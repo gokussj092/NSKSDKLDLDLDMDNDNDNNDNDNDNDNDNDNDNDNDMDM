@@ -274,7 +274,9 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
             "                    val previewDeferred=presentDecodedRecord(processed,saved)")
         batch=replaceOnce(batch,"historyPreferences.setSelectedId(processed.id)",
             "historyPreferences.setSelectedId(if(previewDeferred) null else processed.id)")
-        batch=replaceOnce(batch,"                    tab=0","                    tab=if(previewDeferred)1 else 0")
+        batch=replaceOnce(batch,
+            "                    tab=0\n                }\n                if(generation==importGeneration",
+            "                    tab=if(previewDeferred)1 else 0\n                }\n                if(generation==importGeneration")
         activity=activity.substring(0,batchStart)+batch+activity.substring(batchEnd)
 
         listOf(appPath to app, activityPath to activity).forEach { (name,content)->
