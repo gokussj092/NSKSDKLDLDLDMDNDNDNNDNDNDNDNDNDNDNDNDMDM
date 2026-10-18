@@ -39,7 +39,7 @@ class CloudHistoryActionsTest(unittest.TestCase):
         self.assertIn('cloud_decode_progress_message',GRADLE)
         self.assertIn('BuildConfig.SPDECODE_CLOUD_ENABLED && stored',GRADLE)
         self.assertIn('entry.extension=="nurservers" || entry.rawText.length>=250_000',GRADLE)
-        self.assertIn('presentDecodedRecord(record,saved)',GRADLE)
+        self.assertIn('val previewDeferred=presentDecodedRecord',GRADLE)
         self.assertIn('onDismissLargeResultWarning',GRADLE)
         self.assertIn('CloudLargeResultNotice',ACTION)
         self.assertIn('CloudHistoryEntryActions',ACTION)
