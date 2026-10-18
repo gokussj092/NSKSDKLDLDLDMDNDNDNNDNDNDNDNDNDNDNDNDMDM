@@ -48,7 +48,7 @@ export class ExternalImportError extends Error {
     // Sanitized diagnostics for root-only 'spdecode qa probe-nur'; not included
     // in the public API response. NEVER retain URLs, headers or response bodies.
     this.reason = /^HTTP_[1-5][0-9]{2}$/.test(reason) ||
-      ["DNS","TLS","TIMEOUT","CONNECTION","REDIRECT_BLOCKED","REDIRECT_LIMIT"].includes(reason)
+      ["DNS","TLS","TIMEOUT","CONNECTION","CONNECTION_RESET","CONNECTION_REFUSED","NETWORK_UNREACHABLE","REDIRECT_BLOCKED","REDIRECT_LIMIT"].includes(reason)
       ? reason : "";
 
   }
@@ -155,8 +155,12 @@ export async function downloadApproved({url,kind,method="GET",body,headers={},ma
   const visited=new Set();
 
   const reasonFromError=error=>{
-    if(error?.name==="AbortError" || error?.code==="ETIMEDOUT")return "TIMEOUT";
+    if(error?.name==="AbortError" || ["ETIMEDOUT","ESOCKETTIMEDOUT"].includes(error?.code))
+      return "TIMEOUT";
     if(["ENOTFOUND","EAI_AGAIN"].includes(error?.code))return "DNS";
+    if(["ECONNRESET","EPIPE"].includes(error?.code))return "CONNECTION_RESET";
+    if(error?.code==="ECONNREFUSED")return "CONNECTION_REFUSED";
+    if(["ENETUNREACH","EHOSTUNREACH"].includes(error?.code))return "NETWORK_UNREACHABLE";
     if(typeof error?.code==="string" &&
        (/^ERR_TLS_/.test(error.code) || /CERT|SSL/.test(error.code)))return "TLS";
     return "CONNECTION";
@@ -169,11 +173,17 @@ export async function downloadApproved({url,kind,method="GET",body,headers={},ma
     const destination=approvedUrl(address,kind);
     // DNS re-checked on every redirect and bound to the same HTTPS socket.
     const resolved=await pinnedAddresses(destination.hostname,resolve);
-    const selected=resolved[0];
-    const timeLeft=deadline-Date.now();
-    if(timeLeft<=0)failTransport("REMOTE_PROVIDER_UNAVAILABLE","TIMEOUT");
-
-    const result=await new Promise((resolvePromise,rejectPromise)=>{
+    // Python urllib tries the next resolved address after a socket failure.
+    // Retry NUR only, across independently validated public IPv4s, never on
+    // HTTP errors or TLS certificate failures. Keep one global deadline.
+    let result;
+    const addresses=kind==="nur"?resolved.slice(0,8):resolved.slice(0,1);
+    for(let index=0;index<addresses.length;index++){
+      const selected=addresses[index];
+      const timeLeft=deadline-Date.now();
+      if(timeLeft<=0)failTransport("REMOTE_PROVIDER_UNAVAILABLE","TIMEOUT");
+      try{
+        result=await new Promise((resolvePromise,rejectPromise)=>{
       let settled=false,req;
       const accept=value=>{
         if(settled)return;
@@ -259,7 +269,17 @@ export async function downloadApproved({url,kind,method="GET",body,headers={},ma
       }catch(error){
         reject("REMOTE_PROVIDER_UNAVAILABLE",reasonFromError(error));
       }
-    });
+        });
+        break;
+      }catch(error){
+        const retryable=error instanceof ExternalImportError &&
+          error.code==="REMOTE_PROVIDER_UNAVAILABLE" &&
+          ["CONNECTION","CONNECTION_RESET","CONNECTION_REFUSED",
+           "NETWORK_UNREACHABLE","TIMEOUT"].includes(error.reason);
+        if(!retryable || index===addresses.length-1 || Date.now()>=deadline)
+          throw error;
+      }
+    }
     if(result.data)return result.data;
     if(!result.redirect || kind!=="nur" || hops===NUR_REDIRECT_LIMIT)
       failTransport("REMOTE_PROVIDER_UNAVAILABLE","REDIRECT_LIMIT");
