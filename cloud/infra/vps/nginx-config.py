@@ -97,6 +97,20 @@ def generate(domain: str, api: str, panel: str, www: bool) -> str:
     location ^~ /api/admin/ {{
 {common_headers()}
     }}
+    # Explicitly allow the same *public informational pages* on the panel
+    # origin. Do not expose /api/v1, arbitrary site routes, or worker internals.
+    location = /features {{
+{common_headers()}
+    }}
+    location = /docs {{
+{common_headers()}
+    }}
+    location = /privacy {{
+{common_headers()}
+    }}
+    location = /status {{
+{common_headers()}
+    }}
     # Next.js admin scripts and styles. No public decoding API accessible.
     location ^~ /_next/ {{
 {common_headers()}
