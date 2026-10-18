@@ -169,6 +169,17 @@ class VPSInstallerTests(unittest.TestCase):
         public=output.split("server_name spdecode.xyz;",1)[1].split("server_name api.spdecode.xyz;",1)[0]
         self.assertNotIn("location = /api/v1/decode/import/catalog/remote {",public)
         self.assertIn("location ^~ /api/v1/ { return 404; }",public)
+    def test_nur_catalog_gets_independent_worker_cpu_and_walltime_caps(self):
+        engine=(ROOT/"cloud/workers/python/engine.py").read_text()
+        native=(ROOT/"android/app/src/main/cpp/spdecode_transport.cpp").read_text()
+        gateway=(ROOT/"cloud/web/lib/c3-gateway.mjs").read_text()
+        self.assertIn("TIMEOUT_SECONDS = 20",engine)
+        self.assertIn("CATALOG_TIMEOUT_SECONDS = 120",engine)
+        self.assertIn("timeout: int = CATALOG_TIMEOUT_SECONDS",engine)
+        self.assertIn("preexec_fn=partial(_child_limits,CATALOG_TIMEOUT_SECONDS)",engine)
+        self.assertIn('kind==="catalog"?135000:25000',gateway)
+        self.assertIn("kNurCatalogReadTimeoutMs = 165000",native)
+        self.assertIn('path == "/api/v1/decode/import/catalog/remote"',native)
     def test_worker_permissions_are_normalized_for_root_owned_umask_checkout(self):
         dockerfile=(ROOT/"cloud/workers/python/Dockerfile").read_text()
         self.assertIn("RUN chmod -R a+rX /opt/spdecode",dockerfile)
