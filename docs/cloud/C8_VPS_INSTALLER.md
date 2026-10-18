@@ -2,6 +2,43 @@
 
 **Rama:** `feat/cloud-c8-vps-installer-updater`, basada en C7 (#93). Es software para instalar en tu VPS: **no se ha conectado ni desplegado en una VPS real**. C8 no cambia el bot Python ni las pantallas Android.
 
+## Instalación concreta: dominio spdecode.xyz y VPS OVHcloud
+
+Tu infraestructura se configura así:
+
+| Host público | Servicio | Ruta de acceso |
+| --- | --- | --- |
+| `https://spdecode.xyz` | Sitio web, documentación y privacidad | Next.js interno 127.0.0.1:3000 |
+| `https://www.spdecode.xyz` | Redirección 308 al principal | Solo si añades `--www` y su DNS |
+| `https://api.spdecode.xyz` | API Android C3 (solo `/api/v1/`) | Mismo Next.js interno, host separado |
+| `https://panel.spdecode.xyz` | Panel C6 privado, restringido por IP | Mismo Next.js interno, host separado |
+| `soporte@spdecode.xyz` | Correo de contacto y notificaciones TLS | Se conserva el proveedor de correo actual |
+
+**Importante:** el backend no utiliza puertos 8000 o 3001; son ejemplos antiguos de una arquitectura distinta. C3/C6 usan el **único** Next.js en `127.0.0.1:3000`. Redis y el worker siguen dentro de Docker y **no** deben tener puertos públicos. Los bloques de Nginx impiden abrir endpoints administrativos en el host API, o endpoints de descifrado en el host público.
+
+Comprueba primero que los registros A de los tres hosts apunten a la **IP pública real de tu VPS** y que el certificado pueda emitirse en 80/443. No cambies los registros **MX, SPF, DKIM ni DMARC** de `soporte@spdecode.xyz`. El DNS lo gestiona el proveedor autoritativo del dominio, que no tiene por qué coincidir con tu registrador.
+
+Si tienes una página provisional de Nginx instalada según instrucciones anteriores, haz backup de su configuración y elimina o deshabilita los virtual hosts duplicados **antes** de ejecutar el instalador. No ejecutes simultáneamente dos configuraciones distintas para `spdecode.xyz`, `api.spdecode.xyz` o `panel.spdecode.xyz`.
+
+```bash
+git clone --branch feat/cloud-c8-vps-installer-updater \
+  https://github.com/Gh0stDeveloper/SP-DECODE.git
+cd SP-DECODE
+sudo bash cloud/infra/vps/install.sh \
+  --domain spdecode.xyz \
+  --api-domain api.spdecode.xyz \
+  --panel-domain panel.spdecode.xyz \
+  --email soporte@spdecode.xyz \
+  --support-email soporte@spdecode.xyz
+```
+
+Agrega `--www` **solo** si `www.spdecode.xyz` ya resuelve hacia el VPS. Agrega `--admin-cidr TU_IP_PUBLICA/32` únicamente para autorizar una IP concreta de operador; por defecto el panel está limitado a localhost. Opcionalmente puedes suministrar `--expected-ip IP_PUBLICA_VPS` para abortar si alguno de los hosts resuelve a otra IP (útil frente a parking DNS o registros antiguos).
+
+Después de instalar, el generador de Android toma automáticamente `/etc/spdecode/api-domain` y compila `https://api.spdecode.xyz` dentro de **`libspdecode.so`**. El script **no** empaqueta `spdecode.xyz` como destino de API por error. El correo de soporte se muestra en el pie de página y en privacidad, pero esto **no envía ni configura correo SMTP**, MX o buzones.
+
+**El sistema comienza cerrado:** `CLOUD_API_ENABLED=false`, `CLOUD_ADMIN_ENABLED=false`, `CLOUD_FORCE_MAINTENANCE=true`. Se necesitan configuración y evidencias de C7/Play antes de cambiarlo.
+
+
 ## 1. Instalar SP-DECODE Cloud en Oracle / AWS / DuckDNS
 
 Necesitas Ubuntu/Debian 64 bits, un hostname (por ejemplo, DuckDNS) cuyo DNS A apunte al VPS y puertos **80/443 TCP** abiertos tanto en UFW como en Oracle NSG/security lists o AWS Security Group. Docker y Nginx quedan instalados automáticamente. Si el repositorio es privado, prepara acceso de lectura mediante clave SSH de despliegue; nunca pongas un token PAT en el comando.
@@ -12,11 +49,13 @@ git clone --branch feat/cloud-c8-vps-installer-updater \
   https://github.com/Gh0stDeveloper/SP-DECODE.git
 cd SP-DECODE
 sudo bash cloud/infra/vps/install.sh \
-  --domain tuusuario.duckdns.org \
-  --email tucorreo@ejemplo.com
+  --domain spdecode.xyz \
+  --api-domain api.spdecode.xyz \
+  --panel-domain panel.spdecode.xyz \
+  --email soporte@spdecode.xyz
 ```
 
-El script solicita automáticamente certificado HTTPS Let's Encrypt con webroot de Nginx, instala renovación/reload, clona la rama controlada a `/opt/spdecode/repo`, genera secretos del servidor en `/etc/spdecode/cloud.env` con permisos root 0600 y despliega Docker Compose: Next.js, worker privado Python/Node/PHP y Redis en red interna. **API y administrador permanecen desactivados por defecto**, y `CLOUD_FORCE_MAINTENANCE=true`.
+El script solicita automáticamente un certificado HTTPS Let's Encrypt para sitio, API y panel con webroot de Nginx, instala renovación/reload, clona la rama controlada a `/opt/spdecode/repo`, genera secretos del servidor en `/etc/spdecode/cloud.env` con permisos root 0600 y despliega Docker Compose: Next.js, worker privado Python/Node/PHP y Redis en red interna. **API y administrador permanecen desactivados por defecto**, y `CLOUD_FORCE_MAINTENANCE=true`.
 
 La administración remota se bloquea en Nginx por defecto (solo localhost); puedes agregar `--admin-cidr DIRECCION_IP_PUBLICA/32` al instalador para autorizar exclusivamente tu IP. No pongas 0.0.0.0/0 salvo que añadas protección independiente como VPN/MFA. El script no registra DuckDNS ni abre automáticamente el NSG/firewall de Oracle.
 
