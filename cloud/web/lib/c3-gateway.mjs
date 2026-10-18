@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { settings, limits } from "./c3-config.mjs";
 import { store, reserveSlot, releaseSlot } from "./c3-store.mjs";
-import { createChallenge, issueSession, requireSession } from "./c3-session.mjs";
+import { createChallenge, issueSession, issueQaSession, requireSession } from "./c3-session.mjs";
 import { jsonReply, unavailable } from "./responses.mjs";
 import { ehiConfigured, nurConfigured } from "./c35-provider.mjs";
 import { maintenanceEnabled, recordWorkerResult } from "./c6-ops-store.mjs";
@@ -26,6 +26,8 @@ const ERROR_MESSAGES = Object.freeze({
   EXPIRED_CHALLENGE:"El desafío expiró o ya fue utilizado.",
   INTEGRITY_REJECTED:"No se pudo verificar la integridad de la aplicación.",
   SERVICE_UNAVAILABLE:"Servicio temporalmente no disponible.",
+  QA_DISABLED:"El acceso de pruebas ya no está habilitado.",
+  QA_ACCESS_DENIED:"Código temporal de pruebas inválido o expirado.",
   INVALID_REFERENCE:"Referencia remota inválida.",
   USER_CONSENT_REQUIRED:"Se requiere autorización expresa para importar.",
   REMOTE_NOT_CONFIGURED:"Importación remota no configurada.",
@@ -193,6 +195,21 @@ export async function sessionRequest(request,options={}) {
     if(error?.code==="INVALID_REQUEST")return failure("INVALID_REQUEST",400);
     if(error?.code==="INPUT_TOO_LARGE")return failure("INPUT_TOO_LARGE",413);
     return failure("SERVICE_UNAVAILABLE",503);
+  }
+}
+export async function qaSessionRequest(request,options={}) {
+  if(!enabled())return notEnabled();
+  if(!settings().qaActive)return failure("QA_DISABLED",403);
+  try{
+    const redis=await (options.storeProvider||store)();
+    if(await maintenanceEnabled(redis))return failure("SERVICE_UNAVAILABLE",503);
+    const data=await boundedBody(request,512);
+    const result=await issueQaSession(redis,request,data,settings());
+    if(result.error)return failure(result.error,result.status);
+    return jsonReply({apiVersion:"v1",...result},201);
+  }catch(error){
+    return failure(error?.code==="INVALID_REQUEST"?"INVALID_REQUEST":"SERVICE_UNAVAILABLE",
+      error?.code==="INVALID_REQUEST"?400:503);
   }
 }
 export async function capabilitiesRequest(options={}) {
