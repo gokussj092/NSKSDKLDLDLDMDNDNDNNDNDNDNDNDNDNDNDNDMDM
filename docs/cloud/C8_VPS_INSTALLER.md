@@ -29,6 +29,42 @@ En el teléfono instala la APK firmada **SP-DECODE Cloud v1.2.2-qa (versionCode 
 
 El cliente envía el código una vez por sesión al endpoint `POST /api/v1/session/qa` después de obtener un desafío ligado al origen de la solicitud. Las sesiones se firman con el mismo mecanismo del backend, vencen a los cinco minutos como máximo, están limitadas en frecuencia, y dejan de funcionar inmediatamente cuando se desactiva QA. El código **no se compila ni guarda en la APK**, no se persiste en el dispositivo y no puede utilizarse desde la aplicación pública porque el icono QA queda deshabilitado y el servidor solo admite el canal durante una ventana de pruebas.
 
+## Habilitar NUR Server VPN y proveedores remotos durante QA
+
+El servicio **Server VPN / NUR Tunnel** no necesita cambios en Android: el cliente ya usa
+`/api/v1/decode/import/catalog/remote`. El backend lo mantiene desactivado hasta que
+`CLOUD_NUR_FETCH_ENABLED=true` y `CLOUD_NUR_CATALOG_URL` pasa la validación HTTPS.
+El repositorio contiene el catálogo de URL de la aplicación legado; este valor se instala
+solo en el archivo privado del VPS, jamás se envía como parte de las respuestas ni se
+imprime en consola.
+
+Para una sesión QA **ya iniciada**, sin invalidar el código actual:
+
+```bash
+sudo spdecode update web feat/cloud-c8-vps-installer-updater
+sudo spdecode qa services
+sudo spdecode qa status
+curl -fsS https://api.spdecode.xyz/api/v1/capabilities
+```
+
+El comando `qa services` activa el catálogo remoto NUR a partir de la URL ya validada,
+habilita HTTP Injector Cloud **únicamente si** las dos claves reales de ese proveedor
+ya existen en `/etc/spdecode/cloud.env`, reinicia solo el servicio web y conserva
+el código temporal QA. Si faltan las claves HTTP Injector, el estado indica
+`NOT CONFIGURED`; no se inventan claves. La activación es temporal: `qa stop`
+restaura las opciones previas.
+
+Si vas a iniciar una **nueva** sesión QA después de actualizar esta rama,
+`sudo spdecode qa start` habilita automáticamente los proveedores que estén
+configurados correctamente. No requiere `qa services` adicional.
+
+Las capacidades devuelven `nurRemoteEnabled: true` cuando la URL y el interruptor
+NUR están configurados, y `cloudImportsEnabled: true` cuando lo está EHI Cloud.
+**Esas banderas no prueban que el proveedor remoto esté disponible o que su catálogo
+se pueda descifrar:** la prueba final exige pulsar Servidores VPN en un dispositivo
+QA autenticado y confirmar el resultado JSON completo. Si falla, consulta
+`sudo spdecode logs api` sin copiar ni publicar tokens.
+
 Para cerrar el acceso y revocar el código:
 
 ```bash
