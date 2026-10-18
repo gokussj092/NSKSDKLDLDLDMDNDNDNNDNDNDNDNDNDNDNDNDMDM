@@ -70,8 +70,6 @@ fun SpDecodeApp(
     hideCredentials:Boolean,
     onLanguage:(String)->Unit,
     onMaskCredentials:(Boolean)->Unit,
-    qaCodeConfigured:Boolean=false,
-    onQaCode:(String)->Unit={},
     onExternalLink:(String)->Unit,
     onSelect:(DecodeView)->Unit,
     onClear:()->Unit,
@@ -117,8 +115,7 @@ fun SpDecodeApp(
                     3->ServerVpnScreen(busy,onDecodeServerCatalog)
                     else->FunctionalSettingsPanel(selectedLanguage,hideCredentials,
                         onLanguage,onMaskCredentials,onClear,onExternalLink,
-                        retentionDays,onRetention,onShowGuide=onGuideRestart,
-                        qaCodeConfigured=qaCodeConfigured,onQaCode=onQaCode)
+                        retentionDays,onRetention,onShowGuide=onGuideRestart)
                 }
                 if(guideStep!=null && !whatsNew && !busy && error==null && dialog==null) {
                     CenteredFirstRunGuide(guideStep,onGuideNext,onGuideSkip)
