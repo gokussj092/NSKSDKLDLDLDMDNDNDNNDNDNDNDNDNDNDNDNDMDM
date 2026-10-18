@@ -191,7 +191,7 @@ PY
     "$version" "$code" "$sha" "$domain" "$SPDECODE_TRUSTED_SIGNER_SHA256" \
     > "$dest/BUILD-MANIFEST.txt"
   if [[ "$qa" == true ]]; then
-    printf 'qa_build=true\\nplay_integrity_required_for_qa=false\\n' >> "$dest/BUILD-MANIFEST.txt"
+    printf 'qa_build=true\nplay_integrity_required_for_qa=false\n' >> "$dest/BUILD-MANIFEST.txt"
   fi
   chmod -R go-rwx "$dest"
   log "Signed testing artifacts: $dest"
