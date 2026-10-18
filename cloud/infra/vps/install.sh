@@ -110,6 +110,20 @@ server {
 EOC
 ln -sf /etc/nginx/sites-available/spdecode.conf /etc/nginx/sites-enabled/spdecode.conf
 nginx -t && systemctl reload nginx
+# Before asking Let's Encrypt, prove every virtual host serves the exact
+# challenge webroot. Prevent 404s from old provisional Nginx server blocks.
+probe="spdecode-installer-$"
+printf 'SPDECODE-ACME-READY\n' > "/var/www/spdecode-acme/.well-known/acme-challenge/$probe"
+chmod 0644 "/var/www/spdecode-acme/.well-known/acme-challenge/$probe"
+for host in "${DNS_HOSTS[@]}"; do
+  actual=$(curl --silent --show-error --connect-timeout 4 --max-time 8 --max-redirs 0 \
+    --resolve "$host:80:127.0.0.1" "http://$host/.well-known/acme-challenge/$probe") ||
+    fail "Unable to read ACME challenge on $host; check nginx -T"
+  if [[ "$actual" != "SPDECODE-ACME-READY" ]]; then
+    fail "Wrong Nginx webroot for $host. Check sudo nginx -T for duplicate SP-DECODE virtual hosts. Use the recovery script, do not rerun the installer."
+  fi
+done
+rm -f -- "/var/www/spdecode-acme/.well-known/acme-challenge/$probe"
 log "Requesting HTTPS certificate for $DOMAIN; open inbound TCP 80/443"
 CERTBOT_DOMAINS=(-d "$DOMAIN" -d "$API_DOMAIN" -d "$PANEL_DOMAIN")
 if [[ "$WWW" == true ]]; then CERTBOT_DOMAINS+=(-d "www.$DOMAIN"); fi
