@@ -17,3 +17,4 @@ productores se mantienen en `tests/golden`, y las pruebas en `tests`.
 | Aplicación | Catálogo | Archivos/textos | Icono y documentación |
 | --- | --- | --- | --- |
 | 24clan VPN Green 3.3 | [Script](24clan_VPN_Green/24clan_VPN_Green.py) | [.green](24clan_VPN_Green/24clan_VPN_Green_archivos.py) | [Carpeta](24clan_VPN_Green/README.md) |
+| HX Tunnel VPN Hx-Build14 | [Script](HX_Tunnel_VPN/HX_Tunnel_VPN.py) | [.hxt](HX_Tunnel_VPN/HX_Tunnel_VPN_archivos.py) | [Carpeta](HX_Tunnel_VPN/README.md) |

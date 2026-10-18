@@ -157,6 +157,26 @@ incluidas las listas premium, conservando el JSON completo. Catálogos real
 e integrado comparados con JCE; archivos probados con vectores Java.
 No se adjuntó una exportación `.green` real.
 
+## HX Tunnel VPN Hx-Build14 — catálogo, archivos .hxt e icono
+
+[`apps/HX_Tunnel_VPN`](decoders/Python/apps/HX_Tunnel_VPN/README.md)
+contiene `HX_Tunnel_VPN.py` para el catálogo, `HX_Tunnel_VPN_archivos.py`
+para archivos `.hxt` o texto hexadecimal, y el icono original PNG.
+Ambos scripts son autónomos, usan solo Python estándar y no necesitan el APK.
+
+```bash
+python decoders/Python/apps/HX_Tunnel_VPN/HX_Tunnel_VPN.py --url -o catalogo.json
+python decoders/Python/apps/HX_Tunnel_VPN/HX_Tunnel_VPN_archivos.py perfil.hxt -o perfil.json
+```
+
+El catálogo usa XXTEA con delta `0x9E5729B1`; los archivos, hexadecimal/XOR
+y texto JNI modificado. Consulta real: versión 25.52, **33 servidores y
+707 payloads**, frente a 25 y 635 del catálogo integrado 23.100. Se conserva
+el objeto completo, incluidas todas las listas y los metadatos originales.
+Catálogos comparados byte por byte con Java y CLI comprobada contra el
+endpoint real. Archivos probados con vectores Java independientes y la
+función XOR ARM64 original bajo emulación; no se recibió un `.hxt` real.
+
 ## Flujo por decodificador
 
 ### decoders/Python/DARKTUNNEL.py
