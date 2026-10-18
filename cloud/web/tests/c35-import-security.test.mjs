@@ -75,6 +75,34 @@ function syntheticResponse(responseKey=RESPONSE_KEY){
   const envelope=Buffer.concat([iv,tag,encrypted]);
   return Buffer.from(JSON.stringify({code:200,data:envelope.toString("base64")}));
 }
+test("only NUR catalog worker requests receive extended timeout; other formats retain 25s",async()=>{
+  const {fetchWorker}=await import("../lib/c3-gateway.mjs");
+  const previous=process.env.WORKER_INTERNAL_URL;
+  const nativeTimeout=AbortSignal.timeout;
+  const timeouts=[];
+  process.env.WORKER_INTERNAL_URL="http://decoder-worker:8787";
+  AbortSignal.timeout=ms=>{
+    timeouts.push(ms);
+    return new AbortController().signal;
+  };
+  const fetchImpl=async(url,options)=>{
+    assert.equal(url.startsWith("http://decoder-worker:8787/internal/v1/decode/"),true);
+    assert.equal(options.redirect,"error");
+    return {status:200,text:async()=>JSON.stringify({status:"success",
+      rawText:"{}",structuredJson:{},isPartial:false,warnings:[]})};
+  };
+  try{
+    const cfg={workerToken:"worker-unit-token"};
+    assert.equal((await fetchWorker("catalog",{dataBase64:"ZGVtbw=="},cfg,{fetchImpl})).status,200);
+    assert.equal((await fetchWorker("file",{format:"hc",dataBase64:"ZGVtbw=="},cfg,{fetchImpl})).status,200);
+    assert.equal((await fetchWorker("text",{text:"demo"},cfg,{fetchImpl})).status,200);
+    assert.deepEqual(timeouts,[135000,25000,25000]);
+  }finally{
+    AbortSignal.timeout=nativeTimeout;
+    if(previous===undefined)delete process.env.WORKER_INTERNAL_URL;
+    else process.env.WORKER_INTERNAL_URL=previous;
+  }
+});
 test("only exact EHI reference formats are accepted, including the Android emoji vector",()=>{
   for(const value of ["TEST1234","https://ehi.link/TEST1234","ehi://ehi.link/TEST1234",
     "💉😩😘😩😧😩😗😘🙌😠🙍😤😐🚀"]){
