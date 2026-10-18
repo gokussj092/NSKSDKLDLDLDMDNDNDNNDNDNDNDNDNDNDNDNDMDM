@@ -120,7 +120,7 @@ def reset_admin() -> None:
     panel = (CFG / "panel-domain").read_text().strip()
     generator = REPO / "cloud/infra/vps/nginx-config.py"
     old_env, old_nginx = ENV.read_bytes(), NGINX.read_bytes()
-    had_www = bool(re.search(r"server_name\\s+www\\." + re.escape(domain) + r";", old_nginx.decode("utf-8")))
+    had_www = bool(re.search(r"server_name\s+www\." + re.escape(domain) + r";", old_nginx.decode("utf-8")))
     nginx_args = ["python3", str(generator), domain, "--api-domain", api_domain,
                   "--panel-domain", panel]
     if had_www:
@@ -157,6 +157,8 @@ def reset_admin() -> None:
         else:
             raise ResetError("Next.js did not become healthy")
         check_backend()
+        # Admin-only login throttle might still hold previous failed attempts.
+        compose("exec", "-T", "redis", "redis-cli", "DEL", "spc6:admin:login:global")
         validate_login(panel, username, password)
     except Exception:
         # Never display unusable credentials. Restore previous configuration.
