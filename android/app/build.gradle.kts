@@ -157,6 +157,134 @@ val prepareQaSettingsSource = tasks.register("prepareQaSettingsSource") {
         output.writeText(source, Charsets.UTF_8)
     }
 }
+// C0 UI sources remain byte-for-byte unchanged; only Cloud builds receive
+// generated copies with the minimal safe-preview/history-export behavior.
+val cloudHistoryUiRoot = layout.buildDirectory.dir("generated/cloud-history-ui/java")
+val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") {
+    val originalRoot = layout.projectDirectory.dir("src/main/java/com/ghostdeveloper/spdecode")
+    inputs.files(originalRoot.file("SpDecodeApp.kt"), originalRoot.file("MainActivity.kt"))
+    outputs.dir(cloudHistoryUiRoot)
+    doLast {
+        fun replaceOnce(source:String, old:String, replacement:String):String {
+            require(source.indexOf(old)>=0 && source.indexOf(old)==source.lastIndexOf(old)) {
+                "Cloud history UI anchor absent or ambiguous: " + old.take(75)
+            }
+            return source.replace(old,replacement)
+        }
+        val appPath = "com/ghostdeveloper/spdecode/SpDecodeApp.kt"
+        val activityPath = "com/ghostdeveloper/spdecode/MainActivity.kt"
+        var app = originalRoot.file("SpDecodeApp.kt").asFile.readText(Charsets.UTF_8)
+        app = replaceOnce(app,
+            "    onDeleteSelected:(Set<String>)->Unit,\n    onFavorite:",
+            "    onDeleteSelected:(Set<String>)->Unit,\n    onExportHistory:(DecodeView)->Unit,\n    onFavorite:")
+        app = replaceOnce(app,
+            "    whatsNew:Boolean=false,",
+            "    largeResultWarning:Boolean=false,\n    onDismissLargeResultWarning:()->Unit={},\n    whatsNew:Boolean=false,")
+        app = replaceOnce(app,
+            "1->HistoryScreen(session,onSelect,onDeleteSelected,onClear,onImportMultiple,onFavorite)",
+            "1->HistoryScreen(session,onSelect,onDeleteSelected,onClear,onImportMultiple,onFavorite,onExportHistory)")
+        app = replaceOnce(app,
+            "Text(stringResource(R.string.decode_progress_title),",
+            "Text(stringResource(if(BuildConfig.SPDECODE_CLOUD_ENABLED && progressStage==1) " +
+                "R.string.cloud_decode_progress_title else R.string.decode_progress_title),")
+        app = replaceOnce(app,
+            "else->R.string.decode_progress_decoding",
+            "else->if(BuildConfig.SPDECODE_CLOUD_ENABLED) " +
+                "R.string.cloud_decode_progress_message else R.string.decode_progress_decoding")
+        app = replaceOnce(app,
+            "        if(error!=null && !busy) AlertDialog(",
+            "        if(largeResultWarning && !busy) " +
+                "com.ghostdeveloper.spdecode.cloud.CloudLargeResultNotice(onDismissLargeResultWarning)\n" +
+                "        if(error!=null && !busy) AlertDialog(")
+        app = replaceOnce(app,
+            "    onFavorite: (String, Boolean) -> Unit,\n) {",
+            "    onFavorite: (String, Boolean) -> Unit,\n" +
+                "    onExportHistory: (DecodeView) -> Unit,\n) {")
+        app = replaceOnce(app,
+            """                            IconButton(onClick={
+                                deletingAll=false;deletion=setOf(entry.id)
+                            }) {
+                                Icon(Icons.Outlined.DeleteOutline,
+                                    stringResource(R.string.history_delete_one),tint=Secondary)
+                            }""",
+            """                            com.ghostdeveloper.spdecode.cloud.CloudHistoryEntryActions(
+                                onExport={onExportHistory(entry)},
+                                onDelete={deletingAll=false;deletion=setOf(entry.id)},
+                            )""")
+        var activity = originalRoot.file("MainActivity.kt").asFile.readText(Charsets.UTF_8)
+        activity = replaceOnce(activity,
+            "    private var stagedExport:String?=null",
+            "    private var stagedExport:String?=null\n" +
+                "    private var showLargeResultWarning by mutableStateOf(false)")
+        activity = replaceOnce(activity,
+            "                onDeleteSelected={ids->deleteHistory(ids)},",
+            """                onDeleteSelected={ids->deleteHistory(ids)},
+                onExportHistory={entry->export(
+                    com.ghostdeveloper.spdecode.cloud.CloudHistoryJsonExport.content(entry),
+                    entry.filename,ResultExport.JSON)},
+            """.trimEnd())
+        activity = replaceOnce(activity,
+            "                onDecodeServerCatalog={decodeNurServers()},",
+            """                onDecodeServerCatalog={decodeNurServers()},
+                largeResultWarning=showLargeResultWarning,
+                onDismissLargeResultWarning={showLargeResultWarning=false},""")
+        activity = replaceOnce(activity,
+            "    private fun decodeText(userText:String) {",
+            """    // Large JSON documents must never be parsed eagerly by the preview.
+    // The complete result is already saved in encrypted history.
+    private fun presentDecodedRecord(entry:DecodeView, stored:Boolean):Boolean {
+        val large=BuildConfig.SPDECODE_CLOUD_ENABLED && stored &&
+            (entry.extension=="nurservers" || entry.rawText.length>=250_000)
+        if(large) {
+            result=null
+            reveal=false
+            showLargeResultWarning=true
+        }else result=entry
+        return large
+    }
+
+    private fun decodeText(userText:String) {""")
+        // Dedicated replacements preserve the original flows on all formats.
+        fun updateResultBlock(start:String,end:String,entry:String,saved:String):Unit {
+            val from=activity.indexOf(start)
+            val to=activity.indexOf(end,from+start.length)
+            require(from>=0 && to>from) {"Cloud activity decode section unavailable: "+start}
+            var section=activity.substring(from,to)
+            section=replaceOnce(section,"                result="+entry,
+                "                val previewDeferred=presentDecodedRecord("+entry+","+saved+")")
+            section=replaceOnce(section,"historyPreferences.setSelectedId("+entry+".id)",
+                "historyPreferences.setSelectedId(if(previewDeferred) null else "+entry+".id)")
+            section=replaceOnce(section,"                tab=0","                tab=if(previewDeferred)1 else 0")
+            activity=activity.substring(0,from)+section+activity.substring(to)
+        }
+        updateResultBlock("    private fun decodeText(userText:String) {",
+            "    private fun decodeCloud(reference:String) {","record","stored")
+        updateResultBlock("    private fun decodeCloud(reference:String) {",
+            "    private fun decodeNurServers() {","record","stored")
+        updateResultBlock("    private fun decodeNurServers() {",
+            "    private fun clearVisibleResult() {","record","saved")
+        // Batch files use the same safe preview rule for exceptionally large
+        // outputs, but ordinary files retain their original navigation.
+        val batchStart=activity.indexOf("    private fun importFiles(uris:List<Uri>,")
+        require(batchStart>=0)
+        val batchEnd=activity.indexOf("    private fun clearHistory()",batchStart)
+        require(batchEnd>batchStart)
+        var batch=activity.substring(batchStart,batchEnd)
+        batch=replaceOnce(batch,"                    result=processed",
+            "                    val previewDeferred=presentDecodedRecord(processed,saved)")
+        batch=replaceOnce(batch,"historyPreferences.setSelectedId(processed.id)",
+            "historyPreferences.setSelectedId(if(previewDeferred) null else processed.id)")
+        batch=replaceOnce(batch,"                    tab=0","                    tab=if(previewDeferred)1 else 0")
+        activity=activity.substring(0,batchStart)+batch+activity.substring(batchEnd)
+
+        listOf(appPath to app, activityPath to activity).forEach { (name,content)->
+            val output=cloudHistoryUiRoot.get().file(name).asFile
+            output.parentFile.mkdirs()
+            output.writeText(content,Charsets.UTF_8)
+        }
+    }
+}
+
 val prepareCloudOnlySources = tasks.register<Sync>("prepareCloudOnlySources") {
     from("src/main/java") {
         exclude("com/ghostdeveloper/spdecode/parity/**")
@@ -164,6 +292,8 @@ val prepareCloudOnlySources = tasks.register<Sync>("prepareCloudOnlySources") {
         exclude("com/ghostdeveloper/spdecode/TextPhaseGPort.kt")
         exclude("com/ghostdeveloper/spdecode/HttpInjectorCloudPort.kt")
         exclude("com/ghostdeveloper/spdecode/NurTunnelServerCatalog.kt")
+        exclude("com/ghostdeveloper/spdecode/SpDecodeApp.kt")
+        exclude("com/ghostdeveloper/spdecode/MainActivity.kt")
         if (enableQaBuild) {
             exclude("com/ghostdeveloper/spdecode/FunctionalSettingsPanel.kt")
         }
@@ -173,6 +303,8 @@ val prepareCloudOnlySources = tasks.register<Sync>("prepareCloudOnlySources") {
         into("com/ghostdeveloper/spdecode/parity")
     }
     from("src/cloud/java")
+    dependsOn(prepareCloudHistoryUiSource)
+    from(cloudHistoryUiRoot)
     if (enableQaBuild) {
         dependsOn(prepareQaSettingsSource)
         from(qaSettingsRoot)
