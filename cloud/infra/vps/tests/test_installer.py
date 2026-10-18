@@ -128,6 +128,19 @@ class VPSInstallerTests(unittest.TestCase):
         self.assertNotIn('certbot certonly',script)
         self.assertNotIn('openssl rand',script)
         self.assertNotIn('git reset --hard',script)
+    def test_routing_diagnostics_do_not_expose_secrets_or_modify_state(self):
+        script=(VPS/"diagnose-routing.sh").read_text()
+        self.assertEqual(subprocess.run(["bash","-n",str(VPS/"diagnose-routing.sh")],
+                        capture_output=True).returncode,0)
+        for fragment in ('/api/v1/health','/api/v1/ready','/admin/login',
+                         '/api/admin/session','--resolve "$host:443:127.0.0.1"',
+                         '--noproxy', 'docker ps','nginx -t'):
+            self.assertIn(fragment,script)
+        for forbidden in ('docker inspect','docker compose config',
+                          'cat /etc/spdecode/cloud.env','CLOUD_WORKER_TOKEN=',
+                          'CLOUD_ADMIN_SESSION_KEY=','CLOUD_API_ENABLED=true',
+                          'systemctl restart'):
+            self.assertNotIn(forbidden,script)
     def test_installer_fail_closed(self):
         data=(VPS/"install.sh").read_text()
         for text in ("CLOUD_API_ENABLED=false","CLOUD_ADMIN_ENABLED=false","CLOUD_FORCE_MAINTENANCE=true","certbot certonly","nginx -t && systemctl reload nginx"):
