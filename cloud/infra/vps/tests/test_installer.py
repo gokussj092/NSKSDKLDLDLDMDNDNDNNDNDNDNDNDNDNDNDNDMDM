@@ -109,6 +109,15 @@ class VPSInstallerTests(unittest.TestCase):
             p=subprocess.run(["python3",str(VPS/"nginx-config.py"),
               "ghost.duckdns.org",cidr],capture_output=True)
             self.assertNotEqual(p.returncode,0,cidr)
+    def test_worker_permissions_are_normalized_for_root_owned_umask_checkout(self):
+        dockerfile=(ROOT/"cloud/workers/python/Dockerfile").read_text()
+        self.assertIn("RUN chmod -R a+rX /opt/spdecode",dockerfile)
+        self.assertIn("USER 65532:65532",dockerfile)
+        self.assertLess(dockerfile.index("RUN chmod -R a+rX /opt/spdecode"),
+                        dockerfile.index("USER 65532:65532"))
+        self.assertIn("len(load_file_engines()) == 240",dockerfile)
+        compose=(ROOT/"cloud/compose.yaml").read_text()
+        self.assertIn("start_period: 30s",compose)
     def test_installer_fail_closed(self):
         data=(VPS/"install.sh").read_text()
         for text in ("CLOUD_API_ENABLED=false","CLOUD_ADMIN_ENABLED=false","CLOUD_FORCE_MAINTENANCE=true","certbot certonly","nginx -t && systemctl reload nginx"):

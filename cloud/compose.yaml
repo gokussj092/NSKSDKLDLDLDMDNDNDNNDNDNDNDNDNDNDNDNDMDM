@@ -102,9 +102,9 @@ services:
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8787/health',timeout=2).read()"]
       interval: 30s
-      timeout: 5s
-      retries: 4
-      start_period: 5s
+      timeout: 8s
+      retries: 6
+      start_period: 30s
 
 networks:
   edge: {}
