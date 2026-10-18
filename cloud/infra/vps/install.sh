@@ -116,7 +116,8 @@ probe="spdecode-installer-$"
 printf 'SPDECODE-ACME-READY\n' > "/var/www/spdecode-acme/.well-known/acme-challenge/$probe"
 chmod 0644 "/var/www/spdecode-acme/.well-known/acme-challenge/$probe"
 for host in "${DNS_HOSTS[@]}"; do
-  actual=$(curl --silent --show-error --connect-timeout 4 --max-time 8 --max-redirs 0 \
+  actual=$(curl --noproxy '*' --proxy '' --silent --show-error \
+    --connect-timeout 4 --max-time 8 --max-redirs 0 \
     --resolve "$host:80:127.0.0.1" "http://$host/.well-known/acme-challenge/$probe") ||
     fail "Unable to read ACME challenge on $host; check nginx -T"
   if [[ "$actual" != "SPDECODE-ACME-READY" ]]; then
