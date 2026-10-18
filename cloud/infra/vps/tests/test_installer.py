@@ -155,6 +155,20 @@ class VPSInstallerTests(unittest.TestCase):
         self.assertNotIn("admin-cidr",cli)
         installer=(VPS/"install.sh").read_text()
         self.assertNotIn("--admin-cidr",installer)
+    def test_nur_catalog_only_gets_extended_nginx_https_response_budget(self):
+        output=subprocess.run(["python3",str(VPS/"nginx-config.py"),
+              "spdecode.xyz","--api-domain","api.spdecode.xyz",
+              "--panel-domain","panel.spdecode.xyz"],
+              capture_output=True,text=True,check=True).stdout
+        api=output.split("server_name api.spdecode.xyz;",1)[1].split("server_name panel.spdecode.xyz;",1)[0]
+        self.assertIn("location = /api/v1/decode/import/catalog/remote {",api)
+        catalog=api.split("location = /api/v1/decode/import/catalog/remote {",1)[1].split("}",1)[0]
+        normal=api.split("location ^~ /api/v1/ {",1)[1].split("}",1)[0]
+        self.assertIn("proxy_read_timeout 155s;",catalog)
+        self.assertIn("proxy_read_timeout 35s;",normal)
+        public=output.split("server_name spdecode.xyz;",1)[1].split("server_name api.spdecode.xyz;",1)[0]
+        self.assertNotIn("location = /api/v1/decode/import/catalog/remote {",public)
+        self.assertIn("location ^~ /api/v1/ { return 404; }",public)
     def test_worker_permissions_are_normalized_for_root_owned_umask_checkout(self):
         dockerfile=(ROOT/"cloud/workers/python/Dockerfile").read_text()
         self.assertIn("RUN chmod -R a+rX /opt/spdecode",dockerfile)
