@@ -28,10 +28,12 @@ class QATests(unittest.TestCase):
             "CLOUD_SESSION_SIGNING_KEY="+"x"*48+"\n"
             "CLOUD_WORKER_TOKEN="+"w"*48+"\n"
             "CLOUD_ADMIN_USERNAME=realadmin\n")
-        self.orig_env,self.orig_state=qa.ENV,qa.STATE
-        qa.ENV,qa.STATE=self.env,self.state
+        self.orig_env,self.orig_state,self.orig_nur_asset=qa.ENV,qa.STATE,qa.NUR_ASSET
+        self.asset=root/"nur_tunnel_server_endpoint.json"
+        self.asset.write_text('{"catalogUrl":"https://strongteam.co/api/catalog/vpn"}')
+        qa.ENV,qa.STATE,qa.NUR_ASSET=self.env,self.state,self.asset
     def tearDown(self):
-        qa.ENV,qa.STATE=self.orig_env,self.orig_state
+        qa.ENV,qa.STATE,qa.NUR_ASSET=self.orig_env,self.orig_state,self.orig_nur_asset
         self.temp.cleanup()
     def call(self,command):
         output=io.StringIO();calls=[]
@@ -54,6 +56,10 @@ class QATests(unittest.TestCase):
         self.assertIn("CLOUD_QA_ENABLED=true",self.env.read_text())
         self.assertIn("CLOUD_FORCE_MAINTENANCE=false",self.env.read_text())
         self.assertIn("CLOUD_API_ENABLED=true",self.env.read_text())
+        self.assertIn("CLOUD_NUR_FETCH_ENABLED=true",self.env.read_text())
+        self.assertIn("CLOUD_NUR_CATALOG_URL=https://strongteam.co/api/catalog/vpn",self.env.read_text())
+        self.assertIn("NUR Server VPN: ENABLED",out)
+        self.assertIn("HTTP Injector Cloud: NOT CONFIGURED",out)
         self.assertTrue(self.state.is_file())
         self.assertNotIn(code,self.env.read_text())
         self.assertNotIn(code,self.state.read_text())
@@ -64,12 +70,47 @@ class QATests(unittest.TestCase):
         self.assertIn("CLOUD_API_ENABLED=false",self.env.read_text())
         self.assertIn("CLOUD_FORCE_MAINTENANCE=true",self.env.read_text())
         self.assertIn("CLOUD_QA_ENABLED=false",self.env.read_text())
+        self.assertIn("CLOUD_NUR_FETCH_ENABLED=",self.env.read_text())
+        self.assertNotIn("CLOUD_NUR_FETCH_ENABLED=true",self.env.read_text())
+        self.assertNotIn("CLOUD_NUR_CATALOG_URL=https://strongteam.co",self.env.read_text())
         self.assertFalse(self.state.exists())
     def test_stop_without_prior_state_keeps_existing_server_gates(self):
         self.env.write_text(self.env.read_text().replace("CLOUD_API_ENABLED=false","CLOUD_API_ENABLED=true"))
         self.call("stop")
         self.assertIn("CLOUD_API_ENABLED=true",self.env.read_text())
         self.assertIn("CLOUD_FORCE_MAINTENANCE=true",self.env.read_text())
+    def test_enable_services_during_existing_qa_keeps_code_and_revokes_at_stop(self):
+        # A QA session provisioned by an older CLI does not yet have provider state.
+        self.asset.write_text('{"catalogUrl":"https://strongteam.co/allowed-path"}')
+        output,_=self.call("start")
+        code=output.split("QA CODE: ",1)[1].splitlines()[0]
+        self.env.write_text(self.env.read_text()
+            .replace("CLOUD_NUR_FETCH_ENABLED=true","CLOUD_NUR_FETCH_ENABLED=false"))
+        output,calls=self.call("services")
+        self.assertIn("NUR Server VPN: ENABLED",output)
+        self.assertNotIn(code,output)
+        self.assertTrue(any("web" in call for call in calls))
+        self.call("stop")
+        self.assertIn("CLOUD_NUR_FETCH_ENABLED=",self.env.read_text())
+    def test_optional_ehi_enabled_only_with_valid_keys(self):
+        self.env.write_text(self.env.read_text()+
+            "CLOUD_EHI_SIGN_KEY="+"S"*32+"\\n"+
+            "CLOUD_EHI_RESPONSE_KEY="+"R"*32+"\\n")
+        output,_=self.call("start")
+        self.assertIn("HTTP Injector Cloud: ENABLED",output)
+        self.assertIn("CLOUD_EHI_IMPORT_ENABLED=true",self.env.read_text())
+        self.call("stop")
+        self.assertNotIn("CLOUD_EHI_IMPORT_ENABLED=true",self.env.read_text())
+    def test_invalid_nur_asset_never_opens_qa(self):
+        for url in ("http://strongteam.co/catalog","https://other.example/catalog",
+                    "https://strongteam.co/catalog?token=bad",
+                    "https://strongteam.co:443/catalog"):
+            with self.subTest(url=url):
+                self.asset.write_text('{"catalogUrl":'+__import__("json").dumps(url)+'}')
+                with self.assertRaises(RuntimeError):
+                    self.call("start")
+                self.assertNotIn("CLOUD_API_ENABLED=true",self.env.read_text())
+                self.assertFalse(self.state.exists())
     def test_qa_code_never_printed_by_status(self):
         out,_=self.call("start")
         code=out.split("QA CODE: ",1)[1].splitlines()[0]
