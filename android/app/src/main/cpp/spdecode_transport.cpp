@@ -10,6 +10,7 @@ constexpr size_t kMaxRequestBytes = 12 * 1024 * 1024;
 constexpr size_t kMaxReplyBytes = 6 * 1024 * 1024;
 constexpr jint kConnectTimeoutMs = 10000;
 constexpr jint kReadTimeoutMs = 25000;
+constexpr jint kNurCatalogReadTimeoutMs = 165000; // heavy server-side Argon2id
 
 std::string utf(JNIEnv* env, jstring value) {
     if (value == nullptr) return {};
@@ -149,7 +150,11 @@ jstring post(JNIEnv* env,jstring pathArg,jstring bodyArg,jstring bearerArg) {
     env->DeleteLocalRef(method);
     env->CallVoidMethod(conn,setRedirect,JNI_FALSE);
     env->CallVoidMethod(conn,setConnect,kConnectTimeoutMs);
-    env->CallVoidMethod(conn,setRead,kReadTimeoutMs);
+    // Do not relax ordinary decoder/session timeouts. NUR server catalog
+    // can require up to 120s on the remote worker for nested Argon2id fields.
+    const jint readTimeout = path == "/api/v1/decode/import/catalog/remote"
+        ? kNurCatalogReadTimeoutMs : kReadTimeoutMs;
+    env->CallVoidMethod(conn,setRead,readTimeout);
     env->CallVoidMethod(conn,setOutput,JNI_TRUE);
     env->CallVoidMethod(conn,setLength,8192);
     bool ok=!env->ExceptionCheck();
