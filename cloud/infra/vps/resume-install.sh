@@ -14,6 +14,7 @@ ROOT=/opt/spdecode
 [[ -f "$CONF" && -f "$ENVFILE" && -d "$ROOT/repo/.git" ]] ||
   die "Partial install not found. This is only for resuming after a certificate error."
 [[ "$(stat -c %a "$ENVFILE")" == 600 ]] || die "Cloud secrets must remain mode 0600"
+install -d -m 0700 /etc/spdecode/backups
 [[ -f /etc/spdecode/domain && -f /etc/spdecode/api-domain &&
   -f /etc/spdecode/panel-domain ]] || die "Domain configuration missing"
 DOMAIN=$(cat /etc/spdecode/domain)
