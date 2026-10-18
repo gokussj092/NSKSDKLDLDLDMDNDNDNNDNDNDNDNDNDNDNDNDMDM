@@ -111,6 +111,9 @@ def generate(domain: str, api: str, panel: str, www: bool) -> str:
     location = /status {{
 {common_headers()}
     }}
+    location = /api/site/status {{
+{common_headers()}
+    }}
     # Next.js admin scripts and styles. No public decoding API accessible.
     location ^~ /_next/ {{
 {common_headers()}
