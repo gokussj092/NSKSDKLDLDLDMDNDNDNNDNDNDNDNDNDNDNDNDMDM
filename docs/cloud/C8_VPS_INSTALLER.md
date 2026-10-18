@@ -1,3 +1,22 @@
+## Solución: usuario correcto pero el panel responde ADMIN_DISABLED (503)
+
+En la primera versión de C8, `spdecode panel enable` almacenaba el usuario y el hash de contraseña en `/etc/spdecode/cloud.env`, pero `cloud/compose.yaml` omitía pasar `CLOUD_ADMIN_USERNAME` al contenedor Next.js. Por eso una cuenta válida podía recibir `ADMIN_DISABLED` aunque el instalador declarara que el panel estaba habilitado.
+
+**Corregido:** Compose ahora reenvía el usuario al backend y `spdecode panel enable` comprueba la configuración efectiva dentro del contenedor y que `/api/admin/session` responda `401` a invitados (y no `503`). La sesión no verifica IP.
+
+Si **ya creaste** el usuario y la contraseña, no tienes que repetirlos ni generar secretos nuevos:
+
+```bash
+cd ~/SP-DECODE
+git pull --ff-only origin feat/cloud-c8-vps-installer-updater
+sudo spdecode update web feat/cloud-c8-vps-installer-updater
+sudo spdecode panel check
+```
+
+El segundo comando reconstruye y sustituye Next.js con el nuevo Compose, preservando las credenciales configuradas. El último deberá mostrar `Panel login backend active (guest session correctly returns 401)`. Si indica `ADMIN_DISABLED`, no compartas `cloud.env` ni contraseñas: usa `sudo docker logs --tail 40 spdecode-web-1` o el diagnóstico sin secretos.
+
+Prueba desde el navegador en `https://panel.spdecode.xyz/admin/login` con el usuario exacto configurado, que distingue mayúsculas/minúsculas. Si se utilizó repetidamente una contraseña incorrecta, Redis aplica limitación temporal de intentos.
+
 ## Inicio de sesión desde cualquier red, sin verificación de IP
 
 El panel **no pide ni valida una dirección IP** y no existe ninguna allowlist de IP en Nginx. Para abrirlo desde una red móvil, Wi-Fi o VPN, utiliza **usuario y contraseña** en `https://panel.spdecode.xyz/admin/login`. Una sesión válida se mantiene al cambiar de red hasta expirar o cerrar sesión. La página de entrada es pública, mientras que las rutas `/api/admin/*` exigen una cookie firmada protegida por HTTPS; también se mantienen limitación de intentos y protección CSRF.

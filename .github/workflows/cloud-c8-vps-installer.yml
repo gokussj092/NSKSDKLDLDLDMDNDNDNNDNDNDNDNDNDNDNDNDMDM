@@ -143,6 +143,36 @@ jobs:
           test "$(curl --silent --output /dev/null --write-out '%{http_code}' http://127.0.0.1:3000/api/admin/session)" = 503
           test "$(curl --silent --output /dev/null --write-out '%{http_code}' http://127.0.0.1:3000/api/v1/ready)" = 503
           docker compose -f cloud/compose.yaml ps
+      - name: Validate real username/password login through running Next.js + Redis
+        run: |
+          # Synthetic ephemeral account; no real usernames, keys, hashes or
+          # session cookies are uploaded to CI artifacts or logs.
+          export CLOUD_ADMIN_ENABLED=true
+          export CLOUD_TRUST_PROXY=true
+          export CLOUD_ADMIN_USERNAME=GhostDeveloper
+          export CLOUD_ADMIN_PUBLIC_ORIGIN=https://panel.spdecode.xyz
+          export CLOUD_ADMIN_SESSION_KEY=ci-test-only-admin-key-1234567890abcdef
+          export CLOUD_ADMIN_PASSWORD_SCRYPT="$(python3 - <<'PY'
+          import hashlib
+          salt=b"ci-demo-salt-123"
+          pwd=b"ci-only-password-not-for-production-123"
+          digest=hashlib.scrypt(pwd,salt=salt,n=16384,r=8,p=1,dklen=64)
+          print(f"scrypt$16384$8$1${salt.hex()}${digest.hex()}")
+          PY
+          )"
+          docker compose -f cloud/compose.yaml up -d --no-deps --force-recreate web
+          for i in $(seq 1 20); do
+            if curl -fsS --max-time 3 http://127.0.0.1:3000/api/v1/health >/dev/null; then break; fi
+            sleep 3
+          done
+          docker compose -f cloud/compose.yaml exec -T web node --input-type=module -e             'import {adminSettings} from "./lib/c6-admin-auth.mjs";if(!adminSettings().enabled)process.exit(1)'
+          test "$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:3000/api/admin/session)" = 401
+          for body in '{"username":"NotGhostDeveloper","password":"ci-only-password-not-for-production-123"}' '{"username":"GhostDeveloper","password":"bad-password-1234567890"}'; do
+            test "$(curl -sS -o /dev/null -w '%{http_code}'               -H 'Origin: https://panel.spdecode.xyz' -H 'X-SPDecode-Admin-Action: 1'               -H 'Content-Type: application/json' -d "$body"               http://127.0.0.1:3000/api/admin/login)" = 401
+          done
+          test "$(curl -sS --cookie-jar "$RUNNER_TEMP/admin-test-cookies"             -o /dev/null -w '%{http_code}'             -H 'Origin: https://panel.spdecode.xyz' -H 'X-SPDecode-Admin-Action: 1'             -H 'Content-Type: application/json'             -d '{"username":"GhostDeveloper","password":"ci-only-password-not-for-production-123"}'             http://127.0.0.1:3000/api/admin/login)" = 200
+          test "$(curl -sS --cookie "$RUNNER_TEMP/admin-test-cookies"             -o /dev/null -w '%{http_code}' http://127.0.0.1:3000/api/admin/session)" = 200
+          rm -f "$RUNNER_TEMP/admin-test-cookies"
       - name: Always tear down containers
         if: always()
         run: docker compose -f cloud/compose.yaml down --remove-orphans

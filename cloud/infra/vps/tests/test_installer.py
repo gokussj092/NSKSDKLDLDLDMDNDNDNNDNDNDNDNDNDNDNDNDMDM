@@ -104,6 +104,21 @@ class VPSInstallerTests(unittest.TestCase):
         for value in ("bad;inject","http://host.test","host.test/path","localhost","host.test\nserver {"):
             p=subprocess.run(["python3",str(VPS/"nginx-config.py"),value],capture_output=True)
             self.assertNotEqual(p.returncode,0,value)
+    def test_admin_username_is_actually_forwarded_into_nextjs_container(self):
+        compose=(ROOT/"cloud/compose.yaml").read_text()
+        self.assertIn('CLOUD_ADMIN_USERNAME: ${CLOUD_ADMIN_USERNAME:-}',compose)
+        self.assertIn('CLOUD_ADMIN_PASSWORD_SCRYPT: ${CLOUD_ADMIN_PASSWORD_SCRYPT:-}',compose)
+        auth=(ROOT/"cloud/web/lib/c6-admin-auth.mjs").read_text()
+        self.assertIn('env.CLOUD_ADMIN_USERNAME',auth)
+        self.assertIn('USERNAME.test(username)',auth)
+    def test_panel_enable_probes_actual_backend_before_reporting_success(self):
+        cli=(VPS/"spdecodectl").read_text()
+        self.assertIn('panel_check(){',cli)
+        self.assertIn('compose exec -T web node --input-type=module',cli)
+        self.assertIn('adminSettings().enabled?0:1',cli)
+        self.assertIn('expected 401 for a guest',cli)
+        self.assertIn('panel_check || die',cli)
+        self.assertIn('check) [[ $# -eq 2 ]]',cli)
     def test_public_login_uses_credentials_no_ip_gating(self):
         config=subprocess.run(["python3",str(VPS/"nginx-config.py"),
           "spdecode.xyz","--api-domain","api.spdecode.xyz",
