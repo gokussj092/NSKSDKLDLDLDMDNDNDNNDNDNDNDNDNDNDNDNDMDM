@@ -10,6 +10,7 @@ import secrets
 import subprocess
 import sys
 import time
+from urllib.parse import urlsplit
 
 ROOT=Path(os.environ.get("SPDECODE_HOME","/opt/spdecode"))
 CFG=Path(os.environ.get("SPDECODE_CONFIG_DIR","/etc/spdecode"))
@@ -18,6 +19,53 @@ STATE=CFG/"qa-previous.json"
 COMPOSE=ROOT/"repo/cloud/compose.yaml"
 QA_TTL=4*3600
 KEY="spc3:qa:code"
+PROVIDER_KEYS=("CLOUD_NUR_FETCH_ENABLED","CLOUD_NUR_CATALOG_URL","CLOUD_EHI_IMPORT_ENABLED")
+NUR_ASSET=ROOT/"repo/android/app/src/main/assets/nur_tunnel_server_endpoint.json"
+
+def permitted_catalog():
+    """Use the existing audited Android catalog source without logging its URL."""
+    try:
+        raw=json.loads(NUR_ASSET.read_text(encoding="utf-8"))["catalogUrl"]
+        parsed=urlsplit(raw)
+    except (OSError,ValueError,KeyError,TypeError):
+        raise RuntimeError("NUR catalog asset missing or invalid") from None
+    # Mirror cloud/web/lib/c35-provider.mjs approvedUrl. Never allow arbitrary hosts.
+    if (not isinstance(raw,str) or len(raw)>2048 or
+        parsed.scheme!="https" or parsed.netloc!="strongteam.co" or
+        not parsed.path.startswith("/") or len(parsed.path)>256 or
+        parsed.query or parsed.fragment or
+        parsed.username or parsed.password or parsed.port or
+        any(c.isspace() for c in raw)):
+        raise RuntimeError("NUR catalog endpoint does not match the approved HTTPS vendor host")
+    return raw
+
+def provider_changes(current):
+    url=permitted_catalog()
+    sign=value(current,"CLOUD_EHI_SIGN_KEY")
+    response=value(current,"CLOUD_EHI_RESPONSE_KEY")
+    ehi_ready=len(sign)==32 and len(response.encode("utf-8"))==32
+    return {
+        "CLOUD_NUR_FETCH_ENABLED":"true",
+        "CLOUD_NUR_CATALOG_URL":url,
+        "CLOUD_EHI_IMPORT_ENABLED":"true" if ehi_ready else "false",
+    },ehi_ready
+
+def save_state(data):
+    path=STATE.with_suffix(".qa-tmp")
+    atomic(path,[json.dumps(data,separators=(",",":"),sort_keys=True)])
+    os.replace(path,STATE)
+    STATE.chmod(0o600)
+
+def status():
+    current=rows()
+    until=int(value(current,"CLOUD_QA_EXPIRES_AT") or "0")
+    active=value(current,"CLOUD_QA_ENABLED")=="true" and until>time.time()
+    print("QA active:",active)
+    print("QA expires (UTC epoch):",until)
+    print("NUR Server VPN enabled:",value(current,"CLOUD_NUR_FETCH_ENABLED")=="true" and
+          bool(value(current,"CLOUD_NUR_CATALOG_URL")))
+    print("HTTP Injector Cloud enabled:",value(current,"CLOUD_EHI_IMPORT_ENABLED")=="true")
+    # Avoid printing URLs or signing keys, even if the source is publicly tracked.
 def run(*args,stdin=None,quiet=True):
     return subprocess.run(args,input=stdin,text=True,check=True,
         stdout=subprocess.PIPE if quiet else None,stderr=subprocess.PIPE if quiet else None)
@@ -55,14 +103,36 @@ def health():
     return False
 def main():
     if os.geteuid()!=0:raise SystemExit("Use sudo spdecode qa start|stop|status")
-    if len(sys.argv)!=2 or sys.argv[1] not in ("start","stop","status"):
-        raise SystemExit("Usage: spdecode qa start|stop|status")
+    if len(sys.argv)!=2 or sys.argv[1] not in ("start","stop","status","services"):
+        raise SystemExit("Usage: spdecode qa start|stop|status|services")
     action=sys.argv[1]
     old=rows()
     if action=="status":
+        status()
+        return
+    if action=="services":
         until=int(value(old,"CLOUD_QA_EXPIRES_AT") or "0")
-        print("QA active:",value(old,"CLOUD_QA_ENABLED")=="true" and until>time.time())
-        print("QA expires (UTC epoch):",until)
+        if value(old,"CLOUD_QA_ENABLED")!="true" or until<=time.time() or not STATE.exists():
+            raise SystemExit("QA is inactive. Start it first using: sudo spdecode qa start")
+        state=json.loads(STATE.read_text())
+        changes,ehi_ready=provider_changes(old)
+        # Capture the original flags before the FIRST activation only.
+        for key in PROVIDER_KEYS:
+            if key not in state:
+                state[key]=value(old,key)
+        save_state(state)
+        atomic(ENV,replace(old,changes))
+        try:
+            compose("up","-d","--no-deps","--force-recreate","web")
+            if not health():raise RuntimeError("QA API was not ready after service configuration.")
+        except Exception:
+            atomic(ENV,old)
+            try:compose("up","-d","--no-deps","--force-recreate","web")
+            except Exception:pass
+            raise
+        print("NUR Server VPN: ENABLED for existing QA session")
+        print("HTTP Injector Cloud:", "ENABLED" if ehi_ready else "NOT CONFIGURED (provider credentials missing)")
+        print("Re-use the existing QA code. Android rebuild not required.")
         return
     if action=="start":
         if STATE.exists():
@@ -76,8 +146,9 @@ def main():
         until=int(time.time())+QA_TTL
         changes={"CLOUD_QA_ENABLED":"true","CLOUD_QA_EXPIRES_AT":str(until),
                  "CLOUD_API_ENABLED":"true","CLOUD_FORCE_MAINTENANCE":"false"}
-        STATE.write_text(json.dumps({key:value(old,key) for key in changes}))
-        STATE.chmod(0o600)
+        providers,ehi_ready=provider_changes(old)
+        changes.update(providers)
+        save_state({key:value(old,key) for key in changes})
         try:
             atomic(ENV,replace(old,changes))
             compose("up","-d","--no-deps","--force-recreate","web")
@@ -93,6 +164,8 @@ def main():
             STATE.unlink(missing_ok=True)
             raise
         print("QA ENABLED for four hours. Save this code privately; it is not stored in plaintext.")
+        print("NUR Server VPN: ENABLED during QA")
+        print("HTTP Injector Cloud:", "ENABLED" if ehi_ready else "NOT CONFIGURED (provider credentials missing)")
         print("QA CODE:",code)
         print("Expires at UNIX UTC:",until)
         print("Android QA APK: open the separate 'SP-DECODE QA' launcher, enter the code, then open the main app.")
@@ -102,7 +175,7 @@ def main():
         state=json.loads(STATE.read_text()) if STATE.exists() else {}
         # Preserve unrelated API/maintenance switches when no QA session exists.
         changes={key:state[key] for key in ("CLOUD_API_ENABLED",
-            "CLOUD_FORCE_MAINTENANCE") if key in state}
+            "CLOUD_FORCE_MAINTENANCE",*PROVIDER_KEYS) if key in state}
         changes.update({"CLOUD_QA_ENABLED":"false","CLOUD_QA_EXPIRES_AT":"0"})
         atomic(ENV,replace(old,changes))
         try:
