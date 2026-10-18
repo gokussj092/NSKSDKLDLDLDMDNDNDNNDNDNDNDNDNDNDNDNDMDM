@@ -155,6 +155,47 @@ test("actual HTTPS transport pins checked address and rejects redirects and over
     ...opts,request:fakeTransport(200,Buffer.from("abc"),{"content-encoding":"gzip"}),
   }),{code:"REMOTE_RESPONSE_INVALID"});
 });
+test("Node.js 22 autoSelectFamily all:true receives the pinned DNS result as an address array",async()=>{
+  const pinned=[];
+  const request=(url,options,respond)=>{
+    const req=new EventEmitter();
+    req.destroy=()=>{};
+    req.end=()=>{
+      queueMicrotask(()=>{
+        // Node.js >= 20 calls custom lookup with all:true when automatic
+        // address-family selection is enabled, even for an IPv4-pinned fetch.
+        options.lookup(url.hostname,{all:true,hints:32},(err,addresses)=>{
+          assert.ifError(err);
+          assert.deepEqual(addresses,[{address:"8.8.8.8",family:4}]);
+          pinned.push(addresses[0].address);
+        });
+        options.lookup(url.hostname,{family:4},(err,address,family)=>{
+          assert.ifError(err);
+          assert.equal(address,"8.8.8.8");
+          assert.equal(family,4);
+        });
+        options.lookup("malicious.example",{all:true},err=>{
+          assert.ok(err);
+          assert.match(err.message,/hostname mismatch/);
+        });
+        const res=new EventEmitter();
+        res.statusCode=200;
+        res.headers={};
+        res.destroy=()=>{};
+        respond(res);
+        res.emit("data",Buffer.from("authenticated NUR test"));
+        res.emit("end");
+      });
+    };
+    return req;
+  };
+  const result=await downloadApproved({url:nurUrl,kind:"nur"},{
+    resolve:async()=>[{address:"8.8.8.8",family:4}],
+    request,
+  });
+  assert.equal(result.toString(),"authenticated NUR test");
+  assert.deepEqual(pinned,["8.8.8.8"]);
+});
 test("NUR mirrors Python 30-second/16-MiB download contract without weakening EHI",async()=>{
   const opts={resolve:async()=>[{address:"8.8.8.8",family:4}]};
   const large=Buffer.alloc(8*1024*1024+1,65);
