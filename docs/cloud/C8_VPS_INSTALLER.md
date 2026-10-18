@@ -2,6 +2,49 @@
 
 **Rama:** `feat/cloud-c8-vps-installer-updater`, basada en C7 (#93). Es software para instalar en tu VPS: **no se ha conectado ni desplegado en una VPS real**. C8 no cambia el bot Python ni las pantallas Android.
 
+## Recuperación si Let's Encrypt recibió HTTP 404
+
+**Error:** `unauthorized: Invalid response ... 404` para `spdecode.xyz`, `api.spdecode.xyz` y `panel.spdecode.xyz`. Significa que el servidor HTTP respondió pero **no entregó los archivos de desafío** creados en `/var/www/spdecode-acme/.well-known/acme-challenge/`. La causa más frecuente con el sitio provisional anterior es un virtual host Nginx duplicado.
+
+**No vuelvas a ejecutar `install.sh` completo**: el primer intento ya creó `/opt/spdecode/repo`, `/etc/spdecode/cloud.env` y otros directorios. No cambies los secretos ni los registros MX/TXT del correo.
+
+Primero inspecciona:
+
+```bash
+sudo ls -la /etc/nginx/sites-enabled/
+sudo nginx -T 2>&1 | grep -E 'conflicting server name|server_name|spdecode-acme'
+```
+
+Si `/etc/nginx/sites-enabled/spdecode` es el **enlace simbólico del sitio provisional SP-DECODE** hacia `/etc/nginx/sites-available/spdecode`, el rescatador puede desactivarlo y guardar una copia en `/etc/spdecode/backups` (no elimina el destino original). No toca sitios de terceros.
+
+```bash
+cd ~/SP-DECODE
+git pull --ff-only origin feat/cloud-c8-vps-installer-updater
+
+# Primero una comprobación conservadora (se detiene si encuentra un legacy activo):
+sudo bash cloud/infra/vps/resume-install.sh
+
+# SOLO si el error señala precisamente el antiguo enlace
+# /etc/nginx/sites-enabled/spdecode:
+sudo bash cloud/infra/vps/resume-install.sh --disable-legacy-spdecode
+```
+
+El rescatador comprueba que los archivos previos existen, verifica el webroot por HTTP para cada host en `127.0.0.1:80`, solicita nuevamente el **mismo certificado Let's Encrypt** y finaliza Nginx, Docker y la CLI sin regenerar credenciales. Si localmente funciona pero Let's Encrypt sigue devolviendo 404, inspecciona la resolución A/AAAA pública, posibles CDN/proxy y la dirección pública del VPS. Antes de intentar múltiples validaciones seguidas, comprueba HTTP desde fuera para no alcanzar límites de emisión.
+
+Para verificar manualmente la ruta de desafío:
+
+```bash
+sudo mkdir -p /var/www/spdecode-acme/.well-known/acme-challenge
+echo SPDECODE-ACME-READY | sudo tee /var/www/spdecode-acme/.well-known/acme-challenge/test-spdecode
+for name in spdecode.xyz api.spdecode.xyz panel.spdecode.xyz; do
+    curl -i --resolve "$name:80:127.0.0.1" \
+      "http://$name/.well-known/acme-challenge/test-spdecode"
+done
+sudo rm -f /var/www/spdecode-acme/.well-known/acme-challenge/test-spdecode
+```
+
+Los tres deben responder con HTTP 200 y `SPDECODE-ACME-READY`. El comando de prueba solo consulta Nginx en la VPS; después comprueba también los dominios públicamente antes de repetir Certbot.
+
 ## Instalación concreta: dominio spdecode.xyz y VPS OVHcloud
 
 Tu infraestructura se configura así:

@@ -7,7 +7,7 @@ ROOT=Path(__file__).resolve().parents[4]
 VPS=ROOT/"cloud/infra/vps"
 class VPSInstallerTests(unittest.TestCase):
     def test_bash_parses(self):
-        for name in ("install.sh","spdecodectl","android-build.sh"):
+        for name in ("install.sh","resume-install.sh","spdecodectl","android-build.sh"):
             with self.subTest(file=name):
                 result=subprocess.run(["bash","-n",str(VPS/name)],capture_output=True,text=True)
                 self.assertEqual(result.returncode,0,result.stderr)
@@ -60,6 +60,24 @@ class VPSInstallerTests(unittest.TestCase):
         self.assertIn('"$CFG/api-domain"',android)
         self.assertIn('SPDECODE_CLOUD_API_BASE_URL="https://$domain"',android)
         self.assertIn("CLOUD_SUPPORT_EMAIL:",compose)
+    def test_interrupted_certbot_install_recovery_keeps_existing_secrets(self):
+        script=(VPS/"resume-install.sh").read_text()
+        for fragment in ('/etc/spdecode/cloud.env', 'sites-enabled/spdecode',
+                         '--disable-legacy-spdecode','/var/www/spdecode-acme/',
+                         'SPDECODE-ACME-READY', 'nginx -t',
+                         'certbot certonly --webroot',
+                         'docker compose --project-name spdecode',
+                         'spdecode status'):
+            self.assertIn(fragment,script)
+        self.assertNotIn('openssl rand',script)
+        self.assertNotIn('CLOUD_SESSION_SIGNING_KEY=',script)
+        self.assertNotIn('CLOUD_WORKER_TOKEN=',script)
+        self.assertNotIn('git clone ',script)
+    def test_initial_installer_checks_webroot_before_letsencrypt(self):
+        source=(VPS/"install.sh").read_text()
+        pos=source.index('SPDECODE-ACME-READY')
+        self.assertLess(pos,source.index('certbot certonly'))
+        self.assertIn('--resolve "$host:80:127.0.0.1"',source)
     def test_nginx_rejects_injection(self):
         for value in ("bad;inject","http://host.test","host.test/path","localhost","host.test\nserver {"):
             p=subprocess.run(["python3",str(VPS/"nginx-config.py"),value],capture_output=True)
