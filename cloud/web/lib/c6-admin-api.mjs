@@ -1,6 +1,6 @@
 import { adminSettings, adminLogin, authenticateAdmin, validMutation,
   cookieHeader, deleteCookie, revokeAdmin } from "./c6-admin-auth.mjs";
-import { opsStore, maintenanceEnabled, setMaintenance, aggregateMetrics } from "./c6-ops-store.mjs";
+import { opsStore, maintenanceEnabled, setMaintenance, aggregateMetrics, usageReport } from "./c6-ops-store.mjs";
 import { settings } from "./c3-config.mjs";
 import { ehiConfigured,nurConfigured } from "./c35-provider.mjs";
 import { jsonReply } from "./responses.mjs";
@@ -95,5 +95,21 @@ export async function logoutRequest(request,options={}) {
     if(!claims)return error("UNAUTHORIZED",401);
     await revokeAdmin(redis,claims);
     return api({loggedOut:true},200,{"Set-Cookie":deleteCookie()});
+  }catch{return error("SERVICE_UNAVAILABLE",503);}
+}
+
+/** Confidential operator-only, anonymous metrics. Never expose on /api/site. */
+export async function reportRequest(request,options={}) {
+  if(!adminSettings().enabled)return error("ADMIN_DISABLED",503);
+  try {
+    const redis=await (options.storeProvider||opsStore)();
+    if(!await authenticateAdmin(redis,request))return error("UNAUTHORIZED",401);
+    const url=new URL(request.url);
+    const keys=[...url.searchParams.keys()];
+    if(keys.some(k=>k!=="days") || keys.length>1)return error("INVALID_REQUEST",400);
+    const days=url.searchParams.get("days")||"7";
+    if(!["1","7"].includes(days))return error("INVALID_REQUEST",400);
+    return api({report:await usageReport(redis,Number(days))},200,
+      {"Cache-Control":"private, no-store, max-age=0"});
   }catch{return error("SERVICE_UNAVAILABLE",503);}
 }
