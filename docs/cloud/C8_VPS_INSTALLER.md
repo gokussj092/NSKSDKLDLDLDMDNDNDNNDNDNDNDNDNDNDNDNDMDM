@@ -9,6 +9,15 @@ sudo spdecode update all feat/cloud-c8-vps-installer-updater
 sudo spdecode qa start
 ```
 
+**Alternativa para generar la APK de pruebas en un VPS x86_64 con SDK instalado y tu misma clave de firma configurada:**
+
+```bash
+sudo spdecode android build --version-name 1.2.1 --version-code 27 --testing-only --qa
+sudo spdecode android artifacts
+```
+
+La bandera `--qa` solo se acepta dentro del canal `--testing-only`; la compilación ordinaria permanece sujeta a Play Integrity y no habilita la pantalla QA.
+
 El segundo comando:
 - Verifica que existan el secreto del worker, el de sesiones y el proxy HTTPS confiable.
 - Activa temporalmente la API de descifrado, quita temporalmente el bloqueo de mantenimiento y habilita el canal QA **por solo cuatro horas**.
