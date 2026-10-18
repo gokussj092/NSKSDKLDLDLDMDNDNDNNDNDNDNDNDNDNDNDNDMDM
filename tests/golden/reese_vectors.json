@@ -1,0 +1,159 @@
+{
+  "producer": "OpenJDK 17 JCE: AES-GCM, AES-CBC, HmacSHA256; raw DEFLATE; source-matched byte PBKDF2 and shuffle inverse",
+  "expected": {
+    "meta": {
+      "name": "Synthetic REESE",
+      "locked": true,
+      "lockAll": true,
+      "password": "",
+      "hwid": "",
+      "expiresAt": 0,
+      "author": "Fixture"
+    },
+    "config": {
+      "profileName": "Synthetic REESE 日本語",
+      "sshHost": "vpn.example.invalid",
+      "sshPort": 443,
+      "username": "demo",
+      "password": "synthetic-only",
+      "payload": "GET / HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+      "v2rayMode": true,
+      "v2rayProfiles": [
+        {
+          "remark": "demo",
+          "protocol": "VLESS",
+          "host": "v2.example.invalid",
+          "port": 443,
+          "id": "00000000-0000-0000-0000-000000000001",
+          "tls": true
+        }
+      ],
+      "vault": "",
+      "bannerImage": "synthetic-image",
+      "unknown": {
+        "list": [
+          null,
+          false,
+          0,
+          {
+            "preserve": "yes"
+          }
+        ]
+      }
+    }
+  },
+  "cases": [
+    {
+      "name": "rse1-open",
+      "hwid": "",
+      "password": "",
+      "format": "RSE1",
+      "data": "UlNFMQABAgMEBQYHCAkKCwwNDg8QERITFBUWFxgZGhsoKSorLC0uLzAxMjM0NTY3MDAwMAAAAYDQuIr6HZXcg0mNi62W/lYv78cOYdYPUNJA/9K74FzPb3oK/OUrnSIMrUZVIFYNhe7Lw8KE3ygIvaMm5y4y4tH0/lbcKtzsfBGVKNpfF/5FpmzQH2pAqIYNHpviKaVqIBjoVvn1O82xYAhc6sugNw4EwZFhKoIvPqhirTAYnZ032ZLw4J2DGz0hfOGXavDhZlB+gR5dvN5BSke0DEtjf9WeBGOT0eOYzdSG+ZLRV8olDMSPxJuj6hOrjLXylh6LEIWTKPD6CT1N9YFjyX1JJqgyF0lv24Hp+OIh9RPhtmivwww9tL808v3IntL4W628CVIhNkDgW8FxyHbja3kbXSa/6Gsb//1vLcxa/QV/4wEfNd2MvBpV3jZmVejOuVFsE13OFStIblPrl5INfhh+/SmsE+rkpXakspCyGfZciakRp8j4oD5g8LQ9eQaBbDhJDVT1go2Ek6jSfrmKIGr/6IEhxkOan2xIOe3Gp3G5qZn3/sEvj3bI9dLQc/DI/m6ri8uiW0IeGyQl7dFj1NEm0lt0Q62RFrdiELCL5o+UMk5mYQ=="
+    },
+    {
+      "name": "rse1-protected",
+      "hwid": "RC-TEST-1234-5678-ABCD",
+      "password": "synthetic-ç鍵",
+      "format": "RSE1",
+      "data": "UlNFMQABAgMEBQYHCAkKCwwNDg8QERITFBUWFxgZGhsoKSorLC0uLzAxMjM0NTY3NzI4YwAAAYAYTGWh2IGM+18YufmIRsWQr/7cF/35vHuZsU64Snwi2ocGFyu4XhkF/NjQEoNqhnYyGG90PZyRuqWxnMD1ccSQjdGhdUiyTJICyeVZtoBZnuX4OGTpr04zT7MQ1Cu4tXsTkQU+10zJMRHYH6BKv7sYr43foqqmUazFsbH8XzUmu8I3Ho/8nZ8S1qOJSZcOnwbeMdC5R8yucMWTnMklcyHStPRkI6jQD1R5uSVMwspo/27HFLlJo2BfLOV2+kASDrBaiKl29hEeF6i9+bkSwaLJ3YJI7z9ws5xsCXC6DJCNsLBZjMN9fJupsFIR9/FPWvTQuESyKq/7jjSduHWlhezmnWCgYrLEGvf3b5Oka0BSG5x45KhxSOruj3ANIZHg3nmjcrgS1N2mnJBl9otKR2sWuTyeQE04ashJFyMwBidve1QB7kUiqdgXJapLjDiC8cTeoSMAHzA9wWTz4pIcfXYdJR5j/VhfI4Zmss+Qk1PM1ZUCMFWYwJvZ+4uRq/ptEXp6W3+akuq7gPN9zXt6N1g7luUrXKP2KxGyj9xK6XHEWg=="
+    },
+    {
+      "name": "rse2-open",
+      "hwid": "",
+      "password": "",
+      "format": "RSE2",
+      "data": "UlNFMgABAgMEBQYHCAkKCwwNDg8QERITFBUWFxgZGhsoKSorLC0uLzAxMjM0NTY3PD0+P0BBQkNERUZHSElKSzAwMDAAAAGgnKQSBk209y74QiIYRuy5ylrtXVrAp8bSAm6bRaCGWDA7woMbnbKSa0CpDIu97YmuGBAkaqO6eNXKIDJB8JHkRULQGfPY3E2SiKHCmnMemhb2o+obuxwT8gqyTUZCKcSNUyetFQeaGtnl/QJEOwDLhvyTzf2oOKKKdN1oCu5CcsBLOym/YnHozJY8oLuU9y1qKVd1yapM5WxcZ9V57zA8PQhMZ3Kzd2d+ZvUORyXxkDD8xL35KgZx3tDwnCV6dtavGh5oJDetASStI3T6l3GjKCcCHyAzL9fOrYzP64IXHpzj57G9bz6+ixrk+sDHWKd1hRj+H1g7eIMWjNybZFo2hYQEnbelFsin2CPpZ1n+iOCg1VqcwrqgE4CngggzWL9j5XXqfqtrpZ5ZFTgxWK7ksmO6TqmMdssRe3DgU9ZzveTtox9PAbs1Pyj0JmLykF6UJtUiDuFk48cPWfg+x5INRZNTCUUPkYDNxGQXc8G3DrljF4z/q6VrISwcbk54lbSkyLmWbQPLwMsh50gOy3pqc1acwwqfUmA6osCMIRLebTBMcecrFsrpaU33ImDnDNEtL/94fxdKDc2ZfnNtATKsNw=="
+    },
+    {
+      "name": "rse2-protected",
+      "hwid": "RC-TEST-1234-5678-ABCD",
+      "password": "synthetic-ç鍵",
+      "format": "RSE2",
+      "data": "UlNFMgABAgMEBQYHCAkKCwwNDg8QERITFBUWFxgZGhsoKSorLC0uLzAxMjM0NTY3PD0+P0BBQkNERUZHSElKSzcyOGMAAAGgaTHuuMCgiZvymz+/RoXRpNBBOullHObWXtcIESz5dvQ+qTiaeG1CiFaBNXD7F5Q1Wb89a83c/nBJeLGYvH17J8qA9USKdsjPmfU1ymGmJq/gGA9Uxg+rFk6Sl8+yo8me/ArFthhxlLMx9GolWPXEI3ja7M6y/gIAOcJx09MWqSaHGvKxwrJw6oUl5nRzmCAN+BsoYoYr0R8FCL44Wn7A/ItpIHqQ16gn6eYRAFqSorZXqptvS0eGp5GsVsh1lAvUPFchJ5pWdwVOnppKVJsEKBEhNpIkKPhDhMbm/FkBfqiedJLuKPKhUCdoAGlwSucFRTDl0Qi/szv9hHD3Yl22LmA52JrDLiqvpL9FZeRa/plxTCIK/RHGR7JS5xg5xfcsSO3fdnMmfAEdYtNEbe/Ii6YwBY9Diql6oDuFFg67HwNCP6bD/m2jxbmi8//rnEQtS0JtNtx9jMrV6PLZx770z2QWOckVkpRQiH0tOtyyoOx5t/zDdN/k3FX90hKN8Zb+yOTYhHsT2dKLpr7VjY030gHNNaVQFYneLhPR/5Vn1EmfitsZxVDB3PbQSoPGUcIn4roZ7jle5l6d616mF8j+7w=="
+    },
+    {
+      "name": "rse3-open",
+      "hwid": "",
+      "password": "",
+      "format": "RSE3",
+      "data": "UlNFMwABAgMEBQYHCAkKCwwNDg8QERITFBUWFxgZGhsoKSorLC0uLzAxMjM0NTY3PD0+P0BBQkNERUZHSElKSzAwMDAAAAGgKWjDTDpByD/3CZyzg/SN3n9t/rfPTsJ0KL1uafmXD0AeCyU0G+IJZtLl476F/6D0BTH777RBr+uMjwYbeCfdjXV0tqW+kcOe3G9lWvawsJDhjEughCS2eUY9VrC6wzBERG/a4z34pKLih0lSS31pYj8BTXBzmIK/6568JrIgWLLOEz44Znio3G5SIplN0gFcNqq2n6iPEmj/y7AQ7RNiCgZILT8dAdJI4o/UIrmfw79DSSRmg6N7C6xHekTX68dU5chEcKzwybzAVpdfJtGhKSWF2wVNGsH5dSLL1W510pUdvEtJlLaJdXcB0fNnXBY7yp3Mb2NQKYHeZSI8FOmlncZwSmvMT8kCvnhBnOqS5jZatKO1vVdEd3C78l9w/uWdBBqktrS5j0B3/cVgzYWVQ4MgESFnwGTQ2Y6hNC7N1dx7GZ1ClMRBG9GPIkJmo8WwvNOmZhnnxJgBGF498yZWyvvt7dVin77rJGZ7GWo6PG+zTY5IN0Vvzn5DZ9sKokgtuo9r6++ahIuxpIXfDgTgIDyGaG05UdUZmqjot4lzzmHAAwm267iXGiFp1Jh/R3iQoNVas7A2Yiautp8jmCtc6A=="
+    },
+    {
+      "name": "rse3-protected",
+      "hwid": "RC-TEST-1234-5678-ABCD",
+      "password": "synthetic-ç鍵",
+      "format": "RSE3",
+      "data": "UlNFMwABAgMEBQYHCAkKCwwNDg8QERITFBUWFxgZGhsoKSorLC0uLzAxMjM0NTY3PD0+P0BBQkNERUZHSElKSzcyOGMAAAGghFhXRrZIvD4Ej+bhEZmZxGi90Hc4UQB41pnc0e9OlSHd31q2UiexfHiVgDrms+5vWIPaWPz/coOv/BTDrMtR2qCJLxVxEeltBo2Glv43jKHmUmi81pYiur+0uT+aDRMMGma2tkUDN+vtUAPqXbJLSlr7qW9acZ9/p2Fa/o5syburDzjleYtTLerXpR2hGFzxSjdQCAfhrOsZgp5abNefTPH8a2s7iv2s9b72lsWH/PuKmAJ41X288A55dYRpM/iZ7yE9xnLj11BoEcPp47FbhmCQH9vk/G43ELrQZDEsBOQPMLlMLinFzNDVWu9q5C7Hy1lguU53ss6PUPHPUq0Rats6E8QiUzHPO+yY+0rodZW1lyyaYC4EhoMZk3zLzgFVzCwG5U86Q7ENIQm1xxAGjjWeI+dVGf766t3tgOiDQrFxhqnrgs/9SCcAe0FhDhObK87WdhGG/X5C5w37Ygej66K09l+rP0snLwvKQodn5Y/vFqG+r/v61wMZ7dkwQwCWCHDf9I3faL6vnDYX9na3euCfzIWRakHODmTXtnZC/U0yCk4nacBikmZ+zypQmbptZ1p/S5Wg+H9lpb5urU5Ysw=="
+    },
+    {
+      "name": "rse4-open",
+      "hwid": "",
+      "password": "",
+      "format": "RSE4",
+      "data": "UlNFNAABAgMEBQYHCAkKCwwNDg8QERITFBUWFxgZGhswMDAwAAABdMLWFFAe1rTncjqcjyNJ8IKiQSXA08B8pJ3RhW7vNSiidlsnpxuenNAI/jVpdjjLH/vPRz+y1837XaaZU9Edv5bSTNoToJKderh4gQcMS2pgj6CScW9fetdxLivqfzUGe8YFEjcQGmQR9SvKS+WwfF/Qe58Frf7DXI2SvUCoFScLIzSA7p3lgWaNpZH9pk01gTKWHH50uY9rFPkJx7NArYn8aETABq01WfazhWrALOrvXHOL8P+jBSk2Z/l4kG97nWjAZcnlrDf4JvAQLjWi7kRAlEAdxUSzPwL1YDh2mDj/UeU3B4kVZaAn6hMjhhC0o1z31ke7Jmf8mtIwrwz4KIJ4nD2DWf8ZcG+fk1Ndz+RMX1PYb69ImF/0OUkywCSokE+bZB6YKY+0Muw2XAJOi7JX4dNeBdwavttSFtzv5V671tOW6xdqOtcFAO8bp3i0sb9kJE590rZlfcLVG2yK0yz14e208GvxRZDdQ6he4Y72EPLdd50k5C7uFCRrzAaWdbX+W70="
+    },
+    {
+      "name": "rse4-protected",
+      "hwid": "RC-TEST-1234-5678-ABCD",
+      "password": "synthetic-ç鍵",
+      "format": "RSE4",
+      "data": "UlNFNAABAgMEBQYHCAkKCwwNDg8QERITFBUWFxgZGhs3MjhjAAABdKzmcRl5qGTFMu9ub8Wt9q6ULgafTCPf3vnoCaJQgWBZl/zHpy21Diu3gHm/spMC37+U6pgl++UfwKCRuBIlBAzLGly1ur3BH/UPBZTBf9QmI52j8x/GuZ7GLpcax6nIHs2txSLbuY/lBsrKgNhtEc5aCSfoLQ6EL9BeYrLk78I1J7XesOehzRccIDzgFNAtHNmVhAx6QnTDErk2RdnacS77JYNO2TyJZi47fA4Bl8U129PvsT3eM+hO26bp9Tuq3ny6Md87Cm/DeUizgQQZ9DTEaOXo1RpYq+MSnjGj0EB22OsL4eTtpIXsIor8o5EqA9+DnyGjIPuaPNtUrwSXzhplO5vL20yGSDxQg8dJKXWxpLEXveQ6IQzmXnCzaJLiHgOfVPn0KLzHPz3qUUW8yZjBFTPtRkyLFnMAukmpnoqRW65/3y9LoTagCmzMLP5Gk40w31epAnjhimfnmTYD04e9Ku3d+rxw4hLhY/QLjuxu9AS8KeAq6JCcoHkZ4o9mJaKNdPQ="
+    },
+    {
+      "name": "rse5-c3-open",
+      "hwid": "",
+      "password": "",
+      "format": "RSE5-C3",
+      "data": "pxnSTMMAAAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaG7ALCOVYgCW+7NSpKsY/+OZBtbYZXFbNL5UQs9R53dR2IfK+28MWMBX+OTgSto9XveS/eZsA3fRM2CSd2HxpxKE99dC1aLwr37EhSzruZ3CAgVPP6gnOhYKXvwreJAnGxWqEPEHf0TB/+D5Ej1WHU3sG3qJkE/thQ46v7vWkhgE+A64iybVNTHogI/J5aODG1PyxtGoSYy8nfCVX/XGJTtJQU3QX2oJbM27uVU22mDP8TrrlejL5zixya/FEiIxrvKIoxYQQ1TWcMW43toPc3WmSqWqDSGRLApe0gj0lIpk/CK60wzmYX+OIIDhyXmII7h7VM0R7XnqAcSeTFw1fPERhnBJ/r4RHq4K4nOMgRcARVKtv+MBrssf3S07ZJ1JwnVkECa6ZUYeG/zv+SnVnv6oBx+GCNzHUK99SVcndI8Y7pW93XCdEvJxXbTNF5fTqLYIlrk7XNzDKt2awn86DwV4XfmjKfyTD0zvj2KgaXrJVSg5DYLjVZY3yPp6ZS+w2+9t234bNUuAFO1wzt+i+ck9WOYB6GF63J1Uzbe0h4tE1hhHGMMcXwIk="
+    },
+    {
+      "name": "rse5-c3-protected",
+      "hwid": "RC-TEST-1234-5678-ABCD",
+      "password": "synthetic-ç鍵",
+      "format": "RSE5-C3",
+      "data": "pxnSTMMBAAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaG66LsqYb8ZhFlCuFIZAe/RuqjyB5qIw2Umu77SgCsXzgrkV1iKdPS081v174eoJvdqZsfpBOmMypeF5RhH8ueBBCLXxd9ZXmNTdksgcWBpv3nhA6GvtyiBhwhXPrZ7T8jatbXfB2/yPhLaq2enp55u78R/DUl128pY0WbC+q2pPpRYozjmZ3R/4In1Rwn6aPLGJfQEDYF51/2VpNhRwBRLkPy8LNGCtlNzqqx8CcV5b4ICR+BuGAxWjDmKZ1DL1R2AtIAKcpXQWCVuSoprGPoBPa2A1Wavz6K/415hZsGJ35iPMbAksKPFrf3oSFjoCT7PgFgXv/BbpFr5nqZ6huMzh4LNUB3FZkbq7g13WEcg/BvafwQ9rm/xHabAODc5al9FYAbJkA+0YowwYCzGe4XnKjxrVKCYkUluZkBfXnCXIOVqlN938lfaClvnCZqMxbG/FtK0Ki6aVEEKPa1A1Dux+st7miwsMr2jBTahblyEVUwVicMTnCJZi0vR88C81twEbZJ9sQo0BLNGpU2L5kuNQ/6yra7L+EZX7JYbkHV/XmjTEnLVhq17w="
+    },
+    {
+      "name": "rse5-c4-flags0",
+      "hwid": "",
+      "password": "",
+      "format": "RSE5-C4",
+      "data": "pxnSTMQAAAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaG7ALCOVYgCW+7NSpKsY/+OZBtbYZXFbNL5UQs9R53dR2IfK+28MWMBX+OTgSto9XveS/eZsA3fRM2CSd2HxpxKE99dC1aLwr37EhSzruZ3CAgVPP6gnOhYKXvwreJAnGxWqEPEHf0TB/+D5Ej1WHU3sG3qJkE/thQ46v7vWkhgE+A64iybVNTHogI/J5aODG1PyxtGoSYy8nfCVX/XGJTtJQU3QX2oJbM27uVU22mDP8TrrlejL5zixya/FEiIxrvKIoxYQQ1TWcMW43toPc3WmSqWqDSGRLApe0gj0lIpk/CK60wzmYX+OIIDhyXmII7h7VM0R7XnqAcSeTFw1fPERhnBJ/r4RHq4K4nOMgRcARVKtv+MBrssf3S07ZJ1JwnVkECa6ZUYeG/zv+SnVnv6oBx+GCNzHUK99SVcndI8Y7pW93XCdEvJxXbTNF5fTqLYIlrk7XNzDKt2awn86DwV4XfmjKfyTD0zvj2KgaXrJVSg5DYLjVZY3yPp6ZS+w2+9t234bNUuAFO1wzt+i+ck9WOYB6GF63JwSI1aTqkTipg+eR2BWdmbo="
+    },
+    {
+      "name": "rse5-c4-flags1",
+      "hwid": "RC-TEST-1234-5678-ABCD",
+      "password": "",
+      "format": "RSE5-C4",
+      "data": "pxnSTMQBAAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaG9eb4bqXyjYIg8eZTn3sbH4crstFnK9Bj7DlX9PR0RpPEQcAAjcYjogzVMp79ov/qw217ZSMx//jNIB1pSY35HNSFRK8XJ2DzAcnRjQlIcW2hJcVm6WYLiswaSng/lXDBuggYXKBux4aWa0peCVJp/u5g1AQ7HE1myJIQFdJvM2cSRTuPo+qjix+MxVceTOD/nFE0iNb3ZfU4f4BgKAegR0+np3cnfNqyXdvEyBASKnt9MUflMuzDgvR+93ybxB3S8DcldCVHzHjhroeNyysPkvYb2AHmk10d+2gciTmah5E7TKxTgrLX7nid7aM/br3DA+Tw7l6mjQ2PWHgd2elYnYCRaMH+xhLky9auHIHkjHLBcYld6NKPKi/hYCZGzFYV5MCvchcqy7eSKkOyR3ya7s4YmEURqJGHfjG23bf88oj/8BKEFEVTKxGBAY9UVqRvIsokwTi3/jqNikJlvDZlhYCNrngUvLkhhVRX038bdTK+gMifhHnpXdTz3LScW7c0OY6qsiPGPsHnuZd69iV6fEexOSyORf8Xz4cA9KQnU04moir1NLbEsk="
+    },
+    {
+      "name": "rse5-c4-flags2",
+      "hwid": "",
+      "password": "synthetic-ç鍵",
+      "format": "RSE5-C4",
+      "data": "pxnSTMQCAAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaG54dSHkJBFlaYfs3JlYeDRGQ0GhDSTziLMBu+VJxo331/JeE0m6h88/EmugQ/hhLgUyqFi/EMEPSZIC7DfCf1O66PxErwno8QmFgk82LD6Uvlkhi3HZ0SDbMD4H0jLHKLya1uGoMUUJO917Re+bBpiJcAi+dvnxf2l9uks/KR6rNIW3jPOnmQRie5LAT6O3R6UiH17LUiSXGQ1iflSDvY2TNuHxkkRJYyJ/v7EIkgXq1rRxjhD/hOZJdIApiAWPUNqoKcrWH+bELYFxJNtKDtyPMndQ7cR0oxRSCCPNK9K63LpmvkfI+Da7SiINY4eXe3dscaMrQFLPJXzxV56IMPqC+smHrv2iA2qtw52Ej0YBgIkRtSfzvu7zTOtWhM8qIq7NDOoWjwmCjKupwoqU14/LNAVX6R8xh2etFxEYIW2FBBwbzyRx24GPHCvYbXCHc6AwGeIXSfUv2LvjxX4X2A1imxiLjS1YwBHkJkhvpY0AjeUbQAolBLZdY7gEMVv6zHU+m+rBlVuhpB/zqGB1PjEec5msg0YllZT7hE0T4WuRj5WefFpqgMIA="
+    },
+    {
+      "name": "rse5-c4-flags3",
+      "hwid": "RC-TEST-1234-5678-ABCD",
+      "password": "synthetic-ç鍵",
+      "format": "RSE5-C4",
+      "data": "pxnSTMQDAAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaG66LsqYb8ZhFlCuFIZAe/RuqjyB5qIw2Umu77SgCsXzgrkV1iKdPS081v174eoJvdqZsfpBOmMypeF5RhH8ueBBCLXxd9ZXmNTdksgcWBpv3nhA6GvtyiBhwhXPrZ7T8jatbXfB2/yPhLaq2enp55u78R/DUl128pY0WbC+q2pPpRYozjmZ3R/4In1Rwn6aPLGJfQEDYF51/2VpNhRwBRLkPy8LNGCtlNzqqx8CcV5b4ICR+BuGAxWjDmKZ1DL1R2AtIAKcpXQWCVuSoprGPoBPa2A1Wavz6K/415hZsGJ35iPMbAksKPFrf3oSFjoCT7PgFgXv/BbpFr5nqZ6huMzh4LNUB3FZkbq7g13WEcg/BvafwQ9rm/xHabAODc5al9FYAbJkA+0YowwYCzGe4XnKjxrVKCYkUluZkBfXnCXIOVqlN938lfaClvnCZqMxbG/FtK0Ki6aVEEKPa1A1Dux+st7miwsMr2jBTahblyEVUwVicMTnCJZi0vR88C81twEbZJ9sQo0BLNGpU2L5kuNQ/6yra7L+EZahUngzssc88lnuIsJkQmwQ="
+    },
+    {
+      "name": "rse5-c4-flags4",
+      "hwid": "",
+      "password": "",
+      "format": "RSE5-C4",
+      "data": "pxnSTMQEAAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxMkJSNU9I+qNXCH2UjxySwMF6bd+d/UXYVnxdrSNyNEBULAz2YVHBmPAz2YEZEIPcm1BEzTpvBboOEpy+UUJj9PUMHRjQNkek0TJ13mpi/gOJjK6vz+CO5YceKae392YLV+D9DMVqABqhmMe9EQhh24Je4cXvD7biJ9ZMzuzRYwiZRY53/ShaSbLxWpXWQPThZ6hXghwGQA+NheCuLM7vsVVGTo6AO4CTt4ljmSUmy+c9AR/CHuv6KgVXjW2qxr8N9HGcw1/pv2AOTZCaeQ4zXESFsUqqTltP4RzGoAFASe69/S1bUxxl2Ki7OZ0H7om8sa0IhtPsgDRHEbrNUqN54L/ffyCHX8g5diNZem7gWZRfkxtR4G025Kv0RBuW4l7PSDp7R08IfEF58tblRb/d/Nwmzp1Tv4aQWBjVRN+AbaAfEGhF4gx+7Ihyb02N7ukgEkv/GuzBiY6AM2mEmSSFe6pbuU5IystdrChXlPTThCIR4F83QkBNHIURYs5DXitjGtBPhx21yxfNYWej9bs3zyUzLjEqluxgf2BZGIGMPfk5uHJOE1fUg="
+    },
+    {
+      "name": "rse5-c4-flags7",
+      "hwid": "RC-TEST-1234-5678-ABCD",
+      "password": "synthetic-ç鍵",
+      "format": "RSE5-C4",
+      "data": "pxnSTMQHAAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaG0uB7QTEcAM3cwforUAbYF92dVm7GE4lffA6FT9W7cIrL5gCK7JQA5Bs2B7H9CzY7tnyj9EPJCqGwlgMrdKlrr1Xi2uVtF5A2dkTZ2QdNViSUExveByuMmC4FZh4v0rSvYhNKQEV5CuMcjuDunsTlkikFVIvK7xNRqX+59yR/C+kwiYEALLUXbqbeam+KNaVcrpFcqFuEDjEVo1WRLfrj5MmyviQPSc16S7+GZBZw74BUXYYOjUlfxEj7N1uldMYqP5td7LyLjFXgJJuJARhYUsKpUaVvls2JS4i5cG8S419GEzn6zCeqK6gTb52IsoLGnEVGPB/x2QuYp4TcyBKS5Th2MHx8yoczTZIbgNtwk/afBZ8ERFVCQ/vVQXd547VofS+KLeZDPFjB2etlva5c27tNrVjXCXstfy70ItiynbRV2yWMIGGsuOfnPxtOWU0N7Y6dMEYwVW8D+x3yzeU4SfeTrOoRkEtUzsvjcZcQWEmId+F1FLUPYwoT9pyjLmCmmk2yoi9CJdpbO3zqw0WlFmLGkVfZF3zrEvpC+dxCjplxEwpE/xYYww="
+    }
+  ]
+}

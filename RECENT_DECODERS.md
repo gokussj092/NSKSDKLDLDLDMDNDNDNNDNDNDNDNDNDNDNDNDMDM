@@ -19,6 +19,186 @@ Internamente `subprocess.run()` usa una lista de argumentos y `shell=False`. Las
 
 Cada script mantiene además `run(file_bytes)` para poder reutilizar el motor de descifrado desde Python.
 
+## KSH VPN 1.3.2 — catálogo cifrado
+
+`decoders/Python/ksh_vpn.py` decodifica el catálogo JSON `enc` de KSH VPN
+mediante AES-256-GCM autenticado y conserva todas las configuraciones.
+Admite archivos locales y descarga HTTPS explícita con `--url`.
+
+```bash
+python decoders/Python/ksh_vpn.py servers.json -o ksh_decoded.json
+python decoders/Python/ksh_vpn.py --url -o ksh_decoded.json
+```
+
+Motor independiente, sin registrar una extensión `.ksh` no comprobada.
+Véanse [formato, evidencia real y límites](docs/KSH_VPN_1_3_2.md).
+
+## REESE TUNNEL 3.23.12 — archivos .RT
+
+`decoders/Python/reese_tunnel.py` recupera el JSON completo `meta/config`
+de exportaciones RSE5 C3/C4 y lectores históricos RSE1–RSE4, verificando
+GCM y el HMAC exterior donde corresponde. La muestra `.RT` aportada se
+validó como C4 ligado al certificado público del APK. Se preservan todos
+los campos, perfiles V2Ray y banner.
+
+```bash
+python decoders/Python/reese_tunnel.py "Telkom unlimited v2ray.RT" -o reese_decoded.json
+```
+
+Opciones para credenciales originales: `--hwid`, `--ask-password`,
+`--password-file` y `--signer-sha256`. No se identificó un catálogo remoto
+VPN en las rutas revisadas de este APK.
+[Formato, pruebas independientes y límites](docs/REESE_TUNNEL_3_23_12.md).
+
+## FlexNet V2.3 B42 — v5 y catálogos
+
+`decoders/Python/flexnet_b42.py` lee FLXCFG v5 offline y catálogos FBS1
+integrados; puede procesar archivos online con una clave de contenido
+legítima aportada y respuestas remotas con su clave RSA de petición.
+La muestra `Free Host.flex` es v5 online y no se descifró sin la autorización
+requerida. Se autenticó y recuperó el catálogo real de siete servidores.
+
+```bash
+python decoders/Python/flexnet_b42.py "Free Host.flex" --inspect
+python decoders/Python/flexnet_b42.py "FlexNet V2.3 B42 (1).apk" --builtin-catalog -o flexnet_servers.json
+```
+
+El motor `flex.py` conserva v1–v4 y delega v5 al nuevo lector.
+[Uso, formatos, evidencia y límites online](docs/FLEXNET_V2_3_B42.md).
+
+## VPN PLUS PERÚ 1.0 — .gol, legado, AKN2 y AKN3
+
+`decoders/Python/vpn_plus_peru.py` conserva el JSON completo de las tres
+variantes identificadas en `com.akunt.vpn` 1.0. AKN2/3 verifican HMAC antes
+de descifrar. También admite el JSON sin cifrar que acepta su importador.
+
+```bash
+python decoders/Python/vpn_plus_peru.py configuracion.gol -o resultado.json
+```
+
+Permite `--url HTTPS_URL` para descargar una ubicación explícita y procesar
+su respuesta, pero **no se encontró una URL ni un flujo de catálogo remoto
+en este APK**. No hay descarga automática predeterminada ni catálogo real
+validado. [Hallazgos, uso, formatos y evidencia JCE](docs/VPN_PLUS_PERU_1_0.md).
+
+## Ultra Custom 5.2 — archivos .ua, enlaces y paquetes
+
+`decoders/Python/ultra_custom_52.py` reproduce la transformación nativa de
+`hz.custom.vpn` 5.2, lee XML/EXA1/UAB1 y descifra UAP1 con la contraseña
+original. Admite perfiles individuales, textos `ua://` y paquetes de hasta
+100 miembros, incluidos paquetes mixtos con protección por perfil.
+Conserva las propiedades, payloads CRLF, notas y JSON V2Ray completos.
+
+```bash
+python decoders/Python/ultra_custom_52.py perfil.ua -o resultado.json
+python decoders/Python/ultra_custom_52.py paquete.ua --ask-password -o perfiles.json
+```
+
+Lector independiente y offline, sin modificar `ultra.py` ni el registro
+del bot. Validado con vectores sintéticos JCE y la transformación ARM64 del
+APK; no se recibió una exportación `.ua` real.
+[Uso, formatos, pruebas y límites](docs/ULTRA_CUSTOM_5_2.md).
+
+## DTunnel Mod 4.2.5 — catálogo remoto y enlaces vpn://
+
+`decoders/Python/dtunnelmod.py` lee las respuestas Base64/AES-256-CBC del
+catálogo modificado y los enlaces Base64/JSON `vpn://`. Conserva todos los
+perfiles y campos. No se identificó un formato propio de archivo de
+importación/exportación; los assets de interfaz no son servidores.
+
+```bash
+python decoders/Python/dtunnelmod.py respuesta_catalogo.txt -o servidores.json
+python decoders/Python/dtunnelmod.py --link 'vpn://BASE64_DEL_JSON'
+python decoders/Python/dtunnelmod.py --url --credentials-file credentials.json -o servidores.json
+```
+
+No necesita el APK para ejecutarse. La descarga explícita usa `user_id` del
+archivo pequeño de identificadores original. Consulta real autorizada del
+18 de octubre de 2026: 46 perfiles completos, 37 ajustes y 108 textos,
+con paridad de texto claro entre Python y JCE. Las pruebas automatizadas
+usan vectores sintéticos y mocks; no contienen identificadores del servicio.
+[Uso, petición, evidencia y límites](docs/DTUNNELMOD_4_2_5.md).
+
+## Neutro Vpn 1.5 — .nvpnc, texto, enlaces y catálogo
+
+`decoders/Python/neutro_vpn.py` abre perfiles `NVPNC1.L/P` de archivos
+`.nvpnc` o texto compartido. Verifica AES-GCM y usa la contraseña original
+para `P` mediante PBKDF2-SHA256. El catálogo requiere firma ECDSA antes de
+descifrar GCM. Conserva el documento raíz y todos sus perfiles y campos.
+
+```bash
+python decoders/Python/neutro_vpn.py perfil.nvpnc -o perfil.json
+python decoders/Python/neutro_vpn.py perfil.nvpnc --ask-password
+python decoders/Python/neutro_vpn.py --url -o catalogo.json
+```
+
+No necesita el APK en ejecución. Consulta real de ambos endpoints originales:
+seis perfiles completos, frente a diez del catálogo integrado anterior.
+Inspecciona también URI estándar y JSON Xray conservando su contenido.
+Archivos L/P validados con vectores sintéticos independientes JCE; no se
+adjuntó una exportación `.nvpnc` real.
+[Uso, formatos, evidencia real y límites](docs/NEUTRO_VPN_1_5.md).
+
+## 24clan VPN Green 3.3 — carpeta con catálogo, archivos e icono
+
+[`apps/24clan_VPN_Green`](decoders/Python/apps/24clan_VPN_Green/README.md)
+reúne dos scripts independientes y el icono original de la aplicación:
+`24clan_VPN_Green.py` para el catálogo y
+`24clan_VPN_Green_archivos.py` para `.green` o su texto Base64.
+
+```bash
+python decoders/Python/apps/24clan_VPN_Green/24clan_VPN_Green.py --url -o catalogo.json
+python decoders/Python/apps/24clan_VPN_Green/24clan_VPN_Green_archivos.py perfil.green -o perfil.json
+```
+
+El catálogo usa OpenSSL AES-256-CBC/MD5; los archivos, una variante XXTEA
+con delta `0xFFE5FEA8`. Consulta real: seis servidores y 1.520 tweaks,
+incluidas las listas premium, conservando el JSON completo. Catálogos real
+e integrado comparados con JCE; archivos probados con vectores Java.
+No se adjuntó una exportación `.green` real.
+
+## HX Tunnel VPN Hx-Build14 — catálogo, archivos .hxt e icono
+
+[`apps/HX_Tunnel_VPN`](decoders/Python/apps/HX_Tunnel_VPN/README.md)
+contiene `HX_Tunnel_VPN.py` para el catálogo, `HX_Tunnel_VPN_archivos.py`
+para archivos `.hxt` o texto hexadecimal, y el icono original PNG.
+Ambos scripts son autónomos, usan solo Python estándar y no necesitan el APK.
+
+```bash
+python decoders/Python/apps/HX_Tunnel_VPN/HX_Tunnel_VPN.py --url -o catalogo.json
+python decoders/Python/apps/HX_Tunnel_VPN/HX_Tunnel_VPN_archivos.py perfil.hxt -o perfil.json
+```
+
+El catálogo usa XXTEA con delta `0x9E5729B1`; los archivos, hexadecimal/XOR
+y texto JNI modificado. Consulta real: versión 25.52, **33 servidores y
+707 payloads**, frente a 25 y 635 del catálogo integrado 23.100. Se conserva
+el objeto completo, incluidas todas las listas y los metadatos originales.
+Catálogos comparados byte por byte con Java y CLI comprobada contra el
+endpoint real. Archivos probados con vectores Java independientes y la
+función XOR ARM64 original bajo emulación; no se recibió un `.hxt` real.
+
+## MKK Hyper VPN 2.9.2 — catálogo, suscripciones, textos e icono
+
+[`apps/MKK_Hyper_VPN`](decoders/Python/apps/MKK_Hyper_VPN/README.md)
+reúne `MKK_Hyper_VPN.py`, `MKK_Hyper_VPN_textos.py`, documentación y el icono
+original. No se identificó una extensión propia de archivos: importa texto
+`mkk://`, que el lector también puede abrir desde un archivo de texto.
+Ambos scripts son autónomos y no necesitan el APK en ejecución.
+
+```bash
+python decoders/Python/apps/MKK_Hyper_VPN/MKK_Hyper_VPN.py --url -o catalogo.json
+python decoders/Python/apps/MKK_Hyper_VPN/MKK_Hyper_VPN.py --url --source subscriptions --expand --allow-partial -o informe.json
+python decoders/Python/apps/MKK_Hyper_VPN/MKK_Hyper_VPN_textos.py --text 'mkk://BASE64_REAL'
+```
+
+El catálogo usa AES-256-GCM con clave derivada por SHA-256 y tag separado
+o adjunto. Las claves `mkk://` usan IV de 16 bytes y AES-256-CBC/PKCS7;
+se conserva su URI y el JSON VMess completo. Consulta real: catálogo 97
+autenticado con 12 servidores, comparado byte por byte con JCE. El índice
+incluye diez fuentes; la expansión recuperó nueve y señaló una fallida,
+sin presentar el resultado como completo. Textos comprobados con cinco
+vectores sintéticos JCE; no se recibió una clave `mkk://` real.
+
 ## Flujo por decodificador
 
 ### decoders/Python/DARKTUNNEL.py
