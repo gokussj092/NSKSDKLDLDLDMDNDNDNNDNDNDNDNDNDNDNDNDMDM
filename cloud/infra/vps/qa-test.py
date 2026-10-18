@@ -101,14 +101,71 @@ def health():
             pass
         time.sleep(2)
     return False
+def probe_nur():
+    """Use production broker and private worker, reporting only safe stages."""
+    current=rows()
+    expiration=int(value(current,"CLOUD_QA_EXPIRES_AT") or "0")
+    if (value(current,"CLOUD_QA_ENABLED")!="true" or expiration<=time.time()
+        or not STATE.exists()):
+        raise SystemExit("Start a private QA session before probing NUR.")
+    javascript=r'''
+import {downloadNur,nurConfigured} from "./lib/c35-provider.mjs";
+import {fetchWorker} from "./lib/c3-gateway.mjs";
+import {settings} from "./lib/c3-config.mjs";
+const emit=o=>console.log(JSON.stringify(o));
+if(!nurConfigured()){
+  emit({stage:"configuration",status:"failed",code:"REMOTE_NOT_CONFIGURED"});
+  process.exit(2);
+}
+let raw;
+try {
+  raw=await downloadNur();
+  emit({stage:"download",status:"ok",bytes:raw.length});
+}catch(error){
+  emit({stage:"download",status:"failed",code:
+    typeof error?.code==="string"?error.code:"REMOTE_PROVIDER_UNAVAILABLE"});
+  process.exit(3);
+}
+try {
+  const response=await fetchWorker("catalog",
+    {dataBase64:raw.toString("base64")},settings());
+  const output=await response.json();
+  if(!response.ok){
+    emit({stage:"decode",status:"failed",httpStatus:response.status,
+      code:output?.error?.code||"ENGINE_UNAVAILABLE"});
+    process.exit(4);
+  }
+  const parsed=output?.structuredJson;
+  emit({stage:"decode",status:"ok",servers:
+    Array.isArray(parsed?.Servers)?parsed.Servers.length:null,
+    networks:Array.isArray(parsed?.Networks)?parsed.Networks.length:null,
+    partial:output.isPartial===true});
+}catch(error){
+  emit({stage:"decode",status:"failed",code:"ENGINE_UNAVAILABLE"});
+  process.exit(5);
+}
+'''
+    try:
+        result=compose("exec","-T","web","node","--input-type=module","-e",javascript)
+        print(result.stdout,end="")
+    except subprocess.CalledProcessError as error:
+        if error.stdout:
+            print(error.stdout,end="")
+        else:
+            print("NUR diagnostic failed: check web container availability.")
+        raise SystemExit(error.returncode or 1) from None
+
 def main():
     if os.geteuid()!=0:raise SystemExit("Use sudo spdecode qa start|stop|status")
-    if len(sys.argv)!=2 or sys.argv[1] not in ("start","stop","status","services"):
-        raise SystemExit("Usage: spdecode qa start|stop|status|services")
+    if len(sys.argv)!=2 or sys.argv[1] not in ("start","stop","status","services","probe-nur"):
+        raise SystemExit("Usage: spdecode qa start|stop|status|services|probe-nur")
     action=sys.argv[1]
     old=rows()
     if action=="status":
         status()
+        return
+    if action=="probe-nur":
+        probe_nur()
         return
     if action=="services":
         until=int(value(old,"CLOUD_QA_EXPIRES_AT") or "0")
