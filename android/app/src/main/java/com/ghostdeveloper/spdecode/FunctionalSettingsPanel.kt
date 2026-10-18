@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -36,6 +37,8 @@ fun FunctionalSettingsPanel(
     retentionDays:Int,
     onRetention:(Int)->Unit,
     onShowGuide:()->Unit={},
+    qaCodeConfigured:Boolean=false,
+    onQaCode:(String)->Unit={},
 ){
     var clearDialog by remember { mutableStateOf(false) }
     var languageSheet by remember { mutableStateOf(false) }
@@ -126,6 +129,38 @@ fun FunctionalSettingsPanel(
                 Icon(Icons.Outlined.DeleteOutline,null)
                 Spacer(Modifier.width(8.dp))
                 Text(stringResource(R.string.delete_session))
+            }
+        }
+        // Only the dedicated QA APK exposes this section; never production.
+        if(BuildConfig.SPDECODE_QA_BUILD) {
+            var input by remember { mutableStateOf("") }
+            SettingsCard {
+                Row(verticalAlignment=Alignment.CenterVertically) {
+                    Icon(Icons.Outlined.BugReport,null,tint=TitleText)
+                    Spacer(Modifier.width(10.dp))
+                    Text("Cloud QA · Pruebas privadas",color=TitleText,
+                        fontWeight=FontWeight.SemiBold,fontSize=17.sp)
+                }
+                Text("Introduce el código temporal generado con 'sudo spdecode qa start' "+
+                    "en tu VPS. No necesitas publicar la aplicación en Google Play. "+
+                    "El código solo permanece en memoria hasta cerrar la aplicación.",
+                    color=MutedText,fontSize=12.sp)
+                OutlinedTextField(
+                    value=input,onValueChange={if(it.length<=80)input=it.trim()},
+                    label={Text("Código temporal QA")},singleLine=true,
+                    visualTransformation=PasswordVisualTransformation(),
+                    modifier=Modifier.fillMaxWidth()
+                )
+                Button(
+                    onClick={onQaCode(input);input=""},
+                    enabled=input.matches(Regex("spqa-[A-Za-z0-9_-]{40,64}")),
+                    modifier=Modifier.fillMaxWidth()
+                ) { Text(if(qaCodeConfigured)"Sustituir código" else "Activar acceso QA") }
+                if(qaCodeConfigured) {
+                    Text("Código cargado · Sesión temporal",color=TitleText,fontSize=12.sp)
+                    OutlinedButton(onClick={onQaCode("");input=""},
+                        modifier=Modifier.fillMaxWidth()) { Text("Borrar código QA") }
+                }
             }
         }
         DeviceCredentialSettingsSection()
