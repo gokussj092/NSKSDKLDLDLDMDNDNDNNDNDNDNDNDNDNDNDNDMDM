@@ -141,8 +141,10 @@ class VPSInstallerTests(unittest.TestCase):
           "spdecode.xyz","--api-domain","api.spdecode.xyz",
           "--panel-domain","panel.spdecode.xyz"],
           capture_output=True,text=True,check=True).stdout
-        self.assertNotIn("allow ",config)
-        self.assertNotIn("deny all",config)
+        # Check actual Nginx directives, not a comment that says "allow".
+        import re
+        self.assertIsNone(re.search(r"(?m)^\\s*allow\\s+",config))
+        self.assertIsNone(re.search(r"(?m)^\\s*deny\\s+",config))
         self.assertIn("location ^~ /api/admin/",config)
         self.assertIn("location ^~ /admin",config)
         cli=(VPS/"spdecodectl").read_text()
