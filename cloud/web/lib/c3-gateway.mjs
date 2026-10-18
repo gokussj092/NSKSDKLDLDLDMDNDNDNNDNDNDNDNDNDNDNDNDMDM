@@ -132,7 +132,7 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
 export async function decodeRequest(request,kind,options={}) {
   if(!enabled())return notEnabled();
   const cfg=settings();
-  let redis,claims,lease=null;
+  let redis,claims,lease=null,telemetry=null,recorded=false;
   try{
     redis=await (options.storeProvider||store)();
     if(await maintenanceEnabled(redis))return failure("SERVICE_UNAVAILABLE",503);
@@ -145,10 +145,23 @@ export async function decodeRequest(request,kind,options={}) {
     const requestId=randomUUID();
     if(!await reserveSlot(redis,claims.jti,requestId))return failure("RATE_LIMITED",429);
     lease=requestId;
+    telemetry={
+      kind,format:kind==="file"?payload.format:undefined,
+      bytes:kind==="text"?Buffer.byteLength(payload.text,"utf8"):
+        Math.floor(payload.dataBase64.length*3/4),
+    };
     const outcome=await fetchWorker(kind,payload,cfg,options);
-    try{await recordWorkerResult(redis,outcome.ok?"success":"failed");}catch{}
+    let errorCode="";
+    if(!outcome.ok){
+      try{errorCode=(await outcome.clone().json()).error?.code||"";}catch{}
+    }
+    try{await recordWorkerResult(redis,outcome.ok?"success":"failed",{...telemetry,errorCode});}catch{}
+    recorded=true;
     return outcome;
   }catch(error){
+    if(telemetry && !recorded && redis && lease){
+      try{await recordWorkerResult(redis,"failed",{...telemetry,errorCode:"ENGINE_UNAVAILABLE"});}catch{}
+    }
     if(error?.code==="INPUT_TOO_LARGE")return failure("INPUT_TOO_LARGE",413);
     if(error?.code==="INVALID_BASE64")return failure("INVALID_BASE64",400);
     if(error?.code==="INVALID_CREDENTIALS")return failure("INVALID_CREDENTIALS",400);
