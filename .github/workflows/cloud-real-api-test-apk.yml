@@ -71,9 +71,9 @@ jobs:
           import re
           file=Path("android/app/build.gradle.kts")
           src=file.read_text()
-          src,n=re.subn(r'versionCode = \d+', 'versionCode = 27', src)
+          src,n=re.subn(r'versionCode = \d+', 'versionCode = 28', src)
           assert n==1
-          src,n=re.subn(r'versionName = "[^"]+"', 'versionName = "1.2.1-qa"', src)
+          src,n=re.subn(r'versionName = "[^"]+"', 'versionName = "1.2.2-qa"', src)
           assert n==1
           file.write_text(src)
           PY
@@ -88,6 +88,24 @@ jobs:
           SPDECODE_RELEASE_KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
           SPDECODE_RELEASE_KEY_PASSWORD: ${{ secrets.SPDECODE_SIGNING_KEY_PASSWORD }}
         run: gradle --no-daemon :app:assembleRelease
+      - name: Verify QA Settings exists only in generated client UI
+        run: |
+          set -euo pipefail
+          GENERATED=android/app/build/generated/c5-client/java/com/ghostdeveloper/spdecode/FunctionalSettingsPanel.kt
+          ORIGINAL=android/app/src/main/java/com/ghostdeveloper/spdecode/FunctionalSettingsPanel.kt
+          test -s "$GENERATED"
+          grep -F 'com.ghostdeveloper.spdecode.cloud.CloudQaSettingsCard()' "$GENERATED"
+          if grep -Fq 'CloudQaSettingsCard()' "$ORIGINAL"; then
+            echo "::error::C0 UI source modified instead of generated QA copy"
+            exit 1
+          fi
+          python3 - <<'PY'
+          from pathlib import Path
+          src=Path("android/app/build/generated/c5-client/java/com/ghostdeveloper/spdecode/FunctionalSettingsPanel.kt").read_text()
+          assert src.count('CloudQaSettingsCard()')==1
+          assert 'CloudQaSettingsCard()\\n' not in src
+          print("QA credential entry is present in the existing Settings panel; original UI untouched.")
+          PY
       - name: Validate APK and native HTTPS origin
         run: |
           set -euo pipefail
@@ -97,9 +115,18 @@ jobs:
           "$ANDROID_HOME/build-tools/35.0.0/zipalign" -c -P 16 -v 4 "$APK" >/dev/null
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" > "$RUNNER_TEMP/qa-badging.txt"
           grep -F "package: name='com.ghostdeveloper.spdecode'" "$RUNNER_TEMP/qa-badging.txt"
-          grep -F "versionName='1.2.1-qa'" "$RUNNER_TEMP/qa-badging.txt"
-          grep -F "versionCode='27'" "$RUNNER_TEMP/qa-badging.txt"
+          grep -F "versionName='1.2.2-qa'" "$RUNNER_TEMP/qa-badging.txt"
+          grep -F "versionCode='28'" "$RUNNER_TEMP/qa-badging.txt"
           python3 tests/cloud_c5_apk_audit.py "$APK"
+          python3 - <<'PY'
+          from zipfile import ZipFile
+          apk="android/app/build/outputs/apk/release/app-release.apk"
+          with ZipFile(apk) as archive:
+              strings=b"".join(archive.read(path) for path in archive.namelist()
+                               if path.endswith(".dex"))
+          assert b"Activar acceso QA" in strings, "QA settings card missing from compiled APK"
+          print("QA entry button confirmed in compiled Android DEX")
+          PY
           python3 - <<'PY'
           from zipfile import ZipFile
           f="android/app/build/outputs/apk/release/app-release.apk"
@@ -117,23 +144,23 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p dist
-          cp android/app/build/outputs/apk/release/app-release.apk dist/SP-DECODE-v1.2.1-qa27-CLOUD-REAL-API.apk
+          cp android/app/build/outputs/apk/release/app-release.apk dist/SP-DECODE-v1.2.2-qa28-CLOUD-REAL-API.apk
           (cd dist && sha256sum *.apk > SHA256SUMS.txt)
           {
             echo "Channel: QA only; no Play Store release or production claim"
             echo "API: https://api.spdecode.xyz"
             echo "Package: com.ghostdeveloper.spdecode"
-            echo "VersionName: 1.2.1-qa"
-            echo "VersionCode: 27"
+            echo "VersionName: 1.2.2-qa"
+            echo "VersionCode: 28"
             echo "Source commit: $GITHUB_SHA"
             echo "Signing: existing repository permanent key"
-            echo "QA: enter a temporary credential from sudo spdecode qa start in Android Settings"
+            echo "QA: Settings > Cloud QA > enter temporary code from sudo spdecode qa start"
             echo "Production: Play Integrity remains required; QA mode expires after four hours"
           } > dist/QA-README.txt
       - name: Upload installable signed QA APK (only GitHub Actions artifact)
         uses: actions/upload-artifact@v4
         with:
-          name: SP-DECODE-Cloud-v1.2.1-qa27-REAL-API
+          name: SP-DECODE-Cloud-v1.2.2-qa28-REAL-API
           path: dist/
           if-no-files-found: error
           retention-days: 30
