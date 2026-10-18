@@ -17,6 +17,9 @@ export const NUR_ALLOWED_HOST = "strongteam.co";
 export const EHI_ALLOWED_HOST = "www.ehi.tools";
 const EHI_BUILD = "244";
 const MAX_REMOTE_BYTES = 8 * 1024 * 1024;
+const MAX_NUR_BYTES = 16 * 1024 * 1024; // matches NUR_TUNNEL_SERVERS.py MAX_INPUT
+const NUR_TIMEOUT_MS = 30000; // matches the proven standalone client
+const NUR_REDIRECT_LIMIT = 3; // only the same approved HTTPS origin
 const MAX_UNCOMPRESSED_BYTES = 8 * 1024 * 1024;
 const CONNECT_TIMEOUT_MS = 10000;
 const EMOJI_START = 0x1f489;
@@ -37,11 +40,17 @@ const ERRORS = Object.freeze({
 });
 
 export class ExternalImportError extends Error {
-  constructor(code) {
+  constructor(code, reason="") {
     super(code);
     this.name = "ExternalImportError";
     this.code = Object.hasOwn(ERRORS, code) ? code : "REMOTE_PROVIDER_UNAVAILABLE";
     this.status = ERRORS[this.code];
+    // Sanitized diagnostics for root-only 'spdecode qa probe-nur'; not included
+    // in the public API response. NEVER retain URLs, headers or response bodies.
+    this.reason = /^HTTP_[1-5][0-9]{2}$/.test(reason) ||
+      ["DNS","TLS","TIMEOUT","CONNECTION","REDIRECT_BLOCKED","REDIRECT_LIMIT"].includes(reason)
+      ? reason : "";
+
   }
 }
 const fail = code => { throw new ExternalImportError(code); };
@@ -129,80 +138,139 @@ export async function pinnedAddresses(host, resolver = dns.lookup) {
   return answers.map(r => r.address);
 }
 
-/** Transport injection is for tests only; production always calls this function.
- * tls.connect verifies the ORIGINAL hostname against the public TLS certificate.
+/** Private broker: validated DNS and TLS are pinned per HTTPS hop. NUR
+ * follows only bounded SAME-host redirects, unlike Python urllib's broader
+ * automatic redirect handling; EHI rejects all redirects as before.
  */
 export async function downloadApproved({url,kind,method="GET",body,headers={},maxBytes=MAX_REMOTE_BYTES},
     {resolve = dns.lookup, request = https.request} = {}) {
-  const destination = approvedUrl(url,kind);
-  if (!Number.isSafeInteger(maxBytes) || maxBytes < 1 || maxBytes > MAX_REMOTE_BYTES ||
+  const initial=approvedUrl(url,kind);
+  const upperLimit=kind==="nur" ? MAX_NUR_BYTES : MAX_REMOTE_BYTES;
+  if (!Number.isSafeInteger(maxBytes) || maxBytes<1 || maxBytes>upperLimit ||
       !["GET","POST"].includes(method))
     fail("REMOTE_NETWORK_DENIED");
-  const resolved = await pinnedAddresses(destination.hostname, resolve);
-  const selected = resolved[0]; // pinned into the actual socket lookup callback
-  return await new Promise((resolvePromise,rejectPromise) => {
-    let settled = false;
-    const reject = code => {
-      if (settled) return;
-      settled = true;
-      rejectPromise(new ExternalImportError(code));
-    };
-    const abort = AbortSignal.timeout(CONNECT_TIMEOUT_MS + 5000);
-    const options = {
-      method, signal:abort, agent:false, rejectUnauthorized:true,
-      minVersion:"TLSv1.2", timeout:CONNECT_TIMEOUT_MS,
-      headers:{
-        ...headers,
-        "Accept-Encoding":"identity",
-        "Connection":"close",
-      },
-      lookup:(host,opts,callback) => {
-        if (host !== destination.hostname) return callback(new Error("hostname mismatch"));
-        callback(null,selected,4);
-      },
-    };
-    let req;
-    try {
-      req = request(destination,options,res => {
-        if (res.statusCode !== 200) {
-          res.destroy();
-          return reject("REMOTE_PROVIDER_UNAVAILABLE"); // includes 3xx, no Location follow
-        }
-        const encoding = res.headers["content-encoding"];
-        if (encoding && encoding !== "identity") {
-          res.destroy();return reject("REMOTE_RESPONSE_INVALID");
-        }
-        const announced = res.headers["content-length"];
-        if (announced !== undefined && (!/^\d+$/.test(String(announced)) ||
-            Number(announced) > maxBytes)) {
-          res.destroy();return reject("REMOTE_TOO_LARGE");
-        }
-        let size=0;
-        const chunks=[];
-        res.on("data", chunk => {
-          if (settled) return;
-          size += chunk.length;
-          if (size > maxBytes) {
-            res.destroy();req.destroy();
-            return reject("REMOTE_TOO_LARGE");
+
+  const timeout=kind==="nur" ? NUR_TIMEOUT_MS : CONNECT_TIMEOUT_MS;
+  const deadline=Date.now()+timeout+5000;
+  const visited=new Set();
+
+  const reasonFromError=error=>{
+    if(error?.name==="AbortError" || error?.code==="ETIMEDOUT")return "TIMEOUT";
+    if(["ENOTFOUND","EAI_AGAIN"].includes(error?.code))return "DNS";
+    if(typeof error?.code==="string" &&
+       (/^ERR_TLS_/.test(error.code) || /CERT|SSL/.test(error.code)))return "TLS";
+    return "CONNECTION";
+  };
+  const failTransport=(code,reason)=>{throw new ExternalImportError(code,reason);};
+  let address=initial.href;
+  for(let hops=0;hops<=NUR_REDIRECT_LIMIT;hops++){
+    if(visited.has(address))failTransport("REMOTE_PROVIDER_UNAVAILABLE","REDIRECT_LIMIT");
+    visited.add(address);
+    const destination=approvedUrl(address,kind);
+    // DNS re-checked on every redirect and bound to the same HTTPS socket.
+    const resolved=await pinnedAddresses(destination.hostname,resolve);
+    const selected=resolved[0];
+    const timeLeft=deadline-Date.now();
+    if(timeLeft<=0)failTransport("REMOTE_PROVIDER_UNAVAILABLE","TIMEOUT");
+
+    const result=await new Promise((resolvePromise,rejectPromise)=>{
+      let settled=false,req;
+      const accept=value=>{
+        if(settled)return;
+        settled=true;resolvePromise(value);
+      };
+      const reject=(code,reason)=>{
+        if(settled)return;
+        settled=true;rejectPromise(new ExternalImportError(code,reason));
+      };
+      const controller=new AbortController();
+      const timer=setTimeout(()=>{
+        req?.destroy();
+        controller.abort();
+        reject("REMOTE_PROVIDER_UNAVAILABLE","TIMEOUT");
+      },Math.min(timeout+1000,timeLeft));
+      const cleanup=()=>clearTimeout(timer);
+      const options={
+        method, signal:controller.signal,agent:false,rejectUnauthorized:true,
+        minVersion:"TLSv1.2",timeout:Math.min(timeout,timeLeft),
+        headers:{...headers,"Accept-Encoding":"identity","Connection":"close"},
+        lookup:(host,opts,callback)=>{
+          if(host!==destination.hostname)return callback(new Error("hostname mismatch"));
+          callback(null,selected,4);
+        },
+      };
+      try{
+        req=request(destination,options,res=>{
+          const status=res.statusCode;
+          if(status!==200){
+            res.destroy();
+            if(kind==="nur" && method==="GET" &&
+                [301,302,303,307,308].includes(status)){
+              let next;
+              try{
+                const target=res.headers.location;
+                if(typeof target!=="string" || target.length>2048)
+                  throw new Error("missing redirect");
+                next=new URL(target,destination);
+                approvedUrl(next.href,"nur");
+                // No outbound cross-host, downgrade, port, query, SSRF or credentials.
+                if(next.hostname!==initial.hostname)
+                  throw new Error("cross-host redirect denied");
+              }catch{
+                return reject("REMOTE_NETWORK_DENIED","REDIRECT_BLOCKED");
+              }
+              return accept({redirect:next.href});
+            }
+            return reject("REMOTE_PROVIDER_UNAVAILABLE","HTTP_"+String(status));
           }
-          chunks.push(chunk);
+          const encoding=res.headers["content-encoding"];
+          if(encoding && encoding!=="identity"){
+            res.destroy();return reject("REMOTE_RESPONSE_INVALID");
+          }
+          const announced=res.headers["content-length"];
+          if(announced!==undefined && (!/^\d+$/.test(String(announced)) ||
+              Number(announced)>maxBytes)){
+            res.destroy();return reject("REMOTE_TOO_LARGE");
+          }
+          let size=0;
+          const chunks=[];
+          res.on("data",chunk=>{
+            if(settled)return;
+            size+=chunk.length;
+            if(size>maxBytes){
+              res.destroy();req.destroy();
+              return reject("REMOTE_TOO_LARGE");
+            }
+            chunks.push(chunk);
+          });
+          res.on("end",()=>{
+            if(settled)return;
+            if(!size)return reject("REMOTE_RESPONSE_INVALID");
+            accept({data:Buffer.concat(chunks,size)});
+          });
+          res.on("error",error=>reject("REMOTE_PROVIDER_UNAVAILABLE",reasonFromError(error)));
+          res.on("aborted",()=>reject("REMOTE_PROVIDER_UNAVAILABLE","CONNECTION"));
         });
-        res.on("end", () => {
-          if (settled) return;
-          if (!size) return reject("REMOTE_RESPONSE_INVALID");
-          settled = true;
-          resolvePromise(Buffer.concat(chunks,size));
-        });
-        res.on("error",()=>reject("REMOTE_PROVIDER_UNAVAILABLE"));
-        res.on("aborted",()=>reject("REMOTE_PROVIDER_UNAVAILABLE"));
-      });
-    } catch { reject("REMOTE_PROVIDER_UNAVAILABLE");return; }
-    req.on("timeout",()=>{req.destroy();reject("REMOTE_PROVIDER_UNAVAILABLE");});
-    req.on("error",()=>reject("REMOTE_PROVIDER_UNAVAILABLE"));
-    if (body !== undefined) req.write(body);
-    req.end();
-  });
+        req.on("timeout",()=>{req.destroy();reject("REMOTE_PROVIDER_UNAVAILABLE","TIMEOUT");});
+        req.on("error",error=>reject("REMOTE_PROVIDER_UNAVAILABLE",reasonFromError(error)));
+        if(body!==undefined)req.write(body);
+        req.end();
+      }catch(error){
+        reject("REMOTE_PROVIDER_UNAVAILABLE",reasonFromError(error));
+      }
+      // Clear the timer as soon as the request settles.
+      const clear=()=>cleanup();
+      // settle has no third-party inputs; attach handlers to this single promise
+      // using the request lifecycle to avoid timers surviving failed requests.
+      req?.on("close",clear);
+      controller.signal.addEventListener("abort",clear,{once:true});
+    });
+    if(result.data)return result.data;
+    if(!result.redirect || kind!=="nur" || hops===NUR_REDIRECT_LIMIT)
+      failTransport("REMOTE_PROVIDER_UNAVAILABLE","REDIRECT_LIMIT");
+    address=result.redirect;
+  }
+  failTransport("REMOTE_PROVIDER_UNAVAILABLE","REDIRECT_LIMIT");
 }
 
 // Android Java URLEncoder encodes ~ and punctuation and replaces '+' with %2B.
@@ -298,10 +366,11 @@ export async function downloadNur({env=process.env,transport=downloadApproved}={
   if (!nurConfigured(env)) fail("REMOTE_NOT_CONFIGURED");
   const raw=await transport({
     url:env.CLOUD_NUR_CATALOG_URL,kind:"nur",method:"GET",
-    headers:{"User-Agent":"NUR TUNNEL VPN","Accept":"application/octet-stream"},
-    maxBytes:MAX_REMOTE_BYTES,
+    // Match NUR_TUNNEL_SERVERS.py: urllib has only these two outbound headers.
+    headers:{"User-Agent":"NUR TUNNEL VPN","Accept-Encoding":"identity"},
+    maxBytes:MAX_NUR_BYTES,
   });
-  if (!Buffer.isBuffer(raw) || !raw.length || raw.length>MAX_REMOTE_BYTES)
+  if (!Buffer.isBuffer(raw) || !raw.length || raw.length>MAX_NUR_BYTES)
     fail("REMOTE_RESPONSE_INVALID");
   return raw;
 }
