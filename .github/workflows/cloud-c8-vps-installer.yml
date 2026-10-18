@@ -131,7 +131,7 @@ jobs:
           chmod -R go-rwx cloud/workers/python decoders spdecode docs/cloud/C0_FORMAT_MATRIX.csv
           chmod go-rwx decoders.json
       - name: Compose builds isolated worker and website
-        run: docker compose -f cloud/compose.yaml up -d --build
+        run: docker compose --project-name spdecode -f cloud/compose.yaml up -d --build
       - name: Validate web, admin default deny and private worker topology
         run: |
           for i in $(seq 1 24); do
@@ -142,7 +142,7 @@ jobs:
           curl --fail --silent http://127.0.0.1:3000/ > /dev/null
           test "$(curl --silent --output /dev/null --write-out '%{http_code}' http://127.0.0.1:3000/api/admin/session)" = 503
           test "$(curl --silent --output /dev/null --write-out '%{http_code}' http://127.0.0.1:3000/api/v1/ready)" = 503
-          docker compose -f cloud/compose.yaml ps
+          docker compose --project-name spdecode -f cloud/compose.yaml ps
       - name: Validate real username/password login through running Next.js + Redis
         run: |
           # Synthetic ephemeral account; no real usernames, keys, hashes or
@@ -160,12 +160,12 @@ jobs:
           print(f"scrypt$16384$8$1${salt.hex()}${digest.hex()}")
           PY
           )"
-          docker compose -f cloud/compose.yaml up -d --no-deps --force-recreate web
+          docker compose --project-name spdecode -f cloud/compose.yaml up -d --no-deps --force-recreate web
           for i in $(seq 1 20); do
             if curl -fsS --max-time 3 http://127.0.0.1:3000/api/v1/health >/dev/null; then break; fi
             sleep 3
           done
-          docker compose -f cloud/compose.yaml exec -T web node --input-type=module -e             'import {adminSettings} from "./lib/c6-admin-auth.mjs";if(!adminSettings().enabled)process.exit(1)'
+          docker compose --project-name spdecode -f cloud/compose.yaml exec -T web node --input-type=module -e             'import {adminSettings} from "./lib/c6-admin-auth.mjs";if(!adminSettings().enabled)process.exit(1)'
           test "$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:3000/api/admin/session)" = 401
           for body in '{"username":"NotGhostDeveloper","password":"ci-only-password-not-for-production-123"}' '{"username":"GhostDeveloper","password":"bad-password-1234567890"}'; do
             test "$(curl -sS -o /dev/null -w '%{http_code}'               -H 'Origin: https://panel.spdecode.xyz' -H 'X-SPDecode-Admin-Action: 1'               -H 'Content-Type: application/json' -d "$body"               http://127.0.0.1:3000/api/admin/login)" = 401
@@ -173,6 +173,37 @@ jobs:
           test "$(curl -sS --cookie-jar "$RUNNER_TEMP/admin-test-cookies"             -o /dev/null -w '%{http_code}'             -H 'Origin: https://panel.spdecode.xyz' -H 'X-SPDecode-Admin-Action: 1'             -H 'Content-Type: application/json'             -d '{"username":"GhostDeveloper","password":"ci-only-password-not-for-production-123"}'             http://127.0.0.1:3000/api/admin/login)" = 200
           test "$(curl -sS --cookie "$RUNNER_TEMP/admin-test-cookies"             -o /dev/null -w '%{http_code}' http://127.0.0.1:3000/api/admin/session)" = 200
           rm -f "$RUNNER_TEMP/admin-test-cookies"
+      - name: Real admin rotation script and HTTPS signed-session E2E (CI-only account)
+        run: |
+          # Full Nginx -> Next.js -> Redis login, not just an anonymous 401.
+          sudo apt-get update -qq
+          sudo apt-get install -y nginx-light openssl
+          sudo install -d -m 0755 /etc/letsencrypt/live/spdecode.xyz /etc/nginx/sites-available /etc/nginx/sites-enabled
+          sudo openssl req -x509 -nodes -newkey rsa:2048 -days 1 \
+            -subj '/CN=panel.spdecode.xyz' \
+            -addext 'subjectAltName=DNS:panel.spdecode.xyz,DNS:spdecode.xyz,DNS:api.spdecode.xyz' \
+            -keyout /etc/letsencrypt/live/spdecode.xyz/privkey.pem \
+            -out /etc/letsencrypt/live/spdecode.xyz/fullchain.pem >/dev/null 2>&1
+          sudo cp /etc/letsencrypt/live/spdecode.xyz/fullchain.pem /usr/local/share/ca-certificates/spdecode-ci.crt
+          sudo update-ca-certificates >/dev/null
+          sudo install -d -m 0700 /etc/spdecode /opt/spdecode
+          sudo ln -s "$GITHUB_WORKSPACE" /opt/spdecode/repo
+          printf 'spdecode.xyz\n' | sudo tee /etc/spdecode/domain >/dev/null
+          printf 'api.spdecode.xyz\n' | sudo tee /etc/spdecode/api-domain >/dev/null
+          printf 'panel.spdecode.xyz\n' | sudo tee /etc/spdecode/panel-domain >/dev/null
+          printf 'CLOUD_API_ENABLED=false\nCLOUD_ADMIN_ENABLED=false\nCLOUD_TRUST_PROXY=true\n' | sudo tee /etc/spdecode/cloud.env >/dev/null
+          sudo chmod 600 /etc/spdecode/cloud.env
+          sudo touch /etc/nginx/sites-available/spdecode.conf
+          sudo ln -s /etc/nginx/sites-available/spdecode.conf /etc/nginx/sites-enabled/spdecode.conf
+          sudo systemctl start nginx
+          umask 077
+          # Captured on the disposable runner ONLY, never printed in CI logs.
+          sudo python3 cloud/infra/vps/panel-reset.py > "$RUNNER_TEMP/ci-generated-admin"
+          grep -q '^ADMINISTRADOR RESTABLECIDO' "$RUNNER_TEMP/ci-generated-admin"
+          grep -q '^USUARIO: ' "$RUNNER_TEMP/ci-generated-admin"
+          grep -q '^CONTRASEÑA: ' "$RUNNER_TEMP/ci-generated-admin"
+          rm -f "$RUNNER_TEMP/ci-generated-admin"
+          echo 'Admin reset completed with real HTTPS 200 login and authenticated 200 session.'
       - name: Always tear down containers
         if: always()
-        run: docker compose -f cloud/compose.yaml down --remove-orphans
+        run: docker compose --project-name spdecode -f cloud/compose.yaml down --remove-orphans
