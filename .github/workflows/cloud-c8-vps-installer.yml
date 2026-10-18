@@ -204,6 +204,31 @@ jobs:
           grep -q '^CONTRASEÑA: ' "$RUNNER_TEMP/ci-generated-admin"
           rm -f "$RUNNER_TEMP/ci-generated-admin"
           echo 'Admin reset completed with real HTTPS 200 login and authenticated 200 session.'
+      - name: Probe panel links and protect API hosts through HTTPS Nginx
+        run: |
+          panel=panel.spdecode.xyz
+          for route in /admin /admin/analytics /admin/reports /admin/system /features /docs /privacy /status /api/site/status; do
+            status=$(curl --noproxy '*' --proxy '' -sS --connect-timeout 3 --max-time 10 \
+              --resolve "$panel:443:127.0.0.1" -o /dev/null -w '%{http_code}' \
+              "https://$panel$route")
+            echo "$route -> HTTP $status"
+            test "$status" = 200
+          done
+          status=$(curl --noproxy '*' --proxy '' -sS --resolve "$panel:443:127.0.0.1" \
+            -o /dev/null -w '%{http_code}' "https://$panel/api/admin/reports")
+          test "$status" = 401
+          status=$(curl --noproxy '*' --proxy '' -sS --resolve "$panel:443:127.0.0.1" \
+            -o /dev/null -w '%{http_code}' "https://$panel/api/v1/health")
+          test "$status" = 404
+          status=$(curl --noproxy '*' --proxy '' -sS \
+            --resolve "spdecode.xyz:443:127.0.0.1" \
+            -o /dev/null -w '%{http_code}' "https://spdecode.xyz/admin")
+          test "$status" = 404
+          status=$(curl --noproxy '*' --proxy '' -sS \
+            --resolve "api.spdecode.xyz:443:127.0.0.1" \
+            -o /dev/null -w '%{http_code}' "https://api.spdecode.xyz/privacy")
+          test "$status" = 404
+          echo 'Panel links pass; API and public hosts remain isolated.'
       - name: Always tear down containers
         if: always()
         run: docker compose --project-name spdecode -f cloud/compose.yaml down --remove-orphans
