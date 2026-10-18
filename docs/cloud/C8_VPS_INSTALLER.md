@@ -1,3 +1,35 @@
+## Pruebas reales antes de publicar en Google Play: Cloud QA
+
+**No se necesita publicar la APK, registrar una versión en Play Console ni generar un token de Play Integrity para ejecutar pruebas privadas de los descifradores.** Esta modalidad es independiente y no cambia el comportamiento de las compilaciones públicas.
+
+Después de actualizar ambos contenedores a la rama de QA:
+
+```bash
+sudo spdecode update all feat/cloud-c8-vps-installer-updater
+sudo spdecode qa start
+```
+
+El segundo comando:
+- Verifica que existan el secreto del worker, el de sesiones y el proxy HTTPS confiable.
+- Activa temporalmente la API de descifrado, quita temporalmente el bloqueo de mantenimiento y habilita el canal QA **por solo cuatro horas**.
+- Genera un código aleatorio de gran entropía (`spqa-...`), lo guarda exclusivamente como HMAC-SHA256 con caducidad en Redis y lo **muestra una vez en la consola privada del VPS**.
+- Recrea únicamente la web API y prueba la disponibilidad real del worker. Si falla, restaura la configuración anterior.
+- Preserva el estado anterior de los interruptores de API y mantenimiento para restaurarlo al detener QA.
+
+En el teléfono instala la APK firmada **SP-DECODE Cloud v1.2.0-qa (versionCode 26)**, creada específicamente con `SPDECODE_CLOUD_QA_BUILD=true` y URL `https://api.spdecode.xyz`. Ve a **Ajustes > Cloud QA · Pruebas privadas**, introduce el código temporal y pulsa **Activar acceso QA**. Después descifra archivos y textos como siempre. El resultado continúa llegando del worker aislado y alimenta las estadísticas por extensión; la aplicación no incorpora ningún motor local ni secretos permanentes del servidor.
+
+El cliente envía el código una vez por sesión al endpoint `POST /api/v1/session/qa` después de obtener un desafío ligado al origen de la solicitud. Las sesiones se firman con el mismo mecanismo del backend, vencen a los cinco minutos como máximo, están limitadas en frecuencia, y dejan de funcionar inmediatamente cuando se desactiva QA. El código **no se compila ni guarda en la APK**, no se persiste en el dispositivo y no puede utilizarse desde la aplicación pública porque esta no expone la opción QA.
+
+Para cerrar el acceso y revocar el código:
+
+```bash
+sudo spdecode qa stop
+curl -i https://api.spdecode.xyz/api/v1/ready
+```
+
+Para comprobar el plazo sin mostrar el código: `sudo spdecode qa status`. **No publiques ni compartas el código QA, ni una APK de QA vinculada a un código activo.** Este canal está dirigido exclusivamente al propietario/testers autorizados; los controles de Play Integrity y licencia seguirán siendo obligatorios en la modalidad pública. Si se reinicia Redis, se pierde el código temporal y se debe detener QA y emitir otro. Una vez transcurridas cuatro horas, QA deja de funcionar incluso si no ejecutas `stop`; conviene detenerlo igualmente para restaurar mantenimiento y el estado previo de la API.
+
+---
 ## Corregir los 404 del panel y activar informes administrativos
 
 Las páginas `/features`, `/docs`, `/privacy`, `/status` y la ruta JSON de estado público `/api/site/status` ya existen en Next.js, pero la lista de ubicaciones de Nginx del subdominio `panel.spdecode.xyz` las rechazaba con 404. El generador actualizado las habilita explícitamente sin abrir la API Android `/api/v1/*` ni exponer rutas administrativas en `spdecode.xyz`.
