@@ -19,6 +19,20 @@ Internamente `subprocess.run()` usa una lista de argumentos y `shell=False`. Las
 
 Cada script mantiene además `run(file_bytes)` para poder reutilizar el motor de descifrado desde Python.
 
+## KSH VPN 1.3.2 — catálogo cifrado
+
+`decoders/Python/ksh_vpn.py` decodifica el catálogo JSON `enc` de KSH VPN
+mediante AES-256-GCM autenticado y conserva todas las configuraciones.
+Admite archivos locales y descarga HTTPS explícita con `--url`.
+
+```bash
+python decoders/Python/ksh_vpn.py servers.json -o ksh_decoded.json
+python decoders/Python/ksh_vpn.py --url -o ksh_decoded.json
+```
+
+Motor independiente, sin registrar una extensión `.ksh` no comprobada.
+Véanse [formato, evidencia real y límites](docs/KSH_VPN_1_3_2.md).
+
 ## Flujo por decodificador
 
 ### decoders/Python/DARKTUNNEL.py
