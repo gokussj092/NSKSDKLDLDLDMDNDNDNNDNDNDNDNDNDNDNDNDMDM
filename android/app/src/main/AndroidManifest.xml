@@ -15,6 +15,18 @@
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher"
         android:theme="@style/Theme.SPDecode.Starting">
+        <!-- Disabled and hidden from launcher for every non-QA build. -->
+        <activity
+            android:name=".cloud.CloudQaSetupActivity"
+            android:exported="true"
+            android:enabled="${spdecodeQaEnabled}"
+            android:label="SP-DECODE QA"
+            android:theme="@style/Theme.SPDecode.Starting">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".MainActivity"
             android:exported="true"
