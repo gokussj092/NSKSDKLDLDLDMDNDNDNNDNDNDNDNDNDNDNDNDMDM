@@ -14,9 +14,9 @@ La política de privacidad es provisional y explica transporte de archivos, dato
 
 Rutas `/admin/login` y `/admin` con operaciones exclusivamente desde `/api/admin/login`, `/api/admin/session`, `/api/admin/maintenance` y `/api/admin/logout`.
 
-Admin exige `CLOUD_ADMIN_ENABLED=true`, `CLOUD_TRUST_PROXY=true`, Redis privado, `CLOUD_ADMIN_SESSION_KEY` aleatoria >=32 caracteres, `CLOUD_ADMIN_PASSWORD_SCRYPT` (scrypt con sal aleatoria) y `CLOUD_ADMIN_PUBLIC_ORIGIN` como origen HTTPS exacto. En ausencia de cualquiera de estos factores **el panel permanece desactivado** (503).
+Admin exige `CLOUD_ADMIN_ENABLED=true`, `CLOUD_TRUST_PROXY=true`, Redis privado, `CLOUD_ADMIN_SESSION_KEY` aleatoria >=32 caracteres, `CLOUD_ADMIN_USERNAME` (usuario explícito de administración), `CLOUD_ADMIN_PASSWORD_SCRYPT` (scrypt con sal aleatoria) y `CLOUD_ADMIN_PUBLIC_ORIGIN` como origen HTTPS exacto. En ausencia de cualquiera de estos factores **el panel permanece desactivado** (503).
 
-El login usa hash scrypt, máximo cinco intentos por IP/15 min, límite global, cookie HMAC HttpOnly/Secure/SameSite Strict con caducidad 30 minutos y presencia de sesión en Redis. La IP hash debe coincidir para cada petición y la revocación de la cookie cierra la sesión. Las mutaciones exigen Origin HTTPS fijo, cabecera `X-SPDecode-Admin-Action: 1`, JSON estricto y Fetch Metadata same-origin.
+El login exige usuario y contraseña, verifica el secreto con scrypt, limita a ocho intentos por cuenta cada 15 minutos y 60 globales, y expide una cookie firmada HMAC HttpOnly/Secure/SameSite Strict con caducidad de 30 minutos y presencia de sesión en Redis. Las sesiones no usan ni verifican direcciones IP, por lo que funcionan al cambiar de red. La revocación de la cookie cierra la sesión. Las mutaciones exigen Origin HTTPS fijo, cabecera `X-SPDecode-Admin-Action: 1`, JSON estricto y Fetch Metadata same-origin.
 
 El panel visualiza **solo** estado de Redis, readiness del worker, configuración booleana de la API/proveedores, mantenimiento y contadores agregados diarios UTC. No visualiza nombres, contenido, contraseñas, HWID, bearer, tokens ni archivos procesados; no puede modificar claves ni el inventario de motores.
 
@@ -28,7 +28,7 @@ Las métricas guardan exclusivamente contadores por día UTC y resultado correct
 
 Se puede generar un hash administrador por stdin con `node cloud/web/scripts/hash-admin-password.mjs` (por ejemplo, introducir la contraseña por una entrada de terminal no registrada). Nunca pasar la contraseña en argv, publicar el hash, ni guardar la clave del panel en el APK. Elegir claves distintas de `CLOUD_WORKER_TOKEN` y `CLOUD_SESSION_SIGNING_KEY`.
 
-Todas las rutas administrativas se sirven exclusivamente tras un proxy HTTPS que **sobrescribe X-Real-IP** y configura HSTS. Añadir allowlist IP, VPN, MFA o SSO del operador es recomendado antes de exposición pública. El dashboard no incorpora MFA y **no debe presentarse como configuración definitiva de producción**.
+Todas las rutas administrativas se sirven exclusivamente tras un proxy HTTPS con HSTS. No hay filtrado ni comprobación de IP para el acceso al panel: el formulario público exige usuario y contraseña y las operaciones del backend validan la sesión firmada. No incorpora MFA; por ello se requiere una contraseña sólida, control de intentos y vigilancia operativa, y no debe describirse como autenticación de máxima garantía.
 
 Para correr CI: `cd cloud/web && npm install && npm test && npm run build`; y `docker compose -f cloud/compose.yaml config --quiet` desde la raíz. La suite C6 prueba acceso, cookies, CSRF, expiración/revocación, rate limit, mantenimiento y métricas, sin credenciales reales.
 

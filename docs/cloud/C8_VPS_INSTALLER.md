@@ -1,3 +1,18 @@
+## Inicio de sesión desde cualquier red, sin verificación de IP
+
+El panel **no pide ni valida una dirección IP** y no existe ninguna allowlist de IP en Nginx. Para abrirlo desde una red móvil, Wi-Fi o VPN, utiliza **usuario y contraseña** en `https://panel.spdecode.xyz/admin/login`. Una sesión válida se mantiene al cambiar de red hasta expirar o cerrar sesión. La página de entrada es pública, mientras que las rutas `/api/admin/*` exigen una cookie firmada protegida por HTTPS; también se mantienen limitación de intentos y protección CSRF.
+
+Después de instalar C8 o de actualizar una instalación anterior:
+
+```bash
+sudo spdecode update web feat/cloud-c8-vps-installer-updater
+sudo spdecode panel enable
+```
+
+El primer comando reconstruye Next.js con el formulario y las verificaciones actualizadas. El segundo pregunta por usuario, contraseña y confirmación, configura la cuenta en `/etc/spdecode/cloud.env` sin exponer la contraseña ni registrarla en Git, elimina las reglas anteriores de filtrado IP de Nginx y prueba la nueva configuración antes de recargarla. Solo activa **el panel**: la API de descifrado sigue cerrada por mantenimiento.
+
+No reinicies Certbot ni reconstruyas el APK; la autenticación administrativa es completamente del servidor. Para deshabilitar más tarde, `sudo spdecode panel disable`.
+
 # C8 — SP-DECODE Cloud: instalación VPS, actualizador y compilador APK/AAB
 
 **Rama:** `feat/cloud-c8-vps-installer-updater`, basada en C7 (#93). Es software para instalar en tu VPS: **no se ha conectado ni desplegado en una VPS real**. C8 no cambia el bot Python ni las pantallas Android.
@@ -18,9 +33,9 @@ Este comprobador **no modifica servicios, claves ni acceso administrativo**. Exa
 - Web HTTPS `spdecode.xyz/`: **200**.
 - API HTTPS `api.spdecode.xyz/api/v1/health`: **200**.
 - API HTTPS `api.spdecode.xyz/api/v1/ready`: **503** intencional si `CLOUD_API_ENABLED=false`, no es un 502.
-- Panel HTTPS `panel.spdecode.xyz/admin/login`: **200** desde el VPS (IP permitida local), o **403** desde un equipo público no autorizado. El login remoto no funciona hasta configurar allowlist de una única IP y credenciales C6. El endpoint administrativo de sesión responde **503** hasta habilitar el panel de forma segura.
+- Panel HTTPS `panel.spdecode.xyz/admin/login`: **200** desde cualquier red; el backend solo permite iniciar sesión con usuario y contraseña. El endpoint administrativo de sesión responde **503** hasta habilitarlo y **401** sin una sesión válida cuando esté habilitado.
 
-Si la ruta local del panel da **502** y el acceso directo a Next.js `127.0.0.1:3000/admin/login` también falla, inspecciona `sudo docker logs --tail 80 spdecode-web-1`. Si el backend directo da **200** y el proxy da **502**, inspecciona `sudo tail -n 35 /var/log/nginx/error.log`; comprueba el `server_name` y upstream, sin relajar `allow/deny` del panel.
+Si la ruta local del panel da **502** y el acceso directo a Next.js `127.0.0.1:3000/admin/login` también falla, inspecciona `sudo docker logs --tail 80 spdecode-web-1`. Si el backend directo da **200** y el proxy da **502**, inspecciona `sudo tail -n 35 /var/log/nginx/error.log`; comprueba el `server_name` y el upstream del panel.
 
 **No actives** `CLOUD_API_ENABLED` para intentar reparar un 502: es un interruptor de acceso al descifrador, no de red. Un 200 de `/health` solo confirma liveness, no Play Integrity, disponibilidad ni compatibilidad real.
 
@@ -104,7 +119,7 @@ Tu infraestructura se configura así:
 | `https://spdecode.xyz` | Sitio web, documentación y privacidad | Next.js interno 127.0.0.1:3000 |
 | `https://www.spdecode.xyz` | Redirección 308 al principal | Solo si añades `--www` y su DNS |
 | `https://api.spdecode.xyz` | API Android C3 (solo `/api/v1/`) | Mismo Next.js interno, host separado |
-| `https://panel.spdecode.xyz` | Panel C6 privado, restringido por IP | Mismo Next.js interno, host separado |
+| `https://panel.spdecode.xyz` | Panel C6: usuario y contraseña | Mismo Next.js interno, host separado |
 | `soporte@spdecode.xyz` | Correo de contacto y notificaciones TLS | Se conserva el proveedor de correo actual |
 
 **Importante:** el backend no utiliza puertos 8000 o 3001; son ejemplos antiguos de una arquitectura distinta. C3/C6 usan el **único** Next.js en `127.0.0.1:3000`. Redis y el worker siguen dentro de Docker y **no** deben tener puertos públicos. Los bloques de Nginx impiden abrir endpoints administrativos en el host API, o endpoints de descifrado en el host público.
@@ -125,7 +140,7 @@ sudo bash cloud/infra/vps/install.sh \
   --support-email soporte@spdecode.xyz
 ```
 
-Agrega `--www` **solo** si `www.spdecode.xyz` ya resuelve hacia el VPS. Agrega `--admin-cidr TU_IP_PUBLICA/32` únicamente para autorizar una IP concreta de operador; por defecto el panel está limitado a localhost. Opcionalmente puedes suministrar `--expected-ip IP_PUBLICA_VPS` para abortar si alguno de los hosts resuelve a otra IP (útil frente a parking DNS o registros antiguos).
+Agrega `--www` **solo** si `www.spdecode.xyz` ya resuelve hacia el VPS. Opcionalmente puedes suministrar `--expected-ip IP_PUBLICA_VPS` para abortar si alguno de los hosts resuelve a otra IP (útil frente a parking DNS o registros antiguos). Este parámetro comprueba DNS del servidor, nunca limita el inicio de sesión del panel.
 
 Después de instalar, el generador de Android toma automáticamente `/etc/spdecode/api-domain` y compila `https://api.spdecode.xyz` dentro de **`libspdecode.so`**. El script **no** empaqueta `spdecode.xyz` como destino de API por error. El correo de soporte se muestra en el pie de página y en privacidad, pero esto **no envía ni configura correo SMTP**, MX o buzones.
 
@@ -150,7 +165,7 @@ sudo bash cloud/infra/vps/install.sh \
 
 El script solicita automáticamente un certificado HTTPS Let's Encrypt para sitio, API y panel con webroot de Nginx, instala renovación/reload, clona la rama controlada a `/opt/spdecode/repo`, genera secretos del servidor en `/etc/spdecode/cloud.env` con permisos root 0600 y despliega Docker Compose: Next.js, worker privado Python/Node/PHP y Redis en red interna. **API y administrador permanecen desactivados por defecto**, y `CLOUD_FORCE_MAINTENANCE=true`.
 
-La administración remota se bloquea en Nginx por defecto (solo localhost); puedes agregar `--admin-cidr DIRECCION_IP_PUBLICA/32` al instalador para autorizar exclusivamente tu IP. No pongas 0.0.0.0/0 salvo que añadas protección independiente como VPN/MFA. El script no registra DuckDNS ni abre automáticamente el NSG/firewall de Oracle.
+La página de login del panel será pública mediante HTTPS, pero las operaciones requieren un usuario y contraseña que se configuran después. No existe allowlist ni vinculación de sesión a IP. El instalador no registra DuckDNS ni abre automáticamente el firewall cloud.
 
 En VPS pequeños ten presente que **la instalación de contenedores y la compilación Android son operaciones distintas**. Se recomiendan 2–4 GiB de RAM para el primer build de Docker, más espacio de disco de al menos 20 GiB si piensas compilar localmente. Una instancia económica no garantiza atender 200–300 operaciones de descifrado simultáneas: C7/C8 requieren benchmark y límites por sesión. En Oracle ARM64 se puede alojar el servidor pero el SDK/NDK de compilación Android suministrado aquí requiere x86_64; compila Android con GitHub Actions en ese caso.
 
@@ -182,14 +197,18 @@ Los archivos principales están en `/etc/spdecode/cloud.env` y `/etc/spdecode/in
 ## 3. Panel y credenciales privadas
 
 ```bash
-sudo spdecode config admin-password
+# Configuración desde una terminal SSH interactiva:
+sudo spdecode panel enable
+# Solicita usuario, contraseña fuerte y confirmación sin mostrar la contraseña.
+# Publica /admin/login para todas las conexiones HTTPS;
+# /api/admin requiere una sesión autenticada.
+
 sudo chmod 600 /root/service-account.json
 sudo spdecode config google-service-account /root/service-account.json
 sudo spdecode config set CLOUD_GOOGLE_PLAY_PACKAGE com.ghostdeveloper.spdecode
 
-# Tras configuración y validación manual del acceso de administrador:
-sudo spdecode config set CLOUD_ADMIN_ENABLED true
-sudo spdecode restart web
+## El comando anterior ya habilita el panel y reinicia Next.js.
+## Para desactivarlo después: sudo spdecode panel disable
 
 # Mantenimiento de emergencia impuesto en servidor:
 sudo spdecode config set CLOUD_FORCE_MAINTENANCE true
@@ -249,7 +268,7 @@ El compilador crea un Git worktree temporal, modifica `versionName`/`versionCode
 - `/opt/spdecode/previous.sha` — SHA para rollback.
 - `/etc/spdecode/cloud.env` — secretos de API, Redis y administrador.
 - `/etc/spdecode/signing.env` y `/etc/spdecode/keys/upload-key.p12` — claves de firma, root-only.
-- `/etc/nginx/sites-available/spdecode.conf` — proxy HTTPS con allowlist para admin.
+- `/etc/nginx/sites-available/spdecode.conf` — proxy HTTPS; el panel tiene autenticación por usuario/contraseña, sin bloqueo de IP.
 - `/var/www/spdecode-acme` — desafíos Let's Encrypt.
 - `cloud/infra/vps/tests/test_installer.py` — pruebas offline; GitHub Actions valida sintaxis, dominio y Compose.
 

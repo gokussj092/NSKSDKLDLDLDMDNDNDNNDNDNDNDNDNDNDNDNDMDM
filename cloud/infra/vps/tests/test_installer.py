@@ -11,13 +11,13 @@ class VPSInstallerTests(unittest.TestCase):
             with self.subTest(file=name):
                 result=subprocess.run(["bash","-n",str(VPS/name)],capture_output=True,text=True)
                 self.assertEqual(result.returncode,0,result.stderr)
-    def test_https_proxy_and_cidr(self):
-        result=subprocess.run(["python3",str(VPS/"nginx-config.py"),"ghost.duckdns.org","198.51.100.12/32"],capture_output=True,text=True,check=True)
-        for line in ("listen 443 ssl","allow 198.51.100.12/32","deny all","location ^~ /api/admin/","proxy_set_header X-Real-IP $remote_addr"):
+    def test_https_proxy_panel_uses_authentication_not_ip(self):
+        result=subprocess.run(["python3",str(VPS/"nginx-config.py"),"ghost.duckdns.org"],capture_output=True,text=True,check=True)
+        for line in ("listen 443 ssl","location ^~ /api/admin/","proxy_set_header X-Real-IP $remote_addr"):
             self.assertIn(line,result.stdout)
     def test_three_host_isolation_for_spdecode(self):
         result=subprocess.run(["python3",str(VPS/"nginx-config.py"),
-            "spdecode.xyz","198.51.100.12/32","--api-domain","api.spdecode.xyz",
+            "spdecode.xyz","--api-domain","api.spdecode.xyz",
             "--panel-domain","panel.spdecode.xyz","--www"],
             capture_output=True,text=True,check=True)
         config=result.stdout
@@ -31,8 +31,8 @@ class VPSInstallerTests(unittest.TestCase):
         self.assertIn("location ^~ /_next/",config)
         self.assertIn("location ^~ /api/v1/ { return 404; }",config)
         self.assertIn("location ^~ /api/admin { return 404; }",config)
-        self.assertIn("allow 198.51.100.12/32;",config)
-        self.assertIn("deny all;",config)
+        self.assertNotIn("allow 198.51.100.12/32;",config)
+        self.assertNotIn("deny all;",config)
         self.assertNotIn("proxy_pass http://127.0.0.1:8000",config)
         self.assertNotIn("proxy_pass http://127.0.0.1:3001",config)
     def test_invalid_or_cross_domain_subdomains_rejected(self):
@@ -44,7 +44,7 @@ class VPSInstallerTests(unittest.TestCase):
         ]
         for extra in args:
             p=subprocess.run(["python3",str(VPS/"nginx-config.py"),
-                "spdecode.xyz","198.51.100.12/32",*extra],
+                "spdecode.xyz",*extra],
                 capture_output=True,text=True)
             self.assertNotEqual(p.returncode,0,extra)
     def test_real_domain_and_support_email_wiring(self):
@@ -104,11 +104,23 @@ class VPSInstallerTests(unittest.TestCase):
         for value in ("bad;inject","http://host.test","host.test/path","localhost","host.test\nserver {"):
             p=subprocess.run(["python3",str(VPS/"nginx-config.py"),value],capture_output=True)
             self.assertNotEqual(p.returncode,0,value)
-    def test_admin_rejects_worldwide_allowlist(self):
-        for cidr in ("0.0.0.0/0","::/0","198.51.100.0/24"):
-            p=subprocess.run(["python3",str(VPS/"nginx-config.py"),
-              "ghost.duckdns.org",cidr],capture_output=True)
-            self.assertNotEqual(p.returncode,0,cidr)
+    def test_public_login_uses_credentials_no_ip_gating(self):
+        config=subprocess.run(["python3",str(VPS/"nginx-config.py"),
+          "spdecode.xyz","--api-domain","api.spdecode.xyz",
+          "--panel-domain","panel.spdecode.xyz"],
+          capture_output=True,text=True,check=True).stdout
+        self.assertNotIn("allow ",config)
+        self.assertNotIn("deny all",config)
+        self.assertIn("location ^~ /api/admin/",config)
+        self.assertIn("location ^~ /admin",config)
+        cli=(VPS/"spdecodectl").read_text()
+        for marker in ('panel_enable()', 'CLOUD_ADMIN_USERNAME',
+                       'admin_password', 'set_env CLOUD_ADMIN_ENABLED true',
+                       'nginx -t', 'systemctl reload nginx'):
+            self.assertIn(marker,cli)
+        self.assertNotIn("admin-cidr",cli)
+        installer=(VPS/"install.sh").read_text()
+        self.assertNotIn("--admin-cidr",installer)
     def test_worker_permissions_are_normalized_for_root_owned_umask_checkout(self):
         dockerfile=(ROOT/"cloud/workers/python/Dockerfile").read_text()
         self.assertIn("RUN chmod -R a+rX /opt/spdecode",dockerfile)
