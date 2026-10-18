@@ -67,6 +67,7 @@ export function safeFormat(kind,format,errorCode="") {
   if(kind==="catalog")return "nur-catalog";
   if(kind==="ehi")return "ehi";
   if(kind!=="file" || errorCode==="UNSUPPORTED_FORMAT")return "other";
+  if(format==="fɴ")return format;
   if(typeof format!=="string" || format.length>32 ||
     !/^[a-z0-9][a-z0-9._-]{0,31}$/.test(format))return "other";
   return format;
