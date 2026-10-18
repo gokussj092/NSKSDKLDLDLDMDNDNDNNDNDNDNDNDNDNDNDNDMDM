@@ -1,0 +1,80 @@
+"""Offline unit tests: QA session issuance never leaks plaintext to Redis or APK."""
+import contextlib
+import importlib.util
+import io
+from pathlib import Path
+import re
+import tempfile
+import unittest
+from unittest.mock import patch
+
+SCRIPT=Path(__file__).resolve().parents[1]/"qa-test.py"
+spec=importlib.util.spec_from_file_location("spdecode_qa_test",SCRIPT)
+qa=importlib.util.module_from_spec(spec)
+spec.loader.exec_module(qa)
+
+class QATests(unittest.TestCase):
+    def setUp(self):
+        self.temp=tempfile.TemporaryDirectory()
+        root=Path(self.temp.name)
+        self.env=root/"cloud.env"
+        self.state=root/"qa-previous.json"
+        self.env.write_text(
+            "CLOUD_API_ENABLED=false\n"
+            "CLOUD_FORCE_MAINTENANCE=true\n"
+            "CLOUD_QA_ENABLED=false\n"
+            "CLOUD_QA_EXPIRES_AT=0\n"
+            "CLOUD_TRUST_PROXY=true\n"
+            "CLOUD_SESSION_SIGNING_KEY="+"x"*48+"\n"
+            "CLOUD_WORKER_TOKEN="+"w"*48+"\n"
+            "CLOUD_ADMIN_USERNAME=realadmin\n")
+        self.orig_env,self.orig_state=qa.ENV,qa.STATE
+        qa.ENV,qa.STATE=self.env,self.state
+    def tearDown(self):
+        qa.ENV,qa.STATE=self.orig_env,self.orig_state
+        self.temp.cleanup()
+    def call(self,command):
+        output=io.StringIO();calls=[]
+        def composed(*args):
+            calls.append(args)
+            return None
+        with patch.object(qa.os,"geteuid",return_value=0),\
+             patch.object(qa.sys,"argv",["qa-test.py",command]),\
+             patch.object(qa,"compose",side_effect=composed),\
+             patch.object(qa,"health",return_value=True),\
+             contextlib.redirect_stdout(output):
+            qa.main()
+        return output.getvalue(),calls
+    def test_start_and_stop_restore_original_gates(self):
+        out,calls=self.call("start")
+        self.assertIn("QA ENABLED",out)
+        match=re.search(r"QA CODE: (spqa-[A-Za-z0-9_-]{40,64})",out)
+        self.assertIsNotNone(match)
+        code=match.group(1)
+        self.assertIn("CLOUD_QA_ENABLED=true",self.env.read_text())
+        self.assertIn("CLOUD_FORCE_MAINTENANCE=false",self.env.read_text())
+        self.assertIn("CLOUD_API_ENABLED=true",self.env.read_text())
+        self.assertTrue(self.state.is_file())
+        self.assertNotIn(code,self.env.read_text())
+        self.assertNotIn(code,self.state.read_text())
+        self.assertTrue(any("redis-cli" in call and "SET" in call for call in calls))
+        self.assertFalse(any(code in str(call) for call in calls))
+        out,_=self.call("stop")
+        self.assertIn("QA stopped",out)
+        self.assertIn("CLOUD_API_ENABLED=false",self.env.read_text())
+        self.assertIn("CLOUD_FORCE_MAINTENANCE=true",self.env.read_text())
+        self.assertIn("CLOUD_QA_ENABLED=false",self.env.read_text())
+        self.assertFalse(self.state.exists())
+    def test_stop_without_prior_state_keeps_existing_server_gates(self):
+        self.env.write_text(self.env.read_text().replace("CLOUD_API_ENABLED=false","CLOUD_API_ENABLED=true"))
+        self.call("stop")
+        self.assertIn("CLOUD_API_ENABLED=true",self.env.read_text())
+        self.assertIn("CLOUD_FORCE_MAINTENANCE=true",self.env.read_text())
+    def test_qa_code_never_printed_by_status(self):
+        out,_=self.call("start")
+        code=out.split("QA CODE: ",1)[1].splitlines()[0]
+        status,_=self.call("status")
+        self.assertIn("QA active: True",status)
+        self.assertNotIn(code,status)
+
+if __name__=="__main__":unittest.main()
