@@ -95,7 +95,7 @@ def main():
         print("QA ENABLED for four hours. Save this code privately; it is not stored in plaintext.")
         print("QA CODE:",code)
         print("Expires at UNIX UTC:",until)
-        print("Android QA APK: Settings > Cloud QA > Enter code. Do not distribute the code.")
+        print("Android QA APK: open the separate 'SP-DECODE QA' launcher, enter the code, then open the main app.")
         print("Stop immediately after tests: sudo spdecode qa stop")
     else:
         # Fail closed immediately, even if Redis cleanup fails.
