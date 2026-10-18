@@ -10,7 +10,7 @@ log(){ echo "[spdecode installer] $*"; }
 source /etc/os-release
 [[ "$ID" == ubuntu || "$ID" == debian ]] || fail "Ubuntu/Debian only"
 DOMAIN="" API_DOMAIN="" PANEL_DOMAIN="" EMAIL="" SUPPORT_EMAIL="soporte@spdecode.xyz"
-REF="feat/cloud-c8-vps-installer-updater" ADMIN_CIDR="" EXPECTED_IP="" WWW=false
+REF="feat/cloud-c8-vps-installer-updater" EXPECTED_IP="" WWW=false
 REPO_URL="https://github.com/Gh0stDeveloper/SP-DECODE.git"
 while (($#)); do
   case "$1" in
@@ -22,7 +22,6 @@ while (($#)); do
     --www) WWW=true;shift;;
     --email) EMAIL="$2";shift 2;;
     --ref) REF="$2";shift 2;;
-    --admin-cidr) ADMIN_CIDR="$2";shift 2;;
     --repo-ssh) REPO_URL="git@github.com:Gh0stDeveloper/SP-DECODE.git";shift;;
     *) fail "Unknown option: $1";;
   esac
@@ -137,8 +136,7 @@ if [[ "$WWW" == true ]]; then CERTBOT_DOMAINS+=(-d "www.$DOMAIN"); fi
 certbot certonly --webroot --non-interactive --agree-tos --email "$EMAIL" \
    --cert-name "$DOMAIN" -w /var/www/spdecode-acme "${CERTBOT_DOMAINS[@]}" ||
    fail "Let's Encrypt failed; check DNS and cloud/firewall 80/443"
-NGINX_ARGS=("$DOMAIN" "${ADMIN_CIDR:-127.0.0.1/32}"
-            --api-domain "$API_DOMAIN" --panel-domain "$PANEL_DOMAIN")
+NGINX_ARGS=("$DOMAIN" --api-domain "$API_DOMAIN" --panel-domain "$PANEL_DOMAIN")
 if [[ "$WWW" == true ]]; then NGINX_ARGS+=(--www); fi
 python3 /opt/spdecode/repo/cloud/infra/vps/nginx-config.py "${NGINX_ARGS[@]}" \
   > /etc/nginx/sites-available/spdecode.conf

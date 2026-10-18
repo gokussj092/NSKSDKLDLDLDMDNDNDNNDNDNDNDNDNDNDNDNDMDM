@@ -7,7 +7,6 @@ Backend is one Next.js service on 127.0.0.1:3000, routed by virtual host.
 from __future__ import annotations
 
 import argparse
-import ipaddress
 import re
 
 
@@ -20,13 +19,6 @@ def hostname(value: str) -> str:
                    or label.endswith("-") for label in value.split("."))):
         raise ValueError("Invalid DNS hostname")
     return value
-
-
-def exact_ip_cidr(value: str) -> str:
-    network = ipaddress.ip_network(value, strict=True)
-    if network.prefixlen != network.max_prefixlen:
-        raise ValueError("Admin must be restricted to one IP (/32 or /128)")
-    return str(network)
 
 
 def common_headers() -> str:
@@ -43,13 +35,12 @@ def common_headers() -> str:
     proxy_redirect off;'''
 
 
-def generate(domain: str, api: str, panel: str, cidr: str, www: bool) -> str:
+def generate(domain: str, api: str, panel: str, www: bool) -> str:
     domain, api, panel = map(hostname, (domain, api, panel))
     if api == panel or api == domain or panel == domain:
         raise ValueError("Web, API and admin must use distinct hostnames")
     if not api.endswith("." + domain) or not panel.endswith("." + domain):
         raise ValueError("API and admin must be subdomains of the web domain")
-    ip = exact_ip_cidr(cidr)
     cert = f"/etc/letsencrypt/live/{domain}"
     header = lambda host: f'''    listen 443 ssl;
     server_name {host};
@@ -96,9 +87,8 @@ def generate(domain: str, api: str, panel: str, cidr: str, www: bool) -> str:
 }}''',
         f'''server {{
 {header(panel)}
-    # Default localhost-only access until --admin-cidr OPERATOR_IP/32.
-    allow {ip};
-    deny all;
+    # Public login page. Actual admin endpoints require username + password
+    # with signed HTTPS-only session cookies, CSRF protection and throttling.
     access_log off;
     location = / {{ return 302 /admin/login; }}
     location ^~ /admin {{
@@ -125,8 +115,6 @@ def generate(domain: str, api: str, panel: str, cidr: str, www: bool) -> str:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("domain", help="Public website hostname, e.g. spdecode.xyz")
-    parser.add_argument("admin_cidr", nargs="?", default="127.0.0.1/32",
-                        help="Exact operator IP (never 0.0.0.0/0)")
     parser.add_argument("--api-domain", default=None)
     parser.add_argument("--panel-domain", default=None)
     parser.add_argument("--www", action="store_true")
@@ -135,7 +123,7 @@ def main() -> None:
     api = args.api_domain or "api." + domain
     panel = args.panel_domain or "panel." + domain
     try:
-        print(generate(domain, api, panel, args.admin_cidr, args.www), end="")
+        print(generate(domain, api, panel, args.www), end="")
     except ValueError as exc:
         parser.error(str(exc))
 
