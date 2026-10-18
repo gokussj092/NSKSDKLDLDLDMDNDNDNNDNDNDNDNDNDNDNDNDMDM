@@ -148,7 +148,8 @@ export async function decodeRequest(request,kind,options={}) {
     telemetry={
       kind,format:kind==="file"?payload.format:undefined,
       bytes:kind==="text"?Buffer.byteLength(payload.text,"utf8"):
-        Math.floor(payload.dataBase64.length*3/4),
+        payload.dataBase64.length/4*3-
+        (payload.dataBase64.endsWith("==")?2:payload.dataBase64.endsWith("=")?1:0),
     };
     const outcome=await fetchWorker(kind,payload,cfg,options);
     let errorCode="";
