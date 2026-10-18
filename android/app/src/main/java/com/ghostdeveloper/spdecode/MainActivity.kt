@@ -61,7 +61,6 @@ class MainActivity : ComponentActivity() {
     private companion object { const val MAX_BYTES=1024*1024 }
     private val scope=CoroutineScope(SupervisorJob()+Dispatchers.Main.immediate)
     private val cloudClient by lazy { CloudDecodeClient(this) }
-    private var qaCodeConfigured by mutableStateOf(false)
     private val privateCredentialVault by lazy { DevicePrivateCredentialVault(this) }
     private data class PendingCredentialImport(
         val uri:Uri,
@@ -270,11 +269,6 @@ class MainActivity : ComponentActivity() {
                 hideCredentials=hideCredentials,
                 onLanguage={tag->setLanguage(tag)},
                 onMaskCredentials={value->hideCredentials=value;settings.edit().putBoolean("mask_credentials",value).apply()},
-                qaCodeConfigured=qaCodeConfigured,
-                onQaCode={code->
-                    cloudClient.setQaCode(code)
-                    qaCodeConfigured=code.isNotEmpty()
-                },
                 onExternalLink={url->openExternal(url)},
                 onSelect={selectResult(it)},
                 onClear={clearHistory()},
