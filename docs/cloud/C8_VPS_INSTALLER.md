@@ -71,7 +71,16 @@ en URL o redirecciones con query. HTTP Injector Cloud mantiene su
 política previa y sus credenciales independientes.
 
 `sudo spdecode qa probe-nur` muestra solo `stage`, `code` y
-`reason`. Por ejemplo `HTTP_403` indica rechazo del proveedor,
+`reason`. Si la descarga falla dentro del contenedor, ejecuta una segunda
+comprobación HTTPS desde Python en el VPS anfitrión (`stage: host_python`),
+sin mostrar la URL, las cabeceras ni los bytes del catálogo. Si Python
+obtiene `HTTP_200` pero el contenedor falla, revisa la salida Docker,
+los certificados TLS y las IP públicas seleccionadas. Si ambos fallan,
+revisa conectividad del VPS y restricciones del proveedor. El broker
+NUR puede intentar otras IP públicas validadas del mismo dominio tras
+fallos de conexión, a diferencia del antiguo comportamiento de una sola
+IPv4. No se repiten peticiones cuando hay un error HTTP o de
+certificado TLS. Por ejemplo `HTTP_403` indica rechazo del proveedor,
 `TIMEOUT` agotamiento del plazo, `TLS` fallo de verificación,
 `REDIRECT_BLOCKED` traslado a un origen no autorizado y
 `REDIRECT_LIMIT` redirecciones excesivas. Esta salida no debe
