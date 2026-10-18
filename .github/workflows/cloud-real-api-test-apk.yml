@@ -10,6 +10,7 @@ on:
       - "cloud/web/lib/c3-gateway.mjs"
       - "cloud/web/app/api/v1/session/qa/**"
       - "cloud/infra/vps/qa-test.py"
+      - "tests/test_cloud_history_actions.py"
   workflow_dispatch:
 permissions:
   contents: read
