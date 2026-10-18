@@ -59,6 +59,27 @@ Si vas a iniciar una **nueva** sesión QA después de actualizar esta rama,
 `sudo spdecode qa start` habilita automáticamente los proveedores que estén
 configurados correctamente. No requiere `qa services` adicional.
 
+### Diagnóstico de compatibilidad con el script Python de NUR
+
+El descargador NUR del backend se ajustó a `NUR_TUNNEL_SERVERS.py`:
+`User-Agent: NUR TUNNEL VPN`, `Accept-Encoding: identity`,
+30 segundos, máximo 16 MiB y lectura íntegra de la respuesta cifrada.
+Se admiten hasta tres redirecciones HTTPS al mismo dominio autorizado
+(`strongteam.co`), revalidando DNS público y certificado en cada salto.
+No se permiten destinos arbitrarios, IPv4 privados, HTTP, credenciales
+en URL o redirecciones con query. HTTP Injector Cloud mantiene su
+política previa y sus credenciales independientes.
+
+`sudo spdecode qa probe-nur` muestra solo `stage`, `code` y
+`reason`. Por ejemplo `HTTP_403` indica rechazo del proveedor,
+`TIMEOUT` agotamiento del plazo, `TLS` fallo de verificación,
+`REDIRECT_BLOCKED` traslado a un origen no autorizado y
+`REDIRECT_LIMIT` redirecciones excesivas. Esta salida no debe
+incluir la URL ni el catálogo descifrado. Si aparece un rechazo por
+destino, inspeccionar únicamente el host de redirección bajo un
+procedimiento de autorización manual antes de ampliar ninguna lista
+de dominios.
+
 Las capacidades devuelven `nurRemoteEnabled: true` cuando la URL y el interruptor
 NUR están configurados, y `cloudImportsEnabled: true` cuando lo está EHI Cloud.
 **Esas banderas no prueban que el proveedor remoto esté disponible o que su catálogo
