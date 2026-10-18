@@ -81,6 +81,24 @@ su respuesta, pero **no se encontró una URL ni un flujo de catálogo remoto
 en este APK**. No hay descarga automática predeterminada ni catálogo real
 validado. [Hallazgos, uso, formatos y evidencia JCE](docs/VPN_PLUS_PERU_1_0.md).
 
+## Ultra Custom 5.2 — archivos .ua, enlaces y paquetes
+
+`decoders/Python/ultra_custom_52.py` reproduce la transformación nativa de
+`hz.custom.vpn` 5.2, lee XML/EXA1/UAB1 y descifra UAP1 con la contraseña
+original. Admite perfiles individuales, textos `ua://` y paquetes de hasta
+100 miembros, incluidos paquetes mixtos con protección por perfil.
+Conserva las propiedades, payloads CRLF, notas y JSON V2Ray completos.
+
+```bash
+python decoders/Python/ultra_custom_52.py perfil.ua -o resultado.json
+python decoders/Python/ultra_custom_52.py paquete.ua --ask-password -o perfiles.json
+```
+
+Lector independiente y offline, sin modificar `ultra.py` ni el registro
+del bot. Validado con vectores sintéticos JCE y la transformación ARM64 del
+APK; no se recibió una exportación `.ua` real.
+[Uso, formatos, pruebas y límites](docs/ULTRA_CUSTOM_5_2.md).
+
 ## Flujo por decodificador
 
 ### decoders/Python/DARKTUNNEL.py
