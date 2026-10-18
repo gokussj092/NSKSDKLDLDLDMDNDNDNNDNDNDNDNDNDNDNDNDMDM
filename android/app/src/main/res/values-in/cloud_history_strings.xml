@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_decode_progress_title">Menguraikan konfigurasi</string>
+    <string name="cloud_decode_progress_message">Proses ini mungkin memerlukan beberapa menit. Harap tunggu.</string>
+    <string name="cloud_large_result_title">Konfigurasi besar berhasil diuraikan</string>
+    <string name="cloud_large_result_body">Konfigurasi telah disimpan dalam riwayat terenkripsi. Pratinjau hasil yang sangat besar dapat memperlambat atau menutup aplikasi. Sebaiknya ekspor JSON lengkap melalui Riwayat: ketuk tiga titik, lalu Ekspor. Anda dapat memilih folder dan nama berkas.</string>
+    <string name="cloud_large_result_acknowledge">Mengerti</string>
+    <string name="cloud_history_actions">Opsi lainnya</string>
+</resources>
