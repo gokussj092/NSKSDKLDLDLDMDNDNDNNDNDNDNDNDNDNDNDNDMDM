@@ -66,6 +66,21 @@ python decoders/Python/flexnet_b42.py "FlexNet V2.3 B42 (1).apk" --builtin-catal
 El motor `flex.py` conserva v1–v4 y delega v5 al nuevo lector.
 [Uso, formatos, evidencia y límites online](docs/FLEXNET_V2_3_B42.md).
 
+## VPN PLUS PERÚ 1.0 — .gol, legado, AKN2 y AKN3
+
+`decoders/Python/vpn_plus_peru.py` conserva el JSON completo de las tres
+variantes identificadas en `com.akunt.vpn` 1.0. AKN2/3 verifican HMAC antes
+de descifrar. También admite el JSON sin cifrar que acepta su importador.
+
+```bash
+python decoders/Python/vpn_plus_peru.py configuracion.gol -o resultado.json
+```
+
+Permite `--url HTTPS_URL` para descargar una ubicación explícita y procesar
+su respuesta, pero **no se encontró una URL ni un flujo de catálogo remoto
+en este APK**. No hay descarga automática predeterminada ni catálogo real
+validado. [Hallazgos, uso, formatos y evidencia JCE](docs/VPN_PLUS_PERU_1_0.md).
+
 ## Flujo por decodificador
 
 ### decoders/Python/DARKTUNNEL.py
