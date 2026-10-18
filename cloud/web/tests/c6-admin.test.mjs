@@ -28,10 +28,12 @@ class RedisFake{
   }
   async mGet(keys){return keys.map(x=>String(this.count.get(x)||0));}
 }
+const username="ghostadmin";
 const salt=randomBytes(16),password="correct horse battery staple C6",hash="scrypt$16384$8$1$"+salt.toString("hex")+"$"+scryptSync(password,salt,64,{N:16384,r:8,p:1,maxmem:32*1024*1024}).toString("hex");
 const rsa=generateKeyPairSync("rsa",{modulusLength:2048});
 const env={
-  CLOUD_ADMIN_ENABLED:"true",CLOUD_TRUST_PROXY:"true",CLOUD_ADMIN_PASSWORD_SCRYPT:hash,
+  CLOUD_ADMIN_ENABLED:"true",CLOUD_TRUST_PROXY:"true",CLOUD_ADMIN_USERNAME:username,
+  CLOUD_ADMIN_PASSWORD_SCRYPT:hash,
   CLOUD_ADMIN_SESSION_KEY:"a".repeat(64),
   CLOUD_ADMIN_PUBLIC_ORIGIN:"https://panel.example.test",CLOUD_REDIS_URL:"redis://redis:6379",
   CLOUD_API_ENABLED:"true",CLOUD_WORKER_TOKEN:"w".repeat(48),
@@ -62,6 +64,8 @@ const cookieOnly=reply=>reply.headers.get("set-cookie").split(";")[0];
 test("C6 configuration fails closed on missing password hash, origin, Redis or proxy",()=>{
   assert.equal(adminSettings({}).enabled,false);
   assert.equal(adminSettings({...env,CLOUD_ADMIN_PASSWORD_SCRYPT:"invalid"}).enabled,false);
+  assert.equal(adminSettings({...env,CLOUD_ADMIN_USERNAME:""}).enabled,false);
+  assert.equal(adminSettings({...env,CLOUD_ADMIN_USERNAME:"admin;danger"}).enabled,false);
   assert.equal(adminSettings({...env,CLOUD_ADMIN_PUBLIC_ORIGIN:"http://panel.example.test"}).enabled,false);
   assert.equal(adminSettings({...env,CLOUD_TRUST_PROXY:"false"}).enabled,false);
   assert.equal(adminSettings({...env,CLOUD_ADMIN_SESSION_KEY:"short"}).enabled,false);
@@ -74,17 +78,17 @@ test("scrypt password hash verifies in constant-time comparison",async()=>{
 });
 test("admin login rejects cross-origin and missing CSRF header before Redis",async()=>{
   const redis=new RedisFake(),args=redisFactory(redis);
-  const a=await loginRequest(request("/api/admin/login",{password},"",{origin:"https://evil.example"}),args);
+  const a=await loginRequest(request("/api/admin/login",{username,password},"",{origin:"https://evil.example"}),args);
   assert.equal(a.status,403);
-  const b=await loginRequest(request("/api/admin/login",{password},"",{noAction:true}),args);
+  const b=await loginRequest(request("/api/admin/login",{username,password},"",{noAction:true}),args);
   assert.equal(b.status,403);
-  const c=await loginRequest(request("/api/admin/login",{password},"",{site:"cross-site"}),args);
+  const c=await loginRequest(request("/api/admin/login",{username,password},"",{site:"cross-site"}),args);
   assert.equal(c.status,403);
   assert.equal(redis.count.size,0);
 });
 test("admin login issues secure HttpOnly SameSite=Strict cookie and authenticates",async()=>{
   const redis=new RedisFake(),args=redisFactory(redis);
-  const response=await loginRequest(request("/api/admin/login",{password}),args);
+  const response=await loginRequest(request("/api/admin/login",{username,password}),args);
   assert.equal(response.status,200);
   const set=response.headers.get("set-cookie");
   assert.match(set,/HttpOnly/);assert.match(set,/Secure/);
@@ -93,22 +97,41 @@ test("admin login issues secure HttpOnly SameSite=Strict cookie and authenticate
   const cookie=cookieOnly(response);
   assert.ok(parseAdminCookie(getReq(cookie)));
   assert.ok(await authenticateAdmin(redis,getReq(cookie)));
-  assert.equal(await authenticateAdmin(redis,getReq(cookie,"198.51.100.99")),null);
+  assert.ok(await authenticateAdmin(redis,getReq(cookie,"198.51.100.99")),"Session must remain valid after network/IP changes");
   assert.equal(await authenticateAdmin(redis,getReq(cookie.slice(0,-5)+"fake")),null);
   assert.equal(await authenticateAdmin(redis,getReq(cookie+"; "+cookie)),null);
 });
-test("admin brute-force resistance denies after five invalid attempts per IP",async()=>{
+test("admin brute-force resistance denies after eight invalid attempts per username without IP checks",async()=>{
   const redis=new RedisFake(),args=redisFactory(redis);
-  for(let i=0;i<5;i++){
-    const r=await loginRequest(request("/api/admin/login",{password:"not-the-correct-admin-password-"+i}),args);
+  for(let i=0;i<8;i++){
+    const r=await loginRequest(request("/api/admin/login",{username,password:"not-the-correct-admin-password-"+i}),args);
     assert.equal(r.status,401);
   }
-  const r=await loginRequest(request("/api/admin/login",{password}),args);
+  const r=await loginRequest(request("/api/admin/login",{username,password}),args);
   assert.equal(r.status,429);
+});
+test("user and password are required; wrong username is never accepted",async()=>{
+  const redis=new RedisFake(),args=redisFactory(redis);
+  assert.equal((await loginRequest(request("/api/admin/login",{password}),args)).status,400);
+  assert.equal((await loginRequest(request("/api/admin/login",{username}),args)).status,400);
+  assert.equal((await loginRequest(request("/api/admin/login",{username:"otheradmin",password}),args)).status,401);
+  assert.equal((await loginRequest(request("/api/admin/login",{username,password}),args)).status,200);
+});
+test("admin sessions and login do not depend on client IP or forwarded IP header",async()=>{
+  const redis=new RedisFake(),args=redisFactory(redis);
+  const logged=await loginRequest(request("/api/admin/login",{username,password},"",{ip:"192.0.2.55"}),args);
+  assert.equal(logged.status,200);
+  const cookie=cookieOnly(logged);
+  for(const ip of ["192.0.2.55","2001:db8::abcd","198.51.100.99"]){
+    const response=await statusRequest(getReq(cookie,ip),args);
+    assert.equal(response.status,200);
+  }
+  const authBody=Buffer.from(cookie.split("=")[1].split(".")[0],"base64url").toString("utf8");
+  assert.equal(authBody.includes('"ip"'),false,"session must not carry IP fingerprint");
 });
 test("admin reports status without content; maintenance is CSRF-protected and revocable",async()=>{
   const redis=new RedisFake(),args=redisFactory(redis);
-  const logged=await loginRequest(request("/api/admin/login",{password}),args);
+  const logged=await loginRequest(request("/api/admin/login",{username,password}),args);
   const cookie=cookieOnly(logged);
   let r=await statusRequest(getReq(cookie),args);
   assert.equal(r.status,200);
@@ -153,7 +176,7 @@ test("only anonymous daily success/failure totals enter Redis",async()=>{
 
 test("deployment-enforced maintenance cannot be disabled from admin panel",async()=>{
   const redis=new RedisFake(),args=redisFactory(redis);
-  const logged=await loginRequest(request("/api/admin/login",{password}),args);
+  const logged=await loginRequest(request("/api/admin/login",{username,password}),args);
   const cookie=cookieOnly(logged);
   process.env.CLOUD_FORCE_MAINTENANCE="true";
   try{
