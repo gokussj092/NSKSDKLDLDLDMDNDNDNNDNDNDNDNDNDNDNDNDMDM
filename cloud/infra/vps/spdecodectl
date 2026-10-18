@@ -300,7 +300,7 @@ case "${1:-help}" in
      admin-username) [[ $# -eq 3 ]] || die "spdecode config admin-username USER";set_env CLOUD_ADMIN_USERNAME "$3";;
      *) die "spdecode config set KEY VALUE | google-service-account FILE | admin-password | admin-username NAME";; esac;;
  qa)
-   [[ $# -eq 2 ]] || die "spdecode qa start|stop|status"
+   [[ $# -eq 2 ]] || die "spdecode qa start|stop|status|services"
    preflight
    python3 "$REPO/cloud/infra/vps/qa-test.py" "$2";;
  android) shift;exec bash "$REPO/cloud/infra/vps/android-build.sh" "$@";;
@@ -325,7 +325,7 @@ SP-DECODE VPS commands:
   spdecode panel check
   spdecode panel reset-admin   # generate credentials and validate real HTTPS login
   spdecode panel sync-routes   # update Nginx public links without rotating credentials
-  spdecode qa start|stop|status  # temporary authorized QA, no Play Integrity
+  spdecode qa start|stop|status|services  # ephemeral QA; services enables NUR and configured EHI
   spdecode android setup
   spdecode android signing configure /root/upload-key.p12 alias
   spdecode android build --version-name 1.2.0 --version-code 26 --testing-only
