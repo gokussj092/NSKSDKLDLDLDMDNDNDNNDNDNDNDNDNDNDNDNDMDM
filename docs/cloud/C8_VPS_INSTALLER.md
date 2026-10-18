@@ -1,3 +1,35 @@
+## Corregir los 404 del panel y activar informes administrativos
+
+Las páginas `/features`, `/docs`, `/privacy`, `/status` y la ruta JSON de estado público `/api/site/status` ya existen en Next.js, pero la lista de ubicaciones de Nginx del subdominio `panel.spdecode.xyz` las rechazaba con 404. El generador actualizado las habilita explícitamente sin abrir la API Android `/api/v1/*` ni exponer rutas administrativas en `spdecode.xyz`.
+
+**Actualización de una instalación existente (no restablece usuario ni contraseña):**
+
+```bash
+sudo spdecode update web feat/cloud-c8-vps-installer-updater
+sudo spdecode panel sync-routes
+```
+
+El primer comando construye y reinicia Next.js e instala la CLI actualizada. El segundo reconstruye únicamente el virtual host de SP-DECODE usando los dominios existentes, guarda un respaldo con permisos root en `/etc/spdecode/backups`, comprueba `nginx -t`, recarga y restaura el respaldo si Nginx falla. **No uses `panel reset-admin` para esta actualización:** eso rotaría las credenciales innecesariamente.
+
+**Pantallas:**
+
+| Sección | Ruta |
+| --- | --- |
+| Resumen y mantenimiento | `https://panel.spdecode.xyz/admin` |
+| Estadísticas por extensión, consumo de entrada y actividad diaria | `https://panel.spdecode.xyz/admin/analytics` |
+| Fallos por extensión y códigos de error de los motores | `https://panel.spdecode.xyz/admin/reports` |
+| Infraestructura y control de mantenimiento | `https://panel.spdecode.xyz/admin/system` |
+| Funciones públicas | `https://panel.spdecode.xyz/features` |
+| Documentación pública | `https://panel.spdecode.xyz/docs` |
+| Privacidad pública | `https://panel.spdecode.xyz/privacy` |
+| Estado público | `https://panel.spdecode.xyz/status` |
+
+La telemetría privada, accesible solo después de iniciar sesión y sin caché, agrega conteos diarios en Redis por extensión, éxitos, fallos, código de error y bytes de entrada del worker. Permite rango UTC de hoy o últimos siete días, con retención de ocho días. La instrumentación comienza desde su despliegue: no hay datos históricos por extensión de antes de esta versión. No registra contenido cifrado ni descifrado, nombres de archivos, IPs, credenciales, claves o mensajes de excepción. Los errores de formatos desconocidos se agrupan en `other` y los códigos no reconocidos en `OTHER_ERROR` para limitar la cardinalidad. No representa consumo de CPU/RAM de Docker ni el tráfico de red completo.
+
+La API de descifrado continúa cerrada bajo los requisitos existentes de Play Integrity, credenciales y mantenimiento; mostrar un panel sin datos no equivale a un fallo de la interfaz. Prueba que `/api/admin/reports` devuelve HTTP 401 sin sesión autenticada y HTTP 200 con una cookie válida.
+
+---
+
 ## Restablecer el administrador si el formulario rechaza las credenciales
 
 El estado HTTP 401 de una sesión sin cookie **no** confirma que el usuario/contraseña sean correctos. El comando `reset-admin` incorpora una comprobación real de login HTTPS y sesión autenticada antes de mostrar las credenciales.
