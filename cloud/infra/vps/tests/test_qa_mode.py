@@ -111,6 +111,29 @@ class QATests(unittest.TestCase):
                     self.call("start")
                 self.assertNotIn("CLOUD_API_ENABLED=true",self.env.read_text())
                 self.assertFalse(self.state.exists())
+    def test_nur_host_python_probe_exposes_only_status(self):
+        class Response:
+            def __enter__(self):return self
+            def __exit__(self,*args):return False
+            def read(self,amount):
+                self_amount=amount
+                assert self_amount==1
+                return b"x"
+        class Opener:
+            def open(self,request,timeout):
+                self.assertEqual(request.headers["User-agent"],"NUR TUNNEL VPN")
+                self.assertEqual(timeout,10)
+                return Response()
+        opener=Opener()
+        opener.assertEqual=self.assertEqual
+        with patch.object(qa,"permitted_catalog",return_value="https://strongteam.co/approved"),\
+             patch("urllib.request.build_opener",return_value=opener),\
+             contextlib.redirect_stdout(io.StringIO()) as output:
+            qa.probe_nur_host_python()
+        result=output.getvalue()
+        self.assertIn('"stage": "host_python"',result)
+        self.assertIn('"code": "HTTP_200"',result)
+        self.assertNotIn("strongteam.co",result)
     def test_nur_diagnostic_denied_outside_qa(self):
         with self.assertRaises(SystemExit):
             self.call("probe-nur")
