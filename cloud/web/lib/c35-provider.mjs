@@ -177,19 +177,20 @@ export async function downloadApproved({url,kind,method="GET",body,headers={},ma
       let settled=false,req;
       const accept=value=>{
         if(settled)return;
-        settled=true;resolvePromise(value);
+        settled=true;clearTimeout(timer);
+        resolvePromise(value);
       };
       const reject=(code,reason)=>{
         if(settled)return;
-        settled=true;rejectPromise(new ExternalImportError(code,reason));
+        settled=true;clearTimeout(timer);
+        rejectPromise(new ExternalImportError(code,reason));
       };
       const controller=new AbortController();
       const timer=setTimeout(()=>{
+        reject("REMOTE_PROVIDER_UNAVAILABLE","TIMEOUT");
         req?.destroy();
         controller.abort();
-        reject("REMOTE_PROVIDER_UNAVAILABLE","TIMEOUT");
       },Math.min(timeout+1000,timeLeft));
-      const cleanup=()=>clearTimeout(timer);
       const options={
         method, signal:controller.signal,agent:false,rejectUnauthorized:true,
         minVersion:"TLSv1.2",timeout:Math.min(timeout,timeLeft),
@@ -258,12 +259,6 @@ export async function downloadApproved({url,kind,method="GET",body,headers={},ma
       }catch(error){
         reject("REMOTE_PROVIDER_UNAVAILABLE",reasonFromError(error));
       }
-      // Clear the timer as soon as the request settles.
-      const clear=()=>cleanup();
-      // settle has no third-party inputs; attach handlers to this single promise
-      // using the request lifecycle to avoid timers surviving failed requests.
-      req?.on("close",clear);
-      controller.signal.addEventListener("abort",clear,{once:true});
     });
     if(result.data)return result.data;
     if(!result.redirect || kind!=="nur" || hops===NUR_REDIRECT_LIMIT)
