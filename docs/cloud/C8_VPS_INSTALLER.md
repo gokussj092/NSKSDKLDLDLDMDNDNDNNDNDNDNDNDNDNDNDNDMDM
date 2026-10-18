@@ -12,7 +12,7 @@ sudo spdecode qa start
 **Alternativa para generar la APK de pruebas en un VPS x86_64 con SDK instalado y tu misma clave de firma configurada:**
 
 ```bash
-sudo spdecode android build --version-name 1.2.1 --version-code 27 --testing-only --qa
+sudo spdecode android build --version-name 1.2.2 --version-code 28 --testing-only --qa
 sudo spdecode android artifacts
 ```
 
@@ -25,7 +25,7 @@ El segundo comando:
 - Recrea únicamente la web API y prueba la disponibilidad real del worker. Si falla, restaura la configuración anterior.
 - Preserva el estado anterior de los interruptores de API y mantenimiento para restaurarlo al detener QA.
 
-En el teléfono instala la APK firmada **SP-DECODE Cloud v1.2.1-qa (versionCode 27)**, creada específicamente con `SPDECODE_CLOUD_QA_BUILD=true` y URL `https://api.spdecode.xyz`. Abre el icono adicional **SP-DECODE QA** que aparece únicamente en esta APK, introduce el código temporal, pulsa **Activar QA en este dispositivo** y después **Abrir SP-DECODE**. La interfaz principal original se conserva bit a bit. Después descifra archivos y textos como siempre. El resultado continúa llegando del worker aislado y alimenta las estadísticas por extensión; la aplicación no incorpora ningún motor local ni secretos permanentes del servidor.
+En el teléfono instala la APK firmada **SP-DECODE Cloud v1.2.2-qa (versionCode 28)**, creada específicamente con `SPDECODE_CLOUD_QA_BUILD=true` y URL `https://api.spdecode.xyz`. Ve a **Ajustes > Cloud QA · Pruebas privadas** dentro de la aplicación principal, introduce el código temporal y pulsa **Activar acceso QA**. Esta sección se añade únicamente a la copia de Ajustes compilada para QA; los archivos originales de interfaz del repositorio permanecen intactos. El segundo icono **SP-DECODE QA** también sigue disponible como acceso alternativo. Después descifra archivos y textos como siempre. El resultado continúa llegando del worker aislado y alimenta las estadísticas por extensión; la aplicación no incorpora ningún motor local ni secretos permanentes del servidor.
 
 El cliente envía el código una vez por sesión al endpoint `POST /api/v1/session/qa` después de obtener un desafío ligado al origen de la solicitud. Las sesiones se firman con el mismo mecanismo del backend, vencen a los cinco minutos como máximo, están limitadas en frecuencia, y dejan de funcionar inmediatamente cuando se desactiva QA. El código **no se compila ni guarda en la APK**, no se persiste en el dispositivo y no puede utilizarse desde la aplicación pública porque el icono QA queda deshabilitado y el servidor solo admite el canal durante una ventana de pruebas.
 
