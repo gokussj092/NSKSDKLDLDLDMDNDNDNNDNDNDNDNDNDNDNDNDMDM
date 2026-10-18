@@ -48,11 +48,44 @@ export async function issueSession(redis, request, body, cfg, verifier = verifyP
   if (!await rememberSession(redis,claims.jti,claims.exp)) return {error:"SERVICE_UNAVAILABLE",status:503};
   return {accessToken:sign(claims,cfg.signingKey),tokenType:"Bearer",expiresIn:limits.sessionTtlSeconds};
 }
+/** One temporary QA credential issued by the VPS operator. The APK never
+ * contains the credential: it is entered in Settings and sent only by TLS. */
+export async function issueQaSession(redis,request,body,cfg) {
+  if(!cfg.configured || !cfg.qaActive)return {error:"QA_DISABLED",status:403};
+  const ip=ipKey(request);
+  if(!await throttle(redis,"spc3:qa-limit:"+ip,6,900))
+    return {error:"RATE_LIMITED",status:429};
+  if(!body || typeof body!=="object" || Array.isArray(body) ||
+      Object.keys(body).length!==2 ||
+      typeof body.challengeId!=="string" ||
+      !/^[0-9a-f-]{36}$/.test(body.challengeId) ||
+      typeof body.qaCode!=="string" ||
+      !/^spqa-[A-Za-z0-9_-]{40,64}$/.test(body.qaCode))
+    return {error:"INVALID_REQUEST",status:400};
+  const challenge=await consumeChallenge(redis,body.challengeId,ip);
+  if(!challenge)return {error:"EXPIRED_CHALLENGE",status:401};
+  const expected=await redis.get("spc3:qa:code");
+  const actual=createHmac("sha256",cfg.signingKey).update(body.qaCode).digest("hex");
+  if(typeof expected!=="string" || !/^[0-9a-f]{64}$/.test(expected) ||
+    !timingSafeEqual(Buffer.from(actual,"hex"),Buffer.from(expected,"hex")))
+    return {error:"QA_ACCESS_DENIED",status:403};
+  const now=Math.floor(Date.now()/1000);
+  const ttl=Math.min(limits.sessionTtlSeconds,cfg.qaExpiration-now);
+  if(ttl<=0)return {error:"QA_DISABLED",status:403};
+  const claims={iss:"spdecode-cloud",aud:"spdecode-android-v1",scope:"decode",
+    channel:"qa",iat:now,exp:now+ttl,jti:randomUUID()};
+  if(!await rememberSession(redis,claims.jti,claims.exp))
+    return {error:"SERVICE_UNAVAILABLE",status:503};
+  return {accessToken:sign(claims,cfg.signingKey),tokenType:"Bearer",expiresIn:ttl};
+}
+
 export async function requireSession(redis, request, cfg) {
   const bearer = request.headers.get("authorization") || "";
   if (!bearer.startsWith("Bearer ")) return null;
   const claims = verifySignature(bearer.slice(7), cfg.signingKey);
-  if (!claims || !await sessionExists(redis,claims.jti)) return null;
+  if (!claims || (claims.channel && claims.channel!=="qa") ||
+      (claims.channel==="qa" && !cfg.qaActive) ||
+      !await sessionExists(redis,claims.jti)) return null;
   const ip = ipKey(request);
   const sessionRate = await throttle(redis,"spc3:request-limit:"+claims.jti,limits.requestsPerSessionMinute,60);
   const networkRate = await throttle(redis,"spc3:network-limit:"+ip,limits.requestsPerIpWindow,60);
