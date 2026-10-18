@@ -99,6 +99,25 @@ del bot. Validado con vectores sintéticos JCE y la transformación ARM64 del
 APK; no se recibió una exportación `.ua` real.
 [Uso, formatos, pruebas y límites](docs/ULTRA_CUSTOM_5_2.md).
 
+## DTunnel Mod 4.2.5 — catálogo remoto y enlaces vpn://
+
+`decoders/Python/dtunnelmod.py` lee las respuestas Base64/AES-256-CBC del
+catálogo modificado y los enlaces Base64/JSON `vpn://`. Conserva todos los
+perfiles y campos. No se identificó un formato propio de archivo de
+importación/exportación; los assets de interfaz no son servidores.
+
+```bash
+python decoders/Python/dtunnelmod.py respuesta_catalogo.txt -o servidores.json
+python decoders/Python/dtunnelmod.py --link 'vpn://BASE64_DEL_JSON'
+python decoders/Python/dtunnelmod.py --url --credentials-file credentials.json -o servidores.json
+```
+
+No necesita el APK para ejecutarse. La descarga explícita usa `user_id` del
+archivo pequeño de identificadores original. Formato comprobado mediante
+vectores sintéticos independientes JCE; HTTP probado con mocks. No se
+descargó ni descifró un catálogo real del servicio.
+[Uso, petición, evidencia y límites](docs/DTUNNELMOD_4_2_5.md).
+
 ## Flujo por decodificador
 
 ### decoders/Python/DARKTUNNEL.py
