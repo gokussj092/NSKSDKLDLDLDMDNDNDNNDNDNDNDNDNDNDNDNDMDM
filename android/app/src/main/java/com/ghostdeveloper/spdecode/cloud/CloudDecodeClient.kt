@@ -25,20 +25,6 @@ import java.io.IOException
 internal class CloudDecodeClient(context: Context) {
     private val app = context.applicationContext
     private var token = ""
-    private var qaCode = ""
-
-    /** QA code remains in process memory only; never written to disk/logs. */
-    fun setQaCode(value:String) {
-        require(!BuildConfig.SPDECODE_QA_BUILD || value.isEmpty() ||
-            value.matches(Regex("spqa-[A-Za-z0-9_-]{40,64}"))) { "CLOUD_INVALID_QA_CODE" }
-        if(!BuildConfig.SPDECODE_QA_BUILD && value.isNotEmpty())
-            throw IllegalStateException("CLOUD_QA_NOT_IN_THIS_BUILD")
-        synchronized(lock) {
-            qaCode=value
-            token=""
-            expiresAtMs=0L
-        }
-    }
     private var expiresAtMs = 0L
     private val lock = Any()
     private val integrityManager by lazy { IntegrityManagerFactory.create(app) }
@@ -93,7 +79,7 @@ internal class CloudDecodeClient(context: Context) {
         val nonce = challenge.getString("nonce")
         val challengeId = challenge.getString("challengeId")
         coroutineContext.ensureActive()
-        val code=synchronized(lock){if(BuildConfig.SPDECODE_QA_BUILD)qaCode else ""}
+        val code=if(BuildConfig.SPDECODE_QA_BUILD)CloudQaMemory.get() else ""
         val (endpoint,body)=if(code.isNotEmpty()) {
             "/api/v1/session/qa" to
                 JSONObject().put("challengeId",challengeId).put("qaCode",code)
