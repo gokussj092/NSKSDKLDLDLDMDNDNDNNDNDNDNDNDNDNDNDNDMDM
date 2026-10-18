@@ -9,11 +9,17 @@ log(){ echo "[spdecode installer] $*"; }
 # shellcheck source=/dev/null
 source /etc/os-release
 [[ "$ID" == ubuntu || "$ID" == debian ]] || fail "Ubuntu/Debian only"
-DOMAIN="" EMAIL="" REF="feat/cloud-c8-vps-installer-updater" ADMIN_CIDR=""
+DOMAIN="" API_DOMAIN="" PANEL_DOMAIN="" EMAIL="" SUPPORT_EMAIL="soporte@spdecode.xyz"
+REF="feat/cloud-c8-vps-installer-updater" ADMIN_CIDR="" EXPECTED_IP="" WWW=false
 REPO_URL="https://github.com/Gh0stDeveloper/SP-DECODE.git"
 while (($#)); do
   case "$1" in
-    --domain) DOMAIN="$2";shift 2;;
+    --domain) DOMAIN="${2:?}";shift 2;;
+    --api-domain) API_DOMAIN="${2:?}";shift 2;;
+    --panel-domain) PANEL_DOMAIN="${2:?}";shift 2;;
+    --support-email) SUPPORT_EMAIL="${2:?}";shift 2;;
+    --expected-ip) EXPECTED_IP="${2:?}";shift 2;;
+    --www) WWW=true;shift;;
     --email) EMAIL="$2";shift 2;;
     --ref) REF="$2";shift 2;;
     --admin-cidr) ADMIN_CIDR="$2";shift 2;;
@@ -23,11 +29,33 @@ while (($#)); do
 done
 [[ "$DOMAIN" =~ ^[A-Za-z0-9]([A-Za-z0-9.-]{1,250})[A-Za-z0-9]$ &&
   "$DOMAIN" == *.* && "$DOMAIN" != *..* ]] || fail "--domain is required and must resolve to this VPS"
+API_DOMAIN="${API_DOMAIN:-api.$DOMAIN}"
+PANEL_DOMAIN="${PANEL_DOMAIN:-panel.$DOMAIN}"
+for name in "$DOMAIN" "$API_DOMAIN" "$PANEL_DOMAIN"; do
+  [[ "$name" =~ ^[A-Za-z0-9]([A-Za-z0-9.-]{1,250})[A-Za-z0-9]$ &&
+    "$name" == *.* && "$name" != *..* ]] || fail "Invalid hostname: $name"
+done
+[[ "$API_DOMAIN" == *".$DOMAIN" && "$PANEL_DOMAIN" == *".$DOMAIN" &&
+  "$API_DOMAIN" != "$PANEL_DOMAIN" ]] || fail "API and panel must be distinct subdomains"
 [[ "$EMAIL" =~ ^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$ ]] || fail "--email required"
+[[ "$SUPPORT_EMAIL" =~ ^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$ ]] ||
+  fail "Invalid support email"
+if [[ -n "$EXPECTED_IP" ]]; then
+  python3 -c 'import ipaddress,sys;ipaddress.IPv4Address(sys.argv[1])' "$EXPECTED_IP" ||
+    fail "Invalid --expected-ip"
+fi
 [[ "$REF" =~ ^[A-Za-z0-9._/-]+$ && "$REF" != -* && "$REF" != *..* ]] || fail "Invalid --ref"
 [[ ! -e /etc/spdecode/install.conf ]] || fail "Already installed; use spdecode update"
-log "Checking DNS"
-[[ -n $(getent ahostsv4 "$DOMAIN" || true) ]] || fail "Domain has no A DNS record"
+log "Checking all public hostnames; email MX/TXT DNS records are never modified"
+DNS_HOSTS=("$DOMAIN" "$API_DOMAIN" "$PANEL_DOMAIN")
+if [[ "$WWW" == true ]]; then DNS_HOSTS+=("www.$DOMAIN"); fi
+for name in "${DNS_HOSTS[@]}"; do
+  records=$(getent ahostsv4 "$name" || true)
+  [[ -n "$records" ]] || fail "Missing A record for $name"
+  if [[ -n "$EXPECTED_IP" ]] && ! grep -Fq "$EXPECTED_IP " <<<"$records"; then
+    fail "$name does not resolve to expected VPS IPv4 ($EXPECTED_IP)"
+  fi
+done
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
 apt-get install -y ca-certificates curl gnupg git python3 jq unzip nginx certbot openssl
@@ -53,7 +81,9 @@ CLOUD_TRUST_PROXY=true
 CLOUD_FORCE_MAINTENANCE=true
 CLOUD_PUBLIC_SITE_INDEX=false
 CLOUD_SITE_PUBLIC_ORIGIN=https://$DOMAIN
-CLOUD_ADMIN_PUBLIC_ORIGIN=https://$DOMAIN
+CLOUD_ADMIN_PUBLIC_ORIGIN=https://$PANEL_DOMAIN
+CLOUD_API_PUBLIC_ORIGIN=https://$API_DOMAIN
+CLOUD_SUPPORT_EMAIL=$SUPPORT_EMAIL
 CLOUD_GOOGLE_PLAY_PACKAGE=com.ghostdeveloper.spdecode
 CLOUD_WORKER_TOKEN=$(openssl rand -hex 32)
 CLOUD_SESSION_SIGNING_KEY=$(openssl rand -hex 32)
@@ -63,13 +93,16 @@ CLOUD_NUR_FETCH_ENABLED=false
 EOC
 chmod 600 /etc/spdecode/install.conf /etc/spdecode/cloud.env
 printf '%s\n' "$DOMAIN" > /etc/spdecode/domain
-chmod 600 /etc/spdecode/domain
+printf '%s\n' "$API_DOMAIN" > /etc/spdecode/api-domain
+printf '%s\n' "$PANEL_DOMAIN" > /etc/spdecode/panel-domain
+printf '%s\n' "$SUPPORT_EMAIL" > /etc/spdecode/support-email
+chmod 600 /etc/spdecode/domain /etc/spdecode/api-domain /etc/spdecode/panel-domain /etc/spdecode/support-email
 install -m 0755 /opt/spdecode/repo/cloud/infra/vps/spdecodectl /usr/local/bin/spdecode
 install -d -m 0755 /var/www/spdecode-acme/.well-known/acme-challenge
 cat >/etc/nginx/sites-available/spdecode.conf <<EOC
 server {
   listen 80;
-  server_name $DOMAIN;
+  server_name ${DNS_HOSTS[*]};
   root /var/www/spdecode-acme;
   location ^~ /.well-known/acme-challenge/ { try_files \$uri =404; }
   location / { return 404; }
@@ -78,16 +111,16 @@ EOC
 ln -sf /etc/nginx/sites-available/spdecode.conf /etc/nginx/sites-enabled/spdecode.conf
 nginx -t && systemctl reload nginx
 log "Requesting HTTPS certificate for $DOMAIN; open inbound TCP 80/443"
+CERTBOT_DOMAINS=(-d "$DOMAIN" -d "$API_DOMAIN" -d "$PANEL_DOMAIN")
+if [[ "$WWW" == true ]]; then CERTBOT_DOMAINS+=(-d "www.$DOMAIN"); fi
 certbot certonly --webroot --non-interactive --agree-tos --email "$EMAIL" \
-   -w /var/www/spdecode-acme -d "$DOMAIN" ||
-   fail "Let's Encrypt failed; check DNS, 80/443 and cloud firewall / NSG"
-if [[ -n "$ADMIN_CIDR" ]]; then
-  python3 /opt/spdecode/repo/cloud/infra/vps/nginx-config.py "$DOMAIN" "$ADMIN_CIDR" \
-   > /etc/nginx/sites-available/spdecode.conf
-else
-  python3 /opt/spdecode/repo/cloud/infra/vps/nginx-config.py "$DOMAIN" \
-   > /etc/nginx/sites-available/spdecode.conf
-fi
+   --cert-name "$DOMAIN" -w /var/www/spdecode-acme "${CERTBOT_DOMAINS[@]}" ||
+   fail "Let's Encrypt failed; check DNS and cloud/firewall 80/443"
+NGINX_ARGS=("$DOMAIN" "${ADMIN_CIDR:-127.0.0.1/32}"
+            --api-domain "$API_DOMAIN" --panel-domain "$PANEL_DOMAIN")
+if [[ "$WWW" == true ]]; then NGINX_ARGS+=(--www); fi
+python3 /opt/spdecode/repo/cloud/infra/vps/nginx-config.py "${NGINX_ARGS[@]}" \
+  > /etc/nginx/sites-available/spdecode.conf
 nginx -t && systemctl reload nginx
 systemctl enable --now certbot.timer 2>/dev/null || true
 # Reload Nginx when Let's Encrypt renews a certificate.
