@@ -25,6 +25,28 @@ jobs:
           bash -n cloud/infra/vps/android-build.sh
       - name: Test nginx and install gates
         run: python3 -m unittest discover -s cloud/infra/vps/tests -p 'test_*.py' -v
+      - name: Verify generated HTTPS vhosts with real Nginx syntax checker
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y nginx-light openssl
+          sudo mkdir -p /etc/letsencrypt/live/spdecode.xyz
+          sudo openssl req -x509 -nodes -newkey rsa:2048 -days 1 \
+            -subj '/CN=spdecode.xyz' \
+            -keyout /etc/letsencrypt/live/spdecode.xyz/privkey.pem \
+            -out /etc/letsencrypt/live/spdecode.xyz/fullchain.pem >/dev/null 2>&1
+          python3 cloud/infra/vps/nginx-config.py spdecode.xyz 198.51.100.17/32 \
+            --api-domain api.spdecode.xyz --panel-domain panel.spdecode.xyz --www \
+            > /tmp/spdecode-vhosts.conf
+          cat > /tmp/spdecode-nginx-ci.conf <<'NGINX'
+          worker_processes 1;
+          pid /tmp/spdecode-nginx-ci.pid;
+          events { worker_connections 64; }
+          http {
+              include /etc/nginx/mime.types;
+              include /tmp/spdecode-vhosts.conf;
+          }
+          NGINX
+          sudo nginx -t -c /tmp/spdecode-nginx-ci.conf
       - name: Verify release APK audit allowlist and legacy-engine rejection
         run: python3 -m unittest tests.test_cloud_c8_apk_audit -v
       - name: Verify actual Docker Compose config

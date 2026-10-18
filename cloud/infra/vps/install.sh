@@ -41,7 +41,7 @@ done
 [[ "$SUPPORT_EMAIL" =~ ^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$ ]] ||
   fail "Invalid support email"
 if [[ -n "$EXPECTED_IP" ]]; then
-  python3 -c 'import ipaddress,sys;ipaddress.IPv4Address(sys.argv[1])' "$EXPECTED_IP" ||
+  [[ "$EXPECTED_IP" =~ ^[0-9]{1,3}(\.[0-9]{1,3}){3}$ ]] ||
     fail "Invalid --expected-ip"
 fi
 [[ "$REF" =~ ^[A-Za-z0-9._/-]+$ && "$REF" != -* && "$REF" != *..* ]] || fail "Invalid --ref"
@@ -52,7 +52,7 @@ if [[ "$WWW" == true ]]; then DNS_HOSTS+=("www.$DOMAIN"); fi
 for name in "${DNS_HOSTS[@]}"; do
   records=$(getent ahostsv4 "$name" || true)
   [[ -n "$records" ]] || fail "Missing A record for $name"
-  if [[ -n "$EXPECTED_IP" ]] && ! grep -Fq "$EXPECTED_IP " <<<"$records"; then
+  if [[ -n "$EXPECTED_IP" ]] && ! awk -v ip="$EXPECTED_IP" '$1==ip {match=1} END {exit !match}' <<<"$records"; then
     fail "$name does not resolve to expected VPS IPv4 ($EXPECTED_IP)"
   fi
 done
