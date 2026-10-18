@@ -120,10 +120,10 @@ class QATests(unittest.TestCase):
         captured=[]
         def fake_compose(*args):
             captured.append(args)
-            return type("Result",(),{"stdout":'{"stage":"download","status":"failed","code":"REMOTE_PROVIDER_UNAVAILABLE"}\\n'})()
-        with patch.object(qa.os,"geteuid",return_value=0),\\
-             patch.object(qa.sys,"argv",["qa-test.py","probe-nur"]),\\
-             patch.object(qa,"compose",side_effect=fake_compose),\\
+            return type("Result",(),{"stdout":'{"stage":"download","status":"failed","code":"REMOTE_PROVIDER_UNAVAILABLE"}\n'})()
+        with patch.object(qa.os,"geteuid",return_value=0),\
+             patch.object(qa.sys,"argv",["qa-test.py","probe-nur"]),\
+             patch.object(qa,"compose",side_effect=fake_compose),\
              contextlib.redirect_stdout(io.StringIO()) as stream:
             qa.main()
         self.assertIn('"stage":"download"',stream.getvalue())
