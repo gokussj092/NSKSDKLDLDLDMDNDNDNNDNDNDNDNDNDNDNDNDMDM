@@ -22,9 +22,11 @@ la aplicación importe ese archivo.
 
 `assets/app_config.json` tiene 30 ajustes de interfaz, **no es un catálogo
 local de servidores**. `assets/app_text.json` contiene etiquetas de interfaz.
-El catálogo completo procede de la respuesta remota `app_config`. Su tamaño
-real depende de lo que devuelva el servicio; no se recuperó ni se cuenta un
-catálogo real en esta validación.
+El catálogo completo procede de la respuesta remota `app_config`. En la
+consulta autorizada del 18 de octubre de 2026 se recuperaron sus **46
+perfiles reales**, conservando los 22 campos de cada miembro. Esta cantidad
+corresponde al identificador de la muestra y a esa respuesta; puede cambiar
+y no representa todos los catálogos de otros usuarios del servicio.
 
 ## Uso sin APK
 
@@ -192,13 +194,37 @@ java tests/golden/DTunnelModVectorGenerator.java > /tmp/dtunnelmod_vectors.json
 python -m unittest tests.test_dtunnelmod
 ```
 
-**No se obtuvo una respuesta real del servicio ni se certifica su estado
-actual, el acceso de la cuenta o la cantidad de servidores.** La revisión
-automática bloqueó una consulta anterior por transmitir un identificador
-del APK al dominio externo; no se volvió a ejecutar. La descarga está
-implementada y probada con mocks, pendiente de una consulta real autorizada.
-Los vectores JCE demuestran la implementación del formato reconstruido,
-no una comparación con datos reales de ese servicio.
+### Validación con el servicio real
+
+El **18 de octubre de 2026, entre 22:39 y 22:40 UTC**, se consultaron los
+tres selectores del endpoint original con autorización explícita del
+usuario, usando `user_id` de la muestra. Los tres se descargaron y
+descifraron correctamente con el script publicado, sin modificar el motor:
+
+| Actualización | Respuesta Base64, bytes | JSON claro, bytes | Miembros recuperados |
+| --- | ---: | ---: | ---: |
+| `app_config` | 75.520 | 56.636 | 46 perfiles |
+| `app_layout` | 47.488 | 35.602 | 37 ajustes de interfaz |
+| `app_text` | 10.412 | 7.807 | 108 textos |
+
+El catálogo y la interfaz contienen cadenas JSON; los textos contienen
+objetos directos, como indicaba el análisis del cliente. Se compararon
+todos los miembros y sus campos con los objetos del JSON descifrado.
+El catálogo contiene 22 campos por perfil. La CLI sobre la respuesta
+guardada recuperó los mismos 46 objetos completos que la API Python.
+
+Una segunda implementación con OpenJDK/JCE descifró las tres respuestas
+reales y produjo exactamente los mismos bytes de texto claro que Python.
+SHA-256 de la respuesta cifrada del catálogo:
+`448bcad1618dfded2aab71aa82f024cb33b65e8b699534b527ec9f73d41b57bc`.
+SHA-256 de sus 56.636 bytes de JSON claro:
+`4d49a034ad1b8020a68e714154fd7a9849b82cfce82fd7805ae32c47006692bd`.
+
+Esto verifica la descarga y el formato de esas respuestas, no la conexión
+VPN ni la disponibilidad de cada servidor. Las cantidades y el acceso
+pueden cambiar; el formato CBC sigue sin ofrecer autenticación criptográfica.
+Las pruebas automatizadas permanecen offline y usan solamente fixtures
+sintéticos y mocks, sin depender del servicio ni de sus identificadores.
 
 No se versionan el APK, `credentials.json`, identificadores reales,
 respuestas privadas ni resultados del catálogo.

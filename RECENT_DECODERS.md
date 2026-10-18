@@ -113,9 +113,10 @@ python decoders/Python/dtunnelmod.py --url --credentials-file credentials.json -
 ```
 
 No necesita el APK para ejecutarse. La descarga explícita usa `user_id` del
-archivo pequeño de identificadores original. Formato comprobado mediante
-vectores sintéticos independientes JCE; HTTP probado con mocks. No se
-descargó ni descifró un catálogo real del servicio.
+archivo pequeño de identificadores original. Consulta real autorizada del
+18 de octubre de 2026: 46 perfiles completos, 37 ajustes y 108 textos,
+con paridad de texto claro entre Python y JCE. Las pruebas automatizadas
+usan vectores sintéticos y mocks; no contienen identificadores del servicio.
 [Uso, petición, evidencia y límites](docs/DTUNNELMOD_4_2_5.md).
 
 ## Flujo por decodificador
