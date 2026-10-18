@@ -101,6 +101,56 @@ def health():
             pass
         time.sleep(2)
     return False
+def probe_nur_host_python():
+    """Independent HTTPS probe on the VPS host, with the approved NUR URL.
+    It does not print endpoints, credentials or the encrypted response body.
+    No cross-host redirects or proxy override can redirect it into LAN space.
+    """
+    import errno
+    import socket
+    import ssl
+    import urllib.error
+    import urllib.request
+
+    class NoRedirect(urllib.request.HTTPRedirectHandler):
+        def redirect_request(self, request, fp, code, msg, headers, newurl):
+            return None
+
+    def classify(error):
+        raw=getattr(error,"reason",error)
+        if isinstance(raw,ssl.SSLError):
+            return "TLS"
+        number=getattr(raw,"errno",None)
+        if number in (errno.ECONNRESET,errno.EPIPE):
+            return "CONNECTION_RESET"
+        if number==errno.ECONNREFUSED:
+            return "CONNECTION_REFUSED"
+        if number in (errno.ENETUNREACH,errno.EHOSTUNREACH):
+            return "NETWORK_UNREACHABLE"
+        if isinstance(raw,(socket.timeout,TimeoutError)):
+            return "TIMEOUT"
+        if isinstance(raw,socket.gaierror):
+            return "DNS"
+        return "CONNECTION"
+
+    try:
+        url=permitted_catalog()
+        opener=urllib.request.build_opener(urllib.request.ProxyHandler({}),NoRedirect())
+        request=urllib.request.Request(
+            url,headers={"User-Agent":"NUR TUNNEL VPN",
+                         "Accept-Encoding":"identity"})
+        with opener.open(request,timeout=10) as response:
+            # Read one byte only: never copy or log protected catalog contents.
+            byte=response.read(1)
+            print(json.dumps({"stage":"host_python","status":"ok" if byte else "failed",
+                "code":"HTTP_200" if byte else "EMPTY_BODY"}))
+    except urllib.error.HTTPError as error:
+        print(json.dumps({"stage":"host_python","status":"failed",
+            "code":"HTTP_"+str(error.code)}))
+    except (urllib.error.URLError,TimeoutError,OSError) as error:
+        print(json.dumps({"stage":"host_python","status":"failed",
+            "code":classify(error)}))
+
 def probe_nur():
     """Use production broker and private worker, reporting only safe stages."""
     current=rows()
@@ -153,6 +203,7 @@ try {
     except subprocess.CalledProcessError as error:
         if error.stdout:
             print(error.stdout,end="")
+            probe_nur_host_python()
         else:
             print("NUR diagnostic failed: check web container availability.")
         raise SystemExit(error.returncode or 1) from None
