@@ -78,6 +78,18 @@ class VPSInstallerTests(unittest.TestCase):
         pos=source.index('SPDECODE-ACME-READY')
         self.assertLess(pos,source.index('certbot certonly'))
         self.assertIn('--resolve "$host:80:127.0.0.1"',source)
+    def test_http01_preflight_bypasses_http_proxy_and_diagnoses_wrong_vhost(self):
+        resume=(VPS/"resume-install.sh").read_text()
+        initial=(VPS/"install.sh").read_text()
+        for script in (resume,initial):
+            self.assertIn("--noproxy '*'",script)
+            self.assertIn("--proxy ''",script)
+            self.assertIn("--resolve \"$host:80:127.0.0.1\"",script)
+        self.assertIn('observed HTTP $status',resume)
+        self.assertIn('namei -l "$ACME/$probe"',resume)
+        self.assertIn('nginx -T 2>&1',resume)
+        self.assertIn('NGINX_GEN="$SCRIPT_DIR/nginx-config.py"',resume)
+        self.assertIn('git -C "$ROOT/repo" fetch --no-tags --depth=1',resume)
     def test_nginx_rejects_injection(self):
         for value in ("bad;inject","http://host.test","host.test/path","localhost","host.test\nserver {"):
             p=subprocess.run(["python3",str(VPS/"nginx-config.py"),value],capture_output=True)
