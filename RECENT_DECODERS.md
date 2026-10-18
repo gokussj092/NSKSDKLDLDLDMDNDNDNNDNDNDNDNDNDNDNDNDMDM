@@ -119,6 +119,26 @@ con paridad de texto claro entre Python y JCE. Las pruebas automatizadas
 usan vectores sintéticos y mocks; no contienen identificadores del servicio.
 [Uso, petición, evidencia y límites](docs/DTUNNELMOD_4_2_5.md).
 
+## Neutro Vpn 1.5 — .nvpnc, texto, enlaces y catálogo
+
+`decoders/Python/neutro_vpn.py` abre perfiles `NVPNC1.L/P` de archivos
+`.nvpnc` o texto compartido. Verifica AES-GCM y usa la contraseña original
+para `P` mediante PBKDF2-SHA256. El catálogo requiere firma ECDSA antes de
+descifrar GCM. Conserva el documento raíz y todos sus perfiles y campos.
+
+```bash
+python decoders/Python/neutro_vpn.py perfil.nvpnc -o perfil.json
+python decoders/Python/neutro_vpn.py perfil.nvpnc --ask-password
+python decoders/Python/neutro_vpn.py --url -o catalogo.json
+```
+
+No necesita el APK en ejecución. Consulta real de ambos endpoints originales:
+seis perfiles completos, frente a diez del catálogo integrado anterior.
+Inspecciona también URI estándar y JSON Xray conservando su contenido.
+Archivos L/P validados con vectores sintéticos independientes JCE; no se
+adjuntó una exportación `.nvpnc` real.
+[Uso, formatos, evidencia real y límites](docs/NEUTRO_VPN_1_5.md).
+
 ## Flujo por decodificador
 
 ### decoders/Python/DARKTUNNEL.py
