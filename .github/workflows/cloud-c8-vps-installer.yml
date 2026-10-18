@@ -22,6 +22,7 @@ jobs:
         run: |
           bash -n cloud/infra/vps/install.sh
           bash -n cloud/infra/vps/resume-install.sh
+          bash -n cloud/infra/vps/resume-services.sh
           bash -n cloud/infra/vps/spdecodectl
           bash -n cloud/infra/vps/android-build.sh
       - name: Test nginx and install gates

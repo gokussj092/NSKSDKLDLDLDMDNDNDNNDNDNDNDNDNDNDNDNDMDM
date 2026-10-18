@@ -2,6 +2,29 @@
 
 **Rama:** `feat/cloud-c8-vps-installer-updater`, basada en C7 (#93). Es software para instalar en tu VPS: **no se ha conectado ni desplegado en una VPS real**. C8 no cambia el bot Python ni las pantallas Android.
 
+## Error Docker: `decoder-worker` unhealthy tras emitir HTTPS
+
+Si el certificado ya se emitió correctamente y `docker compose up` informó `dependency failed to start: container spdecode-decoder-worker-1 is unhealthy`, **NO repitas `resume-install.sh` ni Certbot**. Comprueba primero, sin mostrar variables privadas, qué ocurrió:
+
+```bash
+sudo docker ps -a --filter name=spdecode-
+sudo docker logs --tail 80 spdecode-decoder-worker-1
+sudo docker inspect --format '{{json .State.Health}}' spdecode-decoder-worker-1
+```
+
+El worker funciona como UID `65532` sin privilegios, mientras que el instalador clona como root con `umask 077`. Docker `COPY` preserva los permisos de archivos locales; en VPS los scripts pueden quedar modo `0600` y directorios `0700`, bloqueando su lectura. El Dockerfile ahora ejecuta `chmod -R a+rX /opt/spdecode` **dentro de la imagen**, donde solo existen fuentes de los motores; no cambia los secretos privados `/etc/spdecode`. Además prueba importar `server.py` y cargar las 240 rutas usando el mismo usuario restringido durante el build. El healthcheck permite el arranque más lento de VPS.
+
+Continúa desde la etapa de Docker con:
+
+```bash
+cd ~/SP-DECODE
+git pull --ff-only origin feat/cloud-c8-vps-installer-updater
+sudo bash cloud/infra/vps/resume-services.sh
+```
+
+El recuperador comprueba TLS ya emitido, sincroniza solo `/opt/spdecode/repo`, reconstruye Docker y muestra el estado. **No regenera certificados ni claves**. Si el worker sigue fallando, la salida de `docker logs` y `docker inspect` determinará si son permisos, memoria/OOM, Python o Docker.
+
+
 ## Recuperación si Let's Encrypt recibió HTTP 404
 
 **Error:** `unauthorized: Invalid response ... 404` para `spdecode.xyz`, `api.spdecode.xyz` y `panel.spdecode.xyz`. Significa que el servidor HTTP respondió pero **no entregó los archivos de desafío** creados en `/var/www/spdecode-acme/.well-known/acme-challenge/`. La causa más frecuente con el sitio provisional anterior es un virtual host Nginx duplicado.

@@ -7,7 +7,7 @@ ROOT=Path(__file__).resolve().parents[4]
 VPS=ROOT/"cloud/infra/vps"
 class VPSInstallerTests(unittest.TestCase):
     def test_bash_parses(self):
-        for name in ("install.sh","resume-install.sh","spdecodectl","android-build.sh"):
+        for name in ("install.sh","resume-install.sh","resume-services.sh","spdecodectl","android-build.sh"):
             with self.subTest(file=name):
                 result=subprocess.run(["bash","-n",str(VPS/name)],capture_output=True,text=True)
                 self.assertEqual(result.returncode,0,result.stderr)
@@ -118,6 +118,16 @@ class VPSInstallerTests(unittest.TestCase):
         self.assertIn("len(load_file_engines()) == 240",dockerfile)
         compose=(ROOT/"cloud/compose.yaml").read_text()
         self.assertIn("start_period: 30s",compose)
+    def test_post_tls_recovery_preserves_credentials_and_diagnoses_worker(self):
+        script=(VPS/"resume-services.sh").read_text()
+        for value in ('/etc/spdecode/cloud.env','/etc/letsencrypt/live/spdecode.xyz/',
+                      'pull --ff-only origin "$SPDECODE_REF"',
+                      'up -d --build','logs --no-color --tail 65',
+                      'curl --noproxy', 'flock -x 9'):
+            self.assertIn(value,script)
+        self.assertNotIn('certbot certonly',script)
+        self.assertNotIn('openssl rand',script)
+        self.assertNotIn('git reset --hard',script)
     def test_installer_fail_closed(self):
         data=(VPS/"install.sh").read_text()
         for text in ("CLOUD_API_ENABLED=false","CLOUD_ADMIN_ENABLED=false","CLOUD_FORCE_MAINTENANCE=true","certbot certonly","nginx -t && systemctl reload nginx"):
