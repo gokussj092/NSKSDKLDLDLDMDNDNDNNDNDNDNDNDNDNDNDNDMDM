@@ -63,14 +63,33 @@ probe="spdecode-recovery-$(date -u +%s)-$$"
 printf 'SPDECODE-ACME-READY\n' > "$ACME/$probe"
 chmod 0644 "$ACME/$probe"
 trap 'rm -f -- "$ACME/$probe"' EXIT
-log "Testing HTTP-01 challenge on loopback for all three Host headers"
+log "Testing HTTP-01 challenge on actual loopback HTTP, bypassing HTTP_PROXY/ALL_PROXY"
+# --resolve alone does not disable corporate/system proxy variables. Certbot's
+# webroot probe must target the local Nginx listener, not an HTTP proxy.
 for host in "$DOMAIN" "$API" "$PANEL"; do
-  actual=$(curl --silent --show-error --connect-timeout 4 --max-time 7 --max-redirs 0 \
-    --resolve "$host:80:127.0.0.1" "http://$host/.well-known/acme-challenge/$probe") ||
-    die "Nginx cannot serve challenge on localhost for $host"
-  [[ "$actual" == "SPDECODE-ACME-READY" ]] ||
-    die "HTTP-01 path returned wrong content for $host. Check duplicate virtual hosts with: sudo nginx -T"
-  log "$host: ACME webroot OK"
+  header=$(mktemp) && body=$(mktemp)
+  status=$(curl --noproxy '*' --proxy '' --silent --show-error \
+    --connect-timeout 4 --max-time 7 --max-redirs 0 \
+    --resolve "$host:80:127.0.0.1" \
+    -D "$header" -o "$body" -w '%{http_code}' \
+    "http://$host/.well-known/acme-challenge/$probe") || {
+      rm -f -- "$header" "$body"
+      die "$host: local HTTP connection failed. Verify nginx listens on port 80 with: ss -ltnp"
+    }
+  actual=$(cat "$body")
+  if [[ "$status" != 200 || "$actual" != "SPDECODE-ACME-READY" ]]; then
+    log "$host: expected HTTP 200 and known token; observed HTTP $status"
+    log "Response first line: $(head -n 1 "$header" | tr -d '\r' | cut -c 1-110)"
+    log "Response preview: $(head -c 100 "$body" | tr '\r\n' '  ' | tr -cd '[:print:]' | cut -c 1-100)"
+    log "Relevant Nginx configuration (no private keys):"
+    nginx -T 2>&1 | grep -En 'conflicting server name|server_name|listen[[:space:]]+80|spdecode-acme|acme-challenge' | head -n 70 || true
+    log "Permissions for ACME webroot:"
+    namei -l "$ACME/$probe" || true
+    rm -f -- "$header" "$body"
+    die "$host: ACME served from wrong site/webroot. Fix Nginx conflict before retrying Certbot."
+  fi
+  rm -f -- "$header" "$body"
+  log "$host: HTTP $status, ACME webroot OK"
 done
 rm -f -- "$ACME/$probe"
 trap - EXIT
