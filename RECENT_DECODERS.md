@@ -33,6 +33,23 @@ python decoders/Python/ksh_vpn.py --url -o ksh_decoded.json
 Motor independiente, sin registrar una extensión `.ksh` no comprobada.
 Véanse [formato, evidencia real y límites](docs/KSH_VPN_1_3_2.md).
 
+## REESE TUNNEL 3.23.12 — archivos .RT
+
+`decoders/Python/reese_tunnel.py` recupera el JSON completo `meta/config`
+de exportaciones RSE5 C3/C4 y lectores históricos RSE1–RSE4, verificando
+GCM y el HMAC exterior donde corresponde. La muestra `.RT` aportada se
+validó como C4 ligado al certificado público del APK. Se preservan todos
+los campos, perfiles V2Ray y banner.
+
+```bash
+python decoders/Python/reese_tunnel.py "Telkom unlimited v2ray.RT" -o reese_decoded.json
+```
+
+Opciones para credenciales originales: `--hwid`, `--ask-password`,
+`--password-file` y `--signer-sha256`. No se identificó un catálogo remoto
+VPN en las rutas revisadas de este APK.
+[Formato, pruebas independientes y límites](docs/REESE_TUNNEL_3_23_12.md).
+
 ## Flujo por decodificador
 
 ### decoders/Python/DARKTUNNEL.py
