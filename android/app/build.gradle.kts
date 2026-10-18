@@ -109,6 +109,8 @@ internal object VaultBuildKey {
 
 val cloudOrigin=providers.environmentVariable("SPDECODE_CLOUD_API_BASE_URL").orNull.orEmpty().trim()
 val enableCloud=cloudOrigin.isNotEmpty()
+val enableQaBuild=providers.environmentVariable("SPDECODE_CLOUD_QA_BUILD").orNull=="true"
+require(!enableQaBuild || enableCloud) { "QA mode requires Cloud API" }
 if(enableCloud) {
     val parsed=URI(cloudOrigin)
     require(parsed.scheme=="https" &&
@@ -177,6 +179,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // A public API origin is not a secret; all server secrets stay in the VPS.
         buildConfigField("boolean", "SPDECODE_CLOUD_ENABLED", enableCloud.toString())
+        buildConfigField("boolean", "SPDECODE_QA_BUILD", enableQaBuild.toString())
         externalNativeBuild {
             cmake {
                 arguments += "-DSPDECODE_CLOUD_ORIGIN=$cloudOrigin"
