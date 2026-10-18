@@ -120,10 +120,11 @@ build(){
      "$code" =~ ^[1-9][0-9]*$ ]] || fail "Provide valid --version-name X.Y.Z and --version-code NUMBER"
   [[ -f "$SIGN" && $(stat -c %a "$SIGN") == 600 ]] || fail "Signing key missing: spdecode android signing configure..."
   [[ -x "$GRADLE" && -x "$SDK/cmdline-tools/latest/bin/sdkmanager" ]] || fail "Run spdecode android setup first"
-  [[ -f "$CFG/domain" ]] || fail "Missing configured HTTPS domain"
+  [[ -f "$CFG/api-domain" ]] || fail "Missing dedicated HTTPS API domain. Upgrade VPS installer first."
   local domain
-  domain=$(cat "$CFG/domain")
-  [[ "$domain" =~ ^[A-Za-z0-9.-]+$ ]] || fail "Invalid domain"
+  domain=$(cat "$CFG/api-domain")
+  [[ "$domain" =~ ^[A-Za-z0-9.-]+$ && "$domain" == api.* ]] ||
+    fail "Invalid dedicated Android API domain"
   python3 "$REPO/scripts/cloud_c7_release_gate.py" --stage
   local basecode
   basecode=$(sed -nE 's/.*versionCode = ([0-9]+).*/\1/p' "$REPO/android/app/build.gradle.kts")
