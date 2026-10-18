@@ -239,12 +239,12 @@ jobs:
           from pathlib import Path
           p=Path('/etc/spdecode/cloud.env')
           with p.open('a') as f:
-              f.write('CLOUD_WORKER_TOKEN='+'c'*64+'\\n')
-              f.write('CLOUD_SESSION_SIGNING_KEY='+'s'*64+'\\n')
-              f.write('CLOUD_GOOGLE_PLAY_PACKAGE=com.ghostdeveloper.spdecode\\n')
+              f.write('CLOUD_WORKER_TOKEN='+'c'*64+'\n')
+              f.write('CLOUD_SESSION_SIGNING_KEY='+'s'*64+'\n')
+              f.write('CLOUD_GOOGLE_PLAY_PACKAGE=com.ghostdeveloper.spdecode\n')
           p.chmod(0o600)
           PY
-          docker compose --project-name spdecode --env-file /etc/spdecode/cloud.env \
+          sudo docker compose --project-name spdecode --env-file /etc/spdecode/cloud.env \
             -f cloud/compose.yaml up -d --no-deps --force-recreate decoder-worker
           sudo python3 cloud/infra/vps/qa-test.py start > "$RUNNER_TEMP/qa-credentials"
           grep -q '^QA ENABLED' "$RUNNER_TEMP/qa-credentials"
