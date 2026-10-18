@@ -106,12 +106,13 @@ signing_generate(){
   log "For an existing Play Store app, register this upload certificate before updates."
 }
 build(){
-  local version="" code="" testing=false
+  local version="" code="" testing=false qa=false
   while (($#)); do
     case "$1" in
       --version-name) version="$2";shift 2;;
       --version-code) code="$2";shift 2;;
       --testing-only) testing=true;shift;;
+      --qa) qa=true;shift;;
       *) fail "Unknown Android build argument: $1";;
     esac
   done
@@ -155,6 +156,11 @@ PY
   export SPDECODE_RELEASE_STORE_FILE SPDECODE_RELEASE_STORE_PASSWORD
   export SPDECODE_RELEASE_KEY_ALIAS SPDECODE_RELEASE_KEY_PASSWORD
   export SPDECODE_CLOUD_API_BASE_URL="https://$domain" SPDECODE_CLOUD_RELEASE=true
+  if [[ "$qa" == true ]]; then
+    export SPDECODE_CLOUD_QA_BUILD=true
+  else
+    unset SPDECODE_CLOUD_QA_BUILD
+  fi
   export ANDROID_HOME="$SDK" ANDROID_SDK_ROOT="$SDK"
   export JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64"
   SPDECODE_TRUSTED_SIGNER_SHA256=$(keytool -exportcert -storetype PKCS12 \
@@ -184,6 +190,9 @@ PY
   printf 'version=%s\ncode=%s\nsource=%s\norigin=https://%s\nchannel=testing-only\nsigner_cert_sha256=%s\n' \
     "$version" "$code" "$sha" "$domain" "$SPDECODE_TRUSTED_SIGNER_SHA256" \
     > "$dest/BUILD-MANIFEST.txt"
+  if [[ "$qa" == true ]]; then
+    printf 'qa_build=true\\nplay_integrity_required_for_qa=false\\n' >> "$dest/BUILD-MANIFEST.txt"
+  fi
   chmod -R go-rwx "$dest"
   log "Signed testing artifacts: $dest"
   log "AAB is for Google Play Console (closed testing); APK is for local testing."
@@ -199,6 +208,6 @@ case "${1:-help}" in
     esac;;
   build) shift;build "$@";;
   artifacts) ls -lah "$ROOT/artifacts" 2>/dev/null || log "No build artifacts yet";;
-  help|--help|-h) echo "spdecode android setup|signing configure FILE ALIAS|signing generate ALIAS|build --version-name X.Y.Z --version-code N --testing-only|artifacts";;
+  help|--help|-h) echo "spdecode android setup|signing configure FILE ALIAS|signing generate ALIAS|build --version-name X.Y.Z --version-code N --testing-only [--qa]|artifacts";;
   *) fail "Unknown Android command";;
 esac
