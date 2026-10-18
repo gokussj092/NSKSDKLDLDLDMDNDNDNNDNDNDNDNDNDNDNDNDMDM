@@ -75,6 +75,8 @@ test -f /opt/spdecode/repo/cloud/compose.yaml || fail "Missing Cloud compose"
 printf 'SPDECODE_REF=%q\nSPDECODE_REPO_URL=%q\n' "$REF" "$REPO_URL" > /etc/spdecode/install.conf
 cat > /etc/spdecode/cloud.env <<EOC
 CLOUD_API_ENABLED=false
+CLOUD_QA_ENABLED=false
+CLOUD_QA_EXPIRES_AT=0
 CLOUD_ADMIN_ENABLED=false
 CLOUD_TRUST_PROXY=true
 CLOUD_FORCE_MAINTENANCE=true
