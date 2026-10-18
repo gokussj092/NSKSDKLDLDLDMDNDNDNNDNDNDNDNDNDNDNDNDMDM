@@ -169,6 +169,75 @@ test("NUR mirrors Python 30-second/16-MiB download contract without weakening EH
     url:EHI_ENDPOINT,kind:"ehi",method:"POST",maxBytes:16*1024*1024,
   },{...opts,request:fakeTransport()}),{code:"REMOTE_NETWORK_DENIED"});
 });
+test("NUR retries the next pinned public IPv4 after ECONNRESET, preserving HTTPS hostname",async()=>{
+  const attempts=[];
+  const request=(url,options,onResponse)=>{
+    const req=new EventEmitter();
+    req.destroy=()=>{};
+    req.write=()=>{};
+    req.end=()=>{
+      options.lookup(url.hostname,{},(err,ip,family)=>{
+        assert.ifError(err);
+        assert.equal(family,4);
+        attempts.push(ip);
+      });
+      queueMicrotask(()=>{
+        if(attempts.length===1){
+          req.emit("error",Object.assign(new Error("socket hang up"),{code:"ECONNRESET"}));
+        }else{
+          const res=new EventEmitter();
+          res.statusCode=200;
+          res.headers={};
+          res.destroy=()=>{};
+          onResponse(res);
+          res.emit("data",Buffer.from("encrypted-nur-catalog"));
+          res.emit("end");
+        }
+      });
+    };
+    return req;
+  };
+  const result=await downloadApproved({url:nurUrl,kind:"nur"},{
+    resolve:async()=>[
+      {address:"8.8.8.8",family:4},
+      {address:"9.9.9.9",family:4},
+    ],
+    request,
+  });
+  assert.equal(result.toString(),"encrypted-nur-catalog");
+  assert.deepEqual(attempts,["8.8.8.8","9.9.9.9"]);
+});
+test("NUR never retries a certificate failure or HTTP refusal on another IP",async()=>{
+  const attempts=[];
+  const request=(url,options,onResponse)=>{
+    const req=new EventEmitter();
+    req.destroy=()=>{};
+    req.write=()=>{};
+    req.end=()=>{
+      options.lookup(url.hostname,{},(err,ip)=>{
+        assert.ifError(err);attempts.push(ip);
+      });
+      queueMicrotask(()=>{
+        req.emit("error",Object.assign(new Error("certificate check failed"),
+          {code:"CERT_HAS_EXPIRED"}));
+      });
+    };
+    return req;
+  };
+  await assert.rejects(()=>downloadApproved({url:nurUrl,kind:"nur"},{
+    resolve:async()=>[
+      {address:"8.8.8.8",family:4},
+      {address:"9.9.9.9",family:4},
+    ],request,
+  }),err=>err.code==="REMOTE_PROVIDER_UNAVAILABLE"&&err.reason==="TLS");
+  assert.deepEqual(attempts,["8.8.8.8"]);
+  await assert.rejects(()=>downloadApproved({url:nurUrl,kind:"nur"},{
+    resolve:async()=>[
+      {address:"8.8.8.8",family:4},
+      {address:"9.9.9.9",family:4},
+    ],request:fakeTransport(403),
+  }),err=>err.code==="REMOTE_PROVIDER_UNAVAILABLE"&&err.reason==="HTTP_403");
+});
 test("NUR uses standalone script headers and a full 16-MiB encrypted catalog buffer",async()=>{
   const config={...env,CLOUD_NUR_CATALOG_URL:nurUrl};
   let called=false;
