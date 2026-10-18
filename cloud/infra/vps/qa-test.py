@@ -168,32 +168,39 @@ if(!nurConfigured()){
   process.exit(2);
 }
 let raw;
+const fetchStarted=Date.now();
 try {
   raw=await downloadNur();
-  emit({stage:"download",status:"ok",bytes:raw.length});
+  emit({stage:"download",status:"ok",bytes:raw.length,
+    elapsedSeconds:Math.round((Date.now()-fetchStarted)/100)/10});
 }catch(error){
   emit({stage:"download",status:"failed",
     code:typeof error?.code==="string"?error.code:"REMOTE_PROVIDER_UNAVAILABLE",
     reason:typeof error?.reason==="string" && /^[A-Z0-9_]{2,32}$/.test(error.reason)?
-      error.reason:"UNCLASSIFIED"});
+      error.reason:"UNCLASSIFIED",
+    elapsedSeconds:Math.round((Date.now()-fetchStarted)/100)/10});
   process.exit(3);
 }
+const decodeStarted=Date.now();
 try {
   const response=await fetchWorker("catalog",
     {dataBase64:raw.toString("base64")},settings());
   const output=await response.json();
   if(!response.ok){
     emit({stage:"decode",status:"failed",httpStatus:response.status,
-      code:output?.error?.code||"ENGINE_UNAVAILABLE"});
+      code:output?.error?.code||"ENGINE_UNAVAILABLE",
+      elapsedSeconds:Math.round((Date.now()-decodeStarted)/100)/10});
     process.exit(4);
   }
   const parsed=output?.structuredJson;
   emit({stage:"decode",status:"ok",servers:
     Array.isArray(parsed?.Servers)?parsed.Servers.length:null,
     networks:Array.isArray(parsed?.Networks)?parsed.Networks.length:null,
-    partial:output.isPartial===true});
+    partial:output.isPartial===true,
+    elapsedSeconds:Math.round((Date.now()-decodeStarted)/100)/10});
 }catch(error){
-  emit({stage:"decode",status:"failed",code:"ENGINE_UNAVAILABLE"});
+  emit({stage:"decode",status:"failed",code:"ENGINE_UNAVAILABLE",
+    elapsedSeconds:Math.round((Date.now()-decodeStarted)/100)/10});
   process.exit(5);
 }
 '''
