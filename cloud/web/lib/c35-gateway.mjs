@@ -40,12 +40,20 @@ export async function externalImportRequest(request,kind,opts={}) {
     if(kind==="ehi"){
       const ehi=await importEhiReference(body.reference,vendor);
       const result=await fetchWorker("file",{format:"ehi",dataBase64:ehi.toString("base64")},settings(),opts);
-      try{await recordWorkerResult(redis,result.ok?"success":"failed");}catch{}
+      let errorCode="";
+      if(!result.ok){try{errorCode=(await result.clone().json()).error?.code||"";}catch{}}
+      try{await recordWorkerResult(redis,result.ok?"success":"failed",{
+        kind:"ehi",bytes:ehi.length,errorCode,
+      });}catch{}
       return result;
     }
     const catalog=await downloadNur(vendor);
     const result=await fetchWorker("catalog",{dataBase64:catalog.toString("base64")},settings(),opts);
-    try{await recordWorkerResult(redis,result.ok?"success":"failed");}catch{}
+    let errorCode="";
+    if(!result.ok){try{errorCode=(await result.clone().json()).error?.code||"";}catch{}}
+    try{await recordWorkerResult(redis,result.ok?"success":"failed",{
+      kind:"catalog",bytes:catalog.length,errorCode,
+    });}catch{}
     return result;
   }catch(error) {
     if (isExternalImportError(error)) return failure(error.code,error.status);
