@@ -229,6 +229,52 @@ jobs:
             -o /dev/null -w '%{http_code}' "https://api.spdecode.xyz/privacy")
           test "$status" = 404
           echo 'Panel links pass; API and public hosts remain isolated.'
+      - name: Exercise temporary QA access through HTTPS without Google Play
+        run: |
+          set -euo pipefail
+          umask 077
+          sudo python3 cloud/infra/vps/qa-test.py start > "$RUNNER_TEMP/qa-credentials"
+          grep -q '^QA ENABLED' "$RUNNER_TEMP/qa-credentials"
+          python3 - "$RUNNER_TEMP/qa-credentials" "$RUNNER_TEMP/qa-code.json" <<'PY'
+          import json,sys
+          code=next(line.split(': ',1)[1].strip() for line in open(sys.argv[1]) if line.startswith('QA CODE: '))
+          with open(sys.argv[2],'w') as output:json.dump({"qaCode":code},output)
+          PY
+          chmod 600 "$RUNNER_TEMP/qa-code.json"
+          # Existing HTTPS Nginx, Redis, isolated worker, no service account.
+          api=https://api.spdecode.xyz
+          curl --noproxy '*' -fsS --resolve api.spdecode.xyz:443:127.0.0.1 \
+            "$api/api/v1/ready" > "$RUNNER_TEMP/qa-ready.json"
+          grep -q '"status":"ready"' "$RUNNER_TEMP/qa-ready.json"
+          curl --noproxy '*' -fsS --resolve api.spdecode.xyz:443:127.0.0.1 \
+            -H 'Content-Type: application/json' --data-binary '{}' \
+            "$api/api/v1/session/challenge" > "$RUNNER_TEMP/qa-challenge.json"
+          python3 - "$RUNNER_TEMP/qa-code.json" "$RUNNER_TEMP/qa-challenge.json" "$RUNNER_TEMP/qa-request.json" <<'PY'
+          import json,sys
+          key=json.load(open(sys.argv[1]))
+          challenge=json.load(open(sys.argv[2]))
+          assert challenge["challengeId"]
+          with open(sys.argv[3],'w') as out:
+              json.dump({"qaCode":key["qaCode"],"challengeId":challenge["challengeId"]},out)
+          PY
+          test "$(curl --noproxy '*' -sS --resolve api.spdecode.xyz:443:127.0.0.1 \
+            -o "$RUNNER_TEMP/qa-session.json" -w '%{http_code}' \
+            -H 'Content-Type: application/json' --data-binary @"$RUNNER_TEMP/qa-request.json" \
+            "$api/api/v1/session/qa")" = 201
+          python3 - "$RUNNER_TEMP/qa-session.json" <<'PY'
+          import json,sys
+          data=json.load(open(sys.argv[1]))
+          assert data["tokenType"]=="Bearer" and len(data["accessToken"])>50
+          PY
+          # A successful QA admission is NOT a successful decode; verify that
+          # a bearer reaches the worker gate, but no arbitrary data is persisted.
+          sudo python3 cloud/infra/vps/qa-test.py stop >/dev/null
+          test "$(curl --noproxy '*' -sS --resolve api.spdecode.xyz:443:127.0.0.1 \
+            -o /dev/null -w '%{http_code}' "$api/api/v1/ready")" = 503
+          rm -f "$RUNNER_TEMP/qa-credentials" "$RUNNER_TEMP/qa-code.json" \
+            "$RUNNER_TEMP/qa-request.json" "$RUNNER_TEMP/qa-challenge.json" \
+            "$RUNNER_TEMP/qa-session.json"
+          echo 'QA granted 201 over HTTPS without Google Play and then revoked successfully.'
       - name: Always tear down containers
         if: always()
         run: docker compose --project-name spdecode -f cloud/compose.yaml down --remove-orphans
