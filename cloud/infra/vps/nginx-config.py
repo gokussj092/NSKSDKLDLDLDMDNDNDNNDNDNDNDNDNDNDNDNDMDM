@@ -102,13 +102,25 @@ def generate(domain: str, api: str, panel: str, www: bool) -> str:
     location = /features {{
 {common_headers()}
     }}
+    location = /features/ {{
+{common_headers()}
+    }}
     location = /docs {{
+{common_headers()}
+    }}
+    location = /docs/ {{
 {common_headers()}
     }}
     location = /privacy {{
 {common_headers()}
     }}
+    location = /privacy/ {{
+{common_headers()}
+    }}
     location = /status {{
+{common_headers()}
+    }}
+    location = /status/ {{
 {common_headers()}
     }}
     location = /api/site/status {{
