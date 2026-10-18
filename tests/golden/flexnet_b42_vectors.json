@@ -1,0 +1,63 @@
+{
+  "producer": "OpenJDK 17/JCE AES-256-GCM and HMAC-SHA256 HKDF, GZIPOutputStream; see FlexB42VectorGenerator.java",
+  "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE properties SYSTEM \"http://java.sun.com/dtd/properties.dtd\"><properties><comment>Synthetic FlexNet 日本語</comment><entry key=\"tunnelType\">3</entry><entry key=\"sshServer\">vpn.example.invalid</entry><entry key=\"sshPort\">443</entry><entry key=\"sshUser\">demo</entry><entry key=\"sshPass\">synthetic-only</entry><entry key=\"proxyPayload\">GET / HTTP/1.1&#13;&#10;Host: example.invalid</entry><entry key=\"custom.unknown\">keep-me</entry><entry key=\"remoteServerSnapshot\">{&quot;name&quot;:&quot;Synthetic&quot;,&quot;host&quot;:&quot;catalog.example.invalid&quot;,&quot;futureField&quot;:{&quot;keep&quot;:true}}</entry></properties>",
+  "fileKey": "a0a1a2a3a4a5a6a7a8a9aaabacadaeafb0b1b2b3b4b5b6b7b8b9babbbcbdbebf",
+  "offline": "RkxYQ0ZHBQEBAAAAKgAAAAFQUVJTVFVWV1hZWltcXV5fAAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8yMzQ1Njc4OTo7PD0Le0nVs3LZkJ407MrP++rq2REMbg9slDe6rOTfBQhE7akhU/qvVYE6CCOAX8K6eV4eHyAhIiMkJSYnKCkAAAGKAVk9xLabyoyWRLeONcXMRXiQNirvhye85hmo1wiOzCr7RMGLqAUtMDX0tuVn8QQJeSwNHoLNzlpGe8osMsUwCvYykknfNLc2T6M/PHrBtV3PPBJbaZncz2knv5YEWjnzx+H+coR3UD5P0BWD2h/AB4+CqkOYGn5eS5Urel2t+CD8J8US6ibpz0lhVIPFJvNXti8dgCk+ckZc9xSSdH+a+wfanO+Nx0+Kpf9yxZpX0cfmgs/7aHVIN2CfWawiDDUxzpq7phNqAA6JkgwFpe0XtCJlZqb243nbSFPYMifZSribUumTJwLpMcvGg6qyDzlKIGEbr7vuSt3cDvSY2eG4XC00/Y/cpRazB+RklQXnNAudw0rTkh8EX3XDETPvx3VDVBOj9pJM75Vfr+jCbn/q7xEHHiRO4PqVuPTtrImdr/pAQ8T3do0QQwVU+xVhRmbUqL4zgZ0e1M3h6QI6vU3/1ZMJUikMRXOJOdDZ/yu8YDC75A2wmcSL0erXVyJVcFQSY/WLfQZ89WUn3Q==",
+  "online": "RkxYQ0ZHBQIBAAAAKlpbXF1eX2BhYmNkZWZnaGkeHyAhIiMkJSYnKCkAAAGKAVk9xLabyoyWRLeONcXMRXiQNirvhye85hmo1wiOzCr7RMGLqAUtMDX0tuVn8QQJeSwNHoLNzlpGe8osMsUwCvYykknfNLc2T6M/PHrBtV3PPBJbaZncz2knv5YEWjnzx+H+coR3UD5P0BWD2h/AB4+CqkOYGn5eS5Urel2t+CD8J8US6ibpz0lhVIPFJvNXti8dgCk+ckZc9xSSdH+a+wfanO+Nx0+Kpf9yxZpX0cfmgs/7aHVIN2CfWawiDDUxzpq7phNqAA6JkgwFpe0XtCJlZqb243nbSFPYMifZSribUumTJwLpMcvGg6qyDzlKIGEbr7vuSt3cDvSY2eG4XC00/Y/cpRazB+RklQXnNAudw0rTkh8EX3XDETPvx3VDVBOj9pJM75Vfr+jCbn/q7xEHHiRO4PqVuPTtrImdr/pAQ8T3do0QQwVU+xVhRmbUqL4zgZ0e1M3h6QI6vU3/1ZMJUikMRXOJOdDZ/yu8YDC75A2wmcSL0erXpj1Bx4fxfjW/17fJzSeBNA==",
+  "catalog": "RkJTMR4fICEiIyQlJicoKR+yTr1ZqstcpH4p7Qt8ttMPuMCu8Bk3GIbVuKwsYGMwMEe7L6wHn294WK6MbksKkF74YXtUHH1LZLV3O5KXdeHepWKzrwKBZan+BmjSjKRn1eLhhdzqHPbvTMppcjPZUxjfASa35lwhLcSr+YhXQchKSP2yFj6WmAd3vdjS9L4ZfA+AcAlzX+7aBYk/XmKQ/lh02ym2udvs7fosTe3wk1h82mzE/cx1bfwf4+AszVJZ22T66HM+g7ILMfAxVyS0Gtq6gscvD1fAYxLuRldSfpa77kPFeLbA6lhvrwKoNc63nMAAcVO10yWS68sF3sdActoEDW6R6m9QYxhL0GBuvTXxW2JnSn8fUkXbAVSprU9RL2TX8J+nweUzTys6VlG/ERDgBANuKn8JHpD+MAq1MIB8JPj+yqNZ9EqJ04HtGreeCaP/Vykn+h7ymuEuS3B87NtuStUAGlGeInCCkghzX24MWznp+PB1O7DQ4/kZYvHB/ara8RNiZBMkVDpZ4Fdgq3xnLWfiRtq9FDa03XI08Z9VvWrwWC7197Kao4YVN+AAyooVCEYH4IHUe9EDMoFcMZqZAQBvMN4TM2dNqc4NlivqQjnXfe+JbLE1WSC9yqKFPlwkKANPFUsyTb8LCA+D+z1FVJcyAiaooJZpTjWPVPSUbPKFoasvgWY6tLzb+ktwvnlbFSDoAYdc8H/qO5fyGW6umaH5uarDh0UdSnUIRUFMQKmGGntw5R3e2APHCMGl3CddeyxYO2/pKlIc37T7TtscAR37LUXDC3Gw4Gwo5pTBkXtWfvboAwoSmqzXpyvmEA==",
+  "catalogExpected": {
+    "version": 1,
+    "serversVersion": "synthetic",
+    "servers": [
+      {
+        "id": "test-0",
+        "host": "server0.example.invalid",
+        "unknown": {
+          "preserve": true
+        }
+      },
+      {
+        "id": "test-1",
+        "host": "server1.example.invalid",
+        "unknown": {
+          "preserve": true
+        }
+      },
+      {
+        "id": "test-2",
+        "host": "server2.example.invalid",
+        "unknown": {
+          "preserve": true
+        }
+      },
+      {
+        "id": "test-3",
+        "host": "server3.example.invalid",
+        "unknown": {
+          "preserve": true
+        }
+      },
+      {
+        "id": "test-4",
+        "host": "server4.example.invalid",
+        "unknown": {
+          "preserve": true
+        }
+      },
+      {
+        "id": "test-5",
+        "host": "server5.example.invalid",
+        "unknown": {
+          "preserve": true
+        }
+      },
+      {
+        "id": "test-6",
+        "host": "server6.example.invalid",
+        "unknown": {
+          "preserve": true
+        }
+      }
+    ]
+  }
+}

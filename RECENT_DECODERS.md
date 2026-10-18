@@ -50,6 +50,22 @@ Opciones para credenciales originales: `--hwid`, `--ask-password`,
 VPN en las rutas revisadas de este APK.
 [Formato, pruebas independientes y límites](docs/REESE_TUNNEL_3_23_12.md).
 
+## FlexNet V2.3 B42 — v5 y catálogos
+
+`decoders/Python/flexnet_b42.py` lee FLXCFG v5 offline y catálogos FBS1
+integrados; puede procesar archivos online con una clave de contenido
+legítima aportada y respuestas remotas con su clave RSA de petición.
+La muestra `Free Host.flex` es v5 online y no se descifró sin la autorización
+requerida. Se autenticó y recuperó el catálogo real de siete servidores.
+
+```bash
+python decoders/Python/flexnet_b42.py "Free Host.flex" --inspect
+python decoders/Python/flexnet_b42.py "FlexNet V2.3 B42 (1).apk" --builtin-catalog -o flexnet_servers.json
+```
+
+El motor `flex.py` conserva v1–v4 y delega v5 al nuevo lector.
+[Uso, formatos, evidencia y límites online](docs/FLEXNET_V2_3_B42.md).
+
 ## Flujo por decodificador
 
 ### decoders/Python/DARKTUNNEL.py
