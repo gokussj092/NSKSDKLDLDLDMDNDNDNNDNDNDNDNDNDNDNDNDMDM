@@ -139,6 +139,24 @@ Archivos L/P validados con vectores sintéticos independientes JCE; no se
 adjuntó una exportación `.nvpnc` real.
 [Uso, formatos, evidencia real y límites](docs/NEUTRO_VPN_1_5.md).
 
+## 24clan VPN Green 3.3 — carpeta con catálogo, archivos e icono
+
+[`apps/24clan_VPN_Green`](decoders/Python/apps/24clan_VPN_Green/README.md)
+reúne dos scripts independientes y el icono original de la aplicación:
+`24clan_VPN_Green.py` para el catálogo y
+`24clan_VPN_Green_archivos.py` para `.green` o su texto Base64.
+
+```bash
+python decoders/Python/apps/24clan_VPN_Green/24clan_VPN_Green.py --url -o catalogo.json
+python decoders/Python/apps/24clan_VPN_Green/24clan_VPN_Green_archivos.py perfil.green -o perfil.json
+```
+
+El catálogo usa OpenSSL AES-256-CBC/MD5; los archivos, una variante XXTEA
+con delta `0xFFE5FEA8`. Consulta real: seis servidores y 1.520 tweaks,
+incluidas las listas premium, conservando el JSON completo. Catálogos real
+e integrado comparados con JCE; archivos probados con vectores Java.
+No se adjuntó una exportación `.green` real.
+
 ## Flujo por decodificador
 
 ### decoders/Python/DARKTUNNEL.py

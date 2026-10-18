@@ -1,0 +1,203 @@
+{
+  "source": "Synthetic OpenJDK/JCE and APK modified XXTEA; no real server data",
+  "profile": "VQ+EoSYG3c53OwUPCm5PVr0iCW0GGAF5yIMTUKR6eOxz+hf+jspXbEsoMniszQqQOjB8HCU6aA+XFe0Z3Xevb2/aP+u3nllSmesaQMOMrgPqTsHrhkTBuU1cRuKq7tuQeNRZ5AxeqQIsU90/B37PEhB9xLKe6MbQHQwHnDs/TkkAlMUPwfOJmpKMZbrlMIADNrcPM+3QDG/9eizJ4Ev7QGUFE9x5syWciPq6XNgQMachjHzD2FXhIIx4ZJPzB/UVF5tZlE+lb/dI7e8gdrxqCS/AHoJp1MR0q1GNcIa1dqRutic+5NAgs1XlcOgBDOpLv49g589lPenQ0Kbk7khj1YWcrAAch6G30+SRqvnnqP/2zUmnHRLRwK+Ol+D+VJaN4Co+WPzpc0kBo730MMv7zear/RCUVw1z1J7R67jnx66BmoEOsTc7ydLytpwje9kNIcE+56mFJ2DuwUTuscgA9fHT9vDVx26naAQE77UNNTBXIm4Ce3ZXHyodxTbDIwJeGew0939Y01lfSz0cMvGA3yQ4ZBzX0YK/GmQW3blxK9gfNdhjwccAvfXN9kW48ESwdG7JcGsaqBE=",
+  "expectedProfile": {
+    "Name": "Prueba 日本 Perú",
+    "Direct": false,
+    "Payload": "GET / HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+    "Server": "{\"Name\":\"Synthetic server\",\"SSHHost\":\"example.invalid\",\"SSHPort\":\"22\",\"Username\":\"synthetic\",\"Password\":\"fixture-only\",\"future\":null}",
+    "HWID": "SYNTHETIC-DEVICE",
+    "ExpireDate": 1,
+    "MobileData": true,
+    "BlockRoot": true,
+    "isPremium": true,
+    "Note": "First\nSecond\r\nThird",
+    "future": {
+      "values": [
+        null,
+        false,
+        ""
+      ]
+    }
+  },
+  "catalog": "U2FsdGVkX18BAgMEBQYHCOnOh3ov8HnGcrqcfKJ1WfNe+hwsj5EK9aY3db/gyC/xz8WUJ/CUFFqcLtjJDYJJxkXOuh6hyEcI1jLuXg/GjyWkKHZzsZs7fgdDtbA3+9wpTH5uGjFx+lSE1NwF/6RN5DPl65Ejf+wAqkNKU2ruv2FwSJFTbN2ms7pmASeSQRi7hNGYhI24E421VeBQIoqs68aB0Lwusv/i1+u+QZGzbpsTFM6TS7LZQ/rbsUIyj6OHlcRpI9y04yV50jGujFqV08Rd5lhATKTkgsst/Zqy6YP5qQRb4EMBHLylMBXBnrEO5iAAbRZlItO1LAjN2rzq3FbxkoLDgSkxQMV7Akp8W+mHIsLPVKGoS5+UOvsldLea9WoP7sDRXh2sXDHcL64TfUw+KKiQx0Gzm4m+UcGWN+a0igeI1PF3SgiuTfh7HhTztlDtz+f/2//Y+O5nfLNS2IDKFrQGM/sq70DgSrJqwFTTuVcW6VvnEZGCWGPnNm1MuMQpfn4utOXAnXjfRj8TZI2uZPiCrQGzoZTX+6GwLGnIvEOnx60Mrz5EJcFMvBOaoN2Hbpmp32GTfC/K+/NnaHNwP4otiYkXympQ5qlDq4X4/Sewrbt4KWoBvf6QAAiLoqYgoKsVjSg7f+BWil6Rs+tcsZDG93s03MYjtrcf+qw+ZYLhLsH8h7oTgEAW+8LRFEDix4IIvOOEfHPK7dyN7FUQBIQIQXp/H5hXZdp8WXS+rqSVNa8W+QawxqUzd7mmIjPjU36vJKGx0fx+4s7l6fytWgXxgimrz5jaz5VNJf9QpKySl9rKa/ICDDeUUk1wpzSReRzntGAqbzoJU8oLOEdCjwWX2BIO+uFmOaDNI6Ys4rJWLAS4Hm5hjhtJm+JDjdD1Xt/DTucYDX/Hnu19PS2GVYGLAWmWNreoYkqSCnVOXRusuXEhuAoNU6WAxi0TxDWwgR8vIXqTAHaKm+hgerPENfjz2k//7qoXCGLYLql+6LI6n8k+aVJaoCJbPDDTzibsHOJ+qdiIT/+cI3aq2ENkbo72lyEWs4McSjWa+iufhChW46eR9mQmET5L3822ko8vwuw5Ng84g/Yzn/Xbszqx7Cy+YzvDApNO0FkKq1NjG0q5ZADEw5Ijwfv7Xs01",
+  "expectedCatalog": {
+    "Version": "synthetic-1",
+    "Message": "Fixture only",
+    "Servers": [
+      {
+        "Name": "Synthetic server",
+        "SSHHost": "example.invalid",
+        "SSHPort": "22",
+        "Username": "synthetic",
+        "Password": "fixture-only",
+        "future": null
+      }
+    ],
+    "PremiumServers": [
+      {
+        "Name": "Synthetic server",
+        "SSHHost": "example.invalid",
+        "SSHPort": "22",
+        "Username": "synthetic",
+        "Password": "fixture-only",
+        "future": null
+      }
+    ],
+    "Tweaks": [
+      {
+        "Name": "Prueba 日本 Perú",
+        "Direct": false,
+        "Payload": "GET / HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+        "Server": "{\"Name\":\"Synthetic server\",\"SSHHost\":\"example.invalid\",\"SSHPort\":\"22\",\"Username\":\"synthetic\",\"Password\":\"fixture-only\",\"future\":null}",
+        "HWID": "SYNTHETIC-DEVICE",
+        "ExpireDate": 1,
+        "MobileData": true,
+        "BlockRoot": true,
+        "isPremium": true,
+        "Note": "First\nSecond\r\nThird",
+        "future": {
+          "values": [
+            null,
+            false,
+            ""
+          ]
+        }
+      }
+    ],
+    "PremiumTweaks": [],
+    "future": {
+      "keep": true
+    }
+  },
+  "lengthVectors": [
+    {
+      "data": "C2LFKfe3ND1WHmf4ToeSfRqXp3anJjZ241PK3aR5S1+JuxUxA1E+sImmw/8Mw/p/UxG3FWeZnXngPpMp9KWlIRJVb0gJdI0ng41Y41LG9JdqzLmYpOseMIv2awQxI3Xa5+hMQmJZUqQtn2tX2sURwEyXh9scmWcRgk3ETYVZJEAgoiKtAV8CDr1xCDH4mCUA8uI4d6zNBy8vualgeMD8qYcNuo1rR+4dEAeJRmaYwCnYWbPi11pKbneWTvI3orLU7OFJa+SzYyrUGMSbZFtPq0qUJbAX3O7TzfIEY6gzkFu4TeAayRTYzl3RwDl0428LvlYUeZUqoipIDp+VRIsdrH2bOhqups0SpBgAmwbJv0Wkjzi1MeIDzq1pSPsUG7rU70wJ4YiE0mlKAaf2mzxJ45K5luhSDHgtCI9O2q35j1HdGD1kaLSHy/qZS/5WFmL1lXBm4Z89/yhnZyFzoWiNPRNgwJDytFMxtI+3Dg2+ll/2ZnH1+/JdjDgJ5sj159v0rnZe51zu2bgINmOcj1Cj/Eyo3AE2fSI6Uqlm4TouxlSHYii0QQijDw469S83hQbIuUdkPRjf/jelLMazjYeTQJGWGIQ=",
+      "expected": {
+        "Name": "Prueba 日本 Perú",
+        "Direct": false,
+        "Payload": "GET / HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+        "Server": "{\"Name\":\"Synthetic server\",\"SSHHost\":\"example.invalid\",\"SSHPort\":\"22\",\"Username\":\"synthetic\",\"Password\":\"fixture-only\",\"future\":null}",
+        "HWID": "SYNTHETIC-DEVICE",
+        "ExpireDate": 1,
+        "MobileData": true,
+        "BlockRoot": true,
+        "isPremium": true,
+        "Note": "First\nSecond\r\nThird",
+        "future": {
+          "values": [
+            null,
+            false,
+            ""
+          ]
+        },
+        "padding": ""
+      },
+      "utf8Bytes": 446
+    },
+    {
+      "data": "xgS4/PCGIuUsQGNxPri6J64Ew6KIzQZgBCzFzHAeDSiqQGP3eDPVziIWXfbIdfevujHTteIcURgI2dZEY3i9e4QA18fryYJlYbiCCr3AqVcBlq7HsiFzlqq1F6WXLuaTTpyQZ6LJoAYWMQR4kWs1JispQ+HLGOApewDzWhF8xnL/mEv6zPzaDNTJ1CvKa7tZ5t/3Aj2p6ZImPD3vT+1LG6GAMozVQ8ZMod23qypjKNSc/26Q52y88odLVDkFbY8EjaLNwBUAvzmk6vNQWjodAQC4Lp1mHyTb8fQcHsQiMgZwoc7+Cz8ucbI9greK0I4iEmb5Ty8yDmSq095kMI/IATN4U4ghH8UGxgwx7kUl8weoFojxyoKuCVTI3VXB5hcj67pJc53cZXgtlejiOOg5Wb36XPK57KJo6J+/WmYJfGsA52v7/S4ZeZrHvbo2eshjeUcKlgnm+bj3iw3kjDjNCIoGDziV5supgeAADGvOZnhOHyt363ID1qMIYQrGOYXZledvyT3XrFvbzYSpDISOyV10RJFVbqg2yEedkKZkOaZhJpXLtEMb/S8FgdC2g+z62zKoYw+0EOzDqnjvfPdWrz/ojMQ=",
+      "expected": {
+        "Name": "Prueba 日本 Perú",
+        "Direct": false,
+        "Payload": "GET / HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+        "Server": "{\"Name\":\"Synthetic server\",\"SSHHost\":\"example.invalid\",\"SSHPort\":\"22\",\"Username\":\"synthetic\",\"Password\":\"fixture-only\",\"future\":null}",
+        "HWID": "SYNTHETIC-DEVICE",
+        "ExpireDate": 1,
+        "MobileData": true,
+        "BlockRoot": true,
+        "isPremium": true,
+        "Note": "First\nSecond\r\nThird",
+        "future": {
+          "values": [
+            null,
+            false,
+            ""
+          ]
+        },
+        "padding": "x"
+      },
+      "utf8Bytes": 447
+    },
+    {
+      "data": "oVhWGn7OejWNWi1JJtRrpINplG/9iNzy8eF6t5LYTuRYhKDSnz3CeCmj3Lsy/G2OIHTVnKgd+p2qU21aLrVwfonbdPGC2iqQVAa+y2dXkxcLsj86cWMVuwfawpRRfSgOID6hBf2KuRLBtC7Z4EEFS+obq1byp4eRgB68g5gWA/2OkHuGFS42fCrn7Y2oBWF9JWuR8Y21ID8fQrn2QWS+TFViFF05GZk7wKBE+Ii13cLpG251Otpvp/P8FU9B/ugw7XZJa062Ku7vocavhmtXL9shHlbQqIgQDAf0ApF71thb1AybsYBw23GXkV+hJxcVCRVwUCuojvdCgWlfrW/3tvhq3XfEbPr6iyzeISzpvj67S1HTqJjrL7cucLfap//G/vgE5docW7NGzBxx6M0K0JhLkQo8/L88OQpDmhqxoH6v5ROf1UTssdfTOfNLrgjCqKzN/71zGyyTi5XjZskEytO3g+7U5DKQnOzwpLXeATSjGYT0VD+5V3piMNXNz7tutckFxs7rTpfdO5L/oSLROh8hI6uAQSLAlb+zid0tshCSCGD9xlbfsjBGroKSfMr0OOrZJ0wzZVcCqAZPxAJ6+2u6Yc8=",
+      "expected": {
+        "Name": "Prueba 日本 Perú",
+        "Direct": false,
+        "Payload": "GET / HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+        "Server": "{\"Name\":\"Synthetic server\",\"SSHHost\":\"example.invalid\",\"SSHPort\":\"22\",\"Username\":\"synthetic\",\"Password\":\"fixture-only\",\"future\":null}",
+        "HWID": "SYNTHETIC-DEVICE",
+        "ExpireDate": 1,
+        "MobileData": true,
+        "BlockRoot": true,
+        "isPremium": true,
+        "Note": "First\nSecond\r\nThird",
+        "future": {
+          "values": [
+            null,
+            false,
+            ""
+          ]
+        },
+        "padding": "xx"
+      },
+      "utf8Bytes": 448
+    },
+    {
+      "data": "i7bW718WGe4GH5azXUX3CaaQr0ii2O8IujM/rEVf7vjEeU6XLuDetlmzwusaYnJy5S9JYKF0LsMXo6ScpJawyljdpCRnvJP/PBarLyDzFLh3gWsI4DHgB7Pq1eO6pZzMy39bnNmCxu0vl1OwUGdlQ603l5XroiQFV6SyCLQ/TLjR33bRpq2hASSg//yv4lg1yJ5/ClcLkeTlM8XTeK26FtBg6O23sFAddue9ryDATbeGQ5olyrhy7hWGvtTt/G86slVZqBAkhqySKMn9y3G9nOpxPKYV+5xJ230js5rjyTpjOMvPAQW6vBJ9WAkQQuUpGFUQxsMPdqQiK2vi0JcT8ILlend2E5vRKVqSteNWgO1P4yNYTIXOmnVl9AqCs/ahDCCAzVhTdIYZz2XLhmn26oTGLqSRsoq4HX3dxnhShLHUYdthir1ILfUBJu3aKWP7eYTIh/Z8W8b7djdU3KJ+gpaw8N61GxNq9zlI1PPDWnyEqVoK6CwtkJPKc4KTE0yIXHn0GTmGvITY4FalH5ILRHsAXBGnoh4FduSprYSjH52ZjUW4NSmdqvEkn+l5l0vfnhq8H3NqZlxaZNzw+uKLBf+Zj7nBJE6i",
+      "expected": {
+        "Name": "Prueba 日本 Perú",
+        "Direct": false,
+        "Payload": "GET / HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+        "Server": "{\"Name\":\"Synthetic server\",\"SSHHost\":\"example.invalid\",\"SSHPort\":\"22\",\"Username\":\"synthetic\",\"Password\":\"fixture-only\",\"future\":null}",
+        "HWID": "SYNTHETIC-DEVICE",
+        "ExpireDate": 1,
+        "MobileData": true,
+        "BlockRoot": true,
+        "isPremium": true,
+        "Note": "First\nSecond\r\nThird",
+        "future": {
+          "values": [
+            null,
+            false,
+            ""
+          ]
+        },
+        "padding": "xxx"
+      },
+      "utf8Bytes": 449
+    }
+  ],
+  "shortVectors": [
+    {
+      "data": "LFlE+l3fQJc=",
+      "expected": {}
+    },
+    {
+      "data": "Ameta50IjghVNyZ9",
+      "expected": {
+        "a": 1
+      }
+    },
+    {
+      "data": "g2woNRkL14pe99zV",
+      "expected": {
+        "a": 12
+      }
+    },
+    {
+      "data": "QNGfPBY0YyDNgP/MyvzLBA==",
+      "expected": {
+        "a": "日"
+      }
+    }
+  ],
+  "invalidProfiles": [
+    "nlXX4mMTT7kdNoEJg35+mtAxPSQ=",
+    "Me1wvf/QE/RZAc7Q+9QVGA==",
+    "1CC8zFqoWu/5d39ftVDQTw==",
+    "epTnpBXl3cECmXbqmUoVcoNWKWs=",
+    "hhIbGT9+A7Y=",
+    "rXnyJFkmIppf4wC9"
+  ]
+}
