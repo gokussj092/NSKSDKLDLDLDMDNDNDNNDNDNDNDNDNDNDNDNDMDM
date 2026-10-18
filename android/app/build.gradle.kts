@@ -151,7 +151,7 @@ val prepareQaSettingsSource = tasks.register("prepareQaSettingsSource") {
             "QA Settings injection anchor absent or ambiguous; do not ship a build"
         }
         val source = original.replace(anchor,
-            "        com.ghostdeveloper.spdecode.cloud.CloudQaSettingsCard()\\n" + anchor)
+            "        com.ghostdeveloper.spdecode.cloud.CloudQaSettingsCard()\n" + anchor)
         val output = qaSettingsRoot.get().file(qaSettingsRelativePath).asFile
         output.parentFile.mkdirs()
         output.writeText(source, Charsets.UTF_8)
