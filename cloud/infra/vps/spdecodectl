@@ -247,7 +247,8 @@ case "${1:-help}" in
      enable) [[ $# -eq 2 ]] || die "spdecode panel enable";panel_enable;;
      disable) [[ $# -eq 2 ]] || die "spdecode panel disable";set_env CLOUD_ADMIN_ENABLED false;compose up -d --no-deps --force-recreate web;health;;
      check) [[ $# -eq 2 ]] || die "spdecode panel check";panel_check;;
-     *) die "spdecode panel enable|disable|check";; esac;;
+     reset-admin) [[ $# -eq 2 ]] || die "spdecode panel reset-admin";preflight;python3 "$REPO/cloud/infra/vps/panel-reset.py";;
+     *) die "spdecode panel enable|disable|check|reset-admin";; esac;;
  config)
    case "${2:-}" in
      set) [[ $# -eq 4 ]] || die "spdecode config set KEY VALUE";set_env "$3" "$4";;
@@ -275,6 +276,7 @@ SP-DECODE VPS commands:
   spdecode panel enable
   spdecode panel disable
   spdecode panel check
+  spdecode panel reset-admin   # generate credentials and validate real HTTPS login
   spdecode android setup
   spdecode android signing configure /root/upload-key.p12 alias
   spdecode android build --version-name 1.2.0 --version-code 26 --testing-only
