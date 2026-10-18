@@ -6,7 +6,6 @@ import hmac
 import json
 import os
 from pathlib import Path
-import re
 import secrets
 import subprocess
 import sys
@@ -101,11 +100,10 @@ def main():
     else:
         # Fail closed immediately, even if Redis cleanup fails.
         state=json.loads(STATE.read_text()) if STATE.exists() else {}
-        changes={key:state.get(key,"false" if key!="CLOUD_QA_EXPIRES_AT" else "0")
-                 for key in ("CLOUD_QA_ENABLED","CLOUD_QA_EXPIRES_AT",
-                             "CLOUD_API_ENABLED","CLOUD_FORCE_MAINTENANCE")}
-        changes["CLOUD_QA_ENABLED"]="false"
-        changes["CLOUD_QA_EXPIRES_AT"]="0"
+        # Preserve unrelated API/maintenance switches when no QA session exists.
+        changes={key:state[key] for key in ("CLOUD_API_ENABLED",
+            "CLOUD_FORCE_MAINTENANCE") if key in state}
+        changes.update({"CLOUD_QA_ENABLED":"false","CLOUD_QA_EXPIRES_AT":"0"})
         atomic(ENV,replace(old,changes))
         try:
             compose("exec","-T","redis","redis-cli","DEL",KEY)
