@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import base64
 import csv
+from functools import partial
 import json
 import os
 from pathlib import Path
@@ -24,6 +25,9 @@ DECODERS = (ROOT / "decoders").resolve()
 MAX_INPUT_BYTES = 16 * 1024 * 1024
 MAX_OUTPUT_BYTES = 4 * 1024 * 1024
 TIMEOUT_SECONDS = 20
+# NUR server lists contain many independently Argon2id-protected fields.
+# A dedicated budget must not weaken the 20-second cap of other decoders.
+CATALOG_TIMEOUT_SECONDS = 120
 _ALLOWED_RUNTIMES = frozenset({"python", "node", "php"})
 
 
@@ -64,9 +68,9 @@ def load_file_engines() -> dict[str, dict[str, str]]:
     return engines
 
 
-def _child_limits() -> None:
+def _child_limits(cpu_budget: int = TIMEOUT_SECONDS) -> None:
     """POSIX resource caps on untrusted decoder subprocesses."""
-    resource.setrlimit(resource.RLIMIT_CPU, (TIMEOUT_SECONDS + 2, TIMEOUT_SECONDS + 3))
+    resource.setrlimit(resource.RLIMIT_CPU, (cpu_budget + 2, cpu_budget + 3))
     resource.setrlimit(resource.RLIMIT_FSIZE, (MAX_OUTPUT_BYTES + 1, MAX_OUTPUT_BYTES + 1))
     resource.setrlimit(resource.RLIMIT_NOFILE, (64, 64))
     resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
@@ -256,12 +260,14 @@ def decode_text(text: str, *, timeout: int = TIMEOUT_SECONDS) -> dict:
         }
 
 
-def decode_catalog(contents: bytes, *, timeout: int = TIMEOUT_SECONDS) -> dict:
+def decode_catalog(contents: bytes, *, timeout: int = CATALOG_TIMEOUT_SECONDS) -> dict:
     """NUR server catalog: authenticated input bytes, no URL fetching."""
     if not isinstance(contents, bytes) or not contents:
         raise DecodeFailure("INVALID_INPUT")
     if len(contents) > MAX_INPUT_BYTES:
         raise DecodeFailure("INPUT_TOO_LARGE")
+    if not isinstance(timeout,int) or not 1 <= timeout <= CATALOG_TIMEOUT_SECONDS:
+        raise DecodeFailure("INVALID_REQUEST")
     bridge = Path(__file__).with_name("catalog_bridge.py")
     if not bridge.is_file():
         raise DecodeFailure("ENGINE_UNAVAILABLE")
@@ -276,7 +282,7 @@ def decode_catalog(contents: bytes, *, timeout: int = TIMEOUT_SECONDS) -> dict:
                     [sys.executable, str(bridge), str(source)],
                     cwd=ROOT, env=_child_env(folder), stdin=subprocess.DEVNULL,
                     stdout=output, stderr=subprocess.DEVNULL,
-                    close_fds=True, start_new_session=True, preexec_fn=_child_limits,
+                    close_fds=True, start_new_session=True, preexec_fn=partial(_child_limits,CATALOG_TIMEOUT_SECONDS),
                 )
             except OSError as error:
                 raise DecodeFailure("ENGINE_UNAVAILABLE") from error
