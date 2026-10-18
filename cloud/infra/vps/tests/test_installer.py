@@ -143,8 +143,8 @@ class VPSInstallerTests(unittest.TestCase):
           capture_output=True,text=True,check=True).stdout
         # Check actual Nginx directives, not a comment that says "allow".
         import re
-        self.assertIsNone(re.search(r"(?m)^\\s*allow\\s+",config))
-        self.assertIsNone(re.search(r"(?m)^\\s*deny\\s+",config))
+        self.assertIsNone(re.search(r"(?m)^\s*allow\s+",config))
+        self.assertIsNone(re.search(r"(?m)^\s*deny\s+",config))
         self.assertIn("location ^~ /api/admin/",config)
         self.assertIn("location ^~ /admin",config)
         cli=(VPS/"spdecodectl").read_text()
