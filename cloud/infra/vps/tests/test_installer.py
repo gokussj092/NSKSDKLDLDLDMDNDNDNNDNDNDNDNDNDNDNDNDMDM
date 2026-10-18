@@ -15,6 +15,51 @@ class VPSInstallerTests(unittest.TestCase):
         result=subprocess.run(["python3",str(VPS/"nginx-config.py"),"ghost.duckdns.org","198.51.100.12/32"],capture_output=True,text=True,check=True)
         for line in ("listen 443 ssl","allow 198.51.100.12/32","deny all","location ^~ /api/admin/","proxy_set_header X-Real-IP $remote_addr"):
             self.assertIn(line,result.stdout)
+    def test_three_host_isolation_for_spdecode(self):
+        result=subprocess.run(["python3",str(VPS/"nginx-config.py"),
+            "spdecode.xyz","198.51.100.12/32","--api-domain","api.spdecode.xyz",
+            "--panel-domain","panel.spdecode.xyz","--www"],
+            capture_output=True,text=True,check=True)
+        config=result.stdout
+        for host in ("server_name spdecode.xyz;","server_name api.spdecode.xyz;",
+                     "server_name panel.spdecode.xyz;","server_name www.spdecode.xyz;"):
+            self.assertIn(host,config)
+        self.assertEqual(config.count("listen 443 ssl;"),4)
+        self.assertEqual(config.count("ssl_certificate /etc/letsencrypt/live/spdecode.xyz/fullchain.pem;"),4)
+        self.assertIn("location ^~ /api/v1/",config)
+        self.assertIn("location ^~ /api/admin/",config)
+        self.assertIn("location ^~ /_next/",config)
+        self.assertIn("location ^~ /api/v1/ { return 404; }",config)
+        self.assertIn("location ^~ /api/admin { return 404; }",config)
+        self.assertIn("allow 198.51.100.12/32;",config)
+        self.assertIn("deny all;",config)
+        self.assertNotIn("proxy_pass http://127.0.0.1:8000",config)
+        self.assertNotIn("proxy_pass http://127.0.0.1:3001",config)
+    def test_invalid_or_cross_domain_subdomains_rejected(self):
+        args=[
+            ["--api-domain","evil.example.com"],
+            ["--panel-domain","api.spdecode.xyz"],
+            ["--api-domain","-injection.spdecode.xyz"],
+            ["--panel-domain","panel.spdecode.xyz;return 200"],
+        ]
+        for extra in args:
+            p=subprocess.run(["python3",str(VPS/"nginx-config.py"),
+                "spdecode.xyz","198.51.100.12/32",*extra],
+                capture_output=True,text=True)
+            self.assertNotEqual(p.returncode,0,extra)
+    def test_real_domain_and_support_email_wiring(self):
+        install=(VPS/"install.sh").read_text()
+        android=(VPS/"android-build.sh").read_text()
+        compose=(ROOT/"cloud/compose.yaml").read_text()
+        for term in ('--api-domain','--panel-domain','--support-email',
+                     'CLOUD_ADMIN_PUBLIC_ORIGIN=https://$PANEL_DOMAIN',
+                     'CLOUD_API_PUBLIC_ORIGIN=https://$API_DOMAIN',
+                     'CLOUD_SUPPORT_EMAIL=$SUPPORT_EMAIL',
+                     'CERTBOT_DOMAINS=(-d "$DOMAIN" -d "$API_DOMAIN" -d "$PANEL_DOMAIN")'):
+            self.assertIn(term,install)
+        self.assertIn('"$CFG/api-domain"',android)
+        self.assertIn('SPDECODE_CLOUD_API_BASE_URL="https://$domain"',android)
+        self.assertIn("CLOUD_SUPPORT_EMAIL:",compose)
     def test_nginx_rejects_injection(self):
         for value in ("bad;inject","http://host.test","host.test/path","localhost","host.test\nserver {"):
             p=subprocess.run(["python3",str(VPS/"nginx-config.py"),value],capture_output=True)
