@@ -143,6 +143,35 @@ panel_check(){
   log "Panel login backend active (guest session correctly returns 401)."
   return 0
 }
+panel_routes(){
+  preflight
+  local domain api panel conf temp stamp
+  [[ -s "$CFG/domain" && -s "$CFG/api-domain" && -s "$CFG/panel-domain" ]] ||
+    die "Missing configured hostnames"
+  domain=$(cat "$CFG/domain");api=$(cat "$CFG/api-domain");panel=$(cat "$CFG/panel-domain")
+  [[ "$domain" =~ ^[A-Za-z0-9.-]+$ && "$api" =~ ^[A-Za-z0-9.-]+$ &&
+     "$panel" =~ ^[A-Za-z0-9.-]+$ ]] || die "Invalid hostname"
+  conf=/etc/nginx/sites-available/spdecode.conf
+  [[ -f "$conf" ]] || die "Existing SP-DECODE Nginx configuration not found"
+  local opts=("$domain" --api-domain "$api" --panel-domain "$panel")
+  if grep -Eq "server_name[[:space:]]+www\\.$domain;" "$conf"; then opts+=(--www); fi
+  mkdir -p "$CFG/backups"
+  stamp=$(date -u +%Y%m%dT%H%M%SZ)
+  cp -p "$conf" "$CFG/backups/routing-before-$stamp.conf"
+  temp=$(mktemp /etc/nginx/sites-available/.spdecode-routes-XXXXXX)
+  if ! python3 "$REPO/cloud/infra/vps/nginx-config.py" "${opts[@]}" > "$temp"; then
+    rm -f "$temp";die "Could not generate panel routing"
+  fi
+  install -m 0644 "$temp" "$conf"
+  rm -f "$temp"
+  if ! nginx -t || ! systemctl reload nginx; then
+    cp -p "$CFG/backups/routing-before-$stamp.conf" "$conf"
+    nginx -t && systemctl reload nginx || true
+    die "Nginx rejected panel routing; restored the previous configuration"
+  fi
+  log "SP-DECODE panel informational routes and private dashboard routing active."
+  log "No admin usernames, passwords or API settings changed."
+}
 panel_enable(){
   preflight
   local username domain api panel conf stamp temp candidate
@@ -248,7 +277,8 @@ case "${1:-help}" in
      disable) [[ $# -eq 2 ]] || die "spdecode panel disable";set_env CLOUD_ADMIN_ENABLED false;compose up -d --no-deps --force-recreate web;health;;
      check) [[ $# -eq 2 ]] || die "spdecode panel check";panel_check;;
      reset-admin) [[ $# -eq 2 ]] || die "spdecode panel reset-admin";preflight;python3 "$REPO/cloud/infra/vps/panel-reset.py";;
-     *) die "spdecode panel enable|disable|check|reset-admin";; esac;;
+     sync-routes) [[ $# -eq 2 ]] || die "spdecode panel sync-routes";panel_routes;;
+     *) die "spdecode panel enable|disable|check|reset-admin|sync-routes";; esac;;
  config)
    case "${2:-}" in
      set) [[ $# -eq 4 ]] || die "spdecode config set KEY VALUE";set_env "$3" "$4";;
@@ -277,6 +307,7 @@ SP-DECODE VPS commands:
   spdecode panel disable
   spdecode panel check
   spdecode panel reset-admin   # generate credentials and validate real HTTPS login
+  spdecode panel sync-routes   # update Nginx public links without rotating credentials
   spdecode android setup
   spdecode android signing configure /root/upload-key.p12 alias
   spdecode android build --version-name 1.2.0 --version-code 26 --testing-only
