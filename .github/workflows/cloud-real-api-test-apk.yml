@@ -71,9 +71,9 @@ jobs:
           import re
           file=Path("android/app/build.gradle.kts")
           src=file.read_text()
-          src,n=re.subn(r'versionCode = \d+', 'versionCode = 26', src)
+          src,n=re.subn(r'versionCode = \d+', 'versionCode = 27', src)
           assert n==1
-          src,n=re.subn(r'versionName = "[^"]+"', 'versionName = "1.2.0-qa"', src)
+          src,n=re.subn(r'versionName = "[^"]+"', 'versionName = "1.2.1-qa"', src)
           assert n==1
           file.write_text(src)
           PY
@@ -97,8 +97,8 @@ jobs:
           "$ANDROID_HOME/build-tools/35.0.0/zipalign" -c -P 16 -v 4 "$APK" >/dev/null
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" > "$RUNNER_TEMP/qa-badging.txt"
           grep -F "package: name='com.ghostdeveloper.spdecode'" "$RUNNER_TEMP/qa-badging.txt"
-          grep -F "versionName='1.2.0-qa'" "$RUNNER_TEMP/qa-badging.txt"
-          grep -F "versionCode='26'" "$RUNNER_TEMP/qa-badging.txt"
+          grep -F "versionName='1.2.1-qa'" "$RUNNER_TEMP/qa-badging.txt"
+          grep -F "versionCode='27'" "$RUNNER_TEMP/qa-badging.txt"
           python3 tests/cloud_c5_apk_audit.py "$APK"
           python3 - <<'PY'
           from zipfile import ZipFile
@@ -117,14 +117,14 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p dist
-          cp android/app/build/outputs/apk/release/app-release.apk dist/SP-DECODE-v1.2.0-qa26-CLOUD-REAL-API.apk
+          cp android/app/build/outputs/apk/release/app-release.apk dist/SP-DECODE-v1.2.1-qa27-CLOUD-REAL-API.apk
           (cd dist && sha256sum *.apk > SHA256SUMS.txt)
           {
             echo "Channel: QA only; no Play Store release or production claim"
             echo "API: https://api.spdecode.xyz"
             echo "Package: com.ghostdeveloper.spdecode"
-            echo "VersionName: 1.2.0-qa"
-            echo "VersionCode: 26"
+            echo "VersionName: 1.2.1-qa"
+            echo "VersionCode: 27"
             echo "Source commit: $GITHUB_SHA"
             echo "Signing: existing repository permanent key"
             echo "QA: enter a temporary credential from sudo spdecode qa start in Android Settings"
@@ -133,7 +133,7 @@ jobs:
       - name: Upload installable signed QA APK (only GitHub Actions artifact)
         uses: actions/upload-artifact@v4
         with:
-          name: SP-DECODE-Cloud-v1.2.0-qa26-REAL-API
+          name: SP-DECODE-Cloud-v1.2.1-qa27-REAL-API
           path: dist/
           if-no-files-found: error
           retention-days: 30
