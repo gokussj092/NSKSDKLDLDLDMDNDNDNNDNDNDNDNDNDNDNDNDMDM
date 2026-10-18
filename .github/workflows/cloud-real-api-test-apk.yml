@@ -76,6 +76,7 @@ jobs:
         env:
           SPDECODE_CLOUD_API_BASE_URL: https://api.spdecode.xyz
           SPDECODE_CLOUD_RELEASE: "true"
+          SPDECODE_CLOUD_QA_BUILD: "true"
           SPDECODE_RELEASE_STORE_FILE: ${{ runner.temp }}/spdecode-qa-signing.p12
           SPDECODE_RELEASE_STORE_PASSWORD: ${{ secrets.SPDECODE_SIGNING_STORE_PASSWORD }}
           SPDECODE_RELEASE_KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
@@ -120,7 +121,8 @@ jobs:
             echo "VersionCode: 26"
             echo "Source commit: $GITHUB_SHA"
             echo "Signing: existing repository permanent key"
-            echo "Play Integrity: still required by server; install via an authorized Play testing channel for PLAY_RECOGNIZED/Licensed checks"
+            echo "QA: enter a temporary credential from sudo spdecode qa start in Android Settings"
+            echo "Production: Play Integrity remains required; QA mode expires after four hours"
           } > dist/QA-README.txt
       - name: Upload installable signed QA APK (only GitHub Actions artifact)
         uses: actions/upload-artifact@v4
