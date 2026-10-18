@@ -207,6 +207,10 @@ export async function downloadApproved({url,kind,method="GET",body,headers={},ma
         headers:{...headers,"Accept-Encoding":"identity","Connection":"close"},
         lookup:(host,opts,callback)=>{
           if(host!==destination.hostname)return callback(new Error("hostname mismatch"));
+          // Node 22's autoSelectFamily calls lookup({all:true}) and REQUIRES
+          // an array of {address,family}. A scalar silently fails with
+          // ERR_INVALID_IP_ADDRESS before the HTTPS connection is attempted.
+          if(opts?.all===true)return callback(null,[{address:selected,family:4}]);
           callback(null,selected,4);
         },
       };
