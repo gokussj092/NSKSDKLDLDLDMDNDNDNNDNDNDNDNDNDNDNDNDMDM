@@ -90,7 +90,7 @@ def generate(domain: str, api: str, panel: str, www: bool) -> str:
     # Public login page. Actual admin endpoints require username + password
     # with signed HTTPS-only session cookies, CSRF protection and throttling.
     access_log off;
-    location = / {{ return 302 /admin/login; }}
+    location = / {{ return 302 /admin; }}
     location ^~ /admin {{
 {common_headers()}
     }}
