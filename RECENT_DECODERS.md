@@ -177,6 +177,28 @@ Catálogos comparados byte por byte con Java y CLI comprobada contra el
 endpoint real. Archivos probados con vectores Java independientes y la
 función XOR ARM64 original bajo emulación; no se recibió un `.hxt` real.
 
+## MKK Hyper VPN 2.9.2 — catálogo, suscripciones, textos e icono
+
+[`apps/MKK_Hyper_VPN`](decoders/Python/apps/MKK_Hyper_VPN/README.md)
+reúne `MKK_Hyper_VPN.py`, `MKK_Hyper_VPN_textos.py`, documentación y el icono
+original. No se identificó una extensión propia de archivos: importa texto
+`mkk://`, que el lector también puede abrir desde un archivo de texto.
+Ambos scripts son autónomos y no necesitan el APK en ejecución.
+
+```bash
+python decoders/Python/apps/MKK_Hyper_VPN/MKK_Hyper_VPN.py --url -o catalogo.json
+python decoders/Python/apps/MKK_Hyper_VPN/MKK_Hyper_VPN.py --url --source subscriptions --expand --allow-partial -o informe.json
+python decoders/Python/apps/MKK_Hyper_VPN/MKK_Hyper_VPN_textos.py --text 'mkk://BASE64_REAL'
+```
+
+El catálogo usa AES-256-GCM con clave derivada por SHA-256 y tag separado
+o adjunto. Las claves `mkk://` usan IV de 16 bytes y AES-256-CBC/PKCS7;
+se conserva su URI y el JSON VMess completo. Consulta real: catálogo 97
+autenticado con 12 servidores, comparado byte por byte con JCE. El índice
+incluye diez fuentes; la expansión recuperó nueve y señaló una fallida,
+sin presentar el resultado como completo. Textos comprobados con cinco
+vectores sintéticos JCE; no se recibió una clave `mkk://` real.
+
 ## Flujo por decodificador
 
 ### decoders/Python/DARKTUNNEL.py
