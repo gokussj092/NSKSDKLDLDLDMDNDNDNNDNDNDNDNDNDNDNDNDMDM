@@ -94,8 +94,8 @@ class QATests(unittest.TestCase):
         self.assertIn("CLOUD_NUR_FETCH_ENABLED=",self.env.read_text())
     def test_optional_ehi_enabled_only_with_valid_keys(self):
         self.env.write_text(self.env.read_text()+
-            "CLOUD_EHI_SIGN_KEY="+"S"*32+"\\n"+
-            "CLOUD_EHI_RESPONSE_KEY="+"R"*32+"\\n")
+            "CLOUD_EHI_SIGN_KEY="+"S"*32+"\n"+
+            "CLOUD_EHI_RESPONSE_KEY="+"R"*32+"\n")
         output,_=self.call("start")
         self.assertIn("HTTP Injector Cloud: ENABLED",output)
         self.assertIn("CLOUD_EHI_IMPORT_ENABLED=true",self.env.read_text())
