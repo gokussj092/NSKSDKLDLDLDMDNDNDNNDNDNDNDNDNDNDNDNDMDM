@@ -6,6 +6,8 @@
 
 **Error:** `unauthorized: Invalid response ... 404` para `spdecode.xyz`, `api.spdecode.xyz` y `panel.spdecode.xyz`. Significa que el servidor HTTP respondió pero **no entregó los archivos de desafío** creados en `/var/www/spdecode-acme/.well-known/acme-challenge/`. La causa más frecuente con el sitio provisional anterior es un virtual host Nginx duplicado.
 
+**Diagnóstico importante:** el recuperador inicial comparaba únicamente el texto de respuesta HTTP y no mostraba si provenía de Nginx o de un proxy configurado mediante `HTTP_PROXY`/`ALL_PROXY`. Ahora fuerza conexión directa a `127.0.0.1:80` con `curl --noproxy '*'` y, si falla, imprime el código HTTP, un resumen de la respuesta, bloques de Nginx pertinentes y permisos del webroot. No assume que sea siempre un conflicto de hosts.
+
 **No vuelvas a ejecutar `install.sh` completo**: el primer intento ya creó `/opt/spdecode/repo`, `/etc/spdecode/cloud.env` y otros directorios. No cambies los secretos ni los registros MX/TXT del correo.
 
 Primero inspecciona:
@@ -23,6 +25,8 @@ git pull --ff-only origin feat/cloud-c8-vps-installer-updater
 
 # Primero una comprobación conservadora (se detiene si encuentra un legacy activo):
 sudo bash cloud/infra/vps/resume-install.sh
+
+# Si aún falla, envía el bloque "observed HTTP" y "Relevant Nginx configuration".
 
 # SOLO si el error señala precisamente el antiguo enlace
 # /etc/nginx/sites-enabled/spdecode:
