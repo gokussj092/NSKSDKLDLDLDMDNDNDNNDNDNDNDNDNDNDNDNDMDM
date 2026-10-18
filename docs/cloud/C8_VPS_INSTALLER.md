@@ -26,7 +26,7 @@ El primer comando construye y reinicia Next.js e instala la CLI actualizada. El 
 
 La telemetría privada, accesible solo después de iniciar sesión y sin caché, agrega conteos diarios en Redis por extensión, éxitos, fallos, código de error y bytes de entrada del worker. Permite rango UTC de hoy o últimos siete días, con retención de ocho días. La instrumentación comienza desde su despliegue: no hay datos históricos por extensión de antes de esta versión. No registra contenido cifrado ni descifrado, nombres de archivos, IPs, credenciales, claves o mensajes de excepción. Los errores de formatos desconocidos se agrupan en `other` y los códigos no reconocidos en `OTHER_ERROR` para limitar la cardinalidad. No representa consumo de CPU/RAM de Docker ni el tráfico de red completo.
 
-La API de descifrado continúa cerrada bajo los requisitos existentes de Play Integrity, credenciales y mantenimiento; mostrar un panel sin datos no equivale a un fallo de la interfaz. Prueba que `/api/admin/reports` devuelve HTTP 401 sin sesión autenticada y HTTP 200 con una cookie válida.
+**Límite actual de persistencia:** la configuración C8 de Redis no utiliza AOF ni snapshots persistentes. Por tanto, un reinicio o recreación de Redis puede borrar los contadores antes de los ocho días; este panel proporciona observabilidad operativa temporal, no auditoría histórica permanente. Para métricas persistentes necesitará un almacén separado y migración explícita de infraestructura.\n\nLa API de descifrado continúa cerrada bajo los requisitos existentes de Play Integrity, credenciales y mantenimiento; mostrar un panel sin datos no equivale a un fallo de la interfaz. Prueba que `/api/admin/reports` devuelve HTTP 401 sin sesión autenticada y HTTP 200 con una cookie válida.
 
 ---
 
