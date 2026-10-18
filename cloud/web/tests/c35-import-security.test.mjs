@@ -169,6 +169,26 @@ test("NUR mirrors Python 30-second/16-MiB download contract without weakening EH
     url:EHI_ENDPOINT,kind:"ehi",method:"POST",maxBytes:16*1024*1024,
   },{...opts,request:fakeTransport()}),{code:"REMOTE_NETWORK_DENIED"});
 });
+test("NUR uses standalone script headers and a full 16-MiB encrypted catalog buffer",async()=>{
+  const config={...env,CLOUD_NUR_CATALOG_URL:nurUrl};
+  let called=false;
+  const payload=Buffer.from("authenticated catalog placeholder");
+  const bytes=await downloadNur({
+    env:config,transport:async options=>{
+      called=true;
+      assert.equal(options.url,nurUrl);
+      assert.equal(options.kind,"nur");
+      assert.equal(options.method,"GET");
+      assert.equal(options.maxBytes,16*1024*1024);
+      assert.equal(options.headers["User-Agent"],"NUR TUNNEL VPN");
+      assert.equal(options.headers["Accept-Encoding"],"identity");
+      assert.equal(Object.hasOwn(options.headers,"Accept"),false);
+      return payload;
+    },
+  });
+  assert.equal(called,true);
+  assert.equal(bytes,payload);
+});
 test("NUR accepts bounded same-host HTTPS redirects but rejects other origins, protocols and loops",async()=>{
   const opts={resolve:async()=>[{address:"8.8.8.8",family:4}]};
   let calls=0;
