@@ -56,6 +56,13 @@ export async function externalImportRequest(request,kind,opts={}) {
     });}catch{}
     return result;
   }catch(error) {
+    // Count provider/download failures after authorization, without storing URLs.
+    if(redis && lease){
+      try{await recordWorkerResult(redis,"failed",{
+        kind:kind==="nur"?"catalog":"ehi",bytes:0,
+        errorCode:typeof error?.code==="string"?error.code:"SERVICE_UNAVAILABLE",
+      });}catch{}
+    }
     if (isExternalImportError(error)) return failure(error.code,error.status);
     if (error?.code==="INVALID_REQUEST")return failure("INVALID_REQUEST",400);
     if (error?.code==="INPUT_TOO_LARGE")return failure("INPUT_TOO_LARGE",413);
