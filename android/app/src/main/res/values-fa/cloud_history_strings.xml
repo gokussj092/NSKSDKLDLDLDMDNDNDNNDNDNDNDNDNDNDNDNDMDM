@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_decode_progress_title">در حال رمزگشایی پیکربندی</string>
+    <string name="cloud_decode_progress_message">این کار ممکن است چند دقیقه طول بکشد. لطفاً منتظر بمانید.</string>
+    <string name="cloud_large_result_title">پیکربندی بزرگ رمزگشایی شد</string>
+    <string name="cloud_large_result_body">پیکربندی در تاریخچه رمزگذاری‌شده ذخیره شد. پیش‌نمایش نتایج بسیار بزرگ ممکن است برنامه را کند کند یا ببندد. بهتر است فایل JSON کامل را از تاریخچه صادر کنید: روی سه نقطه بزنید و خروجی گرفتن را انتخاب کنید. می‌توانید پوشه و نام فایل را تعیین کنید.</string>
+    <string name="cloud_large_result_acknowledge">متوجه شدم</string>
+    <string name="cloud_history_actions">گزینه‌های بیشتر</string>
+</resources>
