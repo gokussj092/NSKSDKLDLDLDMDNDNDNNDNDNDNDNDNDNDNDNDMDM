@@ -122,8 +122,10 @@ try {
   raw=await downloadNur();
   emit({stage:"download",status:"ok",bytes:raw.length});
 }catch(error){
-  emit({stage:"download",status:"failed",code:
-    typeof error?.code==="string"?error.code:"REMOTE_PROVIDER_UNAVAILABLE"});
+  emit({stage:"download",status:"failed",
+    code:typeof error?.code==="string"?error.code:"REMOTE_PROVIDER_UNAVAILABLE",
+    reason:typeof error?.reason==="string" && /^[A-Z0-9_]{2,32}$/.test(error.reason)?
+      error.reason:"UNCLASSIFIED"});
   process.exit(3);
 }
 try {
