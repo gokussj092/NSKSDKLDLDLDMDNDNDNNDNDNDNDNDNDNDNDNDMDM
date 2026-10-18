@@ -82,6 +82,8 @@ set_env(){
   case "$key" in
     CLOUD_API_ENABLED|CLOUD_ADMIN_ENABLED|CLOUD_FORCE_MAINTENANCE|CLOUD_PUBLIC_SITE_INDEX)
       [[ "$value" == true || "$value" == false ]] || die "Expected true or false";;
+    CLOUD_ADMIN_USERNAME)
+      [[ "$value" =~ ^[a-zA-Z][a-zA-Z0-9._-]{2,63}$ ]] || die "Username: 3-64 letters/numbers/._- and starts with letter";;
     CLOUD_GOOGLE_PLAY_PACKAGE)
       [[ "$value" =~ ^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$ ]] || die "Invalid package";;
     *) die "Unsupported configuration key";;
@@ -113,6 +115,44 @@ file.write_text("\n".join(rows+["CLOUD_ADMIN_PASSWORD_SCRYPT='"+hashed+"'"])+"\n
 file.chmod(0o600)
 print("Admin password hash stored (password not printed)")
 PY
+}
+panel_enable(){
+  preflight
+  local username domain api panel conf stamp temp candidate
+  read -r -p "Nombre de usuario del panel (3-64 caracteres): " username </dev/tty
+  [[ "$username" =~ ^[a-zA-Z][a-zA-Z0-9._-]{2,63}$ ]] || die "Nombre de usuario inválido"
+  set_env CLOUD_ADMIN_USERNAME "$username"
+  admin_password
+  # Check the destination host is the same one enforced by admin CSRF origin.
+  [[ -s "$CFG/domain" && -s "$CFG/api-domain" && -s "$CFG/panel-domain" ]] ||
+    die "Hostnames not provisioned"
+  domain=$(cat "$CFG/domain");api=$(cat "$CFG/api-domain");panel=$(cat "$CFG/panel-domain")
+  grep -Fxq "CLOUD_ADMIN_PUBLIC_ORIGIN=https://$panel" "$ENVFILE" ||
+    die "Configured admin origin mismatches panel hostname"
+  conf=/etc/nginx/sites-available/spdecode.conf
+  [[ -f "$conf" && -f "$REPO/cloud/infra/vps/nginx-config.py" ]] ||
+    die "Nginx configuration or generator missing"
+  mkdir -p "$CFG/backups"
+  stamp=$(date -u +%Y%m%dT%H%M%SZ)
+  cp -p "$conf" "$CFG/backups/panel-before-login-$stamp.conf"
+  temp=$(mktemp /etc/nginx/sites-available/.panel-XXXXXX)
+  local opts=("$domain" --api-domain "$api" --panel-domain "$panel")
+  if grep -Eq "server_name[[:space:]]+www\\.$domain;" "$conf"; then opts+=(--www); fi
+  if ! python3 "$REPO/cloud/infra/vps/nginx-config.py" "${opts[@]}" > "$temp"; then
+    rm -f "$temp";die "Failed to generate Nginx vhosts"
+  fi
+  install -m 0644 "$temp" "$conf"
+  rm -f "$temp"
+  if ! nginx -t || ! systemctl reload nginx; then
+    cp -p "$CFG/backups/panel-before-login-$stamp.conf" "$conf"
+    nginx -t && systemctl reload nginx || true
+    die "Nginx rejected the config; previous vhosts restored"
+  fi
+  set_env CLOUD_ADMIN_ENABLED true
+  compose up -d --no-deps --force-recreate web
+  health || die "Web healthcheck failed; review docker logs spdecode-web-1"
+  log "Panel enabled at https://$panel/admin/login with username and password only."
+  log "No IP verification or IP allowlist. Keep your password private."
 }
 google_account(){
   [[ -f "$1" && $(stat -c %a "$1") =~ ^(400|600)$ ]] || die "Service account must be a file with chmod 600"
@@ -174,12 +214,18 @@ case "${1:-help}" in
    deploy all
    install -m 0755 "$REPO/cloud/infra/vps/spdecodectl" /usr/local/bin/spdecode.next
   mv -f /usr/local/bin/spdecode.next /usr/local/bin/spdecode;;
+ panel)
+   case "${2:-}" in
+     enable) [[ $# -eq 2 ]] || die "spdecode panel enable";panel_enable;;
+     disable) [[ $# -eq 2 ]] || die "spdecode panel disable";set_env CLOUD_ADMIN_ENABLED false;compose up -d --no-deps --force-recreate web;health;;
+     *) die "spdecode panel enable|disable";; esac;;
  config)
    case "${2:-}" in
      set) [[ $# -eq 4 ]] || die "spdecode config set KEY VALUE";set_env "$3" "$4";;
      google-service-account) [[ $# -eq 3 ]] || die "spdecode config google-service-account /root/key.json";google_account "$3";;
      admin-password) [[ $# -eq 2 ]] || die "spdecode config admin-password";admin_password;;
-     *) die "spdecode config set KEY VALUE | google-service-account FILE | admin-password";; esac;;
+     admin-username) [[ $# -eq 3 ]] || die "spdecode config admin-username USER";set_env CLOUD_ADMIN_USERNAME "$3";;
+     *) die "spdecode config set KEY VALUE | google-service-account FILE | admin-password | admin-username NAME";; esac;;
  android) shift;exec bash "$REPO/cloud/infra/vps/android-build.sh" "$@";;
  help|-h|--help)
    cat <<'USAGE'
@@ -196,6 +242,9 @@ SP-DECODE VPS commands:
   spdecode config set CLOUD_ADMIN_ENABLED true|false
   spdecode config google-service-account /root/play-service.json
   spdecode config admin-password
+  spdecode config admin-username NAME
+  spdecode panel enable
+  spdecode panel disable
   spdecode android setup
   spdecode android signing configure /root/upload-key.p12 alias
   spdecode android build --version-name 1.2.0 --version-code 26 --testing-only
