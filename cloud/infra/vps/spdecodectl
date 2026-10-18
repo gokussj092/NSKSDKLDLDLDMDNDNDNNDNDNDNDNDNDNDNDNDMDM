@@ -169,7 +169,20 @@ panel_routes(){
     nginx -t && systemctl reload nginx || true
     die "Nginx rejected panel routing; restored the previous configuration"
   fi
-  log "SP-DECODE panel informational routes and private dashboard routing active."
+  # Test actual Next.js routing through local HTTPS before declaring success.
+  local path status
+  for path in /admin /admin/analytics /admin/reports /admin/system /features /docs /privacy /status /api/site/status; do
+    status=$(curl --noproxy '*' --proxy '' --silent --show-error \
+      --connect-timeout 3 --max-time 10 \
+      --resolve "$panel:443:127.0.0.1" -o /dev/null -w '%{http_code}' \
+      "https://$panel$path") || status=000
+    if [[ "$status" != 200 ]]; then
+      cp -p "$CFG/backups/routing-before-$stamp.conf" "$conf"
+      nginx -t && systemctl reload nginx || true
+      die "Panel $path returned HTTP $status; previous routing restored"
+    fi
+  done
+  log "SP-DECODE panel routes passed real HTTPS navigation checks."
   log "No admin usernames, passwords or API settings changed."
 }
 panel_enable(){
