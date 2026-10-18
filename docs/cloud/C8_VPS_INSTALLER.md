@@ -12,7 +12,7 @@ sudo spdecode qa start
 **Alternativa para generar la APK de pruebas en un VPS x86_64 con SDK instalado y tu misma clave de firma configurada:**
 
 ```bash
-sudo spdecode android build --version-name 1.2.2 --version-code 28 --testing-only --qa
+sudo spdecode android build --version-name 1.2.3 --version-code 29 --testing-only --qa
 sudo spdecode android artifacts
 ```
 
@@ -25,7 +25,7 @@ El segundo comando:
 - Recrea únicamente la web API y prueba la disponibilidad real del worker. Si falla, restaura la configuración anterior.
 - Preserva el estado anterior de los interruptores de API y mantenimiento para restaurarlo al detener QA.
 
-En el teléfono instala la APK firmada **SP-DECODE Cloud v1.2.2-qa (versionCode 28)**, creada específicamente con `SPDECODE_CLOUD_QA_BUILD=true` y URL `https://api.spdecode.xyz`. Ve a **Ajustes > Cloud QA · Pruebas privadas** dentro de la aplicación principal, introduce el código temporal y pulsa **Activar acceso QA**. Esta sección se añade únicamente a la copia de Ajustes compilada para QA; los archivos originales de interfaz del repositorio permanecen intactos. El segundo icono **SP-DECODE QA** también sigue disponible como acceso alternativo. Después descifra archivos y textos como siempre. El resultado continúa llegando del worker aislado y alimenta las estadísticas por extensión; la aplicación no incorpora ningún motor local ni secretos permanentes del servidor.
+En el teléfono instala la APK firmada **SP-DECODE Cloud v1.2.3-qa (versionCode 29)**, creada específicamente con `SPDECODE_CLOUD_QA_BUILD=true` y URL `https://api.spdecode.xyz`. Ve a **Ajustes > Cloud QA · Pruebas privadas** dentro de la aplicación principal, introduce el código temporal y pulsa **Activar acceso QA**. Esta sección se añade únicamente a la copia de Ajustes compilada para QA; los archivos originales de interfaz del repositorio permanecen intactos. El segundo icono **SP-DECODE QA** también sigue disponible como acceso alternativo. Después descifra archivos y textos como siempre. El resultado continúa llegando del worker aislado y alimenta las estadísticas por extensión; la aplicación no incorpora ningún motor local ni secretos permanentes del servidor.
 
 El cliente envía el código una vez por sesión al endpoint `POST /api/v1/session/qa` después de obtener un desafío ligado al origen de la solicitud. Las sesiones se firman con el mismo mecanismo del backend, vencen a los cinco minutos como máximo, están limitadas en frecuencia, y dejan de funcionar inmediatamente cuando se desactiva QA. El código **no se compila ni guarda en la APK**, no se persiste en el dispositivo y no puede utilizarse desde la aplicación pública porque el icono QA queda deshabilitado y el servidor solo admite el canal durante una ventana de pruebas.
 
@@ -58,6 +58,39 @@ restaura las opciones previas.
 Si vas a iniciar una **nueva** sesión QA después de actualizar esta rama,
 `sudo spdecode qa start` habilita automáticamente los proveedores que estén
 configurados correctamente. No requiere `qa services` adicional.
+
+### Catálogo NUR de gran tamaño: presupuesto separado de descifrado
+
+Las respuestas remotas pueden contener miles de campos protegidos con Argon2id.
+El worker detiene los motores normales a los 20 s, pero el catálogo NUR dispone
+de **120 s** (wall time y CPU restringida por RLIMIT). Su llamada privada
+a través de la API espera hasta **135 s**. Nginx debe aceptar **155 s**
+exclusivamente en `/api/v1/decode/import/catalog/remote` y el cliente
+`1.2.3-qa` (versionCode 29) utiliza **165 s** de lectura HTTPS exclusivamente
+en esta operación. Ningún otro archivo o texto recibe esta excepción.
+
+**Instalación en VPS tras aprobar CI:**
+
+```bash
+sudo spdecode update all feat/cloud-c8-vps-installer-updater
+sudo spdecode panel sync-routes
+sudo spdecode qa status
+sudo spdecode qa probe-nur
+```
+
+`update all` recompila el **worker y web**; `panel sync-routes` actualiza el
+proxy HTTPS con backup, validación Nginx y comprobación de rutas; no cambia
+contraseñas del panel. Puede ejecutarse con la sesión QA existente. Instalar la
+APK firmada `SP-DECODE-v1.2.3-qa29-CLOUD-REAL-API.apk` antes de iniciar
+descargas largas desde Android. El binario QA lleva controles de prueba; las
+compilaciones sin `SPDECODE_CLOUD_QA_BUILD=true` no exponen dichos controles.
+
+No confundir el tamaño de descarga con el del JSON resultante. Si el resultado
+supera 4 MiB se responde con error explícito de tamaño; **no** se trunca.
+Si después de 120 s el motor continúa ocupado, devuelve `ENGINE_TIMEOUT`
+sin devolver datos parciales. El siguiente paso sería medir la cantidad de
+campos Argon2id y optimizar el catálogo, no ampliar indiscriminadamente
+los límites de las demás API.
 
 ### Diagnóstico de compatibilidad con el script Python de NUR
 
