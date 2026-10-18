@@ -4,6 +4,12 @@ on:
     branches: ["feat/cloud-c8-vps-installer-updater"]
     paths:
       - ".github/workflows/cloud-real-api-test-apk.yml"
+      - "android/app/**"
+      - "cloud/web/lib/c3-config.mjs"
+      - "cloud/web/lib/c3-session.mjs"
+      - "cloud/web/lib/c3-gateway.mjs"
+      - "cloud/web/app/api/v1/session/qa/**"
+      - "cloud/infra/vps/qa-test.py"
   workflow_dispatch:
 permissions:
   contents: read
