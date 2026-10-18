@@ -101,8 +101,13 @@ certbot certonly --webroot --non-interactive --agree-tos \
 [[ -s "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" ]] ||
   die "Expected fullchain.pem is missing"
 log "Preparing isolated TLS domains for website, API and panel"
-NGINX_GEN="$ROOT/repo/cloud/infra/vps/nginx-config.py"
-[[ -f "$NGINX_GEN" ]] || die "Missing Nginx generator in cloned repo"
+# The operator invokes this recovery from ~/SP-DECODE after git pull, but
+# /opt/spdecode/repo still points to the commit before Certbot failed.
+# Use the verified recovery script's sibling generator, then sync the
+# managed deployment checkout without touching /etc/spdecode secrets.
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)
+NGINX_GEN="$SCRIPT_DIR/nginx-config.py"
+[[ -f "$NGINX_GEN" ]] || die "Missing Nginx generator next to recovery script"
 tmp=$(mktemp /etc/nginx/sites-available/.spdecode-XXXXXX)
 trap 'rm -f -- "$tmp"' EXIT
 python3 "$NGINX_GEN" "$DOMAIN" --api-domain "$API" --panel-domain "$PANEL" > "$tmp"
@@ -119,6 +124,17 @@ install -d -m 0755 /etc/letsencrypt/renewal-hooks/deploy
 printf '#!/bin/sh\n/usr/sbin/nginx -t && /bin/systemctl reload nginx\n' \
   > /etc/letsencrypt/renewal-hooks/deploy/spdecode-nginx
 chmod 0755 /etc/letsencrypt/renewal-hooks/deploy/spdecode-nginx
+log "Updating the managed shallow clone to the current installer branch"
+# shellcheck source=/dev/null
+source "$CONF"
+[[ "$SPDECODE_REF" =~ ^[A-Za-z0-9._/-]+$ && "$SPDECODE_REF" != -* &&
+   "$SPDECODE_REF" != *..* ]] || die "Invalid managed Git ref"
+[[ -z $(git -C "$ROOT/repo" status --porcelain) ]] ||
+  die "Managed source has local changes; refusing to overwrite files"
+git -C "$ROOT/repo" fetch --no-tags --depth=1 origin "$SPDECODE_REF"
+next=$(git -C "$ROOT/repo" rev-parse 'FETCH_HEAD^{commit}')
+[[ "$next" =~ ^[0-9a-f]{40}$ ]] || die "Invalid fetched commit"
+git -C "$ROOT/repo" reset --hard "$next" >/dev/null
 log "Starting private Docker Compose services with existing secrets, no regeneration"
 cd "$ROOT/repo"
 docker compose --project-name spdecode --env-file "$ENVFILE" \
