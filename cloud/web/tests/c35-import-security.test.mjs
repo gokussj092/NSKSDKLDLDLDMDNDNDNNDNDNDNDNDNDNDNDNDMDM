@@ -155,6 +155,52 @@ test("actual HTTPS transport pins checked address and rejects redirects and over
     ...opts,request:fakeTransport(200,Buffer.from("abc"),{"content-encoding":"gzip"}),
   }),{code:"REMOTE_RESPONSE_INVALID"});
 });
+test("NUR mirrors Python 30-second/16-MiB download contract without weakening EHI",async()=>{
+  const opts={resolve:async()=>[{address:"8.8.8.8",family:4}]};
+  const large=Buffer.alloc(8*1024*1024+1,65);
+  const content=await downloadApproved({
+    url:nurUrl,kind:"nur",method:"GET",maxBytes:16*1024*1024,
+  },{...opts,request:fakeTransport(200,large)});
+  assert.equal(content.length,large.length);
+  await assert.rejects(()=>downloadApproved({
+    url:nurUrl,kind:"nur",method:"GET",maxBytes:16*1024*1024+1,
+  },{...opts,request:fakeTransport()}),{code:"REMOTE_NETWORK_DENIED"});
+  await assert.rejects(()=>downloadApproved({
+    url:EHI_ENDPOINT,kind:"ehi",method:"POST",maxBytes:16*1024*1024,
+  },{...opts,request:fakeTransport()}),{code:"REMOTE_NETWORK_DENIED"});
+});
+test("NUR accepts bounded same-host HTTPS redirects but rejects other origins, protocols and loops",async()=>{
+  const opts={resolve:async()=>[{address:"8.8.8.8",family:4}]};
+  let calls=0;
+  const request=(...args)=>{
+    calls++;
+    return fakeTransport(calls===1?302:200,Buffer.from("NUR"),calls===1?
+      {"location":"/catalog/updated"}:{})(...args);
+  };
+  const output=await downloadApproved({url:nurUrl,kind:"nur",method:"GET"},{
+    ...opts,request,
+  });
+  assert.equal(output.toString(),"NUR");
+  assert.equal(calls,2);
+  for(const target of [
+    "https://evil.example/private","http://strongteam.co/catalog",
+    "https://strongteam.co:444/path","https://strongteam.co/catalog?secret=1",
+    "https://strongteam.co@evil.example/catalog","https://127.0.0.1/",
+  ]){
+    await assert.rejects(()=>downloadApproved({url:nurUrl,kind:"nur"},{
+      ...opts,request:fakeTransport(302,Buffer.from(""),{"location":target}),
+    }),{code:"REMOTE_NETWORK_DENIED"},target);
+  }
+  await assert.rejects(()=>downloadApproved({url:nurUrl,kind:"nur"},{
+    ...opts,request:fakeTransport(302,Buffer.from(""),{"location":"/catalog/updated"}),
+  }),{code:"REMOTE_PROVIDER_UNAVAILABLE"});
+});
+test("NUR returns safe HTTP status reason for operator diagnostics only",async()=>{
+  await assert.rejects(()=>downloadApproved({url:nurUrl,kind:"nur"},{
+    resolve:async()=>[{address:"8.8.8.8",family:4}],
+    request:fakeTransport(403),
+  }),err=>err.code==="REMOTE_PROVIDER_UNAVAILABLE" && err.reason==="HTTP_403");
+});
 test("signed HTTP Injector request cannot be redirected to arbitrary URLs",()=>{
   const result=buildEhiRequest("TEST1234",{signKey:SIGN_KEY,
     now:1700000000,nonce:"00000000-0000-4000-8000-000000000000",
