@@ -73,6 +73,16 @@ class VPSInstallerTests(unittest.TestCase):
         self.assertNotIn('CLOUD_SESSION_SIGNING_KEY=',script)
         self.assertNotIn('CLOUD_WORKER_TOKEN=',script)
         self.assertNotIn('git clone ',script)
+    def test_acme_parents_are_traversable_even_under_umask_077(self):
+        for name in ("install.sh","resume-install.sh"):
+            script=(VPS/name).read_text()
+            self.assertIn("umask 077",script)
+            self.assertIn("install -d -m 0755 /var/www/spdecode-acme",script)
+            self.assertIn("install -d -m 0755 /var/www/spdecode-acme/.well-known",script)
+            self.assertIn("chmod 0755 /var/www/spdecode-acme /var/www/spdecode-acme/.well-known",script)
+            self.assertLess(script.index("chmod 0755 /var/www/spdecode-acme"),
+                            script.index("certbot certonly"))
+            self.assertNotIn("chmod -R",script)
     def test_initial_installer_checks_webroot_before_letsencrypt(self):
         source=(VPS/"install.sh").read_text()
         pos=source.index('SPDECODE-ACME-READY')

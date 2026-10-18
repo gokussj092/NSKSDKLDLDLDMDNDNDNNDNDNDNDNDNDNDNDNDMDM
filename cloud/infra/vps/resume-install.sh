@@ -58,7 +58,14 @@ fi
 nginx -t
 systemctl reload nginx
 ACME=/var/www/spdecode-acme/.well-known/acme-challenge
+# Fix the exact cause of Certbot HTTP-01 404 under umask 077:
+# intermediate webroot directories may be created mode 0700 by install -d.
+# chmod the three PUBLIC ACME directories only, never /etc/spdecode.
+install -d -m 0755 /var/www/spdecode-acme
+install -d -m 0755 /var/www/spdecode-acme/.well-known
 install -d -m 0755 "$ACME"
+chmod 0755 /var/www/spdecode-acme /var/www/spdecode-acme/.well-known "$ACME"
+log "Corrected public ACME webroot traversal permissions (0755)"
 probe="spdecode-recovery-$(date -u +%s)-$$"
 printf 'SPDECODE-ACME-READY\n' > "$ACME/$probe"
 chmod 0644 "$ACME/$probe"

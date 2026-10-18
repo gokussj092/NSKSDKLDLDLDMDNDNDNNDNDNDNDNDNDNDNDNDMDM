@@ -98,7 +98,13 @@ printf '%s\n' "$PANEL_DOMAIN" > /etc/spdecode/panel-domain
 printf '%s\n' "$SUPPORT_EMAIL" > /etc/spdecode/support-email
 chmod 600 /etc/spdecode/domain /etc/spdecode/api-domain /etc/spdecode/panel-domain /etc/spdecode/support-email
 install -m 0755 /opt/spdecode/repo/cloud/infra/vps/spdecodectl /usr/local/bin/spdecode
+# With umask 077, GNU install -d creates intermediate directories as 0700
+# even if the leaf has -m 0755. Nginx must traverse every path component.
+install -d -m 0755 /var/www/spdecode-acme
+install -d -m 0755 /var/www/spdecode-acme/.well-known
 install -d -m 0755 /var/www/spdecode-acme/.well-known/acme-challenge
+chmod 0755 /var/www/spdecode-acme /var/www/spdecode-acme/.well-known \
+  /var/www/spdecode-acme/.well-known/acme-challenge
 cat >/etc/nginx/sites-available/spdecode.conf <<EOC
 server {
   listen 80;
