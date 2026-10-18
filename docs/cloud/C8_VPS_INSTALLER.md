@@ -44,6 +44,7 @@ Para una sesión QA **ya iniciada**, sin invalidar el código actual:
 sudo spdecode update web feat/cloud-c8-vps-installer-updater
 sudo spdecode qa services
 sudo spdecode qa status
+sudo spdecode qa probe-nur
 curl -fsS https://api.spdecode.xyz/api/v1/capabilities
 ```
 
