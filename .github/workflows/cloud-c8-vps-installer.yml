@@ -298,8 +298,20 @@ jobs:
           # a bearer reaches the worker gate, but no arbitrary data is persisted.
           sudo python3 cloud/infra/vps/qa-test.py stop >/dev/null
           echo "QA step 5: temporary code revoked"
-          test "$(curl --noproxy '*' -sS --resolve api.spdecode.xyz:443:127.0.0.1 \
-            -o /dev/null -w '%{http_code}' "$api/api/v1/ready")" = 503
+          # Revocation restarts the Next.js container. Wait for it to bind
+          # before asserting its deliberate security-gated HTTP 503 response.
+          qa_stop_status=000
+          for attempt in $(seq 1 30); do
+            qa_stop_status="$(curl --noproxy '*' -sS --max-time 3 \
+              --resolve api.spdecode.xyz:443:127.0.0.1 \
+              -o /dev/null -w '%{http_code}' "$api/api/v1/ready" 2>/dev/null)" || qa_stop_status=000
+            if [[ "$qa_stop_status" == 503 ]]; then break; fi
+            sleep 2
+          done
+          if [[ "$qa_stop_status" != 503 ]]; then
+            echo "::error::QA revoked but readiness returned HTTP $qa_stop_status (expected 503)"
+            exit 1
+          fi
           rm -f "$RUNNER_TEMP/qa-credentials" "$RUNNER_TEMP/qa-code.json" \
             "$RUNNER_TEMP/qa-request.json" "$RUNNER_TEMP/qa-challenge.json" \
             "$RUNNER_TEMP/qa-session.json"
