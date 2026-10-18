@@ -2,6 +2,29 @@
 
 **Rama:** `feat/cloud-c8-vps-installer-updater`, basada en C7 (#93). Es software para instalar en tu VPS: **no se ha conectado ni desplegado en una VPS real**. C8 no cambia el bot Python ni las pantallas Android.
 
+## Diagnóstico de panel 502 y API no habilitada
+
+Después de que Docker indique `spdecode-decoder-worker-1 Healthy` y `spdecode-redis-1 Healthy`, Next.js puede permanecer temporalmente en `health: starting`. Un `curl (56) Connection reset by peer` durante esos primeros segundos no equivale a un fallo permanente.
+
+```bash
+cd ~/SP-DECODE
+git pull --ff-only origin feat/cloud-c8-vps-installer-updater
+sudo bash cloud/infra/vps/diagnose-routing.sh
+```
+
+Este comprobador **no modifica servicios, claves ni acceso administrativo**. Examina Nginx, Docker y las rutas públicas usando `--resolve HOST:443:127.0.0.1` con SNI correcto, sin pasar por un proxy HTTP. Debe indicar:
+
+- Backend `127.0.0.1:3000/api/v1/health`: **200**.
+- Web HTTPS `spdecode.xyz/`: **200**.
+- API HTTPS `api.spdecode.xyz/api/v1/health`: **200**.
+- API HTTPS `api.spdecode.xyz/api/v1/ready`: **503** intencional si `CLOUD_API_ENABLED=false`, no es un 502.
+- Panel HTTPS `panel.spdecode.xyz/admin/login`: **200** desde el VPS (IP permitida local), o **403** desde un equipo público no autorizado. El login remoto no funciona hasta configurar allowlist de una única IP y credenciales C6. El endpoint administrativo de sesión responde **503** hasta habilitar el panel de forma segura.
+
+Si la ruta local del panel da **502** y el acceso directo a Next.js `127.0.0.1:3000/admin/login` también falla, inspecciona `sudo docker logs --tail 80 spdecode-web-1`. Si el backend directo da **200** y el proxy da **502**, inspecciona `sudo tail -n 35 /var/log/nginx/error.log`; comprueba el `server_name` y upstream, sin relajar `allow/deny` del panel.
+
+**No actives** `CLOUD_API_ENABLED` para intentar reparar un 502: es un interruptor de acceso al descifrador, no de red. Un 200 de `/health` solo confirma liveness, no Play Integrity, disponibilidad ni compatibilidad real.
+
+
 ## Error Docker: `decoder-worker` unhealthy tras emitir HTTPS
 
 Si el certificado ya se emitió correctamente y `docker compose up` informó `dependency failed to start: container spdecode-decoder-worker-1 is unhealthy`, **NO repitas `resume-install.sh` ni Certbot**. Comprueba primero, sin mostrar variables privadas, qué ocurrió:
