@@ -1,3 +1,31 @@
+## Restablecer el administrador si el formulario rechaza las credenciales
+
+El estado HTTP 401 de una sesión sin cookie **no** confirma que el usuario/contraseña sean correctos. El comando `reset-admin` incorpora una comprobación real de login HTTPS y sesión autenticada antes de mostrar las credenciales.
+
+En el VPS ya instalado:
+
+```bash
+sudo spdecode update web feat/cloud-c8-vps-installer-updater
+sudo spdecode panel reset-admin
+```
+
+**No vuelvas a ejecutar el instalador completo.** El segundo comando sustituye al único usuario administrador actual por uno nuevo, genera automáticamente usuario y contraseña de alta entropía, almacena solo el hash scrypt en `/etc/spdecode/cloud.env` (permisos 0600), rota la clave de sesión y recrea **solo** el contenedor web. Los usuarios antiguos y sus cookies dejan de servir; no existen registros de usuarios en una base de datos que deban borrarse.
+
+El comando vuelve a generar los virtual hosts SP-DECODE con el origen HTTPS del panel, valida `nginx -t`, recarga Nginx y comprueba `adminSettings().enabled` dentro del contenedor. Después envía las credenciales recién generadas a `https://panel.spdecode.xyz/api/admin/login` **por HTTPS contra el Nginx del VPS** y exige un HTTP 200; finalmente utiliza la cookie de esa respuesta para comprobar que `/api/admin/session` también devuelve HTTP 200. Solo entonces muestra en el terminal:
+
+```text
+ADMINISTRADOR RESTABLECIDO — LOGIN HTTPS VALIDADO
+URL: https://panel.spdecode.xyz/admin/login
+USUARIO: admin_...
+CONTRASEÑA: ... (generada en el VPS)
+```
+
+Guarda las credenciales localmente en un gestor de contraseñas. **No compartas la salida del comando ni la contraseña** en tickets, GitHub o capturas. El script nunca envía las credenciales como argumentos de procesos ni las escribe en el repositorio. Si la comprobación falla, **no imprime credenciales que no funcionan** e intenta restablecer la configuración anterior y el contenedor; diagnostica la conectividad local, certificado TLS, Nginx, Docker o Redis antes de reintentarlo.
+
+La validación anterior confirma el login por Nginx *desde el VPS*. El acceso desde un navegador remoto depende además del DNS y de la conectividad externa. No es necesario activar `CLOUD_API_ENABLED` ni desactivar mantenimiento del descifrador. Si repetiste muchas veces el login, el restablecimiento limpia únicamente el contador global de intentos administrativos (no sesiones de usuarios Android).
+
+---
+
 ## Solución: usuario correcto pero el panel responde ADMIN_DISABLED (503)
 
 En la primera versión de C8, `spdecode panel enable` almacenaba el usuario y el hash de contraseña en `/etc/spdecode/cloud.env`, pero `cloud/compose.yaml` omitía pasar `CLOUD_ADMIN_USERNAME` al contenedor Next.js. Por eso una cuenta válida podía recibir `ADMIN_DISABLED` aunque el instalador declarara que el panel estaba habilitado.
