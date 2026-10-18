@@ -135,6 +135,28 @@ if(providers.environmentVariable("SPDECODE_CLOUD_RELEASE").orNull=="true") {
 // are not a Kotlin/Java input and cannot be recovered from a Cloud APK.
 val cloudSourceRoot = layout.buildDirectory.dir("generated/c5-client/java")
 val cloudAssetRoot = layout.buildDirectory.dir("generated/c5-client/assets")
+// Preserve the nine frozen C0 UI files. QA builds patch only a generated
+// copy of Settings; release builds never compile this generated variant.
+val qaSettingsRelativePath = "com/ghostdeveloper/spdecode/FunctionalSettingsPanel.kt"
+val qaSettingsSource = layout.projectDirectory.file("src/main/java/$qaSettingsRelativePath")
+val qaSettingsRoot = layout.buildDirectory.dir("generated/c5-qa-settings/java")
+val prepareQaSettingsSource = tasks.register("prepareQaSettingsSource") {
+    inputs.file(qaSettingsSource)
+    outputs.dir(qaSettingsRoot)
+    doLast {
+        val original = qaSettingsSource.asFile.readText(Charsets.UTF_8)
+        val anchor = "        DeviceCredentialSettingsSection()"
+        require(original.indexOf(anchor) >= 0 &&
+            original.indexOf(anchor) == original.lastIndexOf(anchor)) {
+            "QA Settings injection anchor absent or ambiguous; do not ship a build"
+        }
+        val source = original.replace(anchor,
+            "        com.ghostdeveloper.spdecode.cloud.CloudQaSettingsCard()\\n" + anchor)
+        val output = qaSettingsRoot.get().file(qaSettingsRelativePath).asFile
+        output.parentFile.mkdirs()
+        output.writeText(source, Charsets.UTF_8)
+    }
+}
 val prepareCloudOnlySources = tasks.register<Sync>("prepareCloudOnlySources") {
     from("src/main/java") {
         exclude("com/ghostdeveloper/spdecode/parity/**")
@@ -142,12 +164,19 @@ val prepareCloudOnlySources = tasks.register<Sync>("prepareCloudOnlySources") {
         exclude("com/ghostdeveloper/spdecode/TextPhaseGPort.kt")
         exclude("com/ghostdeveloper/spdecode/HttpInjectorCloudPort.kt")
         exclude("com/ghostdeveloper/spdecode/NurTunnelServerCatalog.kt")
+        if (enableQaBuild) {
+            exclude("com/ghostdeveloper/spdecode/FunctionalSettingsPanel.kt")
+        }
     }
     // This catalog is public display metadata, not a decryption engine.
     from("src/main/java/com/ghostdeveloper/spdecode/parity/AndroidDecoderCatalog.kt") {
         into("com/ghostdeveloper/spdecode/parity")
     }
     from("src/cloud/java")
+    if (enableQaBuild) {
+        dependsOn(prepareQaSettingsSource)
+        from(qaSettingsRoot)
+    }
     into(cloudSourceRoot)
 }
 val prepareCloudAssets = tasks.register<Sync>("prepareCloudAssets") {
