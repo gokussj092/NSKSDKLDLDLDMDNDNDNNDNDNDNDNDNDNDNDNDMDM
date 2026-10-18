@@ -111,6 +111,26 @@ class QATests(unittest.TestCase):
                     self.call("start")
                 self.assertNotIn("CLOUD_API_ENABLED=true",self.env.read_text())
                 self.assertFalse(self.state.exists())
+    def test_nur_diagnostic_denied_outside_qa(self):
+        with self.assertRaises(SystemExit):
+            self.call("probe-nur")
+    def test_nur_diagnostic_calls_isolated_web_without_secret_output(self):
+        output,_=self.call("start")
+        code=output.split("QA CODE: ",1)[1].splitlines()[0]
+        captured=[]
+        def fake_compose(*args):
+            captured.append(args)
+            return type("Result",(),{"stdout":'{"stage":"download","status":"failed","code":"REMOTE_PROVIDER_UNAVAILABLE"}\\n'})()
+        with patch.object(qa.os,"geteuid",return_value=0),\\
+             patch.object(qa.sys,"argv",["qa-test.py","probe-nur"]),\\
+             patch.object(qa,"compose",side_effect=fake_compose),\\
+             contextlib.redirect_stdout(io.StringIO()) as stream:
+            qa.main()
+        self.assertIn('"stage":"download"',stream.getvalue())
+        self.assertNotIn(code,stream.getvalue())
+        self.assertEqual(captured[0][:4],("exec","-T","web","node"))
+        self.assertNotIn("CLOUD_SESSION_SIGNING_KEY",str(captured[0]))
+        self.assertNotIn("CLOUD_NUR_CATALOG_URL",str(captured[0]))
     def test_qa_code_never_printed_by_status(self):
         out,_=self.call("start")
         code=out.split("QA CODE: ",1)[1].splitlines()[0]
