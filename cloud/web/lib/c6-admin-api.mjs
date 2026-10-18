@@ -29,10 +29,10 @@ export async function loginRequest(request,options={}) {
   if(!validMutation(request,cfg))return error("CSRF_REJECTED",403);
   try {
     const body=await parseSmallJson(request,2048);
-    if(!own(body,["password"]) || typeof body.password!=="string")
+    if(!own(body,["username","password"]) || typeof body.username!=="string" || typeof body.password!=="string")
       return error("INVALID_REQUEST",400);
     const redis=await (options.storeProvider||opsStore)();
-    const result=await adminLogin(redis,request,body.password,cfg);
+    const result=await adminLogin(redis,request,body.username,body.password,cfg);
     if(result.error)return error(result.error,result.status);
     return api({expiresIn:result.expiresIn},200,{
       "Set-Cookie":cookieHeader(result.token),

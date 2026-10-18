@@ -2,6 +2,7 @@
 import {useState} from "react";
 import {useRouter} from "next/navigation";
 export default function AdminLogin(){
+  const [username,setUsername]=useState("");
   const [password,setPassword]=useState("");
   const [loading,setLoading]=useState(false);
   const [message,setMessage]=useState("");
@@ -13,7 +14,7 @@ export default function AdminLogin(){
       const r=await fetch("/api/admin/login",{
         method:"POST",cache:"no-store",credentials:"same-origin",
         headers:{"Content-Type":"application/json","X-SPDecode-Admin-Action":"1"},
-        body:JSON.stringify({password}),
+        body:JSON.stringify({username,password}),
       });
       const result=await r.json();
       setPassword("");
@@ -23,6 +24,10 @@ export default function AdminLogin(){
     finally{setLoading(false);}
   }
   return <form onSubmit={submit}>
+    <label htmlFor="admin-username" className="field-label">Usuario</label>
+    <input className="field" autoComplete="username" id="admin-username"
+      type="text" required minLength={3} maxLength={64} value={username}
+      onChange={e=>setUsername(e.target.value)} placeholder="Usuario de administración"/>
     <label htmlFor="admin-password" className="field-label">Contraseña de administración</label>
     <input className="field" autoComplete="current-password" id="admin-password"
       type="password" required minLength={16} maxLength={512} value={password}
