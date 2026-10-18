@@ -116,6 +116,33 @@ file.chmod(0o600)
 print("Admin password hash stored (password not printed)")
 PY
 }
+panel_check(){
+  preflight
+  local panel status
+  [[ -s "$CFG/panel-domain" ]] || die "Configured panel domain missing"
+  panel=$(cat "$CFG/panel-domain")
+  [[ "$panel" =~ ^[A-Za-z0-9.-]+$ ]] || die "Invalid panel hostname"
+  # Check effective environment INSIDE the running Next.js container.
+  # Never print usernames, password hashes, secret variables or cookies.
+  if ! compose exec -T web node --input-type=module -e \
+    'import {adminSettings} from "./lib/c6-admin-auth.mjs";process.exit(adminSettings().enabled?0:1)' \
+    >/dev/null 2>&1; then
+    log "Panel is NOT authenticated/enabled inside Next.js. Check Compose env mapping and admin setup."
+    return 1
+  fi
+  status=$(curl --noproxy '*' --proxy '' --silent --show-error \
+    --connect-timeout 3 --max-time 8 --resolve "$panel:443:127.0.0.1" \
+    -o /dev/null -w '%{http_code}' "https://$panel/api/admin/session") || {
+      log "Cannot reach panel through local Nginx HTTPS."
+      return 1
+    }
+  if [[ "$status" != 401 ]]; then
+    log "Panel session endpoint returned HTTP $status, expected 401 for a guest."
+    return 1
+  fi
+  log "Panel login backend active (guest session correctly returns 401)."
+  return 0
+}
 panel_enable(){
   preflight
   local username domain api panel conf stamp temp candidate
@@ -151,6 +178,7 @@ panel_enable(){
   set_env CLOUD_ADMIN_ENABLED true
   compose up -d --no-deps --force-recreate web
   health || die "Web healthcheck failed; review docker logs spdecode-web-1"
+  panel_check || die "Panel credentials saved, but login is not active. Check Compose env wiring; do not re-enter your password yet."
   log "Panel enabled at https://$panel/admin/login with username and password only."
   log "No IP verification or IP allowlist. Keep your password private."
 }
@@ -218,7 +246,8 @@ case "${1:-help}" in
    case "${2:-}" in
      enable) [[ $# -eq 2 ]] || die "spdecode panel enable";panel_enable;;
      disable) [[ $# -eq 2 ]] || die "spdecode panel disable";set_env CLOUD_ADMIN_ENABLED false;compose up -d --no-deps --force-recreate web;health;;
-     *) die "spdecode panel enable|disable";; esac;;
+     check) [[ $# -eq 2 ]] || die "spdecode panel check";panel_check;;
+     *) die "spdecode panel enable|disable|check";; esac;;
  config)
    case "${2:-}" in
      set) [[ $# -eq 4 ]] || die "spdecode config set KEY VALUE";set_env "$3" "$4";;
@@ -245,6 +274,7 @@ SP-DECODE VPS commands:
   spdecode config admin-username NAME
   spdecode panel enable
   spdecode panel disable
+  spdecode panel check
   spdecode android setup
   spdecode android signing configure /root/upload-key.p12 alias
   spdecode android build --version-name 1.2.0 --version-code 26 --testing-only
