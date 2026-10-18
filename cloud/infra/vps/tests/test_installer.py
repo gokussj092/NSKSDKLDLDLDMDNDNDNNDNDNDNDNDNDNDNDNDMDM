@@ -35,6 +35,23 @@ class VPSInstallerTests(unittest.TestCase):
         self.assertNotIn("deny all;",config)
         self.assertNotIn("proxy_pass http://127.0.0.1:8000",config)
         self.assertNotIn("proxy_pass http://127.0.0.1:3001",config)
+    def test_panel_route_allowlist_and_api_host_isolation(self):
+        config=subprocess.run(["python3",str(VPS/"nginx-config.py"),
+           "spdecode.xyz","--api-domain","api.spdecode.xyz",
+           "--panel-domain","panel.spdecode.xyz"],capture_output=True,
+           text=True,check=True).stdout
+        panel=config.split("server_name panel.spdecode.xyz;",1)[1]
+        panel=panel.split("\\n}",1)[0]
+        for route in ("/features","/docs","/privacy","/status","/api/site/status"):
+            self.assertIn("location = "+route+" {",panel)
+        self.assertIn("location ^~ /api/admin/",panel)
+        self.assertIn("location ^~ /admin",panel)
+        self.assertIn("location / { return 404; }",panel)
+        self.assertNotIn("location ^~ /api/v1/",panel)
+        cli=(VPS/"spdecodectl").read_text()
+        self.assertIn("panel_routes(){",cli)
+        self.assertIn("sync-routes)",cli)
+        self.assertIn("nginx -t",cli)
     def test_invalid_or_cross_domain_subdomains_rejected(self):
         args=[
             ["--api-domain","evil.example.com"],
