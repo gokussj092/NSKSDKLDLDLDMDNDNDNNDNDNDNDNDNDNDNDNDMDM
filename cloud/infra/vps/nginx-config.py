@@ -79,6 +79,12 @@ def generate(domain: str, api: str, panel: str, www: bool) -> str:
         f'''server {{
 {header(api)}
     # Android-only API; no public website or operator panel on this host.
+    # Large NUR catalogs perform Argon2id for individual protected fields.
+    # The extended HTTP wait applies to this EXACT API route only.
+    location = /api/v1/decode/import/catalog/remote {{
+        access_log off;
+{common_headers().replace("proxy_read_timeout 35s;", "proxy_read_timeout 155s;")}
+    }}
     location ^~ /api/v1/ {{
         access_log off;
 {common_headers()}
