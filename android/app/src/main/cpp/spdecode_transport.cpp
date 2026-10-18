@@ -49,6 +49,7 @@ bool safeBase(const std::string& value) {
 }
 bool safePath(const std::string& path) {
     return path == "/api/v1/session/challenge" ||
+        path == "/api/v1/session/qa" ||
         path == "/api/v1/session" ||
         path == "/api/v1/decode/file" ||
         path == "/api/v1/decode/text" ||
