@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import os
+import json
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -30,6 +32,21 @@ class FileEngineTests(unittest.TestCase):
             with self.subTest(code=code), self.assertRaises(DecodeFailure) as caught:
                 decode_file("tls", payload)
             self.assertEqual(caught.exception.code, code)
+
+    def test_signed_npvs_worker_matches_source_decoder(self):
+        """Actual signed v5 bytes, through the Cloud child-process adapter."""
+        from scripts.android_npvs_fixture_export import export
+
+        with tempfile.TemporaryDirectory() as tmp:
+            output=Path(tmp)
+            export(output)
+            contents=(output/"npvs-v5-appkey.npvs").read_bytes()
+            expected=json.loads((output/"npvs-v5-appkey.json").read_text("utf-8"))
+            received=decode_file("npvs", contents)
+            self.assertEqual(received["status"], "success")
+            self.assertFalse(received["isPartial"])
+            self.assertEqual(json.loads(received["rawText"]), expected)
+            self.assertEqual(received["structuredJson"], expected)
 
     def test_subprocess_environment_removes_secrets(self):
         os.environ["CLOUD_WORKER_TOKEN"] = "private-test-only-do-not-ship"
