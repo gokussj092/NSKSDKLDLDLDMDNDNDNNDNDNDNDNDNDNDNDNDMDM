@@ -10,4 +10,6 @@
     <string name="server_vpn_loading">VPN-Serverkatalog wird geladen…</string>
     <string name="server_vpn_unavailable">Der VPN-Serverkatalog ist nicht verfügbar. Prüfe die Verbindung und versuche es erneut.</string>
     <string name="server_vpn_retry">Katalog erneut laden</string>
+    <string name="cloud_legal_withdraw">Cloud-Einwilligung widerrufen</string>
+    <string name="cloud_legal_withdraw_detail">Durch den Widerruf werden neue Serveranfragen blockiert. Dein lokal verschlüsselter Verlauf bleibt auf diesem Gerät. Du kannst später erneut zustimmen.</string>
 </resources>

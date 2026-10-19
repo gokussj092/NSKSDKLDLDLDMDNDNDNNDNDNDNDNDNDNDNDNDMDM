@@ -10,4 +10,6 @@
     <string name="server_vpn_loading">Loading server VPN catalog…</string>
     <string name="server_vpn_unavailable">The VPN server catalog is unavailable. Check your connection and retry.</string>
     <string name="server_vpn_retry">Retry catalog</string>
+    <string name="cloud_legal_withdraw">Withdraw Cloud consent</string>
+    <string name="cloud_legal_withdraw_detail">Withdrawing consent blocks new server requests. Your locally encrypted history will remain on this device. You can accept again later.</string>
 </resources>

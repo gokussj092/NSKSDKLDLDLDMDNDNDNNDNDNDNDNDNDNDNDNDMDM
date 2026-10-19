@@ -10,4 +10,6 @@
     <string name="server_vpn_loading">در حال بارگذاری فهرست سرورهای VPN…</string>
     <string name="server_vpn_unavailable">فهرست سرورهای VPN در دسترس نیست. اتصال خود را بررسی کنید و دوباره تلاش کنید.</string>
     <string name="server_vpn_retry">تلاش مجدد</string>
+    <string name="cloud_legal_withdraw">لغو رضایت سرویس ابری</string>
+    <string name="cloud_legal_withdraw_detail">با لغو رضایت، درخواست‌های جدید به سرور مسدود می‌شوند. تاریخچه رمزگذاری‌شده محلی روی دستگاه باقی می‌ماند. می‌توانید بعداً دوباره موافقت کنید.</string>
 </resources>

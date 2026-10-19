@@ -10,4 +10,6 @@
     <string name="server_vpn_loading">جارٍ تحميل قائمة خوادم VPN…</string>
     <string name="server_vpn_unavailable">قائمة خوادم VPN غير متاحة. تحقق من الاتصال وحاول مرة أخرى.</string>
     <string name="server_vpn_retry">إعادة المحاولة</string>
+    <string name="cloud_legal_withdraw">سحب موافقة السحابة</string>
+    <string name="cloud_legal_withdraw_detail">سحب الموافقة يمنع الطلبات الجديدة إلى الخادم. سيبقى سجلك المحلي المشفر على هذا الجهاز. يمكنك الموافقة مرة أخرى لاحقًا.</string>
 </resources>

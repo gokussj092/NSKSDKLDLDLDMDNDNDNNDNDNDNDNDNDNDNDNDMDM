@@ -10,4 +10,6 @@
     <string name="server_vpn_loading">Cargando catálogo de servidores VPN…</string>
     <string name="server_vpn_unavailable">El catálogo de servidores VPN no está disponible. Comprueba tu conexión e inténtalo de nuevo.</string>
     <string name="server_vpn_retry">Reintentar catálogo</string>
+    <string name="cloud_legal_withdraw">Retirar consentimiento Cloud</string>
+    <string name="cloud_legal_withdraw_detail">Al retirar el consentimiento se bloquearán nuevas solicitudes al servidor. Tu historial cifrado seguirá en este dispositivo. Podrás volver a aceptar después.</string>
 </resources>
