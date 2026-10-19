@@ -107,9 +107,9 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
   const base=process.env.WORKER_INTERNAL_URL || "";
   // Not an arbitrary proxy. Only Docker service DNS, no client URL or egress.
   if(base!=="http://decoder-worker:8787")throw Error("UNSAFE_WORKER_ORIGIN");
-  const suffix={file:"file",text:"text",catalog:"import/catalog"}[kind];
+  const suffix={file:"file",text:"text",catalog:"import/catalog","server-vpn":"import/server-vpn"}[kind];
   const response=await fetchImpl(base+"/internal/v1/decode/"+suffix,{
-    method:"POST",signal:AbortSignal.timeout(kind==="catalog"?135000:25000),
+    method:"POST",signal:AbortSignal.timeout((kind==="catalog"||kind==="server-vpn")?135000:25000),
     headers:{"Content-Type":"application/json","X-SP-Worker-Token":cfg.workerToken},
     body:JSON.stringify(payload),
     redirect:"error",
