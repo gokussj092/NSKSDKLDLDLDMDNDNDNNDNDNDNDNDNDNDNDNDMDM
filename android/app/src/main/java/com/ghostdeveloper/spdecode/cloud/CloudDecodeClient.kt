@@ -122,6 +122,9 @@ internal class CloudDecodeClient(context: Context) {
         val bearer = session()
         coroutineContext.ensureActive()
         val response = withContext(Dispatchers.IO) {
+            // Consent can be withdrawn while Play Integrity creates a session.
+            // Re-check immediately before sending any file, text or provider ID.
+            requireLegalConsent()
             extract(CloudNativeTransport.post(endpoint,payload,bearer))
         }
         coroutineContext.ensureActive()
