@@ -234,7 +234,8 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
     // The complete result is already saved in encrypted history.
     private fun presentDecodedRecord(entry:DecodeView, stored:Boolean):Boolean {
         val large=BuildConfig.SPDECODE_CLOUD_ENABLED && stored &&
-            (entry.extension=="nurservers" || entry.rawText.length>=250_000)
+            (entry.extension=="nurservers" || entry.extension=="vpnservers" ||
+                entry.rawText.length>=250_000)
         if(large) {
             result=null
             reveal=false
@@ -263,6 +264,10 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
             "    private fun decodeNurServers() {","record","stored")
         updateResultBlock("    private fun decodeNurServers() {",
             "    private fun clearVisibleResult() {","record","saved")
+        // The new cloud-only provider decoder stores complete JSON but its preview
+        // must use the same large-result guard as NUR, never render it eagerly.
+        updateResultBlock("    private fun decodeServerVpnProvider(id:String) {",
+            "    private fun importFiles(uris:List<Uri>,","record","saved")
         // Batch files use the same safe preview rule for exceptionally large
         // outputs, but ordinary files retain their original navigation.
         val batchStart=activity.indexOf("    private fun importFiles(uris:List<Uri>,")

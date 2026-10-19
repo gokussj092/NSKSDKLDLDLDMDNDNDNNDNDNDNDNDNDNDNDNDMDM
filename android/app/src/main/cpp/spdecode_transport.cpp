@@ -155,7 +155,8 @@ jstring post(JNIEnv* env,jstring pathArg,jstring bodyArg,jstring bearerArg) {
     env->CallVoidMethod(conn,setConnect,kConnectTimeoutMs);
     // Do not relax ordinary decoder/session timeouts. NUR server catalog
     // can require up to 120s on the remote worker for nested Argon2id fields.
-    const jint readTimeout = path == "/api/v1/decode/import/catalog/remote"
+    const jint readTimeout = (path == "/api/v1/decode/import/catalog/remote" ||
+        path == "/api/v1/server-vpn/decode")
         ? kNurCatalogReadTimeoutMs : kReadTimeoutMs;
     env->CallVoidMethod(conn,setRead,readTimeout);
     env->CallVoidMethod(conn,setOutput,JNI_TRUE);
