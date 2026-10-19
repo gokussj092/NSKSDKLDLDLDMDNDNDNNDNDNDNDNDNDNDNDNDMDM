@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 PROVIDERS = {
+    "http-jireh": "decoders.Python.apps.HTTP_Jireh.server_catalog_decoder",
     "http-fenixvpn": "decoders.Python.apps.HTTP_FenixVPN.server_catalog_decoder",
     "austroplus-vpn": "decoders.Python.apps.AustroPlus_VPN.server_catalog_decoder",
     "ac-tunnel-vpn": "decoders.Python.apps.AC_TUNNEL_VPN.server_catalog_decoder",

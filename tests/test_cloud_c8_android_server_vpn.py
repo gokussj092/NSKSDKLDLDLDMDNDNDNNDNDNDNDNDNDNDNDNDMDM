@@ -129,6 +129,9 @@ class PhaseVServerVpnIntegration(unittest.TestCase):
         originals["http-fenixvpn"]=(
             ROOT/"decoders/Python/apps/HTTP_FenixVPN/HTTP_FenixVPN.png",
             WEB/"public/server-vpn-icons/http-fenixvpn.png")
+        originals["http-jireh"]=(
+            ROOT/"decoders/Python/apps/HTTP_Jireh/HTTP_Jireh.png",
+            WEB/"public/server-vpn-icons/http-jireh.png")
         for app_id,(original,served) in originals.items():
             with self.subTest(app=app_id):
                 self.assertTrue(original.is_file(),original)

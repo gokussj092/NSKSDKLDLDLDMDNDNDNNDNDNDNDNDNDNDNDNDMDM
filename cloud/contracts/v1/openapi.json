@@ -884,7 +884,8 @@
                       "4u-tunnel-lite",
                       "ac-tunnel-vpn",
                       "austroplus-vpn",
-                      "http-fenixvpn"
+                      "http-fenixvpn",
+                      "http-jireh"
                     ]
                   },
                   "consent": {

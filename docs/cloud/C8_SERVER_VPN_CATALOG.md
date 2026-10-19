@@ -373,3 +373,29 @@ Verificación del lote: Python 664 pruebas / 9 omisiones existentes; worker 11;
 VPS/QA 39; gates 4; Node 71; build web satisfactorio. CLI descargando ambos
 catálogos reales y worker aislado con igualdad JSON completa frente a Java.
 Muestras `.sks` sintéticas; exportación real independiente todavía no acreditada.
+
+## HTTP Jireh 2.0 — PR #96
+
+Se añade `http-jireh`, paquete `com.jirehvpn`, a la rama
+`feat/austroplus-vpn-13-0-1-decoders`. Rutas `HTTP_Jireh/file_decoder.py` y
+`HTTP_Jireh/server_catalog_decoder.py`, icono original de 141600 bytes y
+documentación en esa carpeta de `decoders/Python/apps/`. El importador `.sks`
+GCM/DES coincide exactamente con HTTP FenixVPN: conserva la ruta actual y la
+detección histórica SocksIP JSON `d`/`v`; no se duplica un motor.
+
+Catálogo derivado directamente del APK: alfabeto de nibbles, Base64,
+SHA256(hex mayúsculo de contraseña)/AES-256-CBC/IV cero y campos
+AES-128-CBC/IV cero/ROT22. El GET autorizado de servidores devolvió 109 perfiles
+frente a uno incluido; el catálogo de usuarios separado devolvió uno. Los
+documentos completos coinciden con un oráculo Java normalizado; no se guardan
+en Git datos reales. Archivos verificados con vectores Java sintéticos, sin
+exportación real independiente ni certificación de exportador operativo.
+
+Se registran bridge/allowlist Python, broker fijo HTTPS, contrato OpenAPI,
+ficha/icono y regresiones; catálogo público mínimo 10, QA aumenta desde ese
+mínimo conservando versiones superiores. `CLOUD_SERVER_VPN_ENABLED` conserva
+su estado por defecto. No cambia el diseño Android ni se fusiona/despliega.
+
+Verificación HTTP Jireh: suite principal 677 (9 omisiones existentes), worker
+11, VPS/QA 39, gates 4, Node 72 y build web correctos. CLI de descarga real y
+worker coinciden en el JSON completo; ZIP probado fuera del repositorio.

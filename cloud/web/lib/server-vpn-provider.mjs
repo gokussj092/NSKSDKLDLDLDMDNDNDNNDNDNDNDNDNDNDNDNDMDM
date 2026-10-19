@@ -9,6 +9,10 @@ import https from "node:https";
 import {publicIpv4} from "./c35-provider.mjs";
 
 const PROVIDERS = Object.freeze({
+  "http-jireh": {
+    url:"https://raw.githubusercontent.com/alvarofelizzola/GEN-JIREH/refs/heads/main/GENERADOR",
+    agent:"HTTP Jireh/2.0",
+  },
   "http-fenixvpn": {
     url:"https://raw.githubusercontent.com/Fenix1998x/GEN-SERVIDORES-NUEVO-24-08-2027/refs/heads/main/Fenix",
     agent:"HTTP FenixVPN/19.4",
