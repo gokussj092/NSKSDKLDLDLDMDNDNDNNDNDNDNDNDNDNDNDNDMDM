@@ -8,4 +8,6 @@
     <string name="cloud_legal_accept">Setuju</string>
     <string name="cloud_legal_decline">Tolak</string>
     <string name="server_vpn_loading">Memuat katalog server VPN…</string>
+    <string name="server_vpn_unavailable">Katalog server VPN tidak tersedia. Periksa koneksi Anda lalu coba lagi.</string>
+    <string name="server_vpn_retry">Coba lagi</string>
 </resources>

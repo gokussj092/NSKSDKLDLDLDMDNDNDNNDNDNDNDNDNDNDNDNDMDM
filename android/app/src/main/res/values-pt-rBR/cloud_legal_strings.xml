@@ -8,4 +8,6 @@
     <string name="cloud_legal_accept">Aceitar</string>
     <string name="cloud_legal_decline">Recusar</string>
     <string name="server_vpn_loading">Carregando catálogo de servidores VPN…</string>
+    <string name="server_vpn_unavailable">O catálogo de servidores VPN não está disponível. Verifique sua conexão e tente novamente.</string>
+    <string name="server_vpn_retry">Tentar novamente</string>
 </resources>

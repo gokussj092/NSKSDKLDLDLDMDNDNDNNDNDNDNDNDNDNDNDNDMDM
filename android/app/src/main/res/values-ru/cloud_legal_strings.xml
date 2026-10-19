@@ -8,4 +8,6 @@
     <string name="cloud_legal_accept">Принять</string>
     <string name="cloud_legal_decline">Отклонить</string>
     <string name="server_vpn_loading">Загрузка каталога VPN-серверов…</string>
+    <string name="server_vpn_unavailable">Каталог VPN-серверов недоступен. Проверьте подключение и повторите попытку.</string>
+    <string name="server_vpn_retry">Повторить</string>
 </resources>
