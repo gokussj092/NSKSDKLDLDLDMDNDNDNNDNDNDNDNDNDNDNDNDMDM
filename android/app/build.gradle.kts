@@ -211,6 +211,9 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
                                 onExport={onExportHistory(entry)},
                                 onDelete={deletingAll=false;deletion=setOf(entry.id)},
                             )""")
+        app = replaceOnce(app,
+            "title={Text(stringResource(R.string.decode_notice_title))}",
+            "title={Text(stringResource(R.string.cloud_failure_notice_title))}")
         var activity = originalRoot.file("MainActivity.kt").asFile.readText(Charsets.UTF_8)
         activity = replaceOnce(activity,
             "    private var stagedExport:String?=null",
@@ -268,26 +271,7 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
         // must use the same large-result guard as NUR, never render it eagerly.
         updateResultBlock("    private fun decodeServerVpnProvider(id:String) {",
             "    private fun importFiles(uris:List<Uri>,","record","saved")
-        fun injectProviderQaError(start:String,end:String):Unit {
-            val from=activity.indexOf(start)
-            val to=activity.indexOf(end,from+start.length)
-            require(from>=0 && to>from) { "QA provider section unavailable: " + start }
-            var section=activity.substring(from,to)
-            // Keep error codes local to QA UI and never stringify exceptions.
-            section=replaceOnce(section,"catch(_:Exception) {\n                if(generation==importGeneration) {",
-                "catch(error:Exception) {\n                if(generation==importGeneration) {")
-            section=replaceOnce(section,
-                "message=getString(R.string.nur_servers_failed)",
-                """message=getString(R.string.nur_servers_failed) +
-                        (if(BuildConfig.SPDECODE_QA_BUILD && error is CloudDecodeClient.Failure)
-                            " (QA: " + error.code + ", HTTP " + error.httpStatus + ")"
-                         else "")""")
-            activity=activity.substring(0,from)+section+activity.substring(to)
-        }
-        injectProviderQaError("    private fun decodeNurServers() {",
-            "    private fun clearVisibleResult() {")
-        injectProviderQaError("    private fun decodeServerVpnProvider(id:String) {",
-            "    private fun importFiles(uris:List<Uri>,")
+        // Cloud MainActivity already classifies provider exceptions.
         // Batch files use the same safe preview rule for exceptionally large
         // outputs, but ordinary files retain their original navigation.
         val batchStart=activity.indexOf("    private fun importFiles(uris:List<Uri>,")
@@ -299,7 +283,8 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
         // Never display user payloads, full filenames, credentials or exceptions.
         batch=replaceOnce(batch,"                var failedProtectedHc=false",
             "                var failedProtectedHc=false\n" +
-                "                val qaFailures=mutableListOf<String>()")
+                "                val qaFailures=mutableListOf<String>()\n" +
+                "                val cloudFailureMessages=mutableListOf<String>()")
         batch=replaceOnce(batch,"                    onFailure={uri,_-> ",
             "                    onFailure={uri,cause-> ")
         batch=replaceOnce(batch,
@@ -323,6 +308,9 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
                             }
                             qaFailures.add(ext + ": " + code)
                         }
+                        cloudFailureMessages.add(
+                            com.ghostdeveloper.spdecode.cloud.CloudUserErrors.message(
+                                this@MainActivity,cause))
                         if(!BuildConfig.SPDECODE_CLOUD_ENABLED &&""")
         batch=replaceOnce(batch,"                    message=when {",
             """                    val qaDetails=if(BuildConfig.SPDECODE_QA_BUILD && qaFailures.isNotEmpty())
@@ -332,6 +320,15 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
         batch=batch.replace("+summary", "+summary+qaDetails")
         batch=replaceOnce(batch,"                        else->summary",
             "                        else->summary+qaDetails")
+        batch=replaceOnce(batch,
+            "                        else->summary+qaDetails\\n                    }\\n                    tab=0",
+            """                        else->summary+qaDetails
+                    }
+                    if(cloudFailureMessages.isNotEmpty()) {
+                        message=message + "\\n\\n" +
+                            cloudFailureMessages.distinct().take(3).joinToString("\\n")
+                    }
+                    tab=0""")
         batch=replaceOnce(batch,"                    result=processed",
             "                    val previewDeferred=presentDecodedRecord(processed,saved)")
         batch=replaceOnce(batch,"historyPreferences.setSelectedId(processed.id)",
