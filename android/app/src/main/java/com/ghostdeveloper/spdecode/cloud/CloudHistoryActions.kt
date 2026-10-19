@@ -86,9 +86,9 @@ fun CloudLargeResultNotice(onDismiss: () -> Unit) {
     )
 }
 
-/** Export complete NUR JSON without building the costly 1,500-field preview. */
+/** Export complete provider JSON verbatim, without building an expensive preview. */
 object CloudHistoryJsonExport {
     fun content(entry: DecodeView): String =
-        if (entry.extension == "nurservers") entry.rawText
+        if (entry.extension == "nurservers" || entry.extension == "vpnservers") entry.rawText
         else ResultPresentation.formatted(entry.document, ResultExport.JSON)
 }
