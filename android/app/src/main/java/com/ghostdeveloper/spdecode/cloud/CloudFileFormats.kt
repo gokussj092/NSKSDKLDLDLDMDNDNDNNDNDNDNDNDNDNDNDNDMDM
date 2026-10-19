@@ -15,6 +15,11 @@ internal object CloudFileFormats {
         "nvpnc" to "Neutro VPN",
         "green" to "24clan VPN Green",
         "hxt" to "HX Tunnel VPN",
+        // C8 overrides frozen C0 labels; the suffixes still go to the server unchanged.
+        "mtp" to "My Tunnel Proxy",
+        "roy" to "Royal Tunnel VPN 7.0",
+        "actun" to "AC TUNNEL VPN 1.4",
+        "4ulite" to "4U TUNNEL LITE 2.2",
     )
     fun detect(filename:String):AndroidDecoderCatalog.Format? {
         val basename=filename.substringAfterLast('/').substringAfterLast('\\')
