@@ -137,6 +137,12 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun requireCloudLegal():Boolean {
+        if(!BuildConfig.SPDECODE_CLOUD_ENABLED || CloudLegalConsent.accepted(this))return true
+        showCloudLegal=true
+        return false
+    }
+
     private fun openLegalPage(url:String) {
         if(url!=CloudLegalConsent.TERMS && url!=CloudLegalConsent.PRIVACY)return
         try {startActivity(Intent(Intent.ACTION_VIEW,Uri.parse(url)))}
@@ -428,6 +434,7 @@ class MainActivity : ComponentActivity() {
      * between password selection and import.
      */
     private fun prepareSingleImport(uri:Uri) {
+        if(!requireCloudLegal())return
         pendingCredentialImport?.bytes?.fill(0)
         pendingCredentialImport=null
         enteringHcManually=false
@@ -511,6 +518,7 @@ class MainActivity : ComponentActivity() {
     // The Android editor accepts a complete pasted configuration once.
     // Telegram's multipart chat-session protocol does not apply here.
     private fun decodeText(userText:String) {
+        if(!requireCloudLegal())return
         if(busy)return
         if(userText.isBlank()||userText.length>TextProtocolDecoder.MAX_CHARS) {
             message=getString(R.string.text_decode_invalid)
@@ -584,6 +592,7 @@ class MainActivity : ComponentActivity() {
      * offline file/text decoder, and a failed fetch never saves a result.
      */
     private fun decodeCloud(reference:String) {
+        if(!requireCloudLegal())return
         if(busy)return
         if(reference.isBlank() || reference.length>1024) {
             message=getString(R.string.cloud_http_injector_invalid)
@@ -668,6 +677,7 @@ class MainActivity : ComponentActivity() {
 
     /** User-triggered NUR catalog fetch; endpoint is read from the encrypted asset vault. */
     private fun decodeNurServers() {
+        if(!requireCloudLegal())return
         if(busy)return
         val generation=++importGeneration
         job?.cancel()
@@ -751,7 +761,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun decodeServerVpnProvider(id:String) {
-        if(busy || showCloudLegal || !BuildConfig.SPDECODE_CLOUD_ENABLED)return
+        if(!requireCloudLegal() || busy || !BuildConfig.SPDECODE_CLOUD_ENABLED)return
         val provider=serverVpnApps.firstOrNull { it.id==id && it.decodeEnabled }?:return
         if(!id.matches(Regex("[a-z0-9-]{1,48}")))return
         val generation=++importGeneration
@@ -803,6 +813,7 @@ class MainActivity : ComponentActivity() {
         prepared:PendingCredentialImport?=null,
         hcPassword:ByteArray?=null,
         hcHwid:String?=null){
+        if(!requireCloudLegal())return
         require(privateCredentialId==null || (uris.size==1 && prepared?.uri==uris.single()))
         require((hcPassword==null && hcHwid==null) ||
             (uris.size==1 && prepared?.uri==uris.single() && privateCredentialId==null))
