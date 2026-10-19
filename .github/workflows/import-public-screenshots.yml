@@ -21,7 +21,7 @@ jobs:
           SCREEN_3: "https://media.canva.com/v2/image-resize/format:JPG/height:200/quality:75/uri:ifs%3A%2F%2FM%2Fce9c9e45-e528-4cd8-bb71-385d8f874814/watermark:F/width:87?csig=AAAAAAAAAAAAAAAAAAAAAISp5YqzaySISVmvHZsDRb4-RPC393Hxb7C6wSklvS3x&exp=1792457223&osig=AAAAAAAAAAAAAAAAAAAAADGnBM8_eMUcDfl-G7dsQJcD3rs4d9LanGv04gC_HleL&signer=media-rpc&token=AAIAAU0AJGNlOWM5ZTQ1LWU1MjgtNGNkOC1iYjcxLTM4NWQ4Zjg3NDgxNAAAAAABoVbGq1inDMO6pjXZXre9sI-hJHpoU9McegbJB0Ea6B5pGXDqTg&x-canva-quality=thumbnail"
           SCREEN_4: "https://media.canva.com/v2/image-resize/format:JPG/height:200/quality:75/uri:ifs%3A%2F%2FM%2Fa29c98f7-8cb7-4a26-95d2-9d27fdf79067/watermark:F/width:87?csig=AAAAAAAAAAAAAAAAAAAAACSGO523tuL4Q6uiXgCatzrSYt4MBHTOtL0QFwON6fL1&exp=1792454600&osig=AAAAAAAAAAAAAAAAAAAAAGtIx2P9Q6xXNCAB7-O24qzIir3mpj2XQGYCQIa5whgE&signer=media-rpc&token=AAIAAU0AJGEyOWM5OGY3LThjYjctNGEyNi05NWQyLTlkMjdmZGY3OTA2NwAAAAABoVaepUAItis0aczQxuS4g0EKrFKBOSlK2YgUhc3C5RTmXXzL2Q&x-canva-quality=thumbnail"
         run: |
-          #!/usr/bin/env python3
+          python3 - <<'PY'
           import os
           from pathlib import Path
           from urllib.request import Request, urlopen
@@ -43,7 +43,7 @@ jobs:
                   try:
                       response=urlopen(Request(candidate,headers={"User-Agent":"Mozilla/5.0"}),timeout=35)
                       payload=response.read(2000000)
-                      if response.status==200 and payload.startswith(b"\\xff\\xd8\\xff") and len(payload)>1500:
+                      if response.status==200 and payload[:3]==bytes((255,216,255)) and len(payload)>1500:
                           data=payload
                           break
                   except (HTTPError,URLError,TimeoutError):
@@ -51,6 +51,7 @@ jobs:
               if data is None:raise RuntimeError("Cannot obtain original screenshot "+str(i))
               (dir/name).write_bytes(data)
               print(name,len(data),"bytes received (original public screenshot or provider thumbnail)")
+          PY
       - name: Commit only image assets and remove temporary importer
         run: |
           set -euo pipefail
