@@ -108,6 +108,9 @@ class PhaseVServerVpnIntegration(unittest.TestCase):
         originals["my-tunnel-proxy"]=(
             ROOT/"decoders/Python/apps/My_Tunnel_Proxy/My_Tunnel_Proxy.png",
             WEB/"public/server-vpn-icons/my-tunnel-proxy.png")
+        originals["robust-tunnel"]=(
+            ROOT/"decoders/Python/apps/Robust_Tunnel_VPN/Robust_Tunnel_VPN.png",
+            WEB/"public/server-vpn-icons/robust-tunnel.png")
         for app_id,(original,served) in originals.items():
             with self.subTest(app=app_id):
                 self.assertTrue(original.is_file(),original)

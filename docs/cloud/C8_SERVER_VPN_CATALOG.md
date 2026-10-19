@@ -18,10 +18,10 @@
   dentro de un dispositivo con root, malware o instrumentación Frida.
 - Consentimiento: registro cifrado de la versión legal aceptada antes de la
   primera consulta Cloud, con enlaces públicos a términos y privacidad.
-- Los cinco iconos disponibles y originales son NUR, 24clan, HX, MKK y My Tunnel Proxy.
+- Los seis iconos disponibles y originales son NUR, 24clan, HX, MKK, My Tunnel Proxy y Robust Tunnel.
   El resto de proveedores NO debe mostrarse con iconos inventados: hay que
   extraerlos de sus APK de origen y revisar derechos de marca antes de Play Store.
-- NUR mantiene su broker probado. 24clan, HX, MKK y My Tunnel Proxy disponen de su propio
+- NUR mantiene su broker probado. 24clan, HX, MKK, My Tunnel Proxy y Robust Tunnel disponen de su propio
   broker con HTTPS fijo, DNS anclado, reintentos limitados por IP y worker
   aislado. Están DESACTIVADOS por defecto mediante
   `CLOUD_SERVER_VPN_ENABLED=false` hasta validar contra sus proveedores reales.
@@ -71,7 +71,7 @@ responsable antes de publicarse en Google Play.
 
 ## Phase VII — verificación temporal de catálogos remotos
 
-Durante `sudo spdecode qa start` o `sudo spdecode qa services`, los cuatro proveedores fijos (24clan Green, HX Tunnel, MKK Hyper y My Tunnel Proxy) se habilitan temporalmente junto a NUR para pruebas privadas autorizadas. Al ejecutar `sudo spdecode qa stop`, se restauran los interruptores anteriores y se revoca el acceso QA. No implica autorización de terceros para distribuir su contenido ni certificación de compatibilidad.
+Durante `sudo spdecode qa start` o `sudo spdecode qa services`, los cinco proveedores fijos (24clan Green, HX Tunnel, MKK Hyper, My Tunnel Proxy y Robust Tunnel) se habilitan temporalmente junto a NUR para pruebas privadas autorizadas. Al ejecutar `sudo spdecode qa stop`, se restauran los interruptores anteriores y se revoca el acceso QA. No implica autorización de terceros para distribuir su contenido ni certificación de compatibilidad.
 
 El catálogo Android se cifra y consulta como máximo cada 24 horas, pero el botón existente de **Actualizar** ejecuta una consulta completa (`knownVersion=0`) incluso con la misma versión para reflejar cambios de habilitación. Las actualizaciones automáticas normales siguen necesitando incrementar monotónicamente `CLOUD_SERVER_VPN_CATALOG_VERSION`. La disponibilidad de un botón no garantiza que el servidor remoto esté operativo o que la respuesta pueda descifrarse.
 
@@ -93,9 +93,36 @@ solo revela una referencia Cloud offline; no se descarga su destino autenticado.
 La compatibilidad `.mtp` se verificó con vectores nativos sintéticos: falta
 una exportación real. Ver README, TESTING y manifest de la carpeta.
 
-La versión mínima del catálogo público y el valor por defecto Compose son 3.
+La incorporación de My Tunnel Proxy elevó la versión mínima del catálogo a 3.
+La versión mínima vigente se indica en la última incorporación de este documento.
 Si la instalación ya fija `CLOUD_SERVER_VPN_CATALOG_VERSION`, actualizarlo a
-un entero mayor que el anterior y al menos 3 antes de aplicar el cambio.
+un entero mayor que el anterior y nunca inferior a esa versión mínima.
 El CLI QA avanza monotónicamente desde la versión mínima actual. El proveedor
 continúa bajo el interruptor existente, desactivado por defecto; esta entrega
 no despliega ni altera Android, la web administrativa o los proveedores previos.
+
+## Robust Tunnel VPN isvsoft 16.4.7 — catálogo versión 4
+
+ID fijo `robust-tunnel`; lector autónomo de biblioteca estándar
+`decoders/Python/apps/Robust_Tunnel_VPN/server_catalog_decoder.py`. La misma
+entrada procesa la descarga remota y las copias locales importadas por la app,
+sin necesitar APK ni parámetros de cuenta/dispositivo. No se identificó una
+exportación independiente de perfiles; no se crean extensiones/rutas de archivo.
+
+El catálogo original incluido contiene 74 servidores, 434 ajustes y un
+certificado; la descarga real validada el 2026-10-19 contiene 151 servidores,
+1187 ajustes y 6 certificados. La paridad del JSON completo, sobre y campos
+anidados, se comprobó ejecutando el algoritmo Java original. Las muestras reales
+no se publican. Los tests y fixtures usan exclusivamente datos ficticios.
+
+Se añade el icono PNG original y se conserva la política HTTPS del broker:
+host/consulta fijos, IP pública validada, TLS y redirecciones acotadas sin cambiar
+el query. La metadata cliente no incluye endpoints o claves. Los proveedores
+anteriores y las 240 rutas C0 / 246 rutas efectivas C8 permanecen disponibles.
+
+La versión mínima actual y el valor por defecto Compose son **4**. En una
+instalación con `CLOUD_SERVER_VPN_CATALOG_VERSION` explícita, usar un entero
+mayor que el anterior y al menos 4 al actualizar. El CLI QA eleva versiones
+antiguas sin rebajar las superiores. La incorporación sigue desactivada por
+defecto bajo `CLOUD_SERVER_VPN_ENABLED`; no modifica Android ni la interfaz
+administrativa y no realiza despliegue.

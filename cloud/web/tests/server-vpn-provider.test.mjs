@@ -5,7 +5,10 @@ import https from "node:https";
 import {EventEmitter} from "node:events";
 import {downloadVpnCatalog} from "../lib/server-vpn-provider.mjs";
 
-test("My Tunnel fixed query is pinned across DNS, TLS and redirects",async t=>{
+for(const provider of [
+  {id:"my-tunnel-proxy",host:"mfmpro.xyz",path:"/api/app",query:"?json=3c9a2a29f3a4180271da",agent:"My Tunnel Proxy/2.3"},
+  {id:"robust-tunnel",host:"xkingvpn.xyz",path:"/api/files/app",query:"?json=beae113e6e46d674a068",agent:"Robust Tunnel VPN/isvsoft 16.4.7"},
+]) test(`${provider.id} fixed query is pinned across DNS, TLS and redirects`,async t=>{
   const prior=process.env.CLOUD_SERVER_VPN_ENABLED;
   process.env.CLOUD_SERVER_VPN_ENABLED="true";
   t.after(()=>{
@@ -14,17 +17,18 @@ test("My Tunnel fixed query is pinned across DNS, TLS and redirects",async t=>{
   });
   let dnsAddress="93.184.216.34",mode="success",calls=0;
   t.mock.method(dns,"lookup",async host=>{
-    assert.equal(host,"mfmpro.xyz");
+    assert.equal(host,provider.host);
     return [{address:dnsAddress,family:4}];
   });
   t.mock.method(https,"request",(url,options,callback)=>{
     calls++;
-    assert.equal(url.hostname,"mfmpro.xyz");
-    assert.equal(url.search,"?json=3c9a2a29f3a4180271da");
+    assert.equal(url.hostname,provider.host);
+    assert.equal(url.pathname,provider.path);
+    assert.equal(url.search,provider.query);
     assert.equal(options.rejectUnauthorized,true);
     assert.equal(options.minVersion,"TLSv1.2");
-    assert.equal(options.headers["User-Agent"],"My Tunnel Proxy/2.3");
-    options.lookup("mfmpro.xyz",{},(error,ip,family)=>{
+    assert.equal(options.headers["User-Agent"],provider.agent);
+    options.lookup(provider.host,{},(error,ip,family)=>{
       assert.equal(error,null);assert.equal(ip,dnsAddress);assert.equal(family,4);
     });
     const request=new EventEmitter();
@@ -40,17 +44,17 @@ test("My Tunnel fixed query is pinned across DNS, TLS and redirects",async t=>{
     });
     return request;
   });
-  assert.equal((await downloadVpnCatalog("my-tunnel-proxy")).toString(),"fixed catalog bytes");
+  assert.equal((await downloadVpnCatalog(provider.id)).toString(),"fixed catalog bytes");
   for(const redirect of [
-    "https://mfmpro.xyz/api/app?json=changed",
-    "https://mfmpro.xyz/api/app",
-    "https://other.invalid/api/app?json=3c9a2a29f3a4180271da",
-    "http://mfmpro.xyz/api/app?json=3c9a2a29f3a4180271da",
+    `https://${provider.host}${provider.path}?json=changed`,
+    `https://${provider.host}${provider.path}`,
+    `https://other.invalid${provider.path}${provider.query}`,
+    `http://${provider.host}${provider.path}${provider.query}`,
   ]){
     mode=redirect;
-    await assert.rejects(()=>downloadVpnCatalog("my-tunnel-proxy"),{code:"REMOTE_NETWORK_DENIED"});
+    await assert.rejects(()=>downloadVpnCatalog(provider.id),{code:"REMOTE_NETWORK_DENIED"});
   }
   const before=calls;dnsAddress="127.0.0.1";
-  await assert.rejects(()=>downloadVpnCatalog("my-tunnel-proxy"),{code:"REMOTE_NETWORK_DENIED"});
+  await assert.rejects(()=>downloadVpnCatalog(provider.id),{code:"REMOTE_NETWORK_DENIED"});
   assert.equal(calls,before);
 });

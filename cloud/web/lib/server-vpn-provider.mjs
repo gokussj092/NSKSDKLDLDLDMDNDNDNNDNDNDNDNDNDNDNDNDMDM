@@ -25,6 +25,10 @@ const PROVIDERS = Object.freeze({
     url:"https://mfmpro.xyz/api/app?json=3c9a2a29f3a4180271da",
     agent:"My Tunnel Proxy/2.3",
   },
+  "robust-tunnel": {
+    url:"https://xkingvpn.xyz/api/files/app?json=beae113e6e46d674a068",
+    agent:"Robust Tunnel VPN/isvsoft 16.4.7",
+  },
 });
 const MAX_BYTES=8*1024*1024;
 const DEADLINE_MS=30000;

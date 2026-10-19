@@ -878,7 +878,8 @@
                       "24clan-green",
                       "hx-tunnel",
                       "mkk-hyper",
-                      "my-tunnel-proxy"
+                      "my-tunnel-proxy",
+                      "robust-tunnel"
                     ]
                   },
                   "consent": {
