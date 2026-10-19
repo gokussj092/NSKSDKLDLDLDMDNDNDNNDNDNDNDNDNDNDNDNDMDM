@@ -92,6 +92,10 @@ internal class CloudDecodeClient(context: Context) {
         val challengeId = challenge.getString("challengeId")
         coroutineContext.ensureActive()
         val code=if(BuildConfig.SPDECODE_QA_BUILD)CloudQaMemory.get() else ""
+        // Private QA must never silently attempt Play Integrity after the
+        // volatile test code is lost (e.g., Android killed the process).
+        if(BuildConfig.SPDECODE_QA_BUILD && code.isEmpty())
+            throw IOException("CLOUD_QA_CODE_REQUIRED")
         val (endpoint,body)=if(code.isNotEmpty()) {
             "/api/v1/session/qa" to
                 JSONObject().put("challengeId",challengeId).put("qaCode",code)
