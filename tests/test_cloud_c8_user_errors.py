@@ -26,7 +26,7 @@ class CloudUserErrorsContracts(unittest.TestCase):
                      "CLOUD_NATIVE_NETWORK_UNAVAILABLE"):
             self.assertIn(code,source)
         for status in (401,403,404,408,409,413,422,429,500,502,503,504):
-            self.assertRegex(source,r"\\b"+str(status)+r"\\b")
+            self.assertRegex(source,r"\b"+str(status)+r"\b")
         self.assertIn('R.string.cloud_failure_offline',source)
         self.assertNotIn('cause.toString()',source)
         self.assertNotIn('cause.stackTrace',source)
