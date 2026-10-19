@@ -27,7 +27,7 @@ class CloudUserErrorsContracts(unittest.TestCase):
             self.assertIn(code,source)
         for status in (401,403,404,408,409,413,422,429,500,502,503,504):
             self.assertRegex(source,r"\\b"+str(status)+r"\\b")
-        self.assertIn('NetworkCapabilities.NET_CAPABILITY_VALIDATED',source)
+        self.assertIn('R.string.cloud_failure_offline',source)
         self.assertNotIn('cause.toString()',source)
         self.assertNotIn('cause.stackTrace',source)
 
@@ -51,7 +51,7 @@ class CloudUserErrorsContracts(unittest.TestCase):
         self.assertIn("cloud_failure_notice_title",generated)
         self.assertIn("CloudUserErrors.message",generated)
         manifest=(ROOT/"android/app/src/main/AndroidManifest.xml").read_text("utf-8")
-        self.assertIn("android.permission.ACCESS_NETWORK_STATE",manifest)
+        self.assertEqual(manifest.count("<uses-permission"),1)
 
     def test_server_vpn_handoff_has_no_client_decoder_work(self):
         guide=(ROOT/"docs/cloud/SERVER_VPN_NEXT_CHAT_GUIDE.md").read_text("utf-8")
