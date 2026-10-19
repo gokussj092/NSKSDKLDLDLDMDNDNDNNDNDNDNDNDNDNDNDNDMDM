@@ -759,6 +759,160 @@
           }
         }
       }
+    },
+    "/api/v1/server-vpn/catalog": {
+      "post": {
+        "summary": "Version-aware public VPN application directory",
+        "description": "Public presentation data only. No provider endpoints or private cryptographic material.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [],
+                "properties": {
+                  "knownVersion": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Complete, validated result"
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "401": {
+            "description": "Authentication required for decoding"
+          },
+          "413": {
+            "description": "Payload exceeds configured limit"
+          },
+          "422": {
+            "description": "Decoding or authentication failed"
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "503": {
+            "description": "Service unavailable or disabled"
+          }
+        }
+      }
+    },
+    "/api/v1/server-vpn/icon": {
+      "post": {
+        "summary": "Fetch an allowlisted original PNG icon as SHA-256-checked Base64",
+        "description": "Public presentation data only. No provider endpoints or private cryptographic material.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9-]{1,48}$"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Complete, validated result"
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "401": {
+            "description": "Authentication required for decoding"
+          },
+          "413": {
+            "description": "Payload exceeds configured limit"
+          },
+          "422": {
+            "description": "Decoding or authentication failed"
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "503": {
+            "description": "Service unavailable or disabled"
+          }
+        }
+      }
+    },
+    "/api/v1/server-vpn/decode": {
+      "post": {
+        "summary": "Authenticated, consented server-side VPN provider catalog decoding",
+        "description": "Requires Play Integrity session, service toggle, fixed provider URL, bounded retries and isolated Python worker.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "consent"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "enum": [
+                      "24clan-green",
+                      "hx-tunnel",
+                      "mkk-hyper"
+                    ]
+                  },
+                  "consent": {
+                    "type": "boolean",
+                    "const": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Complete, validated result"
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "401": {
+            "description": "Authentication required for decoding"
+          },
+          "413": {
+            "description": "Payload exceeds configured limit"
+          },
+          "422": {
+            "description": "Decoding or authentication failed"
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "503": {
+            "description": "Service unavailable or disabled"
+          }
+        }
+      }
     }
   },
   "components": {
