@@ -39,6 +39,16 @@ def dispatch(text: str) -> str | None:
         if lowered.startswith(prefix):
             from_module = importlib.import_module(module_name)
             return from_module.run(value.encode("utf-8"))
+    # C8 isolated original application codecs. These prefixes are unambiguous.
+    c8_links = (
+        ("ua://", "decoders.Python.apps.Ultra_Custom.ultra_custom_52"),
+        ("mkk://", "decoders.Python.apps.MKK_Hyper_VPN.MKK_Hyper_VPN_textos"),
+        ("vpn://", "decoders.Python.apps.DTunnel_Mod.dtunnelmod"),
+    )
+    for prefix, module_name in c8_links:
+        if lowered.startswith(prefix):
+            module = importlib.import_module(module_name)
+            return module.run(value.encode("utf-8"))
     # Special Phase G protocols route to the same independent per-format source.
     byte_handlers = (
         (("izph://", "izphvpnpro://"), "decoders.Python.izph"),

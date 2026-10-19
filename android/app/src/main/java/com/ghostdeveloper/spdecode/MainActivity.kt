@@ -24,6 +24,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.ghostdeveloper.spdecode.cloud.CloudDecodeClient
 import com.ghostdeveloper.spdecode.cloud.CloudFileFormats
+import com.ghostdeveloper.spdecode.cloud.CloudTextFormats
 import com.ghostdeveloper.spdecode.cloud.CloudLegalConsent
 import com.ghostdeveloper.spdecode.cloud.CloudLegalConsentDialog
 import com.ghostdeveloper.spdecode.cloud.ServerVpnApp
@@ -503,7 +504,8 @@ class MainActivity : ComponentActivity() {
             message=getString(R.string.text_decode_invalid)
             return
         }
-        val candidate=TextProtocolDecoder.identify(userText)
+        val candidate=(if(BuildConfig.SPDECODE_CLOUD_ENABLED)CloudTextFormats.identify(userText) else null)
+            ?:TextProtocolDecoder.identify(userText)
         if(candidate==null) {
             message=getString(R.string.text_decode_invalid)
             return
