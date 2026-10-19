@@ -5,6 +5,7 @@ Existing engines and their cryptographic implementations are not modified.
 """
 from __future__ import annotations
 
+import base64
 import json
 import sys
 import unittest
@@ -62,6 +63,33 @@ class C8WorkerIntegrationTests(unittest.TestCase):
         self.assertEqual(result["status"],"success")
         self.assertFalse(result["isPartial"])
         self.assertEqual(result["structuredJson"]["uri"],fixture["profiles"][0]["uri"])
+
+    def test_reese_unprotected_binary_profile(self):
+        data=golden("reese_vectors.json")
+        sample=next(v for v in data["cases"] if v["name"]=="rse5-c4-flags0")
+        output=decode_file("rt",base64.b64decode(sample["data"]))
+        self.assertEqual(output["structuredJson"],data["expected"])
+        self.assertFalse(output["isPartial"])
+
+    def test_vpn_plus_peru_akn3_full_json(self):
+        data=golden("vpn_plus_peru_vectors.json")
+        sample=next(v for v in data["vectors"] if v["version"]==3)
+        output=decode_file("gol",sample["data"].encode("utf-8"))
+        self.assertEqual(output["structuredJson"],data["expected"])
+
+    def test_ultra_custom_unprotected_v5(self):
+        data=golden("ultra_custom_52_vectors.json")
+        sample=next(v for v in data["vectors"] if v["name"]=="single-plain")
+        output=decode_file("ua",sample["data"].encode("utf-8"))
+        document=output["structuredJson"]
+        profiles=document.get("profiles",[document])
+        self.assertEqual([p["properties"] for p in profiles],
+                         [data["expectedProfiles"][0]])
+
+    def test_neutro_unprotected_profile_json(self):
+        data=golden("neutro_vpn_vectors.json")
+        output=decode_file("nvpnc",data["local"].encode("utf-8"))
+        self.assertEqual(output["structuredJson"],data["expectedProfile"])
 
     def test_reject_unknown_provider_and_ciphertext_instead_of_falling_back(self):
         with self.assertRaises(DecodeFailure) as bad:
