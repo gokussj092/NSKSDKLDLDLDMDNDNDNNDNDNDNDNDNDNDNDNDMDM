@@ -21,6 +21,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import com.ghostdeveloper.spdecode.cloud.ServerVpnApp
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -82,6 +84,7 @@ fun SpDecodeApp(
     onDecodeText:(String)->Unit={},
     onDecodeCloud:(String)->Unit={},
     onDecodeServerCatalog:()->Unit={},
+    serverVpnApps:List<ServerVpnApp> = emptyList(),
     whatsNew:Boolean=false,
     onDismissWhatsNew:()->Unit={},
     guideStep:Int?=null,
@@ -112,7 +115,7 @@ fun SpDecodeApp(
                         highlightGuide=if(!whatsNew && !busy)guideStep else null)
                     1->HistoryScreen(session,onSelect,onDeleteSelected,onClear,onImportMultiple,onFavorite)
                     2->FormatsScreen()
-                    3->ServerVpnScreen(busy,onDecodeServerCatalog)
+                    3->ServerVpnScreen(busy,serverVpnApps,onDecodeServerCatalog)
                     else->FunctionalSettingsPanel(selectedLanguage,hideCredentials,
                         onLanguage,onMaskCredentials,onClear,onExternalLink,
                         retentionDays,onRetention,onShowGuide=onGuideRestart)
@@ -740,8 +743,9 @@ private fun FormatsScreen() {
  * The NUR logo slot will use the supplied app artwork when available.
  */
 @Composable
-private fun ServerVpnScreen(busy:Boolean,onDecodeCatalog:()->Unit) {
+private fun ServerVpnScreen(busy:Boolean,apps:List<ServerVpnApp>,onDecodeCatalog:()->Unit) {
     var selected by rememberSaveable { mutableStateOf(false) }
+    var selectedId by rememberSaveable { mutableStateOf("") }
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())
         .padding(horizontal=20.dp,vertical=12.dp),
         verticalArrangement=Arrangement.spacedBy(14.dp)) {
@@ -749,6 +753,47 @@ private fun ServerVpnScreen(busy:Boolean,onDecodeCatalog:()->Unit) {
             fontWeight=FontWeight.Bold,color=White)
         Text(stringResource(R.string.server_vpn_description),fontSize=13.sp,
             lineHeight=20.sp,color=Secondary)
+        if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
+            if(apps.isEmpty()) Text(stringResource(R.string.loading),
+                color=Secondary,fontSize=13.sp)
+            apps.forEach { app ->
+                val expanded=selectedId==app.id
+                Surface(modifier=Modifier.fillMaxWidth().clickable { selectedId=if(expanded)"" else app.id },
+                    color=Panel,shape=RoundedCornerShape(15.dp),
+                    border=BorderStroke(1.dp,Outline)) {
+                    Row(Modifier.padding(15.dp),verticalAlignment=Alignment.CenterVertically) {
+                        Surface(color=Raised,shape=RoundedCornerShape(13.dp),
+                            modifier=Modifier.size(52.dp)) {
+                            Box(contentAlignment=Alignment.Center) {
+                                Image(bitmap=app.icon.asImageBitmap(),contentDescription=app.name,
+                                    modifier=Modifier.size(36.dp))
+                            }
+                        }
+                        Spacer(Modifier.width(12.dp))
+                        Text(app.name,color=White,fontSize=16.sp,fontWeight=FontWeight.SemiBold,
+                            modifier=Modifier.weight(1f))
+                        Icon(if(expanded) Icons.Outlined.ExpandLess else Icons.Outlined.ChevronRight,
+                            null,tint=Secondary)
+                    }
+                }
+                if(expanded) {
+                    Surface(color=Panel,shape=RoundedCornerShape(15.dp),
+                        modifier=Modifier.fillMaxWidth()) {
+                        Column(Modifier.padding(15.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
+                            Button(onClick=onDecodeCatalog,
+                                enabled=!busy && app.decodeEnabled && app.id=="nur-tunnel",
+                                modifier=Modifier.fillMaxWidth().heightIn(min=50.dp),
+                                shape=RoundedCornerShape(13.dp),
+                                colors=ButtonDefaults.buttonColors(containerColor=Raised,contentColor=White)) {
+                                Icon(Icons.Outlined.CloudDownload,null,modifier=Modifier.size(19.dp))
+                                Spacer(Modifier.width(8.dp))
+                                Text(stringResource(R.string.nur_servers_decode))
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
         Surface(
             modifier=Modifier.fillMaxWidth().clickable { selected=!selected },
             shape=RoundedCornerShape(15.dp),color=Panel,
@@ -795,6 +840,7 @@ private fun ServerVpnScreen(busy:Boolean,onDecodeCatalog:()->Unit) {
                     }
                 }
             }
+        }
         }
     }
 }
