@@ -25,7 +25,7 @@ class PhaseViPrivacySecurityTests(unittest.TestCase):
         activity=src(KOTLIN/"MainActivity.kt")
         self.assertIn('private fun requireCloudLegal():Boolean',activity)
         for method in ("prepareSingleImport","decodeText","decodeCloud","decodeNurServers","decodeServerVpnProvider"):
-            self.assertRegex(activity,rf'private fun {method}\(.*?\) \{{\s*if\(!requireCloudLegal\(\)\)')
+            self.assertRegex(activity,rf'private fun {method}\(.*?\) \{{\s*if\(!requireCloudLegal\(\)')
         self.assertIn('if(!requireCloudLegal())return\n        require(privateCredentialId',activity)
         self.assertIn('onDecline={finishAffinity()}',activity)
 
