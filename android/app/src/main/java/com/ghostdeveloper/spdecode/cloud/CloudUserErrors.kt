@@ -1,8 +1,6 @@
 package com.ghostdeveloper.spdecode.cloud
 
 import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import com.ghostdeveloper.spdecode.BuildConfig
 import com.ghostdeveloper.spdecode.R
 import java.io.IOException
@@ -13,16 +11,6 @@ import java.io.IOException
  * messages or stack traces in user-visible text. Codes are shown only in QA.
  */
 internal object CloudUserErrors {
-    private fun connected(context:Context):Boolean {
-        val manager=context.getSystemService(Context.CONNECTIVITY_SERVICE)
-            as? ConnectivityManager ?:return true
-        return runCatching {
-            val active=manager.activeNetwork ?: return@runCatching false
-            val capabilities=manager.getNetworkCapabilities(active)
-            capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)==true
-        }.getOrDefault(true)
-    }
-
     private fun resource(cause:Throwable):Int {
         if(cause is CloudDecodeClient.Failure) {
             return when(cause.code) {
@@ -81,10 +69,10 @@ internal object CloudUserErrors {
     }
 
     fun message(context:Context,cause:Throwable):String {
-        val offline=!connected(context)
-        val id=if(offline && (cause !is CloudDecodeClient.Failure ||
-                cause.httpStatus in 502..504)) R.string.cloud_failure_offline
-            else resource(cause)
+        val disconnected=cause is IOException &&
+            cause !is CloudDecodeClient.Failure &&
+            cause.message=="CLOUD_NATIVE_NETWORK_UNAVAILABLE"
+        val id=if(disconnected) R.string.cloud_failure_offline else resource(cause)
         val text=context.getString(id)
         if(!BuildConfig.SPDECODE_QA_BUILD)return text
         // QA diagnostics contain only bounded, local enum-like values.
