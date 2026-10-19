@@ -68,3 +68,11 @@ nueva revisión y elevar `CloudLegalConsent.VERSION` en una actualización
 Android. El registro anterior no habilita la nueva versión. La página legal
 sigue siendo un borrador que requiere revisión profesional y datos del
 responsable antes de publicarse en Google Play.
+
+## Phase VII — verificación temporal de catálogos remotos
+
+Durante `sudo spdecode qa start` o `sudo spdecode qa services`, los tres proveedores fijos (24clan Green, HX Tunnel y MKK Hyper) se habilitan temporalmente junto a NUR para pruebas privadas autorizadas. Al ejecutar `sudo spdecode qa stop`, se restauran los interruptores anteriores y se revoca el acceso QA. No implica autorización de terceros para distribuir su contenido ni certificación de compatibilidad.
+
+El catálogo Android se cifra y consulta como máximo cada 24 horas, pero el botón existente de **Actualizar** ejecuta una consulta completa (`knownVersion=0`) incluso con la misma versión para reflejar cambios de habilitación. Las actualizaciones automáticas normales siguen necesitando incrementar monotónicamente `CLOUD_SERVER_VPN_CATALOG_VERSION`. La disponibilidad de un botón no garantiza que el servidor remoto esté operativo o que la respuesta pueda descifrarse.
+
+La APK QA mostrará códigos de error sanitizados por extensión (sin nombres de archivo ni credenciales) para distinguir fallos de transporte, configuración, sesión y descifrado. Los resultados reales de NUR se diagnostican con `sudo spdecode qa probe-nur` durante una sesión activa.

@@ -19,7 +19,7 @@ STATE=CFG/"qa-previous.json"
 COMPOSE=ROOT/"repo/cloud/compose.yaml"
 QA_TTL=4*3600
 KEY="spc3:qa:code"
-PROVIDER_KEYS=("CLOUD_NUR_FETCH_ENABLED","CLOUD_NUR_CATALOG_URL","CLOUD_EHI_IMPORT_ENABLED")
+PROVIDER_KEYS=("CLOUD_NUR_FETCH_ENABLED","CLOUD_NUR_CATALOG_URL","CLOUD_EHI_IMPORT_ENABLED","CLOUD_SERVER_VPN_ENABLED")
 NUR_ASSET=ROOT/"repo/android/app/src/main/assets/nur_tunnel_server_endpoint.json"
 
 def permitted_catalog():
@@ -48,6 +48,7 @@ def provider_changes(current):
         "CLOUD_NUR_FETCH_ENABLED":"true",
         "CLOUD_NUR_CATALOG_URL":url,
         "CLOUD_EHI_IMPORT_ENABLED":"true" if ehi_ready else "false",
+        "CLOUD_SERVER_VPN_ENABLED":"true",
     },ehi_ready
 
 def save_state(data):
@@ -65,6 +66,7 @@ def status():
     print("NUR Server VPN enabled:",value(current,"CLOUD_NUR_FETCH_ENABLED")=="true" and
           bool(value(current,"CLOUD_NUR_CATALOG_URL")))
     print("HTTP Injector Cloud enabled:",value(current,"CLOUD_EHI_IMPORT_ENABLED")=="true")
+    print("Additional Server VPN providers enabled:",value(current,"CLOUD_SERVER_VPN_ENABLED")=="true")
     # Avoid printing URLs or signing keys, even if the source is publicly tracked.
 def run(*args,stdin=None,quiet=True):
     return subprocess.run(args,input=stdin,text=True,check=True,
@@ -248,6 +250,7 @@ def main():
             except Exception:pass
             raise
         print("NUR Server VPN: ENABLED for existing QA session")
+        print("Additional Server VPN providers: ENABLED for existing QA session")
         print("HTTP Injector Cloud:", "ENABLED" if ehi_ready else "NOT CONFIGURED (provider credentials missing)")
         print("Re-use the existing QA code. Android rebuild not required.")
         return
@@ -282,6 +285,7 @@ def main():
             raise
         print("QA ENABLED for four hours. Save this code privately; it is not stored in plaintext.")
         print("NUR Server VPN: ENABLED during QA")
+        print("Additional Server VPN providers: ENABLED during QA")
         print("HTTP Injector Cloud:", "ENABLED" if ehi_ready else "NOT CONFIGURED (provider credentials missing)")
         print("QA CODE:",code)
         print("Expires at UNIX UTC:",until)
