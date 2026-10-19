@@ -23,6 +23,10 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.ghostdeveloper.spdecode.cloud.CloudDecodeClient
+import com.ghostdeveloper.spdecode.cloud.CloudLegalConsent
+import com.ghostdeveloper.spdecode.cloud.CloudLegalConsentDialog
+import com.ghostdeveloper.spdecode.cloud.ServerVpnApp
+import com.ghostdeveloper.spdecode.cloud.ServerVpnCatalogRepository
 import com.ghostdeveloper.spdecode.parity.AndroidDecoderCatalog
 import com.ghostdeveloper.spdecode.parity.AndroidOfflineDecoderRouter
 import com.ghostdeveloper.spdecode.parity.HcHccfgPort
@@ -61,6 +65,10 @@ class MainActivity : ComponentActivity() {
     private companion object { const val MAX_BYTES=1024*1024 }
     private val scope=CoroutineScope(SupervisorJob()+Dispatchers.Main.immediate)
     private val cloudClient by lazy { CloudDecodeClient(this) }
+    private val serverVpnCatalog by lazy { ServerVpnCatalogRepository(this,cloudClient) }
+    private var serverVpnApps by mutableStateOf<List<ServerVpnApp>>(emptyList())
+    private var showCloudLegal by mutableStateOf(false)
+    private var serverVpnRefresh:Job?=null
     private val privateCredentialVault by lazy { DevicePrivateCredentialVault(this) }
     private data class PendingCredentialImport(
         val uri:Uri,
@@ -106,6 +114,24 @@ class MainActivity : ComponentActivity() {
         get()=sessionVm.reveal
         set(value){sessionVm.reveal=value}
     private var stagedExport:String?=null
+
+    private fun refreshServerVpn() {
+        if(!BuildConfig.SPDECODE_CLOUD_ENABLED || showCloudLegal ||
+            serverVpnRefresh?.isActive==true)return
+        serverVpnRefresh=scope.launch {
+            try {
+                serverVpnApps=serverVpnCatalog.cached()
+                serverVpnApps=serverVpnCatalog.refreshIfDue()
+            }catch(error:CancellationException){throw error}
+             catch(_:Exception){ /* Keep the last authenticated local snapshot. */ }
+        }
+    }
+
+    private fun openLegalPage(url:String) {
+        if(url!=CloudLegalConsent.TERMS && url!=CloudLegalConsent.PRIVACY)return
+        try {startActivity(Intent(Intent.ACTION_VIEW,Uri.parse(url)))}
+        catch(_:ActivityNotFoundException){toast(R.string.read_error)}
+    }
 
     override fun attachBaseContext(base:Context) {
         val tag=base.getSharedPreferences("spdecode-ui-preferences",Context.MODE_PRIVATE)
@@ -193,6 +219,8 @@ class MainActivity : ComponentActivity() {
         val installed=packageManager.getPackageInfo(packageName,0)
         runningVersionCode=if(Build.VERSION.SDK_INT>=28)installed.longVersionCode else installed.versionCode.toLong()
         showWhatsNew=settings.getLong("last_seen_whats_new_version",0L)<runningVersionCode
+        showCloudLegal=BuildConfig.SPDECODE_CLOUD_ENABLED && !CloudLegalConsent.accepted(this)
+        if(!showCloudLegal)refreshServerVpn()
         if(savedInstanceState==null && !settings.getBoolean("first_run_guide_completed",false))
             guideStep=0
         @Suppress("DEPRECATION")
@@ -248,6 +276,7 @@ class MainActivity : ComponentActivity() {
                     navigationExplicit=true
                     tab=newTab
                     reveal=false
+                    if(newTab==3)refreshServerVpn()
                     scope.launch {
                         try { historyPreferences.setLastTab(newTab) }
                         catch(e:CancellationException){throw e}
@@ -281,6 +310,7 @@ class MainActivity : ComponentActivity() {
                 onDecodeText={input->decodeText(input)},
                 onDecodeCloud={reference->decodeCloud(reference)},
                 onDecodeServerCatalog={decodeNurServers()},
+                serverVpnApps=serverVpnApps,
                 whatsNew=showWhatsNew,
                 onDismissWhatsNew={
                     settings.edit().putLong("last_seen_whats_new_version",runningVersionCode).apply()
@@ -308,6 +338,21 @@ class MainActivity : ComponentActivity() {
                     tab=0
                 },
             )
+            if(!showBrandedSplash && showCloudLegal && !showWhatsNew) {
+                CloudLegalConsentDialog(
+                    onTerms={openLegalPage(CloudLegalConsent.TERMS)},
+                    onPrivacy={openLegalPage(CloudLegalConsent.PRIVACY)},
+                    onAccept={
+                        try {
+                            CloudLegalConsent.accept(this@MainActivity)
+                            showCloudLegal=false
+                            refreshServerVpn()
+                            if(savedInstanceState==null && !showCloudLegal)handleExternalIntent(intent)
+                        }catch(_:Exception){message=getString(R.string.history_storage_error)}
+                    },
+                    onDecline={finishAffinity()},
+                )
+            }
             pendingCredentialImport?.let { candidate ->
                 if(enteringHcManually || candidate.requirements.hwidRequired ||
                     candidate.credentials.isEmpty()) {
@@ -339,12 +384,13 @@ class MainActivity : ComponentActivity() {
         // A signature/debuggable check that runs only at cold start can be
         // bypassed by a later process attachment. Defense-in-depth recheck.
         if(!ReleaseIntegrity.isTrusted(this)) finishAndRemoveTask()
+        if(!showCloudLegal)refreshServerVpn()
     }
 
     override fun onNewIntent(intent:Intent){
         super.onNewIntent(intent)
         setIntent(intent)
-        handleExternalIntent(intent)
+        if(!showCloudLegal)handleExternalIntent(intent)
     }
 
     @Suppress("DEPRECATION")
