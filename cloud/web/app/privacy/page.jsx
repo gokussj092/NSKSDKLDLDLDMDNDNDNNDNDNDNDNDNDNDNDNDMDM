@@ -2,7 +2,7 @@ import Link from "next/link";
 export const metadata={title:"Privacidad",description:"Información sobre tratamiento de archivos y protección de datos en SP-DECODE Cloud."};
 export default function Privacy(){
   return <main id="main" className="shell page-wrap prose"><span className="section-kicker">Privacidad</span><h1 className="page-title">Transparencia sobre los archivos y los datos</h1>
-  <p className="page-lead">Documento informativo provisional para la arquitectura Cloud de SP-DECODE. Debe ser revisado y complementado antes del lanzamiento público.</p>
+  <p className="page-lead">Versión del borrador: 18 de octubre de 2026. Documento informativo provisional de SP-DECODE Cloud que necesita revisión legal antes del lanzamiento público.</p>
   <h2>Qué recibe el servidor</h2><p>Cuando el usuario activa expresamente un descifrado en Android, la API recibe el archivo o texto cifrado. Algunos formatos requieren contraseña o HWID aportados por el usuario. Las importaciones externas consultan proveedores permitidos y podrían transmitir una referencia de configuración a ese proveedor.</p>
   <h2>Cómo se procesa</h2><p>Los datos se envían por HTTPS al servidor y se procesan en workers privados. Se usan límites de tamaño y tiempo y directorios temporales que se eliminan al terminar la operación. La API no incorpora un almacenamiento persistente de los archivos o resultados procesados.</p>
   <h2>Autenticación y prevención de abuso</h2><p>La arquitectura utiliza desafíos temporales de Play Integrity, tokens de sesión de corta duración y Redis para control de solicitudes. Las IP pueden procesarse en forma de identificadores hash para limitar abusos. El panel administrativo solo muestra contadores agregados, nunca el contenido de los archivos.</p>

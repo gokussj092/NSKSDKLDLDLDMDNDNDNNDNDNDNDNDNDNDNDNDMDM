@@ -45,3 +45,11 @@ test("only registered icon identifiers are served",async()=>{
  assert.equal((await getIcon(body({id:"../secrets"}))).status,400);
  assert.equal((await getIcon(body({id:"missing"}))).status,404);
 });
+
+import {providerIds,providerEnabled,downloadVpnCatalog} from "../lib/server-vpn-provider.mjs";
+test("only fixed catalog providers are eligible for remote broker",async()=>{
+  assert.deepEqual(providerIds().sort(),["24clan-green","hx-tunnel","mkk-hyper"]);
+  for(const id of providerIds()) assert.equal(providerEnabled(id,{CLOUD_SERVER_VPN_ENABLED:"false"}),false);
+  assert.equal(providerEnabled("https://attacker.invalid/",{CLOUD_SERVER_VPN_ENABLED:"true"}),false);
+  await assert.rejects(()=>downloadVpnCatalog("https://attacker.invalid/"),{code:"UNSUPPORTED_FORMAT"});
+});

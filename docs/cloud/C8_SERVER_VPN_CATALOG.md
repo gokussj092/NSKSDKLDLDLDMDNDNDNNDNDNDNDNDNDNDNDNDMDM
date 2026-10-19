@@ -21,9 +21,13 @@
 - Los cuatro iconos disponibles y originales son NUR, 24clan, HX y MKK.
   El resto de proveedores NO debe mostrarse con iconos inventados: hay que
   extraerlos de sus APK de origen y revisar derechos de marca antes de Play Store.
-- Solo NUR tiene actualmente el broker remoto ya conectado; los botones de
-  los demás se mantienen deshabilitados hasta implementar sus respectivos
-  proveedores. No debe simularse un descifrado correcto.
+- NUR mantiene su broker probado. 24clan, HX y MKK disponen ahora de su propio
+  broker con HTTPS fijo, DNS anclado, reintentos limitados por IP y worker
+  aislado. Están DESACTIVADOS por defecto mediante
+  `CLOUD_SERVER_VPN_ENABLED=false` hasta validar contra sus proveedores reales.
+- KSH, DTunnel Mod y Neutro requieren sus iconos originales verificados,
+  autorización de proveedor y/o parámetros de actualización antes de mostrar
+  un botón operativo. No debe simularse un descifrado correcto.
 - Reintentos de proveedores: reutilizar la estrategia existente C3.5/NUR,
   limitada a transitorios de conexión/DNS, con IP pública fijada a TLS,
   mismos hosts aprobados, presupuesto total y sin repetir ante error
