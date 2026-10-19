@@ -9,6 +9,10 @@ import https from "node:https";
 import {publicIpv4} from "./c35-provider.mjs";
 
 const PROVIDERS = Object.freeze({
+  "http-fenixvpn": {
+    url:"https://raw.githubusercontent.com/Fenix1998x/GEN-SERVIDORES-NUEVO-24-08-2027/refs/heads/main/Fenix",
+    agent:"HTTP FenixVPN/19.4",
+  },
   "austroplus-vpn": {
     url:"https://raw.githubusercontent.com/SpkHexX/HexX/refs/heads/main/AustroPlusVPN.json",
     agent:"AustroPlus VPN/13.0.1",

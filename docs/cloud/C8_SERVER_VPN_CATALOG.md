@@ -331,3 +331,45 @@ Verificación local: **650 pruebas Python / 9 omisiones existentes**, worker
 Los 14 controles nuevos incluyen el Java original; el bundle aislado conserva
 JSON completo y el catálogo funciona con `python -S`. Sin APK, bibliotecas,
 catálogos reales o credenciales de cuenta en Git/CI/ZIP.
+
+
+## HTTP FenixVPN 19.4 — PR #96, misma rama
+
+Incorporada en `feat/austroplus-vpn-13-0-1-decoders`, después de AustroPlus,
+sin crear otra rama ni otro PR. Carpeta `decoders/Python/apps/HTTP_FenixVPN/`:
+lector `.sks`, lector de catálogos, codec, claves de campos, PNG original,
+README, TESTING, manifest y dependencias. Paquete `com.fenix.vpn`, código 181.
+
+El GET fijo de servidores recuperado del APK devolvió HTTP 200, 386584 bytes y
+**300 servidores**; el catálogo local trae uno. La descarga separada de usuarios
+contiene un perfil, accesible mediante `server_catalog_decoder.py --users`.
+El broker Cloud `http-fenixvpn` usa exclusivamente el catálogo de servidores.
+Sobre `WakkoDev`, MD5 encadenado y AES-256-CBC; 27 campos de servidor y 6 de
+usuario usan Base64 URL-safe, IV prefijado, AES-CBC y ROT21 de Java. Se comparó
+el JSON completo local/remoto, incluidos 2127 campos reales no vacíos de los
+servidores. Se conservan claves opacas, nombres de usuario planos, opciones
+BHTTP, tipos, desconocidos y campos vacíos.
+
+Importación `.sks`: PBKDF2-HMAC-SHA256/1000, AES-128-GCM con sal32/nonce12/tag16,
+o DES binario antiguo. Salida íntegra Java Properties: entradas ordenadas,
+duplicados y XML original. Archivos probados con vectores sintéticos basados
+en el APK, sin muestras reales independientes ni certificación del exportador.
+La actividad de exportación existe, pero el onClick observado no invoca la
+rutina exportadora. No se atribuye un esquema de enlaces propio a esta versión.
+
+La colisión `.sks` conserva el motor C0 SocksIP para sobres JSON `d/v`; GCM/DES
+usan el nuevo lector. La selección ocurre antes de descifrar, sin reintentos tras
+un fallo de autenticación. `sks.js`, motores compartidos y snapshots se conservan
+sin cambios. C0 permanece en 240 rutas y C8 en 246 extensiones efectivas.
+
+Bridge, broker, OpenAPI y ficha/icono públicos incorporan `http-fenixvpn`.
+Catálogo mínimo **9**, Compose 9 y QA `max(previous,9)+1`, sin rebajar overrides
+superiores. Icono original 431×426 de 89926 bytes, obtenido del split xhdpi;
+checksum idéntico entre carpeta de app y web. No se cambian el diseño Android,
+los valores predeterminados de activación ni se despliega/publica una APK.
+
+
+Verificación del lote: Python 664 pruebas / 9 omisiones existentes; worker 11;
+VPS/QA 39; gates 4; Node 71; build web satisfactorio. CLI descargando ambos
+catálogos reales y worker aislado con igualdad JSON completa frente a Java.
+Muestras `.sks` sintéticas; exportación real independiente todavía no acreditada.

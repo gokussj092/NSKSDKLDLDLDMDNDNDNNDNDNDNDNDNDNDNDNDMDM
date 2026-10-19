@@ -64,7 +64,7 @@ class PhaseViPrivacySecurityTests(unittest.TestCase):
         route=src(ROOT/"cloud/web/app/api/v1/server-vpn/catalog/route.js")
         self.assertIn('activeCatalogVersion(env=process.env)',code)
         self.assertIn('number<CATALOG_VERSION',code)
-        self.assertIn('CLOUD_SERVER_VPN_CATALOG_VERSION: ${CLOUD_SERVER_VPN_CATALOG_VERSION:-8}',compose)
+        self.assertIn('CLOUD_SERVER_VPN_CATALOG_VERSION: ${CLOUD_SERVER_VPN_CATALOG_VERSION:-9}',compose)
         self.assertIn('const currentVersion=activeCatalogVersion()',route)
         self.assertIn('input.knownVersion===currentVersion',route)
         self.assertIn('unchanged:true',route)

@@ -30,3 +30,4 @@ productores se mantienen en `tests/golden`, y las pruebas en `tests`.
 | AustroPlus VPN 13.0.1 | [Script](AustroPlus_VPN/server_catalog_decoder.py) | [.aro actual AES-GCM](AustroPlus_VPN/file_decoder.py) | [Carpeta](AustroPlus_VPN/README.md) |
 | AC TUNNEL VPN 1.4 | [Script](AC_TUNNEL_VPN/server_catalog_decoder.py) | [.actun, actunnelvpn:// y referencia acvpn://](AC_TUNNEL_VPN/file_decoder.py) | [Carpeta](AC_TUNNEL_VPN/README.md) |
 | 4U TUNNEL LITE 2.2 | [Script](4U_TUNNEL_LITE/server_catalog_decoder.py) | [.4ulite y texto compatible](4U_TUNNEL_LITE/file_decoder.py) | [Carpeta](4U_TUNNEL_LITE/README.md) |
+| HTTP FenixVPN 19.4 | [Servidores y usuarios](HTTP_FenixVPN/server_catalog_decoder.py) | [.sks GCM y DES](HTTP_FenixVPN/file_decoder.py) | [Carpeta](HTTP_FenixVPN/README.md) |

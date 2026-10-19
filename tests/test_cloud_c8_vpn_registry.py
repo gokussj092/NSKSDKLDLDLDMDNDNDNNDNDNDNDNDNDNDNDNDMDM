@@ -13,7 +13,7 @@ class CloudC8VpnRegistry(unittest.TestCase):
         self.assertEqual(len(canonical),240)
         self.assertEqual(canonical["hxt"]["source"],str((ROOT/"decoders/Python/xor_family.py").resolve()))
         extended=load_runtime_file_engines()
-        self.assertEqual(len(extended),246) # six new suffixes; .hxt, .roy, .actun, .aro and .4ulite override C0 routes.
+        self.assertEqual(len(extended),246) # six new suffixes; .hxt, .roy, .actun, .aro, .sks and .4ulite override C0 routes.
         self.assertIn("/apps/HX_Tunnel_VPN/HX_Tunnel_VPN_archivos.py",extended["hxt"]["source"])
         self.assertNotEqual(canonical["hxt"]["source"],extended["hxt"]["source"])
         self.assertIn("/apps/Royal_Tunnel_VPN/file_decoder.py",extended["roy"]["source"])
@@ -27,6 +27,8 @@ class CloudC8VpnRegistry(unittest.TestCase):
         self.assertIn("/apps/AC_TUNNEL_VPN/file_decoder.py",extended["actun"]["source"])
         self.assertEqual(extended["actunnelvpn"],canonical["actunnelvpn"])
         self.assertIn("/apps/AustroPlus_VPN/file_decoder.py",extended["aro"]["source"])
+        self.assertIn("/apps/HTTP_FenixVPN/file_decoder.py",extended["sks"]["source"])
+        self.assertEqual(canonical["sks"]["runtime"],"node")
         for suffix in ("rt","gol","ua","nvpnc","green"):
             self.assertEqual(extended[suffix]["phase"],"C8")
             self.assertTrue(Path(extended[suffix]["source"]).is_file())

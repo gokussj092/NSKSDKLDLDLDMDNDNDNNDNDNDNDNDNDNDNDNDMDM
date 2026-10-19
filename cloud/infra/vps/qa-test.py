@@ -46,13 +46,13 @@ def next_catalog_version(current):
     The increment is not rolled back when QA stops; the public manifest stays
     consistent with the deployed provider flags.
     """
-    raw=value(current,"CLOUD_SERVER_VPN_CATALOG_VERSION") or "8"
+    raw=value(current,"CLOUD_SERVER_VPN_CATALOG_VERSION") or "9"
     if not raw.isascii() or not raw.isdecimal():
         raise RuntimeError("Invalid Server VPN catalog version")
     previous=int(raw)
     if not 2 <= previous < 999_999_999:
         raise RuntimeError("Server VPN catalog version outside valid range")
-    return str(max(previous,8)+1)
+    return str(max(previous,9)+1)
 
 
 def provider_changes(current):
@@ -83,7 +83,7 @@ def status():
           bool(value(current,"CLOUD_NUR_CATALOG_URL")))
     print("HTTP Injector Cloud enabled:",value(current,"CLOUD_EHI_IMPORT_ENABLED")=="true")
     print("Additional Server VPN providers enabled:",value(current,"CLOUD_SERVER_VPN_ENABLED")=="true")
-    print("Server VPN catalog version:",value(current,"CLOUD_SERVER_VPN_CATALOG_VERSION") or "8")
+    print("Server VPN catalog version:",value(current,"CLOUD_SERVER_VPN_CATALOG_VERSION") or "9")
     # Avoid printing URLs or signing keys, even if the source is publicly tracked.
 def run(*args,stdin=None,quiet=True):
     return subprocess.run(args,input=stdin,text=True,check=True,

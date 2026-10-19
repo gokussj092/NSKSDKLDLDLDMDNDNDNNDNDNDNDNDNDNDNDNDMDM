@@ -1,0 +1,241 @@
+{
+  "provenance": "APK 19.4 recipes; original AbstractC6343 MD5/AES and C6334 ROT methods; JDK GCMParameterSpec adaptation; synthetic data only",
+  "profileXml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE properties SYSTEM \"http://java.sun.com/dtd/properties.dtd\">\n<properties><comment>HTTP FenixVPN synthetic</comment><entry key=\"file.appVersionCode\">181</entry><entry key=\"file.proteger\">1</entry><entry key=\"ssz7ImP\">vpn.example.invalid</entry><entry key=\"GFM5lWW\">fake-pass</entry><entry key=\"8DoP4cN\">GET / HTTP/1.1\nHost: example.invalid\n\n</entry><entry key=\"empty\"/><entry key=\"dup\">first</entry><entry key=\"dup\">second</entry><entry key=\"unknown\">ñ 日本 🔥 &amp; x</entry></properties>",
+  "profileGcm": "AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA=.YWJjZGVmZ2hpamts.gc5LXjkCTFc3Uv//h9+AOV4uER8XcRbgeZKV8zUJQhv1pOZ4azYeE7q3No3uggcwQBZTIBbhMWaXXpUxUZrm/Q0Ci/B83tCc6mf9fuLNx3UqozqEf8Qtijtwy0QAgD/u1c44qsYMgB6Tdd3ATvaLq16KTF6LBSbLEYjXMKPq2Uzt2jwSP7unY3FlSZgSsvpF5pWYbmhIORgsNGS8k4BWFCeWdNAMYKuj6p2mYhrTNfI85pS+MHqJAv5dWAefkmWOs6mRkcgHm1YKfMpZTGeh3W0r9rb+UcYtybllSZYMJjbVMLR3uvtvuGPPVfAjKRJEKeCPhvOyRjzR5yDk+5O/8XWwAQXPXwx6N5PmnYapC0lub6bhWwxQqxoH5QqaBsObbKKHAH0WMwBTU7KdP7vYRLkjAX7/y7Qa3Ui6NxCQMOd6VXpN8aSzvXg8unmzXaHXLRRXIh6QSykLd1jYqwRaMU3k+oVDQkM7FCJNZ9eC0s9Oy575GmnYN4CXKwYk8iN8rrOUf9N5cjzV1Xq+4QxO2WJJLikRVzSr9Nj3L8UU3YjrXxL+ZtDuEel7wTkHyjLFM6F9C7D3wP8NwbYYI+vZlOo4b9Ar77vRSDPxt0xN7efsmx37ifSRHCqL2MjyA4INqD6rK/03RS0xvg2TVV5VBdPgWWpOYaSPJk2C6L3Z4dPwD0TEfbf8QKuSk4tuerTHB2IzAi/XS6uHkGU/RAKwP0M2CCGjmdY8CSMskfE=",
+  "profileDesBase64": "7cqsZmHkpFe8w1RSaY69eht4s4SNVe9nTfVBOF0tNAmbCdv+Ub1E/XlDc5qm283b58DS+IIKNuLIDYpXtNMmVK8PrVr7OoqFGDCMQtqCFTgDzgw+ficHLVYmBXEsDOeHUqo0pqcXXypZeVgn+sZjKxu7OQ4kU65GcAniRE+n6HuQMepx1dYiI5dS1a+9G42Lq48y8P9O6Oyt7sPIGLM/SM4COwwSrWKWuahdEQCKGaj41tWx9k6z5Oh/+lMmHSLmi1dP5YbKzFmwWvJAYU84baxOIr9eM+31oIMjQGVRXMbWjruQEFFUliLL8oUIoulVkn3g7F4d40ug6D3pU1T3YGUcjbalTeb9JNdOd59aQuVCI06LXWimM1nWXvT4jF1Lkn3g7F4d40vCxuzXymlapM7TrQgToIrQ22LEG8bKvIZ5kJ/MmHCS7f4QaUO/qNV7DaCMYCCO3hXGpr0oFE45Qomy4WGM6bwxlRfyhV8h61QSaxMh69UPQIXupw8VbjKfB8eORCx2rs0IEHM/dbnKHnhkEd7YHZza81jIyDmoo5vhEH5yfHV64ly+wLnGD7bOEcDmRcAq0qUfacqy2jchujaiPd2wQyBeymj4aMFM1tRRx2hUyUqOqg1Ck5sFK1HyvC2jUBZZMzbBz1nNgUDO/kVj4xAIDRJQ8LyOGmFoQMsz3pbDHTWd3M7vevwwoEzXv+kc6bYpxqfQe3Mx8TG8BA==",
+  "expectedProfile": {
+    "entries": [
+      {
+        "key": "file.appVersionCode",
+        "value": "181"
+      },
+      {
+        "key": "file.proteger",
+        "value": "1"
+      },
+      {
+        "key": "ssz7ImP",
+        "value": "vpn.example.invalid"
+      },
+      {
+        "key": "GFM5lWW",
+        "value": "fake-pass"
+      },
+      {
+        "key": "8DoP4cN",
+        "value": "GET / HTTP/1.1\nHost: example.invalid\n\n"
+      },
+      {
+        "key": "empty",
+        "value": ""
+      },
+      {
+        "key": "dup",
+        "value": "first"
+      },
+      {
+        "key": "dup",
+        "value": "second"
+      },
+      {
+        "key": "unknown",
+        "value": "ñ 日本 🔥 & x"
+      }
+    ],
+    "raw_xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE properties SYSTEM \"http://java.sun.com/dtd/properties.dtd\">\n<properties><comment>HTTP FenixVPN synthetic</comment><entry key=\"file.appVersionCode\">181</entry><entry key=\"file.proteger\">1</entry><entry key=\"ssz7ImP\">vpn.example.invalid</entry><entry key=\"GFM5lWW\">fake-pass</entry><entry key=\"8DoP4cN\">GET / HTTP/1.1\nHost: example.invalid\n\n</entry><entry key=\"empty\"/><entry key=\"dup\">first</entry><entry key=\"dup\">second</entry><entry key=\"unknown\">ñ 日本 🔥 &amp; x</entry></properties>"
+  },
+  "catalog": "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",
+  "expectedCatalog": {
+    "Version": "fixture-19.4",
+    "ReleaseNotes": "synthetic only",
+    "Servers": [
+      {
+        "2kDKELRmSE143VdcX3FPzw==": "vpn.example.invalid",
+        "66P9ZUEM1ju4WGhv856BSg==": "443",
+        "ACqWMY4zuZWzSEs8cZMXIw==": "GET / HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+        "B5jcTSGuJUFbTtH5O1IaBg==": "fake-user",
+        "BWTPMwR0iRu1N9twHCpbAg==": "fake-pass",
+        "EtNSBhechjWxm2t50NyB9Q==": "",
+        "Fo3TT4oONvv69IQIMg1aLg==": "example.invalid/long?x=1",
+        "ITkWvEHp29BmMaLMEGUFcw==": "vpn.example.invalid",
+        "MkRXl4D9vpREVCJ0w4qrgg==": "443",
+        "PFFSWRJKZmOcNLTZxFwgjQ==": "GET / HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+        "QSln2zKCBJvqH9qV4M0ifg==": "fake-user",
+        "SbDP19AbQur0YtkkyRlVMA==": "fake-pass",
+        "U7V8DoP4cYkXJjCnpqW6nQ==": "",
+        "UxdyIntdYykCdV76crKnwg==": "example.invalid/long?x=1",
+        "W4CbS1nMWo6Y2noeUFHmXQ==": "vpn.example.invalid",
+        "aH2nzD4eDLxPSxIAlVivdg==": "443",
+        "asmRO4zXsRjhDYX42dbNuw==": "GET / HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+        "b3MPypEFR83rzFKUa4UbCw==": "fake-user",
+        "b6stZNVaFUjLCw88dn03Ng==": "fake-pass",
+        "iW1aO5DgThVAeo23xTsXSw==": "",
+        "l7MIgkbuXMmGaaQGd54F2w==": "example.invalid/long?x=1",
+        "mtw364P3ZslP2CZYuHTCHQ==": "vpn.example.invalid",
+        "oAqgFKE3WywLRvSvKffLOA==": "443",
+        "p0PgL3l0d89mnssz7ImPJA==": "GET / HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+        "p9ZPlMv9V7gDszRoUaNaJw==": "fake-user",
+        "tmSbWiCK1hvytJ9f3gflkQ==": "fake-pass",
+        "vXfVafVdyaCRTDj6uBT6lg==": "",
+        "serverType": 1,
+        "tunnelType": 2,
+        "SshAuthMode": "public",
+        "Unknown": {
+          "U7V8DoP4cYkXJjCnpqW6nQ==": "literal",
+          "keep": [
+            true,
+            null,
+            0
+          ]
+        }
+      }
+    ],
+    "Usuarios": [
+      {
+        "Auth": "fake-0",
+        "ID": "fake-1",
+        "Obfs": "fake-2",
+        "Password": "fake-3",
+        "Path": "fake-4",
+        "Username": "fake-5",
+        "Name": "Plain name ñ",
+        "Unknown": {
+          "Password": "literal"
+        }
+      }
+    ],
+    "Unknown": [
+      null,
+      true,
+      1,
+      1.5,
+      {
+        "serverType": "literal"
+      }
+    ]
+  },
+  "fieldVectors": [
+    {
+      "plain": "vpn.example.invalid",
+      "cipher": "ERITFBUWFxgZGhscHR4fIEQL32S4pKXEjfc1e22QMEUTZzzsCZQNkTtMowKTGs8Y"
+    },
+    {
+      "plain": "443",
+      "cipher": "ERITFBUWFxgZGhscHR4fIOpJcd7IAn6-9oWsq0fp-R4"
+    },
+    {
+      "plain": "GET / HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+      "cipher": "ERITFBUWFxgZGhscHR4fIIYVgk_8ugWKvaGqjpJdmEdq9B4dnxXZHbB1IzTpLXZzh5Z15eMh7leopJyvyZaJGg"
+    },
+    {
+      "plain": "fake-user",
+      "cipher": "ERITFBUWFxgZGhscHR4fINcVQ7VML-EMaa8WzRErAf0"
+    },
+    {
+      "plain": "fake-pass",
+      "cipher": "ERITFBUWFxgZGhscHR4fILKMQs8T0yaH5LodBpPV0R0"
+    },
+    {
+      "plain": "",
+      "cipher": "ERITFBUWFxgZGhscHR4fIJjT3E4T-LUHDOoib8j4HNE"
+    },
+    {
+      "plain": "example.invalid/long?x=1",
+      "cipher": "ERITFBUWFxgZGhscHR4fICEDbn8W0XMDFPneFVk83m7-LI11_LHe3_-Jh6iKp610"
+    },
+    {
+      "plain": "vpn.example.invalid",
+      "cipher": "ERITFBUWFxgZGhscHR4fIEQL32S4pKXEjfc1e22QMEUTZzzsCZQNkTtMowKTGs8Y"
+    },
+    {
+      "plain": "443",
+      "cipher": "ERITFBUWFxgZGhscHR4fIOpJcd7IAn6-9oWsq0fp-R4"
+    },
+    {
+      "plain": "GET / HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+      "cipher": "ERITFBUWFxgZGhscHR4fIIYVgk_8ugWKvaGqjpJdmEdq9B4dnxXZHbB1IzTpLXZzh5Z15eMh7leopJyvyZaJGg"
+    },
+    {
+      "plain": "fake-user",
+      "cipher": "ERITFBUWFxgZGhscHR4fINcVQ7VML-EMaa8WzRErAf0"
+    },
+    {
+      "plain": "fake-pass",
+      "cipher": "ERITFBUWFxgZGhscHR4fILKMQs8T0yaH5LodBpPV0R0"
+    },
+    {
+      "plain": "",
+      "cipher": "ERITFBUWFxgZGhscHR4fIJjT3E4T-LUHDOoib8j4HNE"
+    },
+    {
+      "plain": "example.invalid/long?x=1",
+      "cipher": "ERITFBUWFxgZGhscHR4fICEDbn8W0XMDFPneFVk83m7-LI11_LHe3_-Jh6iKp610"
+    },
+    {
+      "plain": "vpn.example.invalid",
+      "cipher": "ERITFBUWFxgZGhscHR4fIEQL32S4pKXEjfc1e22QMEUTZzzsCZQNkTtMowKTGs8Y"
+    },
+    {
+      "plain": "443",
+      "cipher": "ERITFBUWFxgZGhscHR4fIOpJcd7IAn6-9oWsq0fp-R4"
+    },
+    {
+      "plain": "GET / HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+      "cipher": "ERITFBUWFxgZGhscHR4fIIYVgk_8ugWKvaGqjpJdmEdq9B4dnxXZHbB1IzTpLXZzh5Z15eMh7leopJyvyZaJGg"
+    },
+    {
+      "plain": "fake-user",
+      "cipher": "ERITFBUWFxgZGhscHR4fINcVQ7VML-EMaa8WzRErAf0"
+    },
+    {
+      "plain": "fake-pass",
+      "cipher": "ERITFBUWFxgZGhscHR4fILKMQs8T0yaH5LodBpPV0R0"
+    },
+    {
+      "plain": "",
+      "cipher": "ERITFBUWFxgZGhscHR4fIJjT3E4T-LUHDOoib8j4HNE"
+    },
+    {
+      "plain": "example.invalid/long?x=1",
+      "cipher": "ERITFBUWFxgZGhscHR4fICEDbn8W0XMDFPneFVk83m7-LI11_LHe3_-Jh6iKp610"
+    },
+    {
+      "plain": "vpn.example.invalid",
+      "cipher": "ERITFBUWFxgZGhscHR4fIEQL32S4pKXEjfc1e22QMEUTZzzsCZQNkTtMowKTGs8Y"
+    },
+    {
+      "plain": "443",
+      "cipher": "ERITFBUWFxgZGhscHR4fIOpJcd7IAn6-9oWsq0fp-R4"
+    },
+    {
+      "plain": "GET / HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+      "cipher": "ERITFBUWFxgZGhscHR4fIIYVgk_8ugWKvaGqjpJdmEdq9B4dnxXZHbB1IzTpLXZzh5Z15eMh7leopJyvyZaJGg"
+    },
+    {
+      "plain": "fake-user",
+      "cipher": "ERITFBUWFxgZGhscHR4fINcVQ7VML-EMaa8WzRErAf0"
+    },
+    {
+      "plain": "fake-pass",
+      "cipher": "ERITFBUWFxgZGhscHR4fILKMQs8T0yaH5LodBpPV0R0"
+    },
+    {
+      "plain": "",
+      "cipher": "ERITFBUWFxgZGhscHR4fIJjT3E4T-LUHDOoib8j4HNE"
+    }
+  ],
+  "rotationVectors": [
+    {
+      "input": "éÉ漢字日本🔥",
+      "expected": "bBiljy🔥"
+    },
+    {
+      "input": "ABC xyz 123",
+      "expected": "VWX stu 123"
+    },
+    {
+      "input": "İıſǅǆKÅ𝐀",
+      "expected": "AvvnoWX𝐀"
+    }
+  ]
+}

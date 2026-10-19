@@ -883,7 +883,8 @@
                       "trv-tunnel",
                       "4u-tunnel-lite",
                       "ac-tunnel-vpn",
-                      "austroplus-vpn"
+                      "austroplus-vpn",
+                      "http-fenixvpn"
                     ]
                   },
                   "consent": {
