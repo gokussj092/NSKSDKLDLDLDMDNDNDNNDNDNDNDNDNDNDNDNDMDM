@@ -29,6 +29,7 @@ internal object CloudNativeTransport {
             "/api/v1/decode/import/cloud",
             "/api/v1/decode/import/catalog/remote",
             "/api/v1/server-vpn/catalog", "/api/v1/server-vpn/icon",
+            "/api/v1/server-vpn/decode",
         )) { "CLOUD_ROUTE_DENIED" }
         val returned = postNative(
             endpoint, payload.toString(), bearer

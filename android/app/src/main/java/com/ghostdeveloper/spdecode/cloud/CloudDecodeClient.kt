@@ -183,6 +183,12 @@ internal class CloudDecodeClient(context: Context) {
                 JSONObject().put("knownVersion",knownVersion)))
         }
 
+    suspend fun decodeServerVpnProvider(id:String): Decoded {
+        require(id.matches(Regex("[a-z0-9-]{1,48}")))
+        return decode("/api/v1/server-vpn/decode",
+            JSONObject().put("id",id).put("consent",true))
+    }
+
     suspend fun serverVpnIcon(id:String): JSONObject {
         require(id.matches(Regex("[a-z0-9-]{1,48}")))
         return withContext(Dispatchers.IO) {

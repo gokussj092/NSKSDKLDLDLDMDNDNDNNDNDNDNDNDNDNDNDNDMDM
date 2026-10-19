@@ -84,6 +84,7 @@ fun SpDecodeApp(
     onDecodeText:(String)->Unit={},
     onDecodeCloud:(String)->Unit={},
     onDecodeServerCatalog:()->Unit={},
+    onDecodeServerApp:(String)->Unit={}, 
     serverVpnApps:List<ServerVpnApp> = emptyList(),
     whatsNew:Boolean=false,
     onDismissWhatsNew:()->Unit={},
@@ -115,7 +116,7 @@ fun SpDecodeApp(
                         highlightGuide=if(!whatsNew && !busy)guideStep else null)
                     1->HistoryScreen(session,onSelect,onDeleteSelected,onClear,onImportMultiple,onFavorite)
                     2->FormatsScreen()
-                    3->ServerVpnScreen(busy,serverVpnApps,onDecodeServerCatalog)
+                    3->ServerVpnScreen(busy,serverVpnApps,onDecodeServerCatalog,onDecodeServerApp)
                     else->FunctionalSettingsPanel(selectedLanguage,hideCredentials,
                         onLanguage,onMaskCredentials,onClear,onExternalLink,
                         retentionDays,onRetention,onShowGuide=onGuideRestart)
@@ -743,7 +744,7 @@ private fun FormatsScreen() {
  * The NUR logo slot will use the supplied app artwork when available.
  */
 @Composable
-private fun ServerVpnScreen(busy:Boolean,apps:List<ServerVpnApp>,onDecodeCatalog:()->Unit) {
+private fun ServerVpnScreen(busy:Boolean,apps:List<ServerVpnApp>,onDecodeCatalog:()->Unit,onDecodeApp:(String)->Unit) {
     var selected by rememberSaveable { mutableStateOf(false) }
     var selectedId by rememberSaveable { mutableStateOf("") }
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())
@@ -780,8 +781,8 @@ private fun ServerVpnScreen(busy:Boolean,apps:List<ServerVpnApp>,onDecodeCatalog
                     Surface(color=Panel,shape=RoundedCornerShape(15.dp),
                         modifier=Modifier.fillMaxWidth()) {
                         Column(Modifier.padding(15.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
-                            Button(onClick=onDecodeCatalog,
-                                enabled=!busy && app.decodeEnabled && app.id=="nur-tunnel",
+                            Button(onClick={if(app.id=="nur-tunnel")onDecodeCatalog() else onDecodeApp(app.id)},
+                                enabled=!busy && app.decodeEnabled,
                                 modifier=Modifier.fillMaxWidth().heightIn(min=50.dp),
                                 shape=RoundedCornerShape(13.dp),
                                 colors=ButtonDefaults.buttonColors(containerColor=Raised,contentColor=White)) {

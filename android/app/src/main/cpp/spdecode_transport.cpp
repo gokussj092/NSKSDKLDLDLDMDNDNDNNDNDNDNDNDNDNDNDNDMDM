@@ -57,7 +57,8 @@ bool safePath(const std::string& path) {
         path == "/api/v1/decode/import/cloud" ||
         path == "/api/v1/decode/import/catalog/remote" ||
         path == "/api/v1/server-vpn/catalog" ||
-        path == "/api/v1/server-vpn/icon";
+        path == "/api/v1/server-vpn/icon" ||
+        path == "/api/v1/server-vpn/decode";
 }
 bool safeBearer(const std::string& token) {
     if (token.size()>2048) return false;
