@@ -8,4 +8,6 @@
     <string name="cloud_legal_accept">پذیرش</string>
     <string name="cloud_legal_decline">رد کردن</string>
     <string name="server_vpn_loading">در حال بارگذاری فهرست سرورهای VPN…</string>
+    <string name="server_vpn_unavailable">فهرست سرورهای VPN در دسترس نیست. اتصال خود را بررسی کنید و دوباره تلاش کنید.</string>
+    <string name="server_vpn_retry">تلاش مجدد</string>
 </resources>

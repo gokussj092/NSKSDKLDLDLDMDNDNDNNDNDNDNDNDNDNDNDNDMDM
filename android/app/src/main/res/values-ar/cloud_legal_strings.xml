@@ -8,4 +8,6 @@
     <string name="cloud_legal_accept">موافقة</string>
     <string name="cloud_legal_decline">رفض</string>
     <string name="server_vpn_loading">جارٍ تحميل قائمة خوادم VPN…</string>
+    <string name="server_vpn_unavailable">قائمة خوادم VPN غير متاحة. تحقق من الاتصال وحاول مرة أخرى.</string>
+    <string name="server_vpn_retry">إعادة المحاولة</string>
 </resources>

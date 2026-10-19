@@ -8,4 +8,6 @@
     <string name="cloud_legal_accept">Accept</string>
     <string name="cloud_legal_decline">Decline</string>
     <string name="server_vpn_loading">Loading server VPN catalog…</string>
+    <string name="server_vpn_unavailable">The VPN server catalog is unavailable. Check your connection and retry.</string>
+    <string name="server_vpn_retry">Retry catalog</string>
 </resources>
