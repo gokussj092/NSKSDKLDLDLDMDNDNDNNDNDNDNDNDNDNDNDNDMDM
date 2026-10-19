@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_offline">اتصال اینترنت وجود ندارد. متصل شوید و دوباره تلاش کنید.</string>
+    <string name="cloud_failure_network">اتصال به سرویس برقرار نشد. شبکه را بررسی کنید.</string>
+    <string name="cloud_failure_tls">اتصال امن برقرار نشد. شبکه و ساعت دستگاه را بررسی کنید.</string>
+    <string name="cloud_failure_timeout">زمان درخواست به پایان رسید. دوباره تلاش کنید.</string>
+    <string name="cloud_failure_integrity">تأیید برنامه انجام نشد. برنامه را به‌روزرسانی کنید یا از دسترسی مجاز QA استفاده کنید.</string>
+    <string name="cloud_failure_qa_code">کد QA وارد نشده است. برنامه SP-DECODE QA را باز کنید و کد جدید را وارد کنید.</string>
+    <string name="cloud_failure_session">نشست منقضی شده یا تأیید نشده است. دوباره تلاش کنید.</string>
+    <string name="cloud_failure_forbidden">دسترسی مجاز نیست. مجوز خود را بررسی کنید.</string>
+    <string name="cloud_failure_qa">دسترسی QA نامعتبر، غیرفعال یا منقضی است.</string>
+    <string name="cloud_failure_consent">برای استفاده از سرویس، شرایط و اطلاعیه حریم خصوصی را بپذیرید.</string>
+    <string name="cloud_failure_rate">تعداد درخواست‌ها زیاد است. کمی صبر کنید.</string>
+    <string name="cloud_failure_large">حجم فایل یا نتیجه بیش از حد مجاز است.</string>
+    <string name="cloud_failure_invalid">فایل یا درخواست نامعتبر است. قالب را بررسی کنید.</string>
+    <string name="cloud_failure_unsupported">این قالب در سرور پشتیبانی نمی‌شود.</string>
+    <string name="cloud_failure_decode">پردازش این نسخه فایل ممکن نبود؛ لزوماً خراب نیست.</string>
+    <string name="cloud_failure_unavailable">سرویس موقتاً در دسترس نیست. بعداً تلاش کنید.</string>
+    <string name="cloud_failure_remote">پاسخ سرویس راه دور نامعتبر بود.</string>
+    <string name="cloud_failure_credentials">رمز عبور یا HWID اشتباه است.</string>
+    <string name="cloud_failure_password">این فایل محافظت‌شده به رمز عبور نیاز دارد.</string>
+    <string name="cloud_failure_hwid">این فایل محافظت‌شده به HWID نیاز دارد.</string>
+    <string name="cloud_failure_both">این فایل محافظت‌شده به رمز عبور و HWID نیاز دارد.</string>
+    <string name="cloud_failure_not_found">منبع درخواستی پیدا نشد یا در دسترس نیست.</string>
+    <string name="cloud_failure_conflict">درخواست با وضعیت فعلی مغایرت دارد.</string>
+    <string name="cloud_failure_partial">نتیجه ناقص یا نامعتبر است و نمایش داده نمی‌شود.</string>
+    <string name="cloud_failure_general">عملیات کامل نشد. دوباره تلاش کنید یا با پشتیبانی تماس بگیرید.</string>
+    <string name="cloud_failure_notice_title">درخواست انجام نشد</string>
+</resources>

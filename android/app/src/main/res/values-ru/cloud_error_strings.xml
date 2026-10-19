@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_offline">Нет подключения к Интернету. Подключитесь и повторите попытку.</string>
+    <string name="cloud_failure_network">Не удалось связаться с сервисом. Проверьте сеть.</string>
+    <string name="cloud_failure_tls">Ошибка защищённого соединения. Проверьте сеть и время устройства.</string>
+    <string name="cloud_failure_timeout">Время ожидания истекло. Повторите попытку.</string>
+    <string name="cloud_failure_integrity">Не удалось проверить приложение. Обновите его или используйте разрешённый QA-доступ.</string>
+    <string name="cloud_failure_qa_code">Нет доступа QA. Откройте SP-DECODE QA и введите новый код.</string>
+    <string name="cloud_failure_session">Срок сеанса истёк или проверка не удалась. Повторите попытку.</string>
+    <string name="cloud_failure_forbidden">Доступ запрещён. Проверьте разрешения.</string>
+    <string name="cloud_failure_qa">QA-доступ неверен, отключён или истёк.</string>
+    <string name="cloud_failure_consent">Примите действующие условия и уведомление о конфиденциальности.</string>
+    <string name="cloud_failure_rate">Слишком много запросов. Подождите.</string>
+    <string name="cloud_failure_large">Файл или результат превышает допустимый размер.</string>
+    <string name="cloud_failure_invalid">Недопустимый файл или запрос. Проверьте формат.</string>
+    <string name="cloud_failure_unsupported">Этот формат недоступен на сервере.</string>
+    <string name="cloud_failure_decode">Не удалось обработать эту версию файла. Это не обязательно означает повреждение.</string>
+    <string name="cloud_failure_unavailable">Сервис временно недоступен. Повторите попытку позже.</string>
+    <string name="cloud_failure_remote">Удалённый поставщик вернул недопустимый ответ.</string>
+    <string name="cloud_failure_credentials">Неверный пароль или HWID. Проверьте данные.</string>
+    <string name="cloud_failure_password">Для защищённого файла требуется пароль.</string>
+    <string name="cloud_failure_hwid">Для защищённого файла требуется HWID.</string>
+    <string name="cloud_failure_both">Для защищённого файла нужны пароль и HWID.</string>
+    <string name="cloud_failure_not_found">Запрошенный ресурс не найден или недоступен.</string>
+    <string name="cloud_failure_conflict">Запрос конфликтует с текущим состоянием.</string>
+    <string name="cloud_failure_partial">Результат неполон или неверен и не будет показан.</string>
+    <string name="cloud_failure_general">Не удалось выполнить операцию. Повторите попытку или обратитесь в поддержку.</string>
+    <string name="cloud_failure_notice_title">Не удалось выполнить запрос</string>
+</resources>

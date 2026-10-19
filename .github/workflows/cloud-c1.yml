@@ -1,0 +1,50 @@
+name: SP-DECODE Cloud C1 Infrastructure
+
+on:
+  pull_request:
+    paths:
+      - "cloud/**"
+      - "docs/cloud/C1_IMPLEMENTATION.md"
+      - ".github/workflows/cloud-c1.yml"
+  push:
+    branches:
+      - "feat/cloud-c1-infrastructure"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cloud-api:
+    name: Next.js C1 contract and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install Cloud-only dependencies
+        working-directory: cloud/web
+        run: npm install --no-audit --no-fund
+      - name: Test versioned HTTP contract (fail-closed)
+        working-directory: cloud/web
+        run: npm test
+      - name: Compile Next.js App Router
+        working-directory: cloud/web
+        env:
+          NEXT_TELEMETRY_DISABLED: "1"
+        run: npm run build
+  worker:
+    name: Python worker stub and Docker topology
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Test isolated worker is fail-closed
+        run: PYTHONPATH=cloud/workers/python python -m unittest discover -s cloud/workers/python -p 'test_*.py' -v
+      - name: Validate Docker Compose topology
+        run: docker compose -f cloud/compose.yaml config --quiet

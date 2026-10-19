@@ -1,0 +1,963 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "SP-DECODE Cloud API — C3 gated security contract",
+    "version": "0.3.5",
+    "description": "Security-gated C3.5: remote imports only from fixed HTTPS provider origins; authentication, explicit consent, and private worker are required. No Android changes. Native library libspdecode.so is planned for C4."
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:3000",
+      "description": "Local development only; production requires HTTPS"
+    }
+  ],
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "summary": "Liveness (no decoder readiness implied)",
+        "responses": {
+          "200": {
+            "description": "Process alive",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "apiVersion",
+                    "status"
+                  ],
+                  "properties": {
+                    "apiVersion": {
+                      "type": "string",
+                      "const": "v1"
+                    },
+                    "status": {
+                      "type": "string",
+                      "const": "alive"
+                    },
+                    "service": {
+                      "type": "string"
+                    },
+                    "phase": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ready": {
+      "get": {
+        "summary": "Cloud readiness (503 until C2/C3)",
+        "responses": {
+          "200": {
+            "description": "Authenticated operation completed"
+          },
+          "503": {
+            "description": "Sanitized JSON error, including disabled/unavailable service.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          }
+        },
+        "description": "C3 gate is disabled by default; success only after Play Integrity admission, Redis checks and private worker readiness."
+      }
+    },
+    "/api/v1/capabilities": {
+      "get": {
+        "summary": "Advertise enabled capabilities only",
+        "responses": {
+          "200": {
+            "description": "Authenticated operation completed"
+          },
+          "503": {
+            "description": "Sanitized JSON error, including disabled/unavailable service.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          }
+        },
+        "description": "C3 gate is disabled by default; success only after Play Integrity admission, Redis checks and private worker readiness."
+      }
+    },
+    "/api/v1/config": {
+      "get": {
+        "summary": "Public non-secret client configuration",
+        "responses": {
+          "200": {
+            "description": "No auth or secret material",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "apiVersion": {
+                      "type": "string"
+                    },
+                    "androidNativeLibrary": {
+                      "type": "string",
+                      "const": "libspdecode.so"
+                    },
+                    "transport": {
+                      "type": "string",
+                      "const": "https"
+                    },
+                    "status": {
+                      "type": "string",
+                      "const": "not_ready"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/decode/file": {
+      "post": {
+        "summary": "Upload file for decoding",
+        "description": "C3 gate is disabled by default; success only after Play Integrity admission, Redis checks and private worker readiness.",
+        "responses": {
+          "200": {
+            "description": "Authenticated operation completed"
+          },
+          "400": {
+            "description": "Sanitized JSON error, including disabled/unavailable service.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sanitized JSON error, including disabled/unavailable service.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Sanitized JSON error, including disabled/unavailable service.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Sanitized JSON error, including disabled/unavailable service.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Sanitized JSON error, including disabled/unavailable service.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sanitized JSON error, including disabled/unavailable service.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Sanitized JSON error, including disabled/unavailable service.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/decode/text": {
+      "post": {
+        "summary": "Submit text protocol for decoding",
+        "description": "C3 gate is disabled by default; success only after Play Integrity admission, Redis checks and private worker readiness.",
+        "responses": {
+          "200": {
+            "description": "Authenticated operation completed"
+          },
+          "400": {
+            "description": "Sanitized JSON error, including disabled/unavailable service.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sanitized JSON error, including disabled/unavailable service.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Sanitized JSON error, including disabled/unavailable service.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Sanitized JSON error, including disabled/unavailable service.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Sanitized JSON error, including disabled/unavailable service.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sanitized JSON error, including disabled/unavailable service.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Sanitized JSON error, including disabled/unavailable service.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/decode/import/cloud": {
+      "post": {
+        "summary": "HTTP Injector Cloud reference import using allowlisted fixed provider",
+        "description": "Accepted body: {reference:string, consent:true}. Server extracts a key; it NEVER accepts a remote destination. 503 if C3 or CLOUD_EHI_IMPORT_ENABLED is disabled. Requires server-owned signing and response keys.",
+        "responses": {
+          "200": {
+            "description": "Successful authenticated remote decode preserving rawText and JSON."
+          },
+          "400": {
+            "description": "Sanitized request, session, remote-network, integrity, size or decoder error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sanitized request, session, remote-network, integrity, size or decoder error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Sanitized request, session, remote-network, integrity, size or decoder error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Sanitized request, session, remote-network, integrity, size or decoder error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Sanitized request, session, remote-network, integrity, size or decoder error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Sanitized request, session, remote-network, integrity, size or decoder error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sanitized request, session, remote-network, integrity, size or decoder error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Sanitized request, session, remote-network, integrity, size or decoder error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "reference",
+                  "consent"
+                ],
+                "properties": {
+                  "reference": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1024
+                  },
+                  "consent": {
+                    "type": "boolean",
+                    "const": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/decode/import/catalog": {
+      "post": {
+        "summary": "Process special NUR catalog",
+        "description": "C3 gate is disabled by default; success only after Play Integrity admission, Redis checks and private worker readiness.",
+        "responses": {
+          "200": {
+            "description": "Authenticated operation completed"
+          },
+          "400": {
+            "description": "Sanitized JSON error, including disabled/unavailable service.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sanitized JSON error, including disabled/unavailable service.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Sanitized JSON error, including disabled/unavailable service.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Sanitized JSON error, including disabled/unavailable service.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Sanitized JSON error, including disabled/unavailable service.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sanitized JSON error, including disabled/unavailable service.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Sanitized JSON error, including disabled/unavailable service.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/session": {
+      "post": {
+        "summary": "Create authenticated Android client session",
+        "description": "C3 gate is disabled by default; success only after Play Integrity admission, Redis checks and private worker readiness.",
+        "responses": {
+          "201": {
+            "description": "Session/challenge established"
+          },
+          "400": {
+            "description": "Sanitized JSON error, including disabled/unavailable service.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sanitized JSON error, including disabled/unavailable service.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sanitized JSON error, including disabled/unavailable service.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Sanitized JSON error, including disabled/unavailable service.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sanitized JSON error, including disabled/unavailable service.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/jobs": {
+      "post": {
+        "summary": "Submit asynchronous decoding job",
+        "description": "Reserved by C1; fails closed before body parsing or worker execution. Authentication/validation defined in C3.",
+        "responses": {
+          "503": {
+            "description": "Endpoint disabled in C1",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/jobs/{id}": {
+      "get": {
+        "summary": "Retrieve or cancel job",
+        "description": "Reserved by C1; fails closed before body parsing or worker execution. Authentication/validation defined in C3.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "503": {
+            "description": "Endpoint disabled in C1",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Retrieve or cancel job",
+        "description": "Reserved by C1; fails closed before body parsing or worker execution. Authentication/validation defined in C3.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "503": {
+            "description": "Endpoint disabled in C1",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/session/challenge": {
+      "post": {
+        "summary": "Allocate a one-time Play Integrity classic nonce",
+        "description": "Rate-limited by trusted proxy IP. Challenge expires after 120s and is consumed atomically once.",
+        "responses": {
+          "201": {
+            "description": "Challenge created, { challengeId, nonce, expiresIn }"
+          },
+          "429": {
+            "description": "Sanitized JSON error, including disabled/unavailable service.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sanitized JSON error, including disabled/unavailable service.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/decode/import/catalog/remote": {
+      "post": {
+        "summary": "Download and authenticate the configured NUR server catalog, never an arbitrary URL",
+        "description": "Accepted body: {consent:true}. Backend has one exact configured HTTPS catalog URL on the approved host. Response decoded by the private NUR worker. 503 if C3/NUR remote disabled.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "consent"
+                ],
+                "properties": {
+                  "consent": {
+                    "type": "boolean",
+                    "const": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful authenticated remote decode preserving rawText and JSON."
+          },
+          "400": {
+            "description": "Sanitized request, session, remote-network, integrity, size or decoder error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sanitized request, session, remote-network, integrity, size or decoder error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Sanitized request, session, remote-network, integrity, size or decoder error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Sanitized request, session, remote-network, integrity, size or decoder error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Sanitized request, session, remote-network, integrity, size or decoder error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Sanitized request, session, remote-network, integrity, size or decoder error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Sanitized request, session, remote-network, integrity, size or decoder error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Sanitized request, session, remote-network, integrity, size or decoder error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/server-vpn/catalog": {
+      "post": {
+        "summary": "Version-aware public VPN application directory",
+        "description": "Public presentation data only. No provider endpoints or private cryptographic material.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [],
+                "properties": {
+                  "knownVersion": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Complete, validated result"
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "401": {
+            "description": "Authentication required for decoding"
+          },
+          "413": {
+            "description": "Payload exceeds configured limit"
+          },
+          "422": {
+            "description": "Decoding or authentication failed"
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "503": {
+            "description": "Service unavailable or disabled"
+          }
+        }
+      }
+    },
+    "/api/v1/server-vpn/icon": {
+      "post": {
+        "summary": "Fetch an allowlisted original PNG icon as SHA-256-checked Base64",
+        "description": "Public presentation data only. No provider endpoints or private cryptographic material.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9-]{1,48}$"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Complete, validated result"
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "401": {
+            "description": "Authentication required for decoding"
+          },
+          "413": {
+            "description": "Payload exceeds configured limit"
+          },
+          "422": {
+            "description": "Decoding or authentication failed"
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "503": {
+            "description": "Service unavailable or disabled"
+          }
+        }
+      }
+    },
+    "/api/v1/server-vpn/decode": {
+      "post": {
+        "summary": "Authenticated, consented server-side VPN provider catalog decoding",
+        "description": "Requires Play Integrity session, service toggle, fixed provider URL, bounded retries and isolated Python worker.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "consent"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "enum": [
+                      "24clan-green",
+                      "hx-tunnel",
+                      "mkk-hyper",
+                      "my-tunnel-proxy",
+                      "robust-tunnel",
+                      "trv-tunnel",
+                      "4u-tunnel-lite",
+                      "ac-tunnel-vpn"
+                    ]
+                  },
+                  "consent": {
+                    "type": "boolean",
+                    "const": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Complete, validated result"
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "401": {
+            "description": "Authentication required for decoding"
+          },
+          "413": {
+            "description": "Payload exceeds configured limit"
+          },
+          "422": {
+            "description": "Decoding or authentication failed"
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "503": {
+            "description": "Service unavailable or disabled"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ErrorReply": {
+        "type": "object",
+        "required": [
+          "apiVersion",
+          "status",
+          "error"
+        ],
+        "properties": {
+          "apiVersion": {
+            "type": "string",
+            "const": "v1"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "error",
+              "unavailable"
+            ]
+          },
+          "error": {
+            "type": "object",
+            "required": [
+              "code",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "phase": "C7",
+  "productionApproved": false,
+  "description": "Preproduction evidence ledger; false is not a missing TODO but an explicit production blocker.",
+  "evaluations": [
+    {
+      "id": "synthetic_gateway_worker",
+      "status": "ci_validation_required",
+      "detail": "C7 Node live loopback test"
+    },
+    {
+      "id": "source_reference_parity_60",
+      "status": "ci_validation_required",
+      "detail": "C2 golden corpus uses original current scripts; historical snapshots may drift"
+    },
+    {
+      "id": "android_cloud_jni_apk_scan",
+      "status": "ci_validation_required",
+      "detail": "C4/C5 NDK and built APK ZIP/DEX inspection"
+    },
+    {
+      "id": "google_play_integrity_live",
+      "status": "not_verified",
+      "detail": "Requires actual Google Play Console and supported enrolled test device"
+    },
+    {
+      "id": "android_real_device_full_flow",
+      "status": "not_verified",
+      "detail": "Requires real Android app, versioned APK and staging API"
+    },
+    {
+      "id": "real_provider_httpinjector_cloud",
+      "status": "not_verified",
+      "detail": "Requires explicitly authorized provider account and live tested reference"
+    },
+    {
+      "id": "real_provider_nur_catalog",
+      "status": "not_verified",
+      "detail": "Requires explicitly authorized provider catalog"
+    },
+    {
+      "id": "exporter_version_matrix",
+      "status": "not_verified",
+      "detail": "240 engine routes do not certify exporter versions"
+    },
+    {
+      "id": "staging_https_vps",
+      "status": "not_verified",
+      "detail": "Requires provisioned HTTPS reverse proxy, Redis and private worker"
+    },
+    {
+      "id": "staging_load_soak",
+      "status": "not_verified",
+      "detail": "Requires representative authorized workload and bounded performance/resource evidence"
+    },
+    {
+      "id": "security_penetration_review",
+      "status": "not_verified",
+      "detail": "Requires independent auth, SSRF, replay and JNI review"
+    },
+    {
+      "id": "privacy_release_review",
+      "status": "not_verified",
+      "detail": "Requires approved legal notice and service retention policy"
+    },
+    {
+      "id": "incident_response_rollback",
+      "status": "not_verified",
+      "detail": "Must be approved in C8"
+    }
+  ]
+}

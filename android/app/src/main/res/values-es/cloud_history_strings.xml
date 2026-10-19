@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_decode_progress_title">Decodificando configuración</string>
+    <string name="cloud_decode_progress_message">Esto puede demorar unos minutos. Por favor, espera.</string>
+    <string name="cloud_large_result_title">Configuración extensa decodificada</string>
+    <string name="cloud_large_result_body">La configuración se guardó en el historial cifrado. La vista previa de un resultado muy grande puede ralentizar o cerrar la aplicación. Te recomendamos exportar el JSON completo desde Historial: pulsa los tres puntos y selecciona Exportar. Podrás elegir la carpeta y el nombre del archivo.</string>
+    <string name="cloud_large_result_acknowledge">Entendido</string>
+    <string name="cloud_history_actions">Más opciones</string>
+</resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_decode_progress_title">Décodage de la configuration</string>
+    <string name="cloud_decode_progress_message">Cela peut prendre quelques minutes. Veuillez patienter.</string>
+    <string name="cloud_large_result_title">Configuration volumineuse décodée</string>
+    <string name="cloud_large_result_body">La configuration a été enregistrée dans un historique chiffré. Un aperçu très volumineux peut ralentir ou fermer SP-DECODE. Nous conseillons un export JSON complet depuis Historique : touchez les trois points puis Exporter. Vous pourrez choisir le dossier et le nom du fichier.</string>
+    <string name="cloud_large_result_acknowledge">Compris</string>
+    <string name="cloud_history_actions">Plus de choix</string>
+</resources>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_offline">Tidak ada koneksi internet. Sambungkan dan coba lagi.</string>
+    <string name="cloud_failure_network">Tidak dapat menghubungi layanan. Periksa koneksi Anda.</string>
+    <string name="cloud_failure_tls">Koneksi aman gagal. Periksa jaringan dan waktu perangkat.</string>
+    <string name="cloud_failure_timeout">Waktu permintaan habis. Coba lagi dengan koneksi stabil.</string>
+    <string name="cloud_failure_integrity">Verifikasi aplikasi gagal. Perbarui aplikasi atau gunakan akses QA resmi.</string>
+    <string name="cloud_failure_qa_code">Akses QA belum tersedia. Buka SP-DECODE QA dan masukkan kode baru.</string>
+    <string name="cloud_failure_session">Sesi kedaluwarsa atau gagal diverifikasi. Coba lagi.</string>
+    <string name="cloud_failure_forbidden">Akses ditolak. Periksa izin Anda.</string>
+    <string name="cloud_failure_qa">Akses QA tidak valid, nonaktif, atau kedaluwarsa.</string>
+    <string name="cloud_failure_consent">Setujui ketentuan dan pemberitahuan privasi terbaru.</string>
+    <string name="cloud_failure_rate">Terlalu banyak permintaan. Tunggu sebelum mencoba lagi.</string>
+    <string name="cloud_failure_large">File atau hasil melebihi batas ukuran.</string>
+    <string name="cloud_failure_invalid">File atau permintaan tidak valid. Periksa format.</string>
+    <string name="cloud_failure_unsupported">Format file ini belum tersedia di server.</string>
+    <string name="cloud_failure_decode">Dekoder gagal memproses varian file ini. File belum tentu rusak.</string>
+    <string name="cloud_failure_unavailable">Layanan sementara tidak tersedia. Coba lagi nanti.</string>
+    <string name="cloud_failure_remote">Penyedia jarak jauh memberikan respons tidak valid.</string>
+    <string name="cloud_failure_credentials">Kata sandi atau HWID salah. Periksa kembali.</string>
+    <string name="cloud_failure_password">File terlindungi ini memerlukan kata sandi.</string>
+    <string name="cloud_failure_hwid">File terlindungi ini memerlukan HWID.</string>
+    <string name="cloud_failure_both">File terlindungi ini memerlukan kata sandi dan HWID.</string>
+    <string name="cloud_failure_not_found">Sumber daya tidak ditemukan atau tidak tersedia.</string>
+    <string name="cloud_failure_conflict">Permintaan bertentangan dengan status saat ini. Coba lagi.</string>
+    <string name="cloud_failure_partial">Hasil tidak lengkap atau tidak valid dan tidak ditampilkan.</string>
+    <string name="cloud_failure_general">Operasi gagal. Coba lagi atau hubungi dukungan.</string>
+    <string name="cloud_failure_notice_title">Permintaan tidak dapat diselesaikan</string>
+</resources>

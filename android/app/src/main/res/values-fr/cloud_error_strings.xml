@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_offline">Pas de connexion Internet. Connectez-vous et réessayez.</string>
+    <string name="cloud_failure_network">Impossible de joindre le service. Vérifiez votre connexion.</string>
+    <string name="cloud_failure_tls">La connexion sécurisée a échoué. Vérifiez le réseau et la date du téléphone.</string>
+    <string name="cloud_failure_timeout">Le délai a été dépassé. Réessayez avec une connexion stable.</string>
+    <string name="cloud_failure_integrity">La vérification de l’application a échoué. Utilisez une version à jour ou un accès QA autorisé.</string>
+    <string name="cloud_failure_qa_code">Accès QA manquant. Ouvrez SP-DECODE QA et saisissez un nouveau code.</string>
+    <string name="cloud_failure_session">Session expirée ou non vérifiée. Réessayez.</string>
+    <string name="cloud_failure_forbidden">Accès refusé. Vérifiez votre autorisation.</string>
+    <string name="cloud_failure_qa">Accès QA invalide, désactivé ou expiré.</string>
+    <string name="cloud_failure_consent">Acceptez les conditions et la politique de confidentialité en vigueur.</string>
+    <string name="cloud_failure_rate">Trop de requêtes. Patientez avant de réessayer.</string>
+    <string name="cloud_failure_large">Le fichier ou le résultat dépasse la taille autorisée.</string>
+    <string name="cloud_failure_invalid">Fichier ou requête non valide. Vérifiez le format.</string>
+    <string name="cloud_failure_unsupported">Ce format de fichier est indisponible sur le serveur.</string>
+    <string name="cloud_failure_decode">Le décodeur ne prend pas en charge cette variante du fichier.</string>
+    <string name="cloud_failure_unavailable">Service temporairement indisponible. Réessayez plus tard.</string>
+    <string name="cloud_failure_remote">Le fournisseur distant a renvoyé une réponse invalide.</string>
+    <string name="cloud_failure_credentials">Mot de passe ou HWID incorrect. Vérifiez les informations.</string>
+    <string name="cloud_failure_password">Ce fichier protégé nécessite un mot de passe.</string>
+    <string name="cloud_failure_hwid">Ce fichier protégé nécessite un HWID.</string>
+    <string name="cloud_failure_both">Ce fichier protégé nécessite un mot de passe et un HWID.</string>
+    <string name="cloud_failure_not_found">La ressource demandée est introuvable ou indisponible.</string>
+    <string name="cloud_failure_conflict">Conflit avec l’état actuel. Réessayez.</string>
+    <string name="cloud_failure_partial">Le résultat est incomplet ou invalide et ne sera pas affiché.</string>
+    <string name="cloud_failure_general">Impossible de terminer l’opération. Réessayez ou contactez le support.</string>
+    <string name="cloud_failure_notice_title">Impossible de terminer la requête</string>
+</resources>

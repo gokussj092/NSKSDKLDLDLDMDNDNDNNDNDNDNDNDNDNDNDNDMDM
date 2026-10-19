@@ -1,0 +1,47 @@
+name: SP-DECODE Cloud C5 APK Secret Isolation
+on:
+  push:
+    branches: ["feat/cloud-c5-apk-secret-minimization"]
+  pull_request:
+    paths:
+      - "android/app/**"
+      - "tests/test_cloud_c5_source_isolation.py"
+      - "tests/cloud_c5_apk_audit.py"
+      - "docs/cloud/C5_IMPLEMENTATION.md"
+      - ".github/workflows/cloud-c5.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  cloud-apk:
+    name: C5 physically inspect Cloud APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.11.1"
+      - name: Source and C0 visual lock checks
+        run: |
+          PYTHONPATH=. python -m unittest tests.test_cloud_c5_source_isolation -v
+          PYTHONPATH=. python -m unittest tests.test_cloud_c4_android_bridge -v
+      - name: Install SDK and NDK
+        run: |
+          SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -n 1)"
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.0" "cmake;3.22.1" "ndk;27.2.12479018"
+      - name: Compile Cloud-only APK
+        working-directory: android
+        env:
+          SPDECODE_CLOUD_API_BASE_URL: https://api.spdecode.example
+        run: gradle --no-daemon :app:assembleDebug
+      - name: Inspect packaged APK
+        run: python tests/cloud_c5_apk_audit.py android/app/build/outputs/apk/debug/app-debug.apk

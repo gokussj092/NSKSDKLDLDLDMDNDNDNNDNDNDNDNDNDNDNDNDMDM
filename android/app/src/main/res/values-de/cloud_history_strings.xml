@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_decode_progress_title">Konfiguration wird dekodiert</string>
+    <string name="cloud_decode_progress_message">Dies kann einige Minuten dauern. Bitte warten.</string>
+    <string name="cloud_large_result_title">Große Konfiguration dekodiert</string>
+    <string name="cloud_large_result_body">Die Konfiguration wurde im verschlüsselten Verlauf gespeichert. Die Vorschau sehr großer Ergebnisse kann die App verlangsamen oder schließen. Wir empfehlen den vollständigen JSON-Export im Verlauf: Tippe auf die drei Punkte und dann auf Exportieren. Anschließend kannst du Ordner und Dateiname wählen.</string>
+    <string name="cloud_large_result_acknowledge">Verstanden</string>
+    <string name="cloud_history_actions">Weitere Optionen</string>
+</resources>

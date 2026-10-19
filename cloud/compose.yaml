@@ -1,0 +1,118 @@
+# C1 development topology. Not a public production deployment.
+services:
+  web:
+    build:
+      context: ./web
+    restart: unless-stopped
+    init: true
+    environment:
+      NODE_ENV: production
+      WORKER_INTERNAL_URL: http://decoder-worker:8787
+      CLOUD_API_ENABLED: ${CLOUD_API_ENABLED:-false}
+      CLOUD_QA_ENABLED: ${CLOUD_QA_ENABLED:-false}
+      CLOUD_QA_EXPIRES_AT: ${CLOUD_QA_EXPIRES_AT:-0}
+      CLOUD_WORKER_TOKEN: ${CLOUD_WORKER_TOKEN:-}
+      CLOUD_SESSION_SIGNING_KEY: ${CLOUD_SESSION_SIGNING_KEY:-}
+      CLOUD_REDIS_URL: redis://redis:6379
+      CLOUD_TRUST_PROXY: ${CLOUD_TRUST_PROXY:-false}
+      CLOUD_GOOGLE_PLAY_PACKAGE: ${CLOUD_GOOGLE_PLAY_PACKAGE:-}
+      CLOUD_GOOGLE_SERVICE_ACCOUNT_JSON: ${CLOUD_GOOGLE_SERVICE_ACCOUNT_JSON:-}
+      CLOUD_REQUIRE_LICENSED: ${CLOUD_REQUIRE_LICENSED:-true}
+      CLOUD_REQUIRE_STRONG_INTEGRITY: ${CLOUD_REQUIRE_STRONG_INTEGRITY:-false}
+      # C6 admin disabled unless every independent server-side value is provisioned.
+      CLOUD_ADMIN_ENABLED: ${CLOUD_ADMIN_ENABLED:-false}
+      CLOUD_ADMIN_USERNAME: ${CLOUD_ADMIN_USERNAME:-}
+      CLOUD_ADMIN_PASSWORD_SCRYPT: ${CLOUD_ADMIN_PASSWORD_SCRYPT:-}
+      CLOUD_ADMIN_SESSION_KEY: ${CLOUD_ADMIN_SESSION_KEY:-}
+      CLOUD_ADMIN_PUBLIC_ORIGIN: ${CLOUD_ADMIN_PUBLIC_ORIGIN:-}
+      CLOUD_FORCE_MAINTENANCE: ${CLOUD_FORCE_MAINTENANCE:-false}
+      CLOUD_PUBLIC_SITE_INDEX: ${CLOUD_PUBLIC_SITE_INDEX:-false}
+      CLOUD_SITE_PUBLIC_ORIGIN: ${CLOUD_SITE_PUBLIC_ORIGIN:-}
+      CLOUD_API_PUBLIC_ORIGIN: ${CLOUD_API_PUBLIC_ORIGIN:-}
+      CLOUD_SUPPORT_EMAIL: ${CLOUD_SUPPORT_EMAIL:-soporte@spdecode.xyz}
+      # C3.5 provider secrets are strictly backend-only; never NEXT_PUBLIC_*.
+      CLOUD_EHI_IMPORT_ENABLED: ${CLOUD_EHI_IMPORT_ENABLED:-false}
+      CLOUD_EHI_SIGN_KEY: ${CLOUD_EHI_SIGN_KEY:-}
+      CLOUD_EHI_RESPONSE_KEY: ${CLOUD_EHI_RESPONSE_KEY:-}
+      CLOUD_NUR_FETCH_ENABLED: ${CLOUD_NUR_FETCH_ENABLED:-false}
+      CLOUD_NUR_CATALOG_URL: ${CLOUD_NUR_CATALOG_URL:-}
+      CLOUD_SERVER_VPN_ENABLED: ${CLOUD_SERVER_VPN_ENABLED:-false}
+      # Must increase on every roster, icon or provider-availability change.
+      CLOUD_SERVER_VPN_CATALOG_VERSION: ${CLOUD_SERVER_VPN_CATALOG_VERSION:-7}
+    ports:
+      # Bound to host loopback only; public HTTPS reverse proxy is a later phase.
+      - "127.0.0.1:3000:3000"
+    networks:
+      - edge
+      - private
+    depends_on:
+      decoder-worker:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: ["ALL"]
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,noexec,nosuid
+      - /app/.next/cache:size=32m,nosuid
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/v1/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 4
+      start_period: 30s
+
+  redis:
+    image: redis:7.4-alpine
+    user: "redis"
+    restart: unless-stopped
+    init: true
+    command: ["redis-server", "--save", "", "--appendonly", "no", "--maxmemory", "48mb", "--maxmemory-policy", "noeviction"]
+    networks: [private]
+    # No external ports; no persisted challenges, sessions or credentials.
+    read_only: true
+    tmpfs:
+      - /data:size=64m,nosuid,noexec,uid=999,gid=999,mode=0700
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 96m
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  decoder-worker:
+    build:
+      context: ..
+      dockerfile: cloud/workers/python/Dockerfile
+    restart: unless-stopped
+    init: true
+    environment:
+      WORKER_BIND_HOST: 0.0.0.0
+      WORKER_PORT: "8787"
+      CLOUD_WORKER_TOKEN: ${CLOUD_WORKER_TOKEN:-}
+    # Deliberately no host port, no credentials, no shared decoder volumes.
+    networks:
+      - private
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: ["ALL"]
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,noexec,nosuid
+    pids_limit: 64
+    mem_limit: 768m
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8787/health',timeout=2).read()"]
+      interval: 30s
+      timeout: 8s
+      retries: 6
+      start_period: 30s
+
+networks:
+  edge: {}
+  private:
+    internal: true

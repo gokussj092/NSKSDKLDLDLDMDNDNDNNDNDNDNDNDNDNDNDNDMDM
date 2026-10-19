@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_decode_progress_title">Декодирование конфигурации</string>
+    <string name="cloud_decode_progress_message">Это может занять несколько минут. Пожалуйста, подождите.</string>
+    <string name="cloud_large_result_title">Большая конфигурация декодирована</string>
+    <string name="cloud_large_result_body">Конфигурация сохранена в зашифрованной истории. Предпросмотр очень больших результатов может замедлить работу приложения или привести к его закрытию. Рекомендуется экспортировать полный JSON из раздела История: нажмите три точки и выберите Экспорт. Затем можно указать папку и имя файла.</string>
+    <string name="cloud_large_result_acknowledge">Понятно</string>
+    <string name="cloud_history_actions">Дополнительные действия</string>
+</resources>

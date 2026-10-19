@@ -1,0 +1,40 @@
+{
+  "id": "robust-tunnel",
+  "name": "Robust Tunnel VPN",
+  "package": "app.robusttunnelvpn.nishat.build",
+  "engine": "python-isvsoft-custom-xxtea",
+  "engineVersion": 1,
+  "compatibleVersions": ["isvsoft 16.4.7"],
+  "versionCode": 16,
+  "files": {
+    "profileExportIdentified": false,
+    "catalogImportIdentified": true,
+    "catalogExtensionRequired": false,
+    "fileDecoderRequired": false,
+    "textProtocolIdentified": false
+  },
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "robust-tunnel",
+    "validation": "complete local and live JSON parity with original Java algorithm",
+    "validatedOn": "2026-10-19",
+    "localServersObserved": 74,
+    "localTweaksObserved": 434,
+    "localCertificatesObserved": 1,
+    "remoteServersObserved": 151,
+    "remoteTweaksObserved": 1187,
+    "remoteCertificatesObserved": 6,
+    "deploymentEnabledByDefault": false
+  },
+  "icon": {
+    "file": "Robust_Tunnel_VPN.png",
+    "source": "split_config.xhdpi.apk:res/drawable-xhdpi-v4/icon.png",
+    "resourceId": "0x7f0800f4",
+    "width": 96,
+    "height": 96,
+    "bytes": 13661,
+    "sha256": "2eb1a386a18b79cc9e9e9ab70d5deb772d24ba657a9ad5ca3ed2e97e03e62e24"
+  },
+  "dependencies": ["Python >=3.10; standard library only"],
+  "sourceApkSha256": "a48ff3aaabb3eb7e3bfd3cc610020b931ede0770c2447de4eba02ae8553238f2"
+}

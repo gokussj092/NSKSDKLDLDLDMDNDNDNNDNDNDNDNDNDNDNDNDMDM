@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_offline">Sem conexão com a Internet. Conecte-se e tente novamente.</string>
+    <string name="cloud_failure_network">Não foi possível acessar o serviço. Verifique sua conexão.</string>
+    <string name="cloud_failure_tls">Falha na conexão segura. Verifique a rede e o relógio do aparelho.</string>
+    <string name="cloud_failure_timeout">Tempo de espera esgotado. Tente novamente com uma conexão estável.</string>
+    <string name="cloud_failure_integrity">Não foi possível verificar o aplicativo. Atualize ou use o acesso QA autorizado.</string>
+    <string name="cloud_failure_qa_code">Acesso QA ausente. Abra SP-DECODE QA e informe um novo código.</string>
+    <string name="cloud_failure_session">Sessão expirada ou não verificada. Tente novamente.</string>
+    <string name="cloud_failure_forbidden">Acesso negado. Verifique sua autorização.</string>
+    <string name="cloud_failure_qa">Acesso QA inválido, desativado ou expirado.</string>
+    <string name="cloud_failure_consent">Aceite os termos e o aviso de privacidade atuais.</string>
+    <string name="cloud_failure_rate">Muitas solicitações. Aguarde antes de tentar novamente.</string>
+    <string name="cloud_failure_large">O arquivo ou resultado excede o tamanho permitido.</string>
+    <string name="cloud_failure_invalid">Arquivo ou solicitação inválidos. Verifique o formato.</string>
+    <string name="cloud_failure_unsupported">Este formato não está disponível no servidor.</string>
+    <string name="cloud_failure_decode">O decodificador não conseguiu processar esta versão do arquivo.</string>
+    <string name="cloud_failure_unavailable">Serviço temporariamente indisponível. Tente mais tarde.</string>
+    <string name="cloud_failure_remote">O provedor remoto retornou uma resposta inválida.</string>
+    <string name="cloud_failure_credentials">Senha ou HWID incorretos. Verifique os dados.</string>
+    <string name="cloud_failure_password">Este arquivo protegido exige uma senha.</string>
+    <string name="cloud_failure_hwid">Este arquivo protegido exige HWID.</string>
+    <string name="cloud_failure_both">Este arquivo protegido exige senha e HWID.</string>
+    <string name="cloud_failure_not_found">Recurso não encontrado ou indisponível.</string>
+    <string name="cloud_failure_conflict">A solicitação está em conflito com o estado atual.</string>
+    <string name="cloud_failure_partial">O resultado está incompleto ou inválido e não será exibido.</string>
+    <string name="cloud_failure_general">Não foi possível concluir a operação. Tente novamente ou contate o suporte.</string>
+    <string name="cloud_failure_notice_title">Não foi possível concluir a solicitação</string>
+</resources>

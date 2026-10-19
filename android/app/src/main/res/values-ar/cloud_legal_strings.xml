@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_legal_title">الشروط والخصوصية</string>
+    <string name="cloud_legal_explanation">يرسل SP-DECODE Cloud إلى الخادم فقط الملفات أو النصوص التي تختار معالجتها. قد تحتوي على بيانات اعتماد حساسة.</string>
+    <string name="cloud_legal_terms">قراءة الشروط والأحكام</string>
+    <string name="cloud_legal_privacy">قراءة سياسة الخصوصية</string>
+    <string name="cloud_legal_accept_check">قرأت الشروط وسياسة الخصوصية وأوافق عليهما.</string>
+    <string name="cloud_legal_accept">موافقة</string>
+    <string name="cloud_legal_decline">رفض</string>
+    <string name="server_vpn_loading">جارٍ تحميل قائمة خوادم VPN…</string>
+    <string name="server_vpn_unavailable">قائمة خوادم VPN غير متاحة. تحقق من الاتصال وحاول مرة أخرى.</string>
+    <string name="server_vpn_retry">إعادة المحاولة</string>
+    <string name="cloud_legal_withdraw">سحب موافقة السحابة</string>
+    <string name="cloud_legal_withdraw_detail">سحب الموافقة يمنع الطلبات الجديدة إلى الخادم. سيبقى سجلك المحلي المشفر على هذا الجهاز. يمكنك الموافقة مرة أخرى لاحقًا.</string>
+</resources>

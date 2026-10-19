@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_decode_progress_title">جارٍ فك ترميز الإعدادات</string>
+    <string name="cloud_decode_progress_message">قد يستغرق ذلك بضع دقائق. يرجى الانتظار.</string>
+    <string name="cloud_large_result_title">تم فك ترميز إعدادات كبيرة</string>
+    <string name="cloud_large_result_body">حُفظت الإعدادات في السجل المشفر. قد تؤدي معاينة النتائج الكبيرة إلى إبطاء التطبيق أو إغلاقه. ننصح بتصدير ملف JSON الكامل من السجل: اضغط على النقاط الثلاث ثم تصدير. يمكنك اختيار المجلد واسم الملف.</string>
+    <string name="cloud_large_result_acknowledge">فهمت</string>
+    <string name="cloud_history_actions">خيارات إضافية</string>
+</resources>

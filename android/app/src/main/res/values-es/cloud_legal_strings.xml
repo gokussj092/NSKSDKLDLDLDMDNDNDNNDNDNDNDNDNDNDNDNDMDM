@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_legal_title">Términos y privacidad</string>
+    <string name="cloud_legal_explanation">SP-DECODE Cloud envía al servidor únicamente los archivos o textos que selecciones para procesarlos. Pueden contener credenciales sensibles.</string>
+    <string name="cloud_legal_terms">Leer términos y condiciones</string>
+    <string name="cloud_legal_privacy">Leer política de privacidad</string>
+    <string name="cloud_legal_accept_check">He leído y acepto los términos y la política de privacidad.</string>
+    <string name="cloud_legal_accept">Aceptar</string>
+    <string name="cloud_legal_decline">No aceptar</string>
+    <string name="server_vpn_loading">Cargando catálogo de servidores VPN…</string>
+    <string name="server_vpn_unavailable">El catálogo de servidores VPN no está disponible. Comprueba tu conexión e inténtalo de nuevo.</string>
+    <string name="server_vpn_retry">Reintentar catálogo</string>
+    <string name="cloud_legal_withdraw">Retirar consentimiento Cloud</string>
+    <string name="cloud_legal_withdraw_detail">Al retirar el consentimiento se bloquearán nuevas solicitudes al servidor. Tu historial cifrado seguirá en este dispositivo. Podrás volver a aceptar después.</string>
+</resources>

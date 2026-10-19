@@ -1,0 +1,80 @@
+name: SP-DECODE Cloud C2 Engine Parity
+
+on:
+  pull_request:
+    paths:
+      - "cloud/**"
+      - "docs/cloud/C0_FORMAT_MATRIX.csv"
+      - "docs/cloud/C2_IMPLEMENTATION.md"
+      - "tests/test_cloud_c2_golden.py"
+      - ".github/workflows/cloud-c2.yml"
+  push:
+    branches: ["feat/cloud-c2-decoder-workers"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-parity:
+    name: C2 original decoder source parity (60 synthetic samples)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install PHP CLI for original decoder scripts
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y php-cli
+      - name: Install existing Python decoder dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Install existing Node decoder dependencies
+        run: npm ci --omit=dev --no-audit --no-fund
+      - name: Verify immutable Android C0 format matrix
+        run: PYTHONPATH=. python scripts/cloud_c0_inventory.py --check
+      - name: C2 private worker, catalog and sanitized error tests
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest discover -s cloud/workers/python -p 'test_*.py' -v
+      - name: C2 validate source-derived Phase G text protocol parity
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_cloud_c2_text -v
+      - name: C2 verify protected HCCFG password HWID and dual-lock parity
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_cloud_c2_hc -v
+      - name: C2 verify NUR server catalog remains separate from solid profiles
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_cloud_c2_nur_catalog -v
+      - name: C2 execute synthetic golden corpus through isolated subprocess adapter
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_cloud_c2_golden -v
+
+  docker-topology:
+    name: C2 Docker isolated worker build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate network topology
+        run: docker compose -f cloud/compose.yaml config --quiet
+      - name: Build C2 worker with Python Node and PHP runtimes
+        run: docker compose -f cloud/compose.yaml build decoder-worker
+      - name: Smoke test worker defaults to safe no-token mode
+        run: |
+          docker compose -f cloud/compose.yaml up -d --no-deps decoder-worker
+          docker compose -f cloud/compose.yaml ps
+          docker compose -f cloud/compose.yaml exec -T decoder-worker python - <<'PY'
+          import urllib.error
+          import urllib.request
+          base = "http://127.0.0.1:8787"
+          assert urllib.request.urlopen(base + "/health", timeout=5).status == 200
+          try:
+              urllib.request.urlopen(base + "/ready", timeout=5)
+          except urllib.error.HTTPError as error:
+              assert error.code == 503
+          else:
+              raise AssertionError("Worker must not be ready without token")
+          PY
+      - name: Tear down
+        if: always()
+        run: docker compose -f cloud/compose.yaml down --remove-orphans

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_legal_title">Ketentuan dan privasi</string>
+    <string name="cloud_legal_explanation">SP-DECODE Cloud hanya mengirim file atau teks yang Anda pilih ke server untuk diproses. Konten tersebut mungkin berisi kredensial sensitif.</string>
+    <string name="cloud_legal_terms">Baca syarat dan ketentuan</string>
+    <string name="cloud_legal_privacy">Baca kebijakan privasi</string>
+    <string name="cloud_legal_accept_check">Saya telah membaca dan menyetujui ketentuan dan kebijakan privasi.</string>
+    <string name="cloud_legal_accept">Setuju</string>
+    <string name="cloud_legal_decline">Tolak</string>
+    <string name="server_vpn_loading">Memuat katalog server VPN…</string>
+    <string name="server_vpn_unavailable">Katalog server VPN tidak tersedia. Periksa koneksi Anda lalu coba lagi.</string>
+    <string name="server_vpn_retry">Coba lagi</string>
+    <string name="cloud_legal_withdraw">Cabut persetujuan Cloud</string>
+    <string name="cloud_legal_withdraw_detail">Mencabut persetujuan akan memblokir permintaan baru ke server. Riwayat terenkripsi lokal tetap berada di perangkat ini. Anda dapat menyetujui lagi nanti.</string>
+</resources>

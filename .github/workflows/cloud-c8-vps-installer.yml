@@ -1,0 +1,321 @@
+name: SP-DECODE Cloud C8 VPS Installer
+on:
+  push:
+    branches: ["feat/cloud-c8-vps-installer-updater"]
+  pull_request:
+    paths:
+      - "cloud/infra/vps/**"
+      - "cloud/compose.yaml"
+      - "docs/cloud/C8_VPS_INSTALLER.md"
+      - ".github/workflows/cloud-c8-vps-installer.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  scripts:
+    name: VPS installation and updater security
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test bash syntax
+        run: |
+          bash -n cloud/infra/vps/install.sh
+          bash -n cloud/infra/vps/resume-install.sh
+          bash -n cloud/infra/vps/resume-services.sh
+          bash -n cloud/infra/vps/diagnose-routing.sh
+          bash -n cloud/infra/vps/spdecodectl
+          bash -n cloud/infra/vps/android-build.sh
+      - name: Test nginx and install gates
+        run: python3 -m unittest discover -s cloud/infra/vps/tests -p 'test_*.py' -v
+      - name: Verify generated HTTPS vhosts with real Nginx syntax checker
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y nginx-light openssl
+          sudo mkdir -p /etc/letsencrypt/live/spdecode.xyz
+          sudo openssl req -x509 -nodes -newkey rsa:2048 -days 1 \
+            -subj '/CN=spdecode.xyz' \
+            -keyout /etc/letsencrypt/live/spdecode.xyz/privkey.pem \
+            -out /etc/letsencrypt/live/spdecode.xyz/fullchain.pem >/dev/null 2>&1
+          python3 cloud/infra/vps/nginx-config.py spdecode.xyz \
+            --api-domain api.spdecode.xyz --panel-domain panel.spdecode.xyz --www \
+            > /tmp/spdecode-vhosts.conf
+          cat > /tmp/spdecode-nginx-ci.conf <<'NGINX'
+          worker_processes 1;
+          pid /tmp/spdecode-nginx-ci.pid;
+          events { worker_connections 64; }
+          http {
+              include /etc/nginx/mime.types;
+              include /tmp/spdecode-vhosts.conf;
+          }
+          NGINX
+          sudo nginx -t -c /tmp/spdecode-nginx-ci.conf
+      - name: Verify release APK audit allowlist and legacy-engine rejection
+        run: python3 -m unittest tests.test_cloud_c8_apk_audit -v
+      - name: Verify actual Docker Compose config
+        run: docker compose -f cloud/compose.yaml config --quiet
+      - name: Verify production gate stays blocked
+        run: |
+          if python3 scripts/cloud_c7_release_gate.py --production; then
+            echo "ERROR: production release cannot be auto-approved" >&2
+            exit 1
+          fi
+
+  android-signed-packages:
+    name: C8 build and validate signed Cloud APK and Play AAB with CI-only key
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.11.1"
+      - name: Install Android SDK NDK and CMake
+        run: |
+          SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -n 1)"
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.0" "cmake;3.22.1" "ndk;27.2.12479018"
+      - name: Generate strictly temporary CI signing key (NEVER usable for Play)
+        run: |
+          keytool -genkeypair -storetype PKCS12             -keystore "$RUNNER_TEMP/ci-test-only.p12"             -alias ci-test -keyalg RSA -keysize 2048 -validity 1             -dname "CN=SP-DECODE CI Test Key"             -storepass ci-test-password-123 -keypass ci-test-password-123
+          echo "SPDECODE_RELEASE_STORE_FILE=$RUNNER_TEMP/ci-test-only.p12" >> "$GITHUB_ENV"
+          echo "SPDECODE_RELEASE_STORE_PASSWORD=ci-test-password-123" >> "$GITHUB_ENV"
+          echo "SPDECODE_RELEASE_KEY_ALIAS=ci-test" >> "$GITHUB_ENV"
+          echo "SPDECODE_RELEASE_KEY_PASSWORD=ci-test-password-123" >> "$GITHUB_ENV"
+      - name: Compile APK and AAB using production signing Gradle contract and synthetic HTTPS origin
+        working-directory: android
+        env:
+          SPDECODE_CLOUD_API_BASE_URL: https://api.spdecode.example
+          SPDECODE_CLOUD_RELEASE: "true"
+        run: gradle --no-daemon :app:assembleRelease :app:bundleRelease
+      - name: Audit exact APK + AAB output, signatures and Cloud-only content
+        run: |
+          APK=android/app/build/outputs/apk/release/app-release.apk
+          AAB=android/app/build/outputs/bundle/release/app-release.aab
+          test -s "$APK"
+          test -s "$AAB"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK" > /tmp/apk-signature.txt
+          "$ANDROID_HOME/build-tools/35.0.0/zipalign" -c -P 16 -v 4 "$APK"
+          jarsigner -verify -certs "$AAB" | grep 'jar verified'
+          python tests/cloud_c5_apk_audit.py "$APK"
+          python - <<'PY'
+          from zipfile import ZipFile
+          path="android/app/build/outputs/bundle/release/app-release.aab"
+          with ZipFile(path) as z:
+              assert "base/manifest/AndroidManifest.xml" in z.namelist()
+              assert any(n.startswith("base/lib/") and n.endswith("/libspdecode.so") for n in z.namelist())
+              assert not any(n.endswith(".spv") for n in z.namelist())
+          print("C8 CI-only AAB contains native Cloud library, no legacy vault")
+          PY
+      - name: Destroy ephemeral upload key; never persist artifacts
+        if: always()
+        run: rm -f "$RUNNER_TEMP/ci-test-only.p12"
+
+  docker-boot:
+    name: C8 fresh-stack Docker Compose smoke (no real secrets)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Simulate root VPS checkout with umask 077
+        run: |
+          # Git under sudo + umask 077 creates 0600/0700 sources. Reproduce
+          # that deployment-specific condition before building Docker.
+          chmod -R go-rwx cloud/workers/python decoders spdecode docs/cloud/C0_FORMAT_MATRIX.csv
+          chmod go-rwx decoders.json
+      - name: Compose builds isolated worker and website
+        run: docker compose --project-name spdecode -f cloud/compose.yaml up -d --build
+      - name: Validate web, admin default deny and private worker topology
+        run: |
+          for i in $(seq 1 24); do
+            if curl --fail --silent http://127.0.0.1:3000/api/v1/health >/dev/null; then break; fi
+            sleep 3
+          done
+          curl --fail --silent http://127.0.0.1:3000/api/v1/health > /tmp/cloud-health.json
+          curl --fail --silent http://127.0.0.1:3000/ > /dev/null
+          test "$(curl --silent --output /dev/null --write-out '%{http_code}' http://127.0.0.1:3000/api/admin/session)" = 503
+          test "$(curl --silent --output /dev/null --write-out '%{http_code}' http://127.0.0.1:3000/api/v1/ready)" = 503
+          docker compose --project-name spdecode -f cloud/compose.yaml ps
+      - name: Validate real username/password login through running Next.js + Redis
+        run: |
+          # Synthetic ephemeral account; no real usernames, keys, hashes or
+          # session cookies are uploaded to CI artifacts or logs.
+          export CLOUD_ADMIN_ENABLED=true
+          export CLOUD_TRUST_PROXY=true
+          export CLOUD_ADMIN_USERNAME=GhostDeveloper
+          export CLOUD_ADMIN_PUBLIC_ORIGIN=https://panel.spdecode.xyz
+          export CLOUD_ADMIN_SESSION_KEY=ci-test-only-admin-key-1234567890abcdef
+          export CLOUD_ADMIN_PASSWORD_SCRYPT="$(python3 - <<'PY'
+          import hashlib
+          salt=b"ci-demo-salt-123"
+          pwd=b"ci-only-password-not-for-production-123"
+          digest=hashlib.scrypt(pwd,salt=salt,n=16384,r=8,p=1,dklen=64)
+          print(f"scrypt$16384$8$1${salt.hex()}${digest.hex()}")
+          PY
+          )"
+          docker compose --project-name spdecode -f cloud/compose.yaml up -d --no-deps --force-recreate web
+          for i in $(seq 1 20); do
+            if curl -fsS --max-time 3 http://127.0.0.1:3000/api/v1/health >/dev/null; then break; fi
+            sleep 3
+          done
+          docker compose --project-name spdecode -f cloud/compose.yaml exec -T web node --input-type=module -e             'import {adminSettings} from "./lib/c6-admin-auth.mjs";if(!adminSettings().enabled)process.exit(1)'
+          test "$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:3000/api/admin/session)" = 401
+          for body in '{"username":"NotGhostDeveloper","password":"ci-only-password-not-for-production-123"}' '{"username":"GhostDeveloper","password":"bad-password-1234567890"}'; do
+            test "$(curl -sS -o /dev/null -w '%{http_code}'               -H 'Origin: https://panel.spdecode.xyz' -H 'X-SPDecode-Admin-Action: 1'               -H 'Content-Type: application/json' -d "$body"               http://127.0.0.1:3000/api/admin/login)" = 401
+          done
+          test "$(curl -sS --cookie-jar "$RUNNER_TEMP/admin-test-cookies"             -o /dev/null -w '%{http_code}'             -H 'Origin: https://panel.spdecode.xyz' -H 'X-SPDecode-Admin-Action: 1'             -H 'Content-Type: application/json'             -d '{"username":"GhostDeveloper","password":"ci-only-password-not-for-production-123"}'             http://127.0.0.1:3000/api/admin/login)" = 200
+          test "$(curl -sS --cookie "$RUNNER_TEMP/admin-test-cookies"             -o /dev/null -w '%{http_code}' http://127.0.0.1:3000/api/admin/session)" = 200
+          rm -f "$RUNNER_TEMP/admin-test-cookies"
+      - name: Real admin rotation script and HTTPS signed-session E2E (CI-only account)
+        run: |
+          # Full Nginx -> Next.js -> Redis login, not just an anonymous 401.
+          sudo apt-get update -qq
+          sudo apt-get install -y nginx-light openssl
+          sudo install -d -m 0755 /etc/letsencrypt/live/spdecode.xyz /etc/nginx/sites-available /etc/nginx/sites-enabled
+          sudo openssl req -x509 -nodes -newkey rsa:2048 -days 1 \
+            -subj '/CN=panel.spdecode.xyz' \
+            -addext 'subjectAltName=DNS:panel.spdecode.xyz,DNS:spdecode.xyz,DNS:api.spdecode.xyz' \
+            -keyout /etc/letsencrypt/live/spdecode.xyz/privkey.pem \
+            -out /etc/letsencrypt/live/spdecode.xyz/fullchain.pem >/dev/null 2>&1
+          sudo cp /etc/letsencrypt/live/spdecode.xyz/fullchain.pem /usr/local/share/ca-certificates/spdecode-ci.crt
+          sudo update-ca-certificates >/dev/null
+          sudo install -d -m 0700 /etc/spdecode /opt/spdecode
+          sudo ln -s "$GITHUB_WORKSPACE" /opt/spdecode/repo
+          printf 'spdecode.xyz\n' | sudo tee /etc/spdecode/domain >/dev/null
+          printf 'api.spdecode.xyz\n' | sudo tee /etc/spdecode/api-domain >/dev/null
+          printf 'panel.spdecode.xyz\n' | sudo tee /etc/spdecode/panel-domain >/dev/null
+          printf 'CLOUD_API_ENABLED=false\nCLOUD_ADMIN_ENABLED=false\nCLOUD_TRUST_PROXY=true\n' | sudo tee /etc/spdecode/cloud.env >/dev/null
+          sudo chmod 600 /etc/spdecode/cloud.env
+          sudo touch /etc/nginx/sites-available/spdecode.conf
+          sudo ln -s /etc/nginx/sites-available/spdecode.conf /etc/nginx/sites-enabled/spdecode.conf
+          sudo systemctl start nginx
+          umask 077
+          # Captured on the disposable runner ONLY, never printed in CI logs.
+          sudo python3 cloud/infra/vps/panel-reset.py > "$RUNNER_TEMP/ci-generated-admin"
+          grep -q '^ADMINISTRADOR RESTABLECIDO' "$RUNNER_TEMP/ci-generated-admin"
+          grep -q '^USUARIO: ' "$RUNNER_TEMP/ci-generated-admin"
+          grep -q '^CONTRASEÑA: ' "$RUNNER_TEMP/ci-generated-admin"
+          rm -f "$RUNNER_TEMP/ci-generated-admin"
+          echo 'Admin reset completed with real HTTPS 200 login and authenticated 200 session.'
+      - name: Probe panel links and protect API hosts through HTTPS Nginx
+        run: |
+          panel=panel.spdecode.xyz
+          for route in /admin /admin/analytics /admin/reports /admin/system /features /docs /privacy /status /api/site/status; do
+            status=$(curl --noproxy '*' --proxy '' -sS --connect-timeout 3 --max-time 10 \
+              --resolve "$panel:443:127.0.0.1" -o /dev/null -w '%{http_code}' \
+              "https://$panel$route")
+            echo "$route -> HTTP $status"
+            test "$status" = 200
+          done
+          status=$(curl --noproxy '*' --proxy '' -sS --resolve "$panel:443:127.0.0.1" \
+            -o /dev/null -w '%{http_code}' "https://$panel/api/admin/reports")
+          test "$status" = 401
+          status=$(curl --noproxy '*' --proxy '' -sS --resolve "$panel:443:127.0.0.1" \
+            -o /dev/null -w '%{http_code}' "https://$panel/api/v1/health")
+          test "$status" = 404
+          status=$(curl --noproxy '*' --proxy '' -sS \
+            --resolve "spdecode.xyz:443:127.0.0.1" \
+            -o /dev/null -w '%{http_code}' "https://spdecode.xyz/admin")
+          test "$status" = 404
+          status=$(curl --noproxy '*' --proxy '' -sS \
+            --resolve "api.spdecode.xyz:443:127.0.0.1" \
+            -o /dev/null -w '%{http_code}' "https://api.spdecode.xyz/privacy")
+          test "$status" = 404
+          echo 'Panel links pass; API and public hosts remain isolated.'
+      - name: Exercise temporary QA access through HTTPS without Google Play
+        run: |
+          set -euo pipefail
+          umask 077
+          # This E2E job started with admin-only config. Add disposable worker
+          # keys and restart the isolated worker before enabling QA.
+          sudo python3 - <<'PY'
+          from pathlib import Path
+          p=Path('/etc/spdecode/cloud.env')
+          with p.open('a') as f:
+              f.write('CLOUD_WORKER_TOKEN='+'c'*64+'\n')
+              f.write('CLOUD_SESSION_SIGNING_KEY='+'s'*64+'\n')
+              f.write('CLOUD_GOOGLE_PLAY_PACKAGE=com.ghostdeveloper.spdecode\n')
+          p.chmod(0o600)
+          PY
+          sudo docker compose --project-name spdecode --env-file /etc/spdecode/cloud.env \
+            -f cloud/compose.yaml up -d --no-deps --force-recreate decoder-worker
+          sudo python3 cloud/infra/vps/qa-test.py start > "$RUNNER_TEMP/qa-credentials"
+          grep -q '^QA ENABLED' "$RUNNER_TEMP/qa-credentials"
+          echo "QA step 1: ephemeral access enabled without exposing code"
+          python3 - "$RUNNER_TEMP/qa-credentials" "$RUNNER_TEMP/qa-code.json" <<'PY'
+          import json,sys
+          code=next(line.split(': ',1)[1].strip() for line in open(sys.argv[1]) if line.startswith('QA CODE: '))
+          with open(sys.argv[2],'w') as output:json.dump({"qaCode":code},output)
+          PY
+          chmod 600 "$RUNNER_TEMP/qa-code.json"
+          # Existing HTTPS Nginx, Redis, isolated worker, no service account.
+          api=https://api.spdecode.xyz
+          curl --noproxy '*' -fsS --resolve api.spdecode.xyz:443:127.0.0.1 \
+            "$api/api/v1/ready" > "$RUNNER_TEMP/qa-ready.json"
+          grep -q '"status":"ready"' "$RUNNER_TEMP/qa-ready.json"
+          echo "QA step 2: API /ready returned 200"
+          curl --noproxy '*' -fsS --resolve api.spdecode.xyz:443:127.0.0.1 \
+            -H 'Content-Type: application/json' --data-binary '{}' \
+            "$api/api/v1/session/challenge" > "$RUNNER_TEMP/qa-challenge.json"
+          echo "QA step 3: challenge route HTTP 201"
+          python3 - "$RUNNER_TEMP/qa-code.json" "$RUNNER_TEMP/qa-challenge.json" "$RUNNER_TEMP/qa-request.json" <<'PY'
+          import json,sys
+          key=json.load(open(sys.argv[1]))
+          challenge=json.load(open(sys.argv[2]))
+          assert challenge["challengeId"]
+          with open(sys.argv[3],'w') as out:
+              json.dump({"qaCode":key["qaCode"],"challengeId":challenge["challengeId"]},out)
+          PY
+          qa_http_code="$(curl --noproxy '*' -sS --resolve api.spdecode.xyz:443:127.0.0.1 \
+            -o "$RUNNER_TEMP/qa-session.json" -w '%{http_code}' \
+            -H 'Content-Type: application/json' --data-binary @"$RUNNER_TEMP/qa-request.json" \
+            "$api/api/v1/session/qa")"
+          if [[ "$qa_http_code" != 201 ]]; then
+            echo "::error::QA session admission returned HTTP $qa_http_code (wanted 201)"
+            python3 - "$RUNNER_TEMP/qa-session.json" <<'PY'
+          import json,sys
+          try:
+              doc=json.load(open(sys.argv[1]))
+              print("QA error code:",doc.get("error",{}).get("code","unknown"))
+          except Exception:print("QA response was not JSON")
+          PY
+            exit 1
+          fi
+          echo "QA step 4: authenticated session issued over HTTPS"
+          python3 - "$RUNNER_TEMP/qa-session.json" <<'PY'
+          import json,sys
+          data=json.load(open(sys.argv[1]))
+          assert data["tokenType"]=="Bearer" and len(data["accessToken"])>50
+          PY
+          # A successful QA admission is NOT a successful decode; verify that
+          # a bearer reaches the worker gate, but no arbitrary data is persisted.
+          sudo python3 cloud/infra/vps/qa-test.py stop >/dev/null
+          echo "QA step 5: temporary code revoked"
+          # Revocation restarts the Next.js container. Wait for it to bind
+          # before asserting its deliberate security-gated HTTP 503 response.
+          qa_stop_status=000
+          for attempt in $(seq 1 30); do
+            qa_stop_status="$(curl --noproxy '*' -sS --max-time 3 \
+              --resolve api.spdecode.xyz:443:127.0.0.1 \
+              -o /dev/null -w '%{http_code}' "$api/api/v1/ready" 2>/dev/null)" || qa_stop_status=000
+            if [[ "$qa_stop_status" == 503 ]]; then break; fi
+            sleep 2
+          done
+          if [[ "$qa_stop_status" != 503 ]]; then
+            echo "::error::QA revoked but readiness returned HTTP $qa_stop_status (expected 503)"
+            exit 1
+          fi
+          rm -f "$RUNNER_TEMP/qa-credentials" "$RUNNER_TEMP/qa-code.json" \
+            "$RUNNER_TEMP/qa-request.json" "$RUNNER_TEMP/qa-challenge.json" \
+            "$RUNNER_TEMP/qa-session.json"
+          echo 'QA granted 201 over HTTPS without Google Play and then revoked successfully.'
+      - name: Always tear down containers
+        if: always()
+        run: docker compose --project-name spdecode -f cloud/compose.yaml down --remove-orphans

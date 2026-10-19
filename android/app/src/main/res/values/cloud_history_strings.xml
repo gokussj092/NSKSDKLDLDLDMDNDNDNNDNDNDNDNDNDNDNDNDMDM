@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_decode_progress_title">Decoding configuration</string>
+    <string name="cloud_decode_progress_message">This may take a few minutes. Please wait.</string>
+    <string name="cloud_large_result_title">Large configuration decoded</string>
+    <string name="cloud_large_result_body">The configuration was saved to encrypted history. Previewing very large results may slow down or close the app. We recommend exporting the complete JSON from History using the three-dot menu, then Export. Android will let you choose the folder and file name.</string>
+    <string name="cloud_large_result_acknowledge">Got it</string>
+    <string name="cloud_history_actions">More actions</string>
+</resources>

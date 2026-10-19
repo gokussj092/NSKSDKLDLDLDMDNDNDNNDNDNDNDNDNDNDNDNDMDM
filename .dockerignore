@@ -1,0 +1,31 @@
+# Context for Cloud worker image: explicitly allow engine source and public build inputs.
+**
+!cloud/
+!cloud/workers/
+!cloud/workers/python/
+!cloud/workers/python/Dockerfile
+!cloud/workers/python/engine.py
+!cloud/workers/python/server.py
+!cloud/workers/python/text_bridge.py
+!cloud/workers/python/hc_bridge.py
+!cloud/workers/python/catalog_bridge.py
+!decoders/
+!decoders/**
+!spdecode/
+!spdecode/**
+!docs/
+!docs/cloud/
+!docs/cloud/C0_FORMAT_MATRIX.csv
+!decoders.json
+!requirements.txt
+!package.json
+!package-lock.json
+# Secrets are never in build context.
+**/.env
+**/.env.*
+**/config.json
+**/keyFile.json
+**/node_modules/**
+**/__pycache__/**
+**/*.pyc
+**/.git/**

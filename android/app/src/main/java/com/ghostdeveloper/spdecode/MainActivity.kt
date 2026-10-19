@@ -22,6 +22,13 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.ghostdeveloper.spdecode.cloud.CloudDecodeClient
+import com.ghostdeveloper.spdecode.cloud.CloudFileFormats
+import com.ghostdeveloper.spdecode.cloud.CloudTextFormats
+import com.ghostdeveloper.spdecode.cloud.CloudLegalConsent
+import com.ghostdeveloper.spdecode.cloud.CloudLegalConsentDialog
+import com.ghostdeveloper.spdecode.cloud.ServerVpnApp
+import com.ghostdeveloper.spdecode.cloud.ServerVpnCatalogRepository
 import com.ghostdeveloper.spdecode.parity.AndroidDecoderCatalog
 import com.ghostdeveloper.spdecode.parity.AndroidOfflineDecoderRouter
 import com.ghostdeveloper.spdecode.parity.HcHccfgPort
@@ -52,13 +59,20 @@ import java.text.DateFormat
 import java.util.Date
 
 /**
- * First functional offline Android alpha.
- * No app-specific file paths, INTERNET permission, backend or original script
- * subprocess. Decoded history persists in app-private encrypted storage.
+ * C4: Cloud transport replaces decoding behind the existing UI, history
+ * and progress flows in enabled builds. Legacy mode is retained only for
+ * regression checks until C5 removes client-side decoder material.
  */
 class MainActivity : ComponentActivity() {
     private companion object { const val MAX_BYTES=1024*1024 }
     private val scope=CoroutineScope(SupervisorJob()+Dispatchers.Main.immediate)
+    private val cloudClient by lazy { CloudDecodeClient(this) }
+    private val serverVpnCatalog by lazy { ServerVpnCatalogRepository(this,cloudClient) }
+    private var serverVpnApps by mutableStateOf<List<ServerVpnApp>>(emptyList())
+    private var showCloudLegal by mutableStateOf(false)
+    private var serverVpnRefresh:Job?=null
+    private var serverVpnLoading by mutableStateOf(false)
+    private var serverVpnUnavailable by mutableStateOf(false)
     private val privateCredentialVault by lazy { DevicePrivateCredentialVault(this) }
     private data class PendingCredentialImport(
         val uri:Uri,
@@ -104,6 +118,36 @@ class MainActivity : ComponentActivity() {
         get()=sessionVm.reveal
         set(value){sessionVm.reveal=value}
     private var stagedExport:String?=null
+
+    private fun refreshServerVpn(force:Boolean=false) {
+        if(!BuildConfig.SPDECODE_CLOUD_ENABLED || showCloudLegal ||
+            serverVpnRefresh?.isActive==true)return
+        serverVpnLoading=true
+        serverVpnUnavailable=false
+        serverVpnRefresh=scope.launch {
+            try {
+                serverVpnApps=serverVpnCatalog.cached()
+                serverVpnApps=serverVpnCatalog.refreshIfDue(force=force)
+            }catch(error:CancellationException){throw error}
+             catch(_:Exception){ /* An authenticated cached snapshot remains usable. */ }
+            finally {
+                serverVpnUnavailable=serverVpnApps.isEmpty()
+                serverVpnLoading=false
+            }
+        }
+    }
+
+    private fun requireCloudLegal():Boolean {
+        if(!BuildConfig.SPDECODE_CLOUD_ENABLED || CloudLegalConsent.accepted(this))return true
+        showCloudLegal=true
+        return false
+    }
+
+    private fun openLegalPage(url:String) {
+        if(url!=CloudLegalConsent.TERMS && url!=CloudLegalConsent.PRIVACY)return
+        try {startActivity(Intent(Intent.ACTION_VIEW,Uri.parse(url)))}
+        catch(_:ActivityNotFoundException){toast(R.string.read_error)}
+    }
 
     override fun attachBaseContext(base:Context) {
         val tag=base.getSharedPreferences("spdecode-ui-preferences",Context.MODE_PRIVATE)
@@ -191,6 +235,8 @@ class MainActivity : ComponentActivity() {
         val installed=packageManager.getPackageInfo(packageName,0)
         runningVersionCode=if(Build.VERSION.SDK_INT>=28)installed.longVersionCode else installed.versionCode.toLong()
         showWhatsNew=settings.getLong("last_seen_whats_new_version",0L)<runningVersionCode
+        showCloudLegal=BuildConfig.SPDECODE_CLOUD_ENABLED && !CloudLegalConsent.accepted(this)
+        if(!showCloudLegal)refreshServerVpn()
         if(savedInstanceState==null && !settings.getBoolean("first_run_guide_completed",false))
             guideStep=0
         @Suppress("DEPRECATION")
@@ -246,6 +292,7 @@ class MainActivity : ComponentActivity() {
                     navigationExplicit=true
                     tab=newTab
                     reveal=false
+                    if(newTab==3)refreshServerVpn()
                     scope.launch {
                         try { historyPreferences.setLastTab(newTab) }
                         catch(e:CancellationException){throw e}
@@ -279,6 +326,29 @@ class MainActivity : ComponentActivity() {
                 onDecodeText={input->decodeText(input)},
                 onDecodeCloud={reference->decodeCloud(reference)},
                 onDecodeServerCatalog={decodeNurServers()},
+                onDecodeServerApp={id->decodeServerVpnProvider(id)},
+                onLegalLink={which->
+                    when(which) {
+                        "terms"->openLegalPage(CloudLegalConsent.TERMS)
+                        "privacy"->openLegalPage(CloudLegalConsent.PRIVACY)
+                    }
+                },
+                onWithdrawCloudConsent={
+                    if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
+                        try {
+                            CloudLegalConsent.revoke(this@MainActivity)
+                            cloudClient.clearSession()
+                            serverVpnRefresh?.cancel()
+                            job?.cancel()
+                            serverVpnApps=emptyList()
+                            showCloudLegal=true
+                        }catch(_:Exception){message=getString(R.string.history_storage_error)}
+                    }
+                },
+                serverVpnApps=serverVpnApps,
+                serverVpnLoading=serverVpnLoading,
+                serverVpnUnavailable=serverVpnUnavailable,
+                onRefreshServerVpn={refreshServerVpn(force=true)},
                 whatsNew=showWhatsNew,
                 onDismissWhatsNew={
                     settings.edit().putLong("last_seen_whats_new_version",runningVersionCode).apply()
@@ -306,6 +376,21 @@ class MainActivity : ComponentActivity() {
                     tab=0
                 },
             )
+            if(!showBrandedSplash && showCloudLegal && !showWhatsNew) {
+                CloudLegalConsentDialog(
+                    onTerms={openLegalPage(CloudLegalConsent.TERMS)},
+                    onPrivacy={openLegalPage(CloudLegalConsent.PRIVACY)},
+                    onAccept={
+                        try {
+                            CloudLegalConsent.accept(this@MainActivity)
+                            showCloudLegal=false
+                            refreshServerVpn()
+                            if(savedInstanceState==null && !showCloudLegal)handleExternalIntent(intent)
+                        }catch(_:Exception){message=getString(R.string.history_storage_error)}
+                    },
+                    onDecline={finishAffinity()},
+                )
+            }
             pendingCredentialImport?.let { candidate ->
                 if(enteringHcManually || candidate.requirements.hwidRequired ||
                     candidate.credentials.isEmpty()) {
@@ -329,7 +414,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-        if(savedInstanceState==null)handleExternalIntent(intent)
+        if(savedInstanceState==null && !showCloudLegal)handleExternalIntent(intent)
     }
 
     override fun onResume() {
@@ -337,12 +422,13 @@ class MainActivity : ComponentActivity() {
         // A signature/debuggable check that runs only at cold start can be
         // bypassed by a later process attachment. Defense-in-depth recheck.
         if(!ReleaseIntegrity.isTrusted(this)) finishAndRemoveTask()
+        if(!showCloudLegal)refreshServerVpn()
     }
 
     override fun onNewIntent(intent:Intent){
         super.onNewIntent(intent)
         setIntent(intent)
-        handleExternalIntent(intent)
+        if(!showCloudLegal)handleExternalIntent(intent)
     }
 
     @Suppress("DEPRECATION")
@@ -366,6 +452,7 @@ class MainActivity : ComponentActivity() {
      * between password selection and import.
      */
     private fun prepareSingleImport(uri:Uri) {
+        if(!requireCloudLegal())return
         pendingCredentialImport?.bytes?.fill(0)
         pendingCredentialImport=null
         enteringHcManually=false
@@ -376,8 +463,11 @@ class MainActivity : ComponentActivity() {
             try {
                 val name=withContext(Dispatchers.IO){displayName(uri)}
                 if(name.endsWith(".hc",ignoreCase=true)){
-                    preview=withContext(Dispatchers.IO){readBounded(uri)}
-                    val requirements=HcHccfgPort.inspectRequirements(preview)
+                    preview=withContext(Dispatchers.IO){readBounded(uri,
+                        if(BuildConfig.SPDECODE_CLOUD_ENABLED) CloudDecodeClient.MAX_INPUT else MAX_BYTES)}
+                    val requirements=if(BuildConfig.SPDECODE_CLOUD_ENABLED)
+                        cloudClient.inspectHcRequirements(preview)
+                    else HcHccfgPort.inspectRequirements(preview)
                     if(requirements?.requiresCredentials==true) {
                         val credentials=if(requirements.passwordRequired &&
                             !requirements.hwidRequired) withContext(Dispatchers.IO){
@@ -392,7 +482,16 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }catch(e:CancellationException){throw e}
-            catch(_:Exception){ /* Existing decoder handles malformed imports. */ }
+            catch(error:Exception) {
+                // Cloud credential inspection can fail before any decoder runs.
+                // Never disguise a missing QA code or network failure as a bad HC file.
+                if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
+                    if(generation==credentialPrepareGeneration)
+                        message=com.ghostdeveloper.spdecode.cloud.CloudUserErrors.message(
+                            this@MainActivity,error)
+                    return@launch
+                }
+            }
             finally { preview?.fill(0) }
             if(generation==credentialPrepareGeneration) importFiles(listOf(uri))
         }
@@ -447,12 +546,14 @@ class MainActivity : ComponentActivity() {
     // The Android editor accepts a complete pasted configuration once.
     // Telegram's multipart chat-session protocol does not apply here.
     private fun decodeText(userText:String) {
+        if(!requireCloudLegal())return
         if(busy)return
         if(userText.isBlank()||userText.length>TextProtocolDecoder.MAX_CHARS) {
             message=getString(R.string.text_decode_invalid)
             return
         }
-        val candidate=TextProtocolDecoder.identify(userText)
+        val candidate=(if(BuildConfig.SPDECODE_CLOUD_ENABLED)CloudTextFormats.identify(userText) else null)
+            ?:TextProtocolDecoder.identify(userText)
         if(candidate==null) {
             message=getString(R.string.text_decode_invalid)
             return
@@ -468,7 +569,9 @@ class MainActivity : ComponentActivity() {
             reveal=false
             try {
                 historyLoad?.await()
-                val decoded=withContext(Dispatchers.Default) {
+                val decoded=if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
+                    cloudClient.decodeText(userText)
+                } else withContext(Dispatchers.Default) {
                     TextProtocolDecoder.decode(this@MainActivity,candidate)
                 }
                 if(decoded==null) {
@@ -498,9 +601,11 @@ class MainActivity : ComponentActivity() {
                 catch(_:Exception){toast(R.string.history_storage_error)}
                 tab=0
             }catch(e:CancellationException){throw e}
-            catch(_:Exception){if(generation==importGeneration) {
+            catch(error:Exception){if(generation==importGeneration) {
                 SafeDecodeDiagnostics.record(SafeDecodeDiagnostics.Event.TEXT_FAILURE)
-                message=getString(R.string.text_decode_unsupported)
+                message=if(BuildConfig.SPDECODE_CLOUD_ENABLED)
+                    com.ghostdeveloper.spdecode.cloud.CloudUserErrors.message(this@MainActivity,error)
+                    else getString(R.string.text_decode_unsupported)
             }
             }finally {
                 if(generation==importGeneration) {
@@ -517,6 +622,7 @@ class MainActivity : ComponentActivity() {
      * offline file/text decoder, and a failed fetch never saves a result.
      */
     private fun decodeCloud(reference:String) {
+        if(!requireCloudLegal())return
         if(busy)return
         if(reference.isBlank() || reference.length>1024) {
             message=getString(R.string.cloud_http_injector_invalid)
@@ -539,7 +645,9 @@ class MainActivity : ComponentActivity() {
             reveal=false
             try {
                 historyLoad?.await()
-                val decoded=withContext(Dispatchers.IO) {
+                val decoded=if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
+                    cloudClient.decodeHttpInjectorCloud(parsed)
+                } else withContext(Dispatchers.IO) {
                     HttpInjectorCloudPort.decodeOnline(this@MainActivity,parsed)
                 }
                 progressStage=2
@@ -563,7 +671,13 @@ class MainActivity : ComponentActivity() {
                 catch(_:Exception){toast(R.string.history_storage_error)}
                 tab=0
             }catch(e:CancellationException){throw e}
-            catch(e:HttpInjectorCloudPort.CloudException) {
+            catch(e:CloudDecodeClient.Failure) {
+                if(generation==importGeneration) {
+                    message=if(BuildConfig.SPDECODE_CLOUD_ENABLED)
+                        com.ghostdeveloper.spdecode.cloud.CloudUserErrors.message(this@MainActivity,e)
+                        else getString(R.string.cloud_http_injector_network_error)
+                }
+            }catch(e:HttpInjectorCloudPort.CloudException) {
                 if(generation==importGeneration) {
                     message=getString(when(e.reason) {
                         HttpInjectorCloudPort.Reason.REFERENCE->R.string.cloud_http_injector_invalid
@@ -573,9 +687,11 @@ class MainActivity : ComponentActivity() {
                         HttpInjectorCloudPort.Reason.DECODER->R.string.cloud_http_injector_decoder_error
                     })
                 }
-            }catch(_:Exception){
+            }catch(error:Exception){
                 if(generation==importGeneration)
-                    message=getString(R.string.cloud_http_injector_network_error)
+                    message=if(BuildConfig.SPDECODE_CLOUD_ENABLED)
+                        com.ghostdeveloper.spdecode.cloud.CloudUserErrors.message(this@MainActivity,error)
+                        else getString(R.string.cloud_http_injector_network_error)
             }finally {
                 if(generation==importGeneration) {
                     busy=false
@@ -588,6 +704,7 @@ class MainActivity : ComponentActivity() {
 
     /** User-triggered NUR catalog fetch; endpoint is read from the encrypted asset vault. */
     private fun decodeNurServers() {
+        if(!requireCloudLegal())return
         if(busy)return
         val generation=++importGeneration
         job?.cancel()
@@ -601,7 +718,10 @@ class MainActivity : ComponentActivity() {
             reveal=false
             try {
                 historyLoad?.await()
-                val pair=withContext(Dispatchers.IO) {
+                val pair=if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
+                    val decoded=cloudClient.decodeNurCatalog()
+                    Pair(decoded.rawText,decoded.sourceBytes ?: 0)
+                } else withContext(Dispatchers.IO) {
                     val url=NurTunnelServerCatalog.defaultUrl(this@MainActivity)
                     val encrypted=NurTunnelServerCatalog.download(url)
                     try {
@@ -628,10 +748,12 @@ class MainActivity : ComponentActivity() {
                 catch(_:Exception){toast(R.string.history_storage_error)}
                 tab=0
             }catch(e:CancellationException){throw e}
-            catch(_:Exception) {
+            catch(error:Exception) {
                 if(generation==importGeneration) {
                     SafeDecodeDiagnostics.record(SafeDecodeDiagnostics.Event.FILE_IMPORT_FAILURE)
-                    message=getString(R.string.nur_servers_failed)
+                    message=if(BuildConfig.SPDECODE_CLOUD_ENABLED)
+                        com.ghostdeveloper.spdecode.cloud.CloudUserErrors.message(this@MainActivity,error)
+                        else getString(R.string.nur_servers_failed)
                 }
             }finally {
                 if(generation==importGeneration) {
@@ -667,11 +789,60 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun decodeServerVpnProvider(id:String) {
+        if(!requireCloudLegal() || busy || !BuildConfig.SPDECODE_CLOUD_ENABLED)return
+        val provider=serverVpnApps.firstOrNull { it.id==id && it.decodeEnabled }?:return
+        if(!id.matches(Regex("[a-z0-9-]{1,48}")))return
+        val generation=++importGeneration
+        job?.cancel()
+        job=scope.launch {
+            busy=true
+            progressStage=1
+            progressPosition=1
+            progressTotal=1
+            progressFilename=provider.name
+            message=null
+            reveal=false
+            try {
+                historyLoad?.await()
+                val decoded=cloudClient.decodeServerVpnProvider(id)
+                progressStage=2
+                val record=DecodeView("server-vpn-$id.json","vpnservers",
+                    decoded.rawText,decoded.sourceBytes?:0)
+                val saved=try {
+                    withContext(Dispatchers.IO){historyStore.save(record)}
+                    true
+                }catch(error:CancellationException){throw error}
+                 catch(_:Exception){false}
+                result=record
+                recent.add(0,record)
+                if(!saved)toast(R.string.history_storage_error)
+                try {historyPreferences.setSelectedId(record.id)}
+                catch(error:CancellationException){throw error}
+                catch(_:Exception){toast(R.string.history_storage_error)}
+                tab=0
+            }catch(error:CancellationException){throw error}
+             catch(error:Exception) {
+                if(generation==importGeneration) {
+                    SafeDecodeDiagnostics.record(SafeDecodeDiagnostics.Event.FILE_IMPORT_FAILURE)
+                    message=com.ghostdeveloper.spdecode.cloud.CloudUserErrors.message(this@MainActivity,error)
+                }
+            }finally {
+                if(generation==importGeneration) {
+                    busy=false
+                    progressStage=0
+                    progressFilename=null
+                }
+            }
+        }
+    }
+
     private fun importFiles(uris:List<Uri>,
         privateCredentialId:String?=null,
         prepared:PendingCredentialImport?=null,
         hcPassword:ByteArray?=null,
         hcHwid:String?=null){
+        if(!requireCloudLegal())return
         require(privateCredentialId==null || (uris.size==1 && prepared?.uri==uris.single()))
         require((hcPassword==null && hcHwid==null) ||
             (uris.size==1 && prepared?.uri==uris.single() && privateCredentialId==null))
@@ -696,7 +867,10 @@ class MainActivity : ComponentActivity() {
                         val filename=runCatching {
                             withContext(Dispatchers.IO){displayName(uri)}
                         }.getOrDefault("")
-                        if(filename.endsWith(".npvs",ignoreCase=true))
+                        // Do not label any Cloud NPVS failure a "private key"
+                        // failure unless the worker explicitly reports that.
+                        if(!BuildConfig.SPDECODE_CLOUD_ENABLED &&
+                            filename.endsWith(".npvs",ignoreCase=true))
                             failedNpvs=true
                         if((prepared?.filename?:filename).endsWith(".hc",ignoreCase=true) &&
                             prepared?.requirements?.requiresCredentials==true)failedProtectedHc=true
@@ -708,16 +882,21 @@ class MainActivity : ComponentActivity() {
                     val name=prepared?.filename
                         ?:withContext(Dispatchers.IO){displayName(uri)}
                     progressFilename=name
-                    val supported=AndroidDecoderCatalog.detect(
-                        name,AndroidDecoderCatalog.read(this@MainActivity))
+                    val supported=(if(BuildConfig.SPDECODE_CLOUD_ENABLED)
+                        CloudFileFormats.detect(name) else null)
+                        ?:AndroidDecoderCatalog.detect(
+                            name,AndroidDecoderCatalog.read(this@MainActivity))
                         ?:throw DecodeFailure(R.string.unsupported)
                     // Phase A identifies pending formats but never reads or
                     // sends their bytes to a native decoder that does not exist.
-                    if (!supported.hasNativeDecoder) {
+                    // All registered suffixes are decoded on the worker in Cloud
+                    // builds; Android's *offline* native decoder status is irrelevant.
+                    if (!BuildConfig.SPDECODE_CLOUD_ENABLED && !supported.hasNativeDecoder) {
                         throw DecodeFailure(R.string.native_decoder_pending)
                     }
                     val input=prepared?.bytes?:withContext(Dispatchers.IO){readBounded(uri,
                         when {
+                            BuildConfig.SPDECODE_CLOUD_ENABLED -> CloudDecodeClient.MAX_INPUT
                             supported.suffix=="solid" -> NurTunnelPort.MAX_INPUT
                             supported.suffix=="lnk" -> LinkLayerPort.MAX_INPUT
                             supported.suffix=="npvs" -> NpvsPort.MAX_INPUT
@@ -731,7 +910,16 @@ class MainActivity : ComponentActivity() {
                     progressStage=1
                     val inputSize=input.size
                     val text=try {
-                        withContext(Dispatchers.Default) {
+                        if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
+                            // Never fall back to local decoders after a Cloud error.
+                            if(privateCredentialId!=null) {
+                                val secret=withContext(Dispatchers.IO) {
+                                    privateCredentialVault.use(privateCredentialId){it.copyOf()}
+                                }
+                                try { cloudClient.decodeFile(supported.suffix,input,password=secret) }
+                                finally { secret.fill(0) }
+                            }else cloudClient.decodeFile(supported.suffix,input,hcPassword,hcHwid)
+                        } else withContext(Dispatchers.Default) {
                             if(privateCredentialId!=null){
                                 privateCredentialVault.use(privateCredentialId){secret->
                                     AndroidOfflineDecoderRouter.decodeWithUserPassword(

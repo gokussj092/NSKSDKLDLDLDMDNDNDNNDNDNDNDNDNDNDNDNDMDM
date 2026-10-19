@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24" role="img" aria-label="SP-DECODE">
+<rect width="24" height="24" rx="5" fill="#000"/>
+<!-- Exact shield/check geometry from Android mipmap-anydpi/ic_launcher.xml -->
+<path fill="#fff" d="M12,2 L21,5 L21,11.5 C21,17.2 17.4,21.5 12,23 C6.6,21.5 3,17.2 3,11.5 L3,5 Z"/>
+<path fill="#000" d="M12,4.4 L18.8,6.8 L18.8,11.5 C18.8,15.8 16.2,18.7 12,20 C7.8,18.7 5.2,15.8 5.2,11.5 L5.2,6.8 Z"/>
+<path fill="#fff" d="M9.4,11.8 L11.2,13.6 L15.5,9.3 L17,10.8 L11.2,16.6 L7.9,13.3 Z"/>
+</svg>

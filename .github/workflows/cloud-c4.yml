@@ -1,0 +1,66 @@
+name: SP-DECODE Cloud C4 Android JNI
+
+on:
+  push:
+    branches: ["feat/cloud-c4-android-jni"]
+  pull_request:
+    paths:
+      - "android/app/src/main/cpp/**"
+      - "android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/**"
+      - "android/app/src/main/java/com/ghostdeveloper/spdecode/MainActivity.kt"
+      - "android/app/src/main/AndroidManifest.xml"
+      - "android/app/build.gradle.kts"
+      - "docs/cloud/C4_IMPLEMENTATION.md"
+      - "tests/test_cloud_c4_android_bridge.py"
+      - ".github/workflows/cloud-c4.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  android:
+    name: C4 libspdecode.so Android cloud compile
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.11.1"
+      - name: Install original registry imports for C0 verification
+        run: python -m pip install -r requirements.txt
+      - name: Verify C0 catalog and C4 no-UI regression
+        run: |
+          PYTHONPATH=. python scripts/cloud_c0_inventory.py --check
+          PYTHONPATH=. python -m unittest tests.test_cloud_c4_android_bridge -v
+      - name: Install Android SDK CMake and NDK
+        run: |
+          SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -n 1)"
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.0" "cmake;3.22.1" "ndk;27.2.12479018"
+      - name: Assemble Cloud-enabled debug APK without real credentials
+        working-directory: android
+        env:
+          SPDECODE_CLOUD_API_BASE_URL: https://api.spdecode.example
+        run: gradle --no-daemon :app:assembleDebug
+      - name: Verify actual JNI library in compiled APK
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from zipfile import ZipFile
+          files=list(Path("android/app/build/outputs/apk/debug").glob("*.apk"))
+          assert len(files)==1,files
+          with ZipFile(files[0]) as apk:
+              native=[name for name in apk.namelist() if name.endswith("/libspdecode.so")]
+              assert native, "Native libspdecode.so missing from APK"
+              assert not any(name.endswith("/libspdecode_cloud.so") for name in apk.namelist())
+          print("libspdecode.so ABIs:",native)
+          PY

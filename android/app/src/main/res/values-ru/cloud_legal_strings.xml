@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_legal_title">Условия и конфиденциальность</string>
+    <string name="cloud_legal_explanation">SP-DECODE Cloud отправляет на сервер только выбранные вами файлы или тексты. Они могут содержать конфиденциальные учетные данные.</string>
+    <string name="cloud_legal_terms">Прочитать условия</string>
+    <string name="cloud_legal_privacy">Прочитать политику конфиденциальности</string>
+    <string name="cloud_legal_accept_check">Я прочитал(а) и принимаю условия и политику конфиденциальности.</string>
+    <string name="cloud_legal_accept">Принять</string>
+    <string name="cloud_legal_decline">Отклонить</string>
+    <string name="server_vpn_loading">Загрузка каталога VPN-серверов…</string>
+    <string name="server_vpn_unavailable">Каталог VPN-серверов недоступен. Проверьте подключение и повторите попытку.</string>
+    <string name="server_vpn_retry">Повторить</string>
+    <string name="cloud_legal_withdraw">Отозвать согласие Cloud</string>
+    <string name="cloud_legal_withdraw_detail">Отзыв согласия блокирует новые запросы к серверу. Локальная зашифрованная история останется на устройстве. Позже вы сможете принять условия снова.</string>
+</resources>

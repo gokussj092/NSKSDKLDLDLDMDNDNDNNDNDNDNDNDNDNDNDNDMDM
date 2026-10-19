@@ -81,6 +81,12 @@ def flex_get_material(version, lock):
 
 def flex_decrypt_bytes(data: bytes) -> str:
     """فك تشفير bytes ملف .flex وإرجاع XML نصي"""
+    if data.startswith(FLEX_MAGIC + b"\x05"):
+        if __package__:
+            from .flexnet_b42 import decrypt_profile_xml
+        else:
+            from flexnet_b42 import decrypt_profile_xml
+        return decrypt_profile_xml(data)
     if len(data) < 7 or data[:6] != FLEX_MAGIC:
         raise ValueError("Invalid Flex header (FLXCFG not found)")
     pos = 6

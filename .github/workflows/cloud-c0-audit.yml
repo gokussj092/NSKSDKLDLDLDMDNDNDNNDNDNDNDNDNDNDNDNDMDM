@@ -1,0 +1,38 @@
+name: SP-DECODE Cloud C0 baseline
+
+on:
+  pull_request:
+    paths:
+      - "android/app/src/main/assets/decoder_catalog.json"
+      - "android/app/src/main/java/com/ghostdeveloper/spdecode/**"
+      - "decoders/**"
+      - "decoders.json"
+      - "spdecode/registry.py"
+      - "scripts/cloud_c0_inventory.py"
+      - "docs/cloud/C0_*"
+      - "tests/test_cloud_c0_inventory.py"
+      - "tests/golden/**"
+      - ".github/workflows/cloud-c0-audit.yml"
+  push:
+    branches: ["feat/cloud-c0-audit-baseline"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: C0 routes, UI lock and reference corpus
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install decoder registry dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Check frozen C0 inventory (metadata only)
+        run: PYTHONPATH=. python scripts/cloud_c0_inventory.py --check
+      - name: Run Cloud C0 regression suite
+        run: PYTHONPATH=. python -m unittest tests.test_cloud_c0_inventory -v

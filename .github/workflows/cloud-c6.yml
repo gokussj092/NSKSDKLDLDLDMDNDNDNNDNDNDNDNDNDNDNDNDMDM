@@ -1,0 +1,40 @@
+name: SP-DECODE Cloud C6 Website and Admin
+on:
+  push:
+    branches: ["feat/cloud-c6-public-site-admin"]
+  pull_request:
+    paths:
+      - "cloud/web/**"
+      - "cloud/compose.yaml"
+      - "docs/cloud/C6_IMPLEMENTATION.md"
+      - ".github/workflows/cloud-c6.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  website-security:
+    name: C6 public site, admin auth and maintenance security
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install application packages
+        working-directory: cloud/web
+        run: npm install --no-audit --no-fund
+      - name: Test public API and admin security
+        working-directory: cloud/web
+        run: npm test
+      - name: Build Next.js production site
+        working-directory: cloud/web
+        env:
+          NEXT_TELEMETRY_DISABLED: "1"
+        run: npm run build
+      - name: Check server-only admin routes and public pages
+        working-directory: cloud/web
+        run: |
+          node --input-type=module -e "import {adminSettings} from './lib/c6-admin-auth.mjs'; if(adminSettings().enabled)process.exit(1)"
+      - name: Docker Compose topology
+        run: docker compose -f cloud/compose.yaml config --quiet

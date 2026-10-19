@@ -1,0 +1,63 @@
+name: SP-DECODE Cloud C3 Security
+
+on:
+  pull_request:
+    paths:
+      - "cloud/**"
+      - "docs/cloud/C3_IMPLEMENTATION.md"
+      - ".github/workflows/cloud-c3.yml"
+  push:
+    branches: ["feat/cloud-c3-api-security"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  api-security:
+    name: C3 Play Integrity, Redis sessions and gated API
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install Cloud API dependencies
+        working-directory: cloud/web
+        run: npm install --no-audit --no-fund
+      - name: Unit and adversarial tests
+        working-directory: cloud/web
+        run: npm test
+      - name: Security check for C3.5 provider broker and remote routes
+        working-directory: cloud/web
+        run: node --test tests/c35-import-security.test.mjs
+      - name: Verify Next.js production build
+        working-directory: cloud/web
+        env:
+          NEXT_TELEMETRY_DISABLED: "1"
+        run: npm run build
+      - name: Validate closed-by-default configuration
+        working-directory: cloud/web
+        run: |
+          node --input-type=module -e "import {settings} from './lib/c3-config.mjs'; if(settings().configured)process.exit(1)"
+  network:
+    name: C3 Docker private Redis and workers
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify Docker Compose has no Redis host port
+        run: |
+          docker compose -f cloud/compose.yaml config --quiet
+          docker compose -f cloud/compose.yaml config --format json | python -c "import json,sys; data=json.load(sys.stdin); assert 'ports' not in data['services']['redis']"
+      - name: Smoke-test private Redis
+        run: |
+          docker compose -f cloud/compose.yaml up --wait -d --no-deps redis
+          docker compose -f cloud/compose.yaml exec -T redis redis-cli ping | grep -Fx PONG
+      - name: Redis diagnostics on failure
+        if: failure()
+        run: docker compose -f cloud/compose.yaml logs --tail=30 redis
+      - name: Tear down
+        if: always()
+        run: docker compose -f cloud/compose.yaml down --remove-orphans

@@ -1,0 +1,241 @@
+suffix,app_name,source_script,source_runtime,android_phase,android_port_status,linux_synthetic,android_verified,exporter_versions,source_catalog
+hamotunnelplus,RENZ / HAMOTUNNELPLUS,decoders/Python/renz.py,python,D,experimental_renz_aes_xxtea_threefish_synthetic,true,false,,spdecode.registry
+deshtunnelvpn,RENZ / DESHTUNNELVPN,decoders/Python/renz.py,python,D,experimental_renz_aes_xxtea_threefish_synthetic,true,false,,spdecode.registry
+vipsnipherpro,RENZ / VIPSNIPHERPRO,decoders/Python/renz.py,python,D,experimental_renz_aes_xxtea_threefish_synthetic,true,false,,spdecode.registry
+actunnelvpn,RENZ / ACTUNNELVPN,decoders/Python/renz.py,python,D,experimental_renz_aes_xxtea_threefish_synthetic,true,false,,spdecode.registry
+cranetunnel,RENZ / CRANETUNNEL,decoders/Python/renz.py,python,D,experimental_renz_aes_xxtea_threefish_synthetic,true,false,,spdecode.registry
+ultratunnel,ULTRA TUNNEL,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+aloplusvpn,RENZ / ALOPLUSVPN,decoders/Python/renz.py,python,D,experimental_renz_aes_xxtea_threefish_synthetic,true,false,,spdecode.registry
+juanscript,JuanScript,decoders/Python/juanscript.py,python,E,experimental_special_13_engines_synthetic,true,false,,spdecode.registry
+mtv2raypro,MT V2RAY PRO,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+safetunnel,RENZ / SAFETUNNEL,decoders/Python/renz.py,python,D,experimental_renz_aes_xxtea_threefish_synthetic,true,false,,spdecode.registry
+wolftunnel,WOLF TUNNEL,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+wyrvpnlite,WyrLite,decoders/Python/wyrlite.py,python,E,experimental_special_13_engines_synthetic,true,false,,spdecode.registry
+flynetvpn,FLY NET VPN,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+fnnetwork,FN Network,decoders/Python/fnnetwork.py,python,legacy,experimental_batch10_synthetic,true,false,,decoders.json
+ignix_vpn,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+letsvpngo,RENZ / LETSVPNGO,decoders/Python/renz.py,python,D,experimental_renz_aes_xxtea_threefish_synthetic,true,false,,spdecode.registry
+mhrtunnel,RENZ / MHRTUNNEL,decoders/Python/renz.py,python,D,experimental_renz_aes_xxtea_threefish_synthetic,true,false,,spdecode.registry
+nurtunnel,NUR TUNNEL,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+sksrv.png,SKS Server,decoders/Python/sksrv.py,python,legacy,experimental_batch15_synthetic,true,false,,decoders.json
+sshbrasil,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+tiktunnel,TIK TUNNEL,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+apnalite,XOR VPN family,decoders/Python/xor_family.py,python,E,experimental_special_13_engines_synthetic,true,false,,spdecode.registry
+apnatnl,XOR VPN family,decoders/Python/xor_family.py,python,E,experimental_special_13_engines_synthetic,true,false,,spdecode.registry
+bshield,RENZ / BSHIELD,decoders/Python/renz.py,python,D,experimental_renz_aes_xxtea_threefish_synthetic,true,false,,spdecode.registry
+flexnet,FlexNet,decoders/Python/flex.py,python,F,experimental_independent_9_engines_synthetic,true,false,,spdecode.registry
+mdproxy,MD PROXY VPN,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+mtv2ray,MT V2RAY,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+omanova,XOR VPN family,decoders/Python/xor_family.py,python,E,experimental_special_13_engines_synthetic,true,false,,spdecode.registry
+sksplus,SocksIP Plus,decoders/PHP/sksplus.php,php,legacy,experimental_final11_synthetic,true,false,,decoders.json
+slipnet,SlipNet,decoders/Python/slipnet.py,python,E,experimental_special_13_engines_synthetic,true,false,,spdecode.registry
+vpnlite,VPN Lite,decoders/Python/vpnlite.py,python,legacy,experimental_batch10_synthetic,true,false,,decoders.json
+wyrlite,WyrLite,decoders/Python/wyrlite.py,python,E,experimental_special_13_engines_synthetic,true,false,,spdecode.registry
+xhypher,RENZ / XHYPHER,decoders/Python/renz.py,python,D,experimental_renz_aes_xxtea_threefish_synthetic,true,false,,spdecode.registry
+4ulite,XOR VPN family,decoders/Python/xor_family.py,python,E,experimental_special_13_engines_synthetic,true,false,,spdecode.registry
+cloudy,Cloudy Inject,decoders/Python/cloudy.py,python,legacy,experimental_batch10_synthetic,true,false,,decoders.json
+flynet,FLY NET VPN,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+garuda,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+gcpvpn,RENZ / GCPVPN,decoders/Python/renz.py,python,D,experimental_renz_aes_xxtea_threefish_synthetic,true,false,,spdecode.registry
+purple,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+skvoid,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+actun,RENZ / ACTUNNELVPN,decoders/Python/renz.py,python,D,experimental_renz_aes_xxtea_threefish_synthetic,true,false,,spdecode.registry
+bdnet,XOR VPN family,decoders/Python/xor_family.py,python,E,experimental_special_13_engines_synthetic,true,false,,spdecode.registry
+cyber,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+dkarl,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+glory,GLORY TUNNEL,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+great,GREAT TUNNEL,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+hsome,XOR VPN family,decoders/Python/xor_family.py,python,E,experimental_special_13_engines_synthetic,true,false,,spdecode.registry
+lucky,LUCKY PROXY,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+marvs,MARVS TUNNEL,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+mdvpn,MD VPN,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+mehaf,MEHAF TUNNEL,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+pausa,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+sksrv,SKS Server,decoders/Python/sksrv.py,python,legacy,experimental_batch10_synthetic,true,false,,decoders.json
+solid,NUR TUNNEL VPN (.solid),decoders/Python/nur_tunnel_solid.py,python,NUR,experimental_nur_solid_native,false,false,,nur-tunnel-v1.0.8.8
+ultra,ULTRA TUNNEL,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+v2box,V2Box Export,decoders/Python/v2box_export.py,python,E,experimental_special_13_engines_synthetic,true,false,,spdecode.registry
+xscks,X-Socks,decoders/Python/xscks.py,python,legacy,experimental_batch15_synthetic,true,false,,decoders.json
+1300,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+7net,RENZ / 7NET,decoders/Python/renz.py,python,D,experimental_renz_aes_xxtea_threefish_synthetic,true,false,,spdecode.registry
+aipr,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+aura,AURA TUNNEL,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+cerv,CREV,decoders/Python/crev.py,python,F,experimental_independent_9_engines_synthetic,true,false,,spdecode.registry
+clay,Generic DES-ECB (AES-GCM fallback),decoders/Python/generic_des.py,python,B,experimental_generic_des_ecb_synthetic,true,false,,spdecode.registry
+cnet,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+crev,CREV,decoders/Python/crev.py,python,F,experimental_independent_9_engines_synthetic,true,false,,spdecode.registry
+dark,Dark Tunnel,decoders/Python/DARKTUNNEL.py,python,legacy,experimental_final7_synthetic_subset,true,false,,decoders.json
+deep,DEEP TUNNEL,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+edan,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+ehil,HTTP Injector Lite,decoders/Python/HTTPINJECTORLITE.py,python,legacy,experimental_final_extra4_synthetic,true,false,,decoders.json
+epro,ePro Tunnel,decoders/JavaScript/modulepro.js,node,legacy,experimental_batch15_synthetic,true,false,,decoders.json
+etun,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+flex,FlexNet,decoders/Python/flex.py,python,F,experimental_independent_9_engines_synthetic,true,false,,spdecode.registry
+fnet,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+fthp,FTHP,decoders/Python/fthp.py,python,E,experimental_special_13_engines_synthetic,true,false,,spdecode.registry
+gibs,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+gold,Gold Tunnel,decoders/Python/gold.py,python,legacy,experimental_batch20_synthetic,true,false,,decoders.json
+izph,IZPH VPN Pro,decoders/Python/izph.py,python,F,experimental_independent_9_engines_synthetic,true,false,,spdecode.registry
+juan,JuanScript,decoders/Python/juanscript.py,python,E,experimental_special_13_engines_synthetic,true,false,,spdecode.registry
+maya,Maya Tunnel,decoders/Python/maya.py,python,legacy,experimental_batch10_synthetic,true,false,,decoders.json
+mina,MinaProNet,decoders/Python/mina.py,python,legacy,experimental_batch10_synthetic,true,false,,decoders.json
+mobi,JuanScript,decoders/Python/juanscript.py,python,E,experimental_special_13_engines_synthetic,true,false,,spdecode.registry
+npv2,NPV Tunnel v2,decoders/JavaScript/chicosp.js,node,legacy,experimental_batch15_synthetic,true,false,,decoders.json
+npv4,NPV Tunnel v4,decoders/Python/NPVTUNNEL.py,python,legacy,experimental_final7_synthetic_subset,true,false,,decoders.json
+npvs,NPV Tunnel NPVS v5,decoders/Python/npvs.py,python,legacy,experimental_native_npvs_v5,false,false,124.0.37,decoders.json
+npvt,NPV Tunnel v4,decoders/Python/NPVTUNNEL.py,python,legacy,experimental_final7_synthetic_subset,true,false,,decoders.json
+rezl,Rez Tunnel Lite,decoders/JavaScript/rez.js,node,legacy,experimental_final11_synthetic,true,false,,decoders.json
+sksx,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+tcv2,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+temt,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+tito,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+ulti,ULTI TUNNEL,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+ursa,XOR VPN family,decoders/Python/xor_family.py,python,E,experimental_special_13_engines_synthetic,true,false,,spdecode.registry
+wolf,WOLF TUNNEL,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+wrld,Generic DES-ECB (AES-GCM fallback),decoders/Python/generic_des.py,python,B,experimental_generic_des_ecb_synthetic,true,false,,spdecode.registry
+wyrl,WyrLite,decoders/Python/wyrlite.py,python,E,experimental_special_13_engines_synthetic,true,false,,spdecode.registry
+xsks,Generic DES-ECB (AES-GCM fallback),decoders/Python/generic_des.py,python,B,experimental_generic_des_ecb_synthetic,true,false,,spdecode.registry
+zoba,Zoba VPN,decoders/Python/zoba.py,python,F,experimental_independent_9_engines_synthetic,true,false,,spdecode.registry
+ace,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+acm,Generic DES-ECB (AES-GCM fallback),decoders/Python/generic_des.py,python,B,experimental_generic_des_ecb_synthetic,true,false,,spdecode.registry
+act,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+agn,AGN Injector,decoders/Python/multides.py,python,legacy,experimental_batch15_synthetic,true,false,,decoders.json
+aip,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+aro,ARMOD,decoders/Python/aro.py,python,legacy,experimental_batch20_synthetic,true,false,,decoders.json
+bbb,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+bcl,BCL TUNNEL,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+bdi,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+bee,BEE TUNNEL,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+btv,BTV TUNNEL,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+cbp,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+ccc,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+cer,CREV,decoders/Python/crev.py,python,F,experimental_independent_9_engines_synthetic,true,false,,spdecode.registry
+cks,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+cln,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+cly,Cloudy,decoders/Python/multides.py,python,legacy,experimental_batch15_synthetic,true,false,,decoders.json
+cyh,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+dak,Generic DES-ECB (AES-GCM fallback),decoders/Python/generic_des.py,python,B,experimental_generic_des_ecb_synthetic,true,false,,spdecode.registry
+ddd,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+dev,DEV VPN,decoders/Python/dev.py,python,F,experimental_independent_9_engines_synthetic,true,false,,spdecode.registry
+dvd,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+dzd,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+eee,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+ehi,HTTP Injector,decoders/Python/HTTPINJECTOR.py,python,legacy,experimental_final7_synthetic_subset,true,false,,decoders.json
+ena,ENA TUNNEL,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+eta,ETA TUNNEL,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+eug,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+eut,EUT Tunnel,decoders/Python/eut.py,python,E,experimental_special_13_engines_synthetic,true,false,,spdecode.registry
+ezi,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+fix,FIX TUNNEL,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+fks,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+fnf,XOR VPN family,decoders/Python/xor_family.py,python,E,experimental_special_13_engines_synthetic,true,false,,spdecode.registry
+ftp,FTHP,decoders/Python/fthp.py,python,E,experimental_special_13_engines_synthetic,true,false,,spdecode.registry
+ftr,Generic DES-ECB (AES-GCM fallback),decoders/Python/generic_des.py,python,B,experimental_generic_des_ecb_synthetic,true,false,,spdecode.registry
+grd,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+hat,HA Tunnel Plus,decoders/JavaScript/hat.js,node,legacy,experimental_final_extra4_synthetic,true,false,,decoders.json
+hbd,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+hdb,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+hqp,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+hrt,HRT Tunnel,decoders/PHP/hrt.php,php,legacy,experimental_batch15_synthetic,true,false,,decoders.json
+hta,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+htb,HTTP Tweak,decoders/Python/HTTPTWEAK.py,python,legacy,experimental_final_extra4_synthetic,true,false,,decoders.json
+htp,Generic DES-ECB (AES-GCM fallback),decoders/Python/generic_des.py,python,B,experimental_generic_des_ecb_synthetic,true,false,,spdecode.registry
+hub,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+hxt,XOR VPN family,decoders/Python/xor_family.py,python,E,experimental_special_13_engines_synthetic,true,false,,spdecode.registry
+int,IntVPN,decoders/Python/intvpn.py,python,E,experimental_special_13_engines_synthetic,true,false,,spdecode.registry
+ipt,WeTunnel,decoders/Python/ipt.py,python,legacy,experimental_batch20_synthetic,true,false,,decoders.json
+itv,ITV Tunnel,decoders/Python/itv.py,python,E,experimental_special_13_engines_synthetic,true,false,,spdecode.registry
+jez,JEZ Tunnel,decoders/PHP/jez.php,php,legacy,experimental_batch15_synthetic,true,false,,decoders.json
+jph,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+jvc,JVC Tunnel,decoders/Python/multides.py,python,legacy,experimental_batch15_synthetic,true,false,,decoders.json
+jvi,JVI Tunnel,decoders/Python/multides.py,python,legacy,experimental_batch15_synthetic,true,false,,decoders.json
+ktr,KTR,decoders/Python/ktr.py,python,F,experimental_independent_9_engines_synthetic,true,false,,spdecode.registry
+lnk,LinkLayer VPN,decoders/Python/linklayer.py,python,legacy,experimental_linklayer_ver6_synthetic,true,false,,decoders.json
+ltm,LTM Tunnel,decoders/Python/ltm.py,python,F,experimental_independent_9_engines_synthetic,true,false,,spdecode.registry
+max,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+mdp,MD PROXY VPN,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+mij,MIJ Tunnel,decoders/Python/mij.py,python,legacy,experimental_batch10_synthetic,true,false,,decoders.json
+mmt,MMT TUNNEL,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+mrc,MRC Tunnel,decoders/Python/mrc.py,python,legacy,experimental_batch15_synthetic,true,false,,decoders.json
+msy,AR Pro / MSY,decoders/Python/ar_pro.py,python,E,experimental_special_13_engines_synthetic,true,false,,spdecode.registry
+mtl,MTL Tunnel,decoders/Python/mtl.py,python,legacy,experimental_batch15_synthetic,true,false,,decoders.json
+nac,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+nd4,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+net,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+nhi,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+ntr,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+nur,NUR TUNNEL,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+nxp,Generic DES-ECB (AES-GCM fallback),decoders/Python/generic_des.py,python,B,experimental_generic_des_ecb_synthetic,true,false,,spdecode.registry
+osp,RENZ / 7NET,decoders/Python/renz.py,python,D,experimental_renz_aes_xxtea_threefish_synthetic,true,false,,spdecode.registry
+ost,OUSS Tunnel,decoders/Python/ost.py,python,legacy,experimental_batch20_synthetic,true,false,,decoders.json
+osv,OSV TUNNEL,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+pcx,PCX Tunnel,decoders/Python/pcx.py,python,legacy,experimental_batch20_synthetic,true,false,,decoders.json
+phc,PHC Tunnel,decoders/Python/phc.py,python,legacy,experimental_batch10_synthetic,true,false,,decoders.json
+pin,Generic DES-ECB (AES-GCM fallback),decoders/Python/generic_des.py,python,B,experimental_generic_des_ecb_synthetic,true,false,,spdecode.registry
+pir,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+pkm,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+pxp,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+rez,Rez Tunnel,decoders/JavaScript/rez.js,node,legacy,experimental_final11_synthetic,true,false,,decoders.json
+roy,Royal Tunnel,decoders/Python/xtproy.py,python,legacy,experimental_final11_synthetic,true,false,,decoders.json
+sbr,SBR Injector,decoders/Python/sbr.py,python,legacy,experimental_batch20_synthetic,true,false,,decoders.json
+sds,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+sip,SocksIP Tunnel,decoders/Python/sockip.py,python,legacy,experimental_final7_synthetic_subset,true,false,,decoders.json
+sks,SocksIP,decoders/JavaScript/sks.js,node,legacy,experimental_final11_synthetic,true,false,,decoders.json
+sky,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+spd,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+ssc,SSC Custom,decoders/Python/SSCCUSTOM.py,python,legacy,experimental_final7_synthetic_subset,true,false,,decoders.json
+ssh,SSH Injector,decoders/Python/ssh.py,python,legacy,experimental_final11_synthetic,true,false,,decoders.json
+ssi,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+stk,Stark VPN,decoders/JavaScript/stk.js,node,legacy,experimental_final11_synthetic,true,false,,decoders.json
+sut,SUT Tunnel,decoders/Python/sut.py,python,legacy,experimental_final11_synthetic,true,false,,decoders.json
+t10,T10 TUNNEL,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+t20,T20 TUNNEL,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+tcx,RENZ / TCXTUNNEL,decoders/Python/renz.py,python,D,experimental_renz_aes_xxtea_threefish_synthetic,true,false,,spdecode.registry
+tik,TIK TUNNEL,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+tls,TLS Tunnel,decoders/Python/TLS.py,python,legacy,prototype_tls_aesgcm_synthetic_case,true,false,,decoders.json
+tmt,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+tnl,Tunnel,decoders/Python/tnl.py,python,legacy,experimental_final11_synthetic,true,false,,decoders.json
+tpp,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+tsd,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+tsm,TSM TUNNEL,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+tut,Generic DES-ECB (AES-GCM fallback),decoders/Python/generic_des.py,python,B,experimental_generic_des_ecb_synthetic,true,false,,spdecode.registry
+tvt,TV Tunnel,decoders/JavaScript/rez.js,node,legacy,experimental_final11_synthetic,true,false,,decoders.json
+utn,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+uwu,UWU Tunnel,decoders/Python/uwu.py,python,legacy,experimental_batch10_synthetic,true,false,,decoders.json
+v2i,V2Ray Injector,decoders/Python/multides.py,python,legacy,experimental_batch15_synthetic,true,false,,decoders.json
+vel,VEL TUNNEL,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+vlx,VLX TUNNEL,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+vmx,Generic DES-ECB (AES-GCM fallback),decoders/Python/generic_des.py,python,B,experimental_generic_des_ecb_synthetic,true,false,,spdecode.registry
+vn7,VN7,decoders/Python/vn7.py,python,F,experimental_independent_9_engines_synthetic,true,false,,spdecode.registry
+vpc,Generic DES-ECB (AES-GCM fallback),decoders/Python/generic_des.py,python,B,experimental_generic_des_ecb_synthetic,true,false,,spdecode.registry
+wcm,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+wyr,WyrVPN,decoders/Python/wyrvpn.py,python,E,experimental_special_13_engines_synthetic,true,false,,spdecode.registry
+xtp,XTProy,decoders/Python/xtproy.py,python,legacy,experimental_final11_synthetic,true,false,,decoders.json
+xui,XUI Tunnel,decoders/Python/xui.py,python,legacy,experimental_batch10_synthetic,true,false,,decoders.json
+ziv,ZIVPN,decoders/Python/ziv.py,python,legacy,experimental_batch15_synthetic,true,false,,decoders.json
+ai,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+ar,AR Pro / MSY,decoders/Python/ar_pro.py,python,E,experimental_special_13_engines_synthetic,true,false,,spdecode.registry
+at,ASH tunnel,decoders/Python/at.py,python,legacy,experimental_batch20_synthetic,true,false,,decoders.json
+ec,EC Tunnel,decoders/Python/ec.py,python,E,experimental_special_13_engines_synthetic,true,false,,spdecode.registry
+fɴ,FN Tunnel,decoders/Python/multides.py,python,legacy,experimental_batch15_synthetic,true,false,,decoders.json
+gv,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+hc,HTTP Custom,decoders/Python/HTTPCUSTOM.py,python,legacy,experimental_final7_synthetic_subset,true,false,,decoders.json
+hq,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+ht,HTTP Tweak,decoders/Python/HTTPTWEAK.py,python,legacy,experimental_final_extra4_synthetic,true,false,,decoders.json
+it,Generic DES-ECB (AES-GCM fallback),decoders/Python/generic_des.py,python,B,experimental_generic_des_ecb_synthetic,true,false,,spdecode.registry
+kt,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+lt,LTM Tunnel,decoders/Python/ltm.py,python,F,experimental_independent_9_engines_synthetic,true,false,,spdecode.registry
+mc,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+md,MD TUNNEL,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+mm,MM TUNNEL,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+n4,N4 VPN Pro,decoders/Python/n4.py,python,F,experimental_independent_9_engines_synthetic,true,false,,spdecode.registry
+nm,NetMod,decoders/Python/nms.py,python,legacy,experimental_batch20_synthetic,true,false,,decoders.json
+nt,Net Tunnel,decoders/Python/nt.py,python,legacy,experimental_batch20_synthetic,true,false,,decoders.json
+nx,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry
+pb,XrayPB,decoders/Python/pb.py,python,legacy,experimental_batch20_synthetic,true,false,,decoders.json
+ry,RY TUNNEL,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+st,Sentinel Tunnel,decoders/Python/sentinel.py,python,E,experimental_special_13_engines_synthetic,true,false,,spdecode.registry
+tx,TX TUNNEL,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+ut,ULTRA TUNNEL,decoders/Python/ultra.py,python,C,experimental_ultra_sandok_argon2id_synthetic,true,false,,spdecode.registry
+v2,e-V2Ray,decoders/Python/EV2RAY.py,python,legacy,prototype_two_synthetic_cases,true,false,,decoders.json
+wt,Generic AES-GCM / PBKDF2,decoders/Python/generic_aes.py,python,B,experimental_generic_aes_gcm_synthetic,true,false,,spdecode.registry

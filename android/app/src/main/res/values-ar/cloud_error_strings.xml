@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_offline">لا يوجد اتصال بالإنترنت. اتصل بالشبكة وأعد المحاولة.</string>
+    <string name="cloud_failure_network">تعذر الاتصال بالخدمة. تحقق من اتصالك.</string>
+    <string name="cloud_failure_tls">فشل الاتصال الآمن. تحقق من الشبكة ووقت الجهاز.</string>
+    <string name="cloud_failure_timeout">انتهت مهلة الطلب. حاول مجددًا باتصال مستقر.</string>
+    <string name="cloud_failure_integrity">تعذر التحقق من التطبيق. حدّثه أو استخدم وصول QA المصرح به.</string>
+    <string name="cloud_failure_qa_code">رمز QA غير موجود. افتح SP-DECODE QA وأدخل رمزًا جديدًا.</string>
+    <string name="cloud_failure_session">انتهت الجلسة أو تعذر التحقق منها. أعد المحاولة.</string>
+    <string name="cloud_failure_forbidden">تم رفض الوصول. تحقق من صلاحياتك.</string>
+    <string name="cloud_failure_qa">وصول QA غير صالح أو معطّل أو منتهي الصلاحية.</string>
+    <string name="cloud_failure_consent">وافق على الشروط وإشعار الخصوصية الحاليين.</string>
+    <string name="cloud_failure_rate">طلبات كثيرة جدًا. انتظر قبل إعادة المحاولة.</string>
+    <string name="cloud_failure_large">الملف أو النتيجة أكبر من الحد المسموح.</string>
+    <string name="cloud_failure_invalid">الملف أو الطلب غير صالح. تحقق من التنسيق.</string>
+    <string name="cloud_failure_unsupported">هذا التنسيق غير متوفر على الخادم.</string>
+    <string name="cloud_failure_decode">تعذر معالجة إصدار هذا الملف، وليس بالضرورة أن يكون تالفًا.</string>
+    <string name="cloud_failure_unavailable">الخدمة غير متاحة مؤقتًا. حاول لاحقًا.</string>
+    <string name="cloud_failure_remote">أعاد المزود البعيد استجابة غير صالحة.</string>
+    <string name="cloud_failure_credentials">كلمة المرور أو HWID غير صحيح. تحقق من البيانات.</string>
+    <string name="cloud_failure_password">هذا الملف المحمي يتطلب كلمة مرور.</string>
+    <string name="cloud_failure_hwid">هذا الملف المحمي يتطلب HWID.</string>
+    <string name="cloud_failure_both">هذا الملف المحمي يتطلب كلمة مرور وHWID.</string>
+    <string name="cloud_failure_not_found">المورد المطلوب غير موجود أو غير متاح.</string>
+    <string name="cloud_failure_conflict">يتعارض الطلب مع الحالة الحالية. أعد المحاولة.</string>
+    <string name="cloud_failure_partial">النتيجة ناقصة أو غير صالحة ولن يتم عرضها.</string>
+    <string name="cloud_failure_general">تعذر إكمال العملية. حاول مجددًا أو اتصل بالدعم.</string>
+    <string name="cloud_failure_notice_title">تعذر إكمال الطلب</string>
+</resources>

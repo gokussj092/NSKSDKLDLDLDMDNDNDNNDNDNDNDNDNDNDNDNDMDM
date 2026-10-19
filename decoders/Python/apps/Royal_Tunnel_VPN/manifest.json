@@ -1,0 +1,54 @@
+{
+  "id": "royal-tunnel",
+  "name": "Royal Tunnel VPN",
+  "package": "kd.app.royaltunnelplus",
+  "engine": "python-royal-7-native-cbc-gcm-catalog-xxtea-cfb-cbc",
+  "engineVersion": 1,
+  "compatibleVersions": [
+    "7.0"
+  ],
+  "versionCode": 7,
+  "files": {
+    "entrypoint": "file_decoder.py",
+    "extensions": [
+      "roy"
+    ],
+    "cloudPhase": "C8",
+    "validation": "original APK exporter/importer and original native framing; synthetic profiles; independent real export not supplied",
+    "exporterCertified": false,
+    "legacyXtpUnchanged": true,
+    "legacyCloudCompatibility": "separate dispatch by distinct legacy Unicode alphabet; no fallback after modern decode errors"
+  },
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "royal-tunnel",
+    "validation": "complete built-in JSON parity with original Java XXTEA and independent Java JCE fields",
+    "validatedOn": "2026-10-19",
+    "localServersObserved": 27,
+    "localTweaksObserved": 100,
+    "localProtectedFields": 1485,
+    "remoteValidation": "HTTP 200 HTML Site Unavailable, not an encrypted catalog",
+    "publicRegistrationEnabled": true,
+    "deploymentEnabledByDefault": false,
+    "publicDecodeEnabled": false,
+    "remoteBrokerEnabled": false,
+    "publicCatalogVersion": 6,
+    "publicDecodePending": [
+      "live catalog JSON parity"
+    ]
+  },
+  "icon": {
+    "file": "Royal_Tunnel_VPN.png",
+    "source": "base.apk:res/drawable/icon.png",
+    "width": 720,
+    "height": 718,
+    "bytes": 415664,
+    "sha256": "d5b0acadb3759da52c90cd45a671e264ed98b58e5c838d496e6999b5e1198309",
+    "policy": "preserve original bytes; byte size is not an exclusion; Android samples display only"
+  },
+  "dependencies": [
+    "Python >=3.10",
+    "pycryptodome"
+  ],
+  "sourceApkSha256": "008bffc727c3dcde94b7f9d01afd82f1753f7133541c34241dd0f37847b4f1eb"
+}
