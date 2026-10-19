@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import os
 import json
+import importlib.util
 import tempfile
 import unittest
 from pathlib import Path
@@ -33,6 +34,8 @@ class FileEngineTests(unittest.TestCase):
                 decode_file("tls", payload)
             self.assertEqual(caught.exception.code, code)
 
+    @unittest.skipUnless(importlib.util.find_spec("Crypto") is not None,
+                         "PyCryptodome absent in dependency-free C1 checks")
     def test_signed_npvs_worker_matches_source_decoder(self):
         """Actual signed v5 bytes, through the Cloud child-process adapter."""
         from scripts.android_npvs_fixture_export import export
