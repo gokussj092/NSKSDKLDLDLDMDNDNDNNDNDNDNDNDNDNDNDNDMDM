@@ -240,3 +240,50 @@ global sigue desactivado por defecto. Instalar el cliente con la nueva política
 antes de activar el catálogo con imágenes grandes: el cliente anterior conserva
 su límite y no se corrige al actualizar solo el servidor. No se ha desplegado,
 fusionado ni publicado una nueva APK en este trabajo.
+
+## AC TUNNEL VPN 1.4 — versión pública 7
+
+Paquete `com.boss.actunnelvpn`, versionCode 14. Se añade
+`decoders/Python/apps/AC_TUNNEL_VPN/` con `file_decoder.py`,
+`server_catalog_decoder.py`, `codec.py`, dependencias, README, TESTING, manifest
+/PNG original. El análisis nuevo del Java y `libovpn3.so` verifica la semilla,
+sal, IV, suma/resta 2 del tipo 0, XXTEA personalizado y Threefish con tweak
+`[índice,0]`. Usuario/contraseña usan Base64 normal + XXTEA + AES-256-CBC con
+IV incluido, PBKDF2-SHA256/100000. Se reutilizan las primitivas RENZ intactas.
+
+El perfil real `.actun` lleva `actunnelvpn://`. El lector actualizado usa campos
+/ubicaciones demostrados por los consumidores Java y conserva JSON completo,
+Unicode, tipos, PIN/caducidad/bloqueos y cadenas desconocidas. Evita recortar
+ceros legítimos del criptograma AES en el relleno de Threefish. La ruta C8 se
+selecciona por el prefijo original antes del descifrado. `.actun` histórico sin
+prefijo conserva el motor C0; `.actunnelvpn` y el alias `actunnel://` permanecen
+intactos. Para texto `actunnelvpn://`, un sobre con `Name` selecciona el formato
+real; documentos genéricos sin ese campo mantienen el resultado RENZ. Un fallo
+de un perfil moderno no provoca reintento con otro algoritmo.
+
+El catálogo remoto se valida completo: **24 servidores / 1248 redes**, frente a
+**1 / 1** del recurso local. El oráculo ARM64 contrasta todos los 6319 campos
+cifrados no vacíos, las listas completas y metadatos; también se verifican los
+12 campos locales. Ambos cruzan el subproceso Cloud con JSON completo idéntico,
+`isPartial=false`. Derivación y 12 vectores adicionales contrastados con OpenSSL.
+El CLI sin argumentos descarga la URL fija e imprime todos los datos, sin APK.
+Las actualizaciones `.js`/`.rj` se leen offline con el mismo lector del catálogo.
+
+Las referencias `acvpn://` se decodifican únicamente a identificador offline,
+con `profileDownloaded=false`. No se incorporan ni usan credenciales GitHub
+incluidas en el APK para resolver perfiles de cuenta. No se recibió un export
+`.actun` independiente; pruebas del formato con datos sintéticos y primitivas
+nativas originales, `exporterCertified=false`.
+
+Proveedor fijo `ac-tunnel-vpn` en bridge privado, broker HTTPS, OpenAPI y ficha
+pública. PNG original idéntico de 188312 bytes. **Versión mínima 7**, monotónica;
+QA incrementa sobre el máximo entre esa versión y el override previo. Siguen
+240 rutas C0 y 246 efectivas C8 porque `.actun` ya existía. Los interruptores
+siguen desactivados por defecto; ningún cambio Android, diseño web, despliegue,
+fusión o publicación APK en esta incorporación.
+
+Verificación local de esta incorporación: **633 pruebas Python, 9 omisiones
+existentes**; worker **11**, VPS/QA **39**, gates Cloud **4**, Node **64** y build
+Next.js correctos. El bundle incluye `renz.py` exacto y se prueba fuera del
+repositorio sin `PYTHONPATH` heredado. No se publican APK, bibliotecas nativas,
+catálogos reales ni credenciales de cuenta.

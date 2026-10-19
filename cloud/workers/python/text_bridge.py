@@ -39,6 +39,13 @@ def dispatch(text: str) -> str | None:
         if lowered.startswith(prefix):
             from_module = importlib.import_module(module_name)
             return from_module.run(value.encode("utf-8"))
+    # AC's verified export has a Name field; older generic RENZ vectors retain
+    # their original wrapper/engine. A corrupt modern profile never falls back.
+    if lowered.startswith("actunnelvpn://"):
+        module = importlib.import_module("decoders.Python.apps.AC_TUNNEL_VPN.file_decoder")
+        result = module.decode_text(value)
+        if result is not None:
+            return result
     # C8 isolated original application codecs. These prefixes are unambiguous.
     c8_links = (
         ("ua://", "decoders.Python.apps.Ultra_Custom.ultra_custom_52"),

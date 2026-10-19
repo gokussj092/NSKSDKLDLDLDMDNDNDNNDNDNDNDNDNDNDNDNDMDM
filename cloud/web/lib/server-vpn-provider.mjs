@@ -9,6 +9,10 @@ import https from "node:https";
 import {publicIpv4} from "./c35-provider.mjs";
 
 const PROVIDERS = Object.freeze({
+  "ac-tunnel-vpn": {
+    url:"https://rttunnelv2ray.xyz/api/files/app?json=7ef7a9a142eb1f77a56f",
+    agent:"AC TUNNEL VPN/1.4",
+  },
   "24clan-green": {
     url:"https://24clanvpn.com/updater/6d5d4a5fb3d053300c1a89f85dbf05",
     agent:"24clan VPN Green/3.3",

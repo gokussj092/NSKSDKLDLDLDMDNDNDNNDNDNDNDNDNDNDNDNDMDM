@@ -881,7 +881,8 @@
                       "my-tunnel-proxy",
                       "robust-tunnel",
                       "trv-tunnel",
-                      "4u-tunnel-lite"
+                      "4u-tunnel-lite",
+                      "ac-tunnel-vpn"
                     ]
                   },
                   "consent": {

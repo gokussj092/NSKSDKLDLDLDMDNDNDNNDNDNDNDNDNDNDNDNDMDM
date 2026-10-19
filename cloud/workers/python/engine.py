@@ -80,6 +80,7 @@ _C8_FILE_ENGINES = {
     "hxt": ("decoders/Python/apps/HX_Tunnel_VPN/HX_Tunnel_VPN_archivos.py", "HX Tunnel VPN"),
     "mtp": ("decoders/Python/apps/My_Tunnel_Proxy/file_decoder.py", "My Tunnel Proxy"),
     "roy": ("decoders/Python/apps/Royal_Tunnel_VPN/file_decoder.py", "Royal Tunnel VPN 7.0"),
+    "actun": ("decoders/Python/apps/AC_TUNNEL_VPN/file_decoder.py", "AC TUNNEL VPN 1.4"),
     "4ulite": ("decoders/Python/apps/4U_TUNNEL_LITE/file_decoder.py", "4U TUNNEL LITE"),
 }
 
@@ -143,6 +144,14 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
     if not isinstance(timeout, int) or timeout < 1 or timeout > TIMEOUT_SECONDS:
         raise DecodeFailure("INVALID_REQUEST")
     engine = load_runtime_file_engines()[suffix]
+    # The APK exports prefixed .actun; keep historical raw RENZ .actun inputs.
+    if suffix == "actun":
+        try:
+            modern = contents.decode("utf-8-sig").strip().startswith("actunnelvpn://")
+        except UnicodeError:
+            modern = False
+        if not modern:
+            engine = load_file_engines()["actun"]
     if suffix == "roy" and _is_legacy_roy(contents):
         engine = load_file_engines()["roy"]
     if credentials is not None:
@@ -234,7 +243,7 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
 
 def decode_provider_catalog(provider_id: str, contents: bytes) -> dict:
     """One fixed provider codec, child-isolated; broker performs all network I/O."""
-    if provider_id not in ("24clan-green", "hx-tunnel", "mkk-hyper", "my-tunnel-proxy", "robust-tunnel", "royal-tunnel", "trv-tunnel", "4u-tunnel-lite"):
+    if provider_id not in ("24clan-green", "hx-tunnel", "mkk-hyper", "my-tunnel-proxy", "robust-tunnel", "royal-tunnel", "trv-tunnel", "4u-tunnel-lite", "ac-tunnel-vpn"):
         raise DecodeFailure("UNSUPPORTED_FORMAT")
     if not isinstance(contents, bytes) or not contents:
         raise DecodeFailure("INVALID_INPUT")

@@ -1,0 +1,58 @@
+{
+  "id": "ac-tunnel-vpn",
+  "name": "AC TUNNEL VPN",
+  "package": "com.boss.actunnelvpn",
+  "engine": "python-shared-renz-primitives-ac-1.4",
+  "engineVersion": 1,
+  "compatibleVersions": [
+    "1.4"
+  ],
+  "versionCode": 14,
+  "files": {
+    "entrypoint": "file_decoder.py",
+    "extensions": [
+      "actun"
+    ],
+    "textPrefixes": [
+      "actunnelvpn://"
+    ],
+    "cloudReferencePrefix": "acvpn://",
+    "cloudReferenceResolution": "offline-pointer-only",
+    "validation": "original ARM64 primitives and synthetic profiles; independent real export not supplied",
+    "exporterCertified": false,
+    "legacyCompatibility": "raw .actun and generic text documents without Name retain RENZ; .actunnelvpn and actunnel:// unchanged"
+  },
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "ac-tunnel-vpn",
+    "offlineExtensions": [
+      "js",
+      "rj"
+    ],
+    "validation": "complete local and live JSON parity with original ARM64 XXTEA and Threefish; OpenSSL key derivation cross-check",
+    "validatedOn": "2026-10-19",
+    "localServersObserved": 1,
+    "localNetworksObserved": 1,
+    "remoteServersObserved": 24,
+    "remoteNetworksObserved": 1248,
+    "publicCatalogVersion": 7,
+    "deploymentEnabledByDefault": false
+  },
+  "icon": {
+    "file": "AC_TUNNEL_VPN.png",
+    "source": "base.apk:res/o/cp.png",
+    "width": 512,
+    "height": 512,
+    "bytes": 188312,
+    "sha256": "daa281539ca616d5cab7cf674b8ec6e157dd765e2b4907620006ea82567c5d45",
+    "policy": "preserve original bytes without application-specific size exclusion"
+  },
+  "dependencies": [
+    "Python >=3.10",
+    "pycryptodome==3.23.0",
+    "decoders/Python/renz.py (unchanged; local renz.py in download bundle)"
+  ],
+  "sharedPrimitiveSha256": "e654a136e44da7aee01a5e264acfb42f61be6ea3f63873c00b8523f3b3c21da6",
+  "sourceApkSha256": "4a537ae26ec1c60dfeba02e33e2f8502cd7f5a06c75887ca2bb768685e0c0b56",
+  "sourceNativeSha256": "e896648449f786ebca76b65bc0828f59b58dec5343ff140177e1ed4f4781cbf2"
+}

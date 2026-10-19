@@ -28,9 +28,9 @@ class C8WorkerIntegrationTests(unittest.TestCase):
         self.assertEqual(len(base),240)
         self.assertEqual(len(extended),246)
         self.assertEqual({k: v for k,v in extended.items() if k not in
-                          {"rt","gol","ua","nvpnc","green","hxt","mtp","roy","4ulite"}},
-                         {k: v for k,v in base.items() if k not in {"hxt","roy","4ulite"}})
-        for ext in ("rt","gol","ua","nvpnc","green","hxt","mtp","roy","4ulite"):
+                          {"rt","gol","ua","nvpnc","green","hxt","mtp","roy","4ulite","actun"}},
+                         {k: v for k,v in base.items() if k not in {"hxt","roy","4ulite","actun"}})
+        for ext in ("rt","gol","ua","nvpnc","green","hxt","mtp","roy","4ulite","actun"):
             self.assertEqual(extended[ext]["phase"],"C8")
             self.assertIn("/apps/",extended[ext]["source"])
         self.assertNotEqual(extended["hxt"]["source"],base["hxt"]["source"])

@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 PROVIDERS = {
+    "ac-tunnel-vpn": "decoders.Python.apps.AC_TUNNEL_VPN.server_catalog_decoder",
     "24clan-green": "decoders.Python.apps.24clan_VPN_Green.24clan_VPN_Green",
     "hx-tunnel": "decoders.Python.apps.HX_Tunnel_VPN.HX_Tunnel_VPN",
     "mkk-hyper": "decoders.Python.apps.MKK_Hyper_VPN.MKK_Hyper_VPN",

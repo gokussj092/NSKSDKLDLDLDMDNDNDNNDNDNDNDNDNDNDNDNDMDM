@@ -6,6 +6,7 @@ import {EventEmitter} from "node:events";
 import {downloadVpnCatalog} from "../lib/server-vpn-provider.mjs";
 
 for(const provider of [
+  {id:"ac-tunnel-vpn",host:"rttunnelv2ray.xyz",path:"/api/files/app",query:"?json=7ef7a9a142eb1f77a56f",agent:"AC TUNNEL VPN/1.4"},
   {id:"my-tunnel-proxy",host:"mfmpro.xyz",path:"/api/app",query:"?json=3c9a2a29f3a4180271da",agent:"My Tunnel Proxy/2.3"},
   {id:"robust-tunnel",host:"xkingvpn.xyz",path:"/api/files/app",query:"?json=beae113e6e46d674a068",agent:"Robust Tunnel VPN/isvsoft 16.4.7"},
   {id:"trv-tunnel",host:"trmrelay.store",path:"/updater/b67b57c85f49c34ee09fd87f2d6915",query:"",agent:"TRV TUNNEL/2.4"},
