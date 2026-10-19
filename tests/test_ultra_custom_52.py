@@ -172,7 +172,7 @@ class UltraCustom52Tests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             script = root / "ultra_custom_52.py"
-            script.write_bytes((ROOT / "decoders/Python/ultra_custom_52.py").read_bytes())
+            script.write_bytes((ROOT / "decoders/Python/apps/Ultra_Custom/ultra_custom_52.py").read_bytes())
             source, pw, output = root/"profile.ua", root/"password.txt", root/"result.json"
             source.write_text(VECTORS["single-password"]["data"])
             pw.write_bytes(PASSWORD.encode()+b"\r\n")

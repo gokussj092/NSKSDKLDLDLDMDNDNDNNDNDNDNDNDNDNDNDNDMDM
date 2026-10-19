@@ -259,7 +259,7 @@ class NeutroVpnTests(unittest.TestCase):
     def test_cli_standalone_profile_password_file_and_text(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);script=root/"neutro_vpn.py";source=root/"profile.nvpnc";pw=root/"password.txt";out=root/"out.json"
-            shutil.copyfile(ROOT/"decoders/Python/neutro_vpn.py",script)
+            shutil.copyfile(ROOT/"decoders/Python/apps/Neutro_VPN/neutro_vpn.py",script)
             source.write_text(FIXTURE["protected"]);pw.write_bytes(FIXTURE["password"].encode()+b"\r\n")
             proc=subprocess.run([sys.executable,str(script),str(source),"--password-file",str(pw),"-o",str(out)],cwd=root,capture_output=True,text=True)
             self.assertEqual(proc.returncode,0,proc.stderr)

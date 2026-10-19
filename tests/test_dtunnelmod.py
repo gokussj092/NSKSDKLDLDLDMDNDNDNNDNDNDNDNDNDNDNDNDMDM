@@ -203,7 +203,7 @@ class DTunnelModTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             script,source,output = root/"dtunnelmod.py",root/"response.txt",root/"result.json"
-            shutil.copyfile(ROOT/"decoders/Python/dtunnelmod.py",script)
+            shutil.copyfile(ROOT/"decoders/Python/apps/DTunnel_Mod/dtunnelmod.py",script)
             source.write_text(VECTORS["catalog"]["data"])
             proc = subprocess.run([sys.executable,str(script),str(source),"-o",str(output)],cwd=root,capture_output=True,text=True)
             self.assertEqual(proc.returncode,0,proc.stderr)

@@ -91,7 +91,7 @@ class VpnPlusPeruTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             script = root / "vpn_plus_peru.py"
-            script.write_bytes((ROOT / "decoders/Python/vpn_plus_peru.py").read_bytes())
+            script.write_bytes((ROOT / "decoders/Python/apps/VPN_PLUS_PERU/vpn_plus_peru.py").read_bytes())
             source = root / "test config.gol"
             source.write_text(FIXTURE["vectors"][2]["data"])
             proc = subprocess.run([sys.executable, str(script), str(source)], cwd=root,
