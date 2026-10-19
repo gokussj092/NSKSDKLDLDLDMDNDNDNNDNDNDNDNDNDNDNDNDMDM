@@ -274,7 +274,7 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
             require(from>=0 && to>from) { "QA provider section unavailable: " + start }
             var section=activity.substring(from,to)
             // Keep error codes local to QA UI and never stringify exceptions.
-            section=replaceOnce(section,"catch(_:Exception) {\\n                if(generation==importGeneration) {",
+            section=replaceOnce(section,"catch(_:Exception) {\n                if(generation==importGeneration) {",
                 "catch(error:Exception) {\\n                if(generation==importGeneration) {")
             section=replaceOnce(section,
                 "message=getString(R.string.nur_servers_failed)",
@@ -315,7 +315,7 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
                         if(filename.endsWith(".npvs",ignoreCase=true))""")
         batch=replaceOnce(batch,"                    message=when {",
             """                    val qaDetails=if(BuildConfig.SPDECODE_QA_BUILD && qaFailures.isNotEmpty())
-                        "\\nQA: " + qaFailures.take(12).joinToString(" | ") else ""
+                        "\nQA: " + qaFailures.take(12).joinToString(" | ") else ""
                     message=when {""")
         // Restrict these summary changes to the batch section only.
         batch=batch.replace("+summary", "+summary+qaDetails")
