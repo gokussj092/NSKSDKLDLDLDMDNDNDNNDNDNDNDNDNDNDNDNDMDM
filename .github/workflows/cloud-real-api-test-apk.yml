@@ -72,9 +72,9 @@ jobs:
           import re
           file=Path("android/app/build.gradle.kts")
           src=file.read_text()
-          src,n=re.subn(r'versionCode = \d+', 'versionCode = 30', src)
+          src,n=re.subn(r'versionCode = \d+', 'versionCode = 31', src)
           assert n==1
-          src,n=re.subn(r'versionName = "[^"]+"', 'versionName = "1.2.4-qa"', src)
+          src,n=re.subn(r'versionName = "[^"]+"', 'versionName = "1.2.5-qa"', src)
           assert n==1
           file.write_text(src)
           PY
@@ -134,6 +134,7 @@ jobs:
             exit 1
           fi
           python3 -m unittest discover -s tests -p 'test_cloud_history_actions.py'
+          python3 -m unittest discover -s tests -p 'test_cloud_c8_android_input_routes.py'
       - name: Validate APK and native HTTPS origin
         run: |
           set -euo pipefail
@@ -143,8 +144,8 @@ jobs:
           "$ANDROID_HOME/build-tools/35.0.0/zipalign" -c -P 16 -v 4 "$APK" >/dev/null
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" > "$RUNNER_TEMP/qa-badging.txt"
           grep -F "package: name='com.ghostdeveloper.spdecode'" "$RUNNER_TEMP/qa-badging.txt"
-          grep -F "versionName='1.2.4-qa'" "$RUNNER_TEMP/qa-badging.txt"
-          grep -F "versionCode='30'" "$RUNNER_TEMP/qa-badging.txt"
+          grep -F "versionName='1.2.5-qa'" "$RUNNER_TEMP/qa-badging.txt"
+          grep -F "versionCode='31'" "$RUNNER_TEMP/qa-badging.txt"
           python3 tests/cloud_c5_apk_audit.py "$APK"
           python3 - <<'PY'
           from zipfile import ZipFile
@@ -172,14 +173,14 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p dist
-          cp android/app/build/outputs/apk/release/app-release.apk dist/SP-DECODE-v1.2.4-qa30-CLOUD-REAL-API.apk
+          cp android/app/build/outputs/apk/release/app-release.apk dist/SP-DECODE-v1.2.5-qa31-CLOUD-REAL-API.apk
           (cd dist && sha256sum *.apk > SHA256SUMS.txt)
           {
             echo "Channel: QA only; no Play Store release or production claim"
             echo "API: https://api.spdecode.xyz"
             echo "Package: com.ghostdeveloper.spdecode"
-            echo "VersionName: 1.2.4-qa"
-            echo "VersionCode: 30"
+            echo "VersionName: 1.2.5-qa"
+            echo "VersionCode: 31"
             echo "Source commit: $GITHUB_SHA"
             echo "Signing: existing repository permanent key"
             echo "QA: Settings > Cloud QA > enter temporary code from sudo spdecode qa start"
@@ -188,7 +189,7 @@ jobs:
       - name: Upload installable signed QA APK (only GitHub Actions artifact)
         uses: actions/upload-artifact@v4
         with:
-          name: SP-DECODE-Cloud-v1.2.4-qa30-REAL-API
+          name: SP-DECODE-Cloud-v1.2.5-qa31-REAL-API
           path: dist/
           if-no-files-found: error
           retention-days: 30
