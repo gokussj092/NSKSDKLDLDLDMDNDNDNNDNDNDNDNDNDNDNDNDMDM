@@ -86,6 +86,9 @@ fun SpDecodeApp(
     onDecodeServerCatalog:()->Unit={},
     onDecodeServerApp:(String)->Unit={}, 
     serverVpnApps:List<ServerVpnApp> = emptyList(),
+    serverVpnLoading:Boolean=false,
+    serverVpnUnavailable:Boolean=false,
+    onRefreshServerVpn:()->Unit={},
     whatsNew:Boolean=false,
     onDismissWhatsNew:()->Unit={},
     guideStep:Int?=null,
@@ -116,7 +119,8 @@ fun SpDecodeApp(
                         highlightGuide=if(!whatsNew && !busy)guideStep else null)
                     1->HistoryScreen(session,onSelect,onDeleteSelected,onClear,onImportMultiple,onFavorite)
                     2->FormatsScreen()
-                    3->ServerVpnScreen(busy,serverVpnApps,onDecodeServerCatalog,onDecodeServerApp)
+                    3->ServerVpnScreen(busy,serverVpnApps,serverVpnLoading,serverVpnUnavailable,
+                        onDecodeServerCatalog,onDecodeServerApp,onRefreshServerVpn)
                     else->FunctionalSettingsPanel(selectedLanguage,hideCredentials,
                         onLanguage,onMaskCredentials,onClear,onExternalLink,
                         retentionDays,onRetention,onShowGuide=onGuideRestart)
@@ -744,7 +748,15 @@ private fun FormatsScreen() {
  * The NUR logo slot will use the supplied app artwork when available.
  */
 @Composable
-private fun ServerVpnScreen(busy:Boolean,apps:List<ServerVpnApp>,onDecodeCatalog:()->Unit,onDecodeApp:(String)->Unit) {
+private fun ServerVpnScreen(
+    busy:Boolean,
+    apps:List<ServerVpnApp>,
+    catalogLoading:Boolean,
+    catalogUnavailable:Boolean,
+    onDecodeCatalog:()->Unit,
+    onDecodeApp:(String)->Unit,
+    onRefresh:()->Unit,
+) {
     var selected by rememberSaveable { mutableStateOf(false) }
     var selectedId by rememberSaveable { mutableStateOf("") }
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())
@@ -755,8 +767,21 @@ private fun ServerVpnScreen(busy:Boolean,apps:List<ServerVpnApp>,onDecodeCatalog
         Text(stringResource(R.string.server_vpn_description),fontSize=13.sp,
             lineHeight=20.sp,color=Secondary)
         if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
-            if(apps.isEmpty()) Text(stringResource(R.string.server_vpn_loading),
-                color=Secondary,fontSize=13.sp)
+            if(apps.isEmpty()) {
+                Text(stringResource(if(catalogLoading) R.string.server_vpn_loading
+                    else R.string.server_vpn_unavailable),
+                    color=Secondary,fontSize=13.sp)
+                if(catalogUnavailable && !catalogLoading) {
+                    Button(onClick=onRefresh,enabled=!busy,
+                        modifier=Modifier.fillMaxWidth(),
+                        shape=RoundedCornerShape(13.dp),
+                        colors=ButtonDefaults.buttonColors(containerColor=Raised,contentColor=White)) {
+                        Icon(Icons.Outlined.Refresh,null,modifier=Modifier.size(18.dp))
+                        Spacer(Modifier.width(8.dp))
+                        Text(stringResource(R.string.server_vpn_retry))
+                    }
+                }
+            }
             apps.forEach { app ->
                 val expanded=selectedId==app.id
                 Surface(modifier=Modifier.fillMaxWidth().clickable { selectedId=if(expanded)"" else app.id },

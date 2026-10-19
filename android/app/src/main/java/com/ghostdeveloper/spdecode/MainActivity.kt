@@ -71,6 +71,8 @@ class MainActivity : ComponentActivity() {
     private var serverVpnApps by mutableStateOf<List<ServerVpnApp>>(emptyList())
     private var showCloudLegal by mutableStateOf(false)
     private var serverVpnRefresh:Job?=null
+    private var serverVpnLoading by mutableStateOf(false)
+    private var serverVpnUnavailable by mutableStateOf(false)
     private val privateCredentialVault by lazy { DevicePrivateCredentialVault(this) }
     private data class PendingCredentialImport(
         val uri:Uri,
@@ -117,15 +119,21 @@ class MainActivity : ComponentActivity() {
         set(value){sessionVm.reveal=value}
     private var stagedExport:String?=null
 
-    private fun refreshServerVpn() {
+    private fun refreshServerVpn(force:Boolean=false) {
         if(!BuildConfig.SPDECODE_CLOUD_ENABLED || showCloudLegal ||
             serverVpnRefresh?.isActive==true)return
+        serverVpnLoading=true
+        serverVpnUnavailable=false
         serverVpnRefresh=scope.launch {
             try {
                 serverVpnApps=serverVpnCatalog.cached()
-                serverVpnApps=serverVpnCatalog.refreshIfDue()
+                serverVpnApps=serverVpnCatalog.refreshIfDue(force=force)
             }catch(error:CancellationException){throw error}
-             catch(_:Exception){ /* Keep the last authenticated local snapshot. */ }
+             catch(_:Exception){ /* An authenticated cached snapshot remains usable. */ }
+            finally {
+                serverVpnUnavailable=serverVpnApps.isEmpty()
+                serverVpnLoading=false
+            }
         }
     }
 
@@ -314,6 +322,9 @@ class MainActivity : ComponentActivity() {
                 onDecodeServerCatalog={decodeNurServers()},
                 onDecodeServerApp={id->decodeServerVpnProvider(id)},
                 serverVpnApps=serverVpnApps,
+                serverVpnLoading=serverVpnLoading,
+                serverVpnUnavailable=serverVpnUnavailable,
+                onRefreshServerVpn={refreshServerVpn(force=true)},
                 whatsNew=showWhatsNew,
                 onDismissWhatsNew={
                     settings.edit().putLong("last_seen_whats_new_version",runningVersionCode).apply()
