@@ -11,7 +11,7 @@ export const metadata={
   openGraph:{type:"website",locale:"es_MX",siteName:"SP-DECODE Cloud",
     title:"SP-DECODE Cloud",description:"La próxima arquitectura online de SP-DECODE para Android."},
 };
-const links=[["Inicio","/"],["Funciones","/features"],["Documentación","/docs"],["Privacidad","/privacy"],["Estado","/status"]];
+const links=[["Inicio","/"],["Funciones","/features"],["Documentación","/docs"],["Términos","/terms"],["Privacidad","/privacy"],["Estado","/status"]];
 export default function RootLayout({children}){
   return <html lang="es"><body>
     <a className="skip" href="#main">Saltar al contenido</a>
@@ -35,7 +35,7 @@ export default function RootLayout({children}){
           <p><a href="mailto:soporte@spdecode.xyz">soporte@spdecode.xyz</a></p></div>
         <div className="footer-links">
           <Link href="/features">Funciones</Link><Link href="/docs">Documentación</Link>
-          <Link href="/privacy">Privacidad</Link><Link href="/status">Estado</Link>
+          <Link href="/terms">Términos</Link><Link href="/privacy">Privacidad</Link><Link href="/status">Estado</Link>
           <Link href="https://panel.spdecode.xyz/admin/login">Administración</Link>
         </div>
       </div>
