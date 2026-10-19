@@ -275,7 +275,7 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
             var section=activity.substring(from,to)
             // Keep error codes local to QA UI and never stringify exceptions.
             section=replaceOnce(section,"catch(_:Exception) {\n                if(generation==importGeneration) {",
-                "catch(error:Exception) {\\n                if(generation==importGeneration) {")
+                "catch(error:Exception) {\n                if(generation==importGeneration) {")
             section=replaceOnce(section,
                 "message=getString(R.string.nur_servers_failed)",
                 """message=getString(R.string.nur_servers_failed) +
