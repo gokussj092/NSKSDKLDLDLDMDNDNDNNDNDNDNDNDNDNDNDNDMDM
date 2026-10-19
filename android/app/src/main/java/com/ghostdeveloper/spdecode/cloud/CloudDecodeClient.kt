@@ -175,4 +175,20 @@ internal class CloudDecodeClient(context: Context) {
 
     suspend fun decodeNurCatalog(): Decoded =
         decode("/api/v1/decode/import/catalog/remote",JSONObject().put("consent",true))
+
+    /** Public presentation metadata only; never contains provider endpoints. */
+    suspend fun serverVpnCatalog(knownVersion:Int): JSONObject =
+        withContext(Dispatchers.IO) {
+            extract(CloudNativeTransport.post("/api/v1/server-vpn/catalog",
+                JSONObject().put("knownVersion",knownVersion)))
+        }
+
+    suspend fun serverVpnIcon(id:String): JSONObject {
+        require(id.matches(Regex("[a-z0-9-]{1,48}")))
+        return withContext(Dispatchers.IO) {
+            extract(CloudNativeTransport.post("/api/v1/server-vpn/icon",
+                JSONObject().put("id",id)))
+        }
+    }
+
 }
