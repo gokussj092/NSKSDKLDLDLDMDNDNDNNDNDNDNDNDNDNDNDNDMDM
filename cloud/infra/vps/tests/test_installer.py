@@ -177,7 +177,10 @@ class VPSInstallerTests(unittest.TestCase):
         self.assertIn("CATALOG_TIMEOUT_SECONDS = 120",engine)
         self.assertIn("timeout: int = CATALOG_TIMEOUT_SECONDS",engine)
         self.assertIn("preexec_fn=partial(_child_limits,CATALOG_TIMEOUT_SECONDS)",engine)
-        self.assertIn('kind==="catalog"?135000:25000',gateway)
+        # Preserve NUR's 135-second bridge budget and extend the same bound
+        # only to the separately allowlisted VPN provider-catalog endpoint.
+        self.assertIn('(kind==="catalog"||kind==="server-vpn")?135000:25000',gateway)
+        self.assertIn('"server-vpn":"import/server-vpn"',gateway)
         self.assertIn("kNurCatalogReadTimeoutMs = 165000",native)
         self.assertIn('path == "/api/v1/decode/import/catalog/remote"',native)
     def test_worker_permissions_are_normalized_for_root_owned_umask_checkout(self):
