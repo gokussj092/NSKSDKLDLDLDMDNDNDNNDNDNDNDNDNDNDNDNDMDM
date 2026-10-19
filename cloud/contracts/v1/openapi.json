@@ -880,7 +880,8 @@
                       "mkk-hyper",
                       "my-tunnel-proxy",
                       "robust-tunnel",
-                      "trv-tunnel"
+                      "trv-tunnel",
+                      "4u-tunnel-lite"
                     ]
                   },
                   "consent": {

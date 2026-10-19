@@ -21,9 +21,9 @@ catálogos reales y resultados privados no se incluyen en Git.
 
 El PNG corresponde a `base.apk:res/drawable/icon.png`, 720 × 718.
 No se sustituyó por `ic_launcher`, que en este APK contiene una marca residual
-diferente. Su exceso de tamaño y la indisponibilidad del catálogo bloquean la
-incorporación al catálogo público. La revisión de Royal no modificó la
-versión pública 4.
+diferente. En la revisión inicial, el tamaño y el endpoint impidieron el alta.
+Por indicación posterior del usuario, la versión pública 6 incluye la ficha
+y el PNG original sin excluirlo por peso; el descifrado remoto sigue desactivado.
 
 ## Paridad independiente
 
@@ -107,6 +107,7 @@ sin calcular transformaciones de conexión `NoobLevel`, `sLevel*`,
 `Jencrypt1` o `Jencryhenx`. Otras versiones requieren otro análisis.
 
 El catálogo remoto debe volver a validarse cuando entregue datos cifrados.
-También hace falta resolver el límite de icono original de 256 KiB antes de
-registrar Royal en el broker, contrato y metadatos públicos. No se afirma
-que el proveedor público esté habilitado ni que el remoto tenga 27 servidores.
+El límite específico de iconos se retiró de backend y del cliente actualizado.
+La ficha y el icono Royal ya constan en los metadatos públicos de versión 6,
+con descifrado desactivado. Broker y contrato de decodificación esperan la
+validación remota. No se atribuyen al remoto los 27 servidores locales.

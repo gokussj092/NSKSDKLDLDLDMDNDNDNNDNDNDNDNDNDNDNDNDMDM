@@ -161,14 +161,15 @@ class RoyalTunnelTests(unittest.TestCase):
         with self.assertRaises(codec.DecodeError):
             catalogs._NoRedirect().redirect_request(None, None, 302, "", {}, "https://other.invalid")
 
-    def test_original_correct_royal_icon_is_preserved_and_public_registration_is_deferred(self):
+    def test_original_correct_royal_icon_is_preserved_and_public_card_is_visible(self):
         data = (APP / "Royal_Tunnel_VPN.png").read_bytes()
         self.assertEqual(hashlib.sha256(data).hexdigest(), "d5b0acadb3759da52c90cd45a671e264ed98b58e5c838d496e6999b5e1198309")
         self.assertGreater(len(data), 256 * 1024)
         manifest = json.loads((APP / "manifest.json").read_text())
-        self.assertFalse(manifest["catalog"]["publicRegistrationEnabled"])
+        self.assertTrue(manifest["catalog"]["publicRegistrationEnabled"])
+        self.assertFalse(manifest["catalog"]["publicDecodeEnabled"])
         self.assertNotIn('"royal-tunnel"', (ROOT / "cloud/web/lib/server-vpn-provider.mjs").read_text())
-        self.assertNotIn('"royal-tunnel"', (ROOT / "cloud/web/lib/server-vpn-catalog.mjs").read_text())
+        self.assertIn('"royal-tunnel"', (ROOT / "cloud/web/lib/server-vpn-catalog.mjs").read_text())
 
     def test_actual_cloud_subprocess_preserves_complete_profile_and_catalog(self):
         sys.path.insert(0, str(ROOT / "cloud/workers/python"))

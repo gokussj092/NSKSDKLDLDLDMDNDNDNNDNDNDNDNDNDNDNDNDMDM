@@ -28,12 +28,14 @@
     "localTweaksObserved": 100,
     "localProtectedFields": 1485,
     "remoteValidation": "HTTP 200 HTML Site Unavailable, not an encrypted catalog",
-    "publicRegistrationEnabled": false,
-    "publicRegistrationPending": [
-      "live catalog JSON parity",
-      "original icon exceeds 256 KiB client limit"
-    ],
-    "deploymentEnabledByDefault": false
+    "publicRegistrationEnabled": true,
+    "deploymentEnabledByDefault": false,
+    "publicDecodeEnabled": false,
+    "remoteBrokerEnabled": false,
+    "publicCatalogVersion": 6,
+    "publicDecodePending": [
+      "live catalog JSON parity"
+    ]
   },
   "icon": {
     "file": "Royal_Tunnel_VPN.png",
@@ -41,7 +43,8 @@
     "width": 720,
     "height": 718,
     "bytes": 415664,
-    "sha256": "d5b0acadb3759da52c90cd45a671e264ed98b58e5c838d496e6999b5e1198309"
+    "sha256": "d5b0acadb3759da52c90cd45a671e264ed98b58e5c838d496e6999b5e1198309",
+    "policy": "preserve original bytes; byte size is not an exclusion; Android samples display only"
   },
   "dependencies": [
     "Python >=3.10",

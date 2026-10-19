@@ -33,6 +33,10 @@ const PROVIDERS = Object.freeze({
     url:"https://trmrelay.store/updater/b67b57c85f49c34ee09fd87f2d6915",
     agent:"TRV TUNNEL/2.4",
   },
+  "4u-tunnel-lite": {
+    url:"https://ctxrelay.online/updater/08f9aa63574a055cffdac66783b05b",
+    agent:"4U TUNNEL LITE/2.2",
+  },
 });
 const MAX_BYTES=8*1024*1024;
 const DEADLINE_MS=30000;

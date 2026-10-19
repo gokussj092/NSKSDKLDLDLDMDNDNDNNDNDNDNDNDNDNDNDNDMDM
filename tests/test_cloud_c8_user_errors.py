@@ -58,7 +58,9 @@ class CloudUserErrorsContracts(unittest.TestCase):
         self.assertIn("decoders/Python/apps/",guide)
         self.assertIn("catalog_vpn_bridge.py",guide)
         self.assertIn("backend Cloud",guide)
-        self.assertIn("No modifiques el APK Android",guide)
+        self.assertIn("No modifiques el diseño Android",guide)
+        self.assertIn("No incluir en el APK métodos de descifrado",guide)
+        self.assertIn("ajustar exclusivamente carga",guide)
 
 if __name__=="__main__":
     unittest.main()

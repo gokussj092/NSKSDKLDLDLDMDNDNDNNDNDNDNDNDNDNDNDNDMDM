@@ -12,9 +12,10 @@ PROVIDERS = {
     "mkk-hyper": "decoders.Python.apps.MKK_Hyper_VPN.MKK_Hyper_VPN",
     "my-tunnel-proxy": "decoders.Python.apps.My_Tunnel_Proxy.server_catalog_decoder",
     "robust-tunnel": "decoders.Python.apps.Robust_Tunnel_VPN.server_catalog_decoder",
-    # Offline only until the live endpoint and original icon meet public gates.
+    # Offline decoder; Royal's public card has an icon but decoding stays disabled.
     "royal-tunnel": "decoders.Python.apps.Royal_Tunnel_VPN.server_catalog_decoder",
     "trv-tunnel": "decoders.Python.apps.TRV_TUNNEL.server_catalog_decoder",
+    "4u-tunnel-lite": "decoders.Python.apps.4U_TUNNEL_LITE.server_catalog_decoder",
 }
 
 def decode(provider_id: str, payload: bytes) -> str:

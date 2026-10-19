@@ -10,7 +10,7 @@ const body=(content)=>new Request("https://api.spdecode.xyz/api/v1/server-vpn/te
 });
 test("original provider PNGs match the public digest and never contain secrets",()=>{
  const values=catalog();assert.equal(values.catalogVersion,CATALOG_VERSION);
- assert.equal(RECHECK_SECONDS,86400);assert.equal(values.apps.length,7);
+ assert.equal(RECHECK_SECONDS,86400);assert.equal(values.apps.length,9);
  const ids=new Set();
  for(const app of values.apps) {
    assert(!ids.has(app.id));ids.add(app.id);
@@ -31,7 +31,7 @@ test("version match returns only a cheap unchanged response",async()=>{
 test("new version returns catalog and invalid bodies fail closed",async()=>{
  const response=await list(body({knownVersion:0}));
  const data=await response.json();assert.equal(response.status,200);
- assert.equal(data.unchanged,false);assert.equal(data.apps.length,7);
+ assert.equal(data.unchanged,false);assert.equal(data.apps.length,9);
  for(const invalid of [{knownVersion:-1},{url:"http://127.0.0.1/"},{knownVersion:"1"}]) {
    assert.equal((await list(body(invalid))).status,400);
  }
@@ -48,7 +48,7 @@ test("only registered icon identifiers are served",async()=>{
 
 import {providerIds,providerEnabled,downloadVpnCatalog} from "../lib/server-vpn-provider.mjs";
 test("only fixed catalog providers are eligible for remote broker",async()=>{
-  assert.deepEqual(providerIds().sort(),["24clan-green","hx-tunnel","mkk-hyper","my-tunnel-proxy","robust-tunnel","trv-tunnel"]);
+  assert.deepEqual(providerIds().sort(),["24clan-green","4u-tunnel-lite","hx-tunnel","mkk-hyper","my-tunnel-proxy","robust-tunnel","trv-tunnel"]);
   for(const id of providerIds()) assert.equal(providerEnabled(id,{CLOUD_SERVER_VPN_ENABLED:"false"}),false);
   assert.equal(providerEnabled("https://attacker.invalid/",{CLOUD_SERVER_VPN_ENABLED:"true"}),false);
   await assert.rejects(()=>downloadVpnCatalog("https://attacker.invalid/"),{code:"UNSUPPORTED_FORMAT"});
@@ -56,8 +56,21 @@ test("only fixed catalog providers are eligible for remote broker",async()=>{
 
 test("deployment version is monotonic and rejects rollback",()=>{
  assert.equal(activeCatalogVersion({}),CATALOG_VERSION);
- assert.equal(activeCatalogVersion({CLOUD_SERVER_VPN_CATALOG_VERSION:"5"}),5);
- for(const value of ["-1","0","1","2","3","4","abc","3.4","0003","9999999999"]) {
+ assert.equal(activeCatalogVersion({CLOUD_SERVER_VPN_CATALOG_VERSION:"6"}),6);
+ for(const value of ["-1","0","1","2","3","4","5","abc","3.4","0003","9999999999"]) {
    assert.throws(()=>activeCatalogVersion({CLOUD_SERVER_VPN_CATALOG_VERSION:value}));
  }
+});
+
+// Original icon bytes must remain available even above the former client cap.
+test("Royal retains its large original PNG and stays visible with decoding disabled",async t=>{
+ const previous=process.env.CLOUD_SERVER_VPN_ENABLED;
+ process.env.CLOUD_SERVER_VPN_ENABLED="true";
+ t.after(()=>{if(previous===undefined)delete process.env.CLOUD_SERVER_VPN_ENABLED;else process.env.CLOUD_SERVER_VPN_ENABLED=previous;});
+ const royal=catalog().apps.find(x=>x.id==="royal-tunnel");
+ assert(royal);assert.equal(royal.decodeEnabled,false);
+ const response=await getIcon(body({id:"royal-tunnel"}));assert.equal(response.status,200);
+ const value=await response.json();const bytes=Buffer.from(value.contentBase64,"base64");
+ assert(bytes.length>256*1024);assert(value.contentBase64.length>350000);
+ assert.equal(createHash("sha256").update(bytes).digest("hex"),"d5b0acadb3759da52c90cd45a671e264ed98b58e5c838d496e6999b5e1198309");
 });

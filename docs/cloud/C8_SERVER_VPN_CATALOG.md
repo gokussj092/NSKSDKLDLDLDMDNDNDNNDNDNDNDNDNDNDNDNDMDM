@@ -196,3 +196,47 @@ descargable incluye las dos fuentes compartidas como dependencias locales,
 verificadas por checksum, para ejecutar fuera del repositorio. Las pruebas no
 llaman a proveedores en CI ni publican datos reales. Sin cambios Android/panel,
 fusión, despliegue VPS ni publicación APK.
+
+## 4U TUNNEL LITE 2.2 e iconos obligatorios — versión pública 6
+
+Paquete `com.forutunnel.lite`, versionCode 13. Carpeta
+`decoders/Python/apps/4U_TUNNEL_LITE/` con dos lectores, icono PNG original,
+manifest, README y TESTING. El análisis independiente del Java y XOR ARM64
+confirma las primitivas compartidas HX; esas fuentes no se modifican ni duplican.
+
+El archivo real de exportación es `.4ulite`: JSON en UTF-8 modificado JNI, XOR
+y hexadecimal. Se preservan sus campos completos, PIN/HWID/caducidad, tipos y
+valores que parecen hexadecimales sin descifrado heurístico. C8 sustituye la ruta
+genérica de `.4ulite`; el lector de archivos admite además `4ulite://` como
+prefijo de compatibilidad offline. El dispatcher global de textos conserva su
+motor histórico y no se registra un handler nuevo. No se afirma que el APK tenga un handler para ese esquema. C0 permanece
+en 240 rutas y C8 en 246 extensiones efectivas: `.4ulite` ya estaba registrada.
+
+Catálogo XXTEA verificado contra el Java original: local **25 servidores /
+635 payloads**; remoto real **33 servidores / 707 payloads**. Ambos JSON completos
+atraviesan el subproceso Cloud sin recortes; los tres grupos Premium/Vip/Private
+vacíos se conservan. Los perfiles se contrastan con el XOR nativo y texto JNI
+Java usando fixtures sintéticos; no se recibió una exportación real independiente.
+
+ID fijo `4u-tunnel-lite` en bridge, broker HTTPS, OpenAPI y metadatos públicos,
+con URL fija e IP pública anclada. Icono original de 20114 bytes, idéntico en la
+carpeta y el backend. El CLI y el paquete descargable funcionan con biblioteca
+estándar, sin APK, Java ni pip; el ZIP incluye sus dos dependencias compartidas.
+
+**Política del usuario aplicable a todas las apps:** no excluir iconos por superar
+el antiguo límite. Backend y cliente retiran los umbrales específicos de
+256 KiB / 350000 caracteres. Android conserva y verifica el original, amplía su
+caché al presupuesto general de transporte existente y muestrea solo el bitmap
+de pantalla. No cambia diseño, credenciales ni motores de descifrado en Android.
+
+Royal aparece con su PNG original de 415664 bytes y descifrado desactivado. Esto
+sustituye el pendiente de imagen descrito en la sección histórica de Royal;
+el pendiente de catálogo remoto permanece. No se añade Royal al broker ni al
+contrato público de descifrado mientras no se valide su respuesta remota.
+
+**Versión mínima 6.** Los overrides deben incrementarse por encima de la versión
+anterior y al menos a 6. QA conserva el incremento monotónico; el interruptor
+global sigue desactivado por defecto. Instalar el cliente con la nueva política
+antes de activar el catálogo con imágenes grandes: el cliente anterior conserva
+su límite y no se corrige al actualizar solo el servidor. No se ha desplegado,
+fusionado ni publicado una nueva APK en este trabajo.

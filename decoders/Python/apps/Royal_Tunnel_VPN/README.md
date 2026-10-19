@@ -122,12 +122,16 @@ comando entero. No se presenta una salida parcialmente descifrada como éxito.
   autónomo continúa siendo exclusivo de Royal 7.0.
 - El bridge privado offline registra `royal-tunnel` y conserva todo el JSON;
   Cloud mantiene su límite global de salida de 4 MiB y proceso aislado.
-- **Publicación remota pendiente**: no se añade Royal al broker público,
-  contrato público ni catálogo Android. Falta validar la respuesta remota y
-  el PNG original pesa 415664 bytes, superior al límite actual de 256 KiB.
-  No se usa el recurso residual `ic_launcher` con otra marca ni se modifica
-  Android para sortear ese límite. La incorporación de Royal no incrementó
-  la versión pública (4 en esa revisión).
+- **Icono público conservado:** por indicación del usuario del 2026-10-19, su
+  tamaño de 415664 bytes ya no excluye la imagen. Se publica el PNG original y
+  su ficha en la versión pública 6. El cliente actualizado conserva los bytes
+  originales y reduce únicamente la vista previa para limitar memoria.
+- **Descifrado remoto pendiente:** `decodeEnabled=false`; falta validar una
+  respuesta cifrada del endpoint. No se añade Royal al broker de descarga ni
+  al enum público de decodificación mientras siga sin esa validación.
+- Los clientes Android anteriores mantienen el límite de 256 KiB: instalar la
+  APK con la nueva política de iconos antes de activar este catálogo en VPS.
+  Este cambio no altera los dos lectores Royal ni publica una APK.
 
 Rama: `feat/cloud-c8-vps-installer-updater`; PR existente #94. Sin despliegue,
 fusión, cambios de interfaz ni publicación de APK.

@@ -1,0 +1,59 @@
+{
+  "id": "4u-tunnel-lite",
+  "name": "4U TUNNEL LITE",
+  "package": "com.forutunnel.lite",
+  "engine": "python-shared-hxt-native-xor-and-princie-xxtea",
+  "engineVersion": 1,
+  "compatibleVersions": [
+    "2.2"
+  ],
+  "versionCode": 13,
+  "files": {
+    "entrypoint": "file_decoder.py",
+    "extensions": [
+      "4ulite"
+    ],
+    "cloudPhase": "C8",
+    "validation": "original 4U native XOR and synthetic profiles with Java JNI modified UTF-8; independent real export not supplied",
+    "wireFormatSharedWith": "hx-tunnel",
+    "exporterCertified": false,
+    "legacyPrefix": "4ulite://; compatibility input, not a demonstrated Android URI handler"
+  },
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "4u-tunnel-lite",
+    "validation": "complete local and remote JSON parity with original 4U Java XXTEA",
+    "validatedOn": "2026-10-19",
+    "localServersObserved": 25,
+    "localPayloadsObserved": 635,
+    "remoteServersObserved": 33,
+    "remotePayloadsObserved": 707,
+    "publicCatalogVersion": 6,
+    "deploymentEnabledByDefault": false
+  },
+  "icon": {
+    "file": "4U_TUNNEL_LITE.png",
+    "source": "base.apk:res/drawable/ic_app_icon.png",
+    "width": 512,
+    "height": 512,
+    "bytes": 20114,
+    "sha256": "b6f76cff34d9f242b3b21ed3c13eedaf917adbfae8eb96f017e76003ab9cbb58",
+    "policy": "preserve original bytes without application-specific size exclusion"
+  },
+  "sharedCodecs": [
+    {
+      "source": "decoders/Python/apps/HX_Tunnel_VPN/HX_Tunnel_VPN_archivos.py",
+      "downloadSidecar": "hxt_file_codec.py",
+      "sha256": "f6c4dde48b213ea915e16d8b93c7fbd68a8c8189cf9a50ffa877c347696960a2"
+    },
+    {
+      "source": "decoders/Python/apps/HX_Tunnel_VPN/HX_Tunnel_VPN.py",
+      "downloadSidecar": "hxt_catalog_codec.py",
+      "sha256": "ba70cb51b9c441dbdbe6bf23a7c6d1d2497a6fd257ee6508950d8f8b6da4a586"
+    }
+  ],
+  "dependencies": [
+    "Python >=3.10; standard library only"
+  ],
+  "sourceApkSha256": "afa1fcb3f99292162d9a727e05c8bcdbe1b51a3d74b17a004d103c319dfb3f3a"
+}

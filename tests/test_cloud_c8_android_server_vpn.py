@@ -114,12 +114,18 @@ class PhaseVServerVpnIntegration(unittest.TestCase):
         originals["trv-tunnel"]=(
             ROOT/"decoders/Python/apps/TRV_TUNNEL/TRV_TUNNEL.png",
             WEB/"public/server-vpn-icons/trv-tunnel.png")
+        originals["4u-tunnel-lite"]=(
+            ROOT/"decoders/Python/apps/4U_TUNNEL_LITE/4U_TUNNEL_LITE.png",
+            WEB/"public/server-vpn-icons/4u-tunnel-lite.png")
+        originals["royal-tunnel"]=(
+            ROOT/"decoders/Python/apps/Royal_Tunnel_VPN/Royal_Tunnel_VPN.png",
+            WEB/"public/server-vpn-icons/royal-tunnel.png")
         for app_id,(original,served) in originals.items():
             with self.subTest(app=app_id):
                 self.assertTrue(original.is_file(),original)
                 self.assertTrue(served.is_file(),served)
                 raw=served.read_bytes()
-                self.assertLess(len(raw),256*1024+1)
+                self.assertGreater(len(raw),32)
                 self.assertEqual(raw[:8],b"\x89PNG\r\n\x1a\n")
                 self.assertEqual(hashlib.sha256(original.read_bytes()).digest(),
                                  hashlib.sha256(raw).digest())

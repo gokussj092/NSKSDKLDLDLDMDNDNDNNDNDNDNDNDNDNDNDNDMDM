@@ -23,7 +23,7 @@ internal class ServerVpnSecureCache(context: Context) {
     private val magic = byteArrayOf(0x53,0x56,0x43,0x31)
     private val alias = "spdecode.server-vpn.device-cache.v1"
     private val store = "AndroidKeyStore"
-    private val maxPlain = 1024 * 1024
+    private val maxPlain = ServerVpnIconPolicy.CACHE_RECORD_BYTES
 
     companion object {
         // All cache instances in this process must share one key-creation lock.
