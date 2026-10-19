@@ -9,6 +9,10 @@ import https from "node:https";
 import {publicIpv4} from "./c35-provider.mjs";
 
 const PROVIDERS = Object.freeze({
+  "austroplus-vpn": {
+    url:"https://raw.githubusercontent.com/SpkHexX/HexX/refs/heads/main/AustroPlusVPN.json",
+    agent:"AustroPlus VPN/13.0.1",
+  },
   "ac-tunnel-vpn": {
     url:"https://rttunnelv2ray.xyz/api/files/app?json=7ef7a9a142eb1f77a56f",
     agent:"AC TUNNEL VPN/1.4",

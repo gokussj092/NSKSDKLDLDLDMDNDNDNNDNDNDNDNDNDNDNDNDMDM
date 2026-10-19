@@ -1,0 +1,55 @@
+{
+  "id": "austroplus-vpn",
+  "name": "AustroPlus VPN",
+  "package": "xyz.tekidoer.austroplus.vpn",
+  "engine": "python-gcm-profile-and-shared-standard-xxtea-catalog",
+  "engineVersion": 1,
+  "compatibleVersions": [
+    "13.0.1"
+  ],
+  "versionCode": 13,
+  "files": {
+    "entrypoint": "file_decoder.py",
+    "extensions": [
+      "aro"
+    ],
+    "format": "Base64(nonce12 + AES-256-GCM + tag16), CONFIG known fields double Base64, optional Server JSON string with Base64/XOR fields",
+    "exporterCertified": false,
+    "validation": "original Java AES-GCM encrypt/decrypt and synthetic exports; independent real export not supplied",
+    "legacyCompatibility": "C0 byte+18 JSON CONFIG envelope recognized before dispatch; no fallback after modern GCM failures",
+    "textPrefixes": []
+  },
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "austroplus-vpn",
+    "validation": "complete local and remote JSON parity with original Java m83 XXTEA and ys.h XOR",
+    "validatedOn": "2026-10-19",
+    "localServersObserved": 1,
+    "localTweaksObserved": 1,
+    "remoteServersObserved": 6,
+    "remoteTweaksObserved": 198,
+    "publicCatalogVersion": 8,
+    "deploymentEnabledByDefault": false
+  },
+  "icon": {
+    "file": "AustroPlus_VPN.png",
+    "source": "base.apk:res/mipmap-xxxhdpi-v4/ic_launcher.png",
+    "width": 192,
+    "height": 192,
+    "bytes": 16607,
+    "sha256": "a687fb12a77d7ea952e1db4675fb2bfd484940bb395bcd5386aa020118a87736",
+    "policy": "preserve original complete launcher PNG; do not upscale or substitute; no application-specific size exclusion"
+  },
+  "sharedPrimitive": {
+    "source": "decoders/Python/ec.py",
+    "bundleFile": "ec.py",
+    "sha256": "8c4efb1e02f9273fa0cd2368c6e44176236a5be471c48a5e9f6a5fb4bf53eb53",
+    "unchanged": true
+  },
+  "dependencies": {
+    "catalog": "Python >=3.10, standard library only",
+    "files": "Python >=3.10, pycryptodome==3.23.0"
+  },
+  "sourceApkSha256": "31664f1beffe1acf175b467397f70924087434518c17a145fcdafee6ab234871",
+  "baseMainCommit": "e6cbb5926372aa6b7d36105802bf366a2138c98e"
+}

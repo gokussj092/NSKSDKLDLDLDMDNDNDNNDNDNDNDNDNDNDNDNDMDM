@@ -80,6 +80,7 @@ _C8_FILE_ENGINES = {
     "hxt": ("decoders/Python/apps/HX_Tunnel_VPN/HX_Tunnel_VPN_archivos.py", "HX Tunnel VPN"),
     "mtp": ("decoders/Python/apps/My_Tunnel_Proxy/file_decoder.py", "My Tunnel Proxy"),
     "roy": ("decoders/Python/apps/Royal_Tunnel_VPN/file_decoder.py", "Royal Tunnel VPN 7.0"),
+    "aro": ("decoders/Python/apps/AustroPlus_VPN/file_decoder.py", "AustroPlus VPN 13.0.1"),
     "actun": ("decoders/Python/apps/AC_TUNNEL_VPN/file_decoder.py", "AC TUNNEL VPN 1.4"),
     "4ulite": ("decoders/Python/apps/4U_TUNNEL_LITE/file_decoder.py", "4U TUNNEL LITE"),
 }
@@ -133,6 +134,22 @@ def _is_legacy_roy(contents: bytes) -> bool:
     return bool(text) and all(char in "¹²³⁴⁵⁶⁷⁸⁹⁰·,‽:'′" for char in text)
 
 
+def _is_legacy_aro(contents: bytes) -> bool:
+    """Recognize the old complete byte+18 JSON envelope before choosing a codec.
+
+    Both formats use Base64. A valid legacy CONFIG document, rather than an
+    AES-GCM failure, selects the frozen route. Never retry a failed GCM codec.
+    Translation uses a fixed 256-byte table and input remains worker-bounded.
+    """
+    try:
+        raw = base64.b64decode(b"".join(contents.split()), validate=True)
+        shifted = raw.translate(bytes((i + 18) & 255 for i in range(256)))
+        value = json.loads(shifted)
+        return isinstance(value, dict) and isinstance(value.get("CONFIG"), dict)
+    except (ValueError, UnicodeError, RecursionError):
+        return False
+
+
 def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS, credentials: dict | None = None) -> dict:
     """Execute one canonical file engine. The caller must authenticate first."""
     if not isinstance(suffix, str) or suffix not in load_runtime_file_engines():
@@ -144,6 +161,8 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
     if not isinstance(timeout, int) or timeout < 1 or timeout > TIMEOUT_SECONDS:
         raise DecodeFailure("INVALID_REQUEST")
     engine = load_runtime_file_engines()[suffix]
+    if suffix == "aro" and _is_legacy_aro(contents):
+        engine = load_file_engines()["aro"]
     # The APK exports prefixed .actun; keep historical raw RENZ .actun inputs.
     if suffix == "actun":
         try:
@@ -243,7 +262,7 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
 
 def decode_provider_catalog(provider_id: str, contents: bytes) -> dict:
     """One fixed provider codec, child-isolated; broker performs all network I/O."""
-    if provider_id not in ("24clan-green", "hx-tunnel", "mkk-hyper", "my-tunnel-proxy", "robust-tunnel", "royal-tunnel", "trv-tunnel", "4u-tunnel-lite", "ac-tunnel-vpn"):
+    if provider_id not in ("24clan-green", "hx-tunnel", "mkk-hyper", "my-tunnel-proxy", "robust-tunnel", "royal-tunnel", "trv-tunnel", "4u-tunnel-lite", "ac-tunnel-vpn", "austroplus-vpn"):
         raise DecodeFailure("UNSUPPORTED_FORMAT")
     if not isinstance(contents, bytes) or not contents:
         raise DecodeFailure("INVALID_INPUT")

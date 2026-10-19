@@ -287,3 +287,47 @@ existentes**; worker **11**, VPS/QA **39**, gates Cloud **4**, Node **64** y bui
 Next.js correctos. El bundle incluye `renz.py` exacto y se prueba fuera del
 repositorio sin `PYTHONPATH` heredado. No se publican APK, bibliotecas nativas,
 catálogos reales ni credenciales de cuenta.
+
+## AustroPlus VPN 13.0.1 — rama nueva desde main, catálogo público 8
+
+Rama `feat/austroplus-vpn-13-0-1-decoders` creada desde `main`
+`e6cbb5926372aa6b7d36105802bf366a2138c98e`, que ya incluye el PR #94. No se
+continúa en la rama C8 anterior. App `xyz.tekidoer.austroplus.vpn`, versionCode
+13, carpeta `decoders/Python/apps/AustroPlus_VPN/` con dos lectores, codec,
+dependencias, manifest, README/TESTING e icono original.
+
+Los `.aro` actuales son Base64 de nonce12 + AES-256-GCM + etiqueta16. `CONFIG`
+contiene campos con doble Base64 Android; `Server` es una cadena JSON con
+campos Base64/XOR. Se verificaron el cifrador/descifrador Java originales y
+perfiles sintéticos, incluyendo Unicode, vacíos y restricciones. La etiqueta
+siempre se verifica. No hay muestra independiente de exportación real:
+`exporterCertified=false`. No se registra un protocolo de texto inventado.
+
+El catálogo usa **XXTEA estándar** de `m83.i/j`, no la variante de `ys.i`.
+La primitiva compatible de `decoders/Python/ec.py` se reutiliza intacta con la
+clave verificada del APK. `ys.h` decodifica campos específicos con Base64/XOR.
+Paridad Java real de ambos JSON completos: inicial **1 servidor / 1 tweak**,
+remoto **6 servidores / 198 tweaks**, 6 / 503 campos comprobados incluidos
+vacíos. Ambos cruzan el subproceso Cloud con igualdad íntegra e `isPartial=false`.
+El CLI del catálogo usa biblioteca estándar y descarga la URL fija original
+sin APK; el lector de archivos requiere PyCryptodome. El ZIP incluye `ec.py`
+exacto y se prueba fuera del repositorio.
+
+La ruta C8 `.aro` selecciona el motor actual; el JSON `CONFIG` completo del
+formato histórico byte+18 se reconoce antes de elegir la ruta y conserva su
+motor/snapshot original. Un fallo GCM moderno no provoca fallback. `aro.py`
+y `ec.py` permanecen sin cambios. C0 conserva 240 rutas y C8 246 extensiones.
+
+Proveedor fijo `austroplus-vpn` en bridge, broker HTTPS y OpenAPI; ficha pública
+con PNG original idéntico de 192×192 / 16607 bytes. Se extrae el PNG completo
+de mayor densidad, no el XML adaptativo como si fuera imagen. Sin límite
+específico que excluya iconos por peso. **Versión mínima 8** y versión QA
+monotónica; interruptores desactivados por defecto. No se aceptan URLs del
+cliente ni se siguen URLs incluidas en el JSON. Sin cambios de diseño web ni
+Android, fusión, despliegue o publicación APK.
+
+Verificación local: **650 pruebas Python / 9 omisiones existentes**, worker
+**11**, VPS/QA **39**, gates Cloud **4**, Node **70** y build Next.js correctos.
+Los 14 controles nuevos incluyen el Java original; el bundle aislado conserva
+JSON completo y el catálogo funciona con `python -S`. Sin APK, bibliotecas,
+catálogos reales o credenciales de cuenta en Git/CI/ZIP.

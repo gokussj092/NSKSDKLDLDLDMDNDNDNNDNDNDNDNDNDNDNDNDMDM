@@ -882,7 +882,8 @@
                       "robust-tunnel",
                       "trv-tunnel",
                       "4u-tunnel-lite",
-                      "ac-tunnel-vpn"
+                      "ac-tunnel-vpn",
+                      "austroplus-vpn"
                     ]
                   },
                   "consent": {
