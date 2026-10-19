@@ -158,3 +158,41 @@ La versión pública sigue en **4**: no cambia la lista visible. El CLI permite
 reintentar la descarga fija y explica la respuesta HTML sin simular éxito ni
 usar el recurso local automáticamente. Pendientes y hashes completos en
 `Royal_Tunnel_VPN/TESTING.md`; sin despliegue, fusión ni cambios Android/web.
+
+## TRV TUNNEL 2.4 — archivos .hxt y catálogo remoto verificado, versión 5
+
+Paquete `com.trv.tunnel`, versionCode 15. Carpeta única
+`decoders/Python/apps/TRV_TUNNEL/`, con `file_decoder.py`,
+`server_catalog_decoder.py`, PNG original, manifest, README y TESTING.
+
+El APK exporta/importa tweaks `.hxt`: JSON en UTF-8 modificado JNI, XOR nativo y
+hexadecimal. El catálogo usa el XXTEA propio de `AbstractC0282Km` con delta
+`-1638454863`. El análisis independiente del Java y del XOR ARM64 de **TRV**
+confirmó que coincide con los motores HX existentes; se reutilizan sin cambiar
+sus fuentes ni duplicar algoritmos. La ruta C8 `.hxt` ya acepta esos bytes,
+por lo que C0 conserva 240 rutas y C8 mantiene 246 extensiones efectivas.
+No se inventa una extensión `.trv` ni un lector de enlaces `hxt://`.
+
+Se verificó el JSON completo frente al Java original del APK: catálogo inicial
+**27 servidores / 630 payloads**; descarga real **32 servidores / 671 payloads**.
+Los grupos Premium/Vip/Private estaban vacíos y también se preservan. Ambos
+catálogos atravesaron el subproceso Cloud sin recortes. Los perfiles `.hxt`
+usan fixtures sintéticos generados con XOR ARM64 y texto JNI contrastado en
+Java; no se recibió una exportación real y `exporterCertified` sigue en false.
+
+ID fijo `trv-tunnel` en bridge privado, broker HTTPS, contrato OpenAPI y metadatos
+públicos. URL fija del APK, TLS, DNS/IP pública anclada y redirecciones acotadas;
+la respuesta pública solo contiene presentación y checksum, sin endpoint o
+credenciales. PNG original de 76923 bytes, idéntico en la carpeta y el backend.
+
+**Versión pública mínima: 5.** Una instalación con override debe incrementarlo
+a un entero mayor que el anterior y al menos 5. QA conserva el incremento
+monotónico y el interruptor `CLOUD_SERVER_VPN_ENABLED` permanece desactivado
+por defecto. Royal continúa pendiente de registro público por sus dos límites
+ya documentados; la incorporación de TRV no los modifica.
+
+Los adaptadores funcionan con biblioteca estándar, sin APK, pip ni Java. El ZIP
+descargable incluye las dos fuentes compartidas como dependencias locales,
+verificadas por checksum, para ejecutar fuera del repositorio. Las pruebas no
+llaman a proveedores en CI ni publican datos reales. Sin cambios Android/panel,
+fusión, despliegue VPS ni publicación APK.

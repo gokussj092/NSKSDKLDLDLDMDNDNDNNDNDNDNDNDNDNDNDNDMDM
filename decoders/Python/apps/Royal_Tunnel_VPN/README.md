@@ -126,7 +126,8 @@ comando entero. No se presenta una salida parcialmente descifrada como éxito.
   contrato público ni catálogo Android. Falta validar la respuesta remota y
   el PNG original pesa 415664 bytes, superior al límite actual de 256 KiB.
   No se usa el recurso residual `ic_launcher` con otra marca ni se modifica
-  Android para sortear ese límite. La versión pública del catálogo sigue en 4.
+  Android para sortear ese límite. La incorporación de Royal no incrementó
+  la versión pública (4 en esa revisión).
 
 Rama: `feat/cloud-c8-vps-installer-updater`; PR existente #94. Sin despliegue,
 fusión, cambios de interfaz ni publicación de APK.

@@ -22,7 +22,8 @@ catálogos reales y resultados privados no se incluyen en Git.
 El PNG corresponde a `base.apk:res/drawable/icon.png`, 720 × 718.
 No se sustituyó por `ic_launcher`, que en este APK contiene una marca residual
 diferente. Su exceso de tamaño y la indisponibilidad del catálogo bloquean la
-incorporación al catálogo público. No se modifica la versión pública 4.
+incorporación al catálogo público. La revisión de Royal no modificó la
+versión pública 4.
 
 ## Paridad independiente
 

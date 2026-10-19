@@ -26,3 +26,4 @@ productores se mantienen en `tests/golden`, y las pruebas en `tests`.
 | My Tunnel Proxy 2.3 | [Script](My_Tunnel_Proxy/server_catalog_decoder.py) | [.mtp y mytunnelproxy://](My_Tunnel_Proxy/file_decoder.py) | [Carpeta](My_Tunnel_Proxy/README.md) |
 | Robust Tunnel VPN isvsoft 16.4.7 | [Script](Robust_Tunnel_VPN/server_catalog_decoder.py) | Copias del mismo catálogo, sin extensión obligatoria | [Carpeta](Robust_Tunnel_VPN/README.md) |
 | Royal Tunnel VPN 7.0 | [Script](Royal_Tunnel_VPN/server_catalog_decoder.py), remoto actualmente devuelve HTML | [.roy actualizado](Royal_Tunnel_VPN/file_decoder.py) | [Carpeta](Royal_Tunnel_VPN/README.md) |
+| TRV TUNNEL 2.4 | [Script](TRV_TUNNEL/server_catalog_decoder.py) | [.hxt, formato compartido verificado](TRV_TUNNEL/file_decoder.py) | [Carpeta](TRV_TUNNEL/README.md) |

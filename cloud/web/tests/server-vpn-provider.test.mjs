@@ -8,7 +8,8 @@ import {downloadVpnCatalog} from "../lib/server-vpn-provider.mjs";
 for(const provider of [
   {id:"my-tunnel-proxy",host:"mfmpro.xyz",path:"/api/app",query:"?json=3c9a2a29f3a4180271da",agent:"My Tunnel Proxy/2.3"},
   {id:"robust-tunnel",host:"xkingvpn.xyz",path:"/api/files/app",query:"?json=beae113e6e46d674a068",agent:"Robust Tunnel VPN/isvsoft 16.4.7"},
-]) test(`${provider.id} fixed query is pinned across DNS, TLS and redirects`,async t=>{
+  {id:"trv-tunnel",host:"trmrelay.store",path:"/updater/b67b57c85f49c34ee09fd87f2d6915",query:"",agent:"TRV TUNNEL/2.4"},
+]) test(`${provider.id} fixed endpoint is pinned across DNS, TLS and redirects`,async t=>{
   const prior=process.env.CLOUD_SERVER_VPN_ENABLED;
   process.env.CLOUD_SERVER_VPN_ENABLED="true";
   t.after(()=>{
@@ -47,7 +48,7 @@ for(const provider of [
   assert.equal((await downloadVpnCatalog(provider.id)).toString(),"fixed catalog bytes");
   for(const redirect of [
     `https://${provider.host}${provider.path}?json=changed`,
-    `https://${provider.host}${provider.path}`,
+    ...(provider.query ? [`https://${provider.host}${provider.path}`] : []),
     `https://other.invalid${provider.path}${provider.query}`,
     `http://${provider.host}${provider.path}${provider.query}`,
   ]){

@@ -14,6 +14,7 @@ PROVIDERS = {
     "robust-tunnel": "decoders.Python.apps.Robust_Tunnel_VPN.server_catalog_decoder",
     # Offline only until the live endpoint and original icon meet public gates.
     "royal-tunnel": "decoders.Python.apps.Royal_Tunnel_VPN.server_catalog_decoder",
+    "trv-tunnel": "decoders.Python.apps.TRV_TUNNEL.server_catalog_decoder",
 }
 
 def decode(provider_id: str, payload: bytes) -> str:

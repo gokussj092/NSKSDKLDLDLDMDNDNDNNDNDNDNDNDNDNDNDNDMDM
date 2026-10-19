@@ -38,7 +38,7 @@ services:
       CLOUD_NUR_CATALOG_URL: ${CLOUD_NUR_CATALOG_URL:-}
       CLOUD_SERVER_VPN_ENABLED: ${CLOUD_SERVER_VPN_ENABLED:-false}
       # Must increase on every roster, icon or provider-availability change.
-      CLOUD_SERVER_VPN_CATALOG_VERSION: ${CLOUD_SERVER_VPN_CATALOG_VERSION:-4}
+      CLOUD_SERVER_VPN_CATALOG_VERSION: ${CLOUD_SERVER_VPN_CATALOG_VERSION:-5}
     ports:
       # Bound to host loopback only; public HTTPS reverse proxy is a later phase.
       - "127.0.0.1:3000:3000"

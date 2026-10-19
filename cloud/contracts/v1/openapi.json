@@ -879,7 +879,8 @@
                       "hx-tunnel",
                       "mkk-hyper",
                       "my-tunnel-proxy",
-                      "robust-tunnel"
+                      "robust-tunnel",
+                      "trv-tunnel"
                     ]
                   },
                   "consent": {

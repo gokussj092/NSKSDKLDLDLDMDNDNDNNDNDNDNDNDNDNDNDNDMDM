@@ -1,0 +1,58 @@
+{
+  "id": "trv-tunnel",
+  "name": "TRV TUNNEL",
+  "package": "com.trv.tunnel",
+  "engine": "python-shared-hxt-native-xor-and-princie-xxtea",
+  "engineVersion": 1,
+  "compatibleVersions": [
+    "2.4"
+  ],
+  "versionCode": 15,
+  "files": {
+    "entrypoint": "file_decoder.py",
+    "extensions": [
+      "hxt"
+    ],
+    "cloudRouteSharedWith": "hx-tunnel",
+    "wireFormatVerifiedFromThisApk": true,
+    "validation": "original TRV native XOR and synthetic profiles with Java JNI modified UTF-8; independent real export not supplied",
+    "exporterCertified": false,
+    "dedicatedTextUriIdentified": false
+  },
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "trv-tunnel",
+    "validation": "complete local and remote JSON parity with original TRV Java XXTEA",
+    "validatedOn": "2026-10-19",
+    "localServersObserved": 27,
+    "localPayloadsObserved": 630,
+    "remoteServersObserved": 32,
+    "remotePayloadsObserved": 671,
+    "publicCatalogVersion": 5,
+    "deploymentEnabledByDefault": false
+  },
+  "icon": {
+    "file": "TRV_TUNNEL.png",
+    "source": "base.apk:res/drawable/ic_app_icon.png",
+    "width": 512,
+    "height": 512,
+    "bytes": 76923,
+    "sha256": "cca027b2a1a69d1cb0a70b77ea902175f93ddf9c405bdbcaf196a0135770526e"
+  },
+  "sharedCodecs": [
+    {
+      "source": "decoders/Python/apps/HX_Tunnel_VPN/HX_Tunnel_VPN_archivos.py",
+      "downloadSidecar": "hxt_file_codec.py",
+      "sha256": "f6c4dde48b213ea915e16d8b93c7fbd68a8c8189cf9a50ffa877c347696960a2"
+    },
+    {
+      "source": "decoders/Python/apps/HX_Tunnel_VPN/HX_Tunnel_VPN.py",
+      "downloadSidecar": "hxt_catalog_codec.py",
+      "sha256": "ba70cb51b9c441dbdbe6bf23a7c6d1d2497a6fd257ee6508950d8f8b6da4a586"
+    }
+  ],
+  "dependencies": [
+    "Python >=3.10; standard library only"
+  ],
+  "sourceApkSha256": "46c30fa59308f219b53bb106e98c1e8ec994de8f61e4eead0edb357f405667bf"
+}
