@@ -1,0 +1,81 @@
+{
+  "source": "OpenJDK/JCE AES-CBC synthetic vectors; no service credentials",
+  "expectedProfiles": [
+    {
+      "id": 7,
+      "category_id": 42,
+      "user_id": "synthetic-owner",
+      "sorter": 9,
+      "name": "Prueba Perú 日本",
+      "mode": "SSH_DIRECT",
+      "server": "example.invalid",
+      "port": 22,
+      "username": "synthetic",
+      "password": "fixture-only",
+      "payload": "GET / HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+      "future": {
+        "enabled": false,
+        "empty": "",
+        "nothing": null,
+        "items": [
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "id": 8,
+      "mode": "V2RAY",
+      "config": "{\"outbounds\":[{\"protocol\":\"vless\",\"settings\":{\"vnext\":[{\"address\":\"example.invalid\",\"port\":443}]}}]}",
+      "unknown": true
+    }
+  ],
+  "expectedLayout": [
+    {
+      "name": "title",
+      "value": "Synthetic layout",
+      "future": 123
+    }
+  ],
+  "expectedTexts": [
+    {
+      "label": "connect",
+      "text": "Conectar",
+      "unknown": null
+    }
+  ],
+  "expectedEmpty": [],
+  "link": "vpn://eyJpZCI6NywiY2F0ZWdvcnlfaWQiOjQyLCJ1c2VyX2lkIjoic3ludGhldGljLW93bmVyIiwic29ydGVyIjo5LCJuYW1lIjoiUHJ1ZWJhIFBlcsO6IOaXpeacrCIsIm1vZGUiOiJTU0hfRElSRUNUIiwic2VydmVyIjoiZXhhbXBsZS5pbnZhbGlkIiwicG9ydCI6MjIsInVzZXJuYW1lIjoic3ludGhldGljIiwicGFzc3dvcmQiOiJmaXh0dXJlLW9ubHkiLCJwYXlsb2FkIjoiR0VUIC8gSFRUUC8xLjFcclxuSG9zdDogZXhhbXBsZS5pbnZhbGlkXHJcblxyXG4iLCJmdXR1cmUiOnsiZW5hYmxlZCI6ZmFsc2UsImVtcHR5IjoiIiwibm90aGluZyI6bnVsbCwiaXRlbXMiOlsxLDJdfX0=",
+  "vectors": [
+    {
+      "name": "catalog",
+      "kind": "catalog",
+      "expected": "expectedProfiles",
+      "data": "9cMP/O90fzQInzoTMCHua08Vu8eABwKbrUp6YuPq9k0FQJ5GRHoFIwNX/vYuags0yBy9CzxmGaDTf+r3YpAd/uWsTK1bVtewiNGmVH4vgtc3jijueFqNABEme3R+DAh32NY/nq2tcTW94zeD4oPFRR61IxBVNDgWWadybgE4jKIMXAFSgYC5nnYXhTjtJ2sb3UsjzFK4uxDu0cbPuHbTgNIr4cXd8prTUNhvwPeBblVr/SvcXK5wpcB4oWNkvZqBpkhizvp3t/KH/YVL0Vqro92rhcyioeb8R4ptmEmowmEhHkH5iLg+wVQdv5sdaeuWcsa6UnzHgxzHDM5qlsfR/5i5pZWJ5H9QpQXdeqTzdf8TVMjDjy2x1h3OfO9NI/Uc4FQ2gJM07DPyZBETur016wIcAV+rdSrMX967nw7tCjEDUFRkdXGy/wfZ2LtW8zTwEmAsKHZZwg3L15YxpNOIxPkaX7nPYAaFPQy/I3TRiQmBx5hzWsaoPHanmVSOZ59W1qYz7mVsIsMFWn8brOBJQNQkfQ9wA2tTF5gj8A3Dwx3F9l9N4dfCEbaykrCIMVWZLZpbgxPtBmRANcM5jwHSJCq805rHmrF4TBK3/QCXd0HC5bFNLJZ80Kp7fmBUOxbc9G1gzZ6U/REbc3uZ/KZAyJLJH/7yc3DfD1R7YT+w6iRDUkQDmcUwwU7gAQWef+amqsPpVZUErg1CsEw76gQOm+ErU9mu+dWwxqftWnYD7UMYQSHdmwKice3JQp8DZqs+DV9M2EEgpLCikQaozv4LGpjhJOYFOEoo+pY5swmRvcM="
+    },
+    {
+      "name": "catalog-objects",
+      "kind": "catalog",
+      "expected": "expectedProfiles",
+      "data": "BXkCIXx2ULMrkgcjZrKH6h8gooNGXnhW3yw828vb5Av5DU5LJ5EPz3BWWEXbWUUlqk8QIFbiqjuyEx438t2qukeilwsweOglbTA5S3geHSOvSBvAB/L6sPcdVNYLpvCyJC+ZPFbdYTM41ON5sCX1Mm9svLJnr4ipiA78a2WqFZrfXy8R8prAOfk4cIx/IIYudbCu9RgFIXTJZKGRL5IFqrKEwyDnFG5IjH5ZikjBnHEWmUhGNCWUQWKn7jhaMJnB96R7LNTLxRV8s5AL0lD11wFqKZsViEoGEj9RIhycBQyo4/2ojP78BUofgaheBlet9pfBiRnh2LJ1jWPEJ9ehLrXUGZQTLJkSDsz77sQS4m1fuGaUtH3F/uskT+0QfBJNuLgJMUWwoZXcTEX1hUhzhXeXRY6P2NfTzDCIdXb50BvO1w4nFgFLlaZRKQWnO4svZzMk7OrnUSzscEcSkZ3o/h2QaiRXzk5wkcc3VM/rVUEG0IEYdgFNEOKQXtefDIp0Atm2WBTcqyqFyL7xKjtMpu1zrkkGKaroqO4+ADwPOaoT6Q7qFpXQWuvVTJSQbECC2hCE0EiMlSPitiXgXSecO0CeBaE3gVeOVFLx3+V5rIRfMSETrXN88u1LK09URWGVLI88O5O8ix3ayvPpWmGsig=="
+    },
+    {
+      "name": "layout",
+      "kind": "layout",
+      "expected": "expectedLayout",
+      "data": "5nPXiYTECbG75OszFzPALbfc7fqygcHNuxWg7N5E9/9cu9+mo9YJ2YQAANSwv4yW0roCc9M/pYf96GK/glTIxOGLQyr/9OuW6zRQ1lM2V+I="
+    },
+    {
+      "name": "texts",
+      "kind": "texts",
+      "expected": "expectedTexts",
+      "data": "do/F2HfWCv2Y4TlfeL92W68AvyxELTXLx6I4qAx85jag7D9F74EZklV2wZUfaPVP7A4Kt+kqhVxenClxCkPgCw=="
+    },
+    {
+      "name": "empty",
+      "kind": "catalog",
+      "expected": "expectedEmpty",
+      "data": "2hIg7fdHKb12oC6e1SkV1w=="
+    }
+  ]
+}
