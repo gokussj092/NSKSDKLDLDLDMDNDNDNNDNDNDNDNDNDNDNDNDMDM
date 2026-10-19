@@ -856,7 +856,10 @@ class MainActivity : ComponentActivity() {
                         val filename=runCatching {
                             withContext(Dispatchers.IO){displayName(uri)}
                         }.getOrDefault("")
-                        if(filename.endsWith(".npvs",ignoreCase=true))
+                        // Do not label any Cloud NPVS failure a "private key"
+                        // failure unless the worker explicitly reports that.
+                        if(!BuildConfig.SPDECODE_CLOUD_ENABLED &&
+                            filename.endsWith(".npvs",ignoreCase=true))
                             failedNpvs=true
                         if((prepared?.filename?:filename).endsWith(".hc",ignoreCase=true) &&
                             prepared?.requirements?.requiresCredentials==true)failedProtectedHc=true
@@ -875,14 +878,14 @@ class MainActivity : ComponentActivity() {
                         ?:throw DecodeFailure(R.string.unsupported)
                     // Phase A identifies pending formats but never reads or
                     // sends their bytes to a native decoder that does not exist.
-                    if (!supported.hasNativeDecoder &&
-                        !(BuildConfig.SPDECODE_CLOUD_ENABLED && supported.migrationPhase=="C8")) {
+                    // All registered suffixes are decoded on the worker in Cloud
+                    // builds; Android's *offline* native decoder status is irrelevant.
+                    if (!BuildConfig.SPDECODE_CLOUD_ENABLED && !supported.hasNativeDecoder) {
                         throw DecodeFailure(R.string.native_decoder_pending)
                     }
                     val input=prepared?.bytes?:withContext(Dispatchers.IO){readBounded(uri,
                         when {
-                            BuildConfig.SPDECODE_CLOUD_ENABLED && supported.migrationPhase=="C8" ->
-                                CloudDecodeClient.MAX_INPUT
+                            BuildConfig.SPDECODE_CLOUD_ENABLED -> CloudDecodeClient.MAX_INPUT
                             supported.suffix=="solid" -> NurTunnelPort.MAX_INPUT
                             supported.suffix=="lnk" -> LinkLayerPort.MAX_INPUT
                             supported.suffix=="npvs" -> NpvsPort.MAX_INPUT

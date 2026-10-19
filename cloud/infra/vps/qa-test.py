@@ -39,6 +39,22 @@ def permitted_catalog():
         raise RuntimeError("NUR catalog endpoint does not match the approved HTTPS vendor host")
     return raw
 
+def next_catalog_version(current):
+    """Monotonic version on QA enable/disable, even without an existing override.
+
+    UI metadata changes must not stay hidden behind a valid 24h encrypted cache.
+    The increment is not rolled back when QA stops; the public manifest stays
+    consistent with the deployed provider flags.
+    """
+    raw=value(current,"CLOUD_SERVER_VPN_CATALOG_VERSION") or "2"
+    if not raw.isascii() or not raw.isdecimal():
+        raise RuntimeError("Invalid Server VPN catalog version")
+    previous=int(raw)
+    if not 2 <= previous < 999_999_999:
+        raise RuntimeError("Server VPN catalog version outside valid range")
+    return str(previous+1)
+
+
 def provider_changes(current):
     url=permitted_catalog()
     sign=value(current,"CLOUD_EHI_SIGN_KEY")
@@ -67,6 +83,7 @@ def status():
           bool(value(current,"CLOUD_NUR_CATALOG_URL")))
     print("HTTP Injector Cloud enabled:",value(current,"CLOUD_EHI_IMPORT_ENABLED")=="true")
     print("Additional Server VPN providers enabled:",value(current,"CLOUD_SERVER_VPN_ENABLED")=="true")
+    print("Server VPN catalog version:",value(current,"CLOUD_SERVER_VPN_CATALOG_VERSION") or "2")
     # Avoid printing URLs or signing keys, even if the source is publicly tracked.
 def run(*args,stdin=None,quiet=True):
     return subprocess.run(args,input=stdin,text=True,check=True,
@@ -235,6 +252,9 @@ def main():
             raise SystemExit("QA is inactive. Start it first using: sudo spdecode qa start")
         state=json.loads(STATE.read_text())
         changes,ehi_ready=provider_changes(old)
+        # Force catalog metadata revision when availability changes.
+        if any(value(old,k)!=v for k,v in changes.items()):
+            changes["CLOUD_SERVER_VPN_CATALOG_VERSION"]=next_catalog_version(old)
         # Capture the original flags before the FIRST activation only.
         for key in PROVIDER_KEYS:
             if key not in state:
@@ -268,7 +288,11 @@ def main():
                  "CLOUD_API_ENABLED":"true","CLOUD_FORCE_MAINTENANCE":"false"}
         providers,ehi_ready=provider_changes(old)
         changes.update(providers)
-        save_state({key:value(old,key) for key in changes})
+        if any(value(old,k)!=v for k,v in providers.items()):
+            changes["CLOUD_SERVER_VPN_CATALOG_VERSION"]=next_catalog_version(old)
+        # Do not save/restore the catalog version. It must never roll backwards.
+        save_state({key:value(old,key) for key in changes
+                    if key!="CLOUD_SERVER_VPN_CATALOG_VERSION"})
         try:
             atomic(ENV,replace(old,changes))
             compose("up","-d","--no-deps","--force-recreate","web")
@@ -298,6 +322,8 @@ def main():
         changes={key:state[key] for key in ("CLOUD_API_ENABLED",
             "CLOUD_FORCE_MAINTENANCE",*PROVIDER_KEYS) if key in state}
         changes.update({"CLOUD_QA_ENABLED":"false","CLOUD_QA_EXPIRES_AT":"0"})
+        if any(k in state and value(old,k)!=state[k] for k in PROVIDER_KEYS):
+            changes["CLOUD_SERVER_VPN_CATALOG_VERSION"]=next_catalog_version(old)
         atomic(ENV,replace(old,changes))
         try:
             compose("exec","-T","redis","redis-cli","DEL",KEY)

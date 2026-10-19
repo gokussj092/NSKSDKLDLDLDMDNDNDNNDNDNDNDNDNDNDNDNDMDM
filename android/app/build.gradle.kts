@@ -307,9 +307,20 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
             """                        if(BuildConfig.SPDECODE_QA_BUILD) {
                             val ext=filename.substringAfterLast('.', "file").lowercase()
                                 .filter { it.isLetterOrDigit() }.take(12).ifBlank { "file" }
-                            val code=if(cause is CloudDecodeClient.Failure)
-                                cause.code + " (" + cause.httpStatus + ")"
-                            else "CLIENT_ERROR"
+                            val code=when(cause) {
+                                is CloudDecodeClient.Failure ->
+                                    cause.code + " (HTTP " + cause.httpStatus + ")"
+                                is java.io.IOException -> {
+                                    // Only fixed, locally generated codes, never
+                                    // exception strings or sensitive file metadata.
+                                    val label=cause.message.orEmpty()
+                                    if(label.matches(Regex("CLOUD_[A-Z_]{3,65}"))) label
+                                    else "CLIENT_IO_FAILURE"
+                                }
+                                is DecodeFailure -> "CLIENT_FORMAT_REJECTED"
+                                is IllegalArgumentException -> "CLIENT_INVALID_ARGUMENT"
+                                else -> "CLIENT_ERROR"
+                            }
                             qaFailures.add(ext + ": " + code)
                         }
                         if(filename.endsWith(".npvs",ignoreCase=true))""")
