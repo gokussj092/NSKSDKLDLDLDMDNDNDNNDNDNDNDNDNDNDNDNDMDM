@@ -28,7 +28,7 @@ class PhaseVServerVpnIntegration(unittest.TestCase):
         self.assertIn('path == "/api/v1/decode/import/catalog/remote"',source)
         self.assertIn('kNurCatalogReadTimeoutMs = 165000',source)
         self.assertRegex(source,
-            r'path == "/api/v1/decode/import/catalog/remote"\\s*\\|\\|\\s*'
+            r'path == "/api/v1/decode/import/catalog/remote"\s*\|\|\s*'
             r'path == "/api/v1/server-vpn/decode"')
         self.assertNotIn('setHostnameVerifier',source)
         self.assertNotIn('setSSLSocketFactory',source)
@@ -101,7 +101,7 @@ class PhaseVServerVpnIntegration(unittest.TestCase):
                 self.assertTrue(served.is_file(),served)
                 raw=served.read_bytes()
                 self.assertLess(len(raw),256*1024+1)
-                self.assertEqual(raw[:8],b"\\x89PNG\\r\\n\\x1a\\n")
+                self.assertEqual(raw[:8],b"\x89PNG\r\n\x1a\n")
                 self.assertEqual(hashlib.sha256(original.read_bytes()).digest(),
                                  hashlib.sha256(raw).digest())
 
