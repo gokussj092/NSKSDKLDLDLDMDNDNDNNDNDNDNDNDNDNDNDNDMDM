@@ -44,6 +44,7 @@ def dispatch(text: str) -> str | None:
         ("ua://", "decoders.Python.apps.Ultra_Custom.ultra_custom_52"),
         ("mkk://", "decoders.Python.apps.MKK_Hyper_VPN.MKK_Hyper_VPN_textos"),
         ("vpn://", "decoders.Python.apps.DTunnel_Mod.dtunnelmod"),
+        ("mytunnelproxy://", "decoders.Python.apps.My_Tunnel_Proxy.file_decoder"),
     )
     for prefix, module_name in c8_links:
         if lowered.startswith(prefix):

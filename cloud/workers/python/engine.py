@@ -78,6 +78,7 @@ _C8_FILE_ENGINES = {
     "nvpnc": ("decoders/Python/apps/Neutro_VPN/neutro_vpn.py", "Neutro VPN"),
     "green": ("decoders/Python/apps/24clan_VPN_Green/24clan_VPN_Green_archivos.py", "24clan VPN Green"),
     "hxt": ("decoders/Python/apps/HX_Tunnel_VPN/HX_Tunnel_VPN_archivos.py", "HX Tunnel VPN"),
+    "mtp": ("decoders/Python/apps/My_Tunnel_Proxy/file_decoder.py", "My Tunnel Proxy"),
 }
 
 def load_runtime_file_engines() -> dict[str, dict[str, str]]:
@@ -216,7 +217,7 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
 
 def decode_provider_catalog(provider_id: str, contents: bytes) -> dict:
     """One fixed provider codec, child-isolated; broker performs all network I/O."""
-    if provider_id not in ("24clan-green", "hx-tunnel", "mkk-hyper"):
+    if provider_id not in ("24clan-green", "hx-tunnel", "mkk-hyper", "my-tunnel-proxy"):
         raise DecodeFailure("UNSUPPORTED_FORMAT")
     if not isinstance(contents, bytes) or not contents:
         raise DecodeFailure("INVALID_INPUT")

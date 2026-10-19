@@ -3,7 +3,7 @@ import {readFileSync} from "node:fs";
 import {join} from "node:path";
 import {createHash} from "node:crypto";
 
-export const CATALOG_VERSION = 2; // Increment whenever the public roster or metadata changes.
+export const CATALOG_VERSION = 3; // Increment whenever the public roster or metadata changes.
 export const RECHECK_SECONDS = 24 * 60 * 60;
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -23,6 +23,7 @@ const ITEMS = Object.freeze([
   {id:"24clan-green", name:"24clan VPN Green", icon:"24clan-green.png", remote:"24clan-green"},
   {id:"hx-tunnel", name:"HX Tunnel VPN", icon:"hx-tunnel.png", remote:"hx-tunnel"},
   {id:"mkk-hyper", name:"MKK Hyper VPN", icon:"mkk-hyper.png", remote:"mkk-hyper"},
+  {id:"my-tunnel-proxy", name:"My Tunnel Proxy", icon:"my-tunnel-proxy.png", remote:"my-tunnel-proxy"},
 ]);
 
 const base = () => join(process.cwd(),"public","server-vpn-icons");

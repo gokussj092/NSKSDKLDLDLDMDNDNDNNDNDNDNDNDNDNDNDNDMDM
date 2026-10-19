@@ -2,7 +2,7 @@
 
 - Base: `feat/cloud-c8-vps-installer-updater`, origen de motores: PR #95.
 - Inventario C0 de 240 rutas: congelado. Extensiones extra: .rt, .gol,
-  .ua, .nvpnc, .green, y .hxt con lector HX independiente.
+  .ua, .nvpnc, .green, .mtp, y .hxt con lector HX independiente.
 - Cada aplicación tiene su módulo Python en `decoders/Python/apps`;
   los siete módulos históricos de la raíz son entradas de compatibilidad.
 - Catálogo público de presentación: `POST /api/v1/server-vpn/catalog`
@@ -18,10 +18,10 @@
   dentro de un dispositivo con root, malware o instrumentación Frida.
 - Consentimiento: registro cifrado de la versión legal aceptada antes de la
   primera consulta Cloud, con enlaces públicos a términos y privacidad.
-- Los cuatro iconos disponibles y originales son NUR, 24clan, HX y MKK.
+- Los cinco iconos disponibles y originales son NUR, 24clan, HX, MKK y My Tunnel Proxy.
   El resto de proveedores NO debe mostrarse con iconos inventados: hay que
   extraerlos de sus APK de origen y revisar derechos de marca antes de Play Store.
-- NUR mantiene su broker probado. 24clan, HX y MKK disponen ahora de su propio
+- NUR mantiene su broker probado. 24clan, HX, MKK y My Tunnel Proxy disponen de su propio
   broker con HTTPS fijo, DNS anclado, reintentos limitados por IP y worker
   aislado. Están DESACTIVADOS por defecto mediante
   `CLOUD_SERVER_VPN_ENABLED=false` hasta validar contra sus proveedores reales.
@@ -71,8 +71,31 @@ responsable antes de publicarse en Google Play.
 
 ## Phase VII — verificación temporal de catálogos remotos
 
-Durante `sudo spdecode qa start` o `sudo spdecode qa services`, los tres proveedores fijos (24clan Green, HX Tunnel y MKK Hyper) se habilitan temporalmente junto a NUR para pruebas privadas autorizadas. Al ejecutar `sudo spdecode qa stop`, se restauran los interruptores anteriores y se revoca el acceso QA. No implica autorización de terceros para distribuir su contenido ni certificación de compatibilidad.
+Durante `sudo spdecode qa start` o `sudo spdecode qa services`, los cuatro proveedores fijos (24clan Green, HX Tunnel, MKK Hyper y My Tunnel Proxy) se habilitan temporalmente junto a NUR para pruebas privadas autorizadas. Al ejecutar `sudo spdecode qa stop`, se restauran los interruptores anteriores y se revoca el acceso QA. No implica autorización de terceros para distribuir su contenido ni certificación de compatibilidad.
 
 El catálogo Android se cifra y consulta como máximo cada 24 horas, pero el botón existente de **Actualizar** ejecuta una consulta completa (`knownVersion=0`) incluso con la misma versión para reflejar cambios de habilitación. Las actualizaciones automáticas normales siguen necesitando incrementar monotónicamente `CLOUD_SERVER_VPN_CATALOG_VERSION`. La disponibilidad de un botón no garantiza que el servidor remoto esté operativo o que la respuesta pueda descifrarse.
 
 La APK QA mostrará códigos de error sanitizados por extensión (sin nombres de archivo ni credenciales) para distinguir fallos de transporte, configuración, sesión y descifrado. Los resultados reales de NUR se diagnostican con `sudo spdecode qa probe-nur` durante una sesión activa.
+
+## My Tunnel Proxy 2.3 — catálogo versión 3
+
+ID fijo `my-tunnel-proxy`, módulo
+`decoders/Python/apps/My_Tunnel_Proxy/server_catalog_decoder.py`. Descarga real
+validada el 2026-10-19: 44 servidores y 601 redes, con comparación del JSON
+completo usando las primitivas ARM64 originales. El broker conserva únicamente
+el query estático de la URL original; rechaza cualquier modificación de ese
+query en redirecciones. El cliente no selecciona URL, query, host ni módulo.
+
+El lector `.mtp` y el texto `mytunnelproxy://` usan `file_decoder.py`. Las
+copias de catálogo `.js`/`.rj` se leen explícitamente con el lector de catálogo,
+sin registrar esas extensiones genéricas en el router global. `mytunnel://`
+solo revela una referencia Cloud offline; no se descarga su destino autenticado.
+La compatibilidad `.mtp` se verificó con vectores nativos sintéticos: falta
+una exportación real. Ver README, TESTING y manifest de la carpeta.
+
+La versión mínima del catálogo público y el valor por defecto Compose son 3.
+Si la instalación ya fija `CLOUD_SERVER_VPN_CATALOG_VERSION`, actualizarlo a
+un entero mayor que el anterior y al menos 3 antes de aplicar el cambio.
+El CLI QA avanza monotónicamente desde la versión mínima actual. El proveedor
+continúa bajo el interruptor existente, desactivado por defecto; esta entrega
+no despliega ni altera Android, la web administrativa o los proveedores previos.

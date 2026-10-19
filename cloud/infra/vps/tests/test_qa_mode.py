@@ -58,7 +58,7 @@ class QATests(unittest.TestCase):
         self.assertIn("CLOUD_API_ENABLED=true",self.env.read_text())
         self.assertIn("CLOUD_NUR_FETCH_ENABLED=true",self.env.read_text())
         self.assertIn("CLOUD_SERVER_VPN_ENABLED=true",self.env.read_text())
-        self.assertIn("CLOUD_SERVER_VPN_CATALOG_VERSION=3",self.env.read_text())
+        self.assertIn("CLOUD_SERVER_VPN_CATALOG_VERSION=4",self.env.read_text())
         self.assertIn("Additional Server VPN providers: ENABLED",out)
         self.assertIn("CLOUD_NUR_CATALOG_URL=https://strongteam.co/api/catalog/vpn",self.env.read_text())
         self.assertIn("NUR Server VPN: ENABLED",out)
@@ -76,7 +76,7 @@ class QATests(unittest.TestCase):
         self.assertIn("CLOUD_NUR_FETCH_ENABLED=",self.env.read_text())
         self.assertNotIn("CLOUD_NUR_FETCH_ENABLED=true",self.env.read_text())
         self.assertNotIn("CLOUD_SERVER_VPN_ENABLED=true",self.env.read_text())
-        self.assertIn("CLOUD_SERVER_VPN_CATALOG_VERSION=4",self.env.read_text())
+        self.assertIn("CLOUD_SERVER_VPN_CATALOG_VERSION=5",self.env.read_text())
         self.assertNotIn("CLOUD_NUR_CATALOG_URL=https://strongteam.co",self.env.read_text())
         self.assertFalse(self.state.exists())
     def test_stop_without_prior_state_keeps_existing_server_gates(self):
@@ -84,6 +84,13 @@ class QATests(unittest.TestCase):
         self.call("stop")
         self.assertIn("CLOUD_API_ENABLED=true",self.env.read_text())
         self.assertIn("CLOUD_FORCE_MAINTENANCE=true",self.env.read_text())
+    def test_catalog_version_upgrade_keeps_existing_higher_versions(self):
+        self.assertEqual(qa.next_catalog_version([]),"4")
+        self.assertEqual(qa.next_catalog_version(["CLOUD_SERVER_VPN_CATALOG_VERSION=2"]),"4")
+        self.assertEqual(qa.next_catalog_version(["CLOUD_SERVER_VPN_CATALOG_VERSION=30"]),"31")
+        for invalid in ("1","-1","abc","999999999"):
+            with self.subTest(version=invalid),self.assertRaises(RuntimeError):
+                qa.next_catalog_version(["CLOUD_SERVER_VPN_CATALOG_VERSION="+invalid])
     def test_enable_services_during_existing_qa_keeps_code_and_revokes_at_stop(self):
         # A QA session provisioned by an older CLI does not yet have provider state.
         self.asset.write_text('{"catalogUrl":"https://strongteam.co/allowed-path"}')
@@ -95,7 +102,7 @@ class QATests(unittest.TestCase):
         self.assertIn("NUR Server VPN: ENABLED",output)
         self.assertIn("Additional Server VPN providers: ENABLED",output)
         # The current flags were deliberately changed before services was called.
-        self.assertIn("CLOUD_SERVER_VPN_CATALOG_VERSION=4",self.env.read_text())
+        self.assertIn("CLOUD_SERVER_VPN_CATALOG_VERSION=5",self.env.read_text())
         self.assertNotIn(code,output)
         self.assertTrue(any("web" in call for call in calls))
         self.call("stop")

@@ -21,6 +21,10 @@ const PROVIDERS = Object.freeze({
     url:"https://f005.backblazeb2.com/file/mkkhyper/api_server.json",
     agent:"MKK Hyper VPN/2.9.2",
   },
+  "my-tunnel-proxy": {
+    url:"https://mfmpro.xyz/api/app?json=3c9a2a29f3a4180271da",
+    agent:"My Tunnel Proxy/2.3",
+  },
 });
 const MAX_BYTES=8*1024*1024;
 const DEADLINE_MS=30000;
@@ -98,7 +102,7 @@ export async function downloadVpnCatalog(id){
   if(!providerEnabled(id))fail("REMOTE_NOT_CONFIGURED");
   const initial=new URL(provider.url);
   if(initial.protocol!=="https:"||initial.port||initial.username||initial.password||
-     initial.search||initial.hash)fail("REMOTE_NETWORK_DENIED");
+     initial.hash)fail("REMOTE_NETWORK_DENIED");
   const deadline=Date.now()+DEADLINE_MS;
   let target=initial.href;
   const visited=new Set();
@@ -107,7 +111,7 @@ export async function downloadVpnCatalog(id){
     visited.add(target);
     const dest=new URL(target);
     if(dest.protocol!=="https:"||dest.host!==initial.host||dest.username||
-       dest.password||dest.search||dest.hash||dest.port)fail("REMOTE_NETWORK_DENIED");
+       dest.password||dest.search!==initial.search||dest.hash||dest.port)fail("REMOTE_NETWORK_DENIED");
     const addresses=await vettedIpv4(dest.hostname);
     let redirected=false;
     for(const ip of addresses){

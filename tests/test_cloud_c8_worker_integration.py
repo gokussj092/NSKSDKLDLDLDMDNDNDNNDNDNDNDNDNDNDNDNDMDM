@@ -26,11 +26,11 @@ class C8WorkerIntegrationTests(unittest.TestCase):
         base=load_file_engines()
         extended=load_runtime_file_engines()
         self.assertEqual(len(base),240)
-        self.assertEqual(len(extended),245)
+        self.assertEqual(len(extended),246)
         self.assertEqual({k: v for k,v in extended.items() if k not in
-                          {"rt","gol","ua","nvpnc","green","hxt"}},
+                          {"rt","gol","ua","nvpnc","green","hxt","mtp"}},
                          {k: v for k,v in base.items() if k!="hxt"})
-        for ext in ("rt","gol","ua","nvpnc","green","hxt"):
+        for ext in ("rt","gol","ua","nvpnc","green","hxt","mtp"):
             self.assertEqual(extended[ext]["phase"],"C8")
             self.assertIn("/apps/",extended[ext]["source"])
         self.assertNotEqual(extended["hxt"]["source"],base["hxt"]["source"])

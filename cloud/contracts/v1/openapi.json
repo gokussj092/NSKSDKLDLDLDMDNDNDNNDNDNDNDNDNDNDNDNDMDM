@@ -877,7 +877,8 @@
                     "enum": [
                       "24clan-green",
                       "hx-tunnel",
-                      "mkk-hyper"
+                      "mkk-hyper",
+                      "my-tunnel-proxy"
                     ]
                   },
                   "consent": {

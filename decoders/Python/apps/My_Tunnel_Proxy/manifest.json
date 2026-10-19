@@ -1,0 +1,37 @@
+{
+  "id": "my-tunnel-proxy",
+  "name": "My Tunnel Proxy",
+  "package": "com.mytunnelproxy.vpn",
+  "engine": "python-shared-renz-primitives",
+  "engineVersion": 1,
+  "compatibleVersions": ["2.3"],
+  "versionCode": 23,
+  "files": {
+    "entrypoint": "file_decoder.py",
+    "extensions": ["mtp"],
+    "textPrefixes": ["mytunnelproxy://"],
+    "cloudReferencePrefix": "mytunnel://",
+    "cloudReferenceResolution": "offline-pointer-only",
+    "validation": "original-native-synthetic-vectors; real exporter sample pending"
+  },
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "my-tunnel-proxy",
+    "offlineExtensions": ["js", "rj"],
+    "validation": "complete live catalog parity with original ARM64 primitives",
+    "validatedOn": "2026-10-19",
+    "serversObserved": 44,
+    "networksObserved": 601,
+    "deploymentEnabledByDefault": false
+  },
+  "icon": {
+    "file": "My_Tunnel_Proxy.png",
+    "source": "base.apk:res/h/bx.png",
+    "width": 512,
+    "height": 512,
+    "bytes": 82407,
+    "sha256": "cdf83eafa496d555c11e88bb14d92c95ff096c648d274196b4336c599fbfe592"
+  },
+  "dependencies": ["Python >=3.10", "pycryptodome==3.23.0", "decoders/Python/renz.py"],
+  "sourceApkSha256": "228a088fa36bf80d6de9412c189c88802a019033f2c639cb9f678a55e06e2cce"
+}
