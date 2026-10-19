@@ -376,7 +376,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-        if(savedInstanceState==null)handleExternalIntent(intent)
+        if(savedInstanceState==null && !showCloudLegal)handleExternalIntent(intent)
     }
 
     override fun onResume() {
