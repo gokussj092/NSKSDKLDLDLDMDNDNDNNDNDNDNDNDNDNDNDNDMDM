@@ -656,54 +656,6 @@ class MainActivity : ComponentActivity() {
     }
 
     /** User-triggered NUR catalog fetch; endpoint is read from the encrypted asset vault. */
-    private fun decodeServerVpnProvider(id:String) {
-        if(busy || showCloudLegal || !BuildConfig.SPDECODE_CLOUD_ENABLED)return
-        val provider=serverVpnApps.firstOrNull { it.id==id && it.decodeEnabled }?:return
-        if(!id.matches(Regex("[a-z0-9-]{1,48}")))return
-        val generation=++importGeneration
-        job?.cancel()
-        job=scope.launch {
-            busy=true
-            progressStage=1
-            progressPosition=1
-            progressTotal=1
-            progressFilename=provider.name
-            message=null
-            reveal=false
-            try {
-                historyLoad?.await()
-                val decoded=cloudClient.decodeServerVpnProvider(id)
-                progressStage=2
-                val record=DecodeView("server-vpn-$id.json","vpnservers",
-                    decoded.rawText,decoded.sourceBytes?:0)
-                val saved=try {
-                    withContext(Dispatchers.IO){historyStore.save(record)}
-                    true
-                }catch(error:CancellationException){throw error}
-                 catch(_:Exception){false}
-                result=record
-                recent.add(0,record)
-                if(!saved)toast(R.string.history_storage_error)
-                try {historyPreferences.setSelectedId(record.id)}
-                catch(error:CancellationException){throw error}
-                catch(_:Exception){toast(R.string.history_storage_error)}
-                tab=0
-            }catch(error:CancellationException){throw error}
-             catch(_:Exception) {
-                if(generation==importGeneration) {
-                    SafeDecodeDiagnostics.record(SafeDecodeDiagnostics.Event.FILE_IMPORT_FAILURE)
-                    message=getString(R.string.nur_servers_failed)
-                }
-            }finally {
-                if(generation==importGeneration) {
-                    busy=false
-                    progressStage=0
-                    progressFilename=null
-                }
-            }
-        }
-    }
-
     private fun decodeNurServers() {
         if(busy)return
         val generation=++importGeneration
@@ -784,6 +736,54 @@ class MainActivity : ComponentActivity() {
             try{historyPreferences.setSelectedId(entry.id)}
             catch(_:CancellationException){throw CancellationException()}
             catch(_:Exception){toast(R.string.history_storage_error)}
+        }
+    }
+
+    private fun decodeServerVpnProvider(id:String) {
+        if(busy || showCloudLegal || !BuildConfig.SPDECODE_CLOUD_ENABLED)return
+        val provider=serverVpnApps.firstOrNull { it.id==id && it.decodeEnabled }?:return
+        if(!id.matches(Regex("[a-z0-9-]{1,48}")))return
+        val generation=++importGeneration
+        job?.cancel()
+        job=scope.launch {
+            busy=true
+            progressStage=1
+            progressPosition=1
+            progressTotal=1
+            progressFilename=provider.name
+            message=null
+            reveal=false
+            try {
+                historyLoad?.await()
+                val decoded=cloudClient.decodeServerVpnProvider(id)
+                progressStage=2
+                val record=DecodeView("server-vpn-$id.json","vpnservers",
+                    decoded.rawText,decoded.sourceBytes?:0)
+                val saved=try {
+                    withContext(Dispatchers.IO){historyStore.save(record)}
+                    true
+                }catch(error:CancellationException){throw error}
+                 catch(_:Exception){false}
+                result=record
+                recent.add(0,record)
+                if(!saved)toast(R.string.history_storage_error)
+                try {historyPreferences.setSelectedId(record.id)}
+                catch(error:CancellationException){throw error}
+                catch(_:Exception){toast(R.string.history_storage_error)}
+                tab=0
+            }catch(error:CancellationException){throw error}
+             catch(_:Exception) {
+                if(generation==importGeneration) {
+                    SafeDecodeDiagnostics.record(SafeDecodeDiagnostics.Event.FILE_IMPORT_FAILURE)
+                    message=getString(R.string.nur_servers_failed)
+                }
+            }finally {
+                if(generation==importGeneration) {
+                    busy=false
+                    progressStage=0
+                    progressFilename=null
+                }
+            }
         }
     }
 

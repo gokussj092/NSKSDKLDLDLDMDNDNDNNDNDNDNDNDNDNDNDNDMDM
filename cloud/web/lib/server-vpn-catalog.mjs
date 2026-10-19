@@ -31,7 +31,8 @@ export function catalog() {
       iconSha256:iconFor(x.id).sha256,
       iconMimeType:"image/png",
       // No decode button for a provider until its remote broker is enabled.
-      decodeEnabled:x.remote==="nur" ? process.env.CLOUD_NUR_FETCH_ENABLED==="true" :\n        Boolean(x.remote) && process.env.CLOUD_SERVER_VPN_ENABLED==="true",
+      decodeEnabled:x.remote==="nur" ? process.env.CLOUD_NUR_FETCH_ENABLED==="true" :
+        Boolean(x.remote) && process.env.CLOUD_SERVER_VPN_ENABLED==="true",
     })),
   };
 }

@@ -13,7 +13,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.security.MessageDigest
 
-internal data class ServerVpnApp(
+data class ServerVpnApp(
     val id:String,
     val name:String,
     val icon:Bitmap,

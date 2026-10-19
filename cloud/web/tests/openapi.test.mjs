@@ -9,13 +9,13 @@ const document = JSON.parse(readFileSync(path.resolve(directory, "../../contract
 
 test("all v1 OpenAPI contract paths are backed by Next.js route handlers", () => {
   assert.equal(document.openapi, "3.1.0");
-  assert.equal(Object.keys(document.paths).length, 13);
+  assert.equal(Object.keys(document.paths).length, 16);
   for (const [pathname, methods] of Object.entries(document.paths)) {
     const relative = pathname.replace(/^\/api\/v1\//, "").replace("{id}", "[id]");
     const routeFile = path.resolve(directory, "../app/api/v1", relative, "route.js");
     const source = readFileSync(routeFile, "utf8");
     for (const method of Object.keys(methods)) {
-      assert.match(source, new RegExp("export function " + method.toUpperCase() + "\\("), pathname);
+      assert.match(source, new RegExp("export\\s+(?:async\\s+)?function\\s+" + method.toUpperCase() + "\\s*\\("), pathname);
     }
   }
 });
