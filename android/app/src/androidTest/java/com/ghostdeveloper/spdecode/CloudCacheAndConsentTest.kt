@@ -68,6 +68,24 @@ class CloudCacheAndConsentTest {
         }
     }
 
+    @Test fun withdrawalBlocksCloudWithoutErasingEncryptedCatalog() {
+        val legal=File(cacheDir,"legal")
+        val backup=legal.takeIf { it.isFile }?.readBytes()
+        val catalog=File(cacheDir,"probe-consent-${UUID.randomUUID().toString().replace("-","")}")
+        try {
+            val store=ServerVpnSecureCache(context)
+            store.write(catalog.name,"local-cached-icon".toByteArray())
+            CloudLegalConsent.accept(context)
+            assertTrue(CloudLegalConsent.accepted(context))
+            CloudLegalConsent.revoke(context)
+            assertFalse(CloudLegalConsent.accepted(context))
+            assertArrayEquals("local-cached-icon".toByteArray(),store.read(catalog.name))
+        }finally {
+            catalog.delete()
+            if(backup==null)legal.delete()else legal.writeBytes(backup)
+        }
+    }
+
     @Test fun consentIsEncryptedAndBoundToCurrentLegalVersion() {
         val file=File(cacheDir,"legal")
         val before=file.takeIf { it.isFile }?.readBytes()
