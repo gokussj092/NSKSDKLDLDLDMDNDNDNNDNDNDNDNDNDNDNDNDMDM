@@ -67,12 +67,33 @@ class PhaseViPrivacySecurityTests(unittest.TestCase):
         self.assertIn('input.knownVersion===currentVersion',route)
         self.assertIn('unchanged:true',route)
 
+    def test_withdrawal_is_accessible_and_keeps_local_history(self):
+        consent=src(CLOUD/"CloudLegalConsent.kt")
+        self.assertIn('ServerVpnSecureCache(context).delete("legal")',consent)
+        settings=src(KOTLIN/"FunctionalSettingsPanel.kt")
+        self.assertIn('cloud_legal_withdraw_detail',settings)
+        self.assertIn('onWithdrawConsent()',settings)
+        source=src(KOTLIN/"MainActivity.kt")
+        self.assertIn('CloudLegalConsent.revoke(this@MainActivity)',source)
+        self.assertIn('cloudClient.clearSession()',source)
+        self.assertIn('showCloudLegal=true',source)
+        locales=("values","values-es","values-ar","values-de","values-fa",
+                 "values-fr","values-in","values-pt-rBR","values-ru")
+        from xml.etree import ElementTree
+        for locale in locales:
+            with self.subTest(locale=locale):
+                p=ROOT/"android/app/src/main/res"/locale/"cloud_legal_strings.xml"
+                keys={e.attrib["name"] for e in ElementTree.parse(p).getroot().findall("string")}
+                self.assertTrue({"cloud_legal_withdraw",
+                                 "cloud_legal_withdraw_detail"}<=keys)
+
     def test_android_test_verifies_tamper_and_nonce_rotation(self):
         source=src(ROOT/"android/app/src/androidTest/java/com/ghostdeveloper/spdecode/CloudCacheAndConsentTest.kt")
         for statement in ("roundTripHasUniqueNoncesAndNoPlaintextOnDisk",
                           "tamperingOrRenamingEncryptedRecordsFailsAuthentication",
                           "illegalIdentifiersAreRejected",
-                          "consentIsEncryptedAndBoundToCurrentLegalVersion"):
+                          "consentIsEncryptedAndBoundToCurrentLegalVersion",
+                          "withdrawalBlocksCloudWithoutErasingEncryptedCatalog"):
             self.assertIn(statement,source)
         self.assertIn('assertFalse(first.contentEquals(second))',source)
         self.assertIn('assertNull(vault.read(other))',source)
