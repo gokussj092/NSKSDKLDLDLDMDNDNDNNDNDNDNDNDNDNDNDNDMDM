@@ -29,6 +29,11 @@ internal class CloudDecodeClient(context: Context) {
     private val lock = Any()
     private val integrityManager by lazy { IntegrityManagerFactory.create(app) }
 
+    /** Client-side defense-in-depth; server sessions still require Play Integrity. */
+    private fun requireLegalConsent() {
+        if(!CloudLegalConsent.accepted(app)) throw Failure("LEGAL_CONSENT_REQUIRED",403)
+    }
+
     data class Decoded(val rawText: String, val sourceBytes: Int? = null)
 
     class Failure(val code: String, val httpStatus: Int) :
@@ -105,6 +110,7 @@ internal class CloudDecodeClient(context: Context) {
 
     private suspend fun decode(endpoint: String, payload: JSONObject): Decoded {
         require(BuildConfig.SPDECODE_CLOUD_ENABLED) { "CLOUD_DISABLED" }
+        withContext(Dispatchers.IO) { requireLegalConsent() }
         coroutineContext.ensureActive()
         val bearer = session()
         coroutineContext.ensureActive()
@@ -179,6 +185,7 @@ internal class CloudDecodeClient(context: Context) {
     /** Public presentation metadata only; never contains provider endpoints. */
     suspend fun serverVpnCatalog(knownVersion:Int): JSONObject =
         withContext(Dispatchers.IO) {
+            requireLegalConsent()
             extract(CloudNativeTransport.post("/api/v1/server-vpn/catalog",
                 JSONObject().put("knownVersion",knownVersion)))
         }
@@ -192,6 +199,7 @@ internal class CloudDecodeClient(context: Context) {
     suspend fun serverVpnIcon(id:String): JSONObject {
         require(id.matches(Regex("[a-z0-9-]{1,48}")))
         return withContext(Dispatchers.IO) {
+            requireLegalConsent()
             extract(CloudNativeTransport.post("/api/v1/server-vpn/icon",
                 JSONObject().put("id",id)))
         }
