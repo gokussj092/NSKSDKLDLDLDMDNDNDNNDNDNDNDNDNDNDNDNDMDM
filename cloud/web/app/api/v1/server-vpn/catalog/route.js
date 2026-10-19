@@ -1,4 +1,4 @@
-import {CATALOG_VERSION,RECHECK_SECONDS,catalog} from "../../../../lib/server-vpn-catalog.mjs";
+import {CATALOG_VERSION,RECHECK_SECONDS,catalog} from "../../../../../lib/server-vpn-catalog.mjs";
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
 const reply=(body,status=200)=>Response.json(body,{status,headers:{"Cache-Control":"no-store","X-Content-Type-Options":"nosniff"}});
