@@ -68,6 +68,32 @@ def load_file_engines() -> dict[str, dict[str, str]]:
     return engines
 
 
+
+# C8 additions are separate from the frozen 240-route C0 inventory.
+# Keep each format pinned to its own source codec; never route HX .hxt into xor_family.
+_C8_FILE_ENGINES = {
+    "rt": ("decoders/Python/apps/REESE_TUNNEL/reese_tunnel.py", "REESE TUNNEL"),
+    "gol": ("decoders/Python/apps/VPN_PLUS_PERU/vpn_plus_peru.py", "VPN PLUS PERÚ"),
+    "ua": ("decoders/Python/apps/Ultra_Custom/ultra_custom_52.py", "Ultra Custom"),
+    "nvpnc": ("decoders/Python/apps/Neutro_VPN/neutro_vpn.py", "Neutro VPN"),
+    "green": ("decoders/Python/apps/24clan_VPN_Green/24clan_VPN_Green_archivos.py", "24clan VPN Green"),
+    "hxt": ("decoders/Python/apps/HX_Tunnel_VPN/HX_Tunnel_VPN_archivos.py", "HX Tunnel VPN"),
+}
+
+def load_runtime_file_engines() -> dict[str, dict[str, str]]:
+    result = load_file_engines()
+    for suffix, (relative, name) in _C8_FILE_ENGINES.items():
+        source = (ROOT / relative).resolve()
+        if not source.is_relative_to(DECODERS) or not source.is_file():
+            raise RuntimeError("C8 engine unavailable")
+        result[suffix] = {
+            "source": str(source),
+            "runtime": "python",
+            "name": name,
+            "phase": "C8",
+        }
+    return result
+
 def _child_limits(cpu_budget: int = TIMEOUT_SECONDS) -> None:
     """POSIX resource caps on untrusted decoder subprocesses."""
     resource.setrlimit(resource.RLIMIT_CPU, (cpu_budget + 2, cpu_budget + 3))
@@ -92,7 +118,7 @@ def _child_env(private_dir: str) -> dict[str, str]:
 
 def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS, credentials: dict | None = None) -> dict:
     """Execute one canonical file engine. The caller must authenticate first."""
-    if not isinstance(suffix, str) or suffix not in load_file_engines():
+    if not isinstance(suffix, str) or suffix not in load_runtime_file_engines():
         raise DecodeFailure("UNSUPPORTED_FORMAT")
     if not isinstance(contents, bytes) or not contents:
         raise DecodeFailure("INVALID_INPUT")
@@ -100,7 +126,7 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
         raise DecodeFailure("INPUT_TOO_LARGE")
     if not isinstance(timeout, int) or timeout < 1 or timeout > TIMEOUT_SECONDS:
         raise DecodeFailure("INVALID_REQUEST")
-    engine = load_file_engines()[suffix]
+    engine = load_runtime_file_engines()[suffix]
     if credentials is not None:
         if suffix != "hc" or not isinstance(credentials, dict) or set(credentials) - {"password", "hwid"}:
             raise DecodeFailure("CREDENTIALS_NOT_ALLOWED")
