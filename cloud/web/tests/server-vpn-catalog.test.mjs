@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {createHash} from "node:crypto";
-import {catalog,iconFor,CATALOG_VERSION,RECHECK_SECONDS} from "../lib/server-vpn-catalog.mjs";
+import {catalog,iconFor,CATALOG_VERSION,RECHECK_SECONDS,activeCatalogVersion} from "../lib/server-vpn-catalog.mjs";
 import {POST as list} from "../app/api/v1/server-vpn/catalog/route.js";
 import {POST as getIcon} from "../app/api/v1/server-vpn/icon/route.js";
 
@@ -52,4 +52,12 @@ test("only fixed catalog providers are eligible for remote broker",async()=>{
   for(const id of providerIds()) assert.equal(providerEnabled(id,{CLOUD_SERVER_VPN_ENABLED:"false"}),false);
   assert.equal(providerEnabled("https://attacker.invalid/",{CLOUD_SERVER_VPN_ENABLED:"true"}),false);
   await assert.rejects(()=>downloadVpnCatalog("https://attacker.invalid/"),{code:"UNSUPPORTED_FORMAT"});
+});
+
+test("deployment version is monotonic and rejects rollback",()=>{
+ assert.equal(activeCatalogVersion({}),CATALOG_VERSION);
+ assert.equal(activeCatalogVersion({CLOUD_SERVER_VPN_CATALOG_VERSION:"3"}),3);
+ for(const value of ["-1","0","1","abc","3.4","0003","9999999999"]) {
+   assert.throws(()=>activeCatalogVersion({CLOUD_SERVER_VPN_CATALOG_VERSION:value}));
+ }
 });

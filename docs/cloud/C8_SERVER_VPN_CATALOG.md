@@ -41,3 +41,30 @@ Ejecutar `cd cloud/web && npm test && npm run build`, pruebas unitarias
 Python C8, `./gradlew :app:assembleDebug`, auditoría C5 y GitHub Actions.
 Las pruebas de firmas, compatibilidad real con exportadores y VPS
 deben realizarse antes de habilitar estos métodos en Play Store.
+
+## Política de publicación de nuevas versiones (Fase VI)
+
+`CATALOG_VERSION` es la versión mínima del código. Al publicar una lista,
+icono o cambio en la disponibilidad de un proveedor, aumentar
+`CLOUD_SERVER_VPN_CATALOG_VERSION` a un entero **mayor que el anterior**.
+Nunca disminuirlo en un rollback del backend: las instalaciones Android
+rechazan catálogos con versiones inferiores. Los indicadores de habilitación
+de proveedores son parte de la metadata, por lo que también requieren
+incrementar la versión. El cliente comprueba como máximo una vez cada
+24 horas, transmite solo `knownVersion`, conserva la caché cuando
+`unchanged=true` y descarga únicamente iconos cuyo SHA-256 sea nuevo.
+
+La cadencia de 24 horas es una comprobación de versión, no la descarga
+diaria del catálogo completo. El botón de reintento permite resolver una
+primera instalación sin datos, sin abrir conexiones a proveedores externos.
+No usar cron en Android para forzar conexiones mientras la app esté cerrada.
+
+## Consentimiento
+
+El cliente bloquea **todas** las operaciones Cloud, incluidas las consultas
+de catálogo y de iconos, si no hay registro cifrado de aceptación vigente.
+En cada cambio sustancial de los términos o política de privacidad, crear una
+nueva revisión y elevar `CloudLegalConsent.VERSION` en una actualización
+Android. El registro anterior no habilita la nueva versión. La página legal
+sigue siendo un borrador que requiere revisión profesional y datos del
+responsable antes de publicarse en Google Play.

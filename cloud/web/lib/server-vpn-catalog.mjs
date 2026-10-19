@@ -5,6 +5,19 @@ import {createHash} from "node:crypto";
 
 export const CATALOG_VERSION = 2; // Increment whenever the public roster or metadata changes.
 export const RECHECK_SECONDS = 24 * 60 * 60;
+
+/** Monotonic deployment version. Bump this override for ANY metadata, icon
+ * or provider enablement change, before the server rollout. */
+export function activeCatalogVersion(env=process.env) {
+  const configured=env.CLOUD_SERVER_VPN_CATALOG_VERSION;
+  if(configured===undefined || configured==="")return CATALOG_VERSION;
+  if(!/^[1-9][0-9]{0,8}$/.test(configured))throw Error("INVALID_CATALOG_VERSION");
+  const number=Number(configured);
+  if(!Number.isSafeInteger(number) || number<CATALOG_VERSION)
+    throw Error("CATALOG_VERSION_ROLLBACK");
+  return number;
+}
+
 const ITEMS = Object.freeze([
   {id:"nur-tunnel", name:"NUR TUNNEL VPN", icon:"nur-tunnel.png", remote:"nur"},
   {id:"24clan-green", name:"24clan VPN Green", icon:"24clan-green.png", remote:"24clan-green"},
@@ -23,7 +36,7 @@ export function iconFor(id) {
 export function catalog() {
   return {
     apiVersion:"v1",
-    catalogVersion:CATALOG_VERSION,
+    catalogVersion:activeCatalogVersion(),
     recheckAfterSeconds:RECHECK_SECONDS,
     apps: ITEMS.map(x=>({
       id:x.id,
