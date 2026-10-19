@@ -38,10 +38,18 @@ internal class ServerVpnCatalogRepository(
     }catch (_:Exception){null}
 
     private fun image(bytes:ByteArray):Bitmap? {
-        if(bytes.size !in 32..maxIconBytes)return null
-        val bitmap=BitmapFactory.decodeByteArray(bytes,0,bytes.size)?:return null
-        if(bitmap.width !in 1..1024 || bitmap.height !in 1..1024)return null
-        return bitmap
+        if(bytes.size !in 32..maxIconBytes ||
+            !bytes.copyOfRange(0,8).contentEquals(
+                byteArrayOf(0x89.toByte(),0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a)
+            ))return null
+        // Read dimensions without allocating pixels: a tiny PNG can expand
+        // into a dangerously large bitmap on a low-memory Android device.
+        val bounds=BitmapFactory.Options().apply { inJustDecodeBounds=true }
+        BitmapFactory.decodeByteArray(bytes,0,bytes.size,bounds)
+        if(bounds.outWidth !in 1..1024 || bounds.outHeight !in 1..1024)return null
+        val options=BitmapFactory.Options().apply { inScaled=false }
+        return BitmapFactory.decodeByteArray(bytes,0,bytes.size,options)
+            ?.takeIf { it.width in 1..1024 && it.height in 1..1024 }
     }
 
     private fun verifiedApps(record:JSONObject?):List<ServerVpnApp> {

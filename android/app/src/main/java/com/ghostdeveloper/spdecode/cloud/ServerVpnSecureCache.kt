@@ -25,12 +25,16 @@ internal class ServerVpnSecureCache(context: Context) {
     private val store = "AndroidKeyStore"
     private val maxPlain = 1024 * 1024
 
+    companion object {
+        // All cache instances in this process must share one key-creation lock.
+        private val keyLock=Any()
+    }
+
     private fun checkName(name:String) {
         require(name.matches(Regex("[a-z0-9-]{1,64}"))) { "Invalid cache identifier" }
     }
 
-    @Synchronized
-    private fun key(): SecretKey {
+    private fun key(): SecretKey = synchronized(keyLock) {
         val ks=KeyStore.getInstance(store)
         ks.load(null)
         val existing=ks.getKey(alias,null) as? SecretKey
@@ -44,7 +48,7 @@ internal class ServerVpnSecureCache(context: Context) {
             .setRandomizedEncryptionRequired(true)
             .setUserAuthenticationRequired(false)
             .build())
-        return generator.generateKey()
+        generator.generateKey()
     }
 
     @Synchronized
