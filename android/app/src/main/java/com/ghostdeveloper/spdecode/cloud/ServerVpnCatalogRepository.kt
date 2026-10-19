@@ -88,17 +88,19 @@ internal class ServerVpnCatalogRepository(
             if(!force && available.isNotEmpty() && last>0 && now>=last &&
                 now-last<dayMillis) return@withContext available
             try {
-                val version=if(available.isEmpty())0 else previous?.optInt("catalogVersion",0)?:0
-                val remote=client.serverVpnCatalog(version)
+                val previousVersion=previous?.optInt("catalogVersion",0)?:0
+                // Manual refresh fetches latest provider flags even if version is unchanged.
+                val knownVersion=if(force || available.isEmpty())0 else previousVersion
+                val remote=client.serverVpnCatalog(knownVersion)
                 if(remote.optBoolean("unchanged",false)) {
-                    if(available.isEmpty() || remote.optInt("catalogVersion")!=version)
+                    if(available.isEmpty() || remote.optInt("catalogVersion")!=knownVersion)
                         throw IllegalStateException("Invalid catalog version response")
                     previous!!.put("checkedAtMillis",now)
                     vault.write("catalog",previous.toString().toByteArray(Charsets.UTF_8))
                     return@withContext available
                 }
                 val remoteVersion=remote.optInt("catalogVersion",0)
-                if(remoteVersion<1 || remoteVersion<version)
+                if(remoteVersion<1 || remoteVersion<previousVersion)
                     throw IllegalStateException("Catalog rollback")
                 val array=remote.optJSONArray("apps")?:throw IllegalStateException("Missing app list")
                 if(array.length() !in 1..100)throw IllegalStateException("Invalid app count")

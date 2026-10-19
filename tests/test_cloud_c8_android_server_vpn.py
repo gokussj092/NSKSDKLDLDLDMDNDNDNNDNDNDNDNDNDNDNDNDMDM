@@ -45,6 +45,8 @@ class PhaseVServerVpnIntegration(unittest.TestCase):
         self.assertIn('remote.optBoolean("unchanged",false)',catalog)
         self.assertIn('digest(bytes)!=checksum',catalog)
         self.assertIn('refreshIfDue(force:Boolean=false)',catalog)
+        self.assertIn('if(force || available.isEmpty())0 else previousVersion',catalog)
+        self.assertIn('remoteVersion<previousVersion',catalog)
         activity=(KOTLIN/"MainActivity.kt").read_text("utf-8")
         self.assertIn('refreshServerVpn(force=true)',activity)
         self.assertIn('serverVpnUnavailable=serverVpnApps.isEmpty()',activity)
