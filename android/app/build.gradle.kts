@@ -323,8 +323,7 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
                             }
                             qaFailures.add(ext + ": " + code)
                         }
-                        if(!BuildConfig.SPDECODE_CLOUD_ENABLED &&
-                            filename.endsWith(".npvs",ignoreCase=true))""")
+                        if(!BuildConfig.SPDECODE_CLOUD_ENABLED &&""")
         batch=replaceOnce(batch,"                    message=when {",
             """                    val qaDetails=if(BuildConfig.SPDECODE_QA_BUILD && qaFailures.isNotEmpty())
                         "\nQA: " + qaFailures.take(12).joinToString(" | ") else ""
