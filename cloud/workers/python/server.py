@@ -9,7 +9,7 @@ import os
 import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from engine import DecodeFailure, MAX_INPUT_BYTES, decode_file, decode_text, decode_catalog, load_file_engines
+from engine import DecodeFailure, MAX_INPUT_BYTES, decode_file, decode_text, decode_catalog, decode_provider_catalog, load_file_engines
 
 # Input is JSON + base64; accept at most bounded overhead. C3 owns public upload parsing.
 MAX_JSON_BYTES = (MAX_INPUT_BYTES * 4 // 3) + 65536
@@ -66,7 +66,7 @@ class WorkerHandler(BaseHTTPRequestHandler):
         return self._json(404, {"error": {"code": "NOT_FOUND"}})
 
     def do_POST(self) -> None:
-        if self.path not in ("/internal/v1/decode/file", "/internal/v1/decode/text", "/internal/v1/decode/import/catalog"):
+        if self.path not in ("/internal/v1/decode/file", "/internal/v1/decode/text", "/internal/v1/decode/import/catalog", "/internal/v1/decode/import/server-vpn"):
             return self._json(503, {"error": {"code": "DECODERS_DISABLED"}})
         if not self._authorized():
             return self._json(403, {"error": {"code": "FORBIDDEN"}})
@@ -81,6 +81,13 @@ class WorkerHandler(BaseHTTPRequestHandler):
                 if set(request) != {"text"} or not isinstance(request["text"], str):
                     raise ValueError("text schema")
                 result = decode_text(request["text"])
+            elif self.path == "/internal/v1/decode/import/server-vpn":
+                if set(request) != {"providerId", "dataBase64"} or not isinstance(request["providerId"], str):
+                    raise ValueError("provider schema")
+                encoded=request["dataBase64"]
+                if not isinstance(encoded,str) or len(encoded) > (MAX_INPUT_BYTES*4//3+8):
+                    raise DecodeFailure("INPUT_TOO_LARGE")
+                result=decode_provider_catalog(request["providerId"],base64.b64decode(encoded,validate=True))
             elif self.path == "/internal/v1/decode/import/catalog":
                 if set(request) != {"dataBase64"} or not isinstance(request["dataBase64"], str):
                     raise ValueError("catalog schema")

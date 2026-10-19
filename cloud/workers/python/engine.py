@@ -214,6 +214,56 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
         }
 
 
+def decode_provider_catalog(provider_id: str, contents: bytes) -> dict:
+    """One fixed provider codec, child-isolated; broker performs all network I/O."""
+    if provider_id not in ("24clan-green", "hx-tunnel", "mkk-hyper"):
+        raise DecodeFailure("UNSUPPORTED_FORMAT")
+    if not isinstance(contents, bytes) or not contents:
+        raise DecodeFailure("INVALID_INPUT")
+    if len(contents) > 8 * 1024 * 1024:
+        raise DecodeFailure("INPUT_TOO_LARGE")
+    bridge=Path(__file__).with_name("catalog_vpn_bridge.py")
+    with tempfile.TemporaryDirectory(prefix="spdecode-c8-catalog-") as folder:
+        source=Path(folder)/"catalog.enc"
+        target=Path(folder)/"stdout"
+        source.write_bytes(contents)
+        source.chmod(0o600)
+        try:
+            with target.open("wb") as output:
+                proc=subprocess.Popen(
+                    [sys.executable,str(bridge),provider_id,str(source)],
+                    cwd=ROOT,env=_child_env(folder),stdin=subprocess.DEVNULL,
+                    stdout=output,stderr=subprocess.DEVNULL,close_fds=True,
+                    start_new_session=True,preexec_fn=partial(_child_limits,CATALOG_TIMEOUT_SECONDS),
+                )
+                try:
+                    rc=proc.wait(timeout=CATALOG_TIMEOUT_SECONDS)
+                except subprocess.TimeoutExpired as error:
+                    os.killpg(proc.pid,signal.SIGKILL)
+                    proc.wait()
+                    raise DecodeFailure("ENGINE_TIMEOUT") from error
+        except OSError as error:
+            raise DecodeFailure("ENGINE_UNAVAILABLE") from error
+        if rc!=0:
+            raise DecodeFailure("DECODE_FAILED")
+        with target.open("rb") as result:
+            raw=result.read(MAX_OUTPUT_BYTES+1)
+        if len(raw)>MAX_OUTPUT_BYTES:
+            raise DecodeFailure("OUTPUT_TOO_LARGE")
+        try:
+            raw_text=raw.decode("utf-8")
+            structured=json.loads(raw_text)
+            if not isinstance(structured,(dict,list)) or not structured:
+                raise ValueError("invalid")
+        except (ValueError,UnicodeError) as error:
+            raise DecodeFailure("OUTPUT_INVALID") from error
+        return {
+            "apiVersion":"v1","status":"success","kind":"vpn_catalog",
+            "providerId":provider_id,"rawText":raw_text,
+            "structuredJson":structured,"isPartial":False,
+            "warnings":[],"exporterCertified":False,
+        }
+
 def decode_b64(suffix: str, encoded: str) -> dict:
     """Base64 strictly decoded; no unrelated extension/key fallback."""
     if not isinstance(encoded, str) or len(encoded) > ((MAX_INPUT_BYTES + 2) // 3) * 4:
