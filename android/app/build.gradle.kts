@@ -268,6 +268,26 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
         // must use the same large-result guard as NUR, never render it eagerly.
         updateResultBlock("    private fun decodeServerVpnProvider(id:String) {",
             "    private fun importFiles(uris:List<Uri>,","record","saved")
+        fun injectProviderQaError(start:String,end:String):Unit {
+            val from=activity.indexOf(start)
+            val to=activity.indexOf(end,from+start.length)
+            require(from>=0 && to>from) { "QA provider section unavailable: " + start }
+            var section=activity.substring(from,to)
+            // Keep error codes local to QA UI and never stringify exceptions.
+            section=replaceOnce(section,"catch(_:Exception) {",
+                "catch(error:Exception) {")
+            section=replaceOnce(section,
+                "message=getString(R.string.nur_servers_failed)",
+                """message=getString(R.string.nur_servers_failed) +
+                        (if(BuildConfig.SPDECODE_QA_BUILD && error is CloudDecodeClient.Failure)
+                            " (QA: " + error.code + ", HTTP " + error.httpStatus + ")"
+                         else "")""")
+            activity=activity.substring(0,from)+section+activity.substring(to)
+        }
+        injectProviderQaError("    private fun decodeNurServers() {",
+            "    private fun clearVisibleResult() {")
+        injectProviderQaError("    private fun decodeServerVpnProvider(id:String) {",
+            "    private fun importFiles(uris:List<Uri>,")
         // Batch files use the same safe preview rule for exceptionally large
         // outputs, but ordinary files retain their original navigation.
         val batchStart=activity.indexOf("    private fun importFiles(uris:List<Uri>,")
@@ -275,6 +295,32 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
         val batchEnd=activity.indexOf("    private fun clearHistory()",batchStart)
         require(batchEnd>batchStart)
         var batch=activity.substring(batchStart,batchEnd)
+        // QA-only failures report sanitized status codes locally to the tester.
+        // Never display user payloads, full filenames, credentials or exceptions.
+        batch=replaceOnce(batch,"                var failedProtectedHc=false",
+            "                var failedProtectedHc=false\n" +
+                "                val qaFailures=mutableListOf<String>()")
+        batch=replaceOnce(batch,"                    onFailure={uri,_-> ",
+            "                    onFailure={uri,cause-> ")
+        batch=replaceOnce(batch,
+            "                        if(filename.endsWith(\".npvs\",ignoreCase=true))",
+            """                        if(BuildConfig.SPDECODE_QA_BUILD) {
+                            val ext=filename.substringAfterLast('.', "file").lowercase()
+                                .filter { it.isLetterOrDigit() }.take(12).ifBlank { "file" }
+                            val code=if(cause is CloudDecodeClient.Failure)
+                                cause.code + " (" + cause.httpStatus + ")"
+                            else "CLIENT_ERROR"
+                            qaFailures.add(ext + ": " + code)
+                        }
+                        if(filename.endsWith(".npvs",ignoreCase=true))""")
+        batch=replaceOnce(batch,"                    message=when {",
+            """                    val qaDetails=if(BuildConfig.SPDECODE_QA_BUILD && qaFailures.isNotEmpty())
+                        "\\nQA: " + qaFailures.take(12).joinToString(" | ") else ""
+                    message=when {""")
+        // Restrict these summary changes to the batch section only.
+        batch=batch.replace("+summary", "+summary+qaDetails")
+        batch=replaceOnce(batch,"                        else->summary",
+            "                        else->summary+qaDetails")
         batch=replaceOnce(batch,"                    result=processed",
             "                    val previewDeferred=presentDecodedRecord(processed,saved)")
         batch=replaceOnce(batch,"historyPreferences.setSelectedId(processed.id)",
