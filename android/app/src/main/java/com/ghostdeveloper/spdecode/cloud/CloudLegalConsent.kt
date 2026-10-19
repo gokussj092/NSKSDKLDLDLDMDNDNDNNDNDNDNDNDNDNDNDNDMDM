@@ -1,6 +1,8 @@
 package com.ghostdeveloper.spdecode.cloud
 
 import android.content.Context
+import com.ghostdeveloper.spdecode.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -46,20 +48,20 @@ internal fun CloudLegalConsentDialog(
     var checked by remember { mutableStateOf(false) }
     AlertDialog(
         onDismissRequest = {},
-        title = { Text("Términos y privacidad") },
+        title = { Text(stringResource(R.string.cloud_legal_title)) },
         text = {
             Column {
-                Text("SP-DECODE Cloud procesa en el servidor los archivos o textos que decidas enviar. Estos pueden contener credenciales y otros datos sensibles.")
-                TextButton(onClick=onTerms){Text("Leer términos y condiciones")}
-                TextButton(onClick=onPrivacy){Text("Leer política de privacidad")}
+                Text(stringResource(R.string.cloud_legal_explanation))
+                TextButton(onClick=onTerms){Text(stringResource(R.string.cloud_legal_terms))}
+                TextButton(onClick=onPrivacy){Text(stringResource(R.string.cloud_legal_privacy))}
                 androidx.compose.foundation.layout.Row(modifier=Modifier.fillMaxWidth()) {
                     Checkbox(checked=checked,onCheckedChange={checked=it})
-                    Text("He leído y acepto los términos y la política de privacidad.",
+                    Text(stringResource(R.string.cloud_legal_accept_check),
                         modifier=Modifier.padding(top=10.dp))
                 }
             }
         },
-        confirmButton={ Button(onClick=onAccept,enabled=checked){Text("Aceptar")} },
-        dismissButton={ TextButton(onClick=onDecline){Text("No aceptar")} },
+        confirmButton={ Button(onClick=onAccept,enabled=checked){Text(stringResource(R.string.cloud_legal_accept))} },
+        dismissButton={ TextButton(onClick=onDecline){Text(stringResource(R.string.cloud_legal_decline))} },
     )
 }

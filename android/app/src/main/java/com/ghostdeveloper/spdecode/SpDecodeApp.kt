@@ -754,7 +754,7 @@ private fun ServerVpnScreen(busy:Boolean,apps:List<ServerVpnApp>,onDecodeCatalog
         Text(stringResource(R.string.server_vpn_description),fontSize=13.sp,
             lineHeight=20.sp,color=Secondary)
         if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
-            if(apps.isEmpty()) Text(stringResource(R.string.json_viewer_loading),
+            if(apps.isEmpty()) Text(stringResource(R.string.server_vpn_loading),
                 color=Secondary,fontSize=13.sp)
             apps.forEach { app ->
                 val expanded=selectedId==app.id
