@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_legal_title">Termos e privacidade</string>
+    <string name="cloud_legal_explanation">O SP-DECODE Cloud envia ao servidor somente arquivos ou textos que você escolher para processamento. Eles podem conter credenciais sensíveis.</string>
+    <string name="cloud_legal_terms">Ler termos e condições</string>
+    <string name="cloud_legal_privacy">Ler política de privacidade</string>
+    <string name="cloud_legal_accept_check">Li e aceito os termos e a política de privacidade.</string>
+    <string name="cloud_legal_accept">Aceitar</string>
+    <string name="cloud_legal_decline">Recusar</string>
+    <string name="server_vpn_loading">Carregando catálogo de servidores VPN…</string>
+</resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_legal_title">Bedingungen und Datenschutz</string>
+    <string name="cloud_legal_explanation">SP-DECODE Cloud sendet nur von dir ausgewählte Dateien oder Texte zur Verarbeitung an den Server. Sie können sensible Zugangsdaten enthalten.</string>
+    <string name="cloud_legal_terms">Nutzungsbedingungen lesen</string>
+    <string name="cloud_legal_privacy">Datenschutzerklärung lesen</string>
+    <string name="cloud_legal_accept_check">Ich habe die Bedingungen und die Datenschutzerklärung gelesen und akzeptiere sie.</string>
+    <string name="cloud_legal_accept">Akzeptieren</string>
+    <string name="cloud_legal_decline">Ablehnen</string>
+    <string name="server_vpn_loading">VPN-Serverkatalog wird geladen…</string>
+</resources>
