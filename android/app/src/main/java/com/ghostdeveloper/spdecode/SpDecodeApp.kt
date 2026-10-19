@@ -95,6 +95,8 @@ fun SpDecodeApp(
     onGuideNext:()->Unit={},
     onGuideSkip:()->Unit={},
     onGuideRestart:()->Unit={},
+    onLegalLink:(String)->Unit={},
+    onWithdrawCloudConsent:()->Unit={},
 ){
     var dialog by remember{mutableStateOf<String?>(null)}
     MaterialTheme(colorScheme=darkColorScheme(
@@ -123,7 +125,8 @@ fun SpDecodeApp(
                         onDecodeServerCatalog,onDecodeServerApp,onRefreshServerVpn)
                     else->FunctionalSettingsPanel(selectedLanguage,hideCredentials,
                         onLanguage,onMaskCredentials,onClear,onExternalLink,
-                        retentionDays,onRetention,onShowGuide=onGuideRestart)
+                        retentionDays,onRetention,onShowGuide=onGuideRestart,
+                        onLegalLink=onLegalLink,onWithdrawConsent=onWithdrawCloudConsent)
                 }
                 if(guideStep!=null && !whatsNew && !busy && error==null && dialog==null) {
                     CenteredFirstRunGuide(guideStep,onGuideNext,onGuideSkip)

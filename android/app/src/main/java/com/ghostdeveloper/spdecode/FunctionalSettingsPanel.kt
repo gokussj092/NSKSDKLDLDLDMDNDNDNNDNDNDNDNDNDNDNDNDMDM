@@ -36,10 +36,13 @@ fun FunctionalSettingsPanel(
     retentionDays:Int,
     onRetention:(Int)->Unit,
     onShowGuide:()->Unit={},
+    onLegalLink:(String)->Unit={},
+    onWithdrawConsent:()->Unit={},
 ){
     var clearDialog by remember { mutableStateOf(false) }
     var languageSheet by remember { mutableStateOf(false) }
     var retentionDialog by remember { mutableStateOf(false) }
+    var withdrawDialog by remember { mutableStateOf(false) }
     Column(
         Modifier.fillMaxSize().verticalScroll(rememberScrollState())
             .padding(horizontal=20.dp,vertical=12.dp),
@@ -126,6 +129,26 @@ fun FunctionalSettingsPanel(
                 Icon(Icons.Outlined.DeleteOutline,null)
                 Spacer(Modifier.width(8.dp))
                 Text(stringResource(R.string.delete_session))
+            }
+        }
+        if(BuildConfig.SPDECODE_CLOUD_ENABLED) SettingsCard {
+            Row(verticalAlignment=Alignment.CenterVertically) {
+                Icon(Icons.Outlined.Lock,null,tint=TitleText)
+                Spacer(Modifier.width(10.dp))
+                Text(stringResource(R.string.cloud_legal_title),color=TitleText,
+                    fontWeight=FontWeight.SemiBold,fontSize=17.sp)
+            }
+            OutlinedButton(onClick={onLegalLink("terms")},
+                modifier=Modifier.fillMaxWidth()) {
+                Text(stringResource(R.string.cloud_legal_terms))
+            }
+            OutlinedButton(onClick={onLegalLink("privacy")},
+                modifier=Modifier.fillMaxWidth()) {
+                Text(stringResource(R.string.cloud_legal_privacy))
+            }
+            OutlinedButton(onClick={withdrawDialog=true},
+                modifier=Modifier.fillMaxWidth()) {
+                Text(stringResource(R.string.cloud_legal_withdraw))
             }
         }
         DeviceCredentialSettingsSection()
@@ -228,6 +251,18 @@ fun FunctionalSettingsPanel(
             }
         }
     }
+    if(withdrawDialog) AlertDialog(
+        onDismissRequest={withdrawDialog=false},
+        title={Text(stringResource(R.string.cloud_legal_withdraw))},
+        text={Text(stringResource(R.string.cloud_legal_withdraw_detail))},
+        confirmButton={TextButton(onClick={withdrawDialog=false;onWithdrawConsent()}) {
+            Text(stringResource(R.string.cloud_legal_withdraw))
+        }},
+        dismissButton={TextButton(onClick={withdrawDialog=false}) {
+            Text(stringResource(R.string.cancel))
+        }},
+        containerColor=Pane,
+    )
     if(retentionDialog) AlertDialog(
         onDismissRequest={retentionDialog=false},
         title={Text(stringResource(R.string.history_retention),color=TitleText)},

@@ -327,6 +327,24 @@ class MainActivity : ComponentActivity() {
                 onDecodeCloud={reference->decodeCloud(reference)},
                 onDecodeServerCatalog={decodeNurServers()},
                 onDecodeServerApp={id->decodeServerVpnProvider(id)},
+                onLegalLink={which->
+                    when(which) {
+                        "terms"->openLegalPage(CloudLegalConsent.TERMS)
+                        "privacy"->openLegalPage(CloudLegalConsent.PRIVACY)
+                    }
+                },
+                onWithdrawCloudConsent={
+                    if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
+                        try {
+                            CloudLegalConsent.revoke(this@MainActivity)
+                            cloudClient.clearSession()
+                            serverVpnRefresh?.cancel()
+                            job?.cancel()
+                            serverVpnApps=emptyList()
+                            showCloudLegal=true
+                        }catch(_:Exception){message=getString(R.string.history_storage_error)}
+                    }
+                },
                 serverVpnApps=serverVpnApps,
                 serverVpnLoading=serverVpnLoading,
                 serverVpnUnavailable=serverVpnUnavailable,
