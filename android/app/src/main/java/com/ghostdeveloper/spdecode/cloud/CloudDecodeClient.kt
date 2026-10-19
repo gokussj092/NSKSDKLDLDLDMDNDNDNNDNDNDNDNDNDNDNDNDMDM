@@ -39,6 +39,13 @@ internal class CloudDecodeClient(context: Context) {
     class Failure(val code: String, val httpStatus: Int) :
         IOException("SP-DECODE CLOUD: $code")
 
+    fun clearSession() {
+        synchronized(lock) {
+            token=""
+            expiresAtMs=0L
+        }
+    }
+
     companion object {
         const val MAX_INPUT = 8 * 1024 * 1024
         private const val SAFE_TOKEN_MARGIN_MS = 30_000L

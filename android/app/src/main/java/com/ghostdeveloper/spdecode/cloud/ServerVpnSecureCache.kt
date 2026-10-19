@@ -67,6 +67,13 @@ internal class ServerVpnSecureCache(context: Context) {
     }
 
     @Synchronized
+    fun delete(name:String) {
+        checkName(name)
+        val file=File(directory,name)
+        if(file.exists() && !file.delete())throw IllegalStateException("Cannot clear consent")
+    }
+
+    @Synchronized
     fun write(name:String,plain:ByteArray) {
         checkName(name)
         require(plain.size in 1..maxPlain) { "Cache record exceeds limit" }

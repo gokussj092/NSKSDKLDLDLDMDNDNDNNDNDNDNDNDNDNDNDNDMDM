@@ -36,6 +36,11 @@ internal object CloudLegalConsent {
             .put("atMillis",System.currentTimeMillis())
         ServerVpnSecureCache(context).write("legal",record.toString().toByteArray(Charsets.UTF_8))
     }
+    /** Withdrawal blocks all future Cloud requests while leaving user-owned
+     * encrypted history untouched. A later acceptance requires a new tap. */
+    fun revoke(context:Context) {
+        ServerVpnSecureCache(context).delete("legal")
+    }
 }
 
 @Composable
