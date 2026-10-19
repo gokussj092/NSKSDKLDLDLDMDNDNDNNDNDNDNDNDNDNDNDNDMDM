@@ -10,4 +10,6 @@
     <string name="server_vpn_loading">Memuat katalog server VPN…</string>
     <string name="server_vpn_unavailable">Katalog server VPN tidak tersedia. Periksa koneksi Anda lalu coba lagi.</string>
     <string name="server_vpn_retry">Coba lagi</string>
+    <string name="cloud_legal_withdraw">Cabut persetujuan Cloud</string>
+    <string name="cloud_legal_withdraw_detail">Mencabut persetujuan akan memblokir permintaan baru ke server. Riwayat terenkripsi lokal tetap berada di perangkat ini. Anda dapat menyetujui lagi nanti.</string>
 </resources>

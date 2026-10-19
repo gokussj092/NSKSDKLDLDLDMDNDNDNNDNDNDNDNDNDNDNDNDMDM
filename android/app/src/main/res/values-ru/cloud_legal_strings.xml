@@ -10,4 +10,6 @@
     <string name="server_vpn_loading">Загрузка каталога VPN-серверов…</string>
     <string name="server_vpn_unavailable">Каталог VPN-серверов недоступен. Проверьте подключение и повторите попытку.</string>
     <string name="server_vpn_retry">Повторить</string>
+    <string name="cloud_legal_withdraw">Отозвать согласие Cloud</string>
+    <string name="cloud_legal_withdraw_detail">Отзыв согласия блокирует новые запросы к серверу. Локальная зашифрованная история останется на устройстве. Позже вы сможете принять условия снова.</string>
 </resources>
