@@ -1,0 +1,9 @@
+{
+  "producer": "OpenJDK/JCE, deterministic salt and IV, synthetic JSON",
+  "expected": {"host":"vpn.example.invalid","port":443,"pass":"synthetic-only","payload":"GET / HTTP/1.1\r\nHost: example.invalid\r\n\r\n","__bloqueo_id":true,"__id_permitido":"synthetic-device","__mensaje":"Perú 日本語","future":{"list":[null,false,0,{"keep":true}]}},
+  "vectors": [
+    {"version": 1, "data": "8ODQwLCgkIBwYFBAMCAQADqXbCLBWa2zNFXATj4DnQTpCPE9tSNE/yB4I61mZoiwzV+0/26ShyPb2nJnx5yhiBWEE3OmftbYceiiFZezZ2KBO34cMlmkKxg6W0J8bWGMrOIghBu13q36vaI2OpiKGhffVSAN9P3gRB9ij3Uq3qZf3HknNU/6CdWegKaAfjnNnVi6kDAYyR3ENWcKxevR01LBTmaVSKwPUYXaAnGACwUdgxqSNjAy8KwXbVMIsVRA+T201aiWpXJR2n8K0d4qlMIocgBTZiOk1836TbRx0LCJB8+OlSBO2Vb6UpG4e7EquC26TXKdssebRiF8ZshuBAs7U0iLgBVk8JWqBYtrrdRQ8Xe6SCZSIUcnMaA4ehsH"},
+    {"version": 2, "data": "AKN2:AAECAwQFBgcICQoLDA0OD/Dg0MCwoJCAcGBQQDAgEACL7HT4/IYeR1xVzjYIrbw4j3LUO/pmPKFxK4mtvWmO3r6OqsWAVx0KyrjK6x/nMOiAOZMDxBzQeJPxGQoC+Wek0cp1c/QWzciS23AJYo/9d4kEEmHAVqSjwyLVnt6YX3xceWJeiUl4oiVt2G3dAk8kypeI3UIWc4z6rQg0koXdpxiM1k8asNXx8qYiP7etjiOCn4XYoR+RkGCIImdfpeUOduzYqqnpkJqJ19u129slNEbSqg6yPb+VKBW5Zt+boNOrZeKJgdipgcAM/WOLWOLue17HadN3duQSyJYoRLSPb4WCD6R3U7Q3VMkm8bhRG9ZzT/mP6DKlvGVO54Nt8SGO5ELtQ7mYMLt4v4dXEDv6RD7sPWJan92ge9yP3RjiAeTFIjf9gXRb+EIO0uaK6j8C"},
+    {"version": 3, "data": "AKN3:AAECAwQFBgcICQoLDA0OD/Dg0MCwoJCAcGBQQDAgEABVbE9hlXvxeosNP6JU+5X0Kf2e1r8xOG+URYqwpTlRRswPnl0hfur4RNuk5YUwxOkezy8p33c29Tqkyxbi+EIaMeD1hwcg/0KVmTx8mEuWZCpyU9m0we+Ng92kNUa400ikFuF4z7a5YkW2xNy06og7/UjVFPa4q1tNLGZGXbs6zIY2aZjTuJ4UQ1UultcJ9ikpINaO9Rg5REp3u0C0mPOo+tnYCG3F7gI2Oprz3cBLOgcmvVbD26iyoKeydfVLlgdH/hv0PpTp8H+ZnfgLmkDsBawFanmm5+LwnPYhZSfUgHNKiUCEPp+athWc/8zhMsqVQhHSNUMLiFCJ75u7Zntsv2WGJhvpPwVHQnTl6zfQ2T++g7QZ2K6NS8Y/h29C0A2S9BNXjiiG2WZauYUQHbdA"}
+  ]
+}

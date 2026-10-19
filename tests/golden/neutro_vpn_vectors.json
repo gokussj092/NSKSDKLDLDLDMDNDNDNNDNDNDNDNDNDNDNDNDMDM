@@ -1,0 +1,84 @@
+{
+  "source": "Synthetic OpenJDK/JCE; public test signing scalar 1",
+  "password": "  clave ñ 日本 𝄞  ",
+  "catalogPublicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEaxfR8uEsQkf4vOblY6RA8ncDfYEt6zOg9KE5RdiYwpZP40Li/hp/m47n60p8D54WK84zV2sxXs7LtkBoN79R9Q==",
+  "expectedProfile": {
+    "v": 2,
+    "name": "Sintético 日本",
+    "mode": 6,
+    "host": "example.invalid",
+    "port": "443",
+    "user": "synthetic-user",
+    "pass": "fixture-only",
+    "proxyHost": "",
+    "proxyPort": "80",
+    "customPayload": true,
+    "payload": "GET / HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+    "sni": "example.invalid",
+    "tlsVersion": "TLSv1.3",
+    "dnsServer": "1.1.1.1",
+    "nameserver": "ns.example.invalid",
+    "pubkey": "fixture-public-data",
+    "xray": "{\"outbounds\":[{\"protocol\":\"vless\",\"future\":true}]}",
+    "udp": true,
+    "mobileOnly": true,
+    "rootBlock": true,
+    "expiresAt": 1,
+    "lockId": "ABCD-EF12-3456",
+    "unlocked": true,
+    "message": "Keep all fields",
+    "future": {
+      "unknown": [
+        null,
+        false,
+        ""
+      ]
+    }
+  },
+  "expectedCatalog": {
+    "v": 7,
+    "profiles": [
+      {
+        "v": 2,
+        "name": "Sintético 日本",
+        "mode": 6,
+        "host": "example.invalid",
+        "port": "443",
+        "user": "synthetic-user",
+        "pass": "fixture-only",
+        "proxyHost": "",
+        "proxyPort": "80",
+        "customPayload": true,
+        "payload": "GET / HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+        "sni": "example.invalid",
+        "tlsVersion": "TLSv1.3",
+        "dnsServer": "1.1.1.1",
+        "nameserver": "ns.example.invalid",
+        "pubkey": "fixture-public-data",
+        "xray": "{\"outbounds\":[{\"protocol\":\"vless\",\"future\":true}]}",
+        "udp": true,
+        "mobileOnly": true,
+        "rootBlock": true,
+        "expiresAt": 1,
+        "lockId": "ABCD-EF12-3456",
+        "unlocked": true,
+        "message": "Keep all fields",
+        "future": {
+          "unknown": [
+            null,
+            false,
+            ""
+          ]
+        }
+      }
+    ],
+    "sshHost": "example.invalid",
+    "capXray": "{\"outbounds\":[{\"protocol\":\"vless\",\"future\":true}]}",
+    "future": {
+      "keep": true
+    }
+  },
+  "local": "NVPNC1.L..QEFCQ0RFRkdISUpL.IdNsYKK2FAWLGPU3jIEGjh6uqQzZVjqmOZvrl5LYIZdqlKx0Yx9hkme5ONcIYsfHEKNTm4/05G3b22z59kZtbF4DmEQoxlk3F/q1tVQTHFccba0RlyZ4OZiCKN6vTEqmj9hKTCNoolAPn7wNMfodwwgdulZ3FofK1xADsFkrDdd1jg3i12U9UekmtqiGMjW9YFUnOncskqSVv5hCdY67fqQnlYzniT57H085DqQkxr398XQWTr+8feVpOq57wC0QxnniHyNiqslZGjSuMpkgh6kx1qb8Av52KqYEqE1PuIMJ8pBp0jJHjlAHQ4x5DMbDvDu2AC8Wh5uK0Igy+y6Fnk7NcBqeYC7pYV+xCMj6MZzg8sPZDGMSd/M5ZOJCsLAdN7dCxHvhs6BgmRTs2mUNZq9MMSsL1y988ZLuWQvUoLB7O2mv/g92w1mv7uVVYwARI17xVf350DQx7lQ+/kczB0dJqqgnItZngmeY8h6DNPmBJH8qXoLpdo3cGf0EEan9wYzmJcsjrPP2tgl6MvtTUN3Wwme5/V97HE0awpASDg59OS4hYqeyr8BWht6LFWjuAyg6+ZMCR+ahkb3xw0Z8Pp0xqwxXE9u0ygNElAyEvtnXk6bYDFFNoOcR0iSuVVGRjCZ+IWBHXuEnhc9Otb7IMgPHYaDZIwpLObINoyy53fqkcOoBpAq5mk6bGGmBJ+tBqsF54BJVO+RTSoM0Gau+s92fn9DZM69QLuHhufWbU9M556OYACxXW4UynbIAJVtqUoLOoHSdVwaNaK5nY0lxSg/YygaqYtQBLiojfCZ6a6u91kRHBte2chU+xd14EiZvMA==",
+  "protected": "NVPNC1.P.ICEiIyQlJicoKSorLC0uLw==.UFFSU1RVVldYWVpb.V9zSPYdTDp2H0QvklqR+1mTySiG7d/a81F7YhFpo2N5qZBn3cl8FBUsxDesKGmIOYGUMVDTZC3V+4EoGuCkNJJFP4HKfa+gUn25Y916ti+kCgvlwBSeKoow4M63F/OBZEOJs5qiAo2T7UrS2hS9Eem4cjPGJXu/pryPvjko6pjdOOG0tHzFHoWj1EVTVrD9IjMgSp385bSle1kik4hg8fNqTkfImm2bXaiCxUtPnnnohtTr6THMFPGwFKRRT47K8AOOxpVdaFf6Q69FJlZbxuFoBaqLCPxWkb3pvJPdzdR6k1AlZCVTETCu/MYVFrhmZC1hiFLTgP/GQqbmA1aNY4FuomNliFz3PJ8unKPrX9DeuP9bKuSv/9rpmmpbv5QLMLs+zJzCxRWWEFAkL5qh/eZnxG4cpxRXuKa9Th7HeTh0hK6RUWo/lfLxOxMMgXLE0TBYEi/57YxDOCSN7m8l5fNRY63WHI6iVcKQJrA/Ee40f7Alot4OlQ+aFp6NYghlYd+xpi+ZI64DOcKPxIx0TY7B5+/6vjE7IFLMXvGuNINqiZzxbSsgqfvdOCcFrzEMe+kE/ZrK5Kcuv0kLledb4971IfTosrpM2sPCQekLGSTNNGkNqLc+yWXXkhPEUw8m7foRyarRLiU0cKFDKrYBLozdBHz0VfmG7KjhJEK4PobCVZfHsQP9sIfB494ivpCpx2TNMjbT4FeIZISdOsf3MqA7YloiemSmtTZGyxbpDk5A3gXGhK7pUbJaTEtrIep7St7vIZwg2IgQvdoNE58XPC3yWSIiRBptASLB4nGu/5IZ0Vt4pnV85yAPTnGv3r0FoEA==",
+  "catalog": "YGFiY2RlZmdoaWpr.zojARjCH/EruVrO0Ya6YJiWfcHRKLfgcRYFO6ulB2yv/4FVf9OC+T6coPDIvhi0WQJWlpf9ssLxdSkDNnYKTkptns6zeEw4sBvY5bgX/q26czLtPgUpT3t4xuZ+W9+koVDnGBrokyxZrMyAyuV8YsS7skEb1xcZSeBLMnuknROptWSqqDAT4GFXDYRa34OH/4o3nHHbsDVv81yUUpbo5Kaa1JU1Bi0d+qhPsxklxQFa3pU+OJeZImXCtrOeDs0RuDwW9CJMoiGk2ynDxcVOqmcQbR9DSWkfNA8WqUnMR3QfnqbHTW+YU8MeIrdQRZd+O1XL9aGVHMhzjE7DX1NQtraGKV13vfKhqlg3ockosabuGkmCAgn1c8yTDEm7ajaKEqfKLpReipRSqp+pZ04dr8SXYWIQbn9qAF5WPXAiGCBry9NqU2zsS5I2l1oz5RcBzCFdTJ/HueLQnw8Z2kraL+Od8E1ntihI21g5jRdiOq1VKiOWMSvB/STnu1IQkbmja7dW4R7+RKzcEmEVVEhTHKVf7hzrxbftzqRQ2Zhixr1ZfOa/cXVpJ/rQS5qevRm0+BvE6fu4Y1J1hC8fGr8Ikz1yMciozdMrtg0cEx5oiDrGvV/JB8jH7Koh+P36ifOPoyj7eQ11X1mvz2B0V08cQQoiymxE9ypyhXJXvKwKpxz33sREl5SgV5bEIcfBzNpbno/6rPOPavp0xmiFwoxUbay0Kw5KdGEX0+plcUMA/zRjysZL/a8r9fvonn5FGDVI2/ihAipNopYL8uX7KAMM2Q7RNgbhYud1M+rQsZtckGlMKStgS1dWPlpRWkaSuTykY8rQkPbJzvS+hqIWwZV6CDVKwEdjuml9GSMpXb28bkLG/onaMaseTcI6kNLQq6YHUR8Cv3KKRmgkE2PNudnUJ2a+gzCJN5mJNjXYsgQJPqOBPn6ZiW3oOz0ofm9gQG6RkmVzaBt8yFmWJThqBSYzzB5svKe+gV4atqp2O7kkqC+cdPNB+ClRYlKRdBnFW0zqn.MEYCIQCPTVnUbdnH4g0WfbDrqABlIhvFn3BC1foeHtNMMrKnyQIhALCj9Pos9LCJy7z9uJ2lXhMHJbX9iK/Wkht0B0uKzozv"
+}
