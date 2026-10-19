@@ -17,7 +17,9 @@ export default function Terms(){
     <p>Los nombres e iconos de aplicaciones externas identifican los formatos compatibles. No implican patrocinio, afiliación ni autorización del titular de sus marcas. La atribución y el uso de recursos gráficos deben revisarse antes de la distribución comercial.</p>
     <h2>6. Responsabilidades</h2>
     <p>La persona usuaria debe comprobar los resultados y proteger las credenciales exportadas. Estas condiciones no limitan derechos irrenunciables que establezca la legislación aplicable ni eximen de responsabilidades que legalmente no puedan excluirse.</p>
-    <h2>7. Cambios y contacto</h2>
+    <h2>7. Aceptación y retirada</h2>
+    <p>Antes del primer procesamiento Cloud se solicita la aceptación expresa de estos términos y de la política de privacidad. Puedes consultarlos posteriormente y retirar tu consentimiento desde Ajustes. La retirada impide nuevas solicitudes, sin eliminar tu historial cifrado local. Si se modifica sustancialmente la documentación legal, la aplicación deberá exigir nuevamente la aceptación de su versión actualizada.</p>
+    <h2>8. Cambios y contacto</h2>
     <p>Los cambios sustanciales de estas condiciones requerirán una versión actualizada y un nuevo consentimiento cuando corresponda. Para soporte escribe a <a href="mailto:soporte@spdecode.xyz">soporte@spdecode.xyz</a>.</p>
     <div className="notice">Pendiente para producción: identidad legal y domicilio del responsable, derechos de consumidores, jurisdicción, mecanismos de reclamación y revisión de políticas de proveedores y marcas. No debe describirse este borrador como documento legal definitivo.</div>
   </main>;
