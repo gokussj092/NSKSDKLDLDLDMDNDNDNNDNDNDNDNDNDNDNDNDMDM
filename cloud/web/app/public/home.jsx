@@ -26,7 +26,7 @@ const content={
   privacy:"Read privacy policy",terms:"View terms",support:"Contact support",
   screenNames:["Home","History","Formats","Settings"],previous:"Previous screenshot",next:"Next screenshot",capture:"Screenshot",of:"of"
  }};
-const screens=["01-home.webp","02-history.webp","03-formats.webp","04-settings.webp"];
+const screens=["01-home.jpg","02-history.jpg","03-formats.jpg","04-settings.jpg"];
 function Gallery({t}){
  const [index,setIndex]=useState(0);
  const change=(n)=>setIndex((n+screens.length)%screens.length);

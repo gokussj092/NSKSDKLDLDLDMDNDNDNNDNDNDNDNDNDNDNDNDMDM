@@ -1,0 +1,63 @@
+name: Temporary SP-DECODE Screenshot Import
+on:
+  push:
+    branches: ["feat/cloud-c8-vps-installer-updater"]
+    paths: [".github/workflows/import-public-screenshots.yml"]
+permissions:
+  contents: write
+jobs:
+  import-screenshots:
+    if: github.repository == 'Gh0stDeveloper/SP-DECODE'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Import the four user-authorized original screenshots
+        env:
+          SCREEN_1: "https://media.canva.com/v2/image-resize/format:JPG/height:200/quality:75/uri:ifs%3A%2F%2FM%2Fdbe76bd7-24ec-4677-a494-f2853db86a36/watermark:F/width:87?csig=AAAAAAAAAAAAAAAAAAAAAHIST9ui6tTelLY4tTPgWIaHPaHeMiIPAhNV9t2D_Urt&exp=1792454558&osig=AAAAAAAAAAAAAAAAAAAAAPhQNlW6yb-1B1RJauYTx6Ow1BUaRSmS0XVKXcSs-GjZ&signer=media-rpc&token=AAIAAU0AJGRiZTc2YmQ3LTI0ZWMtNDY3Ny1hNDk0LWYyODUzZGI4NmEzNgAAAAABoVaeATDjhRghueGlqCvVDurrXjLgnlFwVzCUYtfCxFr4d65aXw&x-canva-quality=thumbnail"
+          SCREEN_2: "https://media.canva.com/v2/image-resize/format:JPG/height:200/quality:75/uri:ifs%3A%2F%2FM%2F0bab5387-0e69-4593-9ae7-d7da9a054e8c/watermark:F/width:87?csig=AAAAAAAAAAAAAAAAAAAAAGwBnyLDa0KcphIqY6aGSXJ6nBMWrMLruHussi7d-En3&exp=1792455211&osig=AAAAAAAAAAAAAAAAAAAAAKMPJHQYyBq_WakDIF-jxAXT9zg7Xb4-BN5qK8TiI-RE&signer=media-rpc&token=AAIAAU0AJDBiYWI1Mzg3LTBlNjktNDU5My05YWU3LWQ3ZGE5YTA1NGU4YwAAAAABoVan9_iPlJ1XhfSVhSP7sUlY3y0TXwFnm0mUwUOr_XKqSBCFpQ&x-canva-quality=thumbnail"
+          SCREEN_3: "https://media.canva.com/v2/image-resize/format:JPG/height:200/quality:75/uri:ifs%3A%2F%2FM%2Fce9c9e45-e528-4cd8-bb71-385d8f874814/watermark:F/width:87?csig=AAAAAAAAAAAAAAAAAAAAAISp5YqzaySISVmvHZsDRb4-RPC393Hxb7C6wSklvS3x&exp=1792457223&osig=AAAAAAAAAAAAAAAAAAAAADGnBM8_eMUcDfl-G7dsQJcD3rs4d9LanGv04gC_HleL&signer=media-rpc&token=AAIAAU0AJGNlOWM5ZTQ1LWU1MjgtNGNkOC1iYjcxLTM4NWQ4Zjg3NDgxNAAAAAABoVbGq1inDMO6pjXZXre9sI-hJHpoU9McegbJB0Ea6B5pGXDqTg&x-canva-quality=thumbnail"
+          SCREEN_4: "https://media.canva.com/v2/image-resize/format:JPG/height:200/quality:75/uri:ifs%3A%2F%2FM%2Fa29c98f7-8cb7-4a26-95d2-9d27fdf79067/watermark:F/width:87?csig=AAAAAAAAAAAAAAAAAAAAACSGO523tuL4Q6uiXgCatzrSYt4MBHTOtL0QFwON6fL1&exp=1792454600&osig=AAAAAAAAAAAAAAAAAAAAAGtIx2P9Q6xXNCAB7-O24qzIir3mpj2XQGYCQIa5whgE&signer=media-rpc&token=AAIAAU0AJGEyOWM5OGY3LThjYjctNGEyNi05NWQyLTlkMjdmZGY3OTA2NwAAAAABoVaepUAItis0aczQxuS4g0EKrFKBOSlK2YgUhc3C5RTmXXzL2Q&x-canva-quality=thumbnail"
+        run: |
+          #!/usr/bin/env python3
+          import os
+          from pathlib import Path
+          from urllib.request import Request, urlopen
+          from urllib.error import HTTPError, URLError
+          import time
+          dir=Path("cloud/web/public/screenshots")
+          dir.mkdir(parents=True,exist_ok=True)
+          names=["01-home.jpg","02-history.jpg","03-formats.jpg","04-settings.jpg"]
+          for i,name in enumerate(names,1):
+              url=os.environ["SCREEN_"+str(i)]
+              # Canva public screenshot export sometimes permits direct sizing; prefer original.
+              variants=[
+                  url.replace("height:200","height:1536").replace("width:87","width:674").replace("x-canva-quality=thumbnail","x-canva-quality=original"),
+                  url.replace("height:200","height:775").replace("width:87","width:340"),
+                  url,
+              ]
+              data=None
+              for candidate in variants:
+                  try:
+                      response=urlopen(Request(candidate,headers={"User-Agent":"Mozilla/5.0"}),timeout=35)
+                      payload=response.read(2000000)
+                      if response.status==200 and payload.startswith(b"\\xff\\xd8\\xff") and len(payload)>1500:
+                          data=payload
+                          break
+                  except (HTTPError,URLError,TimeoutError):
+                      continue
+              if data is None:raise RuntimeError("Cannot obtain original screenshot "+str(i))
+              (dir/name).write_bytes(data)
+              print(name,len(data),"bytes received (original public screenshot or provider thumbnail)")
+      - name: Commit only image assets and remove temporary importer
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/import-public-screenshots.yml
+          git add cloud/web/public/screenshots
+          test "$(find cloud/web/public/screenshots -name '*.jpg' | wc -l)" -eq 4
+          git commit -m "assets(web): include four authentic SP-DECODE Android screenshots"
+          git push origin HEAD:feat/cloud-c8-vps-installer-updater
