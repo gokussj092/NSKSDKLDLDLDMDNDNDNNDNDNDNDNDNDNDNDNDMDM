@@ -463,7 +463,8 @@ class MainActivity : ComponentActivity() {
             try {
                 val name=withContext(Dispatchers.IO){displayName(uri)}
                 if(name.endsWith(".hc",ignoreCase=true)){
-                    preview=withContext(Dispatchers.IO){readBounded(uri)}
+                    preview=withContext(Dispatchers.IO){readBounded(uri,
+                        if(BuildConfig.SPDECODE_CLOUD_ENABLED) CloudDecodeClient.MAX_INPUT else MAX_BYTES)}
                     val requirements=if(BuildConfig.SPDECODE_CLOUD_ENABLED)
                         cloudClient.inspectHcRequirements(preview)
                     else HcHccfgPort.inspectRequirements(preview)
@@ -481,7 +482,16 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }catch(e:CancellationException){throw e}
-            catch(_:Exception){ /* Existing decoder handles malformed imports. */ }
+            catch(error:Exception) {
+                // Cloud credential inspection can fail before any decoder runs.
+                // Never disguise a missing QA code or network failure as a bad HC file.
+                if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
+                    if(generation==credentialPrepareGeneration)
+                        message=com.ghostdeveloper.spdecode.cloud.CloudUserErrors.message(
+                            this@MainActivity,error)
+                    return@launch
+                }
+            }
             finally { preview?.fill(0) }
             if(generation==credentialPrepareGeneration) importFiles(listOf(uri))
         }
@@ -591,9 +601,11 @@ class MainActivity : ComponentActivity() {
                 catch(_:Exception){toast(R.string.history_storage_error)}
                 tab=0
             }catch(e:CancellationException){throw e}
-            catch(_:Exception){if(generation==importGeneration) {
+            catch(error:Exception){if(generation==importGeneration) {
                 SafeDecodeDiagnostics.record(SafeDecodeDiagnostics.Event.TEXT_FAILURE)
-                message=getString(R.string.text_decode_unsupported)
+                message=if(BuildConfig.SPDECODE_CLOUD_ENABLED)
+                    com.ghostdeveloper.spdecode.cloud.CloudUserErrors.message(this@MainActivity,error)
+                    else getString(R.string.text_decode_unsupported)
             }
             }finally {
                 if(generation==importGeneration) {
@@ -661,14 +673,9 @@ class MainActivity : ComponentActivity() {
             }catch(e:CancellationException){throw e}
             catch(e:CloudDecodeClient.Failure) {
                 if(generation==importGeneration) {
-                    message=getString(when(e.code) {
-                        "INVALID_REFERENCE", "INVALID_REQUEST" -> R.string.cloud_http_injector_invalid
-                        "REMOTE_INTEGRITY_FAILED" -> R.string.cloud_http_injector_integrity_error
-                        "REMOTE_DECODER_FAILED", "DECODE_FAILED" -> R.string.cloud_http_injector_decoder_error
-                        "REMOTE_PROVIDER_UNAVAILABLE", "REMOTE_NOT_CONFIGURED" ->
-                            R.string.cloud_http_injector_server_error
-                        else -> R.string.cloud_http_injector_network_error
-                    })
+                    message=if(BuildConfig.SPDECODE_CLOUD_ENABLED)
+                        com.ghostdeveloper.spdecode.cloud.CloudUserErrors.message(this@MainActivity,e)
+                        else getString(R.string.cloud_http_injector_network_error)
                 }
             }catch(e:HttpInjectorCloudPort.CloudException) {
                 if(generation==importGeneration) {
@@ -680,9 +687,11 @@ class MainActivity : ComponentActivity() {
                         HttpInjectorCloudPort.Reason.DECODER->R.string.cloud_http_injector_decoder_error
                     })
                 }
-            }catch(_:Exception){
+            }catch(error:Exception){
                 if(generation==importGeneration)
-                    message=getString(R.string.cloud_http_injector_network_error)
+                    message=if(BuildConfig.SPDECODE_CLOUD_ENABLED)
+                        com.ghostdeveloper.spdecode.cloud.CloudUserErrors.message(this@MainActivity,error)
+                        else getString(R.string.cloud_http_injector_network_error)
             }finally {
                 if(generation==importGeneration) {
                     busy=false
@@ -739,10 +748,12 @@ class MainActivity : ComponentActivity() {
                 catch(_:Exception){toast(R.string.history_storage_error)}
                 tab=0
             }catch(e:CancellationException){throw e}
-            catch(_:Exception) {
+            catch(error:Exception) {
                 if(generation==importGeneration) {
                     SafeDecodeDiagnostics.record(SafeDecodeDiagnostics.Event.FILE_IMPORT_FAILURE)
-                    message=getString(R.string.nur_servers_failed)
+                    message=if(BuildConfig.SPDECODE_CLOUD_ENABLED)
+                        com.ghostdeveloper.spdecode.cloud.CloudUserErrors.message(this@MainActivity,error)
+                        else getString(R.string.nur_servers_failed)
                 }
             }finally {
                 if(generation==importGeneration) {
@@ -811,10 +822,10 @@ class MainActivity : ComponentActivity() {
                 catch(_:Exception){toast(R.string.history_storage_error)}
                 tab=0
             }catch(error:CancellationException){throw error}
-             catch(_:Exception) {
+             catch(error:Exception) {
                 if(generation==importGeneration) {
                     SafeDecodeDiagnostics.record(SafeDecodeDiagnostics.Event.FILE_IMPORT_FAILURE)
-                    message=getString(R.string.nur_servers_failed)
+                    message=com.ghostdeveloper.spdecode.cloud.CloudUserErrors.message(this@MainActivity,error)
                 }
             }finally {
                 if(generation==importGeneration) {
