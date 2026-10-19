@@ -321,12 +321,12 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
         batch=replaceOnce(batch,"                        else->summary",
             "                        else->summary+qaDetails")
         batch=replaceOnce(batch,
-            "                        else->summary+qaDetails\\n                    }\\n                    tab=0",
+            "                        else->summary+qaDetails\n                    }\n                    tab=0",
             """                        else->summary+qaDetails
                     }
                     if(cloudFailureMessages.isNotEmpty()) {
-                        message=message + "\\n\\n" +
-                            cloudFailureMessages.distinct().take(3).joinToString("\\n")
+                        message=message + "\n\n" +
+                            cloudFailureMessages.distinct().take(3).joinToString("\n")
                     }
                     tab=0""")
         batch=replaceOnce(batch,"                    result=processed",
