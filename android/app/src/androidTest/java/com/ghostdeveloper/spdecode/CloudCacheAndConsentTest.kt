@@ -2,10 +2,12 @@ package com.ghostdeveloper.spdecode
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.ghostdeveloper.spdecode.cloud.CloudDecodeClient
 import com.ghostdeveloper.spdecode.cloud.CloudLegalConsent
 import com.ghostdeveloper.spdecode.cloud.ServerVpnSecureCache
 import java.io.File
 import java.util.UUID
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -83,6 +85,24 @@ class CloudCacheAndConsentTest {
         }finally {
             catalog.delete()
             if(backup==null)legal.delete()else legal.writeBytes(backup)
+        }
+    }
+
+    @Test fun publicCatalogNetworkIsBlockedWithoutAcceptedTerms() {
+        val legal=File(cacheDir,"legal")
+        val previous=legal.takeIf { it.isFile }?.readBytes()
+        try {
+            CloudLegalConsent.revoke(context)
+            assertFalse(CloudLegalConsent.accepted(context))
+            try {
+                runBlocking { CloudDecodeClient(context).serverVpnCatalog(0) }
+                fail("Catalog accessed without legal consent")
+            }catch(error:CloudDecodeClient.Failure) {
+                assertEquals("LEGAL_CONSENT_REQUIRED",error.code)
+                assertEquals(403,error.httpStatus)
+            }
+        }finally {
+            if(previous==null) legal.delete() else legal.writeBytes(previous)
         }
     }
 
