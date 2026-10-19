@@ -126,3 +126,35 @@ mayor que el anterior y al menos 4 al actualizar. El CLI QA eleva versiones
 antiguas sin rebajar las superiores. La incorporación sigue desactivada por
 defecto bajo `CLOUD_SERVER_VPN_ENABLED`; no modifica Android ni la interfaz
 administrativa y no realiza despliegue.
+
+## Royal Tunnel VPN 7.0 — lectores privados; proveedor público pendiente
+
+Implementación nueva desde el APK `kd.app.royaltunnelplus` versionCode 7,
+independiente del motor histórico Royal/XTProy. Carpeta única
+`decoders/Python/apps/Royal_Tunnel_VPN/`, con `file_decoder.py`,
+`server_catalog_decoder.py`, `codec.py`, icono original, manifest y documentación.
+
+La ruta C8 `.roy` usa ahora el esquema exportado por Royal 7.0: Base64,
+IV + AES-256-CBC/PKCS#7, marca Royal, JSON y campos AES-256-GCM; servidor
+opcional como cadena JSON con campos AES-CFB. `.xtp` y el mapa congelado C0
+no cambian. El router efectivo continúa con 246 extensiones. Para preservar
+la compatibilidad C2, el router reconoce el `.roy` histórico por su alfabeto
+Unicode distinto y selecciona su ruta original antes de ejecutar el proceso;
+no hay fallback después de errores en el lector moderno.
+
+El bridge privado offline admite `royal-tunnel`. El catálogo combina
+XXTEA con delta propio, metadatos/servidores AES-CFB128 y tweaks AES-CBC con
+clave distinta. El JSON completo del recurso del APK (27 servidores,
+100 tweaks, 1485 campos no vacíos) coincide con el Java original/JCE.
+Las pruebas de `.roy` usan perfiles sintéticos y el empaquetado nativo original
+contrastado con JCE; no se recibió una exportación real independiente.
+
+**No se incorpora Royal al broker ni al catálogo público en esta revisión.**
+El endpoint fijo del APK devolvió HTTP 200 con HTML «Site Unavailable» el
+2026-10-19, impidiendo validar el catálogo real remoto. El icono original de
+415664 bytes también supera el límite existente de 256 KiB. Se conserva en la
+carpeta de la aplicación sin sustituirlo por otro logo ni alterar el cliente.
+La versión pública sigue en **4**: no cambia la lista visible. El CLI permite
+reintentar la descarga fija y explica la respuesta HTML sin simular éxito ni
+usar el recurso local automáticamente. Pendientes y hashes completos en
+`Royal_Tunnel_VPN/TESTING.md`; sin despliegue, fusión ni cambios Android/web.

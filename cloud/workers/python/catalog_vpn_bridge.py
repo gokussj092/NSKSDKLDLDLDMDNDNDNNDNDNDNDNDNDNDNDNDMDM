@@ -12,6 +12,8 @@ PROVIDERS = {
     "mkk-hyper": "decoders.Python.apps.MKK_Hyper_VPN.MKK_Hyper_VPN",
     "my-tunnel-proxy": "decoders.Python.apps.My_Tunnel_Proxy.server_catalog_decoder",
     "robust-tunnel": "decoders.Python.apps.Robust_Tunnel_VPN.server_catalog_decoder",
+    # Offline only until the live endpoint and original icon meet public gates.
+    "royal-tunnel": "decoders.Python.apps.Royal_Tunnel_VPN.server_catalog_decoder",
 }
 
 def decode(provider_id: str, payload: bytes) -> str:

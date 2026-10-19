@@ -79,6 +79,7 @@ _C8_FILE_ENGINES = {
     "green": ("decoders/Python/apps/24clan_VPN_Green/24clan_VPN_Green_archivos.py", "24clan VPN Green"),
     "hxt": ("decoders/Python/apps/HX_Tunnel_VPN/HX_Tunnel_VPN_archivos.py", "HX Tunnel VPN"),
     "mtp": ("decoders/Python/apps/My_Tunnel_Proxy/file_decoder.py", "My Tunnel Proxy"),
+    "roy": ("decoders/Python/apps/Royal_Tunnel_VPN/file_decoder.py", "Royal Tunnel VPN 7.0"),
 }
 
 def load_runtime_file_engines() -> dict[str, dict[str, str]]:
@@ -117,6 +118,19 @@ def _child_env(private_dir: str) -> dict[str, str]:
     }
 
 
+def _is_legacy_roy(contents: bytes) -> bool:
+    """Old nibble alphabet is disjoint from Royal 7.0's ASCII Base64 wire.
+
+    Dispatch by format, never retry a failed modern decoder with old crypto.
+    This keeps the frozen source route usable without coupling the new codec.
+    """
+    try:
+        text = "".join(contents.decode("utf-8-sig").split())
+    except UnicodeError:
+        return False
+    return bool(text) and all(char in "¹²³⁴⁵⁶⁷⁸⁹⁰·,‽:'′" for char in text)
+
+
 def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS, credentials: dict | None = None) -> dict:
     """Execute one canonical file engine. The caller must authenticate first."""
     if not isinstance(suffix, str) or suffix not in load_runtime_file_engines():
@@ -128,6 +142,8 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
     if not isinstance(timeout, int) or timeout < 1 or timeout > TIMEOUT_SECONDS:
         raise DecodeFailure("INVALID_REQUEST")
     engine = load_runtime_file_engines()[suffix]
+    if suffix == "roy" and _is_legacy_roy(contents):
+        engine = load_file_engines()["roy"]
     if credentials is not None:
         if suffix != "hc" or not isinstance(credentials, dict) or set(credentials) - {"password", "hwid"}:
             raise DecodeFailure("CREDENTIALS_NOT_ALLOWED")
@@ -217,7 +233,7 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
 
 def decode_provider_catalog(provider_id: str, contents: bytes) -> dict:
     """One fixed provider codec, child-isolated; broker performs all network I/O."""
-    if provider_id not in ("24clan-green", "hx-tunnel", "mkk-hyper", "my-tunnel-proxy", "robust-tunnel"):
+    if provider_id not in ("24clan-green", "hx-tunnel", "mkk-hyper", "my-tunnel-proxy", "robust-tunnel", "royal-tunnel"):
         raise DecodeFailure("UNSUPPORTED_FORMAT")
     if not isinstance(contents, bytes) or not contents:
         raise DecodeFailure("INVALID_INPUT")
