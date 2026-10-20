@@ -37,6 +37,7 @@ internal class CloudDecodeClient(context: Context) {
     data class Diagnostic(val service:String,val format:String,val code:String)
     @Volatile var lastDiagnostic:Diagnostic?=null
         private set
+    fun clearLastDiagnostic(){lastDiagnostic=null}
 
     data class Decoded(val rawText: String, val sourceBytes: Int? = null)
 

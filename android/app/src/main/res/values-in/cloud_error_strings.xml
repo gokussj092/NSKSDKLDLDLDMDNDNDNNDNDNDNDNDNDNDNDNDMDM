@@ -27,4 +27,10 @@
     <string name="cloud_failure_partial">Hasil tidak lengkap atau tidak valid dan tidak ditampilkan.</string>
     <string name="cloud_failure_general">Operasi gagal. Coba lagi atau hubungi dukungan.</string>
     <string name="cloud_failure_notice_title">Permintaan tidak dapat diselesaikan</string>
+    <string name="cloud_report_action">Laporkan kesalahan</string>
+    <string name="cloud_report_sent">Laporan diterima: %1$s</string>
+    <string name="cloud_report_failed">Laporan gagal dikirim. Coba lagi nanti.</string>
+    <string name="cloud_usage_title">Bagikan statistik penggunaan anonim</string>
+    <string name="cloud_usage_detail">Izinkan perkiraan jumlah instalasi aktif. ID acak dibuat hanya setelah diaktifkan; bukan HWID atau ID iklan.</string>
+    <string name="cloud_usage_footnote">Nonaktif secara default. Menonaktifkan menghapus ID acak dari perangkat.</string>
 </resources>

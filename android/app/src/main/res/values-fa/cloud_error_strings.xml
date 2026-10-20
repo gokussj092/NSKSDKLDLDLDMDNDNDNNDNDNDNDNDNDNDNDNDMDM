@@ -27,4 +27,10 @@
     <string name="cloud_failure_partial">نتیجه ناقص یا نامعتبر است و نمایش داده نمی‌شود.</string>
     <string name="cloud_failure_general">عملیات کامل نشد. دوباره تلاش کنید یا با پشتیبانی تماس بگیرید.</string>
     <string name="cloud_failure_notice_title">درخواست انجام نشد</string>
+    <string name="cloud_report_action">گزارش خطا</string>
+    <string name="cloud_report_sent">گزارش دریافت شد: %1$s</string>
+    <string name="cloud_report_failed">ارسال گزارش ناموفق بود. بعداً تلاش کنید.</string>
+    <string name="cloud_usage_title">اشتراک آمار استفاده ناشناس</string>
+    <string name="cloud_usage_detail">شمارش تقریبی نصب‌های فعال را مجاز کنید. شناسه تصادفی فقط پس از فعال‌سازی ساخته می‌شود و HWID یا شناسه تبلیغاتی نیست.</string>
+    <string name="cloud_usage_footnote">به‌طور پیش‌فرض خاموش است. با غیرفعال کردن، شناسه تصادفی دستگاه پاک می‌شود.</string>
 </resources>

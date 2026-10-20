@@ -27,4 +27,10 @@
     <string name="cloud_failure_partial">El resultado es incompleto o inválido y no se mostrará.</string>
     <string name="cloud_failure_general">No se pudo completar la operación. Reintenta o contacta con soporte.</string>
     <string name="cloud_failure_notice_title">No se pudo completar la solicitud</string>
+    <string name="cloud_report_action">Reportar error</string>
+    <string name="cloud_report_sent">Reporte recibido: %1$s</string>
+    <string name="cloud_report_failed">No se pudo enviar el reporte. Inténtalo más tarde.</string>
+    <string name="cloud_usage_title">Compartir estadísticas anónimas</string>
+    <string name="cloud_usage_detail">Permitir el recuento aproximado de instalaciones activas. Se genera un identificador aleatorio solo si habilitas esta opción; no es HWID ni identificador publicitario.</string>
+    <string name="cloud_usage_footnote">Desactivado por defecto. Al desactivarlo se elimina el identificador aleatorio del dispositivo.</string>
 </resources>
