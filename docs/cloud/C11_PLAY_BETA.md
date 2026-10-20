@@ -87,6 +87,27 @@ sudo spdecode providers status
 
 La habilitación de importaciones es **independiente** de la admisión beta sin Play Integrity, que se activa desde `/admin/system` y caduca en un máximo de 15 días. En la aplicación, abrir Server VPN y pulsar actualizar para consultar la nueva versión del catálogo. Si aparece un error `REMOTE_PROVIDER_UNAVAILABLE`, `REMOTE_NETWORK_DENIED` o similar, el siguiente diagnóstico es el acceso HTTPS del contenedor a los proveedores, no el modo QA del APK.
 
+## Panel web: disponibilidad individual de proveedores (C12)
+
+Después de actualizar la VPS, la página `https://panel.spdecode.xyz/admin/system` ofrece una sección nueva, **Disponibilidad de importaciones remotas**. Permite encender/apagar por separado HTTP Injector Cloud, NUR y los proveedores Server VPN admitidos. **No son botones de mantenimiento**: los estados se aplican tanto al catálogo público de Android como al endpoint protegido de cada descifrador. Un cambio aumenta la versión del catálogo para que Android detecte nuevos metadatos; el usuario puede forzar la actualización desde Server VPN.
+
+**Preparación inicial del servidor**: las restricciones VPS son el máximo permitido y el panel nunca puede saltárselas. Tras detener un QA anterior, `qa stop` puede restaurar el estado antiguo `CLOUD_API_ENABLED=false`. En ese caso, configurar manualmente una vez, en la VPS:
+
+```bash
+sudo spdecode backup
+sudo spdecode update all feat/austroplus-vpn-13-0-1-decoders
+sudo spdecode config set CLOUD_API_ENABLED true
+sudo spdecode restart web
+sudo spdecode providers enable
+sudo spdecode providers status
+```
+
+El panel deja los botones bloqueados para los proveedores no configurados en VPS. HTTP Injector Cloud requiere las dos claves reales del exportador y no debe activarse ni recibir claves sustitutas. Royal Tunnel permanece informativo sin descodificación remota validada.
+
+Los interruptores autorizados y el número de versión se conservan en un **volumen Docker específico**, aislado del Redis efímero (`provider-control`), sin contraseñas ni endpoints. Los archivos VPN y datos privados no se escriben en este volumen. `spdecode providers status` describe los permisos base de VPS, mientras que el panel refleja el estado operativo individual. Mantener el volumen si se actualizan los contenedores, y no ejecutar `docker compose down -v` salvo que se desee borrar voluntariamente la configuración.
+
+Los botones **Mantenimiento** del panel continúan siendo independientes: un servicio en mantenimiento no atenderá peticiones aunque el interruptor del proveedor esté activo. La admisión beta fuera de Play Integrity también es un control separado con caducidad máxima de 15 días.
+
 ## Pasos Play Console
 1. Crear la ficha **SP-DECODE**, editor Ghost Nexora Studio y paquete
    `com.ghostdeveloper.spdecode`. Completar ficha, icono, capturas, política
