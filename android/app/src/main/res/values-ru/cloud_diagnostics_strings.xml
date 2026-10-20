@@ -3,7 +3,7 @@
     <string name="cloud_report_action">Сообщить об ошибке</string>
     <string name="cloud_report_sent">Отчёт получен: %1$s</string>
     <string name="cloud_report_failed">Не удалось отправить отчёт. Повторите попытку позже.</string>
-    <string name="cloud_usage_title">Отправлять анонимную статистику</string>
-    <string name="cloud_usage_detail">Разрешить приблизительный подсчёт активных установок. Случайный идентификатор создаётся только после включения и не является HWID или рекламным ID.</string>
-    <string name="cloud_usage_footnote">По умолчанию отключено. При отключении случайный идентификатор удаляется с устройства.</string>
+    <string name="cloud_usage_title">Анонимная статистика установок</string>
+    <string name="cloud_usage_detail">SP-DECODE раз в сутки оценивает количество активных установок для расчёта мощности серверов. Используется случайный код установки, а не Android ID, HWID или рекламный ID.</string>
+    <string name="cloud_usage_footnote">Учитывается после принятия условий Cloud. Файлы, пароли и содержимое декодированных конфигураций в подсчёт не входят.</string>
 </resources>
