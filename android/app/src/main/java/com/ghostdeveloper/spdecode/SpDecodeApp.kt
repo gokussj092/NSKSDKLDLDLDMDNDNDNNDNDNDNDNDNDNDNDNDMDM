@@ -873,7 +873,7 @@ private fun ServerVpnScreen(
                 }
                 Spacer(Modifier.width(12.dp))
                 Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(5.dp)) {
-                    Text(stringResource(R.string.nur_tunnel_name),color=White,
+                    Text(stringResource(R.string.server_vpn),color=White,
                         fontSize=16.sp,fontWeight=FontWeight.SemiBold)
                     Text(stringResource(R.string.nur_servers_description),color=Secondary,
                         fontSize=12.sp,lineHeight=17.sp)
