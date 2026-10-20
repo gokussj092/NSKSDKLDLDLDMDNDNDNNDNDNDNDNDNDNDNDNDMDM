@@ -43,6 +43,10 @@ services:
       CLOUD_SERVER_VPN_CATALOG_VERSION: ${CLOUD_SERVER_VPN_CATALOG_VERSION:-11}
       # Optional versioned release notes. Validated server-side, no APK update required.
       CLOUD_WHATS_NEW_JSON: ${CLOUD_WHATS_NEW_JSON:-}
+    # Only nonsecret, allowlisted provider switches live in this persistent
+    # named volume. Redis sessions/challenges remain ephemeral and isolated.
+    volumes:
+      - provider-control:/app/provider-control:rw
     ports:
       # Bound to host loopback only; public HTTPS reverse proxy is a later phase.
       - "127.0.0.1:3000:3000"
@@ -115,6 +119,9 @@ services:
       timeout: 8s
       retries: 6
       start_period: 30s
+
+volumes:
+  provider-control: {}
 
 networks:
   edge: {}
