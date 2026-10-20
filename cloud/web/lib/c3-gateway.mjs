@@ -124,7 +124,19 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
   try{decoded=JSON.parse(value);}catch{throw Error("INVALID_WORKER_JSON");}
   if(!isRecord(decoded))throw Error("INVALID_WORKER_SHAPE");
   if(response.status===200){
-    if(decoded.status!=="success" || decoded.isPartial!==false ||
+    // MKK Hyper collects independent vendor sources. Missing sources are
+    // explicitly marked partial, not an invalid response. All other routes
+    // still reject incomplete results, and MKK partial must be schema-bound.
+    const partialMkk=kind==="server-vpn" && payload?.providerId==="mkk-hyper" &&
+      decoded.kind==="vpn_catalog" && decoded.providerId==="mkk-hyper" &&
+      decoded.isPartial===true && decoded.structuredJson?.complete===false &&
+      decoded.structuredJson?.provider==="mkk-hyper" &&
+      Array.isArray(decoded.structuredJson?.sources) &&
+      decoded.structuredJson.sources.length===4 &&
+      decoded.structuredJson.sources.some(x=>x?.status==="ok") &&
+      decoded.structuredJson.sources.some(x=>x?.status==="error") &&
+      Array.isArray(decoded.warnings) && decoded.warnings.includes("PARTIAL_SOURCE_FAILURE");
+    if(decoded.status!=="success" || (decoded.isPartial!==false && !partialMkk) ||
        typeof decoded.rawText!=="string" || !decoded.rawText.length ||
        decoded.rawText.length>4*1024*1024)throw Error("INVALID_WORKER_RESULT");
     return jsonReply({...decoded,requestId:randomUUID()},200);
