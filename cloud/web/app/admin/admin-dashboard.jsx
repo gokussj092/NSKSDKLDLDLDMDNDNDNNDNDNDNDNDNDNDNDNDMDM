@@ -109,6 +109,12 @@ export default function AdminDashboard(){
       <div><strong>Mantenimiento global</strong><small className="muted">{data.maintenanceLocked?"Bloqueado por configuración del VPS":data.maintenance?"Todas las nuevas solicitudes se rechazan":"Sin bloqueo general"}</small></div>
       <button className="sp-admin-switch" role="switch" aria-label="Mantenimiento global" aria-checked={data.maintenance} disabled={busy||data.maintenanceLocked} onClick={()=>changeMaintenance(null)}><span/></button>
      </div>
+     {data.maintenanceLocked&&<p className="muted sp-admin-status-note">
+      El bloqueo procede de la VPS y no puede anularse desde el navegador.
+      En la terminal ejecuta <code>sudo spdecode config set CLOUD_FORCE_MAINTENANCE false</code>
+      y después <code>sudo spdecode restart web</code>. Recarga el panel para
+      desactivar el mantenimiento global si el interruptor continúa encendido.
+     </p>}
     </section>
    </div>
    <section className="admin-card sp-admin-services">
