@@ -9,7 +9,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.foundation.Canvas
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.RoundRect
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathFillType
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -49,18 +59,55 @@ internal object FirstRunGuide {
     }
 }
 
+/** Window-space bounds of controls displayed below the guide scrim. */
+internal object GuideSpotlightTargets {
+    val rectangles=mutableStateMapOf<Int,Rect>()
+    fun locate(step:Int,bounds:Rect){rectangles[step]=bounds}
+}
+
 /** Center the onboarding overlay in the available content viewport. */
 @Composable
 internal fun CenteredFirstRunGuide(step: Int, onNext: () -> Unit, onSkip: () -> Unit) {
+    var windowOrigin by remember { mutableStateOf(Offset.Zero) }
+    val bounds=GuideSpotlightTargets.rectangles[step]
     BoxWithConstraints(
-        modifier=Modifier.fillMaxSize().background(Color.Black.copy(alpha=0.70f)),
+        modifier=Modifier.fillMaxSize().onGloballyPositioned {
+            windowOrigin=it.boundsInWindow().topLeft
+        },
         contentAlignment=Alignment.Center,
     ) {
+        Canvas(Modifier.fillMaxSize()) {
+            val target=bounds?.translate(-windowOrigin.x,-windowOrigin.y)
+            // Render a real cutout, not a border hidden beneath the overlay.
+            val mask=Path().apply {
+                fillType=PathFillType.EvenOdd
+                addRect(Rect(Offset.Zero,size))
+                if(target!=null && target.width>1f && target.height>1f)
+                    addRoundRect(RoundRect(target,CornerRadius(13.dp.toPx())))
+            }
+            drawPath(mask,Color.Black.copy(alpha=0.82f))
+            if(target!=null && target.width>1f && target.height>1f) {
+                drawRoundRect(
+                    color=Color(0xFF80E6FF),
+                    topLeft=target.topLeft,
+                    size=target.size,
+                    cornerRadius=CornerRadius(13.dp.toPx()),
+                    style=Stroke(width=3.dp.toPx()),
+                )
+                drawRoundRect(
+                    color=Color.White.copy(alpha=0.65f),
+                    topLeft=target.topLeft,
+                    size=target.size,
+                    cornerRadius=CornerRadius(13.dp.toPx()),
+                    style=Stroke(width=1.dp.toPx()),
+                )
+            }
+        }
         FirstRunGuidePanel(
-            step=step,
-            onNext=onNext,
-            onSkip=onSkip,
-            modifier=Modifier.heightIn(max=(maxHeight-12.dp).coerceAtLeast(0.dp)),
+            step=step,onNext=onNext,onSkip=onSkip,
+            modifier=Modifier.align(if(step<=3)Alignment.BottomCenter else Alignment.TopCenter)
+                .padding(top=28.dp,bottom=76.dp)
+                .heightIn(max=(maxHeight-108.dp).coerceAtLeast(0.dp)),
         )
     }
 }
