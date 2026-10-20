@@ -24,6 +24,7 @@ const LABELS=Object.freeze({
   "24clan-green":"24clan VPN Green",
   "hx-tunnel":"HX Tunnel VPN",
   "mkk-hyper":"MKK Hyper VPN",
+  "ksh-vpn":"KSH VPN",
   "my-tunnel-proxy":"My Tunnel Proxy",
   "robust-tunnel":"Robust Tunnel VPN",
   "trv-tunnel":"TRV TUNNEL",
