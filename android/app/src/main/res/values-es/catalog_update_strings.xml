@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="catalog_auto_title">Actualizaciones automáticas de Server VPN</string>
-    <string name="catalog_auto_detail">Permite avisos de actualización y comprobaciones de recuperación en segundo plano. Solo se consulta la versión pública; los iconos nuevos se descargan y verifican si cambia el catálogo. Si Firebase Cloud Messaging está configurado, Google puede tratar un token de mensajería del dispositivo. Puedes desactivarlo cuando quieras.</string>
+    <string name="catalog_auto_detail">Consulta versiones con tu servidor SP-DECODE por HTTPS mientras la aplicación está abierta y permite comprobaciones de recuperación espaciadas en segundo plano. Solo descarga datos e iconos si cambia la versión. No necesita Firebase, cuentas ni tokens de mensajería. Puedes desactivarlo cuando quieras.</string>
     <string name="catalog_auto_switch">Permitir sincronización en segundo plano</string>
 </resources>

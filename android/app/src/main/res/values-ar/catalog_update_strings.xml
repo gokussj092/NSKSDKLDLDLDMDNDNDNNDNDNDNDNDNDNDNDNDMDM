@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="catalog_auto_title">تحديث تلقائي لكتالوج Server VPN</string>
-    <string name="catalog_auto_detail">السماح بتنبيهات التحديث والتحقق في الخلفية. يتم فحص رقم الإصدار العام فقط، ولا تُنزّل الأيقونات الجديدة وتُفحص إلا عند تغير الكتالوج. إذا تم إعداد Firebase Cloud Messaging فقد تعالج Google رمز مراسلة للجهاز. يمكنك إيقاف هذه الميزة في أي وقت.</string>
+    <string name="catalog_auto_detail">يتحقق من إصدار الفهرس عبر HTTPS من خادم SP-DECODE أثناء فتح التطبيق، ويجري فحوصات استرداد دورية في الخلفية عند السماح بذلك. يتم تنزيل البيانات والأيقونات فقط عند تغير الإصدار. لا يلزم Firebase أو حساب مستخدم أو رمز مراسلة.</string>
     <string name="catalog_auto_switch">تفعيل المزامنة في الخلفية</string>
 </resources>
