@@ -3,182 +3,104 @@
   "version": 2,
   "publishedAt": "2026-10-20",
   "title": {
-    "en": "SP-DECODE Cloud: server update",
-    "es": "SP-DECODE Cloud: actualización del servidor",
-    "ar": "SP-DECODE Cloud: تحديث الخادم",
-    "fa": "SP-DECODE Cloud: به‌روزرسانی سرور",
-    "fr": "SP-DECODE Cloud : mise à jour du serveur",
-    "id": "SP-DECODE Cloud: pembaruan server",
-    "ru": "SP-DECODE Cloud: обновление сервера",
-    "de": "SP-DECODE Cloud: Server-Update",
-    "pt-BR": "SP-DECODE Cloud: atualização do servidor"
+    "en": "SP-DECODE Cloud — Server update",
+    "es": "SP-DECODE Cloud — Novedades",
+    "ar": "SP-DECODE Cloud — تحديث الخادم",
+    "fa": "SP-DECODE Cloud — به‌روزرسانی سرور",
+    "fr": "SP-DECODE Cloud — Mise à jour",
+    "id": "SP-DECODE Cloud — Pembaruan server",
+    "ru": "SP-DECODE Cloud — Обновление",
+    "de": "SP-DECODE Cloud — Server-Update",
+    "pt-BR": "SP-DECODE Cloud — Atualização"
   },
   "subtitle": {
-    "en": "New VPN providers and decoding improvements. No APK update required.",
-    "es": "Nuevos proveedores VPN y mejoras de descifrado. No necesitas actualizar la APK.",
-    "ar": "مزودو VPN جدد وتحسينات في فك التشفير، دون الحاجة إلى تحديث التطبيق.",
-    "fa": "ارائه‌دهندگان VPN جدید و بهبود رمزگشایی، بدون نیاز به به‌روزرسانی برنامه.",
-    "fr": "Nouveaux fournisseurs VPN et décodage amélioré, sans mise à jour de l’application.",
-    "id": "Penyedia VPN baru dan peningkatan dekode tanpa perlu memperbarui APK.",
-    "ru": "Новые VPN-провайдеры и улучшения декодирования без обновления APK.",
-    "de": "Neue VPN-Anbieter und verbesserte Entschlüsselung ohne APK-Update.",
-    "pt-BR": "Novos provedores VPN e melhorias na decodificação, sem atualizar o APK."
+    "en": "New features and bug fixes.",
+    "es": "Nuevas funciones y correcciones.",
+    "ar": "ميزات جديدة وإصلاحات للأخطاء.",
+    "fa": "قابلیت‌های جدید و رفع اشکال‌ها.",
+    "fr": "Nouveautés et corrections.",
+    "id": "Fitur baru dan perbaikan bug.",
+    "ru": "Новые функции и исправления.",
+    "de": "Neue Funktionen und Fehlerbehebungen.",
+    "pt-BR": "Novidades e correções de erros."
   },
   "items": [
-    {
-      "id": "http-custom-71128",
-      "type": "support",
-      "title": {
-        "en": "HTTP Custom 7.11.28",
-        "es": "HTTP Custom 7.11.28",
-        "ar": "HTTP Custom 7.11.28",
-        "fa": "HTTP Custom 7.11.28",
-        "fr": "HTTP Custom 7.11.28",
-        "id": "HTTP Custom 7.11.28",
-        "ru": "HTTP Custom 7.11.28",
-        "de": "HTTP Custom 7.11.28",
-        "pt-BR": "HTTP Custom 7.11.28"
-      },
-      "description": {
-        "en": "Expanded support for recent .hc exports, including supported password- and HWID-protected files.",
-        "es": "Soporte ampliado para archivos .hc recientes, incluidos los protegidos con contraseña o HWID compatibles.",
-        "ar": "دعم أوسع لملفات .hc الحديثة، بما فيها الملفات المدعومة المحمية بكلمة مرور أو HWID.",
-        "fa": "پشتیبانی گسترده‌تر از فایل‌های جدید .hc، از جمله موارد سازگار محافظت‌شده با رمز عبور یا HWID.",
-        "fr": "Prise en charge étendue des fichiers .hc récents, y compris ceux protégés par mot de passe ou HWID.",
-        "id": "Dukungan lebih luas untuk file .hc terbaru, termasuk yang dilindungi sandi atau HWID yang didukung.",
-        "ru": "Расширена поддержка новых файлов .hc, включая совместимые файлы с паролем или HWID.",
-        "de": "Erweiterte Unterstützung neuer .hc-Dateien, auch mit unterstütztem Passwort- oder HWID-Schutz.",
-        "pt-BR": "Suporte ampliado para arquivos .hc recentes, inclusive os compatíveis protegidos por senha ou HWID."
-      }
-    },
-    {
-      "id": "hat-tunnel-fix",
-      "type": "fix",
-      "title": {
-        "en": "HA Tunnel (.hat) decoding fix",
-        "es": "Corrección de HA Tunnel (.hat)",
-        "ar": "إصلاح فك تشفير HA Tunnel (.hat)",
-        "fa": "رفع اشکال رمزگشایی HA Tunnel (.hat)",
-        "fr": "Correction du décodage HA Tunnel (.hat)",
-        "id": "Perbaikan dekode HA Tunnel (.hat)",
-        "ru": "Исправление HA Tunnel (.hat)",
-        "de": "Fehlerbehebung für HA Tunnel (.hat)",
-        "pt-BR": "Correção do HA Tunnel (.hat)"
-      },
-      "description": {
-        "en": "Improved compatibility with .hat exports and preservation of the complete JSON, including optional fields.",
-        "es": "Mejor compatibilidad con archivos .hat y conservación del JSON completo, incluidos los campos opcionales.",
-        "ar": "تحسين التوافق مع ملفات .hat مع الحفاظ على JSON كاملًا، بما في ذلك الحقول الاختيارية.",
-        "fa": "سازگاری بهتر با فایل‌های .hat و حفظ JSON کامل، از جمله فیلدهای اختیاری.",
-        "fr": "Meilleure compatibilité des fichiers .hat et préservation du JSON complet, y compris les champs facultatifs.",
-        "id": "Kompatibilitas file .hat ditingkatkan dan JSON lengkap dipertahankan, termasuk kolom opsional.",
-        "ru": "Улучшена поддержка файлов .hat и сохранение полного JSON, включая необязательные поля.",
-        "de": "Bessere Unterstützung für .hat-Dateien und vollständiges JSON einschließlich optionaler Felder.",
-        "pt-BR": "Melhor compatibilidade com arquivos .hat e preservação do JSON completo, incluindo campos opcionais."
-      }
-    },
-    {
-      "id": "mkk-hyper-sources",
-      "type": "fix",
-      "title": {
-        "en": "MKK Hyper VPN: complete sources",
-        "es": "MKK Hyper VPN: fuentes completas",
-        "ar": "MKK Hyper VPN: مصادر كاملة",
-        "fa": "MKK Hyper VPN: منابع کامل",
-        "fr": "MKK Hyper VPN : sources complètes",
-        "id": "MKK Hyper VPN: sumber lengkap",
-        "ru": "MKK Hyper VPN: все источники",
-        "de": "MKK Hyper VPN: vollständige Quellen",
-        "pt-BR": "MKK Hyper VPN: fontes completas"
-      },
-      "description": {
-        "en": "Handles server, static-user and subscription catalogs separately. Unavailable sources are reported instead of hidden.",
-        "es": "Procesa por separado servidores, usuarios estáticos y suscripciones. Informa de las fuentes no disponibles.",
-        "ar": "معالجة منفصلة لقوائم الخوادم والمستخدمين الثابتين والاشتراكات، مع إظهار المصادر غير المتاحة.",
-        "fa": "پردازش جداگانه فهرست سرورها، کاربران ثابت و اشتراک‌ها؛ منابع در دسترس نبودنی گزارش می‌شوند.",
-        "fr": "Traitement séparé des serveurs, utilisateurs statiques et abonnements. Les sources indisponibles sont signalées.",
-        "id": "Katalog server, pengguna statis, dan langganan diproses terpisah. Sumber gagal ditampilkan.",
-        "ru": "Серверы, статические пользователи и подписки обрабатываются отдельно; недоступные источники отмечаются.",
-        "de": "Server-, Benutzer- und Abonnementkataloge werden getrennt verarbeitet; Ausfälle werden angezeigt.",
-        "pt-BR": "Catálogos de servidores, usuários estáticos e assinaturas são separados; fontes indisponíveis são sinalizadas."
-      }
-    },
     {
       "id": "ksh-vpn-provider",
       "type": "feature",
       "title": {
-        "en": "KSH VPN server catalog",
-        "es": "Catálogo de servidores KSH VPN",
-        "ar": "قائمة خوادم KSH VPN",
-        "fa": "فهرست سرورهای KSH VPN",
-        "fr": "Catalogue de serveurs KSH VPN",
-        "id": "Katalog server KSH VPN",
-        "ru": "Каталог серверов KSH VPN",
-        "de": "KSH-VPN-Serverkatalog",
-        "pt-BR": "Catálogo de servidores KSH VPN"
+        "en": "✅ KSH VPN",
+        "es": "✅ KSH VPN",
+        "ar": "✅ KSH VPN",
+        "fa": "✅ KSH VPN",
+        "fr": "✅ KSH VPN",
+        "id": "✅ KSH VPN",
+        "ru": "✅ KSH VPN",
+        "de": "✅ KSH VPN",
+        "pt-BR": "✅ KSH VPN"
       },
       "description": {
-        "en": "Added KSH VPN to Server VPN with its icon and complete supported server-catalog decoding.",
-        "es": "Se añadió KSH VPN a Server VPN con su icono y descifrado completo del catálogo compatible.",
-        "ar": "إضافة KSH VPN إلى قسم خوادم VPN مع أيقونته وفك تشفير القائمة المتوافقة بالكامل.",
-        "fa": "KSH VPN با نماد اختصاصی و رمزگشایی کامل فهرست سرورهای سازگار به بخش Server VPN افزوده شد.",
-        "fr": "Ajout de KSH VPN à Server VPN avec son icône et le décodage complet des catalogues compatibles.",
-        "id": "KSH VPN ditambahkan ke Server VPN dengan ikon dan dekode lengkap katalog yang didukung.",
-        "ru": "KSH VPN добавлен в Server VPN со значком и полным декодированием поддерживаемых каталогов.",
-        "de": "KSH VPN ist mit Symbol und vollständiger Dekodierung unterstützter Kataloge neu in Server VPN.",
-        "pt-BR": "KSH VPN foi adicionado ao Server VPN com ícone e decodificação completa dos catálogos compatíveis."
+        "en": "New Server VPN provider with icon and compatible catalog decoding.",
+        "es": "Nuevo proveedor Server VPN con icono y descifrado de catálogos compatibles.",
+        "ar": "مزود جديد في Server VPN مع أيقونته وفك تشفير القوائم المتوافقة.",
+        "fa": "ارائه‌دهنده جدید Server VPN با نماد و رمزگشایی فهرست‌های سازگار.",
+        "fr": "Nouveau fournisseur Server VPN avec icône et décodage des catalogues compatibles.",
+        "id": "Penyedia Server VPN baru dengan ikon dan dekode katalog yang didukung.",
+        "ru": "Новый провайдер Server VPN со значком и декодированием совместимых каталогов.",
+        "de": "Neuer Server-VPN-Anbieter mit Symbol und Dekodierung kompatibler Kataloge.",
+        "pt-BR": "Novo provedor Server VPN com ícone e decodificação de catálogos compatíveis."
       }
     },
     {
       "id": "dtunnel-mod-entry",
       "type": "feature",
       "title": {
-        "en": "DTunnel Mod added to Server VPN",
-        "es": "DTunnel Mod añadido a Server VPN",
-        "ar": "إضافة DTunnel Mod إلى خوادم VPN",
-        "fa": "افزودن DTunnel Mod به Server VPN",
-        "fr": "DTunnel Mod ajouté à Server VPN",
-        "id": "DTunnel Mod ditambahkan ke Server VPN",
-        "ru": "DTunnel Mod добавлен в Server VPN",
-        "de": "DTunnel Mod neu in Server VPN",
-        "pt-BR": "DTunnel Mod adicionado ao Server VPN"
+        "en": "✅ DTunnel Mod",
+        "es": "✅ DTunnel Mod",
+        "ar": "✅ DTunnel Mod",
+        "fa": "✅ DTunnel Mod",
+        "fr": "✅ DTunnel Mod",
+        "id": "✅ DTunnel Mod",
+        "ru": "✅ DTunnel Mod",
+        "de": "✅ DTunnel Mod",
+        "pt-BR": "✅ DTunnel Mod"
       },
       "description": {
-        "en": "DTunnel Mod now appears with its icon. Remote decoding stays unavailable until provider access is configured.",
-        "es": "DTunnel Mod ya aparece con su icono. El descifrado remoto seguirá inactivo hasta configurar el acceso.",
-        "ar": "يظهر DTunnel Mod الآن بأيقونته. يبقى فك التشفير عن بُعد غير متاح حتى إعداد الوصول.",
-        "fa": "DTunnel Mod با نماد خود نمایش داده می‌شود؛ رمزگشایی راه دور تا تنظیم دسترسی غیرفعال است.",
-        "fr": "DTunnel Mod s’affiche avec son icône. Le décodage distant reste désactivé jusqu’à la configuration d’accès.",
-        "id": "DTunnel Mod kini tampil dengan ikonnya. Dekode jarak jauh belum aktif hingga akses disiapkan.",
-        "ru": "DTunnel Mod теперь отображается со значком. Удалённое декодирование отключено до настройки доступа.",
-        "de": "DTunnel Mod wird jetzt mit Symbol angezeigt. Ferndekodierung bleibt bis zur Einrichtung des Zugangs aus.",
-        "pt-BR": "DTunnel Mod agora aparece com seu ícone. A decodificação remota segue inativa até configurar o acesso."
+        "en": "Added with its icon. Remote decoding awaits provider access.",
+        "es": "Añadido con su icono. El descifrado remoto espera configurar el acceso.",
+        "ar": "أضيف مع أيقونته. فك التشفير عن بُعد ينتظر إعداد الوصول.",
+        "fa": "با نماد خود اضافه شد. رمزگشایی راه دور در انتظار تنظیم دسترسی است.",
+        "fr": "Ajouté avec son icône. Décodage distant en attente de l’accès.",
+        "id": "Ditambahkan dengan ikon. Dekode jarak jauh menunggu pengaturan akses.",
+        "ru": "Добавлен со значком. Удалённое декодирование ожидает настройки доступа.",
+        "de": "Mit Symbol hinzugefügt. Ferndekodierung wartet auf die Zugangseinrichtung.",
+        "pt-BR": "Adicionado com ícone. A decodificação remota aguarda a configuração do acesso."
       }
     },
     {
-      "id": "play-store-coming-soon",
-      "type": "improvement",
+      "id": "mkk-hyper-sources",
+      "type": "fix",
       "title": {
-        "en": "Google Play: coming soon",
-        "es": "Google Play: próximamente",
-        "ar": "Google Play: قريبًا",
-        "fa": "Google Play: به‌زودی",
-        "fr": "Google Play : bientôt disponible",
-        "id": "Google Play: segera hadir",
-        "ru": "Google Play: скоро",
-        "de": "Google Play: demnächst",
-        "pt-BR": "Google Play: em breve"
+        "en": "🛠️ MKK Hyper VPN",
+        "es": "🛠️ MKK Hyper VPN",
+        "ar": "🛠️ MKK Hyper VPN",
+        "fa": "🛠️ MKK Hyper VPN",
+        "fr": "🛠️ MKK Hyper VPN",
+        "id": "🛠️ MKK Hyper VPN",
+        "ru": "🛠️ MKK Hyper VPN",
+        "de": "🛠️ MKK Hyper VPN",
+        "pt-BR": "🛠️ MKK Hyper VPN"
       },
       "description": {
-        "en": "The public website now shows Google Play as coming soon, without redirecting downloads to GitHub.",
-        "es": "La web pública ahora muestra Google Play como próximamente, sin redirigir las descargas a GitHub.",
-        "ar": "يعرض الموقع العام Google Play بوصفه قريبًا، دون إعادة توجيه التنزيلات إلى GitHub.",
-        "fa": "وب‌سایت عمومی اکنون Google Play را «به‌زودی» نشان می‌دهد و به GitHub هدایت نمی‌کند.",
-        "fr": "Le site public indique désormais « Bientôt sur Google Play » sans rediriger vers GitHub.",
-        "id": "Situs publik kini menampilkan Google Play sebagai segera hadir, tanpa pengalihan ke GitHub.",
-        "ru": "На сайте теперь указано «Скоро в Google Play» без перенаправления загрузок на GitHub.",
-        "de": "Die öffentliche Website zeigt jetzt „Demnächst bei Google Play“ statt zu GitHub umzuleiten.",
-        "pt-BR": "O site público agora mostra Google Play como em breve, sem redirecionar downloads ao GitHub."
+        "en": "Fixed incomplete results: separate sources, with errors shown when needed.",
+        "es": "Corregidos los resultados incompletos: fuentes separadas y errores visibles.",
+        "ar": "إصلاح النتائج الناقصة: مصادر منفصلة وعرض الأخطاء عند الحاجة.",
+        "fa": "رفع مشکل نتایج ناقص: منابع جداگانه و نمایش خطاها در صورت نیاز.",
+        "fr": "Correction des résultats incomplets : sources séparées et erreurs signalées.",
+        "id": "Hasil tidak lengkap diperbaiki: sumber terpisah dan kesalahan ditampilkan.",
+        "ru": "Исправлены неполные результаты: источники раздельны, ошибки отображаются.",
+        "de": "Unvollständige Ergebnisse behoben: getrennte Quellen und sichtbare Fehler.",
+        "pt-BR": "Resultados incompletos corrigidos: fontes separadas e erros visíveis."
       }
     }
   ]
