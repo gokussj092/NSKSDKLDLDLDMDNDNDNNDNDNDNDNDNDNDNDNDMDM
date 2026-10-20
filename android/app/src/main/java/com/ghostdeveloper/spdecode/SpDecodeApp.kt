@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import com.ghostdeveloper.spdecode.cloud.CloudNewsNotice
 import com.ghostdeveloper.spdecode.cloud.ServerVpnApp
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -92,6 +93,7 @@ fun SpDecodeApp(
     serverVpnUnavailable:Boolean=false,
     onRefreshServerVpn:()->Unit={},
     whatsNew:Boolean=false,
+    cloudWhatsNew:CloudNewsNotice?=null,
     onDismissWhatsNew:()->Unit={},
     guideStep:Int?=null,
     onGuideNext:()->Unit={},
@@ -144,12 +146,30 @@ fun SpDecodeApp(
                 spotlight=if(guideStep!=null && !whatsNew && !busy)
                     FirstRunGuide.targetTab(guideStep) else null)
         }
-        if(whatsNew && !busy) AlertDialog(
+        if(whatsNew && !busy && (cloudWhatsNew!=null || !BuildConfig.SPDECODE_CLOUD_ENABLED)) AlertDialog(
             onDismissRequest=onDismissWhatsNew,
             icon={Icon(Icons.Outlined.NewReleases,null,tint=Green)},
-            title={Text(stringResource(R.string.whats_new_title),fontWeight=FontWeight.Bold)},
+            title={Text(cloudWhatsNew?.title ?: stringResource(R.string.whats_new_title),fontWeight=FontWeight.Bold)},
             text={
-                Column(verticalArrangement=Arrangement.spacedBy(12.dp)) {
+                if(cloudWhatsNew!=null) Column(
+                    modifier=Modifier.heightIn(max=430.dp).verticalScroll(rememberScrollState()),
+                    verticalArrangement=Arrangement.spacedBy(14.dp)
+                ){
+                    Text(cloudWhatsNew.subtitle,color=White,fontSize=14.sp)
+                    cloudWhatsNew.items.forEach { item ->
+                        Row(verticalAlignment=Alignment.Top) {
+                            Icon(Icons.Outlined.CheckCircle,null,tint=Green,
+                                modifier=Modifier.size(20.dp))
+                            Spacer(Modifier.width(11.dp))
+                            Column(verticalArrangement=Arrangement.spacedBy(3.dp)) {
+                                Text(item.title,color=White,fontWeight=FontWeight.SemiBold,fontSize=14.sp)
+                                Text(item.description,color=Secondary,fontSize=13.sp,
+                                    lineHeight=18.sp)
+                            }
+                        }
+                    }
+                    Text(cloudWhatsNew.publishedAt,color=Secondary,fontSize=11.sp)
+                } else Column(verticalArrangement=Arrangement.spacedBy(12.dp)) {
                     Text(stringResource(R.string.whats_new_description),
                         color=White,fontSize=14.sp)
                     Row(verticalAlignment=Alignment.Top) {

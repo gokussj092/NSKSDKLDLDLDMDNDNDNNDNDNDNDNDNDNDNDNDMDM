@@ -24,6 +24,8 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.ghostdeveloper.spdecode.cloud.CloudNewsNotice
+import com.ghostdeveloper.spdecode.cloud.CloudWhatsNewRepository
 import com.ghostdeveloper.spdecode.cloud.CloudDecodeClient
 import com.ghostdeveloper.spdecode.cloud.CloudDiagnosticsPrivacy
 import com.ghostdeveloper.spdecode.cloud.CloudFileFormats
@@ -72,6 +74,7 @@ class MainActivity : ComponentActivity() {
     private val scope=CoroutineScope(SupervisorJob()+Dispatchers.Main.immediate)
     private val cloudClient by lazy { CloudDecodeClient(this) }
     private val serverVpnCatalog by lazy { ServerVpnCatalogRepository(this,cloudClient) }
+    private val cloudNewsRepository by lazy { CloudWhatsNewRepository(this,cloudClient) }
     private var serverVpnApps by mutableStateOf<List<ServerVpnApp>>(emptyList())
     private var showCloudLegal by mutableStateOf(false)
     private var serverVpnRefresh:Job?=null
@@ -115,6 +118,8 @@ class MainActivity : ComponentActivity() {
     private var navigationExplicit=false
     private var showBrandedSplash by mutableStateOf(true)
     private var showWhatsNew by mutableStateOf(false)
+    private var cloudWhatsNew by mutableStateOf<CloudNewsNotice?>(null)
+    private var newsJob:Job?=null
     private var guideStep by mutableStateOf<Int?>(null)
     private var runningVersionCode=0L
     private var message by mutableStateOf<String?>(null)
@@ -168,6 +173,23 @@ class MainActivity : ComponentActivity() {
                 serverVpnApps=apps
                 serverVpnUnavailable=apps.isEmpty()
             }
+        }
+    }
+
+    /** Server publication version is independent of the APK versionCode. */
+    private fun refreshCloudWhatsNew() {
+        if(!BuildConfig.SPDECODE_CLOUD_ENABLED || showCloudLegal ||
+            newsJob?.isActive==true)return
+        newsJob=scope.launch {
+            try {
+                val lastSeen=settings.getInt("last_seen_cloud_news_version",0)
+                val next=cloudNewsRepository.latestUnseen(selectedLanguage,lastSeen)
+                if(next!=null) {
+                    cloudWhatsNew=next
+                    showWhatsNew=true
+                }
+            }catch(error:CancellationException){throw error}
+             catch(_:Exception){ /* News failure must never prevent decoding or login. */ }
         }
     }
 
@@ -287,7 +309,8 @@ class MainActivity : ComponentActivity() {
         @Suppress("DEPRECATION")
         val installed=packageManager.getPackageInfo(packageName,0)
         runningVersionCode=if(Build.VERSION.SDK_INT>=28)installed.longVersionCode else installed.versionCode.toLong()
-        showWhatsNew=settings.getLong("last_seen_whats_new_version",0L)<runningVersionCode
+        showWhatsNew=!BuildConfig.SPDECODE_CLOUD_ENABLED &&
+            settings.getLong("last_seen_whats_new_version",0L)<runningVersionCode
         showCloudLegal=BuildConfig.SPDECODE_CLOUD_ENABLED && !CloudLegalConsent.accepted(this)
         catalogUpdatesEnabled=CloudCatalogUpdates.enabled(this)
         if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
@@ -299,7 +322,7 @@ class MainActivity : ComponentActivity() {
                     !showCloudLegal && tab==3)refreshServerVpn()
             }
         }
-        if(!showCloudLegal){refreshServerVpn();syncOptInUsage();CloudCatalogUpdates.ensureScheduled(this)}
+        if(!showCloudLegal){refreshServerVpn();syncOptInUsage();CloudCatalogUpdates.ensureScheduled(this);refreshCloudWhatsNew()}
         if(savedInstanceState==null && !settings.getBoolean("first_run_guide_completed",false))
             guideStep=0
         @Suppress("DEPRECATION")
@@ -437,8 +460,16 @@ class MainActivity : ComponentActivity() {
                 serverVpnUnavailable=serverVpnUnavailable,
                 onRefreshServerVpn={refreshServerVpn(force=true)},
                 whatsNew=showWhatsNew,
+                cloudWhatsNew=cloudWhatsNew,
                 onDismissWhatsNew={
-                    settings.edit().putLong("last_seen_whats_new_version",runningVersionCode).apply()
+                    if(BuildConfig.SPDECODE_CLOUD_ENABLED){
+                        cloudWhatsNew?.let { news ->
+                            settings.edit().putInt("last_seen_cloud_news_version",news.version).apply()
+                        }
+                        cloudWhatsNew=null
+                    }else{
+                        settings.edit().putLong("last_seen_whats_new_version",runningVersionCode).apply()
+                    }
                     showWhatsNew=false
                 },
                 guideStep=guideStep,
@@ -472,6 +503,7 @@ class MainActivity : ComponentActivity() {
                             CloudLegalConsent.accept(this@MainActivity)
                             showCloudLegal=false
                             refreshServerVpn()
+                            refreshCloudWhatsNew()
                             syncOptInUsage()
                             if(savedInstanceState==null && !showCloudLegal)handleExternalIntent(intent)
                         }catch(_:Exception){message=getString(R.string.history_storage_error)}
@@ -510,7 +542,7 @@ class MainActivity : ComponentActivity() {
         // A signature/debuggable check that runs only at cold start can be
         // bypassed by a later process attachment. Defense-in-depth recheck.
         if(!ReleaseIntegrity.isTrusted(this)) finishAndRemoveTask()
-        if(!showCloudLegal){refreshServerVpn();syncOptInUsage();CloudCatalogUpdates.ensureScheduled(this);startCatalogWatch()}
+        if(!showCloudLegal){refreshServerVpn();syncOptInUsage();CloudCatalogUpdates.ensureScheduled(this);startCatalogWatch();refreshCloudWhatsNew()}
     }
 
     override fun onNewIntent(intent:Intent){
