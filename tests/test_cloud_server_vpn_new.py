@@ -13,12 +13,13 @@ from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
 
 from cloud.workers.python.engine import DecodeFailure, decode_provider_catalog
-from cloud.workers.python import ksh_catalog, dtunnelmod_catalog
+from decoders.Python.apps.KSH_VPN import ksh_vpn as ksh_catalog
+from decoders.Python.apps.DTunnel_Mod import dtunnelmod as dtunnelmod_catalog
 from decoders.Python.apps.MKK_Hyper_VPN import MKK_Hyper_VPN as mkk
 
 def seal_ksh(value):
     nonce=bytes(range(12))
-    cipher=AES.new(ksh_catalog.KEY,AES.MODE_GCM,nonce=nonce)
+    cipher=AES.new(ksh_catalog.CATALOG_KEY,AES.MODE_GCM,nonce=nonce)
     data,tag=cipher.encrypt_and_digest(json.dumps(value).encode())
     return json.dumps({"enc":base64.b64encode(nonce+data+tag).decode()}).encode()
 
@@ -32,7 +33,7 @@ def seal_mkk(value):
 
 def seal_dtunnel(value):
     plain=json.dumps(value).encode()
-    encrypted=AES.new(dtunnelmod_catalog.KEY,AES.MODE_CBC,iv=bytes(16)).encrypt(pad(plain,16))
+    encrypted=AES.new(dtunnelmod_catalog.CATALOG_KEY,AES.MODE_CBC,iv=bytes(16)).encrypt(pad(plain,16))
     return base64.b64encode(encrypted)
 
 def bundle(sources):
