@@ -1,5 +1,6 @@
 /** C3.5 session-gated remote imports; only the broker knows external URLs. */
 import { randomUUID } from "node:crypto";
+import {providerAllowed} from "./c12-provider-controls.mjs";
 import { settings } from "./c3-config.mjs";
 import { store, reserveSlot, releaseSlot } from "./c3-store.mjs";
 import { requireSession } from "./c3-session.mjs";
@@ -23,6 +24,8 @@ export async function externalImportRequest(request,kind,opts={}) {
     if(await maintenanceEnabled(redis))return failure("SERVICE_UNAVAILABLE",503);
     if(await serviceMaintenanceEnabled(redis,kind==="ehi"?"httpInjector":"serverVpn"))
       return failure("SERVICE_MAINTENANCE",503);
+    if(!await providerAllowed(kind==="ehi"?"ehi-cloud":"nur-tunnel"))
+      return failure("REMOTE_NOT_CONFIGURED",503);
     claims=await requireSession(redis,request,settings());
     if (!claims) return failure("UNAUTHORIZED",401);
     if (claims.rateLimited) return failure("RATE_LIMITED",429);
