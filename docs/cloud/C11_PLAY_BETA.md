@@ -243,3 +243,7 @@ Documentación Android de referencia: https://developer.android.com/develop/ui/v
 ### Validación de ventana en emulador
 
 El workflow `android-play-ui-insets.yml` ejecuta una prueba instrumentada en Android API 35 y 36 (emulador x86_64) para comprobar con `WindowInsetsCompat` que el encabezado y las pestañas inferiores visibles no se solapan con las barras del sistema. Esta prueba aporta evidencia de geometría real del emulador, pero no sustituye las pruebas en dispositivos físicos, gestos/3 botones, tamaños de pantalla variados o hardware con páginas reales de 16 KiB. Los resultados se consultan en GitHub Actions, sin publicar ni desplegar la aplicación.
+
+## Decisión de publicación
+
+El paquete v1.1.6 (27) se ha solicitado únicamente para **prueba cerrada de Google Play**. En `release/android-readiness.json` se registra `NO-GO` para distribución estable y prerelease público: ninguna aprobación anterior (incluida la de 1.1.4) se transfiere a esta versión. La compilación AAB para Play cerrada no altera esa decisión.
