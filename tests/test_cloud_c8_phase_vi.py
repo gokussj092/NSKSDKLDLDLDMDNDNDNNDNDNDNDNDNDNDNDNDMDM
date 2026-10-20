@@ -54,7 +54,7 @@ class PhaseViPrivacySecurityTests(unittest.TestCase):
         self.assertNotIn('base64.length>350_000',repo)
         self.assertIn('ServerVpnIconPolicy.sampleSize',repo)
         self.assertIn('ServerVpnIconPolicy.isPng(bytes)',repo)
-        self.assertIn('dayMillis=86_400_000L',repo)
+        self.assertIn('versionCheckMillis=15*60_000L',repo)
         self.assertIn('remote.optBoolean("unchanged",false)',repo)
         self.assertIn('vault.write("catalog",fresh.toString()',repo)
 

@@ -39,14 +39,17 @@ internal object CloudCatalogUpdates {
     private fun messaging(context:Context):FirebaseMessaging? {
         if(!BuildConfig.SPDECODE_CLOUD_ENABLED || !BuildConfig.SPDECODE_FCM_CONFIGURED)return null
         return try {
-            val app=FirebaseApp.getApps(context).firstOrNull{it.name=="spdecode-catalog"}
-                ?: FirebaseApp.initializeApp(context,FirebaseOptions.Builder()
-                    .setProjectId(BuildConfig.SPDECODE_FCM_PROJECT_ID)
-                    .setApplicationId(BuildConfig.SPDECODE_FCM_APP_ID)
-                    .setApiKey(BuildConfig.SPDECODE_FCM_API_KEY)
-                    .setGcmSenderId(BuildConfig.SPDECODE_FCM_SENDER_ID)
-                    .build(),"spdecode-catalog")
-            FirebaseMessaging.getInstance(app).also{it.isAutoInitEnabled=false}
+            val existing=FirebaseApp.getApps(context)
+                .firstOrNull{it.name==FirebaseApp.DEFAULT_APP_NAME}
+            if(existing!=null &&
+                existing.options.applicationId!=BuildConfig.SPDECODE_FCM_APP_ID)return null
+            if(existing==null)FirebaseApp.initializeApp(context,FirebaseOptions.Builder()
+                .setProjectId(BuildConfig.SPDECODE_FCM_PROJECT_ID)
+                .setApplicationId(BuildConfig.SPDECODE_FCM_APP_ID)
+                .setApiKey(BuildConfig.SPDECODE_FCM_API_KEY)
+                .setGcmSenderId(BuildConfig.SPDECODE_FCM_SENDER_ID)
+                .build(),FirebaseApp.DEFAULT_APP_NAME)
+            FirebaseMessaging.getInstance().also{it.isAutoInitEnabled=false}
         }catch(_:Exception){null}
     }
 
