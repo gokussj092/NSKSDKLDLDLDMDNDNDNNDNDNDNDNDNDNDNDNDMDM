@@ -15,6 +15,8 @@ PROVIDERS = {
     "24clan-green": "decoders.Python.apps.24clan_VPN_Green.24clan_VPN_Green",
     "hx-tunnel": "decoders.Python.apps.HX_Tunnel_VPN.HX_Tunnel_VPN",
     "mkk-hyper": "decoders.Python.apps.MKK_Hyper_VPN.MKK_Hyper_VPN",
+    "ksh-vpn": "cloud.workers.python.ksh_catalog",
+    "dtunnel-mod": "cloud.workers.python.dtunnelmod_catalog",
     "my-tunnel-proxy": "decoders.Python.apps.My_Tunnel_Proxy.server_catalog_decoder",
     "robust-tunnel": "decoders.Python.apps.Robust_Tunnel_VPN.server_catalog_decoder",
     # Offline decoder; Royal's public card has an icon but decoding stays disabled.
@@ -27,8 +29,12 @@ def decode(provider_id: str, payload: bytes) -> str:
     module_name = PROVIDERS.get(provider_id)
     if module_name is None:
         raise ValueError("Unsupported provider")
-    module = importlib.import_module(module_name)
-    result = module.run(payload)
+    if provider_id=="mkk-hyper" and payload.startswith(b'{"kind":"spdecode-mkk-sources-v1"'):
+        from cloud.workers.python.mkk_bundle import decode as decode_mkk_bundle
+        result=decode_mkk_bundle(payload)
+    else:
+        module = importlib.import_module(module_name)
+        result = module.run(payload)
     if not isinstance(result, str) or not result.strip():
         raise ValueError("Unable to decode complete catalog")
     # Reject malformed and incomplete catalogs, preserve original entire JSON.
