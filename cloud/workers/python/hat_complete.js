@@ -14,7 +14,7 @@ const MAX=12*1024*1024;
 // Only transform a canonical UTF-8 Base64 carrier. Preserve unknown fields.
 function xorField(encoded){
   if(typeof encoded!=="string"||!encoded)return encoded;
-  const carrier=encoded.replace(/\\s+/g,"");
+  const carrier=encoded.replace(/\s+/g,"");
   if(!/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(carrier)||!carrier)
     return encoded;
   const bytes=Buffer.from(carrier,"base64");
@@ -26,12 +26,13 @@ function xorField(encoded){
   for(let i=0;i<raw.length;i++)value+=String.fromCharCode(raw.charCodeAt(i)^XOR.charCodeAt(i%XOR.length));
   // Malformed or plaintext strings may coincidentally look like Base64.
   // Keep them verbatim rather than inventing an unreadable decrypted field.
-  if(/[\\u0000-\\u0008\\u000e-\\u001f]/.test(value))return encoded;
+  if(/[\u0000-\u0008\u000e-\u001f]/.test(value))return encoded;
   return value;
 }
 function decodeHat(input){
   if(!Buffer.isBuffer(input)||input.length===0||input.length>MAX)throw Error("INVALID_INPUT");
-  // Legacy bot/Python accepts line-wrapped Base64 exports as well as one line.\n  const encoded=input.toString("utf8").replace(/^\\uFEFF/,"").replace(/\\s+/g,"");
+  // Legacy bot/Python accepts line-wrapped Base64 exports as well as one line.
+  const encoded=input.toString("utf8").replace(/^\uFEFF/,"").replace(/\s+/g,"");
   if(!/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(encoded))
     throw Error("INVALID_BASE64");
   const bytes=Buffer.from(encoded,"base64");
