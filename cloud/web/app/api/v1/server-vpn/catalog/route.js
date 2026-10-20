@@ -13,7 +13,7 @@ export async function POST(request) {
        (input.knownVersion!==undefined && (!Number.isSafeInteger(input.knownVersion) || input.knownVersion<0))) throw Error("schema");
   }catch {return reply({error:{code:"INVALID_REQUEST"}},400);}
   try {
-    const summary=await providerOverview();
+    const summary=await providerOverview(process.env,{syncCatalog:true});
     const currentVersion=summary.catalogVersion;
     if(input.knownVersion===currentVersion)
       return reply({apiVersion:"v1",catalogVersion:currentVersion,recheckAfterSeconds:RECHECK_SECONDS,unchanged:true});
