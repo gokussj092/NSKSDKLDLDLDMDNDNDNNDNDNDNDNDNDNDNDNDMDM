@@ -15,7 +15,7 @@ const IDS=Object.freeze(["ehi-cloud","nur-tunnel",...providerIds()]);
 export const PUBLIC_PROVIDER_IDS=IDS;
 const LABELS=Object.freeze({
   "ehi-cloud":"HTTP Injector Cloud",
-  "nur-tunnel":"NUR TUNNEL VPN",
+  "nur-tunnel":"Servidores VPN",
   "tunneltweak":"Tunneltweak",
   "http-jireh":"HTTP Jireh",
   "http-fenixvpn":"HTTP FenixVPN",
