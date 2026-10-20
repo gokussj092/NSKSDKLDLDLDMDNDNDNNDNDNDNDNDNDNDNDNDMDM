@@ -54,10 +54,10 @@ test("separate API maintenance state and file vs VPN telemetry preserve existing
  assert.match(vpn,/serviceMaintenanceEnabled\(redis,"serverVpn"\)/);
 });
 test("Android maintenance response remains localized instead of exposing raw API failures",()=>{
- const client=read("../android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudUserErrors.kt");
+ const client=read("../../android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudUserErrors.kt");
  assert.match(client,/SERVICE_MAINTENANCE/);
  for(const locale of ["values","values-es","values-ar","values-de","values-fa","values-fr","values-in","values-pt-rBR","values-ru"]){
-  const source=read("../android/app/src/main/res/"+locale+"/cloud_error_strings.xml");
+  const source=read("../../android/app/src/main/res/"+locale+"/cloud_error_strings.xml");
   assert.match(source,/name="cloud_failure_maintenance"/);
  }
 });
