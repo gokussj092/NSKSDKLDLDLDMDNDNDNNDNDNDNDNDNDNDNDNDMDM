@@ -4,7 +4,7 @@ import {settings} from "./c3-config.mjs";
 import {store,reserveSlot,releaseSlot} from "./c3-store.mjs";
 import {requireSession} from "./c3-session.mjs";
 import {enabled,notEnabled,failure,boundedBody,fetchWorker} from "./c3-gateway.mjs";
-import {maintenanceEnabled,recordWorkerResult} from "./c6-ops-store.mjs";
+import {serviceMaintenanceEnabled,recordWorkerResult} from "./c6-ops-store.mjs";
 import {providerEnabled,downloadVpnCatalog,VpnProviderError} from "./server-vpn-provider.mjs";
 
 export async function decodeServerVpn(request,opts={}){
@@ -12,7 +12,7 @@ export async function decodeServerVpn(request,opts={}){
   let redis,claims,lease=null,providerId="";
   try{
     redis=await (opts.storeProvider||store)();
-    if(await maintenanceEnabled(redis))return failure("SERVICE_UNAVAILABLE",503);
+    if(await serviceMaintenanceEnabled(redis,"serverVpn"))return failure("SERVICE_MAINTENANCE",503);
     claims=await requireSession(redis,request,settings());
     if(!claims)return failure("UNAUTHORIZED",401);
     if(claims.rateLimited)return failure("RATE_LIMITED",429);
@@ -32,12 +32,12 @@ export async function decodeServerVpn(request,opts={}){
       let errorCode="";
       if(!response.ok)errorCode=(await response.clone().json()).error?.code||"";
       await recordWorkerResult(redis,response.ok?"success":"failed",{
-        kind:"catalog",bytes:bytes.length,errorCode,
+        kind:"server-vpn",format:providerId,bytes:bytes.length,errorCode,
       });
     }catch{}
     return response;
   }catch(error){
-    if(redis&&lease)try{await recordWorkerResult(redis,"failed",{kind:"catalog",bytes:0,
+    if(redis&&lease)try{await recordWorkerResult(redis,"failed",{kind:"server-vpn",format:providerId,bytes:0,
       errorCode:error?.code||"SERVICE_UNAVAILABLE"});}catch{}
     if(error instanceof VpnProviderError){
       const statuses={REMOTE_NOT_CONFIGURED:503,UNSUPPORTED_FORMAT:422,

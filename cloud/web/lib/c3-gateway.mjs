@@ -4,7 +4,7 @@ import { store, reserveSlot, releaseSlot } from "./c3-store.mjs";
 import { createChallenge, issueSession, issueQaSession, requireSession } from "./c3-session.mjs";
 import { jsonReply, unavailable } from "./responses.mjs";
 import { ehiConfigured, nurConfigured } from "./c35-provider.mjs";
-import { maintenanceEnabled, recordWorkerResult } from "./c6-ops-store.mjs";
+import { maintenanceEnabled, serviceMaintenanceEnabled, recordWorkerResult } from "./c6-ops-store.mjs";
 
 const ERROR_MESSAGES = Object.freeze({
   INVALID_REQUEST:"Solicitud inválida.",
@@ -26,6 +26,7 @@ const ERROR_MESSAGES = Object.freeze({
   EXPIRED_CHALLENGE:"El desafío expiró o ya fue utilizado.",
   INTEGRITY_REJECTED:"No se pudo verificar la integridad de la aplicación.",
   SERVICE_UNAVAILABLE:"Servicio temporalmente no disponible.",
+  SERVICE_MAINTENANCE:"Este descifrador está temporalmente en mantenimiento.",
   QA_DISABLED:"El acceso de pruebas ya no está habilitado.",
   QA_ACCESS_DENIED:"Código temporal de pruebas inválido o expirado.",
   INVALID_REFERENCE:"Referencia remota inválida.",
@@ -138,7 +139,7 @@ export async function decodeRequest(request,kind,options={}) {
   let redis,claims,lease=null,telemetry=null,recorded=false;
   try{
     redis=await (options.storeProvider||store)();
-    if(await maintenanceEnabled(redis))return failure("SERVICE_UNAVAILABLE",503);
+    if(await serviceMaintenanceEnabled(redis,"files"))return failure("SERVICE_MAINTENANCE",503);
     claims=await requireSession(redis,request,cfg);
     if(!claims)return failure("UNAUTHORIZED",401);
     if(claims.rateLimited)return failure("RATE_LIMITED",429);

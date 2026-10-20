@@ -1,6 +1,7 @@
 import { adminSettings, adminLogin, authenticateAdmin, validMutation,
   cookieHeader, deleteCookie, revokeAdmin } from "./c6-admin-auth.mjs";
-import { opsStore, maintenanceEnabled, setMaintenance, aggregateMetrics, usageReport } from "./c6-ops-store.mjs";
+import { opsStore, maintenanceEnabled, setMaintenance, aggregateMetrics, usageReport,
+  SERVICE_IDS,serviceMaintenanceStates,setServiceMaintenance } from "./c6-ops-store.mjs";
 import { settings } from "./c3-config.mjs";
 import { ehiConfigured,nurConfigured } from "./c35-provider.mjs";
 import { jsonReply } from "./responses.mjs";
@@ -44,8 +45,8 @@ export async function statusRequest(request,options={}) {
   try{
     const redis=await (options.storeProvider||opsStore)();
     if(!await authenticateAdmin(redis,request))return error("UNAUTHORIZED",401);
-    const [maintenance,metrics,ping]=await Promise.all([
-      maintenanceEnabled(redis),aggregateMetrics(redis),redis.ping(),
+    const [maintenance,metrics,ping,serviceMaintenance]=await Promise.all([
+      maintenanceEnabled(redis),aggregateMetrics(redis),redis.ping(),serviceMaintenanceStates(redis),
     ]);
     const cfg=settings();
     // Worker origin cannot be user-controlled.
@@ -63,7 +64,8 @@ export async function statusRequest(request,options={}) {
       services:{apiConfigured:cfg.configured,redisConnected:ping==="PONG",
         workerReady,ehiImportConfigured:ehiConfigured(),
         nurCatalogImportConfigured:nurConfigured()},
-      maintenance,maintenanceLocked:process.env.CLOUD_FORCE_MAINTENANCE==="true",metrics,
+      maintenance,serviceMaintenance,
+      maintenanceLocked:process.env.CLOUD_FORCE_MAINTENANCE==="true",metrics,
       observation:"Counters are aggregate-only; no user content or keys are logged.",
     });
   }catch{return error("SERVICE_UNAVAILABLE",503);}
@@ -76,10 +78,13 @@ export async function maintenanceRequest(request,options={}) {
     const redis=await (options.storeProvider||opsStore)();
     if(!await authenticateAdmin(redis,request,cfg))return error("UNAUTHORIZED",401);
     const body=await parseSmallJson(request,256);
-    if(!own(body,["enabled"])||typeof body.enabled!=="boolean")
-      return error("INVALID_REQUEST",400);
-    await setMaintenance(redis,body.enabled);
-    return api({maintenance:await maintenanceEnabled(redis)});
+    const general=own(body,["enabled"]),specific=own(body,["enabled","service"]);
+    if((!general&&!specific)||typeof body.enabled!=="boolean"||
+      (specific&&!SERVICE_IDS.includes(body.service)))return error("INVALID_REQUEST",400);
+    if(general)await setMaintenance(redis,body.enabled);
+    else await setServiceMaintenance(redis,body.service,body.enabled);
+    return api({maintenance:await maintenanceEnabled(redis),
+      serviceMaintenance:await serviceMaintenanceStates(redis)});
   }catch(cause){
     if(cause?.message==="MAINTENANCE_LOCKED")return error("MAINTENANCE_LOCKED",409);
     return error("SERVICE_UNAVAILABLE",503);

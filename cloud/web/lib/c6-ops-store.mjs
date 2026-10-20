@@ -25,6 +25,27 @@ export async function setMaintenance(redis,enabled,env=process.env) {
   if(enabled)await redis.set(MAINTENANCE_KEY,"1");
   else await redis.del(MAINTENANCE_KEY);
 }
+/** Fixed allowlist: no arbitrary Redis keys may come from an admin request. */
+export const SERVICE_IDS=Object.freeze(["files","httpInjector","serverVpn"]);
+const serviceKey=id=>{
+  if(!SERVICE_IDS.includes(id))throw Error("INVALID_SERVICE");
+  return "spc6:maintenance:service:"+id;
+};
+export async function serviceMaintenanceStates(redis) {
+  const entries=await Promise.all(SERVICE_IDS.map(async id=>[id,(await redis.get(serviceKey(id)))==="1"]));
+  return Object.fromEntries(entries);
+}
+export async function serviceMaintenanceEnabled(redis,id,env=process.env){
+  // VPS lock and general maintenance always override per-service switches.
+  if(await maintenanceEnabled(redis,env))return true;
+  return (await redis.get(serviceKey(id)))==="1";
+}
+export async function setServiceMaintenance(redis,id,enabled,env=process.env){
+  const key=serviceKey(id);
+  if(env.CLOUD_FORCE_MAINTENANCE==="true")throw Error("MAINTENANCE_LOCKED");
+  if(enabled)await redis.set(key,"1");
+  else await redis.del(key);
+}
 export async function recordWorkerResult(redis,outcome,meta=null) {
   // No filenames, payloads, IPs, tokens, or decoded data are retained.
   if(!["success","failed"].includes(outcome))return;
@@ -59,10 +80,14 @@ const KNOWN_ERRORS=new Set([
   "HWID_PASSWORD_REQUIRED","INVALID_REQUEST","INVALID_INPUT","INVALID_BASE64",
   "INPUT_TOO_LARGE","OUTPUT_TOO_LARGE","SERVICE_UNAVAILABLE",
   "REMOTE_PROVIDER_UNAVAILABLE","REMOTE_RESPONSE_INVALID","REMOTE_INTEGRITY_FAILED",
-  "REMOTE_TOO_LARGE","REMOTE_DECODER_FAILED",
+  "REMOTE_TOO_LARGE","REMOTE_DECODER_FAILED","SERVICE_MAINTENANCE",
 ]);
 const dayUTC=(offset=0)=>new Date(Date.now()-offset*86400000).toISOString().slice(0,10);
 export function safeFormat(kind,format,errorCode="") {
+  // Remote catalog contents and private provider URLs must never be stored.
+  if(kind==="server-vpn")
+    return typeof format==="string" && /^[a-z0-9-]{1,48}$/.test(format)
+      ? "vpn-"+format : "vpn-other";
   if(kind==="text")return "text";
   if(kind==="catalog")return "nur-catalog";
   if(kind==="ehi")return "ehi";
@@ -85,6 +110,12 @@ export async function recordAnonymousUsage(redis,outcome,{kind,format,bytes=0,er
   p.hIncrBy(key,"attempts",1);
   p.hIncrBy(key,outcome,1);
   p.hIncrBy(key,"bytes",inputBytes);
+  const service=kind==="ehi"?"httpInjector":
+    kind==="catalog"||kind==="server-vpn"?"serverVpn":"files";
+  const hour=new Date().toISOString().slice(11,13);
+  p.hIncrBy(key,"service:"+service+":"+outcome,1);
+  p.hIncrBy(key,"hour:"+hour+":"+outcome,1);
+  if(code)p.hIncrBy(key,"serviceError:"+service+":"+code,1);
   p.hIncrBy(key,"format:"+extension+":attempts",1);
   p.hIncrBy(key,"format:"+extension+":"+outcome,1);
   if(code){
@@ -98,7 +129,14 @@ export async function usageReport(redis,days=7) {
   if(![1,7].includes(days))throw Error("INVALID_REPORT_WINDOW");
   const dates=Array.from({length:days},(_,i)=>dayUTC(days-1-i));
   const hashes=await Promise.all(dates.map(day=>redis.hGetAll(REPORT_PREFIX+day)));
+  // Also read yesterday's bounded hourly counters for the rolling 48 h chart.
+  const yesterday=dayUTC(1);
+  const yesterdayData=dates.includes(yesterday) ? null : await redis.hGetAll(REPORT_PREFIX+yesterday);
+  const hourlyHashes=new Map(dates.map((date,i)=>[date,hashes[i]||{}]));
+  if(yesterdayData)hourlyHashes.set(yesterday,yesterdayData);
   const formats=new Map(),errors=new Map(),byFormatError=new Map();
+  const services=Object.fromEntries(SERVICE_IDS.map(id=>[id,{service:id,successfulDecodes:0,failedDecodes:0,attempts:0}]));
+  const serviceErrors=new Map();
   const daily=[];
   let success=0,failed=0,bytes=0;
   const parse=v=>Math.max(0,Number.parseInt(v||"0",10)||0);
@@ -107,6 +145,10 @@ export async function usageReport(redis,days=7) {
     const dSuccess=parse(data.success),dFailed=parse(data.failed),dBytes=parse(data.bytes);
     success+=dSuccess;failed+=dFailed;bytes+=dBytes;
     daily.push({date:dates[i],successfulDecodes:dSuccess,failedDecodes:dFailed,inputBytes:dBytes});
+    for(const service of SERVICE_IDS){
+      services[service].successfulDecodes+=parse(data["service:"+service+":success"]);
+      services[service].failedDecodes+=parse(data["service:"+service+":failed"]);
+    }
     for(const [field,value] of Object.entries(data)){
       const count=parse(value);
       if(!count)continue;
@@ -116,6 +158,11 @@ export async function usageReport(redis,days=7) {
         const item=formats.get(extension)||{extension,successfulDecodes:0,failedDecodes:0};
         item[result==="success"?"successfulDecodes":"failedDecodes"]+=count;
         formats.set(extension,item);
+      }
+      const serviceErr=/^serviceError:(files|httpInjector|serverVpn):([A-Z_]+)$/.exec(field);
+      if(serviceErr){
+        const id=serviceErr[1]+":"+serviceErr[2];
+        serviceErrors.set(id,(serviceErrors.get(id)||0)+count);
       }
       const errMatch=/^error:([A-Z_]+)$/.exec(field);
       if(errMatch)errors.set(errMatch[1],(errors.get(errMatch[1])||0)+count);
@@ -132,9 +179,24 @@ export async function usageReport(redis,days=7) {
     .sort((a,b)=>b.attempts-a.attempts||a.extension.localeCompare(b.extension));
   const failures=[...errors].map(([code,count])=>({code,count})).sort((a,b)=>b.count-a.count||a.code.localeCompare(b.code));
   const incidents=[...byFormatError.values()].sort((a,b)=>b.count-a.count).slice(0,100);
+  const now=new Date();
+  const hourly=Array.from({length:48},(_,i)=>{
+    const hour=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate(),now.getUTCHours()-47+i));
+    const date=hour.toISOString().slice(0,10),hourKey=hour.toISOString().slice(11,13);
+    const bucket=hourlyHashes.get(date)||{};
+    return {hour:date+"T"+hourKey+":00Z",successfulDecodes:parse(bucket["hour:"+hourKey+":success"]),
+      failedDecodes:parse(bucket["hour:"+hourKey+":failed"])};
+  });
+  const breakdownServices=SERVICE_IDS.map(id=>({
+    ...services[id],attempts:services[id].successfulDecodes+services[id].failedDecodes,
+  }));
+  const errorServices=[...serviceErrors].map(([key,count])=>{
+    const [service,code]=key.split(":");return {service,code,count};
+  }).sort((a,b)=>b.count-a.count);
   return {window:days===1?"utc_today":"last_7_utc_days",days,successfulDecodes:success,
     failedDecodes:failed,totalDecodes:success+failed,inputBytes:bytes,daily,
     extensions:breakdown,errors:failures,incidents,
+    serviceBreakdown:breakdownServices,serviceErrors:errorServices,hourlyLast48:hourly,
     retentionDays:8,historyAvailableFrom:"first_deployment_of_telemetry",
     includes:"worker_results_only",privacy:"anonymous_aggregate_counters"};
 }
