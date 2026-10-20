@@ -3,12 +3,12 @@
  * catalog version in the dedicated isolated Docker volume. Never store URLs,
  * passwords, decoded payloads, device identifiers or admin sessions here.
  */
-import {readFile,open,rename,unlink} from "node:fs/promises";
+import {readFile,open,rename,unlink,access} from "node:fs/promises";
 import {join} from "node:path";
-import {randomUUID} from "node:crypto";
+import {randomUUID,createHash} from "node:crypto";
 import {providerIds} from "./server-vpn-provider.mjs";
 import {ehiConfigured,nurConfigured} from "./c35-provider.mjs";
-import {activeCatalogVersion} from "./server-vpn-catalog.mjs";
+import {activeCatalogVersion,catalog} from "./server-vpn-catalog.mjs";
 
 const ROOT="/app/provider-control";
 const IDS=Object.freeze(["ehi-cloud","nur-tunnel",...providerIds()]);
@@ -31,11 +31,23 @@ const LABELS=Object.freeze({
   "4u-tunnel-lite":"4U TUNNEL LITE",
 });
 const empty=()=>({version:0,disabled:[]});
+let rosterFingerprint=null;
+// Include names, IDs, and original icon digests, but exclude dynamic flags.
+// The version only advances for a changed deployment's actual catalog metadata.
+function catalogFingerprint(){
+  if(rosterFingerprint)return rosterFingerprint;
+  const records=catalog({version:1,availability:{}}).apps.map(({id,name,iconSha256,iconMimeType})=>
+    ({id,name,iconSha256,iconMimeType}));
+  rosterFingerprint=createHash("sha256").update(JSON.stringify(records)).digest("hex");
+  return rosterFingerprint;
+}
 const valid=s=>s && typeof s==="object" && !Array.isArray(s) &&
   Number.isSafeInteger(s.version) && s.version>=0 && s.version<1_000_000_000 &&
   Array.isArray(s.disabled) && s.disabled.length<=IDS.length &&
   s.disabled.every(x=>typeof x==="string" && IDS.includes(x)) &&
-  new Set(s.disabled).size===s.disabled.length;
+  new Set(s.disabled).size===s.disabled.length &&
+  (s.catalogFingerprint===undefined ||
+    (typeof s.catalogFingerprint==="string" && /^[a-f0-9]{64}$/.test(s.catalogFingerprint)));
 
 export async function loadProviderState(root=ROOT){
   const STATE=join(root,"switches.json");
@@ -47,6 +59,38 @@ export async function loadProviderState(root=ROOT){
   try{state=JSON.parse(raw);}catch{throw Error("PROVIDER_STATE_INVALID");}
   if(!valid(state))throw Error("PROVIDER_STATE_INVALID");
   return state;
+}
+/** Reconcile on-disk state with the deployed roster/icon fingerprint once.
+ * A previous admin toggle may have raised the cached version far above the
+ * static release number. Never regress that version or overwrite disabled IDs.
+ * The control volume is mounted only in production: file-based unit tests
+ * without a volume continue using the static release baseline.
+ */
+export async function synchronizeCatalogVersion(env=process.env,{root=ROOT}={}){
+  try{await access(root);}
+  catch(error){
+    if(error?.code==="ENOENT")return loadProviderState(root);
+    throw error;
+  }
+  const fingerprint=catalogFingerprint();
+  const previous=await loadProviderState(root);
+  if(previous.catalogFingerprint===fingerprint)return previous;
+  return locked(async()=>{
+    const state=await loadProviderState(root);
+    if(state.catalogFingerprint===fingerprint)return state;
+    const floor=Math.floor(Date.now()/1000)-1_577_836_800;
+    const next=Math.max(state.version,activeCatalogVersion(env),floor)+1;
+    if(next>=1_000_000_000)throw Error("CATALOG_VERSION_EXHAUSTED");
+    const updated={...state,version:next,catalogFingerprint:fingerprint};
+    const file=join(root,"switches.json");
+    const tmp=join(root,".switches-"+randomUUID());
+    const handle=await open(tmp,"wx",0o600);
+    try{await handle.writeFile(JSON.stringify(updated)+"\n","utf8");await handle.sync();}
+    finally{await handle.close();}
+    try{await rename(tmp,file);}
+    catch(error){await unlink(tmp).catch(()=>{});throw error;}
+    return updated;
+  },root);
 }
 export function providerPrerequisite(id,env=process.env){
   if(!IDS.includes(id))throw Error("INVALID_PROVIDER");
@@ -62,8 +106,8 @@ export function providerEffective(id,state,env=process.env){
 export async function providerAllowed(id,env=process.env,{root=ROOT}={}){
   return providerEffective(id,await loadProviderState(root),env);
 }
-export async function providerOverview(env=process.env,{root=ROOT}={}){
-  const state=await loadProviderState(root);
+export async function providerOverview(env=process.env,{root=ROOT,syncCatalog=false}={}){
+  const state=syncCatalog?await synchronizeCatalogVersion(env,{root}):await loadProviderState(root);
   return {
     catalogVersion:Math.max(activeCatalogVersion(env),state.version),
     providers:IDS.map(id=>({
@@ -103,7 +147,7 @@ export async function updateProvider(id,enable,env=process.env,{root=ROOT}={}){
     const floor=Math.floor(Date.now()/1000)-1_577_836_800;
     const version=Math.max(state.version,activeCatalogVersion(env),floor)+1;
     if(version>=1_000_000_000)throw Error("CATALOG_VERSION_EXHAUSTED");
-    const updated={version,disabled:[...disabled].sort()};
+    const updated={...state,version,disabled:[...disabled].sort()};
     const STATE=join(root,"switches.json");
     const tmp=join(root,".switches-"+randomUUID());
     const file=await open(tmp,"wx",0o600);
