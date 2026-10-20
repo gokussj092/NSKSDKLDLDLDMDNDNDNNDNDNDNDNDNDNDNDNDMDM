@@ -1,0 +1,143 @@
+{
+  "profile": {
+    "config_version": 6,
+    "config_message": "test\nmultiline niño 🐺",
+    "config_protected": true,
+    "config_expiry": 123456789,
+    "config_expiry_days": 5,
+    "hide_ssh_credentials": true,
+    "hide_proxy_settings": true,
+    "block_rooted": true,
+    "hwid_enabled": true,
+    "hwid_list": "test-device-A,test-device-B",
+    "sshServer": "node.example.test",
+    "sshPort": "443",
+    "sshUser": "test-user",
+    "sshPass": "test-only",
+    "tunnelType": 2,
+    "v2ray_config": {
+      "outbounds": [
+        {
+          "settings": {
+            "keep": [
+              0,
+              false,
+              null,
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    "unknown": {
+      "opaqueBase64": "YWJj",
+      "entry": [
+        true,
+        0,
+        "0001"
+      ]
+    }
+  },
+  "profileCbc": "azVk21xqt+TYyZaVX2hPaCArPxJdarpAOYVuHBApF0FvovREu04cd1KFGlUZPvpubiegF+xleYV27iIoUN2/N6u3GFkdK6kRDJi84EUj9QvL3JA9PE0BeuPs93DHUj/ZFJEzRkzci32EGD57SCmOPPq5N4STUAc/IwnFG9VDEvR9n+qce9XjTFNewIuLudm8sOF5f5XitI6gm7Hr5g7GRjRvEvmaoHUQLQvJOtzy2CSi9Rw24TULXqYzwRYw0a+XWhUIHJEbNF9zeU39hmw0pNx8lhMcUo/FyrTf+wVtAddCz9voQJ/CtXyB+SQKg37d5aWTZqSRScKGQr6DGUoMN/e10brnz/KHG7NDlvz7tvtNmkHakD53pfQPI5U64WwhclaQBje0Ie1o1OaVvjTbgTh0CZtk/dQeHlT1z7r4jVjHfbndM2ciq+aEDj+4o+ydXvn0IvbFc5pzchSOirfvDMvYWKA5B2zQBmhRpjBQ+6jWsDXhHRxoOsRDX3F7TklGhj4ZjYKa5oD+fkv/zzLPhu4+iadQbnk9WF1uHIeACo7T67A08xSom42M3WLljFeack+8ZfCzYfaDZZNj9X+Iczx6ONlbwz+3zrqI0XGiSbhsPX+a1vPgFNLA7+Vm88CSg+kK8dt0gmajpz6NPkIxsRHaakkKA/2BOXpQBMK/2o53tRtWEZ3jHYZ4tZ/rzNHP0T6aYjSLCzqbmoVw6b58jFgckpx5rX08CPN5XgUke47j4itWQycyOTlMseQhM+SM",
+  "profilePbe": "TTPBE1:QDCLPjM8y3HE7702CgxUfYnM4T9LsMBtKFWDv5qPsXsnArJt78ahvrWV0k83jdsOOaozy7o1qjn+2WKtGpZiLU7w7VM7WqcX1DmdiuONV94wycwwD3t+nwRFDJEs+aC8itm8+tx/9uQrg5KMZUxK2FtHpdCrjj8NhdiWUpPd2BHzXaazPXBasxjP72WLMbq2n3e2uFopjQ84l/Ph58eYtn39HDgrLey3ov8Q2KoYZUeOCHtNsSWF6E2q/gVbTJYhJxqyUwoXGJdtsY8D2ui6VASPz0VpR1QeiZ00UAEWngRxsITJUV6Z0k8KO9zmTDk9AXCowZNGU9XKXoUm9b71laeVDlBNo5F+QBfWvNig3aIMzA/WD+fzQXb3uNPRpogO+XwW1UpkrSkphGTWN6zcw3yV3t5l96979lyOi7fLjtDtuNl7zoSHKDRQvA6kXzEcscYG0quKJFuJEJNo55ZMo96UQvZ3uka0vItBzjw1tTVaZPXU3eU+F+9XeKBdgqo23HtK4mVU5D0xZjbYveKD3gITGAeS3Gq5xFqLLmA7xj2VmFl1vgnyLjqzN38QnP0OzCua0VSGtH0iQHPTGJJ6HZ++AN7XdINHloFcGBlylMw69p2x8dkbgNHVEAqVRe3E/LXjqWBfrV3GJl7vbmbsm3YeDSc4OY3Epc4RWBSFomfFY/RyKiVX2MHIMo99FSBqW2N+ZudjpIqCXjAGjo9Bxdvje834BrkZ8DFOXxuATWzlaNv+r76/hCOI53e4dEPs11CvMFDM54ywbjOcvMIS+XzXvpWW8hru",
+  "profileXor": "IXg5NTQ8Mz0FLD8oKTM1NHhgemx2eng5NTQ8Mz0FNz8pKTs9P3hgenguPykuBjQ3LzYuMzYzND96NDOZ6zV6qsXK4Hh2eng5NTQ8Mz0FKig1Lj85Lj8+eGB6LigvP3Z6eDk1NDwzPQU/IiozKCN4YHpraGlub2xtYmN2eng5NTQ8Mz0FPyIqMygjBT47Iyl4YHpvdnp4MjM+PwUpKTIFOSg/Pj80LjM7Nil4YHouKC8/dnp4MjM+PwUqKDUiIwUpPy4uMzQ9KXhgei4oLz92eng4NjU5MQUoNTUuPz54YHouKC8/dnp4Mi0zPgU/NDs4Nj8+eGB6LigvP3Z6eDItMz4FNjMpLnhgenguPykudz4/LDM5P3cbdi4/KS53Pj8sMzk/dxh4dnp4KSkyCT8oLD8oeGB6eDQ1Pj90PyI7Nyo2P3QuPykueHZ6eCkpMgo1KC54YHp4bm5peHZ6eCkpMg8pPyh4YHp4Lj8pLncvKT8oeHZ6eCkpMgo7KSl4YHp4Lj8pLnc1NDYjeHZ6eC4vNDQ/Ng4jKj94YHpodnp4LGgoOyMFOTU0PDM9eGB6IXg1Ly44NS80Pil4YHoBIXgpPy4uMzQ9KXhgeiF4MT8/KnhgegFqdno8OzYpP3Z6NC82NnZ6eHgHJycHJ3Z6eC80MTQ1LTR4YHoheDUqOysvPxg7KT9sbnhgengDDRAweHZ6eD80LigjeGB6AS4oLz92emp2enhqampreAcnJw==",
+  "testPassword": "test-only ñ🐺",
+  "catalog": {
+    "servers": [
+      {
+        "id": "test-server",
+        "name": "Test ñ",
+        "host": "node.example.test",
+        "username": "test-user",
+        "password": "test-only",
+        "tier": "FREE",
+        "visible": false,
+        "portDirect": 22,
+        "unknown": [
+          true,
+          null,
+          0
+        ]
+      }
+    ],
+    "configs": {
+      "test-config": {
+        "id": "test-config",
+        "name": "Test",
+        "connectionType": 1,
+        "payload": "GET / HTTP/1.1\r\nHost: example.test\r\n\r\n",
+        "unknown": {
+          "keep": false
+        }
+      }
+    },
+    "update_meta": {
+      "pushVersion": 5
+    },
+    "unknownRoot": [
+      "0001",
+      null
+    ]
+  },
+  "catalogGcm": "NsiVWxnRtoiHZRD15BTp0gAfv3whZG9vbU6a8YjIgeA3cQ/FVW1oqbCoHJdrFY1BbdhKNIsi1a26vEqe27chYByD/UbXn0nD0U5m8uY+mXrrS7r2RUz7Wl4K6wXTRG/bXyVmRh3wdbWUdRPiTvWOe9MsA1cPiPIO+KfeEe36mzXwfWDFuKu0Rj/AyVioGTfP1qbBGqp1PxsUzeGcMiCdmPvnCUi7iKckVNeOZKr6EB4viuGu1bGfb9uiLccIEOh/XEIj6v3MFGvzOF4U89OmO8ejniUeaZczXx22kFzUIZ9Dj7aXQZDX37fa0QNcLbghSjbtHffM2eNno6dHreT4cpuq9m0QyZWnQD1fsUIWPvwe/K6BFaQOnkVBkFv58otCiE5T2oNaGkhS0HgeWCCX++aN7wYYuJbTtb8cj+c8tftgCLiYr7z0hkKBs2m8byy6u9Y581dwI5VLYSYbQ+3bWPtSkxJ0cZ4H9Eorq/rG8OSmBNEUmyR0OJjCw1zNQgFwpFxGuZmlYxI/pTHvyBoKm7mQbYiLGzEDcfM9IRohqKF7+2jcrP0xwg+VAcBvbHnUehMpH6R7MOuayY45Zh+9IGPH5HTlDsh1sfBQ+JLECtjtGN+pgYcxQ0OJSUhs4T+YtHcPaw80LwbaLDJ02sMc/U6wnQ==",
+  "catalogKeyed": "hKcgG5gO1oLHV2npBmxR4X8CDo2/urY8JFqBBzsTpZiWVuHuoqfONbuUNb7UWgpSsIvj79bumwKHOcp4Mlnl83yMCfNRf4crqrXmkQYnfii+cjwx16DFSqkKeL+hePsy101HnsP2bVPCXUl2/UYID1ldyBl62LQ+gQCIhNJcC11KFSzV2UigAOf8LwsjZQr6mdFNWCDjsa77kJpvJq/xuvTUPAUB4T2zKJpaMnYtToxd5HZ670qG5Nv+YXuvnQ4HwzB53tgSQiftj5RTFnyuRAPc5IVocnCqHZhbnD+nvStDCHgJ0om6urd99r3pOoq+SaVDoQPicjz2vLeHmjF8rUTHMDEExvdNRrVRKMiGSM/MYNAAzIrkDItxE5uGrXV4Y3i6A+lzUFBxoB9jX3gLcoAygwk6t67BbNNifG8fwJ2fO6wB1slAtcp+jCSYvJGRlWF2Tn/LI28AkpRZL4Uyg/CLBRDi3RgFRWBjKXfN1Xh9kWRLEbqUfc/F0dFRGh2jCwgdR9j4x+yiWcbk20sWMaIKSounMCfpa8vy13VtYCV5iLlN4mYaJR8cLYnTRqpTT4xQ/CZo1JdO1gSRd5rMbQSUmF6lq4IGjImSh2GND+PsviCYcBgQHZRQojy3DBGqcdat/62tu3KOMf86zKgKNIyyEA==",
+  "catalogLegacy": "eyJzZXJ2ZXJzIjogW3siaWQiOiAidGVzdC1zZXJ2ZXIiLCAibmFtZSI6ICJUZXN0IMOxIiwgImhvc3QiOiAibm9kZS5leGFtcGxlLnRlc3QiLCAidXNlcm5hbWUiOiAidGVzdC11c2VyIiwgInBhc3N3b3JkIjogInRlc3Qtb25seSIsICJ0aWVyIjogIkZSRUUiLCAidmlzaWJsZSI6IGZhbHNlLCAicG9ydERpcmVjdCI6IDIyLCAidW5rbm93biI6IFt0cnVlLCBudWxsLCAwXX1dLCAiY29uZmlncyI6IHsidGVzdC1jb25maWciOiB7ImlkIjogInRlc3QtY29uZmlnIiwgIm5hbWUiOiAiVGVzdCIsICJjb25uZWN0aW9uVHlwZSI6IDEsICJwYXlsb2FkIjogIkdFVCAvIEhUVFAvMS4xXHJcbkhvc3Q6IGV4YW1wbGUudGVzdFxyXG5cclxuIiwgInVua25vd24iOiB7ImtlZXAiOiBmYWxzZX19fSwgInVwZGF0ZV9tZXRhIjogeyJwdXNoVmVyc2lvbiI6IDV9LCAidW5rbm93blJvb3QiOiBbIjAwMDEiLCBudWxsXX0=",
+  "wrapper": {
+    "data": "NsiVWxnRtoiHZRD15BTp0gAfv3whZG9vbU6a8YjIgeA3cQ/FVW1oqbCoHJdrFY1BbdhKNIsi1a26vEqe27chYByD/UbXn0nD0U5m8uY+mXrrS7r2RUz7Wl4K6wXTRG/bXyVmRh3wdbWUdRPiTvWOe9MsA1cPiPIO+KfeEe36mzXwfWDFuKu0Rj/AyVioGTfP1qbBGqp1PxsUzeGcMiCdmPvnCUi7iKckVNeOZKr6EB4viuGu1bGfb9uiLccIEOh/XEIj6v3MFGvzOF4U89OmO8ejniUeaZczXx22kFzUIZ9Dj7aXQZDX37fa0QNcLbghSjbtHffM2eNno6dHreT4cpuq9m0QyZWnQD1fsUIWPvwe/K6BFaQOnkVBkFv58otCiE5T2oNaGkhS0HgeWCCX++aN7wYYuJbTtb8cj+c8tftgCLiYr7z0hkKBs2m8byy6u9Y581dwI5VLYSYbQ+3bWPtSkxJ0cZ4H9Eorq/rG8OSmBNEUmyR0OJjCw1zNQgFwpFxGuZmlYxI/pTHvyBoKm7mQbYiLGzEDcfM9IRohqKF7+2jcrP0xwg+VAcBvbHnUehMpH6R7MOuayY45Zh+9IGPH5HTlDsh1sfBQ+JLECtjtGN+pgYcxQ0OJSUhs4T+YtHcPaw80LwbaLDJ02sMc/U6wnQ==",
+    "announcement": "all metadata\nniño 🐺",
+    "unknownOuter": {
+      "keep": [
+        false,
+        null,
+        "0001"
+      ]
+    }
+  },
+  "expectedWrapper": {
+    "data": {
+      "servers": [
+        {
+          "id": "test-server",
+          "name": "Test ñ",
+          "host": "node.example.test",
+          "username": "test-user",
+          "password": "test-only",
+          "tier": "FREE",
+          "visible": false,
+          "portDirect": 22,
+          "unknown": [
+            true,
+            null,
+            0
+          ]
+        }
+      ],
+      "configs": {
+        "test-config": {
+          "id": "test-config",
+          "name": "Test",
+          "connectionType": 1,
+          "payload": "GET / HTTP/1.1\r\nHost: example.test\r\n\r\n",
+          "unknown": {
+            "keep": false
+          }
+        }
+      },
+      "update_meta": {
+        "pushVersion": 5
+      },
+      "unknownRoot": [
+        "0001",
+        null
+      ]
+    },
+    "announcement": "all metadata\nniño 🐺",
+    "unknownOuter": {
+      "keep": [
+        false,
+        null,
+        "0001"
+      ]
+    }
+  }
+}

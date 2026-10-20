@@ -3,7 +3,7 @@ import {readFileSync} from "node:fs";
 import {join} from "node:path";
 import {createHash} from "node:crypto";
 
-export const CATALOG_VERSION = 10; // Increment whenever the public roster or metadata changes.
+export const CATALOG_VERSION = 11; // Increment whenever the public roster or metadata changes.
 export const RECHECK_SECONDS = 24 * 60 * 60;
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -19,6 +19,7 @@ export function activeCatalogVersion(env=process.env) {
 }
 
 const ITEMS = Object.freeze([
+  {id:"tunneltweak", name:"Tunneltweak", icon:"tunneltweak.png", remote:"tunneltweak"},
   {id:"http-jireh", name:"HTTP Jireh", icon:"http-jireh.png", remote:"http-jireh"},
   {id:"http-fenixvpn", name:"HTTP FenixVPN", icon:"http-fenixvpn.png", remote:"http-fenixvpn"},
   {id:"austroplus-vpn", name:"AustroPlus VPN", icon:"austroplus-vpn.png", remote:"austroplus-vpn"},

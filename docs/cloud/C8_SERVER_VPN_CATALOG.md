@@ -399,3 +399,34 @@ su estado por defecto. No cambia el diseño Android ni se fusiona/despliega.
 Verificación HTTP Jireh: suite principal 677 (9 omisiones existentes), worker
 11, VPS/QA 39, gates 4, Node 72 y build web correctos. CLI de descarga real y
 worker coinciden en el JSON completo; ZIP probado fuera del repositorio.
+
+## Tunneltweak 6.2.1 — PR #96
+
+En la misma rama `feat/austroplus-vpn-13-0-1-decoders` se incorpora la carpeta
+`decoders/Python/apps/Tunneltweak/`: lectores separados, codec, red fija, bridge
+de worker, icono exacto, manifest y documentación. `.tut` admite CBC, TTPBE1
+GCM con contraseña aportada y XOR heredado del APK. El dispatcher aislado
+conserva la salida de los motores genéricos DES/GCM anteriores; un TTPBE1
+fallido no llega a esos motores. Credenciales de `.tut`: solo password por
+stdin, usando los códigos PASSWORD_REQUIRED/AUTH_FAILED existentes; HC intacto.
+
+Proveedor `tunneltweak`: GET HTTPS fijo con cabeceras originales 6.2.1/51.
+Catálogo GCM/PBKDF2SHA256/10000 independiente del PBE de archivo /120000.
+Descarga pública verificada: 1 servidor y 53 configuraciones, sobre y anuncio
+conservados; paridad completa con métodos Java del APK. No existe en el APK
+el fallback `data_encoded.txt`. Clave de suscripción opcional solo en CLI y
+UUID Cloud con respuesta simulada: no se proporcionaron credenciales ni UUID
+reales. No se presenta el catálogo público como todos los planes de la app.
+
+Se amplían broker fijo con cabeceras estáticas, bridge/allowlist Python,
+contrato, metadatos/icono y pruebas de credenciales. Versión mínima pública
+11; QA incrementa desde ese mínimo, conservando overrides superiores. C0
+continúa en 240, C8 en 246. Icono original 192×192, 31632 bytes. Android,
+motores históricos y valores por defecto de habilitación no se modifican.
+
+Verificación Tunneltweak: suite principal 694 (9 omisiones existentes), worker
+11, VPS/QA 39, gates 4, Node 74 y build web correctos. CLI real y worker
+coinciden con el documento Java completo; ZIP autónomo probado. El intento
+de broker directo en este entorno falló por DNS EAI_AGAIN (también GitHub),
+sin relajar la política; transporte probado con DNS controlado, pendiente
+una prueba directa en VPS. No se despliega ni fusiona el PR.

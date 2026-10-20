@@ -163,3 +163,20 @@ test("capabilities require live private worker metadata, never invented certific
   assert.equal(data.fileDecoderCatalog.exporterVersionsCertified,0);
   assert.equal(data.cloudImportsEnabled,false);
 });
+
+test("Tunneltweak accepts password credentials only after admission and rejects HWID",async()=>{
+ const redis=new FakeRedis();const {issued}=await authorized(redis,"203.0.113.22");let calls=0;
+ const fetchImpl=async(url,opts)=>{
+  calls++;const payload=JSON.parse(opts.body);
+  assert.equal(payload.format,"tut");assert.deepEqual(payload.credentials,{password:"test-only"});
+  assert.equal(url,"http://decoder-worker:8787/internal/v1/decode/file");
+  return {status:200,text:async()=>JSON.stringify({status:"success",structuredJson:{config_version:6},rawText:'{"config_version":6}\n',isPartial:false,warnings:[]})};
+ };
+ const source={format:"tut",dataBase64:"YWJj",credentials:{password:"test-only"}};
+ const ok=await decodeRequest(req(source,issued.accessToken,"203.0.113.22"),"file",{storeProvider:async()=>redis,fetchImpl});
+ assert.equal(ok.status,200);assert.equal(calls,1);
+ for(const credentials of [{hwid:"test-device"},{password:"test-only",hwid:"test-device"},{password:""},{password:1}]){
+  const bad=await decodeRequest(req({...source,credentials},issued.accessToken,"203.0.113.22"),"file",{storeProvider:async()=>redis,fetchImpl});
+  assert.equal(bad.status,400);assert.equal(calls,1);
+ }
+});

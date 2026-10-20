@@ -82,6 +82,7 @@ _C8_FILE_ENGINES = {
     "roy": ("decoders/Python/apps/Royal_Tunnel_VPN/file_decoder.py", "Royal Tunnel VPN 7.0"),
     "aro": ("decoders/Python/apps/AustroPlus_VPN/file_decoder.py", "AustroPlus VPN 13.0.1"),
     "sks": ("decoders/Python/apps/HTTP_FenixVPN/file_decoder.py", "HTTP FenixVPN 19.4 / HTTP Jireh 2.0"),
+    "tut": ("decoders/Python/apps/Tunneltweak/file_decoder.py", "Tunneltweak 6.2.1"),
     "actun": ("decoders/Python/apps/AC_TUNNEL_VPN/file_decoder.py", "AC TUNNEL VPN 1.4"),
     "4ulite": ("decoders/Python/apps/4U_TUNNEL_LITE/file_decoder.py", "4U TUNNEL LITE"),
 }
@@ -188,17 +189,23 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
     if suffix == "roy" and _is_legacy_roy(contents):
         engine = load_file_engines()["roy"]
     if credentials is not None:
-        if suffix != "hc" or not isinstance(credentials, dict) or set(credentials) - {"password", "hwid"}:
+        allowed = {"password", "hwid"} if suffix == "hc" else {"password"} if suffix == "tut" else None
+        if allowed is None or not isinstance(credentials, dict) or set(credentials) - allowed:
             raise DecodeFailure("CREDENTIALS_NOT_ALLOWED")
         for name, maximum in (("password", 4096), ("hwid", 128)):
             value = credentials.get(name)
             if value is not None and (not isinstance(value, str) or not 0 < len(value) <= maximum):
                 raise DecodeFailure("INVALID_CREDENTIALS")
-    # HTTP Custom must also inspect HCCFG locks without sending passwords in
-    # command arguments. All other suffixes use their original script unchanged.
+    # Protected formats receive credentials on stdin, never argv/env/logs.
     protected_hc = suffix == "hc"
-    source = str(Path(__file__).with_name("hc_bridge.py")) if protected_hc else engine["source"]
-    runtime = sys.executable if protected_hc or engine["runtime"] == "python" else shutil.which(engine["runtime"])
+    protected_tut = suffix == "tut"
+    credential_input = protected_hc or protected_tut
+    source = engine["source"]
+    if protected_hc:
+        source = str(Path(__file__).with_name("hc_bridge.py"))
+    elif protected_tut:
+        source = str(Path(source).with_name("worker_bridge.py"))
+    runtime = sys.executable if credential_input or engine["runtime"] == "python" else shutil.which(engine["runtime"])
     if not runtime:
         raise DecodeFailure("ENGINE_UNAVAILABLE")
 
@@ -213,7 +220,7 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
                     [runtime, source, str(input_file)],
                     cwd=ROOT,
                     env=_child_env(folder),
-                    stdin=subprocess.PIPE if protected_hc else subprocess.DEVNULL,
+                    stdin=subprocess.PIPE if credential_input else subprocess.DEVNULL,
                     stdout=output,
                     stderr=subprocess.DEVNULL,
                     close_fds=True,
@@ -223,7 +230,7 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
             except OSError as error:
                 raise DecodeFailure("ENGINE_UNAVAILABLE") from error
             try:
-                if protected_hc:
+                if credential_input:
                     proc.communicate(input=json.dumps(credentials or {}).encode("utf-8"), timeout=timeout)
                     returncode = proc.returncode
                 else:
@@ -237,7 +244,7 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
         if len(raw) > MAX_OUTPUT_BYTES:
             raise DecodeFailure("OUTPUT_TOO_LARGE")
         if returncode != 0:
-            if protected_hc and returncode == 3:
+            if credential_input and returncode == 3:
                 try:
                     code = json.loads(raw.decode("utf-8")).get("workerError")
                 except (UnicodeError, ValueError, AttributeError):
@@ -276,7 +283,7 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
 
 def decode_provider_catalog(provider_id: str, contents: bytes) -> dict:
     """One fixed provider codec, child-isolated; broker performs all network I/O."""
-    if provider_id not in ("24clan-green", "hx-tunnel", "mkk-hyper", "my-tunnel-proxy", "robust-tunnel", "royal-tunnel", "trv-tunnel", "4u-tunnel-lite", "ac-tunnel-vpn", "austroplus-vpn", "http-fenixvpn", "http-jireh"):
+    if provider_id not in ("24clan-green", "hx-tunnel", "mkk-hyper", "my-tunnel-proxy", "robust-tunnel", "royal-tunnel", "trv-tunnel", "4u-tunnel-lite", "ac-tunnel-vpn", "austroplus-vpn", "http-fenixvpn", "http-jireh", "tunneltweak"):
         raise DecodeFailure("UNSUPPORTED_FORMAT")
     if not isinstance(contents, bytes) or not contents:
         raise DecodeFailure("INVALID_INPUT")

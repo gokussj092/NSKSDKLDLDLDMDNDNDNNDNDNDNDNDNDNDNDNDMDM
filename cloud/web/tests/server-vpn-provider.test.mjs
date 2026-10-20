@@ -6,6 +6,7 @@ import {EventEmitter} from "node:events";
 import {downloadVpnCatalog} from "../lib/server-vpn-provider.mjs";
 
 for(const provider of [
+  {id:"tunneltweak",host:"tunneltweak.com",path:"/api/servers",query:"",agent:"TunnelTweak/1.0 (Android)",headers:{"ngrok-skip-browser-warning":"true","x-app-version":"51","x-cfg-keyed":"1"}},
   {id:"http-jireh",host:"raw.githubusercontent.com",path:"/alvarofelizzola/GEN-JIREH/refs/heads/main/GENERADOR",query:"",agent:"HTTP Jireh/2.0"},
   {id:"http-fenixvpn",host:"raw.githubusercontent.com",path:"/Fenix1998x/GEN-SERVIDORES-NUEVO-24-08-2027/refs/heads/main/Fenix",query:"",agent:"HTTP FenixVPN/19.4"},
   {id:"austroplus-vpn",host:"raw.githubusercontent.com",path:"/SpkHexX/HexX/refs/heads/main/AustroPlusVPN.json",query:"",agent:"AustroPlus VPN/13.0.1"},
@@ -34,6 +35,8 @@ for(const provider of [
     assert.equal(options.rejectUnauthorized,true);
     assert.equal(options.minVersion,"TLSv1.2");
     assert.equal(options.headers["User-Agent"],provider.agent);
+    for(const [key,value] of Object.entries(provider.headers||{}))assert.equal(options.headers[key],value);
+    assert.equal(options.headers["x-api-key"],undefined);
     options.lookup(provider.host,{},(error,ip,family)=>{
       assert.equal(error,null);assert.equal(ip,dnsAddress);assert.equal(family,4);
     });

@@ -132,6 +132,7 @@ class PhaseVServerVpnIntegration(unittest.TestCase):
         originals["http-jireh"]=(
             ROOT/"decoders/Python/apps/HTTP_Jireh/HTTP_Jireh.png",
             WEB/"public/server-vpn-icons/http-jireh.png")
+        originals["tunneltweak"]=(ROOT/"decoders/Python/apps/Tunneltweak/Tunneltweak.png",WEB/"public/server-vpn-icons/tunneltweak.png")
         for app_id,(original,served) in originals.items():
             with self.subTest(app=app_id):
                 self.assertTrue(original.is_file(),original)

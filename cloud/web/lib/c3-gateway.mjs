@@ -84,8 +84,9 @@ function validatePayload(kind,payload) {
         typeof payload.format!=="string" || (!/^[a-z0-9][a-z0-9._-]{0,63}$/.test(payload.format) && payload.format!=="fɴ"))
       throw Object.assign(new Error("format"),{code:"INVALID_REQUEST"});
     if (payload.credentials!==undefined){
-      if (payload.format!=="hc" || !isRecord(payload.credentials) ||
-          Object.keys(payload.credentials).some(k=>!["password","hwid"].includes(k)))
+      const allowed=payload.format==="hc"?["password","hwid"]:payload.format==="tut"?["password"]:null;
+      if (!allowed || !isRecord(payload.credentials) ||
+          Object.keys(payload.credentials).some(k=>!allowed.includes(k)))
         throw Object.assign(new Error("credentials"),{code:"INVALID_CREDENTIALS"});
       for(const [key,max] of [["password",4096],["hwid",128]]){
         const value=payload.credentials[key];

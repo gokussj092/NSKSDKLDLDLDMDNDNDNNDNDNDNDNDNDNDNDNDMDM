@@ -33,3 +33,5 @@ productores se mantienen en `tests/golden`, y las pruebas en `tests`.
 | HTTP FenixVPN 19.4 | [Servidores y usuarios](HTTP_FenixVPN/server_catalog_decoder.py) | [.sks GCM y DES](HTTP_FenixVPN/file_decoder.py) | [Carpeta](HTTP_FenixVPN/README.md) |
 
 - [HTTP Jireh 2.0](HTTP_Jireh/README.md): archivos `.sks` GCM/DES con motor compartido, catálogo nibble/AES-CBC/ROT22 y usuarios separados; icono original.
+
+- [Tunneltweak 6.2.1](Tunneltweak/README.md): `.tut` CBC/TTPBE1 con contraseña/XOR, catálogo público GCM y transporte Cloud UUID; icono original.

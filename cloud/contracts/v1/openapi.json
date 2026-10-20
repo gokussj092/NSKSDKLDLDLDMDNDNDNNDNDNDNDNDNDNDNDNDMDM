@@ -128,7 +128,7 @@
     "/api/v1/decode/file": {
       "post": {
         "summary": "Upload file for decoding",
-        "description": "C3 gate is disabled by default; success only after Play Integrity admission, Redis checks and private worker readiness.",
+        "description": "C3 gate is disabled by default; success only after Play Integrity admission, Redis checks and private worker readiness. Decodes an authenticated file upload. Optional credentials are accepted only for hc (password and/or hwid) and tut (password only). Tunneltweak TTPBE1 returns PASSWORD_REQUIRED or AUTH_FAILED through the existing error contract; credentials are passed to the isolated worker over stdin.",
         "responses": {
           "200": {
             "description": "Authenticated operation completed"
@@ -885,7 +885,8 @@
                       "ac-tunnel-vpn",
                       "austroplus-vpn",
                       "http-fenixvpn",
-                      "http-jireh"
+                      "http-jireh",
+                      "tunneltweak"
                     ]
                   },
                   "consent": {

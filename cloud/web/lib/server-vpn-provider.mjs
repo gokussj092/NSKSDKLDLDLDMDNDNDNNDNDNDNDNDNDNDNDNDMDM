@@ -9,6 +9,11 @@ import https from "node:https";
 import {publicIpv4} from "./c35-provider.mjs";
 
 const PROVIDERS = Object.freeze({
+  "tunneltweak": {
+    url:"https://tunneltweak.com/api/servers",
+    agent:"TunnelTweak/1.0 (Android)",
+    headers:{"ngrok-skip-browser-warning":"true","x-app-version":"51","x-cfg-keyed":"1"},
+  },
   "http-jireh": {
     url:"https://raw.githubusercontent.com/alvarofelizzola/GEN-JIREH/refs/heads/main/GENERADOR",
     agent:"HTTP Jireh/2.0",
@@ -78,7 +83,7 @@ async function vettedIpv4(host) {
   return [...new Set(list.map(item=>item.address))].slice(0,8);
 }
 
-function pinnedGet(url,ip,agent,timeout){
+function pinnedGet(url,ip,agent,timeout,headers={}){
   return new Promise((resolve,reject)=>{
     const parsed=new URL(url);
     let settled=false,bytes=0;
@@ -90,7 +95,7 @@ function pinnedGet(url,ip,agent,timeout){
     const req=https.request(parsed,{
       method:"GET",agent:false,rejectUnauthorized:true,minVersion:"TLSv1.2",
       timeout,
-      headers:{"User-Agent":agent,"Accept-Encoding":"identity","Connection":"close"},
+      headers:{...headers,"User-Agent":agent,"Accept-Encoding":"identity","Connection":"close"},
       lookup:(host,options,callback)=>{
         if(host!==parsed.hostname)return callback(Object.assign(new Error("hostname"),{code:"EHOSTUNREACH"}));
         if(options?.all)return callback(null,[{address:ip,family:4}]);
@@ -146,7 +151,7 @@ export async function downloadVpnCatalog(id){
       const remaining=deadline-Date.now();
       if(remaining<=0)fail("REMOTE_PROVIDER_UNAVAILABLE");
       let answer;
-      try{answer=await pinnedGet(target,ip,provider.agent,Math.min(CONNECT_MS,remaining));}
+      try{answer=await pinnedGet(target,ip,provider.agent,Math.min(CONNECT_MS,remaining),provider.headers);}
       catch(error){
         if(error instanceof VpnProviderError)throw error;
         // TLS/certificate errors and definitive HTTP statuses never retry.
