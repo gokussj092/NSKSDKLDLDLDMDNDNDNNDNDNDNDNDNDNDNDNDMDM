@@ -132,6 +132,23 @@ def generate(domain: str, api: str, panel: str, www: bool) -> str:
     location = /api/site/status {{
 {common_headers()}
     }}
+    # Explicit allowlist for public branding and legal pages on the panel host.
+    # Keep /api/v1/* and other public endpoints inaccessible from the panel.
+    location = /icon.svg {{
+{common_headers()}
+    }}
+    location = /terms {{
+{common_headers()}
+    }}
+    location = /terms/ {{
+{common_headers()}
+    }}
+    location = /support {{
+{common_headers()}
+    }}
+    location = /support/ {{
+{common_headers()}
+    }}
     # Next.js admin scripts and styles. No public decoding API accessible.
     location ^~ /_next/ {{
 {common_headers()}
