@@ -75,3 +75,15 @@ test("Google Play-style gallery scrolls horizontally without manual navigation b
  assert.ok(home.includes("Desliza horizontalmente"));
  assert.ok(home.includes("Swipe horizontally"));
 });
+
+test("Google Play button is disabled and cannot redirect to GitHub",()=>{
+ const home=read("app/public/home.jsx");
+ const css=read("app/public/public.css");
+ assert.doesNotMatch(home,/github\.com|\/releases|href=.*download/i);
+ assert.match(home,/play:"Google Play"/);
+ assert.match(home,/download:"Próximamente"/);
+ assert.match(home,/download:"Coming soon"/);
+ assert.match(home,/<button className="sp-button sp-button-play-pending"[^>]*disabled/);
+ assert.match(home,/\{t\.play\}/);
+ assert.match(css,/\.sp-button-play-pending:disabled\{cursor:not-allowed\}/);
+});
