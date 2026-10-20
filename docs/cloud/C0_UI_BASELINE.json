@@ -1,16 +1,16 @@
 {
   "schemaVersion": 1,
   "baseRef": "main",
-  "purpose": "Git blob SHA-1 identity checks for UI/UX files; updates require explicit UI approval. MainActivity.kt is intentionally excluded because C4 must migrate transport.",
+  "purpose": "Git blob SHA-1 identity checks for UI/UX files; second-delivery authorized Android report button and optional usage toggle are explicitly rebaselined here. All other original C0 files remain byte-identical. MainActivity remains excluded for Cloud transport.",
   "uiGitBlobSha1": {
     "android/app/src/main/java/com/ghostdeveloper/spdecode/CompleteResultCard.kt": "58cf6476fd022ad2b5bd1ce289aba4a2f79e9a26",
     "android/app/src/main/java/com/ghostdeveloper/spdecode/FirstRunGuide.kt": "121c3e5a250e3caebec26bf0896e8b986d3fd8a4",
-    "android/app/src/main/java/com/ghostdeveloper/spdecode/FunctionalSettingsPanel.kt": "8ce81c6aea7b217f9996d557bf0860b6a478a19e",
+    "android/app/src/main/java/com/ghostdeveloper/spdecode/FunctionalSettingsPanel.kt": "e2ebb8d8cb3fad990041bc9a4e64a452c2232b23",
     "android/app/src/main/java/com/ghostdeveloper/spdecode/HcProtectedImportDialog.kt": "de22a6bfa6238acc00cae581f6adec6ddd2e5515",
     "android/app/src/main/java/com/ghostdeveloper/spdecode/HttpInjectorCloudPanel.kt": "5af592ae0b873c50836dcd89c8a120d57d7cb121",
     "android/app/src/main/java/com/ghostdeveloper/spdecode/JsonTreeViewer.kt": "ae32c219d14f54a5d2a229edb9076c79766af6c7",
     "android/app/src/main/java/com/ghostdeveloper/spdecode/ResultPresentation.kt": "d2a53e9715feed5a48d4193a6b4596eb3d86cabd",
-    "android/app/src/main/java/com/ghostdeveloper/spdecode/SpDecodeApp.kt": "907652e047565bb51303cfa139c9bbe954446202",
+    "android/app/src/main/java/com/ghostdeveloper/spdecode/SpDecodeApp.kt": "26a0c908e2cd5f8f6a8cf8a296e1e40d1699d4da",
     "android/app/src/main/java/com/ghostdeveloper/spdecode/TextDecoderPanel.kt": "bb4f3552ca8fba5892da4e6cd6674cb191b00bdf"
   }
 }
