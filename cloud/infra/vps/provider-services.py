@@ -6,11 +6,13 @@ Never creates substitute EHI keys: the real vendor keys are required.
 """
 from __future__ import annotations
 
+import ast
 import json
 import os
 from pathlib import Path
 import re
 import subprocess
+import stat
 import sys
 import time
 from urllib.parse import urlsplit
@@ -125,7 +127,7 @@ def status(lines: list[str]) -> None:
     print("Server VPN providers:",
           "ENABLED" if value(lines, "CLOUD_SERVER_VPN_ENABLED") == "true" else "DISABLED")
     nur = value(lines, "CLOUD_NUR_FETCH_ENABLED") == "true" and bool(value(lines, "CLOUD_NUR_CATALOG_URL"))
-    print("NUR Tunnel remote import:", "ENABLED" if nur else "DISABLED")
+    print("VPN Servers catalog import:", "ENABLED" if nur else "DISABLED")
     ehi = value(lines, "CLOUD_EHI_IMPORT_ENABLED") == "true" and ehi_ready(lines)
     print("HTTP Injector Cloud:", "ENABLED" if ehi else "NOT CONFIGURED")
     if not ehi_ready(lines):
@@ -177,11 +179,81 @@ def apply(action: str, previous: list[str]) -> None:
     status(rewrite(previous, changes))
 
 
+
+def import_ehi_script(filename: str, previous: list[str]) -> None:
+    """Install only the vendor method's two fixed keys without executing the script.
+
+    User supplies HTTPINJECTOR_CLOUD.py privately on the VPS with chmod 0600.
+    Never copy source/keys to Git or print sensitive method material.
+    """
+    if QA_STATE.exists() or value(previous, "CLOUD_QA_ENABLED") == "true":
+        fail("Stop the private QA session before configuring HTTP Injector Cloud.")
+    if value(previous, "CLOUD_API_ENABLED") != "true":
+        fail("Cloud API is disabled. Enable it and restart web before importing EHI.")
+    script = Path(filename)
+    try:
+        mode = script.lstat()
+        if not stat.S_ISREG(mode.st_mode) or mode.st_uid != 0 or mode.st_mode & 0o077:
+            fail("Method script must be a root-owned regular file with mode 0600.")
+        if mode.st_size < 100 or mode.st_size > 64 * 1024:
+            fail("Unexpected method script size.")
+        with script.open("r", encoding="utf-8") as stream:
+            program = ast.parse(stream.read(), filename="<private-method>")
+    except (OSError, UnicodeError, SyntaxError):
+        fail("Cannot read the private HTTP Injector Cloud method.")
+    names = {}
+    for node in program.body:
+        if not isinstance(node, ast.Assign) or len(node.targets) != 1 or not isinstance(node.targets[0], ast.Name):
+            continue
+        identifier = node.targets[0].id
+        if identifier not in ("SIGN_SECRET", "API_KEY", "APP_BUILD", "ENDPOINT"):
+            continue
+        try:
+            names[identifier] = ast.literal_eval(node.value)
+        except (ValueError, TypeError, SyntaxError, RecursionError):
+            fail("Unexpected HTTP Injector method constant type.")
+    sign = names.get("SIGN_SECRET")
+    key = names.get("API_KEY")
+    if (names.get("APP_BUILD") != "244" or
+        names.get("ENDPOINT") != "https://www.ehi.tools/httpinjector/import_config" or
+        not isinstance(sign, str) or not sign.isascii() or len(sign) != 32 or
+        not isinstance(key, bytes) or len(key) != 32 or not key.isascii()):
+        fail("HTTP Injector method is incompatible with the current 6.5.0/244 adapter.")
+    response = key.decode("ascii")
+    # Only the private cloud.env stores these fixed app-protocol values.
+    # The worker and the Android APK never receive them.
+    changes = {
+        "CLOUD_EHI_SIGN_KEY": sign,
+        "CLOUD_EHI_RESPONSE_KEY": response,
+        "CLOUD_EHI_IMPORT_ENABLED": "true",
+    }
+    if all(value(previous, k) == v for k, v in changes.items()):
+        print("HTTP Injector Cloud is already configured.")
+        return
+    atomic(rewrite(previous, changes))
+    try:
+        compose("up", "-d", "--no-deps", "--force-recreate", "web")
+        if not healthy():
+            raise RuntimeError("Health check failed.")
+    except Exception as exc:
+        atomic(previous)
+        try:
+            compose("up", "-d", "--no-deps", "--force-recreate", "web")
+        except Exception:
+            print("WARNING: web rollback needs manual verification.", file=sys.stderr)
+        fail("HTTP Injector credentials were rolled back: " + type(exc).__name__)
+    print("HTTP Injector Cloud method 6.5.0/244 provisioned; credentials not printed.")
+    status(rewrite(previous, changes))
+
+
 def main() -> None:
     if os.geteuid() != 0:
         fail("Use sudo spdecode providers status|enable|disable.")
+    if len(sys.argv) == 3 and sys.argv[1] == "import-ehi":
+        import_ehi_script(sys.argv[2], current_lines())
+        return
     if len(sys.argv) != 2 or sys.argv[1] not in ("status", "enable", "disable"):
-        fail("Usage: spdecode providers status|enable|disable")
+        fail("Usage: spdecode providers status|enable|disable|import-ehi /root/HTTPINJECTOR_CLOUD.py")
     lines = current_lines()
     if sys.argv[1] == "status":
         status(lines)
