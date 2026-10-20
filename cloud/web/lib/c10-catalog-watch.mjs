@@ -1,5 +1,5 @@
 /** Short-lived HTTPS long-poll: Server VPN version only; no user account, FCM or identifiers. */
-import {activeCatalogVersion} from "./server-vpn-catalog.mjs";
+import {providerOverview} from "./c12-provider-controls.mjs";
 import {boundedBody} from "./c3-gateway.mjs";
 export const WATCH_SECONDS=12;
 export const MAX_OPEN_WATCHES=64;
@@ -11,7 +11,7 @@ const pause=(ms,signal)=>new Promise(resolve=>{
  const timer=setTimeout(done,ms);
  signal?.addEventListener("abort",done,{once:true});
 });
-export async function catalogWatchRequest(request,{versionProvider=activeCatalogVersion,wait=pause}={}){
+export async function catalogWatchRequest(request,{versionProvider=async()=> (await providerOverview(process.env,{syncCatalog:true})).catalogVersion,wait=pause}={}){
  let knownVersion;
  try{
   if(request.method!=="POST"||
@@ -28,11 +28,11 @@ export async function catalogWatchRequest(request,{versionProvider=activeCatalog
  activeWatches++;
  try{
   const start=Date.now();
-  let current=versionProvider();
+  let current=await versionProvider();
   while(current<=knownVersion && Date.now()-start<WATCH_SECONDS*1000 && !request.signal?.aborted){
    await wait(1500,request.signal);
    if(request.signal?.aborted)break;
-   current=versionProvider();
+   current=await versionProvider();
   }
   return json({apiVersion:"v1",catalogVersion:current,
    changed:current>knownVersion,checkOnly:true});
