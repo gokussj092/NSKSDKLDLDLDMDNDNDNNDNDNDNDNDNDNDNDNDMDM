@@ -290,7 +290,7 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
 
 def decode_provider_catalog(provider_id: str, contents: bytes) -> dict:
     """One fixed provider codec, child-isolated; broker performs all network I/O."""
-    if provider_id not in ("24clan-green", "hx-tunnel", "mkk-hyper", "my-tunnel-proxy", "robust-tunnel", "royal-tunnel", "trv-tunnel", "4u-tunnel-lite", "ac-tunnel-vpn", "austroplus-vpn", "http-fenixvpn", "http-jireh", "tunneltweak"):
+    if provider_id not in ("24clan-green", "hx-tunnel", "mkk-hyper", "my-tunnel-proxy", "robust-tunnel", "royal-tunnel", "trv-tunnel", "4u-tunnel-lite", "ac-tunnel-vpn", "austroplus-vpn", "http-fenixvpn", "http-jireh", "tunneltweak", "ksh-vpn", "dtunnel-mod"):
         raise DecodeFailure("UNSUPPORTED_FORMAT")
     if not isinstance(contents, bytes) or not contents:
         raise DecodeFailure("INVALID_INPUT")
@@ -334,8 +334,10 @@ def decode_provider_catalog(provider_id: str, contents: bytes) -> dict:
         return {
             "apiVersion":"v1","status":"success","kind":"vpn_catalog",
             "providerId":provider_id,"rawText":raw_text,
-            "structuredJson":structured,"isPartial":False,
-            "warnings":[],"exporterCertified":False,
+            "structuredJson":structured,
+            "isPartial":provider_id=="mkk-hyper" and isinstance(structured,dict) and structured.get("complete") is False,
+            "warnings":["PARTIAL_SOURCE_FAILURE"] if provider_id=="mkk-hyper" and isinstance(structured,dict) and structured.get("complete") is False else [],
+            "exporterCertified":False,
         }
 
 def decode_b64(suffix: str, encoded: str) -> dict:
