@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_report_action">Reportar error</string>
+    <string name="cloud_report_sent">Reporte recibido: %1$s</string>
+    <string name="cloud_report_failed">No se pudo enviar el reporte. Inténtalo más tarde.</string>
+    <string name="cloud_usage_title">Compartir estadísticas anónimas</string>
+    <string name="cloud_usage_detail">Permitir el recuento aproximado de instalaciones activas. Se genera un identificador aleatorio solo si habilitas esta opción; no es HWID ni identificador publicitario.</string>
+    <string name="cloud_usage_footnote">Desactivado por defecto. Al desactivarlo se elimina el identificador aleatorio del dispositivo.</string>
+</resources>

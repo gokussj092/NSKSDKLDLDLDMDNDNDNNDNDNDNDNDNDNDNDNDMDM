@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_report_action">إبلاغ عن خطأ</string>
+    <string name="cloud_report_sent">تم استلام البلاغ: %1$s</string>
+    <string name="cloud_report_failed">تعذر إرسال البلاغ. حاول لاحقًا.</string>
+    <string name="cloud_usage_title">مشاركة إحصاءات استخدام مجهولة</string>
+    <string name="cloud_usage_detail">السماح بعد تقريبي للتثبيتات النشطة. يتم إنشاء معرّف عشوائي فقط بعد التفعيل؛ ولا يمثل HWID أو معرف إعلانات.</string>
+    <string name="cloud_usage_footnote">معطّل افتراضيًا. يؤدي إيقافه إلى حذف المعرّف العشوائي من الجهاز.</string>
+</resources>

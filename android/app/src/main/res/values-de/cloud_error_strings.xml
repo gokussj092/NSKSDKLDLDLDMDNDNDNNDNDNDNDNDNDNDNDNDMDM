@@ -27,10 +27,4 @@
     <string name="cloud_failure_partial">Das Ergebnis ist unvollständig oder ungültig und wird nicht angezeigt.</string>
     <string name="cloud_failure_general">Vorgang fehlgeschlagen. Versuche es erneut oder kontaktiere den Support.</string>
     <string name="cloud_failure_notice_title">Anfrage konnte nicht abgeschlossen werden</string>
-    <string name="cloud_report_action">Fehler melden</string>
-    <string name="cloud_report_sent">Meldung eingegangen: %1$s</string>
-    <string name="cloud_report_failed">Meldung konnte nicht gesendet werden. Bitte später erneut versuchen.</string>
-    <string name="cloud_usage_title">Anonyme Nutzungsstatistiken teilen</string>
-    <string name="cloud_usage_detail">Ermöglicht eine ungefähre Zählung aktiver Installationen. Eine zufällige ID wird erst nach Zustimmung erzeugt und ist keine HWID oder Werbe-ID.</string>
-    <string name="cloud_usage_footnote">Standardmäßig deaktiviert. Ausschalten entfernt die zufällige ID vom Gerät.</string>
 </resources>

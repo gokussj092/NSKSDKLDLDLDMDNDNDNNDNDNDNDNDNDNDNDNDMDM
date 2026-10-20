@@ -27,10 +27,4 @@
     <string name="cloud_failure_partial">Результат неполон или неверен и не будет показан.</string>
     <string name="cloud_failure_general">Не удалось выполнить операцию. Повторите попытку или обратитесь в поддержку.</string>
     <string name="cloud_failure_notice_title">Не удалось выполнить запрос</string>
-    <string name="cloud_report_action">Сообщить об ошибке</string>
-    <string name="cloud_report_sent">Отчёт получен: %1$s</string>
-    <string name="cloud_report_failed">Не удалось отправить отчёт. Повторите попытку позже.</string>
-    <string name="cloud_usage_title">Отправлять анонимную статистику</string>
-    <string name="cloud_usage_detail">Разрешить приблизительный подсчёт активных установок. Случайный идентификатор создаётся только после включения и не является HWID или рекламным ID.</string>
-    <string name="cloud_usage_footnote">По умолчанию отключено. При отключении случайный идентификатор удаляется с устройства.</string>
 </resources>

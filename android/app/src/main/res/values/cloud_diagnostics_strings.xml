@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_report_action">Report error</string>
+    <string name="cloud_report_sent">Report received: %1$s</string>
+    <string name="cloud_report_failed">The report could not be submitted. Try again later.</string>
+    <string name="cloud_usage_title">Share anonymous usage statistics</string>
+    <string name="cloud_usage_detail">Allow an approximate count of active installations. A random identifier is created only if you enable this option; it is not an HWID or advertising ID.</string>
+    <string name="cloud_usage_footnote">Disabled by default. Turning it off removes the random identifier stored on this device.</string>
+</resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_report_action">Сообщить об ошибке</string>
+    <string name="cloud_report_sent">Отчёт получен: %1$s</string>
+    <string name="cloud_report_failed">Не удалось отправить отчёт. Повторите попытку позже.</string>
+    <string name="cloud_usage_title">Отправлять анонимную статистику</string>
+    <string name="cloud_usage_detail">Разрешить приблизительный подсчёт активных установок. Случайный идентификатор создаётся только после включения и не является HWID или рекламным ID.</string>
+    <string name="cloud_usage_footnote">По умолчанию отключено. При отключении случайный идентификатор удаляется с устройства.</string>
+</resources>

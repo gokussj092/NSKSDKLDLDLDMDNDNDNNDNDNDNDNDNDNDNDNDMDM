@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_report_action">Signaler une erreur</string>
+    <string name="cloud_report_sent">Signalement reçu : %1$s</string>
+    <string name="cloud_report_failed">Impossible d’envoyer le signalement. Réessayez plus tard.</string>
+    <string name="cloud_usage_title">Partager les statistiques anonymes</string>
+    <string name="cloud_usage_detail">Autoriser une estimation des installations actives. Un identifiant aléatoire est créé uniquement après activation ; ce n’est ni un HWID ni un identifiant publicitaire.</string>
+    <string name="cloud_usage_footnote">Désactivé par défaut. La désactivation efface l’identifiant aléatoire local.</string>
+</resources>
