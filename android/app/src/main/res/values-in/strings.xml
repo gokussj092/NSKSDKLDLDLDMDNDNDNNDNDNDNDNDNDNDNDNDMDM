@@ -202,7 +202,6 @@
     <string name="guide_step_six">Format: jelajahi aplikasi dan ekstensi yang didukung.</string>
     <string name="guide_step_seven">Server VPN: pilih aplikasi lalu dekode katalog servernya.</string>
     <string name="guide_step_eight">Pengaturan: ubah bahasa, baca informasi privasi, dan atur aplikasi.</string>
-    <string name="guide_step_eight">Pengaturan: ubah bahasa, baca informasi privasi, dan atur aplikasi.</string>
     <string name="server_vpn">Server VPN</string>
     <string name="server_vpn_description">Jelajahi katalog server VPN yang didukung. Pilih aplikasi untuk mendekode daftar servernya.</string>
     <string name="nur_tunnel_name">NUR TUNNEL VPN</string>
