@@ -26,6 +26,7 @@ import com.ghostdeveloper.spdecode.cloud.CloudDecodeClient
 import com.ghostdeveloper.spdecode.cloud.CloudDiagnosticsPrivacy
 import com.ghostdeveloper.spdecode.cloud.CloudFileFormats
 import com.ghostdeveloper.spdecode.cloud.CloudTextFormats
+import com.ghostdeveloper.spdecode.cloud.CloudCatalogUpdates
 import com.ghostdeveloper.spdecode.cloud.CloudLegalConsent
 import com.ghostdeveloper.spdecode.cloud.CloudLegalConsentDialog
 import com.ghostdeveloper.spdecode.cloud.ServerVpnApp
@@ -116,6 +117,7 @@ class MainActivity : ComponentActivity() {
     private var runningVersionCode=0L
     private var message by mutableStateOf<String?>(null)
     private var usageOptIn by mutableStateOf(false)
+    private var catalogUpdatesEnabled by mutableStateOf(false)
     private var reportBusy by mutableStateOf(false)
     private var reveal:Boolean
         get()=sessionVm.reveal
@@ -270,7 +272,8 @@ class MainActivity : ComponentActivity() {
         runningVersionCode=if(Build.VERSION.SDK_INT>=28)installed.longVersionCode else installed.versionCode.toLong()
         showWhatsNew=settings.getLong("last_seen_whats_new_version",0L)<runningVersionCode
         showCloudLegal=BuildConfig.SPDECODE_CLOUD_ENABLED && !CloudLegalConsent.accepted(this)
-        if(!showCloudLegal){refreshServerVpn();syncOptInUsage()}
+        catalogUpdatesEnabled=CloudCatalogUpdates.enabled(this)
+        if(!showCloudLegal){refreshServerVpn();syncOptInUsage();CloudCatalogUpdates.ensureScheduled(this)}
         if(savedInstanceState==null && !settings.getBoolean("first_run_guide_completed",false))
             guideStep=0
         @Suppress("DEPRECATION")
@@ -377,11 +380,20 @@ class MainActivity : ComponentActivity() {
                         if(enabled)syncOptInUsage()
                     }catch(_:Exception){message=getString(R.string.history_storage_error)}
                 },
+                catalogUpdatesEnabled=catalogUpdatesEnabled,
+                onCatalogUpdates={enabled->
+                    try {
+                        CloudCatalogUpdates.setEnabled(this@MainActivity,enabled)
+                        catalogUpdatesEnabled=CloudCatalogUpdates.enabled(this@MainActivity)
+                    }catch(_:Exception){message=getString(R.string.history_storage_error)}
+                },
                 onWithdrawCloudConsent={
                     if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
                         try {
                             CloudDiagnosticsPrivacy.setEnabled(this@MainActivity,false)
                             usageOptIn=false
+                            CloudCatalogUpdates.setEnabled(this@MainActivity,false)
+                            catalogUpdatesEnabled=false
                             CloudLegalConsent.revoke(this@MainActivity)
                             cloudClient.clearSession()
                             serverVpnRefresh?.cancel()
@@ -469,7 +481,7 @@ class MainActivity : ComponentActivity() {
         // A signature/debuggable check that runs only at cold start can be
         // bypassed by a later process attachment. Defense-in-depth recheck.
         if(!ReleaseIntegrity.isTrusted(this)) finishAndRemoveTask()
-        if(!showCloudLegal){refreshServerVpn();syncOptInUsage()}
+        if(!showCloudLegal){refreshServerVpn();syncOptInUsage();CloudCatalogUpdates.ensureScheduled(this)}
     }
 
     override fun onNewIntent(intent:Intent){

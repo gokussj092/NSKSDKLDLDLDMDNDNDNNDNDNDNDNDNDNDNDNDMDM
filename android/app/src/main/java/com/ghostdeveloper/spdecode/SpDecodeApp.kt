@@ -99,6 +99,8 @@ fun SpDecodeApp(
     onGuideRestart:()->Unit={},
     onLegalLink:(String)->Unit={},
     onWithdrawCloudConsent:()->Unit={},
+    catalogUpdatesEnabled:Boolean=false,
+    onCatalogUpdates:(Boolean)->Unit={},
     usageAnalyticsEnabled:Boolean=false,
     onUsageAnalytics:(Boolean)->Unit={},
 ){
@@ -131,6 +133,7 @@ fun SpDecodeApp(
                         onLanguage,onMaskCredentials,onClear,onExternalLink,
                         retentionDays,onRetention,onShowGuide=onGuideRestart,
                         onLegalLink=onLegalLink,onWithdrawConsent=onWithdrawCloudConsent,
+                        catalogUpdatesEnabled=catalogUpdatesEnabled,onCatalogUpdates=onCatalogUpdates,
                         usageAnalyticsEnabled=usageAnalyticsEnabled,onUsageAnalytics=onUsageAnalytics)
                 }
                 if(guideStep!=null && !whatsNew && !busy && error==null && dialog==null) {

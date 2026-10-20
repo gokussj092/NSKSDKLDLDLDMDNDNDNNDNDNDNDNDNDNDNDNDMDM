@@ -38,6 +38,8 @@ fun FunctionalSettingsPanel(
     onShowGuide:()->Unit={},
     onLegalLink:(String)->Unit={},
     onWithdrawConsent:()->Unit={},
+    catalogUpdatesEnabled:Boolean=false,
+    onCatalogUpdates:(Boolean)->Unit={},
     usageAnalyticsEnabled:Boolean=false,
     onUsageAnalytics:(Boolean)->Unit={},
 ){
@@ -168,6 +170,24 @@ fun FunctionalSettingsPanel(
                     colors=SwitchDefaults.colors(checkedThumbColor=Color.Black,checkedTrackColor=TitleText))
             }
             Text(stringResource(R.string.cloud_usage_footnote),color=MutedText,fontSize=11.sp)
+        }
+        if(BuildConfig.SPDECODE_CLOUD_ENABLED) SettingsCard {
+            Row(verticalAlignment=Alignment.CenterVertically) {
+                Icon(Icons.Outlined.Sync,null,tint=TitleText)
+                Spacer(Modifier.width(10.dp))
+                Text(stringResource(R.string.catalog_auto_title),
+                    color=TitleText,fontWeight=FontWeight.SemiBold,fontSize=17.sp)
+            }
+            Text(stringResource(R.string.catalog_auto_detail),
+                color=MutedText,fontSize=12.sp,lineHeight=18.sp)
+            Row(verticalAlignment=Alignment.CenterVertically) {
+                Text(stringResource(R.string.catalog_auto_switch),
+                    color=TitleText,modifier=Modifier.weight(1f),fontSize=14.sp)
+                Switch(checked=catalogUpdatesEnabled,
+                    onCheckedChange=onCatalogUpdates,
+                    colors=SwitchDefaults.colors(checkedThumbColor=Color.Black,
+                        checkedTrackColor=TitleText))
+            }
         }
         DeviceCredentialSettingsSection()
         SettingsCard {
