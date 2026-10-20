@@ -193,7 +193,7 @@ def import_ehi_script(filename: str, previous: list[str]) -> None:
     script = Path(filename)
     try:
         mode = script.lstat()
-        if not stat.S_ISREG(mode.st_mode) or mode.st_uid != 0 or mode.st_mode & 0o077:
+        if not stat.S_ISREG(mode.st_mode) or mode.st_uid != os.geteuid() or mode.st_mode & 0o077:
             fail("Method script must be a root-owned regular file with mode 0600.")
         if mode.st_size < 100 or mode.st_size > 64 * 1024:
             fail("Unexpected method script size.")
