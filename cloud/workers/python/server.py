@@ -13,6 +13,10 @@ from engine import DecodeFailure, MAX_INPUT_BYTES, decode_file, decode_text, dec
 
 # Input is JSON + base64; accept at most bounded overhead. C3 owns public upload parsing.
 MAX_JSON_BYTES = (MAX_INPUT_BYTES * 4 // 3) + 65536
+# The approved MKK bundle carries up to four fixed-source envelopes and
+# is itself Base64-wrapped by the internal broker. Not a public upload limit.
+MAX_MKK_BUNDLE_BYTES = 12 * 1024 * 1024
+MAX_SERVER_VPN_JSON_BYTES = ((MAX_MKK_BUNDLE_BYTES + 2) // 3) * 4 + 65536
 
 
 class WorkerHandler(BaseHTTPRequestHandler):
@@ -71,7 +75,8 @@ class WorkerHandler(BaseHTTPRequestHandler):
         if not self._authorized():
             return self._json(403, {"error": {"code": "FORBIDDEN"}})
         declared = self.headers.get("Content-Length", "")
-        if not declared.isascii() or not declared.isdecimal() or int(declared) > MAX_JSON_BYTES:
+        route_limit = MAX_SERVER_VPN_JSON_BYTES if self.path == "/internal/v1/decode/import/server-vpn" else MAX_JSON_BYTES
+        if not declared.isascii() or not declared.isdecimal() or int(declared) > route_limit:
             return self._json(413, {"error": {"code": "INPUT_TOO_LARGE"}})
         try:
             request = json.loads(self.rfile.read(int(declared)))
@@ -85,9 +90,11 @@ class WorkerHandler(BaseHTTPRequestHandler):
                 if set(request) != {"providerId", "dataBase64"} or not isinstance(request["providerId"], str):
                     raise ValueError("provider schema")
                 encoded=request["dataBase64"]
-                if not isinstance(encoded,str) or len(encoded) > (MAX_INPUT_BYTES*4//3+8):
+                provider=request["providerId"]
+                limit=MAX_MKK_BUNDLE_BYTES if provider=="mkk-hyper" else MAX_INPUT_BYTES
+                if not isinstance(encoded,str) or len(encoded) > ((limit+2)//3)*4:
                     raise DecodeFailure("INPUT_TOO_LARGE")
-                result=decode_provider_catalog(request["providerId"],base64.b64decode(encoded,validate=True))
+                result=decode_provider_catalog(provider,base64.b64decode(encoded,validate=True))
             elif self.path == "/internal/v1/decode/import/catalog":
                 if set(request) != {"dataBase64"} or not isinstance(request["dataBase64"], str):
                     raise ValueError("catalog schema")
