@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="catalog_auto_title">Mises à jour automatiques de Server VPN</string>
-    <string name="catalog_auto_detail">Vérifie la version auprès du serveur SP-DECODE via HTTPS lorsque l'application est ouverte et effectue, si vous le permettez, des vérifications espacées en arrière-plan. Le catalogue et les icônes ne sont téléchargés qu'en cas de changement. Aucun compte ni service Firebase n'est nécessaire.</string>
+    <string name="catalog_auto_detail">Vérifie la version auprès du serveur SP-DECODE via HTTPS lorsque l\'application est ouverte et effectue, si vous le permettez, des vérifications espacées en arrière-plan. Le catalogue et les icônes ne sont téléchargés qu\'en cas de changement. Aucun compte ni service Firebase n\'est nécessaire.</string>
     <string name="catalog_auto_switch">Activer la synchronisation en arrière-plan</string>
 </resources>
