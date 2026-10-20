@@ -123,10 +123,13 @@ jobs:
             echo "ready=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          [[ "$ADI_SNIPPET" =~ ^[A-Z0-9]{16,64}$ ]] || {
-            echo "::error::Unexpected Play Console registration identifier format"
+          # Google Play requires the supplied registration snippet verbatim.
+          # Do not reject it based on an assumed alphabet or sample-token length.
+          # Keep it inside Actions Secrets and never print its contents.
+          if (( ${#ADI_SNIPPET} > 4096 )); then
+            echo "::error::Registration snippet is too large; copy only the snippet from Play Console."
             exit 1
-          }
+          fi
           EXPECTED="0fa9f07f2c47464925f3a7b222c9a39ef887738f678b9c918ec6c4fb96162260"
           if [[ "$SPDECODE_TRUSTED_SIGNER_SHA256" != "$EXPECTED" ]]; then
             echo "::error::Play Console's selected key does not match this repository's permanent signing key."
