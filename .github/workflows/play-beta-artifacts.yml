@@ -89,8 +89,8 @@ jobs:
           AAB=android/app/build/outputs/bundle/release/app-release.aab
           test -s "$APK" && test -s "$AAB"
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK" > "$RUNNER_TEMP/apk-signature.txt"
-          jarsigner -verify -strict "$AAB" > "$RUNNER_TEMP/aab-signature.txt"
-          grep -qi 'jar verified' "$RUNNER_TEMP/aab-signature.txt"
+          jarsigner -verify "$AAB" > "$RUNNER_TEMP/aab-signature.txt"
+          grep -q '^jar verified\.' "$RUNNER_TEMP/aab-signature.txt"
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" > "$RUNNER_TEMP/app-badging.txt"
           grep -F "package: name='com.ghostdeveloper.spdecode'" "$RUNNER_TEMP/app-badging.txt" >/dev/null
           grep -F "versionName='1.1.4'" "$RUNNER_TEMP/app-badging.txt" >/dev/null
