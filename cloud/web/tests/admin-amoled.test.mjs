@@ -61,3 +61,13 @@ test("Android maintenance response remains localized instead of exposing raw API
   assert.match(source,/name="cloud_failure_maintenance"/);
  }
 });
+
+test("admin icon and legal links are allowlisted on the panel origin",()=>{
+ const conf=read("../infra/vps/nginx-config.py");
+ for(const path of ["/icon.svg","/terms","/support"])
+  assert.ok(conf.includes("location = "+path+" {{"),"missing allowed admin route "+path);
+ const admin=read("app/public/site-chrome.jsx");
+ const login=read("app/admin/login/page.jsx");
+ assert.match(admin,/src="\/icon.svg"/);
+ assert.match(login,/src="\/icon.svg"/);
+});
