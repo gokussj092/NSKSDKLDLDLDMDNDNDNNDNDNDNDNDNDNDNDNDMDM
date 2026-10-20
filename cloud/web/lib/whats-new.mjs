@@ -6,7 +6,7 @@ const MAX_JSON=16384,MAX_ITEMS=12;
 const languages=new Set(["en","es","ar","fa","fr","id","ru","de","pt-BR"]);
 const formats=new Set(["feature","support","improvement","fix"]);
 const safeText=(value,max)=>typeof value==="string"&&value.length>0&&value.length<=max
-  && !/[<>\\x00-\\x08\\x0e-\\x1f]/.test(value);
+  && [...value].every(char=>char!=="<"&&char!==">"&&char.charCodeAt(0)>=32);
 function validLocalized(value,max){
  return value&&typeof value==="object"&&!Array.isArray(value)&&
   Object.keys(value).length>0&&Object.keys(value).every(x=>languages.has(x))&&
@@ -15,7 +15,7 @@ function validLocalized(value,max){
 export function validateNews(input){
  if(!input||typeof input!=="object"||Array.isArray(input)||
     !Number.isSafeInteger(input.version)||input.version<1||input.version>999999999||
-    input.schemaVersion!==1||!/^\\d{4}-\\d{2}-\\d{2}$/.test(input.publishedAt||"")||
+    input.schemaVersion!==1||!/^\d{4}-\d{2}-\d{2}$/.test(input.publishedAt||"")||
     !validLocalized(input.title,100)||!validLocalized(input.subtitle,250)||
     !Array.isArray(input.items)||input.items.length<1||input.items.length>MAX_ITEMS)
   throw Error("INVALID_RELEASE_NOTES");
