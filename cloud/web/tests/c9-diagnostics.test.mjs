@@ -40,18 +40,25 @@ test("install counting is opt-in, aggregated and does not persist the raw random
  assert.equal(JSON.stringify([...redis.hll]).includes(id),false);
  await assert.rejects(()=>recordOptInInstallation(redis,"android-hwid",key),/INVALID_INSTALL_ID/);
 });
-test("native JNI, settings and UI require explicit user action and support opt-out",()=>{
+test("native JNI, Cloud consent and settings provide transparent anonymous capacity statistics",()=>{
  const read=path=>readFileSync(new URL("../../../"+path,import.meta.url),"utf8");
  const kotlin=read("android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudDiagnosticsPrivacy.kt");
  const client=read("android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudDecodeClient.kt");
  const native=read("android/app/src/main/cpp/spdecode_transport.cpp");
  const main=read("android/app/src/main/java/com/ghostdeveloper/spdecode/MainActivity.kt");
  const app=read("android/app/src/main/java/com/ghostdeveloper/spdecode/SpDecodeApp.kt");
- assert.match(kotlin,/if\(allowed\)/);assert.match(kotlin,/delete\(INSTALL_ID\)/);
+ assert.match(kotlin,/CloudLegalConsent\.accepted\(context\)/);
+ assert.match(kotlin,/installationId\(context\)/);
+ assert.match(kotlin,/delete\(INSTALL_ID\)/);
  assert.match(client,/reportFailure/);assert.match(client,/registerOptInActivity/);
  assert.match(native,/\/api\/v1\/telemetry/);
  assert.match(main,/syncOptInUsage/);assert.match(main,/sendCurrentFailureReport/);
  assert.match(app,/canReportError/);assert.match(app,/onReportError/);
+ const settings=read("android/app/src/main/java/com/ghostdeveloper/spdecode/FunctionalSettingsPanel.kt");
+ assert.match(settings,/R\.string\.cloud_usage_detail/);
+ assert.doesNotMatch(settings,/Switch\(checked=usageAnalyticsEnabled/);
+ const consent=read("android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudLegalConsent.kt");
+ assert.match(consent,/VERSION=20261020/);
  const legal=read("cloud/web/app/public/legal.jsx");
  assert.match(legal,/HyperLogLog/);
 });
