@@ -176,7 +176,9 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
             legacy_sks = False
         if legacy_sks:
             engine = load_file_engines()["sks"]
-    if suffix == "hat":
+    if suffix == "hat" and full_hat:
+        # Cloud UI requires the complete document. Preserve the original
+        # legacy route for frozen C2 reference output parity.
         # Historical hat.js flattens and drops nested configuration fields.
         # The full-result bridge decrypts the same envelope, preserves every
         # original JSON section and decodes known profilev5 values.
