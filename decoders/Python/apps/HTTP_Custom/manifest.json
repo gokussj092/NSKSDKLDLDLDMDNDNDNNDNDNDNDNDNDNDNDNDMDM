@@ -1,0 +1,85 @@
+{
+  "id": "http-custom",
+  "name": "HTTP Custom",
+  "package": "xyz.easypro.httpcustom",
+  "compatibleVersions": [
+    "7.11.28 - Patch 1"
+  ],
+  "versionCode": 899,
+  "engine": "python-hcx4-hccfg10-n11-n12",
+  "engineVersion": 1,
+  "files": {
+    "entrypoint": "file_decoder.py",
+    "namedEntrypoint": "HTTP_Custom.py",
+    "extensions": [
+      "hc"
+    ],
+    "outer": "HCX4",
+    "schemas": [
+      10
+    ],
+    "schedules": [
+      "n11",
+      "n12"
+    ],
+    "passwordSupported": true,
+    "hwidSupported": true,
+    "dualLockSyntheticValidated": true,
+    "legacyEngines": [
+      "../../HTTPCUSTOM.py",
+      "../../_hc_hccfg.py"
+    ],
+    "realValidation": {
+      "outerAuthenticated": 6,
+      "fullyDecodedWithoutCredentials": 2,
+      "profilesFullyDecoded": 4,
+      "protectedPendingOriginalCredentials": 4
+    },
+    "nativeKdfSyntheticVectors": 4,
+    "exporterCertified": false,
+    "unknownSchemaOrSchedule": "reject after successful outer authentication"
+  },
+  "catalog": {
+    "present": false,
+    "entrypoint": null,
+    "reason": "file-only scope requested; no catalog provider added"
+  },
+  "icon": {
+    "file": "HTTP_Custom.png",
+    "originalFile": "HTTP_Custom.webp",
+    "source": "base.apk:res/mipmap-xxxhdpi-v4/ic_launcher.webp",
+    "resourceId": "0x7f0e0000",
+    "width": 192,
+    "height": 192,
+    "pngConversion": "lossless RGBA pixel conversion; original WebP also preserved",
+    "policy": "original retained regardless of size",
+    "artifacts": {
+      "HTTP_Custom.png": {
+        "bytes": 9894,
+        "sha256": "c51ec34ec4e7a7c2af496aadf4c1d88948144c23131a82931b8c8266e0ea7cf2"
+      },
+      "HTTP_Custom.webp": {
+        "bytes": 5860,
+        "sha256": "9740e90196b7acb0e516f798d1e5fdb48e72b65a3c5571c58be2cf8301523e55"
+      }
+    }
+  },
+  "dependencies": {
+    "python": ">=3.10",
+    "pycryptodome": "3.23.0",
+    "argon2-cffi": "25.1.0",
+    "supportFiles": [
+      "codec.py",
+      "crypto.py"
+    ],
+    "apkRequiredAtRuntime": false,
+    "networkRequiredAtRuntime": false
+  },
+  "sourceApkSha256": "e990a9376b36974d4fec864e9dc8ebca69578e78e31bc94f7d3c07ced71d39e8",
+  "sourceApksSha256": "6dd69113336f8e4be825b0a5315ce174ed85239d67be6c2813bf5769c4b03caa",
+  "certificateSha256": "95dd433d7e4a0be02d55cc62553edcfc8f077fe780be5a7da7f861c2558dc181",
+  "validationDate": "2026-10-20",
+  "branch": "feat/austroplus-vpn-13-0-1-decoders",
+  "pullRequest": 96,
+  "baseMainCommit": "e6cbb5926372aa6b7d36105802bf366a2138c98e"
+}

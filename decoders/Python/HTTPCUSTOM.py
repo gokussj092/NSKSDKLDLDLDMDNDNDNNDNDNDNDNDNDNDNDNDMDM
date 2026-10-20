@@ -353,12 +353,22 @@ class HCDecryptor:
 
 
 def run(file_bytes: bytes) -> Optional[str]:
-    """Use the historical decoder first; HCCFG is a separate, versioned engine.
+    """Authenticate HCX4 first, then retain the historical versioned engines.
 
     The CLI/bot never prompts interactively. Password/HWID-protected files
     report a clear requirement instead of hanging a worker or pretending that
     an authenticated decryption succeeded.
     """
+    if __package__:
+        from .apps.HTTP_Custom.codec import HCError as ModernHCError, UnrecognizedFormat, decrypt as modern_decrypt
+    else:
+        from apps.HTTP_Custom.codec import HCError as ModernHCError, UnrecognizedFormat, decrypt as modern_decrypt
+    try:
+        return json.dumps(modern_decrypt(file_bytes), indent=4, ensure_ascii=False)
+    except UnrecognizedFormat:
+        pass
+    except ModernHCError as exc:
+        raise ValueError("HTTP Custom HCCFG: " + str(exc)) from exc
     legacy = HCDecryptor.execute(file_bytes)
     if legacy is not None:
         return legacy
