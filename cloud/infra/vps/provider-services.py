@@ -55,10 +55,9 @@ def ehi_ready(lines: list[str]) -> bool:
             and len(value(lines, "CLOUD_EHI_RESPONSE_KEY").encode("utf-8")) == 32)
 
 
-# The verified 6.5.0/244 method is ALREADY part of the repository's
-# HTTP Injector Android reference. Ship no extra credential file: extract only
-# its two fixed protocol constants into the VPS-private environment on enable.
-EHI_REFERENCE = ROOT / "repo/android/app/src/main/java/com/ghostdeveloper/spdecode/HttpInjectorCloudPort.kt"
+# The owner-supplied HTTPINJECTOR_CLOUD.py is committed server-side in the
+# repository. It is parsed without execution to provision the VPS on enable.
+EHI_REFERENCE = ROOT / "repo/decoders/Python/HTTPINJECTOR_CLOUD.py"
 EHI_PROTOCOL_DIGESTS = (
     "1ed7b6c1537ab20dca655f7f69f6c5debfe38912e1fe9899da3a0cb127da1ee8",
     "9e5e8ad1459ccfc0ba87811a2153e4e7bce0e88e81bfec0972bf45e33b9a5789",
@@ -66,25 +65,37 @@ EHI_PROTOCOL_DIGESTS = (
 
 
 def bundled_ehi() -> tuple[str, str] | None:
+    """Parse only constants from the owner's bundled Python method; NEVER execute it."""
     try:
         source = EHI_REFERENCE.read_text(encoding="utf-8")
-    except (OSError, UnicodeError):
-        return None
-    if len(source) > 120 * 1024:
-        return None
-    matches = []
-    for name in ("SIGN_KEY", "RESPONSE_KEY"):
-        found = re.findall(r'private const val ' + name + r' = "([A-Za-z0-9+/=]{32})"', source)
-        if len(found) != 1:
+        if len(source) > 64 * 1024:
             return None
-        matches.append(found[0])
-    if 'private const val BUILD = "244"' not in source:
+        program = ast.parse(source, filename="<bundled-http-injector>")
+    except (OSError, UnicodeError, SyntaxError, RecursionError):
         return None
-    if 'private const val ENDPOINT = "https://www.ehi.tools/httpinjector/import_config"' not in source:
+    constants = {}
+    for node in program.body:
+        if (not isinstance(node, ast.Assign) or len(node.targets) != 1
+                or not isinstance(node.targets[0], ast.Name)):
+            continue
+        name = node.targets[0].id
+        if name not in ("SIGN_SECRET", "API_KEY", "APP_BUILD", "ENDPOINT"):
+            continue
+        try:
+            constants[name] = ast.literal_eval(node.value)
+        except (ValueError, TypeError, SyntaxError, RecursionError):
+            return None
+    sign, response = constants.get("SIGN_SECRET"), constants.get("API_KEY")
+    if (constants.get("APP_BUILD") != "244" or
+        constants.get("ENDPOINT") != "https://www.ehi.tools/httpinjector/import_config" or
+        not isinstance(sign, str) or not sign.isascii() or len(sign) != 32 or
+        not isinstance(response, bytes) or len(response) != 32 or not response.isascii()):
         return None
-    if tuple(hashlib.sha256(x.encode("ascii")).hexdigest() for x in matches) != EHI_PROTOCOL_DIGESTS:
+    decoded = response.decode("ascii")
+    if (hashlib.sha256(sign.encode("ascii")).hexdigest(),
+            hashlib.sha256(response).hexdigest()) != EHI_PROTOCOL_DIGESTS:
         return None
-    return matches[0], matches[1]
+    return sign, decoded
 
 
 def bundled_ehi_updates(lines: list[str]) -> dict[str, str]:
