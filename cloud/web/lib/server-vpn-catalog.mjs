@@ -45,10 +45,10 @@ export function iconFor(id) {
     throw Error("INVALID_ORIGINAL_ICON");
   return {id:item.id, bytes, sha256:createHash("sha256").update(bytes).digest("hex")};
 }
-export function catalog() {
+export function catalog({availability=null,version=activeCatalogVersion()}={}) {
   return {
     apiVersion:"v1",
-    catalogVersion:activeCatalogVersion(),
+    catalogVersion:version,
     recheckAfterSeconds:RECHECK_SECONDS,
     apps: ITEMS.map(x=>({
       id:x.id,
@@ -56,8 +56,8 @@ export function catalog() {
       iconSha256:iconFor(x.id).sha256,
       iconMimeType:"image/png",
       // No decode button for a provider until its remote broker is enabled.
-      decodeEnabled:x.remote==="nur" ? process.env.CLOUD_NUR_FETCH_ENABLED==="true" :
-        Boolean(x.remote) && process.env.CLOUD_SERVER_VPN_ENABLED==="true",
+      decodeEnabled:x.remote==="nur" ? (availability?.["nur-tunnel"] ?? process.env.CLOUD_NUR_FETCH_ENABLED==="true") :
+        Boolean(x.remote) && (availability?.[x.id] ?? process.env.CLOUD_SERVER_VPN_ENABLED==="true"),
     })),
   };
 }
