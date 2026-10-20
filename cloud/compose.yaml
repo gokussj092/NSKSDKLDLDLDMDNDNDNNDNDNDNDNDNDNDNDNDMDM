@@ -39,6 +39,10 @@ services:
       CLOUD_SERVER_VPN_ENABLED: ${CLOUD_SERVER_VPN_ENABLED:-false}
       # Must increase on every roster, icon or provider-availability change.
       CLOUD_SERVER_VPN_CATALOG_VERSION: ${CLOUD_SERVER_VPN_CATALOG_VERSION:-11}
+      # C10 optional push to a public FCM topic; server credentials never enter the APK.
+      CLOUD_FCM_ENABLED: ${CLOUD_FCM_ENABLED:-false}
+      CLOUD_FCM_PROJECT_ID: ${CLOUD_FCM_PROJECT_ID:-}
+      CLOUD_FCM_SERVICE_ACCOUNT_JSON: ${CLOUD_FCM_SERVICE_ACCOUNT_JSON:-}
     ports:
       # Bound to host loopback only; public HTTPS reverse proxy is a later phase.
       - "127.0.0.1:3000:3000"
@@ -63,6 +67,34 @@ services:
       timeout: 5s
       retries: 4
       start_period: 30s
+
+  # Enable with docker compose --profile catalog-push up -d after configuring FCM.
+  # A single private watcher checks the version every five minutes, not each Android device.
+  catalog-push:
+    profiles: ["catalog-push"]
+    build:
+      context: ./web
+    command: ["node", "scripts/catalog-watch.mjs"]
+    restart: unless-stopped
+    init: true
+    environment:
+      NODE_ENV: production
+      CLOUD_REDIS_URL: redis://redis:6379
+      CLOUD_SERVER_VPN_CATALOG_VERSION: ${CLOUD_SERVER_VPN_CATALOG_VERSION:-11}
+      CLOUD_FCM_ENABLED: ${CLOUD_FCM_ENABLED:-false}
+      CLOUD_FCM_PROJECT_ID: ${CLOUD_FCM_PROJECT_ID:-}
+      CLOUD_FCM_SERVICE_ACCOUNT_JSON: ${CLOUD_FCM_SERVICE_ACCOUNT_JSON:-}
+    networks: [private, edge]
+    depends_on:
+      redis:
+        condition: service_healthy
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: ["ALL"]
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,noexec,nosuid
+    mem_limit: 128m
 
   redis:
     image: redis:7.4-alpine
