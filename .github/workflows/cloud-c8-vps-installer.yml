@@ -207,7 +207,7 @@ jobs:
       - name: Probe panel links and protect API hosts through HTTPS Nginx
         run: |
           panel=panel.spdecode.xyz
-          for route in /admin /admin/analytics /admin/reports /admin/system /features /docs /privacy /status /api/site/status; do
+          for route in /admin /admin/analytics /admin/reports /admin/system /icon.svg /features /docs /privacy /terms /support /status /api/site/status; do
             status=$(curl --noproxy '*' --proxy '' -sS --connect-timeout 3 --max-time 10 \
               --resolve "$panel:443:127.0.0.1" -o /dev/null -w '%{http_code}' \
               "https://$panel$route")
