@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="cloud_legal_title">الشروط والخصوصية</string>
-    <string name="cloud_legal_explanation">يرسل SP-DECODE Cloud إلى الخادم فقط الملفات أو النصوص التي تختار معالجتها. قد تحتوي على بيانات اعتماد حساسة.</string>
+    <string name="cloud_legal_explanation">يرسل SP-DECODE Cloud الملفات أو النصوص التي تختار فك تشفيرها إلى الخادم للمعالجة. كما يقدّر عدد التثبيتات النشطة يوميًا باستخدام رمز عشوائي لتخطيط قدرة الخادم. لا تدخل محتويات الإعدادات في هذا العد.</string>
     <string name="cloud_legal_terms">قراءة الشروط والأحكام</string>
     <string name="cloud_legal_privacy">قراءة سياسة الخصوصية</string>
     <string name="cloud_legal_accept_check">قرأت الشروط وسياسة الخصوصية وأوافق عليهما.</string>
