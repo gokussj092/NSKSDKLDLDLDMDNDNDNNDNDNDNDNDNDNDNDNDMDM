@@ -194,11 +194,7 @@ def decrypt(data: bytes, password: str | None = None, hwid: str | None = None) -
         raise HCError("INVALID_SECTION") from error
     return {
         "app_version": "7.11.28 - Patch 1 (899)" if envelope.get("n") == 899 else f"build-{envelope.get('n')}",
-        "format": {"outer": "HCX4", "schema": 10, "schedule": envelope["e"]},
         "config": profiles, "main": main,
         "protections": historical._norm_prot(main.get("g", {})) if isinstance(main, dict) else {},
         "other_sections": others,
-        # Keep the exact decoded JSON structure, including unknown fields,
-        # section identities, wrapped slots and future metadata.
-        "envelope": envelope,
     }
