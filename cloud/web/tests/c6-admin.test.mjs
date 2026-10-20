@@ -3,7 +3,7 @@ import {test} from "node:test";
 import {randomBytes,generateKeyPairSync,scryptSync} from "node:crypto";
 import {adminSettings,checkPassword,parseAdminCookie,authenticateAdmin,validMutation} from "../lib/c6-admin-auth.mjs";
 import {loginRequest,statusRequest,maintenanceRequest,logoutRequest} from "../lib/c6-admin-api.mjs";
-import {maintenanceEnabled,recordWorkerResult,aggregateMetrics} from "../lib/c6-ops-store.mjs";
+import {maintenanceEnabled,serviceMaintenanceEnabled,serviceMaintenanceStates,recordWorkerResult,aggregateMetrics} from "../lib/c6-ops-store.mjs";
 import {decodeRequest,challengeRequest} from "../lib/c3-gateway.mjs";
 import {externalImportRequest} from "../lib/c35-gateway.mjs";
 
@@ -186,4 +186,38 @@ test("deployment-enforced maintenance cannot be disabled from admin panel",async
     assert.equal((await r.json()).error.code,"MAINTENANCE_LOCKED");
     assert.equal(await maintenanceEnabled(redis),true);
   }finally{delete process.env.CLOUD_FORCE_MAINTENANCE;}
+});
+
+test("independent service maintenance is authenticated, CSRF protected, and cannot override global maintenance",async()=>{
+  const redis=new RedisFake(),args=redisFactory(redis);
+  const logged=await loginRequest(request("/api/admin/login",{username,password}),args);
+  assert.equal(logged.status,200);
+  const cookie=cookieOnly(logged);
+  const change=(data,opts={})=>maintenanceRequest(request("/api/admin/maintenance",data,cookie,opts),args);
+  assert.equal((await change({enabled:true,service:"serverVpn"})).status,200);
+  assert.equal(await maintenanceEnabled(redis),false);
+  assert.equal(await serviceMaintenanceEnabled(redis,"files"),false);
+  assert.equal(await serviceMaintenanceEnabled(redis,"serverVpn"),true);
+  assert.equal((await decodeRequest(request("/api/v1/decode/file",{format:"hc",dataBase64:"YWJj"}),"file",args)).status,401);
+  // An inactive VPN service rejects requests before a provider fetch or worker operation.
+  const {decodeServerVpn}=await import("../lib/server-vpn-gateway.mjs");
+  const vpn=await decodeServerVpn(request("/api/v1/server-vpn/decode",{id:"nur-tunnel",consent:true}),args);
+  assert.equal(vpn.status,503);
+  assert.equal((await vpn.json()).error.code,"SERVICE_MAINTENANCE");
+  assert.equal((await change({enabled:true,service:"httpInjector"})).status,200);
+  const ehi=await externalImportRequest(request("/api/v1/decode/import/cloud",{reference:"test",consent:true}),"ehi",args);
+  assert.equal(ehi.status,503);
+  assert.equal((await ehi.json()).error.code,"SERVICE_MAINTENANCE");
+  const state=await (await statusRequest(getReq(cookie),args)).json();
+  assert.deepEqual(state.serviceMaintenance,{files:false,httpInjector:true,serverVpn:true});
+  assert.equal((await change({enabled:false,service:"serverVpn"})).status,200);
+  assert.equal(await serviceMaintenanceEnabled(redis,"serverVpn"),false);
+  assert.equal((await change({enabled:true,service:"unknown"})).status,400);
+  assert.equal((await change({enabled:true,service:"../../credentials"})).status,400);
+  assert.equal((await change({enabled:true,service:"files"},{origin:"https://evil.invalid"})).status,403);
+  assert.equal((await change({enabled:true})).status,200);
+  assert.equal(await serviceMaintenanceEnabled(redis,"files"),true);
+  assert.equal((await change({enabled:false})).status,200);
+  assert.equal(await serviceMaintenanceEnabled(redis,"files"),false);
+  assert.deepEqual(await serviceMaintenanceStates(redis),{files:false,httpInjector:true,serverVpn:false});
 });

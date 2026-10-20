@@ -4,7 +4,7 @@ import {settings} from "./c3-config.mjs";
 import {store,reserveSlot,releaseSlot} from "./c3-store.mjs";
 import {requireSession} from "./c3-session.mjs";
 import {enabled,notEnabled,failure,boundedBody,fetchWorker} from "./c3-gateway.mjs";
-import {serviceMaintenanceEnabled,recordWorkerResult} from "./c6-ops-store.mjs";
+import {maintenanceEnabled,serviceMaintenanceEnabled,recordWorkerResult} from "./c6-ops-store.mjs";
 import {providerEnabled,downloadVpnCatalog,VpnProviderError} from "./server-vpn-provider.mjs";
 
 export async function decodeServerVpn(request,opts={}){
@@ -12,6 +12,7 @@ export async function decodeServerVpn(request,opts={}){
   let redis,claims,lease=null,providerId="";
   try{
     redis=await (opts.storeProvider||store)();
+    if(await maintenanceEnabled(redis))return failure("SERVICE_UNAVAILABLE",503);
     if(await serviceMaintenanceEnabled(redis,"serverVpn"))return failure("SERVICE_MAINTENANCE",503);
     claims=await requireSession(redis,request,settings());
     if(!claims)return failure("UNAUTHORIZED",401);

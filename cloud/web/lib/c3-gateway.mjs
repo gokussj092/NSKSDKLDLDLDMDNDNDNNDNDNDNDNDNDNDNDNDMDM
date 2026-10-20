@@ -139,6 +139,7 @@ export async function decodeRequest(request,kind,options={}) {
   let redis,claims,lease=null,telemetry=null,recorded=false;
   try{
     redis=await (options.storeProvider||store)();
+    if(await maintenanceEnabled(redis))return failure("SERVICE_UNAVAILABLE",503);
     if(await serviceMaintenanceEnabled(redis,"files"))return failure("SERVICE_MAINTENANCE",503);
     claims=await requireSession(redis,request,cfg);
     if(!claims)return failure("UNAUTHORIZED",401);

@@ -92,3 +92,24 @@ test("report API requires signed admin session, never supports public or malform
   assert.equal(body.report.privacy,"anonymous_aggregate_counters");
   assert.equal(JSON.stringify(body).includes(password),false);
 });
+
+test("file and Server VPN success/failure diagnostics are counted separately without storing payloads",async()=>{
+  const redis=new RedisFake();
+  await recordWorkerResult(redis,"success",{kind:"file",format:"npvs",bytes:200});
+  await recordWorkerResult(redis,"failed",{kind:"file",format:"hc",bytes:100,errorCode:"AUTH_FAILED"});
+  await recordWorkerResult(redis,"failed",{kind:"server-vpn",format:"tunneltweak",bytes:400,errorCode:"ENGINE_TIMEOUT"});
+  await recordWorkerResult(redis,"success",{kind:"server-vpn",format:"nur-tunnel",bytes:300});
+  await recordWorkerResult(redis,"failed",{kind:"ehi",bytes:200,errorCode:"REMOTE_DECODER_FAILED"});
+  const result=await usageReport(redis,7);
+  const lookup=id=>result.serviceBreakdown.find(s=>s.service===id);
+  assert.deepEqual(lookup("files"),{service:"files",successfulDecodes:1,failedDecodes:1,attempts:2});
+  assert.deepEqual(lookup("httpInjector"),{service:"httpInjector",successfulDecodes:0,failedDecodes:1,attempts:1});
+  assert.deepEqual(lookup("serverVpn"),{service:"serverVpn",successfulDecodes:1,failedDecodes:1,attempts:2});
+  assert.ok(result.extensions.some(e=>e.extension==="vpn-tunneltweak"&&e.failedDecodes===1));
+  assert.ok(result.serviceErrors.some(e=>e.service==="serverVpn"&&e.code==="ENGINE_TIMEOUT"));
+  assert.equal(result.hourlyLast48.length,48);
+  assert.equal(result.hourlyLast48.reduce((n,h)=>n+h.successfulDecodes+h.failedDecodes,0),5);
+  assert.ok(![...redis.hash.keys()].join(" ").includes("password"));
+  assert.equal(safeFormat("server-vpn","../private"),"vpn-other");
+  assert.equal(safeFormat("server-vpn","nur-tunnel"),"vpn-nur-tunnel");
+});

@@ -4,7 +4,7 @@ import { settings } from "./c3-config.mjs";
 import { store, reserveSlot, releaseSlot } from "./c3-store.mjs";
 import { requireSession } from "./c3-session.mjs";
 import { enabled, notEnabled, failure, boundedBody, fetchWorker } from "./c3-gateway.mjs";
-import { serviceMaintenanceEnabled, recordWorkerResult } from "./c6-ops-store.mjs";
+import { maintenanceEnabled, serviceMaintenanceEnabled, recordWorkerResult } from "./c6-ops-store.mjs";
 import {
   isExternalImportError, parseEhiReference, ehiConfigured, nurConfigured,
   importEhiReference, downloadNur,
@@ -20,6 +20,7 @@ export async function externalImportRequest(request,kind,opts={}) {
   try {
     // Authorize before reading any uploaded body or opening external socket.
     redis=await (opts.storeProvider||store)();
+    if(await maintenanceEnabled(redis))return failure("SERVICE_UNAVAILABLE",503);
     if(await serviceMaintenanceEnabled(redis,kind==="ehi"?"httpInjector":"serverVpn"))
       return failure("SERVICE_MAINTENANCE",503);
     claims=await requireSession(redis,request,settings());
