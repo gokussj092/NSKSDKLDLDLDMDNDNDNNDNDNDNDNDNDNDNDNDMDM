@@ -13,7 +13,9 @@ const src=path=>readFileSync(new URL("../../../"+path,import.meta.url),"utf8");
 test("public release notes are versioned, localized in every supported language and safe",()=>{
  const config=validateNews(fixture);
  assert.equal(config.version,2);
- assert(config.items.length>=4);
+ assert.equal(config.items.length,3);
+ assert.deepEqual(config.items.map(x=>x.id),["ksh-vpn-provider","dtunnel-mod-entry","mkk-hyper-sources"]);
+ assert.deepEqual(config.items.map(x=>x.type),["feature","feature","fix"]);
  assert.equal(new Set(config.items.map(x=>x.id)).size,config.items.length);
  const english=localizeNews(config,"en");
  const spanish=localizeNews(config,"es");
@@ -33,11 +35,13 @@ test("public release notes are versioned, localized in every supported language 
   }
  }
  assert.equal(localizeNews(config,"unknown").title,english.title);
- assert(english.items.some(x=>x.title.includes("HTTP Custom")));
- assert(english.items.some(x=>x.title.includes("Server VPN")));
  assert(english.items.some(x=>x.title.includes("KSH VPN")));
- assert(english.items.some(x=>x.title.includes("MKK Hyper")));
- assert(english.items.some(x=>x.title.includes("HA Tunnel")));
+ assert(english.items.some(x=>x.title.includes("DTunnel Mod")));
+ assert(english.items.some(x=>x.title.includes("MKK Hyper VPN")));
+ assert(english.items.every(x=>x.title.includes("✅")||x.title.includes("🛠️")));
+ assert(!JSON.stringify(english).includes("HTTP Custom"));
+ assert(!JSON.stringify(english).includes("HA Tunnel"));
+ assert(!JSON.stringify(english).includes("Google Play"));
  assert(!JSON.stringify(english).includes("NUR download URL"));
 });
 test("one HTTPS version check returns complete text only for new releases",async()=>{
@@ -48,7 +52,7 @@ test("one HTTPS version check returns complete text only for new releases",async
  assert.equal(value.version,2);
  assert.equal(value.unchanged,false);
  assert.equal(value.locale,"en");
- assert(Array.isArray(value.items)&&value.items.length>=4);
+ assert(Array.isArray(value.items)&&value.items.length===3);
  const same=await (await route(query(2,"es"))).json();
  assert.deepEqual(same,{apiVersion:"v1",version:2,recheckAfterSeconds:1800,unchanged:true});
  const es=(await (await route(query(0,"es"))).json());
