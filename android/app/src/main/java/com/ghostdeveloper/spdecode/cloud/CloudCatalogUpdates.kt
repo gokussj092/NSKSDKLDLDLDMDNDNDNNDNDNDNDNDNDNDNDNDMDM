@@ -97,6 +97,11 @@ internal object CloudCatalogUpdates {
         WorkManager.getInstance(context).enqueueUniqueWork(PUSH,ExistingWorkPolicy.REPLACE,immediate)
     }
 
+    /** Firebase must exist before a headless message service starts after process death. */
+    fun restoreOnProcessStart(context:Context) {
+        if(enabled(context) && CloudLegalConsent.accepted(context))messaging(context)
+    }
+
     fun onTokenRotation(context:Context) {
         if(enabled(context)&&CloudLegalConsent.accepted(context))
             messaging(context)?.subscribeToTopic(TOPIC)
