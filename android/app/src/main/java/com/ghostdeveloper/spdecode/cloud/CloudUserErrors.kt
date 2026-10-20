@@ -29,6 +29,7 @@ internal object CloudUserErrors {
                 "DECODE_FAILED","REMOTE_DECODER_FAILED","OUTPUT_INVALID","OUTPUT_INVALID_UTF8" ->
                     R.string.cloud_failure_decode
                 "ENGINE_TIMEOUT" -> R.string.cloud_failure_timeout
+                "SERVICE_MAINTENANCE" -> R.string.cloud_failure_maintenance
                 "ENGINE_UNAVAILABLE","REMOTE_NOT_CONFIGURED","REMOTE_PROVIDER_UNAVAILABLE" ->
                     R.string.cloud_failure_unavailable
                 "REMOTE_INTEGRITY_FAILED","REMOTE_RESPONSE_INVALID","REMOTE_NETWORK_DENIED" ->

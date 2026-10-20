@@ -15,6 +15,7 @@
     <string name="cloud_failure_invalid">Недопустимый файл или запрос. Проверьте формат.</string>
     <string name="cloud_failure_unsupported">Этот формат недоступен на сервере.</string>
     <string name="cloud_failure_decode">Не удалось обработать эту версию файла. Это не обязательно означает повреждение.</string>
+    <string name="cloud_failure_maintenance">Этот сервис временно находится на техническом обслуживании. Повторите попытку позже.</string>
     <string name="cloud_failure_unavailable">Сервис временно недоступен. Повторите попытку позже.</string>
     <string name="cloud_failure_remote">Удалённый поставщик вернул недопустимый ответ.</string>
     <string name="cloud_failure_credentials">Неверный пароль или HWID. Проверьте данные.</string>

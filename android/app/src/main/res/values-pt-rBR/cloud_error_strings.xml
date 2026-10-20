@@ -15,6 +15,7 @@
     <string name="cloud_failure_invalid">Arquivo ou solicitação inválidos. Verifique o formato.</string>
     <string name="cloud_failure_unsupported">Este formato não está disponível no servidor.</string>
     <string name="cloud_failure_decode">O decodificador não conseguiu processar esta versão do arquivo.</string>
+    <string name="cloud_failure_maintenance">Este serviço está temporariamente em manutenção. Tente novamente mais tarde.</string>
     <string name="cloud_failure_unavailable">Serviço temporariamente indisponível. Tente mais tarde.</string>
     <string name="cloud_failure_remote">O provedor remoto retornou uma resposta inválida.</string>
     <string name="cloud_failure_credentials">Senha ou HWID incorretos. Verifique os dados.</string>

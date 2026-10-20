@@ -15,6 +15,7 @@
     <string name="cloud_failure_invalid">File atau permintaan tidak valid. Periksa format.</string>
     <string name="cloud_failure_unsupported">Format file ini belum tersedia di server.</string>
     <string name="cloud_failure_decode">Dekoder gagal memproses varian file ini. File belum tentu rusak.</string>
+    <string name="cloud_failure_maintenance">Layanan ini sedang dalam pemeliharaan sementara. Silakan coba lagi nanti.</string>
     <string name="cloud_failure_unavailable">Layanan sementara tidak tersedia. Coba lagi nanti.</string>
     <string name="cloud_failure_remote">Penyedia jarak jauh memberikan respons tidak valid.</string>
     <string name="cloud_failure_credentials">Kata sandi atau HWID salah. Periksa kembali.</string>

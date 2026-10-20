@@ -130,10 +130,10 @@ export async function usageReport(redis,days=7) {
   const dates=Array.from({length:days},(_,i)=>dayUTC(days-1-i));
   const hashes=await Promise.all(dates.map(day=>redis.hGetAll(REPORT_PREFIX+day)));
   // Also read yesterday's bounded hourly counters for the rolling 48 h chart.
-  const yesterday=dayUTC(1);
-  const yesterdayData=dates.includes(yesterday) ? null : await redis.hGetAll(REPORT_PREFIX+yesterday);
+  const extraDates=[dayUTC(1),dayUTC(2)].filter(date=>!dates.includes(date));
+  const extraHashes=await Promise.all(extraDates.map(date=>redis.hGetAll(REPORT_PREFIX+date)));
   const hourlyHashes=new Map(dates.map((date,i)=>[date,hashes[i]||{}]));
-  if(yesterdayData)hourlyHashes.set(yesterday,yesterdayData);
+  extraDates.forEach((date,i)=>hourlyHashes.set(date,extraHashes[i]||{}));
   const formats=new Map(),errors=new Map(),byFormatError=new Map();
   const services=Object.fromEntries(SERVICE_IDS.map(id=>[id,{service:id,successfulDecodes:0,failedDecodes:0,attempts:0}]));
   const serviceErrors=new Map();

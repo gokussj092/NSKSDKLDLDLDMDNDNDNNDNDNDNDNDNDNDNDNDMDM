@@ -15,6 +15,7 @@
     <string name="cloud_failure_invalid">الملف أو الطلب غير صالح. تحقق من التنسيق.</string>
     <string name="cloud_failure_unsupported">هذا التنسيق غير متوفر على الخادم.</string>
     <string name="cloud_failure_decode">تعذر معالجة إصدار هذا الملف، وليس بالضرورة أن يكون تالفًا.</string>
+    <string name="cloud_failure_maintenance">هذه الخدمة تحت الصيانة مؤقتًا. يرجى المحاولة لاحقًا.</string>
     <string name="cloud_failure_unavailable">الخدمة غير متاحة مؤقتًا. حاول لاحقًا.</string>
     <string name="cloud_failure_remote">أعاد المزود البعيد استجابة غير صالحة.</string>
     <string name="cloud_failure_credentials">كلمة المرور أو HWID غير صحيح. تحقق من البيانات.</string>
