@@ -85,7 +85,7 @@ class ProviderServiceTests(unittest.TestCase):
         # The VPS deployment copies them privately; no method upload is needed.
         import hashlib
         source = Path(__file__).resolve().parents[4] / (
-            "android/app/src/main/java/com/ghostdeveloper/spdecode/HttpInjectorCloudPort.kt"
+            "decoders/Python/HTTPINJECTOR_CLOUD.py"
         )
         with mock.patch.object(providers, "EHI_REFERENCE", source):
             credentials = providers.bundled_ehi()
@@ -123,11 +123,13 @@ class ProviderServiceTests(unittest.TestCase):
         self.assertEqual(providers.value(current, "CLOUD_EHI_SIGN_KEY"), "S"*32)
 
     def test_bundled_method_tamper_fails_closed(self):
-        path = self.root / "bad-CloudPort.kt"
-        path.write_text('private const val BUILD = "244"\\n'
-                        'private const val ENDPOINT = "https://www.ehi.tools/httpinjector/import_config"\\n'
-                        'private const val SIGN_KEY = "' + "X"*32 + '"\\n'
-                        'private const val RESPONSE_KEY = "' + "Y"*32 + '"\\n')
+        path = self.root / "bad-Cloud-method.py"
+        path.write_text(
+            'ENDPOINT = "https://www.ehi.tools/httpinjector/import_config"\\n'
+            'APP_BUILD = "244"\\n'
+            'SIGN_SECRET = "' + "X"*32 + '"\\n'
+            'API_KEY = b"' + "Y"*32 + '"\\n'
+        )
         with mock.patch.object(providers, "EHI_REFERENCE", path):
             self.assertIsNone(providers.bundled_ehi())
 
