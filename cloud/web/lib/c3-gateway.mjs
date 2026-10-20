@@ -5,6 +5,7 @@ import { createChallenge, issueSession, issueQaSession, requireSession } from ".
 import { jsonReply, unavailable } from "./responses.mjs";
 import { ehiConfigured, nurConfigured } from "./c35-provider.mjs";
 import { maintenanceEnabled, serviceMaintenanceEnabled, recordWorkerResult } from "./c6-ops-store.mjs";
+import {admissionPolicy} from "./c11-play-admission.mjs";
 
 const ERROR_MESSAGES = Object.freeze({
   INVALID_REQUEST:"Solicitud inválida.",
@@ -182,7 +183,8 @@ export async function challengeRequest(request,options={}) {
     if(await maintenanceEnabled(redis))return failure("SERVICE_UNAVAILABLE",503);
     const result=await createChallenge(redis,request);
     if(result.error)return failure(result.error,result.status);
-    return jsonReply({apiVersion:"v1",...result},201);
+    const policy=await admissionPolicy(redis);
+    return jsonReply({apiVersion:"v1",...result,integrityRequired:policy.integrityRequired},201);
   }catch{return failure("SERVICE_UNAVAILABLE",503);}
 }
 export async function sessionRequest(request,options={}) {
@@ -191,7 +193,8 @@ export async function sessionRequest(request,options={}) {
     const redis=await (options.storeProvider||store)();
     if(await maintenanceEnabled(redis))return failure("SERVICE_UNAVAILABLE",503);
     const data=await boundedBody(request,19000);
-    const result=await issueSession(redis,request,data,settings(),options.verifyIntegrity);
+    const policy=await admissionPolicy(redis);
+    const result=await issueSession(redis,request,data,settings(),options.verifyIntegrity,policy);
     if(result.error)return failure(result.error,result.status);
     return jsonReply({apiVersion:"v1",...result},201);
   }catch(error){

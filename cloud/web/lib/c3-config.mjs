@@ -19,11 +19,12 @@ export function settings(env = process.env) {
   const validPackage = /^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$/.test(packageName);
   const configured = env.CLOUD_API_ENABLED === "true" &&
     workerToken.length >= 32 && signingKey.length >= 32 && validPackage &&
-    (Boolean(account) || qaActive) && /^rediss?:\/\//.test(env.CLOUD_REDIS_URL || "") &&
+    (Boolean(account) || qaActive || env.CLOUD_BETA_ADMISSION_ENABLED === "true") && /^rediss?:\/\//.test(env.CLOUD_REDIS_URL || "") &&
     env.CLOUD_TRUST_PROXY === "true";
   return {
     configured, account, packageName, workerToken, signingKey,
     qaActive, qaExpiration,
+    betaAdmissionAllowed:env.CLOUD_BETA_ADMISSION_ENABLED === "true",
     redisUrl: env.CLOUD_REDIS_URL,
     requireLicensed: env.CLOUD_REQUIRE_LICENSED !== "false",
     requireStrong: env.CLOUD_REQUIRE_STRONG_INTEGRITY === "true",

@@ -39,6 +39,21 @@ export default function AdminDashboard(){
   }catch(e){setError(e.message||"No se pudo cambiar el estado.");}
   finally{setBusy(false);}
  }
+ async function changePlayAdmission(){
+  if(!data?.playAdmission||busy||data.playAdmission.locked)return;
+  const required=!data.playAdmission.integrityRequired;
+  const prompt=required?
+   "¿Exigir Google Play Integrity nuevamente? Las APK instaladas fuera de Play dejarán de obtener sesiones Cloud nuevas.":
+   "¿Activar durante un máximo de 15 días el acceso beta sin Play Integrity? Cualquier cliente podrá intentar solicitar una sesión; se conservarán los límites de uso. Se cerrará automáticamente al vencer.";
+  if(!window.confirm(prompt))return;
+  setBusy(true);setError("");
+  try{
+   const response=await fetch("/api/admin/play-admission",requestOptions({integrityRequired:required}));
+   if(!response.ok)throw Error("No se pudo cambiar la política ("+response.status+").");
+   await refresh();
+  }catch(e){setError(e.message||"No se pudo actualizar la política.");}
+  finally{setBusy(false);}
+ }
  async function logout(){
   setBusy(true);
   try{
@@ -77,6 +92,23 @@ export default function AdminDashboard(){
      </div>
     </section>
    </div>
+   <section className="admin-card sp-admin-services">
+    <div className="sp-admin-section-heading"><div><h2>Distribución beta y Google Play Integrity</h2>
+     <p className="muted">Esta política afecta a nuevas sesiones Cloud, no a la firma local ni a la seguridad de Google Play.</p></div></div>
+    <div className="sp-admin-switch-row">
+     <div><strong>Exigir verificación de Google Play</strong>
+      <small className="muted">{data.playAdmission?.integrityRequired?
+       "Activa: se requiere una instalación reconocida y el veredicto de Play Integrity.":
+       "Modo beta temporal: la verificación de Play está pausada, con límites de uso."}</small>
+      <small className="sp-admin-status-note">{data.playAdmission?.betaUntil?
+       "Caducidad automática (UTC): "+new Date(data.playAdmission.betaUntil).toLocaleString("es-MX",{timeZone:"UTC"}):
+       data.playAdmission?.locked?"Control beta deshabilitado desde el VPS":"Acceso estándar protegido"}</small></div>
+     <button role="switch" className="sp-admin-switch" aria-label="Exigir Google Play Integrity"
+      aria-checked={data.playAdmission?.integrityRequired??true}
+      disabled={busy||data.playAdmission?.locked} onClick={changePlayAdmission}><span/></button>
+    </div>
+    <p className="muted">No utilices este modo como protección contra aplicaciones alteradas: durante la beta no hay autenticación criptográfica del origen del cliente. Se restablece automáticamente después de 15 días; puedes desactivarlo antes.</p>
+   </section>
    <section className="admin-card sp-admin-services">
     <div className="sp-admin-section-heading">
      <div><h2>Mantenimiento por servicio</h2><p className="muted">Puedes pausar un servicio sin detener los demás. La protección general siempre prevalece.</p></div>

@@ -3,6 +3,7 @@ import { adminSettings, adminLogin, authenticateAdmin, validMutation,
 import { opsStore, maintenanceEnabled, setMaintenance, aggregateMetrics, usageReport,
   SERVICE_IDS,serviceMaintenanceStates,setServiceMaintenance } from "./c6-ops-store.mjs";
 import { settings } from "./c3-config.mjs";
+import {admissionPolicy,setAdmissionPolicy} from "./c11-play-admission.mjs";
 import { ehiConfigured,nurConfigured } from "./c35-provider.mjs";
 import { jsonReply } from "./responses.mjs";
 
@@ -45,8 +46,8 @@ export async function statusRequest(request,options={}) {
   try{
     const redis=await (options.storeProvider||opsStore)();
     if(!await authenticateAdmin(redis,request))return error("UNAUTHORIZED",401);
-    const [maintenance,metrics,ping,serviceMaintenance]=await Promise.all([
-      maintenanceEnabled(redis),aggregateMetrics(redis),redis.ping(),serviceMaintenanceStates(redis),
+    const [maintenance,metrics,ping,serviceMaintenance,playAdmission]=await Promise.all([
+      maintenanceEnabled(redis),aggregateMetrics(redis),redis.ping(),serviceMaintenanceStates(redis),admissionPolicy(redis),
     ]);
     const cfg=settings();
     // Worker origin cannot be user-controlled.
@@ -64,7 +65,7 @@ export async function statusRequest(request,options={}) {
       services:{apiConfigured:cfg.configured,redisConnected:ping==="PONG",
         workerReady,ehiImportConfigured:ehiConfigured(),
         nurCatalogImportConfigured:nurConfigured()},
-      maintenance,serviceMaintenance,
+      maintenance,serviceMaintenance,playAdmission,
       maintenanceLocked:process.env.CLOUD_FORCE_MAINTENANCE==="true",metrics,
       observation:"Counters are aggregate-only; no user content or keys are logged.",
     });
@@ -117,4 +118,23 @@ export async function reportRequest(request,options={}) {
     return api({report:await usageReport(redis,Number(days))},200,
       {"Cache-Control":"private, no-store, max-age=0"});
   }catch{return error("SERVICE_UNAVAILABLE",503);}
+}
+
+/** CSRF-protected, authenticated, short-lived beta admission policy. */
+export async function playAdmissionRequest(request,options={}){
+ const cfg=adminSettings();
+ if(!cfg.enabled)return error("ADMIN_DISABLED",503);
+ if(!validMutation(request,cfg))return error("CSRF_REJECTED",403);
+ try{
+  const redis=await (options.storeProvider||opsStore)();
+  if(!await authenticateAdmin(redis,request,cfg))return error("UNAUTHORIZED",401);
+  const body=await parseSmallJson(request,128);
+  if(!own(body,["integrityRequired"])||typeof body.integrityRequired!=="boolean")
+   return error("INVALID_REQUEST",400);
+  return api({playAdmission:await setAdmissionPolicy(redis,body.integrityRequired)},200,
+   {"Cache-Control":"private, no-store"});
+ }catch(e){
+  if(e?.message==="BETA_LOCKED")return error("BETA_LOCKED",409);
+  return error("SERVICE_UNAVAILABLE",503);
+ }
 }

@@ -18,6 +18,8 @@ services:
       CLOUD_GOOGLE_PLAY_PACKAGE: ${CLOUD_GOOGLE_PLAY_PACKAGE:-}
       CLOUD_GOOGLE_SERVICE_ACCOUNT_JSON: ${CLOUD_GOOGLE_SERVICE_ACCOUNT_JSON:-}
       CLOUD_REQUIRE_LICENSED: ${CLOUD_REQUIRE_LICENSED:-true}
+      # Requires explicit VPS opt-in AND time-limited Redis/admin action.
+      CLOUD_BETA_ADMISSION_ENABLED: ${CLOUD_BETA_ADMISSION_ENABLED:-false}
       CLOUD_REQUIRE_STRONG_INTEGRITY: ${CLOUD_REQUIRE_STRONG_INTEGRITY:-false}
       # C6 admin disabled unless every independent server-side value is provisioned.
       CLOUD_ADMIN_ENABLED: ${CLOUD_ADMIN_ENABLED:-false}
