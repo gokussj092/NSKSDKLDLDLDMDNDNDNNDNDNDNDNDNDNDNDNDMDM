@@ -99,7 +99,7 @@ export default function AdminDashboard(){
       ["Redis",data.services.redisConnected],
       ["Worker privado",data.services.workerReady],
       ["HTTP Injector Cloud",data.services.ehiImportConfigured],
-      ["Importador NUR",data.services.nurCatalogImportConfigured]
+      ["Catálogo de Servidores VPN",data.services.nurCatalogImportConfigured]
      ].map(([title,ok])=><div className="admin-kv" key={title}><span>{title}</span><Health ok={ok}/></div>)}
     </section>
     <section className="admin-card">
@@ -131,7 +131,7 @@ export default function AdminDashboard(){
    <section className="admin-card sp-admin-services">
     <div className="sp-admin-section-heading"><div>
      <h2>Disponibilidad de importaciones remotas</h2>
-     <p className="muted">Activa o desactiva HTTP Injector Cloud, NUR Tunnel y cada proveedor Server VPN. Estos controles no requieren QA. El servidor debe tener habilitados previamente los requisitos privados de cada integración.</p>
+     <p className="muted">Activa o desactiva HTTP Injector Cloud, el catálogo Servidores VPN y cada proveedor individual. Estos controles no requieren QA. El servidor debe tener habilitados previamente los requisitos privados de cada integración.</p>
     </div><span className="sp-admin-chip">Servicios Cloud</span></div>
     <div className="admin-kv"><span>Versión del catálogo Server VPN</span><strong>{data.providerControls?.catalogVersion??"—"}</strong></div>
     {(data.providerControls?.providers||[]).map(provider=>{
