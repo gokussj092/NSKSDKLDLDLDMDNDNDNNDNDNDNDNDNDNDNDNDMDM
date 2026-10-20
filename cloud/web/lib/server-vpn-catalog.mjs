@@ -4,7 +4,7 @@ import {join} from "node:path";
 import {createHash} from "node:crypto";
 
 export const CATALOG_VERSION = 11; // Increment whenever the public roster or metadata changes.
-export const RECHECK_SECONDS = 24 * 60 * 60;
+export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
  * or provider enablement change, before the server rollout. */

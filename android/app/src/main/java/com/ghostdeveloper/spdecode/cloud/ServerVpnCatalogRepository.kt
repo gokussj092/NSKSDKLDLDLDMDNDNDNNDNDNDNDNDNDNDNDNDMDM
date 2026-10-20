@@ -27,7 +27,8 @@ internal class ServerVpnCatalogRepository(
 ) {
     private val vault=ServerVpnSecureCache(context)
     private val mutex=Mutex()
-    private val dayMillis=86_400_000L
+    // Only a lightweight version check, not a full catalog download.
+    private val versionCheckMillis=15*60_000L
 
     private fun digest(data:ByteArray):String =
         MessageDigest.getInstance("SHA-256").digest(data).joinToString("") { "%02x".format(it) }
@@ -77,19 +78,22 @@ internal class ServerVpnCatalogRepository(
         verifiedApps(stored())
     }
 
-    /** At most one version check per 24h; failed requests preserve last good snapshot. */
-    suspend fun refreshIfDue(force:Boolean=false):List<ServerVpnApp> = mutex.withLock {
+    fun currentVersion():Int = stored()?.optInt("catalogVersion",0)?:0
+
+    /** FCM is only a hint. HTTPS metadata, PNG hashes and the encrypted cache are authoritative. */
+    suspend fun refreshIfDue(force:Boolean=false,announcedVersion:Int=0):List<ServerVpnApp> = mutex.withLock {
         withContext(Dispatchers.IO) {
             val previous=stored()
             val available=verifiedApps(previous)
             val now=System.currentTimeMillis()
             val last=previous?.optLong("checkedAtMillis",0L)?:0L
-            if(!force && available.isNotEmpty() && last>0 && now>=last &&
-                now-last<dayMillis) return@withContext available
+            val previousVersion=previous?.optInt("catalogVersion",0)?:0
+            val urgent=announcedVersion>previousVersion
+            if(!force && !urgent && available.isNotEmpty() && last>0 && now>=last &&
+                now-last<versionCheckMillis) return@withContext available
             try {
-                val previousVersion=previous?.optInt("catalogVersion",0)?:0
-                // Manual refresh fetches latest provider flags even if version is unchanged.
-                val knownVersion=if(force || available.isEmpty())0 else previousVersion
+                // Manual refresh still uses the version contract; metadata changes must bump version.
+                val knownVersion=if(available.isEmpty())0 else previousVersion
                 val remote=client.serverVpnCatalog(knownVersion)
                 if(remote.optBoolean("unchanged",false)) {
                     if(available.isEmpty() || remote.optInt("catalogVersion")!=knownVersion)
