@@ -19,8 +19,6 @@ class SpDecodeApplication:Application() {
     val services:HistoryServices by lazy { OfflineHistoryServices(this) }
     override fun onCreate() {
         super.onCreate()
-        // No Firebase initialization or token registration without prior opt-in.
-        if(BuildConfig.SPDECODE_CLOUD_ENABLED)
-            com.ghostdeveloper.spdecode.cloud.CloudCatalogUpdates.restoreOnProcessStart(this)
+        // Own-VPS HTTPS sync needs no messaging SDK or device registration.
     }
 }

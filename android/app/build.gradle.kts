@@ -110,20 +110,6 @@ internal object VaultBuildKey {
 val cloudOrigin=providers.environmentVariable("SPDECODE_CLOUD_API_BASE_URL").orNull.orEmpty().trim()
 val enableCloud=cloudOrigin.isNotEmpty()
 val enableQaBuild=providers.environmentVariable("SPDECODE_CLOUD_QA_BUILD").orNull=="true"
-// C10 Firebase identifiers are public; sender credentials NEVER belong in Android.
-val fcmProject=providers.environmentVariable("SPDECODE_FCM_PROJECT_ID").orNull.orEmpty()
-val fcmAppId=providers.environmentVariable("SPDECODE_FCM_APP_ID").orNull.orEmpty()
-val fcmKey=providers.environmentVariable("SPDECODE_FCM_API_KEY").orNull.orEmpty()
-val fcmSender=providers.environmentVariable("SPDECODE_FCM_SENDER_ID").orNull.orEmpty()
-val fcmFields=listOf(fcmProject,fcmAppId,fcmKey,fcmSender)
-val fcmRequested=fcmFields.any { it.isNotEmpty() }
-if(fcmRequested)require(enableCloud && fcmFields.all { it.isNotEmpty() } &&
-    fcmProject.matches(Regex("[a-z][a-z0-9-]{5,62}")) &&
-    fcmAppId.matches(Regex("[0-9]+:[0-9]+:android:[0-9a-fA-F]+")) &&
-    fcmKey.matches(Regex("[A-Za-z0-9_-]{20,100}")) &&
-    fcmSender.matches(Regex("[0-9]{5,20}"))) {
-    "FCM public identifiers must be complete and valid for a Cloud build"
-}
 require(!enableQaBuild || enableCloud) { "QA mode requires Cloud API" }
 if(enableCloud) {
     val parsed=URI(cloudOrigin)
@@ -416,11 +402,6 @@ android {
         // A public API origin is not a secret; all server secrets stay in the VPS.
         buildConfigField("boolean", "SPDECODE_CLOUD_ENABLED", enableCloud.toString())
         buildConfigField("boolean", "SPDECODE_QA_BUILD", enableQaBuild.toString())
-        buildConfigField("boolean", "SPDECODE_FCM_CONFIGURED", fcmRequested.toString())
-        buildConfigField("String", "SPDECODE_FCM_PROJECT_ID", "\"$fcmProject\"")
-        buildConfigField("String", "SPDECODE_FCM_APP_ID", "\"$fcmAppId\"")
-        buildConfigField("String", "SPDECODE_FCM_API_KEY", "\"$fcmKey\"")
-        buildConfigField("String", "SPDECODE_FCM_SENDER_ID", "\"$fcmSender\"")
         manifestPlaceholders["spdecodeQaEnabled"] = enableQaBuild.toString()
         externalNativeBuild {
             cmake {
@@ -501,8 +482,6 @@ dependencies {
     implementation("com.google.code.gson:gson:2.13.1")
     // Classic Play Integrity nonce flow; the verdict is verified in C3 server-side.
     implementation("com.google.android.play:integrity:1.6.0")
-    // FCM auto-registration remains disabled until a separate opt-in.
-    implementation("com.google.firebase:firebase-messaging:24.1.1")
     implementation("androidx.work:work-runtime-ktx:2.10.4")
     // Lightweight Argon2id + XChaCha20-Poly1305 primitives for standard .ehi.
     if (!enableCloud) implementation("org.bouncycastle:bcprov-jdk18on:1.86")

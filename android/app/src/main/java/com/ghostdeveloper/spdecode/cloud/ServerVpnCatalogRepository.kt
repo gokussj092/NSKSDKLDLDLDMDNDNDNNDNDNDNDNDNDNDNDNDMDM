@@ -80,7 +80,7 @@ internal class ServerVpnCatalogRepository(
 
     fun currentVersion():Int = stored()?.optInt("catalogVersion",0)?:0
 
-    /** FCM is only a hint. HTTPS metadata, PNG hashes and the encrypted cache are authoritative. */
+    /** VPS-only hint; verified HTTPS metadata and encrypted cache are authoritative. */
     suspend fun refreshIfDue(force:Boolean=false,announcedVersion:Int=0):List<ServerVpnApp> = mutex.withLock {
         withContext(Dispatchers.IO) {
             val previous=stored()
