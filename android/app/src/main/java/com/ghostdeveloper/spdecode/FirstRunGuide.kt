@@ -25,13 +25,15 @@ import androidx.compose.ui.unit.sp
  * The Activity records completion in private SharedPreferences.
  */
 internal object FirstRunGuide {
-    const val STEPS = 7
+    // Visit all Home controls before moving to the next tab, once each.
+    const val STEPS = 8
 
     fun targetTab(step: Int): Int = when (step) {
-        0, 1, 5, 6 -> 0
-        2 -> 1
-        3 -> 2
-        4 -> 4
+        in 0..3 -> 0  // File, text, Cloud, result
+        4 -> 1        // History
+        5 -> 2        // Formats
+        6 -> 3        // Servidores VPN
+        7 -> 4        // Settings
         else -> 0
     }
 
@@ -42,7 +44,8 @@ internal object FirstRunGuide {
         3 -> R.string.guide_step_four
         4 -> R.string.guide_step_five
         5 -> R.string.guide_step_six
-        else -> R.string.guide_step_seven
+        6 -> R.string.guide_step_seven
+        else -> R.string.guide_step_eight
     }
 }
 
