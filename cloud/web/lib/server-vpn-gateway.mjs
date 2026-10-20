@@ -6,6 +6,7 @@ import {requireSession} from "./c3-session.mjs";
 import {enabled,notEnabled,failure,boundedBody,fetchWorker} from "./c3-gateway.mjs";
 import {maintenanceEnabled,serviceMaintenanceEnabled,recordWorkerResult} from "./c6-ops-store.mjs";
 import {providerEnabled,downloadVpnCatalog,VpnProviderError} from "./server-vpn-provider.mjs";
+import {providerAllowed} from "./c12-provider-controls.mjs";
 
 export async function decodeServerVpn(request,opts={}){
   if(!enabled())return notEnabled();
@@ -22,7 +23,8 @@ export async function decodeServerVpn(request,opts={}){
        Object.keys(payload).length!==2||typeof payload.id!=="string"||
        payload.consent!==true)return failure("INVALID_REQUEST",400);
     providerId=payload.id;
-    if(!providerEnabled(providerId))return failure("REMOTE_NOT_CONFIGURED",503);
+    if(!providerEnabled(providerId) || !await providerAllowed(providerId))
+      return failure("REMOTE_NOT_CONFIGURED",503);
     lease=randomUUID();
     if(!await reserveSlot(redis,claims.jti,lease))return failure("RATE_LIMITED",429);
     const bytes=await downloadVpnCatalog(providerId);
