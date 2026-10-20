@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "version": 1,
+  "publishedAt": "2026-10-19",
+  "title": {
+    "en": "What's new in SP-DECODE Cloud",
+    "es": "Novedades de SP-DECODE Cloud"
+  },
+  "subtitle": {
+    "en": "New decoding capabilities and improvements, delivered through SP-DECODE Cloud.",
+    "es": "Nuevas capacidades de descifrado y mejoras, disponibles en SP-DECODE Cloud."
+  },
+  "items": [
+    {
+      "id": "server-vpn",
+      "type": "feature",
+      "title": {
+        "en": "Server VPN catalog",
+        "es": "Catálogo Server VPN"
+      },
+      "description": {
+        "en": "Explore the available VPN providers in the dedicated Server VPN section, with catalog updates delivered from the cloud.",
+        "es": "Explora los proveedores disponibles en la sección Server VPN, con actualizaciones del catálogo desde la nube."
+      }
+    },
+    {
+      "id": "http-custom-899",
+      "type": "support",
+      "title": {
+        "en": "HTTP Custom — expanded .hc support",
+        "es": "HTTP Custom — soporte ampliado para .hc"
+      },
+      "description": {
+        "en": "Support for additional HTTP Custom configuration exports, including files protected by a password or HWID, while retaining earlier decoding methods.",
+        "es": "Soporte para nuevas exportaciones de HTTP Custom, incluidos archivos protegidos con contraseña o HWID, conservando los métodos de descifrado anteriores."
+      }
+    },
+    {
+      "id": "more-config-formats",
+      "type": "support",
+      "title": {
+        "en": "Expanded configuration format coverage",
+        "es": "Cobertura ampliada de formatos"
+      },
+      "description": {
+        "en": "Additional file-format support, including .gold and .aura, through cloud-based decoding engines.",
+        "es": "Compatibilidad con más formatos de archivos, incluidos .gold y .aura, mediante motores de descifrado en la nube."
+      }
+    },
+    {
+      "id": "cloud-processing",
+      "type": "improvement",
+      "title": {
+        "en": "Cloud-powered decoding",
+        "es": "Descifrado desde la nube"
+      },
+      "description": {
+        "en": "Configuration decoding runs on SP-DECODE servers, allowing supported decoding methods to improve without requiring a new APK for every engine update.",
+        "es": "Las configuraciones se descifran en los servidores de SP-DECODE, permitiendo mejorar los motores compatibles sin instalar una APK por cada actualización."
+      }
+    },
+    {
+      "id": "error-feedback",
+      "type": "improvement",
+      "title": {
+        "en": "Improved error handling",
+        "es": "Mejor gestión de errores"
+      },
+      "description": {
+        "en": "Clearer feedback for protected files, service maintenance, and decoding failures, with optional in-app problem reporting.",
+        "es": "Mensajes más claros para archivos protegidos, mantenimiento del servicio y errores de descifrado, con opción de reportar problemas desde la aplicación."
+      }
+    }
+  ]
+}
