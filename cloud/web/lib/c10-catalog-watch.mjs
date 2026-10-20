@@ -1,5 +1,6 @@
 /** Short-lived HTTPS long-poll: Server VPN version only; no user account, FCM or identifiers. */
 import {activeCatalogVersion} from "./server-vpn-catalog.mjs";
+import {boundedBody} from "./c3-gateway.mjs";
 export const WATCH_SECONDS=12;
 export const MAX_OPEN_WATCHES=64;
 let activeWatches=0;
@@ -16,7 +17,7 @@ export async function catalogWatchRequest(request,{versionProvider=activeCatalog
   if(request.method!=="POST"||
     request.headers.get("content-type")?.split(";")[0]?.trim().toLowerCase()!=="application/json"||
     Number(request.headers.get("content-length")||0)>256)return json({error:{code:"INVALID_REQUEST"}},400);
-  const input=await request.json();
+  const input=await boundedBody(request,256);
   if(!input||Array.isArray(input)||typeof input!=="object"||
     Object.keys(input).length!==1||!Number.isSafeInteger(input.knownVersion)||
     input.knownVersion<0||input.knownVersion>999999999)return json({error:{code:"INVALID_REQUEST"}},400);
