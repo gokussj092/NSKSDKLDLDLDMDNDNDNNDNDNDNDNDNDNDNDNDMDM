@@ -22,7 +22,7 @@ class CloudUserErrorsContracts(unittest.TestCase):
         source=(JAVA/"cloud/CloudUserErrors.kt").read_text("utf-8")
         for code in ("UNAUTHORIZED","INTEGRITY_REJECTED","QA_ACCESS_DENIED","ENGINE_TIMEOUT",
                      "RATE_LIMITED","PASSWORD_REQUIRED","HWID_REQUIRED","HWID_PASSWORD_REQUIRED",
-                     "AUTH_FAILED","UNSUPPORTED_FORMAT","CLOUD_QA_CODE_REQUIRED",
+                     "AUTH_FAILED","UNSUPPORTED_FORMAT","SERVICE_MAINTENANCE","CLOUD_QA_CODE_REQUIRED",
                      "CLOUD_NATIVE_NETWORK_UNAVAILABLE"):
             self.assertIn(code,source)
         for status in (401,403,404,408,409,413,422,429,500,502,503,504):
@@ -41,7 +41,8 @@ class CloudUserErrorsContracts(unittest.TestCase):
             self.assertTrue(all(k.startswith("cloud_failure_") for k in strings),locale)
             if reference is None:reference=set(strings)
             self.assertEqual(reference,set(strings),locale)
-        self.assertEqual(len(reference),26)
+        self.assertEqual(len(reference),27)
+        self.assertIn('cloud_failure_maintenance',reference)
 
     def test_cloud_messages_are_used_without_touching_legacy_app_ui(self):
         source=(JAVA/"MainActivity.kt").read_text("utf-8")
