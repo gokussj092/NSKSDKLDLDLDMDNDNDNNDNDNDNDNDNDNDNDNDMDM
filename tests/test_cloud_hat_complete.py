@@ -53,6 +53,43 @@ class HatCloudFullOutputTests(unittest.TestCase):
         self.assertEqual(data["extra_top_level"],original["extra_top_level"])
         self.assertIs(data["protextras"]["mobile_data"],False)
 
+    def test_profilev5_optional_plaintext_fields_and_wrapped_carrier(self):
+        """Unwrapped or absent optional fields must not break a valid export."""
+        doc = {
+            "profilev5": {
+                "connection_mode": self.wrap_xor("SSH"),
+                "custom_payload": "GET / HTTP/1.1",
+                "custom_host": None,
+                "custom_sni": "",
+                "future_nested": {"raw": [1, None, False]},
+            },
+            "other": {"preserved": True},
+        }
+        encoded = self.seal(doc)
+        wrapped = b"\xef\xbb\xbf" + b"\n".join(
+            encoded[i:i + 64] for i in range(0, len(encoded), 64)
+        ) + b"\n"
+        result = decode_file("hat", wrapped, full_hat=True)
+        output = result["structuredJson"]
+        self.assertEqual(output["profilev5"]["connection_mode"], "SSH")
+        self.assertEqual(output["profilev5"]["custom_payload"], "GET / HTTP/1.1")
+        self.assertIsNone(output["profilev5"]["custom_host"])
+        self.assertEqual(output["profilev5"]["custom_sni"], "")
+        self.assertEqual(output["profilev5"]["future_nested"], doc["profilev5"]["future_nested"])
+        self.assertIs(result["isPartial"], False)
+
+    def test_repository_hat_fixtures_decode_through_real_cloud_bridge(self):
+        """Regression on historical exports used by the original bot."""
+        from pathlib import Path
+        fixture_dir = Path(__file__).resolve().parents[1] / "hat"
+        for name in ("test.hat", "test1.hat"):
+            with self.subTest(name=name):
+                result = decode_file("hat", (fixture_dir / name).read_bytes(), full_hat=True)
+                self.assertEqual(result["status"], "success")
+                self.assertIsInstance(result["structuredJson"], dict)
+                self.assertTrue(result["structuredJson"])
+                self.assertEqual(json.loads(result["rawText"]), result["structuredJson"])
+
     def test_invalid_ciphertext_fails_closed(self):
         for bad in (b"not base64!",b"AA==",base64.b64encode(b"x"*32)):
             with self.subTest(bad=bad),self.assertRaises(DecodeFailure):
