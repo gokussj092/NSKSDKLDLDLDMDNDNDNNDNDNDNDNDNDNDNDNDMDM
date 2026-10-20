@@ -48,7 +48,8 @@ def main() -> int:
         return 2
     try:
         data=Path(sys.argv[2]).read_bytes()
-        if not data or len(data)>8*1024*1024:
+        limit=12*1024*1024 if sys.argv[1]=="mkk-hyper" else 8*1024*1024
+        if not data or len(data)>limit:
             return 1
         rendered=decode(sys.argv[1],data)
     except (ValueError, OSError, ImportError, RecursionError):
