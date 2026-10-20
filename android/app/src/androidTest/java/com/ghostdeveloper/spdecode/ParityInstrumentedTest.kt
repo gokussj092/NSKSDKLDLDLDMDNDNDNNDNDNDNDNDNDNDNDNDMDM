@@ -105,10 +105,14 @@ class ParityInstrumentedTest {
         // It grants neither network nor storage access.
         assertEquals(setOf(
             "android.permission.INTERNET",
+            // WorkManager requires these for network-constrained recovery and rescheduling.
+            "android.permission.WAKE_LOCK",
+            "android.permission.ACCESS_NETWORK_STATE",
+            "android.permission.RECEIVE_BOOT_COMPLETED",
+            "android.permission.FOREGROUND_SERVICE",
             "com.ghostdeveloper.spdecode.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION",
         ),requested)
         for (forbidden in listOf(
-            "android.permission.ACCESS_NETWORK_STATE",
             "android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE",
             "android.permission.MANAGE_EXTERNAL_STORAGE",
         )) {

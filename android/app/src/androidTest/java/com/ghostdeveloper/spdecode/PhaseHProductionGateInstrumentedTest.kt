@@ -26,10 +26,14 @@ class PhaseHProductionGateInstrumentedTest {
         // It grants neither network nor storage access.
         assertEquals(setOf(
             "android.permission.INTERNET",
+            // WorkManager requires these for network-constrained recovery and rescheduling.
+            "android.permission.WAKE_LOCK",
+            "android.permission.ACCESS_NETWORK_STATE",
+            "android.permission.RECEIVE_BOOT_COMPLETED",
+            "android.permission.FOREGROUND_SERVICE",
             "com.ghostdeveloper.spdecode.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION",
         ),permissions)
-        for(name in listOf("android.permission.ACCESS_NETWORK_STATE",
-            "android.permission.MANAGE_EXTERNAL_STORAGE",
+        for(name in listOf("android.permission.MANAGE_EXTERNAL_STORAGE",
             "android.permission.READ_EXTERNAL_STORAGE",
             "android.permission.WRITE_EXTERNAL_STORAGE",
             "android.permission.QUERY_ALL_PACKAGES"))
