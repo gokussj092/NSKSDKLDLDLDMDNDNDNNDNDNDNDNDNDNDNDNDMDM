@@ -7,8 +7,8 @@ const publicRoutes=new Set(["/","/privacy","/terms","/support"]);
 const LocaleContext=createContext({lang:"es",setLang:()=>{}});
 export const usePublicLocale=()=>useContext(LocaleContext);
 const labels={
- es:{home:"Inicio",privacy:"Privacidad",terms:"Términos",support:"Soporte",download:"Descargar",language:"Idioma",credit:"Creado por Ghost Developer",official:"Sitio oficial de SP-DECODE para Android",skip:"Saltar al contenido"},
- en:{home:"Home",privacy:"Privacy",terms:"Terms",support:"Support",download:"Download",language:"Language",credit:"Created by Ghost Developer",official:"Official SP-DECODE website for Android",skip:"Skip to content"},
+ es:{privacy:"Privacidad",terms:"Términos",support:"Soporte",download:"Descargar",language:"Idioma",credit:"Creado por Ghost Developer",official:"Sitio oficial de SP-DECODE para Android",skip:"Saltar al contenido"},
+ en:{privacy:"Privacy",terms:"Terms",support:"Support",download:"Download",language:"Language",credit:"Created by Ghost Developer",official:"Official SP-DECODE website for Android",skip:"Skip to content"},
 };
 export function PublicChrome({children}){
  const [lang,setLang]=useState("es");
@@ -30,10 +30,6 @@ export function PublicChrome({children}){
    <header className="sp-public-header">
     <div className="sp-container sp-header-row">
      <Link className="sp-logo" href="/" aria-label="SP-DECODE"><img src="/icon.svg" alt="" width="43" height="43"/><span><strong>SP-DECODE</strong><small>Configuration decoder</small></span></Link>
-     <nav className="sp-nav" aria-label="Public">
-      <Link href="/">{t.home}</Link><Link href="/privacy">{t.privacy}</Link>
-      <Link href="/terms">{t.terms}</Link><Link href="/support">{t.support}</Link>
-     </nav>
      <label className="sp-language">{t.language}<select aria-label={t.language} value={lang} onChange={event=>select(event.target.value)}><option value="es">ES</option><option value="en">EN</option></select></label>
     </div>
    </header>
