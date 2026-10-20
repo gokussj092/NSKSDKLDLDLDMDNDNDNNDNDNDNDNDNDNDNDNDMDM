@@ -100,6 +100,69 @@ class ProviderServiceTests(unittest.TestCase):
                 providers.apply("enable", providers.current_lines())
         self.assertEqual(self.env.read_text(), before)
 
+    def method_script(self, content=None):
+        if content is None:
+            content = (
+                'ENDPOINT = "https://www.ehi.tools/httpinjector/import_config"\\n'
+                'APP_BUILD = "244"\\n'
+                'SIGN_SECRET = "T"*32\\n'
+                'API_KEY = b"U"*32\\n'
+            )
+        # The importer accepts literal constants, not executable expressions.
+        content = content.replace('"T"*32', repr("T"*32)).replace('b"U"*32', repr(b"U"*32))
+        script = self.root / "HTTPINJECTOR_CLOUD.py"
+        script.write_text(content)
+        script.chmod(0o600)
+        return script
+
+    def test_import_ehi_method_creates_keys_privately_without_running_code(self):
+        script = self.method_script()
+        with mock.patch.object(providers, "compose"), mock.patch.object(providers, "healthy", return_value=True):
+            providers.import_ehi_script(str(script), providers.current_lines())
+        lines = providers.current_lines()
+        self.assertEqual(providers.value(lines, "CLOUD_EHI_IMPORT_ENABLED"), "true")
+        self.assertEqual(providers.value(lines, "CLOUD_EHI_SIGN_KEY"), "T"*32)
+        self.assertEqual(providers.value(lines, "CLOUD_EHI_RESPONSE_KEY"), "U"*32)
+        self.assertEqual(self.env.stat().st_mode & 0o077, 0)
+
+    def test_import_rejects_unsafe_permissions_and_does_not_run_code(self):
+        script = self.method_script(
+            'ENDPOINT="https://www.ehi.tools/httpinjector/import_config"\\n'
+            'APP_BUILD="244"\\n'
+            'SIGN_SECRET="T"*32\\n'
+            'API_KEY=b"U"*32\\n'
+            'raise RuntimeError("NEVER EXECUTE")\\n'
+        )
+        script.chmod(0o644)
+        before = self.env.read_text()
+        with self.assertRaises(SystemExit):
+            providers.import_ehi_script(str(script), providers.current_lines())
+        self.assertEqual(self.env.read_text(), before)
+        script.chmod(0o600)
+        with mock.patch.object(providers, "compose"), mock.patch.object(providers, "healthy", return_value=True):
+            providers.import_ehi_script(str(script), providers.current_lines())
+        self.assertEqual(providers.value(providers.current_lines(), "CLOUD_EHI_IMPORT_ENABLED"), "true")
+
+    def test_import_rejects_wrong_method_version_without_writing(self):
+        script = self.method_script(
+            'ENDPOINT="https://www.ehi.tools/httpinjector/import_config"\\n'
+            'APP_BUILD="300"\\n'
+            'SIGN_SECRET="T"*32\\n'
+            'API_KEY=b"U"*32\\n'
+        )
+        before = self.env.read_text()
+        with self.assertRaises(SystemExit):
+            providers.import_ehi_script(str(script), providers.current_lines())
+        self.assertEqual(self.env.read_text(), before)
+
+    def test_import_rolls_back_if_web_is_unhealthy(self):
+        script = self.method_script()
+        before = self.env.read_text()
+        with mock.patch.object(providers, "compose"), mock.patch.object(providers, "healthy", return_value=False):
+            with self.assertRaises(SystemExit):
+                providers.import_ehi_script(str(script), providers.current_lines())
+        self.assertEqual(self.env.read_text(), before)
+
     def test_disable_preserves_vendor_credentials_but_bumps_version(self):
         with mock.patch.object(providers, "compose"), mock.patch.object(providers, "healthy", return_value=True):
             providers.apply("enable", providers.current_lines())
