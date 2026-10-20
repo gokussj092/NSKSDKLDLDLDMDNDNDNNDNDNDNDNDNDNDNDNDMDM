@@ -3,6 +3,7 @@ package com.ghostdeveloper.spdecode
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,6 +20,8 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
@@ -380,9 +383,10 @@ private fun HomeScreen(
                     onImport()
                 },
                 enabled=!busy,
-                modifier=Modifier.weight(1f).heightIn(min=52.dp),
+                modifier=Modifier.weight(1f).heightIn(min=52.dp)
+                    .onGloballyPositioned{ GuideSpotlightTargets.locate(0,it.boundsInWindow()) },
                 shape=RoundedCornerShape(14.dp),
-                border=if(highlightGuide==0 || highlightGuide==6)BorderStroke(2.dp,White)else null,
+                border=if(highlightGuide==0)BorderStroke(2.dp,White)else null,
                 contentPadding=PaddingValues(horizontal=8.dp,vertical=12.dp),
                 colors=ButtonDefaults.buttonColors(
                     containerColor=Panel,contentColor=White,
@@ -401,7 +405,8 @@ private fun HomeScreen(
                     textExpanded=!textExpanded
                 },
                 enabled=!busy,
-                modifier=Modifier.weight(1f).heightIn(min=52.dp),
+                modifier=Modifier.weight(1f).heightIn(min=52.dp)
+                    .onGloballyPositioned{ GuideSpotlightTargets.locate(1,it.boundsInWindow()) },
                 shape=RoundedCornerShape(14.dp),
                 border=if(highlightGuide==1)BorderStroke(2.dp,White)else null,
                 contentPadding=PaddingValues(horizontal=8.dp,vertical=12.dp),
@@ -425,12 +430,13 @@ private fun HomeScreen(
                 cloudExpanded=!cloudExpanded
             },
             enabled=!busy,
-            modifier=Modifier.fillMaxWidth().heightIn(min=46.dp),
+            modifier=Modifier.fillMaxWidth().heightIn(min=46.dp)
+                .onGloballyPositioned{ GuideSpotlightTargets.locate(2,it.boundsInWindow()) },
             shape=RoundedCornerShape(14.dp),
             colors=ButtonDefaults.outlinedButtonColors(
                 contentColor=White,disabledContentColor=Secondary),
-            border=BorderStroke(if(highlightGuide==5)2.dp else 1.dp,
-                if(highlightGuide==5)White else Outline),
+            border=BorderStroke(if(highlightGuide==2)2.dp else 1.dp,
+                if(highlightGuide==2)White else Outline),
         ) {
             Icon(Icons.Outlined.Cloud,null,modifier=Modifier.size(19.dp))
             Spacer(Modifier.width(8.dp))
@@ -452,7 +458,9 @@ private fun HomeScreen(
             },
         )
 
-        Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically){
+        Row(Modifier.fillMaxWidth()
+            .onGloballyPositioned{ GuideSpotlightTargets.locate(3,it.boundsInWindow()) },
+            verticalAlignment=Alignment.CenterVertically){
             Text(stringResource(R.string.result),color=White,fontWeight=FontWeight.Bold,
                 fontSize=18.sp,modifier=Modifier.weight(1f))
             if(current==null) Text(stringResource(R.string.illustrative),
@@ -928,8 +936,10 @@ private fun BottomTabs(active:Int,onTab:(Int)->Unit,spotlight:Int?=null) {
         tabs.forEach{(label,icon,index)->
             val selected=active==index
             Column(Modifier.weight(1f).clickable{onTab(index)}
+                    .onGloballyPositioned{ if(index in 1..4) GuideSpotlightTargets.locate(index+3,it.boundsInWindow()) }
                     .then(if(spotlight==index) Modifier
                         .background(Raised,RoundedCornerShape(11.dp))
+                        .border(2.dp,Color(0xFF80E6FF),RoundedCornerShape(11.dp))
                         .padding(horizontal=2.dp) else Modifier)
                     .padding(vertical=9.dp),
                 horizontalAlignment=Alignment.CenterHorizontally,
