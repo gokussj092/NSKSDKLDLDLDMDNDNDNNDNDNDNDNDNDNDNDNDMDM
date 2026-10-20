@@ -102,7 +102,8 @@ class WorkerHandler(BaseHTTPRequestHandler):
                 if not isinstance(encoded, str) or len(encoded) > (MAX_INPUT_BYTES * 4 // 3 + 8):
                     raise DecodeFailure("INPUT_TOO_LARGE")
                 contents = base64.b64decode(encoded, validate=True)
-                result = decode_file(request["format"], contents, credentials=request.get("credentials"))
+                result = decode_file(request["format"], contents,
+                                     credentials=request.get("credentials"), full_hat=True)
         except (ValueError, TypeError, base64.binascii.Error):
             return self._json(400, {"error": {"code": "INVALID_REQUEST"}})
         except DecodeFailure as error:
