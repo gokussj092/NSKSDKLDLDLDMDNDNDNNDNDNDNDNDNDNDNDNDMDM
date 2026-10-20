@@ -42,6 +42,10 @@ const PROVIDERS = Object.freeze({
     url:"https://f005.backblazeb2.com/file/mkkhyper/api_server.json",
     agent:"MKK Hyper VPN/2.9.2",
   },
+  "ksh-vpn": {
+    url:"https://raw.githubusercontent.com/yannaing86tt/ksh_server/main/servers.json",
+    agent:"KSH VPN/1.3.2",
+  },
   "my-tunnel-proxy": {
     url:"https://mfmpro.xyz/api/app?json=3c9a2a29f3a4180271da",
     agent:"My Tunnel Proxy/2.3",
@@ -59,6 +63,14 @@ const PROVIDERS = Object.freeze({
     agent:"4U TUNNEL LITE/2.2",
   },
 });
+// All MKK sources are approved literals; no user-supplied download targets.
+const MKK_SOURCES=Object.freeze({
+  servers:"https://f005.backblazeb2.com/file/mkkhyper/api_server.json",
+  static:"https://flashvpn.sgp1.digitaloceanspaces.com/static.json",
+  subscriptions:"https://f005.backblazeb2.com/file/mkkhyper/subscriptions.json",
+  "legacy-subscriptions":"https://raw.githubusercontent.com/Tunzen665/flash-vpn/refs/heads/main/sub.json",
+});
+export function mkkSourceIds(){return Object.keys(MKK_SOURCES);}
 const MAX_BYTES=8*1024*1024;
 const DEADLINE_MS=30000;
 const CONNECT_MS=10000;
@@ -129,11 +141,13 @@ function pinnedGet(url,ip,agent,timeout,headers={}){
   });
 }
 
-export async function downloadVpnCatalog(id){
+export async function downloadVpnCatalog(id,source="servers"){
   const provider=PROVIDERS[id];
   if(!provider)fail("UNSUPPORTED_FORMAT");
   if(!providerEnabled(id))fail("REMOTE_NOT_CONFIGURED");
-  const initial=new URL(provider.url);
+  if(id!=="mkk-hyper" && source!=="servers")fail("UNSUPPORTED_FORMAT");
+  if(id==="mkk-hyper" && !Object.hasOwn(MKK_SOURCES,source))fail("UNSUPPORTED_FORMAT");
+  const initial=new URL(id==="mkk-hyper"?MKK_SOURCES[source]:provider.url);
   if(initial.protocol!=="https:"||initial.port||initial.username||initial.password||
      initial.hash)fail("REMOTE_NETWORK_DENIED");
   const deadline=Date.now()+DEADLINE_MS;
