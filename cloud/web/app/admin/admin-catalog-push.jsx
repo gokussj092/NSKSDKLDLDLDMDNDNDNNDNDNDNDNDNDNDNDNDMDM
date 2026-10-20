@@ -22,7 +22,7 @@ export default function AdminCatalogPush(){
     headers:{"X-SPDecode-Admin-Action":"1","Content-Type":"application/json"},body:""});
    const result=await response.json();
    if(!response.ok)throw Error("No se pudo enviar el aviso ("+response.status+").");
-   setDone(result.status==="published"?"Aviso enviado al proveedor FCM. Entrega no garantizada.":
+   setDone(result.status==="registered"?"Versión registrada en la VPS. Los clientes conectados comprobarán la versión; la entrega a dispositivos cerrados no es inmediata.":
       result.status==="unchanged"?"La versión ya fue anunciada.": "Hay otro envío en curso.");
    await refresh();
   }catch(e){setError(e.message||"No se pudo publicar.");}
@@ -31,12 +31,12 @@ export default function AdminCatalogPush(){
  return <section className="admin-card admin-report-card">
   <div className="sp-admin-section-heading"><div>
    <h2>Actualizaciones del catálogo Server VPN</h2>
-   <p className="muted">El servidor publica un aviso FCM al detectar una nueva versión. Android valida la versión por HTTPS.</p>
+   <p className="muted">La VPS atiende avisos de versión mediante HTTPS cuando Android está activa. Las tareas de recuperación comprueban cambios sin conexión persistente.</p>
   </div></div>
-  <div className="admin-kv"><span>FCM en la VPS</span><strong>{data?.configured?"Configurado":"Sin configurar"}</strong></div>
+  <div className="admin-kv"><span>Avisos HTTPS de la VPS</span><strong>{data?.configured?"Configurado":"Sin configurar"}</strong></div>
   <div className="admin-kv"><span>Última versión anunciada</span><strong>{data?.lastAnnounced||"—"}</strong></div>
-  <p className="muted">La publicación es automática al habilitar el servicio catalog-push del VPS. Este botón permite reintentar manualmente; no modifica el catálogo.</p>
-  <button className="button subtle" onClick={announce} disabled={busy||!data?.configured}> {busy?"Publicando…":"Publicar aviso de catálogo"} </button>
+  <p className="muted">Los cambios son visibles automáticamente al aumentar CLOUD_SERVER_VPN_CATALOG_VERSION y desplegar el catálogo. Este botón registra la versión actual para auditoría; no modifica los datos ni contacta con servicios externos.</p>
+  <button className="button subtle" onClick={announce} disabled={busy||!data?.configured}> {busy?"Publicando…":"Registrar versión disponible"} </button>
   {error&&<p className="form-message error" role="alert">{error}</p>}
   {done&&<p role="status" className="muted">{done}</p>}
  </section>;
