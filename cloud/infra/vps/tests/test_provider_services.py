@@ -103,10 +103,10 @@ class ProviderServiceTests(unittest.TestCase):
     def method_script(self, content=None):
         if content is None:
             content = (
-                'ENDPOINT = "https://www.ehi.tools/httpinjector/import_config"\\n'
-                'APP_BUILD = "244"\\n'
-                'SIGN_SECRET = "T"*32\\n'
-                'API_KEY = b"U"*32\\n'
+                'ENDPOINT = "https://www.ehi.tools/httpinjector/import_config"\n'
+                'APP_BUILD = "244"\n'
+                'SIGN_SECRET = "T"*32\n'
+                'API_KEY = b"U"*32\n'
             )
         # The importer accepts literal constants, not executable expressions.
         content = content.replace('"T"*32', repr("T"*32)).replace('b"U"*32', repr(b"U"*32))
@@ -127,11 +127,11 @@ class ProviderServiceTests(unittest.TestCase):
 
     def test_import_rejects_unsafe_permissions_and_does_not_run_code(self):
         script = self.method_script(
-            'ENDPOINT="https://www.ehi.tools/httpinjector/import_config"\\n'
-            'APP_BUILD="244"\\n'
-            'SIGN_SECRET="T"*32\\n'
-            'API_KEY=b"U"*32\\n'
-            'raise RuntimeError("NEVER EXECUTE")\\n'
+            'ENDPOINT="https://www.ehi.tools/httpinjector/import_config"\n'
+            'APP_BUILD="244"\n'
+            'SIGN_SECRET="T"*32\n'
+            'API_KEY=b"U"*32\n'
+            'raise RuntimeError("NEVER EXECUTE")\n'
         )
         script.chmod(0o644)
         before = self.env.read_text()
@@ -145,10 +145,10 @@ class ProviderServiceTests(unittest.TestCase):
 
     def test_import_rejects_wrong_method_version_without_writing(self):
         script = self.method_script(
-            'ENDPOINT="https://www.ehi.tools/httpinjector/import_config"\\n'
-            'APP_BUILD="300"\\n'
-            'SIGN_SECRET="T"*32\\n'
-            'API_KEY=b"U"*32\\n'
+            'ENDPOINT="https://www.ehi.tools/httpinjector/import_config"\n'
+            'APP_BUILD="300"\n'
+            'SIGN_SECRET="T"*32\n'
+            'API_KEY=b"U"*32\n'
         )
         before = self.env.read_text()
         with self.assertRaises(SystemExit):
