@@ -447,6 +447,7 @@ android {
     buildTypes {
         debug {
             buildConfigField("String", "TRUSTED_SIGNER_SHA256", "\"\"")
+            buildConfigField("String", "PLAY_APP_SIGNER_SHA256", "\"\"")
         }
         release {
             // R8 shrinks/obfuscates release code only; debug retains readable
@@ -462,6 +463,13 @@ android {
                 "Invalid trusted release signer fingerprint"
             }
             buildConfigField("String", "TRUSTED_SIGNER_SHA256", "\"$trustedSha\"")
+            // Google Play may sign installs with a distinct app-signing certificate.
+            val playSigner=providers.environmentVariable("SPDECODE_PLAY_APP_SIGNER_SHA256").orNull
+                .orEmpty().lowercase()
+            require(playSigner.isEmpty() || playSigner.matches(Regex("[0-9a-f]{64}"))) {
+                "Invalid Play App Signing certificate SHA-256"
+            }
+            buildConfigField("String", "PLAY_APP_SIGNER_SHA256", "\"$playSigner\"")
             signingConfig=signingConfigs.findByName("production")
         }
     }

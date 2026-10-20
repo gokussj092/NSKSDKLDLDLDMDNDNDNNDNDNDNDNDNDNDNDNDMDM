@@ -94,6 +94,8 @@ internal class CloudDecodeClient(context: Context) {
             extract(CloudNativeTransport.post("/api/v1/session/challenge", JSONObject()))
         }
         val nonce = challenge.getString("nonce")
+        // The server decides; the client cannot override enforcement.
+        val integrityRequired=challenge.optBoolean("integrityRequired",true)
         val challengeId = challenge.getString("challengeId")
         coroutineContext.ensureActive()
         val code=if(BuildConfig.SPDECODE_QA_BUILD)CloudQaMemory.get() else ""
@@ -104,11 +106,14 @@ internal class CloudDecodeClient(context: Context) {
         val (endpoint,body)=if(code.isNotEmpty()) {
             "/api/v1/session/qa" to
                 JSONObject().put("challengeId",challengeId).put("qaCode",code)
-        } else {
+        } else if(integrityRequired) {
             val verdict=requestIntegrityToken(nonce)
             coroutineContext.ensureActive()
             "/api/v1/session" to
                 JSONObject().put("challengeId",challengeId).put("integrityToken",verdict)
+        } else {
+            // Strictly short-lived operator-approved beta; no integrity token is forged.
+            "/api/v1/session" to JSONObject().put("challengeId",challengeId)
         }
         val reply=withContext(Dispatchers.IO) {
             extract(CloudNativeTransport.post(endpoint,body))
