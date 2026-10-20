@@ -390,12 +390,12 @@ android {
         sourceSets.getByName("main").assets.setSrcDirs(listOf(vaultPackagedAssets))
         sourceSets.getByName("main").java.srcDir(vaultGeneratedKotlin)
     }
-    compileSdk = 35
+    compileSdk = 36
     ndkVersion = "27.2.12479018"
     defaultConfig {
         applicationId = "com.ghostdeveloper.spdecode"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 25
         versionName = "1.1.4"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

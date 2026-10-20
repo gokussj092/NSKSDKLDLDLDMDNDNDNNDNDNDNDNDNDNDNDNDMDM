@@ -6,7 +6,7 @@ Rama: `feat/austroplus-vpn-13-0-1-decoders`; PR #96 abierto y sin fusionar.
 
 ## Archivos
 El workflow `.github/workflows/play-beta-artifacts.yml` compila **dos formatos a partir
-del mismo código, versión 1.1.4, versionCode 25**:
+del mismo código, versión 1.1.4, versionCode 25, y Android 16 (targetSdk 36)**:
 - `SP-DECODE-v1.1.4-play-closed-test-signed.aab`: subir al track **Prueba cerrada**
   en Google Play Console.
 - `SP-DECODE-v1.1.4-beta-external-signed.apk`: distribución fuera de Play.
@@ -73,3 +73,10 @@ la API decide el acceso. QA temporal continúa como mecanismo independiente.
 
 **No publicar ni fusionar automáticamente**. La compilación produce artifacts
 del workflow, no una subida automática a Play.
+
+## Requisito Android 16 (Google Play, octubre de 2026)
+A partir del 31 de agosto de 2026, las apps nuevas de teléfono/tablet
+necesitan `targetSdk 36`. El proyecto usa AGP 8.9.2 (compatible con API 36),
+`compileSdk 36` y conserva `minSdk 24`. Este cambio se prueba en CI, pero
+se deben comprobar los gestos de navegación, barras de sistema y diálogos
+en un dispositivo Android 16 antes de publicar.
