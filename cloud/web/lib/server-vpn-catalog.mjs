@@ -3,7 +3,7 @@ import {readFileSync} from "node:fs";
 import {join} from "node:path";
 import {createHash} from "node:crypto";
 
-export const CATALOG_VERSION = 11; // Increment whenever the public roster or metadata changes.
+export const CATALOG_VERSION = 12; // Increment whenever the public roster or metadata changes.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -13,9 +13,11 @@ export function activeCatalogVersion(env=process.env) {
   if(configured===undefined || configured==="")return CATALOG_VERSION;
   if(!/^[1-9][0-9]{0,8}$/.test(configured))throw Error("INVALID_CATALOG_VERSION");
   const number=Number(configured);
-  if(!Number.isSafeInteger(number) || number<CATALOG_VERSION)
+  if(!Number.isSafeInteger(number) || number<CATALOG_VERSION-1)
     throw Error("CATALOG_VERSION_ROLLBACK");
-  return number;
+  // Existing VPS installs still pin the previous version 11 in cloud.env.
+  // Serve this roster's minimum version without forcing an unrelated config edit.
+  return Math.max(number,CATALOG_VERSION);
 }
 
 const ITEMS = Object.freeze([
@@ -28,6 +30,7 @@ const ITEMS = Object.freeze([
   {id:"24clan-green", name:"24clan VPN Green", icon:"24clan-green.png", remote:"24clan-green"},
   {id:"hx-tunnel", name:"HX Tunnel VPN", icon:"hx-tunnel.png", remote:"hx-tunnel"},
   {id:"mkk-hyper", name:"MKK Hyper VPN", icon:"mkk-hyper.png", remote:"mkk-hyper"},
+  {id:"ksh-vpn", name:"KSH VPN", icon:"ksh-vpn.png", remote:"ksh-vpn"},
   {id:"my-tunnel-proxy", name:"My Tunnel Proxy", icon:"my-tunnel-proxy.png", remote:"my-tunnel-proxy"},
   {id:"robust-tunnel", name:"Robust Tunnel VPN", icon:"robust-tunnel.png", remote:"robust-tunnel"},
   {id:"trv-tunnel", name:"TRV TUNNEL", icon:"trv-tunnel.png", remote:"trv-tunnel"},
