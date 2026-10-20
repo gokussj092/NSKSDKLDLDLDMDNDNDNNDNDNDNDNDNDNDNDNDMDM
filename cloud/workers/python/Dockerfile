@@ -4,9 +4,12 @@ WORKDIR /opt/spdecode
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev --no-audit --no-fund
 FROM python:3.12-slim-bookworm
-RUN apt-get update && apt-get install -y --no-install-recommends php-cli \
+RUN apt-get update && apt-get install -y --no-install-recommends php-cli libstdc++6 libatomic1 \
     && rm -rf /var/lib/apt/lists/*
 COPY --from=js-deps /usr/local/bin/node /usr/local/bin/node
+# The worker uses the Node binary for .hat and other legacy formats.
+# Fail image builds if a runtime loader dependency is missing.
+RUN node --version >/dev/null
 WORKDIR /opt/spdecode
 COPY requirements.txt package.json package-lock.json ./
 RUN pip install --no-cache-dir -r requirements.txt
@@ -26,6 +29,9 @@ RUN chmod -R a+rX /opt/spdecode
 # the server entry point and inspect the canonical engine inventory.
 USER 65532:65532
 RUN python -B -c "import sys; sys.path.insert(0,'cloud/workers/python'); from engine import load_file_engines; assert len(load_file_engines()) == 240; from server import WorkerHandler; print('SP-DECODE worker: nonroot imports OK')"
+# Exercise the genuine isolated Hat worker subprocess as uid 65532, not only
+# Node startup. A synthetic encrypted document keeps user profiles out of images.
+RUN python -B -c 'import base64,json,sys;from Crypto.Cipher import AES;from Crypto.Util.Padding import pad;sys.path.insert(0,"cloud/workers/python");from engine import decode_file;key=base64.b64decode("zbNkuNCGSLivpEuep3BcNA==");document={"profilev5":{"custom_host":None},"metadata":{"synthetic":True}};raw=json.dumps(document).encode();encrypted=base64.b64encode(AES.new(key,AES.MODE_ECB).encrypt(pad(raw,16)));result=decode_file("hat",encrypted,full_hat=True);assert result["structuredJson"]==document;print("SP-DECODE Hat Cloud synthetic smoke OK")'
 # Package and local import work from the original repository tree.
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 WORKER_BIND_HOST=0.0.0.0 WORKER_PORT=8787
 EXPOSE 8787
