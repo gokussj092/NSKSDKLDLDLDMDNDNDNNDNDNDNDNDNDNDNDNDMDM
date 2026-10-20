@@ -6,10 +6,10 @@ Rama: `feat/austroplus-vpn-13-0-1-decoders`; PR #96 abierto y sin fusionar.
 
 ## Archivos
 El workflow `.github/workflows/play-beta-artifacts.yml` compila **dos formatos a partir
-del mismo código, versión 1.1.5, versionCode 26, y Android 16 (targetSdk 36)**:
-- `SP-DECODE-v1.1.5-play-closed-test-signed.aab`: subir al track **Prueba cerrada**
+del mismo código, versión 1.1.6, versionCode 27, y Android 16 (targetSdk 36)**:
+- `SP-DECODE-v1.1.6-play-closed-test-signed.aab`: subir al track **Prueba cerrada**
   en Google Play Console.
-- `SP-DECODE-v1.1.5-beta-external-signed.apk`: distribución fuera de Play.
+- `SP-DECODE-v1.1.6-beta-external-signed.apk`: distribución fuera de Play.
 - `SHA256SUMS.txt` y `SIGNATURE_VERIFICATION.txt`.
 
 Los dos usan **la clave permanente** de GitHub Secrets `SPDECODE_SIGNING_*`, sin
@@ -227,3 +227,15 @@ El identificador se genera solamente durante esa ejecución y se destruye al
 terminar; el AAB para Google Play y el APK beta externo nunca lo contienen.
 La compilación no fusiona el PR, no publica en GitHub Releases y no sube
 ningún archivo automáticamente a Google Play.
+
+## Play closed test v1.1.6 (27): firma, edge-to-edge y 16 KiB
+
+- Esta versión sucede a `1.1.5 (26)`, ya enviada a Play Console; nunca se reutiliza el `versionCode` 26.
+- El workflow usa el SHA-256 público **del certificado de firma de aplicaciones de Play** (no la clave de subida) desde el secreto `SPDECODE_PLAY_APP_SIGNER_SHA256`, con alternativa `vars` para compatibilidad. Su valor debe coincidir con el certificado DER de Play facilitado por el propietario (`64760393E52521294B40A1FD978B5BAE732B7D8604BD222CA01166A25407854B`). La compilación **falla** si la variable falta o no coincide; la clave de subida histórica sigue siendo imprescindible.
+- La versión Cloud transforma una copia generada de `MainActivity`: activa `enableEdgeToEdge` con estilos oscuros transparentes y retira los setters obsoletos de barras y `systemUiVisibility`. No modifica los nueve archivos de interfaz C0; el contenedor Compose principal ya tiene `safeDrawingPadding()`, que protege cabecera, contenido y pestañas en navegación por gestos y por 3 botones.
+- `Theme.SPDecode` ya no fija `statusBarColor`, `navigationBarColor` ni iconos obsoletos. QA y notificaciones del SO pueden requerir inspección visual adicional en dispositivo físico.
+- `libspdecode.so` enlaza con `max-page-size=16384` y `common-page-size=16384` para NDK r27. CI analiza cada biblioteca ELF de 64 bits en el APK y AAB, rechaza segmentos LOAD con alineación inferior a 16 KiB, y comprueba la alineación ZIP de la APK con `zipalign -P 16`. AGP 8.9.2 cubre el empaquetado AAB.
+- La compatibilidad real requiere además instalar desde Play en Android 15/16 y, cuando haya hardware disponible, un dispositivo de páginas de memoria de 16 KiB: CI estática y análisis ELF **no sustituyen** las pruebas visuales y de arranque en dispositivos reales.
+- Al ser ahora público el repositorio, el flujo no crea ni publica la APK temporal de verificación de propiedad que contiene el identificador de registro. No es necesaria para actualizar una aplicación ya dada de alta.
+
+Documentación Android de referencia: https://developer.android.com/develop/ui/views/layout/edge-to-edge y https://developer.android.com/guide/practices/page-sizes.

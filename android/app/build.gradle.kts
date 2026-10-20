@@ -215,6 +215,25 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
             "title={Text(stringResource(R.string.decode_notice_title))}",
             "title={Text(stringResource(R.string.cloud_failure_notice_title))}")
         var activity = originalRoot.file("MainActivity.kt").asFile.readText(Charsets.UTF_8)
+        // Android 15/16: Cloud builds opt into edge-to-edge on older devices too.
+        // The original C0 UI sources stay byte-for-byte unchanged.
+        activity = replaceOnce(activity,
+            "import androidx.activity.ComponentActivity",
+            "import androidx.activity.ComponentActivity\n" +
+                "import androidx.activity.SystemBarStyle\n" +
+                "import androidx.activity.enableEdgeToEdge")
+        activity = replaceOnce(activity,
+            """        @Suppress("DEPRECATION")
+        window.statusBarColor=android.graphics.Color.BLACK
+        @Suppress("DEPRECATION")
+        window.navigationBarColor=android.graphics.Color.BLACK
+        window.decorView.systemUiVisibility=0""",
+            """        // Edge-to-edge is explicit for API 24-34 and enforced for API 35+.
+        // SpDecodeApp's safeDrawingPadding() prevents toolbar and tabs overlap.
+        enableEdgeToEdge(
+            statusBarStyle=SystemBarStyle.dark(android.graphics.Color.TRANSPARENT),
+            navigationBarStyle=SystemBarStyle.dark(android.graphics.Color.TRANSPARENT),
+        )""")
         activity = replaceOnce(activity,
             "    private var stagedExport:String?=null",
             "    private var stagedExport:String?=null\n" +
@@ -406,8 +425,8 @@ android {
         applicationId = "com.ghostdeveloper.spdecode"
         minSdk = 24
         targetSdk = 36
-        versionCode = 26
-        versionName = "1.1.5"
+        versionCode = 27
+        versionName = "1.1.6"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // A public API origin is not a secret; all server secrets stay in the VPS.
         buildConfigField("boolean", "SPDECODE_CLOUD_ENABLED", enableCloud.toString())
