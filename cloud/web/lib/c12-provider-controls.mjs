@@ -11,8 +11,6 @@ import {ehiConfigured,nurConfigured} from "./c35-provider.mjs";
 import {activeCatalogVersion} from "./server-vpn-catalog.mjs";
 
 const ROOT="/app/provider-control";
-const STATE=join(ROOT,"switches.json");
-const LOCK=join(ROOT,"switches.lock");
 const IDS=Object.freeze(["ehi-cloud","nur-tunnel",...providerIds()]);
 export const PUBLIC_PROVIDER_IDS=IDS;
 const LABELS=Object.freeze({
@@ -38,7 +36,8 @@ const valid=s=>s && typeof s==="object" && !Array.isArray(s) &&
   s.disabled.every(x=>typeof x==="string" && IDS.includes(x)) &&
   new Set(s.disabled).size===s.disabled.length;
 
-export async function loadProviderState(){
+export async function loadProviderState(root=ROOT){
+  const STATE=join(root,"switches.json");
   let raw;
   try{raw=await readFile(STATE,"utf8");}
   catch(e){if(e?.code==="ENOENT")return empty();throw e;}
@@ -58,11 +57,11 @@ export function providerEffective(id,state,env=process.env){
   if(!valid(state))throw Error("PROVIDER_STATE_INVALID");
   return providerPrerequisite(id,env) && !state.disabled.includes(id);
 }
-export async function providerAllowed(id,env=process.env){
-  return providerEffective(id,await loadProviderState(),env);
+export async function providerAllowed(id,env=process.env,{root=ROOT}={}){
+  return providerEffective(id,await loadProviderState(root),env);
 }
-export async function providerOverview(env=process.env){
-  const state=await loadProviderState();
+export async function providerOverview(env=process.env,{root=ROOT}={}){
+  const state=await loadProviderState(root);
   return {
     catalogVersion:Math.max(activeCatalogVersion(env),state.version),
     providers:IDS.map(id=>({
@@ -72,8 +71,9 @@ export async function providerOverview(env=process.env){
   };
 }
 // Cross-request lock, needed because Next.js splits API routes into bundles.
-// A crash leaves a short-lived stale lock; fail closed until it ages out.
-async function locked(callback){
+// A crashed writer may leave a lock; only the owner removes it, or operator cleans it.
+async function locked(callback,root=ROOT){
+  const LOCK=join(root,"switches.lock");
   let file;
   for(let i=0;i<15;i++){
     try{file=await open(LOCK,"wx",0o600);break;}
@@ -86,23 +86,24 @@ async function locked(callback){
   try{return await callback();}
   finally{await file.close();await unlink(LOCK).catch(()=>{});}
 }
-export async function updateProvider(id,enable,env=process.env){
+export async function updateProvider(id,enable,env=process.env,{root=ROOT}={}){
   if(!IDS.includes(id) || typeof enable!=="boolean")throw Error("INVALID_PROVIDER");
   if(env.CLOUD_FORCE_MAINTENANCE==="true")throw Error("MAINTENANCE_LOCKED");
   if(enable && !providerPrerequisite(id,env))throw Error("PROVIDER_NOT_CONFIGURED");
   return locked(async()=>{
-    const state=await loadProviderState();
+    const state=await loadProviderState(root);
     const disabled=new Set(state.disabled);
     if(enable)disabled.delete(id);else disabled.add(id);
     if(disabled.size===state.disabled.length && [...disabled].every(v=>state.disabled.includes(v)))
-      return providerOverview(env);
+      return providerOverview(env,{root});
     // A version above the current epoch-offset seconds prevents stale Android
     // catalogs even across a fresh deployment or a previous QA version bump.
     const floor=Math.floor(Date.now()/1000)-1_577_836_800;
     const version=Math.max(state.version,activeCatalogVersion(env),floor)+1;
     if(version>=1_000_000_000)throw Error("CATALOG_VERSION_EXHAUSTED");
     const updated={version,disabled:[...disabled].sort()};
-    const tmp=join(ROOT,".switches-"+randomUUID());
+    const STATE=join(root,"switches.json");
+    const tmp=join(root,".switches-"+randomUUID());
     const file=await open(tmp,"wx",0o600);
     try{await file.writeFile(JSON.stringify(updated)+"\n","utf8");await file.sync();}
     finally{await file.close();}
@@ -115,5 +116,5 @@ export async function updateProvider(id,enable,env=process.env){
         enabled:providerEffective(k,updated,env),
       })),
     };
-  });
+  },root);
 }
