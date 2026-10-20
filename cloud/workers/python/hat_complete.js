@@ -8,17 +8,30 @@ const crypto=require("node:crypto");
 const KEY=Buffer.from("zbNkuNCGSLivpEuep3BcNA==","base64");
 const XOR=String.fromCharCode(42,42,114,86,103,55,69,107,76,126,99,50,96,68,91,97,78,110);
 const MAX=12*1024*1024;
+// profilev5 fields are optional and vary by exporter revision. Some builds
+// store an empty/null or already readable value; do not reject an otherwise
+// authenticated full JSON document solely because one field is not wrapped.
+// Only transform a canonical UTF-8 Base64 carrier. Preserve unknown fields.
 function xorField(encoded){
-  if(typeof encoded!=="string"||!/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(encoded))
-    throw Error("UNSUPPORTED_PROFILEV5_FIELD");
-  const raw=Buffer.from(encoded,"base64").toString("utf8");
+  if(typeof encoded!=="string"||!encoded)return encoded;
+  const carrier=encoded.replace(/\\s+/g,"");
+  if(!/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(carrier)||!carrier)
+    return encoded;
+  const bytes=Buffer.from(carrier,"base64");
+  if(bytes.toString("base64")!==carrier)return encoded;
+  let raw;
+  try{raw=new TextDecoder("utf-8",{fatal:true}).decode(bytes);}
+  catch{return encoded;}
   let value="";
   for(let i=0;i<raw.length;i++)value+=String.fromCharCode(raw.charCodeAt(i)^XOR.charCodeAt(i%XOR.length));
+  // Malformed or plaintext strings may coincidentally look like Base64.
+  // Keep them verbatim rather than inventing an unreadable decrypted field.
+  if(/[\\u0000-\\u0008\\u000e-\\u001f]/.test(value))return encoded;
   return value;
 }
 function decodeHat(input){
   if(!Buffer.isBuffer(input)||input.length===0||input.length>MAX)throw Error("INVALID_INPUT");
-  const encoded=input.toString("utf8").trim();
+  // Legacy bot/Python accepts line-wrapped Base64 exports as well as one line.\n  const encoded=input.toString("utf8").replace(/^\\uFEFF/,"").replace(/\\s+/g,"");
   if(!/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(encoded))
     throw Error("INVALID_BASE64");
   const bytes=Buffer.from(encoded,"base64");
