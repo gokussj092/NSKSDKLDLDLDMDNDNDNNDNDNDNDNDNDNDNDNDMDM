@@ -63,9 +63,12 @@ jobs:
       - name: Verify source-derived Phase G text protocol reference vectors
         run: PYTHONPATH=. python -m unittest tests.test_android_g_text_parity -v
 
-      - name: Audit Phase H offline privacy, source provenance, release gate and v1.1.4
+      - name: Audit Phase H offline privacy, source provenance, release gate and current Android version
         run: |
-          PYTHONPATH=. python scripts/android_h_production_audit.py --version 1.1.4 --code 25 --report "$RUNNER_TEMP/spdecode-h/audit.json"
+          VERSION="$(sed -nE 's/.*versionName = "([^"]+)".*/\1/p' android/app/build.gradle.kts)"
+          CODE="$(sed -nE 's/.*versionCode = ([0-9]+).*/\1/p' android/app/build.gradle.kts)"
+          test -n "$VERSION" && test -n "$CODE"
+          PYTHONPATH=. python scripts/android_h_production_audit.py --version "$VERSION" --code "$CODE" --report "$RUNNER_TEMP/spdecode-h/audit.json"
           PYTHONPATH=. python -m unittest tests.test_android_h_production_audit -v
 
       - name: Audit Phase S protected resources and classify embedded material
@@ -120,7 +123,7 @@ jobs:
         continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
-          name: SP-DECODE-v1.1.4-H-SOURCE-AUDIT
+          name: SP-DECODE-Play-Beta-H-SOURCE-AUDIT
           path: ${{ runner.temp }}/spdecode-h/audit.json
           if-no-files-found: ignore
           retention-days: 90
@@ -176,7 +179,7 @@ jobs:
 
 
   android-parity:
-    name: Android v1.1.4 production source regression (API 35)
+    name: Android production source regression (API 35)
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
@@ -363,7 +366,7 @@ jobs:
         continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
-          name: SP-DECODE-Android-v1.1.4-ci-home-screenshot
+          name: SP-DECODE-Android-CI-ci-home-screenshot
           path: android/app/build/outputs/spdecode-ui/home.png
           if-no-files-found: error
           retention-days: 30
@@ -387,7 +390,7 @@ jobs:
         continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
-          name: SP-DECODE-Android-v1.1.4-CI-DEBUG-NOT-PRODUCTION
+          name: SP-DECODE-Android-CI-CI-DEBUG-NOT-PRODUCTION
           path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 30
