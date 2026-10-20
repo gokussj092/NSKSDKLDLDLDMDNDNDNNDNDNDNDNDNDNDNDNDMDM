@@ -53,6 +53,8 @@ jobs:
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_cloud_c2_nur_catalog -v
       - name: Hat Tunnel complete JSON, real fixture and optional-field regression
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_cloud_hat_complete -v
+      - name: New KSH and DTunnel codecs and MKK four-source full-result regression
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_cloud_server_vpn_new -v
       - name: C2 execute synthetic golden corpus through isolated subprocess adapter
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_cloud_c2_golden -v
 
