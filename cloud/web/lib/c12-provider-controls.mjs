@@ -49,6 +49,7 @@ export async function loadProviderState(root=ROOT){
 }
 export function providerPrerequisite(id,env=process.env){
   if(!IDS.includes(id))throw Error("INVALID_PROVIDER");
+  if(env.CLOUD_API_ENABLED!=="true")return false;
   if(id==="ehi-cloud")return ehiConfigured(env);
   if(id==="nur-tunnel")return nurConfigured(env);
   return env.CLOUD_SERVER_VPN_ENABLED==="true";
