@@ -3,7 +3,7 @@
     <string name="cloud_report_action">گزارش خطا</string>
     <string name="cloud_report_sent">گزارش دریافت شد: %1$s</string>
     <string name="cloud_report_failed">ارسال گزارش ناموفق بود. بعداً تلاش کنید.</string>
-    <string name="cloud_usage_title">اشتراک آمار استفاده ناشناس</string>
-    <string name="cloud_usage_detail">شمارش تقریبی نصب‌های فعال را مجاز کنید. شناسه تصادفی فقط پس از فعال‌سازی ساخته می‌شود و HWID یا شناسه تبلیغاتی نیست.</string>
-    <string name="cloud_usage_footnote">به‌طور پیش‌فرض خاموش است. با غیرفعال کردن، شناسه تصادفی دستگاه پاک می‌شود.</string>
+    <string name="cloud_usage_title">آمار ناشناس نصب‌ها</string>
+    <string name="cloud_usage_detail">SP-DECODE روزی یک‌بار تعداد تقریبی نصب‌های فعال را برای مدیریت ظرفیت سرور محاسبه می‌کند. از کد تصادفی نصب استفاده می‌شود، نه Android ID یا HWID یا شناسه تبلیغاتی.</string>
+    <string name="cloud_usage_footnote">پس از پذیرش شرایط حریم خصوصی Cloud فعال است. محتوای فایل‌ها، گذرواژه‌ها و پیکربندی‌های رمزگشایی‌شده در این شمارش استفاده نمی‌شود.</string>
 </resources>
