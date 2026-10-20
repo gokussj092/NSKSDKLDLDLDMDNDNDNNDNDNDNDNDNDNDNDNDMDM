@@ -41,7 +41,7 @@ test("install counting is opt-in, aggregated and does not persist the raw random
  await assert.rejects(()=>recordOptInInstallation(redis,"android-hwid",key),/INVALID_INSTALL_ID/);
 });
 test("native JNI, settings and UI require explicit user action and support opt-out",()=>{
- const read=path=>readFileSync(new URL("../../"+path,import.meta.url),"utf8");
+ const read=path=>readFileSync(new URL("../../../"+path,import.meta.url),"utf8");
  const kotlin=read("android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudDiagnosticsPrivacy.kt");
  const client=read("android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudDecodeClient.kt");
  const native=read("android/app/src/main/cpp/spdecode_transport.cpp");
