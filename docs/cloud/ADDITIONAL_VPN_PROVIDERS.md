@@ -1,5 +1,7 @@
 # SP-DECODE Cloud — KSH, MKK Hyper y DTunnel Mod
 
+> [Guía de futuras integraciones y versionado del catálogo y novedades](CATALOGS_UPDATE_RUNBOOK.md)
+
 Estas rutas funcionan del lado del servidor; no es necesario modificar el APK.
 
 ## KSH VPN 1.3.2
