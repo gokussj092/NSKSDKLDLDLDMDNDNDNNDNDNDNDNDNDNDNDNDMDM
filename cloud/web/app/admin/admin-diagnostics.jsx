@@ -37,7 +37,7 @@ export default function AdminDiagnostics({showIncidents=true}){
   {data&&<>
    <div className="admin-metric-grid">
     <article className="admin-card"><span className="muted">Instalaciones activas hoy</span>
-     <strong>{fmt.format(data.installations.activeToday)}</strong><small className="muted">Estimación · participación voluntaria</small></article>
+     <strong>{fmt.format(data.installations.activeToday)}</strong><small className="muted">Estimación de instalaciones Cloud</small></article>
     <article className="admin-card"><span className="muted">Instalaciones activas · 30 días</span>
      <strong>{fmt.format(data.installations.activeLast30Days)}</strong><small className="muted">Estimación, no personas únicas</small></article>
     <article className="admin-card"><span className="muted">Incidencias registradas</span>
@@ -45,7 +45,7 @@ export default function AdminDiagnostics({showIncidents=true}){
     <article className="admin-card"><span className="muted">Reportes manuales</span>
      <strong>{fmt.format(data.incidents.filter(x=>x.source==="user").length)}</strong><small className="muted">Enviados expresamente</small></article>
    </div>
-   <p className="muted">Las instalaciones son estimaciones basadas solo en dispositivos que aceptan compartir actividad. No se almacenan identificadores en claro y la muestra de incidentes no incluye archivos.</p>
+   <p className="muted">Las instalaciones son estimaciones de dispositivos que aceptaron las condiciones Cloud y estuvieron activos. No representan personas únicas. No se almacenan identificadores en claro y los incidentes no incluyen archivos.</p>
    {showIncidents&&<section className="admin-card admin-report-card">
     <h2>Incidentes recientes</h2>
     <div className="admin-table-wrap"><table className="admin-table"><thead><tr>
