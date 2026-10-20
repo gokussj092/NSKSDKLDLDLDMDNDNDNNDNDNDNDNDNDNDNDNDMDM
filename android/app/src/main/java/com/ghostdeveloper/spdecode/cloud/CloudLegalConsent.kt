@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import org.json.JSONObject
 
 internal object CloudLegalConsent {
-    const val VERSION=20261018
+    const val VERSION=20261020
     const val TERMS="https://spdecode.xyz/terms"
     const val PRIVACY="https://spdecode.xyz/privacy"
 
