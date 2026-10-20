@@ -108,6 +108,57 @@ Los interruptores autorizados y el número de versión se conservan en un **volu
 
 Los botones **Mantenimiento** del panel continúan siendo independientes: un servicio en mantenimiento no atenderá peticiones aunque el interruptor del proveedor esté activo. La admisión beta fuera de Play Integrity también es un control separado con caducidad máxima de 15 días.
 
+## Provisión privada de HTTP Injector Cloud 6.5.0/244 y nombres de catálogo
+
+Los métodos suministrados por el propietario `HTTPINJECTOR_CLOUD.py` y
+`HTTPINJECTOR_EMOJI.py` confirman el protocolo HTTP Injector 6.5.0/244:
+`POST /httpinjector/import_config`, firma HMAC-SHA1, HMAC-SHA256 de respuesta,
+AES-256-CBC, descompresión zlib y adaptación al decodificador EHI existente.
+El método emoji (`💉…🚀`) decodifica una **referencia**, no la configuración:
+la aplicación ya la resuelve con el mismo contrato. La compatibilidad de
+otros builds posteriores debe comprobarse con muestras reales.
+
+El backend tiene este importador implementado, pero requiere una provisión privada
+de `CLOUD_EHI_SIGN_KEY` y `CLOUD_EHI_RESPONSE_KEY`. El script adjunto del
+propietario contiene los valores para el build comprobado; **no incorporarlo al
+repositorio, APK, Dockerfile ni historial de shell**. Provisión recomendada:
+
+1. Copiar el archivo `HTTPINJECTOR_CLOUD.py` por SSH/SFTP a
+   `/root/HTTPINJECTOR_CLOUD.py` en la VPS. Este archivo es privado y no
+   se debe servir por HTTP.
+2. Ejecutar `sudo chown root:root /root/HTTPINJECTOR_CLOUD.py` y
+   `sudo chmod 600 /root/HTTPINJECTOR_CLOUD.py`.
+3. Con QA desactivado y `CLOUD_API_ENABLED=true`, ejecutar:
+
+```bash
+sudo spdecode backup
+sudo spdecode providers import-ehi /root/HTTPINJECTOR_CLOUD.py
+sudo spdecode providers status
+```
+
+El comando no **ejecuta** el archivo: inspecciona las constantes literales
+`ENDPOINT`, `APP_BUILD`, `SIGN_SECRET` y `API_KEY` mediante `ast`,
+valida únicamente el contrato 6.5.0/244 y coloca los valores en el fichero
+privado `/etc/spdecode/cloud.env` (0600). Reinicia solo el servicio web, comprueba
+la disponibilidad y revierte la configuración si falla. No escribe las claves
+en GitHub, no las imprime y no modifica el motor tradicional de archivos EHI.
+Después se puede retirar el script temporal de la VPS.
+
+En el panel `/admin/system`, el interruptor **HTTP Injector Cloud** dejará
+de mostrarse sin configurar. El bloque de proveedores denomina al servicio
+general **Servidores VPN**; NUR TUNNEL VPN sigue siendo **uno de los proveedores
+específicos** dentro del catálogo. No confundir la marca del proveedor con el
+nombre de la categoría.
+
+Importante: `spdecode qa stop` puede restaurar `CLOUD_API_ENABLED=false`
+si el estado previo a QA estaba deshabilitado. Restablecerlo una sola vez:
+
+```bash
+sudo spdecode config set CLOUD_API_ENABLED true
+sudo spdecode restart web
+sudo spdecode providers enable
+```
+
 ## Pasos Play Console
 1. Crear la ficha **SP-DECODE**, editor Ghost Nexora Studio y paquete
    `com.ghostdeveloper.spdecode`. Completar ficha, icono, capturas, política
