@@ -202,6 +202,7 @@
     <string name="guide_step_six">Formate: Durchsuche unterstützte Apps und Dateiendungen.</string>
     <string name="guide_step_seven">VPN-Server: Wähle eine App und entschlüssele ihren Serverkatalog.</string>
     <string name="guide_step_eight">Einstellungen: Ändere die Sprache, lies die Datenschutzhinweise und passe die App an.</string>
+    <string name="guide_step_eight">Einstellungen: Ändere die Sprache, lies die Datenschutzhinweise und passe die App an.</string>
     <string name="server_vpn">VPN-Server</string>
     <string name="server_vpn_description">Unterstützte VPN-Serverlisten durchsuchen. Wähle eine App zum Entschlüsseln ihrer Liste.</string>
     <string name="nur_tunnel_name">NUR TUNNEL VPN</string>
