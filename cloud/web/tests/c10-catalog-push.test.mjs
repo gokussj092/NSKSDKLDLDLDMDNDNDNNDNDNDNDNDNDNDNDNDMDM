@@ -23,12 +23,14 @@ function makeRequest(knownVersion,signal){
 test("own VPS version status has no external push configuration or tokens",async()=>{
  const store=new Redis();
  assert.deepEqual(pushSettings(),{enabled:true,transport:"own-vps-https-watch"});
- assert.equal(activeCatalogVersion(env),11);
- assert.deepEqual(await publishCatalogUpdate(store,{env}),{status:"registered",version:11});
- assert.deepEqual(await publishCatalogUpdate(store,{env}),{status:"unchanged",version:11});
- assert.deepEqual(await publishCatalogUpdate(store,{env:{...env,CLOUD_SERVER_VPN_CATALOG_VERSION:"12"}}),{status:"registered",version:12});
- assert.deepEqual(await publishCatalogUpdate(store,{env}),{status:"unchanged",version:11});
- assert.equal(await store.get("spc10:catalog:last-announced"),"12");
+ const current=activeCatalogVersion(env);
+ assert.equal(current,13);
+ assert.deepEqual(await publishCatalogUpdate(store,{env}),{status:"registered",version:current});
+ assert.deepEqual(await publishCatalogUpdate(store,{env}),{status:"unchanged",version:current});
+ const updatedEnv={...env,CLOUD_SERVER_VPN_CATALOG_VERSION:String(current+1)};
+ assert.deepEqual(await publishCatalogUpdate(store,{env:updatedEnv}),{status:"registered",version:current+1});
+ assert.deepEqual(await publishCatalogUpdate(store,{env}),{status:"unchanged",version:current});
+ assert.equal(await store.get("spc10:catalog:last-announced"),String(current+1));
 });
 test("stale catalog version gets immediate metadata-only notification",async()=>{
  let waited=false;
