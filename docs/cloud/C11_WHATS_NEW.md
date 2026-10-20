@@ -30,36 +30,39 @@ Example new publication:
 
 Update `cloud/web/content/whats-new.json` and deploy **only the web/API**; **or** supply a complete validated JSON document through `CLOUD_WHATS_NEW_JSON` in the private VPS environment and restart the web service. The Compose file exposes that server-only variable. Either option updates every connected Cloud APK without recompilation. Always increment `version`; existing clients only show higher, unseen versions.
 
-## Publication v2 — cloud/server changes
+## Publication v2 — server news (three items only)
 
-The October 20 server-side update uses `cloud/web/content/whats-new.json`
-with `version: 2`, `publishedAt: 2026-10-20`, six items and all nine
-translations. Its public notices include:
+The October 20 server-side notice is version **2**. It intentionally contains
+only the three changes first introduced with this update, in all nine supported
+languages:
 
-- HTTP Custom 7.11.28 compatibility for supported protected `.hc` files
-- HA Tunnel `.hat` decoding compatibility and complete JSON handling
-- MKK Hyper VPN catalogs from individually identified sources, reporting failures
-- New KSH VPN remote catalog decoding
-- DTunnel Mod listing and icon; **remote decoding is not yet enabled**
-- Google Play **Coming soon** on the public website
+- **✅ KSH VPN** — new Server VPN provider with compatible catalog decoding
+- **✅ DTunnel Mod** — listed with the confirmed icon; remote decoding remains
+  disabled until authorized provider access is configured
+- **🛠️ MKK Hyper VPN** — fixes incomplete output by reporting each catalog
+  source separately and explicitly identifying errors
+
+Previous announcements for HTTP Custom, HA Tunnel, the cloud architecture and
+Google Play are **not repeated** in this publication. The text is short, and
+all three entries use the existing API categories `feature` or `fix`.
 
 Version 2 succeeds version 1 independently of the Android `versionCode`.
-The Android client checks on open/resume after Cloud consent; it displays a
-versioned **in-app notice**, not an OS-level push notification. A device
-receives it when next online, and dismissing it records the seen version.
+The Android client checks on open/resume after Cloud consent and displays a
+versioned **in-app announcement**, not an OS-level push notification.
+Users see it on a subsequent successful online check; dismissing it records
+the seen version locally.
 
 **Important VPS override:** `loadNews()` prioritizes `CLOUD_WHATS_NEW_JSON`
 over `cloud/web/content/whats-new.json`. Before deployment check whether
 the private `/etc/spdecode/cloud.env` contains a nonempty override. If so,
-either remove that override (to use the version-controlled v2 document)
-or replace it with the fully translated v2 JSON. A stale override can
-prevent v2 from reaching users. Never expose `cloud.env` values publicly.
+either remove it to use this repository's v2 notice or update it to the same
+three-item content. A stale override can prevent the new notice from appearing.
+Never expose values from `cloud.env` in public logs.
 
-Update the existing VPS branch, confirm the web/API container was rebuilt
-and restarted, then check `POST /api/v1/whats-new` from an authorized
-test client with `knownVersion: 1` and `locale: es` and again with
-`knownVersion: 2`. Expected results: v2 content, followed by
-`unchanged: true`. There is no need to publish a new APK.
+After updating the VPS, verify `POST /api/v1/whats-new` with
+`knownVersion: 1` and `locale: es`, expecting localized version 2 with
+exactly three entries. With `knownVersion: 2`, expect `unchanged: true`.
+No Android recompilation is required.
 
 ## Client behavior and privacy
 
