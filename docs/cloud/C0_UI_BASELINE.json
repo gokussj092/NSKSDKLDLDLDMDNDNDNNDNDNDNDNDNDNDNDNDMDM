@@ -10,7 +10,7 @@
     "android/app/src/main/java/com/ghostdeveloper/spdecode/HttpInjectorCloudPanel.kt": "5af592ae0b873c50836dcd89c8a120d57d7cb121",
     "android/app/src/main/java/com/ghostdeveloper/spdecode/JsonTreeViewer.kt": "ae32c219d14f54a5d2a229edb9076c79766af6c7",
     "android/app/src/main/java/com/ghostdeveloper/spdecode/ResultPresentation.kt": "d2a53e9715feed5a48d4193a6b4596eb3d86cabd",
-    "android/app/src/main/java/com/ghostdeveloper/spdecode/SpDecodeApp.kt": "d7e3df04806262910f191a6cca4e3665b039e1a9",
+    "android/app/src/main/java/com/ghostdeveloper/spdecode/SpDecodeApp.kt": "abe30d58695630f3c02f635af624f47658bccb2d",
     "android/app/src/main/java/com/ghostdeveloper/spdecode/TextDecoderPanel.kt": "bb4f3552ca8fba5892da4e6cd6674cb191b00bdf"
   }
 }
