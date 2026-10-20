@@ -10,7 +10,7 @@ import {
 import {catalog} from "../lib/server-vpn-catalog.mjs";
 
 const env={
-  CLOUD_SERVER_VPN_ENABLED:"true",CLOUD_NUR_FETCH_ENABLED:"true",
+  CLOUD_API_ENABLED:"true",CLOUD_SERVER_VPN_ENABLED:"true",CLOUD_NUR_FETCH_ENABLED:"true",
   CLOUD_NUR_CATALOG_URL:"https://strongteam.co/approved/catalog",
   CLOUD_EHI_IMPORT_ENABLED:"true",
   CLOUD_EHI_SIGN_KEY:"S".repeat(32),CLOUD_EHI_RESPONSE_KEY:"R".repeat(32),
