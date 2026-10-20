@@ -59,5 +59,5 @@ export async function installationStats(redis){
  const keys=Array.from({length:30},(_,i)=>INSTALL+day(i));
  const monthly=await redis.pfCount(keys);
  return {activeToday:Math.max(0,Number(activeDay)||0),activeLast30Days:Math.max(0,Number(monthly)||0),
-   privacy:"opt-in_approximate_installations",retentionDays:32};
+   privacy:"cloud_terms_accepted_approximate_installations",retentionDays:32};
 }
