@@ -39,6 +39,8 @@ services:
       CLOUD_SERVER_VPN_ENABLED: ${CLOUD_SERVER_VPN_ENABLED:-false}
       # Must increase on every roster, icon or provider-availability change.
       CLOUD_SERVER_VPN_CATALOG_VERSION: ${CLOUD_SERVER_VPN_CATALOG_VERSION:-11}
+      # Optional versioned release notes. Validated server-side, no APK update required.
+      CLOUD_WHATS_NEW_JSON: ${CLOUD_WHATS_NEW_JSON:-}
     ports:
       # Bound to host loopback only; public HTTPS reverse proxy is a later phase.
       - "127.0.0.1:3000:3000"

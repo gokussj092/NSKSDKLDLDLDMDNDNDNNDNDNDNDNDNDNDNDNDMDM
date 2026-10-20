@@ -220,6 +220,15 @@ internal class CloudDecodeClient(context: Context) {
     suspend fun decodeNurCatalog(): Decoded =
         decode("/api/v1/decode/import/catalog/remote",JSONObject().put("consent",true))
 
+    /** Public What's New. No auth, device identifiers or decoded payloads. */
+    suspend fun whatsNew(knownVersion:Int,locale:String):JSONObject = withContext(Dispatchers.IO) {
+        requireLegalConsent()
+        require(knownVersion in 0..999999999)
+        require(locale.matches(Regex("[A-Za-z-]{2,16}")))
+        extract(CloudNativeTransport.post("/api/v1/whats-new",
+            JSONObject().put("knownVersion",knownVersion).put("locale",locale)))
+    }
+
     /** Public presentation metadata only; never contains provider endpoints. */
     suspend fun serverVpnCatalog(knownVersion:Int): JSONObject =
         withContext(Dispatchers.IO) {
