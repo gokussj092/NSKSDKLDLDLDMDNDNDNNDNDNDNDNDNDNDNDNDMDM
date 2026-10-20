@@ -5,7 +5,7 @@ import {store,reserveSlot,releaseSlot} from "./c3-store.mjs";
 import {requireSession} from "./c3-session.mjs";
 import {enabled,notEnabled,failure,boundedBody,fetchWorker} from "./c3-gateway.mjs";
 import {maintenanceEnabled,serviceMaintenanceEnabled,recordWorkerResult} from "./c6-ops-store.mjs";
-import {providerEnabled,downloadVpnCatalog,VpnProviderError} from "./server-vpn-provider.mjs";
+import {providerEnabled,downloadVpnCatalog,mkkSourceIds,VpnProviderError} from "./server-vpn-provider.mjs";
 import {providerAllowed} from "./c12-provider-controls.mjs";
 
 export async function decodeServerVpn(request,opts={}){
@@ -27,7 +27,29 @@ export async function decodeServerVpn(request,opts={}){
       return failure("REMOTE_NOT_CONFIGURED",503);
     lease=randomUUID();
     if(!await reserveSlot(redis,claims.jti,lease))return failure("RATE_LIMITED",429);
-    const bytes=await downloadVpnCatalog(providerId);
+    let bytes;
+    if(providerId==="mkk-hyper"){
+      // A single api_server.json call silently omitted static users and
+      // subscription catalogs. Fetch each fixed source without caller URLs.
+      // Preserve independent failures as explicit source statuses.
+      const sources=await Promise.all(mkkSourceIds().map(async name=>{
+        try{
+          const payload=await downloadVpnCatalog(providerId,name);
+          return {name,status:"ok",dataBase64:payload.toString("base64")};
+        }catch(error){
+          if(!(error instanceof VpnProviderError))throw error;
+          return {name,status:"error",error:error.code};
+        }
+      }));
+      if(!sources.some(item=>item.status==="ok"))
+        return failure("REMOTE_PROVIDER_UNAVAILABLE",502);
+      bytes=Buffer.from(JSON.stringify({kind:"spdecode-mkk-sources-v1",sources}),"utf8");
+      // Worker input has a 16 MiB hard bound; never ship a partial bundle
+      // because of the transport cap without explicitly returning an error.
+      if(bytes.length>12*1024*1024)return failure("REMOTE_TOO_LARGE",413);
+    }else{
+      bytes=await downloadVpnCatalog(providerId);
+    }
     const response=await fetchWorker("server-vpn",{
       providerId,dataBase64:bytes.toString("base64"),
     },settings(),opts);
