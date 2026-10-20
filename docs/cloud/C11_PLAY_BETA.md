@@ -6,10 +6,10 @@ Rama: `feat/austroplus-vpn-13-0-1-decoders`; PR #96 abierto y sin fusionar.
 
 ## Archivos
 El workflow `.github/workflows/play-beta-artifacts.yml` compila **dos formatos a partir
-del mismo código, versión 1.1.4, versionCode 25, y Android 16 (targetSdk 36)**:
-- `SP-DECODE-v1.1.4-play-closed-test-signed.aab`: subir al track **Prueba cerrada**
+del mismo código, versión 1.1.5, versionCode 26, y Android 16 (targetSdk 36)**:
+- `SP-DECODE-v1.1.5-play-closed-test-signed.aab`: subir al track **Prueba cerrada**
   en Google Play Console.
-- `SP-DECODE-v1.1.4-beta-external-signed.apk`: distribución fuera de Play.
+- `SP-DECODE-v1.1.5-beta-external-signed.apk`: distribución fuera de Play.
 - `SHA256SUMS.txt` y `SIGNATURE_VERIFICATION.txt`.
 
 Los dos usan **la clave permanente** de GitHub Secrets `SPDECODE_SIGNING_*`, sin

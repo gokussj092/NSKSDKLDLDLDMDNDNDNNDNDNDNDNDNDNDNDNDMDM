@@ -406,8 +406,8 @@ android {
         applicationId = "com.ghostdeveloper.spdecode"
         minSdk = 24
         targetSdk = 36
-        versionCode = 25
-        versionName = "1.1.4"
+        versionCode = 26
+        versionName = "1.1.5"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // A public API origin is not a secret; all server secrets stay in the VPS.
         buildConfigField("boolean", "SPDECODE_CLOUD_ENABLED", enableCloud.toString())
