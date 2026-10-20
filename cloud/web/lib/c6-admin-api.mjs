@@ -4,6 +4,7 @@ import { opsStore, maintenanceEnabled, setMaintenance, aggregateMetrics, usageRe
   SERVICE_IDS,serviceMaintenanceStates,setServiceMaintenance } from "./c6-ops-store.mjs";
 import { settings } from "./c3-config.mjs";
 import {admissionPolicy,setAdmissionPolicy} from "./c11-play-admission.mjs";
+import {providerOverview,updateProvider,PUBLIC_PROVIDER_IDS} from "./c12-provider-controls.mjs";
 import { ehiConfigured,nurConfigured } from "./c35-provider.mjs";
 import { jsonReply } from "./responses.mjs";
 
@@ -46,8 +47,9 @@ export async function statusRequest(request,options={}) {
   try{
     const redis=await (options.storeProvider||opsStore)();
     if(!await authenticateAdmin(redis,request))return error("UNAUTHORIZED",401);
-    const [maintenance,metrics,ping,serviceMaintenance,playAdmission]=await Promise.all([
-      maintenanceEnabled(redis),aggregateMetrics(redis),redis.ping(),serviceMaintenanceStates(redis),admissionPolicy(redis),
+    const [maintenance,metrics,ping,serviceMaintenance,playAdmission,providerControls]=await Promise.all([
+      maintenanceEnabled(redis),aggregateMetrics(redis),redis.ping(),serviceMaintenanceStates(redis),
+      admissionPolicy(redis),providerOverview(),
     ]);
     const cfg=settings();
     // Worker origin cannot be user-controlled.
@@ -65,7 +67,7 @@ export async function statusRequest(request,options={}) {
       services:{apiConfigured:cfg.configured,redisConnected:ping==="PONG",
         workerReady,ehiImportConfigured:ehiConfigured(),
         nurCatalogImportConfigured:nurConfigured()},
-      maintenance,serviceMaintenance,playAdmission,
+      maintenance,serviceMaintenance,playAdmission,providerControls,
       maintenanceLocked:process.env.CLOUD_FORCE_MAINTENANCE==="true",metrics,
       observation:"Counters are aggregate-only; no user content or keys are logged.",
     });
@@ -135,6 +137,28 @@ export async function playAdmissionRequest(request,options={}){
    {"Cache-Control":"private, no-store"});
  }catch(e){
   if(e?.message==="BETA_LOCKED")return error("BETA_LOCKED",409);
+  return error("SERVICE_UNAVAILABLE",503);
+ }
+}
+
+/** Fixed-provider availability: CSRF protected, authenticated, never writes credentials. */
+export async function providerControlRequest(request,options={}){
+ const cfg=adminSettings();
+ if(!cfg.enabled)return error("ADMIN_DISABLED",503);
+ if(!validMutation(request,cfg))return error("CSRF_REJECTED",403);
+ try{
+  const redis=await (options.storeProvider||opsStore)();
+  if(!await authenticateAdmin(redis,request,cfg))return error("UNAUTHORIZED",401);
+  const body=await parseSmallJson(request,256);
+  if(!own(body,["id","enabled"]) || typeof body.enabled!=="boolean" ||
+     typeof body.id!=="string" || !PUBLIC_PROVIDER_IDS.includes(body.id))
+    return error("INVALID_REQUEST",400);
+  const providerControls=await updateProvider(body.id,body.enabled);
+  return api({providerControls},200,{"Cache-Control":"private, no-store"});
+ }catch(cause){
+  if(cause?.message==="PROVIDER_NOT_CONFIGURED")return error("PROVIDER_NOT_CONFIGURED",409);
+  if(cause?.message==="MAINTENANCE_LOCKED")return error("MAINTENANCE_LOCKED",409);
+  if(cause?.message==="PROVIDER_BUSY")return error("PROVIDER_BUSY",409);
   return error("SERVICE_UNAVAILABLE",503);
  }
 }
