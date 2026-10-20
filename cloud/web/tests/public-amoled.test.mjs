@@ -45,7 +45,7 @@ test("ES and EN complete and legal pages remain available",()=>{
  assert.match(home,/Tus configuraciones, más claras/);
  assert.match(legal,/Política|Privacidad|Privacidad y tratamiento/);
  assert.match(legal,/Privacy and data processing/);
- assert.match(legal,/October 18, 2026/);
+ assert.match(legal,/October 19, 2026/);
  for(const page of ["app/privacy/page.jsx","app/terms/page.jsx","app/support/page.jsx"])
   assert.match(read(page),/PublicLegal/);
 });
