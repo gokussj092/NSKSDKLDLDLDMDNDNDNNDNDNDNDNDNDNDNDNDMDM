@@ -6,7 +6,7 @@ const content={
  es:{
   tag:"Aplicación para Android",title:"Tus configuraciones, más claras.",
   intro:"Explora e interpreta configuraciones VPN desde tu dispositivo Android con una experiencia sencilla, moderna y familiar.",
-  download:"Descargar para Android",note:"Descargas y versiones disponibles únicamente en el canal oficial.",
+  download:"Próximamente",play:"Google Play",note:"SP-DECODE estará disponible próximamente en Google Play.",
   explore:"Explora la aplicación",exploreText:"Desliza horizontalmente para explorar las cuatro pantallas reales de SP-DECODE.",
   features:"Lo esencial, en un solo lugar",
   featuresText:"Una interfaz diseñada para consultar tus configuraciones y organizar tus resultados sin complicaciones.",
@@ -18,7 +18,7 @@ const content={
  en:{
   tag:"Android application",title:"Make your configurations clearer.",
   intro:"Explore and interpret VPN configurations from your Android device through a simple, modern and familiar experience.",
-  download:"Download for Android",note:"Downloads and available versions are provided only through the official release channel.",
+  download:"Coming soon",play:"Google Play",note:"SP-DECODE is coming soon to Google Play.",
   explore:"Explore the app",exploreText:"Swipe horizontally to explore all four real SP-DECODE screens.",
   features:"Everything you need, in one place",featuresText:"An interface designed to inspect your configurations and organize your results with less effort.",
   items:[["Files and text","Select configuration files or paste text inside the application."],["History","Review and manage your saved results."],["Formats","Browse supported formats in the catalog."],["Server VPN","Access compatible remote catalog features."]],
@@ -82,8 +82,9 @@ export default function Home(){
   <section className="sp-container sp-hero">
    <div className="sp-hero-copy"><span className="sp-kicker"><span aria-hidden="true" className="sp-small-dot"/> {t.tag}</span>
     <h1>SP-DECODE</h1><h2>{t.title}</h2><p>{t.intro}</p>
-    <a className="sp-button sp-button-primary" href="https://github.com/Gh0stDeveloper/SP-DECODE/releases" target="_blank" rel="noopener noreferrer">
-     <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4"/></svg>{t.download}</a>
+    <button className="sp-button sp-button-play-pending" type="button" disabled aria-disabled="true">
+     <span className="sp-play-platform">{t.play}</span><strong>{t.download}</strong>
+    </button>
     <small className="sp-hint">{t.note}</small>
    </div>
    <div className="sp-hero-app" aria-label="SP-DECODE"><img src="/icon.svg" alt="SP-DECODE" width="128" height="128"/><strong>SP-DECODE</strong><span>Configuration decoder</span><div className="sp-hero-device-line"/></div>
