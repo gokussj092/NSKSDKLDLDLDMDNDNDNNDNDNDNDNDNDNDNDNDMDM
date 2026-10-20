@@ -39,6 +39,25 @@ export default function AdminDashboard(){
   }catch(e){setError(e.message||"No se pudo cambiar el estado.");}
   finally{setBusy(false);}
  }
+ async function changeProvider(id,enabled,name){
+  if(!data?.providerControls||busy)return;
+  const action=enabled?"Activar":"Desactivar";
+  const warning=enabled?
+   "El servidor utilizará la integración únicamente si están configurados los requisitos privados en la VPS.":
+   "Los nuevos descifrados de este proveedor quedarán deshabilitados.";
+  if(!window.confirm("¿"+action+" "+name+"? "+warning))return;
+  setBusy(true);setError("");
+  try{
+   const response=await fetch("/api/admin/providers",requestOptions({id,enabled}));
+   const result=await response.json();
+   if(!response.ok)throw Error(response.status===409?
+    "El proveedor está bloqueado o no tiene configurados los requisitos de VPS.":
+    "No se pudo guardar el cambio ("+response.status+").");
+   setData(prev=>({...prev,providerControls:result.providerControls}));
+   await refresh();
+  }catch(e){setError(e.message||"No se pudo actualizar el proveedor.");}
+  finally{setBusy(false);}
+ }
  async function changePlayAdmission(){
   if(!data?.playAdmission||busy||data.playAdmission.locked)return;
   const required=!data.playAdmission.integrityRequired;
@@ -108,6 +127,25 @@ export default function AdminDashboard(){
       disabled={busy||data.playAdmission?.locked} onClick={changePlayAdmission}><span/></button>
     </div>
     <p className="muted">No utilices este modo como protección contra aplicaciones alteradas: durante la beta no hay autenticación criptográfica del origen del cliente. Se restablece automáticamente después de 15 días; puedes desactivarlo antes.</p>
+   </section>
+   <section className="admin-card sp-admin-services">
+    <div className="sp-admin-section-heading"><div>
+     <h2>Disponibilidad de importaciones remotas</h2>
+     <p className="muted">Activa o desactiva HTTP Injector Cloud, NUR Tunnel y cada proveedor Server VPN. Estos controles no requieren QA. El servidor debe tener habilitados previamente los requisitos privados de cada integración.</p>
+    </div><span className="sp-admin-chip">Servicios Cloud</span></div>
+    <div className="admin-kv"><span>Versión del catálogo Server VPN</span><strong>{data.providerControls?.catalogVersion??"—"}</strong></div>
+    {(data.providerControls?.providers||[]).map(provider=>{
+     const locked=busy||!provider.configured||data.maintenance||data.maintenanceLocked;
+     return <div className="sp-admin-switch-row" key={provider.id}>
+      <div><strong>{provider.name}</strong>
+       <small className="muted">{!provider.configured?"No configurado en la VPS":provider.enabled?"Habilitado para nuevos descifrados":"Deshabilitado desde el panel"}</small>
+      </div>
+      <button type="button" className="sp-admin-switch" role="switch"
+       aria-label={"Disponibilidad: "+provider.name} aria-checked={Boolean(provider.enabled)}
+       disabled={locked} onClick={()=>changeProvider(provider.id,!provider.enabled,provider.name)}><span/></button>
+     </div>;
+    })}
+    <p className="muted">Los cambios se guardan en un volumen de configuración independiente, incluso al reiniciar Redis o los contenedores. La versión del catálogo aumenta cuando cambias un proveedor; actualiza Server VPN en la aplicación. La activación de HTTP Injector requiere las claves originales del proveedor, que no se muestran aquí.</p>
    </section>
    <section className="admin-card sp-admin-services">
     <div className="sp-admin-section-heading">
