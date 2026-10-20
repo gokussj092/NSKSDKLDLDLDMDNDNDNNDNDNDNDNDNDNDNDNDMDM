@@ -294,7 +294,10 @@ def decode_provider_catalog(provider_id: str, contents: bytes) -> dict:
         raise DecodeFailure("UNSUPPORTED_FORMAT")
     if not isinstance(contents, bytes) or not contents:
         raise DecodeFailure("INVALID_INPUT")
-    if len(contents) > 8 * 1024 * 1024:
+    # MKK source bundle carries four separately encrypted fixed-origin replies
+    # encoded in Base64; its envelope may exceed one provider response.
+    limit = 12 * 1024 * 1024 if provider_id == "mkk-hyper" else 8 * 1024 * 1024
+    if len(contents) > limit:
         raise DecodeFailure("INPUT_TOO_LARGE")
     bridge=Path(__file__).with_name("catalog_vpn_bridge.py")
     with tempfile.TemporaryDirectory(prefix="spdecode-c8-catalog-") as folder:
