@@ -54,7 +54,27 @@ function LegacyChrome({children}){return <>
   <div className="footer-links"><Link href="/features">Funciones</Link><Link href="/docs">Documentación</Link><Link href="/terms">Términos</Link><Link href="/privacy">Privacidad</Link><Link href="/status">Estado</Link><Link href="https://panel.spdecode.xyz/admin/login">Administración</Link></div>
  </div><div className="shell footer-last">SP-DECODE Cloud · Plataforma Android · Sin descifrado desde el navegador</div></footer>
  </>;}
+function AdminChrome({children,path}){
+ const isLogin=path==="/admin/login";
+ return <div className="sp-admin-frame">
+  <header className="sp-admin-topbar">
+   <div className="sp-admin-topbar-inner">
+    <Link className="sp-admin-brand" href={isLogin?"/":"/admin"} aria-label="SP-DECODE Administración">
+     <img src="/icon.svg" width="43" height="43" alt=""/>
+     <span><strong>SP-DECODE</strong><small>Administración Cloud</small></span>
+    </Link>
+    <span className="sp-admin-topbar-label">{isLogin?"Acceso restringido":"Consola privada"}</span>
+   </div>
+  </header>
+  {children}
+  <footer className="sp-admin-footer">
+   <span>SP-DECODE · Ghost Developer</span>
+   <nav aria-label="Documentos legales"><Link href="/privacy">Privacidad</Link><Link href="/terms">Términos</Link><Link href="/support">Soporte</Link></nav>
+  </footer>
+ </div>;
+}
 export default function SiteChrome({children}){
  const pathname=usePathname();
+ if(pathname?.startsWith("/admin"))return <AdminChrome path={pathname}>{children}</AdminChrome>;
  return publicRoutes.has(pathname)?<PublicChrome>{children}</PublicChrome>:<LegacyChrome>{children}</LegacyChrome>;
 }
