@@ -217,6 +217,43 @@ class ProviderServiceTests(unittest.TestCase):
                 providers.import_ehi_script(str(script), providers.current_lines())
         self.assertEqual(self.env.read_text(), before)
 
+    def test_liveness_does_not_require_decoder_readiness_or_maintenance_clearance(self):
+        """Web liveness is HTTP 200 even when a global maintenance lock is active."""
+        class Reply:
+            status = 200
+            def __enter__(self):
+                return self
+            def __exit__(self, *args):
+                return False
+
+        with mock.patch.object(providers, "urlopen", return_value=Reply()) as fetch:
+            self.assertTrue(providers.healthy())
+        self.assertEqual(fetch.call_args.args[0],
+                         "http://127.0.0.1:3000/api/v1/health")
+
+    def test_liveness_waits_for_transient_connection_resets(self):
+        class Reply:
+            status = 200
+            def __enter__(self):
+                return self
+            def __exit__(self, *args):
+                return False
+
+        with mock.patch.object(providers, "urlopen",
+                               side_effect=[ConnectionResetError(), OSError("starting"), Reply()]) as fetch, \
+             mock.patch.object(providers.time, "sleep") as pause:
+            self.assertTrue(providers.healthy())
+        self.assertEqual(fetch.call_count, 3)
+        self.assertEqual(pause.call_count, 2)
+
+    def test_maintenance_lock_denies_provider_activation_without_mutation(self):
+        before = providers.current_lines()
+        self.write(before + ["CLOUD_FORCE_MAINTENANCE=true"])
+        actual = self.env.read_text()
+        with self.assertRaisesRegex(SystemExit, "maintenance is locked by VPS"):
+            providers.apply("enable", providers.current_lines())
+        self.assertEqual(self.env.read_text(), actual)
+
     def test_disable_preserves_vendor_credentials_but_bumps_version(self):
         with mock.patch.object(providers, "compose"), mock.patch.object(providers, "healthy", return_value=True):
             providers.apply("enable", providers.current_lines())
