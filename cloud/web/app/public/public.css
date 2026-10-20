@@ -20,6 +20,10 @@ body:has(.sp-public-frame){background:#000;color:#f7f7f7}
 .sp-hero p{color:#b1b1b1;font-size:16px;line-height:1.8;max-width:575px;margin:20px 0 30px}
 .sp-button{display:inline-flex;align-items:center;justify-content:center;gap:13px;border-radius:13px;min-height:52px;padding:13px 24px;font-size:14px;font-weight:750}
 .sp-button-primary{background:#f7f7f7;color:#000!important}.sp-button-primary:hover{background:#dcdcdc}
+.sp-button-play-pending{display:inline-flex;flex-direction:column;align-items:flex-start;gap:1px;background:#242424;border:1px solid #454545;color:#f7f7f7;cursor:not-allowed;opacity:.8;text-align:left;line-height:1.25}
+.sp-button-play-pending:disabled{cursor:not-allowed}
+.sp-button-play-pending .sp-play-platform{font-size:12px;font-weight:600;color:#b9b9b9}
+.sp-button-play-pending strong{font-size:15px;font-weight:750}
 .sp-hint{display:block;color:#929292;margin-top:14px;max-width:370px}
 .sp-hero-app{min-height:315px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:9px;border:1px solid #303030;background:#151515;border-radius:30px}
 .sp-hero-app img{background:#242424;border-radius:30px;padding:14px}.sp-hero-app strong{font-size:26px;letter-spacing:-.03em}.sp-hero-app span{color:#aaa}
