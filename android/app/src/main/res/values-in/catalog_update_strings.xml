@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_auto_title">Pembaruan otomatis katalog Server VPN</string>
+    <string name="catalog_auto_detail">Izinkan pemberitahuan dan pemeriksaan pemulihan di latar belakang. Hanya versi katalog publik yang diperiksa; ikon baru diunduh dan diverifikasi hanya saat katalog berubah. Jika Firebase Cloud Messaging disiapkan, Google dapat memproses token pesan perangkat. Anda dapat menonaktifkannya kapan saja.</string>
+    <string name="catalog_auto_switch">Aktifkan sinkronisasi latar belakang</string>
+</resources>

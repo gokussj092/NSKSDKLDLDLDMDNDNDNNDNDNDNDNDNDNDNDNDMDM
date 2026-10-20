@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_auto_title">Mises à jour automatiques de Server VPN</string>
+    <string name="catalog_auto_detail">Autorisez les alertes et la vérification des mises à jour en arrière-plan. Seule la version publique est consultée ; les icônes sont téléchargées si le catalogue change. Si Firebase Cloud Messaging est configuré, Google peut traiter un jeton de messagerie. Vous pouvez désactiver cette fonction à tout moment.</string>
+    <string name="catalog_auto_switch">Activer la synchronisation en arrière-plan</string>
+</resources>

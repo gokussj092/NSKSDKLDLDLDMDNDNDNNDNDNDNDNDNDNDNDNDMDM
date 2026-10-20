@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_auto_title">Automatic Server VPN catalog updates</string>
+    <string name="catalog_auto_detail">Allow update notifications and background recovery checks. Only the public catalog version is checked; new icons are downloaded and verified only when the catalog changes. If Firebase Cloud Messaging is configured, Google may process a device messaging token. You may turn this off at any time.</string>
+    <string name="catalog_auto_switch">Enable background catalog sync</string>
+</resources>

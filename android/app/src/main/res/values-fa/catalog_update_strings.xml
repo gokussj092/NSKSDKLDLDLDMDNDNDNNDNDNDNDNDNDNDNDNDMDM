@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_auto_title">به‌روزرسانی خودکار فهرست Server VPN</string>
+    <string name="catalog_auto_detail">دریافت اعلان تغییرات و بررسی دوره‌ای در پس‌زمینه را مجاز کنید. فقط نسخه عمومی فهرست بررسی می‌شود و نمادهای جدید تنها پس از تغییر دانلود و اعتبارسنجی می‌شوند. اگر Firebase Cloud Messaging فعال باشد، ممکن است گوگل توکن پیام‌رسانی دستگاه را پردازش کند. هر زمان می‌توانید این گزینه را غیرفعال کنید.</string>
+    <string name="catalog_auto_switch">فعال‌سازی همگام‌سازی پس‌زمینه</string>
+</resources>

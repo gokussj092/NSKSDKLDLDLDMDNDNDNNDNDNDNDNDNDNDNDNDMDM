@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_auto_title">Automatische Server-VPN-Katalogupdates</string>
+    <string name="catalog_auto_detail">Erlaube Updates und Hintergrundprüfungen. Es wird nur die öffentliche Katalogversion geprüft; neue Symbole werden ausschließlich bei Änderungen geladen und verifiziert. Falls Firebase Cloud Messaging eingerichtet ist, kann Google ein Geräte-Messaging-Token verarbeiten. Jederzeit deaktivierbar.</string>
+    <string name="catalog_auto_switch">Hintergrund-Synchronisierung aktivieren</string>
+</resources>
