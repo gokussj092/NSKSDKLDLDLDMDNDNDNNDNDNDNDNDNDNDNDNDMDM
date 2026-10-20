@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="cloud_legal_title">Conditions et confidentialité</string>
-    <string name="cloud_legal_explanation">SP-DECODE Cloud envoie au serveur uniquement les fichiers ou textes que vous choisissez de traiter. Ils peuvent contenir des identifiants sensibles.</string>
+    <string name="cloud_legal_explanation">SP-DECODE Cloud transmet les fichiers et textes que vous choisissez de décoder. Il estime également chaque jour les installations actives à partir d’un code aléatoire pour planifier la capacité des serveurs. Le contenu des configurations ne fait pas partie de ce comptage.</string>
     <string name="cloud_legal_terms">Lire les conditions d’utilisation</string>
     <string name="cloud_legal_privacy">Lire la politique de confidentialité</string>
     <string name="cloud_legal_accept_check">J’ai lu et j’accepte les conditions et la politique de confidentialité.</string>
