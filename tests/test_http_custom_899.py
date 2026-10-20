@@ -43,7 +43,9 @@ class HttpCustom899Tests(unittest.TestCase):
                     self.assertEqual(clear["config"], [expected])
                     self.assertEqual(clear["main"], MAIN)
                     self.assertEqual(clear["other_sections"], [{"label": "extra", "content": {"preserved": [None, False, 0]}}])
-                    self.assertEqual(clear["envelope"]["z"], {"preserve": [1, None, False, {}]})
+                    self.assertNotIn("envelope", clear)
+                    self.assertNotIn("format", clear)
+                    self.assertEqual(set(clear), {"app_version", "config", "main", "protections", "other_sections"})
                     self.assertEqual(clear["protections"]["blockRoot"], False)
                     self.assertEqual(clear["config"][0]["port"], 443)
                     self.assertEqual(clear["config"][0]["options"]["port"], 8080)
@@ -115,6 +117,10 @@ class HttpCustom899Tests(unittest.TestCase):
                 credentials["password"] = PASSWORD
             response = decode_file("hc", make_file(locked=locked, protected=protected), credentials=credentials or None)
             self.assertEqual(response["structuredJson"]["main"], MAIN)
+            self.assertNotIn("envelope", response["structuredJson"])
+            self.assertNotIn("format", response["structuredJson"])
+            self.assertNotIn('"envelope"', response["rawText"])
+            self.assertNotIn('"outer"', response["rawText"])
             self.assertEqual(response["structuredJson"]["config"][0]["flags"], 0xffffffff)
             self.assertFalse(response["isPartial"])
         for credentials, code in [(None, "HWID_PASSWORD_REQUIRED"),
