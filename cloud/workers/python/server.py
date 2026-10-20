@@ -16,7 +16,7 @@ MAX_JSON_BYTES = (MAX_INPUT_BYTES * 4 // 3) + 65536
 # The approved MKK bundle carries up to four fixed-source envelopes and
 # is itself Base64-wrapped by the internal broker. Not a public upload limit.
 MAX_MKK_BUNDLE_BYTES = 12 * 1024 * 1024
-MAX_SERVER_VPN_JSON_BYTES = ((MAX_MKK_BUNDLE_BYTES + 2) // 3) * 4 + 65536
+MAX_SERVER_VPN_JSON_BYTES = max(MAX_JSON_BYTES, ((MAX_MKK_BUNDLE_BYTES + 2) // 3) * 4 + 65536)
 
 
 class WorkerHandler(BaseHTTPRequestHandler):
