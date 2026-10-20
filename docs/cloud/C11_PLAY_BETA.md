@@ -239,3 +239,7 @@ ningún archivo automáticamente a Google Play.
 - Al ser ahora público el repositorio, el flujo no crea ni publica la APK temporal de verificación de propiedad que contiene el identificador de registro. No es necesaria para actualizar una aplicación ya dada de alta.
 
 Documentación Android de referencia: https://developer.android.com/develop/ui/views/layout/edge-to-edge y https://developer.android.com/guide/practices/page-sizes.
+
+### Validación de ventana en emulador
+
+El workflow `android-play-ui-insets.yml` ejecuta una prueba instrumentada en Android API 35 y 36 (emulador x86_64) para comprobar con `WindowInsetsCompat` que el encabezado y las pestañas inferiores visibles no se solapan con las barras del sistema. Esta prueba aporta evidencia de geometría real del emulador, pero no sustituye las pruebas en dispositivos físicos, gestos/3 botones, tamaños de pantalla variados o hardware con páginas reales de 16 KiB. Los resultados se consultan en GitHub Actions, sin publicar ni desplegar la aplicación.
