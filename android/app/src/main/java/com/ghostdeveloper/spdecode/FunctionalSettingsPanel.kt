@@ -162,13 +162,10 @@ fun FunctionalSettingsPanel(
                 Text(stringResource(R.string.cloud_usage_title),color=TitleText,
                     fontWeight=FontWeight.SemiBold,fontSize=16.sp)
             }
-            Row(verticalAlignment=Alignment.CenterVertically){
-                Text(stringResource(R.string.cloud_usage_detail),color=MutedText,
-                    fontSize=12.sp,lineHeight=18.sp,modifier=Modifier.weight(1f))
-                Spacer(Modifier.width(10.dp))
-                Switch(checked=usageAnalyticsEnabled,onCheckedChange=onUsageAnalytics,
-                    colors=SwitchDefaults.colors(checkedThumbColor=Color.Black,checkedTrackColor=TitleText))
-            }
+            // Information only: minimum Cloud capacity metrics are explained
+            // before acceptance of Cloud terms; never use a misleading opt-out.
+            Text(stringResource(R.string.cloud_usage_detail),color=MutedText,
+                fontSize=12.sp,lineHeight=18.sp)
             Text(stringResource(R.string.cloud_usage_footnote),color=MutedText,fontSize=11.sp)
         }
         if(BuildConfig.SPDECODE_CLOUD_ENABLED) SettingsCard {
