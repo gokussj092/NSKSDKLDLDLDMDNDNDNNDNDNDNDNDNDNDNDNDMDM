@@ -15,8 +15,8 @@ PROVIDERS = {
     "24clan-green": "decoders.Python.apps.24clan_VPN_Green.24clan_VPN_Green",
     "hx-tunnel": "decoders.Python.apps.HX_Tunnel_VPN.HX_Tunnel_VPN",
     "mkk-hyper": "decoders.Python.apps.MKK_Hyper_VPN.MKK_Hyper_VPN",
-    "ksh-vpn": "cloud.workers.python.ksh_catalog",
-    "dtunnel-mod": "cloud.workers.python.dtunnelmod_catalog",
+    "ksh-vpn": "decoders.Python.apps.KSH_VPN.ksh_vpn",
+    "dtunnel-mod": "decoders.Python.apps.DTunnel_Mod.dtunnelmod",
     "my-tunnel-proxy": "decoders.Python.apps.My_Tunnel_Proxy.server_catalog_decoder",
     "robust-tunnel": "decoders.Python.apps.Robust_Tunnel_VPN.server_catalog_decoder",
     # Offline decoder; Royal's public card has an icon but decoding stays disabled.
