@@ -7,6 +7,7 @@ Never creates substitute EHI keys: the real vendor keys are required.
 from __future__ import annotations
 
 import ast
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -52,6 +53,54 @@ def value(lines: list[str], key: str) -> str:
 def ehi_ready(lines: list[str]) -> bool:
     return (len(value(lines, "CLOUD_EHI_SIGN_KEY")) == 32
             and len(value(lines, "CLOUD_EHI_RESPONSE_KEY").encode("utf-8")) == 32)
+
+
+# The verified 6.5.0/244 method is ALREADY part of the repository's
+# HTTP Injector Android reference. Ship no extra credential file: extract only
+# its two fixed protocol constants into the VPS-private environment on enable.
+EHI_REFERENCE = ROOT / "repo/android/app/src/main/java/com/ghostdeveloper/spdecode/HttpInjectorCloudPort.kt"
+EHI_PROTOCOL_DIGESTS = (
+    "1ed7b6c1537ab20dca655f7f69f6c5debfe38912e1fe9899da3a0cb127da1ee8",
+    "9e5e8ad1459ccfc0ba87811a2153e4e7bce0e88e81bfec0972bf45e33b9a5789",
+)
+
+
+def bundled_ehi() -> tuple[str, str] | None:
+    try:
+        source = EHI_REFERENCE.read_text(encoding="utf-8")
+    except (OSError, UnicodeError):
+        return None
+    if len(source) > 120 * 1024:
+        return None
+    matches = []
+    for name in ("SIGN_KEY", "RESPONSE_KEY"):
+        found = re.findall(r'private const val ' + name + r' = "([A-Za-z0-9+/=]{32})"', source)
+        if len(found) != 1:
+            return None
+        matches.append(found[0])
+    if 'private const val BUILD = "244"' not in source:
+        return None
+    if 'private const val ENDPOINT = "https://www.ehi.tools/httpinjector/import_config"' not in source:
+        return None
+    if tuple(hashlib.sha256(x.encode("ascii")).hexdigest() for x in matches) != EHI_PROTOCOL_DIGESTS:
+        return None
+    return matches[0], matches[1]
+
+
+def bundled_ehi_updates(lines: list[str]) -> dict[str, str]:
+    if ehi_ready(lines):
+        return {"CLOUD_EHI_IMPORT_ENABLED": "true"}
+    # Never overwrite half-configured or custom private keys automatically.
+    if value(lines, "CLOUD_EHI_SIGN_KEY") or value(lines, "CLOUD_EHI_RESPONSE_KEY"):
+        return {"CLOUD_EHI_IMPORT_ENABLED": "false"}
+    credentials = bundled_ehi()
+    if credentials is None:
+        return {"CLOUD_EHI_IMPORT_ENABLED": "false"}
+    return {
+        "CLOUD_EHI_SIGN_KEY": credentials[0],
+        "CLOUD_EHI_RESPONSE_KEY": credentials[1],
+        "CLOUD_EHI_IMPORT_ENABLED": "true",
+    }
 
 
 def validated_nur() -> str:
@@ -149,8 +198,8 @@ def apply(action: str, previous: list[str]) -> None:
             "CLOUD_SERVER_VPN_ENABLED": "true",
             "CLOUD_NUR_FETCH_ENABLED": "true",
             "CLOUD_NUR_CATALOG_URL": validated_nur(),
-            "CLOUD_EHI_IMPORT_ENABLED": "true" if ehi_ready(previous) else "false",
         }
+        changes.update(bundled_ehi_updates(previous))
     else:
         changes = {
             "CLOUD_SERVER_VPN_ENABLED": "false",
