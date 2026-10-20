@@ -176,6 +176,11 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
             legacy_sks = False
         if legacy_sks:
             engine = load_file_engines()["sks"]
+    if suffix == "hat":
+        # Historical hat.js flattens and drops nested configuration fields.
+        # The full-result bridge decrypts the same envelope, preserves every
+        # original JSON section and decodes known profilev5 values.
+        engine = {**engine, "source": str(Path(__file__).with_name("hat_complete.js"))}
     if suffix == "aro" and _is_legacy_aro(contents):
         engine = load_file_engines()["aro"]
     # The APK exports prefixed .actun; keep historical raw RENZ .actun inputs.
