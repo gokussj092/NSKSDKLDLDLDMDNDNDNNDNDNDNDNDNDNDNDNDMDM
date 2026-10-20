@@ -1,6 +1,6 @@
 # SP-DECODE — publicación cerrada de Google Play y APK beta
 
-Operador/editor: **Ghost Netzor Studio**. Nombre comercial del desarrollador; no altera el
+Operador/editor: **Ghost Nexora Studio**. Nombre comercial del desarrollador; no altera el
 paquete **`com.ghostdeveloper.spdecode`** ni el nombre visible SP-DECODE.
 Rama: `feat/austroplus-vpn-13-0-1-decoders`; PR #96 abierto y sin fusionar.
 
@@ -56,7 +56,7 @@ No hay un bloqueo impuesto por Google Play al APK externo por este control:
 la API decide el acceso. QA temporal continúa como mecanismo independiente.
 
 ## Pasos Play Console
-1. Crear la ficha **SP-DECODE**, editor Ghost Netzor Studio y paquete
+1. Crear la ficha **SP-DECODE**, editor Ghost Nexora Studio y paquete
    `com.ghostdeveloper.spdecode`. Completar ficha, icono, capturas, política
    de privacidad y declaración de tratamiento de datos / contenido.
 2. Registrar la firma Play, comparar huella SHA-256 e introducir variable de
@@ -80,3 +80,35 @@ necesitan `targetSdk 36`. El proyecto usa AGP 8.9.2 (compatible con API 36),
 `compileSdk 36` y conserva `minSdk 24`. Este cambio se prueba en CI, pero
 se deben comprobar los gestos de navegación, barras de sistema y diálogos
 en un dispositivo Android 16 antes de publicar.
+
+## Verificación de propiedad del nombre de paquete en Play Console
+
+Si Play Console muestra **Firma y sube un APK** para el paquete
+`com.ghostdeveloper.spdecode`, este procedimiento es independiente de subir
+un AAB para pruebas cerradas. **No subas aquí el AAB ni el APK beta normal**.
+
+1. En tu repositorio GitHub, crea un secreto de Actions llamado
+   `SPDECODE_ADI_REGISTRATION_TOKEN`, usando únicamente el identificador
+   proporcionado por Play Console. **No publiques el identificador en código
+   fuente, archivos del PR, commits, capturas de logs ni un release público.**
+2. Comprueba que la huella SHA-256 indicada por Play Console sea la de la
+   **clave permanente del APK existente**. La huella seleccionada durante esta
+   preparación es `0F:A9:F0:7F:2C:47:46:49:25:F3:A7:B2:22:C9:A3:9E:F8:87:73:8F:67:8B:9C:91:8E:C6:C4:FB:96:16:22:60`.
+   La compilación abortará si difiere: selecciona la clave elegible correcta
+   en Play Console. No sustituyas ni regeneres tu keystore histórico.
+3. Vuelve a ejecutar `.github/workflows/play-beta-artifacts.yml` en la
+   rama de trabajo. Ese flujo compila primero el AAB y la APK beta normales.
+   Después, si existe el secreto, genera un **APK independiente** que contiene
+   `assets/adi-registration.properties`, firmado con la misma clave histórica.
+4. Descarga el artefacto
+   `SP-DECODE-PLAY-PACKAGE-OWNERSHIP-VERIFICATION` de GitHub Actions. Extrae
+   `SP-DECODE-package-name-ownership-verification.apk` y súbelo en el campo
+   **Firma y sube un APK** de Play Console. **No uses este APK en la pista de
+   pruebas cerradas ni lo distribuyas a usuarios.**
+5. Tras verificar el paquete, puedes quitar el secreto temporal de GitHub.
+   Luego continúa con el AAB normal en la pista de pruebas cerradas.
+
+El identificador se genera solamente durante esa ejecución y se destruye al
+terminar; el AAB para Google Play y el APK beta externo nunca lo contienen.
+La compilación no fusiona el PR, no publica en GitHub Releases y no sube
+ningún archivo automáticamente a Google Play.

@@ -376,6 +376,16 @@ val prepareCloudAssets = tasks.register<Sync>("prepareCloudAssets") {
     // No encrypted vault files, generated runtime vault key, network provider
     // endpoints, profile tables or other original decoder source materials.
     from("src/main/assets/decoder_catalog.json")
+    // Google package-name ownership proof is a temporary CI-only APK. It is
+    // NEVER included in ordinary Play AABs, external beta APKs or debug APKs.
+    if (providers.environmentVariable("SPDECODE_ADI_VERIFICATION_BUILD").orNull == "true") {
+        require(enableCloud) { "Package ownership proof requires a Cloud build" }
+        val proof=file("src/main/assets/adi-registration.properties")
+        require(proof.isFile && proof.length() in 16L..128L) {
+            "Missing ephemeral Play Console package-ownership identifier"
+        }
+        from(proof)
+    }
     into(cloudAssetRoot)
 }
 

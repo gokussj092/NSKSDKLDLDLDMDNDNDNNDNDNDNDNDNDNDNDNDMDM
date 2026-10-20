@@ -109,6 +109,71 @@ jobs:
           path: dist/
           if-no-files-found: error
           retention-days: 14
-      - name: Shred temporary keystore copy
+      # Existing AAB/APK are already stored above. The ownership verification
+      # APK is different and contains a one-time Play Console registration code.
+      # Never commit the code or pack it into any public distribution artifact.
+      - name: Prepare optional private package-name ownership verification
+        id: ownership
+        env:
+          ADI_SNIPPET: ${{ secrets.SPDECODE_ADI_REGISTRATION_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [[ -z "$ADI_SNIPPET" ]]; then
+            echo "::notice::Ownership verification skipped: add SPDECODE_ADI_REGISTRATION_TOKEN under repository Actions secrets, then rerun this workflow."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          [[ "$ADI_SNIPPET" =~ ^[A-Z0-9]{16,64}$ ]] || {
+            echo "::error::Unexpected Play Console registration identifier format"
+            exit 1
+          }
+          EXPECTED="0fa9f07f2c47464925f3a7b222c9a39ef887738f678b9c918ec6c4fb96162260"
+          if [[ "$SPDECODE_TRUSTED_SIGNER_SHA256" != "$EXPECTED" ]]; then
+            echo "::error::Play Console's selected key does not match this repository's permanent signing key."
+            echo "::error::Selected SHA-256: $EXPECTED"
+            echo "::error::Repository signer SHA-256: $SPDECODE_TRUSTED_SIGNER_SHA256"
+            echo "::error::Choose the matching eligible key in Play Console. Never replace the original release keystore."
+            exit 1
+          fi
+          umask 077
+          mkdir -p android/app/src/main/assets
+          printf '%s' "$ADI_SNIPPET" > android/app/src/main/assets/adi-registration.properties
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+      - name: Build separate ownership-verification APK with original signing key
+        if: steps.ownership.outputs.ready == 'true'
+        working-directory: android
+        env:
+          SPDECODE_CLOUD_API_BASE_URL: https://api.spdecode.xyz
+          SPDECODE_CLOUD_RELEASE: "true"
+          SPDECODE_ADI_VERIFICATION_BUILD: "true"
+          SPDECODE_RELEASE_STORE_PASSWORD: ${{ secrets.SPDECODE_SIGNING_STORE_PASSWORD }}
+          SPDECODE_RELEASE_KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
+          SPDECODE_RELEASE_KEY_PASSWORD: ${{ secrets.SPDECODE_SIGNING_KEY_PASSWORD }}
+        run: gradle --no-daemon :app:assembleRelease
+      - name: Verify ownership APK contains only the temporary registration asset and correct signing identity
+        if: steps.ownership.outputs.ready == 'true'
+        run: |
+          set -euo pipefail
+          APK=android/app/build/outputs/apk/release/app-release.apk
+          test -s "$APK"
+          unzip -Z -1 "$APK" | grep -Fx 'assets/adi-registration.properties'
+          test "$(unzip -p "$APK" assets/adi-registration.properties | sha256sum | cut -d' ' -f1)" = "$(sha256sum android/app/src/main/assets/adi-registration.properties | cut -d' ' -f1)"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK" > "$RUNNER_TEMP/adi-verified-signature.txt"
+          grep -Fi "Signer #1 certificate SHA-256 digest: 0fa9f07f2c47464925f3a7b222c9a39ef887738f678b9c918ec6c4fb96162260" "$RUNNER_TEMP/adi-verified-signature.txt" >/dev/null
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | grep -F "package: name='com.ghostdeveloper.spdecode'" >/dev/null
+          mkdir -p verification-dist
+          cp "$APK" verification-dist/SP-DECODE-package-name-ownership-verification.apk
+          (cd verification-dist && sha256sum *.apk > SHA256SUMS.txt)
+      - name: Upload Google package-name ownership APK separately (not a production release)
+        if: steps.ownership.outputs.ready == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: SP-DECODE-PLAY-PACKAGE-OWNERSHIP-VERIFICATION
+          path: verification-dist/
+          if-no-files-found: error
+          retention-days: 7
+      - name: Remove temporary verification identifier and keystore
         if: always()
-        run: rm -f "$RUNNER_TEMP/spdecode-beta.p12"
+        run: |
+          rm -f android/app/src/main/assets/adi-registration.properties
+          rm -f "$RUNNER_TEMP/spdecode-beta.p12"
