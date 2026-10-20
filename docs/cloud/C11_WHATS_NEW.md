@@ -1,5 +1,7 @@
 # C11 — Online What's New (versioned API)
 
+> [Procedimiento obligatorio de futuras actualizaciones: Server VPN y novedades](CATALOGS_UPDATE_RUNBOOK.md)
+
 The Android Cloud dialog is now populated from `POST /api/v1/whats-new`, not bundled announcements tied to `versionCode`.
 
 ## Content and localization
