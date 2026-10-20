@@ -228,6 +228,17 @@ internal class CloudDecodeClient(context: Context) {
                 JSONObject().put("knownVersion",knownVersion)))
         }
 
+    /** Only the VPS version number is returned; no provider URLs or decoded files. */
+    suspend fun watchCatalogVersion(knownVersion:Int):Int = withContext(Dispatchers.IO) {
+        requireLegalConsent()
+        require(knownVersion in 0..999999999)
+        val reply=extract(CloudNativeTransport.post("/api/v1/server-vpn/watch",
+            JSONObject().put("knownVersion",knownVersion)))
+        val version=reply.optInt("catalogVersion",0)
+        if(version !in 1..999999999)throw IOException("CLOUD_INVALID_CATALOG_VERSION")
+        version
+    }
+
     suspend fun decodeServerVpnProvider(id:String): Decoded {
         require(id.matches(Regex("[a-z0-9-]{1,48}")))
         return decode("/api/v1/server-vpn/decode",
