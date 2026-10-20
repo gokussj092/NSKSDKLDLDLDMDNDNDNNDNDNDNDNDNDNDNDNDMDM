@@ -55,6 +55,38 @@ usuarios de APK externas perderán acceso a **nuevas** sesiones sin Play.
 No hay un bloqueo impuesto por Google Play al APK externo por este control:
 la API decide el acceso. QA temporal continúa como mecanismo independiente.
 
+## Preproducción externa: importaciones remotas sin QA
+
+Las importaciones de archivos y textos operan por `CLOUD_API_ENABLED`, pero **no activan** por sí solas HTTP Injector Cloud ni Server VPN. Las tres opciones son independientes del control temporal de Google Play Integrity:
+
+- `CLOUD_SERVER_VPN_ENABLED`: permite los proveedores Server VPN con destinos fijos aprobados.
+- `CLOUD_NUR_FETCH_ENABLED` y `CLOUD_NUR_CATALOG_URL`: habilitan la importación del catálogo NUR, leyendo la URL exclusivamente del recurso privado previamente aprobado.
+- `CLOUD_EHI_IMPORT_ENABLED`: permite HTTP Injector Cloud **solo** con `CLOUD_EHI_SIGN_KEY` y `CLOUD_EHI_RESPONSE_KEY` auténticas y de 32 bytes. No crear valores inventados.
+
+En versiones antiguas, `spdecode qa start` activaba temporalmente estos servicios y `spdecode qa stop` restauraba los anteriores, dejándolos a veces deshabilitados. Desde la rama del PR #96 se administran **persistentemente y sin iniciar QA**:
+
+```bash
+sudo spdecode backup
+sudo spdecode update all feat/austroplus-vpn-13-0-1-decoders
+sudo spdecode providers status
+sudo spdecode providers enable
+sudo spdecode providers status
+sudo spdecode status
+```
+
+El comando `providers enable` exige que `CLOUD_API_ENABLED=true` y que no haya una sesión QA en curso. Si hay una, ejecutar `sudo spdecode qa stop` antes de habilitar los servicios permanentes. Verifica y aplica el origen NUR sin imprimirlo. Actualiza `CLOUD_SERVER_VPN_CATALOG_VERSION` únicamente cuando cambia el estado o el origen, obligando a Android a renovar los metadatos de las opciones disponibles. Reinicia solo el servicio web y comprueba `/api/v1/ready`; ante un fallo, restaura el archivo de entorno y el contenedor.
+
+**HTTP Injector Cloud** quedará como `NOT CONFIGURED` si faltan las claves privadas existentes. Se deben aprovisionar por un canal privado; nunca imprimirlas, registrarlas en comandos con historial o incorporarlas a GitHub. `providers enable` no genera sustitutos.
+
+Para desactivar importaciones remotas (sin deshabilitar archivos/textos ni borrar claves):
+
+```bash
+sudo spdecode providers disable
+sudo spdecode providers status
+```
+
+La habilitación de importaciones es **independiente** de la admisión beta sin Play Integrity, que se activa desde `/admin/system` y caduca en un máximo de 15 días. En la aplicación, abrir Server VPN y pulsar actualizar para consultar la nueva versión del catálogo. Si aparece un error `REMOTE_PROVIDER_UNAVAILABLE`, `REMOTE_NETWORK_DENIED` o similar, el siguiente diagnóstico es el acceso HTTPS del contenedor a los proveedores, no el modo QA del APK.
+
 ## Pasos Play Console
 1. Crear la ficha **SP-DECODE**, editor Ghost Nexora Studio y paquete
    `com.ghostdeveloper.spdecode`. Completar ficha, icono, capturas, política
