@@ -180,7 +180,10 @@ def status(lines: list[str]) -> None:
     ehi = value(lines, "CLOUD_EHI_IMPORT_ENABLED") == "true" and ehi_ready(lines)
     print("HTTP Injector Cloud:", "ENABLED" if ehi else "NOT CONFIGURED")
     if not ehi_ready(lines):
-        print("HTTP Injector requires genuine existing server-side 32-byte sign and response keys.")
+        if bundled_ehi() is not None:
+            print("HTTP Injector method 6.5.0/244 available in repo; use 'spdecode providers enable' to activate.")
+        else:
+            print("HTTP Injector requires valid existing 6.5.0/244 protocol keys.")
     print("Server VPN catalog version:",
           value(lines, "CLOUD_SERVER_VPN_CATALOG_VERSION") or str(CATALOG_BASE))
     print("Private QA:",
