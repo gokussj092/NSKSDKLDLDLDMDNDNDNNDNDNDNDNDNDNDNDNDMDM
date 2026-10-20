@@ -171,19 +171,30 @@ def compose(*args: str) -> None:
 
 
 def healthy() -> bool:
-    for _ in range(15):
+    """Wait for the restarted web process, not decoding readiness.
+
+    /ready deliberately returns 503 under maintenance, which previously
+    caused a valid provider configuration to be reverted after a successful
+    web restart. /health is the maintenance-independent liveness endpoint.
+    """
+    for attempt in range(20):
         try:
-            with urlopen("http://127.0.0.1:3000/api/v1/ready", timeout=4) as response:
+            with urlopen("http://127.0.0.1:3000/api/v1/health", timeout=4) as response:
                 if response.status == 200:
                     return True
         except (OSError, ValueError):
             pass
-        time.sleep(2)
+        if attempt != 19:
+            time.sleep(3)
     return False
 
 
 def status(lines: list[str]) -> None:
     print("API:", "ENABLED" if value(lines, "CLOUD_API_ENABLED") == "true" else "DISABLED")
+    forced = value(lines, "CLOUD_FORCE_MAINTENANCE") == "true"
+    print("Mantenimiento global impuesto por VPS:", "ACTIVO" if forced else "DESACTIVADO")
+    if forced:
+        print("Para liberar el panel: spdecode config set CLOUD_FORCE_MAINTENANCE false; spdecode restart web")
     print("Proveedores de Servidores VPN:",
           "ENABLED" if value(lines, "CLOUD_SERVER_VPN_ENABLED") == "true" else "DISABLED")
     nur = value(lines, "CLOUD_NUR_FETCH_ENABLED") == "true" and bool(value(lines, "CLOUD_NUR_CATALOG_URL"))
@@ -207,6 +218,8 @@ def apply(action: str, previous: list[str]) -> None:
         fail("Stop the private QA session first; preserve its state with 'spdecode qa stop'.")
     if value(previous, "CLOUD_API_ENABLED") != "true":
         fail("Cloud API is not enabled; do not change provider settings.")
+    if action == "enable" and value(previous, "CLOUD_FORCE_MAINTENANCE") == "true":
+        fail("Global maintenance is locked by VPS. Run 'spdecode config set CLOUD_FORCE_MAINTENANCE false' and 'spdecode restart web' first.")
     if action == "enable":
         changes = {
             "CLOUD_SERVER_VPN_ENABLED": "true",
