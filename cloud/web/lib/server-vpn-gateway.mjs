@@ -10,7 +10,7 @@ import {providerAllowed} from "./c12-provider-controls.mjs";
 
 export async function decodeServerVpn(request,opts={}){
   if(!enabled())return notEnabled();
-  let redis,claims,lease=null,providerId="";
+  let redis,claims,lease=null,providerId="",downloadedBytes=0;
   try{
     redis=await (opts.storeProvider||store)();
     if(await maintenanceEnabled(redis))return failure("SERVICE_UNAVAILABLE",503);
@@ -50,6 +50,7 @@ export async function decodeServerVpn(request,opts={}){
     }else{
       bytes=await downloadVpnCatalog(providerId);
     }
+    downloadedBytes=bytes.length;
     const response=await fetchWorker("server-vpn",{
       providerId,dataBase64:bytes.toString("base64"),
     },settings(),opts);
@@ -62,8 +63,19 @@ export async function decodeServerVpn(request,opts={}){
     }catch{}
     return response;
   }catch(error){
-    if(redis&&lease)try{await recordWorkerResult(redis,"failed",{kind:"server-vpn",format:providerId,bytes:0,
-      errorCode:error?.code||"SERVICE_UNAVAILABLE"});}catch{}
+    // Distinguish worker schema/output failures from transient network errors.
+    // Persist only sanitized buckets and length; never log VPN payload bytes.
+    const workerErrors={
+      INVALID_WORKER_JSON:"REMOTE_DECODER_FAILED",
+      INVALID_WORKER_SHAPE:"REMOTE_DECODER_FAILED",
+      INVALID_WORKER_RESULT:"REMOTE_DECODER_FAILED",
+      OUTPUT_OVER_LIMIT:"OUTPUT_TOO_LARGE",
+    };
+    const code=error?.code||workerErrors[error?.message]||"SERVICE_UNAVAILABLE";
+    if(redis&&lease)try{await recordWorkerResult(redis,"failed",{kind:"server-vpn",format:providerId,bytes:downloadedBytes,
+      errorCode:code});}catch{}
+    if(code==="REMOTE_DECODER_FAILED")return failure(code,502);
+    if(code==="OUTPUT_TOO_LARGE")return failure(code,413);
     if(error instanceof VpnProviderError){
       const statuses={REMOTE_NOT_CONFIGURED:503,UNSUPPORTED_FORMAT:422,
         REMOTE_NETWORK_DENIED:502,REMOTE_PROVIDER_UNAVAILABLE:502,
