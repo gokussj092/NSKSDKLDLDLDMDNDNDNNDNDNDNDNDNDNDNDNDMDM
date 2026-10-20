@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import {test} from "node:test";
 import {randomBytes,generateKeyPairSync,scryptSync} from "node:crypto";
 import {adminSettings,checkPassword,parseAdminCookie,authenticateAdmin,validMutation} from "../lib/c6-admin-auth.mjs";
-import {loginRequest,statusRequest,maintenanceRequest,logoutRequest} from "../lib/c6-admin-api.mjs";
+import {loginRequest,statusRequest,maintenanceRequest,logoutRequest,providerControlRequest} from "../lib/c6-admin-api.mjs";
 import {maintenanceEnabled,serviceMaintenanceEnabled,serviceMaintenanceStates,recordWorkerResult,aggregateMetrics} from "../lib/c6-ops-store.mjs";
 import {decodeRequest,challengeRequest} from "../lib/c3-gateway.mjs";
 import {externalImportRequest} from "../lib/c35-gateway.mjs";
@@ -220,4 +220,25 @@ test("independent service maintenance is authenticated, CSRF protected, and cann
   assert.equal((await change({enabled:false})).status,200);
   assert.equal(await serviceMaintenanceEnabled(redis,"files"),false);
   assert.deepEqual(await serviceMaintenanceStates(redis),{files:false,httpInjector:true,serverVpn:false});
+});
+
+test("provider availability API rejects cross-origin, unauthenticated and arbitrary provider IDs",async()=>{
+  const redis=new RedisFake(),args=redisFactory(redis);
+  let response=await providerControlRequest(request("/api/admin/providers",{id:"http-jireh",enabled:false}),args);
+  assert.equal(response.status,401);
+  const logged=await loginRequest(request("/api/admin/login",{username,password}),args);
+  assert.equal(logged.status,200);
+  const cookie=cookieOnly(logged);
+  response=await providerControlRequest(request("/api/admin/providers",{id:"http-jireh",enabled:false},
+    cookie,{origin:"https://evil.example"}),args);
+  assert.equal(response.status,403);
+  response=await providerControlRequest(request("/api/admin/providers",{id:"https://attacker.invalid",
+    enabled:true},cookie),args);
+  assert.equal(response.status,400);
+  response=await providerControlRequest(request("/api/admin/providers",{id:"royal-tunnel",
+    enabled:true},cookie),args);
+  assert.equal(response.status,400);
+  response=await providerControlRequest(request("/api/admin/providers",{id:"http-jireh",
+    enabled:"yes"},cookie),args);
+  assert.equal(response.status,400);
 });
