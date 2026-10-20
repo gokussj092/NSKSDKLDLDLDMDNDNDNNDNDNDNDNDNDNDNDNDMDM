@@ -120,6 +120,7 @@ class MainActivity : ComponentActivity() {
     private var message by mutableStateOf<String?>(null)
     private var usageOptIn by mutableStateOf(false)
     private var catalogUpdatesEnabled by mutableStateOf(false)
+    private var catalogWatchJob:Job?=null
     private var reportBusy by mutableStateOf(false)
     private var reveal:Boolean
         get()=sessionVm.reveal
@@ -153,6 +154,20 @@ class MainActivity : ComponentActivity() {
             }catch(e:CancellationException){throw e}
              catch(_:Exception){message=getString(R.string.cloud_report_failed)}
             finally{reportBusy=false}
+        }
+    }
+
+    /** Direct VPS watch runs only while the application is visible. */
+    private fun startCatalogWatch(){
+        if(showCloudLegal || !CloudCatalogUpdates.enabled(this) ||
+            catalogWatchJob?.isActive==true)return
+        catalogWatchJob=scope.launch {
+            CloudCatalogUpdates.watchWhileVisible(
+                this@MainActivity,cloudClient,serverVpnCatalog
+            ){apps->
+                serverVpnApps=apps
+                serverVpnUnavailable=apps.isEmpty()
+            }
         }
     }
 
@@ -396,6 +411,8 @@ class MainActivity : ComponentActivity() {
                     try {
                         CloudCatalogUpdates.setEnabled(this@MainActivity,enabled)
                         catalogUpdatesEnabled=CloudCatalogUpdates.enabled(this@MainActivity)
+                        if(catalogUpdatesEnabled)startCatalogWatch()
+                        else catalogWatchJob?.cancel()
                     }catch(_:Exception){message=getString(R.string.history_storage_error)}
                 },
                 onWithdrawCloudConsent={
@@ -404,6 +421,7 @@ class MainActivity : ComponentActivity() {
                             CloudDiagnosticsPrivacy.setEnabled(this@MainActivity,false)
                             usageOptIn=false
                             CloudCatalogUpdates.setEnabled(this@MainActivity,false)
+                            catalogWatchJob?.cancel()
                             catalogUpdatesEnabled=false
                             CloudLegalConsent.revoke(this@MainActivity)
                             cloudClient.clearSession()
@@ -492,7 +510,7 @@ class MainActivity : ComponentActivity() {
         // A signature/debuggable check that runs only at cold start can be
         // bypassed by a later process attachment. Defense-in-depth recheck.
         if(!ReleaseIntegrity.isTrusted(this)) finishAndRemoveTask()
-        if(!showCloudLegal){refreshServerVpn();syncOptInUsage();CloudCatalogUpdates.ensureScheduled(this)}
+        if(!showCloudLegal){refreshServerVpn();syncOptInUsage();CloudCatalogUpdates.ensureScheduled(this);startCatalogWatch()}
     }
 
     override fun onNewIntent(intent:Intent){
@@ -1180,6 +1198,7 @@ class MainActivity : ComponentActivity() {
     private fun toast(id:Int)=Toast.makeText(this,id,Toast.LENGTH_SHORT).show()
 
     override fun onStop(){
+        catalogWatchJob?.cancel()
         reveal=false
         super.onStop()
     }
