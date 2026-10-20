@@ -118,31 +118,35 @@ El método emoji (`💉…🚀`) decodifica una **referencia**, no la configurac
 la aplicación ya la resuelve con el mismo contrato. La compatibilidad de
 otros builds posteriores debe comprobarse con muestras reales.
 
-El backend tiene este importador implementado, pero requiere una provisión privada
-de `CLOUD_EHI_SIGN_KEY` y `CLOUD_EHI_RESPONSE_KEY`. El script adjunto del
-propietario contiene los valores para el build comprobado; **no incorporarlo al
-repositorio, APK, Dockerfile ni historial de shell**. Provisión recomendada:
+El backend ya contiene el método Cloud y el codec emoji. El propietario aportó
+`HTTPINJECTOR_CLOUD.py` y `HTTPINJECTOR_EMOJI.py` para cotejarlo: las dos
+constantes de protocolo 6.5.0/244 coinciden con las referencias verificadas
+que ya están en `HttpInjectorCloudPort.kt`. **No hace falta copiar archivos
+al servidor ni utilizar Termux/computadora.**
 
-1. Copiar el archivo `HTTPINJECTOR_CLOUD.py` por SSH/SFTP a
-   `/root/HTTPINJECTOR_CLOUD.py` en la VPS. Este archivo es privado y no
-   se debe servir por HTTP.
-2. Ejecutar `sudo chown root:root /root/HTTPINJECTOR_CLOUD.py` y
-   `sudo chmod 600 /root/HTTPINJECTOR_CLOUD.py`.
-3. Con QA desactivado y `CLOUD_API_ENABLED=true`, ejecutar:
+El comando `spdecode providers enable` lee **automáticamente**, sin ejecutar
+código, las constantes protocolarias del archivo versionado, confirma las
+huellas criptográficas y las guarda en
+`/etc/spdecode/cloud.env` con permisos 0600. Reinicia el servicio web y
+restaura la configuración anterior si falla la comprobación de salud. La
+clave de aplicación no se introduce de nuevo en Android ni se muestra en la
+interfaz, los logs o la terminal. El motor EHI previo no cambia.
 
 ```bash
 sudo spdecode backup
-sudo spdecode providers import-ehi /root/HTTPINJECTOR_CLOUD.py
+sudo spdecode update all feat/austroplus-vpn-13-0-1-decoders
+sudo spdecode config set CLOUD_API_ENABLED true
+sudo spdecode restart web
+sudo spdecode providers enable
 sudo spdecode providers status
 ```
 
-El comando no **ejecuta** el archivo: inspecciona las constantes literales
-`ENDPOINT`, `APP_BUILD`, `SIGN_SECRET` y `API_KEY` mediante `ast`,
-valida únicamente el contrato 6.5.0/244 y coloca los valores en el fichero
-privado `/etc/spdecode/cloud.env` (0600). Reinicia solo el servicio web, comprueba
-la disponibilidad y revierte la configuración si falla. No escribe las claves
-en GitHub, no las imprime y no modifica el motor tradicional de archivos EHI.
-Después se puede retirar el script temporal de la VPS.
+Si existían claves privadas personalizadas incorrectas o incompletas en
+`cloud.env`, el comando **no las reemplaza silenciosamente**. En ese caso
+requiere revisión manual de esos valores, sin imprimirlos. La importación
+`providers import-ehi` queda disponible como alternativa avanzada, pero
+no se necesita para la integración normal.
+
 
 En el panel `/admin/system`, el interruptor **HTTP Injector Cloud** dejará
 de mostrarse sin configurar. El bloque de proveedores denomina al servicio
