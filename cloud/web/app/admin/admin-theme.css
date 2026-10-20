@@ -123,3 +123,8 @@ body:has(.sp-admin-frame){background:#000;color:#f7f7f7}
  .sp-admin-footer nav{margin-top:12px;gap:18px}
 }
 @media(prefers-reduced-motion:reduce){.sp-admin-switch,.sp-admin-switch>span{transition:none}}
+
+.sp-admin-diagnostics{margin:27px 0}
+.sp-admin-diagnostics .admin-report-toolbar h2{font-size:17px;letter-spacing:-.02em}
+.sp-admin-diagnostics .admin-table{min-width:790px}
+.sp-admin-diagnostics .admin-table code{overflow-wrap:anywhere}

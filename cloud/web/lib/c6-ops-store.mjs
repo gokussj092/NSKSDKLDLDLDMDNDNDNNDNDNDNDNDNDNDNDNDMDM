@@ -1,4 +1,5 @@
 import { adminSettings } from "./c6-admin-auth.mjs";
+import {recordAutomaticIncident} from "./c9-diagnostics.mjs";
 let cache;
 export async function opsStore() {
   if(!adminSettings().enabled)throw Error("ADMIN_DISABLED");
@@ -57,7 +58,11 @@ export async function recordWorkerResult(redis,outcome,meta=null) {
   await pipeline.exec();
   // Keep legacy totals unchanged. New telemetry begins from deployment;
   // nothing is backfilled or inferred from historical file contents.
-  if(meta) await recordAnonymousUsage(redis,outcome,meta);
+  if(meta){
+    await recordAnonymousUsage(redis,outcome,meta);
+    // Best-effort diagnostics: a Redis failure must never change decode outcomes.
+    try{await recordAutomaticIncident(redis,outcome,meta);}catch{}
+  }
 }
 export async function aggregateMetrics(redis) {
   const day=new Date().toISOString().slice(0,10);
