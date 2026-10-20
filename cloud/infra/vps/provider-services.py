@@ -124,10 +124,10 @@ def healthy() -> bool:
 
 def status(lines: list[str]) -> None:
     print("API:", "ENABLED" if value(lines, "CLOUD_API_ENABLED") == "true" else "DISABLED")
-    print("Server VPN providers:",
+    print("Proveedores de Servidores VPN:",
           "ENABLED" if value(lines, "CLOUD_SERVER_VPN_ENABLED") == "true" else "DISABLED")
     nur = value(lines, "CLOUD_NUR_FETCH_ENABLED") == "true" and bool(value(lines, "CLOUD_NUR_CATALOG_URL"))
-    print("VPN Servers catalog import:", "ENABLED" if nur else "DISABLED")
+    print("Servidores VPN (catálogo):", "ENABLED" if nur else "DISABLED")
     ehi = value(lines, "CLOUD_EHI_IMPORT_ENABLED") == "true" and ehi_ready(lines)
     print("HTTP Injector Cloud:", "ENABLED" if ehi else "NOT CONFIGURED")
     if not ehi_ready(lines):
