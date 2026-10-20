@@ -10,6 +10,7 @@ FROM node:22-bookworm-slim
 WORKDIR /app
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1
 COPY --from=build --chown=node:node /app ./
+RUN mkdir -p /app/provider-control && chown node:node /app/provider-control && chmod 0700 /app/provider-control
 USER node
 EXPOSE 3000
 CMD ["npm", "run", "start"]
