@@ -247,3 +247,7 @@ El workflow `android-play-ui-insets.yml` ejecuta una prueba instrumentada en And
 ## Decisión de publicación
 
 El paquete v1.1.6 (27) se ha solicitado únicamente para **prueba cerrada de Google Play**. En `release/android-readiness.json` se registra `NO-GO` para distribución estable y prerelease público: ninguna aprobación anterior (incluida la de 1.1.4) se transfiere a esta versión. La compilación AAB para Play cerrada no altera esa decisión.
+
+### Aislamiento de pruebas Cloud
+
+Los tests instrumentados heredados importan motores Android locales excluidos deliberadamente de la compilación Cloud. Para evitar referencias no resueltas, Cloud utiliza `src/cloudAndroidTest/java` como fuente exclusiva de instrumentación, con `PlayEdgeToEdgeInstrumentedTest.kt`. La compilación offline conserva intacto `src/androidTest/java` y sus pruebas históricas. Esto solo afecta a los APK de prueba, no incorpora motores al AAB distribuido.

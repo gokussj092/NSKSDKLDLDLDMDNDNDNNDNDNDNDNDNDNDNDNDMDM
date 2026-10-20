@@ -414,6 +414,11 @@ android {
         // Cloud source inputs are isolated from all 107 local engine classes.
         sourceSets.getByName("main").java.setSrcDirs(listOf(cloudSourceRoot))
         sourceSets.getByName("main").assets.setSrcDirs(listOf(cloudAssetRoot))
+        // The Cloud binary deliberately excludes local decoder implementations.
+        // Compile only Cloud instrumentation; historical offline suites use the
+        // legacy test source set and would reference absent local engines.
+        sourceSets.getByName("androidTest").java.setSrcDirs(
+            listOf(file("src/cloudAndroidTest/java")))
     } else {
         // Non-distributed legacy baseline only, to protect historical CI.
         sourceSets.getByName("main").assets.setSrcDirs(listOf(vaultPackagedAssets))
