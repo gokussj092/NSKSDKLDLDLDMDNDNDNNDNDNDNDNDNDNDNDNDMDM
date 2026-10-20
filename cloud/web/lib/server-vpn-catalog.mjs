@@ -3,7 +3,7 @@ import {readFileSync} from "node:fs";
 import {join} from "node:path";
 import {createHash} from "node:crypto";
 
-export const CATALOG_VERSION = 12; // Increment whenever the public roster or metadata changes.
+export const CATALOG_VERSION = 13; // Increment whenever the public roster or metadata changes.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -13,10 +13,10 @@ export function activeCatalogVersion(env=process.env) {
   if(configured===undefined || configured==="")return CATALOG_VERSION;
   if(!/^[1-9][0-9]{0,8}$/.test(configured))throw Error("INVALID_CATALOG_VERSION");
   const number=Number(configured);
-  if(!Number.isSafeInteger(number) || number<CATALOG_VERSION-1)
+  if(!Number.isSafeInteger(number) || number<11)
     throw Error("CATALOG_VERSION_ROLLBACK");
-  // Existing VPS installs still pin the previous version 11 in cloud.env.
-  // Serve this roster's minimum version without forcing an unrelated config edit.
+  // Existing VPS installations may still pin version 11 or 12 in cloud.env.
+  // Keep the effective version monotonic for new icon and roster metadata.
   return Math.max(number,CATALOG_VERSION);
 }
 
@@ -35,6 +35,9 @@ const ITEMS = Object.freeze([
   {id:"robust-tunnel", name:"Robust Tunnel VPN", icon:"robust-tunnel.png", remote:"robust-tunnel"},
   {id:"trv-tunnel", name:"TRV TUNNEL", icon:"trv-tunnel.png", remote:"trv-tunnel"},
   {id:"4u-tunnel-lite", name:"4U TUNNEL LITE", icon:"4u-tunnel-lite.png", remote:"4u-tunnel-lite"},
+  // DTunnel Mod can decrypt offline, but remote catalogs require a private
+  // account identifier. Show the owner-confirmed icon; do not enable download.
+  {id:"dtunnel-mod", name:"DTunnel Mod", icon:"dtunnel-mod.png", remote:null},
   // Keep Royal's original icon visible while its live catalog remains unvalidated.
   {id:"royal-tunnel", name:"Royal Tunnel VPN", icon:"royal-tunnel.png", remote:null},
 ]);
