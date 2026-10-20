@@ -7,7 +7,7 @@ import {
   PUBLIC_PROVIDER_IDS,providerPrerequisite,providerEffective,
   loadProviderState,providerOverview,providerAllowed,updateProvider,
 } from "../lib/c12-provider-controls.mjs";
-import {catalog} from "../lib/server-vpn-catalog.mjs";
+import {catalog,activeCatalogVersion} from "../lib/server-vpn-catalog.mjs";
 
 const env={
   CLOUD_API_ENABLED:"true",CLOUD_SERVER_VPN_ENABLED:"true",CLOUD_NUR_FETCH_ENABLED:"true",
@@ -32,11 +32,11 @@ test("allowlist is fixed and remote URLs are never stored as provider IDs",()=>{
 test("provider settings are opt-out, persistent and version-incremented",async t=>{
   const root=await fixture(t);
   const opts={root};
-  assert.equal((await providerOverview(env,opts)).catalogVersion,12);
+  assert.equal((await providerOverview(env,opts)).catalogVersion,activeCatalogVersion(env));
   assert.equal(await providerAllowed("http-jireh",env,opts),true);
   const disabled=await updateProvider("http-jireh",false,env,opts);
   assert.equal(disabled.providers.find(x=>x.id==="http-jireh").enabled,false);
-  assert(disabled.catalogVersion>12);
+  assert(disabled.catalogVersion>activeCatalogVersion(env));
   assert.equal(await providerAllowed("http-jireh",env,opts),false);
   const stored=await readFile(join(root,"switches.json"),"utf8");
   assert(!stored.includes("https://") && !stored.includes("S".repeat(32)));
