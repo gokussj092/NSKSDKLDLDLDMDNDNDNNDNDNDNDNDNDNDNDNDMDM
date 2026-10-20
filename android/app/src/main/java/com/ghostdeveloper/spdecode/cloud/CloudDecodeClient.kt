@@ -34,6 +34,10 @@ internal class CloudDecodeClient(context: Context) {
         if(!CloudLegalConsent.accepted(app)) throw Failure("LEGAL_CONSENT_REQUIRED",403)
     }
 
+    data class Diagnostic(val service:String,val format:String,val code:String)
+    @Volatile var lastDiagnostic:Diagnostic?=null
+        private set
+
     data class Decoded(val rawText: String, val sourceBytes: Int? = null)
 
     class Failure(val code: String, val httpStatus: Int) :
@@ -123,13 +127,32 @@ internal class CloudDecodeClient(context: Context) {
         require(BuildConfig.SPDECODE_CLOUD_ENABLED) { "CLOUD_DISABLED" }
         withContext(Dispatchers.IO) { requireLegalConsent() }
         coroutineContext.ensureActive()
+        lastDiagnostic=null
         val bearer = session()
         coroutineContext.ensureActive()
-        val response = withContext(Dispatchers.IO) {
-            // Consent can be withdrawn while Play Integrity creates a session.
-            // Re-check immediately before sending any file, text or provider ID.
-            requireLegalConsent()
-            extract(CloudNativeTransport.post(endpoint,payload,bearer))
+        val response = try {
+            withContext(Dispatchers.IO) {
+                // Never store request payloads or credentials in a diagnostic.
+                requireLegalConsent()
+                extract(CloudNativeTransport.post(endpoint,payload,bearer))
+            }
+        }catch(failure:Failure) {
+            // Only whitelisted enum-like codes and known format labels are retained in RAM.
+            if(failure.httpStatus>=400 && failure.code.matches(Regex("[A-Z][A-Z0-9_]{2,49}"))) {
+                val service=when(endpoint){
+                    "/api/v1/decode/import/cloud"->"httpInjector"
+                    "/api/v1/server-vpn/decode","/api/v1/decode/import/catalog/remote"->"serverVpn"
+                    else->"files"
+                }
+                val raw=when(service){
+                    "httpInjector"->"ehi"
+                    "serverVpn"->payload.optString("id","nur-catalog")
+                    else->payload.optString("format",if(endpoint.endsWith("/text"))"text" else "other")
+                }
+                val safe=raw.takeIf{it.matches(Regex("[a-z0-9][a-z0-9._-]{0,31}"))}?:"other"
+                lastDiagnostic=Diagnostic(service,safe,failure.code)
+            }
+            throw failure
         }
         coroutineContext.ensureActive()
         if (response.optString("status") != "success" || response.optBoolean("isPartial",true))
@@ -216,6 +239,31 @@ internal class CloudDecodeClient(context: Context) {
             requireLegalConsent()
             extract(CloudNativeTransport.post("/api/v1/server-vpn/icon",
                 JSONObject().put("id",id)))
+        }
+    }
+
+    /** Explicit user action only: never uploads the source file or a free-text note. */
+    suspend fun reportFailure(details:Diagnostic):String {
+        requireLegalConsent()
+        val data=JSONObject().put("type","report")
+            .put("service",details.service).put("format",details.format)
+            .put("code",details.code).put("appVersion",BuildConfig.VERSION_NAME)
+        val response=withContext(Dispatchers.IO){
+            extract(CloudNativeTransport.post("/api/v1/telemetry",data,session()))
+        }
+        val id=response.optString("reportId")
+        if(!id.matches(Regex("[0-9a-f-]{36}")))throw IOException("CLOUD_REPORT_RESPONSE_INVALID")
+        return id
+    }
+
+    /** Optional count of installations; random ID created only after user opts in. */
+    suspend fun registerOptInActivity(installationId:String) {
+        requireLegalConsent()
+        require(installationId.matches(Regex("[0-9a-f]{32}")))
+        val data=JSONObject().put("type","activity")
+            .put("installationId",installationId).put("consent",true)
+        withContext(Dispatchers.IO){
+            extract(CloudNativeTransport.post("/api/v1/telemetry",data,session()))
         }
     }
 
