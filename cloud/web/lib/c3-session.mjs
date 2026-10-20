@@ -44,7 +44,7 @@ export async function issueSession(redis, request, body, cfg, verifier = verifyP
   if (!challenge) return { error:"EXPIRED_CHALLENGE",status:401 };
   if(policy.integrityRequired){
     if(typeof body.integrityToken!=="string"||body.integrityToken.length<80 ||
-       !cfg.account || !await verifier(body.integrityToken,challenge.nonce,cfg))
+       !await verifier(body.integrityToken,challenge.nonce,cfg))
       return {error:"INTEGRITY_REJECTED",status:403};
   }else if(body.integrityToken!==undefined && body.integrityToken!==""){
     return {error:"INVALID_REQUEST",status:400};
