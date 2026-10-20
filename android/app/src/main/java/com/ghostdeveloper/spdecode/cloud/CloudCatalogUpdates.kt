@@ -30,7 +30,7 @@ internal object CloudCatalogUpdates {
     private const val PREFS="spdecode-catalog-sync"
     private const val CONSENT="allow-background-sync"
     private const val BACKUP="catalog-version-recovery"
-    private const val PUSH="catalog-version-push"
+    internal const val PUSH_WORK_NAME="catalog-version-push"
 
     fun enabled(context:Context):Boolean =
         BuildConfig.SPDECODE_CLOUD_ENABLED &&
@@ -64,7 +64,7 @@ internal object CloudCatalogUpdates {
         }else{
             val wm=WorkManager.getInstance(context)
             wm.cancelUniqueWork(BACKUP)
-            wm.cancelUniqueWork(PUSH)
+            wm.cancelUniqueWork(PUSH_WORK_NAME)
             messaging(context)?.let{
                 it.unsubscribeFromTopic(TOPIC)
                 it.deleteToken()
@@ -94,7 +94,7 @@ internal object CloudCatalogUpdates {
             .setConstraints(constraints)
             .setBackoffCriteria(BackoffPolicy.EXPONENTIAL,30,TimeUnit.SECONDS)
             .build()
-        WorkManager.getInstance(context).enqueueUniqueWork(PUSH,ExistingWorkPolicy.REPLACE,immediate)
+        WorkManager.getInstance(context).enqueueUniqueWork(PUSH_WORK_NAME,ExistingWorkPolicy.REPLACE,immediate)
     }
 
     /** Firebase must exist before a headless message service starts after process death. */
@@ -133,7 +133,7 @@ internal class CloudCatalogSyncWorker(
             repository.refreshIfDue(announcedVersion=requested)
             // Cached data survives transient offline/error states; retry only when
             // the announced version is still missing.
-            if(requested>0 && repository.currentVersion()<requested)Result.retry()
+            if(requested>0 && repository.currentVersion()<requested && runAttemptCount<4)Result.retry()
             else Result.success()
         }catch(error:CancellationException){throw error}
          catch(_:Exception){Result.retry()}

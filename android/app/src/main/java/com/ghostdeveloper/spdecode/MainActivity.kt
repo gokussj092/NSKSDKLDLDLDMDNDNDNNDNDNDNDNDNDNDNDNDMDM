@@ -14,6 +14,8 @@ import android.provider.OpenableColumns
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.work.WorkManager
+import androidx.work.WorkInfo
 import androidx.activity.viewModels
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -273,6 +275,15 @@ class MainActivity : ComponentActivity() {
         showWhatsNew=settings.getLong("last_seen_whats_new_version",0L)<runningVersionCode
         showCloudLegal=BuildConfig.SPDECODE_CLOUD_ENABLED && !CloudLegalConsent.accepted(this)
         catalogUpdatesEnabled=CloudCatalogUpdates.enabled(this)
+        if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
+            // Refresh the visible provider list as soon as a background push completes.
+            WorkManager.getInstance(this).getWorkInfosForUniqueWorkLiveData(
+                CloudCatalogUpdates.PUSH_WORK_NAME
+            ).observe(this) { states ->
+                if(states.any { it.state==WorkInfo.State.SUCCEEDED } &&
+                    !showCloudLegal && tab==3)refreshServerVpn()
+            }
+        }
         if(!showCloudLegal){refreshServerVpn();syncOptInUsage();CloudCatalogUpdates.ensureScheduled(this)}
         if(savedInstanceState==null && !settings.getBoolean("first_run_guide_completed",false))
             guideStep=0
