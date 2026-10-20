@@ -336,7 +336,7 @@ SP-DECODE VPS commands:
   spdecode panel reset-admin   # generate credentials and validate real HTTPS login
   spdecode panel sync-routes   # update Nginx public links without rotating credentials
   spdecode providers status|enable|disable  # persistent remote providers, no QA required
-  spdecode providers import-ehi /root/HTTPINJECTOR_CLOUD.py  # securely read owner-supplied method
+  spdecode providers import-ehi /root/HTTPINJECTOR_CLOUD.py  # carga privada sin ejecutar el método
   spdecode qa start|stop|status|services|probe-nur  # ephemeral QA; services enables NUR and configured EHI
   spdecode android setup
   spdecode android signing configure /root/upload-key.p12 alias
