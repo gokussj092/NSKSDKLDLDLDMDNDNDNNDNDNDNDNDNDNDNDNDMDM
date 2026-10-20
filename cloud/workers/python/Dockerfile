@@ -20,6 +20,7 @@ COPY spdecode/ ./spdecode/
 COPY decoders.json ./decoders.json
 COPY docs/cloud/C0_FORMAT_MATRIX.csv ./docs/cloud/C0_FORMAT_MATRIX.csv
 COPY cloud/workers/python/engine.py cloud/workers/python/server.py cloud/workers/python/text_bridge.py cloud/workers/python/hc_bridge.py cloud/workers/python/catalog_bridge.py cloud/workers/python/catalog_vpn_bridge.py cloud/workers/python/hat_complete.js ./cloud/workers/python/
+COPY cloud/workers/python/ksh_catalog.py cloud/workers/python/dtunnelmod_catalog.py cloud/workers/python/mkk_bundle.py ./cloud/workers/python/
 # VPS installer clones the source as root with umask 077: files can be 0600
 # and directories 0700. Docker COPY preserves modes. The restricted runtime
 # UID 65532 cannot read server.py or traverse decoders/ unless we normalize
