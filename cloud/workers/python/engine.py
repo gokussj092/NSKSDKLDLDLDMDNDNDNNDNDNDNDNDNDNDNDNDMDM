@@ -152,7 +152,7 @@ def _is_legacy_aro(contents: bytes) -> bool:
         return False
 
 
-def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS, credentials: dict | None = None) -> dict:
+def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS, credentials: dict | None = None, full_hat: bool = False) -> dict:
     """Execute one canonical file engine. The caller must authenticate first."""
     if not isinstance(suffix, str) or suffix not in load_runtime_file_engines():
         raise DecodeFailure("UNSUPPORTED_FORMAT")
