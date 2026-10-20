@@ -65,7 +65,8 @@ class PhaseViPrivacySecurityTests(unittest.TestCase):
         self.assertIn('activeCatalogVersion(env=process.env)',code)
         self.assertIn('number<CATALOG_VERSION',code)
         self.assertIn('CLOUD_SERVER_VPN_CATALOG_VERSION: ${CLOUD_SERVER_VPN_CATALOG_VERSION:-11}',compose)
-        self.assertIn('const currentVersion=activeCatalogVersion()',route)
+        self.assertIn('const summary=await providerOverview()',route)
+        self.assertIn('const currentVersion=summary.catalogVersion',route)
         self.assertIn('input.knownVersion===currentVersion',route)
         self.assertIn('unchanged:true',route)
 
