@@ -116,8 +116,8 @@ val fcmAppId=providers.environmentVariable("SPDECODE_FCM_APP_ID").orNull.orEmpty
 val fcmKey=providers.environmentVariable("SPDECODE_FCM_API_KEY").orNull.orEmpty()
 val fcmSender=providers.environmentVariable("SPDECODE_FCM_SENDER_ID").orNull.orEmpty()
 val fcmFields=listOf(fcmProject,fcmAppId,fcmKey,fcmSender)
-val fcmRequested=fcmFields.any(String::isNotEmpty)
-if(fcmRequested)require(enableCloud && fcmFields.all(String::isNotEmpty) &&
+val fcmRequested=fcmFields.any { it.isNotEmpty() }
+if(fcmRequested)require(enableCloud && fcmFields.all { it.isNotEmpty() } &&
     fcmProject.matches(Regex("[a-z][a-z0-9-]{5,62}")) &&
     fcmAppId.matches(Regex("[0-9]+:[0-9]+:android:[0-9a-fA-F]+")) &&
     fcmKey.matches(Regex("[A-Za-z0-9_-]{20,100}")) &&
