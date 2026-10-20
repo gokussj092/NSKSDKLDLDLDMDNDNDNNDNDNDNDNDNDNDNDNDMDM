@@ -93,8 +93,11 @@ test("signed Play AAB and external beta APK are generated without changing appli
  assert.match(gradle,/compileSdk = 36/);
  assert.match(workflow,/:app:assembleRelease :app:bundleRelease/);
  assert.match(workflow,/SPDECODE_SIGNING_KEYSTORE_BASE64/);
- assert.match(workflow,/SP-DECODE-v1\.1\.4-play-closed-test-signed\.aab/);
- assert.match(workflow,/SP-DECODE-v1\.1\.4-beta-external-signed\.apk/);
+  const version=gradle.match(/versionName = "(\d+\.\d+\.\d+)"/)?.[1];
+  const code=gradle.match(/versionCode = (\d+)/)?.[1];
+  assert.ok(version && code && Number(code)>26,"Play update must advance beyond 1.1.5 (26)");
+  assert.ok(workflow.includes("SP-DECODE-v"+version+"-play-closed-test-signed.aab"));
+  assert.ok(workflow.includes("SP-DECODE-v"+version+"-beta-external-signed.apk"));
  assert.match(integrity,/PLAY_APP_SIGNER_SHA256/);
  assert.match(client,/integrityRequired=challenge\.optBoolean\("integrityRequired",true\)/);
  assert.match(client,/if\(integrityRequired\)/);
