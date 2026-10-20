@@ -13,21 +13,29 @@ rechazaba los seis contenedores exteriores.
 | Protección de las muestras | Cantidad | Resultado |
 | --- | ---: | --- |
 | Sin credenciales, con/sin bloqueo visual de payload | 2 | HCX4, sección principal, ambas secciones de perfiles y ambas capas HPR1 autenticadas; cuatro HPC1 completos |
-| Contraseña, con/sin bloqueo visual de payload | 2 | HCX4 autenticado, HCCFG 10/n11 identificado, `PASSWORD_REQUIRED`; contraseña artificial incorrecta rechazada |
-| HWID, con/sin bloqueo visual de payload | 2 | HCX4 autenticado, HCCFG 10/n12 identificado, `HWID_REQUIRED`; HWID artificial incorrecto rechazado |
+| Contraseña, con/sin bloqueo visual de payload | 2 | HCCFG 10/n11 completo con la contraseña original: principal y cuatro perfiles HPC1/HPR1 autenticados; sin contraseña se solicita y una contraseña incorrecta se rechaza |
+| HWID, con/sin bloqueo visual de payload | 2 | HCCFG 10/n12 completo con el HWID original: dos slots, principal y cuatro perfiles HPC1/HPR1 autenticados; sin HWID se solicita y un HWID incorrecto se rechaza |
 
-Para las dos exportaciones completamente abiertas se compararon todos los
+Para las seis exportaciones completamente abiertas se compararon todos los
 campos de HPC1 con el parser histórico independiente de once campos, el
 JSON principal con una apertura de referencia separada y el envelope
 completo con la apertura independiente HCX4. Se conservan los textos de
 opciones y sus valores JSON. El script CLI `HTTP_Custom.py`, la API `run`
 y el proceso aislado Cloud devolvieron el mismo objeto completo;
-`isPartial=false` en ambos casos reales.
+`isPartial=false` en los seis casos reales. Total: **12 perfiles HPC1**, sus
+12 capas HPR1 y seis secciones principales autenticados. En los dos archivos
+n12 se abrió un slot de clave HWID por archivo.
 
-**No se proporcionaron las contraseñas/HWID originales de las otras cuatro
-muestras. Su interior no se presenta como descifrado ni validado con sus
-credenciales reales.** Ninguna salida parcial se confunde con un resultado
-satisfactorio.
+Las credenciales originales aportadas por el usuario permitieron completar
+los cuatro casos protegidos pendientes. La verificación de referencia
+derivó Argon2id directamente con `argon2.low_level`, reconstruyó el transcript,
+abrió los slots HWID y autenticó cada capa antes de comparar los campos.
+Ambos lanzadores recibieron las credenciales por stdin; Cloud utilizó su
+canal de credenciales existente. **No fue necesario modificar el motor.**
+No se publica ningún valor de contraseña/HWID, perfil o JSON real descifrado.
+Ninguna de las seis muestras combina contraseña y HWID a la vez: el doble
+bloqueo continúa cubierto por los vectores sintéticos nativos, no por una
+exportación real de doble bloqueo.
 
 ## Contraste con código nativo
 
@@ -96,9 +104,10 @@ El ZIP de código incluye la carpeta de la app y las dos dependencias
 históricas Python en su ubicación relativa. Se verifica extraído fuera del
 repositorio. No contiene APK, librerías nativas, muestras `.hc`, respuestas
 descifradas privadas, copias de seguridad ni registros de la investigación.
-Extraído en un directorio temporal independiente, su CLI devolvió ocho
+Extraído en un directorio temporal independiente, su CLI devolvió doce
 resultados completos idénticos: cuatro modos de bloqueo sintéticos, dos
-formatos históricos y las dos exportaciones reales sin credenciales.
+formatos históricos y las seis exportaciones reales, incluidas las cuatro
+protegidas con sus credenciales originales.
 
 No hay script de catálogo. No se ha compilado Android ni desplegado o
 fusionado el PR. No se certifican un escritor de archivos, importación en

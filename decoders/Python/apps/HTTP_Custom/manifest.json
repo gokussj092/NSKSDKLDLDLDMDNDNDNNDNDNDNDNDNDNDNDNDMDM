@@ -32,8 +32,13 @@
     "realValidation": {
       "outerAuthenticated": 6,
       "fullyDecodedWithoutCredentials": 2,
-      "profilesFullyDecoded": 4,
-      "protectedPendingOriginalCredentials": 4
+      "fullyDecodedWithPassword": 2,
+      "fullyDecodedWithHwid": 2,
+      "fullyDecodedTotal": 6,
+      "profilesFullyDecoded": 12,
+      "protectedPendingOriginalCredentials": 0,
+      "completeCliApiWorkerParity": 6,
+      "dualLockRealValidated": false
     },
     "nativeKdfSyntheticVectors": 4,
     "exporterCertified": false,

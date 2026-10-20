@@ -93,8 +93,9 @@ datos omitidos por un exportador.
 | Ruta | Estado |
 | --- | --- |
 | HCX4, HCCFG 10, n11 sin credenciales | Dos exportaciones reales completas y autenticadas |
-| n11 con contraseña / n12 con HWID | Contenedor de cuatro exportaciones reales autenticado; faltan sus credenciales para comprobar el interior |
-| Contraseña, HWID y ambas protecciones | Vectores sintéticos contrastados con la KDF nativa; casos correctos e incorrectos probados |
+| n11 con contraseña | Dos exportaciones reales completas y autenticadas con su contraseña original |
+| n12 con HWID | Dos exportaciones reales completas y autenticadas con su HWID original, incluidos sus slots de clave |
+| Contraseña y HWID simultáneos | Vectores sintéticos contrastados con la KDF nativa; casos correctos e incorrectos probados; sin muestra real de doble bloqueo |
 | ChaCha20, RST/AES, JKL y demás rutas del lector histórico | Delegación a `HTTPCUSTOM.py`, sin sustituir sus algoritmos |
 | HCCFG 1/2/5/7, n1/n2/n7/n8 | Delegación a `_hc_hccfg.py`, sin modificar ese motor |
 | Otras combinaciones de esquema/schedule, incluidos n13/n14 | No habilitadas por este módulo; no hay una muestra validada que certifique su formato completo |
@@ -103,6 +104,13 @@ Los números de versión del APK y los de esquema son distintos. Las cadenas
 HCX1–4, n1–14 y otras versiones de HCCFG presentes en el binario no implican
 soporte de todas sus combinaciones. La compatibilidad confirmada aquí se
 limita a lo indicado en la tabla; no se certifican otros builds.
+
+Las seis exportaciones reales de build 899 se abrieron completas: doce
+perfiles HPC1, sus capas HPR1, los JSON principales y todos los metadatos.
+Los resultados coinciden entre la apertura de referencia, la API Python,
+ambos lanzadores y el worker Cloud, sin resultados parciales. Las
+credenciales originales se usaron solo para la verificación local y no se
+incluyen en el repositorio ni en el paquete descargable.
 
 Límites del lector nuevo: archivo de hasta 16 MiB; Argon2id con 1–10
 iteraciones y 8 KiB–256 MiB de memoria; hasta 4096 slots HWID. Cloud mantiene
