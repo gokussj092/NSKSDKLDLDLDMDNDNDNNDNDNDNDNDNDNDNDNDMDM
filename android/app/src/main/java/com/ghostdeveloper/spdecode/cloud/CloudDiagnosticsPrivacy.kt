@@ -2,8 +2,10 @@ package com.ghostdeveloper.spdecode.cloud
 
 import android.content.Context
 import java.security.SecureRandom
-import java.time.LocalDate
-import java.time.ZoneOffset
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 /** Privacy-first: telemetry starts disabled. No Android ID, device HWID, email or fingerprint. */
 internal object CloudDiagnosticsPrivacy {
@@ -32,15 +34,16 @@ internal object CloudDiagnosticsPrivacy {
             vault(context).delete(DAY)
         }
     }
+    private fun utcDay():String=SimpleDateFormat("yyyy-MM-dd",Locale.ROOT).apply{timeZone=TimeZone.getTimeZone("UTC")}.format(Date())
     fun installationIdIfDue(context:Context):String? {
         if(!enabled(context))return null
-        val today=LocalDate.now(ZoneOffset.UTC).toString()
+        val today=utcDay()
         if(vault(context).read(DAY)?.toString(Charsets.UTF_8)==today)return null
         return vault(context).read(INSTALL_ID)?.toString(Charsets.US_ASCII)
             ?.takeIf{it.matches(Regex("[0-9a-f]{32}"))}
     }
     fun markSent(context:Context){
         if(enabled(context))vault(context).write(DAY,
-            LocalDate.now(ZoneOffset.UTC).toString().toByteArray(Charsets.UTF_8))
+            utcDay().toByteArray(Charsets.UTF_8))
     }
 }

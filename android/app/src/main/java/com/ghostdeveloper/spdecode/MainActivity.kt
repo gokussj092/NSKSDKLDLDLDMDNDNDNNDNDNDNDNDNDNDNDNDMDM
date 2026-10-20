@@ -23,6 +23,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.ghostdeveloper.spdecode.cloud.CloudDecodeClient
+import com.ghostdeveloper.spdecode.cloud.CloudDiagnosticsPrivacy
 import com.ghostdeveloper.spdecode.cloud.CloudFileFormats
 import com.ghostdeveloper.spdecode.cloud.CloudTextFormats
 import com.ghostdeveloper.spdecode.cloud.CloudLegalConsent
@@ -114,10 +115,42 @@ class MainActivity : ComponentActivity() {
     private var guideStep by mutableStateOf<Int?>(null)
     private var runningVersionCode=0L
     private var message by mutableStateOf<String?>(null)
+    private var usageOptIn by mutableStateOf(false)
+    private var reportBusy by mutableStateOf(false)
     private var reveal:Boolean
         get()=sessionVm.reveal
         set(value){sessionVm.reveal=value}
     private var stagedExport:String?=null
+
+    private fun syncOptInUsage() {
+        if(!BuildConfig.SPDECODE_CLOUD_ENABLED||!CloudLegalConsent.accepted(this))return
+        scope.launch {
+            try {
+                val id=withContext(Dispatchers.IO){
+                    CloudDiagnosticsPrivacy.installationIdIfDue(this@MainActivity)
+                }?:return@launch
+                cloudClient.registerOptInActivity(id)
+                withContext(Dispatchers.IO){CloudDiagnosticsPrivacy.markSent(this@MainActivity)}
+            }catch(e:CancellationException){throw e}
+             catch(_:Exception){ /* Anonymous opt-in telemetry never interrupts decoding. */ }
+        }
+    }
+
+    private fun sendCurrentFailureReport() {
+        if(reportBusy||!BuildConfig.SPDECODE_CLOUD_ENABLED)return
+        val details=cloudClient.lastDiagnostic?:return
+        if(message==null||!CloudLegalConsent.accepted(this))return
+        reportBusy=true
+        scope.launch {
+            try{
+                val id=cloudClient.reportFailure(details)
+                message=getString(R.string.cloud_report_sent,id.take(8))
+                cloudClient.clearLastDiagnostic()
+            }catch(e:CancellationException){throw e}
+             catch(_:Exception){message=getString(R.string.cloud_report_failed)}
+            finally{reportBusy=false}
+        }
+    }
 
     private fun refreshServerVpn(force:Boolean=false) {
         if(!BuildConfig.SPDECODE_CLOUD_ENABLED || showCloudLegal ||
@@ -231,12 +264,13 @@ class MainActivity : ComponentActivity() {
         }
         selectedLanguage=settings.getString("language","system") ?: "system"
         hideCredentials=settings.getBoolean("mask_credentials",false)
+        usageOptIn=BuildConfig.SPDECODE_CLOUD_ENABLED && CloudDiagnosticsPrivacy.enabled(this)
         @Suppress("DEPRECATION")
         val installed=packageManager.getPackageInfo(packageName,0)
         runningVersionCode=if(Build.VERSION.SDK_INT>=28)installed.longVersionCode else installed.versionCode.toLong()
         showWhatsNew=settings.getLong("last_seen_whats_new_version",0L)<runningVersionCode
         showCloudLegal=BuildConfig.SPDECODE_CLOUD_ENABLED && !CloudLegalConsent.accepted(this)
-        if(!showCloudLegal)refreshServerVpn()
+        if(!showCloudLegal){refreshServerVpn();syncOptInUsage()}
         if(savedInstanceState==null && !settings.getBoolean("first_run_guide_completed",false))
             guideStep=0
         @Suppress("DEPRECATION")
@@ -322,7 +356,9 @@ class MainActivity : ComponentActivity() {
                 onFavorite={id,favorite->updateFavorite(id,favorite)},
                 retentionDays=retentionDays,
                 onRetention={days->setRetention(days)},
-                onDismissError={message=null},
+                onDismissError={message=null;cloudClient.clearLastDiagnostic()},
+                canReportError=BuildConfig.SPDECODE_CLOUD_ENABLED && !reportBusy && cloudClient.lastDiagnostic!=null,
+                onReportError={sendCurrentFailureReport()},
                 onDecodeText={input->decodeText(input)},
                 onDecodeCloud={reference->decodeCloud(reference)},
                 onDecodeServerCatalog={decodeNurServers()},
@@ -333,9 +369,19 @@ class MainActivity : ComponentActivity() {
                         "privacy"->openLegalPage(CloudLegalConsent.PRIVACY)
                     }
                 },
+                usageAnalyticsEnabled=usageOptIn,
+                onUsageAnalytics={enabled->
+                    try{
+                        CloudDiagnosticsPrivacy.setEnabled(this@MainActivity,enabled)
+                        usageOptIn=enabled
+                        if(enabled)syncOptInUsage()
+                    }catch(_:Exception){message=getString(R.string.history_storage_error)}
+                },
                 onWithdrawCloudConsent={
                     if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
                         try {
+                            CloudDiagnosticsPrivacy.setEnabled(this@MainActivity,false)
+                            usageOptIn=false
                             CloudLegalConsent.revoke(this@MainActivity)
                             cloudClient.clearSession()
                             serverVpnRefresh?.cancel()
@@ -385,6 +431,7 @@ class MainActivity : ComponentActivity() {
                             CloudLegalConsent.accept(this@MainActivity)
                             showCloudLegal=false
                             refreshServerVpn()
+                            syncOptInUsage()
                             if(savedInstanceState==null && !showCloudLegal)handleExternalIntent(intent)
                         }catch(_:Exception){message=getString(R.string.history_storage_error)}
                     },
@@ -422,7 +469,7 @@ class MainActivity : ComponentActivity() {
         // A signature/debuggable check that runs only at cold start can be
         // bypassed by a later process attachment. Defense-in-depth recheck.
         if(!ReleaseIntegrity.isTrusted(this)) finishAndRemoveTask()
-        if(!showCloudLegal)refreshServerVpn()
+        if(!showCloudLegal){refreshServerVpn();syncOptInUsage()}
     }
 
     override fun onNewIntent(intent:Intent){

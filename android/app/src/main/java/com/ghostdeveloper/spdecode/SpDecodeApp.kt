@@ -81,6 +81,8 @@ fun SpDecodeApp(
     retentionDays:Int,
     onRetention:(Int)->Unit,
     onDismissError:()->Unit,
+    canReportError:Boolean=false,
+    onReportError:()->Unit={},
     onDecodeText:(String)->Unit={},
     onDecodeCloud:(String)->Unit={},
     onDecodeServerCatalog:()->Unit={},
@@ -97,6 +99,8 @@ fun SpDecodeApp(
     onGuideRestart:()->Unit={},
     onLegalLink:(String)->Unit={},
     onWithdrawCloudConsent:()->Unit={},
+    usageAnalyticsEnabled:Boolean=false,
+    onUsageAnalytics:(Boolean)->Unit={},
 ){
     var dialog by remember{mutableStateOf<String?>(null)}
     MaterialTheme(colorScheme=darkColorScheme(
@@ -126,7 +130,8 @@ fun SpDecodeApp(
                     else->FunctionalSettingsPanel(selectedLanguage,hideCredentials,
                         onLanguage,onMaskCredentials,onClear,onExternalLink,
                         retentionDays,onRetention,onShowGuide=onGuideRestart,
-                        onLegalLink=onLegalLink,onWithdrawConsent=onWithdrawCloudConsent)
+                        onLegalLink=onLegalLink,onWithdrawConsent=onWithdrawCloudConsent,
+                        usageAnalyticsEnabled=usageAnalyticsEnabled,onUsageAnalytics=onUsageAnalytics)
                 }
                 if(guideStep!=null && !whatsNew && !busy && error==null && dialog==null) {
                     CenteredFirstRunGuide(guideStep,onGuideNext,onGuideSkip)
@@ -222,10 +227,14 @@ fun SpDecodeApp(
                 Text(stringResource(R.string.close),color=White)
             }},
             dismissButton={TextButton(onClick={
-                onDismissError()
-                onExternalLink("https://t.me/Gh0stDeveloper")
+                if(canReportError)onReportError()
+                else {
+                    onDismissError()
+                    onExternalLink("https://t.me/Gh0stDeveloper")
+                }
             }) {
-                Text(stringResource(R.string.decode_notice_contact),color=White)
+                Text(stringResource(if(canReportError)R.string.cloud_report_action
+                    else R.string.decode_notice_contact),color=White)
             }},
             containerColor=Panel,
             titleContentColor=White,

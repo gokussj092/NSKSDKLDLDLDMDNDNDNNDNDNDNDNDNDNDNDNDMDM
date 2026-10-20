@@ -38,6 +38,8 @@ fun FunctionalSettingsPanel(
     onShowGuide:()->Unit={},
     onLegalLink:(String)->Unit={},
     onWithdrawConsent:()->Unit={},
+    usageAnalyticsEnabled:Boolean=false,
+    onUsageAnalytics:(Boolean)->Unit={},
 ){
     var clearDialog by remember { mutableStateOf(false) }
     var languageSheet by remember { mutableStateOf(false) }
@@ -150,6 +152,22 @@ fun FunctionalSettingsPanel(
                 modifier=Modifier.fillMaxWidth()) {
                 Text(stringResource(R.string.cloud_legal_withdraw))
             }
+        }
+        if(BuildConfig.SPDECODE_CLOUD_ENABLED) SettingsCard {
+            Row(verticalAlignment=Alignment.CenterVertically){
+                Icon(Icons.Outlined.Insights,null,tint=TitleText)
+                Spacer(Modifier.width(10.dp))
+                Text(stringResource(R.string.cloud_usage_title),color=TitleText,
+                    fontWeight=FontWeight.SemiBold,fontSize=16.sp)
+            }
+            Row(verticalAlignment=Alignment.CenterVertically){
+                Text(stringResource(R.string.cloud_usage_detail),color=MutedText,
+                    fontSize=12.sp,lineHeight=18.sp,modifier=Modifier.weight(1f))
+                Spacer(Modifier.width(10.dp))
+                Switch(checked=usageAnalyticsEnabled,onCheckedChange=onUsageAnalytics,
+                    colors=SwitchDefaults.colors(checkedThumbColor=Color.Black,checkedTrackColor=TitleText))
+            }
+            Text(stringResource(R.string.cloud_usage_footnote),color=MutedText,fontSize=11.sp)
         }
         DeviceCredentialSettingsSection()
         SettingsCard {
