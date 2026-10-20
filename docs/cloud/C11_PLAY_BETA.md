@@ -124,8 +124,15 @@ constantes de protocolo 6.5.0/244 coinciden con las referencias verificadas
 que ya están en `HttpInjectorCloudPort.kt`. **No hace falta copiar archivos
 al servidor ni utilizar Termux/computadora.**
 
+Los archivos `decoders/Python/HTTPINJECTOR_CLOUD.py` y
+`decoders/Python/HTTPINJECTOR_EMOJI.py` están incorporados literalmente
+al repositorio y pueden ejecutarse como herramientas Python separadas.
+El importador Cloud de Next.js ya implementa el mismo protocolo, incluidos
+emojis, firma y verificación criptográfica.
+
 El comando `spdecode providers enable` lee **automáticamente**, sin ejecutar
-código, las constantes protocolarias del archivo versionado, confirma las
+código, las constantes protocolarias de
+`decoders/Python/HTTPINJECTOR_CLOUD.py`, confirma las
 huellas criptográficas y las guarda en
 `/etc/spdecode/cloud.env` con permisos 0600. Reinicia el servicio web y
 restaura la configuración anterior si falla la comprobación de salud. La
