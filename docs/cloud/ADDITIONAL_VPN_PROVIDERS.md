@@ -33,17 +33,24 @@ destinos, previa validación de cada uno.
 - **No se añadió un proveedor público auto-descargable.** El método del
   propietario exige un encabezado `dtunnel-token` con identificador de cuenta;
   no se inventa ni se incorpora al APK o al repositorio.
-- Hace falta proporcionar un mecanismo de credenciales privadas del VPS y
-  confirmar el icono original del proveedor antes de habilitar su botón público.
+- El usuario confirmó el icono verde adjunto para la entrada pública `DTunnel Mod`.
+  Su identificador es `dtunnel-mod` y el asset validado está en
+  `cloud/web/public/server-vpn-icons/dtunnel-mod.png`.
+- La tarjeta es visible en el catálogo **con `decodeEnabled: false`**, porque
+  todavía faltan credenciales legítimas y un broker autenticado en la VPS.
 
-## Identidad pendiente del icono verde
+## Confirmación del icono verde
 
-El archivo adjunto se denomina `Fastiver Vpn Pro_icon.png` y el propio
-logotipo muestra `FASTRIVER VPN`, mientras que la petición lo asocia con
-«Tunnelmoth» y el único script adicional es `dtunnelmod.py`.
-Estas denominaciones **no se tratan como sinónimos**. El icono verde no se
-publica con una identificación que podría ser incorrecta; hace falta confirmar
-nombre y método correspondiente.
+El usuario confirmó expresamente que el icono verde adjunto corresponde a la
+entrada de **DTunnel Mod**. Se incorpora con el nombre de catálogo `DTunnel Mod`
+y el ID `dtunnel-mod`; no se modifica el descifrador original ni se crea una
+identidad adicional de «Fastriver VPN» o «Tunnelmoth» basada solo en el texto
+que aparece dentro del logotipo.
+
+El catálogo pasa a la versión base 13 y admite configuraciones existentes de
+la VPS con `CLOUD_SERVER_VPN_CATALOG_VERSION=11` o `12` sin retroceder la
+versión efectiva. El test de la ruta del icono exige el digest SHA-256 del
+PNG aprobado y que el botón remoto permanezca deshabilitado.
 
 ## Validación
 
