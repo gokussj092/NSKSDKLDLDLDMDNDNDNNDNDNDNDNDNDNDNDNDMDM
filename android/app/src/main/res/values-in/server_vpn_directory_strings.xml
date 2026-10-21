@@ -11,4 +11,5 @@
     <string name="server_vpn_no_matches">Tidak ada aplikasi VPN yang cocok dengan pencarian atau filter.</string>
     <string name="server_vpn_catalog_enabled">Diaktifkan dalam katalog</string>
     <string name="server_vpn_catalog_disabled">Belum diaktifkan dalam katalog</string>
+    <string name="server_vpn_new_badge">Baru</string>
 </resources>
