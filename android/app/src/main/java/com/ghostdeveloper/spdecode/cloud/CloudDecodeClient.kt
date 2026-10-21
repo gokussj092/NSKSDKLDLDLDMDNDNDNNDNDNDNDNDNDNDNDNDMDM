@@ -240,7 +240,8 @@ internal class CloudDecodeClient(context: Context) {
         if (bytes.isEmpty() || bytes.size > MAX_INPUT) throw IOException("CLOUD_INVALID_INPUT")
         if (format.isBlank() || (!format.matches(Regex("[a-z0-9._-]{1,64}")) && format != "fɴ"))
             throw IOException("CLOUD_INVALID_FORMAT")
-        if ((password != null || hwid != null) && format != "hc")
+        if ((password != null && format !in setOf("hc", "ua")) ||
+            (hwid != null && format != "hc"))
             throw IOException("CLOUD_CREDENTIALS_NOT_ALLOWED")
         val body = JSONObject()
             .put("format", format)
@@ -254,8 +255,15 @@ internal class CloudDecodeClient(context: Context) {
         return decode("/api/v1/decode/file",body).rawText
     }
 
-    suspend fun decodeText(text: String): String =
-        decode("/api/v1/decode/text",JSONObject().put("text",text)).rawText
+    suspend fun decodeText(text: String, password: ByteArray? = null): String {
+        if(password != null && (!text.trim().startsWith("ua://",ignoreCase=true) ||
+                password.isEmpty() || password.size > 4096))
+            throw IOException("CLOUD_CREDENTIALS_NOT_ALLOWED")
+        val body=JSONObject().put("text",text)
+        if(password!=null)body.put("credentials",
+            JSONObject().put("password",String(password,Charsets.UTF_8)))
+        return decode("/api/v1/decode/text",body).rawText
+    }
 
     suspend fun decodeHttpInjectorCloud(reference: String): String =
         decode("/api/v1/decode/import/cloud",
