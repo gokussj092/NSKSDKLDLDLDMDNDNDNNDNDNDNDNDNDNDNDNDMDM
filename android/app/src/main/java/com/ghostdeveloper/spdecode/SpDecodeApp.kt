@@ -112,15 +112,7 @@ fun SpDecodeApp(
     onUsageAnalytics:(Boolean)->Unit={},
 ){
     var dialog by remember{mutableStateOf<String?>(null)}
-    MaterialTheme(colorScheme=darkColorScheme(
-        primary=White,
-        onPrimary=Background,
-        background=Background,
-        surface=Background,
-        onSurface=White,
-        onBackground=White,
-        outline=Outline,
-    )){
+    SpDecodeAmoledTheme {
         Column(
             modifier=Modifier.fillMaxSize().background(Background).safeDrawingPadding()
         ) {
@@ -205,7 +197,7 @@ fun SpDecodeApp(
                     Text(stringResource(R.string.whats_new_continue),color=White)
                 }
             },
-            containerColor=Panel,
+            containerColor=Background,
             titleContentColor=White,
             textContentColor=Secondary,
         )
@@ -264,7 +256,7 @@ fun SpDecodeApp(
                 Text(stringResource(if(canReportError)R.string.cloud_report_action
                     else R.string.decode_notice_contact),color=White)
             }},
-            containerColor=Panel,
+            containerColor=Background,
             titleContentColor=White,
             textContentColor=Secondary,
         )
@@ -299,7 +291,7 @@ fun SpDecodeApp(
                 confirmButton={TextButton(onClick={dialog=null}){
                     Text(stringResource(R.string.cancel))
                 }},
-                containerColor=Panel,
+                containerColor=Background,
                 titleContentColor=White,
                 textContentColor=White,
             )
@@ -713,7 +705,9 @@ private fun HistoryScreen(
         dismissButton={TextButton(onClick={deletion=null;deletingAll=false}){
             Text(stringResource(R.string.cancel))
         }},
-        containerColor=Panel,
+        containerColor=Background,
+        titleContentColor=White,
+        textContentColor=White,
     )
 }
 
