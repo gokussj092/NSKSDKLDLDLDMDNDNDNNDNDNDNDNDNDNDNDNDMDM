@@ -43,7 +43,8 @@ def dispatch(text: str, *, password: str | None = None) -> str | None:
     # wrappers. Preserve the exact error instead of silently returning None.
     if lowered.startswith("ua://"):
         from decoders.Python.apps.Ultra_Custom import ultra_custom_52 as ultra
-        return json.dumps(ultra.decode(value, password=password), ensure_ascii=False, indent=2)
+        normalized = "ua://" + value[5:]
+        return json.dumps(ultra.decode(normalized, password=password), ensure_ascii=False, indent=2)
     # AC's verified export has a Name field; older generic RENZ vectors retain
     # their original wrapper/engine. A corrupt modern profile never falls back.
     if lowered.startswith("actunnelvpn://"):
