@@ -122,7 +122,10 @@ export function classifyWorkerOutcome(outcome,{kind,format,errorCode}={}){
   if(outcome==="success")return "success";
   if(outcome!=="failed"&&outcome!=="warning")return "ignored";
   if(REQUIRED_INPUT.has(errorCode))return "ignored"; // No decode; cancelling never yields an event.
+  // A consumed/expired/removed EHI reference is a normal provider lifecycle
+  // condition, not a failed decryption engine or an infrastructure outage.
   if(outcome==="warning"||INCOMPATIBLE.has(errorCode)||
+      (kind==="ehi" && errorCode==="REMOTE_CONFIG_UNAVAILABLE")||
       (kind==="file" && format==="npvs" && errorCode==="DECODE_FAILED"))return "warning";
   return "failed";
 }
