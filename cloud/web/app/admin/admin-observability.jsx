@@ -81,7 +81,7 @@ export default function AdminObservability({mode="analytics"}){
      </tr></thead><tbody>
       {comparison.map(x=><tr key={x.extension}><th>{x.extension}</th><td>{time(x.resetAt)}</td>
        <td>{x.beforeAttempts===null?"Sin histórico":fmt.format(x.beforeErrors)+"/"+fmt.format(x.beforeAttempts)+" · "+percent(x.beforeErrorPercent)}</td>
-       <td>{fmt.format(x.afterErrors)} de {fmt.format(x.afterAttempts)}</td>
+       <td>{fmt.format(x.afterErrors)} de {x.afterAttempts===null?"sin denominador":fmt.format(x.afterAttempts)}</td>
        <td>{percent(x.afterErrorPercent)}</td></tr>)}
       {!comparison.length&&<tr><td colSpan={5}>Reinicia los errores de un formato para iniciar una comparación.</td></tr>}
      </tbody></table></div>

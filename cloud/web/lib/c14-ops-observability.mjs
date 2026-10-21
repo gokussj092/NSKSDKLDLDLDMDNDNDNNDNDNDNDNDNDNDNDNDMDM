@@ -136,14 +136,16 @@ const sys=async path=>{
 export async function hostHealth(redis,{fetchImpl=fetch}={}){
  // This service runs in Docker. cgroup metrics describe only the WEB CONTAINER
  // and must never be misrepresented as host-wide VPS utilisation.
- const memCurrent=Number(await sys("/sys/fs/cgroup/memory.current"));
+ const memoryCurrentText=await sys("/sys/fs/cgroup/memory.current");
+ const memCurrent=memoryCurrentText===null?null:Number(memoryCurrentText);
  const memoryMaxText=await sys("/sys/fs/cgroup/memory.max");
  const memoryLimit=memoryMaxText&&memoryMaxText!=="max"?Number(memoryMaxText):null;
  const cpu=await sys("/sys/fs/cgroup/cpu.stat");
- const usage=Number(/^usage_usec\s+(\d+)/m.exec(cpu||"")?.[1]);
+ const cpuUsageMatch=/^usage_usec\s+(\d+)/m.exec(cpu||"");
+ const usage=cpuUsageMatch?Number(cpuUsageMatch[1]):null;
  const now=Date.now();
  let cpuPercent=null;
- if(Number.isFinite(usage)){
+ if(usage!==null&&Number.isFinite(usage)){
   const previous=await redis.get("spc14:health:cpu:last");
   await redis.set("spc14:health:cpu:last",JSON.stringify({now,usage}),{EX:300});
   try{
@@ -164,7 +166,7 @@ export async function hostHealth(redis,{fetchImpl=fetch}={}){
  }
  return {scope:"web_container_only",vpsHostMetricsAvailable:false,
   cpuPercent:cpuPercent===null?null:Math.max(0,cpuPercent),
-  memoryUsedBytes:Number.isFinite(memCurrent)&&memCurrent>=0?memCurrent:null,
+  memoryUsedBytes:memCurrent!==null&&Number.isFinite(memCurrent)&&memCurrent>=0?memCurrent:null,
   memoryLimitBytes:Number.isFinite(memoryLimit)&&memoryLimit>0?memoryLimit:null,
   redisReady,workerReady,
   pendingQueue:null,queuePolicy:"no_persistent_queue; excess requests are rate-limited",

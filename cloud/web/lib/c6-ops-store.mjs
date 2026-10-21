@@ -290,12 +290,14 @@ export async function usageReport(redis,days=7) {
     .map(([extension,baseline])=>{
       const previous=Object.values(baseline.days||{});
       const beforeErrors=previous.reduce((sum,x)=>sum+parse(x.failed),0);
-      const beforeAttempts=previous.reduce((sum,x)=>sum+parse(x.attempts),0);
+      const hasAttempts=previous.length>0&&previous.every(x=>Object.hasOwn(x,"attempts"));
+      const beforeAttempts=hasAttempts?previous.reduce((sum,x)=>sum+parse(x.attempts),0):null;
       const current=breakdown.find(x=>x.extension===extension);
-      const sinceAttempts=Math.max(0,(current?.attempts||0)-beforeAttempts);
+      const sinceAttempts=beforeAttempts===null?null:
+        Math.max(0,(current?.attempts||0)-beforeAttempts);
       const afterErrors=current?.failedDecodes||0;
       return {extension,resetAt:baseline.at,beforeErrors,
-        beforeAttempts:beforeAttempts||null,
+        beforeAttempts,
         beforeErrorPercent:beforeAttempts?Math.round(beforeErrors/beforeAttempts*1000)/10:null,
         afterErrors,afterAttempts:sinceAttempts,
         afterErrorPercent:sinceAttempts?Math.round(afterErrors/sinceAttempts*1000)/10:null,

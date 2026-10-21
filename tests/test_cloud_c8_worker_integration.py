@@ -68,7 +68,10 @@ class C8WorkerIntegrationTests(unittest.TestCase):
         data=golden("reese_vectors.json")
         sample=next(v for v in data["cases"] if v["name"]=="rse5-c4-flags0")
         output=decode_file("rt",base64.b64decode(sample["data"]))
-        self.assertEqual(output["structuredJson"],data["expected"])
+        expected=json.loads(json.dumps(data["expected"]))
+        expected["config"].pop("bannerImage",None)
+        self.assertEqual(output["structuredJson"],expected)
+        self.assertNotIn("bannerImage",output["rawText"])
         self.assertFalse(output["isPartial"])
 
     def test_vpn_plus_peru_akn3_full_json(self):
