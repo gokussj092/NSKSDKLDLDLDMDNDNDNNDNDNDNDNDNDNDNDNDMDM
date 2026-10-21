@@ -93,7 +93,8 @@ def main() -> int:
         if len(raw) > MAX_TEXT_CHARS * 4:
             return 2
         text = raw.decode("utf-8")
-        credentials = json.loads(sys.stdin.buffer.read(8193))
+        incoming = sys.stdin.buffer.read(8193)
+        credentials = json.loads(incoming) if incoming else {}
         if not isinstance(credentials, dict) or set(credentials) - {"password"}:
             return 2
         password = credentials.get("password")
