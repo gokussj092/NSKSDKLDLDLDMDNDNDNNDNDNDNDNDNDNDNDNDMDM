@@ -83,9 +83,9 @@ class WorkerHandler(BaseHTTPRequestHandler):
             if not isinstance(request, dict):
                 raise ValueError("schema")
             if self.path == "/internal/v1/decode/text":
-                if set(request) != {"text"} or not isinstance(request["text"], str):
+                if "text" not in request or set(request) - {"text", "credentials"} or not isinstance(request["text"], str):
                     raise ValueError("text schema")
-                result = decode_text(request["text"])
+                result = decode_text(request["text"], credentials=request.get("credentials"))
             elif self.path == "/internal/v1/decode/import/server-vpn":
                 if set(request) != {"providerId", "dataBase64"} or not isinstance(request["providerId"], str):
                     raise ValueError("provider schema")
