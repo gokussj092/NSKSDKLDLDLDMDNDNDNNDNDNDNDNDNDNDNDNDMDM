@@ -251,7 +251,7 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
                 largeResultWarning=showLargeResultWarning,
                 onDismissLargeResultWarning={showLargeResultWarning=false},""")
         activity = replaceOnce(activity,
-            "    private fun decodeText(userText:String) {",
+            "    private fun decodeText(userText:String,password:ByteArray?=null) {",
             """    // Large JSON documents must never be parsed eagerly by the preview.
     // The complete result is already saved in encrypted history.
     private fun presentDecodedRecord(entry:DecodeView, stored:Boolean):Boolean {
@@ -266,7 +266,7 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
         return large
     }
 
-    private fun decodeText(userText:String) {""")
+    private fun decodeText(userText:String,password:ByteArray?=null) {""")
         // Dedicated replacements preserve the original flows on all formats.
         fun updateResultBlock(start:String,end:String,entry:String,saved:String):Unit {
             val from=activity.indexOf(start)
@@ -280,7 +280,7 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
             section=replaceOnce(section,"                tab=0","                tab=if(previewDeferred)1 else 0")
             activity=activity.substring(0,from)+section+activity.substring(to)
         }
-        updateResultBlock("    private fun decodeText(userText:String) {",
+        updateResultBlock("    private fun decodeText(userText:String,password:ByteArray?=null) {",
             "    private fun decodeCloud(reference:String) {","record","stored")
         updateResultBlock("    private fun decodeCloud(reference:String) {",
             "    private fun decodeNurServers() {","record","stored")
@@ -304,8 +304,10 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
             "                var failedProtectedHc=false\n" +
                 "                val qaFailures=mutableListOf<String>()\n" +
                 "                val cloudFailureMessages=mutableListOf<String>()")
-        batch=replaceOnce(batch,"                    onFailure={uri,_-> ",
-            "                    onFailure={uri,cause-> ")
+        // MainActivity already passes (uri,cause) to the import callback.
+        require(batch.contains("                    onFailure={uri,cause->")) {
+            "Cloud batch diagnostic callback missing"
+        }
         batch=replaceOnce(batch,
             "                        if(!BuildConfig.SPDECODE_CLOUD_ENABLED &&",
             """                        if(BuildConfig.SPDECODE_QA_BUILD) {
