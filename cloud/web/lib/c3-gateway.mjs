@@ -35,6 +35,7 @@ const ERROR_MESSAGES = Object.freeze({
   REMOTE_NOT_CONFIGURED:"Importación remota no configurada.",
   REMOTE_NETWORK_DENIED:"Destino remoto no autorizado.",
   REMOTE_PROVIDER_UNAVAILABLE:"El proveedor remoto no respondió.",
+  REMOTE_CONFIG_UNAVAILABLE:"Esta configuración Cloud ya no está disponible. Puede haber caducado, haberse eliminado o ser de un solo uso.",
   REMOTE_RESPONSE_INVALID:"El proveedor devolvió una respuesta inválida.",
   REMOTE_INTEGRITY_FAILED:"Falló la integridad de la respuesta remota.",
   REMOTE_TOO_LARGE:"El contenido remoto excede el límite.",
