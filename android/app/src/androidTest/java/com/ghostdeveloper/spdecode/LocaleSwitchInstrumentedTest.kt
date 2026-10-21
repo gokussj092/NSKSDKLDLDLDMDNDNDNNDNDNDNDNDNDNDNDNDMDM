@@ -43,13 +43,20 @@ class LocaleSwitchInstrumentedTest {
             // Select a DIFFERENT language: tapping the currently-selected
             // option deliberately does not recreate the Activity.
             val target=if(before=="es")"en" else "es"
-            val expected=if(target=="es")"Ajustes" else "Settings"
+            val oldActivity=ui.activity
             ui.onNodeWithText(if(target=="es")"Español" else "English")
                 .performClick()
+            // The click must persist the preference and actually recreate the
+            // activity; testing the old Activity context string after a theme
+            // and configuration change can produce a stale resource value.
             ui.waitUntil(20_000){
                 ui.activity.getSharedPreferences("spdecode-ui-preferences",Context.MODE_PRIVATE)
-                    .getString("language","")==target &&
-                ui.activity.getString(R.string.settings_title)==expected
+                    .getString("language","")==target
+            }
+            ui.waitUntil(20_000){ ui.activity!==oldActivity }
+            ui.runOnIdle {
+                assertEquals("New Activity should use the chosen locale",
+                    target,ui.activity.resources.configuration.locales[0].language)
             }
             val active=ViewModelProvider(ui.activity)[DecodeSessionViewModel::class.java]
             assertEquals(sample.rawText,active.current?.rawText)
