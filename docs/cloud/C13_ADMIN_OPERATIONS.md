@@ -36,3 +36,5 @@ Esta modificación solo afecta a la API/panel Cloud; no requiere nueva versión 
 ## Pendiente — .rt
 
 NO se elimina ni altera la imagen del resultado `.rt` sin un ejemplo concreto de la respuesta proporcionado por el propietario. Esta tarea queda pendiente de identificación del campo exacto y prueba de no regresión.
+
+**Reset global e incidencias manuales:** se guarda también una marca temporal global `@all` para excluir reportes manuales previos que aún no tengan un contador por extensión. Las advertencias siempre se conservan. El número máximo de etiquetas saneadas por operación es 512.

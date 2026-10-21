@@ -35,7 +35,11 @@ const NON_INCIDENT=new Set(["PASSWORD_REQUIRED","HWID_REQUIRED","HWID_PASSWORD_R
 export async function recordAutomaticIncident(redis,outcome,{kind,format,bytes,errorCode}={}){
  if(!["failed","warning"].includes(outcome)||NON_INCIDENT.has(errorCode))return null;
  const service=kind==="ehi"?"httpInjector":kind==="catalog"||kind==="server-vpn"?"serverVpn":"files";
- return recordIncident(redis,{service,format:kind==="server-vpn"?format:kind==="catalog"?"nur-catalog":kind==="ehi"?"ehi":format||"text",code:errorCode,bytes,source:"worker",severity:outcome==="warning"?"warning":"error"});
+ // Keep diagnostic labels congruent with the privacy-sanitized metric scope.
+ const scope=kind==="server-vpn"?format:kind==="catalog"?"nur-catalog":
+   kind==="ehi"?"ehi":errorCode==="UNSUPPORTED_FORMAT"&&format!=="npvs"?"other":format||"text";
+ return recordIncident(redis,{service,format:scope,code:errorCode,bytes,source:"worker",
+   severity:outcome==="warning"?"warning":"error"});
 }
 export async function readIncidents(redis,days=7,baselines={}){
  if(![1,7].includes(days))throw Error("INVALID_RANGE");
@@ -47,7 +51,8 @@ export async function readIncidents(redis,days=7,baselines={}){
    if(!v||typeof v.id!=="string"||!SERVICE_IDS.has(v.service))continue;
    const scope=v.service==="serverVpn"?(v.format==="nur-catalog"?"nur-catalog":"vpn-"+v.format):
      v.service==="httpInjector"?"ehi":v.format;
-   if(v.severity!=="warning"&&baselines[scope]?.at&&v.at<=baselines[scope].at)continue;
+   const resetAt=[baselines[scope]?.at,baselines["@all"]?.at].filter(Boolean).sort().at(-1);
+   if(v.severity!=="warning"&&resetAt&&v.at<=resetAt)continue;
    rows.push(v);
   }catch{}
  }

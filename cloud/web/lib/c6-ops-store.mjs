@@ -152,7 +152,7 @@ export async function resetErrorBaselines(redis,{scope,format}){
   const known=[...new Set(hashes.flatMap(data=>Object.keys(data||{})
     .map(key=>/^format:([^:]+):(success|failed|warning)$/.exec(key)?.[1]).filter(Boolean)))];
   const targets=scope==="all"?known:[format];
-  if(targets.length>250)throw Error("RESET_TOO_MANY_FORMATS");
+  if(targets.length>512)throw Error("RESET_TOO_MANY_FORMATS");
   if(scope==="format"&&(!known.includes(format)||!/^[a-z0-9ɴ][a-z0-9ɴ._-]{0,52}$/.test(format)))
     throw Error("INVALID_FORMAT");
   const at=new Date().toISOString();
@@ -161,6 +161,9 @@ export async function resetErrorBaselines(redis,{scope,format}){
     const days=Object.fromEntries(dates.map((date,i)=>[date,errorSnapshot(hashes[i]||{},id)]));
     tx.hSet(BASELINE_KEY,id,JSON.stringify({at,days}));
   }
+  // Manual incidents may have no matching worker-format counter. A global
+  // reset must still hide old manual error reports, never warnings.
+  if(scope==="all")tx.hSet(BASELINE_KEY,"@all",JSON.stringify({at,days:{}}));
   tx.expire(BASELINE_KEY,8*86400);
   await tx.exec();
   return {scope,formatsReset:targets.length,at};
@@ -291,7 +294,7 @@ export async function usageReport(redis,days=7) {
     failedDecodes:failed,warnings:warningTotal,totalDecodes:success+failed+warningTotal,inputBytes:bytes,daily,
     extensions:breakdown,errors:failures,
     warningCodes:[...warnings].map(([code,count])=>({code,count})).sort((a,b)=>b.count-a.count),
-    incidents:incidents.filter(x=>x.count>0),resets:Object.entries(baselines).map(([extension,v])=>({extension,at:v.at})),
+    incidents:incidents.filter(x=>x.count>0),resets:Object.entries(baselines).filter(([label])=>label!=="@all").map(([extension,v])=>({extension,at:v.at})),
     serviceBreakdown:breakdownServices,serviceErrors:errorServices,hourlyLast48:hourly,
     retentionDays:8,hourlyFailuresAreHistorical:true,historyAvailableFrom:"first_deployment_of_telemetry",
     includes:"worker_results_only",privacy:"anonymous_aggregate_counters"};
