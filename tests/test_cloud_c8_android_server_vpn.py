@@ -50,7 +50,7 @@ class PhaseVServerVpnIntegration(unittest.TestCase):
         activity=(KOTLIN/"MainActivity.kt").read_text("utf-8")
         self.assertIn('if (!BuildConfig.SPDECODE_CLOUD_ENABLED && !supported.hasNativeDecoder)',activity)
         self.assertIn('BuildConfig.SPDECODE_CLOUD_ENABLED -> CloudDecodeClient.MAX_INPUT',activity)
-        self.assertIn('if(!BuildConfig.SPDECODE_CLOUD_ENABLED &&',activity)
+        self.assertIn('cause.code=="NPVS_PROTECTION_UNSUPPORTED"',activity)
         gradle=(ROOT/"android/app/build.gradle.kts").read_text("utf-8")
         self.assertIn('CLIENT_IO_FAILURE',gradle)
         self.assertIn('CLIENT_FORMAT_REJECTED',gradle)

@@ -309,7 +309,7 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
             "Cloud batch diagnostic callback missing"
         }
         batch=replaceOnce(batch,
-            "                        if(!BuildConfig.SPDECODE_CLOUD_ENABLED &&",
+            "                        if((prepared?.filename?:filename).endsWith(\".npvs\",ignoreCase=true) &&",
             """                        if(BuildConfig.SPDECODE_QA_BUILD) {
                             val ext=filename.substringAfterLast('.', "file").lowercase()
                                 .filter { it.isLetterOrDigit() }.take(12).ifBlank { "file" }
@@ -332,7 +332,7 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
                         cloudFailureMessages.add(
                             com.ghostdeveloper.spdecode.cloud.CloudUserErrors.message(
                                 this@MainActivity,cause))
-                        if(!BuildConfig.SPDECODE_CLOUD_ENABLED &&""")
+                        if((prepared?.filename?:filename).endsWith(".npvs",ignoreCase=true) &&""")
         batch=replaceOnce(batch,"                    message=when {",
             """                    val qaDetails=if(BuildConfig.SPDECODE_QA_BUILD && qaFailures.isNotEmpty())
                         "\nQA: " + qaFailures.take(12).joinToString(" | ") else ""
