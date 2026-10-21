@@ -17,6 +17,7 @@
     <string name="cloud_failure_decode">تعذر معالجة إصدار هذا الملف، وليس بالضرورة أن يكون تالفًا.</string>
     <string name="cloud_failure_maintenance">هذه الخدمة تحت الصيانة مؤقتًا. يرجى المحاولة لاحقًا.</string>
     <string name="cloud_failure_unavailable">الخدمة غير متاحة مؤقتًا. حاول لاحقًا.</string>
+    <string name="cloud_failure_config_unavailable">لم يعد إعداد Cloud هذا متاحًا. ربما انتهت صلاحيته أو حُذف أو كان مخصصًا للاستخدام مرة واحدة. هذا ليس عطلًا في أداة فك التشفير.</string>
     <string name="cloud_failure_remote">أعاد المزود البعيد استجابة غير صالحة.</string>
     <string name="cloud_failure_credentials">كلمة المرور أو HWID غير صحيح. تحقق من البيانات.</string>
     <string name="cloud_failure_password">هذا الملف المحمي يتطلب كلمة مرور.</string>
