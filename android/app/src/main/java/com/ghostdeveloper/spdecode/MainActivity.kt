@@ -515,12 +515,12 @@ class MainActivity : ComponentActivity() {
                     onDecline={finishAffinity()},
                 )
             }
-            pendingCloudPasswordFile?.let { candidate ->
+            if(!busy) pendingCloudPasswordFile?.let { candidate ->
                 CloudPasswordDialog(candidate.name,
                     onSubmit={value->submitCloudFilePassword(value)},
                     onCancel={clearPendingCloudPassword()})
             }
-            pendingCloudPasswordText?.let { value ->
+            if(!busy) pendingCloudPasswordText?.let { value ->
                 CloudPasswordDialog("Ultra Custom",
                     onSubmit={password->
                         pendingCloudPasswordText=null
@@ -1026,8 +1026,13 @@ class MainActivity : ComponentActivity() {
                 historyLoad?.await()
                 var failedNpvs=false
                 var failedProtectedHc=false
+                var cloudPasswordError:String?=null
                 val report=BatchImportQueue.process(inputs,
-                    onFailure={uri,_-> 
+                    onFailure={uri,cause->
+                        if(cloudPassword!=null && cause is CloudDecodeClient.Failure &&
+                            cause.code in setOf("AUTH_FAILED","INVALID_CREDENTIALS"))
+                            cloudPasswordError=com.ghostdeveloper.spdecode.cloud.CloudUserErrors.message(
+                                this@MainActivity,cause)
                         val filename=runCatching {
                             withContext(Dispatchers.IO){displayName(uri)}
                         }.getOrDefault("")
@@ -1132,6 +1137,7 @@ class MainActivity : ComponentActivity() {
                     val summary=getString(R.string.batch_import_summary,
                         report.successes,report.failures)
                     message=when {
+                        cloudPasswordError!=null->cloudPasswordError+"\n\n"+summary
                         failedProtectedHc->getString(R.string.hc_auth_failed)+"\n\n"+summary
                         failedNpvs->getString(R.string.npvs_private_key_unsupported)+"\n\n"+summary
                         else->summary
