@@ -17,7 +17,10 @@ export function sanitizeDiagnostic({service,format,code,bytes,source,appVersion,
  const safeVersion=typeof appVersion==="string"&&/^\d{1,3}(?:\.\d{1,3}){0,3}$/.test(appVersion)?appVersion:"not-provided";
  return {service,format:safeFormat,code:safeCode,sizeBucket:bucket(bytes),
   source:source==="user"?"user":"worker",appVersion:safeVersion,
-  severity:severity==="warning"?"warning":"error"};
+  // A reference that expired or was consumed is an expected Cloud lifecycle
+  // condition, whether recorded by the backend or reported by a user.
+  severity:service==="httpInjector" && safeFormat==="ehi" &&
+    safeCode==="REMOTE_CONFIG_UNAVAILABLE" || severity==="warning"?"warning":"error"};
 }
 export async function recordIncident(redis,properties){
  const safe=sanitizeDiagnostic(properties);
