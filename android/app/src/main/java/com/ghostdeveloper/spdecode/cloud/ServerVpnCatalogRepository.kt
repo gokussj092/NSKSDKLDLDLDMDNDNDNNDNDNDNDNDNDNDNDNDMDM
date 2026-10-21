@@ -1,6 +1,7 @@
 package com.ghostdeveloper.spdecode.cloud
 
 import android.content.Context
+import com.ghostdeveloper.spdecode.ServerVpnNewBadges
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
@@ -26,6 +27,7 @@ internal class ServerVpnCatalogRepository(
     private val client: CloudDecodeClient,
 ) {
     private val vault=ServerVpnSecureCache(context)
+    private val newBadges=ServerVpnNewBadges(context)
     private val mutex=Mutex()
     // Only a lightweight version check, not a full catalog download.
     private val versionCheckMillis=15*60_000L
@@ -75,7 +77,9 @@ internal class ServerVpnCatalogRepository(
     }
 
     suspend fun cached():List<ServerVpnApp> = withContext(Dispatchers.IO) {
-        verifiedApps(stored())
+        verifiedApps(stored()).also { apps ->
+            newBadges.observeCatalog(apps.map { it.id }.toSet())
+        }
     }
 
     fun currentVersion():Int = stored()?.optInt("catalogVersion",0)?:0
@@ -85,6 +89,9 @@ internal class ServerVpnCatalogRepository(
         withContext(Dispatchers.IO) {
             val previous=stored()
             val available=verifiedApps(previous)
+            // Establish the previous verified catalog as the local baseline before
+            // incorporating newly published entries (also from background sync).
+            newBadges.observeCatalog(available.map { it.id }.toSet())
             val now=System.currentTimeMillis()
             val last=previous?.optLong("checkedAtMillis",0L)?:0L
             val previousVersion=previous?.optInt("catalogVersion",0)?:0
@@ -140,7 +147,9 @@ internal class ServerVpnCatalogRepository(
                     .put("checkedAtMillis",now)
                     .put("apps",array)
                 vault.write("catalog",fresh.toString().toByteArray(Charsets.UTF_8))
-                verifiedApps(fresh).ifEmpty { available }
+                verifiedApps(fresh).ifEmpty { available }.also { apps ->
+                    newBadges.observeCatalog(apps.map { it.id }.toSet())
+                }
             }catch(error:CancellationException){throw error}
              catch(_:Exception){available}
         }
