@@ -17,6 +17,7 @@
     <string name="cloud_failure_decode">El motor no pudo procesar esta versión del archivo. No significa necesariamente que esté dañado.</string>
     <string name="cloud_failure_maintenance">Este servicio está temporalmente en mantenimiento. Vuelve a intentarlo más tarde.</string>
     <string name="cloud_failure_unavailable">El servicio está temporalmente fuera de línea. Vuelve a intentarlo más tarde.</string>
+    <string name="cloud_failure_config_unavailable">Esta configuración Cloud ya no está disponible. Puede haber caducado, haberse eliminado o ser de un solo uso. No es un fallo del descifrador.</string>
     <string name="cloud_failure_remote">El proveedor remoto devolvió una respuesta inválida o que no pudo verificarse.</string>
     <string name="cloud_failure_credentials">Contraseña o HWID incorrectos. Comprueba los datos e inténtalo de nuevo.</string>
     <string name="cloud_failure_password">Este archivo protegido requiere contraseña.</string>
