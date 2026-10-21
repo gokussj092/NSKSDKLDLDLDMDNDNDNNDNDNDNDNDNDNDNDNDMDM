@@ -22,7 +22,7 @@ HANDLERS = (
     ("decoders.Python.npvt_links", "decode_text"),
 )
 
-def dispatch(text: str) -> str | None:
+def dispatch(text: str, *, password: str | None = None) -> str | None:
     if not isinstance(text, str) or not text.strip() or len(text) > MAX_TEXT_CHARS:
         return None
     value = text.strip()
@@ -39,6 +39,11 @@ def dispatch(text: str) -> str | None:
         if lowered.startswith(prefix):
             from_module = importlib.import_module(module_name)
             return from_module.run(value.encode("utf-8"))
+    # The Ultra Custom scheme has an explicit codec, including UAP1 password
+    # wrappers. Preserve the exact error instead of silently returning None.
+    if lowered.startswith("ua://"):
+        from decoders.Python.apps.Ultra_Custom import ultra_custom_52 as ultra
+        return json.dumps(ultra.decode(value, password=password), ensure_ascii=False, indent=2)
     # AC's verified export has a Name field; older generic RENZ vectors retain
     # their original wrapper/engine. A corrupt modern profile never falls back.
     if lowered.startswith("actunnelvpn://"):
@@ -48,7 +53,6 @@ def dispatch(text: str) -> str | None:
             return result
     # C8 isolated original application codecs. These prefixes are unambiguous.
     c8_links = (
-        ("ua://", "decoders.Python.apps.Ultra_Custom.ultra_custom_52"),
         ("mkk://", "decoders.Python.apps.MKK_Hyper_VPN.MKK_Hyper_VPN_textos"),
         ("vpn://", "decoders.Python.apps.DTunnel_Mod.dtunnelmod"),
         ("mytunnelproxy://", "decoders.Python.apps.My_Tunnel_Proxy.file_decoder"),
@@ -89,8 +93,20 @@ def main() -> int:
         if len(raw) > MAX_TEXT_CHARS * 4:
             return 2
         text = raw.decode("utf-8")
-        output = dispatch(text)
-    except (OSError, UnicodeError, ValueError, ImportError):
+        credentials = json.loads(sys.stdin.buffer.read(8193))
+        if not isinstance(credentials, dict) or set(credentials) - {"password"}:
+            return 2
+        password = credentials.get("password")
+        if password is not None and (not isinstance(password, str) or
+                not 0 < len(password.encode("utf-8")) <= 4096):
+            return 2
+        if password is not None and not text.strip().lower().startswith("ua://"):
+            return 2
+        output = dispatch(text, password=password)
+    except (OSError, UnicodeError, ValueError, ImportError) as error:
+        if getattr(error, "code", None) in ("PASSWORD_REQUIRED", "AUTH_FAILED"):
+            sys.stdout.write(json.dumps({"workerError": error.code}))
+            return 3
         return 1
     if not isinstance(output, str) or not output:
         return 1
