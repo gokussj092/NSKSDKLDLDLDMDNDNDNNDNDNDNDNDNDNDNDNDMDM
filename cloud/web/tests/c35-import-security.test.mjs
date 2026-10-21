@@ -10,6 +10,8 @@ import {
   importEhiReference, downloadNur, ehiConfigured, nurConfigured, EHI_ENDPOINT,
 } from "../lib/c35-provider.mjs";
 import { externalImportRequest } from "../lib/c35-gateway.mjs";
+import { classifyWorkerOutcome, safeErrorCode } from "../lib/c6-ops-store.mjs";
+import { failure } from "../lib/c3-gateway.mjs";
 import { createChallenge, issueSession } from "../lib/c3-session.mjs";
 
 const SIGN_KEY="S".repeat(32),RESPONSE_KEY="R".repeat(32);
@@ -64,9 +66,9 @@ async function token(redis){
   assert.ok(session.accessToken);
   return session.accessToken;
 }
-function syntheticResponse(responseKey=RESPONSE_KEY){
+function syntheticResponse(responseKey=RESPONSE_KEY, status="success"){
   const configData=Buffer.alloc(32,9);
-  const plain=Buffer.from(JSON.stringify({status:"success",config_data:configData.toString("base64")}));
+  const plain=Buffer.from(JSON.stringify({status,config_data:configData.toString("base64")}));
   const compressed=deflateSync(plain);
   const iv=Buffer.from(Array.from({length:16},(_,i)=>i));
   const cipher=createCipheriv("aes-256-cbc",Buffer.from(responseKey),iv);
@@ -399,7 +401,9 @@ test("HTTP Injector response MAC and AES/zlib integrity precede EHI processing",
   assert.throws(()=>unwrapEhiResponse(valid,{responseKey:"Q".repeat(32)}),
     {code:"REMOTE_INTEGRITY_FAILED"});
   assert.throws(()=>unwrapEhiResponse(Buffer.from('{"code":401}'),{responseKey:RESPONSE_KEY}),
-    {code:"REMOTE_PROVIDER_UNAVAILABLE"});
+    {code:"REMOTE_CONFIG_UNAVAILABLE"});
+  assert.throws(()=>unwrapEhiResponse(syntheticResponse(RESPONSE_KEY,"error"),
+    {responseKey:RESPONSE_KEY}),{code:"REMOTE_CONFIG_UNAVAILABLE"});
   assert.throws(()=>unwrapEhiResponse(Buffer.from('{"code":200,"data":"AA=="}'),{responseKey:RESPONSE_KEY}),
     {code:"REMOTE_RESPONSE_INVALID"});
 });
@@ -465,4 +469,32 @@ test("NUR catalog download endpoint never accepts client URLs or unconsented req
   const result=await externalImportRequest(send({consent:true},bearer),"nur",options);
   assert.equal(result.status,200);
   assert.equal(calls,1);
+});
+
+// EHI references are sometimes ephemeral or consumable. Only an explicit
+// upstream reference refusal is considered a link lifecycle condition.
+test("EHI expired/consumed or removed configurations are not engine failures", async()=>{
+  const opts={resolve:async()=>[{address:"8.8.8.8",family:4}]};
+  for(const statusCode of [404,410]){
+    await assert.rejects(()=>downloadApproved({url:EHI_ENDPOINT,kind:"ehi",method:"POST"},
+      {...opts,request:fakeTransport(statusCode)}),
+      {code:"REMOTE_CONFIG_UNAVAILABLE",status:410});
+  }
+  for(const statusCode of [401,403,500]){
+    await assert.rejects(()=>downloadApproved({url:EHI_ENDPOINT,kind:"ehi",method:"POST"},
+      {...opts,request:fakeTransport(statusCode)}),
+      {code:"REMOTE_PROVIDER_UNAVAILABLE",status:502});
+  }
+  await assert.rejects(()=>downloadApproved({url:nurUrl,kind:"nur"},
+    {...opts,request:fakeTransport(404)}),{code:"REMOTE_PROVIDER_UNAVAILABLE"});
+  assert.equal(safeErrorCode("REMOTE_CONFIG_UNAVAILABLE"),"REMOTE_CONFIG_UNAVAILABLE");
+  assert.equal(classifyWorkerOutcome("failed",{
+    kind:"ehi",errorCode:"REMOTE_CONFIG_UNAVAILABLE"}),"warning");
+  assert.equal(classifyWorkerOutcome("failed",{
+    kind:"ehi",errorCode:"REMOTE_PROVIDER_UNAVAILABLE"}),"failed");
+  assert.equal(classifyWorkerOutcome("failed",{
+    kind:"catalog",errorCode:"REMOTE_CONFIG_UNAVAILABLE"}),"failed");
+  const response=failure("REMOTE_CONFIG_UNAVAILABLE",410);
+  assert.equal(response.status,410);
+  assert.match((await response.json()).error.message,/caducado|solo uso/);
 });
