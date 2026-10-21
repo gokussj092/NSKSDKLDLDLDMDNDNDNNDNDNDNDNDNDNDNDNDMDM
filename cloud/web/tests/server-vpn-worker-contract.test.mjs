@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {fetchWorker} from "../lib/c3-gateway.mjs";
+import {classifyWorkerOutcome,safeErrorCode} from "../lib/c6-ops-store.mjs";
 
 const cfg={workerToken:"w".repeat(48)};
 const version=()=>{
@@ -63,4 +64,10 @@ test("non-MKK and complete worker results remain strictly non-partial",async()=>
   const bad={...ok,isPartial:true};
   await assert.rejects(()=>fetchWorker("server-vpn",{providerId:"mkk-hyper"},cfg,{fetchImpl:worker(bad)}),/INVALID_WORKER_RESULT/);
  }finally{restore();}
+});
+
+test("MKK partial catalog is an explicit warning, not a full success or an unknown error",()=>{
+ assert.equal(safeErrorCode("PARTIAL_SOURCE_FAILURE"),"PARTIAL_SOURCE_FAILURE");
+ assert.equal(classifyWorkerOutcome("warning",{kind:"server-vpn",format:"mkk-hyper",
+  errorCode:"PARTIAL_SOURCE_FAILURE"}),"warning");
 });

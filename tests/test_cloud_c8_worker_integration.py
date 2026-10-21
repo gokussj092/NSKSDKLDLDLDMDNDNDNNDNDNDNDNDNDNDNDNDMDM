@@ -74,6 +74,21 @@ class C8WorkerIntegrationTests(unittest.TestCase):
         self.assertNotIn("bannerImage",output["rawText"])
         self.assertFalse(output["isPartial"])
 
+    def test_mkk_oversized_render_uses_explicit_error_not_generic_failure(self):
+        import io
+        import tempfile
+        from unittest.mock import patch
+        from cloud.workers.python import catalog_vpn_bridge as bridge
+        with tempfile.TemporaryDirectory() as folder:
+            sample=Path(folder)/"input.bin"
+            sample.write_bytes(b"synthetic")
+            output=io.StringIO()
+            with patch.object(bridge,"decode",return_value="X"*(4*1024*1024+1)), \
+                 patch.object(sys,"argv",["catalog_vpn_bridge.py","mkk-hyper",str(sample)]), \
+                 patch("sys.stdout",output):
+                self.assertEqual(bridge.main(),3)
+            self.assertEqual(json.loads(output.getvalue()),{"workerError":"OUTPUT_TOO_LARGE"})
+
     def test_vpn_plus_peru_akn3_full_json(self):
         data=golden("vpn_plus_peru_vectors.json")
         sample=next(v for v in data["vectors"] if v["version"]==3)

@@ -77,7 +77,7 @@ const CONNECT_MS=10000;
 const RETRY_CODES=new Set(["ECONNRESET","ETIMEDOUT","ESOCKETTIMEDOUT","ECONNREFUSED","EHOSTUNREACH","ENETUNREACH","EPIPE"]);
 
 export class VpnProviderError extends Error {
-  constructor(code) {super(code);this.code=code;}
+  constructor(code,{retryable=false}={}) {super(code);this.code=code;this.retryable=retryable;}
 }
 function fail(code){throw new VpnProviderError(code);}
 export function providerEnabled(id,env=process.env){
@@ -120,7 +120,13 @@ function pinnedGet(url,ip,agent,timeout,headers={}){
         res.resume();
         return finish(null,{redirect:location});
       }
-      if(status!==200){res.resume();return finish(new VpnProviderError("REMOTE_PROVIDER_UNAVAILABLE"));}
+      if(status!==200){
+        res.resume();
+        // Retry only transient upstream throttling/outages, never auth, TLS or
+        // a redirected origin. The bound IP, TLS hostname and deadline remain.
+        const retryable=[429,500,502,503,504].includes(status);
+        return finish(new VpnProviderError("REMOTE_PROVIDER_UNAVAILABLE",{retryable}));
+      }
       if((res.headers["content-encoding"]||"identity")!=="identity"){
         res.resume();return finish(new VpnProviderError("REMOTE_RESPONSE_INVALID"));
       }
@@ -161,13 +167,19 @@ export async function downloadVpnCatalog(id,source="servers"){
        dest.password||dest.search!==initial.search||dest.hash||dest.port)fail("REMOTE_NETWORK_DENIED");
     const addresses=await vettedIpv4(dest.hostname);
     let redirected=false;
-    for(const ip of addresses){
+    // A single-address CDN sometimes drops one request. Retry once on the
+    // *same revalidated public IPv4* only for temporary HTTP/socket errors.
+    const attempts=addresses.length===1?[addresses[0],addresses[0]]:addresses;
+    for(const ip of attempts){
       const remaining=deadline-Date.now();
       if(remaining<=0)fail("REMOTE_PROVIDER_UNAVAILABLE");
       let answer;
       try{answer=await pinnedGet(target,ip,provider.agent,Math.min(CONNECT_MS,remaining),provider.headers);}
       catch(error){
-        if(error instanceof VpnProviderError)throw error;
+        if(error instanceof VpnProviderError){
+          if(!error.retryable)throw error;
+          continue;
+        }
         // TLS/certificate errors and definitive HTTP statuses never retry.
         if(!RETRY_CODES.has(error?.code))fail("REMOTE_PROVIDER_UNAVAILABLE");
         continue;

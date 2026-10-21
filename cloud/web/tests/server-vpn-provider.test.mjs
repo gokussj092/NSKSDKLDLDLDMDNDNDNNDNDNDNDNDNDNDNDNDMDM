@@ -4,6 +4,7 @@ import dns from "node:dns/promises";
 import https from "node:https";
 import {EventEmitter} from "node:events";
 import {downloadVpnCatalog,mkkSourceIds} from "../lib/server-vpn-provider.mjs";
+import {packMkkSources} from "../lib/mkk-source-bundle.mjs";
 
 for(const provider of [
   {id:"tunneltweak",host:"tunneltweak.com",path:"/api/servers",query:"",agent:"TunnelTweak/1.0 (Android)",headers:{"ngrok-skip-browser-warning":"true","x-app-version":"51","x-cfg-keyed":"1"}},
@@ -103,4 +104,46 @@ test("MKK four approved catalog sources are individually bound to fixed HTTPS en
  }
  await assert.rejects(()=>downloadVpnCatalog("mkk-hyper","https://evil.invalid"),{code:"UNSUPPORTED_FORMAT"});
  await assert.rejects(()=>downloadVpnCatalog("ksh-vpn","subscriptions"),{code:"UNSUPPORTED_FORMAT"});
+});
+
+test("MKK intermittent HTTP 503 recovers with one bounded retry on same public IP",async t=>{
+ const previous=process.env.CLOUD_SERVER_VPN_ENABLED;
+ process.env.CLOUD_SERVER_VPN_ENABLED="true";
+ t.after(()=>{if(previous===undefined)delete process.env.CLOUD_SERVER_VPN_ENABLED;else process.env.CLOUD_SERVER_VPN_ENABLED=previous;});
+ let count=0;
+ t.mock.method(dns,"lookup",async()=>[{address:"93.184.216.34",family:4}]);
+ t.mock.method(https,"request",(_url,options,callback)=>{
+  assert.equal(options.rejectUnauthorized,true);
+  const req=new EventEmitter();
+  req.destroy=()=>{};
+  req.end=()=>queueMicrotask(()=>{
+   count++;
+   const res=new EventEmitter();res.resume=()=>{};
+   res.statusCode=count===1?503:200;res.headers={};
+   callback(res);
+   if(count>1){res.emit("data",Buffer.from("valid MKK bytes"));res.emit("end");}
+  });
+  return req;
+ });
+ assert.equal((await downloadVpnCatalog("mkk-hyper","servers")).toString(),"valid MKK bytes");
+ assert.equal(count,2);
+});
+test("MKK budget preserves complete approved sources and marks omissions explicitly",()=>{
+ const sources=[
+  {name:"servers",status:"ok",dataBase64:"A".repeat(600)},
+  {name:"static",status:"ok",dataBase64:"B".repeat(600)},
+  {name:"subscriptions",status:"error",error:"REMOTE_PROVIDER_UNAVAILABLE"},
+  {name:"legacy-subscriptions",status:"error",error:"REMOTE_PROVIDER_UNAVAILABLE"},
+ ];
+ const selected=packMkkSources(sources,1050);
+ const body=JSON.parse(selected.payload.toString("utf8"));
+ assert.equal(body.kind,"spdecode-mkk-sources-v1");
+ assert.ok(selected.payload.length<=1050);
+ assert.equal(body.sources.length,4);
+ assert.deepEqual(body.sources.map(x=>x.name),mkkSourceIds());
+ assert.equal(body.sources[0].status,"ok");
+ assert.equal(body.sources[0].dataBase64,sources[0].dataBase64);
+ assert.deepEqual(body.sources[1],{name:"static",status:"error",error:"REMOTE_TOO_LARGE"});
+ assert.equal(body.sources[2].error,"REMOTE_PROVIDER_UNAVAILABLE");
+ assert.equal(sources[1].status,"ok"); // no mutation or truncation
 });

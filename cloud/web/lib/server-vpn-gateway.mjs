@@ -7,6 +7,7 @@ import {enabled,notEnabled,failure,boundedBody,fetchWorker} from "./c3-gateway.m
 import {maintenanceEnabled,serviceMaintenanceEnabled,recordWorkerResult} from "./c6-ops-store.mjs";
 import {providerEnabled,downloadVpnCatalog,mkkSourceIds,VpnProviderError} from "./server-vpn-provider.mjs";
 import {providerAllowed} from "./c12-provider-controls.mjs";
+import {packMkkSources} from "./mkk-source-bundle.mjs";
 
 export async function decodeServerVpn(request,opts={}){
   if(!enabled())return notEnabled();
@@ -43,11 +44,13 @@ export async function decodeServerVpn(request,opts={}){
         }
       }));
       if(!sources.some(item=>item.status==="ok"))
-        return failure("REMOTE_PROVIDER_UNAVAILABLE",502);
-      bytes=Buffer.from(JSON.stringify({kind:"spdecode-mkk-sources-v1",sources}),"utf8");
-      // Worker input has a 16 MiB hard bound; never ship a partial bundle
-      // because of the transport cap without explicitly returning an error.
-      if(bytes.length>12*1024*1024)return failure("REMOTE_TOO_LARGE",413);
+        throw new VpnProviderError("REMOTE_PROVIDER_UNAVAILABLE");
+      const bundle=packMkkSources(sources);
+      if(!bundle.sources.some(item=>item.status==="ok"))
+        throw new VpnProviderError("REMOTE_TOO_LARGE");
+      // Each omitted source is explicitly marked REMOTE_TOO_LARGE. Remaining
+      // sources are passed intact, with the worker's partial warning visible.
+      bytes=bundle.payload;
     }else{
       bytes=await downloadVpnCatalog(providerId);
     }
@@ -56,9 +59,15 @@ export async function decodeServerVpn(request,opts={}){
       providerId,dataBase64:bytes.toString("base64"),
     },settings(),opts);
     try{
-      let errorCode="";
-      if(!response.ok)errorCode=(await response.clone().json()).error?.code||"";
-      await recordWorkerResult(redis,response.ok?"success":"failed",{
+      let errorCode="",outcome=response.ok?"success":"failed";
+      const result=await response.clone().json();
+      if(!response.ok)errorCode=result.error?.code||"";
+      else if(providerId==="mkk-hyper" && result.isPartial===true){
+        // Decoding succeeded but some vendor sources failed; this is not a
+        // completely successful catalog. Preserve the warning in diagnostics.
+        outcome="warning";errorCode="PARTIAL_SOURCE_FAILURE";
+      }
+      await recordWorkerResult(redis,outcome,{
         kind:"server-vpn",format:providerId,bytes:bytes.length,errorCode,
         latencyMs:performance.now()-started,
         appVersion:request.headers.get("x-spdecode-app-version"),

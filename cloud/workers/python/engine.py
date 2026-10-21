@@ -322,6 +322,13 @@ def decode_provider_catalog(provider_id: str, contents: bytes) -> dict:
         except OSError as error:
             raise DecodeFailure("ENGINE_UNAVAILABLE") from error
         if rc!=0:
+            if provider_id=="mkk-hyper" and rc==3:
+                try:
+                    marker=json.loads(target.read_bytes()[:256])
+                    if marker.get("workerError")=="OUTPUT_TOO_LARGE":
+                        raise DecodeFailure("OUTPUT_TOO_LARGE")
+                except (ValueError, UnicodeError, AttributeError):
+                    pass
             raise DecodeFailure("DECODE_FAILED")
         with target.open("rb") as result:
             raw=result.read(MAX_OUTPUT_BYTES+1)

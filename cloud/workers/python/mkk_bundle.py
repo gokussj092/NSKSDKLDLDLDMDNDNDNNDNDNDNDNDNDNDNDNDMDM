@@ -64,4 +64,7 @@ def decode(payload: bytes) -> str:
         "successfulSources":successful,
         "sources":output,
     }
-    return json.dumps(document,ensure_ascii=False,indent=2,allow_nan=False)+"\n"
+    # Same complete structure, compact wire representation. Four large
+    # catalogs previously exceeded the worker's 4 MiB output file quota
+    # largely because of indentation, producing an opaque DECODE_FAILED.
+    return json.dumps(document,ensure_ascii=False,separators=(",",":"),allow_nan=False)+"\n"
