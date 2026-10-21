@@ -196,7 +196,7 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
     if suffix == "roy" and _is_legacy_roy(contents):
         engine = load_file_engines()["roy"]
     if credentials is not None:
-        allowed = {"password", "hwid"} if suffix == "hc" else {"password"} if suffix == "tut" else None
+        allowed = {"password", "hwid"} if suffix == "hc" else {"password"} if suffix in ("tut", "ua") else None
         if allowed is None or not isinstance(credentials, dict) or set(credentials) - allowed:
             raise DecodeFailure("CREDENTIALS_NOT_ALLOWED")
         for name, maximum in (("password", 4096), ("hwid", 128)):
@@ -206,12 +206,15 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
     # Protected formats receive credentials on stdin, never argv/env/logs.
     protected_hc = suffix == "hc"
     protected_tut = suffix == "tut"
-    credential_input = protected_hc or protected_tut
+    protected_ua = suffix == "ua"
+    credential_input = protected_hc or protected_tut or protected_ua
     source = engine["source"]
     if protected_hc:
         source = str(Path(__file__).with_name("hc_bridge.py"))
     elif protected_tut:
         source = str(Path(source).with_name("worker_bridge.py"))
+    elif protected_ua:
+        source = str(Path(__file__).with_name("ultra_custom_bridge.py"))
     runtime = sys.executable if credential_input or engine["runtime"] == "python" else shutil.which(engine["runtime"])
     if not runtime:
         raise DecodeFailure("ENGINE_UNAVAILABLE")
