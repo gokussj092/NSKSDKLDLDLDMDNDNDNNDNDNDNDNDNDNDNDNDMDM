@@ -97,7 +97,7 @@ test("reset endpoint is authenticated, CSRF protected, allowlisted and never era
  await recordWorkerResult(redis,"failed",{kind:"file",format:"hc",errorCode:"ENGINE_TIMEOUT"});
  const root="https://panel.example.test";
  const login=new Request(root+"/api/admin/login",{
-  method:"POST",headers:{"Origin":root,"X-SPDecode-Admin-Action":"1"}
+  method:"POST",headers:{"Origin":root,"X-SPDecode-Admin-Action":"1","Content-Type":"application/json"}
  });
  const auth=await adminLogin(redis,login,"operator",password);
  assert.ok(auth.token);

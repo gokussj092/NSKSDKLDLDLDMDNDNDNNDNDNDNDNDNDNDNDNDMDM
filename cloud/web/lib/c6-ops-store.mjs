@@ -49,7 +49,7 @@ export async function setServiceMaintenance(redis,id,enabled,env=process.env){
 }
 export async function recordWorkerResult(redis,outcome,meta=null) {
   // No filenames, payloads, IPs, tokens, or decoded data are retained.
-  const classification=classifyWorkerOutcome(outcome,meta);
+  const classification=classifyWorkerOutcome(outcome,meta||{});
   if(classification==="ignored")return;
   outcome=classification;
   const day=new Date().toISOString().slice(0,10);
