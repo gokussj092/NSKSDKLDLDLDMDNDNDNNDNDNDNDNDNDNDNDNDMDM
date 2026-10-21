@@ -4,7 +4,7 @@ import json
 import unittest
 from pathlib import Path
 
-SRC=Path(__file__).resolve().parents[3]/"decoders/Python/apps/REESE_TUNNEL/reese_tunnel.py"
+SRC=Path(__file__).resolve().parents[1]/"decoders/Python/apps/REESE_TUNNEL/reese_tunnel.py"
 spec=importlib.util.spec_from_file_location("reese_tunnel_banner_test",SRC)
 reese=importlib.util.module_from_spec(spec)
 spec.loader.exec_module(reese)
