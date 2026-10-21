@@ -15,14 +15,20 @@ const mkkSources=[
  {name:"subscriptions",status:"error",error:"DECODE_FAILED"},
  {name:"legacy-subscriptions",status:"error",error:"REMOTE_PROVIDER_UNAVAILABLE"},
 ];
-const result=(partial=true)=>({
+const result=(partial=true)=>{
+ const sources=partial?mkkSources:mkkSources.map(x=>x.status==="ok"?x:
+   {name:x.name,status:"ok",records:1,data:{servers:[{id:x.name}]}});
+ const report={provider:"mkk-hyper",complete:!partial,sourceCount:4,
+   successfulSources:partial?1:4,sources};
+ return {
  apiVersion:"v1",status:"success",kind:"vpn_catalog",providerId:"mkk-hyper",
- structuredJson:{provider:"mkk-hyper",complete:!partial,sourceCount:4,successfulSources:1,sources:mkkSources},
- rawText:JSON.stringify({provider:"mkk-hyper",complete:!partial,sources:mkkSources}),
+ structuredJson:report,
+ rawText:JSON.stringify(report),
  isPartial:partial,
  warnings:partial?["PARTIAL_SOURCE_FAILURE"]:[],
  exporterCertified:false
-});
+ };
+};
 const worker=(body)=>async(url,options)=>{
  assert.equal(url,"http://decoder-worker:8787/internal/v1/decode/import/server-vpn");
  assert.equal(options.method,"POST");

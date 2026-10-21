@@ -24,6 +24,9 @@ MATRIX = ROOT / "docs/cloud/C0_FORMAT_MATRIX.csv"
 DECODERS = (ROOT / "decoders").resolve()
 MAX_INPUT_BYTES = 16 * 1024 * 1024
 MAX_OUTPUT_BYTES = 4 * 1024 * 1024
+# Provider-specific cap: all other routes retain the existing 4 MiB quota.
+MAX_MKK_OUTPUT_BYTES = 32 * 1024 * 1024
+MAX_MKK_BUNDLE_BYTES = 45 * 1024 * 1024
 TIMEOUT_SECONDS = 20
 # NUR server lists contain many independently Argon2id-protected fields.
 # A dedicated budget must not weaken the 20-second cap of other decoders.
@@ -101,10 +104,10 @@ def load_runtime_file_engines() -> dict[str, dict[str, str]]:
         }
     return result
 
-def _child_limits(cpu_budget: int = TIMEOUT_SECONDS) -> None:
+def _child_limits(cpu_budget: int = TIMEOUT_SECONDS, output_bytes: int = MAX_OUTPUT_BYTES) -> None:
     """POSIX resource caps on untrusted decoder subprocesses."""
     resource.setrlimit(resource.RLIMIT_CPU, (cpu_budget + 2, cpu_budget + 3))
-    resource.setrlimit(resource.RLIMIT_FSIZE, (MAX_OUTPUT_BYTES + 1, MAX_OUTPUT_BYTES + 1))
+    resource.setrlimit(resource.RLIMIT_FSIZE, (output_bytes + 1, output_bytes + 1))
     resource.setrlimit(resource.RLIMIT_NOFILE, (64, 64))
     resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
 
@@ -299,7 +302,7 @@ def decode_provider_catalog(provider_id: str, contents: bytes) -> dict:
         raise DecodeFailure("INVALID_INPUT")
     # MKK source bundle carries four separately encrypted fixed-origin replies
     # encoded in Base64; its envelope may exceed one provider response.
-    limit = 12 * 1024 * 1024 if provider_id == "mkk-hyper" else 8 * 1024 * 1024
+    limit = MAX_MKK_BUNDLE_BYTES if provider_id == "mkk-hyper" else 8 * 1024 * 1024
     if len(contents) > limit:
         raise DecodeFailure("INPUT_TOO_LARGE")
     bridge=Path(__file__).with_name("catalog_vpn_bridge.py")
@@ -314,7 +317,9 @@ def decode_provider_catalog(provider_id: str, contents: bytes) -> dict:
                     [sys.executable,str(bridge),provider_id,str(source)],
                     cwd=ROOT,env=_child_env(folder),stdin=subprocess.DEVNULL,
                     stdout=output,stderr=subprocess.DEVNULL,close_fds=True,
-                    start_new_session=True,preexec_fn=partial(_child_limits,CATALOG_TIMEOUT_SECONDS),
+                    start_new_session=True,preexec_fn=partial(_child_limits,CATALOG_TIMEOUT_SECONDS,
+                                                MAX_MKK_OUTPUT_BYTES if provider_id=="mkk-hyper"
+                                                else MAX_OUTPUT_BYTES),
                 )
                 try:
                     rc=proc.wait(timeout=CATALOG_TIMEOUT_SECONDS)
@@ -333,9 +338,10 @@ def decode_provider_catalog(provider_id: str, contents: bytes) -> dict:
                 except (ValueError, UnicodeError, AttributeError):
                     pass
             raise DecodeFailure("DECODE_FAILED")
+        output_limit=MAX_MKK_OUTPUT_BYTES if provider_id=="mkk-hyper" else MAX_OUTPUT_BYTES
         with target.open("rb") as result:
-            raw=result.read(MAX_OUTPUT_BYTES+1)
-        if len(raw)>MAX_OUTPUT_BYTES:
+            raw=result.read(output_limit+1)
+        if len(raw)>output_limit:
             raise DecodeFailure("OUTPUT_TOO_LARGE")
         try:
             raw_text=raw.decode("utf-8")

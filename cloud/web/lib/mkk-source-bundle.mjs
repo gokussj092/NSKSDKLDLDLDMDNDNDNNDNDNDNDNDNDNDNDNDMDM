@@ -3,7 +3,9 @@
  * Keep as many complete sources as fit, marking exclusions explicitly; never
  * discard bytes silently or let a single oversized catalog fail the whole job.
  */
-export const MKK_BUNDLE_LIMIT=12*1024*1024;
+// Four fixed MKK catalogs may each use the 8 MiB download cap.
+// This Base64 envelope holds them together without dropping any source.
+export const MKK_BUNDLE_LIMIT=45*1024*1024;
 const KIND="spdecode-mkk-sources-v1";
 export const MKK_NAMES=Object.freeze(["servers","static","subscriptions","legacy-subscriptions"]);
 export function packMkkSources(items,budget=MKK_BUNDLE_LIMIT){

@@ -127,8 +127,35 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
     redirect:"error",
     cache:"no-store",
   });
-  const value=await response.text();
-  if(value.length>6*1024*1024)throw Error("OUTPUT_OVER_LIMIT");
+  // MKK is the only catalog allowed a larger internal result. Bound bytes as
+  // they arrive so a malicious or broken worker cannot exhaust broker memory.
+  const isMkk=kind==="server-vpn" && payload?.providerId==="mkk-hyper";
+  const responseLimit=isMkk?96*1024*1024:6*1024*1024;
+  const advertised=response.headers?.get?.("content-length");
+  if(advertised && /^[0-9]+$/.test(advertised) && Number(advertised)>responseLimit)
+    throw Error("OUTPUT_OVER_LIMIT");
+  let value;
+  if(response.body?.getReader){
+    const reader=response.body.getReader(),chunks=[];
+    let received=0;
+    try{
+      while(true){
+        const item=await reader.read();
+        if(item.done)break;
+        received+=item.value.byteLength;
+        if(received>responseLimit)throw Error("OUTPUT_OVER_LIMIT");
+        chunks.push(Buffer.from(item.value));
+      }
+    }finally{
+      if(received>responseLimit)await reader.cancel().catch(()=>{});
+      reader.releaseLock();
+    }
+    value=new TextDecoder("utf-8",{fatal:true}).decode(Buffer.concat(chunks));
+  }else{
+    // Minimal mocks use text(); production native fetch always streams.
+    value=await response.text();
+    if(Buffer.byteLength(value,"utf8")>responseLimit)throw Error("OUTPUT_OVER_LIMIT");
+  }
   let decoded;
   try{decoded=JSON.parse(value);}catch{throw Error("INVALID_WORKER_JSON");}
   if(!isRecord(decoded))throw Error("INVALID_WORKER_SHAPE");
@@ -147,7 +174,28 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
       Array.isArray(decoded.warnings) && decoded.warnings.includes("PARTIAL_SOURCE_FAILURE");
     if(decoded.status!=="success" || (decoded.isPartial!==false && !partialMkk) ||
        typeof decoded.rawText!=="string" || !decoded.rawText.length ||
-       decoded.rawText.length>4*1024*1024)throw Error("INVALID_WORKER_RESULT");
+       Buffer.byteLength(decoded.rawText,"utf8")>(isMkk?32*1024*1024:4*1024*1024))
+      throw Error("INVALID_WORKER_RESULT");
+    if(isMkk){
+      // A complete, matching JSON document is mandatory; HTML, logs, partial
+      // writes or fabricated structured metadata must not reach the client.
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      if(!isRecord(parsed) || parsed.provider!=="mkk-hyper" ||
+         parsed.sourceCount!==4 || !Array.isArray(parsed.sources) ||
+         parsed.sources.length!==4 || !isRecord(decoded.structuredJson) ||
+         JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson) ||
+         parsed.complete!==(decoded.isPartial===false) ||
+         parsed.successfulSources!==parsed.sources.filter(x=>x?.status==="ok").length ||
+         parsed.complete!==(parsed.successfulSources===4) ||
+         parsed.successfulSources<1 ||
+         parsed.sources.some((x,i)=>x?.name!==["servers","static","subscriptions","legacy-subscriptions"][i] ||
+           (x.status!=="ok" && x.status!=="error") ||
+           (x.status==="ok" && (!Number.isSafeInteger(x.records) || x.records<0 ||
+             !(isRecord(x.data) || Array.isArray(x.data)))) ||
+           (x.status==="error" && typeof x.error!=="string")))
+        throw Error("INVALID_WORKER_RESULT");
+    }
     return jsonReply({...decoded,requestId:randomUUID()},200);
   }
   const code=decoded.error?.code;

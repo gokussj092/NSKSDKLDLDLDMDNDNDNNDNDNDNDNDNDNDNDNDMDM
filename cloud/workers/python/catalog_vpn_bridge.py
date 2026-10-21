@@ -48,11 +48,11 @@ def main() -> int:
         return 2
     try:
         data=Path(sys.argv[2]).read_bytes()
-        limit=12*1024*1024 if sys.argv[1]=="mkk-hyper" else 8*1024*1024
+        limit=45*1024*1024 if sys.argv[1]=="mkk-hyper" else 8*1024*1024
         if not data or len(data)>limit:
             return 1
         rendered=decode(sys.argv[1],data)
-        if sys.argv[1]=="mkk-hyper" and len(rendered.encode("utf-8"))>4*1024*1024:
+        if sys.argv[1]=="mkk-hyper" and len(rendered.encode("utf-8"))>32*1024*1024:
             # Explicit, bounded error marker so the parent can return 413.
             # Never emit or truncate the actual configuration.
             sys.stdout.write('{"workerError":"OUTPUT_TOO_LARGE"}\n')
