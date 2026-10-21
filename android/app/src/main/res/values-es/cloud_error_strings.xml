@@ -28,4 +28,6 @@
     <string name="cloud_failure_partial">El resultado es incompleto o inválido y no se mostrará.</string>
     <string name="cloud_failure_general">No se pudo completar la operación. Reintenta o contacta con soporte.</string>
     <string name="cloud_failure_notice_title">No se pudo completar la solicitud</string>
+    <string name="cloud_password_title">Se requiere contraseña</string>
+    <string name="cloud_password_description">%1$s está protegido con contraseña. Introduce la contraseña de exportación para continuar. No se guardará.</string>
 </resources>
