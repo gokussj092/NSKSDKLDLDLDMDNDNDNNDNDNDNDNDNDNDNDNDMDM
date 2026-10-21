@@ -208,7 +208,7 @@ fun SpDecodeApp(
             properties=DialogProperties(
                 dismissOnBackPress=false,dismissOnClickOutside=false),
         ) {
-            Surface(color=Panel,shape=RoundedCornerShape(22.dp),
+            Surface(color=Background,shape=RoundedCornerShape(22.dp),
                 modifier=Modifier.fillMaxWidth(),
                 border=BorderStroke(1.dp,Outline)) {
                 Column(
