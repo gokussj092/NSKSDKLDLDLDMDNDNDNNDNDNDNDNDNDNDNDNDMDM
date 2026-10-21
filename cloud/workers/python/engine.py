@@ -364,12 +364,18 @@ def decode_b64(suffix: str, encoded: str) -> dict:
     return decode_file(suffix, payload)
 
 
-def decode_text(text: str, *, timeout: int = TIMEOUT_SECONDS) -> dict:
+def decode_text(text: str, *, timeout: int = TIMEOUT_SECONDS, credentials: dict | None = None) -> dict:
     """Run the dedicated source-derived text bridge in its own limited process."""
     if not isinstance(text, str) or not text.strip() or len(text) > 250_000:
         raise DecodeFailure("INVALID_INPUT")
     if not isinstance(timeout, int) or timeout < 1 or timeout > TIMEOUT_SECONDS:
         raise DecodeFailure("INVALID_REQUEST")
+    if credentials is not None:
+        if (not isinstance(credentials, dict) or set(credentials) != {"password"} or
+                not text.strip().lower().startswith("ua://") or
+                not isinstance(credentials["password"], str) or
+                not 0 < len(credentials["password"].encode("utf-8")) <= 4096):
+            raise DecodeFailure("INVALID_CREDENTIALS")
     bridge = Path(__file__).with_name("text_bridge.py")
     if not bridge.is_file():
         raise DecodeFailure("ENGINE_UNAVAILABLE")
@@ -384,7 +390,7 @@ def decode_text(text: str, *, timeout: int = TIMEOUT_SECONDS) -> dict:
                     [sys.executable, str(bridge), str(input_path)],
                     cwd=ROOT,
                     env=_child_env(folder),
-                    stdin=subprocess.DEVNULL,
+                    stdin=subprocess.PIPE,
                     stdout=output,
                     stderr=subprocess.DEVNULL,
                     close_fds=True,
@@ -394,7 +400,8 @@ def decode_text(text: str, *, timeout: int = TIMEOUT_SECONDS) -> dict:
             except OSError as error:
                 raise DecodeFailure("ENGINE_UNAVAILABLE") from error
             try:
-                returncode = proc.wait(timeout=timeout)
+                proc.communicate(input=json.dumps(credentials or {}).encode("utf-8"), timeout=timeout)
+                returncode = proc.returncode
             except subprocess.TimeoutExpired as error:
                 os.killpg(proc.pid, signal.SIGKILL)
                 proc.wait()
@@ -403,6 +410,13 @@ def decode_text(text: str, *, timeout: int = TIMEOUT_SECONDS) -> dict:
             raw = stream.read(MAX_OUTPUT_BYTES + 1)
         if len(raw) > MAX_OUTPUT_BYTES:
             raise DecodeFailure("OUTPUT_TOO_LARGE")
+        if returncode == 3:
+            try:
+                code = json.loads(raw.decode("utf-8")).get("workerError")
+            except (UnicodeError, ValueError, AttributeError):
+                code = None
+            if code in ("PASSWORD_REQUIRED", "AUTH_FAILED"):
+                raise DecodeFailure(code)
         if returncode != 0 or not raw.strip():
             raise DecodeFailure("DECODE_FAILED")
         try:
