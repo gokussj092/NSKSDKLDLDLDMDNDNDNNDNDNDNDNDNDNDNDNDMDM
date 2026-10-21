@@ -89,6 +89,10 @@ class MainActivity : ComponentActivity() {
         val requirements:HcHccfgPort.Requirements,
     )
     private var pendingCredentialImport by mutableStateOf<PendingCredentialImport?>(null)
+    private data class PendingCloudPasswordFile(val uri:Uri,val name:String,
+        val suffix:String,val bytes:ByteArray)
+    private var pendingCloudPasswordFile by mutableStateOf<PendingCloudPasswordFile?>(null)
+    private var pendingCloudPasswordText by mutableStateOf<String?>(null)
     private var enteringHcManually by mutableStateOf(false)
     private var credentialPrepareJob:Job?=null
     private var credentialPrepareGeneration=0
@@ -511,6 +515,19 @@ class MainActivity : ComponentActivity() {
                     onDecline={finishAffinity()},
                 )
             }
+            pendingCloudPasswordFile?.let { candidate ->
+                CloudPasswordDialog(candidate.name,
+                    onSubmit={value->submitCloudFilePassword(value)},
+                    onCancel={clearPendingCloudPassword()})
+            }
+            pendingCloudPasswordText?.let { value ->
+                CloudPasswordDialog("Ultra Custom",
+                    onSubmit={password->
+                        pendingCloudPasswordText=null
+                        decodeText(value,password.toByteArray(Charsets.UTF_8))
+                    },
+                    onCancel={pendingCloudPasswordText=null})
+            }
             pendingCredentialImport?.let { candidate ->
                 if(enteringHcManually || candidate.requirements.hwidRequired ||
                     candidate.credentials.isEmpty()) {
@@ -573,6 +590,7 @@ class MainActivity : ComponentActivity() {
      */
     private fun prepareSingleImport(uri:Uri) {
         if(!requireCloudLegal())return
+        clearPendingCloudPassword()
         pendingCredentialImport?.bytes?.fill(0)
         pendingCredentialImport=null
         enteringHcManually=false
@@ -654,6 +672,20 @@ class MainActivity : ComponentActivity() {
         enteringHcManually=false
     }
 
+    private fun clearPendingCloudPassword() {
+        pendingCloudPasswordFile?.bytes?.fill(0)
+        pendingCloudPasswordFile=null
+        pendingCloudPasswordText=null
+    }
+
+    private fun submitCloudFilePassword(value:String) {
+        val request=pendingCloudPasswordFile?:return
+        val pass=value.toByteArray(Charsets.UTF_8)
+        if(pass.isEmpty()||pass.size>4096){pass.fill(0);return}
+        pendingCloudPasswordFile=null
+        importFiles(listOf(request.uri), cloudPrepared=request,cloudPassword=pass)
+    }
+
     private fun cancelImport() {
         // An obsolete worker must not close the new import's progress dialog.
         importGeneration++
@@ -665,7 +697,7 @@ class MainActivity : ComponentActivity() {
 
     // The Android editor accepts a complete pasted configuration once.
     // Telegram's multipart chat-session protocol does not apply here.
-    private fun decodeText(userText:String) {
+    private fun decodeText(userText:String,password:ByteArray?=null) {
         if(!requireCloudLegal())return
         if(busy)return
         if(userText.isBlank()||userText.length>TextProtocolDecoder.MAX_CHARS) {
@@ -690,7 +722,7 @@ class MainActivity : ComponentActivity() {
             try {
                 historyLoad?.await()
                 val decoded=if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
-                    cloudClient.decodeText(userText)
+                    cloudClient.decodeText(userText,password)
                 } else withContext(Dispatchers.Default) {
                     TextProtocolDecoder.decode(this@MainActivity,candidate)
                 }
@@ -722,12 +754,19 @@ class MainActivity : ComponentActivity() {
                 tab=0
             }catch(e:CancellationException){throw e}
             catch(error:Exception){if(generation==importGeneration) {
+                if(BuildConfig.SPDECODE_CLOUD_ENABLED && password==null &&
+                    error is CloudDecodeClient.Failure && error.code=="PASSWORD_REQUIRED" &&
+                    userText.trim().startsWith("ua://",ignoreCase=true)) {
+                    pendingCloudPasswordText=userText
+                    return@launch
+                }
                 SafeDecodeDiagnostics.record(SafeDecodeDiagnostics.Event.TEXT_FAILURE)
                 message=if(BuildConfig.SPDECODE_CLOUD_ENABLED)
                     com.ghostdeveloper.spdecode.cloud.CloudUserErrors.message(this@MainActivity,error)
                     else getString(R.string.text_decode_unsupported)
             }
             }finally {
+                password?.fill(0)
                 if(generation==importGeneration) {
                     busy=false
                     progressFilename=null
@@ -961,9 +1000,14 @@ class MainActivity : ComponentActivity() {
         privateCredentialId:String?=null,
         prepared:PendingCredentialImport?=null,
         hcPassword:ByteArray?=null,
-        hcHwid:String?=null){
+        hcHwid:String?=null,
+        cloudPrepared:PendingCloudPasswordFile?=null,
+        cloudPassword:ByteArray?=null){
         if(!requireCloudLegal())return
         require(privateCredentialId==null || (uris.size==1 && prepared?.uri==uris.single()))
+        require(cloudPrepared==null || (uris.size==1 && cloudPrepared.uri==uris.single()))
+        require(cloudPassword==null || (cloudPrepared!=null && cloudPassword.isNotEmpty() &&
+            cloudPassword.size<=4096))
         require((hcPassword==null && hcHwid==null) ||
             (uris.size==1 && prepared?.uri==uris.single() && privateCredentialId==null))
         job?.cancel()
@@ -999,7 +1043,7 @@ class MainActivity : ComponentActivity() {
                     progressPosition=index
                     progressTotal=total
                     progressStage=0
-                    val name=prepared?.filename
+                    val name=prepared?.filename?:cloudPrepared?.name
                         ?:withContext(Dispatchers.IO){displayName(uri)}
                     progressFilename=name
                     val supported=(if(BuildConfig.SPDECODE_CLOUD_ENABLED)
@@ -1014,7 +1058,7 @@ class MainActivity : ComponentActivity() {
                     if (!BuildConfig.SPDECODE_CLOUD_ENABLED && !supported.hasNativeDecoder) {
                         throw DecodeFailure(R.string.native_decoder_pending)
                     }
-                    val input=prepared?.bytes?:withContext(Dispatchers.IO){readBounded(uri,
+                    val input=prepared?.bytes?:cloudPrepared?.bytes?:withContext(Dispatchers.IO){readBounded(uri,
                         when {
                             BuildConfig.SPDECODE_CLOUD_ENABLED -> CloudDecodeClient.MAX_INPUT
                             supported.suffix=="solid" -> NurTunnelPort.MAX_INPUT
@@ -1038,7 +1082,8 @@ class MainActivity : ComponentActivity() {
                                 }
                                 try { cloudClient.decodeFile(supported.suffix,input,password=secret) }
                                 finally { secret.fill(0) }
-                            }else cloudClient.decodeFile(supported.suffix,input,hcPassword,hcHwid)
+                            }else cloudClient.decodeFile(supported.suffix,input,
+                                cloudPassword?:hcPassword,hcHwid)
                         } else withContext(Dispatchers.Default) {
                             if(privateCredentialId!=null){
                                 privateCredentialVault.use(privateCredentialId){secret->
@@ -1050,8 +1095,17 @@ class MainActivity : ComponentActivity() {
                                     this@MainActivity,name,input,hcPassword,hcHwid)
                             }else AndroidOfflineDecoderRouter.decode(this@MainActivity,name,input)
                         }
+                    }catch(error:CloudDecodeClient.Failure){
+                        if(BuildConfig.SPDECODE_CLOUD_ENABLED && cloudPassword==null &&
+                            error.code=="PASSWORD_REQUIRED" &&
+                            supported.suffix in setOf("ua","npvs") &&
+                            pendingCloudPasswordFile==null){
+                            pendingCloudPasswordFile=PendingCloudPasswordFile(uri,name,
+                                supported.suffix,input.copyOf())
+                        }
+                        throw error
                     }finally {
-                        if(prepared==null)input.fill(0)
+                        if(prepared==null && cloudPrepared==null)input.fill(0)
                     }?:throw DecodeFailure(R.string.unsupported_variant_message)
                     val processed=DecodeView(name,supported.suffix,text,inputSize)
                     progressStage=2
@@ -1073,7 +1127,8 @@ class MainActivity : ComponentActivity() {
                     catch(_:Exception){toast(R.string.history_storage_error)}
                     tab=0
                 }
-                if(generation==importGeneration && report.failures>0) {
+                if(generation==importGeneration && report.failures>0 &&
+                    pendingCloudPasswordFile==null) {
                     val summary=getString(R.string.batch_import_summary,
                         report.successes,report.failures)
                     message=when {
@@ -1090,6 +1145,8 @@ class MainActivity : ComponentActivity() {
             }}
             finally {
                 hcPassword?.fill(0)
+                cloudPassword?.fill(0)
+                cloudPrepared?.bytes?.fill(0)
                 prepared?.bytes?.fill(0)
                 if(generation==importGeneration) {
                     busy=false
