@@ -296,7 +296,10 @@ fun FunctionalSettingsPanel(
         dismissButton={TextButton(onClick={withdrawDialog=false}) {
             Text(stringResource(R.string.cancel))
         }},
-        containerColor=Pane,
+        containerColor=Color.Black,
+        titleContentColor=TitleText,
+        textContentColor=TitleText,
+        tonalElevation=0.dp,
     )
     if(retentionDialog) AlertDialog(
         onDismissRequest={retentionDialog=false},
@@ -328,7 +331,10 @@ fun FunctionalSettingsPanel(
         confirmButton={TextButton(onClick={retentionDialog=false}) {
             Text(stringResource(R.string.close))
         }},
-        containerColor=Pane,
+        containerColor=Color.Black,
+        titleContentColor=TitleText,
+        textContentColor=TitleText,
+        tonalElevation=0.dp,
     )
     if(clearDialog) AlertDialog(
         onDismissRequest={clearDialog=false},
@@ -342,7 +348,10 @@ fun FunctionalSettingsPanel(
         dismissButton={TextButton(onClick={clearDialog=false}){
             Text(stringResource(R.string.cancel))
         }},
-        containerColor=Pane,
+        containerColor=Color.Black,
+        titleContentColor=TitleText,
+        textContentColor=TitleText,
+        tonalElevation=0.dp,
     )
 }
 
