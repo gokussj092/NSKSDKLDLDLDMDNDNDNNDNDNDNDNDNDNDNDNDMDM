@@ -17,6 +17,7 @@
     <string name="cloud_failure_decode">The decoder could not process this file version. The file is not necessarily damaged.</string>
     <string name="cloud_failure_maintenance">This service is temporarily under maintenance. Please try again later.</string>
     <string name="cloud_failure_unavailable">The service is temporarily unavailable. Try again later.</string>
+    <string name="cloud_failure_config_unavailable">This Cloud configuration is no longer available. It may have expired, been deleted, or been valid for one use only. This is not a decoder failure.</string>
     <string name="cloud_failure_remote">The remote provider returned an invalid or unverifiable response.</string>
     <string name="cloud_failure_credentials">Incorrect password or HWID. Check the information and try again.</string>
     <string name="cloud_failure_password">This protected file requires a password.</string>
