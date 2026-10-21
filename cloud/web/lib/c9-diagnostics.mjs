@@ -10,13 +10,14 @@ const bucket=bytes=>Number.isSafeInteger(bytes)&&bytes>=0
   ? bytes===0?"0 B":bytes<=65536?"≤64 KiB":bytes<=1048576?"≤1 MiB":bytes<=8388608?"≤8 MiB":">8 MiB"
   :"No disponible";
 export const sizeBucket=bucket;
-export function sanitizeDiagnostic({service,format,code,bytes,source,appVersion}={}){
+export function sanitizeDiagnostic({service,format,code,bytes,source,appVersion,severity}={}){
  if(!SERVICE_IDS.has(service))return null;
  const safeFormat=typeof format==="string"&&KNOWN_FORMAT.test(format)?format:"other";
  const safeCode=typeof code==="string"&&KNOWN_ERROR.test(code)?code:"OTHER_ERROR";
  const safeVersion=typeof appVersion==="string"&&/^\d{1,3}(?:\.\d{1,3}){0,3}$/.test(appVersion)?appVersion:"not-provided";
  return {service,format:safeFormat,code:safeCode,sizeBucket:bucket(bytes),
-  source:source==="user"?"user":"worker",appVersion:safeVersion};
+  source:source==="user"?"user":"worker",appVersion:safeVersion,
+  severity:severity==="warning"?"warning":"error"};
 }
 export async function recordIncident(redis,properties){
  const safe=sanitizeDiagnostic(properties);
@@ -32,16 +33,23 @@ export async function recordIncident(redis,properties){
 const NON_INCIDENT=new Set(["PASSWORD_REQUIRED","HWID_REQUIRED","HWID_PASSWORD_REQUIRED",
  "INVALID_CREDENTIALS","AUTH_FAILED","USER_CONSENT_REQUIRED","SERVICE_MAINTENANCE"]);
 export async function recordAutomaticIncident(redis,outcome,{kind,format,bytes,errorCode}={}){
- if(outcome!=="failed"||NON_INCIDENT.has(errorCode))return null;
+ if(!["failed","warning"].includes(outcome)||NON_INCIDENT.has(errorCode))return null;
  const service=kind==="ehi"?"httpInjector":kind==="catalog"||kind==="server-vpn"?"serverVpn":"files";
- return recordIncident(redis,{service,format:kind==="server-vpn"?format:kind==="catalog"?"nur-catalog":kind==="ehi"?"ehi":format||"text",code:errorCode,bytes,source:"worker"});
+ return recordIncident(redis,{service,format:kind==="server-vpn"?format:kind==="catalog"?"nur-catalog":kind==="ehi"?"ehi":format||"text",code:errorCode,bytes,source:"worker",severity:outcome==="warning"?"warning":"error"});
 }
-export async function readIncidents(redis,days=7){
+export async function readIncidents(redis,days=7,baselines={}){
  if(![1,7].includes(days))throw Error("INVALID_RANGE");
  const pages=await Promise.all(Array.from({length:days},(_,i)=>redis.lRange(PREFIX+day(i),0,149)));
  const rows=[];
  for(const page of pages)for(const raw of page){
-  try{const v=JSON.parse(raw);if(v&&typeof v.id==="string"&&SERVICE_IDS.has(v.service))rows.push(v);}catch{}
+  try{
+   const v=JSON.parse(raw);
+   if(!v||typeof v.id!=="string"||!SERVICE_IDS.has(v.service))continue;
+   const scope=v.service==="serverVpn"?(v.format==="nur-catalog"?"nur-catalog":"vpn-"+v.format):
+     v.service==="httpInjector"?"ehi":v.format;
+   if(v.severity!=="warning"&&baselines[scope]?.at&&v.at<=baselines[scope].at)continue;
+   rows.push(v);
+  }catch{}
  }
  return rows.sort((a,b)=>b.at.localeCompare(a.at)).slice(0,150);
 }

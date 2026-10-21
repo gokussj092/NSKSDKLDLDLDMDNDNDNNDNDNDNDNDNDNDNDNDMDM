@@ -49,7 +49,9 @@ export async function setServiceMaintenance(redis,id,enabled,env=process.env){
 }
 export async function recordWorkerResult(redis,outcome,meta=null) {
   // No filenames, payloads, IPs, tokens, or decoded data are retained.
-  if(!["success","failed"].includes(outcome))return;
+  const classification=classifyWorkerOutcome(outcome,meta);
+  if(classification==="ignored")return;
+  outcome=classification;
   const day=new Date().toISOString().slice(0,10);
   const key="spc6:metrics:"+day+":"+outcome;
   const pipeline=redis.multi();
@@ -86,6 +88,7 @@ const KNOWN_ERRORS=new Set([
   "INPUT_TOO_LARGE","OUTPUT_TOO_LARGE","SERVICE_UNAVAILABLE",
   "REMOTE_PROVIDER_UNAVAILABLE","REMOTE_RESPONSE_INVALID","REMOTE_INTEGRITY_FAILED",
   "REMOTE_TOO_LARGE","REMOTE_DECODER_FAILED","SERVICE_MAINTENANCE",
+  "UNSUPPORTED_VERSION","UNSUPPORTED_CONFIG_VERSION",
 ]);
 const dayUTC=(offset=0)=>new Date(Date.now()-offset*86400000).toISOString().slice(0,10);
 export function safeFormat(kind,format,errorCode="") {
@@ -96,7 +99,7 @@ export function safeFormat(kind,format,errorCode="") {
   if(kind==="text")return "text";
   if(kind==="catalog")return "nur-catalog";
   if(kind==="ehi")return "ehi";
-  if(kind!=="file" || errorCode==="UNSUPPORTED_FORMAT")return "other";
+  if(kind!=="file" || (errorCode==="UNSUPPORTED_FORMAT" && format!=="npvs"))return "other";
   if(format==="fɴ")return format;
   if(typeof format!=="string" || format.length>32 ||
     !/^[a-z0-9][a-z0-9._-]{0,31}$/.test(format))return "other";
@@ -105,10 +108,67 @@ export function safeFormat(kind,format,errorCode="") {
 export function safeErrorCode(code) {
   return KNOWN_ERRORS.has(code) ? code : "OTHER_ERROR";
 }
+const REQUIRED_INPUT=new Set(["PASSWORD_REQUIRED","HWID_REQUIRED","HWID_PASSWORD_REQUIRED",
+  "USER_CANCELLED","CANCELLED","USER_CONSENT_REQUIRED"]);
+const INCOMPATIBLE=new Set(["UNSUPPORTED_FORMAT","UNSUPPORTED_VERSION","UNSUPPORTED_CONFIG_VERSION"]);
+export function classifyWorkerOutcome(outcome,{kind,format,errorCode}={}){
+  if(outcome==="success")return "success";
+  if(outcome!=="failed"&&outcome!=="warning")return "ignored";
+  if(REQUIRED_INPUT.has(errorCode))return "ignored"; // No decode; cancelling never yields an event.
+  if(outcome==="warning"||INCOMPATIBLE.has(errorCode)||
+      (kind==="file" && format==="npvs" && errorCode==="DECODE_FAILED"))return "warning";
+  return "failed";
+}
+const BASELINE_KEY="spc6:error-baselines";
+export async function errorBaselines(redis){
+  const raw=await redis.hGetAll(BASELINE_KEY),result={};
+  for(const [format,value] of Object.entries(raw||{})){
+    try{
+      const parsed=JSON.parse(value);
+      if(parsed&&typeof parsed.at==="string"&&parsed.days&&typeof parsed.days==="object")
+        result[format]=parsed;
+    }catch{}
+  }
+  return result;
+}
+const parseCount=value=>Math.max(0,Number.parseInt(value||"0",10)||0);
+function errorSnapshot(data,format){
+  const failed=parseCount(data["format:"+format+":failed"]);
+  const codes={};
+  for(const [field,value] of Object.entries(data)){
+    const match=/^formatError:([^:]+):([A-Z_]+)$/.exec(field);
+    if(match&&match[1]===format)codes[match[2]]=parseCount(value);
+  }
+  return {failed,codes};
+}
+/** Reset *only* currently displayed errors, keeping successes, warnings, bytes
+ * and historical attempts. New errors become visible immediately after reset.
+ * Old errors remain in bounded raw Redis hashes for audit/retention, but are
+ * subtracted by saved per-format/day baselines from current admin diagnostics. */
+export async function resetErrorBaselines(redis,{scope,format}){
+  if(scope!=="all"&&scope!=="format")throw Error("INVALID_RESET_SCOPE");
+  const dates=Array.from({length:7},(_,i)=>dayUTC(i));
+  const hashes=await Promise.all(dates.map(d=>redis.hGetAll(REPORT_PREFIX+d)));
+  const known=[...new Set(hashes.flatMap(data=>Object.keys(data||{})
+    .map(key=>/^format:([^:]+):(success|failed|warning)$/.exec(key)?.[1]).filter(Boolean)))];
+  const targets=scope==="all"?known:[format];
+  if(targets.length>250)throw Error("RESET_TOO_MANY_FORMATS");
+  if(scope==="format"&&(!known.includes(format)||!/^[a-z0-9ɴ][a-z0-9ɴ._-]{0,52}$/.test(format)))
+    throw Error("INVALID_FORMAT");
+  const at=new Date().toISOString();
+  const tx=redis.multi();
+  for(const id of targets){
+    const days=Object.fromEntries(dates.map((date,i)=>[date,errorSnapshot(hashes[i]||{},id)]));
+    tx.hSet(BASELINE_KEY,id,JSON.stringify({at,days}));
+  }
+  tx.expire(BASELINE_KEY,8*86400);
+  await tx.exec();
+  return {scope,formatsReset:targets.length,at};
+}
 export async function recordAnonymousUsage(redis,outcome,{kind,format,bytes=0,errorCode=""}={}) {
-  if(!["success","failed"].includes(outcome))return;
+  if(!["success","failed","warning"].includes(outcome))return;
   const extension=safeFormat(kind,format,errorCode);
-  const code=outcome==="failed"?safeErrorCode(errorCode):null;
+  const code=outcome!=="success"?safeErrorCode(errorCode):null;
   const inputBytes=Number.isSafeInteger(bytes)&&bytes>=0&&bytes<=12*1024*1024?bytes:0;
   const p=redis.multi();
   const key=REPORT_PREFIX+dayUTC();
@@ -120,12 +180,12 @@ export async function recordAnonymousUsage(redis,outcome,{kind,format,bytes=0,er
   const hour=new Date().toISOString().slice(11,13);
   p.hIncrBy(key,"service:"+service+":"+outcome,1);
   p.hIncrBy(key,"hour:"+hour+":"+outcome,1);
-  if(code)p.hIncrBy(key,"serviceError:"+service+":"+code,1);
+  if(code)p.hIncrBy(key,(outcome==="warning"?"serviceWarning:":"serviceError:")+service+":"+code,1);
   p.hIncrBy(key,"format:"+extension+":attempts",1);
   p.hIncrBy(key,"format:"+extension+":"+outcome,1);
   if(code){
-    p.hIncrBy(key,"error:"+code,1);
-    p.hIncrBy(key,"formatError:"+extension+":"+code,1);
+    p.hIncrBy(key,(outcome==="warning"?"warning:":"error:")+code,1);
+    p.hIncrBy(key,(outcome==="warning"?"formatWarning:":"formatError:")+extension+":"+code,1);
   }
   p.expire(key,REPORT_TTL);
   await p.exec();
@@ -139,50 +199,79 @@ export async function usageReport(redis,days=7) {
   const extraHashes=await Promise.all(extraDates.map(date=>redis.hGetAll(REPORT_PREFIX+date)));
   const hourlyHashes=new Map(dates.map((date,i)=>[date,hashes[i]||{}]));
   extraDates.forEach((date,i)=>hourlyHashes.set(date,extraHashes[i]||{}));
-  const formats=new Map(),errors=new Map(),byFormatError=new Map();
+  const formats=new Map(),errors=new Map(),byFormatError=new Map(),warnings=new Map();
+  const baselines=await errorBaselines(redis);
   const services=Object.fromEntries(SERVICE_IDS.map(id=>[id,{service:id,successfulDecodes:0,failedDecodes:0,attempts:0}]));
-  const serviceErrors=new Map();
+
   const daily=[];
-  let success=0,failed=0,bytes=0;
+  let success=0,failed=0,warningTotal=0,bytes=0;
   const parse=v=>Math.max(0,Number.parseInt(v||"0",10)||0);
   for(let i=0;i<dates.length;i++){
     const data=hashes[i]||{};
-    const dSuccess=parse(data.success),dFailed=parse(data.failed),dBytes=parse(data.bytes);
-    success+=dSuccess;failed+=dFailed;bytes+=dBytes;
-    daily.push({date:dates[i],successfulDecodes:dSuccess,failedDecodes:dFailed,inputBytes:dBytes});
+    const dSuccess=parse(data.success),dBytes=parse(data.bytes);
+    let dFailed=0,dWarnings=0;
+    for(const [field,val] of Object.entries(data)){
+      const m=/^format:([^:]+):(failed|warning)$/.exec(field);
+      if(!m)continue;
+      if(m[2]==="warning")dWarnings+=parse(val);
+      else dFailed+=Math.max(0,parse(val)-parse(baselines[m[1]]?.days?.[dates[i]]?.failed));
+    }
+    success+=dSuccess;failed+=dFailed;warningTotal+=dWarnings;bytes+=dBytes;
+    daily.push({date:dates[i],successfulDecodes:dSuccess,failedDecodes:dFailed,
+      warnings:dWarnings,inputBytes:dBytes});
     for(const service of SERVICE_IDS){
       services[service].successfulDecodes+=parse(data["service:"+service+":success"]);
-      services[service].failedDecodes+=parse(data["service:"+service+":failed"]);
+      // Effective failed counts are calculated from per-format counters below.
     }
     for(const [field,value] of Object.entries(data)){
       const count=parse(value);
       if(!count)continue;
-      const formatMatch=/^format:([^:]+):(success|failed)$/.exec(field);
-      if(formatMatch){
-        const [_,extension,result]=formatMatch;
-        const item=formats.get(extension)||{extension,successfulDecodes:0,failedDecodes:0};
-        item[result==="success"?"successfulDecodes":"failedDecodes"]+=count;
+      const attemptMatch=/^format:([^:]+):attempts$/.exec(field);
+      if(attemptMatch){
+        const extension=attemptMatch[1];
+        const item=formats.get(extension)||{extension,successfulDecodes:0,failedDecodes:0,warnings:0,attempts:0};
+        item.attempts=(item.attempts||0)+count;
         formats.set(extension,item);
       }
-      const serviceErr=/^serviceError:(files|httpInjector|serverVpn):([A-Z_]+)$/.exec(field);
-      if(serviceErr){
-        const id=serviceErr[1]+":"+serviceErr[2];
-        serviceErrors.set(id,(serviceErrors.get(id)||0)+count);
+      const formatMatch=/^format:([^:]+):(success|failed|warning)$/.exec(field);
+      if(formatMatch){
+        const [_,extension,result]=formatMatch;
+        const item=formats.get(extension)||{extension,successfulDecodes:0,failedDecodes:0,warnings:0};
+        const effective=result==="failed"
+          ?Math.max(0,count-parse(baselines[extension]?.days?.[dates[i]]?.failed)):count;
+        item[result==="success"?"successfulDecodes":result==="warning"?"warnings":"failedDecodes"]+=effective;
+        formats.set(extension,item);
       }
-      const errMatch=/^error:([A-Z_]+)$/.exec(field);
-      if(errMatch)errors.set(errMatch[1],(errors.get(errMatch[1])||0)+count);
+      const warningMatch=/^warning:([A-Z_]+)$/.exec(field);
+      if(warningMatch)warnings.set(warningMatch[1],(warnings.get(warningMatch[1])||0)+count);
       const formatErrorMatch=/^formatError:([^:]+):([A-Z_]+)$/.exec(field);
       if(formatErrorMatch){
         const label=formatErrorMatch[1],code=formatErrorMatch[2],key=label+":"+code;
         const item=byFormatError.get(key)||{extension:label,code,count:0};
-        item.count+=count;
+        item.count+=Math.max(0,count-parse(baselines[label]?.days?.[dates[i]]?.codes?.[code]));
         byFormatError.set(key,item);
       }
     }
   }
-  const breakdown=[...formats.values()].map(f=>({...f,attempts:f.successfulDecodes+f.failedDecodes}))
+  const breakdown=[...formats.values()].map(f=>{
+    const item={...f,attempts:f.attempts??(f.successfulDecodes+f.failedDecodes+f.warnings)};
+    if(!item.warnings)delete item.warnings; // preserve legacy shape for supported files
+    return item;
+  })
     .sort((a,b)=>b.attempts-a.attempts||a.extension.localeCompare(b.extension));
-  const failures=[...errors].map(([code,count])=>({code,count})).sort((a,b)=>b.count-a.count||a.code.localeCompare(b.code));
+  // Reconstruct current errors from scope-filtered per-format counters; this
+  // avoids old resets reappearing under other error/service rollups.
+  const formatService=label=>label.startsWith("vpn-")||label==="nur-catalog"?"serverVpn":
+    label==="ehi"?"httpInjector":"files";
+  const serviceCounts=new Map();
+  for(const issue of byFormatError.values()){
+    errors.set(issue.code,(errors.get(issue.code)||0)+issue.count);
+    const k=formatService(issue.extension)+":"+issue.code;
+    serviceCounts.set(k,(serviceCounts.get(k)||0)+issue.count);
+  }
+  for(const item of formats.values())services[formatService(item.extension)].failedDecodes+=item.failedDecodes;
+  const failures=[...errors].map(([code,count])=>({code,count})).filter(x=>x.count>0)
+    .sort((a,b)=>b.count-a.count||a.code.localeCompare(b.code));
   const incidents=[...byFormatError.values()].sort((a,b)=>b.count-a.count).slice(0,100);
   const now=new Date();
   const hourly=Array.from({length:48},(_,i)=>{
@@ -195,13 +284,15 @@ export async function usageReport(redis,days=7) {
   const breakdownServices=SERVICE_IDS.map(id=>({
     ...services[id],attempts:services[id].successfulDecodes+services[id].failedDecodes,
   }));
-  const errorServices=[...serviceErrors].map(([key,count])=>{
+  const errorServices=[...serviceCounts].map(([key,count])=>{
     const [service,code]=key.split(":");return {service,code,count};
   }).sort((a,b)=>b.count-a.count);
   return {window:days===1?"utc_today":"last_7_utc_days",days,successfulDecodes:success,
-    failedDecodes:failed,totalDecodes:success+failed,inputBytes:bytes,daily,
-    extensions:breakdown,errors:failures,incidents,
+    failedDecodes:failed,warnings:warningTotal,totalDecodes:success+failed+warningTotal,inputBytes:bytes,daily,
+    extensions:breakdown,errors:failures,
+    warningCodes:[...warnings].map(([code,count])=>({code,count})).sort((a,b)=>b.count-a.count),
+    incidents:incidents.filter(x=>x.count>0),resets:Object.entries(baselines).map(([extension,v])=>({extension,at:v.at})),
     serviceBreakdown:breakdownServices,serviceErrors:errorServices,hourlyLast48:hourly,
-    retentionDays:8,historyAvailableFrom:"first_deployment_of_telemetry",
+    retentionDays:8,hourlyFailuresAreHistorical:true,historyAvailableFrom:"first_deployment_of_telemetry",
     includes:"worker_results_only",privacy:"anonymous_aggregate_counters"};
 }

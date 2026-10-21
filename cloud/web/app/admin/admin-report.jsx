@@ -8,7 +8,8 @@ const ErrorNames={
  PASSWORD_REQUIRED:"Se requiere contraseña",HWID_REQUIRED:"Se requiere HWID",
  HWID_PASSWORD_REQUIRED:"Contraseña y HWID necesarios",DECODE_FAILED:"No se pudo descifrar",
  ENGINE_TIMEOUT:"Tiempo de espera agotado",ENGINE_UNAVAILABLE:"Motor no disponible",
- UNSUPPORTED_FORMAT:"Formato sin soporte",REMOTE_PROVIDER_UNAVAILABLE:"Proveedor VPN sin respuesta",
+ UNSUPPORTED_FORMAT:"Formato sin soporte",UNSUPPORTED_VERSION:"Versión no compatible",
+ UNSUPPORTED_CONFIG_VERSION:"Versión de configuración no compatible",REMOTE_PROVIDER_UNAVAILABLE:"Proveedor VPN sin respuesta",
  REMOTE_DECODER_FAILED:"Descifrado remoto fallido",REMOTE_RESPONSE_INVALID:"Respuesta remota inválida",
  REMOTE_INTEGRITY_FAILED:"Error de integridad del proveedor",
  INPUT_TOO_LARGE:"Archivo demasiado grande",OUTPUT_TOO_LARGE:"Resultado excesivo",
@@ -64,23 +65,23 @@ function HourlyBars({hours}){
   <small className="muted">Retención limitada. Las cifras anteriores al despliegue de esta telemetría no se reconstruyen.</small>
  </section>;
 }
-function FormatTable({rows,empty}){
+function FormatTable({rows,empty,onReset,busy=false}){
  return <div className="admin-table-wrap"><table className="admin-table">
-  <thead><tr><th>Formato / proveedor</th><th>Intentos</th><th>Correctos</th><th>Fallidos</th><th>Éxito</th></tr></thead>
+  <thead><tr><th>Formato / proveedor</th><th>Usos históricos</th><th>Correctos</th><th>Errores nuevos</th><th>Advertencias</th><th>Éxito</th>{onReset&&<th>Reiniciar</th>}</tr></thead>
   <tbody>{rows.map(row=><tr key={row.extension}>
    <th scope="row">{row.extension.startsWith("vpn-")?row.extension.slice(4):row.extension==="nur-catalog"?"NUR Tunnel":row.extension==="other"?"No reconocido":row.extension==="text"?"Texto":row.extension==="ehi"?"HTTP Injector Cloud":"."+row.extension}</th>
    <td>{number.format(row.attempts)}</td><td>{number.format(row.successfulDecodes)}</td>
-   <td>{number.format(row.failedDecodes)}</td><td><Rate success={row.successfulDecodes} failed={row.failedDecodes}/></td>
+   <td>{number.format(row.failedDecodes)}</td><td>{number.format(row.warnings||0)}</td><td><Rate success={row.successfulDecodes} failed={row.failedDecodes}/></td>{onReset&&<td><button type="button" className="button subtle" disabled={busy} onClick={()=>onReset(row.extension)} aria-label={"Reiniciar errores: "+row.extension}>Reiniciar errores</button></td>}
   </tr>)}
-  {!rows.length&&<tr><td colSpan={5}>{empty||"Sin operaciones registradas"}</td></tr>}
+  {!rows.length&&<tr><td colSpan={onReset?7:6}>{empty||"Sin operaciones registradas"}</td></tr>}
   </tbody></table></div>;
 }
-function CategoryTable({name,rows}){
+function CategoryTable({name,rows,onReset,busy}){
  return <section className="admin-card admin-report-card"><div className="sp-admin-section-heading"><div><h2>{name}</h2><p className="muted">Motor o proveedor · resultados procesados</p></div></div>
-  <FormatTable rows={rows}/>
+  <FormatTable rows={rows} onReset={onReset} busy={busy}/>
  </section>;
 }
-function Incidents({report}){
+function Incidents({report,onReset,busy}){
  const all=report.extensions||[];
  const vpn=all.filter(x=>x.extension.startsWith("vpn-")||x.extension==="nur-catalog");
  const ehi=all.filter(x=>x.extension==="ehi");
@@ -89,9 +90,9 @@ function Incidents({report}){
    ["Archivos y textos","files"],["HTTP Injector Cloud","httpInjector"],["Server VPN","serverVpn"]
  ]:[];
  return <>
-  <CategoryTable name="Archivos y textos" rows={files}/>
-  <CategoryTable name="HTTP Injector Cloud" rows={ehi}/>
-  <CategoryTable name="Servidores VPN" rows={vpn}/>
+  <CategoryTable name="Archivos y textos" rows={files} onReset={onReset} busy={busy}/>
+  <CategoryTable name="HTTP Injector Cloud" rows={ehi} onReset={onReset} busy={busy}/>
+  <CategoryTable name="Servidores VPN" rows={vpn} onReset={onReset} busy={busy}/>
   {errorSections.map(([name,id])=><section className="admin-card admin-report-card" key={id}>
    <h2>Errores · {name}</h2>
    <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Motivo</th><th>Código seguro</th><th>Incidentes</th></tr></thead>
@@ -108,9 +109,21 @@ function Incidents({report}){
   </section>
  </>;
 }
+function RankedBars({title,subtitle,rows,empty="Sin datos suficientes"}) {
+ const top=rows.slice(0,10),max=Math.max(1,...top.map(x=>x.value));
+ return <section className="admin-card admin-report-card">
+  <div className="sp-admin-section-heading"><div><h2>{title}</h2><p className="muted">{subtitle}</p></div></div>
+  {!top.length?<p className="muted">{empty}</p>:<div className="sp-admin-ranked">
+   {top.map(x=><div className="sp-admin-ranked-row" key={x.label}>
+    <div className="sp-admin-ranked-head"><span>{x.label}</span><strong>{number.format(x.value)}</strong></div>
+    <div className="sp-admin-ranked-track"><span style={{width:(x.value/max*100)+"%"}}/></div>
+   </div>)}
+  </div>}
+ </section>;
+}
 export default function AdminReport({view="analytics"}){
  const [days,setDays]=useState(7),[report,setReport]=useState(null);
- const [loading,setLoading]=useState(true),[error,setError]=useState("");
+ const [loading,setLoading]=useState(true),[error,setError]=useState(""),[resetBusy,setResetBusy]=useState(false),[resetNote,setResetNote]=useState("");
  const router=useRouter();
  const refresh=useCallback(async signal=>{
   setLoading(true);
@@ -125,28 +138,61 @@ export default function AdminReport({view="analytics"}){
   finally{if(!signal?.aborted)setLoading(false);}
  },[days,router]);
  useEffect(()=>{const ac=new AbortController();refresh(ac.signal);return()=>ac.abort();},[refresh]);
+ async function resetErrors(extension=null){
+  if(resetBusy)return;
+  const label=extension===null?"TODOS los errores visibles":'los errores de "'+extension+'"';
+  if(!window.confirm("¿Reiniciar "+label+"? Los éxitos, las advertencias y el histórico de usos se conservarán. Los nuevos errores volverán a aparecer."))return;
+  setResetBusy(true);setResetNote("");
+  try{
+   const response=await fetch("/api/admin/errors/reset",{
+    method:"POST",credentials:"same-origin",cache:"no-store",
+    headers:{"Content-Type":"application/json","X-SPDecode-Admin-Action":"1"},
+    body:JSON.stringify(extension===null?{scope:"all"}:{scope:"format",format:extension}),
+   });
+   if(response.status===401){router.replace("/admin/login");return;}
+   const json=await response.json();
+   if(!response.ok||json.status!=="ok")throw Error("No se pudo reiniciar: "+(json.error?.code||response.status));
+   setResetNote("Reinicio aplicado en UTC "+new Date(json.reset.at).toLocaleString("es-MX",{timeZone:"UTC"})+
+    ". Formatos afectados: "+json.reset.formatsReset+".");
+   await refresh();
+  }catch(e){setResetNote(e.message||"Error al reiniciar");}
+  finally{setResetBusy(false);}
+ }
  const services=report?.serviceBreakdown||[];
+ const allFormats=report?.extensions||[];
+ const vpnFormats=allFormats.filter(x=>x.extension.startsWith("vpn-")||x.extension==="nur-catalog");
+ const fileFormats=allFormats.filter(x=>!x.extension.startsWith("vpn-")&&x.extension!=="nur-catalog"&&x.extension!=="ehi"&&x.extension!=="text"&&x.extension!=="other");
+ const rowsFor=list=>list.map(x=>({label:x.extension.replace(/^vpn-/,""),value:x.attempts}))
+   .sort((a,b)=>b.value-a.value||a.label.localeCompare(b.label));
  return <section className="sp-admin-report">
   <div className="admin-report-toolbar">
    <div className="admin-range" role="group" aria-label="Periodo estadístico">
     <button type="button" aria-pressed={days===1} onClick={()=>setDays(1)}>Hoy · UTC</button>
     <button type="button" aria-pressed={days===7} onClick={()=>setDays(7)}>Últimos 7 días</button>
    </div>
-   <button type="button" className="button subtle" onClick={()=>refresh()} disabled={loading}>Actualizar datos</button>
+   <div className="sp-admin-toolbar-actions"><button type="button" className="button subtle" disabled={loading||resetBusy} onClick={()=>resetErrors()}>Reiniciar todos los errores</button>
+    <button type="button" className="button subtle" onClick={()=>refresh()} disabled={loading||resetBusy}>Actualizar datos</button></div>
   </div>
   {error&&<div className="form-message error" role="alert">{error}</div>}
+  {resetNote&&<p role="status" className="muted">{resetNote}</p>}
   {loading&&<p className="muted" role="status">Consultando estadísticas…</p>}
   {report&&<>
    {view!=="overview"&&<div className="admin-metric-grid">
     <article className="admin-card"><span className="muted">Procesamientos</span><strong>{number.format(report.totalDecodes)}</strong></article>
     <article className="admin-card"><span className="muted">Correctos</span><strong>{number.format(report.successfulDecodes)}</strong></article>
-    <article className="admin-card"><span className="muted">Fallidos</span><strong>{number.format(report.failedDecodes)}</strong></article>
+    <article className="admin-card"><span className="muted">Errores desde el reinicio</span><strong>{number.format(report.failedDecodes)}</strong></article>
+    <article className="admin-card"><span className="muted">Advertencias de compatibilidad</span><strong>{number.format(report.warnings||0)}</strong></article>
     <article className="admin-card"><span className="muted">Entrada procesada</span><strong>{size(report.inputBytes)}</strong></article>
    </div>}
-   <p className="muted">Retención de {report.retentionDays} días. Los contadores no incluyen el contenido de archivos, credenciales, IP ni identificadores personales. Las métricas históricas anteriores al registro por servicio no se reclasifican.</p>
+   <p className="muted">Retención de {report.retentionDays} días. No se guardan archivos, contenidos, credenciales ni IP. Reiniciar errores ajusta solo su línea base por producto, preserva usos, éxitos y advertencias. La gráfica horaria representa el histórico bruto y puede contener fallos anteriores a un reinicio; utiliza las tablas de errores nuevos para confirmar correcciones.</p>
+   {(report.resets||[]).length>0&&<p className="muted">Reinicios activos por formato: {report.resets.length}. Los errores anteriores al último reinicio quedan excluidos de los indicadores actuales hasta vencer la retención.</p>
    {view!=="reports"?<>
     <DailyLine days={report.daily||[]}/>
     <HourlyBars hours={report.hourlyLast48||[]}/>
+    <div className="sp-admin-charts-grid"><RankedBars title="Extensiones más utilizadas" subtitle="Top 10 · operaciones reales, incluidos los resultados previos al reinicio" rows={rowsFor(fileFormats)}/>
+     <RankedBars title="Catálogos Server VPN más utilizados" subtitle="Top 10 · proveedores y catálogos solicitados" rows={rowsFor(vpnFormats)}/>
+     <RankedBars title="Códigos de error nuevos" subtitle="Solo errores posteriores al último reinicio" rows={(report.errors||[]).map(x=>({label:ErrorNames[x.code]||x.code,value:x.count}))}/>
+     <RankedBars title="Advertencias y versiones no compatibles" subtitle="No equivalen a fallos de infraestructura" rows={(report.warningCodes||[]).map(x=>({label:ErrorNames[x.code]||x.code,value:x.count}))}/></div>
     <section className="admin-card admin-report-card"><h2>Operaciones por servicio</h2>
      <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Servicio</th><th>Correctos</th><th>Fallidos</th><th>Éxito</th></tr></thead>
       <tbody>{channels.map(([id,name])=>{const item=services.find(x=>x.service===id)||{successfulDecodes:0,failedDecodes:0};return <tr key={id}>
@@ -155,8 +201,8 @@ export default function AdminReport({view="analytics"}){
       </tr>;})}</tbody>
      </table></div>
     </section>
-    {view==="analytics"&&<CategoryTable name="Desglose por extensión y proveedor" rows={report.extensions||[]}/>}
-   </>:<Incidents report={report}/>}
+    {view==="analytics"&&<CategoryTable name="Desglose por extensión y proveedor" rows={report.extensions||[]} onReset={resetErrors} busy={resetBusy}/>}
+   </>:<Incidents report={report} onReset={resetErrors} busy={resetBusy}/>}
   </>}
  </section>;
 }

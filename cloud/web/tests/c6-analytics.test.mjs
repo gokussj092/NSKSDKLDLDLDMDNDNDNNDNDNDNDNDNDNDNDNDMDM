@@ -38,11 +38,13 @@ test("seven-day analytics tracks sanitized extensions, bytes and error buckets",
   const report=await usageReport(redis,7);
   assert.equal(report.totalDecodes,6);
   assert.equal(report.successfulDecodes,3);
-  assert.equal(report.failedDecodes,3);
+  assert.equal(report.failedDecodes,2);
+  assert.equal(report.warnings,1);
   assert.equal(report.inputBytes,889);
   assert.deepEqual(report.extensions.find(x=>x.extension==="hc"),{
     extension:"hc",successfulDecodes:1,failedDecodes:1,attempts:2});
-  assert.equal(report.extensions.find(x=>x.extension==="other").failedDecodes,1);
+  assert.equal(report.extensions.find(x=>x.extension==="other").warnings,1);
+  assert.equal(report.extensions.find(x=>x.extension==="other").failedDecodes,0);
   assert.equal(report.errors.find(x=>x.code==="AUTH_FAILED").count,1);
   assert.ok(report.incidents.some(x=>x.extension==="hc"&&x.code==="AUTH_FAILED"));
   assert.equal(report.daily.reduce((n,d)=>n+d.successfulDecodes,0),3);

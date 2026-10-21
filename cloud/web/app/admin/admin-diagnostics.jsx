@@ -40,8 +40,10 @@ export default function AdminDiagnostics({showIncidents=true}){
      <strong>{fmt.format(data.installations.activeToday)}</strong><small className="muted">Estimación de instalaciones Cloud</small></article>
     <article className="admin-card"><span className="muted">Instalaciones activas · 30 días</span>
      <strong>{fmt.format(data.installations.activeLast30Days)}</strong><small className="muted">Estimación, no personas únicas</small></article>
-    <article className="admin-card"><span className="muted">Incidencias registradas</span>
-     <strong>{fmt.format(data.incidents.length)}</strong><small className="muted">Muestra reciente limitada</small></article>
+    <article className="admin-card"><span className="muted">Errores actuales</span>
+     <strong>{fmt.format(data.incidents.filter(x=>x.severity!=="warning").length)}</strong><small className="muted">Desde el reinicio correspondiente · muestra limitada</small></article>
+    <article className="admin-card"><span className="muted">Advertencias de compatibilidad</span>
+     <strong>{fmt.format(data.incidents.filter(x=>x.severity==="warning").length)}</strong><small className="muted">No son fallos operativos</small></article>
     <article className="admin-card"><span className="muted">Reportes manuales</span>
      <strong>{fmt.format(data.incidents.filter(x=>x.source==="user").length)}</strong><small className="muted">Enviados expresamente</small></article>
    </div>
@@ -49,18 +51,18 @@ export default function AdminDiagnostics({showIncidents=true}){
    {showIncidents&&<section className="admin-card admin-report-card">
     <h2>Incidentes recientes</h2>
     <div className="admin-table-wrap"><table className="admin-table"><thead><tr>
-     <th>UTC</th><th>Origen</th><th>Servicio</th><th>Formato</th><th>Error</th><th>Tamaño</th><th>Referencia</th>
+     <th>UTC</th><th>Estado</th><th>Origen</th><th>Servicio</th><th>Formato</th><th>Código</th><th>Tamaño</th><th>Referencia</th>
     </tr></thead><tbody>
      {data.incidents.map(row=><tr key={row.id}>
       <td>{new Date(row.at).toLocaleString("es-MX",{timeZone:"UTC"})}</td>
-      <td>{row.source==="user"?"Usuario":"Servidor"}</td>
+      <td>{row.severity==="warning"?"Advertencia":"Error"}</td><td>{row.source==="user"?"Usuario":"Servidor"}</td>
       <td>{labels[row.service]||"Otro"}</td><td>{row.format}</td>
       <td><code>{row.code}</code></td><td>{row.sizeBucket}</td>
       <td title={row.id}><code>{row.id.slice(0,8)}</code></td>
      </tr>)}
-     {!data.incidents.length&&<tr><td colSpan={7}>Sin incidencias registradas en este periodo.</td></tr>}
+     {!data.incidents.length&&<tr><td colSpan={8}>Sin incidencias registradas en este periodo.</td></tr>}
     </tbody></table></div>
-    <p className="muted">Retención: {data.retentionDays} días, máximo 150 registros por día. Los motivos de error esperados (como contraseña requerida) no crean incidencias automáticas.</p>
+    <p className="muted">Retención: {data.retentionDays} días, máximo 150 registros por día. Las solicitudes de contraseña/HWID y las cancelaciones no crean incidencias automáticas. Las versiones incompatibles se clasifican como advertencias. El reinicio de errores se gestiona en Informes.</p>
    </section>}
   </>}
  </section>;

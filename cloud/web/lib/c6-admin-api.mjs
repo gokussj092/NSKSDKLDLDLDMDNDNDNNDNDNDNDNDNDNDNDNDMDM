@@ -1,7 +1,7 @@
 import { adminSettings, adminLogin, authenticateAdmin, validMutation,
   cookieHeader, deleteCookie, revokeAdmin } from "./c6-admin-auth.mjs";
 import { opsStore, maintenanceEnabled, setMaintenance, aggregateMetrics, usageReport,
-  SERVICE_IDS,serviceMaintenanceStates,setServiceMaintenance } from "./c6-ops-store.mjs";
+  SERVICE_IDS,serviceMaintenanceStates,setServiceMaintenance,resetErrorBaselines } from "./c6-ops-store.mjs";
 import { settings } from "./c3-config.mjs";
 import {admissionPolicy,setAdmissionPolicy} from "./c11-play-admission.mjs";
 import {providerOverview,updateProvider,PUBLIC_PROVIDER_IDS} from "./c12-provider-controls.mjs";
@@ -47,10 +47,15 @@ export async function statusRequest(request,options={}) {
   try{
     const redis=await (options.storeProvider||opsStore)();
     if(!await authenticateAdmin(redis,request))return error("UNAUTHORIZED",401);
-    const [maintenance,metrics,ping,serviceMaintenance,playAdmission,providerControls]=await Promise.all([
+    const [maintenance,legacyMetrics,ping,serviceMaintenance,playAdmission,providerControls]=await Promise.all([
       maintenanceEnabled(redis),aggregateMetrics(redis),redis.ping(),serviceMaintenanceStates(redis),
       admissionPolicy(redis),providerOverview(),
     ]);
+    // Show reset-adjusted current errors when detailed aggregate hashes exist.
+    // The legacy counter remains a fallback for prior deployments/tests.
+    const current=typeof redis.hGetAll==="function"?await usageReport(redis,1):null;
+    const metrics=current?{window:"utc_today",successfulDecodes:legacyMetrics.successfulDecodes,
+      failedDecodes:current.failedDecodes,warnings:current.warnings}:legacyMetrics;
     const cfg=settings();
     // Worker origin cannot be user-controlled.
     let workerReady=false;
@@ -159,6 +164,29 @@ export async function providerControlRequest(request,options={}){
   if(cause?.message==="PROVIDER_NOT_CONFIGURED")return error("PROVIDER_NOT_CONFIGURED",409);
   if(cause?.message==="MAINTENANCE_LOCKED")return error("MAINTENANCE_LOCKED",409);
   if(cause?.message==="PROVIDER_BUSY")return error("PROVIDER_BUSY",409);
+  return error("SERVICE_UNAVAILABLE",503);
+ }
+}
+
+/** Reset per-format error baselines only; success/warnings/usage history remain untouched. */
+export async function resetErrorsRequest(request,options={}){
+ const cfg=adminSettings();
+ if(!cfg.enabled)return error("ADMIN_DISABLED",503);
+ if(!validMutation(request,cfg))return error("CSRF_REJECTED",403);
+ try{
+  const redis=await (options.storeProvider||opsStore)();
+  if(!await authenticateAdmin(redis,request,cfg))return error("UNAUTHORIZED",401);
+  const body=await parseSmallJson(request,192);
+  if(!own(body,["scope"])&&!own(body,["scope","format"]))return error("INVALID_REQUEST",400);
+  if(body.scope!=="all"&&body.scope!=="format")return error("INVALID_REQUEST",400);
+  if(body.scope==="all"&&Object.hasOwn(body,"format"))return error("INVALID_REQUEST",400);
+  if(body.scope==="format"&&(typeof body.format!=="string"||
+      !/^[a-z0-9ɴ][a-z0-9ɴ._-]{0,52}$/.test(body.format)))return error("INVALID_REQUEST",400);
+  const reset=await resetErrorBaselines(redis,body);
+  return api({reset},200,{"Cache-Control":"private, no-store"});
+ }catch(cause){
+  if(["INVALID_RESET_SCOPE","INVALID_FORMAT","RESET_TOO_MANY_FORMATS"].includes(cause?.message))
+    return error(cause?.message,400);
   return error("SERVICE_UNAVAILABLE",503);
  }
 }
