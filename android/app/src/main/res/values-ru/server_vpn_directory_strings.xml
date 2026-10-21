@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_search_hint">Поиск VPN-приложений</string>
+    <string name="server_vpn_filter_all">Все</string>
+    <string name="server_vpn_filter_enabled">Доступные</string>
+    <string name="server_vpn_filter_favorites">Избранное</string>
+    <string name="server_vpn_favorite_add">Добавить в избранное</string>
+    <string name="server_vpn_favorite_remove">Убрать из избранного</string>
+    <string name="server_vpn_manual_refresh">Проверить каталог сейчас</string>
+    <string name="server_vpn_catalog_refreshing">Проверка каталога сервера…</string>
+    <string name="server_vpn_no_matches">Нет VPN-приложений, соответствующих поиску или фильтрам.</string>
+    <string name="server_vpn_catalog_enabled">Включено в каталоге</string>
+    <string name="server_vpn_catalog_disabled">Не включено в каталоге</string>
+</resources>
