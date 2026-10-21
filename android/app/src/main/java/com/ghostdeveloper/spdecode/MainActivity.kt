@@ -366,6 +366,7 @@ class MainActivity : ComponentActivity() {
             showBrandedSplash=false
         }
         setContent {
+            SpDecodeAmoledTheme {
             if(showBrandedSplash) SpDecodeSplashScreen()
             else SpDecodeApp(
                 activeTab=tab,
@@ -549,6 +550,7 @@ class MainActivity : ComponentActivity() {
                         onManual={enteringHcManually=true},
                     )
                 }
+            }
             }
         }
         if(savedInstanceState==null && !showCloudLegal)handleExternalIntent(intent)
