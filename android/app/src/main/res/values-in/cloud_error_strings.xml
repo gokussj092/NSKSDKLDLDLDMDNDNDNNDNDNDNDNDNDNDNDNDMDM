@@ -28,4 +28,6 @@
     <string name="cloud_failure_partial">Hasil tidak lengkap atau tidak valid dan tidak ditampilkan.</string>
     <string name="cloud_failure_general">Operasi gagal. Coba lagi atau hubungi dukungan.</string>
     <string name="cloud_failure_notice_title">Permintaan tidak dapat diselesaikan</string>
+    <string name="cloud_password_title">Kata sandi konfigurasi diperlukan</string>
+    <string name="cloud_password_description">%1$s dilindungi kata sandi. Masukkan kata sandi ekspor untuk melanjutkan. Kata sandi tidak akan disimpan.</string>
 </resources>
