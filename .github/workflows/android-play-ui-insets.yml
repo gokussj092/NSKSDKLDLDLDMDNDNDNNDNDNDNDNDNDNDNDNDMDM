@@ -55,10 +55,4 @@ jobs:
           ram-size: 2048M
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          script: |
-            adb logcat -c || true
-            if ! (cd android && gradle --no-daemon :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.ghostdeveloper.spdecode.PlayEdgeToEdgeInstrumentedTest); then
-              echo "::error::Android instrumentation failed; relevant emulator logs follow"
-              adb logcat -d -v time -t 400 | grep -E 'AndroidRuntime|FATAL EXCEPTION|Instrumentation|com.ghostdeveloper.spdecode|TEST|Process crashed' | tail -n 110 || true
-              exit 1
-            fi
+          script: bash scripts/ci/android-insets-smoke.sh
