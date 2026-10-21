@@ -315,6 +315,16 @@
               }
             }
           },
+          "410": {
+            "description": "HTTP Injector Cloud reference is no longer available (expired, deleted, or one-use). This is not a decoder failure.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
           "413": {
             "description": "Sanitized request, session, remote-network, integrity, size or decoder error.",
             "content": {
