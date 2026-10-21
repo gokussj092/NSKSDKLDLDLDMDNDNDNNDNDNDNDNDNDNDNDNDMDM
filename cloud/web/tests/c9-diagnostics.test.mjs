@@ -62,3 +62,19 @@ test("native JNI, Cloud consent and settings provide transparent anonymous capac
  const legal=read("cloud/web/app/public/legal.jsx");
  assert.match(legal,/HyperLogLog/);
 });
+
+test("one-use EHI reference reports remain warnings for both server and user",async()=>{
+ const redis=new MemoryRedis();
+ for(const source of ["user","worker"]){
+  await recordIncident(redis,{source,service:"httpInjector",format:"ehi",
+    code:"REMOTE_CONFIG_UNAVAILABLE",appVersion:"1.1.5"});
+ }
+ await recordIncident(redis,{source:"worker",service:"httpInjector",format:"ehi",
+   code:"REMOTE_PROVIDER_UNAVAILABLE"});
+ await recordIncident(redis,{source:"worker",service:"serverVpn",format:"nur-catalog",
+   code:"REMOTE_CONFIG_UNAVAILABLE"});
+ const rows=await readIncidents(redis,7);
+ assert.equal(rows.filter(r=>r.severity==="warning").length,2);
+ assert.equal(rows.filter(r=>r.severity==="error").length,2);
+ assert.equal(rows.find(r=>r.source==="user").severity,"warning");
+});
