@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- vi: translated primary screens, Cloud and error strings; untranslated text inherits English source. -->
+    <string name="cloud_legal_title">Điều khoản và quyền riêng tư</string>
+    <string name="cloud_legal_explanation">SP-DECODE Cloud gửi các tệp hoặc văn bản bạn chọn đến máy chủ để giải mã. Dịch vụ cũng ước tính số bản cài đặt hoạt động hằng ngày bằng mã ngẫu nhiên để lập kế hoạch máy chủ. Không có nội dung cấu hình trong số liệu này.</string>
+    <string name="cloud_legal_terms">Đọc điều khoản</string>
+    <string name="cloud_legal_privacy">Đọc chính sách riêng tư</string>
+    <string name="cloud_legal_accept_check">Tôi đã đọc và đồng ý với điều khoản và chính sách riêng tư.</string>
+    <string name="cloud_legal_accept">Chấp nhận</string>
+    <string name="cloud_legal_decline">Từ chối</string>
+    <string name="server_vpn_loading">Đang tải danh mục máy chủ VPN…</string>
+    <string name="server_vpn_unavailable">Danh mục máy chủ VPN không khả dụng. Kiểm tra mạng rồi thử lại.</string>
+    <string name="server_vpn_retry">Thử lại danh mục</string>
+    <string name="cloud_legal_withdraw">Rút lại đồng ý Cloud</string>
+    <string name="cloud_legal_withdraw_detail">Rút lại đồng ý sẽ chặn yêu cầu máy chủ mới. Lịch sử mã hóa vẫn trên thiết bị. Bạn có thể đồng ý lại sau.</string>
+</resources>

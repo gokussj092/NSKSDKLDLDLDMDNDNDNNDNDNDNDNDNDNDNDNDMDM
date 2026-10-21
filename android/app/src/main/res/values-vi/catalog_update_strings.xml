@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- vi: translated primary screens, Cloud and error strings; untranslated text inherits English source. -->
+    <string name="catalog_auto_title">Cập nhật danh mục máy chủ VPN tự động</string>
+    <string name="catalog_auto_detail">Kiểm tra phiên bản danh mục qua HTTPS trên máy chủ SP-DECODE khi ứng dụng mở và tùy chọn kiểm tra khôi phục ít thường xuyên trong nền. Chỉ tải dữ liệu và biểu tượng khi phiên bản thay đổi. Không cần Firebase, tài khoản hay token đẩy. Có thể tắt bất kỳ lúc nào.</string>
+    <string name="catalog_auto_switch">Bật đồng bộ danh mục nền</string>
+</resources>

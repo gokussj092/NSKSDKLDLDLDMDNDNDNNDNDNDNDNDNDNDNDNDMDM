@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- hi: translated primary screens, Cloud and error strings; untranslated text inherits English source. -->
+    <string name="cloud_report_action">त्रुटि रिपोर्ट करें</string>
+    <string name="cloud_report_sent">रिपोर्ट मिली: %1$s</string>
+    <string name="cloud_report_failed">रिपोर्ट भेजी नहीं जा सकी। बाद में प्रयास करें।</string>
+    <string name="cloud_usage_title">अनाम इंस्टॉल आँकड़े</string>
+    <string name="cloud_usage_detail">SP-DECODE सर्वर क्षमता के लिए रोज़ एक बार सक्रिय इंस्टॉल का अनुमान लगाता है। Android ID, HWID या विज्ञापन ID के बजाय यादृच्छिक इंस्टॉल कोड उपयोग होता है।</string>
+    <string name="cloud_usage_footnote">Cloud की गोपनीयता शर्तें स्वीकार करने के बाद गिना जाता है। फ़ाइल सामग्री, पासवर्ड या डिकोड कॉन्फ़िगरेशन शामिल नहीं होते।</string>
+</resources>

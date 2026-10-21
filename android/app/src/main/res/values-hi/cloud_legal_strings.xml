@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- hi: translated primary screens, Cloud and error strings; untranslated text inherits English source. -->
+    <string name="cloud_legal_title">नियम और गोपनीयता</string>
+    <string name="cloud_legal_explanation">SP-DECODE Cloud आपके चुने हुए फ़ाइल या पाठ को डिकोडिंग के लिए सर्वर पर भेजता है। सर्वर क्षमता के लिए यादृच्छिक इंस्टॉल कोड से दिन में एक बार सक्रिय इंस्टॉल का अनुमान लगाया जाता है। इसमें कॉन्फ़िगरेशन सामग्री शामिल नहीं होती।</string>
+    <string name="cloud_legal_terms">नियम और शर्तें पढ़ें</string>
+    <string name="cloud_legal_privacy">गोपनीयता नीति पढ़ें</string>
+    <string name="cloud_legal_accept_check">मैंने नियम और गोपनीयता नीति पढ़कर स्वीकार की है।</string>
+    <string name="cloud_legal_accept">स्वीकार करें</string>
+    <string name="cloud_legal_decline">अस्वीकार</string>
+    <string name="server_vpn_loading">VPN सर्वर कैटलॉग लोड हो रहा है…</string>
+    <string name="server_vpn_unavailable">VPN सर्वर कैटलॉग उपलब्ध नहीं है। कनेक्शन जाँचकर फिर प्रयास करें।</string>
+    <string name="server_vpn_retry">कैटलॉग फिर आज़माएँ</string>
+    <string name="cloud_legal_withdraw">क्लाउड सहमति वापस लें</string>
+    <string name="cloud_legal_withdraw_detail">सहमति वापस लेने से नए सर्वर अनुरोध रुकते हैं। एन्क्रिप्टेड इतिहास डिवाइस पर रहेगा। बाद में फिर सहमति दे सकते हैं।</string>
+</resources>

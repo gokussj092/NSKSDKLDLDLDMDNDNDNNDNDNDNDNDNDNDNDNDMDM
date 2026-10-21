@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ja: translated primary screens, Cloud and error strings; untranslated text inherits English source. -->
+    <string name="cloud_failure_offline">インターネット接続がありません。接続して再試行してください。</string>
+    <string name="cloud_failure_network">サービスに接続できません。通信状態を確認してください。</string>
+    <string name="cloud_failure_tls">安全な接続を確立できません。ネットワークと端末の時刻を確認してください。</string>
+    <string name="cloud_failure_timeout">処理がタイムアウトしました。通信が安定してから再試行してください。</string>
+    <string name="cloud_failure_integrity">アプリを検証できません。更新するか許可された QA アクセスを使用してください。</string>
+    <string name="cloud_failure_qa_code">QA アクセスがありません。SP-DECODE QA を開いて新しい一時コードを入力してください。</string>
+    <string name="cloud_failure_session">セッションの期限切れ、または検証できません。再試行してください。</string>
+    <string name="cloud_failure_forbidden">アクセスが拒否されました。権限を確認してください。</string>
+    <string name="cloud_failure_qa">QA アクセスが無効か期限切れです。新しい専用コードを要求してください。</string>
+    <string name="cloud_failure_consent">Cloud デコードには最新の利用規約とプライバシー通知への同意が必要です。</string>
+    <string name="cloud_failure_rate">リクエストが多すぎます。しばらく待って再試行してください。</string>
+    <string name="cloud_failure_large">ファイルまたは結果がサイズ上限を超えています。</string>
+    <string name="cloud_failure_invalid">ファイルまたはリクエストが無効です。形式を確認してください。</string>
+    <string name="cloud_failure_unsupported">このファイル形式はサーバーで利用できません。</string>
+    <string name="cloud_failure_decode">このファイルのバージョンはデコードできません。破損しているとは限りません。</string>
+    <string name="cloud_failure_maintenance">メンテナンス中です。後で再試行してください。</string>
+    <string name="cloud_failure_unavailable">サービスを一時的に利用できません。後で再試行してください。</string>
+    <string name="cloud_failure_config_unavailable">Cloud 設定は利用できなくなりました。期限切れ、削除済み、または一度限りの利用だった可能性があります。デコーダーの不具合ではありません。</string>
+    <string name="cloud_failure_remote">リモート提供元から無効または検証不能な応答が返されました。</string>
+    <string name="cloud_failure_credentials">パスワードまたは HWID が正しくありません。確認してください。</string>
+    <string name="cloud_failure_password">この保護されたファイルにはパスワードが必要です。</string>
+    <string name="cloud_failure_hwid">この保護されたファイルには HWID が必要です。</string>
+    <string name="cloud_failure_both">このファイルにはパスワードと HWID の両方が必要です。</string>
+    <string name="cloud_failure_not_found">要求されたリソースが見つからないか利用できません。</string>
+    <string name="cloud_failure_conflict">現在の状態とリクエストが競合しています。再試行してください。</string>
+    <string name="cloud_failure_partial">結果が不完全または無効なため表示しません。</string>
+    <string name="cloud_failure_general">処理を完了できませんでした。再試行するかサポートにお問い合わせください。</string>
+    <string name="cloud_failure_notice_title">リクエストを完了できませんでした</string>
+    <string name="cloud_password_title">設定のパスワードが必要です</string>
+    <string name="cloud_password_description">%1$s はパスワードで保護されています。続けるにはエクスポート用パスワードを入力してください。保存されません。</string>
+</resources>

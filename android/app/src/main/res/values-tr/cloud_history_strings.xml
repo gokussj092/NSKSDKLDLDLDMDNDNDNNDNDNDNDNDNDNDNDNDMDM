@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- tr: translated primary screens, Cloud and error strings; untranslated text inherits English source. -->
+    <string name="cloud_decode_progress_title">Yapılandırma çözülüyor</string>
+    <string name="cloud_decode_progress_message">Birkaç dakika sürebilir. Lütfen bekleyin.</string>
+    <string name="cloud_large_result_title">Büyük yapılandırma çözüldü</string>
+    <string name="cloud_large_result_body">Yapılandırma şifreli geçmişe kaydedildi. Çok büyük sonuçların önizlemesi uygulamayı yavaşlatabilir veya kapatabilir. Geçmiş\'teki üç nokta menüsünden Dışa aktar ile tam JSON\'u kaydetmenizi öneririz. Android klasörü ve dosya adını seçmenizi sağlar.</string>
+    <string name="cloud_large_result_acknowledge">Anladım</string>
+    <string name="cloud_history_actions">Diğer işlemler</string>
+</resources>

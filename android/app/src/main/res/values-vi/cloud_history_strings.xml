@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- vi: translated primary screens, Cloud and error strings; untranslated text inherits English source. -->
+    <string name="cloud_decode_progress_title">Đang giải mã cấu hình</string>
+    <string name="cloud_decode_progress_message">Quá trình có thể mất vài phút. Vui lòng đợi.</string>
+    <string name="cloud_large_result_title">Đã giải mã cấu hình lớn</string>
+    <string name="cloud_large_result_body">Cấu hình đã được lưu vào lịch sử mã hóa. Xem trước kết quả quá lớn có thể làm chậm hoặc đóng ứng dụng. Hãy xuất JSON đầy đủ trong Lịch sử qua menu ba chấm rồi chọn Xuất. Android cho phép chọn thư mục và tên tệp.</string>
+    <string name="cloud_large_result_acknowledge">Đã hiểu</string>
+    <string name="cloud_history_actions">Thao tác khác</string>
+</resources>

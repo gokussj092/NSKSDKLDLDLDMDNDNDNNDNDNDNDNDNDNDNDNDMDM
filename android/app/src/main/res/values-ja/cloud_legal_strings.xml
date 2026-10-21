@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ja: translated primary screens, Cloud and error strings; untranslated text inherits English source. -->
+    <string name="cloud_legal_title">利用規約とプライバシー</string>
+    <string name="cloud_legal_explanation">SP-DECODE Cloud は、選択したファイルやテキストをデコードのためサーバーに送信します。サーバー容量の計画用に、ランダムなインストールコードで1日1回アクティブなインストール数を概算します。設定内容は集計に含まれません。</string>
+    <string name="cloud_legal_terms">利用規約を読む</string>
+    <string name="cloud_legal_privacy">プライバシーポリシーを読む</string>
+    <string name="cloud_legal_accept_check">利用規約とプライバシーポリシーを読み、同意します。</string>
+    <string name="cloud_legal_accept">同意する</string>
+    <string name="cloud_legal_decline">拒否する</string>
+    <string name="server_vpn_loading">VPN サーバーカタログを読み込み中…</string>
+    <string name="server_vpn_unavailable">VPN サーバーカタログを利用できません。通信状態を確認して再試行してください。</string>
+    <string name="server_vpn_retry">カタログを再試行</string>
+    <string name="cloud_legal_withdraw">Cloud の同意を撤回</string>
+    <string name="cloud_legal_withdraw_detail">同意を撤回すると新しいサーバーへのリクエストは停止します。端末内の暗号化履歴は残ります。後で再度同意できます。</string>
+</resources>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- it: translated primary screens, Cloud and error strings; untranslated text inherits English source. -->
+    <string name="cloud_failure_offline">Nessuna connessione Internet. Connettiti e riprova.</string>
+    <string name="cloud_failure_network">Servizio irraggiungibile. Controlla la connessione.</string>
+    <string name="cloud_failure_tls">Impossibile stabilire una connessione sicura. Controlla rete e orologio.</string>
+    <string name="cloud_failure_timeout">Richiesta scaduta. Riprova con una connessione stabile.</string>
+    <string name="cloud_failure_integrity">Verifica dell\'app non riuscita. Aggiorna o usa l\'accesso QA autorizzato.</string>
+    <string name="cloud_failure_qa_code">Accesso QA mancante. Apri SP-DECODE QA e inserisci un nuovo codice temporaneo.</string>
+    <string name="cloud_failure_session">Sessione scaduta o non verificata. Riprova.</string>
+    <string name="cloud_failure_forbidden">Accesso negato. Controlla le autorizzazioni.</string>
+    <string name="cloud_failure_qa">Accesso QA non valido, disattivato o scaduto. Richiedi un nuovo codice privato.</string>
+    <string name="cloud_failure_consent">Accetta termini e informativa privacy per usare Cloud.</string>
+    <string name="cloud_failure_rate">Troppe richieste. Attendi prima di riprovare.</string>
+    <string name="cloud_failure_large">File o risultato troppo grande.</string>
+    <string name="cloud_failure_invalid">File o richiesta non validi. Controlla il formato.</string>
+    <string name="cloud_failure_unsupported">Formato file non disponibile sul server.</string>
+    <string name="cloud_failure_decode">Il decoder non supporta questa versione. Il file non è necessariamente danneggiato.</string>
+    <string name="cloud_failure_maintenance">Servizio in manutenzione. Riprova più tardi.</string>
+    <string name="cloud_failure_unavailable">Servizio temporaneamente non disponibile. Riprova più tardi.</string>
+    <string name="cloud_failure_config_unavailable">Configurazione Cloud non più disponibile. Potrebbe essere scaduta, rimossa o monouso. Non è un errore del decoder.</string>
+    <string name="cloud_failure_remote">Il provider remoto ha restituito una risposta non valida o non verificabile.</string>
+    <string name="cloud_failure_credentials">Password o HWID errati. Controlla e riprova.</string>
+    <string name="cloud_failure_password">Questo file protetto richiede una password.</string>
+    <string name="cloud_failure_hwid">Questo file protetto richiede un HWID.</string>
+    <string name="cloud_failure_both">Questo file richiede password e HWID.</string>
+    <string name="cloud_failure_not_found">Risorsa richiesta non trovata o non disponibile.</string>
+    <string name="cloud_failure_conflict">La richiesta è in conflitto con lo stato attuale. Riprova.</string>
+    <string name="cloud_failure_partial">Risultato incompleto o non valido: non verrà mostrato.</string>
+    <string name="cloud_failure_general">Operazione non completata. Riprova o contatta il supporto.</string>
+    <string name="cloud_failure_notice_title">Impossibile completare la richiesta</string>
+    <string name="cloud_password_title">Password configurazione richiesta</string>
+    <string name="cloud_password_description">%1$s è protetto da password. Inserisci la password di esportazione. Non verrà salvata.</string>
+</resources>

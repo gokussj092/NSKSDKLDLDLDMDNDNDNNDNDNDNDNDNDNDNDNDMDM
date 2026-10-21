@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- tr: translated primary screens, Cloud and error strings; untranslated text inherits English source. -->
+    <string name="catalog_auto_title">Otomatik VPN sunucu kataloğu güncellemeleri</string>
+    <string name="catalog_auto_detail">Uygulama açıkken kendi SP-DECODE sunucunuzdaki katalog sürümlerini HTTPS üzerinden denetler. İsteğe bağlı olarak arka planda seyrek kurtarma denetimleri yapar. Veriler ve simgeler yalnızca sürüm değişince indirilir. Firebase, hesap veya bildirim belirteci gerekmez. Dilediğiniz zaman kapatabilirsiniz.</string>
+    <string name="catalog_auto_switch">Arka planda katalog eşitlemesini etkinleştir</string>
+</resources>

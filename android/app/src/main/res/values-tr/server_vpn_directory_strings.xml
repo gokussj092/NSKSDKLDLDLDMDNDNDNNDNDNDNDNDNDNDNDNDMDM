@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- tr: translated primary screens, Cloud and error strings; untranslated text inherits English source. -->
+    <string name="server_vpn_search_hint">VPN uygulaması ara</string>
+    <string name="server_vpn_filter_all">Tümü</string>
+    <string name="server_vpn_filter_enabled">Etkin</string>
+    <string name="server_vpn_filter_favorites">Favoriler</string>
+    <string name="server_vpn_favorite_add">Favorilere ekle</string>
+    <string name="server_vpn_favorite_remove">Favorilerden çıkar</string>
+    <string name="server_vpn_manual_refresh">Kataloğu şimdi kontrol et</string>
+    <string name="server_vpn_catalog_refreshing">Sunucu kataloğu kontrol ediliyor…</string>
+    <string name="server_vpn_no_matches">Arama veya filtrelerle eşleşen VPN yok.</string>
+    <string name="server_vpn_catalog_enabled">Katalogda etkin</string>
+    <string name="server_vpn_catalog_disabled">Katalogda etkin değil</string>
+    <string name="server_vpn_new_badge">Yeni</string>
+</resources>

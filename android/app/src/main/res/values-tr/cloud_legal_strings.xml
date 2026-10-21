@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- tr: translated primary screens, Cloud and error strings; untranslated text inherits English source. -->
+    <string name="cloud_legal_title">Koşullar ve gizlilik</string>
+    <string name="cloud_legal_explanation">SP-DECODE Cloud, seçtiğiniz dosya ve metinleri çözmek için sunucusuna gönderir. Kapasite planlaması için rastgele kurulum koduyla etkin kurulumları günde bir kez yaklaşık sayar. Bu sayılar yapılandırma içeriği içermez.</string>
+    <string name="cloud_legal_terms">Koşulları okuyun</string>
+    <string name="cloud_legal_privacy">Gizlilik politikasını okuyun</string>
+    <string name="cloud_legal_accept_check">Koşulları ve gizlilik politikasını okudum ve kabul ediyorum.</string>
+    <string name="cloud_legal_accept">Kabul et</string>
+    <string name="cloud_legal_decline">Reddet</string>
+    <string name="server_vpn_loading">VPN sunucu kataloğu yükleniyor…</string>
+    <string name="server_vpn_unavailable">VPN sunucu kataloğu kullanılamıyor. Bağlantınızı kontrol edip yeniden deneyin.</string>
+    <string name="server_vpn_retry">Kataloğu yeniden dene</string>
+    <string name="cloud_legal_withdraw">Cloud onayını geri çek</string>
+    <string name="cloud_legal_withdraw_detail">Onayı geri çekmek yeni sunucu isteklerini durdurur. Şifreli yerel geçmiş bu cihazda kalır. Daha sonra tekrar kabul edebilirsiniz.</string>
+</resources>

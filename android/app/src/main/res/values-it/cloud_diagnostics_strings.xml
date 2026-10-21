@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- it: translated primary screens, Cloud and error strings; untranslated text inherits English source. -->
+    <string name="cloud_report_action">Segnala errore</string>
+    <string name="cloud_report_sent">Segnalazione ricevuta: %1$s</string>
+    <string name="cloud_report_failed">Impossibile inviare la segnalazione. Riprova più tardi.</string>
+    <string name="cloud_usage_title">Statistiche anonime delle installazioni</string>
+    <string name="cloud_usage_detail">SP-DECODE stima le installazioni attive ogni giorno per pianificare la capacità del server. Usa un codice casuale, non Android ID, HWID o ID pubblicitario.</string>
+    <string name="cloud_usage_footnote">Incluso nell\'uso Cloud dopo aver accettato le condizioni privacy. Non comprende file, password o configurazioni decodificate.</string>
+</resources>

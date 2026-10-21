@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- tr: translated primary screens, Cloud and error strings; untranslated text inherits English source. -->
+    <string name="cloud_failure_offline">İnternet bağlantısı yok. Bağlanıp tekrar deneyin.</string>
+    <string name="cloud_failure_network">Hizmete ulaşılamıyor. Bağlantınızı kontrol edin.</string>
+    <string name="cloud_failure_tls">Güvenli bağlantı kurulamadı. Ağı ve cihaz saatini kontrol edin.</string>
+    <string name="cloud_failure_timeout">İstek çok uzun sürdü. Bağlantı kararlıyken tekrar deneyin.</string>
+    <string name="cloud_failure_integrity">Uygulama doğrulanamadı. Güncelleyin veya yetkili QA erişimini kullanın.</string>
+    <string name="cloud_failure_qa_code">QA erişimi yok. SP-DECODE QA\'yı açın ve yeni geçici kod girin.</string>
+    <string name="cloud_failure_session">Oturum süresi doldu veya doğrulanamadı. Tekrar deneyin.</string>
+    <string name="cloud_failure_forbidden">Erişim reddedildi. Yetkinizi kontrol edip tekrar deneyin.</string>
+    <string name="cloud_failure_qa">QA erişimi geçersiz, kapalı veya süresi dolmuş. Yeni özel kod isteyin.</string>
+    <string name="cloud_failure_consent">Cloud çözümleme için güncel koşulları ve gizlilik bildirimini kabul edin.</string>
+    <string name="cloud_failure_rate">Çok fazla istek. Yeniden denemeden önce bekleyin.</string>
+    <string name="cloud_failure_large">Dosya veya sonuç izin verilen boyutu aşıyor.</string>
+    <string name="cloud_failure_invalid">Dosya veya istek kabul edilemedi. Biçimi kontrol edin.</string>
+    <string name="cloud_failure_unsupported">Bu dosya biçimi sunucuda kullanılamıyor.</string>
+    <string name="cloud_failure_decode">Çözücü bu dosya sürümünü işleyemedi. Dosya hasarlı olmayabilir.</string>
+    <string name="cloud_failure_maintenance">Hizmet geçici bakımda. Daha sonra tekrar deneyin.</string>
+    <string name="cloud_failure_unavailable">Hizmet geçici olarak kullanılamıyor. Daha sonra deneyin.</string>
+    <string name="cloud_failure_config_unavailable">Cloud yapılandırması artık yok. Süresi dolmuş, silinmiş veya tek kullanımlık olabilir. Bu çözücü hatası değildir.</string>
+    <string name="cloud_failure_remote">Uzak sağlayıcı geçersiz veya doğrulanamayan yanıt verdi.</string>
+    <string name="cloud_failure_credentials">Parola veya HWID yanlış. Kontrol edip tekrar deneyin.</string>
+    <string name="cloud_failure_password">Bu korumalı dosya parola gerektiriyor.</string>
+    <string name="cloud_failure_hwid">Bu korumalı dosya HWID gerektiriyor.</string>
+    <string name="cloud_failure_both">Bu dosya hem parola hem HWID gerektiriyor.</string>
+    <string name="cloud_failure_not_found">İstenen kaynak bulunamadı veya kullanılamıyor.</string>
+    <string name="cloud_failure_conflict">İstek mevcut durumla çakışıyor. Tekrar deneyin.</string>
+    <string name="cloud_failure_partial">Sonuç eksik veya geçersiz, görüntülenmeyecek.</string>
+    <string name="cloud_failure_general">İşlem tamamlanamadı. Tekrar deneyin veya destek alın.</string>
+    <string name="cloud_failure_notice_title">İstek tamamlanamadı</string>
+    <string name="cloud_password_title">Yapılandırma parolası gerekli</string>
+    <string name="cloud_password_description">%1$s parola korumalıdır. Devam etmek için dışa aktarma parolasını girin. Kaydedilmez.</string>
+</resources>

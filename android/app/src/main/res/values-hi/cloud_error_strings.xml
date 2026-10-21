@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- hi: translated primary screens, Cloud and error strings; untranslated text inherits English source. -->
+    <string name="cloud_failure_offline">इंटरनेट नहीं है। कनेक्ट होकर फिर प्रयास करें।</string>
+    <string name="cloud_failure_network">सेवा तक नहीं पहुँचा जा सकता। कनेक्शन जाँचें।</string>
+    <string name="cloud_failure_tls">सुरक्षित कनेक्शन नहीं बना। नेटवर्क और डिवाइस घड़ी जाँचें।</string>
+    <string name="cloud_failure_timeout">अनुरोध में बहुत समय लगा। कनेक्शन स्थिर होने पर दोबारा प्रयास करें।</string>
+    <string name="cloud_failure_integrity">ऐप सत्यापन विफल। अपडेट करें या अधिकृत QA पहुँच लें।</string>
+    <string name="cloud_failure_qa_code">QA पहुँच नहीं है। SP-DECODE QA खोलें और नया अस्थायी कोड दर्ज करें।</string>
+    <string name="cloud_failure_session">सत्र समाप्त या सत्यापित नहीं हुआ। फिर प्रयास करें।</string>
+    <string name="cloud_failure_forbidden">पहुँच अस्वीकृत। अनुमति जाँचकर फिर प्रयास करें।</string>
+    <string name="cloud_failure_qa">QA पहुँच अमान्य, बंद या समाप्त है। नया निजी कोड माँगें।</string>
+    <string name="cloud_failure_consent">क्लाउड डिकोडिंग के लिए नियम और गोपनीयता सूचना स्वीकार करें।</string>
+    <string name="cloud_failure_rate">बहुत अधिक अनुरोध। फिर प्रयास करने से पहले प्रतीक्षा करें।</string>
+    <string name="cloud_failure_large">फ़ाइल या परिणाम अनुमत आकार से बड़ा है।</string>
+    <string name="cloud_failure_invalid">फ़ाइल या अनुरोध अमान्य है। प्रारूप जाँचें।</string>
+    <string name="cloud_failure_unsupported">यह फ़ाइल प्रारूप सर्वर पर उपलब्ध नहीं है।</string>
+    <string name="cloud_failure_decode">डिकोडर इस फ़ाइल संस्करण को नहीं पढ़ सका। फ़ाइल ज़रूरी नहीं कि खराब हो।</string>
+    <string name="cloud_failure_maintenance">सेवा रखरखाव में है। बाद में प्रयास करें।</string>
+    <string name="cloud_failure_unavailable">सेवा अस्थायी रूप से अनुपलब्ध है। बाद में प्रयास करें।</string>
+    <string name="cloud_failure_config_unavailable">Cloud कॉन्फ़िगरेशन अब उपलब्ध नहीं है। समाप्त, हटाया गया या एक बार के उपयोग का हो सकता है। यह डिकोडर त्रुटि नहीं है।</string>
+    <string name="cloud_failure_remote">दूरस्थ प्रदाता ने अमान्य या अप्रमाणित जवाब दिया।</string>
+    <string name="cloud_failure_credentials">गलत पासवर्ड या HWID। जाँचकर फिर प्रयास करें।</string>
+    <string name="cloud_failure_password">इस सुरक्षित फ़ाइल को पासवर्ड चाहिए।</string>
+    <string name="cloud_failure_hwid">इस सुरक्षित फ़ाइल को HWID चाहिए।</string>
+    <string name="cloud_failure_both">इस फ़ाइल को पासवर्ड और HWID दोनों चाहिए।</string>
+    <string name="cloud_failure_not_found">अनुरोधित संसाधन नहीं मिला या अनुपलब्ध है।</string>
+    <string name="cloud_failure_conflict">अनुरोध वर्तमान स्थिति से टकराता है। पुनः प्रयास करें।</string>
+    <string name="cloud_failure_partial">परिणाम अधूरा या अमान्य है, दिखाया नहीं जाएगा।</string>
+    <string name="cloud_failure_general">कार्रवाई पूरी नहीं हो सकी। पुनः प्रयास करें या सहायता लें।</string>
+    <string name="cloud_failure_notice_title">अनुरोध पूरा नहीं हुआ</string>
+    <string name="cloud_password_title">कॉन्फ़िगरेशन पासवर्ड आवश्यक</string>
+    <string name="cloud_password_description">%1$s पासवर्ड से सुरक्षित है। आगे बढ़ने के लिए एक्सपोर्ट पासवर्ड दें। यह सहेजा नहीं जाएगा।</string>
+</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- hi: translated primary screens, Cloud and error strings; untranslated text inherits English source. -->
+    <string name="catalog_auto_title">स्वचालित VPN सर्वर कैटलॉग अपडेट</string>
+    <string name="catalog_auto_detail">ऐप खुले होने पर SP-DECODE सर्वर से HTTPS के माध्यम से कैटलॉग संस्करण जाँचता है और वैकल्पिक रूप से पृष्ठभूमि में कम बार जाँच करता है। डेटा और आइकन केवल संस्करण बदलने पर डाउनलोड होते हैं। Firebase, खाता या पुश टोकन नहीं चाहिए। कभी भी बंद कर सकते हैं।</string>
+    <string name="catalog_auto_switch">पृष्ठभूमि कैटलॉग सिंक चालू करें</string>
+</resources>
