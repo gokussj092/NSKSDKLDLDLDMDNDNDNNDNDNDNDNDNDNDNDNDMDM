@@ -11,4 +11,5 @@
     <string name="server_vpn_no_matches">Нет VPN-приложений, соответствующих поиску или фильтрам.</string>
     <string name="server_vpn_catalog_enabled">Включено в каталоге</string>
     <string name="server_vpn_catalog_disabled">Не включено в каталоге</string>
+    <string name="server_vpn_new_badge">Новое</string>
 </resources>
