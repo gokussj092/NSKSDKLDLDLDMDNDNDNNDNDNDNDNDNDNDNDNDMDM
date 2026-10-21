@@ -17,6 +17,7 @@
     <string name="cloud_failure_decode">Dieser Dateityp konnte nicht entschlüsselt werden. Die Datei muss nicht beschädigt sein.</string>
     <string name="cloud_failure_maintenance">Dieser Dienst wird vorübergehend gewartet. Bitte versuche es später erneut.</string>
     <string name="cloud_failure_unavailable">Dienst derzeit nicht verfügbar. Versuche es später.</string>
+    <string name="cloud_failure_config_unavailable">Diese Cloud-Konfiguration ist nicht mehr verfügbar. Sie ist möglicherweise abgelaufen, wurde gelöscht oder war nur einmal verwendbar. Dies ist kein Fehler des Decoders.</string>
     <string name="cloud_failure_remote">Der externe Anbieter lieferte eine ungültige Antwort.</string>
     <string name="cloud_failure_credentials">Passwort oder HWID falsch. Prüfe die Angaben.</string>
     <string name="cloud_failure_password">Diese geschützte Datei benötigt ein Passwort.</string>
