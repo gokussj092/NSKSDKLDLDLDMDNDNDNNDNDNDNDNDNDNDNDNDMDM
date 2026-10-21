@@ -22,7 +22,17 @@ Sí se identificaron cuatro puntos reproducibles en el código:
 
 ## Validaciones
 
-Las pruebas solo usan mocks HTTP y vectores sintéticos; no se descargan datos reales del proveedor. Cubren reintento 503, presupuesto de 12 MiB, estructura de resultados parciales, advertencias y error explícito cuando el JSON supera 4 MiB. El ajuste no añade proveedores ni altera Android, Play, catálogos de servidor o credenciales.
+Las pruebas solo usan mocks HTTP y vectores sintéticos; no se descargan datos reales del proveedor. Cubren reintento 503, presupuesto de 12 MiB, estructura de resultados parciales, advertencias y error explícito cuando el JSON supera 4 MiB. El ajuste no añade proveedores ni modifica los endpoints, catálogos o credenciales.
+También se corrigió una incompatibilidad real del **cliente Android Cloud**:
+`CloudDecodeClient.decode()` rechazaba cualquier respuesta `isPartial=true`,
+incluidos los catálogos MKK con fuentes descifradas. Ahora acepta
+**exclusivamente** MKK cuando el reporte declara las cuatro fuentes
+autorizadas en orden, al menos una correcta y una fallida, y la advertencia
+`PARTIAL_SOURCE_FAILURE`; los demás formatos siguen rechazando
+respuestas incompletas. Una actualización de la VPS **no actualiza el código
+de los dispositivos ya instalados**: esta mejora necesita una futura
+actualización Android con un `versionCode` nuevo y pruebas en Google Play.
+No se publica ni se genera una nueva versión de Play como parte de este cambio.
 
 ## Actualización conjunta del VPS (solo cuando las verificaciones estén en verde)
 

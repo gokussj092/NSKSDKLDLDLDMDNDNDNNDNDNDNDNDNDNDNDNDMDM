@@ -129,6 +129,43 @@ internal class CloudDecodeClient(context: Context) {
         return access
     }
 
+    /**
+     * MKK aggregates four independent sources. A complete RESPONSE can carry
+     * explicit source failures. Permit only this documented partial shape;
+     * never accept arbitrary incomplete file/NUR/EHI results.
+     */
+    private fun allowsMkkHyperPartial(
+        endpoint:String,payload:JSONObject,response:JSONObject
+    ):Boolean {
+        if(endpoint!="/api/v1/server-vpn/decode" ||
+            payload.optString("id")!="mkk-hyper" ||
+            response.optString("kind")!="vpn_catalog" ||
+            response.optString("providerId")!="mkk-hyper")return false
+        val report=response.optJSONObject("structuredJson")?:return false
+        if(report.optString("provider")!="mkk-hyper" ||
+            report.optBoolean("complete",true) ||
+            report.optInt("sourceCount",-1)!=4)return false
+        val warnings=response.optJSONArray("warnings")?:return false
+        if((0 until warnings.length()).none {
+                warnings.optString(it)=="PARTIAL_SOURCE_FAILURE"
+            })return false
+        val sources=report.optJSONArray("sources")?:return false
+        val expected=listOf("servers","static","subscriptions","legacy-subscriptions")
+        if(sources.length()!=expected.size)return false
+        var succeeded=0
+        var failed=0
+        for(i in expected.indices){
+            val source=sources.optJSONObject(i)?:return false
+            if(source.optString("name")!=expected[i])return false
+            when(source.optString("status")){
+                "ok"->succeeded++
+                "error"->failed++
+                else->return false
+            }
+        }
+        return succeeded>0 && failed>0 && succeeded==report.optInt("successfulSources",-1)
+    }
+
     private suspend fun decode(endpoint: String, payload: JSONObject): Decoded {
         require(BuildConfig.SPDECODE_CLOUD_ENABLED) { "CLOUD_DISABLED" }
         withContext(Dispatchers.IO) { requireLegalConsent() }
@@ -161,7 +198,9 @@ internal class CloudDecodeClient(context: Context) {
             throw failure
         }
         coroutineContext.ensureActive()
-        if (response.optString("status") != "success" || response.optBoolean("isPartial",true))
+        if (response.optString("status") != "success" ||
+            (response.optBoolean("isPartial",true) &&
+             !allowsMkkHyperPartial(endpoint,payload,response)))
             throw IOException("CLOUD_PARTIAL_RESULT_REJECTED")
         if (!response.has("rawText") || response.isNull("rawText"))
             throw IOException("CLOUD_MISSING_RESULT")
