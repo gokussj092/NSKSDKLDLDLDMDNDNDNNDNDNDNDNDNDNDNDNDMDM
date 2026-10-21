@@ -17,6 +17,7 @@
     <string name="cloud_failure_decode">Le décodeur ne prend pas en charge cette variante du fichier.</string>
     <string name="cloud_failure_maintenance">Ce service est temporairement en maintenance. Veuillez réessayer plus tard.</string>
     <string name="cloud_failure_unavailable">Service temporairement indisponible. Réessayez plus tard.</string>
+    <string name="cloud_failure_config_unavailable">Cette configuration Cloud n’est plus disponible. Elle a peut-être expiré, été supprimée ou été limitée à une seule utilisation. Il ne s’agit pas d’une erreur du décodeur.</string>
     <string name="cloud_failure_remote">Le fournisseur distant a renvoyé une réponse invalide.</string>
     <string name="cloud_failure_credentials">Mot de passe ou HWID incorrect. Vérifiez les informations.</string>
     <string name="cloud_failure_password">Ce fichier protégé nécessite un mot de passe.</string>
