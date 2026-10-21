@@ -28,4 +28,6 @@
     <string name="cloud_failure_partial">Das Ergebnis ist unvollständig oder ungültig und wird nicht angezeigt.</string>
     <string name="cloud_failure_general">Vorgang fehlgeschlagen. Versuche es erneut oder kontaktiere den Support.</string>
     <string name="cloud_failure_notice_title">Anfrage konnte nicht abgeschlossen werden</string>
+    <string name="cloud_password_title">Konfigurationspasswort erforderlich</string>
+    <string name="cloud_password_description">%1$s ist passwortgeschützt. Gib das Exportpasswort ein. Es wird nicht gespeichert.</string>
 </resources>
