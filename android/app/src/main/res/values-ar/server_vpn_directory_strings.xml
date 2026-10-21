@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_search_hint">البحث عن تطبيقات VPN</string>
+    <string name="server_vpn_filter_all">الكل</string>
+    <string name="server_vpn_filter_enabled">المتاحة</string>
+    <string name="server_vpn_filter_favorites">المفضلة</string>
+    <string name="server_vpn_favorite_add">إضافة إلى المفضلة</string>
+    <string name="server_vpn_favorite_remove">إزالة من المفضلة</string>
+    <string name="server_vpn_manual_refresh">التحقق من الكتالوج الآن</string>
+    <string name="server_vpn_catalog_refreshing">جارٍ التحقق من كتالوج الخادم…</string>
+    <string name="server_vpn_no_matches">لا توجد تطبيقات VPN تطابق البحث أو عوامل التصفية.</string>
+    <string name="server_vpn_catalog_enabled">مفعّل في الكتالوج</string>
+    <string name="server_vpn_catalog_disabled">غير مفعّل في الكتالوج</string>
+</resources>
