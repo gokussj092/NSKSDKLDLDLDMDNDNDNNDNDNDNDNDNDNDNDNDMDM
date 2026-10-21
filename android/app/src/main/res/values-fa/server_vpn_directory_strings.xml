@@ -11,4 +11,5 @@
     <string name="server_vpn_no_matches">هیچ برنامه VPN با جستجو یا فیلترها مطابقت ندارد.</string>
     <string name="server_vpn_catalog_enabled">فعال در کاتالوگ</string>
     <string name="server_vpn_catalog_disabled">غیرفعال در کاتالوگ</string>
+    <string name="server_vpn_new_badge">جدید</string>
 </resources>
