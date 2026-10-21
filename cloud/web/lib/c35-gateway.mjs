@@ -69,9 +69,6 @@ export async function externalImportRequest(request,kind,opts={}) {
       try{await recordWorkerResult(redis,"failed",{
         kind:kind==="nur"?"catalog":"ehi",bytes:0,
         errorCode:typeof error?.code==="string"?error.code:"SERVICE_UNAVAILABLE",
-        // Only the broker's closed, sanitized reason vocabulary. No URLs,
-        // references, raw response bodies, tokens or upstream error strings.
-        providerReason:isExternalImportError(error)?error.reason:"",
         latencyMs:started===null?null:performance.now()-started,
         appVersion:request.headers.get("x-spdecode-app-version"),
       });}catch{}
