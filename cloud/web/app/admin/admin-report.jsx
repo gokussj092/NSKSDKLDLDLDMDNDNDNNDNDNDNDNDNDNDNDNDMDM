@@ -185,7 +185,7 @@ export default function AdminReport({view="analytics"}){
     <article className="admin-card"><span className="muted">Entrada procesada</span><strong>{size(report.inputBytes)}</strong></article>
    </div>}
    <p className="muted">Retención de {report.retentionDays} días. No se guardan archivos, contenidos, credenciales ni IP. Reiniciar errores ajusta solo su línea base por producto, preserva usos, éxitos y advertencias. La gráfica horaria representa el histórico bruto y puede contener fallos anteriores a un reinicio; utiliza las tablas de errores nuevos para confirmar correcciones.</p>
-   {(report.resets||[]).length>0&&<p className="muted">Reinicios activos por formato: {report.resets.length}. Los errores anteriores al último reinicio quedan excluidos de los indicadores actuales hasta vencer la retención.</p>
+   {(report.resets||[]).length>0&&<p className="muted">Reinicios activos por formato: {report.resets.length}. Los errores anteriores al último reinicio quedan excluidos de los indicadores actuales hasta vencer la retención.</p>}
    {view!=="reports"?<>
     <DailyLine days={report.daily||[]}/>
     <HourlyBars hours={report.hourlyLast48||[]}/>
