@@ -87,7 +87,7 @@ function validatePayload(kind,payload) {
         typeof payload.format!=="string" || (!/^[a-z0-9][a-z0-9._-]{0,63}$/.test(payload.format) && payload.format!=="fɴ"))
       throw Object.assign(new Error("format"),{code:"INVALID_REQUEST"});
     if (payload.credentials!==undefined){
-      const allowed=payload.format==="hc"?["password","hwid"]:payload.format==="tut"?["password"]:null;
+      const allowed=payload.format==="hc"?["password","hwid"]:["tut","ua"].includes(payload.format)?["password"]:null;
       if (!allowed || !isRecord(payload.credentials) ||
           Object.keys(payload.credentials).some(k=>!allowed.includes(k)))
         throw Object.assign(new Error("credentials"),{code:"INVALID_CREDENTIALS"});
@@ -99,9 +99,17 @@ function validatePayload(kind,payload) {
     }
     encodedBytes(payload.dataBase64);
   } else if(kind==="text"){
-    if(Object.keys(payload).length!==1 || typeof payload.text!=="string" ||
-       !payload.text.trim() || payload.text.length>limits.maxPublicTextChars)
+    if(Object.keys(payload).some(key=>!["text","credentials"].includes(key)) ||
+       typeof payload.text!=="string" || !payload.text.trim() ||
+       payload.text.length>limits.maxPublicTextChars)
        throw Object.assign(new Error("text"),{code:"INVALID_REQUEST"});
+    if(payload.credentials!==undefined){
+      const pass=payload.credentials?.password;
+      if(!payload.text.trim().toLowerCase().startsWith("ua://") ||
+         !isRecord(payload.credentials) || Object.keys(payload.credentials).length!==1 ||
+         typeof pass!=="string" || !pass.length || Buffer.byteLength(pass,"utf8")>4096)
+        throw Object.assign(new Error("credentials"),{code:"INVALID_CREDENTIALS"});
+    }
   } else if(kind==="catalog"){
     if(Object.keys(payload).length!==1)throw Object.assign(new Error("catalog"),{code:"INVALID_REQUEST"});
     encodedBytes(payload.dataBase64);
