@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_search_hint">Cari aplikasi VPN</string>
+    <string name="server_vpn_filter_all">Semua</string>
+    <string name="server_vpn_filter_enabled">Diaktifkan</string>
+    <string name="server_vpn_filter_favorites">Favorit</string>
+    <string name="server_vpn_favorite_add">Tambahkan ke favorit</string>
+    <string name="server_vpn_favorite_remove">Hapus dari favorit</string>
+    <string name="server_vpn_manual_refresh">Periksa katalog sekarang</string>
+    <string name="server_vpn_catalog_refreshing">Memeriksa katalog server…</string>
+    <string name="server_vpn_no_matches">Tidak ada aplikasi VPN yang cocok dengan pencarian atau filter.</string>
+    <string name="server_vpn_catalog_enabled">Diaktifkan dalam katalog</string>
+    <string name="server_vpn_catalog_disabled">Belum diaktifkan dalam katalog</string>
+</resources>
