@@ -1098,7 +1098,7 @@ class MainActivity : ComponentActivity() {
                     }catch(error:CloudDecodeClient.Failure){
                         if(BuildConfig.SPDECODE_CLOUD_ENABLED && cloudPassword==null &&
                             error.code=="PASSWORD_REQUIRED" &&
-                            supported.suffix in setOf("ua","npvs") &&
+                            supported.suffix=="ua" &&
                             pendingCloudPasswordFile==null){
                             pendingCloudPasswordFile=PendingCloudPasswordFile(uri,name,
                                 supported.suffix,input.copyOf())
