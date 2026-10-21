@@ -17,6 +17,7 @@
     <string name="cloud_failure_decode">Не удалось обработать эту версию файла. Это не обязательно означает повреждение.</string>
     <string name="cloud_failure_maintenance">Этот сервис временно находится на техническом обслуживании. Повторите попытку позже.</string>
     <string name="cloud_failure_unavailable">Сервис временно недоступен. Повторите попытку позже.</string>
+    <string name="cloud_failure_config_unavailable">Эта облачная конфигурация больше недоступна. Возможно, срок действия истёк, она удалена или была одноразовой. Это не ошибка декодера.</string>
     <string name="cloud_failure_remote">Удалённый поставщик вернул недопустимый ответ.</string>
     <string name="cloud_failure_credentials">Неверный пароль или HWID. Проверьте данные.</string>
     <string name="cloud_failure_password">Для защищённого файла требуется пароль.</string>
