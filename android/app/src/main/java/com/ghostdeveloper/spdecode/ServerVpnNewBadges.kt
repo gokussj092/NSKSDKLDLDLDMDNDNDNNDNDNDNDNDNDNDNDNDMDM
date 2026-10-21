@@ -76,7 +76,14 @@ internal class ServerVpnNewBadges(
         val key=FEATURE_PREFIX+featureId
         val born=if(preferences.contains(key))preferences.getLong(key,0L)
             else nowMillis.also { preferences.edit().putLong(key,it).apply() }
-        return remaining(born,nowMillis)
+        if(born==Long.MIN_VALUE)return null
+        val left=remaining(born,nowMillis)
+        if(left==null) {
+            // Tombstone an expired or clock-rolled-back feature so setting the
+            // clock back cannot make a previously expired label appear again.
+            preferences.edit().putLong(key,Long.MIN_VALUE).apply()
+        }
+        return left
     }
 
     private fun remaining(born:Long,now:Long):Long? {
