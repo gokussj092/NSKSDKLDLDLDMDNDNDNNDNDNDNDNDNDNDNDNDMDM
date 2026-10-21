@@ -21,8 +21,8 @@ const channels=[
  ["httpInjector","HTTP Injector Cloud"],
  ["serverVpn","Server VPN"]
 ];
-function Rate({success,failed}){
- const total=success+failed;
+function Rate({success,failed,attempts}){
+ const total=attempts??(success+failed);
  return <span>{total?Math.round(success/total*100)+" %":"—"}</span>;
 }
 function DailyLine({days}){
@@ -71,7 +71,7 @@ function FormatTable({rows,empty,onReset,busy=false}){
   <tbody>{rows.map(row=><tr key={row.extension}>
    <th scope="row">{row.extension.startsWith("vpn-")?row.extension.slice(4):row.extension==="nur-catalog"?"NUR Tunnel":row.extension==="other"?"No reconocido":row.extension==="text"?"Texto":row.extension==="ehi"?"HTTP Injector Cloud":"."+row.extension}</th>
    <td>{number.format(row.attempts)}</td><td>{number.format(row.successfulDecodes)}</td>
-   <td>{number.format(row.failedDecodes)}</td><td>{number.format(row.warnings||0)}</td><td><Rate success={row.successfulDecodes} failed={row.failedDecodes}/></td>{onReset&&<td><button type="button" className="button subtle" disabled={busy} onClick={()=>onReset(row.extension)} aria-label={"Reiniciar errores: "+row.extension}>Reiniciar errores</button></td>}
+   <td>{number.format(row.failedDecodes)}</td><td>{number.format(row.warnings||0)}</td><td><Rate success={row.successfulDecodes} failed={row.failedDecodes} attempts={row.attempts}/></td>{onReset&&<td><button type="button" className="button subtle" disabled={busy} onClick={()=>onReset(row.extension)} aria-label={"Reiniciar errores: "+row.extension}>Reiniciar errores</button></td>}
   </tr>)}
   {!rows.length&&<tr><td colSpan={onReset?7:6}>{empty||"Sin operaciones registradas"}</td></tr>}
   </tbody></table></div>;
@@ -197,7 +197,7 @@ export default function AdminReport({view="analytics"}){
      <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Servicio</th><th>Correctos</th><th>Fallidos</th><th>Éxito</th></tr></thead>
       <tbody>{channels.map(([id,name])=>{const item=services.find(x=>x.service===id)||{successfulDecodes:0,failedDecodes:0};return <tr key={id}>
        <th scope="row">{name}</th><td>{number.format(item.successfulDecodes)}</td><td>{number.format(item.failedDecodes)}</td>
-       <td><Rate success={item.successfulDecodes} failed={item.failedDecodes}/></td>
+       <td><Rate success={item.successfulDecodes} failed={item.failedDecodes} attempts={item.attempts}/></td>
       </tr>;})}</tbody>
      </table></div>
     </section>

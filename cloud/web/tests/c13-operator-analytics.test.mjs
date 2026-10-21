@@ -66,6 +66,9 @@ test("reset a single VPN provider's errors, preserving successes, other errors a
  const after=await usageReport(r,7);
  assert.equal(after.successfulDecodes,1);
  assert.equal(after.failedDecodes,1);
+ assert.equal(after.totalDecodes,before.totalDecodes);
+ assert.equal(after.serviceBreakdown.find(x=>x.service==="serverVpn").attempts,
+   before.serviceBreakdown.find(x=>x.service==="serverVpn").attempts);
  assert.equal(after.warnings,1);
  assert.equal(after.extensions.find(x=>x.extension==="vpn-mkk-hyper").attempts,2);
  assert.equal(after.extensions.find(x=>x.extension==="vpn-mkk-hyper").failedDecodes,0);

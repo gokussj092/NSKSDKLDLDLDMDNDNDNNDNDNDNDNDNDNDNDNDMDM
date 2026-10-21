@@ -38,3 +38,5 @@ Esta modificación solo afecta a la API/panel Cloud; no requiere nueva versión 
 NO se elimina ni altera la imagen del resultado `.rt` sin un ejemplo concreto de la respuesta proporcionado por el propietario. Esta tarea queda pendiente de identificación del campo exacto y prueba de no regresión.
 
 **Reset global e incidencias manuales:** se guarda también una marca temporal global `@all` para excluir reportes manuales previos que aún no tengan un contador por extensión. Las advertencias siempre se conservan. El número máximo de etiquetas saneadas por operación es 512.
+
+El valor **Procesamientos** y las **tasas de éxito** utilizan el número original de operaciones registrado (incluidas las previas al reinicio). Reiniciar errores no reduce los totales históricos ni aumenta artificialmente la tasa de éxito: los fallos mostrados como «nuevos» son un contador operacional separado.

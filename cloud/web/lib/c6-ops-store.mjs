@@ -205,9 +205,10 @@ export async function usageReport(redis,days=7) {
   const formats=new Map(),errors=new Map(),byFormatError=new Map(),warnings=new Map();
   const baselines=await errorBaselines(redis);
   const services=Object.fromEntries(SERVICE_IDS.map(id=>[id,{service:id,successfulDecodes:0,failedDecodes:0,attempts:0}]));
+  const rawServiceAttempts=Object.fromEntries(SERVICE_IDS.map(id=>[id,0]));
 
   const daily=[];
-  let success=0,failed=0,warningTotal=0,bytes=0;
+  let success=0,failed=0,warningTotal=0,bytes=0,historicalAttempts=0;
   const parse=v=>Math.max(0,Number.parseInt(v||"0",10)||0);
   for(let i=0;i<dates.length;i++){
     const data=hashes[i]||{};
@@ -220,10 +221,13 @@ export async function usageReport(redis,days=7) {
       else dFailed+=Math.max(0,parse(val)-parse(baselines[m[1]]?.days?.[dates[i]]?.failed));
     }
     success+=dSuccess;failed+=dFailed;warningTotal+=dWarnings;bytes+=dBytes;
+    historicalAttempts+=parse(data.attempts);
     daily.push({date:dates[i],successfulDecodes:dSuccess,failedDecodes:dFailed,
       warnings:dWarnings,inputBytes:dBytes});
     for(const service of SERVICE_IDS){
       services[service].successfulDecodes+=parse(data["service:"+service+":success"]);
+      rawServiceAttempts[service]+=parse(data["service:"+service+":success"])+
+        parse(data["service:"+service+":failed"])+parse(data["service:"+service+":warning"]);
       // Effective failed counts are calculated from per-format counters below.
     }
     for(const [field,value] of Object.entries(data)){
@@ -285,13 +289,13 @@ export async function usageReport(redis,days=7) {
       failedDecodes:parse(bucket["hour:"+hourKey+":failed"])};
   });
   const breakdownServices=SERVICE_IDS.map(id=>({
-    ...services[id],attempts:services[id].successfulDecodes+services[id].failedDecodes,
+    ...services[id],attempts:rawServiceAttempts[id],
   }));
   const errorServices=[...serviceCounts].map(([key,count])=>{
     const [service,code]=key.split(":");return {service,code,count};
   }).sort((a,b)=>b.count-a.count);
   return {window:days===1?"utc_today":"last_7_utc_days",days,successfulDecodes:success,
-    failedDecodes:failed,warnings:warningTotal,totalDecodes:success+failed+warningTotal,inputBytes:bytes,daily,
+    failedDecodes:failed,warnings:warningTotal,totalDecodes:historicalAttempts,inputBytes:bytes,daily,
     extensions:breakdown,errors:failures,
     warningCodes:[...warnings].map(([code,count])=>({code,count})).sort((a,b)=>b.count-a.count),
     incidents:incidents.filter(x=>x.count>0),resets:Object.entries(baselines).filter(([label])=>label!=="@all").map(([extension,v])=>({extension,at:v.at})),
