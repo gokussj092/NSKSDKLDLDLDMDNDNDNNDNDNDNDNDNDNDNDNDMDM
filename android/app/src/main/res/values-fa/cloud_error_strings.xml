@@ -17,6 +17,7 @@
     <string name="cloud_failure_decode">پردازش این نسخه فایل ممکن نبود؛ لزوماً خراب نیست.</string>
     <string name="cloud_failure_maintenance">این سرویس به‌طور موقت در حال نگهداری است. لطفاً بعداً دوباره تلاش کنید.</string>
     <string name="cloud_failure_unavailable">سرویس موقتاً در دسترس نیست. بعداً تلاش کنید.</string>
+    <string name="cloud_failure_config_unavailable">این پیکربندی ابری دیگر در دسترس نیست. ممکن است منقضی یا حذف شده باشد یا فقط یک‌بار قابل استفاده بوده باشد. این مشکل از رمزگشا نیست.</string>
     <string name="cloud_failure_remote">پاسخ سرویس راه دور نامعتبر بود.</string>
     <string name="cloud_failure_credentials">رمز عبور یا HWID اشتباه است.</string>
     <string name="cloud_failure_password">این فایل محافظت‌شده به رمز عبور نیاز دارد.</string>
