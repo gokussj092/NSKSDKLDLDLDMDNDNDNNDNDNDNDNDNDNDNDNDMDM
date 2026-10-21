@@ -28,4 +28,6 @@
     <string name="cloud_failure_partial">النتيجة ناقصة أو غير صالحة ولن يتم عرضها.</string>
     <string name="cloud_failure_general">تعذر إكمال العملية. حاول مجددًا أو اتصل بالدعم.</string>
     <string name="cloud_failure_notice_title">تعذر إكمال الطلب</string>
+    <string name="cloud_password_title">كلمة مرور الإعداد مطلوبة</string>
+    <string name="cloud_password_description">الملف %1$s محمي بكلمة مرور. أدخل كلمة مرور التصدير للمتابعة. لن يتم حفظها.</string>
 </resources>
