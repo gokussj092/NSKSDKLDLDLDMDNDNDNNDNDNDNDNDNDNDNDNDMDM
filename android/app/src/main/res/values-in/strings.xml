@@ -211,4 +211,5 @@
     <string name="nur_servers_decode">Dekode server</string>
     <string name="nur_servers_invalid_url">Masukkan URL HTTPS yang valid untuk daftar server.</string>
     <string name="nur_servers_failed">Gagal mengunduh, mengautentikasi, atau mendekode katalog server.</string>
+    <string name="language_screen_title">Pilih bahasa</string>
 </resources>

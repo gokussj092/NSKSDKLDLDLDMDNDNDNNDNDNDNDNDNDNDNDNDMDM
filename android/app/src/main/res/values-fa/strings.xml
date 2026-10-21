@@ -211,4 +211,5 @@
     <string name="nur_servers_decode">رمزگشایی سرورها</string>
     <string name="nur_servers_invalid_url">نشانی HTTPS معتبر برای فهرست سرورها وارد کنید.</string>
     <string name="nur_servers_failed">دریافت، تأیید اصالت یا رمزگشایی فهرست سرورها انجام نشد.</string>
+    <string name="language_screen_title">انتخاب زبان</string>
 </resources>

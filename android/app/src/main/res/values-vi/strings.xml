@@ -212,4 +212,5 @@
     <string name="nur_servers_decode">Giải mã máy chủ</string>
     <string name="nur_servers_invalid_url">Nhập URL HTTPS hợp lệ cho danh sách máy chủ.</string>
     <string name="nur_servers_failed">Không thể tải, xác thực hoặc giải mã danh mục máy chủ.</string>
+    <string name="language_screen_title">Chọn ngôn ngữ</string>
 </resources>

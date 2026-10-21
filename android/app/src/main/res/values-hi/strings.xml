@@ -212,4 +212,5 @@
     <string name="nur_servers_decode">सर्वर डिकोड करें</string>
     <string name="nur_servers_invalid_url">सर्वर सूची के लिए मान्य HTTPS URL दर्ज करें।</string>
     <string name="nur_servers_failed">सर्वर कैटलॉग डाउनलोड, सत्यापित या डिकोड नहीं हुआ।</string>
+    <string name="language_screen_title">भाषा चुनें</string>
 </resources>

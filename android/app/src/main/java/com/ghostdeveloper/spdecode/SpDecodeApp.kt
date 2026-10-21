@@ -808,17 +808,13 @@ private fun ServerVpnScreen(
     }
     val newBadgeStore=remember(context) { ServerVpnNewBadges(context) }
     var newProviderIds by remember { mutableStateOf<Set<String>>(emptySet()) }
-    var manualRefreshIsNew by remember { mutableStateOf(false) }
+    // NEW applies only to newly incorporated server VPN providers.
     LaunchedEffect(apps,newBadgeStore) {
         if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
             while(true) {
                 val snapshot=newBadgeStore.observeCatalog(apps.map { it.id }.toSet())
                 newProviderIds=snapshot.ids
-                val featureMs=newBadgeStore.featureRemaining(
-                    ServerVpnNewBadges.MANUAL_REFRESH_FEATURE)
-                manualRefreshIsNew=featureMs!=null
-                val nearest=listOfNotNull(snapshot.nextExpiryMs,featureMs).minOrNull()
-                    ?:break
+                val nearest=snapshot.nextExpiryMs ?:break
                 // The same device clock controls the expiry even when the user
                 // remains on this screen; reopening never restarts the timer.
                 delay(nearest.coerceAtLeast(1L))
@@ -831,15 +827,12 @@ private fun ServerVpnScreen(
             Text(stringResource(R.string.server_vpn),fontSize=24.sp,
                 fontWeight=FontWeight.Bold,color=White,modifier=Modifier.weight(1f))
             if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
-                if(manualRefreshIsNew) {
-                    ServerVpnNewTag()
-                    Spacer(Modifier.width(8.dp))
-                }
                 IconButton(
                     onClick=onRefresh,
                     enabled=!busy && !catalogLoading,
-                    modifier=Modifier.size(44.dp)
-                        .background(Raised,RoundedCornerShape(50))
+                    modifier=Modifier.size(46.dp)
+                        .background(Color(0xFF282828),RoundedCornerShape(50))
+                        .border(1.dp,Color(0xFF484848),RoundedCornerShape(50))
                         .testTag("server_vpn_manual_refresh"),
                 ) {
                     if(catalogLoading) {
@@ -859,7 +852,7 @@ private fun ServerVpnScreen(
         if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
             OutlinedTextField(
                 value=query,onValueChange={query=it},
-                label={Text(stringResource(R.string.server_vpn_search_hint))},
+                placeholder={Text(stringResource(R.string.server_vpn_search_hint))},
                 leadingIcon={Icon(Icons.Outlined.Search,null)},
                 trailingIcon={
                     if(query.isNotEmpty()) IconButton(onClick={query=""}) {
@@ -867,7 +860,15 @@ private fun ServerVpnScreen(
                     }
                 },
                 singleLine=true,modifier=Modifier.fillMaxWidth(),
-                shape=RoundedCornerShape(13.dp),
+                shape=RoundedCornerShape(16.dp),
+                colors=OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor=Color(0xFF8873AC),
+                    unfocusedBorderColor=Color(0xFF565656),
+                    focusedTextColor=White,unfocusedTextColor=White,
+                    cursorColor=White,
+                    focusedPlaceholderColor=Secondary,
+                    unfocusedPlaceholderColor=Secondary,
+                ),
             )
             FlowRow(
                 horizontalArrangement=Arrangement.spacedBy(7.dp),
@@ -876,16 +877,31 @@ private fun ServerVpnScreen(
                 FilterChip(
                     selected=filter==ServerVpnListFilter.ALL,
                     onClick={filter=ServerVpnListFilter.ALL},
+                    shape=RoundedCornerShape(12.dp),
+                    colors=FilterChipDefaults.filterChipColors(
+                        containerColor=Background,labelColor=Secondary,
+                        selectedContainerColor=Color(0xFF4E455E),
+                        selectedLabelColor=White),
                     label={Text(stringResource(R.string.server_vpn_filter_all))},
                 )
                 FilterChip(
                     selected=filter==ServerVpnListFilter.ENABLED,
                     onClick={filter=ServerVpnListFilter.ENABLED},
+                    shape=RoundedCornerShape(12.dp),
+                    colors=FilterChipDefaults.filterChipColors(
+                        containerColor=Background,labelColor=Secondary,
+                        selectedContainerColor=Color(0xFF4E455E),
+                        selectedLabelColor=White),
                     label={Text(stringResource(R.string.server_vpn_filter_enabled))},
                 )
                 FilterChip(
                     selected=filter==ServerVpnListFilter.FAVORITES,
                     onClick={filter=ServerVpnListFilter.FAVORITES},
+                    shape=RoundedCornerShape(12.dp),
+                    colors=FilterChipDefaults.filterChipColors(
+                        containerColor=Background,labelColor=Secondary,
+                        selectedContainerColor=Color(0xFF4E455E),
+                        selectedLabelColor=White),
                     label={Text(stringResource(R.string.server_vpn_filter_favorites))},
                     leadingIcon={Icon(Icons.Outlined.StarBorder,null,
                         modifier=Modifier.size(16.dp))},
@@ -938,23 +954,27 @@ private fun ServerVpnScreen(
                                         Text(app.name,color=White,fontSize=15.sp,
                                             fontWeight=FontWeight.SemiBold,
                                             maxLines=2,overflow=TextOverflow.Ellipsis)
-                                        if(app.id in newProviderIds) ServerVpnNewTag()
+                                        
                                         Text(stringResource(if(app.decodeEnabled)
                                             R.string.server_vpn_catalog_enabled
                                             else R.string.server_vpn_catalog_disabled),
                                             color=Secondary,fontSize=11.sp)
                                     }
+                                    if(app.id in newProviderIds) {
+                                        ServerVpnNewTag()
+                                        Spacer(Modifier.width(5.dp))
+                                    }
                                     val isFavorite=app.id in favoriteIds
                                     IconButton(
                                         onClick={favoriteIds=favoritesStore.toggle(app.id)},
-                                        modifier=Modifier.size(42.dp),
+                                        modifier=Modifier.size(40.dp),
                                     ) {
                                         Icon(if(isFavorite) Icons.Outlined.Star
                                             else Icons.Outlined.StarBorder,
                                             stringResource(if(isFavorite)
                                                 R.string.server_vpn_favorite_remove
                                                 else R.string.server_vpn_favorite_add),
-                                            tint=if(isFavorite) Amber else Secondary)
+                                            tint=if(isFavorite) Color(0xFFB895EC) else Secondary)
                                     }
                                     Icon(if(expanded) Icons.Outlined.ExpandLess
                                         else Icons.Outlined.ChevronRight,
@@ -1048,17 +1068,18 @@ private fun ServerVpnScreen(
 @Composable
 private fun ServerVpnNewTag() {
     Surface(
-        color=Raised,
-        shape=RoundedCornerShape(7.dp),
-        border=BorderStroke(1.dp,Color(0xFF686868)),
+        color=Color(0xFF352945),
+        shape=RoundedCornerShape(10.dp),
+        border=BorderStroke(1.dp,Color(0xFFA581D9)),
         modifier=Modifier.testTag("server_vpn_new_badge"),
     ) {
         Text(
             stringResource(R.string.server_vpn_new_badge),
-            color=White,
+            color=Color(0xFFE4D7FF),
             fontSize=10.sp,
+            maxLines=1,
             fontWeight=FontWeight.SemiBold,
-            modifier=Modifier.padding(horizontal=7.dp,vertical=3.dp),
+            modifier=Modifier.padding(horizontal=7.dp,vertical=4.dp),
         )
     }
 }

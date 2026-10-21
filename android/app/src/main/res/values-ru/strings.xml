@@ -211,4 +211,5 @@
     <string name="nur_servers_decode">Расшифровать серверы</string>
     <string name="nur_servers_invalid_url">Введите корректный HTTPS-адрес списка серверов.</string>
     <string name="nur_servers_failed">Не удалось загрузить, проверить или расшифровать каталог серверов.</string>
+    <string name="language_screen_title">Выбрать язык</string>
 </resources>

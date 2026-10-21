@@ -1,16 +1,16 @@
 {
   "schemaVersion": 1,
   "baseRef": "main",
-  "purpose": "Explicitly authorized UI rebaseline for phases 1-3 and subsequent Cloud-only UI corrections: server VPN search/favorites/manual refresh, AMOLED dialogs, multilingual Cloud copy, and NPVS error presentation. MainActivity remains excluded for transport. Frozen hashes continue to guard all listed sources.",
+  "purpose": "Authorized UI rebaseline for Server VPN compact NEW provider badges, polished manual refresh and search, and a full-screen language picker. All nine tracked sources remain SHA-1 verified; the active PR does not modify decoder cryptography.",
   "uiGitBlobSha1": {
     "android/app/src/main/java/com/ghostdeveloper/spdecode/CompleteResultCard.kt": "58cf6476fd022ad2b5bd1ce289aba4a2f79e9a26",
     "android/app/src/main/java/com/ghostdeveloper/spdecode/FirstRunGuide.kt": "d7a222ee435d354fc84b15476bf6bd98ee750171",
-    "android/app/src/main/java/com/ghostdeveloper/spdecode/FunctionalSettingsPanel.kt": "9b83d607674b848673f0a7c17ac4baa67001fa7a",
+    "android/app/src/main/java/com/ghostdeveloper/spdecode/FunctionalSettingsPanel.kt": "af689df583243df41864d27fea3302e526f05a84",
     "android/app/src/main/java/com/ghostdeveloper/spdecode/HcProtectedImportDialog.kt": "0c69fc5a6758c2d6229b0e91efae561c0c6f4484",
     "android/app/src/main/java/com/ghostdeveloper/spdecode/HttpInjectorCloudPanel.kt": "5af592ae0b873c50836dcd89c8a120d57d7cb121",
     "android/app/src/main/java/com/ghostdeveloper/spdecode/JsonTreeViewer.kt": "ae32c219d14f54a5d2a229edb9076c79766af6c7",
     "android/app/src/main/java/com/ghostdeveloper/spdecode/ResultPresentation.kt": "d2a53e9715feed5a48d4193a6b4596eb3d86cabd",
-    "android/app/src/main/java/com/ghostdeveloper/spdecode/SpDecodeApp.kt": "3bf1cdf7c193b46eaebb8d08d30480137f3a4b20",
+    "android/app/src/main/java/com/ghostdeveloper/spdecode/SpDecodeApp.kt": "9ad12fd7a8416621d5f185740e2e9e664c7944f6",
     "android/app/src/main/java/com/ghostdeveloper/spdecode/TextDecoderPanel.kt": "bb4f3552ca8fba5892da4e6cd6674cb191b00bdf"
   }
 }

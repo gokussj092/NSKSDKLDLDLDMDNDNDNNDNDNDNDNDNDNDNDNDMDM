@@ -212,4 +212,5 @@
     <string name="nur_servers_decode">Sunucuları çöz</string>
     <string name="nur_servers_invalid_url">Sunucu listesi için geçerli bir HTTPS URL girin.</string>
     <string name="nur_servers_failed">Sunucu kataloğu indirilemedi, doğrulanamadı veya çözülemedi.</string>
+    <string name="language_screen_title">Dil seç</string>
 </resources>

@@ -211,4 +211,5 @@
     <string name="nur_servers_decode">Décoder les serveurs</string>
     <string name="nur_servers_invalid_url">Saisissez une URL HTTPS valide pour la liste des serveurs.</string>
     <string name="nur_servers_failed">Impossible de télécharger, authentifier ou décoder le catalogue des serveurs.</string>
+    <string name="language_screen_title">Choisir la langue</string>
 </resources>

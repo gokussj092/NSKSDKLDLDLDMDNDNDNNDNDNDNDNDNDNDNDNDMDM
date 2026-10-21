@@ -211,4 +211,5 @@
     <string name="nur_servers_decode">فك تشفير الخوادم</string>
     <string name="nur_servers_invalid_url">أدخل رابط HTTPS صالحًا لقائمة الخوادم.</string>
     <string name="nur_servers_failed">تعذر تنزيل قائمة الخوادم أو التحقق منها أو فك تشفيرها.</string>
+    <string name="language_screen_title">اختيار اللغة</string>
 </resources>
