@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_search_hint">جستجوی برنامه‌های VPN</string>
+    <string name="server_vpn_filter_all">همه</string>
+    <string name="server_vpn_filter_enabled">فعال</string>
+    <string name="server_vpn_filter_favorites">علاقه‌مندی‌ها</string>
+    <string name="server_vpn_favorite_add">افزودن به علاقه‌مندی‌ها</string>
+    <string name="server_vpn_favorite_remove">حذف از علاقه‌مندی‌ها</string>
+    <string name="server_vpn_manual_refresh">بررسی کاتالوگ اکنون</string>
+    <string name="server_vpn_catalog_refreshing">در حال بررسی کاتالوگ سرور…</string>
+    <string name="server_vpn_no_matches">هیچ برنامه VPN با جستجو یا فیلترها مطابقت ندارد.</string>
+    <string name="server_vpn_catalog_enabled">فعال در کاتالوگ</string>
+    <string name="server_vpn_catalog_disabled">غیرفعال در کاتالوگ</string>
+</resources>
