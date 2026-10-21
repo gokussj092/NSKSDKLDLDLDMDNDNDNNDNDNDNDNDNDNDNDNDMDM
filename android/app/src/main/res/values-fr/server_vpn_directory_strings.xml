@@ -11,4 +11,5 @@
     <string name="server_vpn_no_matches">Aucune application VPN ne correspond à la recherche ou aux filtres.</string>
     <string name="server_vpn_catalog_enabled">Activée dans le catalogue</string>
     <string name="server_vpn_catalog_disabled">Non activée dans le catalogue</string>
+    <string name="server_vpn_new_badge">Nouveau</string>
 </resources>
