@@ -22,6 +22,9 @@ const NUR_TIMEOUT_MS = 30000; // matches the proven standalone client
 const NUR_REDIRECT_LIMIT = 3; // only the same approved HTTPS origin
 const MAX_UNCOMPRESSED_BYTES = 8 * 1024 * 1024;
 const CONNECT_TIMEOUT_MS = 10000;
+// Android allows 10s for connect and 20s for the response; the old broker
+// prematurely aborted the entire cloud import after only 10 seconds.
+const EHI_TIMEOUT_MS = CONNECT_TIMEOUT_MS + 20000;
 const EMOJI_START = 0x1f489;
 const EMOJI_END = 0x1f680;
 const EMOJI_OFFSET = 128467;
@@ -48,7 +51,7 @@ export class ExternalImportError extends Error {
     // Sanitized diagnostics for root-only 'spdecode qa probe-nur'; not included
     // in the public API response. NEVER retain URLs, headers or response bodies.
     this.reason = /^HTTP_[1-5][0-9]{2}$/.test(reason) ||
-      ["DNS","TLS","TIMEOUT","CONNECTION","CONNECTION_RESET","CONNECTION_REFUSED","NETWORK_UNREACHABLE","REDIRECT_BLOCKED","REDIRECT_LIMIT"].includes(reason)
+      ["DNS","TLS","TIMEOUT","CONNECTION","CONNECTION_RESET","CONNECTION_REFUSED","NETWORK_UNREACHABLE","REDIRECT_BLOCKED","REDIRECT_LIMIT","UPSTREAM_REJECTED","CONFIG_UNAVAILABLE"].includes(reason)
       ? reason : "";
 
   }
@@ -150,7 +153,7 @@ export async function downloadApproved({url,kind,method="GET",body,headers={},ma
       !["GET","POST"].includes(method))
     fail("REMOTE_NETWORK_DENIED");
 
-  const timeout=kind==="nur" ? NUR_TIMEOUT_MS : CONNECT_TIMEOUT_MS;
+  const timeout=kind==="nur" ? NUR_TIMEOUT_MS : EHI_TIMEOUT_MS;
   const deadline=Date.now()+timeout+5000;
   const visited=new Set();
 
@@ -173,11 +176,12 @@ export async function downloadApproved({url,kind,method="GET",body,headers={},ma
     const destination=approvedUrl(address,kind);
     // DNS re-checked on every redirect and bound to the same HTTPS socket.
     const resolved=await pinnedAddresses(destination.hostname,resolve);
-    // Python urllib tries the next resolved address after a socket failure.
-    // Retry NUR only, across independently validated public IPv4s, never on
-    // HTTP errors or TLS certificate failures. Keep one global deadline.
+    // Try another DNS-validated public IPv4 only when it is safe to do so.
+    // EHI uses a signed POST: retry only definitive pre-connection refusals;
+    // never replay a request after timeout/reset or an HTTP response.
+    // NUR GET keeps its broader transport failover. Use one global deadline.
     let result;
-    const addresses=kind==="nur"?resolved.slice(0,8):resolved.slice(0,1);
+    const addresses=resolved.slice(0,8);
     for(let index=0;index<addresses.length;index++){
       const selected=addresses[index];
       const timeLeft=deadline-Date.now();
@@ -278,8 +282,10 @@ export async function downloadApproved({url,kind,method="GET",body,headers={},ma
       }catch(error){
         const retryable=error instanceof ExternalImportError &&
           error.code==="REMOTE_PROVIDER_UNAVAILABLE" &&
-          ["CONNECTION","CONNECTION_RESET","CONNECTION_REFUSED",
-           "NETWORK_UNREACHABLE","TIMEOUT"].includes(error.reason);
+          (kind==="nur"
+            ? ["CONNECTION","CONNECTION_RESET","CONNECTION_REFUSED",
+               "NETWORK_UNREACHABLE","TIMEOUT"].includes(error.reason)
+            : ["CONNECTION_REFUSED","NETWORK_UNREACHABLE"].includes(error.reason));
         if(!retryable || index===addresses.length-1 || Date.now()>=deadline)
           throw error;
       }
@@ -327,7 +333,8 @@ export function unwrapEhiResponse(source,{responseKey}) {
   let doc;
   try {doc=JSON.parse(new TextDecoder("utf-8",{fatal:true}).decode(source));}
   catch {fail("REMOTE_RESPONSE_INVALID");}
-  if (!doc || doc.code!==200) fail("REMOTE_PROVIDER_UNAVAILABLE");
+  if (!doc || doc.code!==200)
+    throw new ExternalImportError("REMOTE_PROVIDER_UNAVAILABLE","UPSTREAM_REJECTED");
   const envelope=strictBase64(doc.data);
   if (envelope.length<64 || (envelope.length-48)%16 !== 0)
     fail("REMOTE_RESPONSE_INVALID");
@@ -347,7 +354,8 @@ export function unwrapEhiResponse(source,{responseKey}) {
   let clear;
   try {clear=JSON.parse(new TextDecoder("utf-8",{fatal:true}).decode(inflated));}
   catch {fail("REMOTE_RESPONSE_INVALID");}
-  if (!clear || clear.status!=="success") fail("REMOTE_PROVIDER_UNAVAILABLE");
+  if (!clear || clear.status!=="success")
+    throw new ExternalImportError("REMOTE_PROVIDER_UNAVAILABLE","CONFIG_UNAVAILABLE");
   const ciphertext=strictBase64(clear.config_data);
   if (ciphertext.length % 16!==0) fail("REMOTE_DECODER_FAILED");
   // Same Java DataOutputStream binary format as Android's temporary EHI envelope.
