@@ -56,6 +56,10 @@ internal fun CloudPasswordDialog(
             Text(stringResource(R.string.cancel))
         }},
         shape=RoundedCornerShape(17.dp),
-        containerColor=Color(0xFF242424),
+        containerColor=Color.Black,
+        titleContentColor=Color(0xFFF7F7F7),
+        textContentColor=Color(0xFFF7F7F7),
+        iconContentColor=Color(0xFFF7F7F7),
+        tonalElevation=0.dp,
     )
 }
