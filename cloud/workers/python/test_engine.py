@@ -10,7 +10,7 @@ from pathlib import Path
 
 from engine import (
     DecodeFailure, MAX_INPUT_BYTES, ROOT, _child_env,
-    decode_file, load_file_engines,
+    decode_file, decode_text, load_file_engines,
 )
 
 class FileEngineTests(unittest.TestCase):
@@ -50,6 +50,40 @@ class FileEngineTests(unittest.TestCase):
             self.assertFalse(received["isPartial"])
             self.assertEqual(json.loads(received["rawText"]), expected)
             self.assertEqual(received["structuredJson"], expected)
+
+    @unittest.skipUnless(importlib.util.find_spec("Crypto") is not None,
+                         "PyCryptodome absent in dependency-free C1 checks")
+    def test_ultra_custom_file_and_text_password_contract(self):
+        """Only verified Ultra Custom vectors can trigger and unlock UAP1."""
+        fixture=json.loads((ROOT/"tests/golden/ultra_custom_52_vectors.json").read_text("utf-8"))
+        vectors={entry["name"]:entry["data"] for entry in fixture["vectors"]}
+        password=fixture["password"]
+        for name in ("single-password","bundle-mixed-password"):
+            raw=vectors[name].encode("utf-8")
+            with self.subTest(name=name), self.assertRaises(DecodeFailure) as caught:
+                decode_file("ua",raw)
+            self.assertEqual(caught.exception.code,"PASSWORD_REQUIRED")
+            with self.assertRaises(DecodeFailure) as caught:
+                decode_file("ua",raw,credentials={"password":"incorrect"})
+            self.assertEqual(caught.exception.code,"AUTH_FAILED")
+            decoded=decode_file("ua",raw,credentials={"password":password})
+            self.assertEqual(decoded["status"],"success")
+            self.assertIsNotNone(decoded["structuredJson"])
+        link="ua://"+vectors["link-password"]
+        with self.assertRaises(DecodeFailure) as caught:
+            decode_text(link)
+        self.assertEqual(caught.exception.code,"PASSWORD_REQUIRED")
+        with self.assertRaises(DecodeFailure) as caught:
+            decode_text(link,credentials={"password":"incorrect"})
+        self.assertEqual(caught.exception.code,"AUTH_FAILED")
+        decoded=decode_text(link,credentials={"password":password})
+        self.assertEqual(decoded["status"],"success")
+        with self.assertRaises(DecodeFailure) as caught:
+            decode_text("tls://abcd",credentials={"password":password})
+        self.assertEqual(caught.exception.code,"INVALID_CREDENTIALS")
+        with self.assertRaises(DecodeFailure) as caught:
+            decode_file("npvs",b"unrelated",credentials={"password":password})
+        self.assertEqual(caught.exception.code,"CREDENTIALS_NOT_ALLOWED")
 
     def test_subprocess_environment_removes_secrets(self):
         os.environ["CLOUD_WORKER_TOKEN"] = "private-test-only-do-not-ship"
