@@ -18,6 +18,9 @@ jobs:
     timeout-minutes: 60
     strategy:
       fail-fast: false
+      # These are expensive independent Android emulators. Run one at a time
+      # to prevent KVM/host-memory pressure and avoid saturated Actions.
+      max-parallel: 1
       matrix:
         api-level: [35, 36]
     steps:
@@ -34,6 +37,11 @@ jobs:
           set -euo pipefail
           MANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -n 1)"
           "$MANAGER" --install "platforms;android-36" "build-tools;35.0.0" "cmake;3.22.1" "ndk;27.2.12479018"
+      - name: Enable hardware acceleration (same proven setup as Android parity CI)
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
       - name: Android 15/16 actual UI window inset assertions
         uses: reactivecircus/android-emulator-runner@v2
         env:
@@ -43,5 +51,14 @@ jobs:
           target: google_apis
           arch: x86_64
           profile: pixel_6
+          cores: 2
+          ram-size: 2048M
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          script: cd android && gradle --no-daemon :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.ghostdeveloper.spdecode.PlayEdgeToEdgeInstrumentedTest
+          script: |
+            adb logcat -c || true
+            if ! (cd android && gradle --no-daemon :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.ghostdeveloper.spdecode.PlayEdgeToEdgeInstrumentedTest); then
+              echo "::error::Android instrumentation failed; relevant emulator logs follow"
+              adb logcat -d -v time -t 400 | grep -E 'AndroidRuntime|FATAL EXCEPTION|Instrumentation|com.ghostdeveloper.spdecode|TEST|Process crashed' | tail -n 110 || true
+              exit 1
+            fi

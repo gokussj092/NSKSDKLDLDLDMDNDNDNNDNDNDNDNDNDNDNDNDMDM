@@ -70,7 +70,7 @@ internal fun LanguageSelectionScreen(
         Text(stringResource(R.string.language_pick_description),
             color=LanguageSecondary,fontSize=13.sp,lineHeight=19.sp)
         LazyColumn(
-            modifier=Modifier.fillMaxSize(),
+            modifier=Modifier.fillMaxSize().testTag("settings_language_list"),
             contentPadding=PaddingValues(bottom=20.dp),
             verticalArrangement=Arrangement.spacedBy(8.dp),
         ) {

@@ -19,7 +19,7 @@ import org.junit.runner.RunWith
 class LocaleSwitchInstrumentedTest {
     @get:Rule val ui=createAndroidComposeRule<MainActivity>()
 
-    @Test fun selectingSpanishPreservesDecodedSessionInMemory() {
+    @Test fun changingLanguagePreservesDecodedSessionInMemory() {
         val ctx=ui.activity
         ui.waitUntil(10000) {
             ui.onAllNodesWithContentDescription(ctx.getString(R.string.settings))
@@ -40,11 +40,16 @@ class LocaleSwitchInstrumentedTest {
             }
             ui.waitForIdle()
             ui.onNodeWithText(ctx.getString(R.string.language_title)).performClick()
-            ui.onNodeWithText("Español").performClick()
-            ui.waitUntil(10000){
+            // Select a DIFFERENT language: tapping the currently-selected
+            // option deliberately does not recreate the Activity.
+            val target=if(before=="es")"en" else "es"
+            val expected=if(target=="es")"Ajustes" else "Settings"
+            ui.onNodeWithText(if(target=="es")"Español" else "English")
+                .performClick()
+            ui.waitUntil(20_000){
                 ui.activity.getSharedPreferences("spdecode-ui-preferences",Context.MODE_PRIVATE)
-                    .getString("language","")=="es" &&
-                ui.activity.getString(R.string.settings_title)=="Ajustes"
+                    .getString("language","")==target &&
+                ui.activity.getString(R.string.settings_title)==expected
             }
             val active=ViewModelProvider(ui.activity)[DecodeSessionViewModel::class.java]
             assertEquals(sample.rawText,active.current?.rawText)

@@ -1,5 +1,5 @@
 name: SP-DECODE private Cloud preproduction APK
-# Rebuild from a single consolidated follow-up fixing Cloud UI generation anchors.
+# Signed APK only. Rebuild after consolidated Android UI/emulator regression repairs.
 on:
   push:
     branches: ["feat/austroplus-vpn-13-0-1-decoders"]
