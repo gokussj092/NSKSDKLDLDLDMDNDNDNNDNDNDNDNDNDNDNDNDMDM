@@ -14,6 +14,7 @@ internal object CloudUserErrors {
     private fun resource(cause:Throwable):Int {
         if(cause is CloudDecodeClient.Failure) {
             return when(cause.code) {
+                "NPVS_PROTECTION_UNSUPPORTED" -> R.string.npvs_private_key_unsupported
                 "PASSWORD_REQUIRED" -> R.string.cloud_failure_password
                 "HWID_REQUIRED" -> R.string.cloud_failure_hwid
                 "HWID_PASSWORD_REQUIRED" -> R.string.cloud_failure_both

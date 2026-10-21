@@ -40,7 +40,7 @@ class CloudC8ClientRouting(unittest.TestCase):
                 self.assertIn(f'"{scheme}://"', bridge)
         activity = (ANDROID / "MainActivity.kt").read_text("utf-8")
         self.assertIn('CloudTextFormats.identify(userText) else null', activity)
-        self.assertIn('cloudClient.decodeText(userText)', activity)
+        self.assertIn('cloudClient.decodeText(userText,password)', activity)
         self.assertIn('CloudFileFormats.detect(name) else null', activity)
         self.assertIn('cloudClient.decodeFile(supported.suffix,input', activity)
         self.assertIn('BuildConfig.SPDECODE_CLOUD_ENABLED', activity)

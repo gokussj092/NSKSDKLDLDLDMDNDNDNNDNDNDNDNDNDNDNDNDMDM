@@ -900,7 +900,7 @@ private fun ServerVpnScreen(
                     else R.string.server_vpn_unavailable),
                     color=Secondary,fontSize=13.sp)
                 if(catalogUnavailable && !catalogLoading) {
-                    Text(stringResource(R.string.server_vpn_manual_refresh),
+                    Text(stringResource(R.string.server_vpn_retry),
                         color=Secondary,fontSize=12.sp)
                 }
             }else if(visibleApps.isEmpty()) {

@@ -155,6 +155,21 @@ def _is_legacy_aro(contents: bytes) -> bool:
         return False
 
 
+def _unsupported_npvs_protection(contents: bytes) -> bool:
+    """Only classify genuine v5 NPVS envelopes with an alternative key method.
+
+    Header inspection does not decrypt data, invent credentials, or infer that
+    unrelated corrupt files are protected by a private/public key.
+    """
+    if len(contents)<62 or contents[:4]!=b"NPVS" or contents[4]!=5:
+        return False
+    size=int.from_bytes(contents[5:9],"big")
+    if not 135<=size<=262144 or 9+size+80>len(contents):
+        return False
+    header=contents[9:9+size]
+    return header[0]!=1 or header[50]!=2
+
+
 def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS, credentials: dict | None = None, full_hat: bool = False) -> dict:
     """Execute one canonical file engine. The caller must authenticate first."""
     if not isinstance(suffix, str) or suffix not in load_runtime_file_engines():
@@ -165,6 +180,8 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
         raise DecodeFailure("INPUT_TOO_LARGE")
     if not isinstance(timeout, int) or timeout < 1 or timeout > TIMEOUT_SECONDS:
         raise DecodeFailure("INVALID_REQUEST")
+    if suffix=="npvs" and _unsupported_npvs_protection(contents):
+        raise DecodeFailure("NPVS_PROTECTION_UNSUPPORTED")
     engine = load_runtime_file_engines()[suffix]
     if suffix == "sks":
         # Historical SocksIP exports use a JSON d/v envelope. Fenix imports

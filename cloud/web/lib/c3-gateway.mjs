@@ -21,6 +21,7 @@ const ERROR_MESSAGES = Object.freeze({
   HWID_PASSWORD_REQUIRED:"Se requieren contraseña y HWID.",
   AUTH_FAILED:"No se pudo autenticar el archivo.",
   DECODE_FAILED:"No se pudo descifrar el archivo.",
+  NPVS_PROTECTION_UNSUPPORTED:"Este archivo NPVS utiliza una protección por contraseña o clave que aún no está implementada.",
   ENGINE_TIMEOUT:"El motor agotó el tiempo disponible.",
   ENGINE_UNAVAILABLE:"Motor temporalmente no disponible.",
   OUTPUT_TOO_LARGE:"Resultado demasiado grande.",

@@ -1040,8 +1040,9 @@ class MainActivity : ComponentActivity() {
                         }.getOrDefault("")
                         // Do not label any Cloud NPVS failure a "private key"
                         // failure unless the worker explicitly reports that.
-                        if(!BuildConfig.SPDECODE_CLOUD_ENABLED &&
-                            filename.endsWith(".npvs",ignoreCase=true))
+                        if((prepared?.filename?:filename).endsWith(".npvs",ignoreCase=true) &&
+                            cause is CloudDecodeClient.Failure &&
+                            cause.code=="NPVS_PROTECTION_UNSUPPORTED")
                             failedNpvs=true
                         if((prepared?.filename?:filename).endsWith(".hc",ignoreCase=true) &&
                             prepared?.requirements?.requiresCredentials==true)failedProtectedHc=true

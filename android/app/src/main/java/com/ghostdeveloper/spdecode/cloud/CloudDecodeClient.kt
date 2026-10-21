@@ -206,7 +206,21 @@ internal class CloudDecodeClient(context: Context) {
             throw IOException("CLOUD_MISSING_RESULT")
         val text = response.getString("rawText")
         if (text.isBlank()) throw IOException("CLOUD_EMPTY_RESULT")
-        if (text.length > 4 * 1024 * 1024) throw IOException("CLOUD_RESULT_TOO_LARGE")
+        val isMkk=endpoint=="/api/v1/server-vpn/decode" &&
+            payload.optString("id")=="mkk-hyper"
+        val maximum=if(isMkk)32*1024*1024 else 4*1024*1024
+        if(text.length>maximum || text.toByteArray(Charsets.UTF_8).size>maximum)
+            throw IOException("CLOUD_RESULT_TOO_LARGE")
+        if(isMkk) {
+            // A large MKK result must be a complete JSON document, never an
+            // HTML response, truncated result or arbitrary diagnostic string.
+            val document=try{JSONObject(text)}
+                catch(_:Exception){throw IOException("CLOUD_INVALID_JSON")}
+            if(document.optString("provider")!="mkk-hyper" ||
+                document.optJSONArray("sources")?.length()!=4 ||
+                response.optJSONObject("structuredJson")?.optString("provider")!="mkk-hyper")
+                throw IOException("CLOUD_INVALID_JSON")
+        }
         return Decoded(text,response.optInt("sourceBytes",0).takeIf { it > 0 })
     }
 

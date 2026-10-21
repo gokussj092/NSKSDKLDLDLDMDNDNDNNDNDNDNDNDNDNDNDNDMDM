@@ -83,7 +83,7 @@ class C8WorkerIntegrationTests(unittest.TestCase):
             sample=Path(folder)/"input.bin"
             sample.write_bytes(b"synthetic")
             output=io.StringIO()
-            with patch.object(bridge,"decode",return_value="X"*(4*1024*1024+1)), \
+            with patch.object(bridge,"decode",return_value="X"*(32*1024*1024+1)), \
                  patch.object(sys,"argv",["catalog_vpn_bridge.py","mkk-hyper",str(sample)]), \
                  patch("sys.stdout",output):
                 self.assertEqual(bridge.main(),3)

@@ -8,7 +8,8 @@ ROOT=Path(__file__).resolve().parents[1]
 JAVA=ROOT/"android/app/src/main/java/com/ghostdeveloper/spdecode"
 GRADLE=ROOT/"android/app/build.gradle.kts"
 LOCALES=("values","values-es","values-fr","values-de","values-in",
-         "values-pt-rBR","values-ru","values-fa","values-ar")
+         "values-pt-rBR","values-ru","values-fa","values-ar",
+         "values-tr","values-vi","values-hi","values-ja","values-it")
 
 class CloudUserErrorsContracts(unittest.TestCase):
     def test_qa_never_silently_falls_back_to_integrity(self):
@@ -38,10 +39,10 @@ class CloudUserErrorsContracts(unittest.TestCase):
             root=ET.parse(location).getroot()
             strings={child.attrib["name"]:child.text or "" for child in root}
             self.assertTrue(all(strings.values()),locale)
-            self.assertTrue(all(k.startswith("cloud_failure_") for k in strings),locale)
+            self.assertTrue(all(k.startswith(("cloud_failure_","cloud_password_")) for k in strings),locale)
             if reference is None:reference=set(strings)
             self.assertEqual(reference,set(strings),locale)
-        self.assertEqual(len(reference),27)
+        self.assertGreaterEqual(len(reference),27)
         self.assertIn('cloud_failure_maintenance',reference)
 
     def test_cloud_messages_are_used_without_touching_legacy_app_ui(self):

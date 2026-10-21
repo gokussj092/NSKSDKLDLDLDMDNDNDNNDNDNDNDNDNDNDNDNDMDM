@@ -42,8 +42,8 @@ class ServerVpnTransportTests(unittest.TestCase):
             self.assertEqual(error["error"]["code"],"INPUT_TOO_LARGE")
 
     def test_mkk_bundle_limit_is_bounded_without_shrinking_other_providers(self):
-        self.assertEqual(worker.MAX_MKK_BUNDLE_BYTES,12*1024*1024)
-        self.assertLessEqual(worker.MAX_MKK_BUNDLE_BYTES,worker.MAX_INPUT_BYTES)
+        self.assertEqual(worker.MAX_MKK_BUNDLE_BYTES,45*1024*1024)
+        self.assertGreater(worker.MAX_MKK_BUNDLE_BYTES,worker.MAX_INPUT_BYTES)
         self.assertGreaterEqual(worker.MAX_SERVER_VPN_JSON_BYTES,worker.MAX_JSON_BYTES)
 
 

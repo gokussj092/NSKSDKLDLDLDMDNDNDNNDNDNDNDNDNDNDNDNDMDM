@@ -8,6 +8,8 @@
 namespace {
 constexpr size_t kMaxRequestBytes = 12 * 1024 * 1024;
 constexpr size_t kMaxReplyBytes = 6 * 1024 * 1024;
+// Server-VPN MKK only: the signed JSON envelope carries both raw and structured data.
+constexpr size_t kMaxMkkReplyBytes = 96 * 1024 * 1024;
 constexpr jint kConnectTimeoutMs = 10000;
 constexpr jint kReadTimeoutMs = 25000;
 constexpr jint kNurCatalogReadTimeoutMs = 165000; // heavy server-side Argon2id
@@ -210,13 +212,16 @@ jstring post(JNIEnv* env,jstring pathArg,jstring bodyArg,jstring bearerArg,jstri
     }
     jbyteArray buffer=env->NewByteArray(8192);
     std::string result;
+    const size_t replyCap=(path=="/api/v1/server-vpn/decode" &&
+        body.find("mkk-hyper")!=std::string::npos)
+        ? kMaxMkkReplyBytes : kMaxReplyBytes;
     bool oversize=false,readFailed=false;
     for(;;) {
         const jint n=env->CallIntMethod(input,read,buffer,0,8192);
         if(clearException(env)){readFailed=true;break;}
         if(n<0)break;
         if(n==0)continue;
-        if(result.size()+static_cast<size_t>(n)>kMaxReplyBytes){oversize=true;break;}
+        if(result.size()+static_cast<size_t>(n)>replyCap){oversize=true;break;}
         const size_t offset=result.size();
         result.resize(offset+static_cast<size_t>(n));
         env->GetByteArrayRegion(buffer,0,n,reinterpret_cast<jbyte*>(&result[offset]));

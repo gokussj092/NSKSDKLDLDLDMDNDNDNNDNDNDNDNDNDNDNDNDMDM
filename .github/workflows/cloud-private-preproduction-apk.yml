@@ -1,0 +1,116 @@
+name: SP-DECODE private Cloud preproduction APK
+on:
+  push:
+    branches: ["feat/austroplus-vpn-13-0-1-decoders"]
+    paths: [".github/workflows/cloud-private-preproduction-apk.yml"]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: spdecode-private-preprod-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  private-signed-apk:
+    if: github.repository == 'Gh0stDeveloper/SP-DECODE' && github.ref == 'refs/heads/feat/austroplus-vpn-13-0-1-decoders'
+    runs-on: ubuntu-latest
+    timeout-minutes: 65
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.11.1"
+      - name: Install required Android build toolchain
+        run: |
+          set -euo pipefail
+          MANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -n 1)"
+          "$MANAGER" --install "platforms;android-36" "build-tools;35.0.0" "platform-tools" "cmake;3.22.1" "ndk;27.2.12479018"
+      - name: Restore permanent signing certificate from existing Actions Secrets
+        env:
+          STORE_BASE64: ${{ secrets.SPDECODE_SIGNING_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.SPDECODE_SIGNING_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.SPDECODE_SIGNING_KEY_PASSWORD }}
+          PLAY_CERT: ${{ secrets.SPDECODE_PLAY_APP_SIGNER_SHA256 || vars.SPDECODE_PLAY_APP_SIGNER_SHA256 }}
+        run: |
+          set -euo pipefail
+          test -n "$STORE_BASE64" && test -n "$STORE_PASSWORD" && test -n "$KEY_ALIAS" && test -n "$KEY_PASSWORD" || {
+            echo "::error::Permanent GitHub Actions signing secrets are required. Do not generate temporary keys."
+            exit 1
+          }
+          umask 077
+          printf '%s' "$STORE_BASE64" | base64 --decode > "$RUNNER_TEMP/spdecode-private-preprod.p12"
+          keytool -list -storetype PKCS12 -keystore "$RUNNER_TEMP/spdecode-private-preprod.p12" \
+            -storepass:env STORE_PASSWORD -alias "$KEY_ALIAS" >/dev/null
+          CERT="$(keytool -exportcert -storetype PKCS12 -keystore "$RUNNER_TEMP/spdecode-private-preprod.p12" \
+            -storepass:env STORE_PASSWORD -alias "$KEY_ALIAS" | sha256sum | cut -d ' ' -f1)"
+          if [[ "$CERT" != "0fa9f07f2c47464925f3a7b222c9a39ef887738f678b9c918ec6c4fb96162260" ]]; then
+            echo "::error::Permanent APK signing identity does not match the trusted original certificate"
+            exit 1
+          fi
+          if [[ -n "$PLAY_CERT" && ! "$PLAY_CERT" =~ ^[0-9a-fA-F]{64}$ ]]; then
+            echo "::error::Invalid Play App Signing certificate pin"; exit 1
+          fi
+          echo "SPDECODE_RELEASE_STORE_FILE=$RUNNER_TEMP/spdecode-private-preprod.p12" >> "$GITHUB_ENV"
+          echo "SPDECODE_TRUSTED_SIGNER_SHA256=$CERT" >> "$GITHUB_ENV"
+          echo "SPDECODE_PLAY_APP_SIGNER_SHA256=$PLAY_CERT" >> "$GITHUB_ENV"
+      - name: Assert unchanged app identity and safe preproduction configuration
+        run: |
+          set -euo pipefail
+          grep -Fq 'versionCode = 27' android/app/build.gradle.kts
+          grep -Fq 'versionName = "1.1.6"' android/app/build.gradle.kts
+          grep -Fq 'applicationId = "com.ghostdeveloper.spdecode"' android/app/build.gradle.kts
+          test ! -e android/app/src/main/assets/adi-registration.properties
+      - name: Build Cloud preproduction APK only; never build an AAB
+        working-directory: android
+        env:
+          SPDECODE_CLOUD_API_BASE_URL: https://api.spdecode.xyz
+          SPDECODE_CLOUD_RELEASE: "true"
+          SPDECODE_CLOUD_QA_BUILD: "false"
+          SPDECODE_ADI_VERIFICATION_BUILD: "false"
+          SPDECODE_RELEASE_STORE_PASSWORD: ${{ secrets.SPDECODE_SIGNING_STORE_PASSWORD }}
+          SPDECODE_RELEASE_KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
+          SPDECODE_RELEASE_KEY_PASSWORD: ${{ secrets.SPDECODE_SIGNING_KEY_PASSWORD }}
+        run: gradle --no-daemon :app:assembleRelease
+      - name: Validate permanent signature, APK identity, Cloud origin and output
+        run: |
+          set -euo pipefail
+          APK=android/app/build/outputs/apk/release/app-release.apk
+          test -s "$APK"
+          test ! -e android/app/build/outputs/bundle/release/app-release.aab
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK" > "$RUNNER_TEMP/apk-cert.txt"
+          grep -Fi 'Signer #1 certificate SHA-256 digest: 0fa9f07f2c47464925f3a7b222c9a39ef887738f678b9c918ec6c4fb96162260' "$RUNNER_TEMP/apk-cert.txt" >/dev/null
+          "$ANDROID_HOME/build-tools/35.0.0/zipalign" -c -P 16 -v 4 "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" > "$RUNNER_TEMP/badging.txt"
+          grep -F "package: name='com.ghostdeveloper.spdecode'" "$RUNNER_TEMP/badging.txt"
+          grep -F "versionName='1.1.6'" "$RUNNER_TEMP/badging.txt"
+          grep -F "versionCode='27'" "$RUNNER_TEMP/badging.txt"
+          python3 tests/cloud_c5_apk_audit.py "$APK"
+          python3 - <<'PY'
+          from zipfile import ZipFile
+          apk='android/app/build/outputs/apk/release/app-release.apk'
+          with ZipFile(apk) as archive:
+              names=archive.namelist()
+              assert 'assets/adi-registration.properties' not in names
+              native=[x for x in names if x.endswith('/libspdecode.so')]
+              assert native and all(b'https://api.spdecode.xyz' in archive.read(x) for x in native)
+          PY
+          mkdir -p dist
+          cp "$APK" dist/SP-DECODE-v1.1.6-build27-CLOUD-PREPRODUCTION-PRIVATE.apk
+          (cd dist && sha256sum *.apk > SHA256SUMS.txt)
+          printf 'SP-DECODE PRIVATE Cloud preproduction\nVersion: 1.1.6 (27)\nPackage: com.ghostdeveloper.spdecode\nAPI: https://api.spdecode.xyz\nQA: disabled\nSigner: permanent release keystore\nSource commit: %s\nPlay AAB: not built\n' "$GITHUB_SHA" > dist/BUILD_INFO.txt
+      - name: Upload PRIVATE signed APK to this Actions run only
+        uses: actions/upload-artifact@v4
+        with:
+          name: SP-DECODE-v1.1.6-27-PRIVATE-PREPRODUCTION-SIGNED-APK
+          path: dist/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Delete temporary keystore file
+        if: always()
+        run: rm -f "$RUNNER_TEMP/spdecode-private-preprod.p12"

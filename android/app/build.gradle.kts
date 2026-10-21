@@ -444,7 +444,7 @@ android {
                 arguments += "-DSPDECODE_CLOUD_ORIGIN=$cloudOrigin"
             }
         }
-        resourceConfigurations += listOf("en", "es", "pt-rBR", "ar", "fa", "fr", "in", "ru", "de")
+        resourceConfigurations += listOf("en", "es", "pt-rBR", "ar", "fa", "fr", "in", "ru", "de", "tr", "vi", "hi", "ja", "it")
     }
     buildFeatures { compose = true; buildConfig = true }
     externalNativeBuild {

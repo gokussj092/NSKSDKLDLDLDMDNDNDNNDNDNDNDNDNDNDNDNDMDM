@@ -29,7 +29,8 @@ class NurEndpointPrivacyTest(unittest.TestCase):
         start = source.index("private fun ServerVpnScreen(")
         end = source.index("@Composable\nprivate fun CardText", start)
         screen = source[start:end]
-        self.assertNotIn("OutlinedTextField", screen)
+        # A provider search is expected; only raw catalog URLs remain prohibited.
+        self.assertIn("OutlinedTextField", screen)
         self.assertNotIn("nur_servers_catalog_url", screen)
         self.assertNotIn("var url", screen)
         self.assertIn("Button(onClick=onDecodeCatalog", screen)

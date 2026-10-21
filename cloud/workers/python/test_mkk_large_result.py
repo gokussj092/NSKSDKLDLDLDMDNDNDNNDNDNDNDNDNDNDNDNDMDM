@@ -9,12 +9,19 @@ import sys
 ROOT=Path(__file__).resolve().parents[3]
 sys.path.insert(0,str(ROOT))
 sys.path.insert(0,str(Path(__file__).resolve().parent))
-from cloud.workers.python import mkk_bundle, catalog_vpn_bridge
+import importlib.util
 import engine
 import server
 
 
-def bundle() -> bytes:
+def _load_mkk():
+    if importlib.util.find_spec("Crypto") is None:
+        raise unittest.SkipTest("Cryptographic engine is not installed in this dependency-free CI job")
+    from cloud.workers.python import mkk_bundle, catalog_vpn_bridge
+    return mkk_bundle, catalog_vpn_bridge
+
+
+def bundle(mkk_bundle) -> bytes:
     entry=base64.b64encode(b'{"sample":true}').decode("ascii")
     return json.dumps({
         "kind":mkk_bundle.KIND,
@@ -25,10 +32,11 @@ def bundle() -> bytes:
 
 class MkkHyperLargeResultTests(unittest.TestCase):
     def test_large_json_preserves_all_four_full_sources(self):
+        mkk_bundle, catalog_vpn_bridge=_load_mkk()
         big={"servers":[{"payload":"x"*(1024*1024+100)}]}
         with patch.object(mkk_bundle.codec,"decode",return_value=big) as decode:
-            rendered=mkk_bundle.decode(bundle())
-            bridged=catalog_vpn_bridge.decode("mkk-hyper",bundle())
+            rendered=mkk_bundle.decode(bundle(mkk_bundle))
+            bridged=catalog_vpn_bridge.decode("mkk-hyper",bundle(mkk_bundle))
         self.assertGreater(len(rendered.encode("utf-8")),4*1024*1024)
         self.assertEqual(json.loads(rendered),json.loads(bridged))
         value=json.loads(rendered)
@@ -41,9 +49,10 @@ class MkkHyperLargeResultTests(unittest.TestCase):
             self.assertEqual(source["data"],big)
 
     def test_non_json_source_is_rejected_not_forwarded_as_text(self):
+        mkk_bundle,_=_load_mkk()
         with patch.object(mkk_bundle.codec,"decode",return_value="<html>bad</html>"):
             with self.assertRaisesRegex(ValueError,"INVALID_SOURCE_RESULT"):
-                mkk_bundle.decode(bundle())
+                mkk_bundle.decode(bundle(mkk_bundle))
 
     def test_mkk_budget_is_route_specific(self):
         self.assertEqual(engine.MAX_OUTPUT_BYTES,4*1024*1024)
