@@ -52,13 +52,14 @@ internal class ServerVpnNewBadges(
         for((key,value) in preferences.all) {
             if(!key.startsWith(PREFIX))continue
             val born=value as? Long
-            val remaining=if(born==null) null else remaining(born,nowMillis)
-            if(remaining==null) {
+            val left=if(born==null) null else remaining(born,nowMillis)
+            if(left==null) {
                 remove.remove(key)
                 hasRemovals=true
             }else if(key.removePrefix(PREFIX) in valid) {
                 active+=key.removePrefix(PREFIX)
-                nextExpiry=if(nextExpiry==null)remaining else minOf(nextExpiry,remaining)
+                val previous=nextExpiry
+                nextExpiry=if(previous==null)left else minOf(previous,left)
             }
         }
         if(hasRemovals)remove.apply()
