@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import com.ghostdeveloper.spdecode.cloud.CloudNewsNotice
 import com.ghostdeveloper.spdecode.cloud.ServerVpnApp
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -802,67 +803,176 @@ private fun ServerVpnScreen(
 ) {
     var selected by rememberSaveable { mutableStateOf(false) }
     var selectedId by rememberSaveable { mutableStateOf("") }
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())
-        .padding(horizontal=20.dp,vertical=12.dp),
-        verticalArrangement=Arrangement.spacedBy(14.dp)) {
-        Text(stringResource(R.string.server_vpn),fontSize=24.sp,
-            fontWeight=FontWeight.Bold,color=White)
+    var query by rememberSaveable { mutableStateOf("") }
+    var filter by rememberSaveable { mutableStateOf(ServerVpnListFilter.ALL) }
+    val context=LocalContext.current
+    val favoritesStore=remember(context) { ServerVpnFavorites(context) }
+    var favoriteIds by remember(favoritesStore) { mutableStateOf(favoritesStore.read()) }
+    val visibleApps=remember(apps,query,filter,favoriteIds) {
+        ServerVpnDirectory.visible(apps,query,filter,favoriteIds)
+    }
+    Column(Modifier.fillMaxSize().padding(horizontal=20.dp,vertical=12.dp),
+        verticalArrangement=Arrangement.spacedBy(12.dp)) {
+        Row(verticalAlignment=Alignment.CenterVertically) {
+            Text(stringResource(R.string.server_vpn),fontSize=24.sp,
+                fontWeight=FontWeight.Bold,color=White,modifier=Modifier.weight(1f))
+            if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
+                IconButton(
+                    onClick=onRefresh,
+                    enabled=!busy && !catalogLoading,
+                    modifier=Modifier.size(44.dp)
+                        .background(Raised,RoundedCornerShape(50))
+                        .testTag("server_vpn_manual_refresh"),
+                ) {
+                    if(catalogLoading) {
+                        CircularProgressIndicator(
+                            modifier=Modifier.size(20.dp),strokeWidth=2.dp,color=White)
+                    }else{
+                        Icon(Icons.Outlined.Refresh,
+                            stringResource(R.string.server_vpn_manual_refresh),
+                            tint=if(busy)Secondary else White,
+                            modifier=Modifier.size(22.dp))
+                    }
+                }
+            }
+        }
         Text(stringResource(R.string.server_vpn_description),fontSize=13.sp,
             lineHeight=20.sp,color=Secondary)
         if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
+            OutlinedTextField(
+                value=query,onValueChange={query=it},
+                label={Text(stringResource(R.string.server_vpn_search_hint))},
+                leadingIcon={Icon(Icons.Outlined.Search,null)},
+                trailingIcon={
+                    if(query.isNotEmpty()) IconButton(onClick={query=""}) {
+                        Icon(Icons.Outlined.Close,stringResource(R.string.close))
+                    }
+                },
+                singleLine=true,modifier=Modifier.fillMaxWidth(),
+                shape=RoundedCornerShape(13.dp),
+            )
+            FlowRow(
+                horizontalArrangement=Arrangement.spacedBy(7.dp),
+                verticalArrangement=Arrangement.spacedBy(4.dp),
+            ) {
+                FilterChip(
+                    selected=filter==ServerVpnListFilter.ALL,
+                    onClick={filter=ServerVpnListFilter.ALL},
+                    label={Text(stringResource(R.string.server_vpn_filter_all))},
+                )
+                FilterChip(
+                    selected=filter==ServerVpnListFilter.ENABLED,
+                    onClick={filter=ServerVpnListFilter.ENABLED},
+                    label={Text(stringResource(R.string.server_vpn_filter_enabled))},
+                )
+                FilterChip(
+                    selected=filter==ServerVpnListFilter.FAVORITES,
+                    onClick={filter=ServerVpnListFilter.FAVORITES},
+                    label={Text(stringResource(R.string.server_vpn_filter_favorites))},
+                    leadingIcon={Icon(Icons.Outlined.StarBorder,null,
+                        modifier=Modifier.size(16.dp))},
+                )
+            }
+            if(catalogLoading) {
+                Text(stringResource(R.string.server_vpn_catalog_refreshing),
+                    color=Secondary,fontSize=12.sp)
+            }
             if(apps.isEmpty()) {
                 Text(stringResource(if(catalogLoading) R.string.server_vpn_loading
                     else R.string.server_vpn_unavailable),
                     color=Secondary,fontSize=13.sp)
                 if(catalogUnavailable && !catalogLoading) {
-                    Button(onClick=onRefresh,enabled=!busy,
-                        modifier=Modifier.fillMaxWidth(),
-                        shape=RoundedCornerShape(13.dp),
-                        colors=ButtonDefaults.buttonColors(containerColor=Raised,contentColor=White)) {
-                        Icon(Icons.Outlined.Refresh,null,modifier=Modifier.size(18.dp))
-                        Spacer(Modifier.width(8.dp))
-                        Text(stringResource(R.string.server_vpn_retry))
+                    Text(stringResource(R.string.server_vpn_manual_refresh),
+                        color=Secondary,fontSize=12.sp)
+                }
+            }else if(visibleApps.isEmpty()) {
+                Text(stringResource(R.string.server_vpn_no_matches),
+                    color=Secondary,fontSize=13.sp)
+            }else{
+                LazyColumn(
+                    modifier=Modifier.weight(1f),
+                    verticalArrangement=Arrangement.spacedBy(9.dp),
+                    contentPadding=PaddingValues(bottom=20.dp),
+                ) {
+                    items(visibleApps,key={it.id}) { app ->
+                        val expanded=selectedId==app.id
+                        Column(verticalArrangement=Arrangement.spacedBy(7.dp)) {
+                            Surface(
+                                modifier=Modifier.fillMaxWidth().clickable {
+                                    selectedId=if(expanded)"" else app.id
+                                },
+                                color=Panel,shape=RoundedCornerShape(15.dp),
+                                border=BorderStroke(1.dp,Outline),
+                            ) {
+                                Row(Modifier.padding(12.dp),
+                                    verticalAlignment=Alignment.CenterVertically) {
+                                    Surface(color=Raised,shape=RoundedCornerShape(13.dp),
+                                        modifier=Modifier.size(52.dp)) {
+                                        Box(contentAlignment=Alignment.Center) {
+                                            Image(bitmap=app.icon.asImageBitmap(),
+                                                contentDescription=app.name,
+                                                modifier=Modifier.size(36.dp))
+                                        }
+                                    }
+                                    Spacer(Modifier.width(12.dp))
+                                    Column(Modifier.weight(1f),
+                                        verticalArrangement=Arrangement.spacedBy(4.dp)) {
+                                        Text(app.name,color=White,fontSize=15.sp,
+                                            fontWeight=FontWeight.SemiBold,
+                                            maxLines=2,overflow=TextOverflow.Ellipsis)
+                                        Text(stringResource(if(app.decodeEnabled)
+                                            R.string.server_vpn_catalog_enabled
+                                            else R.string.server_vpn_catalog_disabled),
+                                            color=Secondary,fontSize=11.sp)
+                                    }
+                                    val isFavorite=app.id in favoriteIds
+                                    IconButton(
+                                        onClick={favoriteIds=favoritesStore.toggle(app.id)},
+                                        modifier=Modifier.size(42.dp),
+                                    ) {
+                                        Icon(if(isFavorite) Icons.Outlined.Star
+                                            else Icons.Outlined.StarBorder,
+                                            stringResource(if(isFavorite)
+                                                R.string.server_vpn_favorite_remove
+                                                else R.string.server_vpn_favorite_add),
+                                            tint=if(isFavorite) Amber else Secondary)
+                                    }
+                                    Icon(if(expanded) Icons.Outlined.ExpandLess
+                                        else Icons.Outlined.ChevronRight,
+                                        null,tint=Secondary,modifier=Modifier.size(20.dp))
+                                }
+                            }
+                            if(expanded) {
+                                Surface(color=Panel,shape=RoundedCornerShape(15.dp),
+                                    modifier=Modifier.fillMaxWidth()) {
+                                    Column(Modifier.padding(15.dp)) {
+                                        Button(
+                                            onClick={
+                                                if(app.id=="nur-tunnel")onDecodeCatalog()
+                                                else onDecodeApp(app.id)
+                                            },
+                                            enabled=!busy && app.decodeEnabled,
+                                            modifier=Modifier.fillMaxWidth()
+                                                .heightIn(min=50.dp),
+                                            shape=RoundedCornerShape(13.dp),
+                                            colors=ButtonDefaults.buttonColors(
+                                                containerColor=Raised,contentColor=White),
+                                        ) {
+                                            Icon(Icons.Outlined.CloudDownload,null,
+                                                modifier=Modifier.size(19.dp))
+                                            Spacer(Modifier.width(8.dp))
+                                            Text(stringResource(R.string.nur_servers_decode))
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
-            apps.forEach { app ->
-                val expanded=selectedId==app.id
-                Surface(modifier=Modifier.fillMaxWidth().clickable { selectedId=if(expanded)"" else app.id },
-                    color=Panel,shape=RoundedCornerShape(15.dp),
-                    border=BorderStroke(1.dp,Outline)) {
-                    Row(Modifier.padding(15.dp),verticalAlignment=Alignment.CenterVertically) {
-                        Surface(color=Raised,shape=RoundedCornerShape(13.dp),
-                            modifier=Modifier.size(52.dp)) {
-                            Box(contentAlignment=Alignment.Center) {
-                                Image(bitmap=app.icon.asImageBitmap(),contentDescription=app.name,
-                                    modifier=Modifier.size(36.dp))
-                            }
-                        }
-                        Spacer(Modifier.width(12.dp))
-                        Text(app.name,color=White,fontSize=16.sp,fontWeight=FontWeight.SemiBold,
-                            modifier=Modifier.weight(1f))
-                        Icon(if(expanded) Icons.Outlined.ExpandLess else Icons.Outlined.ChevronRight,
-                            null,tint=Secondary)
-                    }
-                }
-                if(expanded) {
-                    Surface(color=Panel,shape=RoundedCornerShape(15.dp),
-                        modifier=Modifier.fillMaxWidth()) {
-                        Column(Modifier.padding(15.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
-                            Button(onClick={if(app.id=="nur-tunnel")onDecodeCatalog() else onDecodeApp(app.id)},
-                                enabled=!busy && app.decodeEnabled,
-                                modifier=Modifier.fillMaxWidth().heightIn(min=50.dp),
-                                shape=RoundedCornerShape(13.dp),
-                                colors=ButtonDefaults.buttonColors(containerColor=Raised,contentColor=White)) {
-                                Icon(Icons.Outlined.CloudDownload,null,modifier=Modifier.size(19.dp))
-                                Spacer(Modifier.width(8.dp))
-                                Text(stringResource(R.string.nur_servers_decode))
-                            }
-                        }
-                    }
-                }
-            }
-        } else {
+        }else{
+            Column(Modifier.verticalScroll(rememberScrollState()),
+                verticalArrangement=Arrangement.spacedBy(14.dp)) {
         Surface(
             modifier=Modifier.fillMaxWidth().clickable { selected=!selected },
             shape=RoundedCornerShape(15.dp),color=Panel,
@@ -910,6 +1020,7 @@ private fun ServerVpnScreen(
                 }
             }
         }
+            }
         }
     }
 }
