@@ -28,4 +28,6 @@
     <string name="cloud_failure_partial">نتیجه ناقص یا نامعتبر است و نمایش داده نمی‌شود.</string>
     <string name="cloud_failure_general">عملیات کامل نشد. دوباره تلاش کنید یا با پشتیبانی تماس بگیرید.</string>
     <string name="cloud_failure_notice_title">درخواست انجام نشد</string>
+    <string name="cloud_password_title">رمز عبور پیکربندی لازم است</string>
+    <string name="cloud_password_description">%1$s با رمز عبور محافظت می‌شود. رمز عبور خروجی را وارد کنید. ذخیره نخواهد شد.</string>
 </resources>
