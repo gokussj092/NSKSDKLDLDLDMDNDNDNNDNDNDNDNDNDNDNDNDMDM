@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_search_hint">Buscar aplicativos VPN</string>
+    <string name="server_vpn_filter_all">Todos</string>
+    <string name="server_vpn_filter_enabled">Disponíveis</string>
+    <string name="server_vpn_filter_favorites">Favoritos</string>
+    <string name="server_vpn_favorite_add">Adicionar aos favoritos</string>
+    <string name="server_vpn_favorite_remove">Remover dos favoritos</string>
+    <string name="server_vpn_manual_refresh">Verificar catálogo agora</string>
+    <string name="server_vpn_catalog_refreshing">Verificando catálogo do servidor…</string>
+    <string name="server_vpn_no_matches">Nenhum aplicativo VPN corresponde à pesquisa ou aos filtros.</string>
+    <string name="server_vpn_catalog_enabled">Habilitado no catálogo</string>
+    <string name="server_vpn_catalog_disabled">Não habilitado no catálogo</string>
+</resources>
