@@ -10,7 +10,7 @@ import {providerAllowed} from "./c12-provider-controls.mjs";
 
 export async function decodeServerVpn(request,opts={}){
   if(!enabled())return notEnabled();
-  let redis,claims,lease=null,providerId="",downloadedBytes=0;
+  let redis,claims,lease=null,providerId="",downloadedBytes=0,started=null;
   try{
     redis=await (opts.storeProvider||store)();
     if(await maintenanceEnabled(redis))return failure("SERVICE_UNAVAILABLE",503);
@@ -26,6 +26,7 @@ export async function decodeServerVpn(request,opts={}){
     if(!providerEnabled(providerId) || !await providerAllowed(providerId))
       return failure("REMOTE_NOT_CONFIGURED",503);
     lease=randomUUID();
+    started=performance.now();
     if(!await reserveSlot(redis,claims.jti,lease))return failure("RATE_LIMITED",429);
     let bytes;
     if(providerId==="mkk-hyper"){
@@ -59,6 +60,8 @@ export async function decodeServerVpn(request,opts={}){
       if(!response.ok)errorCode=(await response.clone().json()).error?.code||"";
       await recordWorkerResult(redis,response.ok?"success":"failed",{
         kind:"server-vpn",format:providerId,bytes:bytes.length,errorCode,
+        latencyMs:performance.now()-started,
+        appVersion:request.headers.get("x-spdecode-app-version"),
       });
     }catch{}
     return response;
@@ -73,7 +76,8 @@ export async function decodeServerVpn(request,opts={}){
     };
     const code=error?.code||workerErrors[error?.message]||"SERVICE_UNAVAILABLE";
     if(redis&&lease)try{await recordWorkerResult(redis,"failed",{kind:"server-vpn",format:providerId,bytes:downloadedBytes,
-      errorCode:code});}catch{}
+      errorCode:code,latencyMs:started===null?null:performance.now()-started,
+      appVersion:request.headers.get("x-spdecode-app-version")});}catch{}
     if(code==="REMOTE_DECODER_FAILED")return failure(code,502);
     if(code==="OUTPUT_TOO_LARGE")return failure(code,413);
     if(error instanceof VpnProviderError){

@@ -140,3 +140,15 @@ body:has(.sp-admin-frame){background:#000;color:#f7f7f7}
 .sp-admin-ranked-track{height:8px;border-radius:999px;background:#323232;overflow:hidden}
 .sp-admin-ranked-track span{display:block;height:100%;background:#b4b4b4;border-radius:inherit}
 @media(max-width:820px){.sp-admin-charts-grid{grid-template-columns:1fr}}
+
+/* C14 observability: responsive, restrained monochrome controls and alerts. */
+.sp-admin-observability{margin-top:30px}
+.sp-admin-observability>.admin-report-toolbar{margin-bottom:18px}
+.sp-admin-observability .admin-report-card{min-width:0}
+.sp-admin-alert-list{display:grid;gap:10px;margin:15px 0}
+.sp-admin-alert-row{display:grid;grid-template-columns:minmax(130px,1fr) 1.2fr 1fr;align-items:center;gap:12px;
+ border:1px solid #484848;background:#1b1b1b;border-radius:9px;padding:12px}
+.sp-admin-alert-row strong{overflow-wrap:anywhere;color:#fff}
+.sp-admin-alert-row span{font-size:12px;color:#e7e7e7}
+.sp-admin-observability .admin-table{min-width:650px}
+@media(max-width:720px){.sp-admin-alert-row{grid-template-columns:1fr}}

@@ -7,6 +7,7 @@ import {admissionPolicy,setAdmissionPolicy} from "./c11-play-admission.mjs";
 import {providerOverview,updateProvider,PUBLIC_PROVIDER_IDS} from "./c12-provider-controls.mjs";
 import { ehiConfigured,nurConfigured } from "./c35-provider.mjs";
 import { jsonReply } from "./responses.mjs";
+import {readOpsReport,hostHealth} from "./c14-ops-observability.mjs";
 
 const error=(code,status)=>jsonReply({status:"error",error:{code}},status);
 const api=(body,status=200,headers={})=>jsonReply({status:"ok",...body},status,headers);
@@ -189,4 +190,23 @@ export async function resetErrorsRequest(request,options={}){
     return error(cause?.message,400);
   return error("SERVICE_UNAVAILABLE",503);
  }
+}
+
+/** Private operator-only observability; no endpoint, token, or payload leaves Redis. */
+export async function observabilityRequest(request,options={}){
+ if(!adminSettings().enabled)return error("ADMIN_DISABLED",503);
+ try{
+  const redis=await (options.storeProvider||opsStore)();
+  if(!await authenticateAdmin(redis,request))return error("UNAUTHORIZED",401);
+  const url=new URL(request.url),keys=[...url.searchParams.keys()];
+  if(keys.length>1||keys.some(k=>k!=="days"))return error("INVALID_REQUEST",400);
+  const days=url.searchParams.get("days")||"7";
+  if(!["1","7"].includes(days))return error("INVALID_REQUEST",400);
+  const [report,observability,health]=await Promise.all([
+   usageReport(redis,Number(days)),
+   readOpsReport(redis,Number(days)),
+   hostHealth(redis,{fetchImpl:options.fetchImpl||fetch}),
+  ]);
+  return api({report,observability,health},200,{"Cache-Control":"private, no-store"});
+ }catch{return error("SERVICE_UNAVAILABLE",503);}
 }

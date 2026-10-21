@@ -278,7 +278,7 @@ def _document(raw: bytes) -> dict[str, Any]:
 def decode(data: bytes | str, *, hwid: str = "", password: str = "",
            signer_sha256: str = APK_SIGNER_SHA256,
            audit: dict[str, Any] | None = None) -> dict[str, Any]:
-    """Return the original complete JSON, preserving metadata and all fields."""
+    """Return verified JSON minus display-only bannerImage fields at any depth."""
     for value in (hwid, password, signer_sha256):
         if not isinstance(value, str) or len(value) > 4096:
             raise DecodeError("CREDENTIAL_FORMAT", "Invalid credential type or length.")
@@ -303,6 +303,17 @@ def decode(data: bytes | str, *, hwid: str = "", password: str = "",
     result = _document(raw)
     if info.get("authenticated") and not (isinstance(result.get("meta"), dict) and isinstance(result.get("config"), dict)):
         raise DecodeError("WRONG_DOCUMENT", "Encrypted export must contain a meta/config envelope.")
+    # bannerImage is a display-only embedded image (often very large Base64).
+    # Remove by exact JSON key at every nesting level, regardless of its value.
+    # The authenticated structure has already passed strict JSON validation.
+    pending = [result]
+    while pending:
+        item = pending.pop()
+        if isinstance(item, dict):
+            item.pop("bannerImage", None)
+            pending.extend(item.values())
+        elif isinstance(item, list):
+            pending.extend(item)
     if audit is not None:
         audit.update(info)
     return result

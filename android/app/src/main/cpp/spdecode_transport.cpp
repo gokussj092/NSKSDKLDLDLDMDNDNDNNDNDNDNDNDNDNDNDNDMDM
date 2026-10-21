@@ -90,12 +90,17 @@ bool setHeader(JNIEnv* env,jobject conn,jclass cls,jmethodID method,
 // C++ owns network initiation, route verification, HTTP method, request headers,
 // size limits and reading. Android's HttpsURLConnection provides platform TLS
 // certificate/hostname verification; certificate validation is never disabled.
-jstring post(JNIEnv* env,jstring pathArg,jstring bodyArg,jstring bearerArg) {
+jstring post(JNIEnv* env,jstring pathArg,jstring bodyArg,jstring bearerArg,jstring versionArg) {
     const std::string base=SPDECODE_CLOUD_ORIGIN;
     const std::string path=utf(env,pathArg);
     const std::string body=utf(env,bodyArg);
     const std::string bearer=utf(env,bearerArg);
-    if (!safeBase(base) || !safePath(path) || !safeBearer(bearer) ||
+    const std::string clientVersion=utf(env,versionArg);
+    const bool validVersion=clientVersion.size()>=5 && clientVersion.size()<=11 &&
+        std::all_of(clientVersion.begin(),clientVersion.end(),[](unsigned char c){
+            return std::isdigit(c) || c=='.';
+        }) && std::count(clientVersion.begin(),clientVersion.end(),'.')==2;
+    if (!validVersion || !safeBase(base) || !safePath(path) || !safeBearer(bearer) ||
         body.empty() || body.size()>kMaxRequestBytes) {
         fail(env,"CLOUD_NATIVE_REQUEST_REJECTED");return nullptr;
     }
@@ -169,6 +174,7 @@ jstring post(JNIEnv* env,jstring pathArg,jstring bodyArg,jstring bearerArg) {
     if(ok)ok=setHeader(env,conn,connectionClass,setProperty,"Accept","application/json");
     if(ok)ok=setHeader(env,conn,connectionClass,setProperty,"Accept-Encoding","identity");
     if(ok)ok=setHeader(env,conn,connectionClass,setProperty,"Cache-Control","no-store");
+    if(ok)ok=setHeader(env,conn,connectionClass,setProperty,"X-SPDecode-App-Version",clientVersion);
     if(ok && !bearer.empty())ok=setHeader(env,conn,connectionClass,setProperty,"Authorization","Bearer "+bearer);
     if(!ok) {
         clearException(env);env->CallVoidMethod(conn,disconnect);
@@ -248,6 +254,6 @@ jstring post(JNIEnv* env,jstring pathArg,jstring bodyArg,jstring bearerArg) {
 
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_ghostdeveloper_spdecode_cloud_CloudNativeTransport_postNative(
-    JNIEnv* env,jobject,jstring endpoint,jstring body,jstring bearer) {
-    return post(env,endpoint,body,bearer);
+    JNIEnv* env,jobject,jstring endpoint,jstring body,jstring bearer,jstring clientVersion) {
+    return post(env,endpoint,body,bearer,clientVersion);
 }

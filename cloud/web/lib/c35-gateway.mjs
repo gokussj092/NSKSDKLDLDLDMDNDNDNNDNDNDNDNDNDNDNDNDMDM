@@ -17,7 +17,7 @@ export async function externalImportRequest(request,kind,opts={}) {
   if (!enabled()) return notEnabled();
   if (kind==="ehi" && !ehiConfigured() || kind==="nur" && !nurConfigured())
     return failure("REMOTE_NOT_CONFIGURED",503);
-  let redis,claims,lease=null;
+  let redis,claims,lease=null,started=null;
   try {
     // Authorize before reading any uploaded body or opening external socket.
     redis=await (opts.storeProvider||store)();
@@ -41,6 +41,7 @@ export async function externalImportRequest(request,kind,opts={}) {
     const requestId=randomUUID();
     if(!await reserveSlot(redis,claims.jti,requestId)) return failure("RATE_LIMITED",429);
     lease=requestId;
+    started=performance.now();
     const vendor=opts.vendor || {};
     if(kind==="ehi"){
       const ehi=await importEhiReference(body.reference,vendor);
@@ -48,7 +49,8 @@ export async function externalImportRequest(request,kind,opts={}) {
       let errorCode="";
       if(!result.ok){try{errorCode=(await result.clone().json()).error?.code||"";}catch{}}
       try{await recordWorkerResult(redis,result.ok?"success":"failed",{
-        kind:"ehi",bytes:ehi.length,errorCode,
+        kind:"ehi",bytes:ehi.length,errorCode,latencyMs:performance.now()-started,
+        appVersion:request.headers.get("x-spdecode-app-version"),
       });}catch{}
       return result;
     }
@@ -57,7 +59,8 @@ export async function externalImportRequest(request,kind,opts={}) {
     let errorCode="";
     if(!result.ok){try{errorCode=(await result.clone().json()).error?.code||"";}catch{}}
     try{await recordWorkerResult(redis,result.ok?"success":"failed",{
-      kind:"catalog",bytes:catalog.length,errorCode,
+      kind:"catalog",bytes:catalog.length,errorCode,latencyMs:performance.now()-started,
+      appVersion:request.headers.get("x-spdecode-app-version"),
     });}catch{}
     return result;
   }catch(error) {
@@ -66,6 +69,8 @@ export async function externalImportRequest(request,kind,opts={}) {
       try{await recordWorkerResult(redis,"failed",{
         kind:kind==="nur"?"catalog":"ehi",bytes:0,
         errorCode:typeof error?.code==="string"?error.code:"SERVICE_UNAVAILABLE",
+        latencyMs:started===null?null:performance.now()-started,
+        appVersion:request.headers.get("x-spdecode-app-version"),
       });}catch{}
     }
     if (isExternalImportError(error)) return failure(error.code,error.status);

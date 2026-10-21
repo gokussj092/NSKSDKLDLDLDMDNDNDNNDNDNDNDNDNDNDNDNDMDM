@@ -146,10 +146,21 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
   const safeStatus = [400,401,403,413,422,429,503,504].includes(response.status) ? response.status : 503;
   return failure(recognized?code:"SERVICE_UNAVAILABLE",recognized?safeStatus:503);
 }
+/** Non-identifying REESE envelope version, extracted only from first four bytes. */
+export function rtEnvelopeVersion(encoded){
+ if(typeof encoded!=="string"||encoded.length<8)return null;
+ let bytes;
+ try{bytes=Buffer.from(encoded.slice(0,12),"base64");}catch{return null;}
+ const marker=bytes.subarray(0,4).toString("ascii");
+ if(["RSE1","RSE2","RSE3","RSE4"].includes(marker))return marker;
+ if(bytes.subarray(0,4).equals(Buffer.from([0xa7,0x19,0xd2,0x4c])))return "RSE5";
+ if(marker.startsWith("{"))return "JSON";
+ return null;
+}
 export async function decodeRequest(request,kind,options={}) {
   if(!enabled())return notEnabled();
   const cfg=settings();
-  let redis,claims,lease=null,telemetry=null,recorded=false;
+  let redis,claims,lease=null,telemetry=null,recorded=false,started=null;
   try{
     redis=await (options.storeProvider||store)();
     if(await maintenanceEnabled(redis))return failure("SERVICE_UNAVAILABLE",503);
@@ -165,21 +176,28 @@ export async function decodeRequest(request,kind,options={}) {
     lease=requestId;
     telemetry={
       kind,format:kind==="file"?payload.format:undefined,
+      formatVersion:kind==="file"&&payload.format==="rt"?rtEnvelopeVersion(payload.dataBase64):null,
       bytes:kind==="text"?Buffer.byteLength(payload.text,"utf8"):
         payload.dataBase64.length/4*3-
         (payload.dataBase64.endsWith("==")?2:payload.dataBase64.endsWith("=")?1:0),
     };
+    started=performance.now();
     const outcome=await fetchWorker(kind,payload,cfg,options);
     let errorCode="";
     if(!outcome.ok){
       try{errorCode=(await outcome.clone().json()).error?.code||"";}catch{}
     }
-    try{await recordWorkerResult(redis,outcome.ok?"success":"failed",{...telemetry,errorCode});}catch{}
+    try{await recordWorkerResult(redis,outcome.ok?"success":"failed",{
+      ...telemetry,errorCode,latencyMs:performance.now()-started,
+      appVersion:request.headers.get("x-spdecode-app-version"),
+    });}catch{}
     recorded=true;
     return outcome;
   }catch(error){
     if(telemetry && !recorded && redis && lease){
-      try{await recordWorkerResult(redis,"failed",{...telemetry,errorCode:"ENGINE_UNAVAILABLE"});}catch{}
+      try{await recordWorkerResult(redis,"failed",{...telemetry,errorCode:"ENGINE_UNAVAILABLE",
+          latencyMs:started===null?null:performance.now()-started,
+          appVersion:request.headers.get("x-spdecode-app-version")});}catch{}
     }
     if(error?.code==="INPUT_TOO_LARGE")return failure("INPUT_TOO_LARGE",413);
     if(error?.code==="INVALID_BASE64")return failure("INVALID_BASE64",400);

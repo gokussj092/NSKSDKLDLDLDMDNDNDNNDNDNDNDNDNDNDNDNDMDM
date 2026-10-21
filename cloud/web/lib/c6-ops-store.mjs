@@ -1,5 +1,6 @@
 import { adminSettings } from "./c6-admin-auth.mjs";
 import {recordAutomaticIncident} from "./c9-diagnostics.mjs";
+import {recordOpsTelemetry,recordAdminAudit} from "./c14-ops-observability.mjs";
 let cache;
 export async function opsStore() {
   if(!adminSettings().enabled)throw Error("ADMIN_DISABLED");
@@ -64,6 +65,12 @@ export async function recordWorkerResult(redis,outcome,meta=null) {
     await recordAnonymousUsage(redis,outcome,meta);
     // Best-effort diagnostics: a Redis failure must never change decode outcomes.
     try{await recordAutomaticIncident(redis,outcome,meta);}catch{}
+    try{
+      const service=meta.kind==="ehi"?"httpInjector":
+        ["catalog","server-vpn"].includes(meta.kind)?"serverVpn":"files";
+      await recordOpsTelemetry(redis,{...meta,outcome,service,
+        format:safeFormat(meta.kind,meta.format,meta.errorCode)});
+    }catch{} // Observability can never change the user's decode result.
   }
 }
 export async function aggregateMetrics(redis) {
@@ -139,7 +146,8 @@ function errorSnapshot(data,format){
     const match=/^formatError:([^:]+):([A-Z_]+)$/.exec(field);
     if(match&&match[1]===format)codes[match[2]]=parseCount(value);
   }
-  return {failed,codes};
+  return {failed,codes,attempts:parseCount(data["format:"+format+":attempts"]),
+    success:parseCount(data["format:"+format+":success"])};
 }
 /** Reset *only* currently displayed errors, keeping successes, warnings, bytes
  * and historical attempts. New errors become visible immediately after reset.
@@ -166,6 +174,7 @@ export async function resetErrorBaselines(redis,{scope,format}){
   if(scope==="all")tx.hSet(BASELINE_KEY,"@all",JSON.stringify({at,days:{}}));
   tx.expire(BASELINE_KEY,8*86400);
   await tx.exec();
+  await recordAdminAudit(redis,{scope,format,at,formatsReset:targets.length});
   return {scope,formatsReset:targets.length,at};
 }
 export async function recordAnonymousUsage(redis,outcome,{kind,format,bytes=0,errorCode=""}={}) {
@@ -277,6 +286,21 @@ export async function usageReport(redis,days=7) {
     serviceCounts.set(k,(serviceCounts.get(k)||0)+issue.count);
   }
   for(const item of formats.values())services[formatService(item.extension)].failedDecodes+=item.failedDecodes;
+  const comparisons=Object.entries(baselines).filter(([format])=>format!=="@all")
+    .map(([extension,baseline])=>{
+      const previous=Object.values(baseline.days||{});
+      const beforeErrors=previous.reduce((sum,x)=>sum+parse(x.failed),0);
+      const beforeAttempts=previous.reduce((sum,x)=>sum+parse(x.attempts),0);
+      const current=breakdown.find(x=>x.extension===extension);
+      const sinceAttempts=Math.max(0,(current?.attempts||0)-beforeAttempts);
+      const afterErrors=current?.failedDecodes||0;
+      return {extension,resetAt:baseline.at,beforeErrors,
+        beforeAttempts:beforeAttempts||null,
+        beforeErrorPercent:beforeAttempts?Math.round(beforeErrors/beforeAttempts*1000)/10:null,
+        afterErrors,afterAttempts:sinceAttempts,
+        afterErrorPercent:sinceAttempts?Math.round(afterErrors/sinceAttempts*1000)/10:null,
+        note:"UTC 7-day bounded baseline; historical attempts may include earlier operations"};
+    }).sort((a,b)=>b.resetAt.localeCompare(a.resetAt)).slice(0,100);
   const failures=[...errors].map(([code,count])=>({code,count})).filter(x=>x.count>0)
     .sort((a,b)=>b.count-a.count||a.code.localeCompare(b.code));
   const incidents=[...byFormatError.values()].sort((a,b)=>b.count-a.count).slice(0,100);
@@ -298,7 +322,7 @@ export async function usageReport(redis,days=7) {
     failedDecodes:failed,warnings:warningTotal,totalDecodes:historicalAttempts,inputBytes:bytes,daily,
     extensions:breakdown,errors:failures,
     warningCodes:[...warnings].map(([code,count])=>({code,count})).sort((a,b)=>b.count-a.count),
-    incidents:incidents.filter(x=>x.count>0),resets:Object.entries(baselines).filter(([label])=>label!=="@all").map(([extension,v])=>({extension,at:v.at})),
+    comparisons,incidents:incidents.filter(x=>x.count>0),resets:Object.entries(baselines).filter(([label])=>label!=="@all").map(([extension,v])=>({extension,at:v.at})),
     serviceBreakdown:breakdownServices,serviceErrors:errorServices,hourlyLast48:hourly,
     retentionDays:8,hourlyFailuresAreHistorical:true,historyAvailableFrom:"first_deployment_of_telemetry",
     includes:"worker_results_only",privacy:"anonymous_aggregate_counters"};
