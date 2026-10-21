@@ -38,6 +38,7 @@ import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.delay
 import com.ghostdeveloper.spdecode.parity.AndroidDecoderCatalog
 
 /** Authoritative reference is the USER-PROVIDED 2026-10-08 ChatGPT capture:
@@ -811,12 +812,35 @@ private fun ServerVpnScreen(
     val visibleApps=remember(apps,query,filter,favoriteIds) {
         ServerVpnDirectory.visible(apps,query,filter,favoriteIds)
     }
+    val newBadgeStore=remember(context) { ServerVpnNewBadges(context) }
+    var newProviderIds by remember { mutableStateOf<Set<String>>(emptySet()) }
+    var manualRefreshIsNew by remember { mutableStateOf(false) }
+    LaunchedEffect(apps,newBadgeStore) {
+        if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
+            while(true) {
+                val snapshot=newBadgeStore.observeCatalog(apps.map { it.id }.toSet())
+                newProviderIds=snapshot.ids
+                val featureMs=newBadgeStore.featureRemaining(
+                    ServerVpnNewBadges.MANUAL_REFRESH_FEATURE)
+                manualRefreshIsNew=featureMs!=null
+                val nearest=listOfNotNull(snapshot.nextExpiryMs,featureMs).minOrNull()
+                    ?:break
+                // The same device clock controls the expiry even when the user
+                // remains on this screen; reopening never restarts the timer.
+                delay(nearest.coerceAtLeast(1L))
+            }
+        }
+    }
     Column(Modifier.fillMaxSize().padding(horizontal=20.dp,vertical=12.dp),
         verticalArrangement=Arrangement.spacedBy(12.dp)) {
         Row(verticalAlignment=Alignment.CenterVertically) {
             Text(stringResource(R.string.server_vpn),fontSize=24.sp,
                 fontWeight=FontWeight.Bold,color=White,modifier=Modifier.weight(1f))
             if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
+                if(manualRefreshIsNew) {
+                    ServerVpnNewTag()
+                    Spacer(Modifier.width(8.dp))
+                }
                 IconButton(
                     onClick=onRefresh,
                     enabled=!busy && !catalogLoading,
@@ -920,6 +944,7 @@ private fun ServerVpnScreen(
                                         Text(app.name,color=White,fontSize=15.sp,
                                             fontWeight=FontWeight.SemiBold,
                                             maxLines=2,overflow=TextOverflow.Ellipsis)
+                                        if(app.id in newProviderIds) ServerVpnNewTag()
                                         Text(stringResource(if(app.decodeEnabled)
                                             R.string.server_vpn_catalog_enabled
                                             else R.string.server_vpn_catalog_disabled),
@@ -1022,6 +1047,25 @@ private fun ServerVpnScreen(
         }
             }
         }
+    }
+}
+
+/** Neutral, readable, reusable two-hour marker for new client features and VPNs. */
+@Composable
+private fun ServerVpnNewTag() {
+    Surface(
+        color=Raised,
+        shape=RoundedCornerShape(7.dp),
+        border=BorderStroke(1.dp,Color(0xFF686868)),
+        modifier=Modifier.testTag("server_vpn_new_badge"),
+    ) {
+        Text(
+            stringResource(R.string.server_vpn_new_badge),
+            color=White,
+            fontSize=10.sp,
+            fontWeight=FontWeight.SemiBold,
+            modifier=Modifier.padding(horizontal=7.dp,vertical=3.dp),
+        )
     }
 }
 
