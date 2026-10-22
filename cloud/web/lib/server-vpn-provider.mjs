@@ -8,7 +8,15 @@ import dns from "node:dns/promises";
 import https from "node:https";
 import {publicIpv4} from "./c35-provider.mjs";
 
+const SOCKETCLAY_SOURCES=Object.freeze({
+  servers:"https://dl.dropboxusercontent.com/scl/fi/vh319xyu0ck84ks0wdqw8/ServersSC?rlkey=b9g57byy0igz2jitqix31t4i4&st=evmzpf11&dl=1",
+  users:"https://dl.dropboxusercontent.com/scl/fi/yas4u26xnhdpz4f8qxkp0/UsersSC?rlkey=jtdh2g84uj6y5j9zp4ca929xk&st=hp49nv1g&dl=1",
+});
 const PROVIDERS = Object.freeze({
+  "http-socketclay": {
+    url:SOCKETCLAY_SOURCES.servers,
+    agent:"HTTP SocketClay/3.4.0",
+  },
   "tunneltweak": {
     url:"https://tunneltweak.com/api/servers",
     agent:"TunnelTweak/1.0 (Android)",
@@ -151,9 +159,11 @@ export async function downloadVpnCatalog(id,source="servers"){
   const provider=PROVIDERS[id];
   if(!provider)fail("UNSUPPORTED_FORMAT");
   if(!providerEnabled(id))fail("REMOTE_NOT_CONFIGURED");
-  if(id!=="mkk-hyper" && source!=="servers")fail("UNSUPPORTED_FORMAT");
+  if(id!=="mkk-hyper" && id!=="http-socketclay" && source!=="servers")fail("UNSUPPORTED_FORMAT");
   if(id==="mkk-hyper" && !Object.hasOwn(MKK_SOURCES,source))fail("UNSUPPORTED_FORMAT");
-  const initial=new URL(id==="mkk-hyper"?MKK_SOURCES[source]:provider.url);
+  if(id==="http-socketclay" && !Object.hasOwn(SOCKETCLAY_SOURCES,source))fail("UNSUPPORTED_FORMAT");
+  const initial=new URL(id==="mkk-hyper"?MKK_SOURCES[source]:
+    id==="http-socketclay"?SOCKETCLAY_SOURCES[source]:provider.url);
   if(initial.protocol!=="https:"||initial.port||initial.username||initial.password||
      initial.hash)fail("REMOTE_NETWORK_DENIED");
   const deadline=Date.now()+DEADLINE_MS;
@@ -185,6 +195,7 @@ export async function downloadVpnCatalog(id,source="servers"){
         continue;
       }
       if(answer.redirect!==undefined){
+        if(id==="http-socketclay")fail("REMOTE_NETWORK_DENIED");
         const next=answer.redirect;
         if(typeof next!=="string"||next.length>2048)fail("REMOTE_NETWORK_DENIED");
         target=new URL(next,dest).href;

@@ -25,6 +25,7 @@ test("allowlist is fixed and remote URLs are never stored as provider IDs",()=>{
   assert(PUBLIC_PROVIDER_IDS.includes("ehi-cloud"));
   assert(PUBLIC_PROVIDER_IDS.includes("nur-tunnel"));
   assert(PUBLIC_PROVIDER_IDS.includes("tunneltweak"));
+  assert(PUBLIC_PROVIDER_IDS.includes("http-socketclay"));
   assert(!PUBLIC_PROVIDER_IDS.includes("royal-tunnel"));
   assert(!PUBLIC_PROVIDER_IDS.includes("https://evil.example/"));
   assert.throws(()=>providerPrerequisite("https://evil.example/",env));
@@ -90,4 +91,20 @@ test("concurrent mutations serialize and keep both switches",async t=>{
   assert(a.catalogVersion!==b.catalogVersion);
   const state=await loadProviderState(root);
   assert.deepEqual(state.disabled,["http-jireh","hx-tunnel"]);
+});
+
+
+test("SocketClay has a named control and can be enabled or disabled without touching other providers",async t=>{
+ const root=await fixture(t),opts={root};
+ let overview=await providerOverview(env,opts);
+ assert.deepEqual(overview.providers.find(x=>x.id==="http-socketclay"),{
+   id:"http-socketclay",name:"HTTP SocketClay",configured:true,enabled:true,
+ });
+ overview=await updateProvider("http-socketclay",false,env,opts);
+ let availability=Object.fromEntries(overview.providers.map(x=>[x.id,x.enabled]));
+ assert.equal(catalog({availability}).apps.find(x=>x.id==="http-socketclay").decodeEnabled,false);
+ assert.equal(await providerAllowed("http-jireh",env,opts),true);
+ overview=await updateProvider("http-socketclay",true,env,opts);
+ availability=Object.fromEntries(overview.providers.map(x=>[x.id,x.enabled]));
+ assert.equal(catalog({availability}).apps.find(x=>x.id==="http-socketclay").decodeEnabled,true);
 });

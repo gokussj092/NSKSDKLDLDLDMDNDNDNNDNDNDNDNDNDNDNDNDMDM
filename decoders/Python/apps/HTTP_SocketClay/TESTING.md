@@ -34,7 +34,7 @@ PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_http_socketclay 
 PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_cloud_c8_android_server_vpn -v
 python scripts/cloud_c0_inventory.py --check
 cd cloud/web
-node --test tests/server-vpn-catalog.test.mjs tests/server-vpn-provider.test.mjs tests/server-vpn-version-sync.test.mjs tests/server-vpn-worker-contract.test.mjs tests/c10-catalog-push.test.mjs tests/c12-provider-controls.test.mjs
+npm test
 ```
 
 La suite nueva comprueba resultados completos del proceso aislado, CLI desde
@@ -44,25 +44,46 @@ campos corruptos sin salida parcial, límites, icono original y descarga simulad
 El JDK es necesario para reproducir el oracle; la CI Ubuntu lo incluye.
 La descarga simulada no demuestra disponibilidad de una URL real.
 
+## Validación remota autorizada
+
+El usuario autorizó expresamente consultar servidores y usuarios el 2026-10-21.
+El bloqueo previo de revisión quedó resuelto por esa autorización.
+
+- Los enlaces originales del APK respondieron 302 hacia CDN firmado de Dropbox;
+  ambas descargas terminaron con HTTP 200. Las fuentes directas fijas verificadas
+  devolvieron bytes idénticos, sin redirecciones.
+- Servidores: **157056 bytes, Version `107`, 86 registros, 663 campos cifrados
+  no vacíos**. Usuarios: **1816 bytes, Version `10`, 2 entradas, 10 campos
+  cifrados no vacíos**. Se compararon los JSON completos contra el JDK oracle;
+  no solo nombres, recuentos o muestras de los primeros registros.
+- La CLI real `--all` descargó ambas fuentes y devolvió exactamente esos dos
+  documentos completos. La misma comparación pasó en el trabajador aislado.
+- Flujo local autenticado: petición → broker y dos fuentes fijas simuladas con
+  los bytes remotos autorizados → HTTP privado real → proceso aislado → respuesta
+  completa. Igualdad total con el oracle y `isPartial:false`.
+- El DNS nativo Node de este entorno devolvió `EAI_AGAIN`. Por ello las pruebas
+  del transporte Node DNS/IP/TLS/redirecciones fueron controladas; las descargas
+  externas reales fueron por Python/HTTPS. No se afirma una prueba externa desde
+  la VPS, que no fue desplegada en este trabajo.
+- Ningún catálogo ni valor descifrado real se incluye en Git/CI. Solo vectores
+  sintéticos, estadísticas de validación y parámetros fijos del motor.
+
 ## Resultado de esta entrega
 
-- **47 pruebas Python aprobadas**, incluidas 14 nuevas de SocketClay y
-  regresiones Fenix/Jireh e integridad de la integración Android existente.
-- **41 pruebas Node aprobadas** para catálogo, fuentes existentes, sincronía de
-  versión, avisos, contratos de worker y controles de proveedores.
-- Copias incluidas `config.png`/`usr.png`: igualdad completa con el oracle Java
-  también a través del trabajador aislado y CLI real con archivo y stdin.
+- **50 pruebas Python aprobadas**, incluidas 17 de SocketClay y regresiones
+  Fenix/Jireh e integridad de la integración Android existente.
+- **152 pruebas Node aprobadas**: toda la suite web, incluidas siete pruebas
+  nuevas de descargas duales, petición autenticada, ausencia de éxitos parciales,
+  coherencia de resultado, fuentes fijas y transporte del paquete.
+- Se comprobó la activación/desactivación del proveedor y la elevación de la
+  versión persistente aunque la tarjeta y el icono ya existieran.
 - Matriz C0 verificada sin cambios y `git diff --check` correcto.
-- No se afirma que CI de GitHub ya haya terminado ni que los endpoints remotos
-  hayan sido comprobados: estos resultados son de la validación local descrita.
+- Estos resultados son locales. La finalización de CI de GitHub no se presupone.
 
-## Pendiente y límites
+## Límites restantes
 
-La revisión automática rechazó las consultas externas a los catálogos de
-servidores y usuarios por la posible presencia de credenciales y la falta de
-una autorización explícita para acceder a esas fuentes. No se repitieron por
-otro host o herramienta. El contenido remoto, sus versiones y redirecciones
-**no están validados**. Se conserva `remote:null`, sin broker público habilitado.
-La validación remota y la habilitación posterior requieren una nueva comprobación.
 No se ejecutó el APK en Android ni se certificó exportación/roundtrip `.sks`.
 No se fusionó, desplegó, compiló ni publicó una APK como parte de este trabajo.
+Los presupuestos de tamaño/tiempo generan errores explícitos; nunca se recortan
+catálogos ni se silencian fuentes omitidas. Si los catálogos reales cambian,
+la descarga usa sus documentos actuales y las claves de sus propias versiones.

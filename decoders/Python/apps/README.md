@@ -36,4 +36,4 @@ productores se mantienen en `tests/golden`, y las pruebas en `tests`.
 
 - [Tunneltweak 6.2.1](Tunneltweak/README.md): `.tut` CBC/TTPBE1 con contraseña/XOR, catálogo público GCM y transporte Cloud UUID; icono original.
 
-- [HTTP SocketClay 3.4.0](HTTP_SocketClay/README.md): catálogo WakkoDev/ChaCha20/AES con clave por versión y `.sks` GCM/DES compartido. Catálogo remoto pendiente; tarjeta desactivada.
+- [HTTP SocketClay 3.4.0](HTTP_SocketClay/README.md): catálogo WakkoDev/ChaCha20/AES con clave por versión y `.sks` GCM/DES compartido. Descarga dual de servidores/usuarios verificada y habilitada en el catálogo Cloud.

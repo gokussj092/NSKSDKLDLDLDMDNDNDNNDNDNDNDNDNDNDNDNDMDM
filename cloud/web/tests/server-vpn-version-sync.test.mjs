@@ -1,3 +1,5 @@
+import {createHash} from "node:crypto";
+import {catalog} from "../lib/server-vpn-catalog.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import {mkdtemp,rm,readFile,writeFile} from "node:fs/promises";
@@ -56,4 +58,21 @@ test("catalog sync handles local development without provider-control volume",as
  const state=await synchronizeCatalogVersion(env,{root});
  assert.equal(state.version,0);
  assert.deepEqual(state.disabled,[]);
+});
+
+
+test("enabling an existing card invalidates an older roster-only fingerprint above the release floor",async t=>{
+ const root=await mkdtemp(join(tmpdir(),"spdecode-enable-visible-"));
+ t.after(async()=>rm(root,{recursive:true,force:true}));
+ const records=catalog({version:1,availability:{}}).apps.map(({id,name,iconSha256,iconMimeType})=>
+   ({id,name,iconSha256,iconMimeType}));
+ const oldFingerprint=createHash("sha256").update(JSON.stringify(records)).digest("hex");
+ await writeFile(join(root,"switches.json"),JSON.stringify({
+   version:250000000,disabled:["mkk-hyper"],catalogFingerprint:oldFingerprint,
+ }));
+ const state=await synchronizeCatalogVersion(env,{root});
+ assert.equal(state.version,250000001);
+ assert.notEqual(state.catalogFingerprint,oldFingerprint);
+ assert.deepEqual(state.disabled,["mkk-hyper"]);
+ assert.equal((await synchronizeCatalogVersion(env,{root})).version,state.version);
 });

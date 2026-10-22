@@ -16,6 +16,7 @@ export const PUBLIC_PROVIDER_IDS=IDS;
 const LABELS=Object.freeze({
   "ehi-cloud":"HTTP Injector Cloud",
   "nur-tunnel":"Servidores VPN",
+  "http-socketclay":"HTTP SocketClay",
   "tunneltweak":"Tunneltweak",
   "http-jireh":"HTTP Jireh",
   "http-fenixvpn":"HTTP FenixVPN",
@@ -32,13 +33,14 @@ const LABELS=Object.freeze({
 });
 const empty=()=>({version:0,disabled:[]});
 let rosterFingerprint=null;
-// Include names, IDs, and original icon digests, but exclude dynamic flags.
+// Include the release floor so enabling a previously visible offline card also
+// invalidates cached availability, even when IDs/names/icons do not change.
 // The version only advances for a changed deployment's actual catalog metadata.
 function catalogFingerprint(){
   if(rosterFingerprint)return rosterFingerprint;
   const records=catalog({version:1,availability:{}}).apps.map(({id,name,iconSha256,iconMimeType})=>
     ({id,name,iconSha256,iconMimeType}));
-  rosterFingerprint=createHash("sha256").update(JSON.stringify(records)).digest("hex");
+  rosterFingerprint=createHash("sha256").update(JSON.stringify({releaseVersion:activeCatalogVersion({}),records})).digest("hex");
   return rosterFingerprint;
 }
 const valid=s=>s && typeof s==="object" && !Array.isArray(s) &&

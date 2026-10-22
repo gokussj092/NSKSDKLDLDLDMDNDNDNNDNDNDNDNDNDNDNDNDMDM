@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-"""Read a SocketClay catalog copy; --download requests its fixed server source."""
+"""Download both SocketClay catalogs, or decode an existing encrypted copy."""
 from __future__ import annotations
 import argparse
+import base64
+import json
 from pathlib import Path
 import sys
 from urllib.request import Request, HTTPRedirectHandler, build_opener
@@ -11,18 +13,20 @@ if __package__:
 else:
     from codec import DecodeError, MAX_BYTES, decode_catalog, render
 
-# APK SkProtect.updateURL. Remote response/redirect chain not yet validated;
-# the public Cloud card deliberately has remote:null until that check succeeds.
-CATALOG_URL = "https://www.dropbox.com/scl/fi/vh319xyu0ck84ks0wdqw8/ServersSC?rlkey=b9g57byy0igz2jitqix31t4i4&st=evmzpf11&dl=1"
+# Direct Dropbox URLs are byte-identical to the APK links followed through
+# their signed CDN redirects. Keep both file IDs and their original query fixed.
+CATALOG_URL = "https://dl.dropboxusercontent.com/scl/fi/vh319xyu0ck84ks0wdqw8/ServersSC?rlkey=b9g57byy0igz2jitqix31t4i4&st=evmzpf11&dl=1"
+USERS_URL = "https://dl.dropboxusercontent.com/scl/fi/yas4u26xnhdpz4f8qxkp0/UsersSC?rlkey=jtdh2g84uj6y5j9zp4ca929xk&st=hp49nv1g&dl=1"
+BUNDLE_KIND = "spdecode-socketclay-catalogs-v1"
 
 
 class _NoRedirect(HTTPRedirectHandler):
     def redirect_request(self, req, fp, code, msg, headers, newurl):
-        raise DecodeError("La descarga requiere validar la redirección del proveedor.")
+        raise DecodeError("El proveedor intentó redirigir la descarga fija.")
 
 
-def download() -> bytes:
-    request = Request(CATALOG_URL, headers={"User-Agent": "HTTP SocketClay/3.4.0", "Accept-Encoding": "identity"})
+def download(*, users=False) -> bytes:
+    request = Request(USERS_URL if users else CATALOG_URL, headers={"User-Agent": "HTTP SocketClay/3.4.0", "Accept-Encoding": "identity"})
     try:
         with build_opener(_NoRedirect()).open(request, timeout=25) as response:
             if response.status != 200 or response.headers.get("Content-Encoding", "identity") != "identity":
@@ -35,8 +39,57 @@ def download() -> bytes:
     return data
 
 
+def pack_catalogs(servers: bytes, users: bytes) -> bytes:
+    for source in (servers, users):
+        if not isinstance(source, bytes) or not source or len(source) > MAX_BYTES:
+            raise DecodeError("Copia de catálogo vacía o superior al límite.")
+    bundle = {"kind": BUNDLE_KIND, "catalogs": {
+        "servers": base64.b64encode(servers).decode("ascii"),
+        "users": base64.b64encode(users).decode("ascii"),
+    }}
+    data = json.dumps(bundle, separators=(",", ":")).encode("utf-8")
+    if len(data) > MAX_BYTES:
+        raise DecodeError("Los catálogos completos superan el límite del transporte.")
+    return data
+
+
+def decode_bundle(data: bytes) -> dict:
+    try:
+        if not isinstance(data, bytes) or not data or len(data) > MAX_BYTES:
+            raise DecodeError("Paquete de catálogos inválido.")
+        bundle = json.loads(data, object_pairs_hook=_unique)
+        if (not isinstance(bundle, dict) or set(bundle) != {"kind", "catalogs"}
+                or bundle["kind"] != BUNDLE_KIND or not isinstance(bundle["catalogs"], dict)
+                or set(bundle["catalogs"]) != {"servers", "users"}):
+            raise DecodeError("Paquete de catálogos inválido.")
+        decoded = {}
+        for name, required in (("servers", "Servers"), ("users", "Usuarios")):
+            encoded = bundle["catalogs"][name]
+            if not isinstance(encoded, str):
+                raise DecodeError("Copia de catálogo inválida.")
+            raw = base64.b64decode(encoded, validate=True)
+            doc = decode_catalog(raw)
+            if required not in doc:
+                raise DecodeError("La fuente no corresponde al catálogo esperado.")
+            decoded[name] = doc
+        return {"provider": "http-socketclay", "complete": True, "catalogs": decoded}
+    except (ValueError, UnicodeError, RecursionError, TypeError) as exc:
+        raise DecodeError("No se pudieron abrir ambos catálogos completos de HTTP SocketClay.") from exc
+
+
+def _unique(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise DecodeError("Paquete de catálogos ambiguo.")
+        result[key] = value
+    return result
+
+
 def run(data: bytes) -> str:
-    """Offline worker entry point, never accesses the network."""
+    """Offline entry point for a raw copy or the fixed server+user bundle."""
+    if isinstance(data, bytes) and data.lstrip().startswith(b"{"):
+        return render(decode_bundle(data))
     return render(decode_catalog(data))
 
 
@@ -45,18 +98,20 @@ def main() -> int:
     modes = parser.add_mutually_exclusive_group()
     modes.add_argument("file", nargs="?", type=Path, help="Copia cifrada local de servidores o usuarios")
     modes.add_argument("--stdin", action="store_true", help="Leer una copia cifrada sin red")
-    modes.add_argument("--download", action="store_true", help="Consultar la fuente fija de servidores; validación remota pendiente")
+    modes.add_argument("--download", action="store_true", help="Descargar únicamente los servidores")
+    modes.add_argument("--users", action="store_true", help="Descargar únicamente los usuarios")
+    modes.add_argument("--all", action="store_true", help="Descargar ambos catálogos completos (predeterminado)")
     args = parser.parse_args()
-    if not (args.file or args.stdin or args.download):
-        parser.error("Indica un archivo, --stdin o --download.")
     try:
         if args.file:
             with args.file.open("rb") as stream:
                 data = stream.read(MAX_BYTES + 1)
         elif args.stdin:
             data = sys.stdin.buffer.read(MAX_BYTES + 1)
+        elif args.download or args.users:
+            data = download(users=args.users)
         else:
-            data = download()
+            data = pack_catalogs(download(), download(users=True))
         print(run(data))
         return 0
     except (OSError, ValueError) as exc:

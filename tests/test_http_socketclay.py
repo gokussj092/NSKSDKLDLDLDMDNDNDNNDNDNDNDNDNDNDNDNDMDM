@@ -114,7 +114,7 @@ class SocketClayTests(unittest.TestCase):
                 with self.assertRaises(codec.DecodeError): run(data)
         with self.assertRaises(codec.DecodeError): codec.render({"x": "x" * codec.MAX_BYTES})
 
-    def test_only_fixed_server_download_is_possible_and_redirects_stay_blocked(self):
+    def test_both_fixed_catalog_downloads_are_supported_and_unexpected_redirects_stay_blocked(self):
         class Response:
             status = 200
             headers = {}
@@ -131,6 +131,8 @@ class SocketClayTests(unittest.TestCase):
         with patch.object(catalog, "build_opener", return_value=opener):
             self.assertEqual(catalog.download(), V["catalog"].encode())
             self.assertEqual(opener.url, catalog.CATALOG_URL); self.assertEqual(opener.timeout, 25)
+            self.assertEqual(catalog.download(users=True), V["catalog"].encode())
+            self.assertEqual(opener.url, catalog.USERS_URL)
             for bad in (b"", b"<html/>", b"x" * (codec.MAX_BYTES + 1)):
                 with patch.object(Response, "data", bad), self.assertRaises(codec.DecodeError): catalog.download()
             for bad in ({"Content-Encoding": "gzip"},):
@@ -174,6 +176,51 @@ class SocketClayTests(unittest.TestCase):
         count = len(V["keyVectors"])
         self.assertEqual(values[1:1+count], [base64.b64decode(v["keyBase64"]) for v in V["keyVectors"]])
         self.assertEqual([v.decode() for v in values[1+count:]], [v["plain"] for v in V["fieldVectors"]])
+
+    def test_combined_catalogs_use_independent_versions_and_preserve_both_documents(self):
+        server_v = next(v for v in V["fieldVectors"] if v["version"] == "1")
+        user_v = next(v for v in V["fieldVectors"] if v["version"] == "341")
+        name = codec._names["servers"]["sName"]
+        servers = {"Version": "1", "Servers": [{name: server_v["cipher"], "unknown": [None, False]}], "ReleaseNotes": "Synthetic"}
+        users = {"Version": "341", "Usuarios": [{"Name": user_v["cipher"]}], "unknown": {"keep": True}}
+        bundle = catalog.pack_catalogs(wrap_json(json.dumps(servers)), wrap_json(json.dumps(users)))
+        expected_s = {**servers, "Servers": [{name: server_v["plain"], "unknown": [None, False]}]}
+        expected_u = {**users, "Usuarios": [{"Name": user_v["plain"]}]}
+        expected = {"provider": "http-socketclay", "complete": True, "catalogs": {"servers": expected_s, "users": expected_u}}
+        self.assertEqual(json.loads(catalog.run(bundle)), expected)
+        sys.path.insert(0, str(ROOT / "cloud/workers/python"))
+        from engine import decode_provider_catalog
+        result = decode_provider_catalog("http-socketclay", bundle)
+        self.assertEqual(result["structuredJson"], expected)
+        self.assertFalse(result["isPartial"])
+
+    def test_combined_catalog_rejects_missing_corrupt_swapped_or_ambiguous_sources(self):
+        data = V["catalog"].encode()
+        bundle = json.loads(catalog.pack_catalogs(data, data))
+        bad = [b'{"kind":"spdecode-socketclay-catalogs-v1","kind":"fake","catalogs":{}}']
+        for name in ("servers", "users"):
+            missing = json.loads(json.dumps(bundle)); del missing["catalogs"][name]
+            bad.append(json.dumps(missing).encode())
+            corrupt = json.loads(json.dumps(bundle)); corrupt["catalogs"][name] = "!"
+            bad.append(json.dumps(corrupt).encode())
+        only_servers = json.loads(codec.decrypt_catalog(data)); del only_servers["Usuarios"]
+        wrong = {**bundle, "catalogs": {**bundle["catalogs"], "users": base64.b64encode(wrap_json(json.dumps(only_servers))).decode()}}
+        bad.append(json.dumps(wrong).encode())
+        for payload in bad:
+            with self.assertRaises(codec.DecodeError): catalog.run(payload)
+        with self.assertRaises(codec.DecodeError): catalog.pack_catalogs(b"", data)
+        with self.assertRaises(codec.DecodeError): catalog.pack_catalogs(b"x" * (4*1024*1024), b"x" * (4*1024*1024))
+
+    def test_cli_default_downloads_both_catalogs_and_users_flag_selects_users(self):
+        data = V["catalog"].encode()
+        for flags, calls in (([], [False, True]), (["--all"], [False, True]), (["--users"], [True]), (["--download"], [False])):
+            seen = []
+            def download(*, users=False):
+                seen.append(users)
+                return data
+            with patch.object(catalog, "download", side_effect=download), patch.object(sys, "argv", ["catalog", *flags]), patch("sys.stdout"):
+                self.assertEqual(catalog.main(), 0)
+            self.assertEqual(seen, calls)
 
     def test_original_icon_matches_manifest_and_cloud_bytes(self):
         icon = (APP / "HTTP_SocketClay.png").read_bytes()

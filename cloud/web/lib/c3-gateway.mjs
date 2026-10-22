@@ -177,6 +177,17 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
        typeof decoded.rawText!=="string" || !decoded.rawText.length ||
        Buffer.byteLength(decoded.rawText,"utf8")>(isMkk?32*1024*1024:4*1024*1024))
       throw Error("INVALID_WORKER_RESULT");
+    if(kind==="server-vpn" && payload?.providerId==="http-socketclay"){
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      if(decoded.kind!=="vpn_catalog" || decoded.providerId!=="http-socketclay" ||
+         !isRecord(parsed) || parsed.provider!=="http-socketclay" || parsed.complete!==true ||
+         !isRecord(parsed.catalogs) || Object.keys(parsed.catalogs).sort().join(",")!=="servers,users" ||
+         !Array.isArray(parsed.catalogs.servers?.Servers) || !parsed.catalogs.servers.Servers.length ||
+         !Array.isArray(parsed.catalogs.users?.Usuarios) || !parsed.catalogs.users.Usuarios.length ||
+         JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))
+        throw Error("INVALID_WORKER_RESULT");
+    }
     if(isMkk){
       // A complete, matching JSON document is mandatory; HTML, logs, partial
       // writes or fabricated structured metadata must not reach the client.
