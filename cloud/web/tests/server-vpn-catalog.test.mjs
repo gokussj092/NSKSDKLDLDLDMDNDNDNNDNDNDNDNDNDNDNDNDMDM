@@ -10,7 +10,7 @@ const body=(content)=>new Request("https://api.spdecode.xyz/api/v1/server-vpn/te
 });
 test("original provider PNGs match the public digest and never contain secrets",()=>{
  const values=catalog();assert.equal(values.catalogVersion,CATALOG_VERSION);
- assert.equal(RECHECK_SECONDS,900);assert.equal(values.apps.length,19);
+ assert.equal(RECHECK_SECONDS,900);assert.equal(values.apps.length,20);
  const ids=new Set();
  for(const app of values.apps) {
    assert(!ids.has(app.id));ids.add(app.id);
@@ -31,7 +31,7 @@ test("version match returns only a cheap unchanged response",async()=>{
 test("new version returns catalog and invalid bodies fail closed",async()=>{
  const response=await list(body({knownVersion:0}));
  const data=await response.json();assert.equal(response.status,200);
- assert.equal(data.unchanged,false);assert.equal(data.apps.length,19);
+ assert.equal(data.unchanged,false);assert.equal(data.apps.length,20);
  for(const invalid of [{knownVersion:-1},{url:"http://127.0.0.1/"},{knownVersion:"1"}]) {
    assert.equal((await list(body(invalid))).status,400);
  }
@@ -48,7 +48,7 @@ test("only registered icon identifiers are served",async()=>{
 
 import {providerIds,providerEnabled,downloadVpnCatalog} from "../lib/server-vpn-provider.mjs";
 test("only fixed catalog providers are eligible for remote broker",async()=>{
-  assert.deepEqual(providerIds().sort(),["24clan-green","4u-tunnel-lite","ac-tunnel-vpn","austroplus-vpn","http-fenixvpn","http-jireh","http-socketclay","http-wakko","hx-tunnel","ksh-vpn","mkk-hyper","my-tunnel-proxy","robust-tunnel","trv-tunnel","tunneltweak"]);
+  assert.deepEqual(providerIds().sort(),["24clan-green","4u-tunnel-lite","ac-tunnel-vpn","austroplus-vpn","http-fenixvpn","http-jireh","http-socketclay","http-wakko","hx-tunnel","ksh-vpn","mkk-hyper","my-tunnel-proxy","robust-tunnel","trv-tunnel","tunneltweak","v2ray-tunnel-plus"]);
   for(const id of providerIds()) assert.equal(providerEnabled(id,{CLOUD_SERVER_VPN_ENABLED:"false"}),false);
   assert.equal(providerEnabled("https://attacker.invalid/",{CLOUD_SERVER_VPN_ENABLED:"true"}),false);
   await assert.rejects(()=>downloadVpnCatalog("https://attacker.invalid/"),{code:"UNSUPPORTED_FORMAT"});
@@ -129,4 +129,15 @@ test("TunelGuard keeps its original icon while the build-128 updater returns 404
  await assert.rejects(()=>downloadVpnCatalog("tunelguard-vpn"),{code:"UNSUPPORTED_FORMAT"});
  const response=await getIcon(body({id:"tunelguard-vpn"}));assert.equal(response.status,200);
  assert.equal((await response.json()).sha256,app.iconSha256);
+});
+
+test("V2ray Tunnel Plus original icon and verified remote source follow provider availability",t=>{
+ const old=process.env.CLOUD_SERVER_VPN_ENABLED;
+ process.env.CLOUD_SERVER_VPN_ENABLED="true";
+ t.after(()=>{if(old===undefined)delete process.env.CLOUD_SERVER_VPN_ENABLED;else process.env.CLOUD_SERVER_VPN_ENABLED=old;});
+ const app=catalog({availability:{"v2ray-tunnel-plus":true}}).apps.find(x=>x.id==="v2ray-tunnel-plus");
+ assert(app);assert.equal(app.name,"V2ray Tunnel Plus");assert.equal(app.decodeEnabled,true);
+ assert.equal(catalog({availability:{"v2ray-tunnel-plus":false}}).apps.find(x=>x.id==="v2ray-tunnel-plus").decodeEnabled,false);
+ assert.equal(app.iconSha256,"b87f9c792ec5271da31e255cf957e02abf8fbafd0f1f2737549f232d47cfb47f");
+ assert.equal(providerEnabled("v2ray-tunnel-plus",{CLOUD_SERVER_VPN_ENABLED:"true"}),true);
 });

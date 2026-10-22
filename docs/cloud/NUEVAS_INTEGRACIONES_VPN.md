@@ -49,6 +49,23 @@ entregas anteriores ni publicar anuncios automáticamente.
 - No se identificó formato de perfil exportado/importado en Wakko 4.9; no se
   registra `.sks` u otro método de archivos únicamente por compartir helpers.
 
+- **V2ray Tunnel Plus 10.0.0 (4000010) ✅** — suscripciones públicas Base64 y
+  URI en texto descargadas e integradas en el PR #96 con autorización externa
+  expresa. Validación 2026-10-22: **150 perfiles por fuente**, misma lista
+  representada de dos formas (no 300 distintos). Captura inicial: 68 VLESS,
+  39 VMess, 24 Shadowsocks y 19 Trojan. Ambos documentos completos coinciden
+  con Java independiente; nueva captura CLI tras actualizarse la lista también.
+- Carpeta `decoders/Python/apps/V2ray_Tunnel_Plus/`, lector sin cifrado propio,
+  ocho esquemas URI, orden/duplicados/campos conservados e icono PNG original.
+  Worker `v2ray-tunnel-plus`, dos fuentes HTTPS primarias fijas, controles y
+  catálogo mínimo **18** (20 fichas). No se identificó catálogo separado de
+  usuarios ni se añade una extensión propia o ruta Android de archivos.
+- **89 pruebas Python y 173 Node aprobadas localmente**. CLI con HTTPS real,
+  proceso aislado y flujo autenticado a worker HTTP privado real verificados
+  con ambos documentos completos. DNS externo Node controlado por `EAI_AGAIN`
+  del entorno; no se afirma prueba externa desde la VPS. Disponibilidad pública
+  tras actualizar la VPS, sin fusión, despliegue o novedades automáticos.
+
 ## Nuevos métodos de archivos, textos o enlaces añadidos
 
 - **HTTP SocketClay 3.4.0 ✅ — archivos `.sks`**: lector Python y ruta Cloud

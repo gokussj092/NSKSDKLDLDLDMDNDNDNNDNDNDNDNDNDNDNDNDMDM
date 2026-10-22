@@ -188,6 +188,19 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
          JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))
         throw Error("INVALID_WORKER_RESULT");
     }
+    if(kind==="server-vpn" && payload?.providerId==="v2ray-tunnel-plus"){
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId ||
+         !isRecord(parsed) || parsed.provider!==payload.providerId || parsed.complete!==true ||
+         !isRecord(parsed.catalogs) || Object.keys(parsed.catalogs).sort().join(",")!=="base64,raw" ||
+         ["base64","raw"].some(name=>{
+           const doc=parsed.catalogs[name];
+           return !isRecord(doc)||doc.encoding!==(name==="raw"?"plain":"base64")||
+             typeof doc.text!=="string"||!doc.text.length||!Number.isInteger(doc.count)||doc.count<=0||
+             !Array.isArray(doc.profiles)||doc.profiles.length!==doc.count;
+         }) || JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))throw Error("INVALID_WORKER_RESULT");
+    }
     if(isMkk){
       // A complete, matching JSON document is mandatory; HTML, logs, partial
       // writes or fabricated structured metadata must not reach the client.

@@ -124,3 +124,18 @@ test("Wakko has a named control and can be enabled or disabled without touching 
  availability=Object.fromEntries(overview.providers.map(x=>[x.id,x.enabled]));
  assert.equal(catalog({availability}).apps.find(x=>x.id==="http-wakko").decodeEnabled,true);
 });
+
+test("V2ray Tunnel Plus has a named control and can be enabled or disabled without touching other providers",async t=>{
+ const root=await fixture(t),opts={root};
+ let overview=await providerOverview(env,opts);
+ assert.deepEqual(overview.providers.find(x=>x.id==="v2ray-tunnel-plus"),{
+   id:"v2ray-tunnel-plus",name:"V2ray Tunnel Plus",configured:true,enabled:true,
+ });
+ overview=await updateProvider("v2ray-tunnel-plus",false,env,opts);
+ let availability=Object.fromEntries(overview.providers.map(x=>[x.id,x.enabled]));
+ assert.equal(catalog({availability}).apps.find(x=>x.id==="v2ray-tunnel-plus").decodeEnabled,false);
+ assert.equal(await providerAllowed("http-jireh",env,opts),true);
+ overview=await updateProvider("v2ray-tunnel-plus",true,env,opts);
+ availability=Object.fromEntries(overview.providers.map(x=>[x.id,x.enabled]));
+ assert.equal(catalog({availability}).apps.find(x=>x.id==="v2ray-tunnel-plus").decodeEnabled,true);
+});

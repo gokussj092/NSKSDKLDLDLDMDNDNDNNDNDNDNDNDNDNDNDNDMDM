@@ -1,0 +1,519 @@
+{
+  "provenance": "Independent JDK URI/Base64 oracle from build 4000010 Java readers; all endpoints and credentials in this fixture are synthetic.",
+  "raw": "\nvless://synthetic-user@example.invalid:443?security=reality&type=ws&path=%2Fa%3Fb%3D1&x=first&x=second&blank=&flag#Label+%252B+%F0%9F%99%82\r\n\nvmess://eyJ2IjogIjIiLCAicHMiOiAiU3ludGhldGljIPCfmYIiLCAiYWRkIjogImV4YW1wbGUuaW52YWxpZCIsICJwb3J0IjogNDQzLCAiaWQiOiAic3ludGhldGljLWlkIiwgImFpZCI6IDAsICJuZXQiOiAid3MiLCAiaG9zdCI6ICJob3N0LmludmFsaWQiLCAicGF0aCI6ICIvYT9iPTEiLCAidGxzIjogInRscyIsICJ1bmtub3duIjogeyJuZXN0ZWQiOiBbbnVsbCwgZmFsc2UsIDEyXX19\r\n\nvmess://synthetic-user@example.invalid:443?type=grpc&serviceName=a%3Db#Standard\r\n\ntrojan://p%3Aa%40ss@[2001:db8::1]:443?security=tls&unknown=one%3Dtwo#IPv6\r\n\nss://YWVzLTI1Ni1nY206cGE6c3M@example.invalid:8443/?plugin=v2ray-plugin%3Btls%3Bhost%3Dexample.invalid#SIP002\r\n\nss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpsZWdhY3ktcGFzc0BleGFtcGxlLmludmFsaWQ6ODM4OA#Legacy\r\n\nsocks://dGVzdC11c2VyOnRlc3Q6cGFzcw@example.invalid:1080#SOCKS\r\n\nsocks://example.invalid:1080#NoAuth\r\n\nwireguard://private-key%3D@example.invalid:51820?publickey=synthetic%2Bkey%3D&address=10.0.0.2%2F32#WG\r\n\nhysteria2://test-auth@example.invalid:443?obfs=salamander&obfs-password=synthetic#HY2\r\n\nhy2://test-auth@example.invalid:443?sni=example.invalid#Alias\r\n\nvless://test@example.invalid:443?x=a%2Bb#Literal space | label\r\n",
+  "base64": "CnZsZXNzOi8vc3ludGhldGljLXVzZXJAZXhhbXBsZS5pbnZhbGlkOjQ0Mz9zZWN1cml0eT1yZWFsaXR5JnR5cGU9d3MmcGF0aD0lMkZhJTNGYiUzRDEmeD1maXJzdCZ4PXNlY29uZCZibGFuaz0mZmxhZyNMYWJlbCslMjUyQislRjAlOUYlOTklODINCgp2bWVzczovL2V5SjJJam9nSWpJaUxDQWljSE1pT2lBaVUzbHVkR2hsZEdsaklQQ2ZtWUlpTENBaVlXUmtJam9nSW1WNFlXMXdiR1V1YVc1MllXeHBaQ0lzSUNKd2IzSjBJam9nTkRRekxDQWlhV1FpT2lBaWMzbHVkR2hsZEdsakxXbGtJaXdnSW1GcFpDSTZJREFzSUNKdVpYUWlPaUFpZDNNaUxDQWlhRzl6ZENJNklDSm9iM04wTG1sdWRtRnNhV1FpTENBaWNHRjBhQ0k2SUNJdllUOWlQVEVpTENBaWRHeHpJam9nSW5Sc2N5SXNJQ0oxYm10dWIzZHVJam9nZXlKdVpYTjBaV1FpT2lCYmJuVnNiQ3dnWm1Gc2MyVXNJREV5WFgxOQ0KCnZtZXNzOi8vc3ludGhldGljLXVzZXJAZXhhbXBsZS5pbnZhbGlkOjQ0Mz90eXBlPWdycGMmc2VydmljZU5hbWU9YSUzRGIjU3RhbmRhcmQNCgp0cm9qYW46Ly9wJTNBYSU0MHNzQFsyMDAxOmRiODo6MV06NDQzP3NlY3VyaXR5PXRscyZ1bmtub3duPW9uZSUzRHR3byNJUHY2DQoKc3M6Ly9ZV1Z6TFRJMU5pMW5ZMjA2Y0dFNmMzTUBleGFtcGxlLmludmFsaWQ6ODQ0My8/cGx1Z2luPXYycmF5LXBsdWdpbiUzQnRscyUzQmhvc3QlM0RleGFtcGxlLmludmFsaWQjU0lQMDAyDQoKc3M6Ly9ZMmhoWTJoaE1qQXRhV1YwWmkxd2IyeDVNVE13TlRwc1pXZGhZM2t0Y0dGemMwQmxlR0Z0Y0d4bExtbHVkbUZzYVdRNk9ETTRPQSNMZWdhY3kNCgpzb2NrczovL2RHVnpkQzExYzJWeU9uUmxjM1E2Y0dGemN3QGV4YW1wbGUuaW52YWxpZDoxMDgwI1NPQ0tTDQoKc29ja3M6Ly9leGFtcGxlLmludmFsaWQ6MTA4MCNOb0F1dGgNCgp3aXJlZ3VhcmQ6Ly9wcml2YXRlLWtleSUzREBleGFtcGxlLmludmFsaWQ6NTE4MjA/cHVibGlja2V5PXN5bnRoZXRpYyUyQmtleSUzRCZhZGRyZXNzPTEwLjAuMC4yJTJGMzIjV0cNCgpoeXN0ZXJpYTI6Ly90ZXN0LWF1dGhAZXhhbXBsZS5pbnZhbGlkOjQ0Mz9vYmZzPXNhbGFtYW5kZXImb2Jmcy1wYXNzd29yZD1zeW50aGV0aWMjSFkyDQoKaHkyOi8vdGVzdC1hdXRoQGV4YW1wbGUuaW52YWxpZDo0NDM/c25pPWV4YW1wbGUuaW52YWxpZCNBbGlhcw0KCnZsZXNzOi8vdGVzdEBleGFtcGxlLmludmFsaWQ6NDQzP3g9YSUyQmIjTGl0ZXJhbCBzcGFjZSB8IGxhYmVsDQo",
+  "expectedRaw": {
+    "encoding": "plain",
+    "sourceSha256": "e3af8c8c8666d0b615cbac61b208ae45679ed50d4d56a0ab2cdb007f448183ca",
+    "text": "\nvless://synthetic-user@example.invalid:443?security=reality&type=ws&path=%2Fa%3Fb%3D1&x=first&x=second&blank=&flag#Label+%252B+%F0%9F%99%82\r\n\nvmess://eyJ2IjogIjIiLCAicHMiOiAiU3ludGhldGljIPCfmYIiLCAiYWRkIjogImV4YW1wbGUuaW52YWxpZCIsICJwb3J0IjogNDQzLCAiaWQiOiAic3ludGhldGljLWlkIiwgImFpZCI6IDAsICJuZXQiOiAid3MiLCAiaG9zdCI6ICJob3N0LmludmFsaWQiLCAicGF0aCI6ICIvYT9iPTEiLCAidGxzIjogInRscyIsICJ1bmtub3duIjogeyJuZXN0ZWQiOiBbbnVsbCwgZmFsc2UsIDEyXX19\r\n\nvmess://synthetic-user@example.invalid:443?type=grpc&serviceName=a%3Db#Standard\r\n\ntrojan://p%3Aa%40ss@[2001:db8::1]:443?security=tls&unknown=one%3Dtwo#IPv6\r\n\nss://YWVzLTI1Ni1nY206cGE6c3M@example.invalid:8443/?plugin=v2ray-plugin%3Btls%3Bhost%3Dexample.invalid#SIP002\r\n\nss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpsZWdhY3ktcGFzc0BleGFtcGxlLmludmFsaWQ6ODM4OA#Legacy\r\n\nsocks://dGVzdC11c2VyOnRlc3Q6cGFzcw@example.invalid:1080#SOCKS\r\n\nsocks://example.invalid:1080#NoAuth\r\n\nwireguard://private-key%3D@example.invalid:51820?publickey=synthetic%2Bkey%3D&address=10.0.0.2%2F32#WG\r\n\nhysteria2://test-auth@example.invalid:443?obfs=salamander&obfs-password=synthetic#HY2\r\n\nhy2://test-auth@example.invalid:443?sni=example.invalid#Alias\r\n\nvless://test@example.invalid:443?x=a%2Bb#Literal space | label\r\n",
+    "count": 12,
+    "profiles": [
+      {
+        "line": 2,
+        "protocol": "vless",
+        "uri": "vless://synthetic-user@example.invalid:443?security=reality&type=ws&path=%2Fa%3Fb%3D1&x=first&x=second&blank=&flag#Label+%252B+%F0%9F%99%82",
+        "encoding": "uri",
+        "host": "example.invalid",
+        "port": 443,
+        "userInfo": "synthetic-user",
+        "path": "",
+        "query": [
+          [
+            "security",
+            "reality"
+          ],
+          [
+            "type",
+            "ws"
+          ],
+          [
+            "path",
+            "/a?b=1"
+          ],
+          [
+            "x",
+            "first"
+          ],
+          [
+            "x",
+            "second"
+          ],
+          [
+            "blank",
+            ""
+          ],
+          [
+            "flag",
+            ""
+          ]
+        ],
+        "fragment": "Label + 🙂"
+      },
+      {
+        "line": 4,
+        "protocol": "vmess",
+        "uri": "vmess://eyJ2IjogIjIiLCAicHMiOiAiU3ludGhldGljIPCfmYIiLCAiYWRkIjogImV4YW1wbGUuaW52YWxpZCIsICJwb3J0IjogNDQzLCAiaWQiOiAic3ludGhldGljLWlkIiwgImFpZCI6IDAsICJuZXQiOiAid3MiLCAiaG9zdCI6ICJob3N0LmludmFsaWQiLCAicGF0aCI6ICIvYT9iPTEiLCAidGxzIjogInRscyIsICJ1bmtub3duIjogeyJuZXN0ZWQiOiBbbnVsbCwgZmFsc2UsIDEyXX19",
+        "encoding": "base64-json",
+        "config": {
+          "v": "2",
+          "ps": "Synthetic 🙂",
+          "add": "example.invalid",
+          "port": 443,
+          "id": "synthetic-id",
+          "aid": 0,
+          "net": "ws",
+          "host": "host.invalid",
+          "path": "/a?b=1",
+          "tls": "tls",
+          "unknown": {
+            "nested": [
+              null,
+              false,
+              12
+            ]
+          }
+        }
+      },
+      {
+        "line": 6,
+        "protocol": "vmess",
+        "uri": "vmess://synthetic-user@example.invalid:443?type=grpc&serviceName=a%3Db#Standard",
+        "encoding": "uri",
+        "host": "example.invalid",
+        "port": 443,
+        "userInfo": "synthetic-user",
+        "path": "",
+        "query": [
+          [
+            "type",
+            "grpc"
+          ],
+          [
+            "serviceName",
+            "a=b"
+          ]
+        ],
+        "fragment": "Standard"
+      },
+      {
+        "line": 8,
+        "protocol": "trojan",
+        "uri": "trojan://p%3Aa%40ss@[2001:db8::1]:443?security=tls&unknown=one%3Dtwo#IPv6",
+        "encoding": "uri",
+        "host": "2001:db8::1",
+        "port": 443,
+        "userInfo": "p:a@ss",
+        "path": "",
+        "query": [
+          [
+            "security",
+            "tls"
+          ],
+          [
+            "unknown",
+            "one=two"
+          ]
+        ],
+        "fragment": "IPv6"
+      },
+      {
+        "line": 10,
+        "protocol": "ss",
+        "uri": "ss://YWVzLTI1Ni1nY206cGE6c3M@example.invalid:8443/?plugin=v2ray-plugin%3Btls%3Bhost%3Dexample.invalid#SIP002",
+        "encoding": "uri",
+        "host": "example.invalid",
+        "port": 8443,
+        "userInfo": "YWVzLTI1Ni1nY206cGE6c3M",
+        "path": "/",
+        "query": [
+          [
+            "plugin",
+            "v2ray-plugin;tls;host=example.invalid"
+          ]
+        ],
+        "fragment": "SIP002",
+        "credentials": {
+          "method": "aes-256-gcm",
+          "password": "pa:ss"
+        }
+      },
+      {
+        "line": 12,
+        "protocol": "ss",
+        "uri": "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpsZWdhY3ktcGFzc0BleGFtcGxlLmludmFsaWQ6ODM4OA#Legacy",
+        "encoding": "uri",
+        "host": "example.invalid",
+        "port": 8388,
+        "userInfo": "chacha20-ietf-poly1305:legacy-pass",
+        "path": "",
+        "query": [],
+        "fragment": "Legacy",
+        "credentials": {
+          "method": "chacha20-ietf-poly1305",
+          "password": "legacy-pass"
+        }
+      },
+      {
+        "line": 14,
+        "protocol": "socks",
+        "uri": "socks://dGVzdC11c2VyOnRlc3Q6cGFzcw@example.invalid:1080#SOCKS",
+        "encoding": "uri",
+        "host": "example.invalid",
+        "port": 1080,
+        "userInfo": "dGVzdC11c2VyOnRlc3Q6cGFzcw",
+        "path": "",
+        "query": [],
+        "fragment": "SOCKS",
+        "credentials": {
+          "username": "test-user",
+          "password": "test:pass"
+        }
+      },
+      {
+        "line": 16,
+        "protocol": "socks",
+        "uri": "socks://example.invalid:1080#NoAuth",
+        "encoding": "uri",
+        "host": "example.invalid",
+        "port": 1080,
+        "userInfo": "",
+        "path": "",
+        "query": [],
+        "fragment": "NoAuth"
+      },
+      {
+        "line": 18,
+        "protocol": "wireguard",
+        "uri": "wireguard://private-key%3D@example.invalid:51820?publickey=synthetic%2Bkey%3D&address=10.0.0.2%2F32#WG",
+        "encoding": "uri",
+        "host": "example.invalid",
+        "port": 51820,
+        "userInfo": "private-key=",
+        "path": "",
+        "query": [
+          [
+            "publickey",
+            "synthetic+key="
+          ],
+          [
+            "address",
+            "10.0.0.2/32"
+          ]
+        ],
+        "fragment": "WG"
+      },
+      {
+        "line": 20,
+        "protocol": "hysteria2",
+        "uri": "hysteria2://test-auth@example.invalid:443?obfs=salamander&obfs-password=synthetic#HY2",
+        "encoding": "uri",
+        "host": "example.invalid",
+        "port": 443,
+        "userInfo": "test-auth",
+        "path": "",
+        "query": [
+          [
+            "obfs",
+            "salamander"
+          ],
+          [
+            "obfs-password",
+            "synthetic"
+          ]
+        ],
+        "fragment": "HY2"
+      },
+      {
+        "line": 22,
+        "protocol": "hy2",
+        "uri": "hy2://test-auth@example.invalid:443?sni=example.invalid#Alias",
+        "encoding": "uri",
+        "host": "example.invalid",
+        "port": 443,
+        "userInfo": "test-auth",
+        "path": "",
+        "query": [
+          [
+            "sni",
+            "example.invalid"
+          ]
+        ],
+        "fragment": "Alias"
+      },
+      {
+        "line": 24,
+        "protocol": "vless",
+        "uri": "vless://test@example.invalid:443?x=a%2Bb#Literal space | label",
+        "encoding": "uri",
+        "host": "example.invalid",
+        "port": 443,
+        "userInfo": "test",
+        "path": "",
+        "query": [
+          [
+            "x",
+            "a+b"
+          ]
+        ],
+        "fragment": "Literal space | label"
+      }
+    ]
+  },
+  "expectedBase64": {
+    "encoding": "base64",
+    "sourceSha256": "5215d8cadc79a6096bf248d8738361c32d4752b062c328d1f64a3aeb50f130a5",
+    "text": "\nvless://synthetic-user@example.invalid:443?security=reality&type=ws&path=%2Fa%3Fb%3D1&x=first&x=second&blank=&flag#Label+%252B+%F0%9F%99%82\r\n\nvmess://eyJ2IjogIjIiLCAicHMiOiAiU3ludGhldGljIPCfmYIiLCAiYWRkIjogImV4YW1wbGUuaW52YWxpZCIsICJwb3J0IjogNDQzLCAiaWQiOiAic3ludGhldGljLWlkIiwgImFpZCI6IDAsICJuZXQiOiAid3MiLCAiaG9zdCI6ICJob3N0LmludmFsaWQiLCAicGF0aCI6ICIvYT9iPTEiLCAidGxzIjogInRscyIsICJ1bmtub3duIjogeyJuZXN0ZWQiOiBbbnVsbCwgZmFsc2UsIDEyXX19\r\n\nvmess://synthetic-user@example.invalid:443?type=grpc&serviceName=a%3Db#Standard\r\n\ntrojan://p%3Aa%40ss@[2001:db8::1]:443?security=tls&unknown=one%3Dtwo#IPv6\r\n\nss://YWVzLTI1Ni1nY206cGE6c3M@example.invalid:8443/?plugin=v2ray-plugin%3Btls%3Bhost%3Dexample.invalid#SIP002\r\n\nss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpsZWdhY3ktcGFzc0BleGFtcGxlLmludmFsaWQ6ODM4OA#Legacy\r\n\nsocks://dGVzdC11c2VyOnRlc3Q6cGFzcw@example.invalid:1080#SOCKS\r\n\nsocks://example.invalid:1080#NoAuth\r\n\nwireguard://private-key%3D@example.invalid:51820?publickey=synthetic%2Bkey%3D&address=10.0.0.2%2F32#WG\r\n\nhysteria2://test-auth@example.invalid:443?obfs=salamander&obfs-password=synthetic#HY2\r\n\nhy2://test-auth@example.invalid:443?sni=example.invalid#Alias\r\n\nvless://test@example.invalid:443?x=a%2Bb#Literal space | label\r\n",
+    "count": 12,
+    "profiles": [
+      {
+        "line": 2,
+        "protocol": "vless",
+        "uri": "vless://synthetic-user@example.invalid:443?security=reality&type=ws&path=%2Fa%3Fb%3D1&x=first&x=second&blank=&flag#Label+%252B+%F0%9F%99%82",
+        "encoding": "uri",
+        "host": "example.invalid",
+        "port": 443,
+        "userInfo": "synthetic-user",
+        "path": "",
+        "query": [
+          [
+            "security",
+            "reality"
+          ],
+          [
+            "type",
+            "ws"
+          ],
+          [
+            "path",
+            "/a?b=1"
+          ],
+          [
+            "x",
+            "first"
+          ],
+          [
+            "x",
+            "second"
+          ],
+          [
+            "blank",
+            ""
+          ],
+          [
+            "flag",
+            ""
+          ]
+        ],
+        "fragment": "Label + 🙂"
+      },
+      {
+        "line": 4,
+        "protocol": "vmess",
+        "uri": "vmess://eyJ2IjogIjIiLCAicHMiOiAiU3ludGhldGljIPCfmYIiLCAiYWRkIjogImV4YW1wbGUuaW52YWxpZCIsICJwb3J0IjogNDQzLCAiaWQiOiAic3ludGhldGljLWlkIiwgImFpZCI6IDAsICJuZXQiOiAid3MiLCAiaG9zdCI6ICJob3N0LmludmFsaWQiLCAicGF0aCI6ICIvYT9iPTEiLCAidGxzIjogInRscyIsICJ1bmtub3duIjogeyJuZXN0ZWQiOiBbbnVsbCwgZmFsc2UsIDEyXX19",
+        "encoding": "base64-json",
+        "config": {
+          "v": "2",
+          "ps": "Synthetic 🙂",
+          "add": "example.invalid",
+          "port": 443,
+          "id": "synthetic-id",
+          "aid": 0,
+          "net": "ws",
+          "host": "host.invalid",
+          "path": "/a?b=1",
+          "tls": "tls",
+          "unknown": {
+            "nested": [
+              null,
+              false,
+              12
+            ]
+          }
+        }
+      },
+      {
+        "line": 6,
+        "protocol": "vmess",
+        "uri": "vmess://synthetic-user@example.invalid:443?type=grpc&serviceName=a%3Db#Standard",
+        "encoding": "uri",
+        "host": "example.invalid",
+        "port": 443,
+        "userInfo": "synthetic-user",
+        "path": "",
+        "query": [
+          [
+            "type",
+            "grpc"
+          ],
+          [
+            "serviceName",
+            "a=b"
+          ]
+        ],
+        "fragment": "Standard"
+      },
+      {
+        "line": 8,
+        "protocol": "trojan",
+        "uri": "trojan://p%3Aa%40ss@[2001:db8::1]:443?security=tls&unknown=one%3Dtwo#IPv6",
+        "encoding": "uri",
+        "host": "2001:db8::1",
+        "port": 443,
+        "userInfo": "p:a@ss",
+        "path": "",
+        "query": [
+          [
+            "security",
+            "tls"
+          ],
+          [
+            "unknown",
+            "one=two"
+          ]
+        ],
+        "fragment": "IPv6"
+      },
+      {
+        "line": 10,
+        "protocol": "ss",
+        "uri": "ss://YWVzLTI1Ni1nY206cGE6c3M@example.invalid:8443/?plugin=v2ray-plugin%3Btls%3Bhost%3Dexample.invalid#SIP002",
+        "encoding": "uri",
+        "host": "example.invalid",
+        "port": 8443,
+        "userInfo": "YWVzLTI1Ni1nY206cGE6c3M",
+        "path": "/",
+        "query": [
+          [
+            "plugin",
+            "v2ray-plugin;tls;host=example.invalid"
+          ]
+        ],
+        "fragment": "SIP002",
+        "credentials": {
+          "method": "aes-256-gcm",
+          "password": "pa:ss"
+        }
+      },
+      {
+        "line": 12,
+        "protocol": "ss",
+        "uri": "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpsZWdhY3ktcGFzc0BleGFtcGxlLmludmFsaWQ6ODM4OA#Legacy",
+        "encoding": "uri",
+        "host": "example.invalid",
+        "port": 8388,
+        "userInfo": "chacha20-ietf-poly1305:legacy-pass",
+        "path": "",
+        "query": [],
+        "fragment": "Legacy",
+        "credentials": {
+          "method": "chacha20-ietf-poly1305",
+          "password": "legacy-pass"
+        }
+      },
+      {
+        "line": 14,
+        "protocol": "socks",
+        "uri": "socks://dGVzdC11c2VyOnRlc3Q6cGFzcw@example.invalid:1080#SOCKS",
+        "encoding": "uri",
+        "host": "example.invalid",
+        "port": 1080,
+        "userInfo": "dGVzdC11c2VyOnRlc3Q6cGFzcw",
+        "path": "",
+        "query": [],
+        "fragment": "SOCKS",
+        "credentials": {
+          "username": "test-user",
+          "password": "test:pass"
+        }
+      },
+      {
+        "line": 16,
+        "protocol": "socks",
+        "uri": "socks://example.invalid:1080#NoAuth",
+        "encoding": "uri",
+        "host": "example.invalid",
+        "port": 1080,
+        "userInfo": "",
+        "path": "",
+        "query": [],
+        "fragment": "NoAuth"
+      },
+      {
+        "line": 18,
+        "protocol": "wireguard",
+        "uri": "wireguard://private-key%3D@example.invalid:51820?publickey=synthetic%2Bkey%3D&address=10.0.0.2%2F32#WG",
+        "encoding": "uri",
+        "host": "example.invalid",
+        "port": 51820,
+        "userInfo": "private-key=",
+        "path": "",
+        "query": [
+          [
+            "publickey",
+            "synthetic+key="
+          ],
+          [
+            "address",
+            "10.0.0.2/32"
+          ]
+        ],
+        "fragment": "WG"
+      },
+      {
+        "line": 20,
+        "protocol": "hysteria2",
+        "uri": "hysteria2://test-auth@example.invalid:443?obfs=salamander&obfs-password=synthetic#HY2",
+        "encoding": "uri",
+        "host": "example.invalid",
+        "port": 443,
+        "userInfo": "test-auth",
+        "path": "",
+        "query": [
+          [
+            "obfs",
+            "salamander"
+          ],
+          [
+            "obfs-password",
+            "synthetic"
+          ]
+        ],
+        "fragment": "HY2"
+      },
+      {
+        "line": 22,
+        "protocol": "hy2",
+        "uri": "hy2://test-auth@example.invalid:443?sni=example.invalid#Alias",
+        "encoding": "uri",
+        "host": "example.invalid",
+        "port": 443,
+        "userInfo": "test-auth",
+        "path": "",
+        "query": [
+          [
+            "sni",
+            "example.invalid"
+          ]
+        ],
+        "fragment": "Alias"
+      },
+      {
+        "line": 24,
+        "protocol": "vless",
+        "uri": "vless://test@example.invalid:443?x=a%2Bb#Literal space | label",
+        "encoding": "uri",
+        "host": "example.invalid",
+        "port": 443,
+        "userInfo": "test",
+        "path": "",
+        "query": [
+          [
+            "x",
+            "a+b"
+          ]
+        ],
+        "fragment": "Literal space | label"
+      }
+    ]
+  }
+}

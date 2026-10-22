@@ -41,3 +41,5 @@ productores se mantienen en `tests/golden`, y las pruebas en `tests`.
 - [HTTP Wakko 4.9](HTTP_Wakko/README.md): catálogo completo de servidores/usuarios, clave nativa por versión y 29 campos de servidor incluidos slots BHTTP. Descarga dual real verificada; sin formato de perfil exportado identificado.
 
 - [TunelGuard VPN 12.8](TunelGuard_VPN/README.md): `.tgv` AES-CBC y catálogo STGCM2.TG autenticado, con paridad Java/ARM64. Catálogo inicial validado; fuente remota responde 404 y su ficha permanece desactivada.
+
+- [V2ray Tunnel Plus 10.0.0](V2ray_Tunnel_Plus/README.md): suscripciones públicas Base64 y URI en texto, con descarga dual completa y paridad Java. 150 perfiles por fuente observados, misma lista representada de dos formas; catálogo Cloud integrado con icono original.

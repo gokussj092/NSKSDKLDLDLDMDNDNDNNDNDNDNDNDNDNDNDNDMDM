@@ -52,11 +52,10 @@ export async function decodeServerVpn(request,opts={}){
       // Each omitted source is explicitly marked REMOTE_TOO_LARGE. Remaining
       // sources are passed intact, with the worker's partial warning visible.
       bytes=bundle.payload;
-    }else if(["http-socketclay","http-wakko"].includes(providerId)){
-      const [servers,users]=await Promise.all([
-        downloadVpnCatalog(providerId,"servers"),downloadVpnCatalog(providerId,"users"),
-      ]);
-      bytes=packPairedVpnCatalogs(providerId,{servers,users});
+    }else if(["http-socketclay","http-wakko","v2ray-tunnel-plus"].includes(providerId)){
+      const names=providerId==="v2ray-tunnel-plus"?["base64","raw"]:["servers","users"];
+      const sources=await Promise.all(names.map(async name=>[name,await downloadVpnCatalog(providerId,name)]));
+      bytes=packPairedVpnCatalogs(providerId,Object.fromEntries(sources));
     }else{
       bytes=await downloadVpnCatalog(providerId);
     }

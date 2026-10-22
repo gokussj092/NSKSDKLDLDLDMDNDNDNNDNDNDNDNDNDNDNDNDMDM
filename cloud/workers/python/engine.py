@@ -314,7 +314,7 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
 
 def decode_provider_catalog(provider_id: str, contents: bytes) -> dict:
     """One fixed provider codec, child-isolated; broker performs all network I/O."""
-    if provider_id not in ("24clan-green", "hx-tunnel", "mkk-hyper", "my-tunnel-proxy", "robust-tunnel", "royal-tunnel", "trv-tunnel", "4u-tunnel-lite", "ac-tunnel-vpn", "austroplus-vpn", "http-fenixvpn", "http-jireh", "http-socketclay", "http-wakko", "tunelguard-vpn", "tunneltweak", "ksh-vpn", "dtunnel-mod"):
+    if provider_id not in ("24clan-green", "hx-tunnel", "mkk-hyper", "my-tunnel-proxy", "robust-tunnel", "royal-tunnel", "trv-tunnel", "4u-tunnel-lite", "ac-tunnel-vpn", "austroplus-vpn", "http-fenixvpn", "http-jireh", "http-socketclay", "http-wakko", "v2ray-tunnel-plus", "tunelguard-vpn", "tunneltweak", "ksh-vpn", "dtunnel-mod"):
         raise DecodeFailure("UNSUPPORTED_FORMAT")
     if not isinstance(contents, bytes) or not contents:
         raise DecodeFailure("INVALID_INPUT")

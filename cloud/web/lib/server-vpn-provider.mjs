@@ -16,8 +16,13 @@ const WAKKO_SOURCES=Object.freeze({
   "servers": "https://dl.dropboxusercontent.com/scl/fi/a6grfye2vx80gxxydc6aw/ServersWK2?rlkey=ulmj9oxy1xx3fedhrtnzdwrxm&st=93x7687n&dl=1",
   "users": "https://dl.dropboxusercontent.com/scl/fi/2sc3ud954k0ai07trkdhj/UsersWK?rlkey=k4wqqaawxcddx0kc1sfanof9r&st=dwrzwrmv&dl=1"
 });
-const PAIRED_SOURCES=Object.freeze({"http-socketclay":SOCKETCLAY_SOURCES,"http-wakko":WAKKO_SOURCES});
+const V2PLUS_SOURCES=Object.freeze({
+  base64:"https://raw.githubusercontent.com/roosterkid/openproxylist/main/V2RAY_BASE64.txt",
+  raw:"https://raw.githubusercontent.com/roosterkid/openproxylist/main/V2RAY_RAW.txt",
+});
+const PAIRED_SOURCES=Object.freeze({"http-socketclay":SOCKETCLAY_SOURCES,"http-wakko":WAKKO_SOURCES,"v2ray-tunnel-plus":V2PLUS_SOURCES});
 const PROVIDERS = Object.freeze({
+  "v2ray-tunnel-plus": {url:V2PLUS_SOURCES.base64,agent:"V2ray Tunnel Plus/10.0.0"},
   "http-wakko": {url:WAKKO_SOURCES.servers,agent:"HTTP Wakko/4.9"},
   "http-socketclay": {
     url:SOCKETCLAY_SOURCES.servers,
@@ -161,7 +166,7 @@ function pinnedGet(url,ip,agent,timeout,headers={}){
   });
 }
 
-export async function downloadVpnCatalog(id,source="servers"){
+export async function downloadVpnCatalog(id,source=id==="v2ray-tunnel-plus"?"base64":"servers"){
   const provider=PROVIDERS[id];
   if(!provider)fail("UNSUPPORTED_FORMAT");
   if(!providerEnabled(id))fail("REMOTE_NOT_CONFIGURED");
