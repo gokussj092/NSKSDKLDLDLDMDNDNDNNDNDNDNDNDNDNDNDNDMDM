@@ -28,6 +28,9 @@ on:
       - "tests/test_focus_vpn_cloud.py"
       - "tests/golden/focus_vpn_cloud*"
       - "decoders/Python/apps/FreedomVPN/**"
+      - "decoders/Python/apps/HTTP_Internet_Infinito/**"
+      - "tests/test_http_internet_infinito.py"
+      - "tests/golden/http_internet_infinito*"
       - "tests/test_freedomvpn.py"
       - "tests/golden/freedomvpn*"
       - "tests/golden/http_custom_899.py"
@@ -71,7 +74,7 @@ jobs:
       - name: Verify HCX4 build 899 native key vectors and authenticated file layers
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_http_custom_899 -v
       - name: Verify TunelGuard/Wakko/SocketClay catalogs and file compatibility
-        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_freedomvpn tests.test_focus_vpn_cloud tests.test_eut_vpn tests.test_v2ray_tunnel_plus tests.test_tunelguard tests.test_http_wakko tests.test_http_socketclay tests.test_http_fenixvpn tests.test_http_jireh -v
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_http_internet_infinito tests.test_freedomvpn tests.test_focus_vpn_cloud tests.test_eut_vpn tests.test_v2ray_tunnel_plus tests.test_tunelguard tests.test_http_wakko tests.test_http_socketclay tests.test_http_fenixvpn tests.test_http_jireh -v
       - name: C2 verify NUR server catalog remains separate from solid profiles
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_cloud_c2_nur_catalog -v
       - name: Hat Tunnel complete JSON, real fixture and optional-field regression

@@ -49,3 +49,5 @@ productores se mantienen en `tests/golden`, y las pruebas en `tests`.
 - [Focus VPN Cloud 5.0](Focus_VPN_Cloud/README.md): catálogo de bloques Unicode/AES-CBC y 12 campos RC4, descarga real de 142 servidores verificada con JDK, CLI y worker aislado. Proveedor, control e icono original integrados.
 
 - [FreedomVPN 1.0.29](FreedomVPN/README.md): catálogo XXTEA con delta propio y ocho campos XXTEA/AES-ECB/símbolos-AES-CBC. 147 servidores descargados y comparados íntegramente con JDK, CLI y worker; proveedor e icono original integrados.
+
+- [HTTP Internet Infinito 1.3.9](HTTP_Internet_Infinito/README.md): catálogo WakkoDev/MD5/AES-CBC y 29 campos de servidor con ROT22; descarga real de 74 servidores comparada íntegramente con JDK, CLI y worker. Usuarios incluidos en el APK verificados offline; proveedor e icono PNG original integrados.

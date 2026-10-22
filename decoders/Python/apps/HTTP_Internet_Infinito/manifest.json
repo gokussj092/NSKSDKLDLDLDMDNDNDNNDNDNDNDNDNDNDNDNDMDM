@@ -1,0 +1,61 @@
+{
+  "id": "http-internet-infinito",
+  "name": "HTTP Internet Infinito",
+  "package": "com.internetinfinito.http",
+  "compatibleVersions": [
+    "1.3.9"
+  ],
+  "versionCode": 139,
+  "engine": "python-wakkodev-md5-aes256-cbc-rot22",
+  "engineVersion": 1,
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "http-internet-infinito",
+    "url": "https://raw.githubusercontent.com/nemygoku/nemy/refs/heads/main/httpinfi",
+    "validatedOn": "2026-10-22",
+    "remoteAuthorization": "Explicit user authorization for external catalogs",
+    "remoteValidated": true,
+    "remoteVersion": "1103",
+    "remoteServersObserved": 74,
+    "remoteFieldsProcessed": 789,
+    "remoteNonemptyFieldsCompared": 586,
+    "remoteBytes": 91584,
+    "remoteSha256": "f65fb3fc8b1e3b5b23e25fa58496aec1b7f42eca8b4155f4ba933a9fde3f3ff8",
+    "embeddedVersion": "1",
+    "embeddedServersObserved": 1,
+    "embeddedUsersObserved": 1,
+    "separateRemoteUserCatalogIdentified": false,
+    "validation": "Entire remote and embedded Servers/Usuarios JSON equals independent JDK; real Python CLI/download and isolated worker match. No filtering, deduplication or truncation.",
+    "publicCatalogVersion": 22,
+    "publicCatalogCards": 24,
+    "deploymentEnabledByDefault": false,
+    "testScope": "3 Python and 19 targeted web checks, no full suites. Python external HTTPS real, Node transport controlled."
+  },
+  "files": {
+    "supported": false,
+    "validation": "Catalog-only integration; no exported profile format or new Android route certified."
+  },
+  "icon": {
+    "file": "HTTP_Internet_Infinito.png",
+    "source": "split_config.xhdpi.apk:res/drawable-xhdpi-v4/ic_launcher.png",
+    "bytes": 29645,
+    "width": 431,
+    "height": 426,
+    "sha256": "93917c9c260d4d7fe7633d57f64f654f9dd800837bac186517f884dfb04c7efa",
+    "policy": "Exact original PNG bytes, no resizing or reconstruction."
+  },
+  "dependencies": {
+    "python": ">=3.10",
+    "pycryptodome": "3.23.0",
+    "supportFiles": [
+      "codec.py",
+      "field_names.json",
+      "../HTTP_FenixVPN/codec.py",
+      "../HTTP_FenixVPN/field_names.json"
+    ]
+  },
+  "sourceApkSha256": "1243ff6fa3038bcfd738b6ba5bd40a32d0506b464e80d5e943676c9556fd8073",
+  "branch": "feat/austroplus-vpn-13-0-1-decoders",
+  "pullRequest": 96,
+  "analyzedBaseCommit": "4bbdf5bffffe5e2e0accc5a2c43b6f3dcb6688e0"
+}

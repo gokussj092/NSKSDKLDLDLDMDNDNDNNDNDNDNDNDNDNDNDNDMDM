@@ -1,6 +1,14 @@
 # SP-DECODE Cloud — Guía para ampliar Server VPN en otro chat
 
-**Estado:** ampliación de catálogo POSPUESTA. Esta guía no habilita proveedores nuevos.
+**Preferencia de esta sesión (2026-10-22):** cuando el usuario adjunte únicamente
+un APK/APKS, continuar automáticamente esta misma integración en la rama del
+PR #96. Mantiene autorización para consultar y descargar los catálogos externos
+de la aplicación. Solicita integración rápida con comprobaciones puntuales del
+script y del enlace al servidor, sin ejecutar todas las suites. Esta instrucción
+sustituye para este lote la indicación general de abrir un PR independiente;
+no autoriza fusionar, desplegar o publicar APK/novedades automáticamente.
+
+**Estado:** ampliación de catálogo autorizada para los APK/APKS aportados en este lote del PR #96.
 **Alcance:** backend Cloud y módulos Python; no modificar el diseño Android ni el panel web.
 **Excepción autorizada por el usuario (2026-10-19):** ajustar exclusivamente carga,
 muestreo y caché Android de iconos para que su peso no excluya aplicaciones.

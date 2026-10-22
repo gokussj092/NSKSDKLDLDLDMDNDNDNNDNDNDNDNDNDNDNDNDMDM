@@ -10,7 +10,7 @@ const body=(content)=>new Request("https://api.spdecode.xyz/api/v1/server-vpn/te
 });
 test("original provider PNGs match the public digest and never contain secrets",()=>{
  const values=catalog();assert.equal(values.catalogVersion,CATALOG_VERSION);
- assert.equal(RECHECK_SECONDS,900);assert.equal(values.apps.length,23);
+ assert.equal(RECHECK_SECONDS,900);assert.equal(values.apps.length,24);
  const ids=new Set();
  for(const app of values.apps) {
    assert(!ids.has(app.id));ids.add(app.id);
@@ -31,7 +31,7 @@ test("version match returns only a cheap unchanged response",async()=>{
 test("new version returns catalog and invalid bodies fail closed",async()=>{
  const response=await list(body({knownVersion:0}));
  const data=await response.json();assert.equal(response.status,200);
- assert.equal(data.unchanged,false);assert.equal(data.apps.length,23);
+ assert.equal(data.unchanged,false);assert.equal(data.apps.length,24);
  for(const invalid of [{knownVersion:-1},{url:"http://127.0.0.1/"},{knownVersion:"1"}]) {
    assert.equal((await list(body(invalid))).status,400);
  }
@@ -48,7 +48,7 @@ test("only registered icon identifiers are served",async()=>{
 
 import {providerIds,providerEnabled,downloadVpnCatalog} from "../lib/server-vpn-provider.mjs";
 test("only fixed catalog providers are eligible for remote broker",async()=>{
-  assert.deepEqual(providerIds().sort(),["24clan-green","4u-tunnel-lite","ac-tunnel-vpn","austroplus-vpn","focus-vpn-cloud","freedom-vpn","http-fenixvpn","http-jireh","http-socketclay","http-wakko","hx-tunnel","ksh-vpn","mkk-hyper","my-tunnel-proxy","robust-tunnel","trv-tunnel","tunneltweak","v2ray-tunnel-plus"]);
+  assert.deepEqual(providerIds().sort(),["24clan-green","4u-tunnel-lite","ac-tunnel-vpn","austroplus-vpn","focus-vpn-cloud","freedom-vpn","http-fenixvpn","http-internet-infinito","http-jireh","http-socketclay","http-wakko","hx-tunnel","ksh-vpn","mkk-hyper","my-tunnel-proxy","robust-tunnel","trv-tunnel","tunneltweak","v2ray-tunnel-plus"]);
   for(const id of providerIds()) assert.equal(providerEnabled(id,{CLOUD_SERVER_VPN_ENABLED:"false"}),false);
   assert.equal(providerEnabled("https://attacker.invalid/",{CLOUD_SERVER_VPN_ENABLED:"true"}),false);
   await assert.rejects(()=>downloadVpnCatalog("https://attacker.invalid/"),{code:"UNSUPPORTED_FORMAT"});
@@ -161,4 +161,11 @@ test("FreedomVPN original icon and verified source follow provider availability"
  assert.equal(app.name,"FreedomVPN");assert.equal(app.decodeEnabled,true);
  assert.equal(app.iconSha256,"70750ce9d34de700556f0c3db93c1a3677ebbe581c06ba267833e449ded63234");
  assert.equal(catalog({availability:{"freedom-vpn":false}}).apps.find(x=>x.id==="freedom-vpn").decodeEnabled,false);
+});
+
+test("Internet Infinito original icon and verified source follow provider availability",()=>{
+ const app=catalog({availability:{"http-internet-infinito":true}}).apps.find(x=>x.id==="http-internet-infinito");
+ assert.equal(app.name,"HTTP Internet Infinito");assert.equal(app.decodeEnabled,true);
+ assert.equal(app.iconSha256,"93917c9c260d4d7fe7633d57f64f654f9dd800837bac186517f884dfb04c7efa");
+ assert.equal(catalog({availability:{"http-internet-infinito":false}}).apps.find(x=>x.id==="http-internet-infinito").decodeEnabled,false);
 });
