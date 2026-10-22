@@ -54,18 +54,28 @@ def decode_field(value: str) -> str:
 
 
 def decode_catalog(data: bytes) -> dict:
+    return decode_sv5c(data, release_code=157, signature_key=SIGNATURE_PUBLIC_KEY,
+                       root_key=ROOT_KEY, context=CONTEXT)
+
+
+def decode_sv5c(data: bytes, *, release_code: int, signature_key: bytes,
+                root_key: bytes, context: bytes) -> dict:
+    """Shared wire primitive; each registered provider supplies fixed APK material."""
     try:
+        release_bytes = struct.pack('<I', release_code)
+        if any(not isinstance(value, bytes) or len(value) != 32 for value in (signature_key, root_key, context)):
+            raise DecodeError('Material SV5C incompatible.')
         shared._bounded(data)
         if len(data) < 84:
             raise DecodeError('Sobre SV5C incompleto.')
         magic, version, purpose, reserved, release, count, meta_size = struct.unpack_from('<4sBBHIII', data)
         if (magic != b'SV5C' or version != 2 or purpose not in (1, 2)
-                or reserved or release != 157 or not 1 <= count <= 4096
+                or reserved or release != release_code or not 1 <= count <= 4096
                 or not 1 <= meta_size <= 512 * 1024 or 20 + meta_size > len(data) - 64):
             raise DecodeError('Sobre SV5C incompatible.')
         unsigned = data[:-64]
         message = hashlib.sha256(b'SV5C-SIG-V2\0' + unsigned + SIGNATURE_SUFFIX).digest()
-        eddsa.new(eddsa.import_public_key(SIGNATURE_PUBLIC_KEY), 'rfc8032').verify(message, data[-64:])
+        eddsa.new(eddsa.import_public_key(signature_key), 'rfc8032').verify(message, data[-64:])
         metadata_bytes = data[20:20 + meta_size]
         metadata = _json(metadata_bytes)
         section, other = ('Servers', 'Usuarios') if purpose == 1 else ('Usuarios', 'Servers')
@@ -76,7 +86,7 @@ def decode_catalog(data: bytes) -> dict:
             raise DecodeError('Metadatos SV5C incompatibles.')
         meta_hash = hashlib.sha256(metadata_bytes).digest()
         purpose_byte = bytes([purpose])
-        base_key = hmac.digest(ROOT_KEY, b'SVR5B2-BASE-KDF-V1\0' + BASE_SALT + RELEASE + purpose_byte + CONTEXT, 'sha256')
+        base_key = hmac.digest(root_key, b'SVR5B2-BASE-KDF-V1\0' + BASE_SALT + release_bytes + purpose_byte + context, 'sha256')
         fields = SERVER_FIELDS if purpose == 1 else USER_FIELDS
         result = metadata.copy()
         records = []
@@ -88,8 +98,8 @@ def decode_catalog(data: bytes) -> dict:
             if record_index != index or not 1 <= size <= 512 * 1024 or offset + 48 + size > len(unsigned):
                 raise DecodeError('Registro SV5C incompatible.')
             index_bytes = struct.pack('<I', index)
-            key = hmac.digest(base_key, b'SVR5B2-REC-KDF-V1\0' + RECORD_SALT + RELEASE + index_bytes + purpose_byte + meta_hash + CONTEXT, 'sha256')
-            aad = data[:20] + meta_hash + AAD_SALT + RELEASE + struct.pack('<II', index, size) + purpose_byte + CONTEXT
+            key = hmac.digest(base_key, b'SVR5B2-REC-KDF-V1\0' + RECORD_SALT + release_bytes + index_bytes + purpose_byte + meta_hash + context, 'sha256')
+            aad = data[:20] + meta_hash + AAD_SALT + release_bytes + struct.pack('<II', index, size) + purpose_byte + context
             cipher = ChaCha20_Poly1305.new(key=key, nonce=data[offset + 8:offset + 32])
             cipher.update(aad)
             record = _json(cipher.decrypt_and_verify(data[offset + 32:offset + 32 + size], data[offset + 32 + size:offset + 48 + size]))

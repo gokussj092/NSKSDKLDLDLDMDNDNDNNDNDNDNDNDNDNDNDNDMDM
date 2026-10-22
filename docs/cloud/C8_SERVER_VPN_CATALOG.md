@@ -454,3 +454,24 @@ controlado, HTTPS Python real. Herramientas ELF/JNI y ARM64 guardadas en
 `scripts/apk_analysis/`. Disponible en código, pendiente de actualizar la VPS.
 Ver README/TESTING/manifest de la aplicación; no se añade una ruta de archivos,
 se fusiona el PR, despliega el servidor ni publica un APK o novedades.
+
+
+## TurboMX VPN 143.1.26 — catálogo versión 30
+
+Proveedor `turbomx-vpn`, paquete `turbo.mx.anuncios`, build 168. Dos fuentes
+HTTPS fijas, descarga pareada, control administrativo, worker aislado e icono
+PNG original 192×192. Catálogo público mínimo **30**, **32 fichas**.
+
+SV5C v2/release 143, Ed25519, HMAC-SHA256, XChaCha20-Poly1305 y campos AES-CBC/
+ROT5. Reutiliza la primitiva de SuperFlash con firma, clave y contexto TurboMX
+confirmados por separado; conserva todos los campos y autentica cada registro.
+SuperFlash mantiene sus valores/release 157 y ambos lectores rechazan el otro.
+
+HTTP 200 autorizado del 2026-10-22: **268 servidores / una entrada de usuarios**,
+versiones **18 / 3**, 2900 campos procesados / 2189 no vacíos. Ambos documentos
+completos y assets (240 / 1, versiones 3 / 3) coinciden con la referencia nativa
+original/libsodium/JDK, CLI y worker. **3 pruebas nuevas, 3 regresiones SuperFlash
+y 31 web aprobadas**, sin suites completas. El CLI HTTPS `--all` y los procesos
+son reales; transporte Node controlado. Herramientas y layouts por SHA-256
+conservados. Disponible en código, pendiente de actualizar VPS; sin merge,
+publicación APK, novedades automáticas ni ruta de perfiles exportados nueva.

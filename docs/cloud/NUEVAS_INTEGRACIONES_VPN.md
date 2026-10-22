@@ -11,6 +11,23 @@ entregas anteriores ni publicar anuncios automáticamente.
 
 ## Nuevos Servidores VPN añadidos
 
+- **TurboMX VPN 143.1.26 (168) ✅** — ambos catálogos oficiales descargados,
+  descifrados e integrados en PR #96 con autorización externa expresa.
+  HTTP 200 del 2026-10-22: **268 servidores**, versión **18**, y **una entrada
+  de usuarios**, versión **3**; 2900 campos procesados / 2189 no vacíos.
+  Assets: **240 / 1**, versión **3 / 3**. Los cuatro documentos completos
+  coinciden con KDF/AAD originales de TurboMX, libsodium y JDK; CLI HTTPS
+  `--all`, stdin fuera del repo y worker aislado también coinciden íntegramente.
+- Carpeta `decoders/Python/apps/TurboMX_VPN/`, proveedor `turbomx-vpn`, dos fuentes
+  fijas, sobre dual, control e icono original. Catálogo mínimo **30**, 32 fichas.
+  Reutiliza SV5C v2 con release **143**, firma, clave y contexto propios;
+  SuperFlash conserva release 157 y supera sus regresiones y par real/worker.
+- **3 pruebas TurboMX, 3 regresiones SuperFlash y 31 web aprobadas**; sin suites
+  completas. Herramientas ELF/JNI/ARM64 reutilizadas y layouts conocidos por hash
+  guardados en Git. Transporte Node controlado; HTTPS/CLI y worker reales.
+  Disponible en código, pendiente de VPS. Sin fusión, despliegue, APK, novedades
+  automáticas o formato de archivo nuevo; binarios y cuentas fuera de Git.
+
 - **SuperFlash VPN 184.0.1 (184) ✅** — ambos catálogos oficiales descargados,
   descifrados e integrados en el PR #96 con autorización externa expresa.
   HTTP 200 del 2026-10-22: **268 servidores**, versión **27**, y **una entrada

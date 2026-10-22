@@ -1,6 +1,6 @@
 """Compare private SV5C captures using original ARM64 KDF/AAD, host libsodium/JDK.
 
-Requires the owner's original libspeigoshield.so; no APK/SO or captures in Git.
+Requires a known SuperFlash/TurboMX libspeigoshield.so; no binaries/captures in Git.
 Usage: python tests/golden/superflash_vpn_native_oracle.py library.so input output
 The output may contain account data: keep it outside Git.
 """
@@ -18,6 +18,16 @@ import sys
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'scripts/apk_analysis'))
 from arm64_function import Arm64Function
+
+# Addresses belong to these exact inspected libraries; unknown hashes fail.
+LAYOUTS = {
+ 'd98368bf814482a9eb29fe246916cfc43e465ce07e17cd3de949d5def8a186fb':
+     {'kdf': 0x19234, 'aad': 0x1997c, 'public': 0x2119, 'release': 157,
+      'fixture': 'superflash_vpn_vectors.json'},
+ 'ff8779979b63ee88b8dd7288a4fbfd963d4eb109484c529d52811c7e6bb286ab':
+     {'kdf': 0x19240, 'aad': 0x19988, 'public': 0x2111, 'release': 143,
+      'fixture': 'turbomx_vpn_vectors.json'},
+}
 
 # APK resource names, independently extracted; do not import the reader.
 FIELDS = {'2kDKELRmSE143VdcX3FPzw==', '66P9ZUEM1ju4WGhv856BSg==',
@@ -38,8 +48,9 @@ FIELDS = {'2kDKELRmSE143VdcX3FPzw==', '66P9ZUEM1ju4WGhv856BSg==',
 
 def decode(library, data):
     emu = Arm64Function(library)
-    if hashlib.sha256(emu.image.data).hexdigest() != 'd98368bf814482a9eb29fe246916cfc43e465ce07e17cd3de949d5def8a186fb':
-        raise ValueError('Oracle requires the inspected SuperFlash native library')
+    layout = LAYOUTS.get(hashlib.sha256(emu.image.data).hexdigest())
+    if not layout:
+        raise ValueError('Oracle requires an explicitly inspected SV5C native library')
     sodium = C.CDLL(ctypes.util.find_library('sodium'))
     verify = sodium.crypto_sign_verify_detached
     verify.argtypes = [C.c_char_p, C.c_char_p, C.c_ulonglong, C.c_char_p]
@@ -49,7 +60,7 @@ def decode(library, data):
     purpose = data[5]
     count, length = struct.unpack_from('<II', data, 12)
     message = hashlib.sha256(b'SV5C-SIG-V2\0' + data[:-64] + bytes.fromhex('d2f5270a3b6c91e4')).digest()
-    assert verify(data[-64:], message, 32, emu.image.read(0x2119, 32)) == 0
+    assert verify(data[-64:], message, 32, emu.image.read(layout['public'], 32)) == 0
     metadata = json.loads(data[20:20 + length])
     section = 'Servers' if purpose == 1 else 'Usuarios'
     pos = 20 + length
@@ -60,8 +71,8 @@ def decode(library, data):
     for index in range(count):
         ordinal, size = struct.unpack_from('<II', data, pos)
         assert ordinal == index
-        emu.call(0x19234, purpose, index, meta_hash, key_ptr)
-        emu.call(0x1997c, source, meta_hash, purpose, index, size, aad_ptr)
+        emu.call(layout['kdf'], purpose, index, meta_hash, key_ptr)
+        emu.call(layout['aad'], source, meta_hash, purpose, index, size, aad_ptr)
         plain, actual = C.create_string_buffer(size), C.c_ulonglong()
         assert decrypt(plain, C.byref(actual), None, data[pos + 32:pos + 48 + size], size + 16,
                        emu.read(aad_ptr, 105), 105, data[pos + 8:pos + 32], emu.read(key_ptr, 32)) == 0

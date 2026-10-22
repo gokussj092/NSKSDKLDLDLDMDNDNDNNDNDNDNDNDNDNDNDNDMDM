@@ -8,6 +8,10 @@ import dns from "node:dns/promises";
 import https from "node:https";
 import {publicIpv4} from "./c35-provider.mjs";
 
+const TURBOMX_SOURCES=Object.freeze({
+  servers:"https://raw.githubusercontent.com/apksdemons/apks2/refs/heads/main/turbomx/servr_turbomx_sv5c",
+  users:"https://raw.githubusercontent.com/apksdemons/apks2/refs/heads/main/turbomx/user_turbomx_sv5c",
+});
 const SUPERFLASH_SOURCES=Object.freeze({
   servers:"https://raw.githubusercontent.com/apksdemons/apks2/refs/heads/main/supervpn/servr_superflash_sv5c",
   users:"https://raw.githubusercontent.com/apksdemons/apks2/refs/heads/main/supervpn/user_superflash_sv5c",
@@ -28,8 +32,9 @@ const V2PLUS_SOURCES=Object.freeze({
   base64:"https://raw.githubusercontent.com/roosterkid/openproxylist/main/V2RAY_BASE64.txt",
   raw:"https://raw.githubusercontent.com/roosterkid/openproxylist/main/V2RAY_RAW.txt",
 });
-const PAIRED_SOURCES=Object.freeze({"superflash-vpn":SUPERFLASH_SOURCES,"onspace-vpn":ONSPACE_SOURCES,"http-socketclay":SOCKETCLAY_SOURCES,"http-wakko":WAKKO_SOURCES,"v2ray-tunnel-plus":V2PLUS_SOURCES});
+const PAIRED_SOURCES=Object.freeze({"turbomx-vpn":TURBOMX_SOURCES,"superflash-vpn":SUPERFLASH_SOURCES,"onspace-vpn":ONSPACE_SOURCES,"http-socketclay":SOCKETCLAY_SOURCES,"http-wakko":WAKKO_SOURCES,"v2ray-tunnel-plus":V2PLUS_SOURCES});
 const PROVIDERS = Object.freeze({
+  "turbomx-vpn": {url:TURBOMX_SOURCES.servers,agent:"TurboMX VPN/143.1.26"},
   "superflash-vpn": {url:SUPERFLASH_SOURCES.servers,agent:"SuperFlash VPN/184.0.1"},
   "rmp-tunnel-pro": {url:"https://raw.githubusercontent.com/pipoyrichards/RMPSYSTEM/refs/heads/main/RMPPRO",agent:"RMP TUNNEL PRO/RMP-5"},
   "rjc-tunnel-pro": {url:"https://raw.githubusercontent.com/pipoyrichards/RJCPRO/refs/heads/main/FEBRUARY",agent:"RJC TUNNEL PRO/RJC-6"},

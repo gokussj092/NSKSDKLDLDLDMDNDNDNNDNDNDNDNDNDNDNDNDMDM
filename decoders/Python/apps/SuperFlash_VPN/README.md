@@ -59,3 +59,8 @@ Las herramientas reutilizables `elf_inspect.py` y `arm64_function.py` están en
 APK, SO, descargas y datos de usuarios se mantienen fuera de Git. Integración
 de catálogo SV5C de esta versión; no certifica un formato de perfil exportado.
 Ver [TESTING.md](TESTING.md) y [manifest.json](manifest.json).
+
+La primitiva interna `decode_sv5c` también se reutiliza por TurboMX con otro
+release, firma, clave y contexto fijos. `decode_catalog` de SuperFlash conserva
+los valores originales y rechaza catálogos TurboMX. No se mezclan materiales
+ni se prueban claves de otros proveedores cuando falla la autenticación.

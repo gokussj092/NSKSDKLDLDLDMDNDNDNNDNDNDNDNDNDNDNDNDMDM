@@ -1,6 +1,6 @@
 """Synthetic SV5C: original native KDF/AAD + host libsodium + JDK fields.
 
-Pass the original SuperFlash 184.0.1 libspeigoshield.so path. Fixture signing
+Pass a known SuperFlash 184.0.1 or TurboMX 143.1.26 library path. Fixture signing
 seed is public test data; it is unrelated to the application's signing key.
 """
 import base64
@@ -12,13 +12,15 @@ from pathlib import Path
 import struct
 import subprocess
 import sys
-from superflash_vpn_native_oracle import Arm64Function
+from superflash_vpn_native_oracle import Arm64Function, LAYOUTS
 
 HERE = Path(__file__).resolve().parent
 
 
 def main():
     emu = Arm64Function(sys.argv[1])
+    layout = LAYOUTS.get(hashlib.sha256(emu.image.data).hexdigest())
+    if not layout: raise ValueError('Unknown native library')
     sodium = C.CDLL(ctypes.util.find_library('sodium'))
     public, secret = C.create_string_buffer(32), C.create_string_buffer(64)
     assert sodium.crypto_sign_seed_keypair(public, secret, bytes(range(32))) == 0
@@ -36,15 +38,15 @@ def main():
 
     def seal(purpose, metadata, records):
         meta = json.dumps(metadata, ensure_ascii=False, separators=(',', ':')).encode()
-        header = struct.pack('<4sBBHIII', b'SV5C', 2, purpose, 0, 157, len(records), len(meta))
+        header = struct.pack('<4sBBHIII', b'SV5C', 2, purpose, 0, layout['release'], len(records), len(meta))
         source = emu.alloc(header);mh = emu.alloc(hashlib.sha256(meta).digest())
         key, aad = emu.alloc(32), emu.alloc(105)
         parts = [header, meta]
         for i, record in enumerate(records):
             plain = record.encode() if isinstance(record, str) else json.dumps(record, ensure_ascii=False).encode()
             nonce = bytes([i + purpose]) * 24
-            emu.call(0x19234, purpose, i, mh, key)
-            emu.call(0x1997c, source, mh, purpose, i, len(plain), aad)
+            emu.call(layout['kdf'], purpose, i, mh, key)
+            emu.call(layout['aad'], source, mh, purpose, i, len(plain), aad)
             output, size = C.create_string_buffer(len(plain) + 16), C.c_ulonglong()
             assert encrypt(output, C.byref(size), plain, len(plain), emu.read(aad, 105), 105,
                            None, nonce, emu.read(key, 32)) == 0
@@ -82,7 +84,7 @@ def main():
                'testPublicKey': public.raw.hex(), 'servers': encoded(server_bytes), 'users': encoded(user_bytes),
                'expectedServers': expected_servers, 'expectedUsers': expected_users,
                'invalid': [encoded(v) for v in invalid]}
-    (HERE / 'superflash_vpn_vectors.json').write_text(json.dumps(fixture, ensure_ascii=False, indent=2) + '\n')
+    (HERE / layout['fixture']).write_text(json.dumps(fixture, ensure_ascii=False, indent=2) + '\n')
 
 
 if __name__ == '__main__': main()

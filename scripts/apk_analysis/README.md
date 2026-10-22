@@ -60,3 +60,10 @@ de cadenas y resultados descifrados fuera de Git. Las salidas pueden contener
 claves de formato o datos de usuarios; las herramientas imprimen solo recuentos
 y metadatos. La descarga de catálogos se realiza por el lector de cada aplicación,
 no por estas herramientas.
+
+TurboMX 143.1.26 reutiliza las herramientas ELF/JNI/ARM64 anteriores. La referencia
+`tests/golden/superflash_vpn_native_oracle.py` ahora selecciona únicamente los
+layouts conocidos de SuperFlash/TurboMX por SHA-256 exacto del SO. Sus offsets,
+revisión y clave pública se verificaron por separado; no se deducen del nombre
+ni de la diferencia de tamaños. El generador compartido escribe vectores
+sintéticos independientes según el layout y conserva los de SuperFlash.
