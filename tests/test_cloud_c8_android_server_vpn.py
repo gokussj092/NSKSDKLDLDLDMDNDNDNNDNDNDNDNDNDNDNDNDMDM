@@ -132,6 +132,7 @@ class PhaseVServerVpnIntegration(unittest.TestCase):
         originals["http-jireh"]=(
             ROOT/"decoders/Python/apps/HTTP_Jireh/HTTP_Jireh.png",
             WEB/"public/server-vpn-icons/http-jireh.png")
+        originals["megatunnel"]=(ROOT/"decoders/Python/apps/MegaTunnel/MegaTunnel.png",WEB/"public/server-vpn-icons/megatunnel.png")
         originals["http-internet-infinito"]=(ROOT/"decoders/Python/apps/HTTP_Internet_Infinito/HTTP_Internet_Infinito.png",WEB/"public/server-vpn-icons/http-internet-infinito.png")
         originals["freedom-vpn"]=(ROOT/"decoders/Python/apps/FreedomVPN/FreedomVPN.png",WEB/"public/server-vpn-icons/freedom-vpn.png")
         originals["focus-vpn-cloud"]=(ROOT/"decoders/Python/apps/Focus_VPN_Cloud/Focus_VPN_Cloud.png",WEB/"public/server-vpn-icons/focus-vpn-cloud.png")

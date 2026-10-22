@@ -107,6 +107,19 @@ entregas anteriores ni publicar anuncios automáticamente.
   pública tras actualizar la VPS. No se añade ruta de archivos ni se fusiona,
   despliega o publica APK o novedades automáticamente.
 
+- **MegaTunnel 1.17.1 (17) ✅** — catálogo descargado y descifrado realmente,
+  con autorización externa: **10 servidores y 124 ajustes**, versión **0.2**,
+  **297 campos procesados / 210 no vacíos**. Documento completo igual al oracle
+  JDK independiente, descarga Python, CLI real y worker aislado.
+- Carpeta `decoders/Python/apps/MegaTunnel/`, AES-256-GCM y 13 campos Base64/XOR,
+  proveedor `megatunnel`, controles e icono PNG original. Catálogo mínimo **23**
+  (**25 fichas**). Se preservan ambas listas completas, registros dispersos,
+  vacíos y metadatos; no se identificó fuente separada de usuarios.
+- Comprobación breve: **3 pruebas Python y 20 web aprobadas**, sin suites
+  completas. HTTPS real por Python y transporte Node controlado. PR #96;
+  disponibilidad pública tras actualizar la VPS. Sin registrar `.meg`,
+  fusionar, desplegar o publicar APK/novedades automáticamente.
+
 ## Nuevos métodos de archivos, textos o enlaces añadidos
 
 - **HTTP SocketClay 3.4.0 ✅ — archivos `.sks`**: lector Python y ruta Cloud

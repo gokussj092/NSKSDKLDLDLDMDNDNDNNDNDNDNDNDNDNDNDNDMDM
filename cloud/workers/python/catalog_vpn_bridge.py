@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 PROVIDERS = {
+    "megatunnel": "decoders.Python.apps.MegaTunnel.server_catalog_decoder",
     "http-internet-infinito": "decoders.Python.apps.HTTP_Internet_Infinito.server_catalog_decoder",
     "freedom-vpn": "decoders.Python.apps.FreedomVPN.server_catalog_decoder",
     "focus-vpn-cloud": "decoders.Python.apps.Focus_VPN_Cloud.server_catalog_decoder",
