@@ -132,6 +132,7 @@ class PhaseVServerVpnIntegration(unittest.TestCase):
         originals["http-jireh"]=(
             ROOT/"decoders/Python/apps/HTTP_Jireh/HTTP_Jireh.png",
             WEB/"public/server-vpn-icons/http-jireh.png")
+        originals["rmp-tunnel-pro"]=(ROOT/"decoders/Python/apps/RMP_TUNNEL_PRO/RMP_TUNNEL_PRO.png",WEB/"public/server-vpn-icons/rmp-tunnel-pro.png")
         originals["rjc-tunnel-pro"]=(ROOT/"decoders/Python/apps/RJC_TUNNEL_PRO/RJC_TUNNEL_PRO.png",WEB/"public/server-vpn-icons/rjc-tunnel-pro.png")
         originals["proneet-vpn"]=(ROOT/"decoders/Python/apps/ProNeet_VPN/ProNeet_VPN.png",WEB/"public/server-vpn-icons/proneet-vpn.png")
         originals["onspace-vpn"]=(ROOT/"decoders/Python/apps/OnSpace_VPN/OnSpace_VPN.png",WEB/"public/server-vpn-icons/onspace-vpn.png")

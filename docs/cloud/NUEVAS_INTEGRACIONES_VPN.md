@@ -11,6 +11,22 @@ entregas anteriores ni publicar anuncios automáticamente.
 
 ## Nuevos Servidores VPN añadidos
 
+- **RMP TUNNEL PRO RMP-5 (5) ✅** — catálogo oficial descargado, descifrado e
+  integrado en el PR #96 con autorización externa expresa. HTTP 200 del
+  2026-10-22: **40 servidores y 1250 payloads**, versión **9.9**. Asset inicial:
+  **40 servidores y 1211 payloads**, versión **3.8**. Ambos documentos completos
+  coinciden con JDK independiente, CLI y worker aislado sin salida parcial;
+  el CLI `--download` también devuelve la descarga real completa.
+- Carpeta `decoders/Python/apps/RMP_TUNNEL_PRO/`, worker `rmp-tunnel-pro`, fuente
+  HTTPS fija, control administrativo e icono PNG original. Catálogo mínimo **28**,
+  30 fichas. La receta XXTEA se confirmó en este APK y reutiliza Mx sin alterar
+  lectores anteriores. **3 comprobaciones Python y 25 web aprobadas**;
+  sin suites completas. Transporte Node controlado; Python HTTPS/CLI y worker
+  aislado reales. Disponible en código, pendiente de actualizar la VPS.
+- No se registra un perfil exportado ni una API de acceso como feed adicional.
+  Sin fusión, despliegue, publicación APK o novedades automáticas; datos reales
+  y binarios de análisis excluidos de Git.
+
 - **RJC TUNNEL PRO RJC-6 (6) ✅** — catálogo oficial descargado, descifrado e
   integrado en el PR #96 con autorización externa expresa. HTTP 200 del
   2026-10-22: **41 servidores y 1253 payloads**, versión **22.4**. Asset inicial:

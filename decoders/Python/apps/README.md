@@ -63,3 +63,5 @@ productores se mantienen en `tests/golden`, y las pruebas en `tests`.
 - [ProNeet VPN 27.11](ProNeet_VPN/README.md): catálogos de modo usuario/token con Base64 personalizado/AES-CBC y 23 campos internos. Assets reales de 25/23 servidores comprobados con JDK, CLI y worker. Ficha e icono incluidos; descarga remota desactivada porque ambas URLs oficiales contienen solo un salto de línea.
 
 - [RJC TUNNEL PRO RJC-6](RJC_TUNNEL_PRO/README.md): catálogo XXTEA compartido con Mx, descarga real de 41 servidores y 1253 payloads comparada íntegramente con JDK, CLI y worker. Proveedor, control e icono PNG original integrados.
+
+- [RMP TUNNEL PRO RMP-5](RMP_TUNNEL_PRO/README.md): catálogo XXTEA compartido, descarga real de 40 servidores y 1250 payloads comparada íntegramente con JDK, CLI y worker. Proveedor, control e icono PNG original integrados.

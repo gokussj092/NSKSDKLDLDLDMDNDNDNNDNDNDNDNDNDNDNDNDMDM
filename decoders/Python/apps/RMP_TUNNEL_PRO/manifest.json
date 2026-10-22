@@ -1,0 +1,89 @@
+{
+  "id": "rmp-tunnel-pro",
+  "name": "RMP TUNNEL PRO",
+  "package": "com.rmptunnel.pro",
+  "compatibleVersions": [
+    "RMP-5"
+  ],
+  "versionCode": 5,
+  "engine": "python-shared-mx-xxtea",
+  "engineVersion": 1,
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "rmp-tunnel-pro",
+    "url": "https://raw.githubusercontent.com/pipoyrichards/RMPSYSTEM/refs/heads/main/RMPPRO",
+    "validatedOn": "2026-10-22",
+    "remoteAuthorization": "Explicit user authorization for external catalogs",
+    "remoteValidated": true,
+    "remoteVersion": "9.9",
+    "remoteServersObserved": 40,
+    "remotePayloadsObserved": 1250,
+    "sourceEvidence": [
+      {
+        "source": "catalog-download.bin",
+        "bytes": 723084,
+        "sha256": "8696d369274b630e733438e89d597d4a55ba384a02859db3c651e2a29ea90579",
+        "version": "9.9",
+        "lists": {
+          "Premium_servers": 0,
+          "Vip_servers": 0,
+          "Private_servers": 0,
+          "Free_servers": 40,
+          "Payloads": 1250
+        },
+        "renderedBytes": 664892,
+        "jdkCliWorkerEqual": true
+      },
+      {
+        "source": "gremlin.json",
+        "bytes": 698936,
+        "sha256": "03c9cc0f2baa6e46026f8759715867071b2796e9af30b03e1c2186c202223501",
+        "version": "3.8",
+        "lists": {
+          "Premium_servers": 0,
+          "Vip_servers": 0,
+          "Private_servers": 0,
+          "Free_servers": 40,
+          "Payloads": 1211
+        },
+        "renderedBytes": 643066,
+        "jdkCliWorkerEqual": true
+      }
+    ],
+    "separateUserCatalogIdentified": false,
+    "validation": "Entire real remote and embedded documents equal independent shared JDK XXTEA oracle, offline CLI, isolated worker and actual CLI HTTPS --download. isPartial:false.",
+    "publicCatalogVersion": 28,
+    "publicCatalogCards": 30,
+    "deploymentEnabledByDefault": false,
+    "testScope": "3 Python and 25 web checks; no full suites. Python external HTTPS real, Node transport controlled."
+  },
+  "files": {
+    "supported": false,
+    "validation": "Catalog-only; no exported profile sample or new file route certified."
+  },
+  "icon": {
+    "file": "RMP_TUNNEL_PRO.png",
+    "source": "base.apk:res/drawable/ic_app_icon.png",
+    "bytes": 69948,
+    "sha256": "c00e5d70987cf08e1b868be5800962569abd16e98f86d9e4bc999f71e1405527",
+    "width": 512,
+    "height": 512,
+    "policy": "Exact original PNG, no conversion or resizing."
+  },
+  "dependencies": {
+    "python": ">=3.10",
+    "supportFiles": [
+      "codec.py",
+      "../Mx_Tunnel_PRO/codec.py",
+      "../HX_Tunnel_VPN/HX_Tunnel_VPN.py"
+    ],
+    "sharedSourceSha256": {
+      "../Mx_Tunnel_PRO/codec.py": "79dd9b5d3875b4215e143fdb7d75df76c37aa51f733637f6849651515637ba12",
+      "../HX_Tunnel_VPN/HX_Tunnel_VPN.py": "ac355fdeb5c4558ffbb765ed7335ed226578911b3ddc89c901bf520712549a6e"
+    }
+  },
+  "sourceApkSha256": "7be8fb3d627f82c9d1ae33471684b2d663f6fb8cbcbf466679504469be0576e2",
+  "branch": "feat/austroplus-vpn-13-0-1-decoders",
+  "pullRequest": 96,
+  "analyzedBaseCommit": "18a6617a2de164ddb7ae82764ebe0865ca458d10"
+}
