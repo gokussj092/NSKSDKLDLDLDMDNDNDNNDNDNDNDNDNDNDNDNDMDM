@@ -11,6 +11,24 @@ entregas anteriores ni publicar anuncios automáticamente.
 
 ## Nuevos Servidores VPN añadidos
 
+- **SuperFlash VPN 184.0.1 (184) ✅** — ambos catálogos oficiales descargados,
+  descifrados e integrados en el PR #96 con autorización externa expresa.
+  HTTP 200 del 2026-10-22: **268 servidores**, versión **27**, y **una entrada
+  de usuarios**, versión **5**; 2900 campos procesados / 2189 no vacíos.
+  Todos los registros, firmas y tags se abren; ambos documentos completos y
+  los dos assets SV5C coinciden con KDF/AAD nativos originales, libsodium y JDK.
+  CLI HTTPS `--all`, stdin fuera del repo y worker aislado coinciden íntegramente.
+- Carpeta `decoders/Python/apps/SuperFlash_VPN/`, proveedor `superflash-vpn`, dos
+  fuentes fijas, sobre dual, controles y PNG original. Catálogo mínimo **29**,
+  31 fichas. SV5C v2/Ed25519/XChaCha20-Poly1305 más campos AES-CBC/ROT5;
+  los metadatos visibles por sí solos no cuentan como descifrado completo.
+- **3 comprobaciones Python y 30 web aprobadas**, sin suites completas.
+  Herramientas nuevas ELF/JNI y ARM64 conservadas en `scripts/apk_analysis/`,
+  referencias y vectores sintéticos en `tests/golden/`. Python HTTPS/CLI y worker
+  reales; transporte Node controlado. Disponible en código, pendiente de VPS.
+  Sin fusión, despliegue, APK o novedades automáticas; binarios y cuentas fuera
+  de Git. No se registra un formato de archivo exportado nuevo.
+
 - **RMP TUNNEL PRO RMP-5 (5) ✅** — catálogo oficial descargado, descifrado e
   integrado en el PR #96 con autorización externa expresa. HTTP 200 del
   2026-10-22: **40 servidores y 1250 payloads**, versión **9.9**. Asset inicial:

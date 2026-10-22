@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 PROVIDERS = {
+    "superflash-vpn": "decoders.Python.apps.SuperFlash_VPN.server_catalog_decoder",
     "rmp-tunnel-pro": "decoders.Python.apps.RMP_TUNNEL_PRO.server_catalog_decoder",
     "rjc-tunnel-pro": "decoders.Python.apps.RJC_TUNNEL_PRO.server_catalog_decoder",
     "proneet-vpn": "decoders.Python.apps.ProNeet_VPN.server_catalog_decoder",

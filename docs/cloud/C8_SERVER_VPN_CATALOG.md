@@ -430,3 +430,27 @@ coinciden con el documento Java completo; ZIP autónomo probado. El intento
 de broker directo en este entorno falló por DNS EAI_AGAIN (también GitHub),
 sin relajar la política; transporte probado con DNS controlado, pendiente
 una prueba directa en VPS. No se despliega ni fusiona el PR.
+
+
+## SuperFlash VPN 184.0.1 — catálogo versión 29
+
+Proveedor `superflash-vpn`, paquete `speicers.diablo.vpn`, build 184. Dos fuentes
+HTTPS fijas, descarga pareada íntegra, worker Python aislado, control administrativo
+y PNG original 192×192. Catálogo público mínimo **29**, **31 fichas**.
+
+SV5C v2/release 157: firma Ed25519 sobre hash de dominio, metadatos y todos los
+registros; cada registro se abre con XChaCha20-Poly1305 y KDF HMAC-SHA256/AAD
+ligados a propósito, índice, tamaño y hash de metadatos. Campos AES-256-CBC con
+IV incluido y rotación Java inversa de ROT5. Conserva nombres opacos, campos
+vacíos, tipos, listas, opciones xhttp en claro y propiedades desconocidas.
+No devuelve éxito con solo los metadatos visibles ni omite registros fallidos.
+
+HTTP 200 autorizado del 2026-10-22: **268 servidores / una entrada de usuarios**,
+versiones **27 / 5**, ambos JSON completos iguales a la referencia independiente
+nativa/libsodium/JDK. Assets: **234 / 1**, versiones **2 / 4**. CLI `--all` HTTPS,
+stdin fuera del repo y worker aislado coinciden con el par completo.
+**3 pruebas Python y 30 web aprobadas**, sin suites completas; transporte Node
+controlado, HTTPS Python real. Herramientas ELF/JNI y ARM64 guardadas en
+`scripts/apk_analysis/`. Disponible en código, pendiente de actualizar la VPS.
+Ver README/TESTING/manifest de la aplicación; no se añade una ruta de archivos,
+se fusiona el PR, despliega el servidor ni publica un APK o novedades.

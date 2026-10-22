@@ -19,6 +19,9 @@ python scripts/apk_analysis/paranoid_strings.py scripts/apk_analysis/work/jadx2/
   'scripts/apk_analysis/work/jadx2/sources/org/lsposed/lsparanoid/Deobfuscator$MHRTUNNELVPN$app.java' \
   scripts/apk_analysis/work/clear --inventory
 python scripts/apk_analysis/random_strings.py fuentes-jadx C1682lA salida-privada
+python scripts/apk_analysis/elf_inspect.py biblioteca.so
+python scripts/apk_analysis/elf_inspect.py biblioteca.so --disassemble 0x79ec --size 664
+python scripts/apk_analysis/elf_inspect.py biblioteca.so --jni-table 0x26358 --count 17
 ```
 
 - `inspect_apk.py`: metadatos, hashes, DEX raíz, PNG original si existe como PNG,
@@ -33,6 +36,19 @@ python scripts/apk_analysis/random_strings.py fuentes-jadx C1682lA salida-privad
 - `random_strings.py`: patrón de constructor con `long[]` y `java.util.Random`,
   como el confirmado en MegaTunnel. El nombre de clase es obligatorio; no
   presupone que cualquier constructor tenga este algoritmo.
+- `elf_inspect.py`: lectura AArch64 de segmentos, símbolos, PLT, relocaciones,
+  desensamblado y tablas JNI dinámicas con direcciones conocidas. No ejecuta SO.
+- `arm64_function.py`: clase `Arm64Function` para emular funciones aisladas con
+  Unicorn, límite de instrucciones/memoria y relocaciones relativas. Solo modela
+  memcpy/memset; rechaza cualquier otra importación. No carga JNI, Android ni
+  ofrece red o llamadas al sistema. Las direcciones y argumentos deben obtenerse
+  antes por inspección. Comprobada con las funciones KDF/AAD originales de
+  SuperFlash 184.0.1; no pretende arrancar una biblioteca completa.
+
+Referencia reproducible de SuperFlash: `tests/golden/superflash_vpn_native_oracle.py`
+usa estas herramientas con el SO original aportado localmente, libsodium del
+sistema y JDK. `superflash_vpn_generate.py` crea únicamente vectores sintéticos
+firmados con una clave pública de pruebas, que el lector de producción rechaza.
 
 Los patrones son específicos de familias confirmadas; no son un desempaquetador
 universal de LIAPP ni garantizan recuperar todo el código protegido. Verificar
