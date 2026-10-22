@@ -10,7 +10,7 @@ const body=(content)=>new Request("https://api.spdecode.xyz/api/v1/server-vpn/te
 });
 test("original provider PNGs match the public digest and never contain secrets",()=>{
  const values=catalog();assert.equal(values.catalogVersion,CATALOG_VERSION);
- assert.equal(RECHECK_SECONDS,900);assert.equal(values.apps.length,20);
+ assert.equal(RECHECK_SECONDS,900);assert.equal(values.apps.length,21);
  const ids=new Set();
  for(const app of values.apps) {
    assert(!ids.has(app.id));ids.add(app.id);
@@ -31,7 +31,7 @@ test("version match returns only a cheap unchanged response",async()=>{
 test("new version returns catalog and invalid bodies fail closed",async()=>{
  const response=await list(body({knownVersion:0}));
  const data=await response.json();assert.equal(response.status,200);
- assert.equal(data.unchanged,false);assert.equal(data.apps.length,20);
+ assert.equal(data.unchanged,false);assert.equal(data.apps.length,21);
  for(const invalid of [{knownVersion:-1},{url:"http://127.0.0.1/"},{knownVersion:"1"}]) {
    assert.equal((await list(body(invalid))).status,400);
  }
@@ -140,4 +140,11 @@ test("V2ray Tunnel Plus original icon and verified remote source follow provider
  assert.equal(catalog({availability:{"v2ray-tunnel-plus":false}}).apps.find(x=>x.id==="v2ray-tunnel-plus").decodeEnabled,false);
  assert.equal(app.iconSha256,"b87f9c792ec5271da31e255cf957e02abf8fbafd0f1f2737549f232d47cfb47f");
  assert.equal(providerEnabled("v2ray-tunnel-plus",{CLOUD_SERVER_VPN_ENABLED:"true"}),true);
+});
+
+test("EUT VPN retains the original bundled icon while its API requires an accepted session",()=>{
+ const app=catalog().apps.find(x=>x.id==="eut-vpn");
+ assert(app);assert.equal(app.name,"EUT VPN");assert.equal(app.decodeEnabled,false);
+ assert.equal(app.iconSha256,"f037219478e9ab6ec2d6963ffed9e303186fcbeb50ffece2a33d19173ef465cf");
+ assert(!providerIds().includes("eut-vpn"));
 });

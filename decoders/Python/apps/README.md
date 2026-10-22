@@ -43,3 +43,5 @@ productores se mantienen en `tests/golden`, y las pruebas en `tests`.
 - [TunelGuard VPN 12.8](TunelGuard_VPN/README.md): `.tgv` AES-CBC y catálogo STGCM2.TG autenticado, con paridad Java/ARM64. Catálogo inicial validado; fuente remota responde 404 y su ficha permanece desactivada.
 
 - [V2ray Tunnel Plus 10.0.0](V2ray_Tunnel_Plus/README.md): suscripciones públicas Base64 y URI en texto, con descarga dual completa y paridad Java. 150 perfiles por fuente observados, misma lista representada de dos formas; catálogo Cloud integrado con icono original.
+
+- [EUT VPN 2.4.1](EUT_VPN/README.md): lector de recursos AES-CBC y worker aislado, validación breve con vectores JDK e icono original. Ficha remota desactivada: API exige sesión válida y el inicio de sesión rechaza el entorno.

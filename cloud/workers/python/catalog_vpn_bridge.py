@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 PROVIDERS = {
+    "eut-vpn": "decoders.Python.apps.EUT_VPN.server_catalog_decoder",
     "v2ray-tunnel-plus": "decoders.Python.apps.V2ray_Tunnel_Plus.server_catalog_decoder",
     "tunelguard-vpn": "decoders.Python.apps.TunelGuard_VPN.server_catalog_decoder",
     "http-wakko": "decoders.Python.apps.HTTP_Wakko.server_catalog_decoder",

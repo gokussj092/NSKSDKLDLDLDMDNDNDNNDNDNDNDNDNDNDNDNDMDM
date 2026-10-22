@@ -1,0 +1,52 @@
+{
+  "id": "eut-vpn",
+  "name": "EUT VPN",
+  "package": "xyz.eutvpn.app",
+  "compatibleVersions": [
+    "2.4.1"
+  ],
+  "versionCode": 370,
+  "engine": "python-eut-resource-aes128-cbc-pkcs7",
+  "engineVersion": 1,
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "eut-vpn",
+    "remoteValidated": false,
+    "publicRemoteEnabled": false,
+    "publicCatalogVersion": 19,
+    "apiMethod": "POST",
+    "apiUrl": "https://api.eutvpn.com/v5/android/client/get-all-resources",
+    "authentication": "Official Bearer session and NativeKeys request parameters; CLI accepts supplied token/body, does not produce integrity tokens or sessions. Public broker not enabled.",
+    "checkedOn": "2026-10-22",
+    "observedHttpStatus": 401,
+    "sessionInitHttpStatus": 403,
+    "sessionInitMessage": "unsupported_integrity_env",
+    "realCatalogObtained": false,
+    "validation": "Three targeted Python smoke tests using independent JDK ciphertext; full resource/field equality, isolated worker, stdin CLI and invalid input. 13 targeted web catalog tests pass. No full regression suite or real-catalog parity."
+  },
+  "files": {
+    "changed": false,
+    "validation": "Historical decoders/Python/eut.py and existing routes retained; no 2.4.1 file certification."
+  },
+  "icon": {
+    "file": "EUT_VPN.png",
+    "source": "base.apk:assets/appicon-store.png",
+    "width": 512,
+    "height": 512,
+    "bytes": 20355,
+    "sha256": "f037219478e9ab6ec2d6963ffed9e303186fcbeb50ffece2a33d19173ef465cf",
+    "policy": "Original bundled store PNG, unchanged. Not a reconstruction of adaptive launcher XML."
+  },
+  "dependencies": {
+    "python": ">=3.10",
+    "pycryptodome": "3.23.0",
+    "supportFiles": [
+      "../HTTP_FenixVPN/codec.py",
+      "../HTTP_FenixVPN/field_names.json"
+    ]
+  },
+  "sourceApkSha256": "6e8939304613ff0b81f0786dc17395a3143bc50bd1e6ae596269448f526db75c",
+  "branch": "feat/austroplus-vpn-13-0-1-decoders",
+  "pullRequest": 96,
+  "analyzedBaseCommit": "6bf89176ccc52c9f92b4f5e99b17f665277fb96f"
+}

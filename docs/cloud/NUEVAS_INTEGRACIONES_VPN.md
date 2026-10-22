@@ -88,6 +88,19 @@ entregas anteriores ni publicar anuncios automáticamente.
 
 ## Integraciones pendientes
 
+- **EUT VPN 2.4.1 (370) — catálogo remoto pendiente**: lector AES-128-CBC de
+  recursos y campos anidados añadido en `decoders/Python/apps/EUT_VPN/`, worker
+  aislado `eut-vpn`, icono PNG original y ficha desactivada en catálogo mínimo
+  **19** (21 fichas), PR #96. Comprobación breve solicitada: tres pruebas Python
+  con vectores independientes JDK, CLI y worker; sin suites completas.
+  Consulta HTTPS autorizada: catálogo **401 Missing token**, inicio de sesión
+  **403 unsupported_integrity_env**. Falta una sesión oficial aceptada y una
+  respuesta real para validar/habilitar la descarga pública; no es falta de
+  autorización del usuario. No se anuncian recuentos ni catálogo descargado.
+  El lector `.eut` histórico permanece intacto; esta entrega no certifica
+  archivos de la versión 2.4.1. CLI preparada para token/cuerpo oficial,
+  sin fabricar atestaciones o sesiones ni publicar datos privados.
+
 - **TunelGuard VPN 12.8 — catálogo remoto pendiente**: el lector STGCM2.TG
   abre el documento inicial entero (1 servidor / 1 ajuste, versión 0.1,
   paridad Java), pero la URL original devuelve **HTTP 404**, confirmado por

@@ -21,6 +21,9 @@ on:
       - "decoders/Python/apps/V2ray_Tunnel_Plus/**"
       - "tests/test_v2ray_tunnel_plus.py"
       - "tests/golden/v2ray_tunnel_plus*"
+      - "decoders/Python/apps/EUT_VPN/**"
+      - "tests/test_eut_vpn.py"
+      - "tests/golden/eut_vpn*"
       - "tests/golden/http_custom_899.py"
       - ".github/workflows/cloud-c2.yml"
   push:
@@ -62,7 +65,7 @@ jobs:
       - name: Verify HCX4 build 899 native key vectors and authenticated file layers
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_http_custom_899 -v
       - name: Verify TunelGuard/Wakko/SocketClay catalogs and file compatibility
-        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_v2ray_tunnel_plus tests.test_tunelguard tests.test_http_wakko tests.test_http_socketclay tests.test_http_fenixvpn tests.test_http_jireh -v
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_eut_vpn tests.test_v2ray_tunnel_plus tests.test_tunelguard tests.test_http_wakko tests.test_http_socketclay tests.test_http_fenixvpn tests.test_http_jireh -v
       - name: C2 verify NUR server catalog remains separate from solid profiles
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_cloud_c2_nur_catalog -v
       - name: Hat Tunnel complete JSON, real fixture and optional-field regression

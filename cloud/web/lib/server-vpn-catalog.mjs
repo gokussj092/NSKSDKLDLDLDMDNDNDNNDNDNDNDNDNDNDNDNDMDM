@@ -3,7 +3,7 @@ import {readFileSync} from "node:fs";
 import {join} from "node:path";
 import {createHash} from "node:crypto";
 
-export const CATALOG_VERSION = 18; // Increment whenever the public roster or metadata changes.
+export const CATALOG_VERSION = 19; // Increment whenever the public roster or metadata changes.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -21,6 +21,8 @@ export function activeCatalogVersion(env=process.env) {
 }
 
 const ITEMS = Object.freeze([
+  // Build 370 resources require an official session; API rejects this environment.
+  {id:"eut-vpn", name:"EUT VPN", icon:"eut-vpn.png", remote:null},
   {id:"v2ray-tunnel-plus", name:"V2ray Tunnel Plus", icon:"v2ray-tunnel-plus.png", remote:"v2ray-tunnel-plus"},
   // Build 128 updater returns HTTP 404; offline reader is validated.
   {id:"tunelguard-vpn", name:"TunelGuard VPN", icon:"tunelguard-vpn.png", remote:null},
