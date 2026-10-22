@@ -17,7 +17,8 @@ data class CloudNewsNotice(val version:Int,val title:String,val subtitle:String,
 internal class CloudWhatsNewRepository(context:Context,private val client:CloudDecodeClient) {
     private val vault=ServerVpnSecureCache(context)
     private val mutex=Mutex()
-    private val supported=setOf("en","es","ar","fa","fr","id","ru","de","pt-BR")
+    private val supported=setOf("en","es","ar","fa","fr","id","ru","de","pt-BR",
+        "tr","vi","hi","ja","it")
 
     fun language(selected:String):String {
         val raw=if(selected=="system") Locale.getDefault().toLanguageTag() else selected

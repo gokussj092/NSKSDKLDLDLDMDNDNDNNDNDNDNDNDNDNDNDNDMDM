@@ -3,14 +3,19 @@ import {readFileSync} from "node:fs";
 import {join} from "node:path";
 
 const MAX_JSON=16384,MAX_ITEMS=12;
-const languages=new Set(["en","es","ar","fa","fr","id","ru","de","pt-BR"]);
+const languages=new Set(["en","es","ar","fa","fr","id","ru","de","pt-BR",
+  "tr","vi","hi","ja","it"]);
 const formats=new Set(["feature","support","improvement","fix"]);
-const safeText=(value,max)=>typeof value==="string"&&value.length>0&&value.length<=max
-  && [...value].every(char=>char!=="<"&&char!==">"&&char.charCodeAt(0)>=32);
-function validLocalized(value,max){
+// Line breaks are supported only in item descriptions, for readable lists.
+// Reject every other control character, HTML delimiters and long text.
+const safeText=(value,max,allowLines=false)=>typeof value==="string"&&value.length>0&&value.length<=max
+  && [...value].every(char=>char!=="<"&&char!==">"&&
+    (char.charCodeAt(0)>=32 || (allowLines&&char==="\n")));
+function validLocalized(value,max,allowLines=false){
  return value&&typeof value==="object"&&!Array.isArray(value)&&
   Object.keys(value).length>0&&Object.keys(value).every(x=>languages.has(x))&&
-  safeText(value.en,max)&&Object.values(value).every(x=>safeText(x,max));
+  safeText(value.en,max,allowLines)&&
+  Object.values(value).every(x=>safeText(x,max,allowLines));
 }
 export function validateNews(input){
  if(!input||typeof input!=="object"||Array.isArray(input)||
@@ -23,7 +28,7 @@ export function validateNews(input){
  for(const entry of input.items){
   if(!entry||typeof entry!=="object"||!/^[-a-z0-9]{3,48}$/.test(entry.id||"")||
      ids.has(entry.id)||!formats.has(entry.type)||!validLocalized(entry.title,90)||
-     !validLocalized(entry.description,320))throw Error("INVALID_RELEASE_NOTES");
+     !validLocalized(entry.description,320,true))throw Error("INVALID_RELEASE_NOTES");
   ids.add(entry.id);
  }
  return input;

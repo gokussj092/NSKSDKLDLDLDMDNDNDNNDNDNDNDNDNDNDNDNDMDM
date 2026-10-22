@@ -8,7 +8,7 @@ The Android Cloud dialog is now populated from `POST /api/v1/whats-new`, not bun
 
 The canonical editorial catalog is `cloud/web/content/whats-new.json`. It is JSON only, not executable HTML. Each publication has a strictly increasing integer `version`, date, a short title and subtitle, and 1–12 user-facing entries with categories `feature`, `support`, `improvement`, or `fix`.
 
-Publication **v2 (2026-10-20)** is translated into all nine supported app languages: `en`, `es`, `ar`, `fa`, `fr`, `id`, `ru`, `de`, and `pt-BR`. Any unrecognized or missing translation falls back to **English**. No new APK is required for server-side releases.
+Publication **v3 (2026-10-22)** is translated into all 14 languages currently listed in the app: `en`, `es`, `ar`, `fa`, `fr`, `id`, `ru`, `de`, `pt-BR`, `tr`, `vi`, `hi`, `ja`, and `it`. Any unrecognized or missing translation falls back to **English**. The release notes are deployed server-side without a new APK; however, **previous APKs whose CloudWhatsNewRepository only requests nine languages continue to receive English for Turkish, Vietnamese, Hindi, Japanese, and Italian**. The expanded Android locale allowlist takes effect only in subsequent Android builds.
 
 Example new publication:
 
@@ -32,7 +32,17 @@ Example new publication:
 
 Update `cloud/web/content/whats-new.json` and deploy **only the web/API**; **or** supply a complete validated JSON document through `CLOUD_WHATS_NEW_JSON` in the private VPS environment and restart the web service. The Compose file exposes that server-only variable. Either option updates every connected Cloud APK without recompilation. Always increment `version`; existing clients only show higher, unseen versions.
 
-## Publication v2 — server news (three items only)
+## Publication v3 — new Server VPN catalog (2026-10-22)
+
+- **Version:** 3 (up from 2); publishedAt: 2026-10-22; schemaVersion stays 1.
+- **List:** 14 added providers from V2ray Tunnel Plus through UT Loop Pro VPN, each shown with a check mark. The 14 names are grouped into two multi-line entries (7 + 7) to respect the existing 12-item limit, 320-character descriptions, 16 KiB JSON cap and the scrollable Android dialogue.
+- **Message:** the updated Server VPN catalog can be downloaded; users with automatic catalog updates disabled can choose the manual refresh button.
+- **Availability disclaimer:** EUT VPN, ProNeet VPN and UT Loop Pro VPN are visible but their remote downloads remain unavailable, and no provider is promised functionality without its official broker. The server VPN catalog minimum stays at 31 / 33 cards; the separate editorial news version increments to 3.
+- **Delivery:** when deployed to the VPS, eligible Cloud clients with consent receive the new in-app notice on their next online open/resume, once per version. This is **not an Android OS push** and cannot reach clients that never open or reconnect.
+- **VPS override:** if `CLOUD_WHATS_NEW_JSON` is set in `/etc/spdecode/cloud.env`, the override replaces the bundled v3 JSON. Clear or update it securely before deployment; `spdecode config set` does not support this key. Do not print private environment values.
+- **Verification:** `POST /api/v1/whats-new` with `{"knownVersion":2,"locale":"es"}` must return localized version 3 and three entries. Request version 3 to confirm `unchanged:true`. Also confirm all 14 locale tags on the API.
+
+## Publication v2 — historical server news (three items only)
 
 The October 20 server-side notice is version **2**. It intentionally contains
 only the three changes first introduced with this update, in all nine supported
