@@ -22,6 +22,7 @@ const V2PLUS_SOURCES=Object.freeze({
 });
 const PAIRED_SOURCES=Object.freeze({"http-socketclay":SOCKETCLAY_SOURCES,"http-wakko":WAKKO_SOURCES,"v2ray-tunnel-plus":V2PLUS_SOURCES});
 const PROVIDERS = Object.freeze({
+  "mx-tunnel-pro": {url:"https://rasedpanel.xyz/updater/750b71355b025b19884ee835b759d6",agent:"Mx Tunnel PRO/Mx-Build48"},
   "megatunnel": {url:"https://raw.githubusercontent.com/SpkHexX/HexX/refs/heads/main/MegaTunnel.js",agent:"MegaTunnel/1.17.1"},
   "http-internet-infinito": {url:"https://raw.githubusercontent.com/nemygoku/nemy/refs/heads/main/httpinfi",agent:"HTTP Internet Infinito/1.3.9"},
   "freedom-vpn": {url:"https://raw.githubusercontent.com/geko2023/shield/refs/heads/master/free",agent:"FreedomVPN/1.0.29"},
@@ -210,7 +211,7 @@ export async function downloadVpnCatalog(id,source=id==="v2ray-tunnel-plus"?"bas
         continue;
       }
       if(answer.redirect!==undefined){
-        if(["focus-vpn-cloud","freedom-vpn","http-internet-infinito","megatunnel"].includes(id)||Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
+        if(["focus-vpn-cloud","freedom-vpn","http-internet-infinito","megatunnel","mx-tunnel-pro"].includes(id)||Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
         const next=answer.redirect;
         if(typeof next!=="string"||next.length>2048)fail("REMOTE_NETWORK_DENIED");
         target=new URL(next,dest).href;

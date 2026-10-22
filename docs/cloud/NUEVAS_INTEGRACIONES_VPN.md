@@ -11,6 +11,24 @@ entregas anteriores ni publicar anuncios automáticamente.
 
 ## Nuevos Servidores VPN añadidos
 
+- **Mx Tunnel PRO Mx-Build48 (48) ✅** — catálogo oficial descargado, descifrado
+  e integrado en el PR #96 con autorización externa expresa. HTTP 200 del
+  2026-10-22: **39 servidores y 1467 payloads**, versión **564**. Asset inicial:
+  **51 servidores y 1396 payloads**, versión **497**. Ambos JSON completos
+  coinciden con JDK independiente, CLI y worker aislado; `--download` también
+  validado por HTTPS real. Se mantienen todos los campos, tipos y listas.
+- Carpeta `decoders/Python/apps/Mx_Tunnel_PRO/`, proveedor fijo `mx-tunnel-pro`,
+  control administrativo, icono PNG original y catálogo mínimo **24**, 26 fichas.
+  Reutiliza la primitiva XXTEA histórica con otra clave, preservando el valor
+  predeterminado de HX/TRV/4U. **3 pruebas Python, 4 regresiones puntuales TRV/4U
+  y 21 web aprobadas**; sin suites
+  completas. Transporte Node controlado; sin despliegue ni sesión VPN acreditados.
+- Se conservan fuentes reutilizables de inspección APK/APKS, lanzador JADX con
+  versión/checksum fijados y lectores de cadenas LSParanoid/Random en
+  `scripts/apk_analysis/`. Comprobados con muestras reales; no se suben binarios,
+  capturas o datos descifrados. Disponibilidad efectiva tras actualizar la VPS;
+  sin fusión, publicación APK o novedades automáticas.
+
 - **HTTP SocketClay 3.4.0 ✅** — catálogo de servidores y usuarios descargado,
   descifrado e integrado en código en el PR #96. Validación del 2026-10-21:
   **86 servidores y 2 entradas de usuarios**, versiones `107` / `10`; 673 campos

@@ -1,0 +1,7 @@
+androguard==4.1.4
+Pillow==13.0.0
+# Optional native inspection/emulation:
+pyelftools==0.33
+capstone==5.0.9
+unicorn==2.1.4
+pycryptodome==3.23.0

@@ -1,0 +1,2 @@
+# Python >=3.10, standard library only.
+# Retain codec.py and ../HX_Tunnel_VPN/HX_Tunnel_VPN.py.
