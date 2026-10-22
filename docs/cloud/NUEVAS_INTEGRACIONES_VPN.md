@@ -11,6 +11,23 @@ entregas anteriores ni publicar anuncios automáticamente.
 
 ## Nuevos Servidores VPN añadidos
 
+- **OnSpace VPN 4.2 (25) ✅** — ambos catálogos oficiales descargados,
+  descifrados e integrados en el PR #96 con autorización externa expresa.
+  HTTP 200 del 2026-10-22: **164 servidores**, versión **1662**, y **una entrada
+  de usuarios**, versión **63**. Ambos JSON y **704 campos no vacíos** coinciden
+  con JDK independiente, CLI `--all` por HTTPS real y worker aislado sin salida
+  parcial. Los dos assets iniciales también coinciden íntegramente.
+- Carpeta `decoders/Python/apps/OnSpace_VPN/`, proveedor `onspace-vpn`, dos URLs
+  HTTPS fijas, sobre dual, validación de integridad de ambos documentos y control
+  administrativo. Catálogo mínimo **25**, 27 fichas. WebP original conservado y
+  PNG con píxeles idénticos. Motor Jireh compartido parametrizado, manteniendo
+  sus valores predeterminados y soporte histórico.
+- **3 pruebas Python nuevas, 2 regresiones puntuales Jireh y 26 web aprobadas**;
+  sin suites completas. Transporte Node/gateway HTTP controlado; proceso aislado
+  y HTTPS Python reales. Disponible en código, pendiente de actualizar la VPS.
+  Sin fusión, despliegue, APK, publicación de novedades ni certificación de un
+  formato de archivo exportado; datos reales excluidos de Git.
+
 - **Mx Tunnel PRO Mx-Build48 (48) ✅** — catálogo oficial descargado, descifrado
   e integrado en el PR #96 con autorización externa expresa. HTTP 200 del
   2026-10-22: **39 servidores y 1467 payloads**, versión **564**. Asset inicial:

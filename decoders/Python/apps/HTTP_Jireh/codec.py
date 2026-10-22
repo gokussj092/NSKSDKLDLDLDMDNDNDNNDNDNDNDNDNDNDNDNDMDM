@@ -9,7 +9,7 @@ from Crypto.Util.Padding import unpad
 
 # Reuse the byte-identical SKS importer and validation primitives, without
 # duplicating a historical engine. This sibling is shipped in the download ZIP.
-if __package__:
+if __package__ and '.' in __package__:
     from ..HTTP_FenixVPN import codec as shared
 else:
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -29,7 +29,7 @@ SERVER_FIELDS = frozenset(("ServerIP", "ProxyIP", "ServerUser", "ServerPass", "P
 USER_FIELDS = frozenset(("Username", "Password", "Obfs", "Auth", "ID", "Path"))
 
 
-def decrypt_catalog(data: bytes) -> str:
+def decrypt_catalog(data: bytes, *, key: bytes = CATALOG_KEY) -> str:
     text = shared._bounded(data).decode("utf-8-sig").strip()
     if not text or len(text) % 2 or any(c not in ALPHABET for c in text):
         raise DecodeError("Alfabeto de catálogo inválido.")
@@ -37,23 +37,24 @@ def decrypt_catalog(data: bytes) -> str:
     ciphertext = shared._base64(raw.decode("ascii"))
     if not ciphertext or len(ciphertext) % 16:
         raise DecodeError("Sobre de catálogo inválido.")
-    return unpad(AES.new(CATALOG_KEY, AES.MODE_CBC, bytes(16)).decrypt(ciphertext), 16).decode("utf-8")
+    return unpad(AES.new(key, AES.MODE_CBC, bytes(16)).decrypt(ciphertext), 16).decode("utf-8")
 
 
-def decode_field(value: str) -> str:
+def decode_field(value: str, *, key: bytes = FIELD_KEY, rotation: int = 22) -> str:
     if value == "":
         return value
     raw = shared._base64(value)
     if not raw or len(raw) % 16:
         raise DecodeError("Campo AES-CBC inválido.")
-    text = unpad(AES.new(FIELD_KEY, AES.MODE_CBC, bytes(16)).decrypt(raw), 16).decode("utf-8")
+    text = unpad(AES.new(key, AES.MODE_CBC, bytes(16)).decrypt(raw), 16).decode("utf-8")
     # JirehActivity.o00Oo0(str, 4) calls o00O0O(str, 26-4).
-    return shared.rotate_java(text, 22)
+    return shared.rotate_java(text, rotation)
 
 
-def decode_catalog(data: bytes) -> dict:
+def decode_catalog(data: bytes, *, catalog_key: bytes = CATALOG_KEY,
+                   field_key: bytes = FIELD_KEY, rotation: int = 22) -> dict:
     try:
-        obj = json.loads(decrypt_catalog(data), object_pairs_hook=shared._unique, parse_constant=shared._constant)
+        obj = json.loads(decrypt_catalog(data, key=catalog_key), object_pairs_hook=shared._unique, parse_constant=shared._constant)
         shared._validate(obj)
         if not isinstance(obj, dict) or not isinstance(obj.get("Version"), str) or not obj["Version"]:
             raise DecodeError("Estructura de catálogo incompatible.")
@@ -74,7 +75,7 @@ def decode_catalog(data: bytes) -> dict:
                 for key in fields & item.keys():
                     if not isinstance(item[key], str):
                         raise DecodeError("Un campo cifrado no contiene texto.")
-                    entry[key] = decode_field(item[key])
+                    entry[key] = decode_field(item[key], key=field_key, rotation=rotation)
                 decoded.append(entry)
             result[name] = decoded
         shared._validate(result)

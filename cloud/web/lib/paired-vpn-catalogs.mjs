@@ -2,6 +2,7 @@
 import {VpnProviderError} from "./server-vpn-provider.mjs";
 export const PAIRED_CATALOG_LIMIT=8*1024*1024;
 const KINDS=Object.freeze({
+ "onspace-vpn":{kind:"spdecode-onspace-vpn-catalogs-v1",sources:["servers","users"]},
  "http-socketclay":{kind:"spdecode-socketclay-catalogs-v1",sources:["servers","users"]},
  "http-wakko":{kind:"spdecode-wakko-catalogs-v1",sources:["servers","users"]},
  "v2ray-tunnel-plus":{kind:"spdecode-v2ray-tunnel-plus-catalogs-v1",sources:["base64","raw"]},

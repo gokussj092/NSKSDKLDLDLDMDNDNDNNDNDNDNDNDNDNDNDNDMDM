@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 PROVIDERS = {
+    "onspace-vpn": "decoders.Python.apps.OnSpace_VPN.server_catalog_decoder",
     "mx-tunnel-pro": "decoders.Python.apps.Mx_Tunnel_PRO.server_catalog_decoder",
     "megatunnel": "decoders.Python.apps.MegaTunnel.server_catalog_decoder",
     "http-internet-infinito": "decoders.Python.apps.HTTP_Internet_Infinito.server_catalog_decoder",

@@ -8,6 +8,10 @@ import dns from "node:dns/promises";
 import https from "node:https";
 import {publicIpv4} from "./c35-provider.mjs";
 
+const ONSPACE_SOURCES=Object.freeze({
+  servers:"https://raw.githubusercontent.com/El-Patron-Oficial2003/Metodos/refs/heads/main/OnSpace%20VPN",
+  users:"https://raw.githubusercontent.com/El-Patron-Oficial2003/User-Pass-New/refs/heads/main/OnSpace%20VPN",
+});
 const SOCKETCLAY_SOURCES=Object.freeze({
   servers:"https://dl.dropboxusercontent.com/scl/fi/vh319xyu0ck84ks0wdqw8/ServersSC?rlkey=b9g57byy0igz2jitqix31t4i4&st=evmzpf11&dl=1",
   users:"https://dl.dropboxusercontent.com/scl/fi/yas4u26xnhdpz4f8qxkp0/UsersSC?rlkey=jtdh2g84uj6y5j9zp4ca929xk&st=hp49nv1g&dl=1",
@@ -20,8 +24,9 @@ const V2PLUS_SOURCES=Object.freeze({
   base64:"https://raw.githubusercontent.com/roosterkid/openproxylist/main/V2RAY_BASE64.txt",
   raw:"https://raw.githubusercontent.com/roosterkid/openproxylist/main/V2RAY_RAW.txt",
 });
-const PAIRED_SOURCES=Object.freeze({"http-socketclay":SOCKETCLAY_SOURCES,"http-wakko":WAKKO_SOURCES,"v2ray-tunnel-plus":V2PLUS_SOURCES});
+const PAIRED_SOURCES=Object.freeze({"onspace-vpn":ONSPACE_SOURCES,"http-socketclay":SOCKETCLAY_SOURCES,"http-wakko":WAKKO_SOURCES,"v2ray-tunnel-plus":V2PLUS_SOURCES});
 const PROVIDERS = Object.freeze({
+  "onspace-vpn": {url:ONSPACE_SOURCES.servers,agent:"OnSpace VPN/4.2"},
   "mx-tunnel-pro": {url:"https://rasedpanel.xyz/updater/750b71355b025b19884ee835b759d6",agent:"Mx Tunnel PRO/Mx-Build48"},
   "megatunnel": {url:"https://raw.githubusercontent.com/SpkHexX/HexX/refs/heads/main/MegaTunnel.js",agent:"MegaTunnel/1.17.1"},
   "http-internet-infinito": {url:"https://raw.githubusercontent.com/nemygoku/nemy/refs/heads/main/httpinfi",agent:"HTTP Internet Infinito/1.3.9"},

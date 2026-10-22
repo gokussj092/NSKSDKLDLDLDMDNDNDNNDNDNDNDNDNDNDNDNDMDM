@@ -1,0 +1,138 @@
+{
+  "id": "onspace-vpn",
+  "name": "OnSpace VPN",
+  "package": "com.onspace.http",
+  "compatibleVersions": [
+    "4.2"
+  ],
+  "versionCode": 25,
+  "engine": "python-nibble-aes256-cbc-aes128-cbc-rot24",
+  "engineVersion": 1,
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "onspace-vpn",
+    "sources": {
+      "servers": "https://raw.githubusercontent.com/El-Patron-Oficial2003/Metodos/refs/heads/main/OnSpace%20VPN",
+      "users": "https://raw.githubusercontent.com/El-Patron-Oficial2003/User-Pass-New/refs/heads/main/OnSpace%20VPN"
+    },
+    "validatedOn": "2026-10-22",
+    "remoteAuthorization": "Explicit user authorization for external server and user catalogs",
+    "remoteValidated": true,
+    "remoteServersObserved": 164,
+    "remoteUsersObserved": 1,
+    "remoteVersions": {
+      "servers": "1662",
+      "users": "63"
+    },
+    "remoteFieldsProcessed": 2630,
+    "remoteNonemptyFieldsCompared": 704,
+    "sourceEvidence": [
+      {
+        "source": "servers-download.bin",
+        "bytes": 487344,
+        "sha256": "fa3ef820c3912c28ddfc934da4d52a23deb7ea6fe8783605b3472c437c7a0d6d",
+        "version": "1662",
+        "records": 164,
+        "processedFields": 2624,
+        "nonemptyFields": 698,
+        "jdkCompleteEqual": true
+      },
+      {
+        "source": "users-download.bin",
+        "bytes": 856,
+        "sha256": "0f610ab876997e7e78064394c2b8fcf62b4d1d369357897fef4b52b53fb9d880",
+        "version": "63",
+        "records": 1,
+        "processedFields": 6,
+        "nonemptyFields": 6,
+        "jdkCompleteEqual": true
+      },
+      {
+        "source": "config.json",
+        "bytes": 2816,
+        "sha256": "b607be07fba6bed71ee57716093963cb33c9bd8b7202820fd07fa93a63424073",
+        "version": "1",
+        "records": 1,
+        "processedFields": 16,
+        "nonemptyFields": 4,
+        "jdkCompleteEqual": true
+      },
+      {
+        "source": "users-embedded.bin",
+        "bytes": 856,
+        "sha256": "977b67378f754383cda5900555d6d51eec726be85a1c6b72dd1d8c0735d891f8",
+        "version": "1",
+        "records": 1,
+        "processedFields": 6,
+        "nonemptyFields": 6,
+        "jdkCompleteEqual": true
+      }
+    ],
+    "serverFieldNames": [
+      "ServerIP",
+      "ProxyIP",
+      "ServerUser",
+      "ServerPass",
+      "Payload",
+      "SNI",
+      "Slowchave",
+      "Nameserver",
+      "Slowdns",
+      "V2rayConfig",
+      "UdpServer",
+      "UdpObfs",
+      "UdpAuth",
+      "UdpDown",
+      "UdpUp",
+      "UdpBuffer"
+    ],
+    "userFieldNames": [
+      "Username",
+      "Password",
+      "Obfs",
+      "Auth",
+      "ID",
+      "Path"
+    ],
+    "validation": "Both complete real HTTPS and embedded documents equal independent JDK; real CLI --all and isolated worker preserve the entire pair with isPartial:false.",
+    "publicCatalogVersion": 25,
+    "publicCatalogCards": 27,
+    "deploymentEnabledByDefault": false,
+    "testScope": "3 new Python tests, 2 focused Jireh regressions, 26 web checks; no full suites. Real Python HTTPS; Node transport/HTTP worker controlled, actual isolated worker separately verified."
+  },
+  "files": {
+    "supported": false,
+    "validation": "Catalog-only integration; no exported profile sample certified or new file route registered."
+  },
+  "icon": {
+    "originalFile": "OnSpace_VPN.webp",
+    "file": "OnSpace_VPN.png",
+    "source": "base.apk:res/mipmap-xxxhdpi-v4/ic_launcher.webp",
+    "sourceBytes": 19808,
+    "sourceSha256": "28027f6dc6c6d0c3bd51fbdc1c0d3ca891d6b86592e9e6bf8a3f64ffa66b353d",
+    "width": 192,
+    "height": 192,
+    "pngBytes": 29822,
+    "pngSha256": "59a6de90b34c625913705585ed6e0f2115b661015c656d9a0c43fdd036a5b232",
+    "policy": "Exact original WebP retained; PNG has identical RGBA pixels, no resizing."
+  },
+  "dependencies": {
+    "python": ">=3.10",
+    "pycryptodome": "3.23.0",
+    "supportFiles": [
+      "codec.py",
+      "../HTTP_Jireh/codec.py",
+      "../HTTP_FenixVPN/codec.py",
+      "../HTTP_FenixVPN/field_names.json"
+    ],
+    "sharedSourceSha256": {
+      "../HTTP_Jireh/codec.py": "55369ad60f9f365fcf3a49547be71c1cc1d5d9d76ddf13d0a5d07a669ee3ae63",
+      "../HTTP_FenixVPN/codec.py": "7e3de48e36d88dcbfa9afa94cc736d763bd7fe89de6d6d87d1d6ecb31e456c34",
+      "../HTTP_FenixVPN/field_names.json": "0352b854bbb8153ac6a961e624e19e93de32ffdd3acc618d5f1a5ca02b2ad798"
+    }
+  },
+  "sourceApkSha256": "4c7be73d9ae105142eee2d5e6ab2c7a29129153338d998eeb076db25bc9f3d7a",
+  "branch": "feat/austroplus-vpn-13-0-1-decoders",
+  "pullRequest": 96,
+  "analyzedBaseCommit": "8432d49762a5ac277db17e84f0c5de89ed32b0c1"
+}

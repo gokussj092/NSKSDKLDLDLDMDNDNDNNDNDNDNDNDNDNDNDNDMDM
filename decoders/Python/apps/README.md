@@ -57,3 +57,5 @@ productores se mantienen en `tests/golden`, y las pruebas en `tests`.
 - [MegaTunnel 1.17.1](MegaTunnel/README.md): catálogo AES-256-GCM y campos Base64/XOR, descarga real de 10 servidores y 124 ajustes íntegros comprobada con JDK, CLI y worker; proveedor e icono original integrados.
 
 - [Mx Tunnel PRO Mx-Build48](Mx_Tunnel_PRO/README.md): catálogo XXTEA con clave propia, descarga real de 39 servidores y 1467 payloads comprobada íntegramente con JDK, CLI y worker; proveedor e icono original integrados. Herramientas reutilizables en `scripts/apk_analysis/`.
+
+- [OnSpace VPN 4.2](OnSpace_VPN/README.md): catálogos de servidores y usuarios nibble/AES-CBC con campos AES-CBC/ROT24. Descarga real de 164 servidores y una entrada de usuarios comparada íntegramente con JDK, CLI y worker; descarga dual, control e icono original integrados.
