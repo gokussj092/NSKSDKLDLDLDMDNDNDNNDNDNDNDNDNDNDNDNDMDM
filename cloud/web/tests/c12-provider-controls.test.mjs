@@ -139,3 +139,19 @@ test("V2ray Tunnel Plus has a named control and can be enabled or disabled witho
  availability=Object.fromEntries(overview.providers.map(x=>[x.id,x.enabled]));
  assert.equal(catalog({availability}).apps.find(x=>x.id==="v2ray-tunnel-plus").decodeEnabled,true);
 });
+
+
+test("Xhypher Tunnel Pro has a named control and can be enabled or disabled without touching other providers",async t=>{
+ const root=await fixture(t),opts={root};
+ let overview=await providerOverview(env,opts);
+ assert.deepEqual(overview.providers.find(x=>x.id==="xhypher-tunnel-pro"),{
+   id:"xhypher-tunnel-pro",name:"Xhypher Tunnel Pro",configured:true,enabled:true,
+ });
+ overview=await updateProvider("xhypher-tunnel-pro",false,env,opts);
+ let availability=Object.fromEntries(overview.providers.map(x=>[x.id,x.enabled]));
+ assert.equal(catalog({availability}).apps.find(x=>x.id==="xhypher-tunnel-pro").decodeEnabled,false);
+ assert.equal(await providerAllowed("http-jireh",env,opts),true);
+ overview=await updateProvider("xhypher-tunnel-pro",true,env,opts);
+ availability=Object.fromEntries(overview.providers.map(x=>[x.id,x.enabled]));
+ assert.equal(catalog({availability}).apps.find(x=>x.id==="xhypher-tunnel-pro").decodeEnabled,true);
+});

@@ -188,6 +188,16 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
          JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))
         throw Error("INVALID_WORKER_RESULT");
     }
+    if(kind==="server-vpn" && payload?.providerId==="xhypher-tunnel-pro"){
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId ||
+         !isRecord(parsed) || !Object.hasOwn(parsed,"Version") ||
+         !Array.isArray(parsed.Servers) || !parsed.Servers.length ||
+         !Array.isArray(parsed.Networks) || !parsed.Networks.length ||
+         parsed.Servers.some(x=>!isRecord(x)) || parsed.Networks.some(x=>!isRecord(x)) ||
+         JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))throw Error("INVALID_WORKER_RESULT");
+    }
     if(kind==="server-vpn" && payload?.providerId==="v2ray-tunnel-plus"){
       let parsed;
       try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}

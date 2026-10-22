@@ -53,17 +53,21 @@ def main():
     p.add_argument('chunks_class',type=Path,help='Deobfuscator class containing the string chunks')
     p.add_argument('output',type=Path,help='Private output directory, outside source')
     p.add_argument('--inventory',action='store_true',help='Also recover all chunk strings when all literal IDs share one seed')
+    p.add_argument('--chunk-field',default='chunks',help='Confirmed renamed chunk field')
+    p.add_argument('--method',default='getString',help='Confirmed renamed literal decoder method')
     a=p.parse_args();source=a.source.resolve();output=a.output.resolve()
     if output==source or source in output.parents or output in source.parents:
         p.error('Source and output directories must be separate, without nesting')
     text=a.chunks_class.read_text('utf-8')
-    match=re.search(r'chunks\s*=\s*new String\[\]\{(.*?)\};',text,re.S)
+    if not all(re.fullmatch(r'[A-Za-z_$][A-Za-z0-9_$]*',v) for v in (a.chunk_field,a.method)):
+        p.error('Expected Java identifiers for field and method')
+    match=re.search(r'\b'+re.escape(a.chunk_field)+r'\s*=\s*new String\[\]\{(.*?)\};',text,re.S)
     if not match:raise ValueError('No LSParanoid chunks found')
     literal=re.compile(r'"(?:\\.|[^"\\])*"',re.S)
     parts=literal.findall(match[1]);remainder=literal.sub('',match[1])
     if not parts or remainder.strip(' \r\n\t,'):raise ValueError('Unsupported chunk expression')
     class_name=a.chunks_class.stem
-    call=re.compile(re.escape(class_name)+r'\.getString\((-?\d+)L\)')
+    call=re.compile(re.escape(class_name)+r'\.'+re.escape(a.method)+r'\((-?\d+)L\)')
     files=[];ids=[]
     for f in source.rglob('*.java'):
         s=f.read_text('utf-8');found=call.findall(s)

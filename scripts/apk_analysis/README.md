@@ -82,3 +82,19 @@ argumentos variables requieren inspección aparte. No compila expresiones del
 APK ni imprime cadenas recuperadas. La clave se obtuvo de `L5.b` y el algoritmo
 de `StringFogImpl`; las salidas privadas permanecen fuera de Git. El análisis
 real resolvió 2438 llamadas en 71 archivos; no se afirma resolver toda la app.
+
+
+Para wrappers LSParanoid renombrados, `paranoid_strings.py` admite identificadores
+explícitos sin cambiar los defaults `chunks` / `getString`. Primero confirmar
+las constantes y el generador de estado; no basta el nombre de clase.
+
+```bash
+python scripts/apk_analysis/paranoid_strings.py fuentes-jadx fuentes-jadx/defpackage/on.java   salida-privada --chunk-field a --method a --inventory
+```
+
+Caso real Xhypher 43: 1987 literales en 81 archivos / 2252 cadenas de inventario.
+El oracle `tests/golden/xhypher_native_oracle.py` reutiliza ELF/Unicorn con hash
+exacto del SO para ejecutar decode_invisible, XXTEA y Threefish offline, usando
+únicamente helpers de memoria/cadenas acotados. APK/SO, inventarios y documentos
+reales no se guardan en Git. El tipo nativo 3 es un DEX de comprobación de APK,
+no un formato de configuración ni un método de catálogo.

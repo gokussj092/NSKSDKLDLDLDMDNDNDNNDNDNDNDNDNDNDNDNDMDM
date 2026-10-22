@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 PROVIDERS = {
+    "xhypher-tunnel-pro": "decoders.Python.apps.Xhypher_Tunnel_Pro.server_catalog_decoder",
     "ut-loop-pro-vpn": "decoders.Python.apps.UT_Loop_Pro_VPN.server_catalog_decoder",
     "turbomx-vpn": "decoders.Python.apps.TurboMX_VPN.server_catalog_decoder",
     "superflash-vpn": "decoders.Python.apps.SuperFlash_VPN.server_catalog_decoder",

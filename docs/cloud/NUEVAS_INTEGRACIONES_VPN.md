@@ -11,6 +11,30 @@ entregas anteriores ni publicar anuncios automáticamente.
 
 ## Nuevos Servidores VPN añadidos
 
+- **Xhypher Tunnel Pro 43 (43) ✅** — catálogo oficial descargado e integrado
+  en PR #96: **57 servidores / 1161 redes-payloads**, Version **2.665**,
+  HTTP 200, 1386712 bytes. **10055 campos procesados / 7363 no vacíos** y
+  todo el JSON coinciden con JDK independiente, CLI HTTPS/stdin y worker
+  aislado (`isPartial:false`, 858366 bytes). Catálogo inicial: **1 / 1**,
+  Version **1.0.0**, también igual íntegro.
+- Carpeta `decoders/Python/apps/Xhypher_Tunnel_Pro/`, proveedor fijo
+  `xhypher-tunnel-pro`, control administrativo, fuente HTTPS exacta y PNG
+  original sin conversión. Catálogo mínimo **32**, **34 fichas**.
+  Reutiliza primitivas RENZ confirmadas en este SO; añade el portador invisible
+  de credenciales y conserva ceros legítimos de ciphertext en tres campos.
+  La ruta canónica `.xhypher` y aliases históricos se mantienen; no se registra
+  extensión nueva ni se certifica una exportación real no aportada.
+- **4 pruebas nuevas, 4 regresiones RENZ y 46 web aprobadas**, sin suites
+  completas. **10 casos de primitivas ARM64 originales aprobados**, incluidos
+  los tres streams Threefish afectados. Solo memoria/cadenas modeladas;
+  sin ejecución Android/JNI o sesión VPN. HTTPS Python/CLI/worker reales;
+  transporte Node controlado.
+- Herramienta LSParanoid ampliada con campo/método renombrados, conservando
+  defaults: 1987 literales, 81 archivos, 2252 cadenas de inventario. Fuentes
+  y referencias guardadas; sin APK/SO/catálogos reales/credenciales de servicio
+  en Git. Disponible en código, pendiente de VPS; sin merge, despliegue,
+  APK ni actualización automática de C11.
+
 - **TurboMX VPN 143.1.26 (168) ✅** — ambos catálogos oficiales descargados,
   descifrados e integrados en PR #96 con autorización externa expresa.
   HTTP 200 del 2026-10-22: **268 servidores**, versión **18**, y **una entrada

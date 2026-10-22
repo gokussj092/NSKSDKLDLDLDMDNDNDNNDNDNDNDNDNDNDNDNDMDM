@@ -500,3 +500,28 @@ Un auxiliar offline reproduce los banners SSH GCM/XXTEA, comprobado con JDK
 sintético; no se convierte en extensión de archivo ni proveedor adicional.
 `TESTING.md` y el registro de integraciones distinguen lo comprobado y pendiente.
 No hay despliegue, publicación Android ni actualización automática de C11.
+
+
+## Xhypher Tunnel Pro 43: catálogo completo y compatibilidad RENZ
+
+PR #96 incorpora `xhypher-tunnel-pro` al worker privado, broker HTTPS fijo,
+controles de proveedor y contrato de salida completa (Servers + Networks,
+proveedor/kind coincidentes, rawText y structuredJson iguales). Fuente única:
+`https://raw.githubusercontent.com/XyrussProject/infinite88/refs/heads/main/xhyphertunnelpro888.hs`.
+Consulta autorizada del 2026-10-22: HTTP 200, **57 servidores / 1161 redes**,
+Version **2.665**. Todo el JSON y 7363 campos no vacíos coinciden con JDK,
+CLI HTTPS/stdin y worker aislado reales. El recurso inicial también coincide.
+
+Los tipos 0/1/2 cubren AES-CBC/XXTEA, HKDF/Threefish y PBKDF2 con credenciales
+invisibles. Se preservan ceros legítimos hasta el límite de bloque CBC.
+Las primitivas se confirmaron en el SO actual y diez casos ARM64 se ejecutaron
+sin JNI/red; no se confunde este formato sin autenticación criptográfica con
+un sobre autenticado. README/TESTING/manifest documentan pruebas y límites.
+
+Se mantiene la ruta RENZ `.xhypher` con ajustes limitados a este proveedor;
+no hay extensión nueva, consulta de enlaces cortos ni uso de credenciales de
+servicios incrustadas. El icono original exacto 512×512, 102502 bytes, tiene SHA-256
+`f32f6d6c2044ee507741b4b389f53b9fc03922800deaac66cda1dd094ece9e72`.
+Catálogo mínimo **32**, **34 fichas**; la versión efectiva sigue siendo monotónica.
+La disponibilidad pública requiere actualizar la VPS. Esta entrega no publica
+APK, novedades C11, merge ni despliegue.
