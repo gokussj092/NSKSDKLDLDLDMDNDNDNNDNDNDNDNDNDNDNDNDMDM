@@ -1,0 +1,118 @@
+{
+  "id": "am-tunnel-lite-vpn",
+  "name": "AM TUNNEL LITE VPN",
+  "package": "app.vpn.amtunnellite",
+  "compatibleVersions": [
+    "AM"
+  ],
+  "versionCode": 63,
+  "status": "pending-protected-catalog",
+  "engine": "partial-native-hex-xor-modified-utf8",
+  "engineVersion": 1,
+  "catalog": {
+    "supported": false,
+    "entrypoint": null,
+    "providerId": "am-tunnel-lite-vpn",
+    "workerRegistered": false,
+    "brokerRegistered": false,
+    "remoteValidated": false,
+    "extractedEndpoint": "https://freedomnavigate.com/updater/8112011e98856d3ca814d0f8ce3231",
+    "endpointConsumerRecovered": false,
+    "probeOn": "2026-10-22",
+    "probeMethod": "GET HTTPS, TLS verified, no redirects, no account/service credentials",
+    "probeOutcome": "read-timeout",
+    "observedHttpStatus": null,
+    "observedServers": null,
+    "observedNetworks": null,
+    "embeddedSource": "base.apk:assets/pdrv2.json",
+    "embeddedBytes": 156216,
+    "embeddedSha256": "3afd30a15d97f15105834c1f6a36fb8e07405d351e4bf23d1371546413c688d3",
+    "base64DecodedBytes": 117160,
+    "completeDocumentDecoded": false,
+    "isPartialSuccessReported": false,
+    "blockers": [
+      "Protected reader class not recovered; outer catalog format remains unknown",
+      "No validated remote response"
+    ],
+    "publicCard": {
+      "catalogVersion": 34,
+      "catalogCards": 36,
+      "remote": null,
+      "decodeEnabled": false
+    }
+  },
+  "fields": {
+    "entrypoint": "field_decoder.py",
+    "supported": true,
+    "scope": "Explicit PUtils hexadecimal fields only; no recursive catalog/file claims",
+    "method": "hex -> XOR cyclic 12-byte native format key -> JNI modified UTF-8",
+    "independentJdkSyntheticVectors": 8,
+    "originalNativeXorCasesEqual": 8,
+    "realCatalogFieldCompared": false
+  },
+  "files": {
+    "supported": false,
+    "extensions": [],
+    "exportSchemeConfirmed": false,
+    "newRouteRegistered": false,
+    "exporterCertified": false
+  },
+  "wireGuardAssets": {
+    "count": 1000,
+    "bytes": 132570,
+    "fields": [
+      "Endpoint",
+      "Hash1",
+      "Hash2"
+    ],
+    "remoteCatalogValidated": false,
+    "realValuesCommitted": false
+  },
+  "icon": {
+    "file": "AM_TUNNEL_LITE_VPN.png",
+    "source": "base.apk:res/drawable/ic_app_icon.png",
+    "width": 479,
+    "height": 440,
+    "pngBytes": 30105,
+    "pngSha256": "ad8aab869a41fd23aa1bff5c976c589ae73738192a8d475c3fcc36edd1da2d7a",
+    "policy": "Exact original PNG bytes, no redraw, conversion or resize"
+  },
+  "dependencies": {
+    "python": ">=3.10",
+    "runtime": "standard library only; analysis dependencies separate"
+  },
+  "sourceBaseApkSha256": "636f96d211266bb592d47ff0f63cb886e332cb312c99ef0fb48572c180065aed",
+  "sourceApksSha256": "2e0fbefe9b1482997226c30287960c433d992d130388652c9b0d40366f07f23e",
+  "sourceNativeSha256": "a0e7c704dbf8bde1ee5e05d230a0232e0c5ea3f75b4be01d6519993cfdf93890",
+  "protector": {
+    "name": "LIAPP",
+    "versionObserved": "v5.1.1.190",
+    "wrapperSha256": "f09f2ab5e12d41836ed4ddd25022bfac7271432710462312cca7790accfaeb29",
+    "firstNativeStageRecovered": true,
+    "nativeCoreBytes": 657452,
+    "nativeCoreSha256": "fe2ee74275a21be8b6ff728d00761db8676fb729af2de4e455b672f500c7e5e6",
+    "dexRecovered": false,
+    "catalogReaderRecovered": false
+  },
+  "analysisTools": [
+    "scripts/apk_analysis/inspect_apk.py",
+    "scripts/apk_analysis/decompile.py",
+    "scripts/apk_analysis/paranoid_strings.py",
+    "scripts/apk_analysis/elf_inspect.py",
+    "scripts/apk_analysis/arm64_function.py",
+    "scripts/apk_analysis/liapp_wrapper.py",
+    "tests/golden/am_tunnel_lite_oracle.java",
+    "tests/golden/am_tunnel_lite_native_oracle.py",
+    "tests/golden/am_tunnel_lite_generate.py",
+    "scripts/apk_analysis/RESTORE.md"
+  ],
+  "tests": {
+    "pythonPassed": 4,
+    "webPassed": 43,
+    "scope": "Known fields and disabled roster card only; no full project suites or successful catalog decode"
+  },
+  "analysisLimit": "DEX1 JADX 30 general errors; DEX2 exit 0. Protected application definitions and outer catalog remain unrecovered. First native wrapper extraction is not DEX unpacking.",
+  "branch": "feat/austroplus-vpn-13-0-1-decoders",
+  "pullRequest": 96,
+  "analyzedBaseCommit": "b3bf2aa10b2b9918a344eed461396cefa4055f96"
+}

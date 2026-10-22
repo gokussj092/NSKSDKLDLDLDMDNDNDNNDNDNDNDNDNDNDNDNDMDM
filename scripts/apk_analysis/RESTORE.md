@@ -58,3 +58,31 @@ exacto; los tests habituales no requieren ese binario ni un catálogo real.
 Las pruebas y los metadatos completos de la muestra están en `TESTING.md` y
 `manifest.json` de la aplicación. El runtime Cloud solo necesita Python y la
 dependencia de su carpeta, no las herramientas de descompilación.
+
+## AM TUNNEL LITE VPN build 63 — continuación pendiente
+
+Las herramientas recuperan los campos conocidos y la primera capa nativa de
+LIAPP. **No recuperan todavía el DEX protegido ni el catálogo completo.**
+
+```bash
+python scripts/apk_analysis/inspect_apk.py 'AM TUNNEL LITE VPN_AM.apks' \
+  scripts/apk_analysis/work/am --asset pdrv2.json --asset .efuyxx.dex \
+  --native libputils.so --native libefuyxx.so
+python scripts/apk_analysis/decompile.py \
+  scripts/apk_analysis/work/am/dex/classes2.dex scripts/apk_analysis/work/am-jadx2
+python scripts/apk_analysis/paranoid_strings.py \
+  scripts/apk_analysis/work/am-jadx2/sources \
+  'scripts/apk_analysis/work/am-jadx2/sources/org/lsposed/lsparanoid/Deobfuscator$AMTUNNELLITE$app.java' \
+  scripts/apk_analysis/work/am-clear2 --inventory
+python scripts/apk_analysis/liapp_wrapper.py \
+  scripts/apk_analysis/work/am/native/split_config.arm64_v8a/libefuyxx.so \
+  scripts/apk_analysis/work/am-core.so
+python tests/golden/am_tunnel_lite_generate.py
+python tests/golden/am_tunnel_lite_native_oracle.py \
+  scripts/apk_analysis/work/am/native/split_config.arm64_v8a/libputils.so
+```
+
+El extractor acepta únicamente el hash conocido y no ejecuta el protector.
+Revisar `decoders/Python/apps/AM_TUNNEL_LITE_VPN/ANALYSIS.md` antes de continuar.
+La ficha está desactivada: ni los tests del auxiliar ni recuperar un ELF del
+wrapper autorizan afirmar paridad de un catálogo aún no abierto.

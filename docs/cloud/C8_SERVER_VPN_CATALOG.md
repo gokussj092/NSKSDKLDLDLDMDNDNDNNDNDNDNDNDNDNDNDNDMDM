@@ -551,3 +551,24 @@ manifest y pruebas: `decoders/Python/apps/SevenNET_VPN/`. Herramientas persistid
 `scripts/apk_analysis/`, verificador `sevennet_verify.py`, guía `RESTORE.md` y
 referencias `tests/golden/sevennet*`. No se suben APK/SO, catálogos reales ni datos
 descifrados. La integración queda en código del PR, pendiente de despliegue VPS.
+
+
+## AM TUNNEL LITE VPN build 63: ficha pendiente, proveedor desactivado
+
+La ficha `am-tunnel-lite-vpn` conserva el PNG original de 479×440 / 30105 bytes.
+Catálogo mínimo **34 / 36 fichas**, respetando los switches y la versión
+persistente. `remote:null` impide habilitarla mediante una disponibilidad
+inyectada; el ID no está registrado en el broker ni el worker.
+
+El núcleo Java protegido con LIAPP no permitió recuperar aún el lector de
+`pdrv2.json`; **no hay un resultado completo ni cantidades verificadas de
+servidores/redes**. La consulta al enlace extraído produjo timeout, sin status
+HTTP verificado. No presentar esta incorporación como catálogo operativo.
+
+El auxiliar de campos PUtils sí reproduce hexadecimal/XOR y UTF-8 modificado,
+con 8 vectores JDK y casos de XOR ARM64 originales iguales. **4 tests Python y
+43 web aprobados**, limitados al auxiliar y a la ficha desactivada. Herramientas
+persistidas en `scripts/apk_analysis/` y `tests/golden/am_tunnel_lite*`;
+`liapp_wrapper.py` recupera solo la primera capa nativa, no el DEX. Las notas
+para continuar están en `decoders/Python/apps/AM_TUNNEL_LITE_VPN/ANALYSIS.md`.
+No se añaden formatos/exportadores sin confirmar, ni se publican datos reales.

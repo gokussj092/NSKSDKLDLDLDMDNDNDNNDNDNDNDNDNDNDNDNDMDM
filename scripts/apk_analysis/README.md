@@ -114,3 +114,17 @@ generador sintético: `tests/golden/sevennet*`. En las muestras reales coincidie
 LSParanoid confirmado es `pp.a(long)`, campo `a`, generador `px0.G` (DEX 2/3):
 2089 literales en 72 archivos y 2280 cadenas de inventario. Los resultados
 reales y los inventarios privados no se publican en el repositorio.
+
+## Primera capa nativa de LIAPP en AM build 63
+
+`liapp_wrapper.py` reproduce la extracción estática observada en el constructor
+ARM64 del wrapper de AM: marcador de ocho bytes y restauración del magic ELF.
+Comprueba hashes exactos de entrada y salida, límites y ausencia de sobrescritura;
+no ejecuta código. **No es un desempaquetador DEX completo ni un lector del
+catálogo.** Los siguientes pasos y sus límites quedan en `ANALYSIS.md` de AM.
+
+`tests/golden/am_tunnel_lite_native_oracle.py` ejecuta solo la primitiva PUtils
+XOR con copia C++ modelada y memoria/instrucciones limitadas. Ocho vectores
+sintéticos coinciden con JDK, incluidos UTF-8 modificado y emoji. No se llama
+JNI, controles de firma ni el inicio de la app. `RESTORE.md` deja los comandos
+para reconstruir este avance; no habilitar el proveedor hasta abrir el catálogo.

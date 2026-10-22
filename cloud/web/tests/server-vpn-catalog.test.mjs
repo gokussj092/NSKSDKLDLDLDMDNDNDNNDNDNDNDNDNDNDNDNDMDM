@@ -10,7 +10,7 @@ const body=(content)=>new Request("https://api.spdecode.xyz/api/v1/server-vpn/te
 });
 test("original provider PNGs match the public digest and never contain secrets",()=>{
  const values=catalog();assert.equal(values.catalogVersion,CATALOG_VERSION);
- assert.equal(RECHECK_SECONDS,900);assert.equal(values.apps.length,35);
+ assert.equal(RECHECK_SECONDS,900);assert.equal(values.apps.length,36);
  const ids=new Set();
  for(const app of values.apps) {
    assert(!ids.has(app.id));ids.add(app.id);
@@ -31,7 +31,7 @@ test("version match returns only a cheap unchanged response",async()=>{
 test("new version returns catalog and invalid bodies fail closed",async()=>{
  const response=await list(body({knownVersion:0}));
  const data=await response.json();assert.equal(response.status,200);
- assert.equal(data.unchanged,false);assert.equal(data.apps.length,35);
+ assert.equal(data.unchanged,false);assert.equal(data.apps.length,36);
  for(const invalid of [{knownVersion:-1},{url:"http://127.0.0.1/"},{knownVersion:"1"}]) {
    assert.equal((await list(body(invalid))).status,400);
  }
@@ -263,4 +263,16 @@ test("7NET original PNG and validated complete catalog follow provider controls"
  assert.equal(app.name,"7NET VPN");assert.equal(app.decodeEnabled,true);
  assert.equal(app.iconSha256,"a6eac9703f48f4890f29a093178526e841984f8d5915fbc187a9e895da6a538c");
  assert.equal(catalog({availability:{"7net-vpn":false}}).apps.find(x=>x.id==="7net-vpn").decodeEnabled,false);
+});
+
+
+test("AM retains its original PNG while protected catalog support is pending",async t=>{
+ const old=process.env.CLOUD_SERVER_VPN_ENABLED;process.env.CLOUD_SERVER_VPN_ENABLED="true";
+ t.after(()=>{if(old===undefined)delete process.env.CLOUD_SERVER_VPN_ENABLED;else process.env.CLOUD_SERVER_VPN_ENABLED=old;});
+ const app=catalog({availability:{"am-tunnel-lite-vpn":true}}).apps.find(x=>x.id==="am-tunnel-lite-vpn");
+ assert.equal(app.name,"AM TUNNEL LITE VPN");assert.equal(app.decodeEnabled,false);
+ assert.equal(app.iconSha256,"ad8aab869a41fd23aa1bff5c976c589ae73738192a8d475c3fcc36edd1da2d7a");
+ assert(!providerIds().includes("am-tunnel-lite-vpn"));
+ assert.equal(providerEnabled("am-tunnel-lite-vpn",{CLOUD_SERVER_VPN_ENABLED:"true"}),false);
+ await assert.rejects(()=>downloadVpnCatalog("am-tunnel-lite-vpn"),{code:"UNSUPPORTED_FORMAT"});
 });

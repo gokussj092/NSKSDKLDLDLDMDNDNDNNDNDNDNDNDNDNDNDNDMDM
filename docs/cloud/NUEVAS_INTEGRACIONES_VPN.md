@@ -285,6 +285,22 @@ entregas anteriores ni publicar anuncios automáticamente.
 
 ## Integraciones pendientes
 
+- **AM TUNNEL LITE VPN — AM (63): pendiente de catálogo**. El núcleo Java está
+  protegido con LIAPP; **todavía no se ha abierto íntegramente `pdrv2.json`**.
+  El enlace extraído del APK agotó el tiempo de espera y no se validó su
+  respuesta. **No anunciar como servidor operativo ni como integración completa.**
+  Se incorpora solo la ficha y PNG original, `remote:null`, catálogo mínimo
+  **34 / 36 fichas**. Sin ruta de worker/broker ni extensión nueva.
+- En `decoders/Python/apps/AM_TUNNEL_LITE_VPN/` queda un auxiliar de campos
+  PUtils hexadecimal/XOR/UTF-8 modificado, **8 vectores JDK / XOR ARM64 iguales**,
+  **4 Python / 43 web aprobadas**. No equivalen a paridad del catálogo.
+  Herramientas versionadas: extractor de primera capa nativa
+  `scripts/apk_analysis/liapp_wrapper.py`, oracles/generador y guía de
+  recuperación. `ANALYSIS.md` conserva los hashes y el punto de continuación.
+  El DEX/lector protegido aún no se recuperó; no se suben datos reales ni
+  se despliega, fusiona, publica APK o modifica C11.
+
+
 - **UT Loop Pro VPN 22.10.26 (65) — catálogo remoto pendiente**: lector
   RSA/SHA-256 + AES-256-GCM de actualizaciones firmadas y copias locales en
   `decoders/Python/apps/UT_Loop_Pro_VPN/`, worker fijo `ut-loop-pro-vpn`.

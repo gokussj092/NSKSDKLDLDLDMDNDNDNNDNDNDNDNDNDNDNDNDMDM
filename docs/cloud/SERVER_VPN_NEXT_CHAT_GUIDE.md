@@ -88,5 +88,8 @@ datos temporales. Las referencias independientes y fixtures sintéticos de
 completo con JDK y opcionalmente con primitivas ARM64 y el worker aislado.
 Conservar allí cualquier herramienta nueva; no depender solo del entorno.
 APK/SO, inventarios de cadenas, catálogos reales y credenciales descifradas
-permanecen fuera de Git. Última integración: **7NET VPN 5.6**, catálogo mínimo
-**33 / 35 fichas**, proveedor fijo `7net-vpn`; detalles en su carpeta de app.
+permanecen fuera de Git. Último catálogo completo integrado: **7NET VPN 5.6**,
+proveedor fijo `7net-vpn`. Último avance: **AM TUNNEL LITE VPN build 63**, aún
+pendiente de abrir su catálogo LIAPP; ficha desactivada, catálogo mínimo
+**34 / 36 fichas**. Revisar su `ANALYSIS.md` y no confundir el auxiliar de campos
+ni la extracción de primera capa nativa con un catálogo completo.
