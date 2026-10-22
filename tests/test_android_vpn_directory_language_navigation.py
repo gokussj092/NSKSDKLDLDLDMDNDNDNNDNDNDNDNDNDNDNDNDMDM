@@ -11,8 +11,10 @@ class DirectoryAndLanguageNavigation(unittest.TestCase):
         start=src.index("private fun ServerVpnScreen(")
         end=src.index("@Composable\nprivate fun ServerVpnNewTag",start)
         code=src[start:end]
-        self.assertIn('testTag("server_vpn_manual_refresh")',code)
-        self.assertIn("onClick=onRefresh",code)
+        header=src[src.index("private fun BrandHeader("):start]
+        self.assertIn('testTag("server_vpn_manual_refresh")',header)
+        self.assertIn("onClick=onRefreshServerVpn",header)
+        self.assertNotIn('testTag("server_vpn_manual_refresh")',code)
         self.assertNotIn("manualRefreshIsNew",code)
         self.assertNotIn("featureRemaining(",code)
         self.assertIn("if(app.id in newProviderIds)",code)

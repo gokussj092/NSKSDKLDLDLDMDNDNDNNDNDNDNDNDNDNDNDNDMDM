@@ -80,6 +80,7 @@ class MainActivity : ComponentActivity() {
     private var serverVpnRefresh:Job?=null
     private var serverVpnLoading by mutableStateOf(false)
     private var serverVpnUnavailable by mutableStateOf(false)
+    private var pendingServerVpnCatalogVersion by mutableStateOf<Int?>(null)
     private val privateCredentialVault by lazy { DevicePrivateCredentialVault(this) }
     private data class PendingCredentialImport(
         val uri:Uri,
@@ -197,6 +198,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    /** Opening Server VPN without auto-updates reads cached icons only. */
     private fun refreshServerVpn(force:Boolean=false) {
         if(!BuildConfig.SPDECODE_CLOUD_ENABLED || showCloudLegal ||
             serverVpnRefresh?.isActive==true)return
@@ -205,9 +207,64 @@ class MainActivity : ComponentActivity() {
         serverVpnRefresh=scope.launch {
             try {
                 serverVpnApps=serverVpnCatalog.cached()
-                serverVpnApps=serverVpnCatalog.refreshIfDue(force=force)
+                if(force || CloudCatalogUpdates.enabled(this@MainActivity)) {
+                    serverVpnApps=serverVpnCatalog.refreshIfDue(force=force)
+                }
             }catch(error:CancellationException){throw error}
              catch(_:Exception){ /* An authenticated cached snapshot remains usable. */ }
+            finally {
+                serverVpnUnavailable=serverVpnApps.isEmpty()
+                serverVpnLoading=false
+            }
+        }
+    }
+
+    /** Manual tap: probe version only, never download before user consent. */
+    private fun checkServerVpnUpdates() {
+        if(!BuildConfig.SPDECODE_CLOUD_ENABLED || showCloudLegal || busy ||
+            serverVpnRefresh?.isActive==true)return
+        pendingServerVpnCatalogVersion=null
+        serverVpnLoading=true
+        serverVpnRefresh=scope.launch {
+            try {
+                // knownVersion=0 returns immediately from the VPS version watch.
+                val remoteVersion=cloudClient.watchCatalogVersion(0)
+                if(remoteVersion<=serverVpnCatalog.currentVersion()) {
+                    toast(R.string.server_vpn_catalog_current)
+                }else if(CloudCatalogUpdates.enabled(this@MainActivity)) {
+                    serverVpnApps=serverVpnCatalog.refreshIfDue(
+                        force=true,announcedVersion=remoteVersion)
+                    toast(if(serverVpnCatalog.currentVersion()>=remoteVersion)
+                        R.string.server_vpn_catalog_updated
+                        else R.string.server_vpn_catalog_update_error)
+                }else {
+                    pendingServerVpnCatalogVersion=remoteVersion
+                }
+            }catch(error:CancellationException){throw error}
+             catch(_:Exception){toast(R.string.server_vpn_catalog_update_error)}
+            finally {
+                serverVpnUnavailable=serverVpnApps.isEmpty()
+                serverVpnLoading=false
+            }
+        }
+    }
+
+    /** A confirmed manual download is the only non-opt-in update path. */
+    private fun confirmServerVpnUpdate() {
+        val version=pendingServerVpnCatalogVersion?:return
+        pendingServerVpnCatalogVersion=null
+        if(!BuildConfig.SPDECODE_CLOUD_ENABLED || showCloudLegal || busy ||
+            serverVpnRefresh?.isActive==true)return
+        serverVpnLoading=true
+        serverVpnRefresh=scope.launch {
+            try {
+                serverVpnApps=serverVpnCatalog.refreshIfDue(
+                    force=true,announcedVersion=version)
+                toast(if(serverVpnCatalog.currentVersion()>=version)
+                    R.string.server_vpn_catalog_updated
+                    else R.string.server_vpn_catalog_update_error)
+            }catch(error:CancellationException){throw error}
+             catch(_:Exception){toast(R.string.server_vpn_catalog_update_error)}
             finally {
                 serverVpnUnavailable=serverVpnApps.isEmpty()
                 serverVpnLoading=false
@@ -387,7 +444,9 @@ class MainActivity : ComponentActivity() {
                     navigationExplicit=true
                     tab=newTab
                     reveal=false
-                    if(newTab==3)refreshServerVpn()
+                    if(newTab==3)refreshServerVpn(
+                        force=CloudCatalogUpdates.enabled(this@MainActivity))
+                    else pendingServerVpnCatalogVersion=null
                     scope.launch {
                         try { historyPreferences.setLastTab(newTab) }
                         catch(e:CancellationException){throw e}
@@ -443,8 +502,14 @@ class MainActivity : ComponentActivity() {
                     try {
                         CloudCatalogUpdates.setEnabled(this@MainActivity,enabled)
                         catalogUpdatesEnabled=CloudCatalogUpdates.enabled(this@MainActivity)
-                        if(catalogUpdatesEnabled)startCatalogWatch()
-                        else catalogWatchJob?.cancel()
+                        if(catalogUpdatesEnabled) {
+                            startCatalogWatch()
+                            if(tab==3)refreshServerVpn(force=true)
+                        }else {
+                            catalogWatchJob?.cancel()
+                            serverVpnRefresh?.cancel()
+                            serverVpnLoading=false
+                        }
                     }catch(_:Exception){message=getString(R.string.history_storage_error)}
                 },
                 onWithdrawCloudConsent={
@@ -460,6 +525,7 @@ class MainActivity : ComponentActivity() {
                             serverVpnRefresh?.cancel()
                             job?.cancel()
                             serverVpnApps=emptyList()
+                            pendingServerVpnCatalogVersion=null
                             showCloudLegal=true
                         }catch(_:Exception){message=getString(R.string.history_storage_error)}
                     }
@@ -467,7 +533,10 @@ class MainActivity : ComponentActivity() {
                 serverVpnApps=serverVpnApps,
                 serverVpnLoading=serverVpnLoading,
                 serverVpnUnavailable=serverVpnUnavailable,
-                onRefreshServerVpn={refreshServerVpn(force=true)},
+                onRefreshServerVpn={checkServerVpnUpdates()},
+                pendingServerVpnCatalogVersion=pendingServerVpnCatalogVersion,
+                onConfirmServerVpnUpdate={confirmServerVpnUpdate()},
+                onDismissServerVpnUpdate={pendingServerVpnCatalogVersion=null},
                 whatsNew=showWhatsNew,
                 cloudWhatsNew=cloudWhatsNew,
                 onDismissWhatsNew={
@@ -565,7 +634,13 @@ class MainActivity : ComponentActivity() {
         // A signature/debuggable check that runs only at cold start can be
         // bypassed by a later process attachment. Defense-in-depth recheck.
         if(!ReleaseIntegrity.isTrusted(this)) finishAndRemoveTask()
-        if(!showCloudLegal){refreshServerVpn();syncOptInUsage();CloudCatalogUpdates.ensureScheduled(this);startCatalogWatch();refreshCloudWhatsNew()}
+        if(!showCloudLegal){
+            refreshServerVpn(force=CloudCatalogUpdates.enabled(this))
+            syncOptInUsage()
+            CloudCatalogUpdates.ensureScheduled(this)
+            startCatalogWatch()
+            refreshCloudWhatsNew()
+        }
     }
 
     override fun onNewIntent(intent:Intent){

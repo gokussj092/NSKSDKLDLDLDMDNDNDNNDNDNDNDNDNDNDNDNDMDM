@@ -45,12 +45,12 @@ internal object CloudCatalogUpdates {
     fun ensureScheduled(context:Context) {
         if(!enabled(context)||!CloudLegalConsent.accepted(context))return
         val constraints=Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
-        val fallback=PeriodicWorkRequestBuilder<CloudCatalogSyncWorker>(12,TimeUnit.HOURS)
+        val fallback=PeriodicWorkRequestBuilder<CloudCatalogSyncWorker>(24,TimeUnit.HOURS)
             .setConstraints(constraints)
             .setBackoffCriteria(BackoffPolicy.EXPONENTIAL,30,TimeUnit.SECONDS)
             .build()
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-            BACKUP,ExistingPeriodicWorkPolicy.KEEP,fallback)
+            BACKUP,ExistingPeriodicWorkPolicy.UPDATE,fallback)
     }
 
     /** Untrusted version hints never carry URLs, icon bytes or provider metadata. */

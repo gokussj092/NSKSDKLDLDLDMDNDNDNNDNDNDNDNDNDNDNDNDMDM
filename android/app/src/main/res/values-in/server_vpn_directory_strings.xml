@@ -12,4 +12,10 @@
     <string name="server_vpn_catalog_enabled">Diaktifkan dalam katalog</string>
     <string name="server_vpn_catalog_disabled">Belum diaktifkan dalam katalog</string>
     <string name="server_vpn_new_badge">Baru</string>
+    <string name="server_vpn_catalog_update_title">Pembaruan katalog tersedia</string>
+    <string name="server_vpn_catalog_update_question">Versi %1$d katalog server VPN tersedia. Unduh sekarang?</string>
+    <string name="server_vpn_catalog_download">Unduh</string>
+    <string name="server_vpn_catalog_current">Katalog server VPN sudah terbaru.</string>
+    <string name="server_vpn_catalog_updated">Katalog server VPN berhasil diperbarui.</string>
+    <string name="server_vpn_catalog_update_error">Tidak dapat memeriksa atau mengunduh katalog. Coba lagi.</string>
 </resources>

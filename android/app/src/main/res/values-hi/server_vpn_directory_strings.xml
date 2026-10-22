@@ -13,4 +13,10 @@
     <string name="server_vpn_catalog_enabled">कैटलॉग में सक्रिय</string>
     <string name="server_vpn_catalog_disabled">कैटलॉग में निष्क्रिय</string>
     <string name="server_vpn_new_badge">नया</string>
+    <string name="server_vpn_catalog_update_title">कैटलॉग अपडेट उपलब्ध है</string>
+    <string name="server_vpn_catalog_update_question">VPN सर्वर कैटलॉग का संस्करण %1$d उपलब्ध है। क्या इसे डाउनलोड करें?</string>
+    <string name="server_vpn_catalog_download">डाउनलोड</string>
+    <string name="server_vpn_catalog_current">VPN सर्वर कैटलॉग अद्यतन है।</string>
+    <string name="server_vpn_catalog_updated">VPN सर्वर कैटलॉग अपडेट हो गया।</string>
+    <string name="server_vpn_catalog_update_error">कैटलॉग की जाँच या डाउनलोड नहीं हो सका। फिर प्रयास करें।</string>
 </resources>

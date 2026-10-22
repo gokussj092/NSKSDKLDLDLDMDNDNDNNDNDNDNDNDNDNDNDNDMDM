@@ -12,4 +12,10 @@
     <string name="server_vpn_catalog_enabled">Habilitado no catálogo</string>
     <string name="server_vpn_catalog_disabled">Não habilitado no catálogo</string>
     <string name="server_vpn_new_badge">Novo</string>
+    <string name="server_vpn_catalog_update_title">Atualização de catálogo disponível</string>
+    <string name="server_vpn_catalog_update_question">A versão %1$d do catálogo de servidores VPN está disponível. Deseja baixá-la?</string>
+    <string name="server_vpn_catalog_download">Baixar</string>
+    <string name="server_vpn_catalog_current">O catálogo de servidores VPN está atualizado.</string>
+    <string name="server_vpn_catalog_updated">Catálogo de servidores VPN atualizado.</string>
+    <string name="server_vpn_catalog_update_error">Não foi possível verificar ou baixar o catálogo. Tente novamente.</string>
 </resources>

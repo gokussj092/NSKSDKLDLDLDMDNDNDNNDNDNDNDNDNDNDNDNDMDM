@@ -97,6 +97,9 @@ fun SpDecodeApp(
     serverVpnLoading:Boolean=false,
     serverVpnUnavailable:Boolean=false,
     onRefreshServerVpn:()->Unit={},
+    pendingServerVpnCatalogVersion:Int?=null,
+    onConfirmServerVpnUpdate:()->Unit={},
+    onDismissServerVpnUpdate:()->Unit={},
     whatsNew:Boolean=false,
     cloudWhatsNew:CloudNewsNotice?=null,
     onDismissWhatsNew:()->Unit={},
@@ -116,7 +119,13 @@ fun SpDecodeApp(
         Column(
             modifier=Modifier.fillMaxSize().background(Background).safeDrawingPadding()
         ) {
-            BrandHeader(onSettings={onTab(4)})
+            BrandHeader(
+                onSettings={onTab(4)},
+                showServerVpnRefresh=activeTab==3 && BuildConfig.SPDECODE_CLOUD_ENABLED,
+                refreshingServerVpn=serverVpnLoading,
+                enableServerVpnRefresh=!busy && !serverVpnLoading,
+                onRefreshServerVpn=onRefreshServerVpn,
+            )
             Box(Modifier.weight(1f)) {
                 when(activeTab) {
                     0->HomeScreen(current,session,busy,reveal,hideCredentials,onImport,onCancel,onReveal,
@@ -127,7 +136,7 @@ fun SpDecodeApp(
                     1->HistoryScreen(session,onSelect,onDeleteSelected,onClear,onImportMultiple,onFavorite)
                     2->FormatsScreen()
                     3->ServerVpnScreen(busy,serverVpnApps,serverVpnLoading,serverVpnUnavailable,
-                        onDecodeServerCatalog,onDecodeServerApp,onRefreshServerVpn)
+                        onDecodeServerCatalog,onDecodeServerApp)
                     else->FunctionalSettingsPanel(selectedLanguage,hideCredentials,
                         onLanguage,onMaskCredentials,onClear,onExternalLink,
                         retentionDays,onRetention,onShowGuide=onGuideRestart,
@@ -143,6 +152,21 @@ fun SpDecodeApp(
                 spotlight=if(guideStep!=null && !whatsNew && !busy)
                     FirstRunGuide.targetTab(guideStep) else null)
         }
+        if(activeTab==3 && pendingServerVpnCatalogVersion!=null && !busy) AlertDialog(
+            onDismissRequest=onDismissServerVpnUpdate,
+            title={Text(stringResource(R.string.server_vpn_catalog_update_title))},
+            text={Text(stringResource(R.string.server_vpn_catalog_update_question,
+                pendingServerVpnCatalogVersion),color=Secondary)},
+            confirmButton={TextButton(onClick=onConfirmServerVpnUpdate) {
+                Text(stringResource(R.string.server_vpn_catalog_download),color=White)
+            }},
+            dismissButton={TextButton(onClick=onDismissServerVpnUpdate) {
+                Text(stringResource(R.string.cancel),color=White)
+            }},
+            containerColor=Background,
+            titleContentColor=White,
+            textContentColor=Secondary,
+        )
         if(whatsNew && !busy && (cloudWhatsNew!=null || !BuildConfig.SPDECODE_CLOUD_ENABLED)) AlertDialog(
             onDismissRequest=onDismissWhatsNew,
             icon={Icon(Icons.Outlined.NewReleases,null,tint=Green)},
@@ -300,7 +324,13 @@ fun SpDecodeApp(
 }
 
 @Composable
-private fun BrandHeader(onSettings:()->Unit){
+private fun BrandHeader(
+    onSettings:()->Unit,
+    showServerVpnRefresh:Boolean=false,
+    refreshingServerVpn:Boolean=false,
+    enableServerVpnRefresh:Boolean=true,
+    onRefreshServerVpn:()->Unit={},
+){
     Row(
         modifier=Modifier.fillMaxWidth().padding(start=20.dp,end=12.dp,top=14.dp,bottom=11.dp),
         verticalAlignment=Alignment.CenterVertically,
@@ -317,6 +347,27 @@ private fun BrandHeader(onSettings:()->Unit){
                 maxLines=1)
             Text(stringResource(R.string.subtitle),color=Secondary,fontSize=14.sp,
                 maxLines=1,overflow=TextOverflow.Ellipsis)
+        }
+        if(showServerVpnRefresh) {
+            IconButton(
+                onClick=onRefreshServerVpn,
+                enabled=enableServerVpnRefresh,
+                modifier=Modifier.size(46.dp)
+                    .background(Color(0xFF282828),RoundedCornerShape(50))
+                    .border(1.dp,Color(0xFF484848),RoundedCornerShape(50))
+                    .testTag("server_vpn_manual_refresh"),
+            ) {
+                if(refreshingServerVpn) {
+                    CircularProgressIndicator(
+                        modifier=Modifier.size(20.dp),strokeWidth=2.dp,color=White)
+                }else{
+                    Icon(Icons.Outlined.Refresh,
+                        stringResource(R.string.server_vpn_manual_refresh),
+                        tint=if(enableServerVpnRefresh)White else Secondary,
+                        modifier=Modifier.size(22.dp))
+                }
+            }
+            Spacer(Modifier.width(8.dp))
         }
         IconButton(onClick=onSettings){
             Icon(Icons.Outlined.Tune,stringResource(R.string.options),tint=Secondary)
@@ -794,7 +845,6 @@ private fun ServerVpnScreen(
     catalogUnavailable:Boolean,
     onDecodeCatalog:()->Unit,
     onDecodeApp:(String)->Unit,
-    onRefresh:()->Unit,
 ) {
     var selected by rememberSaveable { mutableStateOf(false) }
     var selectedId by rememberSaveable { mutableStateOf("") }
@@ -823,30 +873,8 @@ private fun ServerVpnScreen(
     }
     Column(Modifier.fillMaxSize().padding(horizontal=20.dp,vertical=12.dp),
         verticalArrangement=Arrangement.spacedBy(12.dp)) {
-        Row(verticalAlignment=Alignment.CenterVertically) {
-            Text(stringResource(R.string.server_vpn),fontSize=24.sp,
-                fontWeight=FontWeight.Bold,color=White,modifier=Modifier.weight(1f))
-            if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
-                IconButton(
-                    onClick=onRefresh,
-                    enabled=!busy && !catalogLoading,
-                    modifier=Modifier.size(46.dp)
-                        .background(Color(0xFF282828),RoundedCornerShape(50))
-                        .border(1.dp,Color(0xFF484848),RoundedCornerShape(50))
-                        .testTag("server_vpn_manual_refresh"),
-                ) {
-                    if(catalogLoading) {
-                        CircularProgressIndicator(
-                            modifier=Modifier.size(20.dp),strokeWidth=2.dp,color=White)
-                    }else{
-                        Icon(Icons.Outlined.Refresh,
-                            stringResource(R.string.server_vpn_manual_refresh),
-                            tint=if(busy)Secondary else White,
-                            modifier=Modifier.size(22.dp))
-                    }
-                }
-            }
-        }
+        Text(stringResource(R.string.server_vpn),fontSize=24.sp,
+            fontWeight=FontWeight.Bold,color=White)
         Text(stringResource(R.string.server_vpn_description),fontSize=13.sp,
             lineHeight=20.sp,color=Secondary)
         if(BuildConfig.SPDECODE_CLOUD_ENABLED) {

@@ -13,4 +13,10 @@
     <string name="server_vpn_catalog_enabled">Katalogda etkin</string>
     <string name="server_vpn_catalog_disabled">Katalogda etkin değil</string>
     <string name="server_vpn_new_badge">Yeni</string>
+    <string name="server_vpn_catalog_update_title">Katalog güncellemesi mevcut</string>
+    <string name="server_vpn_catalog_update_question">VPN sunucu kataloğunun %1$d sürümü mevcut. İndirilsin mi?</string>
+    <string name="server_vpn_catalog_download">İndir</string>
+    <string name="server_vpn_catalog_current">VPN sunucu kataloğu güncel.</string>
+    <string name="server_vpn_catalog_updated">VPN sunucu kataloğu güncellendi.</string>
+    <string name="server_vpn_catalog_update_error">Katalog kontrol edilemedi veya indirilemedi. Tekrar deneyin.</string>
 </resources>

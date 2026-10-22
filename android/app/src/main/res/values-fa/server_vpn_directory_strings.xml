@@ -12,4 +12,10 @@
     <string name="server_vpn_catalog_enabled">فعال در کاتالوگ</string>
     <string name="server_vpn_catalog_disabled">غیرفعال در کاتالوگ</string>
     <string name="server_vpn_new_badge">جدید</string>
+    <string name="server_vpn_catalog_update_title">به‌روزرسانی فهرست در دسترس است</string>
+    <string name="server_vpn_catalog_update_question">نسخه %1$d فهرست سرورهای VPN موجود است. دانلود شود؟</string>
+    <string name="server_vpn_catalog_download">دانلود</string>
+    <string name="server_vpn_catalog_current">فهرست سرورهای VPN به‌روز است.</string>
+    <string name="server_vpn_catalog_updated">فهرست سرورهای VPN به‌روزرسانی شد.</string>
+    <string name="server_vpn_catalog_update_error">بررسی یا دانلود فهرست ممکن نشد. دوباره تلاش کنید.</string>
 </resources>

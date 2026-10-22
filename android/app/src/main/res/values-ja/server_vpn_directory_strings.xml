@@ -13,4 +13,10 @@
     <string name="server_vpn_catalog_enabled">カタログで有効</string>
     <string name="server_vpn_catalog_disabled">カタログで無効</string>
     <string name="server_vpn_new_badge">新着</string>
+    <string name="server_vpn_catalog_update_title">カタログの更新があります</string>
+    <string name="server_vpn_catalog_update_question">VPNサーバーカタログのバージョン%1$dが利用可能です。ダウンロードしますか？</string>
+    <string name="server_vpn_catalog_download">ダウンロード</string>
+    <string name="server_vpn_catalog_current">VPNサーバーカタログは最新です。</string>
+    <string name="server_vpn_catalog_updated">VPNサーバーカタログを更新しました。</string>
+    <string name="server_vpn_catalog_update_error">カタログの確認またはダウンロードに失敗しました。再度お試しください。</string>
 </resources>

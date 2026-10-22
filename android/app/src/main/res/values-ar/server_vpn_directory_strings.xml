@@ -12,4 +12,10 @@
     <string name="server_vpn_catalog_enabled">مفعّل في الكتالوج</string>
     <string name="server_vpn_catalog_disabled">غير مفعّل في الكتالوج</string>
     <string name="server_vpn_new_badge">جديد</string>
+    <string name="server_vpn_catalog_update_title">تحديث الكتالوج متاح</string>
+    <string name="server_vpn_catalog_update_question">الإصدار %1$d من كتالوج خوادم VPN متاح. هل تريد تنزيله؟</string>
+    <string name="server_vpn_catalog_download">تنزيل</string>
+    <string name="server_vpn_catalog_current">كتالوج خوادم VPN محدث.</string>
+    <string name="server_vpn_catalog_updated">تم تحديث كتالوج خوادم VPN.</string>
+    <string name="server_vpn_catalog_update_error">تعذر التحقق من الكتالوج أو تنزيله. حاول مرة أخرى.</string>
 </resources>

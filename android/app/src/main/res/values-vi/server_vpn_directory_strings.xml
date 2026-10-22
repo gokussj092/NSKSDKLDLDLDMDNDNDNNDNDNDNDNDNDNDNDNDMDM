@@ -13,4 +13,10 @@
     <string name="server_vpn_catalog_enabled">Đã bật trong danh mục</string>
     <string name="server_vpn_catalog_disabled">Chưa bật trong danh mục</string>
     <string name="server_vpn_new_badge">Mới</string>
+    <string name="server_vpn_catalog_update_title">Có bản cập nhật danh mục</string>
+    <string name="server_vpn_catalog_update_question">Đã có phiên bản %1$d của danh mục máy chủ VPN. Tải xuống ngay?</string>
+    <string name="server_vpn_catalog_download">Tải xuống</string>
+    <string name="server_vpn_catalog_current">Danh mục máy chủ VPN đã được cập nhật.</string>
+    <string name="server_vpn_catalog_updated">Đã cập nhật danh mục máy chủ VPN.</string>
+    <string name="server_vpn_catalog_update_error">Không thể kiểm tra hoặc tải danh mục. Vui lòng thử lại.</string>
 </resources>

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseRef": "main",
-  "purpose": "Authorized UI rebaseline for Server VPN compact NEW provider badges, polished manual refresh and search, and a full-screen language picker. All nine tracked sources remain SHA-1 verified; the active PR does not modify decoder cryptography.",
+  "purpose": "Authorized UI rebaseline: header-only manual Server VPN version check, confirmation before non-opt-in download, opt-in 24-hour recovery, and full-screen language picker. All nine protected UI files remain SHA-1 checked.",
   "uiGitBlobSha1": {
     "android/app/src/main/java/com/ghostdeveloper/spdecode/CompleteResultCard.kt": "58cf6476fd022ad2b5bd1ce289aba4a2f79e9a26",
     "android/app/src/main/java/com/ghostdeveloper/spdecode/FirstRunGuide.kt": "d7a222ee435d354fc84b15476bf6bd98ee750171",
@@ -10,7 +10,7 @@
     "android/app/src/main/java/com/ghostdeveloper/spdecode/HttpInjectorCloudPanel.kt": "5af592ae0b873c50836dcd89c8a120d57d7cb121",
     "android/app/src/main/java/com/ghostdeveloper/spdecode/JsonTreeViewer.kt": "ae32c219d14f54a5d2a229edb9076c79766af6c7",
     "android/app/src/main/java/com/ghostdeveloper/spdecode/ResultPresentation.kt": "d2a53e9715feed5a48d4193a6b4596eb3d86cabd",
-    "android/app/src/main/java/com/ghostdeveloper/spdecode/SpDecodeApp.kt": "9ad12fd7a8416621d5f185740e2e9e664c7944f6",
+    "android/app/src/main/java/com/ghostdeveloper/spdecode/SpDecodeApp.kt": "22f39d8c9e4573e91cb44b6862790851ac8c16f9",
     "android/app/src/main/java/com/ghostdeveloper/spdecode/TextDecoderPanel.kt": "bb4f3552ca8fba5892da4e6cd6674cb191b00bdf"
   }
 }
