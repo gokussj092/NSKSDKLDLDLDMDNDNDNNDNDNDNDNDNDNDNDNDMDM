@@ -80,6 +80,20 @@ entregas anteriores ni publicar anuncios automáticamente.
   Código subido al PR #96; disponibilidad pública tras actualizar la VPS,
   sin despliegue, fusión, APK ni novedades C11 automáticos.
 
+- **FreedomVPN 1.0.29 (125) ✅** — descarga autorizada de **147 servidores**,
+  Version **4.4.88**, **1176 campos cifrados procesados**, con igualdad de todo el
+  JSON frente al oracle JDK, CLI real y worker aislado. Catálogo inicial: 1
+  servidor, Version 1.0.0, ocho campos, también igual. Todos los registros y
+  metadatos se conservan; no se fabrica la credencial dinámica del cliente.
+- Carpeta `decoders/Python/apps/FreedomVPN/`, XXTEA de delta propio, AES-ECB,
+  símbolos/AES-CBC y rotación Java; proveedor `freedom-vpn`, control administrativo,
+  icono PNG original y catálogo mínimo **21** (23 fichas). No se añade método
+  de archivos ni fuente de usuarios no identificada.
+- Comprobación breve solicitada: **3 pruebas Python y 18 web aprobadas**, sin
+  suites completas. HTTPS/CLI reales por Python y transporte Node controlado.
+  PR #96; disponible públicamente tras actualizar la VPS. Sin despliegue,
+  fusión, publicación de APK o novedades automáticos.
+
 ## Nuevos métodos de archivos, textos o enlaces añadidos
 
 - **HTTP SocketClay 3.4.0 ✅ — archivos `.sks`**: lector Python y ruta Cloud

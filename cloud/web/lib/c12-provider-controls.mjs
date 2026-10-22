@@ -14,6 +14,7 @@ const ROOT="/app/provider-control";
 const IDS=Object.freeze(["ehi-cloud","nur-tunnel",...providerIds()]);
 export const PUBLIC_PROVIDER_IDS=IDS;
 const LABELS=Object.freeze({
+  "freedom-vpn":"FreedomVPN",
   "focus-vpn-cloud":"Focus VPN Cloud",
   "v2ray-tunnel-plus":"V2ray Tunnel Plus",
   "ehi-cloud":"HTTP Injector Cloud",

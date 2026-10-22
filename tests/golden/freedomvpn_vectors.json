@@ -1,0 +1,44 @@
+{
+  "provenance": "Entirely synthetic; ciphertext generated independently by JDK reference from build-125 Ri/P5/CU and rotation readers.",
+  "catalog": "Y8hgpF/5XTAOZUpUDcNk9srIA080MBsoGXoRTbtmNrZY2ecyNxxMvkGKFLQtyI8lfMil+dKJZruFHj5UxaKKxbU2A+x//HHAdsAhxNCII+uo+VqZFRPJ8dX8zXQa/V7QeKPNqJNEYp/XCoeF5nfcpZHwhlBEE8aeP2ruVAGJngcVVuyrqzEhCz2P1v+lqUnj2S63B6hidvG2YlG6VDgXIeJFEnIoiWgbfRz6cNfy013JmdkaDBdNduu+2qrqN7FGh2RdAFlY37MYTFCu5dwMMKxE7udURvyRExjkuaYvMp9+uMSSf6X1Ud5AnGPx0vHNGMWpLtHUYOxqoBeuMhctfUTJ0zkV8YACn5A9AdlRWqLmTz9O6JhbJKlHB1mUSEQ0afPmMMQk2ywephHWJK8s4rHPKK5ANHuMcwHslq9O1/1Q1AH+Iv0bIXX4V4sP6KaBrt26sBDPtliEPiGsCKAosOjiG6EW10tJqV+IEW5WfZ78SHdwoQ/CQ9dx54KaHp4EUL7KAGpsIOLpH0W8UB/LibAf7d/dQ5+eSW859Hvk9k0IG/tHMs3B93L/EmX6JKj0jOEDNWoCXRTiTlsd+UlgXU+hEmXt+DlEcChDmb7cZyBStOGCMEd32iMLyXyUQQ1sNrFw0lOgHss1pA/+pV/W0oE4pjfUwMoqDLtMfaLQe0zVwOcN+b6HnQaie4Nbgz371qfkhkMwVESXTbDJV5C5RfQSUS5V0X74gS8/cLItcw81uofKiomzI6+PDJa3SjFWQ9pqevZY45Q004uNwBIHVKNS8e17YVaWmNaCjxcJCGBg43e1r9zJOQ/qgiEMODDVwFWXUFaaAIUKJTpXEXldtdVJ42858CUbLeopR5uCynYw72QIiPq2TOxmc0FsoOm7AIkRY9fiAzENRekA4YOh+O4XP21H0YJ6R9SWvdvFYx6WEQQUbEUG4Pgqro+K4JeF4b/4WKnLrrUh5HsTxxycRkX6zzzmNh/d6T5zwQNccs5+pNCp/J6TA1bn2vkyKA3vURLJew1no82uF874Kt0xppsBtvJUGdVfXLIN/hDpXAyDEA6/cWFQ4UVmBSCpT3oIvlEelkyPNQntppCHDkT0TpcrgihUm+wyrH5ovJrxoE60g4/mWMGJKq+l9C/64/ogXWKgTbKygHrHQDFXfisObCBFyL+4RpclgdIh+85dkGjhisAK",
+  "expected": {
+    "Version": "synthetic",
+    "ReleaseNotes": "Synthetic only",
+    "password": "synthetic",
+    "Servers": [
+      {
+        "Name": "One",
+        "ServerIP": "example.invalid",
+        "ServerUser": "test-user",
+        "ServerPass": "stored-template",
+        "Payload": "GET / HTTP/1.1\r\n\r\n",
+        "SNI": "host.invalid",
+        "udpserver": "udp.invalid",
+        "udpobfs": "test-obfs",
+        "v2rayJson": "{\"test\":true}",
+        "ProxyIP": "plain.invalid:80",
+        "ServerPort": "443",
+        "isV2ray": true,
+        "unknown": [
+          null,
+          false,
+          3
+        ]
+      },
+      {
+        "Name": "Two",
+        "ServerIP": "other.invalid",
+        "ServerUser": "",
+        "Payload": "",
+        "isDirect": false
+      }
+    ],
+    "unknown": {
+      "typed": [
+        true,
+        4,
+        null
+      ]
+    }
+  }
+}

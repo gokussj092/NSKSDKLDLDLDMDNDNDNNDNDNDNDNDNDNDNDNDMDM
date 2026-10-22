@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 PROVIDERS = {
+    "freedom-vpn": "decoders.Python.apps.FreedomVPN.server_catalog_decoder",
     "focus-vpn-cloud": "decoders.Python.apps.Focus_VPN_Cloud.server_catalog_decoder",
     "eut-vpn": "decoders.Python.apps.EUT_VPN.server_catalog_decoder",
     "v2ray-tunnel-plus": "decoders.Python.apps.V2ray_Tunnel_Plus.server_catalog_decoder",

@@ -47,3 +47,5 @@ productores se mantienen en `tests/golden`, y las pruebas en `tests`.
 - [EUT VPN 2.4.1](EUT_VPN/README.md): lector de recursos AES-CBC y worker aislado, validación breve con vectores JDK e icono original. Ficha remota desactivada: API exige sesión válida y el inicio de sesión rechaza el entorno.
 
 - [Focus VPN Cloud 5.0](Focus_VPN_Cloud/README.md): catálogo de bloques Unicode/AES-CBC y 12 campos RC4, descarga real de 142 servidores verificada con JDK, CLI y worker aislado. Proveedor, control e icono original integrados.
+
+- [FreedomVPN 1.0.29](FreedomVPN/README.md): catálogo XXTEA con delta propio y ocho campos XXTEA/AES-ECB/símbolos-AES-CBC. 147 servidores descargados y comparados íntegramente con JDK, CLI y worker; proveedor e icono original integrados.

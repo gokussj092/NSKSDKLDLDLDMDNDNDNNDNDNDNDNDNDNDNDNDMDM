@@ -3,7 +3,7 @@ import {readFileSync} from "node:fs";
 import {join} from "node:path";
 import {createHash} from "node:crypto";
 
-export const CATALOG_VERSION = 20; // Increment whenever the public roster or metadata changes.
+export const CATALOG_VERSION = 21; // Increment whenever the public roster or metadata changes.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -21,6 +21,7 @@ export function activeCatalogVersion(env=process.env) {
 }
 
 const ITEMS = Object.freeze([
+  {id:"freedom-vpn", name:"FreedomVPN", icon:"freedom-vpn.png", remote:"freedom-vpn"},
   {id:"focus-vpn-cloud", name:"Focus VPN Cloud", icon:"focus-vpn-cloud.png", remote:"focus-vpn-cloud"},
   // Build 370 resources require an official session; API rejects this environment.
   {id:"eut-vpn", name:"EUT VPN", icon:"eut-vpn.png", remote:null},
