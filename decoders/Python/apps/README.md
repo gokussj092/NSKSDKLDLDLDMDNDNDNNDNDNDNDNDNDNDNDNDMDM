@@ -45,3 +45,5 @@ productores se mantienen en `tests/golden`, y las pruebas en `tests`.
 - [V2ray Tunnel Plus 10.0.0](V2ray_Tunnel_Plus/README.md): suscripciones públicas Base64 y URI en texto, con descarga dual completa y paridad Java. 150 perfiles por fuente observados, misma lista representada de dos formas; catálogo Cloud integrado con icono original.
 
 - [EUT VPN 2.4.1](EUT_VPN/README.md): lector de recursos AES-CBC y worker aislado, validación breve con vectores JDK e icono original. Ficha remota desactivada: API exige sesión válida y el inicio de sesión rechaza el entorno.
+
+- [Focus VPN Cloud 5.0](Focus_VPN_Cloud/README.md): catálogo de bloques Unicode/AES-CBC y 12 campos RC4, descarga real de 142 servidores verificada con JDK, CLI y worker aislado. Proveedor, control e icono original integrados.

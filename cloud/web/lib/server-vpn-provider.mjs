@@ -22,6 +22,7 @@ const V2PLUS_SOURCES=Object.freeze({
 });
 const PAIRED_SOURCES=Object.freeze({"http-socketclay":SOCKETCLAY_SOURCES,"http-wakko":WAKKO_SOURCES,"v2ray-tunnel-plus":V2PLUS_SOURCES});
 const PROVIDERS = Object.freeze({
+  "focus-vpn-cloud": {url:"https://raw.githubusercontent.com/Rotdtd/Upagost17/refs/heads/main/NewSepFocass",agent:"Focus VPN Cloud/5.0"},
   "v2ray-tunnel-plus": {url:V2PLUS_SOURCES.base64,agent:"V2ray Tunnel Plus/10.0.0"},
   "http-wakko": {url:WAKKO_SOURCES.servers,agent:"HTTP Wakko/4.9"},
   "http-socketclay": {
@@ -206,7 +207,7 @@ export async function downloadVpnCatalog(id,source=id==="v2ray-tunnel-plus"?"bas
         continue;
       }
       if(answer.redirect!==undefined){
-        if(Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
+        if(id==="focus-vpn-cloud"||Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
         const next=answer.redirect;
         if(typeof next!=="string"||next.length>2048)fail("REMOTE_NETWORK_DENIED");
         target=new URL(next,dest).href;

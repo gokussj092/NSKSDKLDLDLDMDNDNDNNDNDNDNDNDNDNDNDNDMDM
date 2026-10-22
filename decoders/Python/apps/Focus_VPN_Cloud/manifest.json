@@ -1,0 +1,61 @@
+{
+  "id": "focus-vpn-cloud",
+  "name": "Focus VPN Cloud",
+  "package": "com.cloud.focus",
+  "compatibleVersions": [
+    "5.0"
+  ],
+  "versionCode": 59,
+  "engine": "python-block-nibble-sha256-aes256-cbc-rc4",
+  "engineVersion": 1,
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "focus-vpn-cloud",
+    "apiMethod": "GET",
+    "url": "https://raw.githubusercontent.com/Rotdtd/Upagost17/refs/heads/main/NewSepFocass",
+    "validatedOn": "2026-10-22",
+    "remoteAuthorization": "Explicit user authorization for external catalogs",
+    "remoteValidated": true,
+    "remoteVersion": "1081",
+    "remoteServersObserved": 142,
+    "remoteNonemptyFieldsCompared": 590,
+    "remoteBytes": 1015056,
+    "remoteSha256": "a20203e8ae622d6fbf8348f13039898daf4c2478061354c86cd767a198cc6644",
+    "embeddedSource": "base.apk:assets/flags/fc.png",
+    "embeddedVersion": "1",
+    "embeddedServersObserved": 1,
+    "separateUsersCatalogIdentified": false,
+    "secondarySource": "LINKUPDATEANUNCIOS is consumed as advertisement placement configuration, not user profiles",
+    "validation": "Whole initial and remote documents match independent JDK AES/RC4 oracle. Real CLI and isolated worker match all 142 servers and every field. First SSLdirecto RC4 key is the cold-start String.valueOf(null), zero-padded to 16 bytes. ProxyIP and ports remain plaintext.",
+    "publicCatalogVersion": 20,
+    "publicCatalogCards": 22,
+    "deploymentEnabledByDefault": false,
+    "testScope": "3 targeted Python and 17 targeted web tests passed. No full regression suites, Android execution or VPS deployment. External Python HTTPS real; Node DNS/IP/TLS controlled."
+  },
+  "files": {
+    "supported": false,
+    "validation": "Catalog-only addition; no new file format or Android file route registered."
+  },
+  "icon": {
+    "file": "Focus_VPN_Cloud.png",
+    "source": "base.apk:res/mipmap-xxxhdpi-v4/ic_launcher.png",
+    "bytes": 17633,
+    "width": 192,
+    "height": 192,
+    "sha256": "81b351e2ce9b578db175da44c521f72aaaa136b1d40a7a3759a211c3becb9164",
+    "policy": "Exact original launcher PNG; no conversion or resize."
+  },
+  "dependencies": {
+    "python": ">=3.10",
+    "pycryptodome": "3.23.0",
+    "supportFiles": [
+      "codec.py",
+      "../HTTP_FenixVPN/codec.py",
+      "../HTTP_FenixVPN/field_names.json"
+    ]
+  },
+  "sourceApkSha256": "409416cc4e58e53d610be0bca90fbe9be37a2f8069dd1986c01246ba6fdf5504",
+  "branch": "feat/austroplus-vpn-13-0-1-decoders",
+  "pullRequest": 96,
+  "analyzedBaseCommit": "f766afa40a873ac498ee2d64280457834d434140"
+}

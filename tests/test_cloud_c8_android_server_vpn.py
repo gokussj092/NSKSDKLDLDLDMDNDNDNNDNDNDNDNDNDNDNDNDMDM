@@ -132,6 +132,7 @@ class PhaseVServerVpnIntegration(unittest.TestCase):
         originals["http-jireh"]=(
             ROOT/"decoders/Python/apps/HTTP_Jireh/HTTP_Jireh.png",
             WEB/"public/server-vpn-icons/http-jireh.png")
+        originals["focus-vpn-cloud"]=(ROOT/"decoders/Python/apps/Focus_VPN_Cloud/Focus_VPN_Cloud.png",WEB/"public/server-vpn-icons/focus-vpn-cloud.png")
         originals["eut-vpn"]=(ROOT/"decoders/Python/apps/EUT_VPN/EUT_VPN.png",WEB/"public/server-vpn-icons/eut-vpn.png")
         originals["v2ray-tunnel-plus"]=(ROOT/"decoders/Python/apps/V2ray_Tunnel_Plus/V2ray_Tunnel_Plus.png",WEB/"public/server-vpn-icons/v2ray-tunnel-plus.png")
         originals["tunelguard-vpn"]=(ROOT/"decoders/Python/apps/TunelGuard_VPN/TunelGuard_VPN.png",WEB/"public/server-vpn-icons/tunelguard-vpn.png")

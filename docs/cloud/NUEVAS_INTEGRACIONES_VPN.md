@@ -66,6 +66,20 @@ entregas anteriores ni publicar anuncios automáticamente.
   del entorno; no se afirma prueba externa desde la VPS. Disponibilidad pública
   tras actualizar la VPS, sin fusión, despliegue o novedades automáticos.
 
+- **Focus VPN Cloud 5.0 (59) ✅** — catálogo descargado y abierto con
+  autorización externa expresa: **142 servidores**, Version **1081**, **590
+  campos cifrados no vacíos**. Documento completo igual al oracle JDK, CLI real
+  y worker aislado. Catálogo inicial activo: 1 servidor, Version 1, también igual.
+- Carpeta `decoders/Python/apps/Focus_VPN_Cloud/`, bloques Unicode/Base64/
+  AES-256-CBC y 12 campos RC4, proveedor `focus-vpn-cloud`, control administrativo,
+  icono PNG original y catálogo mínimo **20** (22 fichas). Datos, versiones,
+  vacíos y claves desconocidas conservados, sin recortar registros. La fuente de
+  anuncios no se anuncia como catálogo de usuarios. No se añade ruta de archivos.
+- Comprobación breve solicitada: **3 pruebas Python y 17 web aprobadas**, sin
+  suites completas. HTTPS externo por Python y transporte Node controlado.
+  Código subido al PR #96; disponibilidad pública tras actualizar la VPS,
+  sin despliegue, fusión, APK ni novedades C11 automáticos.
+
 ## Nuevos métodos de archivos, textos o enlaces añadidos
 
 - **HTTP SocketClay 3.4.0 ✅ — archivos `.sks`**: lector Python y ruta Cloud
