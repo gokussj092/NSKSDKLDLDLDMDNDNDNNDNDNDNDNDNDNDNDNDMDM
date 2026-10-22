@@ -6,6 +6,7 @@ on:
     paths:
       - ".github/workflows/play-beta-artifacts.yml"
       - "android/**"
+      - "tests/test_android_play_compatibility.py"
       - "cloud/web/lib/c11-play-admission.mjs"
       - "cloud/web/lib/c3-session.mjs"
       - "docs/cloud/C11_PLAY_BETA.md"

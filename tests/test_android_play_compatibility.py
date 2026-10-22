@@ -1,4 +1,4 @@
-"""Play v1.1.6 signature, edge-to-edge and 16 KiB regression contracts."""
+"""Play signed release signature, edge-to-edge and 16 KiB regression contracts."""
 from __future__ import annotations
 
 import struct
@@ -61,8 +61,8 @@ class AndroidPlayCompatibility(unittest.TestCase):
             self.assertIn(linker, cmake)
         self.assertIn("android_16kb_elf_audit.py", flow)
         self.assertIn('zipalign" -c -P 16', flow)
-        self.assertIn("versionName='1.1.6'", flow)
-        self.assertIn("versionCode='27'", flow)
+        self.assertIn("versionName='1.1.17'", flow)
+        self.assertIn("versionCode='28'", flow)
 
     def test_play_signing_certificate_is_mandatory(self):
         flow = (ROOT / ".github/workflows/play-beta-artifacts.yml").read_text("utf-8")
