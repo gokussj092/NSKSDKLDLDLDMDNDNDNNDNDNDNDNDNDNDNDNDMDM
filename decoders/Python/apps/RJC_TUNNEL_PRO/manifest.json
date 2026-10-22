@@ -1,0 +1,89 @@
+{
+  "id": "rjc-tunnel-pro",
+  "name": "RJC TUNNEL PRO",
+  "package": "com.rjct.pro",
+  "compatibleVersions": [
+    "RJC-6"
+  ],
+  "versionCode": 6,
+  "engine": "python-shared-mx-xxtea",
+  "engineVersion": 1,
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "rjc-tunnel-pro",
+    "url": "https://raw.githubusercontent.com/pipoyrichards/RJCPRO/refs/heads/main/FEBRUARY",
+    "validatedOn": "2026-10-22",
+    "remoteAuthorization": "Explicit user authorization for external catalogs",
+    "remoteValidated": true,
+    "remoteVersion": "22.4",
+    "remoteServersObserved": 41,
+    "remotePayloadsObserved": 1253,
+    "sourceEvidence": [
+      {
+        "source": "catalog-download.bin",
+        "bytes": 783128,
+        "sha256": "7eb51ecca8f0e5cdfe3a7c002344de4fca7f1c9ebd30d98104939a2309d54f68",
+        "version": "22.4",
+        "lists": {
+          "Premium_servers": 0,
+          "Vip_servers": 0,
+          "Private_servers": 0,
+          "Free_servers": 41,
+          "Payloads": 1253
+        },
+        "renderedBytes": 710294,
+        "jdkCliWorkerEqual": true
+      },
+      {
+        "source": "gremlin.json",
+        "bytes": 744904,
+        "sha256": "520e2aa7fa07a312f1dee7297ab3a93b238cb89bfcca3a9f220fb903ad841ac3",
+        "version": "15.1",
+        "lists": {
+          "Premium_servers": 0,
+          "Vip_servers": 0,
+          "Private_servers": 0,
+          "Free_servers": 46,
+          "Payloads": 1205
+        },
+        "renderedBytes": 677459,
+        "jdkCliWorkerEqual": true
+      }
+    ],
+    "separateUserCatalogIdentified": false,
+    "validation": "Entire real remote and embedded documents equal independent shared JDK XXTEA oracle, offline CLI, isolated worker and actual CLI HTTPS --download. isPartial:false.",
+    "publicCatalogVersion": 27,
+    "publicCatalogCards": 29,
+    "deploymentEnabledByDefault": false,
+    "testScope": "3 Python and 24 web checks; no full suites. Python external HTTPS real, Node transport controlled."
+  },
+  "files": {
+    "supported": false,
+    "validation": "Catalog-only; no exported profile sample or new file route certified."
+  },
+  "icon": {
+    "file": "RJC_TUNNEL_PRO.png",
+    "source": "base.apk:res/drawable/ic_app_icon.png",
+    "bytes": 105621,
+    "sha256": "cbfa6c1555e6c9839c915b0e49b381a551099807c28fe1927bd9b33b79fb0476",
+    "width": 512,
+    "height": 512,
+    "policy": "Exact original PNG, no conversion or resizing."
+  },
+  "dependencies": {
+    "python": ">=3.10",
+    "supportFiles": [
+      "codec.py",
+      "../Mx_Tunnel_PRO/codec.py",
+      "../HX_Tunnel_VPN/HX_Tunnel_VPN.py"
+    ],
+    "sharedSourceSha256": {
+      "../Mx_Tunnel_PRO/codec.py": "79dd9b5d3875b4215e143fdb7d75df76c37aa51f733637f6849651515637ba12",
+      "../HX_Tunnel_VPN/HX_Tunnel_VPN.py": "ac355fdeb5c4558ffbb765ed7335ed226578911b3ddc89c901bf520712549a6e"
+    }
+  },
+  "sourceApkSha256": "78b4ab567b9d31bd839bee3199ea37f2bdaf4758e4b9988f1a9843edd7d605b1",
+  "branch": "feat/austroplus-vpn-13-0-1-decoders",
+  "pullRequest": 96,
+  "analyzedBaseCommit": "0717dcdad322cc81c955071fd331af15c2fcf582"
+}

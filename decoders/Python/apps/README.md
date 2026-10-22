@@ -61,3 +61,5 @@ productores se mantienen en `tests/golden`, y las pruebas en `tests`.
 - [OnSpace VPN 4.2](OnSpace_VPN/README.md): catálogos de servidores y usuarios nibble/AES-CBC con campos AES-CBC/ROT24. Descarga real de 164 servidores y una entrada de usuarios comparada íntegramente con JDK, CLI y worker; descarga dual, control e icono original integrados.
 
 - [ProNeet VPN 27.11](ProNeet_VPN/README.md): catálogos de modo usuario/token con Base64 personalizado/AES-CBC y 23 campos internos. Assets reales de 25/23 servidores comprobados con JDK, CLI y worker. Ficha e icono incluidos; descarga remota desactivada porque ambas URLs oficiales contienen solo un salto de línea.
+
+- [RJC TUNNEL PRO RJC-6](RJC_TUNNEL_PRO/README.md): catálogo XXTEA compartido con Mx, descarga real de 41 servidores y 1253 payloads comparada íntegramente con JDK, CLI y worker. Proveedor, control e icono PNG original integrados.

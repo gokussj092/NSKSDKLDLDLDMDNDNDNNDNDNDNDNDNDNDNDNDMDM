@@ -3,7 +3,7 @@ import {readFileSync} from "node:fs";
 import {join} from "node:path";
 import {createHash} from "node:crypto";
 
-export const CATALOG_VERSION = 26; // Increment whenever the public roster or metadata changes.
+export const CATALOG_VERSION = 27; // Increment whenever the public roster or metadata changes.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -21,6 +21,7 @@ export function activeCatalogVersion(env=process.env) {
 }
 
 const ITEMS = Object.freeze([
+  {id:"rjc-tunnel-pro", name:"RJC TUNNEL PRO", icon:"rjc-tunnel-pro.png", remote:"rjc-tunnel-pro"},
   // Build 88 updater files currently contain only a newline; offline catalogs work.
   {id:"proneet-vpn", name:"ProNeet VPN", icon:"proneet-vpn.png", remote:null},
   {id:"onspace-vpn", name:"OnSpace VPN", icon:"onspace-vpn.png", remote:"onspace-vpn"},

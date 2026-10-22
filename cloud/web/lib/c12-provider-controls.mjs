@@ -14,6 +14,7 @@ const ROOT="/app/provider-control";
 const IDS=Object.freeze(["ehi-cloud","nur-tunnel",...providerIds()]);
 export const PUBLIC_PROVIDER_IDS=IDS;
 const LABELS=Object.freeze({
+  "rjc-tunnel-pro":"RJC TUNNEL PRO",
   "onspace-vpn":"OnSpace VPN",
   "mx-tunnel-pro":"Mx Tunnel PRO",
   "megatunnel":"MegaTunnel",

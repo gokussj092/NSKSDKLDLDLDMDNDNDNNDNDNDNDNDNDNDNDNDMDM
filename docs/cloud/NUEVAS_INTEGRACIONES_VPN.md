@@ -11,6 +11,22 @@ entregas anteriores ni publicar anuncios automáticamente.
 
 ## Nuevos Servidores VPN añadidos
 
+- **RJC TUNNEL PRO RJC-6 (6) ✅** — catálogo oficial descargado, descifrado e
+  integrado en el PR #96 con autorización externa expresa. HTTP 200 del
+  2026-10-22: **41 servidores y 1253 payloads**, versión **22.4**. Asset inicial:
+  **46 servidores y 1205 payloads**, versión **15.1**. Ambos documentos completos
+  coinciden con JDK independiente, CLI y worker aislado sin salida parcial;
+  el CLI `--download` también devuelve la descarga real completa.
+- Carpeta `decoders/Python/apps/RJC_TUNNEL_PRO/`, worker `rjc-tunnel-pro`, fuente
+  HTTPS fija, control administrativo e icono PNG original. Catálogo mínimo **27**,
+  29 fichas. Reutiliza la receta XXTEA de Mx tras confirmarla en este APK, sin
+  cambiar lectores anteriores. **3 comprobaciones Python y 24 web aprobadas**;
+  sin suites completas. Transporte Node controlado; Python HTTPS/CLI y worker
+  aislado reales. Disponible en código, pendiente de actualizar la VPS.
+- No se certifica un archivo de perfil ni una API de acceso como feed adicional.
+  Sin fusión, despliegue, publicación APK o novedades automáticas; datos reales
+  y binarios de análisis excluidos de Git.
+
 - **OnSpace VPN 4.2 (25) ✅** — ambos catálogos oficiales descargados,
   descifrados e integrados en el PR #96 con autorización externa expresa.
   HTTP 200 del 2026-10-22: **164 servidores**, versión **1662**, y **una entrada
