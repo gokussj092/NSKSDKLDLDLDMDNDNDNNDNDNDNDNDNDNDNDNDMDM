@@ -1,0 +1,94 @@
+{
+  "id": "proneet-vpn",
+  "name": "ProNeet VPN",
+  "package": "com.proneet.vpn",
+  "compatibleVersions": [
+    "27.11"
+  ],
+  "versionCode": 88,
+  "engine": "python-custom-base64-aes256-cbc",
+  "engineVersion": 1,
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "proneet-vpn",
+    "sources": {
+      "usuario": "https://raw.githubusercontent.com/ProNeet-27/ProNet/refs/heads/main/MODO%20USUARIO",
+      "token": "https://raw.githubusercontent.com/ProNeet-27/ProNet/refs/heads/main/MODO%20TOKEN"
+    },
+    "validatedOn": "2026-10-22",
+    "remoteAuthorization": "Explicit user authorization for external catalogs",
+    "remoteValidated": false,
+    "remoteHttpStatus": {
+      "usuario": 200,
+      "token": 200
+    },
+    "remoteBytes": {
+      "usuario": 1,
+      "token": 1
+    },
+    "remoteResponseSha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "remoteBlocker": "Both official update files contain only one LF byte; independently confirmed via GitHub Contents. No usable remote catalog.",
+    "embeddedEvidence": [
+      {
+        "source": "config.json",
+        "bytes": 38028,
+        "sha256": "8cc07cd287ef6538dc4d164d1924b987a0b7786ea71c65a1cb87ad8dbffa7441",
+        "version": "1.0.0",
+        "servers": 25,
+        "processedFields": 575,
+        "nonemptyFields": 266,
+        "jdkCliEqual": true
+      },
+      {
+        "source": "config.mvgl",
+        "bytes": 38253,
+        "sha256": "bb9ce7a7bf4cd1ce36f30bc0f03e1aae3490d234cf0c21ebd77500386845ec46",
+        "version": "1.0.0",
+        "servers": 23,
+        "processedFields": 529,
+        "nonemptyFields": 306,
+        "jdkCliEqual": true
+      }
+    ],
+    "embeddedNonemptyFieldsCompared": 572,
+    "validation": "Complete actual embedded user/token documents and fields equal independent JDK, offline CLI and isolated worker. Actual download CLI rejects both empty feeds.",
+    "publicCatalogVersion": 26,
+    "publicCatalogCards": 28,
+    "remoteCardEnabled": false,
+    "deploymentEnabledByDefault": false,
+    "testScope": "3 Python and 20 public catalog web checks, no full suites. Positive parity is embedded data, not remote empty feeds."
+  },
+  "files": {
+    "supported": false,
+    "validation": "Internal catalog assets are supported; no exported user profile sample or file route certified."
+  },
+  "icon": {
+    "originalFile": "ProNeet_VPN.webp",
+    "file": "ProNeet_VPN.png",
+    "source": "base.apk:res/mipmap-xxxhdpi-v4/ic_launcher.webp",
+    "sourceBytes": 9402,
+    "sourceSha256": "8681e5d520c746e17202241366fb50bf8027f1cdabbdc829608ff145af3db823",
+    "width": 192,
+    "height": 192,
+    "pngBytes": 14777,
+    "pngSha256": "3158eca3593b48108561aea234d3015f3e0e3c3c05fe4454bd86e78984aa1693",
+    "policy": "Exact manifest-referenced original WebP retained; identical RGBA PNG, no resizing."
+  },
+  "dependencies": {
+    "python": ">=3.10",
+    "pycryptodome": "3.23.0",
+    "supportFiles": [
+      "codec.py",
+      "../HTTP_FenixVPN/codec.py",
+      "../HTTP_FenixVPN/field_names.json"
+    ],
+    "sharedSourceSha256": {
+      "../HTTP_FenixVPN/codec.py": "7e3de48e36d88dcbfa9afa94cc736d763bd7fe89de6d6d87d1d6ecb31e456c34",
+      "../HTTP_FenixVPN/field_names.json": "0352b854bbb8153ac6a961e624e19e93de32ffdd3acc618d5f1a5ca02b2ad798"
+    }
+  },
+  "sourceApkSha256": "b85efdbd83373fb098b8818da1a4972fa2d670ba415f01fee8c9ac93dc63461f",
+  "branch": "feat/austroplus-vpn-13-0-1-decoders",
+  "pullRequest": 96,
+  "analyzedBaseCommit": "729949b09a33bed54559e5d58915c86a323cc8c1"
+}

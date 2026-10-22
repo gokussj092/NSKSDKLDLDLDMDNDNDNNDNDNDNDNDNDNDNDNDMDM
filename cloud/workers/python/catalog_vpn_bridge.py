@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 PROVIDERS = {
+    "proneet-vpn": "decoders.Python.apps.ProNeet_VPN.server_catalog_decoder",
     "onspace-vpn": "decoders.Python.apps.OnSpace_VPN.server_catalog_decoder",
     "mx-tunnel-pro": "decoders.Python.apps.Mx_Tunnel_PRO.server_catalog_decoder",
     "megatunnel": "decoders.Python.apps.MegaTunnel.server_catalog_decoder",

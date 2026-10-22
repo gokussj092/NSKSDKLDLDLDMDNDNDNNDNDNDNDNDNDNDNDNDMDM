@@ -177,6 +177,21 @@ entregas anteriores ni publicar anuncios automáticamente.
 
 ## Integraciones pendientes
 
+- **ProNeet VPN 27.11 (88) — catálogo remoto pendiente**: lector de ambos
+  modos añadido en `decoders/Python/apps/ProNeet_VPN/`, worker aislado
+  `proneet-vpn`, icono WebP original y PNG con píxeles idénticos. Assets reales:
+  **25 servidores usuario / 23 token**, ambos versión **1.0.0**, **572 campos
+  no vacíos** y los dos JSON íntegros iguales a JDK independiente, CLI offline
+  y worker (`isPartial:false`). Son recuentos por modo, no 48 servidores distintos.
+- Consulta HTTPS autorizada del 2026-10-22: ambas URLs exactas responden
+  **HTTP 200 con un único salto de línea**, confirmado también por GitHub.
+  El CLI real rechaza ambas sin salida JSON; no hay catálogo remoto descargado
+  con éxito. Ficha visible con descarga **desactivada**, catálogo mínimo **26**,
+  28 fichas. Habilitación del broker pendiente de documentos oficiales no vacíos.
+- **3 comprobaciones Python y 20 web aprobadas**, sin suites completas.
+  Datos reales y APK excluidos de Git; no se certifica un formato de perfil ni
+  se fusiona, despliega, publica APK o anuncia como descarga remota operativa.
+
 - **EUT VPN 2.4.1 (370) — catálogo remoto pendiente**: lector AES-128-CBC de
   recursos y campos anidados añadido en `decoders/Python/apps/EUT_VPN/`, worker
   aislado `eut-vpn`, icono PNG original y ficha desactivada en catálogo mínimo

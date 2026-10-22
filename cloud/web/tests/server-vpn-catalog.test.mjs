@@ -10,7 +10,7 @@ const body=(content)=>new Request("https://api.spdecode.xyz/api/v1/server-vpn/te
 });
 test("original provider PNGs match the public digest and never contain secrets",()=>{
  const values=catalog();assert.equal(values.catalogVersion,CATALOG_VERSION);
- assert.equal(RECHECK_SECONDS,900);assert.equal(values.apps.length,27);
+ assert.equal(RECHECK_SECONDS,900);assert.equal(values.apps.length,28);
  const ids=new Set();
  for(const app of values.apps) {
    assert(!ids.has(app.id));ids.add(app.id);
@@ -31,7 +31,7 @@ test("version match returns only a cheap unchanged response",async()=>{
 test("new version returns catalog and invalid bodies fail closed",async()=>{
  const response=await list(body({knownVersion:0}));
  const data=await response.json();assert.equal(response.status,200);
- assert.equal(data.unchanged,false);assert.equal(data.apps.length,27);
+ assert.equal(data.unchanged,false);assert.equal(data.apps.length,28);
  for(const invalid of [{knownVersion:-1},{url:"http://127.0.0.1/"},{knownVersion:"1"}]) {
    assert.equal((await list(body(invalid))).status,400);
  }
@@ -191,4 +191,15 @@ test("OnSpace VPN lossless original launcher and verified paired sources follow 
  assert.equal(app.name,"OnSpace VPN");assert.equal(app.decodeEnabled,true);
  assert.equal(app.iconSha256,"59a6de90b34c625913705585ed6e0f2115b661015c656d9a0c43fdd036a5b232");
  assert.equal(catalog({availability:{"onspace-vpn":false}}).apps.find(x=>x.id==="onspace-vpn").decodeEnabled,false);
+});
+
+
+test("ProNeet keeps its original icon visible while both official updater files are empty",async t=>{
+ const old=process.env.CLOUD_SERVER_VPN_ENABLED;process.env.CLOUD_SERVER_VPN_ENABLED="true";
+ t.after(()=>{if(old===undefined)delete process.env.CLOUD_SERVER_VPN_ENABLED;else process.env.CLOUD_SERVER_VPN_ENABLED=old;});
+ const app=catalog({availability:{"proneet-vpn":true}}).apps.find(x=>x.id==="proneet-vpn");
+ assert.equal(app.name,"ProNeet VPN");assert.equal(app.decodeEnabled,false);
+ assert.equal(app.iconSha256,"3158eca3593b48108561aea234d3015f3e0e3c3c05fe4454bd86e78984aa1693");
+ assert(!providerIds().includes("proneet-vpn"));assert.equal(providerEnabled("proneet-vpn",{CLOUD_SERVER_VPN_ENABLED:"true"}),false);
+ await assert.rejects(()=>downloadVpnCatalog("proneet-vpn"),{code:"UNSUPPORTED_FORMAT"});
 });
