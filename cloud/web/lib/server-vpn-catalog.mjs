@@ -3,7 +3,7 @@ import {readFileSync} from "node:fs";
 import {join} from "node:path";
 import {createHash} from "node:crypto";
 
-export const CATALOG_VERSION = 15; // Increment whenever the public roster or metadata changes.
+export const CATALOG_VERSION = 16; // Increment whenever the public roster or metadata changes.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -21,6 +21,7 @@ export function activeCatalogVersion(env=process.env) {
 }
 
 const ITEMS = Object.freeze([
+  {id:"http-wakko", name:"HTTP Wakko", icon:"http-wakko.png", remote:"http-wakko"},
   {id:"http-socketclay", name:"HTTP SocketClay", icon:"http-socketclay.png", remote:"http-socketclay"},
   {id:"tunneltweak", name:"Tunneltweak", icon:"tunneltweak.png", remote:"tunneltweak"},
   {id:"http-jireh", name:"HTTP Jireh", icon:"http-jireh.png", remote:"http-jireh"},

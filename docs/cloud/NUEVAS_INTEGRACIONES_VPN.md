@@ -32,6 +32,23 @@ entregas anteriores ni publicar anuncios automáticamente.
   anterior queda resuelto. Disponibilidad pública efectiva tras actualizar la VPS;
   sin fusión, despliegue ni anuncio C11 automáticos.
 
+- **HTTP Wakko 4.9 (40) ✅** — catálogo de servidores y usuarios descargado,
+  descifrado e integrado en el PR #96 con autorización externa expresa.
+  **91 servidores y 2 entradas de usuarios**, versiones `116` / `8`, y **735
+  campos cifrados no vacíos**; ambos documentos completos coinciden con el
+  oracle Java independiente. Incluye slots BHTTP de servidores tipo 5.
+- Carpeta `decoders/Python/apps/HTTP_Wakko/`: lector, esquema de 29 campos de
+  servidor/siete de usuarios, icono original WebP y PNG sin pérdida, manifiesto,
+  pruebas y documentación. Worker `http-wakko`, descarga dual de fuentes HTTPS
+  fijas, controles administrativos y catálogo mínimo **16**.
+- **66 pruebas Python y 162 pruebas Node aprobadas** en esta entrega, incluidas
+  regresiones SocketClay/Fenix/Jireh. CLI real y flujo autenticado con capturas
+  completas hacia worker HTTP privado real verificados; la conectividad externa
+  Node usa pruebas controladas por `EAI_AGAIN` del entorno. Disponibilidad pública
+  tras actualizar la VPS. No se fusiona, despliega ni publica C11 automáticamente.
+- No se identificó formato de perfil exportado/importado en Wakko 4.9; no se
+  registra `.sks` u otro método de archivos únicamente por compartir helpers.
+
 ## Nuevos métodos de archivos, textos o enlaces añadidos
 
 - **HTTP SocketClay 3.4.0 ✅ — archivos `.sks`**: lector Python y ruta Cloud
@@ -43,7 +60,7 @@ entregas anteriores ni publicar anuncios automáticamente.
 
 ## Integraciones pendientes
 
-No quedan pendientes de análisis del catálogo de SocketClay en este lote.
+No quedan pendientes de análisis de los catálogos de SocketClay y Wakko en este lote.
 Persisten únicamente la comprobación del servicio desde la VPS tras un despliegue
 solicitado y los límites de certificación `.sks` documentados en `TESTING.md`.
 

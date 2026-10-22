@@ -1,0 +1,99 @@
+{
+  "id": "http-wakko",
+  "name": "HTTP Wakko",
+  "package": "com.wakko.http",
+  "compatibleVersions": [
+    "4.9"
+  ],
+  "versionCode": 40,
+  "engine": "python-wakkodev-chacha20poly1305-versioned-aes-cbc-rot19",
+  "engineVersion": 1,
+  "files": {
+    "supported": false,
+    "extensions": [],
+    "textPrefixes": [],
+    "validation": "No exported profile format or import/export route identified in build 40; shared secure-preferences code does not certify .sks support."
+  },
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "http-wakko",
+    "format": "WakkoDev/MD5/AES-256-CBC; URL-Base64 nonce12/ChaCha20-Poly1305/tag16 around URL-Base64 IV16/AES-256-CBC fields; native version-derived 16 ASCII chars padded to 32 bytes; Java ROT19",
+    "validatedOn": "2026-10-21",
+    "remoteAuthorization": "User explicitly authorized both external server and user catalogs",
+    "embeddedVersions": {
+      "servers": "1",
+      "users": "1"
+    },
+    "embeddedServersObserved": 1,
+    "embeddedUserEntriesObserved": 2,
+    "embeddedNonemptyFieldsCompared": 17,
+    "serverFieldNames": 29,
+    "userFieldNames": 7,
+    "bhttpFields": [
+      "BhttpUpSlot",
+      "BhttpDownSlot"
+    ],
+    "remoteValidated": true,
+    "remoteServersObserved": 91,
+    "remoteUserEntriesObserved": 2,
+    "remoteVersions": {
+      "servers": "116",
+      "users": "8"
+    },
+    "remoteEncryptedBytes": {
+      "servers": 170304,
+      "users": 1792
+    },
+    "remoteNonemptyFieldsCompared": {
+      "servers": 725,
+      "users": 10
+    },
+    "validation": "Whole embedded and live documents match independent JDK oracle. Native ARM64 KDF/SHA checked for four versions. Live dual CLI, isolated worker and authenticated broker through real private HTTP worker match both full oracle documents.",
+    "cloudSource": "Both fixed direct Dropbox server and user sources. Full documents and independent versions under catalogs.servers/catalogs.users; any source failure rejects the combined request.",
+    "publicCatalogVersion": 16,
+    "deploymentEnabledByDefault": false,
+    "liveTransportScope": "Real Python HTTPS downloads, original signed redirects and direct sources byte-identical. Native Node DNS returns EAI_AGAIN here; broker DNS/IP/TLS checks use controlled tests and authenticated HTTP-worker parity uses captured authorized source bytes. No live VPS deployment claimed."
+  },
+  "icon": {
+    "file": "HTTP_Wakko.png",
+    "originalFile": "HTTP_Wakko.webp",
+    "source": "base.apk:res/mipmap-xxxhdpi-v4/ic_launcher_wkk.webp",
+    "resourceId": "0x7f100014",
+    "width": 192,
+    "height": 192,
+    "bytes": 7781,
+    "sha256": "77d7f0647746000fea1dee4ae0dff7189214e649944de226fc07d864971f520a",
+    "originalBytes": 5186,
+    "originalSha256": "67e597e008e6f275edfdc1a143d352430b8f68048848cda1dbe840d27b54fa4e",
+    "policy": "Exact default launcher WebP retained; PNG converted losslessly with identical RGBA pixels, no resizing or substitute artwork."
+  },
+  "dependencies": {
+    "python": ">=3.10",
+    "pycryptodome": "3.23.0",
+    "supportFiles": [
+      "codec.py",
+      "field_names.json",
+      "../HTTP_SocketClay/codec.py",
+      "../HTTP_SocketClay/field_names.json",
+      "../HTTP_FenixVPN/codec.py",
+      "../HTTP_FenixVPN/field_names.json"
+    ]
+  },
+  "sourceApkSha256": "0cea08de7ccef4d4c26a33be1fd7cfa1354c9f5051d81ce5e9f9eaf9c5ad971f",
+  "nativeEvidence": {
+    "libcryptoSha256": "0edd3176d34113d27ee5440348d1fec51ef634b4000f2eb041f6c28b8f136898",
+    "kdfAddress": "0x6e1fc",
+    "nativeVersionsChecked": [
+      "1",
+      "40",
+      "2026.10.21",
+      "synthetic-v2"
+    ],
+    "libconscryptSha256": "a01efce3ffa0dcd42904a11167c32f4f2a67c279ef91f4d1e3d374ffaa793da1",
+    "chachaDecryptAddress": "0x3d2e8",
+    "chachaKeyAddress": "0x13d2c"
+  },
+  "branch": "feat/austroplus-vpn-13-0-1-decoders",
+  "pullRequest": 96,
+  "analyzedBaseCommit": "70f7911d52ab4ec1138aca50b15a777cde4bab4a"
+}

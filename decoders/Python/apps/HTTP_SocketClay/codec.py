@@ -8,7 +8,7 @@ from Crypto.Cipher import AES, ChaCha20_Poly1305
 from Crypto.Util.Padding import unpad
 
 # Byte-identical .sks import/export primitives; retain the existing shared route.
-if __package__:
+if __package__ and "." in __package__:
     from ..HTTP_FenixVPN import codec as shared
 else:
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -68,34 +68,39 @@ def decode_field(value: str, key: bytes) -> str:
     return shared.rotate_java(plain, ROTATION)
 
 
+def decode_catalog_fields(data: bytes, *, server_fields: frozenset, user_fields: frozenset, display_key: str) -> dict:
+    """Shared verified wire recipe; callers provide their APK-specific field schema."""
+    obj = json.loads(decrypt_catalog(data), object_pairs_hook=shared._unique, parse_constant=shared._constant)
+    shared._validate(obj)
+    if not isinstance(obj, dict):
+        raise DecodeError("Estructura de catálogo incompatible.")
+    key = field_key(obj.get("Version"))
+    lists = [name for name in ("Servers", "Usuarios") if name in obj]
+    if not lists:
+        raise DecodeError("El catálogo no contiene perfiles.")
+    result = obj.copy()
+    for name in lists:
+        items = obj[name]
+        if not isinstance(items, list) or not items or any(not isinstance(item, dict) or not item for item in items):
+            raise DecodeError("Lista de perfiles inválida.")
+        fields = server_fields if name == "Servers" else user_fields
+        name_key = display_key if name == "Servers" else "Name"
+        decoded = []
+        for item in items:
+            if not isinstance(item.get(name_key), str):
+                raise DecodeError("El perfil no contiene su nombre.")
+            entry = item.copy()
+            for field in fields & item.keys():
+                entry[field] = decode_field(item[field], key)
+            decoded.append(entry)
+        result[name] = decoded
+    shared._validate(result)
+    return result
+
+
 def decode_catalog(data: bytes) -> dict:
     try:
-        obj = json.loads(decrypt_catalog(data), object_pairs_hook=shared._unique, parse_constant=shared._constant)
-        shared._validate(obj)
-        if not isinstance(obj, dict):
-            raise DecodeError("Estructura de catálogo incompatible.")
-        key = field_key(obj.get("Version"))
-        lists = [name for name in ("Servers", "Usuarios") if name in obj]
-        if not lists:
-            raise DecodeError("El catálogo no contiene perfiles.")
-        result = obj.copy()
-        for name in lists:
-            items = obj[name]
-            if not isinstance(items, list) or not items or any(not isinstance(item, dict) or not item for item in items):
-                raise DecodeError("Lista de perfiles inválida.")
-            fields = SERVER_FIELDS if name == "Servers" else USER_FIELDS
-            display_key = _names["servers"]["sName"] if name == "Servers" else "Name"
-            decoded = []
-            for item in items:
-                if not isinstance(item.get(display_key), str):
-                    raise DecodeError("El perfil no contiene su nombre.")
-                entry = item.copy()
-                for field in fields & item.keys():
-                    entry[field] = decode_field(item[field], key)
-                decoded.append(entry)
-            result[name] = decoded
-        shared._validate(result)
-        return result
+        return decode_catalog_fields(data, server_fields=SERVER_FIELDS, user_fields=USER_FIELDS, display_key=_names["servers"]["sName"])
     except (ValueError, UnicodeError, RecursionError, TypeError) as exc:
         raise DecodeError("Catálogo inválido o no compatible con HTTP SocketClay 3.4.0.") from exc
 

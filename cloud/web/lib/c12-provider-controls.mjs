@@ -16,6 +16,7 @@ export const PUBLIC_PROVIDER_IDS=IDS;
 const LABELS=Object.freeze({
   "ehi-cloud":"HTTP Injector Cloud",
   "nur-tunnel":"Servidores VPN",
+  "http-wakko":"HTTP Wakko",
   "http-socketclay":"HTTP SocketClay",
   "tunneltweak":"Tunneltweak",
   "http-jireh":"HTTP Jireh",

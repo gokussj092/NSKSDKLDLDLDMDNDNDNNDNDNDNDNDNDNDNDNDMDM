@@ -7,7 +7,7 @@ import {enabled,notEnabled,failure,boundedBody,fetchWorker} from "./c3-gateway.m
 import {maintenanceEnabled,serviceMaintenanceEnabled,recordWorkerResult} from "./c6-ops-store.mjs";
 import {providerEnabled,downloadVpnCatalog,mkkSourceIds,VpnProviderError} from "./server-vpn-provider.mjs";
 import {providerAllowed} from "./c12-provider-controls.mjs";
-import {packSocketClayCatalogs} from "./socketclay-catalogs.mjs";
+import {packPairedVpnCatalogs} from "./paired-vpn-catalogs.mjs";
 import {packMkkSources} from "./mkk-source-bundle.mjs";
 
 export async function decodeServerVpn(request,opts={}){
@@ -52,11 +52,11 @@ export async function decodeServerVpn(request,opts={}){
       // Each omitted source is explicitly marked REMOTE_TOO_LARGE. Remaining
       // sources are passed intact, with the worker's partial warning visible.
       bytes=bundle.payload;
-    }else if(providerId==="http-socketclay"){
+    }else if(["http-socketclay","http-wakko"].includes(providerId)){
       const [servers,users]=await Promise.all([
         downloadVpnCatalog(providerId,"servers"),downloadVpnCatalog(providerId,"users"),
       ]);
-      bytes=packSocketClayCatalogs({servers,users});
+      bytes=packPairedVpnCatalogs(providerId,{servers,users});
     }else{
       bytes=await downloadVpnCatalog(providerId);
     }

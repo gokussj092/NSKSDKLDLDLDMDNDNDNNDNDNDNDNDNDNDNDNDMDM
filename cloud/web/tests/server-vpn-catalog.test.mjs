@@ -10,7 +10,7 @@ const body=(content)=>new Request("https://api.spdecode.xyz/api/v1/server-vpn/te
 });
 test("original provider PNGs match the public digest and never contain secrets",()=>{
  const values=catalog();assert.equal(values.catalogVersion,CATALOG_VERSION);
- assert.equal(RECHECK_SECONDS,900);assert.equal(values.apps.length,17);
+ assert.equal(RECHECK_SECONDS,900);assert.equal(values.apps.length,18);
  const ids=new Set();
  for(const app of values.apps) {
    assert(!ids.has(app.id));ids.add(app.id);
@@ -31,7 +31,7 @@ test("version match returns only a cheap unchanged response",async()=>{
 test("new version returns catalog and invalid bodies fail closed",async()=>{
  const response=await list(body({knownVersion:0}));
  const data=await response.json();assert.equal(response.status,200);
- assert.equal(data.unchanged,false);assert.equal(data.apps.length,17);
+ assert.equal(data.unchanged,false);assert.equal(data.apps.length,18);
  for(const invalid of [{knownVersion:-1},{url:"http://127.0.0.1/"},{knownVersion:"1"}]) {
    assert.equal((await list(body(invalid))).status,400);
  }
@@ -48,7 +48,7 @@ test("only registered icon identifiers are served",async()=>{
 
 import {providerIds,providerEnabled,downloadVpnCatalog} from "../lib/server-vpn-provider.mjs";
 test("only fixed catalog providers are eligible for remote broker",async()=>{
-  assert.deepEqual(providerIds().sort(),["24clan-green","4u-tunnel-lite","ac-tunnel-vpn","austroplus-vpn","http-fenixvpn","http-jireh","http-socketclay","hx-tunnel","ksh-vpn","mkk-hyper","my-tunnel-proxy","robust-tunnel","trv-tunnel","tunneltweak"]);
+  assert.deepEqual(providerIds().sort(),["24clan-green","4u-tunnel-lite","ac-tunnel-vpn","austroplus-vpn","http-fenixvpn","http-jireh","http-socketclay","http-wakko","hx-tunnel","ksh-vpn","mkk-hyper","my-tunnel-proxy","robust-tunnel","trv-tunnel","tunneltweak"]);
   for(const id of providerIds()) assert.equal(providerEnabled(id,{CLOUD_SERVER_VPN_ENABLED:"false"}),false);
   assert.equal(providerEnabled("https://attacker.invalid/",{CLOUD_SERVER_VPN_ENABLED:"true"}),false);
   await assert.rejects(()=>downloadVpnCatalog("https://attacker.invalid/"),{code:"UNSUPPORTED_FORMAT"});
@@ -105,4 +105,15 @@ test("SocketClay original icon and verified remote source follow provider availa
  assert.equal(catalog({availability:{"http-socketclay":false}}).apps.find(x=>x.id==="http-socketclay").decodeEnabled,false);
  assert.equal(app.iconSha256,"8a09f5b74e445f859532809204c3a543b05b6fa89be8844b655191e17690f101");
  assert.equal(providerEnabled("http-socketclay",{CLOUD_SERVER_VPN_ENABLED:"true"}),true);
+});
+
+test("Wakko original icon and verified remote source follow provider availability",t=>{
+ const old=process.env.CLOUD_SERVER_VPN_ENABLED;
+ process.env.CLOUD_SERVER_VPN_ENABLED="true";
+ t.after(()=>{if(old===undefined)delete process.env.CLOUD_SERVER_VPN_ENABLED;else process.env.CLOUD_SERVER_VPN_ENABLED=old;});
+ const app=catalog({availability:{"http-wakko":true}}).apps.find(x=>x.id==="http-wakko");
+ assert(app);assert.equal(app.name,"HTTP Wakko");assert.equal(app.decodeEnabled,true);
+ assert.equal(catalog({availability:{"http-wakko":false}}).apps.find(x=>x.id==="http-wakko").decodeEnabled,false);
+ assert.equal(app.iconSha256,"77d7f0647746000fea1dee4ae0dff7189214e649944de226fc07d864971f520a");
+ assert.equal(providerEnabled("http-wakko",{CLOUD_SERVER_VPN_ENABLED:"true"}),true);
 });

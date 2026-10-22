@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 PROVIDERS = {
+    "http-wakko": "decoders.Python.apps.HTTP_Wakko.server_catalog_decoder",
     "http-socketclay": "decoders.Python.apps.HTTP_SocketClay.server_catalog_decoder",
     "tunneltweak": "decoders.Python.apps.Tunneltweak.server_catalog_decoder",
     "http-jireh": "decoders.Python.apps.HTTP_Jireh.server_catalog_decoder",

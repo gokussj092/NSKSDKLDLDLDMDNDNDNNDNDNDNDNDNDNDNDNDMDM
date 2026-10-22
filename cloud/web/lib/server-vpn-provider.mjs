@@ -12,7 +12,13 @@ const SOCKETCLAY_SOURCES=Object.freeze({
   servers:"https://dl.dropboxusercontent.com/scl/fi/vh319xyu0ck84ks0wdqw8/ServersSC?rlkey=b9g57byy0igz2jitqix31t4i4&st=evmzpf11&dl=1",
   users:"https://dl.dropboxusercontent.com/scl/fi/yas4u26xnhdpz4f8qxkp0/UsersSC?rlkey=jtdh2g84uj6y5j9zp4ca929xk&st=hp49nv1g&dl=1",
 });
+const WAKKO_SOURCES=Object.freeze({
+  "servers": "https://dl.dropboxusercontent.com/scl/fi/a6grfye2vx80gxxydc6aw/ServersWK2?rlkey=ulmj9oxy1xx3fedhrtnzdwrxm&st=93x7687n&dl=1",
+  "users": "https://dl.dropboxusercontent.com/scl/fi/2sc3ud954k0ai07trkdhj/UsersWK?rlkey=k4wqqaawxcddx0kc1sfanof9r&st=dwrzwrmv&dl=1"
+});
+const PAIRED_SOURCES=Object.freeze({"http-socketclay":SOCKETCLAY_SOURCES,"http-wakko":WAKKO_SOURCES});
 const PROVIDERS = Object.freeze({
+  "http-wakko": {url:WAKKO_SOURCES.servers,agent:"HTTP Wakko/4.9"},
   "http-socketclay": {
     url:SOCKETCLAY_SOURCES.servers,
     agent:"HTTP SocketClay/3.4.0",
@@ -159,11 +165,11 @@ export async function downloadVpnCatalog(id,source="servers"){
   const provider=PROVIDERS[id];
   if(!provider)fail("UNSUPPORTED_FORMAT");
   if(!providerEnabled(id))fail("REMOTE_NOT_CONFIGURED");
-  if(id!=="mkk-hyper" && id!=="http-socketclay" && source!=="servers")fail("UNSUPPORTED_FORMAT");
+  if(id!=="mkk-hyper" && !Object.hasOwn(PAIRED_SOURCES,id) && source!=="servers")fail("UNSUPPORTED_FORMAT");
   if(id==="mkk-hyper" && !Object.hasOwn(MKK_SOURCES,source))fail("UNSUPPORTED_FORMAT");
-  if(id==="http-socketclay" && !Object.hasOwn(SOCKETCLAY_SOURCES,source))fail("UNSUPPORTED_FORMAT");
+  if(Object.hasOwn(PAIRED_SOURCES,id) && !Object.hasOwn(PAIRED_SOURCES[id],source))fail("UNSUPPORTED_FORMAT");
   const initial=new URL(id==="mkk-hyper"?MKK_SOURCES[source]:
-    id==="http-socketclay"?SOCKETCLAY_SOURCES[source]:provider.url);
+    Object.hasOwn(PAIRED_SOURCES,id)?PAIRED_SOURCES[id][source]:provider.url);
   if(initial.protocol!=="https:"||initial.port||initial.username||initial.password||
      initial.hash)fail("REMOTE_NETWORK_DENIED");
   const deadline=Date.now()+DEADLINE_MS;
@@ -195,7 +201,7 @@ export async function downloadVpnCatalog(id,source="servers"){
         continue;
       }
       if(answer.redirect!==undefined){
-        if(id==="http-socketclay")fail("REMOTE_NETWORK_DENIED");
+        if(Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
         const next=answer.redirect;
         if(typeof next!=="string"||next.length>2048)fail("REMOTE_NETWORK_DENIED");
         target=new URL(next,dest).href;
