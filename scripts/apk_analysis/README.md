@@ -67,3 +67,18 @@ layouts conocidos de SuperFlash/TurboMX por SHA-256 exacto del SO. Sus offsets,
 revisión y clave pública se verificaron por separado; no se deducen del nombre
 ni de la diferencia de tamaños. El generador compartido escribe vectores
 sintéticos independientes según el layout y conserva los de SuperFlash.
+
+`stringfog_strings.py` resuelve llamadas literales Base64/XOR de un wrapper
+StringFog **confirmado** y una clave explícita, sin ejecutar código del APK.
+Ejemplo comprobado con UT Loop 22.10.26:
+
+```bash
+python scripts/apk_analysis/stringfog_strings.py fuentes-jadx L5.b.a salida-privada \
+  --key-hex 737472696e67666f67
+```
+
+Procesa únicamente el método exacto indicado; las llamadas mediante alias o
+argumentos variables requieren inspección aparte. No compila expresiones del
+APK ni imprime cadenas recuperadas. La clave se obtuvo de `L5.b` y el algoritmo
+de `StringFogImpl`; las salidas privadas permanecen fuera de Git. El análisis
+real resolvió 2438 llamadas en 71 archivos; no se afirma resolver toda la app.

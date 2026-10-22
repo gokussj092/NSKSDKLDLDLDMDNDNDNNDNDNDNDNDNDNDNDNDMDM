@@ -3,7 +3,7 @@ import {readFileSync} from "node:fs";
 import {join} from "node:path";
 import {createHash} from "node:crypto";
 
-export const CATALOG_VERSION = 30; // Increment whenever the public roster or metadata changes.
+export const CATALOG_VERSION = 31; // Increment whenever the public roster or metadata changes.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -21,6 +21,8 @@ export function activeCatalogVersion(env=process.env) {
 }
 
 const ITEMS = Object.freeze([
+  // Official endpoint returns HTML; a valid signed OTA response is still required.
+  {id:"ut-loop-pro-vpn", name:"UT Loop Pro VPN", icon:"ut-loop-pro-vpn.png", remote:null},
   {id:"turbomx-vpn", name:"TurboMX VPN", icon:"turbomx-vpn.png", remote:"turbomx-vpn"},
   {id:"superflash-vpn", name:"SuperFlash VPN", icon:"superflash-vpn.png", remote:"superflash-vpn"},
   {id:"rmp-tunnel-pro", name:"RMP TUNNEL PRO", icon:"rmp-tunnel-pro.png", remote:"rmp-tunnel-pro"},

@@ -34,6 +34,9 @@ on:
       - "tests/test_focus_vpn_cloud.py"
       - "tests/golden/focus_vpn_cloud*"
       - "decoders/Python/apps/FreedomVPN/**"
+      - "decoders/Python/apps/UT_Loop_Pro_VPN/**"
+      - "tests/test_ut_loop_pro.py"
+      - "tests/golden/ut_loop_pro*"
       - "decoders/Python/apps/TurboMX_VPN/**"
       - "tests/test_turbomx_vpn.py"
       - "tests/golden/turbomx_vpn*"
@@ -103,7 +106,7 @@ jobs:
       - name: Verify HCX4 build 899 native key vectors and authenticated file layers
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_http_custom_899 -v
       - name: Verify TunelGuard/Wakko/SocketClay catalogs and file compatibility
-        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_turbomx_vpn tests.test_superflash_vpn tests.test_rmp_tunnel_pro tests.test_rjc_tunnel_pro tests.test_proneet_vpn tests.test_onspace_vpn tests.test_mx_tunnel_pro tests.test_megatunnel tests.test_http_internet_infinito tests.test_freedomvpn tests.test_focus_vpn_cloud tests.test_eut_vpn tests.test_v2ray_tunnel_plus tests.test_tunelguard tests.test_http_wakko tests.test_http_socketclay tests.test_http_fenixvpn tests.test_http_jireh -v
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_ut_loop_pro tests.test_turbomx_vpn tests.test_superflash_vpn tests.test_rmp_tunnel_pro tests.test_rjc_tunnel_pro tests.test_proneet_vpn tests.test_onspace_vpn tests.test_mx_tunnel_pro tests.test_megatunnel tests.test_http_internet_infinito tests.test_freedomvpn tests.test_focus_vpn_cloud tests.test_eut_vpn tests.test_v2ray_tunnel_plus tests.test_tunelguard tests.test_http_wakko tests.test_http_socketclay tests.test_http_fenixvpn tests.test_http_jireh -v
       - name: Verify FlexNet v1-v6 compatibility and B46 protected fields
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_flexnet_b46 tests.test_flexnet_b42 -v
       - name: C2 verify NUR server catalog remains separate from solid profiles

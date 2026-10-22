@@ -475,3 +475,28 @@ y 31 web aprobadas**, sin suites completas. El CLI HTTPS `--all` y los procesos
 son reales; transporte Node controlado. Herramientas y layouts por SHA-256
 conservados. Disponible en código, pendiente de actualizar VPS; sin merge,
 publicación APK, novedades automáticas ni ruta de perfiles exportados nueva.
+
+
+## UT Loop Pro VPN 22.10.26 (65): lector offline y acceso remoto pendiente
+
+PR #96 registra `ut-loop-pro-vpn` en el bridge y allowlist del worker aislado,
+con lector propio en `decoders/Python/apps/UT_Loop_Pro_VPN/`. Abre el JSON completo
+de copias GCM y verifica RSA PKCS#1 v1.5/SHA-256 más GCM en respuestas firmadas.
+El catálogo inicial real (1 servidor / 1 tweak, Version 1.0) coincide íntegro con
+JDK independiente, CLI y worker. Los métodos de solicitud OTA/premium requieren
+credenciales oficiales suministradas por el operador y se prueban con transporte
+controlado. No hay un formato de perfil exportado acreditado en este build.
+
+El endpoint oficial devuelve desde este entorno HTTP 200/text/html (195 bytes,
+Site Unavailable), no un catálogo firmado. El APK tiene acceso OTA con Play
+Integrity y entitlement premium separado; ninguno se fabrica. La ficha conserva
+el PNG original 601×601, SHA-256
+`8f01bceeb6a4f352e0b5b17ffe43df37ff4c5c78aaaf250696e540ae3f779b17`, con
+`remote:null`, sin registro de descarga pública o control administrativo remoto.
+Mínimo de catálogo **31**, **33 fichas**, respetando la versión persistente
+monotónica. No habilitarlo hasta validar la respuesta oficial y el canal de acceso.
+
+Un auxiliar offline reproduce los banners SSH GCM/XXTEA, comprobado con JDK
+sintético; no se convierte en extensión de archivo ni proveedor adicional.
+`TESTING.md` y el registro de integraciones distinguen lo comprobado y pendiente.
+No hay despliegue, publicación Android ni actualización automática de C11.

@@ -10,7 +10,7 @@ const body=(content)=>new Request("https://api.spdecode.xyz/api/v1/server-vpn/te
 });
 test("original provider PNGs match the public digest and never contain secrets",()=>{
  const values=catalog();assert.equal(values.catalogVersion,CATALOG_VERSION);
- assert.equal(RECHECK_SECONDS,900);assert.equal(values.apps.length,32);
+ assert.equal(RECHECK_SECONDS,900);assert.equal(values.apps.length,33);
  const ids=new Set();
  for(const app of values.apps) {
    assert(!ids.has(app.id));ids.add(app.id);
@@ -31,7 +31,7 @@ test("version match returns only a cheap unchanged response",async()=>{
 test("new version returns catalog and invalid bodies fail closed",async()=>{
  const response=await list(body({knownVersion:0}));
  const data=await response.json();assert.equal(response.status,200);
- assert.equal(data.unchanged,false);assert.equal(data.apps.length,32);
+ assert.equal(data.unchanged,false);assert.equal(data.apps.length,33);
  for(const invalid of [{knownVersion:-1},{url:"http://127.0.0.1/"},{knownVersion:"1"}]) {
    assert.equal((await list(body(invalid))).status,400);
  }
@@ -234,4 +234,18 @@ test("TurboMX original PNG and validated paired sources follow provider controls
  assert.equal(app.name,"TurboMX VPN");assert.equal(app.decodeEnabled,true);
  assert.equal(app.iconSha256,"3f9f45bb05d49cb20a84d3fa86c90981a7e52287c13a3acf157d5cc1068b7945");
  assert.equal(catalog({availability:{"turbomx-vpn":false}}).apps.find(x=>x.id==="turbomx-vpn").decodeEnabled,false);
+});
+
+
+test("UT Loop keeps its original icon visible while its official remote response remains unvalidated",async t=>{
+ const old=process.env.CLOUD_SERVER_VPN_ENABLED;process.env.CLOUD_SERVER_VPN_ENABLED="true";
+ t.after(()=>{if(old===undefined)delete process.env.CLOUD_SERVER_VPN_ENABLED;else process.env.CLOUD_SERVER_VPN_ENABLED=old;});
+ const app=catalog({availability:{"ut-loop-pro-vpn":true}}).apps.find(x=>x.id==="ut-loop-pro-vpn");
+ assert(app);assert.equal(app.name,"UT Loop Pro VPN");assert.equal(app.decodeEnabled,false);
+ assert.equal(app.iconSha256,"8f01bceeb6a4f352e0b5b17ffe43df37ff4c5c78aaaf250696e540ae3f779b17");
+ assert(!providerIds().includes("ut-loop-pro-vpn"));
+ assert.equal(providerEnabled("ut-loop-pro-vpn",{CLOUD_SERVER_VPN_ENABLED:"true"}),false);
+ await assert.rejects(()=>downloadVpnCatalog("ut-loop-pro-vpn"),{code:"UNSUPPORTED_FORMAT"});
+ const response=await getIcon(body({id:"ut-loop-pro-vpn"}));assert.equal(response.status,200);
+ assert.equal((await response.json()).sha256,app.iconSha256);
 });

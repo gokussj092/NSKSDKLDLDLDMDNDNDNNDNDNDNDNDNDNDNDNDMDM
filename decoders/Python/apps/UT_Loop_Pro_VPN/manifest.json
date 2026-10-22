@@ -1,0 +1,95 @@
+{
+  "id": "ut-loop-pro-vpn",
+  "name": "UT Loop Pro VPN",
+  "package": "loop.uchetechs.vpn.pro",
+  "compatibleVersions": [
+    "22.10.26"
+  ],
+  "versionCode": 65,
+  "engine": "python-rsa-pkcs1v15-sha256-aes256gcm",
+  "engineVersion": 1,
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "ut-loop-pro-vpn",
+    "sources": {
+      "ota": "https://api.utloop.xyz/v1/ota/config?package=loop.uchetechs.vpn.pro",
+      "premium": "https://api.utloop.xyz/v1/premium/config"
+    },
+    "validatedOn": "2026-10-22",
+    "remoteAuthorization": "User-authorized catalog read; additional access checks blocked by automatic review and not retried",
+    "remoteValidated": false,
+    "remoteObservation": {
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "bytes": 195,
+      "sha256": "5b131ca14aa96311d3432b0062c7443d3b0e6346ec279bd376a75f0a76bcd5d7",
+      "description": "Site Unavailable HTML from this environment; no signed catalog"
+    },
+    "officialCredentialsRequired": {
+      "ota": [
+        "X-Ota-Access",
+        "X-Ota-Iid"
+      ],
+      "premium": [
+        "entitlement"
+      ]
+    },
+    "embeddedServersObserved": 1,
+    "embeddedTweaksObserved": 1,
+    "embeddedVersion": "1.0",
+    "embeddedBytes": 1544,
+    "embeddedSha256": "23c3f897d17646bd610db2d253da8dcbe413ea29b7997123457ed175ed8bcb15",
+    "validation": "Entire real embedded JSON equals independent JDK, CLI stdin outside repo and isolated worker. Production RSA public key equals APK. Remote signed response not supplied; synthetic RSA/GCM coverage only.",
+    "publicCatalogVersion": 31,
+    "publicCatalogCards": 33,
+    "publicRemoteEnabled": false,
+    "deploymentEnabledByDefault": false,
+    "activationRequirement": "Verify full official signed OTA response and supported official access channel before adding public download allowlist and administrative control.",
+    "premiumValidated": false,
+    "testScope": "4 UT Loop Python and 38 focused web checks passed; no complete project suites."
+  },
+  "banners": {
+    "entrypoint": "banner_decoder.py",
+    "scope": "Offline SSH greeting helper only; no file route",
+    "methods": [
+      "AES-GCM with certificate-bound material and utloop-banner-v1 AAD",
+      "Legacy XXTEA custom delta -1704280"
+    ],
+    "realBannerSupplied": false,
+    "validation": "Independent JDK synthetic vectors for both admitted certificate slots and legacy fallback"
+  },
+  "files": {
+    "supported": false,
+    "validation": "No exported profile format identified in this build; no extension or file route registered."
+  },
+  "localPreferences": {
+    "scope": "Android Keystore storage and XXTEA migration are not exported profile/catalog formats; no device key extraction"
+  },
+  "icon": {
+    "file": "UT_Loop_Pro_VPN.png",
+    "source": "base.apk:res/drawable/ic_launcher.png",
+    "width": 601,
+    "height": 601,
+    "pngBytes": 74425,
+    "pngSha256": "8f01bceeb6a4f352e0b5b17ffe43df37ff4c5c78aaaf250696e540ae3f779b17",
+    "policy": "Exact original PNG bytes; no resize, conversion or redraw"
+  },
+  "dependencies": {
+    "python": ">=3.10",
+    "pycryptodome": "3.23.0",
+    "supportFiles": [
+      "codec.py"
+    ]
+  },
+  "sourceApkSha256": "8df86b9839e7fd77463081cea983136c8c6684a2506777d622b7e4cea965abb8",
+  "sourceDexSha256": "0009e8d46a5d96b19c7a7fa372449e98b69303a9e46a68477f8b9737afdce833",
+  "analysisTools": [
+    "scripts/apk_analysis/inspect_apk.py",
+    "scripts/apk_analysis/decompile.py",
+    "scripts/apk_analysis/stringfog_strings.py"
+  ],
+  "analysisLimit": "JADX reported 21 errors; named crypto paths inspected and independently checked, not a claim of error-free whole-app decompilation.",
+  "branch": "feat/austroplus-vpn-13-0-1-decoders",
+  "pullRequest": 96,
+  "analyzedBaseCommit": "cf10003bc11b745501fd69d3117676258ef58887"
+}

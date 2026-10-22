@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 PROVIDERS = {
+    "ut-loop-pro-vpn": "decoders.Python.apps.UT_Loop_Pro_VPN.server_catalog_decoder",
     "turbomx-vpn": "decoders.Python.apps.TurboMX_VPN.server_catalog_decoder",
     "superflash-vpn": "decoders.Python.apps.SuperFlash_VPN.server_catalog_decoder",
     "rmp-tunnel-pro": "decoders.Python.apps.RMP_TUNNEL_PRO.server_catalog_decoder",

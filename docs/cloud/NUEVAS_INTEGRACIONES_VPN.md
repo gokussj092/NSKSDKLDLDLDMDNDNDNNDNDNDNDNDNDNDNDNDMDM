@@ -244,6 +244,29 @@ entregas anteriores ni publicar anuncios automáticamente.
 
 ## Integraciones pendientes
 
+- **UT Loop Pro VPN 22.10.26 (65) — catálogo remoto pendiente**: lector
+  RSA/SHA-256 + AES-256-GCM de actualizaciones firmadas y copias locales en
+  `decoders/Python/apps/UT_Loop_Pro_VPN/`, worker fijo `ut-loop-pro-vpn`.
+  El catálogo inicial real se autentica: **un servidor / un tweak, versión 1.0**;
+  todo el JSON coincide con JDK independiente, CLI fuera del repo y proceso
+  aislado (`isPartial:false`). Auxiliar de banners SSH GCM con ambos certificados
+  y XXTEA heredado, validado con vectores sintéticos JDK; no es un perfil exportado.
+- La consulta autorizada del endpoint oficial devolvió **HTTP 200, HTML,
+  195 bytes, Site Unavailable**; sin catálogo firmado remoto ni sesión OTA
+  aceptada. El APK usa Play Integrity/acceso OTA y un entitlement premium
+  separado. No se inventan accesos, credenciales, registros premium ni feeds
+  de usuarios. Chequeos adicionales de acceso bloqueados por revisión
+  automática; no se reintentaron y no se usan como evidencia.
+- **4 pruebas Python y 38 web aprobadas**; sin suites completas. CLI/worker
+  reales para el catálogo incluido, transporte remoto controlado para las
+  solicitudes oficiales. Ficha e icono PNG original exacto conservados con
+  `remote:null`, catálogo mínimo **31**, **33 fichas**; sin allowlist ni
+  activación administrativa remota hasta validar la respuesta oficial.
+- Herramienta reutilizable `scripts/apk_analysis/stringfog_strings.py` guardada:
+  2438 llamadas literales en 71 archivos. README/TESTING/manifest/vectores
+  incluidos. Sin formato de archivo nuevo, APK/datos reales en Git, fusión,
+  despliegue, publicación APK o novedades automáticas.
+
 - **ProNeet VPN 27.11 (88) — catálogo remoto pendiente**: lector de ambos
   modos añadido en `decoders/Python/apps/ProNeet_VPN/`, worker aislado
   `proneet-vpn`, icono WebP original y PNG con píxeles idénticos. Assets reales:

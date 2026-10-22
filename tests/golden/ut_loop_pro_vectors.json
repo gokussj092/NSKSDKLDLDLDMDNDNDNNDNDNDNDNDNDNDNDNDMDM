@@ -1,0 +1,115 @@
+{
+  "provenance": "Independent JDK JCA and APK custom-delta XXTEA reference; synthetic signer rejected by production",
+  "expected": {
+    "Version": "synthetic-1",
+    "Message": "Prueba 日本語 🔒",
+    "Servers": [
+      {
+        "Name": "all types",
+        "SSHHost": "ssh.example.test",
+        "SSHPort": "22",
+        "DropBear": "443",
+        "SSLPort": 443,
+        "PublicKey": "synthetic-key",
+        "NameServer": "dns.example.test",
+        "OpenVPNHost": "vpn.example.test",
+        "UDPPort": "7300",
+        "UDPCertificate": "test certificate",
+        "Flag": "default",
+        "ProxyPort": "8080",
+        "HUDPHost": "udp.example.test",
+        "HUDPPort": "9000",
+        "ServerEntry": "full entry",
+        "V2Ray": "vmess://test",
+        "Trojan": "trojan://test",
+        "Vless": "vless://test",
+        "HostKey": "test-host-key",
+        "DNSHostKey": "dns-key",
+        "Premium": true,
+        "Stub": true,
+        "unknown": {
+          "list": [
+            null,
+            false,
+            1,
+            1.5,
+            ""
+          ]
+        }
+      },
+      {
+        "Name": "all types",
+        "SSHHost": "duplicate.example.test",
+        "empty": ""
+      }
+    ],
+    "Tweaks": [
+      {
+        "Name": "all modes",
+        "Direct": false,
+        "SSL": true,
+        "Websocket": true,
+        "Bug": "sni.example.test",
+        "DNS": true,
+        "DNSAddress": "dns.example.test",
+        "DNSMode": "doh",
+        "DoHUrl": "https://dns.example.test/dns-query",
+        "DNSEngine": "vaydns",
+        "DNSWorkers": 2,
+        "UDP": true,
+        "FastDNS": true,
+        "HUDP": true,
+        "HUDP2": true,
+        "WG": true,
+        "Vmess": true,
+        "Trojan": true,
+        "Vless": true,
+        "Payload": "GET / HTTP/1.1\r\n\r\n",
+        "CustomProxy": true,
+        "ProxyHost": "proxy.example.test",
+        "ProxyPort": 8080,
+        "Port": "443",
+        "Flag": "default"
+      }
+    ],
+    "MinVersion": 65,
+    "PremiumRev": "separate",
+    "unknownRoot": [
+      0,
+      null,
+      false,
+      {
+        "untouched": ""
+      }
+    ]
+  },
+  "cached": "AAECAwQFBgcICQoLgRY7WV/HzAEcRV00XN6RvV9IHU2/DV8x0rpWOu0zfuMRFS4QhVf1WfwY3DcSlAxmZSAFmr25gdKq4fXOshFFdYsmQLfEuwqS9dznIRcQxaDENftCSyhy2KJwUWetndEGRj0Khjydoeeq1WOc/wgQavLBZcPLa2BOArXsn6aHF8xMFAQd0oGUtKJ5JamZs7MQxP/2c7XQGeaPNpI6xHpfY/McEVOQYCvDLYx5E/+ORGpIq6DIW1Q8qomxH8Gtm8RIM+UUVBfE9pyuYhm5z8rlBAUYtu4pNmqwmDKafRpRM1y5vNDb01MNoJKjiwjuh7VnAYoSI8IA+Zh2AmF3faSO2s2z/PG2rgeDepuqioz2Zg2NhdK5fKY32xM6mkBRf7oAR8BIA+MVHONytn9OwvEwbtjMWt8S5qQ3R1XuzhQpuy667L2kqPkZn6yYH/lMuHyHh2P8SZANImA1ij+UInEzSRIs07z2VDqsWcGFb5Zi1vxkdABDXEftTvgpU1HzHMcWwDLOURPp9ybG3c1DjVZ3CPUnfA4tSu1LnwQqf4z11+PAFX1nkjLSWE9yJRXIqNNj1g4YQpMy/2JVZ2ZUkOBcjXITbQDrWaCxPLn26cC5fFclRiNL+KT2bm6J1r0xFn3NVV/ilWaR3Vx0l7+rbVXS+QYz0Mj5zOHSNS304Cd8S+mmyY92tU/tPOXa12YX4KxsqtawMSFzz1ENywuVeMEhmyx+ky7ZyaRZHqj24H5lbkcb2bMoIitnqKsA3bgXrgIzGpcz8og8mFh3hqmATf1GoQXhO33mLkOyh44Gj5mJsya9LftV6T27kljCPFTn5CSvvQ6cNk8OxLtgA72sjO9d4hX1bBuwklB+Xdllm8wiw1JTbnKdTlxNY2lbw9hjJ0EPIdxykEynvSk9rTdwP5+YcnlKs/yzopB764LHxMaDxwzkPen1xzp9q2+kgf5FvAR/XUchzpNJfYVpw8kO2jQXnoZRlO2iigJ7aHEpFbRGxkZtnUMZEc9XGq9lc3tUixNQJWx0JeZmNLGyJkizWDopPAw8+5QUSuav/nCf4o0R4PWAe0NqDvMkbsiaPfvSq9exO9JV7PA38dp5bn8sgsNtc2dLLAuxTFX+tWo0iF57XLauHr1xoGhMRA//AYZh2O/hIVZnotg8lRoUHX6X1nG5N2DQmSu+yt/78dT+QWjXcM1FGq8h2dEXBgqy+r9/DXh4MQBt//i8mtjq/9f9ffAxyW9xiDq0Bp+7LZmvVSOk72i33r/j60+xbhQ6bM/dbm4uTrOAutsmGIfPkV82WAA+4B4fpBCwCEbz+luZlsA/c0Yadcx7o3o3nWczAFwsQKiI0zi0nPG5goodeP3h7xh/XaF6Bwi8/5jgZQXVJmtNcncFlnH46hf/0QRw6bGJZyQh6RkiMY5HP2uWvoK3/iINVoW8YOKzSgdT1rqPWCjaZmi2jfeNr7S5iT8QTq+Qmk5/vLI1BGLdAT0z8dDYjq/SDqioSlSBXp5U3m5uwLaN9JFj6BjhztFJk1r0OOWb25HKtXk6T8rN1KkNoahj0Eji2csOksQAZYRTdOF/cf7Lq+uJ/BB+fGzlF+79Mzufbuyyhg9YBA5K8kI19uG3fdj41UA4pYz+d+F6PePrTLJtDkwJXiXYG6RO/Ehkx0o5R2lAfobqpGHbBMeo",
+  "signed": {
+    "data": "AAECAwQFBgcICQoLgRY7WV/HzAEcRV00XN6RvV9IHU2/DV8x0rpWOu0zfuMRFS4QhVf1WfwY3DcSlAxmZSAFmr25gdKq4fXOshFFdYsmQLfEuwqS9dznIRcQxaDENftCSyhy2KJwUWetndEGRj0Khjydoeeq1WOc/wgQavLBZcPLa2BOArXsn6aHF8xMFAQd0oGUtKJ5JamZs7MQxP/2c7XQGeaPNpI6xHpfY/McEVOQYCvDLYx5E/+ORGpIq6DIW1Q8qomxH8Gtm8RIM+UUVBfE9pyuYhm5z8rlBAUYtu4pNmqwmDKafRpRM1y5vNDb01MNoJKjiwjuh7VnAYoSI8IA+Zh2AmF3faSO2s2z/PG2rgeDepuqioz2Zg2NhdK5fKY32xM6mkBRf7oAR8BIA+MVHONytn9OwvEwbtjMWt8S5qQ3R1XuzhQpuy667L2kqPkZn6yYH/lMuHyHh2P8SZANImA1ij+UInEzSRIs07z2VDqsWcGFb5Zi1vxkdABDXEftTvgpU1HzHMcWwDLOURPp9ybG3c1DjVZ3CPUnfA4tSu1LnwQqf4z11+PAFX1nkjLSWE9yJRXIqNNj1g4YQpMy/2JVZ2ZUkOBcjXITbQDrWaCxPLn26cC5fFclRiNL+KT2bm6J1r0xFn3NVV/ilWaR3Vx0l7+rbVXS+QYz0Mj5zOHSNS304Cd8S+mmyY92tU/tPOXa12YX4KxsqtawMSFzz1ENywuVeMEhmyx+ky7ZyaRZHqj24H5lbkcb2bMoIitnqKsA3bgXrgIzGpcz8og8mFh3hqmATf1GoQXhO33mLkOyh44Gj5mJsya9LftV6T27kljCPFTn5CSvvQ6cNk8OxLtgA72sjO9d4hX1bBuwklB+Xdllm8wiw1JTbnKdTlxNY2lbw9hjJ0EPIdxykEynvSk9rTdwP5+YcnlKs/yzopB764LHxMaDxwzkPen1xzp9q2+kgf5FvAR/XUchzpNJfYVpw8kO2jQXnoZRlO2iigJ7aHEpFbRGxkZtnUMZEc9XGq9lc3tUixNQJWx0JeZmNLGyJkizWDopPAw8+5QUSuav/nCf4o0R4PWAe0NqDvMkbsiaPfvSq9exO9JV7PA38dp5bn8sgsNtc2dLLAuxTFX+tWo0iF57XLauHr1xoGhMRA//AYZh2O/hIVZnotg8lRoUHX6X1nG5N2DQmSu+yt/78dT+QWjXcM1FGq8h2dEXBgqy+r9/DXh4MQBt//i8mtjq/9f9ffAxyW9xiDq0Bp+7LZmvVSOk72i33r/j60+xbhQ6bM/dbm4uTrOAutsmGIfPkV82WAA+4B4fpBCwCEbz+luZlsA/c0Yadcx7o3o3nWczAFwsQKiI0zi0nPG5goodeP3h7xh/XaF6Bwi8/5jgZQXVJmtNcncFlnH46hf/0QRw6bGJZyQh6RkiMY5HP2uWvoK3/iINVoW8YOKzSgdT1rqPWCjaZmi2jfeNr7S5iT8QTq+Qmk5/vLI1BGLdAT0z8dDYjq/SDqioSlSBXp5U3m5uwLaN9JFj6BjhztFJk1r0OOWb25HKtXk6T8rN1KkNoahj0Eji2csOksQAZYRTdOF/cf7Lq+uJ/BB+fGzlF+79Mzufbuyyhg9YBA5K8kI19uG3fdj41UA4pYz+d+F6PePrTLJtDkwJXiXYG6RO/Ehkx0o5R2lAfobqpGHbBMeo",
+    "sig": "QiCA8DeKnDPFIbjacn2Z3hCZnwit1hFCsLIqsNklkQswPVKfZLikIyHFdknGX1dsj4pFXPTxs5Dip9i2XcB6EvJQYhv7phgYyu2f2DGN0AGiEFGJjXWurG3NuQRk2+H/v9IOUW6V276Ugl1XxK0JZDLnPwTrhKqxCdH4rnNsFcODUO2PzlM1eQTapwQvCa524HH5v/VBsCBYzjyuhOXoxvQ9eaEDUssKZlRH4Y+6LUoDVi44KuLH/8O8BXqjObp980Y8hbHe3iDKVcKsAdvA/qttQ5VTmCcsfftfbHB8CUCaVrDyvfsLGNpRynA9LepNcHTVqMoNsXM6jpQTHsvbBQ==",
+    "unknownEnvelope": {
+      "keep": "signature covers data"
+    }
+  },
+  "testPublicKey": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzlI8dIkcpFC4/+BE6OJVIR0f/CVQlJxJznPwmgjLnDaM7Fq4vWMTciAWGNtQqSaEe//QyZ1nzcTmoe2T9NihddxCI6VrTzCAAtLheHZq3y2sovD9NvP3OFmp++RPEdIcKns1CD0i2jxrUbRP3CLbcLHfdy+w7pnZJaUadCZhvfNl2iwaInnxdvzM2gKVQipXOjrOpZfrfJKP77/Q2vGx9ZGIX6OSZPCiXU0qxObXpPc/vyQlLValcqelNsnfnBy8HUmGrqp+UzHrlDo1QBij9JBHqVOosI/PHX2iFCpfqEDRqpVlVkWixV4EescTgyWD+A8SjWIcCavhF186uzzLxQIDAQAB",
+  "badTagSigned": {
+    "data": "AAECAwQFBgcICQoLgRY7WV/HzAEcRV00XN6RvV9IHU2/DV8x0rpWOu0zfuMRFS4QhVf1WfwY3DcSlAxmZSAFmr25gdKq4fXOshFFdYsmQLfEuwqS9dznIRcQxaDENftCSyhy2KJwUWetndEGRj0Khjydoeeq1WOc/wgQavLBZcPLa2BOArXsn6aHF8xMFAQd0oGUtKJ5JamZs7MQxP/2c7XQGeaPNpI6xHpfY/McEVOQYCvDLYx5E/+ORGpIq6DIW1Q8qomxH8Gtm8RIM+UUVBfE9pyuYhm5z8rlBAUYtu4pNmqwmDKafRpRM1y5vNDb01MNoJKjiwjuh7VnAYoSI8IA+Zh2AmF3faSO2s2z/PG2rgeDepuqioz2Zg2NhdK5fKY32xM6mkBRf7oAR8BIA+MVHONytn9OwvEwbtjMWt8S5qQ3R1XuzhQpuy667L2kqPkZn6yYH/lMuHyHh2P8SZANImA1ij+UInEzSRIs07z2VDqsWcGFb5Zi1vxkdABDXEftTvgpU1HzHMcWwDLOURPp9ybG3c1DjVZ3CPUnfA4tSu1LnwQqf4z11+PAFX1nkjLSWE9yJRXIqNNj1g4YQpMy/2JVZ2ZUkOBcjXITbQDrWaCxPLn26cC5fFclRiNL+KT2bm6J1r0xFn3NVV/ilWaR3Vx0l7+rbVXS+QYz0Mj5zOHSNS304Cd8S+mmyY92tU/tPOXa12YX4KxsqtawMSFzz1ENywuVeMEhmyx+ky7ZyaRZHqj24H5lbkcb2bMoIitnqKsA3bgXrgIzGpcz8og8mFh3hqmATf1GoQXhO33mLkOyh44Gj5mJsya9LftV6T27kljCPFTn5CSvvQ6cNk8OxLtgA72sjO9d4hX1bBuwklB+Xdllm8wiw1JTbnKdTlxNY2lbw9hjJ0EPIdxykEynvSk9rTdwP5+YcnlKs/yzopB764LHxMaDxwzkPen1xzp9q2+kgf5FvAR/XUchzpNJfYVpw8kO2jQXnoZRlO2iigJ7aHEpFbRGxkZtnUMZEc9XGq9lc3tUixNQJWx0JeZmNLGyJkizWDopPAw8+5QUSuav/nCf4o0R4PWAe0NqDvMkbsiaPfvSq9exO9JV7PA38dp5bn8sgsNtc2dLLAuxTFX+tWo0iF57XLauHr1xoGhMRA//AYZh2O/hIVZnotg8lRoUHX6X1nG5N2DQmSu+yt/78dT+QWjXcM1FGq8h2dEXBgqy+r9/DXh4MQBt//i8mtjq/9f9ffAxyW9xiDq0Bp+7LZmvVSOk72i33r/j60+xbhQ6bM/dbm4uTrOAutsmGIfPkV82WAA+4B4fpBCwCEbz+luZlsA/c0Yadcx7o3o3nWczAFwsQKiI0zi0nPG5goodeP3h7xh/XaF6Bwi8/5jgZQXVJmtNcncFlnH46hf/0QRw6bGJZyQh6RkiMY5HP2uWvoK3/iINVoW8YOKzSgdT1rqPWCjaZmi2jfeNr7S5iT8QTq+Qmk5/vLI1BGLdAT0z8dDYjq/SDqioSlSBXp5U3m5uwLaN9JFj6BjhztFJk1r0OOWb25HKtXk6T8rN1KkNoahj0Eji2csOksQAZYRTdOF/cf7Lq+uJ/BB+fGzlF+79Mzufbuyyhg9YBA5K8kI19uG3fdj41UA4pYz+d+F6PePrTLJtDkwJXiXYG6RO/Ehkx0o5R2lAfobqpGHbBMep",
+    "sig": "Efne7G5kUh1CiI8Zs8yHkhBbhTMDByAvu1dSIWxcR//REq7VPg9EyADbU6oL76pm/3bnohgG5U5+l03QrPnxJCIKQOMOWyFjW9kQNIJ+W9lQ30NP7VIKJP7FCnxVzjjnRTVYLiBxiHrAkR/TBLdlLs5l6ItN2xUfPiqex5bIDNpoWPJtZiy2BDExj1jKtgqnhhYuaSVaKoWoVcKXimKHTgZkIFh+hX1juP1eIUSARXPM5ZEDkQLgkZ79XbVSWfbapXe8NMG9FpoEBXDF/XppPJuWaderlNqeqH7FPkyRrBNyClid04g2n1bpddWhMGlIGn8T9lJETDT7RS2v1AKpSA==",
+    "unknownEnvelope": {
+      "keep": "signature covers data"
+    }
+  },
+  "badSchemaSigned": {
+    "data": "AAECAwQFBgcICQoLgRY7WV/HzAEcRV00HoXT62RIG1K5Uh0xxLpyMeghc+0QFWlQJHBRdMQ3mD5kA/QFfTJD",
+    "sig": "eUe9QV6ehVUOpBjSh9CibSys9on/hBo93zfQBWb3cAnrMQW9/bfs/shyDEjK7c2GrQoE6zcO+a0Fb2ReYxi/jvc27jTj517fPplkrdLVq/dri14OuIqy6ygF+8NmtdFlkudJe46FYmF0KhLJ8oSlDEg5LxKDIXYYrNd3Q0KCq61w65yr6YVc4X5Mn1heqoi+nonUpArqpz0W6vUom9uMSmvl6uMxcyMQvDocxAIfgV1C8uJOUB7NJKMyOm/RyHK8lcr6bQlgPbqATOlRsA5FYoiA5zR6cneaCDGtiQDGQxYs3i4F2yf5mZ4MipJDqzSH5vHoL3EOc4+C2+FUT3KfEA==",
+    "unknownEnvelope": {
+      "keep": "signature covers data"
+    }
+  },
+  "bannerExpected": "SYNTHETIC banner 日本語\r\nall text preserved",
+  "banners": [
+    "<div title=\"AAECAwQFBgcICQoLqcjY5EsX6ViMR0w8Z4XzF2V+vrcsZlkvaF9nWGl46/uVUvteCb0t6/sdZeOM+m/Eo9GbOpPopFiZYYO6yB0=\">x</div>",
+    "<div title=\"AAECAwQFBgcICQoLqcjY5EsX6ViMR0w8Z4XzF2V+vrcsZlkvaF9nWGl46/uVUvteCb0t6/sdZeOM+m/Eo9GbOpPopFiZYYO6yB0=\">x</div>"
+  ],
+  "legacyBanner": "<div title=\"Z6BzwvK+J/gICqe5MiRKiHTZu7KhY+WmzOO+Ry9qlCtVm5SSQmauSOSIZe7BR7iXljSp2Q==\">legacy</div>"
+}
