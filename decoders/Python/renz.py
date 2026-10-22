@@ -702,6 +702,12 @@ def renz_patch_hkdf_a(hkdf32: bytes) -> bytes:
     return hkdf32 + final
 
 def renz_decrypt_speciale(input_b64: str, vpn: str) -> bytes | None:
+    if vpn == "7net" and input_b64:
+        if __package__:
+            from .apps.SevenNET_VPN.codec import decode_special
+        else:
+            from apps.SevenNET_VPN.codec import decode_special
+        return decode_special(input_b64)
     if vpn == "xhypher" and input_b64:
         if __package__:
             from .apps.Xhypher_Tunnel_Pro.codec import decode_special

@@ -155,3 +155,18 @@ test("Xhypher Tunnel Pro has a named control and can be enabled or disabled with
  availability=Object.fromEntries(overview.providers.map(x=>[x.id,x.enabled]));
  assert.equal(catalog({availability}).apps.find(x=>x.id==="xhypher-tunnel-pro").decodeEnabled,true);
 });
+
+test("7NET VPN has a named control and can be enabled or disabled without touching other providers",async t=>{
+ const root=await fixture(t),opts={root};
+ let overview=await providerOverview(env,opts);
+ assert.deepEqual(overview.providers.find(x=>x.id==="7net-vpn"),{
+   id:"7net-vpn",name:"7NET VPN",configured:true,enabled:true,
+ });
+ overview=await updateProvider("7net-vpn",false,env,opts);
+ let availability=Object.fromEntries(overview.providers.map(x=>[x.id,x.enabled]));
+ assert.equal(catalog({availability}).apps.find(x=>x.id==="7net-vpn").decodeEnabled,false);
+ assert.equal(await providerAllowed("http-jireh",env,opts),true);
+ overview=await updateProvider("7net-vpn",true,env,opts);
+ availability=Object.fromEntries(overview.providers.map(x=>[x.id,x.enabled]));
+ assert.equal(catalog({availability}).apps.find(x=>x.id==="7net-vpn").decodeEnabled,true);
+});

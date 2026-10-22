@@ -11,6 +11,23 @@ entregas anteriores ni publicar anuncios automáticamente.
 
 ## Nuevos Servidores VPN añadidos
 
+- **7NET VPN 5.6 (56) ✅** — catálogo público oficial integrado en PR #96:
+  **76 servidores / 619 redes-payloads**, Version **40.19**, HTTP 200,
+  758848 bytes. **6025 campos / 4750 no vacíos** y todo el JSON iguales a
+  JDK independiente; CLI HTTPS/stdin y worker aislado entregan **502968 bytes**,
+  `isPartial:false`. Catálogo inicial: **92 / 634**, Version **1.0**,
+  **6347 campos / 4982 no vacíos**, también igual íntegro.
+- Carpeta `decoders/Python/apps/SevenNET_VPN/`, ID fijo `7net-vpn`, PNG original,
+  control individual y URL exacta sin redirecciones. Catálogo mínimo **33**,
+  **35 fichas**; preserva switches y versión persistente. Reutiliza RENZ y
+  corrige el recorte CBC en seis campos por muestra, verificado con las
+  primitivas ARM64 originales (**9 casos por fuente / 18 ejecuciones**).
+  `.7net` y aliases conservan su ruta; no se certifica una exportación real
+  independiente que no se aportó. **12 Python / 54 web aprobadas**, sin suites
+  completas. Herramientas y recuperación guardadas en `scripts/apk_analysis/`
+  y referencias sintéticas en `tests/golden/sevennet*`. Pendiente desplegar VPS;
+  no se fusiona, publica APK ni se modifican novedades C11 automáticamente.
+
 - **Xhypher Tunnel Pro 43 (43) ✅** — catálogo oficial descargado e integrado
   en PR #96: **57 servidores / 1161 redes-payloads**, Version **2.665**,
   HTTP 200, 1386712 bytes. **10055 campos procesados / 7363 no vacíos** y

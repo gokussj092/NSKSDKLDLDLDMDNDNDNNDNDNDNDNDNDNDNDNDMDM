@@ -10,7 +10,7 @@ const body=(content)=>new Request("https://api.spdecode.xyz/api/v1/server-vpn/te
 });
 test("original provider PNGs match the public digest and never contain secrets",()=>{
  const values=catalog();assert.equal(values.catalogVersion,CATALOG_VERSION);
- assert.equal(RECHECK_SECONDS,900);assert.equal(values.apps.length,34);
+ assert.equal(RECHECK_SECONDS,900);assert.equal(values.apps.length,35);
  const ids=new Set();
  for(const app of values.apps) {
    assert(!ids.has(app.id));ids.add(app.id);
@@ -31,7 +31,7 @@ test("version match returns only a cheap unchanged response",async()=>{
 test("new version returns catalog and invalid bodies fail closed",async()=>{
  const response=await list(body({knownVersion:0}));
  const data=await response.json();assert.equal(response.status,200);
- assert.equal(data.unchanged,false);assert.equal(data.apps.length,34);
+ assert.equal(data.unchanged,false);assert.equal(data.apps.length,35);
  for(const invalid of [{knownVersion:-1},{url:"http://127.0.0.1/"},{knownVersion:"1"}]) {
    assert.equal((await list(body(invalid))).status,400);
  }
@@ -48,7 +48,7 @@ test("only registered icon identifiers are served",async()=>{
 
 import {providerIds,providerEnabled,downloadVpnCatalog} from "../lib/server-vpn-provider.mjs";
 test("only fixed catalog providers are eligible for remote broker",async()=>{
-  assert.deepEqual(providerIds().sort(),["24clan-green","4u-tunnel-lite","ac-tunnel-vpn","austroplus-vpn","focus-vpn-cloud","freedom-vpn","http-fenixvpn","http-internet-infinito","http-jireh","http-socketclay","http-wakko","hx-tunnel","ksh-vpn","megatunnel","mkk-hyper","mx-tunnel-pro","my-tunnel-proxy","onspace-vpn","rjc-tunnel-pro","rmp-tunnel-pro","robust-tunnel","superflash-vpn","trv-tunnel","tunneltweak","turbomx-vpn","v2ray-tunnel-plus","xhypher-tunnel-pro"]);
+  assert.deepEqual(providerIds().sort(),["24clan-green","4u-tunnel-lite","7net-vpn","ac-tunnel-vpn","austroplus-vpn","focus-vpn-cloud","freedom-vpn","http-fenixvpn","http-internet-infinito","http-jireh","http-socketclay","http-wakko","hx-tunnel","ksh-vpn","megatunnel","mkk-hyper","mx-tunnel-pro","my-tunnel-proxy","onspace-vpn","rjc-tunnel-pro","rmp-tunnel-pro","robust-tunnel","superflash-vpn","trv-tunnel","tunneltweak","turbomx-vpn","v2ray-tunnel-plus","xhypher-tunnel-pro"]);
   for(const id of providerIds()) assert.equal(providerEnabled(id,{CLOUD_SERVER_VPN_ENABLED:"false"}),false);
   assert.equal(providerEnabled("https://attacker.invalid/",{CLOUD_SERVER_VPN_ENABLED:"true"}),false);
   await assert.rejects(()=>downloadVpnCatalog("https://attacker.invalid/"),{code:"UNSUPPORTED_FORMAT"});
@@ -256,4 +256,11 @@ test("Xhypher original PNG and validated complete catalog follow provider contro
  assert.equal(app.name,"Xhypher Tunnel Pro");assert.equal(app.decodeEnabled,true);
  assert.equal(app.iconSha256,"f32f6d6c2044ee507741b4b389f53b9fc03922800deaac66cda1dd094ece9e72");
  assert.equal(catalog({availability:{"xhypher-tunnel-pro":false}}).apps.find(x=>x.id==="xhypher-tunnel-pro").decodeEnabled,false);
+});
+
+test("7NET original PNG and validated complete catalog follow provider controls",()=>{
+ const app=catalog({availability:{"7net-vpn":true}}).apps.find(x=>x.id==="7net-vpn");
+ assert.equal(app.name,"7NET VPN");assert.equal(app.decodeEnabled,true);
+ assert.equal(app.iconSha256,"a6eac9703f48f4890f29a093178526e841984f8d5915fbc187a9e895da6a538c");
+ assert.equal(catalog({availability:{"7net-vpn":false}}).apps.find(x=>x.id==="7net-vpn").decodeEnabled,false);
 });

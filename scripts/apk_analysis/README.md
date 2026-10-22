@@ -98,3 +98,19 @@ exacto del SO para ejecutar decode_invisible, XXTEA y Threefish offline, usando
 únicamente helpers de memoria/cadenas acotados. APK/SO, inventarios y documentos
 reales no se guardan en Git. El tipo nativo 3 es un DEX de comprobación de APK,
 no un formato de configuración ni un método de catálogo.
+
+
+## Recuperación y validación 7NET
+
+[RESTORE.md](RESTORE.md) contiene el arranque desde un checkout nuevo del PR #96,
+versiones y comandos para recuperar las herramientas después de perder el entorno.
+Los binarios se reconstruyen con checksums; las fuentes quedan en Git.
+
+`sevennet_verify.py` compara el documento completo con JDK y, con `--runtime`,
+comprueba stdin y worker aislado. `--native` verifica además primitivas ARM64
+originales del SO de 7NET 5.6, con hash exacto y sin JNI/red. Referencias y
+generador sintético: `tests/golden/sevennet*`. En las muestras reales coincidieron
+92/634 registros iniciales y 76/619 remotos; 9 casos ARM64 por fuente. El wrapper
+LSParanoid confirmado es `pp.a(long)`, campo `a`, generador `px0.G` (DEX 2/3):
+2089 literales en 72 archivos y 2280 cadenas de inventario. Los resultados
+reales y los inventarios privados no se publican en el repositorio.

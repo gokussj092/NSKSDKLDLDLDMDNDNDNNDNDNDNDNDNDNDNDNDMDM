@@ -525,3 +525,29 @@ servicios incrustadas. El icono original exacto 512×512, 102502 bytes, tiene SH
 Catálogo mínimo **32**, **34 fichas**; la versión efectiva sigue siendo monotónica.
 La disponibilidad pública requiere actualizar la VPS. Esta entrega no publica
 APK, novedades C11, merge ni despliegue.
+
+
+## 7NET VPN 5.6: catálogo completo y herramientas recuperables
+
+PR #96 añade el proveedor fijo `7net-vpn`, worker privado, contrato de documento
+completo, fuente HTTPS exacta sin redirecciones, control administrativo e icono
+PNG original de 190×190 / 13258 bytes. Catálogo mínimo **33**, **35 fichas**,
+conservando switches y sincronización monotónica de la versión persistente.
+
+La lectura oficial del 2026-10-22 dio HTTP 200, Version **40.19**, **76 servidores
+/ 619 redes**. El JSON completo, 6025 campos conocidos / 4750 no vacíos, coincide
+con JDK independiente, CLI HTTPS/stdin y worker aislado (`isPartial:false`,
+502968 bytes). El catálogo inicial también coincide completo: Version 1.0,
+92 / 634. Tres métodos confirmados: AES/XXTEA con desplazamiento de bytes,
+Threefish/HKDF con tweak `(índice,0)`, y credenciales PBKDF2/XXTEA/AES-256-CBC.
+Conservar el bloque CBC recupera seis campos por muestra que el recorte nativo
+truncaría; sus flujos originales se compararon con ARM64 offline. No hay
+presunción de autenticidad criptográfica de estos formatos.
+
+Se conserva la ruta RENZ `.7net` y sus aliases, con una corrección puntual
+para este perfil; no se cambia el inventario C0. **12 Python / 54 web aprobadas**,
+sin suites completas. No se aportó una exportación real independiente. Lectores,
+manifest y pruebas: `decoders/Python/apps/SevenNET_VPN/`. Herramientas persistidas:
+`scripts/apk_analysis/`, verificador `sevennet_verify.py`, guía `RESTORE.md` y
+referencias `tests/golden/sevennet*`. No se suben APK/SO, catálogos reales ni datos
+descifrados. La integración queda en código del PR, pendiente de despliegue VPS.

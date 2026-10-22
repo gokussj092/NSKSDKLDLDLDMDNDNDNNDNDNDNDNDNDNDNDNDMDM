@@ -76,3 +76,17 @@ Antes de activar en producción un catálogo con imágenes grandes, instalar en
 los clientes una APK compilada con esta política. Una APK anterior no cambia
 por actualizar solo el backend y puede rechazar el icono grande. No publicar ni
 desplegar automáticamente como parte del análisis de una nueva aplicación.
+
+
+## Herramientas conservadas y recuperación
+
+Las herramientas reutilizables de este lote están versionadas en
+`scripts/apk_analysis/`. `RESTORE.md` explica cómo recuperar el checkout,
+recrear el entorno e instalar JADX con sus checksums cuando se pierdan los
+datos temporales. Las referencias independientes y fixtures sintéticos de
+7NET están en `tests/golden/sevennet*`; `sevennet_verify.py` compara el JSON
+completo con JDK y opcionalmente con primitivas ARM64 y el worker aislado.
+Conservar allí cualquier herramienta nueva; no depender solo del entorno.
+APK/SO, inventarios de cadenas, catálogos reales y credenciales descifradas
+permanecen fuera de Git. Última integración: **7NET VPN 5.6**, catálogo mínimo
+**33 / 35 fichas**, proveedor fijo `7net-vpn`; detalles en su carpeta de app.
