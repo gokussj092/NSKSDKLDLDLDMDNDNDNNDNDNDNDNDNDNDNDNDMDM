@@ -1,5 +1,9 @@
 # FlexNet V2.3 B42 — FLXCFG v5 y catálogos
 
+Actualización compatible de B46 (2026-10-22): ver [FlexNet V 2.4](FLEXNET_V2_4_B46.md).
+El análisis B42 siguiente se conserva como evidencia histórica; sus formatos y
+catálogos siguen admitidos. El lector actual amplía el límite de compatibilidad hasta el build 46.
+
 Aplicación analizada: `com.flexnet.tunnel`, **V 2.3**, versionCode **42**.
 Motor independiente: `decoders/Python/flexnet_b42.py`.
 Rama: `feat/ksh-vpn-python-decoder`, junto con KSH y REESE.

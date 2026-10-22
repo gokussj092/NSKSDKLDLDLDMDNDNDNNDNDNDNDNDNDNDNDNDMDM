@@ -117,13 +117,13 @@ class FlexB42Tests(unittest.TestCase):
             self.assert_error(bytes(corrupt), "AUTH_FAILED", **options)
 
     def test_versions_modes_generation_minimum_and_lengths(self):
-        for offset, value, code in [(6, 6, "UNSUPPORTED_VERSION"), (7, 3, "UNSUPPORTED_MODE"),
+        for offset, value, code in [(6, 7, "UNSUPPORTED_VERSION"), (7, 3, "UNSUPPORTED_MODE"),
                                     (8, 2, "UNSUPPORTED_SUITE"), (16, 2, "UNSUPPORTED_GENERATION")]:
             corrupt = bytearray(OFFLINE)
             corrupt[offset] = value
             self.assert_error(bytes(corrupt), code)
         corrupt = bytearray(ONLINE)
-        struct.pack_into(">I", corrupt, 9, 43)
+        struct.pack_into(">I", corrupt, 9, b42.CLIENT_BUILD + 1)
         self.assert_error(bytes(corrupt), "MINIMUM_BUILD")
         self.assert_error(ONLINE[:-1], "TRUNCATED")
         self.assert_error(OFFLINE[:30], "TRUNCATED")

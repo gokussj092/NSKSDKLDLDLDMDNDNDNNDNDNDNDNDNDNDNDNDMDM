@@ -51,3 +51,5 @@ productores se mantienen en `tests/golden`, y las pruebas en `tests`.
 - [FreedomVPN 1.0.29](FreedomVPN/README.md): catálogo XXTEA con delta propio y ocho campos XXTEA/AES-ECB/símbolos-AES-CBC. 147 servidores descargados y comparados íntegramente con JDK, CLI y worker; proveedor e icono original integrados.
 
 - [HTTP Internet Infinito 1.3.9](HTTP_Internet_Infinito/README.md): catálogo WakkoDev/MD5/AES-CBC y 29 campos de servidor con ROT22; descarga real de 74 servidores comparada íntegramente con JDK, CLI y worker. Usuarios incluidos en el APK verificados offline; proveedor e icono PNG original integrados.
+
+- [FlexNet V 2.4 / B46](FlexNet_B42/README.md): amplía el lector existente a v5 build 46, v6 con clave de setup autorizada y campos protegidos SNI/payload; conserva v1–v5 y B42. La muestra online aportada requiere su clave de contenido y no se presenta como descifrada.

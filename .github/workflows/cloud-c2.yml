@@ -7,6 +7,12 @@ on:
       - "docs/cloud/C0_FORMAT_MATRIX.csv"
       - "docs/cloud/C2_IMPLEMENTATION.md"
       - "tests/test_cloud_c2_golden.py"
+      - "decoders/Python/apps/FlexNet_B42/**"
+      - "decoders/Python/flex.py"
+      - "decoders/Python/flexnet_b42.py"
+      - "tests/test_flexnet_b*.py"
+      - "tests/golden/flexnet_b*"
+      - "tests/golden/FlexB*VectorGenerator.java"
       - "decoders/Python/apps/HTTP_Custom/**"
       - "tests/test_http_custom_899.py"
       - "decoders/Python/apps/HTTP_SocketClay/**"
@@ -75,6 +81,8 @@ jobs:
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_http_custom_899 -v
       - name: Verify TunelGuard/Wakko/SocketClay catalogs and file compatibility
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_http_internet_infinito tests.test_freedomvpn tests.test_focus_vpn_cloud tests.test_eut_vpn tests.test_v2ray_tunnel_plus tests.test_tunelguard tests.test_http_wakko tests.test_http_socketclay tests.test_http_fenixvpn tests.test_http_jireh -v
+      - name: Verify FlexNet v1-v6 compatibility and B46 protected fields
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_flexnet_b46 tests.test_flexnet_b42 -v
       - name: C2 verify NUR server catalog remains separate from solid profiles
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_cloud_c2_nur_catalog -v
       - name: Hat Tunnel complete JSON, real fixture and optional-field regression

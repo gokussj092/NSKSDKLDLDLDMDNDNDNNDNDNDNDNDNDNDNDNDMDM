@@ -154,6 +154,18 @@ Los catálogos de SocketClay y Wakko mantienen su validación anterior.
 Persisten únicamente la comprobación del servicio desde la VPS tras un despliegue
 solicitado y los límites de certificación `.sks` documentados en `TESTING.md`.
 
+## Actualizaciones de lectores existentes
+
+- **FlexNet V 2.4 (46)**: ampliado el lector en `FlexNet_B42/`, conservando
+  v1–v4, sus 30 materiales y las fixtures B42. Admite v5 mínimo 46, v6 con
+  clave de setup autorizada y campos SNI/payload FLXFLD con bindings y GCM.
+  **22 pruebas específicas aprobadas**, JDK independiente y un campo nativo ARM64.
+- **Muestra `free (1).flex` pendiente de clave online**: cabecera reconocida como
+  v5 online B46; devuelve `ONLINE_AUTH_REQUIRED`. No se recuperó su contenido
+  ni se anuncia descifrado real completo o descarga automática del servidor.
+  Es una actualización de script, sin cambio del catálogo Server VPN, despliegue,
+  release o novedades automáticas. PR #96; análisis en `docs/FLEXNET_V2_4_B46.md`.
+
 ## Cómo completar el registro
 
 Al terminar cada integración:
