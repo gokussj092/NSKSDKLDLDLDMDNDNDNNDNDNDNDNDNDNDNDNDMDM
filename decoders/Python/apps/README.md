@@ -39,3 +39,5 @@ productores se mantienen en `tests/golden`, y las pruebas en `tests`.
 - [HTTP SocketClay 3.4.0](HTTP_SocketClay/README.md): catálogo WakkoDev/ChaCha20/AES con clave por versión y `.sks` GCM/DES compartido. Descarga dual de servidores/usuarios verificada y habilitada en el catálogo Cloud.
 
 - [HTTP Wakko 4.9](HTTP_Wakko/README.md): catálogo completo de servidores/usuarios, clave nativa por versión y 29 campos de servidor incluidos slots BHTTP. Descarga dual real verificada; sin formato de perfil exportado identificado.
+
+- [TunelGuard VPN 12.8](TunelGuard_VPN/README.md): `.tgv` AES-CBC y catálogo STGCM2.TG autenticado, con paridad Java/ARM64. Catálogo inicial validado; fuente remota responde 404 y su ficha permanece desactivada.

@@ -1,0 +1,382 @@
+{
+  "provenance": "Independent JDK/JCA oracle normalized from build 128; catalog key checked against native ARM64 XOR function; file AES-CBC/native padding executed in ARM64 for seven lengths. Synthetic only.",
+  "catalog": "STGCM2.TG.JSYnKCkqKywtLi8w.Nv3aa87AnmiHeNILCZ40JwW0SG519oh6KSECvjtUhtRyXJe0zy3TUhwzO-MAUqQAl9VD8Zk2ZSdz60j5qtkuXllO6RtJ9p0BpVxYYuMyJ4ivNRsvWwf7x5rMBFr7K198qt9LbqiB5VazF32wZklacoINbmWvkIVFJMN5G2ycdiG9_uAuJH4smnp5nUfhSZboyri1SFKCjStYTnz5iPA-AEYdAa9X8wqZjTtRpSM0uY5Q8Sk9Rt01kK7IuP88SUer1vDYw860L1KEg8Vn93M89SdSiEBPto0jh643tXfuHLKiI8wRNB4NVokx9UheuTO7lrdMlslQDVkOdjD_96MsPi5C6O3Ux02-8PGcSmLUQd9-dg-adrSlBZm6E4CKghk9OrGF8HYs4oDXcF0KvVES_caGK9dHV6kg51-zH7IBzo02J3Ih-mFN-UNj762Yq8E2xc9gJ3GMPBmoIgX4AZCk--4IXbzxQ5fdWoQm0f2B3lXn1Q_JBbDAVBA1WEuvVaEIhhB9vERQwS45uk2AHF2ZExNvHyr6LXa3XVuD2pdbuAGXpLMi9_xOaoRh6AXRKglU5rxvgNWe1wqHk8w3xRorC67Wn6HBEmHEpedJP2ycizGOtJ6XWt7gACftumt1vR_isUnZR_SMtTRpd-PUtBdys2c8LrlPddNCUsokVtmQ1e3pkHlAFNgLifqpOiurJr-AbAW27hmD_6NuGzZvQbEtG4YXw87g99wIcWeStWDbUNiQAhDQHzKhFFoe98_Jn7bg9hNH5lXp6Zx9VVIqOG5gJmFKPiv1U7fIemJXLApGiSmUN7BYN9pKFQvf9C1MavEH-AsgGqQN24x2yd52woKI90a9EoygVP17f4mIy0fdK8D0XHn2dNy_XaQLe1lDQ6pHJtVsp7GXlhnQIWNdJQKvR1KPNp2PVo6QS_8wrkmZeUhC_gWhw7jjlMXkb3F94yIDGCbAtdDD8PaxnYyaas-KRpMU6OMOuKOQc_qxlGzkoWjFTl_dLa5PTJj9duVA76XuWbMdi2bK7yfELk9kwRYfq_eocwE2pETpLRkGcYKI9c4-OeM4b4WFMfFrrShR-stqisVIoKzkJ_dD5K6QVA_TQ3SOd7zoMyfGJDLkNKrahX-BVaE6z8lfJiRDcZFJ4A_lNvTHUT9oIT_PFqKi96RcxF2wHUU1RTdefQ4AXzgiqFOFFSDI0gQDsunzzm-1-l5KUGbKignySxXi4I_i3UcHO17k1NHUFpmfvq4FVrUB6bM5yJg_j-emryzBrr1pnAFKxHF7LsIwKqvggGGMYfMlwZkc3O9CrO4SrD7wukGUMvlZA7DCRXEaS7RijENPpkQTB1oMI9YOmmT09NyIYvNtd59ipv71cLHSJCFfwN4DOhvQe0Um4_ewo6pgbTbGqC_vYWSwLVdfXAPOqypm74I2bKos_ZooZZoWxdhgnhQzoPLmf_bYFXl4zhEQvfHdhslTCDsFKjgO7UzeXe8S9uL0j9yqGcglGX5Zxpeo39hErImsaYKpvVWi6UwHxBajeyveUkMyCan-SqMpysYz6hyssJWBQYIs1xMnkEgAxMKoXnGo4tEbuLYiS-_UfGmAvsWeFK_66sntp67vPB_tJVCh4kt8skZ4jPPUxhn3RNHQT8CWops7Hnl1qJlVHf7XpnrYtkdmV5MDivXnkUhS61HCsT_1L74mto8B4EqAhkEJZ5ufB6rUbuaGAKNXcYOOZQEV-Y7UrG06Ri4v8btECZdtQRZi-VMTq4dJRmDoZjiBwRb_zOMgbryYOAezqXq62V04OcDbyir2PUWjiZEa7nrJlLnS5nYodW0KyKNG1fQKGL7sCZlBOY7ag01Lys7cURKoXpTc_KaHRBJ1-XsAEpqOPnewNqF6kfxw7CT18I0hStokJ5OTSGVNVSVtB-1hf2Hgei3qBYde7HZzkAlOhIRj4ZGpjHrWwAcAmUJUmkGD3pvp4B6FNbCgg5IZFxJHzCQa6uj7j0RRcsDRYR55BTMM1lcFhkajJ-2KpLJJFP1U27tOZp2UpPaWBXRJr6AJtFExiwS9IZ0sOyDT7uae6T8mpfWvfSo1UuUQAaUZu5cBcSuUJxyZRuxpiWstcaSOiYBkigucQY_MGQ0iOBVQBTryT8_8X_aXGkPYajnZbTeEq8wZworplzCSgUXSx6ZWRmfyX-lJmMuIv1BhNqxHxrGjUPTfhlBGyRWFLodWaIYIzq4PMMLLXV_GOMqkluH_bybtSabopuOlJxft1QJdXpCrWcnXOBL8ZmARFG0lOPANJeuVZagdVPje8eGLxk67Xy6LSjA3XA8fU_vREI3im8mY6AAFptohVBqz8BY2Ty4SG3Se_tfMMjpUfq7UZQW81Luop0G4A61b1BdwmjXgdp9tVKWTrgFwAouNAxZ9hFDiTg_e5SkY8AikgiDzmz_PSZyANknpW_VXaU60OOOoJwu1UeMRb1ZM40A3MCmqBJuxlkSvHvLTJLVkg15wD7oZlALZAKCA2cNOpkXNbEjF6RU5_vjnPHlhglkYvRdKWw8-jblpxYVGilHOGEs6mG-oeF8l3uNphh8TSwvJibKk1u-8jU37dF2Xnwu3D9THgSaHUQ51JliFjubLayvKy0f8HSQD475VH4EwiJe01Cp6a2zBScXiFAvjnqZwiusrYK4ZISThksIcDDPNF9pJezsGvBH3mHYzCsCq9muZ7DxforEUDgIIeqdM4LqjXmg-TffPMsrbVvtj12LZDWXJxYHPnIwStvfrCwfUJIhHx7u8xetSay8E26hkLPgJFBZhF5PdFfjvYT-QNWdqfpmRsnAv6Cng4tWqpy4OP_H9jPxdyopI79r4t4KQGMHi-s8GNUWRjaHc9EeljvwEL3kzIBN9G-iPYr2dALozioUSM6WJHNmLt44CYOH7bk9x3a1gxR7whKTVwVf77Mai5gvdXrzK3DbgWm6c_KdfOzf3UMPK1dTa6PpqHugygz3Xu_Z4T3HO9QqBb0Mr446cfoR24yNH4lBwDkPpghUB_8_r32kRI4JzthRgqAIe4NL8P9jol5FpskJp1CEDd0sqMiHs-QWxTduyH70XQLL4MnY9p-dk_4OuVmN40P9vkQUM8qHmDAqVgbZUWWFXEUWu5xEgs2_CFUBZ79l0rOTGM2YGjQaHRL-uTeM0TmTmX7lxAlzcGIT09DybvKnbjjbOM9Pp9YooO7tOKbpjiURN5xwhGUbH8t3xyqXW1P-fQhy5LuINSlaF7ruED0qYFD3tf0fA4BDecovsqj0V-QTCtKMoT42AcHl7ILtkXO94yO_52Keji87eToM4Bp3DYCWpRyGzOKdesHvoHl3ikZvRYk3BWB4ukCEtXaBtmpQLec80FPfYtHqzN6bsa3Dnh5mR-wZUBBBb9E5jKbmbIKp5FcrZYoz81l47TA7CBEYmQhFdPv6SlvFlXiY8Om2_UFAGcGzhQoCXaOYVH7j8rQy9nTpiA9jf2KliXUFctAQXl0Wh-OTvkMtdsGTIo6jwrurRsBkQnoojsQFYNLAEgFoa_0fT3mTsZTEyh5GjAKyXvfe5Usy6K2x9i2_y5gByghLeofZiTR8gWueCnkka9c1cBx1iaXpN2Lrk4EY5RmUaXc-NEXeVjIQnkK1Xh9pnLUEeFMGOd44mjjVevo7cDBWCNcOzFZXYGJgfkF27i5j5h4Xj_t3q391M4XIO2t1MEG0fKe0Vs4ILf0xc9gmx2_-v9-nwtf-1WVjc3QGV5kCsg69zjvlizVJ4pu9zNmF808LFS9mxaFYUYzPGG7F1qEmInFcpo_DTBxQmYXHQWLAE-EaRzI54QhlOzoIuo9xcs9FhqtCcNV1ZD_LWB_JuL4568IprKd99UwCQH-0IeSMGFO-xOrJ0pZ995XOgvPFKnNYLquFDv3MlLn4WMZvgKEFJr4Kx5HWFPB9eYMJcVj2Zvi-bzf_cBsUwATxKQUHClqkWJljFnl8_U3cwXK4UErufZzznIWvZ6TFZpQrGdq-ngq502NvM4nJXfu5vom9qdvxUhxbAJDkdcDCk-cbS4fx4PvE6XGeqEUfSlTwv0ienihb6JTPBg_109f_moxlOa_6h2UC6xgZRkUxjcmv2FshrIwO5usB7JUhFsvHV82AQAewcNDtZDJyvzCVcYQpWveC_rq-rrdO7I5Rbdn8yKfuY9mbwhskuGiFn1d5fcnJO5bY4ZSQyLags6xxsoRUhiVxWMJ6PU6hl7jBeOUGTG8as96yXhT8ko2Ac1nDizH62fbV_il8kknisY-vzFksybZaM80DeF4Uby0I9q21HAIi2RGSftN3uVEu1QexTeABj9Fcb3TFus9o_l2f-s2L7hVAk_-ulD0Kz7tgAYv-Snbwl7h7BEk58DGdYX1kgFgO2PZc1wptAWbHnooLVAi8hgE947-wMbYe9_pBLu3-bckpJIG5l_6IGQIKz3RJJsL0n7RHi4dCu7GQfThSJ92Ote_4hpiNYAcYoij6_Nt_3cWmhATxvx2WMN5dO6jr9II32D_wqP3FLe3QZmh_8tKFU13hn30iTn6EjgLRft3boBXQv9ANMlNhhTfbbKrvz885dCJYMlqFca1ULUjt2T3pSfm2n9FjLwoSnmR0GAVo-pb53jY7AwrlQONOns-9_stRnbm2XZBrHtHvqLyCZt5-4ienT23MW0vczNMfcikpTYNf0RJGyZvXiWKQwGuz3eaEi-B_Lo-QOEXhT8xdW27C1MpI6k0aXVNl9BFVg3t9PEPeHNFXE4mkbMfEgIvL3jkvrDjoVruUHFCPVLhX8u9CwXdwikbB5UvqRIvtM8n_t2BI2QERh-Elx117Kh9klN5EKMhta_t80tuAMvv9jwhjzEza_75pxFcGTMPfRo9y9h4agVx8x9rmZKVyJJPsKNuTPu8dg4KI7WHSeBNEG1BGNuQrqQ39T-o5QBRvV5rSbkYYadXJaR0D-z_wgIVT0AkMsICZw0Br_lHwZ61dTYLmjR7rv40paNXeR6iuwW5SBMV4H0pNok4PhFcuRmvh-ciLAtcIksezNX-lHy-BBbTLtBMuzGqwe41aC1iwBeWn-KmCSKv-kt8AYa3m6CS8Kow5nts7pz8iZUApfvJja9V5GBsDnSKUnq21WmPD5we9CVUXLgUCmZC4iyDqk5NYOzDqRFUKxJ_Nndko3gdBrT48YNEsNsm5-wVnzXsvNoAELHxQ_alacXG9Hx8cFAdEnqWIHb_WJOazrNm49iBTxp4GK_UK68URF4pqAQVWKRjHUTV-lwWw1X0vM2MREKoV2GHbcGk-5Ui_c2dASACTe7RYoxnVG4hONdkVj6H30QtMMpVm724h1VjGSkAeu7NhAUAWvHywBIl8RheGZdJ4eN4pzS-dsL_JMY_NoToIuKwnRvZrV6KeNzlHRgr4685ffdRKFyUFXsWt67uvkPUCQTWdNl5wW91mg-armJ4b6oVTlB-ge1A0jloo2WkeywAhuRUQu8VOTLMxmbxzpCoY2D0iTOSVh14jkG_EZQqM7TDB8wQ7YtwiOZYUE7VPKw2HOCHGAcjXpjpNnQsn-tlGBEFXHJdHDbAZt0J9zHu9hb7_F-goGrvQVfcl3vYH4J5eMAX1TBcuUCIF3Jwuls3OwJrWv-zeaNSQSpD7rtGCMTlEZ-cMsI4KRO0lMYkFgP5rR9QZqBX2-8HCNd780HyKryadiMf2pLn3op3HIuM8oHnS6VnwA5e2LS51wfo0S99Da_lT1w-rZRUGpcdA--CVAEKbkcYbayvXXYb6hCrPGKQi-bYMa9flJ1PdVUdVBde6fR1uI3MxdNt9Hhpfpu5cMe4dwnaXNCIvXHo88UGo36HZJcdfFlrC-5Wpmhcvq26JJrK6EoAK_zr34_N4_4cEGxU8dDonRENLluy1GbmYhfoEidjfcfom5pWaGwfZPtvd0MvjMpx23KDkpZUyssFiM_R9vR1qSdSdUrG6M5JgvioatXxNn_cL3bSndWG--N3zjmXEVYEvjBcGNlvg6pltatJewPrrrKoIRgKBJaGOGhKVmhQl2YJsgpdR69Qsc547gmu-tJiJcFhg_aBN4ge92s4aKtiZ-lPDB-6WoMjBYEAjcWZejZWe-eMMp0JATiTkiWV7lExT8HOi_GXCfVybhwsKfvUd3Tb8AsPSezdq4K0-_gu23yTcJ9T7NsFmIbinZDREXu7aS9paXM-ROToYGwpYJNZdcq7nlhKXolFe7m7-dZ0y6NJuV1vZaNd1B4QniGDaGlxN0hTqVWW7uApePpg7cyzVDRGy4IqGUcohrZZewDyzg3pooAmVp0wmSRwX2Sq97ynhZZL-adrwhe0MnEeQRioVXnYfp6mDJka6sdtNjt6xNSIY2qn-j1oE7T2dyHhrcVm-cb5_wj5hfDZSW1Gj2P-TcLiq5oQtf8tGEonRozR5jrn2CnyylX_Eoc4yVITTIUdIozlja3NAsNzz5czJGcCmZPL9djT7PsRFfiHDXxjO73L6cHRYQorFAQXoiG74qCGShFpipMb1ZwPAwArx73Y_MJ1NwN5IrX5iSrFrNnq1yf-7N-kJK0ZpwNNKbmBi62JOhr0rZb6FVM5LIKoPXhyThvtxxjaAs4VIatlIC3NspgZ3_lrl5P7c2tJ0yV7CoDbDZDG3xUS74lhXM1ZYjp2Le4G-soA0ujMN-ieEvQjaCr3ae0GJnL2Al14W3fbNnIAWjsA5ww9KMSOghc-k-10hklA86-uP2GjrxG8lT5PCUK69flP-J23nYKB-wKBJQENha6zCBxOtBsu9KabCskHtCNDf7_xzv4jM_uUpkl614sp7g_NhQtvyNPvDGdOJzCE12tzQgyrY8xb115ikI-nQ1MXuS8sy2A1N0iahoud-n1G-NGydlxRHBSHkCBOSLpGhlfS8sCdijLL2u0fby-kAT2TGXjFx6EIDMzUcof8MnFW16fQb4QvZvH7hcBmMS2ZDB2l8NriCVWzsjP124X5i9-wSlZp3iXr9FkOjVjvCLpg86Fp6Jd1o-K6IBOMw_rR5rnap_cAUerKWuMRtU4eCgHzD65aB2xzMz6ANJCmrig823bjFlxp6RWat2iC9EEIsMUrwBrnrMCwiF-t59uTGm8v3kAyybzDrHsaXVvZsR9r9AnTnV-SG0O9ZzI0O4iGzs9uYsOr9R802xT5mSeuhQndXKXOqkXZeFi0Cz0PEFB0RIZ2JpKyFdYzogtFkuoNmsDsOpjNgYl22nuTi-bjJSe7GAXS7RelRlkOLmE5l2mIkY_TIKaM2q4pgzwot4hHv8BfRGOZRf2BlKOXPtl1K03-ejDM8zLVDmhPctjFUMCONHnYdkv_pThfMw4o6zwBNx64bVGt4SzWnYBJ8KFcpcd166ElAmRAnmZuFbosQMgGyZ1as84wKPR6-r6kHblvPRieteKBIbPWapzF6Vo0QOS27tamnvK2NGdISIgeWaJRe0pBgfhYsGBi7Jyr5to-WeK45yOLK9DCJQ64GGSLS6P6JCUX5tNQ1cy7Cw4rgVVffAxv0JlmTjit8XgOemS9e802Y-AI14C-AQZKMbRaMsDKHrIVd7_8vcBTVqkj1rcZGmjUFkmWtQnGodC_l6vYsGR-a8OPhsK7NeIitDgr9JUJaUHxBub5TKWkkFMQ2hSrf5A-lan4IswVMYwNg8s5-xWMSLCdHrheUEiaV6Ms96RhFyLkTa0Aguvx1TxNps1bxCNILVSZrVM80cCb-YyZzBrDduEyJOLnuiWbdoVdLpSTFNFEDGUtsnVsPDOqKj4x6IdNaP5j3tcQqS7AhEfeHemiW_6YGEzsagcSpmNvqEsRCgtR-5R_iYjleOU5a2dintaZ-_kSodHDNEXM_rtdk8f_SNFEe2ex49cgQp3C0iwbFh70ukvCMKckzzkuEsVp9o-Gdj59VK2IeDou-lr4-utrtSxvXczuIgJvrFXJTyULZbndnDBPfrr77yqhew14mDOBTkoZAWpJ0hy4BG45IZJFZp-_SgeuggucWWtvlJ4e8mjDnBJ_A1veGBqyIu9GV8K8gRcJzjHh5myrubRrU8RxQMSbFctT6o6jL1nO0GDORXOcMRDSjxtP3CiMCjLaTAOPnYdd6RxJbUlfv9fvmro6RUmtIBPz5sRsRjMXcdpuHp8d-awyUVt-ltsQztkBGSFJ_2b6I41QRb_EzEz6WqFzz2Pzt2QDDbCWpDRRLHsKEdzSAJTHnIXS1sdU2AVFGS1dph6eHsA1fIIreghdC4etPBrqJlZcAMBv-jgtzYCyIImvJSPPr2M6NQ-mYvHfdFBriN-fNnb1NX6iNmMGtu4tgVxCjmx81neHD3u52KEA-dgkk8RA47RBQUSocGdv9o5Svx_gZIW5Q9mEPD0jX1bZRIkG1jcD5hTbO4ufrdDjsMD8dj-yOc9OZUvsPffEWrpjTUs_c_bTqYf1RE9j9opkQ4PomBJmCcqOz5HbfHM8iGq1n3bcHd15PRVh66dQLHkDg35ZZiN1AUG7Am34LihvbMg5lA0YkI5fX226bhz7UcG1cUvtXUwzl7l9ZgWgMFTl0GEJXskGRMGsnhS8VwcVvkfcBBw04zW9_HzlNrOO8EoTDVEbkQbdtEqgQb64H-JfLhcwRLCunUR437oQWh0U10UVf6wRuIQlpteHTS5EwOHi2bbMc8PQy2i4D5va8iYuiszIEBTp_7iOupEIO1HVvRUFdPpkUPxK503FNDj79UUweVIIbGkmzaOHmgn1Twfr6AFEQzcfmODoKsAxnEopee_9jEwUU6I_j2XSVqg8GT725AS9Pv04tMr9V6mgUQE6sWyXZ95ph5d5CCLWpju6_XWtK1_9M-lkegwqSTxY0-dDkcr0-GZEenAWaROIv4sPqQacR8mm2Jw_pXK0X49Rqeva51gzxVwbeKsoioKFE1G_btwFhvFFWYF1xp4zaXKCIkFdr6lVZhIXO-07uPThQqCE4XhXC-0wZs8Icfr-h3iuI8bLdIcio7q9ZE2GO4OoORkKFNrmfqgT-SSdvf6JlY6o0N7outmui6h9u8k8g9UDJhR5ucXf4kI0Xf2TqQsVFtsq5s48f0VOZQ0tIilgHk0QVnkpF6MZfAUk7nQXKjLjcypGfFS6rxeBW9ZyY2ioym36gfYIBbLkTj7o21HGh_K7tWx9KrFP9NacR9sU7y6MwZEyB8LG9ValiSKw1Ovk0LfzQaUOtm11Hk4x39to7WS5qhVVC5zmu6jqregHvVaQz_R0Xd_2K0mCBIh1crSI2O4gvz8oIsOX96hZqUzcFHCdPahyTsbe4WxsULJWuLDJ4ZRUp_HD5xRg-XI8jQeHDWDG9ktnGDtwDSxNKG3ul7jGNLNpbXbaWtRKS-uobW7r7FvdZj0bNbIfCtNJO0Tut3Cch4XZYcrrJG8vpuV4KnW8Wbm8iMBY3h4ugCZkFkSrlRwQV55-ygnzGzDMfBQRwI1pWgEf7q-4QIi2kin352CBpCRvONNXMysh37ZZGoA2ha-oasp6VcMMFAwLmCLbnbYtXwdM-dx-C3Ru__ZglXV7GjkMI8KQRi7tEZlViFeumpWABz83lI6llnixd3RD3blnDF1eyn_d7W4DeboP4DKk554MIznaB3V2XzEOWJFieq6q4_-BiPzkbAkWZ4aHFmO8CR3QhmtNyb_6kfso_fw-0n1m9KMZVU9MtGJ5BT4yFNMfmuE0SBNzgUoBYMrOfliR57KtqwtZIDjPGvATAVOJWBbI5CX9TECBz7Vkh6kn7Vw_0JApSdrDTOMTsRGjqDBCwP9HnF9sb4dwIrnpRg-swPacxmgQNwUVLV2ulvIOGRb2cDqV1WpaRdh3Efi8rLpYtjptU4rmA4b3xQZFD0zGJkmBKdtpYoRQajm4Z3Ui0QPzVfpPe0VVI3OPvzX20C47KtwsBPgEwLA6w54KjzrZv2dY0692hsn5YlMKn7R9znokW2SCLTJQ1PYCoNbYjdv1jTBbNeIt_K1Qw0plOs3kRQj5zs3HP0wleAzkft7Md6rCYDx4IWZXjr8-yBbqNViu9YvPtdUIZF8UJzfbMl1UHoyEwJmDodop0wGHuipizZwzqS_2RqBfKFwRjJnAiAbkSmvJD2RdAc9fsmMhtRaf5D4XBMxqpljc8LMakaRnXy74zq0mt7dvnqw4V0T0UgMcpPKVvfuD_PItLFsnt9PfQf5QqgbTkyhOpp_jA8rhpzyJ7OSGQcAdkbmnCJ9euSqHpLPDSYlit5JSay5uHeCVMRag820EaNd0Juo2OwCHsLEfAF6F8Jn4h0S94bMsix-0Zf2U4-HuOX1fbGt2Ls6kwj09Mx2Z2qUpDCXIhcDjADzUqhwiGjAazQ7v-gtPOzVV4HH7-y9v2J2qrIO6SwR8nBdDgih7UHDoDVPLV92bjml3xM54ySgSuTMyd1Io2TAjyJ0FZz6GJS9UWkq8G1WEgLWMJNfUjWsHIBxas8raSzz-E50MjdhOoMsO8zZ6xcOv6BJAtZBlhRBF66EDhFgvJTvny2d6TewGSn5ygnx85KUL6wjYAkNDqVxoHxrmAqeFE9fzi9xZ6_Eg6acNZYYj_FYriUlueFWPUmku5vr1_voojnyYhUEbDGrnVIfyC3Uk8yMf8o_GD8UB6q4xPEN3vECEr-c3ENO3q7Hz9evKBzZnFNHhK1z1vcy3rb3faBJ9C9D-O0ygHiYHiPpccMTt2d5ObLG-MWeG5VCFxvl3FfK4b9KakpqLrkdxV-K1DbMyinodPwl8sNV3pIkuyxgSFAIW8HtTjQc1qvk0WOjDT0Y021js0haCd89mpV3eOMLpdJk64NvKqyMjpkeuo77_zfB1fn2b7zjnGD_sikdMxkHMLq3NFbRR_F_EyvP0m58S4gNuh0JFyYGlKmJkQpuKPFTRRG9qLO5caCx8wK_DaZgpjIzQ9BMEfLQQRn9nN2Sttk3gOvQ4-tTswEmLgOtOW6XYEaD76MVuo_7zmDCQ_-PmwxSbVlqRSHIAzVL0wYrVdx-gzlllDTrJXAx8qw43hztsrgs1GANWfSXAx5nh81KPmoof_LAa74xaGbm0BXSeAaLGUQiqPUHNRFflXIzDJqjmFqinulVSoAs14XQJJ2W0aQJbiJrNKnRopkmHAo08MXfCngS7qe9shhxmRL-_yn9RcONhSIBLX_SlaG1Wbi6fDFLoQrVmrO5a55QAZ7iik5UubY10Ntk7PVIrMKBwkHWoWW1jVcxGlxEDh7WXb96GWlK6TGiqed0u-5UMmc71FAgT_p9skVEecHPcssbNZ8TrQT60Qz-lSLJfE",
+  "expectedCatalog": {
+    "version": "Synthetic version",
+    "url_updater": "Synthetic url_updater",
+    "banner_id": "Synthetic banner_id",
+    "app_open_id": "Synthetic app_open_id",
+    "interst_id": "Synthetic interst_id",
+    "reward_id": "Synthetic reward_id",
+    "native_id": "Synthetic native_id",
+    "reward_interstitial_id": "Synthetic reward_interstitial_id",
+    "reward_fallback_id": "Synthetic reward_fallback_id",
+    "message": "Aviso 🙂 漢",
+    "Servers": [
+      {
+        "CloudFrontPass": "synthetic-CloudFrontPass.example",
+        "CloudFrontServer": "synthetic-CloudFrontServer.example",
+        "CloudFrontUser": "synthetic-CloudFrontUser.example",
+        "DNSPassword": "synthetic-DNSPassword.example",
+        "DNSUsername": "synthetic-DNSUsername.example",
+        "DropBear": "synthetic-DropBear.example",
+        "GCPPass": "synthetic-GCPPass.example",
+        "GCPServer": "synthetic-GCPServer.example",
+        "GCPUser": "synthetic-GCPUser.example",
+        "Hysteria2Details": "synthetic-Hysteria2Details.example",
+        "NameServer": "synthetic-NameServer.example",
+        "OpenVPNPassword": "synthetic-OpenVPNPassword.example",
+        "OpenVPNProfile": "synthetic-OpenVPNProfile.example",
+        "OpenVPNSSLPort": "synthetic-OpenVPNSSLPort.example",
+        "OpenVPNTcpPort": "synthetic-OpenVPNTcpPort.example",
+        "OpenVPNUdpPort": "synthetic-OpenVPNUdpPort.example",
+        "OpenVPNUsername": "synthetic-OpenVPNUsername.example",
+        "Password": "synthetic-Password.example",
+        "ProxyPort": "synthetic-ProxyPort.example",
+        "PublicKey": "synthetic-PublicKey.example",
+        "SSHHost": "synthetic-SSHHost.example",
+        "SSHPort": "synthetic-SSHPort.example",
+        "SSLPort": "synthetic-SSLPort.example",
+        "UDPDetails": "synthetic-UDPDetails.example",
+        "Username": "synthetic-Username.example",
+        "V2ray443": "synthetic-V2ray443.example",
+        "V2ray80": "synthetic-V2ray80.example",
+        "WSPort": "synthetic-WSPort.example",
+        "WebPass": "synthetic-WebPass.example",
+        "WebServer": "synthetic-WebServer.example",
+        "WebUser": "synthetic-WebUser.example",
+        "WireGuardDetails": "synthetic-WireGuardDetails.example",
+        "Name": "Synthetic server 🙂",
+        "Flag": "us",
+        "Category": "Example",
+        "Info": "Plain display",
+        "unknown": {
+          "list": [
+            null,
+            false,
+            3
+          ]
+        }
+      },
+      {
+        "CloudFrontPass": "synthetic-CloudFrontPass.example",
+        "CloudFrontServer": "synthetic-CloudFrontServer.example",
+        "CloudFrontUser": "synthetic-CloudFrontUser.example",
+        "DNSPassword": "synthetic-DNSPassword.example",
+        "DNSUsername": "synthetic-DNSUsername.example",
+        "DropBear": "synthetic-DropBear.example",
+        "GCPPass": "synthetic-GCPPass.example",
+        "GCPServer": "synthetic-GCPServer.example",
+        "GCPUser": "synthetic-GCPUser.example",
+        "Hysteria2Details": "synthetic-Hysteria2Details.example",
+        "NameServer": "synthetic-NameServer.example",
+        "OpenVPNPassword": "synthetic-OpenVPNPassword.example",
+        "OpenVPNProfile": "synthetic-OpenVPNProfile.example",
+        "OpenVPNSSLPort": "synthetic-OpenVPNSSLPort.example",
+        "OpenVPNTcpPort": "synthetic-OpenVPNTcpPort.example",
+        "OpenVPNUdpPort": "synthetic-OpenVPNUdpPort.example",
+        "OpenVPNUsername": "synthetic-OpenVPNUsername.example",
+        "Password": "synthetic-Password.example",
+        "ProxyPort": "synthetic-ProxyPort.example",
+        "PublicKey": "synthetic-PublicKey.example",
+        "SSHHost": "synthetic-SSHHost.example",
+        "SSHPort": "synthetic-SSHPort.example",
+        "SSLPort": "synthetic-SSLPort.example",
+        "UDPDetails": "synthetic-UDPDetails.example",
+        "Username": "synthetic-Username.example",
+        "V2ray443": "synthetic-V2ray443.example",
+        "V2ray80": "synthetic-V2ray80.example",
+        "WSPort": "synthetic-WSPort.example",
+        "WebPass": "synthetic-WebPass.example",
+        "WebServer": "synthetic-WebServer.example",
+        "WebUser": "synthetic-WebUser.example",
+        "WireGuardDetails": "synthetic-WireGuardDetails.example",
+        "Name": "Second server",
+        "Flag": "us",
+        "Category": "Example",
+        "Info": "Plain display",
+        "unknown": {
+          "list": [
+            null,
+            false,
+            3
+          ]
+        }
+      }
+    ],
+    "Tweaks": [
+      {
+        "Bug": "Synthetic Bug",
+        "DNSHost": "Synthetic DNSHost",
+        "Flag": "Synthetic Flag",
+        "Info": "Synthetic Info",
+        "Payload": "Synthetic Payload",
+        "ProxyHost": "Synthetic ProxyHost",
+        "ProxyPort": "Synthetic ProxyPort",
+        "Sni": "Synthetic Sni",
+        "Name": "Synthetic tweak",
+        "Mode": 9,
+        "CustomProxy": true,
+        "Country": "ZZ",
+        "unknown": [
+          "keep",
+          false
+        ]
+      }
+    ],
+    "reset": false,
+    "def_time": 0,
+    "add_time": 120,
+    "unknownRoot": {
+      "keep": [
+        null,
+        false,
+        7
+      ]
+    }
+  },
+  "catalogWire": {
+    "version": "睁㢮塈ﾋ睺㢲塒ﾖ睱㣷塐ﾚ睠㢤塏ﾐ睼",
+    "url_updater": "睁㢮塈ﾋ睺㢲塒ﾖ睱㣷塓ﾍ睾㢈塓ﾏ睶㢶塒ﾚ睠",
+    "banner_id": "睁㢮塈ﾋ睺㢲塒ﾖ睱㣷塄ﾞ睼㢹塃ﾍ睍㢾塂",
+    "app_open_id": "睁㢮塈ﾋ睺㢲塒ﾖ睱㣷塇ﾏ睢㢈塉ﾏ睷㢹塹ﾖ睶",
+    "interst_id": "睁㢮塈ﾋ睺㢲塒ﾖ睱㣷塏ﾑ睦㢲塔ﾌ睦㢈塏ﾛ",
+    "reward_id": "睁㢮塈ﾋ睺㢲塒ﾖ睱㣷塔ﾚ睥㢶塔ﾛ睍㢾塂",
+    "native_id": "睁㢮塈ﾋ睺㢲塒ﾖ睱㣷塈ﾞ睦㢾塐ﾚ睍㢾塂",
+    "reward_interstitial_id": "睁㢮塈ﾋ睺㢲塒ﾖ睱㣷塔ﾚ睥㢶塔ﾛ睍㢾塈ﾋ睷㢥塕ﾋ睻㢣塏ﾞ睾㢈塏ﾛ",
+    "reward_fallback_id": "睁㢮塈ﾋ睺㢲塒ﾖ睱㣷塔ﾚ睥㢶塔ﾛ睍㢱塇ﾓ睾㢵塇ﾜ睹㢈塏ﾛ",
+    "message": "睓㢡塏ﾌ睽㣷耛↽眲埵",
+    "Servers": [
+      {
+        "CloudFrontPass": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塥ﾓ睽㢢塂ﾹ睠㢸塈ﾋ睂㢶塕ﾌ眼㢲塞ﾞ睿㢧塊ﾚ",
+        "CloudFrontServer": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塥ﾓ睽㢢塂ﾹ睠㢸塈ﾋ睁㢲塔ﾉ睷㢥堈ﾚ睪㢶塋ﾏ睾㢲",
+        "CloudFrontUser": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塥ﾓ睽㢢塂ﾹ睠㢸塈ﾋ睇㢤塃ﾍ眼㢲塞ﾞ睿㢧塊ﾚ",
+        "DNSPassword": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塢ﾱ睁㢇塇ﾌ睡㢠塉ﾍ睶㣹塃ﾇ睳㢺塖ﾓ睷",
+        "DNSUsername": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塢ﾱ睁㢂塕ﾚ睠㢹塇ﾒ睷㣹塃ﾇ睳㢺塖ﾓ睷",
+        "DropBear": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塢ﾍ睽㢧塤ﾚ睳㢥堈ﾚ睪㢶塋ﾏ睾㢲",
+        "GCPPass": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塡ﾼ睂㢇塇ﾌ睡㣹塃ﾇ睳㢺塖ﾓ睷",
+        "GCPServer": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塡ﾼ睂㢄塃ﾍ睤㢲塔￑睷㢯塇ﾒ睢㢻塃",
+        "GCPUser": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塡ﾼ睂㢂塕ﾚ睠㣹塃ﾇ睳㢺塖ﾓ睷",
+        "Hysteria2Details": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塮ﾆ睡㢣塃ﾍ睻㢶堔ﾻ睷㢣塇ﾖ睾㢤堈ﾚ睪㢶塋ﾏ睾㢲",
+        "NameServer": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塨ﾞ睿㢲塵ﾚ睠㢡塃ﾍ眼㢲塞ﾞ睿㢧塊ﾚ",
+        "OpenVPNPassword": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塩ﾏ睷㢹塰ﾯ睜㢇塇ﾌ睡㢠塉ﾍ睶㣹塃ﾇ睳㢺塖ﾓ睷",
+        "OpenVPNProfile": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塩ﾏ睷㢹塰ﾯ睜㢇塔ﾐ睴㢾塊ﾚ眼㢲塞ﾞ睿㢧塊ﾚ",
+        "OpenVPNSSLPort": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塩ﾏ睷㢹塰ﾯ睜㢄塵ﾳ睂㢸塔ﾋ眼㢲塞ﾞ睿㢧塊ﾚ",
+        "OpenVPNTcpPort": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塩ﾏ睷㢹塰ﾯ睜㢃塅ﾏ睂㢸塔ﾋ眼㢲塞ﾞ睿㢧塊ﾚ",
+        "OpenVPNUdpPort": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塩ﾏ睷㢹塰ﾯ睜㢂塂ﾏ睂㢸塔ﾋ眼㢲塞ﾞ睿㢧塊ﾚ",
+        "OpenVPNUsername": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塩ﾏ睷㢹塰ﾯ睜㢂塕ﾚ睠㢹塇ﾒ睷㣹塃ﾇ睳㢺塖ﾓ睷",
+        "Password": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塶ﾞ睡㢤塑ﾐ睠㢳堈ﾚ睪㢶塋ﾏ睾㢲",
+        "ProxyPort": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塶ﾍ睽㢯塟ﾯ睽㢥塒￑睷㢯塇ﾒ睢㢻塃",
+        "PublicKey": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塶ﾊ睰㢻塏ﾜ睙㢲塟￑睷㢯塇ﾒ睢㢻塃",
+        "SSHHost": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塵ﾬ睚㢟塉ﾌ睦㣹塃ﾇ睳㢺塖ﾓ睷",
+        "SSHPort": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塵ﾬ睚㢇塉ﾍ睦㣹塃ﾇ睳㢺塖ﾓ睷",
+        "SSLPort": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塵ﾬ睞㢇塉ﾍ睦㣹塃ﾇ睳㢺塖ﾓ睷",
+        "UDPDetails": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塳ﾻ睂㢓塃ﾋ睳㢾塊ﾌ眼㢲塞ﾞ睿㢧塊ﾚ",
+        "Username": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塳ﾌ睷㢥塈ﾞ睿㢲堈ﾚ睪㢶塋ﾏ睾㢲",
+        "V2ray443": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塰ￍ睠㢶塟ￋ眦㣤堈ﾚ睪㢶塋ﾏ睾㢲",
+        "V2ray80": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塰ￍ睠㢶塟ￇ眢㣹塃ﾇ睳㢺塖ﾓ睷",
+        "WSPort": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塱ﾬ睂㢸塔ﾋ眼㢲塞ﾞ睿㢧塊ﾚ",
+        "WebPass": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塱ﾚ睰㢇塇ﾌ睡㣹塃ﾇ睳㢺塖ﾓ睷",
+        "WebServer": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塱ﾚ睰㢄塃ﾍ睤㢲塔￑睷㢯塇ﾒ睢㢻塃",
+        "WebUser": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塱ﾚ睰㢂塕ﾚ睠㣹塃ﾇ睳㢺塖ﾓ睷",
+        "WireGuardDetails": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塱ﾖ睠㢲塡ﾊ睳㢥塂ﾻ睷㢣塇ﾖ睾㢤堈ﾚ睪㢶塋ﾏ睾㢲",
+        "Name": "Synthetic server 🙂",
+        "Flag": "us",
+        "Category": "Example",
+        "Info": "Plain display",
+        "unknown": {
+          "list": [
+            null,
+            false,
+            3
+          ]
+        }
+      },
+      {
+        "CloudFrontPass": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塥ﾓ睽㢢塂ﾹ睠㢸塈ﾋ睂㢶塕ﾌ眼㢲塞ﾞ睿㢧塊ﾚ",
+        "CloudFrontServer": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塥ﾓ睽㢢塂ﾹ睠㢸塈ﾋ睁㢲塔ﾉ睷㢥堈ﾚ睪㢶塋ﾏ睾㢲",
+        "CloudFrontUser": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塥ﾓ睽㢢塂ﾹ睠㢸塈ﾋ睇㢤塃ﾍ眼㢲塞ﾞ睿㢧塊ﾚ",
+        "DNSPassword": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塢ﾱ睁㢇塇ﾌ睡㢠塉ﾍ睶㣹塃ﾇ睳㢺塖ﾓ睷",
+        "DNSUsername": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塢ﾱ睁㢂塕ﾚ睠㢹塇ﾒ睷㣹塃ﾇ睳㢺塖ﾓ睷",
+        "DropBear": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塢ﾍ睽㢧塤ﾚ睳㢥堈ﾚ睪㢶塋ﾏ睾㢲",
+        "GCPPass": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塡ﾼ睂㢇塇ﾌ睡㣹塃ﾇ睳㢺塖ﾓ睷",
+        "GCPServer": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塡ﾼ睂㢄塃ﾍ睤㢲塔￑睷㢯塇ﾒ睢㢻塃",
+        "GCPUser": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塡ﾼ睂㢂塕ﾚ睠㣹塃ﾇ睳㢺塖ﾓ睷",
+        "Hysteria2Details": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塮ﾆ睡㢣塃ﾍ睻㢶堔ﾻ睷㢣塇ﾖ睾㢤堈ﾚ睪㢶塋ﾏ睾㢲",
+        "NameServer": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塨ﾞ睿㢲塵ﾚ睠㢡塃ﾍ眼㢲塞ﾞ睿㢧塊ﾚ",
+        "OpenVPNPassword": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塩ﾏ睷㢹塰ﾯ睜㢇塇ﾌ睡㢠塉ﾍ睶㣹塃ﾇ睳㢺塖ﾓ睷",
+        "OpenVPNProfile": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塩ﾏ睷㢹塰ﾯ睜㢇塔ﾐ睴㢾塊ﾚ眼㢲塞ﾞ睿㢧塊ﾚ",
+        "OpenVPNSSLPort": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塩ﾏ睷㢹塰ﾯ睜㢄塵ﾳ睂㢸塔ﾋ眼㢲塞ﾞ睿㢧塊ﾚ",
+        "OpenVPNTcpPort": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塩ﾏ睷㢹塰ﾯ睜㢃塅ﾏ睂㢸塔ﾋ眼㢲塞ﾞ睿㢧塊ﾚ",
+        "OpenVPNUdpPort": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塩ﾏ睷㢹塰ﾯ睜㢂塂ﾏ睂㢸塔ﾋ眼㢲塞ﾞ睿㢧塊ﾚ",
+        "OpenVPNUsername": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塩ﾏ睷㢹塰ﾯ睜㢂塕ﾚ睠㢹塇ﾒ睷㣹塃ﾇ睳㢺塖ﾓ睷",
+        "Password": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塶ﾞ睡㢤塑ﾐ睠㢳堈ﾚ睪㢶塋ﾏ睾㢲",
+        "ProxyPort": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塶ﾍ睽㢯塟ﾯ睽㢥塒￑睷㢯塇ﾒ睢㢻塃",
+        "PublicKey": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塶ﾊ睰㢻塏ﾜ睙㢲塟￑睷㢯塇ﾒ睢㢻塃",
+        "SSHHost": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塵ﾬ睚㢟塉ﾌ睦㣹塃ﾇ睳㢺塖ﾓ睷",
+        "SSHPort": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塵ﾬ睚㢇塉ﾍ睦㣹塃ﾇ睳㢺塖ﾓ睷",
+        "SSLPort": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塵ﾬ睞㢇塉ﾍ睦㣹塃ﾇ睳㢺塖ﾓ睷",
+        "UDPDetails": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塳ﾻ睂㢓塃ﾋ睳㢾塊ﾌ眼㢲塞ﾞ睿㢧塊ﾚ",
+        "Username": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塳ﾌ睷㢥塈ﾞ睿㢲堈ﾚ睪㢶塋ﾏ睾㢲",
+        "V2ray443": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塰ￍ睠㢶塟ￋ眦㣤堈ﾚ睪㢶塋ﾏ睾㢲",
+        "V2ray80": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塰ￍ睠㢶塟ￇ眢㣹塃ﾇ睳㢺塖ﾓ睷",
+        "WSPort": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塱ﾬ睂㢸塔ﾋ眼㢲塞ﾞ睿㢧塊ﾚ",
+        "WebPass": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塱ﾚ睰㢇塇ﾌ睡㣹塃ﾇ睳㢺塖ﾓ睷",
+        "WebServer": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塱ﾚ睰㢄塃ﾍ睤㢲塔￑睷㢯塇ﾒ睢㢻塃",
+        "WebUser": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塱ﾚ睰㢂塕ﾚ睠㣹塃ﾇ睳㢺塖ﾓ睷",
+        "WireGuardDetails": "睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塱ﾖ睠㢲塡ﾊ睳㢥塂ﾻ睷㢣塇ﾖ睾㢤堈ﾚ睪㢶塋ﾏ睾㢲",
+        "Name": "Second server",
+        "Flag": "us",
+        "Category": "Example",
+        "Info": "Plain display",
+        "unknown": {
+          "list": [
+            null,
+            false,
+            3
+          ]
+        }
+      }
+    ],
+    "Tweaks": [
+      {
+        "Bug": "睁㢮塈ﾋ睺㢲塒ﾖ睱㣷塤ﾊ睵",
+        "DNSHost": "睁㢮塈ﾋ睺㢲塒ﾖ睱㣷塢ﾱ睁㢟塉ﾌ睦",
+        "Flag": "睁㢮塈ﾋ睺㢲塒ﾖ睱㣷塠ﾓ睳㢰",
+        "Info": "睁㢮塈ﾋ睺㢲塒ﾖ睱㣷塯ﾑ睴㢸",
+        "Payload": "睁㢮塈ﾋ睺㢲塒ﾖ睱㣷塶ﾞ睫㢻塉ﾞ睶",
+        "ProxyHost": "睁㢮塈ﾋ睺㢲塒ﾖ睱㣷塶ﾍ睽㢯塟ﾷ睽㢤塒",
+        "ProxyPort": "睁㢮塈ﾋ睺㢲塒ﾖ睱㣷塶ﾍ睽㢯塟ﾯ睽㢥塒",
+        "Sni": "睁㢮塈ﾋ睺㢲塒ﾖ睱㣷塵ﾑ睻",
+        "Name": "Synthetic tweak",
+        "Mode": 9,
+        "CustomProxy": true,
+        "Country": "ZZ",
+        "unknown": [
+          "keep",
+          false
+        ]
+      }
+    ],
+    "reset": false,
+    "def_time": 0,
+    "add_time": 120,
+    "unknownRoot": {
+      "keep": [
+        null,
+        false,
+        7
+      ]
+    }
+  },
+  "profile": "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",
+  "expectedProfile": {
+    "TGV_CONFIG": {
+      "Payload": "Synthetic Payload\n🙂 漢",
+      "WSPayload": "Synthetic WSPayload\n🙂 漢",
+      "SNIHost": "Synthetic SNIHost\n🙂 漢",
+      "BUGHost": "Synthetic BUGHost\n🙂 漢",
+      "DNSHost": "Synthetic DNSHost\n🙂 漢",
+      "V2RAYLink": "Synthetic V2RAYLink\n🙂 漢",
+      "UDPIP": "Synthetic UDPIP\n🙂 漢",
+      "UDPPorts": "Synthetic UDPPorts\n🙂 漢",
+      "UDPObfs": "Synthetic UDPObfs\n🙂 漢",
+      "UDPAuth": "Synthetic UDPAuth\n🙂 漢",
+      "ProxySet": "Synthetic ProxySet\n🙂 漢",
+      "V2rayBug": "Synthetic V2rayBug\n🙂 漢",
+      "OpenVPNPayload": "Synthetic OpenVPNPayload\n🙂 漢",
+      "OpenVPNSni": "Synthetic OpenVPNSni\n🙂 漢",
+      "OpenVPNProxyHost": "Synthetic OpenVPNProxyHost\n🙂 漢",
+      "OpenVPNProxyPort": "Synthetic OpenVPNProxyPort\n🙂 漢",
+      "TunnelType": 79,
+      "DeviceID": "synthetic-hwid",
+      "ExpireDate": 0,
+      "RootBlock": true,
+      "MobileData": false,
+      "PSInstall": true,
+      "isPassON": true,
+      "MyPass": "synthetic-password",
+      "isMsg": true,
+      "CFGMessage": "Original message 🙂",
+      "Server": "{\"CloudFrontPass\":\"synthetic-CloudFrontPass.example\",\"CloudFrontServer\":\"synthetic-CloudFrontServer.example\",\"CloudFrontUser\":\"synthetic-CloudFrontUser.example\",\"DNSPassword\":\"synthetic-DNSPassword.example\",\"DNSUsername\":\"synthetic-DNSUsername.example\",\"DropBear\":\"synthetic-DropBear.example\",\"GCPPass\":\"synthetic-GCPPass.example\",\"GCPServer\":\"synthetic-GCPServer.example\",\"GCPUser\":\"synthetic-GCPUser.example\",\"Hysteria2Details\":\"synthetic-Hysteria2Details.example\",\"NameServer\":\"synthetic-NameServer.example\",\"OpenVPNPassword\":\"synthetic-OpenVPNPassword.example\",\"OpenVPNProfile\":\"synthetic-OpenVPNProfile.example\",\"OpenVPNSSLPort\":\"synthetic-OpenVPNSSLPort.example\",\"OpenVPNTcpPort\":\"synthetic-OpenVPNTcpPort.example\",\"OpenVPNUdpPort\":\"synthetic-OpenVPNUdpPort.example\",\"OpenVPNUsername\":\"synthetic-OpenVPNUsername.example\",\"Password\":\"synthetic-Password.example\",\"ProxyPort\":\"synthetic-ProxyPort.example\",\"PublicKey\":\"synthetic-PublicKey.example\",\"SSHHost\":\"synthetic-SSHHost.example\",\"SSHPort\":\"synthetic-SSHPort.example\",\"SSLPort\":\"synthetic-SSLPort.example\",\"UDPDetails\":\"synthetic-UDPDetails.example\",\"Username\":\"synthetic-Username.example\",\"V2ray443\":\"synthetic-V2ray443.example\",\"V2ray80\":\"synthetic-V2ray80.example\",\"WSPort\":\"synthetic-WSPort.example\",\"WebPass\":\"synthetic-WebPass.example\",\"WebServer\":\"synthetic-WebServer.example\",\"WebUser\":\"synthetic-WebUser.example\",\"WireGuardDetails\":\"synthetic-WireGuardDetails.example\",\"Name\":\"Synthetic server 🙂\",\"Flag\":\"us\",\"Category\":\"Example\",\"Info\":\"Plain display\",\"unknown\":{\"list\":[null,false,3]}}",
+      "unknownProfile": {
+        "a": [
+          null,
+          false,
+          0
+        ]
+      }
+    },
+    "unknownFile": [
+      "preserve",
+      false
+    ]
+  },
+  "profileWire": {
+    "TGV_CONFIG": {
+      "Payload": "VTNsdWRHaGxkR2xqSUZCaGVXeHZZV1FLOEorWmdpRG12S0k9Cg==\n",
+      "WSPayload": "VTNsdWRHaGxkR2xqSUZkVFVHRjViRzloWkFyd241bUNJT2E4b2c9PQo=\n",
+      "SNIHost": "VTNsdWRHaGxkR2xqSUZOT1NVaHZjM1FLOEorWmdpRG12S0k9Cg==\n",
+      "BUGHost": "VTNsdWRHaGxkR2xqSUVKVlIwaHZjM1FLOEorWmdpRG12S0k9Cg==\n",
+      "DNSHost": "VTNsdWRHaGxkR2xqSUVST1UwaHZjM1FLOEorWmdpRG12S0k9Cg==\n",
+      "V2RAYLink": "VTNsdWRHaGxkR2xqSUZZeVVrRlpUR2x1YXdyd241bUNJT2E4b2c9PQo=\n",
+      "UDPIP": "VTNsdWRHaGxkR2xqSUZWRVVFbFFDdkNmbVlJZzVyeWkK\n",
+      "UDPPorts": "VTNsdWRHaGxkR2xqSUZWRVVGQnZjblJ6Q3ZDZm1ZSWc1cnlpCg==\n",
+      "UDPObfs": "VTNsdWRHaGxkR2xqSUZWRVVFOWlabk1LOEorWmdpRG12S0k9Cg==\n",
+      "UDPAuth": "VTNsdWRHaGxkR2xqSUZWRVVFRjFkR2dLOEorWmdpRG12S0k9Cg==\n",
+      "ProxySet": "VTNsdWRHaGxkR2xqSUZCeWIzaDVVMlYwQ3ZDZm1ZSWc1cnlpCg==\n",
+      "V2rayBug": "VTNsdWRHaGxkR2xqSUZZeWNtRjVRblZuQ3ZDZm1ZSWc1cnlpCg==\n",
+      "OpenVPNPayload": "VTNsdWRHaGxkR2xqSUU5d1pXNVdVRTVRWVhsc2IyRmtDdkNmbVlJZzVyeWkK\n",
+      "OpenVPNSni": "VTNsdWRHaGxkR2xqSUU5d1pXNVdVRTVUYm1rSzhKK1pnaURtdktJPQo=\n",
+      "OpenVPNProxyHost": "VTNsdWRHaGxkR2xqSUU5d1pXNVdVRTVRY205NGVVaHZjM1FLOEorWmdpRG12S0k9Cg==\n",
+      "OpenVPNProxyPort": "VTNsdWRHaGxkR2xqSUU5d1pXNVdVRTVRY205NGVWQnZjblFLOEorWmdpRG12S0k9Cg==\n",
+      "TunnelType": 79,
+      "DeviceID": "synthetic-hwid",
+      "ExpireDate": 0,
+      "RootBlock": true,
+      "MobileData": false,
+      "PSInstall": true,
+      "isPassON": true,
+      "MyPass": "synthetic-password",
+      "isMsg": true,
+      "CFGMessage": "Original message 🙂",
+      "Server": "{\"CloudFrontPass\": \"睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塥ﾓ睽㢢塂ﾹ睠㢸塈ﾋ睂㢶塕ﾌ眼㢲塞ﾞ睿㢧塊ﾚ\", \"CloudFrontServer\": \"睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塥ﾓ睽㢢塂ﾹ睠㢸塈ﾋ睁㢲塔ﾉ睷㢥堈ﾚ睪㢶塋ﾏ睾㢲\", \"CloudFrontUser\": \"睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塥ﾓ睽㢢塂ﾹ睠㢸塈ﾋ睇㢤塃ﾍ眼㢲塞ﾞ睿㢧塊ﾚ\", \"DNSPassword\": \"睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塢ﾱ睁㢇塇ﾌ睡㢠塉ﾍ睶㣹塃ﾇ睳㢺塖ﾓ睷\", \"DNSUsername\": \"睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塢ﾱ睁㢂塕ﾚ睠㢹塇ﾒ睷㣹塃ﾇ睳㢺塖ﾓ睷\", \"DropBear\": \"睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塢ﾍ睽㢧塤ﾚ睳㢥堈ﾚ睪㢶塋ﾏ睾㢲\", \"GCPPass\": \"睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塡ﾼ睂㢇塇ﾌ睡㣹塃ﾇ睳㢺塖ﾓ睷\", \"GCPServer\": \"睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塡ﾼ睂㢄塃ﾍ睤㢲塔￑睷㢯塇ﾒ睢㢻塃\", \"GCPUser\": \"睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塡ﾼ睂㢂塕ﾚ睠㣹塃ﾇ睳㢺塖ﾓ睷\", \"Hysteria2Details\": \"睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塮ﾆ睡㢣塃ﾍ睻㢶堔ﾻ睷㢣塇ﾖ睾㢤堈ﾚ睪㢶塋ﾏ睾㢲\", \"NameServer\": \"睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塨ﾞ睿㢲塵ﾚ睠㢡塃ﾍ眼㢲塞ﾞ睿㢧塊ﾚ\", \"OpenVPNPassword\": \"睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塩ﾏ睷㢹塰ﾯ睜㢇塇ﾌ睡㢠塉ﾍ睶㣹塃ﾇ睳㢺塖ﾓ睷\", \"OpenVPNProfile\": \"睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塩ﾏ睷㢹塰ﾯ睜㢇塔ﾐ睴㢾塊ﾚ眼㢲塞ﾞ睿㢧塊ﾚ\", \"OpenVPNSSLPort\": \"睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塩ﾏ睷㢹塰ﾯ睜㢄塵ﾳ睂㢸塔ﾋ眼㢲塞ﾞ睿㢧塊ﾚ\", \"OpenVPNTcpPort\": \"睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塩ﾏ睷㢹塰ﾯ睜㢃塅ﾏ睂㢸塔ﾋ眼㢲塞ﾞ睿㢧塊ﾚ\", \"OpenVPNUdpPort\": \"睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塩ﾏ睷㢹塰ﾯ睜㢂塂ﾏ睂㢸塔ﾋ眼㢲塞ﾞ睿㢧塊ﾚ\", \"OpenVPNUsername\": \"睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塩ﾏ睷㢹塰ﾯ睜㢂塕ﾚ睠㢹塇ﾒ睷㣹塃ﾇ睳㢺塖ﾓ睷\", \"Password\": \"睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塶ﾞ睡㢤塑ﾐ睠㢳堈ﾚ睪㢶塋ﾏ睾㢲\", \"ProxyPort\": \"睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塶ﾍ睽㢯塟ﾯ睽㢥塒￑睷㢯塇ﾒ睢㢻塃\", \"PublicKey\": \"睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塶ﾊ睰㢻塏ﾜ睙㢲塟￑睷㢯塇ﾒ睢㢻塃\", \"SSHHost\": \"睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塵ﾬ睚㢟塉ﾌ睦㣹塃ﾇ睳㢺塖ﾓ睷\", \"SSHPort\": \"睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塵ﾬ睚㢇塉ﾍ睦㣹塃ﾇ睳㢺塖ﾓ睷\", \"SSLPort\": \"睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塵ﾬ睞㢇塉ﾍ睦㣹塃ﾇ睳㢺塖ﾓ睷\", \"UDPDetails\": \"睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塳ﾻ睂㢓塃ﾋ睳㢾塊ﾌ眼㢲塞ﾞ睿㢧塊ﾚ\", \"Username\": \"睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塳ﾌ睷㢥塈ﾞ睿㢲堈ﾚ睪㢶塋ﾏ睾㢲\", \"V2ray443\": \"睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塰ￍ睠㢶塟ￋ眦㣤堈ﾚ睪㢶塋ﾏ睾㢲\", \"V2ray80\": \"睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塰ￍ睠㢶塟ￇ眢㣹塃ﾇ睳㢺塖ﾓ睷\", \"WSPort\": \"睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塱ﾬ睂㢸塔ﾋ眼㢲塞ﾞ睿㢧塊ﾚ\", \"WebPass\": \"睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塱ﾚ睰㢇塇ﾌ睡㣹塃ﾇ睳㢺塖ﾓ睷\", \"WebServer\": \"睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塱ﾚ睰㢄塃ﾍ睤㢲塔￑睷㢯塇ﾒ睢㢻塃\", \"WebUser\": \"睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塱ﾚ睰㢂塕ﾚ睠㣹塃ﾇ睳㢺塖ﾓ睷\", \"WireGuardDetails\": \"睡㢮塈ﾋ睺㢲塒ﾖ睱㣺塱ﾖ睠㢲塡ﾊ睳㢥塂ﾻ睷㢣塇ﾖ睾㢤堈ﾚ睪㢶塋ﾏ睾㢲\", \"Name\": \"Synthetic server 🙂\", \"Flag\": \"us\", \"Category\": \"Example\", \"Info\": \"Plain display\", \"unknown\": {\"list\": [null, false, 3]}}",
+      "unknownProfile": {
+        "a": [
+          null,
+          false,
+          0
+        ]
+      }
+    },
+    "unknownFile": [
+      "preserve",
+      false
+    ]
+  },
+  "utf8Catalog": "STGCM2.TG.JSYnKCkqKywtLi8w.Nv3aa87AnmiHeNILCZ40JwW0SG519oh6KSECvjtUhtRyXJe0zy3TUhwzO-MAUqQAl9VD8Zk2ZSdz60j5qtkuXllO6RtJ9p0BpVxYYuMyJ4ivNRsvWwf7x5rMBFr7K198qt9LbqiB5VazF32wZklacoINbmWvkIVFJMN5G2ycdiG9_uAuJH4smnp5nUfhSZboyri1SFKCjStYTnz5iPA-AEYdAa9X8wqZjTtRpSM0uY5Q8Sk9Rt01kK7IuP88SUer1vDYw860L1KEg8Vn93M89SdSiEBPto0jh643tXfuHLKiI8wRNB4NVokx9UheuTO7lrdMlslQDVkOdjD_96MsPi5C6O3Ux02-8PGcSmLUQd9-dg-adrSlBZm6E4CKghk9OrGF8HYs4oDXcF0KvVES_caGK9dHV6kg51-zH7IBzo02J3Ih-mFN-UNj762Yq8E2xc9gJ3GMPBmoIgX4AZCk--4IXbzxQ5fdWoQm0f2B3lXn1Q_JBbDAVBA1WEuvVaEIhhB9vERQwS45uk2AHF2ZExNvHyr6LXa3XVuD2pdbuAGXpLMi9_xOaoRh6AXRKglU5rxvgNWe1wqHk8w3xRorC67Wn6HBEmHEpedJP2ycizGOtJ6XWt7gACftumt1vR_isUnZR_SMtTRpd-PUtBdys2c8LrlPddNCUsokVtmQ1e3pkHlAFNgLifqpOiurJr-AbAW27hmD_6NuGzZvQbEtG4YXw87g99wIcWeStWDbUNiQAhDQHzKhFFoe98_Jn7bg9hNH5lXp6Zx9VVIqOG5gJmFKPiv1U7fIemJXLApGiSmUN7BYN9pKFQvf9C1MavEH-AsgGqQN24x2yd52woKI90a9EoygVP17f4mIy0fdK8D0XHn2dNy_XaQLe1lDQ6pHJtVsp7GXlhnQIWNdJQKvR1KPNp2PVo6QS_8wrkmZeUhC_gWhw7jjlMXkb3F94yIDGCbAtdDD8PaxnYyaas-KRpMU6OMOuKOQc_qxlGzkoWjFTl_dLa5PTJj9duVA76XuWbMdi2bK7yfELk_2ZL-qXwQKnc2dbaY73eesnVRYGjLhgnzz0xUzyzY_5HoAi5Q4p_0W86yKcMlZrZ7eAVrsWCrBO7rdITHBJDLkcCwrV_kP22b_IkC-2aqzrlDRctpohDkYo7yq5LUByWU5cnrQZ5YNgtP5jLyQiI_sibDLKooH1ucCP47NGzROF-JiINfH5e8Vap0L29Z3Dxc-wsk9-YMr-jsY6DS0xIlDlw",
+  "expectedUtf8Catalog": {
+    "version": "Synthetic version",
+    "url_updater": "Synthetic url_updater",
+    "banner_id": "Synthetic banner_id",
+    "app_open_id": "Synthetic app_open_id",
+    "interst_id": "Synthetic interst_id",
+    "reward_id": "Synthetic reward_id",
+    "native_id": "Synthetic native_id",
+    "reward_interstitial_id": "Synthetic reward_interstitial_id",
+    "reward_fallback_id": "Synthetic reward_fallback_id",
+    "message": "UTF8 🙂 漢",
+    "Servers": [],
+    "Tweaks": [],
+    "reset": false,
+    "def_time": 0,
+    "add_time": 120,
+    "unknownRoot": {
+      "keep": [
+        null,
+        false,
+        7
+      ]
+    }
+  }
+}

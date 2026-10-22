@@ -10,7 +10,7 @@ const body=(content)=>new Request("https://api.spdecode.xyz/api/v1/server-vpn/te
 });
 test("original provider PNGs match the public digest and never contain secrets",()=>{
  const values=catalog();assert.equal(values.catalogVersion,CATALOG_VERSION);
- assert.equal(RECHECK_SECONDS,900);assert.equal(values.apps.length,18);
+ assert.equal(RECHECK_SECONDS,900);assert.equal(values.apps.length,19);
  const ids=new Set();
  for(const app of values.apps) {
    assert(!ids.has(app.id));ids.add(app.id);
@@ -31,7 +31,7 @@ test("version match returns only a cheap unchanged response",async()=>{
 test("new version returns catalog and invalid bodies fail closed",async()=>{
  const response=await list(body({knownVersion:0}));
  const data=await response.json();assert.equal(response.status,200);
- assert.equal(data.unchanged,false);assert.equal(data.apps.length,18);
+ assert.equal(data.unchanged,false);assert.equal(data.apps.length,19);
  for(const invalid of [{knownVersion:-1},{url:"http://127.0.0.1/"},{knownVersion:"1"}]) {
    assert.equal((await list(body(invalid))).status,400);
  }
@@ -116,4 +116,17 @@ test("Wakko original icon and verified remote source follow provider availabilit
  assert.equal(catalog({availability:{"http-wakko":false}}).apps.find(x=>x.id==="http-wakko").decodeEnabled,false);
  assert.equal(app.iconSha256,"77d7f0647746000fea1dee4ae0dff7189214e649944de226fc07d864971f520a");
  assert.equal(providerEnabled("http-wakko",{CLOUD_SERVER_VPN_ENABLED:"true"}),true);
+});
+
+test("TunelGuard keeps its original icon while the build-128 updater returns 404",async t=>{
+ const old=process.env.CLOUD_SERVER_VPN_ENABLED;process.env.CLOUD_SERVER_VPN_ENABLED="true";
+ t.after(()=>{if(old===undefined)delete process.env.CLOUD_SERVER_VPN_ENABLED;else process.env.CLOUD_SERVER_VPN_ENABLED=old;});
+ const app=catalog({availability:{"tunelguard-vpn":true}}).apps.find(x=>x.id==="tunelguard-vpn");
+ assert(app);assert.equal(app.name,"TunelGuard VPN");assert.equal(app.decodeEnabled,false);
+ assert.equal(app.iconSha256,"bdc4bca16e4c9fc0c446e90cf683eef1fe57f7a10de9c451e8c5ec30890f3f6a");
+ assert.equal(providerEnabled("tunelguard-vpn",{CLOUD_SERVER_VPN_ENABLED:"true"}),false);
+ assert(!providerIds().includes("tunelguard-vpn"));
+ await assert.rejects(()=>downloadVpnCatalog("tunelguard-vpn"),{code:"UNSUPPORTED_FORMAT"});
+ const response=await getIcon(body({id:"tunelguard-vpn"}));assert.equal(response.status,200);
+ assert.equal((await response.json()).sha256,app.iconSha256);
 });

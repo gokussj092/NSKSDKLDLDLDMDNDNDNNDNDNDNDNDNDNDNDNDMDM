@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 PROVIDERS = {
+    "tunelguard-vpn": "decoders.Python.apps.TunelGuard_VPN.server_catalog_decoder",
     "http-wakko": "decoders.Python.apps.HTTP_Wakko.server_catalog_decoder",
     "http-socketclay": "decoders.Python.apps.HTTP_SocketClay.server_catalog_decoder",
     "tunneltweak": "decoders.Python.apps.Tunneltweak.server_catalog_decoder",

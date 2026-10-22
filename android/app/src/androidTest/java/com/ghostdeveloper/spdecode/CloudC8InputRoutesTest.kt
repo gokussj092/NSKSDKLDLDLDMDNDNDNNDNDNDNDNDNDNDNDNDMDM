@@ -15,6 +15,7 @@ import org.junit.runner.RunWith
 class CloudC8InputRoutesTest {
     @Test fun cloudFilesKeepExactWorkerSuffixes() {
         val supported=mapOf(
+            "export.TGV" to Pair("tgv","TunelGuard VPN 12.8"),
             "test.mtp" to Pair("mtp","My Tunnel Proxy"),
             "royal.ROY" to Pair("roy","Royal Tunnel VPN 7.0"),
             "export.ACTUN" to Pair("actun","AC TUNNEL VPN 1.4"),

@@ -14,6 +14,7 @@ class CloudC8ClientRouting(unittest.TestCase):
         client = (ANDROID / "cloud/CloudFileFormats.kt").read_text("utf-8")
         backend = (WORKER / "engine.py").read_text("utf-8")
         routes = {
+            "tgv": ("TunelGuard VPN 12.8", "TunelGuard_VPN/file_decoder.py"),
             "mtp": ("My Tunnel Proxy", "My_Tunnel_Proxy/file_decoder.py"),
             "roy": ("Royal Tunnel VPN 7.0", "Royal_Tunnel_VPN/file_decoder.py"),
             "actun": ("AC TUNNEL VPN 1.4", "AC_TUNNEL_VPN/file_decoder.py"),
@@ -50,7 +51,7 @@ class CloudC8ClientRouting(unittest.TestCase):
 
     def test_device_regression_suite_covers_case_and_legacy(self):
         suite = (ROOT / "android/app/src/androidTest/java/com/ghostdeveloper/spdecode/CloudC8InputRoutesTest.kt").read_text("utf-8")
-        for symbol in ("test.mtp", "royal.ROY", "export.ACTUN", "profile.4ULITE",
+        for symbol in ("export.TGV", "test.mtp", "royal.ROY", "export.ACTUN", "profile.4ULITE",
                        "mytunnelproxy://cipher", "ACTUNNELVPN://cipher",
                        "historicalCloudLinksAreUnaffected"):
             self.assertIn(symbol, suite)

@@ -9,6 +9,7 @@ import java.util.Locale
  */
 internal object CloudFileFormats {
     private val names=mapOf(
+        "tgv" to "TunelGuard VPN 12.8",
         "rt" to "REESE TUNNEL",
         "gol" to "VPN PLUS PERÚ",
         "ua" to "Ultra Custom",

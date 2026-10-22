@@ -132,6 +132,7 @@ class PhaseVServerVpnIntegration(unittest.TestCase):
         originals["http-jireh"]=(
             ROOT/"decoders/Python/apps/HTTP_Jireh/HTTP_Jireh.png",
             WEB/"public/server-vpn-icons/http-jireh.png")
+        originals["tunelguard-vpn"]=(ROOT/"decoders/Python/apps/TunelGuard_VPN/TunelGuard_VPN.png",WEB/"public/server-vpn-icons/tunelguard-vpn.png")
         originals["http-wakko"]=(ROOT/"decoders/Python/apps/HTTP_Wakko/HTTP_Wakko.png",WEB/"public/server-vpn-icons/http-wakko.png")
         originals["http-socketclay"]=(ROOT/"decoders/Python/apps/HTTP_SocketClay/HTTP_SocketClay.png",WEB/"public/server-vpn-icons/http-socketclay.png")
         originals["tunneltweak"]=(ROOT/"decoders/Python/apps/Tunneltweak/Tunneltweak.png",WEB/"public/server-vpn-icons/tunneltweak.png")

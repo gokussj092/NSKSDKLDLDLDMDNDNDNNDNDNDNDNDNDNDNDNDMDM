@@ -58,9 +58,28 @@ entregas anteriores ni publicar anuncios automáticamente.
   extensión ni se modifica Android. Su catálogo remoto también está integrado
   según la sección anterior.
 
+- **TunelGuard VPN 12.8 (128) ✅ — archivos `.tgv`**: lector Python, worker
+  C8 y detección Cloud Android incorporados. AES-CBC nativo, Modified UTF-8 y
+  16 campos doble Base64 comprobados con JDK y ejecución ARM64; 32 campos del
+  servidor interior incluidos. Metadatos de contraseña/HWID/caducidad intactos.
+  No se proporcionó exportación real independiente ni se certifica writer.
+  Carpeta `decoders/Python/apps/TunelGuard_VPN/`, PR #96.
+- Entrega TunelGuard: **140 pruebas Python y 163 Node aprobadas localmente**;
+  petición autenticada al worker HTTP real con resultado completo verificada.
+  Icono original WebP y PNG sin pérdida, ficha añadida al catálogo mínimo **17**.
+  Reconocer `.tgv` requiere cliente actualizado; no se publica APK automáticamente.
+
 ## Integraciones pendientes
 
-No quedan pendientes de análisis de los catálogos de SocketClay y Wakko en este lote.
+- **TunelGuard VPN 12.8 — catálogo remoto pendiente**: el lector STGCM2.TG
+  abre el documento inicial entero (1 servidor / 1 ajuste, versión 0.1,
+  paridad Java), pero la URL original devuelve **HTTP 404**, confirmado por
+  Python HTTPS y las APIs de GitHub con autorización del usuario. La ficha
+  permanece **desactivada**; no se anuncia descarga remota operativa ni una
+  lista de usuarios inexistente. Habilitar únicamente tras validar una respuesta
+  oficial autenticada. No es un bloqueo de permisos.
+
+Los catálogos de SocketClay y Wakko mantienen su validación anterior.
 Persisten únicamente la comprobación del servicio desde la VPS tras un despliegue
 solicitado y los límites de certificación `.sks` documentados en `TESTING.md`.
 
