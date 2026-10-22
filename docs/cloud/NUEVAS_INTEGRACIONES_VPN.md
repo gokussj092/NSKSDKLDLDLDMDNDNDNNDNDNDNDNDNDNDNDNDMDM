@@ -18,30 +18,37 @@ incorporar más aplicaciones.
 
 ## Nuevos métodos de archivos, textos o enlaces añadidos
 
-Todavía no hay incorporaciones confirmadas en este lote.
-Si una aplicación solo admite archivos o enlaces, registrarla en esta
-sección; no anunciarla como un servidor VPN nuevo.
+- **HTTP SocketClay 3.4.0 ✅ — archivos `.sks`**: lector Python y ruta Cloud
+  compartida con Fenix/Jireh. GCM y DES comprobados con el importador del APK y
+  vectores Java sintéticos; exportación real independiente no proporcionada.
+  Carpeta: `decoders/Python/apps/HTTP_SocketClay/`, PR #96. No se añade otra
+  extensión ni se modifica Android. Esto no habilita su catálogo remoto.
 
 ## Integraciones pendientes
 
-### HTTP SocketClay — versión indicada 3.4.0
+### HTTP SocketClay — 3.4.0, versionCode 341
 
-- Adjunto recibido: `HTTP SocketClay_3.4.0.zip`.
-- Estado: **pendiente de análisis e integración; no habilitado**.
-- Bloqueo observado: el entorno de ejecución del chat está no disponible;
-  no fue posible abrir el ZIP ni ejecutar las herramientas de análisis.
-  El adjunto ya está aportado; no hace falta solicitarlo nuevamente.
-- Nombre, paquete y versión interna del APK: por comprobar.
-- Catálogo remoto, archivos exportados, extensiones y enlaces: por identificar.
-- Descifrado, comparación del JSON completo y pruebas reales: pendientes.
-- Scripts, icono original y documentación de la aplicación: pendientes.
-- No se ha añadido un motor, proveedor, ficha de catálogo ni anuncio de
-  HTTP SocketClay. Esta entrada no acredita compatibilidad.
+- Adjunto analizado: `HTTP SocketClay_3.4.0.zip`; paquete `com.socketclay.http`.
+- **Código integrado**: lectores separados de archivos y catálogo, manifiesto,
+  icono original, documentación y pruebas bajo `decoders/Python/apps/HTTP_SocketClay/`.
+- Catálogos actuales incluidos en el APK: JSON completo de 1 servidor y 2
+  entradas de usuarios, paridad Java/Python y 17 campos no vacíos verificados.
+  No confundir con disponibilidad o cantidad de servidores remotos actuales.
+- Método actual: WakkoDev/MD5/AES-CBC, envoltura ChaCha20-Poly1305 de campos,
+  clave derivada de versión y Java ROT19. KDF nativo contrastado para cuatro
+  versiones. Worker aislado con ID `http-socketclay`, sin red.
+- `.sks` GCM/DES reutiliza el motor existente; fuente e icono de 431×426
+  comprobados. No se identificó otro lector propio de enlaces.
+- **Pendiente de consulta remota y habilitación**: la revisión automática rechazó
+  acceder a las fuentes externas de servidores y usuarios por su posible
+  contenido de credenciales; requiere autorización explícita antes de reintentar.
+  No se intentó otro host ni herramienta. El bloqueo antiguo del entorno ya no
+  aplica: se abrió el ZIP y se completó el análisis local.
+- Tarjeta presente con `remote:null` y descifrado desactivado; versión mínima de
+  Server VPN **14**. No se registra aún un broker externo sin validar.
+- Ramas y cambios anteriores conservados. No se modifican novedades C11 ni
+  se afirma disponibilidad tras despliegue. Ver README/TESTING del lector.
 
-Al continuar, analizar el ZIP aportado y seguir la organización
-`decoders/Python/apps/<APP_NAME>/`. Crear lectores separados de catálogo y
-archivos únicamente para los mecanismos que existan realmente. Conservar
-los métodos anteriores y todos los campos de las configuraciones.
 
 ## Cómo completar el registro
 

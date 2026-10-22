@@ -35,3 +35,5 @@ productores se mantienen en `tests/golden`, y las pruebas en `tests`.
 - [HTTP Jireh 2.0](HTTP_Jireh/README.md): archivos `.sks` GCM/DES con motor compartido, catálogo nibble/AES-CBC/ROT22 y usuarios separados; icono original.
 
 - [Tunneltweak 6.2.1](Tunneltweak/README.md): `.tut` CBC/TTPBE1 con contraseña/XOR, catálogo público GCM y transporte Cloud UUID; icono original.
+
+- [HTTP SocketClay 3.4.0](HTTP_SocketClay/README.md): catálogo WakkoDev/ChaCha20/AES con clave por versión y `.sks` GCM/DES compartido. Catálogo remoto pendiente; tarjeta desactivada.

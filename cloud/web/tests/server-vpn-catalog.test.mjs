@@ -10,7 +10,7 @@ const body=(content)=>new Request("https://api.spdecode.xyz/api/v1/server-vpn/te
 });
 test("original provider PNGs match the public digest and never contain secrets",()=>{
  const values=catalog();assert.equal(values.catalogVersion,CATALOG_VERSION);
- assert.equal(RECHECK_SECONDS,900);assert.equal(values.apps.length,16);
+ assert.equal(RECHECK_SECONDS,900);assert.equal(values.apps.length,17);
  const ids=new Set();
  for(const app of values.apps) {
    assert(!ids.has(app.id));ids.add(app.id);
@@ -31,7 +31,7 @@ test("version match returns only a cheap unchanged response",async()=>{
 test("new version returns catalog and invalid bodies fail closed",async()=>{
  const response=await list(body({knownVersion:0}));
  const data=await response.json();assert.equal(response.status,200);
- assert.equal(data.unchanged,false);assert.equal(data.apps.length,16);
+ assert.equal(data.unchanged,false);assert.equal(data.apps.length,17);
  for(const invalid of [{knownVersion:-1},{url:"http://127.0.0.1/"},{knownVersion:"1"}]) {
    assert.equal((await list(body(invalid))).status,400);
  }
@@ -93,4 +93,15 @@ test("Royal retains its large original PNG and stays visible with decoding disab
  const value=await response.json();const bytes=Buffer.from(value.contentBase64,"base64");
  assert(bytes.length>256*1024);assert(value.contentBase64.length>350000);
  assert.equal(createHash("sha256").update(bytes).digest("hex"),"d5b0acadb3759da52c90cd45a671e264ed98b58e5c838d496e6999b5e1198309");
+});
+
+
+test("SocketClay original icon is visible while its external source awaits validation",t=>{
+ const old=process.env.CLOUD_SERVER_VPN_ENABLED;
+ process.env.CLOUD_SERVER_VPN_ENABLED="true";
+ t.after(()=>{if(old===undefined)delete process.env.CLOUD_SERVER_VPN_ENABLED;else process.env.CLOUD_SERVER_VPN_ENABLED=old;});
+ const app=catalog({availability:{"http-socketclay":true}}).apps.find(x=>x.id==="http-socketclay");
+ assert(app);assert.equal(app.name,"HTTP SocketClay");assert.equal(app.decodeEnabled,false);
+ assert.equal(app.iconSha256,"8a09f5b74e445f859532809204c3a543b05b6fa89be8844b655191e17690f101");
+ assert.equal(providerEnabled("http-socketclay",{CLOUD_SERVER_VPN_ENABLED:"true"}),false);
 });

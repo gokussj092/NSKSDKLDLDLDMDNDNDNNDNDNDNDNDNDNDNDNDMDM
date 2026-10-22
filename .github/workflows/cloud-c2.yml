@@ -9,6 +9,9 @@ on:
       - "tests/test_cloud_c2_golden.py"
       - "decoders/Python/apps/HTTP_Custom/**"
       - "tests/test_http_custom_899.py"
+      - "decoders/Python/apps/HTTP_SocketClay/**"
+      - "tests/test_http_socketclay.py"
+      - "tests/golden/socketclay*"
       - "tests/golden/http_custom_899.py"
       - ".github/workflows/cloud-c2.yml"
   push:
@@ -49,6 +52,8 @@ jobs:
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_cloud_c2_hc -v
       - name: Verify HCX4 build 899 native key vectors and authenticated file layers
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_http_custom_899 -v
+      - name: Verify SocketClay native-derived catalog vectors and shared SKS compatibility
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_http_socketclay tests.test_http_fenixvpn tests.test_http_jireh -v
       - name: C2 verify NUR server catalog remains separate from solid profiles
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_cloud_c2_nur_catalog -v
       - name: Hat Tunnel complete JSON, real fixture and optional-field regression

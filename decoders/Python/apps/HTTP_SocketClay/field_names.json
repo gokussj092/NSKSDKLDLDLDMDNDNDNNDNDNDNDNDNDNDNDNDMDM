@@ -1,0 +1,40 @@
+{
+  "servers": {
+    "Nameserver": "l7MIgkbuXMmGaaQGd54F2w==",
+    "Payload": "PFFSWRJKZmOcNLTZxFwgjQ==",
+    "ProxyIp": "SbDP19AbQur0YtkkyRlVMA==",
+    "ProxyPort": "vXfVafVdyaCRTDj6uBT6lg==",
+    "SNI": "tmSbWiCK1hvytJ9f3gflkQ==",
+    "ServerIP": "U7V8DoP4cYkXJjCnpqW6nQ==",
+    "ServerPass": "Fo3TT4oONvv69IQIMg1aLg==",
+    "ServerPort": "p9ZPlMv9V7gDszRoUaNaJw==",
+    "ServerUser": "mtw364P3ZslP2CZYuHTCHQ==",
+    "Slowchave": "UxdyIntdYykCdV76crKnwg==",
+    "Slowdns": "QSln2zKCBJvqH9qV4M0ifg==",
+    "V2rayAddress": "oAqgFKE3WywLRvSvKffLOA==",
+    "V2rayHost": "BWTPMwR0iRu1N9twHCpbAg==",
+    "V2rayPort": "b6stZNVaFUjLCw88dn03Ng==",
+    "sFlag": "ACqWMY4zuZWzSEs8cZMXIw==",
+    "sInfo": "66P9ZUEM1ju4WGhv856BSg==",
+    "sName": "p0PgL3l0d89mnssz7ImPJA==",
+    "udpObfs": "iW1aO5DgThVAeo23xTsXSw==",
+    "udpauth": "b3MPypEFR83rzFKUa4UbCw==",
+    "udpbuffer": "asmRO4zXsRjhDYX42dbNuw==",
+    "udpdown": "MkRXl4D9vpREVCJ0w4qrgg==",
+    "udpport": "2kDKELRmSE143VdcX3FPzw==",
+    "udpserver": "ITkWvEHp29BmMaLMEGUFcw==",
+    "udpup": "B5jcTSGuJUFbTtH5O1IaBg==",
+    "v2rayJson": "W4CbS1nMWo6Y2noeUFHmXQ==",
+    "v2rayid": "EtNSBhechjWxm2t50NyB9Q==",
+    "v2raypath": "aH2nzD4eDLxPSxIAlVivdg=="
+  },
+  "users": {
+    "Username": "Username",
+    "Password": "Password",
+    "Obfs": "Obfs",
+    "Auth": "Auth",
+    "ID": "ID",
+    "Path": "Path",
+    "Name": "Name"
+  }
+}

@@ -3,7 +3,7 @@ import {readFileSync} from "node:fs";
 import {join} from "node:path";
 import {createHash} from "node:crypto";
 
-export const CATALOG_VERSION = 13; // Increment whenever the public roster or metadata changes.
+export const CATALOG_VERSION = 14; // Increment whenever the public roster or metadata changes.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -21,6 +21,8 @@ export function activeCatalogVersion(env=process.env) {
 }
 
 const ITEMS = Object.freeze([
+  // Offline codec verified; external source and redirects still await validation.
+  {id:"http-socketclay", name:"HTTP SocketClay", icon:"http-socketclay.png", remote:null},
   {id:"tunneltweak", name:"Tunneltweak", icon:"tunneltweak.png", remote:"tunneltweak"},
   {id:"http-jireh", name:"HTTP Jireh", icon:"http-jireh.png", remote:"http-jireh"},
   {id:"http-fenixvpn", name:"HTTP FenixVPN", icon:"http-fenixvpn.png", remote:"http-fenixvpn"},

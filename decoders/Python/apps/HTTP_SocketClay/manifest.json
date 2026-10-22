@@ -1,0 +1,67 @@
+{
+  "id": "http-socketclay",
+  "name": "HTTP SocketClay",
+  "package": "com.socketclay.http",
+  "compatibleVersions": [
+    "3.4.0"
+  ],
+  "versionCode": 341,
+  "engine": "python-wakkodev-chacha20poly1305-versioned-aes-cbc-rot19-and-shared-sks",
+  "engineVersion": 1,
+  "files": {
+    "entrypoint": "file_decoder.py",
+    "extensions": [
+      "sks"
+    ],
+    "formats": [
+      "AES-128-GCM/PBKDF2-HMAC-SHA256/1000 salt32 nonce12 tag16",
+      "legacy raw DES-ECB/PKCS5"
+    ],
+    "sharedEngine": "../HTTP_FenixVPN/codec.py",
+    "exporterCertified": false,
+    "validation": "APK importer/exporter paths and independent synthetic Java GCM/DES vectors; no real exported .sks supplied",
+    "textPrefixes": [],
+    "legacyCompatibility": "Existing historical SocksIP JSON d/v .sks selection unchanged"
+  },
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "http-socketclay",
+    "format": "WakkoDev/MD5/AES-256-CBC; URL-Base64 nonce12/ChaCha20-Poly1305/tag16 around URL-Base64 IV16/AES-256-CBC fields; native version-derived 16 ASCII chars padded to 32 bytes; Java ROT19",
+    "validatedOn": "2026-10-21",
+    "embeddedServersObserved": 1,
+    "embeddedUserEntriesObserved": 2,
+    "embeddedNonemptyFieldsCompared": 17,
+    "serverFieldNames": 27,
+    "userFieldNames": 7,
+    "validation": "Entire embedded server/user documents match independent JDK oracle; native ARM64 KDF/SHA executed for four versions with modeled C++ strings and Java decoder callback; 20 synthetic field vectors and isolated worker",
+    "remoteValidated": false,
+    "remoteValidationBlocker": "Automatic approval review rejected external server and user catalog retrieval because the sources may contain credentials; explicit user authorization required before retrying",
+    "cloudSource": "Offline worker registered; public remote:null; external broker is not registered until actual source and redirects are verified",
+    "publicCatalogVersion": 14,
+    "deploymentEnabledByDefault": false
+  },
+  "icon": {
+    "file": "HTTP_SocketClay.png",
+    "source": "split_config.xhdpi.apk:res/drawable-xhdpi-v4/ic_launcher.png",
+    "resourceId": "0x7f080142",
+    "width": 431,
+    "height": 426,
+    "bytes": 71943,
+    "sha256": "8a09f5b74e445f859532809204c3a543b05b6fa89be8844b655191e17690f101",
+    "policy": "exact original PNG, no resizing or substitute artwork"
+  },
+  "dependencies": {
+    "python": ">=3.10",
+    "pycryptodome": "3.23.0",
+    "supportFiles": [
+      "codec.py",
+      "field_names.json",
+      "../HTTP_FenixVPN/codec.py",
+      "../HTTP_FenixVPN/field_names.json"
+    ]
+  },
+  "sourceApkSha256": "542430bbe7313d0d1992611df0b3bbec68c83ad412bb9771f0422aece1a082e6",
+  "branch": "feat/austroplus-vpn-13-0-1-decoders",
+  "pullRequest": 96,
+  "analyzedBaseCommit": "262d48ae51cdb60c07b6abbbaa77b7bfdff6c5d1"
+}

@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 PROVIDERS = {
+    "http-socketclay": "decoders.Python.apps.HTTP_SocketClay.server_catalog_decoder",
     "tunneltweak": "decoders.Python.apps.Tunneltweak.server_catalog_decoder",
     "http-jireh": "decoders.Python.apps.HTTP_Jireh.server_catalog_decoder",
     "http-fenixvpn": "decoders.Python.apps.HTTP_FenixVPN.server_catalog_decoder",

@@ -1,7 +1,7 @@
 import {test} from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
-import {activeCatalogVersion} from "../lib/server-vpn-catalog.mjs";
+import {activeCatalogVersion,CATALOG_VERSION} from "../lib/server-vpn-catalog.mjs";
 import {publishCatalogUpdate,pushSettings} from "../lib/c10-catalog-push.mjs";
 import {catalogWatchRequest,MAX_OPEN_WATCHES,WATCH_SECONDS} from "../lib/c10-catalog-watch.mjs";
 import {POST as httpWatch} from "../app/api/v1/server-vpn/watch/route.js";
@@ -24,7 +24,7 @@ test("own VPS version status has no external push configuration or tokens",async
  const store=new Redis();
  assert.deepEqual(pushSettings(),{enabled:true,transport:"own-vps-https-watch"});
  const current=activeCatalogVersion(env);
- assert.equal(current,13);
+ assert.equal(current,CATALOG_VERSION);
  assert.deepEqual(await publishCatalogUpdate(store,{env}),{status:"registered",version:current});
  assert.deepEqual(await publishCatalogUpdate(store,{env}),{status:"unchanged",version:current});
  const updatedEnv={...env,CLOUD_SERVER_VPN_CATALOG_VERSION:String(current+1)};
