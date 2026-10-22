@@ -84,6 +84,9 @@ class LocaleSwitchInstrumentedTest {
             ).performClick()
             ui.onNodeWithTag("settings_language_screen").assertExists()
             ui.onNodeWithTag("language_option_${target}").performClick()
+            ui.waitForIdle()
+            assertEquals("Tapping a language must save the selected preference",
+                target, preferences.getString("language", null))
 
             // A preference write is not proof that an Activity was recreated.
             ui.waitUntil(20_000) { recreatedActivity.get() != null }

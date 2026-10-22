@@ -278,7 +278,11 @@ class MainActivity : ComponentActivity() {
         if(!SupportedLanguages.supports(tag)||tag==selectedLanguage)return
         settings.edit().putString("language",tag).apply()
         selectedLanguage=tag
-        recreate()
+        // Finish the Compose click before tearing down its host Activity.
+        // The ViewModel survives this configuration-style recreation.
+        window.decorView.post {
+            if(!isFinishing && !isDestroyed) recreate()
+        }
     }
 
     private fun openExternal(url:String){
