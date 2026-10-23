@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="file_extension_unsupported_contact">このファイル拡張子は未対応です。対応をリクエストするには開発者に連絡してください。</string>
+    <string name="text_format_unsupported_contact">このテキスト形式またはプロトコルは未対応です。開発者に対応をリクエストしてください。</string>
+    <string name="formats_remote_catalog_note">対応する拡張子は SP-DECODE Cloud から安全に同期されます。アプリを更新せずに新しい形式を追加できます。</string>
+    <string name="formats_cloud_ready_short">クラウド</string>
+</resources>
