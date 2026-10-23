@@ -113,7 +113,7 @@ def encrypt_sources():
     return data
 
 def generate():
-    catalog=json.loads((ROOT/"android/app/src/main/assets/decoder_catalog.json").read_text("utf-8"))
+    catalog=__import__("scripts.android_a24_catalog",fromlist=["generate"]).generate()
     entries=[x for x in catalog["entries"] if x["migrationPhase"]=="E"]
     if len(entries)!=27:raise ValueError(f"Expected 27 E formats, found {len(entries)}")
     src=encrypt_sources()
