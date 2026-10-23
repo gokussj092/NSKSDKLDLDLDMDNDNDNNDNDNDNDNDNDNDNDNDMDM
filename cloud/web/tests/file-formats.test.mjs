@@ -54,6 +54,9 @@ test("catalog response is backwards-compatible and uses the existing version con
   const result=catalog();
   assert.equal(result.catalogVersion,CATALOG_VERSION);
   assert.equal(result.formatsSchemaVersion,1);
+  assert.deepEqual(result.formatDetection,{
+    rule:"longest-filename-suffix",caseInsensitive:true,separator:".",
+  });
   assert.equal(result.formatCount,publicFormats().length);
   assert.equal(result.formats.length,publicFormats().length);
   assert.equal(result.apps.length,38);
