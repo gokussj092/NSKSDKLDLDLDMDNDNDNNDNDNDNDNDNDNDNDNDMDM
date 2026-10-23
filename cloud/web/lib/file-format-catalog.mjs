@@ -17,7 +17,7 @@ export function validatePublicFormats(parsed){
     if(!entry || Object.keys(entry).length!==allowedKeys.length ||
        Object.keys(entry).some(k=>!allowedKeys.includes(k)) ||
        typeof entry.suffix!=='string' ||
-       !/^[\\p{L}\\p{N}_.-]{1,64}$/u.test(entry.suffix) ||
+       !/^[\p{L}\p{N}_.-]{1,64}$/u.test(entry.suffix) ||
        entry.suffix!==entry.suffix.toLowerCase() ||
        seen.has(entry.suffix) ||
        typeof entry.name!=='string' || !entry.name.trim() || entry.name.length>120 ||
