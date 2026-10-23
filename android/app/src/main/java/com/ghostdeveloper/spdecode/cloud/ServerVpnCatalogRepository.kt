@@ -78,7 +78,7 @@ internal class ServerVpnCatalogRepository(
     }
 
     /** A strict, read-only catalogue: never accept executable routes or arbitrary URLs. */
-    private fun validateFormats(record:JSONObject?):List<AndroidDecoderCatalog.Format> {
+    internal fun validateFormats(record:JSONObject?):List<AndroidDecoderCatalog.Format> {
         require(record!=null && record.optInt("formatsSchemaVersion",-1)==1)
         val detection=record.getJSONObject("formatDetection")
         require(detection.getString("rule")=="longest-filename-suffix" &&
