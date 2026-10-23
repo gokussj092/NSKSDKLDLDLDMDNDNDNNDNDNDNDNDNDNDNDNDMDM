@@ -30,4 +30,8 @@
     <string name="cloud_failure_notice_title">Could not complete the request</string>
     <string name="cloud_password_title">Configuration password required</string>
     <string name="cloud_password_description">%1$s is password-protected. Enter the export password to continue. It will not be saved.</string>
+    <string name="cloud_failure_password_incorrect">Incorrect password, or the protected file was modified. Check the password and try again.</string>
+    <string name="cloud_failure_private_key">This NPVS file requires the recipient device\'s private key; a public key or password cannot replace it.</string>
+    <string name="cloud_failure_recipient">The supplied public key does not match this file\'s recipient.</string>
+    <string name="cloud_failure_npvs_unsupported">This NPVS protection variant is not yet supported.</string>
 </resources>

@@ -30,4 +30,8 @@
     <string name="cloud_failure_notice_title">درخواست انجام نشد</string>
     <string name="cloud_password_title">رمز عبور پیکربندی لازم است</string>
     <string name="cloud_password_description">%1$s با رمز عبور محافظت می‌شود. رمز عبور خروجی را وارد کنید. ذخیره نخواهد شد.</string>
+    <string name="cloud_failure_password_incorrect">گذرواژه نادرست است یا فایل محافظت‌شده تغییر کرده است. گذرواژه را بررسی و دوباره امتحان کنید.</string>
+    <string name="cloud_failure_private_key">این فایل NPVS به کلید خصوصی دستگاه گیرنده نیاز دارد؛ کلید عمومی یا گذرواژه جای آن را نمی‌گیرد.</string>
+    <string name="cloud_failure_recipient">کلید عمومی واردشده با گیرنده این فایل مطابقت ندارد.</string>
+    <string name="cloud_failure_npvs_unsupported">این نوع محافظت NPVS هنوز پشتیبانی نمی‌شود.</string>
 </resources>
