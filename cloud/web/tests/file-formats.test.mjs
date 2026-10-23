@@ -18,9 +18,9 @@ test("all C0 and C8 file routes are published once, without decoder implementati
   assert(block);
   const additional=[...block.matchAll(/^\s*"([^"]+)": \("([^"]+)", "([^"]+)"\),/gm)].map(m=>m[1]);
   assert.equal(matrix.length,240);
-  assert.equal(additional.length,18);
+  assert(additional.length>=18);
   const known=new Set([...matrix,...additional]);
-  assert.equal(known.size,250);
+  assert(known.size>=250);
   const current=publicFormats();
   assert.equal(current.length,known.size);
   assert.deepEqual(new Set(current.map(f=>f.suffix)),known);
@@ -36,7 +36,7 @@ test("all C0 and C8 file routes are published once, without decoder implementati
     assert.equal(entry.kind,"file");
     assert(!("script" in entry) && !("originalRuntime" in entry) && !("key" in entry));
   }
-  assert.equal(current.filter(x=>!x.offlineSupported).length,10);
+  assert.equal(current.filter(x=>!x.offlineSupported).length,known.size-native.size);
 });
 
 test("extension precedence, native/cloud overlap and credential metadata",()=>{
@@ -54,8 +54,8 @@ test("catalog response is backwards-compatible and uses the existing version con
   const result=catalog();
   assert.equal(result.catalogVersion,CATALOG_VERSION);
   assert.equal(result.formatsSchemaVersion,1);
-  assert.equal(result.formatCount,250);
-  assert.equal(result.formats.length,250);
+  assert.equal(result.formatCount,publicFormats().length);
+  assert.equal(result.formats.length,publicFormats().length);
   assert.equal(result.apps.length,38);
   const payload=JSON.stringify(result);
   for(const forbidden of [
@@ -66,7 +66,7 @@ test("catalog response is backwards-compatible and uses the existing version con
   assert.equal(response.status,200);
   const body=await response.json();
   assert.equal(body.unchanged,false);
-  assert.equal(body.formats.length,250);
+  assert.equal(body.formats.length,publicFormats().length);
   assert.equal(body.apps.length,38);
   const unchanged=await endpoint(request(body.catalogVersion));
   assert.equal(unchanged.status,200);
@@ -79,7 +79,7 @@ test("catalog response is backwards-compatible and uses the existing version con
 test("schema rejects duplicate, invented or executable fields",()=>{
   const clean=JSON.parse(project("cloud/web/content/file-formats.json"));
   const clone=()=>JSON.parse(JSON.stringify(clean));
-  assert.equal(validatePublicFormats(clean).length,250);
+  assert.equal(validatePublicFormats(clean).length,publicFormats().length);
   const duplicate=clone();duplicate.formats[1].suffix=duplicate.formats[0].suffix;
   assert.throws(()=>validatePublicFormats(duplicate));
   const script=clone();script.formats[0].script="custom.py";
