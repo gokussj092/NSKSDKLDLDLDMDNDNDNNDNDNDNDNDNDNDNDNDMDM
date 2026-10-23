@@ -72,24 +72,24 @@ object AndroidOfflineDecoderRouter {
         if (format.migrationPhase == "D") {
             return RenzPort.decode(context, format.suffix, input)
         }
+        // Family dispatch is based on audited native suffixes, never Python paths
+        // shipped in assets or received from a remote catalog.
         if (format.migrationPhase == "E") {
-            return when (format.script) {
-                "decoders/Python/xor_family.py" -> { SpecialE3Port.decode(format.suffix,input) }
-                "decoders/Python/sentinel.py","decoders/Python/itv.py",
-                "decoders/Python/eut.py","decoders/Python/v2box_export.py",
-                "decoders/Python/slipnet.py","decoders/Python/juanscript.py" ->
+            return when (format.suffix) {
+                "apnalite","apnatnl","omanova","4ulite","bdnet",
+                "hsome","ursa","fnf","hxt" -> SpecialE3Port.decode(format.suffix,input)
+                "st","itv","eut","v2box","slipnet","juanscript","juan","mobi" ->
                     SpecialE1Port.decode(context,format.suffix,input,userPassword)
                 else -> SpecialE2Port.decode(context,format.suffix,input)
             }
         }
         if (format.migrationPhase == "F") {
-            return when (format.script) {
-                "decoders/Python/izph.py" -> { IzphNativePort.decode(input) }
-                "decoders/Python/flex.py", "decoders/Python/ltm.py",
-                "decoders/Python/vn7.py" -> { IndependentF1Port.decode(context,format.suffix,input) }
-                "decoders/Python/crev.py", "decoders/Python/zoba.py",
-                "decoders/Python/n4.py", "decoders/Python/dev.py",
-                "decoders/Python/ktr.py" -> { IndependentF2Port.decode(context,format.suffix,input) }
+            return when (format.suffix) {
+                "izph" -> IzphNativePort.decode(input)
+                "flexnet","flex","ltm","lt","vn7" ->
+                    IndependentF1Port.decode(context,format.suffix,input)
+                "cerv","crev","cer","zoba","n4","dev","ktr" ->
+                    IndependentF2Port.decode(context,format.suffix,input)
                 else -> null
             }
         }
