@@ -85,7 +85,11 @@ def validate_reference_mapping(doc: dict) -> None:
     from spdecode.registry import DECODER_REGISTRY
 
     expected = {row["suffix"] for row in doc["entries"]} | {"solid"}
-    if set(DECODER_REGISTRY) != expected:
+    # New 1FTunnel is a C8 overlay, never a mutation of the frozen C0 set.
+    extra = DECODER_REGISTRY.get("1ftnl")
+    if (set(DECODER_REGISTRY) - {"1ftnl"} != expected or
+        (extra is not None and (extra.script != "decoders/Python/apps/OneFTunnel/file_decoder.py"
+                                or extra.runtime != "python"))):
         fail("Android and bot registry suffix sets differ")
     for row in doc["entries"]:
         suffix = row["suffix"]

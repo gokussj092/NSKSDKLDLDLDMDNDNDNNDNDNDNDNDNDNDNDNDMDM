@@ -94,7 +94,7 @@ def generate() -> dict:
         raise ValueError("NUR .solid registry route changed unexpectedly")
     baseline_registry = {
         suffix: spec for suffix, spec in DECODER_REGISTRY.items()
-        if suffix != "solid"
+        if suffix not in ("solid", "1ftnl")
     }
     legacy = json.loads((ROOT / "decoders.json").read_text("utf-8"))["decoders"]
     if len(legacy) != 61 or len(baseline_registry) != 239:

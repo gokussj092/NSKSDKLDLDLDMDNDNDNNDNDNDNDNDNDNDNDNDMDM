@@ -411,7 +411,10 @@ def decode_text(text: str, *, timeout: int = TIMEOUT_SECONDS, credentials: dict 
     if credentials is not None:
         if (not isinstance(credentials, dict) or set(credentials) != {"password"} or
                 not (text.strip().lower().startswith("ua://") or text.strip().startswith(
-                    ("1FTnl.", "1FT1.", "1ftunnel://1FTnl/", "1ftunnel://1FT1/"))) or
+                    ("1FTnl.", "1FT1.", "1ftunnel://1FTnl/", "1ftunnel://1FT1/")) or
+                    any(text.strip().lower().startswith(prefix) and
+                        len(text.strip()) > len(prefix) for prefix in
+                        ("npvt://", "npvt-ssh://", "npvt-vless://", "npvt-vmess://", "npv://"))) or
                 not isinstance(credentials["password"], str) or
                 not 0 < len(credentials["password"].encode("utf-8")) <= 4096):
             raise DecodeFailure("INVALID_CREDENTIALS")
@@ -454,7 +457,9 @@ def decode_text(text: str, *, timeout: int = TIMEOUT_SECONDS, credentials: dict 
                 code = json.loads(raw.decode("utf-8")).get("workerError")
             except (UnicodeError, ValueError, AttributeError):
                 code = None
-            if code in ("PASSWORD_REQUIRED", "AUTH_FAILED"):
+            if code in ("PASSWORD_REQUIRED", "AUTH_FAILED", "PRIVATE_KEY_REQUIRED",
+                        "RECIPIENT_MISMATCH", "INVALID_CREDENTIALS",
+                        "NPVS_PROTECTION_UNSUPPORTED"):
                 raise DecodeFailure(code)
         if returncode != 0 or not raw.strip():
             raise DecodeFailure("DECODE_FAILED")

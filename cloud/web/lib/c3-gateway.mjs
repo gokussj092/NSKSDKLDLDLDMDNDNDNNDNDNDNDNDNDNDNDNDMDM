@@ -111,7 +111,9 @@ function validatePayload(kind,payload) {
       const pass=payload.credentials?.password;
       const value=payload.text.trim();
       const passwordFormat=value.toLowerCase().startsWith("ua://") ||
-        ["1FTnl.","1FT1.","1ftunnel://1FTnl/","1ftunnel://1FT1/"].some(prefix=>value.startsWith(prefix));
+        ["1FTnl.","1FT1.","1ftunnel://1FTnl/","1ftunnel://1FT1/"].some(prefix=>value.startsWith(prefix)) ||
+        ["npvt://","npvt-ssh://","npvt-vless://","npvt-vmess://","npv://"].some(prefix=>
+          value.toLowerCase().startsWith(prefix) && value.length>prefix.length);
       if(!passwordFormat ||
          !isRecord(payload.credentials) || Object.keys(payload.credentials).length!==1 ||
          typeof pass!=="string" || !pass.length || Buffer.byteLength(pass,"utf8")>4096)

@@ -12,6 +12,12 @@ import sys
 from pathlib import Path
 
 MAX_TEXT_CHARS = 250_000
+NPV_TEXT_PREFIXES = ("npvt://", "npvt-ssh://", "npvt-vless://", "npvt-vmess://", "npv://")
+
+def is_npv_text(value: str) -> bool:
+    return any(value.lower().startswith(prefix) and len(value) > len(prefix)
+               for prefix in NPV_TEXT_PREFIXES)
+
 # Explicit modules: a protocol prefix never selects a shell command or path.
 HANDLERS = (
     ("decoders.Python.text_structured_protocols", "decode_text"),
@@ -27,6 +33,11 @@ def dispatch(text: str, *, password: str | None = None) -> str | None:
         return None
     value = text.strip()
     lowered = value.lower()
+    # Exact modern NPV handler owns five schemes. Preserve historical
+    # dns:// and standalone npvs1: without retrying failed NPVS auth.
+    if is_npv_text(value):
+        from decoders.Python.apps.NPV_Tunnel.text_decoder import decode_text
+        return decode_text(value, password=password)
     if value.startswith(("1FTnl.", "1FT1.", "1ftunnel://1FTnl/", "1ftunnel://1FT1/")):
         from decoders.Python.apps.OneFTunnel.file_decoder import run
         return run(value.encode("utf-8"), password=password)
@@ -98,7 +109,8 @@ def main() -> int:
             return 2
         text = raw.decode("utf-8")
         onef = text.strip().startswith(("1FTnl.", "1FT1.", "1ftunnel://1FTnl/", "1ftunnel://1FT1/"))
-        credential_limit = 32768 if onef else 8192
+        npv = is_npv_text(text.strip())
+        credential_limit = 32768 if (onef or npv) else 8192
         incoming = sys.stdin.buffer.read(credential_limit + 1)
         if len(incoming) > credential_limit:
             return 2
@@ -110,11 +122,13 @@ def main() -> int:
                 not 0 < len(password.encode("utf-8")) <= 4096):
             return 2
         if password is not None and not (text.strip().lower().startswith("ua://") or
-                text.strip().startswith(("1FTnl.", "1FT1.", "1ftunnel://1FTnl/", "1ftunnel://1FT1/"))):
+                onef or npv):
             return 2
         output = dispatch(text, password=password)
     except (OSError, UnicodeError, ValueError, ImportError) as error:
-        if getattr(error, "code", None) in ("PASSWORD_REQUIRED", "AUTH_FAILED"):
+        if getattr(error, "code", None) in ("PASSWORD_REQUIRED", "AUTH_FAILED",
+                "PRIVATE_KEY_REQUIRED", "RECIPIENT_MISMATCH",
+                "INVALID_CREDENTIALS", "NPVS_PROTECTION_UNSUPPORTED"):
             sys.stdout.write(json.dumps({"workerError": error.code}))
             return 3
         return 1
