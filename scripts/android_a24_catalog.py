@@ -206,11 +206,24 @@ def generate() -> dict:
     }
 
 
+def public_catalog(full: dict) -> dict:
+    """APK metadata only: never embed runtime paths or Python implementation details."""
+    hidden = {"inventorySource", "legacyInventorySource"}
+    public = {key: value for key, value in full.items() if key not in hidden}
+    public["schemaVersion"] = 4
+    public["entries"] = [
+        {key: row[key] for key in
+            ("suffix", "name", "androidPortStatus", "androidVerified", "migrationPhase")}
+        for row in full["entries"]
+    ]
+    return public
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--write", action="store_true")
     args = parser.parse_args()
-    expected = json.dumps(generate(), ensure_ascii=False, indent=2) + "\n"
+    expected = json.dumps(public_catalog(generate()), ensure_ascii=False, indent=2) + "\n"
     if args.write:
         CATALOG.parent.mkdir(parents=True, exist_ok=True)
         CATALOG.write_text(expected, encoding="utf-8")
