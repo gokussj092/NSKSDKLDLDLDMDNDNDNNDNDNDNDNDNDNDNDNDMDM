@@ -29,6 +29,7 @@ import com.ghostdeveloper.spdecode.cloud.CloudWhatsNewRepository
 import com.ghostdeveloper.spdecode.cloud.CloudDecodeClient
 import com.ghostdeveloper.spdecode.cloud.CloudDiagnosticsPrivacy
 import com.ghostdeveloper.spdecode.cloud.CloudCredentialPolicy
+import com.ghostdeveloper.spdecode.cloud.NpvsPasswordProbe
 import com.ghostdeveloper.spdecode.cloud.CloudFileFormats
 import com.ghostdeveloper.spdecode.cloud.CloudTextFormats
 import com.ghostdeveloper.spdecode.cloud.CloudCatalogUpdates
@@ -683,6 +684,26 @@ class MainActivity : ComponentActivity() {
             var preview:ByteArray?=null
             try {
                 val name=withContext(Dispatchers.IO){displayName(uri)}
+                // A signed NPVS v5 passphrase envelope can be identified from
+                // bounded local framing. Prompt without waiting for a server
+                // that might still be running an older NPVS worker. Only the
+                // Cloud worker validates the signature and decrypts the file.
+                if(BuildConfig.SPDECODE_CLOUD_ENABLED &&
+                    ImportFilenameNormalizer.forDetection(name)
+                        .endsWith(".npvs",ignoreCase=true)){
+                    preview=withContext(Dispatchers.IO){
+                        readBounded(uri,CloudDecodeClient.MAX_INPUT)
+                    }
+                    if(NpvsPasswordProbe.requiresPassword(preview) &&
+                        generation==credentialPrepareGeneration){
+                        pendingCloudPasswordFile=PendingCloudPasswordFile(
+                            uri,name,"npvs",preview)
+                        preview=null // password dialog owns the same input bytes
+                        return@launch
+                    }
+                    preview.fill(0)
+                    preview=null
+                }
                 if(ImportFilenameNormalizer.forDetection(name).endsWith(".hc",ignoreCase=true)){
                     preview=withContext(Dispatchers.IO){readBounded(uri,
                         if(BuildConfig.SPDECODE_CLOUD_ENABLED) CloudDecodeClient.MAX_INPUT else MAX_BYTES)}
@@ -1203,8 +1224,11 @@ class MainActivity : ComponentActivity() {
                         }
                     }catch(error:CloudDecodeClient.Failure){
                         if(BuildConfig.SPDECODE_CLOUD_ENABLED && cloudPassword==null &&
-                            error.code=="PASSWORD_REQUIRED" &&
                             CloudCredentialPolicy.fileNeedsPasswordDialog(supported.suffix) &&
+                            (error.code=="PASSWORD_REQUIRED" ||
+                                (supported.suffix=="npvs" &&
+                                error.code in setOf("NPVS_PROTECTION_UNSUPPORTED","DECODE_FAILED") &&
+                                NpvsPasswordProbe.requiresPassword(input))) &&
                             pendingCloudPasswordFile==null){
                             pendingCloudPasswordFile=PendingCloudPasswordFile(uri,name,
                                 supported.suffix,input.copyOf())
