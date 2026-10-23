@@ -83,6 +83,21 @@ class CloudC8InputRoutesTest {
         assertTrue(CloudCredentialPolicy.textAcceptsPassword("1FTnl.YWJj"))
     }
 
+    @Test fun protectedV2BoxAndNpvsAppKeyAreClassifiedSeparately() {
+        val envelope="""{"magic":"v2box_export","isPasswordProtected":true,"nonce":"AAAAAAAAAAAAAAAA","tag":"AAAAAAAAAAAAAAAAAAAAAA==","ciphertext":"AQ=="}"""
+        assertTrue(com.ghostdeveloper.spdecode.cloud.V2BoxPasswordProbe.requiresPassword(
+            envelope.toByteArray(Charsets.UTF_8)))
+        assertFalse(com.ghostdeveloper.spdecode.cloud.V2BoxPasswordProbe.requiresPassword(
+            envelope.replace("true","false").toByteArray(Charsets.UTF_8)))
+        assertFalse(com.ghostdeveloper.spdecode.cloud.V2BoxPasswordProbe.requiresPassword(
+            "not-a-v2box".toByteArray(Charsets.UTF_8)))
+        assertTrue(CloudCredentialPolicy.fileAcceptsPassword("v2box"))
+        assertTrue(CloudCredentialPolicy.fileNeedsPasswordDialog("v2box"))
+        assertTrue(CloudCredentialPolicy.incorrectPassword("AUTH_FAILED",true))
+        assertTrue(CloudCredentialPolicy.npvsProtectionNotice("NPVS_APPKEY_AUTH_FAILED","npvs"))
+        assertFalse(CloudCredentialPolicy.npvsProtectionNotice("NPVS_APPKEY_AUTH_FAILED","v2box"))
+    }
+
     @Test fun historicalCloudLinksAreUnaffected() {
         assertEquals("ua",CloudTextFormats.identify("ua://fake")?.suffix)
         assertEquals("mkk",CloudTextFormats.identify("mkk://fake")?.suffix)
