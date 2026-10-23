@@ -681,7 +681,7 @@ class MainActivity : ComponentActivity() {
             var preview:ByteArray?=null
             try {
                 val name=withContext(Dispatchers.IO){displayName(uri)}
-                if(name.endsWith(".hc",ignoreCase=true)){
+                if(ImportFilenameNormalizer.forDetection(name).endsWith(".hc",ignoreCase=true)){
                     preview=withContext(Dispatchers.IO){readBounded(uri,
                         if(BuildConfig.SPDECODE_CLOUD_ENABLED) CloudDecodeClient.MAX_INPUT else MAX_BYTES)}
                     val requirements=if(BuildConfig.SPDECODE_CLOUD_ENABLED)
@@ -1119,11 +1119,13 @@ class MainActivity : ComponentActivity() {
                         }.getOrDefault("")
                         // Do not label any Cloud NPVS failure a "private key"
                         // failure unless the worker explicitly reports that.
-                        if((prepared?.filename?:filename).endsWith(".npvs",ignoreCase=true) &&
+                        if(ImportFilenameNormalizer.forDetection(prepared?.filename?:filename)
+                            .endsWith(".npvs",ignoreCase=true) &&
                             cause is CloudDecodeClient.Failure &&
                             cause.code=="NPVS_PROTECTION_UNSUPPORTED")
                             failedNpvs=true
-                        if((prepared?.filename?:filename).endsWith(".hc",ignoreCase=true) &&
+                        if(ImportFilenameNormalizer.forDetection(prepared?.filename?:filename)
+                            .endsWith(".hc",ignoreCase=true) &&
                             prepared?.requirements?.requiresCredentials==true)failedProtectedHc=true
                     }
                 ){uri,index,total->
@@ -1133,10 +1135,12 @@ class MainActivity : ComponentActivity() {
                     val name=prepared?.filename?:cloudPrepared?.name
                         ?:withContext(Dispatchers.IO){displayName(uri)}
                     progressFilename=name
+                    // Only the decoder route uses this name. History keeps the original.
+                    val routingName=ImportFilenameNormalizer.forDetection(name)
                     val supported=(if(BuildConfig.SPDECODE_CLOUD_ENABLED)
-                        CloudFileFormats.detect(name) else null)
+                        CloudFileFormats.detect(routingName) else null)
                         ?:AndroidDecoderCatalog.detect(
-                            name,AndroidDecoderCatalog.read(this@MainActivity))
+                            routingName,AndroidDecoderCatalog.read(this@MainActivity))
                         ?:throw DecodeFailure(R.string.unsupported)
                     // Phase A identifies pending formats but never reads or
                     // sends their bytes to a native decoder that does not exist.
@@ -1175,12 +1179,12 @@ class MainActivity : ComponentActivity() {
                             if(privateCredentialId!=null){
                                 privateCredentialVault.use(privateCredentialId){secret->
                                     AndroidOfflineDecoderRouter.decodeWithUserPassword(
-                                        this@MainActivity,name,input,secret)
+                                        this@MainActivity,routingName,input,secret)
                                 }
                             }else if(hcPassword!=null || hcHwid!=null){
                                 AndroidOfflineDecoderRouter.decodeWithCredentials(
-                                    this@MainActivity,name,input,hcPassword,hcHwid)
-                            }else AndroidOfflineDecoderRouter.decode(this@MainActivity,name,input)
+                                    this@MainActivity,routingName,input,hcPassword,hcHwid)
+                            }else AndroidOfflineDecoderRouter.decode(this@MainActivity,routingName,input)
                         }
                     }catch(error:CloudDecodeClient.Failure){
                         if(BuildConfig.SPDECODE_CLOUD_ENABLED && cloudPassword==null &&

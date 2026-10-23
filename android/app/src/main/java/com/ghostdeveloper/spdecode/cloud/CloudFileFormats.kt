@@ -1,5 +1,6 @@
 package com.ghostdeveloper.spdecode.cloud
 
+import com.ghostdeveloper.spdecode.ImportFilenameNormalizer
 import com.ghostdeveloper.spdecode.parity.AndroidDecoderCatalog
 import java.util.Locale
 
@@ -23,7 +24,7 @@ internal object CloudFileFormats {
         "4ulite" to "4U TUNNEL LITE 2.2",
     )
     fun detect(filename:String):AndroidDecoderCatalog.Format? {
-        val basename=filename.substringAfterLast('/').substringAfterLast('\\')
+        val basename=ImportFilenameNormalizer.forDetection(filename)
             .lowercase(Locale.ROOT)
         val suffix=names.keys.filter { basename.endsWith(".$it") }
             .maxByOrNull { it.length }?:return null

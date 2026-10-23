@@ -1,6 +1,7 @@
 package com.ghostdeveloper.spdecode.parity
 
 import android.content.Context
+import com.ghostdeveloper.spdecode.ImportFilenameNormalizer
 import org.json.JSONObject
 import java.util.Locale
 
@@ -110,7 +111,7 @@ object AndroidDecoderCatalog {
 
     /** Longest suffix wins; .sksrv.png must not be confused with .png. */
     fun detect(filename: String, formats: List<Format>): Format? {
-        val candidate = filename.substringAfterLast('/').substringAfterLast('\\')
+        val candidate = ImportFilenameNormalizer.forDetection(filename)
             .lowercase(Locale.ROOT)
         if (candidate.isBlank()) return null
         // The existing 239 audited suffixes remain frozen; NUR is independently routed.
