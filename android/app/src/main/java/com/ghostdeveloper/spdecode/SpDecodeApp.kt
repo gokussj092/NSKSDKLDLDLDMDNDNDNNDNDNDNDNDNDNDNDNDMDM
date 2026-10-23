@@ -94,6 +94,7 @@ fun SpDecodeApp(
     onDecodeServerCatalog:()->Unit={},
     onDecodeServerApp:(String)->Unit={}, 
     serverVpnApps:List<ServerVpnApp> = emptyList(),
+    fileFormats:List<AndroidDecoderCatalog.Format> = emptyList(),
     serverVpnLoading:Boolean=false,
     serverVpnUnavailable:Boolean=false,
     onRefreshServerVpn:()->Unit={},
@@ -134,7 +135,7 @@ fun SpDecodeApp(
                         onDecodeCloud=onDecodeCloud,
                         highlightGuide=if(!whatsNew && !busy)guideStep else null)
                     1->HistoryScreen(session,onSelect,onDeleteSelected,onClear,onImportMultiple,onFavorite)
-                    2->FormatsScreen()
+                    2->FormatsScreen(fileFormats)
                     3->ServerVpnScreen(busy,serverVpnApps,serverVpnLoading,serverVpnUnavailable,
                         onDecodeServerCatalog,onDecodeServerApp)
                     else->FunctionalSettingsPanel(selectedLanguage,hideCredentials,
@@ -763,12 +764,14 @@ private fun HistoryScreen(
 }
 
 @Composable
-private fun FormatsScreen() {
+private fun FormatsScreen(remoteFormats:List<AndroidDecoderCatalog.Format>) {
     val context = LocalContext.current
-    val formats = remember(context) { AndroidDecoderCatalog.read(context) }
+    val formats = if(BuildConfig.SPDECODE_CLOUD_ENABLED && remoteFormats.isNotEmpty())
+        remoteFormats else remember(context) { AndroidDecoderCatalog.read(context) }
     var query by rememberSaveable { mutableStateOf("") }
     val groups = remember(query, formats) {
-        (formats + listOfNotNull(AndroidDecoderCatalog.detect("preview.solid",formats)))
+        (formats + if(BuildConfig.SPDECODE_CLOUD_ENABLED && remoteFormats.isNotEmpty())
+            emptyList() else listOfNotNull(AndroidDecoderCatalog.detect("preview.solid",formats)))
             .groupBy { it.appName }.toList()
             .filter { (name, entries) ->
                 query.isBlank() || name.contains(query.trim(), ignoreCase = true) ||
@@ -779,7 +782,8 @@ private fun FormatsScreen() {
     Column(Modifier.fillMaxSize().padding(horizontal = 20.dp, vertical = 12.dp)) {
         Text(stringResource(R.string.formats), fontSize = 24.sp, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(8.dp))
-        Text(stringResource(R.string.catalog_note), fontSize = 13.sp,
+        Text(stringResource(if(BuildConfig.SPDECODE_CLOUD_ENABLED && remoteFormats.isNotEmpty())
+            R.string.formats_remote_catalog_note else R.string.catalog_note), fontSize = 13.sp,
             color = Secondary, lineHeight = 20.sp)
         Spacer(Modifier.height(14.dp))
         OutlinedTextField(value = query, onValueChange = { query = it },
@@ -818,7 +822,9 @@ private fun FormatsScreen() {
                     Spacer(Modifier.width(5.dp))
                     Text(
                         stringResource(
-                            if (extensions.all { it.isPending })
+                            if(BuildConfig.SPDECODE_CLOUD_ENABLED && remoteFormats.isNotEmpty())
+                                R.string.formats_cloud_ready_short
+                            else if (extensions.all { it.isPending })
                                 R.string.native_decoder_pending_short
                             else if (extensions.all { it.hasNativeDecoder })
                                 R.string.experimental
