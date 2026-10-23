@@ -11,6 +11,7 @@ no se reemplaza el evaluador white-box ni se repite su extracción.
 | Rjo sniff password.npvs | NPVS v5 / passphrase 1 | Completo: firma, DEK, metadatos, contexto, HMAC y 16 registros válidos; nueve campos `npvs1:` abiertos |
 | Rjo public-key.npvs | NPVS v6 / recipient 0, un destinatario | Firma válida y clave pública coincidente; falta clave privada |
 | Rjo normal.npvs | Exactamente los mismos bytes que public-key | Mismo resultado; no es un tercer caso normal independiente |
+| Kurdo vip bunq.npvs (continuación) | NPVS v5 / app-key 2, sin destinatarios | Completo, sin contraseña/public key; 20 registros y 12 campos npvs1 |
 
 El problema reproducido es de **alcance del lector**: solo implementaba v5
 app-key 2. Rechazaba modo 1 y versión 6 antes de descifrar. La modificación
@@ -79,7 +80,11 @@ la máscara de aplicación no elimina la necesidad previa de ECDH. No se intenta
 contraseñas inventadas ni se presenta una public key como material secreto.
 Pendiente una exportación con otro método o material privado legítimo del
 destinatario; no se implementa un importador de privadas sin una muestra real.
-También falta una exportación normal distinta para comprobar el caso solicitado.
+La nueva exportación normal **Kurdo vip bunq.npvs** resuelve ese caso: se abre
+sin credenciales adicionales y su documento íntegro coincide con JDK y worker.
+La importación normal no debe confundirse con un diálogo de clave: el cliente
+puede usar automáticamente su identidad. Contraste y límites de esa inferencia
+en [NPV_TEXT_AND_NORMAL_FILE.md](NPV_TEXT_AND_NORMAL_FILE.md).
 
 ## Fuentes y hashes
 
@@ -92,6 +97,7 @@ También falta una exportación normal distinta para comprobar el caso solicitad
 | rt.dat | 749617 | `0c56b43e7a60e312e80ff163088f32ab25c4bdbbcd677f046c78d9f61b0cd9fd` |
 | archivo passphrase | 1352 | `a3eb8004c523d90fea23e61e619b1c13c881b97b2f006b1755f2eda2f8797a49` |
 | normal y public-key | 1413 cada uno | `c7dc276dcfa73a66e33cd1c96f4f4b17cdf0e3f3d726134efb950c4dcd06e41c` |
+| Kurdo normal (continuación) | 2050 | `aefa84cb8ab5dca63c95d1887080b3e4e3faf0c825f1485bd77085e7c0f5a353` |
 
 Bibliotecas y recurso coinciden con la investigación original; se mantienen sus
 tablas. JADX 1.5.6 finalizó con 79 errores generales; las rutas `ah.m/j/g/i/b`

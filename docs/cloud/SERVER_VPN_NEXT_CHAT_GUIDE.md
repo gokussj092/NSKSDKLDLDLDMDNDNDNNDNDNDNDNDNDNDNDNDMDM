@@ -109,7 +109,13 @@ como parte del análisis 1FTunnel. Sin despliegue, fusión o APK automáticos.
 
 Actualización posterior **NPV Tunnel 124.0.37**: `npvs.py` conserva v5 app-key
 y añade passphrase v5 real completo; **16 Python / 15 Node aprobadas**.
-Recipient v6 pendiente de privada; normal/public-key son el mismo adjunto.
+Recipient v6 pendiente de privada; Rjo normal/public-key son el mismo adjunto.
+La nueva muestra Kurdo normal v5 app-key 2 ya se abre sin contraseña/public key,
+20 registros y 12 campos npvs1, JSON completo igual a JDK/worker. El script
+`apps/NPV_Tunnel/text_decoder.py` se entrega separado para integración de textos
+en otro chat por instrucción del usuario; no registrar todavía en routers.
+Ver `docs/NPV_TEXT_AND_NORMAL_FILE.md`: cinco pruebas nuevas, solo npvt-ssh
+confirmado como exportación del APK, cuatro aliases pendientes de enlaces reales.
 No repetir la extracción de tablas: SO/rt.dat coinciden con el handoff anterior.
 `go_inspect.py`, `npvs_verify.py` y referencias JDK/generador guardados.
 Ver `docs/NPVS_PROTECTED_FILES.md`; no anunciar public-key como descifrado,

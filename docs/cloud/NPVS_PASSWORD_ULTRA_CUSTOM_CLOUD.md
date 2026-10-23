@@ -15,8 +15,10 @@ y `publicKey` para diagnóstico, por stdin y sin HWID. No se cambia la UI Androi
 
 Los dos adjuntos normal/public-key son idénticos NPVS v6 recipient. La public
 key coincide pero falta la privada del destinatario; se devuelve
-`PRIVATE_KEY_REQUIRED` y no un resultado parcial. Queda pendiente ese modo y
-una muestra normal diferente. Se conserva v5 app-key 2 y sus tablas/pruebas.
+`PRIVATE_KEY_REQUIRED` y no un resultado parcial. Queda pendiente ese modo.
+La nueva muestra normal Kurdo v5 app-key 2 ya se abrió sin credenciales, completa
+e igual a JDK/worker. Se conservan las tablas/pruebas. El nuevo script de texto
+se entrega separado para integración posterior, según la instrucción del usuario.
 Ver [la investigación nueva](../NPVS_PROTECTED_FILES.md).
 
 ### Limitación documentada antes de esta actualización

@@ -1,5 +1,14 @@
 # Recuperar herramientas después de perder el entorno
 
+Continuación normal/textos: `npvs_verify.py /ruta/normal.npvs --worker` comprueba
+app-key sin objeto de credenciales. Kurdo v5: 20 registros / 12 campos npvs1,
+JSON entero igual a JDK, CLI y worker. `apps/NPV_Tunnel/text_decoder.py` funciona
+por archivo/stdin, con cinco prefijos explícitos y sin registro de rutas.
+`python -m unittest tests.test_npv_text -v` reproduce sus cinco pruebas;
+documentación de las dependencias y de los cuatro aliases no certificados en
+`docs/NPV_TEXT_AND_NORMAL_FILE.md`. No habilitarlo automáticamente: el usuario
+solicitó integrar esos textos en otro chat.
+
 ## Actualización NPV Tunnel 124.0.37 — 2026-10-22
 
 El lector canónico sigue en `decoders/Python/npvs.py`. Retomar primero

@@ -11,6 +11,11 @@ etiquetados normal/public-key son idénticos NPVS v6 recipient y siguen pendient
 de la clave privada del destinatario. La investigación original de abajo se
 conserva como referencia histórica; alcance actual y herramientas en
 [NPVS_PROTECTED_FILES.md](NPVS_PROTECTED_FILES.md).
+Continuación: el archivo normal Kurdo v5 app-key 2 se abrió sin contraseña ni
+public key, con 20 registros y 12 campos npvs1, completo igual a JDK/worker.
+El script de texto independiente y sus límites están documentados en
+[NPV_TEXT_AND_NORMAL_FILE.md](NPV_TEXT_AND_NORMAL_FILE.md); integrarlo en otro
+chat por petición del usuario, sin cambiar ahora los routers.
 
 ## Retomar en dos minutos
 

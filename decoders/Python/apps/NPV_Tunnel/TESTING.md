@@ -1,5 +1,28 @@
 # Comprobaciones de actualización
 
+## Nueva muestra normal y script de texto separado
+
+- **Kurdo vip bunq.npvs**, 2050 bytes: NPVS v5, app-key 2/keyId 2, cero
+  destinatarios; una configuración, 20 registros autenticados y 12 campos
+  `npvs1:` internos abiertos. Todo el JSON igual a JDK, CLI fuera del repo y
+  worker aislado sin credenciales, `isPartial:false`.
+- **Cinco pruebas nuevas aprobadas** de `tests.test_npv_text`: detección de
+  cinco aliases, JSON completo/listas/Unicode/tipos/vacíos, capas npvs1, errores,
+  NPVS autenticado app-key/passphrase, diagnóstico recipient y CLI copiado
+  fuera del checkout con `python -S` para probar stdlib sin paquetes externos.
+- Los enlaces de prueba son sintéticos. `npvt-ssh` se contrasta además con el
+  exportador/importador del APK; los otros cuatro prefijos carecen de muestras
+  reales. No se certifican otras variantes cifradas por el nombre del esquema.
+- Sin cambios del códec de archivos ni del router. La integración del nuevo
+  script de textos queda para el siguiente chat por instrucción del usuario.
+
+```bash
+PYTHONPATH=. python -m unittest tests.test_npv_text -v
+python scripts/apk_analysis/npvs_verify.py /ruta/normal.npvs --worker
+```
+
+## Comprobaciones de la entrega anterior
+
 **16 Python / 15 Node aprobadas**, enfocadas en contraseña, diagnóstico de
 destinatarios y regresiones v5 app-key/npvs1. Sin suites completas.
 

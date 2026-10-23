@@ -392,12 +392,19 @@ solicitado y los límites de certificación `.sks` documentados en `TESTING.md`.
   JSON entero igual a JDK, CLI fuera del repo y worker aislado.
 - Public-key: punto P-256 válido y fingerprint coincidente, pero los dos
   adjuntos normal/public-key son idénticos NPVS v6 recipient; **pendiente la
-  privada del dispositivo y una exportación normal distinta**. Se informa
+  privada del dispositivo para esas copias v6**. Se informa
   `PRIVATE_KEY_REQUIRED`, sin anunciar descifrado v6. Se conserva v5 app-key,
   sus tablas y el lector v4. **16 Python / 15 Node aprobadas**, sin suites
   completas. Herramientas y oracles guardados; documentación
   `docs/NPVS_PROTECTED_FILES.md`. Rutas backend listas, pendiente desplegar;
   sin Android/UI, formato nuevo, Server VPN/C11, fusión o APK automáticos.
+  Continuación: **Kurdo vip bunq.npvs**, normal v5 app-key 2 con cero
+  destinatarios, abierto sin credenciales: 20 registros y 12 campos npvs1,
+  JSON entero igual a JDK, CLI y worker. Se entrega además `text_decoder.py`
+  separado, **cinco pruebas nuevas aprobadas**, sin registro en routers.
+  `npvt-ssh://` confirmado en el APK; otros cuatro prefijos solicitados aceptados
+  como aliases, pendientes de enlaces reales para certificar otras variantes
+  cifradas. Detalles en `docs/NPV_TEXT_AND_NORMAL_FILE.md`.
 
 - **FlexNet V 2.4 (46)**: ampliado el lector en `FlexNet_B42/`, conservando
   v1–v4, sus 30 materiales y las fixtures B42. Admite v5 mínimo 46, v6 con
