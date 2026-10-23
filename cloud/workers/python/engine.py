@@ -219,7 +219,7 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
     if suffix == "roy" and _is_legacy_roy(contents):
         engine = load_file_engines()["roy"]
     if credentials is not None:
-        allowed = {"password", "hwid"} if suffix == "hc" else {"password", "publicKey"} if suffix == "npvs" else {"password"} if suffix in ("tut", "ua", "1ftnl") else None
+        allowed = {"password", "hwid"} if suffix == "hc" else {"password", "publicKey"} if suffix == "npvs" else {"password"} if suffix in ("tut", "ua", "1ftnl", "v2box") else None
         if allowed is None or not isinstance(credentials, dict) or set(credentials) - allowed:
             raise DecodeFailure("CREDENTIALS_NOT_ALLOWED")
         for name, maximum in (("password", 4096), ("hwid", 128), ("publicKey", 128)):
@@ -238,7 +238,8 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
     protected_ua = suffix == "ua"
     protected_onef = suffix == "1ftnl"
     protected_npvs = suffix == "npvs"
-    credential_input = protected_hc or protected_tut or protected_ua or protected_onef or protected_npvs
+    protected_v2box = suffix == "v2box"
+    credential_input = protected_hc or protected_tut or protected_ua or protected_onef or protected_npvs or protected_v2box
     source = engine["source"]
     if protected_hc:
         source = str(Path(__file__).with_name("hc_bridge.py"))
@@ -248,6 +249,8 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
         source = str(Path(__file__).with_name("ultra_custom_bridge.py"))
     elif protected_npvs:
         source = str(Path(__file__).with_name("npvs_bridge.py"))
+    elif protected_v2box:
+        source = str(Path(__file__).with_name("v2box_bridge.py"))
     runtime = sys.executable if credential_input or engine["runtime"] == "python" else shutil.which(engine["runtime"])
     if not runtime:
         raise DecodeFailure("ENGINE_UNAVAILABLE")

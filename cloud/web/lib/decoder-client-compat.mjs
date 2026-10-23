@@ -11,7 +11,7 @@ export function supportsCredentialPrompts(request){
   return request.headers.get(CREDENTIAL_PROMPTS_HEADER)===CREDENTIAL_PROMPTS_VERSION;
 }
 
-const legacyProtectedFiles=new Set(["1ftnl","tut"]);
+const legacyProtectedFiles=new Set(["1ftnl","tut","v2box"]);
 const onefText=["1FTnl.","1FT1.","1ftunnel://1FTnl/","1ftunnel://1FT1/"];
 const npvText=["npvt://","npvt-ssh://","npvt-vless://","npvt-vmess://","npv://"];
 

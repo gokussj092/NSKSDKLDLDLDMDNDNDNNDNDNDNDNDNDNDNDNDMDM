@@ -91,7 +91,7 @@ function validatePayload(kind,payload) {
         typeof payload.format!=="string" || (!/^[a-z0-9][a-z0-9._-]{0,63}$/.test(payload.format) && payload.format!=="fɴ"))
       throw Object.assign(new Error("format"),{code:"INVALID_REQUEST"});
     if (payload.credentials!==undefined){
-      const allowed=payload.format==="hc"?["password","hwid"]:payload.format==="npvs"?["password","publicKey"]:["tut","ua","1ftnl"].includes(payload.format)?["password"]:null;
+      const allowed=payload.format==="hc"?["password","hwid"]:payload.format==="npvs"?["password","publicKey"]:["tut","ua","1ftnl","v2box"].includes(payload.format)?["password"]:null;
       if (!allowed || !isRecord(payload.credentials) ||
           Object.keys(payload.credentials).some(k=>!allowed.includes(k)))
         throw Object.assign(new Error("credentials"),{code:"INVALID_CREDENTIALS"});
