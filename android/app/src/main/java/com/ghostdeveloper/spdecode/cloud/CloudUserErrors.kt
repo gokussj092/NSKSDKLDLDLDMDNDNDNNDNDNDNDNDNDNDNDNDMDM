@@ -77,6 +77,26 @@ internal object CloudUserErrors {
         return R.string.cloud_failure_general
     }
 
+    /** HTTP Injector Cloud reports typed service errors; avoid a generic file alert. */
+    fun httpInjectorMessage(context:Context,cause:Throwable):String {
+        val code=(cause as? CloudDecodeClient.Failure)?.code ?: return message(context,cause)
+        val id=when(code) {
+            "INVALID_REFERENCE","INVALID_BASE64","INVALID_INPUT" ->
+                R.string.cloud_http_injector_invalid
+            "REMOTE_NOT_CONFIGURED" -> R.string.cloud_http_injector_not_configured
+            "REMOTE_CONFIG_UNAVAILABLE" -> R.string.cloud_failure_config_unavailable
+            "REMOTE_INTEGRITY_FAILED","INTEGRITY_REJECTED" ->
+                R.string.cloud_http_injector_integrity_error
+            "REMOTE_DECODER_FAILED","DECODE_FAILED","OUTPUT_INVALID","OUTPUT_INVALID_UTF8" ->
+                R.string.cloud_http_injector_decoder_error
+            "REMOTE_PROVIDER_UNAVAILABLE","REMOTE_NETWORK_DENIED" ->
+                R.string.cloud_http_injector_network_error
+            "REMOTE_RESPONSE_INVALID" -> R.string.cloud_http_injector_server_error
+            else -> return message(context,cause)
+        }
+        return context.getString(id)
+    }
+
     fun isInformational(cause:Throwable,format:String?=null,
                         passwordSubmitted:Boolean=false,
                         hwidSubmitted:Boolean=false):Boolean {
