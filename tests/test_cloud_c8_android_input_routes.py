@@ -42,7 +42,10 @@ class CloudC8ClientRouting(unittest.TestCase):
         activity = (ANDROID / "MainActivity.kt").read_text("utf-8")
         self.assertIn('CloudTextFormats.identify(userText) else null', activity)
         self.assertIn('cloudClient.decodeText(userText,password)', activity)
-        self.assertIn('CloudFileFormats.detect(name) else null', activity)
+        # The downloaded, validated catalog is authoritative in Cloud builds.
+        self.assertIn('AndroidDecoderCatalog.detect(routingName,fileFormats)', activity)
+        self.assertIn('CloudFileFormats.detect(routingName) else null', activity)
+        self.assertIn('serverVpnCatalog.cachedFormats()', activity)
         self.assertIn('cloudClient.decodeFile(supported.suffix,input', activity)
         self.assertIn('BuildConfig.SPDECODE_CLOUD_ENABLED', activity)
         # The Android 239-format native catalog is deliberately not extended.
