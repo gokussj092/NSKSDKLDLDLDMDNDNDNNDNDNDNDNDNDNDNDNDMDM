@@ -1111,6 +1111,7 @@ class MainActivity : ComponentActivity() {
                 var failedNpvs=false
                 var failedProtectedHc=false
                 var cloudPasswordError:String?=null
+                var cloudCredentialError:String?=null
                 val report=BatchImportQueue.process(inputs,
                     onFailure={uri,cause->
                         if(cloudPassword!=null && cause is CloudDecodeClient.Failure &&
@@ -1120,6 +1121,14 @@ class MainActivity : ComponentActivity() {
                         val filename=runCatching {
                             withContext(Dispatchers.IO){displayName(uri)}
                         }.getOrDefault("")
+                        // Non-password NPVS errors must not collapse into the
+                        // generic failed-import summary or prompt for a password.
+                        if(cause is CloudDecodeClient.Failure &&
+                            cause.code in setOf("PRIVATE_KEY_REQUIRED","RECIPIENT_MISMATCH",
+                                "NPVS_PROTECTION_UNSUPPORTED") &&
+                            cloudCredentialError==null)
+                            cloudCredentialError=com.ghostdeveloper.spdecode.cloud.CloudUserErrors.message(
+                                this@MainActivity,cause)
                         // Do not label any Cloud NPVS failure a "private key"
                         // failure unless the worker explicitly reports that.
                         if(ImportFilenameNormalizer.forDetection(prepared?.filename?:filename)
@@ -1230,6 +1239,7 @@ class MainActivity : ComponentActivity() {
                         report.successes,report.failures)
                     message=when {
                         cloudPasswordError!=null->cloudPasswordError+"\n\n"+summary
+                        cloudCredentialError!=null->cloudCredentialError+"\n\n"+summary
                         failedProtectedHc->getString(R.string.cloud_failure_credentials)+"\n\n"+summary
                         failedNpvs->getString(R.string.npvs_private_key_unsupported)+"\n\n"+summary
                         else->summary
