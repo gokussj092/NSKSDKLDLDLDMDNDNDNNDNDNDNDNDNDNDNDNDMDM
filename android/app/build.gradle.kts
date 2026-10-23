@@ -398,9 +398,14 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
                             }
                             qaFailures.add(ext + ": " + code)
                         }
-                        cloudFailureMessages.add(
-                            com.ghostdeveloper.spdecode.cloud.CloudUserErrors.message(
-                                this@MainActivity,cause))
+                        // Unsupported formats are expected compatibility
+                        // outcomes, not additional generic errors.
+                        if(!(cause is DecodeFailure && cause.stringId==R.string.unsupported) &&
+                            (cause as? CloudDecodeClient.Failure)?.code!="UNSUPPORTED_FORMAT") {
+                            cloudFailureMessages.add(
+                                com.ghostdeveloper.spdecode.cloud.CloudUserErrors.message(
+                                    this@MainActivity,cause))
+                        }
                         if(ImportFilenameNormalizer.forDetection(prepared?.filename?:filename)
                             .endsWith(".npvs",ignoreCase=true) &&""")
         batch=replaceOnce(batch,"                    message=when {",
