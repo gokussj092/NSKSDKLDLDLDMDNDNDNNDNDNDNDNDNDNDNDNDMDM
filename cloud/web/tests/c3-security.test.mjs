@@ -180,3 +180,33 @@ test("Tunneltweak accepts password credentials only after admission and rejects 
   assert.equal(bad.status,400);assert.equal(calls,1);
  }
 });
+
+test("1FTunnel file credentials pass through the admitted gateway and reject HWID",async()=>{
+ const redis=new FakeRedis();const ip="203.0.113.24";const {issued}=await authorized(redis,ip);let calls=0;
+ const fetchImpl=async(url,opts)=>{
+  calls++;const payload=JSON.parse(opts.body);
+  assert.equal(payload.format,"1ftnl");assert.deepEqual(payload.credentials,{password:"test-only"});
+  return {status:200,text:async()=>JSON.stringify({status:"success",structuredJson:{config:{name:"synthetic"}},rawText:'{"config":{"name":"synthetic"}}',isPartial:false,warnings:[]})};
+ };
+ const source={format:"1ftnl",dataBase64:"YWJj",credentials:{password:"test-only"}};
+ const ok=await decodeRequest(req(source,issued.accessToken,ip),"file",{storeProvider:async()=>redis,fetchImpl});
+ assert.equal(ok.status,200);assert.equal(calls,1);
+ const bad=await decodeRequest(req({...source,credentials:{hwid:"not-supported"}},issued.accessToken,ip),"file",{storeProvider:async()=>redis,fetchImpl});
+ assert.equal(bad.status,400);assert.equal(calls,1);
+});
+
+test("1FTunnel text passwords accept only source-exact prefixes",async()=>{
+ const redis=new FakeRedis();const ip="203.0.113.25";const {issued}=await authorized(redis,ip);let calls=0;
+ const fetchImpl=async(url,opts)=>{
+  calls++;assert.equal(url,"http://decoder-worker:8787/internal/v1/decode/text");
+  assert.deepEqual(JSON.parse(opts.body).credentials,{password:"synthetic-password"});
+  return {status:200,text:async()=>JSON.stringify({status:"success",structuredJson:{config:{}},rawText:'{"config":{}}',isPartial:false,warnings:[]})};
+ };
+ for(const prefix of ["1FTnl.","1FT1.","1ftunnel://1FTnl/","1ftunnel://1FT1/"]){
+  const body={text:prefix+"cipher",credentials:{password:"synthetic-password"}};
+  assert.equal((await decodeRequest(req(body,issued.accessToken,ip),"text",{storeProvider:async()=>redis,fetchImpl})).status,200);
+ }
+ const bad={text:"1ftnl.cipher",credentials:{password:"synthetic-password"}};
+ assert.equal((await decodeRequest(req(bad,issued.accessToken,ip),"text",{storeProvider:async()=>redis,fetchImpl})).status,400);
+ assert.equal(calls,4);
+});

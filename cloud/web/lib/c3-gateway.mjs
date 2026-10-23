@@ -88,13 +88,14 @@ function validatePayload(kind,payload) {
         typeof payload.format!=="string" || (!/^[a-z0-9][a-z0-9._-]{0,63}$/.test(payload.format) && payload.format!=="fɴ"))
       throw Object.assign(new Error("format"),{code:"INVALID_REQUEST"});
     if (payload.credentials!==undefined){
-      const allowed=payload.format==="hc"?["password","hwid"]:["tut","ua"].includes(payload.format)?["password"]:null;
+      const allowed=payload.format==="hc"?["password","hwid"]:["tut","ua","1ftnl"].includes(payload.format)?["password"]:null;
       if (!allowed || !isRecord(payload.credentials) ||
           Object.keys(payload.credentials).some(k=>!allowed.includes(k)))
         throw Object.assign(new Error("credentials"),{code:"INVALID_CREDENTIALS"});
       for(const [key,max] of [["password",4096],["hwid",128]]){
         const value=payload.credentials[key];
-        if(value!==undefined && (typeof value!=="string" || !value.length || value.length>max))
+        if(value!==undefined && (typeof value!=="string" || !value.length || value.length>max ||
+            (payload.format==="1ftnl" && Buffer.byteLength(value,"utf8")>max)))
           throw Object.assign(new Error("credentials"),{code:"INVALID_CREDENTIALS"});
       }
     }
@@ -106,7 +107,10 @@ function validatePayload(kind,payload) {
        throw Object.assign(new Error("text"),{code:"INVALID_REQUEST"});
     if(payload.credentials!==undefined){
       const pass=payload.credentials?.password;
-      if(!payload.text.trim().toLowerCase().startsWith("ua://") ||
+      const value=payload.text.trim();
+      const passwordFormat=value.toLowerCase().startsWith("ua://") ||
+        ["1FTnl.","1FT1.","1ftunnel://1FTnl/","1ftunnel://1FT1/"].some(prefix=>value.startsWith(prefix));
+      if(!passwordFormat ||
          !isRecord(payload.credentials) || Object.keys(payload.credentials).length!==1 ||
          typeof pass!=="string" || !pass.length || Buffer.byteLength(pass,"utf8")>4096)
         throw Object.assign(new Error("credentials"),{code:"INVALID_CREDENTIALS"});

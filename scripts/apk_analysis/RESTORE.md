@@ -102,3 +102,30 @@ El probe modela archivos y contexto; no ejecuta Android/JNI ni accede a red/OS.
 Las rutas `/input` y `/output` son virtuales, no rutas reales del equipo.
 Paquete y SHA-1 se verifican localmente en PUtils; no se ha demostrado que el
 servidor exija identidad en cabeceras. Ver el flujo y los límites en ANALYSIS.md.
+
+## 1FTunnel 0.6.99 / build 125
+
+Después de restaurar el checkout del PR #96 y el entorno descrito arriba,
+volver a aportar el APK/perfil autorizados con hashes de
+`decoders/Python/apps/OneFTunnel/ANALYSIS.md`. No se necesitan para usar el lector
+ni ejecutar sus fixtures; solo para repetir la comprobación privada/nativa.
+
+```bash
+python scripts/apk_analysis/inspect_apk.py /ruta/1FTunnel.apk \
+  scripts/apk_analysis/work/oneftunnel --native liboneftunnel-security.so
+env JAVA_TOOL_OPTIONS=-XX:-UsePerfData python scripts/apk_analysis/decompile.py \
+  scripts/apk_analysis/work/oneftunnel/dex/classes.dex \
+  scripts/apk_analysis/work/oneftunnel-jadx
+java -XX:-UsePerfData tests/golden/oneftunnel_oracle.java > /tmp/oneftunnel_vectors.json
+python -m unittest tests.test_oneftunnel tests.test_cloud_c8_vpn_registry -v
+python scripts/apk_analysis/oneftunnel_verify.py --worker
+python scripts/apk_analysis/oneftunnel_verify.py --input /ruta/perfil.1ftnl \
+  --library /ruta/liboneftunnel-security.so --worker
+```
+
+El SO debe ser ARM64 y coincidir con el SHA fijado. La herramienta nativa no
+se ejecuta con otros layouts; solo modela HMAC JNI y memoria. El verificador
+no imprime datos descifrados ni claves. Para un perfil con contraseña, añadir
+`--credentials` y pasar `{"password":"..."}` por stdin privado. No guardar
+APK/SO, fuentes JADX, inventarios ni resultados reales en Git. Conservar AM
+pendiente; este lector no depende de quitar LIAPP ni usa sus herramientas.

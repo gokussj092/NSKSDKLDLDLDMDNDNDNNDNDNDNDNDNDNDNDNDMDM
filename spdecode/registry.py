@@ -159,6 +159,14 @@ def load_decoder_registry(path: Path = DECODERS_PATH) -> dict[str, DecoderSpec]:
             script="decoders/Python/nur_tunnel_solid.py", runtime="python"
         )
 
+    if path.resolve() == DECODERS_PATH.resolve():
+        if "1ftnl" in registry:
+            raise ValueError("1FTunnel decoder conflicts with an existing route")
+        registry["1ftnl"] = DecoderSpec(
+            extension="1ftnl", name="1FTunnel 0.6.99",
+            script="decoders/Python/apps/OneFTunnel/file_decoder.py", runtime="python"
+        )
+
     return registry
 
 

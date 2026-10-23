@@ -1,0 +1,1007 @@
+[
+  {
+    "label": "v1-cfg1",
+    "wire": "1FTnl.AQEBAAABAgMEBQYHCAkKCwwNDg-AgYKDhIWGh4iJiosAAABlAAABQwEAEmNvbS5vbmVmdHVubmVsLmFwcABAZDVkNjY2NTg2ODI0NDk4MWE3Y2UzZTllYTU0MzYxMGFmODNlZDNiOWMwMDMyMmYwYTdmZmVkODhkMzI3ZDU4OQAAAAH__________wAAzRFnnRfYE5ah4rD0QqrhH62oW47nuZHjrifoEKNjhUaim5TyIWyDKBG43QeW080pjnfUWpKj3S-F7BDZkJelNQjbya6Rs4etAqowU03nFHZXLxxlz9ux87ty_mLEuN_0beuRaCI6gK34Mj-XRyKl5aIJZrmBknsQ1xQtGWHag69Ga_EXfZ5_YT9Yx2PfdAUoaxiBsIUFCtlWY15BugoZlc1UHKtOB_W-Hl3hBkNOS9Rn1Hlad4q-D7oaW87Zx-5pcouxT2cDjYgecyKu0JH53AyiTerePZJmQlXC6UU1iGdcHgBTSPpkx6NaWzp9yOoOI1eS1E4MjPsG_1xjpU83ZInyu_Icdv4LEMIfBq-afgAfr54s-49UaKMELm7qs_uIjgvp_Kg4kVbvYO6s3N6qyiYO54-7VcnW9cXJFoqNlMSeWiE",
+    "password": "",
+    "expected": {
+      "application": "1FTunnel",
+      "format": "1FT1",
+      "metadata": {
+        "version": 1,
+        "package": "com.oneftunnel.app",
+        "signatureSha256": "d5d6665868244981a7ce3e9ea543610af83ed3b9c00322f0a7ffed88d327d589",
+        "configVersion": 1,
+        "keySlot": 0,
+        "minimumAppBuild": null,
+        "createdAt": null,
+        "expiredAt": -1,
+        "configType": "SSH",
+        "lockMode": 0,
+        "blockRoot": false,
+        "authenticated": true,
+        "algorithm": "AES-256-GCM",
+        "kdf": "HKDF-SHA256"
+      },
+      "config": {
+        "payloadVersion": 1,
+        "id": "synthetic-0",
+        "name": "Perfil de prueba 😀\u00000",
+        "createdAt": 1700000000000,
+        "message": null,
+        "fieldLockMask": null,
+        "ssh": {
+          "host": "ssh.example.invalid",
+          "port": 22,
+          "username": "",
+          "password": "synthetic-password"
+        },
+        "inject": {
+          "mode": "DIRECT",
+          "payload": "GET / HTTP/1.1\r\n\r\n",
+          "proxyHost": null,
+          "proxyPort": null,
+          "sni": "",
+          "wildcardHost": "*.example.invalid"
+        },
+        "dns": {
+          "primary": "192.0.2.53",
+          "secondary": ""
+        },
+        "xray": {
+          "protocol": "VMESS",
+          "host": "xray.example.invalid",
+          "port": 443,
+          "uuid": "00000000-0000-0000-0000-000000000000",
+          "password": null,
+          "security": "TLS",
+          "network": "WS",
+          "path": "/ws",
+          "serviceName": null,
+          "sni": "sni.example.invalid",
+          "hostHeader": "",
+          "wildcardHost": null,
+          "allowInsecure": false,
+          "alpn": null,
+          "flow": null,
+          "fingerprint": null,
+          "realityPublicKey": null,
+          "shortId": null,
+          "spiderX": null,
+          "mode": null
+        }
+      },
+      "isPartial": false
+    }
+  },
+  {
+    "label": "v1-cfg2",
+    "wire": "1FTnl.AQEBAAECAwQFBgcICQoLDA0ODxCBgoOEhYaHiImKi4wAAABlAAAA1gEAEmNvbS5vbmVmdHVubmVsLmFwcABAMGM3NzE4MTY2YzBiNjBjYjA5MjI5ZGZjNWY4YzAyZjI1NjdlYTQxZmI3NWY3YzdiNzkyMTExYzY1ZGZhZjkzNwAAAAEAAAGjGFxQAAEBGR_BwtUz1uz2pNM_wOdAQ-LZVUCrjdzyuPBrexc6O38y4WLLH1dqjWoJh8KrfFZ1FupuhneE8UpqjughsJ6joUhOZL1IZ2KYvykItFsrW4oph8I1zRIJbs1RszngIfZkg60fZZIOmLx5h1Oq42IDMZLnjqocZz-48HlrhiUqW7BoEd0XPnZVsKEVtY6_opmBCCpIV5OAUbV84CyZ6lfrhz8BUUF3T4S7SZu8CojRevCOHgFtMw6vHnMWDEXtqBiUBv2XAKrUKZL42J8qsOoNYxLt70c6KA",
+    "password": "",
+    "expected": {
+      "application": "1FTunnel",
+      "format": "1FT1",
+      "metadata": {
+        "version": 1,
+        "package": "com.oneftunnel.app",
+        "signatureSha256": "0c7718166c0b60cb09229dfc5f8c02f2567ea41fb75f7c7b792111c65dfaf937",
+        "configVersion": 1,
+        "keySlot": 0,
+        "minimumAppBuild": null,
+        "createdAt": null,
+        "expiredAt": 1800000000000,
+        "configType": "VMESS",
+        "lockMode": 1,
+        "blockRoot": false,
+        "authenticated": true,
+        "algorithm": "AES-256-GCM",
+        "kdf": "HKDF-SHA256"
+      },
+      "config": {
+        "payloadVersion": 2,
+        "id": "synthetic-1",
+        "name": "Perfil de prueba 😀\u00001",
+        "createdAt": 1700000000000,
+        "message": "mensaje\nprueba",
+        "fieldLockMask": 511,
+        "ssh": null,
+        "inject": null,
+        "dns": null,
+        "xray": {
+          "protocol": "VMESS",
+          "host": "xray.example.invalid",
+          "port": 443,
+          "uuid": "00000000-0000-0000-0000-000000000000",
+          "password": null,
+          "security": "NONE",
+          "network": "GRPC",
+          "path": "/ws",
+          "serviceName": null,
+          "sni": "sni.example.invalid",
+          "hostHeader": "",
+          "wildcardHost": null,
+          "allowInsecure": false,
+          "alpn": null,
+          "flow": null,
+          "fingerprint": null,
+          "realityPublicKey": null,
+          "shortId": null,
+          "spiderX": null,
+          "mode": null
+        }
+      },
+      "isPartial": false
+    }
+  },
+  {
+    "label": "v1-cfg3",
+    "wire": "1FTnl.AQEBAAIDBAUGBwgJCgsMDQ4PEBGCg4SFhoeIiYqLjI0AAABlAAABVwEAEmNvbS5vbmVmdHVubmVsLmFwcABAZDVkNjY2NTg2ODI0NDk4MWE3Y2UzZTllYTU0MzYxMGFmODNlZDNiOWMwMDMyMmYwYTdmZmVkODhkMzI3ZDU4OQAAAAH__________wIC0nwcVB8YmC1MK1KjFxBRwkpOHwivO_-FOHwLP8xAdOfmCKXY9k1qifu2WzcfRcdNkYh0qIHZ5f1vgkXwxtnxXi-uFx5Ssi16KyUYfiHDYErmnAF6LEgzyvazaeQjihcIlgXGMWRw_mYaK7lrzmcXbmL6c0gqgGBEgHGi9uE_RsDvrBMOyHvV4jlX_hvpxrfsiPw9ISC1N2bAD0cAG42HhKjsXYAOWKGzf0B1v2-gYr3RnTqc6_TqE6hYFTMHdAlnCJvcp_3sTD-6a9f3D8p0cs1DIENKp4qt1ag4SUIb-rYtAVA-Rk3ljkQrQHetM1KmxhJs4QwsAouv2AS33-nZvbDGDkzT3CdStJgeza2wsEgup8AL46NGEBGiwVhnCSOOvZVpnqtNIhPnfSQWteRUq0Y6Z65fmrNcLZ0sasuTsgXUoUccO77H9HmyVh3bsj68bN-e098b5g",
+    "password": "prueba-😀-contraseña",
+    "expected": {
+      "application": "1FTunnel",
+      "format": "1FT1",
+      "metadata": {
+        "version": 1,
+        "package": "com.oneftunnel.app",
+        "signatureSha256": "d5d6665868244981a7ce3e9ea543610af83ed3b9c00322f0a7ffed88d327d589",
+        "configVersion": 1,
+        "keySlot": 0,
+        "minimumAppBuild": null,
+        "createdAt": null,
+        "expiredAt": -1,
+        "configType": "VLESS",
+        "lockMode": 2,
+        "blockRoot": false,
+        "authenticated": true,
+        "algorithm": "AES-256-GCM",
+        "kdf": "HKDF-SHA256"
+      },
+      "config": {
+        "payloadVersion": 3,
+        "id": "synthetic-2",
+        "name": "Perfil de prueba 😀\u00002",
+        "createdAt": 1700000000000,
+        "message": null,
+        "fieldLockMask": null,
+        "ssh": {
+          "host": "ssh.example.invalid",
+          "port": 22,
+          "username": "",
+          "password": "synthetic-password"
+        },
+        "inject": {
+          "mode": "PROXY",
+          "payload": "GET / HTTP/1.1\r\n\r\n",
+          "proxyHost": null,
+          "proxyPort": null,
+          "sni": "",
+          "wildcardHost": "*.example.invalid"
+        },
+        "dns": {
+          "primary": "192.0.2.53",
+          "secondary": ""
+        },
+        "xray": {
+          "protocol": "VLESS",
+          "host": "xray.example.invalid",
+          "port": 443,
+          "uuid": "00000000-0000-0000-0000-000000000000",
+          "password": null,
+          "security": "REALITY",
+          "network": "RAW",
+          "path": "/ws",
+          "serviceName": null,
+          "sni": "sni.example.invalid",
+          "hostHeader": "",
+          "wildcardHost": null,
+          "allowInsecure": true,
+          "alpn": "h2,http/1.1",
+          "flow": null,
+          "fingerprint": null,
+          "realityPublicKey": null,
+          "shortId": null,
+          "spiderX": null,
+          "mode": null
+        }
+      },
+      "isPartial": false
+    }
+  },
+  {
+    "label": "v1-cfg4",
+    "wire": "1FTnl.AQEBAAMEBQYHCAkKCwwNDg8QERKDhIWGh4iJiouMjY4AAABlAAABKAEAEmNvbS5vbmVmdHVubmVsLmFwcABAMGM3NzE4MTY2YzBiNjBjYjA5MjI5ZGZjNWY4YzAyZjI1NjdlYTQxZmI3NWY3YzdiNzkyMTExYzY1ZGZhZjkzNwAAAAEAAAGjGFxQAAMAXiWmHl2P3ki7vEb07BNZbnJ1omGeRec6xoyPOe8LbfUxi7b0pJS27g4kSuvyeXX98Z-bo6Y8jGIFeFwG2X7FwMd_8mB2feJowPmbQBBmtcL8BE2H-u_ITO0PY8cU4EAH6rADBsT39Gp4Vwaq3CJ51f-0v0wvgRjcRCKsdtgB5ZEd5qoFrqXv1_foEMmB_01xxpiWIJuWDHNao1ASwWQjzprYlnsBIBvszbvIjncJB5Z31x9CagVh7g-qH229z4-Fl2nQqcQe_kAnzQ267M8eRmNQi6b0_tx1gmSenIlBbNrDR1cuhrekfN8lRrvE2Lsh75DYQOtX8rAlHI29roDu4MFLJsS7tHRwY3z1oBz-zoPiaQFBKOOY7OWq68U_7RVplTp-2RbskB4",
+    "password": "",
+    "expected": {
+      "application": "1FTunnel",
+      "format": "1FT1",
+      "metadata": {
+        "version": 1,
+        "package": "com.oneftunnel.app",
+        "signatureSha256": "0c7718166c0b60cb09229dfc5f8c02f2567ea41fb75f7c7b792111c65dfaf937",
+        "configVersion": 1,
+        "keySlot": 0,
+        "minimumAppBuild": null,
+        "createdAt": null,
+        "expiredAt": 1800000000000,
+        "configType": "TROJAN",
+        "lockMode": 0,
+        "blockRoot": false,
+        "authenticated": true,
+        "algorithm": "AES-256-GCM",
+        "kdf": "HKDF-SHA256"
+      },
+      "config": {
+        "payloadVersion": 4,
+        "id": "synthetic-3",
+        "name": "Perfil de prueba 😀\u00003",
+        "createdAt": 1700000000000,
+        "message": "mensaje\nprueba",
+        "fieldLockMask": 511,
+        "ssh": null,
+        "inject": null,
+        "dns": null,
+        "xray": {
+          "protocol": "TROJAN",
+          "host": "xray.example.invalid",
+          "port": 443,
+          "uuid": "00000000-0000-0000-0000-000000000000",
+          "password": null,
+          "security": "TLS",
+          "network": "XHTTP",
+          "path": "/ws",
+          "serviceName": null,
+          "sni": "sni.example.invalid",
+          "hostHeader": "",
+          "wildcardHost": null,
+          "allowInsecure": false,
+          "alpn": "h2,http/1.1",
+          "flow": "xtls-rprx-vision",
+          "fingerprint": "chrome",
+          "realityPublicKey": "synthetic-public-key",
+          "shortId": "abcd",
+          "spiderX": null,
+          "mode": null
+        }
+      },
+      "isPartial": false
+    }
+  },
+  {
+    "label": "v1-cfg5",
+    "wire": "1FTnl.AQEBAAQFBgcICQoLDA0ODxAREhOEhYaHiImKi4yNjo8AAABlAAABoQEAEmNvbS5vbmVmdHVubmVsLmFwcABAZDVkNjY2NTg2ODI0NDk4MWE3Y2UzZTllYTU0MzYxMGFmODNlZDNiOWMwMDMyMmYwYTdmZmVkODhkMzI3ZDU4OQAAAAH__________wAB6RIemj5cfA9tCgDVvIAUfucA1v3_R-iQu62wiYWZlpk8-EyADBGNXFgpyRu-5-iw2saBTm4gNBN1hkFru9GO9Ik6wQO0pRBkP1uwM-b58jmbuFrH02JX-QGCZ8H9rYG7aJ-2rE2We9pYM78URyDdIKAV7DixCjPVHCNjImCKEh3lalym7cnhjjV-TS0WnwFFdzqmDMbvBdy_Wk7CnnL461L-zhtRQ6nlUa1OFcxoAv_dlQikqrMDkKBsRiD84awn2s3xYsFRhYoN2yuI2hTqkWipALuefiSoZeXezJvJf9JZh7dL6MBkaJz_1bfugBbTjLmY95NbRe7-zUJSMofTT6eSJClxsjnlY8vH43vwofNF3Vn8w1Qb6JSBkRrCYsb3hJfGEMXZB-f4ptaXZv2Lw4749AUHuvxM6_ZXBMSYeyb4Vbo_WpgY8VH7kuocVMjH_XLMbW1LhlvjsizLrAOMdW3s-poKioya4qeX9dkYH0uF10L3xfEhuuP83o8v48SGzqn75CgI9LyBAUxbZN_n3_KMXjBoyaeLlrzD7F2jlJp3",
+    "password": "",
+    "expected": {
+      "application": "1FTunnel",
+      "format": "1FT1",
+      "metadata": {
+        "version": 1,
+        "package": "com.oneftunnel.app",
+        "signatureSha256": "d5d6665868244981a7ce3e9ea543610af83ed3b9c00322f0a7ffed88d327d589",
+        "configVersion": 1,
+        "keySlot": 0,
+        "minimumAppBuild": null,
+        "createdAt": null,
+        "expiredAt": -1,
+        "configType": "SSH",
+        "lockMode": 1,
+        "blockRoot": false,
+        "authenticated": true,
+        "algorithm": "AES-256-GCM",
+        "kdf": "HKDF-SHA256"
+      },
+      "config": {
+        "payloadVersion": 5,
+        "id": "synthetic-4",
+        "name": "Perfil de prueba 😀\u00004",
+        "createdAt": 1700000000000,
+        "message": null,
+        "fieldLockMask": null,
+        "ssh": {
+          "host": "ssh.example.invalid",
+          "port": 22,
+          "username": "",
+          "password": "synthetic-password"
+        },
+        "inject": {
+          "mode": "WILDCARD",
+          "payload": "GET / HTTP/1.1\r\n\r\n",
+          "proxyHost": null,
+          "proxyPort": null,
+          "sni": "",
+          "wildcardHost": "*.example.invalid"
+        },
+        "dns": {
+          "primary": "192.0.2.53",
+          "secondary": ""
+        },
+        "xray": {
+          "protocol": "VLESS",
+          "host": "xray.example.invalid",
+          "port": 443,
+          "uuid": "00000000-0000-0000-0000-000000000000",
+          "password": null,
+          "security": "NONE",
+          "network": "HTTPUPGRADE",
+          "path": "/ws",
+          "serviceName": null,
+          "sni": "sni.example.invalid",
+          "hostHeader": "",
+          "wildcardHost": null,
+          "allowInsecure": true,
+          "alpn": "h2,http/1.1",
+          "flow": "xtls-rprx-vision",
+          "fingerprint": "chrome",
+          "realityPublicKey": "synthetic-public-key",
+          "shortId": "abcd",
+          "spiderX": null,
+          "mode": "auto"
+        }
+      },
+      "isPartial": false
+    }
+  },
+  {
+    "label": "v2-cfg1",
+    "wire": "1FTnl.AgEBAAUGBwgJCgsMDQ4PEBESExSFhoeIiYqLjI2Oj5AAAAB5AAAA0gIAEmNvbS5vbmVmdHVubmVsLmFwcABAMGM3NzE4MTY2YzBiNjBjYjA5MjI5ZGZjNWY4YzAyZjI1NjdlYTQxZmI3NWY3YzdiNzkyMTExYzY1ZGZhZjkzNwAAAAEAAAABAAAAAAAAAHoAAAGLz-VoAAAAAaMYXFAAAQI9Z3zE103e86Q9hTst6N8algbp8V-JxaNAyDEZQQcNZv1bvvEL-WUWZleetD9DcMM6_N9Godh-s405Ha9k0VhvN1VUg3F-HCSSdtgQtqjF2t8pv0VUrZOOh_avTZqxmcIm6ofwQPf4Tai7-GZ1CZ8BdsQ8yoc05bm099sfr6qWjgFRkS8TQQ16F9jDom2_oyLr5kCnnJYo1JJiONMuoI4njT8QJAtTGjkyHQ-t1zEdhSYoDaaOLnUjL9T89pZJJOdUamOpJrkBi1NZIwusHBA4lTg",
+    "password": "prueba-😀-contraseña",
+    "expected": {
+      "application": "1FTunnel",
+      "format": "1FT1",
+      "metadata": {
+        "version": 2,
+        "package": "com.oneftunnel.app",
+        "signatureSha256": "0c7718166c0b60cb09229dfc5f8c02f2567ea41fb75f7c7b792111c65dfaf937",
+        "configVersion": 1,
+        "keySlot": 1,
+        "minimumAppBuild": 122,
+        "createdAt": 1700000000000,
+        "expiredAt": 1800000000000,
+        "configType": "VMESS",
+        "lockMode": 2,
+        "blockRoot": false,
+        "authenticated": true,
+        "algorithm": "AES-256-GCM",
+        "kdf": "HKDF-SHA256"
+      },
+      "config": {
+        "payloadVersion": 1,
+        "id": "synthetic-5",
+        "name": "Perfil de prueba 😀\u00005",
+        "createdAt": 1700000000000,
+        "message": "mensaje\nprueba",
+        "fieldLockMask": null,
+        "ssh": null,
+        "inject": null,
+        "dns": null,
+        "xray": {
+          "protocol": "VMESS",
+          "host": "xray.example.invalid",
+          "port": 443,
+          "uuid": "00000000-0000-0000-0000-000000000000",
+          "password": null,
+          "security": "REALITY",
+          "network": "WS",
+          "path": "/ws",
+          "serviceName": null,
+          "sni": "sni.example.invalid",
+          "hostHeader": "",
+          "wildcardHost": null,
+          "allowInsecure": false,
+          "alpn": null,
+          "flow": null,
+          "fingerprint": null,
+          "realityPublicKey": null,
+          "shortId": null,
+          "spiderX": null,
+          "mode": null
+        }
+      },
+      "isPartial": false
+    }
+  },
+  {
+    "label": "v2-cfg2",
+    "wire": "1FTnl.AgEBAAYHCAkKCwwNDg8QERITFBWGh4iJiouMjY6PkJEAAAB5AAABRwIAEmNvbS5vbmVmdHVubmVsLmFwcABAZDVkNjY2NTg2ODI0NDk4MWE3Y2UzZTllYTU0MzYxMGFmODNlZDNiOWMwMDMyMmYwYTdmZmVkODhkMzI3ZDU4OQAAAAEAAAAAAAAAAAAAAHoAAAGLz-VoAP__________AgDOVxHIUTnNpfXqdb7VHsDilxqLiT87yWxxMtWA9LtwrnhQAha0pBO4mb-WjBMl_PEObN1dF1iAPONAfZmdtvRqmMY7Jfeao09I1tH_opsIEZyaYWbgCbyVDxLA_sOGafiYrobxGQ8VN-_DO9IRIu2m-UNLvILDWryo9mkKsf3y1NFeWKf0ncGqIcdMnOPPlSYvfwDEVOlwafpWI8L4PRlS10Dtb8YLzfcI-rPryv4ZNQqhvgfwyT6f22Sv8NLRW2d_w4daSj6yhYc7oENk4hjlkkQBMB-qk6R1clmynIJFJuEjggH8CPZ_GH_nc7OSvFXEu99MAryFvDAgrjQ_l9a0-zFKbvbAOCcWYFEwa_Ore1W5Li7O7lpFiYalHGAPxNnct8OrHmo1Z2X0Y7w3qTcjihG5wkJXpRZd9WBaOGX5NPts_O6KANs",
+    "password": "",
+    "expected": {
+      "application": "1FTunnel",
+      "format": "1FT1",
+      "metadata": {
+        "version": 2,
+        "package": "com.oneftunnel.app",
+        "signatureSha256": "d5d6665868244981a7ce3e9ea543610af83ed3b9c00322f0a7ffed88d327d589",
+        "configVersion": 1,
+        "keySlot": 0,
+        "minimumAppBuild": 122,
+        "createdAt": 1700000000000,
+        "expiredAt": -1,
+        "configType": "VLESS",
+        "lockMode": 0,
+        "blockRoot": false,
+        "authenticated": true,
+        "algorithm": "AES-256-GCM",
+        "kdf": "HKDF-SHA256"
+      },
+      "config": {
+        "payloadVersion": 2,
+        "id": "synthetic-6",
+        "name": "Perfil de prueba 😀\u00006",
+        "createdAt": 1700000000000,
+        "message": null,
+        "fieldLockMask": null,
+        "ssh": {
+          "host": "ssh.example.invalid",
+          "port": 22,
+          "username": "",
+          "password": "synthetic-password"
+        },
+        "inject": {
+          "mode": "SSH_PAYLOAD",
+          "payload": "GET / HTTP/1.1\r\n\r\n",
+          "proxyHost": null,
+          "proxyPort": null,
+          "sni": "",
+          "wildcardHost": "*.example.invalid"
+        },
+        "dns": {
+          "primary": "192.0.2.53",
+          "secondary": ""
+        },
+        "xray": {
+          "protocol": "VLESS",
+          "host": "xray.example.invalid",
+          "port": 443,
+          "uuid": "00000000-0000-0000-0000-000000000000",
+          "password": null,
+          "security": "TLS",
+          "network": "GRPC",
+          "path": "/ws",
+          "serviceName": null,
+          "sni": "sni.example.invalid",
+          "hostHeader": "",
+          "wildcardHost": null,
+          "allowInsecure": false,
+          "alpn": null,
+          "flow": null,
+          "fingerprint": null,
+          "realityPublicKey": null,
+          "shortId": null,
+          "spiderX": null,
+          "mode": null
+        }
+      },
+      "isPartial": false
+    }
+  },
+  {
+    "label": "v2-cfg3",
+    "wire": "1FTnl.AgEBAAcICQoLDA0ODxAREhMUFRaHiImKi4yNjo-QkZIAAAB5AAAA5gIAEmNvbS5vbmVmdHVubmVsLmFwcABAMGM3NzE4MTY2YzBiNjBjYjA5MjI5ZGZjNWY4YzAyZjI1NjdlYTQxZmI3NWY3YzdiNzkyMTExYzY1ZGZhZjkzNwAAAAEAAAABAAAAAAAAAHoAAAGLz-VoAAAAAaMYXFAAAwGPsQOb6FkjXDoZM3lmN2Kr2ZYdA6ZsdJJxRx8QiYLhBiI2V84tLRHVmx4ciSHq7LJAt1L8zYygGRDQ677CBshBBbXWGAic2EGgpLAZkJMdYlqsNpZ16LH8oqsqV2UnEZFMy3c6k0RfwBxS54NIJ1qr7OH72ZBYNonq6vr1sMd6GLBSJcmzNhFZyM440cgJIhs_PIYqyLiPwgY_lysJ3TdpxXFoLEEQRYBSYD5CZLjhYzVpSOQJK5Kl-KcoNQZsmI1hq1ZkoIdK9t2Ae2DIodB4AZdL0ZvDti4bOUpsfOZJ2PHfvSh60A",
+    "password": "",
+    "expected": {
+      "application": "1FTunnel",
+      "format": "1FT1",
+      "metadata": {
+        "version": 2,
+        "package": "com.oneftunnel.app",
+        "signatureSha256": "0c7718166c0b60cb09229dfc5f8c02f2567ea41fb75f7c7b792111c65dfaf937",
+        "configVersion": 1,
+        "keySlot": 1,
+        "minimumAppBuild": 122,
+        "createdAt": 1700000000000,
+        "expiredAt": 1800000000000,
+        "configType": "TROJAN",
+        "lockMode": 1,
+        "blockRoot": false,
+        "authenticated": true,
+        "algorithm": "AES-256-GCM",
+        "kdf": "HKDF-SHA256"
+      },
+      "config": {
+        "payloadVersion": 3,
+        "id": "synthetic-7",
+        "name": "Perfil de prueba 😀\u00007",
+        "createdAt": 1700000000000,
+        "message": "mensaje\nprueba",
+        "fieldLockMask": 511,
+        "ssh": null,
+        "inject": null,
+        "dns": null,
+        "xray": {
+          "protocol": "TROJAN",
+          "host": "xray.example.invalid",
+          "port": 443,
+          "uuid": "00000000-0000-0000-0000-000000000000",
+          "password": null,
+          "security": "NONE",
+          "network": "RAW",
+          "path": "/ws",
+          "serviceName": null,
+          "sni": "sni.example.invalid",
+          "hostHeader": "",
+          "wildcardHost": null,
+          "allowInsecure": false,
+          "alpn": "h2,http/1.1",
+          "flow": null,
+          "fingerprint": null,
+          "realityPublicKey": null,
+          "shortId": null,
+          "spiderX": null,
+          "mode": null
+        }
+      },
+      "isPartial": false
+    }
+  },
+  {
+    "label": "v2-cfg4",
+    "wire": "1FTnl.AgEBAAgJCgsMDQ4PEBESExQVFheIiYqLjI2Oj5CRkpMAAAB5AAABmQIAEmNvbS5vbmVmdHVubmVsLmFwcABAZDVkNjY2NTg2ODI0NDk4MWE3Y2UzZTllYTU0MzYxMGFmODNlZDNiOWMwMDMyMmYwYTdmZmVkODhkMzI3ZDU4OQAAAAEAAAAAAAAAAAAAAHoAAAGLz-VoAP__________AAKNwCyI5LK6ER7_9ytIqy-0Hc1ck8PuBFJ_z2iR0FpW2Fg9G0oE0gClPVbn52GIwHXHnY7iAtoaCKFEMz0PTD3nkW2mN39m3aUcu1vJJic8OlsR9PetY_CgjX-kRRYLNcdkcOasUhAPi4rzEG04T9RWGr-6msgfgKX66cip_OjgxXYnoscpbCo25-4T9NkWg9yroETsIrltS6i_W2Mc0avmaFUYxO8c_DHCk37qe2mKwCWr3aJA9u00XIw3pjG1ZIaGWnB2yFUhGf5TAL2PSVnsNjPPbb4qfAgkhAg5BFBZ6c-NzTGuA_1zMH1vpcdr4fYHCiQNmDWmAuIvs7TRsBIEHUJ_Hf-wVaLh_lAOWKQgO-DWeMo9uUlf0KJzTbovIxqtzLPtiDI40J76PtQjppfNAYK6e1Xtqr0I5CTA9LqNsyJSZYtiAygk6C7EhA1xVxBo99qJL5CFg_fil5-XtG5WS5NH787Ou40ZnO2tMYVEW2-Rm0D5rgs8lf4RuE75ujoUrt9v6t1cVni7dIaCt-JNFirR06UUn071",
+    "password": "prueba-😀-contraseña",
+    "expected": {
+      "application": "1FTunnel",
+      "format": "1FT1",
+      "metadata": {
+        "version": 2,
+        "package": "com.oneftunnel.app",
+        "signatureSha256": "d5d6665868244981a7ce3e9ea543610af83ed3b9c00322f0a7ffed88d327d589",
+        "configVersion": 1,
+        "keySlot": 0,
+        "minimumAppBuild": 122,
+        "createdAt": 1700000000000,
+        "expiredAt": -1,
+        "configType": "SSH",
+        "lockMode": 2,
+        "blockRoot": false,
+        "authenticated": true,
+        "algorithm": "AES-256-GCM",
+        "kdf": "HKDF-SHA256"
+      },
+      "config": {
+        "payloadVersion": 4,
+        "id": "synthetic-8",
+        "name": "Perfil de prueba 😀\u00008",
+        "createdAt": 1700000000000,
+        "message": null,
+        "fieldLockMask": null,
+        "ssh": {
+          "host": "ssh.example.invalid",
+          "port": 22,
+          "username": "",
+          "password": "synthetic-password"
+        },
+        "inject": {
+          "mode": "PROXY_SNI",
+          "payload": "GET / HTTP/1.1\r\n\r\n",
+          "proxyHost": null,
+          "proxyPort": null,
+          "sni": "",
+          "wildcardHost": "*.example.invalid"
+        },
+        "dns": {
+          "primary": "192.0.2.53",
+          "secondary": ""
+        },
+        "xray": {
+          "protocol": "TROJAN",
+          "host": "xray.example.invalid",
+          "port": 443,
+          "uuid": "00000000-0000-0000-0000-000000000000",
+          "password": null,
+          "security": "REALITY",
+          "network": "XHTTP",
+          "path": "/ws",
+          "serviceName": null,
+          "sni": "sni.example.invalid",
+          "hostHeader": "",
+          "wildcardHost": null,
+          "allowInsecure": true,
+          "alpn": "h2,http/1.1",
+          "flow": "xtls-rprx-vision",
+          "fingerprint": "chrome",
+          "realityPublicKey": "synthetic-public-key",
+          "shortId": "abcd",
+          "spiderX": null,
+          "mode": null
+        }
+      },
+      "isPartial": false
+    }
+  },
+  {
+    "label": "v2-cfg5",
+    "wire": "1FTnl.AgEBAAkKCwwNDg8QERITFBUWFxiJiouMjY6PkJGSk5QAAAB5AAABMAIAEmNvbS5vbmVmdHVubmVsLmFwcABAMGM3NzE4MTY2YzBiNjBjYjA5MjI5ZGZjNWY4YzAyZjI1NjdlYTQxZmI3NWY3YzdiNzkyMTExYzY1ZGZhZjkzNwAAAAEAAAABAAAAAAAAAHoAAAGLz-VoAAAAAaMYXFAAAQCTrqoXYfdRQDdU3pJHddzX4_CBjrESoq0n5WhSqGFX2jESJXs_wo609kbXbIcHdDuFdEZby-lsAL5j6OdBH-ayFBh9sklHBy46bAb3pFUA4gG2cvCMHUnofxy01RBQcYkCIMQkDxfy7Tgw8BqYkfQgZ-HO8l3GxfYdtZm7HBKpr_M0YS4AG6zGfLmxDbZjF-IN-sRoTS0PMJvfEWcVu-WuUxdVr25fF8nKn5Jadsi2DBXoSVoiADVQzNH2-KPnUOqH-34QZHXtcNtAs8Pclhi5n4JMosHVsKcNA0ZT4D46SWPwEemqvLIQxl_eCWWd6sydwU1_9wDlyuCJ2tvj1EARgNnIKRanEu0xzBNahHPL1cCTwQSunUlQnRC-laoV4X_rG5Amf4E-DmeR6dOq23U1",
+    "password": "",
+    "expected": {
+      "application": "1FTunnel",
+      "format": "1FT1",
+      "metadata": {
+        "version": 2,
+        "package": "com.oneftunnel.app",
+        "signatureSha256": "0c7718166c0b60cb09229dfc5f8c02f2567ea41fb75f7c7b792111c65dfaf937",
+        "configVersion": 1,
+        "keySlot": 1,
+        "minimumAppBuild": 122,
+        "createdAt": 1700000000000,
+        "expiredAt": 1800000000000,
+        "configType": "VMESS",
+        "lockMode": 0,
+        "blockRoot": false,
+        "authenticated": true,
+        "algorithm": "AES-256-GCM",
+        "kdf": "HKDF-SHA256"
+      },
+      "config": {
+        "payloadVersion": 5,
+        "id": "synthetic-9",
+        "name": "Perfil de prueba 😀\u00009",
+        "createdAt": 1700000000000,
+        "message": "mensaje\nprueba",
+        "fieldLockMask": 511,
+        "ssh": null,
+        "inject": null,
+        "dns": null,
+        "xray": {
+          "protocol": "VMESS",
+          "host": "xray.example.invalid",
+          "port": 443,
+          "uuid": "00000000-0000-0000-0000-000000000000",
+          "password": null,
+          "security": "TLS",
+          "network": "HTTPUPGRADE",
+          "path": "/ws",
+          "serviceName": null,
+          "sni": "sni.example.invalid",
+          "hostHeader": "",
+          "wildcardHost": null,
+          "allowInsecure": false,
+          "alpn": "h2,http/1.1",
+          "flow": "xtls-rprx-vision",
+          "fingerprint": "chrome",
+          "realityPublicKey": "synthetic-public-key",
+          "shortId": "abcd",
+          "spiderX": null,
+          "mode": "auto"
+        }
+      },
+      "isPartial": false
+    }
+  },
+  {
+    "label": "v3-cfg1",
+    "wire": "1FTnl.AwEBAAoLDA0ODxAREhMUFRYXGBmKi4yNjo-QkZKTlJUAAAB6AAABRQMAEmNvbS5vbmVmdHVubmVsLmFwcABAZDVkNjY2NTg2ODI0NDk4MWE3Y2UzZTllYTU0MzYxMGFmODNlZDNiOWMwMDMyMmYwYTdmZmVkODhkMzI3ZDU4OQAAAAEAAAAAAAAAAAAAAHoAAAGLz-VoAP__________AgEB_rJ41ENVu8Tp9bWAhg81LnG2qnBAa0WF81j0-tbkateJW2el_2n_UIPrKHguvb0WaGi8PewsJ6Mn1ir-uCqRKakSAdzpMn9lfTvsPgXOb0A534ov04Z7gq7fNaTV1Y53TNVe4aTFARqPEMTxzMoPzazMXxUU4Ym5xnwyFZeyMDzvOwk3f1q9VYw4T_h6_pTgPVhO5crJgoPoJVefB_GARltcFzv9nFMuKyCqyMJ3Kvbj0tP3osIQlP2wopZhyU6b2IKeFibLQrH-RL0k0G7LjndGIcb6KiMx8X-30H2eLDUXhowSdiyoo7A0O9GnTPLUnDd_qb58y0bLODtKFOqYZ5_V8K5lOAJ_6koi5pMGSw9snNCuWt3e2tzB8vMDccFoXpymXnSZVeASzd51oTPTPSFjwhLrKAn0WnclCJKYg7KLkmFk6w",
+    "password": "",
+    "expected": {
+      "application": "1FTunnel",
+      "format": "1FT1",
+      "metadata": {
+        "version": 3,
+        "package": "com.oneftunnel.app",
+        "signatureSha256": "d5d6665868244981a7ce3e9ea543610af83ed3b9c00322f0a7ffed88d327d589",
+        "configVersion": 1,
+        "keySlot": 0,
+        "minimumAppBuild": 122,
+        "createdAt": 1700000000000,
+        "expiredAt": -1,
+        "configType": "VLESS",
+        "lockMode": 1,
+        "blockRoot": true,
+        "authenticated": true,
+        "algorithm": "AES-256-GCM",
+        "kdf": "HKDF-SHA256"
+      },
+      "config": {
+        "payloadVersion": 1,
+        "id": "synthetic-10",
+        "name": "Perfil de prueba 😀\u000010",
+        "createdAt": 1700000000000,
+        "message": null,
+        "fieldLockMask": null,
+        "ssh": {
+          "host": "ssh.example.invalid",
+          "port": 22,
+          "username": "",
+          "password": "synthetic-password"
+        },
+        "inject": {
+          "mode": "DIRECT",
+          "payload": "GET / HTTP/1.1\r\n\r\n",
+          "proxyHost": null,
+          "proxyPort": null,
+          "sni": "",
+          "wildcardHost": "*.example.invalid"
+        },
+        "dns": {
+          "primary": "192.0.2.53",
+          "secondary": ""
+        },
+        "xray": {
+          "protocol": "VLESS",
+          "host": "xray.example.invalid",
+          "port": 443,
+          "uuid": "00000000-0000-0000-0000-000000000000",
+          "password": null,
+          "security": "NONE",
+          "network": "WS",
+          "path": "/ws",
+          "serviceName": null,
+          "sni": "sni.example.invalid",
+          "hostHeader": "",
+          "wildcardHost": null,
+          "allowInsecure": false,
+          "alpn": null,
+          "flow": null,
+          "fingerprint": null,
+          "realityPublicKey": null,
+          "shortId": null,
+          "spiderX": null,
+          "mode": null
+        }
+      },
+      "isPartial": false
+    }
+  },
+  {
+    "label": "v3-cfg2",
+    "wire": "1FTnl.AwEBAAsMDQ4PEBESExQVFhcYGRqLjI2Oj5CRkpOUlZYAAAB6AAAA2AMAEmNvbS5vbmVmdHVubmVsLmFwcABAMGM3NzE4MTY2YzBiNjBjYjA5MjI5ZGZjNWY4YzAyZjI1NjdlYTQxZmI3NWY3YzdiNzkyMTExYzY1ZGZhZjkzNwAAAAEAAAABAAAAAAAAAHoAAAGLz-VoAAAAAaMYXFAAAwIAfghbbdTi3gB-YKozG182DXahp1tzED1Eznad1fjIgOhYeJvACVn4MQ4eW-_tQy3f4FzB05_edDQziYy33VMzI0NrKMPTGBcArt39FHnCVCDL4r03oIC9vbu-2yQCzz45Yv7488tipnaNw2j3bPKVTURU15YQEAzjWgA_hP9I-6FJ0-IHcFJBdxZUx_yjgltj9xn_rDtJRz5xftYfXjTmmcImLYvY44YtUKy8IwrLoohpRUxnoGmEIlV1WNeCYqrB6hk35-6CpBwq39GFaqVfqaEV53kE2DAp",
+    "password": "prueba-😀-contraseña",
+    "expected": {
+      "application": "1FTunnel",
+      "format": "1FT1",
+      "metadata": {
+        "version": 3,
+        "package": "com.oneftunnel.app",
+        "signatureSha256": "0c7718166c0b60cb09229dfc5f8c02f2567ea41fb75f7c7b792111c65dfaf937",
+        "configVersion": 1,
+        "keySlot": 1,
+        "minimumAppBuild": 122,
+        "createdAt": 1700000000000,
+        "expiredAt": 1800000000000,
+        "configType": "TROJAN",
+        "lockMode": 2,
+        "blockRoot": false,
+        "authenticated": true,
+        "algorithm": "AES-256-GCM",
+        "kdf": "HKDF-SHA256"
+      },
+      "config": {
+        "payloadVersion": 2,
+        "id": "synthetic-11",
+        "name": "Perfil de prueba 😀\u000011",
+        "createdAt": 1700000000000,
+        "message": "mensaje\nprueba",
+        "fieldLockMask": 511,
+        "ssh": null,
+        "inject": null,
+        "dns": null,
+        "xray": {
+          "protocol": "TROJAN",
+          "host": "xray.example.invalid",
+          "port": 443,
+          "uuid": "00000000-0000-0000-0000-000000000000",
+          "password": null,
+          "security": "REALITY",
+          "network": "GRPC",
+          "path": "/ws",
+          "serviceName": null,
+          "sni": "sni.example.invalid",
+          "hostHeader": "",
+          "wildcardHost": null,
+          "allowInsecure": false,
+          "alpn": null,
+          "flow": null,
+          "fingerprint": null,
+          "realityPublicKey": null,
+          "shortId": null,
+          "spiderX": null,
+          "mode": null
+        }
+      },
+      "isPartial": false
+    }
+  },
+  {
+    "label": "v3-cfg3",
+    "wire": "1FTnl.AwEBAAwNDg8QERITFBUWFxgZGhuMjY6PkJGSk5SVlpcAAAB6AAABWQMAEmNvbS5vbmVmdHVubmVsLmFwcABAZDVkNjY2NTg2ODI0NDk4MWE3Y2UzZTllYTU0MzYxMGFmODNlZDNiOWMwMDMyMmYwYTdmZmVkODhkMzI3ZDU4OQAAAAEAAAAAAAAAAAAAAHoAAAGLz-VoAP__________AAABDueJO8jJdz7zOnvBLMn8DJbRu70zD4vg078bhEe2Xyx859-eZknYlVK9R1A3c3O3mvMUrz41_TgiDpV9A-EFx6uePin5h5XrBICw8BmeSjoP9r5siutPV_IL8TZdKdc3qAIqjJt5QWD-6gbHe7WxpBCB4aYsePxZ_SctpKvqtiny4ZrwooXAgaMvkHOFgcbkQYvkvklU7tpxNyLM4DL8uRdc_zBPujhcRuemLe0O4Axiiw04enJijwu5JcjiKrU8LuWdwbglPtb97yiQqrcLHOIaJ0vkVG3JzYHaYtXK706MdiIG02w4BJFjDeOPizOJpRBf69hBc5vpS1hNxalY5n1tJXp7MiNu-MjfFz4gqD1TMzQOeosOFClZy8DVBdZ2mdDVYLPg0KbZ9B1hy7Sqh9LMOhUwdPrliEYADuu80BCUI3znguUMyR7-mND9vMKXit2-8MJ_cgu9",
+    "password": "",
+    "expected": {
+      "application": "1FTunnel",
+      "format": "1FT1",
+      "metadata": {
+        "version": 3,
+        "package": "com.oneftunnel.app",
+        "signatureSha256": "d5d6665868244981a7ce3e9ea543610af83ed3b9c00322f0a7ffed88d327d589",
+        "configVersion": 1,
+        "keySlot": 0,
+        "minimumAppBuild": 122,
+        "createdAt": 1700000000000,
+        "expiredAt": -1,
+        "configType": "SSH",
+        "lockMode": 0,
+        "blockRoot": true,
+        "authenticated": true,
+        "algorithm": "AES-256-GCM",
+        "kdf": "HKDF-SHA256"
+      },
+      "config": {
+        "payloadVersion": 3,
+        "id": "synthetic-12",
+        "name": "Perfil de prueba 😀\u000012",
+        "createdAt": 1700000000000,
+        "message": null,
+        "fieldLockMask": null,
+        "ssh": {
+          "host": "ssh.example.invalid",
+          "port": 22,
+          "username": "",
+          "password": "synthetic-password"
+        },
+        "inject": {
+          "mode": "PROXY",
+          "payload": "GET / HTTP/1.1\r\n\r\n",
+          "proxyHost": null,
+          "proxyPort": null,
+          "sni": "",
+          "wildcardHost": "*.example.invalid"
+        },
+        "dns": {
+          "primary": "192.0.2.53",
+          "secondary": ""
+        },
+        "xray": {
+          "protocol": "VMESS",
+          "host": "xray.example.invalid",
+          "port": 443,
+          "uuid": "00000000-0000-0000-0000-000000000000",
+          "password": null,
+          "security": "TLS",
+          "network": "RAW",
+          "path": "/ws",
+          "serviceName": null,
+          "sni": "sni.example.invalid",
+          "hostHeader": "",
+          "wildcardHost": null,
+          "allowInsecure": true,
+          "alpn": "h2,http/1.1",
+          "flow": null,
+          "fingerprint": null,
+          "realityPublicKey": null,
+          "shortId": null,
+          "spiderX": null,
+          "mode": null
+        }
+      },
+      "isPartial": false
+    }
+  },
+  {
+    "label": "v3-cfg4",
+    "wire": "1FTnl.AwEBAA0ODxAREhMUFRYXGBkaGxyNjo-QkZKTlJWWl5gAAAB6AAABKgMAEmNvbS5vbmVmdHVubmVsLmFwcABAMGM3NzE4MTY2YzBiNjBjYjA5MjI5ZGZjNWY4YzAyZjI1NjdlYTQxZmI3NWY3YzdiNzkyMTExYzY1ZGZhZjkzNwAAAAEAAAABAAAAAAAAAHoAAAGLz-VoAAAAAaMYXFAAAQEAvCDvz7wWyp0LxZuSGWj0Xq4HTIgLLTJE10BTDqCX93zvMvmdftjeS8GfwI02eBvBMr73ttJsQfWhvzAk_JihfUHA9N08xkkWQLRmTrAQz0kLnL29VEu0m8u865SGwWPOPEiqBIghIpSlDlUGjPEtP8Tq4RpeO_fQjv2JReDZS3dr_Y2qgfKae_UYSoQXwQeTCci1ilfKdsHR7PHOaYI8CXiX3XWqgkj9ehyPZjnThqGkbLM-qa9PoEhTNCEbJTLNm3j0nidw8oylkUxHUXY5Nx-cnKHO5EqVsgh9Fw-uExZlTiJHP2t9xxv2UnlS21ZTZx1d3QLF9ok3d4UoNwX8K8_WvE7Oblt0VEVeFvGbx0DohdEBUrcYXr5TJIr8mQ29tLAmMrJLNtuvYg",
+    "password": "",
+    "expected": {
+      "application": "1FTunnel",
+      "format": "1FT1",
+      "metadata": {
+        "version": 3,
+        "package": "com.oneftunnel.app",
+        "signatureSha256": "0c7718166c0b60cb09229dfc5f8c02f2567ea41fb75f7c7b792111c65dfaf937",
+        "configVersion": 1,
+        "keySlot": 1,
+        "minimumAppBuild": 122,
+        "createdAt": 1700000000000,
+        "expiredAt": 1800000000000,
+        "configType": "VMESS",
+        "lockMode": 1,
+        "blockRoot": false,
+        "authenticated": true,
+        "algorithm": "AES-256-GCM",
+        "kdf": "HKDF-SHA256"
+      },
+      "config": {
+        "payloadVersion": 4,
+        "id": "synthetic-13",
+        "name": "Perfil de prueba 😀\u000013",
+        "createdAt": 1700000000000,
+        "message": "mensaje\nprueba",
+        "fieldLockMask": 511,
+        "ssh": null,
+        "inject": null,
+        "dns": null,
+        "xray": {
+          "protocol": "VMESS",
+          "host": "xray.example.invalid",
+          "port": 443,
+          "uuid": "00000000-0000-0000-0000-000000000000",
+          "password": null,
+          "security": "NONE",
+          "network": "XHTTP",
+          "path": "/ws",
+          "serviceName": null,
+          "sni": "sni.example.invalid",
+          "hostHeader": "",
+          "wildcardHost": null,
+          "allowInsecure": false,
+          "alpn": "h2,http/1.1",
+          "flow": "xtls-rprx-vision",
+          "fingerprint": "chrome",
+          "realityPublicKey": "synthetic-public-key",
+          "shortId": "abcd",
+          "spiderX": null,
+          "mode": null
+        }
+      },
+      "isPartial": false
+    }
+  },
+  {
+    "label": "v3-cfg5",
+    "wire": "1FTnl.AwEBAA4PEBESExQVFhcYGRobHB2Oj5CRkpOUlZaXmJkAAAB6AAABowMAEmNvbS5vbmVmdHVubmVsLmFwcABAZDVkNjY2NTg2ODI0NDk4MWE3Y2UzZTllYTU0MzYxMGFmODNlZDNiOWMwMDMyMmYwYTdmZmVkODhkMzI3ZDU4OQAAAAEAAAAAAAAAAAAAAHoAAAGLz-VoAP__________AgIB13r5FhMCteqQ5QzhV9hWW40FY64WVafhfAzHRzEt2AOAcwz-HfXzdZBtMVZEpB5kjh8f80-XHm75JJMgmi5kPJESOJ-HDH2jzScgQqXJwMeXEU7X9HqZvI6NIKyBI33BjnG3RniY-oCCzEnPKyTFztuOy45khBq4l_VHeEGBltyJyiw-tdFwDto71-uzMJOzq_ee472Cv3nVK05b2NjDOCapwog-80jCg6igY2uGiZ9y_SYHJgZfOZOKsGK2XWoCMFYzPuviYikHYonUjV_D2gHgeZgPhjfhf5iSxWT-SKGeaeo67SXOAK95RQigkcC6WgEul1cvWWtGsE4SviQiKqi8RRoZfrWT7Opi6Hap9V-8b7ynB21AtF9ilqkjsxAGSWi2MjmON6KuYWMA6RoODXRc1WLGjVz0DS4SQCzEVKKc_1eK-ed7BsZhDxdwN_sz8inwwJY5Or6k9ltDFHaE4BNAgS3F1nypKqHXupNy6bsx5ULxo5TU0VPxVuFlonBg0E3GgKXZL4ILyPegcsFQiw1-3EzMbGmMxXhujRz5Hh4_VqQ",
+    "password": "prueba-😀-contraseña",
+    "expected": {
+      "application": "1FTunnel",
+      "format": "1FT1",
+      "metadata": {
+        "version": 3,
+        "package": "com.oneftunnel.app",
+        "signatureSha256": "d5d6665868244981a7ce3e9ea543610af83ed3b9c00322f0a7ffed88d327d589",
+        "configVersion": 1,
+        "keySlot": 0,
+        "minimumAppBuild": 122,
+        "createdAt": 1700000000000,
+        "expiredAt": -1,
+        "configType": "VLESS",
+        "lockMode": 2,
+        "blockRoot": true,
+        "authenticated": true,
+        "algorithm": "AES-256-GCM",
+        "kdf": "HKDF-SHA256"
+      },
+      "config": {
+        "payloadVersion": 5,
+        "id": "synthetic-14",
+        "name": "Perfil de prueba 😀\u000014",
+        "createdAt": 1700000000000,
+        "message": null,
+        "fieldLockMask": null,
+        "ssh": {
+          "host": "ssh.example.invalid",
+          "port": 22,
+          "username": "",
+          "password": "synthetic-password"
+        },
+        "inject": {
+          "mode": "WILDCARD",
+          "payload": "GET / HTTP/1.1\r\n\r\n",
+          "proxyHost": null,
+          "proxyPort": null,
+          "sni": "",
+          "wildcardHost": "*.example.invalid"
+        },
+        "dns": {
+          "primary": "192.0.2.53",
+          "secondary": ""
+        },
+        "xray": {
+          "protocol": "VLESS",
+          "host": "xray.example.invalid",
+          "port": 443,
+          "uuid": "00000000-0000-0000-0000-000000000000",
+          "password": null,
+          "security": "REALITY",
+          "network": "HTTPUPGRADE",
+          "path": "/ws",
+          "serviceName": null,
+          "sni": "sni.example.invalid",
+          "hostHeader": "",
+          "wildcardHost": null,
+          "allowInsecure": true,
+          "alpn": "h2,http/1.1",
+          "flow": "xtls-rprx-vision",
+          "fingerprint": "chrome",
+          "realityPublicKey": "synthetic-public-key",
+          "shortId": "abcd",
+          "spiderX": null,
+          "mode": "auto"
+        }
+      },
+      "isPartial": false
+    }
+  }
+]

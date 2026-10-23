@@ -97,3 +97,12 @@ Se recuperaron además 213 bytes de metadatos LIAPP y la identidad local
 paquete/SHA-1. `am_liapp_metadata.py`, `am_liapp_native_probe.py` y los vectores
 `tests/golden/am_liapp*` están conservados. El probe usa contexto/archivos
 modelados; DEX original, lector exterior y respuesta remota siguen pendientes.
+
+Último lector de archivos incorporado: **1FTunnel 0.6.99 (125)**,
+`decoders/Python/apps/OneFTunnel/`. `.1ftnl` y cuatro prefijos, muestra real
+completa igual a JDK y worker, **9 Python / 13 Node aprobadas**, 32 KDF ARM64.
+Catálogo no identificado, pendiente; no añade ficha ni cambia Server VPN/C11.
+C8 efectivo **248**; C0 congelado **240**. Herramientas `oneftunnel_verify.py`
+y `oneftunnel_native_oracle.py` conservadas, instrucciones en RESTORE.md y
+ANALYSIS.md. AM queda pendiente por indicación del usuario; no continuarlo
+como parte del análisis 1FTunnel. Sin despliegue, fusión o APK automáticos.

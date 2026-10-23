@@ -265,6 +265,21 @@ entregas anteriores ni publicar anuncios automáticamente.
 
 ## Nuevos métodos de archivos, textos o enlaces añadidos
 
+- **1FTunnel 0.6.99 (125) ✅ — `.1ftnl` y cuatro prefijos de texto**:
+  muestra real aportada autenticada AES-256-GCM y CFG1 completo de **1995 bytes**,
+  JSON íntegro igual a JDK, CLI y worker aislado de archivo/texto, sin recorte.
+  KDF HKDF-SHA256 y contraseñas UTF-16BE confirmadas con ARM64 original.
+- Carpeta `decoders/Python/apps/OneFTunnel/`, API Python/bot, ruta Cloud,
+  credenciales por stdin y detección Android para servidor. Contenedor v1–v3 y
+  CFG1 v1–v5, SSH/inyección/DNS/Xray completos. **9 Python / 13 Node aprobadas**,
+  15 vectores sintéticos JDK y **32 comparaciones KDF ARM64** incluyendo la
+  muestra real. Worker HTTP local autenticado verificado; sin suites completas.
+- Herramientas `oneftunnel_native_oracle.py` / `oneftunnel_verify.py` y guía de
+  recuperación conservadas. Catálogo **no identificado, pendiente**; sin nuevo
+  proveedor/ficha Server VPN. C0 sigue 240, C8 efectivo 248. Disponible en código
+  del PR #96, pendiente de VPS/cliente actualizado; sin despliegue, fusión, APK
+  o novedades C11 automáticos. Datos reales y binarios fuera de Git.
+
 - **HTTP SocketClay 3.4.0 ✅ — archivos `.sks`**: lector Python y ruta Cloud
   compartida con Fenix/Jireh. GCM y DES comprobados con el importador del APK y
   vectores Java sintéticos; exportación real independiente no proporcionada.

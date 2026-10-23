@@ -27,6 +27,9 @@ def dispatch(text: str, *, password: str | None = None) -> str | None:
         return None
     value = text.strip()
     lowered = value.lower()
+    if value.startswith(("1FTnl.", "1FT1.", "1ftunnel://1FTnl/", "1ftunnel://1FT1/")):
+        from decoders.Python.apps.OneFTunnel.file_decoder import run
+        return run(value.encode("utf-8"), password=password)
     # File/text twin formats: same vetted legacy algorithm, no unrelated fallback.
     direct = {
         "tls://": "decoders.Python.TLS",
@@ -94,7 +97,11 @@ def main() -> int:
         if len(raw) > MAX_TEXT_CHARS * 4:
             return 2
         text = raw.decode("utf-8")
-        incoming = sys.stdin.buffer.read(8193)
+        onef = text.strip().startswith(("1FTnl.", "1FT1.", "1ftunnel://1FTnl/", "1ftunnel://1FT1/"))
+        credential_limit = 32768 if onef else 8192
+        incoming = sys.stdin.buffer.read(credential_limit + 1)
+        if len(incoming) > credential_limit:
+            return 2
         credentials = json.loads(incoming) if incoming else {}
         if not isinstance(credentials, dict) or set(credentials) - {"password"}:
             return 2
@@ -102,7 +109,8 @@ def main() -> int:
         if password is not None and (not isinstance(password, str) or
                 not 0 < len(password.encode("utf-8")) <= 4096):
             return 2
-        if password is not None and not text.strip().lower().startswith("ua://"):
+        if password is not None and not (text.strip().lower().startswith("ua://") or
+                text.strip().startswith(("1FTnl.", "1FT1.", "1ftunnel://1FTnl/", "1ftunnel://1FT1/"))):
             return 2
         output = dispatch(text, password=password)
     except (OSError, UnicodeError, ValueError, ImportError) as error:

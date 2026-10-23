@@ -15,6 +15,7 @@ import org.junit.runner.RunWith
 class CloudC8InputRoutesTest {
     @Test fun cloudFilesKeepExactWorkerSuffixes() {
         val supported=mapOf(
+            "profile.1FTNL" to Pair("1ftnl","1FTunnel 0.6.99"),
             "export.TGV" to Pair("tgv","TunelGuard VPN 12.8"),
             "test.mtp" to Pair("mtp","My Tunnel Proxy"),
             "royal.ROY" to Pair("roy","Royal Tunnel VPN 7.0"),
@@ -37,6 +38,10 @@ class CloudC8InputRoutesTest {
 
     @Test fun cloudTextVendorLinksReachExactServerPrefixes() {
         val cases=mapOf(
+            "1FTnl.cipher" to Triple("oneftunnel","1ftnl","1FTunnel"),
+            "1FT1.cipher" to Triple("oneftunnel","1ftnl","1FTunnel"),
+            "1ftunnel://1FTnl/cipher" to Triple("oneftunnel","1ftnl","1FTunnel"),
+            "1ftunnel://1FT1/cipher" to Triple("oneftunnel","1ftnl","1FTunnel"),
             "mytunnelproxy://cipher" to Triple("mytunnelproxy","mtp","My Tunnel Proxy"),
             "MYTUNNELPROXY://cipher" to Triple("mytunnelproxy","mtp","My Tunnel Proxy"),
             "actunnelvpn://cipher" to Triple("actunnelvpn","actun","AC TUNNEL VPN"),
@@ -52,6 +57,8 @@ class CloudC8InputRoutesTest {
         }
         assertNull(CloudTextFormats.identify("mytunnelproxy://"))
         assertNull(CloudTextFormats.identify("actunnelvpn://"))
+        assertNull(CloudTextFormats.identify("1FTnl."))
+        assertNull(CloudTextFormats.identify("1ftnl.cipher"))
         assertNull(CloudTextFormats.identify("https://example.invalid"))
     }
 

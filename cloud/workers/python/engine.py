@@ -75,6 +75,7 @@ def load_file_engines() -> dict[str, dict[str, str]]:
 # C8 additions are separate from the frozen 240-route C0 inventory.
 # Keep each format pinned to its own source codec; never route HX .hxt into xor_family.
 _C8_FILE_ENGINES = {
+    "1ftnl": ("decoders/Python/apps/OneFTunnel/file_decoder.py", "1FTunnel 0.6.99"),
     "tgv": ("decoders/Python/apps/TunelGuard_VPN/file_decoder.py", "TunelGuard VPN 12.8"),
     "rt": ("decoders/Python/apps/REESE_TUNNEL/reese_tunnel.py", "REESE TUNNEL"),
     "gol": ("decoders/Python/apps/VPN_PLUS_PERU/vpn_plus_peru.py", "VPN PLUS PERÚ"),
@@ -217,22 +218,29 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
     if suffix == "roy" and _is_legacy_roy(contents):
         engine = load_file_engines()["roy"]
     if credentials is not None:
-        allowed = {"password", "hwid"} if suffix == "hc" else {"password"} if suffix in ("tut", "ua") else None
+        allowed = {"password", "hwid"} if suffix == "hc" else {"password"} if suffix in ("tut", "ua", "1ftnl") else None
         if allowed is None or not isinstance(credentials, dict) or set(credentials) - allowed:
             raise DecodeFailure("CREDENTIALS_NOT_ALLOWED")
         for name, maximum in (("password", 4096), ("hwid", 128)):
             value = credentials.get(name)
             if value is not None and (not isinstance(value, str) or not 0 < len(value) <= maximum):
                 raise DecodeFailure("INVALID_CREDENTIALS")
+            if suffix == "1ftnl" and value is not None:
+                try:
+                    if len(value.encode("utf-8")) > maximum:
+                        raise DecodeFailure("INVALID_CREDENTIALS")
+                except UnicodeError as error:
+                    raise DecodeFailure("INVALID_CREDENTIALS") from error
     # Protected formats receive credentials on stdin, never argv/env/logs.
     protected_hc = suffix == "hc"
     protected_tut = suffix == "tut"
     protected_ua = suffix == "ua"
-    credential_input = protected_hc or protected_tut or protected_ua
+    protected_onef = suffix == "1ftnl"
+    credential_input = protected_hc or protected_tut or protected_ua or protected_onef
     source = engine["source"]
     if protected_hc:
         source = str(Path(__file__).with_name("hc_bridge.py"))
-    elif protected_tut:
+    elif protected_tut or protected_onef:
         source = str(Path(source).with_name("worker_bridge.py"))
     elif protected_ua:
         source = str(Path(__file__).with_name("ultra_custom_bridge.py"))
@@ -396,7 +404,8 @@ def decode_text(text: str, *, timeout: int = TIMEOUT_SECONDS, credentials: dict 
         raise DecodeFailure("INVALID_REQUEST")
     if credentials is not None:
         if (not isinstance(credentials, dict) or set(credentials) != {"password"} or
-                not text.strip().lower().startswith("ua://") or
+                not (text.strip().lower().startswith("ua://") or text.strip().startswith(
+                    ("1FTnl.", "1FT1.", "1ftunnel://1FTnl/", "1ftunnel://1FT1/"))) or
                 not isinstance(credentials["password"], str) or
                 not 0 < len(credentials["password"].encode("utf-8")) <= 4096):
             raise DecodeFailure("INVALID_CREDENTIALS")

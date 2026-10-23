@@ -16,6 +16,13 @@ entorno virtual. JADX **1.5.6** se descarga de su publicación oficial solo con
 `--install`; `decompile.py` verifica SHA-256 del ZIP y JAR antes de usarlo.
 También acepta un JAR existente con `--jar`, verificando el mismo checksum.
 
+1FTunnel 0.6.99: `oneftunnel_verify.py` compara el JSON completo con JDK y,
+opcionalmente, archivo privado/worker. `oneftunnel_native_oracle.py` ejecuta la
+KDF ARM64 del SO con hash fijado; modela HMAC y memoria, sin JNI/Android/red.
+**16 documentos iguales y 32 KDF iguales** contando 15 vectores sintéticos y
+la muestra real. Pasos reproducibles en [RESTORE.md](RESTORE.md) y formato en
+`decoders/Python/apps/OneFTunnel/ANALYSIS.md`. No se identificó catálogo.
+
 ```bash
 python scripts/apk_analysis/inspect_apk.py aplicacion.apks scripts/apk_analysis/work/app \
   --asset gremlin.json --native libputils.so
