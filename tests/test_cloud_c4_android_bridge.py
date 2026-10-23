@@ -32,7 +32,9 @@ class CloudC4Tests(unittest.TestCase):
         ):
             self.assertIn(route, source)
         self.assertIn("if(BuildConfig.SPDECODE_CLOUD_ENABLED)", source)
-        self.assertIn("else AndroidOfflineDecoderRouter.decode(this@MainActivity,name,input)",source)
+        self.assertIn("val routingName=ImportFilenameNormalizer.forDetection(name)", source)
+        self.assertIn("else AndroidOfflineDecoderRouter.decode(this@MainActivity,routingName,input)",source)
+        self.assertIn("val processed=DecodeView(name,supported.suffix,text,inputSize)",source)
         self.assertIn("if(BuildConfig.SPDECODE_CLOUD_ENABLED) {\n                            // Never fall back",source)
         self.assertEqual(source.count("cloudClient.decodeFile(supported.suffix,input"), 2)
 
