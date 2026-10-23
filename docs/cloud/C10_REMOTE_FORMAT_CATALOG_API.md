@@ -63,10 +63,11 @@ La versión mínima de código de esta fase es **37**. Una nueva extensión C8
 se integra en el worker, se regenera el inventario y se prueba antes de
 desplegar. **No se permite activar motores arbitrarios desde JSON**.
 
-## Pendiente: fase 2 Android
+## Fase Android implementada en el PR #96 (pendiente de CI/QA)
 
-La APK actual **no** lee `formats`: guarda únicamente `apps`. Eso es
-deliberado. En una actualización Android posterior:
+La fuente Android Cloud del PR **ya** lee, valida y guarda `formats` junto con
+`apps` al descargar el catálogo. Las APK **ya distribuidas** todavía no tienen
+esta función y requieren una actualización inicial:
 
 1. Extender el lector de catálogo para validar y cachear `formats`
    cifrado junto con `apps`, conservando un snapshot anterior si falla.
@@ -79,7 +80,10 @@ deliberado. En una actualización Android posterior:
 4. Preservar `sksrv.png`, sufijos Unicode, precedencia de C8 y los avisos
    de contraseña, HWID y clave de dispositivo.
 
-Ni Android ni el JSON local se modificaron en esta fase. No desplegar VPS,
+Los cambios Android se documentan en
+`docs/cloud/C10_ANDROID_REMOTE_FORMATS_MIGRATION.md`. Solo se alteró el asset
+público (`schemaVersion:4`) y la generación de UI Cloud; la versión nativa
+de producción aún necesita CI y QA antes de publicarse. No desplegar VPS,
 publicar APK ni cambiar novedades sin autorización del propietario.
 
 ## Estado de verificación
