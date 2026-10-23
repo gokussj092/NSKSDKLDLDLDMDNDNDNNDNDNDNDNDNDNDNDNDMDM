@@ -23,7 +23,7 @@ internal object CloudCredentialPolicy {
     fun npvsProtectionNotice(code:String,format:String?):Boolean =
         format=="npvs" && code in setOf(
             "PRIVATE_KEY_REQUIRED","RECIPIENT_MISMATCH",
-            "NPVS_PROTECTION_UNSUPPORTED"
+            "NPVS_PROTECTION_UNSUPPORTED","NPVS_APPKEY_AUTH_FAILED"
         )
 
     /** Expected user/format outcomes must not become client error telemetry. */
@@ -31,7 +31,7 @@ internal object CloudCredentialPolicy {
         code in setOf("PASSWORD_REQUIRED","HWID_REQUIRED",
             "HWID_PASSWORD_REQUIRED","AUTH_FAILED","INVALID_CREDENTIALS",
             "PRIVATE_KEY_REQUIRED","RECIPIENT_MISMATCH",
-            "NPVS_PROTECTION_UNSUPPORTED")
+            "NPVS_PROTECTION_UNSUPPORTED","NPVS_APPKEY_AUTH_FAILED")
 
     fun fileAcceptsPassword(suffix:String):Boolean = suffix in filePasswords
     fun fileNeedsPasswordDialog(suffix:String):Boolean = suffix in simpleDialogs

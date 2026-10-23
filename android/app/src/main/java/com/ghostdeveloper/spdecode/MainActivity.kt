@@ -1202,7 +1202,7 @@ class MainActivity : ComponentActivity() {
                         // generic failed-import summary or prompt for a password.
                         if(cause is CloudDecodeClient.Failure &&
                             cause.code in setOf("PRIVATE_KEY_REQUIRED","RECIPIENT_MISMATCH",
-                                "NPVS_PROTECTION_UNSUPPORTED") &&
+                                "NPVS_PROTECTION_UNSUPPORTED","NPVS_APPKEY_AUTH_FAILED") &&
                             cloudCredentialError==null)
                             cloudCredentialError=CloudUserErrors.message(
                                 this@MainActivity,cause,format)

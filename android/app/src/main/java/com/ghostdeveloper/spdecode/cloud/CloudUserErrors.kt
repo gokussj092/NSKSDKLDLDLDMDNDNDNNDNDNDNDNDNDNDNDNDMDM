@@ -15,6 +15,7 @@ internal object CloudUserErrors {
         if(cause is CloudDecodeClient.Failure) {
             return when(cause.code) {
                 "NPVS_PROTECTION_UNSUPPORTED" -> R.string.cloud_failure_npvs_unsupported
+                "NPVS_APPKEY_AUTH_FAILED" -> R.string.cloud_failure_npvs_appkey_auth
                 "PRIVATE_KEY_REQUIRED" -> R.string.cloud_failure_private_key
                 "RECIPIENT_MISMATCH" -> R.string.cloud_failure_recipient
                 "PASSWORD_REQUIRED" -> R.string.cloud_failure_password
