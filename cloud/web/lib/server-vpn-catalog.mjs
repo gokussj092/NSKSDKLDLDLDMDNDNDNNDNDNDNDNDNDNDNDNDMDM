@@ -2,7 +2,7 @@
 import {readFileSync} from "node:fs";
 import {join} from "node:path";
 import {createHash} from "node:crypto";
-import {publicFormats} from "./file-format-catalog.mjs";
+import {publicFormats,FORMAT_DETECTION} from "./file-format-catalog.mjs";
 
 export const CATALOG_VERSION = 37; // Increment whenever the public roster or metadata changes.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
@@ -87,6 +87,7 @@ export function catalog({availability=null,version=activeCatalogVersion()}={}) {
     recheckAfterSeconds:RECHECK_SECONDS,
     // Additive: old APKs only consume apps and ignore these optional fields.
     formatsSchemaVersion:1,
+    formatDetection:FORMAT_DETECTION,
     formatCount:publicFormats().length,
     formats:publicFormats(),
     apps: ITEMS.map(x=>({
