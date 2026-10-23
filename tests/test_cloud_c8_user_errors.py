@@ -60,8 +60,12 @@ class CloudUserErrorsContracts(unittest.TestCase):
         self.assertIn('passwordSubmitted=password!=null',source)
         self.assertIn('isExpectedFailure:(Exception)->Boolean={false}',queue)
         self.assertIn('if(!isExpectedFailure(failure))',queue)
-        self.assertIn('if(!noticeOnly) TextButton',screen)
-        self.assertIn('R.string.cloud_failure_notice_title',screen)
+        # C0 SpDecodeApp remains frozen. Cloud-only generated sources receive
+        # noticeOnly through Gradle rather than changing protected UI files.
+        generated=GRADLE.read_text("utf-8")
+        self.assertIn('if(!noticeOnly) TextButton',generated)
+        self.assertIn('R.string.cloud_failure_notice_title',generated)
+        self.assertIn('noticeOnly=messageIsCredentialNotice',generated)
         for locale in LOCALES:
             location=ROOT/"android/app/src/main/res"/locale/"cloud_error_strings.xml"
             resources={node.attrib["name"]:(node.text or "") for node in ET.parse(location).getroot()}
