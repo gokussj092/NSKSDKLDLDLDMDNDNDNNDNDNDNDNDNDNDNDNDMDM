@@ -18,9 +18,9 @@ copies, so that integration worked.
 - Add an explicit `COPY ... npvs_bridge.py` to the worker Dockerfile.
 - Validate its presence and Python imports while building the image under the
   actual UID 65532 (nonroot), not just in source-tree CI.
-- In C2 Docker topology tests, copy an entirely **synthetic** NPVS fixture
-  generator to the ephemeral test container (never the built Docker image)
-  and verify `PASSWORD_REQUIRED`, `AUTH_FAILED`, and successful complete JSON
+- In C2 Docker topology tests, stream an entirely **synthetic** NPVS
+  fixture generator through stdin into the read-only runtime container (never
+  store it in the production image or the container) and verify `PASSWORD_REQUIRED`, `AUTH_FAILED`, and successful complete JSON
   with the actual isolated worker and correct password.
 - Add a source-to-image packaging regression test.
 

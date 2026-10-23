@@ -179,25 +179,17 @@ jobs:
       - name: Verify packaged NPVS password and error contracts in real Docker worker
         run: |
           set -eu
-          container="$(docker compose -f cloud/compose.yaml ps -q decoder-worker)"
-          test -n "$container"
-          # The generator is synthetic test code, copied to the ephemeral
-          # container tmpfs, never included in a production layer or artifact.
-          docker cp tests/golden/npvs_protected_generate.py "$container:/tmp/npvs_synthetic_generator.py"
-          docker compose -f cloud/compose.yaml exec -T decoder-worker python - <<'PY'
-          import importlib.util
+          # Stream only synthetic code into the read-only runtime container.
+          # No test data, passwords, or fixture files are persisted to disk.
+          docker compose -f cloud/compose.yaml exec -T decoder-worker python -c '
           import sys
-          from pathlib import Path
 
           sys.path.insert(0, "cloud/workers/python")
           from engine import decode_file, DecodeFailure
           from decoders.Python.npvs import decode_npvs_complete
-          spec = importlib.util.spec_from_file_location(
-              "synthetic_npvs", "/tmp/npvs_synthetic_generator.py")
-          assert spec is not None and spec.loader is not None
-          module = importlib.util.module_from_spec(spec)
-          spec.loader.exec_module(module)
-          vector = module.make(password="fixture-only-password")
+          fixture = {"__name__": "synthetic_npvs_fixture"}
+          exec(compile(sys.stdin.read(), "<synthetic-fixture>", "exec"), fixture)
+          vector = fixture["make"](password="fixture-only-password")
           raw = vector["data"]
           correct = {"password": vector["password"]}
           for creds, expected in (
@@ -216,7 +208,7 @@ jobs:
           assert output["isPartial"] is False
           assert output["rawText"]
           print("NPVS packaged Docker worker: PASSWORD_REQUIRED / AUTH_FAILED / complete JSON OK")
-          PY
+          ' < tests/golden/npvs_protected_generate.py
       - name: Tear down
         if: always()
         run: docker compose -f cloud/compose.yaml down --remove-orphans

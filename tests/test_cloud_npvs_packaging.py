@@ -24,7 +24,8 @@ class NpvsPackagingTests(unittest.TestCase):
     def test_real_container_credential_cases_are_in_ci(self):
         ci=(ROOT/".github/workflows/cloud-c2.yml").read_text()
         for value in ("Verify packaged NPVS password and error contracts",
-                      "docker cp tests/golden/npvs_protected_generate.py",
+                      "tests/golden/npvs_protected_generate.py",
+                      "sys.stdin.read()",
                       "decode_file(\"npvs\", raw, credentials=creds)",
                       "PASSWORD_REQUIRED", "AUTH_FAILED",
                       "output[\"structuredJson\"] == expected"):
