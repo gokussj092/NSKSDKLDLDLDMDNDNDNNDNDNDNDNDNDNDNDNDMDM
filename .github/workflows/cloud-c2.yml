@@ -176,6 +176,47 @@ jobs:
           else:
               raise AssertionError("Worker must not be ready without token")
           PY
+      - name: Verify packaged NPVS password and error contracts in real Docker worker
+        run: |
+          set -eu
+          container="$(docker compose -f cloud/compose.yaml ps -q decoder-worker)"
+          test -n "$container"
+          # The generator is synthetic test code, copied to the ephemeral
+          # container tmpfs, never included in a production layer or artifact.
+          docker cp tests/golden/npvs_protected_generate.py "$container:/tmp/npvs_synthetic_generator.py"
+          docker compose -f cloud/compose.yaml exec -T decoder-worker python - <<'PY'
+          import importlib.util
+          import sys
+          from pathlib import Path
+
+          sys.path.insert(0, "cloud/workers/python")
+          from engine import decode_file, DecodeFailure
+          from decoders.Python.npvs import decode_npvs_complete
+          spec = importlib.util.spec_from_file_location(
+              "synthetic_npvs", "/tmp/npvs_synthetic_generator.py")
+          assert spec is not None and spec.loader is not None
+          module = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(module)
+          vector = module.make(password="fixture-only-password")
+          raw = vector["data"]
+          correct = {"password": vector["password"]}
+          for creds, expected in (
+              (None, "PASSWORD_REQUIRED"),
+              ({"password": "wrong-synthetic-password"}, "AUTH_FAILED"),
+          ):
+              try:
+                  decode_file("npvs", raw, credentials=creds)
+              except DecodeFailure as exc:
+                  assert exc.code == expected, (exc.code, expected)
+              else:
+                  raise AssertionError("protected NPVS unexpectedly succeeded")
+          output = decode_file("npvs", raw, credentials=correct)
+          expected = decode_npvs_complete(raw, password=correct["password"])
+          assert output["structuredJson"] == expected
+          assert output["isPartial"] is False
+          assert output["rawText"]
+          print("NPVS packaged Docker worker: PASSWORD_REQUIRED / AUTH_FAILED / complete JSON OK")
+          PY
       - name: Tear down
         if: always()
         run: docker compose -f cloud/compose.yaml down --remove-orphans
