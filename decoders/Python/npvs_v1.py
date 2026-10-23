@@ -1109,9 +1109,28 @@ def decode_npvs_v1(raw: bytes, *, password: str | None=None, public_key: str | N
     if not isinstance(document,(dict,list)): raise DecodeError()
     return document
 
+def decode_npvs_v1_complete(raw: bytes, *, password: str | None=None,
+                            public_key: str | None=None):
+    """Open authenticated v1 content, then unwrap explicit npvs1: fields.
+
+    The postprocessor is already used for signed NPVS v5. Reusing it keeps
+    encoded nested JSON, repeated prefix layers, size/depth limits and type
+    preservation identical without changing the working v5/v6 cipher paths.
+    Unlike crypto fallback, postprocessing runs ONLY after v1's AEAD succeeds.
+    """
+    document=decode_npvs_v1(raw,password=password,public_key=public_key)
+    from decoders.Python.npvs import (
+        DecodeError as EmbeddedDecodeError, _decode_embedded_npvs1
+    )
+    try:
+        return _decode_embedded_npvs1(document)
+    except EmbeddedDecodeError as err:
+        raise DecodeError("DECODE_FAILED") from err
+
 def run(raw: bytes, *, password: str | None=None, public_key: str | None=None) -> str:
-    return json.dumps(decode_npvs_v1(raw,password=password,public_key=public_key),
-                      ensure_ascii=False,indent=2,allow_nan=False)
+    return json.dumps(decode_npvs_v1_complete(raw,password=password,
+                       public_key=public_key),ensure_ascii=False,indent=2,
+                      allow_nan=False)
 
 def main() -> int:
     if len(sys.argv)!=3 or sys.argv[2]!="--credentials-stdin": return 2

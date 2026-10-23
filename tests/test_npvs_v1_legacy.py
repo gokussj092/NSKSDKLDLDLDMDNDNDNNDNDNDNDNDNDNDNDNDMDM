@@ -31,7 +31,7 @@ def _seal(key,nonce,data,aad):
     ct,tag=c.encrypt_and_digest(data)
     return ct+tag
 
-def make_v1(*,passphrase=False,recipients=False):
+def make_v1(*,passphrase=False,recipients=False,embedded=False):
     signer=ECC.construct(curve="P-256",d=0x123456789abcedf)
     pub=signer.public_key().export_key(format="SEC1",compress=True)
     salt=bytes(range(16))
@@ -58,6 +58,31 @@ def make_v1(*,passphrase=False,recipients=False):
     plain={"configs":[{"name":"synthetic","host":"example.invalid",
                        "port":443,"enabled":True,"optional":None}],
            "metadata":{"complete":True}}
+    if embedded:
+        # Non-secret synthetic values imitate the real NPVS v1 prefixed
+        # fields. Exact prefixed Base64 is deliberately not coerced to
+        # integer/bool: the surrounding JSON schema remains authoritative.
+        b64=lambda value: "npvs1:"+_b64(value.encode("utf-8"))
+        plain["configs"][0].update({
+            "name":"synthetic",
+            "remarks":b64("Rjo"),
+            "server":b64("example.invalid"),
+            "serverPort":b64("8081"),
+            "password":b64("synthetic-only-not-a-real-credential"),
+            "method":b64("none"),
+            "network":b64("xhttp"),
+            "headerType":b64("none"),
+            "mode":b64("gun"),
+            "xhttpMode":b64("auto"),
+            "nested":{
+                "items":[b64("日本語"),b64('{"host":"example.invalid","ports":[443,8443]}')],
+                "double":b64(b64("twice")),
+                "flag":False,
+                "number":8443,
+                "nullable":None,
+                "untaggedBase64":"dGVzdA==",
+            },
+        })
     nonce=bytes(range(60,72))
     body=_seal(dek,nonce,json.dumps(plain).encode(),h)
     unsigned=b"NPVS"+b"\x01"+struct.pack(">I",len(h))+h+nonce+struct.pack(">I",len(body))+body
@@ -72,6 +97,47 @@ class NpvsV1Tests(unittest.TestCase):
         self.assertEqual(out["structuredJson"],expected)
         self.assertFalse(out["isPartial"])
         self.assertEqual(json.loads(out["rawText"]),expected)
+
+    def test_v1_authenticated_embedded_fields_are_fully_decoded(self):
+        raw,_,original=make_v1(embedded=True)
+        # The unprocessed cryptographic result is deliberately unchanged.
+        self.assertEqual(npvs_v1.decode_npvs_v1(raw),original)
+        output=decode_file("npvs",raw)
+        got=output["structuredJson"]
+        self.assertEqual(json.loads(output["rawText"]),got)
+        self.assertFalse(output["isPartial"])
+        profile=got["configs"][0]
+        for name,value in (
+            ("remarks","Rjo"),("server","example.invalid"),
+            ("serverPort","8081"),("password","synthetic-only-not-a-real-credential"),
+            ("method","none"),("network","xhttp"),("headerType","none"),
+            ("mode","gun"),("xhttpMode","auto"),
+        ):
+            self.assertEqual(profile[name],value)
+            self.assertFalse(profile[name].startswith("npvs1:"))
+        self.assertEqual(profile["nested"]["items"],[
+            "日本語",{"host":"example.invalid","ports":[443,8443]}])
+        self.assertEqual(profile["nested"]["double"],"twice")
+        self.assertEqual(profile["nested"]["number"],8443)
+        self.assertIs(profile["nested"]["flag"],False)
+        self.assertIsNone(profile["nested"]["nullable"])
+        self.assertEqual(profile["nested"]["untaggedBase64"],"dGVzdA==")
+        self.assertEqual(profile["enabled"],True)
+        self.assertEqual(profile["port"],443)
+
+    def test_v1_password_embedded_values_after_authentication(self):
+        raw,credential,_=make_v1(passphrase=True,embedded=True)
+        with self.assertRaises(DecodeFailure) as err:
+            decode_file("npvs",raw,credentials={"password":"wrong"})
+        self.assertEqual(err.exception.code,"AUTH_FAILED")
+        output=decode_file("npvs",raw,credentials=credential)
+        self.assertEqual(output["structuredJson"]["configs"][0]["remarks"],"Rjo")
+
+    def test_v1_malformed_embedded_data_rejects_without_partial_result(self):
+        from decoders.Python.npvs import _decode_embedded_npvs1, DecodeError as FieldError
+        for bad in ("npvs1:!!!!","npvs1:","npvs1:////"):
+            with self.assertRaises(FieldError):
+                _decode_embedded_npvs1({"configs":[{"host":bad}]})
 
     def test_v1_password_contract_and_wrong_password(self):
         raw,credential,expected=make_v1(passphrase=True)

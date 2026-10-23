@@ -32,3 +32,20 @@ credentials. A signed but unsupported app-key generation is returned as
 After validation, `spdecode update worker feat/austroplus-vpn-13-0-1-decoders`
 rebuilds the Docker worker. No changes to API responses, Play distribution
 or Android app are required.
+
+## Explicit embedded-field second stage (2026-10-23)
+
+The user verified that RJO2 now authenticates/decrypts in production but its
+`v2rayProfile` includes values such as `npvs1:Umpv`. These are prefixed,
+Base64-encoded strings, NOT a second password or an ECDH private-key lock.
+
+After a successful NPVS v1 signature, key unwrapping and document AEAD,
+`decode_npvs_v1_complete` applies the existing v5 `_decode_embedded_npvs1`
+postprocessor to the complete JSON tree. It recursively unwraps explicit
+`npvs1:` values, UTF-8 text, nested JSON documents and repeated tagged
+layers, with the existing 64-level nesting and field-size limits. Native JSON
+booleans, numbers, null and ordinary untagged Base64 strings remain unchanged.
+Malformed explicit tagged values fail closed: never return a partial or
+fabricated JSON. No changes to v5/v6 decryptors, API, Android, password
+contract or the worker process sandbox. Test the end-to-end worker with
+synthetic, non-secret prefixed fields; do not commit real VPN credentials.
