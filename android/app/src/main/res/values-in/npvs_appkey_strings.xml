@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_npvs_appkey_auth">File NPVS ini tidak dapat diautentikasi dengan kunci aplikasi. File mungkin memakai varian lain atau telah diubah. Metode ini tidak memerlukan sandi atau kunci privat penerima.</string>
+</resources>

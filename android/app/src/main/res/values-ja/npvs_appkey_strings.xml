@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_npvs_appkey_auth">このNPVSファイルをアプリキーで認証できませんでした。別の方式か、ファイルが変更されている可能性があります。この方式にはパスワードや受信者の秘密鍵は不要です。</string>
+</resources>
