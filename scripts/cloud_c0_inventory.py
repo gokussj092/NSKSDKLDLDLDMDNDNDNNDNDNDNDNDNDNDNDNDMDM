@@ -54,7 +54,15 @@ def fail(message: str) -> None:
 
 
 def load_android_catalog() -> dict:
-    doc = json.loads(CATALOG.read_text(encoding="utf-8"))
+    # Public APK metadata no longer contains decoder scripts. The *private*
+    # canonical generator retains paths for audited C0 source parity.
+    if str(ROOT) not in sys.path:
+        sys.path.insert(0, str(ROOT))
+    from scripts.android_a24_catalog import generate, public_catalog
+    doc=generate()
+    public=json.loads(CATALOG.read_text(encoding="utf-8"))
+    if public!=public_catalog(doc):
+        fail("public APK metadata drift or executable fields reintroduced")
     if doc.get("schemaVersion") != 3 or doc.get("botRegisteredSuffixes") != 239:
         fail("unexpected Android catalog schema or registered count")
     if doc.get("androidNativePortSuffixes") != 239 or doc.get("androidPendingNativeSuffixes") != 0:
