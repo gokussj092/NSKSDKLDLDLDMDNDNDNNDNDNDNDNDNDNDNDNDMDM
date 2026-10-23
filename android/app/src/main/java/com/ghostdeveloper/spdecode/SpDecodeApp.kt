@@ -122,7 +122,7 @@ fun SpDecodeApp(
         ) {
             BrandHeader(
                 onSettings={onTab(4)},
-                showServerVpnRefresh=activeTab==3 && BuildConfig.SPDECODE_CLOUD_ENABLED,
+                showServerVpnRefresh=(activeTab==2 || activeTab==3) && BuildConfig.SPDECODE_CLOUD_ENABLED,
                 refreshingServerVpn=serverVpnLoading,
                 enableServerVpnRefresh=!busy && !serverVpnLoading,
                 onRefreshServerVpn=onRefreshServerVpn,
@@ -153,7 +153,7 @@ fun SpDecodeApp(
                 spotlight=if(guideStep!=null && !whatsNew && !busy)
                     FirstRunGuide.targetTab(guideStep) else null)
         }
-        if(activeTab==3 && pendingServerVpnCatalogVersion!=null && !busy) AlertDialog(
+        if((activeTab==2 || activeTab==3) && pendingServerVpnCatalogVersion!=null && !busy) AlertDialog(
             onDismissRequest=onDismissServerVpnUpdate,
             title={Text(stringResource(R.string.server_vpn_catalog_update_title))},
             text={Text(stringResource(R.string.server_vpn_catalog_update_question,
