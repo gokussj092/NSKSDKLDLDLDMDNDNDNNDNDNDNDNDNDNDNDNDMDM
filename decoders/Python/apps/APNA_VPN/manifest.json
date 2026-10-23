@@ -1,0 +1,36 @@
+{
+  "id": "apna-vpn",
+  "name": "APNA VPN",
+  "package": "my.teamapna.tunnel",
+  "compatibleVersions": [
+    "3.9"
+  ],
+  "engine": "python-custom-delta-xxtea",
+  "engineVersion": 1,
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "apna-vpn",
+    "embeddedAsset": "assets/janu.json",
+    "embeddedVersion": "289",
+    "embeddedServersObserved": 19,
+    "embeddedPayloadsObserved": 491,
+    "embeddedEncryptedBytes": 281096,
+    "embeddedDecodedBytes": 210815,
+    "embeddedAssetSha256": "620e4aa2cd5c4ec6cb1d2015b4bfdec172050bcdb8e1b5e4187f026563e5a94a",
+    "validation": "Real embedded plaintext, byte-exact independent XXTEA re-encryption, three synthetic unit tests",
+    "remote": null,
+    "remoteValidated": false,
+    "deploymentEnabledByDefault": false,
+    "encryptionAuthenticated": false
+  },
+  "files": {
+    "supported": false,
+    "validation": "Catalog only; no exported-profile reader certified"
+  },
+  "dependencies": {
+    "python": ">=3.10",
+    "standardLibraryOnly": true
+  },
+  "branch": "feat/austroplus-vpn-13-0-1-decoders",
+  "pullRequest": 96
+}
