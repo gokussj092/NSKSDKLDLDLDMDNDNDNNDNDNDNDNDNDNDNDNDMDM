@@ -44,6 +44,11 @@ on:
       - "decoders/Python/apps/OneFTunnel/**"
       - "decoders/Python/npvs.py"
       - "tests/test_npvs_protected.py"
+      - "tests/test_npv_text.py"
+      - "tests/test_npv_cloud_password_integration.py"
+      - "decoders/Python/apps/NPV_Tunnel/**"
+      - "cloud/workers/python/npvs_bridge.py"
+      - "cloud/workers/python/text_bridge.py"
       - "tests/test_npvs_v5_embedded.py"
       - "tests/golden/npvs_protected*"
       - "tests/test_oneftunnel.py"
@@ -126,6 +131,8 @@ jobs:
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_http_custom_899 -v
       - name: Verify TunelGuard/Wakko/SocketClay catalogs and file compatibility
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_am_liapp_metadata tests.test_am_tunnel_lite tests.test_sevennet_vpn tests.test_xhypher_tunnel_pro tests.test_ut_loop_pro tests.test_turbomx_vpn tests.test_superflash_vpn tests.test_rmp_tunnel_pro tests.test_rjc_tunnel_pro tests.test_proneet_vpn tests.test_onspace_vpn tests.test_mx_tunnel_pro tests.test_megatunnel tests.test_http_internet_infinito tests.test_freedomvpn tests.test_focus_vpn_cloud tests.test_eut_vpn tests.test_v2ray_tunnel_plus tests.test_tunelguard tests.test_http_wakko tests.test_http_socketclay tests.test_http_fenixvpn tests.test_http_jireh -v
+      - name: Verify NPV text aliases, strict credential errors and legacy envelope isolation
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_npv_text tests.test_npv_cloud_password_integration -v
       - name: Verify 1FTunnel files, password handling and complete worker output
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_oneftunnel tests.test_cloud_c8_vpn_registry -v
       - name: Verify NPVS password, legacy app-key and recipient diagnostics
