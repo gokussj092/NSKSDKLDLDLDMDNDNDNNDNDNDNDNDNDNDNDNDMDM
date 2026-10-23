@@ -2,8 +2,8 @@ package com.ghostdeveloper.spdecode.cloud
 
 /** Format-specific credential gates; never retry one family's failed auth using another codec. */
 internal object CloudCredentialPolicy {
-    private val filePasswords = setOf("hc","ua","npvs","1ftnl","tut")
-    private val simpleDialogs = setOf("ua","npvs","1ftnl","tut")
+    private val filePasswords = setOf("hc","ua","npvs","1ftnl","tut","v2box")
+    private val simpleDialogs = setOf("ua","npvs","1ftnl","tut","v2box")
     private val npvPrefixes = listOf("npvt://","npvt-ssh://",
         "npvt-vless://","npvt-vmess://","npv://")
     private val onefPrefixes = listOf("1FTnl.","1FT1.",

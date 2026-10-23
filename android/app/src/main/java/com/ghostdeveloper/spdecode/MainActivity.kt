@@ -31,6 +31,7 @@ import com.ghostdeveloper.spdecode.cloud.CloudDiagnosticsPrivacy
 import com.ghostdeveloper.spdecode.cloud.CloudCredentialPolicy
 import com.ghostdeveloper.spdecode.cloud.CloudUserErrors
 import com.ghostdeveloper.spdecode.cloud.NpvsPasswordProbe
+import com.ghostdeveloper.spdecode.cloud.V2BoxPasswordProbe
 import com.ghostdeveloper.spdecode.cloud.CloudFileFormats
 import com.ghostdeveloper.spdecode.cloud.CloudTextFormats
 import com.ghostdeveloper.spdecode.cloud.CloudCatalogUpdates
@@ -692,6 +693,21 @@ class MainActivity : ComponentActivity() {
             var preview:ByteArray?=null
             try {
                 val name=withContext(Dispatchers.IO){displayName(uri)}
+                // Detect password-protected V2Box before attempting either decoder.
+                // Reuse the existing one-shot password dialog in both build modes.
+                if(ImportFilenameNormalizer.forDetection(name)
+                    .endsWith(".v2box",ignoreCase=true)){
+                    preview=withContext(Dispatchers.IO){readBounded(uri,2*1024*1024)}
+                    if(V2BoxPasswordProbe.requiresPassword(preview) &&
+                        generation==credentialPrepareGeneration){
+                        pendingCloudPasswordFile=PendingCloudPasswordFile(
+                            uri,name,"v2box",preview)
+                        preview=null
+                        return@launch
+                    }
+                    preview.fill(0)
+                    preview=null
+                }
                 // A signed NPVS v5 passphrase envelope can be identified from
                 // bounded local framing. Prompt without waiting for a server
                 // that might still be running an older NPVS worker. Only the
@@ -1170,6 +1186,14 @@ class MainActivity : ComponentActivity() {
                                 hwidSubmitted=suppliedHwid)
                             cloudClient.clearLastDiagnostic()
                         }
+                        // Offline V2Box does not return Cloud error codes. Only a
+                        // structurally valid protected envelope with a supplied
+                        // password can show this one-shot authentication notice.
+                        if(!BuildConfig.SPDECODE_CLOUD_ENABLED &&
+                            cloudPassword!=null && format=="v2box" &&
+                            cloudPrepared?.bytes?.let { V2BoxPasswordProbe.requiresPassword(it) }==true &&
+                            cause is DecodeFailure && inputs.size==1)
+                            singleCredentialNotice=getString(R.string.cloud_failure_password_incorrect)
                         if(cloudPassword!=null && cause is CloudDecodeClient.Failure &&
                             cause.code=="INVALID_CREDENTIALS")
                             cloudPasswordError=CloudUserErrors.message(
@@ -1237,6 +1261,15 @@ class MainActivity : ComponentActivity() {
                         })}
                     progressStage=1
                     val inputSize=input.size
+                    if(!BuildConfig.SPDECODE_CLOUD_ENABLED &&
+                        supported.suffix=="v2box" && cloudPassword==null &&
+                        V2BoxPasswordProbe.requiresPassword(input)){
+                        if(pendingCloudPasswordFile==null)
+                            pendingCloudPasswordFile=PendingCloudPasswordFile(
+                                uri,name,"v2box",input.copyOf())
+                        if(prepared==null && cloudPrepared==null)input.fill(0)
+                        throw DecodeFailure(R.string.cloud_failure_password)
+                    }
                     val text=try {
                         if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
                             // Never fall back to local decoders after a Cloud error.
@@ -1254,6 +1287,9 @@ class MainActivity : ComponentActivity() {
                                     AndroidOfflineDecoderRouter.decodeWithUserPassword(
                                         this@MainActivity,routingName,input,secret)
                                 }
+                            }else if(cloudPassword!=null && supported.suffix=="v2box"){
+                                AndroidOfflineDecoderRouter.decodeWithUserPassword(
+                                    this@MainActivity,routingName,input,cloudPassword)
                             }else if(hcPassword!=null || hcHwid!=null){
                                 AndroidOfflineDecoderRouter.decodeWithCredentials(
                                     this@MainActivity,routingName,input,hcPassword,hcHwid)
