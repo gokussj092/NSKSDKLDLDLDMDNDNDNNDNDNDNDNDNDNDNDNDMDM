@@ -4,7 +4,23 @@
 - Archivo adjunto `NPVS_Telegram_Bot_🔓Decryptor_VPN.py` (referencia de versión anterior; **no se agrega ni se despliega**).
 - Archivo adjunto `ultra_custom_52.py`; idéntico al blob Git `ca62da9ad7f5cdde299b8cff1aa656e09c5b0a6b` ya existente en `decoders/Python/apps/Ultra_Custom/ultra_custom_52.py`.
 
-## NPVS: limitación de versión
+## NPVS: soporte de contraseña comprobado (2026-10-22)
+
+El Python canónico ahora admite **passphrase de NPVS v5 compacto**, verificado
+con el archivo real y su contraseña aportados por el usuario. La DEK se abre
+con PBKDF2-HMAC-SHA256 y ChaCha20-Poly1305, no con el parser antiguo. Se compara
+todo el JSON con JDK independiente y worker: 16 registros y nueve campos
+`npvs1:` internos, sin recorte. Worker/gateway aceptan `credentials.password`
+y `publicKey` para diagnóstico, por stdin y sin HWID. No se cambia la UI Android.
+
+Los dos adjuntos normal/public-key son idénticos NPVS v6 recipient. La public
+key coincide pero falta la privada del destinatario; se devuelve
+`PRIVATE_KEY_REQUIRED` y no un resultado parcial. Queda pendiente ese modo y
+una muestra normal diferente. Se conserva v5 app-key 2 y sus tablas/pruebas.
+Ver [la investigación nueva](../NPVS_PROTECTED_FILES.md).
+
+### Limitación documentada antes de esta actualización
+
 El archivo antiguo reconoce un encabezado JSON `passphrase` y usa
 `PBKDF2-HMAC-SHA256` con ChaCha20-Poly1305 para abrir una clave del
 documento. El decodificador actualmente desplegable de NPVS v5 (`npvs.py`)
@@ -12,11 +28,10 @@ usa un encabezado binario compacto firmado y un descriptor `appKey`
 distinto. El formato de contraseña de v5 NO queda demostrado por ese código
 antiguo y no se debe asumir que ambos formatos son intercambiables.
 
-**No se ha portado el decodificador antiguo**, ni se ha añadido soporte de
-contraseña no verificado al motor NPVS v5. Para implementar esa parte hace
-falta un archivo NPVS v5 real que requiera contraseña, su contraseña correcta
-y una descripción/verificación del descriptor de clave. No convertir un
-fallo de firma o autenticación de NPVS v5 en `PASSWORD_REQUIRED`.
+**No se ha portado el decodificador antiguo**. La muestra v5 real, su contraseña
+y la verificación del descriptor se recibieron y completaron el 2026-10-22.
+Se mantiene la regla: no convertir un fallo de firma o autenticación de NPVS
+en `PASSWORD_REQUIRED`.
 
 ## Ultra Custom 5.2: soporte disponible
 El códec canónico existente ya reconoce `.ua` y `ua://`, XML Properties,

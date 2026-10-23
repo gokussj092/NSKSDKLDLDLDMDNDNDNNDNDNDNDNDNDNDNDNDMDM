@@ -106,3 +106,11 @@ C8 efectivo **248**; C0 congelado **240**. Herramientas `oneftunnel_verify.py`
 y `oneftunnel_native_oracle.py` conservadas, instrucciones en RESTORE.md y
 ANALYSIS.md. AM queda pendiente por indicación del usuario; no continuarlo
 como parte del análisis 1FTunnel. Sin despliegue, fusión o APK automáticos.
+
+Actualización posterior **NPV Tunnel 124.0.37**: `npvs.py` conserva v5 app-key
+y añade passphrase v5 real completo; **16 Python / 15 Node aprobadas**.
+Recipient v6 pendiente de privada; normal/public-key son el mismo adjunto.
+No repetir la extracción de tablas: SO/rt.dat coinciden con el handoff anterior.
+`go_inspect.py`, `npvs_verify.py` y referencias JDK/generador guardados.
+Ver `docs/NPVS_PROTECTED_FILES.md`; no anunciar public-key como descifrado,
+no modificar APK/UI ni volver a AM dentro de esta actualización.

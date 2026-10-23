@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Decode authenticated NPV Tunnel NPVS v5 app-key files (124.0.37).
+"""Decode authenticated NPV Tunnel NPVS v5 app-key/passphrase files (124.0.37).
 
 Dependency: python -m pip install pycryptodome
 Usage: python npvs.py INPUT.npvs -o decoded.json
@@ -31,6 +31,10 @@ _MAX_FILE = 4 * 1024 * 1024
 
 class DecodeError(ValueError):
     """Invalid, unauthenticated, or unsupported NPVS input."""
+
+    def __init__(self, message: str, code: str = "DECODE_FAILED"):
+        super().__init__(message)
+        self.code = code
 
 
 def _json_load(data: bytes):
@@ -118,7 +122,7 @@ def _open(key: bytes, nonce: bytes, data: bytes, aad: bytes, label: str) -> byte
         cipher.update(aad)
         return cipher.decrypt_and_verify(data[:-16], data[-16:])
     except ValueError as exc:
-        raise DecodeError(f"Authentication failed: {label}") from exc
+        raise DecodeError(f"Authentication failed: {label}", "AUTH_FAILED") from exc
 
 
 def _signature(data: bytes, public_key: bytes):
@@ -187,29 +191,50 @@ def _document(body: bytes, dek: bytes, context: bytes):
     return document
 
 
-def decode_npvs(data: bytes) -> dict:
-    """Authenticate and decode a v5 app-key envelope; retain its policy metadata."""
+def inspect_npvs(data: bytes) -> dict:
+    """Validate complete framing and ECDSA before requesting any credentials.
+
+    v6 recipient files include a 16-byte masking salt after the recipient list.
+    Recognizing that framing does not supply the device's ECDH private key.
+    """
     if not isinstance(data, bytes) or not 89 <= len(data) <= _MAX_FILE:
         raise DecodeError("Invalid NPVS file size")
     if data[:4] != b"NPVS":
         raise DecodeError("Expected binary NPVS input")
-    if data[4] != 5:
-        raise DecodeError("Only NPVS version 5 is supported")
+    if data[4] not in (5, 6):
+        raise DecodeError("Only NPVS versions 5 and 6 are recognized")
     hlen = int.from_bytes(data[5:9], "big")
-    if not 135 <= hlen <= 262144 or 9 + hlen + 80 > len(data):
+    if not 73 <= hlen <= 262144 or 9 + hlen + 80 > len(data):
         raise DecodeError("Invalid compact header length")
     header = data[9:9 + hlen]
-    if header[0] != 1 or header[50] != 2:
-        raise DecodeError("Only compact app-key configurations are supported")
+    if header[0] != 1 or header[50] not in (0, 1, 2):
+        raise DecodeError("Unsupported compact key method", "NPVS_PROTECTION_UNSUPPORTED")
     recipients = int.from_bytes(header[51:53], "big")
     if recipients > 1024:
         raise DecodeError("Too many recipients")
     offset = 53 + recipients * 125
-    if offset + 82 > len(header) or header[offset:offset + 2] != b"\x00\x02":
-        raise DecodeError("Invalid app-key descriptor")
-    salt = header[offset + 2:offset + 18]
-    wrapped = header[offset + 18:offset + 78]
-    prefix_end = offset + 78
+    records = []
+    seen = set()
+    for pos in range(53, offset, 125):
+        record = header[pos:pos + 125]
+        if len(record) != 125 or record[:32] in seen or record[32] not in (2, 3):
+            raise DecodeError("Invalid recipient record")
+        seen.add(record[:32])
+        records.append(record)
+    if data[4] == 6:
+        offset += 16
+    mode = header[50]
+    size = {0: 0, 1: 80, 2: 78}[mode]
+    prefix_end = offset + size
+    if prefix_end + 4 > hlen or (mode == 0 and not records):
+        raise DecodeError("Invalid compact descriptor bounds")
+    descriptor = header[offset:prefix_end]
+    if mode == 1:
+        iterations = int.from_bytes(descriptor[:4], "big")
+        if not 600000 <= iterations <= 10000000:
+            raise DecodeError("Invalid PBKDF2 iteration count")
+    if mode == 2 and descriptor[:2] != b"\x00\x02":
+        raise DecodeError("Unsupported app-key descriptor", "NPVS_PROTECTION_UNSUPPORTED")
     mlen = int.from_bytes(header[prefix_end:prefix_end + 4], "big")
     if mlen < 16 or prefix_end + 4 + mlen != hlen:
         raise DecodeError("Invalid metadata length")
@@ -220,8 +245,63 @@ def decode_npvs(data: bytes) -> dict:
         raise DecodeError("Invalid body length or trailing bytes")
     public_key = header[17:50]
     _signature(data, public_key)
+    return {"version": data[4], "mode": mode, "recipients": records,
+            "header": header, "prefixEnd": prefix_end, "descriptor": descriptor,
+            "nonce": nonce, "body": data[end + 16:-64]}
+
+
+def _validate_public_key(value: str, records: list[bytes]) -> None:
+    try:
+        if not isinstance(value, str) or not 1 <= len(value) <= 128:
+            raise ValueError("Invalid credential")
+        raw = base64.b64decode(value + "=" * (-len(value) % 4), altchars=b"-_", validate=True)
+        if len(raw) != 33 or raw[0] not in (2, 3):
+            raise ValueError("Invalid public key encoding")
+        ECC.import_key(raw, curve_name="P-256")
+    except (ValueError, TypeError, UnicodeError) as error:
+        raise DecodeError("Invalid recipient public key", "INVALID_CREDENTIALS") from error
+    fingerprint = hashlib.sha256(raw).digest()
+    if not any(hmac.compare_digest(fingerprint, record[:32]) for record in records):
+        raise DecodeError("Public key is not a recipient", "RECIPIENT_MISMATCH")
+
+
+def decode_npvs(data: bytes, *, password: str | None = None, public_key: str | None = None) -> dict:
+    """Authenticate v5 app-key/passphrase files; diagnose device-bound v5/v6.
+
+    A matching public key identifies a recipient; it cannot perform ECDH alone.
+    Never reinterpret recipient failures as a password or retry another mode.
+    """
+    env = inspect_npvs(data)
+    header, nonce, prefix_end = env["header"], env["nonce"], env["prefixEnd"]
+    if password is not None and (not isinstance(password, str) or not password):
+        raise DecodeError("Invalid password", "INVALID_CREDENTIALS")
+    if env["mode"] == 0:
+        if public_key is not None:
+            _validate_public_key(public_key, env["recipients"])
+        raise DecodeError("Recipient ECDH private key is required; a public key alone cannot decrypt",
+                          "PRIVATE_KEY_REQUIRED")
+    if public_key is not None:
+        raise DecodeError("This key method does not accept a public key", "INVALID_CREDENTIALS")
+    if env["version"] != 5:
+        raise DecodeError("NPVS v6 decryption is not verified", "NPVS_PROTECTION_UNSUPPORTED")
     config_id = header[1:17]
-    kdk = hashlib.sha256(b"npvtunnel/appkey/v2 " + _whitebox_block(salt) + config_id).digest()
+    public_key = header[17:50]
+    descriptor = env["descriptor"]
+    if env["mode"] == 1:
+        if password is None:
+            raise DecodeError("Password is required", "PASSWORD_REQUIRED")
+        try:
+            encoded = password.encode("utf-8")
+        except UnicodeError as error:
+            raise DecodeError("Invalid password", "INVALID_CREDENTIALS") from error
+        if len(encoded) > 4096:
+            raise DecodeError("Password exceeds limit", "INVALID_CREDENTIALS")
+        iterations = int.from_bytes(descriptor[:4], "big")
+        salt, wrapped = descriptor[4:20], descriptor[20:80]
+        kdk = hashlib.pbkdf2_hmac("sha256", encoded, salt, iterations, 32)
+    else:
+        salt, wrapped = descriptor[2:18], descriptor[18:78]
+        kdk = hashlib.sha256(b"npvtunnel/appkey/v2 " + _whitebox_block(salt) + config_id).digest()
     dek = _open(kdk, wrapped[:12], wrapped[12:], salt, "document key")
     if len(dek) != 32:
         raise DecodeError("Invalid document key length")
@@ -247,7 +327,7 @@ def decode_npvs(data: bytes) -> dict:
         "policy": source_policy, "recipients": None,
     }
     context = hashlib.sha256(b"NPVS-v5/source-fields-v1/" + _canonical(source_header) + nonce).digest()
-    document = _document(data[end + 16:-64], dek, context)
+    document = _document(env["body"], dek, context)
     return {"metadata": metadata, "document": document}
 
 
@@ -289,14 +369,15 @@ def _decode_embedded_npvs1(value, depth: int = 0):
     return text
 
 
-def decode_npvs_complete(file_bytes: bytes) -> dict:
+def decode_npvs_complete(file_bytes: bytes, *, password: str | None = None, public_key: str | None = None) -> dict:
     """Decrypt NPVS v5 and fully unwrap documented npvs1: embedded values."""
-    return _decode_embedded_npvs1(decode_npvs(file_bytes))
+    options = {k: v for k, v in (("password", password), ("public_key", public_key)) if v is not None}
+    return _decode_embedded_npvs1(decode_npvs(file_bytes, **options))
 
 
-def run(file_bytes: bytes) -> str:
+def run(file_bytes: bytes, *, password: str | None = None, public_key: str | None = None) -> str:
     """SP-DECODE-compatible complete JSON export; failures raise DecodeError."""
-    return json.dumps(decode_npvs_complete(file_bytes), ensure_ascii=False,
+    return json.dumps(decode_npvs_complete(file_bytes, password=password, public_key=public_key), ensure_ascii=False,
                       indent=2, allow_nan=False)
 
 
@@ -304,17 +385,33 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Descifra archivos NPVS v5 de NPV Tunnel.")
     parser.add_argument("input", type=Path)
     parser.add_argument("-o", "--output", type=Path, help="Guarda el JSON descifrado")
+    parser.add_argument("--credentials-stdin", action="store_true", help="Objeto JSON password/publicKey por stdin")
     args = parser.parse_args()
     try:
         if args.input.stat().st_size > _MAX_FILE:
             raise DecodeError("Input exceeds 4 MiB")
-        result = run(args.input.read_bytes()) + "\n"
+        credentials = {}
+        if args.credentials_stdin:
+            raw = sys.stdin.buffer.read(32769)
+            if len(raw) > 32768:
+                raise DecodeError("Credentials exceed limit", "INVALID_CREDENTIALS")
+            try:
+                credentials = json.loads(raw)
+            except (ValueError, UnicodeError) as error:
+                raise DecodeError("Invalid credential object", "INVALID_CREDENTIALS") from error
+            if not isinstance(credentials, dict) or set(credentials) - {"password", "publicKey"}:
+                raise DecodeError("Invalid credential object", "INVALID_CREDENTIALS")
+        result = run(args.input.read_bytes(), password=credentials.get("password"),
+                     public_key=credentials.get("publicKey")) + "\n"
         if args.output:
             args.output.write_text(result, encoding="utf-8")
         else:
             sys.stdout.write(result)
         return 0
     except (OSError, DecodeError) as exc:
+        if args.credentials_stdin and isinstance(exc, DecodeError):
+            print(json.dumps({"workerError": exc.code}))
+            return 3
         print(f"Error: {exc}", file=sys.stderr)
         return 1
 

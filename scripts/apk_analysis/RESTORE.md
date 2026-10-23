@@ -1,5 +1,34 @@
 # Recuperar herramientas después de perder el entorno
 
+## Actualización NPV Tunnel 124.0.37 — 2026-10-22
+
+El lector canónico sigue en `decoders/Python/npvs.py`. Retomar primero
+`docs/NPVS_V5_INVESTIGATION_HANDOFF.md` y `docs/NPVS_PROTECTED_FILES.md`.
+Reutilizar las tablas existentes mientras los hashes de SO/rt.dat coincidan.
+Los siguientes comandos se ejecutan después de restaurar repo/dependencias
+como se indica en la sección general de abajo. Archivos privados fuera de Git.
+
+```bash
+python scripts/apk_analysis/inspect_apk.py /ruta/Npv.apks \
+  scripts/apk_analysis/work/npv --asset rt.dat \
+  --native libnpvtunnel.so --native libgojni.so
+python scripts/apk_analysis/go_inspect.py /ruta/libgojni.so \
+  --filter '(\.parseCompactHeader|\.openSourcePassphrase)$'
+python scripts/apk_analysis/go_inspect.py /ruta/libgojni.so \
+  --disassemble npv-tunnel-core/MobileLibrary/libnpvtunnel.openSourcePassphrase
+python tests/golden/npvs_protected_generate.py > /tmp/npvs-synthetic.json
+python -m unittest tests.test_npvs_protected tests.test_npvs_v5.PrimitiveTests \
+  tests.test_npvs_v5_embedded tests.test_cloud_c8_npvs_error_classification -v
+python scripts/apk_analysis/npvs_verify.py /ruta/protegido.npvs \
+  --credentials-stdin --worker < /ruta/credenciales-privadas.json
+```
+
+El JSON privado puede contener `password` y `publicKey`; el verificador elige
+el dato correspondiente a cada método al recibir varios archivos. No imprime
+sus valores. El modo recipient se contrasta solo como diagnóstico ECDSA y
+coincidencia de fingerprint; requiere la privada para descifrar. Ver los hashes
+de los dos adjuntos idénticos antes de creer que son casos distintos.
+
 Las fuentes están versionadas en `Gh0stDeveloper/SP-DECODE`, rama
 `feat/austroplus-vpn-13-0-1-decoders`, PR #96. Una vez publicado el commit,
 no dependen de los archivos temporales del entorno de trabajo.

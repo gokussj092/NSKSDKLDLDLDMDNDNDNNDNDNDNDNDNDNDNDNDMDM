@@ -25,7 +25,7 @@ class NpvsErrorsTests(unittest.TestCase):
 
     def test_corrupt_data_or_standard_app_key_never_mislabeled(self):
         for data in (b"",b"garbage",b"NPVS"+bytes([4])+bytes(200),
-                     make_header(1,2),make_header(2,2)[:65]):
+                     make_header(1,0),make_header(1,1),make_header(1,2),make_header(2,2)[:65]):
             with self.subTest(data=data[:12]):
                 self.assertFalse(_unsupported_npvs_protection(data))
 

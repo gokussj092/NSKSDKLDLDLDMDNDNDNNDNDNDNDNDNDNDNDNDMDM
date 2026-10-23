@@ -5,6 +5,13 @@ Conserva los descubrimientos, el bloqueo resuelto y las comprobaciones que
 permiten distinguir un cambio de formato de un error de implementación.
 Investigación y documentación: 10 de octubre de 2026 UTC.
 
+**Actualización 22 de octubre de 2026:** el método v5 con contraseña ya está
+verificado con un exportado real y añadido al Python canónico. Los dos adjuntos
+etiquetados normal/public-key son idénticos NPVS v6 recipient y siguen pendientes
+de la clave privada del destinatario. La investigación original de abajo se
+conserva como referencia histórica; alcance actual y herramientas en
+[NPVS_PROTECTED_FILES.md](NPVS_PROTECTED_FILES.md).
+
 ## Retomar en dos minutos
 
 - Aplicación comprobada: **NPV Tunnel 124.0.37**, versionCode **577**, paquete

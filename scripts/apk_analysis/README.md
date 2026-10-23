@@ -1,5 +1,12 @@
 # Herramientas de análisis APK
 
+NPV Tunnel: `go_inspect.py` recupera nombres Go y resuelve `textStart` desde
+moduledata relocado, evitando el desfase de 0x50 de la investigación original.
+`npvs_verify.py` compara JSON íntegro, incluidas capas `npvs1:`, con framing y
+primitivas JDK independientes; credenciales solo por stdin. Reutiliza las tablas
+white-box verificadas para app-key. No descifra recipient con una public key.
+Ver RESTORE.md y `docs/NPVS_PROTECTED_FILES.md` para el estado y las limitaciones.
+
 Fuentes reutilizables para preparar próximas integraciones. No forman parte del
 servidor ni se importan desde los decodificadores. No necesitan un APK en runtime.
 Se mantienen aquí los scripts y versiones; los binarios se reconstruyen.

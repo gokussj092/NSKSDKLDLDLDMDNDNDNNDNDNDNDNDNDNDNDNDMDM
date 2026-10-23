@@ -5,6 +5,8 @@ import { settings } from "../lib/c3-config.mjs";
 import { checkIntegrityVerdict, verifyPlayToken } from "../lib/c3-integrity.mjs";
 import { createChallenge, issueSession, requireSession, verifySignature } from "../lib/c3-session.mjs";
 import { decodeRequest, sessionRequest, challengeRequest, readinessRequest, capabilitiesRequest } from "../lib/c3-gateway.mjs";
+import { safeErrorCode, classifyWorkerOutcome } from "../lib/c6-ops-store.mjs";
+import { recordAutomaticIncident } from "../lib/c9-diagnostics.mjs";
 
 class FakeRedis {
   constructor(){this.values=new Map();this.counters=new Map();this.slots=new Map();}
@@ -209,4 +211,31 @@ test("1FTunnel text passwords accept only source-exact prefixes",async()=>{
  const bad={text:"1ftnl.cipher",credentials:{password:"synthetic-password"}};
  assert.equal((await decodeRequest(req(bad,issued.accessToken,ip),"text",{storeProvider:async()=>redis,fetchImpl})).status,400);
  assert.equal(calls,4);
+});
+
+test("NPVS verified password credentials pass through; HWID is rejected",async()=>{
+ const redis=new FakeRedis();const ip="203.0.113.26";const {issued}=await authorized(redis,ip);let calls=0;
+ const fetchImpl=async(url,opts)=>{
+  calls++;assert.equal(url,"http://decoder-worker:8787/internal/v1/decode/file");
+  const payload=JSON.parse(opts.body);assert.equal(payload.format,"npvs");assert.deepEqual(payload.credentials,{password:"synthetic"});
+  return {status:200,text:async()=>JSON.stringify({status:"success",structuredJson:{metadata:{},document:{configs:[]}},rawText:'{"document":{"configs":[]}}',isPartial:false,warnings:[]})};
+ };
+ const body={format:"npvs",dataBase64:"YWJj",credentials:{password:"synthetic"}};
+ assert.equal((await decodeRequest(req(body,issued.accessToken,ip),"file",{storeProvider:async()=>redis,fetchImpl})).status,200);
+ assert.equal((await decodeRequest(req({...body,credentials:{hwid:"unsupported"}},issued.accessToken,ip),"file",{storeProvider:async()=>redis,fetchImpl})).status,400);
+ assert.equal(calls,1);
+});
+
+test("NPVS public-key diagnosis is preserved without an automatic incident",async()=>{
+ const redis=new FakeRedis();const ip="203.0.113.27";const {issued}=await authorized(redis,ip);let calls=0;
+ const fetchImpl=async(url,opts)=>{
+  calls++;assert.deepEqual(JSON.parse(opts.body).credentials,{publicKey:"synthetic-public-key"});
+  return {status:422,text:async()=>JSON.stringify({error:{code:"PRIVATE_KEY_REQUIRED"}})};
+ };
+ const body={format:"npvs",dataBase64:"YWJj",credentials:{publicKey:"synthetic-public-key"}};
+ const response=await decodeRequest(req(body,issued.accessToken,ip),"file",{storeProvider:async()=>redis,fetchImpl});
+ assert.equal(response.status,422);assert.equal((await response.json()).error.code,"PRIVATE_KEY_REQUIRED");assert.equal(calls,1);
+ assert.equal(safeErrorCode("PRIVATE_KEY_REQUIRED"),"PRIVATE_KEY_REQUIRED");
+ assert.equal(classifyWorkerOutcome("failed",{kind:"file",format:"npvs",errorCode:"PRIVATE_KEY_REQUIRED"}),"ignored");
+ assert.equal(await recordAutomaticIncident(redis,"failed",{kind:"file",format:"npvs",errorCode:"PRIVATE_KEY_REQUIRED"}),null);
 });

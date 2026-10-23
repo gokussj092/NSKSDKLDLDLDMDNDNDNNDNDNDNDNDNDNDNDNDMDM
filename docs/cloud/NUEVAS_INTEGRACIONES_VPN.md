@@ -386,6 +386,19 @@ solicitado y los límites de certificación `.sks` documentados en `TESTING.md`.
 
 ## Actualizaciones de lectores existentes
 
+- **NPV Tunnel 124.0.37 (577)**: ampliado el Python canónico `.npvs` con
+  passphrase v5 (PBKDF2/ChaCha20-Poly1305). Muestra real completa: una
+  configuración, **16 registros autenticados / nueve campos `npvs1:`**,
+  JSON entero igual a JDK, CLI fuera del repo y worker aislado.
+- Public-key: punto P-256 válido y fingerprint coincidente, pero los dos
+  adjuntos normal/public-key son idénticos NPVS v6 recipient; **pendiente la
+  privada del dispositivo y una exportación normal distinta**. Se informa
+  `PRIVATE_KEY_REQUIRED`, sin anunciar descifrado v6. Se conserva v5 app-key,
+  sus tablas y el lector v4. **16 Python / 15 Node aprobadas**, sin suites
+  completas. Herramientas y oracles guardados; documentación
+  `docs/NPVS_PROTECTED_FILES.md`. Rutas backend listas, pendiente desplegar;
+  sin Android/UI, formato nuevo, Server VPN/C11, fusión o APK automáticos.
+
 - **FlexNet V 2.4 (46)**: ampliado el lector en `FlexNet_B42/`, conservando
   v1–v4, sus 30 materiales y las fixtures B42. Admite v5 mínimo 46, v6 con
   clave de setup autorizada y campos SNI/payload FLXFLD con bindings y GCM.

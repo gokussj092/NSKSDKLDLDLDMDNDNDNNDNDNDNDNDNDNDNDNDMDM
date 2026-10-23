@@ -82,7 +82,7 @@ class FileEngineTests(unittest.TestCase):
             decode_text("tls://abcd",credentials={"password":password})
         self.assertEqual(caught.exception.code,"INVALID_CREDENTIALS")
         with self.assertRaises(DecodeFailure) as caught:
-            decode_file("npvs",b"unrelated",credentials={"password":password})
+            decode_file("npvs",b"unrelated",credentials={"hwid":"unsupported"})
         self.assertEqual(caught.exception.code,"CREDENTIALS_NOT_ALLOWED")
 
     def test_subprocess_environment_removes_secrets(self):

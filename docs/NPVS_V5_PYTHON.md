@@ -19,6 +19,26 @@ ejecuta las restricciones Android de red, vencimiento o atestación.
 
 ## Alcance comprobado
 
+Actualización 2026-10-22: **v5 passphrase también disponible**, contraseña UTF-8
+mediante PBKDF2-HMAC-SHA256, 600000–10000000 iteraciones. Se verificó una muestra
+real completa (16 registros, nueve campos internos `npvs1:`) y los métodos
+app-key anteriores mantienen sus pruebas. La versión 6 recipient se reconoce
+y se valida su firma/framing, pero **no se descifra con una public key sola**.
+Detalles y límites en [NPVS_PROTECTED_FILES.md](NPVS_PROTECTED_FILES.md).
+
+```sh
+python decoders/Python/npvs.py archivo.npvs --credentials-stdin < credenciales.json
+```
+
+`credenciales.json` contiene `{"password":"contraseña de exportación"}` para
+passphrase, o `{"publicKey":"clave pública Base64URL"}` para identificar un
+destinatario. No se pasa la contraseña por argv/env. `publicKey` solo permite
+comprobar coincidencia; la ausencia de clave privada devuelve
+`PRIVATE_KEY_REQUIRED`, sin JSON parcial. API: `run`, `decode_npvs` y
+`decode_npvs_complete` aceptan los kwargs opcionales `password` y `public_key`.
+
+### Alcance original del 10 de octubre
+
 Soporta el contenedor binario `NPVS`, versión 5, cabecera compacta versión 1,
 modo app-key 2, identificador de clave 2. El archivo probado no tiene destinatarios.
 La cabecera admite registros de destinatario, pero otros modos, versiones y

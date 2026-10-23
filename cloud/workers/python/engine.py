@@ -158,18 +158,19 @@ def _is_legacy_aro(contents: bytes) -> bool:
 
 
 def _unsupported_npvs_protection(contents: bytes) -> bool:
-    """Only classify genuine v5 NPVS envelopes with an alternative key method.
+    """Classify unknown compact versions/methods without rejecting known routes.
 
     Header inspection does not decrypt data, invent credentials, or infer that
-    unrelated corrupt files are protected by a private/public key.
+    unrelated corrupt files are protected by a private/public key. Passphrase
+    and recipient framing now reach the authenticated NPVS reader.
     """
-    if len(contents)<62 or contents[:4]!=b"NPVS" or contents[4]!=5:
+    if len(contents)<62 or contents[:4]!=b"NPVS" or contents[4] not in (5,6):
         return False
     size=int.from_bytes(contents[5:9],"big")
     if not 135<=size<=262144 or 9+size+80>len(contents):
         return False
     header=contents[9:9+size]
-    return header[0]!=1 or header[50]!=2
+    return header[0]!=1 or header[50] not in (0,1,2)
 
 
 def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS, credentials: dict | None = None, full_hat: bool = False) -> dict:
@@ -218,14 +219,14 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
     if suffix == "roy" and _is_legacy_roy(contents):
         engine = load_file_engines()["roy"]
     if credentials is not None:
-        allowed = {"password", "hwid"} if suffix == "hc" else {"password"} if suffix in ("tut", "ua", "1ftnl") else None
+        allowed = {"password", "hwid"} if suffix == "hc" else {"password", "publicKey"} if suffix == "npvs" else {"password"} if suffix in ("tut", "ua", "1ftnl") else None
         if allowed is None or not isinstance(credentials, dict) or set(credentials) - allowed:
             raise DecodeFailure("CREDENTIALS_NOT_ALLOWED")
-        for name, maximum in (("password", 4096), ("hwid", 128)):
+        for name, maximum in (("password", 4096), ("hwid", 128), ("publicKey", 128)):
             value = credentials.get(name)
             if value is not None and (not isinstance(value, str) or not 0 < len(value) <= maximum):
                 raise DecodeFailure("INVALID_CREDENTIALS")
-            if suffix == "1ftnl" and value is not None:
+            if suffix in ("1ftnl", "npvs") and value is not None:
                 try:
                     if len(value.encode("utf-8")) > maximum:
                         raise DecodeFailure("INVALID_CREDENTIALS")
@@ -236,7 +237,8 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
     protected_tut = suffix == "tut"
     protected_ua = suffix == "ua"
     protected_onef = suffix == "1ftnl"
-    credential_input = protected_hc or protected_tut or protected_ua or protected_onef
+    protected_npvs = suffix == "npvs"
+    credential_input = protected_hc or protected_tut or protected_ua or protected_onef or protected_npvs
     source = engine["source"]
     if protected_hc:
         source = str(Path(__file__).with_name("hc_bridge.py"))
@@ -244,6 +246,8 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
         source = str(Path(source).with_name("worker_bridge.py"))
     elif protected_ua:
         source = str(Path(__file__).with_name("ultra_custom_bridge.py"))
+    elif protected_npvs:
+        source = str(Path(__file__).with_name("npvs_bridge.py"))
     runtime = sys.executable if credential_input or engine["runtime"] == "python" else shutil.which(engine["runtime"])
     if not runtime:
         raise DecodeFailure("ENGINE_UNAVAILABLE")
@@ -288,7 +292,9 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
                     code = json.loads(raw.decode("utf-8")).get("workerError")
                 except (UnicodeError, ValueError, AttributeError):
                     code = None
-                if code in ("PASSWORD_REQUIRED", "HWID_REQUIRED", "HWID_PASSWORD_REQUIRED", "AUTH_FAILED"):
+                if code in ("PASSWORD_REQUIRED", "HWID_REQUIRED", "HWID_PASSWORD_REQUIRED", "AUTH_FAILED",
+                            "PRIVATE_KEY_REQUIRED", "RECIPIENT_MISMATCH", "INVALID_CREDENTIALS",
+                            "NPVS_PROTECTION_UNSUPPORTED"):
                     raise DecodeFailure(code)
             raise DecodeFailure("DECODE_FAILED")
         if not raw.strip():

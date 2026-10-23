@@ -21,7 +21,9 @@ const ERROR_MESSAGES = Object.freeze({
   HWID_PASSWORD_REQUIRED:"Se requieren contraseña y HWID.",
   AUTH_FAILED:"No se pudo autenticar el archivo.",
   DECODE_FAILED:"No se pudo descifrar el archivo.",
-  NPVS_PROTECTION_UNSUPPORTED:"Este archivo NPVS utiliza una protección por contraseña o clave que aún no está implementada.",
+  NPVS_PROTECTION_UNSUPPORTED:"Esta variante de protección NPVS aún no está implementada.",
+  PRIVATE_KEY_REQUIRED:"Este archivo requiere la clave privada del dispositivo destinatario; la clave pública sola no permite descifrarlo.",
+  RECIPIENT_MISMATCH:"La clave pública no corresponde a un destinatario de este archivo.",
   ENGINE_TIMEOUT:"El motor agotó el tiempo disponible.",
   ENGINE_UNAVAILABLE:"Motor temporalmente no disponible.",
   OUTPUT_TOO_LARGE:"Resultado demasiado grande.",
@@ -88,14 +90,14 @@ function validatePayload(kind,payload) {
         typeof payload.format!=="string" || (!/^[a-z0-9][a-z0-9._-]{0,63}$/.test(payload.format) && payload.format!=="fɴ"))
       throw Object.assign(new Error("format"),{code:"INVALID_REQUEST"});
     if (payload.credentials!==undefined){
-      const allowed=payload.format==="hc"?["password","hwid"]:["tut","ua","1ftnl"].includes(payload.format)?["password"]:null;
+      const allowed=payload.format==="hc"?["password","hwid"]:payload.format==="npvs"?["password","publicKey"]:["tut","ua","1ftnl"].includes(payload.format)?["password"]:null;
       if (!allowed || !isRecord(payload.credentials) ||
           Object.keys(payload.credentials).some(k=>!allowed.includes(k)))
         throw Object.assign(new Error("credentials"),{code:"INVALID_CREDENTIALS"});
-      for(const [key,max] of [["password",4096],["hwid",128]]){
+      for(const [key,max] of [["password",4096],["hwid",128],["publicKey",128]]){
         const value=payload.credentials[key];
         if(value!==undefined && (typeof value!=="string" || !value.length || value.length>max ||
-            (payload.format==="1ftnl" && Buffer.byteLength(value,"utf8")>max)))
+            (["1ftnl","npvs"].includes(payload.format) && Buffer.byteLength(value,"utf8")>max)))
           throw Object.assign(new Error("credentials"),{code:"INVALID_CREDENTIALS"});
       }
     }
