@@ -469,3 +469,16 @@ Leer también [la guía de integración](SERVER_VPN_NEXT_CHAT_GUIDE.md) y
 [el procedimiento de actualización de catálogos y novedades](CATALOGS_UPDATE_RUNBOOK.md).
 Server VPN y What's New tienen versiones independientes. Una modificación
 de este registro, por sí sola, no cambia ninguno de esos catálogos.
+
+- **CREEB VPN 50.0 (50) ✅ — 2026-10-23**: `.crev` XXTEA modificado,
+  Servers y Tweaks completos con claves contextuales. Reutiliza la primitiva
+  histórica; C8/bot override `.crev`, 250 rutas efectivas, C0 240 y aliases
+  `.cer/.cerv` históricos. No es `.creeb` DES de CREEB INJECTOR. Contraseña,
+  HWID y restricciones son posteriores al descifrado. Cinco documentos
+  sintéticos y asset real 1.0.0 (1 servidor / 1 ajuste) iguales a JDK, CLI y
+  worker. 19 pruebas Python / 50 Node aprobadas; exportación real pendiente.
+- CREEB VPN **remoto pendiente**: flujo Play Integrity observado; endpoint
+  entregó HTML (GET 200, POST vacío 405), sin catálogo válido. Tarjeta con
+  icono original vector conservado y PNG renderizado, desactivada. Catálogo
+  mínimo **36 / 38 fichas**, sin alterar switches. Herramientas/referencia y
+  recuperación guardadas en Git, sin datos reales, APK, despliegue ni C11.

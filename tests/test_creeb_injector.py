@@ -92,11 +92,13 @@ class CreebTests(unittest.TestCase):
             self.assertEqual(replies[0][0],200)
             self.assertEqual(replies[0][1]["structuredJson"],codec.decode(data))
 
-    def test_dedicated_bot_route_leaves_historical_crev_untouched(self):
+    def test_dedicated_bot_route_leaves_crev_family_separate(self):
         from spdecode.registry import get_decoder,get_supported_extension
         self.assertEqual(get_supported_extension("Synthetic.CREEB"),"creeb")
         self.assertTrue(get_decoder("creeb").script.endswith("apps/CREEB_INJECTOR/file_decoder.py"))
-        self.assertEqual(get_decoder("crev").script,"decoders/Python/crev.py")
+        self.assertNotEqual(get_decoder("crev").script,get_decoder("creeb").script)
+        self.assertEqual(get_decoder("cer").script,"decoders/Python/crev.py")
+        self.assertEqual(get_decoder("cerv").script,"decoders/Python/crev.py")
 
 
 if __name__=="__main__":unittest.main()

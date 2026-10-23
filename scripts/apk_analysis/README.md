@@ -1,5 +1,15 @@
 # Herramientas de análisis APK
 
+CREEB VPN 50.0: `creeb_vpn_verify.py` compara documentos completos con JDK,
+CLI y worker (cinco sintéticos y asset real 1/1). Dos claves y selección
+contextual pInfo, sin password externo; pendiente `.crev` real y descarga
+remota. `creeb_vpn_remote_probe.py` consulta solo el actualizador fijo, sin
+atestación inventada, sin imprimir cuerpos. `vector_icon.py` conserva las
+formas/colores de VectorDrawable plano y genera PNG a tamaño original;
+rechaza construcciones no admitidas. Conservar siempre el AXML original,
+registrar hashes y no afirmar identidad de antialiasing con Android.
+Comandos en RESTORE.md; no confundir con CREEB INJECTOR ni su asset `.creeb`.
+
 CREEB INJECTOR 38.0: `dex_method.py` conserva métodos Dalvik exactos en JSON
 privado cuando JADX no produce la clase anónima; no ejecuta código. Confirmó
 64 instrucciones de `ConfigParser$1.toString`, clave fija DES. `creeb_verify.py`

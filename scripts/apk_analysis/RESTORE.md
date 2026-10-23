@@ -1,5 +1,40 @@
 # Recuperar herramientas después de perder el entorno
 
+## CREEB VPN 50.0 (50) — 2026-10-23
+
+Runtime: checkout completo y PyCryptodome, sin APK/nativas. Para investigar de
+nuevo aportar el APKS con hash en `apps/CREEB_VPN/ANALYSIS.md`; instalar las
+dependencias de análisis de requirements.txt y JDK 17. No guardar datos reales.
+
+```bash
+python scripts/apk_analysis/inspect_apk.py /ruta/CREEB-VPN.apks scripts/apk_analysis/work/creeb-vpn --asset data.creeb --resource res/drawable/icons.xml
+env JAVA_TOOL_OPTIONS=-XX:-UsePerfData python scripts/apk_analysis/decompile.py \
+  scripts/apk_analysis/work/creeb-vpn/dex/classes.dex scripts/apk_analysis/work/creeb-vpn-jadx
+python scripts/apk_analysis/dex_method.py scripts/apk_analysis/work/creeb-vpn/dex/classes.dex \
+  'Lge6;' f scripts/apk_analysis/work/creeb-vpn-f.json
+python scripts/apk_analysis/dex_method.py scripts/apk_analysis/work/creeb-vpn/dex/classes.dex \
+  'Lj51;' onClick scripts/apk_analysis/work/creeb-vpn-password-check.json
+python scripts/apk_analysis/vector_icon.py \
+  scripts/apk_analysis/work/creeb-vpn/resources/res/drawable/icons.xml /tmp/creeb-vpn-icon.png
+python tests/golden/creeb_vpn_generate.py > /tmp/creeb-vpn-vectors.json
+python -m unittest tests.test_creeb_vpn tests.test_creeb_injector tests.test_cloud_c8_vpn_registry
+python scripts/apk_analysis/creeb_vpn_verify.py \
+  --catalog scripts/apk_analysis/work/creeb-vpn/assets/data.creeb --worker
+```
+
+JADX: salida 3, 52 errores generales; confirmar `ge6.f` con sus 58 instrucciones
+Dalvik. Asset 1.0.0 real 1/1: igualdad de JSON completo JDK/CLI/worker, sin publicar
+valores. `--file /ruta/real.crev` permite añadir la muestra que aún falta.
+No adivinar claves ni omitir errores de campos internos: clave C para exterior
+y Custom Tweak, S para servidores y otros ajustes. No tocar `.creeb` de INJECTOR.
+
+`creeb_vpn_remote_probe.py` hace GET al endpoint fijo. `--empty-token-post`
+repite solo la rama oficial de fallo de token con diagnóstico offline, nunca
+una atestación falsa. `--output /ruta/privada` guarda respuesta 0600 sin
+sobrescribir; no imprimir cuerpos. GET 200 HTML y POST 405 HTML observados;
+remoto pendiente hasta recibir y validar catálogo oficial. Tarjeta desactivada,
+36 / 38, switches conservados. No continuar AM/NPV ni publicar C11 por esto.
+
 ## CREEB INJECTOR 38.0 (40) — 2026-10-23
 
 Restaurar checkout/dependencias con la sección general de este archivo.

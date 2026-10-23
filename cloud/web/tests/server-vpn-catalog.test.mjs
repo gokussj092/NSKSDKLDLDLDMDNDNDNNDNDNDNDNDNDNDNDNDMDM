@@ -10,7 +10,7 @@ const body=(content)=>new Request("https://api.spdecode.xyz/api/v1/server-vpn/te
 });
 test("original provider PNGs match the public digest and never contain secrets",()=>{
  const values=catalog();assert.equal(values.catalogVersion,CATALOG_VERSION);
- assert.equal(RECHECK_SECONDS,900);assert.equal(values.apps.length,37);
+ assert.equal(RECHECK_SECONDS,900);assert.equal(values.apps.length,38);
  const ids=new Set();
  for(const app of values.apps) {
    assert(!ids.has(app.id));ids.add(app.id);
@@ -31,7 +31,7 @@ test("version match returns only a cheap unchanged response",async()=>{
 test("new version returns catalog and invalid bodies fail closed",async()=>{
  const response=await list(body({knownVersion:0}));
  const data=await response.json();assert.equal(response.status,200);
- assert.equal(data.unchanged,false);assert.equal(data.apps.length,37);
+ assert.equal(data.unchanged,false);assert.equal(data.apps.length,38);
  for(const invalid of [{knownVersion:-1},{url:"http://127.0.0.1/"},{knownVersion:"1"}]) {
    assert.equal((await list(body(invalid))).status,400);
  }
@@ -275,4 +275,11 @@ test("AM retains its original PNG while protected catalog support is pending",as
  assert(!providerIds().includes("am-tunnel-lite-vpn"));
  assert.equal(providerEnabled("am-tunnel-lite-vpn",{CLOUD_SERVER_VPN_ENABLED:"true"}),false);
  await assert.rejects(()=>downloadVpnCatalog("am-tunnel-lite-vpn"),{code:"UNSUPPORTED_FORMAT"});
+});
+
+// CREEB VPN has a validated offline reader; this card cannot download yet.
+test("CREEB VPN remains disabled even with global availability",()=>{
+ const app=catalog({availability:{"creeb-vpn":true}}).apps.find(x=>x.id==="creeb-vpn");
+ assert.equal(app.name,"CREEB VPN");assert.equal(app.decodeEnabled,false);
+ assert.equal(app.iconSha256,createHash("sha256").update(iconFor("creeb-vpn").bytes).digest("hex"));
 });

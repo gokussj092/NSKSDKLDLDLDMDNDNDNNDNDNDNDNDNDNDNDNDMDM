@@ -572,3 +572,25 @@ persistidas en `scripts/apk_analysis/` y `tests/golden/am_tunnel_lite*`;
 `liapp_wrapper.py` recupera solo la primera capa nativa, no el DEX. Las notas
 para continuar están en `decoders/Python/apps/AM_TUNNEL_LITE_VPN/ANALYSIS.md`.
 No se añaden formatos/exportadores sin confirmar, ni se publican datos reales.
+
+
+## CREEB VPN 50.0 (50), 2026-10-23
+
+Proveedor offline `creeb-vpn`, carpeta `apps/CREEB_VPN/`. `.crev` y catálogo
+usan XXTEA modificado compartido con el motor histórico, con dos claves fijas
+y selección por contexto/pInfo, sin adivinación de claves. El nuevo override
+C8/bot abre Servers además de Tweaks; C0 240 / C8 250 sin cambiar cer/cerv.
+Security.Password y DeviceID son controles de importación posteriores.
+
+Catálogo incluido real 1.0.0, 1 servidor / 1 ajuste, todo el JSON idéntico a
+JDK/CLI/worker. Descarga remota **pendiente**: flujo Play Integrity en la app,
+GET HTML «Site Unavailable», POST sin token HTTP 405 HTML. No se interpreta
+como prueba de que el proveedor rechazó una atestación. No entra en allowlist
+remota ni controles operativos. Tarjeta `remote:null` incluso si disponibilidad
+es true; mínimo **36 / 38 fichas**, versión persistente monotónica conservada.
+
+Launcher VectorDrawable original conservado, PNG renderizado 512×512 de 29433
+bytes, SHA-256 `2ae4ed0b2b96fdf3dfbd0cc96ae0bd69ec0e0d983fd35bf5fd37d08b63217bf3`.
+No se sustituye por iconos genéricos del APK. Ver receta, evidencias, pruebas,
+limitaciones y comandos en README/ANALYSIS/TESTING de la app. 19 Python y 50
+Node; `.crev` real pendiente, sin despliegue/Android/C11.

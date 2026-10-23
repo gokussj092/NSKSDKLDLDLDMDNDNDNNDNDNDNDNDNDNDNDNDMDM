@@ -1,5 +1,19 @@
 # SP-DECODE Cloud — Guía para ampliar Server VPN en otro chat
 
+**Última incorporación, 2026-10-23: CREEB VPN 50.0 (50)**,
+`apps/CREEB_VPN/`, distinta de CREEB INJECTOR. `.crev` XXTEA modificado:
+reutiliza la primitiva histórica y corrige campos/claves de servidores y ajustes
+según `pInfo` (Custom Tweak / catálogo). C0 **240**, C8 **250**: override de
+`.crev`, sin cambiar `.cer/.cerv` ni `.creeb`. Contraseña/HWID son comprobaciones
+posteriores, no requisitos de cifrado. **19 Python / 50 Node aprobadas**;
+cinco documentos sintéticos y un catálogo real íntegros frente a JDK, CLI y
+worker. Asset **1.0.0, 1 servidor / 1 ajuste**. Pendiente `.crev` real.
+Actualizador con flujo Play Integrity, GET/POST solo HTML aquí: remoto pendiente.
+Ficha con icono vector original conservado y PNG renderizado, `remote:null`;
+Server VPN mínimo **36 / 38 fichas**, sin restablecer switches. Herramientas,
+JDK/generador, límites y recuperación guardados. Sin despliegue, fusión, APK,
+diseño Android ni C11. Ver ANALYSIS/TESTING/RESTORE y `creeb_vpn_verify.py`.
+
 **Último lector, 2026-10-23: CREEB INJECTOR 38.0 (40)**, `apps/CREEB_INJECTOR/`:
 `.creeb` DES/Java Properties y JSON v1 con varios perfiles. Contraseña/HWID
 son validaciones posteriores, no entradas de cifrado. **10 pruebas enfocadas
@@ -9,7 +23,7 @@ tres DES iguales a JDK y cinco al worker. Pendiente archivo real. C8 pasa a
 metadatos APK; no registrar esa URL como servidores ni crear una ficha.
 Server VPN conserva **35 / 37** y sus switches. Ver ANALYSIS/TESTING y
 `creeb_verify.py`, `dex_method.py`, oracle JDK y RESTORE.md. Sin despliegue,
-APK, Android/diseño ni C11. El avance AboWaged de abajo es el último catálogo.
+APK, Android/diseño ni C11. El avance AboWaged de abajo es histórico.
 
 **Última incorporación, 2026-10-23: AboWaged VPN 1.0 (1)**,
 `apps/AboWaged_VPN/`, proveedor fijo `abowaged-vpn`. Catálogo remoto principal

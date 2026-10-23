@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 PROVIDERS = {
+    "creeb-vpn": "decoders.Python.apps.CREEB_VPN.server_catalog_decoder",
     "abowaged-vpn": "decoders.Python.apps.AboWaged_VPN.server_catalog_decoder",
     # Offline-only until the official APNA catalog source is validated.
     "apna-vpn": "decoders.Python.apps.APNA_VPN.server_catalog_decoder",
