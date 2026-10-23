@@ -119,7 +119,8 @@ export function safeErrorCode(code) {
 const REQUIRED_INPUT=new Set(["PASSWORD_REQUIRED","HWID_REQUIRED","HWID_PASSWORD_REQUIRED",
   "PRIVATE_KEY_REQUIRED",
   "USER_CANCELLED","CANCELLED","USER_CONSENT_REQUIRED"]);
-const INCOMPATIBLE=new Set(["UNSUPPORTED_FORMAT","UNSUPPORTED_VERSION","UNSUPPORTED_CONFIG_VERSION"]);
+const INCOMPATIBLE=new Set(["UNSUPPORTED_FORMAT","UNSUPPORTED_VERSION","UNSUPPORTED_CONFIG_VERSION",
+  "NPVS_PROTECTION_UNSUPPORTED"]);
 export function classifyWorkerOutcome(outcome,{kind,format,errorCode}={}){
   if(outcome==="success")return "success";
   if(outcome!=="failed"&&outcome!=="warning")return "ignored";

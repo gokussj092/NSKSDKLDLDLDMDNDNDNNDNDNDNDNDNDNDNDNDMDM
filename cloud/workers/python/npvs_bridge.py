@@ -44,6 +44,15 @@ def main() -> int:
     try:
         raw = Path(sys.argv[1]).read_bytes()
         if raw.startswith(b"NPVS"):
+            # Explicit version selection BEFORE authentication. Do not retry
+            # a failed v1 tag with the v5 codec or vice versa.
+            if len(raw) < 5 or raw[4] not in (1, 5, 6):
+                sys.stdout.write(json.dumps({"workerError": "NPVS_PROTECTION_UNSUPPORTED"}))
+                return 3
+            if raw[4] == 1:
+                from decoders.Python.npvs_v1 import main as legacy_v1_main
+                sys.argv.append("--credentials-stdin")
+                return legacy_v1_main()
             from decoders.Python.npvs import main as signed_main
             sys.argv.append("--credentials-stdin")
             return signed_main()
