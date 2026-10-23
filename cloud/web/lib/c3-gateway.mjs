@@ -3,6 +3,7 @@ import { settings, limits } from "./c3-config.mjs";
 import { store, reserveSlot, releaseSlot } from "./c3-store.mjs";
 import { createChallenge, issueSession, issueQaSession, requireSession } from "./c3-session.mjs";
 import { jsonReply, unavailable } from "./responses.mjs";
+import { legacyCredentialError } from "./decoder-client-compat.mjs";
 import { ehiConfigured, nurConfigured } from "./c35-provider.mjs";
 import { maintenanceEnabled, serviceMaintenanceEnabled, recordWorkerResult } from "./c6-ops-store.mjs";
 import {admissionPolicy} from "./c11-play-admission.mjs";
@@ -287,12 +288,18 @@ export async function decodeRequest(request,kind,options={}) {
     if(!outcome.ok){
       try{errorCode=(await outcome.clone().json()).error?.code||"";}catch{}
     }
+    // The worker always decides if the file requires credentials. An old APK
+    // lacks a dialog for the new formats; return only a preexisting localized
+    // error code instead of an impossible PASSWORD_REQUIRED interaction.
+    // Do not alter successful results, HTTP Custom, or Ultra Custom.
+    const legacyCode=legacyCredentialError(request,kind,payload,errorCode);
+    const clientOutcome=legacyCode?failure(legacyCode,422):outcome;
     try{await recordWorkerResult(redis,outcome.ok?"success":"failed",{
       ...telemetry,errorCode,latencyMs:performance.now()-started,
       appVersion:request.headers.get("x-spdecode-app-version"),
     });}catch{}
     recorded=true;
-    return outcome;
+    return clientOutcome;
   }catch(error){
     if(telemetry && !recorded && redis && lease){
       try{await recordWorkerResult(redis,"failed",{...telemetry,errorCode:"ENGINE_UNAVAILABLE",

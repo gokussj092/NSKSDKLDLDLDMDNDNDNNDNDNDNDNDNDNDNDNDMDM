@@ -177,6 +177,10 @@ jstring post(JNIEnv* env,jstring pathArg,jstring bodyArg,jstring bearerArg,jstri
     if(ok)ok=setHeader(env,conn,connectionClass,setProperty,"Accept-Encoding","identity");
     if(ok)ok=setHeader(env,conn,connectionClass,setProperty,"Cache-Control","no-store");
     if(ok)ok=setHeader(env,conn,connectionClass,setProperty,"X-SPDecode-App-Version",clientVersion);
+    // Capability negotiation for the new credential dialog. Older APKs omit
+    // this header automatically. It is not trusted for authentication.
+    if(ok && (path == "/api/v1/decode/file" || path == "/api/v1/decode/text"))
+        ok=setHeader(env,conn,connectionClass,setProperty,"X-SPDecode-Credential-Prompts","1");
     if(ok && !bearer.empty())ok=setHeader(env,conn,connectionClass,setProperty,"Authorization","Bearer "+bearer);
     if(!ok) {
         clearException(env);env->CallVoidMethod(conn,disconnect);

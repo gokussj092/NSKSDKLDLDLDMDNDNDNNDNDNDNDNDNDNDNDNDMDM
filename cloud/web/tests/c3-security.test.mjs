@@ -33,8 +33,9 @@ const env={
   CLOUD_GOOGLE_SERVICE_ACCOUNT_JSON:JSON.stringify(account),
   WORKER_INTERNAL_URL:"http://decoder-worker:8787",
 };
-const req=(body,token,ip="203.0.113.20")=>new Request("https://spdecode.example.test/api/v1/decode/file",{
-  method:"POST",headers:{"Content-Type":"application/json","X-Real-IP":ip,...(token?{Authorization:"Bearer "+token}:{})},
+const req=(body,token,ip="203.0.113.20",promptVersion=null)=>new Request("https://spdecode.example.test/api/v1/decode/file",{
+  method:"POST",headers:{"Content-Type":"application/json","X-Real-IP":ip,...(token?{Authorization:"Bearer "+token}:{}),
+    ...(promptVersion!==null?{"X-SPDecode-Credential-Prompts":promptVersion}:{})},
   body:JSON.stringify(body),
 });
 test("C3 must fail closed when any required server configuration is missing",()=>{
@@ -238,4 +239,45 @@ test("NPVS public-key diagnosis is preserved without an automatic incident",asyn
  assert.equal(safeErrorCode("PRIVATE_KEY_REQUIRED"),"PRIVATE_KEY_REQUIRED");
  assert.equal(classifyWorkerOutcome("failed",{kind:"file",format:"npvs",errorCode:"PRIVATE_KEY_REQUIRED"}),"ignored");
  assert.equal(await recordAutomaticIncident(redis,"failed",{kind:"file",format:"npvs",errorCode:"PRIVATE_KEY_REQUIRED"}),null);
+});
+
+test("legacy APKs receive bounded known errors; negotiated APKs receive PASSWORD_REQUIRED",async()=>{
+  const redis=new FakeRedis(), ip="203.0.113.29";
+  const {issued}=await authorized(redis,ip);
+  let calls=0;
+  const fetchImpl=async(url,opts)=>{
+    calls++;
+    assert.equal(url,"http://decoder-worker:8787/internal/v1/decode/file");
+    assert.deepEqual(Object.keys(JSON.parse(opts.body)).sort(),["dataBase64","format"]);
+    return {status:422,text:async()=>JSON.stringify({error:{code:"PASSWORD_REQUIRED"}})};
+  };
+  for(const [format,capability,expected] of [
+    ["npvs",null,"NPVS_PROTECTION_UNSUPPORTED"],
+    ["npvs","1","PASSWORD_REQUIRED"],
+    ["1ftnl",null,"UNSUPPORTED_FORMAT"],
+    ["1ftnl","1","PASSWORD_REQUIRED"],
+    ["tut",null,"UNSUPPORTED_FORMAT"],
+    ["hc",null,"PASSWORD_REQUIRED"],
+    ["ua",null,"PASSWORD_REQUIRED"]]){
+    const body={format,dataBase64:"YWJj"};
+    const result=await decodeRequest(req(body,issued.accessToken,ip,capability),"file",
+      {storeProvider:async()=>redis,fetchImpl});
+    assert.equal(result.status,422);
+    assert.equal((await result.json()).error.code,expected);
+  }
+  assert.equal(calls,7);
+});
+test("legacy NPVS without password still receives the complete successful JSON",async()=>{
+  const redis=new FakeRedis(),ip="203.0.113.30";
+  const {issued}=await authorized(redis,ip);
+  const response=await decodeRequest(req({format:"npvs",dataBase64:"YWJj"},issued.accessToken,ip),"file",{
+    storeProvider:async()=>redis,
+    fetchImpl:async()=>({status:200,text:async()=>JSON.stringify({
+      status:"success",rawText:'{"configs":[{"id":1},{"id":2}]}',
+      structuredJson:{configs:[{id:1},{id:2}]},isPartial:false,warnings:[]
+    })})
+  });
+  assert.equal(response.status,200);
+  const result=await response.json();
+  assert.deepEqual(result.structuredJson.configs,[{id:1},{id:2}]);
 });
