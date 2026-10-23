@@ -9,6 +9,8 @@ Añade tres propiedades públicas:
 
 - `formatsSchemaVersion:1`: esquema del inventario de extensiones.
 - `formatCount`: cantidad exacta de entradas.
+- `formatDetection`: regla explícita `longest-filename-suffix`, sin distinguir
+  mayúsculas/minúsculas, con punto como separador.
 - `formats`: arreglo de registros con `suffix`, `name`, `kind:"file"`,
   `offlineSupported`, `cloudSupported` y `credentialFields`.
 
