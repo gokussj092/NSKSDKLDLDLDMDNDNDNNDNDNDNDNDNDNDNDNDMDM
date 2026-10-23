@@ -28,11 +28,11 @@
     <string name="cloud_failure_conflict">अनुरोध वर्तमान स्थिति से टकराता है। पुनः प्रयास करें।</string>
     <string name="cloud_failure_partial">परिणाम अधूरा या अमान्य है, दिखाया नहीं जाएगा।</string>
     <string name="cloud_failure_general">कार्रवाई पूरी नहीं हो सकी। पुनः प्रयास करें या सहायता लें।</string>
-    <string name="cloud_failure_notice_title">अनुरोध पूरा नहीं हुआ</string>
+    <string name="cloud_failure_notice_title">सूचना</string>
     <string name="cloud_password_title">कॉन्फ़िगरेशन पासवर्ड आवश्यक</string>
     <string name="cloud_password_description">%1$s पासवर्ड से सुरक्षित है। आगे बढ़ने के लिए एक्सपोर्ट पासवर्ड दें। यह सहेजा नहीं जाएगा।</string>
-    <string name="cloud_failure_password_incorrect">पासवर्ड गलत है या सुरक्षित फ़ाइल बदली गई है। पासवर्ड जाँचकर फिर कोशिश करें।</string>
-    <string name="cloud_failure_private_key">इस NPVS फ़ाइल के लिए प्राप्तकर्ता डिवाइस की निजी कुंजी चाहिए; सार्वजनिक कुंजी या पासवर्ड इसका विकल्प नहीं है।</string>
-    <string name="cloud_failure_recipient">दी गई सार्वजनिक कुंजी इस फ़ाइल के प्राप्तकर्ता से मेल नहीं खाती।</string>
-    <string name="cloud_failure_npvs_unsupported">NPVS सुरक्षा का यह प्रकार अभी समर्थित नहीं है।</string>
+    <string name="cloud_failure_password_incorrect">पासवर्ड गलत है।</string>
+    <string name="cloud_failure_private_key">यह NPVS फ़ाइल प्राप्तकर्ता की सार्वजनिक और निजी कुंजी से सुरक्षित है। यह विधि अभी समर्थित नहीं है; समर्थन जल्द आएगा।</string>
+    <string name="cloud_failure_recipient">यह NPVS फ़ाइल प्राप्तकर्ता की ऐसी कुंजी विधि उपयोग करती है जो अभी समर्थित नहीं है। जल्द उपलब्ध होगी।</string>
+    <string name="cloud_failure_npvs_unsupported">यह NPVS संस्करण या सुरक्षा विधि अभी समर्थित नहीं है। जल्द उपलब्ध होगी।</string>
 </resources>

@@ -27,11 +27,11 @@
     <string name="cloud_failure_conflict">يتعارض الطلب مع الحالة الحالية. أعد المحاولة.</string>
     <string name="cloud_failure_partial">النتيجة ناقصة أو غير صالحة ولن يتم عرضها.</string>
     <string name="cloud_failure_general">تعذر إكمال العملية. حاول مجددًا أو اتصل بالدعم.</string>
-    <string name="cloud_failure_notice_title">تعذر إكمال الطلب</string>
+    <string name="cloud_failure_notice_title">تنبيه</string>
     <string name="cloud_password_title">كلمة مرور الإعداد مطلوبة</string>
     <string name="cloud_password_description">الملف %1$s محمي بكلمة مرور. أدخل كلمة مرور التصدير للمتابعة. لن يتم حفظها.</string>
-    <string name="cloud_failure_password_incorrect">كلمة المرور غير صحيحة أو تم تعديل الملف المحمي. تحقق من كلمة المرور وأعد المحاولة.</string>
-    <string name="cloud_failure_private_key">يتطلب ملف NPVS هذا المفتاح الخاص لجهاز المستلم؛ لا يحل المفتاح العام أو كلمة المرور محله.</string>
-    <string name="cloud_failure_recipient">المفتاح العام المقدم لا يطابق مستلم هذا الملف.</string>
-    <string name="cloud_failure_npvs_unsupported">طريقة حماية NPVS هذه غير مدعومة بعد.</string>
+    <string name="cloud_failure_password_incorrect">كلمة المرور غير صحيحة.</string>
+    <string name="cloud_failure_private_key">يستخدم ملف NPVS هذا حماية بالمفتاحين العام والخاص للمستلم. هذه الطريقة غير مدعومة بعد، وستتوفر قريبًا.</string>
+    <string name="cloud_failure_recipient">يستخدم ملف NPVS هذا طريقة مفتاح مستلم غير مدعومة حاليًا. ستتوفر قريبًا.</string>
+    <string name="cloud_failure_npvs_unsupported">إصدار NPVS هذا أو طريقة الحماية هذه غير مدعومة بعد. ستتوفر قريبًا.</string>
 </resources>

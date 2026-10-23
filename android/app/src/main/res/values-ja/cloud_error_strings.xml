@@ -28,11 +28,11 @@
     <string name="cloud_failure_conflict">現在の状態とリクエストが競合しています。再試行してください。</string>
     <string name="cloud_failure_partial">結果が不完全または無効なため表示しません。</string>
     <string name="cloud_failure_general">処理を完了できませんでした。再試行するかサポートにお問い合わせください。</string>
-    <string name="cloud_failure_notice_title">リクエストを完了できませんでした</string>
+    <string name="cloud_failure_notice_title">お知らせ</string>
     <string name="cloud_password_title">設定のパスワードが必要です</string>
     <string name="cloud_password_description">%1$s はパスワードで保護されています。続けるにはエクスポート用パスワードを入力してください。保存されません。</string>
-    <string name="cloud_failure_password_incorrect">パスワードが間違っているか、保護されたファイルが変更されています。パスワードを確認して再試行してください。</string>
-    <string name="cloud_failure_private_key">このNPVSファイルには受信端末の秘密鍵が必要です。公開鍵やパスワードでは代用できません。</string>
-    <string name="cloud_failure_recipient">指定された公開鍵はこのファイルの受信者と一致しません。</string>
-    <string name="cloud_failure_npvs_unsupported">このNPVS保護方式にはまだ対応していません。</string>
+    <string name="cloud_failure_password_incorrect">パスワードが正しくありません。</string>
+    <string name="cloud_failure_private_key">このNPVSファイルは受信者の公開鍵と秘密鍵で保護されています。この方式は現在未対応で、今後対応予定です。</string>
+    <string name="cloud_failure_recipient">このNPVSファイルの受信者鍵方式は現在未対応です。今後対応予定です。</string>
+    <string name="cloud_failure_npvs_unsupported">このNPVSのバージョンまたは保護方式は現在未対応です。今後対応予定です。</string>
 </resources>

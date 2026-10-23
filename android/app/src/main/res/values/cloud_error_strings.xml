@@ -27,11 +27,11 @@
     <string name="cloud_failure_conflict">The request conflicts with the current state. Please retry.</string>
     <string name="cloud_failure_partial">The result was incomplete or invalid, and will not be displayed.</string>
     <string name="cloud_failure_general">Unable to complete the operation. Try again or contact support.</string>
-    <string name="cloud_failure_notice_title">Could not complete the request</string>
+    <string name="cloud_failure_notice_title">Notice</string>
     <string name="cloud_password_title">Configuration password required</string>
     <string name="cloud_password_description">%1$s is password-protected. Enter the export password to continue. It will not be saved.</string>
-    <string name="cloud_failure_password_incorrect">Incorrect password, or the protected file was modified. Check the password and try again.</string>
-    <string name="cloud_failure_private_key">This NPVS file requires the recipient device\'s private key; a public key or password cannot replace it.</string>
-    <string name="cloud_failure_recipient">The supplied public key does not match this file\'s recipient.</string>
-    <string name="cloud_failure_npvs_unsupported">This NPVS protection variant is not yet supported.</string>
+    <string name="cloud_failure_password_incorrect">Incorrect password.</string>
+    <string name="cloud_failure_private_key">This NPVS file uses recipient public/private key protection. This method is not supported yet; support is coming soon.</string>
+    <string name="cloud_failure_recipient">This NPVS file uses a recipient key method that is not supported yet. Support is coming soon.</string>
+    <string name="cloud_failure_npvs_unsupported">This NPVS version or protection method is not supported yet. Support is coming soon.</string>
 </resources>

@@ -27,11 +27,11 @@
     <string name="cloud_failure_conflict">Запрос конфликтует с текущим состоянием.</string>
     <string name="cloud_failure_partial">Результат неполон или неверен и не будет показан.</string>
     <string name="cloud_failure_general">Не удалось выполнить операцию. Повторите попытку или обратитесь в поддержку.</string>
-    <string name="cloud_failure_notice_title">Не удалось выполнить запрос</string>
+    <string name="cloud_failure_notice_title">Уведомление</string>
     <string name="cloud_password_title">Требуется пароль конфигурации</string>
     <string name="cloud_password_description">%1$s защищён паролем. Введите пароль экспорта. Он не будет сохранён.</string>
-    <string name="cloud_failure_password_incorrect">Неверный пароль или защищённый файл был изменён. Проверьте пароль и повторите попытку.</string>
-    <string name="cloud_failure_private_key">Для этого файла NPVS нужен закрытый ключ устройства получателя. Открытый ключ или пароль его не заменяют.</string>
-    <string name="cloud_failure_recipient">Указанный открытый ключ не соответствует получателю файла.</string>
-    <string name="cloud_failure_npvs_unsupported">Этот вариант защиты NPVS пока не поддерживается.</string>
+    <string name="cloud_failure_password_incorrect">Неверный пароль.</string>
+    <string name="cloud_failure_private_key">Этот файл NPVS защищён открытым и закрытым ключами получателя. Метод пока не поддерживается; поддержка появится позже.</string>
+    <string name="cloud_failure_recipient">Этот файл NPVS использует пока неподдерживаемый метод ключа получателя. Поддержка скоро появится.</string>
+    <string name="cloud_failure_npvs_unsupported">Эта версия NPVS или метод защиты пока не поддерживается. Поддержка скоро появится.</string>
 </resources>

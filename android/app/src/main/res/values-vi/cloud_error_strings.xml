@@ -28,11 +28,11 @@
     <string name="cloud_failure_conflict">Yêu cầu xung đột với trạng thái hiện tại. Thử lại.</string>
     <string name="cloud_failure_partial">Kết quả chưa hoàn chỉnh hoặc không hợp lệ nên sẽ không hiển thị.</string>
     <string name="cloud_failure_general">Không thể hoàn tất. Thử lại hoặc liên hệ hỗ trợ.</string>
-    <string name="cloud_failure_notice_title">Không thể hoàn tất yêu cầu</string>
+    <string name="cloud_failure_notice_title">Thông báo</string>
     <string name="cloud_password_title">Cần mật khẩu cấu hình</string>
     <string name="cloud_password_description">%1$s được bảo vệ bằng mật khẩu. Nhập mật khẩu xuất để tiếp tục. Mật khẩu không được lưu.</string>
-    <string name="cloud_failure_password_incorrect">Mật khẩu không đúng hoặc tệp được bảo vệ đã bị thay đổi. Kiểm tra mật khẩu và thử lại.</string>
-    <string name="cloud_failure_private_key">Tệp NPVS này cần khóa riêng của thiết bị nhận; khóa công khai hoặc mật khẩu không thể thay thế.</string>
-    <string name="cloud_failure_recipient">Khóa công khai không khớp với người nhận của tệp này.</string>
-    <string name="cloud_failure_npvs_unsupported">Biến thể bảo vệ NPVS này chưa được hỗ trợ.</string>
+    <string name="cloud_failure_password_incorrect">Mật khẩu không đúng.</string>
+    <string name="cloud_failure_private_key">Tệp NPVS này dùng cơ chế bảo vệ bằng khóa công khai và khóa riêng của người nhận. Phương thức này chưa được hỗ trợ và sẽ sớm được bổ sung.</string>
+    <string name="cloud_failure_recipient">Tệp NPVS này dùng phương thức khóa người nhận chưa được hỗ trợ. Sắp ra mắt.</string>
+    <string name="cloud_failure_npvs_unsupported">Phiên bản hoặc phương thức bảo vệ NPVS này chưa được hỗ trợ. Sắp ra mắt.</string>
 </resources>

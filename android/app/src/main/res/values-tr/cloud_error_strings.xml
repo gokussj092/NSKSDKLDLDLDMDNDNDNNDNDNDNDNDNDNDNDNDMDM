@@ -28,11 +28,11 @@
     <string name="cloud_failure_conflict">İstek mevcut durumla çakışıyor. Tekrar deneyin.</string>
     <string name="cloud_failure_partial">Sonuç eksik veya geçersiz, görüntülenmeyecek.</string>
     <string name="cloud_failure_general">İşlem tamamlanamadı. Tekrar deneyin veya destek alın.</string>
-    <string name="cloud_failure_notice_title">İstek tamamlanamadı</string>
+    <string name="cloud_failure_notice_title">Bilgilendirme</string>
     <string name="cloud_password_title">Yapılandırma parolası gerekli</string>
     <string name="cloud_password_description">%1$s parola korumalıdır. Devam etmek için dışa aktarma parolasını girin. Kaydedilmez.</string>
-    <string name="cloud_failure_password_incorrect">Parola yanlış veya korunan dosya değiştirilmiş. Parolayı kontrol edip tekrar deneyin.</string>
-    <string name="cloud_failure_private_key">Bu NPVS dosyası alıcı cihazın özel anahtarını gerektirir; ortak anahtar veya parola bunun yerini tutmaz.</string>
-    <string name="cloud_failure_recipient">Verilen ortak anahtar bu dosyanın alıcısıyla eşleşmiyor.</string>
-    <string name="cloud_failure_npvs_unsupported">Bu NPVS koruma türü henüz desteklenmiyor.</string>
+    <string name="cloud_failure_password_incorrect">Parola yanlış.</string>
+    <string name="cloud_failure_private_key">Bu NPVS dosyası alıcının açık ve özel anahtarıyla korunuyor. Bu yöntem henüz desteklenmiyor; destek yakında eklenecek.</string>
+    <string name="cloud_failure_recipient">Bu NPVS dosyası henüz desteklenmeyen bir alıcı anahtarı yöntemi kullanıyor. Yakında desteklenecek.</string>
+    <string name="cloud_failure_npvs_unsupported">Bu NPVS sürümü veya koruma yöntemi henüz desteklenmiyor. Yakında desteklenecek.</string>
 </resources>

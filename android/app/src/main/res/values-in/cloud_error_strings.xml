@@ -27,11 +27,11 @@
     <string name="cloud_failure_conflict">Permintaan bertentangan dengan status saat ini. Coba lagi.</string>
     <string name="cloud_failure_partial">Hasil tidak lengkap atau tidak valid dan tidak ditampilkan.</string>
     <string name="cloud_failure_general">Operasi gagal. Coba lagi atau hubungi dukungan.</string>
-    <string name="cloud_failure_notice_title">Permintaan tidak dapat diselesaikan</string>
+    <string name="cloud_failure_notice_title">Pemberitahuan</string>
     <string name="cloud_password_title">Kata sandi konfigurasi diperlukan</string>
     <string name="cloud_password_description">%1$s dilindungi kata sandi. Masukkan kata sandi ekspor untuk melanjutkan. Kata sandi tidak akan disimpan.</string>
-    <string name="cloud_failure_password_incorrect">Kata sandi salah atau berkas terlindungi telah diubah. Periksa kata sandi lalu coba lagi.</string>
-    <string name="cloud_failure_private_key">Berkas NPVS ini memerlukan kunci privat perangkat penerima; kunci publik atau kata sandi tidak dapat menggantikannya.</string>
-    <string name="cloud_failure_recipient">Kunci publik tidak cocok dengan penerima berkas ini.</string>
-    <string name="cloud_failure_npvs_unsupported">Varian perlindungan NPVS ini belum didukung.</string>
+    <string name="cloud_failure_password_incorrect">Kata sandi salah.</string>
+    <string name="cloud_failure_private_key">File NPVS ini menggunakan perlindungan kunci publik dan privat penerima. Metode ini belum didukung dan akan segera tersedia.</string>
+    <string name="cloud_failure_recipient">File NPVS ini menggunakan metode kunci penerima yang belum didukung. Segera hadir.</string>
+    <string name="cloud_failure_npvs_unsupported">Versi atau metode perlindungan NPVS ini belum didukung. Segera hadir.</string>
 </resources>

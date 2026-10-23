@@ -27,11 +27,11 @@
     <string name="cloud_failure_conflict">Conflit avec l’état actuel. Réessayez.</string>
     <string name="cloud_failure_partial">Le résultat est incomplet ou invalide et ne sera pas affiché.</string>
     <string name="cloud_failure_general">Impossible de terminer l’opération. Réessayez ou contactez le support.</string>
-    <string name="cloud_failure_notice_title">Impossible de terminer la requête</string>
+    <string name="cloud_failure_notice_title">Information</string>
     <string name="cloud_password_title">Mot de passe requis</string>
     <string name="cloud_password_description">%1$s est protégé par un mot de passe. Saisissez le mot de passe d’exportation. Il ne sera pas enregistré.</string>
-    <string name="cloud_failure_password_incorrect">Mot de passe incorrect ou fichier protégé modifié. Vérifiez le mot de passe et réessayez.</string>
-    <string name="cloud_failure_private_key">Ce fichier NPVS nécessite la clé privée de l’appareil destinataire. La clé publique ou un mot de passe ne peut pas la remplacer.</string>
-    <string name="cloud_failure_recipient">La clé publique fournie ne correspond pas au destinataire de ce fichier.</string>
-    <string name="cloud_failure_npvs_unsupported">Ce mode de protection NPVS n’est pas encore pris en charge.</string>
+    <string name="cloud_failure_password_incorrect">Mot de passe incorrect.</string>
+    <string name="cloud_failure_private_key">Ce fichier NPVS utilise une protection par clé publique et privée du destinataire. Cette méthode sera bientôt prise en charge.</string>
+    <string name="cloud_failure_recipient">Ce fichier NPVS utilise une méthode de clé de destinataire pas encore prise en charge. Bientôt disponible.</string>
+    <string name="cloud_failure_npvs_unsupported">Cette version ou méthode de protection NPVS sera bientôt prise en charge.</string>
 </resources>

@@ -27,11 +27,11 @@
     <string name="cloud_failure_conflict">Die Anfrage steht im Konflikt mit dem aktuellen Zustand.</string>
     <string name="cloud_failure_partial">Das Ergebnis ist unvollständig oder ungültig und wird nicht angezeigt.</string>
     <string name="cloud_failure_general">Vorgang fehlgeschlagen. Versuche es erneut oder kontaktiere den Support.</string>
-    <string name="cloud_failure_notice_title">Anfrage konnte nicht abgeschlossen werden</string>
+    <string name="cloud_failure_notice_title">Hinweis</string>
     <string name="cloud_password_title">Konfigurationspasswort erforderlich</string>
     <string name="cloud_password_description">%1$s ist passwortgeschützt. Gib das Exportpasswort ein. Es wird nicht gespeichert.</string>
-    <string name="cloud_failure_password_incorrect">Falsches Passwort oder geschützte Datei verändert. Prüfe das Passwort und versuche es erneut.</string>
-    <string name="cloud_failure_private_key">Diese NPVS-Datei benötigt den privaten Schlüssel des Empfängergeräts; ein öffentlicher Schlüssel oder Passwort ersetzt ihn nicht.</string>
-    <string name="cloud_failure_recipient">Der öffentliche Schlüssel gehört nicht zum Empfänger dieser Datei.</string>
-    <string name="cloud_failure_npvs_unsupported">Diese NPVS-Schutzvariante wird noch nicht unterstützt.</string>
+    <string name="cloud_failure_password_incorrect">Falsches Passwort.</string>
+    <string name="cloud_failure_private_key">Diese NPVS-Datei verwendet den öffentlichen und privaten Schlüssel des Empfängers. Diese Methode wird noch nicht unterstützt; Unterstützung folgt.</string>
+    <string name="cloud_failure_recipient">Diese NPVS-Datei verwendet eine noch nicht unterstützte Empfängerschlüssel-Methode. Unterstützung folgt.</string>
+    <string name="cloud_failure_npvs_unsupported">Diese NPVS-Version oder Schutzmethode wird noch nicht unterstützt. Unterstützung folgt.</string>
 </resources>
