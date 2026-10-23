@@ -1,0 +1,2024 @@
+{
+  "schemaVersion": 1,
+  "detection": {
+    "rule": "longest-filename-suffix",
+    "caseInsensitive": true,
+    "separator": "."
+  },
+  "formats": [
+    {
+      "suffix": "hamotunnelplus",
+      "name": "RENZ / HAMOTUNNELPLUS",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "deshtunnelvpn",
+      "name": "RENZ / DESHTUNNELVPN",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "vipsnipherpro",
+      "name": "RENZ / VIPSNIPHERPRO",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "actunnelvpn",
+      "name": "RENZ / ACTUNNELVPN",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "cranetunnel",
+      "name": "RENZ / CRANETUNNEL",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "ultratunnel",
+      "name": "ULTRA TUNNEL",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "aloplusvpn",
+      "name": "RENZ / ALOPLUSVPN",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "juanscript",
+      "name": "JuanScript",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "mtv2raypro",
+      "name": "MT V2RAY PRO",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "safetunnel",
+      "name": "RENZ / SAFETUNNEL",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "wolftunnel",
+      "name": "WOLF TUNNEL",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "wyrvpnlite",
+      "name": "WyrLite",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "flynetvpn",
+      "name": "FLY NET VPN",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "fnnetwork",
+      "name": "FN Network",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "ignix_vpn",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "letsvpngo",
+      "name": "RENZ / LETSVPNGO",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "mhrtunnel",
+      "name": "RENZ / MHRTUNNEL",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "nurtunnel",
+      "name": "NUR TUNNEL",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "sksrv.png",
+      "name": "SKS Server",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "sshbrasil",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "tiktunnel",
+      "name": "TIK TUNNEL",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "apnalite",
+      "name": "XOR VPN family",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "apnatnl",
+      "name": "XOR VPN family",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "bshield",
+      "name": "RENZ / BSHIELD",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "flexnet",
+      "name": "FlexNet",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "mdproxy",
+      "name": "MD PROXY VPN",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "mtv2ray",
+      "name": "MT V2RAY",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "omanova",
+      "name": "XOR VPN family",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "sksplus",
+      "name": "SocksIP Plus",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "slipnet",
+      "name": "SlipNet",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "vpnlite",
+      "name": "VPN Lite",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "wyrlite",
+      "name": "WyrLite",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "xhypher",
+      "name": "RENZ / XHYPHER",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "4ulite",
+      "name": "4U TUNNEL LITE",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "cloudy",
+      "name": "Cloudy Inject",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "flynet",
+      "name": "FLY NET VPN",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "garuda",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "gcpvpn",
+      "name": "RENZ / GCPVPN",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "purple",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "skvoid",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "1ftnl",
+      "name": "1FTunnel 0.6.99",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": [
+        "password"
+      ]
+    },
+    {
+      "suffix": "actun",
+      "name": "AC TUNNEL VPN 1.4",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "bdnet",
+      "name": "XOR VPN family",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "creeb",
+      "name": "CREEB INJECTOR 38.0",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "cyber",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "dkarl",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "glory",
+      "name": "GLORY TUNNEL",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "great",
+      "name": "GREAT TUNNEL",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "green",
+      "name": "24clan VPN Green",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "hsome",
+      "name": "XOR VPN family",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "lucky",
+      "name": "LUCKY PROXY",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "marvs",
+      "name": "MARVS TUNNEL",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "mdvpn",
+      "name": "MD VPN",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "mehaf",
+      "name": "MEHAF TUNNEL",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "nvpnc",
+      "name": "Neutro VPN",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "pausa",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "sksrv",
+      "name": "SKS Server",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "solid",
+      "name": "NUR TUNNEL VPN (.solid)",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "ultra",
+      "name": "ULTRA TUNNEL",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "v2box",
+      "name": "V2Box Export",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": [
+        "password"
+      ]
+    },
+    {
+      "suffix": "xscks",
+      "name": "X-Socks",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "1300",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "7net",
+      "name": "RENZ / 7NET",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "aipr",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "aura",
+      "name": "AURA TUNNEL",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "cerv",
+      "name": "CREV",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "clay",
+      "name": "Generic DES-ECB (AES-GCM fallback)",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "cnet",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "crev",
+      "name": "CREEB VPN 50.0",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "dark",
+      "name": "Dark Tunnel",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "deep",
+      "name": "DEEP TUNNEL",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "edan",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "ehil",
+      "name": "HTTP Injector Lite",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "epro",
+      "name": "ePro Tunnel",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "etun",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "flex",
+      "name": "FlexNet",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "fnet",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "fthp",
+      "name": "FTHP",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "gibs",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "gold",
+      "name": "Gold Tunnel",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "izph",
+      "name": "IZPH VPN Pro",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "juan",
+      "name": "JuanScript",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "maya",
+      "name": "Maya Tunnel",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "mina",
+      "name": "MinaProNet",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "mobi",
+      "name": "JuanScript",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "npv2",
+      "name": "NPV Tunnel v2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "npv4",
+      "name": "NPV Tunnel v4",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "npvs",
+      "name": "NPV Tunnel NPVS v5",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": [
+        "password",
+        "publicKey"
+      ]
+    },
+    {
+      "suffix": "npvt",
+      "name": "NPV Tunnel v4",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "rezl",
+      "name": "Rez Tunnel Lite",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "sksx",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "tcv2",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "temt",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "tito",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "ulti",
+      "name": "ULTI TUNNEL",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "ursa",
+      "name": "XOR VPN family",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "wolf",
+      "name": "WOLF TUNNEL",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "wrld",
+      "name": "Generic DES-ECB (AES-GCM fallback)",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "wyrl",
+      "name": "WyrLite",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "xsks",
+      "name": "Generic DES-ECB (AES-GCM fallback)",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "zoba",
+      "name": "Zoba VPN",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "ace",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "acm",
+      "name": "Generic DES-ECB (AES-GCM fallback)",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "act",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "agn",
+      "name": "AGN Injector",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "aip",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "aro",
+      "name": "AustroPlus VPN 13.0.1",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "awg",
+      "name": "AboWaged VPN 1.0",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "bbb",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "bcl",
+      "name": "BCL TUNNEL",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "bdi",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "bee",
+      "name": "BEE TUNNEL",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "btv",
+      "name": "BTV TUNNEL",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "cbp",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "ccc",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "cer",
+      "name": "CREV",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "cks",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "cln",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "cly",
+      "name": "Cloudy",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "cyh",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "dak",
+      "name": "Generic DES-ECB (AES-GCM fallback)",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "ddd",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "dev",
+      "name": "DEV VPN",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "dvd",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "dzd",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "eee",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "ehi",
+      "name": "HTTP Injector",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "ena",
+      "name": "ENA TUNNEL",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "eta",
+      "name": "ETA TUNNEL",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "eug",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "eut",
+      "name": "EUT Tunnel",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "ezi",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "fix",
+      "name": "FIX TUNNEL",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "fks",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "fnf",
+      "name": "XOR VPN family",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "ftp",
+      "name": "FTHP",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "ftr",
+      "name": "Generic DES-ECB (AES-GCM fallback)",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "gol",
+      "name": "VPN PLUS PERÚ",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "grd",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "hat",
+      "name": "HA Tunnel Plus",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "hbd",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "hdb",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "hqp",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "hrt",
+      "name": "HRT Tunnel",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "hta",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "htb",
+      "name": "HTTP Tweak",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "htp",
+      "name": "Generic DES-ECB (AES-GCM fallback)",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "hub",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "hxt",
+      "name": "HX Tunnel VPN",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "int",
+      "name": "IntVPN",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "ipt",
+      "name": "WeTunnel",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "itv",
+      "name": "ITV Tunnel",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "jez",
+      "name": "JEZ Tunnel",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "jph",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "jvc",
+      "name": "JVC Tunnel",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "jvi",
+      "name": "JVI Tunnel",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "ktr",
+      "name": "KTR",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "lnk",
+      "name": "LinkLayer VPN",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "ltm",
+      "name": "LTM Tunnel",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "max",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "mdp",
+      "name": "MD PROXY VPN",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "mij",
+      "name": "MIJ Tunnel",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "mmt",
+      "name": "MMT TUNNEL",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "mrc",
+      "name": "MRC Tunnel",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "msy",
+      "name": "AR Pro / MSY",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "mtl",
+      "name": "MTL Tunnel",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "mtp",
+      "name": "My Tunnel Proxy",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "nac",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "nd4",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "net",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "nhi",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "ntr",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "nur",
+      "name": "NUR TUNNEL",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "nxp",
+      "name": "Generic DES-ECB (AES-GCM fallback)",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "osp",
+      "name": "RENZ / 7NET",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "ost",
+      "name": "OUSS Tunnel",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "osv",
+      "name": "OSV TUNNEL",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "pcx",
+      "name": "PCX Tunnel",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "phc",
+      "name": "PHC Tunnel",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "pin",
+      "name": "Generic DES-ECB (AES-GCM fallback)",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "pir",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "pkm",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "pxp",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "rez",
+      "name": "Rez Tunnel",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "roy",
+      "name": "Royal Tunnel VPN 7.0",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "sbr",
+      "name": "SBR Injector",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "sds",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "sip",
+      "name": "SocksIP Tunnel",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "sks",
+      "name": "HTTP FenixVPN 19.4 / HTTP Jireh 2.0 / HTTP SocketClay 3.4.0",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "sky",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "spd",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "ssc",
+      "name": "SSC Custom",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "ssh",
+      "name": "SSH Injector",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "ssi",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "stk",
+      "name": "Stark VPN",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "sut",
+      "name": "SUT Tunnel",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "t10",
+      "name": "T10 TUNNEL",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "t20",
+      "name": "T20 TUNNEL",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "tcx",
+      "name": "RENZ / TCXTUNNEL",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "tgv",
+      "name": "TunelGuard VPN 12.8",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "tik",
+      "name": "TIK TUNNEL",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "tls",
+      "name": "TLS Tunnel",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "tmt",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "tnl",
+      "name": "Tunnel",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "tpp",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "tsd",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "tsm",
+      "name": "TSM TUNNEL",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "tut",
+      "name": "Tunneltweak 6.2.1",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": [
+        "password"
+      ]
+    },
+    {
+      "suffix": "tvt",
+      "name": "TV Tunnel",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "utn",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "uwu",
+      "name": "UWU Tunnel",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "v2i",
+      "name": "V2Ray Injector",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "vel",
+      "name": "VEL TUNNEL",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "vlx",
+      "name": "VLX TUNNEL",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "vmx",
+      "name": "Generic DES-ECB (AES-GCM fallback)",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "vn7",
+      "name": "VN7",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "vpc",
+      "name": "Generic DES-ECB (AES-GCM fallback)",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "wcm",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "wyr",
+      "name": "WyrVPN",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "xtp",
+      "name": "XTProy",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "xui",
+      "name": "XUI Tunnel",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "ziv",
+      "name": "ZIVPN",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "ai",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "ar",
+      "name": "AR Pro / MSY",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "at",
+      "name": "ASH tunnel",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "ec",
+      "name": "EC Tunnel",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "fɴ",
+      "name": "FN Tunnel",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "gv",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "hc",
+      "name": "HTTP Custom",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": [
+        "password",
+        "hwid"
+      ]
+    },
+    {
+      "suffix": "hq",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "ht",
+      "name": "HTTP Tweak",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "it",
+      "name": "Generic DES-ECB (AES-GCM fallback)",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "kt",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "lt",
+      "name": "LTM Tunnel",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "mc",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "md",
+      "name": "MD TUNNEL",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "mm",
+      "name": "MM TUNNEL",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "n4",
+      "name": "N4 VPN Pro",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "nm",
+      "name": "NetMod",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "nt",
+      "name": "Net Tunnel",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "nx",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "pb",
+      "name": "XrayPB",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "rt",
+      "name": "REESE TUNNEL",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "ry",
+      "name": "RY TUNNEL",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "st",
+      "name": "Sentinel Tunnel",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "tx",
+      "name": "TX TUNNEL",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "ua",
+      "name": "Ultra Custom",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": [
+        "password"
+      ]
+    },
+    {
+      "suffix": "ut",
+      "name": "ULTRA TUNNEL",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "v2",
+      "name": "e-V2Ray",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "wt",
+      "name": "Generic AES-GCM / PBKDF2",
+      "kind": "file",
+      "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    }
+  ]
+}
