@@ -30,6 +30,12 @@ los switches. La entrega no fusiona ni despliega ni publica novedades C11.
 - LSParanoid: **203 literales resueltos en 21 archivos / 1039 cadenas de
   inventario** del DEX 2. El núcleo de la aplicación permanece protegido por
   LIAPP. JADX reportó 30 errores en DEX 1 y terminó con éxito en DEX 2.
+- Continuación: control **local** de paquete y SHA-1 confirmado; el certificado
+  entregado figura en la lista aceptada. Se recuperaron **213 bytes de
+  metadatos LIAPP**, iguales por Python estático y rutina ARM64 con archivos y
+  contexto modelados. **3 tests nuevos / 7 Python en total**. La Application
+  original ya se identifica; sus clases y el lector exterior siguen pendientes.
+  Los controles locales no demuestran una exigencia de identidad en HTTP.
 
 ## Alcance del auxiliar
 
@@ -71,6 +77,9 @@ habilitar `remote`. **No usar la ficha como anuncio de soporte terminado.**
 - `scripts/apk_analysis/`: preparación, JADX fijado por checksum, LSParanoid,
   ELF y emulación limitada; `liapp_wrapper.py` recupera exclusivamente la
   primera capa nativa del wrapper de este build.
+- `am_liapp_metadata.py` y `am_liapp_native_probe.py`: metadatos y checkpoints
+  del protector con hashes exactos; no son lectores de catálogo ni DEX completo.
+- `tests/golden/am_liapp*`: vectores sintéticos y generador ARM64 original.
 - `tests/golden/am_tunnel_lite*`: fuente JDK, generador, vectores sintéticos y
   oracle de la primitiva XOR original.
 - [ANALYSIS.md](ANALYSIS.md): hashes, direcciones y puntos concretos para

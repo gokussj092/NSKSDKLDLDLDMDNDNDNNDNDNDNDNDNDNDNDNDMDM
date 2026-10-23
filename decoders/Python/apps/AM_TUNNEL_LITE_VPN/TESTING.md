@@ -40,3 +40,32 @@ El oracle y el extractor rechazan builds con hashes distintos. El extractor
 no es un desempaquetador completo de LIAPP. `ANALYSIS.md` deja los límites y
 el siguiente punto de investigación reproducible. Las herramientas pueden
 reinstalarse siguiendo `scripts/apk_analysis/RESTORE.md`.
+
+## Continuación de LIAPP y control de identidad
+
+- **7 Python aprobadas**: las 4 anteriores y 3 para LCG/CRC independientes,
+  el bloque sintético de metadatos, relación entre enteros, corrupción,
+  truncamiento, límites y rechazo de APK de otro build. CI C2 las incluye.
+- 4 vectores LCG, 3 CRC y el sobre sintético se generan con las funciones
+  ARM64 originales `0x11798`/`0x10994`, sin modelar esas primitivas.
+- APK real: **1003 assets** en el fold; **213 bytes de metadatos**, con hash
+  esperado y relación interna válidos. Igualdad completa entre el lector
+  estático y el checkpoint nativo original; también probado `--buffers`.
+- El checkpoint modela archivos y contexto, acelera helpers de memoria,
+  cadenas y CRC y conserva límites de instrucciones/memoria. No demuestra
+  Android/JNI, validación completa del guard de firma ni arranque de la app.
+- El certificado del APK coincide con un SHA-1 admitido en el flujo local de
+  PUtils. No se ha establecido que una petición remota exija ese certificado.
+- No cambian runtime Cloud, ficha, disponibilidad ni versión del catálogo;
+  las **43 web son la validación anterior**, no una suite repetida en este paso.
+
+```bash
+python -m unittest tests.test_am_liapp_metadata tests.test_am_tunnel_lite -v
+python scripts/apk_analysis/am_liapp_metadata.py ruta/base.apk
+python tests/golden/am_liapp_generate.py ruta/core.so
+python scripts/apk_analysis/am_liapp_native_probe.py \
+  ruta/core.so ruta/base.apk ruta/split_config.arm64_v8a.apk
+```
+
+No se ha abierto el documento `pdrv2.json`, ni reconstruido sus clases o
+certificado una respuesta remota. Los nuevos tests no cambian ese estado.

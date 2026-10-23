@@ -92,7 +92,16 @@
     "nativeCoreBytes": 657452,
     "nativeCoreSha256": "fe2ee74275a21be8b6ff728d00761db8676fb729af2de4e455b672f500c7e5e6",
     "dexRecovered": false,
-    "catalogReaderRecovered": false
+    "catalogReaderRecovered": false,
+    "metadataRecovered": true,
+    "metadataBytes": 213,
+    "metadataSha256": "626ddbf5be13f9fb8e4d86062c5fcf5e8f3ecf147d509a657536ba80fa1b7a01",
+    "fullNativeMetadataEqual": true,
+    "nativeContextModeled": true,
+    "androidRuntimeExecuted": false,
+    "originalApplication": "prince.udp.vpn.activities.UDPApplication",
+    "originalActivity": "prince.udp.vpn.activities.SplashActivity",
+    "laterCheckpointDexRecovered": false
   },
   "analysisTools": [
     "scripts/apk_analysis/inspect_apk.py",
@@ -104,15 +113,34 @@
     "tests/golden/am_tunnel_lite_oracle.java",
     "tests/golden/am_tunnel_lite_native_oracle.py",
     "tests/golden/am_tunnel_lite_generate.py",
-    "scripts/apk_analysis/RESTORE.md"
+    "scripts/apk_analysis/RESTORE.md",
+    "scripts/apk_analysis/am_liapp_metadata.py",
+    "scripts/apk_analysis/am_liapp_native_probe.py",
+    "tests/golden/am_liapp_generate.py"
   ],
   "tests": {
-    "pythonPassed": 4,
+    "pythonPassed": 7,
     "webPassed": 43,
-    "scope": "Known fields and disabled roster card only; no full project suites or successful catalog decode"
+    "scope": "Known fields and protector metadata only; 43 web checks are previous disabled-card validation. No full suites or complete catalog decode.",
+    "protectorMetadataTests": 3,
+    "originalNativeLcgVectors": 4,
+    "originalNativeCrcVectors": 3,
+    "webReexecutedInMetadataContinuation": false
   },
-  "analysisLimit": "DEX1 JADX 30 general errors; DEX2 exit 0. Protected application definitions and outer catalog remain unrecovered. First native wrapper extraction is not DEX unpacking.",
+  "analysisLimit": "LIAPP bootstrap and 213 metadata bytes recovered with full native/Python parity in a modeled context. Application DEX definitions, string context and outer catalog remain unrecovered. No Android execution or authenticated/complete remote catalog.",
   "branch": "feat/austroplus-vpn-13-0-1-decoders",
   "pullRequest": 96,
-  "analyzedBaseCommit": "b3bf2aa10b2b9918a344eed461396cefa4055f96"
+  "analyzedBaseCommit": "ab9024fdb12b8c9cb4ee473ee534ea7fafc1b669",
+  "localIdentity": {
+    "packageCheckedByPUtils": true,
+    "certificateSha1CheckedByPUtils": true,
+    "allowedCertificateSha1": [
+      "5FED785CA69AEC41CE2C925E8C8A5A738A6DE276",
+      "8F2A3D1AF1A88D527B8C7FC247EA2C1208308F3C"
+    ],
+    "suppliedCertificateSha1": "8F2A3D1AF1A88D527B8C7FC247EA2C1208308F3C",
+    "suppliedCertificateAcceptedByInspectedFlow": true,
+    "fullGuardExecutedOnAndroid": false,
+    "remoteIdentityRequirementConfirmed": false
+  }
 }

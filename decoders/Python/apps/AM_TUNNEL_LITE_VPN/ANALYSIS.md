@@ -30,11 +30,28 @@ otro APK por nombre o tamaño. No hay bloqueo de permisos del usuario.
 | `hexToString` | `0x146550` | Conversión intermedia |
 | `xorWithKey` | `0x1466d4` | XOR por índice módulo 12 |
 | Datos iniciales de clave | `0xc4947` | Ocho bytes, seguidos del inmediato little-endian `0x5d506b66` |
+| Guard local de certificado | `0x147c70` | Lee APK/RSA/certificado y compara su SHA-1 |
+| `getSignatureSha1` | `0x147590` | Identidad local, no una petición HTTP |
 
 La clave de formato es `4%PdXch>fkP]`. El oracle ejecuta la rutina XOR aislada,
 con copia de `std::string` y memoria acotadas. Ocho salidas coinciden con los
 bytes UTF modificados generados por DataOutputStream JDK. No se ha probado
 un campo real extraído del catálogo que aún no está abierto.
+
+### Paquete y firma: control local confirmado
+
+`pDecrypt` llama al guard y compara el paquete con `app.vpn.amtunnellite`.
+El guard admite los SHA-1 `5FED785CA69AEC41CE2C925E8C8A5A738A6DE276` y
+`8F2A3D1AF1A88D527B8C7FC247EA2C1208308F3C`. El certificado del APK entregado
+tiene este último SHA-1; SHA-256 del certificado:
+`6ec7a52144782de25268ce82e73cf81ec6fb315bf6f768e6bc6c300c10b7d76f`.
+Se comprobó por inspección del flujo y extracción del certificado; no se
+ejecutó el guard completo en Android. El auxiliar Python reproduce la
+transformación de campos sin depender de PackageManager ni modificar el APK.
+
+Esto no demuestra que el servidor reciba o exija paquete, SHA o firma en
+cabeceras. Tampoco el timeout demuestra autenticación. No añadir cabeceras
+supuestas ni confundir el pinning TLS de `com.liapp.C/l` con identidad HTTP.
 
 ## Primera capa del protector recuperada
 
@@ -59,10 +76,73 @@ Puntos inspeccionados para continuar, sin afirmar una receta completa:
   `(state >> 16) & 255`. Es código del protector, no del catálogo.
 - `0x802b0..0x803a4`: descodifica metadatos y verifica relaciones entre enteros.
 - `0x82460..0x82504`: deriva material MD5 a partir de una cadena formateada
-  con tres enteros globales; aún falta reconstruir cómo se obtienen.
+  con tres enteros globales, `%8.8x%8.8x%8.8x`; ver la recuperación siguiente.
 - `0x82580..0x829dc`: expansión de clave AES de 128 bits y procesamiento CBC
   dentro de la rutina del protector. La presencia de AES aquí no demuestra
   que `pdrv2.json` use esa misma receta.
+
+## Arranque y metadatos LIAPP recuperados
+
+La clase `com/liapp/x.java` está en **DEX 2**, no en DEX 1. Su `m63` arma
+metadatos de versión, paquete, dataDir, sourceDir, nativeLibraryDir, minSdk,
+targetSdk, flags, SDK, UID, release, debugger y serial, separados por `|`.
+Llama a `m31(Context,String,String,int,int,int,Context,Application,Object)`;
+la entrada nativa inspeccionada comienza en `0x83974`. La desofuscación literal
+`k.m14` recorre unidades UTF-16 desde el final: XOR con estado inicial 124 y
+`state = (state ^ index) & 63`. No se compilan las clases extraídas del APK.
+
+Se recuperaron los **213 bytes** de metadatos del protector, SHA-256
+`626ddbf5be13f9fb8e4d86062c5fcf5e8f3ecf147d509a657536ba80fa1b7a01`.
+El Python estático y la rutina ARM64 original producen exactamente ese bloque
+y supera la relación original entre los tres enteros. No es el catálogo.
+
+Para este hash exacto, en aritmética de 32 bits:
+
+1. `D50` parte de `0xa6038691 ^ 0xb3167321` y acumula XOR de CRC32 y tamaño
+   ZIP de **1003 assets**. Excluye `.efuyxx.dex`, `dexopt/baseline.prof` y
+   `dexopt/baseline.profm`. No leer ni publicar las configuraciones WireGuard.
+2. `D4C = CRC32("app.vpn.amtunnellite") ^ 0xd6162568 ^ 63`.
+3. `D48 = D50 ^ 0xd6162568 ^ 0x11308681` tras las simplificaciones del flujo.
+4. Resultan `D48=0x6b534996`, `D4C=0xfebb5fab`, `D50=0xac75ea7f`.
+   El bloque de cuatro bytes del asset en `0x220` se abre con el stream
+   `0x11798` y D48: longitud 213. Los siguientes 213 bytes, desde `0x224`,
+   se abren con D4C. Su primera palabra debe ser `D48 ^ D4C ^ D50`.
+
+Los cinco flags recuperados son `113,113,4227077,0,0`. La Application original
+es `prince.udp.vpn.activities.UDPApplication`; la Activity original es
+`prince.udp.vpn.activities.SplashActivity`. Sus definiciones protegidas aún
+no se han reconstruido. Los valores anteriores son material del protector,
+no credenciales de servidor ni una receta para `pdrv2.json`.
+
+Fuentes conservadas:
+
+- `am_liapp_metadata.py`: recuperación estática, stdlib, hash exacto y límites.
+- `am_liapp_native_probe.py`: checkpoint acotado de `0x7e018`. Lee solo las
+  dos copias de APK verificadas en memoria; modela rutas, archivos `/proc`
+  vacíos e identificadores de proceso. Acelera helpers de bytes/cadenas/CRC.
+  Ejecuta LCG, inflater y comprobación de metadatos originales. Se detiene
+  en `0x803b4`; **no ejecuta Android/JNI real ni arranca la aplicación**.
+- `tests/golden/am_liapp_generate.py`: 4 vectores LCG, 3 CRC y un bloque de
+  metadatos sintético obtenidos de las primitivas ARM64 originales, sin
+  modelar esas primitivas. Las pruebas ordinarias no necesitan APK/SO.
+
+### Checkpoint posterior, todavía experimental
+
+`--buffers` continúa únicamente hasta `0x829e8`, antes de las comparaciones
+posteriores de integridad/entorno. Conserva asignaciones y globals si se pide
+una carpeta nueva. Ejecuta el AES del protector. El asset principal queda
+idéntico al original; el buffer secundario mide 34289 bytes, SHA-256
+`e49adb49f7878355c741d47cc2c962890871b35899ef4491ee61bab69a330cc1`.
+Ninguno constituye un DEX reconstruido. No confundir que la emulación llegue
+a ese checkpoint con que la app completa funcione o pase todos sus controles.
+
+El secundario contiene 1680 registros con longitud corta, pero su contenido
+no está descifrado. El camino `m31` para cadenas, `0x8411c..0x84328`, usa
+`0x12968` y `0x12a9c`, además del contexto global D54/D58/D5C y offsets.
+Una inicialización tentativa no produjo un inventario válido; no publicar
+esas cadenas ni tratarlas como material de claves confirmado. El siguiente
+trabajo es recuperar ese contexto y las definiciones originales o capturarlas
+en un runtime Android autorizado. No basta añadir identidad a la URL.
 
 `libpdr.so` es un ejecutable Go con `main.main`, sin JNI exportado. No se ha
 hallado evidencia de que participe en la apertura del catálogo; no tratarlo
@@ -86,4 +166,6 @@ Próximo paso: recuperar la clase de apertura y el esquema completo; después,
 paridad independiente con el catálogo inicial, respuesta remota válida, CLI y
 worker antes de habilitar el proveedor. Se pueden usar un DEX recuperado de
 forma autorizada o una edición de la app sin este empaquetado como evidencia
-adicional; el alcance actual sigue siendo estático/offline.
+adicional; el alcance actual sigue siendo offline, con el modelo de emulación
+limitado descrito arriba. No hay una imagen/runtime Android disponible en este
+entorno y no se certifica arranque, DEX completo ni solicitud de red de la app.

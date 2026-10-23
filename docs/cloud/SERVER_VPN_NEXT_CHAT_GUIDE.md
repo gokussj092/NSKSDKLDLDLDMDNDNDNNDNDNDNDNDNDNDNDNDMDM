@@ -93,3 +93,7 @@ proveedor fijo `7net-vpn`. Último avance: **AM TUNNEL LITE VPN build 63**, aún
 pendiente de abrir su catálogo LIAPP; ficha desactivada, catálogo mínimo
 **34 / 36 fichas**. Revisar su `ANALYSIS.md` y no confundir el auxiliar de campos
 ni la extracción de primera capa nativa con un catálogo completo.
+Se recuperaron además 213 bytes de metadatos LIAPP y la identidad local
+paquete/SHA-1. `am_liapp_metadata.py`, `am_liapp_native_probe.py` y los vectores
+`tests/golden/am_liapp*` están conservados. El probe usa contexto/archivos
+modelados; DEX original, lector exterior y respuesta remota siguen pendientes.

@@ -299,6 +299,11 @@ entregas anteriores ni publicar anuncios automáticamente.
   recuperación. `ANALYSIS.md` conserva los hashes y el punto de continuación.
   El DEX/lector protegido aún no se recuperó; no se suben datos reales ni
   se despliega, fusiona, publica APK o modifica C11.
+  Continuación: validación local de paquete/SHA-1 identificada y metadatos
+  LIAPP de **213 bytes** recuperados por Python y checkpoint ARM64 original
+  con contexto modelado, iguales byte por byte. Herramientas, generador y
+  **3 pruebas nuevas / 7 Python aprobadas** conservados. Esto no abre el
+  catálogo, no demuestra identidad HTTP y no cambia la ficha ni su versión.
 
 
 - **UT Loop Pro VPN 22.10.26 (65) — catálogo remoto pendiente**: lector

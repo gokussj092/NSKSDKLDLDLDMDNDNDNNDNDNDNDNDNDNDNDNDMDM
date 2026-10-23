@@ -80,9 +80,25 @@ python scripts/apk_analysis/liapp_wrapper.py \
 python tests/golden/am_tunnel_lite_generate.py
 python tests/golden/am_tunnel_lite_native_oracle.py \
   scripts/apk_analysis/work/am/native/split_config.arm64_v8a/libputils.so
+python scripts/apk_analysis/am_liapp_metadata.py \
+  scripts/apk_analysis/work/am/apks/base.apk
+python tests/golden/am_liapp_generate.py scripts/apk_analysis/work/am-core.so
+python scripts/apk_analysis/am_liapp_native_probe.py \
+  scripts/apk_analysis/work/am-core.so scripts/apk_analysis/work/am/apks/base.apk \
+  scripts/apk_analysis/work/am/apks/split_config.arm64_v8a.apk
+python -m unittest tests.test_am_liapp_metadata tests.test_am_tunnel_lite -v
 ```
 
 El extractor acepta únicamente el hash conocido y no ejecuta el protector.
 Revisar `decoders/Python/apps/AM_TUNNEL_LITE_VPN/ANALYSIS.md` antes de continuar.
 La ficha está desactivada: ni los tests del auxiliar ni recuperar un ELF del
 wrapper autorizan afirmar paridad de un catálogo aún no abierto.
+
+El lector estático y el checkpoint ARM64 recuperan los mismos **213 bytes de
+metadatos** y comprueban su relación interna. `--buffers --output carpeta-nueva`
+en el probe permite conservar el checkpoint posterior y sus asignaciones,
+con permiso 0600. Son datos privados de investigación, no un DEX recuperado.
+El probe modela archivos y contexto; no ejecuta Android/JNI ni accede a red/OS.
+Las rutas `/input` y `/output` son virtuales, no rutas reales del equipo.
+Paquete y SHA-1 se verifican localmente en PUtils; no se ha demostrado que el
+servidor exija identidad en cabeceras. Ver el flujo y los límites en ANALYSIS.md.

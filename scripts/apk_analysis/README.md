@@ -4,6 +4,13 @@ Fuentes reutilizables para preparar próximas integraciones. No forman parte del
 servidor ni se importan desde los decodificadores. No necesitan un APK en runtime.
 Se mantienen aquí los scripts y versiones; los binarios se reconstruyen.
 
+Continuación AM-63: `am_liapp_metadata.py` abre estáticamente los **213 bytes**
+de metadatos LIAPP del APK con hash exacto. `am_liapp_native_probe.py` verifica
+su igualdad con el flujo ARM64 acotado; requiere core/base/split originales y
+modela archivos y contexto. `--buffers` conserva opcionalmente un checkpoint
+posterior. Ninguno reconstruye todavía el DEX ni abre `pdrv2.json`; no habilitan
+el proveedor. Comandos en [RESTORE.md](RESTORE.md), detalles en el ANALYSIS de AM.
+
 Requisitos: Python 3.10+, JDK 17+ y `pip install -r requirements.txt` dentro de un
 entorno virtual. JADX **1.5.6** se descarga de su publicación oficial solo con
 `--install`; `decompile.py` verifica SHA-256 del ZIP y JAR antes de usarlo.
