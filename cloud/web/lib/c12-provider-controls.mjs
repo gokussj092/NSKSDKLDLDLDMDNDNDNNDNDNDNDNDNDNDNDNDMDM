@@ -60,6 +60,7 @@ function catalogFingerprint(){
   rosterFingerprint=createHash("sha256").update(JSON.stringify({
     releaseVersion:activeCatalogVersion({}),records,
     formatsSchemaVersion:snapshot.formatsSchemaVersion,
+    formatDetection:snapshot.formatDetection,
     formats:snapshot.formats,
   })).digest("hex");
   return rosterFingerprint;
