@@ -1,0 +1,40 @@
+{
+  "id": "abowaged-vpn",
+  "name": "AboWaged VPN",
+  "package": "com.modev.vpn",
+  "versionName": "1.0",
+  "versionCode": 1,
+  "engine": "python",
+  "entrypoint": "file_decoder.py",
+  "extensions": ["awg"],
+  "dependencies": ["pycryptodome==3.23.0"],
+  "credentials": [],
+  "customPassword": {
+    "cryptographicallyRequired": false,
+    "kind": "post_decryption_application_lock",
+    "preservedFields": ["isPassON", "MyPass"]
+  },
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "status": "validated",
+    "providerId": "abowaged-vpn",
+    "sources": ["servers", "udp"],
+    "bundleKind": "spdecode-abowaged-vpn-catalogs-v1",
+    "realCatalogsVerified": true,
+    "observedMainVersion": "4.6.3",
+    "observedServers": 12,
+    "observedTweaks": 257,
+    "observedUdpServers": 2
+  },
+  "icon": {
+    "path": "AboWaged_VPN.png",
+    "original": true,
+    "width": 648,
+    "height": 648,
+    "bytes": 456508,
+    "sha256": "c54288a67e612f627d6fd00d553254d0f6f2184882a4c802dc263e9dc8eb1cf2"
+  },
+  "realFileSampleVerified": false,
+  "syntheticFileSamplesVerified": 2,
+  "deployment": "pending"
+}

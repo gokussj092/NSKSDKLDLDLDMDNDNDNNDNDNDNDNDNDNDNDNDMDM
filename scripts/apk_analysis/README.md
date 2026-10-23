@@ -1,5 +1,16 @@
 # Herramientas de análisis APK
 
+AboWaged VPN 1.0: `inspect_apk.py --resource res/raw/noobdev.js` recupera el
+catálogo raw exacto, además de `--native libwg-pro.so`. Para el wrapper
+LSParanoid entre DEX, `paranoid_strings.py --call-class
+Deobfuscator.AboWagedVPN10.app` conserva la clase de chunks original y usa la
+notación de llamadas realmente emitida por JADX. **2432 / 100 / 2860** cadenas,
+archivos e inventario. `abowaged_verify.py` compara documentos completos con
+JDK y worker; `abowaged_native_oracle.py` ejecuta solo los cuatro wrappers
+JNI con cadenas/call Java modelados, sin Android/red. Confirma sus constantes;
+el AES del APK es Java y se contrasta por separado en JDK. Comandos y hashes
+en RESTORE.md y `apps/AboWaged_VPN/ANALYSIS.md`. Sin muestra `.awg` real aún.
+
 NPV Tunnel: `go_inspect.py` recupera nombres Go y resuelve `textStart` desde
 moduledata relocado, evitando el desfase de 0x50 de la investigación original.
 `npvs_verify.py` compara JSON íntegro, incluidas capas `npvs1:`, con framing y

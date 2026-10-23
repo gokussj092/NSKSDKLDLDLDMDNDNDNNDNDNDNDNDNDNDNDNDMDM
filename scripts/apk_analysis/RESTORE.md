@@ -1,5 +1,49 @@
 # Recuperar herramientas después de perder el entorno
 
+## AboWaged VPN 1.0 (1) — 2026-10-23
+
+Restaurar el checkout y dependencias con la sección general de este archivo.
+El runtime del lector necesita PyCryptodome y los scripts de la app; no el APK.
+Para repetir la investigación, volver a aportar el APKS autorizado con el hash
+de `decoders/Python/apps/AboWaged_VPN/ANALYSIS.md`. No guardar sus copias ni
+las salidas reales en Git. `work/` y `cache/` están ignorados.
+
+```bash
+python scripts/apk_analysis/inspect_apk.py /ruta/AboWaged.apks \
+  scripts/apk_analysis/work/abo --native libwg-pro.so --resource res/raw/noobdev.js
+env JAVA_TOOL_OPTIONS=-XX:-UsePerfData python scripts/apk_analysis/decompile.py \
+  scripts/apk_analysis/work/abo/dex/classes.dex scripts/apk_analysis/work/abo-jadx1
+env JAVA_TOOL_OPTIONS=-XX:-UsePerfData python scripts/apk_analysis/decompile.py \
+  scripts/apk_analysis/work/abo/dex/classes2.dex scripts/apk_analysis/work/abo-jadx2
+env JAVA_TOOL_OPTIONS=-XX:-UsePerfData python scripts/apk_analysis/paranoid_strings.py \
+  scripts/apk_analysis/work/abo-jadx1/sources \
+  'scripts/apk_analysis/work/abo-jadx2/sources/org/lsposed/lsparanoid/Deobfuscator$AboWagedVPN10$app.java' \
+  scripts/apk_analysis/work/abo-clear --call-class Deobfuscator.AboWagedVPN10.app --inventory
+python tests/golden/abowaged_generate.py
+python -m unittest tests.test_abowaged_vpn tests.test_cloud_c8_vpn_registry -v
+python scripts/apk_analysis/abowaged_verify.py --worker \
+  --catalog scripts/apk_analysis/work/abo/resources/res/raw/noobdev.js \
+  --native scripts/apk_analysis/work/abo/native/split_config.arm64_v8a/libwg-pro.so
+```
+
+DEX 1 termina con 27 errores generales de JADX, DEX 2 con código 0. Inspeccionar
+el log y los métodos pertinentes. No omitir la verificación del checksum de
+JADX: si una caché temporal queda truncada, retirarla y reinstalar la versión
+oficial mediante `decompile.py --install`; no cambiar los hashes fijados.
+
+Para copias privadas del catálogo remoto y selector, añadir al verificador
+`--catalog /ruta/Elk.txt --udp /ruta/pickerver`; el CLI de
+`apps/AboWaged_VPN/server_catalog_decoder.py` descarga las dos fuentes exactas
+sin argumentos. No imprime resúmenes: guardar su JSON completo en una ruta
+privada. `abowaged_verify.py` sí imprime únicamente conteos y paridad.
+`--file /ruta/perfil.awg` permite incorporar una exportación real futura.
+El verificador siempre incluye dos fixtures sintéticos; no pedir contraseña:
+`MyPass` es un bloqueo del importador después de abrir el JSON. Se preservan
+`Server` como cadena y todos los campos, sin aplicar lógica de conexión.
+
+No se modifica AM pendiente, los lectores NPV ni las novedades C11 como parte
+de esta integración. Catálogo mínimo 35 / 37 fichas; C8 efectivo 249 / C0 240.
+
 Continuación normal/textos: `npvs_verify.py /ruta/normal.npvs --worker` comprueba
 app-key sin objeto de credenciales. Kurdo v5: 20 registros / 12 campos npvs1,
 JSON entero igual a JDK, CLI y worker. `apps/NPV_Tunnel/text_decoder.py` funciona

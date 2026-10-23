@@ -36,6 +36,7 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('input',type=Path);p.add_argument('output',type=Path)
     p.add_argument('--asset',action='append',default=[],help='Exact path relative to assets/')
+    p.add_argument('--resource',action='append',default=[],help='Exact base-APK path under res/, e.g. res/raw/noobdev.js')
     p.add_argument('--native',action='append',default=[],help='Library basename, e.g. libputils.so')
     p.add_argument('--abi',default='arm64-v8a')
     a=p.parse_args();source=a.input.resolve();out=a.output.resolve()
@@ -69,6 +70,11 @@ def main():
             entries.append({'path':icon,'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest(),'width':width,'height':height})
         for asset in a.asset:
             name='assets/'+str(relative(asset));b=safe_read(z,name);write(out/'assets'/relative(asset),b)
+        for resource in a.resource:
+            name=relative(resource)
+            if not name.parts or name.parts[0]!='res':raise ValueError('Expected a res/ resource path')
+            b=safe_read(z,str(name));write(out/'resources'/name,b)
+            entries.append({'path':str(name),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()})
     for lib in a.native:
         if relative(lib).name!=lib:raise ValueError('Expected library basename')
         name='lib/'+str(relative(a.abi))+'/'+lib;found=0

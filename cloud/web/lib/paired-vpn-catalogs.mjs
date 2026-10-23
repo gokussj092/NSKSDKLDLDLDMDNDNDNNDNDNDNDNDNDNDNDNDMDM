@@ -2,6 +2,7 @@
 import {VpnProviderError} from "./server-vpn-provider.mjs";
 export const PAIRED_CATALOG_LIMIT=8*1024*1024;
 const KINDS=Object.freeze({
+ "abowaged-vpn":{kind:"spdecode-abowaged-vpn-catalogs-v1",sources:["servers","udp"]},
  "turbomx-vpn":{kind:"spdecode-turbomx-vpn-catalogs-v1",sources:["servers","users"]},
  "superflash-vpn":{kind:"spdecode-superflash-vpn-catalogs-v1",sources:["servers","users"]},
  "onspace-vpn":{kind:"spdecode-onspace-vpn-catalogs-v1",sources:["servers","users"]},

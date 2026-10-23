@@ -167,6 +167,14 @@ def load_decoder_registry(path: Path = DECODERS_PATH) -> dict[str, DecoderSpec]:
             script="decoders/Python/apps/OneFTunnel/file_decoder.py", runtime="python"
         )
 
+    if path.resolve() == DECODERS_PATH.resolve():
+        if "awg" in registry:
+            raise ValueError("AboWaged .awg decoder conflicts with an existing route")
+        registry["awg"] = DecoderSpec(
+            extension="awg", name="AboWaged VPN 1.0",
+            script="decoders/Python/apps/AboWaged_VPN/file_decoder.py", runtime="python"
+        )
+
     return registry
 
 

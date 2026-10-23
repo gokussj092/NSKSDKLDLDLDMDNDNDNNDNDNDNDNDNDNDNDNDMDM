@@ -11,6 +11,25 @@ entregas anteriores ni publicar anuncios automáticamente.
 
 ## Nuevos Servidores VPN añadidos
 
+- **AboWaged VPN 1.0 (1) ✅** — dos fuentes oficiales del APK incorporadas en
+  PR #96, consulta del **2026-10-23**: **12 servidores / 257 ajustes**, versión
+  **4.6.3**, y **2 servidores UDP** en selector independiente. Asset inicial
+  **1 / 1**, v1.0. JSON completos iguales a JDK independiente; CLI HTTPS y
+  worker aislado devuelven el bundle íntegro de **102521 bytes**, sin parcial.
+- Carpeta `decoders/Python/apps/AboWaged_VPN/`, proveedor `abowaged-vpn`, dos
+  fuentes HTTPS exactas, contrato dual `servers/udp`, control individual y PNG
+  original **456508 bytes**. Catálogo mínimo **35 / 37 fichas**; no reiniciar
+  switches ni rebajar versión persistente. `.awg` en C8/bot, **249** rutas
+  efectivas / **240** C0 congeladas. Contraseña personalizada: `isPassON/MyPass`
+  dentro del JSON, validación posterior al cifrado; no requiere contraseña
+  externa. Dos exportaciones sintéticas JDK, pendiente `.awg` real.
+- **11 Python / 68 Node aprobadas**, cuatro wrappers JNI ARM64 originales
+  coinciden en destino/operación/clave; AES verificado por JDK. Herramientas,
+  referencia y recuperación conservadas. Backend preparado, pendiente VPS y
+  futura detección de `.awg` en clientes anteriores. Sin fusión, despliegue,
+  APK, cambios de diseño ni novedades C11 automáticos. Sin binarios, catálogos
+  ni credenciales reales publicados.
+
 - **7NET VPN 5.6 (56) ✅** — catálogo público oficial integrado en PR #96:
   **76 servidores / 619 redes-payloads**, Version **40.19**, HTTP 200,
   758848 bytes. **6025 campos / 4750 no vacíos** y todo el JSON iguales a

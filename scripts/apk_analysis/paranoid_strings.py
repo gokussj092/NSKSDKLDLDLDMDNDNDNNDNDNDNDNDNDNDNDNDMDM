@@ -55,6 +55,7 @@ def main():
     p.add_argument('--inventory',action='store_true',help='Also recover all chunk strings when all literal IDs share one seed')
     p.add_argument('--chunk-field',default='chunks',help='Confirmed renamed chunk field')
     p.add_argument('--method',default='getString',help='Confirmed renamed literal decoder method')
+    p.add_argument('--call-class',help='Confirmed JADX call spelling, e.g. Deobfuscator.App.app for a cross-DEX nested class')
     a=p.parse_args();source=a.source.resolve();output=a.output.resolve()
     if output==source or source in output.parents or output in source.parents:
         p.error('Source and output directories must be separate, without nesting')
@@ -66,7 +67,9 @@ def main():
     literal=re.compile(r'"(?:\\.|[^"\\])*"',re.S)
     parts=literal.findall(match[1]);remainder=literal.sub('',match[1])
     if not parts or remainder.strip(' \r\n\t,'):raise ValueError('Unsupported chunk expression')
-    class_name=a.chunks_class.stem
+    class_name=a.call_class or a.chunks_class.stem
+    if not re.fullmatch(r'[A-Za-z_$][A-Za-z0-9_$]*(?:\.[A-Za-z_$][A-Za-z0-9_$]*)*',class_name):
+        p.error('Expected a Java class name for --call-class')
     call=re.compile(re.escape(class_name)+r'\.'+re.escape(a.method)+r'\((-?\d+)L\)')
     files=[];ids=[]
     for f in source.rglob('*.java'):

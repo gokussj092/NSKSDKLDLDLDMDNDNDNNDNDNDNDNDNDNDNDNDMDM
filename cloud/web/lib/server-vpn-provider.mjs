@@ -8,6 +8,10 @@ import dns from "node:dns/promises";
 import https from "node:https";
 import {publicIpv4} from "./c35-provider.mjs";
 
+const ABOWAGED_SOURCES=Object.freeze({
+  servers:"https://raw.githubusercontent.com/th3fre/Testing/refs/heads/main/Elk.txt",
+  udp:"https://raw.githubusercontent.com/janatshaban/REMOTEUPDATER/refs/heads/main/pickerver",
+});
 const TURBOMX_SOURCES=Object.freeze({
   servers:"https://raw.githubusercontent.com/apksdemons/apks2/refs/heads/main/turbomx/servr_turbomx_sv5c",
   users:"https://raw.githubusercontent.com/apksdemons/apks2/refs/heads/main/turbomx/user_turbomx_sv5c",
@@ -32,8 +36,9 @@ const V2PLUS_SOURCES=Object.freeze({
   base64:"https://raw.githubusercontent.com/roosterkid/openproxylist/main/V2RAY_BASE64.txt",
   raw:"https://raw.githubusercontent.com/roosterkid/openproxylist/main/V2RAY_RAW.txt",
 });
-const PAIRED_SOURCES=Object.freeze({"turbomx-vpn":TURBOMX_SOURCES,"superflash-vpn":SUPERFLASH_SOURCES,"onspace-vpn":ONSPACE_SOURCES,"http-socketclay":SOCKETCLAY_SOURCES,"http-wakko":WAKKO_SOURCES,"v2ray-tunnel-plus":V2PLUS_SOURCES});
+const PAIRED_SOURCES=Object.freeze({"abowaged-vpn":ABOWAGED_SOURCES,"turbomx-vpn":TURBOMX_SOURCES,"superflash-vpn":SUPERFLASH_SOURCES,"onspace-vpn":ONSPACE_SOURCES,"http-socketclay":SOCKETCLAY_SOURCES,"http-wakko":WAKKO_SOURCES,"v2ray-tunnel-plus":V2PLUS_SOURCES});
 const PROVIDERS = Object.freeze({
+  "abowaged-vpn": {url:ABOWAGED_SOURCES.servers,agent:"AboWaged VPN/1.0"},
   "7net-vpn": {url:"https://raw.githubusercontent.com/MAKE-MONEY-MILLION-DOLLAR-PER-DAY/7net-Team/refs/heads/main/7net%2BAll_Team.js",agent:"7NET VPN/5.6"},
   "xhypher-tunnel-pro": {url:"https://raw.githubusercontent.com/XyrussProject/infinite88/refs/heads/main/xhyphertunnelpro888.hs",agent:"Xhypher Tunnel Pro/43"},
   "turbomx-vpn": {url:TURBOMX_SOURCES.servers,agent:"TurboMX VPN/143.1.26"},

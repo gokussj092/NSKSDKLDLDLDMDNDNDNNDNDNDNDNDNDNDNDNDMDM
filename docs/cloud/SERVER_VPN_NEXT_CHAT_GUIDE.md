@@ -1,5 +1,19 @@
 # SP-DECODE Cloud — Guía para ampliar Server VPN en otro chat
 
+**Última incorporación, 2026-10-23: AboWaged VPN 1.0 (1)**,
+`apps/AboWaged_VPN/`, proveedor fijo `abowaged-vpn`. Catálogo remoto principal
+12 servidores / 257 ajustes v4.6.3 y selector adicional de 2 UDP; ambos cuerpos
+completos igual a JDK, CLI HTTPS y worker aislado. Asset inicial 1/1 v1.0.
+Catálogo mínimo **35 / 37 fichas**, PNG original 456508 bytes, controles y
+versión persistente conservados. `.awg` añadido en C8/bot: efectivo **249**,
+C0 sigue **240**. La contraseña `MyPass` es un bloqueo posterior al descifrado,
+no se solicita al usuario para abrir el archivo. Dos perfiles sintéticos con y
+sin bloqueo; pendiente exportación `.awg` real. **11 Python / 68 Node aprobadas**,
+cuatro wrappers ARM64 iguales. Herramientas `abowaged_verify.py` y
+`abowaged_native_oracle.py`, referencia JDK/generador y recuperación en Git.
+Ver `ANALYSIS.md` / `TESTING.md` de la app. Sin despliegue, APK, diseño Android,
+fusión ni C11 automáticos. No confundir la PublicKey de DNS con recipient NPVS.
+
 **Preferencia de esta sesión (2026-10-22):** cuando el usuario adjunte únicamente
 un APK/APKS, continuar automáticamente esta misma integración en la rama del
 PR #96. Mantiene autorización para consultar y descargar los catálogos externos
