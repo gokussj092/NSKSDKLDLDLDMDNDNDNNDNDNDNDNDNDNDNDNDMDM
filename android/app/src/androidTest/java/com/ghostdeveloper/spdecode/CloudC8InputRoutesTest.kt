@@ -3,6 +3,7 @@ package com.ghostdeveloper.spdecode
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ghostdeveloper.spdecode.cloud.CloudFileFormats
 import com.ghostdeveloper.spdecode.cloud.CloudTextFormats
+import com.ghostdeveloper.spdecode.cloud.CloudCredentialPolicy
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -60,6 +61,26 @@ class CloudC8InputRoutesTest {
         assertNull(CloudTextFormats.identify("1FTnl."))
         assertNull(CloudTextFormats.identify("1ftnl.cipher"))
         assertNull(CloudTextFormats.identify("https://example.invalid"))
+    }
+
+    @Test fun npvTextAndCredentialRoutesAreExplicit() {
+        val prefixes=listOf("npvt://","npvt-ssh://","npvt-vless://",
+            "npvt-vmess://","npv://")
+        for(prefix in prefixes) {
+            val input=CloudTextFormats.identify(prefix+"YWJj")
+            assertNotNull(prefix,input)
+            assertEquals("npvs",input!!.suffix)
+            assertTrue(CloudCredentialPolicy.textAcceptsPassword(prefix+"YWJj"))
+            assertNull(CloudTextFormats.identify(prefix))
+        }
+        for(suffix in listOf("hc","ua","npvs","1ftnl","tut"))
+            assertTrue(CloudCredentialPolicy.fileAcceptsPassword(suffix))
+        assertFalse(CloudCredentialPolicy.fileNeedsPasswordDialog("hc"))
+        for(suffix in listOf("ua","npvs","1ftnl","tut"))
+            assertTrue(CloudCredentialPolicy.fileNeedsPasswordDialog(suffix))
+        assertFalse(CloudCredentialPolicy.fileAcceptsPassword("ehi"))
+        assertFalse(CloudCredentialPolicy.textAcceptsPassword("dns://YWJj"))
+        assertTrue(CloudCredentialPolicy.textAcceptsPassword("1FTnl.YWJj"))
     }
 
     @Test fun historicalCloudLinksAreUnaffected() {

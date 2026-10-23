@@ -28,6 +28,7 @@ import com.ghostdeveloper.spdecode.cloud.CloudNewsNotice
 import com.ghostdeveloper.spdecode.cloud.CloudWhatsNewRepository
 import com.ghostdeveloper.spdecode.cloud.CloudDecodeClient
 import com.ghostdeveloper.spdecode.cloud.CloudDiagnosticsPrivacy
+import com.ghostdeveloper.spdecode.cloud.CloudCredentialPolicy
 import com.ghostdeveloper.spdecode.cloud.CloudFileFormats
 import com.ghostdeveloper.spdecode.cloud.CloudTextFormats
 import com.ghostdeveloper.spdecode.cloud.CloudCatalogUpdates
@@ -93,7 +94,8 @@ class MainActivity : ComponentActivity() {
     private data class PendingCloudPasswordFile(val uri:Uri,val name:String,
         val suffix:String,val bytes:ByteArray)
     private var pendingCloudPasswordFile by mutableStateOf<PendingCloudPasswordFile?>(null)
-    private var pendingCloudPasswordText by mutableStateOf<String?>(null)
+    private data class PendingCloudPasswordText(val text:String,val label:String)
+    private var pendingCloudPasswordText by mutableStateOf<PendingCloudPasswordText?>(null)
     private var enteringHcManually by mutableStateOf(false)
     private var credentialPrepareJob:Job?=null
     private var credentialPrepareGeneration=0
@@ -594,11 +596,11 @@ class MainActivity : ComponentActivity() {
                     onSubmit={value->submitCloudFilePassword(value)},
                     onCancel={clearPendingCloudPassword()})
             }
-            if(!busy) pendingCloudPasswordText?.let { value ->
-                CloudPasswordDialog("Ultra Custom",
+            if(!busy) pendingCloudPasswordText?.let { candidate ->
+                CloudPasswordDialog(candidate.label,
                     onSubmit={password->
                         pendingCloudPasswordText=null
-                        decodeText(value,password.toByteArray(Charsets.UTF_8))
+                        decodeText(candidate.text,password.toByteArray(Charsets.UTF_8))
                     },
                     onCancel={pendingCloudPasswordText=null})
             }
@@ -837,13 +839,14 @@ class MainActivity : ComponentActivity() {
             catch(error:Exception){if(generation==importGeneration) {
                 if(BuildConfig.SPDECODE_CLOUD_ENABLED && password==null &&
                     error is CloudDecodeClient.Failure && error.code=="PASSWORD_REQUIRED" &&
-                    userText.trim().startsWith("ua://",ignoreCase=true)) {
-                    pendingCloudPasswordText=userText
+                    CloudCredentialPolicy.textAcceptsPassword(userText)) {
+                    pendingCloudPasswordText=PendingCloudPasswordText(userText,candidate.app)
                     return@launch
                 }
                 SafeDecodeDiagnostics.record(SafeDecodeDiagnostics.Event.TEXT_FAILURE)
                 message=if(BuildConfig.SPDECODE_CLOUD_ENABLED)
-                    com.ghostdeveloper.spdecode.cloud.CloudUserErrors.message(this@MainActivity,error)
+                    com.ghostdeveloper.spdecode.cloud.CloudUserErrors.message(
+                        this@MainActivity,error,candidate.suffix)
                     else getString(R.string.text_decode_unsupported)
             }
             }finally {
@@ -1113,7 +1116,7 @@ class MainActivity : ComponentActivity() {
                         if(cloudPassword!=null && cause is CloudDecodeClient.Failure &&
                             cause.code in setOf("AUTH_FAILED","INVALID_CREDENTIALS"))
                             cloudPasswordError=com.ghostdeveloper.spdecode.cloud.CloudUserErrors.message(
-                                this@MainActivity,cause)
+                                this@MainActivity,cause,cloudPrepared?.suffix)
                         val filename=runCatching {
                             withContext(Dispatchers.IO){displayName(uri)}
                         }.getOrDefault("")
@@ -1126,7 +1129,10 @@ class MainActivity : ComponentActivity() {
                             failedNpvs=true
                         if(ImportFilenameNormalizer.forDetection(prepared?.filename?:filename)
                             .endsWith(".hc",ignoreCase=true) &&
-                            prepared?.requirements?.requiresCredentials==true)failedProtectedHc=true
+                            prepared?.requirements?.requiresCredentials==true &&
+                            cause is CloudDecodeClient.Failure &&
+                            cause.code in setOf("AUTH_FAILED","INVALID_CREDENTIALS"))
+                            failedProtectedHc=true
                     }
                 ){uri,index,total->
                     progressPosition=index
@@ -1189,7 +1195,7 @@ class MainActivity : ComponentActivity() {
                     }catch(error:CloudDecodeClient.Failure){
                         if(BuildConfig.SPDECODE_CLOUD_ENABLED && cloudPassword==null &&
                             error.code=="PASSWORD_REQUIRED" &&
-                            supported.suffix=="ua" &&
+                            CloudCredentialPolicy.fileNeedsPasswordDialog(supported.suffix) &&
                             pendingCloudPasswordFile==null){
                             pendingCloudPasswordFile=PendingCloudPasswordFile(uri,name,
                                 supported.suffix,input.copyOf())
@@ -1224,7 +1230,7 @@ class MainActivity : ComponentActivity() {
                         report.successes,report.failures)
                     message=when {
                         cloudPasswordError!=null->cloudPasswordError+"\n\n"+summary
-                        failedProtectedHc->getString(R.string.hc_auth_failed)+"\n\n"+summary
+                        failedProtectedHc->getString(R.string.cloud_failure_credentials)+"\n\n"+summary
                         failedNpvs->getString(R.string.npvs_private_key_unsupported)+"\n\n"+summary
                         else->summary
                     }

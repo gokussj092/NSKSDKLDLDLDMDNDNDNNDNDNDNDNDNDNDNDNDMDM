@@ -11,14 +11,19 @@ import java.io.IOException
  * messages or stack traces in user-visible text. Codes are shown only in QA.
  */
 internal object CloudUserErrors {
-    private fun resource(cause:Throwable):Int {
+    private fun resource(cause:Throwable,format:String?):Int {
         if(cause is CloudDecodeClient.Failure) {
             return when(cause.code) {
                 "NPVS_PROTECTION_UNSUPPORTED" -> R.string.npvs_private_key_unsupported
+                "PRIVATE_KEY_REQUIRED" -> R.string.cloud_failure_private_key
+                "RECIPIENT_MISMATCH" -> R.string.cloud_failure_recipient
                 "PASSWORD_REQUIRED" -> R.string.cloud_failure_password
                 "HWID_REQUIRED" -> R.string.cloud_failure_hwid
                 "HWID_PASSWORD_REQUIRED" -> R.string.cloud_failure_both
-                "AUTH_FAILED", "INVALID_CREDENTIALS" -> R.string.cloud_failure_credentials
+                "AUTH_FAILED" -> if(format in setOf("ua","npvs","1ftnl","tut"))
+                    R.string.cloud_failure_password_incorrect
+                    else R.string.cloud_failure_credentials
+                "INVALID_CREDENTIALS" -> R.string.cloud_failure_credentials
                 "LEGAL_CONSENT_REQUIRED","USER_CONSENT_REQUIRED" -> R.string.cloud_failure_consent
                 "QA_DISABLED","QA_ACCESS_DENIED" -> R.string.cloud_failure_qa
                 "INTEGRITY_REJECTED" -> R.string.cloud_failure_integrity
@@ -71,11 +76,11 @@ internal object CloudUserErrors {
         return R.string.cloud_failure_general
     }
 
-    fun message(context:Context,cause:Throwable):String {
+    fun message(context:Context,cause:Throwable,format:String?=null):String {
         val disconnected=cause is IOException &&
             cause !is CloudDecodeClient.Failure &&
             cause.message=="CLOUD_NATIVE_NETWORK_UNAVAILABLE"
-        val id=if(disconnected) R.string.cloud_failure_offline else resource(cause)
+        val id=if(disconnected) R.string.cloud_failure_offline else resource(cause,format)
         val text=context.getString(id)
         if(!BuildConfig.SPDECODE_QA_BUILD)return text
         // QA diagnostics contain only bounded, local enum-like values.

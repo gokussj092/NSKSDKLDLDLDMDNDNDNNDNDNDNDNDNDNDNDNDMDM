@@ -254,7 +254,8 @@ internal class CloudDecodeClient(context: Context) {
         if (bytes.isEmpty() || bytes.size > MAX_INPUT) throw IOException("CLOUD_INVALID_INPUT")
         if (format.isBlank() || (!format.matches(Regex("[a-z0-9._-]{1,64}")) && format != "fɴ"))
             throw IOException("CLOUD_INVALID_FORMAT")
-        if ((password != null && format !in setOf("hc", "ua")) ||
+        if ((password != null && (!CloudCredentialPolicy.fileAcceptsPassword(format) ||
+                password.isEmpty() || password.size>4096)) ||
             (hwid != null && format != "hc"))
             throw IOException("CLOUD_CREDENTIALS_NOT_ALLOWED")
         val body = JSONObject()
@@ -270,7 +271,7 @@ internal class CloudDecodeClient(context: Context) {
     }
 
     suspend fun decodeText(text: String, password: ByteArray? = null): String {
-        if(password != null && (!text.trim().startsWith("ua://",ignoreCase=true) ||
+        if(password != null && (!CloudCredentialPolicy.textAcceptsPassword(text) ||
                 password.isEmpty() || password.size > 4096))
             throw IOException("CLOUD_CREDENTIALS_NOT_ALLOWED")
         val body=JSONObject().put("text",text)
