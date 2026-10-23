@@ -31,4 +31,8 @@
     <string name="cloud_failure_notice_title">Impossibile completare la richiesta</string>
     <string name="cloud_password_title">Password configurazione richiesta</string>
     <string name="cloud_password_description">%1$s è protetto da password. Inserisci la password di esportazione. Non verrà salvata.</string>
+    <string name="cloud_failure_password_incorrect">Password errata o file protetto modificato. Controlla la password e riprova.</string>
+    <string name="cloud_failure_private_key">Questo file NPVS richiede la chiave privata del dispositivo destinatario; una chiave pubblica o una password non possono sostituirla.</string>
+    <string name="cloud_failure_recipient">La chiave pubblica fornita non corrisponde al destinatario del file.</string>
+    <string name="cloud_failure_npvs_unsupported">Questa variante di protezione NPVS non è ancora supportata.</string>
 </resources>

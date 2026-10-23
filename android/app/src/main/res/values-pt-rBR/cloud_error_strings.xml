@@ -30,4 +30,8 @@
     <string name="cloud_failure_notice_title">Não foi possível concluir a solicitação</string>
     <string name="cloud_password_title">Senha da configuração necessária</string>
     <string name="cloud_password_description">%1$s está protegido por senha. Digite a senha de exportação para continuar. Ela não será salva.</string>
+    <string name="cloud_failure_password_incorrect">Senha incorreta ou arquivo protegido alterado. Confira a senha e tente novamente.</string>
+    <string name="cloud_failure_private_key">Este arquivo NPVS exige a chave privada do dispositivo destinatário; a chave pública ou uma senha não a substitui.</string>
+    <string name="cloud_failure_recipient">A chave pública informada não corresponde ao destinatário deste arquivo.</string>
+    <string name="cloud_failure_npvs_unsupported">Esta variante de proteção NPVS ainda não é compatível.</string>
 </resources>

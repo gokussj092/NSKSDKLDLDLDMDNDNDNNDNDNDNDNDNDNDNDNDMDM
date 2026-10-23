@@ -31,4 +31,8 @@
     <string name="cloud_failure_notice_title">リクエストを完了できませんでした</string>
     <string name="cloud_password_title">設定のパスワードが必要です</string>
     <string name="cloud_password_description">%1$s はパスワードで保護されています。続けるにはエクスポート用パスワードを入力してください。保存されません。</string>
+    <string name="cloud_failure_password_incorrect">パスワードが間違っているか、保護されたファイルが変更されています。パスワードを確認して再試行してください。</string>
+    <string name="cloud_failure_private_key">このNPVSファイルには受信端末の秘密鍵が必要です。公開鍵やパスワードでは代用できません。</string>
+    <string name="cloud_failure_recipient">指定された公開鍵はこのファイルの受信者と一致しません。</string>
+    <string name="cloud_failure_npvs_unsupported">このNPVS保護方式にはまだ対応していません。</string>
 </resources>

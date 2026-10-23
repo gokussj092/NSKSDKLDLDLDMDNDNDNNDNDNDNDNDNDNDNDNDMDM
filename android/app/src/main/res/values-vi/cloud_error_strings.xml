@@ -31,4 +31,8 @@
     <string name="cloud_failure_notice_title">Không thể hoàn tất yêu cầu</string>
     <string name="cloud_password_title">Cần mật khẩu cấu hình</string>
     <string name="cloud_password_description">%1$s được bảo vệ bằng mật khẩu. Nhập mật khẩu xuất để tiếp tục. Mật khẩu không được lưu.</string>
+    <string name="cloud_failure_password_incorrect">Mật khẩu không đúng hoặc tệp được bảo vệ đã bị thay đổi. Kiểm tra mật khẩu và thử lại.</string>
+    <string name="cloud_failure_private_key">Tệp NPVS này cần khóa riêng của thiết bị nhận; khóa công khai hoặc mật khẩu không thể thay thế.</string>
+    <string name="cloud_failure_recipient">Khóa công khai không khớp với người nhận của tệp này.</string>
+    <string name="cloud_failure_npvs_unsupported">Biến thể bảo vệ NPVS này chưa được hỗ trợ.</string>
 </resources>

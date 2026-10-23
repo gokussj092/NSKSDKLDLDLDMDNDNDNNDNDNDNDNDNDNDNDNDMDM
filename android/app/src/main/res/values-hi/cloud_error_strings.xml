@@ -31,4 +31,8 @@
     <string name="cloud_failure_notice_title">अनुरोध पूरा नहीं हुआ</string>
     <string name="cloud_password_title">कॉन्फ़िगरेशन पासवर्ड आवश्यक</string>
     <string name="cloud_password_description">%1$s पासवर्ड से सुरक्षित है। आगे बढ़ने के लिए एक्सपोर्ट पासवर्ड दें। यह सहेजा नहीं जाएगा।</string>
+    <string name="cloud_failure_password_incorrect">पासवर्ड गलत है या सुरक्षित फ़ाइल बदली गई है। पासवर्ड जाँचकर फिर कोशिश करें।</string>
+    <string name="cloud_failure_private_key">इस NPVS फ़ाइल के लिए प्राप्तकर्ता डिवाइस की निजी कुंजी चाहिए; सार्वजनिक कुंजी या पासवर्ड इसका विकल्प नहीं है।</string>
+    <string name="cloud_failure_recipient">दी गई सार्वजनिक कुंजी इस फ़ाइल के प्राप्तकर्ता से मेल नहीं खाती।</string>
+    <string name="cloud_failure_npvs_unsupported">NPVS सुरक्षा का यह प्रकार अभी समर्थित नहीं है।</string>
 </resources>
