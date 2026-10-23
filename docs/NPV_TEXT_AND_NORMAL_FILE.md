@@ -56,7 +56,13 @@ Faltan enlaces completos reales para acreditar sus posibles cifrados propios.
 `decoders/Python/apps/NPV_Tunnel/text_decoder.py` tiene API de detección,
 diccionario/lista y JSON (`identify`, `decode`, `decode_text`, `run`) y CLI de
 archivo/stdin. Reconoce los cinco prefijos sin importar mayúsculas del esquema.
-No se modifica `npvt_links.py` ni se registra el módulo nuevo en Cloud/bot/Android.
+Actualización posterior en el mismo PR: se registró el módulo en el
+dispatcher de textos Cloud y en la detección Android; `npvt_links.py` conserva
+las rutas históricas `dns://` y `npvs1:`. El backend admite contraseñas
+NPVS mediante su protocolo de credenciales; Android reutiliza el diálogo
+existente cuando recibe `PASSWORD_REQUIRED`, sin rediseñar el componente.
+Los cuatro aliases sin muestras reales siguen sin certificación independiente.
+No significa que ya esté desplegado en la VPS ni instalado en las APK previas.
 
 Contenido admitido:
 

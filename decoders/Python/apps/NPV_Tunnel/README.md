@@ -24,8 +24,11 @@ se abre completa sin contraseña ni public key (20 registros, 12 campos internos
 ## Script de textos separado
 
 `text_decoder.py` reconoce `npvt://`, `npvt-ssh://`, `npvt-vless://`,
-`npvt-vmess://` y `npv://`. Está preparado para integración posterior;
-**no se ha registrado en Cloud, bot ni Android**.
+`npvt-vmess://` y `npv://`. Está integrado en el dispatcher de textos Cloud y en la detección de
+Android en PR #96; la versión anterior del cliente todavía requiere una
+actualización APK para solicitar los nuevos prefijos al servidor.
+El router legado `npvt_links.py` sigue atendiendo `dns://` y `npvs1:`.
+No se añaden motores criptográficos al APK.
 
 ```bash
 python decoders/Python/apps/NPV_Tunnel/text_decoder.py enlace.txt

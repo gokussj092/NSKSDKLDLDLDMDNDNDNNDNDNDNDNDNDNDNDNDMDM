@@ -17,8 +17,10 @@ Los dos adjuntos normal/public-key son idénticos NPVS v6 recipient. La public
 key coincide pero falta la privada del destinatario; se devuelve
 `PRIVATE_KEY_REQUIRED` y no un resultado parcial. Queda pendiente ese modo.
 La nueva muestra normal Kurdo v5 app-key 2 ya se abrió sin credenciales, completa
-e igual a JDK/worker. Se conservan las tablas/pruebas. El nuevo script de texto
-se entrega separado para integración posterior, según la instrucción del usuario.
+e igual a JDK/worker. Se conservan las tablas/pruebas. El nuevo script de texto está registrado posteriormente en el worker Cloud y
+en Android dentro del mismo PR; las notas anteriores documentan el alcance
+de la etapa original. No se ha desplegado en la VPS ni publicado una APK.
+Consulte `NPV_PASSWORD_TEXT_END_TO_END.md` para el flujo y sus límites.
 Ver [la investigación nueva](../NPVS_PROTECTED_FILES.md).
 
 ### Limitación documentada antes de esta actualización
