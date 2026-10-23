@@ -302,7 +302,15 @@ def decode_npvs(data: bytes, *, password: str | None = None, public_key: str | N
     else:
         salt, wrapped = descriptor[2:18], descriptor[18:78]
         kdk = hashlib.sha256(b"npvtunnel/appkey/v2 " + _whitebox_block(salt) + config_id).digest()
-    dek = _open(kdk, wrapped[:12], wrapped[12:], salt, "document key")
+    try:
+        dek = _open(kdk, wrapped[:12], wrapped[12:], salt, "document key")
+    except DecodeError as exc:
+        # Authenticated v5 app-key files require neither a password nor ECDH.
+        # Failed AEAD may mean another app-key variant or modified ciphertext.
+        if env["mode"] == 2 and exc.code == "AUTH_FAILED":
+            raise DecodeError("NPVS app-key authentication failed",
+                              "NPVS_APPKEY_AUTH_FAILED") from exc
+        raise
     if len(dek) != 32:
         raise DecodeError("Invalid document key length")
     mkey = HKDF(dek, 32, nonce, SHA256, context=b"NPVS-v5/metadata")

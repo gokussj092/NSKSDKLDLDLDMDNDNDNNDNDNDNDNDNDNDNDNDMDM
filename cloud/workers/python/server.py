@@ -118,7 +118,7 @@ class WorkerHandler(BaseHTTPRequestHandler):
                       "ENGINE_UNAVAILABLE": 503, "OUTPUT_TOO_LARGE": 413, "CREDENTIALS_NOT_ALLOWED": 400, "INVALID_CREDENTIALS": 400,
                       "PASSWORD_REQUIRED": 422, "HWID_REQUIRED": 422, "HWID_PASSWORD_REQUIRED": 422,
                       "AUTH_FAILED": 422, "PRIVATE_KEY_REQUIRED": 422,
-                      "RECIPIENT_MISMATCH": 422}.get(error.code, 422)
+                      "RECIPIENT_MISMATCH": 422, "NPVS_APPKEY_AUTH_FAILED": 422}.get(error.code, 422)
             return self._json(status, {"error": {"code": error.code}})
         return self._json(200, result)
 

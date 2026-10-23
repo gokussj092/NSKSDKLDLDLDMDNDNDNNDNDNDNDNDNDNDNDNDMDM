@@ -23,6 +23,7 @@ const ERROR_MESSAGES = Object.freeze({
   AUTH_FAILED:"No se pudo autenticar el archivo.",
   DECODE_FAILED:"No se pudo descifrar el archivo.",
   NPVS_PROTECTION_UNSUPPORTED:"Esta variante de protección NPVS aún no está implementada.",
+  NPVS_APPKEY_AUTH_FAILED:"La clave de aplicación NPVS no pudo autenticarse; puede ser una variante diferente o un archivo modificado.",
   PRIVATE_KEY_REQUIRED:"Este archivo requiere la clave privada del dispositivo destinatario; la clave pública sola no permite descifrarlo.",
   RECIPIENT_MISMATCH:"La clave pública no corresponde a un destinatario de este archivo.",
   ENGINE_TIMEOUT:"El motor agotó el tiempo disponible.",

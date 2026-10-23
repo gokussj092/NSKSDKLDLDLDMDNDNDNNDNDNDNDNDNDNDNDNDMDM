@@ -297,7 +297,7 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
                     code = None
                 if code in ("PASSWORD_REQUIRED", "HWID_REQUIRED", "HWID_PASSWORD_REQUIRED", "AUTH_FAILED",
                             "PRIVATE_KEY_REQUIRED", "RECIPIENT_MISMATCH", "INVALID_CREDENTIALS",
-                            "NPVS_PROTECTION_UNSUPPORTED"):
+                            "NPVS_PROTECTION_UNSUPPORTED", "NPVS_APPKEY_AUTH_FAILED"):
                     raise DecodeFailure(code)
             raise DecodeFailure("DECODE_FAILED")
         if not raw.strip():
