@@ -126,10 +126,16 @@ def main() -> int:
             return 2
         output = dispatch(text, password=password)
     except (OSError, UnicodeError, ValueError, ImportError) as error:
-        if getattr(error, "code", None) in ("PASSWORD_REQUIRED", "AUTH_FAILED",
+        # NPV uses CREDENTIALS_NOT_ALLOWED for passwords on plain JSON links.
+        # Expose the existing public INVALID_CREDENTIALS contract, never a
+        # misleading generic decode failure.
+        code = getattr(error, "code", None)
+        if code == "CREDENTIALS_NOT_ALLOWED":
+            code = "INVALID_CREDENTIALS"
+        if code in ("PASSWORD_REQUIRED", "AUTH_FAILED",
                 "PRIVATE_KEY_REQUIRED", "RECIPIENT_MISMATCH",
                 "INVALID_CREDENTIALS", "NPVS_PROTECTION_UNSUPPORTED"):
-            sys.stdout.write(json.dumps({"workerError": error.code}))
+            sys.stdout.write(json.dumps({"workerError": code}))
             return 3
         return 1
     if not isinstance(output, str) or not output:
