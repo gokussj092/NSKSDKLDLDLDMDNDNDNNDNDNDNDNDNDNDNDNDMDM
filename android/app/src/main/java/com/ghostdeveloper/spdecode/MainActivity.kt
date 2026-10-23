@@ -847,7 +847,7 @@ class MainActivity : ComponentActivity() {
             ?:TextProtocolDecoder.identify(userText)
         if(candidate==null) {
             message=getString(R.string.text_format_unsupported_contact)
-            messageIsCredentialNotice=true
+            cloudClient.clearLastDiagnostic()
             return
         }
         val generation=++importGeneration
@@ -903,6 +903,8 @@ class MainActivity : ComponentActivity() {
                 val notice=BuildConfig.SPDECODE_CLOUD_ENABLED &&
                     CloudUserErrors.isInformational(error,candidate.suffix,
                         passwordSubmitted=password!=null)
+                if((error as? CloudDecodeClient.Failure)?.code=="UNSUPPORTED_FORMAT")
+                    cloudClient.clearLastDiagnostic()
                 if(!notice)SafeDecodeDiagnostics.record(SafeDecodeDiagnostics.Event.TEXT_FAILURE)
                 else cloudClient.clearLastDiagnostic()
                 messageIsCredentialNotice=notice
@@ -1358,7 +1360,7 @@ class MainActivity : ComponentActivity() {
                     pendingCloudPasswordFile==null) {
                     val summary=getString(R.string.batch_import_summary,
                         report.successes,report.failures)
-                    if(singleCredentialNotice!=null || unsupportedNotice) {
+                    if(singleCredentialNotice!=null) {
                         // An expected credential/compatibility response is not
                         // an app error: show just one notice and OK. The
                         // password dialog has already been dismissed; a new
@@ -1366,6 +1368,7 @@ class MainActivity : ComponentActivity() {
                         messageIsCredentialNotice=true
                         cloudClient.clearLastDiagnostic()
                     }
+                    if(unsupportedNotice)cloudClient.clearLastDiagnostic()
                     message=when {
                         singleCredentialNotice!=null->singleCredentialNotice
                         unsupportedNotice && inputs.size==1->
