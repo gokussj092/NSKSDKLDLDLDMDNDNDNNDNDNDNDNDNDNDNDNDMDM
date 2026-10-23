@@ -552,7 +552,6 @@ class MainActivity : ComponentActivity() {
                     }
                 },
                 serverVpnApps=serverVpnApps,
-                fileFormats=fileFormats,
                 serverVpnLoading=serverVpnLoading,
                 serverVpnUnavailable=serverVpnUnavailable,
                 onRefreshServerVpn={checkServerVpnUpdates()},
