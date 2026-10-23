@@ -87,9 +87,9 @@ internal object CloudUserErrors {
         val disconnected=cause is IOException &&
             cause !is CloudDecodeClient.Failure &&
             cause.message=="CLOUD_NATIVE_NETWORK_UNAVAILABLE"
-        val code=(cause as? CloudDecodeClient.Failure)?.code
-        val incorrect=code!=null && CloudCredentialPolicy.incorrectPassword(
-            code,passwordSubmitted,hwidSubmitted)
+        val failureCode=(cause as? CloudDecodeClient.Failure)?.code
+        val incorrect=failureCode!=null && CloudCredentialPolicy.incorrectPassword(
+            failureCode,passwordSubmitted,hwidSubmitted)
         val id=when {
             incorrect -> R.string.cloud_failure_password_incorrect
             disconnected -> R.string.cloud_failure_offline
