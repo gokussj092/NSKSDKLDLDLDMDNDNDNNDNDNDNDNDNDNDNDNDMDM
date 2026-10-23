@@ -34,7 +34,7 @@ def generate() -> dict:
     from cloud.workers.python.engine import load_runtime_file_engines
 
     mobile = json.loads(ANDROID.read_text(encoding="utf-8"))
-    if mobile.get("schemaVersion") != 3:
+    if mobile.get("schemaVersion") != 4:
         raise ValueError("Unsupported current Android inventory version")
     native = {entry["suffix"] for entry in mobile["entries"]}
     if len(native) != len(mobile["entries"]):
