@@ -524,7 +524,7 @@ class MainActivity : ComponentActivity() {
                         catalogUpdatesEnabled=CloudCatalogUpdates.enabled(this@MainActivity)
                         if(catalogUpdatesEnabled) {
                             startCatalogWatch()
-                            if(tab==3)refreshServerVpn(force=true)
+                            if(tab==2 || tab==3)refreshServerVpn(force=true)
                         }else {
                             catalogWatchJob?.cancel()
                             serverVpnRefresh?.cancel()
@@ -982,7 +982,7 @@ class MainActivity : ComponentActivity() {
             catch(e:CloudDecodeClient.Failure) {
                 if(generation==importGeneration) {
                     message=if(BuildConfig.SPDECODE_CLOUD_ENABLED)
-                        com.ghostdeveloper.spdecode.cloud.CloudUserErrors.message(this@MainActivity,e)
+                        CloudUserErrors.httpInjectorMessage(this@MainActivity,e)
                         else getString(R.string.cloud_http_injector_network_error)
                 }
             }catch(e:HttpInjectorCloudPort.CloudException) {
