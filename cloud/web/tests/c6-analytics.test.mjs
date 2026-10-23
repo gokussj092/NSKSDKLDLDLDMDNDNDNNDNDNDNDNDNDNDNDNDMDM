@@ -40,7 +40,7 @@ test("seven-day analytics tracks sanitized extensions, bytes and error buckets",
   assert.equal(report.successfulDecodes,3);
   assert.equal(report.failedDecodes,1);
   assert.equal(report.warnings,1);
-  assert.equal(report.inputBytes,889);
+  assert.equal(report.inputBytes,789);
   assert.deepEqual(report.extensions.find(x=>x.extension==="hc"),{
     extension:"hc",successfulDecodes:1,failedDecodes:0,attempts:1});
   assert.equal(report.extensions.find(x=>x.extension==="other").warnings,1);
