@@ -20,9 +20,7 @@ internal object CloudUserErrors {
                 "PASSWORD_REQUIRED" -> R.string.cloud_failure_password
                 "HWID_REQUIRED" -> R.string.cloud_failure_hwid
                 "HWID_PASSWORD_REQUIRED" -> R.string.cloud_failure_both
-                "AUTH_FAILED" -> if(format in setOf("ua","npvs","1ftnl","tut"))
-                    R.string.cloud_failure_password_incorrect
-                    else R.string.cloud_failure_credentials
+                "AUTH_FAILED" -> R.string.cloud_failure_credentials
                 "INVALID_CREDENTIALS" -> R.string.cloud_failure_credentials
                 "LEGAL_CONSENT_REQUIRED","USER_CONSENT_REQUIRED" -> R.string.cloud_failure_consent
                 "QA_DISABLED","QA_ACCESS_DENIED" -> R.string.cloud_failure_qa
@@ -76,13 +74,32 @@ internal object CloudUserErrors {
         return R.string.cloud_failure_general
     }
 
-    fun message(context:Context,cause:Throwable,format:String?=null):String {
+    fun isInformational(cause:Throwable,format:String?=null,
+                        passwordSubmitted:Boolean=false,
+                        hwidSubmitted:Boolean=false):Boolean {
+        val code=(cause as? CloudDecodeClient.Failure)?.code?:return false
+        return CloudCredentialPolicy.incorrectPassword(code,passwordSubmitted,hwidSubmitted) ||
+            CloudCredentialPolicy.npvsProtectionNotice(code,format)
+    }
+
+    fun message(context:Context,cause:Throwable,format:String?=null,
+                passwordSubmitted:Boolean=false,hwidSubmitted:Boolean=false):String {
         val disconnected=cause is IOException &&
             cause !is CloudDecodeClient.Failure &&
             cause.message=="CLOUD_NATIVE_NETWORK_UNAVAILABLE"
-        val id=if(disconnected) R.string.cloud_failure_offline else resource(cause,format)
+        val code=(cause as? CloudDecodeClient.Failure)?.code
+        val incorrect=code!=null && CloudCredentialPolicy.incorrectPassword(
+            code,passwordSubmitted,hwidSubmitted)
+        val id=when {
+            incorrect -> R.string.cloud_failure_password_incorrect
+            disconnected -> R.string.cloud_failure_offline
+            else -> resource(cause,format)
+        }
         val text=context.getString(id)
-        if(!BuildConfig.SPDECODE_QA_BUILD)return text
+        // Expected credential/compatibility notices contain exactly the
+        // localized guidance, even in QA builds (no error/report UI).
+        if(isInformational(cause,format,passwordSubmitted,hwidSubmitted) ||
+            !BuildConfig.SPDECODE_QA_BUILD)return text
         // QA diagnostics contain only bounded, local enum-like values.
         val code=when(cause) {
             is CloudDecodeClient.Failure -> cause.code

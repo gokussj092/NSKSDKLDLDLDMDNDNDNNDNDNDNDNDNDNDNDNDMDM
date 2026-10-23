@@ -117,14 +117,19 @@ export function safeErrorCode(code) {
   return KNOWN_ERRORS.has(code) ? code : "OTHER_ERROR";
 }
 const REQUIRED_INPUT=new Set(["PASSWORD_REQUIRED","HWID_REQUIRED","HWID_PASSWORD_REQUIRED",
-  "PRIVATE_KEY_REQUIRED",
+  "PRIVATE_KEY_REQUIRED","RECIPIENT_MISMATCH","AUTH_FAILED","INVALID_CREDENTIALS",
   "USER_CANCELLED","CANCELLED","USER_CONSENT_REQUIRED"]);
 const INCOMPATIBLE=new Set(["UNSUPPORTED_FORMAT","UNSUPPORTED_VERSION","UNSUPPORTED_CONFIG_VERSION",
   "NPVS_PROTECTION_UNSUPPORTED"]);
 export function classifyWorkerOutcome(outcome,{kind,format,errorCode}={}){
   if(outcome==="success")return "success";
   if(outcome!=="failed"&&outcome!=="warning")return "ignored";
-  if(REQUIRED_INPUT.has(errorCode))return "ignored"; // No decode; cancelling never yields an event.
+  if(REQUIRED_INPUT.has(errorCode) ||
+      (kind==="file" && format==="npvs" &&
+        errorCode==="NPVS_PROTECTION_UNSUPPORTED"))return "ignored";
+  // Expected user credentials and unsupported NPVS recipient protections are
+  // not infrastructure or decoder faults. Genuine DECODE_FAILED remains a
+  // warning/error under the existing privacy-safe metrics contract.
   // A consumed/expired/removed EHI reference is a normal provider lifecycle
   // condition, not a failed decryption engine or an infrastructure outage.
   if(outcome==="warning"||INCOMPATIBLE.has(errorCode)||

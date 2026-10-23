@@ -131,6 +131,7 @@ class MainActivity : ComponentActivity() {
     private var guideStep by mutableStateOf<Int?>(null)
     private var runningVersionCode=0L
     private var message by mutableStateOf<String?>(null)
+    private var messageIsCredentialNotice by mutableStateOf(false)
     private var usageOptIn by mutableStateOf(false)
     private var catalogUpdatesEnabled by mutableStateOf(false)
     private var catalogWatchJob:Job?=null
@@ -438,6 +439,7 @@ class MainActivity : ComponentActivity() {
                 session=recent,
                 busy=busy,
                 error=message,
+                noticeOnly=messageIsCredentialNotice,
                 progressStage=progressStage,
                 progressFilename=progressFilename,
                 progressPosition=progressPosition,
@@ -479,8 +481,13 @@ class MainActivity : ComponentActivity() {
                 onFavorite={id,favorite->updateFavorite(id,favorite)},
                 retentionDays=retentionDays,
                 onRetention={days->setRetention(days)},
-                onDismissError={message=null;cloudClient.clearLastDiagnostic()},
-                canReportError=BuildConfig.SPDECODE_CLOUD_ENABLED && !reportBusy && cloudClient.lastDiagnostic!=null,
+                onDismissError={
+                    message=null
+                    messageIsCredentialNotice=false
+                    cloudClient.clearLastDiagnostic()
+                },
+                canReportError=BuildConfig.SPDECODE_CLOUD_ENABLED && !messageIsCredentialNotice &&
+                    !reportBusy && cloudClient.lastDiagnostic!=null,
                 onReportError={sendCurrentFailureReport()},
                 onDecodeText={input->decodeText(input)},
                 onDecodeCloud={reference->decodeCloud(reference)},
@@ -674,6 +681,7 @@ class MainActivity : ComponentActivity() {
      */
     private fun prepareSingleImport(uri:Uri) {
         if(!requireCloudLegal())return
+        messageIsCredentialNotice=false
         clearPendingCloudPassword()
         pendingCredentialImport?.bytes?.fill(0)
         pendingCredentialImport=null
@@ -803,6 +811,7 @@ class MainActivity : ComponentActivity() {
     // Telegram's multipart chat-session protocol does not apply here.
     private fun decodeText(userText:String,password:ByteArray?=null) {
         if(!requireCloudLegal())return
+        messageIsCredentialNotice=false
         if(busy)return
         if(userText.isBlank()||userText.length>TextProtocolDecoder.MAX_CHARS) {
             message=getString(R.string.text_decode_invalid)
@@ -864,10 +873,15 @@ class MainActivity : ComponentActivity() {
                     pendingCloudPasswordText=PendingCloudPasswordText(userText,candidate.app)
                     return@launch
                 }
-                SafeDecodeDiagnostics.record(SafeDecodeDiagnostics.Event.TEXT_FAILURE)
+                val notice=BuildConfig.SPDECODE_CLOUD_ENABLED &&
+                    CloudUserErrors.isInformational(error,candidate.suffix,
+                        passwordSubmitted=password!=null)
+                if(!notice)SafeDecodeDiagnostics.record(SafeDecodeDiagnostics.Event.TEXT_FAILURE)
+                else cloudClient.clearLastDiagnostic()
+                messageIsCredentialNotice=notice
                 message=if(BuildConfig.SPDECODE_CLOUD_ENABLED)
-                    com.ghostdeveloper.spdecode.cloud.CloudUserErrors.message(
-                        this@MainActivity,error,candidate.suffix)
+                    CloudUserErrors.message(this@MainActivity,error,candidate.suffix,
+                        passwordSubmitted=password!=null)
                     else getString(R.string.text_decode_unsupported)
             }
             }finally {
@@ -1116,6 +1130,7 @@ class MainActivity : ComponentActivity() {
         require((hcPassword==null && hcHwid==null) ||
             (uris.size==1 && prepared?.uri==uris.single() && privateCredentialId==null))
         job?.cancel()
+        messageIsCredentialNotice=false
         val generation=++importGeneration
         val inputs=uris.take(BatchImportQueue.MAX_FILES)
         if(inputs.isEmpty())return
@@ -1133,23 +1148,40 @@ class MainActivity : ComponentActivity() {
                 var failedProtectedHc=false
                 var cloudPasswordError:String?=null
                 var cloudCredentialError:String?=null
+                var singleCredentialNotice:String?=null
+                val suppliedPassword=cloudPassword!=null || hcPassword!=null ||
+                    privateCredentialId!=null
+                val suppliedHwid=hcHwid!=null
                 val report=BatchImportQueue.process(inputs,
                     onFailure={uri,cause->
-                        if(cloudPassword!=null && cause is CloudDecodeClient.Failure &&
-                            cause.code in setOf("AUTH_FAILED","INVALID_CREDENTIALS"))
-                            cloudPasswordError=com.ghostdeveloper.spdecode.cloud.CloudUserErrors.message(
-                                this@MainActivity,cause,cloudPrepared?.suffix)
                         val filename=runCatching {
                             withContext(Dispatchers.IO){displayName(uri)}
                         }.getOrDefault("")
+                        val format=cloudPrepared?.suffix ?:
+                            ImportFilenameNormalizer.forDetection(filename)
+                                .substringAfterLast('.',"").lowercase()
+                        val notice=CloudUserErrors.isInformational(cause,format,
+                            passwordSubmitted=suppliedPassword,
+                            hwidSubmitted=suppliedHwid)
+                        if(notice && inputs.size==1) {
+                            singleCredentialNotice=CloudUserErrors.message(
+                                this@MainActivity,cause,format,
+                                passwordSubmitted=suppliedPassword,
+                                hwidSubmitted=suppliedHwid)
+                            cloudClient.clearLastDiagnostic()
+                        }
+                        if(cloudPassword!=null && cause is CloudDecodeClient.Failure &&
+                            cause.code=="INVALID_CREDENTIALS")
+                            cloudPasswordError=CloudUserErrors.message(
+                                this@MainActivity,cause,format)
                         // Non-password NPVS errors must not collapse into the
                         // generic failed-import summary or prompt for a password.
                         if(cause is CloudDecodeClient.Failure &&
                             cause.code in setOf("PRIVATE_KEY_REQUIRED","RECIPIENT_MISMATCH",
                                 "NPVS_PROTECTION_UNSUPPORTED") &&
                             cloudCredentialError==null)
-                            cloudCredentialError=com.ghostdeveloper.spdecode.cloud.CloudUserErrors.message(
-                                this@MainActivity,cause)
+                            cloudCredentialError=CloudUserErrors.message(
+                                this@MainActivity,cause,format)
                         // Do not label any Cloud NPVS failure a "private key"
                         // failure unless the worker explicitly reports that.
                         if(ImportFilenameNormalizer.forDetection(prepared?.filename?:filename)
@@ -1163,6 +1195,11 @@ class MainActivity : ComponentActivity() {
                             cause is CloudDecodeClient.Failure &&
                             cause.code in setOf("AUTH_FAILED","INVALID_CREDENTIALS"))
                             failedProtectedHc=true
+                    },
+                    isExpectedFailure={cause->
+                        (cause as? CloudDecodeClient.Failure)?.let {
+                            CloudCredentialPolicy.expectedCredentialResponse(it.code)
+                        }==true
                     }
                 ){uri,index,total->
                     progressPosition=index
@@ -1261,7 +1298,16 @@ class MainActivity : ComponentActivity() {
                     pendingCloudPasswordFile==null) {
                     val summary=getString(R.string.batch_import_summary,
                         report.successes,report.failures)
+                    if(singleCredentialNotice!=null) {
+                        // An expected credential/compatibility response is not
+                        // an app error: show just one notice and OK. The
+                        // password dialog has already been dismissed; a new
+                        // attempt must explicitly re-import the file.
+                        messageIsCredentialNotice=true
+                        cloudClient.clearLastDiagnostic()
+                    }
                     message=when {
+                        singleCredentialNotice!=null->singleCredentialNotice
                         cloudPasswordError!=null->cloudPasswordError+"\n\n"+summary
                         cloudCredentialError!=null->cloudCredentialError+"\n\n"+summary
                         failedProtectedHc->getString(R.string.cloud_failure_credentials)+"\n\n"+summary

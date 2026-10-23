@@ -181,7 +181,9 @@ internal class CloudDecodeClient(context: Context) {
             }
         }catch(failure:Failure) {
             // Only whitelisted enum-like codes and known format labels are retained in RAM.
-            if(failure.httpStatus>=400 && failure.code.matches(Regex("[A-Z][A-Z0-9_]{2,49}"))) {
+            if(!CloudCredentialPolicy.expectedCredentialResponse(failure.code) &&
+                failure.httpStatus>=400 &&
+                failure.code.matches(Regex("[A-Z][A-Z0-9_]{2,49}"))) {
                 val service=when(endpoint){
                     "/api/v1/decode/import/cloud"->"httpInjector"
                     "/api/v1/server-vpn/decode","/api/v1/decode/import/catalog/remote"->"serverVpn"
