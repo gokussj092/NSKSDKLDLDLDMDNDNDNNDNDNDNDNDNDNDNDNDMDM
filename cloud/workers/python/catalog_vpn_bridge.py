@@ -7,6 +7,8 @@ import sys
 from pathlib import Path
 
 PROVIDERS = {
+    # Offline-only until the official APNA catalog source is validated.
+    "apna-vpn": "decoders.Python.apps.APNA_VPN.server_catalog_decoder",
     "7net-vpn": "decoders.Python.apps.SevenNET_VPN.server_catalog_decoder",
     "xhypher-tunnel-pro": "decoders.Python.apps.Xhypher_Tunnel_Pro.server_catalog_decoder",
     "ut-loop-pro-vpn": "decoders.Python.apps.UT_Loop_Pro_VPN.server_catalog_decoder",
