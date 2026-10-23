@@ -87,7 +87,6 @@ fun SpDecodeApp(
     retentionDays:Int,
     onRetention:(Int)->Unit,
     onDismissError:()->Unit,
-    noticeOnly:Boolean=false,
     canReportError:Boolean=false,
     onReportError:()->Unit={},
     onDecodeText:(String)->Unit={},
@@ -266,24 +265,21 @@ fun SpDecodeApp(
         if(error!=null && !busy) AlertDialog(
             onDismissRequest=onDismissError,
             icon={Icon(Icons.Outlined.Info,null,tint=Amber)},
-            title={Text(stringResource(if(noticeOnly)
-                R.string.cloud_failure_notice_title else R.string.decode_notice_title))},
+            title={Text(stringResource(R.string.decode_notice_title))},
             text={Text(error,color=Secondary)},
             confirmButton={TextButton(onClick=onDismissError){
                 Text(stringResource(R.string.close),color=White)
             }},
-            dismissButton={
-                if(!noticeOnly) TextButton(onClick={
-                    if(canReportError)onReportError()
-                    else {
-                        onDismissError()
-                        onExternalLink("https://t.me/Gh0stDeveloper")
-                    }
-                }) {
-                    Text(stringResource(if(canReportError)R.string.cloud_report_action
-                        else R.string.decode_notice_contact),color=White)
+            dismissButton={TextButton(onClick={
+                if(canReportError)onReportError()
+                else {
+                    onDismissError()
+                    onExternalLink("https://t.me/Gh0stDeveloper")
                 }
-            },
+            }) {
+                Text(stringResource(if(canReportError)R.string.cloud_report_action
+                    else R.string.decode_notice_contact),color=White)
+            }},
             containerColor=Background,
             titleContentColor=White,
             textContentColor=Secondary,

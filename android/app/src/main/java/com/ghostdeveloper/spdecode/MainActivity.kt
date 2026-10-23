@@ -440,7 +440,6 @@ class MainActivity : ComponentActivity() {
                 session=recent,
                 busy=busy,
                 error=message,
-                noticeOnly=messageIsCredentialNotice,
                 progressStage=progressStage,
                 progressFilename=progressFilename,
                 progressPosition=progressPosition,

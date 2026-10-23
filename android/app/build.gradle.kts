@@ -211,9 +211,42 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
                                 onExport={onExportHistory(entry)},
                                 onDelete={deletingAll=false;deletion=setOf(entry.id)},
                             )""")
-        // SpDecodeApp now chooses a neutral localized title for expected
-        // password and NPVS compatibility notices. Preserve it in Cloud builds.
+        // C0 SpDecodeApp is immutable. Informational notices are injected
+        // ONLY into the Cloud variant, along with matching MainActivity args.
+        app = replaceOnce(app,
+            "    onDismissError:()->Unit,",
+            "    onDismissError:()->Unit,\\n    noticeOnly:Boolean=false,".replace("\\n","\n"))
+        app = replaceOnce(app,
+            "title={Text(stringResource(R.string.decode_notice_title))}",
+            "title={Text(stringResource(if(noticeOnly) " +
+                "R.string.cloud_failure_notice_title else R.string.decode_notice_title))}")
+        app = replaceOnce(app,
+            """            dismissButton={TextButton(onClick={
+                if(canReportError)onReportError()
+                else {
+                    onDismissError()
+                    onExternalLink("https://t.me/Gh0stDeveloper")
+                }
+            }) {
+                Text(stringResource(if(canReportError)R.string.cloud_report_action
+                    else R.string.decode_notice_contact),color=White)
+            }},""",
+            """            dismissButton={
+                if(!noticeOnly) TextButton(onClick={
+                    if(canReportError)onReportError()
+                    else {
+                        onDismissError()
+                        onExternalLink("https://t.me/Gh0stDeveloper")
+                    }
+                }) {
+                    Text(stringResource(if(canReportError)R.string.cloud_report_action
+                        else R.string.decode_notice_contact),color=White)
+                }
+            },""")
         var activity = originalRoot.file("MainActivity.kt").asFile.readText(Charsets.UTF_8)
+        activity = replaceOnce(activity,
+            "                error=message,",
+            "                error=message,\n                noticeOnly=messageIsCredentialNotice,")
         // Android 15/16: Cloud builds opt into edge-to-edge on older devices too.
         // The original C0 UI sources stay byte-for-byte unchanged.
         activity = replaceOnce(activity,
