@@ -1,5 +1,17 @@
 # SP-DECODE Cloud — Guía para ampliar Server VPN en otro chat
 
+**Último análisis de archivo, 2026-10-23: Hex Custom 10.6.1 (101)**,
+`apps/Hex_Custom/`: **lector pendiente**, no integrado. Usuario solicitó solo
+archivo: sin catálogo o consultas externas. KOV-SEC convirtió CustomServerShare
+a wrappers ARM64/VM. Se recuperaron 10 entradas JNI, 3 paquetes opacos KVS1 y
+546488 bytes de pool iguales a su bucle XOR nativo aislado. No confundir esto
+con cuerpos VM o archivos descifrados. Extensión y contraseña criptográfica
+sin confirmar, falta exportación real; no registrar formatos por inferencia.
+`hex_custom_recover.py` y recuperación en Git. ELF PLT corregido para entradas
+24 bytes mediante GOT; 4 wrappers AboWaged siguen iguales. 16 pruebas Python
+(6 recuperación + 10 regresiones) aprobadas. C0 240, C8 250, Server VPN 36/38
+sin cambios. Ver ANALYSIS/TESTING y RESTORE; no iniciar AM/NPV por este pendiente.
+
 **Última incorporación, 2026-10-23: CREEB VPN 50.0 (50)**,
 `apps/CREEB_VPN/`, distinta de CREEB INJECTOR. `.crev` XXTEA modificado:
 reutiliza la primitiva histórica y corrige campos/claves de servidores y ajustes

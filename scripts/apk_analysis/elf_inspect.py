@@ -23,7 +23,21 @@ class ElfImage:
         section=self.elf.get_section_by_name('.rela.plt');plt=self.elf.get_section_by_name('.plt')
         if section and plt:
             syms=self.elf.get_section(section['sh_link'])
-            self.plt={plt['sh_addr']+32+16*i:syms.get_symbol(r['r_info_sym']).name for i,r in enumerate(section.iter_relocations())}
+            # Linkers can emit 16-byte or BTI-padded 24-byte AArch64 entries.
+            # Resolve each ADRP/LDR through its GOT relocation, not entry order.
+            from capstone import Cs, CS_ARCH_ARM64, CS_MODE_LITTLE_ENDIAN
+            got={r['r_offset']:syms.get_symbol(r['r_info_sym']).name for r in section.iter_relocations()}
+            instructions=list(Cs(CS_ARCH_ARM64,CS_MODE_LITTLE_ENDIAN).disasm(plt.data(),plt['sh_addr']))
+            for i,ins in enumerate(instructions[:-1]):
+                if ins.mnemonic!='adrp' or not ins.op_str.startswith('x16, #'):continue
+                following=instructions[i+1]
+                if following.mnemonic!='ldr' or not following.op_str.startswith('x17, [x16'):continue
+                page=int(ins.op_str.split('#')[1],0)
+                offset=int(following.op_str.split('#')[1].rstrip(']'),0) if '#' in following.op_str else 0
+                name=got.get(page+offset)
+                if name:
+                    self.plt[ins.address]=name
+                    if i and instructions[i-1].mnemonic=='bti':self.plt[instructions[i-1].address]=name
         for section in self.elf.iter_sections():
             if section['sh_type']=='SHT_RELA':self.relocations.extend(dict(r.entry) for r in section.iter_relocations())
 

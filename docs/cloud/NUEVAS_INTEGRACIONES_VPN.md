@@ -482,3 +482,11 @@ de este registro, por sí sola, no cambia ninguno de esos catálogos.
   icono original vector conservado y PNG renderizado, desactivada. Catálogo
   mínimo **36 / 38 fichas**, sin alterar switches. Herramientas/referencia y
   recuperación guardadas en Git, sin datos reales, APK, despliegue ni C11.
+
+- **Hex Custom 10.6.1 (101) — PENDIENTE, 2026-10-23**: solicitud solo de
+  archivo. CustomServerShare virtualizado por KOV-SEC; no hay lector funcional,
+  extensión ni contraseña confirmadas. Herramienta `hex_custom_recover.py`
+  recupera tabla de 10 métodos y tres paquetes opacos; pool 546488 bytes igual
+  al bucle XOR nativo. 16 pruebas de herramientas/regresiones y 4 wrappers
+  AboWaged comprobados. Documentación y recuperación en `apps/Hex_Custom/`.
+  No se activó motor Cloud/bot ni catálogo; C8 250, Server VPN 36/38 intactos.

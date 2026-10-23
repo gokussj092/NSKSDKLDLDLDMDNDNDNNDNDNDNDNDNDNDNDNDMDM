@@ -1,0 +1,78 @@
+{
+  "class": "com/hexapplications/hexvpn/ui/servers/CustomServerShare",
+  "registration": "classes7Init0(226)",
+  "librarySha256": "17b2261afd80aaf49ae9b13c9202b080bc314216d79b072b8b6ebb3599ff052b",
+  "status": "native_VM_wrappers_only",
+  "methods": [
+    {
+      "name": "exportToDocuments",
+      "signature": "(Landroid/content/Context;Lorg/json/JSONObject;Lcom/hexapplications/hexvpn/ui/servers/ShareOptions;)Landroid/net/Uri;",
+      "address": "0x272488"
+    },
+    {
+      "name": "shareFile",
+      "signature": "(Landroid/content/Context;Landroid/net/Uri;)V",
+      "address": "0x2725e0"
+    },
+    {
+      "name": "sign$lambda$0",
+      "signature": "(B)Ljava/lang/CharSequence;",
+      "address": "0x2726ec"
+    },
+    {
+      "name": "doubleEncrypt",
+      "signature": "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+      "address": "0x272800"
+    },
+    {
+      "name": "currentCompanyAndCountry",
+      "signature": "(Landroid/content/Context;)Lkotlin/Pair;",
+      "address": "0x272918"
+    },
+    {
+      "name": "sign",
+      "signature": "(Ljava/lang/String;)Ljava/lang/String;",
+      "address": "0x272a2c"
+    },
+    {
+      "name": "getDeviceId",
+      "signature": "(Landroid/content/Context;)Ljava/lang/String;",
+      "address": "0x272b70"
+    },
+    {
+      "name": "getDeviceId$lambda$1",
+      "signature": "(B)Ljava/lang/CharSequence;",
+      "address": "0x272cb4"
+    },
+    {
+      "name": "importFromUri",
+      "signature": "(Landroid/content/Context;Landroid/net/Uri;)Lcom/hexapplications/hexvpn/ui/servers/ImportResult;",
+      "address": "0x272dc8"
+    },
+    {
+      "name": "doubleDecrypt",
+      "signature": "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+      "address": "0x272f1c"
+    }
+  ],
+  "packages": [
+    {
+      "id": 0,
+      "offset": 0,
+      "bytes": 1092588,
+      "sha256": "3b3fe83e0e7f702b5dbc959f3e1d6af9115949f042fbcecad94c3ffaac9105f8"
+    },
+    {
+      "id": 1,
+      "offset": 1092588,
+      "bytes": 13281,
+      "sha256": "36098e036e7f321f7dbc4dd7eddc393412523edbaef0af4f5352e0931084691b"
+    },
+    {
+      "id": 2,
+      "offset": 1105869,
+      "bytes": 1193018,
+      "sha256": "9e85b9e87c4bc543189219542ab0a16190d67e965baa9c70b0402865dc5d7326"
+    }
+  ]
+}

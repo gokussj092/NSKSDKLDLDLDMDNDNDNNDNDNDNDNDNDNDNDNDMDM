@@ -1,5 +1,13 @@
 # Herramientas de análisis APK
 
+Hex Custom 10.6.1: `hex_custom_recover.py` es una herramienta de análisis,
+**no un decodificador de archivos**. Separa KVS1 con límites comprobados y
+recupera la tabla JNI de CustomServerShare desde su pool XOR; `--verify-xor`
+compara 546488 bytes con el bucle ARM64 original aislado. Salidas privadas,
+hashes fijados, sin ejecutar JNI/VM. Cuerpos virtualizados y formato pendientes.
+`elf_inspect.py` resuelve PLT mediante GOT, incluyendo entradas de 24 bytes;
+regresión de cuatro wrappers AboWaged comprobada. Ver RESTORE y app/ANALYSIS.
+
 CREEB VPN 50.0: `creeb_vpn_verify.py` compara documentos completos con JDK,
 CLI y worker (cinco sintéticos y asset real 1/1). Dos claves y selección
 contextual pInfo, sin password externo; pendiente `.crev` real y descarga

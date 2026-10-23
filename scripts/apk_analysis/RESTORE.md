@@ -1,5 +1,33 @@
 # Recuperar herramientas después de perder el entorno
 
+## Hex Custom 10.6.1 (101) — pendiente, 2026-10-23
+
+Solicitud solo de archivo. Recuperar el APKS con hash de `apps/Hex_Custom/ANALYSIS.md`
+e instalar dependencias de análisis. No hay lector funcional que desplegar.
+
+```bash
+python scripts/apk_analysis/inspect_apk.py /ruta/Hex-Custom.apks scripts/apk_analysis/work/hex-custom --asset protection/kov-sec.dat --native libkovsec.so --native libkovsecvm.so
+python scripts/apk_analysis/hex_custom_recover.py \
+  scripts/apk_analysis/work/hex-custom/native/split_config.arm64_v8a/libkovsec.so \
+  scripts/apk_analysis/work/hex-custom/assets/protection/kov-sec.dat \
+  scripts/apk_analysis/work/hex-custom-recovery --verify-xor
+python -m unittest tests.test_hex_custom_recovery tests.test_creeb_vpn tests.test_cloud_c8_vpn_registry
+```
+
+JADX DEX1/2/3: salida 3, 11/9/8 errores; DEX4/5: salida 0. Sus métodos native no
+son cuerpos recuperados. Si hace falta, usar `decompile.py` con cada DEX y un
+directorio distinto. Tabla classes7Init0(226), CustomServerShare, diez wrappers;
+archivo `native-methods.json` guarda direcciones y hashes. Pool 546488 bytes
+igual a XOR nativo aislado. Tres paquetes KVS1 **siguen opacos**, sin firma
+Ed25519 verificada ni ejecución de la VM. No llamarlos DEX descifrados.
+
+`hex_custom_recover.py` solo admite hashes de este build; directorio nuevo,
+archivos 0600, sin sobrescritura. No publicar paquetes, pool, SO o APK. El ajuste
+ELF de PLT 24 bytes usa relocaciones GOT, mantiene la regresión de cuatro
+wrappers AboWaged. Extensión, cifrado exportado y contraseña siguen sin confirmar;
+continuar desde los cuerpos VM y una exportación real, sin registrar una receta
+basada en bibliotecas antiguas incluidas. C0/C8, Server VPN y C11 intactos.
+
 ## CREEB VPN 50.0 (50) — 2026-10-23
 
 Runtime: checkout completo y PyCryptodome, sin APK/nativas. Para investigar de

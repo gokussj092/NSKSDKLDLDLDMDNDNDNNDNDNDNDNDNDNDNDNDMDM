@@ -1,0 +1,22 @@
+{
+  "id": "hex-custom",
+  "name": "Hex Custom",
+  "package": "com.hex.custom.jotchuast",
+  "versionName": "10.6.1",
+  "versionCode": 101,
+  "status": "pending_protected_file_method",
+  "engine": null,
+  "entrypoint": null,
+  "extensions": [],
+  "extensionConfirmed": false,
+  "fileMethodRecovered": false,
+  "customPassword": {"cryptographicallyRequired": null, "status": "unconfirmed"},
+  "catalog": {"status": "out_of_scope_user_requested_files_only"},
+  "analysisTool": "scripts/apk_analysis/hex_custom_recover.py",
+  "nativePoolBytesVerified": 546488,
+  "nativeMethodsMapped": 10,
+  "protectedPackagesRecovered": 3,
+  "realFileSampleVerified": false,
+  "runtimeRegistered": false,
+  "deployment": "not_applicable"
+}
