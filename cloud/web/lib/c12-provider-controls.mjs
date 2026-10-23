@@ -53,9 +53,15 @@ let rosterFingerprint=null;
 // The version only advances for a changed deployment's actual catalog metadata.
 function catalogFingerprint(){
   if(rosterFingerprint)return rosterFingerprint;
-  const records=catalog({version:1,availability:{}}).apps.map(({id,name,iconSha256,iconMimeType})=>
+  const snapshot=catalog({version:1,availability:{}});
+  const records=snapshot.apps.map(({id,name,iconSha256,iconMimeType})=>
     ({id,name,iconSha256,iconMimeType}));
-  rosterFingerprint=createHash("sha256").update(JSON.stringify({releaseVersion:activeCatalogVersion({}),records})).digest("hex");
+  // Include format metadata, so changes invalidate old versioned Android caches.
+  rosterFingerprint=createHash("sha256").update(JSON.stringify({
+    releaseVersion:activeCatalogVersion({}),records,
+    formatsSchemaVersion:snapshot.formatsSchemaVersion,
+    formats:snapshot.formats,
+  })).digest("hex");
   return rosterFingerprint;
 }
 const valid=s=>s && typeof s==="object" && !Array.isArray(s) &&
