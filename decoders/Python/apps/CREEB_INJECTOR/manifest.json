@@ -1,0 +1,23 @@
+{
+  "id": "creeb-injector",
+  "name": "CREEB INJECTOR",
+  "package": "com.creeb.Injector",
+  "versionName": "38.0",
+  "versionCode": 40,
+  "engine": "python",
+  "entrypoint": "file_decoder.py",
+  "extensions": ["creeb"],
+  "formats": ["des-ecb-pkcs5-java-properties", "creeb_profile_bundle-v1-json"],
+  "dependencies": ["pycryptodome==3.23.0"],
+  "credentials": [],
+  "customPassword": {
+    "cryptographicallyRequired": false,
+    "kind": "post_decryption_hash_check",
+    "originalPasswordRecovered": false
+  },
+  "hwidCryptographicallyRequired": false,
+  "catalog": {"status": "not_identified", "remote": null},
+  "realFileSampleVerified": false,
+  "syntheticDocumentsVerified": 5,
+  "deployment": "pending"
+}

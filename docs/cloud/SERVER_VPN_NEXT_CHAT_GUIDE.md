@@ -1,5 +1,16 @@
 # SP-DECODE Cloud — Guía para ampliar Server VPN en otro chat
 
+**Último lector, 2026-10-23: CREEB INJECTOR 38.0 (40)**, `apps/CREEB_INJECTOR/`:
+`.creeb` DES/Java Properties y JSON v1 con varios perfiles. Contraseña/HWID
+son validaciones posteriores, no entradas de cifrado. **10 pruebas enfocadas
+y 10 regresiones AboWaged aprobadas**, cinco documentos sintéticos íntegros,
+tres DES iguales a JDK y cinco al worker. Pendiente archivo real. C8 pasa a
+**250**, C0 sigue **240**. **Catálogo no identificado**: UpdateAsync entrega
+metadatos APK; no registrar esa URL como servidores ni crear una ficha.
+Server VPN conserva **35 / 37** y sus switches. Ver ANALYSIS/TESTING y
+`creeb_verify.py`, `dex_method.py`, oracle JDK y RESTORE.md. Sin despliegue,
+APK, Android/diseño ni C11. El avance AboWaged de abajo es el último catálogo.
+
 **Última incorporación, 2026-10-23: AboWaged VPN 1.0 (1)**,
 `apps/AboWaged_VPN/`, proveedor fijo `abowaged-vpn`. Catálogo remoto principal
 12 servidores / 257 ajustes v4.6.3 y selector adicional de 2 UDP; ambos cuerpos

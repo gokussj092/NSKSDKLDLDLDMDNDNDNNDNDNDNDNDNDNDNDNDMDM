@@ -1,5 +1,44 @@
 # Recuperar herramientas después de perder el entorno
 
+## CREEB INJECTOR 38.0 (40) — 2026-10-23
+
+Restaurar checkout/dependencias con la sección general de este archivo.
+El lector necesita únicamente Python y PyCryptodome. Para repetir el análisis,
+aportar el APKS con hash de `apps/CREEB_INJECTOR/ANALYSIS.md`; no necesita SO.
+
+```bash
+python scripts/apk_analysis/inspect_apk.py /ruta/CREEB.apks scripts/apk_analysis/work/creeb
+env JAVA_TOOL_OPTIONS=-XX:-UsePerfData python scripts/apk_analysis/decompile.py \
+  scripts/apk_analysis/work/creeb/dex/classes.dex scripts/apk_analysis/work/creeb-jadx1
+env JAVA_TOOL_OPTIONS=-XX:-UsePerfData python scripts/apk_analysis/decompile.py \
+  scripts/apk_analysis/work/creeb/dex/classes2.dex scripts/apk_analysis/work/creeb-jadx2
+python scripts/apk_analysis/dex_method.py scripts/apk_analysis/work/creeb/dex/classes.dex \
+  'Lcom/creeb/injector/config/ConfigParser$1;' toString \
+  scripts/apk_analysis/work/creeb-key-method.json
+java -XX:-UsePerfData tests/golden/creeb_oracle.java --generate > /tmp/creeb_vectors.json
+python -m unittest tests.test_creeb_injector tests.test_cloud_c8_vpn_registry -v
+python -m unittest tests.test_abowaged_vpn -v
+python scripts/apk_analysis/creeb_verify.py --worker
+```
+
+JADX informa 62/4 errores generales en DEX 1/2; no considerarlo una recuperación
+completa. La clase anónima de la clave se verifica en las 64 instrucciones del
+volcado Dalvik. `dex_method.py` requiere nombre exacto de clase y método, crea
+salida 0600 y no sobrescribe un archivo existente. No guardar esas salidas en
+Git. El oracle transcribe desplazamientos Java y usa DESKeySpec, Cipher("DES")
+y Properties, sin ejecutar clases del APK.
+
+`creeb_verify.py --worker /ruta/real.creeb` permitirá añadir una muestra real;
+por ahora verifica tres DES/XML sintéticos y dos bundles JSON. Conservar
+`raw_xml` exacto, entradas duplicadas y todas las propiedades/perfiles. El hash
+de contraseña y HWID se preservan como contenido; no son secretos para abrir
+estos formatos. No se descifra ni se adivina el password original.
+
+Catálogo no identificado: el enlace de UpdateAsync solo contiene actualización
+APK; Cloud Firestore requiere referencia de configuración y no es un catálogo.
+No añadir ficha/proveedor por inferencia. Server VPN sigue 35 / 37; C8 250 / C0
+240. Sin cambios C11, despliegue, APK o continuación de AM/NPV automática.
+
 ## AboWaged VPN 1.0 (1) — 2026-10-23
 
 Restaurar el checkout y dependencias con la sección general de este archivo.

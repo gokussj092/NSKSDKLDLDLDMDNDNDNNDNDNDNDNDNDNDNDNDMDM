@@ -175,6 +175,14 @@ def load_decoder_registry(path: Path = DECODERS_PATH) -> dict[str, DecoderSpec]:
             script="decoders/Python/apps/AboWaged_VPN/file_decoder.py", runtime="python"
         )
 
+    if path.resolve() == DECODERS_PATH.resolve():
+        if "creeb" in registry:
+            raise ValueError("CREEB .creeb decoder conflicts with an existing route")
+        registry["creeb"] = DecoderSpec(
+            extension="creeb", name="CREEB INJECTOR 38.0",
+            script="decoders/Python/apps/CREEB_INJECTOR/file_decoder.py", runtime="python"
+        )
+
     return registry
 
 

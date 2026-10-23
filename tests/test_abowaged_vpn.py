@@ -11,6 +11,7 @@ import unittest
 from decoders.Python.apps.AboWaged_VPN import codec, file_decoder, server_catalog_decoder as catalogs
 
 ROOT=Path(__file__).resolve().parents[1]
+sys.path.insert(0,str(ROOT/"cloud/workers/python"))
 FIXTURE=json.loads((ROOT/"tests/golden/abowaged_vectors.json").read_text())
 
 

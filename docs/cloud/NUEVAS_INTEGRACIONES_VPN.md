@@ -284,6 +284,22 @@ entregas anteriores ni publicar anuncios automáticamente.
 
 ## Nuevos métodos de archivos, textos o enlaces añadidos
 
+- **CREEB INJECTOR 38.0 (40) ✅ — 2026-10-23**: `.creeb` individual
+  DES-ECB/PKCS5 → Java Properties y exportación JSON v1 con varios perfiles.
+  Carpeta `apps/CREEB_INJECTOR/`, motor offline completo en C8/bot, **250** rutas
+  efectivas / **240** C0 congeladas. Contraseña y HWID son bloqueos posteriores
+  a abrir el contenido; se conservan hash/restricciones sin pedir secretos
+  externos. Tres documentos DES iguales a JDK y dos bundles completos iguales
+  al original; los cinco coinciden con worker. **10 pruebas enfocadas + 10
+  regresiones AboWaged aprobadas**. Herramienta Dalvik, referencia JDK y
+  recuperación guardadas; pendiente exportación `.creeb` real.
+- CREEB: **catálogo no identificado**. El endpoint observado devuelve una
+  actualización APK, sin servidores. No se añade proveedor, ficha ni versión
+  Server VPN; permanece **35 / 37 fichas**. Tokens Firestore no son un feed.
+  `.crev` histórico preservado. Sin despliegue, fusión, APK, Android/diseño ni
+  novedades C11. Detección `.creeb` en clientes anteriores pendiente de una
+  actualización futura del cliente.
+
 - **1FTunnel 0.6.99 (125) ✅ — `.1ftnl` y cuatro prefijos de texto**:
   muestra real aportada autenticada AES-256-GCM y CFG1 completo de **1995 bytes**,
   JSON íntegro igual a JDK, CLI y worker aislado de archivo/texto, sin recorte.

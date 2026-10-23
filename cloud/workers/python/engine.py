@@ -75,6 +75,7 @@ def load_file_engines() -> dict[str, dict[str, str]]:
 # C8 additions are separate from the frozen 240-route C0 inventory.
 # Keep each format pinned to its own source codec; never route HX .hxt into xor_family.
 _C8_FILE_ENGINES = {
+    "creeb": ("decoders/Python/apps/CREEB_INJECTOR/file_decoder.py", "CREEB INJECTOR 38.0"),
     "awg": ("decoders/Python/apps/AboWaged_VPN/file_decoder.py", "AboWaged VPN 1.0"),
     "1ftnl": ("decoders/Python/apps/OneFTunnel/file_decoder.py", "1FTunnel 0.6.99"),
     "tgv": ("decoders/Python/apps/TunelGuard_VPN/file_decoder.py", "TunelGuard VPN 12.8"),

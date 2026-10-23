@@ -1,5 +1,14 @@
 # Herramientas de análisis APK
 
+CREEB INJECTOR 38.0: `dex_method.py` conserva métodos Dalvik exactos en JSON
+privado cuando JADX no produce la clase anónima; no ejecuta código. Confirmó
+64 instrucciones de `ConfigParser$1.toString`, clave fija DES. `creeb_verify.py`
+contrasta archivos completos con DES/Properties JDK y worker, y comprueba los
+bundles JSON con varios perfiles. Cinco documentos sintéticos, pendiente
+`.creeb` real. No confundir su actualizador APK con un catálogo de servidores.
+Hashes, receta, bloqueos de contraseña/HWID y comandos en la carpeta de la app
+y RESTORE.md. El cifrado no es el antiguo XXTEA de `.crev`.
+
 AboWaged VPN 1.0: `inspect_apk.py --resource res/raw/noobdev.js` recupera el
 catálogo raw exacto, además de `--native libwg-pro.so`. Para el wrapper
 LSParanoid entre DEX, `paranoid_strings.py --call-class

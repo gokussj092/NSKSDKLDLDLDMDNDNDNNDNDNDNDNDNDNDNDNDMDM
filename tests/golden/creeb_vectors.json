@@ -1,0 +1,189 @@
+{
+  "desFiles": [
+    {
+      "xmlBase64": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPCFET0NUWVBFIHByb3BlcnRpZXMgU1lTVEVNICJodHRwOi8vamF2YS5zdW4uY29tL2R0ZC9wcm9wZXJ0aWVzLmR0ZCI+Cjxwcm9wZXJ0aWVzPgo8Y29tbWVudD5Db25maWd1cmF0aW9uIEZpbGU8L2NvbW1lbnQ+CjxlbnRyeSBrZXk9InNzaFBvcnQiPjQ0MzwvZW50cnk+CjxlbnRyeSBrZXk9ImZpbGUudmFsaWRhZGUiPjA8L2VudHJ5Pgo8ZW50cnkga2V5PSJmaWxlLnBlZGlyTG9naW4iPjA8L2VudHJ5Pgo8ZW50cnkga2V5PSJibG9ja0h3aWQiPjA8L2VudHJ5Pgo8ZW50cnkga2V5PSJlbXB0eSI+PC9lbnRyeT4KPGVudHJ5IGtleT0idW5rbm93biI+Jmx0O3RhZyZndDsgJmFtcDsgInF1b3RlcyIJPC9lbnRyeT4KPGVudHJ5IGtleT0iZmlsZS5wcm90ZWdlciI+MDwvZW50cnk+CjxlbnRyeSBrZXk9InNzaFBhc3MiPnN5bnRoZXRpYy1jb25uZWN0aW9uLXBhc3N3b3JkPC9lbnRyeT4KPGVudHJ5IGtleT0idHVubmVsVHlwZSI+ODwvZW50cnk+CjxlbnRyeSBrZXk9ImZpbGUuYXBwVmVyc2lvbkNvZGUiPjM8L2VudHJ5Pgo8ZW50cnkga2V5PSJmaWxlLm1zZyI+U3ludGhldGljIMOpIOaXpeacrOiqniAmI3hkODNkOyYjeGRlMDA7PC9lbnRyeT4KPGVudHJ5IGtleT0ic3NoVXNlciI+c3ludGhldGljLXVzZXI8L2VudHJ5Pgo8ZW50cnkga2V5PSJmaWxlLmJsb2NrZWRQYWNrYWdlcyI+c3ludGhldGljLnBhY2thZ2Uub25lLHN5bnRoZXRpYy5wYWNrYWdlLnR3bzwvZW50cnk+CjxlbnRyeSBrZXk9InYycmF5anNvbiI+eyJvdXRib3VuZHMiOlt7InByb3RvY29sIjoidmxlc3MifV0sInVua25vd24iOm51bGx9PC9lbnRyeT4KPGVudHJ5IGtleT0icHJveHlQYXlsb2FkIj5HRVQgLyBIVFRQLzEuMQ0KSG9zdDogW2hvc3RdDQoNCjwvZW50cnk+CjxlbnRyeSBrZXk9Imh3aWRzdHJpbmciPjwvZW50cnk+CjxlbnRyeSBrZXk9InNzaFNlcnZlciI+ZXhhbXBsZS5pbnZhbGlkPC9lbnRyeT4KPC9wcm9wZXJ0aWVzPgo=",
+      "properties": {
+        "blockHwid": "0",
+        "empty": "",
+        "file.appVersionCode": "3",
+        "file.blockedPackages": "synthetic.package.one,synthetic.package.two",
+        "file.msg": "Synthetic é 日本語 😀",
+        "file.pedirLogin": "0",
+        "file.proteger": "0",
+        "file.validade": "0",
+        "hwidstring": "",
+        "proxyPayload": "GET / HTTP/1.1\nHost: [host]\n\n",
+        "sshPass": "synthetic-connection-password",
+        "sshPort": "443",
+        "sshServer": "example.invalid",
+        "sshUser": "synthetic-user",
+        "tunnelType": "8",
+        "unknown": "<tag> & \"quotes\"\t",
+        "v2rayjson": "{\"outbounds\":[{\"protocol\":\"vless\"}],\"unknown\":null}"
+      },
+      "name": "normal",
+      "cipherBase64": "LSfE0qU8tTHMM1CbK4reYTJMjys8i2o5qxjZz64CXnrrUZvViN1O+WFSlzZEpFOUieQAb4aM+Ut0FyTzzf0XZsQAWzr6dFOkrP9MbIsqtc8TwM/Ds9vR/5AEZ5E5PwqY8mY4G5USIuP6esDoI4XMbcPTUNycLGfm0xoB2ZWUyx9rBn6zC+TzKcoBq7J1nB6Wv6Rn36giOvfNcgjQQKxmce55OldC5gKrY9cAG/d72jgOA6pcsN2N8LiQydPAnj9SkkB5g8++GoSTr7jKsDqWrGHYk66OnxSjJriA3aj7uB7NOi0Kd50cOPikF4faGwOqCSS1g/5aSHUVILaXqkUyZmjXmB9WorsX3PEeNc0HW6+E+GVCIcVepFfjMoPfP8DlCXHVbVHdCUjNOi0Kd50cOPikF4faGwOqIhYKhi7bP5FysQHwAoa9Zo/SEeRqs1w/plb2rmkL05cMB6C6pURbpdbP+bzFqoSY9bfJIUCTgWScPMhFwh+ktNyZxx0TS7GARyXls0PTqbtHpgc/qzs45+3VQ3imQSYbPeCP4yF6kY9C0QYzQT2x9O55OldC5gKrY9cAG/d72jjxcz5dV0xCiBnAN4zehV5WO/vghY1tJd/TNMw3tt52NoQCI1DKIfPxRyXls0PTqbu+DOFpC0vsqybNAF0oJmctcsmC4T96CZjc8R41zQdbr4T4ZUIhxV6kXDgiBIEE6vHQ2gzMZM/KH5X5/gVASnqfQtEGM0E9sfTueTpXQuYCq4R4SKpWHyWS5Db50VAypEgAFMiylclChFi2O9jA/Qeuwf0msYnxypkAE66jnFvEcJbKRchg+BGhzTotCnedHDj4pBeH2hsDqhHricB+ka/Z0u+dWOgs9wRIF0as69knYarqcvu+fetEj9IR5GqzXD8SXuiocoRjmOHwdMwOVKsWP21u8HQLalplZMjind952NAu9vrpHACcDajv4gNUxqU+4M9H2eu46fHGq0hxr/tJRx09CdVkwe5C0QYzQT2x9O55OldC5gKrO3mUkoYcQOQ0UkNNOTwKrfZ+ZsscOzS3gYWkSJ+mwlohRX3t9r2m8/EP7gBvaW76Y6Wx19hq5ZvU2QMCctSEyTEsjUFDK6stRyXls0PTqbs3YkJmOimOU1zpz6gQEu7JsZURhTNeizit/s89m7vEPdU903xg4hpqK8kh7YrJeRaVSGkBXLtsl806LQp3nRw4+KQXh9obA6oR/zl1+BwqXpbEGXbJVTPOdC2aXXNj0nPZWRCfl6AeVHUN0m9FtBv4Wfn1clZilZ/iGAXBoG3/DyhtzbF6dBvNH7PNh+An44lzJ27bFDGVz4QVbBEwoTWR"
+    },
+    {
+      "xmlBase64": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPCFET0NUWVBFIHByb3BlcnRpZXMgU1lTVEVNICJodHRwOi8vamF2YS5zdW4uY29tL2R0ZC9wcm9wZXJ0aWVzLmR0ZCI+Cjxwcm9wZXJ0aWVzPgo8Y29tbWVudD5Db25maWd1cmF0aW9uIEZpbGU8L2NvbW1lbnQ+CjxlbnRyeSBrZXk9InNzaFBvcnQiPjQ0MzwvZW50cnk+CjxlbnRyeSBrZXk9ImZpbGUudmFsaWRhZGUiPjA8L2VudHJ5Pgo8ZW50cnkga2V5PSJmaWxlLnBlZGlyTG9naW4iPjE8L2VudHJ5Pgo8ZW50cnkga2V5PSJibG9ja0h3aWQiPjE8L2VudHJ5Pgo8ZW50cnkga2V5PSJlbXB0eSI+PC9lbnRyeT4KPGVudHJ5IGtleT0idW5rbm93biI+Jmx0O3RhZyZndDsgJmFtcDsgInF1b3RlcyIJPC9lbnRyeT4KPGVudHJ5IGtleT0iZmlsZS5wcm90ZWdlciI+MTwvZW50cnk+CjxlbnRyeSBrZXk9InNzaFBhc3MiPnN5bnRoZXRpYy1jb25uZWN0aW9uLXBhc3N3b3JkPC9lbnRyeT4KPGVudHJ5IGtleT0idHVubmVsVHlwZSI+ODwvZW50cnk+CjxlbnRyeSBrZXk9ImZpbGUuYXBwVmVyc2lvbkNvZGUiPjM8L2VudHJ5Pgo8ZW50cnkga2V5PSJmaWxlLm1zZyI+U3ludGhldGljIMOpIOaXpeacrOiqniAmI3hkODNkOyYjeGRlMDA7PC9lbnRyeT4KPGVudHJ5IGtleT0ic3NoVXNlciI+c3ludGhldGljLXVzZXI8L2VudHJ5Pgo8ZW50cnkga2V5PSJmaWxlLmJsb2NrZWRQYWNrYWdlcyI+c3ludGhldGljLnBhY2thZ2Uub25lLHN5bnRoZXRpYy5wYWNrYWdlLnR3bzwvZW50cnk+CjxlbnRyeSBrZXk9InYycmF5anNvbiI+eyJvdXRib3VuZHMiOlt7InByb3RvY29sIjoidmxlc3MifV0sInVua25vd24iOm51bGx9PC9lbnRyeT4KPGVudHJ5IGtleT0iZmlsZS5wYXNzd29yZEhhc2giPjI5YTJlZjk4ODc2MTQ4MGZlNzU3MjE0NTE1NDA1MjAxYTNiZjNlMjIxNjkzMTc3YjVjOGIxNjRiZTA1MTM5MGE8L2VudHJ5Pgo8ZW50cnkga2V5PSJwcm94eVBheWxvYWQiPkdFVCAvIEhUVFAvMS4xDQpIb3N0OiBbaG9zdF0NCg0KPC9lbnRyeT4KPGVudHJ5IGtleT0iaHdpZHN0cmluZyI+c3ludGhldGljLWRldmljZTwvZW50cnk+CjxlbnRyeSBrZXk9InNzaFNlcnZlciI+ZXhhbXBsZS5pbnZhbGlkPC9lbnRyeT4KPC9wcm9wZXJ0aWVzPgo=",
+      "properties": {
+        "blockHwid": "1",
+        "empty": "",
+        "file.appVersionCode": "3",
+        "file.blockedPackages": "synthetic.package.one,synthetic.package.two",
+        "file.msg": "Synthetic é 日本語 😀",
+        "file.passwordHash": "29a2ef988761480fe757214515405201a3bf3e221693177b5c8b164be051390a",
+        "file.pedirLogin": "1",
+        "file.proteger": "1",
+        "file.validade": "0",
+        "hwidstring": "synthetic-device",
+        "proxyPayload": "GET / HTTP/1.1\nHost: [host]\n\n",
+        "sshPass": "synthetic-connection-password",
+        "sshPort": "443",
+        "sshServer": "example.invalid",
+        "sshUser": "synthetic-user",
+        "tunnelType": "8",
+        "unknown": "<tag> & \"quotes\"\t",
+        "v2rayjson": "{\"outbounds\":[{\"protocol\":\"vless\"}],\"unknown\":null}"
+      },
+      "name": "locked",
+      "cipherBase64": "LSfE0qU8tTHMM1CbK4reYTJMjys8i2o5qxjZz64CXnrrUZvViN1O+WFSlzZEpFOUieQAb4aM+Ut0FyTzzf0XZsQAWzr6dFOkrP9MbIsqtc8TwM/Ds9vR/5AEZ5E5PwqY8mY4G5USIuP6esDoI4XMbcPTUNycLGfm0xoB2ZWUyx9rBn6zC+TzKcoBq7J1nB6Wv6Rn36giOvfNcgjQQKxmce55OldC5gKrY9cAG/d72jgOA6pcsN2N8LiQydPAnj9SkkB5g8++GoSTr7jKsDqWrGHYk66OnxSjJriA3aj7uB7NOi0Kd50cOPikF4faGwOqCSS1g/5aSHUVILaXqkUyZsyzieQDR5lC3PEeNc0HW6+E+GVCIcVepFfjMoPfP8DliOHUxUNEBhzNOi0Kd50cOPikF4faGwOqIhYKhi7bP5FysQHwAoa9Zo/SEeRqs1w/plb2rmkL05cMB6C6pURbpdbP+bzFqoSY9bfJIUCTgWScPMhFwh+ktNyZxx0TS7GARyXls0PTqbtHpgc/qzs45+3VQ3imQSYbHcWBML1MQuFC0QYzQT2x9O55OldC5gKrY9cAG/d72jjxcz5dV0xCiBnAN4zehV5WO/vghY1tJd/TNMw3tt52NoQCI1DKIfPxRyXls0PTqbu+DOFpC0vsqybNAF0oJmctcsmC4T96CZjc8R41zQdbr4T4ZUIhxV6kXDgiBIEE6vHQ2gzMZM/KH5X5/gVASnqfQtEGM0E9sfTueTpXQuYCq4R4SKpWHyWS5Db50VAypEgAFMiylclChFi2O9jA/Qeuwf0msYnxypkAE66jnFvEcJbKRchg+BGhzTotCnedHDj4pBeH2hsDqhHricB+ka/Z0u+dWOgs9wRIF0as69knYarqcvu+fetEj9IR5GqzXD8SXuiocoRjmOHwdMwOVKsWP21u8HQLalplZMjind952NAu9vrpHACcDajv4gNUxqU+4M9H2eu46fHGq0hxr/tJRx09CdVkwe5C0QYzQT2x9O55OldC5gKrO3mUkoYcQOQ0UkNNOTwKrfZ+ZsscOzS3gYWkSJ+mwlohRX3t9r2m8/EP7gBvaW76Y6Wx19hq5ZvU2QMCctSEyTEsjUFDK6stRyXls0PTqbtHpgc/qzs453KqFW82O9vc11MDnEzutLb2o4f7sHZYeHkoX2UsLABDb4znb7TJsKYBCpc+XJo9ky482kEqvTjmgxFet+Yz8qitNfd8NpoNF2skhEFZgIhcyD8/CzKeqoRHJeWzQ9OpuzdiQmY6KY5TXOnPqBAS7smxlRGFM16LOK3+zz2bu8Q91T3TfGDiGmorySHtisl5FpVIaQFcu2yXzTotCnedHDj4pBeH2hsDqhH/OXX4HCpemNmVQST5ItQjJWPXvGCRCe+pUAw0IPV7dC2aXXNj0nPZWRCfl6AeVHUN0m9FtBv4Wfn1clZilZ/iGAXBoG3/DyhtzbF6dBvNH7PNh+An44lzJ27bFDGVz4QVbBEwoTWR"
+    },
+    {
+      "xmlBase64": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPCFET0NUWVBFIHByb3BlcnRpZXMgU1lTVEVNICJodHRwOi8vamF2YS5zdW4uY29tL2R0ZC9wcm9wZXJ0aWVzLmR0ZCI+Cjxwcm9wZXJ0aWVzPjxlbnRyeSBrZXk9ImR1cGxpY2F0ZSI+Zmlyc3Q8L2VudHJ5PjxlbnRyeSBrZXk9ImR1cGxpY2F0ZSI+bGFzdDwvZW50cnk+PGVudHJ5IGtleT0iZW1vamkiPiYjMzI7JiN4ZDgzZDsmI3hkZTAwOyAmIzU1MzU3OyYjNTY4MzI7PC9lbnRyeT48ZW50cnkga2V5PSJlbXB0eSIvPjxlbnRyeSBrZXk9ImNybGYiPm9uZSYjMTM7JiMxMDt0d288L2VudHJ5PjwvcHJvcGVydGllcz4=",
+      "properties": {
+        "crlf": "one\r\ntwo",
+        "duplicate": "last",
+        "emoji": " 😀 😀",
+        "empty": ""
+      },
+      "name": "duplicate-entries",
+      "cipherBase64": "LSfE0qU8tTHMM1CbK4reYTJMjys8i2o5qxjZz64CXnrrUZvViN1O+WFSlzZEpFOUieQAb4aM+Ut0FyTzzf0XZsQAWzr6dFOkrP9MbIsqtc8TwM/Ds9vR/5AEZ5E5PwqY8mY4G5USIuP6esDoI4XMbcPTUNycLGfmvM0gw1EI6IfC5gjhnkjK7WyjnEilG+UfJdew67bB/aZlCQ+/Q/ASAIT4ZUIhxV6k+uK8MAVEdxb3I1olYX9vvriQydPAnj9S7nk6V0LmAquM6Sy7XmXwtdkFt+CAVpi6lLeA37/MZ2sB/OheedygG23KzLQ2BtrzxE7iNIFxzqareSnu1TjPebzNIMNRCOiH4oAh/Ut9XQOt+AYZ25/+QoT4ZUIhxV6kyuo5axEDgVJpG4A1a3fwKJ5y1HPXeZvUxuX54Y54Kitc9wXejsd0S97i/FTrDe1V"
+    }
+  ],
+  "provenance": "Independent JDK; synthetic only",
+  "jsonBundles": [
+    {
+      "type": "creeb_profile_bundle",
+      "version": 1,
+      "profiles": [
+        {
+          "id": "synthetic-0",
+          "name": "Synthetic 0",
+          "hostPort": "example.invalid:443",
+          "tunnelType": 1,
+          "prefs": {
+            "sshServer": "example.invalid",
+            "sshPass": "synthetic",
+            "dnsForward": true,
+            "empty": "",
+            "v2rayjson": "{\"outbounds\":[]}",
+            "unknown": [
+              null,
+              false,
+              7,
+              {
+                "Password": "untouched"
+              }
+            ]
+          },
+          "isImported": false,
+          "isProtected": true
+        },
+        {
+          "id": "synthetic-1",
+          "name": "Synthetic 1",
+          "hostPort": "example.invalid:443",
+          "tunnelType": 8,
+          "prefs": {
+            "sshServer": "example.invalid",
+            "sshPass": "synthetic",
+            "dnsForward": true,
+            "empty": "",
+            "v2rayjson": "{\"outbounds\":[]}",
+            "unknown": [
+              null,
+              false,
+              7,
+              {
+                "Password": "untouched"
+              }
+            ]
+          },
+          "isImported": false,
+          "isProtected": true
+        }
+      ],
+      "message": "Synthetic 😀\r\n",
+      "unknown": [
+        null,
+        false,
+        12
+      ]
+    },
+    {
+      "type": "creeb_profile_bundle",
+      "version": 1,
+      "profiles": [
+        {
+          "id": "synthetic-0",
+          "name": "Synthetic 0",
+          "hostPort": "example.invalid:443",
+          "tunnelType": 1,
+          "prefs": {
+            "sshServer": "example.invalid",
+            "sshPass": "synthetic",
+            "dnsForward": true,
+            "empty": "",
+            "v2rayjson": "{\"outbounds\":[]}",
+            "unknown": [
+              null,
+              false,
+              7,
+              {
+                "Password": "untouched"
+              }
+            ]
+          },
+          "isImported": false,
+          "isProtected": true
+        },
+        {
+          "id": "synthetic-1",
+          "name": "Synthetic 1",
+          "hostPort": "example.invalid:443",
+          "tunnelType": 8,
+          "prefs": {
+            "sshServer": "example.invalid",
+            "sshPass": "synthetic",
+            "dnsForward": true,
+            "empty": "",
+            "v2rayjson": "{\"outbounds\":[]}",
+            "unknown": [
+              null,
+              false,
+              7,
+              {
+                "Password": "untouched"
+              }
+            ]
+          },
+          "isImported": false,
+          "isProtected": true
+        }
+      ],
+      "security": {
+        "hwidstring": "synthetic-device",
+        "passwordHash": "29a2ef988761480fe757214515405201a3bf3e221693177b5c8b164be051390a",
+        "requiresPassword": true,
+        "blockHwid": true
+      },
+      "message": "Synthetic 😀\r\n",
+      "unknown": [
+        null,
+        false,
+        12
+      ]
+    }
+  ]
+}
