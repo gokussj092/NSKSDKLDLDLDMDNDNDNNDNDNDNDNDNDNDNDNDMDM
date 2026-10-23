@@ -2,8 +2,9 @@
 import {readFileSync} from "node:fs";
 import {join} from "node:path";
 import {createHash} from "node:crypto";
+import {publicFormats} from "./file-format-catalog.mjs";
 
-export const CATALOG_VERSION = 36; // Increment whenever the public roster or metadata changes.
+export const CATALOG_VERSION = 37; // Increment whenever the public roster or metadata changes.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -84,6 +85,10 @@ export function catalog({availability=null,version=activeCatalogVersion()}={}) {
     apiVersion:"v1",
     catalogVersion:version,
     recheckAfterSeconds:RECHECK_SECONDS,
+    // Additive: old APKs only consume apps and ignore these optional fields.
+    formatsSchemaVersion:1,
+    formatCount:publicFormats().length,
+    formats:publicFormats(),
     apps: ITEMS.map(x=>({
       id:x.id,
       name:x.name,
