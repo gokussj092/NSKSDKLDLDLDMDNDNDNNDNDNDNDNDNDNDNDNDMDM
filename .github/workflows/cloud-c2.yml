@@ -211,6 +211,25 @@ jobs:
           assert output["rawText"]
           print("NPVS packaged Docker worker: PASSWORD_REQUIRED / AUTH_FAILED / complete JSON OK")
           ' < tests/golden/npvs_protected_generate.py
+      - name: Run historical NPVS v1 fixture in actual read-only Docker worker
+        run: |
+          set -eu
+          # The test module is streamed via stdin. Nothing is copied into the
+          # read-only container and no user-provided NPVS files are persisted.
+          docker compose -f cloud/compose.yaml exec -T decoder-worker python -c '
+          import sys
+          from pathlib import Path
+          sys.path.insert(0, "cloud/workers/python")
+          module={"__name__":"npvs_v1_container_smoke",
+                  "__file__":"/opt/spdecode/tests/test_npvs_v1_legacy.py"}
+          exec(compile(sys.stdin.read(), "<synthetic-npvs-v1>", "exec"), module)
+          from engine import decode_file
+          fixture,credentials,expected=module["make_v1"]()
+          output=decode_file("npvs",fixture)
+          assert output["structuredJson"]==expected
+          assert output["isPartial"] is False
+          print("NPVS v1 signed synthetic Docker full JSON OK")
+          ' < tests/test_npvs_v1_legacy.py
       - name: Tear down
         if: always()
         run: docker compose -f cloud/compose.yaml down --remove-orphans
