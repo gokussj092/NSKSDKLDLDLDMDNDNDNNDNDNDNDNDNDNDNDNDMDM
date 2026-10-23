@@ -211,9 +211,8 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
                                 onExport={onExportHistory(entry)},
                                 onDelete={deletingAll=false;deletion=setOf(entry.id)},
                             )""")
-        app = replaceOnce(app,
-            "title={Text(stringResource(R.string.decode_notice_title))}",
-            "title={Text(stringResource(R.string.cloud_failure_notice_title))}")
+        // SpDecodeApp now chooses a neutral localized title for expected
+        // password and NPVS compatibility notices. Preserve it in Cloud builds.
         var activity = originalRoot.file("MainActivity.kt").asFile.readText(Charsets.UTF_8)
         // Android 15/16: Cloud builds opt into edge-to-edge on older devices too.
         // The original C0 UI sources stay byte-for-byte unchanged.
@@ -346,7 +345,7 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
             "                        else->summary+qaDetails\n                    }\n                    tab=0",
             """                        else->summary+qaDetails
                     }
-                    if(cloudFailureMessages.isNotEmpty()) {
+                    if(!messageIsCredentialNotice && cloudFailureMessages.isNotEmpty()) {
                         message=message + "\n\n" +
                             cloudFailureMessages.distinct().take(3).joinToString("\n")
                     }

@@ -45,6 +45,32 @@ class CloudUserErrorsContracts(unittest.TestCase):
         self.assertGreaterEqual(len(reference),27)
         self.assertIn('cloud_failure_maintenance',reference)
 
+    def test_generic_password_and_npvs_notices_do_not_become_client_errors(self):
+        source=(JAVA/"MainActivity.kt").read_text("utf-8")
+        policy=(JAVA/"cloud/CloudCredentialPolicy.kt").read_text("utf-8")
+        mapped=(JAVA/"cloud/CloudUserErrors.kt").read_text("utf-8")
+        screen=(JAVA/"SpDecodeApp.kt").read_text("utf-8")
+        queue=(JAVA/"BatchImportQueue.kt").read_text("utf-8")
+        client=(JAVA/"cloud/CloudDecodeClient.kt").read_text("utf-8")
+        self.assertIn('code=="AUTH_FAILED" && submittedPassword && !submittedHwid',policy)
+        self.assertIn('npvsProtectionNotice(code,format)',mapped)
+        self.assertIn('CloudCredentialPolicy.expectedCredentialResponse(failure.code)',client)
+        self.assertIn('messageIsCredentialNotice=true',source)
+        self.assertIn('singleCredentialNotice!=null->singleCredentialNotice',source)
+        self.assertIn('passwordSubmitted=password!=null',source)
+        self.assertIn('isExpectedFailure:(Exception)->Boolean={false}',queue)
+        self.assertIn('if(!isExpectedFailure(failure))',queue)
+        self.assertIn('if(!noticeOnly) TextButton',screen)
+        self.assertIn('R.string.cloud_failure_notice_title',screen)
+        for locale in LOCALES:
+            location=ROOT/"android/app/src/main/res"/locale/"cloud_error_strings.xml"
+            resources={node.attrib["name"]:(node.text or "") for node in ET.parse(location).getroot()}
+            self.assertTrue(resources["cloud_failure_notice_title"])
+            self.assertTrue(resources["cloud_failure_password_incorrect"])
+            self.assertTrue(resources["cloud_failure_private_key"])
+            self.assertTrue(resources["cloud_failure_npvs_unsupported"])
+            self.assertNotIn("modified",resources["cloud_failure_password_incorrect"].lower())
+
     def test_cloud_messages_are_used_without_touching_legacy_app_ui(self):
         source=(JAVA/"MainActivity.kt").read_text("utf-8")
         self.assertGreaterEqual(source.count("CloudUserErrors.message"),4)

@@ -267,7 +267,7 @@ fun SpDecodeApp(
             onDismissRequest=onDismissError,
             icon={Icon(Icons.Outlined.Info,null,tint=Amber)},
             title={Text(stringResource(if(noticeOnly)
-                R.string.cloud_credential_notice_title else R.string.decode_notice_title))},
+                R.string.cloud_failure_notice_title else R.string.decode_notice_title))},
             text={Text(error,color=Secondary)},
             confirmButton={TextButton(onClick=onDismissError){
                 Text(stringResource(R.string.close),color=White)

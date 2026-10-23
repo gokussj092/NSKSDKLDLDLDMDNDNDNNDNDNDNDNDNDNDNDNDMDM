@@ -29,6 +29,7 @@ import com.ghostdeveloper.spdecode.cloud.CloudWhatsNewRepository
 import com.ghostdeveloper.spdecode.cloud.CloudDecodeClient
 import com.ghostdeveloper.spdecode.cloud.CloudDiagnosticsPrivacy
 import com.ghostdeveloper.spdecode.cloud.CloudCredentialPolicy
+import com.ghostdeveloper.spdecode.cloud.CloudUserErrors
 import com.ghostdeveloper.spdecode.cloud.NpvsPasswordProbe
 import com.ghostdeveloper.spdecode.cloud.CloudFileFormats
 import com.ghostdeveloper.spdecode.cloud.CloudTextFormats
