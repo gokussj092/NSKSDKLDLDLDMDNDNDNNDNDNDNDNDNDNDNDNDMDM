@@ -3,6 +3,7 @@ import {readFileSync} from 'node:fs';
 import {join} from 'node:path';
 
 const allowedKeys=['suffix','name','kind','offlineSupported','cloudSupported','credentialFields'];
+export const FORMAT_DETECTION=Object.freeze({rule:'longest-filename-suffix',caseInsensitive:true,separator:'.'});
 let cache=null;
 export function validatePublicFormats(parsed){
   if(!parsed || parsed.schemaVersion!==1 ||
