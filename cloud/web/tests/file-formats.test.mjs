@@ -59,7 +59,7 @@ test("catalog response is backwards-compatible and uses the existing version con
   assert.equal(result.apps.length,38);
   const payload=JSON.stringify(result);
   for(const forbidden of [
-    "decoders/Python/","\\\"script\\\":","source_script","originalRuntime",
+    "decoders/Python/",'"script":',"source_script","originalRuntime",
     "migrationPhase","androidPortStatus","__proto__","privateKey",
   ]) assert(!payload.includes(forbidden),forbidden);
   const response=await endpoint(request(0));
