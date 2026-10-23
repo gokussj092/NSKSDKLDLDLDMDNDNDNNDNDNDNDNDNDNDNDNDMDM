@@ -205,7 +205,7 @@ def fixtures():
         "ltm.py":ltm_fixture(),
         "vn7.py":vn7_fixture()
     }
-    cat=json.loads((ROOT/"android/app/src/main/assets/decoder_catalog.json").read_text("utf-8"))
+    cat=__import__("scripts.android_a24_catalog",fromlist=["generate"]).generate()
     rows=sorted((x for x in cat["entries"] if x["migrationPhase"]=="F"),
                 key=lambda x:x["suffix"])
     assert len(rows)==13
