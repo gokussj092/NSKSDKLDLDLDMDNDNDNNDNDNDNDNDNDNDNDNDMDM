@@ -42,6 +42,33 @@ class CloudRemoteFormatsInstrumentedTest {
         assertFalse(entries[0].hasNativeDecoder)
     }
 
+    @Test fun cloudCatalogAddsNewSuffixesAndPasswordMetadataWithoutLocalRegistrations() {
+        val repo=ServerVpnCatalogRepository(context,CloudDecodeClient(context))
+        val fixture=metadata()
+        val prior=repo.validateFormats(fixture)
+        assertNull(AndroidDecoderCatalog.detect("ملف.NEWVPN",prior))
+        fun entry(suffix:String,name:String,needsPassword:Boolean=false)=JSONObject()
+            .put("suffix",suffix).put("name",name).put("kind","file")
+            .put("offlineSupported",false).put("cloudSupported",true)
+            .put("credentialFields",if(needsPassword) JSONArray().put("password") else JSONArray())
+        // Server format contract: longest suffix first, lexicographic ties.
+        val initial=fixture.getJSONArray("formats")
+        val latest=JSONArray().put(initial.getJSONObject(0))
+            .put(entry("newvpn","Future Cloud Decoder"))
+            .put(initial.getJSONObject(1))
+            .put(entry("awg","AboWaged VPN"))
+            .put(entry("ua","Ultra Custom",needsPassword=true))
+        fixture.put("formats",latest).put("formatCount",latest.length())
+        val updated=repo.validateFormats(fixture)
+        assertEquals("newvpn",AndroidDecoderCatalog.detect("ملف.NEWVPN",updated)?.suffix)
+        assertEquals("awg",AndroidDecoderCatalog.detect("متعدد شبكات  AbowagedDevX .AWG",updated)?.suffix)
+        val ultra=AndroidDecoderCatalog.detect("Movistar sin redes.UA",updated)
+        assertEquals("ua",ultra?.suffix)
+        assertEquals(setOf("password"),ultra?.credentialFields)
+        assertTrue(ultra!!.cloudSupported)
+        assertFalse(ultra.hasNativeDecoder)
+    }
+
     @Test fun cloudRejectsUnexpectedScriptsDuplicateSuffixesAndRollbackPayload() {
         val repo=ServerVpnCatalogRepository(context,CloudDecodeClient(context))
         val executable=metadata()
