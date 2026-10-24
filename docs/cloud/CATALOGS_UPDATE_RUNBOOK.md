@@ -35,7 +35,7 @@ Pruebas relacionadas: `cloud/web/tests/server-vpn-catalog.test.mjs`, `server-vpn
 **Fuente editorial:** `cloud/web/content/whats-new.json`. **API:** `POST /api/v1/whats-new`. **Lógica:** `cloud/web/lib/whats-new.mjs`. **Android:** `CloudWhatsNewRepository.kt`. **Pruebas:** `cloud/web/tests/whats-new.test.mjs`.
 
 **Reglas de publicación**
-1. Acordar **qué cambios se publican ahora**. No volver a anunciar características antiguas. La publicación vigente del 22/oct/2026 es **versión 3**: catálogo Server VPN actualizado y lista de 14 aplicaciones desde V2ray Tunnel Plus hasta UT Loop Pro VPN, agrupadas en dos bloques de siete con ✅. El tercer bloque advierte que EUT VPN, ProNeet VPN y UT Loop Pro VPN figuran en el catálogo, pero todavía no ofrecen descarga remota. La v2 (KSH, DTunnel Mod y MKK Hyper) es histórica y no se repite.
+1. Acordar **qué cambios se publican ahora**. No repetir funciones antiguas. La v3 del 22/oct/2026 anunció 14 aplicaciones desde V2ray Tunnel Plus hasta UT Loop Pro VPN y la disponibilidad pendiente de EUT, ProNeet y UT Loop. La **v4 preparada en este PR (23/oct/2026)** incluye cinco bloques nuevos: catálogos Xhypher/7NET/AboWaged; archivos .1ftnl/.creeb/.awg y método .crev actualizado; mejoras NPVS v5/v1 y limitación v6; V2Box y textos NPV; sincronización segura de 250 sufijos y errores mejorados. El JSON v4 en Git no implica que la VPS ya esté sirviendo v4: comprobar el override `CLOUD_WHATS_NEW_JSON`, desplegar solo con autorización y validar la API. CREEB VPN y AM Tunnel Lite no deben anunciarse como descargas remotas activas.
 2. Aumentar `version` a un entero **estrictamente superior al último que hayan visto los usuarios**. Nunca reutilizar una versión ya publicada para textos distintos. Actualizar `publishedAt`; mantener `schemaVersion:1` salvo migración de contrato.
 3. Usar títulos y descripciones cortos. Se admiten emojis como ✅ y 🛠️, y categorías `feature`, `support`, `improvement`, `fix`. Cada ID debe ser único. No presentar funcionalidades pendientes como activas.
 4. Localizar en los 14 idiomas de la app: `en`, `es`, `ar`, `fa`, `fr`, `id`, `ru`, `de`, `pt-BR`, `tr`, `vi`, `hi`, `ja`, `it`. El inglés es obligatorio para fallback. Límites: 1–12 ítems; título 100 caracteres, subtítulo 250, título de ítem 90, descripción 320 y documento total **16 KiB**. En descripciones se permiten saltos de línea para listas; siguen prohibidos HTML y controles inseguros. Las APK anteriores que todavía envían inglés para `tr`, `vi`, `hi`, `ja` e `it` requieren nueva APK para acceder a esas traducciones; actualizar solo VPS no cambia el código del cliente.
@@ -61,3 +61,26 @@ Pruebas relacionadas: `cloud/web/tests/server-vpn-catalog.test.mjs`, `server-vpn
 - `cloud/infra/vps/spdecodectl` y `cloud/infra/vps/provider-services.py` — procedimientos del VPS.
 
 **Al empezar el próximo chat:** abrir este archivo y las fuentes enlazadas antes de proponer nuevos catálogos. Validar siempre el estado actual; los números históricos aquí son ejemplos, no versiones permanentes.
+
+## C. APK y AAB 1.1.18 (29): condiciones de preproducción
+
+El PR #96 contiene la versión de fuente **1.1.18 (versionCode 29)**. La
+publicación estable y pública sigue **NO-GO** en `release/android-readiness.json`.
+El workflow `Validate SP-DECODE` ejecuta pruebas unitarias y 268 pruebas
+instrumentadas API 35. La tarea reutilizable
+`.github/workflows/cloud-private-preproduction-apk.yml` depende de la
+aprobación de **ambas** tareas y de que el PR sea interno, en la rama prevista.
+Solo entonces puede utilizar los secretos permanentes para compilar
+`assembleRelease` y `bundleRelease`; realiza comprobación de certificado,
+identidad, HTTPS, contenido Cloud-only, alineación y hashes. Los resultados se
+conservan 14 días como artefactos **privados**, no como GitHub Release ni como
+publicación Play. Si fallan las pruebas o falta el certificado, **no hay paquete**.
+
+La clave temporal generada en C8 es exclusivamente de CI; su AAB nunca debe
+subirse a Google Play. El bundle de preproducción firmado con la clave
+permanente sigue siendo un **candidato**, pues la aceptación de la clave de
+subida requiere la comprobación en Play Console. Si el certificado de subida
+se ha fijado en `SPDECODE_PLAY_UPLOAD_CERT_SHA256`, el workflow exige coincidencia.
+No deben confundirse el certificado de firma de la aplicación de Google Play
+con el de subida; pueden ser distintos. Después de QA en dispositivo físico,
+solicitar autorización explícita para la publicación en prueba cerrada.
