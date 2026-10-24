@@ -49,7 +49,8 @@ test("unsupported formats and NPVS decoding incompatibility are warnings, not ba
  assert.equal(report.warnings,3);
  assert.equal(report.extensions.find(x=>x.extension==="npvs").warnings,2);
  assert.equal(report.errors.length,0);
- assert.equal((await readIncidents(r,7)).filter(x=>x.severity==="warning").length,3);
+ // Only the ambiguous DECODE_FAILED remains reportable; known incompatibilities are expected, not incidents.
+ assert.equal((await readIncidents(r,7)).filter(x=>x.severity==="warning").length,1);
 });
 test("reset a single VPN provider's errors, preserving successes, other errors and warnings",async()=>{
  const r=new FakeRedis();
