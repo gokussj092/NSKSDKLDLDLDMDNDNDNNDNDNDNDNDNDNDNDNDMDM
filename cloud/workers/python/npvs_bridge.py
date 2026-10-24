@@ -46,8 +46,17 @@ def main() -> int:
         if raw.startswith(b"NPVS"):
             # Explicit version selection BEFORE authentication. Do not retry
             # a failed v1 tag with the v5 codec or vice versa.
-            if len(raw) < 5 or raw[4] not in (1, 5, 6):
-                sys.stdout.write(json.dumps({"workerError": "NPVS_PROTECTION_UNSUPPORTED"}))
+            if len(raw) < 9:
+                sys.stdout.write(json.dumps({"workerError": "INVALID_INPUT"}))
+                return 3
+            if raw[4] not in (1, 5, 6):
+                # An unknown exporter version is not an ECDH/private-key
+                # requirement. Validate generic framing before reporting it.
+                header_size=int.from_bytes(raw[5:9], "big")
+                code=("UNSUPPORTED_VERSION"
+                      if 73<=header_size<=262144 and 9+header_size+80<=len(raw)
+                      else "INVALID_INPUT")
+                sys.stdout.write(json.dumps({"workerError": code}))
                 return 3
             if raw[4] == 1:
                 from decoders.Python.npvs_v1 import main as legacy_v1_main
