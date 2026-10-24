@@ -48,12 +48,12 @@ object AndroidOfflineDecoderRouter {
             else -> LegacyPortPrimitives.MAX_INPUT
         }
         if (input.size > maxInput) return null
-        if(userHwid!=null && (format.suffix!="hc" ||
+        if(userHwid!=null && (format.suffix != "hc" ||
             HcHccfgPort.inspectRequirements(input)?.requiresCredentials!=true))return null
         if(userPassword!=null && format.suffix=="v2box"){
             if(!com.ghostdeveloper.spdecode.cloud.V2BoxPasswordProbe.requiresPassword(input))
                 return null
-        } else if(userPassword!=null && (format.suffix!="hc" ||
+        } else if(userPassword!=null && (format.suffix != "hc" ||
             HcHccfgPort.inspectRequirements(input)?.requiresCredentials!=true ||
             !HcHccfgPort.requiresExternalPassword(input)))return null
         // Phase A: 178 bot-only suffixes are catalogued but have no native port.
