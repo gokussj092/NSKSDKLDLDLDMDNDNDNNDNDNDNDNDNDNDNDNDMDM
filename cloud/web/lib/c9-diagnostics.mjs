@@ -35,7 +35,11 @@ export async function recordIncident(redis,properties){
 }
 const NON_INCIDENT=new Set(["PASSWORD_REQUIRED","HWID_REQUIRED","HWID_PASSWORD_REQUIRED",
  "PRIVATE_KEY_REQUIRED","RECIPIENT_MISMATCH","NPVS_PROTECTION_UNSUPPORTED",
- "INVALID_CREDENTIALS","AUTH_FAILED","USER_CONSENT_REQUIRED","SERVICE_MAINTENANCE"]);
+ "NPVS_APPKEY_AUTH_FAILED","INVALID_CREDENTIALS","AUTH_FAILED",
+ "INVALID_INPUT","INVALID_BASE64","INVALID_REQUEST","INPUT_TOO_LARGE",
+ "UNSUPPORTED_FORMAT","UNSUPPORTED_VERSION","UNSUPPORTED_METHOD",
+ "UNSUPPORTED_VARIANT","UNSUPPORTED_CONFIG_VERSION",
+ "USER_CONSENT_REQUIRED","SERVICE_MAINTENANCE"]);
 export async function recordAutomaticIncident(redis,outcome,{kind,format,bytes,errorCode}={}){
  if(!["failed","warning"].includes(outcome)||NON_INCIDENT.has(errorCode))return null;
  const service=kind==="ehi"?"httpInjector":kind==="catalog"||kind==="server-vpn"?"serverVpn":"files";
