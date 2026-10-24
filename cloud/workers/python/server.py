@@ -114,11 +114,22 @@ class WorkerHandler(BaseHTTPRequestHandler):
         except (ValueError, TypeError, base64.binascii.Error):
             return self._json(400, {"error": {"code": "INVALID_REQUEST"}})
         except DecodeFailure as error:
-            status = {"INPUT_TOO_LARGE": 413, "UNSUPPORTED_FORMAT": 422, "ENGINE_TIMEOUT": 504,
-                      "ENGINE_UNAVAILABLE": 503, "OUTPUT_TOO_LARGE": 413, "CREDENTIALS_NOT_ALLOWED": 400, "INVALID_CREDENTIALS": 400,
-                      "PASSWORD_REQUIRED": 422, "HWID_REQUIRED": 422, "HWID_PASSWORD_REQUIRED": 422,
-                      "AUTH_FAILED": 422, "PRIVATE_KEY_REQUIRED": 422,
-                      "RECIPIENT_MISMATCH": 422, "NPVS_APPKEY_AUTH_FAILED": 422}.get(error.code, 422)
+            # Stable HTTP semantics for Android 1.1.19: incompatible exporter
+            # methods are expected 422 responses; bad input is 400; worker
+            # outages are 503/504. Never promote a crypto failure to an outage.
+            status = {"INPUT_TOO_LARGE": 413, "OUTPUT_TOO_LARGE": 413,
+                      "INVALID_REQUEST": 400, "INVALID_INPUT": 400,
+                      "INVALID_BASE64": 400, "INVALID_CREDENTIALS": 400,
+                      "CREDENTIALS_NOT_ALLOWED": 400,
+                      "UNSUPPORTED_FORMAT": 422, "UNSUPPORTED_VERSION": 422,
+                      "UNSUPPORTED_METHOD": 422, "UNSUPPORTED_VARIANT": 422,
+                      "NPVS_PROTECTION_UNSUPPORTED": 422,
+                      "PASSWORD_REQUIRED": 422, "HWID_REQUIRED": 422,
+                      "HWID_PASSWORD_REQUIRED": 422, "AUTH_FAILED": 422,
+                      "PRIVATE_KEY_REQUIRED": 422, "RECIPIENT_MISMATCH": 422,
+                      "NPVS_APPKEY_AUTH_FAILED": 422,
+                      "ENGINE_TIMEOUT": 504, "ENGINE_UNAVAILABLE": 503,
+                      }.get(error.code, 422)
             return self._json(status, {"error": {"code": error.code}})
         return self._json(200, result)
 
