@@ -1,5 +1,6 @@
 """Regression checks for private NUR Tunnel endpoint and HTTP Custom text contrast."""
 from pathlib import Path
+import re
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -40,8 +41,12 @@ class NurEndpointPrivacyTest(unittest.TestCase):
         source = (ANDROID / "HcProtectedImportDialog.kt").read_text("utf-8")
         self.assertEqual(source.count("textStyle=TextStyle(color=Color(0xFFF7F7F7))"), 2)
         gradle = (ROOT / "android/app/build.gradle.kts").read_text("utf-8")
-        self.assertIn('versionName = "1.1.18"', gradle)
-        self.assertIn("versionCode = 29", gradle)
+        # Release metadata evolves independently of the original NUR UI fix.
+        version = re.search(r'versionName\s*=\s*"([^"]+)"', gradle)
+        code = re.search(r'versionCode\s*=\s*(\d+)', gradle)
+        self.assertIsNotNone(version)
+        self.assertIsNotNone(code)
+        self.assertGreaterEqual(int(code.group(1)), 30)
 
 
 if __name__ == "__main__":
