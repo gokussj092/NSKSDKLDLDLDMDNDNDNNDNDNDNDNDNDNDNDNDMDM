@@ -105,7 +105,12 @@ class OneFTunnelTests(unittest.TestCase):
 
     def test_complete_isolated_file_text_routes_and_bot_registration(self):
         self.assertEqual(len(load_file_engines()),240)
-        self.assertEqual(len(load_runtime_file_engines()),248)
+        # Two new audited Cloud-only routes (.awg and .creeb) extend the
+        # runtime registry without modifying the frozen 240 C0 file routes.
+        routes=load_runtime_file_engines()
+        self.assertEqual(len(routes),250)
+        self.assertIn("awg",routes)
+        self.assertIn("creeb",routes)
         from spdecode.registry import get_decoder,get_supported_extension
         self.assertEqual(get_supported_extension("profile.1FTNL"),"1ftnl")
         self.assertEqual(get_decoder("1ftnl").script,"decoders/Python/apps/OneFTunnel/file_decoder.py")
