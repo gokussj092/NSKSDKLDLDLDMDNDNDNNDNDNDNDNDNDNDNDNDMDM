@@ -32,7 +32,7 @@ class NpvsErrorsTests(unittest.TestCase):
 
         # A truncated header is malformed input, not an unsupported key.
         with self.assertRaises(DecodeFailure) as caught:
-            decode_file("npvs", b"NPVS\\x07")
+            decode_file("npvs", b"NPVS" + bytes([7]))
         self.assertEqual(caught.exception.code, "INVALID_INPUT")
 
     def test_unsigned_appkey_and_recipient_samples_are_not_key_notices(self):
