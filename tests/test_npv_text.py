@@ -74,7 +74,7 @@ class NpvTextTests(unittest.TestCase):
                 self.assertEqual(ctx.exception.code,code)
             bad=bytearray(v["data"]);bad[-1]^=1
             with self.assertRaises(text.DecodeError) as ctx:text.decode(link(prefix,bytes(bad)))
-            self.assertEqual(ctx.exception.code,"DECODE_FAILED")
+            self.assertEqual(ctx.exception.code,"INVALID_INPUT")
 
     def test_recipient_transport_keeps_the_existing_honest_diagnostic(self):
         for version in (5,6):
