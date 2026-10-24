@@ -31,9 +31,15 @@ class IndependentFamilyRegistryTests(unittest.TestCase):
             with self.subTest(extension=suffix):
                 self.assertEqual(get_supported_extension("CONFIG" + suffix.upper()), suffix[1:])
                 spec = DECODER_REGISTRY[suffix[1:]]
-                self.assertEqual(spec.script, script)
+                # .crev is explicitly overlaid for the newer CREEB VPN Cloud
+                # handler; its historical Phase F module remains intact.
+                if suffix == ".crev":
+                    self.assertEqual(spec.script, "decoders/Python/apps/CREEB_VPN/file_decoder.py")
+                    self.assertEqual(spec.name, "CREEB VPN 50.0")
+                else:
+                    self.assertEqual(spec.script, script)
+                    self.assertEqual(spec.name, name)
                 self.assertEqual(spec.runtime, "python")
-                self.assertEqual(spec.name, name)
                 module = importlib.import_module("decoders.Python." + Path(script).stem)
                 self.assertTrue(callable(module.run))
                 self.assertIn(suffix, module.EXTENSIONS)
