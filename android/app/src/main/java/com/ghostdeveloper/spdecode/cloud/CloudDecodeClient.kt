@@ -255,7 +255,9 @@ internal class CloudDecodeClient(context: Context) {
                            password: ByteArray? = null, hwid: String? = null,
                            allowPasswordFromCatalog: Boolean = false): String {
         if (bytes.isEmpty() || bytes.size > MAX_INPUT) throw IOException("CLOUD_INVALID_INPUT")
-        if (format.isBlank() || (!format.matches(Regex("[a-z0-9._-]{1,64}")) && format != "fɴ"))
+        // Match the validated Unicode suffix contract, not a frozen ASCII list.
+        // The server still decides whether a decoder for the suffix exists.
+        if (format.isBlank() || !format.matches(Regex("[\\p{L}\\p{N}._-]{1,64}")))
             throw IOException("CLOUD_INVALID_FORMAT")
         // Future password-capable engines may be announced by a validated remote
         // format snapshot. The worker independently enforces its own allowlist.
