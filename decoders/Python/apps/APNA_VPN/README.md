@@ -1,24 +1,69 @@
-# APNA VPN 3.9 — catálogo de servidores
+# APNA VPN 3.9 (30)
 
-App: APNA VPN, Android package my.teamapna.tunnel, versión 3.9.
+Paquete `my.teamapna.tunnel`. Catálogo remoto y lector de `.apnavpn` y texto
+`apnavpn://`, sin contraseña criptográfica del usuario. Python 3.10+ con
+biblioteca estándar; no requiere APK, SO, root ni módulos de pip en producción.
 
-El catálogo embebido se encuentra en base.apk/assets/janu.json del APKS. Es Base64 estándar de XXTEA modificado, delta hexadecimal 9E5729B1, enteros little-endian y tamaño original al final. La clave de formato se recuperó de LBm en classes2.dex.
+## Termux
 
-**Validación real:** Version=289, 19 Free_servers, 491 Payloads, 10 secciones y 210815 bytes de JSON UTF-8 completo. Premium_servers, Vip_servers y Private_servers están vacíos en esta versión. Se conservan todos los campos, listas y valores sin truncar. XXTEA no proporciona autenticación criptográfica, por lo que el lector solo valida estructura.
+El archivo autónomo es `server_catalog_decoder.py`; puede guardarse como
+`apna_vpn.py` fuera del repositorio:
 
-## Uso
+```sh
+pkg install python
+python apna_vpn.py
+```
 
-    python decoders/Python/apps/APNA_VPN/server_catalog_decoder.py --apks 'APNA VPN_3.9.apks' --summary
-    python decoders/Python/apps/APNA_VPN/server_catalog_decoder.py --apks 'APNA VPN_3.9.apks' --output /ruta/privada/catalogo.json
-    python decoders/Python/apps/APNA_VPN/server_catalog_decoder.py --input janu.json --output /ruta/privada/catalogo.json
-    python decoders/Python/apps/APNA_VPN/server_catalog_decoder.py --stdin < janu.json > /ruta/privada/catalogo.json
+Sin opciones hace GET a la fuente fija oficial y guarda el JSON completo en
+`apna_vpn_catalogo.json`, con modo 0600 y sin sobrescribir archivos existentes.
+Para otra ejecución, usar otro nombre o mover el archivo anterior:
 
-Python 3.10+ únicamente con biblioteca estándar. La función run(data: bytes) -> str entrega JSON completo; el worker privado registra el ID fijo apna-vpn. La opción --summary solo emite recuentos. El JSON completo puede contener usuarios, contraseñas, hosts y payloads: nunca publicarlo en CI, Git ni registros.
+```sh
+python apna_vpn.py --output catalogo_nuevo.json
+python apna_vpn.py --summary
+python apna_vpn.py --apks 'APNA VPN_3.9.apks' --summary
+python apna_vpn.py --input janu.json --output incluido.json
+python apna_vpn.py --stdin < janu.json > incluido.json
+python apna_vpn.py --file perfil.apnavpn --output perfil.json
+python apna_vpn.py --text 'apnavpn://HEX' --output perfil_texto.json
+```
 
-## Fuente y límites
+Las fuentes locales no acceden a la red. Sin `--output` entregan JSON por stdout;
+`--summary` solo admite catálogos y entrega recuentos sin sus credenciales.
 
-Lprince/open/vpn/activities/a;.g lee filesDir/janu.json o assets/janu.json; LHZ.o realiza Base64; LBm.c/b descifra XXTEA y LBm.f/g recupera los bytes. Las cadenas se recuperaron de cinco bloques LSParanoid de Deobfuscator$APNAVPN$app. El script no necesita APK o bibliotecas nativas en producción.
+## Cobertura verificada el 24 de octubre de 2026
 
-**El catálogo remoto no está validado.** El APK contiene un enlace de actualización, pero no se confirmó que entregue catálogos de servidores. No añadir URL al broker, tarjeta pública habilitada ni publicarlo como operativo hasta validar un origen oficial, su icono y el JSON entero.
+| Fuente real | Versión | Free_servers | Payloads | JSON completo |
+|---|---|---|---|---|
+| `assets/janu.json` del APK | 289 | 19 | 491 | 210815 bytes |
+| GET oficial de `OpenVPNClient.r()` | 456 | 18 | 493 | 208498 bytes |
 
-El trabajo se conserva en la rama feat/austroplus-vpn-13-0-1-decoders, PR #96, sin merge ni despliegue.
+Los dos documentos completos coinciden byte por byte con la referencia Java y
+como objetos completos con el worker aislado. En ambos están vacíos
+`Premium_servers`, `Vip_servers` y `Private_servers`; se conservan las diez
+secciones y sus valores. El `UpdaterLink` del asset está desactualizado:
+el descargador utiliza exclusivamente la URL fija que realmente llama el APK.
+
+Catálogos: Base64 → XXTEA modificado, delta `0x9E5729B1`, little-endian y tamaño
+original en la última palabra. Perfiles: hexadecimal → XOR fijo nativo → UTF-8
+modificado JNI → JSON. No hay MAC en estos formatos; la validación estructural
+no equivale a autenticación criptográfica. Ver [ANALYSIS.md](ANALYSIS.md).
+
+La app descifra el perfil antes de leer `tweak_password`. Ese valor controla
+la importación, no deriva la clave de cifrado. El lector conserva la contraseña,
+expiración, HWID, restricciones y campos desconocidos dentro del JSON recuperado.
+El formato de archivos/texto está confirmado por DEX/SO, cinco vectores de la
+función ARM64 original y perfiles sintéticos completos comparados con Java;
+**aún falta una exportación `.apnavpn` real y una prueba Android**.
+
+## Integración
+
+Rama `feat/mm-tunnel-1-10-11-1-decoders`, PR #99. Tarjeta pública `apna-vpn`,
+icono PNG original, broker HTTPS fijo y control individual persistente. Se
+respeta el interruptor global `CLOUD_SERVER_VPN_ENABLED` y los estados previos.
+Catálogo mínimo 42, 43 fichas; C0 conserva 240 rutas y C8 tiene 252, incluida
+`.apnavpn` en los metadatos remotos como Cloud, sin anunciar soporte Android
+offline. `run()` del catálogo y `file_decoder.py` no descargan contenidos.
+
+No se incluyen APK/SO/DEX, catálogos reales ni credenciales en Git. El resultado
+integra el código; no implica despliegue VPS, fusión, APK nueva o novedades C11.

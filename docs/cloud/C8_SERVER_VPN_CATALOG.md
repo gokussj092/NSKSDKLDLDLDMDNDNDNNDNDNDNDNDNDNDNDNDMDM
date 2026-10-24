@@ -1,5 +1,12 @@
 # C8 — Catálogo de VPN, iconos originales y caché
 
+Estado actual del PR #99 (2026-10-24): APNA añadido después de ANY/Speicers,
+catálogo mínimo 42 / 43 fichas, C0 240 / C8 252. APNA tiene fuente remota
+fija validada, PNG original y control individual; `.apnavpn`/`apnavpn://`
+usan el lector derivado de DEX/SO (exportación real pendiente). Ver
+`decoders/Python/apps/APNA_VPN/` y SERVER_VPN_NEXT_CHAT_GUIDE para la
+evidencia actual; las fases históricas de abajo conservan sus propios conteos.
+
 - Base: `feat/cloud-c8-vps-installer-updater`, origen de motores: PR #95.
 - Inventario C0 de 240 rutas: congelado. Extensiones extra: .rt, .gol,
   .ua, .nvpnc, .green, .mtp, y .hxt con lector HX independiente.

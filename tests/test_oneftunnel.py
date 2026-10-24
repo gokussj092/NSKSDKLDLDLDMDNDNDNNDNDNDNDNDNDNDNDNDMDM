@@ -108,7 +108,7 @@ class OneFTunnelTests(unittest.TestCase):
         # Two new audited Cloud-only routes (.awg and .creeb) extend the
         # runtime registry without modifying the frozen 240 C0 file routes.
         routes=load_runtime_file_engines()
-        self.assertEqual(len(routes),251)
+        self.assertEqual(len(routes),252)
         self.assertIn("awg",routes)
         self.assertIn("creeb",routes)
         from spdecode.registry import get_decoder,get_supported_extension

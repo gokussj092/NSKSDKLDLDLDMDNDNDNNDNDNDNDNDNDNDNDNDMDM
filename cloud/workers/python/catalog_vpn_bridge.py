@@ -14,7 +14,7 @@ PROVIDERS = {
     "mm-tunnel": "decoders.Python.apps.MM_Tunnel.server_catalog_decoder",
     "creeb-vpn": "decoders.Python.apps.CREEB_VPN.server_catalog_decoder",
     "abowaged-vpn": "decoders.Python.apps.AboWaged_VPN.server_catalog_decoder",
-    # Offline-only until the official APNA catalog source is validated.
+    # Fixed APK updater validated independently from the stale embedded UpdaterLink.
     "apna-vpn": "decoders.Python.apps.APNA_VPN.server_catalog_decoder",
     "7net-vpn": "decoders.Python.apps.SevenNET_VPN.server_catalog_decoder",
     "xhypher-tunnel-pro": "decoders.Python.apps.Xhypher_Tunnel_Pro.server_catalog_decoder",

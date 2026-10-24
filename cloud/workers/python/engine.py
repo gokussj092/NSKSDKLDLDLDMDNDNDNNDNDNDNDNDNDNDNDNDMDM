@@ -75,6 +75,7 @@ def load_file_engines() -> dict[str, dict[str, str]]:
 # C8 additions are separate from the frozen 240-route C0 inventory.
 # Keep each format pinned to its own source codec; never route HX .hxt into xor_family.
 _C8_FILE_ENGINES = {
+    "apnavpn": ("decoders/Python/apps/APNA_VPN/file_decoder.py", "APNA VPN 3.9"),
     "dtk": ("decoders/Python/apps/ANY_VPN/file_decoder.py", "ANY VPN build 40"),
     "tx": ("decoders/Python/apps/Tx_Tunnel/file_decoder.py", "Tx Tunnel v2.17"),
     "mmt": ("decoders/Python/apps/MM_Tunnel/file_decoder.py", "MM Tunnel v1.10.11.1"),
@@ -346,7 +347,7 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
 
 def decode_provider_catalog(provider_id: str, contents: bytes) -> dict:
     """One fixed provider codec, child-isolated; broker performs all network I/O."""
-    if provider_id not in ("any-vpn", "speicers-pro-vpn", "tx-tunnel", "mm-tunnel", "creeb-vpn", "abowaged-vpn", "7net-vpn", "xhypher-tunnel-pro", "ut-loop-pro-vpn", "turbomx-vpn", "superflash-vpn", "rmp-tunnel-pro", "rjc-tunnel-pro", "proneet-vpn", "onspace-vpn", "mx-tunnel-pro", "megatunnel", "http-internet-infinito", "24clan-green", "hx-tunnel", "mkk-hyper", "my-tunnel-proxy", "robust-tunnel", "royal-tunnel", "trv-tunnel", "4u-tunnel-lite", "ac-tunnel-vpn", "austroplus-vpn", "http-fenixvpn", "http-jireh", "http-socketclay", "http-wakko", "v2ray-tunnel-plus", "eut-vpn", "focus-vpn-cloud", "freedom-vpn", "tunelguard-vpn", "tunneltweak", "ksh-vpn", "dtunnel-mod"):
+    if provider_id not in ("apna-vpn", "any-vpn", "speicers-pro-vpn", "tx-tunnel", "mm-tunnel", "creeb-vpn", "abowaged-vpn", "7net-vpn", "xhypher-tunnel-pro", "ut-loop-pro-vpn", "turbomx-vpn", "superflash-vpn", "rmp-tunnel-pro", "rjc-tunnel-pro", "proneet-vpn", "onspace-vpn", "mx-tunnel-pro", "megatunnel", "http-internet-infinito", "24clan-green", "hx-tunnel", "mkk-hyper", "my-tunnel-proxy", "robust-tunnel", "royal-tunnel", "trv-tunnel", "4u-tunnel-lite", "ac-tunnel-vpn", "austroplus-vpn", "http-fenixvpn", "http-jireh", "http-socketclay", "http-wakko", "v2ray-tunnel-plus", "eut-vpn", "focus-vpn-cloud", "freedom-vpn", "tunelguard-vpn", "tunneltweak", "ksh-vpn", "dtunnel-mod"):
         raise DecodeFailure("UNSUPPORTED_FORMAT")
     if not isinstance(contents, bytes) or not contents:
         raise DecodeFailure("INVALID_INPUT")

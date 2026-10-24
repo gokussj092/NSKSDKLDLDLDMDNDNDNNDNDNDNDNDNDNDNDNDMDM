@@ -1,5 +1,21 @@
 # SP-DECODE Cloud — Guía para ampliar Server VPN en otro chat
 
+**Estado más reciente, 2026-10-24: APNA VPN 3.9 (30)** completado en PR #99
+sobre ANY/Speicers `323839f`. Catálogo incluido real 289 / 19 servidores /
+491 payloads y remoto real 456 / 18 / 493; ambos completos iguales a Java y
+worker aislado. El GET activo de `OpenVPNClient.r()` está en paperonboard.com;
+no usar el `UpdaterLink` desactualizado de amtun.xyz. Agente mínimo Dalvik
+validado. `.apnavpn` y `apnavpn://` usan XOR nativo fijo; la contraseña se
+comprueba después del descifrado. Cinco vectores ARM64 originales y perfiles
+sintéticos con/sin contraseña y Unicode comprobados; exportación real y
+Android pendientes. Tarjeta pública, icono original y control individual
+persistente añadidos. Catálogo mínimo **42 / 43 fichas**, C0 **240**, C8
+**252**. 128 Python / 285 Node aprobadas, build web correcto. Script autónomo
+stdlib para Termux en APNA_VPN. No reiniciar switches,
+fusionar, desplegar, publicar APK ni C11. Análisis/oracles y recuperación en
+APNA_VPN, `apna_verify.py`, `apna_native_oracle.py` y RESTORE. Los estados de
+abajo son históricos; ANY y Speicers ya están integrados públicamente.
+
 **Estado más reciente, 2026-10-24: ANY VPN build 40 y Speicers público**, PR #99,
 después de b83419c. El usuario ahora pide que ambas apps aparezcan en catálogo:
 esto sustituye expresamente la exclusión inicial de Speicers. ANY: incluido

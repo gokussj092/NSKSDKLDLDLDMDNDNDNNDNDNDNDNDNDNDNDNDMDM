@@ -1,5 +1,28 @@
 # Registro de nuevas integraciones VPN
 
+## APNA VPN 3.9 (30) — 2026-10-24
+
+`apps/APNA_VPN/`, paquete `my.teamapna.tunnel`, PR #99 sobre `323839f`.
+Se completa el lector de catálogo preexistente con fuente remota real activa,
+archivos `.apnavpn`, texto `apnavpn://` y CLI autónoma de biblioteca estándar
+para Termux. Incluido real 289: 19 servidores / 491 payloads; remoto real 456:
+18 / 493. Los dos JSON completos coinciden con Java y worker aislado. El
+actualizador fijo de OpenVPNClient difiere del UpdaterLink obsoleto del asset.
+
+Perfiles con XOR nativo fijo y UTF-8 modificado JNI; `tweak_password` es un
+control posterior, no entrada de clave. Se conservan todos los campos y
+restricciones. Cinco vectores de la función ARM64 original y perfiles
+sintéticos completos contrastados con Java y workers de archivo/texto.
+Pendientes exportación `.apnavpn` real y Android. APK/SO y datos reales fuera
+de Git. Herramientas y recuperación conservadas.
+
+Ficha pública, icono PNG original de 21812 bytes, broker HTTPS fijo validado
+y control individual persistente. Catálogo mínimo **42 / 43 fichas**, C0
+**240 / C8 252**, `.apnavpn` en formatos Cloud. Se preservan estados previos.
+Sin fusión, despliegue, APK, diseño Android ni C11 automáticos.
+Validación: 128 Python / 285 Node aprobadas y build web correcto. El origen
+respondió 200, una solicitud adicional expiró y el GET posterior volvió a 200.
+
 ## ANY VPN build 40 y Speicers público — 2026-10-24
 
 `apps/ANY_VPN/`: lector `.dtk` y catálogo, clave interna fija sin contraseña.

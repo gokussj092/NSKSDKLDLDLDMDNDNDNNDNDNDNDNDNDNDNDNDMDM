@@ -7,6 +7,7 @@ import {downloadVpnCatalog,mkkSourceIds} from "../lib/server-vpn-provider.mjs";
 import {packMkkSources} from "../lib/mkk-source-bundle.mjs";
 
 for(const provider of [
+  {id:"apna-vpn",host:"paperonboard.com",path:"/updater/3c3c4c58d864ca394da16656b4d0c4",query:"",agent:"Dalvik/2.1.0"},
   {id:"any-vpn",host:"free-panel.myprotectionservices.com",path:"/uploads/json/1e760370dff563b8fa00.json",query:"",agent:"okhttp/5.0.0-alpha.12"},
   {id:"speicers-pro-vpn",host:"raw.githubusercontent.com",path:"/satanas66666/Aplicaciones/refs/heads/main/speicerspro/servidores_pro",query:"",agent:"Speicers Pro/104.1.17"},
   {id:"tx-tunnel",host:"strongteam.co",path:"/api/txtunnel/v1/",query:"?appcode=27.0",agent:"Tx Tunnel"},

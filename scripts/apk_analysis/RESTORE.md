@@ -1,5 +1,43 @@
 # Recuperar herramientas después de perder el entorno
 
+## APNA VPN 3.9 (30) — 2026-10-24
+
+Rama y PR #99 sobre `323839f` (ANY y Speicers públicos ya integrados).
+Código en `apps/APNA_VPN/`, detalles en ANALYSIS/TESTING. C0 240, C8 252,
+catálogo mínimo 42 / 43 fichas. No guardar APK, SO ni catálogos reales en Git.
+
+```sh
+python scripts/apk_analysis/inspect_apk.py /privado/APNA.apks /privado/apna \
+  --asset janu.json --resource res/drawable/ic_app_icon.png --native libputils.so
+python scripts/apk_analysis/decompile.py /privado/apna/dex/classes2.dex /privado/apna-jadx
+python scripts/apk_analysis/paranoid_strings.py /privado/apna-jadx/sources \
+  '/privado/apna-jadx/sources/org/lsposed/lsparanoid/Deobfuscator$APNAVPN$app.java' \
+  /privado/apna-clear --inventory
+python scripts/apk_analysis/apna_verify.py /privado/apna/assets/janu.json /privado/remoto.enc
+python scripts/apk_analysis/apna_verify.py --file /privado/perfil.apnavpn
+python scripts/apk_analysis/apna_native_oracle.py /privado/apna/native/split_config.arm64_v8a/libputils.so
+PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_apna_vpn -v
+```
+
+`inspect_apk.py` produce informe, DEX, recursos y SO exactos del ZIP.
+JADX fijado por checksum; referencias
+Java requieren JDK 17+. Oracle nativo requiere Unicorn/pyelftools y el hash
+exacto del SO documentado; solo ejecuta XOR aislado, no JNI/firmas/Android.
+
+`OpenVPNClient.r()` → YV GET a paperonboard.com/updater/3c3c4c58d864ca394da16656b4d0c4,
+agente Dalvik/2.1.0 validado, 200, catálogo 456 / 18 / 493. No seguir
+UpdaterLink de amtun.xyz: es obsoleto y devuelve 403. Asset `assets/janu.json`
+289 / 19 / 491. Ambos completos iguales a Java y worker. Bm en classes2.dex
+usa XXTEA delta 9E5729B1, clave fija `...|...` y length word little-endian.
+`libputils.so` ARM64: pDecrypt 0x147c58, hexToString 0x14654c, XOR 0x1466d0,
+clave fija `4%PdXch>fkP]`, UTF-8 modificado JNI. `tweak_password` se lee
+después de descifrar; conservar contraseña y restricciones en el JSON.
+Cinco vectores XOR originales y perfiles sintéticos con/sin contraseña
+verificados. Pendientes `.apnavpn` real y Android. Broker público, PNG
+original y disponibilidad individual incorporados; no desplegar ni publicar
+APK/novedades automáticamente. Script stdlib autónomo descarga/guarda 0600
+sin sobrescribir y admite --file/--text/--input/--apks/--summary.
+
 ## ANY VPN build 40 y Speicers público — 2026-10-24
 
 Continuar en PR #99, sin fusionar ni desplegar. La instrucción posterior del

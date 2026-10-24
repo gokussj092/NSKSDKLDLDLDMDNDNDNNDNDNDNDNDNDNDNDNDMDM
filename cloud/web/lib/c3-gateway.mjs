@@ -220,6 +220,16 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
            typeof x.obfs!=="string" || typeof x.auth!=="string") ||
          JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))throw Error("INVALID_WORKER_RESULT");
     }
+    if(kind==="server-vpn" && payload?.providerId==="apna-vpn"){
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId ||
+         !isRecord(parsed) || typeof parsed.Version!=="string" || !parsed.Version.length ||
+         !Array.isArray(parsed.Free_servers) || !Array.isArray(parsed.Payloads) ||
+         ["Free_servers","Premium_servers","Vip_servers","Private_servers","Payloads"].some(name=>
+           Object.hasOwn(parsed,name) && (!Array.isArray(parsed[name]) || parsed[name].some(x=>!isRecord(x)))) ||
+         JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))throw Error("INVALID_WORKER_RESULT");
+    }
     if(kind==="server-vpn" && ["7net-vpn","xhypher-tunnel-pro"].includes(payload?.providerId)){
       let parsed;
       try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}

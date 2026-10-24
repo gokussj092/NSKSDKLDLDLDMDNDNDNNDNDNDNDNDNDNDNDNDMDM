@@ -60,7 +60,7 @@ class TxTunnelTests(unittest.TestCase):
     def test_worker_documents_registry_and_public_credentials(self):
         from cloud.workers.python.engine import decode_file,decode_provider_catalog,load_file_engines,load_runtime_file_engines
         base=load_file_engines();runtime=load_runtime_file_engines()
-        self.assertEqual(len(base),240);self.assertEqual(len(runtime),251)
+        self.assertEqual(len(base),240);self.assertEqual(len(runtime),252)
         self.assertIn('/apps/Tx_Tunnel/',runtime['tx']['source'])
         self.assertEqual(runtime['mm'],base['mm'])
         for v in VECTORS['documents']:

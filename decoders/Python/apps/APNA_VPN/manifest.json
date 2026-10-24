@@ -5,8 +5,8 @@
   "compatibleVersions": [
     "3.9"
   ],
-  "engine": "python-custom-delta-xxtea",
-  "engineVersion": 1,
+  "engine": "python",
+  "engineVersion": 2,
   "catalog": {
     "entrypoint": "server_catalog_decoder.py",
     "providerId": "apna-vpn",
@@ -17,20 +17,47 @@
     "embeddedEncryptedBytes": 281096,
     "embeddedDecodedBytes": 210815,
     "embeddedAssetSha256": "620e4aa2cd5c4ec6cb1d2015b4bfdec172050bcdb8e1b5e4187f026563e5a94a",
-    "validation": "Real embedded plaintext, byte-exact independent XXTEA re-encryption, three synthetic unit tests",
-    "remote": null,
-    "remoteValidated": false,
-    "deploymentEnabledByDefault": false,
-    "encryptionAuthenticated": false
+    "validation": "Complete embedded and remote plaintext equals independent JDK and isolated worker",
+    "remote": "fixed-official-get",
+    "remoteValidated": true,
+    "encryptionAuthenticated": false,
+    "remoteVerifiedVersion": "456",
+    "remoteVerifiedServers": 18,
+    "remoteVerifiedPayloads": 493,
+    "remoteEncryptedBytes": 278008,
+    "remoteDecodedBytes": 208498,
+    "publicVisible": true,
+    "cardDecodeEnabled": true
   },
   "files": {
-    "supported": false,
-    "validation": "Catalog only; no exported-profile reader certified"
+    "supported": true,
+    "entrypoint": "file_decoder.py",
+    "textPrefixes": [
+      "apnavpn://"
+    ],
+    "encryptionAuthenticated": false,
+    "validation": "DEX/JNI format, five original isolated ARM64 XOR cases; synthetic locked/unlocked Unicode JSON equals JDK and isolated file/text workers; real export pending"
   },
   "dependencies": {
     "python": ">=3.10",
     "standardLibraryOnly": true
   },
-  "branch": "feat/austroplus-vpn-13-0-1-decoders",
-  "pullRequest": 96
+  "branch": "feat/mm-tunnel-1-10-11-1-decoders",
+  "pullRequest": 99,
+  "versionName": "3.9",
+  "versionCode": 30,
+  "entrypoint": "file_decoder.py",
+  "extensions": [
+    "apnavpn"
+  ],
+  "credentials": [],
+  "userPasswordCryptographicallyRequired": false,
+  "realFileSampleVerified": false,
+  "androidRuntimeTested": false,
+  "deployment": "not-requested",
+  "icon": {
+    "originalResource": "res/drawable/ic_app_icon.png",
+    "bytes": 21812,
+    "sha256": "01b38d6d006d24b6d50d3e32b3595bbdcd6bb0d634f2468ce3a009bd7cd966ee"
+  }
 }

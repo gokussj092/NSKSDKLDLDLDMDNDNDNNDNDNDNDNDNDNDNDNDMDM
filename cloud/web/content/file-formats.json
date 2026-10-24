@@ -191,6 +191,14 @@
       "credentialFields": []
     },
     {
+      "suffix": "apnavpn",
+      "name": "APNA VPN 3.9",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
       "suffix": "bshield",
       "name": "RENZ / BSHIELD",
       "kind": "file",

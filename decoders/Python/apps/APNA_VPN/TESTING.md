@@ -1,21 +1,57 @@
-# APNA VPN 3.9 — validación del catálogo
+# APNA VPN 3.9 — validación
 
-## Muestra real (23 octubre 2026)
+## Comprobaciones reales (2026-10-24)
 
-- APK/APKS de usuario, sin incorporar sus bytes, JSON, contraseñas, hosts ni payloads a Git.
-- Asset assets/janu.json: 281096 bytes Base64; SHA-256 620e4aa2cd5c4ec6cb1d2015b4bfdec172050bcdb8e1b5e4187f026563e5a94a.
-- Base64 contiene 210820 bytes binarios XXTEA modificado.
-- JSON íntegro descifrado: 210815 bytes UTF8, Version 289, 19 servidores gratuitos, 491 payloads, 10 secciones.
-- Un cifrador XXTEA independiente reconstruyó los 210820 bytes binarios originales byte por byte a partir del JSON recuperado.
-- CLI sobre el APKS real con --summary terminó con código 0 y recuentos idénticos.
-- Reversibilidad exacta **no significa** que el archivo cuente con MAC o firma criptográfica.
+| Documento | Versión | Free_servers | Payloads | Bytes JSON | Java / worker |
+|---|---|---|---|---|---|
+| Asset del APKS | 289 | 19 | 491 | 210815 | Íntegros iguales |
+| GET activo del APK | 456 | 18 | 493 | 208498 | Íntegros iguales |
 
-## Pruebas automatizadas sintéticas
+La comparación Java es byte por byte; la del worker aislado compara el objeto
+JSON entero y exige `isPartial=false`. También se ejecutó la CLI real del APKS
+y el GET del script autónomo. La validación anterior de recifrado XXTEA del
+asset se conserva como evidencia complementaria, sin confundirla con un MAC.
 
-    PYTHONPATH=. python -m unittest tests.test_apna_vpn -v
+Una descarga adicional agotó el tiempo de espera del proveedor. La respuesta
+200 validada no garantiza disponibilidad continua de ese origen externo.
+Un GET posterior volvió a entregar 456 / 18 / 493 correctamente.
 
-Tres casos locales aprobados: reversibilidad con cifrador independiente, JSON anidado Unicode, errores de Base64/ciphertext/formato y resumen CLI sin exponer contraseñas de prueba.
+Cinco vectores independientes coinciden con la función XOR de la biblioteca
+ARM64 original en memoria acotada. No se ejecutan JNI, chequeos de identidad,
+arranque Android ni operaciones de red dentro del emulador.
 
-## Pendientes
+```sh
+PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_apna_vpn -v
+python scripts/apk_analysis/apna_verify.py /privado/janu.json /privado/remoto.enc
+python scripts/apk_analysis/apna_verify.py --file /privado/perfil.apnavpn
+python scripts/apk_analysis/apna_native_oracle.py /privado/libputils.so
+```
 
-No se confirmó fuente HTTPS oficial de catálogo remoto ni el icono del proveedor; no hay descargas públicas, edición Android, APK nueva, despliegue VPS ni publicación de novedades. El motor privado solo descifra bytes de catálogo suministrados por una ruta autorizada. Las suites globales y la integración Android no fueron ejecutadas localmente.
+El último comando requiere Unicorn y pyelftools solo para análisis, no para
+el lector de producción. Las referencias Java requieren JDK 17 o posterior.
+
+## Pruebas automatizadas
+
+12 pruebas APNA cubren catálogos completos, estructuras anidadas, Unicode,
+archivos/texto con y sin contraseña de importación, restricciones preservadas,
+comparación Java, workers aislados y CLI autónoma. Se comprueban errores de
+Base64/hex/cifrado/esquema, JSON duplicado/no finito, profundidad, sustitutos
+inválidos, GET fijo/cabeceras/límites/sin redirecciones y salida 0600 sin
+sobrescritura. `--text ''` falla localmente sin descargar contenido.
+
+Node verifica icono original, tarjeta pública, metadatos `.apnavpn`, URL y
+agente fijos, IP/TLS/redirecciones y el interruptor individual persistente sin
+alterar proveedores previamente deshabilitados. Las regresiones del inventario
+mantienen C0=240, C8=252, catálogo mínimo=42 y 43 fichas.
+
+Regresión local final: 128 pruebas Python aprobadas, sin omisiones. Incluye
+APNA/ANY/Speicers, inventarios, texto y compatibilidad MM/Tx/4U/1F/AC/TRV/Austro.
+285 pruebas Node aprobadas y el servidor web compiló correctamente. Incluyen el recorrido
+autenticado del broker APNA y rechazan resultados parciales o inconsistentes.
+
+## Límites de la certificación
+
+Falta una exportación `.apnavpn` real y una prueba Android. Las pruebas de
+archivos/texto son sintéticas derivadas de DEX/SO; los dos catálogos sí son
+reales. No se incluyen APK/SO/DEX, catálogos ni credenciales reales en Git.
+Integración de código en PR #99; sin fusión, despliegue VPS o publicación APK.
