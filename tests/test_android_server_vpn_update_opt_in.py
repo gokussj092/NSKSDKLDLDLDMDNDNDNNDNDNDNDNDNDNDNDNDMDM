@@ -34,7 +34,7 @@ class ServerVpnUpdateOptInContracts(unittest.TestCase):
     def test_all_public_catalog_entries_have_paired_png_icons(self):
         catalog=(WEB/"lib/server-vpn-catalog.mjs").read_text("utf-8")
         ids=re.findall(r'\{id:"([a-z0-9-]+)", name:"[^"]+", icon:"([a-z0-9-]+\.png)"',catalog)
-        self.assertEqual(len(ids),19)
+        self.assertEqual(len(ids),38)
         self.assertEqual(len({i for i,_ in ids}),len(ids))
         for provider,filename in ids:
             with self.subTest(provider=provider):
