@@ -131,7 +131,7 @@ def _signature(data: bytes, public_key: bytes):
         DSS.new(key, "fips-186-3", encoding="binary").verify(
             SHA256.new(data[:-64]), data[-64:])
     except (ValueError, TypeError, IndexError) as exc:
-        raise DecodeError("Invalid NPVS ECDSA signature") from exc
+        raise DecodeError("Invalid NPVS ECDSA signature", "INVALID_INPUT") from exc
 
 
 def _field_key(dek: bytes, context: bytes, label: bytes, field_id: int) -> bytes:
@@ -198,27 +198,27 @@ def inspect_npvs(data: bytes) -> dict:
     Recognizing that framing does not supply the device's ECDH private key.
     """
     if not isinstance(data, bytes) or not 89 <= len(data) <= _MAX_FILE:
-        raise DecodeError("Invalid NPVS file size")
+        raise DecodeError("Invalid NPVS file size", "INVALID_INPUT")
     if data[:4] != b"NPVS":
-        raise DecodeError("Expected binary NPVS input")
+        raise DecodeError("Expected binary NPVS input", "INVALID_INPUT")
     if data[4] not in (5, 6):
-        raise DecodeError("Only NPVS versions 5 and 6 are recognized")
+        raise DecodeError("Only NPVS versions 5 and 6 are recognized", "UNSUPPORTED_VERSION")
     hlen = int.from_bytes(data[5:9], "big")
     if not 73 <= hlen <= 262144 or 9 + hlen + 80 > len(data):
-        raise DecodeError("Invalid compact header length")
+        raise DecodeError("Invalid compact header length", "INVALID_INPUT")
     header = data[9:9 + hlen]
     if header[0] != 1 or header[50] not in (0, 1, 2):
         raise DecodeError("Unsupported compact key method", "NPVS_PROTECTION_UNSUPPORTED")
     recipients = int.from_bytes(header[51:53], "big")
     if recipients > 1024:
-        raise DecodeError("Too many recipients")
+        raise DecodeError("Too many recipients", "INVALID_INPUT")
     offset = 53 + recipients * 125
     records = []
     seen = set()
     for pos in range(53, offset, 125):
         record = header[pos:pos + 125]
         if len(record) != 125 or record[:32] in seen or record[32] not in (2, 3):
-            raise DecodeError("Invalid recipient record")
+            raise DecodeError("Invalid recipient record", "INVALID_INPUT")
         seen.add(record[:32])
         records.append(record)
     if data[4] == 6:
@@ -227,22 +227,22 @@ def inspect_npvs(data: bytes) -> dict:
     size = {0: 0, 1: 80, 2: 78}[mode]
     prefix_end = offset + size
     if prefix_end + 4 > hlen or (mode == 0 and not records):
-        raise DecodeError("Invalid compact descriptor bounds")
+        raise DecodeError("Invalid compact descriptor bounds", "INVALID_INPUT")
     descriptor = header[offset:prefix_end]
     if mode == 1:
         iterations = int.from_bytes(descriptor[:4], "big")
         if not 600000 <= iterations <= 10000000:
-            raise DecodeError("Invalid PBKDF2 iteration count")
+            raise DecodeError("Invalid PBKDF2 iteration count", "INVALID_INPUT")
     if mode == 2 and descriptor[:2] != b"\x00\x02":
         raise DecodeError("Unsupported app-key descriptor", "NPVS_PROTECTION_UNSUPPORTED")
     mlen = int.from_bytes(header[prefix_end:prefix_end + 4], "big")
     if mlen < 16 or prefix_end + 4 + mlen != hlen:
-        raise DecodeError("Invalid metadata length")
+        raise DecodeError("Invalid metadata length", "INVALID_INPUT")
     end = 9 + hlen
     nonce = data[end:end + 12]
     blen = int.from_bytes(data[end + 12:end + 16], "big")
     if blen < 70 or end + 16 + blen + 64 != len(data):
-        raise DecodeError("Invalid body length or trailing bytes")
+        raise DecodeError("Invalid body length or trailing bytes", "INVALID_INPUT")
     public_key = header[17:50]
     _signature(data, public_key)
     return {"version": data[4], "mode": mode, "recipients": records,
