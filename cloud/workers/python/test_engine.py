@@ -85,6 +85,33 @@ class FileEngineTests(unittest.TestCase):
             decode_file("npvs",b"unrelated",credentials={"hwid":"unsupported"})
         self.assertEqual(caught.exception.code,"CREDENTIALS_NOT_ALLOWED")
 
+    def test_npvs_appkey_failure_is_ambiguous_variant_not_private_key(self):
+        """Worker output is allowlisted; a signed app-key failure is not ECDH."""
+        from unittest.mock import patch
+
+        def process_for(code):
+            class FakeProcess:
+                returncode = 3
+                def __init__(self, *args, stdout, **kwargs):
+                    stdout.write(json.dumps({"workerError": code}).encode("utf-8"))
+                    stdout.flush()
+                def communicate(self, *, input, timeout):
+                    return b"", b""
+            return FakeProcess
+
+        for raw_code, expected in (
+            ("NPVS_APPKEY_AUTH_FAILED", "UNSUPPORTED_VARIANT"),
+            ("PRIVATE_KEY_REQUIRED", "PRIVATE_KEY_REQUIRED"),
+            ("AUTH_FAILED", "AUTH_FAILED"),
+            ("UNSUPPORTED_METHOD", "UNSUPPORTED_METHOD"),
+            ("INVALID_INPUT", "INVALID_INPUT"),
+        ):
+            with self.subTest(code=raw_code):
+                with patch("engine.subprocess.Popen", process_for(raw_code)):
+                    with self.assertRaises(DecodeFailure) as caught:
+                        decode_file("npvs", b"opaque-envelope")
+                self.assertEqual(caught.exception.code, expected)
+
     def test_subprocess_environment_removes_secrets(self):
         os.environ["CLOUD_WORKER_TOKEN"] = "private-test-only-do-not-ship"
         try:
