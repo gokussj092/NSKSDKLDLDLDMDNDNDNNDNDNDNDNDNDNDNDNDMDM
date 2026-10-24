@@ -1257,13 +1257,13 @@ class MainActivity : ComponentActivity() {
                     progressFilename=name
                     // Only the decoder route uses this name. History keeps the original.
                     val routingName=ImportFilenameNormalizer.forDetection(name)
-                    val supported=if(BuildConfig.SPDECODE_CLOUD_ENABLED &&
+                    val supported=(if(BuildConfig.SPDECODE_CLOUD_ENABLED &&
                         fileFormats.isNotEmpty())
                         AndroidDecoderCatalog.detect(routingName,fileFormats)
                     else (if(BuildConfig.SPDECODE_CLOUD_ENABLED)
                         CloudFileFormats.detect(routingName) else null)
                         ?:AndroidDecoderCatalog.detect(
-                            routingName,AndroidDecoderCatalog.read(this@MainActivity))
+                            routingName,AndroidDecoderCatalog.read(this@MainActivity)))
                         ?:throw DecodeFailure(R.string.unsupported)
                     // Phase A identifies pending formats but never reads or
                     // sends their bytes to a native decoder that does not exist.
