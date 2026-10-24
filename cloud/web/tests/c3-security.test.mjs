@@ -135,6 +135,37 @@ test("file size, invalid JSON and cross-format credentials fail before the worke
   const badtype=new Request("https://spdecode.example.test/api/v1/decode/file",{method:"POST",headers:{Authorization:"Bearer "+issued.accessToken,"Content-Type":"text/plain","X-Real-IP":"203.0.113.21"},body:"x"});
   const type=await decodeRequest(badtype,"file",common);assert.equal(type.status,400);
 });
+test("Cloud file credential allowlist follows validated format metadata, never client claims",async()=>{
+  const redis=new FakeRedis(),ip="203.0.113.39";
+  const {issued}=await authorized(redis,ip);
+  let workerCalls=0;
+  const fetchImpl=async(url,options)=>{
+    workerCalls++;
+    const body=JSON.parse(options.body);
+    assert.equal(body.format,"ua");
+    assert.deepEqual(body.credentials,{password:"test-only"});
+    return {status:200,text:async()=>JSON.stringify({
+      status:"success",structuredJson:{profile:"test"},rawText:'{"profile":"test"}',
+      isPartial:false,warnings:[],
+    })};
+  };
+  const args={storeProvider:async()=>redis,fetchImpl};
+  const base={dataBase64:"YWJj"};
+  const allowed=await decodeRequest(req({...base,format:"ua",
+    credentials:{password:"test-only"}},issued.accessToken,ip),"file",args);
+  assert.equal(allowed.status,200);assert.equal(workerCalls,1);
+  for(const source of [
+    {...base,format:"awg",credentials:{password:"not-allowed"}},
+    {...base,format:"ua",credentials:{hwid:"not-allowed"}},
+    {...base,format:"tls",credentials:{password:"not-allowed"}},
+    {...base,format:"unknownfuture",credentials:{password:"not-allowed"}},
+  ]){
+    const response=await decodeRequest(req(source,issued.accessToken,ip),"file",args);
+    assert.equal(response.status,400);
+  }
+  assert.equal(workerCalls,1);
+});
+
 test("C3 challenge and session routes can be exercised with injected verifier; replay denied",async()=>{
   const redis=new FakeRedis();
   const options={storeProvider:async()=>redis};
