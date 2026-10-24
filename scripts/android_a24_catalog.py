@@ -92,10 +92,19 @@ def generate() -> dict:
         or solid.name != "NUR TUNNEL VPN (.solid)"
     ):
         raise ValueError("NUR .solid registry route changed unexpectedly")
+    # C8 overlays must not mutate the immutable 239-route C0 Android baseline.
+    # AboWaged and CREEB Injector are new Cloud-only extensions, and CREEB VPN
+    # overrides the historical .crev route in the live bot registry.
     baseline_registry = {
         suffix: spec for suffix, spec in DECODER_REGISTRY.items()
-        if suffix not in ("solid", "1ftnl")
+        if suffix not in ("solid", "1ftnl", "awg", "creeb")
     }
+    from dataclasses import replace
+    if "crev" in baseline_registry:
+        baseline_registry["crev"] = replace(
+            baseline_registry["crev"], name="CREV",
+            script="decoders/Python/crev.py", runtime="python"
+        )
     legacy = json.loads((ROOT / "decoders.json").read_text("utf-8"))["decoders"]
     if len(legacy) != 61 or len(baseline_registry) != 239:
         raise ValueError("Expected 61 original and 239 existing migration formats")
