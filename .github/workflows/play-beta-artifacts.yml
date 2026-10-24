@@ -14,7 +14,7 @@ jobs:
   signed-artifacts:
     if: >-
       github.repository == 'Gh0stDeveloper/SP-DECODE' &&
-      github.ref == 'refs/heads/feat/austroplus-vpn-13-0-1-decoders' &&
+      (github.ref == 'refs/heads/fix/android-aab-all-locales' || github.ref == 'refs/heads/main') &&
       github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 55
@@ -90,24 +90,24 @@ jobs:
           grep -q '^jar verified\.' "$RUNNER_TEMP/aab-signature.txt"
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" > "$RUNNER_TEMP/app-badging.txt"
           grep -F "package: name='com.ghostdeveloper.spdecode'" "$RUNNER_TEMP/app-badging.txt" >/dev/null
-          grep -F "versionName='1.1.19'" "$RUNNER_TEMP/app-badging.txt" >/dev/null
-          grep -F "versionCode='30'" "$RUNNER_TEMP/app-badging.txt" >/dev/null
+          grep -F "versionName='1.1.20'" "$RUNNER_TEMP/app-badging.txt" >/dev/null
+          grep -F "versionCode='31'" "$RUNNER_TEMP/app-badging.txt" >/dev/null
           # A good upload signature alone is insufficient. Check every 64-bit
           # ELF in both packages, and verify the APK ZIP's 16 KiB alignment.
           python3 -m unittest tests.test_android_play_compatibility -v
           python3 scripts/android_16kb_elf_audit.py "$APK" "$AAB"
           "$ANDROID_HOME/build-tools/35.0.0/zipalign" -c -P 16 -v 4 "$APK"
           mkdir -p dist
-          cp "$APK" dist/SP-DECODE-v1.1.19-beta-external-signed.apk
-          cp "$AAB" dist/SP-DECODE-v1.1.19-play-closed-test-signed.aab
+          cp "$APK" dist/SP-DECODE-v1.1.20-beta-external-signed.apk
+          cp "$AAB" dist/SP-DECODE-v1.1.20-play-closed-test-signed.aab
           (cd dist && sha256sum *.apk *.aab > SHA256SUMS.txt)
-          printf 'Package: com.ghostdeveloper.spdecode\nVersion: 1.1.19\nVersion code: 30\nSource commit: %s\nUpload certificate SHA-256: %s\nPlay app signing certificate SHA-256: %s\n' \
+          printf 'Package: com.ghostdeveloper.spdecode\nVersion: 1.1.20\nVersion code: 31\nSource commit: %s\nUpload certificate SHA-256: %s\nPlay app signing certificate SHA-256: %s\n' \
             "$GITHUB_SHA" "$SPDECODE_TRUSTED_SIGNER_SHA256" "${SPDECODE_PLAY_APP_SIGNER_SHA256:-NOT_SET}" \
             > dist/SIGNATURE_VERIFICATION.txt
       - name: Publish artifacts only to the private workflow run, never to Releases
         uses: actions/upload-artifact@v4
         with:
-          name: SP-DECODE-v1.1.19-PLAY-BETA-SIGNED
+          name: SP-DECODE-v1.1.20-PLAY-BETA-SIGNED
           path: dist/
           if-no-files-found: error
           retention-days: 14
