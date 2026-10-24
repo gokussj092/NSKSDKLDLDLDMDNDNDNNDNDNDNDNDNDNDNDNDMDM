@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_http_injector_not_configured">HTTP Injector Cloud n’est pas encore configuré sur le serveur. Réessayez lorsque le service sera activé.</string>
+</resources>

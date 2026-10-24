@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Credential-aware HCCFG entrypoint for the isolated Cloud worker.
 
-Password/HWID arrive over stdin, never argv/env/logs. Reuses original,
-unmodified HTTP Custom and HCCFG engines; no hidden bypass or blind fallback.
+Password/HWID arrive over stdin, never argv/env/logs. HCX4 authenticates before
+the historical HTTP Custom and HCCFG engines are considered.
 """
 from __future__ import annotations
 
@@ -12,6 +12,7 @@ from pathlib import Path
 
 from decoders.Python.HTTPCUSTOM import run as legacy_hc
 from decoders.Python import _hc_hccfg as hccfg
+from decoders.Python.apps.HTTP_Custom.codec import UnrecognizedFormat, decrypt as modern_hc
 
 SAFE_ERRORS = {"PASSWORD_REQUIRED", "HWID_REQUIRED", "HWID_PASSWORD_REQUIRED", "AUTH_FAILED"}
 
@@ -30,6 +31,13 @@ def main() -> int:
             return 2
         if hwid is not None and (not isinstance(hwid, str) or not 0 < len(hwid) <= 128):
             return 2
+        try:
+            clear = modern_hc(raw, password=password, hwid=hwid)
+        except UnrecognizedFormat:
+            pass
+        else:
+            sys.stdout.write(json.dumps(clear, ensure_ascii=False, indent=2) + "\n")
+            return 0
         if password is None and hwid is None:
             # Existing legacy behaviour wins when no auth is required.
             try:

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_report_action">Signaler une erreur</string>
+    <string name="cloud_report_sent">Signalement reçu : %1$s</string>
+    <string name="cloud_report_failed">Impossible d’envoyer le signalement. Réessayez plus tard.</string>
+    <string name="cloud_usage_title">Statistiques anonymes des installations</string>
+    <string name="cloud_usage_detail">SP-DECODE estime une fois par jour les installations actives afin de dimensionner les serveurs. Un code aléatoire propre à l’installation est utilisé, sans Android ID, HWID ni identifiant publicitaire.</string>
+    <string name="cloud_usage_footnote">Inclus après acceptation des conditions Cloud. Aucun fichier, mot de passe ou contenu décodé n’est utilisé pour ce comptage.</string>
+</resources>

@@ -35,7 +35,8 @@ class AndroidPhaseFParityTests(unittest.TestCase):
             row=self.entries[s]
             self.assertEqual(row["androidPortStatus"],
                 "experimental_independent_9_engines_synthetic")
-            self.assertEqual(row["script"],DECODER_REGISTRY[s].script)
+            self.assertEqual(row["script"],
+                "decoders/Python/crev.py" if s=="crev" else DECODER_REGISTRY[s].script)
             self.assertTrue(row["linuxGoldenSynthetic"])
             self.assertFalse(row["androidVerified"])
         self.assertTrue(all(r["androidPortStatus"]!="registered_not_implemented"

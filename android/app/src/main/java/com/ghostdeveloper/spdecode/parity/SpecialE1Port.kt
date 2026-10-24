@@ -20,7 +20,7 @@ internal object SpecialE1Port {
     private val html=Regex("<[^>]+>")
     private val entry=Regex("""<entry\s+key="([^"]+)"(?:>([\s\S]*?)</entry>|/>)""")
 
-    fun decode(context:Context,suffix:String,data:ByteArray):String? {
+    fun decode(context:Context,suffix:String,data:ByteArray,password:ByteArray?=null):String? {
         if(!p.check(data))return null
         return try{
             val keys=PhaseS2FamilyMaterials.e1(context)
@@ -28,7 +28,7 @@ internal object SpecialE1Port {
                 "st"->sentinel(data,keys)
                 "itv"->itv(data)
                 "eut"->eut(data,keys)
-                "v2box"->v2box(data,keys)
+                "v2box"->v2box(data,keys,password)
                 "slipnet"->slipnet(data,keys)
                 "juanscript","juan","mobi"->juan(data,keys)
                 else->null
@@ -135,19 +135,24 @@ internal object SpecialE1Port {
         return first
     }
 
-    private fun v2box(data:ByteArray,keys:PhaseS2FamilyMaterials.E1):String? {
+    private fun v2box(data:ByteArray,keys:PhaseS2FamilyMaterials.E1,password:ByteArray?):String? {
         var raw=String(data,Charsets.UTF_8).trim()
         for(scheme in listOf("v2box://","locked="))if(scheme in raw)raw=raw.substringAfter(scheme)
         raw=raw.filterNot{it.isWhitespace()}
         val decoded=try{p.utf8(p.b64(raw.padEnd((raw.length+3)/4*4,'=')))}catch(_:Exception){raw}
         val wrapper=(p.parse(decoded)?:p.parse(raw))?.takeIf{it.isJsonObject}?.asJsonObject ?:return null
         if(wrapper.get("magic")?.asString!="v2box_export")return null
-        if(wrapper.get("isPasswordProtected")?.asBoolean==true)
-            return "V2Box: this export requires its user-defined password."
+        val protected=wrapper.get("isPasswordProtected")?.asBoolean==true
+        if(protected && (password==null || password.isEmpty() || password.size>4096))return null
+        if(!protected && password!=null)return null
         val nonce=p.b64(wrapper.get("nonce").asString)
         val ciphertext=p.b64(wrapper.get("ciphertext").asString)
         val tag=p.b64(wrapper.get("tag").asString)
-        for(key in listOf(keys.v2boxKey,p.sha(keys.v2boxKey))){
+        if(nonce.size!=12 || tag.size!=16 || ciphertext.isEmpty())return null
+        // Match the exporter's SHA-256(UTF8(password)); no key fallback on auth failure.
+        val keysToTry=if(protected)listOf(p.sha(password!!))
+            else listOf(keys.v2boxKey,p.sha(keys.v2boxKey))
+        for(key in keysToTry){
             try {
                 return p.gson.toJson(JsonParser.parseString(p.utf8(p.gcm(key,nonce,ciphertext+tag))))
             }catch(_:Exception){}

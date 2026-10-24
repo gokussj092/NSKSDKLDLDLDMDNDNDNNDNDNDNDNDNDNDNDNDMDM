@@ -15,7 +15,9 @@
     <string name="cloud_failure_invalid">الملف أو الطلب غير صالح. تحقق من التنسيق.</string>
     <string name="cloud_failure_unsupported">هذا التنسيق غير متوفر على الخادم.</string>
     <string name="cloud_failure_decode">تعذر معالجة إصدار هذا الملف، وليس بالضرورة أن يكون تالفًا.</string>
+    <string name="cloud_failure_maintenance">هذه الخدمة تحت الصيانة مؤقتًا. يرجى المحاولة لاحقًا.</string>
     <string name="cloud_failure_unavailable">الخدمة غير متاحة مؤقتًا. حاول لاحقًا.</string>
+    <string name="cloud_failure_config_unavailable">لم يعد إعداد Cloud هذا متاحًا. ربما انتهت صلاحيته أو حُذف أو كان مخصصًا للاستخدام مرة واحدة. هذا ليس عطلًا في أداة فك التشفير.</string>
     <string name="cloud_failure_remote">أعاد المزود البعيد استجابة غير صالحة.</string>
     <string name="cloud_failure_credentials">كلمة المرور أو HWID غير صحيح. تحقق من البيانات.</string>
     <string name="cloud_failure_password">هذا الملف المحمي يتطلب كلمة مرور.</string>
@@ -25,5 +27,11 @@
     <string name="cloud_failure_conflict">يتعارض الطلب مع الحالة الحالية. أعد المحاولة.</string>
     <string name="cloud_failure_partial">النتيجة ناقصة أو غير صالحة ولن يتم عرضها.</string>
     <string name="cloud_failure_general">تعذر إكمال العملية. حاول مجددًا أو اتصل بالدعم.</string>
-    <string name="cloud_failure_notice_title">تعذر إكمال الطلب</string>
+    <string name="cloud_failure_notice_title">تنبيه</string>
+    <string name="cloud_password_title">كلمة مرور الإعداد مطلوبة</string>
+    <string name="cloud_password_description">الملف %1$s محمي بكلمة مرور. أدخل كلمة مرور التصدير للمتابعة. لن يتم حفظها.</string>
+    <string name="cloud_failure_password_incorrect">كلمة المرور غير صحيحة.</string>
+    <string name="cloud_failure_private_key">يستخدم ملف NPVS هذا حماية بالمفتاحين العام والخاص للمستلم. هذه الطريقة غير مدعومة بعد، وستتوفر قريبًا.</string>
+    <string name="cloud_failure_recipient">يستخدم ملف NPVS هذا طريقة مفتاح مستلم غير مدعومة حاليًا. ستتوفر قريبًا.</string>
+    <string name="cloud_failure_npvs_unsupported">إصدار NPVS هذا أو طريقة الحماية هذه غير مدعومة بعد. ستتوفر قريبًا.</string>
 </resources>

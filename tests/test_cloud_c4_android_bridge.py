@@ -25,14 +25,16 @@ class CloudC4Tests(unittest.TestCase):
     def test_four_user_flows_have_no_offline_fallback_in_cloud_branch(self):
         source = ACTIVITY.read_text("utf-8")
         for route in (
-            "cloudClient.decodeText(userText)",
+            "cloudClient.decodeText(userText,password)",
             "cloudClient.decodeHttpInjectorCloud(parsed)",
             "cloudClient.decodeNurCatalog()",
             "cloudClient.decodeFile(supported.suffix,input",
         ):
             self.assertIn(route, source)
         self.assertIn("if(BuildConfig.SPDECODE_CLOUD_ENABLED)", source)
-        self.assertIn("else AndroidOfflineDecoderRouter.decode(this@MainActivity,name,input)",source)
+        self.assertIn("val routingName=ImportFilenameNormalizer.forDetection(name)", source)
+        self.assertIn("else AndroidOfflineDecoderRouter.decode(this@MainActivity,routingName,input)",source)
+        self.assertIn("val processed=DecodeView(name,supported.suffix,text,inputSize)",source)
         self.assertIn("if(BuildConfig.SPDECODE_CLOUD_ENABLED) {\n                            // Never fall back",source)
         self.assertEqual(source.count("cloudClient.decodeFile(supported.suffix,input"), 2)
 

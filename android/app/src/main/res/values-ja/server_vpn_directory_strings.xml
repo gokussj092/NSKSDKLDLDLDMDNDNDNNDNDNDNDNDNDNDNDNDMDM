@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ja: translated primary screens, Cloud and error strings; untranslated text inherits English source. -->
+    <string name="server_vpn_search_hint">VPN アプリを検索</string>
+    <string name="server_vpn_filter_all">すべて</string>
+    <string name="server_vpn_filter_enabled">有効</string>
+    <string name="server_vpn_filter_favorites">お気に入り</string>
+    <string name="server_vpn_favorite_add">お気に入りに追加</string>
+    <string name="server_vpn_favorite_remove">お気に入りから削除</string>
+    <string name="server_vpn_manual_refresh">今すぐカタログを確認</string>
+    <string name="server_vpn_catalog_refreshing">サーバーカタログを確認中…</string>
+    <string name="server_vpn_no_matches">条件に一致する VPN アプリはありません。</string>
+    <string name="server_vpn_catalog_enabled">カタログで有効</string>
+    <string name="server_vpn_catalog_disabled">カタログで無効</string>
+    <string name="server_vpn_new_badge">新着</string>
+    <string name="server_vpn_catalog_update_title">カタログの更新があります</string>
+    <string name="server_vpn_catalog_update_question">VPNサーバーカタログのバージョン%1$dが利用可能です。ダウンロードしますか？</string>
+    <string name="server_vpn_catalog_download">ダウンロード</string>
+    <string name="server_vpn_catalog_current">VPNサーバーカタログは最新です。</string>
+    <string name="server_vpn_catalog_updated">VPNサーバーカタログを更新しました。</string>
+    <string name="server_vpn_catalog_update_error">カタログの確認またはダウンロードに失敗しました。再度お試しください。</string>
+</resources>

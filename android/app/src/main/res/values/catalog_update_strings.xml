@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_auto_title">Automatic Server VPN catalog updates</string>
+    <string name="catalog_auto_detail">Checks catalog versions with your own SP-DECODE server over HTTPS while the app is open, and optionally performs infrequent recovery checks in the background. New catalog data and icons are downloaded only after a version change. No Firebase, account or push token is required. You can disable this at any time.</string>
+    <string name="catalog_auto_switch">Enable background catalog sync</string>
+</resources>

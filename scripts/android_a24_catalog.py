@@ -92,10 +92,19 @@ def generate() -> dict:
         or solid.name != "NUR TUNNEL VPN (.solid)"
     ):
         raise ValueError("NUR .solid registry route changed unexpectedly")
+    # C8 overlays must not mutate the immutable 239-route C0 Android baseline.
+    # AboWaged and CREEB Injector are new Cloud-only extensions, and CREEB VPN
+    # overrides the historical .crev route in the live bot registry.
     baseline_registry = {
         suffix: spec for suffix, spec in DECODER_REGISTRY.items()
-        if suffix != "solid"
+        if suffix not in ("solid", "1ftnl", "awg", "creeb")
     }
+    from dataclasses import replace
+    if "crev" in baseline_registry:
+        baseline_registry["crev"] = replace(
+            baseline_registry["crev"], name="CREV",
+            script="decoders/Python/crev.py", runtime="python"
+        )
     legacy = json.loads((ROOT / "decoders.json").read_text("utf-8"))["decoders"]
     if len(legacy) != 61 or len(baseline_registry) != 239:
         raise ValueError("Expected 61 original and 239 existing migration formats")
@@ -206,11 +215,24 @@ def generate() -> dict:
     }
 
 
+def public_catalog(full: dict) -> dict:
+    """APK metadata only: never embed runtime paths or Python implementation details."""
+    hidden = {"inventorySource", "legacyInventorySource"}
+    public = {key: value for key, value in full.items() if key not in hidden}
+    public["schemaVersion"] = 4
+    public["entries"] = [
+        {key: row[key] for key in
+            ("suffix", "name", "androidPortStatus", "androidVerified", "migrationPhase")}
+        for row in full["entries"]
+    ]
+    return public
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--write", action="store_true")
     args = parser.parse_args()
-    expected = json.dumps(generate(), ensure_ascii=False, indent=2) + "\n"
+    expected = json.dumps(public_catalog(generate()), ensure_ascii=False, indent=2) + "\n"
     if args.write:
         CATALOG.parent.mkdir(parents=True, exist_ok=True)
         CATALOG.write_text(expected, encoding="utf-8")

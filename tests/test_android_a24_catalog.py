@@ -8,7 +8,7 @@ import unittest
 from pathlib import Path
 
 from scripts.android_a24_catalog import (
-    CATALOG, EXPECTED_NEW_BY_PHASE, PROTO, ROOT, generate, phase_for,
+    CATALOG, EXPECTED_NEW_BY_PHASE, PROTO, ROOT, generate, phase_for, public_catalog,
 )
 from spdecode.registry import DECODER_REGISTRY
 
@@ -23,8 +23,8 @@ class AndroidA24CatalogTests(unittest.TestCase):
 
     def test_exact_239_canonical_entries_without_renumbering_originals(self):
         committed = json.loads(CATALOG.read_text("utf-8"))
-        self.assertEqual(self.doc, committed)
-        self.assertEqual(self.doc["schemaVersion"], 3)
+        self.assertEqual(public_catalog(self.doc), committed)
+        self.assertEqual(committed["schemaVersion"], 4)
         self.assertEqual(self.doc["botRegisteredSuffixes"], 239)
         self.assertEqual(self.doc["androidExistingSuffixes"], 61)
         self.assertEqual(self.doc["androidGenericNativeSuffixes"], 81)
@@ -35,7 +35,7 @@ class AndroidA24CatalogTests(unittest.TestCase):
         self.assertEqual(self.doc["androidNativePortSuffixes"], 239)
         self.assertEqual(self.doc["androidPendingNativeSuffixes"], 0)
         self.assertEqual(len(self.doc["entries"]), 239)
-        self.assertEqual(set(self.rows), set(DECODER_REGISTRY) - {'solid'})
+        self.assertEqual(set(self.rows), set(DECODER_REGISTRY) - {"solid","1ftnl","awg","creeb"})
         self.assertEqual(len(self.rows), 239)
         self.assertEqual(len(ORIGINAL), 61)
         self.assertEqual(set(PROTO), set(ORIGINAL))
@@ -92,8 +92,10 @@ class AndroidA24CatalogTests(unittest.TestCase):
                     self.fail(f"Unregistered phase for {suffix}")
                     self.assertFalse(row["linuxGoldenSynthetic"])
                 self.assertFalse(row["androidVerified"])
-                self.assertEqual(row["migrationPhase"], phase_for(spec.script))
+                self.assertEqual(row["migrationPhase"], phase_for(row["script"]))
                 self.assertEqual((row["name"], row["script"], row["originalRuntime"]),
+                                 ("CREV", "decoders/Python/crev.py", "python")
+                                 if suffix=="crev" else
                                  (spec.name, spec.script, spec.runtime))
                 self.assertTrue((ROOT / row["script"]).is_file(), suffix)
         for suffix in ("ace","clay","ultra","7net","itv","izph","flexnet","st","apnalite"):
@@ -126,6 +128,12 @@ class AndroidA24CatalogTests(unittest.TestCase):
                  "migrationPhase","sourceCatalog"},
             )
             self.assertFalse(set(row) & {"key","password","privateKey","secret","cryptoKey"})
+
+    def test_public_apk_has_no_python_paths_or_execution_metadata(self):
+        raw = CATALOG.read_text("utf-8")
+        for secret in ("decoders/Python/", '"script":', '"originalRuntime":', '"sourceCatalog":'):
+            self.assertNotIn(secret, raw)
+        self.assertEqual(len(json.loads(raw)["entries"]), 239)
 
     def test_script_detects_byte_level_stale_asset(self):
         result = subprocess.run(

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="file_extension_unsupported_contact">امتداد هذا الملف غير مدعوم. تواصل مع المطور لطلب إضافته.</string>
+    <string name="text_format_unsupported_contact">تنسيق النص أو البروتوكول هذا غير مدعوم. تواصل مع المطور لطلب دعمه.</string>
+    <string name="formats_remote_catalog_note">تتم مزامنة الامتدادات المدعومة بأمان من SP-DECODE Cloud. قد تظهر تنسيقات جديدة دون تحديث التطبيق.</string>
+    <string name="formats_cloud_ready_short">سحابي</string>
+</resources>

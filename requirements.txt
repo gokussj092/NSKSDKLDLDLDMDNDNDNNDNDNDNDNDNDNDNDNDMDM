@@ -1,5 +1,6 @@
 pyTelegramBotAPI==4.28.0
 pycryptodome==3.23.0
+pyelftools==0.32
 argon2-cffi==25.1.0
 msgpack==1.1.1
 requests==2.32.4

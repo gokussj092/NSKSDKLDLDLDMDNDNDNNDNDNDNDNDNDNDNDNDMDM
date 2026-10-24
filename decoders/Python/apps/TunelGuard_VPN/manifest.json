@@ -1,0 +1,82 @@
+{
+  "id": "tunelguard-vpn",
+  "name": "TunelGuard VPN",
+  "package": "tunnel.guard.vpn",
+  "compatibleVersions": [
+    "12.8"
+  ],
+  "versionCode": 128,
+  "engine": "python-stgcm2-tg-aes256gcm-and-tgv-aes128cbc",
+  "engineVersion": 1,
+  "files": {
+    "entrypoint": "file_decoder.py",
+    "extensions": [
+      "tgv"
+    ],
+    "format": "Base64(IV16 || AES-128-CBC/PKCS7(Modified UTF-8 JSON)); TGV_CONFIG known fields use double Android Base64/UTF-8; embedded Server JSON fields use Java UTF-16 XOR",
+    "validation": "APK importer/exporter, independent JDK synthetic entire document and native ARM64 CBC decryption verified. No independent real exported .tgv supplied.",
+    "exporterCertified": false,
+    "passwordAndHwid": "MyPass/DeviceID are preserved policy metadata checked by the app after decryption; they do not derive this build cipher key.",
+    "textPrefixes": []
+  },
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "tunelguard-vpn",
+    "format": "STGCM2.TG.<URL-Base64 nonce12>.<URL-Base64 AES-256-GCM ciphertext+tag16>, AAD STGCM2.TG.; registered Java UTF-16 XOR fields and u8: message variant",
+    "validatedOn": "2026-10-21",
+    "serverFieldNames": 32,
+    "tweakFieldNames": 8,
+    "profileBase64FieldNames": 16,
+    "embeddedVersion": "0.1",
+    "embeddedServersObserved": 1,
+    "embeddedTweaksObserved": 1,
+    "embeddedNonemptyFieldsCompared": 10,
+    "embeddedValidation": "Entire JSON, both arrays and all known encoded fields equal independent JDK oracle",
+    "remoteAuthorization": "User explicitly authorized external catalog consultation",
+    "remoteValidated": false,
+    "remoteStatus": 404,
+    "remoteSource": "https://raw.githubusercontent.com/eddyme23/octo/refs/heads/main/xxTG.js",
+    "remoteValidation": "Original APK updater URL returned HTTP 404 via real Python HTTPS; GitHub file and repository Contents API also return 404. No alternate endpoint guessed.",
+    "publicCatalogVersion": 17,
+    "decodeEnabled": false,
+    "remoteControlRegistered": false,
+    "cloudSource": "Offline worker route registered; public broker unavailable until an authorized source returns a valid authenticated catalog. No separate users endpoint identified."
+  },
+  "icon": {
+    "file": "TunelGuard_VPN.png",
+    "originalFile": "TunelGuard_VPN.webp",
+    "resourceId": "0x7f100003",
+    "source": "base.apk:res/mipmap-xxxhdpi-v4/ic_launcher.webp",
+    "originalSha256": "a1be636abb359351a1902fe22b45be1dd11e652b0274320f9e4d34cdd931788b",
+    "sha256": "bdc4bca16e4c9fc0c446e90cf683eef1fe57f7a10de9c451e8c5ec30890f3f6a",
+    "width": 192,
+    "height": 192,
+    "originalBytes": 18210,
+    "bytes": 28873,
+    "policy": "Original default launcher WebP retained; PNG conversion preserves exact RGBA pixels without resizing."
+  },
+  "dependencies": {
+    "python": ">=3.10",
+    "pycryptodome": "3.23.0",
+    "supportFiles": [
+      "codec.py",
+      "field_names.json",
+      "../HTTP_FenixVPN/codec.py",
+      "../HTTP_FenixVPN/field_names.json"
+    ]
+  },
+  "nativeEvidence": {
+    "library": "libfrkudp.so (arm64-v8a)",
+    "sha256": "24707768a3e709acc09afcaead17401ac6d535c718bdedafb326644c7ecac354",
+    "catalogDecrypt": "0xd81c8",
+    "catalogKey": "0xdae20",
+    "fileDecrypt": "0xdfbac",
+    "fileEncrypt": "0xde90c",
+    "fileKey": "0xe06ec",
+    "executed": "Native catalog-key function and entire AES-CBC decoder for seven padding-boundary lengths plus full independent JDK synthetic .tgv. JNI string allocation, C++ storage and libc/TLS plumbing modeled; AES not modeled."
+  },
+  "sourceApkSha256": "cf9f74da2b59f934ec3f8725092b87556eb10c636660888aa6a7117e65d0f7b8",
+  "branch": "feat/austroplus-vpn-13-0-1-decoders",
+  "pullRequest": 96,
+  "analyzedBaseCommit": "c3734258e99d3f9c46c43bacb0d380f17e085660"
+}

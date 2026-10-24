@@ -5,6 +5,9 @@ import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Assert.*
@@ -26,18 +29,19 @@ class SettingsEnhancementsInstrumentedTest {
         if(ui.onAllNodesWithText(ctx.getString(R.string.whats_new_continue)).fetchSemanticsNodes().isNotEmpty())
             ui.onNodeWithText(ctx.getString(R.string.whats_new_continue)).performClick()
         ui.onNodeWithContentDescription(ctx.getString(R.string.settings)).performClick()
-        // Settings keeps a single compact row until the user opens the sheet.
-        ui.onNodeWithText("Español").assertDoesNotExist()
+        // This is now a dedicated full-screen destination, not the old
+        // ModalBottomSheet. LazyColumn does not compose all 15 rows at once.
+        ui.onNodeWithTag("settings_language_screen").assertDoesNotExist()
         ui.onNodeWithText(ctx.getString(R.string.language_title)).performClick()
-        ui.onNodeWithText("Español").assertExists()
-        ui.onNodeWithText("English").assertExists()
-        ui.onNodeWithText("Português (Brasil)").assertExists()
-        ui.onNodeWithText("العربية").assertExists()
-        ui.onNodeWithText("فارسی").assertExists()
-        ui.onNodeWithText("Français").assertExists()
-        ui.onNodeWithText("Bahasa Indonesia").assertExists()
-        ui.onNodeWithText("Русский").assertExists()
-        ui.onNodeWithText("Deutsch").assertExists()
+        ui.onNodeWithTag("settings_language_screen").assertExists()
+        ui.onNodeWithTag("language_option_system").assertExists()
+        ui.onNodeWithTag("language_option_es").assertExists()
+        ui.onNodeWithTag("settings_language_list")
+            .performScrollToNode(hasTestTag("language_option_it"))
+        ui.onNodeWithTag("language_option_it").assertExists()
+        // Return to Settings before testing privacy and developer links.
+        ui.onNodeWithTag("settings_language_back").performClick()
+        ui.onNodeWithTag("settings_language_screen").assertDoesNotExist()
         ui.onNodeWithText(ctx.getString(R.string.mask_passwords_title)).assertExists()
         // Telegram is the sole contact surface. No repository/source links.
         ui.onNodeWithText(ctx.getString(R.string.contact_developer)).assertExists()

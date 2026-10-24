@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_auto_title">Pembaruan otomatis katalog Server VPN</string>
+    <string name="catalog_auto_detail">Memeriksa versi katalog melalui server SP-DECODE sendiri dengan HTTPS saat aplikasi terbuka dan melakukan pemeriksaan pemulihan berkala di latar belakang jika diizinkan. Data dan ikon baru hanya diunduh saat versi berubah. Tidak memerlukan Firebase, akun, atau token pesan.</string>
+    <string name="catalog_auto_switch">Aktifkan sinkronisasi latar belakang</string>
+</resources>

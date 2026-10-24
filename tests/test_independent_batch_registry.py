@@ -23,7 +23,7 @@ class IndependentFamilyRegistryTests(unittest.TestCase):
     def test_nine_engines_thirteen_extensions(self):
         self.assertEqual(len(INDEPENDENT_DECODERS), 9)
         self.assertEqual(len(independent_file_decoder_specs()), 13)
-        self.assertEqual(len(set(DECODER_REGISTRY) - {'solid'}), 239)
+        self.assertEqual(len(set(DECODER_REGISTRY) - {'solid','1ftnl','awg','creeb'}), 239)
         self.assertEqual(validate_decoder_files(), [])
         original = json.loads((ROOT / "decoders.json").read_text(encoding="utf-8"))
         self.assertEqual(len(original["decoders"]), 61)
@@ -31,9 +31,15 @@ class IndependentFamilyRegistryTests(unittest.TestCase):
             with self.subTest(extension=suffix):
                 self.assertEqual(get_supported_extension("CONFIG" + suffix.upper()), suffix[1:])
                 spec = DECODER_REGISTRY[suffix[1:]]
-                self.assertEqual(spec.script, script)
+                # .crev is explicitly overlaid for the newer CREEB VPN Cloud
+                # handler; its historical Phase F module remains intact.
+                if suffix == ".crev":
+                    self.assertEqual(spec.script, "decoders/Python/apps/CREEB_VPN/file_decoder.py")
+                    self.assertEqual(spec.name, "CREEB VPN 50.0")
+                else:
+                    self.assertEqual(spec.script, script)
+                    self.assertEqual(spec.name, name)
                 self.assertEqual(spec.runtime, "python")
-                self.assertEqual(spec.name, name)
                 module = importlib.import_module("decoders.Python." + Path(script).stem)
                 self.assertTrue(callable(module.run))
                 self.assertIn(suffix, module.EXTENSIONS)

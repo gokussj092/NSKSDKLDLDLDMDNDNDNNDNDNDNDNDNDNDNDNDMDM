@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_npvs_appkey_auth">ऐप कुंजी से इस NPVS फ़ाइल का प्रमाणीकरण नहीं हो सका। संभव है कि यह किसी दूसरे संस्करण का उपयोग करती हो या बदली गई हो। इस विधि में पासवर्ड या प्राप्तकर्ता की निजी कुंजी आवश्यक नहीं है।</string>
+</resources>

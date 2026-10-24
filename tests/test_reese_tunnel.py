@@ -24,7 +24,18 @@ from decoders.Python import reese_tunnel as rt
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = json.loads((ROOT / "tests/golden/reese_vectors.json").read_text("utf-8"))
 CASES = {case["name"]: case for case in FIXTURE["cases"]}
-EXPECTED = FIXTURE["expected"]
+# Golden ciphertext still contains bannerImage. Only this output expectation
+# removes the display-only image, preserving cryptographic test vectors.
+EXPECTED = json.loads(json.dumps(FIXTURE["expected"]))
+def strip_banner_images(node):
+    if isinstance(node, dict):
+        node.pop("bannerImage", None)
+        for value in node.values():
+            strip_banner_images(value)
+    elif isinstance(node, list):
+        for value in node:
+            strip_banner_images(value)
+strip_banner_images(EXPECTED)
 
 
 def raw(name):
@@ -57,7 +68,7 @@ class ReeseTunnelTests(unittest.TestCase):
         self.assertEqual(ctx.exception.code, code)
         self.assertIsNone(rt.run(data, **kwargs))
 
-    def test_all_16_independent_java_vectors_preserve_complete_json(self):
+    def test_all_16_independent_java_vectors_preserve_json_without_banner(self):
         self.assertEqual(len(CASES), 16)
         for name, case in CASES.items():
             with self.subTest(name=name):

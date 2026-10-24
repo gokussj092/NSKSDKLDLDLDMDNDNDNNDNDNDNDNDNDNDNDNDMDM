@@ -1,9 +1,13 @@
 import { adminSettings, adminLogin, authenticateAdmin, validMutation,
   cookieHeader, deleteCookie, revokeAdmin } from "./c6-admin-auth.mjs";
-import { opsStore, maintenanceEnabled, setMaintenance, aggregateMetrics, usageReport } from "./c6-ops-store.mjs";
+import { opsStore, maintenanceEnabled, setMaintenance, aggregateMetrics, usageReport,
+  SERVICE_IDS,serviceMaintenanceStates,setServiceMaintenance,resetErrorBaselines } from "./c6-ops-store.mjs";
 import { settings } from "./c3-config.mjs";
+import {admissionPolicy,setAdmissionPolicy} from "./c11-play-admission.mjs";
+import {providerOverview,updateProvider,PUBLIC_PROVIDER_IDS} from "./c12-provider-controls.mjs";
 import { ehiConfigured,nurConfigured } from "./c35-provider.mjs";
 import { jsonReply } from "./responses.mjs";
+import {readOpsReport,hostHealth} from "./c14-ops-observability.mjs";
 
 const error=(code,status)=>jsonReply({status:"error",error:{code}},status);
 const api=(body,status=200,headers={})=>jsonReply({status:"ok",...body},status,headers);
@@ -44,9 +48,15 @@ export async function statusRequest(request,options={}) {
   try{
     const redis=await (options.storeProvider||opsStore)();
     if(!await authenticateAdmin(redis,request))return error("UNAUTHORIZED",401);
-    const [maintenance,metrics,ping]=await Promise.all([
-      maintenanceEnabled(redis),aggregateMetrics(redis),redis.ping(),
+    const [maintenance,legacyMetrics,ping,serviceMaintenance,playAdmission,providerControls]=await Promise.all([
+      maintenanceEnabled(redis),aggregateMetrics(redis),redis.ping(),serviceMaintenanceStates(redis),
+      admissionPolicy(redis),providerOverview(),
     ]);
+    // Show reset-adjusted current errors when detailed aggregate hashes exist.
+    // The legacy counter remains a fallback for prior deployments/tests.
+    const current=typeof redis.hGetAll==="function"?await usageReport(redis,1):null;
+    const metrics=current?{window:"utc_today",successfulDecodes:legacyMetrics.successfulDecodes,
+      failedDecodes:current.failedDecodes,warnings:current.warnings}:legacyMetrics;
     const cfg=settings();
     // Worker origin cannot be user-controlled.
     let workerReady=false;
@@ -63,7 +73,8 @@ export async function statusRequest(request,options={}) {
       services:{apiConfigured:cfg.configured,redisConnected:ping==="PONG",
         workerReady,ehiImportConfigured:ehiConfigured(),
         nurCatalogImportConfigured:nurConfigured()},
-      maintenance,maintenanceLocked:process.env.CLOUD_FORCE_MAINTENANCE==="true",metrics,
+      maintenance,serviceMaintenance,playAdmission,providerControls,
+      maintenanceLocked:process.env.CLOUD_FORCE_MAINTENANCE==="true",metrics,
       observation:"Counters are aggregate-only; no user content or keys are logged.",
     });
   }catch{return error("SERVICE_UNAVAILABLE",503);}
@@ -76,10 +87,13 @@ export async function maintenanceRequest(request,options={}) {
     const redis=await (options.storeProvider||opsStore)();
     if(!await authenticateAdmin(redis,request,cfg))return error("UNAUTHORIZED",401);
     const body=await parseSmallJson(request,256);
-    if(!own(body,["enabled"])||typeof body.enabled!=="boolean")
-      return error("INVALID_REQUEST",400);
-    await setMaintenance(redis,body.enabled);
-    return api({maintenance:await maintenanceEnabled(redis)});
+    const general=own(body,["enabled"]),specific=own(body,["enabled","service"]);
+    if((!general&&!specific)||typeof body.enabled!=="boolean"||
+      (specific&&!SERVICE_IDS.includes(body.service)))return error("INVALID_REQUEST",400);
+    if(general)await setMaintenance(redis,body.enabled);
+    else await setServiceMaintenance(redis,body.service,body.enabled);
+    return api({maintenance:await maintenanceEnabled(redis),
+      serviceMaintenance:await serviceMaintenanceStates(redis)});
   }catch(cause){
     if(cause?.message==="MAINTENANCE_LOCKED")return error("MAINTENANCE_LOCKED",409);
     return error("SERVICE_UNAVAILABLE",503);
@@ -112,4 +126,87 @@ export async function reportRequest(request,options={}) {
     return api({report:await usageReport(redis,Number(days))},200,
       {"Cache-Control":"private, no-store, max-age=0"});
   }catch{return error("SERVICE_UNAVAILABLE",503);}
+}
+
+/** CSRF-protected, authenticated, short-lived beta admission policy. */
+export async function playAdmissionRequest(request,options={}){
+ const cfg=adminSettings();
+ if(!cfg.enabled)return error("ADMIN_DISABLED",503);
+ if(!validMutation(request,cfg))return error("CSRF_REJECTED",403);
+ try{
+  const redis=await (options.storeProvider||opsStore)();
+  if(!await authenticateAdmin(redis,request,cfg))return error("UNAUTHORIZED",401);
+  const body=await parseSmallJson(request,128);
+  if(!own(body,["integrityRequired"])||typeof body.integrityRequired!=="boolean")
+   return error("INVALID_REQUEST",400);
+  return api({playAdmission:await setAdmissionPolicy(redis,body.integrityRequired)},200,
+   {"Cache-Control":"private, no-store"});
+ }catch(e){
+  if(e?.message==="BETA_LOCKED")return error("BETA_LOCKED",409);
+  return error("SERVICE_UNAVAILABLE",503);
+ }
+}
+
+/** Fixed-provider availability: CSRF protected, authenticated, never writes credentials. */
+export async function providerControlRequest(request,options={}){
+ const cfg=adminSettings();
+ if(!cfg.enabled)return error("ADMIN_DISABLED",503);
+ if(!validMutation(request,cfg))return error("CSRF_REJECTED",403);
+ try{
+  const redis=await (options.storeProvider||opsStore)();
+  if(!await authenticateAdmin(redis,request,cfg))return error("UNAUTHORIZED",401);
+  const body=await parseSmallJson(request,256);
+  if(!own(body,["id","enabled"]) || typeof body.enabled!=="boolean" ||
+     typeof body.id!=="string" || !PUBLIC_PROVIDER_IDS.includes(body.id))
+    return error("INVALID_REQUEST",400);
+  const providerControls=await updateProvider(body.id,body.enabled);
+  return api({providerControls},200,{"Cache-Control":"private, no-store"});
+ }catch(cause){
+  if(cause?.message==="PROVIDER_NOT_CONFIGURED")return error("PROVIDER_NOT_CONFIGURED",409);
+  if(cause?.message==="MAINTENANCE_LOCKED")return error("MAINTENANCE_LOCKED",409);
+  if(cause?.message==="PROVIDER_BUSY")return error("PROVIDER_BUSY",409);
+  return error("SERVICE_UNAVAILABLE",503);
+ }
+}
+
+/** Reset per-format error baselines only; success/warnings/usage history remain untouched. */
+export async function resetErrorsRequest(request,options={}){
+ const cfg=adminSettings();
+ if(!cfg.enabled)return error("ADMIN_DISABLED",503);
+ if(!validMutation(request,cfg))return error("CSRF_REJECTED",403);
+ try{
+  const redis=await (options.storeProvider||opsStore)();
+  if(!await authenticateAdmin(redis,request,cfg))return error("UNAUTHORIZED",401);
+  const body=await parseSmallJson(request,192);
+  if(!own(body,["scope"])&&!own(body,["scope","format"]))return error("INVALID_REQUEST",400);
+  if(body.scope!=="all"&&body.scope!=="format")return error("INVALID_REQUEST",400);
+  if(body.scope==="all"&&Object.hasOwn(body,"format"))return error("INVALID_REQUEST",400);
+  if(body.scope==="format"&&(typeof body.format!=="string"||
+      !/^[a-z0-9ɴ][a-z0-9ɴ._-]{0,52}$/.test(body.format)))return error("INVALID_REQUEST",400);
+  const reset=await resetErrorBaselines(redis,body);
+  return api({reset},200,{"Cache-Control":"private, no-store"});
+ }catch(cause){
+  if(["INVALID_RESET_SCOPE","INVALID_FORMAT","RESET_TOO_MANY_FORMATS"].includes(cause?.message))
+    return error(cause?.message,400);
+  return error("SERVICE_UNAVAILABLE",503);
+ }
+}
+
+/** Private operator-only observability; no endpoint, token, or payload leaves Redis. */
+export async function observabilityRequest(request,options={}){
+ if(!adminSettings().enabled)return error("ADMIN_DISABLED",503);
+ try{
+  const redis=await (options.storeProvider||opsStore)();
+  if(!await authenticateAdmin(redis,request))return error("UNAUTHORIZED",401);
+  const url=new URL(request.url),keys=[...url.searchParams.keys()];
+  if(keys.length>1||keys.some(k=>k!=="days"))return error("INVALID_REQUEST",400);
+  const days=url.searchParams.get("days")||"7";
+  if(!["1","7"].includes(days))return error("INVALID_REQUEST",400);
+  const [report,observability,health]=await Promise.all([
+   usageReport(redis,Number(days)),
+   readOpsReport(redis,Number(days)),
+   hostHealth(redis,{fetchImpl:options.fetchImpl||fetch}),
+  ]);
+  return api({report,observability,health},200,{"Cache-Control":"private, no-store"});
+ }catch{return error("SERVICE_UNAVAILABLE",503);}
 }

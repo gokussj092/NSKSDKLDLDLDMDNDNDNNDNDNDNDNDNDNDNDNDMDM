@@ -15,6 +15,7 @@ internal object CloudNativeTransport {
         endpoint: String,
         json: String,
         bearer: String,
+        clientVersion: String,
     ): String
 
     data class Reply(val status: Int, val body: JSONObject)
@@ -29,10 +30,11 @@ internal object CloudNativeTransport {
             "/api/v1/decode/import/cloud",
             "/api/v1/decode/import/catalog/remote",
             "/api/v1/server-vpn/catalog", "/api/v1/server-vpn/icon",
-            "/api/v1/server-vpn/decode",
+            "/api/v1/server-vpn/decode", "/api/v1/server-vpn/watch",
+            "/api/v1/whats-new", "/api/v1/telemetry",
         )) { "CLOUD_ROUTE_DENIED" }
         val returned = postNative(
-            endpoint, payload.toString(), bearer
+            endpoint, payload.toString(), bearer, BuildConfig.VERSION_NAME
         )
         val newline = returned.indexOf('\n')
         if (newline !in 3..4) throw IOException("CLOUD_INVALID_HTTP_ENVELOPE")

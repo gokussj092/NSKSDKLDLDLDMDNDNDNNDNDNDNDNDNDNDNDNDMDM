@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_npvs_appkey_auth">تعذرت مصادقة ملف NPVS باستخدام مفتاح التطبيق. قد يستخدم إصدارًا مختلفًا أو يكون قد عُدّل. لا تتطلب هذه الطريقة كلمة مرور أو مفتاحًا خاصًا للمستلم.</string>
+</resources>

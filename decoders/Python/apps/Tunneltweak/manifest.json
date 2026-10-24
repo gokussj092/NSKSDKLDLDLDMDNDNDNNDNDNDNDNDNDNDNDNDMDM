@@ -1,0 +1,78 @@
+{
+  "id": "tunneltweak",
+  "name": "Tunneltweak",
+  "package": "com.tunneltweak.loyalteams",
+  "compatibleVersions": [
+    "6.2.1"
+  ],
+  "versionCode": 51,
+  "engine": "python-tut-cbc-pbe-gcm-xor-and-secure-catalog-gcm",
+  "engineVersion": 1,
+  "files": {
+    "entrypoint": "file_decoder.py",
+    "workerEntrypoint": "worker_bridge.py",
+    "extensions": [
+      "tut"
+    ],
+    "configVersions": [
+      6
+    ],
+    "formats": [
+      "Base64(IV16+AES128CBC ciphertext), PKCS5",
+      "TTPBE1:Base64(salt16+nonce12+AES256GCM ciphertext+tag16), PBKDF2SHA256/120000",
+      "Base64(XOR90 JSON) legacy importer"
+    ],
+    "passwordSupported": true,
+    "passwordSource": "user-provided; CLI file/prompt or existing Cloud credentials.password stdin",
+    "hwid": "metadata only; not used for key derivation",
+    "exporterCertified": false,
+    "validation": "APK crypto methods and synthetic Java-produced vectors; independent real exports not supplied",
+    "legacyCompatibility": "Original generic DES raw/Base64 and three-segment GCM engines unchanged in isolated worker"
+  },
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "tunneltweak",
+    "format": "JSON data envelope or raw Base64(salt16+nonce12+AES256GCM+tag16), PBKDF2SHA256/10000; legacy Base64(JSON) and JSON",
+    "validatedOn": "2026-10-20",
+    "validatedTimezone": "UTC",
+    "remoteServersObserved": 1,
+    "remoteConfigsObserved": 53,
+    "embeddedCatalogPresent": false,
+    "expectedAsset": "data_encoded.txt (absent)",
+    "subscriptionKeySupported": "standalone CLI only; provided by user; no real subscription key tested",
+    "publicCatalogVersion": 11,
+    "validation": "complete real JSON parity with recovered Java crypto methods, standalone CLI and isolated worker",
+    "output": "outer metadata and announcement preserved; data replaced by full decoded object",
+    "deploymentEnabledByDefault": false,
+    "brokerValidation": "Fixed headers/DNS/TLS/redirect tests passed; direct GET blocked by environment native DNS EAI_AGAIN, including GitHub; VPS live broker not tested"
+  },
+  "cloudProfiles": {
+    "source": "fixed /api/cloudconfig/<UUID> GET",
+    "cliOption": "--cloud-id",
+    "format": "same .tut; config field decoded with envelope preserved",
+    "validation": "synthetic response only; real UUID not supplied"
+  },
+  "icon": {
+    "file": "Tunneltweak.png",
+    "source": "base.apk:res/mipmap-xxxhdpi-v4/ic_launcher.png",
+    "resourceId": "0x7f0f0000",
+    "width": 192,
+    "height": 192,
+    "bytes": 31632,
+    "sha256": "e7eec681345d4fcbefd699857d2e456d42d7cd6568488d64d578b9d489263a72",
+    "policy": "exact original PNG; no per-app size exclusion"
+  },
+  "dependencies": {
+    "python": ">=3.10",
+    "pycryptodome": "3.23.0",
+    "supportFiles": [
+      "codec.py",
+      "network.py"
+    ],
+    "workerOnly": "repository generic_des.py/generic_aes.py/generic_profiles.py, unchanged"
+  },
+  "sourceApkSha256": "24f6bc80f2b6c53e44d4da4ade270b58da451449f149b84ef17f34ae3be4019e",
+  "branch": "feat/austroplus-vpn-13-0-1-decoders",
+  "pullRequest": 96,
+  "baseMainCommit": "e6cbb5926372aa6b7d36105802bf366a2138c98e"
+}

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="file_extension_unsupported_contact">This file extension is not supported. Contact the developer to request support.</string>
+    <string name="text_format_unsupported_contact">This text format or protocol is not supported. Contact the developer to request support.</string>
+    <string name="formats_remote_catalog_note">Supported extensions are synchronized securely from SP-DECODE Cloud. New Cloud formats can appear without updating the app.</string>
+    <string name="formats_cloud_ready_short">Cloud</string>
+</resources>

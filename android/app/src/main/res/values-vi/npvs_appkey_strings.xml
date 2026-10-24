@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_npvs_appkey_auth">Không thể xác thực tệp NPVS này bằng khóa ứng dụng. Tệp có thể dùng biến thể khác hoặc đã bị chỉnh sửa. Phương thức này không cần mật khẩu hay khóa riêng của người nhận.</string>
+</resources>

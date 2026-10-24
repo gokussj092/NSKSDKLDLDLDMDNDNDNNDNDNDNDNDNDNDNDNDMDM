@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="file_extension_unsupported_contact">Phần mở rộng tệp này chưa được hỗ trợ. Liên hệ nhà phát triển để yêu cầu hỗ trợ.</string>
+    <string name="text_format_unsupported_contact">Định dạng văn bản hoặc giao thức này chưa được hỗ trợ. Liên hệ nhà phát triển để yêu cầu hỗ trợ.</string>
+    <string name="formats_remote_catalog_note">Các phần mở rộng được hỗ trợ được đồng bộ an toàn từ SP-DECODE Cloud. Định dạng mới có thể xuất hiện mà không cần cập nhật ứng dụng.</string>
+    <string name="formats_cloud_ready_short">Đám mây</string>
+</resources>

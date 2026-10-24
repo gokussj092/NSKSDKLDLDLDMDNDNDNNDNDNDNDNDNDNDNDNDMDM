@@ -17,6 +17,7 @@ from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:sys.path.insert(0,str(ROOT))
+from scripts.android_a24_catalog import generate as audited_android_catalog
 from Crypto.Cipher import AES, ChaCha20_Poly1305
 from Crypto.Util.Padding import pad
 from decoders.Python import (
@@ -113,7 +114,7 @@ def encrypt_sources():
     return data
 
 def generate():
-    catalog=json.loads((ROOT/"android/app/src/main/assets/decoder_catalog.json").read_text("utf-8"))
+    catalog=audited_android_catalog()
     entries=[x for x in catalog["entries"] if x["migrationPhase"]=="E"]
     if len(entries)!=27:raise ValueError(f"Expected 27 E formats, found {len(entries)}")
     src=encrypt_sources()

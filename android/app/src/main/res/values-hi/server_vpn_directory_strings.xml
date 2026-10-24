@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- hi: translated primary screens, Cloud and error strings; untranslated text inherits English source. -->
+    <string name="server_vpn_search_hint">VPN ऐप खोजें</string>
+    <string name="server_vpn_filter_all">सभी</string>
+    <string name="server_vpn_filter_enabled">सक्रिय</string>
+    <string name="server_vpn_filter_favorites">पसंदीदा</string>
+    <string name="server_vpn_favorite_add">पसंदीदा में जोड़ें</string>
+    <string name="server_vpn_favorite_remove">पसंदीदा से हटाएँ</string>
+    <string name="server_vpn_manual_refresh">कैटलॉग अभी जाँचें</string>
+    <string name="server_vpn_catalog_refreshing">सर्वर कैटलॉग जाँचा जा रहा है…</string>
+    <string name="server_vpn_no_matches">कोई VPN ऐप मेल नहीं खाता।</string>
+    <string name="server_vpn_catalog_enabled">कैटलॉग में सक्रिय</string>
+    <string name="server_vpn_catalog_disabled">कैटलॉग में निष्क्रिय</string>
+    <string name="server_vpn_new_badge">नया</string>
+    <string name="server_vpn_catalog_update_title">कैटलॉग अपडेट उपलब्ध है</string>
+    <string name="server_vpn_catalog_update_question">VPN सर्वर कैटलॉग का संस्करण %1$d उपलब्ध है। क्या इसे डाउनलोड करें?</string>
+    <string name="server_vpn_catalog_download">डाउनलोड</string>
+    <string name="server_vpn_catalog_current">VPN सर्वर कैटलॉग अद्यतन है।</string>
+    <string name="server_vpn_catalog_updated">VPN सर्वर कैटलॉग अपडेट हो गया।</string>
+    <string name="server_vpn_catalog_update_error">कैटलॉग की जाँच या डाउनलोड नहीं हो सका। फिर प्रयास करें।</string>
+</resources>

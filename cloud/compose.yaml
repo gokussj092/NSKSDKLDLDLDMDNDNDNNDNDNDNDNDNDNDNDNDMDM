@@ -18,6 +18,8 @@ services:
       CLOUD_GOOGLE_PLAY_PACKAGE: ${CLOUD_GOOGLE_PLAY_PACKAGE:-}
       CLOUD_GOOGLE_SERVICE_ACCOUNT_JSON: ${CLOUD_GOOGLE_SERVICE_ACCOUNT_JSON:-}
       CLOUD_REQUIRE_LICENSED: ${CLOUD_REQUIRE_LICENSED:-true}
+      # Requires explicit VPS opt-in AND time-limited Redis/admin action.
+      CLOUD_BETA_ADMISSION_ENABLED: ${CLOUD_BETA_ADMISSION_ENABLED:-false}
       CLOUD_REQUIRE_STRONG_INTEGRITY: ${CLOUD_REQUIRE_STRONG_INTEGRITY:-false}
       # C6 admin disabled unless every independent server-side value is provisioned.
       CLOUD_ADMIN_ENABLED: ${CLOUD_ADMIN_ENABLED:-false}
@@ -38,7 +40,13 @@ services:
       CLOUD_NUR_CATALOG_URL: ${CLOUD_NUR_CATALOG_URL:-}
       CLOUD_SERVER_VPN_ENABLED: ${CLOUD_SERVER_VPN_ENABLED:-false}
       # Must increase on every roster, icon or provider-availability change.
-      CLOUD_SERVER_VPN_CATALOG_VERSION: ${CLOUD_SERVER_VPN_CATALOG_VERSION:-7}
+      CLOUD_SERVER_VPN_CATALOG_VERSION: ${CLOUD_SERVER_VPN_CATALOG_VERSION:-11}
+      # Optional versioned release notes. Validated server-side, no APK update required.
+      CLOUD_WHATS_NEW_JSON: ${CLOUD_WHATS_NEW_JSON:-}
+    # Only nonsecret, allowlisted provider switches live in this persistent
+    # named volume. Redis sessions/challenges remain ephemeral and isolated.
+    volumes:
+      - provider-control:/app/provider-control:rw
     ports:
       # Bound to host loopback only; public HTTPS reverse proxy is a later phase.
       - "127.0.0.1:3000:3000"
@@ -111,6 +119,9 @@ services:
       timeout: 8s
       retries: 6
       start_period: 30s
+
+volumes:
+  provider-control: {}
 
 networks:
   edge: {}

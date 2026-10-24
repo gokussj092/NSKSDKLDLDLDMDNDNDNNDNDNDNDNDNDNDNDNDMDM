@@ -1,0 +1,64 @@
+{
+  "id": "http-jireh",
+  "name": "HTTP Jireh",
+  "package": "com.jirehvpn",
+  "compatibleVersions": [
+    "2.0"
+  ],
+  "versionCode": 11,
+  "engine": "python-nibble-sha256-aes-cbc-rot22-and-shared-sks",
+  "engineVersion": 1,
+  "files": {
+    "entrypoint": "file_decoder.py",
+    "extensions": [
+      "sks"
+    ],
+    "formats": [
+      "AES-128-GCM/PBKDF2-HMAC-SHA256/1000 salt32 nonce12 tag16",
+      "legacy raw DES-ECB/PKCS5"
+    ],
+    "sharedEngine": "../HTTP_FenixVPN/codec.py",
+    "exporterCertified": false,
+    "validation": "APK import paths and independent synthetic Java vectors; real exported file not supplied",
+    "textPrefixes": [],
+    "legacyCompatibility": "Existing .sks historical JSON d/v route preserved"
+  },
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "http-jireh",
+    "format": "nibble alphabet -> Base64 -> AES-256-CBC, SHA256(uppercase password hex), zero IV; Base64/AES-128-CBC/zero IV/Java ROT22 for known fields",
+    "validatedOn": "2026-10-19",
+    "localServersObserved": 1,
+    "remoteServersObserved": 109,
+    "localUsersObserved": 1,
+    "remoteUsersObserved": 1,
+    "decodedRemoteServerFields": 1744,
+    "validation": "Complete JSON parity with normalized independent Java oracle; offline worker and real CLI",
+    "cloudSource": "servers only; standalone --users fetches fixed separate user catalog",
+    "publicCatalogVersion": 10,
+    "deploymentEnabledByDefault": false
+  },
+  "icon": {
+    "file": "HTTP_Jireh.png",
+    "source": "split_config.xhdpi.apk:res/drawable-xhdpi-v4/ic_launcher.png",
+    "resourceId": "0x7f0800ce",
+    "width": 512,
+    "height": 512,
+    "bytes": 141600,
+    "sha256": "91d4b152a6087a0b60656de9d03444c60199ab4928d8af0c517ab5be0270088e",
+    "policy": "preserve exact original PNG without app-specific size exclusion"
+  },
+  "dependencies": {
+    "python": ">=3.10",
+    "pycryptodome": "3.23.0",
+    "supportFiles": [
+      "codec.py",
+      "../HTTP_FenixVPN/codec.py",
+      "../HTTP_FenixVPN/field_names.json"
+    ]
+  },
+  "sourceApkSha256": "d97c8cc35769acaf257d76c58f978a9e5716f6e7752486002e166bc230d7ff91",
+  "branch": "feat/austroplus-vpn-13-0-1-decoders",
+  "pullRequest": 96,
+  "baseMainCommit": "e6cbb5926372aa6b7d36105802bf366a2138c98e"
+}

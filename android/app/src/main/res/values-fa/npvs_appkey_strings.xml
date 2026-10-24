@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_npvs_appkey_auth">احراز اصالت این فایل NPVS با کلید برنامه ممکن نشد. ممکن است از گونهٔ متفاوتی استفاده کند یا تغییر کرده باشد. این روش به گذرواژه یا کلید خصوصی گیرنده نیاز ندارد.</string>
+</resources>

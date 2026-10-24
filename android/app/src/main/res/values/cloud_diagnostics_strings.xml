@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_report_action">Report error</string>
+    <string name="cloud_report_sent">Report received: %1$s</string>
+    <string name="cloud_report_failed">The report could not be submitted. Try again later.</string>
+    <string name="cloud_usage_title">Anonymous installation statistics</string>
+    <string name="cloud_usage_detail">SP-DECODE counts approximate active installations once a day to plan server capacity. A random installation code is used, not your Android ID, HWID or advertising ID.</string>
+    <string name="cloud_usage_footnote">Included with Cloud use after you accept its privacy terms. No file contents, passwords or decoded configurations are included.</string>
+</resources>

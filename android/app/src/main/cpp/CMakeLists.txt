@@ -10,4 +10,10 @@ add_library(spdecode SHARED spdecode_transport.cpp)
 target_include_directories(spdecode PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
 set_target_properties(spdecode PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
 target_compile_options(spdecode PRIVATE -Wall -Wextra -Werror -fvisibility=hidden -fstack-protector-strong)
-target_link_options(spdecode PRIVATE -Wl,-z,relro,-z,now)
+target_link_options(spdecode PRIVATE
+  -Wl,-z,relro,-z,now
+  -Wl,-z,max-page-size=16384
+  -Wl,-z,common-page-size=16384
+)
+# NDK r27 does not align PT_LOAD to 16 KiB by default. Both 4/16 KiB
+# Android devices must be able to load this same libspdecode.so.

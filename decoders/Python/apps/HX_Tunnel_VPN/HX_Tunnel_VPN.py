@@ -112,12 +112,15 @@ def _mx(total, y, z, position, e, key):
             ^ (((z >> 5) ^ (y << 2)) + ((y >> 3) ^ (z << 4)))) & MASK
 
 
-def decrypt_catalog_bytes(data: bytes | str) -> bytes:
+def decrypt_catalog_bytes(data: bytes | str, *, key: bytes | None = None) -> bytes:
+    """Shared APK XXTEA variant; select the current default key at call-time."""
+    if key is None:
+        key = CATALOG_KEY
     encrypted = _base64(_text(data))
     if len(encrypted) < 8 or len(encrypted) % 4:
         raise DecodeError("TRUNCATED", "El catálogo no contiene palabras XXTEA completas.")
     values = list(struct.unpack("<" + "I" * (len(encrypted) // 4), encrypted))
-    key = struct.unpack("<4I", CATALOG_KEY[:16].ljust(16, b"\0"))
+    key = struct.unpack("<4I", key[:16].ljust(16, b"\0"))
     count = len(values)
     total = ((6 + 52 // count) * DELTA) & MASK
     y = values[0]

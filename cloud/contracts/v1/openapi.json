@@ -128,7 +128,7 @@
     "/api/v1/decode/file": {
       "post": {
         "summary": "Upload file for decoding",
-        "description": "C3 gate is disabled by default; success only after Play Integrity admission, Redis checks and private worker readiness.",
+        "description": "C3 gate is disabled by default; success only after Play Integrity admission, Redis checks and private worker readiness. Decodes an authenticated file upload. Optional credentials are accepted only for hc (password and/or hwid) and tut (password only). Tunneltweak TTPBE1 returns PASSWORD_REQUIRED or AUTH_FAILED through the existing error contract; credentials are passed to the isolated worker over stdin.",
         "responses": {
           "200": {
             "description": "Authenticated operation completed"
@@ -307,6 +307,16 @@
           },
           "401": {
             "description": "Sanitized request, session, remote-network, integrity, size or decoder error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReply"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "HTTP Injector Cloud reference is no longer available (expired, deleted, or one-use). This is not a decoder failure.",
             "content": {
               "application/json": {
                 "schema": {
@@ -882,7 +892,11 @@
                       "robust-tunnel",
                       "trv-tunnel",
                       "4u-tunnel-lite",
-                      "ac-tunnel-vpn"
+                      "ac-tunnel-vpn",
+                      "austroplus-vpn",
+                      "http-fenixvpn",
+                      "http-jireh",
+                      "tunneltweak"
                     ]
                   },
                   "consent": {

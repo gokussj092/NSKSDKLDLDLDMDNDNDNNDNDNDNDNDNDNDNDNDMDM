@@ -1,0 +1,119 @@
+{
+  "id": "xhypher-tunnel-pro",
+  "name": "Xhypher Tunnel Pro",
+  "package": "pro.xhypher.tunnel",
+  "compatibleVersions": [
+    "43"
+  ],
+  "versionCode": 43,
+  "engine": "python-renz-aes128cbc-xxtea-threefish256-pbkdf2-aes256cbc-invisible",
+  "engineVersion": 1,
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "xhypher-tunnel-pro",
+    "source": "https://raw.githubusercontent.com/XyrussProject/infinite88/refs/heads/main/xhyphertunnelpro888.hs",
+    "validatedOn": "2026-10-22",
+    "remoteAuthorization": "User-authorized fixed public catalog read",
+    "remoteValidated": true,
+    "remoteServersObserved": 57,
+    "remoteNetworksObserved": 1161,
+    "remoteVersion": "2.665",
+    "remoteFieldsProcessed": 10055,
+    "remoteNonemptyFieldsCompared": 7363,
+    "sourceEvidence": [
+      {
+        "source": "embedded-catalog.bin",
+        "bytes": 7832,
+        "sha256": "97b628a80785d69ce138204bbc2ec2815dd64b01f917305410546defde603850",
+        "version": "1.0.0",
+        "servers": 1,
+        "networks": 1,
+        "processed": 21,
+        "nonempty": 15,
+        "mode2": 4,
+        "mode0": 9,
+        "mode1": 2,
+        "completeJdkEqual": true
+      },
+      {
+        "source": "download.bin",
+        "bytes": 1386712,
+        "sha256": "d435a57bdd74a72f84337b81a35cb2f9d4f95b37198d2afa17c6dd1758524d32",
+        "version": "2.665",
+        "servers": 57,
+        "networks": 1161,
+        "processed": 10055,
+        "nonempty": 7363,
+        "mode2": 72,
+        "mode0": 5638,
+        "mode1": 1653,
+        "completeJdkEqual": true
+      }
+    ],
+    "runtimeValidation": {
+      "completeRealWorkerEqual": true,
+      "completeLiveCliEqual": true,
+      "completeStdinCliEqual": true,
+      "renderedBytes": 858366,
+      "remoteVersion": "2.665",
+      "servers": 57,
+      "networks": 1161
+    },
+    "publicCatalogVersion": 32,
+    "publicCatalogCards": 34,
+    "deploymentEnabledByDefault": false,
+    "validation": "Entire embedded and actual remote JSON equal independent JDK; original ARM64 invisible/XXTEA/Threefish primitives independently match. Live HTTPS CLI, stdin and isolated worker equal full result.",
+    "zeroCiphertextRecovery": "Preserve ciphertext zero bytes to the next CBC boundary; original byte-wise trim would cut three actual fields. All recovered values equal JDK, all affected Threefish streams equal original native output.",
+    "authenticatedCiphertext": false,
+    "testScope": "4 Xhypher tests, 4 selected RENZ regressions and 46 focused web checks; no full project suites; controlled Node transport, real Python HTTPS/CLI/worker."
+  },
+  "files": {
+    "entrypoint": "file_decoder.py",
+    "supported": true,
+    "extensions": [
+      "xhypher"
+    ],
+    "canonicalScript": "../../renz.py",
+    "newRouteRegistered": false,
+    "realExportSupplied": false,
+    "exporterCertified": false,
+    "validation": "Existing canonical RENZ file/text routes preserved with app-scoped invisible and aligned Threefish updates. Synthetic JDK profile, legacy variants and CLI verified; no independent real build-43 export or Android roundtrip."
+  },
+  "sharing": {
+    "shortLinkRemoteLookupSupported": false,
+    "serviceCredentialsUsed": false
+  },
+  "icon": {
+    "file": "Xhypher_Tunnel_Pro.png",
+    "source": "base.apk:res/i/c8.png",
+    "width": 512,
+    "height": 512,
+    "pngBytes": 102502,
+    "pngSha256": "f32f6d6c2044ee507741b4b389f53b9fc03922800deaac66cda1dd094ece9e72",
+    "policy": "Exact original PNG bytes, no redraw, conversion or resize"
+  },
+  "dependencies": {
+    "python": ">=3.10",
+    "pycryptodome": "3.23.0",
+    "supportFiles": [
+      "codec.py",
+      "../../renz.py"
+    ],
+    "sharedSourceSha256": {
+      "../../renz.py": "dab53968f15bd2f82329aae3bd64cce2f66c1f0991ac18e8f066c355ba3c04f4"
+    }
+  },
+  "sourceApkSha256": "206b99ea205115274aeb9022c5e31cc1e4bbfea22a017eef898348252c37a214",
+  "sourceNativeSha256": "046eaccf1974d6c9a0c4af664d226ce84548dc4169a72ec564663c6444bca2fd",
+  "analysisTools": [
+    "scripts/apk_analysis/inspect_apk.py",
+    "scripts/apk_analysis/decompile.py",
+    "scripts/apk_analysis/paranoid_strings.py",
+    "scripts/apk_analysis/elf_inspect.py",
+    "scripts/apk_analysis/arm64_function.py"
+  ],
+  "analysisLimit": "JADX reported 5 errors; documented source/native paths independently inspected. Native type 3 is an APK-checker DEX, not configuration support.",
+  "branch": "feat/austroplus-vpn-13-0-1-decoders",
+  "pullRequest": 96,
+  "analyzedBaseCommit": "768b00ae618d4df75279d36a28126e34375309d4"
+}

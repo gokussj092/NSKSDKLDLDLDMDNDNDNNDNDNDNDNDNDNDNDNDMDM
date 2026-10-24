@@ -79,11 +79,11 @@ jobs:
       - name: C4 and C5 source isolation
         run: |
           PYTHONPATH=. python -m unittest tests.test_cloud_c4_android_bridge tests.test_cloud_c5_source_isolation -v
-      - name: Install NDK CMake and Android API 35
+      - name: Install NDK CMake and Android API 36
         run: |
           SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -n 1)"
           yes | "$SDKMANAGER" --licenses >/dev/null || true
-          "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.0" "cmake;3.22.1" "ndk;27.2.12479018"
+          "$SDKMANAGER" "platforms;android-36" "build-tools;35.0.0" "cmake;3.22.1" "ndk;27.2.12479018"
       - name: Assemble Cloud APK with synthetic public HTTPS origin
         working-directory: android
         env:

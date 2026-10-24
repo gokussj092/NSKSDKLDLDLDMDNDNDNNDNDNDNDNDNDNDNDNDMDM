@@ -8,6 +8,8 @@
 namespace {
 constexpr size_t kMaxRequestBytes = 12 * 1024 * 1024;
 constexpr size_t kMaxReplyBytes = 6 * 1024 * 1024;
+// Server-VPN MKK only: the signed JSON envelope carries both raw and structured data.
+constexpr size_t kMaxMkkReplyBytes = 96 * 1024 * 1024;
 constexpr jint kConnectTimeoutMs = 10000;
 constexpr jint kReadTimeoutMs = 25000;
 constexpr jint kNurCatalogReadTimeoutMs = 165000; // heavy server-side Argon2id
@@ -57,8 +59,11 @@ bool safePath(const std::string& path) {
         path == "/api/v1/decode/import/cloud" ||
         path == "/api/v1/decode/import/catalog/remote" ||
         path == "/api/v1/server-vpn/catalog" ||
+        path == "/api/v1/server-vpn/watch" ||
+        path == "/api/v1/whats-new" ||
         path == "/api/v1/server-vpn/icon" ||
-        path == "/api/v1/server-vpn/decode";
+        path == "/api/v1/server-vpn/decode" ||
+        path == "/api/v1/telemetry";
 }
 bool safeBearer(const std::string& token) {
     if (token.size()>2048) return false;
@@ -87,12 +92,17 @@ bool setHeader(JNIEnv* env,jobject conn,jclass cls,jmethodID method,
 // C++ owns network initiation, route verification, HTTP method, request headers,
 // size limits and reading. Android's HttpsURLConnection provides platform TLS
 // certificate/hostname verification; certificate validation is never disabled.
-jstring post(JNIEnv* env,jstring pathArg,jstring bodyArg,jstring bearerArg) {
+jstring post(JNIEnv* env,jstring pathArg,jstring bodyArg,jstring bearerArg,jstring versionArg) {
     const std::string base=SPDECODE_CLOUD_ORIGIN;
     const std::string path=utf(env,pathArg);
     const std::string body=utf(env,bodyArg);
     const std::string bearer=utf(env,bearerArg);
-    if (!safeBase(base) || !safePath(path) || !safeBearer(bearer) ||
+    const std::string clientVersion=utf(env,versionArg);
+    const bool validVersion=clientVersion.size()>=5 && clientVersion.size()<=11 &&
+        std::all_of(clientVersion.begin(),clientVersion.end(),[](unsigned char c){
+            return std::isdigit(c) || c=='.';
+        }) && std::count(clientVersion.begin(),clientVersion.end(),'.')==2;
+    if (!validVersion || !safeBase(base) || !safePath(path) || !safeBearer(bearer) ||
         body.empty() || body.size()>kMaxRequestBytes) {
         fail(env,"CLOUD_NATIVE_REQUEST_REJECTED");return nullptr;
     }
@@ -166,6 +176,11 @@ jstring post(JNIEnv* env,jstring pathArg,jstring bodyArg,jstring bearerArg) {
     if(ok)ok=setHeader(env,conn,connectionClass,setProperty,"Accept","application/json");
     if(ok)ok=setHeader(env,conn,connectionClass,setProperty,"Accept-Encoding","identity");
     if(ok)ok=setHeader(env,conn,connectionClass,setProperty,"Cache-Control","no-store");
+    if(ok)ok=setHeader(env,conn,connectionClass,setProperty,"X-SPDecode-App-Version",clientVersion);
+    // Capability negotiation for the new credential dialog. Older APKs omit
+    // this header automatically. It is not trusted for authentication.
+    if(ok && (path == "/api/v1/decode/file" || path == "/api/v1/decode/text"))
+        ok=setHeader(env,conn,connectionClass,setProperty,"X-SPDecode-Credential-Prompts","1");
     if(ok && !bearer.empty())ok=setHeader(env,conn,connectionClass,setProperty,"Authorization","Bearer "+bearer);
     if(!ok) {
         clearException(env);env->CallVoidMethod(conn,disconnect);
@@ -201,13 +216,16 @@ jstring post(JNIEnv* env,jstring pathArg,jstring bodyArg,jstring bearerArg) {
     }
     jbyteArray buffer=env->NewByteArray(8192);
     std::string result;
+    const size_t replyCap=(path=="/api/v1/server-vpn/decode" &&
+        body.find("mkk-hyper")!=std::string::npos)
+        ? kMaxMkkReplyBytes : kMaxReplyBytes;
     bool oversize=false,readFailed=false;
     for(;;) {
         const jint n=env->CallIntMethod(input,read,buffer,0,8192);
         if(clearException(env)){readFailed=true;break;}
         if(n<0)break;
         if(n==0)continue;
-        if(result.size()+static_cast<size_t>(n)>kMaxReplyBytes){oversize=true;break;}
+        if(result.size()+static_cast<size_t>(n)>replyCap){oversize=true;break;}
         const size_t offset=result.size();
         result.resize(offset+static_cast<size_t>(n));
         env->GetByteArrayRegion(buffer,0,n,reinterpret_cast<jbyte*>(&result[offset]));
@@ -245,6 +263,6 @@ jstring post(JNIEnv* env,jstring pathArg,jstring bodyArg,jstring bearerArg) {
 
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_ghostdeveloper_spdecode_cloud_CloudNativeTransport_postNative(
-    JNIEnv* env,jobject,jstring endpoint,jstring body,jstring bearer) {
-    return post(env,endpoint,body,bearer);
+    JNIEnv* env,jobject,jstring endpoint,jstring body,jstring bearer,jstring clientVersion) {
+    return post(env,endpoint,body,bearer,clientVersion);
 }

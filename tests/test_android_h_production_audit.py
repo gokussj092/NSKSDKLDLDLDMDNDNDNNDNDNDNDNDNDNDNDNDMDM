@@ -14,7 +14,9 @@ ROOT = Path(__file__).resolve().parents[1]
 class PhaseHProductionAuditTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.data = inspect("1.1.4", 25)
+        # Audit the actual declared version instead of a frozen prior build.
+        # inspect() independently validates the version/code and NO-GO release gate.
+        cls.data = inspect()
 
     def test_source_inventory_still_exactly_239(self):
         self.assertEqual(self.data["sourceGate"], "PASS",
@@ -35,30 +37,33 @@ class PhaseHProductionAuditTests(unittest.TestCase):
 
     def test_no_unverified_real_exporter_is_claimed_certified(self):
         self.assertTrue(self.data["assertions"]["no_real_vendor_exporters_claimed"])
-        self.assertEqual(self.data["productionGate"],"OWNER-GO-PENDING-CI-SIGNING")
+        self.assertEqual(self.data["productionGate"],"NO-GO")
         self.assertGreaterEqual(len(self.data["pendingEvidence"]),8)
         flags={row["gate"] for row in self.data["pendingEvidence"]}
         self.assertIn("realExporterFormats",flags)
         self.assertIn("signingInstallUpgrade",flags)
         self.assertIn("real_text_protocol_version_matrix",flags)
 
-    def test_documented_owner_go_only_applies_to_1_1_4_not_future_versions(self):
+    def test_previous_owner_approval_does_not_transfer_to_play_beta(self):
         readiness=json.loads((ROOT/"release/android-readiness.json").read_text("utf-8"))
-        self.assertEqual(readiness["stableVersion"],"1.1.4")
-        self.assertEqual(readiness["decision"],"OWNER-GO")
+        self.assertEqual(readiness["stableVersion"],self.data["targetVersion"])
+        self.assertGreaterEqual(self.data["targetVersionCode"],30)
+        self.assertEqual(readiness["decision"],"NO-GO")
+        self.assertFalse(readiness["ownerApproval"])
         self.assertFalse(readiness["publicPreviewApproval"])
-        self.assertTrue(readiness["ownerStableAcceptance"]["approved"])
-        self.assertEqual([],check(readiness,"stable","1.1.4"))
-        self.assertTrue(check(readiness,"public-preview","1.1.4"))
-        self.assertTrue(check(readiness,"stable","1.1.2"))
-        self.assertTrue(check(readiness,"stable","1.1.5"))
-        self.assertTrue(check(readiness,"stable","1.0.7"))
-        self.assertEqual(self.data["productionGate"],"OWNER-GO-PENDING-CI-SIGNING")
-        tampered=copy.deepcopy(readiness)
-        tampered["ownerStableAcceptance"]["report"]="docs/android/fake-report.md"
-        self.assertTrue(check(tampered,"stable","1.1.4"))
-        # Owner's manual QA report does not convert the missing external
-        # evidence into independent/current-exporter certification.
+        self.assertFalse(readiness["ownerStableAcceptance"]["approved"])
+        self.assertEqual(self.data["productionGate"],"NO-GO")
+        self.assertTrue(check(readiness,"stable",self.data["targetVersion"]))
+        self.assertTrue(check(readiness,"public-preview",self.data["targetVersion"]))
+        prior=copy.deepcopy(readiness)
+        prior.update({"stableVersion":"1.1.4","decision":"OWNER-GO","ownerApproval":True})
+        prior["ownerStableAcceptance"]={
+            "approved":True,"version":"1.1.4",
+            "report":"docs/android/RELEASE_1_1_4_PRODUCTION.md",
+        }
+        self.assertEqual([],check(prior,"stable","1.1.4"))
+        self.assertTrue(check(prior,"stable",self.data["targetVersion"]))
+        self.assertTrue(check(prior,"public-preview","1.1.4"))
         self.assertEqual(0,self.data["catalog"]["certifiedCurrentExporterSuffixes"])
 
     def test_whatsnew_and_catalog_status_all_four_locales(self):

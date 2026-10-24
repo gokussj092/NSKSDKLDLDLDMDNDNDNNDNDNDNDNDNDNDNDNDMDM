@@ -32,17 +32,23 @@ export async function createChallenge(redis, request) {
   if (!await reserveChallenge(redis, challengeId, nonce, ip)) return { error:"SERVICE_UNAVAILABLE", status:503 };
   return { challengeId, nonce, expiresIn:limits.challengeTtlSeconds };
 }
-export async function issueSession(redis, request, body, cfg, verifier = verifyPlayToken) {
+export async function issueSession(redis, request, body, cfg, verifier = verifyPlayToken, policy = {integrityRequired:true}) {
   const ip = ipKey(request);
   const limited = await throttle(redis,"spc3:admission-limit:"+ip,20,900);
   if (!limited) return { error:"RATE_LIMITED", status:429 };
   if (!body || typeof body !== "object" || Array.isArray(body) ||
       typeof body.challengeId !== "string" || !/^[0-9a-f-]{36}$/.test(body.challengeId) ||
-      typeof body.integrityToken !== "string" || body.integrityToken.length > 16384) return { error:"INVALID_REQUEST",status:400 };
+      (body.integrityToken!==undefined && (typeof body.integrityToken !== "string" || body.integrityToken.length>16384))) return { error:"INVALID_REQUEST",status:400 };
   // GETDEL is atomic and consumes challenge even if token is forged/replayed.
   const challenge = await consumeChallenge(redis, body.challengeId, ip);
   if (!challenge) return { error:"EXPIRED_CHALLENGE",status:401 };
-  if (!await verifier(body.integrityToken,challenge.nonce,cfg)) return { error:"INTEGRITY_REJECTED",status:403 };
+  if(policy.integrityRequired){
+    if(typeof body.integrityToken!=="string"||body.integrityToken.length<80 ||
+       !await verifier(body.integrityToken,challenge.nonce,cfg))
+      return {error:"INTEGRITY_REJECTED",status:403};
+  }else if(body.integrityToken!==undefined && body.integrityToken!==""){
+    return {error:"INVALID_REQUEST",status:400};
+  }
   const now = Math.floor(Date.now()/1000);
   const claims = {iss:"spdecode-cloud",aud:"spdecode-android-v1",scope:"decode",iat:now,exp:now+limits.sessionTtlSeconds,jti:randomUUID()};
   if (!await rememberSession(redis,claims.jti,claims.exp)) return {error:"SERVICE_UNAVAILABLE",status:503};

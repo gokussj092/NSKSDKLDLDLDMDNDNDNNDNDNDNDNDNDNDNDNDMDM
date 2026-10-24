@@ -17,4 +17,8 @@ class OfflineHistoryServices(context:Context):HistoryServices {
 
 class SpDecodeApplication:Application() {
     val services:HistoryServices by lazy { OfflineHistoryServices(this) }
+    override fun onCreate() {
+        super.onCreate()
+        // Own-VPS HTTPS sync needs no messaging SDK or device registration.
+    }
 }

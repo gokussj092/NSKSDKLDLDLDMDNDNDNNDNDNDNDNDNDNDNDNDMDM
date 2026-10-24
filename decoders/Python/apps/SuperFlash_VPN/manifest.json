@@ -1,0 +1,115 @@
+{
+  "id": "superflash-vpn",
+  "name": "SuperFlash VPN",
+  "package": "speicers.diablo.vpn",
+  "compatibleVersions": [
+    "184.0.1"
+  ],
+  "versionCode": 184,
+  "engine": "python-sv5c-v2-ed25519-xchacha20poly1305-aes256cbc-rot5",
+  "engineVersion": 1,
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "superflash-vpn",
+    "sources": {
+      "servers": "https://raw.githubusercontent.com/apksdemons/apks2/refs/heads/main/supervpn/servr_superflash_sv5c",
+      "users": "https://raw.githubusercontent.com/apksdemons/apks2/refs/heads/main/supervpn/user_superflash_sv5c"
+    },
+    "validatedOn": "2026-10-22",
+    "remoteAuthorization": "Explicit user authorization for external server and user catalogs",
+    "remoteValidated": true,
+    "remoteServersObserved": 268,
+    "remoteUsersObserved": 1,
+    "remoteVersions": {
+      "servers": "27",
+      "users": "5"
+    },
+    "remoteFieldsProcessed": 2900,
+    "remoteNonemptyFieldsCompared": 2189,
+    "sourceEvidence": [
+      {
+        "source": "servers.sv5c",
+        "records": 234,
+        "fields": 2532,
+        "nonempty": 1928,
+        "version": "2",
+        "nativeSodiumJdkCompleteEqual": true,
+        "bytes": 331166,
+        "sha256": "912ffd04f137c24223d57f824c802f106eb34f10efa363010f2308c358484ac0"
+      },
+      {
+        "source": "users.sv5c",
+        "records": 1,
+        "fields": 6,
+        "nonempty": 6,
+        "version": "4",
+        "nativeSodiumJdkCompleteEqual": true,
+        "bytes": 1233,
+        "sha256": "208cb9271a01bb7c7a8eb89848fdab708715b6041f2ffc9471293ee652509f9b"
+      },
+      {
+        "source": "servers-download.bin",
+        "records": 268,
+        "fields": 2894,
+        "nonempty": 2183,
+        "version": "27",
+        "nativeSodiumJdkCompleteEqual": true,
+        "bytes": 412505,
+        "sha256": "21a287e0a5226231e421ac6b16b114a3d1be30ca7ce782895def1680923c53cb"
+      },
+      {
+        "source": "users-download.bin",
+        "records": 1,
+        "fields": 6,
+        "nonempty": 6,
+        "version": "5",
+        "nativeSodiumJdkCompleteEqual": true,
+        "bytes": 1233,
+        "sha256": "0d276bc2717d650fc5c76fe5030fbe542365c310de870d0022e91f400074df0a"
+      }
+    ],
+    "validation": "Entire actual remote and embedded documents equal original ARM64 KDF/AAD + host libsodium + JDK fields; real CLI --all, stdin outside repo and isolated worker return the complete pair with isPartial:false.",
+    "publicCatalogVersion": 29,
+    "publicCatalogCards": 31,
+    "deploymentEnabledByDefault": false,
+    "testScope": "3 focused Python and 30 web checks; no full suites. Python HTTPS/CLI and isolated process real; Node transport/HTTP worker controlled.",
+    "formatVersion": 2,
+    "securityRelease": 157,
+    "signatureRequired": true
+  },
+  "files": {
+    "supported": false,
+    "validation": "Catalog-only integration; no new exported-file route or exporter certification."
+  },
+  "icon": {
+    "file": "SuperFlash_VPN.png",
+    "source": "base.apk:res/mipmap-xxxhdpi/ic_launcher.png",
+    "width": 192,
+    "height": 192,
+    "pngBytes": 16109,
+    "pngSha256": "69a0efc8ac0e713e705c7935524e340b99f7dd5c6404cdb4162cd60b0deae214",
+    "policy": "Exact existing launcher raster PNG, no redraw, resize or conversion; adaptive XML not reconstructed."
+  },
+  "dependencies": {
+    "python": ">=3.10",
+    "pycryptodome": "3.23.0",
+    "supportFiles": [
+      "codec.py",
+      "../HTTP_FenixVPN/codec.py",
+      "../HTTP_FenixVPN/field_names.json"
+    ],
+    "sharedSourceSha256": {
+      "../HTTP_FenixVPN/codec.py": "7e3de48e36d88dcbfa9afa94cc736d763bd7fe89de6d6d87d1d6ecb31e456c34",
+      "../HTTP_FenixVPN/field_names.json": "0352b854bbb8153ac6a961e624e19e93de32ffdd3acc618d5f1a5ca02b2ad798"
+    }
+  },
+  "sourceApkSha256": "3bf75d95c878884811a924b06b6d4be7e92e44a4bc895670f192a9bd4b7d1f25",
+  "sourceNativeSha256": "d98368bf814482a9eb29fe246916cfc43e465ce07e17cd3de949d5def8a186fb",
+  "analysisTools": [
+    "scripts/apk_analysis/elf_inspect.py",
+    "scripts/apk_analysis/arm64_function.py"
+  ],
+  "branch": "feat/austroplus-vpn-13-0-1-decoders",
+  "pullRequest": 96,
+  "analyzedBaseCommit": "16c0f21352835aedf92192c11e310d502137fa05"
+}

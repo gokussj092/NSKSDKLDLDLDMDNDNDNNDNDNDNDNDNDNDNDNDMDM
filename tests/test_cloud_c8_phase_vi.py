@@ -54,7 +54,7 @@ class PhaseViPrivacySecurityTests(unittest.TestCase):
         self.assertNotIn('base64.length>350_000',repo)
         self.assertIn('ServerVpnIconPolicy.sampleSize',repo)
         self.assertIn('ServerVpnIconPolicy.isPng(bytes)',repo)
-        self.assertIn('dayMillis=86_400_000L',repo)
+        self.assertIn('versionCheckMillis=15*60_000L',repo)
         self.assertIn('remote.optBoolean("unchanged",false)',repo)
         self.assertIn('vault.write("catalog",fresh.toString()',repo)
 
@@ -63,9 +63,11 @@ class PhaseViPrivacySecurityTests(unittest.TestCase):
         compose=src(ROOT/"cloud/compose.yaml")
         route=src(ROOT/"cloud/web/app/api/v1/server-vpn/catalog/route.js")
         self.assertIn('activeCatalogVersion(env=process.env)',code)
-        self.assertIn('number<CATALOG_VERSION',code)
-        self.assertIn('CLOUD_SERVER_VPN_CATALOG_VERSION: ${CLOUD_SERVER_VPN_CATALOG_VERSION:-7}',compose)
-        self.assertIn('const currentVersion=activeCatalogVersion()',route)
+        self.assertIn('number<11',code)
+        self.assertIn('return Math.max(number,CATALOG_VERSION)',code)
+        self.assertIn('CLOUD_SERVER_VPN_CATALOG_VERSION: ${CLOUD_SERVER_VPN_CATALOG_VERSION:-11}',compose)
+        self.assertIn('const summary=await providerOverview(process.env,{syncCatalog:true})',route)
+        self.assertIn('const currentVersion=summary.catalogVersion',route)
         self.assertIn('input.knownVersion===currentVersion',route)
         self.assertIn('unchanged:true',route)
 

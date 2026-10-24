@@ -1,0 +1,100 @@
+{
+  "id": "v2ray-tunnel-plus",
+  "name": "V2ray Tunnel Plus",
+  "package": "vpn.v2raytunnelplus.com.eg",
+  "compatibleVersions": [
+    "10.0.0"
+  ],
+  "versionCode": 4000010,
+  "engine": "python-base64-standard-v2ray-subscription-uri",
+  "engineVersion": 1,
+  "files": {
+    "supported": false,
+    "extensions": [],
+    "textPrefixes": [],
+    "validation": "No proprietary file format registered. This integration reads public subscription catalogs; generic app URI imports do not add Android file routes."
+  },
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "v2ray-tunnel-plus",
+    "format": "Public Base64 UTF-8 subscription and plain URI subscription; no proprietary encryption",
+    "bundleKind": "spdecode-v2ray-tunnel-plus-catalogs-v1",
+    "sources": [
+      "base64",
+      "raw"
+    ],
+    "validatedOn": "2026-10-22",
+    "remoteAuthorization": "User explicitly authorized external catalog downloads",
+    "remoteValidated": true,
+    "remoteProfilesObserved": {
+      "base64": 150,
+      "raw": 150
+    },
+    "sameListInBothSources": true,
+    "separateUserCatalogIdentified": false,
+    "initialProtocolCounts": {
+      "vless": 68,
+      "vmess": 39,
+      "ss": 24,
+      "trojan": 19
+    },
+    "initialSourceBytes": {
+      "base64": 49052,
+      "raw": 36788
+    },
+    "initialSourceSha256": {
+      "base64": "6627d9c40a45a9c8e8e33fce733969f982c932196ba1a68f76900c16ef79f4d3",
+      "raw": "a2bae8af49c853153e358ad10cd0b9afa1f635e6bee790aa2fc2e2fae37c116a"
+    },
+    "schemes": [
+      "vmess",
+      "vless",
+      "trojan",
+      "ss",
+      "socks",
+      "wireguard",
+      "hysteria2",
+      "hy2"
+    ],
+    "validation": "Whole documents match independent JDK URI/Base64 oracle. Live dual CLI revalidated against its own captured responses after upstream changed. Full isolated worker and authenticated gateway through real private HTTP worker match both complete oracle documents. Exact source text, original URIs, query pairs and unknown VMess JSON fields retained. No VPN sessions tested.",
+    "cloudSource": "Both fixed primary raw.githubusercontent.com sources from FreeServersActivity, no caller URLs or redirects. APK declares three additional jsDelivr mirrors; no mirror fallback enabled.",
+    "publicCatalogVersion": 18,
+    "publicCatalogCards": 20,
+    "deploymentEnabledByDefault": false,
+    "liveTransportScope": "Real Python HTTPS downloads. Native Node DNS returns EAI_AGAIN here; broker DNS/IP/TLS tests are controlled, authenticated HTTP-worker parity uses captured authorized responses. No live VPS deployment claimed."
+  },
+  "icon": {
+    "file": "V2ray_Tunnel_Plus.png",
+    "source": "base.apk:res/mipmap-xxxhdpi-v4/ic_launcher.png",
+    "resourceId": "0x7f100002",
+    "width": 192,
+    "height": 192,
+    "bytes": 42800,
+    "sha256": "b87f9c792ec5271da31e255cf957e02abf8fbafd0f1f2737549f232d47cfb47f",
+    "policy": "Exact original launcher PNG; no conversion, resizing or substitute artwork."
+  },
+  "dependencies": {
+    "python": ">=3.10",
+    "pycryptodome": "3.23.0",
+    "supportFiles": [
+      "codec.py",
+      "../HTTP_FenixVPN/codec.py",
+      "../HTTP_FenixVPN/field_names.json"
+    ],
+    "note": "Shared validation/Base64/render module imports PyCryptodome; these subscriptions are not encrypted."
+  },
+  "sourceApkSha256": "b05ed5cf21b9741fe25a80383782533feb0673f4350c88191f1f8112591e5888",
+  "javaEvidence": [
+    "com/v2ray/ang/ui/FreeServersActivity",
+    "com/v2ray/ang/handler/AngConfigManager.parseConfig",
+    "Utils.decode",
+    "Utils.fixIllegalUrl",
+    "VmessFmt",
+    "ShadowsocksFmt",
+    "SocksFmt",
+    "FmtBase"
+  ],
+  "branch": "feat/austroplus-vpn-13-0-1-decoders",
+  "pullRequest": 96,
+  "analyzedBaseCommit": "63a56e9a038e9e1e788544611610913512a2ed55"
+}

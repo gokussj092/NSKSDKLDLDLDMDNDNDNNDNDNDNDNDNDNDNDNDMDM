@@ -15,7 +15,9 @@
     <string name="cloud_failure_invalid">Недопустимый файл или запрос. Проверьте формат.</string>
     <string name="cloud_failure_unsupported">Этот формат недоступен на сервере.</string>
     <string name="cloud_failure_decode">Не удалось обработать эту версию файла. Это не обязательно означает повреждение.</string>
+    <string name="cloud_failure_maintenance">Этот сервис временно находится на техническом обслуживании. Повторите попытку позже.</string>
     <string name="cloud_failure_unavailable">Сервис временно недоступен. Повторите попытку позже.</string>
+    <string name="cloud_failure_config_unavailable">Эта облачная конфигурация больше недоступна. Возможно, срок действия истёк, она удалена или была одноразовой. Это не ошибка декодера.</string>
     <string name="cloud_failure_remote">Удалённый поставщик вернул недопустимый ответ.</string>
     <string name="cloud_failure_credentials">Неверный пароль или HWID. Проверьте данные.</string>
     <string name="cloud_failure_password">Для защищённого файла требуется пароль.</string>
@@ -25,5 +27,11 @@
     <string name="cloud_failure_conflict">Запрос конфликтует с текущим состоянием.</string>
     <string name="cloud_failure_partial">Результат неполон или неверен и не будет показан.</string>
     <string name="cloud_failure_general">Не удалось выполнить операцию. Повторите попытку или обратитесь в поддержку.</string>
-    <string name="cloud_failure_notice_title">Не удалось выполнить запрос</string>
+    <string name="cloud_failure_notice_title">Уведомление</string>
+    <string name="cloud_password_title">Требуется пароль конфигурации</string>
+    <string name="cloud_password_description">%1$s защищён паролем. Введите пароль экспорта. Он не будет сохранён.</string>
+    <string name="cloud_failure_password_incorrect">Неверный пароль.</string>
+    <string name="cloud_failure_private_key">Этот файл NPVS защищён открытым и закрытым ключами получателя. Метод пока не поддерживается; поддержка появится позже.</string>
+    <string name="cloud_failure_recipient">Этот файл NPVS использует пока неподдерживаемый метод ключа получателя. Поддержка скоро появится.</string>
+    <string name="cloud_failure_npvs_unsupported">Эта версия NPVS или метод защиты пока не поддерживается. Поддержка скоро появится.</string>
 </resources>

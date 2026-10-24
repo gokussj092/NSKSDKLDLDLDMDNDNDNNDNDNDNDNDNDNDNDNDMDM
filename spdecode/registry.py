@@ -159,6 +159,37 @@ def load_decoder_registry(path: Path = DECODERS_PATH) -> dict[str, DecoderSpec]:
             script="decoders/Python/nur_tunnel_solid.py", runtime="python"
         )
 
+    if path.resolve() == DECODERS_PATH.resolve():
+        if "1ftnl" in registry:
+            raise ValueError("1FTunnel decoder conflicts with an existing route")
+        registry["1ftnl"] = DecoderSpec(
+            extension="1ftnl", name="1FTunnel 0.6.99",
+            script="decoders/Python/apps/OneFTunnel/file_decoder.py", runtime="python"
+        )
+
+    if path.resolve() == DECODERS_PATH.resolve():
+        if "awg" in registry:
+            raise ValueError("AboWaged .awg decoder conflicts with an existing route")
+        registry["awg"] = DecoderSpec(
+            extension="awg", name="AboWaged VPN 1.0",
+            script="decoders/Python/apps/AboWaged_VPN/file_decoder.py", runtime="python"
+        )
+
+    if path.resolve() == DECODERS_PATH.resolve():
+        if "creeb" in registry:
+            raise ValueError("CREEB .creeb decoder conflicts with an existing route")
+        registry["creeb"] = DecoderSpec(
+            extension="creeb", name="CREEB INJECTOR 38.0",
+            script="decoders/Python/apps/CREEB_INJECTOR/file_decoder.py", runtime="python"
+        )
+
+    if path.resolve() == DECODERS_PATH.resolve():
+        # Exact 50.0 .crev route; .cer/.cerv retain the historical engine.
+        registry["crev"] = DecoderSpec(
+            extension="crev", name="CREEB VPN 50.0",
+            script="decoders/Python/apps/CREEB_VPN/file_decoder.py", runtime="python"
+        )
+
     return registry
 
 

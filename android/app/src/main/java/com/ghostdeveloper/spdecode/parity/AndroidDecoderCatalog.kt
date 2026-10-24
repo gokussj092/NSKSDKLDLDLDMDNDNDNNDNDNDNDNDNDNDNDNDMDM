@@ -1,6 +1,7 @@
 package com.ghostdeveloper.spdecode.parity
 
 import android.content.Context
+import com.ghostdeveloper.spdecode.ImportFilenameNormalizer
 import org.json.JSONObject
 import java.util.Locale
 
@@ -11,8 +12,8 @@ import java.util.Locale
  * + 13 independent native formats; none are pending (all are experimental).
  * Native availability is NOT vendor/exporter version certification.
  *
- * The JSON is reproducibly built by scripts/android_a24_catalog.py from
- * spdecode.registry.DECODER_REGISTRY, never from a hand-maintained alias table.
+ * The bundled JSON is generated from the canonical registry with *public*
+ * metadata only. Python paths and execution details remain server-side.
  */
 object AndroidDecoderCatalog {
     const val TOTAL_SUFFIXES = 239
@@ -37,10 +38,10 @@ object AndroidDecoderCatalog {
         val appName: String,
         val portStatus: String,
         val androidVerified: Boolean,
-        val script: String,
-        val originalRuntime: String,
         val migrationPhase: String,
-        val sourceCatalog: String,
+        val cloudSupported: Boolean = true,
+        // Validated Cloud catalog metadata, never an Android decoder or key.
+        val credentialFields: Set<String> = emptySet(),
     ) {
         val hasNativeDecoder: Boolean
             get() = (migrationPhase == "legacy" &&
@@ -59,7 +60,7 @@ object AndroidDecoderCatalog {
         val source = context.assets.open("decoder_catalog.json").bufferedReader(Charsets.UTF_8)
             .use { it.readText() }
         val doc = JSONObject(source)
-        require(doc.getInt("schemaVersion") == 3)
+        require(doc.getInt("schemaVersion") == 4)
         require(doc.getInt("botRegisteredSuffixes") == TOTAL_SUFFIXES)
         require(doc.getInt("androidExistingSuffixes") == LEGACY_NATIVE_SUFFIXES)
         require(doc.getInt("androidGenericNativeSuffixes") == GENERIC_NATIVE_SUFFIXES)
@@ -79,10 +80,7 @@ object AndroidDecoderCatalog {
                 appName = item.getString("name"),
                 portStatus = item.getString("androidPortStatus"),
                 androidVerified = item.getBoolean("androidVerified"),
-                script = item.getString("script"),
-                originalRuntime = item.getString("originalRuntime"),
                 migrationPhase = item.getString("migrationPhase"),
-                sourceCatalog = item.getString("sourceCatalog"),
             )
         }
         require(formats.map { it.suffix }.toSet().size == TOTAL_SUFFIXES)
@@ -97,27 +95,18 @@ object AndroidDecoderCatalog {
         require(formats.count { it.migrationPhase == "F" && it.hasNativeDecoder } == INDEPENDENT_NATIVE_SUFFIXES)
         require(formats.single { it.suffix == "ost" }.migrationPhase == "legacy")
         require(formats.count { it.isPending } == PENDING_NATIVE_SUFFIXES)
-        require(formats.filter { it.hasNativeDecoder }.all {
-            (it.migrationPhase == "legacy" && it.sourceCatalog == "decoders.json") ||
-            ((it.migrationPhase == "B" || it.migrationPhase == "C" || it.migrationPhase == "D" || it.migrationPhase == "E" || it.migrationPhase == "F") &&
-                it.sourceCatalog == "spdecode.registry")
-        })
-        require(formats.filter { it.isPending }.all {
-            it.portStatus == PENDING_STATUS && it.sourceCatalog == "spdecode.registry"
-        })
         return formats
     }
 
     /** Longest suffix wins; .sksrv.png must not be confused with .png. */
     fun detect(filename: String, formats: List<Format>): Format? {
-        val candidate = filename.substringAfterLast('/').substringAfterLast('\\')
+        val candidate = ImportFilenameNormalizer.forDetection(filename)
             .lowercase(Locale.ROOT)
         if (candidate.isBlank()) return null
         // The existing 239 audited suffixes remain frozen; NUR is independently routed.
         if (candidate.endsWith(".solid")) return Format(
             "solid", "NUR TUNNEL VPN", "experimental_nur_solid_native",
-            false, "decoders/Python/nur_tunnel_solid.py", "python",
-            "NUR", "nur-tunnel-v1.0.8.8"
+            false, "NUR"
         )
         return formats.filter {
             candidate.endsWith("." + it.suffix.lowercase(Locale.ROOT))

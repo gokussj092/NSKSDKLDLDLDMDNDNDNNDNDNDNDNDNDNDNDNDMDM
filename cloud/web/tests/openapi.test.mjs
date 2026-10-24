@@ -40,5 +40,7 @@ test("C3 contract documents success only where an authenticated service exists",
     assert.ok(document.paths[p].post.responses["502"],p);
     assert.equal(document.paths[p].post.requestBody.required,true);
   }
+  assert.ok(document.paths["/api/v1/decode/import/cloud"].post.responses["410"],
+    "a consumed/expired EHI reference is not a server failure");
   assert.deepEqual(Object.keys(document.paths["/api/v1/jobs"].post.responses), ["503"]);
 });

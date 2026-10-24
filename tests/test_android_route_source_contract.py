@@ -22,9 +22,11 @@ class AndroidSourceWiringContract(unittest.TestCase):
         registry = json.loads((ROOT / "decoders.json").read_text("utf-8"))["decoders"]
         content = ROUTER.read_text("utf-8")
         route_lines = re.findall(r'^\s*"([^"]+)"\s*->\s*([A-Za-z_]\w*)\.decode\(', content, re.M)
-        self.assertEqual(len(route_lines), len(registry),
-            "Every suffix must be routed exactly once, with no unrelated fallback")
-        self.assertEqual({suffix for suffix, _ in route_lines}, set(registry))
+        # Exactly one explicitly audited extra Phase F route, besides the
+        # original 61 legacy switch entries; no unrelated fallback accepted.
+        self.assertEqual(len(route_lines), len(registry)+1)
+        self.assertEqual({suffix for suffix, _ in route_lines}, set(registry)|{"izph"})
+        self.assertIn(("izph","IzphNativePort"),route_lines)
         self.assertEqual(len({suffix for suffix, _ in route_lines}), len(route_lines))
         for suffix, spec in registry.items():
             self.assertIn(spec["runtime"], ("python", "node", "php"))

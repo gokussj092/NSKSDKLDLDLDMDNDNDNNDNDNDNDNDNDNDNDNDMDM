@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_npvs_appkey_auth">Bu NPVS dosyası uygulama anahtarıyla doğrulanamadı. Farklı bir varyant kullanıyor veya değiştirilmiş olabilir. Bu yöntem parola veya alıcı özel anahtarı gerektirmez.</string>
+</resources>

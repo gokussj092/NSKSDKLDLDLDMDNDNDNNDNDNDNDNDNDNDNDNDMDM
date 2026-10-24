@@ -33,6 +33,7 @@ const ERRORS = Object.freeze({
   REMOTE_NOT_CONFIGURED: 503,
   REMOTE_NETWORK_DENIED: 502,
   REMOTE_PROVIDER_UNAVAILABLE: 502,
+  REMOTE_CONFIG_UNAVAILABLE: 410, // remote link consumed, expired or removed
   REMOTE_RESPONSE_INVALID: 502,
   REMOTE_INTEGRITY_FAILED: 422,
   REMOTE_TOO_LARGE: 413,
@@ -236,6 +237,8 @@ export async function downloadApproved({url,kind,method="GET",body,headers={},ma
               }
               return accept({redirect:next.href});
             }
+            if(kind==="ehi" && [404,410].includes(status))
+              return reject("REMOTE_CONFIG_UNAVAILABLE");
             return reject("REMOTE_PROVIDER_UNAVAILABLE","HTTP_"+String(status));
           }
           const encoding=res.headers["content-encoding"];
@@ -327,7 +330,9 @@ export function unwrapEhiResponse(source,{responseKey}) {
   let doc;
   try {doc=JSON.parse(new TextDecoder("utf-8",{fatal:true}).decode(source));}
   catch {fail("REMOTE_RESPONSE_INVALID");}
-  if (!doc || doc.code!==200) fail("REMOTE_PROVIDER_UNAVAILABLE");
+  // The vendor responded at the application level: the reference may be
+  // expired, already consumed or removed. Not a decoding engine failure.
+  if (!doc || doc.code!==200) fail("REMOTE_CONFIG_UNAVAILABLE");
   const envelope=strictBase64(doc.data);
   if (envelope.length<64 || (envelope.length-48)%16 !== 0)
     fail("REMOTE_RESPONSE_INVALID");
@@ -347,7 +352,7 @@ export function unwrapEhiResponse(source,{responseKey}) {
   let clear;
   try {clear=JSON.parse(new TextDecoder("utf-8",{fatal:true}).decode(inflated));}
   catch {fail("REMOTE_RESPONSE_INVALID");}
-  if (!clear || clear.status!=="success") fail("REMOTE_PROVIDER_UNAVAILABLE");
+  if (!clear || clear.status!=="success") fail("REMOTE_CONFIG_UNAVAILABLE");
   const ciphertext=strictBase64(clear.config_data);
   if (ciphertext.length % 16!==0) fail("REMOTE_DECODER_FAILED");
   // Same Java DataOutputStream binary format as Android's temporary EHI envelope.

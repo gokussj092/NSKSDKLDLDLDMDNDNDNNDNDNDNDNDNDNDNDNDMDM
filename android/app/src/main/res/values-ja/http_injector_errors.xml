@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_http_injector_not_configured">HTTP Injector Cloud はまだサーバーで設定されていません。サービスが有効になったら再試行してください。</string>
+</resources>

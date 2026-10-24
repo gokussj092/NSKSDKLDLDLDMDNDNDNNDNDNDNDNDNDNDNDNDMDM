@@ -702,6 +702,18 @@ def renz_patch_hkdf_a(hkdf32: bytes) -> bytes:
     return hkdf32 + final
 
 def renz_decrypt_speciale(input_b64: str, vpn: str) -> bytes | None:
+    if vpn == "7net" and input_b64:
+        if __package__:
+            from .apps.SevenNET_VPN.codec import decode_special
+        else:
+            from apps.SevenNET_VPN.codec import decode_special
+        return decode_special(input_b64)
+    if vpn == "xhypher" and input_b64:
+        if __package__:
+            from .apps.Xhypher_Tunnel_Pro.codec import decode_special
+        else:
+            from apps.Xhypher_Tunnel_Pro.codec import decode_special
+        return decode_special(input_b64)
     limite = False
     if vpn == "tcxtunnel":
         return renz_tcx_decrypt(input_b64)
@@ -794,6 +806,14 @@ def renz_strip_control_padding(b):
     return b
 
 def renz_decrypt_sensitive(data_b64: str, vpn: str):
+    # Xhypher build 43 wraps the existing sensitive-field cipher in an
+    # invisible Unicode carrier. Keep historical Base64 paths unchanged.
+    if vpn == "xhypher" and any(c in data_b64 for c in "\u200b\u200c\u200d"):
+        if __package__:
+            from .apps.Xhypher_Tunnel_Pro.codec import decode_sensitive
+        else:
+            from apps.Xhypher_Tunnel_Pro.codec import decode_sensitive
+        return decode_sensitive(data_b64)
     if vpn == "tcxtunnel":
         try:
             return renz_tcx_decrypt(data_b64)

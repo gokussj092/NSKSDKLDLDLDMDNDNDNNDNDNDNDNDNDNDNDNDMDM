@@ -1,6 +1,65 @@
 # SP-DECODE Cloud — Guía para ampliar Server VPN en otro chat
 
-**Estado:** ampliación de catálogo POSPUESTA. Esta guía no habilita proveedores nuevos.
+**Último análisis de archivo, 2026-10-23: Hex Custom 10.6.1 (101)**,
+`apps/Hex_Custom/`: **lector pendiente**, no integrado. Usuario solicitó solo
+archivo: sin catálogo o consultas externas. KOV-SEC convirtió CustomServerShare
+a wrappers ARM64/VM. Se recuperaron 10 entradas JNI, 3 paquetes opacos KVS1 y
+546488 bytes de pool iguales a su bucle XOR nativo aislado. No confundir esto
+con cuerpos VM o archivos descifrados. Extensión y contraseña criptográfica
+sin confirmar, falta exportación real; no registrar formatos por inferencia.
+`hex_custom_recover.py` y recuperación en Git. ELF PLT corregido para entradas
+24 bytes mediante GOT; 4 wrappers AboWaged siguen iguales. 16 pruebas Python
+(6 recuperación + 10 regresiones) aprobadas. C0 240, C8 250, Server VPN 36/38
+sin cambios. Ver ANALYSIS/TESTING y RESTORE; no iniciar AM/NPV por este pendiente.
+
+**Última incorporación, 2026-10-23: CREEB VPN 50.0 (50)**,
+`apps/CREEB_VPN/`, distinta de CREEB INJECTOR. `.crev` XXTEA modificado:
+reutiliza la primitiva histórica y corrige campos/claves de servidores y ajustes
+según `pInfo` (Custom Tweak / catálogo). C0 **240**, C8 **250**: override de
+`.crev`, sin cambiar `.cer/.cerv` ni `.creeb`. Contraseña/HWID son comprobaciones
+posteriores, no requisitos de cifrado. **19 Python / 50 Node aprobadas**;
+cinco documentos sintéticos y un catálogo real íntegros frente a JDK, CLI y
+worker. Asset **1.0.0, 1 servidor / 1 ajuste**. Pendiente `.crev` real.
+Actualizador con flujo Play Integrity, GET/POST solo HTML aquí: remoto pendiente.
+Ficha con icono vector original conservado y PNG renderizado, `remote:null`;
+Server VPN mínimo **36 / 38 fichas**, sin restablecer switches. Herramientas,
+JDK/generador, límites y recuperación guardados. Sin despliegue, fusión, APK,
+diseño Android ni C11. Ver ANALYSIS/TESTING/RESTORE y `creeb_vpn_verify.py`.
+
+**Último lector, 2026-10-23: CREEB INJECTOR 38.0 (40)**, `apps/CREEB_INJECTOR/`:
+`.creeb` DES/Java Properties y JSON v1 con varios perfiles. Contraseña/HWID
+son validaciones posteriores, no entradas de cifrado. **10 pruebas enfocadas
+y 10 regresiones AboWaged aprobadas**, cinco documentos sintéticos íntegros,
+tres DES iguales a JDK y cinco al worker. Pendiente archivo real. C8 pasa a
+**250**, C0 sigue **240**. **Catálogo no identificado**: UpdateAsync entrega
+metadatos APK; no registrar esa URL como servidores ni crear una ficha.
+Server VPN conserva **35 / 37** y sus switches. Ver ANALYSIS/TESTING y
+`creeb_verify.py`, `dex_method.py`, oracle JDK y RESTORE.md. Sin despliegue,
+APK, Android/diseño ni C11. El avance AboWaged de abajo es histórico.
+
+**Última incorporación, 2026-10-23: AboWaged VPN 1.0 (1)**,
+`apps/AboWaged_VPN/`, proveedor fijo `abowaged-vpn`. Catálogo remoto principal
+12 servidores / 257 ajustes v4.6.3 y selector adicional de 2 UDP; ambos cuerpos
+completos igual a JDK, CLI HTTPS y worker aislado. Asset inicial 1/1 v1.0.
+Catálogo mínimo **35 / 37 fichas**, PNG original 456508 bytes, controles y
+versión persistente conservados. `.awg` añadido en C8/bot: efectivo **249**,
+C0 sigue **240**. La contraseña `MyPass` es un bloqueo posterior al descifrado,
+no se solicita al usuario para abrir el archivo. Dos perfiles sintéticos con y
+sin bloqueo; pendiente exportación `.awg` real. **11 Python / 68 Node aprobadas**,
+cuatro wrappers ARM64 iguales. Herramientas `abowaged_verify.py` y
+`abowaged_native_oracle.py`, referencia JDK/generador y recuperación en Git.
+Ver `ANALYSIS.md` / `TESTING.md` de la app. Sin despliegue, APK, diseño Android,
+fusión ni C11 automáticos. No confundir la PublicKey de DNS con recipient NPVS.
+
+**Preferencia de esta sesión (2026-10-22):** cuando el usuario adjunte únicamente
+un APK/APKS, continuar automáticamente esta misma integración en la rama del
+PR #96. Mantiene autorización para consultar y descargar los catálogos externos
+de la aplicación. Solicita integración rápida con comprobaciones puntuales del
+script y del enlace al servidor, sin ejecutar todas las suites. Esta instrucción
+sustituye para este lote la indicación general de abrir un PR independiente;
+no autoriza fusionar, desplegar o publicar APK/novedades automáticamente.
+
+**Estado:** ampliación de catálogo autorizada para los APK/APKS aportados en este lote del PR #96.
 **Alcance:** backend Cloud y módulos Python; no modificar el diseño Android ni el panel web.
 **Excepción autorizada por el usuario (2026-10-19):** ajustar exclusivamente carga,
 muestreo y caché Android de iconos para que su peso no excluya aplicaciones.
@@ -68,3 +127,47 @@ Antes de activar en producción un catálogo con imágenes grandes, instalar en
 los clientes una APK compilada con esta política. Una APK anterior no cambia
 por actualizar solo el backend y puede rechazar el icono grande. No publicar ni
 desplegar automáticamente como parte del análisis de una nueva aplicación.
+
+
+## Herramientas conservadas y recuperación
+
+Las herramientas reutilizables de este lote están versionadas en
+`scripts/apk_analysis/`. `RESTORE.md` explica cómo recuperar el checkout,
+recrear el entorno e instalar JADX con sus checksums cuando se pierdan los
+datos temporales. Las referencias independientes y fixtures sintéticos de
+7NET están en `tests/golden/sevennet*`; `sevennet_verify.py` compara el JSON
+completo con JDK y opcionalmente con primitivas ARM64 y el worker aislado.
+Conservar allí cualquier herramienta nueva; no depender solo del entorno.
+APK/SO, inventarios de cadenas, catálogos reales y credenciales descifradas
+permanecen fuera de Git. Último catálogo completo integrado: **7NET VPN 5.6**,
+proveedor fijo `7net-vpn`. Último avance: **AM TUNNEL LITE VPN build 63**, aún
+pendiente de abrir su catálogo LIAPP; ficha desactivada, catálogo mínimo
+**34 / 36 fichas**. Revisar su `ANALYSIS.md` y no confundir el auxiliar de campos
+ni la extracción de primera capa nativa con un catálogo completo.
+Se recuperaron además 213 bytes de metadatos LIAPP y la identidad local
+paquete/SHA-1. `am_liapp_metadata.py`, `am_liapp_native_probe.py` y los vectores
+`tests/golden/am_liapp*` están conservados. El probe usa contexto/archivos
+modelados; DEX original, lector exterior y respuesta remota siguen pendientes.
+
+Último lector de archivos incorporado: **1FTunnel 0.6.99 (125)**,
+`decoders/Python/apps/OneFTunnel/`. `.1ftnl` y cuatro prefijos, muestra real
+completa igual a JDK y worker, **9 Python / 13 Node aprobadas**, 32 KDF ARM64.
+Catálogo no identificado, pendiente; no añade ficha ni cambia Server VPN/C11.
+C8 efectivo **248**; C0 congelado **240**. Herramientas `oneftunnel_verify.py`
+y `oneftunnel_native_oracle.py` conservadas, instrucciones en RESTORE.md y
+ANALYSIS.md. AM queda pendiente por indicación del usuario; no continuarlo
+como parte del análisis 1FTunnel. Sin despliegue, fusión o APK automáticos.
+
+Actualización posterior **NPV Tunnel 124.0.37**: `npvs.py` conserva v5 app-key
+y añade passphrase v5 real completo; **16 Python / 15 Node aprobadas**.
+Recipient v6 pendiente de privada; Rjo normal/public-key son el mismo adjunto.
+La nueva muestra Kurdo normal v5 app-key 2 ya se abre sin contraseña/public key,
+20 registros y 12 campos npvs1, JSON completo igual a JDK/worker. El script
+`apps/NPV_Tunnel/text_decoder.py` se entrega separado para integración de textos
+en otro chat por instrucción del usuario; no registrar todavía en routers.
+Ver `docs/NPV_TEXT_AND_NORMAL_FILE.md`: cinco pruebas nuevas, solo npvt-ssh
+confirmado como exportación del APK, cuatro aliases pendientes de enlaces reales.
+No repetir la extracción de tablas: SO/rt.dat coinciden con el handoff anterior.
+`go_inspect.py`, `npvs_verify.py` y referencias JDK/generador guardados.
+Ver `docs/NPVS_PROTECTED_FILES.md`; no anunciar public-key como descifrado,
+no modificar APK/UI ni volver a AM dentro de esta actualización.

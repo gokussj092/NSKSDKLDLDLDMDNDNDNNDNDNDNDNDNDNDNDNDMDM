@@ -1,0 +1,75 @@
+{
+  "id": "megatunnel",
+  "name": "MegaTunnel",
+  "package": "xyz.tekidoer.mega.tunnel",
+  "compatibleVersions": [
+    "1.17.1"
+  ],
+  "versionCode": 17,
+  "engine": "python-aes256-gcm-base64-xor-fields",
+  "engineVersion": 1,
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "megatunnel",
+    "url": "https://raw.githubusercontent.com/SpkHexX/HexX/refs/heads/main/MegaTunnel.js",
+    "validatedOn": "2026-10-22",
+    "remoteAuthorization": "Explicit user authorization for external catalogs",
+    "remoteValidated": true,
+    "remoteVersion": "0.2",
+    "remoteServersObserved": 10,
+    "remoteTweaksObserved": 124,
+    "remoteFieldsProcessed": 297,
+    "remoteNonemptyFieldsCompared": 210,
+    "remoteBytes": 64713,
+    "remoteSha256": "b89a4a83fed75f2316db70b8391a62367e008fbaa557747a4228f01c3ac218bf",
+    "serverFieldNames": [
+      "server_host",
+      "ws_host",
+      "username",
+      "password",
+      "name_server",
+      "dns_pubkey",
+      "v2id",
+      "v2path"
+    ],
+    "tweakFieldNames": [
+      "custom_dns",
+      "custom_payload",
+      "custom_sni",
+      "custom_v2ray",
+      "proxy_host"
+    ],
+    "separateUserCatalogIdentified": false,
+    "validation": "Complete real HTTPS JSON and 210 nonempty fields equal independent JDK; real Python CLI/download and isolated worker match without truncation or partial output.",
+    "publicCatalogVersion": 23,
+    "publicCatalogCards": 25,
+    "deploymentEnabledByDefault": false,
+    "testScope": "3 Python and 20 targeted web tests. No full suites, Android, VPN sessions or VPS rollout. Python external HTTPS real; Node transport controlled."
+  },
+  "files": {
+    "supported": false,
+    "validation": "Catalog-only integration; .meg importer not certified or registered without an exported sample."
+  },
+  "icon": {
+    "file": "MegaTunnel.png",
+    "source": "base.apk:res/mipmap-xxxhdpi-v4/ic_launcher.png",
+    "bytes": 20975,
+    "width": 192,
+    "height": 192,
+    "sha256": "aa9a6c221895ee6f525c8cae66acbee10bc1d5ab9d91bcd70e03930fd274a192",
+    "policy": "Exact original compatibility launcher PNG; no resizing or adaptive XML reconstruction."
+  },
+  "dependencies": {
+    "python": ">=3.10",
+    "pycryptodome": "3.23.0",
+    "supportFiles": [
+      "codec.py",
+      "../HTTP_FenixVPN/codec.py",
+      "../HTTP_FenixVPN/field_names.json"
+    ]
+  },
+  "sourceApkSha256": "1edf375bb4e711ef4bca71c39de0ff5848efde0c5304167ac5f7125e8746cad1",
+  "branch": "feat/austroplus-vpn-13-0-1-decoders",
+  "pullRequest": 96,
+  "analyzedBaseCommit": "29a19db28b9327f2490f70f98d15fa88d15ce9bf"
+}

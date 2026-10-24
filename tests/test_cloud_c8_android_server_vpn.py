@@ -41,16 +41,16 @@ class PhaseVServerVpnIntegration(unittest.TestCase):
         self.assertIn('GCMParameterSpec(128',vault)
         self.assertIn('cipher.updateAAD(',vault)
         catalog=(CLOUD/"ServerVpnCatalogRepository.kt").read_text("utf-8")
-        self.assertIn('86_400_000L',catalog)
+        self.assertIn('versionCheckMillis=15*60_000L',catalog)
         self.assertIn('remote.optBoolean("unchanged",false)',catalog)
         self.assertIn('digest(bytes)!=checksum',catalog)
-        self.assertIn('refreshIfDue(force:Boolean=false)',catalog)
-        self.assertIn('if(force || available.isEmpty())0 else previousVersion',catalog)
+        self.assertIn('refreshIfDue(force:Boolean=false,announcedVersion:Int=0)',catalog)
+        self.assertIn('if(available.isEmpty() || cachedFormats.isEmpty())0 else previousVersion',catalog)
         self.assertIn('CLOUD_SERVER_VPN_CATALOG_VERSION', (ROOT/"cloud/infra/vps/qa-test.py").read_text("utf-8"))
         activity=(KOTLIN/"MainActivity.kt").read_text("utf-8")
         self.assertIn('if (!BuildConfig.SPDECODE_CLOUD_ENABLED && !supported.hasNativeDecoder)',activity)
         self.assertIn('BuildConfig.SPDECODE_CLOUD_ENABLED -> CloudDecodeClient.MAX_INPUT',activity)
-        self.assertIn('if(!BuildConfig.SPDECODE_CLOUD_ENABLED &&',activity)
+        self.assertIn('cause.code=="NPVS_PROTECTION_UNSUPPORTED"',activity)
         gradle=(ROOT/"android/app/build.gradle.kts").read_text("utf-8")
         self.assertIn('CLIENT_IO_FAILURE',gradle)
         self.assertIn('CLIENT_FORMAT_REJECTED',gradle)
@@ -123,6 +123,30 @@ class PhaseVServerVpnIntegration(unittest.TestCase):
         originals["ac-tunnel-vpn"]=(
             ROOT/"decoders/Python/apps/AC_TUNNEL_VPN/AC_TUNNEL_VPN.png",
             WEB/"public/server-vpn-icons/ac-tunnel-vpn.png")
+        originals["austroplus-vpn"]=(
+            ROOT/"decoders/Python/apps/AustroPlus_VPN/AustroPlus_VPN.png",
+            WEB/"public/server-vpn-icons/austroplus-vpn.png")
+        originals["http-fenixvpn"]=(
+            ROOT/"decoders/Python/apps/HTTP_FenixVPN/HTTP_FenixVPN.png",
+            WEB/"public/server-vpn-icons/http-fenixvpn.png")
+        originals["http-jireh"]=(
+            ROOT/"decoders/Python/apps/HTTP_Jireh/HTTP_Jireh.png",
+            WEB/"public/server-vpn-icons/http-jireh.png")
+        originals["rmp-tunnel-pro"]=(ROOT/"decoders/Python/apps/RMP_TUNNEL_PRO/RMP_TUNNEL_PRO.png",WEB/"public/server-vpn-icons/rmp-tunnel-pro.png")
+        originals["rjc-tunnel-pro"]=(ROOT/"decoders/Python/apps/RJC_TUNNEL_PRO/RJC_TUNNEL_PRO.png",WEB/"public/server-vpn-icons/rjc-tunnel-pro.png")
+        originals["proneet-vpn"]=(ROOT/"decoders/Python/apps/ProNeet_VPN/ProNeet_VPN.png",WEB/"public/server-vpn-icons/proneet-vpn.png")
+        originals["onspace-vpn"]=(ROOT/"decoders/Python/apps/OnSpace_VPN/OnSpace_VPN.png",WEB/"public/server-vpn-icons/onspace-vpn.png")
+        originals["mx-tunnel-pro"]=(ROOT/"decoders/Python/apps/Mx_Tunnel_PRO/Mx_Tunnel_PRO.png",WEB/"public/server-vpn-icons/mx-tunnel-pro.png")
+        originals["megatunnel"]=(ROOT/"decoders/Python/apps/MegaTunnel/MegaTunnel.png",WEB/"public/server-vpn-icons/megatunnel.png")
+        originals["http-internet-infinito"]=(ROOT/"decoders/Python/apps/HTTP_Internet_Infinito/HTTP_Internet_Infinito.png",WEB/"public/server-vpn-icons/http-internet-infinito.png")
+        originals["freedom-vpn"]=(ROOT/"decoders/Python/apps/FreedomVPN/FreedomVPN.png",WEB/"public/server-vpn-icons/freedom-vpn.png")
+        originals["focus-vpn-cloud"]=(ROOT/"decoders/Python/apps/Focus_VPN_Cloud/Focus_VPN_Cloud.png",WEB/"public/server-vpn-icons/focus-vpn-cloud.png")
+        originals["eut-vpn"]=(ROOT/"decoders/Python/apps/EUT_VPN/EUT_VPN.png",WEB/"public/server-vpn-icons/eut-vpn.png")
+        originals["v2ray-tunnel-plus"]=(ROOT/"decoders/Python/apps/V2ray_Tunnel_Plus/V2ray_Tunnel_Plus.png",WEB/"public/server-vpn-icons/v2ray-tunnel-plus.png")
+        originals["tunelguard-vpn"]=(ROOT/"decoders/Python/apps/TunelGuard_VPN/TunelGuard_VPN.png",WEB/"public/server-vpn-icons/tunelguard-vpn.png")
+        originals["http-wakko"]=(ROOT/"decoders/Python/apps/HTTP_Wakko/HTTP_Wakko.png",WEB/"public/server-vpn-icons/http-wakko.png")
+        originals["http-socketclay"]=(ROOT/"decoders/Python/apps/HTTP_SocketClay/HTTP_SocketClay.png",WEB/"public/server-vpn-icons/http-socketclay.png")
+        originals["tunneltweak"]=(ROOT/"decoders/Python/apps/Tunneltweak/Tunneltweak.png",WEB/"public/server-vpn-icons/tunneltweak.png")
         for app_id,(original,served) in originals.items():
             with self.subTest(app=app_id):
                 self.assertTrue(original.is_file(),original)

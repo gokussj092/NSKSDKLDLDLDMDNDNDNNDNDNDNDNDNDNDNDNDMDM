@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_auto_title">به‌روزرسانی خودکار فهرست Server VPN</string>
+    <string name="catalog_auto_detail">هنگام باز بودن برنامه، نسخهٔ فهرست را از سرور SP-DECODE از طریق HTTPS بررسی می‌کند. در صورت اجازه، بررسی‌های دوره‌ای برای بازیابی به‌روزرسانی‌های ازدست‌رفته انجام می‌شود. داده‌ها و نمادها فقط با تغییر نسخه دریافت می‌شوند. به Firebase یا حساب کاربری نیاز نیست.</string>
+    <string name="catalog_auto_switch">فعال‌سازی همگام‌سازی پس‌زمینه</string>
+</resources>

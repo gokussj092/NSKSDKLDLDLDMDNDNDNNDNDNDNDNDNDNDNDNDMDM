@@ -26,11 +26,16 @@ class C8WorkerIntegrationTests(unittest.TestCase):
         base=load_file_engines()
         extended=load_runtime_file_engines()
         self.assertEqual(len(base),240)
-        self.assertEqual(len(extended),246)
-        self.assertEqual({k: v for k,v in extended.items() if k not in
-                          {"rt","gol","ua","nvpnc","green","hxt","mtp","roy","4ulite","actun"}},
-                         {k: v for k,v in base.items() if k not in {"hxt","roy","4ulite","actun"}})
-        for ext in ("rt","gol","ua","nvpnc","green","hxt","mtp","roy","4ulite","actun"):
+        self.assertEqual(len(extended),250)
+        from engine import _C8_FILE_ENGINES
+        overlays=set(_C8_FILE_ENGINES)
+        self.assertEqual(len(overlays),18)
+        self.assertEqual({k:v for k,v in extended.items() if k not in overlays},
+                         {k:v for k,v in base.items() if k not in overlays})
+        for ext in overlays:
+            self.assertEqual(extended[ext]["phase"],"C8")
+            self.assertIn("/apps/",extended[ext]["source"])
+        for ext in ("tgv","rt","gol","ua","nvpnc","green","hxt","mtp","roy","4ulite","actun","aro","sks","tut"):
             self.assertEqual(extended[ext]["phase"],"C8")
             self.assertIn("/apps/",extended[ext]["source"])
         self.assertNotEqual(extended["hxt"]["source"],base["hxt"]["source"])
@@ -68,8 +73,26 @@ class C8WorkerIntegrationTests(unittest.TestCase):
         data=golden("reese_vectors.json")
         sample=next(v for v in data["cases"] if v["name"]=="rse5-c4-flags0")
         output=decode_file("rt",base64.b64decode(sample["data"]))
-        self.assertEqual(output["structuredJson"],data["expected"])
+        expected=json.loads(json.dumps(data["expected"]))
+        expected["config"].pop("bannerImage",None)
+        self.assertEqual(output["structuredJson"],expected)
+        self.assertNotIn("bannerImage",output["rawText"])
         self.assertFalse(output["isPartial"])
+
+    def test_mkk_oversized_render_uses_explicit_error_not_generic_failure(self):
+        import io
+        import tempfile
+        from unittest.mock import patch
+        from cloud.workers.python import catalog_vpn_bridge as bridge
+        with tempfile.TemporaryDirectory() as folder:
+            sample=Path(folder)/"input.bin"
+            sample.write_bytes(b"synthetic")
+            output=io.StringIO()
+            with patch.object(bridge,"decode",return_value="X"*(32*1024*1024+1)), \
+                 patch.object(sys,"argv",["catalog_vpn_bridge.py","mkk-hyper",str(sample)]), \
+                 patch("sys.stdout",output):
+                self.assertEqual(bridge.main(),3)
+            self.assertEqual(json.loads(output.getvalue()),{"workerError":"OUTPUT_TOO_LARGE"})
 
     def test_vpn_plus_peru_akn3_full_json(self):
         data=golden("vpn_plus_peru_vectors.json")

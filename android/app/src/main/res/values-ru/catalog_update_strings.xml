@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_auto_title">Автоматическое обновление каталога Server VPN</string>
+    <string name="catalog_auto_detail">Проверяет версию каталога по HTTPS на собственном сервере SP-DECODE при открытом приложении. При разрешении выполняет редкие фоновые проверки для восстановления пропущенных обновлений. Данные загружаются только при смене версии. Firebase и регистрация не требуются.</string>
+    <string name="catalog_auto_switch">Включить фоновую синхронизацию</string>
+</resources>

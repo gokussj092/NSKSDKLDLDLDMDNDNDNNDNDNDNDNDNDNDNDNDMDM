@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_report_action">Laporkan kesalahan</string>
+    <string name="cloud_report_sent">Laporan diterima: %1$s</string>
+    <string name="cloud_report_failed">Laporan gagal dikirim. Coba lagi nanti.</string>
+    <string name="cloud_usage_title">Statistik instalasi anonim</string>
+    <string name="cloud_usage_detail">SP-DECODE memperkirakan instalasi aktif sekali sehari untuk merencanakan kapasitas server. Kode acak per instalasi digunakan, bukan Android ID, HWID, atau ID iklan.</string>
+    <string name="cloud_usage_footnote">Termasuk setelah menyetujui ketentuan privasi Cloud. Isi berkas, kata sandi, dan konfigurasi terdekripsi tidak digunakan untuk penghitungan ini.</string>
+</resources>

@@ -52,7 +52,7 @@
     "pycryptodome==3.23.0",
     "decoders/Python/renz.py (unchanged; local renz.py in download bundle)"
   ],
-  "sharedPrimitiveSha256": "e654a136e44da7aee01a5e264acfb42f61be6ea3f63873c00b8523f3b3c21da6",
+  "sharedPrimitiveSha256": "dab53968f15bd2f82329aae3bd64cce2f66c1f0991ac18e8f066c355ba3c04f4",
   "sourceApkSha256": "4a537ae26ec1c60dfeba02e33e2f8502cd7f5a06c75887ca2bb768685e0c0b56",
   "sourceNativeSha256": "e896648449f786ebca76b65bc0828f59b58dec5343ff140177e1ed4f4781cbf2"
 }

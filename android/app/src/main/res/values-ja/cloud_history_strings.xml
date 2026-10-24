@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ja: translated primary screens, Cloud and error strings; untranslated text inherits English source. -->
+    <string name="cloud_decode_progress_title">設定をデコード中</string>
+    <string name="cloud_decode_progress_message">数分かかる場合があります。お待ちください。</string>
+    <string name="cloud_large_result_title">大きな設定をデコードしました</string>
+    <string name="cloud_large_result_body">設定は暗号化された履歴に保存されました。大きな結果のプレビューはアプリの動作を遅くしたり終了させる可能性があります。履歴の三点メニューから「エクスポート」を選び、完全な JSON を書き出すことを推奨します。Android で保存先とファイル名を選べます。</string>
+    <string name="cloud_large_result_acknowledge">了解</string>
+    <string name="cloud_history_actions">その他の操作</string>
+</resources>

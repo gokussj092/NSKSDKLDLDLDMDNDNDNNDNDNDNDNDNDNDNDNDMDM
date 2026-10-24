@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="file_extension_unsupported_contact">Bu dosya uzantısı desteklenmiyor. Destek istemek için geliştiriciyle iletişime geçin.</string>
+    <string name="text_format_unsupported_contact">Bu metin biçimi veya protokol desteklenmiyor. Destek istemek için geliştiriciyle iletişime geçin.</string>
+    <string name="formats_remote_catalog_note">Desteklenen uzantılar SP-DECODE Cloud üzerinden güvenle eşitlenir. Yeni biçimler uygulama güncellemesi olmadan eklenebilir.</string>
+    <string name="formats_cloud_ready_short">Bulut</string>
+</resources>

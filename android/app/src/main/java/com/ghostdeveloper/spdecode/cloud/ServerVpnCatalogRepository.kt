@@ -1,6 +1,8 @@
 package com.ghostdeveloper.spdecode.cloud
 
 import android.content.Context
+import com.ghostdeveloper.spdecode.ServerVpnNewBadges
+import com.ghostdeveloper.spdecode.parity.AndroidDecoderCatalog
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
@@ -26,8 +28,10 @@ internal class ServerVpnCatalogRepository(
     private val client: CloudDecodeClient,
 ) {
     private val vault=ServerVpnSecureCache(context)
+    private val newBadges=ServerVpnNewBadges(context)
     private val mutex=Mutex()
-    private val dayMillis=86_400_000L
+    // Only a lightweight version check, not a full catalog download.
+    private val versionCheckMillis=15*60_000L
 
     private fun digest(data:ByteArray):String =
         MessageDigest.getInstance("SHA-256").digest(data).joinToString("") { "%02x".format(it) }
@@ -73,23 +77,84 @@ internal class ServerVpnCatalogRepository(
         return apps
     }
 
-    suspend fun cached():List<ServerVpnApp> = withContext(Dispatchers.IO) {
-        verifiedApps(stored())
+    /** A strict, read-only catalogue: never accept executable routes or arbitrary URLs. */
+    internal fun validateFormats(record:JSONObject?):List<AndroidDecoderCatalog.Format> {
+        require(record!=null && record.optInt("formatsSchemaVersion",-1)==1)
+        val detection=record.getJSONObject("formatDetection")
+        require(detection.getString("rule")=="longest-filename-suffix" &&
+            detection.getBoolean("caseInsensitive") &&
+            detection.getString("separator")==".")
+        val array=record.getJSONArray("formats")
+        require(array.length() in 1..1024 && record.getInt("formatCount")==array.length())
+        val formats=ArrayList<AndroidDecoderCatalog.Format>(array.length())
+        val seen=HashSet<String>()
+        val supportedFields=setOf("password","hwid","publicKey")
+        val keys=setOf("suffix","name","kind","offlineSupported","cloudSupported","credentialFields")
+        var last:String?=null
+        for(i in 0 until array.length()) {
+            val entry=array.getJSONObject(i)
+            require(entry.keys().asSequence().toSet()==keys)
+            val suffix=entry.getString("suffix")
+            val name=entry.getString("name")
+            require(suffix.matches(Regex("^[\\p{L}\\p{N}_.-]{1,64}$")) &&
+                suffix==suffix.lowercase(java.util.Locale.ROOT) && seen.add(suffix))
+            require(name.isNotBlank() && name==name.trim() && name.length<=120)
+            require(entry.getString("kind")=="file" &&
+                entry.getBoolean("cloudSupported"))
+            entry.getBoolean("offlineSupported")
+            val credentials=entry.getJSONArray("credentialFields")
+            require(credentials.length()<=3)
+            val credentialNames=(0 until credentials.length()).map { j ->
+                credentials.getString(j)
+            }
+            require(credentialNames.toSet().size==credentialNames.size &&
+                credentialNames.all { it in supportedFields })
+            if(last!=null) require(last.length>suffix.length ||
+                (last.length==suffix.length && last<suffix))
+            last=suffix
+            // The server never chooses a local native engine. All remote
+            // entries use the already allowlisted Cloud format route.
+            formats.add(AndroidDecoderCatalog.Format(suffix,name,"cloud_server_only",
+                false,"C8",cloudSupported=true,credentialFields=credentialNames.toSet()))
+        }
+        return formats
     }
 
-    /** At most one version check per 24h; failed requests preserve last good snapshot. */
-    suspend fun refreshIfDue(force:Boolean=false):List<ServerVpnApp> = mutex.withLock {
+    private fun verifiedFormats(record:JSONObject?):List<AndroidDecoderCatalog.Format> =
+        try { validateFormats(record) } catch (_:Exception) { emptyList() }
+
+    /** Encrypted snapshot only. Never fetch automatically when sync is disabled. */
+    suspend fun cachedFormats():List<AndroidDecoderCatalog.Format> =
+        withContext(Dispatchers.IO) { verifiedFormats(stored()) }
+
+    fun hasCachedFormats():Boolean = verifiedFormats(stored()).isNotEmpty()
+
+    suspend fun cached():List<ServerVpnApp> = withContext(Dispatchers.IO) {
+        verifiedApps(stored()).also { apps ->
+            newBadges.observeCatalog(apps.map { it.id }.toSet())
+        }
+    }
+
+    fun currentVersion():Int = stored()?.optInt("catalogVersion",0)?:0
+
+    /** VPS-only hint; verified HTTPS metadata and encrypted cache are authoritative. */
+    suspend fun refreshIfDue(force:Boolean=false,announcedVersion:Int=0):List<ServerVpnApp> = mutex.withLock {
         withContext(Dispatchers.IO) {
             val previous=stored()
             val available=verifiedApps(previous)
+            val cachedFormats=verifiedFormats(previous)
+            // Establish the previous verified catalog as the local baseline before
+            // incorporating newly published entries (also from background sync).
+            newBadges.observeCatalog(available.map { it.id }.toSet())
             val now=System.currentTimeMillis()
             val last=previous?.optLong("checkedAtMillis",0L)?:0L
-            if(!force && available.isNotEmpty() && last>0 && now>=last &&
-                now-last<dayMillis) return@withContext available
+            val previousVersion=previous?.optInt("catalogVersion",0)?:0
+            val urgent=announcedVersion>previousVersion
+            if(!force && !urgent && available.isNotEmpty() && cachedFormats.isNotEmpty() && last>0 && now>=last &&
+                now-last<versionCheckMillis) return@withContext available
             try {
-                val previousVersion=previous?.optInt("catalogVersion",0)?:0
-                // Manual refresh fetches latest provider flags even if version is unchanged.
-                val knownVersion=if(force || available.isEmpty())0 else previousVersion
+                // Manual refresh still uses the version contract; metadata changes must bump version.
+                val knownVersion=if(available.isEmpty() || cachedFormats.isEmpty())0 else previousVersion
                 val remote=client.serverVpnCatalog(knownVersion)
                 if(remote.optBoolean("unchanged",false)) {
                     if(available.isEmpty() || remote.optInt("catalogVersion")!=knownVersion)
@@ -101,6 +166,9 @@ internal class ServerVpnCatalogRepository(
                 val remoteVersion=remote.optInt("catalogVersion",0)
                 if(remoteVersion<1 || remoteVersion<previousVersion)
                     throw IllegalStateException("Catalog rollback")
+                // Reject an incomplete format snapshot before touching the encrypted cache.
+                val remoteFormats=validateFormats(remote)
+                require(remoteFormats.isNotEmpty())
                 val array=remote.optJSONArray("apps")?:throw IllegalStateException("Missing app list")
                 if(array.length() !in 1..100)throw IllegalStateException("Invalid app count")
                 val candidates=ArrayList<Pair<String,ByteArray>>()
@@ -135,8 +203,14 @@ internal class ServerVpnCatalogRepository(
                     .put("catalogVersion",remoteVersion)
                     .put("checkedAtMillis",now)
                     .put("apps",array)
+                    .put("formatsSchemaVersion",remote.getInt("formatsSchemaVersion"))
+                    .put("formatCount",remote.getInt("formatCount"))
+                    .put("formatDetection",remote.getJSONObject("formatDetection"))
+                    .put("formats",remote.getJSONArray("formats"))
                 vault.write("catalog",fresh.toString().toByteArray(Charsets.UTF_8))
-                verifiedApps(fresh).ifEmpty { available }
+                verifiedApps(fresh).ifEmpty { available }.also { apps ->
+                    newBadges.observeCatalog(apps.map { it.id }.toSet())
+                }
             }catch(error:CancellationException){throw error}
              catch(_:Exception){available}
         }

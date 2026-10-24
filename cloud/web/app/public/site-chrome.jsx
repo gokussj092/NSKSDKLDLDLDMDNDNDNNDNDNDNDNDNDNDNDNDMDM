@@ -7,8 +7,8 @@ const publicRoutes=new Set(["/","/privacy","/terms","/support"]);
 const LocaleContext=createContext({lang:"es",setLang:()=>{}});
 export const usePublicLocale=()=>useContext(LocaleContext);
 const labels={
- es:{home:"Inicio",privacy:"Privacidad",terms:"Términos",support:"Soporte",download:"Descargar",language:"Idioma",credit:"Creado por Ghost Developer",official:"Sitio oficial de SP-DECODE para Android",skip:"Saltar al contenido"},
- en:{home:"Home",privacy:"Privacy",terms:"Terms",support:"Support",download:"Download",language:"Language",credit:"Created by Ghost Developer",official:"Official SP-DECODE website for Android",skip:"Skip to content"},
+ es:{privacy:"Privacidad",terms:"Términos",support:"Soporte",download:"Descargar",language:"Idioma",credit:"Creado por Ghost Developer",official:"Sitio oficial de SP-DECODE para Android",skip:"Saltar al contenido"},
+ en:{privacy:"Privacy",terms:"Terms",support:"Support",download:"Download",language:"Language",credit:"Created by Ghost Developer",official:"Official SP-DECODE website for Android",skip:"Skip to content"},
 };
 export function PublicChrome({children}){
  const [lang,setLang]=useState("es");
@@ -30,10 +30,6 @@ export function PublicChrome({children}){
    <header className="sp-public-header">
     <div className="sp-container sp-header-row">
      <Link className="sp-logo" href="/" aria-label="SP-DECODE"><img src="/icon.svg" alt="" width="43" height="43"/><span><strong>SP-DECODE</strong><small>Configuration decoder</small></span></Link>
-     <nav className="sp-nav" aria-label="Public">
-      <Link href="/">{t.home}</Link><Link href="/privacy">{t.privacy}</Link>
-      <Link href="/terms">{t.terms}</Link><Link href="/support">{t.support}</Link>
-     </nav>
      <label className="sp-language">{t.language}<select aria-label={t.language} value={lang} onChange={event=>select(event.target.value)}><option value="es">ES</option><option value="en">EN</option></select></label>
     </div>
    </header>
@@ -58,7 +54,27 @@ function LegacyChrome({children}){return <>
   <div className="footer-links"><Link href="/features">Funciones</Link><Link href="/docs">Documentación</Link><Link href="/terms">Términos</Link><Link href="/privacy">Privacidad</Link><Link href="/status">Estado</Link><Link href="https://panel.spdecode.xyz/admin/login">Administración</Link></div>
  </div><div className="shell footer-last">SP-DECODE Cloud · Plataforma Android · Sin descifrado desde el navegador</div></footer>
  </>;}
+function AdminChrome({children,path}){
+ const isLogin=path==="/admin/login";
+ return <div className="sp-admin-frame">
+  <header className="sp-admin-topbar">
+   <div className="sp-admin-topbar-inner">
+    <Link className="sp-admin-brand" href={isLogin?"/":"/admin"} aria-label="SP-DECODE Administración">
+     <img src="/icon.svg" width="43" height="43" alt=""/>
+     <span><strong>SP-DECODE</strong><small>Administración Cloud</small></span>
+    </Link>
+    <span className="sp-admin-topbar-label">{isLogin?"Acceso restringido":"Consola privada"}</span>
+   </div>
+  </header>
+  {children}
+  <footer className="sp-admin-footer">
+   <span>SP-DECODE · Ghost Developer</span>
+   <nav aria-label="Documentos legales"><Link href="/privacy">Privacidad</Link><Link href="/terms">Términos</Link><Link href="/support">Soporte</Link></nav>
+  </footer>
+ </div>;
+}
 export default function SiteChrome({children}){
  const pathname=usePathname();
+ if(pathname?.startsWith("/admin"))return <AdminChrome path={pathname}>{children}</AdminChrome>;
  return publicRoutes.has(pathname)?<PublicChrome>{children}</PublicChrome>:<LegacyChrome>{children}</LegacyChrome>;
 }

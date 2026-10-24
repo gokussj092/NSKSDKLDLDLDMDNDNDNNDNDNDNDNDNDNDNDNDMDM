@@ -3,6 +3,7 @@ package com.ghostdeveloper.spdecode
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,11 +20,15 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import com.ghostdeveloper.spdecode.cloud.CloudNewsNotice
 import com.ghostdeveloper.spdecode.cloud.ServerVpnApp
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -33,6 +38,7 @@ import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.delay
 import com.ghostdeveloper.spdecode.parity.AndroidDecoderCatalog
 
 /** Authoritative reference is the USER-PROVIDED 2026-10-08 ChatGPT capture:
@@ -81,6 +87,8 @@ fun SpDecodeApp(
     retentionDays:Int,
     onRetention:(Int)->Unit,
     onDismissError:()->Unit,
+    canReportError:Boolean=false,
+    onReportError:()->Unit={},
     onDecodeText:(String)->Unit={},
     onDecodeCloud:(String)->Unit={},
     onDecodeServerCatalog:()->Unit={},
@@ -89,7 +97,11 @@ fun SpDecodeApp(
     serverVpnLoading:Boolean=false,
     serverVpnUnavailable:Boolean=false,
     onRefreshServerVpn:()->Unit={},
+    pendingServerVpnCatalogVersion:Int?=null,
+    onConfirmServerVpnUpdate:()->Unit={},
+    onDismissServerVpnUpdate:()->Unit={},
     whatsNew:Boolean=false,
+    cloudWhatsNew:CloudNewsNotice?=null,
     onDismissWhatsNew:()->Unit={},
     guideStep:Int?=null,
     onGuideNext:()->Unit={},
@@ -97,21 +109,23 @@ fun SpDecodeApp(
     onGuideRestart:()->Unit={},
     onLegalLink:(String)->Unit={},
     onWithdrawCloudConsent:()->Unit={},
+    catalogUpdatesEnabled:Boolean=false,
+    onCatalogUpdates:(Boolean)->Unit={},
+    usageAnalyticsEnabled:Boolean=false,
+    onUsageAnalytics:(Boolean)->Unit={},
 ){
     var dialog by remember{mutableStateOf<String?>(null)}
-    MaterialTheme(colorScheme=darkColorScheme(
-        primary=White,
-        onPrimary=Background,
-        background=Background,
-        surface=Background,
-        onSurface=White,
-        onBackground=White,
-        outline=Outline,
-    )){
+    SpDecodeAmoledTheme {
         Column(
             modifier=Modifier.fillMaxSize().background(Background).safeDrawingPadding()
         ) {
-            BrandHeader(onSettings={onTab(4)})
+            BrandHeader(
+                onSettings={onTab(4)},
+                showServerVpnRefresh=activeTab==3 && BuildConfig.SPDECODE_CLOUD_ENABLED,
+                refreshingServerVpn=serverVpnLoading,
+                enableServerVpnRefresh=!busy && !serverVpnLoading,
+                onRefreshServerVpn=onRefreshServerVpn,
+            )
             Box(Modifier.weight(1f)) {
                 when(activeTab) {
                     0->HomeScreen(current,session,busy,reveal,hideCredentials,onImport,onCancel,onReveal,
@@ -122,11 +136,13 @@ fun SpDecodeApp(
                     1->HistoryScreen(session,onSelect,onDeleteSelected,onClear,onImportMultiple,onFavorite)
                     2->FormatsScreen()
                     3->ServerVpnScreen(busy,serverVpnApps,serverVpnLoading,serverVpnUnavailable,
-                        onDecodeServerCatalog,onDecodeServerApp,onRefreshServerVpn)
+                        onDecodeServerCatalog,onDecodeServerApp)
                     else->FunctionalSettingsPanel(selectedLanguage,hideCredentials,
                         onLanguage,onMaskCredentials,onClear,onExternalLink,
                         retentionDays,onRetention,onShowGuide=onGuideRestart,
-                        onLegalLink=onLegalLink,onWithdrawConsent=onWithdrawCloudConsent)
+                        onLegalLink=onLegalLink,onWithdrawConsent=onWithdrawCloudConsent,
+                        catalogUpdatesEnabled=catalogUpdatesEnabled,onCatalogUpdates=onCatalogUpdates,
+                        usageAnalyticsEnabled=usageAnalyticsEnabled,onUsageAnalytics=onUsageAnalytics)
                 }
                 if(guideStep!=null && !whatsNew && !busy && error==null && dialog==null) {
                     CenteredFirstRunGuide(guideStep,onGuideNext,onGuideSkip)
@@ -136,12 +152,45 @@ fun SpDecodeApp(
                 spotlight=if(guideStep!=null && !whatsNew && !busy)
                     FirstRunGuide.targetTab(guideStep) else null)
         }
-        if(whatsNew && !busy) AlertDialog(
+        if(activeTab==3 && pendingServerVpnCatalogVersion!=null && !busy) AlertDialog(
+            onDismissRequest=onDismissServerVpnUpdate,
+            title={Text(stringResource(R.string.server_vpn_catalog_update_title))},
+            text={Text(stringResource(R.string.server_vpn_catalog_update_question,
+                pendingServerVpnCatalogVersion),color=Secondary)},
+            confirmButton={TextButton(onClick=onConfirmServerVpnUpdate) {
+                Text(stringResource(R.string.server_vpn_catalog_download),color=White)
+            }},
+            dismissButton={TextButton(onClick=onDismissServerVpnUpdate) {
+                Text(stringResource(R.string.cancel),color=White)
+            }},
+            containerColor=Background,
+            titleContentColor=White,
+            textContentColor=Secondary,
+        )
+        if(whatsNew && !busy && (cloudWhatsNew!=null || !BuildConfig.SPDECODE_CLOUD_ENABLED)) AlertDialog(
             onDismissRequest=onDismissWhatsNew,
             icon={Icon(Icons.Outlined.NewReleases,null,tint=Green)},
-            title={Text(stringResource(R.string.whats_new_title),fontWeight=FontWeight.Bold)},
+            title={Text(cloudWhatsNew?.title ?: stringResource(R.string.whats_new_title),fontWeight=FontWeight.Bold)},
             text={
-                Column(verticalArrangement=Arrangement.spacedBy(12.dp)) {
+                if(cloudWhatsNew!=null) Column(
+                    modifier=Modifier.heightIn(max=430.dp).verticalScroll(rememberScrollState()),
+                    verticalArrangement=Arrangement.spacedBy(14.dp)
+                ){
+                    Text(cloudWhatsNew.subtitle,color=White,fontSize=14.sp)
+                    cloudWhatsNew.items.forEach { item ->
+                        Row(verticalAlignment=Alignment.Top) {
+                            Icon(Icons.Outlined.CheckCircle,null,tint=Green,
+                                modifier=Modifier.size(20.dp))
+                            Spacer(Modifier.width(11.dp))
+                            Column(verticalArrangement=Arrangement.spacedBy(3.dp)) {
+                                Text(item.title,color=White,fontWeight=FontWeight.SemiBold,fontSize=14.sp)
+                                Text(item.description,color=Secondary,fontSize=13.sp,
+                                    lineHeight=18.sp)
+                            }
+                        }
+                    }
+                    Text(cloudWhatsNew.publishedAt,color=Secondary,fontSize=11.sp)
+                } else Column(verticalArrangement=Arrangement.spacedBy(12.dp)) {
                     Text(stringResource(R.string.whats_new_description),
                         color=White,fontSize=14.sp)
                     Row(verticalAlignment=Alignment.Top) {
@@ -172,7 +221,7 @@ fun SpDecodeApp(
                     Text(stringResource(R.string.whats_new_continue),color=White)
                 }
             },
-            containerColor=Panel,
+            containerColor=Background,
             titleContentColor=White,
             textContentColor=Secondary,
         )
@@ -183,7 +232,7 @@ fun SpDecodeApp(
             properties=DialogProperties(
                 dismissOnBackPress=false,dismissOnClickOutside=false),
         ) {
-            Surface(color=Panel,shape=RoundedCornerShape(22.dp),
+            Surface(color=Background,shape=RoundedCornerShape(22.dp),
                 modifier=Modifier.fillMaxWidth(),
                 border=BorderStroke(1.dp,Outline)) {
                 Column(
@@ -222,12 +271,16 @@ fun SpDecodeApp(
                 Text(stringResource(R.string.close),color=White)
             }},
             dismissButton={TextButton(onClick={
-                onDismissError()
-                onExternalLink("https://t.me/Gh0stDeveloper")
+                if(canReportError)onReportError()
+                else {
+                    onDismissError()
+                    onExternalLink("https://t.me/Gh0stDeveloper")
+                }
             }) {
-                Text(stringResource(R.string.decode_notice_contact),color=White)
+                Text(stringResource(if(canReportError)R.string.cloud_report_action
+                    else R.string.decode_notice_contact),color=White)
             }},
-            containerColor=Panel,
+            containerColor=Background,
             titleContentColor=White,
             textContentColor=Secondary,
         )
@@ -262,7 +315,7 @@ fun SpDecodeApp(
                 confirmButton={TextButton(onClick={dialog=null}){
                     Text(stringResource(R.string.cancel))
                 }},
-                containerColor=Panel,
+                containerColor=Background,
                 titleContentColor=White,
                 textContentColor=White,
             )
@@ -271,7 +324,13 @@ fun SpDecodeApp(
 }
 
 @Composable
-private fun BrandHeader(onSettings:()->Unit){
+private fun BrandHeader(
+    onSettings:()->Unit,
+    showServerVpnRefresh:Boolean=false,
+    refreshingServerVpn:Boolean=false,
+    enableServerVpnRefresh:Boolean=true,
+    onRefreshServerVpn:()->Unit={},
+){
     Row(
         modifier=Modifier.fillMaxWidth().padding(start=20.dp,end=12.dp,top=14.dp,bottom=11.dp),
         verticalAlignment=Alignment.CenterVertically,
@@ -288,6 +347,27 @@ private fun BrandHeader(onSettings:()->Unit){
                 maxLines=1)
             Text(stringResource(R.string.subtitle),color=Secondary,fontSize=14.sp,
                 maxLines=1,overflow=TextOverflow.Ellipsis)
+        }
+        if(showServerVpnRefresh) {
+            IconButton(
+                onClick=onRefreshServerVpn,
+                enabled=enableServerVpnRefresh,
+                modifier=Modifier.size(46.dp)
+                    .background(Color(0xFF282828),RoundedCornerShape(50))
+                    .border(1.dp,Color(0xFF484848),RoundedCornerShape(50))
+                    .testTag("server_vpn_manual_refresh"),
+            ) {
+                if(refreshingServerVpn) {
+                    CircularProgressIndicator(
+                        modifier=Modifier.size(20.dp),strokeWidth=2.dp,color=White)
+                }else{
+                    Icon(Icons.Outlined.Refresh,
+                        stringResource(R.string.server_vpn_manual_refresh),
+                        tint=if(enableServerVpnRefresh)White else Secondary,
+                        modifier=Modifier.size(22.dp))
+                }
+            }
+            Spacer(Modifier.width(8.dp))
         }
         IconButton(onClick=onSettings){
             Icon(Icons.Outlined.Tune,stringResource(R.string.options),tint=Secondary)
@@ -348,9 +428,10 @@ private fun HomeScreen(
                     onImport()
                 },
                 enabled=!busy,
-                modifier=Modifier.weight(1f).heightIn(min=52.dp),
+                modifier=Modifier.weight(1f).heightIn(min=52.dp)
+                    .onGloballyPositioned{ GuideSpotlightTargets.locate(0,it.boundsInWindow()) },
                 shape=RoundedCornerShape(14.dp),
-                border=if(highlightGuide==0 || highlightGuide==6)BorderStroke(2.dp,White)else null,
+                border=if(highlightGuide==0)BorderStroke(2.dp,White)else null,
                 contentPadding=PaddingValues(horizontal=8.dp,vertical=12.dp),
                 colors=ButtonDefaults.buttonColors(
                     containerColor=Panel,contentColor=White,
@@ -369,7 +450,8 @@ private fun HomeScreen(
                     textExpanded=!textExpanded
                 },
                 enabled=!busy,
-                modifier=Modifier.weight(1f).heightIn(min=52.dp),
+                modifier=Modifier.weight(1f).heightIn(min=52.dp)
+                    .onGloballyPositioned{ GuideSpotlightTargets.locate(1,it.boundsInWindow()) },
                 shape=RoundedCornerShape(14.dp),
                 border=if(highlightGuide==1)BorderStroke(2.dp,White)else null,
                 contentPadding=PaddingValues(horizontal=8.dp,vertical=12.dp),
@@ -393,12 +475,13 @@ private fun HomeScreen(
                 cloudExpanded=!cloudExpanded
             },
             enabled=!busy,
-            modifier=Modifier.fillMaxWidth().heightIn(min=46.dp),
+            modifier=Modifier.fillMaxWidth().heightIn(min=46.dp)
+                .onGloballyPositioned{ GuideSpotlightTargets.locate(2,it.boundsInWindow()) },
             shape=RoundedCornerShape(14.dp),
             colors=ButtonDefaults.outlinedButtonColors(
                 contentColor=White,disabledContentColor=Secondary),
-            border=BorderStroke(if(highlightGuide==5)2.dp else 1.dp,
-                if(highlightGuide==5)White else Outline),
+            border=BorderStroke(if(highlightGuide==2)2.dp else 1.dp,
+                if(highlightGuide==2)White else Outline),
         ) {
             Icon(Icons.Outlined.Cloud,null,modifier=Modifier.size(19.dp))
             Spacer(Modifier.width(8.dp))
@@ -420,7 +503,9 @@ private fun HomeScreen(
             },
         )
 
-        Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically){
+        Row(Modifier.fillMaxWidth()
+            .onGloballyPositioned{ GuideSpotlightTargets.locate(3,it.boundsInWindow()) },
+            verticalAlignment=Alignment.CenterVertically){
             Text(stringResource(R.string.result),color=White,fontWeight=FontWeight.Bold,
                 fontSize=18.sp,modifier=Modifier.weight(1f))
             if(current==null) Text(stringResource(R.string.illustrative),
@@ -671,7 +756,9 @@ private fun HistoryScreen(
         dismissButton={TextButton(onClick={deletion=null;deletingAll=false}){
             Text(stringResource(R.string.cancel))
         }},
-        containerColor=Panel,
+        containerColor=Background,
+        titleContentColor=White,
+        textContentColor=White,
     )
 }
 
@@ -758,71 +845,201 @@ private fun ServerVpnScreen(
     catalogUnavailable:Boolean,
     onDecodeCatalog:()->Unit,
     onDecodeApp:(String)->Unit,
-    onRefresh:()->Unit,
 ) {
     var selected by rememberSaveable { mutableStateOf(false) }
     var selectedId by rememberSaveable { mutableStateOf("") }
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())
-        .padding(horizontal=20.dp,vertical=12.dp),
-        verticalArrangement=Arrangement.spacedBy(14.dp)) {
+    var query by rememberSaveable { mutableStateOf("") }
+    var filter by rememberSaveable { mutableStateOf(ServerVpnListFilter.ALL) }
+    val context=LocalContext.current
+    val favoritesStore=remember(context) { ServerVpnFavorites(context) }
+    var favoriteIds by remember(favoritesStore) { mutableStateOf(favoritesStore.read()) }
+    val visibleApps=remember(apps,query,filter,favoriteIds) {
+        ServerVpnDirectory.visible(apps,query,filter,favoriteIds)
+    }
+    val newBadgeStore=remember(context) { ServerVpnNewBadges(context) }
+    var newProviderIds by remember { mutableStateOf<Set<String>>(emptySet()) }
+    // NEW applies only to newly incorporated server VPN providers.
+    LaunchedEffect(apps,newBadgeStore) {
+        if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
+            while(true) {
+                val snapshot=newBadgeStore.observeCatalog(apps.map { it.id }.toSet())
+                newProviderIds=snapshot.ids
+                val nearest=snapshot.nextExpiryMs ?:break
+                // The same device clock controls the expiry even when the user
+                // remains on this screen; reopening never restarts the timer.
+                delay(nearest.coerceAtLeast(1L))
+            }
+        }
+    }
+    Column(Modifier.fillMaxSize().padding(horizontal=20.dp,vertical=12.dp),
+        verticalArrangement=Arrangement.spacedBy(12.dp)) {
         Text(stringResource(R.string.server_vpn),fontSize=24.sp,
             fontWeight=FontWeight.Bold,color=White)
         Text(stringResource(R.string.server_vpn_description),fontSize=13.sp,
             lineHeight=20.sp,color=Secondary)
         if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
+            OutlinedTextField(
+                value=query,onValueChange={query=it},
+                placeholder={Text(stringResource(R.string.server_vpn_search_hint))},
+                leadingIcon={Icon(Icons.Outlined.Search,null)},
+                trailingIcon={
+                    if(query.isNotEmpty()) IconButton(onClick={query=""}) {
+                        Icon(Icons.Outlined.Close,stringResource(R.string.close))
+                    }
+                },
+                singleLine=true,modifier=Modifier.fillMaxWidth(),
+                shape=RoundedCornerShape(16.dp),
+                colors=OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor=Color(0xFF8873AC),
+                    unfocusedBorderColor=Color(0xFF565656),
+                    focusedTextColor=White,unfocusedTextColor=White,
+                    cursorColor=White,
+                    focusedPlaceholderColor=Secondary,
+                    unfocusedPlaceholderColor=Secondary,
+                ),
+            )
+            FlowRow(
+                horizontalArrangement=Arrangement.spacedBy(7.dp),
+                verticalArrangement=Arrangement.spacedBy(4.dp),
+            ) {
+                FilterChip(
+                    selected=filter==ServerVpnListFilter.ALL,
+                    onClick={filter=ServerVpnListFilter.ALL},
+                    shape=RoundedCornerShape(12.dp),
+                    colors=FilterChipDefaults.filterChipColors(
+                        containerColor=Background,labelColor=Secondary,
+                        selectedContainerColor=Color(0xFF4E455E),
+                        selectedLabelColor=White),
+                    label={Text(stringResource(R.string.server_vpn_filter_all))},
+                )
+                FilterChip(
+                    selected=filter==ServerVpnListFilter.ENABLED,
+                    onClick={filter=ServerVpnListFilter.ENABLED},
+                    shape=RoundedCornerShape(12.dp),
+                    colors=FilterChipDefaults.filterChipColors(
+                        containerColor=Background,labelColor=Secondary,
+                        selectedContainerColor=Color(0xFF4E455E),
+                        selectedLabelColor=White),
+                    label={Text(stringResource(R.string.server_vpn_filter_enabled))},
+                )
+                FilterChip(
+                    selected=filter==ServerVpnListFilter.FAVORITES,
+                    onClick={filter=ServerVpnListFilter.FAVORITES},
+                    shape=RoundedCornerShape(12.dp),
+                    colors=FilterChipDefaults.filterChipColors(
+                        containerColor=Background,labelColor=Secondary,
+                        selectedContainerColor=Color(0xFF4E455E),
+                        selectedLabelColor=White),
+                    label={Text(stringResource(R.string.server_vpn_filter_favorites))},
+                    leadingIcon={Icon(Icons.Outlined.StarBorder,null,
+                        modifier=Modifier.size(16.dp))},
+                )
+            }
+            if(catalogLoading) {
+                Text(stringResource(R.string.server_vpn_catalog_refreshing),
+                    color=Secondary,fontSize=12.sp)
+            }
             if(apps.isEmpty()) {
                 Text(stringResource(if(catalogLoading) R.string.server_vpn_loading
                     else R.string.server_vpn_unavailable),
                     color=Secondary,fontSize=13.sp)
                 if(catalogUnavailable && !catalogLoading) {
-                    Button(onClick=onRefresh,enabled=!busy,
-                        modifier=Modifier.fillMaxWidth(),
-                        shape=RoundedCornerShape(13.dp),
-                        colors=ButtonDefaults.buttonColors(containerColor=Raised,contentColor=White)) {
-                        Icon(Icons.Outlined.Refresh,null,modifier=Modifier.size(18.dp))
-                        Spacer(Modifier.width(8.dp))
-                        Text(stringResource(R.string.server_vpn_retry))
+                    Text(stringResource(R.string.server_vpn_retry),
+                        color=Secondary,fontSize=12.sp)
+                }
+            }else if(visibleApps.isEmpty()) {
+                Text(stringResource(R.string.server_vpn_no_matches),
+                    color=Secondary,fontSize=13.sp)
+            }else{
+                LazyColumn(
+                    modifier=Modifier.weight(1f),
+                    verticalArrangement=Arrangement.spacedBy(9.dp),
+                    contentPadding=PaddingValues(bottom=20.dp),
+                ) {
+                    items(visibleApps,key={it.id}) { app ->
+                        val expanded=selectedId==app.id
+                        Column(verticalArrangement=Arrangement.spacedBy(7.dp)) {
+                            Surface(
+                                modifier=Modifier.fillMaxWidth().clickable {
+                                    selectedId=if(expanded)"" else app.id
+                                },
+                                color=Panel,shape=RoundedCornerShape(15.dp),
+                                border=BorderStroke(1.dp,Outline),
+                            ) {
+                                Row(Modifier.padding(12.dp),
+                                    verticalAlignment=Alignment.CenterVertically) {
+                                    Surface(color=Raised,shape=RoundedCornerShape(13.dp),
+                                        modifier=Modifier.size(52.dp)) {
+                                        Box(contentAlignment=Alignment.Center) {
+                                            Image(bitmap=app.icon.asImageBitmap(),
+                                                contentDescription=app.name,
+                                                modifier=Modifier.size(36.dp))
+                                        }
+                                    }
+                                    Spacer(Modifier.width(12.dp))
+                                    Column(Modifier.weight(1f),
+                                        verticalArrangement=Arrangement.spacedBy(4.dp)) {
+                                        Text(app.name,color=White,fontSize=15.sp,
+                                            fontWeight=FontWeight.SemiBold,
+                                            maxLines=2,overflow=TextOverflow.Ellipsis)
+                                        
+                                        Text(stringResource(if(app.decodeEnabled)
+                                            R.string.server_vpn_catalog_enabled
+                                            else R.string.server_vpn_catalog_disabled),
+                                            color=Secondary,fontSize=11.sp)
+                                    }
+                                    if(app.id in newProviderIds) {
+                                        ServerVpnNewTag()
+                                        Spacer(Modifier.width(5.dp))
+                                    }
+                                    val isFavorite=app.id in favoriteIds
+                                    IconButton(
+                                        onClick={favoriteIds=favoritesStore.toggle(app.id)},
+                                        modifier=Modifier.size(40.dp),
+                                    ) {
+                                        Icon(if(isFavorite) Icons.Outlined.Star
+                                            else Icons.Outlined.StarBorder,
+                                            stringResource(if(isFavorite)
+                                                R.string.server_vpn_favorite_remove
+                                                else R.string.server_vpn_favorite_add),
+                                            tint=if(isFavorite) Color(0xFFB895EC) else Secondary)
+                                    }
+                                    Icon(if(expanded) Icons.Outlined.ExpandLess
+                                        else Icons.Outlined.ChevronRight,
+                                        null,tint=Secondary,modifier=Modifier.size(20.dp))
+                                }
+                            }
+                            if(expanded) {
+                                Surface(color=Panel,shape=RoundedCornerShape(15.dp),
+                                    modifier=Modifier.fillMaxWidth()) {
+                                    Column(Modifier.padding(15.dp)) {
+                                        Button(
+                                            onClick={
+                                                if(app.id=="nur-tunnel")onDecodeCatalog()
+                                                else onDecodeApp(app.id)
+                                            },
+                                            enabled=!busy && app.decodeEnabled,
+                                            modifier=Modifier.fillMaxWidth()
+                                                .heightIn(min=50.dp),
+                                            shape=RoundedCornerShape(13.dp),
+                                            colors=ButtonDefaults.buttonColors(
+                                                containerColor=Raised,contentColor=White),
+                                        ) {
+                                            Icon(Icons.Outlined.CloudDownload,null,
+                                                modifier=Modifier.size(19.dp))
+                                            Spacer(Modifier.width(8.dp))
+                                            Text(stringResource(R.string.nur_servers_decode))
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
-            apps.forEach { app ->
-                val expanded=selectedId==app.id
-                Surface(modifier=Modifier.fillMaxWidth().clickable { selectedId=if(expanded)"" else app.id },
-                    color=Panel,shape=RoundedCornerShape(15.dp),
-                    border=BorderStroke(1.dp,Outline)) {
-                    Row(Modifier.padding(15.dp),verticalAlignment=Alignment.CenterVertically) {
-                        Surface(color=Raised,shape=RoundedCornerShape(13.dp),
-                            modifier=Modifier.size(52.dp)) {
-                            Box(contentAlignment=Alignment.Center) {
-                                Image(bitmap=app.icon.asImageBitmap(),contentDescription=app.name,
-                                    modifier=Modifier.size(36.dp))
-                            }
-                        }
-                        Spacer(Modifier.width(12.dp))
-                        Text(app.name,color=White,fontSize=16.sp,fontWeight=FontWeight.SemiBold,
-                            modifier=Modifier.weight(1f))
-                        Icon(if(expanded) Icons.Outlined.ExpandLess else Icons.Outlined.ChevronRight,
-                            null,tint=Secondary)
-                    }
-                }
-                if(expanded) {
-                    Surface(color=Panel,shape=RoundedCornerShape(15.dp),
-                        modifier=Modifier.fillMaxWidth()) {
-                        Column(Modifier.padding(15.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
-                            Button(onClick={if(app.id=="nur-tunnel")onDecodeCatalog() else onDecodeApp(app.id)},
-                                enabled=!busy && app.decodeEnabled,
-                                modifier=Modifier.fillMaxWidth().heightIn(min=50.dp),
-                                shape=RoundedCornerShape(13.dp),
-                                colors=ButtonDefaults.buttonColors(containerColor=Raised,contentColor=White)) {
-                                Icon(Icons.Outlined.CloudDownload,null,modifier=Modifier.size(19.dp))
-                                Spacer(Modifier.width(8.dp))
-                                Text(stringResource(R.string.nur_servers_decode))
-                            }
-                        }
-                    }
-                }
-            }
-        } else {
+        }else{
+            Column(Modifier.verticalScroll(rememberScrollState()),
+                verticalArrangement=Arrangement.spacedBy(14.dp)) {
         Surface(
             modifier=Modifier.fillMaxWidth().clickable { selected=!selected },
             shape=RoundedCornerShape(15.dp),color=Panel,
@@ -870,7 +1087,28 @@ private fun ServerVpnScreen(
                 }
             }
         }
+            }
         }
+    }
+}
+
+/** Neutral, readable, reusable two-hour marker for new client features and VPNs. */
+@Composable
+private fun ServerVpnNewTag() {
+    Surface(
+        color=Color(0xFF352945),
+        shape=RoundedCornerShape(10.dp),
+        border=BorderStroke(1.dp,Color(0xFFA581D9)),
+        modifier=Modifier.testTag("server_vpn_new_badge"),
+    ) {
+        Text(
+            stringResource(R.string.server_vpn_new_badge),
+            color=Color(0xFFE4D7FF),
+            fontSize=10.sp,
+            maxLines=1,
+            fontWeight=FontWeight.SemiBold,
+            modifier=Modifier.padding(horizontal=7.dp,vertical=4.dp),
+        )
     }
 }
 
@@ -896,8 +1134,10 @@ private fun BottomTabs(active:Int,onTab:(Int)->Unit,spotlight:Int?=null) {
         tabs.forEach{(label,icon,index)->
             val selected=active==index
             Column(Modifier.weight(1f).clickable{onTab(index)}
+                    .onGloballyPositioned{ if(index in 1..4) GuideSpotlightTargets.locate(index+3,it.boundsInWindow()) }
                     .then(if(spotlight==index) Modifier
                         .background(Raised,RoundedCornerShape(11.dp))
+                        .border(2.dp,Color(0xFF80E6FF),RoundedCornerShape(11.dp))
                         .padding(horizontal=2.dp) else Modifier)
                     .padding(vertical=9.dp),
                 horizontalAlignment=Alignment.CenterHorizontally,

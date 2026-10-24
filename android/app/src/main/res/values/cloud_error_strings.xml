@@ -15,7 +15,9 @@
     <string name="cloud_failure_invalid">This file or request could not be accepted. Check the format.</string>
     <string name="cloud_failure_unsupported">This file format is not available on the server.</string>
     <string name="cloud_failure_decode">The decoder could not process this file version. The file is not necessarily damaged.</string>
+    <string name="cloud_failure_maintenance">This service is temporarily under maintenance. Please try again later.</string>
     <string name="cloud_failure_unavailable">The service is temporarily unavailable. Try again later.</string>
+    <string name="cloud_failure_config_unavailable">This Cloud configuration is no longer available. It may have expired, been deleted, or been valid for one use only. This is not a decoder failure.</string>
     <string name="cloud_failure_remote">The remote provider returned an invalid or unverifiable response.</string>
     <string name="cloud_failure_credentials">Incorrect password or HWID. Check the information and try again.</string>
     <string name="cloud_failure_password">This protected file requires a password.</string>
@@ -25,5 +27,11 @@
     <string name="cloud_failure_conflict">The request conflicts with the current state. Please retry.</string>
     <string name="cloud_failure_partial">The result was incomplete or invalid, and will not be displayed.</string>
     <string name="cloud_failure_general">Unable to complete the operation. Try again or contact support.</string>
-    <string name="cloud_failure_notice_title">Could not complete the request</string>
+    <string name="cloud_failure_notice_title">Notice</string>
+    <string name="cloud_password_title">Configuration password required</string>
+    <string name="cloud_password_description">%1$s is password-protected. Enter the export password to continue. It will not be saved.</string>
+    <string name="cloud_failure_password_incorrect">Incorrect password.</string>
+    <string name="cloud_failure_private_key">This NPVS file uses recipient public/private key protection. This method is not supported yet; support is coming soon.</string>
+    <string name="cloud_failure_recipient">This NPVS file uses a recipient key method that is not supported yet. Support is coming soon.</string>
+    <string name="cloud_failure_npvs_unsupported">This NPVS version or protection method is not supported yet. Support is coming soon.</string>
 </resources>

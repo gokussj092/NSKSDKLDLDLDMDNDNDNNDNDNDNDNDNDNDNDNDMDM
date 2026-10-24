@@ -28,14 +28,14 @@ class ExtendedLanguageResourcesInstrumentedTest {
             assertEquals("language=$tag",settingsTitle,
                 res.getString(R.string.settings_title))
             for(id in listOf(
-                R.string.guide_step_six, R.string.guide_step_seven,
+                R.string.guide_step_six, R.string.guide_step_seven, R.string.guide_step_eight,
                 R.string.cloud_http_injector_privacy, R.string.hc_auth_failed,
                 R.string.hc_auth_hwid_hint, R.string.npvs_private_key_unsupported,
             )) assertTrue("missing resource $tag:$id",res.getString(id).isNotBlank())
-            val progress=res.getString(R.string.guide_progress,1,7)
+            val progress=res.getString(R.string.guide_progress,1,8)
             // Android may format 7 as ۷ in Persian; test numeric value, not glyph.
             assertTrue("localized progress $tag: $progress",
-                progress.any { Character.getNumericValue(it)==7 })
+                progress.any { Character.getNumericValue(it)==8 })
             assertTrue(res.getString(R.string.hc_auth_description,"file.hc")
                 .contains("file.hc"))
             assertTrue(res.getString(R.string.batch_import_summary,1,2).isNotBlank())

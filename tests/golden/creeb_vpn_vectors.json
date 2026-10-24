@@ -1,0 +1,685 @@
+{
+  "provenance": "Synthetic only; independently transcribed JDK XXTEA, two fixed keys",
+  "documents": [
+    {
+      "name": "normal",
+      "expected": {
+        "Message": "plain notice",
+        "Servers": [
+          {
+            "Name": "Synthetic — 😀",
+            "Flag": "rc",
+            "sInfo": "Custom Server",
+            "ServerPort": "22",
+            "UDPPort": "20000-50000:1:2",
+            "extra": {
+              "ServerPass": "unknown nested metadata"
+            },
+            "ServerIP": "ServerIP test α\r\n",
+            "ServerUser": "ServerUser test α\r\n",
+            "ServerPass": "ServerPass test α\r\n",
+            "ProxyIP": "ProxyIP test α\r\n",
+            "Cloud": "Cloud test α\r\n",
+            "Slowchave": "Slowchave test α\r\n",
+            "Nameserver": "Nameserver test α\r\n",
+            "V2RAY_URI": "V2RAY_URI test α\r\n",
+            "UDPServer": "UDPServer test α\r\n",
+            "WireGuardConfig": "WireGuardConfig test α\r\n"
+          }
+        ],
+        "Tweaks": [
+          {
+            "Name": "Synthetic tweak",
+            "Flag": "rc",
+            "pInfo": "Custom Tweak",
+            "TunnelType": 6,
+            "CPort": "8080",
+            "extra": {
+              "SNI": "unknown nested metadata"
+            },
+            "Payload": "Payload test 😀\r\n",
+            "CHost": "CHost test 😀\r\n",
+            "SNI": "SNI test 😀\r\n",
+            "DNSHost": "DNSHost test 😀\r\n",
+            "V2RAY_JSON": "V2RAY_JSON test 😀\r\n",
+            "V2RAY": "V2RAY test 😀\r\n",
+            "V2RAY_SNI": "V2RAY_SNI test 😀\r\n",
+            "V2RAY_URI": "V2RAY_URI test 😀\r\n"
+          }
+        ],
+        "unmapped": [
+          "keep",
+          null,
+          0,
+          false
+        ]
+      },
+      "outer": {
+        "Message": "plain notice",
+        "Servers": [
+          {
+            "Name": "Synthetic — 😀",
+            "Flag": "rc",
+            "sInfo": "Custom Server",
+            "ServerPort": "22",
+            "UDPPort": "20000-50000:1:2",
+            "extra": {
+              "ServerPass": "unknown nested metadata"
+            },
+            "ServerIP": "nDFeaoOSRpp6EgKrkrbMPnErvuZwBFPC",
+            "ServerUser": "GHHLifWA95W4nsclIYJLwIrd2p94gNlv",
+            "ServerPass": "zYgWmQwY0ru6+Ph79aRIFYdUQI+/gkCM",
+            "ProxyIP": "cAl6y5B0QecYm/A9/aYyvlgoaEUrhpHm",
+            "Cloud": "IZ8wPHr2qxubfYpUJylczWeqDo8=",
+            "Slowchave": "w4tXWxkmoUFsRyomhcL8hZ9ZZ9I05zqe",
+            "Nameserver": "NcTEQ3tEr+S0XKf04q/ACegBiy6tLiq6",
+            "V2RAY_URI": "eORD3/3dIoPW2QG4XXFXRGEfPBWrSVTs",
+            "UDPServer": "8lhHTWG5jwoQIT1Um/WKlrSbNFB2Fvjh",
+            "WireGuardConfig": "uN8cMv4m4U1/qSMweS9XYw5+fMA0Khz0s/o0Kyxeby8="
+          }
+        ],
+        "Tweaks": [
+          {
+            "Name": "Synthetic tweak",
+            "Flag": "rc",
+            "pInfo": "Custom Tweak",
+            "TunnelType": 6,
+            "CPort": "8080",
+            "extra": {
+              "SNI": "unknown nested metadata"
+            },
+            "Payload": "Rq62x2u9dHTItGjE2BUbP6OL0e9izzbj",
+            "CHost": "z+OD/aIQ+8IBDfgmeFsQvqqB6wJV4X58",
+            "SNI": "yRZ1Vaci2S0SP6KnBkGYYJn9fWI=",
+            "DNSHost": "mkcvW32dfepgtc3g7tFWLGOTD1g6O4BR",
+            "V2RAY_JSON": "NwNnVft0GhyfRAMFkR/eQDyB+EVXDWUxsWsR3A==",
+            "V2RAY": "nHAdkbQyZInGBN4La6f7sIMPZYbNPt2z",
+            "V2RAY_SNI": "3uFe9ldgrbNqDK68ExG+mQL7NrV4Rkn5UGNifg==",
+            "V2RAY_URI": "6orSk+/zS8wDOLF98aRDz23tJBOjCz/XLU8mVA=="
+          }
+        ],
+        "unmapped": [
+          "keep",
+          null,
+          0,
+          false
+        ]
+      },
+      "cipher": "bMjQ6tc7U4r3/XIGCqvaRbLtAITwYnCTgzPD5WVK+BAUhK6AJUGYLfh+ZLKN8aEMqNpOqDHb/NdxiwmW0pwUJ2MVEYipWs8pp4/jWVDOLslkdPQrOfaUQ3mzSptJhf6Nlu7HJbPpMw82I0dkGIr5VHfPDcBGv8JHhcqrcLUGX9DS5Cy0ETy3c4HEGwysWm18SOXSKgeOSB9PZxQHT2IDsUDD/iak9EdwrP/yutVlumZo9UcLgRCTJO/I5xkNvLdCS4WjdZhSWVuNCbWSYtPtKJ434y5eoC4XwMTO5MqgiqbkXz42MHEIkDV78LOFHo3jufBMsvq8fBsC2Q8TWFE3Msxo9GLcOV4c0dc2KIJsE8jofY6wgl1W+iRyj27PC3yYEE/YIMsBXxIphjlElNWorFAKGGQUpl2UHpjAj19F/lYxkjp3BJUo66S3hIa6kSJ7IPhSnXNyXwJOnoD+NaRtNsrxfPVWV8Vj8EJwca92n62vKiU23BXEEU5igKXdjLeqai3vBwFd1i2rSg3JpgifRDNLBGkHFv80Xv6ukjNZlxQKbOPAZn0zam3xI/7Jv7TaFXTZC1RRXVlM7APWN/OYIJvhDM6dpnD5CLoicplNbMqbe+eGe3VjsP/qKFRVRNVFr+uReaeKrfJGdv8+uDNbRn0HLaFYePg05pAX1cf2wviFqdPHcpJKAROXBInhSCb7jAKmK0h1uVdb+FlfEjnmI3nZlg8DJm+sI6fSwVg0QjMfDEq1ClQ44NIgLozxP+h+cqy/EWKsb2oxKnoJfq72cFuswb/w04gULirQJnzWwa5oYZwhzg7zZw4HzC+NMttnfDCk3KScZ6kJNynfTlPiusQ/8HhIBo03txF2wT5bkjxqZ0YO28jiDIJGDx6qFSxWY+Blhu3MTPmA6rm1nTrb0WooMUtMsc0tt6FJJA3Z0LFBItkMnwXIXGqZ4obxLyhLRpdtP00FEYLAQqv0+umifRmoKuGxcSRozX17i/6BWepYW0l5hcjA71bGGVAE4lsPtSFhWquVKIa8hKQrMsF4phTyUCS3DzNyefcrlda4euYlf8VphlyxTqgCiwyEyHokFzu4sZUwlKKIAUHbrCEYOqd3/R6hdUbak2ZvgzEgpczLiXf2gBcoH8BQnpfH/fQ1UGZ5hFC3U/Bv741SmOg3k2k79aT0I4kxhzywPAdU+UbFAnveeC/Kb849YRwtIwOJ95QTHM+47CH8fK/hS+nfsYTkLjlTucHBZLspq47tr6Wk39EAxRNQSR5V7FvI9Ea3itfo653ekgr/M1bF2CkRKFFubgrm+6xQ+XWz5ISjGmDV59vG+kHyt3c6zy88hfVyik29gtkqTfXw0izxHfnwe3AfJ6KFvDUimrOjVt6H7TyqekNIMUZlXCXndLcY317HAIWXKv5PPmAfOmhaoZpfz7po7J7mybFnNe0nwnx80zlDLcN3aL4D3KDJrsYV5/l3nxXPa5nTCgQLTMeAOUjihBbNv4Hm2ct8bPj1r5uCaA89SQWuOOMqAZmWTaYb4ZX+Q03gjMec4tLlameq+TToMkrM/cn64I2kak9pDKU18pi+5E6AmSD1cZNq+tnOIByaCDUXK6OBmfFmW3jCCPXMlCFWghLLVyMzAkqxFAlmj+AzY1s4pTYogA=="
+    },
+    {
+      "name": "locked",
+      "expected": {
+        "Message": "plain notice",
+        "Servers": [
+          {
+            "Name": "Synthetic — 😀",
+            "Flag": "rc",
+            "sInfo": "Custom Server",
+            "ServerPort": "22",
+            "UDPPort": "20000-50000:1:2",
+            "extra": {
+              "ServerPass": "unknown nested metadata"
+            },
+            "ServerIP": "ServerIP test α\r\n",
+            "ServerUser": "ServerUser test α\r\n",
+            "ServerPass": "ServerPass test α\r\n",
+            "ProxyIP": "ProxyIP test α\r\n",
+            "Cloud": "Cloud test α\r\n",
+            "Slowchave": "Slowchave test α\r\n",
+            "Nameserver": "Nameserver test α\r\n",
+            "V2RAY_URI": "V2RAY_URI test α\r\n",
+            "UDPServer": "UDPServer test α\r\n",
+            "WireGuardConfig": "WireGuardConfig test α\r\n"
+          }
+        ],
+        "Tweaks": [
+          {
+            "Name": "Synthetic tweak",
+            "Flag": "rc",
+            "pInfo": "Custom Tweak",
+            "TunnelType": 6,
+            "CPort": "8080",
+            "extra": {
+              "SNI": "unknown nested metadata"
+            },
+            "Payload": "Payload test 😀\r\n",
+            "CHost": "CHost test 😀\r\n",
+            "SNI": "SNI test 😀\r\n",
+            "DNSHost": "DNSHost test 😀\r\n",
+            "V2RAY_JSON": "V2RAY_JSON test 😀\r\n",
+            "V2RAY": "V2RAY test 😀\r\n",
+            "V2RAY_SNI": "V2RAY_SNI test 😀\r\n",
+            "V2RAY_URI": "V2RAY_URI test 😀\r\n"
+          }
+        ],
+        "unmapped": [
+          "keep",
+          null,
+          0,
+          false
+        ],
+        "Security": {
+          "PasswordProtect": true,
+          "Password": "synthetic password",
+          "DeviceIDLock": true,
+          "DeviceID": "synthetic-id;second-id",
+          "Expiry": true,
+          "ExpiryDate": 1,
+          "BlockRoot": true,
+          "BlockPackages": true,
+          "BlockedPackagesList": "example.invalid",
+          "MobileDataOnly": true,
+          "PlayStoreOnly": true
+        }
+      },
+      "outer": {
+        "Message": "plain notice",
+        "Servers": [
+          {
+            "Name": "Synthetic — 😀",
+            "Flag": "rc",
+            "sInfo": "Custom Server",
+            "ServerPort": "22",
+            "UDPPort": "20000-50000:1:2",
+            "extra": {
+              "ServerPass": "unknown nested metadata"
+            },
+            "ServerIP": "nDFeaoOSRpp6EgKrkrbMPnErvuZwBFPC",
+            "ServerUser": "GHHLifWA95W4nsclIYJLwIrd2p94gNlv",
+            "ServerPass": "zYgWmQwY0ru6+Ph79aRIFYdUQI+/gkCM",
+            "ProxyIP": "cAl6y5B0QecYm/A9/aYyvlgoaEUrhpHm",
+            "Cloud": "IZ8wPHr2qxubfYpUJylczWeqDo8=",
+            "Slowchave": "w4tXWxkmoUFsRyomhcL8hZ9ZZ9I05zqe",
+            "Nameserver": "NcTEQ3tEr+S0XKf04q/ACegBiy6tLiq6",
+            "V2RAY_URI": "eORD3/3dIoPW2QG4XXFXRGEfPBWrSVTs",
+            "UDPServer": "8lhHTWG5jwoQIT1Um/WKlrSbNFB2Fvjh",
+            "WireGuardConfig": "uN8cMv4m4U1/qSMweS9XYw5+fMA0Khz0s/o0Kyxeby8="
+          }
+        ],
+        "Tweaks": [
+          {
+            "Name": "Synthetic tweak",
+            "Flag": "rc",
+            "pInfo": "Custom Tweak",
+            "TunnelType": 6,
+            "CPort": "8080",
+            "extra": {
+              "SNI": "unknown nested metadata"
+            },
+            "Payload": "Rq62x2u9dHTItGjE2BUbP6OL0e9izzbj",
+            "CHost": "z+OD/aIQ+8IBDfgmeFsQvqqB6wJV4X58",
+            "SNI": "yRZ1Vaci2S0SP6KnBkGYYJn9fWI=",
+            "DNSHost": "mkcvW32dfepgtc3g7tFWLGOTD1g6O4BR",
+            "V2RAY_JSON": "NwNnVft0GhyfRAMFkR/eQDyB+EVXDWUxsWsR3A==",
+            "V2RAY": "nHAdkbQyZInGBN4La6f7sIMPZYbNPt2z",
+            "V2RAY_SNI": "3uFe9ldgrbNqDK68ExG+mQL7NrV4Rkn5UGNifg==",
+            "V2RAY_URI": "6orSk+/zS8wDOLF98aRDz23tJBOjCz/XLU8mVA=="
+          }
+        ],
+        "unmapped": [
+          "keep",
+          null,
+          0,
+          false
+        ],
+        "Security": {
+          "PasswordProtect": true,
+          "Password": "synthetic password",
+          "DeviceIDLock": true,
+          "DeviceID": "synthetic-id;second-id",
+          "Expiry": true,
+          "ExpiryDate": 1,
+          "BlockRoot": true,
+          "BlockPackages": true,
+          "BlockedPackagesList": "example.invalid",
+          "MobileDataOnly": true,
+          "PlayStoreOnly": true
+        }
+      },
+      "cipher": "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"
+    },
+    {
+      "name": "mixed-keys",
+      "expected": {
+        "Message": "plain notice",
+        "Servers": [
+          {
+            "Name": "Synthetic — 😀",
+            "Flag": "rc",
+            "sInfo": "Custom Server",
+            "ServerPort": "22",
+            "UDPPort": "20000-50000:1:2",
+            "extra": {
+              "ServerPass": "unknown nested metadata"
+            },
+            "ServerIP": "ServerIP test α\r\n",
+            "ServerUser": "ServerUser test α\r\n",
+            "ServerPass": "ServerPass test α\r\n",
+            "ProxyIP": "ProxyIP test α\r\n",
+            "Cloud": "Cloud test α\r\n",
+            "Slowchave": "Slowchave test α\r\n",
+            "Nameserver": "Nameserver test α\r\n",
+            "V2RAY_URI": "V2RAY_URI test α\r\n",
+            "UDPServer": "UDPServer test α\r\n",
+            "WireGuardConfig": "WireGuardConfig test α\r\n"
+          }
+        ],
+        "Tweaks": [
+          {
+            "Name": "Synthetic tweak",
+            "Flag": "rc",
+            "pInfo": "Custom Tweak",
+            "TunnelType": 6,
+            "CPort": "8080",
+            "extra": {
+              "SNI": "unknown nested metadata"
+            },
+            "Payload": "Payload test 😀\r\n",
+            "CHost": "CHost test 😀\r\n",
+            "SNI": "SNI test 😀\r\n",
+            "DNSHost": "DNSHost test 😀\r\n",
+            "V2RAY_JSON": "V2RAY_JSON test 😀\r\n",
+            "V2RAY": "V2RAY test 😀\r\n",
+            "V2RAY_SNI": "V2RAY_SNI test 😀\r\n",
+            "V2RAY_URI": "V2RAY_URI test 😀\r\n"
+          },
+          {
+            "Name": "Synthetic tweak",
+            "Flag": "rc",
+            "pInfo": "Bundled carrier",
+            "TunnelType": 6,
+            "CPort": "8080",
+            "extra": {
+              "SNI": "unknown nested metadata"
+            },
+            "Payload": "Payload test 😀\r\n",
+            "CHost": "CHost test 😀\r\n",
+            "SNI": "SNI test 😀\r\n",
+            "DNSHost": "DNSHost test 😀\r\n",
+            "V2RAY_JSON": "V2RAY_JSON test 😀\r\n",
+            "V2RAY": "V2RAY test 😀\r\n",
+            "V2RAY_SNI": "V2RAY_SNI test 😀\r\n",
+            "V2RAY_URI": "V2RAY_URI test 😀\r\n"
+          }
+        ],
+        "unmapped": [
+          "keep",
+          null,
+          0,
+          false
+        ]
+      },
+      "outer": {
+        "Message": "plain notice",
+        "Servers": [
+          {
+            "Name": "Synthetic — 😀",
+            "Flag": "rc",
+            "sInfo": "Custom Server",
+            "ServerPort": "22",
+            "UDPPort": "20000-50000:1:2",
+            "extra": {
+              "ServerPass": "unknown nested metadata"
+            },
+            "ServerIP": "nDFeaoOSRpp6EgKrkrbMPnErvuZwBFPC",
+            "ServerUser": "GHHLifWA95W4nsclIYJLwIrd2p94gNlv",
+            "ServerPass": "zYgWmQwY0ru6+Ph79aRIFYdUQI+/gkCM",
+            "ProxyIP": "cAl6y5B0QecYm/A9/aYyvlgoaEUrhpHm",
+            "Cloud": "IZ8wPHr2qxubfYpUJylczWeqDo8=",
+            "Slowchave": "w4tXWxkmoUFsRyomhcL8hZ9ZZ9I05zqe",
+            "Nameserver": "NcTEQ3tEr+S0XKf04q/ACegBiy6tLiq6",
+            "V2RAY_URI": "eORD3/3dIoPW2QG4XXFXRGEfPBWrSVTs",
+            "UDPServer": "8lhHTWG5jwoQIT1Um/WKlrSbNFB2Fvjh",
+            "WireGuardConfig": "uN8cMv4m4U1/qSMweS9XYw5+fMA0Khz0s/o0Kyxeby8="
+          }
+        ],
+        "Tweaks": [
+          {
+            "Name": "Synthetic tweak",
+            "Flag": "rc",
+            "pInfo": "Custom Tweak",
+            "TunnelType": 6,
+            "CPort": "8080",
+            "extra": {
+              "SNI": "unknown nested metadata"
+            },
+            "Payload": "Rq62x2u9dHTItGjE2BUbP6OL0e9izzbj",
+            "CHost": "z+OD/aIQ+8IBDfgmeFsQvqqB6wJV4X58",
+            "SNI": "yRZ1Vaci2S0SP6KnBkGYYJn9fWI=",
+            "DNSHost": "mkcvW32dfepgtc3g7tFWLGOTD1g6O4BR",
+            "V2RAY_JSON": "NwNnVft0GhyfRAMFkR/eQDyB+EVXDWUxsWsR3A==",
+            "V2RAY": "nHAdkbQyZInGBN4La6f7sIMPZYbNPt2z",
+            "V2RAY_SNI": "3uFe9ldgrbNqDK68ExG+mQL7NrV4Rkn5UGNifg==",
+            "V2RAY_URI": "6orSk+/zS8wDOLF98aRDz23tJBOjCz/XLU8mVA=="
+          },
+          {
+            "Name": "Synthetic tweak",
+            "Flag": "rc",
+            "pInfo": "Bundled carrier",
+            "TunnelType": 6,
+            "CPort": "8080",
+            "extra": {
+              "SNI": "unknown nested metadata"
+            },
+            "Payload": "pk70+UElcwJG1pqUU9iH2eRpDrkcvvYd",
+            "CHost": "Fl5jglC/RmEbIqHTKb9p5+4kYqANN5Jg",
+            "SNI": "lL7n9zfJbhnx5EnP2DntGfZboYw=",
+            "DNSHost": "ERhfCPM6lXt/ENnTi2+1gAA9ml6CiIxd",
+            "V2RAY_JSON": "b0LwL05yDF4oq35WoE2BnLugHKdvZ35KqZlAng==",
+            "V2RAY": "3fsRJAMkpKhH5/jMMbo3AFbcgX7VKgiw",
+            "V2RAY_SNI": "KVII7W1laqAhNesi/UOkVke1uHrz9vvTy1LNIg==",
+            "V2RAY_URI": "Lob0t6B/R0ufbeIIW8YXwY+TB5jEr3UGjg1s4A=="
+          }
+        ],
+        "unmapped": [
+          "keep",
+          null,
+          0,
+          false
+        ]
+      },
+      "cipher": "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"
+    },
+    {
+      "name": "empty-optional",
+      "expected": {
+        "Tweaks": [
+          {
+            "pInfo": "Custom Tweak",
+            "Payload": "",
+            "SNI": null,
+            "Name": "Only tweak"
+          }
+        ]
+      },
+      "outer": {
+        "Tweaks": [
+          {
+            "pInfo": "Custom Tweak",
+            "Payload": "",
+            "SNI": null,
+            "Name": "Only tweak"
+          }
+        ]
+      },
+      "cipher": "2C7FDs56tetViishGekgya0LKRLnb9JCCVKE2I//9BOu5A7cnGjdDgG7OMpGa1yW0sk1RPb02O674NXoPQN5CjvBmVOxNsrN3CfvgMDyFCeWjLR2vRbFZA=="
+    },
+    {
+      "name": "catalog",
+      "expected": {
+        "Message": "plain notice",
+        "Servers": [
+          {
+            "Name": "Synthetic — 😀",
+            "Flag": "rc",
+            "sInfo": "Custom Server",
+            "ServerPort": "22",
+            "UDPPort": "20000-50000:1:2",
+            "extra": {
+              "ServerPass": "unknown nested metadata"
+            },
+            "ServerIP": "ServerIP test α\r\n",
+            "ServerUser": "ServerUser test α\r\n",
+            "ServerPass": "ServerPass test α\r\n",
+            "ProxyIP": "ProxyIP test α\r\n",
+            "Cloud": "Cloud test α\r\n",
+            "Slowchave": "Slowchave test α\r\n",
+            "Nameserver": "Nameserver test α\r\n",
+            "V2RAY_URI": "V2RAY_URI test α\r\n",
+            "UDPServer": "UDPServer test α\r\n",
+            "WireGuardConfig": "WireGuardConfig test α\r\n"
+          }
+        ],
+        "Tweaks": [
+          {
+            "Name": "Synthetic tweak",
+            "Flag": "rc",
+            "pInfo": "Custom Tweak",
+            "TunnelType": 6,
+            "CPort": "8080",
+            "extra": {
+              "SNI": "unknown nested metadata"
+            },
+            "Payload": "Payload test 😀\r\n",
+            "CHost": "CHost test 😀\r\n",
+            "SNI": "SNI test 😀\r\n",
+            "DNSHost": "DNSHost test 😀\r\n",
+            "V2RAY_JSON": "V2RAY_JSON test 😀\r\n",
+            "V2RAY": "V2RAY test 😀\r\n",
+            "V2RAY_SNI": "V2RAY_SNI test 😀\r\n",
+            "V2RAY_URI": "V2RAY_URI test 😀\r\n"
+          },
+          {
+            "Name": "Synthetic tweak",
+            "Flag": "rc",
+            "pInfo": "Bundled carrier",
+            "TunnelType": 6,
+            "CPort": "8080",
+            "extra": {
+              "SNI": "unknown nested metadata"
+            },
+            "Payload": "Payload test 😀\r\n",
+            "CHost": "CHost test 😀\r\n",
+            "SNI": "SNI test 😀\r\n",
+            "DNSHost": "DNSHost test 😀\r\n",
+            "V2RAY_JSON": "V2RAY_JSON test 😀\r\n",
+            "V2RAY": "V2RAY test 😀\r\n",
+            "V2RAY_SNI": "V2RAY_SNI test 😀\r\n",
+            "V2RAY_URI": "V2RAY_URI test 😀\r\n"
+          }
+        ],
+        "unmapped": [
+          "keep",
+          null,
+          0,
+          false
+        ],
+        "Version": "synthetic-1",
+        "V2Json": "{\"outbounds\":[]}",
+        "ServerBanner": "<b>synthetic</b>",
+        "isTimer": false,
+        "TimeLimit": "0",
+        "AD_UNIT_OPEN": ""
+      },
+      "outer": {
+        "Message": "plain notice",
+        "Servers": [
+          {
+            "Name": "Synthetic — 😀",
+            "Flag": "rc",
+            "sInfo": "Custom Server",
+            "ServerPort": "22",
+            "UDPPort": "20000-50000:1:2",
+            "extra": {
+              "ServerPass": "unknown nested metadata"
+            },
+            "ServerIP": "nDFeaoOSRpp6EgKrkrbMPnErvuZwBFPC",
+            "ServerUser": "GHHLifWA95W4nsclIYJLwIrd2p94gNlv",
+            "ServerPass": "zYgWmQwY0ru6+Ph79aRIFYdUQI+/gkCM",
+            "ProxyIP": "cAl6y5B0QecYm/A9/aYyvlgoaEUrhpHm",
+            "Cloud": "IZ8wPHr2qxubfYpUJylczWeqDo8=",
+            "Slowchave": "w4tXWxkmoUFsRyomhcL8hZ9ZZ9I05zqe",
+            "Nameserver": "NcTEQ3tEr+S0XKf04q/ACegBiy6tLiq6",
+            "V2RAY_URI": "eORD3/3dIoPW2QG4XXFXRGEfPBWrSVTs",
+            "UDPServer": "8lhHTWG5jwoQIT1Um/WKlrSbNFB2Fvjh",
+            "WireGuardConfig": "uN8cMv4m4U1/qSMweS9XYw5+fMA0Khz0s/o0Kyxeby8="
+          }
+        ],
+        "Tweaks": [
+          {
+            "Name": "Synthetic tweak",
+            "Flag": "rc",
+            "pInfo": "Custom Tweak",
+            "TunnelType": 6,
+            "CPort": "8080",
+            "extra": {
+              "SNI": "unknown nested metadata"
+            },
+            "Payload": "Rq62x2u9dHTItGjE2BUbP6OL0e9izzbj",
+            "CHost": "z+OD/aIQ+8IBDfgmeFsQvqqB6wJV4X58",
+            "SNI": "yRZ1Vaci2S0SP6KnBkGYYJn9fWI=",
+            "DNSHost": "mkcvW32dfepgtc3g7tFWLGOTD1g6O4BR",
+            "V2RAY_JSON": "NwNnVft0GhyfRAMFkR/eQDyB+EVXDWUxsWsR3A==",
+            "V2RAY": "nHAdkbQyZInGBN4La6f7sIMPZYbNPt2z",
+            "V2RAY_SNI": "3uFe9ldgrbNqDK68ExG+mQL7NrV4Rkn5UGNifg==",
+            "V2RAY_URI": "6orSk+/zS8wDOLF98aRDz23tJBOjCz/XLU8mVA=="
+          },
+          {
+            "Name": "Synthetic tweak",
+            "Flag": "rc",
+            "pInfo": "Bundled carrier",
+            "TunnelType": 6,
+            "CPort": "8080",
+            "extra": {
+              "SNI": "unknown nested metadata"
+            },
+            "Payload": "pk70+UElcwJG1pqUU9iH2eRpDrkcvvYd",
+            "CHost": "Fl5jglC/RmEbIqHTKb9p5+4kYqANN5Jg",
+            "SNI": "lL7n9zfJbhnx5EnP2DntGfZboYw=",
+            "DNSHost": "ERhfCPM6lXt/ENnTi2+1gAA9ml6CiIxd",
+            "V2RAY_JSON": "b0LwL05yDF4oq35WoE2BnLugHKdvZ35KqZlAng==",
+            "V2RAY": "3fsRJAMkpKhH5/jMMbo3AFbcgX7VKgiw",
+            "V2RAY_SNI": "KVII7W1laqAhNesi/UOkVke1uHrz9vvTy1LNIg==",
+            "V2RAY_URI": "Lob0t6B/R0ufbeIIW8YXwY+TB5jEr3UGjg1s4A=="
+          }
+        ],
+        "unmapped": [
+          "keep",
+          null,
+          0,
+          false
+        ],
+        "Version": "synthetic-1",
+        "V2Json": "{\"outbounds\":[]}",
+        "ServerBanner": "<b>synthetic</b>",
+        "isTimer": false,
+        "TimeLimit": "0",
+        "AD_UNIT_OPEN": ""
+      },
+      "cipher": "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"
+    }
+  ],
+  "primitives": [
+    {
+      "key": "C",
+      "plainBase64": "zrHwn5iA",
+      "cipher": "8i2axK9Q+cizIXaK"
+    },
+    {
+      "key": "C",
+      "plainBase64": "Qc6x8J+YgA==",
+      "cipher": "yn5La0gXvdybIMHl"
+    },
+    {
+      "key": "C",
+      "plainBase64": "QUHOsfCfmIA=",
+      "cipher": "rO7517K2ld3cd41i"
+    },
+    {
+      "key": "C",
+      "plainBase64": "QUFBzrHwn5iA",
+      "cipher": "/pxWtfXXPIUDCH0VZEjHAQ=="
+    },
+    {
+      "key": "C",
+      "plainBase64": "QUFBQc6x8J+YgA==",
+      "cipher": "2mZ7A/3BhfjZzcsKNErOgQ=="
+    },
+    {
+      "key": "C",
+      "plainBase64": "QUFBQUHOsfCfmIA=",
+      "cipher": "2l87cYpVbi5mFGdMao3LUA=="
+    },
+    {
+      "key": "C",
+      "plainBase64": "QUFBQUFBzrHwn5iA",
+      "cipher": "zLPWee+ap3SKYDgRM0i1lA=="
+    },
+    {
+      "key": "C",
+      "plainBase64": "QUFBQUFBQc6x8J+YgA==",
+      "cipher": "wg7CmKrCa/da3m5mQgkoS2o93rc="
+    },
+    {
+      "key": "C",
+      "plainBase64": "QUFBQUFBQUHOsfCfmIA=",
+      "cipher": "8sZktyfHc8rd5C5m3D9MakafWK4="
+    },
+    {
+      "key": "C",
+      "plainBase64": "QUFBQUFBQUFBzrHwn5iA",
+      "cipher": "vw8wtSowMGViFJ55ywk8WKksfS0="
+    },
+    {
+      "key": "C",
+      "plainBase64": "QUFBQUFBQUFBQc6x8J+YgA==",
+      "cipher": "sQZSWnv7ayTPPNGpu0T4TuybjHk="
+    },
+    {
+      "key": "C",
+      "plainBase64": "QUFBQUFBQUFBQUHOsfCfmIA=",
+      "cipher": "B7zkFuTyzFBsMgTlJSgWKAhR9XHLRaQz"
+    },
+    {
+      "key": "S",
+      "plainBase64": "zrHwn5iA",
+      "cipher": "YZEn4kRT0wAi2nF1"
+    },
+    {
+      "key": "S",
+      "plainBase64": "Qc6x8J+YgA==",
+      "cipher": "3I4uVeeZ4vx0EUwQ"
+    },
+    {
+      "key": "S",
+      "plainBase64": "QUHOsfCfmIA=",
+      "cipher": "LLC5v4EHKLxEq2Tu"
+    },
+    {
+      "key": "S",
+      "plainBase64": "QUFBzrHwn5iA",
+      "cipher": "noCJhHOXoUKpU0PdiuZBIg=="
+    },
+    {
+      "key": "S",
+      "plainBase64": "QUFBQc6x8J+YgA==",
+      "cipher": "KajPUndIypbIK86ui/serA=="
+    },
+    {
+      "key": "S",
+      "plainBase64": "QUFBQUHOsfCfmIA=",
+      "cipher": "SySJyhA0UycPs6TQdAuXYQ=="
+    },
+    {
+      "key": "S",
+      "plainBase64": "QUFBQUFBzrHwn5iA",
+      "cipher": "DajP/N5xkAsARGAdrO2q2g=="
+    },
+    {
+      "key": "S",
+      "plainBase64": "QUFBQUFBQc6x8J+YgA==",
+      "cipher": "g4KPadeU0UG4t2Z0/G9BR63ltKs="
+    },
+    {
+      "key": "S",
+      "plainBase64": "QUFBQUFBQUHOsfCfmIA=",
+      "cipher": "rVHzQLPWosWPhbxCrT8jf0+e718="
+    },
+    {
+      "key": "S",
+      "plainBase64": "QUFBQUFBQUFBzrHwn5iA",
+      "cipher": "/A155burtWkuHKWzMkDlWsn5E20="
+    },
+    {
+      "key": "S",
+      "plainBase64": "QUFBQUFBQUFBQc6x8J+YgA==",
+      "cipher": "uQGsFdJ5dSCNAlNh3NaKJgIorE4="
+    },
+    {
+      "key": "S",
+      "plainBase64": "QUFBQUFBQUFBQUHOsfCfmIA=",
+      "cipher": "chgQdIvpmazF3KszMjjNQnyBfV8BBcHh"
+    }
+  ]
+}

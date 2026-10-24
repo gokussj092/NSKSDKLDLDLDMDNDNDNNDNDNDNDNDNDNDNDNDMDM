@@ -10,6 +10,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.activity.compose.BackHandler
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,11 +40,24 @@ fun FunctionalSettingsPanel(
     onShowGuide:()->Unit={},
     onLegalLink:(String)->Unit={},
     onWithdrawConsent:()->Unit={},
+    catalogUpdatesEnabled:Boolean=false,
+    onCatalogUpdates:(Boolean)->Unit={},
+    usageAnalyticsEnabled:Boolean=false,
+    onUsageAnalytics:(Boolean)->Unit={},
 ){
     var clearDialog by remember { mutableStateOf(false) }
-    var languageSheet by remember { mutableStateOf(false) }
+    var languagePage by rememberSaveable { mutableStateOf(false) }
     var retentionDialog by remember { mutableStateOf(false) }
     var withdrawDialog by remember { mutableStateOf(false) }
+    BackHandler(enabled=languagePage) { languagePage=false }
+    if(languagePage) {
+        LanguageSelectionScreen(
+            selectedLanguage=language,
+            onBack={languagePage=false},
+            onSelect={tag->if(language!=tag)onLanguage(tag)},
+        )
+        return
+    }
     Column(
         Modifier.fillMaxSize().verticalScroll(rememberScrollState())
             .padding(horizontal=20.dp,vertical=12.dp),
@@ -54,7 +69,7 @@ fun FunctionalSettingsPanel(
         // One compact row instead of a permanently expanded radio list.
         SettingsCard {
             Row(
-                modifier=Modifier.fillMaxWidth().clickable{languageSheet=true}
+                modifier=Modifier.fillMaxWidth().clickable{languagePage=true}
                     .padding(vertical=5.dp),
                 verticalAlignment=Alignment.CenterVertically,
             ) {
@@ -151,6 +166,37 @@ fun FunctionalSettingsPanel(
                 Text(stringResource(R.string.cloud_legal_withdraw))
             }
         }
+        if(BuildConfig.SPDECODE_CLOUD_ENABLED) SettingsCard {
+            Row(verticalAlignment=Alignment.CenterVertically){
+                Icon(Icons.Outlined.Insights,null,tint=TitleText)
+                Spacer(Modifier.width(10.dp))
+                Text(stringResource(R.string.cloud_usage_title),color=TitleText,
+                    fontWeight=FontWeight.SemiBold,fontSize=16.sp)
+            }
+            // Information only: minimum Cloud capacity metrics are explained
+            // before acceptance of Cloud terms; never use a misleading opt-out.
+            Text(stringResource(R.string.cloud_usage_detail),color=MutedText,
+                fontSize=12.sp,lineHeight=18.sp)
+            Text(stringResource(R.string.cloud_usage_footnote),color=MutedText,fontSize=11.sp)
+        }
+        if(BuildConfig.SPDECODE_CLOUD_ENABLED) SettingsCard {
+            Row(verticalAlignment=Alignment.CenterVertically) {
+                Icon(Icons.Outlined.Sync,null,tint=TitleText)
+                Spacer(Modifier.width(10.dp))
+                Text(stringResource(R.string.catalog_auto_title),
+                    color=TitleText,fontWeight=FontWeight.SemiBold,fontSize=17.sp)
+            }
+            Text(stringResource(R.string.catalog_auto_detail),
+                color=MutedText,fontSize=12.sp,lineHeight=18.sp)
+            Row(verticalAlignment=Alignment.CenterVertically) {
+                Text(stringResource(R.string.catalog_auto_switch),
+                    color=TitleText,modifier=Modifier.weight(1f),fontSize=14.sp)
+                Switch(checked=catalogUpdatesEnabled,
+                    onCheckedChange=onCatalogUpdates,
+                    colors=SwitchDefaults.colors(checkedThumbColor=Color.Black,
+                        checkedTrackColor=TitleText))
+            }
+        }
         DeviceCredentialSettingsSection()
         SettingsCard {
             Row(verticalAlignment=Alignment.CenterVertically) {
@@ -206,51 +252,6 @@ fun FunctionalSettingsPanel(
         }
         Spacer(Modifier.height(6.dp))
     }
-    if(languageSheet) ModalBottomSheet(
-        onDismissRequest={languageSheet=false},
-        containerColor=Pane,
-        contentColor=TitleText,
-        scrimColor=Color.Black.copy(alpha=0.72f),
-    ) {
-        Column(
-            Modifier.fillMaxWidth().heightIn(max=550.dp)
-                .verticalScroll(rememberScrollState())
-                .padding(start=22.dp,end=22.dp,bottom=25.dp),
-            verticalArrangement=Arrangement.spacedBy(8.dp),
-        ) {
-            Text(stringResource(R.string.language_title),color=TitleText,
-                fontWeight=FontWeight.Bold,fontSize=21.sp)
-            Text(stringResource(R.string.language_pick_description),
-                color=MutedText,fontSize=13.sp,lineHeight=19.sp)
-            Spacer(Modifier.height(7.dp))
-            SupportedLanguages.options.forEach { option ->
-                Row(
-                    modifier=Modifier.fillMaxWidth()
-                        .clickable {
-                            languageSheet=false
-                            if(language!=option.tag) onLanguage(option.tag)
-                        }
-                        .padding(vertical=8.dp),
-                    verticalAlignment=Alignment.CenterVertically,
-                ) {
-                    RadioButton(
-                        selected=language==option.tag,
-                        onClick={
-                            languageSheet=false
-                            if(language!=option.tag) onLanguage(option.tag)
-                        },
-                        colors=RadioButtonDefaults.colors(
-                            selectedColor=TitleText,unselectedColor=MutedText,
-                        ),
-                    )
-                    Spacer(Modifier.width(11.dp))
-                    Text(if(option.tag=="system")stringResource(R.string.language_system)
-                        else option.nativeName,
-                        color=TitleText,fontSize=15.sp)
-                }
-            }
-        }
-    }
     if(withdrawDialog) AlertDialog(
         onDismissRequest={withdrawDialog=false},
         title={Text(stringResource(R.string.cloud_legal_withdraw))},
@@ -261,7 +262,10 @@ fun FunctionalSettingsPanel(
         dismissButton={TextButton(onClick={withdrawDialog=false}) {
             Text(stringResource(R.string.cancel))
         }},
-        containerColor=Pane,
+        containerColor=Color.Black,
+        titleContentColor=TitleText,
+        textContentColor=TitleText,
+        tonalElevation=0.dp,
     )
     if(retentionDialog) AlertDialog(
         onDismissRequest={retentionDialog=false},
@@ -293,7 +297,10 @@ fun FunctionalSettingsPanel(
         confirmButton={TextButton(onClick={retentionDialog=false}) {
             Text(stringResource(R.string.close))
         }},
-        containerColor=Pane,
+        containerColor=Color.Black,
+        titleContentColor=TitleText,
+        textContentColor=TitleText,
+        tonalElevation=0.dp,
     )
     if(clearDialog) AlertDialog(
         onDismissRequest={clearDialog=false},
@@ -307,7 +314,10 @@ fun FunctionalSettingsPanel(
         dismissButton={TextButton(onClick={clearDialog=false}){
             Text(stringResource(R.string.cancel))
         }},
-        containerColor=Pane,
+        containerColor=Color.Black,
+        titleContentColor=TitleText,
+        textContentColor=TitleText,
+        tonalElevation=0.dp,
     )
 }
 

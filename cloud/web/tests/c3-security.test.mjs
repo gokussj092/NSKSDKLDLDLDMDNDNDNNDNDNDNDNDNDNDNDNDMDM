@@ -4,7 +4,9 @@ import { generateKeyPairSync } from "node:crypto";
 import { settings } from "../lib/c3-config.mjs";
 import { checkIntegrityVerdict, verifyPlayToken } from "../lib/c3-integrity.mjs";
 import { createChallenge, issueSession, requireSession, verifySignature } from "../lib/c3-session.mjs";
-import { decodeRequest, sessionRequest, challengeRequest, readinessRequest, capabilitiesRequest } from "../lib/c3-gateway.mjs";
+import { decodeRequest, sessionRequest, challengeRequest, readinessRequest, capabilitiesRequest, failure } from "../lib/c3-gateway.mjs";
+import { safeErrorCode, classifyWorkerOutcome } from "../lib/c6-ops-store.mjs";
+import { recordAutomaticIncident } from "../lib/c9-diagnostics.mjs";
 
 class FakeRedis {
   constructor(){this.values=new Map();this.counters=new Map();this.slots=new Map();}
@@ -31,8 +33,9 @@ const env={
   CLOUD_GOOGLE_SERVICE_ACCOUNT_JSON:JSON.stringify(account),
   WORKER_INTERNAL_URL:"http://decoder-worker:8787",
 };
-const req=(body,token,ip="203.0.113.20")=>new Request("https://spdecode.example.test/api/v1/decode/file",{
-  method:"POST",headers:{"Content-Type":"application/json","X-Real-IP":ip,...(token?{Authorization:"Bearer "+token}:{})},
+const req=(body,token,ip="203.0.113.20",promptVersion=null)=>new Request("https://spdecode.example.test/api/v1/decode/file",{
+  method:"POST",headers:{"Content-Type":"application/json","X-Real-IP":ip,...(token?{Authorization:"Bearer "+token}:{}),
+    ...(promptVersion!==null?{"X-SPDecode-Credential-Prompts":promptVersion}:{})},
   body:JSON.stringify(body),
 });
 test("C3 must fail closed when any required server configuration is missing",()=>{
@@ -132,6 +135,57 @@ test("file size, invalid JSON and cross-format credentials fail before the worke
   const badtype=new Request("https://spdecode.example.test/api/v1/decode/file",{method:"POST",headers:{Authorization:"Bearer "+issued.accessToken,"Content-Type":"text/plain","X-Real-IP":"203.0.113.21"},body:"x"});
   const type=await decodeRequest(badtype,"file",common);assert.equal(type.status,400);
 });
+test("Cloud file credential allowlist follows validated format metadata, never client claims",async()=>{
+  const redis=new FakeRedis(),ip="203.0.113.39";
+  const {issued}=await authorized(redis,ip);
+  let workerCalls=0;
+  const fetchImpl=async(url,options)=>{
+    workerCalls++;
+    const body=JSON.parse(options.body);
+    assert.equal(body.format,"ua");
+    assert.deepEqual(body.credentials,{password:"test-only"});
+    return {status:200,text:async()=>JSON.stringify({
+      status:"success",structuredJson:{profile:"test"},rawText:'{"profile":"test"}',
+      isPartial:false,warnings:[],
+    })};
+  };
+  const args={storeProvider:async()=>redis,fetchImpl};
+  const base={dataBase64:"YWJj"};
+  const allowed=await decodeRequest(req({...base,format:"ua",
+    credentials:{password:"test-only"}},issued.accessToken,ip),"file",args);
+  assert.equal(allowed.status,200);assert.equal(workerCalls,1);
+  for(const source of [
+    {...base,format:"awg",credentials:{password:"not-allowed"}},
+    {...base,format:"ua",credentials:{hwid:"not-allowed"}},
+    {...base,format:"tls",credentials:{password:"not-allowed"}},
+    {...base,format:"unknownfuture",credentials:{password:"not-allowed"}},
+  ]){
+    const response=await decodeRequest(req(source,issued.accessToken,ip),"file",args);
+    assert.equal(response.status,400);
+  }
+  assert.equal(workerCalls,1);
+});
+
+test("C3 keeps unsupported methods, versions and app-key variants distinct from outages",async()=>{
+  for(const code of ["UNSUPPORTED_VERSION","UNSUPPORTED_METHOD","UNSUPPORTED_VARIANT"]){
+    const response=failure(code,422);
+    assert.equal(response.status,422);
+    const body=await response.json();
+    assert.equal(body.error.code,code);
+    assert.notEqual(body.error.message,"Servicio temporalmente no disponible.");
+    assert.equal(safeErrorCode(code),code);
+    assert.equal(classifyWorkerOutcome("failed",{kind:"file",format:"npvs",errorCode:code}),"warning");
+    assert.equal(await recordAutomaticIncident(null,"failed",{kind:"file",format:"npvs",errorCode:code}),null);
+  }
+  for(const code of ["PRIVATE_KEY_REQUIRED","NPVS_PROTECTION_UNSUPPORTED","NPVS_APPKEY_AUTH_FAILED"]){
+    assert.equal((await failure(code,422).json()).error.code,code);
+    assert.equal(await recordAutomaticIncident(null,"failed",{kind:"file",format:"npvs",errorCode:code}),null);
+  }
+  assert.equal(classifyWorkerOutcome("failed",{kind:"file",format:"npvs",errorCode:"INVALID_INPUT"}),"ignored");
+  assert.equal(await recordAutomaticIncident(null,"failed",{kind:"file",format:"npvs",errorCode:"INVALID_INPUT"}),null);
+  assert.equal(classifyWorkerOutcome("failed",{kind:"file",format:"hc",errorCode:"ENGINE_UNAVAILABLE"}),"failed");
+});
+
 test("C3 challenge and session routes can be exercised with injected verifier; replay denied",async()=>{
   const redis=new FakeRedis();
   const options={storeProvider:async()=>redis};
@@ -162,4 +216,119 @@ test("capabilities require live private worker metadata, never invented certific
   assert.equal(data.enabledFormats.length,240);
   assert.equal(data.fileDecoderCatalog.exporterVersionsCertified,0);
   assert.equal(data.cloudImportsEnabled,false);
+});
+
+test("Tunneltweak accepts password credentials only after admission and rejects HWID",async()=>{
+ const redis=new FakeRedis();const {issued}=await authorized(redis,"203.0.113.22");let calls=0;
+ const fetchImpl=async(url,opts)=>{
+  calls++;const payload=JSON.parse(opts.body);
+  assert.equal(payload.format,"tut");assert.deepEqual(payload.credentials,{password:"test-only"});
+  assert.equal(url,"http://decoder-worker:8787/internal/v1/decode/file");
+  return {status:200,text:async()=>JSON.stringify({status:"success",structuredJson:{config_version:6},rawText:'{"config_version":6}\n',isPartial:false,warnings:[]})};
+ };
+ const source={format:"tut",dataBase64:"YWJj",credentials:{password:"test-only"}};
+ const ok=await decodeRequest(req(source,issued.accessToken,"203.0.113.22"),"file",{storeProvider:async()=>redis,fetchImpl});
+ assert.equal(ok.status,200);assert.equal(calls,1);
+ for(const credentials of [{hwid:"test-device"},{password:"test-only",hwid:"test-device"},{password:""},{password:1}]){
+  const bad=await decodeRequest(req({...source,credentials},issued.accessToken,"203.0.113.22"),"file",{storeProvider:async()=>redis,fetchImpl});
+  assert.equal(bad.status,400);assert.equal(calls,1);
+ }
+});
+
+test("1FTunnel file credentials pass through the admitted gateway and reject HWID",async()=>{
+ const redis=new FakeRedis();const ip="203.0.113.24";const {issued}=await authorized(redis,ip);let calls=0;
+ const fetchImpl=async(url,opts)=>{
+  calls++;const payload=JSON.parse(opts.body);
+  assert.equal(payload.format,"1ftnl");assert.deepEqual(payload.credentials,{password:"test-only"});
+  return {status:200,text:async()=>JSON.stringify({status:"success",structuredJson:{config:{name:"synthetic"}},rawText:'{"config":{"name":"synthetic"}}',isPartial:false,warnings:[]})};
+ };
+ const source={format:"1ftnl",dataBase64:"YWJj",credentials:{password:"test-only"}};
+ const ok=await decodeRequest(req(source,issued.accessToken,ip),"file",{storeProvider:async()=>redis,fetchImpl});
+ assert.equal(ok.status,200);assert.equal(calls,1);
+ const bad=await decodeRequest(req({...source,credentials:{hwid:"not-supported"}},issued.accessToken,ip),"file",{storeProvider:async()=>redis,fetchImpl});
+ assert.equal(bad.status,400);assert.equal(calls,1);
+});
+
+test("1FTunnel text passwords accept only source-exact prefixes",async()=>{
+ const redis=new FakeRedis();const ip="203.0.113.25";const {issued}=await authorized(redis,ip);let calls=0;
+ const fetchImpl=async(url,opts)=>{
+  calls++;assert.equal(url,"http://decoder-worker:8787/internal/v1/decode/text");
+  assert.deepEqual(JSON.parse(opts.body).credentials,{password:"synthetic-password"});
+  return {status:200,text:async()=>JSON.stringify({status:"success",structuredJson:{config:{}},rawText:'{"config":{}}',isPartial:false,warnings:[]})};
+ };
+ for(const prefix of ["1FTnl.","1FT1.","1ftunnel://1FTnl/","1ftunnel://1FT1/"]){
+  const body={text:prefix+"cipher",credentials:{password:"synthetic-password"}};
+  assert.equal((await decodeRequest(req(body,issued.accessToken,ip),"text",{storeProvider:async()=>redis,fetchImpl})).status,200);
+ }
+ const bad={text:"1ftnl.cipher",credentials:{password:"synthetic-password"}};
+ assert.equal((await decodeRequest(req(bad,issued.accessToken,ip),"text",{storeProvider:async()=>redis,fetchImpl})).status,400);
+ assert.equal(calls,4);
+});
+
+test("NPVS verified password credentials pass through; HWID is rejected",async()=>{
+ const redis=new FakeRedis();const ip="203.0.113.26";const {issued}=await authorized(redis,ip);let calls=0;
+ const fetchImpl=async(url,opts)=>{
+  calls++;assert.equal(url,"http://decoder-worker:8787/internal/v1/decode/file");
+  const payload=JSON.parse(opts.body);assert.equal(payload.format,"npvs");assert.deepEqual(payload.credentials,{password:"synthetic"});
+  return {status:200,text:async()=>JSON.stringify({status:"success",structuredJson:{metadata:{},document:{configs:[]}},rawText:'{"document":{"configs":[]}}',isPartial:false,warnings:[]})};
+ };
+ const body={format:"npvs",dataBase64:"YWJj",credentials:{password:"synthetic"}};
+ assert.equal((await decodeRequest(req(body,issued.accessToken,ip),"file",{storeProvider:async()=>redis,fetchImpl})).status,200);
+ assert.equal((await decodeRequest(req({...body,credentials:{hwid:"unsupported"}},issued.accessToken,ip),"file",{storeProvider:async()=>redis,fetchImpl})).status,400);
+ assert.equal(calls,1);
+});
+
+test("NPVS public-key diagnosis is preserved without an automatic incident",async()=>{
+ const redis=new FakeRedis();const ip="203.0.113.27";const {issued}=await authorized(redis,ip);let calls=0;
+ const fetchImpl=async(url,opts)=>{
+  calls++;assert.deepEqual(JSON.parse(opts.body).credentials,{publicKey:"synthetic-public-key"});
+  return {status:422,text:async()=>JSON.stringify({error:{code:"PRIVATE_KEY_REQUIRED"}})};
+ };
+ const body={format:"npvs",dataBase64:"YWJj",credentials:{publicKey:"synthetic-public-key"}};
+ const response=await decodeRequest(req(body,issued.accessToken,ip),"file",{storeProvider:async()=>redis,fetchImpl});
+ assert.equal(response.status,422);assert.equal((await response.json()).error.code,"PRIVATE_KEY_REQUIRED");assert.equal(calls,1);
+ assert.equal(safeErrorCode("PRIVATE_KEY_REQUIRED"),"PRIVATE_KEY_REQUIRED");
+ assert.equal(classifyWorkerOutcome("failed",{kind:"file",format:"npvs",errorCode:"PRIVATE_KEY_REQUIRED"}),"ignored");
+ assert.equal(await recordAutomaticIncident(redis,"failed",{kind:"file",format:"npvs",errorCode:"PRIVATE_KEY_REQUIRED"}),null);
+});
+
+test("legacy APKs receive bounded known errors; negotiated APKs receive PASSWORD_REQUIRED",async()=>{
+  const redis=new FakeRedis(), ip="203.0.113.29";
+  const {issued}=await authorized(redis,ip);
+  let calls=0;
+  const fetchImpl=async(url,opts)=>{
+    calls++;
+    assert.equal(url,"http://decoder-worker:8787/internal/v1/decode/file");
+    assert.deepEqual(Object.keys(JSON.parse(opts.body)).sort(),["dataBase64","format"]);
+    return {status:422,text:async()=>JSON.stringify({error:{code:"PASSWORD_REQUIRED"}})};
+  };
+  for(const [format,capability,expected] of [
+    ["npvs",null,"NPVS_PROTECTION_UNSUPPORTED"],
+    ["npvs","1","PASSWORD_REQUIRED"],
+    ["1ftnl",null,"UNSUPPORTED_FORMAT"],
+    ["1ftnl","1","PASSWORD_REQUIRED"],
+    ["tut",null,"UNSUPPORTED_FORMAT"],
+    ["hc",null,"PASSWORD_REQUIRED"],
+    ["ua",null,"PASSWORD_REQUIRED"]]){
+    const body={format,dataBase64:"YWJj"};
+    const result=await decodeRequest(req(body,issued.accessToken,ip,capability),"file",
+      {storeProvider:async()=>redis,fetchImpl});
+    assert.equal(result.status,422);
+    assert.equal((await result.json()).error.code,expected);
+  }
+  assert.equal(calls,7);
+});
+test("legacy NPVS without password still receives the complete successful JSON",async()=>{
+  const redis=new FakeRedis(),ip="203.0.113.30";
+  const {issued}=await authorized(redis,ip);
+  const response=await decodeRequest(req({format:"npvs",dataBase64:"YWJj"},issued.accessToken,ip),"file",{
+    storeProvider:async()=>redis,
+    fetchImpl:async()=>({status:200,text:async()=>JSON.stringify({
+      status:"success",rawText:'{"configs":[{"id":1},{"id":2}]}',
+      structuredJson:{configs:[{id:1},{id:2}]},isPartial:false,warnings:[]
+    })})
+  });
+  assert.equal(response.status,200);
+  const result=await response.json();
+  assert.deepEqual(result.structuredJson.configs,[{id:1},{id:2}]);
 });

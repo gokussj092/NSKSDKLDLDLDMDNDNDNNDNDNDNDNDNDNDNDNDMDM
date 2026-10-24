@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="file_extension_unsupported_contact">Это расширение файла не поддерживается. Свяжитесь с разработчиком, чтобы запросить поддержку.</string>
+    <string name="text_format_unsupported_contact">Этот текстовый формат или протокол не поддерживается. Свяжитесь с разработчиком, чтобы запросить поддержку.</string>
+    <string name="formats_remote_catalog_note">Поддерживаемые расширения безопасно синхронизируются из SP-DECODE Cloud. Новые форматы появляются без обновления приложения.</string>
+    <string name="formats_cloud_ready_short">Облако</string>
+</resources>

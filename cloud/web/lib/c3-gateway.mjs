@@ -3,8 +3,11 @@ import { settings, limits } from "./c3-config.mjs";
 import { store, reserveSlot, releaseSlot } from "./c3-store.mjs";
 import { createChallenge, issueSession, issueQaSession, requireSession } from "./c3-session.mjs";
 import { jsonReply, unavailable } from "./responses.mjs";
+import { legacyCredentialError } from "./decoder-client-compat.mjs";
 import { ehiConfigured, nurConfigured } from "./c35-provider.mjs";
-import { maintenanceEnabled, recordWorkerResult } from "./c6-ops-store.mjs";
+import { maintenanceEnabled, serviceMaintenanceEnabled, recordWorkerResult } from "./c6-ops-store.mjs";
+import {admissionPolicy} from "./c11-play-admission.mjs";
+import {publicFormats} from "./file-format-catalog.mjs";
 
 const ERROR_MESSAGES = Object.freeze({
   INVALID_REQUEST:"Solicitud inválida.",
@@ -12,6 +15,9 @@ const ERROR_MESSAGES = Object.freeze({
   RATE_LIMITED:"Límite de solicitudes alcanzado.",
   INPUT_TOO_LARGE:"Archivo o texto demasiado grande.",
   UNSUPPORTED_FORMAT:"Formato no reconocido por el servidor.",
+  UNSUPPORTED_VERSION:"La versión de este archivo aún no está integrada.",
+  UNSUPPORTED_METHOD:"Este método de protección aún no está integrado.",
+  UNSUPPORTED_VARIANT:"Esta variante todavía no es compatible o el archivo ha sido modificado.",
   INVALID_INPUT:"Entrada inválida.",
   INVALID_BASE64:"Archivo Base64 inválido.",
   INVALID_CREDENTIALS:"Credenciales inválidas.",
@@ -20,12 +26,17 @@ const ERROR_MESSAGES = Object.freeze({
   HWID_PASSWORD_REQUIRED:"Se requieren contraseña y HWID.",
   AUTH_FAILED:"No se pudo autenticar el archivo.",
   DECODE_FAILED:"No se pudo descifrar el archivo.",
+  NPVS_PROTECTION_UNSUPPORTED:"Esta variante de protección NPVS aún no está implementada.",
+  NPVS_APPKEY_AUTH_FAILED:"La clave de aplicación NPVS no pudo autenticarse; puede ser una variante diferente o un archivo modificado.",
+  PRIVATE_KEY_REQUIRED:"Este archivo requiere la clave privada del dispositivo destinatario; la clave pública sola no permite descifrarlo.",
+  RECIPIENT_MISMATCH:"La clave pública no corresponde a un destinatario de este archivo.",
   ENGINE_TIMEOUT:"El motor agotó el tiempo disponible.",
   ENGINE_UNAVAILABLE:"Motor temporalmente no disponible.",
   OUTPUT_TOO_LARGE:"Resultado demasiado grande.",
   EXPIRED_CHALLENGE:"El desafío expiró o ya fue utilizado.",
   INTEGRITY_REJECTED:"No se pudo verificar la integridad de la aplicación.",
   SERVICE_UNAVAILABLE:"Servicio temporalmente no disponible.",
+  SERVICE_MAINTENANCE:"Este descifrador está temporalmente en mantenimiento.",
   QA_DISABLED:"El acceso de pruebas ya no está habilitado.",
   QA_ACCESS_DENIED:"Código temporal de pruebas inválido o expirado.",
   INVALID_REFERENCE:"Referencia remota inválida.",
@@ -33,6 +44,7 @@ const ERROR_MESSAGES = Object.freeze({
   REMOTE_NOT_CONFIGURED:"Importación remota no configurada.",
   REMOTE_NETWORK_DENIED:"Destino remoto no autorizado.",
   REMOTE_PROVIDER_UNAVAILABLE:"El proveedor remoto no respondió.",
+  REMOTE_CONFIG_UNAVAILABLE:"Esta configuración Cloud ya no está disponible. Puede haber caducado, haberse eliminado o ser de un solo uso.",
   REMOTE_RESPONSE_INVALID:"El proveedor devolvió una respuesta inválida.",
   REMOTE_INTEGRITY_FAILED:"Falló la integridad de la respuesta remota.",
   REMOTE_TOO_LARGE:"El contenido remoto excede el límite.",
@@ -81,23 +93,41 @@ function validatePayload(kind,payload) {
   if (!isRecord(payload))throw Object.assign(new Error("schema"),{code:"INVALID_REQUEST"});
   if(kind==="file"){
     if (Object.keys(payload).some(x=>!["format","dataBase64","credentials"].includes(x)) ||
-        typeof payload.format!=="string" || (!/^[a-z0-9][a-z0-9._-]{0,63}$/.test(payload.format) && payload.format!=="fɴ"))
+        typeof payload.format!=="string" || !/^[\p{L}\p{N}][\p{L}\p{N}._-]{0,63}$/u.test(payload.format))
       throw Object.assign(new Error("format"),{code:"INVALID_REQUEST"});
     if (payload.credentials!==undefined){
-      if (payload.format!=="hc" || !isRecord(payload.credentials) ||
-          Object.keys(payload.credentials).some(k=>!["password","hwid"].includes(k)))
+      // Metadata is curated and validated on the server. Never trust an
+      // Android-supplied credential policy or executable route.
+      const allowed=publicFormats().find(entry=>entry.suffix===payload.format)?.credentialFields;
+
+      if (!allowed?.length || !isRecord(payload.credentials) ||
+          Object.keys(payload.credentials).some(k=>!allowed.includes(k)))
         throw Object.assign(new Error("credentials"),{code:"INVALID_CREDENTIALS"});
-      for(const [key,max] of [["password",4096],["hwid",128]]){
+      for(const [key,max] of [["password",4096],["hwid",128],["publicKey",128]]){
         const value=payload.credentials[key];
-        if(value!==undefined && (typeof value!=="string" || !value.length || value.length>max))
+        if(value!==undefined && (typeof value!=="string" || !value.length || value.length>max ||
+            (["1ftnl","npvs"].includes(payload.format) && Buffer.byteLength(value,"utf8")>max)))
           throw Object.assign(new Error("credentials"),{code:"INVALID_CREDENTIALS"});
       }
     }
     encodedBytes(payload.dataBase64);
   } else if(kind==="text"){
-    if(Object.keys(payload).length!==1 || typeof payload.text!=="string" ||
-       !payload.text.trim() || payload.text.length>limits.maxPublicTextChars)
+    if(Object.keys(payload).some(key=>!["text","credentials"].includes(key)) ||
+       typeof payload.text!=="string" || !payload.text.trim() ||
+       payload.text.length>limits.maxPublicTextChars)
        throw Object.assign(new Error("text"),{code:"INVALID_REQUEST"});
+    if(payload.credentials!==undefined){
+      const pass=payload.credentials?.password;
+      const value=payload.text.trim();
+      const passwordFormat=value.toLowerCase().startsWith("ua://") ||
+        ["1FTnl.","1FT1.","1ftunnel://1FTnl/","1ftunnel://1FT1/"].some(prefix=>value.startsWith(prefix)) ||
+        ["npvt://","npvt-ssh://","npvt-vless://","npvt-vmess://","npv://"].some(prefix=>
+          value.toLowerCase().startsWith(prefix) && value.length>prefix.length);
+      if(!passwordFormat ||
+         !isRecord(payload.credentials) || Object.keys(payload.credentials).length!==1 ||
+         typeof pass!=="string" || !pass.length || Buffer.byteLength(pass,"utf8")>4096)
+        throw Object.assign(new Error("credentials"),{code:"INVALID_CREDENTIALS"});
+    }
   } else if(kind==="catalog"){
     if(Object.keys(payload).length!==1)throw Object.assign(new Error("catalog"),{code:"INVALID_REQUEST"});
     encodedBytes(payload.dataBase64);
@@ -115,15 +145,124 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
     redirect:"error",
     cache:"no-store",
   });
-  const value=await response.text();
-  if(value.length>6*1024*1024)throw Error("OUTPUT_OVER_LIMIT");
+  // MKK is the only catalog allowed a larger internal result. Bound bytes as
+  // they arrive so a malicious or broken worker cannot exhaust broker memory.
+  const isMkk=kind==="server-vpn" && payload?.providerId==="mkk-hyper";
+  const responseLimit=isMkk?96*1024*1024:6*1024*1024;
+  const advertised=response.headers?.get?.("content-length");
+  if(advertised && /^[0-9]+$/.test(advertised) && Number(advertised)>responseLimit)
+    throw Error("OUTPUT_OVER_LIMIT");
+  let value;
+  if(response.body?.getReader){
+    const reader=response.body.getReader(),chunks=[];
+    let received=0;
+    try{
+      while(true){
+        const item=await reader.read();
+        if(item.done)break;
+        received+=item.value.byteLength;
+        if(received>responseLimit)throw Error("OUTPUT_OVER_LIMIT");
+        chunks.push(Buffer.from(item.value));
+      }
+    }finally{
+      if(received>responseLimit)await reader.cancel().catch(()=>{});
+      reader.releaseLock();
+    }
+    value=new TextDecoder("utf-8",{fatal:true}).decode(Buffer.concat(chunks));
+  }else{
+    // Minimal mocks use text(); production native fetch always streams.
+    value=await response.text();
+    if(Buffer.byteLength(value,"utf8")>responseLimit)throw Error("OUTPUT_OVER_LIMIT");
+  }
   let decoded;
   try{decoded=JSON.parse(value);}catch{throw Error("INVALID_WORKER_JSON");}
   if(!isRecord(decoded))throw Error("INVALID_WORKER_SHAPE");
   if(response.status===200){
-    if(decoded.status!=="success" || decoded.isPartial!==false ||
+    // MKK Hyper collects independent vendor sources. Missing sources are
+    // explicitly marked partial, not an invalid response. All other routes
+    // still reject incomplete results, and MKK partial must be schema-bound.
+    const partialMkk=kind==="server-vpn" && payload?.providerId==="mkk-hyper" &&
+      decoded.kind==="vpn_catalog" && decoded.providerId==="mkk-hyper" &&
+      decoded.isPartial===true && decoded.structuredJson?.complete===false &&
+      decoded.structuredJson?.provider==="mkk-hyper" &&
+      Array.isArray(decoded.structuredJson?.sources) &&
+      decoded.structuredJson.sources.length===4 &&
+      decoded.structuredJson.sources.some(x=>x?.status==="ok") &&
+      decoded.structuredJson.sources.some(x=>x?.status==="error") &&
+      Array.isArray(decoded.warnings) && decoded.warnings.includes("PARTIAL_SOURCE_FAILURE");
+    if(decoded.status!=="success" || (decoded.isPartial!==false && !partialMkk) ||
        typeof decoded.rawText!=="string" || !decoded.rawText.length ||
-       decoded.rawText.length>4*1024*1024)throw Error("INVALID_WORKER_RESULT");
+       Buffer.byteLength(decoded.rawText,"utf8")>(isMkk?32*1024*1024:4*1024*1024))
+      throw Error("INVALID_WORKER_RESULT");
+    if(kind==="server-vpn" && ["http-socketclay","http-wakko","onspace-vpn","superflash-vpn","turbomx-vpn"].includes(payload?.providerId)){
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId ||
+         !isRecord(parsed) || parsed.provider!==payload.providerId || parsed.complete!==true ||
+         !isRecord(parsed.catalogs) || Object.keys(parsed.catalogs).sort().join(",")!=="servers,users" ||
+         !Array.isArray(parsed.catalogs.servers?.Servers) || !parsed.catalogs.servers.Servers.length ||
+         !Array.isArray(parsed.catalogs.users?.Usuarios) || !parsed.catalogs.users.Usuarios.length ||
+         JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))
+        throw Error("INVALID_WORKER_RESULT");
+    }
+    if(kind==="server-vpn" && payload?.providerId==="abowaged-vpn"){
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId ||
+         !isRecord(parsed) || parsed.provider!==payload.providerId || parsed.complete!==true ||
+         !isRecord(parsed.catalogs) || Object.keys(parsed.catalogs).sort().join(",")!=="servers,udp" ||
+         !isRecord(parsed.catalogs.servers) || typeof parsed.catalogs.servers.Version!=="string" ||
+         !Array.isArray(parsed.catalogs.servers.Servers) || !Array.isArray(parsed.catalogs.servers.Tweaks) ||
+         !(parsed.catalogs.servers.Servers.length || parsed.catalogs.servers.Tweaks.length) ||
+         [...parsed.catalogs.servers.Servers,...parsed.catalogs.servers.Tweaks].some(x=>!isRecord(x)) ||
+         !Array.isArray(parsed.catalogs.udp) || !parsed.catalogs.udp.length ||
+         parsed.catalogs.udp.some(x=>!isRecord(x) || typeof x.UDPserver!=="string" ||
+           typeof x.obfs!=="string" || typeof x.auth!=="string") ||
+         JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))throw Error("INVALID_WORKER_RESULT");
+    }
+    if(kind==="server-vpn" && ["7net-vpn","xhypher-tunnel-pro"].includes(payload?.providerId)){
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId ||
+         !isRecord(parsed) || !Object.hasOwn(parsed,"Version") ||
+         !Array.isArray(parsed.Servers) || !parsed.Servers.length ||
+         !Array.isArray(parsed.Networks) || !parsed.Networks.length ||
+         parsed.Servers.some(x=>!isRecord(x)) || parsed.Networks.some(x=>!isRecord(x)) ||
+         JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))throw Error("INVALID_WORKER_RESULT");
+    }
+    if(kind==="server-vpn" && payload?.providerId==="v2ray-tunnel-plus"){
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId ||
+         !isRecord(parsed) || parsed.provider!==payload.providerId || parsed.complete!==true ||
+         !isRecord(parsed.catalogs) || Object.keys(parsed.catalogs).sort().join(",")!=="base64,raw" ||
+         ["base64","raw"].some(name=>{
+           const doc=parsed.catalogs[name];
+           return !isRecord(doc)||doc.encoding!==(name==="raw"?"plain":"base64")||
+             typeof doc.text!=="string"||!doc.text.length||!Number.isInteger(doc.count)||doc.count<=0||
+             !Array.isArray(doc.profiles)||doc.profiles.length!==doc.count;
+         }) || JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))throw Error("INVALID_WORKER_RESULT");
+    }
+    if(isMkk){
+      // A complete, matching JSON document is mandatory; HTML, logs, partial
+      // writes or fabricated structured metadata must not reach the client.
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      if(!isRecord(parsed) || parsed.provider!=="mkk-hyper" ||
+         parsed.sourceCount!==4 || !Array.isArray(parsed.sources) ||
+         parsed.sources.length!==4 || !isRecord(decoded.structuredJson) ||
+         JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson) ||
+         parsed.complete!==(decoded.isPartial===false) ||
+         parsed.successfulSources!==parsed.sources.filter(x=>x?.status==="ok").length ||
+         parsed.complete!==(parsed.successfulSources===4) ||
+         parsed.successfulSources<1 ||
+         parsed.sources.some((x,i)=>x?.name!==["servers","static","subscriptions","legacy-subscriptions"][i] ||
+           (x.status!=="ok" && x.status!=="error") ||
+           (x.status==="ok" && (!Number.isSafeInteger(x.records) || x.records<0 ||
+             !(isRecord(x.data) || Array.isArray(x.data)))) ||
+           (x.status==="error" && typeof x.error!=="string")))
+        throw Error("INVALID_WORKER_RESULT");
+    }
     return jsonReply({...decoded,requestId:randomUUID()},200);
   }
   const code=decoded.error?.code;
@@ -131,13 +270,25 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
   const safeStatus = [400,401,403,413,422,429,503,504].includes(response.status) ? response.status : 503;
   return failure(recognized?code:"SERVICE_UNAVAILABLE",recognized?safeStatus:503);
 }
+/** Non-identifying REESE envelope version, extracted only from first four bytes. */
+export function rtEnvelopeVersion(encoded){
+ if(typeof encoded!=="string"||encoded.length<8)return null;
+ let bytes;
+ try{bytes=Buffer.from(encoded.slice(0,12),"base64");}catch{return null;}
+ const marker=bytes.subarray(0,4).toString("ascii");
+ if(["RSE1","RSE2","RSE3","RSE4"].includes(marker))return marker;
+ if(bytes.subarray(0,4).equals(Buffer.from([0xa7,0x19,0xd2,0x4c])))return "RSE5";
+ if(marker.startsWith("{"))return "JSON";
+ return null;
+}
 export async function decodeRequest(request,kind,options={}) {
   if(!enabled())return notEnabled();
   const cfg=settings();
-  let redis,claims,lease=null,telemetry=null,recorded=false;
+  let redis,claims,lease=null,telemetry=null,recorded=false,started=null;
   try{
     redis=await (options.storeProvider||store)();
     if(await maintenanceEnabled(redis))return failure("SERVICE_UNAVAILABLE",503);
+    if(await serviceMaintenanceEnabled(redis,"files"))return failure("SERVICE_MAINTENANCE",503);
     claims=await requireSession(redis,request,cfg);
     if(!claims)return failure("UNAUTHORIZED",401);
     if(claims.rateLimited)return failure("RATE_LIMITED",429);
@@ -149,21 +300,34 @@ export async function decodeRequest(request,kind,options={}) {
     lease=requestId;
     telemetry={
       kind,format:kind==="file"?payload.format:undefined,
+      formatVersion:kind==="file"&&payload.format==="rt"?rtEnvelopeVersion(payload.dataBase64):null,
       bytes:kind==="text"?Buffer.byteLength(payload.text,"utf8"):
         payload.dataBase64.length/4*3-
         (payload.dataBase64.endsWith("==")?2:payload.dataBase64.endsWith("=")?1:0),
     };
+    started=performance.now();
     const outcome=await fetchWorker(kind,payload,cfg,options);
     let errorCode="";
     if(!outcome.ok){
       try{errorCode=(await outcome.clone().json()).error?.code||"";}catch{}
     }
-    try{await recordWorkerResult(redis,outcome.ok?"success":"failed",{...telemetry,errorCode});}catch{}
+    // The worker always decides if the file requires credentials. An old APK
+    // lacks a dialog for the new formats; return only a preexisting localized
+    // error code instead of an impossible PASSWORD_REQUIRED interaction.
+    // Do not alter successful results, HTTP Custom, or Ultra Custom.
+    const legacyCode=legacyCredentialError(request,kind,payload,errorCode);
+    const clientOutcome=legacyCode?failure(legacyCode,422):outcome;
+    try{await recordWorkerResult(redis,outcome.ok?"success":"failed",{
+      ...telemetry,errorCode,latencyMs:performance.now()-started,
+      appVersion:request.headers.get("x-spdecode-app-version"),
+    });}catch{}
     recorded=true;
-    return outcome;
+    return clientOutcome;
   }catch(error){
     if(telemetry && !recorded && redis && lease){
-      try{await recordWorkerResult(redis,"failed",{...telemetry,errorCode:"ENGINE_UNAVAILABLE"});}catch{}
+      try{await recordWorkerResult(redis,"failed",{...telemetry,errorCode:"ENGINE_UNAVAILABLE",
+          latencyMs:started===null?null:performance.now()-started,
+          appVersion:request.headers.get("x-spdecode-app-version")});}catch{}
     }
     if(error?.code==="INPUT_TOO_LARGE")return failure("INPUT_TOO_LARGE",413);
     if(error?.code==="INVALID_BASE64")return failure("INVALID_BASE64",400);
@@ -179,7 +343,8 @@ export async function challengeRequest(request,options={}) {
     if(await maintenanceEnabled(redis))return failure("SERVICE_UNAVAILABLE",503);
     const result=await createChallenge(redis,request);
     if(result.error)return failure(result.error,result.status);
-    return jsonReply({apiVersion:"v1",...result},201);
+    const policy=await admissionPolicy(redis);
+    return jsonReply({apiVersion:"v1",...result,integrityRequired:policy.integrityRequired},201);
   }catch{return failure("SERVICE_UNAVAILABLE",503);}
 }
 export async function sessionRequest(request,options={}) {
@@ -188,7 +353,8 @@ export async function sessionRequest(request,options={}) {
     const redis=await (options.storeProvider||store)();
     if(await maintenanceEnabled(redis))return failure("SERVICE_UNAVAILABLE",503);
     const data=await boundedBody(request,19000);
-    const result=await issueSession(redis,request,data,settings(),options.verifyIntegrity);
+    const policy=await admissionPolicy(redis);
+    const result=await issueSession(redis,request,data,settings(),options.verifyIntegrity,policy);
     if(result.error)return failure(result.error,result.status);
     return jsonReply({apiVersion:"v1",...result},201);
   }catch(error){

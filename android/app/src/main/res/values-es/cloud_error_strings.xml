@@ -15,7 +15,9 @@
     <string name="cloud_failure_invalid">El archivo o la solicitud no son válidos. Comprueba el formato.</string>
     <string name="cloud_failure_unsupported">Este formato todavía no está disponible en el servidor.</string>
     <string name="cloud_failure_decode">El motor no pudo procesar esta versión del archivo. No significa necesariamente que esté dañado.</string>
+    <string name="cloud_failure_maintenance">Este servicio está temporalmente en mantenimiento. Vuelve a intentarlo más tarde.</string>
     <string name="cloud_failure_unavailable">El servicio está temporalmente fuera de línea. Vuelve a intentarlo más tarde.</string>
+    <string name="cloud_failure_config_unavailable">Esta configuración Cloud ya no está disponible. Puede haber caducado, haberse eliminado o ser de un solo uso. No es un fallo del descifrador.</string>
     <string name="cloud_failure_remote">El proveedor remoto devolvió una respuesta inválida o que no pudo verificarse.</string>
     <string name="cloud_failure_credentials">Contraseña o HWID incorrectos. Comprueba los datos e inténtalo de nuevo.</string>
     <string name="cloud_failure_password">Este archivo protegido requiere contraseña.</string>
@@ -25,5 +27,11 @@
     <string name="cloud_failure_conflict">La solicitud entra en conflicto con el estado actual. Inténtalo de nuevo.</string>
     <string name="cloud_failure_partial">El resultado es incompleto o inválido y no se mostrará.</string>
     <string name="cloud_failure_general">No se pudo completar la operación. Reintenta o contacta con soporte.</string>
-    <string name="cloud_failure_notice_title">No se pudo completar la solicitud</string>
+    <string name="cloud_failure_notice_title">Aviso</string>
+    <string name="cloud_password_title">Se requiere contraseña</string>
+    <string name="cloud_password_description">%1$s está protegido con contraseña. Introduce la contraseña de exportación para continuar. No se guardará.</string>
+    <string name="cloud_failure_password_incorrect">La contraseña es incorrecta.</string>
+    <string name="cloud_failure_private_key">Este archivo NPVS utiliza protección con claves pública y privada del destinatario. Este método todavía no es compatible; próximamente.</string>
+    <string name="cloud_failure_recipient">Este archivo NPVS utiliza un método de clave de destinatario aún no compatible. Próximamente.</string>
+    <string name="cloud_failure_npvs_unsupported">Esta versión o método de protección NPVS todavía no es compatible. Próximamente.</string>
 </resources>

@@ -1,0 +1,129 @@
+{
+  "id": "7net-vpn",
+  "name": "7NET VPN",
+  "package": "xyz.sevennetvpn.org",
+  "compatibleVersions": [
+    "5.6"
+  ],
+  "versionCode": 56,
+  "engine": "python-renz-aes128cbc-xxtea-byteoffset-threefish256-pbkdf2-aes256cbc",
+  "engineVersion": 1,
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "7net-vpn",
+    "source": "https://raw.githubusercontent.com/MAKE-MONEY-MILLION-DOLLAR-PER-DAY/7net-Team/refs/heads/main/7net%2BAll_Team.js",
+    "validatedOn": "2026-10-22",
+    "remoteAuthorization": "User-authorized fixed public catalog read",
+    "remoteValidated": true,
+    "remoteServersObserved": 76,
+    "remoteNetworksObserved": 619,
+    "remoteVersion": "40.19",
+    "remoteFieldsProcessed": 6025,
+    "remoteNonemptyFieldsCompared": 4750,
+    "sourceEvidence": [
+      {
+        "source": "embedded-catalog.bin",
+        "bytes": 857240,
+        "sha256": "3bbef4ed4e846c7edaad26155f1a6b7c2ad9e8375d681eca9bc99fb4f0bf5c70",
+        "version": "1.0",
+        "servers": 92,
+        "networks": 634,
+        "processed": 6347,
+        "nonempty": 4982,
+        "mode0": 3739,
+        "mode1": 1177,
+        "mode2": 66,
+        "completeJdkEqual": true,
+        "zeroCiphertextFields": 6,
+        "nativeCasesEqual": 9
+      },
+      {
+        "source": "download.bin",
+        "bytes": 758848,
+        "sha256": "be69b0afe7cffd3f3b1f482c84a2cd343ad5881bf4caa32623462473fb078c33",
+        "version": "40.19",
+        "servers": 76,
+        "networks": 619,
+        "processed": 6025,
+        "nonempty": 4750,
+        "mode0": 3563,
+        "mode1": 1159,
+        "mode2": 28,
+        "completeJdkEqual": true,
+        "zeroCiphertextFields": 6,
+        "nativeCasesEqual": 9
+      }
+    ],
+    "runtimeValidation": {
+      "completeRealWorkerEqual": true,
+      "completeStdinCliEqual": true,
+      "completeLiveCliEqual": true,
+      "renderedBytes": 502968,
+      "version": "40.19",
+      "servers": 76,
+      "networks": 619
+    },
+    "publicCatalogVersion": 33,
+    "publicCatalogCards": 35,
+    "deploymentEnabledByDefault": false,
+    "validation": "Entire embedded and remote JSON equal independent JDK; original ARM64 XXTEA/Threefish primitives equal reference (9 cases per source). Live HTTPS CLI, stdin and isolated worker equal complete result.",
+    "zeroCiphertextRecovery": "Preserve ciphertext zero bytes to next CBC boundary; byte-wise native trimming would cut six fields in each real catalog. All affected original Threefish streams and complete JDK values compared.",
+    "authenticatedCiphertext": false,
+    "testScope": "4 new 7NET tests, 8 Xhypher/RENZ regressions and 54 focused web checks passed; no full project suites. Controlled Node transport, real Python HTTPS/CLI/worker."
+  },
+  "files": {
+    "entrypoint": "file_decoder.py",
+    "supported": true,
+    "extensions": [
+      "7net"
+    ],
+    "confirmedScheme": "7netvpn://",
+    "historicalAliasesRetained": [
+      "7net://"
+    ],
+    "canonicalScript": "../../renz.py",
+    "newRouteRegistered": false,
+    "realExportSupplied": false,
+    "exporterCertified": false,
+    "validation": "Existing canonical RENZ route, with app-scoped aligned Threefish/CBC correction. JDK synthetic single-network export with scheme, nested profile, aliases, legacy types and CLI verified. No independent real export or Android roundtrip."
+  },
+  "icon": {
+    "file": "SevenNET_VPN.png",
+    "source": "base.apk:res/h/cr.png",
+    "width": 190,
+    "height": 190,
+    "pngBytes": 13258,
+    "pngSha256": "a6eac9703f48f4890f29a093178526e841984f8d5915fbc187a9e895da6a538c",
+    "policy": "Exact original PNG bytes; no redraw, conversion or resize"
+  },
+  "dependencies": {
+    "python": ">=3.10",
+    "pycryptodome": "3.23.0",
+    "supportFiles": [
+      "codec.py",
+      "../../renz.py"
+    ],
+    "sharedSourceSha256": {
+      "../../renz.py": "dab53968f15bd2f82329aae3bd64cce2f66c1f0991ac18e8f066c355ba3c04f4"
+    }
+  },
+  "sourceBaseApkSha256": "d7b900683f32f2d5641c1ddbcd8d7fa9209efe5fff698a75021ce370f6f23452",
+  "sourceApksSha256": "6440a8f22da8b4a033fc60171cd33b16ad2dc21c5ac1edf846978aad9c63c082",
+  "sourceNativeSha256": "1cbe5ce9f3de6256cf65d0b9cb91f30b7a11bd7df076c23b3b4df6a73a6c6228",
+  "analysisTools": [
+    "scripts/apk_analysis/inspect_apk.py",
+    "scripts/apk_analysis/decompile.py",
+    "scripts/apk_analysis/paranoid_strings.py",
+    "scripts/apk_analysis/elf_inspect.py",
+    "scripts/apk_analysis/arm64_function.py",
+    "scripts/apk_analysis/sevennet_verify.py",
+    "scripts/apk_analysis/RESTORE.md",
+    "tests/golden/sevennet_vpn_oracle.java",
+    "tests/golden/sevennet_native_oracle.py",
+    "tests/golden/sevennet_vpn_generate.py"
+  ],
+  "analysisLimit": "DEX3 JADX exit 0; DEX1/2 reported general errors. Documented source/native paths independently inspected. Type 3 loads an auxiliary DEX, not config support.",
+  "branch": "feat/austroplus-vpn-13-0-1-decoders",
+  "pullRequest": 96,
+  "analyzedBaseCommit": "30c257a0297385222e17cfd78e32e485b4c7782c"
+}

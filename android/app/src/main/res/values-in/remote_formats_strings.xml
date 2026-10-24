@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="file_extension_unsupported_contact">Ekstensi berkas ini belum didukung. Hubungi pengembang untuk meminta dukungan.</string>
+    <string name="text_format_unsupported_contact">Format teks atau protokol ini belum didukung. Hubungi pengembang untuk meminta dukungan.</string>
+    <string name="formats_remote_catalog_note">Ekstensi yang didukung disinkronkan secara aman dari SP-DECODE Cloud. Format Cloud baru dapat muncul tanpa memperbarui aplikasi.</string>
+    <string name="formats_cloud_ready_short">Cloud</string>
+</resources>

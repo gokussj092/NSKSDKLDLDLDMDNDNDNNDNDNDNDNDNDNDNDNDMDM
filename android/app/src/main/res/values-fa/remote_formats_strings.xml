@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="file_extension_unsupported_contact">پسوند این فایل پشتیبانی نمی‌شود. برای درخواست پشتیبانی با توسعه‌دهنده تماس بگیرید.</string>
+    <string name="text_format_unsupported_contact">این قالب متن یا پروتکل پشتیبانی نمی‌شود. برای درخواست پشتیبانی با توسعه‌دهنده تماس بگیرید.</string>
+    <string name="formats_remote_catalog_note">پسوندهای پشتیبانی‌شده با SP-DECODE Cloud همگام می‌شوند. قالب‌های جدید ممکن است بدون به‌روزرسانی برنامه افزوده شوند.</string>
+    <string name="formats_cloud_ready_short">ابری</string>
+</resources>

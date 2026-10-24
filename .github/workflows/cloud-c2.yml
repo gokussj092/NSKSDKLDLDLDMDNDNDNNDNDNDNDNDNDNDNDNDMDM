@@ -7,6 +7,95 @@ on:
       - "docs/cloud/C0_FORMAT_MATRIX.csv"
       - "docs/cloud/C2_IMPLEMENTATION.md"
       - "tests/test_cloud_c2_golden.py"
+      - "decoders/Python/apps/FlexNet_B42/**"
+      - "decoders/Python/flex.py"
+      - "decoders/Python/flexnet_b42.py"
+      - "tests/test_flexnet_b*.py"
+      - "tests/golden/flexnet_b*"
+      - "tests/golden/FlexB*VectorGenerator.java"
+      - "decoders/Python/apps/HTTP_Custom/**"
+      - "tests/test_http_custom_899.py"
+      - "decoders/Python/apps/HTTP_SocketClay/**"
+      - "tests/test_http_socketclay.py"
+      - "tests/golden/socketclay*"
+      - "decoders/Python/apps/HTTP_Wakko/**"
+      - "tests/test_http_wakko.py"
+      - "tests/golden/wakko*"
+      - "decoders/Python/apps/TunelGuard_VPN/**"
+      - "tests/test_tunelguard.py"
+      - "tests/golden/tunelguard*"
+      - "decoders/Python/apps/V2ray_Tunnel_Plus/**"
+      - "tests/test_v2ray_tunnel_plus.py"
+      - "tests/golden/v2ray_tunnel_plus*"
+      - "decoders/Python/apps/EUT_VPN/**"
+      - "tests/test_eut_vpn.py"
+      - "tests/golden/eut_vpn*"
+      - "decoders/Python/apps/Focus_VPN_Cloud/**"
+      - "tests/test_focus_vpn_cloud.py"
+      - "tests/golden/focus_vpn_cloud*"
+      - "decoders/Python/apps/FreedomVPN/**"
+      - "decoders/Python/apps/Xhypher_Tunnel_Pro/**"
+      - "decoders/Python/apps/AM_TUNNEL_LITE_VPN/**"
+      - "tests/test_am_tunnel_lite.py"
+      - "tests/golden/am_tunnel_lite*"
+      - "tests/test_am_liapp_metadata.py"
+      - "tests/golden/am_liapp*"
+      - "decoders/Python/apps/SevenNET_VPN/**"
+      - "decoders/Python/apps/OneFTunnel/**"
+      - "decoders/Python/npvs.py"
+      - "decoders/Python/v2box_export.py"
+      - "tests/test_v2box_password.py"
+      - "decoders/Python/apps/APNA_VPN/**"
+      - "tests/test_apna_vpn.py"
+      - "tests/test_npvs_protected.py"
+      - "tests/test_npvs_v1_legacy.py"
+      - "decoders/Python/npvs_v1.py"
+      - "tests/test_npv_text.py"
+      - "tests/test_npv_cloud_password_integration.py"
+      - "decoders/Python/apps/NPV_Tunnel/**"
+      - "cloud/workers/python/npvs_bridge.py"
+      - "cloud/workers/python/text_bridge.py"
+      - "tests/test_npvs_v5_embedded.py"
+      - "tests/golden/npvs_protected*"
+      - "tests/test_oneftunnel.py"
+      - "tests/golden/oneftunnel*"
+      - "tests/test_sevennet_vpn.py"
+      - "tests/golden/sevennet*"
+      - "tests/test_xhypher_tunnel_pro.py"
+      - "tests/golden/xhypher*"
+      - "decoders/Python/renz.py"
+      - "decoders/Python/apps/UT_Loop_Pro_VPN/**"
+      - "tests/test_ut_loop_pro.py"
+      - "tests/golden/ut_loop_pro*"
+      - "decoders/Python/apps/TurboMX_VPN/**"
+      - "tests/test_turbomx_vpn.py"
+      - "tests/golden/turbomx_vpn*"
+      - "decoders/Python/apps/SuperFlash_VPN/**"
+      - "tests/test_superflash_vpn.py"
+      - "tests/golden/superflash_vpn*"
+      - "decoders/Python/apps/RMP_TUNNEL_PRO/**"
+      - "tests/test_rmp_tunnel_pro.py"
+      - "decoders/Python/apps/RJC_TUNNEL_PRO/**"
+      - "tests/test_rjc_tunnel_pro.py"
+      - "decoders/Python/apps/ProNeet_VPN/**"
+      - "tests/test_proneet_vpn.py"
+      - "tests/golden/proneet_vpn*"
+      - "decoders/Python/apps/OnSpace_VPN/**"
+      - "tests/test_onspace_vpn.py"
+      - "tests/golden/onspace_vpn*"
+      - "decoders/Python/apps/Mx_Tunnel_PRO/**"
+      - "tests/test_mx_tunnel_pro.py"
+      - "tests/golden/mx_tunnel_pro*"
+      - "scripts/apk_analysis/**"
+      - "decoders/Python/apps/MegaTunnel/**"
+      - "tests/test_megatunnel.py"
+      - "tests/golden/megatunnel*"
+      - "decoders/Python/apps/HTTP_Internet_Infinito/**"
+      - "tests/test_http_internet_infinito.py"
+      - "tests/golden/http_internet_infinito*"
+      - "tests/test_freedomvpn.py"
+      - "tests/golden/freedomvpn*"
+      - "tests/golden/http_custom_899.py"
       - ".github/workflows/cloud-c2.yml"
   push:
     branches: ["feat/cloud-c2-decoder-workers"]
@@ -44,8 +133,30 @@ jobs:
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_cloud_c2_text -v
       - name: C2 verify protected HCCFG password HWID and dual-lock parity
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_cloud_c2_hc -v
+      - name: Verify HCX4 build 899 native key vectors and authenticated file layers
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_http_custom_899 -v
+      - name: Verify TunelGuard/Wakko/SocketClay catalogs and file compatibility
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_am_liapp_metadata tests.test_am_tunnel_lite tests.test_sevennet_vpn tests.test_xhypher_tunnel_pro tests.test_ut_loop_pro tests.test_turbomx_vpn tests.test_superflash_vpn tests.test_rmp_tunnel_pro tests.test_rjc_tunnel_pro tests.test_proneet_vpn tests.test_onspace_vpn tests.test_mx_tunnel_pro tests.test_megatunnel tests.test_http_internet_infinito tests.test_freedomvpn tests.test_focus_vpn_cloud tests.test_eut_vpn tests.test_v2ray_tunnel_plus tests.test_tunelguard tests.test_http_wakko tests.test_http_socketclay tests.test_http_fenixvpn tests.test_http_jireh -v
+      - name: Verify APNA VPN modified XXTEA complete catalog and worker
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_apna_vpn -v
+      - name: Verify V2Box fixed-key, password and tag integrity routes
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_v2box_password -v
+      - name: Verify NPV text aliases, strict credential errors and legacy envelope isolation
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_npv_text tests.test_npv_cloud_password_integration -v
+      - name: Verify 1FTunnel files, password handling and complete worker output
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_oneftunnel tests.test_cloud_c8_vpn_registry -v
+      - name: Verify NPVS v1 legacy route, v5 protected methods, and recipient diagnostics
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_npvs_v1_legacy tests.test_npvs_protected tests.test_npvs_v5.PrimitiveTests tests.test_npvs_v5_embedded tests.test_cloud_c8_npvs_error_classification -v
+      - name: Verify FlexNet v1-v6 compatibility and B46 protected fields
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_flexnet_b46 tests.test_flexnet_b42 -v
       - name: C2 verify NUR server catalog remains separate from solid profiles
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_cloud_c2_nur_catalog -v
+      - name: Hat Tunnel complete JSON, real fixture and optional-field regression
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_cloud_hat_complete -v
+      - name: Verify original independently tested KSH DTunnel Mod and MKK methods
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_ksh_vpn tests.test_dtunnelmod tests.test_mkk_hyper -v
+      - name: New KSH and DTunnel codecs and MKK four-source full-result regression
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_cloud_server_vpn_new tests.test_cloud_server_vpn_transport -v
       - name: C2 execute synthetic golden corpus through isolated subprocess adapter
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_cloud_c2_golden -v
 
@@ -75,6 +186,58 @@ jobs:
           else:
               raise AssertionError("Worker must not be ready without token")
           PY
+      - name: Verify packaged NPVS password and error contracts in real Docker worker
+        run: |
+          set -eu
+          # Stream only synthetic code into the read-only runtime container.
+          # No test data, passwords, or fixture files are persisted to disk.
+          docker compose -f cloud/compose.yaml exec -T decoder-worker python -c '
+          import sys
+
+          sys.path.insert(0, "cloud/workers/python")
+          from engine import decode_file, DecodeFailure
+          from decoders.Python.npvs import decode_npvs_complete
+          fixture = {"__name__": "synthetic_npvs_fixture"}
+          exec(compile(sys.stdin.read(), "<synthetic-fixture>", "exec"), fixture)
+          vector = fixture["make"](password="fixture-only-password")
+          raw = vector["data"]
+          correct = {"password": vector["password"]}
+          for creds, expected in (
+              (None, "PASSWORD_REQUIRED"),
+              ({"password": "wrong-synthetic-password"}, "AUTH_FAILED"),
+          ):
+              try:
+                  decode_file("npvs", raw, credentials=creds)
+              except DecodeFailure as exc:
+                  assert exc.code == expected, (exc.code, expected)
+              else:
+                  raise AssertionError("protected NPVS unexpectedly succeeded")
+          output = decode_file("npvs", raw, credentials=correct)
+          expected = decode_npvs_complete(raw, password=correct["password"])
+          assert output["structuredJson"] == expected
+          assert output["isPartial"] is False
+          assert output["rawText"]
+          print("NPVS packaged Docker worker: PASSWORD_REQUIRED / AUTH_FAILED / complete JSON OK")
+          ' < tests/golden/npvs_protected_generate.py
+      - name: Run historical NPVS v1 fixture in actual read-only Docker worker
+        run: |
+          set -eu
+          # The test module is streamed via stdin. Nothing is copied into the
+          # read-only container and no user-provided NPVS files are persisted.
+          docker compose -f cloud/compose.yaml exec -T decoder-worker python -c '
+          import sys
+          from pathlib import Path
+          sys.path.insert(0, "cloud/workers/python")
+          module={"__name__":"npvs_v1_container_smoke",
+                  "__file__":"/opt/spdecode/tests/test_npvs_v1_legacy.py"}
+          exec(compile(sys.stdin.read(), "<synthetic-npvs-v1>", "exec"), module)
+          from engine import decode_file
+          fixture,credentials,expected=module["make_v1"]()
+          output=decode_file("npvs",fixture)
+          assert output["structuredJson"]==expected
+          assert output["isPartial"] is False
+          print("NPVS v1 signed synthetic Docker full JSON OK")
+          ' < tests/test_npvs_v1_legacy.py
       - name: Tear down
         if: always()
         run: docker compose -f cloud/compose.yaml down --remove-orphans

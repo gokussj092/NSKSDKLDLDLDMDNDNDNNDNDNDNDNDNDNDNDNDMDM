@@ -15,6 +15,7 @@ object BatchImportQueue {
     suspend fun <T> process(
         inputs:List<T>,
         onFailure:suspend (value:T, cause:Exception)->Unit={_,_->},
+        isExpectedFailure:(Exception)->Boolean={false},
         action:suspend (value:T, index:Int, total:Int)->Unit,
     ):BatchImportReport {
         require(inputs.size<=MAX_FILES) { "Batch exceeds $MAX_FILES entries" }
@@ -29,7 +30,8 @@ object BatchImportQueue {
                 throw cancelled
             }catch(failure:Exception) {
                 onFailure(element,failure)
-                SafeDecodeDiagnostics.record(SafeDecodeDiagnostics.Event.FILE_IMPORT_FAILURE)
+                if(!isExpectedFailure(failure))
+                    SafeDecodeDiagnostics.record(SafeDecodeDiagnostics.Event.FILE_IMPORT_FAILURE)
                 failed++
             }
         }

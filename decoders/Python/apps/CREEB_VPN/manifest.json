@@ -1,0 +1,37 @@
+{
+  "id": "creeb-vpn",
+  "name": "CREEB VPN",
+  "package": "com.creebtunnel.vpn",
+  "versionName": "50.0",
+  "versionCode": 50,
+  "engine": "python",
+  "entrypoint": "file_decoder.py",
+  "extensions": ["crev"],
+  "formats": ["modified-xxtea-base64-json", "direct-import-json"],
+  "dependencies": ["pycryptodome==3.23.0"],
+  "credentials": [],
+  "customPassword": {"cryptographicallyRequired": false, "kind": "post_decryption_comparison"},
+  "hwidCryptographicallyRequired": false,
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "asset": "assets/data.creeb",
+    "embeddedVerified": true,
+    "embeddedVersion": "1.0.0",
+    "embeddedServers": 1,
+    "embeddedTweaks": 1,
+    "remote": null,
+    "remoteStatus": "unvalidated_html_response",
+    "cardDecodeEnabled": false
+  },
+  "icon": {
+    "originalResource": "res/drawable/icons.xml",
+    "originalCopy": "icon.vector.axml",
+    "originalSha256": "b7741c2acd3282a62511fa5dd3cde87688d589dbf965c1d505782f1d0b3cf4e7",
+    "png": "icon.png",
+    "rendering": "756 original vector paths; CairoSVG 2.8.2, 512x512",
+    "pngSha256": "2ae4ed0b2b96fdf3dfbd0cc96ae0bd69ec0e0d983fd35bf5fd37d08b63217bf3"
+  },
+  "realFileSampleVerified": false,
+  "syntheticDocumentsVerified": 5,
+  "deployment": "pending"
+}

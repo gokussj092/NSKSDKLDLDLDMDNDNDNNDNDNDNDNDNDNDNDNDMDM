@@ -10,7 +10,7 @@ import java.security.MessageDigest
  * digest is injected by the production CI from the permanent signing keystore.
  * This detects APKs re-signed using a different certificate on normal Android
  * installs. It does NOT defeat a determined patcher, or protect static keys
- * from inspection, and Play App Signing would require its own trusted signer.
+ * from inspection, and Play App Signing requires its own allowlisted SHA-256 certificate.
  */
 internal object ReleaseIntegrity {
     fun isTrusted(context: Context): Boolean {
@@ -22,22 +22,29 @@ internal object ReleaseIntegrity {
                 android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0) return false
         if (android.os.Debug.isDebuggerConnected() ||
             android.os.Debug.waitingForDebugger()) return false
-        val expected = hex(BuildConfig.TRUSTED_SIGNER_SHA256) ?: return false
-        if (expected.size != 32) return false
+        // Distinguish the upload/APK signer from Play App Signing. Accept only
+        // explicit fingerprints injected by trusted release CI (never arbitrary certs).
+        val expected = listOfNotNull(
+            hex(BuildConfig.TRUSTED_SIGNER_SHA256),
+            hex(BuildConfig.PLAY_APP_SIGNER_SHA256)
+        ).distinctBy { it.toList() }
+        if (expected.isEmpty()) return false
         return try {
             val pm = context.packageManager
             if (Build.VERSION.SDK_INT >= 28) {
-                pm.hasSigningCertificate(context.packageName, expected,
-                    PackageManager.CERT_INPUT_SHA256)
+                expected.any { digest ->
+                    pm.hasSigningCertificate(context.packageName, digest, PackageManager.CERT_INPUT_SHA256)
+                }
             } else {
                 @Suppress("DEPRECATION")
                 val packageInfo = pm.getPackageInfo(context.packageName,
                     PackageManager.GET_SIGNATURES)
                 @Suppress("DEPRECATION")
                 val signatures = packageInfo.signatures.orEmpty()
-                signatures.size == 1 && MessageDigest.isEqual(
-                    MessageDigest.getInstance("SHA-256")
-                        .digest(signatures[0].toByteArray()),expected)
+                signatures.size == 1 && expected.any { digest ->
+                    MessageDigest.isEqual(MessageDigest.getInstance("SHA-256")
+                        .digest(signatures[0].toByteArray()),digest)
+                }
             }
         } catch (_: Exception) {
             false // fail closed on production, never accept an unknown signer

@@ -1,0 +1,58 @@
+{
+  "id": "mx-tunnel-pro",
+  "name": "Mx Tunnel PRO",
+  "package": "com.mxtunnel.pro",
+  "compatibleVersions": [
+    "Mx-Build48"
+  ],
+  "versionCode": 48,
+  "engine": "python-custom-delta-xxtea",
+  "engineVersion": 1,
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "mx-tunnel-pro",
+    "url": "https://rasedpanel.xyz/updater/750b71355b025b19884ee835b759d6",
+    "validatedOn": "2026-10-22",
+    "remoteAuthorization": "Explicit user authorization for external catalogs",
+    "remoteValidated": true,
+    "remoteVersion": "564",
+    "remoteServersObserved": 39,
+    "remotePayloadsObserved": 1467,
+    "remoteBytes": 729536,
+    "remoteSha256": "8206fa868065fdf9d20958332e7f271e28b381bb62a479be27354e6db0e17df2",
+    "embeddedVersion": "497",
+    "embeddedServersObserved": 51,
+    "embeddedPayloadsObserved": 1396,
+    "separateUserCatalogIdentified": false,
+    "validation": "Complete real HTTPS and embedded JSON equal independent JDK, CLI stdin and isolated worker; real CLI --download matches. isPartial:false.",
+    "publicCatalogVersion": 24,
+    "publicCatalogCards": 26,
+    "deploymentEnabledByDefault": false,
+    "testScope": "3 Mx Python, 4 focused TRV/4U regressions and 21 targeted web checks; no full suites. Python external HTTPS real, Node transport controlled."
+  },
+  "files": {
+    "supported": false,
+    "validation": "Catalog-only; no exported profile sample certified."
+  },
+  "icon": {
+    "file": "Mx_Tunnel_PRO.png",
+    "source": "base.apk:res/drawable/ic_app_icon.png",
+    "bytes": 14458,
+    "sha256": "e533df6792db791255152d871904f302674c9f4cba9c118a13abe4bb55bff20d",
+    "width": 512,
+    "height": 512,
+    "policy": "Exact original PNG; no resizing."
+  },
+  "dependencies": {
+    "python": ">=3.10",
+    "supportFiles": [
+      "codec.py",
+      "../HX_Tunnel_VPN/HX_Tunnel_VPN.py"
+    ],
+    "sharedCodecSha256": "ac355fdeb5c4558ffbb765ed7335ed226578911b3ddc89c901bf520712549a6e"
+  },
+  "sourceApkSha256": "d18b49c8b4b10c77aec898e5b1df8d9d9ae058e674ccbe4c22e2b0bb0c528c06",
+  "branch": "feat/austroplus-vpn-13-0-1-decoders",
+  "pullRequest": 96,
+  "analyzedBaseCommit": "4c061344faf42d842caab507050e1e79b29785f0"
+}

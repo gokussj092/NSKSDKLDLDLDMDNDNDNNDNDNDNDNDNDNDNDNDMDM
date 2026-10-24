@@ -299,6 +299,16 @@ case "${1:-help}" in
      admin-password) [[ $# -eq 2 ]] || die "spdecode config admin-password";admin_password;;
      admin-username) [[ $# -eq 3 ]] || die "spdecode config admin-username USER";set_env CLOUD_ADMIN_USERNAME "$3";;
      *) die "spdecode config set KEY VALUE | google-service-account FILE | admin-password | admin-username NAME";; esac;;
+ providers)
+   if [[ "${2:-}" == import-ehi ]]; then
+     [[ $# -eq 3 ]] || die "spdecode providers import-ehi /root/HTTPINJECTOR_CLOUD.py"
+     preflight
+     python3 "$REPO/cloud/infra/vps/provider-services.py" "$2" "$3"
+   else
+     [[ $# -eq 2 ]] || die "spdecode providers status|enable|disable"
+     preflight
+     python3 "$REPO/cloud/infra/vps/provider-services.py" "$2"
+   fi;;
  qa)
    [[ $# -eq 2 ]] || die "spdecode qa start|stop|status|services|probe-nur"
    preflight
@@ -325,6 +335,8 @@ SP-DECODE VPS commands:
   spdecode panel check
   spdecode panel reset-admin   # generate credentials and validate real HTTPS login
   spdecode panel sync-routes   # update Nginx public links without rotating credentials
+  spdecode providers status|enable|disable  # persistent remote providers, no QA required
+  spdecode providers import-ehi /root/HTTPINJECTOR_CLOUD.py  # carga privada sin ejecutar el método
   spdecode qa start|stop|status|services|probe-nur  # ephemeral QA; services enables NUR and configured EHI
   spdecode android setup
   spdecode android signing configure /root/upload-key.p12 alias

@@ -33,13 +33,13 @@ class PhaseA239CatalogInstrumentedTest {
         assertEquals(13, formats.count { it.migrationPhase == "F" && it.hasNativeDecoder })
         assertEquals(0, planned.count { it.migrationPhase == "F" })
         assertTrue(planned.all { it.portStatus == AndroidDecoderCatalog.PENDING_STATUS })
-        assertTrue(planned.all { it.sourceCatalog == "spdecode.registry" })
-        assertTrue(formats.filter { it.hasNativeDecoder && it.migrationPhase == "legacy" }.all {
-            it.sourceCatalog == "decoders.json"
-        })
-        assertTrue(formats.filter { it.migrationPhase == "B" }.all {
-            it.hasNativeDecoder && it.sourceCatalog == "spdecode.registry"
-        })
+        // Public asset no longer includes implementation details or Python paths.
+        val bundled=context.assets.open("decoder_catalog.json").bufferedReader().use { it.readText() }
+        assertFalse(bundled.contains("decoders/Python/"))
+        assertFalse(bundled.contains("\"script\""))
+        assertFalse(bundled.contains("\"originalRuntime\""))
+        assertFalse(bundled.contains("\"sourceCatalog\""))
+        assertTrue(formats.filter { it.migrationPhase == "B" }.all { it.hasNativeDecoder })
     }
 
     @Test fun migrationSuffixesHaveNoAccidentalDecodeFallback() {

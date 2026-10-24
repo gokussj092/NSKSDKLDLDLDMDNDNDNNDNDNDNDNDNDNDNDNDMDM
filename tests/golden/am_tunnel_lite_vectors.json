@@ -1,0 +1,45 @@
+{
+  "provenance": "Independent JDK DataInput/OutputStream modified UTF-8 and native-transcribed XOR; synthetic fields only; no catalog vectors",
+  "fields": [
+    {
+      "plain": "server.example.test",
+      "cipher": "474022123d11465b1e0a3d2d58407e103d101c",
+      "modifiedUtf8Base64": "c2VydmVyLmV4YW1wbGUudGVzdA=="
+    },
+    {
+      "plain": "test-user",
+      "cipher": "4040231075161b5b14",
+      "modifiedUtf8Base64": "dGVzdC11c2Vy"
+    },
+    {
+      "plain": "test-password",
+      "cipher": "404023107513094d151c3f2f50",
+      "modifiedUtf8Base64": "dGVzdC1wYXNzd29yZA=="
+    },
+    {
+      "plain": "GET / HTTP/1.1\r\n\r\n",
+      "cipher": "736004447743206a323b7f6c1a145d6e5569",
+      "modifiedUtf8Base64": "R0VUIC8gSFRUUC8xLjENCg0K"
+    },
+    {
+      "plain": "日本語 🌐",
+      "cipher": "d2b2f582c4cf8094f84bbdfd88c8ecf4",
+      "modifiedUtf8Base64": "5pel5pys6KqeIO2gvO28kA=="
+    },
+    {
+      "plain": "prefix\u0000suffix",
+      "cipher": "44573502311ba8be151e363b5d5d",
+      "modifiedUtf8Base64": "cHJlZml4wIBzdWZmaXg="
+    },
+    {
+      "plain": "xxxxxxxxxxxxxxxxxxxxxxx",
+      "cipher": "4c5d281c201b10461e1328254c5d281c201b10461e1328",
+      "modifiedUtf8Base64": "eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHg="
+    },
+    {
+      "plain": "long.example.test/long.example.test/long.example.test/long.example.test/long.example.test/long.example.test/long.example.test/long.example.test/long.example.test/long.example.test/long.example.test/long.example.test/long.example.test/long.example.test/long.example.test/long.example.test/long.example.test/long.example.test/long.example.test/long.example.test/",
+      "cipher": "584a3e037606105f0b1b3c381a5135172c4c0451080c7e384c443d143406464a03182472584a3e037606105f0b1b3c381a5135172c4c0451080c7e384c443d143406464a03182472584a3e037606105f0b1b3c381a5135172c4c0451080c7e384c443d143406464a03182472584a3e037606105f0b1b3c381a5135172c4c0451080c7e384c443d143406464a03182472584a3e037606105f0b1b3c381a5135172c4c0451080c7e384c443d143406464a03182472584a3e037606105f0b1b3c381a5135172c4c0451080c7e384c443d143406464a03182472584a3e037606105f0b1b3c381a5135172c4c0451080c7e384c443d143406464a03182472584a3e037606105f0b1b3c381a5135172c4c0451080c7e384c443d143406464a03182472584a3e037606105f0b1b3c381a5135172c4c0451080c7e384c443d143406464a03182472584a3e037606105f0b1b3c381a5135172c4c0451080c7e384c443d143406464a03182472",
+      "modifiedUtf8Base64": "bG9uZy5leGFtcGxlLnRlc3QvbG9uZy5leGFtcGxlLnRlc3QvbG9uZy5leGFtcGxlLnRlc3QvbG9uZy5leGFtcGxlLnRlc3QvbG9uZy5leGFtcGxlLnRlc3QvbG9uZy5leGFtcGxlLnRlc3QvbG9uZy5leGFtcGxlLnRlc3QvbG9uZy5leGFtcGxlLnRlc3QvbG9uZy5leGFtcGxlLnRlc3QvbG9uZy5leGFtcGxlLnRlc3QvbG9uZy5leGFtcGxlLnRlc3QvbG9uZy5leGFtcGxlLnRlc3QvbG9uZy5leGFtcGxlLnRlc3QvbG9uZy5leGFtcGxlLnRlc3QvbG9uZy5leGFtcGxlLnRlc3QvbG9uZy5leGFtcGxlLnRlc3QvbG9uZy5leGFtcGxlLnRlc3QvbG9uZy5leGFtcGxlLnRlc3QvbG9uZy5leGFtcGxlLnRlc3QvbG9uZy5leGFtcGxlLnRlc3Qv"
+    }
+  ]
+}

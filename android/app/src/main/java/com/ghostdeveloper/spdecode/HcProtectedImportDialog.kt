@@ -103,7 +103,8 @@ internal fun HcProtectedImportDialog(
             TextButton(onClick={dismiss()}){Text(stringResource(R.string.cancel),
                 color=Color(0xFFABABAB))}
         },
-        containerColor=Color(0xFF242424),
+        containerColor=Color.Black,
+        tonalElevation=0.dp,
         titleContentColor=Color(0xFFF7F7F7),
         textContentColor=Color(0xFFABABAB),
         shape=RoundedCornerShape(17.dp),

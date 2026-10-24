@@ -1,109 +1,208 @@
 "use client";
 import {useCallback,useEffect,useState} from "react";
 import {useRouter} from "next/navigation";
-const fmt=new Intl.NumberFormat("es-MX");
-const bytes=n=>n<1024?fmt.format(n)+" B":n<1024**2?(n/1024).toFixed(1)+" KiB":(n/1024**2).toFixed(2)+" MiB";
-const ErrorMeaning={
-  DECODE_FAILED:"Descifrado fallido",ENGINE_TIMEOUT:"Tiempo agotado",
-  ENGINE_UNAVAILABLE:"Motor no disponible",AUTH_FAILED:"Autenticación del archivo fallida",
-  INVALID_CREDENTIALS:"Credenciales del archivo inválidas",
-  PASSWORD_REQUIRED:"Contraseña requerida",HWID_REQUIRED:"HWID requerido",
-  HWID_PASSWORD_REQUIRED:"Contraseña y HWID requeridos",
-  UNSUPPORTED_FORMAT:"Extensión no soportada",OUTPUT_TOO_LARGE:"Salida demasiado grande",
-  INPUT_TOO_LARGE:"Entrada demasiado grande",INVALID_REQUEST:"Solicitud inválida",
-  INVALID_BASE64:"Base64 inválido",SERVICE_UNAVAILABLE:"Servicio no disponible",
-  OTHER_ERROR:"Otro error del worker"
+const number=new Intl.NumberFormat("es-MX");
+const size=n=>n<1024?number.format(n)+" B":n<1024**2?(n/1024).toFixed(1)+" KiB":(n/1024**2).toFixed(2)+" MiB";
+const ErrorNames={
+ AUTH_FAILED:"Autenticación del archivo",INVALID_CREDENTIALS:"Credenciales incorrectas",
+ PASSWORD_REQUIRED:"Se requiere contraseña",HWID_REQUIRED:"Se requiere HWID",
+ HWID_PASSWORD_REQUIRED:"Contraseña y HWID necesarios",DECODE_FAILED:"No se pudo descifrar",
+ ENGINE_TIMEOUT:"Tiempo de espera agotado",ENGINE_UNAVAILABLE:"Motor no disponible",
+ UNSUPPORTED_FORMAT:"Formato sin soporte",UNSUPPORTED_VERSION:"Versión no compatible",
+ UNSUPPORTED_CONFIG_VERSION:"Versión de configuración no compatible",REMOTE_PROVIDER_UNAVAILABLE:"Proveedor VPN sin respuesta",
+ REMOTE_DECODER_FAILED:"Descifrado remoto fallido",REMOTE_RESPONSE_INVALID:"Respuesta remota inválida",
+ REMOTE_INTEGRITY_FAILED:"Error de integridad del proveedor",
+ INPUT_TOO_LARGE:"Archivo demasiado grande",OUTPUT_TOO_LARGE:"Resultado excesivo",
+ SERVICE_UNAVAILABLE:"Servicio no disponible",SERVICE_MAINTENANCE:"Servicio en mantenimiento",
+ OTHER_ERROR:"Otro error controlado"
 };
-export default function AdminReport({view}){
-  const [days,setDays]=useState(7),[report,setReport]=useState(null);
-  const [loading,setLoading]=useState(true),[error,setError]=useState("");
-  const router=useRouter();
-  const refresh=useCallback(async(signal)=>{
-    setLoading(true);
-    try {
-      const response=await fetch("/api/admin/reports?days="+days,
-        {cache:"no-store",credentials:"same-origin",signal});
-      if(response.status===401){router.replace("/admin/login");return;}
-      if(!response.ok)throw Error("No se pudo consultar el informe administrativo ("+response.status+").");
-      const data=await response.json();
-      if(data.status!=="ok"||!data.report)throw Error("Respuesta inválida del servidor.");
-      setReport(data.report);setError("");
-    }catch(err){
-      if(err.name==="AbortError")return;
-      setError(err.message||"No se pudo cargar.");
-    }finally{if(!signal?.aborted)setLoading(false);}
-  },[days,router]);
-  useEffect(()=>{const ac=new AbortController();refresh(ac.signal);return()=>ac.abort();},[refresh]);
-  const total=report?.totalDecodes||0;
-  const max=Math.max(1,...(report?.daily||[]).map(x=>x.successfulDecodes+x.failedDecodes));
-  return <section>
-    <div className="admin-report-toolbar">
-      <div role="group" aria-label="Rango de consulta" className="admin-range">
-        <button type="button" aria-pressed={days===1} onClick={()=>setDays(1)}>Hoy (UTC)</button>
-        <button type="button" aria-pressed={days===7} onClick={()=>setDays(7)}>Últimos 7 días</button>
-      </div>
-      <button className="button subtle" type="button" onClick={()=>refresh()} disabled={loading}>Actualizar</button>
-    </div>
-    {error&&<div className="form-message error" role="alert">{error}</div>}
-    {loading&&<p aria-live="polite" className="muted">Consultando estadísticas…</p>}
-    {report&&<>
-      <div className="admin-metric-grid" aria-live="polite">
-        <article className="admin-card"><span className="muted">Operaciones del worker</span><strong>{fmt.format(total)}</strong></article>
-        <article className="admin-card"><span className="muted">Descifrados correctos</span><strong>{fmt.format(report.successfulDecodes)}</strong></article>
-        <article className="admin-card"><span className="muted">Descifrados fallidos</span><strong>{fmt.format(report.failedDecodes)}</strong></article>
-        <article className="admin-card"><span className="muted">Entrada procesada</span><strong>{bytes(report.inputBytes)}</strong></article>
-      </div>
-      <p className="muted">Retención: {report.retentionDays} días. Datos desde la instalación de esta telemetría; no incluyen los descifrados anteriores. El consumo indica bytes de entrada procesada, no tráfico total de red ni uso de CPU.</p>
-      {view==="analytics"?<>
-        <section className="admin-card admin-report-card"><h2>Actividad diaria (UTC)</h2>
-          {total===0?<p className="muted">Aún no hay ejecuciones del worker registradas en este periodo.</p>:
-          <div className="admin-chart" role="img" aria-label="Descifrados correctos y fallidos por día">
-            {report.daily.map(d=><div className="admin-chart-day" key={d.date}>
-              <div className="admin-chart-bars" title={d.date+": "+d.successfulDecodes+" correctos, "+d.failedDecodes+" fallidos"}>
-                <span className="admin-chart-success" style={{height:Math.max(0,d.successfulDecodes/max*100)+"%"}}/>
-                <span className="admin-chart-failed" style={{height:Math.max(0,d.failedDecodes/max*100)+"%"}}/>
-              </div>
-              <small>{d.date.slice(5)}</small>
-            </div>)}
-          </div>}
-          <p className="muted">Correctos / Fallidos. Los contadores excluyen archivos, contraseñas, IPs y resultados.</p>
-        </section>
-        <section className="admin-card admin-report-card"><h2>Descifrados por extensión</h2>
-          <div className="admin-table-wrap"><table className="admin-table"><thead><tr>
-            <th>Formato</th><th>Intentos</th><th>Correctos</th><th>Fallidos</th><th>Éxito</th>
-          </tr></thead><tbody>
-          {report.extensions.map(f=><tr key={f.extension}>
-            <th scope="row">{f.extension==="other"?"Otros / no reconocidos":"."+f.extension}</th>
-            <td>{fmt.format(f.attempts)}</td><td>{fmt.format(f.successfulDecodes)}</td>
-            <td>{fmt.format(f.failedDecodes)}</td><td>{f.attempts?Math.round(100*f.successfulDecodes/f.attempts)+" %":"—"}</td>
-          </tr>)}
-          {!report.extensions.length&&<tr><td colSpan={5}>Sin operaciones registradas</td></tr>}
-          </tbody></table></div>
-        </section>
-      </>:<>
-        <section className="admin-card admin-report-card"><h2>Extensiones que requieren revisión</h2>
-          <p className="muted">Ordenadas por fallos observados en el periodo.</p>
-          <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Extensión</th><th>Fallidos</th><th>Correctos</th><th>Tasa de fallo</th></tr></thead><tbody>
-          {[...report.extensions].filter(f=>f.failedDecodes>0).sort((a,b)=>b.failedDecodes-a.failedDecodes).map(f=><tr key={f.extension}>
-            <th scope="row">{f.extension==="other"?"Otros / desconocidos":"."+f.extension}</th>
-            <td>{fmt.format(f.failedDecodes)}</td><td>{fmt.format(f.successfulDecodes)}</td>
-            <td>{Math.round(f.failedDecodes/f.attempts*100)} %</td></tr>)}
-          {!report.extensions.some(f=>f.failedDecodes>0)&&<tr><td colSpan={4}>No hay fallos registrados</td></tr>}
-          </tbody></table></div>
-        </section>
-        <section className="admin-card admin-report-card"><h2>Motivos de error</h2>
-          <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Motivo</th><th>Código</th><th>Casos</th></tr></thead><tbody>
-          {report.errors.map(e=><tr key={e.code}><td>{ErrorMeaning[e.code]||e.code.replaceAll("_"," ")}</td><td><code>{e.code}</code></td><td>{fmt.format(e.count)}</td></tr>)}
-          {!report.errors.length&&<tr><td colSpan={3}>Sin errores</td></tr>}
-          </tbody></table></div>
-        </section>
-        <section className="admin-card admin-report-card"><h2>Fallos específicos por extensión</h2>
-          <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Extensión</th><th>Error</th><th>Casos</th></tr></thead><tbody>
-          {report.incidents.map((e,i)=><tr key={e.extension+":"+e.code+":"+i}><td>{e.extension}</td><td>{ErrorMeaning[e.code]||e.code}</td><td>{fmt.format(e.count)}</td></tr>)}
-          {!report.incidents.length&&<tr><td colSpan={3}>Sin incidencias</td></tr>}
-          </tbody></table></div>
-        </section>
-      </>}
-    </>}
-  </section>;
+const channels=[
+ ["files","Archivos y textos"],
+ ["httpInjector","HTTP Injector Cloud"],
+ ["serverVpn","Server VPN"]
+];
+function Rate({success,failed,attempts}){
+ const total=attempts??(success+failed);
+ return <span>{total?Math.round(success/total*100)+" %":"—"}</span>;
+}
+function DailyLine({days}){
+ const max=Math.max(1,...days.map(d=>d.successfulDecodes),...days.map(d=>d.failedDecodes));
+ const points=key=>days.map((d,i)=>{
+  const x=18+(days.length===1?0:i*664/(days.length-1));
+  const y=165-d[key]/max*138;
+  return [x,y];
+ });
+ const path=key=>points(key).map(([x,y],i)=>(i===0?"M ":"L ")+x.toFixed(1)+" "+y.toFixed(1)).join(" ");
+ const sums=days.reduce((total,d)=>total+d.successfulDecodes+d.failedDecodes,0);
+ return <section className="admin-card admin-report-card">
+  <div className="sp-admin-section-heading"><div><h2>Actividad de descifrado</h2><p className="muted">Serie por día · UTC</p></div>
+   <div className="sp-admin-legend"><span><i className="sp-admin-key-success"/> Correctos</span><span><i className="sp-admin-key-error"/> Fallidos</span></div>
+  </div>
+  {sums===0?<p className="muted">Todavía no hay descifrados registrados durante este intervalo.</p>:
+   <div className="sp-admin-line-chart">
+    <svg viewBox="0 0 700 190" role="img" aria-label="Serie temporal de descifrados correctos y fallidos" preserveAspectRatio="none">
+     {[35,80,125,165].map(y=><line key={y} x1="18" y1={y} x2="682" y2={y} stroke="#313131" strokeWidth="1"/>)}
+     <path d={path("successfulDecodes")} stroke="#f7f7f7" strokeWidth="3" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+     <path d={path("failedDecodes")} stroke="#888888" strokeWidth="2.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+     {days.length===1&&points("successfulDecodes").map(([x,y],i)=><circle key={i} cx={x} cy={y} r="5" fill="#f7f7f7"/>)}
+    </svg>
+    <div className="sp-admin-chart-labels">{days.map(d=><small key={d.date}>{d.date.slice(5)}</small>)}</div>
+   </div>}
+ </section>;
+}
+function HourlyBars({hours}){
+ const max=Math.max(1,...hours.map(h=>h.successfulDecodes+h.failedDecodes));
+ const total=hours.reduce((n,h)=>n+h.successfulDecodes+h.failedDecodes,0);
+ return <section className="admin-card admin-report-card">
+  <div className="sp-admin-section-heading"><div><h2>Actividad de las últimas 48 horas</h2><p className="muted">Intervalos horarios · UTC · equivalente al gráfico de tiempo real de YouTube Studio</p></div></div>
+  {total===0?<p className="muted">La gráfica aparecerá cuando se registren nuevas operaciones con el contador horario.</p>:
+   <div className="sp-admin-hourly-scroll"><div className="sp-admin-hourly" role="img" aria-label="Número de solicitudes procesadas por hora durante las últimas 48 horas">
+    {hours.map((h,i)=><div className="sp-admin-hour" key={h.hour} title={h.hour+": "+(h.successfulDecodes+h.failedDecodes)+" operaciones"}
+     style={{height:Math.max(1,(h.successfulDecodes+h.failedDecodes)/max*100)+"%"}}>
+     {(i%8===0)&&<span>{h.hour.slice(11,13)}h</span>}
+    </div>)}
+   </div></div>}
+  <small className="muted">Retención limitada. Las cifras anteriores al despliegue de esta telemetría no se reconstruyen.</small>
+ </section>;
+}
+function FormatTable({rows,empty,onReset,busy=false}){
+ return <div className="admin-table-wrap"><table className="admin-table">
+  <thead><tr><th>Formato / proveedor</th><th>Usos históricos</th><th>Correctos</th><th>Errores nuevos</th><th>Advertencias</th><th>Éxito</th>{onReset&&<th>Reiniciar</th>}</tr></thead>
+  <tbody>{rows.map(row=><tr key={row.extension}>
+   <th scope="row">{row.extension.startsWith("vpn-")?row.extension.slice(4):row.extension==="nur-catalog"?"NUR Tunnel":row.extension==="other"?"No reconocido":row.extension==="text"?"Texto":row.extension==="ehi"?"HTTP Injector Cloud":"."+row.extension}</th>
+   <td>{number.format(row.attempts)}</td><td>{number.format(row.successfulDecodes)}</td>
+   <td>{number.format(row.failedDecodes)}</td><td>{number.format(row.warnings||0)}</td><td><Rate success={row.successfulDecodes} failed={row.failedDecodes} attempts={row.attempts}/></td>{onReset&&<td><button type="button" className="button subtle" disabled={busy} onClick={()=>onReset(row.extension)} aria-label={"Reiniciar errores: "+row.extension}>Reiniciar errores</button></td>}
+  </tr>)}
+  {!rows.length&&<tr><td colSpan={onReset?7:6}>{empty||"Sin operaciones registradas"}</td></tr>}
+  </tbody></table></div>;
+}
+function CategoryTable({name,rows,onReset,busy}){
+ return <section className="admin-card admin-report-card"><div className="sp-admin-section-heading"><div><h2>{name}</h2><p className="muted">Motor o proveedor · resultados procesados</p></div></div>
+  <FormatTable rows={rows} onReset={onReset} busy={busy}/>
+ </section>;
+}
+function Incidents({report,onReset,busy}){
+ const all=report.extensions||[];
+ const vpn=all.filter(x=>x.extension.startsWith("vpn-")||x.extension==="nur-catalog");
+ const ehi=all.filter(x=>x.extension==="ehi");
+ const files=all.filter(x=>!vpn.includes(x)&&!ehi.includes(x));
+ const errorSections=(report.serviceErrors||[]).length?[
+   ["Archivos y textos","files"],["HTTP Injector Cloud","httpInjector"],["Server VPN","serverVpn"]
+ ]:[];
+ return <>
+  <CategoryTable name="Archivos y textos" rows={files} onReset={onReset} busy={busy}/>
+  <CategoryTable name="HTTP Injector Cloud" rows={ehi} onReset={onReset} busy={busy}/>
+  <CategoryTable name="Servidores VPN" rows={vpn} onReset={onReset} busy={busy}/>
+  {errorSections.map(([name,id])=><section className="admin-card admin-report-card" key={id}>
+   <h2>Errores · {name}</h2>
+   <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Motivo</th><th>Código seguro</th><th>Incidentes</th></tr></thead>
+   <tbody>{(report.serviceErrors||[]).filter(x=>x.service===id).map(e=><tr key={e.code}>
+    <td>{ErrorNames[e.code]||e.code.replaceAll("_"," ")}</td><td><code>{e.code}</code></td><td>{number.format(e.count)}</td>
+   </tr>)}
+   {!(report.serviceErrors||[]).some(x=>x.service===id)&&<tr><td colSpan={3}>No se registraron errores de este servicio.</td></tr>}
+   </tbody></table></div>
+  </section>)}
+  <section className="admin-card admin-report-card"><h2>Incidencias por extensión y código</h2>
+   <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Formato</th><th>Error</th><th>Casos</th></tr></thead>
+   <tbody>{(report.incidents||[]).map((e,i)=><tr key={e.extension+":"+e.code+":"+i}><td>{e.extension}</td><td>{ErrorNames[e.code]||e.code}</td><td>{number.format(e.count)}</td></tr>)}
+   {!report.incidents?.length&&<tr><td colSpan={3}>No hay errores registrados.</td></tr>}</tbody></table></div>
+  </section>
+ </>;
+}
+function RankedBars({title,subtitle,rows,empty="Sin datos suficientes"}) {
+ const top=rows.slice(0,10),max=Math.max(1,...top.map(x=>x.value));
+ return <section className="admin-card admin-report-card">
+  <div className="sp-admin-section-heading"><div><h2>{title}</h2><p className="muted">{subtitle}</p></div></div>
+  {!top.length?<p className="muted">{empty}</p>:<div className="sp-admin-ranked">
+   {top.map(x=><div className="sp-admin-ranked-row" key={x.label}>
+    <div className="sp-admin-ranked-head"><span>{x.label}</span><strong>{number.format(x.value)}</strong></div>
+    <div className="sp-admin-ranked-track"><span style={{width:(x.value/max*100)+"%"}}/></div>
+   </div>)}
+  </div>}
+ </section>;
+}
+export default function AdminReport({view="analytics"}){
+ const [days,setDays]=useState(7),[report,setReport]=useState(null);
+ const [loading,setLoading]=useState(true),[error,setError]=useState(""),[resetBusy,setResetBusy]=useState(false),[resetNote,setResetNote]=useState("");
+ const router=useRouter();
+ const refresh=useCallback(async signal=>{
+  setLoading(true);
+  try{
+   const response=await fetch("/api/admin/reports?days="+days,{cache:"no-store",credentials:"same-origin",signal});
+   if(response.status===401){router.replace("/admin/login");return;}
+   if(!response.ok)throw Error("No se pudo consultar el informe ("+response.status+").");
+   const json=await response.json();
+   if(json.status!=="ok"||!json.report)throw Error("Respuesta inválida del servidor.");
+   setReport(json.report);setError("");
+  }catch(err){if(err.name!=="AbortError")setError(err.message||"No se pudo cargar.");}
+  finally{if(!signal?.aborted)setLoading(false);}
+ },[days,router]);
+ useEffect(()=>{const ac=new AbortController();refresh(ac.signal);return()=>ac.abort();},[refresh]);
+ async function resetErrors(extension=null){
+  if(resetBusy)return;
+  const label=extension===null?"TODOS los errores visibles":'los errores de "'+extension+'"';
+  if(!window.confirm("¿Reiniciar "+label+"? Los éxitos, las advertencias y el histórico de usos se conservarán. Los nuevos errores volverán a aparecer."))return;
+  setResetBusy(true);setResetNote("");
+  try{
+   const response=await fetch("/api/admin/errors/reset",{
+    method:"POST",credentials:"same-origin",cache:"no-store",
+    headers:{"Content-Type":"application/json","X-SPDecode-Admin-Action":"1"},
+    body:JSON.stringify(extension===null?{scope:"all"}:{scope:"format",format:extension}),
+   });
+   if(response.status===401){router.replace("/admin/login");return;}
+   const json=await response.json();
+   if(!response.ok||json.status!=="ok")throw Error("No se pudo reiniciar: "+(json.error?.code||response.status));
+   setResetNote("Reinicio aplicado en UTC "+new Date(json.reset.at).toLocaleString("es-MX",{timeZone:"UTC"})+
+    ". Formatos afectados: "+json.reset.formatsReset+".");
+   await refresh();
+  }catch(e){setResetNote(e.message||"Error al reiniciar");}
+  finally{setResetBusy(false);}
+ }
+ const services=report?.serviceBreakdown||[];
+ const allFormats=report?.extensions||[];
+ const vpnFormats=allFormats.filter(x=>x.extension.startsWith("vpn-")||x.extension==="nur-catalog");
+ const fileFormats=allFormats.filter(x=>!x.extension.startsWith("vpn-")&&x.extension!=="nur-catalog"&&x.extension!=="ehi"&&x.extension!=="text"&&x.extension!=="other");
+ const rowsFor=list=>list.map(x=>({label:x.extension.replace(/^vpn-/,""),value:x.attempts}))
+   .sort((a,b)=>b.value-a.value||a.label.localeCompare(b.label));
+ return <section className="sp-admin-report">
+  <div className="admin-report-toolbar">
+   <div className="admin-range" role="group" aria-label="Periodo estadístico">
+    <button type="button" aria-pressed={days===1} onClick={()=>setDays(1)}>Hoy · UTC</button>
+    <button type="button" aria-pressed={days===7} onClick={()=>setDays(7)}>Últimos 7 días</button>
+   </div>
+   <div className="sp-admin-toolbar-actions"><button type="button" className="button subtle" disabled={loading||resetBusy} onClick={()=>resetErrors()}>Reiniciar todos los errores</button>
+    <button type="button" className="button subtle" onClick={()=>refresh()} disabled={loading||resetBusy}>Actualizar datos</button></div>
+  </div>
+  {error&&<div className="form-message error" role="alert">{error}</div>}
+  {resetNote&&<p role="status" className="muted">{resetNote}</p>}
+  {loading&&<p className="muted" role="status">Consultando estadísticas…</p>}
+  {report&&<>
+   {view!=="overview"&&<div className="admin-metric-grid">
+    <article className="admin-card"><span className="muted">Procesamientos</span><strong>{number.format(report.totalDecodes)}</strong></article>
+    <article className="admin-card"><span className="muted">Correctos</span><strong>{number.format(report.successfulDecodes)}</strong></article>
+    <article className="admin-card"><span className="muted">Errores desde el reinicio</span><strong>{number.format(report.failedDecodes)}</strong></article>
+    <article className="admin-card"><span className="muted">Advertencias de compatibilidad</span><strong>{number.format(report.warnings||0)}</strong></article>
+    <article className="admin-card"><span className="muted">Entrada procesada</span><strong>{size(report.inputBytes)}</strong></article>
+   </div>}
+   <p className="muted">Retención de {report.retentionDays} días. No se guardan archivos, contenidos, credenciales ni IP. Reiniciar errores ajusta solo su línea base por producto, preserva usos, éxitos y advertencias. La gráfica horaria representa el histórico bruto y puede contener fallos anteriores a un reinicio; utiliza las tablas de errores nuevos para confirmar correcciones.</p>
+   {(report.resets||[]).length>0&&<p className="muted">Reinicios activos por formato: {report.resets.length}. Los errores anteriores al último reinicio quedan excluidos de los indicadores actuales hasta vencer la retención.</p>}
+   {view!=="reports"?<>
+    <DailyLine days={report.daily||[]}/>
+    <HourlyBars hours={report.hourlyLast48||[]}/>
+    <div className="sp-admin-charts-grid"><RankedBars title="Extensiones más utilizadas" subtitle="Top 10 · operaciones reales, incluidos los resultados previos al reinicio" rows={rowsFor(fileFormats)}/>
+     <RankedBars title="Catálogos Server VPN más utilizados" subtitle="Top 10 · proveedores y catálogos solicitados" rows={rowsFor(vpnFormats)}/>
+     <RankedBars title="Códigos de error nuevos" subtitle="Solo errores posteriores al último reinicio" rows={(report.errors||[]).map(x=>({label:ErrorNames[x.code]||x.code,value:x.count}))}/>
+     <RankedBars title="Advertencias y versiones no compatibles" subtitle="No equivalen a fallos de infraestructura" rows={(report.warningCodes||[]).map(x=>({label:ErrorNames[x.code]||x.code,value:x.count}))}/></div>
+    <section className="admin-card admin-report-card"><h2>Operaciones por servicio</h2>
+     <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Servicio</th><th>Correctos</th><th>Fallidos</th><th>Éxito</th></tr></thead>
+      <tbody>{channels.map(([id,name])=>{const item=services.find(x=>x.service===id)||{successfulDecodes:0,failedDecodes:0};return <tr key={id}>
+       <th scope="row">{name}</th><td>{number.format(item.successfulDecodes)}</td><td>{number.format(item.failedDecodes)}</td>
+       <td><Rate success={item.successfulDecodes} failed={item.failedDecodes} attempts={item.attempts}/></td>
+      </tr>;})}</tbody>
+     </table></div>
+    </section>
+    {view==="analytics"&&<CategoryTable name="Desglose por extensión y proveedor" rows={report.extensions||[]} onReset={resetErrors} busy={resetBusy}/>}
+   </>:<Incidents report={report} onReset={resetErrors} busy={resetBusy}/>}
+  </>}
+ </section>;
 }

@@ -174,6 +174,40 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
         val appPath = "com/ghostdeveloper/spdecode/SpDecodeApp.kt"
         val activityPath = "com/ghostdeveloper/spdecode/MainActivity.kt"
         var app = originalRoot.file("SpDecodeApp.kt").asFile.readText(Charsets.UTF_8)
+        // The C0 AMOLED UI file remains byte-for-byte frozen. Only the
+        // generated Cloud variant gets remotely synchronized format data.
+        app = replaceOnce(app,
+            "    serverVpnApps:List<ServerVpnApp> = emptyList(),",
+            "    serverVpnApps:List<ServerVpnApp> = emptyList(),\n    fileFormats:List<AndroidDecoderCatalog.Format> = emptyList(),")
+        app = replaceOnce(app,
+            "2->FormatsScreen()",
+            "2->FormatsScreen(fileFormats)")
+        app = replaceOnce(app,
+            "private fun FormatsScreen() {",
+            "private fun FormatsScreen(remoteFormats:List<AndroidDecoderCatalog.Format>) {")
+        app = replaceOnce(app,
+            "    val formats = remember(context) { AndroidDecoderCatalog.read(context) }",
+            "    val formats = if(BuildConfig.SPDECODE_CLOUD_ENABLED && remoteFormats.isNotEmpty())\n" +
+            "        remoteFormats else remember(context) { AndroidDecoderCatalog.read(context) }")
+        app = replaceOnce(app,
+            "(formats + listOfNotNull(AndroidDecoderCatalog.detect(\"preview.solid\",formats)))",
+            "(formats + if(BuildConfig.SPDECODE_CLOUD_ENABLED && remoteFormats.isNotEmpty())\n" +
+            "            emptyList() else listOfNotNull(AndroidDecoderCatalog.detect(\"preview.solid\",formats)))")
+        app = replaceOnce(app,
+            "Text(stringResource(R.string.catalog_note), fontSize = 13.sp,",
+            "Text(stringResource(if(BuildConfig.SPDECODE_CLOUD_ENABLED && remoteFormats.isNotEmpty())\n" +
+            "            R.string.formats_remote_catalog_note else R.string.catalog_note), fontSize = 13.sp,")
+        app = replaceOnce(app,
+            "stringResource(\n                            if (extensions.all { it.isPending })",
+            "stringResource(\n                            if(BuildConfig.SPDECODE_CLOUD_ENABLED && remoteFormats.isNotEmpty())\n" +
+            "                                R.string.formats_cloud_ready_short\n" +
+            "                            else if (extensions.all { it.isPending })")
+        app = replaceOnce(app,
+            "showServerVpnRefresh=activeTab==3 && BuildConfig.SPDECODE_CLOUD_ENABLED",
+            "showServerVpnRefresh=(activeTab==2 || activeTab==3) && BuildConfig.SPDECODE_CLOUD_ENABLED")
+        app = replaceOnce(app,
+            "if(activeTab==3 && pendingServerVpnCatalogVersion!=null && !busy) AlertDialog(",
+            "if((activeTab==2 || activeTab==3) && pendingServerVpnCatalogVersion!=null && !busy) AlertDialog(")
         app = replaceOnce(app,
             "    onDeleteSelected:(Set<String>)->Unit,\n    onFavorite:",
             "    onDeleteSelected:(Set<String>)->Unit,\n    onExportHistory:(DecodeView)->Unit,\n    onFavorite:")
@@ -211,10 +245,69 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
                                 onExport={onExportHistory(entry)},
                                 onDelete={deletingAll=false;deletion=setOf(entry.id)},
                             )""")
+        // C0 SpDecodeApp is immutable. Informational notices are injected
+        // ONLY into the Cloud variant, along with matching MainActivity args.
+        app = replaceOnce(app,
+            "    onDismissError:()->Unit,",
+            "    onDismissError:()->Unit,\n    noticeOnly:Boolean=false,".replace("\n","\n"))
         app = replaceOnce(app,
             "title={Text(stringResource(R.string.decode_notice_title))}",
-            "title={Text(stringResource(R.string.cloud_failure_notice_title))}")
+            "title={Text(stringResource(if(noticeOnly) " +
+                "R.string.cloud_failure_notice_title else R.string.decode_notice_title))}")
+        app = replaceOnce(app,
+            """            dismissButton={TextButton(onClick={
+                if(canReportError)onReportError()
+                else {
+                    onDismissError()
+                    onExternalLink("https://t.me/Gh0stDeveloper")
+                }
+            }) {
+                Text(stringResource(if(canReportError)R.string.cloud_report_action
+                    else R.string.decode_notice_contact),color=White)
+            }},""",
+            """            dismissButton={
+                if(!noticeOnly) TextButton(onClick={
+                    if(canReportError)onReportError()
+                    else {
+                        onDismissError()
+                        onExternalLink("https://t.me/Gh0stDeveloper")
+                    }
+                }) {
+                    Text(stringResource(if(canReportError)R.string.cloud_report_action
+                        else R.string.decode_notice_contact),color=White)
+                }
+            },""")
         var activity = originalRoot.file("MainActivity.kt").asFile.readText(Charsets.UTF_8)
+        activity = replaceOnce(activity,
+            "                serverVpnApps=serverVpnApps,",
+            "                serverVpnApps=serverVpnApps,\n                fileFormats=fileFormats,")
+        activity = replaceOnce(activity,
+            "                error=message,",
+            "                error=message,\n                noticeOnly=messageIsCredentialNotice,")
+        // In Cloud builds, the Formats screen must display the last cached
+        // remote inventory regardless of the user's automatic-sync setting.
+        activity = replaceOnce(activity,
+            "if(newTab==2 && CloudCatalogUpdates.enabled(this@MainActivity))\n                        refreshServerVpn()",
+            "if(newTab==2)refreshServerVpn()")
+        // Android 15/16: Cloud builds opt into edge-to-edge on older devices too.
+        // The original C0 UI sources stay byte-for-byte unchanged.
+        activity = replaceOnce(activity,
+            "import androidx.activity.ComponentActivity",
+            "import androidx.activity.ComponentActivity\n" +
+                "import androidx.activity.SystemBarStyle\n" +
+                "import androidx.activity.enableEdgeToEdge")
+        activity = replaceOnce(activity,
+            """        @Suppress("DEPRECATION")
+        window.statusBarColor=android.graphics.Color.BLACK
+        @Suppress("DEPRECATION")
+        window.navigationBarColor=android.graphics.Color.BLACK
+        window.decorView.systemUiVisibility=0""",
+            """        // Edge-to-edge is explicit for API 24-34 and enforced for API 35+.
+        // SpDecodeApp's safeDrawingPadding() prevents toolbar and tabs overlap.
+        enableEdgeToEdge(
+            statusBarStyle=SystemBarStyle.dark(android.graphics.Color.TRANSPARENT),
+            navigationBarStyle=SystemBarStyle.dark(android.graphics.Color.TRANSPARENT),
+        )""")
         activity = replaceOnce(activity,
             "    private var stagedExport:String?=null",
             "    private var stagedExport:String?=null\n" +
@@ -232,7 +325,7 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
                 largeResultWarning=showLargeResultWarning,
                 onDismissLargeResultWarning={showLargeResultWarning=false},""")
         activity = replaceOnce(activity,
-            "    private fun decodeText(userText:String) {",
+            "    private fun decodeText(userText:String,password:ByteArray?=null) {",
             """    // Large JSON documents must never be parsed eagerly by the preview.
     // The complete result is already saved in encrypted history.
     private fun presentDecodedRecord(entry:DecodeView, stored:Boolean):Boolean {
@@ -247,7 +340,7 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
         return large
     }
 
-    private fun decodeText(userText:String) {""")
+    private fun decodeText(userText:String,password:ByteArray?=null) {""")
         // Dedicated replacements preserve the original flows on all formats.
         fun updateResultBlock(start:String,end:String,entry:String,saved:String):Unit {
             val from=activity.indexOf(start)
@@ -261,7 +354,7 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
             section=replaceOnce(section,"                tab=0","                tab=if(previewDeferred)1 else 0")
             activity=activity.substring(0,from)+section+activity.substring(to)
         }
-        updateResultBlock("    private fun decodeText(userText:String) {",
+        updateResultBlock("    private fun decodeText(userText:String,password:ByteArray?=null) {",
             "    private fun decodeCloud(reference:String) {","record","stored")
         updateResultBlock("    private fun decodeCloud(reference:String) {",
             "    private fun decodeNurServers() {","record","stored")
@@ -281,14 +374,60 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
         var batch=activity.substring(batchStart,batchEnd)
         // QA-only failures report sanitized status codes locally to the tester.
         // Never display user payloads, full filenames, credentials or exceptions.
+        // Re-read the encrypted catalog for every user-initiated batch.
+        // A background worker can update it while the Activity is alive.
+        batch=replaceOnce(batch,
+            "                historyLoad?.await()\n                var failedNpvs=false",
+            """                historyLoad?.await()
+                var latestFileFormats=if(BuildConfig.SPDECODE_CLOUD_ENABLED)
+                    serverVpnCatalog.cachedFormats().also { fileFormats=it }
+                else emptyList()
+                var checkedUnknownSuffix=false
+                var failedNpvs=false""")
+        // Only opted-in devices refresh automatically on an unknown suffix.
+        // Otherwise the user can manually update the catalog in Formats.
+        batch=replaceOnce(batch,
+            """                    val supported=(if(BuildConfig.SPDECODE_CLOUD_ENABLED &&
+                        fileFormats.isNotEmpty())
+                        AndroidDecoderCatalog.detect(routingName,fileFormats)
+                    else null)""",
+            """                    var remoteFormat=if(BuildConfig.SPDECODE_CLOUD_ENABLED)
+                        AndroidDecoderCatalog.detect(routingName,latestFileFormats) else null
+                    if(BuildConfig.SPDECODE_CLOUD_ENABLED && remoteFormat==null &&
+                        !checkedUnknownSuffix && CloudCatalogUpdates.enabled(this@MainActivity)) {
+                        checkedUnknownSuffix=true
+                        try {
+                            serverVpnApps=serverVpnCatalog.refreshIfDue(force=true)
+                            latestFileFormats=serverVpnCatalog.cachedFormats()
+                            fileFormats=latestFileFormats
+                            remoteFormat=AndroidDecoderCatalog.detect(routingName,latestFileFormats)
+                        }catch(error:CancellationException){throw error}
+                         catch(_:Exception){ /* Keep the last verified snapshot. */ }
+                    }
+                    val supported=remoteFormat""")
+        batch=replaceOnce(batch,
+            "cloudClient.decodeFile(supported.suffix,input,password=secret)",
+            """cloudClient.decodeFile(supported.suffix,input,password=secret,
+                                    allowPasswordFromCatalog="password" in supported.credentialFields)""")
+        batch=replaceOnce(batch,
+            "cloudPassword?:hcPassword,hcHwid)",
+            """cloudPassword?:hcPassword,hcHwid,
+                                allowPasswordFromCatalog="password" in supported.credentialFields)""")
+        batch=replaceOnce(batch,
+            "CloudCredentialPolicy.fileNeedsPasswordDialog(supported.suffix) &&",
+            """(CloudCredentialPolicy.fileNeedsPasswordDialog(supported.suffix) ||
+                                (supported.suffix!="hc" &&
+                                 "password" in supported.credentialFields)) &&""")
         batch=replaceOnce(batch,"                var failedProtectedHc=false",
             "                var failedProtectedHc=false\n" +
                 "                val qaFailures=mutableListOf<String>()\n" +
                 "                val cloudFailureMessages=mutableListOf<String>()")
-        batch=replaceOnce(batch,"                    onFailure={uri,_-> ",
-            "                    onFailure={uri,cause-> ")
+        // MainActivity already passes (uri,cause) to the import callback.
+        require(batch.contains("                    onFailure={uri,cause->")) {
+            "Cloud batch diagnostic callback missing"
+        }
         batch=replaceOnce(batch,
-            "                        if(!BuildConfig.SPDECODE_CLOUD_ENABLED &&",
+            "                        if(ImportFilenameNormalizer.forDetection(prepared?.filename?:filename)\n                            .endsWith(\".npvs\",ignoreCase=true) &&",
             """                        if(BuildConfig.SPDECODE_QA_BUILD) {
                             val ext=filename.substringAfterLast('.', "file").lowercase()
                                 .filter { it.isLetterOrDigit() }.take(12).ifBlank { "file" }
@@ -308,10 +447,16 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
                             }
                             qaFailures.add(ext + ": " + code)
                         }
-                        cloudFailureMessages.add(
-                            com.ghostdeveloper.spdecode.cloud.CloudUserErrors.message(
-                                this@MainActivity,cause))
-                        if(!BuildConfig.SPDECODE_CLOUD_ENABLED &&""")
+                        // Unsupported formats are expected compatibility
+                        // outcomes, not additional generic errors.
+                        if(!(cause is DecodeFailure && cause.stringId==R.string.unsupported) &&
+                            (cause as? CloudDecodeClient.Failure)?.code!="UNSUPPORTED_FORMAT") {
+                            cloudFailureMessages.add(
+                                com.ghostdeveloper.spdecode.cloud.CloudUserErrors.message(
+                                    this@MainActivity,cause))
+                        }
+                        if(ImportFilenameNormalizer.forDetection(prepared?.filename?:filename)
+                            .endsWith(".npvs",ignoreCase=true) &&""")
         batch=replaceOnce(batch,"                    message=when {",
             """                    val qaDetails=if(BuildConfig.SPDECODE_QA_BUILD && qaFailures.isNotEmpty())
                         "\nQA: " + qaFailures.take(12).joinToString(" | ") else ""
@@ -324,7 +469,7 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
             "                        else->summary+qaDetails\n                    }\n                    tab=0",
             """                        else->summary+qaDetails
                     }
-                    if(cloudFailureMessages.isNotEmpty()) {
+                    if(!messageIsCredentialNotice && cloudFailureMessages.isNotEmpty()) {
                         message=message + "\n\n" +
                             cloudFailureMessages.distinct().take(3).joinToString("\n")
                     }
@@ -376,6 +521,16 @@ val prepareCloudAssets = tasks.register<Sync>("prepareCloudAssets") {
     // No encrypted vault files, generated runtime vault key, network provider
     // endpoints, profile tables or other original decoder source materials.
     from("src/main/assets/decoder_catalog.json")
+    // Google package-name ownership proof is a temporary CI-only APK. It is
+    // NEVER included in ordinary Play AABs, external beta APKs or debug APKs.
+    if (providers.environmentVariable("SPDECODE_ADI_VERIFICATION_BUILD").orNull == "true") {
+        require(enableCloud) { "Package ownership proof requires a Cloud build" }
+        val proof=file("src/main/assets/adi-registration.properties")
+        require(proof.isFile && proof.length() in 16L..128L) {
+            "Missing ephemeral Play Console package-ownership identifier"
+        }
+        from(proof)
+    }
     into(cloudAssetRoot)
 }
 
@@ -385,19 +540,24 @@ android {
         // Cloud source inputs are isolated from all 107 local engine classes.
         sourceSets.getByName("main").java.setSrcDirs(listOf(cloudSourceRoot))
         sourceSets.getByName("main").assets.setSrcDirs(listOf(cloudAssetRoot))
+        // The Cloud binary deliberately excludes local decoder implementations.
+        // Compile only Cloud instrumentation; historical offline suites use the
+        // legacy test source set and would reference absent local engines.
+        sourceSets.getByName("androidTest").java.setSrcDirs(
+            listOf(file("src/cloudAndroidTest/java")))
     } else {
         // Non-distributed legacy baseline only, to protect historical CI.
         sourceSets.getByName("main").assets.setSrcDirs(listOf(vaultPackagedAssets))
         sourceSets.getByName("main").java.srcDir(vaultGeneratedKotlin)
     }
-    compileSdk = 35
+    compileSdk = 36
     ndkVersion = "27.2.12479018"
     defaultConfig {
         applicationId = "com.ghostdeveloper.spdecode"
         minSdk = 24
-        targetSdk = 35
-        versionCode = 25
-        versionName = "1.1.4"
+        targetSdk = 36
+        versionCode = 30
+        versionName = "1.1.19"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // A public API origin is not a secret; all server secrets stay in the VPS.
         buildConfigField("boolean", "SPDECODE_CLOUD_ENABLED", enableCloud.toString())
@@ -408,7 +568,7 @@ android {
                 arguments += "-DSPDECODE_CLOUD_ORIGIN=$cloudOrigin"
             }
         }
-        resourceConfigurations += listOf("en", "es", "pt-rBR", "ar", "fa", "fr", "in", "ru", "de")
+        resourceConfigurations += listOf("en", "es", "pt-rBR", "ar", "fa", "fr", "in", "ru", "de", "tr", "vi", "hi", "ja", "it")
     }
     buildFeatures { compose = true; buildConfig = true }
     externalNativeBuild {
@@ -447,6 +607,7 @@ android {
     buildTypes {
         debug {
             buildConfigField("String", "TRUSTED_SIGNER_SHA256", "\"\"")
+            buildConfigField("String", "PLAY_APP_SIGNER_SHA256", "\"\"")
         }
         release {
             // R8 shrinks/obfuscates release code only; debug retains readable
@@ -462,6 +623,13 @@ android {
                 "Invalid trusted release signer fingerprint"
             }
             buildConfigField("String", "TRUSTED_SIGNER_SHA256", "\"$trustedSha\"")
+            // Google Play may sign installs with a distinct app-signing certificate.
+            val playSigner=providers.environmentVariable("SPDECODE_PLAY_APP_SIGNER_SHA256").orNull
+                .orEmpty().lowercase()
+            require(playSigner.isEmpty() || playSigner.matches(Regex("[0-9a-f]{64}"))) {
+                "Invalid Play App Signing certificate SHA-256"
+            }
+            buildConfigField("String", "PLAY_APP_SIGNER_SHA256", "\"$playSigner\"")
             signingConfig=signingConfigs.findByName("production")
         }
     }
@@ -482,6 +650,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.13.1")
     // Classic Play Integrity nonce flow; the verdict is verified in C3 server-side.
     implementation("com.google.android.play:integrity:1.6.0")
+    implementation("androidx.work:work-runtime-ktx:2.10.4")
     // Lightweight Argon2id + XChaCha20-Poly1305 primitives for standard .ehi.
     if (!enableCloud) implementation("org.bouncycastle:bcprov-jdk18on:1.86")
     implementation("androidx.activity:activity-ktx:1.10.1")

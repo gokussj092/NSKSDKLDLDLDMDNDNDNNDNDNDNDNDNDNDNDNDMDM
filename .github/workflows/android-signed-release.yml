@@ -109,7 +109,7 @@ jobs:
           set -euo pipefail
           MANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -n 1)"
           test -x "$MANAGER"
-          "$MANAGER" --install "platforms;android-35" "build-tools;35.0.0" "platform-tools"
+          "$MANAGER" --install "platforms;android-36" "build-tools;35.0.0" "platform-tools"
       - name: Generate the same audited local assets as validated by CI
         run: |
           set -euo pipefail

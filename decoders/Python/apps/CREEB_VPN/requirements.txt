@@ -1,0 +1,2 @@
+# Historical shared crev primitive imports Crypto; no native/JNI runtime needed.
+pycryptodome==3.23.0

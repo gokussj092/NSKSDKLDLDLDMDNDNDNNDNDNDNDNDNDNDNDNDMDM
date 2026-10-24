@@ -1,0 +1,20 @@
+{
+  "id": "npv-tunnel",
+  "name": "NPV Tunnel",
+  "package": "com.napsternetlabs.napsternetv",
+  "versionName": "124.0.37",
+  "versionCode": 577,
+  "engine": "python",
+  "entrypoint": "../../npvs.py",
+  "extensions": ["npvs"],
+  "implemented": ["v5 compact app-key 2 keyId 2", "v5 compact passphrase 1"],
+  "diagnosticOnly": ["v5/v6 compact recipient 0"],
+  "textDecoder": "text_decoder.py",
+  "textPrefixes": ["npvt://", "npvt-ssh://", "npvt-vless://", "npvt-vmess://", "npv://"],
+  "textRegistration": "cloud-worker-and-android-client-integrated-in-pr96",
+  "textApkConfirmed": ["npvt-ssh:// Base64 UTF8 JSON"],
+  "normalRealFileVerified": {"version": 5, "mode": 2, "recipients": 0, "authenticatedRecords": 20},
+  "credentials": ["password", "publicKey (diagnostic only)"],
+  "pending": ["recipient private key", "v6 decryption", "real examples of four requested text aliases"],
+  "deployment": "pending"
+}

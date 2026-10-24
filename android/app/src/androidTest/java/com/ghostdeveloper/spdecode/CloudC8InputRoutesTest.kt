@@ -3,6 +3,7 @@ package com.ghostdeveloper.spdecode
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ghostdeveloper.spdecode.cloud.CloudFileFormats
 import com.ghostdeveloper.spdecode.cloud.CloudTextFormats
+import com.ghostdeveloper.spdecode.cloud.CloudCredentialPolicy
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -15,6 +16,9 @@ import org.junit.runner.RunWith
 class CloudC8InputRoutesTest {
     @Test fun cloudFilesKeepExactWorkerSuffixes() {
         val supported=mapOf(
+            "export.AWG" to Pair("awg","AboWaged VPN 1.0"),
+            "profile.1FTNL" to Pair("1ftnl","1FTunnel 0.6.99"),
+            "export.TGV" to Pair("tgv","TunelGuard VPN 12.8"),
             "test.mtp" to Pair("mtp","My Tunnel Proxy"),
             "royal.ROY" to Pair("roy","Royal Tunnel VPN 7.0"),
             "export.ACTUN" to Pair("actun","AC TUNNEL VPN 1.4"),
@@ -29,6 +33,7 @@ class CloudC8InputRoutesTest {
             assertEquals(filename,"C8",format.migrationPhase)
             assertFalse(format.hasNativeDecoder)
         }
+        assertEquals("awg",CloudFileFormats.detect("content/folder/ملف VPN.awg")?.suffix)
         assertNull(CloudFileFormats.detect("test.mtp.bak"))
         assertNull(CloudFileFormats.detect("test-notmtp"))
         assertNull(CloudFileFormats.detect("file.actunnelvpn"))
@@ -36,6 +41,10 @@ class CloudC8InputRoutesTest {
 
     @Test fun cloudTextVendorLinksReachExactServerPrefixes() {
         val cases=mapOf(
+            "1FTnl.cipher" to Triple("oneftunnel","1ftnl","1FTunnel"),
+            "1FT1.cipher" to Triple("oneftunnel","1ftnl","1FTunnel"),
+            "1ftunnel://1FTnl/cipher" to Triple("oneftunnel","1ftnl","1FTunnel"),
+            "1ftunnel://1FT1/cipher" to Triple("oneftunnel","1ftnl","1FTunnel"),
             "mytunnelproxy://cipher" to Triple("mytunnelproxy","mtp","My Tunnel Proxy"),
             "MYTUNNELPROXY://cipher" to Triple("mytunnelproxy","mtp","My Tunnel Proxy"),
             "actunnelvpn://cipher" to Triple("actunnelvpn","actun","AC TUNNEL VPN"),
@@ -51,7 +60,44 @@ class CloudC8InputRoutesTest {
         }
         assertNull(CloudTextFormats.identify("mytunnelproxy://"))
         assertNull(CloudTextFormats.identify("actunnelvpn://"))
+        assertNull(CloudTextFormats.identify("1FTnl."))
+        assertNull(CloudTextFormats.identify("1ftnl.cipher"))
         assertNull(CloudTextFormats.identify("https://example.invalid"))
+    }
+
+    @Test fun npvTextAndCredentialRoutesAreExplicit() {
+        val prefixes=listOf("npvt://","npvt-ssh://","npvt-vless://",
+            "npvt-vmess://","npv://")
+        for(prefix in prefixes) {
+            val input=CloudTextFormats.identify(prefix+"YWJj")
+            assertNotNull(prefix,input)
+            assertEquals("npvs",input!!.suffix)
+            assertTrue(CloudCredentialPolicy.textAcceptsPassword(prefix+"YWJj"))
+            assertNull(CloudTextFormats.identify(prefix))
+        }
+        for(suffix in listOf("hc","ua","npvs","1ftnl","tut"))
+            assertTrue(CloudCredentialPolicy.fileAcceptsPassword(suffix))
+        assertFalse(CloudCredentialPolicy.fileNeedsPasswordDialog("hc"))
+        for(suffix in listOf("ua","npvs","1ftnl","tut"))
+            assertTrue(CloudCredentialPolicy.fileNeedsPasswordDialog(suffix))
+        assertFalse(CloudCredentialPolicy.fileAcceptsPassword("ehi"))
+        assertFalse(CloudCredentialPolicy.textAcceptsPassword("dns://YWJj"))
+        assertTrue(CloudCredentialPolicy.textAcceptsPassword("1FTnl.YWJj"))
+    }
+
+    @Test fun protectedV2BoxAndNpvsAppKeyAreClassifiedSeparately() {
+        val envelope="""{"magic":"v2box_export","isPasswordProtected":true,"nonce":"AAAAAAAAAAAAAAAA","tag":"AAAAAAAAAAAAAAAAAAAAAA==","ciphertext":"AQ=="}"""
+        assertTrue(com.ghostdeveloper.spdecode.cloud.V2BoxPasswordProbe.requiresPassword(
+            envelope.toByteArray(Charsets.UTF_8)))
+        assertFalse(com.ghostdeveloper.spdecode.cloud.V2BoxPasswordProbe.requiresPassword(
+            envelope.replace("true","false").toByteArray(Charsets.UTF_8)))
+        assertFalse(com.ghostdeveloper.spdecode.cloud.V2BoxPasswordProbe.requiresPassword(
+            "not-a-v2box".toByteArray(Charsets.UTF_8)))
+        assertTrue(CloudCredentialPolicy.fileAcceptsPassword("v2box"))
+        assertTrue(CloudCredentialPolicy.fileNeedsPasswordDialog("v2box"))
+        assertTrue(CloudCredentialPolicy.incorrectPassword("AUTH_FAILED",true))
+        assertTrue(CloudCredentialPolicy.npvsProtectionNotice("NPVS_APPKEY_AUTH_FAILED","npvs"))
+        assertFalse(CloudCredentialPolicy.npvsProtectionNotice("NPVS_APPKEY_AUTH_FAILED","v2box"))
     }
 
     @Test fun historicalCloudLinksAreUnaffected() {

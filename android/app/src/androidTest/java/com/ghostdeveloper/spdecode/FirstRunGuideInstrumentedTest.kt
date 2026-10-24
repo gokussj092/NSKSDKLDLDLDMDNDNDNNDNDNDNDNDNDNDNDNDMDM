@@ -49,11 +49,12 @@ class FirstRunGuideInstrumentedTest {
             assertFalse(visible)
             assertEquals(0,FirstRunGuide.targetTab(0))
             assertEquals(0,FirstRunGuide.targetTab(1))
-            assertEquals(1,FirstRunGuide.targetTab(2))
-            assertEquals(2,FirstRunGuide.targetTab(3))
-            assertEquals(4,FirstRunGuide.targetTab(4))
-            assertEquals(0,FirstRunGuide.targetTab(5))
-            assertEquals(0,FirstRunGuide.targetTab(6))
+            assertEquals(0,FirstRunGuide.targetTab(2))
+            assertEquals(0,FirstRunGuide.targetTab(3))
+            assertEquals(1,FirstRunGuide.targetTab(4))
+            assertEquals(2,FirstRunGuide.targetTab(5))
+            assertEquals(3,FirstRunGuide.targetTab(6))
+            assertEquals(4,FirstRunGuide.targetTab(7))
         }
     }
 
@@ -76,8 +77,10 @@ class FirstRunGuideInstrumentedTest {
         }
         val viewport=ui.onNodeWithTag("guide_viewport").getUnclippedBoundsInRoot()
         val panel=ui.onNodeWithTag("first_run_guide_panel").getUnclippedBoundsInRoot()
-        assertEquals((viewport.top.value+viewport.bottom.value)/2f,
-            (panel.top.value+panel.bottom.value)/2f,3f)
+        // Spotlight tour deliberately positions the guide away from the
+        // target: Home targets sit above the panel; tab targets sit below it.
+        assertTrue(panel.top>=viewport.top)
+        assertTrue(panel.bottom<=viewport.bottom)
         ui.onNodeWithText(ctx.getString(R.string.guide_next)).assertExists()
         ui.onNodeWithText(ctx.getString(R.string.guide_skip)).assertExists()
     }

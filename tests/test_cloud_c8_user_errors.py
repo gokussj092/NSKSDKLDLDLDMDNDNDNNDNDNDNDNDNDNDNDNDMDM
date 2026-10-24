@@ -8,7 +8,8 @@ ROOT=Path(__file__).resolve().parents[1]
 JAVA=ROOT/"android/app/src/main/java/com/ghostdeveloper/spdecode"
 GRADLE=ROOT/"android/app/build.gradle.kts"
 LOCALES=("values","values-es","values-fr","values-de","values-in",
-         "values-pt-rBR","values-ru","values-fa","values-ar")
+         "values-pt-rBR","values-ru","values-fa","values-ar",
+         "values-tr","values-vi","values-hi","values-ja","values-it")
 
 class CloudUserErrorsContracts(unittest.TestCase):
     def test_qa_never_silently_falls_back_to_integrity(self):
@@ -22,7 +23,7 @@ class CloudUserErrorsContracts(unittest.TestCase):
         source=(JAVA/"cloud/CloudUserErrors.kt").read_text("utf-8")
         for code in ("UNAUTHORIZED","INTEGRITY_REJECTED","QA_ACCESS_DENIED","ENGINE_TIMEOUT",
                      "RATE_LIMITED","PASSWORD_REQUIRED","HWID_REQUIRED","HWID_PASSWORD_REQUIRED",
-                     "AUTH_FAILED","UNSUPPORTED_FORMAT","CLOUD_QA_CODE_REQUIRED",
+                     "AUTH_FAILED","UNSUPPORTED_FORMAT","SERVICE_MAINTENANCE","CLOUD_QA_CODE_REQUIRED",
                      "CLOUD_NATIVE_NETWORK_UNAVAILABLE"):
             self.assertIn(code,source)
         for status in (401,403,404,408,409,413,422,429,500,502,503,504):
@@ -38,10 +39,41 @@ class CloudUserErrorsContracts(unittest.TestCase):
             root=ET.parse(location).getroot()
             strings={child.attrib["name"]:child.text or "" for child in root}
             self.assertTrue(all(strings.values()),locale)
-            self.assertTrue(all(k.startswith("cloud_failure_") for k in strings),locale)
+            self.assertTrue(all(k.startswith(("cloud_failure_","cloud_password_")) for k in strings),locale)
             if reference is None:reference=set(strings)
             self.assertEqual(reference,set(strings),locale)
-        self.assertEqual(len(reference),26)
+        self.assertGreaterEqual(len(reference),27)
+        self.assertIn('cloud_failure_maintenance',reference)
+
+    def test_generic_password_and_npvs_notices_do_not_become_client_errors(self):
+        source=(JAVA/"MainActivity.kt").read_text("utf-8")
+        policy=(JAVA/"cloud/CloudCredentialPolicy.kt").read_text("utf-8")
+        mapped=(JAVA/"cloud/CloudUserErrors.kt").read_text("utf-8")
+        screen=(JAVA/"SpDecodeApp.kt").read_text("utf-8")
+        queue=(JAVA/"BatchImportQueue.kt").read_text("utf-8")
+        client=(JAVA/"cloud/CloudDecodeClient.kt").read_text("utf-8")
+        self.assertIn('code=="AUTH_FAILED" && submittedPassword && !submittedHwid',policy)
+        self.assertIn('npvsProtectionNotice(code,format)',mapped)
+        self.assertIn('CloudCredentialPolicy.expectedCredentialResponse(failure.code)',client)
+        self.assertIn('messageIsCredentialNotice=true',source)
+        self.assertIn('singleCredentialNotice!=null->singleCredentialNotice',source)
+        self.assertIn('passwordSubmitted=password!=null',source)
+        self.assertIn('isExpectedFailure:(Exception)->Boolean={false}',queue)
+        self.assertIn('if(!isExpectedFailure(failure))',queue)
+        # C0 SpDecodeApp remains frozen. Cloud-only generated sources receive
+        # noticeOnly through Gradle rather than changing protected UI files.
+        generated=GRADLE.read_text("utf-8")
+        self.assertIn('if(!noticeOnly) TextButton',generated)
+        self.assertIn('R.string.cloud_failure_notice_title',generated)
+        self.assertIn('noticeOnly=messageIsCredentialNotice',generated)
+        for locale in LOCALES:
+            location=ROOT/"android/app/src/main/res"/locale/"cloud_error_strings.xml"
+            resources={node.attrib["name"]:(node.text or "") for node in ET.parse(location).getroot()}
+            self.assertTrue(resources["cloud_failure_notice_title"])
+            self.assertTrue(resources["cloud_failure_password_incorrect"])
+            self.assertTrue(resources["cloud_failure_private_key"])
+            self.assertTrue(resources["cloud_failure_npvs_unsupported"])
+            self.assertNotIn("modified",resources["cloud_failure_password_incorrect"].lower())
 
     def test_cloud_messages_are_used_without_touching_legacy_app_ui(self):
         source=(JAVA/"MainActivity.kt").read_text("utf-8")

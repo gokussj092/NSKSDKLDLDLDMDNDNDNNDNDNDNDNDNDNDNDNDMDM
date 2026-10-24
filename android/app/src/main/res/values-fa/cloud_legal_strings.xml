@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="cloud_legal_title">شرایط و حریم خصوصی</string>
-    <string name="cloud_legal_explanation">SP-DECODE Cloud فقط فایل‌ها یا متن‌هایی را که انتخاب می‌کنید برای پردازش به سرور ارسال می‌کند. ممکن است حاوی اطلاعات حساس باشند.</string>
+    <string name="cloud_legal_explanation">SP-DECODE Cloud فقط فایل‌ها یا متن‌های انتخابی شما را برای پردازش به سرور می‌فرستد. همچنین با کد تصادفی نصب، روزی یک‌بار تعداد تقریبی نصب‌های فعال را برای برنامه‌ریزی ظرفیت می‌شمارد. محتوای پیکربندی در این شمارش نیست.</string>
     <string name="cloud_legal_terms">مطالعه شرایط و ضوابط</string>
     <string name="cloud_legal_privacy">مطالعه سیاست حفظ حریم خصوصی</string>
     <string name="cloud_legal_accept_check">شرایط و سیاست حفظ حریم خصوصی را خوانده‌ام و می‌پذیرم.</string>

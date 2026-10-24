@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_search_hint">Search VPN apps</string>
+    <string name="server_vpn_filter_all">All</string>
+    <string name="server_vpn_filter_enabled">Enabled</string>
+    <string name="server_vpn_filter_favorites">Favorites</string>
+    <string name="server_vpn_favorite_add">Add to favorites</string>
+    <string name="server_vpn_favorite_remove">Remove from favorites</string>
+    <string name="server_vpn_manual_refresh">Check catalog now</string>
+    <string name="server_vpn_catalog_refreshing">Checking server catalog…</string>
+    <string name="server_vpn_no_matches">No VPN apps match your search or filters.</string>
+    <string name="server_vpn_catalog_enabled">Enabled in catalog</string>
+    <string name="server_vpn_catalog_disabled">Not enabled in catalog</string>
+    <string name="server_vpn_new_badge">New</string>
+    <string name="server_vpn_catalog_update_title">Catalog update available</string>
+    <string name="server_vpn_catalog_update_question">Version %1$d of the Server VPN catalog is available. Download it now?</string>
+    <string name="server_vpn_catalog_download">Download</string>
+    <string name="server_vpn_catalog_current">Your Server VPN catalog is up to date.</string>
+    <string name="server_vpn_catalog_updated">Server VPN catalog updated.</string>
+    <string name="server_vpn_catalog_update_error">Could not check or download the catalog. Please try again.</string>
+</resources>

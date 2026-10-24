@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""FlexNet V2.3 B42: FLXCFG v5 and authenticated server catalog readers.
+"""FlexNet V2.3 B42 / V2.4 B46: FLXCFG v5/v6 and protected fields.
 
 Offline mode 1 and FBS1 catalogs use client format material. Online mode 2
 requires the file key obtained through the issuer's authorized workflow.
@@ -31,10 +31,13 @@ from Crypto.Signature.pss import MGF1
 MAX_INPUT = 2 * 1024 * 1024
 MAX_XML = 4 * 1024 * 1024
 MAX_CATALOG = 128 * 1024
-CLIENT_BUILD = 42
+CLIENT_BUILD = 46
 MAGIC = b"FLXCFG"
 WRAP_ROOT = bytes.fromhex("09c76c0cea3739ed9aac7fb157978b4ce701d81194f7730e45c1a69750dcfd6b")
 WRAP_LABEL = b"FlexNet/v5/offline/wrap/generation-1"
+FIELD_LABEL = b"FlexNet/inner-field/v1/generation-1"
+FIELD_MAGIC = b"FLXFLD\x01\x01"
+PROTECTED_FIELDS = frozenset(("customSni", "proxyPayload"))
 CATALOG_PASSWORD = b"cinbdf665$4"
 
 
@@ -60,30 +63,32 @@ def inspect_profile(data: bytes, *, client_build: int = CLIENT_BUILD) -> dict[st
         raise DecodeError("FORMAT_ERROR", "Missing FLXCFG header.")
     if len(data) < 7:
         raise DecodeError("TRUNCATED", "Missing FLXCFG version.")
-    if data[6] != 5:
-        raise DecodeError("UNSUPPORTED_VERSION", "This reader handles v5; use flex.py for v1-v4.")
+    version = data[6]
+    if version not in (5, 6):
+        raise DecodeError("UNSUPPORTED_VERSION", "This reader handles v5/v6; use flex.py for v1-v4.")
     if len(data) < 13:
-        raise DecodeError("TRUNCATED", "Incomplete v5 prefix.")
+        raise DecodeError("TRUNCATED", "Incomplete FLXCFG prefix.")
     mode, suite = data[7:9]
-    if mode not in (1, 2):
-        raise DecodeError("UNSUPPORTED_MODE", "Unknown v5 mode.")
+    if mode not in ((1, 2) if version == 5 else (1,)):
+        raise DecodeError("UNSUPPORTED_MODE", "Unknown FLXCFG mode.")
     if suite != 1:
-        raise DecodeError("UNSUPPORTED_SUITE", "Unknown v5 crypto suite.")
+        raise DecodeError("UNSUPPORTED_SUITE", "Unknown FLXCFG crypto suite.")
     minimum = struct.unpack_from(">I", data, 9)[0]
-    if not isinstance(client_build, int) or not 1 <= minimum <= client_build:
+    if type(client_build) is not int or not (44 if version == 6 else 1) <= minimum <= client_build:
         raise DecodeError("MINIMUM_BUILD", "Unsupported minimum client build.")
-    header_size = 141 if mode == 1 else 45
+    header_size = 141 if version == 5 and mode == 1 else 45
     if len(data) < header_size + 16:
         raise DecodeError("TRUNCATED", "Missing v5 header or authentication tag.")
-    if mode == 1 and struct.unpack_from(">I", data, 13)[0] != 1:
+    if version == 5 and mode == 1 and struct.unpack_from(">I", data, 13)[0] != 1:
         raise DecodeError("UNSUPPORTED_GENERATION", "Unknown offline wrapping generation.")
     payload_size = struct.unpack_from(">I", data, header_size - 4)[0]
     if payload_size < 16 or payload_size != len(data) - header_size:
         raise DecodeError("TRUNCATED", "Payload length does not match the file.")
-    return {"format": "FLXCFG-v5", "mode": "offline" if mode == 1 else "online",
+    return {"format": f"FLXCFG-v{version}", "mode": "device-offline" if version == 6 else "offline" if mode == 1 else "online",
             "minimumClientBuild": minimum, "cryptoSuite": suite,
             "headerBytes": header_size, "encryptedPayloadBytes": payload_size,
-            "requiresAuthorizedFileKey": mode == 2}
+            "requiresAuthorizedFileKey": mode == 2,
+            "requiresAuthorizedOfflineKey": version == 6}
 
 
 def _open(key: bytes, nonce: bytes, body: bytes, aad: bytes) -> bytes:
@@ -105,8 +110,16 @@ def _hkdf(root: bytes, salt: bytes, info: bytes) -> bytes:
 
 
 def decrypt_profile_xml(data: bytes, *, file_key: bytes | None = None,
+                        offline_key: bytes | None = None,
                         client_build: int = CLIENT_BUILD) -> str:
     info = inspect_profile(data, client_build=client_build)
+    if info["mode"] == "device-offline":
+        if offline_key is None:
+            raise DecodeError("OFFLINE_KEY_REQUIRED", "This v6 export requires its authorized offline setup key; it is stored in Android Keystore, not in the file or APK.")
+        inner = _open(offline_key, data[29:41], data[45:], data[:45])
+        if not inner.startswith(MAGIC + b"\x05\x01"):
+            raise DecodeError("FORMAT_ERROR", "Expected a v5 offline container inside v6.")
+        return decrypt_profile_xml(inner, client_build=client_build)
     if info["mode"] == "offline":
         wrap_key = _hkdf(WRAP_ROOT, data[33:65], WRAP_LABEL + data[:33])
         key = _open(wrap_key, data[65:77], data[77:125], data[:77])
@@ -171,8 +184,52 @@ def _json(data: bytes | str) -> Any:
         raise DecodeError("INVALID_JSON", "Expected valid UTF-8 JSON.") from None
 
 
-def decode_profile(data: bytes, *, file_key: bytes | None = None) -> dict[str, Any]:
-    xml = decrypt_profile_xml(data, file_key=file_key)
+def _protected_properties(props: dict[str, str]) -> dict[str, str] | None:
+    if "file.routeData" not in props and "file.routeFields" not in props:
+        return None
+    if props.get("file.routeFields") != "1" or "file.routeData" not in props:
+        raise DecodeError("INVALID_FIELD", "Missing protected field metadata.")
+    document = _json(props["file.routeData"])
+    if (not isinstance(document, dict) or set(document) != {"v", "fields"}
+            or type(document["v"]) is not int or document["v"] != 1
+            or not isinstance(document["fields"], dict)
+            or not set(document["fields"]) <= PROTECTED_FIELDS):
+        raise DecodeError("INVALID_FIELD", "Invalid protected field document.")
+    fields = document["fields"]
+    opened = {}
+    for name in PROTECTED_FIELDS:
+        if name not in fields:
+            if props.get(name, ""):
+                raise DecodeError("INVALID_FIELD", "Missing protected field envelope.")
+            continue
+        entry = fields[name]
+        if not isinstance(entry, dict) or set(entry) != {"a", "c"}:
+            raise DecodeError("INVALID_FIELD", "Invalid protected field entry.")
+        alias = entry["a"]
+        if (not isinstance(alias, str) or not alias or len(alias.encode("utf-16-le")) > 400
+                or alias != props.get(name)):
+            raise DecodeError("INVALID_FIELD", "Protected field binding mismatch.")
+        binding = ("FlexNet/inner-field/v1\0" + name + "|" + alias).encode("utf-8")
+        if len(binding) > 512:
+            raise DecodeError("INVALID_FIELD", "Protected field binding is too large.")
+        raw = _base64_field(entry["c"], MAX_INPUT)
+        if base64.b64encode(raw).decode("ascii") != entry["c"]:
+            raise DecodeError("INVALID_FIELD", "Noncanonical protected field encoding.")
+        if (len(raw) <= 76 or raw[:8] != FIELD_MAGIC or struct.unpack_from(">I", raw, 8)[0] != 43
+                or struct.unpack_from(">I", raw, 56)[0] != len(raw) - 60):
+            raise DecodeError("INVALID_FIELD", "Invalid protected field header or length.")
+        key = _hkdf(WRAP_ROOT, raw[12:44], FIELD_LABEL + binding)
+        plain = _open(key, raw[44:56], raw[60:], raw[:60] + binding)
+        try:
+            opened[name] = plain.decode("utf-8")
+        except UnicodeError:
+            raise DecodeError("INVALID_FIELD", "Protected field is not UTF-8.") from None
+    return opened
+
+
+def decode_profile(data: bytes, *, file_key: bytes | None = None,
+                   offline_key: bytes | None = None) -> dict[str, Any]:
+    xml = decrypt_profile_xml(data, file_key=file_key, offline_key=offline_key)
     # The app uses java.util.Properties, not an arbitrary XML document.
     if re.search(r"<!ENTITY\b|<!DOCTYPE[^>]*\[", xml, re.I):
         raise DecodeError("INVALID_XML", "XML entity declarations are not supported.")
@@ -194,7 +251,11 @@ def decode_profile(data: bytes, *, file_key: bytes | None = None) -> dict[str, A
             props[key] = entry.text or ""
         else:
             raise DecodeError("INVALID_XML", "Unexpected XML property structure.")
-    result: dict[str, Any] = {"app": "FlexNet", "format": "FLXCFG-v5", "rawProperties": props}
+    result: dict[str, Any] = {"app": "FlexNet", "format": f"FLXCFG-v{data[6]}", "rawProperties": props}
+    opened = _protected_properties(props)
+    if opened is not None:
+        result["protectedFields"] = opened
+        result["decodedProperties"] = {**props, **opened}
     if comments:
         result["xmlComments"] = comments
     embedded = {}
@@ -280,10 +341,11 @@ def builtin_from_apk(path: Path) -> bytes:
 
 
 def decode(data: bytes, *, file_key: bytes | None = None,
+           offline_key: bytes | None = None,
            private_key: bytes | None = None) -> dict[str, Any]:
     _bounded(data)
     if data.startswith(MAGIC):
-        return decode_profile(data, file_key=file_key)
+        return decode_profile(data, file_key=file_key, offline_key=offline_key)
     if data.startswith(b"FBS1"):
         return decode_builtin_catalog(data)
     return decode_server_envelope(data, private_key=private_key)
@@ -296,13 +358,24 @@ def run(file_bytes: bytes, **kwargs: Any) -> str | None:
         return None
 
 
+def read_key_file(path: Path) -> bytes:
+    with path.open("rb") as handle:
+        data = handle.read(129)
+    if len(data) == 32:
+        return data
+    if re.fullmatch(rb"[0-9A-Fa-f]{64}", data.strip()):
+        return bytes.fromhex(data.strip().decode("ascii"))
+    raise DecodeError("KEY_FORMAT", "Key file must contain 32 bytes or 64 hex digits.")
+
+
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="FlexNet B42 v5 and server catalog decoder (offline)")
+    parser = argparse.ArgumentParser(description="FlexNet B42/B46 v5/v6 and server catalog decoder (offline)")
     parser.add_argument("file", type=Path)
     parser.add_argument("-o", "--output", type=Path)
     parser.add_argument("--builtin-catalog", action="store_true", help="Read FBS1 catalog from the supplied APK")
-    parser.add_argument("--inspect", action="store_true", help="Inspect v5 header; no plaintext is decrypted")
+    parser.add_argument("--inspect", action="store_true", help="Inspect v5/v6 header; no plaintext is decrypted")
     parser.add_argument("--file-key-file", type=Path, help="Authorized online file key: 32 binary bytes or 64 hex digits")
+    parser.add_argument("--offline-key-file", type=Path, help="Authorized v6 offline setup key: 32 binary bytes or 64 hex digits")
     parser.add_argument("--rsa-key-file", type=Path, help="Private RSA key for a saved authorized catalog response")
     args = parser.parse_args(argv)
     if args.inspect and args.builtin_catalog:
@@ -313,20 +386,13 @@ def main(argv: list[str] | None = None) -> int:
         else:
             with args.file.open("rb") as handle:
                 raw = handle.read(MAX_INPUT + 1)
-        file_key, private_key = None, None
-        if args.file_key_file:
-            with args.file_key_file.open("rb") as handle:
-                key_data = handle.read(129)
-            if len(key_data) == 32:
-                file_key = key_data
-            elif re.fullmatch(rb"[0-9A-Fa-f]{64}", key_data.strip()):
-                file_key = bytes.fromhex(key_data.strip().decode("ascii"))
-            else:
-                raise DecodeError("KEY_FORMAT", "File key must be 32 bytes or 64 hex digits.")
+        file_key = read_key_file(args.file_key_file) if args.file_key_file else None
+        offline_key = read_key_file(args.offline_key_file) if args.offline_key_file else None
+        private_key = None
         if args.rsa_key_file:
             with args.rsa_key_file.open("rb") as handle:
                 private_key = handle.read(64 * 1024 + 1)
-        obj = inspect_profile(raw) if args.inspect else decode(raw, file_key=file_key, private_key=private_key)
+        obj = inspect_profile(raw) if args.inspect else decode(raw, file_key=file_key, offline_key=offline_key, private_key=private_key)
         result = json.dumps(obj, ensure_ascii=False, indent=2) + "\n"
         if args.output:
             args.output.write_text(result, encoding="utf-8")

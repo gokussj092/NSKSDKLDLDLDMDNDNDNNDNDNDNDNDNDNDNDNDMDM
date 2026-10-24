@@ -65,7 +65,16 @@ class PhaseESpecialInstrumentedTest {
         for(i in 0 until vectors.length()){
             val row=vectors.getJSONObject(i)
             if(row.getString("mode")=="outer")continue
-            reference(row);modes.add(row.getString("mode"))
+            if(row.getString("mode")=="password_required" &&
+                row.getString("suffix")=="v2box") {
+                // A protected V2Box synthetic fixture intentionally has no user
+                // password. The guarded path must request credentials, never
+                // silently claim a successful decryption.
+                val input=Base64.decode(row.getString("encodedInput"),Base64.DEFAULT)
+                assertTrue(com.ghostdeveloper.spdecode.cloud.V2BoxPasswordProbe.requiresPassword(input))
+                assertNull(AndroidOfflineDecoderRouter.decode(context,"sample.v2box",input))
+            }else reference(row)
+            modes.add(row.getString("mode"))
         }
         assertEquals(setOf("aes_gcm","optional_header","secondary_key","password_required"),modes)
     }

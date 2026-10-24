@@ -5,6 +5,7 @@ No Telegram handlers, network access, or third-party requests are performed.
 This engine is imported on demand by the bot's central extension registry.
 """
 from __future__ import annotations
+import argparse
 import base64
 import hashlib
 import hmac
@@ -79,14 +80,19 @@ def flex_get_material(version, lock):
     return bytes.fromhex(cands[0][1])
 
 
-def flex_decrypt_bytes(data: bytes) -> str:
+def _modern_codec():
+    if __package__:
+        from . import flexnet_b42
+    else:
+        import flexnet_b42
+    return flexnet_b42
+
+
+def flex_decrypt_bytes(data: bytes, *, file_key: bytes | None = None,
+                       offline_key: bytes | None = None) -> str:
     """فك تشفير bytes ملف .flex وإرجاع XML نصي"""
-    if data.startswith(FLEX_MAGIC + b"\x05"):
-        if __package__:
-            from .flexnet_b42 import decrypt_profile_xml
-        else:
-            from flexnet_b42 import decrypt_profile_xml
-        return decrypt_profile_xml(data)
+    if data[:6] == FLEX_MAGIC and data[6:7] in (b"\x05", b"\x06"):
+        return _modern_codec().decrypt_profile_xml(data, file_key=file_key, offline_key=offline_key)
     if len(data) < 7 or data[:6] != FLEX_MAGIC:
         raise ValueError("Invalid Flex header (FLXCFG not found)")
     pos = 6
@@ -166,6 +172,10 @@ def flex_clean_output(raw_text: str) -> dict:
     raw_text = flex_sanitize_xml_refs(raw_text)
     root = ET.fromstring(raw_text)
     props = {e.get("key"): (e.text or "") for e in root.findall("entry")}
+    return flex_clean_properties(props)
+
+
+def flex_clean_properties(props: dict) -> dict:
     # Include all decrypted properties without discarding fields from newer exports.
     out = {"app": "FlexNet", "rawProperties": props}
     if props.get("file.validade"):
@@ -230,40 +240,62 @@ def flex_clean_output(raw_text: str) -> dict:
     return out
 
 
-def decrypt_flex_file(file_data: bytes) -> dict:
+def _decode_flex_file(file_data: bytes, *, file_key: bytes | None = None,
+                      offline_key: bytes | None = None) -> dict:
+    if file_data[:6] == FLEX_MAGIC and file_data[6:7] in (b"\x05", b"\x06"):
+        result = _modern_codec().decode_profile(file_data, file_key=file_key, offline_key=offline_key)
+        props = result.get("decodedProperties", result["rawProperties"])
+        return {**flex_clean_properties(props), **result}
+    return flex_clean_output(flex_decrypt_bytes(file_data))
+
+
+def decrypt_flex_file(file_data: bytes, *, file_key: bytes | None = None,
+                       offline_key: bytes | None = None) -> dict | None:
     """الدالة الرئيسية للبوت: فك تشفير .flex وإرجاع قاموس"""
     try:
-        raw_xml = flex_decrypt_bytes(file_data)
-        return flex_clean_output(raw_xml)
+        return _decode_flex_file(file_data, file_key=file_key, offline_key=offline_key)
     except Exception as e:
         logger.debug("FlexNet rejected invalid data: %s", e)
         return None
-def run(file_bytes: bytes) -> str | None:
+def run(file_bytes: bytes, *, file_key: bytes | None = None,
+        offline_key: bytes | None = None) -> str | None:
     if not isinstance(file_bytes, bytes) or not file_bytes or len(file_bytes) > MAX_INPUT_BYTES:
         return None
-    result = decrypt_flex_file(file_bytes)
+    result = decrypt_flex_file(file_bytes, file_key=file_key, offline_key=offline_key)
     return json.dumps(result, ensure_ascii=False, indent=2) if isinstance(result, dict) else None
 
 EXTENSIONS = (".flex", ".flexnet")
 
 def main(argv=None) -> int:
-    args = sys.argv[1:] if argv is None else argv
-    if len(args) != 1:
-        print("Usage: python flex.py <configuration-file>", file=sys.stderr)
+    parser = argparse.ArgumentParser(description="FlexNet v1-v6 profile decoder")
+    parser.add_argument("file", type=Path)
+    parser.add_argument("--file-key-file", type=Path, help="Authorized v5 online content key")
+    parser.add_argument("--offline-key-file", type=Path, help="Authorized v6 offline setup key")
+    if argv is None:
+        argv = sys.argv[1:]
+    if not argv:
+        parser.print_usage(file=sys.stderr)
         return 2
-    path = Path(args[0])
+    args = parser.parse_args(argv)
+    path = args.file
     if path.suffix.lower() not in EXTENSIONS:
         print("Unsupported flex extension", file=sys.stderr)
         return 2
     try:
-        result = run(path.read_bytes())
-    except (OSError, ValueError) as exc:
-        print(f"Unable to read configuration: {exc}", file=sys.stderr)
+        with path.open("rb") as stream:
+            data = stream.read(MAX_INPUT_BYTES + 1)
+        if not data or len(data) > MAX_INPUT_BYTES:
+            raise ValueError("Invalid input size")
+        file_key = _modern_codec().read_key_file(args.file_key_file) if args.file_key_file else None
+        offline_key = _modern_codec().read_key_file(args.offline_key_file) if args.offline_key_file else None
+        result = _decode_flex_file(data, file_key=file_key, offline_key=offline_key)
+    except OSError:
+        print("Unable to read flex configuration or key file", file=sys.stderr)
         return 1
-    if result is None:
-        print("Unable to decrypt flex configuration", file=sys.stderr)
+    except (ValueError, IndexError, struct.error, ET.ParseError, zlib.error, OverflowError) as exc:
+        print(f"Unable to decrypt flex configuration ({getattr(exc, 'code', 'INVALID_INPUT')})", file=sys.stderr)
         return 1
-    print(result)
+    print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0
 
 if __name__ == "__main__":

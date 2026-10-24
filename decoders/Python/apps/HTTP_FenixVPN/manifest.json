@@ -1,0 +1,63 @@
+{
+  "id": "http-fenixvpn",
+  "name": "HTTP FenixVPN",
+  "package": "com.fenix.vpn",
+  "compatibleVersions": [
+    "19.4"
+  ],
+  "versionCode": 181,
+  "engine": "python-wakkodev-md5-aes-cbc-rot-and-sks-gcm-des",
+  "engineVersion": 1,
+  "files": {
+    "entrypoint": "file_decoder.py",
+    "extensions": [
+      "sks"
+    ],
+    "formats": [
+      "Base64(salt32).Base64(nonce12).Base64(AES-128-GCM ciphertext+tag16), PBKDF2-HMAC-SHA256/1000",
+      "legacy raw DES-ECB/PKCS5 bytes, first 8 password bytes"
+    ],
+    "output": "ordered entries and exact Java Properties raw_xml; no type coercion",
+    "exporterCertified": false,
+    "validation": "APK import recipes and synthetic Java vectors; independent real exports not supplied; export UI activity does not invoke exporter in observed onClick",
+    "textPrefixes": [],
+    "legacyCompatibility": "existing SocksIP JSON d/v envelopes select the unchanged Node C0 engine before decryption"
+  },
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "http-fenixvpn",
+    "format": "Base64(WakkoDev+salt8+AES-256-CBC), MD5 key/IV chaining; URL-safe Base64/IV/AES-CBC and Java ROT21 in field_names.json",
+    "validatedOn": "2026-10-19",
+    "localServersObserved": 1,
+    "remoteServersObserved": 300,
+    "localUsersObserved": 1,
+    "remoteUsersObserved": 1,
+    "decodedRemoteServerFields": 2127,
+    "validation": "complete local and remote JSON parity with Java; offline worker and actual CLI",
+    "cloudSource": "servers only; standalone --users retrieves the separate fixed user-profile catalog",
+    "publicCatalogVersion": 9,
+    "deploymentEnabledByDefault": false
+  },
+  "icon": {
+    "file": "HTTP_FenixVPN.png",
+    "source": "split_config.xhdpi.apk:res/drawable-xhdpi-v4/ic_launcher.png",
+    "resourceId": "0x7f080117",
+    "width": 431,
+    "height": 426,
+    "bytes": 89926,
+    "sha256": "bff1df78ea9249243edb055e86f75d23b31412045c7fdd809a4bfbd2d615ddd1",
+    "policy": "preserve exact original launcher PNG; no app-specific size exclusion"
+  },
+  "dependencies": {
+    "python": ">=3.10",
+    "pycryptodome": "3.23.0",
+    "supportFiles": [
+      "codec.py",
+      "field_names.json"
+    ]
+  },
+  "sourceApkSha256": "a6a4ce1c56853b6cd5015434dd211c6ac72064838c74c0a00c67e6962596efa9",
+  "branch": "feat/austroplus-vpn-13-0-1-decoders",
+  "pullRequest": 96,
+  "baseMainCommit": "e6cbb5926372aa6b7d36105802bf366a2138c98e"
+}

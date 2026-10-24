@@ -15,7 +15,9 @@
     <string name="cloud_failure_invalid">Ungültige Datei oder Anfrage. Prüfe das Format.</string>
     <string name="cloud_failure_unsupported">Dieses Dateiformat ist auf dem Server nicht verfügbar.</string>
     <string name="cloud_failure_decode">Dieser Dateityp konnte nicht entschlüsselt werden. Die Datei muss nicht beschädigt sein.</string>
+    <string name="cloud_failure_maintenance">Dieser Dienst wird vorübergehend gewartet. Bitte versuche es später erneut.</string>
     <string name="cloud_failure_unavailable">Dienst derzeit nicht verfügbar. Versuche es später.</string>
+    <string name="cloud_failure_config_unavailable">Diese Cloud-Konfiguration ist nicht mehr verfügbar. Sie ist möglicherweise abgelaufen, wurde gelöscht oder war nur einmal verwendbar. Dies ist kein Fehler des Decoders.</string>
     <string name="cloud_failure_remote">Der externe Anbieter lieferte eine ungültige Antwort.</string>
     <string name="cloud_failure_credentials">Passwort oder HWID falsch. Prüfe die Angaben.</string>
     <string name="cloud_failure_password">Diese geschützte Datei benötigt ein Passwort.</string>
@@ -25,5 +27,11 @@
     <string name="cloud_failure_conflict">Die Anfrage steht im Konflikt mit dem aktuellen Zustand.</string>
     <string name="cloud_failure_partial">Das Ergebnis ist unvollständig oder ungültig und wird nicht angezeigt.</string>
     <string name="cloud_failure_general">Vorgang fehlgeschlagen. Versuche es erneut oder kontaktiere den Support.</string>
-    <string name="cloud_failure_notice_title">Anfrage konnte nicht abgeschlossen werden</string>
+    <string name="cloud_failure_notice_title">Hinweis</string>
+    <string name="cloud_password_title">Konfigurationspasswort erforderlich</string>
+    <string name="cloud_password_description">%1$s ist passwortgeschützt. Gib das Exportpasswort ein. Es wird nicht gespeichert.</string>
+    <string name="cloud_failure_password_incorrect">Falsches Passwort.</string>
+    <string name="cloud_failure_private_key">Diese NPVS-Datei verwendet den öffentlichen und privaten Schlüssel des Empfängers. Diese Methode wird noch nicht unterstützt; Unterstützung folgt.</string>
+    <string name="cloud_failure_recipient">Diese NPVS-Datei verwendet eine noch nicht unterstützte Empfängerschlüssel-Methode. Unterstützung folgt.</string>
+    <string name="cloud_failure_npvs_unsupported">Diese NPVS-Version oder Schutzmethode wird noch nicht unterstützt. Unterstützung folgt.</string>
 </resources>

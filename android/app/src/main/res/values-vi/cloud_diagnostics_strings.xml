@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- vi: translated primary screens, Cloud and error strings; untranslated text inherits English source. -->
+    <string name="cloud_report_action">Báo lỗi</string>
+    <string name="cloud_report_sent">Đã nhận báo cáo: %1$s</string>
+    <string name="cloud_report_failed">Không thể gửi báo cáo. Thử lại sau.</string>
+    <string name="cloud_usage_title">Thống kê cài đặt ẩn danh</string>
+    <string name="cloud_usage_detail">SP-DECODE ước tính số bản cài đặt hoạt động mỗi ngày để lập kế hoạch máy chủ. Sử dụng mã cài đặt ngẫu nhiên thay vì Android ID, HWID hay ID quảng cáo.</string>
+    <string name="cloud_usage_footnote">Được tính sau khi bạn chấp nhận điều khoản Cloud. Không bao gồm nội dung tệp, mật khẩu hoặc cấu hình đã giải mã.</string>
+</resources>

@@ -15,7 +15,9 @@
     <string name="cloud_failure_invalid">فایل یا درخواست نامعتبر است. قالب را بررسی کنید.</string>
     <string name="cloud_failure_unsupported">این قالب در سرور پشتیبانی نمی‌شود.</string>
     <string name="cloud_failure_decode">پردازش این نسخه فایل ممکن نبود؛ لزوماً خراب نیست.</string>
+    <string name="cloud_failure_maintenance">این سرویس به‌طور موقت در حال نگهداری است. لطفاً بعداً دوباره تلاش کنید.</string>
     <string name="cloud_failure_unavailable">سرویس موقتاً در دسترس نیست. بعداً تلاش کنید.</string>
+    <string name="cloud_failure_config_unavailable">این پیکربندی ابری دیگر در دسترس نیست. ممکن است منقضی یا حذف شده باشد یا فقط یک‌بار قابل استفاده بوده باشد. این مشکل از رمزگشا نیست.</string>
     <string name="cloud_failure_remote">پاسخ سرویس راه دور نامعتبر بود.</string>
     <string name="cloud_failure_credentials">رمز عبور یا HWID اشتباه است.</string>
     <string name="cloud_failure_password">این فایل محافظت‌شده به رمز عبور نیاز دارد.</string>
@@ -25,5 +27,11 @@
     <string name="cloud_failure_conflict">درخواست با وضعیت فعلی مغایرت دارد.</string>
     <string name="cloud_failure_partial">نتیجه ناقص یا نامعتبر است و نمایش داده نمی‌شود.</string>
     <string name="cloud_failure_general">عملیات کامل نشد. دوباره تلاش کنید یا با پشتیبانی تماس بگیرید.</string>
-    <string name="cloud_failure_notice_title">درخواست انجام نشد</string>
+    <string name="cloud_failure_notice_title">اطلاع</string>
+    <string name="cloud_password_title">رمز عبور پیکربندی لازم است</string>
+    <string name="cloud_password_description">%1$s با رمز عبور محافظت می‌شود. رمز عبور خروجی را وارد کنید. ذخیره نخواهد شد.</string>
+    <string name="cloud_failure_password_incorrect">گذرواژه نادرست است.</string>
+    <string name="cloud_failure_private_key">این فایل NPVS از حفاظت با کلید عمومی و خصوصی گیرنده استفاده می‌کند. این روش هنوز پشتیبانی نمی‌شود و به‌زودی اضافه خواهد شد.</string>
+    <string name="cloud_failure_recipient">این فایل NPVS از روش کلید گیرنده استفاده می‌کند که هنوز پشتیبانی نمی‌شود. به‌زودی اضافه می‌شود.</string>
+    <string name="cloud_failure_npvs_unsupported">این نسخه یا روش حفاظت NPVS هنوز پشتیبانی نمی‌شود. به‌زودی اضافه خواهد شد.</string>
 </resources>

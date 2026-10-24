@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="cloud_legal_title">Terms and privacy</string>
-    <string name="cloud_legal_explanation">SP-DECODE Cloud sends only the files or texts you choose to the server for processing. They may contain sensitive credentials.</string>
+    <string name="cloud_legal_explanation">SP-DECODE Cloud sends files or texts that you choose to decode to its server. It also counts approximate active installations once daily to plan server capacity, using a random installation code. No configuration contents are included in those counts.</string>
     <string name="cloud_legal_terms">Read terms and conditions</string>
     <string name="cloud_legal_privacy">Read privacy policy</string>
     <string name="cloud_legal_accept_check">I have read and accept the terms and privacy policy.</string>

@@ -1,0 +1,117 @@
+{
+  "id": "turbomx-vpn",
+  "name": "TurboMX VPN",
+  "package": "turbo.mx.anuncios",
+  "compatibleVersions": [
+    "143.1.26"
+  ],
+  "versionCode": 168,
+  "engine": "python-sv5c-v2-ed25519-xchacha20poly1305-aes256cbc-rot5",
+  "engineVersion": 1,
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "turbomx-vpn",
+    "sources": {
+      "servers": "https://raw.githubusercontent.com/apksdemons/apks2/refs/heads/main/turbomx/servr_turbomx_sv5c",
+      "users": "https://raw.githubusercontent.com/apksdemons/apks2/refs/heads/main/turbomx/user_turbomx_sv5c"
+    },
+    "validatedOn": "2026-10-22",
+    "remoteAuthorization": "Explicit user authorization for external server and user catalogs",
+    "remoteValidated": true,
+    "remoteServersObserved": 268,
+    "remoteUsersObserved": 1,
+    "remoteVersions": {
+      "servers": "18",
+      "users": "3"
+    },
+    "remoteFieldsProcessed": 2900,
+    "remoteNonemptyFieldsCompared": 2189,
+    "sourceEvidence": [
+      {
+        "source": "servers.sv5c",
+        "bytes": 344032,
+        "sha256": "a521043098e858d476b3cf422f544d9ab91bb0b586d8069ee0971ded90a4f6fd",
+        "records": 240,
+        "fields": 2589,
+        "nonempty": 1999,
+        "version": "3",
+        "nativeSodiumJdkCompleteEqual": true
+      },
+      {
+        "source": "users.sv5c",
+        "bytes": 1233,
+        "sha256": "c3e7f848b372d7ff46af66351e37d9af8063643a21f3083ddbe4812d97e22ddf",
+        "records": 1,
+        "fields": 6,
+        "nonempty": 6,
+        "version": "3",
+        "nativeSodiumJdkCompleteEqual": true
+      },
+      {
+        "source": "servers-download.bin",
+        "bytes": 413851,
+        "sha256": "b9666ad35148f0e2da0b7c0af74e3bc85645717ec419584d2aef143372a27ee0",
+        "records": 268,
+        "fields": 2894,
+        "nonempty": 2183,
+        "version": "18",
+        "nativeSodiumJdkCompleteEqual": true
+      },
+      {
+        "source": "users-download.bin",
+        "bytes": 1233,
+        "sha256": "c3e7f848b372d7ff46af66351e37d9af8063643a21f3083ddbe4812d97e22ddf",
+        "records": 1,
+        "fields": 6,
+        "nonempty": 6,
+        "version": "3",
+        "nativeSodiumJdkCompleteEqual": true
+      }
+    ],
+    "validation": "Entire remote and embedded SV5C documents equal original TurboMX ARM64 KDF/AAD + host libsodium + unchanged JDK field reference. Real CLI --all/stdin and isolated worker preserve full pair. SuperFlash real pair and worker remain equal; both readers reject the other app release.",
+    "publicCatalogVersion": 30,
+    "publicCatalogCards": 32,
+    "deploymentEnabledByDefault": false,
+    "testScope": "3 TurboMX Python tests plus 3 SuperFlash regressions and 31 focused web checks; no full suites. Real Python HTTPS/CLI and isolated worker; controlled Node transport.",
+    "formatVersion": 2,
+    "securityRelease": 143,
+    "signatureRequired": true
+  },
+  "files": {
+    "supported": false,
+    "validation": "Catalog-only integration; no new exported-file route or exporter certification."
+  },
+  "icon": {
+    "file": "TurboMX_VPN.png",
+    "source": "base.apk:res/mipmap-xxxhdpi/ic_launcher.png",
+    "width": 192,
+    "height": 192,
+    "pngBytes": 15861,
+    "pngSha256": "3f9f45bb05d49cb20a84d3fa86c90981a7e52287c13a3acf157d5cc1068b7945",
+    "policy": "Exact existing launcher raster PNG, no redraw, resize or conversion; adaptive XML not reconstructed."
+  },
+  "dependencies": {
+    "python": ">=3.10",
+    "pycryptodome": "3.23.0",
+    "supportFiles": [
+      "codec.py",
+      "../SuperFlash_VPN/codec.py",
+      "../HTTP_FenixVPN/codec.py",
+      "../HTTP_FenixVPN/field_names.json"
+    ],
+    "sharedSourceSha256": {
+      "../SuperFlash_VPN/codec.py": "90c9e9c4872e21ce8f2fa6cb16c6938e9c170839a6415046d7fa137f5ab5885c",
+      "../HTTP_FenixVPN/codec.py": "7e3de48e36d88dcbfa9afa94cc736d763bd7fe89de6d6d87d1d6ecb31e456c34",
+      "../HTTP_FenixVPN/field_names.json": "0352b854bbb8153ac6a961e624e19e93de32ffdd3acc618d5f1a5ca02b2ad798"
+    }
+  },
+  "sourceApkSha256": "f09460adc85a94d34776487c523463fa69e14bc1acba4ad55dd0b59412e9ee50",
+  "sourceNativeSha256": "ff8779979b63ee88b8dd7288a4fbfd963d4eb109484c529d52811c7e6bb286ab",
+  "analysisTools": [
+    "scripts/apk_analysis/elf_inspect.py",
+    "scripts/apk_analysis/arm64_function.py"
+  ],
+  "branch": "feat/austroplus-vpn-13-0-1-decoders",
+  "pullRequest": 96,
+  "analyzedBaseCommit": "fe0b4af37976aa30ccfe689fd753f7350bc19a85"
+}

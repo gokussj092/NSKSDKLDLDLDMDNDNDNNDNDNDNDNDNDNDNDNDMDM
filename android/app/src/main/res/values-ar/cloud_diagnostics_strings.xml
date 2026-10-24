@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_report_action">إبلاغ عن خطأ</string>
+    <string name="cloud_report_sent">تم استلام البلاغ: %1$s</string>
+    <string name="cloud_report_failed">تعذر إرسال البلاغ. حاول لاحقًا.</string>
+    <string name="cloud_usage_title">إحصاءات تثبيت مجهولة</string>
+    <string name="cloud_usage_detail">يقدّر SP-DECODE عدد التثبيتات النشطة مرة يوميًا لتخطيط قدرة الخادم. يُستخدم رمز عشوائي لكل تثبيت، وليس Android ID أو HWID أو معرّف الإعلانات.</string>
+    <string name="cloud_usage_footnote">تُجمع بعد الموافقة على شروط خصوصية Cloud. لا تشمل هذه الإحصاءات محتويات الملفات أو كلمات المرور أو الإعدادات المفكوكة.</string>
+</resources>

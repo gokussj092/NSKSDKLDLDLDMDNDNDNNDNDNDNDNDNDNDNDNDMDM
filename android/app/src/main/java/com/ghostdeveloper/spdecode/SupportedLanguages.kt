@@ -15,6 +15,11 @@ object SupportedLanguages {
         SupportedLanguage("id","Bahasa Indonesia"),
         SupportedLanguage("ru","Русский"),
         SupportedLanguage("de","Deutsch"),
+        SupportedLanguage("tr","Türkçe"),
+        SupportedLanguage("vi","Tiếng Việt"),
+        SupportedLanguage("hi","हिन्दी"),
+        SupportedLanguage("ja","日本語"),
+        SupportedLanguage("it","Italiano"),
     )
     fun supports(tag:String):Boolean=options.any{it.tag==tag}
 }

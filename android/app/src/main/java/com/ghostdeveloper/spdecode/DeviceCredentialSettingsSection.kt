@@ -155,6 +155,10 @@ internal fun DeviceCredentialSettingsSection() {
                 }){Text(stringResource(R.string.cancel))}
             },
             properties=DialogProperties(securePolicy=SecureFlagPolicy.SecureOn),
+            containerColor=Color.Black,
+            titleContentColor=Color(0xFFF7F7F7),
+            textContentColor=Color(0xFFF7F7F7),
+            tonalElevation=0.dp,
         )
     }
     if(deleteId!=null){
@@ -186,7 +190,11 @@ internal fun DeviceCredentialSettingsSection() {
                 TextButton(enabled=!working,onClick={deleteId=null}){
                     Text(stringResource(R.string.cancel))
                 }
-            }
+            },
+            containerColor=Color.Black,
+            titleContentColor=Color(0xFFF7F7F7),
+            textContentColor=Color(0xFFF7F7F7),
+            tonalElevation=0.dp,
         )
     }
 }

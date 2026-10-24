@@ -180,3 +180,7 @@ vacío. Los flags y fechas originales se conservan en el resultado.
 
 Este cambio entrega un script independiente: no registra `.RT` en el bot,
 no altera Android, no cambia versiones y no modifica el motor KSH.
+
+## Resultados ligeros (.RT)
+
+El decodificador valida íntegramente el documento autenticado y después **elimina únicamente la clave JSON exacta `bannerImage` en cualquier nivel** (también dentro de listas), con independencia de la imagen Base64. El resto de propiedades permanece intacto. La eliminación afecta a `decode()`, `run()`, la CLI y a las respuestas `rawText`/`structuredJson` del worker Cloud, evitando que el visor o el teléfono tengan que procesar una imagen embebida de tamaño considerable. Los vectores criptográficos congelados conservan el contenido original; las aserciones de salida esperan la omisión intencional del banner. No se almacenan las imágenes eliminadas.

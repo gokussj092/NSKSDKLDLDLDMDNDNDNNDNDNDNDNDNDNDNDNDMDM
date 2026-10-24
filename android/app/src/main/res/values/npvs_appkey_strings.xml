@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_npvs_appkey_auth">This NPVS app-key file could not be authenticated. It may use a different variant or have been modified. This method requires neither a password nor a recipient private key.</string>
+</resources>

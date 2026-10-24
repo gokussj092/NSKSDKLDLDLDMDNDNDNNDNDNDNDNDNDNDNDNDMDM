@@ -17,6 +17,7 @@ from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:sys.path.insert(0,str(ROOT))
+from scripts.android_a24_catalog import generate as audited_android_catalog
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA256
 from Crypto.Util.Padding import pad
@@ -205,7 +206,7 @@ def fixtures():
         "ltm.py":ltm_fixture(),
         "vn7.py":vn7_fixture()
     }
-    cat=json.loads((ROOT/"android/app/src/main/assets/decoder_catalog.json").read_text("utf-8"))
+    cat=audited_android_catalog()
     rows=sorted((x for x in cat["entries"] if x["migrationPhase"]=="F"),
                 key=lambda x:x["suffix"])
     assert len(rows)==13

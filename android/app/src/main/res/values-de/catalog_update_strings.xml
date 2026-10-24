@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_auto_title">Automatische Server-VPN-Katalogupdates</string>
+    <string name="catalog_auto_detail">Prüft die Katalogversion über den eigenen SP-DECODE-Server per HTTPS, solange die App geöffnet ist. Seltene Hintergrundprüfungen stellen verpasste Updates wieder her. Daten und Symbole werden nur bei Versionsänderungen heruntergeladen. Kein Firebase, Konto oder Push-Token erforderlich.</string>
+    <string name="catalog_auto_switch">Hintergrund-Synchronisierung aktivieren</string>
+</resources>

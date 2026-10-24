@@ -36,19 +36,21 @@ test("seven-day analytics tracks sanitized extensions, bytes and error buckets",
   await recordWorkerResult(redis,"success",{kind:"text",bytes:10});
   await recordWorkerResult(redis,"failed",{kind:"catalog",bytes:80,errorCode:"ENGINE_TIMEOUT"});
   const report=await usageReport(redis,7);
-  assert.equal(report.totalDecodes,6);
+  assert.equal(report.totalDecodes,5);
   assert.equal(report.successfulDecodes,3);
-  assert.equal(report.failedDecodes,3);
-  assert.equal(report.inputBytes,889);
+  assert.equal(report.failedDecodes,1);
+  assert.equal(report.warnings,1);
+  assert.equal(report.inputBytes,789);
   assert.deepEqual(report.extensions.find(x=>x.extension==="hc"),{
-    extension:"hc",successfulDecodes:1,failedDecodes:1,attempts:2});
-  assert.equal(report.extensions.find(x=>x.extension==="other").failedDecodes,1);
-  assert.equal(report.errors.find(x=>x.code==="AUTH_FAILED").count,1);
-  assert.ok(report.incidents.some(x=>x.extension==="hc"&&x.code==="AUTH_FAILED"));
+    extension:"hc",successfulDecodes:1,failedDecodes:0,attempts:1});
+  assert.equal(report.extensions.find(x=>x.extension==="other").warnings,1);
+  assert.equal(report.extensions.find(x=>x.extension==="other").failedDecodes,0);
+  assert.ok(!report.errors.some(x=>x.code==="AUTH_FAILED"));
+  assert.ok(!report.incidents.some(x=>x.code==="AUTH_FAILED"));
   assert.equal(report.daily.reduce((n,d)=>n+d.successfulDecodes,0),3);
   const keys=[...redis.hash.keys()].join(" ");
   assert.doesNotMatch(keys,/password|ip|filename|payload|dataBase64/);
-  assert.equal((await usageReport(redis,1)).totalDecodes,6);
+  assert.equal((await usageReport(redis,1)).totalDecodes,5);
 });
 test("untrusted extension and error strings cannot create arbitrary Redis labels",()=>{
   assert.equal(safeFormat("file","../../secrets","DECODE_FAILED"),"other");
@@ -91,4 +93,44 @@ test("report API requires signed admin session, never supports public or malform
   const body=await reportResponse.json();
   assert.equal(body.report.privacy,"anonymous_aggregate_counters");
   assert.equal(JSON.stringify(body).includes(password),false);
+});
+
+test("file and Server VPN success/failure diagnostics are counted separately without storing payloads",async()=>{
+  const redis=new RedisFake();
+  await recordWorkerResult(redis,"success",{kind:"file",format:"npvs",bytes:200});
+  await recordWorkerResult(redis,"failed",{kind:"file",format:"hc",bytes:100,errorCode:"AUTH_FAILED"});
+  await recordWorkerResult(redis,"failed",{kind:"server-vpn",format:"tunneltweak",bytes:400,errorCode:"ENGINE_TIMEOUT"});
+  await recordWorkerResult(redis,"success",{kind:"server-vpn",format:"nur-tunnel",bytes:300});
+  await recordWorkerResult(redis,"failed",{kind:"ehi",bytes:200,errorCode:"REMOTE_DECODER_FAILED"});
+  const result=await usageReport(redis,7);
+  const lookup=id=>result.serviceBreakdown.find(s=>s.service===id);
+  assert.deepEqual(lookup("files"),{service:"files",successfulDecodes:1,failedDecodes:0,attempts:1});
+  assert.deepEqual(lookup("httpInjector"),{service:"httpInjector",successfulDecodes:0,failedDecodes:1,attempts:1});
+  assert.deepEqual(lookup("serverVpn"),{service:"serverVpn",successfulDecodes:1,failedDecodes:1,attempts:2});
+  assert.ok(result.extensions.some(e=>e.extension==="vpn-tunneltweak"&&e.failedDecodes===1));
+  assert.ok(result.serviceErrors.some(e=>e.service==="serverVpn"&&e.code==="ENGINE_TIMEOUT"));
+  assert.equal(result.hourlyLast48.length,48);
+  assert.equal(result.hourlyLast48.reduce((n,h)=>n+h.successfulDecodes+h.failedDecodes,0),4);
+  assert.ok(![...redis.hash.keys()].join(" ").includes("password"));
+  assert.equal(safeFormat("server-vpn","../private"),"vpn-other");
+  assert.equal(safeFormat("server-vpn","nur-tunnel"),"vpn-nur-tunnel");
+});
+
+test("expected credential and recipient outcomes stay out of engine failure analytics",async()=>{
+  const redis=new RedisFake();
+  for(const code of ["PASSWORD_REQUIRED","AUTH_FAILED","INVALID_CREDENTIALS",
+    "PRIVATE_KEY_REQUIRED","RECIPIENT_MISMATCH","NPVS_PROTECTION_UNSUPPORTED"]){
+    await recordWorkerResult(redis,"failed",{
+      kind:"file",format:"npvs",bytes:110,errorCode:code
+    });
+  }
+  await recordWorkerResult(redis,"failed",{
+    kind:"file",format:"npvs",bytes:110,errorCode:"DECODE_FAILED"
+  });
+  const report=await usageReport(redis,7);
+  assert.equal(report.totalDecodes,1);
+  assert.equal(report.failedDecodes,0);
+  assert.equal(report.warnings,1);
+  assert.ok(!report.errors.some(x=>["AUTH_FAILED","PRIVATE_KEY_REQUIRED"].includes(x.code)));
+  assert.ok(!report.incidents.some(x=>x.code==="PRIVATE_KEY_REQUIRED"));
 });

@@ -8,7 +8,72 @@ import dns from "node:dns/promises";
 import https from "node:https";
 import {publicIpv4} from "./c35-provider.mjs";
 
+const ABOWAGED_SOURCES=Object.freeze({
+  servers:"https://raw.githubusercontent.com/th3fre/Testing/refs/heads/main/Elk.txt",
+  udp:"https://raw.githubusercontent.com/janatshaban/REMOTEUPDATER/refs/heads/main/pickerver",
+});
+const TURBOMX_SOURCES=Object.freeze({
+  servers:"https://raw.githubusercontent.com/apksdemons/apks2/refs/heads/main/turbomx/servr_turbomx_sv5c",
+  users:"https://raw.githubusercontent.com/apksdemons/apks2/refs/heads/main/turbomx/user_turbomx_sv5c",
+});
+const SUPERFLASH_SOURCES=Object.freeze({
+  servers:"https://raw.githubusercontent.com/apksdemons/apks2/refs/heads/main/supervpn/servr_superflash_sv5c",
+  users:"https://raw.githubusercontent.com/apksdemons/apks2/refs/heads/main/supervpn/user_superflash_sv5c",
+});
+const ONSPACE_SOURCES=Object.freeze({
+  servers:"https://raw.githubusercontent.com/El-Patron-Oficial2003/Metodos/refs/heads/main/OnSpace%20VPN",
+  users:"https://raw.githubusercontent.com/El-Patron-Oficial2003/User-Pass-New/refs/heads/main/OnSpace%20VPN",
+});
+const SOCKETCLAY_SOURCES=Object.freeze({
+  servers:"https://dl.dropboxusercontent.com/scl/fi/vh319xyu0ck84ks0wdqw8/ServersSC?rlkey=b9g57byy0igz2jitqix31t4i4&st=evmzpf11&dl=1",
+  users:"https://dl.dropboxusercontent.com/scl/fi/yas4u26xnhdpz4f8qxkp0/UsersSC?rlkey=jtdh2g84uj6y5j9zp4ca929xk&st=hp49nv1g&dl=1",
+});
+const WAKKO_SOURCES=Object.freeze({
+  "servers": "https://dl.dropboxusercontent.com/scl/fi/a6grfye2vx80gxxydc6aw/ServersWK2?rlkey=ulmj9oxy1xx3fedhrtnzdwrxm&st=93x7687n&dl=1",
+  "users": "https://dl.dropboxusercontent.com/scl/fi/2sc3ud954k0ai07trkdhj/UsersWK?rlkey=k4wqqaawxcddx0kc1sfanof9r&st=dwrzwrmv&dl=1"
+});
+const V2PLUS_SOURCES=Object.freeze({
+  base64:"https://raw.githubusercontent.com/roosterkid/openproxylist/main/V2RAY_BASE64.txt",
+  raw:"https://raw.githubusercontent.com/roosterkid/openproxylist/main/V2RAY_RAW.txt",
+});
+const PAIRED_SOURCES=Object.freeze({"abowaged-vpn":ABOWAGED_SOURCES,"turbomx-vpn":TURBOMX_SOURCES,"superflash-vpn":SUPERFLASH_SOURCES,"onspace-vpn":ONSPACE_SOURCES,"http-socketclay":SOCKETCLAY_SOURCES,"http-wakko":WAKKO_SOURCES,"v2ray-tunnel-plus":V2PLUS_SOURCES});
 const PROVIDERS = Object.freeze({
+  "abowaged-vpn": {url:ABOWAGED_SOURCES.servers,agent:"AboWaged VPN/1.0"},
+  "7net-vpn": {url:"https://raw.githubusercontent.com/MAKE-MONEY-MILLION-DOLLAR-PER-DAY/7net-Team/refs/heads/main/7net%2BAll_Team.js",agent:"7NET VPN/5.6"},
+  "xhypher-tunnel-pro": {url:"https://raw.githubusercontent.com/XyrussProject/infinite88/refs/heads/main/xhyphertunnelpro888.hs",agent:"Xhypher Tunnel Pro/43"},
+  "turbomx-vpn": {url:TURBOMX_SOURCES.servers,agent:"TurboMX VPN/143.1.26"},
+  "superflash-vpn": {url:SUPERFLASH_SOURCES.servers,agent:"SuperFlash VPN/184.0.1"},
+  "rmp-tunnel-pro": {url:"https://raw.githubusercontent.com/pipoyrichards/RMPSYSTEM/refs/heads/main/RMPPRO",agent:"RMP TUNNEL PRO/RMP-5"},
+  "rjc-tunnel-pro": {url:"https://raw.githubusercontent.com/pipoyrichards/RJCPRO/refs/heads/main/FEBRUARY",agent:"RJC TUNNEL PRO/RJC-6"},
+  "onspace-vpn": {url:ONSPACE_SOURCES.servers,agent:"OnSpace VPN/4.2"},
+  "mx-tunnel-pro": {url:"https://rasedpanel.xyz/updater/750b71355b025b19884ee835b759d6",agent:"Mx Tunnel PRO/Mx-Build48"},
+  "megatunnel": {url:"https://raw.githubusercontent.com/SpkHexX/HexX/refs/heads/main/MegaTunnel.js",agent:"MegaTunnel/1.17.1"},
+  "http-internet-infinito": {url:"https://raw.githubusercontent.com/nemygoku/nemy/refs/heads/main/httpinfi",agent:"HTTP Internet Infinito/1.3.9"},
+  "freedom-vpn": {url:"https://raw.githubusercontent.com/geko2023/shield/refs/heads/master/free",agent:"FreedomVPN/1.0.29"},
+  "focus-vpn-cloud": {url:"https://raw.githubusercontent.com/Rotdtd/Upagost17/refs/heads/main/NewSepFocass",agent:"Focus VPN Cloud/5.0"},
+  "v2ray-tunnel-plus": {url:V2PLUS_SOURCES.base64,agent:"V2ray Tunnel Plus/10.0.0"},
+  "http-wakko": {url:WAKKO_SOURCES.servers,agent:"HTTP Wakko/4.9"},
+  "http-socketclay": {
+    url:SOCKETCLAY_SOURCES.servers,
+    agent:"HTTP SocketClay/3.4.0",
+  },
+  "tunneltweak": {
+    url:"https://tunneltweak.com/api/servers",
+    agent:"TunnelTweak/1.0 (Android)",
+    headers:{"ngrok-skip-browser-warning":"true","x-app-version":"51","x-cfg-keyed":"1"},
+  },
+  "http-jireh": {
+    url:"https://raw.githubusercontent.com/alvarofelizzola/GEN-JIREH/refs/heads/main/GENERADOR",
+    agent:"HTTP Jireh/2.0",
+  },
+  "http-fenixvpn": {
+    url:"https://raw.githubusercontent.com/Fenix1998x/GEN-SERVIDORES-NUEVO-24-08-2027/refs/heads/main/Fenix",
+    agent:"HTTP FenixVPN/19.4",
+  },
+  "austroplus-vpn": {
+    url:"https://raw.githubusercontent.com/SpkHexX/HexX/refs/heads/main/AustroPlusVPN.json",
+    agent:"AustroPlus VPN/13.0.1",
+  },
   "ac-tunnel-vpn": {
     url:"https://rttunnelv2ray.xyz/api/files/app?json=7ef7a9a142eb1f77a56f",
     agent:"AC TUNNEL VPN/1.4",
@@ -24,6 +89,10 @@ const PROVIDERS = Object.freeze({
   "mkk-hyper": {
     url:"https://f005.backblazeb2.com/file/mkkhyper/api_server.json",
     agent:"MKK Hyper VPN/2.9.2",
+  },
+  "ksh-vpn": {
+    url:"https://raw.githubusercontent.com/yannaing86tt/ksh_server/main/servers.json",
+    agent:"KSH VPN/1.3.2",
   },
   "my-tunnel-proxy": {
     url:"https://mfmpro.xyz/api/app?json=3c9a2a29f3a4180271da",
@@ -42,13 +111,21 @@ const PROVIDERS = Object.freeze({
     agent:"4U TUNNEL LITE/2.2",
   },
 });
+// All MKK sources are approved literals; no user-supplied download targets.
+const MKK_SOURCES=Object.freeze({
+  servers:"https://f005.backblazeb2.com/file/mkkhyper/api_server.json",
+  static:"https://flashvpn.sgp1.digitaloceanspaces.com/static.json",
+  subscriptions:"https://f005.backblazeb2.com/file/mkkhyper/subscriptions.json",
+  "legacy-subscriptions":"https://raw.githubusercontent.com/Tunzen665/flash-vpn/refs/heads/main/sub.json",
+});
+export function mkkSourceIds(){return Object.keys(MKK_SOURCES);}
 const MAX_BYTES=8*1024*1024;
 const DEADLINE_MS=30000;
 const CONNECT_MS=10000;
 const RETRY_CODES=new Set(["ECONNRESET","ETIMEDOUT","ESOCKETTIMEDOUT","ECONNREFUSED","EHOSTUNREACH","ENETUNREACH","EPIPE"]);
 
 export class VpnProviderError extends Error {
-  constructor(code) {super(code);this.code=code;}
+  constructor(code,{retryable=false}={}) {super(code);this.code=code;this.retryable=retryable;}
 }
 function fail(code){throw new VpnProviderError(code);}
 export function providerEnabled(id,env=process.env){
@@ -66,7 +143,7 @@ async function vettedIpv4(host) {
   return [...new Set(list.map(item=>item.address))].slice(0,8);
 }
 
-function pinnedGet(url,ip,agent,timeout){
+function pinnedGet(url,ip,agent,timeout,headers={}){
   return new Promise((resolve,reject)=>{
     const parsed=new URL(url);
     let settled=false,bytes=0;
@@ -78,7 +155,7 @@ function pinnedGet(url,ip,agent,timeout){
     const req=https.request(parsed,{
       method:"GET",agent:false,rejectUnauthorized:true,minVersion:"TLSv1.2",
       timeout,
-      headers:{"User-Agent":agent,"Accept-Encoding":"identity","Connection":"close"},
+      headers:{...headers,"User-Agent":agent,"Accept-Encoding":"identity","Connection":"close"},
       lookup:(host,options,callback)=>{
         if(host!==parsed.hostname)return callback(Object.assign(new Error("hostname"),{code:"EHOSTUNREACH"}));
         if(options?.all)return callback(null,[{address:ip,family:4}]);
@@ -91,7 +168,13 @@ function pinnedGet(url,ip,agent,timeout){
         res.resume();
         return finish(null,{redirect:location});
       }
-      if(status!==200){res.resume();return finish(new VpnProviderError("REMOTE_PROVIDER_UNAVAILABLE"));}
+      if(status!==200){
+        res.resume();
+        // Retry only transient upstream throttling/outages, never auth, TLS or
+        // a redirected origin. The bound IP, TLS hostname and deadline remain.
+        const retryable=[429,500,502,503,504].includes(status);
+        return finish(new VpnProviderError("REMOTE_PROVIDER_UNAVAILABLE",{retryable}));
+      }
       if((res.headers["content-encoding"]||"identity")!=="identity"){
         res.resume();return finish(new VpnProviderError("REMOTE_RESPONSE_INVALID"));
       }
@@ -112,11 +195,15 @@ function pinnedGet(url,ip,agent,timeout){
   });
 }
 
-export async function downloadVpnCatalog(id){
+export async function downloadVpnCatalog(id,source=id==="v2ray-tunnel-plus"?"base64":"servers"){
   const provider=PROVIDERS[id];
   if(!provider)fail("UNSUPPORTED_FORMAT");
   if(!providerEnabled(id))fail("REMOTE_NOT_CONFIGURED");
-  const initial=new URL(provider.url);
+  if(id!=="mkk-hyper" && !Object.hasOwn(PAIRED_SOURCES,id) && source!=="servers")fail("UNSUPPORTED_FORMAT");
+  if(id==="mkk-hyper" && !Object.hasOwn(MKK_SOURCES,source))fail("UNSUPPORTED_FORMAT");
+  if(Object.hasOwn(PAIRED_SOURCES,id) && !Object.hasOwn(PAIRED_SOURCES[id],source))fail("UNSUPPORTED_FORMAT");
+  const initial=new URL(id==="mkk-hyper"?MKK_SOURCES[source]:
+    Object.hasOwn(PAIRED_SOURCES,id)?PAIRED_SOURCES[id][source]:provider.url);
   if(initial.protocol!=="https:"||initial.port||initial.username||initial.password||
      initial.hash)fail("REMOTE_NETWORK_DENIED");
   const deadline=Date.now()+DEADLINE_MS;
@@ -130,18 +217,25 @@ export async function downloadVpnCatalog(id){
        dest.password||dest.search!==initial.search||dest.hash||dest.port)fail("REMOTE_NETWORK_DENIED");
     const addresses=await vettedIpv4(dest.hostname);
     let redirected=false;
-    for(const ip of addresses){
+    // A single-address CDN sometimes drops one request. Retry once on the
+    // *same revalidated public IPv4* only for temporary HTTP/socket errors.
+    const attempts=addresses.length===1?[addresses[0],addresses[0]]:addresses;
+    for(const ip of attempts){
       const remaining=deadline-Date.now();
       if(remaining<=0)fail("REMOTE_PROVIDER_UNAVAILABLE");
       let answer;
-      try{answer=await pinnedGet(target,ip,provider.agent,Math.min(CONNECT_MS,remaining));}
+      try{answer=await pinnedGet(target,ip,provider.agent,Math.min(CONNECT_MS,remaining),provider.headers);}
       catch(error){
-        if(error instanceof VpnProviderError)throw error;
+        if(error instanceof VpnProviderError){
+          if(!error.retryable)throw error;
+          continue;
+        }
         // TLS/certificate errors and definitive HTTP statuses never retry.
         if(!RETRY_CODES.has(error?.code))fail("REMOTE_PROVIDER_UNAVAILABLE");
         continue;
       }
       if(answer.redirect!==undefined){
+        if(["7net-vpn","xhypher-tunnel-pro","focus-vpn-cloud","freedom-vpn","http-internet-infinito","megatunnel","mx-tunnel-pro","rjc-tunnel-pro","rmp-tunnel-pro"].includes(id)||Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
         const next=answer.redirect;
         if(typeof next!=="string"||next.length>2048)fail("REMOTE_NETWORK_DENIED");
         target=new URL(next,dest).href;

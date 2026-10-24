@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="cloud_legal_title">Условия и конфиденциальность</string>
-    <string name="cloud_legal_explanation">SP-DECODE Cloud отправляет на сервер только выбранные вами файлы или тексты. Они могут содержать конфиденциальные учетные данные.</string>
+    <string name="cloud_legal_explanation">SP-DECODE Cloud отправляет на сервер только выбранные вами файлы или тексты для обработки. Также раз в сутки оценивается число активных установок по случайному коду для планирования мощности. Содержимое конфигураций не используется.</string>
     <string name="cloud_legal_terms">Прочитать условия</string>
     <string name="cloud_legal_privacy">Прочитать политику конфиденциальности</string>
     <string name="cloud_legal_accept_check">Я прочитал(а) и принимаю условия и политику конфиденциальности.</string>

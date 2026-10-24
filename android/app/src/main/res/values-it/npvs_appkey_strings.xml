@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_failure_npvs_appkey_auth">Impossibile autenticare questo file NPVS con la chiave dell’app. Potrebbe utilizzare una variante diversa o essere stato modificato. Questo metodo non richiede password né chiavi private del destinatario.</string>
+</resources>

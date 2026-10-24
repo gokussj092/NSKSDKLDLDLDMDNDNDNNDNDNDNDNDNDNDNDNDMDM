@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="file_extension_unsupported_contact">Esta extensão de arquivo não é compatível. Entre em contato com o desenvolvedor para solicitar suporte.</string>
+    <string name="text_format_unsupported_contact">Este formato de texto ou protocolo não é compatível. Entre em contato com o desenvolvedor para solicitar suporte.</string>
+    <string name="formats_remote_catalog_note">As extensões compatíveis são sincronizadas com segurança pelo SP-DECODE Cloud. Novos formatos podem surgir sem atualizar o aplicativo.</string>
+    <string name="formats_cloud_ready_short">Nuvem</string>
+</resources>

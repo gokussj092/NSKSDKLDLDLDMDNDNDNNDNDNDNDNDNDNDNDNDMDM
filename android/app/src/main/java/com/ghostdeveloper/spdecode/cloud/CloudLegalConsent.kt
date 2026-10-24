@@ -6,6 +6,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
@@ -17,11 +18,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import org.json.JSONObject
 
 internal object CloudLegalConsent {
-    const val VERSION=20261018
+    const val VERSION=20261020
     const val TERMS="https://spdecode.xyz/terms"
     const val PRIVACY="https://spdecode.xyz/privacy"
 
@@ -68,5 +70,13 @@ internal fun CloudLegalConsentDialog(
         },
         confirmButton={ Button(onClick=onAccept,enabled=checked){Text(stringResource(R.string.cloud_legal_accept))} },
         dismissButton={ TextButton(onClick=onDecline){Text(stringResource(R.string.cloud_legal_decline))} },
+        // This modal is hosted by MainActivity rather than the SpDecodeApp
+        // screen; explicit AMOLED colors prevent light/purple Material defaults.
+        containerColor=Color.Black,
+        titleContentColor=Color(0xFFF7F7F7),
+        textContentColor=Color(0xFFF7F7F7),
+        iconContentColor=Color(0xFFF7F7F7),
+        tonalElevation=0.dp,
+        shape=RoundedCornerShape(18.dp),
     )
 }

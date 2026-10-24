@@ -1,5 +1,6 @@
 """Regression checks for private NUR Tunnel endpoint and HTTP Custom text contrast."""
 from pathlib import Path
+import re
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -29,7 +30,8 @@ class NurEndpointPrivacyTest(unittest.TestCase):
         start = source.index("private fun ServerVpnScreen(")
         end = source.index("@Composable\nprivate fun CardText", start)
         screen = source[start:end]
-        self.assertNotIn("OutlinedTextField", screen)
+        # A provider search is expected; only raw catalog URLs remain prohibited.
+        self.assertIn("OutlinedTextField", screen)
         self.assertNotIn("nur_servers_catalog_url", screen)
         self.assertNotIn("var url", screen)
         self.assertIn("Button(onClick=onDecodeCatalog", screen)
@@ -39,8 +41,12 @@ class NurEndpointPrivacyTest(unittest.TestCase):
         source = (ANDROID / "HcProtectedImportDialog.kt").read_text("utf-8")
         self.assertEqual(source.count("textStyle=TextStyle(color=Color(0xFFF7F7F7))"), 2)
         gradle = (ROOT / "android/app/build.gradle.kts").read_text("utf-8")
-        self.assertIn('versionName = "1.1.4"', gradle)
-        self.assertIn("versionCode = 25", gradle)
+        # Release metadata evolves independently of the original NUR UI fix.
+        version = re.search(r'versionName\s*=\s*"([^"]+)"', gradle)
+        code = re.search(r'versionCode\s*=\s*(\d+)', gradle)
+        self.assertIsNotNone(version)
+        self.assertIsNotNone(code)
+        self.assertGreaterEqual(int(code.group(1)), 30)
 
 
 if __name__ == "__main__":

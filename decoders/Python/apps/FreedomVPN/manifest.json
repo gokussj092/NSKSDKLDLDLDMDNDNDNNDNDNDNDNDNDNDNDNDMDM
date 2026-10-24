@@ -1,0 +1,59 @@
+{
+  "id": "freedom-vpn",
+  "name": "FreedomVPN",
+  "package": "com.zfreevpn.dev",
+  "compatibleVersions": [
+    "1.0.29"
+  ],
+  "versionCode": 125,
+  "engine": "python-custom-delta-xxtea-mixed-aes-rot25",
+  "engineVersion": 1,
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "freedom-vpn",
+    "url": "https://raw.githubusercontent.com/geko2023/shield/refs/heads/master/free",
+    "validatedOn": "2026-10-22",
+    "remoteAuthorization": "Explicit user authorization for external catalogs",
+    "remoteValidated": true,
+    "remoteVersion": "4.4.88",
+    "remoteServersObserved": 147,
+    "remoteFieldsCompared": 1176,
+    "remoteBytes": 292761,
+    "remoteSha256": "9bb1f8f6c99935c2b591f4b93e01a8a7d7655bf56e0e89cdeca5c744e81856a7",
+    "embeddedVersion": "1.0.0",
+    "embeddedServersObserved": 1,
+    "customXxteaDelta": -170877363,
+    "separateUserCatalogIdentified": false,
+    "validation": "Complete embedded/remote JSON equals independent JDK reference; live CLI and isolated worker match. Stored ServerPass has compatible P5/obfs-key encoding; runtime V10.d password generation is not performed.",
+    "publicCatalogVersion": 21,
+    "publicCatalogCards": 23,
+    "deploymentEnabledByDefault": false,
+    "testScope": "3 Python and 18 targeted web tests; no full suites, Android, VPS deployment or VPN sessions. External Python HTTPS real; Node transport controlled."
+  },
+  "files": {
+    "supported": false,
+    "validation": "Catalog-only integration; no new exported file route certified or registered."
+  },
+  "icon": {
+    "file": "FreedomVPN.png",
+    "source": "base.apk:res/mipmap-xxxhdpi-v4/ic_launcher.png",
+    "bytes": 24646,
+    "width": 192,
+    "height": 192,
+    "sha256": "70750ce9d34de700556f0c3db93c1a3677ebbe581c06ba267833e449ded63234",
+    "policy": "Exact original compatibility launcher PNG; adaptive XML is not reconstructed."
+  },
+  "dependencies": {
+    "python": ">=3.10",
+    "pycryptodome": "3.23.0",
+    "supportFiles": [
+      "codec.py",
+      "../HTTP_FenixVPN/codec.py",
+      "../HTTP_FenixVPN/field_names.json"
+    ]
+  },
+  "sourceApkSha256": "db35c805e18bf8524f51dfaacdef0ae165dd80cd1d75c83ef16b06c8bd1979b8",
+  "branch": "feat/austroplus-vpn-13-0-1-decoders",
+  "pullRequest": 96,
+  "analyzedBaseCommit": "1a6237a8305999c06a6deea6e2c72b3dd53329e2"
+}

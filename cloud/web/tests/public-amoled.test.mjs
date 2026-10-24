@@ -45,7 +45,45 @@ test("ES and EN complete and legal pages remain available",()=>{
  assert.match(home,/Tus configuraciones, más claras/);
  assert.match(legal,/Política|Privacidad|Privacidad y tratamiento/);
  assert.match(legal,/Privacy and data processing/);
- assert.match(legal,/October 18, 2026/);
+ assert.match(legal,/October 19, 2026/);
  for(const page of ["app/privacy/page.jsx","app/terms/page.jsx","app/support/page.jsx"])
   assert.match(read(page),/PublicLegal/);
+});
+
+test("public header hides legal links while the footer retains privacy, terms and support",()=>{
+ const chrome=read("app/public/site-chrome.jsx");
+ const header=chrome.slice(chrome.indexOf('<header className="sp-public-header">'),chrome.indexOf('</header>')+9);
+ const footer=chrome.slice(chrome.indexOf('<footer className="sp-public-footer">'),chrome.indexOf('</footer>')+9);
+ for(const path of ["/privacy","/terms","/support"]){
+  assert.ok(!header.includes('href="'+path+'"'),"header exposes "+path);
+  assert.ok(footer.includes('href="'+path+'"'),"footer missing "+path);
+ }
+ assert.ok(!header.includes('className="sp-nav"'));
+ assert.ok(header.includes('className="sp-logo"'));
+ assert.ok(header.includes('className="sp-language"'));
+});
+test("Google Play-style gallery scrolls horizontally without manual navigation buttons",()=>{
+ const home=read("app/public/home.jsx"),css=read("app/public/public.css");
+ const gallery=home.slice(home.indexOf("function Gallery({t})"),home.indexOf("export default function Home(){"));
+ assert.ok(gallery.includes('className="sp-gallery-viewport"'));
+ assert.ok(gallery.includes("onPointerMove"));
+ assert.ok(gallery.includes("onKeyDown"));
+ assert.ok(gallery.includes('role="region"'));
+ assert.ok(!gallery.includes("<button"));
+ assert.ok(!gallery.includes("translateX("));
+ for(const selector of ["overflow-x:auto","scroll-snap-type:x mandatory","scroll-snap-align:start"])assert.ok(css.includes(selector));
+ assert.ok(home.includes("Desliza horizontalmente"));
+ assert.ok(home.includes("Swipe horizontally"));
+});
+
+test("Google Play button is disabled and cannot redirect to GitHub",()=>{
+ const home=read("app/public/home.jsx");
+ const css=read("app/public/public.css");
+ assert.doesNotMatch(home,/github\.com|\/releases|href=.*download/i);
+ assert.match(home,/play:"Google Play"/);
+ assert.match(home,/download:"Próximamente"/);
+ assert.match(home,/download:"Coming soon"/);
+ assert.match(home,/<button className="sp-button sp-button-play-pending"[^>]*disabled/);
+ assert.match(home,/\{t\.play\}/);
+ assert.match(css,/\.sp-button-play-pending:disabled\{cursor:not-allowed\}/);
 });

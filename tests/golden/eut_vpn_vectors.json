@@ -1,0 +1,90 @@
+{
+  "provenance": "Synthetic ciphertext generated independently using JDK AES/CBC/PKCS5Padding and build-370 sza.b key truncation; no real catalog.",
+  "source": {
+    "SERVER": [
+      {
+        "version_code": 370,
+        "version_name": "synthetic",
+        "data": "ySdEEUNKrhsMxJOBag6r1z4RVavPRV/zSIt6SwoiNFJppupYeNlH1TmJd3odLuxEHQJ2NRFfsXoMTQ7lg0JAOA==:AQIDBAUGBwgJCgsMDQ4PEA==",
+        "unknown": {
+          "encrypted": "PKkNIY8pCRQpQYM29YBo22mEDUyIrwJSVdqhpKvzIhvnMxyNWa2+jQ8CGloRvhtlO4PqvBoMZRCJ4XIEt5TBSmZaeOAz5Q1xIgOUEUPadvA=:AQIDBAUGBwgJCgsMDQ4PEA=="
+        }
+      },
+      {
+        "version_code": 371,
+        "data": "ySdEEUNKrhsMxJOBag6r1z4RVavPRV/zSIt6SwoiNFJppupYeNlH1TmJd3odLuxEHQJ2NRFfsXoMTQ7lg0JAOA==:AQIDBAUGBwgJCgsMDQ4PEA=="
+      }
+    ],
+    "PAYLOAD": [
+      {
+        "version_code": 2,
+        "data": "ySdEEUNKrhsMxJOBag6r18GiMgWVSS3I+93jD5agBXQ2f8vYaGeK43xI5ZUehi+Y+UTM3YMIkJc/uMeh7TZDPiBlxf4qHsxEgDLE3t+n0vg=:AQIDBAUGBwgJCgsMDQ4PEA=="
+      }
+    ],
+    "unknown": {
+      "empty": "",
+      "nullable": null,
+      "typed": [
+        true,
+        4
+      ],
+      "encrypted": "9RyZtfaKX9Fq4RbFvDePlw==:AQIDBAUGBwgJCgsMDQ4PEA=="
+    }
+  },
+  "expected": {
+    "SERVER": [
+      {
+        "version_code": 370,
+        "version_name": "synthetic",
+        "data": [
+          {
+            "name": "Synthetic",
+            "server_id": "7",
+            "host": "example.invalid"
+          }
+        ],
+        "unknown": {
+          "encrypted": {
+            "host": "example.invalid",
+            "user": "synthetic",
+            "unknown": [
+              null,
+              false,
+              3
+            ]
+          }
+        }
+      },
+      {
+        "version_code": 371,
+        "data": [
+          {
+            "name": "Synthetic",
+            "server_id": "7",
+            "host": "example.invalid"
+          }
+        ]
+      }
+    ],
+    "PAYLOAD": [
+      {
+        "version_code": 2,
+        "data": [
+          {
+            "name": "Synthetic payload",
+            "payload_template": "GET / HTTP/1.1\r\n\r\n"
+          }
+        ]
+      }
+    ],
+    "unknown": {
+      "empty": "",
+      "nullable": null,
+      "typed": [
+        true,
+        4
+      ],
+      "encrypted": "370"
+    }
+  }
+}

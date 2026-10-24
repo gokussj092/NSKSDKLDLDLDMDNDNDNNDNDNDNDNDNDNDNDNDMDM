@@ -13,6 +13,10 @@ from engine import DecodeFailure, MAX_INPUT_BYTES, decode_file, decode_text, dec
 
 # Input is JSON + base64; accept at most bounded overhead. C3 owns public upload parsing.
 MAX_JSON_BYTES = (MAX_INPUT_BYTES * 4 // 3) + 65536
+# The approved MKK bundle carries up to four fixed-source envelopes and
+# is itself Base64-wrapped by the internal broker. Not a public upload limit.
+MAX_MKK_BUNDLE_BYTES = 45 * 1024 * 1024
+MAX_SERVER_VPN_JSON_BYTES = max(MAX_JSON_BYTES, ((MAX_MKK_BUNDLE_BYTES + 2) // 3) * 4 + 65536)
 
 
 class WorkerHandler(BaseHTTPRequestHandler):
@@ -71,23 +75,26 @@ class WorkerHandler(BaseHTTPRequestHandler):
         if not self._authorized():
             return self._json(403, {"error": {"code": "FORBIDDEN"}})
         declared = self.headers.get("Content-Length", "")
-        if not declared.isascii() or not declared.isdecimal() or int(declared) > MAX_JSON_BYTES:
+        route_limit = MAX_SERVER_VPN_JSON_BYTES if self.path == "/internal/v1/decode/import/server-vpn" else MAX_JSON_BYTES
+        if not declared.isascii() or not declared.isdecimal() or int(declared) > route_limit:
             return self._json(413, {"error": {"code": "INPUT_TOO_LARGE"}})
         try:
             request = json.loads(self.rfile.read(int(declared)))
             if not isinstance(request, dict):
                 raise ValueError("schema")
             if self.path == "/internal/v1/decode/text":
-                if set(request) != {"text"} or not isinstance(request["text"], str):
+                if "text" not in request or set(request) - {"text", "credentials"} or not isinstance(request["text"], str):
                     raise ValueError("text schema")
-                result = decode_text(request["text"])
+                result = decode_text(request["text"], credentials=request.get("credentials"))
             elif self.path == "/internal/v1/decode/import/server-vpn":
                 if set(request) != {"providerId", "dataBase64"} or not isinstance(request["providerId"], str):
                     raise ValueError("provider schema")
                 encoded=request["dataBase64"]
-                if not isinstance(encoded,str) or len(encoded) > (MAX_INPUT_BYTES*4//3+8):
+                provider=request["providerId"]
+                limit=MAX_MKK_BUNDLE_BYTES if provider=="mkk-hyper" else MAX_INPUT_BYTES
+                if not isinstance(encoded,str) or len(encoded) > ((limit+2)//3)*4:
                     raise DecodeFailure("INPUT_TOO_LARGE")
-                result=decode_provider_catalog(request["providerId"],base64.b64decode(encoded,validate=True))
+                result=decode_provider_catalog(provider,base64.b64decode(encoded,validate=True))
             elif self.path == "/internal/v1/decode/import/catalog":
                 if set(request) != {"dataBase64"} or not isinstance(request["dataBase64"], str):
                     raise ValueError("catalog schema")
@@ -102,14 +109,27 @@ class WorkerHandler(BaseHTTPRequestHandler):
                 if not isinstance(encoded, str) or len(encoded) > (MAX_INPUT_BYTES * 4 // 3 + 8):
                     raise DecodeFailure("INPUT_TOO_LARGE")
                 contents = base64.b64decode(encoded, validate=True)
-                result = decode_file(request["format"], contents, credentials=request.get("credentials"))
+                result = decode_file(request["format"], contents,
+                                     credentials=request.get("credentials"), full_hat=True)
         except (ValueError, TypeError, base64.binascii.Error):
             return self._json(400, {"error": {"code": "INVALID_REQUEST"}})
         except DecodeFailure as error:
-            status = {"INPUT_TOO_LARGE": 413, "UNSUPPORTED_FORMAT": 422, "ENGINE_TIMEOUT": 504,
-                      "ENGINE_UNAVAILABLE": 503, "OUTPUT_TOO_LARGE": 413, "CREDENTIALS_NOT_ALLOWED": 400, "INVALID_CREDENTIALS": 400,
-                      "PASSWORD_REQUIRED": 422, "HWID_REQUIRED": 422, "HWID_PASSWORD_REQUIRED": 422,
-                      "AUTH_FAILED": 422}.get(error.code, 422)
+            # Stable HTTP semantics for Android 1.1.19: incompatible exporter
+            # methods are expected 422 responses; bad input is 400; worker
+            # outages are 503/504. Never promote a crypto failure to an outage.
+            status = {"INPUT_TOO_LARGE": 413, "OUTPUT_TOO_LARGE": 413,
+                      "INVALID_REQUEST": 400, "INVALID_INPUT": 400,
+                      "INVALID_BASE64": 400, "INVALID_CREDENTIALS": 400,
+                      "CREDENTIALS_NOT_ALLOWED": 400,
+                      "UNSUPPORTED_FORMAT": 422, "UNSUPPORTED_VERSION": 422,
+                      "UNSUPPORTED_METHOD": 422, "UNSUPPORTED_VARIANT": 422,
+                      "NPVS_PROTECTION_UNSUPPORTED": 422,
+                      "PASSWORD_REQUIRED": 422, "HWID_REQUIRED": 422,
+                      "HWID_PASSWORD_REQUIRED": 422, "AUTH_FAILED": 422,
+                      "PRIVATE_KEY_REQUIRED": 422, "RECIPIENT_MISMATCH": 422,
+                      "NPVS_APPKEY_AUTH_FAILED": 422,
+                      "ENGINE_TIMEOUT": 504, "ENGINE_UNAVAILABLE": 503,
+                      }.get(error.code, 422)
             return self._json(status, {"error": {"code": error.code}})
         return self._json(200, result)
 
