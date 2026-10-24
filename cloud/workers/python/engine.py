@@ -300,7 +300,16 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
                     code = None
                 if code in ("PASSWORD_REQUIRED", "HWID_REQUIRED", "HWID_PASSWORD_REQUIRED", "AUTH_FAILED",
                             "PRIVATE_KEY_REQUIRED", "RECIPIENT_MISMATCH", "INVALID_CREDENTIALS",
-                            "NPVS_PROTECTION_UNSUPPORTED", "NPVS_APPKEY_AUTH_FAILED"):
+                            "INVALID_INPUT", "UNSUPPORTED_VERSION", "UNSUPPORTED_METHOD",
+                            "UNSUPPORTED_VARIANT", "NPVS_PROTECTION_UNSUPPORTED",
+                            "NPVS_APPKEY_AUTH_FAILED"):
+                    # The NPVS decoder authenticates its signed envelope before
+                    # opening app-key. A failed recognized app-key is ambiguous:
+                    # unsupported exporter/key variant OR altered signed input,
+                    # never proof that an ECDH recipient private key is needed.
+                    # Android 1.1.19 already has a localized variant notice.
+                    if suffix == "npvs" and code == "NPVS_APPKEY_AUTH_FAILED":
+                        raise DecodeFailure("UNSUPPORTED_VARIANT")
                     raise DecodeFailure(code)
             raise DecodeFailure("DECODE_FAILED")
         if not raw.strip():
@@ -464,7 +473,8 @@ def decode_text(text: str, *, timeout: int = TIMEOUT_SECONDS, credentials: dict 
             except (UnicodeError, ValueError, AttributeError):
                 code = None
             if code in ("PASSWORD_REQUIRED", "AUTH_FAILED", "PRIVATE_KEY_REQUIRED",
-                        "RECIPIENT_MISMATCH", "INVALID_CREDENTIALS",
+                        "RECIPIENT_MISMATCH", "INVALID_CREDENTIALS", "INVALID_INPUT",
+                        "UNSUPPORTED_VERSION", "UNSUPPORTED_METHOD", "UNSUPPORTED_VARIANT",
                         "NPVS_PROTECTION_UNSUPPORTED"):
                 raise DecodeFailure(code)
         if returncode != 0 or not raw.strip():
