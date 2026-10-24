@@ -15,7 +15,7 @@ def _var(value: int) -> bytes:
         out.append((value & 127) | 128)
         value >>= 7
     out.append(value)
-    return bytes(out + bytes([value]))
+    return bytes(out)
 
 
 def _num(field: int, value: int) -> bytes:
