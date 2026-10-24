@@ -40,6 +40,8 @@ object AndroidDecoderCatalog {
         val androidVerified: Boolean,
         val migrationPhase: String,
         val cloudSupported: Boolean = true,
+        // Validated Cloud catalog metadata, never an Android decoder or key.
+        val credentialFields: Set<String> = emptySet(),
     ) {
         val hasNativeDecoder: Boolean
             get() = (migrationPhase == "legacy" &&
