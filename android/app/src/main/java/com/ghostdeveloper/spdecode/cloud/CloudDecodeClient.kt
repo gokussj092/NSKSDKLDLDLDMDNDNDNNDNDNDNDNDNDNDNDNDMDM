@@ -252,12 +252,15 @@ internal class CloudDecodeClient(context: Context) {
         }
 
     suspend fun decodeFile(format: String, bytes: ByteArray,
-                           password: ByteArray? = null, hwid: String? = null): String {
+                           password: ByteArray? = null, hwid: String? = null,
+                           allowPasswordFromCatalog: Boolean = false): String {
         if (bytes.isEmpty() || bytes.size > MAX_INPUT) throw IOException("CLOUD_INVALID_INPUT")
         if (format.isBlank() || (!format.matches(Regex("[a-z0-9._-]{1,64}")) && format != "fɴ"))
             throw IOException("CLOUD_INVALID_FORMAT")
-        if ((password != null && (!CloudCredentialPolicy.fileAcceptsPassword(format) ||
-                password.isEmpty() || password.size>4096)) ||
+        // Future password-capable engines may be announced by a validated remote
+        // format snapshot. The worker independently enforces its own allowlist.
+        if ((password != null && (!(CloudCredentialPolicy.fileAcceptsPassword(format) ||
+                allowPasswordFromCatalog) || password.isEmpty() || password.size>4096)) ||
             (hwid != null && format != "hc"))
             throw IOException("CLOUD_CREDENTIALS_NOT_ALLOWED")
         val body = JSONObject()
