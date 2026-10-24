@@ -85,6 +85,26 @@ class RemoteFormatsAndroidTests(unittest.TestCase):
         self.assertLess(route.index(pinned),route.index('AndroidDecoderCatalog.read(this@MainActivity)'))
         self.assertIn('"awg" to "AboWaged VPN 1.0"',fallback)
 
+    def test_cloud_generated_ui_uses_dynamic_snapshot_during_import(self):
+        """The frozen C0 Activity is patched only in generated Cloud sources."""
+        gradle=(ROOT/"android/app/build.gradle.kts").read_text("utf-8")
+        client=(JAVA/"cloud/CloudDecodeClient.kt").read_text("utf-8")
+        repository=(JAVA/"cloud/ServerVpnCatalogRepository.kt").read_text("utf-8")
+        model=(JAVA/"parity/AndroidDecoderCatalog.kt").read_text("utf-8")
+        for token in (
+            'if(newTab==2)refreshServerVpn()',
+            'serverVpnCatalog.cachedFormats().also { fileFormats=it }',
+            'AndroidDecoderCatalog.detect(routingName,latestFileFormats)',
+            'CloudCatalogUpdates.enabled(this@MainActivity)',
+            'var checkedUnknownSuffix=false',
+            'allowPasswordFromCatalog="password" in supported.credentialFields',
+        ):
+            self.assertIn(token,gradle)
+        self.assertIn('credentialFields=credentialNames.toSet()',repository)
+        self.assertIn('val credentialFields: Set<String> = emptySet()',model)
+        self.assertIn('allowPasswordFromCatalog: Boolean = false',client)
+        self.assertNotIn('decoders/Python/',client)
+
     def test_14_locales_have_specific_notices_with_matching_keys(self):
         for locale in LOCALES:
             with self.subTest(locale=locale):
