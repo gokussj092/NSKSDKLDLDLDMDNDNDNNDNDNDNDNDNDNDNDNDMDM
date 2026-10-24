@@ -249,7 +249,7 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
         // ONLY into the Cloud variant, along with matching MainActivity args.
         app = replaceOnce(app,
             "    onDismissError:()->Unit,",
-            "    onDismissError:()->Unit,\\n    noticeOnly:Boolean=false,".replace("\\n","\n"))
+            "    onDismissError:()->Unit,\n    noticeOnly:Boolean=false,".replace("\n","\n"))
         app = replaceOnce(app,
             "title={Text(stringResource(R.string.decode_notice_title))}",
             "title={Text(stringResource(if(noticeOnly) " +
@@ -287,7 +287,7 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
         // In Cloud builds, the Formats screen must display the last cached
         // remote inventory regardless of the user's automatic-sync setting.
         activity = replaceOnce(activity,
-            "if(newTab==2 && CloudCatalogUpdates.enabled(this@MainActivity))\\n                        refreshServerVpn()",
+            "if(newTab==2 && CloudCatalogUpdates.enabled(this@MainActivity))\n                        refreshServerVpn()",
             "if(newTab==2)refreshServerVpn()")
         // Android 15/16: Cloud builds opt into edge-to-edge on older devices too.
         // The original C0 UI sources stay byte-for-byte unchanged.
@@ -377,7 +377,7 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
         // Re-read the encrypted catalog for every user-initiated batch.
         // A background worker can update it while the Activity is alive.
         batch=replaceOnce(batch,
-            "                historyLoad?.await()\\n                var failedNpvs=false",
+            "                historyLoad?.await()\n                var failedNpvs=false",
             """                historyLoad?.await()
                 var latestFileFormats=if(BuildConfig.SPDECODE_CLOUD_ENABLED)
                     serverVpnCatalog.cachedFormats().also { fileFormats=it }
