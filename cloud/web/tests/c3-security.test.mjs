@@ -4,7 +4,7 @@ import { generateKeyPairSync } from "node:crypto";
 import { settings } from "../lib/c3-config.mjs";
 import { checkIntegrityVerdict, verifyPlayToken } from "../lib/c3-integrity.mjs";
 import { createChallenge, issueSession, requireSession, verifySignature } from "../lib/c3-session.mjs";
-import { decodeRequest, sessionRequest, challengeRequest, readinessRequest, capabilitiesRequest } from "../lib/c3-gateway.mjs";
+import { decodeRequest, sessionRequest, challengeRequest, readinessRequest, capabilitiesRequest, failure } from "../lib/c3-gateway.mjs";
 import { safeErrorCode, classifyWorkerOutcome } from "../lib/c6-ops-store.mjs";
 import { recordAutomaticIncident } from "../lib/c9-diagnostics.mjs";
 
@@ -164,6 +164,26 @@ test("Cloud file credential allowlist follows validated format metadata, never c
     assert.equal(response.status,400);
   }
   assert.equal(workerCalls,1);
+});
+
+test("C3 keeps unsupported methods, versions and app-key variants distinct from outages",async()=>{
+  for(const code of ["UNSUPPORTED_VERSION","UNSUPPORTED_METHOD","UNSUPPORTED_VARIANT"]){
+    const response=failure(code,422);
+    assert.equal(response.status,422);
+    const body=await response.json();
+    assert.equal(body.error.code,code);
+    assert.notEqual(body.error.message,"Servicio temporalmente no disponible.");
+    assert.equal(safeErrorCode(code),code);
+    assert.equal(classifyWorkerOutcome("failed",{kind:"file",format:"npvs",errorCode:code}),"warning");
+    assert.equal(await recordAutomaticIncident(null,"failed",{kind:"file",format:"npvs",errorCode:code}),null);
+  }
+  for(const code of ["PRIVATE_KEY_REQUIRED","NPVS_PROTECTION_UNSUPPORTED","NPVS_APPKEY_AUTH_FAILED"]){
+    assert.equal((await failure(code,422).json()).error.code,code);
+    assert.equal(await recordAutomaticIncident(null,"failed",{kind:"file",format:"npvs",errorCode:code}),null);
+  }
+  assert.equal(classifyWorkerOutcome("failed",{kind:"file",format:"npvs",errorCode:"INVALID_INPUT"}),"ignored");
+  assert.equal(await recordAutomaticIncident(null,"failed",{kind:"file",format:"npvs",errorCode:"INVALID_INPUT"}),null);
+  assert.equal(classifyWorkerOutcome("failed",{kind:"file",format:"hc",errorCode:"ENGINE_UNAVAILABLE"}),"failed");
 });
 
 test("C3 challenge and session routes can be exercised with injected verifier; replay denied",async()=>{
