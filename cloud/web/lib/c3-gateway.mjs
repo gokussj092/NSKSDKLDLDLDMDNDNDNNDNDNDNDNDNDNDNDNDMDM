@@ -220,7 +220,7 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
            typeof x.obfs!=="string" || typeof x.auth!=="string") ||
          JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))throw Error("INVALID_WORKER_RESULT");
     }
-    if(kind==="server-vpn" && payload?.providerId==="apna-vpn"){
+    if(kind==="server-vpn" && ["apna-vpn","bd-net-vpn"].includes(payload?.providerId)){
       let parsed;
       try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
       if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId ||

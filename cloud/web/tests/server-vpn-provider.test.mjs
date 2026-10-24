@@ -7,6 +7,7 @@ import {downloadVpnCatalog,mkkSourceIds} from "../lib/server-vpn-provider.mjs";
 import {packMkkSources} from "../lib/mkk-source-bundle.mjs";
 
 for(const provider of [
+  {id:"bd-net-vpn",host:"raw.githubusercontent.com",path:"/panigbatanc/BDNET2023/main/JSONDEC2025",query:"",agent:"BD NET VPN/PrinceBuild111"},
   {id:"aura-net-vpn",host:"strongteam.co",path:"/api/kidvpn/v4/aurav1.txt",query:"",agent:"Aura Net VPN"},
   {id:"apna-vpn",host:"paperonboard.com",path:"/updater/3c3c4c58d864ca394da16656b4d0c4",query:"",agent:"Dalvik/2.1.0"},
   {id:"any-vpn",host:"free-panel.myprotectionservices.com",path:"/uploads/json/1e760370dff563b8fa00.json",query:"",agent:"okhttp/5.0.0-alpha.12"},

@@ -1,5 +1,22 @@
 # SP-DECODE Cloud — Guía para ampliar Server VPN en otro chat
 
+**Estado más reciente, 2026-10-24: BD NET VPN PrinceBuild111 (111)**, PR #99
+sobre Aura `5a5abe5`, paquete `dastan.prince.bdfreevpn`. Catálogo asset real
+57 / 20 servidores / 257 Payloads y remoto literal real **56 / 19 / 255**:
+el remoto es anterior, no mezclar ni renumerar. Ambos completos iguales a
+JDK y worker; 187 campos cifrados distintos por documento. XXTEA modificado
+nm + XOR nativo, UTF JNI no canónico y anexo binario `_spdecodeBinaryFields`
+para una carga por catálogo; conserva hex y todos los bytes. No usar
+errors=ignore ni truncar la recuperación. `.bdnet` y `bdnet://` preexistentes
+actualizados; contraseña comprobada después del descifrado. Cinco vectores
+ARM64 originales iguales, 71 Python / 295 Node y build web correctos.
+LIAPP presente, DEX protegido completo pendiente; no es necesario para los
+lectores de formato verificados. Falta `.bdnet` real del build y Android/Termux.
+Tarjeta, PNG original, broker fijo e interruptor persistente. Mínimo **44 /
+45 fichas**, C0 **240**, C8 **252**, 24 overrides. Script stdlib, herramientas
+y recuperación conservados. No fusionar, desplegar, publicar APK ni C11.
+Los estados de abajo son históricos.
+
 **Estado más reciente, 2026-10-24: Aura Net VPN AuraNet_v9 (19)** completado
 en PR #99 sobre APNA `a76add0`. Paquete `civ.snipher.v2ray`. `.aura` ya existía:
 override C8 y delegación del bot conservan el lector histórico. Claves nuevas

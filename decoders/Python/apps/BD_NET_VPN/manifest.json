@@ -1,0 +1,74 @@
+{
+  "id": "bd-net-vpn",
+  "name": "BD NET VPN",
+  "package": "dastan.prince.bdfreevpn",
+  "versionName": "PrinceBuild111",
+  "versionCode": 111,
+  "engine": "python",
+  "entrypoint": "file_decoder.py",
+  "extensions": [
+    "bdnet"
+  ],
+  "textPrefixes": [
+    "bdnet://"
+  ],
+  "dependencies": {
+    "python": ">=3.10",
+    "standardLibraryOnly": true
+  },
+  "credentials": [],
+  "userPasswordCryptographicallyRequired": false,
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "bd-net-vpn",
+    "embeddedAsset": "assets/gunny.json",
+    "embeddedVersion": "57",
+    "embeddedServers": 20,
+    "embeddedPayloads": 257,
+    "embeddedEncryptedBytes": 471448,
+    "remote": "fixed-apk-literal-get",
+    "remoteVerifiedVersion": "56",
+    "remoteVerifiedServers": 19,
+    "remoteVerifiedPayloads": 255,
+    "remoteEncryptedBytes": 469153,
+    "publicVisible": true,
+    "cardDecodeEnabled": true,
+    "remoteOlderThanEmbedded": true,
+    "originalSections": 18,
+    "nestedDistinctEncryptedFieldsPerCatalog": 187,
+    "binaryRecoveryFieldsPerCatalog": 1,
+    "encryptionAuthenticated": false
+  },
+  "icon": {
+    "originalResource": "res/drawable/ic_app_icon.png",
+    "bytes": 36294,
+    "sha256": "46c3149a1e70087a9c34bc4b06b432ebd285b64762ab23ed4368d2cb4b7bce45"
+  },
+  "files": {
+    "validation": "Source-derived XOR/JNI format, synthetic locked/unlocked profiles, complete JDK and file/text worker parity",
+    "realExportVerified": false,
+    "metadataPasswordIsPostDecryptionLock": true
+  },
+  "binaryRecovery": {
+    "reservedRootKey": "_spdecodeBinaryFields",
+    "retainsSourceHex": true,
+    "retainsCompleteXorBytesBase64": true,
+    "visibleValue": "C-string prefix only when full bytes are not UTF text after NUL"
+  },
+  "historicalCompatibility": {
+    "alreadyRegistered": true,
+    "canonicalSource": "decoders/Python/xor_family.py",
+    "genericC0RunChanged": false
+  },
+  "appProtection": {
+    "liappPresent": true,
+    "completeProtectedDexRecovered": false,
+    "readerNeedsProtectedDex": false
+  },
+  "cloudProfileTokenServiceIdentified": false,
+  "androidRuntimeTested": false,
+  "termuxRuntimeTested": false,
+  "branch": "feat/mm-tunnel-1-10-11-1-decoders",
+  "pullRequest": 99,
+  "deployment": "not-requested"
+}

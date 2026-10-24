@@ -1,5 +1,51 @@
 # Recuperar herramientas después de perder el entorno
 
+## BD NET VPN PrinceBuild111 (111) — 2026-10-24
+
+PR #99 sobre Aura `5a5abe5`, sin fusionar/desplegar/publicar APK ni C11.
+Código y evidencia en `apps/BD_NET_VPN/`. C0 240, C8 252, 24 overrides,
+mínimo catálogo 44 / 45 fichas. Conservar switches y valores desconocidos.
+
+```sh
+python scripts/apk_analysis/inspect_apk.py /privado/BDNET.apks /privado/bdnet \
+  --asset gunny.json --resource res/drawable/ic_app_icon.png --native libputils.so
+python scripts/apk_analysis/decompile.py /privado/bdnet/dex/classes2.dex /privado/bdnet-jadx
+python scripts/apk_analysis/paranoid_strings.py /privado/bdnet-jadx/sources \
+  '/privado/bdnet-jadx/sources/org/lsposed/lsparanoid/Deobfuscator$BDNETVPN$app.java' \
+  /privado/bdnet-clear --inventory
+python scripts/apk_analysis/bd_net_verify.py /privado/bdnet/assets/gunny.json /privado/remoto.enc --worker
+python scripts/apk_analysis/bd_net_verify.py --file /privado/perfil.bdnet --worker
+python scripts/apk_analysis/bd_net_native_oracle.py /privado/bdnet/native/split_config.arm64_v8a/libputils.so
+PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_bd_net_vpn -v
+```
+
+JADX fijado: DEX1 46 errores, DEX2 3, DEX3 0. LIAPP presente; no afirmar
+DEX protegido completo. LSParanoid 787 llamadas / 35 archivos / 2310 cadenas.
+nm.b/c: delta 9E5729B1, clave `...|...`, XXTEA length word little-endian.
+Kf fija `https://raw.githubusercontent.com/panigbatanc/BDNET2023/main/JSONDEC2025`.
+GET 200, remoto 56 / 19 / 255, menor que asset 57 / 20 / 257. UA del broker
+descriptivo, no recuperado del actualizador protegido. Sin otros orígenes.
+
+libputils.so ARM64: pEncrypt 0x147938, pDecrypt 0x147ef8, XOR 0x1466e4,
+hexToString 0x146560. Clave `4%PdXch>fkP]`, rodata 0xbfb77 + inmediato.
+Cinco casos de la función original iguales, sin ejecutar JNI/firma/identidad.
+S00 cifra payload/host/sausage y guarda restricciones. B00 descifra antes de
+leer tweak_password. `.bdnet` y `bdnet://` reconocidos; no cloud token hallado.
+
+Ambos catálogos completos iguales a JDK y worker, 187 campos distintos cada
+uno. **UTF JNI no canónico**: preservar secuencias de dos/tres bytes, NUL y
+pares sustitutos, no errors=ignore. Una carga por catálogo tiene binario
+inválido después de NUL: texto visible = prefijo JNI y `_spdecodeBinaryFields`
+conserva pointer, sourceHex y todos los bytes XOR Base64. No quitar ese anexo
+ni marcar completo si se pierden bytes. La raíz reservada rechaza colisiones.
+Referencia JDK readUTF reutiliza el XXTEA de apna_oracle; launcher source
+sin javac separado, strings del oracle hasta 65535 bytes.
+
+71 Python / 295 Node, build web y CLI stdlib real correctos. C0 genérico
+xor_family.run queda intacto; el bot delega solo .bdnet/bdnet://. Offline
+Android histórico no certifica el build nuevo. Pendientes exportación real
+y Android/Termux. No guardar APK/SO/DEX, catálogos ni credenciales en Git.
+
 ## Aura Net VPN AuraNet_v9 (19) — 2026-10-24
 
 Continuar en PR #99 sobre APNA `a76add0`, sin fusionar/desplegar/publicar APK.

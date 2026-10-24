@@ -1,5 +1,27 @@
 # Registro de nuevas integraciones VPN
 
+## BD NET VPN PrinceBuild111 (111) — 2026-10-24
+
+Paquete `dastan.prince.bdfreevpn`, `apps/BD_NET_VPN/`, PR #99 sobre Aura
+`5a5abe5`. Catálogo y métodos `.bdnet`/`bdnet://` preexistentes actualizados.
+Exterior XXTEA modificado de nm; perfiles y campos XOR fijo nativo, sin
+contraseña criptográfica del usuario. La UI comprueba el password después.
+
+Asset real 57 / 20 servidores / 257 Payloads; remoto real **56 / 19 / 255**.
+Se mantienen separados porque el remoto es anterior. Los dos JSON completos
+coinciden con JDK y worker, 187 campos cifrados distintos cada uno. Se
+conserva UTF JNI no canónico y una carga binaria por catálogo con anexo
+`_spdecodeBinaryFields` (hex original y todos los bytes Base64), sin ignorar
+errores o perder datos. Cinco casos del XOR ARM64 original comprobados.
+
+Ficha pública, PNG original e interruptor individual persistente. Mínimo
+**44 / 45 fichas**, C0 **240**, C8 **252**, sin sufijo nuevo. **71 Python /
+295 Node**, build web y descarga/guardado real con la CLI stdlib correctos.
+Herramientas/referencias/recuperación conservadas, datos reales fuera de Git.
+Pendientes exportación `.bdnet` real, Android/Termux y DEX protegido completo;
+el último no impide los lectores basados en helpers visibles y SO.
+Sin fusión, despliegue, APK, diseño Android ni C11 automáticos.
+
 ## Aura Net VPN AuraNet_v9 (19) — 2026-10-24
 
 Paquete `civ.snipher.v2ray`, `apps/Aura_Net_VPN/`, PR #99 sobre `a76add0`.

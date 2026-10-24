@@ -56,6 +56,10 @@ on:
       - "decoders/Python/npvs.py"
       - "decoders/Python/v2box_export.py"
       - "tests/test_v2box_password.py"
+      - "decoders/Python/apps/BD_NET_VPN/**"
+      - "tests/test_bd_net_vpn.py"
+      - "tests/golden/bd_net*"
+      - "scripts/apk_analysis/bd_net_*.py"
       - "decoders/Python/apps/Aura_Net_VPN/**"
       - "tests/test_aura_net_vpn.py"
       - "tests/golden/aura_net*"
@@ -154,6 +158,8 @@ jobs:
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_http_custom_899 -v
       - name: Verify TunelGuard/Wakko/SocketClay catalogs and file compatibility
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_am_liapp_metadata tests.test_am_tunnel_lite tests.test_sevennet_vpn tests.test_xhypher_tunnel_pro tests.test_ut_loop_pro tests.test_turbomx_vpn tests.test_superflash_vpn tests.test_rmp_tunnel_pro tests.test_rjc_tunnel_pro tests.test_proneet_vpn tests.test_onspace_vpn tests.test_mx_tunnel_pro tests.test_megatunnel tests.test_http_internet_infinito tests.test_freedomvpn tests.test_focus_vpn_cloud tests.test_eut_vpn tests.test_v2ray_tunnel_plus tests.test_tunelguard tests.test_http_wakko tests.test_http_socketclay tests.test_http_fenixvpn tests.test_http_jireh -v
+      - name: Verify BD NET catalog, nested binary recovery, file and text
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_bd_net_vpn -v
       - name: Verify Aura Net complete catalog, exported profile and historical routes
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_aura_net_vpn -v
       - name: Verify APNA complete catalog, native profile format, text and worker

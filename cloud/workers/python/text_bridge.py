@@ -68,6 +68,7 @@ def dispatch(text: str, *, password: str | None = None) -> str | None:
             return result
     # C8 isolated original application codecs. These prefixes are unambiguous.
     c8_links = (
+        ("bdnet://", "decoders.Python.apps.BD_NET_VPN.file_decoder"),
         ("apnavpn://", "decoders.Python.apps.APNA_VPN.file_decoder"),
         ("mkk://", "decoders.Python.apps.MKK_Hyper_VPN.MKK_Hyper_VPN_textos"),
         ("vpn://", "decoders.Python.apps.DTunnel_Mod.dtunnelmod"),

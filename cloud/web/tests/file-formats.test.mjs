@@ -61,7 +61,7 @@ test("catalog response is backwards-compatible and uses the existing version con
   });
   assert.equal(result.formatCount,publicFormats().length);
   assert.equal(result.formats.length,publicFormats().length);
-  assert.equal(result.apps.length,44);
+  assert.equal(result.apps.length,45);
   const payload=JSON.stringify(result);
   for(const forbidden of [
     "decoders/Python/",'"script":',"source_script","originalRuntime",
@@ -72,7 +72,7 @@ test("catalog response is backwards-compatible and uses the existing version con
   const body=await response.json();
   assert.equal(body.unchanged,false);
   assert.equal(body.formats.length,publicFormats().length);
-  assert.equal(body.apps.length,44);
+  assert.equal(body.apps.length,45);
   const unchanged=await endpoint(request(body.catalogVersion));
   assert.equal(unchanged.status,200);
   const hint=await unchanged.json();

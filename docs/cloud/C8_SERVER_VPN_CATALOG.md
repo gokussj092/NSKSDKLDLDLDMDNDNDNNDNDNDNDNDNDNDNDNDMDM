@@ -1,5 +1,12 @@
 # C8 — Catálogo de VPN, iconos originales y caché
 
+Estado más reciente del PR #99 (2026-10-24): BD NET VPN build 111 añadido
+después de Aura, mínimo **44 / 45 fichas**, C0 **240 / C8 252**, 24 overrides.
+`.bdnet` y `bdnet://` actualizados, campos internos y recuperación binaria
+completos, PNG e interruptor persistente. Remoto real 56 / 19 / 255 frente
+al incluido 57 / 20 / 257; no mezclar versiones. Ver BD_NET_VPN y la guía
+de continuación. Los conteos de las fases siguientes son históricos.
+
 Estado más reciente del PR #99 (2026-10-24): Aura Net build 19 añadido después
 de APNA, catálogo mínimo **43 / 44 fichas**, C0 **240 / C8 252**. `.aura` ya
 existía y conserva su ruta histórica; nuevas claves confirmadas, catálogo

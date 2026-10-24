@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 PROVIDERS = {
+    "bd-net-vpn": "decoders.Python.apps.BD_NET_VPN.server_catalog_decoder",
     "aura-net-vpn": "decoders.Python.apps.Aura_Net_VPN.server_catalog_decoder",
     "any-vpn": "decoders.Python.apps.ANY_VPN.server_catalog_decoder",
     "speicers-pro-vpn": "decoders.Python.apps.Speicers_Pro_VPN.server_catalog_decoder",

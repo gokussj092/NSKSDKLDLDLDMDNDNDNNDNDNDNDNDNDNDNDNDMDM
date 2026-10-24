@@ -4,7 +4,7 @@ import {join} from "node:path";
 import {createHash} from "node:crypto";
 import {publicFormats,FORMAT_DETECTION} from "./file-format-catalog.mjs";
 
-export const CATALOG_VERSION = 43; // Aura Net build 19 catalog and existing .aura route.
+export const CATALOG_VERSION = 44; // BD NET catalog, nested fields and existing .bdnet route.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -22,6 +22,7 @@ export function activeCatalogVersion(env=process.env) {
 }
 
 const ITEMS = Object.freeze([
+  {id:"bd-net-vpn", name:"BD NET VPN", icon:"bd-net-vpn.png", remote:"bd-net-vpn"},
   {id:"aura-net-vpn", name:"Aura Net VPN", icon:"aura-net-vpn.png", remote:"aura-net-vpn"},
   {id:"apna-vpn", name:"APNA VPN", icon:"apna-vpn.png", remote:"apna-vpn"},
   {id:"any-vpn", name:"ANY VPN", icon:"any-vpn.png", remote:"any-vpn"},
