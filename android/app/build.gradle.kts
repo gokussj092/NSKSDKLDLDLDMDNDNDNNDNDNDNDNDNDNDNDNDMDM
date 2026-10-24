@@ -536,6 +536,14 @@ val prepareCloudAssets = tasks.register<Sync>("prepareCloudAssets") {
 
 android {
     namespace = "com.ghostdeveloper.spdecode"
+    // The app offers an independent in-app language picker. Google Play must
+    // install every packaged locale from the AAB (including offline switches),
+    // not deliver language configuration splits based on the device language.
+    bundle {
+        language {
+            enableSplit = false
+        }
+    }
     if (enableCloud) {
         // Cloud source inputs are isolated from all 107 local engine classes.
         sourceSets.getByName("main").java.setSrcDirs(listOf(cloudSourceRoot))
@@ -556,8 +564,8 @@ android {
         applicationId = "com.ghostdeveloper.spdecode"
         minSdk = 24
         targetSdk = 36
-        versionCode = 30
-        versionName = "1.1.19"
+        versionCode = 31
+        versionName = "1.1.20"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // A public API origin is not a secret; all server secrets stay in the VPS.
         buildConfigField("boolean", "SPDECODE_CLOUD_ENABLED", enableCloud.toString())
