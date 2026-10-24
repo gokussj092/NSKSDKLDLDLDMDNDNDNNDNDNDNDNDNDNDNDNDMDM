@@ -29,6 +29,8 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.11.1"
+      - name: Install Python decoder registry dependencies
+        run: python -m pip install -r requirements.txt
       - name: Source and C0 visual lock checks
         run: |
           PYTHONPATH=. python -m unittest tests.test_cloud_c5_source_isolation -v
