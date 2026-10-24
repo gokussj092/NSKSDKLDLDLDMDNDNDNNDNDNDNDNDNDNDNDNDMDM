@@ -20,7 +20,7 @@ class EmulatorControllerTests(unittest.TestCase):
                 p.write_text("#!/usr/bin/env python3\n" + code)
                 p.chmod(0o700)
             requests = [{"adb": ["shell", "first"]}, {"adb": ["shell", "second"]}, {"exit": True}]
-            r = subprocess.run([sys.executable, str(SCRIPT), "--work", str(base), "--seconds", "60"],
+            r = subprocess.run([sys.executable, str(SCRIPT), "--work", str(base), "--seconds", "60", "--small"],
                                input="".join(json.dumps(q) + "\n" for q in requests), text=True,
                                capture_output=True, timeout=10)
             self.assertEqual(r.returncode, 0, r.stderr)

@@ -64,7 +64,7 @@ def prepare(base):
         print(json.dumps({"archive": name, "verifiedAndExtracted": True}), flush=True)
 
 
-def run(base, seconds):
+def run(base, seconds, small=False):
     name = "FlexB46_Software"
     avds = base / "avd"
     avd = avds / (name + ".avd")
@@ -75,6 +75,9 @@ def run(base, seconds):
               "hw.gpu.enabled": "yes", "hw.gpu.mode": "swiftshader", "image.sysdir.1": "system-images/android-30/google_apis/x86_64/",
               "tag.id": "google_apis", "target": "android-30", "disk.dataPartition.size": "2048M",
               "hw.keyboard": "yes", "hw.camera.back": "none", "hw.camera.front": "none"}
+    if small:
+        config.update({"hw.lcd.width": "384", "hw.lcd.height": "640", "hw.lcd.density": "160",
+                       "hw.gpu.mode": "swiftshader_indirect"})
     (avd / "config.ini").write_text("".join(k + "=" + v + "\n" for k, v in config.items()))
     sdk = base / "sdk"
     env = {**os.environ, "ANDROID_SDK_ROOT": str(sdk), "ANDROID_AVD_HOME": str(avds)}
@@ -82,6 +85,9 @@ def run(base, seconds):
     args = [str(sdk / "emulator/emulator"), "-avd", name, "-no-window", "-no-audio", "-no-boot-anim",
             "-no-snapshot", "-show-kernel", "-gpu", "swiftshader", "-accel", "off", "-cores", "2", "-memory", "2048",
             "-camera-back", "none", "-camera-front", "none", "-netspeed", "full", "-netdelay", "none", "-port", "5554"]
+    if small:
+        args[args.index("swiftshader")] = "swiftshader_indirect"
+        args += ["-feature", "-Vulkan"]
     jobs = []
     with (base / "emulator.log").open("wb") as log, (base / "controller.jsonl").open("a") as audit:
         audit_path = base / "controller.jsonl"
@@ -136,11 +142,12 @@ def main():
     parser.add_argument("--work", type=Path, default=Path(__file__).resolve().parent / "work/flex-b46-avd")
     parser.add_argument("--prepare", action="store_true")
     parser.add_argument("--seconds", type=int, default=1200)
+    parser.add_argument("--small", action="store_true", help="384x640, legacy software GLES and no Vulkan")
     args = parser.parse_args()
     base = args.work.resolve(); base.mkdir(parents=True, exist_ok=True)
     if not 60 <= args.seconds <= 1800: parser.error("Runtime must be 60..1800 seconds")
     if args.prepare: prepare(base)
-    else: run(base, args.seconds)
+    else: run(base, args.seconds, args.small)
 
 
 if __name__ == "__main__": main()

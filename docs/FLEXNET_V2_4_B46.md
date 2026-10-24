@@ -1,5 +1,9 @@
 # FlexNet V 2.4 B46 — actualización compatible
 
+Se realizó una [prueba real en Android virtual](FLEXNET_V2_4_EMULATOR_PROBE.md):
+Android arrancó y el APK fue registrado, pero no se completó una importación
+estable ni se obtuvo una captura. Las muestras continúan sin descifrarse.
+
 Continuación del 24 de octubre: [captura de importación autorizada](FLEXNET_V2_4_AUTHORIZED_IMPORT.md),
 layout de concesión de 117 bytes, CLI `--grant-capture` y 87 casos nativos de
 binding. Las dos muestras online reales **siguen pendientes de su captura**.
@@ -71,3 +75,4 @@ automático, cambio de catálogo Server VPN, despliegue o novedades publicadas.
 
 APK SHA-256: `bb30b8aa5bb4207c97f19f752eeefb2fb87b417b6e491864c8508cce4c6ae5cb`.
 Biblioteca arm64 SHA-256: `a1779083ed5418eedd1ff70ea10e729745dfc2baac27ec2441fc517ff80098bb`.
+

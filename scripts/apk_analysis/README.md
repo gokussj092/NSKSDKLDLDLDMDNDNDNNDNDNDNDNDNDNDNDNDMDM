@@ -1,5 +1,13 @@
 # Herramientas de análisis APK
 
+FlexNet B46 en Android virtual: `flexnet_emulator_probe.py` reconstruye un AVD
+con SDK verificado por SHA-256, ejecución por software acotada y controlador
+JSON/ADB en un solo namespace. Android arrancó y registró el APK, pero ANR,
+reinicios y fallos de inicio impidieron una captura válida. No se descifraron
+las muestras ni se confirmó un rechazo de atestación del backend. Dos tests
+del controlador con SDK ficticio; detalles y límites en
+`docs/FLEXNET_V2_4_EMULATOR_PROBE.md`.
+
 FlexNet B46: `flexnet_b46_grant_oracle.py` contrasta 87 casos del binding de
 concesión con el bloque ARM64 original y un vector JDK. El observador
 `flexnet_b46_capture.js` y colector `flexnet_collect_grant.py` preparan la
@@ -213,3 +221,4 @@ XOR con copia C++ modelada y memoria/instrucciones limitadas. Ocho vectores
 sintéticos coinciden con JDK, incluidos UTF-8 modificado y emoji. No se llama
 JNI, controles de firma ni el inicio de la app. `RESTORE.md` deja los comandos
 para reconstruir este avance; no habilitar el proveedor hasta abrir el catálogo.
+
