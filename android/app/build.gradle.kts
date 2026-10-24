@@ -536,6 +536,14 @@ val prepareCloudAssets = tasks.register<Sync>("prepareCloudAssets") {
 
 android {
     namespace = "com.ghostdeveloper.spdecode"
+    // The app offers an independent in-app language picker. Google Play must
+    // install every packaged locale from the AAB (including offline switches),
+    // not deliver language configuration splits based on the device language.
+    bundle {
+        language {
+            enableSplit = false
+        }
+    }
     if (enableCloud) {
         // Cloud source inputs are isolated from all 107 local engine classes.
         sourceSets.getByName("main").java.setSrcDirs(listOf(cloudSourceRoot))
