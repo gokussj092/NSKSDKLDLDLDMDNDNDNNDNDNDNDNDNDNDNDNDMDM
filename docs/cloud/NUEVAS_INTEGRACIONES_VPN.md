@@ -1,13 +1,29 @@
 # Registro de nuevas integraciones VPN
 
-Este registro reúne únicamente las incorporaciones del lote iniciado con
-HTTP SocketClay. Se utilizará como fuente para una futura actualización de
+Este registro conserva las incorporaciones del lote iniciado con HTTP
+SocketClay y registra por separado los lotes posteriores. Se utilizará como
+fuente para una futura actualización de
 novedades cuando el usuario la solicite. No arrastrar funcionalidades de
 entregas anteriores ni publicar anuncios automáticamente.
 
 - Rama de trabajo: `feat/austroplus-vpn-13-0-1-decoders`.
 - PR: [#96](https://github.com/Gh0stDeveloper/SP-DECODE/pull/96).
 - Inicio del lote: 2026-10-20.
+
+## Lote posterior desde main: MM Tunnel (2026-10-24)
+
+- Rama independiente `feat/mm-tunnel-1-10-11-1-decoders`, por instrucción del
+  usuario; no forma parte del lote histórico del PR #96 descrito abajo.
+- MM Tunnel v1.10.11.1 (45), `apps/MM_Tunnel/`: `.mmt` con nuevo método de
+  exportación y alternativa histórica conservada, sin contraseña del usuario.
+- Catálogo inicial real v1.01 **34 servidores / 555 redes / 3335 campos**,
+  JSON completo igual a libsodium/JDK y worker; seis documentos sintéticos.
+- Remoto POST oficial HTTP 403: **pendiente**, ficha con PNG original y
+  `remote:null`. No anunciar descarga remota activa. No se identificó un nuevo
+  esquema de texto ni cloud de perfiles por token. Pendiente `.mmt` real.
+- **39 Python / 69 Node aprobadas**; mínimo Server VPN **39 / 39 fichas**,
+  C8 **250**, C0 **240**. Sin fusión, VPS, Android, APK o C11 automáticos.
+  Detalles y recuperación en los documentos de la app y `RESTORE.md`.
 
 ## Nuevos Servidores VPN añadidos
 

@@ -45,6 +45,8 @@ test("extension precedence, native/cloud overlap and credential metadata",()=>{
   assert.equal(candidates("backup.sksrv.png")[0].suffix,"sksrv.png");
   assert.equal(formats.find(x=>x.suffix==="npvs").credentialFields.join(","),"password,publicKey");
   assert.equal(formats.find(x=>x.suffix==="hc").credentialFields.join(","),"password,hwid");
+  assert.equal(formats.find(x=>x.suffix==="mmt").name,"MM Tunnel v1.10.11.1");
+  assert.deepEqual(formats.find(x=>x.suffix==="mmt").credentialFields,[]);
   assert.equal(formats.find(x=>x.suffix==="1ftnl").offlineSupported,false);
   assert.equal(formats.find(x=>x.suffix==="1ftnl").cloudSupported,true);
   assert.equal(formats.find(x=>x.suffix==="fɴ").offlineSupported,true);
@@ -59,7 +61,7 @@ test("catalog response is backwards-compatible and uses the existing version con
   });
   assert.equal(result.formatCount,publicFormats().length);
   assert.equal(result.formats.length,publicFormats().length);
-  assert.equal(result.apps.length,38);
+  assert.equal(result.apps.length,39);
   const payload=JSON.stringify(result);
   for(const forbidden of [
     "decoders/Python/",'"script":',"source_script","originalRuntime",
@@ -70,7 +72,7 @@ test("catalog response is backwards-compatible and uses the existing version con
   const body=await response.json();
   assert.equal(body.unchanged,false);
   assert.equal(body.formats.length,publicFormats().length);
-  assert.equal(body.apps.length,38);
+  assert.equal(body.apps.length,39);
   const unchanged=await endpoint(request(body.catalogVersion));
   assert.equal(unchanged.status,200);
   const hint=await unchanged.json();

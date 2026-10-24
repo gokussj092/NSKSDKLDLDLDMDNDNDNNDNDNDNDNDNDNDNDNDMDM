@@ -1,5 +1,19 @@
 # SP-DECODE Cloud — Guía para ampliar Server VPN en otro chat
 
+**Última incorporación, 2026-10-24: MM Tunnel v1.10.11.1 (45)**,
+`apps/MM_Tunnel/`, rama nueva `feat/mm-tunnel-1-10-11-1-decoders` desde main
+`d6b28e532c97455b3e57a53dc7ec9d232f3a0d9c`, por instrucción actual del usuario.
+`.mmt` conserva su ruta histórica y añade el método de exportación de build 45:
+Argon2id/AES-GCM, letra insertada y clave fija distinta de EO/DO; no pide
+contraseña del usuario. Asset real v1.01, **34 servidores / 555 redes / 3335
+campos**; JSON completo igual a libsodium/JDK y worker aislado. Seis documentos
+sintéticos adicionales; pendiente `.mmt` real. **39 Python / 69 Node aprobadas**.
+POST oficial HTTP 403: remoto pendiente, ficha/icono original desactivada,
+`remote:null`. Server VPN mínimo **39 / 39**, C8 **250**, C0 **240**. No añadir
+`mmt://` por inferencia; `/nets/` solo sirve iconos. Herramientas y recuperación
+guardadas; Go pclntab fusionada ahora soportada. Sin despliegue, fusión, APK,
+Android/diseño o C11 automáticos. Ver ANALYSIS/TESTING/RESTORE de MM Tunnel.
+
 **Último análisis de archivo, 2026-10-23: Hex Custom 10.6.1 (101)**,
 `apps/Hex_Custom/`: **lector pendiente**, no integrado. Usuario solicitó solo
 archivo: sin catálogo o consultas externas. KOV-SEC convirtió CustomServerShare

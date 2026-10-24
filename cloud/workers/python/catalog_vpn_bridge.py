@@ -7,6 +7,8 @@ import sys
 from pathlib import Path
 
 PROVIDERS = {
+    # Fixed official POST is blocked here; this route accepts offline bytes only.
+    "mm-tunnel": "decoders.Python.apps.MM_Tunnel.server_catalog_decoder",
     "creeb-vpn": "decoders.Python.apps.CREEB_VPN.server_catalog_decoder",
     "abowaged-vpn": "decoders.Python.apps.AboWaged_VPN.server_catalog_decoder",
     # Offline-only until the official APNA catalog source is validated.

@@ -1,5 +1,12 @@
 # Herramientas de análisis APK
 
+MM Tunnel build 45: `mm_tunnel_verify.py` contrasta JSON completo con libsodium
+Argon2id y JDK AES-GCM independientes, CLI y worker. Seis documentos sintéticos
+y el catálogo real 34/555, incluidos 3335 campos. No imprime valores privados.
+`go_inspect.py` admite pclntab f1 fusionada en `.data.rel.ro`, mantiene textStart
+relocalizado y rechaza tablas ambiguas. Exportación `.mmt` sin contraseña de
+usuario; pendiente muestra real y POST remoto aceptado (HTTP 403). Ver RESTORE.
+
 Hex Custom 10.6.1: `hex_custom_recover.py` es una herramienta de análisis,
 **no un decodificador de archivos**. Separa KVS1 con límites comprobados y
 recupera la tabla JNI de CustomServerShare desde su pool XOR; `--verify-xor`

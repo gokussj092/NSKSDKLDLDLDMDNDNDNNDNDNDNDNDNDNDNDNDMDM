@@ -1,5 +1,44 @@
 # Recuperar herramientas después de perder el entorno
 
+## MM Tunnel v1.10.11.1 (45) — 2026-10-24
+
+Rama nueva `feat/mm-tunnel-1-10-11-1-decoders`, desde main; no retomar el PR #96
+para este trabajo. Runtime: Python, PyCryptodome y argon2-cffi. Para repetir el
+análisis, aportar APKS con SHA-256 de `apps/MM_Tunnel/ANALYSIS.md`, JDK 17+ y las
+dependencias de análisis. El oracle requiere libsodium del sistema. Las
+herramientas se conservan en Git; no subir APK/SO, assets o resultados reales.
+
+```bash
+python scripts/apk_analysis/inspect_apk.py /ruta/MM-Tunnel.apks \
+  scripts/apk_analysis/work/mm-tunnel --asset configfile.json --native libgojni.so
+python scripts/apk_analysis/decompile.py --install
+python scripts/apk_analysis/decompile.py scripts/apk_analysis/work/mm-tunnel/dex/classes.dex scripts/apk_analysis/work/mm-jadx1
+python scripts/apk_analysis/decompile.py scripts/apk_analysis/work/mm-tunnel/dex/classes2.dex scripts/apk_analysis/work/mm-jadx2
+python scripts/apk_analysis/paranoid_strings.py scripts/apk_analysis/work/mm-jadx2/sources \
+  'scripts/apk_analysis/work/mm-jadx2/sources/org/lsposed/lsparanoid/Deobfuscator$MMTunnel$app.java' \
+  scripts/apk_analysis/work/mm-clear2 --inventory
+python scripts/apk_analysis/go_inspect.py \
+  scripts/apk_analysis/work/mm-tunnel/native/split_config.arm64_v8a/libgojni.so \
+  --filter '^github.com/2dust/AndroidLibXrayLite.(Encrypt|decrypt|DO|EO|CU)$'
+python scripts/apk_analysis/dex_method.py scripts/apk_analysis/work/mm-tunnel/dex/classes2.dex \
+  'Lcom/v2ray/ang/adapter/NetworkAdapter;' u scripts/apk_analysis/work/mm-export-method.json
+python -m unittest tests.test_mm_tunnel tests.test_go_pclntab tests.test_ultra_sandok -v
+python scripts/apk_analysis/mm_tunnel_verify.py --worker \
+  --catalog scripts/apk_analysis/work/mm-tunnel/assets/configfile.json
+```
+
+DEX1/2 tienen 42/31 errores generales de JADX; revisar cuerpos concretos. La
+pclntab f1 está en `.data.rel.ro`; no adivinar direcciones ni textStart. Para
+resolver DEX1, repetir `paranoid_strings.py` con `--call-class Deobfuscator.MMTunnel.app`
+y la misma clase de chunks DEX2. La tabla completa contiene 36659 funciones.
+
+El catálogo inicial v1.01 (34/555/3335 campos) es real y está validado completo.
+El POST oficial devuelve HTTP 403; no habilitar la tarjeta por tener un asset
+funcional. `.mmt` requiere una exportación real futura; seis documentos
+sintéticos iguales a libsodium/JDK/CLI/worker no prueban una importación en un
+móvil. No añadir esquemas de texto inventados. C0 240 / C8 250, mínimo catálogo
+39 / 39 fichas, switches persistentes intactos. Sin despliegue, fusión o APK.
+
 ## Hex Custom 10.6.1 (101) — pendiente, 2026-10-23
 
 Solicitud solo de archivo. Recuperar el APKS con hash de `apps/Hex_Custom/ANALYSIS.md`

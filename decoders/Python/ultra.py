@@ -511,6 +511,16 @@ def run(file_bytes: bytes, extension: str = ".ultra") -> str | None:
     ext = "." + extension.lower().lstrip(".")
     if ext not in ULTRA_EXTS:
         return None
+    if ext == ".mmt":
+        # Build 45 uses a distinct export key and an inserted Base64 letter.
+        # The app reader reuses the historical decryptor below as fallback.
+        if not __package__:
+            sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+        from decoders.Python.apps.MM_Tunnel.file_decoder import run as mm_run
+        try:
+            return mm_run(file_bytes)
+        except (ValueError, RecursionError):
+            return None
     config = decrypt_ultra_file(file_bytes, ext)
     if config is None:
         return None

@@ -1,0 +1,38 @@
+{
+  "id": "mm-tunnel",
+  "name": "MM Tunnel",
+  "package": "co.strongteam.marvsudp",
+  "versionName": "v1.10.11.1",
+  "versionCode": 45,
+  "engine": "python",
+  "entrypoint": "file_decoder.py",
+  "extensions": ["mmt"],
+  "formats": ["argon2id-aes256-gcm-inserted-letter-export", "eo-do-aes256-gcm", "direct-import-json"],
+  "dependencies": ["pycryptodome==3.23.0", "argon2-cffi==25.1.0"],
+  "credentials": [],
+  "userPasswordCryptographicallyRequired": false,
+  "legacyMmtFallback": "decoders/Python/ultra.py:decrypt_ultra_file",
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "asset": "assets/configfile.json",
+    "embeddedVerified": true,
+    "embeddedVersion": "1.01",
+    "embeddedServers": 34,
+    "embeddedNetworks": 555,
+    "embeddedEncryptedFields": 3335,
+    "remote": null,
+    "remoteStatus": "official_post_http_403",
+    "cardDecodeEnabled": false
+  },
+  "icon": {
+    "originalResource": "res/drawable/icon.png",
+    "publicCopy": "cloud/web/public/server-vpn-icons/mm-tunnel.png",
+    "bytes": 109337,
+    "sha256": "be2bb0a69da20838aaa46c388ab898a33b84cab59ccdad7413b76eac21b7b211"
+  },
+  "proprietaryTextSchemeIdentified": false,
+  "cloudUserProfileSharingIdentified": false,
+  "realFileSampleVerified": false,
+  "syntheticDocumentsVerified": 6,
+  "deployment": "pending"
+}
