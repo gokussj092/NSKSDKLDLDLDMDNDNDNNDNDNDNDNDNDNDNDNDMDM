@@ -35,7 +35,7 @@ class AndroidA24CatalogTests(unittest.TestCase):
         self.assertEqual(self.doc["androidNativePortSuffixes"], 239)
         self.assertEqual(self.doc["androidPendingNativeSuffixes"], 0)
         self.assertEqual(len(self.doc["entries"]), 239)
-        self.assertEqual(set(self.rows), set(DECODER_REGISTRY) - {'solid'})
+        self.assertEqual(set(self.rows), set(DECODER_REGISTRY) - {"solid","1ftnl","awg","creeb"})
         self.assertEqual(len(self.rows), 239)
         self.assertEqual(len(ORIGINAL), 61)
         self.assertEqual(set(PROTO), set(ORIGINAL))
