@@ -1,5 +1,25 @@
 # Registro de nuevas integraciones VPN
 
+## Aura Net VPN AuraNet_v9 (19) — 2026-10-24
+
+Paquete `civ.snipher.v2ray`, `apps/Aura_Net_VPN/`, PR #99 sobre `a76add0`.
+Se completa `.aura` preexistente con el método del build 19 y se conserva el
+lector histórico. Exportación Encrypt con letra en índice 3, campos y asset
+EO; claves distintas, Argon2id m=8192/t=3/p=1 y AES-GCM con AAD=salt. No pide
+contraseña de usuario. No se añade texto propietario ni cloud por token.
+
+Asset real 1.01 / 4 servidores / 663 redes / 40 campos cifrados distintos;
+GET real 2.18 / 14 / 685 / 424. Ambos documentos íntegros iguales a
+libsodium/JDK y worker aislado. Seis documentos sintéticos adicionales.
+Fuente activa y agente tomados del Go; URL histórica de ultra.py inerte.
+Pendientes `.aura` real y Android/Termux; sin datos reales en Git.
+
+Ficha pública, PNG original y control individual persistente. Mínimo **43 /
+44 fichas**, C0 **240**, C8 **252**, sin sufijo nuevo. **61 Python / 290 Node**
+aprobadas, build web correcto y descarga/guardado real con la CLI autónoma.
+Herramientas y recuperación guardadas. Sin fusión, despliegue, cambios de
+diseño Android, publicación APK ni novedades C11 automáticas.
+
 ## APNA VPN 3.9 (30) — 2026-10-24
 
 `apps/APNA_VPN/`, paquete `my.teamapna.tunnel`, PR #99 sobre `323839f`.

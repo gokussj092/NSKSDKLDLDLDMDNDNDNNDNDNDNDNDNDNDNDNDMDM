@@ -1,5 +1,48 @@
 # Recuperar herramientas después de perder el entorno
 
+## Aura Net VPN AuraNet_v9 (19) — 2026-10-24
+
+Continuar en PR #99 sobre APNA `a76add0`, sin fusionar/desplegar/publicar APK.
+Código en `apps/Aura_Net_VPN/`, evidencia en ANALYSIS/TESTING. C0 240, C8 252,
+23 overrides, catálogo mínimo 43 / 44 fichas. Mantener switches previos.
+
+```sh
+python scripts/apk_analysis/inspect_apk.py /privado/Aura.apks /privado/aura \
+  --asset configfile.json --resource res/drawable/icon.png --native libgojni.so
+python scripts/apk_analysis/decompile.py /privado/aura/dex/classes3.dex /privado/aura-jadx
+python scripts/apk_analysis/go_inspect.py \
+  /privado/aura/native/split_config.arm64_v8a/libgojni.so --filter AndroidLibXrayLite
+python scripts/apk_analysis/dex_method.py /privado/aura/dex/classes3.dex \
+  'Lcom/v2ray/ang/adapter/NetworkAdapter;' u /privado/aura/export-method.json
+python scripts/apk_analysis/aura_net_verify.py --catalog /privado/aura/assets/configfile.json \
+  --catalog /privado/remoto.enc --worker
+python scripts/apk_analysis/aura_net_verify.py --file /privado/perfil.aura --worker
+PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_aura_net_vpn -v
+```
+
+JADX fijado por checksum, DEX3 con 15 errores generales (DEX1 43); no afirmar
+descompilación total. Dalvik export 149 instrucciones, import 158. Go 39794
+funciones: Encrypt 0x1a4a4c0, decrypt 0x1a4a820, EO 0x1a4ad10, DO 0x1a4b0f0,
+CU 0x1a4de80. Constantes export/field de 32 bytes en 0x3b35e5 y 0x3b3605,
+Argon2id 8192 KiB / t3 / p1, GCM AAD=salt. Salt16/nonce12/tag16. Export
+inserta letra en índice 3 del Base64; EO no. El parseConfig del bridge llama
+a decrypt; no recibe password personal. No ejecutar ni modificar flags JNI.
+
+CU GET literal `https://strongteam.co/api/kidvpn/v4/aurav1.txt`, UA Aura Net VPN,
+sin appcode/token/formulario. No usar la URL histórica `api/auranet/v1/`.
+Incluido real 1.01 / 4 / 663 / 40 campos, remoto real 2.18 / 14 / 685 / 424;
+ambos completos iguales a libsodium/JDK y worker, más seis sintéticos.
+61 Python / 290 Node y build web correctos; CLI descarga/guarda completo.
+
+`.aura` ya existía: override C8 y bot conservan Ultra/Sandok histórico,
+incluidas sus claves y ambos modos AAD. No hacer fallback después de
+autenticar un documento moderno si fallan JSON/campos. PNG original copiado
+de drawable/icon.png; no confundirlo con el launcher adaptativo XML/WebP.
+No se identificó esquema Aura propio ni cloud de perfiles por token.
+Script `codec.py` autónomo para Termux con argon2-cffi/pycryptodome, GET fijo,
+salida 0600 sin sobrescribir. Pendiente exportación `.aura` real del build 19
+y Android/Termux; no guardar APK/SO/DEX ni catálogos reales en Git.
+
 ## APNA VPN 3.9 (30) — 2026-10-24
 
 Rama y PR #99 sobre `323839f` (ANY y Speicers públicos ya integrados).

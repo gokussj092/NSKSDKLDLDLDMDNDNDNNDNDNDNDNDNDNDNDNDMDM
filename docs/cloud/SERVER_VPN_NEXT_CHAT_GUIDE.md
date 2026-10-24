@@ -1,5 +1,21 @@
 # SP-DECODE Cloud — Guía para ampliar Server VPN en otro chat
 
+**Estado más reciente, 2026-10-24: Aura Net VPN AuraNet_v9 (19)** completado
+en PR #99 sobre APNA `a76add0`. Paquete `civ.snipher.v2ray`. `.aura` ya existía:
+override C8 y delegación del bot conservan el lector histórico. Claves nuevas
+del Go, Argon2id m=8192/t=3/p=1 y GCM AAD=salt; exportación con letra en índice
+3, EO sin letra. Sin contraseña de usuario. Asset real 1.01: 4 servidores /
+663 redes / 40 campos; GET activo real 2.18: 14 / 685 / 424. Ambos documentos
+completos iguales a libsodium/JDK y worker, más seis documentos sintéticos.
+URL activa `strongteam.co/api/kidvpn/v4/aurav1.txt`, UA `Aura Net VPN`; no usar
+la URL histórica de ultra.py. Tarjeta, PNG original y control individual
+persistente. Catálogo mínimo **43 / 44 fichas**, C0 **240**, C8 **252**,
+23 overrides (sufijo preexistente). 61 Python / 290 Node aprobadas y build web
+correcto. Script autónomo, herramientas y recuperación conservados. Falta
+`.aura` real del build 19 y Android/Termux. No hay esquema Aura propio ni
+cloud por token identificado. No reiniciar switches, fusionar, desplegar,
+publicar APK o C11 automáticamente. Los estados de abajo son históricos.
+
 **Estado más reciente, 2026-10-24: APNA VPN 3.9 (30)** completado en PR #99
 sobre ANY/Speicers `323839f`. Catálogo incluido real 289 / 19 servidores /
 491 payloads y remoto real 456 / 18 / 493; ambos completos iguales a Java y

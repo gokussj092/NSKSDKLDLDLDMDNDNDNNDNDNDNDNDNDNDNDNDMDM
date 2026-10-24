@@ -511,6 +511,14 @@ def run(file_bytes: bytes, extension: str = ".ultra") -> str | None:
     ext = "." + extension.lower().lstrip(".")
     if ext not in ULTRA_EXTS:
         return None
+    if ext == ".aura":
+        if not __package__:
+            sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+        from decoders.Python.apps.Aura_Net_VPN.file_decoder import run as aura_run
+        try:
+            return aura_run(file_bytes)
+        except (ValueError, RecursionError):
+            return None
     if ext == ".tx":
         if not __package__:
             sys.path.insert(0, str(Path(__file__).resolve().parents[2]))

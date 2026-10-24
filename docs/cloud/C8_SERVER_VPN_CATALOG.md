@@ -1,5 +1,12 @@
 # C8 — Catálogo de VPN, iconos originales y caché
 
+Estado más reciente del PR #99 (2026-10-24): Aura Net build 19 añadido después
+de APNA, catálogo mínimo **43 / 44 fichas**, C0 **240 / C8 252**. `.aura` ya
+existía y conserva su ruta histórica; nuevas claves confirmadas, catálogo
+real completo, PNG original e interruptor individual. Sin nuevo lector
+offline Android. Ver Aura_Net_VPN y SERVER_VPN_NEXT_CHAT_GUIDE. Las fases
+históricas de abajo conservan sus conteos.
+
 Estado actual del PR #99 (2026-10-24): APNA añadido después de ANY/Speicers,
 catálogo mínimo 42 / 43 fichas, C0 240 / C8 252. APNA tiene fuente remota
 fija validada, PNG original y control individual; `.apnavpn`/`apnavpn://`
