@@ -79,6 +79,32 @@ test("catalog response is backwards-compatible and uses the existing version con
   assert(!("formats" in hint) && !("apps" in hint));
 });
 
+test("Cloud catalog v38 refreshes AWG and password-protected UA without an APK update",async()=>{
+  // The catalog is metadata only; decoding remains on the allowlisted VPS worker.
+  assert.equal(CATALOG_VERSION,38);
+  const formats=publicFormats();
+  const awg=formats.find(f=>f.suffix==="awg");
+  const ua=formats.find(f=>f.suffix==="ua");
+  assert.deepEqual(awg,{
+    suffix:"awg",name:"AboWaged VPN 1.0",kind:"file",
+    offlineSupported:false,cloudSupported:true,credentialFields:[],
+  });
+  assert.deepEqual(ua,{
+    suffix:"ua",name:"Ultra Custom",kind:"file",
+    offlineSupported:false,cloudSupported:true,credentialFields:["password"],
+  });
+  const worker=project("cloud/workers/python/engine.py");
+  assert.match(worker, /"awg": \\("decoders\\/Python\\/apps\\/AboWaged_VPN\\/file_decoder\\.py"/);
+  assert.match(worker, /"ua": \\("decoders\\/Python\\/apps\\/Ultra_Custom\\/ultra_custom_52\\.py"/);
+  const response=await endpoint(request(37));
+  assert.equal(response.status,200);
+  const body=await response.json();
+  assert.equal(body.unchanged,false);
+  assert(body.catalogVersion>37);
+  assert.deepEqual(body.formats.find(f=>f.suffix==="awg"),awg);
+  assert.deepEqual(body.formats.find(f=>f.suffix==="ua"),ua);
+});
+
 test("schema rejects duplicate, invented or executable fields",()=>{
   const clean=JSON.parse(project("cloud/web/content/file-formats.json"));
   const clone=()=>JSON.parse(JSON.stringify(clean));
