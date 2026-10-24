@@ -127,6 +127,46 @@ def _payload(data: bytes) -> tuple[bytes, str]:
     raise DecodeError("FORMAT_ERROR", "Expected XML, EXA1 or UAB1 after decoding.")
 
 
+def _normalize_java_surrogate_references(text: str) -> str:
+    """Combine Java XML exports' adjacent UTF-16 surrogate character references.
+
+    Python's XML 1.0 parser correctly rejects individual surrogate references.
+    Some Java Properties exporters emit supplementary characters as two numeric
+    references (UTF-16 code units), which must be combined into one scalar
+    reference. All lone/reordered surrogate references remain invalid.
+    """
+    matches = iter(re.finditer(r"&#(?:[0-9]+|[xX][0-9A-Fa-f]+);", text))
+    current = next(matches, None)
+    chunks: list[str] = []
+    last = 0
+
+    def codepoint(match: re.Match[str]) -> int:
+        token = match.group()
+        if len(token) > 20:
+            raise DecodeError("INVALID_XML", "Invalid numeric XML reference.")
+        return int(token[3:-1], 16) if token[2] in "xX" else int(token[2:-1])
+
+    while current is not None:
+        value = codepoint(current)
+        if 0xD800 <= value <= 0xDBFF:
+            following = next(matches, None)
+            if following is None or following.start() != current.end():
+                raise DecodeError("INVALID_XML", "Unpaired Java UTF-16 surrogate reference.")
+            low = codepoint(following)
+            if not 0xDC00 <= low <= 0xDFFF:
+                raise DecodeError("INVALID_XML", "Invalid Java UTF-16 surrogate pair.")
+            scalar = 0x10000 + ((value - 0xD800) << 10) + (low - 0xDC00)
+            chunks.extend((text[last:current.start()], f"&#{scalar};"))
+            last = following.end()
+            current = next(matches, None)
+            continue
+        if 0xDC00 <= value <= 0xDFFF:
+            raise DecodeError("INVALID_XML", "Unpaired Java UTF-16 surrogate reference.")
+        current = next(matches, None)
+    chunks.append(text[last:])
+    return "".join(chunks)
+
+
 def _properties(data: bytes, budget: list[int]) -> tuple[dict[str, str], list[str]]:
     budget[0] -= len(data)
     if len(data) > MAX_BYTES or budget[0] < 0:
@@ -143,7 +183,7 @@ def _properties(data: bytes, budget: list[int]) -> tuple[dict[str, str], list[st
         # Properties.storeToXML emits literal CR in payload values. Avoid
         # ElementTree's XML newline normalization losing the exported CRLF.
         text = re.sub(r'^\s*<\?xml\s+[^?]*\?>', "", text).strip()
-        root = ET.fromstring(text.replace("\r", "&#13;"))
+        root = ET.fromstring(_normalize_java_surrogate_references(text.replace("\r", "&#13;")))
         if root.tag != "properties" or root.attrib or (root.text or "").strip():
             raise ValueError
         properties: dict[str, str] = {}
