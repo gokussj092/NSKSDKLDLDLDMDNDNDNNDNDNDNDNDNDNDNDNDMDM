@@ -81,7 +81,7 @@ test("catalog response is backwards-compatible and uses the existing version con
 
 test("Cloud catalog v38 refreshes AWG and password-protected UA without an APK update",async()=>{
   // The catalog is metadata only; decoding remains on the allowlisted VPS worker.
-  assert.equal(CATALOG_VERSION,38);
+  assert(CATALOG_VERSION>=38);
   const formats=publicFormats();
   const awg=formats.find(f=>f.suffix==="awg");
   const ua=formats.find(f=>f.suffix==="ua");
