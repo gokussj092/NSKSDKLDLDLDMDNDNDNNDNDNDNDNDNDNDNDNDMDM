@@ -396,7 +396,7 @@ jobs:
           retention-days: 30
 
   private-preproduction:
-    name: Private 1.1.18 APK and AAB after complete Android QA
+    name: Private 1.1.19 APK and AAB after complete Android QA
     needs: [validate, android-parity]
     if: >-
       github.repository == 'Gh0stDeveloper/SP-DECODE' &&
