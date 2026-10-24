@@ -169,6 +169,6 @@ class NpvsV1Tests(unittest.TestCase):
         raw,_,_=make_v1()
         unknown=raw[:4]+b"\x03"+raw[5:]
         with self.assertRaises(DecodeFailure) as ctx:decode_file("npvs",unknown)
-        self.assertEqual(ctx.exception.code,"NPVS_PROTECTION_UNSUPPORTED")
+        self.assertEqual(ctx.exception.code,"UNSUPPORTED_VERSION")
 
 if __name__=="__main__": unittest.main()
