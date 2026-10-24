@@ -1,5 +1,5 @@
 /** Public metadata only; internal decoder routing stays server-side. */
-import {readFileSync} from 'node:fs';
+import {readFileSync,existsSync} from 'node:fs';
 import {join} from 'node:path';
 
 const allowedKeys=['suffix','name','kind','offlineSupported','cloudSupported','credentialFields'];
@@ -42,7 +42,12 @@ export function validatePublicFormats(parsed){
 
 export function publicFormats(){
   if(cache)return cache;
-  const data=readFileSync(join(process.cwd(),'content','file-formats.json'),'utf8');
+  // In a deployed Next.js service cwd is cloud/web; C7 integration tests
+  // also invoke the gateway from the repository root. Both must resolve
+  // the same trusted, local metadata file, never user-controlled paths.
+  const deployed=join(process.cwd(),'content','file-formats.json');
+  const source=existsSync(deployed)?deployed:new URL('../content/file-formats.json',import.meta.url);
+  const data=readFileSync(source,'utf8');
   if(Buffer.byteLength(data,'utf8')>262144)throw Error('FORMATS_SIZE_LIMIT');
   cache=validatePublicFormats(JSON.parse(data));
   return cache;
