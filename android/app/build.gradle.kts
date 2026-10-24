@@ -284,6 +284,11 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
         activity = replaceOnce(activity,
             "                error=message,",
             "                error=message,\n                noticeOnly=messageIsCredentialNotice,")
+        // In Cloud builds, the Formats screen must display the last cached
+        // remote inventory regardless of the user's automatic-sync setting.
+        activity = replaceOnce(activity,
+            "if(newTab==2 && CloudCatalogUpdates.enabled(this@MainActivity))\\n                        refreshServerVpn()",
+            "if(newTab==2)refreshServerVpn()")
         // Android 15/16: Cloud builds opt into edge-to-edge on older devices too.
         // The original C0 UI sources stay byte-for-byte unchanged.
         activity = replaceOnce(activity,
@@ -369,6 +374,50 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
         var batch=activity.substring(batchStart,batchEnd)
         // QA-only failures report sanitized status codes locally to the tester.
         // Never display user payloads, full filenames, credentials or exceptions.
+        // Re-read the encrypted catalog for every user-initiated batch.
+        // A background worker can update it while the Activity is alive.
+        batch=replaceOnce(batch,
+            "                historyLoad?.await()\\n                var failedNpvs=false",
+            """                historyLoad?.await()
+                var latestFileFormats=if(BuildConfig.SPDECODE_CLOUD_ENABLED)
+                    serverVpnCatalog.cachedFormats().also { fileFormats=it }
+                else emptyList()
+                var checkedUnknownSuffix=false
+                var failedNpvs=false""")
+        // Only opted-in devices refresh automatically on an unknown suffix.
+        // Otherwise the user can manually update the catalog in Formats.
+        batch=replaceOnce(batch,
+            """                    val supported=(if(BuildConfig.SPDECODE_CLOUD_ENABLED &&
+                        fileFormats.isNotEmpty())
+                        AndroidDecoderCatalog.detect(routingName,fileFormats)
+                    else null)""",
+            """                    var remoteFormat=if(BuildConfig.SPDECODE_CLOUD_ENABLED)
+                        AndroidDecoderCatalog.detect(routingName,latestFileFormats) else null
+                    if(BuildConfig.SPDECODE_CLOUD_ENABLED && remoteFormat==null &&
+                        !checkedUnknownSuffix && CloudCatalogUpdates.enabled(this@MainActivity)) {
+                        checkedUnknownSuffix=true
+                        try {
+                            serverVpnApps=serverVpnCatalog.refreshIfDue(force=true)
+                            latestFileFormats=serverVpnCatalog.cachedFormats()
+                            fileFormats=latestFileFormats
+                            remoteFormat=AndroidDecoderCatalog.detect(routingName,latestFileFormats)
+                        }catch(error:CancellationException){throw error}
+                         catch(_:Exception){ /* Keep the last verified snapshot. */ }
+                    }
+                    val supported=remoteFormat""")
+        batch=replaceOnce(batch,
+            "cloudClient.decodeFile(supported.suffix,input,password=secret)",
+            """cloudClient.decodeFile(supported.suffix,input,password=secret,
+                                    allowPasswordFromCatalog="password" in supported.credentialFields)""")
+        batch=replaceOnce(batch,
+            "cloudPassword?:hcPassword,hcHwid)",
+            """cloudPassword?:hcPassword,hcHwid,
+                                allowPasswordFromCatalog="password" in supported.credentialFields)""")
+        batch=replaceOnce(batch,
+            "CloudCredentialPolicy.fileNeedsPasswordDialog(supported.suffix) &&",
+            """(CloudCredentialPolicy.fileNeedsPasswordDialog(supported.suffix) ||
+                                (supported.suffix!="hc" &&
+                                 "password" in supported.credentialFields)) &&""")
         batch=replaceOnce(batch,"                var failedProtectedHc=false",
             "                var failedProtectedHc=false\n" +
                 "                val qaFailures=mutableListOf<String>()\n" +
