@@ -21,7 +21,7 @@ SHARED_NEW = frozenset({".acm", ".htp", ".pin", ".tut", ".vmx", ".xsks"})
 
 class GenericFamilyRegistryTests(unittest.TestCase):
     def test_exact_81_new_suffixes_74_aes_13_des(self):
-        self.assertEqual(len(set(DECODER_REGISTRY) - {'solid'}), 239)
+        self.assertEqual(len(set(DECODER_REGISTRY) - {'solid','1ftnl','awg','creeb'}), 239)
         self.assertEqual(validate_decoder_files(), [])
         self.assertEqual(len(AES_PROFILES), 94)  # .vpnlite has no key
         self.assertEqual(len(DES_PROFILES), 21)
@@ -43,7 +43,7 @@ class GenericFamilyRegistryTests(unittest.TestCase):
         self.assertEqual(aes_new & des_new, SHARED_NEW)
         self.assertEqual(len(des_new - aes_new), 7)
         self.assertEqual(len(aes_new - des_new), 68)
-        self.assertEqual(len(DECODER_REGISTRY) - len(generated) - 1, 158)
+        self.assertEqual(len(DECODER_REGISTRY) - len(generated) - 4, 158)
         for suffix, spec in generated.items():
             with self.subTest(suffix=suffix):
                 self.assertEqual(get_supported_extension("FILE" + suffix.upper()),

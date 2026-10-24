@@ -40,7 +40,7 @@ class NurEndpointPrivacyTest(unittest.TestCase):
         source = (ANDROID / "HcProtectedImportDialog.kt").read_text("utf-8")
         self.assertEqual(source.count("textStyle=TextStyle(color=Color(0xFFF7F7F7))"), 2)
         gradle = (ROOT / "android/app/build.gradle.kts").read_text("utf-8")
-        self.assertIn('versionName = "1.1.6"', gradle)
+        self.assertIn('versionName = "1.1.17"', gradle)
         self.assertIn("versionCode = 27", gradle)
 
 

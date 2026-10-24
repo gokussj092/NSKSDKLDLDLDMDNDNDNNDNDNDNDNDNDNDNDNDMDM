@@ -23,7 +23,7 @@ class IndependentFamilyRegistryTests(unittest.TestCase):
     def test_nine_engines_thirteen_extensions(self):
         self.assertEqual(len(INDEPENDENT_DECODERS), 9)
         self.assertEqual(len(independent_file_decoder_specs()), 13)
-        self.assertEqual(len(set(DECODER_REGISTRY) - {'solid'}), 239)
+        self.assertEqual(len(set(DECODER_REGISTRY) - {'solid','1ftnl','awg','creeb'}), 239)
         self.assertEqual(validate_decoder_files(), [])
         original = json.loads((ROOT / "decoders.json").read_text(encoding="utf-8"))
         self.assertEqual(len(original["decoders"]), 61)
