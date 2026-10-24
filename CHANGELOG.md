@@ -1,5 +1,13 @@
 # Historial de cambios
 
+## Android 1.1.19 (build 30) — catálogo Cloud dinámico (preproducción)
+
+- La importación Cloud vuelve a consultar el último catálogo de extensiones verificado en caché cifrada, incluso si una actualización en segundo plano llegó después de abrir la aplicación.
+- La pestaña Formatos carga el catálogo previamente descargado aunque la actualización automática esté desactivada. La descarga manual mantiene la confirmación; con autoactualización activada se comprueba una sola vez el catálogo al importar una extensión desconocida.
+- Se conservan los `credentialFields` del catálogo remoto para reconocer motores nuevos que solicitan contraseña. El backend sigue autorizando cada extensión y credencial; el APK no descarga ni ejecuta código de decodificación.
+- Reconocimiento de extensiones Unicode conforme a los metadatos remotos y pruebas con un sufijo futuro que no existe en el catálogo local.
+- Versión privada de QA/preproducción. No fusionada, no desplegada y no publicada; CI y pruebas en dispositivo son obligatorias.
+
 ## SocksIP 15.14.4 y separación de HTTP Injector Lite 2026-07-23
 
 - Verificado el ZIP completo y analizado SocksIP 15.14.4, incluidos sus tres DEX y la biblioteca nativa.
