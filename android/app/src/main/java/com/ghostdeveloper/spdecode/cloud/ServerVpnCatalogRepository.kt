@@ -115,7 +115,7 @@ internal class ServerVpnCatalogRepository(
             // The server never chooses a local native engine. All remote
             // entries use the already allowlisted Cloud format route.
             formats.add(AndroidDecoderCatalog.Format(suffix,name,"cloud_server_only",
-                false,"C8",cloudSupported=true))
+                false,"C8",cloudSupported=true,credentialFields=credentialNames.toSet()))
         }
         return formats
     }
