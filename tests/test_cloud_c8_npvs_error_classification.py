@@ -36,12 +36,26 @@ class NpvsErrorsTests(unittest.TestCase):
         self.assertEqual(caught.exception.code, "INVALID_INPUT")
 
     def test_unsigned_appkey_and_recipient_samples_are_not_key_notices(self):
-        # These fabricated bytes cannot pass the signed envelope verifier.
-        # Method 2 = app-key, method 0 = recipient ECDH, not vice versa.
+        # Valid framing but deliberately invalid ECDSA signatures. Before
+        # issuing ANY private-key or app-key notice, verify authenticity.
         for method in (0, 2):
             with self.subTest(method=method):
+                recipients = 1 if method == 0 else 0
+                extra = 125 if recipients else 78
+                header = bytearray(53 + extra + 4 + 16)
+                header[0] = 1
+                header[50] = method
+                header[51:53] = recipients.to_bytes(2, "big")
+                if recipients:
+                    header[53 + 32] = 2  # compressed ECDH ephemeral key
+                else:
+                    header[53:55] = (2).to_bytes(2, "big")  # app-key keyId
+                header[53 + extra:57 + extra] = (16).to_bytes(4, "big")
+                raw = (b"NPVS" + bytes([5]) + len(header).to_bytes(4, "big")
+                       + bytes(header) + bytes(12) + (70).to_bytes(4, "big")
+                       + bytes(70) + bytes(64))
                 with self.assertRaises(DecodeFailure) as caught:
-                    decode_file("npvs", make_header(1, method))
+                    decode_file("npvs", raw)
                 self.assertEqual(caught.exception.code, "INVALID_INPUT")
 
     def test_corrupt_data_or_standard_app_key_never_mislabeled(self):
