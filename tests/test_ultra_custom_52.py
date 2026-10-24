@@ -86,8 +86,8 @@ class UltraCustom52Tests(unittest.TestCase):
             b'</properties>'
         )
         actual = uc.decode(mask(profile))
-        self.assertEqual(actual["properties"]["rocket"], "\\U0001f680")
-        self.assertEqual(actual["properties"]["emoji"], "\\U0001f600")
+        self.assertEqual(actual["properties"]["rocket"], "\U0001f680")
+        self.assertEqual(actual["properties"]["emoji"], "\U0001f600")
         self.assertEqual(actual["properties"]["ordinary"], "A")
         for invalid in (
             b'&#55357;', b'&#56960;', b'&#55357;gap&#56960;',
