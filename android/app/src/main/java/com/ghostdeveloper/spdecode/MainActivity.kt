@@ -346,7 +346,9 @@ class MainActivity : ComponentActivity() {
 
     private fun setLanguage(tag:String){
         if(!SupportedLanguages.supports(tag)||tag==selectedLanguage)return
-        settings.edit().putString("language",tag).apply()
+        // Persist before scheduling Activity.recreate(); the new base context
+        // must observe the same locale even under fast Compose/lifecycle changes.
+        if(!settings.edit().putString("language",tag).commit())return
         selectedLanguage=tag
         // Finish the Compose click before tearing down its host Activity.
         // The ViewModel survives this configuration-style recreation.
@@ -455,6 +457,9 @@ class MainActivity : ComponentActivity() {
                 reveal=reveal,
                 onTab={ newTab ->
                     navigationExplicit=true
+                    // Explicit navigation to Settings must not leave the first-run
+                    // overlay intercepting taps in the language picker.
+                    if(newTab==4 && guideStep!=null)guideStep=null
                     tab=newTab
                     reveal=false
                     if(newTab==2 && CloudCatalogUpdates.enabled(this@MainActivity))

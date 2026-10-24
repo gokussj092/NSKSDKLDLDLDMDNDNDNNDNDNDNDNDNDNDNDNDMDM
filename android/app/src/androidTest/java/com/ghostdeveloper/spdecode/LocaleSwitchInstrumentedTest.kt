@@ -84,7 +84,9 @@ class LocaleSwitchInstrumentedTest {
             ).performClick()
             ui.onNodeWithTag("settings_language_screen").assertExists()
             ui.onNodeWithTag("language_option_${target}").performClick()
-            ui.waitForIdle()
+            // Delivery of the click and Activity recreation can span different
+            // Compose frames; validate the persisted choice, not a transient root.
+            ui.waitUntil(10_000) { preferences.getString("language", null)==target }
             assertEquals("Tapping a language must save the selected preference",
                 target, preferences.getString("language", null))
 
