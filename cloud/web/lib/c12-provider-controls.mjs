@@ -14,6 +14,8 @@ const ROOT="/app/provider-control";
 const IDS=Object.freeze(["ehi-cloud","nur-tunnel",...providerIds()]);
 export const PUBLIC_PROVIDER_IDS=IDS;
 const LABELS=Object.freeze({
+  "any-vpn":"ANY VPN",
+  "speicers-pro-vpn":"Speicers Pro VPN",
   "tx-tunnel":"Tx Tunnel",
   "abowaged-vpn":"AboWaged VPN",
   "7net-vpn":"7NET VPN",

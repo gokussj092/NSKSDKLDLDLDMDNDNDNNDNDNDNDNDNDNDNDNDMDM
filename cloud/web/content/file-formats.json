@@ -998,6 +998,14 @@
       "credentialFields": []
     },
     {
+      "suffix": "dtk",
+      "name": "ANY VPN build 40",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
       "suffix": "dvd",
       "name": "Generic AES-GCM / PBKDF2",
       "kind": "file",

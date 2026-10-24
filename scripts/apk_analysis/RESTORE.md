@@ -1,6 +1,42 @@
 # Recuperar herramientas después de perder el entorno
 
-## Speicers Pro VPN 104.1.17 (120), privado — 2026-10-24
+## ANY VPN build 40 y Speicers público — 2026-10-24
+
+Continuar en PR #99, sin fusionar ni desplegar. La instrucción posterior del
+usuario de incorporar AMBAS apps al catálogo sustituye el estado privado de
+Speicers. Versión mínima 41 / 42 fichas y C8 251; C0 sigue 240. No reiniciar
+switches persistentes ni publicar APK/C11 automáticamente.
+
+```bash
+python scripts/apk_analysis/inspect_apk.py /ruta/ANY-VPN.apks \
+  scripts/apk_analysis/work/any
+python scripts/apk_analysis/decompile.py --install
+python scripts/apk_analysis/decompile.py \
+  scripts/apk_analysis/work/any/dex/classes3.dex scripts/apk_analysis/work/any-jadx
+python scripts/apk_analysis/random_strings.py \
+  scripts/apk_analysis/work/any-jadx/sources/com/tknetwork ObfuscatedString \
+  scripts/apk_analysis/work/any-clear
+python scripts/apk_analysis/dex_method.py \
+  scripts/apk_analysis/work/any/dex/classes3.dex \
+  'Lcom/tknetwork/tunnel/activities/ActivityUi;' attemptExportNetwork \
+  scripts/apk_analysis/work/any-network-method.json
+python -m unittest tests.test_any_vpn tests.test_speicers_pro tests.test_cloud_c8_vpn_registry -v
+python scripts/apk_analysis/any_vpn_verify.py /ruta/embedded.enc /ruta/remoto.enc
+```
+
+El catálogo incluido real está en `c_11.conf` del DEX3, no en tk.js. JSON 1.1,
+12/46; remoto fijo verificado 5.84, 13/91. 877 campos conocidos iguales a JDK y
+worker aislado; dos `.dtk` sintéticos adicionales. Extraer la constante cifrada
+de la clase recuperada a una ruta privada antes de invocar el verificador.
+`codec.py` de ANY es autónomo, descargador/lector Termux sin root o contraseña.
+El origen real se obtiene de config_url y 26 sustituciones Unicode, no de la
+constante histórica data_url. Reproducir el User-Agent oficial de OkHttp;
+con él se recibió 200; el agente Python recibió 403. No consultar auth/freeze.
+JADX 1.5.6: 31 errores generales; exportador red/servidor 151 instrucciones.
+El de servidor tiene una anomalía encrypt/JSONObject, no se certifica en móvil.
+Pendientes `.dtk` real y Android. Ver ANALYSIS/TESTING/manifest de ANY_VPN.
+
+## Speicers Pro VPN 104.1.17 (120) — 2026-10-24
 
 Continuar en la rama del PR #99. El APKS autorizado y su hash están en
 `apps/Speicers_Pro_VPN/ANALYSIS.md`. No guardar APK, catálogos, usuarios ni
@@ -34,10 +70,11 @@ remoto 35/74 y secundario 9/32; 1605 campos conocidos, 1229 no vacíos. La URL d
 usuarios se identifica pero no se descarga. El esquema de pagos no es cloud VPN.
 JADX 1.5.6 termina con 21 errores generales; GET confirmado en 163 instrucciones.
 
-**Mantener privado por instrucción expresa:** registro en engine/bridge internos
-offline, sin ficha, icono público o proveedor de descarga web. No incrementar
-Server VPN ni habilitarlo desde el interruptor global. Mínimo 40 / 40 fichas;
-C0 240 / C8 250, sin tocar switches, Android o C11. Prueba Node dedicada.
+**Estado actual:** la instrucción posterior autoriza su ficha e icono público,
+broker fijo y control individual junto con ANY. Mínimo 41 / 42 fichas;
+C0 240 / C8 251, sin tocar switches existentes, Android o C11. PNG de launcher
+original `res/mipmap-xxxhdpi/ic_launcher.png`; no usar el logo de flags/sp.png.
+Prueba Node dedicada de las dos tarjetas y controles persistentes.
 Pendiente `.sks` real y ejecución Android. Sin despliegue o APK.
 
 ## Tx Tunnel, Tx v2.17 (70) — 2026-10-24

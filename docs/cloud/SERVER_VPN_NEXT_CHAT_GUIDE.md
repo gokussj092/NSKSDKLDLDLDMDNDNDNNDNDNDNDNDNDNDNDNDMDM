@@ -1,5 +1,19 @@
 # SP-DECODE Cloud — Guía para ampliar Server VPN en otro chat
 
+**Estado más reciente, 2026-10-24: ANY VPN build 40 y Speicers público**, PR #99,
+después de b83419c. El usuario ahora pide que ambas apps aparezcan en catálogo:
+esto sustituye expresamente la exclusión inicial de Speicers. ANY: incluido
+1.1 (12 servidores / 46 redes) y remoto 5.84 (13 / 91), completos iguales a
+JDK y worker aislado. `.dtk` sin contraseña con dos perfiles sintéticos;
+exportación real y Android pendientes. El script autónomo codec.py funciona
+como descargador/lector Termux sin root; GET fijo con agente oficial OkHttp.
+Speicers remoto 35 / 74 reconfirmado, PNG de launcher oficial añadido.
+Ambas fichas y brokers tienen disponibilidad individual sin reiniciar switches.
+Catálogo mínimo **41 / 42 fichas**, C0 **240**, C8 **251** con `.dtk` en formatos
+remotos. Herramientas, oracles, límites y recuperación en ANY_VPN y RESTORE.
+No fusionar, desplegar, publicar APK/novedades ni cambiar diseño Android
+automáticamente. Los estados anteriores de abajo son históricos.
+
 **Última incorporación, 2026-10-24: Tx Tunnel, Tx v2.17 (70)**,
 `apps/Tx_Tunnel/`, en la rama del **PR #99** después de MM. Paquete
 `co.strongteam.ospro`. `.tx` ya existía: se conserva la alternativa histórica

@@ -18,7 +18,7 @@ se guardan de forma privada para verificar; no forman parte de los fixtures.
 ```bash
 python -m unittest tests.test_speicers_pro tests.test_http_fenixvpn tests.test_cloud_c8_vpn_registry -v
 cd cloud/web
-node --test tests/speicers-private.test.mjs tests/server-vpn-catalog.test.mjs tests/server-vpn-provider.test.mjs tests/server-vpn-version-sync.test.mjs
+node --test tests/server-vpn-any-speicers.test.mjs tests/server-vpn-catalog.test.mjs tests/server-vpn-provider.test.mjs tests/server-vpn-version-sync.test.mjs
 ```
 
 14 pruebas nuevas de Python y 15 regresiones existentes: **29 aprobadas**.
@@ -30,10 +30,11 @@ sintéticos adicionales coinciden con JDK, incluido un campo con letras Unicode
 BMP/suplementarias y emoji. Los dos formatos `.sks` reutilizan los vectores
 GCM y DES generados por JDK de Fenix: XML, duplicados, vacíos y flags íntegros.
 
-**52 pruebas Node aprobadas.** El test nuevo verifica ausencia de Speicers en
-la respuesta pública incluso con habilitación global y disponibilidad forzada,
-ausencia en broker e icono y conservación de versión 40 / 40 fichas. Las suites
-de proveedores, catálogo y sincronización conservan sus resultados.
+La validación inicial tuvo 52 pruebas Node. El usuario posteriormente solicitó
+la incorporación pública junto con ANY VPN; el test de exclusión se sustituyó
+por `server-vpn-any-speicers.test.mjs`. La validación actual tiene 60 pruebas
+Node, verifica ambas tarjetas, PNG originales, versión 41 / 42 fichas, broker
+fijo y switches individuales persistentes. Ver TESTING.md de ANY_VPN.
 
 La CLI autónoma copiada fuera del repositorio descargó y guardó de nuevo el
 catálogo remoto 35/74. No se ejecutó en Termux/Android: la compatibilidad se basa
@@ -46,5 +47,5 @@ problema de entorno. Dependencias adicionales de regresión: msgpack y argon2-cf
 
 Pendiente: exportación `.sks` real y prueba de la interfaz Android. No se afirma
 despliegue, importación en un teléfono ni autenticidad por MAC para catálogos
-CBC. El ocultamiento es de la lista/broker públicos; el código permanece en la
-rama del repositorio por instrucción del usuario, no es un almacén secreto.
+CBC. La exclusión inicial quedó sustituida por la solicitud posterior de
+mostrar Speicers en el catálogo; no se realizó un despliegue automáticamente.

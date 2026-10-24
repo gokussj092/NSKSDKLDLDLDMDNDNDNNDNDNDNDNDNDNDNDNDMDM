@@ -7,6 +7,8 @@ import {downloadVpnCatalog,mkkSourceIds} from "../lib/server-vpn-provider.mjs";
 import {packMkkSources} from "../lib/mkk-source-bundle.mjs";
 
 for(const provider of [
+  {id:"any-vpn",host:"free-panel.myprotectionservices.com",path:"/uploads/json/1e760370dff563b8fa00.json",query:"",agent:"okhttp/5.0.0-alpha.12"},
+  {id:"speicers-pro-vpn",host:"raw.githubusercontent.com",path:"/satanas66666/Aplicaciones/refs/heads/main/speicerspro/servidores_pro",query:"",agent:"Speicers Pro/104.1.17"},
   {id:"tx-tunnel",host:"strongteam.co",path:"/api/txtunnel/v1/",query:"?appcode=27.0",agent:"Tx Tunnel"},
   {id:"abowaged-vpn",host:"raw.githubusercontent.com",path:"/th3fre/Testing/refs/heads/main/Elk.txt",query:"",agent:"AboWaged VPN/1.0"},
   {id:"http-socketclay",host:"dl.dropboxusercontent.com",path:"/scl/fi/vh319xyu0ck84ks0wdqw8/ServersSC",query:"?rlkey=b9g57byy0igz2jitqix31t4i4&st=evmzpf11&dl=1",agent:"HTTP SocketClay/3.4.0"},

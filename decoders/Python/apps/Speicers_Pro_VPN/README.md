@@ -1,14 +1,14 @@
 # Speicers Pro VPN 104.1.17 (120)
 
-Lector privado solicitado por el propietario de SP-DECODE. Descarga el catálogo
+Lector solicitado por el propietario de SP-DECODE. Descarga el catálogo
 oficial de servidores y abre todos sus campos conocidos. Requiere Python 3 y
 PyCryptodome; funciona sin root, Frida, emulador ni APK instalado.
 
-**No aparece en Server VPN.** Solo se registra en el worker interno de lectura
-offline; no tiene ficha, icono público ni broker web de descarga. El catálogo
-SP-DECODE permanece en versión mínima 40 y 40 fichas. Activar el interruptor
-global o pasar disponibilidad para este ID no puede añadirlo a la lista. No se
-modifican los controles persistentes ni se realiza un despliegue.
+**Ahora aparece en Server VPN por la instrucción posterior del usuario.** La
+solicitud de incorporarlo junto con ANY VPN sustituye la exclusión inicial.
+Tiene ficha, PNG original del APK y broker HTTPS fijo con control individual.
+El catálogo SP-DECODE sube a versión mínima 41 y 42 fichas. Se conservan los
+switches persistentes y no se realiza un despliegue automáticamente.
 
 ## Termux
 

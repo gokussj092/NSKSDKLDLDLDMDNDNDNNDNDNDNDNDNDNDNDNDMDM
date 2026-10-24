@@ -38,6 +38,8 @@ const V2PLUS_SOURCES=Object.freeze({
 });
 const PAIRED_SOURCES=Object.freeze({"abowaged-vpn":ABOWAGED_SOURCES,"turbomx-vpn":TURBOMX_SOURCES,"superflash-vpn":SUPERFLASH_SOURCES,"onspace-vpn":ONSPACE_SOURCES,"http-socketclay":SOCKETCLAY_SOURCES,"http-wakko":WAKKO_SOURCES,"v2ray-tunnel-plus":V2PLUS_SOURCES});
 const PROVIDERS = Object.freeze({
+  "any-vpn": {url:"https://free-panel.myprotectionservices.com/uploads/json/1e760370dff563b8fa00.json",agent:"okhttp/5.0.0-alpha.12"},
+  "speicers-pro-vpn": {url:"https://raw.githubusercontent.com/satanas66666/Aplicaciones/refs/heads/main/speicerspro/servidores_pro",agent:"Speicers Pro/104.1.17"},
   "tx-tunnel": {url:"https://strongteam.co/api/txtunnel/v1/?appcode=27.0",agent:"Tx Tunnel"},
   "abowaged-vpn": {url:ABOWAGED_SOURCES.servers,agent:"AboWaged VPN/1.0"},
   "7net-vpn": {url:"https://raw.githubusercontent.com/MAKE-MONEY-MILLION-DOLLAR-PER-DAY/7net-Team/refs/heads/main/7net%2BAll_Team.js",agent:"7NET VPN/5.6"},
@@ -236,7 +238,7 @@ export async function downloadVpnCatalog(id,source=id==="v2ray-tunnel-plus"?"bas
         continue;
       }
       if(answer.redirect!==undefined){
-        if(["7net-vpn","xhypher-tunnel-pro","focus-vpn-cloud","freedom-vpn","http-internet-infinito","megatunnel","mx-tunnel-pro","rjc-tunnel-pro","rmp-tunnel-pro"].includes(id)||Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
+        if(["any-vpn","speicers-pro-vpn","7net-vpn","xhypher-tunnel-pro","focus-vpn-cloud","freedom-vpn","http-internet-infinito","megatunnel","mx-tunnel-pro","rjc-tunnel-pro","rmp-tunnel-pro"].includes(id)||Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
         const next=answer.redirect;
         if(typeof next!=="string"||next.length>2048)fail("REMOTE_NETWORK_DENIED");
         target=new URL(next,dest).href;

@@ -6,9 +6,13 @@
   "versionCode": 120,
   "engine": "python",
   "entrypoint": "file_decoder.py",
-  "extensions": ["sks"],
+  "extensions": [
+    "sks"
+  ],
   "canonicalFileEngine": "decoders/Python/apps/HTTP_FenixVPN/file_decoder.py",
-  "dependencies": ["pycryptodome==3.23.0"],
+  "dependencies": [
+    "pycryptodome==3.23.0"
+  ],
   "credentials": [],
   "userPasswordCryptographicallyRequired": false,
   "catalog": {
@@ -21,15 +25,20 @@
     "remoteVerifiedServers": 74,
     "secondaryEmbeddedVersion": "9",
     "secondaryEmbeddedServers": 32,
-    "publicVisible": false,
-    "publicDownloadBrokerRegistered": false,
-    "cardDecodeEnabled": false,
-    "visibilityReason": "Explicit user instruction: private script and offline worker only."
+    "publicVisible": true,
+    "publicDownloadBrokerRegistered": true,
+    "cardDecodeEnabled": true,
+    "visibilityReason": "User explicitly requested public catalog integration on 2026-10-24; supersedes initial private-only request."
   },
   "proprietaryTextSchemeIdentified": false,
   "cloudUserProfileSharingIdentified": false,
   "paymentReturnScheme": "speicerspro://payment",
   "realFileSampleVerified": false,
   "androidRuntimeTested": false,
-  "deployment": "not-requested"
+  "deployment": "not-requested",
+  "icon": {
+    "originalResource": "res/mipmap-xxxhdpi/ic_launcher.png",
+    "bytes": 34275,
+    "sha256": "8c49bc17d883ffee1275b113a12e1d4696b95e1bfba57dd0ebe8346e82be6e91"
+  }
 }

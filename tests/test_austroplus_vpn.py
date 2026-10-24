@@ -160,7 +160,7 @@ class AustroPlusCloudTests(unittest.TestCase):
         from tests.golden.a23_batch3 import aro_json_bytes
         result = decode_file("aro", aro_json_bytes())
         self.assertEqual(result["rawText"], (ROOT / "tests/golden/expected/aro-minus18.txt").read_text())
-        self.assertEqual(len(load_file_engines()), 240); self.assertEqual(len(load_runtime_file_engines()), 250)
+        self.assertEqual(len(load_file_engines()), 240); self.assertEqual(len(load_runtime_file_engines()), 251)
         self.assertTrue(load_file_engines()["aro"]["source"].endswith("/aro.py"))
         self.assertTrue(load_runtime_file_engines()["aro"]["source"].endswith("/AustroPlus_VPN/file_decoder.py"))
 

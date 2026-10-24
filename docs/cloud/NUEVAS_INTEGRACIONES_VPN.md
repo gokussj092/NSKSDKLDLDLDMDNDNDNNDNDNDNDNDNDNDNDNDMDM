@@ -1,6 +1,21 @@
 # Registro de nuevas integraciones VPN
 
-## Speicers Pro VPN 104.1.17 (120), integración privada — 2026-10-24
+## ANY VPN build 40 y Speicers público — 2026-10-24
+
+`apps/ANY_VPN/`: lector `.dtk` y catálogo, clave interna fija sin contraseña.
+Incluido real 1.1 / 12 servidores / 46 redes; remoto real 5.84 / 13 / 91.
+Dos JSON reales completos y dos `.dtk` sintéticos iguales a JDK y worker
+aislado. Falta `.dtk` exportado real y Android. Script autónomo codec.py para
+Termux, herramientas, oracle y recuperación conservados, sin datos reales en Git.
+
+El usuario pidió ahora **incorporar también Speicers al catálogo**: sustituye
+su exclusión inicial. Ambas fichas con iconos originales, broker fijo validado
+y control individual persistente. Versión mínima 41 / 42 fichas; C0 240 / C8 251
+con `.dtk` en metadatos remotos de formatos. Sin reiniciar switches, fusionar,
+desplegar, publicar APK ni C11. Se reemplaza el test de exclusión de Speicers
+por pruebas de visibilidad, disponibilidad individual y preservación de estados.
+
+## Speicers Pro VPN 104.1.17 (120) — 2026-10-24
 
 Rama del PR #99, desde HEAD fd025ee. `apps/Speicers_Pro_VPN/` entrega un script
 autónomo Python/Termux para descargar el catálogo fijo y abrir campos completos,
@@ -9,10 +24,10 @@ asset principal 36 / 75 y secundario 9 / 32. Los tres documentos coinciden
 íntegros con JDK independiente y bridge. Se conservan todos los controles y
 servidores, incluidos deshabilitados; el remoto no se confunde con el asset.
 
-**Exclusión pública solicitada por el usuario:** registrado solo en engine y
-bridge internos de lectura offline. Sin ficha, icono ni broker de descarga
-público; Server VPN sigue en mínimo 40 / 40. El interruptor global no lo expone.
-No publicar esta incorporación en novedades hasta nueva instrucción.
+La instrucción inicial fue de exclusión pública; quedó sustituida al pedir el
+usuario su incorporación junto con ANY. Ficha, icono de launcher original y
+broker de descarga con control individual. Server VPN mínimo 41 / 42; no
+publicar esta incorporación en novedades hasta nueva instrucción.
 
 `.sks` reutiliza el método GCM/DES canónico ya registrado, sin cambiar C0 240 /
 C8 250. Vectores JDK correctos; exportación `.sks` real y Android pendientes.
