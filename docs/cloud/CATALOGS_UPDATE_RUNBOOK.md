@@ -2,6 +2,26 @@
 
 Documento de referencia para próximos chats/PR. **Leer antes de integrar un proveedor o redactar novedades.** Las listas de Server VPN y What's New son **sistemas distintos**, con versiones y cachés independientes. Este documento recoge el estado del código a octubre de 2026; volver a comprobarlo si cambia la implementación.
 
+## Publicación Cloud C10 — revisión 38 (AWG / UA, 23-oct-2026)
+
+- Android **1.1.18 build 29** ya integra el lector de metadatos remotos C10. Este cambio **no requiere recompilar la APK** siempre que esa versión instalada esté realmente conectada al endpoint del VPS y haya aceptado la descarga del catálogo.
+- `.awg` = AboWaged VPN 1.0 (`cloudSupported:true`, sin contraseña externa); `.ua` = Ultra Custom (`cloudSupported:true`, `credentialFields:["password"]`). Ambos sufijos ya estaban en `cloud/web/content/file-formats.json`: **no duplicar** entradas ni publicar métodos criptográficos en la lista JSON.
+- El motor `.ua` corrigió el tratamiento de referencias Unicode UTF-16 en XML; el motor `.awg` ya decodifica la exportación real aportada. Los motores siguen exclusivamente en `cloud/workers/python` / `decoders/Python` y se invocan por rutas fijas.
+- Se incrementó el mínimo `CATALOG_VERSION` de 37 a 38 para forzar una nueva huella C12 y la actualización monotónica del caché cifrado de Android, incluso cuando el inventario público de 250 sufijos no cambia. No borrar ni editar manualmente el volumen `provider-control`.
+- **Despliegue pendiente de ejecución en el VPS**. Después de aprobar CI, usar la CLI existente del VPS (sin APK):
+
+```bash
+sudo spdecode update all feat/austroplus-vpn-13-0-1-decoders
+sudo spdecode status
+curl -fsS https://api.spdecode.xyz/api/v1/health
+curl -fsS https://api.spdecode.xyz/api/v1/ready
+curl -fsS -X POST https://api.spdecode.xyz/api/v1/server-vpn/catalog \\
+  -H 'Content-Type: application/json' -d '{"knownVersion":0}' \\
+  | python3 -c 'import json,sys; d=json.load(sys.stdin); formats={x["suffix"]:x for x in d["formats"]}; assert d["formatCount"] >= 250; assert formats["awg"]["cloudSupported"] and formats["awg"]["credentialFields"] == []; assert formats["ua"]["cloudSupported"] and formats["ua"]["credentialFields"] == ["password"]; print("Catalog version:", d["catalogVersion"], "formats:", d["formatCount"], "AWG/UA OK")'
+```
+
+En Android, abrir **Formatos > Actualizar catálogo** (o el equivalente de actualización manual de Server VPN), aceptar la descarga, y probar los archivos originales. Si persiste «no soportado», comprobar que la APK instalada realmente sea **1.1.18 build 29**, la versión anunciada por el VPS y la sincronización de la caché; no introducir rutas Kotlin para cada nueva extensión como solución ordinaria.
+
 ## A. Catálogo Server VPN (proveedores, iconos y disponibilidad)
 
 **Archivos de referencia**
