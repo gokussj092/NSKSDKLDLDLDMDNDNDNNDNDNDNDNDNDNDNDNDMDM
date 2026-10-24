@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import struct
+import re
 import tempfile
 import unittest
 import zipfile
@@ -61,8 +62,14 @@ class AndroidPlayCompatibility(unittest.TestCase):
             self.assertIn(linker, cmake)
         self.assertIn("android_16kb_elf_audit.py", flow)
         self.assertIn('zipalign" -c -P 16', flow)
-        self.assertIn("versionName='1.1.18'", flow)
-        self.assertIn("versionCode='29'", flow)
+        gradle = (ROOT / "android/app/build.gradle.kts").read_text("utf-8")
+        version = re.search(r'versionName\\s*=\\s*"([^"]+)"', gradle)
+        code = re.search(r'versionCode\\s*=\\s*(\\d+)', gradle)
+        self.assertIsNotNone(version)
+        self.assertIsNotNone(code)
+        self.assertGreaterEqual(int(code.group(1)), 30)
+        self.assertIn(f"versionName='{version.group(1)}'", flow)
+        self.assertIn(f"versionCode='{code.group(1)}'", flow)
 
     def test_play_signing_certificate_is_mandatory(self):
         flow = (ROOT / ".github/workflows/play-beta-artifacts.yml").read_text("utf-8")
