@@ -16,6 +16,7 @@ import org.junit.runner.RunWith
 class CloudC8InputRoutesTest {
     @Test fun cloudFilesKeepExactWorkerSuffixes() {
         val supported=mapOf(
+            "export.AWG" to Pair("awg","AboWaged VPN 1.0"),
             "profile.1FTNL" to Pair("1ftnl","1FTunnel 0.6.99"),
             "export.TGV" to Pair("tgv","TunelGuard VPN 12.8"),
             "test.mtp" to Pair("mtp","My Tunnel Proxy"),
@@ -32,6 +33,7 @@ class CloudC8InputRoutesTest {
             assertEquals(filename,"C8",format.migrationPhase)
             assertFalse(format.hasNativeDecoder)
         }
+        assertEquals("awg",CloudFileFormats.detect("content/folder/ملف VPN.awg")?.suffix)
         assertNull(CloudFileFormats.detect("test.mtp.bak"))
         assertNull(CloudFileFormats.detect("test-notmtp"))
         assertNull(CloudFileFormats.detect("file.actunnelvpn"))
