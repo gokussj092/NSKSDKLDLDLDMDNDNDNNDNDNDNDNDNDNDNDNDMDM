@@ -74,6 +74,17 @@ class RemoteFormatsAndroidTests(unittest.TestCase):
                       "CloudUserErrors.httpInjectorMessage"):
             self.assertIn(check,activity)
 
+    def test_abowaged_fallback_survives_stale_remote_format_snapshot(self):
+        activity=(JAVA/"MainActivity.kt").read_text("utf-8")
+        fallback=(JAVA/"cloud/CloudFileFormats.kt").read_text("utf-8")
+        remote='AndroidDecoderCatalog.detect(routingName,fileFormats)'
+        pinned='CloudFileFormats.detect(routingName)'
+        native='AndroidDecoderCatalog.detect(\n                            routingName,AndroidDecoderCatalog.read(this@MainActivity))'
+        route=activity.split('val supported=',1)[1].split('?:throw DecodeFailure(R.string.unsupported)',1)[0]
+        self.assertLess(route.index(remote),route.index(pinned))
+        self.assertLess(route.index(pinned),route.index('AndroidDecoderCatalog.read(this@MainActivity)'))
+        self.assertIn('"awg" to "AboWaged VPN 1.0"',fallback)
+
     def test_14_locales_have_specific_notices_with_matching_keys(self):
         for locale in LOCALES:
             with self.subTest(locale=locale):
