@@ -1262,13 +1262,17 @@ class MainActivity : ComponentActivity() {
                     progressFilename=name
                     // Only the decoder route uses this name. History keeps the original.
                     val routingName=ImportFilenameNormalizer.forDetection(name)
+                    // A locally pinned Cloud engine can be newer than a cached
+                    // server format snapshot. Keep its strictly allowlisted
+                    // suffix routable; the worker still authorizes the decode.
                     val supported=(if(BuildConfig.SPDECODE_CLOUD_ENABLED &&
                         fileFormats.isNotEmpty())
                         AndroidDecoderCatalog.detect(routingName,fileFormats)
-                    else (if(BuildConfig.SPDECODE_CLOUD_ENABLED)
-                        CloudFileFormats.detect(routingName) else null)
-                        ?:AndroidDecoderCatalog.detect(
-                            routingName,AndroidDecoderCatalog.read(this@MainActivity)))
+                    else null)
+                        ?: (if(BuildConfig.SPDECODE_CLOUD_ENABLED)
+                            CloudFileFormats.detect(routingName) else null)
+                        ?: AndroidDecoderCatalog.detect(
+                            routingName,AndroidDecoderCatalog.read(this@MainActivity))
                         ?:throw DecodeFailure(R.string.unsupported)
                     // Phase A identifies pending formats but never reads or
                     // sends their bytes to a native decoder that does not exist.
