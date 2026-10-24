@@ -1,5 +1,9 @@
 # FlexNet V 2.4 B46: recuperación mediante una importación autorizada
 
+La nueva muestra recibida después es **v6 offline** y usa otro camino.
+Ver [su prueba y captura del contenedor interior](FLEXNET_V2_4_V6_SAMPLE.md).
+El mismo observador incluye ahora ambos modos; la captura v6 no es un grant RSA.
+
 2026-10-24. Este avance **no descifró las dos muestras reales**. Añade una ruta
 concreta para aprovechar la importación que el usuario confirmó que funciona
 en su teléfono. Hace falta capturar la concesión ya desenvuelta dentro de esa

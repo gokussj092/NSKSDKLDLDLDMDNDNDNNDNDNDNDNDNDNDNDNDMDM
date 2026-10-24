@@ -1,4 +1,4 @@
-/* Passive FlexNet B46 import observer. Load through the Frida REPL (-l).
+/* Passive FlexNet B46 online/v6 import observer. Load through the Frida REPL (-l).
  * Requires an instrumentable Android device running the official APK. This
  * host script never calls enrollment/execute, changes arguments, or exports a
  * Keystore private key. The emitted local capture contains a sensitive AES key.
@@ -17,9 +17,11 @@ Java.perform(function () {
     const Base64 = Java.use('android.util.Base64');
     const Digest = Java.use('java.security.MessageDigest');
     const Bridge = Java.use('com.betlog.ultrasshservice.config.VpnRouteBridge');
+    const Offline = Java.use('com.betlog.ultrasshservice.config.d');
     const Cipher = Java.use('javax.crypto.Cipher');
     const transport = Bridge.transport.overload('[B', '[B', '[B', '[B', 'java.lang.String', 'int', 'boolean');
     const doFinal = Cipher.doFinal.overload('[B');
+    const openOffline = Offline.w.overload('com.betlog.baho.activities.BaseActivity', '[B');
     const active = new Map();
     const emitted = new Set();
     const b64 = bytes => String(Base64.encodeToString(bytes, 2));
@@ -78,5 +80,33 @@ Java.perform(function () {
             if (previous) active.set(tid, previous); else active.delete(tid);
         }
     };
-    console.log('FLEXNET_CAPTURE_STATUS ready; import your file normally with internet access');
+
+    openOffline.implementation = function (activity, profile) {
+        let fingerprint = null;
+        try {
+            if (profile !== null && profile.length > 61 && profile.length <= 2 * 1024 * 1024
+                    && profile[6] === 6 && profile[7] === 1 && profile[8] === 1) {
+                fingerprint = sha256(profile);
+            }
+        } catch (_) { status(); }
+        // The official function verifies outer AES-GCM with Android Keystore.
+        // Observe its v5 result rather than trying to export the hardware key.
+        const output = openOffline.call(this, activity, profile);
+        try {
+            if (fingerprint !== null && !emitted.has(fingerprint) && output !== null
+                    && output.length >= 157 && output.length === profile.length - 61
+                    && output[0] === 70 && output[1] === 76 && output[2] === 88
+                    && output[3] === 67 && output[4] === 70 && output[5] === 71
+                    && output[6] === 5 && output[7] === 1) {
+                console.log('FLEXNET_OFFLINE_CAPTURE ' + JSON.stringify({
+                    schema: 'flexnet-v6-opened-inner/1',
+                    fileSha256: fingerprint,
+                    innerBase64: b64(output)
+                }));
+                emitted.add(fingerprint);
+            }
+        } catch (_) { status(); }
+        return output;
+    };
+    console.log('FLEXNET_CAPTURE_STATUS ready; import your file normally');
 });

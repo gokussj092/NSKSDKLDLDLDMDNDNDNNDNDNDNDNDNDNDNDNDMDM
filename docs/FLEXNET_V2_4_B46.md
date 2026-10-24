@@ -3,6 +3,8 @@
 Continuación del 24 de octubre: [captura de importación autorizada](FLEXNET_V2_4_AUTHORIZED_IMPORT.md),
 layout de concesión de 117 bytes, CLI `--grant-capture` y 87 casos nativos de
 binding. Las dos muestras online reales **siguen pendientes de su captura**.
+La [tercera muestra v6 offline](FLEXNET_V2_4_V6_SAMPLE.md) también se probó:
+requiere la época offline del Keystore o capturar el v5 interior de la app.
 
 Paquete `com.flexnet.tunnel`, V 2.4, versionCode 46. PR #96, misma rama
 `feat/austroplus-vpn-13-0-1-decoders`. Se amplía el lector B42 existente,

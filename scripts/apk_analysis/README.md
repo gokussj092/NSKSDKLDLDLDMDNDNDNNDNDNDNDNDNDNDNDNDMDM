@@ -4,9 +4,12 @@ FlexNet B46: `flexnet_b46_grant_oracle.py` contrasta 87 casos del binding de
 concesión con el bloque ARM64 original y un vector JDK. El observador
 `flexnet_b46_capture.js` y colector `flexnet_collect_grant.py` preparan la
 recuperación local durante una importación oficial: requieren Android
-instrumentable y **no se han validado en teléfono**. Las dos muestras reales
+instrumentable y **no se han validado en teléfono**. Las tres muestras reales
 siguen sin abrirse. Los mocks del observador no sustituyen esa comprobación.
 Layout, límites y pasos en `docs/FLEXNET_V2_4_AUTHORIZED_IMPORT.md` y RESTORE.
+Para la nueva muestra v6 offline se observa `d.w` y se guarda su v5 interior
+con `--offline-inner`, sin extraer la clave hardware. El host autentica el v5;
+el tag v6 lo verifica la llamada original observada. Ver el documento V6_SAMPLE.
 
 Tx Tunnel build 70: `tx_tunnel_verify.py` reutiliza el comparador de documentos
 completos y la referencia libsodium/JDK, sin copiar el motor histórico. Catálogos

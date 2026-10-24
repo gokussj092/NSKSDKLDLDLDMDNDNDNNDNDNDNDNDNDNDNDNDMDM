@@ -10,10 +10,11 @@ const vectors = JSON.parse(readFileSync(new URL('golden/flexnet_b46_vectors.json
 const capture = JSON.parse(readFileSync(new URL('golden/flexnet_b46_grant_capture.json', import.meta.url), 'utf8'));
 const bytes = encoded => Array.from(Buffer.from(encoded, 'base64'));
 
-function harness({ unwrapError = false, transportError = false, wrongWrapped = false } = {}) {
-    const logs = [], invocations = [], finalInvocations = [];
+function harness({ unwrapError = false, transportError = false, wrongWrapped = false, offlineError = false } = {}) {
+    const logs = [], invocations = [], finalInvocations = [], offlineInvocations = [];
     const profile = bytes(vectors.online), wrapped = Array(256).fill(42), challenge = bytes(capture.challengeBase64);
     const grant = bytes(capture.grantBase64), result = [9, 8, 7];
+    const offlineProfile = bytes(vectors.v6), inner = bytes(vectors.offline);
     const cipher = { getAlgorithm: () => 'RSA/ECB/OAEPPadding' };
     const app = { getPackageName: () => 'com.flexnet.tunnel', getPackageManager: () => ({
         getPackageInfo: () => ({ versionCode: { value: 46 } })
@@ -30,6 +31,11 @@ function harness({ unwrapError = false, transportError = false, wrongWrapped = f
         if (transportError) throw new Error('original transport failure');
         return result;
     } };
+    const openOffline = { call(receiver, ...args) {
+        offlineInvocations.push({ receiver, args });
+        if (offlineError) throw new Error('original offline failure');
+        return inner;
+    } };
     const classes = {
         'android.app.ActivityThread': { currentApplication: () => app },
         'android.util.Base64': { encodeToString: value => Buffer.from(value).toString('base64') },
@@ -37,6 +43,10 @@ function harness({ unwrapError = false, transportError = false, wrongWrapped = f
         'com.betlog.ultrasshservice.config.VpnRouteBridge': { transport: { overload: (...args) => {
             assert.deepEqual(args, ['[B', '[B', '[B', '[B', 'java.lang.String', 'int', 'boolean']);
             return transport;
+        } } },
+        'com.betlog.ultrasshservice.config.d': { w: { overload: (...args) => {
+            assert.deepEqual(args, ['com.betlog.baho.activities.BaseActivity', '[B']);
+            return openOffline;
         } } },
         'javax.crypto.Cipher': { doFinal: { overload: value => {
             assert.equal(value, '[B'); return doFinal;
@@ -48,8 +58,10 @@ function harness({ unwrapError = false, transportError = false, wrongWrapped = f
     });
     const receiver = {};
     const args = [profile, wrapped, challenge, null, 'flexnet.v5.route', 46, false];
-    return { logs, invocations, finalInvocations, receiver, args, result, cipher, wrapped, grant,
+    return { logs, invocations, finalInvocations, offlineInvocations, receiver, args, result, cipher, wrapped, grant,
+        offlineProfile, inner, app,
         invoke: () => transport.implementation.call(receiver, ...args),
+        invokeOffline: () => openOffline.implementation.call(receiver, app, offlineProfile),
         final: () => doFinal.implementation.call(cipher, wrapped) };
 }
 
@@ -85,5 +97,33 @@ test('unrelated unwraps and export operations do not emit import grants', () => 
     assert.equal(exporting.invoke(), exporting.result);
     for (const h of [unrelated, exporting]) {
         assert.equal(h.logs.some(line => line.startsWith('FLEXNET_GRANT_CAPTURE ')), false);
+    }
+});
+
+test('offline observer preserves original call and copies the opened v5 container without reading a key', () => {
+    const h = harness();
+    assert.equal(h.invokeOffline(), h.inner);
+    assert.equal(h.offlineInvocations.length, 1);
+    assert.equal(h.offlineInvocations[0].receiver, h.receiver);
+    assert.deepEqual(h.offlineInvocations[0].args, [h.app, h.offlineProfile]);
+    const record = h.logs.find(line => line.startsWith('FLEXNET_OFFLINE_CAPTURE '));
+    const opened = JSON.parse(record.slice('FLEXNET_OFFLINE_CAPTURE '.length));
+    assert.deepEqual(opened, {
+        schema: 'flexnet-v6-opened-inner/1',
+        fileSha256: createHash('sha256').update(Buffer.from(h.offlineProfile)).digest('hex'),
+        innerBase64: vectors.offline
+    });
+    h.inner.fill(0);
+    assert.equal(opened.innerBase64, vectors.offline);
+});
+
+test('offline authentication exceptions propagate and an invalid inner container is not emitted', () => {
+    const failed = harness({ offlineError: true });
+    assert.throws(failed.invokeOffline, /original offline failure/);
+    const invalid = harness();
+    invalid.inner[6] = 6;
+    assert.equal(invalid.invokeOffline(), invalid.inner);
+    for (const h of [failed, invalid]) {
+        assert.equal(h.logs.some(line => line.startsWith('FLEXNET_OFFLINE_CAPTURE ')), false);
     }
 });

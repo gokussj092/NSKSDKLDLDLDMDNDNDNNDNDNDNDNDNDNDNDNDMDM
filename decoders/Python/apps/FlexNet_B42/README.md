@@ -46,6 +46,13 @@ La captura necesita un Android instrumentable; aún no se ha probado en un
 dispositivo ni se han descifrado las dos muestras reales. Las pruebas locales
 usan JDK, el bloque nativo aislado y mocks del observador.
 
+Para v6, el observador también puede copiar el v5 interior que la llamada
+original de la app abre con Keystore. `flexnet_collect_grant.py --offline-inner`
+lo autentica por completo y guarda un `.flex` local que este lector ya admite.
+El host no verifica por separado el tag exterior v6 sin su clave. La nueva
+[muestra v6 real](../../../../docs/FLEXNET_V2_4_V6_SAMPLE.md) sigue pendiente de
+esa captura; devuelve `OFFLINE_KEY_REQUIRED`.
+
 **Muestra recibida `free (1).flex`:** FLXCFG v5 online, mínimo B46, 1388 bytes.
 Ahora se reconoce correctamente, pero **su contenido sigue sin recuperarse**:
 falta su clave de contenido del flujo oficial de autorización. Devuelve

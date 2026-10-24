@@ -1,5 +1,20 @@
 # Validación dirigida — FlexNet B46
 
+## Muestra v6 y captura offline
+
+Ahora pasan **32 pruebas Python y cinco Node con mocks**, usando los mismos
+comandos de abajo. Cuatro pruebas Python y dos Node adicionales verifican la
+copia del v5 interior tras `d.w`, ambos tags GCM internos, el XML completo JDK,
+rechazo de otro archivo/datos alterados, esquema exacto, límites y salida 0600.
+La CLI conserva su modo de captura online y no sobrescribe salidas.
+
+La muestra nueva de 1394 bytes es v6 offline B46. Se validó su cabecera y el
+error `OFFLINE_KEY_REQUIRED`; **no se descifró ni se autenticó su tag GCM**.
+Se comprobó el descriptor DEX original de `d.w` (50 instrucciones). El
+observador v6 aún requiere ejecución en Android. La asociación exterior
+depende de esa captura: el host solo autentica el v5 interior por separado.
+Ver [muestra v6](../../../../docs/FLEXNET_V2_4_V6_SAMPLE.md).
+
 ## Continuación del 24 de octubre: concesiones online
 
 **28 pruebas Python y tres pruebas Node aprobadas**, incluidas las 22 anteriores:

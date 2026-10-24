@@ -10,7 +10,7 @@ import tempfile
 import unittest
 
 from decoders.Python import flex, flexnet_b42 as codec
-from scripts.apk_analysis.flexnet_collect_grant import collect, PREFIX
+from scripts.apk_analysis.flexnet_collect_grant import collect, collect_offline_inner, PREFIX, OFFLINE_PREFIX
 
 ROOT = Path(__file__).resolve().parents[1]
 V = json.loads((ROOT / "tests/golden/flexnet_b46_vectors.json").read_text())
@@ -19,10 +19,18 @@ CAPTURE = (ROOT / "tests/golden/flexnet_b46_grant_capture.json").read_bytes()
 OBJ = json.loads(CAPTURE)
 GRANT = base64.b64decode(OBJ["grantBase64"])
 CHALLENGE = base64.b64decode(OBJ["challengeBase64"])
+V6 = base64.b64decode(V["v6"])
+INNER = base64.b64decode(V["offline"])
+OFFLINE_OBJ = {"schema": "flexnet-v6-opened-inner/1", "fileSha256": hashlib.sha256(V6).hexdigest(),
+               "innerBase64": V["offline"]}
 
 
 def capture_with(**changes):
     return json.dumps({**OBJ, **changes}).encode()
+
+
+def offline_log(**changes):
+    return ("[console] " + OFFLINE_PREFIX + json.dumps({**OFFLINE_OBJ, **changes}) + "\n").encode()
 
 
 class FlexB46Grant(unittest.TestCase):
@@ -115,6 +123,55 @@ class FlexB46Grant(unittest.TestCase):
             self.assertEqual(retry.returncode, 1)
             self.assertEqual(json.loads(output.read_bytes()), OBJ)
             self.assertNotIn(OBJ["grantBase64"].encode(), done.stdout + done.stderr + retry.stdout + retry.stderr)
+
+    def test_v6_observed_inner_matches_jdk_and_opens_without_exporting_a_keystore_key(self):
+        inner = collect_offline_inner(V6, offline_log())
+        self.assertEqual(inner, INNER)
+        self.assertEqual(codec.decrypt_profile_xml(inner), V["xml"])
+        decoded_v6 = codec.decode(V6, offline_key=bytes.fromhex(V["offlineKey"]))
+        self.assertEqual(codec.decode(inner), {**decoded_v6, "format": "FLXCFG-v5"})
+
+    def test_v6_collector_rejects_other_file_and_modified_inner_gcm_tags(self):
+        self.assert_code("CAPTURE_NOT_FOUND", collect_offline_inner, V6, offline_log(fileSha256="0" * 64))
+        altered_outer = V6[:-1] + bytes([V6[-1] ^ 1])
+        self.assert_code("CAPTURE_NOT_FOUND", collect_offline_inner, altered_outer, offline_log())
+        for offset in (77, len(INNER) - 1):
+            inner = bytearray(INNER)
+            inner[offset] ^= 1
+            log = offline_log(innerBase64=base64.b64encode(inner).decode())
+            self.assert_code("CAPTURE_NOT_FOUND", collect_offline_inner, V6, log)
+            self.assertEqual(collect_offline_inner(V6, log + offline_log()), INNER)
+
+    def test_v6_collector_rejects_wrong_schema_duplicates_lengths_and_profile_modes(self):
+        for changes in ({"schema": 1}, {"extra": "ignored?"}, {"innerBase64": V["offline"][:-4]},
+                        {"innerBase64": "!" * len(V["offline"])}, {"innerBase64": V["online"]}):
+            self.assert_code("CAPTURE_NOT_FOUND", collect_offline_inner, V6, offline_log(**changes))
+        duplicate = (OFFLINE_PREFIX + json.dumps(OFFLINE_OBJ)[:-1] + ',"schema":"flexnet-v6-opened-inner/1"}\n').encode()
+        self.assert_code("CAPTURE_NOT_FOUND", collect_offline_inner, V6, duplicate)
+        self.assert_code("CAPTURE_FORMAT", collect_offline_inner, PROFILE, offline_log())
+        self.assert_code("CAPTURE_FORMAT", collect_offline_inner, INNER, offline_log())
+        self.assert_code("SIZE_LIMIT", collect_offline_inner, V6, b"x" * (8 * 1024 * 1024 + 1))
+
+    def test_v6_collector_cli_creates_private_inner_and_does_not_treat_it_as_a_grant(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            profile, log, output = (folder / name for name in ("v6.flex", "frida.log", "inner.flex"))
+            profile.write_bytes(V6)
+            log.write_bytes(offline_log())
+            cmd = [sys.executable, str(ROOT / "scripts/apk_analysis/flexnet_collect_grant.py"), str(profile), str(log), str(output)]
+            rejected = subprocess.run(cmd, cwd=tmp, capture_output=True, timeout=10)
+            self.assertEqual(rejected.returncode, 1)
+            self.assertFalse(output.exists())
+            opened = subprocess.run(cmd + ["--offline-inner"], cwd=tmp, capture_output=True, timeout=10)
+            self.assertEqual(opened.returncode, 0, opened.stderr.decode())
+            self.assertEqual(output.read_bytes(), INNER)
+            if os.name == "posix":
+                self.assertEqual(output.stat().st_mode & 0o777, 0o600)
+            repeat = subprocess.run(cmd + ["--offline-inner"], cwd=tmp, capture_output=True, timeout=10)
+            self.assertEqual(repeat.returncode, 1)
+            decoded = subprocess.run([sys.executable, str(ROOT / "decoders/Python/flex.py"), str(output)], cwd=tmp, capture_output=True, timeout=10)
+            self.assertEqual(decoded.returncode, 0, decoded.stderr.decode())
+            self.assertEqual(json.loads(decoded.stdout)["protectedFields"]["customSni"], "real.example.invalid")
 
 
 if __name__ == "__main__":

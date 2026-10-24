@@ -417,6 +417,14 @@ descompilación completa. El directorio Java contiene material sintético.
 
 `flexnet_b46_capture.js` se carga por el REPL de Frida en el proceso oficial;
 `flexnet_collect_grant.py` verifica GCM/XML antes de crear una captura local 0600.
-El runtime Android de ese observador sigue pendiente: las tres pruebas Node
-usan mocks. No guardar logs/concesiones reales en Git. El APK/SO y las dos
+El runtime Android de ese observador sigue pendiente: las cinco pruebas Node
+usan mocks. No guardar logs/concesiones reales en Git. El APK/SO y las tres
 muestras se vuelven a aportar localmente con los hashes documentados.
+
+La tercera muestra es v6 offline: ver
+[FLEXNET_V2_4_V6_SAMPLE.md](../../docs/FLEXNET_V2_4_V6_SAMPLE.md).
+El observador también captura el retorno v5 de `d.w` y el colector admite
+`--offline-inner`. Se contrastó su descriptor real en DEX (50 instrucciones).
+Los mismos comandos de pruebas cubren ahora 32 casos Python y cinco Node.
+La clave de época no se exporta. El host verifica las capas internas v5;
+la autenticación del exterior v6 depende de la llamada original en Android.
