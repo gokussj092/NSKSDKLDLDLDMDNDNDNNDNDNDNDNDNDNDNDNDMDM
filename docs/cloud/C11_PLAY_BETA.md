@@ -5,14 +5,14 @@ paquete **`com.ghostdeveloper.spdecode`** ni el nombre visible SP-DECODE.
 Rama: `feat/austroplus-vpn-13-0-1-decoders`; PR #96 abierto y sin fusionar.
 
 ## Archivos
-El workflow `.github/workflows/play-beta-artifacts.yml` compila **dos formatos a partir
-del mismo código, versión 1.1.6, versionCode 27, y Android 16 (targetSdk 36)**:
-- `SP-DECODE-v1.1.6-play-closed-test-signed.aab`: subir al track **Prueba cerrada**
+Tras validación de la APK en emulador y QA, el workflow manual `.github/workflows/play-beta-artifacts.yml` compila **dos formatos a partir
+del mismo código, versión 1.1.18, versionCode 29, y Android 16 (targetSdk 36)**:
+- `SP-DECODE-v1.1.18-play-closed-test-signed.aab`: subir al track **Prueba cerrada**
   en Google Play Console.
-- `SP-DECODE-v1.1.6-beta-external-signed.apk`: distribución fuera de Play.
+- `SP-DECODE-v1.1.18-beta-external-signed.apk`: distribución fuera de Play.
 - `SHA256SUMS.txt` y `SIGNATURE_VERIFICATION.txt`.
 
-Los dos usan **la clave permanente** de GitHub Secrets `SPDECODE_SIGNING_*`, sin
+Esta ejecución manual NO publica en Google Play ni GitHub Releases. Las pruebas de preproducción privada se generan por separado solo tras aprobar ambos trabajos de `Validate SP-DECODE`. Los dos usan **la clave permanente** de GitHub Secrets `SPDECODE_SIGNING_*`, sin
 generar otra ni almacenar contraseñas en el repositorio. El AAB se firma para subir a
 Play; Google Play firma los APK que entrega a los dispositivos.
 
@@ -228,7 +228,7 @@ terminar; el AAB para Google Play y el APK beta externo nunca lo contienen.
 La compilación no fusiona el PR, no publica en GitHub Releases y no sube
 ningún archivo automáticamente a Google Play.
 
-## Play closed test v1.1.6 (27): firma, edge-to-edge y 16 KiB
+## Play closed test v1.1.18 (27): firma, edge-to-edge y 16 KiB
 
 - Esta versión sucede a `1.1.5 (26)`, ya enviada a Play Console; nunca se reutiliza el `versionCode` 26.
 - El workflow usa el SHA-256 público **del certificado de firma de aplicaciones de Play** (no la clave de subida) desde el secreto `SPDECODE_PLAY_APP_SIGNER_SHA256`, con alternativa `vars` para compatibilidad. Su valor debe coincidir con el certificado DER de Play facilitado por el propietario (`64760393E52521294B40A1FD978B5BAE732B7D8604BD222CA01166A25407854B`). La compilación **falla** si la variable falta o no coincide; la clave de subida histórica sigue siendo imprescindible.
@@ -246,7 +246,7 @@ El workflow `android-play-ui-insets.yml` ejecuta una prueba instrumentada en And
 
 ## Decisión de publicación
 
-El paquete v1.1.6 (27) se ha solicitado únicamente para **prueba cerrada de Google Play**. En `release/android-readiness.json` se registra `NO-GO` para distribución estable y prerelease público: ninguna aprobación anterior (incluida la de 1.1.4) se transfiere a esta versión. La compilación AAB para Play cerrada no altera esa decisión.
+El paquete v1.1.18 (27) se ha solicitado únicamente para **prueba cerrada de Google Play**. En `release/android-readiness.json` se registra `NO-GO` para distribución estable y prerelease público: ninguna aprobación anterior (incluida la de 1.1.4) se transfiere a esta versión. La compilación AAB para Play cerrada no altera esa decisión.
 
 ### Aislamiento de pruebas Cloud
 
