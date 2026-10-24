@@ -82,9 +82,9 @@ Pruebas relacionadas: `cloud/web/tests/server-vpn-catalog.test.mjs`, `server-vpn
 
 **Al empezar el próximo chat:** abrir este archivo y las fuentes enlazadas antes de proponer nuevos catálogos. Validar siempre el estado actual; los números históricos aquí son ejemplos, no versiones permanentes.
 
-## C. APK y AAB 1.1.18 (29): condiciones de preproducción
+## C. APK y AAB 1.1.19 (30): condiciones de preproducción
 
-El PR #96 contiene la versión de fuente **1.1.18 (versionCode 29)**. La
+El PR #96 contiene la versión de fuente **1.1.19 (versionCode 30)**. La
 publicación estable y pública sigue **NO-GO** en `release/android-readiness.json`.
 El workflow `Validate SP-DECODE` ejecuta pruebas unitarias y 268 pruebas
 instrumentadas API 35. La tarea reutilizable
