@@ -94,6 +94,8 @@ class AndroidA24CatalogTests(unittest.TestCase):
                 self.assertFalse(row["androidVerified"])
                 self.assertEqual(row["migrationPhase"], phase_for(spec.script))
                 self.assertEqual((row["name"], row["script"], row["originalRuntime"]),
+                                 ("CREV", "decoders/Python/crev.py", "python")
+                                 if suffix=="crev" else
                                  (spec.name, spec.script, spec.runtime))
                 self.assertTrue((ROOT / row["script"]).is_file(), suffix)
         for suffix in ("ace","clay","ultra","7net","itv","izph","flexnet","st","apnalite"):
