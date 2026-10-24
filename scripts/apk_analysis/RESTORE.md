@@ -1,5 +1,45 @@
 # Recuperar herramientas después de perder el entorno
 
+## Speicers Pro VPN 104.1.17 (120), privado — 2026-10-24
+
+Continuar en la rama del PR #99. El APKS autorizado y su hash están en
+`apps/Speicers_Pro_VPN/ANALYSIS.md`. No guardar APK, catálogos, usuarios ni
+resultados reales en Git. Runtime: Python + PyCryptodome; JDK para paridad.
+
+```bash
+python scripts/apk_analysis/inspect_apk.py /ruta/Speicers-Pro.apks \
+  scripts/apk_analysis/work/speicers --asset flags/config.png \
+  --asset config/config.json --asset LICENSE
+python scripts/apk_analysis/decompile.py --install
+python scripts/apk_analysis/decompile.py \
+  scripts/apk_analysis/work/speicers/dex/classes.dex \
+  scripts/apk_analysis/work/speicers-jadx
+python scripts/apk_analysis/dex_method.py \
+  scripts/apk_analysis/work/speicers/dex/classes.dex \
+  'Lsp8x108/hpNtUD1CNW0w7ETBbL;' run \
+  scripts/apk_analysis/work/speicers-download-method.json
+python -m unittest tests.test_speicers_pro tests.test_http_fenixvpn tests.test_cloud_c8_vpn_registry -v
+python scripts/apk_analysis/speicers_verify.py \
+  scripts/apk_analysis/work/speicers/assets/flags/config.png \
+  scripts/apk_analysis/work/speicers/assets/config/config.json
+```
+
+Añadir `/ruta/servidores_pro-cifrado` al verificador para una copia remota.
+La CLI autónoma `apps/Speicers_Pro_VPN/server_catalog_decoder.py` usa la fuente
+fija y guarda JSON privado; no sobrescribe. Requiere solo PyCryptodome, apta para
+Termux sin root. Reutiliza los `.sks` canónicos; no duplica la ruta histórica.
+
+Paridad completa JDK/bridge de tres documentos reales: asset principal 36/75,
+remoto 35/74 y secundario 9/32; 1605 campos conocidos, 1229 no vacíos. La URL de
+usuarios se identifica pero no se descarga. El esquema de pagos no es cloud VPN.
+JADX 1.5.6 termina con 21 errores generales; GET confirmado en 163 instrucciones.
+
+**Mantener privado por instrucción expresa:** registro en engine/bridge internos
+offline, sin ficha, icono público o proveedor de descarga web. No incrementar
+Server VPN ni habilitarlo desde el interruptor global. Mínimo 40 / 40 fichas;
+C0 240 / C8 250, sin tocar switches, Android o C11. Prueba Node dedicada.
+Pendiente `.sks` real y ejecución Android. Sin despliegue o APK.
+
 ## Tx Tunnel, Tx v2.17 (70) — 2026-10-24
 
 Continuar en la rama del PR #99, conservando MM. Runtime: checkout completo,

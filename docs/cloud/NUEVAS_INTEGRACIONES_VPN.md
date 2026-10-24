@@ -1,5 +1,26 @@
 # Registro de nuevas integraciones VPN
 
+## Speicers Pro VPN 104.1.17 (120), integración privada — 2026-10-24
+
+Rama del PR #99, desde HEAD fd025ee. `apps/Speicers_Pro_VPN/` entrega un script
+autónomo Python/Termux para descargar el catálogo fijo y abrir campos completos,
+sin root ni contraseña de usuario. GET real 200, versión 35 / 74 servidores;
+asset principal 36 / 75 y secundario 9 / 32. Los tres documentos coinciden
+íntegros con JDK independiente y bridge. Se conservan todos los controles y
+servidores, incluidos deshabilitados; el remoto no se confunde con el asset.
+
+**Exclusión pública solicitada por el usuario:** registrado solo en engine y
+bridge internos de lectura offline. Sin ficha, icono ni broker de descarga
+público; Server VPN sigue en mínimo 40 / 40. El interruptor global no lo expone.
+No publicar esta incorporación en novedades hasta nueva instrucción.
+
+`.sks` reutiliza el método GCM/DES canónico ya registrado, sin cambiar C0 240 /
+C8 250. Vectores JDK correctos; exportación `.sks` real y Android pendientes.
+No se identificó formato propietario de texto ni cloud por token. Retorno de
+pago separado del catálogo; la fuente de usuarios no se descarga. Ver README,
+ANALYSIS, TESTING, `speicers_verify.py`, oracle JDK y RESTORE. Sin despliegue,
+fusión, APK, diseño Android ni C11 automáticos.
+
 Este registro conserva las incorporaciones del lote iniciado con HTTP
 SocketClay y registra por separado los lotes posteriores. Se utilizará como
 fuente para una futura actualización de

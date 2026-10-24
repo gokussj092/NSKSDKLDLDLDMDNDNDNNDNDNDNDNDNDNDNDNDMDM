@@ -4,6 +4,10 @@ on:
   pull_request:
     paths:
       - "cloud/**"
+      - "decoders/Python/apps/Speicers_Pro_VPN/**"
+      - "tests/test_speicers_pro.py"
+      - "tests/golden/speicers_oracle.java"
+      - "scripts/apk_analysis/speicers_verify.py"
       - "docs/cloud/C0_FORMAT_MATRIX.csv"
       - "docs/cloud/C2_IMPLEMENTATION.md"
       - "tests/test_cloud_c2_golden.py"
@@ -142,6 +146,8 @@ jobs:
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_am_liapp_metadata tests.test_am_tunnel_lite tests.test_sevennet_vpn tests.test_xhypher_tunnel_pro tests.test_ut_loop_pro tests.test_turbomx_vpn tests.test_superflash_vpn tests.test_rmp_tunnel_pro tests.test_rjc_tunnel_pro tests.test_proneet_vpn tests.test_onspace_vpn tests.test_mx_tunnel_pro tests.test_megatunnel tests.test_http_internet_infinito tests.test_freedomvpn tests.test_focus_vpn_cloud tests.test_eut_vpn tests.test_v2ray_tunnel_plus tests.test_tunelguard tests.test_http_wakko tests.test_http_socketclay tests.test_http_fenixvpn tests.test_http_jireh -v
       - name: Verify APNA VPN modified XXTEA complete catalog and worker
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_apna_vpn -v
+      - name: Verify private Speicers catalogs and shared SKS compatibility
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_speicers_pro -v
       - name: Verify V2Box fixed-key, password and tag integrity routes
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_v2box_password -v
       - name: Verify NPV text aliases, strict credential errors and legacy envelope isolation

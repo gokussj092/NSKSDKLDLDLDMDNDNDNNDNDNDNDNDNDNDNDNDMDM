@@ -7,6 +7,8 @@ import sys
 from pathlib import Path
 
 PROVIDERS = {
+    # Private offline reader only; deliberately absent from the public roster/broker.
+    "speicers-pro-vpn": "decoders.Python.apps.Speicers_Pro_VPN.server_catalog_decoder",
     "tx-tunnel": "decoders.Python.apps.Tx_Tunnel.server_catalog_decoder",
     # Fixed official POST is blocked here; this route accepts offline bytes only.
     "mm-tunnel": "decoders.Python.apps.MM_Tunnel.server_catalog_decoder",
