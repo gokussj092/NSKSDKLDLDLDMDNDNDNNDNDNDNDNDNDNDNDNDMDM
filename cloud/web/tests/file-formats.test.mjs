@@ -94,8 +94,8 @@ test("Cloud catalog v38 refreshes AWG and password-protected UA without an APK u
     offlineSupported:false,cloudSupported:true,credentialFields:["password"],
   });
   const worker=project("cloud/workers/python/engine.py");
-  assert.match(worker, /"awg": \\("decoders\\/Python\\/apps\\/AboWaged_VPN\\/file_decoder\\.py"/);
-  assert.match(worker, /"ua": \\("decoders\\/Python\\/apps\\/Ultra_Custom\\/ultra_custom_52\\.py"/);
+  assert(worker.includes('"awg": ("decoders/Python/apps/AboWaged_VPN/file_decoder.py"'));
+  assert(worker.includes('"ua": ("decoders/Python/apps/Ultra_Custom/ultra_custom_52.py"'));
   const response=await endpoint(request(37));
   assert.equal(response.status,200);
   const body=await response.json();
