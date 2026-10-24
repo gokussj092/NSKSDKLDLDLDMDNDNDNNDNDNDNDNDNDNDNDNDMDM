@@ -9,6 +9,7 @@ import java.util.Locale
  */
 internal object CloudFileFormats {
     private val names=mapOf(
+        "awg" to "AboWaged VPN 1.0",
         "1ftnl" to "1FTunnel 0.6.99",
         "tgv" to "TunelGuard VPN 12.8",
         "rt" to "REESE TUNNEL",
