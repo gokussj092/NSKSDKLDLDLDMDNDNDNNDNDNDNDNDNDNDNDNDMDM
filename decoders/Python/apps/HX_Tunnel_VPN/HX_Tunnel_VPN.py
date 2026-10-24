@@ -112,8 +112,10 @@ def _mx(total, y, z, position, e, key):
             ^ (((z >> 5) ^ (y << 2)) + ((y >> 3) ^ (z << 4)))) & MASK
 
 
-def decrypt_catalog_bytes(data: bytes | str, *, key: bytes = CATALOG_KEY) -> bytes:
-    """Shared APK XXTEA variant; the historical HX key remains the default."""
+def decrypt_catalog_bytes(data: bytes | str, *, key: bytes | None = None) -> bytes:
+    """Shared APK XXTEA variant; select the current default key at call-time."""
+    if key is None:
+        key = CATALOG_KEY
     encrypted = _base64(_text(data))
     if len(encrypted) < 8 or len(encrypted) % 4:
         raise DecodeError("TRUNCATED", "El catálogo no contiene palabras XXTEA completas.")

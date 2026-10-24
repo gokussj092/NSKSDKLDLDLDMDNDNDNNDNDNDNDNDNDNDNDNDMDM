@@ -175,7 +175,7 @@ class AcTunnelCloudTests(unittest.TestCase):
         link = "actunnelvpn://" + raw.decode()
         self.assertEqual(decode_text(link)["structuredJson"], json.loads(renz.decode_text(link)))
         self.assertEqual(decode_file("actunnelvpn", raw)["structuredJson"], json.loads(renz.decode_file(raw, ".actunnelvpn")))
-        self.assertEqual(len(load_runtime_file_engines()), 247)
+        self.assertEqual(len(load_runtime_file_engines()), 250)
         self.assertEqual(len(load_file_engines()), 240)
         self.assertEqual(load_runtime_file_engines()["actunnelvpn"], load_file_engines()["actunnelvpn"])
 

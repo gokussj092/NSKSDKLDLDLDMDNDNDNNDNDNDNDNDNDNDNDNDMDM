@@ -26,10 +26,15 @@ class C8WorkerIntegrationTests(unittest.TestCase):
         base=load_file_engines()
         extended=load_runtime_file_engines()
         self.assertEqual(len(base),240)
-        self.assertEqual(len(extended),247)
-        self.assertEqual({k: v for k,v in extended.items() if k not in
-                          {"tgv","rt","gol","ua","nvpnc","green","hxt","mtp","roy","4ulite","actun","aro","sks","tut"}},
-                         {k: v for k,v in base.items() if k not in {"hxt","roy","4ulite","actun","aro","sks","tut"}})
+        self.assertEqual(len(extended),250)
+        from engine import _C8_FILE_ENGINES
+        overlays=set(_C8_FILE_ENGINES)
+        self.assertEqual(len(overlays),18)
+        self.assertEqual({k:v for k,v in extended.items() if k not in overlays},
+                         {k:v for k,v in base.items() if k not in overlays})
+        for ext in overlays:
+            self.assertEqual(extended[ext]["phase"],"C8")
+            self.assertIn("/apps/",extended[ext]["source"])
         for ext in ("tgv","rt","gol","ua","nvpnc","green","hxt","mtp","roy","4ulite","actun","aro","sks","tut"):
             self.assertEqual(extended[ext]["phase"],"C8")
             self.assertIn("/apps/",extended[ext]["source"])

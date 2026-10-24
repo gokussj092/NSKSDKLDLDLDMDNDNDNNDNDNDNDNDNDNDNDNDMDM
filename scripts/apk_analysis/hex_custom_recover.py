@@ -55,8 +55,9 @@ def parse_container(data):
 
 
 def recover_methods(library):
-    from elf_inspect import ElfImage
+    # Validate the exact authorized library before attempting any ELF parsing.
     if hashlib.sha256(Path(library).read_bytes()).hexdigest()!=SO_SHA256:raise ValueError('Unknown native build')
+    from elf_inspect import ElfImage
     image=ElfImage(library)
     key=image.read(POOL_KEY_ADDRESS,8)
     encoded=image.read(POOL_ADDRESS,POOL_SIZE)
