@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 class PhaseHProductionAuditTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.data = inspect("1.1.6", 27)
+        cls.data = inspect("1.1.17", 28)
 
     def test_source_inventory_still_exactly_239(self):
         self.assertEqual(self.data["sourceGate"], "PASS",
@@ -44,14 +44,14 @@ class PhaseHProductionAuditTests(unittest.TestCase):
 
     def test_previous_owner_approval_does_not_transfer_to_play_beta(self):
         readiness=json.loads((ROOT/"release/android-readiness.json").read_text("utf-8"))
-        self.assertEqual(readiness["stableVersion"],"1.1.6")
+        self.assertEqual(readiness["stableVersion"],"1.1.17")
         self.assertEqual(readiness["decision"],"NO-GO")
         self.assertFalse(readiness["ownerApproval"])
         self.assertFalse(readiness["publicPreviewApproval"])
         self.assertFalse(readiness["ownerStableAcceptance"]["approved"])
         self.assertEqual(self.data["productionGate"],"NO-GO")
-        self.assertTrue(check(readiness,"stable","1.1.6"))
-        self.assertTrue(check(readiness,"public-preview","1.1.6"))
+        self.assertTrue(check(readiness,"stable","1.1.17"))
+        self.assertTrue(check(readiness,"public-preview","1.1.17"))
         prior=copy.deepcopy(readiness)
         prior.update({"stableVersion":"1.1.4","decision":"OWNER-GO","ownerApproval":True})
         prior["ownerStableAcceptance"]={
@@ -59,7 +59,7 @@ class PhaseHProductionAuditTests(unittest.TestCase):
             "report":"docs/android/RELEASE_1_1_4_PRODUCTION.md",
         }
         self.assertEqual([],check(prior,"stable","1.1.4"))
-        self.assertTrue(check(prior,"stable","1.1.6"))
+        self.assertTrue(check(prior,"stable","1.1.17"))
         self.assertTrue(check(prior,"public-preview","1.1.4"))
         self.assertEqual(0,self.data["catalog"]["certifiedCurrentExporterSuffixes"])
 
