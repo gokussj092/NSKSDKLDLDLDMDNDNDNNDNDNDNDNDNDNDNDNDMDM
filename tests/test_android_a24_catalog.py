@@ -92,7 +92,7 @@ class AndroidA24CatalogTests(unittest.TestCase):
                     self.fail(f"Unregistered phase for {suffix}")
                     self.assertFalse(row["linuxGoldenSynthetic"])
                 self.assertFalse(row["androidVerified"])
-                self.assertEqual(row["migrationPhase"], phase_for(spec.script))
+                self.assertEqual(row["migrationPhase"], phase_for(row["script"]))
                 self.assertEqual((row["name"], row["script"], row["originalRuntime"]),
                                  ("CREV", "decoders/Python/crev.py", "python")
                                  if suffix=="crev" else
