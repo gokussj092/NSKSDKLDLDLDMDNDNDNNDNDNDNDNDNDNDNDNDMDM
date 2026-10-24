@@ -45,7 +45,7 @@ class RemoteFormatsAndroidTests(unittest.TestCase):
         block_e=router.split('if (format.migrationPhase == "E")')[1].split(
             'if (format.migrationPhase == "F")')[0]
         block_f=router.split('if (format.migrationPhase == "F")')[1].split(
-            'return when (format.suffix)')[0]
+            'return when (format.suffix) {',1)[1].split('}',1)[0]
         def group(text,decoder):
             match=re.search(r'((?:"[^"]+"[\s,]*)+)->\s*'+decoder,text)
             self.assertIsNotNone(match,decoder)
