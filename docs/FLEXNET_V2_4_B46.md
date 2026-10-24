@@ -1,5 +1,9 @@
 # FlexNet V 2.4 B46 — actualización compatible
 
+Continuación del 24 de octubre: [captura de importación autorizada](FLEXNET_V2_4_AUTHORIZED_IMPORT.md),
+layout de concesión de 117 bytes, CLI `--grant-capture` y 87 casos nativos de
+binding. Las dos muestras online reales **siguen pendientes de su captura**.
+
 Paquete `com.flexnet.tunnel`, V 2.4, versionCode 46. PR #96, misma rama
 `feat/austroplus-vpn-13-0-1-decoders`. Se amplía el lector B42 existente,
 sin duplicarlo ni eliminar versiones anteriores. Ver
@@ -12,7 +16,8 @@ sin duplicarlo ni eliminar versiones anteriores. Ver
 `flexnet.v5.request` y `VpnRouteBridge.transport` desenvuelve la concesión con
 `flexnet.v5.route`, identidades de Android Keystore. La clave aleatoria del
 archivo no puede deducirse de su identificador, hash o los materiales legacy.
-Se mantiene la entrada de clave autorizada `--file-key-file`.
+Se mantiene la entrada de clave autorizada `--file-key-file`; también se admite
+una captura de la concesión ya desenvuelta durante la importación oficial.
 
 El modo offline B46 añade un contenedor **FLXCFG v6**, modo 1, suite 1, mínimo
 build >=44: cabecera de 45 bytes (magic6/version/mode/suite/build4/key-id16/

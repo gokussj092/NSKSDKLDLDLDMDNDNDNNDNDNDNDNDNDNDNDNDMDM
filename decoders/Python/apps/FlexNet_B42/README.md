@@ -27,6 +27,7 @@ python decoders/Python/flex.py perfil_antiguo.flex
 python decoders/Python/flexnet_b42.py perfil.flex --inspect
 python decoders/Python/flex.py online.flex --file-key-file clave_contenido.bin
 python decoders/Python/flexnet_b42.py online.flex --file-key-file clave_contenido.bin -o resultado.json
+python decoders/Python/flexnet_b42.py online.flex --grant-capture captura_local.json -o resultado.json
 python decoders/Python/flex.py offline_v6.flex --offline-key-file clave_setup.bin
 ```
 
@@ -35,6 +36,15 @@ legítimas de esa exportación/setup, no contraseñas adivinadas ni el `wrappedG
 `run(data, file_key=...)` y `run(data, offline_key=...)` aceptan los mismos datos.
 El script es offline y no fabrica identidades, retos o concesiones del servidor.
 Los imports, rutas Cloud existentes, catálogos FBS1/RSA y extensiones se mantienen.
+
+`--grant-capture` y `run(data, grant_capture=capture_bytes)` admiten una concesión
+de 117 bytes ya desenvuelta durante una importación autorizada. Comprueban el
+archivo exacto, reto, build y operación antes de GCM; no aceptan `wrappedGrant`.
+El observador y los pasos están en
+[recuperación B46](../../../../docs/FLEXNET_V2_4_AUTHORIZED_IMPORT.md).
+La captura necesita un Android instrumentable; aún no se ha probado en un
+dispositivo ni se han descifrado las dos muestras reales. Las pruebas locales
+usan JDK, el bloque nativo aislado y mocks del observador.
 
 **Muestra recibida `free (1).flex`:** FLXCFG v5 online, mínimo B46, 1388 bytes.
 Ahora se reconoce correctamente, pero **su contenido sigue sin recuperarse**:

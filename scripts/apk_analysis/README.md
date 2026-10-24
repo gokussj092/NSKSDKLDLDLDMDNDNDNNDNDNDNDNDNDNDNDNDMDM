@@ -1,5 +1,13 @@
 # Herramientas de análisis APK
 
+FlexNet B46: `flexnet_b46_grant_oracle.py` contrasta 87 casos del binding de
+concesión con el bloque ARM64 original y un vector JDK. El observador
+`flexnet_b46_capture.js` y colector `flexnet_collect_grant.py` preparan la
+recuperación local durante una importación oficial: requieren Android
+instrumentable y **no se han validado en teléfono**. Las dos muestras reales
+siguen sin abrirse. Los mocks del observador no sustituyen esa comprobación.
+Layout, límites y pasos en `docs/FLEXNET_V2_4_AUTHORIZED_IMPORT.md` y RESTORE.
+
 Tx Tunnel build 70: `tx_tunnel_verify.py` reutiliza el comparador de documentos
 completos y la referencia libsodium/JDK, sin copiar el motor histórico. Catálogos
 reales 23/66 y 27/643, 4888 campos; cuatro documentos sintéticos adicionales.

@@ -390,3 +390,33 @@ no imprime datos descifrados ni claves. Para un perfil con contraseña, añadir
 `--credentials` y pasar `{"password":"..."}` por stdin privado. No guardar
 APK/SO, fuentes JADX, inventarios ni resultados reales en Git. Conservar AM
 pendiente; este lector no depende de quitar LIAPP ni usa sus herramientas.
+
+## FlexNet V 2.4 / build 46: concesiones de importación
+
+Continuación en PR #99. No se abrieron las dos muestras online reales: falta
+observar su importación en un Android instrumentable. El usuario confirmó que
+la app oficial sí las importa. Layout, hashes, captura y uso privado completos
+en [FLEXNET_V2_4_AUTHORIZED_IMPORT.md](../../docs/FLEXNET_V2_4_AUTHORIZED_IMPORT.md).
+
+```bash
+python scripts/apk_analysis/inspect_apk.py '/ruta/FlexNet V 2.4 .apk' \
+  scripts/apk_analysis/work/flex-b46 --asset builtin_servers.dat --native libvpnbridge.so
+python scripts/apk_analysis/decompile.py \
+  scripts/apk_analysis/work/flex-b46/dex/classes.dex scripts/apk_analysis/work/flex-b46-jadx
+java tests/golden/FlexB46VectorGenerator.java scripts/apk_analysis/work/flex-b46-jdk-grant
+python scripts/apk_analysis/flexnet_b46_grant_oracle.py /ruta/libvpnbridge.so
+PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_flexnet_b46_grant tests.test_flexnet_b46 tests.test_flexnet_b42 -v
+node --test tests/flexnet_b46_capture.test.mjs
+```
+
+Se necesita el entorno opcional Unicorn/pyelftools para el oracle, no para el
+lector. SHA exacto fijado en el script. Ejecuta parser/binding y comparador
+originales: 87 casos, sin JNI/Android/RSA. JADX terminó con 27 errores generales;
+las rutas indicadas se revisaron con DEX y desensamblado nativo, sin afirmar
+descompilación completa. El directorio Java contiene material sintético.
+
+`flexnet_b46_capture.js` se carga por el REPL de Frida en el proceso oficial;
+`flexnet_collect_grant.py` verifica GCM/XML antes de crear una captura local 0600.
+El runtime Android de ese observador sigue pendiente: las tres pruebas Node
+usan mocks. No guardar logs/concesiones reales en Git. El APK/SO y las dos
+muestras se vuelven a aportar localmente con los hashes documentados.

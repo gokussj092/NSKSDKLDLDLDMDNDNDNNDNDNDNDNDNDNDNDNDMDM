@@ -89,10 +89,13 @@ def _modern_codec():
 
 
 def flex_decrypt_bytes(data: bytes, *, file_key: bytes | None = None,
-                       offline_key: bytes | None = None) -> str:
+                       offline_key: bytes | None = None,
+                       grant_capture: bytes | None = None) -> str:
     """فك تشفير bytes ملف .flex وإرجاع XML نصي"""
     if data[:6] == FLEX_MAGIC and data[6:7] in (b"\x05", b"\x06"):
-        return _modern_codec().decrypt_profile_xml(data, file_key=file_key, offline_key=offline_key)
+        return _modern_codec().decrypt_profile_xml(data, file_key=file_key, offline_key=offline_key, grant_capture=grant_capture)
+    if grant_capture is not None:
+        raise ValueError("An import capture requires a v5 online profile")
     if len(data) < 7 or data[:6] != FLEX_MAGIC:
         raise ValueError("Invalid Flex header (FLXCFG not found)")
     pos = 6
@@ -241,27 +244,30 @@ def flex_clean_properties(props: dict) -> dict:
 
 
 def _decode_flex_file(file_data: bytes, *, file_key: bytes | None = None,
-                      offline_key: bytes | None = None) -> dict:
+                      offline_key: bytes | None = None,
+                      grant_capture: bytes | None = None) -> dict:
     if file_data[:6] == FLEX_MAGIC and file_data[6:7] in (b"\x05", b"\x06"):
-        result = _modern_codec().decode_profile(file_data, file_key=file_key, offline_key=offline_key)
+        result = _modern_codec().decode_profile(file_data, file_key=file_key, offline_key=offline_key, grant_capture=grant_capture)
         props = result.get("decodedProperties", result["rawProperties"])
         return {**flex_clean_properties(props), **result}
-    return flex_clean_output(flex_decrypt_bytes(file_data))
+    return flex_clean_output(flex_decrypt_bytes(file_data, grant_capture=grant_capture))
 
 
 def decrypt_flex_file(file_data: bytes, *, file_key: bytes | None = None,
-                       offline_key: bytes | None = None) -> dict | None:
+                       offline_key: bytes | None = None,
+                       grant_capture: bytes | None = None) -> dict | None:
     """الدالة الرئيسية للبوت: فك تشفير .flex وإرجاع قاموس"""
     try:
-        return _decode_flex_file(file_data, file_key=file_key, offline_key=offline_key)
+        return _decode_flex_file(file_data, file_key=file_key, offline_key=offline_key, grant_capture=grant_capture)
     except Exception as e:
         logger.debug("FlexNet rejected invalid data: %s", e)
         return None
 def run(file_bytes: bytes, *, file_key: bytes | None = None,
-        offline_key: bytes | None = None) -> str | None:
+        offline_key: bytes | None = None,
+        grant_capture: bytes | None = None) -> str | None:
     if not isinstance(file_bytes, bytes) or not file_bytes or len(file_bytes) > MAX_INPUT_BYTES:
         return None
-    result = decrypt_flex_file(file_bytes, file_key=file_key, offline_key=offline_key)
+    result = decrypt_flex_file(file_bytes, file_key=file_key, offline_key=offline_key, grant_capture=grant_capture)
     return json.dumps(result, ensure_ascii=False, indent=2) if isinstance(result, dict) else None
 
 EXTENSIONS = (".flex", ".flexnet")
@@ -270,6 +276,7 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description="FlexNet v1-v6 profile decoder")
     parser.add_argument("file", type=Path)
     parser.add_argument("--file-key-file", type=Path, help="Authorized v5 online content key")
+    parser.add_argument("--grant-capture", type=Path, help="Local capture from an authorized v5 online import")
     parser.add_argument("--offline-key-file", type=Path, help="Authorized v6 offline setup key")
     if argv is None:
         argv = sys.argv[1:]
@@ -277,6 +284,8 @@ def main(argv=None) -> int:
         parser.print_usage(file=sys.stderr)
         return 2
     args = parser.parse_args(argv)
+    if args.grant_capture and (args.file_key_file or args.offline_key_file):
+        parser.error("--grant-capture cannot be combined with key options")
     path = args.file
     if path.suffix.lower() not in EXTENSIONS:
         print("Unsupported flex extension", file=sys.stderr)
@@ -288,7 +297,8 @@ def main(argv=None) -> int:
             raise ValueError("Invalid input size")
         file_key = _modern_codec().read_key_file(args.file_key_file) if args.file_key_file else None
         offline_key = _modern_codec().read_key_file(args.offline_key_file) if args.offline_key_file else None
-        result = _decode_flex_file(data, file_key=file_key, offline_key=offline_key)
+        capture = _modern_codec().read_grant_capture(args.grant_capture) if args.grant_capture else None
+        result = _decode_flex_file(data, file_key=file_key, offline_key=offline_key, grant_capture=capture)
     except OSError:
         print("Unable to read flex configuration or key file", file=sys.stderr)
         return 1

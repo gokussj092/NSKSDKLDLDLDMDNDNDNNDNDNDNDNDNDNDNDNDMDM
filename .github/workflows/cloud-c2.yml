@@ -11,6 +11,9 @@ on:
       - "decoders/Python/flex.py"
       - "decoders/Python/flexnet_b42.py"
       - "tests/test_flexnet_b*.py"
+      - "tests/flexnet_b46_capture.test.mjs"
+      - "scripts/apk_analysis/flexnet_b46_capture.js"
+      - "scripts/apk_analysis/flexnet_collect_grant.py"
       - "tests/golden/flexnet_b*"
       - "tests/golden/FlexB*VectorGenerator.java"
       - "decoders/Python/apps/HTTP_Custom/**"
@@ -147,8 +150,10 @@ jobs:
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_oneftunnel tests.test_cloud_c8_vpn_registry -v
       - name: Verify NPVS v1 legacy route, v5 protected methods, and recipient diagnostics
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_npvs_v1_legacy tests.test_npvs_protected tests.test_npvs_v5.PrimitiveTests tests.test_npvs_v5_embedded tests.test_cloud_c8_npvs_error_classification -v
-      - name: Verify FlexNet v1-v6 compatibility and B46 protected fields
-        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_flexnet_b46 tests.test_flexnet_b42 -v
+      - name: Verify FlexNet v1-v6, B46 protected fields and authorized import captures
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_flexnet_b46_grant tests.test_flexnet_b46 tests.test_flexnet_b42 -v
+      - name: Verify FlexNet capture observer flow with host mocks
+        run: node --test tests/flexnet_b46_capture.test.mjs
       - name: C2 verify NUR server catalog remains separate from solid profiles
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_cloud_c2_nur_catalog -v
       - name: Hat Tunnel complete JSON, real fixture and optional-field regression

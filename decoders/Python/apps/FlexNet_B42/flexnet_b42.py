@@ -32,6 +32,8 @@ MAX_INPUT = 2 * 1024 * 1024
 MAX_XML = 4 * 1024 * 1024
 MAX_CATALOG = 128 * 1024
 CLIENT_BUILD = 46
+MAX_GRANT_CAPTURE = 2048
+GRANT_SCHEMA = "flexnet-v5-authorized-grant/1"
 MAGIC = b"FLXCFG"
 WRAP_ROOT = bytes.fromhex("09c76c0cea3739ed9aac7fb157978b4ce701d81194f7730e45c1a69750dcfd6b")
 WRAP_LABEL = b"FlexNet/v5/offline/wrap/generation-1"
@@ -109,10 +111,69 @@ def _hkdf(root: bytes, salt: bytes, info: bytes) -> bytes:
     return hmac.digest(extracted, info + b"\x01", "sha256")
 
 
+def file_key_from_grant(data: bytes, grant: bytes, challenge: bytes) -> bytes:
+    """Validate an already unwrapped import grant using B46's native bindings.
+
+    This does not authenticate a server signature or obtain authorization. The
+    official app unwraps the grant with its non-exportable Keystore RSA key.
+    AES-GCM verification is still required before exposing any profile data.
+    """
+    info = inspect_profile(data)
+    if info["format"] != "FLXCFG-v5" or info["mode"] != "online":
+        raise DecodeError("GRANT_FORMAT", "An import grant requires a v5 online profile.")
+    if not isinstance(grant, bytes) or len(grant) != 117:
+        raise DecodeError("GRANT_FORMAT", "Expected the 117-byte unwrapped import grant, not wrappedGrant.")
+    if not isinstance(challenge, bytes) or len(challenge) != 32:
+        raise DecodeError("GRANT_FORMAT", "Expected the original 32-byte operation challenge.")
+    bindings = ((grant[32:48], data[13:29]),
+                (grant[48:80], hashlib.sha256(data).digest()),
+                (grant[80:112], challenge), (grant[112:116], data[9:13]))
+    if any(not hmac.compare_digest(actual, expected) for actual, expected in bindings) or grant[116] != 2:
+        raise DecodeError("GRANT_BINDING", "Import grant does not match the file, challenge, build or operation.")
+    return grant[:32]
+
+
+def file_key_from_grant_capture(data: bytes, capture: bytes) -> bytes:
+    """Read the small local capture produced during an authorized app import."""
+    obj = _json(_bounded(capture, MAX_GRANT_CAPTURE))
+    if (not isinstance(obj, dict)
+            or set(obj) != {"schema", "fileSha256", "challengeBase64", "grantBase64"}
+            or obj["schema"] != GRANT_SCHEMA
+            or not isinstance(obj["fileSha256"], str)
+            or not re.fullmatch(r"[0-9a-f]{64}", obj["fileSha256"])):
+        raise DecodeError("GRANT_FORMAT", "Invalid authorized import capture.")
+    _bounded(data)
+    if not hmac.compare_digest(obj["fileSha256"], hashlib.sha256(data).hexdigest()):
+        raise DecodeError("GRANT_BINDING", "Import capture belongs to a different encrypted file.")
+    fields = []
+    for name, size in (("challengeBase64", 32), ("grantBase64", 117)):
+        value = obj[name]
+        if not isinstance(value, str) or len(value) != ((size + 2) // 3) * 4:
+            raise DecodeError("GRANT_FORMAT", "Invalid capture field length.")
+        try:
+            raw = base64.b64decode(value, validate=True)
+        except (binascii.Error, ValueError):
+            raise DecodeError("GRANT_FORMAT", "Invalid capture Base64.") from None
+        if len(raw) != size or base64.b64encode(raw).decode("ascii") != value:
+            raise DecodeError("GRANT_FORMAT", "Expected canonical capture Base64.")
+        fields.append(raw)
+    return file_key_from_grant(data, fields[1], fields[0])
+
+
+def read_grant_capture(path: Path) -> bytes:
+    with path.open("rb") as handle:
+        return _bounded(handle.read(MAX_GRANT_CAPTURE + 1), MAX_GRANT_CAPTURE)
+
+
 def decrypt_profile_xml(data: bytes, *, file_key: bytes | None = None,
                         offline_key: bytes | None = None,
+                        grant_capture: bytes | None = None,
                         client_build: int = CLIENT_BUILD) -> str:
     info = inspect_profile(data, client_build=client_build)
+    if grant_capture is not None:
+        if file_key is not None or offline_key is not None:
+            raise DecodeError("KEY_OPTIONS", "Use the import capture without other key options.")
+        file_key = file_key_from_grant_capture(data, grant_capture)
     if info["mode"] == "device-offline":
         if offline_key is None:
             raise DecodeError("OFFLINE_KEY_REQUIRED", "This v6 export requires its authorized offline setup key; it is stored in Android Keystore, not in the file or APK.")
@@ -228,8 +289,9 @@ def _protected_properties(props: dict[str, str]) -> dict[str, str] | None:
 
 
 def decode_profile(data: bytes, *, file_key: bytes | None = None,
-                   offline_key: bytes | None = None) -> dict[str, Any]:
-    xml = decrypt_profile_xml(data, file_key=file_key, offline_key=offline_key)
+                   offline_key: bytes | None = None,
+                   grant_capture: bytes | None = None) -> dict[str, Any]:
+    xml = decrypt_profile_xml(data, file_key=file_key, offline_key=offline_key, grant_capture=grant_capture)
     # The app uses java.util.Properties, not an arbitrary XML document.
     if re.search(r"<!ENTITY\b|<!DOCTYPE[^>]*\[", xml, re.I):
         raise DecodeError("INVALID_XML", "XML entity declarations are not supported.")
@@ -342,10 +404,13 @@ def builtin_from_apk(path: Path) -> bytes:
 
 def decode(data: bytes, *, file_key: bytes | None = None,
            offline_key: bytes | None = None,
+           grant_capture: bytes | None = None,
            private_key: bytes | None = None) -> dict[str, Any]:
     _bounded(data)
     if data.startswith(MAGIC):
-        return decode_profile(data, file_key=file_key, offline_key=offline_key)
+        return decode_profile(data, file_key=file_key, offline_key=offline_key, grant_capture=grant_capture)
+    if grant_capture is not None:
+        raise DecodeError("GRANT_FORMAT", "An import capture requires a v5 online profile.")
     if data.startswith(b"FBS1"):
         return decode_builtin_catalog(data)
     return decode_server_envelope(data, private_key=private_key)
@@ -375,11 +440,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--builtin-catalog", action="store_true", help="Read FBS1 catalog from the supplied APK")
     parser.add_argument("--inspect", action="store_true", help="Inspect v5/v6 header; no plaintext is decrypted")
     parser.add_argument("--file-key-file", type=Path, help="Authorized online file key: 32 binary bytes or 64 hex digits")
+    parser.add_argument("--grant-capture", type=Path, help="Local JSON capture from a successful authorized v5 import")
     parser.add_argument("--offline-key-file", type=Path, help="Authorized v6 offline setup key: 32 binary bytes or 64 hex digits")
     parser.add_argument("--rsa-key-file", type=Path, help="Private RSA key for a saved authorized catalog response")
     args = parser.parse_args(argv)
     if args.inspect and args.builtin_catalog:
         parser.error("--inspect and --builtin-catalog cannot be combined")
+    if args.grant_capture and any((args.inspect, args.builtin_catalog, args.file_key_file, args.offline_key_file, args.rsa_key_file)):
+        parser.error("--grant-capture cannot be combined with inspection, catalog or key options")
     try:
         if args.builtin_catalog:
             raw = builtin_from_apk(args.file)
@@ -392,7 +460,8 @@ def main(argv: list[str] | None = None) -> int:
         if args.rsa_key_file:
             with args.rsa_key_file.open("rb") as handle:
                 private_key = handle.read(64 * 1024 + 1)
-        obj = inspect_profile(raw) if args.inspect else decode(raw, file_key=file_key, offline_key=offline_key, private_key=private_key)
+        capture = read_grant_capture(args.grant_capture) if args.grant_capture else None
+        obj = inspect_profile(raw) if args.inspect else decode(raw, file_key=file_key, offline_key=offline_key, grant_capture=capture, private_key=private_key)
         result = json.dumps(obj, ensure_ascii=False, indent=2) + "\n"
         if args.output:
             args.output.write_text(result, encoding="utf-8")
