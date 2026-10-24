@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 PROVIDERS = {
+    "tx-tunnel": "decoders.Python.apps.Tx_Tunnel.server_catalog_decoder",
     # Fixed official POST is blocked here; this route accepts offline bytes only.
     "mm-tunnel": "decoders.Python.apps.MM_Tunnel.server_catalog_decoder",
     "creeb-vpn": "decoders.Python.apps.CREEB_VPN.server_catalog_decoder",

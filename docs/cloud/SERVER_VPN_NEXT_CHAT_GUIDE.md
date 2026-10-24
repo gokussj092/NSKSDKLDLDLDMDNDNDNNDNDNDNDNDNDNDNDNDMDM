@@ -1,5 +1,23 @@
 # SP-DECODE Cloud — Guía para ampliar Server VPN en otro chat
 
+**Última incorporación, 2026-10-24: Tx Tunnel, Tx v2.17 (70)**,
+`apps/Tx_Tunnel/`, en la rama del **PR #99** después de MM. Paquete
+`co.strongteam.ospro`. `.tx` ya existía: se conserva la alternativa histórica
+y se reutiliza el KDF/claves txtunnel; EO/DOO con AAD=salt, sin contraseña del
+usuario ni letra insertada. Catálogo real inicial **2.0, 23/66/657 campos** y
+remoto **65.62, 27/643/4231 campos**, HTTP 200, ambos completos iguales a
+libsodium/JDK y worker aislado. GET fijo con appcode **27.0** derivado del
+tamaño de base.apk y UA del recurso **Tx Tunnel**. No usar la URL histórica
+inerte del perfil Ultra ni inventar otros appcode. **42 Python / 72 Node**
+aprobadas; 6 documentos / 4900 campos contrastados. Pendiente `.tx` real.
+Proveedor `tx-tunnel`, controles e icono PNG original 312819 bytes incorporados;
+mínimo catálogo **40 / 40 fichas**, C8 **250**, C0 **240**. MM sigue intacto y
+con remoto desactivado. No se identificó texto propietario ni cloud por token.
+Se consultaron las guías Android/nativas de `https://github.com/morluto/rea`,
+referencia aportada por el usuario para investigaciones difíciles. Herramientas,
+referencias y recuperación conservadas. Sin fusión, despliegue, APK o C11.
+Ver ANALYSIS/TESTING/RESTORE; no retomar automáticamente los pendientes AM/Hex.
+
 **Última incorporación, 2026-10-24: MM Tunnel v1.10.11.1 (45)**,
 `apps/MM_Tunnel/`, rama nueva `feat/mm-tunnel-1-10-11-1-decoders` desde main
 `d6b28e532c97455b3e57a53dc7ec9d232f3a0d9c`, por instrucción actual del usuario.

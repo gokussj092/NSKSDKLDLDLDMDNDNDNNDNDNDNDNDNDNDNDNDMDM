@@ -1980,7 +1980,7 @@
     },
     {
       "suffix": "tx",
-      "name": "TX TUNNEL",
+      "name": "Tx Tunnel v2.17",
       "kind": "file",
       "offlineSupported": true,
       "cloudSupported": true,

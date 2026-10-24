@@ -4,7 +4,7 @@ import {join} from "node:path";
 import {createHash} from "node:crypto";
 import {publicFormats,FORMAT_DETECTION} from "./file-format-catalog.mjs";
 
-export const CATALOG_VERSION = 39; // MM Tunnel metadata and current .mmt reader.
+export const CATALOG_VERSION = 40; // Tx Tunnel catalog and .tx metadata.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -22,6 +22,7 @@ export function activeCatalogVersion(env=process.env) {
 }
 
 const ITEMS = Object.freeze([
+  {id:"tx-tunnel", name:"Tx Tunnel", icon:"tx-tunnel.png", remote:"tx-tunnel"},
   // Embedded catalog verified; official fixed POST returned HTTP 403.
   {id:"mm-tunnel", name:"MM Tunnel", icon:"mm-tunnel.png", remote:null},
   // Embedded catalog works; remote Play Integrity response remains unvalidated.

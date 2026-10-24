@@ -1,5 +1,43 @@
 # Recuperar herramientas después de perder el entorno
 
+## Tx Tunnel, Tx v2.17 (70) — 2026-10-24
+
+Continuar en la rama del PR #99, conservando MM. Runtime: checkout completo,
+PyCryptodome y argon2-cffi. Aportar el APKS con hash de `apps/Tx_Tunnel/ANALYSIS.md`
+para repetir ingeniería inversa. JDK 17+ y dependencias de análisis; libsodium
+para el oracle independiente. Material privado fuera de Git.
+
+```bash
+python scripts/apk_analysis/inspect_apk.py /ruta/Tx-Tunnel.apks \
+  scripts/apk_analysis/work/tx-tunnel --asset configfile.json --native libgojni.so
+python scripts/apk_analysis/decompile.py --install
+python scripts/apk_analysis/decompile.py scripts/apk_analysis/work/tx-tunnel/dex/classes3.dex scripts/apk_analysis/work/tx-jadx3
+python scripts/apk_analysis/go_inspect.py \
+  scripts/apk_analysis/work/tx-tunnel/native/split_config.arm64_v8a/libgojni.so \
+  --filter '^github.com/2dust/AndroidLibXrayLite.(EO|DOO)$'
+python scripts/apk_analysis/dex_method.py scripts/apk_analysis/work/tx-tunnel/dex/classes3.dex \
+  'Lcom/v2ray/ang/adapter/NetworkAdapter;' u scripts/apk_analysis/work/tx-export.json
+python scripts/apk_analysis/dex_method.py scripts/apk_analysis/work/tx-tunnel/dex/classes3.dex \
+  'Lrk1;' g scripts/apk_analysis/work/tx-appcode.json
+python -m unittest tests.test_tx_tunnel tests.test_mm_tunnel tests.test_ultra_sandok -v
+python scripts/apk_analysis/tx_tunnel_verify.py --worker \
+  --catalog scripts/apk_analysis/work/tx-tunnel/assets/configfile.json
+```
+
+DEX3/1: salida 3 con 7/41 errores generales, revisar métodos concretos. No
+confundir clase nativa declarada con cuerpo recuperado. EO/DOO: 0x1012e70 y
+0x1013290; constante igual al perfil txtunnel existente, sin letra insertada.
+El GET oficial y User-Agent se obtuvieron del APK; appcode 27.0 procede solo
+del tamaño de este base.apk. Descargador sin argumentos para fuente fija.
+
+Asset real 2.0 (23/66/657 campos) y remoto 65.62 (27/643/4231) completos iguales
+a libsodium/JDK y worker, sin datos reales publicados. Pendiente `.tx` real.
+Ficha operativa en código, mínimo catálogo 40/40, switches conservados; no
+significa que la VPS esté desplegada. C0 240 / C8 250, sin APK o C11 automáticos.
+Guías de apoyo aportadas por el usuario: `https://github.com/morluto/rea`,
+`docs/android-analysis.md` y `docs/native-investigation.md` de ese repositorio.
+No instalar ni ejecutar herramientas externas sin inspeccionar su procedencia.
+
 ## MM Tunnel v1.10.11.1 (45) — 2026-10-24
 
 Rama nueva `feat/mm-tunnel-1-10-11-1-decoders`, desde main; no retomar el PR #96

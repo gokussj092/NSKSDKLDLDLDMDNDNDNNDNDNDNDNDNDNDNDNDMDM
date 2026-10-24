@@ -1,5 +1,13 @@
 # Herramientas de análisis APK
 
+Tx Tunnel build 70: `tx_tunnel_verify.py` reutiliza el comparador de documentos
+completos y la referencia libsodium/JDK, sin copiar el motor histórico. Catálogos
+reales 23/66 y 27/643, 4888 campos; cuatro documentos sintéticos adicionales.
+El origen GET usa appcode 27.0 calculado del tamaño real del APK, no una cuenta.
+`dex_method.py` requiere descriptor original **Lrk1;**, no el `defpackage` de
+JADX, para `g(Context)D` (32 instrucciones). Exportador `NetworkAdapter.u`,
+149 instrucciones. Sin contraseña de usuario; `.tx` real pendiente. Ver RESTORE.
+
 MM Tunnel build 45: `mm_tunnel_verify.py` contrasta JSON completo con libsodium
 Argon2id y JDK AES-GCM independientes, CLI y worker. Seis documentos sintéticos
 y el catálogo real 34/555, incluidos 3335 campos. No imprime valores privados.

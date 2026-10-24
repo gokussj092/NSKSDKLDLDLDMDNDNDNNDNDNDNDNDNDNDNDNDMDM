@@ -38,6 +38,7 @@ const V2PLUS_SOURCES=Object.freeze({
 });
 const PAIRED_SOURCES=Object.freeze({"abowaged-vpn":ABOWAGED_SOURCES,"turbomx-vpn":TURBOMX_SOURCES,"superflash-vpn":SUPERFLASH_SOURCES,"onspace-vpn":ONSPACE_SOURCES,"http-socketclay":SOCKETCLAY_SOURCES,"http-wakko":WAKKO_SOURCES,"v2ray-tunnel-plus":V2PLUS_SOURCES});
 const PROVIDERS = Object.freeze({
+  "tx-tunnel": {url:"https://strongteam.co/api/txtunnel/v1/?appcode=27.0",agent:"Tx Tunnel"},
   "abowaged-vpn": {url:ABOWAGED_SOURCES.servers,agent:"AboWaged VPN/1.0"},
   "7net-vpn": {url:"https://raw.githubusercontent.com/MAKE-MONEY-MILLION-DOLLAR-PER-DAY/7net-Team/refs/heads/main/7net%2BAll_Team.js",agent:"7NET VPN/5.6"},
   "xhypher-tunnel-pro": {url:"https://raw.githubusercontent.com/XyrussProject/infinite88/refs/heads/main/xhyphertunnelpro888.hs",agent:"Xhypher Tunnel Pro/43"},

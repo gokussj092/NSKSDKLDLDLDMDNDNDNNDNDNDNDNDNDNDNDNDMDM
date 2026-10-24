@@ -10,6 +10,20 @@ entregas anteriores ni publicar anuncios automáticamente.
 - PR: [#96](https://github.com/Gh0stDeveloper/SP-DECODE/pull/96).
 - Inicio del lote: 2026-10-20.
 
+## Continuación del PR #99: Tx Tunnel (2026-10-24)
+
+- **Tx Tunnel, Tx v2.17 (70)**, `co.strongteam.ospro`, `apps/Tx_Tunnel/`.
+  `.tx` ya existía; se completa el lector y se conserva el método histórico,
+  sin contraseña del usuario. No presentarlo como un sufijo nuevo.
+- Catálogos reales: asset **2.0, 23 servidores / 66 redes / 657 campos**;
+  GET oficial **65.62, 27 / 643 / 4231**, HTTP 200. Documentos completos
+  iguales a libsodium/JDK y worker aislado; 4 documentos sintéticos adicionales.
+- `tx-tunnel` con descarga fija validada, controles individuales e icono PNG
+  original **312819 bytes**, mínimo **40 / 40 fichas**. C0 240 / C8 250.
+  **42 Python / 72 Node aprobadas**, 6 documentos / 4900 campos contrastados.
+- Pendiente exportación `.tx` real. No se identificó prefijo de texto propio ni
+  cloud por token. Backend preparado; sin despliegue, APK, Android o C11.
+
 ## Lote posterior desde main: MM Tunnel (2026-10-24)
 
 - Rama independiente `feat/mm-tunnel-1-10-11-1-decoders`, por instrucción del
