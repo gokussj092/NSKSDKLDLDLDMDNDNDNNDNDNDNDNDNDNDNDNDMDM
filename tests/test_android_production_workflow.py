@@ -72,8 +72,17 @@ class AndroidProductionWorkflowTest(unittest.TestCase):
         self.assertIn("finishAndRemoveTask()", activity)
 
     def test_stable_identity_and_publication_are_separate(self):
-        self.assertRegex(self.gradle, r'versionName\s*=\s*"1\.1\.18"')
-        self.assertRegex(self.gradle, r'versionCode\s*=\s*29\b')
+        version = re.search(r'versionName\s*=\s*"([0-9]+\.[0-9]+\.[0-9]+)"', self.gradle)
+        code = re.search(r'versionCode\s*=\s*(\d+)', self.gradle)
+        self.assertIsNotNone(version)
+        self.assertIsNotNone(code)
+        self.assertGreaterEqual(int(code.group(1)), 30)
+        # An app version change must not transfer prior public release approval.
+        import json
+        readiness=json.loads((ROOT / "release/android-readiness.json").read_text("utf-8"))
+        self.assertEqual(readiness["stableVersion"],version.group(1))
+        self.assertEqual(readiness["decision"],"NO-GO")
+        self.assertFalse(readiness["ownerApproval"])
         w = self.workflow
         self.assertIn("Previous public signer: v1.0.5-rc.1", w)
         self.assertIn("Same permanent SHA-256 signer certificate: yes", w)
