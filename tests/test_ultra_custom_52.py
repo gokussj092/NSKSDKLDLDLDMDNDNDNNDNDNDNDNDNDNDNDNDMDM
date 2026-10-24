@@ -75,6 +75,31 @@ class UltraCustom52Tests(unittest.TestCase):
         self.assertEqual(hashlib.sha256(uc.LINK_DICTIONARY).hexdigest(),
                          "78e8417efba522298311269ddfb9bc1fd29e55cbc758b0c778e3081225b26ca7")
 
+    def test_java_utf16_surrogate_xml_references_and_invalid_pairs(self):
+        # Java Properties XML may export non-BMP symbols as adjacent UTF-16
+        # numeric references. XML 1.0 parsers reject these until normalized.
+        profile = (
+            b'<?xml version="1.0"?><properties>'
+            b'<entry key="rocket">&#55357;&#56960;</entry>'
+            b'<entry key="emoji">&#xD83D;&#xDE00;</entry>'
+            b'<entry key="ordinary">&#65;</entry>'
+            b'</properties>'
+        )
+        actual = uc.decode(mask(profile))
+        self.assertEqual(actual["properties"]["rocket"], "\\U0001f680")
+        self.assertEqual(actual["properties"]["emoji"], "\\U0001f600")
+        self.assertEqual(actual["properties"]["ordinary"], "A")
+        for invalid in (
+            b'&#55357;', b'&#56960;', b'&#55357;gap&#56960;',
+            b'&#56960;&#55357;', b'&#55357;&#55357;',
+        ):
+            with self.subTest(invalid=invalid):
+                self.assert_error(
+                    mask(b'<properties><entry key="bad">' + invalid +
+                         b'</entry></properties>'),
+                    "INVALID_XML",
+                )
+
     def test_ua_links_bom_wrapping_and_optional_padding(self):
         data = VECTORS["link-plain"]["data"]
         expected = uc.decode(data)
