@@ -23,6 +23,27 @@ class NpvsErrorsTests(unittest.TestCase):
                     decode_file("npvs",data)
                 self.assertEqual(e.exception.code,"NPVS_PROTECTION_UNSUPPORTED")
 
+    def test_unknown_version_is_not_reported_as_private_key_or_engine_failure(self):
+        data = bytearray(make_header(1, 2))
+        data[4] = 7
+        with self.assertRaises(DecodeFailure) as caught:
+            decode_file("npvs", bytes(data))
+        self.assertEqual(caught.exception.code, "UNSUPPORTED_VERSION")
+
+        # A truncated header is malformed input, not an unsupported key.
+        with self.assertRaises(DecodeFailure) as caught:
+            decode_file("npvs", b"NPVS\\x07")
+        self.assertEqual(caught.exception.code, "INVALID_INPUT")
+
+    def test_unsigned_appkey_and_recipient_samples_are_not_key_notices(self):
+        # These fabricated bytes cannot pass the signed envelope verifier.
+        # Method 2 = app-key, method 0 = recipient ECDH, not vice versa.
+        for method in (0, 2):
+            with self.subTest(method=method):
+                with self.assertRaises(DecodeFailure) as caught:
+                    decode_file("npvs", make_header(1, method))
+                self.assertEqual(caught.exception.code, "INVALID_INPUT")
+
     def test_corrupt_data_or_standard_app_key_never_mislabeled(self):
         for data in (b"",b"garbage",b"NPVS"+bytes([4])+bytes(200),
                      make_header(1,0),make_header(1,1),make_header(1,2),make_header(2,2)[:65]):
