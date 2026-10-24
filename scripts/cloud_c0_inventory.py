@@ -95,13 +95,19 @@ def validate_reference_mapping(doc: dict) -> None:
     expected = {row["suffix"] for row in doc["entries"]} | {"solid"}
     # New 1FTunnel is a C8 overlay, never a mutation of the frozen C0 set.
     extra = DECODER_REGISTRY.get("1ftnl")
-    if (set(DECODER_REGISTRY) - {"1ftnl"} != expected or
+    if (set(DECODER_REGISTRY) - {"1ftnl", "awg", "creeb"} != expected or
         (extra is not None and (extra.script != "decoders/Python/apps/OneFTunnel/file_decoder.py"
                                 or extra.runtime != "python"))):
         fail("Android and bot registry suffix sets differ")
     for row in doc["entries"]:
         suffix = row["suffix"]
         spec = DECODER_REGISTRY[suffix]
+        # .crev is a deliberate Cloud/bot overlay, not a C0 rebaseline.
+        if suffix == "crev":
+            if (row["name"], row["script"], row["originalRuntime"]) != (
+                    "CREV", "decoders/Python/crev.py", "python"):
+                fail("historical .crev C0 engine drift")
+            continue
         if (row["name"], row["script"], row["originalRuntime"]) != (
             spec.name, spec.script, spec.runtime
         ):
