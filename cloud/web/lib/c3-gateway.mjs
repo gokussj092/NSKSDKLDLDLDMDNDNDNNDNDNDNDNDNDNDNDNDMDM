@@ -7,6 +7,7 @@ import { legacyCredentialError } from "./decoder-client-compat.mjs";
 import { ehiConfigured, nurConfigured } from "./c35-provider.mjs";
 import { maintenanceEnabled, serviceMaintenanceEnabled, recordWorkerResult } from "./c6-ops-store.mjs";
 import {admissionPolicy} from "./c11-play-admission.mjs";
+import {publicFormats} from "./file-format-catalog.mjs";
 
 const ERROR_MESSAGES = Object.freeze({
   INVALID_REQUEST:"Solicitud inválida.",
@@ -89,11 +90,14 @@ function validatePayload(kind,payload) {
   if (!isRecord(payload))throw Object.assign(new Error("schema"),{code:"INVALID_REQUEST"});
   if(kind==="file"){
     if (Object.keys(payload).some(x=>!["format","dataBase64","credentials"].includes(x)) ||
-        typeof payload.format!=="string" || (!/^[a-z0-9][a-z0-9._-]{0,63}$/.test(payload.format) && payload.format!=="fɴ"))
+        typeof payload.format!=="string" || !/^[\p{L}\p{N}][\p{L}\p{N}._-]{0,63}$/u.test(payload.format))
       throw Object.assign(new Error("format"),{code:"INVALID_REQUEST"});
     if (payload.credentials!==undefined){
-      const allowed=payload.format==="hc"?["password","hwid"]:payload.format==="npvs"?["password","publicKey"]:["tut","ua","1ftnl","v2box"].includes(payload.format)?["password"]:null;
-      if (!allowed || !isRecord(payload.credentials) ||
+      // Metadata is curated and validated on the server. Never trust an
+      // Android-supplied credential policy or executable route.
+      const allowed=publicFormats().find(entry=>entry.suffix===payload.format)?.credentialFields;
+
+      if (!allowed?.length || !isRecord(payload.credentials) ||
           Object.keys(payload.credentials).some(k=>!allowed.includes(k)))
         throw Object.assign(new Error("credentials"),{code:"INVALID_CREDENTIALS"});
       for(const [key,max] of [["password",4096],["hwid",128],["publicKey",128]]){
