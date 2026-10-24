@@ -4,7 +4,7 @@ import {join} from "node:path";
 import {createHash} from "node:crypto";
 import {publicFormats,FORMAT_DETECTION} from "./file-format-catalog.mjs";
 
-export const CATALOG_VERSION = 37; // Increment whenever the public roster or metadata changes.
+export const CATALOG_VERSION = 38; // Cloud-only refresh: .awg/.ua file formats and fixed .ua decoder.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
