@@ -31,7 +31,8 @@ import java.util.UUID
 
 /** In-app Compose selection. No Activity, task, intent, or key material in UI state. */
 internal object NpvsRecipientPicker {
-    private data class Choice(val id:String,val label:String)
+    private data class Choice(val id:String,val source:String,
+        val fingerprint:String,val fileOnly:Boolean)
     private data class Pending(val ticket:String,val choices:List<Choice>,
         val decision:CompletableDeferred<String?>)
     private val mutex=Mutex()
@@ -42,13 +43,12 @@ internal object NpvsRecipientPicker {
         val vault=NpvsIdentityVault(context)
         val choices=withContext(Dispatchers.IO){vault.matching(bytes)}
         if(choices.isEmpty())return@withLock null
-        val labels=choices.map { entry ->
-            val source=context.getString(if(entry.source=="generated")R.string.npv_generated
-                else R.string.npv_captured)
-            val suffix=if(entry.kind=="agreement")" · "+context.getString(R.string.npv_file_only) else ""
-            Choice(entry.id,source+" · "+entry.fingerprint.take(16)+suffix)
+        // Resolve presentation labels inside Compose, using the selected app
+        // language rather than the applicationContext default locale.
+        val items=choices.map { entry ->
+            Choice(entry.id,entry.source,entry.fingerprint.take(16),entry.kind=="agreement")
         }
-        val pending=Pending(UUID.randomUUID().toString(),labels,CompletableDeferred())
+        val pending=Pending(UUID.randomUUID().toString(),items,CompletableDeferred())
         withContext(Dispatchers.Main.immediate){active=pending}
         try {
             val selected=pending.decision.await()
@@ -98,7 +98,13 @@ internal object NpvsRecipientPicker {
                                                 selectedColor=Color(0xFF38A36D),
                                                 unselectedColor=Color(0xFFABABAB)))
                                         Spacer(Modifier.width(8.dp))
-                                        Text(choice.label,color=Color.White,
+                                        val source=stringResource(
+                                            if(choice.source=="generated")R.string.npv_generated
+                                            else R.string.npv_captured)
+                                        val label=source+" · "+choice.fingerprint+
+                                            if(choice.fileOnly)" · "+stringResource(R.string.npv_file_only)
+                                            else ""
+                                        Text(label,color=Color.White,
                                             style=MaterialTheme.typography.bodyMedium)
                                     }
                                 }
