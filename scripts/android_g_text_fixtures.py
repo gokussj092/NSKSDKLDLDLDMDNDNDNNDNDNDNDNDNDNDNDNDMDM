@@ -44,9 +44,14 @@ def build():
     # field values, regardless of suffix spelling.
     xor_key=xor_family.XORDecoder.XOR_KEY
     nested=bytes(v^xor_key[i%len(xor_key)] for i,v in enumerate(b"inner.example")).hex()
-    content=js({**DOC,"SNIHost":nested})
-    token=bytes(v^xor_key[i%len(xor_key)] for i,v in enumerate(content)).hex()
     for prefix in xor_family.SCHEMES:
+        # BD NET's version-specific decoder intentionally opens only known
+        # encrypted profile fields; other XOR-family engines decode any hex
+        # string. Use a field that BD NET actually decrypts to compare genuine
+        # Python/Android parity without loosening its unknown-field policy.
+        nested_field="host" if prefix=="bdnet://" else "SNIHost"
+        content=js({**DOC,nested_field:nested})
+        token=bytes(v^xor_key[i%len(xor_key)] for i,v in enumerate(content)).hex()
         add(prefix,"xor",prefix+token,xor_family.decode_text)
     # Source-structured protocols; Base64, JSON and URL-decoding are NOT
     # encryption and are deliberately identified as plain text conversions.
