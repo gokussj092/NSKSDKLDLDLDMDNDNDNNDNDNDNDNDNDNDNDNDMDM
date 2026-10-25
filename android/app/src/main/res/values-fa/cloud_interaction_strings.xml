@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unsupported_file_title">نوع فایل پشتیبانی نمی‌شود</string>
+    <string name="unsupported_file_detail">این پسوند هنوز در SP-DECODE پشتیبانی نمی‌شود. برای پیشنهاد آن با توسعه‌دهنده تماس بگیرید.</string>
+    <string name="unsupported_version_title">نسخه فایل پشتیبانی نمی‌شود</string>
+    <string name="unsupported_version_detail">این فایل از نسخه یا روش رمزگذاری جدیدی استفاده می‌کند که هنوز پشتیبانی نمی‌شود.</string>
+    <string name="unsupported_text_title">متن پشتیبانی نمی‌شود</string>
+    <string name="unsupported_text_detail">این متن یا پروتکل هنوز پشتیبانی نمی‌شود. برای پیشنهاد با توسعه‌دهنده تماس بگیرید.</string>
+    <string name="catalog_check_action">بررسی به‌روزرسانی</string>
+    <string name="catalog_checking">در حال بررسی نسخه فهرست…</string>
+    <string name="catalog_downloading">در حال به‌روزرسانی فهرست…</string>
+    <string name="catalog_progress">موارد آماده فهرست: %1$d%%</string>
+    <string name="app_update_title">نسخه جدید موجود است</string>
+    <string name="app_update_body">نسخه SP-DECODE %1$s موجود است. برای دریافت آن به کانال رسمی Telegram بروید.</string>
+    <string name="app_update_open">باز کردن Telegram</string>
+    <string name="app_update_close">بستن</string>
+    <string name="catalog_available_title">فهرست جدید موجود است</string>
+    <string name="catalog_available_body">نسخه %1$d فهرست برای دریافت آماده است.</string>
+    <string name="catalog_check_short">بررسی فهرست</string>
+</resources>
