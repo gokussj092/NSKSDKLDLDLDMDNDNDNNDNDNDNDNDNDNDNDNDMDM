@@ -183,13 +183,14 @@ class MainActivity : ComponentActivity() {
 
     /** Direct VPS watch runs only while the application is visible. */
     private fun startCatalogWatch(){
-        if(showCloudLegal || !CloudCatalogUpdates.enabled(this) ||
+        if(showCloudLegal || !BuildConfig.SPDECODE_CLOUD_ENABLED ||
             catalogWatchJob?.isActive==true)return
         catalogWatchJob=scope.launch {
             CloudCatalogUpdates.watchWhileVisible(
                 this@MainActivity,cloudClient,serverVpnCatalog
             ){version->
-                if(version>serverVpnCatalog.currentVersion())
+                if(version>serverVpnCatalog.currentVersion() &&
+                    version>settings.getInt("last_dismissed_catalog_version",0))
                     pendingServerVpnCatalogVersion=version
             }
         }
@@ -202,7 +203,8 @@ class MainActivity : ComponentActivity() {
         entryProbeJob=scope.launch {
             try{
                 val latest=cloudClient.watchCatalogVersion(0)
-                if(latest>serverVpnCatalog.currentVersion())
+                if(latest>serverVpnCatalog.currentVersion() &&
+                    latest>settings.getInt("last_dismissed_catalog_version",0))
                     pendingServerVpnCatalogVersion=latest
             }catch(error:CancellationException){throw error}
              catch(_:Exception){ /* Offline: the next foreground connection retries. */ }
@@ -562,7 +564,6 @@ class MainActivity : ComponentActivity() {
                             startCatalogWatch()
                             if(tab==2 || tab==3)refreshServerVpn()
                         }else {
-                            catalogWatchJob?.cancel()
                             serverVpnRefresh?.cancel()
                             serverVpnLoading=false
                         }
@@ -603,7 +604,12 @@ class MainActivity : ComponentActivity() {
                     availableAppUpdate=null
                 },
                 onConfirmServerVpnUpdate={confirmServerVpnUpdate()},
-                onDismissServerVpnUpdate={pendingServerVpnCatalogVersion=null},
+                onDismissServerVpnUpdate={
+                    pendingServerVpnCatalogVersion?.let {version ->
+                        settings.edit().putInt("last_dismissed_catalog_version",version).apply()
+                    }
+                    pendingServerVpnCatalogVersion=null
+                },
                 whatsNew=showWhatsNew,
                 cloudWhatsNew=cloudWhatsNew,
                 onDismissWhatsNew={
