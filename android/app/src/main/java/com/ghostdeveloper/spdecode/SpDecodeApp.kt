@@ -139,9 +139,9 @@ fun SpDecodeApp(
                         onDecodeCloud=onDecodeCloud,
                         highlightGuide=if(!whatsNew && !busy)guideStep else null)
                     1->HistoryScreen(session,onSelect,onDeleteSelected,onClear,onImportMultiple,onFavorite)
-                    2->FormatsScreen(cloudFormats)
+                    2->FormatsScreen(cloudFormats,serverVpnLoading,catalogProgress)
                     3->ServerVpnScreen(busy,serverVpnApps,serverVpnLoading,serverVpnUnavailable,
-                        onDecodeServerCatalog,onDecodeServerApp)
+                        onDecodeServerCatalog,onDecodeServerApp,catalogProgress)
                     else->FunctionalSettingsPanel(selectedLanguage,hideCredentials,
                         onLanguage,onMaskCredentials,onClear,onExternalLink,
                         retentionDays,onRetention,onShowGuide=onGuideRestart,
@@ -770,7 +770,8 @@ private fun HistoryScreen(
 }
 
 @Composable
-private fun FormatsScreen(cloudFormats:List<AndroidDecoderCatalog.Format>) {
+private fun FormatsScreen(cloudFormats:List<AndroidDecoderCatalog.Format>,
+    catalogLoading:Boolean=false,catalogProgress:Int?=null) {
     val context = LocalContext.current
     val baseline = remember(context) { AndroidDecoderCatalog.read(context) }
     val formats = if(BuildConfig.SPDECODE_CLOUD_ENABLED && cloudFormats.isNotEmpty())
@@ -790,6 +791,12 @@ private fun FormatsScreen(cloudFormats:List<AndroidDecoderCatalog.Format>) {
         Spacer(Modifier.height(8.dp))
         Text(stringResource(R.string.catalog_note), fontSize = 13.sp,
             color = Secondary, lineHeight = 20.sp)
+        if(catalogLoading) Row(verticalAlignment=Alignment.CenterVertically) {
+            CircularProgressIndicator(modifier=Modifier.size(18.dp),strokeWidth=2.dp,color=White)
+            Spacer(Modifier.width(8.dp))
+            Text(if(catalogProgress!=null)stringResource(R.string.catalog_progress,catalogProgress)
+                else stringResource(R.string.catalog_checking),color=Secondary,fontSize=12.sp)
+        }
         Spacer(Modifier.height(14.dp))
         OutlinedTextField(value = query, onValueChange = { query = it },
             label = { Text(stringResource(R.string.search_formats)) },
@@ -854,6 +861,7 @@ private fun ServerVpnScreen(
     catalogUnavailable:Boolean,
     onDecodeCatalog:()->Unit,
     onDecodeApp:(String)->Unit,
+    catalogProgress:Int?=null,
 ) {
     var selected by rememberSaveable { mutableStateOf(false) }
     var selectedId by rememberSaveable { mutableStateOf("") }
@@ -949,7 +957,9 @@ private fun ServerVpnScreen(
                     CircularProgressIndicator(modifier=Modifier.size(18.dp),
                         strokeWidth=2.dp,color=White)
                     Spacer(Modifier.width(9.dp))
-                    Text(stringResource(R.string.catalog_checking),
+                    Text(if(catalogProgress!=null)
+                        stringResource(R.string.catalog_progress,catalogProgress)
+                        else stringResource(R.string.catalog_checking),
                         color=Secondary,fontSize=12.sp)
                 }
             }
