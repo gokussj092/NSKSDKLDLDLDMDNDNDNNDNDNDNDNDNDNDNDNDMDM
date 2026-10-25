@@ -10,7 +10,7 @@ pendientes. **Catálogo de servidores no identificado**: sin proveedor/ficha,
 sin consultar localhost:8000/update.json ni registrar animaciones o geodatos.
 Icono original identificado, no publicado como ficha. C0 **240**, C8 **253**,
 25 overrides; **45 fichas**, versión mínima **45** para refrescar el formato.
-27 Python / 22 Node aprobadas; herramientas en `http_door_bundle.py`,
+43 Python / 296 Node aprobadas, incluidos gates C0/Android; herramientas en `http_door_bundle.py`,
 `http_door_verify.py` y oracle JDK. Sin fusión, despliegue, APK ni C11.
 Los estados de abajo son históricos.
 

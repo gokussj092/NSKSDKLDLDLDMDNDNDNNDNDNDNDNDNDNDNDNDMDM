@@ -14,7 +14,7 @@ assets son geodatos/licencia; AppUpdater solo contiene un GET genérico a
 localhost. No se consulta ni se registra como fuente de servidores. Sin
 nuevo proveedor, ficha o descarga. Los controles actuales se conservan.
 C0 **240**, C8 **253**, 25 overrides; **45 fichas** y versión mínima **45**
-para refrescar formatos. **27 Python / 22 Node** y validaciones de inventario
+para refrescar formatos. **43 Python / 296 Node** y validaciones C0/Android/formatos
 correctas. Herramientas/oracle/evidencia conservados, binarios fuera de Git.
 Sin fusión, despliegue, APK, diseño Android ni C11 automáticos.
 

@@ -3,16 +3,21 @@
 ```sh
 PYTHONPATH=cloud/workers/python:. python -m unittest \
   tests.test_http_door tests.test_creeb_injector \
-  tests.test_cloud_c8_vpn_registry tests.test_cloud_c8_worker_integration -v
+  tests.test_cloud_c8_vpn_registry tests.test_cloud_c8_worker_integration \
+  tests.test_cloud_c0_inventory tests.test_android_a24_catalog -v
+python scripts/cloud_c0_inventory.py --check
+python scripts/android_a24_catalog.py
 cd cloud/web
-node --test tests/file-formats.test.mjs tests/bd-net-vpn.test.mjs tests/c12-provider-controls.test.mjs
+node --test tests/*.test.mjs
 ```
 
-**27 pruebas Python y 22 Node aprobadas**, sin omisiones. Python incluye siete
+**43 pruebas Python y 296 Node aprobadas**, sin omisiones. Python incluye siete
 pruebas nuevas de HTTP Door, nueve de CREEB (parser compartido), un gate C8 y
-diez integraciones previas. Node cubre el formato público, respuesta de
+diez integraciones previas, más 16 gates C0/Android. Node cubre toda la web, el formato público, respuesta de
 metadatos 44→45, ausencia de proveedor inventado y controles persistentes.
-`validate_project.py`, generador de formatos y `git diff --check` correctos.
+`validate_project.py`, generadores C0/Android/formatos y `git diff --check` correctos.
+El nuevo sufijo Cloud queda excluido explícitamente del inventario Android
+congelado, y C0 valida su ruta específica. No cambian los assets o la matriz.
 No se requiere un nuevo build web por cambiar datos y versión del catálogo.
 
 Tres documentos sintéticos completos generados por el JDK independiente:

@@ -93,11 +93,11 @@ def generate() -> dict:
     ):
         raise ValueError("NUR .solid registry route changed unexpectedly")
     # C8 overlays must not mutate the immutable 239-route C0 Android baseline.
-    # AboWaged and CREEB Injector are new Cloud-only extensions, and CREEB VPN
+    # HTTP Door, AboWaged and CREEB Injector are new Cloud-only extensions; CREEB VPN
     # overrides the historical .crev route in the live bot registry.
     baseline_registry = {
         suffix: spec for suffix, spec in DECODER_REGISTRY.items()
-        if suffix not in ("solid", "1ftnl", "awg", "creeb")
+        if suffix not in ("solid", "1ftnl", "awg", "creeb", "kyz")
     }
     from dataclasses import replace
     if "crev" in baseline_registry:

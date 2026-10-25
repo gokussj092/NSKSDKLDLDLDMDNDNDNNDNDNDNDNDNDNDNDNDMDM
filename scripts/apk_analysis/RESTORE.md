@@ -24,7 +24,9 @@ ECB/PKCS5, XML directo sin Base64. No contraseña/HWID requeridos. Tres
 documentos sintéticos iguales a JDK/worker/bundle; `.kyz` real y móvil pendientes.
 **Sin catálogo identificado**: no consultar AppUpdater localhost:8000/update.json
 ni registrar block.json (Lottie) o geodatos como perfiles. No esquema propio.
-C0 240, C8 253, 25 overrides, mínimo 45 / 45 fichas. 27 Python / 22 Node.
+C0 240, C8 253, 25 overrides, mínimo 45 / 45 fichas. 43 Python / 296 Node.
+El generador Android y guard C0 excluyen `.kyz` como overlay explícito;
+los assets y la matriz congelada no cambian. Pruebas web esperan mínimo 45.
 Guardar binarios/perfiles fuera de Git; sin fusión, despliegue, APK o C11.
 
 ## BD NET VPN PrinceBuild111 (111) — 2026-10-24
