@@ -56,7 +56,7 @@ test("HTTP Door publishes its file route and refreshes cached v44 metadata witho
   const format=publicFormats().find(x=>x.suffix==="kyz");
   assert.deepEqual(format,{suffix:"kyz",name:"HTTP Door 5.0",kind:"file",
     offlineSupported:false,cloudSupported:true,credentialFields:[]});
-  assert.equal(CATALOG_VERSION,47);
+  assert.equal(CATALOG_VERSION,48);
   const response=await endpoint(request(44));
   assert.equal(response.status,200);
   const body=await response.json();
