@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="npv_title">NPV alıcı anahtarları</string>
+    <string name="npv_detail">Sizin için oluşturulan dosyalarda kimliğinizi kullanın. Anahtarlar bu cihazda şifrelenerek saklanır. SP Cloud ile kullanmak için etkinleştirin.</string>
+    <string name="npv_enabled">NPV kimliklerimi kullan</string>
+    <string name="npv_generate">SP Cloud ile oluştur</string>
+    <string name="npv_import">Yakalanan JSON dosyasını içe aktar</string>
+    <string name="npv_generated">SP Cloud tarafından oluşturuldu</string>
+    <string name="npv_captured">Resmî uygulamadan yakalandı</string>
+    <string name="npv_file_only">Yalnızca bu dosya</string>
+    <string name="npv_view">Görüntüle ve kopyala</string>
+    <string name="npv_delete">Sil</string>
+    <string name="npv_invalid">NPV anahtarları okunamadı. JSON biçimini ve anahtar eşleşmesini kontrol edin.</string>
+    <string name="npv_saved">Kimlik kaydedildi. Kullanmak için seçeneği etkinleştirin.</string>
+    <string name="npv_generation_notice">Yalnızca açık anahtarı VPN sunucunuzu veya yapılandırmanızı oluşturan kişiyle paylaşın. Özel anahtarınızı asla paylaşmayın.</string>
+    <string name="npv_choose_title">NPV kimliği seç</string>
+    <string name="npv_send_notice">Bu dosyayı SP Cloud ile açmak için bir kimlik seçin.</string>
+    <string name="npv_use">Seçilen kimliği kullan</string>
+    <string name="npv_copy_public">Açık anahtarı kopyala</string>
+    <string name="npv_copy_private">Özel anahtarı kopyala</string>
+    <string name="npv_reveal">Özel anahtarı göster veya gizle</string>
+    <string name="npv_hardware_notice">Donanımsal özel anahtar dışa aktarılamaz. Bu yakalama yalnızca eşleşen dosyada çalışır.</string>
+    <string name="npv_delete_title">Bu kimlik silinsin mi?</string>
+    <string name="npv_delete_warning">Bu anahtar yalnızca bu cihazda saklanır. Silindikten sonra SP Cloud onu geri getiremez. Bu kimlik için şifrelenen dosyalara erişimi kaybedebilirsiniz.</string>
+    <string name="npv_public_label">Açık anahtar · P-256</string>
+    <string name="npv_private_label">Özel anahtar · PKCS#8</string>
+    <string name="npv_cancel">İptal</string>
+    <string name="npv_already_generated">Zaten bir SP Cloud kimliği var. Yenisini oluşturmadan önce silin.</string>
+</resources>
