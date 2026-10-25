@@ -142,6 +142,8 @@ class MainActivity : ComponentActivity() {
     private var usageOptIn by mutableStateOf(false)
     private var catalogUpdatesEnabled by mutableStateOf(false)
     private var catalogWatchJob:Job?=null
+    private var entryProbeJob:Job?=null
+    private var availableAppUpdateCode by mutableIntStateOf(0)
     private var reportBusy by mutableStateOf(false)
     private var reveal:Boolean
         get()=sessionVm.reveal
@@ -189,6 +191,32 @@ class MainActivity : ComponentActivity() {
                 if(version>serverVpnCatalog.currentVersion())
                     pendingServerVpnCatalogVersion=version
             }
+        }
+    }
+
+    /** Recover missed VPS announcements whenever the app becomes active. */
+    private fun probeUpdatesOnEntry(){
+        if(!BuildConfig.SPDECODE_CLOUD_ENABLED || showCloudLegal ||
+            entryProbeJob?.isActive==true)return
+        entryProbeJob=scope.launch {
+            try{
+                val latest=cloudClient.watchCatalogVersion(0)
+                if(latest>serverVpnCatalog.currentVersion())
+                    pendingServerVpnCatalogVersion=latest
+            }catch(error:CancellationException){throw error}
+             catch(_:Exception){ /* Offline: the next foreground connection retries. */ }
+            try{
+                val remote=cloudClient.whatsNew(0,"en").optJSONObject("appUpdate")
+                val code=remote?.optInt("versionCode",0)?:0
+                val name=remote?.optString("versionName").orEmpty()
+                if(code>BuildConfig.VERSION_CODE &&
+                    code>settings.getInt("last_seen_app_update_code",0) &&
+                    name.matches(Regex("[0-9]+\\.[0-9]+\\.[0-9]+"))) {
+                    availableAppUpdate=name
+                    availableAppUpdateCode=code
+                }
+            }catch(error:CancellationException){throw error}
+             catch(_:Exception){ /* No update prompt unless verified HTTPS succeeds. */ }
         }
     }
 
@@ -563,7 +591,11 @@ class MainActivity : ComponentActivity() {
                 onRefreshServerVpn={checkServerVpnUpdates()},
                 pendingServerVpnCatalogVersion=pendingServerVpnCatalogVersion,
                 availableAppUpdate=availableAppUpdate,
-                onDismissAppUpdate={availableAppUpdate=null},
+                onDismissAppUpdate={
+                    if(availableAppUpdateCode>0)settings.edit()
+                        .putInt("last_seen_app_update_code",availableAppUpdateCode).apply()
+                    availableAppUpdate=null
+                },
                 onConfirmServerVpnUpdate={confirmServerVpnUpdate()},
                 onDismissServerVpnUpdate={pendingServerVpnCatalogVersion=null},
                 whatsNew=showWhatsNew,
@@ -611,6 +643,7 @@ class MainActivity : ComponentActivity() {
                             showCloudLegal=false
                             refreshServerVpn()
                             refreshCloudWhatsNew()
+                            probeUpdatesOnEntry()
                             syncOptInUsage()
                             if(savedInstanceState==null && !showCloudLegal)handleExternalIntent(intent)
                         }catch(_:Exception){message=getString(R.string.history_storage_error)}
@@ -668,6 +701,7 @@ class MainActivity : ComponentActivity() {
             syncOptInUsage()
             CloudCatalogUpdates.ensureScheduled(this)
             startCatalogWatch()
+            probeUpdatesOnEntry()
             refreshCloudWhatsNew()
         }
     }
