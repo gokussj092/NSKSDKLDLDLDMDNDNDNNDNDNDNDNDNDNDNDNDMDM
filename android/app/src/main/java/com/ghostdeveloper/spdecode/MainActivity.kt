@@ -592,6 +592,7 @@ class MainActivity : ComponentActivity() {
                 },
                 serverVpnApps=serverVpnApps,
                 cloudFormats=fileFormats,
+                cloudTextFormats=textRoutes,
                 serverVpnLoading=serverVpnLoading,
                 catalogProgress=catalogProgress,
                 serverVpnUnavailable=serverVpnUnavailable,
