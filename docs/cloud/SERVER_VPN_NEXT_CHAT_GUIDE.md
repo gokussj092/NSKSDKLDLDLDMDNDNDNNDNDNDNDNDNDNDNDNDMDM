@@ -1,5 +1,24 @@
 # SP-DECODE Cloud — Guía para ampliar Server VPN en otro chat
 
+**Estado más reciente, 2026-10-24: MNR TUNNEL PLUS 3.1 (31)**, PR #99 sobre
+HTTP Door `b8168cc`. Paquete `com.hamo.vpn`; catálogo real incluido **1.0 / 9
+servidores / 112 redes** y remoto **14.4 / 14 / 119**, ambos completos iguales
+a JDK y worker: 537+612 campos cifrados. Fuente fija GitHub plusfast, no el
+actualizador APK plusfastapp. Nuevo `.stp`, texto cifrado del clipboard y
+`mnrtunneludp://` online. AES-CBC/nibbles, claves fijas; campos usan dígitos
+Unicode U+2000..U+200F, no strip/normalización. MyPass/DeviceID/fecha se leen
+después de descifrar y se conservan. Firebase bucket fijo, objeto normalizado
+`mnrtunneludp:/ID.sky`, metadata→token→media; API dedicada y texto, sin red en
+worker. **Online implementado con mocks; falta referencia real y `.stp` real**,
+Android/Termux físicos pendientes. No listar bucket ni probar IDs inventados.
+Android Cloud reconoce los dos textos sin claves locales; caso instrumentado
+añadido, ejecución móvil pendiente. CLI autónoma descargó y guardó completo en 0600; icono original y switch
+persistente. C0 **240**, C8 **254**, 26 overrides, mínimo **46 / 46 fichas**.
+**50 Python / 309 Node**, build web correcto; herramientas/oracle/restauración
+en MNR_TUNNEL_PLUS, `mnr_constants.py`, `mnr_verify.py`. `.sft` no publicado:
+helper legado sin ruta activa identificada. Sin fusión, despliegue, APK o C11.
+Los estados siguientes son históricos.
+
 **Estado más reciente, 2026-10-24: HTTP Door 5.0 (5)**, PR #99 sobre BD NET
 `cf6ba54`. Paquete `com.httpdoor.vpn`; nuevo `.kyz` en C8/bot, DES-ECB/PKCS5
 con clave fija interna, XML Java completo. Parser canónico de CREEB compartido,

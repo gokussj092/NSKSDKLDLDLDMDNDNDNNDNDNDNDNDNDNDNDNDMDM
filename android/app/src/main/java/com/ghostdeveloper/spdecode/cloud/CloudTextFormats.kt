@@ -4,10 +4,14 @@ import com.ghostdeveloper.spdecode.TextProtocolDecoder
 
 /** Explicit Cloud schemes: no format guessing or cross-decoder fallbacks. */
 internal object CloudTextFormats {
+    private const val MNR_ALPHABET="¹²³⁴⁵⁶⁷⁸⁹⁰·,‽:'′"
     fun identify(raw:String):TextProtocolDecoder.Input? {
         val value=raw.trim()
         if(value.length !in 6..TextProtocolDecoder.MAX_CHARS)return null
         return when {
+            Regex("^mnrtunneludp://[A-Za-z0-9]{10}$").matches(value) ||
+                (value.length>=64 && value.length%2==0 && value.all { it in MNR_ALPHABET }) ->
+                TextProtocolDecoder.Input("mnr-tunnel-plus","MNR TUNNEL PLUS","stp",value)
             listOf("npvt://","npvt-ssh://","npvt-vless://","npvt-vmess://","npv://")
                 .any { value.startsWith(it,ignoreCase=true) && value.length>it.length } ->
                 TextProtocolDecoder.Input("npv-tunnel","NPV Tunnel","npvs",value)

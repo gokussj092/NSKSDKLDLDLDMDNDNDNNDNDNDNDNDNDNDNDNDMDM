@@ -33,6 +33,10 @@ def dispatch(text: str, *, password: str | None = None) -> str | None:
         return None
     value = text.strip()
     lowered = value.lower()
+    from decoders.Python.apps.MNR_TUNNEL_PLUS.codec import is_profile_text
+    if is_profile_text(value):
+        from decoders.Python.apps.MNR_TUNNEL_PLUS.file_decoder import run
+        return run(value.encode('utf-8'))
     # Exact modern NPV handler owns five schemes. Preserve historical
     # dns:// and standalone npvs1: without retrying failed NPVS auth.
     if is_npv_text(value):

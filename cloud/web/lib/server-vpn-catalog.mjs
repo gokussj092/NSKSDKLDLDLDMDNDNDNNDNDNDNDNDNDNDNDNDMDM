@@ -4,7 +4,7 @@ import {join} from "node:path";
 import {createHash} from "node:crypto";
 import {publicFormats,FORMAT_DETECTION} from "./file-format-catalog.mjs";
 
-export const CATALOG_VERSION = 45; // Publish the new HTTP Door .kyz file format to cached clients.
+export const CATALOG_VERSION = 46; // MNR catalog, .stp/clipboard and online import support.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -22,6 +22,7 @@ export function activeCatalogVersion(env=process.env) {
 }
 
 const ITEMS = Object.freeze([
+  {id:"mnr-tunnel-plus", name:"MNR TUNNEL PLUS", icon:"mnr-tunnel-plus.png", remote:"mnr-tunnel-plus"},
   {id:"bd-net-vpn", name:"BD NET VPN", icon:"bd-net-vpn.png", remote:"bd-net-vpn"},
   {id:"aura-net-vpn", name:"Aura Net VPN", icon:"aura-net-vpn.png", remote:"aura-net-vpn"},
   {id:"apna-vpn", name:"APNA VPN", icon:"apna-vpn.png", remote:"apna-vpn"},

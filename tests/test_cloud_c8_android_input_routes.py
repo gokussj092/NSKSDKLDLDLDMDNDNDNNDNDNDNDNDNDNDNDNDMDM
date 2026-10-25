@@ -59,5 +59,16 @@ class CloudC8ClientRouting(unittest.TestCase):
                        "historicalCloudLinksAreUnaffected"):
             self.assertIn(symbol, suite)
 
+    def test_mnr_cloud_detection_contains_no_keys_and_covers_both_inputs(self):
+        client = (ANDROID / "cloud/CloudTextFormats.kt").read_text("utf-8")
+        self.assertIn('^mnrtunneludp://[A-Za-z0-9]{10}$', client)
+        self.assertIn('it in MNR_ALPHABET', client)
+        self.assertIn('TextProtocolDecoder.Input("mnr-tunnel-plus","MNR TUNNEL PLUS","stp",value)', client)
+        for secret in ('demondevs', 'devpro', 'firebasestorage', 'FIELD_SECRET'):
+            self.assertNotIn(secret, client)
+        suite = (ROOT / "android/app/src/androidTest/java/com/ghostdeveloper/spdecode/CloudC8InputRoutesTest.kt").read_text("utf-8")
+        self.assertIn('mnrClipboardAndOnlineReferenceAreCloudOnlyInputs', suite)
+        self.assertIn('reference+"/extra"', suite)
+
 if __name__ == "__main__":
     unittest.main()

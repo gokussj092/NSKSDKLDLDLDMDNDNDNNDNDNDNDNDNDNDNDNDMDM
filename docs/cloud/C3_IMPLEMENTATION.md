@@ -1,5 +1,26 @@
 # C3 — API protegida, sesiones, límites y procesamiento seguro
 
+## Ampliación MNR, 2026-10-24 (PR #99)
+
+`POST /api/v1/decode/import/mnr` admite únicamente
+`{"reference":"mnrtunneludp://ID_DE_DIEZ_CARACTERES","consent":true}` con
+sesión válida. También acepta ID10 alfanumérico sin prefijo en ese endpoint.
+El texto genérico exige enlace completo: enviar ese enlace a
+`/api/v1/decode/text` solicita importar ese objeto. No hay detección de IDs
+sueltos ni URLs arbitrarias. El mismo control persistente `mnr-tunnel-plus`
+gobierna la red del catálogo y las importaciones, con flag global Server VPN.
+
+Broker fijo Firebase: host firebasestorage.googleapis.com, bucket
+hamovpn.firebasestorage.app, ruta codificada de `mnrtunneludp:/ID.sky`, dos
+GET (metadata y media con primer downloadToken). DNS pública IPv4 fijada,
+TLS, sin redirects; metadatos 256 KiB, cuerpo 8 MiB. Worker recibe únicamente
+ciphertext por ruta `.stp`, permanece offline y devuelve JSON completo.
+Referencias/tokens no se conservan en métricas. Archivos/clipboard locales
+no dependen del switch remoto. **Flujo online comprobado con mocks y código
+original; referencia real y permisos actuales del bucket pendientes.**
+Catálogo real, pruebas y fuentes en `apps/MNR_TUNNEL_PLUS/`. Sin despliegue,
+nueva UI Android o publicación de APK. Las secciones originales siguen abajo.
+
 **Alcance:** únicamente SP-DECODE Android Cloud; sin cambiar UI/UX, bot ni algoritmos. La comunicación C++ en `libspdecode.so` sigue siendo parte de C4 y **no contendrá ninguna credencial permanente**.
 
 ## C3.1: API de archivos, textos y catálogos

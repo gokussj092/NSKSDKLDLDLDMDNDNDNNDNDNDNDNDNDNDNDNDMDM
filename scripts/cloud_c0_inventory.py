@@ -96,7 +96,7 @@ def validate_reference_mapping(doc: dict) -> None:
     # New file suffixes are C8 overlays, never mutations of the frozen C0 set.
     extra = DECODER_REGISTRY.get("1ftnl")
     door = DECODER_REGISTRY.get("kyz")
-    if (set(DECODER_REGISTRY) - {"1ftnl", "awg", "creeb", "kyz"} != expected or
+    if (set(DECODER_REGISTRY) - {"1ftnl", "awg", "creeb", "kyz", "stp"} != expected or
         (extra is not None and (extra.script != "decoders/Python/apps/OneFTunnel/file_decoder.py"
                                 or extra.runtime != "python")) or
         (door is not None and (door.script != "decoders/Python/apps/HTTP_Door/file_decoder.py"

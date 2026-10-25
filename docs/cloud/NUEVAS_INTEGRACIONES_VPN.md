@@ -1,5 +1,31 @@
 # Registro de nuevas integraciones VPN
 
+## MNR TUNNEL PLUS 3.1 (31) — 2026-10-24
+
+`com.hamo.vpn`, `apps/MNR_TUNNEL_PLUS/`, PR #99 sobre HTTP Door `b8168cc`.
+Catálogo real asset **1.0 / 9 servidores / 112 redes**; remoto fijo plusfast
+**14.4 / 14 / 119**, HTTP 200. Los dos JSON completos coinciden con JDK y
+worker: 1149 campos cifrados. Exterior nibbles/AES-CBC, clave SHA256 de HEX
+UTF8; campos con alfabeto U+2000..U+200F. No quitar espacios Unicode. Names,
+flags, IDs y campos desconocidos conservados; wsPayload/wsProxyPayload booleanos.
+
+Nuevo `.stp` C8/bot y texto clipboard, clave fija demondevs. MyPass/DeviceID
+y fecha son validaciones posteriores; no contraseña/HWID para descifrar.
+Dos esquemas exportados local/cloud se mantienen completos sin renombrar.
+Online `mnrtunneludp://` + diez caracteres: bucket fijo hamovpn, objeto
+`mnrtunneludp:/ID.sky` tras normalización Firebase, GET metadata→token→media.
+API `/api/v1/decode/import/mnr` y texto integrado, sesión/cuota/switch/DNS/TLS;
+reconocimiento Android Cloud de enlace/clipboard sin claves locales y sin UI nueva;
+sin red en worker ni URLs arbitrarias. **Flujo online sintético verificado;
+referencia real y `.stp` real pendientes**, además de Android/Termux físicos.
+
+Ficha, PNG original 72125 bytes e interruptor persistente. C0 **240**, C8
+**254**, 26 overrides; mínimo **46 / 46 fichas**. **50 Python / 309 Node** y
+build web correctos; CLI autónoma hizo GET real y guardó 0600. Herramientas,
+JDK y recuperación conservados. `.sft` del helper legado no se registra sin
+ruta activa identificada. Sin binarios/datos reales en Git, fusión, despliegue,
+APK, diseño Android o C11 automáticos.
+
 ## HTTP Door 5.0 (5) — 2026-10-24
 
 Paquete `com.httpdoor.vpn`, `apps/HTTP_Door/`, PR #99 sobre `cf6ba54`.

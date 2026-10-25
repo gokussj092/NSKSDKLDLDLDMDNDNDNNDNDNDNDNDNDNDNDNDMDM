@@ -4,6 +4,9 @@ on:
   pull_request:
     paths:
       - "cloud/**"
+      - "decoders/Python/apps/MNR_TUNNEL_PLUS/**"
+      - "tests/test_mnr_tunnel_plus.py"
+      - "tests/golden/mnr_oracle.java"
       - "decoders/Python/apps/HTTP_Door/**"
       - "decoders/Python/apps/CREEB_INJECTOR/codec.py"
       - "tests/test_http_door.py"
@@ -166,6 +169,8 @@ jobs:
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_bd_net_vpn -v
       - name: Verify HTTP Door KYZ, shared Java Properties parser and standalone Termux bundle
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_http_door tests.test_creeb_injector -v
+      - name: Verify MNR complete catalogs, profiles, clipboard and reference handling
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_mnr_tunnel_plus -v
       - name: Verify Aura Net complete catalog, exported profile and historical routes
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_aura_net_vpn -v
       - name: Verify APNA complete catalog, native profile format, text and worker

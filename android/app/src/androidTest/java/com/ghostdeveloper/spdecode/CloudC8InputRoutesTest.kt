@@ -105,4 +105,19 @@ class CloudC8InputRoutesTest {
         assertEquals("mkk",CloudTextFormats.identify("mkk://fake")?.suffix)
         assertEquals("vpn",CloudTextFormats.identify("vpn://fake")?.suffix)
     }
+
+    @Test fun mnrClipboardAndOnlineReferenceAreCloudOnlyInputs() {
+        val reference="mnrtunneludp://AbC123xyZ0"
+        val ciphertext="¹²³⁴⁵⁶⁷⁸⁹⁰·,‽:'′".repeat(4)
+        for(text in listOf(reference,ciphertext)) {
+            val input=CloudTextFormats.identify(text)
+            assertNotNull(input)
+            assertEquals("mnr-tunnel-plus",input!!.protocol)
+            assertEquals("stp",input.suffix)
+            assertEquals(text,input.content)
+            assertFalse(CloudCredentialPolicy.textAcceptsPassword(text))
+        }
+        for(text in listOf("AbC123xyZ0",reference+"/extra",reference+"?x=y",
+            "mnrtunneludp://short","¹²³⁴"))assertNull(CloudTextFormats.identify(text))
+    }
 }

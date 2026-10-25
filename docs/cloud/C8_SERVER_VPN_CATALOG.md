@@ -1,5 +1,15 @@
 # C8 — Catálogo de VPN, iconos originales y caché
 
+Estado más reciente PR #99 (2026-10-24): **MNR TUNNEL PLUS 3.1 (31)**, fuente
+real GitHub plusfast 14.4 / 14 servidores / 119 redes frente al asset 1.0 /
+9 / 112. Ambos completos iguales a JDK y worker, 1149 campos internos. Nuevo
+`.stp`, clipboard y referencia online `mnrtunneludp://` con Firebase fijo;
+online validado con mocks, referencia real/export/Android/Termux pendientes.
+PNG original y switch individual preservando los anteriores. Mínimo **46 /
+46 fichas**, C0 **240**, C8 **254**, 26 overrides. **50 Python / 309 Node** y
+build web correctos. Ver MNR_TUNNEL_PLUS; no confundir plusfastapp con catálogo.
+Sin fusión, despliegue, APK o C11. Los estados siguientes son históricos.
+
 Estado más reciente del PR #99 (2026-10-24): HTTP Door 5.0 incorpora `.kyz`
 al inventario de archivos, DES/XML sin contraseña de usuario. **No se identificó
 catálogo de servidores**, por lo que no se añade proveedor/ficha. C0 **240**,

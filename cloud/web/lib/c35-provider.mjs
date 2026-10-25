@@ -15,6 +15,8 @@ import { inflateSync, deflateSync } from "node:zlib";
 export const EHI_ENDPOINT = "https://www.ehi.tools/httpinjector/import_config";
 export const NUR_ALLOWED_HOST = "strongteam.co";
 export const EHI_ALLOWED_HOST = "www.ehi.tools";
+export const MNR_ALLOWED_HOST = "firebasestorage.googleapis.com";
+export const MNR_BUCKET = "hamovpn.firebasestorage.app";
 const EHI_BUILD = "244";
 const MAX_REMOTE_BYTES = 8 * 1024 * 1024;
 const MAX_NUR_BYTES = 16 * 1024 * 1024; // matches NUR_TUNNEL_SERVERS.py MAX_INPUT
@@ -91,20 +93,52 @@ export function parseEhiReference(value) {
   return decoded;
 }
 
-/* Only hardcoded vendor destinations are accepted. No user URLs, query, custom
- * ports, userinfo, redirects, IP literals, punycode substitutions or aliases.
+export function parseMnrReference(value) {
+  if(typeof value!=="string" || value.length>64)fail("INVALID_REFERENCE");
+  const match=/^(?:mnrtunneludp:\/\/)?([A-Za-z0-9]{10})$/.exec(value.trim());
+  if(!match)fail("INVALID_REFERENCE");
+  return match[1];
+}
+export function mnrReferenceUrl(value) {
+  // Firebase StorageReference.child() collapses the doubled slash in ://.
+  return "https://"+MNR_ALLOWED_HOST+"/v0/b/"+MNR_BUCKET+"/o/"+
+    encodeURIComponent("mnrtunneludp:/"+parseMnrReference(value)+".sky");
+}
+export async function importMnrReference(value,options={}) {
+  const id=parseMnrReference(value),url=mnrReferenceUrl(value);
+  const fetcher=options.download || downloadApproved;
+  let metadata;
+  try{
+    const raw=await fetcher({url,kind:"mnr",maxBytes:256*1024},options);
+    if(!Buffer.isBuffer(raw)||!raw.length||raw.length>256*1024)fail("REMOTE_RESPONSE_INVALID");
+    metadata=JSON.parse(new TextDecoder("utf-8",{fatal:true}).decode(raw));
+  }catch(error){if(isExternalImportError(error))throw error;fail("REMOTE_RESPONSE_INVALID");}
+  if(!metadata || Array.isArray(metadata) || metadata.bucket!==MNR_BUCKET ||
+     metadata.name!=="mnrtunneludp:/"+id+".sky" || typeof metadata.downloadTokens!=="string")
+    fail("REMOTE_RESPONSE_INVALID");
+  const token=metadata.downloadTokens.split(",")[0];
+  if(!/^[A-Za-z0-9_-]{1,256}$/.test(token))fail("REMOTE_RESPONSE_INVALID");
+  const data=await fetcher({url:url+"?alt=media&token="+token,kind:"mnr",maxBytes:MAX_REMOTE_BYTES},options);
+  if(!Buffer.isBuffer(data)||!data.length||data.length>MAX_REMOTE_BYTES)fail("REMOTE_RESPONSE_INVALID");
+  return data;
+}
+
+/* Only hardcoded vendor destinations are accepted. No user URLs, custom ports,
+ * userinfo, IP literals or aliases. MNR media has one generated token query.
  */
 export function approvedUrl(address, kind) {
-  const expectedHost = kind === "ehi" ? EHI_ALLOWED_HOST : kind === "nur" ? NUR_ALLOWED_HOST : "";
+  const expectedHost = kind === "ehi" ? EHI_ALLOWED_HOST : kind === "nur" ? NUR_ALLOWED_HOST : kind === "mnr" ? MNR_ALLOWED_HOST : "";
   if (typeof address !== "string" || address.length > 2048 || !expectedHost)
     fail("REMOTE_NETWORK_DENIED");
   let parsed;
   try { parsed = new URL(address); } catch { fail("REMOTE_NETWORK_DENIED"); }
   if (parsed.protocol !== "https:" || parsed.hostname !== expectedHost ||
-      parsed.port || parsed.username || parsed.password || parsed.search || parsed.hash ||
+      parsed.port || parsed.username || parsed.password || (kind!=="mnr" && parsed.search) || parsed.hash ||
       parsed.pathname.length > 256 || parsed.href !== address ||
       (kind === "ehi" && parsed.href !== EHI_ENDPOINT))
     fail("REMOTE_NETWORK_DENIED");
+  if(kind==="mnr" && (!/^\/v0\/b\/hamovpn\.firebasestorage\.app\/o\/mnrtunneludp%3A%2F[A-Za-z0-9]{10}\.sky$/.test(parsed.pathname) ||
+      (parsed.search!=="" && !/^\?alt=media&token=[A-Za-z0-9_-]{1,256}$/.test(parsed.search))))fail("REMOTE_NETWORK_DENIED");
   return parsed;
 }
 
@@ -129,7 +163,7 @@ export function publicIpv4(address) {
 
 export async function pinnedAddresses(host, resolver = dns.lookup) {
   // The only legal hosts come from approvedUrl; never accept raw user host.
-  if (![EHI_ALLOWED_HOST, NUR_ALLOWED_HOST].includes(host)) fail("REMOTE_NETWORK_DENIED");
+  if (![EHI_ALLOWED_HOST, NUR_ALLOWED_HOST, MNR_ALLOWED_HOST].includes(host)) fail("REMOTE_NETWORK_DENIED");
   let answers;
   try { answers = await resolver(host, {all:true, family:4, verbatim:true}); }
   catch { fail("REMOTE_NETWORK_DENIED"); }
@@ -237,7 +271,7 @@ export async function downloadApproved({url,kind,method="GET",body,headers={},ma
               }
               return accept({redirect:next.href});
             }
-            if(kind==="ehi" && [404,410].includes(status))
+            if(["ehi","mnr"].includes(kind) && [404,410].includes(status))
               return reject("REMOTE_CONFIG_UNAVAILABLE");
             return reject("REMOTE_PROVIDER_UNAVAILABLE","HTTP_"+String(status));
           }

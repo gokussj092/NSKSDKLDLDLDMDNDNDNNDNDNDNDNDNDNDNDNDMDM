@@ -1,5 +1,40 @@
 # Recuperar herramientas después de perder el entorno
 
+## MNR TUNNEL PLUS 3.1 (31) — 2026-10-24
+
+PR #99 sobre `b8168cc`, carpeta MNR_TUNNEL_PLUS. Script codec.py autónomo con
+PyCryptodome; entrypoints offline separados. Binarios y catálogos fuera de Git.
+
+```sh
+python scripts/apk_analysis/inspect_apk.py /privado/MNR.apks /privado/mnr \
+  --asset config/config.json
+python scripts/apk_analysis/decompile.py /privado/mnr/dex/classes.dex /privado/mnr-jadx
+python scripts/apk_analysis/mnr_constants.py /privado/mnr-jadx/sources
+python scripts/apk_analysis/dex_method.py /privado/mnr/dex/classes.dex \
+  'LG5/f;' onClick /privado/export.json
+python scripts/apk_analysis/dex_method.py /privado/mnr/dex/classes.dex \
+  'Lcom/hamo/vpn/MainActivity;' F /privado/import.json
+python scripts/apk_analysis/mnr_verify.py /privado/mnr/assets/config/config.json /privado/remoto.enc --worker
+python scripts/apk_analysis/mnr_verify.py /privado/perfil.stp --profile --worker
+PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_mnr_tunnel_plus -v
+```
+
+JADX 49 errores generales; Dalvik G5.f export 200 / F import 151 / G5.k online
+168 instrucciones. F5.a alfabeto superscrito, SHA256(HEX_UTF8_UPPER(secret)),
+CBC/IV0; devpro catálogo, demondevs perfil. F5.g alfabeto U+2000..U+200F y
+clave recuperados con shift Java 69&31=5; **no strip de whitespace Unicode**.
+Datos reales: 1.0/9/112/537 campos y GET 14.4/14/119/612, JDK/worker completos.
+MyPass/HWID/fecha se comprueban después de descifrar. `.sft` legado no activo.
+
+Online mnrtunneludp:// + ID10, bucket hamovpn.firebasestorage.app, objeto
+normalizado `mnrtunneludp:/ID.sky`; metadata downloadTokens primero→media.
+API dedicada consentida/texto/bot/CLI, sesión y transporte fijo. No listar
+bucket ni adivinar referencias. **Mocks comprobados; falta ID real y `.stp`
+real, Android/Termux físicos.** Catálogo y descarga CLI reales correctos.
+50 Python / 309 Node, build web; reconocimiento Android Cloud sin claves,
+caso instrumentado añadido pero ejecución móvil pendiente. C0 240 / C8 254 / 26 overrides, mínimo 46 /
+46 fichas. No desplegar, fusionar, publicar APK o C11 automáticamente.
+
 ## HTTP Door 5.0 (5) — 2026-10-24
 
 PR #99 sobre BD NET `cf6ba54`. `apps/HTTP_Door/` contiene lector `.kyz`,

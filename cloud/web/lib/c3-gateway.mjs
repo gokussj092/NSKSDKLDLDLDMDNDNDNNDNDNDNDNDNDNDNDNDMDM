@@ -4,7 +4,8 @@ import { store, reserveSlot, releaseSlot } from "./c3-store.mjs";
 import { createChallenge, issueSession, issueQaSession, requireSession } from "./c3-session.mjs";
 import { jsonReply, unavailable } from "./responses.mjs";
 import { legacyCredentialError } from "./decoder-client-compat.mjs";
-import { ehiConfigured, nurConfigured } from "./c35-provider.mjs";
+import { ehiConfigured, nurConfigured, importMnrReference, isExternalImportError } from "./c35-provider.mjs";
+import {providerAllowed} from "./c12-provider-controls.mjs";
 import { maintenanceEnabled, serviceMaintenanceEnabled, recordWorkerResult } from "./c6-ops-store.mjs";
 import {admissionPolicy} from "./c11-play-admission.mjs";
 import {publicFormats} from "./file-format-catalog.mjs";
@@ -220,6 +221,22 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
            typeof x.obfs!=="string" || typeof x.auth!=="string") ||
          JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))throw Error("INVALID_WORKER_RESULT");
     }
+    if(kind==="server-vpn" && payload?.providerId==="mnr-tunnel-plus"){
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId ||
+         !isRecord(parsed) || typeof parsed.Version!=="string" || !parsed.Version ||
+         !Array.isArray(parsed.Servers) || !Array.isArray(parsed.Networks) ||
+         [...parsed.Servers,...parsed.Networks].some(x=>!isRecord(x)) ||
+         JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))throw Error("INVALID_WORKER_RESULT");
+    }
+    if(kind==="file" && payload?.format==="stp"){
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      if(!isRecord(parsed) || typeof parsed.isPassON!=="boolean" || typeof parsed.MyPass!=="string" ||
+         !Number.isInteger(parsed.TunnelType) || JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))
+        throw Error("INVALID_WORKER_RESULT");
+    }
     if(kind==="server-vpn" && ["apna-vpn","bd-net-vpn"].includes(payload?.providerId)){
       let parsed;
       try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
@@ -325,7 +342,15 @@ export async function decodeRequest(request,kind,options={}) {
         (payload.dataBase64.endsWith("==")?2:payload.dataBase64.endsWith("=")?1:0),
     };
     started=performance.now();
-    const outcome=await fetchWorker(kind,payload,cfg,options);
+    let outcome;
+    if(kind==="text" && payload.text.trim().startsWith("mnrtunneludp://")){
+      if(process.env.CLOUD_SERVER_VPN_ENABLED!=="true" || !await providerAllowed("mnr-tunnel-plus"))
+        return failure("REMOTE_NOT_CONFIGURED",503);
+      // Pasting an explicit MNR reference into Decode requests that one object.
+      // No arbitrary URL, storage listing, credential lookup or worker egress.
+      const data=await importMnrReference(payload.text,options.vendor || {});
+      outcome=await fetchWorker("file",{format:"stp",dataBase64:data.toString("base64")},cfg,options);
+    }else outcome=await fetchWorker(kind,payload,cfg,options);
     let errorCode="";
     if(!outcome.ok){
       try{errorCode=(await outcome.clone().json()).error?.code||"";}catch{}
@@ -344,10 +369,11 @@ export async function decodeRequest(request,kind,options={}) {
     return clientOutcome;
   }catch(error){
     if(telemetry && !recorded && redis && lease){
-      try{await recordWorkerResult(redis,"failed",{...telemetry,errorCode:"ENGINE_UNAVAILABLE",
+      try{await recordWorkerResult(redis,"failed",{...telemetry,errorCode:isExternalImportError(error)?error.code:"ENGINE_UNAVAILABLE",
           latencyMs:started===null?null:performance.now()-started,
           appVersion:request.headers.get("x-spdecode-app-version")});}catch{}
     }
+    if(isExternalImportError(error))return failure(error.code,error.status);
     if(error?.code==="INPUT_TOO_LARGE")return failure("INPUT_TOO_LARGE",413);
     if(error?.code==="INVALID_BASE64")return failure("INVALID_BASE64",400);
     if(error?.code==="INVALID_CREDENTIALS")return failure("INVALID_CREDENTIALS",400);

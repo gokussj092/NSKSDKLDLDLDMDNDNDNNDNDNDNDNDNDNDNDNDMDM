@@ -9,13 +9,15 @@ import { maintenanceEnabled, serviceMaintenanceEnabled, recordWorkerResult } fro
 import {
   isExternalImportError, parseEhiReference, ehiConfigured, nurConfigured,
   importEhiReference, downloadNur,
+  parseMnrReference, importMnrReference,
 } from "./c35-provider.mjs";
 const ownKeys=(value,expected)=> value && typeof value==="object" && !Array.isArray(value)
   && Object.keys(value).length===expected.length && expected.every(key=>Object.hasOwn(value,key));
 
 export async function externalImportRequest(request,kind,opts={}) {
   if (!enabled()) return notEnabled();
-  if (kind==="ehi" && !ehiConfigured() || kind==="nur" && !nurConfigured())
+  if (kind==="ehi" && !ehiConfigured() || kind==="nur" && !nurConfigured() ||
+      kind==="mnr" && process.env.CLOUD_SERVER_VPN_ENABLED!=="true")
     return failure("REMOTE_NOT_CONFIGURED",503);
   let redis,claims,lease=null,started=null;
   try {
@@ -24,16 +26,16 @@ export async function externalImportRequest(request,kind,opts={}) {
     if(await maintenanceEnabled(redis))return failure("SERVICE_UNAVAILABLE",503);
     if(await serviceMaintenanceEnabled(redis,kind==="ehi"?"httpInjector":"serverVpn"))
       return failure("SERVICE_MAINTENANCE",503);
-    if(!await providerAllowed(kind==="ehi"?"ehi-cloud":"nur-tunnel"))
+    if(!await providerAllowed(kind==="ehi"?"ehi-cloud":kind==="mnr"?"mnr-tunnel-plus":"nur-tunnel"))
       return failure("REMOTE_NOT_CONFIGURED",503);
     claims=await requireSession(redis,request,settings());
     if (!claims) return failure("UNAUTHORIZED",401);
     if (claims.rateLimited) return failure("RATE_LIMITED",429);
     const body=await boundedBody(request,4096);
-    if(kind==="ehi") {
+    if(kind==="ehi" || kind==="mnr") {
       if(!ownKeys(body,["reference","consent"])||body.consent!==true)
         return failure("USER_CONSENT_REQUIRED",400);
-      parseEhiReference(body.reference);
+      if(kind==="mnr")parseMnrReference(body.reference);else parseEhiReference(body.reference);
     }else if(kind==="nur") {
       if(!ownKeys(body,["consent"])||body.consent!==true)
         return failure("USER_CONSENT_REQUIRED",400);
@@ -43,6 +45,17 @@ export async function externalImportRequest(request,kind,opts={}) {
     lease=requestId;
     started=performance.now();
     const vendor=opts.vendor || {};
+    if(kind==="mnr"){
+      const bytes=await importMnrReference(body.reference,vendor);
+      const result=await fetchWorker("file",{format:"stp",dataBase64:bytes.toString("base64")},settings(),opts);
+      let errorCode="";
+      if(!result.ok){try{errorCode=(await result.clone().json()).error?.code||"";}catch{}}
+      try{await recordWorkerResult(redis,result.ok?"success":"failed",{
+        kind:"file",format:"stp",bytes:bytes.length,errorCode,latencyMs:performance.now()-started,
+        appVersion:request.headers.get("x-spdecode-app-version"),
+      });}catch{}
+      return result;
+    }
     if(kind==="ehi"){
       const ehi=await importEhiReference(body.reference,vendor);
       const result=await fetchWorker("file",{format:"ehi",dataBase64:ehi.toString("base64")},settings(),opts);
@@ -67,7 +80,7 @@ export async function externalImportRequest(request,kind,opts={}) {
     // Count provider/download failures after authorization, without storing URLs.
     if(redis && lease){
       try{await recordWorkerResult(redis,"failed",{
-        kind:kind==="nur"?"catalog":"ehi",bytes:0,
+        kind:kind==="nur"?"catalog":kind==="mnr"?"file":"ehi",format:kind==="mnr"?"stp":undefined,bytes:0,
         errorCode:typeof error?.code==="string"?error.code:"SERVICE_UNAVAILABLE",
         latencyMs:started===null?null:performance.now()-started,
         appVersion:request.headers.get("x-spdecode-app-version"),

@@ -198,6 +198,14 @@ def load_decoder_registry(path: Path = DECODERS_PATH) -> dict[str, DecoderSpec]:
             script="decoders/Python/apps/HTTP_Door/file_decoder.py", runtime="python"
         )
 
+    if path.resolve() == DECODERS_PATH.resolve():
+        if "stp" in registry:
+            raise ValueError("MNR .stp decoder conflicts with an existing route")
+        registry["stp"] = DecoderSpec(
+            extension="stp", name="MNR TUNNEL PLUS 3.1",
+            script="decoders/Python/apps/MNR_TUNNEL_PLUS/file_decoder.py", runtime="python"
+        )
+
     return registry
 
 

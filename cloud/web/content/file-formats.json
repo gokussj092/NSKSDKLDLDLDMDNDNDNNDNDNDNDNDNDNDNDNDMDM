@@ -1598,6 +1598,14 @@
       "credentialFields": []
     },
     {
+      "suffix": "stp",
+      "name": "MNR TUNNEL PLUS 3.1",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
       "suffix": "sut",
       "name": "SUT Tunnel",
       "kind": "file",

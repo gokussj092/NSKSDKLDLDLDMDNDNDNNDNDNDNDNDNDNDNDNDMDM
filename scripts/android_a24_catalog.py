@@ -97,7 +97,7 @@ def generate() -> dict:
     # overrides the historical .crev route in the live bot registry.
     baseline_registry = {
         suffix: spec for suffix, spec in DECODER_REGISTRY.items()
-        if suffix not in ("solid", "1ftnl", "awg", "creeb", "kyz")
+        if suffix not in ("solid", "1ftnl", "awg", "creeb", "kyz", "stp")
     }
     from dataclasses import replace
     if "crev" in baseline_registry:
