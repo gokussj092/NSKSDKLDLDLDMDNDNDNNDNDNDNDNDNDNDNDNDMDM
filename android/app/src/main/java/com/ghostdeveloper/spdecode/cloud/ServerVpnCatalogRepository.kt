@@ -170,7 +170,8 @@ internal class ServerVpnCatalogRepository(
     fun currentVersion():Int = stored()?.optInt("catalogVersion",0)?:0
 
     /** VPS-only hint; verified HTTPS metadata and encrypted cache are authoritative. */
-    suspend fun refreshIfDue(force:Boolean=false,announcedVersion:Int=0):List<ServerVpnApp> = mutex.withLock {
+    suspend fun refreshIfDue(force:Boolean=false,announcedVersion:Int=0,
+        onProgress:((Int)->Unit)?=null):List<ServerVpnApp> = mutex.withLock {
         withContext(Dispatchers.IO) {
             val previous=stored()
             val available=verifiedApps(previous)
@@ -230,6 +231,9 @@ internal class ServerVpnCatalogRepository(
                             throw IllegalStateException("Icon digest mismatch")
                         candidates.add("icon-$id" to bytes)
                     }
+                    // Percentage of catalog app records and hash-verified icons
+                    // processed, not a fake HTTP byte-level download progress.
+                    onProgress?.invoke((i+1)*100/array.length())
                 }
                 // Write validated icons first, then atomically activate metadata.
                 for((id,data) in candidates)vault.write(id,data)
