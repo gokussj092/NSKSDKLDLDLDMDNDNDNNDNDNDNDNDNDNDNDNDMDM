@@ -126,7 +126,8 @@ fun SpDecodeApp(
         ) {
             BrandHeader(
                 onSettings={onTab(4)},
-                showServerVpnRefresh=activeTab==3 && BuildConfig.SPDECODE_CLOUD_ENABLED,
+                showServerVpnRefresh=(activeTab==2 || activeTab==3) &&
+                    BuildConfig.SPDECODE_CLOUD_ENABLED,
                 refreshingServerVpn=serverVpnLoading,
                 enableServerVpnRefresh=!busy && !serverVpnLoading,
                 onRefreshServerVpn=onRefreshServerVpn,
