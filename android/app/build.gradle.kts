@@ -234,6 +234,11 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
             "    onDismissError:()->Unit,",
             "    onDismissError:()->Unit,\n    noticeOnly:Boolean=false,".replace("\n","\n"))
         app = replaceOnce(app,
+            "title={Text(stringResource(errorTitle))}",
+            "title={Text(stringResource(if(noticeOnly) " +
+                "R.string.cloud_failure_notice_title else errorTitle))}")
+
+        app = replaceOnce(app,
             """            dismissButton={TextButton(onClick={
                 if(canReportError)onReportError()
                 else {
