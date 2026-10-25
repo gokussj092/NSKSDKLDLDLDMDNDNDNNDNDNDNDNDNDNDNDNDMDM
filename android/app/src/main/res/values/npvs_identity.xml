@@ -12,7 +12,7 @@
     <string name="npv_delete">Delete</string>
     <string name="npv_invalid">Cannot read these NPV keys. Check the JSON format and public/private key match.</string>
     <string name="npv_saved">Identity imported. Enable the switch to use it.</string>
-    <string name="npv_generation_notice">The API creates a fresh P-256 key pair and returns both keys once. Its private key passes through the server. Protect it and share only the public key with the configuration creator. This does not copy the official Android Keystore.</string>
+    <string name="npv_generation_notice">Share only your public key with the person creating your VPN server or configuration. Never share your private key.</string>
     <string name="npv_choose_title">Choose NPV identity</string>
     <string name="npv_send_notice">Send the selected private key or file-bound agreement to Cloud to open this file.</string>
     <string name="npv_use">Use selected identity</string>

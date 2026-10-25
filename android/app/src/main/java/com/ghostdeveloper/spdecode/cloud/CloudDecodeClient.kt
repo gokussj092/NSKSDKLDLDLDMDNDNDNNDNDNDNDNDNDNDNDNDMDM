@@ -268,15 +268,18 @@ internal class CloudDecodeClient(context: Context) {
         val body = JSONObject()
             .put("format", format)
             .put("dataBase64", Base64.encodeToString(bytes, Base64.NO_WRAP))
-        val recipient=if(format=="npvs" && NpvsRecipientProbe.fingerprints(bytes).isNotEmpty())
-            NpvsRecipientActivity.choose(app,bytes) else null
-        if(recipient!=null)body.put("credentials",JSONObject().put("recipientKey",recipient))
-        if (password != null || hwid != null) {
-            val credentials = JSONObject()
-            if (password != null) credentials.put("password", String(password,Charsets.UTF_8))
-            if (hwid != null) credentials.put("hwid",hwid)
-            body.put("credentials",credentials)
-        }
+        val isRecipientNpvs=format=="npvs" &&
+            NpvsRecipientProbe.fingerprints(bytes).isNotEmpty()
+        // The signed NPVS recipient envelope is mutually exclusive with
+        // passphrase protection. Never silently overwrite recipientKey.
+        if(isRecipientNpvs && (password!=null || hwid!=null))
+            throw IOException("CLOUD_CREDENTIALS_NOT_ALLOWED")
+        val recipient=if(isRecipientNpvs) NpvsRecipientActivity.choose(app,bytes) else null
+        val credentials=JSONObject()
+        if(recipient!=null)credentials.put("recipientKey",recipient)
+        if(password!=null)credentials.put("password",String(password,Charsets.UTF_8))
+        if(hwid!=null)credentials.put("hwid",hwid)
+        if(credentials.length()>0)body.put("credentials",credentials)
         return decode("/api/v1/decode/file",body).rawText
     }
 

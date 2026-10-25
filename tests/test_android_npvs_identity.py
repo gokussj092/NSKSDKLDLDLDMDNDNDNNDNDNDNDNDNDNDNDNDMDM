@@ -38,6 +38,16 @@ class AndroidNpvIdentityTests(unittest.TestCase):
         self.assertIn('NpvsRecipientActivity.choose(app,bytes)',client)
         self.assertIn('put("recipientKey",recipient)',client)
         self.assertIn('CloudNativeTransport.post("/api/v1/npvs/identity"',client)
+        transport=(SOURCE/"CloudNativeTransport.kt").read_text()
+        self.assertIn('"/api/v1/npvs/identity"',transport)
+        native=(APP/"src/main/cpp/spdecode_transport.cpp").read_text()
+        self.assertIn('path == "/api/v1/npvs/identity"',native)
+        self.assertIn('if(isRecipientNpvs && (password!=null || hwid!=null))',client)
+        self.assertIn('if(credentials.length()>0)body.put("credentials",credentials)',client)
+        self.assertNotIn('if(recipient!=null)body.put("credentials",JSONObject()',client)
+        spanish=(APP/"src/main/res/values-es/npvs_identity.xml").read_text()
+        self.assertIn("Comparte solo la clave pública",spanish)
+        self.assertNotIn("Esto no copia el Keystore oficial",spanish)
         self.assertNotIn('lastDiagnostic=Diagnostic("identity"',client)
 
 
