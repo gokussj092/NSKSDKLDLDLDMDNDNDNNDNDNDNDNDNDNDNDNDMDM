@@ -17,9 +17,10 @@ real completa guardada 0600, bundle reproducible y no sobrescritura. MTM solo
 Cloud/CLI, el offlineSupported de `.v2` pertenece a e-V2Ray histórico. Falta
 archivo MTM de usuario y Android/Termux físicos. C0 **240**, C8 **254**, **27
 overrides**, mínimo **47 / 47 fichas**. Pruebas y herramientas mtm_bundle.py,
-mtm_verify.py, oracle Java y MTM_Tunnel_Lite. **42 Python / 315 Node aprobadas**,
+mtm_verify.py, oracle Java y MTM_Tunnel_Lite. **166 Python / 315 Node aprobadas**,
 incluidos los 60 casos históricos C2; build web, inventarios y validación
-correctos. Sin fusión, VPS, APK ni C11.
+correctos. Recuentos legacy actualizados a 254 y exclusiones `.kyz/.stp`
+corregidas; 124 regresiones adicionales aprobadas. Sin fusión, VPS, APK ni C11.
 Los estados siguientes son históricos.
 
 **Estado más reciente, 2026-10-24: MNR TUNNEL PLUS 3.1 (31)**, PR #99 sobre

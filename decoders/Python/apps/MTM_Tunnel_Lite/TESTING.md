@@ -1,9 +1,12 @@
 # Verificación MTM
 
-Resultado local 2026-10-25: **42 Python / 315 Node aprobadas**, build web
+Resultado local 2026-10-25: **166 Python / 315 Node aprobadas**, build web
 correcto. Incluye MTM, MNR, HTTP Door, worker C8, C0/Android y comparación
 byte por byte de los 60 casos C2 con Python/Node/PHP. Los dos desajustes
 históricos de httptweak se siguen notificando sin reescribir sus goldens.
+Se actualizaron los recuentos antiguos de 252 a 254 y las exclusiones del
+inventario histórico para `.kyz/.stp`; 124 regresiones adicionales pasan sin
+cambiar sus lectores ni los 239 formatos originales.
 
 ```sh
 PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_mtm_tunnel_lite -v

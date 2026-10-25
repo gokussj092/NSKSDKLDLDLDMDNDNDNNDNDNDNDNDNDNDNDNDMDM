@@ -47,7 +47,7 @@ class UltraSandokBotTests(unittest.TestCase):
         assert len(ultra.ULTRA_EXTS) == 42
         self.assertEqual(set(ultra.ULTRA_NAMES), ultra.ULTRA_EXTS)
         self.assertEqual(set(ultra.EXT_TO_KEY), ultra.ULTRA_EXTS)
-        self.assertEqual(len(set(DECODER_REGISTRY) - {'solid','1ftnl','awg','creeb'}), 239)
+        self.assertEqual(len(set(DECODER_REGISTRY) - {'solid','1ftnl','awg','creeb','kyz','stp'}), 239)
         for suffix in ultra.ULTRA_EXTS:
             ext = suffix[1:]
             self.assertEqual(get_supported_extension("file" + suffix.upper()), ext)
