@@ -36,7 +36,7 @@ class ServerVpnUpdateOptInContracts(unittest.TestCase):
         ids=re.findall(r'\{id:"([a-z0-9-]+)", name:"[^"]+", icon:"([a-z0-9-]+\.png)"',catalog)
         # Every catalog provider must have a registered PNG. Do not hardcode a
         # historical provider count: new catalog integrations are expected.
-        total_entries=len(re.findall(r'\\{id:"[a-z0-9-]+"',catalog))
+        total_entries=len(re.findall(r'\{id:"[a-z0-9-]+"',catalog))
         self.assertGreater(total_entries,0)
         self.assertEqual(len(ids),total_entries)
         self.assertEqual(len({i for i,_ in ids}),len(ids))
