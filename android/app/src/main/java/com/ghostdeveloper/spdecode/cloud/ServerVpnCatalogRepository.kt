@@ -186,12 +186,14 @@ internal class ServerVpnCatalogRepository(
             val now=System.currentTimeMillis()
             val last=previous?.optLong("checkedAtMillis",0L)?:0L
             val previousVersion=previous?.optInt("catalogVersion",0)?:0
-            val urgent=announcedVersion>previousVersion
+            val recipientMetadata=cachedFormats.firstOrNull{it.suffix=="npvs"}
+                ?.credentialFields?.contains("recipientKey")==true
+            val urgent=announcedVersion>previousVersion || !recipientMetadata
             if(!force && !urgent && available.isNotEmpty() && cachedFormats.isNotEmpty() && last>0 && now>=last &&
                 now-last<versionCheckMillis) return@withContext available
             try {
                 // Manual refresh still uses the version contract; metadata changes must bump version.
-                val knownVersion=if(available.isEmpty() || cachedFormats.isEmpty())0 else previousVersion
+                val knownVersion=if(available.isEmpty() || cachedFormats.isEmpty() || !recipientMetadata)0 else previousVersion
                 val remote=client.serverVpnCatalog(knownVersion)
                 if(remote.optBoolean("unchanged",false)) {
                     if(available.isEmpty() || remote.optInt("catalogVersion")!=knownVersion)

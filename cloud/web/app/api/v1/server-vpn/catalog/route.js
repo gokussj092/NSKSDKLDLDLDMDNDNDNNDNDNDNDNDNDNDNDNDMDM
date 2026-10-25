@@ -18,6 +18,12 @@ export async function POST(request) {
     if(input.knownVersion===currentVersion)
       return reply({apiVersion:"v1",catalogVersion:currentVersion,recheckAfterSeconds:RECHECK_SECONDS,unchanged:true});
     const availability=Object.fromEntries(summary.providers.map(p=>[p.id,p.enabled]));
-    return reply({...catalog({availability,version:currentVersion}),unchanged:false});
+    const result=catalog({availability,version:currentVersion});
+    // Existing APKs reject unknown credential names. Keep their snapshot
+    // valid while newer clients explicitly negotiate recipient identities.
+    if(request.headers.get("x-spdecode-npv-identities")!=="1")
+      result.formats=result.formats.map(entry=>({...entry,
+        credentialFields:entry.credentialFields.filter(field=>field!=="recipientKey")}));
+    return reply({...result,unchanged:false});
   }catch{return reply({error:{code:"SERVICE_UNAVAILABLE"}},503);}
 }

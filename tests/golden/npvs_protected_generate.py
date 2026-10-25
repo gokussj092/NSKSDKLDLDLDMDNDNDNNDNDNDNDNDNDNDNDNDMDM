@@ -46,8 +46,8 @@ def make(*,password="synthetic-password",version=5,recipient=False,identity=None
         public=key.public_key().export_key(format="SEC1",compress=True);public_key=url(public)
         fp=hashlib.sha256(public).digest();ephemeral=ECC.construct(curve="P-256",d=0x123abc)
         shared=int((key.pointQ*ephemeral.d).x).to_bytes(32,"big")
-        wrapping=HKDF(shared,32,cid,SHA256,context=b"NPVS-v1-wrap"+fp)
-        aes=AES.new(wrapping,AES.MODE_GCM,nonce=wrapped_nonce);aes.update(cid)
+        wrapping=HKDF(shared,32,fp,SHA256,context=b"NPVS-v1-wrap"+cid)
+        aes=AES.new(wrapping,AES.MODE_GCM,nonce=wrapped_nonce);aes.update(fp)
         recipient_dek=dek
         if version==6:
             from decoders.Python.npvs import _whitebox_block

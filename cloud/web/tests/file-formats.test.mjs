@@ -52,6 +52,15 @@ test("extension precedence, native/cloud overlap and credential metadata",()=>{
   assert.equal(formats.find(x=>x.suffix==="fɴ").offlineSupported,true);
 });
 
+test("legacy APK snapshots exclude the new credential name; negotiated clients receive it",async()=>{
+  const legacy=await endpoint(request(0));
+  const old=(await legacy.json()).formats.find(x=>x.suffix==="npvs");
+  assert.deepEqual(old.credentialFields,["password","publicKey"]);
+  const modern=request(0);modern.headers.set("X-SPDecode-NPV-Identities","1");
+  const reply=await endpoint(modern);const current=(await reply.json()).formats.find(x=>x.suffix==="npvs");
+  assert.deepEqual(current.credentialFields,["password","publicKey","recipientKey"]);
+});
+
 test("HTTP Door publishes its file route and refreshes cached v44 metadata without adding a server provider",async()=>{
   const format=publicFormats().find(x=>x.suffix==="kyz");
   assert.deepEqual(format,{suffix:"kyz",name:"HTTP Door 5.0",kind:"file",

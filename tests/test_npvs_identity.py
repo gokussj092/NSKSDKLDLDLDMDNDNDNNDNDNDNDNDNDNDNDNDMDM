@@ -90,6 +90,23 @@ class IdentityTests(unittest.TestCase):
             with self.assertRaises(npvs.DecodeError) as error:npvs.decode_npvs(raw,recipient_key=identity)
             self.assertEqual(error.exception.code,"AUTH_FAILED" if signed else "INVALID_INPUT")
 
+    def test_apk_fingerprint_salt_and_aad_are_not_interchanged_with_config_id(self):
+        from Crypto.Cipher import AES
+        from Crypto.Protocol.KDF import HKDF
+        from Crypto.Hash import SHA256
+        identity=identities.generate();fixture=make(recipient=True,identity=identity)
+        raw=fixture["data"];env=npvs.inspect_npvs(raw);record=env["recipients"][0];cid=env["header"][1:17]
+        _,shared=identities.agreement(identity,raw,[record])
+        # The former generic recipe used salt=cid/info=label+fp/AAD=cid.
+        # It is a valid AES-GCM envelope but is NOT the APK's ah.m.e method.
+        key=HKDF(shared,32,cid,SHA256,context=b"NPVS-v1-wrap"+record[:32])
+        cipher=AES.new(key,AES.MODE_GCM,nonce=record[65:77]);cipher.update(cid)
+        encrypted,tag=cipher.encrypt_and_digest(fixture["dek"])
+        wrong=raw[:9+53+77]+encrypted+tag+raw[9+53+125:]
+        wrong=resign(wrong,fixture["creator"])
+        with self.assertRaises(npvs.DecodeError) as error:npvs.decode_npvs(wrong,recipient_key=identity)
+        self.assertEqual(error.exception.code,"AUTH_FAILED")
+
     def test_worker_identity_route_requires_auth_and_explicit_consent(self):
         import http.client,threading
         from server import WorkerHandler,ThreadingHTTPServer

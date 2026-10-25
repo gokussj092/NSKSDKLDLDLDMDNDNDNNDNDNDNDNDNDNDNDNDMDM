@@ -34,8 +34,8 @@ metadatos privados y resultados descifrados permanecen fuera de Git/CI.
   SHA-256 de esos33 bytes; privada PKCS#8 DER. Intercambio Base64URL sin padding.
 - Registro125: fingerprint32, efímera33, nonce12, ciphertext32 y tag16.
 - ECDH devuelve X de32 bytes BE. HKDF-SHA256: IKM=sharedX,
-  salt=configId16, info=`NPVS-v1-wrap || fingerprint32`, salida32.
-- AES-256-GCM abre la DEK con nonce del registro y AAD=configId16.
+  salt=fingerprint32, info=`NPVS-v1-wrap || configId16`, salida32.
+- AES-256-GCM abre la DEK con nonce del registro y AAD=fingerprint32.
 - En v6, después de los registros hay maskSalt16. KDK=
   SHA256(`npvtunnel/appkey/v2 ` || whitebox(maskSalt) || configId).
   Pad=HKDF-SHA256(KDK, salt=maskSalt,
@@ -61,6 +61,10 @@ libgojni SHA-256 `ea5c68f088256b648b91c0ca009ad7f6d144e5d107608f622a5f564c9bc889
 | compactMetadataKey | 0x1f203e0 |
 | sourceDocumentContext | 0x1f4e050 |
 | openSourceRecipientWithValidation | 0x1f4b4b0 |
+
+El orden sal/AAD=fingerprint, info=label+configId se confirma en `ah.m.e`,
+`ah.j.c` y `unwrapSealedDEK`: la sal pasada al HKDF es el argumento fingerprint
+de32 bytes y el sufijo copiado al info mide16 bytes. No intercambiar esos campos.
 
 Java `ah.j` usa `ah.g` (ECDH AndroidKeyStore, alias
 `npvtunnel.recipient.v1`) o `ah.i` (PKCS#8 cifrado en
@@ -97,6 +101,10 @@ de nuevo opt-in/archivo antes del envío; cancelar no envía la clave. Archivos
 app-key y passphrase mantienen su flujo. El protocolo de archivo añade
 `credentials.recipientKey` (JSON string, máximo16384 bytes) y lo entrega al
 proceso aislado por stdin. No hay credenciales en argumentos o entorno.
+
+El cliente negocia `X-SPDecode-NPV-Identities: 1` para recibir el nuevo
+campo de credenciales. Los APK anteriores reciben los nombres históricos para
+no invalidar su caché; un cliente actualizado refresca la instantánea anterior.
 
 Catálogo de metadatos49, sin nuevas fichas Server VPN: C0 240, C8 254,47 fichas.
 Se conservan estados previos de interruptores. Otros métodos v6 y recipientes

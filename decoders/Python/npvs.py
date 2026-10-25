@@ -293,10 +293,10 @@ def decode_npvs(data: bytes, *, password: str | None = None, public_key: str | N
             raise DecodeError("Identity does not match this file", "RECIPIENT_MISMATCH") from error
         except (ValueError, TypeError, KeyError, IndexError) as error:
             raise DecodeError("Invalid recipient material", "INVALID_CREDENTIALS") from error
-        wrapping = HKDF(shared, 32, config_id, SHA256, context=b"NPVS-v1-wrap" + record[:32])
+        wrapping = HKDF(shared, 32, record[:32], SHA256, context=b"NPVS-v1-wrap" + config_id)
         try:
             cipher = AES.new(wrapping, AES.MODE_GCM, nonce=record[65:77])
-            cipher.update(config_id)
+            cipher.update(record[:32])
             dek = cipher.decrypt_and_verify(record[77:109], record[109:125])
         except ValueError as error:
             raise DecodeError("Recipient key authentication failed", "AUTH_FAILED") from error

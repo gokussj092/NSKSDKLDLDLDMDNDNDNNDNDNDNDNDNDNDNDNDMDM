@@ -41,8 +41,8 @@ class npvs_protected_oracle {
    if(record==null)throw new IOException("recipient mismatch");
    var privateKey=KeyFactory.getInstance("EC").generatePrivate(new PKCS8EncodedKeySpec(privateDer));
    var agreement=KeyAgreement.getInstance("ECDH");agreement.init(privateKey);agreement.doPhase(point(Arrays.copyOfRange(record,32,65)),true);
-   key=hkdf(agreement.generateSecret(),cid,cat(text("NPVS-v1-wrap"),fp));
-   var aes=Cipher.getInstance("AES/GCM/NoPadding");aes.init(Cipher.DECRYPT_MODE,new SecretKeySpec(key,"AES"),new GCMParameterSpec(128,Arrays.copyOfRange(record,65,77)));aes.updateAAD(cid);dek=aes.doFinal(Arrays.copyOfRange(record,77,125));
+   key=hkdf(agreement.generateSecret(),fp,cat(text("NPVS-v1-wrap"),cid));
+   var aes=Cipher.getInstance("AES/GCM/NoPadding");aes.init(Cipher.DECRYPT_MODE,new SecretKeySpec(key,"AES"),new GCMParameterSpec(128,Arrays.copyOfRange(record,65,77)));aes.updateAAD(fp);dek=aes.doFinal(Arrays.copyOfRange(record,77,125));
    if(v==6){
     byte[] kdk=MessageDigest.getInstance("SHA-256").digest(cat(text("npvtunnel/appkey/v2 "),wb,cid));
     byte[] pad=hkdf(kdk,maskSalt,cat(text("NPVS-v6/recipient-binding"),cid));for(int i=0;i<32;i++)dek[i]^=pad[i];
