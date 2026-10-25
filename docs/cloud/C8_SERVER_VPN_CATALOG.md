@@ -1,5 +1,15 @@
 # C8 — Catálogo de VPN, iconos originales y caché
 
+Estado más reciente del PR #99 (2026-10-24): HTTP Door 5.0 incorpora `.kyz`
+al inventario de archivos, DES/XML sin contraseña de usuario. **No se identificó
+catálogo de servidores**, por lo que no se añade proveedor/ficha. C0 **240**,
+C8 **253**, 25 overrides; se mantienen **45 fichas** y se eleva el mínimo a
+**45** para refrescar metadatos 44. Parser Java compartido de CREEB, script
+Termux reproducible. Tres documentos sintéticos completos iguales a JDK y
+worker; falta `.kyz` real y Android/Termux. 27 Python / 22 Node aprobadas.
+Sin consultar localhost, desplegar, fusionar, APK o C11. Los estados siguientes
+son históricos.
+
 Estado más reciente del PR #99 (2026-10-24): BD NET VPN build 111 añadido
 después de Aura, mínimo **44 / 45 fichas**, C0 **240 / C8 252**, 24 overrides.
 `.bdnet` y `bdnet://` actualizados, campos internos y recuperación binaria

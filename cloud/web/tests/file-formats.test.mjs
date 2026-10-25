@@ -52,6 +52,20 @@ test("extension precedence, native/cloud overlap and credential metadata",()=>{
   assert.equal(formats.find(x=>x.suffix==="fɴ").offlineSupported,true);
 });
 
+test("HTTP Door publishes its file route and refreshes cached v44 metadata without adding a server provider",async()=>{
+  const format=publicFormats().find(x=>x.suffix==="kyz");
+  assert.deepEqual(format,{suffix:"kyz",name:"HTTP Door 5.0",kind:"file",
+    offlineSupported:false,cloudSupported:true,credentialFields:[]});
+  assert.equal(CATALOG_VERSION,45);
+  const response=await endpoint(request(44));
+  assert.equal(response.status,200);
+  const body=await response.json();
+  assert.equal(body.unchanged,false);
+  assert.equal(body.apps.length,45);
+  assert(!body.apps.some(x=>x.id==="http-door"));
+  assert(body.formats.some(x=>x.suffix==="kyz"));
+});
+
 test("catalog response is backwards-compatible and uses the existing version contract",async()=>{
   const result=catalog();
   assert.equal(result.catalogVersion,CATALOG_VERSION);

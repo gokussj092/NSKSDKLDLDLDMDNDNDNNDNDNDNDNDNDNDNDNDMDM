@@ -1,5 +1,32 @@
 # Recuperar herramientas después de perder el entorno
 
+## HTTP Door 5.0 (5) — 2026-10-24
+
+PR #99 sobre BD NET `cf6ba54`. `apps/HTTP_Door/` contiene lector `.kyz`,
+manifest y evidencia. Parser XML compartido de CREEB; no quitar esa carpeta.
+El builder incluye las funciones canónicas en un único script para Termux.
+
+```sh
+python scripts/apk_analysis/inspect_apk.py /privado/HTTP-Door.apks /privado/http-door
+python scripts/apk_analysis/decompile.py /privado/http-door/dex/classes2.dex /privado/http-door-jadx
+python scripts/apk_analysis/dex_method.py /privado/http-door/dex/classes2.dex \
+  'Lcom/httpdoor/vpn/config/ConfigParser;' convertDataToFile /privado/export.json
+python scripts/apk_analysis/dex_method.py /privado/http-door/dex/classes2.dex \
+  'Lcom/httpdoor/vpn/config/ConfigParser;' convertInputAndSave /privado/import.json
+python scripts/apk_analysis/http_door_bundle.py /privado/http_door.py
+python scripts/apk_analysis/http_door_verify.py /privado/perfil.kyz --worker
+PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_http_door tests.test_creeb_injector -v
+```
+
+JADX DEX1 18 / DEX2 11 errores generales; rutas Dalvik 379 export / 575 import.
+ConfigParser KEY_PASSWORD cinbdf665$4, DESKeySpec toma cinbdf66; Cipher DES,
+ECB/PKCS5, XML directo sin Base64. No contraseña/HWID requeridos. Tres
+documentos sintéticos iguales a JDK/worker/bundle; `.kyz` real y móvil pendientes.
+**Sin catálogo identificado**: no consultar AppUpdater localhost:8000/update.json
+ni registrar block.json (Lottie) o geodatos como perfiles. No esquema propio.
+C0 240, C8 253, 25 overrides, mínimo 45 / 45 fichas. 27 Python / 22 Node.
+Guardar binarios/perfiles fuera de Git; sin fusión, despliegue, APK o C11.
+
 ## BD NET VPN PrinceBuild111 (111) — 2026-10-24
 
 PR #99 sobre Aura `5a5abe5`, sin fusionar/desplegar/publicar APK ni C11.

@@ -1286,6 +1286,14 @@
       "credentialFields": []
     },
     {
+      "suffix": "kyz",
+      "name": "HTTP Door 5.0",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
       "suffix": "lnk",
       "name": "LinkLayer VPN",
       "kind": "file",

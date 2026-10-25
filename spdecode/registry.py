@@ -190,6 +190,14 @@ def load_decoder_registry(path: Path = DECODERS_PATH) -> dict[str, DecoderSpec]:
             script="decoders/Python/apps/CREEB_VPN/file_decoder.py", runtime="python"
         )
 
+    if path.resolve() == DECODERS_PATH.resolve():
+        if "kyz" in registry:
+            raise ValueError("HTTP Door .kyz decoder conflicts with an existing route")
+        registry["kyz"] = DecoderSpec(
+            extension="kyz", name="HTTP Door 5.0",
+            script="decoders/Python/apps/HTTP_Door/file_decoder.py", runtime="python"
+        )
+
     return registry
 
 

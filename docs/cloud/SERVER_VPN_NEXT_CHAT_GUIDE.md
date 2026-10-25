@@ -1,5 +1,19 @@
 # SP-DECODE Cloud — Guía para ampliar Server VPN en otro chat
 
+**Estado más reciente, 2026-10-24: HTTP Door 5.0 (5)**, PR #99 sobre BD NET
+`cf6ba54`. Paquete `com.httpdoor.vpn`; nuevo `.kyz` en C8/bot, DES-ECB/PKCS5
+con clave fija interna, XML Java completo. Parser canónico de CREEB compartido,
+bundle autónomo reproducible para Termux con PyCryptodome. No requiere clave
+personal ni HWID; flags y credenciales de túnel se conservan. Tres documentos
+sintéticos completos iguales a JDK/CLI/worker/HTTP; export real y Android/Termux
+pendientes. **Catálogo de servidores no identificado**: sin proveedor/ficha,
+sin consultar localhost:8000/update.json ni registrar animaciones o geodatos.
+Icono original identificado, no publicado como ficha. C0 **240**, C8 **253**,
+25 overrides; **45 fichas**, versión mínima **45** para refrescar el formato.
+27 Python / 22 Node aprobadas; herramientas en `http_door_bundle.py`,
+`http_door_verify.py` y oracle JDK. Sin fusión, despliegue, APK ni C11.
+Los estados de abajo son históricos.
+
 **Estado más reciente, 2026-10-24: BD NET VPN PrinceBuild111 (111)**, PR #99
 sobre Aura `5a5abe5`, paquete `dastan.prince.bdfreevpn`. Catálogo asset real
 57 / 20 servidores / 257 Payloads y remoto literal real **56 / 19 / 255**:

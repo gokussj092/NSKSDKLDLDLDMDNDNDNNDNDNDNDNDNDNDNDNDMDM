@@ -1,5 +1,23 @@
 # Registro de nuevas integraciones VPN
 
+## HTTP Door 5.0 (5) — 2026-10-24
+
+Paquete `com.httpdoor.vpn`, `apps/HTTP_Door/`, PR #99 sobre `cf6ba54`.
+Nuevo lector `.kyz` C8/bot, DES-ECB/PKCS5 y XML Java Properties. Clave interna
+fija `cinbdf66`; no contraseña/HWID criptográficos. Mantiene restricciones,
+XML exacto, entradas duplicadas y mapa Java. Reutiliza parser de CREEB;
+builder genera un script único para Termux. Tres perfiles sintéticos completos
+iguales a JDK/CLI/worker/HTTP. Pendientes exportación real y Android/Termux.
+
+**No se identificó catálogo incluido o remoto**. `block.json` es Lottie,
+assets son geodatos/licencia; AppUpdater solo contiene un GET genérico a
+localhost. No se consulta ni se registra como fuente de servidores. Sin
+nuevo proveedor, ficha o descarga. Los controles actuales se conservan.
+C0 **240**, C8 **253**, 25 overrides; **45 fichas** y versión mínima **45**
+para refrescar formatos. **27 Python / 22 Node** y validaciones de inventario
+correctas. Herramientas/oracle/evidencia conservados, binarios fuera de Git.
+Sin fusión, despliegue, APK, diseño Android ni C11 automáticos.
+
 ## BD NET VPN PrinceBuild111 (111) — 2026-10-24
 
 Paquete `dastan.prince.bdfreevpn`, `apps/BD_NET_VPN/`, PR #99 sobre Aura

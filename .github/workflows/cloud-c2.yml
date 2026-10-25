@@ -4,6 +4,10 @@ on:
   pull_request:
     paths:
       - "cloud/**"
+      - "decoders/Python/apps/HTTP_Door/**"
+      - "decoders/Python/apps/CREEB_INJECTOR/codec.py"
+      - "tests/test_http_door.py"
+      - "tests/golden/http_door_oracle.java"
       - "decoders/Python/apps/Speicers_Pro_VPN/**"
       - "decoders/Python/apps/ANY_VPN/**"
       - "tests/test_any_vpn.py"
@@ -160,6 +164,8 @@ jobs:
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_am_liapp_metadata tests.test_am_tunnel_lite tests.test_sevennet_vpn tests.test_xhypher_tunnel_pro tests.test_ut_loop_pro tests.test_turbomx_vpn tests.test_superflash_vpn tests.test_rmp_tunnel_pro tests.test_rjc_tunnel_pro tests.test_proneet_vpn tests.test_onspace_vpn tests.test_mx_tunnel_pro tests.test_megatunnel tests.test_http_internet_infinito tests.test_freedomvpn tests.test_focus_vpn_cloud tests.test_eut_vpn tests.test_v2ray_tunnel_plus tests.test_tunelguard tests.test_http_wakko tests.test_http_socketclay tests.test_http_fenixvpn tests.test_http_jireh -v
       - name: Verify BD NET catalog, nested binary recovery, file and text
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_bd_net_vpn -v
+      - name: Verify HTTP Door KYZ, shared Java Properties parser and standalone Termux bundle
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_http_door tests.test_creeb_injector -v
       - name: Verify Aura Net complete catalog, exported profile and historical routes
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_aura_net_vpn -v
       - name: Verify APNA complete catalog, native profile format, text and worker

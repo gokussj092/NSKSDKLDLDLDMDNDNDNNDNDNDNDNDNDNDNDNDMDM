@@ -75,6 +75,7 @@ def load_file_engines() -> dict[str, dict[str, str]]:
 # C8 additions are separate from the frozen 240-route C0 inventory.
 # Keep each format pinned to its own source codec; never route HX .hxt into xor_family.
 _C8_FILE_ENGINES = {
+    "kyz": ("decoders/Python/apps/HTTP_Door/file_decoder.py", "HTTP Door 5.0"),
     "bdnet": ("decoders/Python/apps/BD_NET_VPN/file_decoder.py", "BD NET VPN PrinceBuild111"),
     "aura": ("decoders/Python/apps/Aura_Net_VPN/file_decoder.py", "Aura Net VPN AuraNet_v9"),
     "apnavpn": ("decoders/Python/apps/APNA_VPN/file_decoder.py", "APNA VPN 3.9"),
