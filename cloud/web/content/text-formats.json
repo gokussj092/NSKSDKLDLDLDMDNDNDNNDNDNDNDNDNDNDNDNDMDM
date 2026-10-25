@@ -1,0 +1,263 @@
+{
+  "schemaVersion": 1,
+  "formats": [
+    {
+      "prefix": "mnrtunneludp://",
+      "name": "MNR TUNNEL PLUS",
+      "suffix": "stp",
+      "kind": "cloud"
+    },
+    {
+      "prefix": "npvt-vless://",
+      "name": "NPV Tunnel",
+      "suffix": "npvs",
+      "kind": "text"
+    },
+    {
+      "prefix": "npvt-vmess://",
+      "name": "NPV Tunnel",
+      "suffix": "npvs",
+      "kind": "text"
+    },
+    {
+      "prefix": "npvt-ssh://",
+      "name": "NPV Tunnel",
+      "suffix": "npvs",
+      "kind": "text"
+    },
+    {
+      "prefix": "npvt://",
+      "name": "NPV Tunnel",
+      "suffix": "npvs",
+      "kind": "text"
+    },
+    {
+      "prefix": "npv://",
+      "name": "NPV Tunnel",
+      "suffix": "npvs",
+      "kind": "text"
+    },
+    {
+      "prefix": "mytunnelproxy://",
+      "name": "My Tunnel Proxy",
+      "suffix": "mtp",
+      "kind": "text"
+    },
+    {
+      "prefix": "actunnelvpn://",
+      "name": "AC TUNNEL VPN",
+      "suffix": "actun",
+      "kind": "text"
+    },
+    {
+      "prefix": "apnavpn://",
+      "name": "APNA VPN",
+      "suffix": "apnavpn",
+      "kind": "text"
+    },
+    {
+      "prefix": "bdnet://",
+      "name": "BD NET VPN",
+      "suffix": "bdnet",
+      "kind": "text"
+    },
+    {
+      "prefix": "mkk://",
+      "name": "MKK Hyper VPN",
+      "suffix": "mkk",
+      "kind": "text"
+    },
+    {
+      "prefix": "vpn://",
+      "name": "DTunnel Mod",
+      "suffix": "vpn",
+      "kind": "text"
+    },
+    {
+      "prefix": "ua://",
+      "name": "Ultra Custom",
+      "suffix": "ua",
+      "kind": "text"
+    },
+    {
+      "prefix": "tls://",
+      "name": "TLS Tunnel",
+      "suffix": "tls",
+      "kind": "text"
+    },
+    {
+      "prefix": "ssc://",
+      "name": "SSC Custom",
+      "suffix": "ssc",
+      "kind": "text"
+    },
+    {
+      "prefix": "dark://",
+      "name": "Dark Tunnel",
+      "suffix": "dark",
+      "kind": "text"
+    },
+    {
+      "prefix": "dtunnel://",
+      "name": "Dark Tunnel",
+      "suffix": "dark",
+      "kind": "text"
+    },
+    {
+      "prefix": "dt://",
+      "name": "Dark Tunnel",
+      "suffix": "dark",
+      "kind": "text"
+    },
+    {
+      "prefix": "izphvpnpro://",
+      "name": "IZPH VPN Pro",
+      "suffix": "izph",
+      "kind": "text"
+    },
+    {
+      "prefix": "izph://",
+      "name": "IZPH VPN Pro",
+      "suffix": "izph",
+      "kind": "text"
+    },
+    {
+      "prefix": "wyrlite://",
+      "name": "WyrLite",
+      "suffix": "wyrl",
+      "kind": "text"
+    },
+    {
+      "prefix": "wyrvpnlite://",
+      "name": "WyrLite",
+      "suffix": "wyrl",
+      "kind": "text"
+    },
+    {
+      "prefix": "wyrl://",
+      "name": "WyrLite",
+      "suffix": "wyrl",
+      "kind": "text"
+    },
+    {
+      "prefix": "wyrvpn://",
+      "name": "WyrVPN",
+      "suffix": "wyrvpn",
+      "kind": "text"
+    },
+    {
+      "prefix": "intvpn://",
+      "name": "IntVPN",
+      "suffix": "intvpn",
+      "kind": "text"
+    },
+    {
+      "prefix": "slipnet-enc://",
+      "name": "SlipNet",
+      "suffix": "slipnet",
+      "kind": "text"
+    },
+    {
+      "prefix": "juanscript://",
+      "name": "JuanScript",
+      "suffix": "juan",
+      "kind": "text"
+    },
+    {
+      "prefix": "mobi://",
+      "name": "JuanScript",
+      "suffix": "juan",
+      "kind": "text"
+    },
+    {
+      "prefix": "eut-settings://",
+      "name": "EUT VPN",
+      "suffix": "eut",
+      "kind": "text"
+    },
+    {
+      "prefix": "1ftunnel://1FTnl/",
+      "name": "1FTunnel",
+      "suffix": "1ftnl",
+      "kind": "text"
+    },
+    {
+      "prefix": "1ftunnel://1FT1/",
+      "name": "1FTunnel",
+      "suffix": "1ftnl",
+      "kind": "text"
+    },
+    {
+      "prefix": "1FTnl.",
+      "name": "1FTunnel",
+      "suffix": "1ftnl",
+      "kind": "text"
+    },
+    {
+      "prefix": "1FT1.",
+      "name": "1FTunnel",
+      "suffix": "1ftnl",
+      "kind": "text"
+    },
+    {
+      "prefix": "falcontunnel://import/",
+      "name": "Falcon Tunnel",
+      "suffix": "falcon",
+      "kind": "text"
+    },
+    {
+      "prefix": "npvs1:",
+      "name": "NPVS",
+      "suffix": "npvs",
+      "kind": "text"
+    },
+    {
+      "prefix": "dns://",
+      "name": "DNS Tunnel",
+      "suffix": "dns",
+      "kind": "text"
+    },
+    {
+      "prefix": "vmess://",
+      "name": "VMess",
+      "suffix": "vmess",
+      "kind": "text"
+    },
+    {
+      "prefix": "vless://",
+      "name": "VLESS",
+      "suffix": "vless",
+      "kind": "text"
+    },
+    {
+      "prefix": "trojan://",
+      "name": "Trojan",
+      "suffix": "trojan",
+      "kind": "text"
+    },
+    {
+      "prefix": "happ://",
+      "name": "HAPP",
+      "suffix": "happ",
+      "kind": "text"
+    },
+    {
+      "prefix": "flex://",
+      "name": "FlexNet",
+      "suffix": "flex",
+      "kind": "text"
+    },
+    {
+      "prefix": "flexnet://",
+      "name": "FlexNet",
+      "suffix": "flex",
+      "kind": "text"
+    },
+    {
+      "prefix": "v2box://",
+      "name": "V2Box",
+      "suffix": "v2box",
+      "kind": "text"
+    }
+  ]
+}
