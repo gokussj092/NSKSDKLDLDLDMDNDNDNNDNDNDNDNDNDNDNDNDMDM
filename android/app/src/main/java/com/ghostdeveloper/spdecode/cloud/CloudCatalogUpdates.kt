@@ -85,7 +85,7 @@ internal object CloudCatalogUpdates {
         context:Context,client:CloudDecodeClient,repository:ServerVpnCatalogRepository,
         onAvailable:(Int)->Unit
     ) {
-        while(currentCoroutineContext().isActive && enabled(context) &&
+        while(currentCoroutineContext().isActive && BuildConfig.SPDECODE_CLOUD_ENABLED &&
             CloudLegalConsent.accepted(context)){
             try {
                 val local=repository.currentVersion()
