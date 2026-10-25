@@ -892,6 +892,7 @@ class MainActivity : ComponentActivity() {
     private fun decodeText(userText:String,password:ByteArray?=null) {
         if(!requireCloudLegal())return
         messageIsCredentialNotice=false
+        noticeTitle=R.string.decode_notice_title
         if(busy)return
         if(userText.isBlank()||userText.length>TextProtocolDecoder.MAX_CHARS) {
             message=getString(R.string.text_decode_invalid)
@@ -960,13 +961,23 @@ class MainActivity : ComponentActivity() {
                 val notice=BuildConfig.SPDECODE_CLOUD_ENABLED &&
                     CloudUserErrors.isInformational(error,candidate.suffix,
                         passwordSubmitted=password!=null)
-                if((error as? CloudDecodeClient.Failure)?.code=="UNSUPPORTED_FORMAT")
+                val incompatible=(error as? CloudDecodeClient.Failure)?.code in
+                    setOf("UNSUPPORTED_VERSION","UNSUPPORTED_VARIANT","UNSUPPORTED_METHOD",
+                        "UNSUPPORTED_CONFIG_VERSION","DECODE_FAILED")
+                if(incompatible){
+                    noticeTitle=R.string.unsupported_version_title
                     cloudClient.clearLastDiagnostic()
+                }
+                if((error as? CloudDecodeClient.Failure)?.code=="UNSUPPORTED_FORMAT") {
+                    noticeTitle=R.string.unsupported_text_title
+                    cloudClient.clearLastDiagnostic()
+                }
                 if(!notice)SafeDecodeDiagnostics.record(SafeDecodeDiagnostics.Event.TEXT_FAILURE)
                 else cloudClient.clearLastDiagnostic()
                 messageIsCredentialNotice=notice
                 message=if((error as? CloudDecodeClient.Failure)?.code=="UNSUPPORTED_FORMAT")
                     getString(R.string.unsupported_text_detail)
+                    else if(incompatible)getString(R.string.unsupported_version_detail)
                     else if(BuildConfig.SPDECODE_CLOUD_ENABLED)
                         CloudUserErrors.message(this@MainActivity,error,candidate.suffix,
                             passwordSubmitted=password!=null)
@@ -1219,6 +1230,7 @@ class MainActivity : ComponentActivity() {
             (uris.size==1 && prepared?.uri==uris.single() && privateCredentialId==null))
         job?.cancel()
         messageIsCredentialNotice=false
+        noticeTitle=R.string.decode_notice_title
         val generation=++importGeneration
         val inputs=uris.take(BatchImportQueue.MAX_FILES)
         if(inputs.isEmpty())return
