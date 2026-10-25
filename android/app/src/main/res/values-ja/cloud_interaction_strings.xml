@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unsupported_file_title">未対応のファイル形式</string>
+    <string name="unsupported_file_detail">この拡張子はまだSP-DECODEに対応していません。追加の提案は開発者にお問い合わせください。</string>
+    <string name="unsupported_version_title">未対応のファイルバージョン</string>
+    <string name="unsupported_version_detail">このファイルには未対応のバージョンまたは暗号化方式が使用されています。</string>
+    <string name="unsupported_text_title">未対応のテキスト</string>
+    <string name="unsupported_text_detail">このテキストやプロトコルにはまだ対応していません。追加の提案は開発者まで。</string>
+    <string name="catalog_check_action">更新を確認</string>
+    <string name="catalog_checking">カタログのバージョンを確認中…</string>
+    <string name="catalog_downloading">カタログを更新中…</string>
+    <string name="catalog_progress">カタログの準備状況: %1$d%%</string>
+    <string name="app_update_title">新しいバージョンがあります</string>
+    <string name="app_update_body">SP-DECODE %1$s が利用可能です。公式Telegramチャンネルから更新してください。</string>
+    <string name="app_update_open">Telegramを開く</string>
+    <string name="app_update_close">閉じる</string>
+    <string name="catalog_available_title">新しいカタログがあります</string>
+    <string name="catalog_available_body">カタログのバージョン %1$d をダウンロードできます。</string>
+    <string name="catalog_check_short">カタログを確認</string>
+</resources>
