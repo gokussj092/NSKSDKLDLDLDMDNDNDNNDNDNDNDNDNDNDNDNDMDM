@@ -14,6 +14,7 @@ export function validatePublicTextFormats(document){
  for(const item of document.formats){
   if(!item || Object.keys(item).sort().join(",")!=="kind,name,prefix,suffix" ||
      typeof item.prefix!=="string" || item.prefix.length<4 || item.prefix.length>64 ||
+     /^https?:\/\//i.test(item.prefix) ||
      !/^[A-Za-z0-9.-]+(?::\/\/|:|\.)[A-Za-z0-9/]*$/.test(item.prefix) ||
      typeof item.name!=="string" || !item.name.trim() || item.name.length>80 ||
      typeof item.suffix!=="string" || !/^[a-z0-9_-]{1,32}$/.test(item.suffix) ||
