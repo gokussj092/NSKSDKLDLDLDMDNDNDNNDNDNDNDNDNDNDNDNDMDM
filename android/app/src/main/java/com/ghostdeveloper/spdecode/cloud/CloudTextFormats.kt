@@ -21,6 +21,10 @@ internal object CloudTextFormats {
         if(remote!=null && value.length<=TextProtocolDecoder.MAX_CHARS)
             return TextProtocolDecoder.Input("cloud:"+remote.suffix,
                 remote.name,remote.suffix,value)
+        // Once a verified Cloud inventory is installed it is authoritative.
+        // Never accept a legacy hardcoded scheme that the server did not publish.
+        // The fallback below is for old VPS snapshots without text metadata.
+        if(routes.isNotEmpty())return null
         if(value.length !in 6..TextProtocolDecoder.MAX_CHARS)return null
         return when {
             Regex("^mnrtunneludp://[A-Za-z0-9]{10}$").matches(value) ||
