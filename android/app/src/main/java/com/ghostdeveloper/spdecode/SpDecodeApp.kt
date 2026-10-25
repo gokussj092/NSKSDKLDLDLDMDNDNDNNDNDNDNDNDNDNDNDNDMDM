@@ -160,7 +160,8 @@ fun SpDecodeApp(
         }
         if(pendingServerVpnCatalogVersion!=null && !busy) AlertDialog(
             onDismissRequest=onDismissServerVpnUpdate,
-            icon={Icon(Icons.Outlined.CloudDownload,null,tint=Green)},
+            icon={Image(painter=painterResource(R.drawable.ic_launcher_foreground),
+                contentDescription=null,modifier=Modifier.size(46.dp))},
             title={Text(stringResource(R.string.catalog_available_title))},
             text={Text(stringResource(R.string.catalog_available_body,
                 pendingServerVpnCatalogVersion),color=Secondary)},
