@@ -185,11 +185,9 @@ class MainActivity : ComponentActivity() {
         catalogWatchJob=scope.launch {
             CloudCatalogUpdates.watchWhileVisible(
                 this@MainActivity,cloudClient,serverVpnCatalog
-            ){apps->
-                serverVpnApps=apps
-                scope.launch { fileFormats=serverVpnCatalog.cachedFormats()
-                    textRoutes=serverVpnCatalog.cachedTextFormats() }
-                serverVpnUnavailable=apps.isEmpty()
+            ){version->
+                if(version>serverVpnCatalog.currentVersion())
+                    pendingServerVpnCatalogVersion=version
             }
         }
     }
