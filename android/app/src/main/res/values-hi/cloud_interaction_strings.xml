@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unsupported_file_title">फ़ाइल प्रकार समर्थित नहीं है</string>
+    <string name="unsupported_file_detail">यह एक्सटेंशन अभी SP-DECODE में समर्थित नहीं है। इसे जोड़ने का सुझाव देने के लिए डेवलपर से संपर्क करें।</string>
+    <string name="unsupported_version_title">फ़ाइल संस्करण समर्थित नहीं है</string>
+    <string name="unsupported_version_detail">इस फ़ाइल में नया संस्करण या एन्क्रिप्शन तरीका है जो अभी समर्थित नहीं है।</string>
+    <string name="unsupported_text_title">टेक्स्ट समर्थित नहीं है</string>
+    <string name="unsupported_text_detail">यह टेक्स्ट या प्रोटोकॉल अभी समर्थित नहीं है। डेवलपर से संपर्क करें।</string>
+    <string name="catalog_check_action">अपडेट जाँचें</string>
+    <string name="catalog_checking">कैटलॉग संस्करण जाँच रहे हैं…</string>
+    <string name="catalog_downloading">कैटलॉग अपडेट हो रहा है…</string>
+    <string name="catalog_progress">कैटलॉग आइटम तैयार: %1$d%%</string>
+    <string name="app_update_title">नया संस्करण उपलब्ध</string>
+    <string name="app_update_body">SP-DECODE %1$s उपलब्ध है। अपडेट के लिए आधिकारिक Telegram चैनल खोलें।</string>
+    <string name="app_update_open">Telegram खोलें</string>
+    <string name="app_update_close">बंद करें</string>
+    <string name="catalog_available_title">नया कैटलॉग उपलब्ध</string>
+    <string name="catalog_available_body">कैटलॉग संस्करण %1$d डाउनलोड के लिए तैयार है।</string>
+    <string name="catalog_check_short">कैटलॉग जाँचें</string>
+</resources>
