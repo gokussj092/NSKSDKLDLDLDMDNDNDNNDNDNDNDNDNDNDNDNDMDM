@@ -120,6 +120,38 @@ internal class ServerVpnCatalogRepository(
         return formats
     }
 
+    /** Public text/cloud-import declarations only; never accept routes or URLs. */
+    internal fun validateTextFormats(record:JSONObject?):List<CloudTextRoute> {
+        if(record?.has("textSchemaVersion")!=true)return emptyList() // old VPS snapshot
+        require(record.optInt("textSchemaVersion",-1)==1)
+        val array=record.getJSONArray("textFormats")
+        require(array.length() in 1..256 && record.getInt("textCount")==array.length())
+        val seen=HashSet<String>()
+        val routes=ArrayList<CloudTextRoute>(array.length())
+        val keys=setOf("prefix","name","suffix","kind")
+        for(index in 0 until array.length()){
+            val entry=array.getJSONObject(index)
+            require(entry.keys().asSequence().toSet()==keys)
+            val prefix=entry.getString("prefix")
+            val name=entry.getString("name")
+            val suffix=entry.getString("suffix")
+            val kind=entry.getString("kind")
+            require(prefix.length in 4..64 &&
+                prefix.matches(Regex("^[A-Za-z0-9.\\-]+(?:://|:|\\.)[A-Za-z0-9/]*$")) &&
+                seen.add(prefix.lowercase(java.util.Locale.ROOT)))
+            require(name.length in 1..80 && name==name.trim())
+            require(suffix.matches(Regex("^[a-z0-9_-]{1,32}$")))
+            require(kind=="text" || kind=="cloud")
+            routes.add(CloudTextRoute(prefix,name,suffix,kind))
+        }
+        return routes
+    }
+
+    suspend fun cachedTextFormats():List<CloudTextRoute> =
+        withContext(Dispatchers.IO) {
+            try { validateTextFormats(stored()) }catch(_:Exception){emptyList()}
+        }
+
     private fun verifiedFormats(record:JSONObject?):List<AndroidDecoderCatalog.Format> =
         try { validateFormats(record) } catch (_:Exception) { emptyList() }
 
@@ -169,6 +201,8 @@ internal class ServerVpnCatalogRepository(
                 // Reject an incomplete format snapshot before touching the encrypted cache.
                 val remoteFormats=validateFormats(remote)
                 require(remoteFormats.isNotEmpty())
+                val remoteTexts=validateTextFormats(remote)
+                require(!remote.has("textSchemaVersion") || remoteTexts.isNotEmpty())
                 val array=remote.optJSONArray("apps")?:throw IllegalStateException("Missing app list")
                 if(array.length() !in 1..100)throw IllegalStateException("Invalid app count")
                 val candidates=ArrayList<Pair<String,ByteArray>>()
@@ -207,6 +241,10 @@ internal class ServerVpnCatalogRepository(
                     .put("formatCount",remote.getInt("formatCount"))
                     .put("formatDetection",remote.getJSONObject("formatDetection"))
                     .put("formats",remote.getJSONArray("formats"))
+                if(remote.has("textSchemaVersion")) fresh
+                    .put("textSchemaVersion",remote.getInt("textSchemaVersion"))
+                    .put("textCount",remote.getInt("textCount"))
+                    .put("textFormats",remote.getJSONArray("textFormats"))
                 vault.write("catalog",fresh.toString().toByteArray(Charsets.UTF_8))
                 verifiedApps(fresh).ifEmpty { available }.also { apps ->
                     newBadges.observeCatalog(apps.map { it.id }.toSet())
