@@ -25,6 +25,7 @@ internal object CloudCatalogUpdates {
     private const val CONSENT="allow-background-sync"
     private const val BACKUP="catalog-version-recovery"
     internal const val PUSH_WORK_NAME="catalog-version-push"
+    private const val PENDING_VERSION="latest-offered-catalog"
 
     fun enabled(context:Context):Boolean =
         BuildConfig.SPDECODE_CLOUD_ENABLED &&
@@ -53,11 +54,22 @@ internal object CloudCatalogUpdates {
             BACKUP,ExistingPeriodicWorkPolicy.UPDATE,fallback)
     }
 
+    fun pendingVersion(context:Context):Int =
+        context.getSharedPreferences(PREFS,Context.MODE_PRIVATE).getInt(PENDING_VERSION,0)
+
+    fun markOffered(context:Context,version:Int){
+        if(version !in 1..999999999)return
+        val prefs=context.getSharedPreferences(PREFS,Context.MODE_PRIVATE)
+        if(version>prefs.getInt(PENDING_VERSION,0))
+            prefs.edit().putInt(PENDING_VERSION,version).apply()
+    }
+
     /** Untrusted version hints never carry URLs, icon bytes or provider metadata. */
     fun onVersionHint(context:Context,rawVersion:String) {
         if(!enabled(context)||!CloudLegalConsent.accepted(context))return
         if(!rawVersion.matches(Regex("[1-9][0-9]{0,8}")))return
         val version=rawVersion.toIntOrNull()?:return
+        markOffered(context,version)
         val constraints=Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
         val work=OneTimeWorkRequestBuilder<CloudCatalogSyncWorker>()
             .setInputData(workDataOf("catalogVersion" to version))
@@ -71,7 +83,7 @@ internal object CloudCatalogUpdates {
     /** The VPS returns a version over native HTTPS; this coroutine runs only while visible. */
     suspend fun watchWhileVisible(
         context:Context,client:CloudDecodeClient,repository:ServerVpnCatalogRepository,
-        onUpdated:(List<ServerVpnApp>)->Unit
+        onAvailable:(Int)->Unit
     ) {
         while(currentCoroutineContext().isActive && enabled(context) &&
             CloudLegalConsent.accepted(context)){
@@ -79,12 +91,9 @@ internal object CloudCatalogUpdates {
                 val local=repository.currentVersion()
                 val hint=client.watchCatalogVersion(local)
                 if(hint>local) {
-                    val fresh=repository.refreshIfDue(announcedVersion=hint)
-                    if(repository.currentVersion()>=hint)onUpdated(fresh)
-                    else {
-                        onVersionHint(context,hint.toString())
-                        delay(15000)
-                    }
+                    markOffered(context,hint)
+                    onAvailable(hint)
+                    delay(15000)
                 }else delay(2000)
             }catch(error:CancellationException){throw error}
              catch(_:Exception){delay(15000)}
@@ -100,12 +109,11 @@ internal class CloudCatalogSyncWorker(
             !CloudLegalConsent.accepted(applicationContext))return Result.success()
         val requested=inputData.getInt("catalogVersion",0)
         return try{
-            val repository=ServerVpnCatalogRepository(applicationContext,
-                CloudDecodeClient(applicationContext))
-            repository.refreshIfDue(announcedVersion=requested)
-            if(requested>0 && repository.currentVersion()<requested && runAttemptCount<4)
-                Result.retry()
-            else Result.success()
+            // Background recovery only retains a version hint. Never download
+            // new catalogs without the user confirming the foreground dialog.
+            val remote=CloudDecodeClient(applicationContext).watchCatalogVersion(0)
+            markOffered(applicationContext,maxOf(requested,remote))
+            Result.success()
         }catch(error:CancellationException){throw error}
          catch(_:Exception){if(runAttemptCount<4)Result.retry() else Result.failure()}
     }
