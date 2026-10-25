@@ -14,7 +14,7 @@ jobs:
   signed-artifacts:
     if: >-
       github.repository == 'Gh0stDeveloper/SP-DECODE' &&
-      github.ref == 'refs/heads/feat/mm-tunnel-1-10-11-1-decoders' &&
+      (github.ref == 'refs/heads/feat/mm-tunnel-1-10-11-1-decoders' || github.ref == 'refs/heads/main') &&
       github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 55
