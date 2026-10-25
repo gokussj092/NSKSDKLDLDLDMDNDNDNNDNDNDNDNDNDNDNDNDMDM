@@ -34,6 +34,7 @@ import com.ghostdeveloper.spdecode.cloud.NpvsPasswordProbe
 import com.ghostdeveloper.spdecode.cloud.V2BoxPasswordProbe
 import com.ghostdeveloper.spdecode.cloud.CloudFileFormats
 import com.ghostdeveloper.spdecode.cloud.CloudTextFormats
+import com.ghostdeveloper.spdecode.cloud.CloudTextRoute
 import com.ghostdeveloper.spdecode.cloud.CloudCatalogUpdates
 import com.ghostdeveloper.spdecode.cloud.CloudLegalConsent
 import com.ghostdeveloper.spdecode.cloud.CloudLegalConsentDialog
@@ -81,6 +82,9 @@ class MainActivity : ComponentActivity() {
     private val cloudNewsRepository by lazy { CloudWhatsNewRepository(this,cloudClient) }
     private var serverVpnApps by mutableStateOf<List<ServerVpnApp>>(emptyList())
     private var fileFormats by mutableStateOf<List<AndroidDecoderCatalog.Format>>(emptyList())
+    private var textRoutes by mutableStateOf<List<CloudTextRoute>>(emptyList())
+    private var noticeTitle by mutableIntStateOf(R.string.decode_notice_title)
+    private var availableAppUpdate by mutableStateOf<String?>(null)
     private var showCloudLegal by mutableStateOf(false)
     private var serverVpnRefresh:Job?=null
     private var serverVpnLoading by mutableStateOf(false)
@@ -183,7 +187,8 @@ class MainActivity : ComponentActivity() {
                 this@MainActivity,cloudClient,serverVpnCatalog
             ){apps->
                 serverVpnApps=apps
-                scope.launch { fileFormats=serverVpnCatalog.cachedFormats() }
+                scope.launch { fileFormats=serverVpnCatalog.cachedFormats()
+                    textRoutes=serverVpnCatalog.cachedTextFormats() }
                 serverVpnUnavailable=apps.isEmpty()
             }
         }
@@ -216,9 +221,11 @@ class MainActivity : ComponentActivity() {
             try {
                 serverVpnApps=serverVpnCatalog.cached()
                 fileFormats=serverVpnCatalog.cachedFormats()
+                    textRoutes=serverVpnCatalog.cachedTextFormats()
                 if(force || CloudCatalogUpdates.enabled(this@MainActivity)) {
                     serverVpnApps=serverVpnCatalog.refreshIfDue(force=force)
                     fileFormats=serverVpnCatalog.cachedFormats()
+                    textRoutes=serverVpnCatalog.cachedTextFormats()
                 }
             }catch(error:CancellationException){throw error}
              catch(_:Exception){ /* An authenticated cached snapshot remains usable. */ }
@@ -242,13 +249,6 @@ class MainActivity : ComponentActivity() {
                 if(remoteVersion<=serverVpnCatalog.currentVersion() &&
                     serverVpnCatalog.hasCachedFormats()) {
                     toast(R.string.server_vpn_catalog_current)
-                }else if(CloudCatalogUpdates.enabled(this@MainActivity)) {
-                    serverVpnApps=serverVpnCatalog.refreshIfDue(
-                        force=true,announcedVersion=remoteVersion)
-                    fileFormats=serverVpnCatalog.cachedFormats()
-                    toast(if(serverVpnCatalog.currentVersion()>=remoteVersion)
-                        R.string.server_vpn_catalog_updated
-                        else R.string.server_vpn_catalog_update_error)
                 }else {
                     pendingServerVpnCatalogVersion=remoteVersion
                 }
@@ -273,6 +273,7 @@ class MainActivity : ComponentActivity() {
                 serverVpnApps=serverVpnCatalog.refreshIfDue(
                     force=true,announcedVersion=version)
                 fileFormats=serverVpnCatalog.cachedFormats()
+                    textRoutes=serverVpnCatalog.cachedTextFormats()
                 toast(if(serverVpnCatalog.currentVersion()>=version)
                     R.string.server_vpn_catalog_updated
                     else R.string.server_vpn_catalog_update_error)
@@ -501,6 +502,7 @@ class MainActivity : ComponentActivity() {
                     messageIsCredentialNotice=false
                     cloudClient.clearLastDiagnostic()
                 },
+                errorTitle=noticeTitle,
                 canReportError=BuildConfig.SPDECODE_CLOUD_ENABLED && !messageIsCredentialNotice &&
                     !reportBusy && cloudClient.lastDiagnostic!=null,
                 onReportError={sendCurrentFailureReport()},
@@ -551,16 +553,21 @@ class MainActivity : ComponentActivity() {
                             job?.cancel()
                             serverVpnApps=emptyList()
                             fileFormats=emptyList()
+                            textRoutes=emptyList()
+                            availableAppUpdate=null
                             pendingServerVpnCatalogVersion=null
                             showCloudLegal=true
                         }catch(_:Exception){message=getString(R.string.history_storage_error)}
                     }
                 },
                 serverVpnApps=serverVpnApps,
+                cloudFormats=fileFormats,
                 serverVpnLoading=serverVpnLoading,
                 serverVpnUnavailable=serverVpnUnavailable,
                 onRefreshServerVpn={checkServerVpnUpdates()},
                 pendingServerVpnCatalogVersion=pendingServerVpnCatalogVersion,
+                availableAppUpdate=availableAppUpdate,
+                onDismissAppUpdate={availableAppUpdate=null},
                 onConfirmServerVpnUpdate={confirmServerVpnUpdate()},
                 onDismissServerVpnUpdate={pendingServerVpnCatalogVersion=null},
                 whatsNew=showWhatsNew,
@@ -661,7 +668,7 @@ class MainActivity : ComponentActivity() {
         // bypassed by a later process attachment. Defense-in-depth recheck.
         if(!ReleaseIntegrity.isTrusted(this)) finishAndRemoveTask()
         if(!showCloudLegal){
-            refreshServerVpn(force=CloudCatalogUpdates.enabled(this))
+            refreshServerVpn()
             syncOptInUsage()
             CloudCatalogUpdates.ensureScheduled(this)
             startCatalogWatch()
@@ -848,10 +855,12 @@ class MainActivity : ComponentActivity() {
             message=getString(R.string.text_decode_invalid)
             return
         }
-        val candidate=(if(BuildConfig.SPDECODE_CLOUD_ENABLED)CloudTextFormats.identify(userText) else null)
+        val candidate=(if(BuildConfig.SPDECODE_CLOUD_ENABLED)
+            CloudTextFormats.identify(userText,textRoutes) else null)
             ?:TextProtocolDecoder.identify(userText)
         if(candidate==null) {
-            message=getString(R.string.text_format_unsupported_contact)
+            noticeTitle=R.string.unsupported_text_title
+            message=getString(R.string.unsupported_text_detail)
             cloudClient.clearLastDiagnostic()
             return
         }
@@ -873,7 +882,8 @@ class MainActivity : ComponentActivity() {
                 }
                 if(decoded==null) {
                     SafeDecodeDiagnostics.record(SafeDecodeDiagnostics.Event.TEXT_UNSUPPORTED)
-                    message=getString(R.string.text_format_unsupported_contact)
+                    noticeTitle=R.string.unsupported_text_title
+                    message=getString(R.string.unsupported_text_detail)
                     return@launch
                 }
                 progressStage=2
@@ -914,7 +924,7 @@ class MainActivity : ComponentActivity() {
                 else cloudClient.clearLastDiagnostic()
                 messageIsCredentialNotice=notice
                 message=if((error as? CloudDecodeClient.Failure)?.code=="UNSUPPORTED_FORMAT")
-                    getString(R.string.text_format_unsupported_contact)
+                    getString(R.string.unsupported_text_detail)
                     else if(BuildConfig.SPDECODE_CLOUD_ENABLED)
                         CloudUserErrors.message(this@MainActivity,error,candidate.suffix,
                             passwordSubmitted=password!=null)
@@ -1186,6 +1196,7 @@ class MainActivity : ComponentActivity() {
                 var cloudCredentialError:String?=null
                 var singleCredentialNotice:String?=null
                 var unsupportedNotice=false
+                var variantNotice=false
                 val suppliedPassword=cloudPassword!=null || hcPassword!=null ||
                     privateCredentialId!=null
                 val suppliedHwid=hcHwid!=null
@@ -1200,6 +1211,12 @@ class MainActivity : ComponentActivity() {
                         if((cause is DecodeFailure && cause.stringId==R.string.unsupported) ||
                             (cause as? CloudDecodeClient.Failure)?.code=="UNSUPPORTED_FORMAT") {
                             unsupportedNotice=true
+                            cloudClient.clearLastDiagnostic()
+                        }
+                        if((cause as? CloudDecodeClient.Failure)?.code in setOf(
+                            "UNSUPPORTED_VERSION","UNSUPPORTED_VARIANT","UNSUPPORTED_METHOD",
+                            "UNSUPPORTED_CONFIG_VERSION","DECODE_FAILED")) {
+                            variantNotice=true
                             cloudClient.clearLastDiagnostic()
                         }
                         val notice=CloudUserErrors.isInformational(cause,format,
@@ -1250,7 +1267,8 @@ class MainActivity : ComponentActivity() {
                         (cause is DecodeFailure && cause.stringId==R.string.unsupported) ||
                             (cause as? CloudDecodeClient.Failure)?.let {
                                 CloudCredentialPolicy.expectedCredentialResponse(it.code) ||
-                                it.code=="UNSUPPORTED_FORMAT"
+                                it.code in setOf("UNSUPPORTED_FORMAT","UNSUPPORTED_VERSION",
+                                    "UNSUPPORTED_VARIANT","UNSUPPORTED_METHOD","UNSUPPORTED_CONFIG_VERSION")
                             }==true
                     }
                 ){uri,index,total->
@@ -1378,12 +1396,19 @@ class MainActivity : ComponentActivity() {
                         cloudClient.clearLastDiagnostic()
                     }
                     if(unsupportedNotice)cloudClient.clearLastDiagnostic()
+                    noticeTitle=when {
+                        unsupportedNotice -> R.string.unsupported_file_title
+                        variantNotice -> R.string.unsupported_version_title
+                        else -> R.string.decode_notice_title
+                    }
                     message=when {
                         singleCredentialNotice!=null->singleCredentialNotice
                         unsupportedNotice && inputs.size==1->
-                            getString(R.string.file_extension_unsupported_contact)
+                            getString(R.string.unsupported_file_detail)
                         unsupportedNotice->
-                            getString(R.string.file_extension_unsupported_contact)+"\n\n"+summary
+                            getString(R.string.unsupported_file_detail)+"\n\n"+summary
+                        variantNotice && inputs.size==1->getString(R.string.unsupported_version_detail)
+                        variantNotice->getString(R.string.unsupported_version_detail)+"\n\n"+summary
                         cloudPasswordError!=null->cloudPasswordError+"\n\n"+summary
                         cloudCredentialError!=null->cloudCredentialError+"\n\n"+summary
                         failedProtectedHc->getString(R.string.cloud_failure_credentials)+"\n\n"+summary
