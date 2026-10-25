@@ -57,7 +57,7 @@ export function androidUpdateHint(env=process.env){
  const code=Number(raw);
  if(code===0)return null;
  const version=env.CLOUD_ANDROID_LATEST_VERSION_NAME||"";
- if(!/^\\d+\\.\\d+\\.\\d+$/.test(version))throw Error("INVALID_APP_UPDATE");
+ if(!/^\d+\.\d+\.\d+$/.test(version))throw Error("INVALID_APP_UPDATE");
  return {versionCode:code,versionName:version};
 }
 
