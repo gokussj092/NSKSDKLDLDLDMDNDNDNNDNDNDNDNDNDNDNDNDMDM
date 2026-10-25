@@ -2,11 +2,25 @@ package com.ghostdeveloper.spdecode.cloud
 
 import com.ghostdeveloper.spdecode.TextProtocolDecoder
 
+/** Versioned public Cloud metadata, never executable routes or decryption keys. */
+internal data class CloudTextRoute(
+    val prefix:String,val name:String,val suffix:String,val kind:String
+)
+
 /** Explicit Cloud schemes: no format guessing or cross-decoder fallbacks. */
 internal object CloudTextFormats {
     private const val MNR_ALPHABET="¹²³⁴⁵⁶⁷⁸⁹⁰·,‽:'′"
-    fun identify(raw:String):TextProtocolDecoder.Input? {
+    fun identify(raw:String,routes:List<CloudTextRoute> = emptyList()):TextProtocolDecoder.Input? {
         val value=raw.trim()
+        // Longest prefix first: e.g. npvt-vless:// before npvt://.
+        // The worker independently checks whether a method is really supported.
+        val remote=routes.asSequence()
+            .filter { value.length>it.prefix.length &&
+                value.startsWith(it.prefix,ignoreCase=true) }
+            .maxByOrNull { it.prefix.length }
+        if(remote!=null && value.length<=TextProtocolDecoder.MAX_CHARS)
+            return TextProtocolDecoder.Input("cloud:"+remote.suffix,
+                remote.name,remote.suffix,value)
         if(value.length !in 6..TextProtocolDecoder.MAX_CHARS)return null
         return when {
             Regex("^mnrtunneludp://[A-Za-z0-9]{10}$").matches(value) ||
