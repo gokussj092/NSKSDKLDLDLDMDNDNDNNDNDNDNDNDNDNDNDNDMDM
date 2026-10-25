@@ -174,21 +174,10 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
         val appPath = "com/ghostdeveloper/spdecode/SpDecodeApp.kt"
         val activityPath = "com/ghostdeveloper/spdecode/MainActivity.kt"
         var app = originalRoot.file("SpDecodeApp.kt").asFile.readText(Charsets.UTF_8)
-        // The C0 AMOLED UI file remains byte-for-byte frozen. Only the
-        // generated Cloud variant gets remotely synchronized format data.
-        app = replaceOnce(app,
-            "    serverVpnApps:List<ServerVpnApp> = emptyList(),",
-            "    serverVpnApps:List<ServerVpnApp> = emptyList(),\n    fileFormats:List<AndroidDecoderCatalog.Format> = emptyList(),")
-        app = replaceOnce(app,
-            "2->FormatsScreen()",
-            "2->FormatsScreen(fileFormats)")
-        app = replaceOnce(app,
-            "private fun FormatsScreen() {",
-            "private fun FormatsScreen(remoteFormats:List<AndroidDecoderCatalog.Format>) {")
-        app = replaceOnce(app,
-            "    val formats = remember(context) { AndroidDecoderCatalog.read(context) }",
-            "    val formats = if(BuildConfig.SPDECODE_CLOUD_ENABLED && remoteFormats.isNotEmpty())\n" +
-            "        remoteFormats else remember(context) { AndroidDecoderCatalog.read(context) }")
+        // C0 now already passes cloudFormats and cloudTextFormats to FormatsScreen.
+        // The frozen source must not be patched a second time with the old
+        // FormatsScreen() / fileFormats signatures. Keep only Cloud-only
+        // notices, history actions and preview protections below.
         app = replaceOnce(app,
             "(formats + listOfNotNull(AndroidDecoderCatalog.detect(\"preview.solid\",formats)))",
             "(formats + if(BuildConfig.SPDECODE_CLOUD_ENABLED && remoteFormats.isNotEmpty())\n" +
@@ -202,12 +191,6 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
             "stringResource(\n                            if(BuildConfig.SPDECODE_CLOUD_ENABLED && remoteFormats.isNotEmpty())\n" +
             "                                R.string.formats_cloud_ready_short\n" +
             "                            else if (extensions.all { it.isPending })")
-        app = replaceOnce(app,
-            "showServerVpnRefresh=activeTab==3 && BuildConfig.SPDECODE_CLOUD_ENABLED",
-            "showServerVpnRefresh=(activeTab==2 || activeTab==3) && BuildConfig.SPDECODE_CLOUD_ENABLED")
-        app = replaceOnce(app,
-            "if(activeTab==3 && pendingServerVpnCatalogVersion!=null && !busy) AlertDialog(",
-            "if((activeTab==2 || activeTab==3) && pendingServerVpnCatalogVersion!=null && !busy) AlertDialog(")
         app = replaceOnce(app,
             "    onDeleteSelected:(Set<String>)->Unit,\n    onFavorite:",
             "    onDeleteSelected:(Set<String>)->Unit,\n    onExportHistory:(DecodeView)->Unit,\n    onFavorite:")
@@ -251,10 +234,6 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
             "    onDismissError:()->Unit,",
             "    onDismissError:()->Unit,\n    noticeOnly:Boolean=false,".replace("\n","\n"))
         app = replaceOnce(app,
-            "title={Text(stringResource(R.string.decode_notice_title))}",
-            "title={Text(stringResource(if(noticeOnly) " +
-                "R.string.cloud_failure_notice_title else R.string.decode_notice_title))}")
-        app = replaceOnce(app,
             """            dismissButton={TextButton(onClick={
                 if(canReportError)onReportError()
                 else {
@@ -278,9 +257,6 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
                 }
             },""")
         var activity = originalRoot.file("MainActivity.kt").asFile.readText(Charsets.UTF_8)
-        activity = replaceOnce(activity,
-            "                serverVpnApps=serverVpnApps,",
-            "                serverVpnApps=serverVpnApps,\n                fileFormats=fileFormats,")
         activity = replaceOnce(activity,
             "                error=message,",
             "                error=message,\n                noticeOnly=messageIsCredentialNotice,")
