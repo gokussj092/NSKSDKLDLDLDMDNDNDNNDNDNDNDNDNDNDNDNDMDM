@@ -42,7 +42,7 @@ function session(t){
 }
 
 test("MNR catalog publishes the original icon, Cloud-only STP and persistent availability",async t=>{
-  assert.equal(CATALOG_VERSION,47);
+  assert.equal(CATALOG_VERSION,48);
   const current=catalog({availability:{"mnr-tunnel-plus":true}});
   assert.equal(current.apps.length,47);
   const card=current.apps.find(x=>x.id==="mnr-tunnel-plus");
