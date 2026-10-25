@@ -26,6 +26,10 @@ test("Untrusted catalog cannot select worker modules, URLs, scripts or duplicate
  for(const malicious of [
   {prefix:"https://attacker.invalid/",name:"Evil",suffix:"evil",kind:"cloud"},
   {prefix:"../evil",name:"Evil",suffix:"evil",kind:"cloud"},
+  {prefix:"../evil/",name:"Evil",suffix:"evil",kind:"text"},
+  {prefix:"evil://../secret",name:"Evil",suffix:"evil",kind:"text"},
+  {prefix:"evil.com",name:"Evil",suffix:"evil",kind:"text"},
+  {prefix:"evil://a.b",name:"Evil",suffix:"evil",kind:"cloud"},
   {...safe[0],worker:"../secrets.py"},
   {...safe[0],prefix:safe[1].prefix},
   {...safe[0],kind:"network"},
