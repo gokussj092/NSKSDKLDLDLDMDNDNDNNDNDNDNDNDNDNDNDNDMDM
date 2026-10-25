@@ -899,9 +899,9 @@ class MainActivity : ComponentActivity() {
             message=getString(R.string.text_decode_invalid)
             return
         }
-        val candidate=if(BuildConfig.SPDECODE_CLOUD_ENABLED)
-            CloudTextFormats.identify(userText,textRoutes)
-            else TextProtocolDecoder.identify(userText)
+        val candidate=(if(BuildConfig.SPDECODE_CLOUD_ENABLED)
+            CloudTextFormats.identify(userText,textRoutes) else null)
+            ?:TextProtocolDecoder.identify(userText)
         if(candidate==null) {
             noticeTitle=R.string.unsupported_text_title
             message=getString(R.string.unsupported_text_detail)
