@@ -3,7 +3,7 @@ package com.ghostdeveloper.spdecode.cloud
 import com.ghostdeveloper.spdecode.TextProtocolDecoder
 
 /** Versioned public Cloud metadata, never executable routes or decryption keys. */
-internal data class CloudTextRoute(
+data class CloudTextRoute(
     val prefix:String,val name:String,val suffix:String,val kind:String
 )
 
