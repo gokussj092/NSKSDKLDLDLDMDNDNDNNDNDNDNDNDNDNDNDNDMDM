@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import com.ghostdeveloper.spdecode.cloud.CloudNewsNotice
 import com.ghostdeveloper.spdecode.cloud.ServerVpnApp
+import com.ghostdeveloper.spdecode.cloud.CloudTextRoute
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -96,6 +97,7 @@ fun SpDecodeApp(
     onDecodeServerApp:(String)->Unit={}, 
     serverVpnApps:List<ServerVpnApp> = emptyList(),
     cloudFormats:List<AndroidDecoderCatalog.Format> = emptyList(),
+    cloudTextFormats:List<CloudTextRoute> = emptyList(),
     serverVpnLoading:Boolean=false,
     serverVpnUnavailable:Boolean=false,
     catalogProgress:Int?=null,
@@ -140,7 +142,7 @@ fun SpDecodeApp(
                         onDecodeCloud=onDecodeCloud,
                         highlightGuide=if(!whatsNew && !busy)guideStep else null)
                     1->HistoryScreen(session,onSelect,onDeleteSelected,onClear,onImportMultiple,onFavorite)
-                    2->FormatsScreen(cloudFormats,serverVpnLoading,catalogProgress)
+                    2->FormatsScreen(cloudFormats,cloudTextFormats,serverVpnLoading,catalogProgress)
                     3->ServerVpnScreen(busy,serverVpnApps,serverVpnLoading,serverVpnUnavailable,
                         onDecodeServerCatalog,onDecodeServerApp,catalogProgress)
                     else->FunctionalSettingsPanel(selectedLanguage,hideCredentials,
@@ -773,7 +775,7 @@ private fun HistoryScreen(
 
 @Composable
 private fun FormatsScreen(cloudFormats:List<AndroidDecoderCatalog.Format>,
-    catalogLoading:Boolean=false,catalogProgress:Int?=null) {
+    textFormats:List<CloudTextRoute>,catalogLoading:Boolean=false,catalogProgress:Int?=null) {
     val context = LocalContext.current
     val baseline = remember(context) { AndroidDecoderCatalog.read(context) }
     val formats = if(BuildConfig.SPDECODE_CLOUD_ENABLED && cloudFormats.isNotEmpty())
@@ -847,6 +849,27 @@ private fun FormatsScreen(cloudFormats:List<AndroidDecoderCatalog.Format>,
                     )
                 }
                 HorizontalDivider(color = Outline)
+            }
+            val textResults=textFormats.filter { entry ->
+                query.isBlank() || entry.name.contains(query,ignoreCase=true) ||
+                    entry.prefix.contains(query,ignoreCase=true)
+            }
+            if(BuildConfig.SPDECODE_CLOUD_ENABLED && textResults.isNotEmpty()) {
+                item(key="cloud-text-title") {
+                    Text(stringResource(R.string.text_decode_title)+" · "+
+                        stringResource(R.string.formats_cloud_ready_short),
+                        color=White,fontSize=17.sp,fontWeight=FontWeight.Bold,
+                        modifier=Modifier.padding(top=20.dp,bottom=8.dp))
+                }
+                items(textResults,key={ "text:"+it.prefix }) { entry ->
+                    Column(modifier=Modifier.fillMaxWidth().padding(vertical=7.dp),
+                        verticalArrangement=Arrangement.spacedBy(4.dp)) {
+                        Text(entry.name,color=White,fontSize=14.sp,
+                            fontWeight=FontWeight.SemiBold)
+                        Text(entry.prefix,color=Secondary,fontSize=12.sp)
+                    }
+                    HorizontalDivider(color=Outline)
+                }
             }
         }
     }
