@@ -48,6 +48,19 @@ export function localizeNews(content,locale){
   items:content.items.map(x=>({id:x.id,type:x.type,title:localized(x.title),
    description:localized(x.description)}))};
 }
+/** Optional operator-published Android update hint. Never return arbitrary URLs.
+ * A code of zero disables it; public release requires a separate owner action.
+ */
+export function androidUpdateHint(env=process.env){
+ const raw=env.CLOUD_ANDROID_LATEST_VERSION_CODE||"0";
+ if(!/^(0|[1-9][0-9]{0,8})$/.test(raw))throw Error("INVALID_APP_UPDATE");
+ const code=Number(raw);
+ if(code===0)return null;
+ const version=env.CLOUD_ANDROID_LATEST_VERSION_NAME||"";
+ if(!/^\\d+\\.\\d+\\.\\d+$/.test(version))throw Error("INVALID_APP_UPDATE");
+ return {versionCode:code,versionName:version};
+}
+
 export const RECHECK_AFTER=1800;
 export async function whatsNewRequest(request,{source=loadNews}={}){
  const json=(payload,status=200)=>Response.json(payload,{status,
@@ -67,7 +80,7 @@ export async function whatsNewRequest(request,{source=loadNews}={}){
  try{
   const contents=source();
   const head={apiVersion:"v1",version:contents.version,
-   recheckAfterSeconds:RECHECK_AFTER};
+   recheckAfterSeconds:RECHECK_AFTER,appUpdate:androidUpdateHint()};
   if(contents.version<=input.knownVersion)return json({...head,unchanged:true});
   return json({...head,unchanged:false,...localizeNews(contents,input.locale)});
  }catch{return json({error:{code:"SERVICE_UNAVAILABLE"}},503);}
