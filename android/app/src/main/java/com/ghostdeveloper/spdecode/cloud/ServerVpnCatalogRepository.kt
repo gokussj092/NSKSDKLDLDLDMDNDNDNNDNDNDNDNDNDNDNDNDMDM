@@ -233,7 +233,7 @@ internal class ServerVpnCatalogRepository(
                     }
                     // Percentage of catalog app records and hash-verified icons
                     // processed, not a fake HTTP byte-level download progress.
-                    onProgress?.invoke((i+1)*100/array.length())
+                    onProgress?.invoke(minOf(99,(i+1)*100/array.length()))
                 }
                 // Write validated icons first, then atomically activate metadata.
                 for((id,data) in candidates)vault.write(id,data)
@@ -250,6 +250,7 @@ internal class ServerVpnCatalogRepository(
                     .put("textCount",remote.getInt("textCount"))
                     .put("textFormats",remote.getJSONArray("textFormats"))
                 vault.write("catalog",fresh.toString().toByteArray(Charsets.UTF_8))
+                onProgress?.invoke(100)
                 verifiedApps(fresh).ifEmpty { available }.also { apps ->
                     newBadges.observeCatalog(apps.map { it.id }.toSet())
                 }
