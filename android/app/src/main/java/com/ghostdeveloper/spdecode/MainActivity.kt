@@ -222,7 +222,7 @@ class MainActivity : ComponentActivity() {
                 serverVpnApps=serverVpnCatalog.cached()
                 fileFormats=serverVpnCatalog.cachedFormats()
                     textRoutes=serverVpnCatalog.cachedTextFormats()
-                if(force || CloudCatalogUpdates.enabled(this@MainActivity)) {
+                if(force) {
                     serverVpnApps=serverVpnCatalog.refreshIfDue(force=force)
                     fileFormats=serverVpnCatalog.cachedFormats()
                     textRoutes=serverVpnCatalog.cachedTextFormats()
@@ -465,9 +465,7 @@ class MainActivity : ComponentActivity() {
                     reveal=false
                     if(newTab==2 && CloudCatalogUpdates.enabled(this@MainActivity))
                         refreshServerVpn()
-                    if(newTab==3)refreshServerVpn(
-                        force=CloudCatalogUpdates.enabled(this@MainActivity))
-                    else pendingServerVpnCatalogVersion=null
+                    if(newTab==3)refreshServerVpn()
                     scope.launch {
                         try { historyPreferences.setLastTab(newTab) }
                         catch(e:CancellationException){throw e}
@@ -531,7 +529,7 @@ class MainActivity : ComponentActivity() {
                         catalogUpdatesEnabled=CloudCatalogUpdates.enabled(this@MainActivity)
                         if(catalogUpdatesEnabled) {
                             startCatalogWatch()
-                            if(tab==2 || tab==3)refreshServerVpn(force=true)
+                            if(tab==2 || tab==3)refreshServerVpn()
                         }else {
                             catalogWatchJob?.cancel()
                             serverVpnRefresh?.cancel()
