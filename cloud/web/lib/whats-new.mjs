@@ -80,7 +80,7 @@ export async function whatsNewRequest(request,{source=loadNews}={}){
  try{
   const contents=source();
   const head={apiVersion:"v1",version:contents.version,
-   recheckAfterSeconds:RECHECK_AFTER,appUpdate:androidUpdateHint()};
+   recheckAfterSeconds:RECHECK_AFTER,...(androidUpdateHint()?{appUpdate:androidUpdateHint()}:{})};
   if(contents.version<=input.knownVersion)return json({...head,unchanged:true});
   return json({...head,unchanged:false,...localizeNews(contents,input.locale)});
  }catch{return json({error:{code:"SERVICE_UNAVAILABLE"}},503);}
