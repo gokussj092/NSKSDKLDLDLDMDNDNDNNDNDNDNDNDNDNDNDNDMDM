@@ -1340,15 +1340,19 @@ class MainActivity : ComponentActivity() {
                     // not a decode request or an operational failure.
                     // Historical bundled routes are a fallback only before the
                     // first successful catalog download.
-                    val supported=if(BuildConfig.SPDECODE_CLOUD_ENABLED &&
-                        fileFormats.isNotEmpty()) {
+                    val supported=(if(BuildConfig.SPDECODE_CLOUD_ENABLED &&
+                        fileFormats.isNotEmpty())
                         AndroidDecoderCatalog.detect(routingName,fileFormats)
-                    }else {
-                        (if(BuildConfig.SPDECODE_CLOUD_ENABLED)
+                    else null)
+                        // Pinned legacy Cloud routes remain compatible with a
+                        // stale server snapshot; no general guess/fallback.
+                        ?: (if(BuildConfig.SPDECODE_CLOUD_ENABLED)
                             CloudFileFormats.detect(routingName) else null)
-                            ?:AndroidDecoderCatalog.detect(
-                                routingName,AndroidDecoderCatalog.read(this@MainActivity))
-                    }?:throw DecodeFailure(R.string.unsupported)
+                        ?: (if(BuildConfig.SPDECODE_CLOUD_ENABLED &&
+                                fileFormats.isNotEmpty()) null
+                            else AndroidDecoderCatalog.detect(
+                                routingName,AndroidDecoderCatalog.read(this@MainActivity)))
+                        ?:throw DecodeFailure(R.string.unsupported)
                     // Phase A identifies pending formats but never reads or
                     // sends their bytes to a native decoder that does not exist.
                     // All registered suffixes are decoded on the worker in Cloud
