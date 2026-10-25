@@ -33,7 +33,7 @@
     <string name="privacy_title">गोपनीयता</string>
     <string name="privacy_text">मूल आयातित फ़ाइलों की कॉपी नहीं बनती। डिकोड किए गए परिणाम हटाने तक केवल इस डिवाइस पर एन्क्रिप्टेड रहते हैं।</string>
     <string name="about_title">SP-DECODE के बारे में</string>
-    <string name="about_text">SP-DECODE सुरक्षित Cloud API से VPN कॉन्फ़िगरेशन संसाधित करता है। परिणाम डिवाइस के एन्क्रिप्टेड इतिहास में सहेजे जाते हैं।</string>
+    <string name="about_text">SP-DECODE SP Cloud के माध्यम से VPN कॉन्फ़िगरेशन सुरक्षित रूप से संसाधित करता है। परिणाम डिवाइस के एन्क्रिप्टेड इतिहास में सहेजे जाते हैं।</string>
     <string name="language_title">भाषाएँ</string>
     <string name="language_text">ऐप की भाषा चुनें। बदलाव पर स्क्रीन पुनः शुरू होगी।</string>
     <string name="show">दिखाएँ</string>
@@ -183,7 +183,7 @@
     <string name="cloud_http_injector_open">Cloud (ऑनलाइन)</string>
     <string name="cloud_http_injector_hint">ehi.link लिंक, Cloud कुंजी या 💉…🚀 क्रम चिपकाएँ</string>
     <string name="cloud_http_injector_action">क्लाउड कॉन्फ़िगरेशन आयात करें</string>
-    <string name="cloud_http_injector_privacy">Cloud सेवा: आयात दबाने पर ही संदर्भ HTTP Injector Cloud को भेजा जाता है। अन्य प्रारूप SP-DECODE API उपयोग करते हैं।</string>
+    <string name="cloud_http_injector_privacy">SP Cloud सेवा: आयात दबाने पर ही संदर्भ HTTP Injector Cloud को भेजा जाता है। अन्य प्रारूप SP Cloud उपयोग करते हैं।</string>
     <string name="cloud_http_injector_invalid">Cloud लिंक, कुंजी या इमोजी क्रम अमान्य है। मूल संदर्भ जाँचें।</string>
     <string name="cloud_http_injector_network_error">HTTP Injector Cloud से कनेक्ट नहीं हो सका। कनेक्शन जाँचकर फिर प्रयास करें।</string>
     <string name="cloud_http_injector_server_error">HTTP Injector Cloud ने संदर्भ स्वीकार नहीं किया। यह समाप्त, रद्द या सेवा अनुपलब्ध हो सकती है।</string>

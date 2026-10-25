@@ -33,7 +33,7 @@
     <string name="privacy_title">Privacy</string>
     <string name="privacy_text">I file originali importati non vengono copiati. I risultati sono cifrati e conservati solo sul dispositivo fino all\'eliminazione.</string>
     <string name="about_title">Informazioni su SP-DECODE</string>
-    <string name="about_text">SP-DECODE elabora le configurazioni VPN tramite API Cloud sicura e salva i risultati nella cronologia cifrata del dispositivo.</string>
+    <string name="about_text">SP-DECODE elabora le configurazioni VPN in modo sicuro tramite SP Cloud e salva i risultati nella cronologia cifrata del dispositivo.</string>
     <string name="language_title">Lingue</string>
     <string name="language_text">Scegli la lingua. La schermata verrà riavviata.</string>
     <string name="show">Mostra</string>
@@ -183,7 +183,7 @@
     <string name="cloud_http_injector_open">Cloud (Online)</string>
     <string name="cloud_http_injector_hint">Incolla link ehi.link, chiave Cloud o sequenza 💉…🚀</string>
     <string name="cloud_http_injector_action">Importa configurazione Cloud</string>
-    <string name="cloud_http_injector_privacy">Servizio Cloud: il riferimento viene inviato a HTTP Injector Cloud solo dopo aver toccato Importa. Gli altri formati usano API SP-DECODE.</string>
+    <string name="cloud_http_injector_privacy">Servizio SP Cloud: il riferimento viene inviato a HTTP Injector Cloud solo dopo aver toccato Importa. Gli altri formati utilizzano SP Cloud.</string>
     <string name="cloud_http_injector_invalid">Link Cloud, chiave o sequenza emoji non validi. Controlla il riferimento.</string>
     <string name="cloud_http_injector_network_error">Impossibile connettersi a HTTP Injector Cloud. Controlla la connessione e riprova.</string>
     <string name="cloud_http_injector_server_error">HTTP Injector Cloud non ha accettato il riferimento. Potrebbe essere scaduto, revocato o il servizio non disponibile.</string>

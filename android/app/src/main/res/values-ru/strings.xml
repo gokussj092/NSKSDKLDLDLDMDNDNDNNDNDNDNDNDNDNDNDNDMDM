@@ -32,7 +32,7 @@
     <string name="privacy_title">Конфиденциальность</string>
     <string name="privacy_text">Исходные импортированные файлы не копируются. Декодированные результаты шифруются и хранятся только на этом устройстве до удаления.</string>
     <string name="about_title">О приложении SP-DECODE</string>
-    <string name="about_text">SP-DECODE обрабатывает конфигурации VPN через защищённый Cloud API и сохраняет результаты в зашифрованной истории устройства.</string>
+    <string name="about_text">SP-DECODE безопасно обрабатывает конфигурации VPN через SP Cloud и сохраняет результаты в зашифрованной истории устройства.</string>
     <string name="language_title">Языки</string>
     <string name="language_text">Выберите язык приложения. При смене языка этот экран перезапустится.</string>
     <string name="show">Показать</string>
@@ -182,7 +182,7 @@
     <string name="cloud_http_injector_open">Облако (онлайн)</string>
     <string name="cloud_http_injector_hint">Вставьте ссылку ehi.link, ключ Cloud или последовательность 💉…🚀</string>
     <string name="cloud_http_injector_action">Импортировать конфигурацию Cloud</string>
-    <string name="cloud_http_injector_privacy">Сервис Cloud: ссылка отправляется в HTTP Injector Cloud только после нажатия «Импорт». Другие форматы используют API SP-DECODE.</string>
+    <string name="cloud_http_injector_privacy">Сервис SP Cloud: ссылка отправляется в HTTP Injector Cloud только после нажатия «Импорт». Для остальных форматов используется SP Cloud.</string>
     <string name="cloud_http_injector_invalid">Неверная ссылка Cloud, ключ или последовательность эмодзи. Проверьте исходные данные.</string>
     <string name="cloud_http_injector_network_error">Не удалось подключиться к HTTP Injector Cloud. Проверьте подключение и повторите попытку.</string>
     <string name="cloud_http_injector_server_error">HTTP Injector Cloud отклонил ссылку. Возможно, срок её действия истёк, она отозвана или сервис недоступен.</string>
