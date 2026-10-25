@@ -44,6 +44,17 @@ class NpvsIdentityVaultInstrumentedTest {
             .put("source","generated").put("curve","P-256").put("fingerprint",sha(public))
             .put("publicKey",b64(public)).put("privateKey",b64(pair.private.encoded))
     }
+    @Test fun generatedIdentityCannotBeReplacedWithoutDeletion(){
+        val vault=NpvsIdentityVault(context)
+        val first=identity()
+        val original=vault.save(first)
+        val second=identity()
+        assertTrue(runCatching{vault.save(second)}.isFailure)
+        assertEquals(original.id,vault.entries().single().id)
+        vault.delete(original.id)
+        assertEquals(second.getString("fingerprint"),
+            vault.save(second).fingerprint)
+    }
     private fun frame(fingerprint:String):ByteArray=ByteArray(320).also {
         "NPVS".toByteArray().copyInto(it);it[4]=5;it[8]=198.toByte();it[9]=1;it[61]=1
         fingerprint.chunked(2).map{value->value.toInt(16).toByte()}.toByteArray().copyInto(it,62)

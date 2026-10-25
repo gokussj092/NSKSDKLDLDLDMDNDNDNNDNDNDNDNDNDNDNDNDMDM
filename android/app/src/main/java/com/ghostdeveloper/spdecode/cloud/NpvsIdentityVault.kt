@@ -52,9 +52,15 @@ internal class NpvsIdentityVault(context:Context) {
     }
     fun save(value:JSONObject):Entry {
         validate(value)
-        val existing=entries().firstOrNull { it.fingerprint==value.getString("fingerprint") &&
+        val stored=entries()
+        val existing=stored.firstOrNull { it.fingerprint==value.getString("fingerprint") &&
             it.kind==value.getString("kind") && it.material.optString("fileSha256")==value.optString("fileSha256") }
-        require(existing!=null || entries().size<64)
+        // One generated SP Cloud keypair per installation until explicitly deleted.
+        // Imported captured identities remain independently selectable.
+        if(value.optString("source")=="generated" && value.optString("kind")=="keypair")
+            require(stored.none { it.source=="generated" && it.kind=="keypair" &&
+                it.fingerprint!=value.getString("fingerprint") })
+        require(existing!=null || stored.size<64)
         val id=existing?.id?:UUID.randomUUID().toString()
         val bytes=value.toString().toByteArray()
         try{write(id,bytes)}finally{bytes.fill(0)}

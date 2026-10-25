@@ -36,6 +36,8 @@ internal fun NpvsIdentitySettings() {
     var shown by remember{mutableStateOf<NpvsIdentityVault.Entry?>(null)}
     var revealPrivate by remember{mutableStateOf(false)}
     var consent by remember{mutableStateOf(false)}
+    var deleteTarget by remember{mutableStateOf<NpvsIdentityVault.Entry?>(null)}
+    val hasGeneratedIdentity=entries.any{it.source=="generated" && it.kind=="keypair"}
     fun refresh(){entries=vault.entries();enabled=vault.enabled()}
     LaunchedEffect(Unit){try{withContext(Dispatchers.IO){refresh()}}catch(_:Exception){message=context.getString(R.string.npv_invalid)}}
     val importer=rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()){uri->
@@ -67,7 +69,8 @@ internal fun NpvsIdentitySettings() {
                     catch(_:Exception){message=context.getString(R.string.npv_invalid)}
                 }})
             }
-            OutlinedButton(onClick={consent=true},enabled=!working,modifier=Modifier.fillMaxWidth()){
+            if(!hasGeneratedIdentity) OutlinedButton(
+                onClick={consent=true},enabled=!working,modifier=Modifier.fillMaxWidth()){
                 Text(stringResource(R.string.npv_generate))}
             OutlinedButton(onClick={importer.launch(arrayOf("application/json","text/plain","application/octet-stream"))},
                 enabled=!working,modifier=Modifier.fillMaxWidth()) {Text(stringResource(R.string.npv_import))}
@@ -76,8 +79,8 @@ internal fun NpvsIdentitySettings() {
                     " · "+entry.fingerprint.take(16),color=Color.White)
                 Row {
                     TextButton(onClick={shown=entry;revealPrivate=false},enabled=!working){Text(stringResource(R.string.npv_view))}
-                    TextButton(onClick={scope.launch{try{withContext(Dispatchers.IO){vault.delete(entry.id);refresh()}}
-                        catch(_:Exception){message=context.getString(R.string.npv_invalid)}}},enabled=!working){Text(stringResource(R.string.npv_delete))}
+                    TextButton(onClick={deleteTarget=entry},enabled=!working){
+                        Text(stringResource(R.string.npv_delete))}
                 }
             }
             if(working)CircularProgressIndicator()
@@ -88,12 +91,46 @@ internal fun NpvsIdentitySettings() {
         text={Text(stringResource(R.string.npv_generation_notice))},confirmButton={TextButton(onClick={
             consent=false;working=true;scope.launch {
                 try{
+                    // Recheck disk state, not only the visible button, before API work.
+                    val alreadyExists=withContext(Dispatchers.IO){
+                        vault.entries().any{it.source=="generated" && it.kind=="keypair"}
+                    }
+                    if(alreadyExists){
+                        message=context.getString(R.string.npv_already_generated)
+                        return@launch
+                    }
                     val value=client.generateNpvsIdentity()
                     val entry=withContext(Dispatchers.IO){vault.save(value).also{refresh()}}
                     shown=entry;revealPrivate=false;message=null
                 }catch(error:Exception){message=CloudUserErrors.message(context,error)}finally{working=false}
             }
-        }){Text(stringResource(R.string.npv_generate))}},dismissButton={TextButton(onClick={consent=false}){Text(stringResource(android.R.string.cancel))}})
+        }){Text(stringResource(R.string.npv_generate))}},dismissButton={TextButton(onClick={consent=false}){Text(stringResource(R.string.npv_cancel),color=Color.White)}},
+        containerColor=Color.Black,titleContentColor=Color.White,
+        textContentColor=Color(0xFFABABAB),shape=RoundedCornerShape(22.dp))
+    deleteTarget?.let{entry->
+        AlertDialog(
+            onDismissRequest={deleteTarget=null},
+            title={Text(stringResource(R.string.npv_delete_title))},
+            text={Text(stringResource(R.string.npv_delete_warning))},
+            confirmButton={TextButton(onClick={
+                deleteTarget=null;working=true
+                scope.launch {
+                    try{
+                        withContext(Dispatchers.IO){vault.delete(entry.id);refresh()}
+                        if(shown?.id==entry.id)shown=null
+                    }catch(_:Exception){message=context.getString(R.string.npv_invalid)}
+                    finally{working=false}
+                }
+            }){Text(stringResource(R.string.npv_delete),color=Color(0xFFE0B563))}},
+            dismissButton={TextButton(onClick={deleteTarget=null}){
+                Text(stringResource(R.string.npv_cancel),color=Color.White)
+            }},
+            containerColor=Color.Black,titleContentColor=Color.White,
+            textContentColor=Color(0xFFABABAB),
+            shape=RoundedCornerShape(22.dp),
+            properties=DialogProperties(securePolicy=SecureFlagPolicy.SecureOn)
+        )
+    }
     shown?.let{entry->
         fun copy(value:String,sensitive:Boolean){
             val clip=ClipData.newPlainText("NPV",value)
@@ -107,14 +144,16 @@ internal fun NpvsIdentitySettings() {
             title={Text(stringResource(R.string.npv_title))},text={Column(verticalArrangement=Arrangement.spacedBy(10.dp)){
                 if(entry.kind=="keypair"){
                     val public=entry.material.getString("publicKey");val private=entry.material.getString("privateKey")
-                    OutlinedTextField(value=public,onValueChange={},readOnly=true,label={Text("Public key · P-256")})
+                    OutlinedTextField(value=public,onValueChange={},readOnly=true,label={Text(stringResource(R.string.npv_public_label))})
                     TextButton(onClick={copy(public,false)}){Text(stringResource(R.string.npv_copy_public))}
-                    OutlinedTextField(value=private,onValueChange={},readOnly=true,label={Text("Private key · PKCS#8")},
+                    OutlinedTextField(value=private,onValueChange={},readOnly=true,label={Text(stringResource(R.string.npv_private_label))},
                         visualTransformation=if(revealPrivate)androidx.compose.ui.text.input.VisualTransformation.None else PasswordVisualTransformation())
                     TextButton(onClick={revealPrivate=!revealPrivate}){Text(stringResource(R.string.npv_reveal))}
                     TextButton(onClick={copy(private,true)}){Text(stringResource(R.string.npv_copy_private))}
                 }else Text(stringResource(R.string.npv_hardware_notice))
                 Text(entry.fingerprint,style=MaterialTheme.typography.bodySmall)
-            }},confirmButton={TextButton(onClick={shown=null;revealPrivate=false}){Text(stringResource(android.R.string.ok))}})
+            }},confirmButton={TextButton(onClick={shown=null;revealPrivate=false}){Text(stringResource(android.R.string.ok),color=Color.White)}},
+            containerColor=Color.Black,titleContentColor=Color.White,
+            textContentColor=Color(0xFFABABAB),shape=RoundedCornerShape(22.dp))
     }
 }

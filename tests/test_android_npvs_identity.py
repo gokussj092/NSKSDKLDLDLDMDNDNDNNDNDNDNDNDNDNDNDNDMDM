@@ -20,14 +20,20 @@ class AndroidNpvIdentityTests(unittest.TestCase):
         for marker in ("noBackupFilesDir","AES/GCM/NoPadding","AndroidKeyStore","AtomicFile",
                        'fingerprint in fingerprints','fileSha256',"PKCS8EncodedKeySpec","sign.verify(signature)"):
             self.assertIn(marker,vault)
-        picker=(SOURCE/"NpvsRecipientActivity.kt").read_text()
-        self.assertIn('putExtra("ticket",ticket)',picker)
+        picker=(SOURCE/"NpvsRecipientPicker.kt").read_text()
         self.assertIn("vault.matching(bytes)",picker)
-        self.assertIn("FLAG_SECURE",picker)
+        self.assertIn("SecureFlagPolicy.SecureOn",picker)
+        self.assertIn("RadioButton(",picker)
+        self.assertIn("mutableStateOf<Pending?>(null)",picker)
+        self.assertNotIn("startActivity(",picker)
+        self.assertNotIn("Intent(",picker)
         for forbidden in ("HistoryRepository","Telemetry","Log.","println(","privateKey\",",'putExtra("identity"'):
             self.assertNotIn(forbidden,vault+picker)
         manifest=(APP/"src/main/AndroidManifest.xml").read_text()
-        self.assertIn('android:name=".cloud.NpvsRecipientActivity"\n            android:exported="false"',manifest)
+        self.assertNotIn("NpvsRecipientActivity",manifest)
+        gradle=(APP/"build.gradle.kts").read_text()
+        self.assertIn("NpvsRecipientPicker.Content()",gradle)
+        self.assertIn("NpvsRecipientPicker.isShowing",gradle)
 
     def test_copy_requires_explicit_action_and_generation_uses_api(self):
         ui=(SOURCE/"NpvsIdentitySettings.kt").read_text()
@@ -35,7 +41,7 @@ class AndroidNpvIdentityTests(unittest.TestCase):
                        "IS_SENSITIVE","npv_copy_private","npv_import","vault.enable(value)"):
             self.assertIn(marker,ui)
         client=(SOURCE/"CloudDecodeClient.kt").read_text()
-        self.assertIn('NpvsRecipientActivity.choose(app,bytes)',client)
+        self.assertIn('NpvsRecipientPicker.choose(app,bytes)',client)
         self.assertIn('put("recipientKey",recipient)',client)
         self.assertIn('CloudNativeTransport.post("/api/v1/npvs/identity"',client)
         transport=(SOURCE/"CloudNativeTransport.kt").read_text()
@@ -49,6 +55,20 @@ class AndroidNpvIdentityTests(unittest.TestCase):
         self.assertIn("Comparte solo la clave pública",spanish)
         self.assertNotIn("Esto no copia el Keystore oficial",spanish)
         self.assertNotIn('lastDiagnostic=Diagnostic("identity"',client)
+        self.assertIn('deleteTarget=entry',ui)
+        self.assertIn('if(!hasGeneratedIdentity)',ui)
+        self.assertIn('R.string.npv_delete_warning',ui)
+        store=(SOURCE/"NpvsIdentityVault.kt").read_text()
+        self.assertIn('if(value.optString("source")=="generated"',store)
+        for lang in ("values","values-es","values-ar","values-de","values-fa",
+                     "values-fr","values-hi","values-in","values-it",
+                     "values-ja","values-pt-rBR","values-ru","values-tr","values-vi"):
+            xml=(APP/"src/main/res"/lang/"npvs_identity.xml").read_text()
+            for key in ("npv_delete_title","npv_delete_warning","npv_cancel",
+                        "npv_already_generated","npv_choose_title","npv_generate"):
+                self.assertIn('name="'+key+'"',xml)
+            self.assertNotIn('Generar con la API',xml)
+            self.assertNotIn('Generate with API',xml)
 
 
 if __name__=="__main__":unittest.main()

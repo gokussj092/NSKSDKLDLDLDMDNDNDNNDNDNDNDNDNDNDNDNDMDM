@@ -274,7 +274,7 @@ internal class CloudDecodeClient(context: Context) {
         // passphrase protection. Never silently overwrite recipientKey.
         if(isRecipientNpvs && (password!=null || hwid!=null))
             throw IOException("CLOUD_CREDENTIALS_NOT_ALLOWED")
-        val recipient=if(isRecipientNpvs) NpvsRecipientActivity.choose(app,bytes) else null
+        val recipient=if(isRecipientNpvs) NpvsRecipientPicker.choose(app,bytes) else null
         val credentials=JSONObject()
         if(recipient!=null)credentials.put("recipientKey",recipient)
         if(password!=null)credentials.put("password",String(password,Charsets.UTF_8))
