@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unsupported_file_title">Type de fichier non pris en charge</string>
+    <string name="unsupported_file_detail">Cette extension ne figure pas encore dans SP-DECODE. Contactez le développeur pour proposer son ajout.</string>
+    <string name="unsupported_version_title">Version du fichier non prise en charge</string>
+    <string name="unsupported_version_detail">Ce fichier utilise une version ou une méthode de chiffrement non encore prise en charge.</string>
+    <string name="unsupported_text_title">Texte non pris en charge</string>
+    <string name="unsupported_text_detail">Ce texte ou protocole ne figure pas encore dans SP-DECODE. Contactez le développeur.</string>
+    <string name="catalog_check_action">Vérifier les mises à jour</string>
+    <string name="catalog_checking">Vérification de la version du catalogue…</string>
+    <string name="catalog_downloading">Mise à jour du catalogue…</string>
+    <string name="catalog_progress">Éléments du catalogue prêts : %1$d%%</string>
+    <string name="app_update_title">Nouvelle version disponible</string>
+    <string name="app_update_body">SP-DECODE %1$s est disponible. Consultez le canal Telegram officiel pour la mise à jour.</string>
+    <string name="app_update_open">Ouvrir Telegram</string>
+    <string name="app_update_close">Fermer</string>
+    <string name="catalog_available_title">Nouveau catalogue disponible</string>
+    <string name="catalog_available_body">La version %1$d du catalogue est disponible au téléchargement.</string>
+    <string name="catalog_check_short">Vérifier le catalogue</string>
+</resources>
