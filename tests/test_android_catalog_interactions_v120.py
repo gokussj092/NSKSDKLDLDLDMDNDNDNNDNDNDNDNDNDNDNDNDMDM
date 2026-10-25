@@ -50,7 +50,7 @@ class CatalogInteractions(unittest.TestCase):
   self.assertIn("serverVpnCatalog.cachedTextFormats()",activity)
   self.assertIn("onProgress={percent->",activity)
   self.assertIn("fun validateTextFormats(",repo)
-  self.assertIn('client.watchCatalogVersion(0)',update)
+  self.assertIn('CloudDecodeClient(applicationContext).watchCatalogVersion(0)',update)
   self.assertNotIn('repository.refreshIfDue(announcedVersion=requested)',update)
   self.assertIn("CloudLegalConsent.accepted(context)",update)
 
