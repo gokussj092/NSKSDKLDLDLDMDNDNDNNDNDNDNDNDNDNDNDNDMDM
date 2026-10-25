@@ -257,6 +257,15 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
                 }
             },""")
         var activity = originalRoot.file("MainActivity.kt").asFile.readText(Charsets.UTF_8)
+        // Only the Cloud artifact uses the verified downloadable text inventory.
+        // Preserve C0's legacy fallback without leaking it into Cloud builds.
+        activity = replaceOnce(activity,
+            """        val candidate=(if(BuildConfig.SPDECODE_CLOUD_ENABLED)
+            CloudTextFormats.identify(userText,textRoutes) else null)
+            ?:TextProtocolDecoder.identify(userText)""",
+            """        val candidate=if(BuildConfig.SPDECODE_CLOUD_ENABLED)
+            CloudTextFormats.identify(userText,textRoutes)
+            else TextProtocolDecoder.identify(userText)""")
         activity = replaceOnce(activity,
             "                error=message,",
             "                error=message,\n                noticeOnly=messageIsCredentialNotice,")
