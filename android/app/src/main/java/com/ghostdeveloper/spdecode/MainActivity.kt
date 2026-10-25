@@ -88,6 +88,7 @@ class MainActivity : ComponentActivity() {
     private var showCloudLegal by mutableStateOf(false)
     private var serverVpnRefresh:Job?=null
     private var serverVpnLoading by mutableStateOf(false)
+    private var catalogProgress by mutableStateOf<Int?>(null)
     private var serverVpnUnavailable by mutableStateOf(false)
     private var pendingServerVpnCatalogVersion by mutableStateOf<Int?>(null)
     private val privateCredentialVault by lazy { DevicePrivateCredentialVault(this) }
@@ -267,6 +268,7 @@ class MainActivity : ComponentActivity() {
         if(!BuildConfig.SPDECODE_CLOUD_ENABLED || showCloudLegal || busy ||
             serverVpnRefresh?.isActive==true)return
         pendingServerVpnCatalogVersion=null
+        catalogProgress=null
         serverVpnLoading=true
         serverVpnRefresh=scope.launch {
             try {
@@ -294,10 +296,12 @@ class MainActivity : ComponentActivity() {
         if(!BuildConfig.SPDECODE_CLOUD_ENABLED || showCloudLegal || busy ||
             serverVpnRefresh?.isActive==true)return
         serverVpnLoading=true
+        catalogProgress=0
         serverVpnRefresh=scope.launch {
             try {
                 serverVpnApps=serverVpnCatalog.refreshIfDue(
-                    force=true,announcedVersion=version)
+                    force=true,announcedVersion=version,
+                    onProgress={percent->scope.launch { catalogProgress=percent }})
                 fileFormats=serverVpnCatalog.cachedFormats()
                     textRoutes=serverVpnCatalog.cachedTextFormats()
                 toast(if(serverVpnCatalog.currentVersion()>=version)
@@ -308,6 +312,7 @@ class MainActivity : ComponentActivity() {
             finally {
                 serverVpnUnavailable=serverVpnApps.isEmpty()
                 serverVpnLoading=false
+                catalogProgress=null
             }
         }
     }
@@ -587,6 +592,7 @@ class MainActivity : ComponentActivity() {
                 serverVpnApps=serverVpnApps,
                 cloudFormats=fileFormats,
                 serverVpnLoading=serverVpnLoading,
+                catalogProgress=catalogProgress,
                 serverVpnUnavailable=serverVpnUnavailable,
                 onRefreshServerVpn={checkServerVpnUpdates()},
                 pendingServerVpnCatalogVersion=pendingServerVpnCatalogVersion,
