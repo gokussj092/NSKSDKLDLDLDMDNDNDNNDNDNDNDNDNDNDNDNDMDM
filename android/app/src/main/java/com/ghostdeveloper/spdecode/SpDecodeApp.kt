@@ -87,6 +87,7 @@ fun SpDecodeApp(
     retentionDays:Int,
     onRetention:(Int)->Unit,
     onDismissError:()->Unit,
+    errorTitle:Int=R.string.decode_notice_title,
     canReportError:Boolean=false,
     onReportError:()->Unit={},
     onDecodeText:(String)->Unit={},
@@ -94,12 +95,16 @@ fun SpDecodeApp(
     onDecodeServerCatalog:()->Unit={},
     onDecodeServerApp:(String)->Unit={}, 
     serverVpnApps:List<ServerVpnApp> = emptyList(),
+    cloudFormats:List<AndroidDecoderCatalog.Format> = emptyList(),
     serverVpnLoading:Boolean=false,
     serverVpnUnavailable:Boolean=false,
+    catalogProgress:Int?=null,
     onRefreshServerVpn:()->Unit={},
     pendingServerVpnCatalogVersion:Int?=null,
     onConfirmServerVpnUpdate:()->Unit={},
     onDismissServerVpnUpdate:()->Unit={},
+    availableAppUpdate:String?=null,
+    onDismissAppUpdate:()->Unit={},
     whatsNew:Boolean=false,
     cloudWhatsNew:CloudNewsNotice?=null,
     onDismissWhatsNew:()->Unit={},
@@ -134,7 +139,7 @@ fun SpDecodeApp(
                         onDecodeCloud=onDecodeCloud,
                         highlightGuide=if(!whatsNew && !busy)guideStep else null)
                     1->HistoryScreen(session,onSelect,onDeleteSelected,onClear,onImportMultiple,onFavorite)
-                    2->FormatsScreen()
+                    2->FormatsScreen(cloudFormats)
                     3->ServerVpnScreen(busy,serverVpnApps,serverVpnLoading,serverVpnUnavailable,
                         onDecodeServerCatalog,onDecodeServerApp)
                     else->FunctionalSettingsPanel(selectedLanguage,hideCredentials,
@@ -152,10 +157,11 @@ fun SpDecodeApp(
                 spotlight=if(guideStep!=null && !whatsNew && !busy)
                     FirstRunGuide.targetTab(guideStep) else null)
         }
-        if(activeTab==3 && pendingServerVpnCatalogVersion!=null && !busy) AlertDialog(
+        if(pendingServerVpnCatalogVersion!=null && !busy) AlertDialog(
             onDismissRequest=onDismissServerVpnUpdate,
-            title={Text(stringResource(R.string.server_vpn_catalog_update_title))},
-            text={Text(stringResource(R.string.server_vpn_catalog_update_question,
+            icon={Icon(Icons.Outlined.CloudDownload,null,tint=Green)},
+            title={Text(stringResource(R.string.catalog_available_title))},
+            text={Text(stringResource(R.string.catalog_available_body,
                 pendingServerVpnCatalogVersion),color=Secondary)},
             confirmButton={TextButton(onClick=onConfirmServerVpnUpdate) {
                 Text(stringResource(R.string.server_vpn_catalog_download),color=White)
@@ -262,10 +268,23 @@ fun SpDecodeApp(
                 }
             }
         }
+        if(availableAppUpdate!=null && !busy) AlertDialog(
+            onDismissRequest=onDismissAppUpdate,
+            icon={Icon(Icons.Outlined.SystemUpdate,null,tint=Green)},
+            title={Text(stringResource(R.string.app_update_title))},
+            text={Text(stringResource(R.string.app_update_body,availableAppUpdate),color=Secondary)},
+            confirmButton={TextButton(onClick={
+                onDismissAppUpdate()
+                onExternalLink("https://t.me/GhostDeve")
+            }){Text(stringResource(R.string.app_update_open),color=White)}},
+            dismissButton={TextButton(onClick=onDismissAppUpdate){
+                Text(stringResource(R.string.app_update_close),color=White)
+            }},containerColor=Background,titleContentColor=White,
+        )
         if(error!=null && !busy) AlertDialog(
             onDismissRequest=onDismissError,
             icon={Icon(Icons.Outlined.Info,null,tint=Amber)},
-            title={Text(stringResource(R.string.decode_notice_title))},
+            title={Text(stringResource(errorTitle))},
             text={Text(error,color=Secondary)},
             confirmButton={TextButton(onClick=onDismissError){
                 Text(stringResource(R.string.close),color=White)
@@ -349,23 +368,18 @@ private fun BrandHeader(
                 maxLines=1,overflow=TextOverflow.Ellipsis)
         }
         if(showServerVpnRefresh) {
-            IconButton(
-                onClick=onRefreshServerVpn,
-                enabled=enableServerVpnRefresh,
-                modifier=Modifier.size(46.dp)
-                    .background(Color(0xFF282828),RoundedCornerShape(50))
-                    .border(1.dp,Color(0xFF484848),RoundedCornerShape(50))
-                    .testTag("server_vpn_manual_refresh"),
+            OutlinedButton(
+                onClick=onRefreshServerVpn,enabled=enableServerVpnRefresh,
+                modifier=Modifier.testTag("server_vpn_manual_refresh"),
+                contentPadding=PaddingValues(horizontal=12.dp,vertical=7.dp),
             ) {
-                if(refreshingServerVpn) {
-                    CircularProgressIndicator(
-                        modifier=Modifier.size(20.dp),strokeWidth=2.dp,color=White)
-                }else{
-                    Icon(Icons.Outlined.Refresh,
-                        stringResource(R.string.server_vpn_manual_refresh),
-                        tint=if(enableServerVpnRefresh)White else Secondary,
-                        modifier=Modifier.size(22.dp))
-                }
+                if(refreshingServerVpn) CircularProgressIndicator(
+                    modifier=Modifier.size(17.dp),strokeWidth=2.dp,color=White)
+                else Icon(Icons.Outlined.Refresh,null,tint=White,
+                    modifier=Modifier.size(17.dp))
+                Spacer(Modifier.width(6.dp))
+                Text(stringResource(if(refreshingServerVpn) R.string.catalog_checking
+                    else R.string.catalog_check_action),fontSize=12.sp,color=White)
             }
             Spacer(Modifier.width(8.dp))
         }
@@ -734,13 +748,6 @@ private fun HistoryScreen(
                 }
             }
         }
-        item {
-            OutlinedButton(onClick=onImportMultiple) {
-                Icon(Icons.Outlined.FileUpload,null)
-                Spacer(Modifier.width(8.dp))
-                Text(stringResource(R.string.history_import_batch))
-            }
-        }
     }
     if(deletion!=null) AlertDialog(
         onDismissRequest={deletion=null;deletingAll=false},
@@ -763,9 +770,11 @@ private fun HistoryScreen(
 }
 
 @Composable
-private fun FormatsScreen() {
+private fun FormatsScreen(cloudFormats:List<AndroidDecoderCatalog.Format>) {
     val context = LocalContext.current
-    val formats = remember(context) { AndroidDecoderCatalog.read(context) }
+    val baseline = remember(context) { AndroidDecoderCatalog.read(context) }
+    val formats = if(BuildConfig.SPDECODE_CLOUD_ENABLED && cloudFormats.isNotEmpty())
+        cloudFormats else baseline
     var query by rememberSaveable { mutableStateOf("") }
     val groups = remember(query, formats) {
         (formats + listOfNotNull(AndroidDecoderCatalog.detect("preview.solid",formats)))
@@ -936,8 +945,13 @@ private fun ServerVpnScreen(
                 )
             }
             if(catalogLoading) {
-                Text(stringResource(R.string.server_vpn_catalog_refreshing),
-                    color=Secondary,fontSize=12.sp)
+                Row(verticalAlignment=Alignment.CenterVertically) {
+                    CircularProgressIndicator(modifier=Modifier.size(18.dp),
+                        strokeWidth=2.dp,color=White)
+                    Spacer(Modifier.width(9.dp))
+                    Text(stringResource(R.string.catalog_checking),
+                        color=Secondary,fontSize=12.sp)
+                }
             }
             if(apps.isEmpty()) {
                 Text(stringResource(if(catalogLoading) R.string.server_vpn_loading
