@@ -38,6 +38,7 @@ const V2PLUS_SOURCES=Object.freeze({
 });
 const PAIRED_SOURCES=Object.freeze({"abowaged-vpn":ABOWAGED_SOURCES,"turbomx-vpn":TURBOMX_SOURCES,"superflash-vpn":SUPERFLASH_SOURCES,"onspace-vpn":ONSPACE_SOURCES,"http-socketclay":SOCKETCLAY_SOURCES,"http-wakko":WAKKO_SOURCES,"v2ray-tunnel-plus":V2PLUS_SOURCES});
 const PROVIDERS = Object.freeze({
+  "mtm-tunnel-lite": {url:"https://xtmtunnel.xyz/updater/527543543860c45bf4238f2a1b56c3",agent:"Dalvik/2.1.0"},
   "mnr-tunnel-plus": {url:"https://raw.githubusercontent.com/buttacuore2025/up/refs/heads/main/plusfast",agent:"MNR TUNNEL PLUS/3.1"},
   "bd-net-vpn": {url:"https://raw.githubusercontent.com/panigbatanc/BDNET2023/main/JSONDEC2025",agent:"BD NET VPN/PrinceBuild111"},
   "aura-net-vpn": {url:"https://strongteam.co/api/kidvpn/v4/aurav1.txt",agent:"Aura Net VPN"},
@@ -242,7 +243,7 @@ export async function downloadVpnCatalog(id,source=id==="v2ray-tunnel-plus"?"bas
         continue;
       }
       if(answer.redirect!==undefined){
-        if(["mnr-tunnel-plus","bd-net-vpn","aura-net-vpn","apna-vpn","any-vpn","speicers-pro-vpn","7net-vpn","xhypher-tunnel-pro","focus-vpn-cloud","freedom-vpn","http-internet-infinito","megatunnel","mx-tunnel-pro","rjc-tunnel-pro","rmp-tunnel-pro"].includes(id)||Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
+        if(["mtm-tunnel-lite","mnr-tunnel-plus","bd-net-vpn","aura-net-vpn","apna-vpn","any-vpn","speicers-pro-vpn","7net-vpn","xhypher-tunnel-pro","focus-vpn-cloud","freedom-vpn","http-internet-infinito","megatunnel","mx-tunnel-pro","rjc-tunnel-pro","rmp-tunnel-pro"].includes(id)||Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
         const next=answer.redirect;
         if(typeof next!=="string"||next.length>2048)fail("REMOTE_NETWORK_DENIED");
         target=new URL(next,dest).href;

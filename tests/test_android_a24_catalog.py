@@ -96,6 +96,8 @@ class AndroidA24CatalogTests(unittest.TestCase):
                 self.assertEqual((row["name"], row["script"], row["originalRuntime"]),
                                  ("CREV", "decoders/Python/crev.py", "python")
                                  if suffix=="crev" else
+                                 ("e-V2Ray", "decoders/Python/EV2RAY.py", "python")
+                                 if suffix=="v2" else
                                  (spec.name, spec.script, spec.runtime))
                 self.assertTrue((ROOT / row["script"]).is_file(), suffix)
         for suffix in ("ace","clay","ultra","7net","itv","izph","flexnet","st","apnalite"):

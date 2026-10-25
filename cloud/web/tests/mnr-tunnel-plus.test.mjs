@@ -42,9 +42,9 @@ function session(t){
 }
 
 test("MNR catalog publishes the original icon, Cloud-only STP and persistent availability",async t=>{
-  assert.equal(CATALOG_VERSION,46);
+  assert.equal(CATALOG_VERSION,47);
   const current=catalog({availability:{"mnr-tunnel-plus":true}});
-  assert.equal(current.apps.length,46);
+  assert.equal(current.apps.length,47);
   const card=current.apps.find(x=>x.id==="mnr-tunnel-plus");
   assert.equal(card.name,"MNR TUNNEL PLUS");assert.equal(card.decodeEnabled,true);
   assert.equal(card.iconSha256,"ed99d8abdfbbcdd58c0a016d54299440d64c39608dd225674c0291f85d219b1a");

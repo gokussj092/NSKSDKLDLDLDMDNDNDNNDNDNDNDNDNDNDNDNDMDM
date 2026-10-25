@@ -1,5 +1,27 @@
 # SP-DECODE Cloud — Guía para ampliar Server VPN en otro chat
 
+**Estado más reciente, 2026-10-25: MTM Tunnel Lite MTM (40)**, PR #99 sobre
+MNR `24fa3e2`. Paquete `com.mtmtunnel.lite`; asset real 35.55: **29 servidores /
+471 payloads**, GET fijo real 37.63: **27 / 479**, HTTP 200 con UA Dalvik/2.1.0.
+Ambos plaintext completos iguales a JDK y JSON completo igual a workers de
+catálogo y archivo. XXTEA delta 0x9E5729B1, clave Princie!: reutiliza HX sin
+mutar defaults. No hay capa adicional en campos consumidos ni contraseña/HWID
+criptográficos. Ficha, PNG original exacto y switch persistente añadidos.
+Selector original acepta `.json/.v2`, mismo aQ.a; escribe plaintext Servers.js
+aunque D() lee ciphertext sept.json (anomalía documentada). `.v2` overlay
+C8/bot conserva e-V2Ray y su stdout exacto; C0/Android conservan mapa histórico.
+`.json` y texto stdin solo CLI explícita; no se captura sufijo JSON global ni
+se inventa formato clipboard o cloud por ID. Actualizador online de catálogo
+identificado; no importación individual tipo EHI. CLI stdlib autónoma, descarga
+real completa guardada 0600, bundle reproducible y no sobrescritura. MTM solo
+Cloud/CLI, el offlineSupported de `.v2` pertenece a e-V2Ray histórico. Falta
+archivo MTM de usuario y Android/Termux físicos. C0 **240**, C8 **254**, **27
+overrides**, mínimo **47 / 47 fichas**. Pruebas y herramientas mtm_bundle.py,
+mtm_verify.py, oracle Java y MTM_Tunnel_Lite. **42 Python / 315 Node aprobadas**,
+incluidos los 60 casos históricos C2; build web, inventarios y validación
+correctos. Sin fusión, VPS, APK ni C11.
+Los estados siguientes son históricos.
+
 **Estado más reciente, 2026-10-24: MNR TUNNEL PLUS 3.1 (31)**, PR #99 sobre
 HTTP Door `b8168cc`. Paquete `com.hamo.vpn`; catálogo real incluido **1.0 / 9
 servidores / 112 redes** y remoto **14.4 / 14 / 119**, ambos completos iguales

@@ -237,7 +237,7 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
          !Number.isInteger(parsed.TunnelType) || JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))
         throw Error("INVALID_WORKER_RESULT");
     }
-    if(kind==="server-vpn" && ["apna-vpn","bd-net-vpn"].includes(payload?.providerId)){
+    if(kind==="server-vpn" && ["mtm-tunnel-lite","apna-vpn","bd-net-vpn"].includes(payload?.providerId)){
       let parsed;
       try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
       if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId ||

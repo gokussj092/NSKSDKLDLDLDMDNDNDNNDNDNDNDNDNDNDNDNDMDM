@@ -105,6 +105,11 @@ def generate() -> dict:
             baseline_registry["crev"], name="CREV",
             script="decoders/Python/crev.py", runtime="python"
         )
+    if "v2" in baseline_registry:
+        baseline_registry["v2"] = replace(
+            baseline_registry["v2"], name="e-V2Ray",
+            script="decoders/Python/EV2RAY.py", runtime="python"
+        )
     legacy = json.loads((ROOT / "decoders.json").read_text("utf-8"))["decoders"]
     if len(legacy) != 61 or len(baseline_registry) != 239:
         raise ValueError("Expected 61 original and 239 existing migration formats")

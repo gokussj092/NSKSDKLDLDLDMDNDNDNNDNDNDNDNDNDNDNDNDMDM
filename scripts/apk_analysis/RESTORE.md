@@ -1,5 +1,42 @@
 # Recuperar herramientas después de perder el entorno
 
+## MTM Tunnel Lite MTM (40) — 2026-10-25
+
+PR #99 sobre MNR `24fa3e2`. Carpeta MTM_Tunnel_Lite, motor canónico HX.
+Guardar todos los resultados reales fuera de Git:
+
+```sh
+python scripts/apk_analysis/inspect_apk.py /privado/MTM.apks /privado/mtm --asset sept.json
+python scripts/apk_analysis/decompile.py /privado/mtm/dex/classes.dex /privado/mtm-jadx1
+python scripts/apk_analysis/decompile.py /privado/mtm/dex/classes2.dex /privado/mtm-jadx2
+python scripts/apk_analysis/paranoid_strings.py /privado/mtm-jadx2/sources \
+  '/privado/mtm-jadx2/sources/org/lsposed/lsparanoid/Deobfuscator$MTMTunnelLite$app.java' \
+  /privado/mtm-clear2 --inventory
+python scripts/apk_analysis/paranoid_strings.py /privado/mtm-jadx1/sources \
+  '/privado/mtm-jadx2/sources/org/lsposed/lsparanoid/Deobfuscator$MTMTunnelLite$app.java' \
+  /privado/mtm-clear1 --call-class Deobfuscator.MTMTunnelLite.app --inventory
+python scripts/apk_analysis/mtm_verify.py /privado/mtm/assets/sept.json /privado/remoto.enc --worker
+python scripts/apk_analysis/mtm_bundle.py /privado/mtm_tunnel_lite.py
+PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_mtm_tunnel_lite -v
+```
+
+JADX parcial: 22/13 errores. LSParanoid 1166/42 archivos en DEX2, 67/10 en
+DEX1 e inventario 1487. Los argumentos long mediante variables requieren
+seguir el flujo DEX. No confundir callbacks `vB/wB` renombrados de cada DEX;
+OL entrega catálogo en RunnableC0007Ad, no en el callback de consentimiento.
+Fuente literal en OpenVPNClient.S(), GET fijo con agente Dalvik/2.1.0 y sin
+redirects. No tomar URLs de conexión de InjectorService como cloud import.
+
+Incluido 35.55: 29 / 471, 431531 bytes plaintext; remoto 37.63: 27 / 479,
+270806 bytes, ambos enteros iguales a JDK/worker. Sj y aQ abren Base64/XXTEA
+Princie! delta 0x9E5729B1; Username/Password no son la clave. Selector `.json`
+o `.v2` llama aQ.a y escribe plaintext Servers.js: anomalía original, D() sigue
+leyendo sept.json cifrado. SP-DECODE abre datos, no replica esa escritura.
+`.v2` compartido conserva e-V2Ray; `.json` y stdin solo CLI. C0 240 sin cambios,
+C8 254 / 27 overlays, versión mínima 47 / 47 fichas. No se identificó formato
+propio de texto/ID cloud. Sin muestra MTM de usuario ni móvil físico. No
+fusionar/desplegar/publicar APK o C11 automáticamente; conservar switches.
+
 ## MNR TUNNEL PLUS 3.1 (31) — 2026-10-24
 
 PR #99 sobre `b8168cc`, carpeta MNR_TUNNEL_PLUS. Script codec.py autónomo con

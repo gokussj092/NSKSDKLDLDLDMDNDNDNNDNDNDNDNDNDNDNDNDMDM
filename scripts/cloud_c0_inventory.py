@@ -106,6 +106,11 @@ def validate_reference_mapping(doc: dict) -> None:
         suffix = row["suffix"]
         spec = DECODER_REGISTRY[suffix]
         # .crev is a deliberate Cloud/bot overlay, not a C0 rebaseline.
+        if suffix == "v2":
+            if (row["name"], row["script"], row["originalRuntime"]) != (
+                    "e-V2Ray", "decoders/Python/EV2RAY.py", "python"):
+                fail("historical .v2 C0 engine drift")
+            continue
         if suffix == "crev":
             if (row["name"], row["script"], row["originalRuntime"]) != (
                     "CREV", "decoders/Python/crev.py", "python"):

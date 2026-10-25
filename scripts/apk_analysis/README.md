@@ -1,5 +1,12 @@
 # Herramientas de análisis APK
 
+MTM Tunnel Lite MTM (40): `mtm_bundle.py` genera la CLI autónoma stdlib desde
+XXTEA canónico HX y `mtm_verify.py` compara catálogos privados completos con
+JDK y workers de catálogo/archivo. Dos respuestas reales verificadas; `.v2`
+conserva e-V2Ray, `.json`/stdin son explícitos en CLI. LSParanoid cruza dos DEX
+con `--call-class` en DEX1; limitaciones del selector original y pasos en
+`RESTORE.md` y `decoders/Python/apps/MTM_Tunnel_Lite/ANALYSIS.md`.
+
 FlexNet B46 en Android virtual: `flexnet_emulator_probe.py` reconstruye un AVD
 con SDK verificado por SHA-256, ejecución por software acotada y controlador
 JSON/ADB en un solo namespace. Android arrancó y registró el APK, pero ANR,

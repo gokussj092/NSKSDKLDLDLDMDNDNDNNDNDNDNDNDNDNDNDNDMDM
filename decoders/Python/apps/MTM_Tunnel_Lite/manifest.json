@@ -1,0 +1,28 @@
+{
+  "id": "mtm-tunnel-lite",
+  "name": "MTM Tunnel Lite",
+  "package": "com.mtmtunnel.lite",
+  "versionName": "MTM",
+  "versionCode": 40,
+  "engine": "python",
+  "entrypoint": "file_decoder.py",
+  "extensions": ["v2"],
+  "explicitCliExtensions": ["json", "v2"],
+  "sharedExtensionFallback": "decoders/Python/EV2RAY.py",
+  "dependencies": [],
+  "credentials": [],
+  "userPasswordCryptographicallyRequired": false,
+  "hwidCryptographicallyRequired": false,
+  "clipboardFormatIdentified": false,
+  "onlineIndividualImportIdentified": false,
+  "catalog": {
+    "status": "verified",
+    "embedded": {"version": "35.55", "servers": 29, "payloads": 471, "plaintextBytes": 431531},
+    "remote": {"version": "37.63", "servers": 27, "payloads": 479, "plaintextBytes": 270806}
+  },
+  "realFileSampleVerified": false,
+  "androidOfflineSupported": false,
+  "androidDeviceVerified": false,
+  "termuxDeviceVerified": false,
+  "deployment": "pending"
+}
