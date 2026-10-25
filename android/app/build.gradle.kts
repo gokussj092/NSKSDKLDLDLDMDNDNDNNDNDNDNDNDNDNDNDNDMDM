@@ -180,15 +180,15 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
         // notices, history actions and preview protections below.
         app = replaceOnce(app,
             "(formats + listOfNotNull(AndroidDecoderCatalog.detect(\"preview.solid\",formats)))",
-            "(formats + if(BuildConfig.SPDECODE_CLOUD_ENABLED && remoteFormats.isNotEmpty())\n" +
+            "(formats + if(BuildConfig.SPDECODE_CLOUD_ENABLED && cloudFormats.isNotEmpty())\n" +
             "            emptyList() else listOfNotNull(AndroidDecoderCatalog.detect(\"preview.solid\",formats)))")
         app = replaceOnce(app,
             "Text(stringResource(R.string.catalog_note), fontSize = 13.sp,",
-            "Text(stringResource(if(BuildConfig.SPDECODE_CLOUD_ENABLED && remoteFormats.isNotEmpty())\n" +
+            "Text(stringResource(if(BuildConfig.SPDECODE_CLOUD_ENABLED && cloudFormats.isNotEmpty())\n" +
             "            R.string.formats_remote_catalog_note else R.string.catalog_note), fontSize = 13.sp,")
         app = replaceOnce(app,
             "stringResource(\n                            if (extensions.all { it.isPending })",
-            "stringResource(\n                            if(BuildConfig.SPDECODE_CLOUD_ENABLED && remoteFormats.isNotEmpty())\n" +
+            "stringResource(\n                            if(BuildConfig.SPDECODE_CLOUD_ENABLED && cloudFormats.isNotEmpty())\n" +
             "                                R.string.formats_cloud_ready_short\n" +
             "                            else if (extensions.all { it.isPending })")
         app = replaceOnce(app,
