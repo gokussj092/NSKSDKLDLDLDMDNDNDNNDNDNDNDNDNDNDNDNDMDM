@@ -1,5 +1,7 @@
 # NPV Tunnel — memoria de investigación del descifrado NPVS v5
 
+> Continuación 2026-10-25: [identidades v5/v6, error JSON y ajustes Android](NPVS_RECIPIENT_IDENTITIES.md). Los límites antiguos de destinatarios de este documento son históricos.
+
 Documento para retomar esta investigación en otro chat o tras una actualización.
 Conserva los descubrimientos, el bloqueo resuelto y las comprobaciones que
 permiten distinguir un cambio de formato de un error de implementación.

@@ -151,7 +151,8 @@ val prepareQaSettingsSource = tasks.register("prepareQaSettingsSource") {
             "QA Settings injection anchor absent or ambiguous; do not ship a build"
         }
         val source = original.replace(anchor,
-            "        com.ghostdeveloper.spdecode.cloud.CloudQaSettingsCard()\n" + anchor)
+            (if(enableQaBuild) "        com.ghostdeveloper.spdecode.cloud.CloudQaSettingsCard()\n" else "") +
+            "        com.ghostdeveloper.spdecode.cloud.NpvsIdentitySettings()\n" + anchor)
         val output = qaSettingsRoot.get().file(qaSettingsRelativePath).asFile
         output.parentFile.mkdirs()
         output.writeText(source, Charsets.UTF_8)
@@ -490,9 +491,7 @@ val prepareCloudOnlySources = tasks.register<Sync>("prepareCloudOnlySources") {
         exclude("com/ghostdeveloper/spdecode/NurTunnelServerCatalog.kt")
         exclude("com/ghostdeveloper/spdecode/SpDecodeApp.kt")
         exclude("com/ghostdeveloper/spdecode/MainActivity.kt")
-        if (enableQaBuild) {
-            exclude("com/ghostdeveloper/spdecode/FunctionalSettingsPanel.kt")
-        }
+        exclude("com/ghostdeveloper/spdecode/FunctionalSettingsPanel.kt")
     }
     // This catalog is public display metadata, not a decryption engine.
     from("src/main/java/com/ghostdeveloper/spdecode/parity/AndroidDecoderCatalog.kt") {
@@ -501,10 +500,8 @@ val prepareCloudOnlySources = tasks.register<Sync>("prepareCloudOnlySources") {
     from("src/cloud/java")
     dependsOn(prepareCloudHistoryUiSource)
     from(cloudHistoryUiRoot)
-    if (enableQaBuild) {
-        dependsOn(prepareQaSettingsSource)
-        from(qaSettingsRoot)
-    }
+    dependsOn(prepareQaSettingsSource)
+    from(qaSettingsRoot)
     into(cloudSourceRoot)
 }
 val prepareCloudAssets = tasks.register<Sync>("prepareCloudAssets") {

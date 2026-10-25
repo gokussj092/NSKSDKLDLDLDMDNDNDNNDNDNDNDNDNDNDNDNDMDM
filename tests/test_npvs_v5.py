@@ -39,7 +39,7 @@ class PrimitiveTests(unittest.TestCase):
 
     def test_json_and_go_string_canonicalization(self):
         self.assertEqual(decoder._canonical({"x": "<>&\u2028\u2029"}),
-                         b'{"x":"\\u003c\\u003e\\u0026\\u2028\\u2029"}')
+                         '{"x":"<>&\u2028\u2029"}'.encode())
         for data in (b'{"x":1,"x":2}', b'NaN', b'Infinity', b'"\xff"', b'{'):
             with self.subTest(data=data), self.assertRaises(decoder.DecodeError):
                 decoder._json_load(data)

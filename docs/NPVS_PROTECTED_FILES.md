@@ -1,5 +1,7 @@
 # NPV Tunnel 124.0.37 — contraseña y destinatarios
 
+> Continuación 2026-10-25: [identidades v5/v6, error JSON y ajustes Android](NPVS_RECIPIENT_IDENTITIES.md). Los límites antiguos de destinatarios de este documento son históricos.
+
 Actualización del Python en PR #96, 2026-10-22 (hora del cliente).
 Se parte de [la investigación existente](NPVS_V5_INVESTIGATION_HANDOFF.md);
 no se reemplaza el evaluador white-box ni se repite su extracción.

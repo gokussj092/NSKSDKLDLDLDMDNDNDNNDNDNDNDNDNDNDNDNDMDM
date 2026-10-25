@@ -231,10 +231,10 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
     if suffix == "roy" and _is_legacy_roy(contents):
         engine = load_file_engines()["roy"]
     if credentials is not None:
-        allowed = {"password", "hwid"} if suffix == "hc" else {"password", "publicKey"} if suffix == "npvs" else {"password"} if suffix in ("tut", "ua", "1ftnl", "v2box") else None
+        allowed = {"password", "hwid"} if suffix == "hc" else {"password", "publicKey", "recipientKey"} if suffix == "npvs" else {"password"} if suffix in ("tut", "ua", "1ftnl", "v2box") else None
         if allowed is None or not isinstance(credentials, dict) or set(credentials) - allowed:
             raise DecodeFailure("CREDENTIALS_NOT_ALLOWED")
-        for name, maximum in (("password", 4096), ("hwid", 128), ("publicKey", 128)):
+        for name, maximum in (("password", 4096), ("hwid", 128), ("publicKey", 128), ("recipientKey", 16384)):
             value = credentials.get(name)
             if value is not None and (not isinstance(value, str) or not 0 < len(value) <= maximum):
                 raise DecodeFailure("INVALID_CREDENTIALS")

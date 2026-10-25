@@ -54,6 +54,7 @@ bool safePath(const std::string& path) {
     return path == "/api/v1/session/challenge" ||
         path == "/api/v1/session/qa" ||
         path == "/api/v1/session" ||
+        path == "/api/v1/npvs/identity" ||
         path == "/api/v1/decode/file" ||
         path == "/api/v1/decode/text" ||
         path == "/api/v1/decode/import/cloud" ||

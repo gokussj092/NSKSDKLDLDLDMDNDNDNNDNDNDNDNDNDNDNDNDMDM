@@ -8,7 +8,7 @@ import {androidUpdateHint} from "../lib/whats-new.mjs";
 test("Cloud catalog advertises bounded file, text and online reference formats",()=>{
  const formats=publicTextFormats();
  const published=catalog();
- assert.equal(CATALOG_VERSION,48);
+ assert.equal(CATALOG_VERSION,49);
  assert.equal(published.textSchemaVersion,1);
  assert.equal(published.textCount,formats.length);
  assert.deepEqual(published.textFormats,formats);

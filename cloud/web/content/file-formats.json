@@ -722,7 +722,8 @@
       "cloudSupported": true,
       "credentialFields": [
         "password",
-        "publicKey"
+        "publicKey",
+        "recipientKey"
       ]
     },
     {

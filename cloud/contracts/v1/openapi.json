@@ -932,6 +932,52 @@
           }
         }
       }
+    },
+    "/api/v1/npvs/identity": {
+      "post": {
+        "summary": "Generate a fresh NPV P-256 recipient identity; returned once, never retained",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "consent"
+                ],
+                "properties": {
+                  "consent": {
+                    "const": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Identity with public SEC1 compressed and private PKCS8, Base64URL, no-store"
+          },
+          "400": {
+            "description": "Explicit consent required"
+          },
+          "401": {
+            "description": "Session required"
+          },
+          "429": {
+            "description": "Rate limit"
+          },
+          "503": {
+            "description": "Not configured or unavailable"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -971,6 +1017,12 @@
             }
           }
         }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
       }
     }
   }

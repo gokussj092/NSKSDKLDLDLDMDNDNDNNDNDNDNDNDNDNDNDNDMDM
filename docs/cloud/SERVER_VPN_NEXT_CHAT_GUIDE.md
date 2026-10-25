@@ -1,6 +1,15 @@
 # SP-DECODE Cloud — Guía para ampliar Server VPN en otro chat
 
-**Estado más reciente, 2026-10-25: MTM Tunnel Lite MTM (40)**, PR #99 sobre
+**Continuación NPV, 2026-10-25:** [análisis y contratos](../NPVS_RECIPIENT_IDENTITIES.md),
+[Termux](../NPV_RECIPIENT_TERMUX.md). Tres RIFI v5 app-key abiertos completos
+tras corregir el escape HTML del contexto; 72 registros contra JCA y worker.
+Destinatarios v5/v6 con identidad propia o acuerdo capturado ligado al archivo,
+API de generación y ajustes Android opt-in. Sin nueva ficha; metadatos49,
+47 fichas, C0 240 / C8 254. Validación física root/Frida pendiente. No confundir
+con TM Tunnel VPN: su avance está preservado en una rama local separada y no
+forma parte de esta continuación NPV. Sin despliegue/fusión/publicación automática.
+
+**Estado anterior, 2026-10-25: MTM Tunnel Lite MTM (40)**, PR #99 sobre
 MNR `24fa3e2`. Paquete `com.mtmtunnel.lite`; asset real 35.55: **29 servidores /
 471 payloads**, GET fijo real 37.63: **27 / 479**, HTTP 200 con UA Dalvik/2.1.0.
 Ambos plaintext completos iguales a JDK y JSON completo igual a workers de

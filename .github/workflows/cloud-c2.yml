@@ -64,6 +64,10 @@ on:
       - "decoders/Python/apps/SevenNET_VPN/**"
       - "decoders/Python/apps/OneFTunnel/**"
       - "decoders/Python/npvs.py"
+      - "decoders/Python/npvs_identity.py"
+      - "tests/test_npvs_identity.py"
+      - "scripts/apk_analysis/npv_*"
+      - "tests/npv_recipient_capture.test.mjs"
       - "decoders/Python/v2box_export.py"
       - "tests/test_v2box_password.py"
       - "decoders/Python/apps/BD_NET_VPN/**"
@@ -189,7 +193,9 @@ jobs:
       - name: Verify 1FTunnel files, password handling and complete worker output
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_oneftunnel tests.test_cloud_c8_vpn_registry -v
       - name: Verify NPVS v1 legacy route, v5 protected methods, and recipient diagnostics
-        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_npvs_v1_legacy tests.test_npvs_protected tests.test_npvs_v5.PrimitiveTests tests.test_npvs_v5_embedded tests.test_cloud_c8_npvs_error_classification -v
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_npvs_identity tests.test_npvs_v1_legacy tests.test_npvs_protected tests.test_npvs_v5.PrimitiveTests tests.test_npvs_v5_embedded tests.test_cloud_c8_npvs_error_classification -v
+      - name: Verify scoped NPV capture observer
+        run: node --test tests/npv_recipient_capture.test.mjs
       - name: Verify FlexNet v1-v6, B46 protected fields and authorized import captures
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_flexnet_b46_grant tests.test_flexnet_b46 tests.test_flexnet_b42 -v
       - name: Verify FlexNet capture observer flow with host mocks

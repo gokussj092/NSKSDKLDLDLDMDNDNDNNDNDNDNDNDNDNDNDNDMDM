@@ -27,7 +27,7 @@ export function validatePublicFormats(parsed){
        !Array.isArray(entry.credentialFields) ||
        entry.credentialFields.length>3 ||
        new Set(entry.credentialFields).size!==entry.credentialFields.length ||
-       entry.credentialFields.some(x=>!['password','hwid','publicKey'].includes(x)))
+       entry.credentialFields.some(x=>!['password','hwid','publicKey','recipientKey'].includes(x)))
       throw Error('FORMATS_INVALID_ENTRY');
     seen.add(entry.suffix);
   }

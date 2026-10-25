@@ -88,7 +88,7 @@ internal class ServerVpnCatalogRepository(
         require(array.length() in 1..1024 && record.getInt("formatCount")==array.length())
         val formats=ArrayList<AndroidDecoderCatalog.Format>(array.length())
         val seen=HashSet<String>()
-        val supportedFields=setOf("password","hwid","publicKey")
+        val supportedFields=setOf("password","hwid","publicKey","recipientKey")
         val keys=setOf("suffix","name","kind","offlineSupported","cloudSupported","credentialFields")
         var last:String?=null
         for(i in 0 until array.length()) {

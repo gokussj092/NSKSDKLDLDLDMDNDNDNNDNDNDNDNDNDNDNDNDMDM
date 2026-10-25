@@ -24,11 +24,6 @@ internal object NpvsJson {
         for(c in value)when(c){
             '"'->append("\\\"")
             '\\'->append("\\\\")
-            '<'->append("\\u003c")
-            '>'->append("\\u003e")
-            '&'->append("\\u0026")
-            '\u2028'->append("\\u2028")
-            '\u2029'->append("\\u2029")
             '\b'->append("\\b")
             '\u000c'->append("\\f")
             '\n'->append("\\n")

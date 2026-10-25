@@ -43,7 +43,7 @@ test("extension precedence, native/cloud overlap and credential metadata",()=>{
   const formats=publicFormats();
   const candidates=filename=>formats.filter(x=>filename.toLowerCase().endsWith("."+x.suffix));
   assert.equal(candidates("backup.sksrv.png")[0].suffix,"sksrv.png");
-  assert.equal(formats.find(x=>x.suffix==="npvs").credentialFields.join(","),"password,publicKey");
+  assert.equal(formats.find(x=>x.suffix==="npvs").credentialFields.join(","),"password,publicKey,recipientKey");
   assert.equal(formats.find(x=>x.suffix==="hc").credentialFields.join(","),"password,hwid");
   assert.equal(formats.find(x=>x.suffix==="mmt").name,"MM Tunnel v1.10.11.1");
   assert.deepEqual(formats.find(x=>x.suffix==="mmt").credentialFields,[]);
@@ -56,7 +56,7 @@ test("HTTP Door publishes its file route and refreshes cached v44 metadata witho
   const format=publicFormats().find(x=>x.suffix==="kyz");
   assert.deepEqual(format,{suffix:"kyz",name:"HTTP Door 5.0",kind:"file",
     offlineSupported:false,cloudSupported:true,credentialFields:[]});
-  assert.equal(CATALOG_VERSION,48);
+  assert.equal(CATALOG_VERSION,49);
   const response=await endpoint(request(44));
   assert.equal(response.status,200);
   const body=await response.json();

@@ -268,6 +268,9 @@ internal class CloudDecodeClient(context: Context) {
         val body = JSONObject()
             .put("format", format)
             .put("dataBase64", Base64.encodeToString(bytes, Base64.NO_WRAP))
+        val recipient=if(format=="npvs" && NpvsRecipientProbe.fingerprints(bytes).isNotEmpty())
+            NpvsRecipientActivity.choose(app,bytes) else null
+        if(recipient!=null)body.put("credentials",JSONObject().put("recipientKey",recipient))
         if (password != null || hwid != null) {
             val credentials = JSONObject()
             if (password != null) credentials.put("password", String(password,Charsets.UTF_8))
@@ -275,6 +278,20 @@ internal class CloudDecodeClient(context: Context) {
             body.put("credentials",credentials)
         }
         return decode("/api/v1/decode/file",body).rawText
+    }
+
+    suspend fun generateNpvsIdentity():JSONObject {
+        require(BuildConfig.SPDECODE_CLOUD_ENABLED)
+        requireLegalConsent()
+        val bearer=session()
+        val result=withContext(Dispatchers.IO){
+            requireLegalConsent()
+            extract(CloudNativeTransport.post("/api/v1/npvs/identity",
+                JSONObject().put("consent",true),bearer)).getJSONObject("identity")
+        }
+        NpvsIdentityVault.validate(result)
+        require(result.optString("source")=="generated" && result.optString("kind")=="keypair")
+        return result
     }
 
     suspend fun decodeText(text: String, password: ByteArray? = null): String {

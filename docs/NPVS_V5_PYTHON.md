@@ -1,5 +1,7 @@
 # NPV Tunnel: descifrado Python de NPVS v5
 
+> Continuación 2026-10-25: [identidades v5/v6, error JSON y ajustes Android](NPVS_RECIPIENT_IDENTITIES.md). Los límites antiguos de destinatarios de este documento son históricos.
+
 `decoders/Python/npvs.py` descifra el archivo real suministrado de NPV Tunnel
 124.0.37 (`com.napsternetlabs.napsternetv`, versionCode 577). Es independiente de
 Android y de la APK durante su ejecución. Solo requiere Python 3 y PyCryptodome.

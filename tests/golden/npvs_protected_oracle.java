@@ -26,19 +26,34 @@ class npvs_protected_oracle {
   if(!y.pow(2).mod(p).equals(rhs))throw new IOException("point");if(y.testBit(0)!=(raw[0]==3))y=p.subtract(y);
   return KeyFactory.getInstance("EC").generatePublic(new ECPublicKeySpec(new ECPoint(x,y),spec));
  }
- static String read(byte[] raw,String password,byte[] wb)throws Exception{
+ static String read(byte[] raw,String password,byte[] wb,byte[] privateDer,byte[] recipientPub)throws Exception{
   var d=new DataInputStream(new ByteArrayInputStream(raw));if(!Arrays.equals(d.readNBytes(4),text("NPVS")))throw new IOException("magic");int v=d.readUnsignedByte();
   int size=d.readInt();byte[] header=d.readNBytes(size),nonce=d.readNBytes(12);int bodySize=d.readInt();byte[] body=d.readNBytes(bodySize),signature=d.readNBytes(64);
   if(d.available()!=0||signature.length!=64||body.length!=bodySize)throw new IOException("bounds");
   byte[] pub=Arrays.copyOfRange(header,17,50);var verify=Signature.getInstance("SHA256withECDSAinP1363Format");verify.initVerify(point(pub));verify.update(raw,0,raw.length-64);if(!verify.verify(signature))throw new IOException("signature");
-  var h=new DataInputStream(new ByteArrayInputStream(header));if(h.readUnsignedByte()!=1)throw new IOException("header");byte[] cid=h.readNBytes(16);h.readNBytes(33);int mode=h.readUnsignedByte(),recipients=h.readUnsignedShort();h.readNBytes(recipients*125);if(v==6)h.readNBytes(16);
-  if(mode==0)return "{\"status\":\"PRIVATE_KEY_REQUIRED\",\"signatureValid\":true}";
-  if(v!=5)throw new IOException("unsupported version");byte[] salt,wrapped,key;
+  var h=new DataInputStream(new ByteArrayInputStream(header));if(h.readUnsignedByte()!=1)throw new IOException("header");byte[] cid=h.readNBytes(16);h.readNBytes(33);int mode=h.readUnsignedByte(),recipients=h.readUnsignedShort();byte[] recipientRecords=h.readNBytes(recipients*125);byte[] maskSalt=v==6?h.readNBytes(16):new byte[0];
+  if(mode==0 && privateDer.length==0)return "{\"status\":\"PRIVATE_KEY_REQUIRED\",\"signatureValid\":true}";
+  if(v!=5 && !(v==6 && mode==0))throw new IOException("unsupported version");byte[] salt,wrapped,key;
+  byte[] dek=null;
+  if(mode==0){
+   byte[] fp=MessageDigest.getInstance("SHA-256").digest(recipientPub);byte[] record=null;
+   for(int i=0;i<recipients;i++){byte[] candidate=Arrays.copyOfRange(recipientRecords,i*125,(i+1)*125);if(MessageDigest.isEqual(fp,Arrays.copyOf(candidate,32)))record=candidate;}
+   if(record==null)throw new IOException("recipient mismatch");
+   var privateKey=KeyFactory.getInstance("EC").generatePrivate(new PKCS8EncodedKeySpec(privateDer));
+   var agreement=KeyAgreement.getInstance("ECDH");agreement.init(privateKey);agreement.doPhase(point(Arrays.copyOfRange(record,32,65)),true);
+   key=hkdf(agreement.generateSecret(),cid,cat(text("NPVS-v1-wrap"),fp));
+   var aes=Cipher.getInstance("AES/GCM/NoPadding");aes.init(Cipher.DECRYPT_MODE,new SecretKeySpec(key,"AES"),new GCMParameterSpec(128,Arrays.copyOfRange(record,65,77)));aes.updateAAD(cid);dek=aes.doFinal(Arrays.copyOfRange(record,77,125));
+   if(v==6){
+    byte[] kdk=MessageDigest.getInstance("SHA-256").digest(cat(text("npvtunnel/appkey/v2 "),wb,cid));
+    byte[] pad=hkdf(kdk,maskSalt,cat(text("NPVS-v6/recipient-binding"),cid));for(int i=0;i<32;i++)dek[i]^=pad[i];
+   }
+   salt=new byte[0];wrapped=new byte[0];
+  } else
   if(mode==1){int iterations=h.readInt();salt=h.readNBytes(16);wrapped=h.readNBytes(60);var spec=new PBEKeySpec(password.toCharArray(),salt,iterations,256);key=SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256").generateSecret(spec).getEncoded();spec.clearPassword();}
   else if(mode==2){if(h.readUnsignedShort()!=2||wb.length!=16)throw new IOException("app-key");salt=h.readNBytes(16);wrapped=h.readNBytes(60);key=MessageDigest.getInstance("SHA-256").digest(cat(text("npvtunnel/appkey/v2 "),wb,cid));}
   else throw new IOException("mode");
   int prefix=header.length-h.available();int msize=h.readInt();byte[] metadataCipher=h.readNBytes(msize);if(h.available()!=0)throw new IOException("metadata bounds");
-  byte[] dek=open(key,Arrays.copyOf(wrapped,12),Arrays.copyOfRange(wrapped,12,60),salt);
+  if(mode!=0)dek=open(key,Arrays.copyOf(wrapped,12),Arrays.copyOfRange(wrapped,12,60),salt);
   byte[] metadata=open(hkdf(dek,nonce,text("NPVS-v5/metadata")),nonce,metadataCipher,Arrays.copyOf(header,prefix));
   var f=new DataInputStream(new ByteArrayInputStream(body));if(!Arrays.equals(f.readNBytes(4),new byte[]{'N','P','F',1}))throw new IOException("NPF");byte[] context=f.readNBytes(32);
   byte[] inventory=hkdf(dek,context,cat(text("NPV-fields-v1/inventory/"),new byte[]{0,0}));if(!MessageDigest.isEqual(mac(inventory,Arrays.copyOf(body,body.length-32)),Arrays.copyOfRange(body,body.length-32,body.length)))throw new IOException("inventory");
@@ -52,6 +67,6 @@ class npvs_protected_oracle {
  }
  public static void main(String[] args)throws Exception{
   var reader=new BufferedReader(new InputStreamReader(System.in,StandardCharsets.UTF_8));String line;
-  while((line=reader.readLine())!=null){var parts=line.split("\t",-1);System.out.println(read(Base64.getDecoder().decode(parts[0]),new String(Base64.getDecoder().decode(parts[1]),StandardCharsets.UTF_8),Base64.getDecoder().decode(parts[2])));}
+  while((line=reader.readLine())!=null){var parts=line.split("\t",-1);System.out.println(read(Base64.getDecoder().decode(parts[0]),new String(Base64.getDecoder().decode(parts[1]),StandardCharsets.UTF_8),Base64.getDecoder().decode(parts[2]),parts.length>3?Base64.getDecoder().decode(parts[3]):new byte[0],parts.length>4?Base64.getDecoder().decode(parts[4]):new byte[0]));}
  }
 }

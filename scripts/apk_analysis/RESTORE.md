@@ -1,5 +1,26 @@
 # Recuperar herramientas después de perder el entorno
 
+## NPV Tunnel 124.0.37 — 2026-10-25
+
+Leer `docs/NPVS_RECIPIENT_IDENTITIES.md` y `docs/NPV_RECIPIENT_TERMUX.md`.
+Las tres RIFI son v5 app-key sin destinatarios: error de escape HTML de JSON
+corregido, tres documentos / 72 registros íntegros iguales a JCA y worker.
+Destinatarios P-256 implementados en v5/v6 con privada PKCS8 o captura ECDH
+ligada al SHA-256 y efímera del archivo. Contexto fuente versionado5/6,
+metadata HKDF sigue label v5; v6 añade pad whitebox/HKDF XOR.
+API genera pares frescos sin retención; Android Cloud tiene vault cifrado,
+opt-in apagado, generar/importar/copiar y selector seguro por importación.
+C0 UI permanece congelado; sección solo en Settings generado de Cloud/QA.
+Catálogo49 /47 fichas, C8 254; no desplegar/fusionar/publicar automáticamente.
+No afirmar privada hardware exportable ni validación física Frida ya realizada.
+
+```sh
+python -m unittest tests.test_npvs_identity tests.test_npvs_protected
+node --test tests/npv_recipient_capture.test.mjs
+python scripts/apk_analysis/npv_termux_bundle.py /privado/npv_termux_bundle.zip
+python scripts/apk_analysis/npvs_verify.py /privado/rifi.npvs --worker
+```
+
 ## MTM Tunnel Lite MTM (40) — 2026-10-25
 
 PR #99 sobre MNR `24fa3e2`. Carpeta MTM_Tunnel_Lite, motor canónico HX.

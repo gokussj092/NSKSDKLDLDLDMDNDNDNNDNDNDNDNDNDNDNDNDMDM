@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+import { randomUUID, createPrivateKey, createPublicKey, createHash, ECDH } from "node:crypto";
 import { settings, limits } from "./c3-config.mjs";
 import { store, reserveSlot, releaseSlot } from "./c3-store.mjs";
 import { createChallenge, issueSession, issueQaSession, requireSession } from "./c3-session.mjs";
@@ -104,7 +104,7 @@ function validatePayload(kind,payload) {
       if (!allowed?.length || !isRecord(payload.credentials) ||
           Object.keys(payload.credentials).some(k=>!allowed.includes(k)))
         throw Object.assign(new Error("credentials"),{code:"INVALID_CREDENTIALS"});
-      for(const [key,max] of [["password",4096],["hwid",128],["publicKey",128]]){
+      for(const [key,max] of [["password",4096],["hwid",128],["publicKey",128],["recipientKey",16384]]){
         const value=payload.credentials[key];
         if(value!==undefined && (typeof value!=="string" || !value.length || value.length>max ||
             (["1ftnl","npvs"].includes(payload.format) && Buffer.byteLength(value,"utf8")>max)))
@@ -391,6 +391,53 @@ export async function challengeRequest(request,options={}) {
     const policy=await admissionPolicy(redis);
     return jsonReply({apiVersion:"v1",...result,integrityRequired:policy.integrityRequired},201);
   }catch{return failure("SERVICE_UNAVAILABLE",503);}
+}
+/** Fresh P-256 identity, returned once. No database, telemetry or decoder history. */
+export async function npvsIdentityRequest(request,options={}) {
+  if(!enabled())return notEnabled();
+  let redis,claims,lease;
+  try {
+    const cfg=settings();
+    redis=await (options.storeProvider||store)();
+    if(await maintenanceEnabled(redis) || await serviceMaintenanceEnabled(redis,"files"))
+      return failure("SERVICE_UNAVAILABLE",503);
+    claims=await requireSession(redis,request,cfg);
+    if(!claims)return failure("UNAUTHORIZED",401);
+    if(claims.rateLimited)return failure("RATE_LIMITED",429);
+    const payload=await boundedBody(request,128);
+    if(!isRecord(payload) || Object.keys(payload).length!==1 || payload.consent!==true)
+      return failure("USER_CONSENT_REQUIRED",400);
+    lease=randomUUID();
+    if(!await reserveSlot(redis,claims.jti,lease)){lease=null;return failure("RATE_LIMITED",429);}
+    if(process.env.WORKER_INTERNAL_URL!=="http://decoder-worker:8787")throw Error("worker origin");
+    const response=await (options.fetchImpl||fetch)("http://decoder-worker:8787/internal/v1/npvs/identity",{
+      method:"POST",headers:{"Content-Type":"application/json","X-SP-Worker-Token":cfg.workerToken},
+      body:'{"consent":true}',redirect:"error",cache:"no-store",signal:AbortSignal.timeout(10000),
+    });
+    if(response.status!==200)throw Error("identity worker");
+    const reader=response.body.getReader();let length=0,chunks=[];
+    try{while(true){const item=await reader.read();if(item.done)break;
+      length+=item.value.byteLength;if(length>4096)throw Error("identity size");chunks.push(Buffer.from(item.value));
+    }}finally{if(length>4096)await reader.cancel().catch(()=>{});reader.releaseLock();}
+    const result=JSON.parse(Buffer.concat(chunks).toString("utf8"));
+    if(!isRecord(result) || Object.keys(result).join(",")!=="identity")throw Error("identity envelope");
+    const key=result.identity;
+    if(!isRecord(key) || Object.keys(key).sort().join(",")!=="curve,fingerprint,kind,privateKey,publicKey,schema,source" ||
+       key.schema!=="spdecode.npvs.recipient.v1" || key.source!=="generated" || key.kind!=="keypair" || key.curve!=="P-256" ||
+       !/^[A-Za-z0-9_-]{100,512}$/.test(key.privateKey) || !/^[A-Za-z0-9_-]{44}$/.test(key.publicKey))throw Error("identity schema");
+    const privateKey=createPrivateKey({key:Buffer.from(key.privateKey,"base64url"),format:"der",type:"pkcs8"});
+    if(privateKey.asymmetricKeyDetails?.namedCurve!=="prime256v1")throw Error("identity curve");
+    const jwk=createPublicKey(privateKey).export({format:"jwk"});
+    const publicKey=ECDH.convertKey(Buffer.concat([Buffer.from([4]),Buffer.from(jwk.x,"base64url"),Buffer.from(jwk.y,"base64url")]),"prime256v1",undefined,undefined,"compressed");
+    if(publicKey.toString("base64url")!==key.publicKey || createHash("sha256").update(publicKey).digest("hex")!==key.fingerprint)
+      throw Error("identity mismatch");
+    return jsonReply({identity:key},201);
+  }catch(error){
+    if(error?.code==="INVALID_REQUEST")return failure("INVALID_REQUEST",400);
+    if(error?.code==="INPUT_TOO_LARGE")return failure("INPUT_TOO_LARGE",413);
+    return failure("SERVICE_UNAVAILABLE",503);
+  }
+  finally{if(redis&&lease&&claims){try{await releaseSlot(redis,claims.jti,lease);}catch{}}}
 }
 export async function sessionRequest(request,options={}) {
   if(!enabled())return notEnabled();
