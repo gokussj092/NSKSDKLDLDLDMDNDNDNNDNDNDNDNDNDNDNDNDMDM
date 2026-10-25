@@ -136,8 +136,12 @@ internal class ServerVpnCatalogRepository(
             val name=entry.getString("name")
             val suffix=entry.getString("suffix")
             val kind=entry.getString("kind")
+            // Prefix syntax must agree with the VPS validator: no relative
+            // paths, dot segments, URLs or arbitrarily executable routes.
             require(prefix.length in 4..64 &&
-                prefix.matches(Regex("^[A-Za-z0-9.\\-]+(?:://|:|\\.)[A-Za-z0-9/]*$")) &&
+                !prefix.startsWith("http://",ignoreCase=true) &&
+                !prefix.startsWith("https://",ignoreCase=true) &&
+                prefix.matches(Regex("""^(?:[A-Za-z0-9][A-Za-z0-9-]{1,62}://[A-Za-z0-9/_-]*|[A-Za-z0-9][A-Za-z0-9-]{1,62}:|[A-Za-z0-9][A-Za-z0-9-]{1,62}\\.)$""")) &&
                 seen.add(prefix.lowercase(java.util.Locale.ROOT)))
             require(name.length in 1..80 && name==name.trim())
             require(suffix.matches(Regex("^[a-z0-9_-]{1,32}$")))
