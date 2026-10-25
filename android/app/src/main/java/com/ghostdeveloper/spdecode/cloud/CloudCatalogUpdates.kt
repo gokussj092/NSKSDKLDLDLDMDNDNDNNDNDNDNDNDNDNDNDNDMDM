@@ -112,7 +112,7 @@ internal class CloudCatalogSyncWorker(
             // Background recovery only retains a version hint. Never download
             // new catalogs without the user confirming the foreground dialog.
             val remote=CloudDecodeClient(applicationContext).watchCatalogVersion(0)
-            markOffered(applicationContext,maxOf(requested,remote))
+            CloudCatalogUpdates.markOffered(applicationContext,maxOf(requested,remote))
             Result.success()
         }catch(error:CancellationException){throw error}
          catch(_:Exception){if(runAttemptCount<4)Result.retry() else Result.failure()}
