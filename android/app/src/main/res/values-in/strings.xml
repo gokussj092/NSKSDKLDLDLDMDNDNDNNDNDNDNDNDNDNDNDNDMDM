@@ -32,7 +32,7 @@
     <string name="privacy_title">Privasi</string>
     <string name="privacy_text">Berkas asli yang diimpor tidak disalin. Hasil dekode dienkripsi dan disimpan hanya di perangkat ini sampai Anda menghapusnya.</string>
     <string name="about_title">Tentang SP-DECODE</string>
-    <string name="about_text">SP-DECODE memproses konfigurasi VPN melalui Cloud API aman dan menyimpan hasil di riwayat terenkripsi perangkat.</string>
+    <string name="about_text">SP-DECODE memproses konfigurasi VPN secara aman melalui SP Cloud dan menyimpan hasil dalam riwayat perangkat yang terenkripsi.</string>
     <string name="language_title">Bahasa</string>
     <string name="language_text">Pilih bahasa aplikasi. Mengubahnya akan memulai ulang layar ini.</string>
     <string name="show">Tampilkan</string>
@@ -182,7 +182,7 @@
     <string name="cloud_http_injector_open">Cloud (Online)</string>
     <string name="cloud_http_injector_hint">Tempel tautan ehi.link, kunci Cloud, atau urutan 💉…🚀</string>
     <string name="cloud_http_injector_action">Impor konfigurasi Cloud</string>
-    <string name="cloud_http_injector_privacy">Layanan Cloud: referensi dikirim ke HTTP Injector Cloud hanya setelah mengetuk Impor. Format lain memakai API SP-DECODE.</string>
+    <string name="cloud_http_injector_privacy">Layanan SP Cloud: referensi dikirim ke HTTP Injector Cloud hanya setelah mengetuk Impor. Format lain menggunakan SP Cloud.</string>
     <string name="cloud_http_injector_invalid">Tautan Cloud, kunci, atau urutan emoji tidak valid. Periksa referensi aslinya.</string>
     <string name="cloud_http_injector_network_error">Tidak dapat terhubung ke HTTP Injector Cloud. Periksa koneksi dan coba lagi.</string>
     <string name="cloud_http_injector_server_error">HTTP Injector Cloud menolak referensi ini. Mungkin sudah kedaluwarsa, dicabut, atau layanan sedang tidak tersedia.</string>

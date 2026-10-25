@@ -32,7 +32,7 @@
     <string name="privacy_title">حریم خصوصی</string>
     <string name="privacy_text">فایل‌های اصلی واردشده کپی نمی‌شوند. نتایج رمزگشایی‌شده رمزگذاری می‌شوند و تا زمان حذف فقط در همین دستگاه می‌مانند.</string>
     <string name="about_title">درباره SP-DECODE</string>
-    <string name="about_text">SP-DECODE تنظیمات VPN را با API ابری امن پردازش می‌کند و نتایج را در تاریخچه رمزگذاری‌شده دستگاه ذخیره می‌کند.</string>
+    <string name="about_text">SP-DECODE تنظیمات VPN را به‌صورت امن از طریق SP Cloud پردازش می‌کند و نتایج را در تاریخچه رمزگذاری‌شده دستگاه ذخیره می‌کند.</string>
     <string name="language_title">زبان‌ها</string>
     <string name="language_text">زبان برنامه را انتخاب کنید. با تغییر زبان، این صفحه دوباره راه‌اندازی می‌شود.</string>
     <string name="show">نمایش</string>
@@ -182,7 +182,7 @@
     <string name="cloud_http_injector_open">فضای ابری (آنلاین)</string>
     <string name="cloud_http_injector_hint">پیوند ehi.link، کلید Cloud یا دنباله 💉…🚀 را بچسبانید</string>
     <string name="cloud_http_injector_action">وارد کردن پیکربندی ابری</string>
-    <string name="cloud_http_injector_privacy">سرویس Cloud: مرجع فقط پس از زدن وارد کردن به HTTP Injector Cloud ارسال می‌شود. قالب‌های دیگر از API SP-DECODE استفاده می‌کنند.</string>
+    <string name="cloud_http_injector_privacy">سرویس SP Cloud: مرجع فقط پس از زدن وارد کردن به HTTP Injector Cloud ارسال می‌شود. قالب‌های دیگر از SP Cloud استفاده می‌کنند.</string>
     <string name="cloud_http_injector_invalid">پیوند ابری، کلید یا دنباله ایموجی نامعتبر است. مرجع اصلی را بررسی کنید.</string>
     <string name="cloud_http_injector_network_error">اتصال به HTTP Injector Cloud ممکن نیست. اتصال اینترنت را بررسی و دوباره تلاش کنید.</string>
     <string name="cloud_http_injector_server_error">HTTP Injector Cloud این مرجع را نپذیرفت. ممکن است منقضی یا لغو شده باشد یا سرویس در دسترس نباشد.</string>
