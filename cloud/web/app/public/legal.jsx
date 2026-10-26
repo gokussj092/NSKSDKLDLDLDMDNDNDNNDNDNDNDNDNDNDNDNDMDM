@@ -131,11 +131,71 @@ const docs={
 export default function PublicLegal({kind}){
  const {lang}=usePublicLocale();
  const d=(docs[lang]||docs.es)[kind];
- return <main id="main" className="sp-public-main"><article className="sp-container sp-legal">
-  <span className="sp-kicker">{d.label}</span><h1>{d.title}</h1><p className="sp-legal-lead">{d.intro}</p>
-  {d.sections.map(([heading,body],index)=><section key={index} className="sp-legal-card"><h2>{heading}</h2><p>{body}</p></section>)}
-  {kind==="support"&&<a className="sp-support-email" href="mailto:soporte@spdecode.xyz">soporte@spdecode.xyz ↗</a>}
-  <div className="sp-legal-notice" role="note">{d.notice}</div>
-  <div className="sp-cta-links" style={{marginTop:28}}><Link href="/privacy">{lang==="es"?"Privacidad":"Privacy"}</Link><Link href="/terms">{lang==="es"?"Términos":"Terms"}</Link><Link href="/support">{lang==="es"?"Soporte":"Support"}</Link></div>
- </article></main>;
+ const es=lang==="es";
+ const sections=d.sections.map(([heading,body],index)=>({
+  heading,body,id:"sp-legal-"+kind+"-"+(index+1),
+  number:String(index+1).padStart(2,"0"),
+ }));
+ const pages=[
+  {url:"/privacy",key:"privacy",name:es?"Privacidad":"Privacy"},
+  {url:"/terms",key:"terms",name:es?"Términos de uso":"Terms of use"},
+  {url:"/support",key:"support",name:es?"Soporte":"Support"},
+ ];
+ return <main id="main" className="sp-public-main">
+  <article className="sp-container sp-legal" aria-labelledby="sp-legal-title">
+   <nav className="sp-legal-breadcrumb" aria-label={es?"Ruta de navegación":"Breadcrumb"}>
+    <Link href="/">SP-DECODE</Link><span aria-hidden="true">/</span><span aria-current="page">{d.label}</span>
+   </nav>
+   <header className="sp-legal-hero">
+    <div className="sp-legal-hero-top">
+     <span className="sp-kicker">{d.label}</span>
+     <span className="sp-legal-edition">{es?"Documentación oficial":"Official documentation"} · ES / EN</span>
+    </div>
+    <h1 id="sp-legal-title">{d.title}</h1>
+    <p className="sp-legal-lead">{d.intro}</p>
+    <div className="sp-legal-hero-actions">
+     <span className="sp-legal-count">{sections.length} {es?"apartados":"sections"}</span>
+     <button type="button" className="sp-legal-print" onClick={()=>window.print()} aria-label={es?"Imprimir este documento":"Print this document"}>
+      {es?"Imprimir / guardar PDF":"Print / save PDF"}
+     </button>
+    </div>
+   </header>
+   <nav className="sp-legal-doc-tabs" aria-label={es?"Documentos de SP-DECODE":"SP-DECODE documents"}>
+    {pages.map(page=><Link key={page.key} href={page.url}
+     className={page.key===kind?"sp-legal-doc-tab is-active":"sp-legal-doc-tab"}
+     aria-current={page.key===kind?"page":undefined}>{page.name}</Link>)}
+   </nav>
+   <div className="sp-legal-layout">
+    <aside className="sp-legal-sidebar" aria-label={es?"Índice del documento":"Table of contents"}>
+     <div className="sp-legal-sidebar-title">{es?"En esta página":"On this page"}</div>
+     <nav className="sp-legal-toc">
+      {sections.map(section=><a href={"#"+section.id} key={section.id}>
+       <span aria-hidden="true">{section.number}</span>{section.heading}
+      </a>)}
+     </nav>
+    </aside>
+    <div className="sp-legal-content">
+     <div className="sp-legal-intro-note">
+      <strong>{es?"Sobre este documento":"About this document"}</strong>
+      <p>{es?"Información sobre el funcionamiento actual de SP-DECODE. Para dudas acerca del tratamiento de datos o del uso de la aplicación, utiliza el contacto oficial al final de esta página.":"Information about how SP-DECODE currently works. For questions about data handling or using the app, contact the official support address at the end of this page."}</p>
+     </div>
+     {sections.map(section=><section id={section.id} key={section.id} className="sp-legal-card" aria-labelledby={section.id+"-title"}>
+      <div className="sp-legal-section-number" aria-hidden="true">{section.number}</div>
+      <div><h2 id={section.id+"-title"}>{section.heading}</h2><p>{section.body}</p></div>
+     </section>)}
+     <section className="sp-legal-contact" aria-label={es?"Contacto":"Contact"}>
+      <div>
+       <strong>{es?"¿Necesitas ayuda o quieres consultar tus derechos?":"Need support or have a privacy question?"}</strong>
+       <p>{es?"Utiliza nuestro correo oficial. No incluyas contraseñas, claves privadas ni archivos confidenciales.":"Use our official email. Do not include passwords, private keys or confidential files."}</p>
+      </div>
+      <a className="sp-support-email" href="mailto:soporte@spdecode.xyz">soporte@spdecode.xyz</a>
+     </section>
+     <div className="sp-legal-notice" role="note">{d.notice}</div>
+     <div className="sp-legal-bottom"><a href="#sp-legal-title">{es?"Volver al inicio":"Back to top"}</a>
+      <div className="sp-cta-links"><Link href="/privacy">{es?"Privacidad":"Privacy"}</Link><Link href="/terms">{es?"Términos":"Terms"}</Link><Link href="/support">{es?"Soporte":"Support"}</Link></div>
+     </div>
+    </div>
+   </div>
+  </article>
+ </main>;
 }
