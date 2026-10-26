@@ -80,6 +80,18 @@
       "kind": "text"
     },
     {
+      "prefix": "xhypher://",
+      "name": "Xhypher Tunnel Pro",
+      "suffix": "xhypher",
+      "kind": "text"
+    },
+    {
+      "prefix": "xhyphertunnelpro://",
+      "name": "Xhypher Tunnel Pro",
+      "suffix": "xhypher",
+      "kind": "text"
+    },
+    {
       "prefix": "tls://",
       "name": "TLS Tunnel",
       "suffix": "tls",
@@ -93,6 +105,12 @@
     },
     {
       "prefix": "dark://",
+      "name": "Dark Tunnel",
+      "suffix": "dark",
+      "kind": "text"
+    },
+    {
+      "prefix": "darktunnel://",
       "name": "Dark Tunnel",
       "suffix": "dark",
       "kind": "text"

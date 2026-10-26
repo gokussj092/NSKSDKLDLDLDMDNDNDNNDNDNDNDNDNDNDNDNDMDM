@@ -11,6 +11,7 @@ import unittest
 from cloud.workers.python.engine import decode_text, DecodeFailure
 from cloud.workers.python.text_bridge import dispatch
 from scripts.android_g_text_fixtures import build
+from tests.golden.a23_generators import dark_bytes
 
 class CloudC2TextTests(unittest.TestCase):
     @classmethod
@@ -34,6 +35,23 @@ class CloudC2TextTests(unittest.TestCase):
                 if parsed != case["expected"]:
                     misses.append(case["scheme"])
         self.assertEqual(misses, [], "Source-derived text parity gaps: " + ", ".join(misses))
+
+    def test_dark_tunnel_real_name_and_historical_text_prefixes(self):
+        # The independent A23 fixture is a full AES-CFB/MessagePack envelope.
+        # The four aliases must select one decoder, not four crypto methods.
+        payload = dark_bytes().decode("ascii")
+        expected = decode_text("dt://" + payload)
+        self.assertEqual(expected["kind"], "text")
+        self.assertFalse(expected["isPartial"])
+        self.assertIn("synthetic", expected["rawText"])
+        for prefix in ("dark://", "darktunnel://", "dtunnel://", "dt://"):
+            with self.subTest(prefix=prefix):
+                actual = decode_text(prefix + payload)
+                self.assertEqual(actual["rawText"], expected["rawText"])
+                self.assertEqual(actual["structuredJson"], expected["structuredJson"])
+                self.assertEqual(dispatch(prefix + payload), expected["rawText"].rstrip("\n"))
+        with self.assertRaises(DecodeFailure):
+            decode_text("darktunnel://not-valid-dark-config")
 
     def test_text_bridge_is_protected_against_unknown_and_private_key_formats(self):
         self.assertIsNone(dispatch("happ://crypt/AAAA"))
