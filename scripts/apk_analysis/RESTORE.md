@@ -1,5 +1,32 @@
 # Recuperar herramientas después de perder el entorno
 
+## TunnelDOOM VPN 4.2.4 — 2026-10-26
+
+Continuar PR102 y leer `apps/TunnelDOOM_VPN/{README,ANALYSIS,TESTING}.md`.
+Catálogo incluido completo igual a JCA/worker; remoto sin respuesta real,
+ficha desactivada. No confundir `.sks` legado con un export actual probado.
+Guardar el APKS/catálogos/DEX privados fuera de Git y comprobar hashes.
+
+```sh
+python scripts/apk_analysis/inspect_apk.py /privado/TunnelDOOM.apks /privado/doom
+python scripts/apk_analysis/decompile.py /privado/doom/dex/classes3.dex /privado/doom-jadx3
+python scripts/apk_analysis/dex_method.py /privado/doom/dex/classes3.dex \
+  'Lcom/tunneldoom/sshservice/util/crypt/StringCrypter;' processString /privado/doom-outer.json
+python scripts/apk_analysis/tunneldoom_verify.py /privado/noobdev.txt --worker
+PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_tunneldoom_vpn -v
+python decoders/Python/apps/TunnelDOOM_VPN/server_catalog_decoder.py \
+  -o /privado/nuevo-catalogo.json
+```
+
+Extraer `res/raw/noobdev.txt` de base.apk a la ruta privada para el verificador.
+Launcher PNG exacto en split_config.xhdpi.apk: `res/drawable-xhdpi-v4/ic_launcher.png`.
+JADX DEX3 parcial con8 errores; las rutas relevantes se contrastan con Dalvik.
+GET fijo `control.tunneldoom.space/config.json` no alcanzable aquí (proxy503);
+no habilitar hasta obtener documento remoto real completo y paridad. No probar
+servicios de cuentas/tokens ni copiar cuentas hardcodeadas/llaves API del APK.
+Python/Termux del catálogo necesita solo PyCryptodome + codec/CLI; SKS usa
+la carpeta hermana Fenix. C0 240/C8 254, mínimo55/49 fichas.
+
 ## HTTP Custom online — 2026-10-26
 
 Misma rama/PR #102, después de HA. Ver `docs/cloud/HTTP_CUSTOM_ONLINE.md`: descarga una

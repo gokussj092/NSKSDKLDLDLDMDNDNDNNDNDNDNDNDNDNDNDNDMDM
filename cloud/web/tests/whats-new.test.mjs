@@ -68,10 +68,10 @@ test("server publication is independent of Android versionCode",async()=>{
  const response=await whatsNewRequest(query(fixture.version,"fr"),{source:()=>validateNews(next)});
  assert.equal(response.status,200);
  const body=await response.json();
- assert.equal(body.version,5);
+ assert.equal(body.version,next.version);
  assert.equal(body.locale,"fr");
  assert.equal(body.items[0].title,"Cloud processing improvements");
- assert.equal(loadNews({CLOUD_WHATS_NEW_JSON:JSON.stringify(next)}).version,5);
+ assert.equal(loadNews({CLOUD_WHATS_NEW_JSON:JSON.stringify(next)}).version,next.version);
 });
 test("invalid controls, unsafe HTML and oversized data fail closed; list newlines are safe",async()=>{
  for(const invalid of [{knownVersion:-1,locale:"en"},{knownVersion:"0",locale:"en"},

@@ -1,5 +1,24 @@
 # SP-DECODE Cloud — Guía para ampliar Server VPN en otro chat
 
+## TunnelDOOM VPN 4.2.4 (424) — 2026-10-26
+
+PR **#102**, rama `feat/ha-tunnel-plus-1-7-1-decoders`, base `d7d2f696`.
+`apps/TunnelDOOM_VPN/`: catálogo activo `res/raw/noobdev.txt` Version3,
+**1 servidor / 13 campos cifrados**. XOR SHA256/test_key en el exterior,
+NoobPass/NoobCrypt AES256-CBC/IV0 en campos; documento entero igual a JCA,
+CLI y worker. Metadatos/flags/desconocidos conservados, sin copiar cuentas
+codificadas del APK. `.sks` reutiliza Fenix GCM/DES; contrato del parser
+confirmado pero sin export real ni ruta UI activa comprobada de build424.
+No se identifica texto propietario ni importación Cloud individual por ID.
+
+Actualizador GET fijo identificado, **inaccesible desde este entorno**:
+HTTP503 del proxy/envoy por fallo de conexión upstream. No se afirma que el
+origen esté caído. CLI fijo con mocks; sin paridad remota ni broker público.
+Ficha con PNG launcher original16328 bytes, `remote:null`, aun con global on.
+Mínimo **55 / 49 fichas**; C0 **240**, C8 **254**, sin extensión nueva.
+Ver README/ANALYSIS/TESTING/manifest, `tunneldoom_verify.py` y oracle JDK.
+No fusionar, desplegar, publicar APK ni novedades automáticamente.
+
 ## HTTP Custom online — 2026-10-26
 
 Misma rama/PR #102, después de HA. Ver `HTTP_CUSTOM_ONLINE.md`: descarga una

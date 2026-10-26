@@ -1,0 +1,36 @@
+{
+  "id": "tunneldoom-vpn",
+  "name": "TunnelDOOM VPN",
+  "package": "com.tunneldoom.http",
+  "versionName": "4.2.4",
+  "versionCode": 424,
+  "engine": "python",
+  "catalogEntrypoint": "server_catalog_decoder.py",
+  "fileEntrypoint": "file_decoder.py",
+  "extensions": ["sks"],
+  "sharedFileDecoder": "HTTP_FenixVPN/file_decoder.py",
+  "fileSupportScope": "bundled-legacy-parser-contract; current-build-export-unverified",
+  "dependencies": ["pycryptodome==3.23.0"],
+  "credentials": [],
+  "userPasswordCryptographicallyRequired": false,
+  "hwidCryptographicallyRequired": false,
+  "catalog": {
+    "embedded": {"resource": "res/raw/noobdev.txt", "version": "3", "servers": 1, "encryptedFields": 13, "completeParity": true},
+    "remote": {"status": "unreachable-from-analysis-environment", "enabled": false, "observedProxyStatus": 503}
+  },
+  "proprietaryTextFormatIdentified": false,
+  "individualCloudImportIdentified": false,
+  "realFileSampleVerified": false,
+  "androidOfflineSupported": false,
+  "androidDeviceVerified": false,
+  "termuxDeviceVerified": false,
+  "icon": {
+    "path": "cloud/web/public/server-vpn-icons/tunneldoom-vpn.png",
+    "source": "split_config.xhdpi.apk!/res/drawable-xhdpi-v4/ic_launcher.png",
+    "bytes": 16328,
+    "width": 1000,
+    "height": 1000,
+    "sha256": "ce33bc4ef6b663f43af31dc72bc32d6d7981fd4cb33bc0d89bc9b1b699187980"
+  },
+  "deployment": "pending"
+}
