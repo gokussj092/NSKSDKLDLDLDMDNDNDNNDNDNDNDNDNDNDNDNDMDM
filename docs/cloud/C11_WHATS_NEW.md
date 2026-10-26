@@ -89,3 +89,29 @@ No Android recompilation is required.
 ## QA
 
 Run `cd cloud/web && npm test`, the Next.js production build, Android Cloud compile, and C0 snapshot parity. Test English, Spanish, another language falling back to English, a new higher publication, unchanged response, offline cached notice, failed downloads and repeated app launches.
+
+
+## Actualización editorial v5 — 26 de octubre de 2026
+
+Publicación preparada en `cloud/web/content/whats-new.json` para los **14 idiomas**
+(`en,es,ar,fa,fr,id,ru,de,pt-BR,tr,vi,hi,ja,it`), `version:5`,
+independiente de `CATALOG_VERSION:54`.
+
+Contiene tres avisos breves: (1) lectura más completa de archivos históricos
+`.hat` con catálogo remoto HA aún pendiente; (2) HTTP Custom Cloud con
+referencias `hccloud://` para el editor de textos de APK antiguos y límites
+para enlaces caducados/credenciales; (3) actualización a **SP-DECODE 1.1.20**,
+descarga para usuarios del canal `https://t.me/GhostDeve/377`, actualización
+para testers desde Google Play Store y **sin reinstalar** cuando ya usan 1.1.20.
+
+Los enlaces se publican como **texto simple** dentro de las descripciones, no
+como HTML ni como destinos ejecutables configurados por el servidor. La
+versión antigua de Android interpreta solamente texto localizado.
+
+**Importante al desplegar:** `CLOUD_WHATS_NEW_JSON` tiene prioridad sobre el
+archivo. Si existe un override con notas v4, actualizarlo a v5 o desactivarlo;
+de otro modo los usuarios seguirán recibiendo novedades obsoletas pese a que
+el repositorio tenga v5. Verificar que `POST /api/v1/whats-new` con
+`{"knownVersion":4,"locale":"es"}` devuelve la versión 5. No subir la
+versión en producción hasta que los métodos Cloud anunciados estén
+desplegados y validados.
