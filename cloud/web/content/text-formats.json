@@ -2,6 +2,12 @@
   "schemaVersion": 1,
   "formats": [
     {
+      "prefix": "hccloud://",
+      "name": "HTTP Custom Cloud (enlaces compatibles)",
+      "suffix": "hc",
+      "kind": "cloud"
+    },
+    {
       "prefix": "mnrtunneludp://",
       "name": "MNR TUNNEL PLUS",
       "suffix": "stp",
