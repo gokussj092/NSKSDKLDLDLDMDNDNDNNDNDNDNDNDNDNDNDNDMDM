@@ -15,7 +15,7 @@ import {downloadVpnCatalog} from "../lib/server-vpn-provider.mjs";
 
 test("MTM original PNG, public format and card follow availability",()=>{
   const doc=catalog({availability:{"mtm-tunnel-lite":true}});
-  assert.equal(CATALOG_VERSION,50);assert.equal(doc.apps.length,47);
+  assert.equal(CATALOG_VERSION,51);assert.equal(doc.apps.length,47);
   const card=doc.apps.find(x=>x.id==="mtm-tunnel-lite");
   assert.equal(card.name,"MTM Tunnel Lite");assert.equal(card.decodeEnabled,true);
   assert.equal(card.iconSha256,"b0e76f47ec044182148e2e1c95e211acc8fdc4c5ff961554e70164e1490a03d5");
