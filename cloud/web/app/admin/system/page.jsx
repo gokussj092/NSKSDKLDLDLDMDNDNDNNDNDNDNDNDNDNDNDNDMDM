@@ -5,7 +5,8 @@ export const metadata={title:"Infraestructura y mantenimiento",robots:{index:fal
 export default function SystemPage(){return <main id="main" className="admin-wrap admin-wide">
   <span className="section-kicker">Administración · Infraestructura</span>
   <h1 className="admin-title">Servicios y mantenimiento</h1>
-  <AdminDashboard/>
+  <p className="muted">Configura proveedores, controla el mantenimiento y consulta el estado real de la infraestructura. Los gráficos de uso permanecen en Analítica.</p>
+  <AdminDashboard mode="system"/>
   <AdminObservability mode="system"/>
   <AdminCatalogPush/>
 </main>;}
