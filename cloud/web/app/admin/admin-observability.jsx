@@ -55,7 +55,7 @@ export default function AdminObservability({mode="analytics"}){
   {loading&&<p className="muted" role="status">Consultando telemetría agregada…</p>}
   {data&&<>
    <div className="sp-admin-charts-grid">
-    <Panel title="Alertas automáticas de proveedores" subtitle="Se actualiza cada minuto; sin correos ni datos de clientes">
+    {mode!=="system"&&<Panel title="Alertas automáticas de proveedores" subtitle="Se actualiza cada minuto; sin correos ni datos de clientes">
      <p className="muted">Reglas: tres fallos consecutivos de red/timeout, o al menos cinco errores entre las últimas diez operaciones. Máximo una alerta por condición y hora.</p>
      {alerts.length?<div className="sp-admin-alert-list">
       {alerts.slice(0,12).map((a,i)=><div className="sp-admin-alert-row" key={a.at+":"+a.format+":"+i}>
@@ -64,15 +64,15 @@ export default function AdminObservability({mode="analytics"}){
        <small className="muted">{time(a.at)} · {a.failures}/{a.recent} operaciones</small>
       </div>)}
      </div>:<p className="muted">No se han disparado alertas recientes.</p>}
-    </Panel>
-    <Panel title="Estado del servidor" subtitle="Medidas seguras y límites de visibilidad del contenedor Docker">
+    </Panel>}
+    {mode==="system"&&<Panel title="Estado del servidor" subtitle="Medidas seguras y límites de visibilidad del contenedor Docker">
      <div className="admin-kv"><span>Worker</span><strong>{health.workerReady?"Disponible":"No disponible"}</strong></div>
      <div className="admin-kv"><span>Redis</span><strong>{health.redisReady?"Disponible":"No disponible"}</strong></div>
      <div className="admin-kv"><span>CPU web (contenedor)</span><strong>{percent(health.cpuPercent)}</strong></div>
      <div className="admin-kv"><span>RAM web (contenedor)</span><strong>{health.memoryUsedBytes===null?"No disponible":(health.memoryUsedBytes/1048576).toFixed(1)+" MiB"}{health.memoryLimitBytes?" / "+(health.memoryLimitBytes/1048576).toFixed(1)+" MiB":""}</strong></div>
      <div className="admin-kv"><span>Cola de trabajo</span><strong>Sin cola persistente</strong></div>
      <p className="muted">La CPU/RAM indicada corresponde al contenedor web, NO a toda la VPS. El uso de CPU puede aparecer tras la segunda lectura. No hay métricas de host ni cola persistente configuradas.</p>
-    </Panel>
+    </Panel>}
    </div>
    {mode!=="system"&&<>
     <Panel title="Antes y después de una corrección" subtitle="Líneas base de reinicios · tasas históricas y operaciones posteriores">
@@ -123,7 +123,7 @@ export default function AdminObservability({mode="analytics"}){
      </Panel>
     </div>
    </>}
-   <Panel title="Historial de acciones administrativas" subtitle="Reinicios registrados sin cuentas, IP ni identificadores de usuario">
+   {mode==="system"&&<Panel title="Historial de acciones administrativas" subtitle="Reinicios registrados sin cuentas, IP ni identificadores de usuario">
     <div className="admin-table-wrap"><table className="admin-table"><thead><tr>
      <th>Fecha UTC</th><th>Acción</th><th>Ámbito</th><th>Formatos</th>
     </tr></thead><tbody>
@@ -132,7 +132,7 @@ export default function AdminObservability({mode="analytics"}){
      </tr>)}
      {!ops.actions?.length&&<tr><td colSpan={4}>Sin acciones administrativas recientes.</td></tr>}
     </tbody></table></div>
-   </Panel>
+   </Panel>}
   </>}
  </section>;
 }
