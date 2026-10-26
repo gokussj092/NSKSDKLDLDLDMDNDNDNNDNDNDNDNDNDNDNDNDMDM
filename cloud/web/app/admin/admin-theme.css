@@ -172,3 +172,6 @@ body:has(.sp-admin-frame){background:#000;color:#f7f7f7}
 .sp-admin-frame .sp-admin-overview-note .muted{font-size:13px}
 @media(max-width:860px){.sp-admin-frame .sp-admin-filter-grid{grid-template-columns:1fr 1fr}.sp-admin-frame .sp-admin-filter-grid label:first-child{grid-column:1/-1}}
 @media(max-width:620px){.sp-admin-frame .sp-admin-provider-tools,.sp-admin-frame .sp-admin-filter-grid{grid-template-columns:1fr}.sp-admin-frame .sp-admin-filter-grid label:first-child{grid-column:auto}.sp-admin-frame .sp-admin-overview-note{margin-top:13px}}
+
+/* A dedicated observability section has one principal panel, not an empty second column. */
+.sp-admin-frame .sp-admin-observability-head>.admin-card{grid-column:1/-1}
