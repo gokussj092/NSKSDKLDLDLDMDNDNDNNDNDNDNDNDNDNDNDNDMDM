@@ -2,21 +2,43 @@
   "id": "tunneldoom-vpn",
   "name": "TunnelDOOM VPN",
   "package": "com.tunneldoom.http",
-  "versionName": "4.2.4",
-  "versionCode": 424,
+  "versionName": "4.3.0",
+  "versionCode": 430,
   "engine": "python",
   "catalogEntrypoint": "server_catalog_decoder.py",
   "fileEntrypoint": "file_decoder.py",
-  "extensions": ["sks"],
+  "extensions": [
+    "sks"
+  ],
   "sharedFileDecoder": "HTTP_FenixVPN/file_decoder.py",
   "fileSupportScope": "bundled-legacy-parser-contract; current-build-export-unverified",
-  "dependencies": ["pycryptodome==3.23.0"],
+  "dependencies": [
+    "pycryptodome==3.23.0"
+  ],
   "credentials": [],
   "userPasswordCryptographicallyRequired": false,
   "hwidCryptographicallyRequired": false,
   "catalog": {
-    "embedded": {"resource": "res/raw/noobdev.txt", "version": "3", "servers": 1, "encryptedFields": 13, "completeParity": true},
-    "remote": {"status": "unreachable-from-analysis-environment", "enabled": false, "observedProxyStatus": 503}
+    "embedded": {
+      "resource": "res/raw/noobdev.txt",
+      "version": "3",
+      "servers": 1,
+      "encryptedFields": 13,
+      "completeParity": true
+    },
+    "remote": {
+      "status": "verified",
+      "enabled": true,
+      "sourceBuild": 430,
+      "version": "473",
+      "servers": 387,
+      "encryptedFields": 5031,
+      "ciphertextBytes": 662936,
+      "plaintextJsonBytes": 435343,
+      "completeParity": true,
+      "observedHttpStatus": 200,
+      "ciphertextSha256": "62a83ca9e60d692f707476e3cc56300cd64ab965d562f2ff1fc6f6b92a123f2d"
+    }
   },
   "proprietaryTextFormatIdentified": false,
   "individualCloudImportIdentified": false,
@@ -32,5 +54,26 @@
     "height": 1000,
     "sha256": "ce33bc4ef6b663f43af31dc72bc32d6d7981fd4cb33bc0d89bc9b1b699187980"
   },
-  "deployment": "pending"
+  "deployment": "pending",
+  "analyzedVersions": [
+    {
+      "versionName": "4.2.4",
+      "versionCode": 424
+    },
+    {
+      "versionName": "4.2.7",
+      "versionCode": 427
+    },
+    {
+      "versionName": "4.3.0",
+      "versionCode": 430
+    }
+  ],
+  "signerCertificateSha256": "12704504f5711f22d78ee436f38baeb90557c2fa72c4dfb281c766f59800461d",
+  "distribution": {
+    "source": "https://apkpure.net/tunneldoom-vpn-internet-seguro/com.tunneldoom.http/download",
+    "sourceVersion427": "https://apkpure.net/tunneldoom-vpn-internet-seguro/com.tunneldoom.http/download/4.2.7",
+    "xapkSha256": "930e45d6356203abb8d2181b234f888a2d6499c36764a09774f2712ea62a4661",
+    "baseSha256": "c576d424dd85028dbd092312f37baa0cdbfd112eed67bdf1e9bf05f2816ece97"
+  }
 }

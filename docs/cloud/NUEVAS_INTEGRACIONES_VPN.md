@@ -1,5 +1,30 @@
 # Registro de nuevas integraciones VPN
 
+## Actualización TunnelDOOM 4.3.0 (430) — 2026-10-26
+
+Se descargaron 4.2.7 (427) y 4.3.0 (430) de APKPure, paquete y versiones
+confirmados en sus APK, certificado SHA256 igual a la 4.2.4 aportada.
+La 430 reemplaza el origen antiguo por **GET público fijo**
+`https://panel.tunneldoom.space/config.json`. HTTP200 real: **Version473,
+387 servidores / 5031 campos cifrados**, documento entero igual a JCA,
+CLI de descarga y worker aislado. El contador470 indicado por el usuario
+ya está superado; no se descargó una instantánea470.
+
+Broker DNS/TLS fijo, sin redirecciones, control individual persistente,
+ficha e icono original (idéntico en430), gateway valida identidad y JSON
+completo. Catálogo mínimo **56 /49 fichas**, C0 **240 / C8 254** intactos.
+32 Python /348 Node y build web correctos. Node nativo no consigue egress
+validado aquí; descarga real comprobada por Python, transporte Node y
+sesión/gateway con mocks. VPS y Android/Termux físicos pendientes.
+
+427 usa otra API con cabeceras nativas, no integrada; la430 pública no las
+requiere. El endpoint HTTP7676/GCM del script del usuario sigue sin respuesta
+real, no se confunde con esta receta. Sigue pendiente export SKS real/ruta UI;
+no hay texto propietario/Cloud por ID nuevo. Herramientas y evidencia en
+`apps/TunnelDOOM_VPN/`, sin binarios/datos reales en Git ni APK/novedad/VPS
+publicados automáticamente. **Este estado sustituye el remoto pendiente de
+TunnelDOOM descrito en los registros históricos siguientes.**
+
 ## TunnelDOOM VPN 4.2.4 (424) — 2026-10-26
 
 PR **#102**, rama `feat/ha-tunnel-plus-1-7-1-decoders`, base `d7d2f696`.

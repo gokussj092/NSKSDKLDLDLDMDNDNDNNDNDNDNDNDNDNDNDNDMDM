@@ -5,7 +5,7 @@ import {createHash} from "node:crypto";
 import {publicFormats,FORMAT_DETECTION} from "./file-format-catalog.mjs";
 import {publicTextFormats,publicOnlineReferenceFormats} from "./text-format-catalog.mjs";
 
-export const CATALOG_VERSION = 55; // Text and online-import metadata, versioned Cloud snapshot.
+export const CATALOG_VERSION = 56; // Text and online-import metadata, versioned Cloud snapshot.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -23,8 +23,8 @@ export function activeCatalogVersion(env=process.env) {
 }
 
 const ITEMS = Object.freeze([
-  // Embedded catalog verified; fixed updater unreachable from the analysis environment.
-  {id:"tunneldoom-vpn", name:"TunnelDOOM VPN", icon:"tunneldoom-vpn.png", remote:null},
+  // Build 430 fixed updater validated against the complete real catalog.
+  {id:"tunneldoom-vpn", name:"TunnelDOOM VPN", icon:"tunneldoom-vpn.png", remote:"tunneldoom-vpn"},
   // DexProtector resources and the fixed updater still require runtime verification.
   {id:"ha-tunnel-plus", name:"HA Tunnel Plus", icon:"ha-tunnel-plus.png", remote:null},
   {id:"mtm-tunnel-lite", name:"MTM Tunnel Lite", icon:"mtm-tunnel-lite.png", remote:"mtm-tunnel-lite"},

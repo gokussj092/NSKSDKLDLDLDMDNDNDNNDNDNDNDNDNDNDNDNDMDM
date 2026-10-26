@@ -229,6 +229,15 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
            typeof x.obfs!=="string" || typeof x.auth!=="string") ||
          JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))throw Error("INVALID_WORKER_RESULT");
     }
+    if(kind==="server-vpn" && payload?.providerId==="tunneldoom-vpn"){
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId ||
+         !isRecord(parsed) || typeof parsed.Version!=="string" || !parsed.Version ||
+         !Array.isArray(parsed.Servers) || !parsed.Servers.length ||
+         parsed.Servers.some(x=>!isRecord(x) || typeof x.Name!=="string") ||
+         JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))throw Error("INVALID_WORKER_RESULT");
+    }
     if(kind==="server-vpn" && payload?.providerId==="mnr-tunnel-plus"){
       let parsed;
       try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}

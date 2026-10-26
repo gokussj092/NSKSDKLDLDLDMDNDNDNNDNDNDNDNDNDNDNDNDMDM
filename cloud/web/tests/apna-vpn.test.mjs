@@ -14,7 +14,7 @@ import {fetchWorker} from "../lib/c3-gateway.mjs";
 
 test("APNA original PNG, public format and card follow availability",()=>{
   const doc=catalog({availability:{"apna-vpn":true}});
-  assert.equal(CATALOG_VERSION,55);assert.equal(doc.apps.length,49);
+  assert.equal(CATALOG_VERSION,56);assert.equal(doc.apps.length,49);
   const card=doc.apps.find(x=>x.id==="apna-vpn");
   assert.equal(card.name,"APNA VPN");assert.equal(card.decodeEnabled,true);
   assert.equal(card.iconSha256,"01b38d6d006d24b6d50d3e32b3595bbdcd6bb0d634f2468ce3a009bd7cd966ee");

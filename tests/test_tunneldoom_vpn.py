@@ -116,7 +116,7 @@ class TunnelDoomTests(unittest.TestCase):
             def read(inner, size): return self.cipher[:size]
         class Opener:
             def open(inner, request, timeout):
-                self.assertEqual(request.full_url, "https://control.tunneldoom.space/config.json")
+                self.assertEqual(request.full_url, "https://panel.tunneldoom.space/config.json")
                 self.assertEqual(timeout, 25)
                 return Response()
         with patch.object(server_catalog_decoder, "build_opener", return_value=Opener()):

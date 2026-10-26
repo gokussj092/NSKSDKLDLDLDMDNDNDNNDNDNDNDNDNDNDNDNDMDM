@@ -1,4 +1,60 @@
-# Evidencia TunnelDOOM 4.2.4
+# Evidencia actual: TunnelDOOM 4.2.7 / 4.3.0
+
+Actualización autorizada del 26-oct-2026 sobre `e5f2c50c`, PR102.
+Se descargaron y analizaron los XAPK, sin instalar ni modificar la app:
+
+| Versión | XAPK SHA256 | base.apk SHA256 |
+| --- | --- | --- |
+| 4.2.7 (427) | `e9aa33e2407783246c50c5896ada23f9963994338e1526da5988c0775e8d326b` | `b753a8015d6a8409d2a7b0492b1ba71c5ef18d3e0a8ac7b3100ef72d3a5ad438` |
+| 4.3.0 (430) | `930e45d6356203abb8d2181b234f888a2d6499c36764a09774f2712ea62a4661` | `c576d424dd85028dbd092312f37baa0cdbfd112eed67bdf1e9bf05f2816ece97` |
+
+El nombre/código reales coinciden con esas versiones y el paquete es
+`com.tunneldoom.http`. Certificado DER SHA256 en los tres builds:
+`12704504f5711f22d78ee436f38baeb90557c2fa72c4dfb281c766f59800461d`.
+Esto compara el certificado con el adjunto original del usuario, no sustituye
+una auditoría de publicación ni un análisis de malware.
+
+Fuentes observadas de descarga: APKPure `/download/4.2.7` y `/download`;
+ambas páginas proporcionaron el link directo XAPK y SHA256 del archivo.
+La consulta indexada web presentaba versiones atrasadas: la comprobación de
+versiones se hizo sobre los bytes descargados, no sobre el snippet.
+
+`ConfigUpdateco.doInBackground` de430 contiene el GET literal
+`https://panel.tunneldoom.space/config.json` (43 instrucciones sumando sus
+dos overloads). Sin cabeceras nativas de firma/tiempo. La427 apuntaba a
+`panel.proeducativa.com/panel_v2/api_servidores.php` con `SecurityHelper`
+y `libapp_security.so`; no se reproduce esa firma ni se usa esa API.
+El endpoint proporcionado por el usuario HTTP7676 es distinto y no devolvió
+respuesta desde aquí. No se integra una receta GCM sin muestra real.
+
+Los helpers StringCrypter, NoobPass, NoobCrypt, ConfigUtil y ConfigParser de
+430 son idénticos a424 al retirar comentarios de procedencia de JADX.
+El recurso noobdev es byte a byte igual en424/427/430: plantilla Version3,
+1 entrada vacía, no un catálogo real. El recurso original de launcher430
+`config.hdpi.apk!/res/drawable-hdpi-v4/ic_launcher.png` es byte a byte igual
+al PNG ya registrado, SHA256 `ce33bc4ef6b663f43af31dc72bc32d6d7981fd4cb33bc0d89bc9b1b699187980`.
+
+La descarga430 devolvió HTTP200, 662936 bytes, SHA256
+`62a83ca9e60d692f707476e3cc56300cd64ab965d562f2ff1fc6f6b92a123f2d`.
+Se obtuvo **Version473 /387 servidores /5031 campos cifrados**; JSON completo
+renderizado435343 bytes. Texto exterior y todos los campos iguales al oracle
+JCA independiente y al worker aislado. Una segunda descarga CLI produjo el
+mismo documento completo. No hay aliases de cuenta del mapa estático en los
+387 registros; no se copiaron cuentas del APK al código.
+
+El broker público usa origen/ruta fijos y rechazo de redirects, controles
+persistentes y validación del resultado entero. El egress Node nativo falla
+en este entorno; pruebas DNS/IP/TLS, sesión y JSON del gateway con mocks,
+respuesta real obtenida por Python/HTTPS. No se afirma despliegue/VPS probado.
+
+Sigue pendiente una exportación SKS real y ruta UI de import/export del
+build nuevo. Las primitivas reutilizadas no certifican un archivo inexistente.
+La extracción JADX es parcial:427 terminó con8 errores; en430 se verificaron
+las rutas relevantes con DEX. No se afirma recuperación de todo el código.
+
+## Evidencia histórica de la 4.2.4
+
+### Análisis inicial TunnelDOOM 4.2.4
 
 Análisis autorizado del APKS aportado, 26-oct-2026. Base del trabajo:
 PR102 HEAD `d7d2f696c349851842c901d691a46dc465f42c8d`.

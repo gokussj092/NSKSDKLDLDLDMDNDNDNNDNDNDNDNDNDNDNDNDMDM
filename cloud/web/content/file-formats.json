@@ -1544,7 +1544,7 @@
     },
     {
       "suffix": "sks",
-      "name": "HTTP FenixVPN 19.4 / HTTP Jireh 2.0 / HTTP SocketClay 3.4.0 / TunnelDOOM VPN 4.2.4",
+      "name": "HTTP FenixVPN 19.4 / HTTP Jireh 2.0 / HTTP SocketClay 3.4.0 / TunnelDOOM VPN 4.2.4–4.3.0",
       "kind": "file",
       "offlineSupported": true,
       "cloudSupported": true,
