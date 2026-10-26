@@ -1,3 +1,4 @@
+import {readFileSync} from "node:fs";
 import assert from "node:assert/strict";
 import {test} from "node:test";
 import {randomBytes,scryptSync} from "node:crypto";
@@ -133,4 +134,38 @@ test("expected credential and recipient outcomes stay out of engine failure anal
   assert.equal(report.warnings,1);
   assert.ok(!report.errors.some(x=>["AUTH_FAILED","PRIVATE_KEY_REQUIRED"].includes(x.code)));
   assert.ok(!report.incidents.some(x=>x.code==="PRIVATE_KEY_REQUIRED"));
+});
+
+test("admin overview, analytics, diagnostics and services have distinct responsibilities",()=>{
+ const read=path=>readFileSync(new URL(path,import.meta.url),"utf8");
+ const home=read("../app/admin/page.jsx");
+ const analytics=read("../app/admin/analytics/page.jsx");
+ const issues=read("../app/admin/reports/page.jsx");
+ const system=read("../app/admin/system/page.jsx");
+ const dashboard=read("../app/admin/admin-dashboard.jsx");
+ const report=read("../app/admin/admin-report.jsx");
+ const ops=read("../app/admin/admin-observability.jsx");
+ assert.match(home,/AdminDashboard mode="overview"/);
+ assert.doesNotMatch(home,/AdminReport/);
+ assert.match(system,/AdminDashboard mode="system"/);
+ assert.match(system,/AdminObservability mode="system"/);
+ assert.match(analytics,/AdminReport view="analytics"/);
+ assert.match(issues,/AdminReport view="reports"/);
+ assert.match(dashboard,/mode==="overview"/);
+ assert.match(dashboard,/sp-admin-provider-tools/);
+ assert.match(report,/sp-admin-filter-grid/);
+ assert.match(report,/downloadAggregateCsv/);
+ assert.match(report,/view==="reports"&&<button/);
+ assert.match(ops,/mode!=="system"&&<Panel title="Alertas/);
+ assert.match(ops,/mode==="system"&&<Panel title="Estado/);
+ assert.match(ops,/mode==="system"&&<Panel title="Historial/);
+});
+
+test("CSV uses aggregate rows and neutralizes spreadsheet formula prefixes",()=>{
+ const report=readFileSync(new URL("../app/admin/admin-report.jsx",import.meta.url),"utf8");
+ assert.match(report,/function safeCsvCell/);
+ assert.match(report,/replace\(\/\^\[=\+\\-@\]\//);
+ assert.match(report,/row\.extension,row\.attempts,row\.successfulDecodes,row\.failedDecodes/);
+ assert.doesNotMatch(report,/row\.rawText|row\.password|row\.privateKey|row\.dataBase64/);
+ assert.match(report,/text\/csv;charset=utf-8/);
 });
