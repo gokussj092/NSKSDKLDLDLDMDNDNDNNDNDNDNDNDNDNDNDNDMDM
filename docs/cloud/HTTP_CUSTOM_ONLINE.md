@@ -129,8 +129,9 @@ python -m unittest tests.test_http_custom_899 tests.test_cloud_c2_hc \
 - **36 pruebas Python** de motor HC, contratos, errores, rutas e inventario/UI.
 - Cuatro casos Android añadidos: misma entrada en la petición de credenciales,
   descarga única, borrado de bytes al terminar/cancelar, error por expiración y
-  referencias estrictas. **Ejecución instrumentada pendiente en GitHub Actions**;
-  este entorno no tiene Android SDK. No presentar estos casos como ejecutados.
+  referencias estrictas. **Suite instrumentada API35 aprobada en Actions
+  40343506902**, commit de implementación `3c1b7e16`. Las diez comprobaciones de
+  ese commit finalizaron aprobadas. Este entorno local no tiene Android SDK.
 - Pendiente: enlace real nuevo y prueba física Android/Termux. Un enlace
   agotado no se revive ni se eluden los límites configurados por su propietario.
 
