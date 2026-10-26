@@ -4,7 +4,7 @@ export const metadata={title:"Analítica operativa",robots:{index:false,follow:f
 export default function AnalyticsPage(){return <main id="main" className="admin-wrap admin-wide">
  <span className="section-kicker">Administración · Telemetría</span>
  <h1 className="admin-title">Actividad y rendimiento</h1>
- <p className="muted">Gráficas por día y hora, estadísticas por servicio y resultados de cada formato.</p>
+ <p className="muted">Actividad por fecha, rendimiento y comparativas. Filtra los formatos y exporta únicamente estadísticas agregadas, sin archivos ni credenciales.</p>
  <AdminReport view="analytics"/>
  <AdminObservability/>
 </main>;}
