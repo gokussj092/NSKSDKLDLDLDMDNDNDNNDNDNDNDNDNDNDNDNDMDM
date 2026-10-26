@@ -152,3 +152,23 @@ body:has(.sp-admin-frame){background:#000;color:#f7f7f7}
 .sp-admin-alert-row span{font-size:12px;color:#e7e7e7}
 .sp-admin-observability .admin-table{min-width:650px}
 @media(max-width:720px){.sp-admin-alert-row{grid-template-columns:1fr}}
+
+/* Distinct operational overview, searchable provider controls and analytics explorer. */
+.sp-admin-frame .sp-admin-quick-links{display:grid;gap:9px}
+.sp-admin-frame .sp-admin-quick-links a{display:flex;flex-direction:column;gap:3px;padding:12px 15px;border:1px solid #303030;background:#202020;border-radius:12px;text-decoration:none}
+.sp-admin-frame .sp-admin-quick-links a:hover{background:#2d2d2d;border-color:#555}
+.sp-admin-frame .sp-admin-quick-links strong{font-size:13px;color:#f8f8f8}
+.sp-admin-frame .sp-admin-quick-links span{font-size:11px;color:#b6b6b6;line-height:1.5}
+.sp-admin-frame .sp-admin-overview-note{margin:18px 0}
+.sp-admin-frame .sp-admin-overview-note strong{font-size:16px}
+.sp-admin-frame .sp-admin-overview-note a{font-size:12px;font-weight:700;text-decoration:underline;text-underline-offset:4px}
+.sp-admin-frame .sp-admin-provider-tools,.sp-admin-frame .sp-admin-filter-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(160px,1fr);gap:12px;margin:22px 0 12px}
+.sp-admin-frame .sp-admin-filter-grid{grid-template-columns:minmax(0,2fr) repeat(2,minmax(150px,1fr));margin:0 0 14px}
+.sp-admin-frame .sp-admin-provider-tools label,.sp-admin-frame .sp-admin-filter-grid label{display:flex;flex-direction:column;gap:8px;color:#bdbdbd;font-size:12px;font-weight:650}
+.sp-admin-frame .sp-admin-provider-tools :is(input,select),.sp-admin-frame .sp-admin-filter-grid :is(input,select){width:100%;min-width:0;min-height:42px;color:#fafafa;background:#0c0c0c;border:1px solid #414141;border-radius:11px;padding:9px 12px;font:inherit}
+.sp-admin-frame .sp-admin-provider-tools :is(input,select):hover,.sp-admin-frame .sp-admin-filter-grid :is(input,select):hover{border-color:#777}
+.sp-admin-frame .sp-admin-provider-tools :is(input,select):focus-visible,.sp-admin-frame .sp-admin-filter-grid :is(input,select):focus-visible{outline:2px solid #fff;outline-offset:2px}
+.sp-admin-frame .sp-admin-filter-card{margin-top:19px}
+.sp-admin-frame .sp-admin-overview-note .muted{font-size:13px}
+@media(max-width:860px){.sp-admin-frame .sp-admin-filter-grid{grid-template-columns:1fr 1fr}.sp-admin-frame .sp-admin-filter-grid label:first-child{grid-column:1/-1}}
+@media(max-width:620px){.sp-admin-frame .sp-admin-provider-tools,.sp-admin-frame .sp-admin-filter-grid{grid-template-columns:1fr}.sp-admin-frame .sp-admin-filter-grid label:first-child{grid-column:auto}.sp-admin-frame .sp-admin-overview-note{margin-top:13px}}
