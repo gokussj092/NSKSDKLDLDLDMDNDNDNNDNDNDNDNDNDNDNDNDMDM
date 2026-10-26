@@ -110,6 +110,12 @@
       "kind": "text"
     },
     {
+      "prefix": "darktunnel://",
+      "name": "Dark Tunnel",
+      "suffix": "dark",
+      "kind": "text"
+    },
+    {
       "prefix": "dtunnel://",
       "name": "Dark Tunnel",
       "suffix": "dark",
