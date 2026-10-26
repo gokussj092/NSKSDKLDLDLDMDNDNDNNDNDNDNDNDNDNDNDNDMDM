@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {test} from 'node:test';
 import {EventEmitter} from 'node:events';
 import {generateKeyPairSync} from 'node:crypto';
-import {parseHttpCustomReference,importHttpCustomReference,downloadApproved,approvedUrl,ExternalImportError} from '../lib/c35-provider.mjs';
+import {parseHttpCustomReference,parseHttpCustomLegacyReference,isHttpCustomLegacyReference,importHttpCustomReference,downloadApproved,approvedUrl,ExternalImportError} from '../lib/c35-provider.mjs';
 import {externalImportRequest} from '../lib/c35-gateway.mjs';
 import {decodeRequest} from '../lib/c3-gateway.mjs';
 import {catalog} from '../lib/server-vpn-catalog.mjs';
@@ -120,8 +120,52 @@ test('unavailable source skips worker, releases lease and respects the persisten
  finally{delete process.env.CLOUD_HTTP_CUSTOM_IMPORT_ENABLED;}
 });
 test('online HTTPS metadata is additive and leaves the legacy text schema valid',()=>{
- const c=catalog();assert.equal(c.catalogVersion,53);validatePublicTextFormats({schemaVersion:1,formats:c.textFormats});
+ const c=catalog();assert.equal(c.catalogVersion,54);validatePublicTextFormats({schemaVersion:1,formats:c.textFormats});
  assert.equal(c.onlineReferencesSchemaVersion,1);assert.equal(c.onlineReferenceCount,2);
  assert.deepEqual(c.onlineReferenceFormats.map(x=>x.prefix).sort(),['https://cloudvpn.mrfrankofc.com/','https://link.playsmarty.uk/'].sort());
  assert(c.onlineReferenceFormats.every(x=>x.suffix==='hc'&&x.kind==='cloud'));
+});
+
+test('older Cloud APKs can paste hccloud:// in the existing text editor, no APK route required',async()=>{
+ const aliases=[
+  ['hccloud://playsmarty/Test-Only',short],
+  ['hccloud://mrfrank/Ab12Cd',direct],
+ ];
+ for(const [legacy,url] of aliases){
+  assert.equal(isHttpCustomLegacyReference(legacy),true);
+  assert.equal(parseHttpCustomLegacyReference(legacy),url);
+  const redis=new Redis(),bearer=await session(redis);let reads=0,decodes=0;
+  const response=await decodeRequest(send({text:legacy},bearer),'text',{
+   storeProvider:async()=>redis,
+   vendor:{download:async({url:requested})=>{reads++;assert.equal(requested,url);return encrypted;}},
+   fetchImpl:async(_,options)=>{
+    decodes++;
+    const payload=JSON.parse(options.body);
+    assert.equal(payload.format,'hc');
+    assert.deepEqual(Buffer.from(payload.dataBase64,'base64'),encrypted);
+    return Response.json({apiVersion:'v1',status:'success',format:'hc',isPartial:false,
+      rawText:'{"ok":true}',structuredJson:{ok:true},kind:'file'});
+   },
+  });
+  assert.equal(response.status,200);
+  assert.deepEqual((await response.json()).structuredJson,{ok:true});
+  assert.equal(reads,1);assert.equal(decodes,1);
+  for(const active of redis.active.values())assert.equal(active.size,0);
+ }
+ const c=catalog();
+ assert(c.textFormats.some(x=>x.prefix==='hccloud://' && x.suffix==='hc' && x.kind==='cloud'));
+ assert.equal(c.textCount,47);
+});
+
+test('legacy aliases reject foreign domains and cannot be used as an unrestricted proxy',()=>{
+ for(const source of [
+  'hccloud://evil.test/Ab12Cd','hccloud://playsmarty/http://localhost',
+  'hccloud://playsmarty/alpha/extra','hccloud://playsmarty/',
+  'hccloud://mrfrank/short','hccloud://mrfrank/123456?x=1',
+  'hccloud://playsmarty/a#x','hccloud://playsmarty/%41',
+  'hccloud://playsmarty@localhost/ABCDEF'
+ ]){
+  assert.equal(isHttpCustomLegacyReference(source),false);
+  assert.throws(()=>parseHttpCustomLegacyReference(source),{code:'INVALID_REFERENCE'});
+ }
 });
