@@ -115,7 +115,7 @@ export async function readOpsReport(redis,days=7){
  }
  const latest=await redis.lRange(AUDIT,0,49),actions=[];
  for(const raw of latest){
-  try{const v=JSON.parse(raw);if(v.action==="reset_errors"&&typeof v.at==="string")actions.push(v);}catch{}
+  try{const v=JSON.parse(raw);if(["reset_errors","purge_errors","clear_alerts"].includes(v.action)&&typeof v.at==="string")actions.push(v);}catch{}
  }
  return {performance,alerts,versions:[...versions].map(([version,count])=>({version,count}))
    .sort((a,b)=>b.count-a.count).slice(0,30),
@@ -124,8 +124,11 @@ export async function readOpsReport(redis,days=7){
   actions,latencyMethod:"bounded_histogram",retentionDays:8,
   thresholds:{unresponsive:"3 consecutive network/timeout failures",highFailureRatio:"5 of last 10 operations",cooldownMinutes:60}};
 }
-export async function recordAdminAudit(redis,{scope,format,at,formatsReset}){
- const event={at,action:"reset_errors",scope,format:scope==="format"?format:null,formatsReset};
+export async function recordAdminAudit(redis,{scope,format,at,formatsReset,mode="reset",
+  removedFailures=0,removedIncidents=0,removedAlerts=0}={}){
+ const action=mode==="purge"?"purge_errors":mode==="clear_alerts"?"clear_alerts":"reset_errors";
+ const event={at,action,scope,format:scope==="format"?format:null,formatsReset,
+  removedFailures,removedIncidents,removedAlerts};
  await redis.lPush(AUDIT,JSON.stringify(event));
  await redis.lTrim(AUDIT,0,99);await redis.expire(AUDIT,TTL);
 }
