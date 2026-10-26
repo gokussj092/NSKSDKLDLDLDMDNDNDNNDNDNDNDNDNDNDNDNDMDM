@@ -8,7 +8,7 @@ import {providerOverview,updateProvider,PUBLIC_PROVIDER_IDS} from "./c12-provide
 import { ehiConfigured,nurConfigured } from "./c35-provider.mjs";
 import { jsonReply } from "./responses.mjs";
 import {readOpsReport,hostHealth} from "./c14-ops-observability.mjs";
-import {purgeRetainedErrors,clearOperationalAlerts} from "./c15-admin-operations.mjs";
+import {purgeRetainedErrors,clearOperationalAlerts,setAlertPause} from "./c15-admin-operations.mjs";
 
 const error=(code,status)=>jsonReply({status:"error",error:{code}},status);
 const api=(body,status=200,headers={})=>jsonReply({status:"ok",...body},status,headers);
@@ -242,5 +242,19 @@ export async function clearAlertsRequest(request,options={}){
    return error("INVALID_REQUEST",400);
   const cleared=await clearOperationalAlerts(redis);
   return api({cleared},200,{"Cache-Control":"private, no-store"});
+ }catch{return error("SERVICE_UNAVAILABLE",503);}
+}
+
+export async function pauseAlertsRequest(request,options={}){
+ const cfg=adminSettings();
+ if(!cfg.enabled)return error("ADMIN_DISABLED",503);
+ if(!validMutation(request,cfg))return error("CSRF_REJECTED",403);
+ try{
+  const redis=await (options.storeProvider||opsStore)();
+  if(!await authenticateAdmin(redis,request,cfg))return error("UNAUTHORIZED",401);
+  const body=await parseSmallJson(request,128);
+  if(!own(body,["paused"])||typeof body.paused!=="boolean")return error("INVALID_REQUEST",400);
+  const alerts=await setAlertPause(redis,body.paused);
+  return api({alerts},200,{"Cache-Control":"private, no-store"});
  }catch{return error("SERVICE_UNAVAILABLE",503);}
 }
