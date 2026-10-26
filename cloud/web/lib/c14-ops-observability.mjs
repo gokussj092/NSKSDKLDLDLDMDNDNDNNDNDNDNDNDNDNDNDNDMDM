@@ -132,8 +132,9 @@ export async function recordAdminAudit(redis,{scope,format,at,formatsReset,mode=
   removedFailures=0,removedIncidents=0,removedAlerts=0}={}){
  const action=mode==="purge"?"purge_errors":mode==="clear_alerts"?"clear_alerts":
   mode==="pause_alerts"?"pause_alerts":mode==="resume_alerts"?"resume_alerts":"reset_errors";
- const event={at,action,scope,format:scope==="format"?format:null,formatsReset,
-  removedFailures,removedIncidents,removedAlerts};
+ const event={at,action,scope,format:scope==="format"?format:null,formatsReset};
+ if(action==="purge_errors")Object.assign(event,{removedFailures,removedIncidents,removedAlerts});
+ if(action==="clear_alerts")event.removedAlerts=removedAlerts;
  await redis.lPush(AUDIT,JSON.stringify(event));
  await redis.lTrim(AUDIT,0,99);await redis.expire(AUDIT,TTL);
 }
