@@ -16,7 +16,7 @@ No private source files, configuration contents, decrypted records, hosts, passw
 
 ## Android and rollout
 
-`cloud/web/content/text-formats.json` publishes both prefixes as Cloud text metadata pointing to the vetted `xhypher` suffix. Server VPN catalog version 50 triggers the encrypted Android format-cache refresh. The existing Cloud Android build reads these server-supplied metadata routes and sends raw text to the unchanged private text bridge.
+`cloud/web/content/text-formats.json` publishes both prefixes as Cloud text metadata pointing to the vetted `xhypher` suffix. Server VPN catalog version 51 triggers the encrypted Android format-cache refresh. The existing Cloud Android build reads these server-supplied metadata routes and sends raw text to the unchanged private text bridge.
 
 The `.xhypher`, `.hat` and `.bdnet` entries remain in the file catalog: no new file extension is invented and there are still 254 file routes. Native C0 engines, Android offline code, API session authorization, provider controls, and secret handling remain intact.
 
@@ -30,3 +30,15 @@ curl -fsS https://api.spdecode.xyz/api/v1/ready
 ```
 
 In the Android app, use **Actualizar catálogo** so the new text prefixes become visible. The actual VPS must first be updated and healthy; committing this change does not deploy it.
+
+## Dark Tunnel text aliases in the same release
+
+The Cloud text catalog already published `dt://`, `dtunnel://` and
+`dark://`, but did not publish the full application-name alias
+`darktunnel://`. The private worker likewise lacked that explicit dispatcher
+route. Version 51 adds the fourth alias to both the Cloud catalog and worker,
+using the existing `DARKTUNNEL.py` decoder (no new cryptographic method).
+Android already recognizes schemes containing `dark`; a refreshed catalog
+now advertises this exact alias. A synthetic AES-CFB/MessagePack fixture tests
+all four schemes through the isolated Cloud text worker, preserving identical
+output and rejecting malformed input.
