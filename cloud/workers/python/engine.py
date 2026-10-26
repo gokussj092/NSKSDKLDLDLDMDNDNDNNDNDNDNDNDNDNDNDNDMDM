@@ -185,6 +185,34 @@ def _unsupported_npvs_protection(contents: bytes) -> bool:
     return header[0]!=1 or header[50] not in (0,1,2)
 
 
+
+def _xhypher_export_in_renamed_file(suffix: str, contents: bytes) -> bool:
+    """Recognize an intact Xhypher export in the two observed wrong suffixes.
+
+    This is carrier validation, NOT crypto authentication. Only an exact
+    vendor prefix and a complete CBC-length Base64 envelope may change the
+    selected engine. The Xhypher decoder must still decrypt and parse JSON.
+    Short xhypher:// references are never resolved or fetched here.
+    """
+    if suffix not in ("hat", "bdnet"):
+        return False
+    try:
+        raw = contents.decode("utf-8-sig").strip()
+        marker, separator, body = raw.partition("://")
+        if not separator or marker.lower() not in ("xhyphertunnelpro", "xhypher"):
+            return False
+        carrier = "".join(body.split()).encode("ascii")
+    except (UnicodeError, ValueError):
+        return False
+    if len(carrier) < 64 or len(carrier) % 4:
+        return False
+    try:
+        binary = base64.b64decode(carrier, validate=True)
+    except (ValueError, base64.binascii.Error):
+        return False
+    return len(binary) >= 32 and len(binary) % 16 == 0
+
+
 def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS, credentials: dict | None = None, full_hat: bool = False) -> dict:
     """Execute one canonical file engine. The caller must authenticate first."""
     if not isinstance(suffix, str) or suffix not in load_runtime_file_engines():
@@ -198,6 +226,13 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
     if suffix=="npvs" and _unsupported_npvs_protection(contents):
         raise DecodeFailure("NPVS_PROTECTION_UNSUPPORTED")
     engine = load_runtime_file_engines()[suffix]
+    # The .hat and .bdnet cases supplied by the owner are complete Xhypher
+    # text exports renamed without changing their content. Do not reinterpret
+    # genuine HA Tunnel/BD NET files or guess unrelated encryption keys.
+    input_suffix = suffix
+    if _xhypher_export_in_renamed_file(suffix, contents):
+        input_suffix = "xhypher"
+        engine = load_runtime_file_engines()["xhypher"]
     if suffix == "sks":
         # Historical SocksIP exports use a JSON d/v envelope. Fenix imports
         # dot-separated GCM or raw DES. Choose before decryption, never retry
@@ -211,7 +246,7 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
             legacy_sks = False
         if legacy_sks:
             engine = load_file_engines()["sks"]
-    if suffix == "hat" and full_hat:
+    if suffix == "hat" and full_hat and input_suffix == "hat":
         # Cloud UI requires the complete document. Preserve the original
         # legacy route for frozen C2 reference output parity.
         # Historical hat.js flattens and drops nested configuration fields.
@@ -268,7 +303,7 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
         raise DecodeFailure("ENGINE_UNAVAILABLE")
 
     with tempfile.TemporaryDirectory(prefix="spdecode-c2-") as folder:
-        input_file = Path(folder) / ("input." + suffix)
+        input_file = Path(folder) / ("input." + input_suffix)
         output_file = Path(folder) / "stdout"
         input_file.write_bytes(contents)
         input_file.chmod(0o600)
