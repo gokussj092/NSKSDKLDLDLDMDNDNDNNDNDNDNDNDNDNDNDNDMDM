@@ -4,7 +4,7 @@ import { store, reserveSlot, releaseSlot } from "./c3-store.mjs";
 import { createChallenge, issueSession, issueQaSession, requireSession } from "./c3-session.mjs";
 import { jsonReply, unavailable } from "./responses.mjs";
 import { legacyCredentialError } from "./decoder-client-compat.mjs";
-import { ehiConfigured, nurConfigured, importMnrReference, importHttpCustomReference, isHttpCustomReference, isExternalImportError } from "./c35-provider.mjs";
+import { ehiConfigured, nurConfigured, importMnrReference, importHttpCustomReference, isHttpCustomReference, isHttpCustomLegacyReference, parseHttpCustomLegacyReference, isExternalImportError } from "./c35-provider.mjs";
 import {providerAllowed} from "./c12-provider-controls.mjs";
 import { maintenanceEnabled, serviceMaintenanceEnabled, recordWorkerResult } from "./c6-ops-store.mjs";
 import {admissionPolicy} from "./c11-play-admission.mjs";
@@ -351,9 +351,15 @@ export async function decodeRequest(request,kind,options={}) {
     };
     started=performance.now();
     let outcome;
-    if(kind==="text" && isHttpCustomReference(payload.text)){
+    if(kind==="text" && (isHttpCustomReference(payload.text) ||
+                        isHttpCustomLegacyReference(payload.text))){
       if(!await providerAllowed("hc-cloud"))return failure("REMOTE_NOT_CONFIGURED",503);
-      const data=await importHttpCustomReference(payload.text,options.vendor || {});
+      // Older catalog-aware APKs submit hccloud:// aliases as ordinary text.
+      // Resolve exactly to the two pre-approved hosts, never an arbitrary URL.
+      // No second fetch is attempted for password/HWID-gated one-use links.
+      const source=isHttpCustomLegacyReference(payload.text) ?
+        parseHttpCustomLegacyReference(payload.text) : payload.text;
+      const data=await importHttpCustomReference(source,options.vendor || {});
       telemetry={kind:"file",format:"hc",bytes:data.length};
       outcome=await fetchWorker("file",{format:"hc",dataBase64:data.toString("base64"),
         ...(payload.credentials?{credentials:payload.credentials}:{})},cfg,options);
