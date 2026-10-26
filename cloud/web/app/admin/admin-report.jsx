@@ -121,9 +121,26 @@ function RankedBars({title,subtitle,rows,empty="Sin datos suficientes"}) {
   </div>}
  </section>;
 }
+function safeCsvCell(value){
+ const text=String(value??"").replace(/[\r\n\t]+/g," ").replace(/^[=+\-@]/,"'$&");
+ return '"'+text.replaceAll('"','""')+'"';
+}
+function downloadAggregateCsv(rows,days){
+ const lines=[["Formato","Solicitudes","Correctos","Errores nuevos","Advertencias","Tasa de exito (%)"],
+  ...rows.map(row=>[row.extension,row.attempts,row.successfulDecodes,row.failedDecodes,row.warnings||0,
+   row.attempts?(100*row.successfulDecodes/row.attempts).toFixed(1):""])];
+ const csv="\uFEFF"+lines.map(row=>row.map(safeCsvCell).join(",")).join("\r\n")+"\r\n";
+ const url=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
+ const link=document.createElement("a");
+ link.href=url;link.download="spdecode-analitica-agregada-"+days+"d.csv";
+ document.body.appendChild(link);link.click();link.remove();
+ // Revoke after the download gesture has handed the blob to the browser.
+ window.setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
 export default function AdminReport({view="analytics"}){
  const [days,setDays]=useState(7),[report,setReport]=useState(null);
  const [loading,setLoading]=useState(true),[error,setError]=useState(""),[resetBusy,setResetBusy]=useState(false),[resetNote,setResetNote]=useState("");
+ const [search,setSearch]=useState(""),[category,setCategory]=useState("all"),[sortBy,setSortBy]=useState("attempts");
  const router=useRouter();
  const refresh=useCallback(async signal=>{
   setLoading(true);
@@ -162,6 +179,13 @@ export default function AdminReport({view="analytics"}){
  const allFormats=report?.extensions||[];
  const vpnFormats=allFormats.filter(x=>x.extension.startsWith("vpn-")||x.extension==="nur-catalog");
  const fileFormats=allFormats.filter(x=>!x.extension.startsWith("vpn-")&&x.extension!=="nur-catalog"&&x.extension!=="ehi"&&x.extension!=="text"&&x.extension!=="other");
+ const filteredFormats=allFormats.filter(x=>{
+  const name=x.extension.toLowerCase();
+  const wanted=search.trim().toLowerCase();
+  const group=x.extension.startsWith("vpn-")||x.extension==="nur-catalog"?"vpn":
+   x.extension==="ehi"?"ehi":"files";
+  return (!wanted||name.includes(wanted))&&(category==="all"||category===group);
+ }).sort((a,b)=>(b[sortBy]||0)-(a[sortBy]||0)||a.extension.localeCompare(b.extension));
  const rowsFor=list=>list.map(x=>({label:x.extension.replace(/^vpn-/,""),value:x.attempts}))
    .sort((a,b)=>b.value-a.value||a.label.localeCompare(b.label));
  return <section className="sp-admin-report">
@@ -170,7 +194,8 @@ export default function AdminReport({view="analytics"}){
     <button type="button" aria-pressed={days===1} onClick={()=>setDays(1)}>Hoy · UTC</button>
     <button type="button" aria-pressed={days===7} onClick={()=>setDays(7)}>Últimos 7 días</button>
    </div>
-   <div className="sp-admin-toolbar-actions"><button type="button" className="button subtle" disabled={loading||resetBusy} onClick={()=>resetErrors()}>Reiniciar todos los errores</button>
+   <div className="sp-admin-toolbar-actions">{view==="reports"&&<button type="button" className="button subtle" disabled={loading||resetBusy} onClick={()=>resetErrors()}>Reiniciar todos los errores</button>}
+    {view==="analytics"&&<button type="button" className="button subtle" disabled={!report||loading||!filteredFormats.length} onClick={()=>downloadAggregateCsv(filteredFormats,days)}>Exportar CSV agregado</button>}
     <button type="button" className="button subtle" onClick={()=>refresh()} disabled={loading||resetBusy}>Actualizar datos</button></div>
   </div>
   {error&&<div className="form-message error" role="alert">{error}</div>}
@@ -201,7 +226,23 @@ export default function AdminReport({view="analytics"}){
       </tr>;})}</tbody>
      </table></div>
     </section>
-    {view==="analytics"&&<CategoryTable name="Desglose por extensión y proveedor" rows={report.extensions||[]} onReset={resetErrors} busy={resetBusy}/>}
+    {view==="analytics"&&<>
+     <section className="admin-card sp-admin-filter-card" aria-label="Filtros de estadísticas">
+      <div className="sp-admin-section-heading"><div><h2>Explorar formatos y proveedores</h2>
+       <p className="muted">Filtra las cifras agregadas que ya existen en el informe. Ningún filtro se envía a la API.</p></div></div>
+      <div className="sp-admin-filter-grid">
+       <label>Buscar formato o proveedor<input type="search" maxLength={80} value={search} onChange={event=>setSearch(event.target.value)} placeholder="p. ej., npvs o mkk-hyper"/></label>
+       <label>Servicio<select value={category} onChange={event=>setCategory(event.target.value)}>
+        <option value="all">Todos los servicios</option><option value="files">Archivos y textos</option><option value="ehi">HTTP Injector</option><option value="vpn">Server VPN</option>
+       </select></label>
+       <label>Ordenar por<select value={sortBy} onChange={event=>setSortBy(event.target.value)}>
+        <option value="attempts">Más operaciones</option><option value="successfulDecodes">Más correctos</option><option value="failedDecodes">Más errores nuevos</option><option value="warnings">Más advertencias</option>
+       </select></label>
+      </div>
+      <p className="muted">{filteredFormats.length} de {allFormats.length} formatos mostrados · intervalo de {days} día{days===1?"":"s"} UTC.</p>
+     </section>
+     <CategoryTable name="Desglose filtrado por extensión y proveedor" rows={filteredFormats} onReset={null} busy={resetBusy}/>
+    </>}
    </>:<Incidents report={report} onReset={resetErrors} busy={resetBusy}/>}
   </>}
  </section>;
