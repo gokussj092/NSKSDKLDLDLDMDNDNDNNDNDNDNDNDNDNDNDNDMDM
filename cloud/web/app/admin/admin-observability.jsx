@@ -16,7 +16,7 @@ function Panel({title,subtitle,children}){
 }
 export default function AdminObservability({mode="analytics"}){
  const [days,setDays]=useState(7),[data,setData]=useState(null),
-  [error,setError]=useState(""),[loading,setLoading]=useState(true);
+  [error,setError]=useState(""),[loading,setLoading]=useState(true),[actionBusy,setActionBusy]=useState(false),[actionNote,setActionNote]=useState("");
  const router=useRouter();
  const refresh=useCallback(async(signal,quiet=false)=>{
   if(!quiet)setLoading(true);
@@ -35,8 +35,28 @@ export default function AdminObservability({mode="analytics"}){
   const controller=new AbortController();
   refresh(controller.signal);
   const timer=setInterval(()=>{if(!controller.signal.aborted)refresh(controller.signal,true);},60000);
-  return()=>{controller.abort();clearInterval(timer);};
+  const notify=()=>{if(!controller.signal.aborted)refresh(controller.signal,true);};
+  window.addEventListener("spdecode:admin-telemetry-changed",notify);
+  return()=>{controller.abort();clearInterval(timer);window.removeEventListener("spdecode:admin-telemetry-changed",notify);};
  },[refresh]);
+ async function clearAlerts(){
+  if(actionBusy||loading)return;
+  if(!window.confirm("¿Vaciar las alertas operativas actuales? Los fallos estadísticos, descifrados y contadores NO se borrarán. Nuevas alertas podrán activarse normalmente."))return;
+  setActionBusy(true);setActionNote("");
+  try{
+   const response=await fetch("/api/admin/alerts/clear",{
+    method:"POST",credentials:"same-origin",cache:"no-store",
+    headers:{"Content-Type":"application/json","X-SPDecode-Admin-Action":"1"},
+    body:JSON.stringify({confirmation:"VACIAR_ALERTAS"}),
+   });
+   if(response.status===401){router.replace("/admin/login");return;}
+   const result=await response.json();
+   if(!response.ok||result.status!=="ok")throw Error("No se pudieron limpiar las alertas.");
+   setActionNote("Se eliminaron "+fmt.format(result.cleared.removedAlerts)+" alertas registradas.");
+   await refresh(undefined,true);
+  }catch(e){setError(e.message||"Error al limpiar alertas.");}
+  finally{setActionBusy(false);}
+ }
  const ops=data?.observability||{},health=data?.health||{};
  const comparison=data?.report?.comparisons||[];
  const perf=ops.performance||[],alerts=ops.alerts||[];
@@ -52,11 +72,13 @@ export default function AdminObservability({mode="analytics"}){
    </div>
   </div>
   {error&&<p role="alert" className="form-message error">{error}</p>}
+  {actionNote&&<p role="status" className="muted">{actionNote}</p>}
   {loading&&<p className="muted" role="status">Consultando telemetría agregada…</p>}
   {data&&<>
    <div className="sp-admin-charts-grid sp-admin-observability-head">
     {mode!=="system"&&<Panel title="Alertas automáticas de proveedores" subtitle="Se actualiza cada minuto; sin correos ni datos de clientes">
      <p className="muted">Reglas: tres fallos consecutivos de red/timeout, o al menos cinco errores entre las últimas diez operaciones. Máximo una alerta por condición y hora.</p>
+     <div className="sp-admin-alert-actions"><strong>{alerts.length} alertas recientes</strong><button type="button" className="button subtle" onClick={clearAlerts} disabled={actionBusy||loading||!alerts.length}>{actionBusy?"Limpiando…":"Vaciar alertas"}</button></div>
      {alerts.length?<div className="sp-admin-alert-list">
       {alerts.slice(0,12).map((a,i)=><div className="sp-admin-alert-row" key={a.at+":"+a.format+":"+i}>
        <strong>{a.format.replace(/^vpn-/,"")}</strong>
@@ -123,12 +145,12 @@ export default function AdminObservability({mode="analytics"}){
      </Panel>
     </div>
    </>}
-   {mode==="system"&&<Panel title="Historial de acciones administrativas" subtitle="Reinicios registrados sin cuentas, IP ni identificadores de usuario">
+   {mode==="system"&&<Panel title="Historial de acciones administrativas" subtitle="Reinicios, purgas y limpieza de alertas; sin cuentas, IP ni identificadores de usuario">
     <div className="admin-table-wrap"><table className="admin-table"><thead><tr>
-     <th>Fecha UTC</th><th>Acción</th><th>Ámbito</th><th>Formatos</th>
+     <th>Fecha UTC</th><th>Acción</th><th>Ámbito</th><th>Resultado</th>
     </tr></thead><tbody>
      {(ops.actions||[]).slice(0,30).map((a,i)=><tr key={a.at+":"+i}>
-      <td>{time(a.at)}</td><td>Reinicio de errores</td><td>{a.scope==="all"?"Todos":a.format}</td><td>{fmt.format(a.formatsReset||0)}</td>
+      <td>{time(a.at)}</td><td>{a.action==="purge_errors"?"Purga real de errores":a.action==="clear_alerts"?"Limpieza de alertas":"Reinicio de indicadores"}</td><td>{a.scope==="all"?"Todos":a.format}</td><td>{a.action==="purge_errors"?fmt.format(a.removedFailures||0)+" fallos":a.action==="clear_alerts"?fmt.format(a.removedAlerts||0)+" alertas":fmt.format(a.formatsReset||0)+" formatos"}</td>
      </tr>)}
      {!ops.actions?.length&&<tr><td colSpan={4}>Sin acciones administrativas recientes.</td></tr>}
     </tbody></table></div>
