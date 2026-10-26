@@ -1,13 +1,14 @@
 import {test} from "node:test";
 import assert from "node:assert/strict";
 import {randomBytes,scryptSync} from "node:crypto";
-import {errorPurgeKeys,purgeRetainedErrors,clearOperationalAlerts} from "../lib/c15-admin-operations.mjs";
-import {purgeErrorsRequest,clearAlertsRequest} from "../lib/c6-admin-api.mjs";
+import {errorPurgeKeys,purgeRetainedErrors,clearOperationalAlerts,setAlertPause} from "../lib/c15-admin-operations.mjs";
+import {purgeErrorsRequest,clearAlertsRequest,pauseAlertsRequest} from "../lib/c6-admin-api.mjs";
 import {adminLogin} from "../lib/c6-admin-auth.mjs";
 
 class ActionRedis {
  constructor(){this.calls=[];this.strings=new Map();this.events=[];}
  async get(key){return this.strings.get(key)||null;}
+ async del(key){return this.strings.delete(key)?1:0;}
  async set(key,value,opts={}){if(opts.NX&&this.strings.has(key))return null;this.strings.set(key,value);return "OK";}
  async expire(){return 1;}
  async lPush(key,value){this.events.push({key,value:JSON.parse(value)});return this.events.length;}
@@ -58,6 +59,17 @@ test("clear-alert action does not change other data families",async()=>{
  assert.deepEqual(redis.calls[0].options.keys,["spc14:alerts"]);
  assert.equal(redis.events[0].value.action,"clear_alerts");
 });
+test("alert pause changes Redis state but not decoder counters, with an automatic TTL",async()=>{
+ const redis=new ActionRedis();
+ const on=await setAlertPause(redis,true);
+ assert.equal(on.paused,true);
+ assert.ok(on.until);
+ assert.ok(redis.strings.get("spc14:alerts:pause-until"));
+ const off=await setAlertPause(redis,false);
+ assert.equal(off.paused,false);
+ assert.equal(redis.strings.has("spc14:alerts:pause-until"),false);
+ assert.deepEqual(redis.events.map(e=>e.value.action),["pause_alerts","resume_alerts"]);
+});
 test("destructive routes enforce session, CSRF and exact typed confirmation",async()=>{
  const salt=randomBytes(16),password="operator-safety-strong-password";
  Object.assign(process.env,{
@@ -98,5 +110,10 @@ test("destructive routes enforce session, CSRF and exact typed confirmation",asy
  const cleared=await clearAlertsRequest(make(clear,{confirmation:"VACIAR_ALERTAS"}),options);
  assert.equal(cleared.status,200);
  assert.equal((await cleared.json()).cleared.removedAlerts,2);
+ assert.equal((await pauseAlertsRequest(make("/api/admin/alerts/pause",{paused:"true"}),options)).status,400);
+ assert.equal((await pauseAlertsRequest(make("/api/admin/alerts/pause",{paused:true},false),options)).status,401);
+ const paused=await pauseAlertsRequest(make("/api/admin/alerts/pause",{paused:true}),options);
+ assert.equal(paused.status,200);
+ assert.equal((await paused.json()).alerts.paused,true);
  assert.equal(redis.calls.length,2);
 });
