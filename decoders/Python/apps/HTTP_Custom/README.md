@@ -4,7 +4,9 @@
 
 APK analizado: **HTTP Custom 7.11.28 - Patch 1**, `xyz.easypro.httpcustom`,
 versionCode **899**. Este módulo añade **HCX4 / HCCFG 10, n11 y n12** al
-lector de archivos. No utiliza catálogo ni hace peticiones de red.
+lector de archivos. El codec no hace peticiones de red. La importación online
+se integra aparte en el broker API y reutiliza este mismo motor; ver
+[HTTP_CUSTOM_ONLINE.md](../../../../docs/cloud/HTTP_CUSTOM_ONLINE.md).
 
 ## Uso
 

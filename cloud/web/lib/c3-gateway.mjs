@@ -4,7 +4,7 @@ import { store, reserveSlot, releaseSlot } from "./c3-store.mjs";
 import { createChallenge, issueSession, issueQaSession, requireSession } from "./c3-session.mjs";
 import { jsonReply, unavailable } from "./responses.mjs";
 import { legacyCredentialError } from "./decoder-client-compat.mjs";
-import { ehiConfigured, nurConfigured, importMnrReference, isExternalImportError } from "./c35-provider.mjs";
+import { ehiConfigured, nurConfigured, importMnrReference, importHttpCustomReference, isHttpCustomReference, isHttpCustomLegacyReference, parseHttpCustomLegacyReference, isExternalImportError } from "./c35-provider.mjs";
 import {providerAllowed} from "./c12-provider-controls.mjs";
 import { maintenanceEnabled, serviceMaintenanceEnabled, recordWorkerResult } from "./c6-ops-store.mjs";
 import {admissionPolicy} from "./c11-play-admission.mjs";
@@ -120,6 +120,14 @@ function validatePayload(kind,payload) {
     if(payload.credentials!==undefined){
       const pass=payload.credentials?.password;
       const value=payload.text.trim();
+      const hc=isHttpCustomReference(value);
+      if(hc){
+        if(!isRecord(payload.credentials) || Object.keys(payload.credentials).some(key=>!["password","hwid"].includes(key)) ||
+            Object.entries(payload.credentials).some(([key,val])=>typeof val!=="string" || !val.length ||
+              Buffer.byteLength(val,"utf8")>(key==="password"?4096:128)))
+          throw Object.assign(new Error("credentials"),{code:"INVALID_CREDENTIALS"});
+        return;
+      }
       const passwordFormat=value.toLowerCase().startsWith("ua://") ||
         ["1FTnl.","1FT1.","1ftunnel://1FTnl/","1ftunnel://1FT1/"].some(prefix=>value.startsWith(prefix)) ||
         ["npvt://","npvt-ssh://","npvt-vless://","npvt-vmess://","npv://"].some(prefix=>
@@ -219,6 +227,15 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
          !Array.isArray(parsed.catalogs.udp) || !parsed.catalogs.udp.length ||
          parsed.catalogs.udp.some(x=>!isRecord(x) || typeof x.UDPserver!=="string" ||
            typeof x.obfs!=="string" || typeof x.auth!=="string") ||
+         JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))throw Error("INVALID_WORKER_RESULT");
+    }
+    if(kind==="server-vpn" && payload?.providerId==="tunneldoom-vpn"){
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId ||
+         !isRecord(parsed) || typeof parsed.Version!=="string" || !parsed.Version ||
+         !Array.isArray(parsed.Servers) || !parsed.Servers.length ||
+         parsed.Servers.some(x=>!isRecord(x) || typeof x.Name!=="string") ||
          JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))throw Error("INVALID_WORKER_RESULT");
     }
     if(kind==="server-vpn" && payload?.providerId==="mnr-tunnel-plus"){
@@ -343,7 +360,19 @@ export async function decodeRequest(request,kind,options={}) {
     };
     started=performance.now();
     let outcome;
-    if(kind==="text" && payload.text.trim().startsWith("mnrtunneludp://")){
+    if(kind==="text" && (isHttpCustomReference(payload.text) ||
+                        isHttpCustomLegacyReference(payload.text))){
+      if(!await providerAllowed("hc-cloud"))return failure("REMOTE_NOT_CONFIGURED",503);
+      // Older catalog-aware APKs submit hccloud:// aliases as ordinary text.
+      // Resolve exactly to the two pre-approved hosts, never an arbitrary URL.
+      // No second fetch is attempted for password/HWID-gated one-use links.
+      const source=isHttpCustomLegacyReference(payload.text) ?
+        parseHttpCustomLegacyReference(payload.text) : payload.text;
+      const data=await importHttpCustomReference(source,options.vendor || {});
+      telemetry={kind:"file",format:"hc",bytes:data.length};
+      outcome=await fetchWorker("file",{format:"hc",dataBase64:data.toString("base64"),
+        ...(payload.credentials?{credentials:payload.credentials}:{})},cfg,options);
+    }else if(kind==="text" && payload.text.trim().startsWith("mnrtunneludp://")){
       if(process.env.CLOUD_SERVER_VPN_ENABLED!=="true" || !await providerAllowed("mnr-tunnel-plus"))
         return failure("REMOTE_NOT_CONFIGURED",503);
       // Pasting an explicit MNR reference into Decode requests that one object.

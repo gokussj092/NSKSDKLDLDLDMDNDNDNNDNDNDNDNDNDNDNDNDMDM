@@ -14,7 +14,7 @@ import {fetchWorker} from "../lib/c3-gateway.mjs";
 
 test("BD NET original PNG, public format and card follow availability",()=>{
   const doc=catalog({availability:{"bd-net-vpn":true}});
-  assert.equal(CATALOG_VERSION,51);assert.equal(doc.apps.length,47);
+  assert.equal(CATALOG_VERSION,56);assert.equal(doc.apps.length,49);
   const card=doc.apps.find(x=>x.id==="bd-net-vpn");
   assert.equal(card.name,"BD NET VPN");assert.equal(card.decodeEnabled,true);
   assert.equal(card.iconSha256,"46c3149a1e70087a9c34bc4b06b432ebd285b64762ab23ed4368d2cb4b7bce45");

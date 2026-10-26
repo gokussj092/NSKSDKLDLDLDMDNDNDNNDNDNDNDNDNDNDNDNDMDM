@@ -3,9 +3,9 @@ import {readFileSync} from "node:fs";
 import {join} from "node:path";
 import {createHash} from "node:crypto";
 import {publicFormats,FORMAT_DETECTION} from "./file-format-catalog.mjs";
-import {publicTextFormats} from "./text-format-catalog.mjs";
+import {publicTextFormats,publicOnlineReferenceFormats} from "./text-format-catalog.mjs";
 
-export const CATALOG_VERSION = 51; // Text and online-import metadata, versioned Cloud snapshot.
+export const CATALOG_VERSION = 56; // Text and online-import metadata, versioned Cloud snapshot.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -23,6 +23,10 @@ export function activeCatalogVersion(env=process.env) {
 }
 
 const ITEMS = Object.freeze([
+  // Build 430 fixed updater validated against the complete real catalog.
+  {id:"tunneldoom-vpn", name:"TunnelDOOM VPN", icon:"tunneldoom-vpn.png", remote:"tunneldoom-vpn"},
+  // DexProtector resources and the fixed updater still require runtime verification.
+  {id:"ha-tunnel-plus", name:"HA Tunnel Plus", icon:"ha-tunnel-plus.png", remote:null},
   {id:"mtm-tunnel-lite", name:"MTM Tunnel Lite", icon:"mtm-tunnel-lite.png", remote:"mtm-tunnel-lite"},
   {id:"mnr-tunnel-plus", name:"MNR TUNNEL PLUS", icon:"mnr-tunnel-plus.png", remote:"mnr-tunnel-plus"},
   {id:"bd-net-vpn", name:"BD NET VPN", icon:"bd-net-vpn.png", remote:"bd-net-vpn"},
@@ -104,6 +108,9 @@ export function catalog({availability=null,version=activeCatalogVersion()}={}) {
     textSchemaVersion:1,
     textCount:publicTextFormats().length,
     textFormats:publicTextFormats(),
+    onlineReferencesSchemaVersion:1,
+    onlineReferenceCount:publicOnlineReferenceFormats().length,
+    onlineReferenceFormats:publicOnlineReferenceFormats(),
     apps: ITEMS.map(x=>({
       id:x.id,
       name:x.name,

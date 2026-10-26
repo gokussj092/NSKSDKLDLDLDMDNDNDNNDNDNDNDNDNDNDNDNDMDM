@@ -1,0 +1,36 @@
+{
+  "app": "HA Tunnel Plus",
+  "package": "com.hatunnel.plus",
+  "version": "1.7.1",
+  "versionCode": 76,
+  "apkSha256": "741e283ba3ee4b04b6988d5842d38491a51fa0bddfaf52d9c6bca9e6245ad051",
+  "format": {
+    "suffix": "hat",
+    "scope": "historical AES-128-ECB full JSON; current build constants require runtime confirmation",
+    "codec": "hat_decoder.py"
+  },
+  "catalog": {
+    "id": "ha-tunnel-plus",
+    "state": "pending-protected-resources",
+    "remoteEnabled": false,
+    "assetPaths": [
+      "resources/servers.json",
+      "resources/methods.json",
+      "resources/customs.json",
+      "resources/allowed_apps.json",
+      "resources/whatsnew.json"
+    ]
+  },
+  "onlineImports": {
+    "state": "no-independent-link-or-cloud-id-verified"
+  },
+  "icon": {
+    "path": "cloud/web/public/server-vpn-icons/ha-tunnel-plus.png",
+    "sha256": "42aa9743f5d430933257f0023af2182f2dcc6ae41a8930a9ca38e9f397ac3ab8"
+  },
+  "validation": {
+    "historicalRealFixtures": 2,
+    "syntheticJcaVectors": 6,
+    "android171": "pending-runtime"
+  }
+}

@@ -10,7 +10,7 @@ const XOR=String.fromCharCode(42,42,114,86,103,55,69,107,76,126,99,50,96,68,91,9
 const MAX=12*1024*1024;
 // profilev5 fields are optional and vary by exporter revision. Some builds
 // store an empty/null or already readable value; do not reject an otherwise
-// authenticated full JSON document solely because one field is not wrapped.
+// decrypted full JSON document solely because one field is not wrapped.
 // Only transform a canonical UTF-8 Base64 carrier. Preserve unknown fields.
 function xorField(encoded){
   if(typeof encoded!=="string"||!encoded)return encoded;

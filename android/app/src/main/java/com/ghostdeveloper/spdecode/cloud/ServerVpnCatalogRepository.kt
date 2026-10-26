@@ -148,6 +148,22 @@ internal class ServerVpnCatalogRepository(
             require(kind=="text" || kind=="cloud")
             routes.add(CloudTextRoute(prefix,name,suffix,kind))
         }
+        // Separate additive metadata keeps older clients' text validation intact.
+        if(record.has("onlineReferencesSchemaVersion")) {
+            require(record.getInt("onlineReferencesSchemaVersion")==1)
+            val online=record.getJSONArray("onlineReferenceFormats")
+            require(online.length() in 0..2 && record.getInt("onlineReferenceCount")==online.length())
+            for(index in 0 until online.length()) {
+                val entry=online.getJSONObject(index)
+                require(entry.keys().asSequence().toSet()==keys)
+                val prefix=entry.getString("prefix")
+                require(prefix in HttpCustomCloudReference.prefixes && seen.add(prefix))
+                require(entry.getString("kind")=="cloud" && entry.getString("suffix")=="hc")
+                val name=entry.getString("name")
+                require(name.length in 1..80 && name==name.trim())
+                routes.add(CloudTextRoute(prefix,name,"hc","cloud"))
+            }
+        }
         return routes
     }
 
@@ -255,6 +271,10 @@ internal class ServerVpnCatalogRepository(
                     .put("textSchemaVersion",remote.getInt("textSchemaVersion"))
                     .put("textCount",remote.getInt("textCount"))
                     .put("textFormats",remote.getJSONArray("textFormats"))
+                if(remote.has("onlineReferencesSchemaVersion")) fresh
+                    .put("onlineReferencesSchemaVersion",remote.getInt("onlineReferencesSchemaVersion"))
+                    .put("onlineReferenceCount",remote.getInt("onlineReferenceCount"))
+                    .put("onlineReferenceFormats",remote.getJSONArray("onlineReferenceFormats"))
                 vault.write("catalog",fresh.toString().toByteArray(Charsets.UTF_8))
                 onProgress?.invoke(100)
                 verifiedApps(fresh).ifEmpty { available }.also { apps ->

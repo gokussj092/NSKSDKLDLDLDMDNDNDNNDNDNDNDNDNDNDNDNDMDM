@@ -1,4 +1,5 @@
 /** C3.5 session-gated remote imports; only the broker knows external URLs. */
+import {jsonReply} from "./responses.mjs";
 import { randomUUID } from "node:crypto";
 import {providerAllowed} from "./c12-provider-controls.mjs";
 import { settings } from "./c3-config.mjs";
@@ -9,7 +10,7 @@ import { maintenanceEnabled, serviceMaintenanceEnabled, recordWorkerResult } fro
 import {
   isExternalImportError, parseEhiReference, ehiConfigured, nurConfigured,
   importEhiReference, downloadNur,
-  parseMnrReference, importMnrReference,
+  parseMnrReference, importMnrReference, parseHttpCustomReference, importHttpCustomReference,
 } from "./c35-provider.mjs";
 const ownKeys=(value,expected)=> value && typeof value==="object" && !Array.isArray(value)
   && Object.keys(value).length===expected.length && expected.every(key=>Object.hasOwn(value,key));
@@ -24,18 +25,19 @@ export async function externalImportRequest(request,kind,opts={}) {
     // Authorize before reading any uploaded body or opening external socket.
     redis=await (opts.storeProvider||store)();
     if(await maintenanceEnabled(redis))return failure("SERVICE_UNAVAILABLE",503);
-    if(await serviceMaintenanceEnabled(redis,kind==="ehi"?"httpInjector":"serverVpn"))
+    if(await serviceMaintenanceEnabled(redis,kind==="hc"?"files":kind==="ehi"?"httpInjector":"serverVpn"))
       return failure("SERVICE_MAINTENANCE",503);
-    if(!await providerAllowed(kind==="ehi"?"ehi-cloud":kind==="mnr"?"mnr-tunnel-plus":"nur-tunnel"))
+    if(!await providerAllowed(kind==="hc"?"hc-cloud":kind==="ehi"?"ehi-cloud":kind==="mnr"?"mnr-tunnel-plus":"nur-tunnel"))
       return failure("REMOTE_NOT_CONFIGURED",503);
     claims=await requireSession(redis,request,settings());
     if (!claims) return failure("UNAUTHORIZED",401);
     if (claims.rateLimited) return failure("RATE_LIMITED",429);
     const body=await boundedBody(request,4096);
-    if(kind==="ehi" || kind==="mnr") {
+    if(kind==="ehi" || kind==="mnr" || kind==="hc") {
       if(!ownKeys(body,["reference","consent"])||body.consent!==true)
         return failure("USER_CONSENT_REQUIRED",400);
-      if(kind==="mnr")parseMnrReference(body.reference);else parseEhiReference(body.reference);
+      if(kind==="hc")parseHttpCustomReference(body.reference);
+      else if(kind==="mnr")parseMnrReference(body.reference);else parseEhiReference(body.reference);
     }else if(kind==="nur") {
       if(!ownKeys(body,["consent"])||body.consent!==true)
         return failure("USER_CONSENT_REQUIRED",400);
@@ -45,6 +47,15 @@ export async function externalImportRequest(request,kind,opts={}) {
     lease=requestId;
     started=performance.now();
     const vendor=opts.vendor || {};
+    if(kind==="hc"){
+      // Return encrypted bytes once. The Android file path holds them only in
+      // RAM for password/HWID interaction; no server cache, retry or plaintext.
+      const bytes=await importHttpCustomReference(body.reference,vendor);
+      try{await recordWorkerResult(redis,"success",{kind:"file",format:"hc",bytes:bytes.length,
+        latencyMs:performance.now()-started,appVersion:request.headers.get("x-spdecode-app-version")});}catch{}
+      return jsonReply({apiVersion:"v1",status:"success",kind:"encrypted_file",format:"hc",
+        sourceBytes:bytes.length,dataBase64:bytes.toString("base64")},200);
+    }
     if(kind==="mnr"){
       const bytes=await importMnrReference(body.reference,vendor);
       const result=await fetchWorker("file",{format:"stp",dataBase64:bytes.toString("base64")},settings(),opts);
@@ -80,7 +91,7 @@ export async function externalImportRequest(request,kind,opts={}) {
     // Count provider/download failures after authorization, without storing URLs.
     if(redis && lease){
       try{await recordWorkerResult(redis,"failed",{
-        kind:kind==="nur"?"catalog":kind==="mnr"?"file":"ehi",format:kind==="mnr"?"stp":undefined,bytes:0,
+        kind:kind==="nur"?"catalog":["mnr","hc"].includes(kind)?"file":"ehi",format:kind==="hc"?"hc":kind==="mnr"?"stp":undefined,bytes:0,
         errorCode:typeof error?.code==="string"?error.code:"SERVICE_UNAVAILABLE",
         latencyMs:started===null?null:performance.now()-started,
         appVersion:request.headers.get("x-spdecode-app-version"),

@@ -37,3 +37,9 @@ export function publicTextFormats(){
  cache=Object.freeze(validatePublicTextFormats(JSON.parse(raw)));
  return cache;
 }
+
+/** Additive capability: old APKs ignore this array and retain textFormats. */
+export function publicOnlineReferenceFormats(){
+ return ["https://cloudvpn.mrfrankofc.com/","https://link.playsmarty.uk/"].map(prefix=>
+  ({prefix,name:"HTTP Custom Cloud",suffix:"hc",kind:"cloud"}));
+}

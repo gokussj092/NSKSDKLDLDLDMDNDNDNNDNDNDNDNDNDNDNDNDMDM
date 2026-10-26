@@ -1,5 +1,114 @@
 # Recuperar herramientas después de perder el entorno
 
+## Actualización TunnelDOOM 4.3.0 (430) — 2026-10-26
+
+Se descargaron 4.2.7 (427) y 4.3.0 (430) de APKPure, paquete y versiones
+confirmados en sus APK, certificado SHA256 igual a la 4.2.4 aportada.
+La 430 reemplaza el origen antiguo por **GET público fijo**
+`https://panel.tunneldoom.space/config.json`. HTTP200 real: **Version473,
+387 servidores / 5031 campos cifrados**, documento entero igual a JCA,
+CLI de descarga y worker aislado. El contador470 indicado por el usuario
+ya está superado; no se descargó una instantánea470.
+
+Broker DNS/TLS fijo, sin redirecciones, control individual persistente,
+ficha e icono original (idéntico en430), gateway valida identidad y JSON
+completo. Catálogo mínimo **56 /49 fichas**, C0 **240 / C8 254** intactos.
+32 Python /348 Node y build web correctos. Node nativo no consigue egress
+validado aquí; descarga real comprobada por Python, transporte Node y
+sesión/gateway con mocks. VPS y Android/Termux físicos pendientes.
+
+427 usa otra API con cabeceras nativas, no integrada; la430 pública no las
+requiere. El endpoint HTTP7676/GCM del script del usuario sigue sin respuesta
+real, no se confunde con esta receta. Sigue pendiente export SKS real/ruta UI;
+no hay texto propietario/Cloud por ID nuevo. Herramientas y evidencia en
+`apps/TunnelDOOM_VPN/`, sin binarios/datos reales en Git ni APK/novedad/VPS
+publicados automáticamente. **Este estado sustituye el remoto pendiente de
+TunnelDOOM descrito en los registros históricos siguientes.**
+
+Para reproducir desde un catálogo real privado:
+
+```sh
+python decoders/Python/apps/TunnelDOOM_VPN/server_catalog_decoder.py -o /privado/nuevo473.json
+python scripts/apk_analysis/tunneldoom_verify.py /privado/respuesta430.enc --worker
+PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_tunneldoom_vpn -v
+```
+
+Descargas de referencia identificadas: página `/download/4.2.7` de APKPure,
+link XAPK observado `https://d.apkpure.net/b/XAPK/com.tunneldoom.http?versionCode=427`;
+para430 se observó `?version=latest` y se verificó versión/código en el APK.
+Esa URL latest es mutable: comprobar hashes del manifest/ANALYSIS, no asumir430.
+Leer los hashes antes de repetir la investigación. Los párrafos siguientes
+conservan el punto histórico previo al descubrimiento del nuevo actualizador.
+
+## TunnelDOOM VPN 4.2.4 — 2026-10-26
+
+Continuar PR102 y leer `apps/TunnelDOOM_VPN/{README,ANALYSIS,TESTING}.md`.
+Catálogo incluido completo igual a JCA/worker; remoto sin respuesta real,
+ficha desactivada. No confundir `.sks` legado con un export actual probado.
+Guardar el APKS/catálogos/DEX privados fuera de Git y comprobar hashes.
+
+```sh
+python scripts/apk_analysis/inspect_apk.py /privado/TunnelDOOM.apks /privado/doom
+python scripts/apk_analysis/decompile.py /privado/doom/dex/classes3.dex /privado/doom-jadx3
+python scripts/apk_analysis/dex_method.py /privado/doom/dex/classes3.dex \
+  'Lcom/tunneldoom/sshservice/util/crypt/StringCrypter;' processString /privado/doom-outer.json
+python scripts/apk_analysis/tunneldoom_verify.py /privado/noobdev.txt --worker
+PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_tunneldoom_vpn -v
+python decoders/Python/apps/TunnelDOOM_VPN/server_catalog_decoder.py \
+  -o /privado/nuevo-catalogo.json
+```
+
+Extraer `res/raw/noobdev.txt` de base.apk a la ruta privada para el verificador.
+Launcher PNG exacto en split_config.xhdpi.apk: `res/drawable-xhdpi-v4/ic_launcher.png`.
+JADX DEX3 parcial con8 errores; las rutas relevantes se contrastan con Dalvik.
+GET fijo `control.tunneldoom.space/config.json` no alcanzable aquí (proxy503);
+no habilitar hasta obtener documento remoto real completo y paridad. No probar
+servicios de cuentas/tokens ni copiar cuentas hardcodeadas/llaves API del APK.
+Python/Termux del catálogo necesita solo PyCryptodome + codec/CLI; SKS usa
+la carpeta hermana Fenix. C0 240/C8 254, mínimo55/49 fichas.
+
+## HTTP Custom online — 2026-10-26
+
+Misma rama/PR #102, después de HA. Ver `docs/cloud/HTTP_CUSTOM_ONLINE.md`: descarga una
+vez de `cloudvpn.mrfrankofc.com/{6chars}` o `link.playsmarty.uk/{alias}`;
+API nueva devuelve HC cifrado sin almacenamiento, Android retiene solo RAM
+para diálogo HC de password/HWID y pasa los bytes al mismo motor de archivos.
+Los dos enlaces recibidos ya devolvían404; subida pública de HC sintético dio500.
+**No hay prueba de descarga real vigente ni ejecución Android local**.
+Node339 y Python36 aprobados; cuatro casos Android añadidos para Actions.
+Catálogo mínimo53/48 fichas, C0 240/C8 254 intactos; metadata online separada
+para que APK antiguos sigan aceptando textFormats. Panel `hc-cloud`, switch
+persistente; env `CLOUD_HTTP_CUSTOM_IMPORT_ENABLED` predeterminado true conAPI.
+No es HTTP Injector ni añade ficha Server VPN. Sin fusión/despliegue/C11/APK.
+
+
+## HA Tunnel Plus 1.7.1 (76) — 2026-10-26
+
+Leer `decoders/Python/apps/HA_Tunnel_Plus/{README,ANALYSIS,TESTING}.md`.
+Rama nueva desde main `27cc8894`: `feat/ha-tunnel-plus-1-7-1-decoders`.
+Catálogo52 /48 fichas, HA con PNG original pero desactivado. `.hat` histórico
+completo integrado en Cloud, C0/C2 conservados; catálogo DexProtector pendiente.
+No perder este alcance ni usar `hat_decoder.py` como lector de recursos APK.
+
+```sh
+python scripts/apk_analysis/inspect_apk.py /privado/ha-1.7.1.apk /privado/ha \
+  --asset resources/servers.json --asset resources/methods.json
+python scripts/apk_analysis/decompile.py /privado/ha/dex/classes.dex /privado/ha-jadx
+python -m unittest tests.test_ha_tunnel_plus tests.test_cloud_hat_complete \
+  tests.test_cloud_xhypher_renamed_files tests.test_cloud_c0_inventory -v
+python -m pip install frida==17.24.3 frida-tools==14.11.0
+adb forward tcp:27042 tcp:27042
+python scripts/apk_analysis/ha_runtime_capture.py --apk /privado/ha-1.7.1.apk \
+  --pid PID --output /privado/ha-capture
+```
+
+Abrir la aplicación original antes de adjuntar al PID, componente launcher
+`com.hatunnel.plus/com.hatunnel.plus.jlvfyyvkjayic`. El collector guarda recursos,
+constantes relevantes y un oracle sintético, sin perfiles/cuentas ni acceso
+remoto. Requiere APK exacto y directorio nuevo privado. Solo sintaxis validada;
+captura completa pendiente. No guardar APK/SO/AVD/catálogos reales en Git.
+
+
 ## NPV Tunnel 124.0.37 — 2026-10-25
 
 Leer `docs/NPVS_RECIPIENT_IDENTITIES.md` y `docs/NPV_RECIPIENT_TERMUX.md`.

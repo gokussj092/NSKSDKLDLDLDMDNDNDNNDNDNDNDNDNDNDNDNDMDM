@@ -11,60 +11,53 @@ const query=(knownVersion=0,locale="en")=>new Request("https://api.spdecode.xyz/
 const src=path=>readFileSync(new URL("../../../"+path,import.meta.url),"utf8");
 
 const locales=["en","es","ar","fa","fr","id","ru","de","pt-BR","tr","vi","hi","ja","it"];
-const appsAdded=["Xhypher Tunnel Pro","7NET VPN","AboWaged VPN"];
-const fileSuffixes=[".1ftnl",".creeb",".awg",".crev"];
-test("v4 release notes announce only post-v3 VPN and file integrations in 14 locales",()=>{
+test("v5 notes cover HA, HC Cloud and the 1.1.20 release in all 14 locales",()=>{
  const news=validateNews(fixture);
- assert.equal(news.version,4);
- assert.equal(news.publishedAt,"2026-10-23");
- assert.deepEqual(news.items.map(i=>i.id),[
-  "vpn-new-servers-v4","vpn-file-formats-v4","npvs-protection-v4",
-  "v2box-npv-import-v4","formats-and-notices-v4"
- ]);
- assert.deepEqual(news.items.map(i=>i.type),
-   ["feature","feature","improvement","improvement","fix"]);
+ assert.equal(news.version,5);
+ assert.equal(news.publishedAt,"2026-10-26");
+ assert.deepEqual(news.items.map(x=>x.id),[
+   "ha-tunnel-plus-v5","http-custom-online-v5","app-update-1120-v5"]);
+ assert.deepEqual(news.items.map(x=>x.type),["improvement","feature","support"]);
  assert(readFileSync(new URL("../content/whats-new.json",import.meta.url)).length<=16384);
- for(const locale of locales) {
-  const translated=localizeNews(news,locale);
-  assert.equal(translated.locale,locale);
-  assert.equal(translated.version,4);
-  assert.equal(translated.title,news.title[locale]);
-  assert.equal(translated.subtitle,news.subtitle[locale]);
-  assert.equal(translated.items.length,5);
-  translated.items.forEach((item,index)=>{
-   assert.equal(item.title,news.items[index].title[locale]);
-   assert.equal(item.description,news.items[index].description[locale]);
-  });
-  for(const name of appsAdded)assert(translated.items[0].description.includes(name),locale);
-  for(const suffix of fileSuffixes)assert(translated.items[1].description.includes(suffix),locale);
-  assert(translated.items[2].description.includes("NPVS"),locale);
-  assert(translated.items[3].description.includes("V2Box"),locale);
-  assert(translated.items[4].description.includes("250"),locale);
-  assert(translated.items[0].description.includes("CREEB VPN"),locale);
-  assert(translated.items[0].description.includes("AM Tunnel Lite"),locale);
+ for(const locale of locales){
+   const translated=localizeNews(news,locale);
+   assert.equal(translated.locale,locale);
+   assert.equal(translated.title,news.title[locale]);
+   assert.equal(translated.subtitle,news.subtitle[locale]);
+   assert.equal(translated.items.length,3);
+   translated.items.forEach((item,i)=>{
+     assert.equal(item.title,news.items[i].title[locale]);
+     assert.equal(item.description,news.items[i].description[locale]);
+   });
+   assert(translated.subtitle.includes("1.1.20"),locale);
+   assert(translated.items[0].description.includes(".hat"),locale);
+   assert(translated.items[1].description.includes("hccloud://"),locale);
+   assert(translated.items[2].description.includes("1.1.20"),locale);
+   assert(translated.items[2].description.includes("https://t.me/GhostDeve/377"),locale);
+   assert(translated.items[2].description.includes("Google Play Store"),locale);
  }
  assert.equal(localizeNews(news,"unknown").title,news.title.en);
- assert(!JSON.stringify(news).includes("Google Play"));
- assert(!JSON.stringify(news).includes("NUR download URL"));
  assert(!JSON.stringify(news).includes("Password:"));
+ assert(!JSON.stringify(news).includes("<a "));
 });
-test("v3 clients receive v4 notice once; v4 is unchanged",async()=>{
- const response=await route(query(3,"es"));
+
+test("v4 readers receive v5 once and v5 snapshots remain unchanged",async()=>{
+ const response=await route(query(4,"es"));
  assert.equal(response.status,200);
  assert.equal(response.headers.get("Cache-Control"),"no-store");
  const body=await response.json();
  assert.equal(body.unchanged,false);
- assert.equal(body.version,4);
+ assert.equal(body.version,5);
  assert.equal(body.locale,"es");
- assert.equal(body.items.length,5);
- const same=await (await route(query(4,"es"))).json();
- assert.deepEqual(same,{apiVersion:"v1",version:4,recheckAfterSeconds:1800,unchanged:true});
- for(const locale of locales) {
-  const response=await route(query(3,locale));
-  assert.equal(response.status,200);
-  const content=await response.json();
-  assert.equal(content.locale,locale);
-  assert.equal(content.title,fixture.title[locale]);
+ assert.equal(body.items.length,3);
+ const same=await (await route(query(5,"es"))).json();
+ assert.deepEqual(same,{apiVersion:"v1",version:5,recheckAfterSeconds:1800,unchanged:true});
+ for(const locale of locales){
+   const response=await route(query(4,locale));
+   assert.equal(response.status,200);
+   const doc=await response.json();
+   assert.equal(doc.locale,locale);
+   assert.equal(doc.title,fixture.title[locale]);
  }
 });
 test("server publication is independent of Android versionCode",async()=>{
@@ -75,10 +68,10 @@ test("server publication is independent of Android versionCode",async()=>{
  const response=await whatsNewRequest(query(fixture.version,"fr"),{source:()=>validateNews(next)});
  assert.equal(response.status,200);
  const body=await response.json();
- assert.equal(body.version,5);
+ assert.equal(body.version,next.version);
  assert.equal(body.locale,"fr");
  assert.equal(body.items[0].title,"Cloud processing improvements");
- assert.equal(loadNews({CLOUD_WHATS_NEW_JSON:JSON.stringify(next)}).version,5);
+ assert.equal(loadNews({CLOUD_WHATS_NEW_JSON:JSON.stringify(next)}).version,next.version);
 });
 test("invalid controls, unsafe HTML and oversized data fail closed; list newlines are safe",async()=>{
  for(const invalid of [{knownVersion:-1,locale:"en"},{knownVersion:"0",locale:"en"},

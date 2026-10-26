@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 PROVIDERS = {
+    "tunneldoom-vpn": "decoders.Python.apps.TunnelDOOM_VPN.server_catalog_decoder",
     "mtm-tunnel-lite": "decoders.Python.apps.MTM_Tunnel_Lite.server_catalog_decoder",
     "mnr-tunnel-plus": "decoders.Python.apps.MNR_TUNNEL_PLUS.server_catalog_decoder",
     "bd-net-vpn": "decoders.Python.apps.BD_NET_VPN.server_catalog_decoder",
