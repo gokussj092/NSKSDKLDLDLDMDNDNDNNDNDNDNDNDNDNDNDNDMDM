@@ -50,6 +50,7 @@ def dispatch(text: str, *, password: str | None = None) -> str | None:
         "tls://": "decoders.Python.TLS",
         "ssc://": "decoders.Python.SSCCUSTOM",
         "dark://": "decoders.Python.DARKTUNNEL",
+        "darktunnel://": "decoders.Python.DARKTUNNEL",
         "dt://": "decoders.Python.DARKTUNNEL",
         "dtunnel://": "decoders.Python.DARKTUNNEL",
     }
