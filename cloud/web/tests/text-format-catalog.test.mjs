@@ -8,13 +8,14 @@ import {androidUpdateHint} from "../lib/whats-new.mjs";
 test("Cloud catalog advertises bounded file, text and online reference formats",()=>{
  const formats=publicTextFormats();
  const published=catalog();
- assert.equal(CATALOG_VERSION,53);
+ assert.equal(CATALOG_VERSION,54);
  assert.equal(published.textSchemaVersion,1);
  assert.equal(published.textCount,formats.length);
  assert.deepEqual(published.textFormats,formats);
  assert(formats.length>=40);
  assert(formats.some(x=>x.prefix==="mnrtunneludp://" && x.kind==="cloud"));
  assert(formats.some(x=>x.prefix==="bdnet://"));
+ assert(formats.some(x=>x.prefix==="hccloud://" && x.suffix==="hc" && x.kind==="cloud"));
  for(const prefix of ["xhypher://","xhyphertunnelpro://"])
    assert(formats.some(x=>x.prefix===prefix && x.suffix==="xhypher" && x.kind==="text"));
  assert(formats.some(x=>x.prefix==="npvt-vless://"));
