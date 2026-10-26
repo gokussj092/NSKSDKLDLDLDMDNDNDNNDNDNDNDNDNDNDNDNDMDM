@@ -137,6 +137,24 @@ export function parseHttpCustomReference(value) {
 export function isHttpCustomReference(value) {
   try{parseHttpCustomReference(value);return true;}catch{return false;}
 }
+
+/** Server-only adapter for Android versions whose Cloud text catalog supports
+ * custom schemes but cannot recognize new HTTPS domains or native endpoints.
+ * The adapter never accepts a host, URL or user-controlled network destination.
+ */
+export function parseHttpCustomLegacyReference(value) {
+  if(typeof value!=="string" || value.length>128)fail("INVALID_REFERENCE");
+  const match=/^hccloud:\/\/(playsmarty|mrfrank)\/([A-Za-z0-9_-]{1,64})$/i.exec(value.trim());
+  if(!match)fail("INVALID_REFERENCE");
+  const host=match[1].toLowerCase()==="playsmarty" ? HC_SHORT_HOST : HC_HOST;
+  const alias=match[2];
+  if(host===HC_HOST && !/^[A-Za-z0-9_-]{6}$/.test(alias))
+    fail("INVALID_REFERENCE");
+  return parseHttpCustomReference("https://"+host+"/"+alias);
+}
+export function isHttpCustomLegacyReference(value) {
+  try{parseHttpCustomLegacyReference(value);return true;}catch{return false;}
+}
 export async function importHttpCustomReference(reference,options={}) {
   const url=parseHttpCustomReference(reference);
   const bytes=await (options.download||downloadApproved)({url,kind:"hc",maxBytes:MAX_REMOTE_BYTES},options);
