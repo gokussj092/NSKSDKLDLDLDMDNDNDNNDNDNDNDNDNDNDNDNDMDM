@@ -1,6 +1,7 @@
 "use client";
 import {useCallback,useEffect,useState} from "react";
 import {useRouter} from "next/navigation";
+import Link from "next/link";
 const requestOptions=body=>({method:"POST",cache:"no-store",credentials:"same-origin",
  headers:{"Content-Type":"application/json","X-SPDecode-Admin-Action":"1"},body:JSON.stringify(body)});
 const serviceList=[
@@ -10,9 +11,10 @@ const serviceList=[
 ];
 const fmt=new Intl.NumberFormat("es-MX");
 function Health({ok}){return <span className="sp-admin-health" data-ok={ok?"yes":"no"}><span aria-hidden="true"/> {ok?"Disponible":"No disponible"}</span>}
-export default function AdminDashboard(){
+export default function AdminDashboard({mode="system"}){
  const [data,setData]=useState(null),[busy,setBusy]=useState(false);
  const [error,setError]=useState(""),[loading,setLoading]=useState(true);
+ const [providerQuery,setProviderQuery]=useState(""),[providerFilter,setProviderFilter]=useState("all");
  const router=useRouter();
  const refresh=useCallback(async()=>{
   try{
@@ -85,12 +87,34 @@ export default function AdminDashboard(){
  return <section className="sp-admin-dashboard">
   {error&&<div className="form-message error" role="alert">{error}</div>}
   {data&&<>
-   <div className="admin-metric-grid">
-    <article className="admin-card"><span className="muted">Correctos hoy · UTC</span><strong>{fmt.format(data.metrics.successfulDecodes)}</strong><small className="muted">Descifrados del worker</small></article>
-    <article className="admin-card"><span className="muted">Fallidos hoy · UTC</span><strong>{fmt.format(data.metrics.failedDecodes)}</strong><small className="muted">Resultado del worker</small></article>
-    <article className="admin-card"><span className="muted">Operaciones procesadas</span><strong>{fmt.format(data.metrics.successfulDecodes+data.metrics.failedDecodes)}</strong><small className="muted">No equivale a usuarios únicos</small></article>
-    <article className="admin-card"><span className="muted">Estado general</span><strong className="sp-admin-status-text">{data.maintenance?"Mantenimiento":"Operativo"}</strong><small className="muted">Control global</small></article>
-   </div>
+   {mode==="overview"?<>
+    <div className="admin-metric-grid">
+     <article className="admin-card"><span className="muted">Correctos hoy · UTC</span><strong>{fmt.format(data.metrics.successfulDecodes)}</strong><small className="muted">Descifrados completados</small></article>
+     <article className="admin-card"><span className="muted">Fallidos hoy · UTC</span><strong>{fmt.format(data.metrics.failedDecodes)}</strong><small className="muted">Errores técnicos nuevos</small></article>
+     <article className="admin-card"><span className="muted">Servicios disponibles</span><strong>{[data.services.apiConfigured,data.services.redisConnected,data.services.workerReady].filter(Boolean).length}/3</strong><small className="muted">API, Redis y worker</small></article>
+     <article className="admin-card"><span className="muted">Estado general</span><strong className="sp-admin-status-text">{data.maintenance?"Mantenimiento":"Operativo"}</strong><small className="muted">Según control global</small></article>
+    </div>
+    <div className="admin-grid">
+     <section className="admin-card">
+      <h2>Estado de la infraestructura</h2>
+      {[["API configurada",data.services.apiConfigured],["Redis",data.services.redisConnected],["Worker",data.services.workerReady]].map(([name,ok])=><div className="admin-kv" key={name}><span>{name}</span><Health ok={ok}/></div>)}
+      <p className="muted">Disponibilidad técnica al momento de actualizar. No representa una prueba de cada proveedor.</p>
+     </section>
+     <section className="admin-card">
+      <h2>Accesos operativos</h2>
+      <div className="sp-admin-quick-links">
+       <Link href="/admin/analytics"><strong>Analítica</strong><span>Actividad, tendencias, filtros y exportación de estadísticas</span></Link>
+       <Link href="/admin/reports"><strong>Incidencias</strong><span>Diagnósticos y reinicio de errores por formato</span></Link>
+       <Link href="/admin/system"><strong>Servicios</strong><span>Disponibilidad de proveedores, mantenimiento y controles Cloud</span></Link>
+      </div>
+     </section>
+    </div>
+    <div className="admin-card sp-admin-overview-note">
+     <strong>Estado de la distribución</strong>
+     <p className="muted">Verificación de Google Play: {data.playAdmission?.integrityRequired?"obligatoria":"beta temporal (sin Play Integrity)"}. Proveedores configurados: {(data.providerControls?.providers||[]).filter(x=>x.configured).length} de {(data.providerControls?.providers||[]).length}. Catálogo Server VPN: versión {data.providerControls?.catalogVersion??"—"}.</p>
+     <Link href="/admin/system">Administrar disponibilidad y servicios</Link>
+    </div>
+   </>:<>
    <div className="admin-grid">
     <section className="admin-card">
      <h2>Infraestructura</h2>
@@ -140,7 +164,24 @@ export default function AdminDashboard(){
      <p className="muted">Activa o desactiva HTTP Injector Cloud, el catálogo Servidores VPN y cada proveedor individual. Estos controles no requieren QA. El servidor debe tener habilitados previamente los requisitos privados de cada integración.</p>
     </div><span className="sp-admin-chip">Servicios Cloud</span></div>
     <div className="admin-kv"><span>Versión del catálogo Server VPN</span><strong>{data.providerControls?.catalogVersion??"—"}</strong></div>
-    {(data.providerControls?.providers||[]).map(provider=>{
+    <div className="sp-admin-provider-tools">
+     <label>Buscar proveedor<input type="search" value={providerQuery} onChange={event=>setProviderQuery(event.target.value)}
+      placeholder="Nombre o identificador" maxLength={80}/></label>
+     <label>Estado<select value={providerFilter} onChange={event=>setProviderFilter(event.target.value)}>
+      <option value="all">Todos</option>
+      <option value="enabled">Habilitados</option>
+      <option value="disabled">Deshabilitados</option>
+      <option value="unconfigured">No configurados</option>
+     </select></label>
+    </div>
+    <p className="muted">Mostrando {(data.providerControls?.providers||[]).filter(p=>
+      (p.name.toLowerCase().includes(providerQuery.trim().toLowerCase())||p.id.toLowerCase().includes(providerQuery.trim().toLowerCase()))&&
+      (providerFilter==="all"||providerFilter==="enabled"&&p.enabled||providerFilter==="disabled"&&p.configured&&!p.enabled||providerFilter==="unconfigured"&&!p.configured)
+     ).length} de {(data.providerControls?.providers||[]).length} proveedores.</p>
+    {(data.providerControls?.providers||[]).filter(p=>
+      (p.name.toLowerCase().includes(providerQuery.trim().toLowerCase())||p.id.toLowerCase().includes(providerQuery.trim().toLowerCase()))&&
+      (providerFilter==="all"||providerFilter==="enabled"&&p.enabled||providerFilter==="disabled"&&p.configured&&!p.enabled||providerFilter==="unconfigured"&&!p.configured)
+     ).map(provider=>{
      const locked=busy||!provider.configured||data.maintenance||data.maintenanceLocked;
      return <div className="sp-admin-switch-row" key={provider.id}>
       <div><strong>{provider.name}</strong>
@@ -169,6 +210,7 @@ export default function AdminDashboard(){
     })}
     <p className="muted">Los estados se guardan en Redis. Las protecciones impuestas desde el VPS no se pueden anular aquí.</p>
    </section>
+   </>}
   </>}
   <div className="admin-actions">
    <button className="button subtle" onClick={()=>refresh()} disabled={busy} type="button">Actualizar estado</button>
