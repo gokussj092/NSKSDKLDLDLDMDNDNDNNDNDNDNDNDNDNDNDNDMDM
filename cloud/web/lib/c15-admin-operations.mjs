@@ -1,5 +1,5 @@
 /** Bounded, authenticated operator operations; no content or arbitrary Redis keys. */
-import {recordAdminAudit} from "./c14-ops-observability.mjs";
+import {recordAdminAudit,ALERT_PAUSE_KEY} from "./c14-ops-observability.mjs";
 const dayUTC=offset=>new Date(Date.now()-offset*86400000).toISOString().slice(0,10);
 export function errorPurgeKeys(){
  const keys=[];
@@ -34,4 +34,15 @@ export async function clearOperationalAlerts(redis){
  const at=new Date().toISOString();
  try{await recordAdminAudit(redis,{scope:"all",at,formatsReset:0,mode:"clear_alerts",removedAlerts:removed});}catch{} // Redis data was already mutated.
  return {at,removedAlerts:removed};
+}
+
+export async function setAlertPause(redis,paused){
+ if(typeof paused!=="boolean")throw Error("INVALID_PAUSE");
+ const at=new Date().toISOString();
+ const until=paused?Date.now()+3600000:null;
+ if(paused)await redis.set(ALERT_PAUSE_KEY,String(until),{EX:3600});
+ else await redis.del(ALERT_PAUSE_KEY);
+ try{await recordAdminAudit(redis,{scope:"all",at,formatsReset:0,
+  mode:paused?"pause_alerts":"resume_alerts"});}catch{}
+ return {paused,until:until?new Date(until).toISOString():null,at};
 }
