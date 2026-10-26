@@ -22,7 +22,7 @@ const channels=[
  ["serverVpn","Server VPN"]
 ];
 function Rate({success,failed,attempts}){
- const total=attempts??(success+failed);
+ const total=success+failed; // Warnings and cleared historical errors never dilute the operational success rate.
  return <span>{total?Math.round(success/total*100)+" %":"—"}</span>;
 }
 function DailyLine({days}){
@@ -67,7 +67,7 @@ function HourlyBars({hours}){
 }
 function FormatTable({rows,empty,onReset,busy=false}){
  return <div className="admin-table-wrap"><table className="admin-table">
-  <thead><tr><th>Formato / proveedor</th><th>Usos históricos</th><th>Correctos</th><th>Errores nuevos</th><th>Advertencias</th><th>Éxito</th>{onReset&&<th>Reiniciar</th>}</tr></thead>
+  <thead><tr><th>Formato / proveedor</th><th>Usos en el periodo</th><th>Correctos</th><th>Errores nuevos</th><th>Advertencias</th><th>Éxito operativo</th>{onReset&&<th>Reiniciar</th>}</tr></thead>
   <tbody>{rows.map(row=><tr key={row.extension}>
    <th scope="row">{row.extension.startsWith("vpn-")?row.extension.slice(4):row.extension==="nur-catalog"?"NUR Tunnel":row.extension==="other"?"No reconocido":row.extension==="text"?"Texto":row.extension==="ehi"?"HTTP Injector Cloud":"."+row.extension}</th>
    <td>{number.format(row.attempts)}</td><td>{number.format(row.successfulDecodes)}</td>
@@ -158,7 +158,7 @@ export default function AdminReport({view="analytics"}){
  async function resetErrors(extension=null){
   if(resetBusy)return;
   const label=extension===null?"TODOS los errores visibles":'los errores de "'+extension+'"';
-  if(!window.confirm("¿Reiniciar "+label+"? Los éxitos, las advertencias y el histórico de usos se conservarán. Los nuevos errores volverán a aparecer."))return;
+  if(!window.confirm("¿Reiniciar visualmente "+label+"? Este reinicio crea una línea base; NO borra los contadores Redis originales. Para eliminar registros realmente, utiliza «Purgar errores retenidos»."))return;
   setResetBusy(true);setResetNote("");
   try{
    const response=await fetch("/api/admin/errors/reset",{
@@ -173,6 +173,29 @@ export default function AdminReport({view="analytics"}){
     ". Formatos afectados: "+json.reset.formatsReset+".");
    await refresh();
   }catch(e){setResetNote(e.message||"Error al reiniciar");}
+  finally{setResetBusy(false);}
+ }
+
+ async function purgeErrors(){
+  if(resetBusy||loading)return;
+  const confirm=window.prompt("OPERACIÓN IRREVERSIBLE: elimina los errores retenidos (hasta 8 días), reportes técnicos de error y alertas. Conserva éxitos, advertencias y estadísticas de instalaciones. Para confirmar escribe PURGAR_ERRORES.");
+  if(confirm!=="PURGAR_ERRORES")return;
+  setResetBusy(true);setResetNote("");setError("");
+  try{
+   const response=await fetch("/api/admin/errors/purge",{
+    method:"POST",credentials:"same-origin",cache:"no-store",
+    headers:{"Content-Type":"application/json","X-SPDecode-Admin-Action":"1"},
+    body:JSON.stringify({scope:"all",confirmation:"PURGAR_ERRORES"}),
+   });
+   if(response.status===401){router.replace("/admin/login");return;}
+   const data=await response.json();
+   if(!response.ok||data.status!=="ok")throw Error("No se completó la purga ("+(data.error?.code||response.status)+").");
+   setResetNote("Purga real aplicada: "+number.format(data.purge.removedFailures)+
+    " fallos contabilizados y "+number.format(data.purge.removedIncidents)+
+    " registros de incidencia eliminados. Los nuevos errores se registrarán normalmente.");
+   await refresh();
+   window.dispatchEvent(new Event("spdecode:admin-telemetry-changed"));
+  }catch(e){setError(e.message||"No fue posible purgar los errores.");}
   finally{setResetBusy(false);}
  }
  const services=report?.serviceBreakdown||[];
@@ -194,10 +217,19 @@ export default function AdminReport({view="analytics"}){
     <button type="button" aria-pressed={days===1} onClick={()=>setDays(1)}>Hoy · UTC</button>
     <button type="button" aria-pressed={days===7} onClick={()=>setDays(7)}>Últimos 7 días</button>
    </div>
-   <div className="sp-admin-toolbar-actions">{view==="reports"&&<button type="button" className="button subtle" disabled={loading||resetBusy} onClick={()=>resetErrors()}>Reiniciar todos los errores</button>}
+   <div className="sp-admin-toolbar-actions">{view==="reports"&&<button type="button" className="button subtle" disabled={loading||resetBusy} onClick={()=>resetErrors()}>Reiniciar indicador (sin borrar)</button>}
     {view==="analytics"&&<button type="button" className="button subtle" disabled={!report||loading||!filteredFormats.length} onClick={()=>downloadAggregateCsv(filteredFormats,days)}>Exportar CSV agregado</button>}
     <button type="button" className="button subtle" onClick={()=>refresh()} disabled={loading||resetBusy}>Actualizar datos</button></div>
   </div>
+  {view==="reports"&&<section className="admin-card sp-admin-purge-panel" aria-label="Limpieza real de errores">
+   <div><h2>Administración de registros de error</h2>
+    <p className="muted">El reinicio por formato solo ajusta los indicadores. La purga real elimina de Redis los fallos retenidos de todos los servicios, sus incidentes y alertas, sin borrar aciertos, advertencias, instalaciones estimadas ni las configuraciones del servidor. Los nuevos errores aparecerán inmediatamente.</p>
+    <small className="muted">Alcance: registros operativos de hasta 8 días. No elimina registros externos del sistema operativo, Nginx ni Docker.</small>
+   </div>
+   <button type="button" className="button sp-admin-destructive" onClick={purgeErrors} disabled={resetBusy||loading}>
+    {resetBusy?"Procesando…":"Purgar errores retenidos"}
+   </button>
+  </section>}
   {error&&<div className="form-message error" role="alert">{error}</div>}
   {resetNote&&<p role="status" className="muted">{resetNote}</p>}
   {loading&&<p className="muted" role="status">Consultando estadísticas…</p>}
@@ -209,7 +241,7 @@ export default function AdminReport({view="analytics"}){
     <article className="admin-card"><span className="muted">Advertencias de compatibilidad</span><strong>{number.format(report.warnings||0)}</strong></article>
     <article className="admin-card"><span className="muted">Entrada procesada</span><strong>{size(report.inputBytes)}</strong></article>
    </div>}
-   <p className="muted">Retención de {report.retentionDays} días. No se guardan archivos, contenidos, credenciales ni IP. Reiniciar errores ajusta solo su línea base por producto, preserva usos, éxitos y advertencias. La gráfica horaria representa el histórico bruto y puede contener fallos anteriores a un reinicio; utiliza las tablas de errores nuevos para confirmar correcciones.</p>
+   <p className="muted">Retención de {report.retentionDays} días. Los informes contienen métricas agregadas, no archivos ni credenciales. La tasa de éxito operativo se calcula con correctos y errores actualmente contabilizados, sin penalizar advertencias. Reiniciar por formato solo mueve la línea base; la purga real elimina los fallos retenidos. Los bytes procesados históricos y las mediciones de latencia se conservan.</p>
    {(report.resets||[]).length>0&&<p className="muted">Reinicios activos por formato: {report.resets.length}. Los errores anteriores al último reinicio quedan excluidos de los indicadores actuales hasta vencer la retención.</p>}
    {view!=="reports"?<>
     <DailyLine days={report.daily||[]}/>
