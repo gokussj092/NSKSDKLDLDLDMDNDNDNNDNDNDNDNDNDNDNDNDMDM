@@ -21,7 +21,7 @@ export async function purgeRetainedErrors(redis){
   throw Error("PURGE_RESULT_INVALID");
  const [removedFailures,removedIncidents,removedAlerts,removedCategories]=result.map(Number);
  const at=new Date().toISOString();
- await recordAdminAudit(redis,{scope:"all",at,formatsReset:0,mode:"purge",removedFailures,removedIncidents,removedAlerts});
+ try{await recordAdminAudit(redis,{scope:"all",at,formatsReset:0,mode:"purge",removedFailures,removedIncidents,removedAlerts});}catch{} // Cleanup must report success even when audit storage fails.
  return {scope:"all",mode:"purge",at,removedFailures,removedIncidents,removedAlerts,
   removedCategories,retentionDays:8,
   note:"Successful decodes and compatibility warnings are preserved. New failures are recorded normally."};
@@ -32,6 +32,6 @@ export async function clearOperationalAlerts(redis){
  const removed=Number(result);
  if(!Number.isSafeInteger(removed)||removed<0)throw Error("INVALID_ALERT_COUNT");
  const at=new Date().toISOString();
- await recordAdminAudit(redis,{scope:"all",at,formatsReset:0,mode:"clear_alerts",removedAlerts:removed});
+ try{await recordAdminAudit(redis,{scope:"all",at,formatsReset:0,mode:"clear_alerts",removedAlerts:removed});}catch{} // Redis data was already mutated.
  return {at,removedAlerts:removed};
 }
