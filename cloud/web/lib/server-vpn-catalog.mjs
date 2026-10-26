@@ -5,7 +5,7 @@ import {createHash} from "node:crypto";
 import {publicFormats,FORMAT_DETECTION} from "./file-format-catalog.mjs";
 import {publicTextFormats,publicOnlineReferenceFormats} from "./text-format-catalog.mjs";
 
-export const CATALOG_VERSION = 53; // Text and online-import metadata, versioned Cloud snapshot.
+export const CATALOG_VERSION = 54; // Text and online-import metadata, versioned Cloud snapshot.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
