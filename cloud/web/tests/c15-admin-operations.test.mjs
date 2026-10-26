@@ -9,6 +9,7 @@ class ActionRedis {
  constructor(){this.calls=[];this.strings=new Map();this.events=[];}
  async get(key){return this.strings.get(key)||null;}
  async del(key){return this.strings.delete(key)?1:0;}
+ async incr(key){const n=(Number(this.strings.get(key))||0)+1;this.strings.set(key,String(n));return n;}
  async set(key,value,opts={}){if(opts.NX&&this.strings.has(key))return null;this.strings.set(key,value);return "OK";}
  async expire(){return 1;}
  async lPush(key,value){this.events.push({key,value:JSON.parse(value)});return this.events.length;}
