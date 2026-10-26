@@ -49,7 +49,8 @@ class CloudC2TextTests(unittest.TestCase):
                 actual = decode_text(prefix + payload)
                 self.assertEqual(actual["rawText"], expected["rawText"])
                 self.assertEqual(actual["structuredJson"], expected["structuredJson"])
-                self.assertEqual(dispatch(prefix + payload), expected["rawText"].rstrip("\n"))
+                # Preserve the legacy decoder's complete stdout, including LF.
+                self.assertEqual(dispatch(prefix + payload), expected["rawText"])
         with self.assertRaises(DecodeFailure):
             decode_text("darktunnel://not-valid-dark-config")
 

@@ -4,6 +4,9 @@ on:
   pull_request:
     paths:
       - "cloud/**"
+      - "decoders/Python/apps/HA_Tunnel_Plus/**"
+      - "tests/test_ha_tunnel_plus.py"
+      - "tests/golden/ha_tunnel_plus/**"
       - "decoders/Python/apps/MTM_Tunnel_Lite/**"
       - "tests/test_mtm_tunnel_lite.py"
       - "tests/golden/mtm_oracle.java"
@@ -203,7 +206,7 @@ jobs:
       - name: C2 verify NUR server catalog remains separate from solid profiles
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_cloud_c2_nur_catalog -v
       - name: Hat Tunnel complete JSON, real fixture and optional-field regression
-        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_cloud_hat_complete -v
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_cloud_hat_complete tests.test_ha_tunnel_plus -v
       - name: Verify original independently tested KSH DTunnel Mod and MKK methods
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_ksh_vpn tests.test_dtunnelmod tests.test_mkk_hyper -v
       - name: New KSH and DTunnel codecs and MKK four-source full-result regression

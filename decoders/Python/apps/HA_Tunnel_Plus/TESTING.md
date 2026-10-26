@@ -19,6 +19,9 @@ node --test tests/server-vpn-catalog.test.mjs tests/file-formats.test.mjs \
   inventario C0 240 y nueve fuentes UI congeladas intactas.
 - 7 regresiones Python adicionales: registro C8 de proveedores y soporte Android
   de Server VPN; sin claves ni lógica de descifrado en el catálogo público.
+- 4 regresiones de texto C2: 55+ vectores de protocolos y aliases Dark Tunnel;
+  comparación corregida para conservar el salto de línea del stdout legado.
+  La prueba ya fallaba en el main de origen por aplicar `rstrip` solo al esperado.
 - 75 pruebas Node en los nueve archivos indicados: catálogo52/48 fichas,
   icono original, ficha HA desactivada aun si availability=true, versiones y
   compatibilidad de proveedores existentes.
@@ -41,3 +44,6 @@ Pendientes: constantes y recursos DexProtector, `hideParams` real, exportación
 real de este build, GET del catálogo con comparación completa, dispositivo
 Android/Termux físico. No se marca soporte remoto habilitado ni nuevos textos o
 IDs cloud. C0 240 y C8 254 permanecen sin añadir extensiones.
+
+El flujo `.github/workflows/cloud-c2.yml` ejecuta ambos módulos HA y se activa
+también al cambiar la carpeta del lector o sus vectores sintéticos.
