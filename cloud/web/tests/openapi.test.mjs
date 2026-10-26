@@ -9,7 +9,7 @@ const document = JSON.parse(readFileSync(path.resolve(directory, "../../contract
 
 test("all v1 OpenAPI contract paths are backed by Next.js route handlers", () => {
   assert.equal(document.openapi, "3.1.0");
-  assert.equal(Object.keys(document.paths).length, 16);
+  assert.equal(Object.keys(document.paths).length, 17);
   for (const [pathname, methods] of Object.entries(document.paths)) {
     const relative = pathname.replace(/^\/api\/v1\//, "").replace("{id}", "[id]");
     const routeFile = path.resolve(directory, "../app/api/v1", relative, "route.js");

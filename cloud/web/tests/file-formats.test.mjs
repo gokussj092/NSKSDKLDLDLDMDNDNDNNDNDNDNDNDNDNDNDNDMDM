@@ -43,11 +43,36 @@ test("extension precedence, native/cloud overlap and credential metadata",()=>{
   const formats=publicFormats();
   const candidates=filename=>formats.filter(x=>filename.toLowerCase().endsWith("."+x.suffix));
   assert.equal(candidates("backup.sksrv.png")[0].suffix,"sksrv.png");
-  assert.equal(formats.find(x=>x.suffix==="npvs").credentialFields.join(","),"password,publicKey");
+  assert.equal(formats.find(x=>x.suffix==="npvs").credentialFields.join(","),"password,publicKey,recipientKey");
   assert.equal(formats.find(x=>x.suffix==="hc").credentialFields.join(","),"password,hwid");
+  assert.equal(formats.find(x=>x.suffix==="mmt").name,"MM Tunnel v1.10.11.1");
+  assert.deepEqual(formats.find(x=>x.suffix==="mmt").credentialFields,[]);
   assert.equal(formats.find(x=>x.suffix==="1ftnl").offlineSupported,false);
   assert.equal(formats.find(x=>x.suffix==="1ftnl").cloudSupported,true);
   assert.equal(formats.find(x=>x.suffix==="fɴ").offlineSupported,true);
+});
+
+test("legacy APK snapshots exclude the new credential name; negotiated clients receive it",async()=>{
+  const legacy=await endpoint(request(0));
+  const old=(await legacy.json()).formats.find(x=>x.suffix==="npvs");
+  assert.deepEqual(old.credentialFields,["password","publicKey"]);
+  const modern=request(0);modern.headers.set("X-SPDecode-NPV-Identities","1");
+  const reply=await endpoint(modern);const current=(await reply.json()).formats.find(x=>x.suffix==="npvs");
+  assert.deepEqual(current.credentialFields,["password","publicKey","recipientKey"]);
+});
+
+test("HTTP Door publishes its file route and refreshes cached v44 metadata without adding a server provider",async()=>{
+  const format=publicFormats().find(x=>x.suffix==="kyz");
+  assert.deepEqual(format,{suffix:"kyz",name:"HTTP Door 5.0",kind:"file",
+    offlineSupported:false,cloudSupported:true,credentialFields:[]});
+  assert.equal(CATALOG_VERSION,49);
+  const response=await endpoint(request(44));
+  assert.equal(response.status,200);
+  const body=await response.json();
+  assert.equal(body.unchanged,false);
+  assert.equal(body.apps.length,47);
+  assert(!body.apps.some(x=>x.id==="http-door"));
+  assert(body.formats.some(x=>x.suffix==="kyz"));
 });
 
 test("catalog response is backwards-compatible and uses the existing version contract",async()=>{
@@ -59,7 +84,7 @@ test("catalog response is backwards-compatible and uses the existing version con
   });
   assert.equal(result.formatCount,publicFormats().length);
   assert.equal(result.formats.length,publicFormats().length);
-  assert.equal(result.apps.length,38);
+  assert.equal(result.apps.length,47);
   const payload=JSON.stringify(result);
   for(const forbidden of [
     "decoders/Python/",'"script":',"source_script","originalRuntime",
@@ -70,7 +95,7 @@ test("catalog response is backwards-compatible and uses the existing version con
   const body=await response.json();
   assert.equal(body.unchanged,false);
   assert.equal(body.formats.length,publicFormats().length);
-  assert.equal(body.apps.length,38);
+  assert.equal(body.apps.length,47);
   const unchanged=await endpoint(request(body.catalogVersion));
   assert.equal(unchanged.status,200);
   const hint=await unchanged.json();

@@ -19,15 +19,22 @@ sys.path.insert(0,str(ROOT))
 from decoders.Python import npvs
 
 
-def jdk(cases):
+def jdk(cases, identity=None):
     lines=[]
     for raw,password in cases:
         hlen=int.from_bytes(raw[5:9],"big");h=raw[9:9+hlen]
         if h[50]==2:
             p=53+125*int.from_bytes(h[51:53],"big")
             wb=npvs._whitebox_block(h[p+2:p+18])
+        elif raw[4]==6:
+            p=53+125*int.from_bytes(h[51:53],"big")
+            wb=npvs._whitebox_block(h[p:p+16])
         else:wb=b""
-        lines.append("\t".join(base64.b64encode(v).decode() for v in (raw,(password or "").encode(),wb)))
+        values=[raw,(password or "").encode(),wb]
+        if identity:
+            from decoders.Python.npvs_identity import binary
+            values.extend([binary(identity["privateKey"]),binary(identity["publicKey"])])
+        lines.append("\t".join(base64.b64encode(v).decode() for v in values))
     process=subprocess.run(["java","-XX:-UsePerfData",str(ROOT/"tests/golden/npvs_protected_oracle.java")],
         input="\n".join(lines)+"\n",text=True,capture_output=True,timeout=45)
     if process.returncode:raise ValueError("Independent JDK verification failed")
@@ -51,11 +58,10 @@ def document(reference,raw):
     policy={k:pol.get(k,d) for k,d in (("onlyMobileNetwork",False),("attestationLevel",""),
         ("expiresAt",None),("displayMessage",""),("customServerMessage",""))}
     if pol.get("configVersion",0):policy["configVersion"]=pol["configVersion"]
-    source={"v":5,"configId":encode(h[1:17]),"issuedAt":metadata.get("issuedAt",""),
+    source={"v":raw[4],"configId":encode(h[1:17]),"issuedAt":metadata.get("issuedAt",""),
         "creator":{"fp":encode(hashlib.sha256(h[17:50]).digest()),"pk":encode(h[17:50])},"policy":policy,"recipients":None}
     canonical=json.dumps(source,ensure_ascii=False,sort_keys=True,separators=(",",":"))
-    for a,b in (("<","\\u003c"),(">","\\u003e"),("&","\\u0026"),("\u2028","\\u2028"),("\u2029","\\u2029")):canonical=canonical.replace(a,b)
-    context=hashlib.sha256(b"NPVS-v5/source-fields-v1/"+canonical.encode()+nonce).digest()
+    context=hashlib.sha256(f"NPVS-v{raw[4]}/source-fields-v1/".encode()+canonical.encode()+nonce).digest()
     if context!=base64.b64decode(reference["context"]):raise ValueError("Reference source context mismatch")
     return {"metadata":metadata,"document":reconstructed}
 

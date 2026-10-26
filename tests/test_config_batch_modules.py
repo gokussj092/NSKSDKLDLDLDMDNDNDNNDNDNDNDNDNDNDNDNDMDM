@@ -11,7 +11,7 @@ class BatchModuleTests(unittest.TestCase):
     def test_all_twelve_independent_modules_and_eighteen_suffixes(self):
         self.assertEqual(len(FILE_DECODER_FAMILIES), 13)
         self.assertEqual(len(file_decoder_specs()), 27)
-        self.assertEqual(len(set(DECODER_REGISTRY) - {'solid','1ftnl','awg','creeb'}), 239)
+        self.assertEqual(len(set(DECODER_REGISTRY) - {'solid','1ftnl','awg','creeb','kyz','stp'}), 239)
         self.assertEqual(validate_decoder_files(), [])
         for suffix, (name, script) in file_decoder_specs().items():
             with self.subTest(suffix=suffix):

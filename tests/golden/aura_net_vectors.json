@@ -1,0 +1,419 @@
+{
+  "documents": [
+    {
+      "kind": "file",
+      "mode": "export",
+      "wire": "CgsQMDQ4PEBESExQVFhcYGT9AQUJDREVGR0hJSjUQhJUZboN2rpmHo1vav0qte3Z++zKhES7Hw70p609IWnz9c3oqZ0n6dnwy1YsAjqh0UZL3n+Ts66Cmy0mDApmZkYqhYycVwZwRzxVg4Ewjmq/8IXE6H+jVloUTH3QqjXfudiBL9qUODSgMi5W05a5rPIdju3I73RZyfn8R4NgYCWD3L2R8HmFO+rqqJmknWYeQxE6CAAqykkSe50iPSs0ELbHp0vd+kIhK1zRrO90GiMu155wi+N8Z8YS4kDsJ4uk8ogtYAMLWeK4uFfCHsfYhX+oruQ5N4QYctoaltm8IF9ozKLQtZEGB8o8Gnqk99vnTdC7T8oOh/YP5w4AZ91BaIAVXHULqwT7rm1bk8QZA9OJmvzoMbGusMz5aK5yZ9a2rFLGNt0KPaMr2B8Adz5k5LC0LRF5vVe8CvLcJwgfxCoRDF9coqil+iLMZYqoEDq3hxXgWij5iAW7bX7seYR1XptfitUDyTWf/x77L+LVp6Vgk5801fEwOdGxR",
+      "outer": {
+        "Name": "Aura 日本語 🛠",
+        "TunnelType": "SSH",
+        "Payload": "AQIDBAUGBwgJCgsMDQ4PEDY3ODk6Ozw9Pj9AQZR090Tc8U05roElv3Az1+xbO83xbBTWgskLWzJZccZaNZ4/I6WMMdR0U2bFmzq3eVNVgGvi1pA=",
+        "SNI": "plain.example.invalid",
+        "URI": false,
+        "ProxyPort": "8080",
+        "unknown": {
+          "nested": [
+            true,
+            null,
+            3.5,
+            "é"
+          ]
+        },
+        "restrictions": {
+          "password": "synthetic lock",
+          "HWID": "synthetic device",
+          "expiry": "2030"
+        }
+      },
+      "expected": {
+        "Name": "Aura 日本語 🛠",
+        "TunnelType": "SSH",
+        "Payload": "GET / HTTP/1.1\r\nHost: example.invalid\r\n",
+        "SNI": "plain.example.invalid",
+        "URI": false,
+        "ProxyPort": "8080",
+        "unknown": {
+          "nested": [
+            true,
+            null,
+            3.5,
+            "é"
+          ]
+        },
+        "restrictions": {
+          "password": "synthetic lock",
+          "HWID": "synthetic device",
+          "expiry": "2030"
+        }
+      }
+    },
+    {
+      "kind": "file",
+      "mode": "eo",
+      "wire": "CwwNDg8QERITFBUWFxgZGkBBQkNERUZHSElKSwNdkGbrzLK2PEd9tvQyuP6X4p7aHdy1j3+z+BUwhwc7QZfWwLEYiRFkVkUxtEjeX/DfKacIJCIx+hrImtwnkFQieGPyy0mHV02hzbFR2qnSXTAylpcW9EnyIn+hETRPxv7vI6KvgV2uLWXGdf9kxXs14ZrSIFTYk3IIJpqje/A8hD7D9N7jjZ/0Si3zv2P2CeuTDg0CSre35xnhMMEQQFOFfMk68b3UltbYNivk3XPi17mwD+lmdJLwScdpdHuIVIWOL6WFvMvhwh5Nz3+hFh49XWKSnSUYxziL0uDjXnLNQGoQ8/JUlnp+2Y1xRwE8gWT/Yyy6jw/cVhmOfyJ1wsgfx6iwj4ETMxo+jduy6bKbS3x6EGXcZfrOcoc8LPdKqz1R6OQOsg9QvzceAC2X9o3gkOTfHpUdz4U4EvBYDxG/0hm9TkoByMqeseIngl5IzkruGyteUER8GwT65F54LZv9ilTNitn5OUapxm/EfgfeJwZel+mDuCEx8WWO",
+      "outer": {
+        "Name": "Aura 日本語 🛠",
+        "TunnelType": "SSH",
+        "Payload": "AQIDBAUGBwgJCgsMDQ4PEDY3ODk6Ozw9Pj9AQZR090Tc8U05roElv3Az1+xbO83xbBTWgskLWzJZccZaNZ4/I6WMMdR0U2bFmzq3eVNVgGvi1pA=",
+        "SNI": "plain.example.invalid",
+        "URI": false,
+        "ProxyPort": "8080",
+        "unknown": {
+          "nested": [
+            true,
+            null,
+            3.5,
+            "é"
+          ]
+        },
+        "restrictions": {
+          "password": "synthetic lock",
+          "HWID": "synthetic device",
+          "expiry": "2030"
+        }
+      },
+      "expected": {
+        "Name": "Aura 日本語 🛠",
+        "TunnelType": "SSH",
+        "Payload": "GET / HTTP/1.1\r\nHost: example.invalid\r\n",
+        "SNI": "plain.example.invalid",
+        "URI": false,
+        "ProxyPort": "8080",
+        "unknown": {
+          "nested": [
+            true,
+            null,
+            3.5,
+            "é"
+          ]
+        },
+        "restrictions": {
+          "password": "synthetic lock",
+          "HWID": "synthetic device",
+          "expiry": "2030"
+        }
+      }
+    },
+    {
+      "kind": "file",
+      "mode": "plain",
+      "wire": "{\"Name\":\"Aura 日本語 🛠\",\"TunnelType\":\"SSH\",\"Payload\":\"AQIDBAUGBwgJCgsMDQ4PEDY3ODk6Ozw9Pj9AQZR090Tc8U05roElv3Az1+xbO83xbBTWgskLWzJZccZaNZ4/I6WMMdR0U2bFmzq3eVNVgGvi1pA=\",\"SNI\":\"plain.example.invalid\",\"URI\":false,\"ProxyPort\":\"8080\",\"unknown\":{\"nested\":[true,null,3.5,\"é\"]},\"restrictions\":{\"password\":\"synthetic lock\",\"HWID\":\"synthetic device\",\"expiry\":\"2030\"}}",
+      "outer": {
+        "Name": "Aura 日本語 🛠",
+        "TunnelType": "SSH",
+        "Payload": "AQIDBAUGBwgJCgsMDQ4PEDY3ODk6Ozw9Pj9AQZR090Tc8U05roElv3Az1+xbO83xbBTWgskLWzJZccZaNZ4/I6WMMdR0U2bFmzq3eVNVgGvi1pA=",
+        "SNI": "plain.example.invalid",
+        "URI": false,
+        "ProxyPort": "8080",
+        "unknown": {
+          "nested": [
+            true,
+            null,
+            3.5,
+            "é"
+          ]
+        },
+        "restrictions": {
+          "password": "synthetic lock",
+          "HWID": "synthetic device",
+          "expiry": "2030"
+        }
+      },
+      "expected": {
+        "Name": "Aura 日本語 🛠",
+        "TunnelType": "SSH",
+        "Payload": "GET / HTTP/1.1\r\nHost: example.invalid\r\n",
+        "SNI": "plain.example.invalid",
+        "URI": false,
+        "ProxyPort": "8080",
+        "unknown": {
+          "nested": [
+            true,
+            null,
+            3.5,
+            "é"
+          ]
+        },
+        "restrictions": {
+          "password": "synthetic lock",
+          "HWID": "synthetic device",
+          "expiry": "2030"
+        }
+      }
+    },
+    {
+      "kind": "catalog",
+      "mode": "export",
+      "wire": "DQ4QPEBESExQVFhcYGRobHEJDREVGR0hJSktMTfqF8uuGK8WlmRFXTyvjtW3Jt+U+Jwc/v43/OK+pEskbm0E0R/Sf1L+vbNHwdhHctc4OYS0SLGXN2uHD9om50pLqYKJdjggjDPRKkTE6m4s4lZPCyqlpQ5gGTRgMhd10Q3P71ZWkFlmGGMsGiZsUE+6fdoFKsn0lylNdFu3SO8cGe91NIPaWWwv6w/fn/DPuBdWjyljrkiHjMG29cfYlTPtc0/4rzhffIa2Mxl+EShPqfFiUTYgbM6V3JHgB3BxKL03wGHj+hCoFUFnTAWmJSueKNfXBuzAODwFfkPRKCSU+xB6Kt44TGnPQI1zD3dqsCempDY5EHfGZ/PYSzOKtZlA8qfIdVX5UaUr+PRPV9MAE+phFxuKCGBfISfmOeOoB4GNf/8GlEqBaPST/7KNWaSsz6VgYC+l2NRwIMBd28b5DyDpFsKwNKDhlYZMCMLtKPCO0PkufQ6xCyoC+Ahljnnawi30Eu5BGG1q4es0JYt+fE/Cz2quIQnlLqzjCtnX5kIno6hcOI9dQBJDkyV8tVOxEK/i11jFmt3sgLfqKpTR8TAnKaDFe6lf0G9OfSd5k7Xbnh/TnlwMWUKPzazZxECIut13xUFNpLVrlpad00OiBwgOe1dQlRdIj7BGf7MmLGwOa2LEbCmqXq9tXzPVfVXqmXdXhBUlcUMnZUJA3Ct/ovX7WYTGnurSgks1v4NM67haCZZ+S7UdQwvO/+ReBH/nJcOnBiwP/62QRe1YLwMTR5pv85EuYvgDOKbnHAu3vqaz2aMobCwZgp57UTcAiW0wALsKBqalro8tqTBEwy3DFlfq9oeO7Vqt0sAJ4XEDcjj0a2JYh0Q7pxKfN+OJvxxWmcqlT7+8RAoOHx16s3L1M1ocku6CaRxapAQJI0EEHlf3HF1s2aLG0Z4Xhx5/60pKXm4unsocnq7iHyr2qmbE/ZA3MfVbJAgUAUUVesVefloi8DolzKzJbmtS6Bw/VZEnalFnxHDJ3jvRG/m4fjlBlExMLvXpxDK7IX8utaAwuZWjz+iucn+onFe259lRUuhXe+TSNkH6xvwM=",
+      "outer": {
+        "Version": "test.19",
+        "Servers": [
+          {
+            "Name": "test server",
+            "ServerIPHost": "AgMEBQYHCAkKCwwNDg8QETc4OTo7PD0+P0BBQolKBEEBkCcjoVis2mmcwIvm8sCuSWu9bgbtr9qJsZM18tGF",
+            "H2pass": "AwQFBgcICQoLDA0ODxAREjg5Ojs8PT4/QEFCQ0F2gra8kqFAz/JsPnFNY4qDwlMI1Yg5ZzJGudo="
+          }
+        ],
+        "Networks": [
+          {
+            "Name": "Aura 日本語 🛠",
+            "TunnelType": "SSH",
+            "Payload": "AQIDBAUGBwgJCgsMDQ4PEDY3ODk6Ozw9Pj9AQZR090Tc8U05roElv3Az1+xbO83xbBTWgskLWzJZccZaNZ4/I6WMMdR0U2bFmzq3eVNVgGvi1pA=",
+            "SNI": "plain.example.invalid",
+            "URI": false,
+            "ProxyPort": "8080",
+            "unknown": {
+              "nested": [
+                true,
+                null,
+                3.5,
+                "é"
+              ]
+            },
+            "restrictions": {
+              "password": "synthetic lock",
+              "HWID": "synthetic device",
+              "expiry": "2030"
+            }
+          }
+        ],
+        "ReleaseNotes": "synthetic",
+        "DefOVPNPass": "BAUGBwgJCgsMDQ4PEBESEzk6Ozw9Pj9AQUJDREjuYPI3is9k4wwaxx1i0co=",
+        "isTimerOn": false,
+        "future": {
+          "preserve": [
+            0,
+            null
+          ]
+        }
+      },
+      "expected": {
+        "Version": "test.19",
+        "Servers": [
+          {
+            "Name": "test server",
+            "ServerIPHost": "vpn.example.invalid",
+            "H2pass": "synthetic h2"
+          }
+        ],
+        "Networks": [
+          {
+            "Name": "Aura 日本語 🛠",
+            "TunnelType": "SSH",
+            "Payload": "GET / HTTP/1.1\r\nHost: example.invalid\r\n",
+            "SNI": "plain.example.invalid",
+            "URI": false,
+            "ProxyPort": "8080",
+            "unknown": {
+              "nested": [
+                true,
+                null,
+                3.5,
+                "é"
+              ]
+            },
+            "restrictions": {
+              "password": "synthetic lock",
+              "HWID": "synthetic device",
+              "expiry": "2030"
+            }
+          }
+        ],
+        "ReleaseNotes": "synthetic",
+        "DefOVPNPass": "",
+        "isTimerOn": false,
+        "future": {
+          "preserve": [
+            0,
+            null
+          ]
+        }
+      }
+    },
+    {
+      "kind": "catalog",
+      "mode": "eo",
+      "wire": "Dg8QERITFBUWFxgZGhscHUNERUZHSElKS0xNTlzULmxxxn9+whbtglpItGpS0w/ylOQDT/YijGQppErlLJmPOtD2XdvY0DIdx0IYqQOK24DKctf9fQHnmTjFbTTgCWB8AgWY6Bi/Uw1L5zywQVswjEVT8/dBZw9fHElFaok2nV3IeGntVQI1gidU+WHfu4RMJemQflDjx8rsH5CmyEPvE2AY+X+kILMzjnzQnGUzWpmikO+FZhaCIQKc6SJ1s87C5C+FCYwydqzqK8sGYEveVJEY5j91Vydyk83d4j6N6a7mYhux4C8DnQPSS3IqpYu+MgfxLsEtGVpttNUa07UHS5tK5Lfzl3Om2v/Wvnu460e3Tj3GbcWsqIgtrYseJxyRmpbXxfIKFBMbqmB3J7262AIUk4W5PqSeQsZFXneC3Z3GTU2yt4hNC6HdkyJpGkBD4MxWqUD5x/PuVX/N2BlpaVsXrq5fLocLYQlJZq5VyJgedpONOMVil4zUDh8HHovhQ2nTXZA7Lfndim7JZGL4HBQV6riW5Tul2cEXSjTyAgVPqLV9HKipbsXVpEXdZbCLePvyo065P/IScXo7CC0XycYO+2NcdC0MclkjxYt9KbqyFcsg5NeeMRTVDfsVxvCCMP3rjPqFFbXh9cTSJXv2eyUCj7o0a52tQHlT6wPJmV9uCRPJUnE3X3dXDwSDJuqP1NjCdcKGcBFBtmr35AF40ZsXu7Zpw0SgkryYYSQZR3927tqkLAv/oYiuvAOI3fBJ+C2A6wP7nJoSUXIprCZ+PHF2UD3arr9tacqOiJk449geParmOHScwxJC09IH/nDBPzO6mRbMerZ6lU4bBuweQy+Qx0JBsyk+gFmxG0U9b4obcr8ymGtN6HsTwBgDHPDa55Wv/+pkGlI1kg3Jw0msHS2aZEP1efNEltVDZzICNbrsNlPmao5IJknS+3taHURYD1JrZP7otibtBZlXsrvNPIHU0vGLhg2U9pAoxGgKY34CTr0YO+lHANDDS9KJIJaWxjh4IRmDDDDY6pe7F8OqqYRSX+TRxOrGIc8jqSovICd+EG3D3rroJqAh3Pxn6R2ZZ7IrEPo=",
+      "outer": {
+        "Version": "test.19",
+        "Servers": [
+          {
+            "Name": "test server",
+            "ServerIPHost": "AgMEBQYHCAkKCwwNDg8QETc4OTo7PD0+P0BBQolKBEEBkCcjoVis2mmcwIvm8sCuSWu9bgbtr9qJsZM18tGF",
+            "H2pass": "AwQFBgcICQoLDA0ODxAREjg5Ojs8PT4/QEFCQ0F2gra8kqFAz/JsPnFNY4qDwlMI1Yg5ZzJGudo="
+          }
+        ],
+        "Networks": [
+          {
+            "Name": "Aura 日本語 🛠",
+            "TunnelType": "SSH",
+            "Payload": "AQIDBAUGBwgJCgsMDQ4PEDY3ODk6Ozw9Pj9AQZR090Tc8U05roElv3Az1+xbO83xbBTWgskLWzJZccZaNZ4/I6WMMdR0U2bFmzq3eVNVgGvi1pA=",
+            "SNI": "plain.example.invalid",
+            "URI": false,
+            "ProxyPort": "8080",
+            "unknown": {
+              "nested": [
+                true,
+                null,
+                3.5,
+                "é"
+              ]
+            },
+            "restrictions": {
+              "password": "synthetic lock",
+              "HWID": "synthetic device",
+              "expiry": "2030"
+            }
+          }
+        ],
+        "ReleaseNotes": "synthetic",
+        "DefOVPNPass": "BAUGBwgJCgsMDQ4PEBESEzk6Ozw9Pj9AQUJDREjuYPI3is9k4wwaxx1i0co=",
+        "isTimerOn": false,
+        "future": {
+          "preserve": [
+            0,
+            null
+          ]
+        }
+      },
+      "expected": {
+        "Version": "test.19",
+        "Servers": [
+          {
+            "Name": "test server",
+            "ServerIPHost": "vpn.example.invalid",
+            "H2pass": "synthetic h2"
+          }
+        ],
+        "Networks": [
+          {
+            "Name": "Aura 日本語 🛠",
+            "TunnelType": "SSH",
+            "Payload": "GET / HTTP/1.1\r\nHost: example.invalid\r\n",
+            "SNI": "plain.example.invalid",
+            "URI": false,
+            "ProxyPort": "8080",
+            "unknown": {
+              "nested": [
+                true,
+                null,
+                3.5,
+                "é"
+              ]
+            },
+            "restrictions": {
+              "password": "synthetic lock",
+              "HWID": "synthetic device",
+              "expiry": "2030"
+            }
+          }
+        ],
+        "ReleaseNotes": "synthetic",
+        "DefOVPNPass": "",
+        "isTimerOn": false,
+        "future": {
+          "preserve": [
+            0,
+            null
+          ]
+        }
+      }
+    },
+    {
+      "kind": "catalog",
+      "mode": "plain",
+      "wire": "{\"Version\":\"test.19\",\"Servers\":[{\"Name\":\"test server\",\"ServerIPHost\":\"AgMEBQYHCAkKCwwNDg8QETc4OTo7PD0+P0BBQolKBEEBkCcjoVis2mmcwIvm8sCuSWu9bgbtr9qJsZM18tGF\",\"H2pass\":\"AwQFBgcICQoLDA0ODxAREjg5Ojs8PT4/QEFCQ0F2gra8kqFAz/JsPnFNY4qDwlMI1Yg5ZzJGudo=\"}],\"Networks\":[{\"Name\":\"Aura 日本語 🛠\",\"TunnelType\":\"SSH\",\"Payload\":\"AQIDBAUGBwgJCgsMDQ4PEDY3ODk6Ozw9Pj9AQZR090Tc8U05roElv3Az1+xbO83xbBTWgskLWzJZccZaNZ4/I6WMMdR0U2bFmzq3eVNVgGvi1pA=\",\"SNI\":\"plain.example.invalid\",\"URI\":false,\"ProxyPort\":\"8080\",\"unknown\":{\"nested\":[true,null,3.5,\"é\"]},\"restrictions\":{\"password\":\"synthetic lock\",\"HWID\":\"synthetic device\",\"expiry\":\"2030\"}}],\"ReleaseNotes\":\"synthetic\",\"DefOVPNPass\":\"BAUGBwgJCgsMDQ4PEBESEzk6Ozw9Pj9AQUJDREjuYPI3is9k4wwaxx1i0co=\",\"isTimerOn\":false,\"future\":{\"preserve\":[0,null]}}",
+      "outer": {
+        "Version": "test.19",
+        "Servers": [
+          {
+            "Name": "test server",
+            "ServerIPHost": "AgMEBQYHCAkKCwwNDg8QETc4OTo7PD0+P0BBQolKBEEBkCcjoVis2mmcwIvm8sCuSWu9bgbtr9qJsZM18tGF",
+            "H2pass": "AwQFBgcICQoLDA0ODxAREjg5Ojs8PT4/QEFCQ0F2gra8kqFAz/JsPnFNY4qDwlMI1Yg5ZzJGudo="
+          }
+        ],
+        "Networks": [
+          {
+            "Name": "Aura 日本語 🛠",
+            "TunnelType": "SSH",
+            "Payload": "AQIDBAUGBwgJCgsMDQ4PEDY3ODk6Ozw9Pj9AQZR090Tc8U05roElv3Az1+xbO83xbBTWgskLWzJZccZaNZ4/I6WMMdR0U2bFmzq3eVNVgGvi1pA=",
+            "SNI": "plain.example.invalid",
+            "URI": false,
+            "ProxyPort": "8080",
+            "unknown": {
+              "nested": [
+                true,
+                null,
+                3.5,
+                "é"
+              ]
+            },
+            "restrictions": {
+              "password": "synthetic lock",
+              "HWID": "synthetic device",
+              "expiry": "2030"
+            }
+          }
+        ],
+        "ReleaseNotes": "synthetic",
+        "DefOVPNPass": "BAUGBwgJCgsMDQ4PEBESEzk6Ozw9Pj9AQUJDREjuYPI3is9k4wwaxx1i0co=",
+        "isTimerOn": false,
+        "future": {
+          "preserve": [
+            0,
+            null
+          ]
+        }
+      },
+      "expected": {
+        "Version": "test.19",
+        "Servers": [
+          {
+            "Name": "test server",
+            "ServerIPHost": "vpn.example.invalid",
+            "H2pass": "synthetic h2"
+          }
+        ],
+        "Networks": [
+          {
+            "Name": "Aura 日本語 🛠",
+            "TunnelType": "SSH",
+            "Payload": "GET / HTTP/1.1\r\nHost: example.invalid\r\n",
+            "SNI": "plain.example.invalid",
+            "URI": false,
+            "ProxyPort": "8080",
+            "unknown": {
+              "nested": [
+                true,
+                null,
+                3.5,
+                "é"
+              ]
+            },
+            "restrictions": {
+              "password": "synthetic lock",
+              "HWID": "synthetic device",
+              "expiry": "2030"
+            }
+          }
+        ],
+        "ReleaseNotes": "synthetic",
+        "DefOVPNPass": "",
+        "isTimerOn": false,
+        "future": {
+          "preserve": [
+            0,
+            null
+          ]
+        }
+      }
+    }
+  ],
+  "duplicate": "Hh8QgISIjJCUmJygpKissLVNUVVZXWFlaW1xdXoWbZuvhDcj/gfhxFdge4SiMpc2vYC8Ks3GT/2sleeCkwYbq9TO2CjN12BqPDSsG61zXAmIuxtQyg6U=",
+  "invalidUtf8": "HyAQhIiMkJSYnKCkqKywtLlRVVldYWVpbXF1eX56hwV5bq9OKHAHyl8fGxbtKGQ==",
+  "kdf": {
+    "password": "synthetic key",
+    "saltHex": "000102030405060708090a0b0c0d0e0f",
+    "keyHex": "a4f35528d93dc7240faebe993ec2eaf1e55cdca23f99dd296bba304640d3a244"
+  }
+}

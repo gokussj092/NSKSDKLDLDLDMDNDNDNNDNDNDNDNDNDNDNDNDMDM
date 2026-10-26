@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unsupported_file_title">Loại tệp chưa được hỗ trợ</string>
+    <string name="unsupported_file_detail">Phần mở rộng này chưa được SP-DECODE hỗ trợ. Liên hệ nhà phát triển để đề xuất bổ sung.</string>
+    <string name="unsupported_version_title">Phiên bản tệp chưa hỗ trợ</string>
+    <string name="unsupported_version_detail">Tệp này dùng phiên bản hoặc phương pháp mã hóa chưa tương thích.</string>
+    <string name="unsupported_text_title">Văn bản chưa hỗ trợ</string>
+    <string name="unsupported_text_detail">Văn bản hoặc giao thức này chưa được hỗ trợ. Liên hệ nhà phát triển.</string>
+    <string name="catalog_check_action">Kiểm tra cập nhật</string>
+    <string name="catalog_checking">Đang kiểm tra phiên bản danh mục…</string>
+    <string name="catalog_downloading">Đang cập nhật danh mục…</string>
+    <string name="catalog_progress">Mục danh mục sẵn sàng: %1$d%%</string>
+    <string name="app_update_title">Có phiên bản mới</string>
+    <string name="app_update_body">SP-DECODE %1$s đã có. Mở kênh Telegram chính thức để cập nhật.</string>
+    <string name="app_update_open">Mở Telegram</string>
+    <string name="app_update_close">Đóng</string>
+    <string name="catalog_available_title">Có danh mục mới</string>
+    <string name="catalog_available_body">Danh mục phiên bản %1$d đã sẵn sàng tải xuống.</string>
+    <string name="catalog_check_short">Kiểm tra danh mục</string>
+</resources>

@@ -1,0 +1,23 @@
+{
+  "id": "http-door",
+  "name": "HTTP Door",
+  "package": "com.httpdoor.vpn",
+  "versionName": "5.0",
+  "versionCode": 5,
+  "engine": "python",
+  "entrypoint": "file_decoder.py",
+  "extensions": ["kyz"],
+  "formats": ["raw-des-ecb-pkcs5-java-properties"],
+  "dependencies": ["pycryptodome==3.23.0"],
+  "sharedParser": "../CREEB_INJECTOR/codec.py:decode_properties",
+  "standaloneBuilder": "scripts/apk_analysis/http_door_bundle.py",
+  "standalone": "http_door.py",
+  "credentials": [],
+  "customPassword": {"cryptographicallyRequired": false, "kind": "fixed_internal_des_key"},
+  "hwidCryptographicallyRequired": false,
+  "catalog": {"status": "not_identified", "remote": null, "publicCard": false},
+  "realFileSampleVerified": false,
+  "syntheticDocumentsVerified": 3,
+  "androidOfflineSupported": false,
+  "deployment": "pending"
+}

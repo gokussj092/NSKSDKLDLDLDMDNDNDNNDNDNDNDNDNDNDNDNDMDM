@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="npv_title">NPV-Empfängerschlüssel</string>
+    <string name="npv_detail">Verwende deine Identität für Dateien, die für dich erstellt wurden. Die Schlüssel sind auf diesem Gerät verschlüsselt. Aktiviere die Nutzung mit SP Cloud.</string>
+    <string name="npv_enabled">Meine NPV-Identitäten verwenden</string>
+    <string name="npv_generate">Mit SP Cloud erstellen</string>
+    <string name="npv_import">Erfasstes JSON importieren</string>
+    <string name="npv_generated">Von SP Cloud erstellt</string>
+    <string name="npv_captured">Aus offizieller App erfasst</string>
+    <string name="npv_file_only">Nur diese Datei</string>
+    <string name="npv_view">Anzeigen und kopieren</string>
+    <string name="npv_delete">Löschen</string>
+    <string name="npv_invalid">NPV-Schlüssel konnten nicht gelesen werden. Prüfe JSON und Schlüsselpaar.</string>
+    <string name="npv_saved">Identität gespeichert. Aktiviere die Option zur Verwendung.</string>
+    <string name="npv_generation_notice">Teile nur deinen öffentlichen Schlüssel mit der Person, die deinen VPN-Server oder deine Konfiguration erstellt. Teile niemals den privaten Schlüssel.</string>
+    <string name="npv_choose_title">NPV-Identität auswählen</string>
+    <string name="npv_send_notice">Wähle die Identität zum Öffnen der Datei mit SP Cloud.</string>
+    <string name="npv_use">Ausgewählte Identität verwenden</string>
+    <string name="npv_copy_public">Öffentlichen Schlüssel kopieren</string>
+    <string name="npv_copy_private">Privaten Schlüssel kopieren</string>
+    <string name="npv_reveal">Privaten Schlüssel anzeigen oder verbergen</string>
+    <string name="npv_hardware_notice">Der private Hardwareschlüssel kann nicht exportiert werden. Diese Erfassung gilt nur für die passende Datei.</string>
+    <string name="npv_delete_title">Diese Identität löschen?</string>
+    <string name="npv_delete_warning">Dieser Schlüssel liegt nur auf diesem Gerät. Nach dem Löschen kann SP Cloud ihn nicht wiederherstellen. Der Zugriff auf für diese Identität verschlüsselte Dateien kann verloren gehen.</string>
+    <string name="npv_public_label">Öffentlicher Schlüssel · P-256</string>
+    <string name="npv_private_label">Privater Schlüssel · PKCS#8</string>
+    <string name="npv_cancel">Abbrechen</string>
+    <string name="npv_already_generated">Eine SP Cloud-Identität ist bereits vorhanden. Lösche sie vor dem Erstellen einer neuen.</string>
+</resources>

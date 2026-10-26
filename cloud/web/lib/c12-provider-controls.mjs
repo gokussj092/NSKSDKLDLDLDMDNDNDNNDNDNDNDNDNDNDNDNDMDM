@@ -14,6 +14,14 @@ const ROOT="/app/provider-control";
 const IDS=Object.freeze(["ehi-cloud","nur-tunnel",...providerIds()]);
 export const PUBLIC_PROVIDER_IDS=IDS;
 const LABELS=Object.freeze({
+  "mtm-tunnel-lite":"MTM Tunnel Lite",
+  "mnr-tunnel-plus":"MNR TUNNEL PLUS",
+  "bd-net-vpn":"BD NET VPN",
+  "aura-net-vpn":"Aura Net VPN",
+  "apna-vpn":"APNA VPN",
+  "any-vpn":"ANY VPN",
+  "speicers-pro-vpn":"Speicers Pro VPN",
+  "tx-tunnel":"Tx Tunnel",
   "abowaged-vpn":"AboWaged VPN",
   "7net-vpn":"7NET VPN",
   "xhypher-tunnel-pro":"Xhypher Tunnel Pro",

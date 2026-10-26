@@ -33,7 +33,7 @@
     <string name="privacy_title">プライバシー</string>
     <string name="privacy_text">読み込んだ元のファイルは複製されません。デコード結果は削除するまで端末にのみ暗号化して保存されます。</string>
     <string name="about_title">SP-DECODE について</string>
-    <string name="about_text">SP-DECODE は安全な Cloud API で VPN 設定を処理し、結果を端末の暗号化履歴に保存します。</string>
+    <string name="about_text">SP-DECODE は SP Cloud を通じて VPN 設定を安全に処理し、結果を端末の暗号化履歴に保存します。</string>
     <string name="language_title">言語</string>
     <string name="language_text">アプリの言語を選択します。変更すると画面が再起動します。</string>
     <string name="show">表示</string>
@@ -183,7 +183,7 @@
     <string name="cloud_http_injector_open">Cloud（オンライン）</string>
     <string name="cloud_http_injector_hint">ehi.link のリンク、Cloud キー、または 💉…🚀 の並びを貼り付け</string>
     <string name="cloud_http_injector_action">Cloud 設定をインポート</string>
-    <string name="cloud_http_injector_privacy">Cloud サービス: インポートを押した時だけ参照情報を HTTP Injector Cloud に送信します。他の形式は SP-DECODE API を使用します。</string>
+    <string name="cloud_http_injector_privacy">SP Cloud サービス: インポートを押した時だけ参照情報を HTTP Injector Cloud に送信します。他の形式も SP Cloud を使用します。</string>
     <string name="cloud_http_injector_invalid">Cloud リンク、キー、または絵文字の並びが無効です。参照情報を確認してください。</string>
     <string name="cloud_http_injector_network_error">HTTP Injector Cloud に接続できません。通信状態を確認して再試行してください。</string>
     <string name="cloud_http_injector_server_error">HTTP Injector Cloud が参照情報を受け付けませんでした。期限切れ、失効、またはサービス停止の可能性があります。</string>

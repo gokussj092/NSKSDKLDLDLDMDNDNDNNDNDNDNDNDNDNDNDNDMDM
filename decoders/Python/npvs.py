@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Decode authenticated NPV Tunnel NPVS v5 app-key/passphrase files (124.0.37).
+"""Decode NPV 124.0.37: v5 app-key/passphrase and v5/v6 recipient files.
 
 Dependency: python -m pip install pycryptodome
 Usage: python npvs.py INPUT.npvs -o decoded.json
@@ -18,7 +18,7 @@ import zlib
 from functools import lru_cache
 from pathlib import Path
 
-from Crypto.Cipher import ChaCha20_Poly1305
+from Crypto.Cipher import AES, ChaCha20_Poly1305
 from Crypto.Hash import SHA256
 from Crypto.Protocol.KDF import HKDF
 from Crypto.PublicKey import ECC
@@ -59,9 +59,8 @@ def _json_load(data: bytes):
 def _canonical(value) -> bytes:
     text = json.dumps(value, ensure_ascii=False, sort_keys=True,
                       separators=(",", ":"), allow_nan=False)
-    for char, escaped in (("<", "\\u003c"), (">", "\\u003e"), ("&", "\\u0026"),
-                          ("\u2028", "\\u2028"), ("\u2029", "\\u2029")):
-        text = text.replace(char, escaped)
+    # The APK's writer uses encoding/json/v2 string encoding: only JSON
+    # grammar escapes, without v1's HTML/JavaScript compatibility escapes.
     return text.encode("utf-8")
 
 
@@ -265,8 +264,8 @@ def _validate_public_key(value: str, records: list[bytes]) -> None:
         raise DecodeError("Public key is not a recipient", "RECIPIENT_MISMATCH")
 
 
-def decode_npvs(data: bytes, *, password: str | None = None, public_key: str | None = None) -> dict:
-    """Authenticate v5 app-key/passphrase files; diagnose device-bound v5/v6.
+def decode_npvs(data: bytes, *, password: str | None = None, public_key: str | None = None, recipient_key: str | dict | None = None) -> dict:
+    """Authenticate v5 app-key/passphrase and credentialed v5/v6 recipients.
 
     A matching public key identifies a recipient; it cannot perform ECDH alone.
     Never reinterpret recipient failures as a password or retry another mode.
@@ -275,42 +274,70 @@ def decode_npvs(data: bytes, *, password: str | None = None, public_key: str | N
     header, nonce, prefix_end = env["header"], env["nonce"], env["prefixEnd"]
     if password is not None and (not isinstance(password, str) or not password):
         raise DecodeError("Invalid password", "INVALID_CREDENTIALS")
+    config_id = header[1:17]
     if env["mode"] == 0:
+        if password is not None:
+            raise DecodeError("Recipient files do not accept passwords", "INVALID_CREDENTIALS")
         if public_key is not None:
             _validate_public_key(public_key, env["recipients"])
-        raise DecodeError("Recipient ECDH private key is required; a public key alone cannot decrypt",
-                          "PRIVATE_KEY_REQUIRED")
-    if public_key is not None:
-        raise DecodeError("This key method does not accept a public key", "INVALID_CREDENTIALS")
-    if env["version"] != 5:
-        raise DecodeError("NPVS v6 decryption is not verified", "NPVS_PROTECTION_UNSUPPORTED")
-    config_id = header[1:17]
-    public_key = header[17:50]
-    descriptor = env["descriptor"]
-    if env["mode"] == 1:
-        if password is None:
-            raise DecodeError("Password is required", "PASSWORD_REQUIRED")
+        if recipient_key is None:
+            raise DecodeError("Recipient ECDH private key or file-bound agreement is required",
+                              "PRIVATE_KEY_REQUIRED")
         try:
-            encoded = password.encode("utf-8")
-        except UnicodeError as error:
-            raise DecodeError("Invalid password", "INVALID_CREDENTIALS") from error
-        if len(encoded) > 4096:
-            raise DecodeError("Password exceeds limit", "INVALID_CREDENTIALS")
-        iterations = int.from_bytes(descriptor[:4], "big")
-        salt, wrapped = descriptor[4:20], descriptor[20:80]
-        kdk = hashlib.pbkdf2_hmac("sha256", encoded, salt, iterations, 32)
-    else:
-        salt, wrapped = descriptor[2:18], descriptor[18:78]
-        kdk = hashlib.sha256(b"npvtunnel/appkey/v2 " + _whitebox_block(salt) + config_id).digest()
-    try:
-        dek = _open(kdk, wrapped[:12], wrapped[12:], salt, "document key")
-    except DecodeError as exc:
-        # Authenticated v5 app-key files require neither a password nor ECDH.
-        # Failed AEAD may mean another app-key variant or modified ciphertext.
-        if env["mode"] == 2 and exc.code == "AUTH_FAILED":
-            raise DecodeError("NPVS app-key authentication failed",
-                              "NPVS_APPKEY_AUTH_FAILED") from exc
-        raise
+            try:
+                from .npvs_identity import agreement
+            except ImportError:
+                from npvs_identity import agreement
+            record, shared = agreement(recipient_key, data, env["recipients"])
+        except LookupError as error:
+            raise DecodeError("Identity does not match this file", "RECIPIENT_MISMATCH") from error
+        except (ValueError, TypeError, KeyError, IndexError) as error:
+            raise DecodeError("Invalid recipient material", "INVALID_CREDENTIALS") from error
+        wrapping = HKDF(shared, 32, record[:32], SHA256, context=b"NPVS-v1-wrap" + config_id)
+        try:
+            cipher = AES.new(wrapping, AES.MODE_GCM, nonce=record[65:77])
+            cipher.update(record[:32])
+            dek = cipher.decrypt_and_verify(record[77:109], record[109:125])
+        except ValueError as error:
+            raise DecodeError("Recipient key authentication failed", "AUTH_FAILED") from error
+        if env["version"] == 6:
+            salt_pos = 53 + 125 * len(env["recipients"])
+            salt = header[salt_pos:salt_pos + 16]
+            kdk = hashlib.sha256(b"npvtunnel/appkey/v2 " + _whitebox_block(salt) + config_id).digest()
+            pad = HKDF(kdk, 32, salt, SHA256, context=b"NPVS-v6/recipient-binding" + config_id)
+            dek = bytes(a ^ b for a, b in zip(dek, pad))
+    elif public_key is not None or recipient_key is not None:
+        raise DecodeError("This key method does not accept a public key", "INVALID_CREDENTIALS")
+    if env["mode"] != 0:
+        if env["version"] != 5:
+            raise DecodeError("NPVS v6 decryption is not verified", "NPVS_PROTECTION_UNSUPPORTED")
+        config_id = header[1:17]
+        public_key = header[17:50]
+        descriptor = env["descriptor"]
+        if env["mode"] == 1:
+            if password is None:
+                raise DecodeError("Password is required", "PASSWORD_REQUIRED")
+            try:
+                encoded = password.encode("utf-8")
+            except UnicodeError as error:
+                raise DecodeError("Invalid password", "INVALID_CREDENTIALS") from error
+            if len(encoded) > 4096:
+                raise DecodeError("Password exceeds limit", "INVALID_CREDENTIALS")
+            iterations = int.from_bytes(descriptor[:4], "big")
+            salt, wrapped = descriptor[4:20], descriptor[20:80]
+            kdk = hashlib.pbkdf2_hmac("sha256", encoded, salt, iterations, 32)
+        else:
+            salt, wrapped = descriptor[2:18], descriptor[18:78]
+            kdk = hashlib.sha256(b"npvtunnel/appkey/v2 " + _whitebox_block(salt) + config_id).digest()
+        try:
+            dek = _open(kdk, wrapped[:12], wrapped[12:], salt, "document key")
+        except DecodeError as exc:
+            # Authenticated v5 app-key files require neither a password nor ECDH.
+            # Failed AEAD may mean another app-key variant or modified ciphertext.
+            if env["mode"] == 2 and exc.code == "AUTH_FAILED":
+                raise DecodeError("NPVS app-key authentication failed",
+                                  "NPVS_APPKEY_AUTH_FAILED") from exc
+            raise
     if len(dek) != 32:
         raise DecodeError("Invalid document key length")
     mkey = HKDF(dek, 32, nonce, SHA256, context=b"NPVS-v5/metadata")
@@ -329,12 +356,13 @@ def decode_npvs(data: bytes, *, password: str | None = None, public_key: str | N
     if policy.get("configVersion", 0):
         source_policy["configVersion"] = policy["configVersion"]
     encode = lambda b: base64.urlsafe_b64encode(b).decode("ascii").rstrip("=")
+    public_key = header[17:50]
     source_header = {
-        "v": 5, "configId": encode(config_id), "issuedAt": metadata.get("issuedAt", ""),
+        "v": env["version"], "configId": encode(config_id), "issuedAt": metadata.get("issuedAt", ""),
         "creator": {"fp": encode(hashlib.sha256(public_key).digest()), "pk": encode(public_key)},
         "policy": source_policy, "recipients": None,
     }
-    context = hashlib.sha256(b"NPVS-v5/source-fields-v1/" + _canonical(source_header) + nonce).digest()
+    context = hashlib.sha256(f"NPVS-v{env['version']}/source-fields-v1/".encode() + _canonical(source_header) + nonce).digest()
     document = _document(env["body"], dek, context)
     return {"metadata": metadata, "document": document}
 
@@ -377,23 +405,23 @@ def _decode_embedded_npvs1(value, depth: int = 0):
     return text
 
 
-def decode_npvs_complete(file_bytes: bytes, *, password: str | None = None, public_key: str | None = None) -> dict:
-    """Decrypt NPVS v5 and fully unwrap documented npvs1: embedded values."""
-    options = {k: v for k, v in (("password", password), ("public_key", public_key)) if v is not None}
+def decode_npvs_complete(file_bytes: bytes, *, password: str | None = None, public_key: str | None = None, recipient_key: str | dict | None = None) -> dict:
+    """Decrypt NPVS and fully unwrap documented npvs1: embedded values."""
+    options = {k: v for k, v in (("password", password), ("public_key", public_key), ("recipient_key", recipient_key)) if v is not None}
     return _decode_embedded_npvs1(decode_npvs(file_bytes, **options))
 
 
-def run(file_bytes: bytes, *, password: str | None = None, public_key: str | None = None) -> str:
+def run(file_bytes: bytes, *, password: str | None = None, public_key: str | None = None, recipient_key: str | dict | None = None) -> str:
     """SP-DECODE-compatible complete JSON export; failures raise DecodeError."""
-    return json.dumps(decode_npvs_complete(file_bytes, password=password, public_key=public_key), ensure_ascii=False,
+    return json.dumps(decode_npvs_complete(file_bytes, password=password, public_key=public_key, recipient_key=recipient_key), ensure_ascii=False,
                       indent=2, allow_nan=False)
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Descifra archivos NPVS v5 de NPV Tunnel.")
+    parser = argparse.ArgumentParser(description="Descifra archivos NPVS v5/v6 de NPV Tunnel.")
     parser.add_argument("input", type=Path)
     parser.add_argument("-o", "--output", type=Path, help="Guarda el JSON descifrado")
-    parser.add_argument("--credentials-stdin", action="store_true", help="Objeto JSON password/publicKey por stdin")
+    parser.add_argument("--credentials-stdin", action="store_true", help="Objeto JSON password/publicKey/recipientKey por stdin")
     args = parser.parse_args()
     try:
         if args.input.stat().st_size > _MAX_FILE:
@@ -407,12 +435,14 @@ def main() -> int:
                 credentials = json.loads(raw)
             except (ValueError, UnicodeError) as error:
                 raise DecodeError("Invalid credential object", "INVALID_CREDENTIALS") from error
-            if not isinstance(credentials, dict) or set(credentials) - {"password", "publicKey"}:
+            if not isinstance(credentials, dict) or set(credentials) - {"password", "publicKey", "recipientKey"}:
                 raise DecodeError("Invalid credential object", "INVALID_CREDENTIALS")
         result = run(args.input.read_bytes(), password=credentials.get("password"),
-                     public_key=credentials.get("publicKey")) + "\n"
+                     public_key=credentials.get("publicKey"), recipient_key=credentials.get("recipientKey")) + "\n"
         if args.output:
-            args.output.write_text(result, encoding="utf-8")
+            import os
+            with os.fdopen(os.open(args.output, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600), "w", encoding="utf-8") as output:
+                output.write(result)
         else:
             sys.stdout.write(result)
         return 0

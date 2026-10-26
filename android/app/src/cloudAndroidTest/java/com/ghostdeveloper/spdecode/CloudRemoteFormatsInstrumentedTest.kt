@@ -2,6 +2,8 @@ package com.ghostdeveloper.spdecode
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.ghostdeveloper.spdecode.cloud.CloudTextFormats
+import com.ghostdeveloper.spdecode.cloud.CloudTextRoute
 import com.ghostdeveloper.spdecode.cloud.CloudDecodeClient
 import com.ghostdeveloper.spdecode.cloud.CloudUserErrors
 import com.ghostdeveloper.spdecode.cloud.ServerVpnCatalogRepository
@@ -81,6 +83,40 @@ class CloudRemoteFormatsInstrumentedTest {
         val duplicate=metadata()
         duplicate.getJSONArray("formats").getJSONObject(1).put("suffix","sksrv.png")
         assertThrows(IllegalArgumentException::class.java) { repo.validateFormats(duplicate) }
+    }
+
+
+    @Test fun validatedTextCatalogIsAuthoritativeAndRejectsUnknownLinks() {
+        val repo=ServerVpnCatalogRepository(context,CloudDecodeClient(context))
+        val catalog=JSONObject()
+            .put("textSchemaVersion",1).put("textCount",2)
+            .put("textFormats",JSONArray()
+                .put(JSONObject().put("prefix","npvt-vless://")
+                    .put("name","NPV Tunnel").put("suffix","npvs").put("kind","text"))
+                .put(JSONObject().put("prefix","1FTnl.")
+                    .put("name","1FTunnel").put("suffix","1ftnl").put("kind","text")))
+        val routes=repo.validateTextFormats(catalog)
+        assertEquals(2,routes.size)
+        assertEquals("npvs",CloudTextFormats.identify("npvt-vless://something",routes)?.suffix)
+        assertEquals("1ftnl",CloudTextFormats.identify("1FTnl.token",routes)?.suffix)
+        assertNull(CloudTextFormats.identify("mkk://unpublished",routes))
+        assertNull(CloudTextFormats.identify("unknown://payload",routes))
+        assertNull(CloudTextFormats.identify("npvt-vless://",routes))
+    }
+
+    @Test fun invalidTextCatalogPrefixesFailClosed() {
+        val repo=ServerVpnCatalogRepository(context,CloudDecodeClient(context))
+        for(prefix in listOf("../evil","evil://../secret","https://attacker.invalid/",
+            "evil.com","evil://a.b")) {
+            val fixture=JSONObject()
+                .put("textSchemaVersion",1).put("textCount",1)
+                .put("textFormats",JSONArray().put(JSONObject()
+                    .put("prefix",prefix).put("name","Unsafe")
+                    .put("suffix","bad").put("kind","text")))
+            assertThrows(IllegalArgumentException::class.java) {
+                repo.validateTextFormats(fixture)
+            }
+        }
     }
 
     @Test fun cloudPackagedCatalogHasNoPythonRoutesAndHttpInjectorErrorIsSpecific() {

@@ -9,7 +9,8 @@ export default function AdminDiagnostics({showIncidents=true}){
  const router=useRouter();
  useEffect(()=>{
   const controller=new AbortController();
-  (async()=>{
+  const load=async()=>{
+   if(controller.signal.aborted)return;
    setLoading(true);
    try{
     const response=await fetch("/api/admin/incidents?days="+days,
@@ -19,10 +20,12 @@ export default function AdminDiagnostics({showIncidents=true}){
     const payload=await response.json();
     if(payload.status!=="ok")throw Error("Datos de diagnóstico no válidos.");
     if(!controller.signal.aborted){setData(payload);setError("");}
-   }catch(e){if(e.name!=="AbortError")setError(e.message);}
+   }catch(e){if(e.name!=="AbortError"&&!controller.signal.aborted)setError(e.message);}
    finally{if(!controller.signal.aborted)setLoading(false);}
-  })();
-  return()=>controller.abort();
+  };
+  load();
+  window.addEventListener("spdecode:admin-telemetry-changed",load);
+  return()=>{controller.abort();window.removeEventListener("spdecode:admin-telemetry-changed",load);};
  },[days,router]);
  return <section className="sp-admin-diagnostics">
   <div className="admin-report-toolbar">

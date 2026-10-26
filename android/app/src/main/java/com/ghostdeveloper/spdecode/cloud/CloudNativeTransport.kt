@@ -25,7 +25,7 @@ internal object CloudNativeTransport {
         // Fixed route allowlist; do not let the UI provide a full URL.
         require(endpoint in setOf(
             "/api/v1/session/challenge", "/api/v1/session",
-            "/api/v1/session/qa",
+            "/api/v1/session/qa", "/api/v1/npvs/identity",
             "/api/v1/decode/file", "/api/v1/decode/text",
             "/api/v1/decode/import/cloud",
             "/api/v1/decode/import/catalog/remote",

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="npv_title">Chiavi destinatario NPV</string>
+    <string name="npv_detail">Usa la tua identità per i file creati per te. Le chiavi sono cifrate su questo dispositivo. Attiva per usarle con SP Cloud.</string>
+    <string name="npv_enabled">Usa le mie identità NPV</string>
+    <string name="npv_generate">Genera con SP Cloud</string>
+    <string name="npv_import">Importa JSON acquisito</string>
+    <string name="npv_generated">Generata da SP Cloud</string>
+    <string name="npv_captured">Acquisita dall’app ufficiale</string>
+    <string name="npv_file_only">Solo questo file</string>
+    <string name="npv_view">Visualizza e copia</string>
+    <string name="npv_delete">Elimina</string>
+    <string name="npv_invalid">Impossibile leggere le chiavi NPV. Controlla il JSON e la corrispondenza delle chiavi.</string>
+    <string name="npv_saved">Identità salvata. Attiva l’opzione per utilizzarla.</string>
+    <string name="npv_generation_notice">Condividi solo la chiave pubblica con chi crea il tuo server o configurazione VPN. Non condividere mai la chiave privata.</string>
+    <string name="npv_choose_title">Seleziona identità NPV</string>
+    <string name="npv_send_notice">Scegli l’identità per aprire questo file tramite SP Cloud.</string>
+    <string name="npv_use">Usa identità selezionata</string>
+    <string name="npv_copy_public">Copia chiave pubblica</string>
+    <string name="npv_copy_private">Copia chiave privata</string>
+    <string name="npv_reveal">Mostra o nascondi chiave privata</string>
+    <string name="npv_hardware_notice">La chiave privata hardware non può essere esportata. Questa acquisizione funziona solo con il file corrispondente.</string>
+    <string name="npv_delete_title">Eliminare questa identità?</string>
+    <string name="npv_delete_warning">La chiave è salvata solo su questo dispositivo. Dopo l’eliminazione SP Cloud non potrà recuperarla. Potresti perdere l’accesso ai file cifrati per questa identità.</string>
+    <string name="npv_public_label">Chiave pubblica · P-256</string>
+    <string name="npv_private_label">Chiave privata · PKCS#8</string>
+    <string name="npv_cancel">Annulla</string>
+    <string name="npv_already_generated">Esiste già un’identità SP Cloud. Eliminala prima di generarne un’altra.</string>
+</resources>

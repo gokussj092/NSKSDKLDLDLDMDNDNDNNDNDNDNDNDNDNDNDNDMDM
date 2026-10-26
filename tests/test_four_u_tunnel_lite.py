@@ -171,7 +171,7 @@ class FourUTunnelLiteTests(unittest.TestCase):
         result = decode_provider_catalog("4u-tunnel-lite", fixture["catalog"].encode())
         self.assertEqual(result["structuredJson"], fixture["expectedCatalog"])
         self.assertFalse(result["isPartial"])
-        self.assertEqual(len(load_runtime_file_engines()), 250)
+        self.assertEqual(len(load_runtime_file_engines()), 254)
         self.assertIn("/4U_TUNNEL_LITE/file_decoder.py", load_runtime_file_engines()["4ulite"]["source"])
         with self.assertRaises(DecodeFailure): decode_provider_catalog("4u-tunnel-lite", fixture["invalidCatalogs"][0].encode())
 

@@ -130,14 +130,14 @@ export function classifyWorkerOutcome(outcome,{kind,format,errorCode}={}){
   if(REQUIRED_INPUT.has(errorCode) ||
       (kind==="file" && format==="npvs" &&
         errorCode==="NPVS_PROTECTION_UNSUPPORTED"))return "ignored";
-  // Expected user credentials and unsupported NPVS recipient protections are
-  // not infrastructure or decoder faults. Genuine DECODE_FAILED remains a
-  // warning/error under the existing privacy-safe metrics contract.
+  // Expected credentials and unrecognized exporter revisions should not
+  // inflate operational error counters. Ambiguous DECODE_FAILED on file/text
+  // imports remains a warning for investigation, never a claim of success.
   // A consumed/expired/removed EHI reference is a normal provider lifecycle
   // condition, not a failed decryption engine or an infrastructure outage.
   if(outcome==="warning"||INCOMPATIBLE.has(errorCode)||
       (kind==="ehi" && errorCode==="REMOTE_CONFIG_UNAVAILABLE")||
-      (kind==="file" && format==="npvs" && errorCode==="DECODE_FAILED"))return "warning";
+      ((kind==="file"||kind==="text") && errorCode==="DECODE_FAILED"))return "warning";
   return "failed";
 }
 const BASELINE_KEY="spc6:error-baselines";

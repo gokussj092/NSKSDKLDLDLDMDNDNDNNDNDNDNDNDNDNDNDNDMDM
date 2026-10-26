@@ -2,6 +2,7 @@
 import java.nio.file.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.ByteBuffer;
+import java.security.MessageDigest;
 import java.util.*;
 import java.util.zip.GZIPOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -39,7 +40,11 @@ class FlexB46VectorGenerator {
   String xml="<properties><comment>Synthetic B46 日本語</comment><entry key=\"tunnelType\">3</entry><entry key=\"customSni\">"+esc(sniAlias)+"</entry><entry key=\"proxyPayload\">"+esc(payloadAlias)+"</entry><entry key=\"file.routeFields\">1</entry><entry key=\"file.routeData\">"+esc(route)+"</entry><entry key=\"custom.unknown\">keep-me</entry><entry key=\"sshServer\">vpn.example.invalid</entry></properties>";
   byte[] plain=text(xml),packed=gzip(plain),key=seq(160,32),nonce=seq(30,12),offline=offline(plain);
   byte[] oh=cat(text("FLXCFG"),new byte[]{5,2,1},be(46),seq(90,16),nonce,be(packed.length+16));
-  Files.write(out.resolve("online.flex"),cat(oh,seal(key,nonce,packed,oh)));Files.write(out.resolve("offline.flex"),offline);
+  byte[] online=cat(oh,seal(key,nonce,packed,oh));
+  Files.write(out.resolve("online.flex"),online);Files.write(out.resolve("offline.flex"),offline);
+  byte[] challenge=seq(10,32),grant=cat(key,seq(90,16),MessageDigest.getInstance("SHA-256").digest(online),challenge,be(46),new byte[]{2});
+  String capture="{\n  \"schema\": \"flexnet-v5-authorized-grant/1\",\n  \"fileSha256\": \""+HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(online))+"\",\n  \"challengeBase64\": \""+Base64.getEncoder().encodeToString(challenge)+"\",\n  \"grantBase64\": \""+Base64.getEncoder().encodeToString(grant)+"\"\n}\n";
+  Files.writeString(out.resolve("grant-capture.json"),capture);
   byte[] setup=seq(200,32),vh=cat(text("FLXCFG"),new byte[]{6,1,1},be(46),seq(100,16),nonce,be(offline.length+16));
   Files.write(out.resolve("v6.flex"),cat(vh,seal(setup,nonce,offline,vh)));
   Files.write(out.resolve("profile.xml"),plain);Files.write(out.resolve("file-key.bin"),key);Files.write(out.resolve("offline-key.bin"),setup);

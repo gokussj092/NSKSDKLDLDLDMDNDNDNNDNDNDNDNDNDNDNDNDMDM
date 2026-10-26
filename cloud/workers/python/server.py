@@ -6,10 +6,11 @@ import base64
 import hmac
 import json
 import os
+import sys
 import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from engine import DecodeFailure, MAX_INPUT_BYTES, decode_file, decode_text, decode_catalog, decode_provider_catalog, load_file_engines
+from engine import ROOT, DecodeFailure, MAX_INPUT_BYTES, decode_file, decode_text, decode_catalog, decode_provider_catalog, load_file_engines
 
 # Input is JSON + base64; accept at most bounded overhead. C3 owns public upload parsing.
 MAX_JSON_BYTES = (MAX_INPUT_BYTES * 4 // 3) + 65536
@@ -70,18 +71,26 @@ class WorkerHandler(BaseHTTPRequestHandler):
         return self._json(404, {"error": {"code": "NOT_FOUND"}})
 
     def do_POST(self) -> None:
-        if self.path not in ("/internal/v1/decode/file", "/internal/v1/decode/text", "/internal/v1/decode/import/catalog", "/internal/v1/decode/import/server-vpn"):
+        if self.path not in ("/internal/v1/npvs/identity", "/internal/v1/decode/file", "/internal/v1/decode/text", "/internal/v1/decode/import/catalog", "/internal/v1/decode/import/server-vpn"):
             return self._json(503, {"error": {"code": "DECODERS_DISABLED"}})
         if not self._authorized():
             return self._json(403, {"error": {"code": "FORBIDDEN"}})
         declared = self.headers.get("Content-Length", "")
-        route_limit = MAX_SERVER_VPN_JSON_BYTES if self.path == "/internal/v1/decode/import/server-vpn" else MAX_JSON_BYTES
+        route_limit = (128 if self.path == "/internal/v1/npvs/identity" else
+            MAX_SERVER_VPN_JSON_BYTES if self.path == "/internal/v1/decode/import/server-vpn" else MAX_JSON_BYTES)
         if not declared.isascii() or not declared.isdecimal() or int(declared) > route_limit:
             return self._json(413, {"error": {"code": "INPUT_TOO_LARGE"}})
         try:
             request = json.loads(self.rfile.read(int(declared)))
             if not isinstance(request, dict):
                 raise ValueError("schema")
+            if self.path == "/internal/v1/npvs/identity":
+                if request != {"consent": True}:
+                    raise ValueError("identity schema")
+                if str(ROOT) not in sys.path:
+                    sys.path.insert(0, str(ROOT))
+                from decoders.Python.npvs_identity import generate
+                return self._json(200, {"identity": generate()})
             if self.path == "/internal/v1/decode/text":
                 if "text" not in request or set(request) - {"text", "credentials"} or not isinstance(request["text"], str):
                     raise ValueError("text schema")

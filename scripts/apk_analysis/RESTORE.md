@@ -1,5 +1,408 @@
 # Recuperar herramientas después de perder el entorno
 
+## NPV Tunnel 124.0.37 — 2026-10-25
+
+Leer `docs/NPVS_RECIPIENT_IDENTITIES.md` y `docs/NPV_RECIPIENT_TERMUX.md`.
+Las tres RIFI son v5 app-key sin destinatarios: error de escape HTML de JSON
+corregido, tres documentos / 72 registros íntegros iguales a JCA y worker.
+Destinatarios P-256 implementados en v5/v6 con privada PKCS8 o captura ECDH
+ligada al SHA-256 y efímera del archivo. Contexto fuente versionado5/6,
+metadata HKDF sigue label v5; v6 añade pad whitebox/HKDF XOR.
+API genera pares frescos sin retención; Android Cloud tiene vault cifrado,
+opt-in apagado, generar/importar/copiar y selector seguro por importación.
+C0 UI permanece congelado; sección solo en Settings generado de Cloud/QA.
+Catálogo49 /47 fichas, C8 254; no desplegar/fusionar/publicar automáticamente.
+No afirmar privada hardware exportable ni validación física Frida ya realizada.
+
+```sh
+python -m unittest tests.test_npvs_identity tests.test_npvs_protected
+node --test tests/npv_recipient_capture.test.mjs
+python scripts/apk_analysis/npv_termux_bundle.py /privado/npv_termux_bundle.zip
+python scripts/apk_analysis/npvs_verify.py /privado/rifi.npvs --worker
+```
+
+## MTM Tunnel Lite MTM (40) — 2026-10-25
+
+PR #99 sobre MNR `24fa3e2`. Carpeta MTM_Tunnel_Lite, motor canónico HX.
+Guardar todos los resultados reales fuera de Git:
+
+```sh
+python scripts/apk_analysis/inspect_apk.py /privado/MTM.apks /privado/mtm --asset sept.json
+python scripts/apk_analysis/decompile.py /privado/mtm/dex/classes.dex /privado/mtm-jadx1
+python scripts/apk_analysis/decompile.py /privado/mtm/dex/classes2.dex /privado/mtm-jadx2
+python scripts/apk_analysis/paranoid_strings.py /privado/mtm-jadx2/sources \
+  '/privado/mtm-jadx2/sources/org/lsposed/lsparanoid/Deobfuscator$MTMTunnelLite$app.java' \
+  /privado/mtm-clear2 --inventory
+python scripts/apk_analysis/paranoid_strings.py /privado/mtm-jadx1/sources \
+  '/privado/mtm-jadx2/sources/org/lsposed/lsparanoid/Deobfuscator$MTMTunnelLite$app.java' \
+  /privado/mtm-clear1 --call-class Deobfuscator.MTMTunnelLite.app --inventory
+python scripts/apk_analysis/mtm_verify.py /privado/mtm/assets/sept.json /privado/remoto.enc --worker
+python scripts/apk_analysis/mtm_bundle.py /privado/mtm_tunnel_lite.py
+PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_mtm_tunnel_lite -v
+```
+
+JADX parcial: 22/13 errores. LSParanoid 1166/42 archivos en DEX2, 67/10 en
+DEX1 e inventario 1487. Los argumentos long mediante variables requieren
+seguir el flujo DEX. No confundir callbacks `vB/wB` renombrados de cada DEX;
+OL entrega catálogo en RunnableC0007Ad, no en el callback de consentimiento.
+Fuente literal en OpenVPNClient.S(), GET fijo con agente Dalvik/2.1.0 y sin
+redirects. No tomar URLs de conexión de InjectorService como cloud import.
+
+Incluido 35.55: 29 / 471, 431531 bytes plaintext; remoto 37.63: 27 / 479,
+270806 bytes, ambos enteros iguales a JDK/worker. Sj y aQ abren Base64/XXTEA
+Princie! delta 0x9E5729B1; Username/Password no son la clave. Selector `.json`
+o `.v2` llama aQ.a y escribe plaintext Servers.js: anomalía original, D() sigue
+leyendo sept.json cifrado. SP-DECODE abre datos, no replica esa escritura.
+`.v2` compartido conserva e-V2Ray; `.json` y stdin solo CLI. C0 240 sin cambios,
+C8 254 / 27 overlays, versión mínima 47 / 47 fichas. No se identificó formato
+propio de texto/ID cloud. Sin muestra MTM de usuario ni móvil físico. No
+fusionar/desplegar/publicar APK o C11 automáticamente; conservar switches.
+
+## MNR TUNNEL PLUS 3.1 (31) — 2026-10-24
+
+PR #99 sobre `b8168cc`, carpeta MNR_TUNNEL_PLUS. Script codec.py autónomo con
+PyCryptodome; entrypoints offline separados. Binarios y catálogos fuera de Git.
+
+```sh
+python scripts/apk_analysis/inspect_apk.py /privado/MNR.apks /privado/mnr \
+  --asset config/config.json
+python scripts/apk_analysis/decompile.py /privado/mnr/dex/classes.dex /privado/mnr-jadx
+python scripts/apk_analysis/mnr_constants.py /privado/mnr-jadx/sources
+python scripts/apk_analysis/dex_method.py /privado/mnr/dex/classes.dex \
+  'LG5/f;' onClick /privado/export.json
+python scripts/apk_analysis/dex_method.py /privado/mnr/dex/classes.dex \
+  'Lcom/hamo/vpn/MainActivity;' F /privado/import.json
+python scripts/apk_analysis/mnr_verify.py /privado/mnr/assets/config/config.json /privado/remoto.enc --worker
+python scripts/apk_analysis/mnr_verify.py /privado/perfil.stp --profile --worker
+PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_mnr_tunnel_plus -v
+```
+
+JADX 49 errores generales; Dalvik G5.f export 200 / F import 151 / G5.k online
+168 instrucciones. F5.a alfabeto superscrito, SHA256(HEX_UTF8_UPPER(secret)),
+CBC/IV0; devpro catálogo, demondevs perfil. F5.g alfabeto U+2000..U+200F y
+clave recuperados con shift Java 69&31=5; **no strip de whitespace Unicode**.
+Datos reales: 1.0/9/112/537 campos y GET 14.4/14/119/612, JDK/worker completos.
+MyPass/HWID/fecha se comprueban después de descifrar. `.sft` legado no activo.
+
+Online mnrtunneludp:// + ID10, bucket hamovpn.firebasestorage.app, objeto
+normalizado `mnrtunneludp:/ID.sky`; metadata downloadTokens primero→media.
+API dedicada consentida/texto/bot/CLI, sesión y transporte fijo. No listar
+bucket ni adivinar referencias. **Mocks comprobados; falta ID real y `.stp`
+real, Android/Termux físicos.** Catálogo y descarga CLI reales correctos.
+50 Python / 309 Node, build web; reconocimiento Android Cloud sin claves,
+caso instrumentado añadido pero ejecución móvil pendiente. C0 240 / C8 254 / 26 overrides, mínimo 46 /
+46 fichas. No desplegar, fusionar, publicar APK o C11 automáticamente.
+
+## HTTP Door 5.0 (5) — 2026-10-24
+
+PR #99 sobre BD NET `cf6ba54`. `apps/HTTP_Door/` contiene lector `.kyz`,
+manifest y evidencia. Parser XML compartido de CREEB; no quitar esa carpeta.
+El builder incluye las funciones canónicas en un único script para Termux.
+
+```sh
+python scripts/apk_analysis/inspect_apk.py /privado/HTTP-Door.apks /privado/http-door
+python scripts/apk_analysis/decompile.py /privado/http-door/dex/classes2.dex /privado/http-door-jadx
+python scripts/apk_analysis/dex_method.py /privado/http-door/dex/classes2.dex \
+  'Lcom/httpdoor/vpn/config/ConfigParser;' convertDataToFile /privado/export.json
+python scripts/apk_analysis/dex_method.py /privado/http-door/dex/classes2.dex \
+  'Lcom/httpdoor/vpn/config/ConfigParser;' convertInputAndSave /privado/import.json
+python scripts/apk_analysis/http_door_bundle.py /privado/http_door.py
+python scripts/apk_analysis/http_door_verify.py /privado/perfil.kyz --worker
+PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_http_door tests.test_creeb_injector -v
+```
+
+JADX DEX1 18 / DEX2 11 errores generales; rutas Dalvik 379 export / 575 import.
+ConfigParser KEY_PASSWORD cinbdf665$4, DESKeySpec toma cinbdf66; Cipher DES,
+ECB/PKCS5, XML directo sin Base64. No contraseña/HWID requeridos. Tres
+documentos sintéticos iguales a JDK/worker/bundle; `.kyz` real y móvil pendientes.
+**Sin catálogo identificado**: no consultar AppUpdater localhost:8000/update.json
+ni registrar block.json (Lottie) o geodatos como perfiles. No esquema propio.
+C0 240, C8 253, 25 overrides, mínimo 45 / 45 fichas. 43 Python / 296 Node.
+El generador Android y guard C0 excluyen `.kyz` como overlay explícito;
+los assets y la matriz congelada no cambian. Pruebas web esperan mínimo 45.
+Guardar binarios/perfiles fuera de Git; sin fusión, despliegue, APK o C11.
+
+## BD NET VPN PrinceBuild111 (111) — 2026-10-24
+
+PR #99 sobre Aura `5a5abe5`, sin fusionar/desplegar/publicar APK ni C11.
+Código y evidencia en `apps/BD_NET_VPN/`. C0 240, C8 252, 24 overrides,
+mínimo catálogo 44 / 45 fichas. Conservar switches y valores desconocidos.
+
+```sh
+python scripts/apk_analysis/inspect_apk.py /privado/BDNET.apks /privado/bdnet \
+  --asset gunny.json --resource res/drawable/ic_app_icon.png --native libputils.so
+python scripts/apk_analysis/decompile.py /privado/bdnet/dex/classes2.dex /privado/bdnet-jadx
+python scripts/apk_analysis/paranoid_strings.py /privado/bdnet-jadx/sources \
+  '/privado/bdnet-jadx/sources/org/lsposed/lsparanoid/Deobfuscator$BDNETVPN$app.java' \
+  /privado/bdnet-clear --inventory
+python scripts/apk_analysis/bd_net_verify.py /privado/bdnet/assets/gunny.json /privado/remoto.enc --worker
+python scripts/apk_analysis/bd_net_verify.py --file /privado/perfil.bdnet --worker
+python scripts/apk_analysis/bd_net_native_oracle.py /privado/bdnet/native/split_config.arm64_v8a/libputils.so
+PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_bd_net_vpn -v
+```
+
+JADX fijado: DEX1 46 errores, DEX2 3, DEX3 0. LIAPP presente; no afirmar
+DEX protegido completo. LSParanoid 787 llamadas / 35 archivos / 2310 cadenas.
+nm.b/c: delta 9E5729B1, clave `...|...`, XXTEA length word little-endian.
+Kf fija `https://raw.githubusercontent.com/panigbatanc/BDNET2023/main/JSONDEC2025`.
+GET 200, remoto 56 / 19 / 255, menor que asset 57 / 20 / 257. UA del broker
+descriptivo, no recuperado del actualizador protegido. Sin otros orígenes.
+
+libputils.so ARM64: pEncrypt 0x147938, pDecrypt 0x147ef8, XOR 0x1466e4,
+hexToString 0x146560. Clave `4%PdXch>fkP]`, rodata 0xbfb77 + inmediato.
+Cinco casos de la función original iguales, sin ejecutar JNI/firma/identidad.
+S00 cifra payload/host/sausage y guarda restricciones. B00 descifra antes de
+leer tweak_password. `.bdnet` y `bdnet://` reconocidos; no cloud token hallado.
+
+Ambos catálogos completos iguales a JDK y worker, 187 campos distintos cada
+uno. **UTF JNI no canónico**: preservar secuencias de dos/tres bytes, NUL y
+pares sustitutos, no errors=ignore. Una carga por catálogo tiene binario
+inválido después de NUL: texto visible = prefijo JNI y `_spdecodeBinaryFields`
+conserva pointer, sourceHex y todos los bytes XOR Base64. No quitar ese anexo
+ni marcar completo si se pierden bytes. La raíz reservada rechaza colisiones.
+Referencia JDK readUTF reutiliza el XXTEA de apna_oracle; launcher source
+sin javac separado, strings del oracle hasta 65535 bytes.
+
+71 Python / 295 Node, build web y CLI stdlib real correctos. C0 genérico
+xor_family.run queda intacto; el bot delega solo .bdnet/bdnet://. Offline
+Android histórico no certifica el build nuevo. Pendientes exportación real
+y Android/Termux. No guardar APK/SO/DEX, catálogos ni credenciales en Git.
+
+## Aura Net VPN AuraNet_v9 (19) — 2026-10-24
+
+Continuar en PR #99 sobre APNA `a76add0`, sin fusionar/desplegar/publicar APK.
+Código en `apps/Aura_Net_VPN/`, evidencia en ANALYSIS/TESTING. C0 240, C8 252,
+23 overrides, catálogo mínimo 43 / 44 fichas. Mantener switches previos.
+
+```sh
+python scripts/apk_analysis/inspect_apk.py /privado/Aura.apks /privado/aura \
+  --asset configfile.json --resource res/drawable/icon.png --native libgojni.so
+python scripts/apk_analysis/decompile.py /privado/aura/dex/classes3.dex /privado/aura-jadx
+python scripts/apk_analysis/go_inspect.py \
+  /privado/aura/native/split_config.arm64_v8a/libgojni.so --filter AndroidLibXrayLite
+python scripts/apk_analysis/dex_method.py /privado/aura/dex/classes3.dex \
+  'Lcom/v2ray/ang/adapter/NetworkAdapter;' u /privado/aura/export-method.json
+python scripts/apk_analysis/aura_net_verify.py --catalog /privado/aura/assets/configfile.json \
+  --catalog /privado/remoto.enc --worker
+python scripts/apk_analysis/aura_net_verify.py --file /privado/perfil.aura --worker
+PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_aura_net_vpn -v
+```
+
+JADX fijado por checksum, DEX3 con 15 errores generales (DEX1 43); no afirmar
+descompilación total. Dalvik export 149 instrucciones, import 158. Go 39794
+funciones: Encrypt 0x1a4a4c0, decrypt 0x1a4a820, EO 0x1a4ad10, DO 0x1a4b0f0,
+CU 0x1a4de80. Constantes export/field de 32 bytes en 0x3b35e5 y 0x3b3605,
+Argon2id 8192 KiB / t3 / p1, GCM AAD=salt. Salt16/nonce12/tag16. Export
+inserta letra en índice 3 del Base64; EO no. El parseConfig del bridge llama
+a decrypt; no recibe password personal. No ejecutar ni modificar flags JNI.
+
+CU GET literal `https://strongteam.co/api/kidvpn/v4/aurav1.txt`, UA Aura Net VPN,
+sin appcode/token/formulario. No usar la URL histórica `api/auranet/v1/`.
+Incluido real 1.01 / 4 / 663 / 40 campos, remoto real 2.18 / 14 / 685 / 424;
+ambos completos iguales a libsodium/JDK y worker, más seis sintéticos.
+61 Python / 290 Node y build web correctos; CLI descarga/guarda completo.
+
+`.aura` ya existía: override C8 y bot conservan Ultra/Sandok histórico,
+incluidas sus claves y ambos modos AAD. No hacer fallback después de
+autenticar un documento moderno si fallan JSON/campos. PNG original copiado
+de drawable/icon.png; no confundirlo con el launcher adaptativo XML/WebP.
+No se identificó esquema Aura propio ni cloud de perfiles por token.
+Script `codec.py` autónomo para Termux con argon2-cffi/pycryptodome, GET fijo,
+salida 0600 sin sobrescribir. Pendiente exportación `.aura` real del build 19
+y Android/Termux; no guardar APK/SO/DEX ni catálogos reales en Git.
+
+## APNA VPN 3.9 (30) — 2026-10-24
+
+Rama y PR #99 sobre `323839f` (ANY y Speicers públicos ya integrados).
+Código en `apps/APNA_VPN/`, detalles en ANALYSIS/TESTING. C0 240, C8 252,
+catálogo mínimo 42 / 43 fichas. No guardar APK, SO ni catálogos reales en Git.
+
+```sh
+python scripts/apk_analysis/inspect_apk.py /privado/APNA.apks /privado/apna \
+  --asset janu.json --resource res/drawable/ic_app_icon.png --native libputils.so
+python scripts/apk_analysis/decompile.py /privado/apna/dex/classes2.dex /privado/apna-jadx
+python scripts/apk_analysis/paranoid_strings.py /privado/apna-jadx/sources \
+  '/privado/apna-jadx/sources/org/lsposed/lsparanoid/Deobfuscator$APNAVPN$app.java' \
+  /privado/apna-clear --inventory
+python scripts/apk_analysis/apna_verify.py /privado/apna/assets/janu.json /privado/remoto.enc
+python scripts/apk_analysis/apna_verify.py --file /privado/perfil.apnavpn
+python scripts/apk_analysis/apna_native_oracle.py /privado/apna/native/split_config.arm64_v8a/libputils.so
+PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_apna_vpn -v
+```
+
+`inspect_apk.py` produce informe, DEX, recursos y SO exactos del ZIP.
+JADX fijado por checksum; referencias
+Java requieren JDK 17+. Oracle nativo requiere Unicorn/pyelftools y el hash
+exacto del SO documentado; solo ejecuta XOR aislado, no JNI/firmas/Android.
+
+`OpenVPNClient.r()` → YV GET a paperonboard.com/updater/3c3c4c58d864ca394da16656b4d0c4,
+agente Dalvik/2.1.0 validado, 200, catálogo 456 / 18 / 493. No seguir
+UpdaterLink de amtun.xyz: es obsoleto y devuelve 403. Asset `assets/janu.json`
+289 / 19 / 491. Ambos completos iguales a Java y worker. Bm en classes2.dex
+usa XXTEA delta 9E5729B1, clave fija `...|...` y length word little-endian.
+`libputils.so` ARM64: pDecrypt 0x147c58, hexToString 0x14654c, XOR 0x1466d0,
+clave fija `4%PdXch>fkP]`, UTF-8 modificado JNI. `tweak_password` se lee
+después de descifrar; conservar contraseña y restricciones en el JSON.
+Cinco vectores XOR originales y perfiles sintéticos con/sin contraseña
+verificados. Pendientes `.apnavpn` real y Android. Broker público, PNG
+original y disponibilidad individual incorporados; no desplegar ni publicar
+APK/novedades automáticamente. Script stdlib autónomo descarga/guarda 0600
+sin sobrescribir y admite --file/--text/--input/--apks/--summary.
+
+## ANY VPN build 40 y Speicers público — 2026-10-24
+
+Continuar en PR #99, sin fusionar ni desplegar. La instrucción posterior del
+usuario de incorporar AMBAS apps al catálogo sustituye el estado privado de
+Speicers. Versión mínima 41 / 42 fichas y C8 251; C0 sigue 240. No reiniciar
+switches persistentes ni publicar APK/C11 automáticamente.
+
+```bash
+python scripts/apk_analysis/inspect_apk.py /ruta/ANY-VPN.apks \
+  scripts/apk_analysis/work/any
+python scripts/apk_analysis/decompile.py --install
+python scripts/apk_analysis/decompile.py \
+  scripts/apk_analysis/work/any/dex/classes3.dex scripts/apk_analysis/work/any-jadx
+python scripts/apk_analysis/random_strings.py \
+  scripts/apk_analysis/work/any-jadx/sources/com/tknetwork ObfuscatedString \
+  scripts/apk_analysis/work/any-clear
+python scripts/apk_analysis/dex_method.py \
+  scripts/apk_analysis/work/any/dex/classes3.dex \
+  'Lcom/tknetwork/tunnel/activities/ActivityUi;' attemptExportNetwork \
+  scripts/apk_analysis/work/any-network-method.json
+python -m unittest tests.test_any_vpn tests.test_speicers_pro tests.test_cloud_c8_vpn_registry -v
+python scripts/apk_analysis/any_vpn_verify.py /ruta/embedded.enc /ruta/remoto.enc
+```
+
+El catálogo incluido real está en `c_11.conf` del DEX3, no en tk.js. JSON 1.1,
+12/46; remoto fijo verificado 5.84, 13/91. 877 campos conocidos iguales a JDK y
+worker aislado; dos `.dtk` sintéticos adicionales. Extraer la constante cifrada
+de la clase recuperada a una ruta privada antes de invocar el verificador.
+`codec.py` de ANY es autónomo, descargador/lector Termux sin root o contraseña.
+El origen real se obtiene de config_url y 26 sustituciones Unicode, no de la
+constante histórica data_url. Reproducir el User-Agent oficial de OkHttp;
+con él se recibió 200; el agente Python recibió 403. No consultar auth/freeze.
+JADX 1.5.6: 31 errores generales; exportador red/servidor 151 instrucciones.
+El de servidor tiene una anomalía encrypt/JSONObject, no se certifica en móvil.
+Pendientes `.dtk` real y Android. Ver ANALYSIS/TESTING/manifest de ANY_VPN.
+
+## Speicers Pro VPN 104.1.17 (120) — 2026-10-24
+
+Continuar en la rama del PR #99. El APKS autorizado y su hash están en
+`apps/Speicers_Pro_VPN/ANALYSIS.md`. No guardar APK, catálogos, usuarios ni
+resultados reales en Git. Runtime: Python + PyCryptodome; JDK para paridad.
+
+```bash
+python scripts/apk_analysis/inspect_apk.py /ruta/Speicers-Pro.apks \
+  scripts/apk_analysis/work/speicers --asset flags/config.png \
+  --asset config/config.json --asset LICENSE
+python scripts/apk_analysis/decompile.py --install
+python scripts/apk_analysis/decompile.py \
+  scripts/apk_analysis/work/speicers/dex/classes.dex \
+  scripts/apk_analysis/work/speicers-jadx
+python scripts/apk_analysis/dex_method.py \
+  scripts/apk_analysis/work/speicers/dex/classes.dex \
+  'Lsp8x108/hpNtUD1CNW0w7ETBbL;' run \
+  scripts/apk_analysis/work/speicers-download-method.json
+python -m unittest tests.test_speicers_pro tests.test_http_fenixvpn tests.test_cloud_c8_vpn_registry -v
+python scripts/apk_analysis/speicers_verify.py \
+  scripts/apk_analysis/work/speicers/assets/flags/config.png \
+  scripts/apk_analysis/work/speicers/assets/config/config.json
+```
+
+Añadir `/ruta/servidores_pro-cifrado` al verificador para una copia remota.
+La CLI autónoma `apps/Speicers_Pro_VPN/server_catalog_decoder.py` usa la fuente
+fija y guarda JSON privado; no sobrescribe. Requiere solo PyCryptodome, apta para
+Termux sin root. Reutiliza los `.sks` canónicos; no duplica la ruta histórica.
+
+Paridad completa JDK/bridge de tres documentos reales: asset principal 36/75,
+remoto 35/74 y secundario 9/32; 1605 campos conocidos, 1229 no vacíos. La URL de
+usuarios se identifica pero no se descarga. El esquema de pagos no es cloud VPN.
+JADX 1.5.6 termina con 21 errores generales; GET confirmado en 163 instrucciones.
+
+**Estado actual:** la instrucción posterior autoriza su ficha e icono público,
+broker fijo y control individual junto con ANY. Mínimo 41 / 42 fichas;
+C0 240 / C8 251, sin tocar switches existentes, Android o C11. PNG de launcher
+original `res/mipmap-xxxhdpi/ic_launcher.png`; no usar el logo de flags/sp.png.
+Prueba Node dedicada de las dos tarjetas y controles persistentes.
+Pendiente `.sks` real y ejecución Android. Sin despliegue o APK.
+
+## Tx Tunnel, Tx v2.17 (70) — 2026-10-24
+
+Continuar en la rama del PR #99, conservando MM. Runtime: checkout completo,
+PyCryptodome y argon2-cffi. Aportar el APKS con hash de `apps/Tx_Tunnel/ANALYSIS.md`
+para repetir ingeniería inversa. JDK 17+ y dependencias de análisis; libsodium
+para el oracle independiente. Material privado fuera de Git.
+
+```bash
+python scripts/apk_analysis/inspect_apk.py /ruta/Tx-Tunnel.apks \
+  scripts/apk_analysis/work/tx-tunnel --asset configfile.json --native libgojni.so
+python scripts/apk_analysis/decompile.py --install
+python scripts/apk_analysis/decompile.py scripts/apk_analysis/work/tx-tunnel/dex/classes3.dex scripts/apk_analysis/work/tx-jadx3
+python scripts/apk_analysis/go_inspect.py \
+  scripts/apk_analysis/work/tx-tunnel/native/split_config.arm64_v8a/libgojni.so \
+  --filter '^github.com/2dust/AndroidLibXrayLite.(EO|DOO)$'
+python scripts/apk_analysis/dex_method.py scripts/apk_analysis/work/tx-tunnel/dex/classes3.dex \
+  'Lcom/v2ray/ang/adapter/NetworkAdapter;' u scripts/apk_analysis/work/tx-export.json
+python scripts/apk_analysis/dex_method.py scripts/apk_analysis/work/tx-tunnel/dex/classes3.dex \
+  'Lrk1;' g scripts/apk_analysis/work/tx-appcode.json
+python -m unittest tests.test_tx_tunnel tests.test_mm_tunnel tests.test_ultra_sandok -v
+python scripts/apk_analysis/tx_tunnel_verify.py --worker \
+  --catalog scripts/apk_analysis/work/tx-tunnel/assets/configfile.json
+```
+
+DEX3/1: salida 3 con 7/41 errores generales, revisar métodos concretos. No
+confundir clase nativa declarada con cuerpo recuperado. EO/DOO: 0x1012e70 y
+0x1013290; constante igual al perfil txtunnel existente, sin letra insertada.
+El GET oficial y User-Agent se obtuvieron del APK; appcode 27.0 procede solo
+del tamaño de este base.apk. Descargador sin argumentos para fuente fija.
+
+Asset real 2.0 (23/66/657 campos) y remoto 65.62 (27/643/4231) completos iguales
+a libsodium/JDK y worker, sin datos reales publicados. Pendiente `.tx` real.
+Ficha operativa en código, mínimo catálogo 40/40, switches conservados; no
+significa que la VPS esté desplegada. C0 240 / C8 250, sin APK o C11 automáticos.
+Guías de apoyo aportadas por el usuario: `https://github.com/morluto/rea`,
+`docs/android-analysis.md` y `docs/native-investigation.md` de ese repositorio.
+No instalar ni ejecutar herramientas externas sin inspeccionar su procedencia.
+
+## MM Tunnel v1.10.11.1 (45) — 2026-10-24
+
+Rama nueva `feat/mm-tunnel-1-10-11-1-decoders`, desde main; no retomar el PR #96
+para este trabajo. Runtime: Python, PyCryptodome y argon2-cffi. Para repetir el
+análisis, aportar APKS con SHA-256 de `apps/MM_Tunnel/ANALYSIS.md`, JDK 17+ y las
+dependencias de análisis. El oracle requiere libsodium del sistema. Las
+herramientas se conservan en Git; no subir APK/SO, assets o resultados reales.
+
+```bash
+python scripts/apk_analysis/inspect_apk.py /ruta/MM-Tunnel.apks \
+  scripts/apk_analysis/work/mm-tunnel --asset configfile.json --native libgojni.so
+python scripts/apk_analysis/decompile.py --install
+python scripts/apk_analysis/decompile.py scripts/apk_analysis/work/mm-tunnel/dex/classes.dex scripts/apk_analysis/work/mm-jadx1
+python scripts/apk_analysis/decompile.py scripts/apk_analysis/work/mm-tunnel/dex/classes2.dex scripts/apk_analysis/work/mm-jadx2
+python scripts/apk_analysis/paranoid_strings.py scripts/apk_analysis/work/mm-jadx2/sources \
+  'scripts/apk_analysis/work/mm-jadx2/sources/org/lsposed/lsparanoid/Deobfuscator$MMTunnel$app.java' \
+  scripts/apk_analysis/work/mm-clear2 --inventory
+python scripts/apk_analysis/go_inspect.py \
+  scripts/apk_analysis/work/mm-tunnel/native/split_config.arm64_v8a/libgojni.so \
+  --filter '^github.com/2dust/AndroidLibXrayLite.(Encrypt|decrypt|DO|EO|CU)$'
+python scripts/apk_analysis/dex_method.py scripts/apk_analysis/work/mm-tunnel/dex/classes2.dex \
+  'Lcom/v2ray/ang/adapter/NetworkAdapter;' u scripts/apk_analysis/work/mm-export-method.json
+python -m unittest tests.test_mm_tunnel tests.test_go_pclntab tests.test_ultra_sandok -v
+python scripts/apk_analysis/mm_tunnel_verify.py --worker \
+  --catalog scripts/apk_analysis/work/mm-tunnel/assets/configfile.json
+```
+
+DEX1/2 tienen 42/31 errores generales de JADX; revisar cuerpos concretos. La
+pclntab f1 está en `.data.rel.ro`; no adivinar direcciones ni textStart. Para
+resolver DEX1, repetir `paranoid_strings.py` con `--call-class Deobfuscator.MMTunnel.app`
+y la misma clase de chunks DEX2. La tabla completa contiene 36659 funciones.
+
+El catálogo inicial v1.01 (34/555/3335 campos) es real y está validado completo.
+El POST oficial devuelve HTTP 403; no habilitar la tarjeta por tener un asset
+funcional. `.mmt` requiere una exportación real futura; seis documentos
+sintéticos iguales a libsodium/JDK/CLI/worker no prueban una importación en un
+móvil. No añadir esquemas de texto inventados. C0 240 / C8 250, mínimo catálogo
+39 / 39 fichas, switches persistentes intactos. Sin despliegue, fusión o APK.
+
 ## Hex Custom 10.6.1 (101) — pendiente, 2026-10-23
 
 Solicitud solo de archivo. Recuperar el APKS con hash de `apps/Hex_Custom/ANALYSIS.md`
@@ -313,3 +716,41 @@ no imprime datos descifrados ni claves. Para un perfil con contraseña, añadir
 `--credentials` y pasar `{"password":"..."}` por stdin privado. No guardar
 APK/SO, fuentes JADX, inventarios ni resultados reales en Git. Conservar AM
 pendiente; este lector no depende de quitar LIAPP ni usa sus herramientas.
+
+## FlexNet V 2.4 / build 46: concesiones de importación
+
+Continuación en PR #99. No se abrieron las dos muestras online reales: falta
+observar su importación en un Android instrumentable. El usuario confirmó que
+la app oficial sí las importa. Layout, hashes, captura y uso privado completos
+en [FLEXNET_V2_4_AUTHORIZED_IMPORT.md](../../docs/FLEXNET_V2_4_AUTHORIZED_IMPORT.md).
+
+```bash
+python scripts/apk_analysis/inspect_apk.py '/ruta/FlexNet V 2.4 .apk' \
+  scripts/apk_analysis/work/flex-b46 --asset builtin_servers.dat --native libvpnbridge.so
+python scripts/apk_analysis/decompile.py \
+  scripts/apk_analysis/work/flex-b46/dex/classes.dex scripts/apk_analysis/work/flex-b46-jadx
+java tests/golden/FlexB46VectorGenerator.java scripts/apk_analysis/work/flex-b46-jdk-grant
+python scripts/apk_analysis/flexnet_b46_grant_oracle.py /ruta/libvpnbridge.so
+PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_flexnet_b46_grant tests.test_flexnet_b46 tests.test_flexnet_b42 -v
+node --test tests/flexnet_b46_capture.test.mjs
+```
+
+Se necesita el entorno opcional Unicorn/pyelftools para el oracle, no para el
+lector. SHA exacto fijado en el script. Ejecuta parser/binding y comparador
+originales: 87 casos, sin JNI/Android/RSA. JADX terminó con 27 errores generales;
+las rutas indicadas se revisaron con DEX y desensamblado nativo, sin afirmar
+descompilación completa. El directorio Java contiene material sintético.
+
+`flexnet_b46_capture.js` se carga por el REPL de Frida en el proceso oficial;
+`flexnet_collect_grant.py` verifica GCM/XML antes de crear una captura local 0600.
+El runtime Android de ese observador sigue pendiente: las cinco pruebas Node
+usan mocks. No guardar logs/concesiones reales en Git. El APK/SO y las tres
+muestras se vuelven a aportar localmente con los hashes documentados.
+
+La tercera muestra es v6 offline: ver
+[FLEXNET_V2_4_V6_SAMPLE.md](../../docs/FLEXNET_V2_4_V6_SAMPLE.md).
+El observador también captura el retorno v5 de `d.w` y el colector admite
+`--offline-inner`. Se contrastó su descriptor real en DEX (50 instrucciones).
+Los mismos comandos de pruebas cubren ahora 32 casos Python y cinco Node.
+La clave de época no se exporta. El host verifica las capas internas v5;
+la autenticación del exterior v6 depende de la llamada original en Android.

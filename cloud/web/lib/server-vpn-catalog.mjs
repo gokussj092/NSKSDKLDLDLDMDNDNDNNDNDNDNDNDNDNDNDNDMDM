@@ -3,8 +3,9 @@ import {readFileSync} from "node:fs";
 import {join} from "node:path";
 import {createHash} from "node:crypto";
 import {publicFormats,FORMAT_DETECTION} from "./file-format-catalog.mjs";
+import {publicTextFormats} from "./text-format-catalog.mjs";
 
-export const CATALOG_VERSION = 38; // Cloud-only refresh: .awg/.ua file formats and fixed .ua decoder.
+export const CATALOG_VERSION = 49; // Text and online-import metadata, versioned Cloud snapshot.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -22,6 +23,16 @@ export function activeCatalogVersion(env=process.env) {
 }
 
 const ITEMS = Object.freeze([
+  {id:"mtm-tunnel-lite", name:"MTM Tunnel Lite", icon:"mtm-tunnel-lite.png", remote:"mtm-tunnel-lite"},
+  {id:"mnr-tunnel-plus", name:"MNR TUNNEL PLUS", icon:"mnr-tunnel-plus.png", remote:"mnr-tunnel-plus"},
+  {id:"bd-net-vpn", name:"BD NET VPN", icon:"bd-net-vpn.png", remote:"bd-net-vpn"},
+  {id:"aura-net-vpn", name:"Aura Net VPN", icon:"aura-net-vpn.png", remote:"aura-net-vpn"},
+  {id:"apna-vpn", name:"APNA VPN", icon:"apna-vpn.png", remote:"apna-vpn"},
+  {id:"any-vpn", name:"ANY VPN", icon:"any-vpn.png", remote:"any-vpn"},
+  {id:"speicers-pro-vpn", name:"Speicers Pro VPN", icon:"speicers-pro-vpn.png", remote:"speicers-pro-vpn"},
+  {id:"tx-tunnel", name:"Tx Tunnel", icon:"tx-tunnel.png", remote:"tx-tunnel"},
+  // Embedded catalog verified; official fixed POST returned HTTP 403.
+  {id:"mm-tunnel", name:"MM Tunnel", icon:"mm-tunnel.png", remote:null},
   // Embedded catalog works; remote Play Integrity response remains unvalidated.
   {id:"creeb-vpn", name:"CREEB VPN", icon:"creeb-vpn.png", remote:null},
   {id:"abowaged-vpn", name:"AboWaged VPN", icon:"abowaged-vpn.png", remote:"abowaged-vpn"},
@@ -90,6 +101,9 @@ export function catalog({availability=null,version=activeCatalogVersion()}={}) {
     formatDetection:FORMAT_DETECTION,
     formatCount:publicFormats().length,
     formats:publicFormats(),
+    textSchemaVersion:1,
+    textCount:publicTextFormats().length,
+    textFormats:publicTextFormats(),
     apps: ITEMS.map(x=>({
       id:x.id,
       name:x.name,

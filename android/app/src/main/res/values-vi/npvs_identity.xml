@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="npv_title">Khóa người nhận NPV</string>
+    <string name="npv_detail">Dùng danh tính của bạn cho các tệp được tạo riêng cho bạn. Khóa được mã hóa trên thiết bị này. Bật để dùng với SP Cloud.</string>
+    <string name="npv_enabled">Dùng danh tính NPV của tôi</string>
+    <string name="npv_generate">Tạo bằng SP Cloud</string>
+    <string name="npv_import">Nhập JSON đã thu thập</string>
+    <string name="npv_generated">Được tạo bởi SP Cloud</string>
+    <string name="npv_captured">Đã thu thập từ ứng dụng chính thức</string>
+    <string name="npv_file_only">Chỉ tệp này</string>
+    <string name="npv_view">Xem và sao chép</string>
+    <string name="npv_delete">Xóa</string>
+    <string name="npv_invalid">Không thể đọc khóa NPV. Kiểm tra JSON và cặp khóa.</string>
+    <string name="npv_saved">Đã lưu danh tính. Bật tùy chọn để sử dụng.</string>
+    <string name="npv_generation_notice">Chỉ chia sẻ khóa công khai với người tạo máy chủ hoặc cấu hình VPN cho bạn. Không bao giờ chia sẻ khóa riêng tư.</string>
+    <string name="npv_choose_title">Chọn danh tính NPV</string>
+    <string name="npv_send_notice">Chọn danh tính để mở tệp này bằng SP Cloud.</string>
+    <string name="npv_use">Dùng danh tính đã chọn</string>
+    <string name="npv_copy_public">Sao chép khóa công khai</string>
+    <string name="npv_copy_private">Sao chép khóa riêng tư</string>
+    <string name="npv_reveal">Hiện hoặc ẩn khóa riêng tư</string>
+    <string name="npv_hardware_notice">Không thể xuất khóa riêng tư trong phần cứng. Dữ liệu này chỉ dùng cho tệp tương ứng.</string>
+    <string name="npv_delete_title">Xóa danh tính này?</string>
+    <string name="npv_delete_warning">Khóa này chỉ lưu trên thiết bị này. Sau khi xóa, SP Cloud không thể khôi phục. Bạn có thể mất quyền truy cập các tệp được mã hóa cho danh tính này.</string>
+    <string name="npv_public_label">Khóa công khai · P-256</string>
+    <string name="npv_private_label">Khóa riêng tư · PKCS#8</string>
+    <string name="npv_cancel">Hủy</string>
+    <string name="npv_already_generated">Đã có danh tính SP Cloud. Hãy xóa trước khi tạo danh tính mới.</string>
+</resources>

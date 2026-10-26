@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unsupported_file_title">نوع الملف غير مدعوم</string>
+    <string name="unsupported_file_detail">امتداد الملف غير متاح بعد في SP-DECODE. تواصل مع المطور لاقتراح إضافته.</string>
+    <string name="unsupported_version_title">إصدار الملف غير مدعوم</string>
+    <string name="unsupported_version_detail">يستخدم الملف إصدارا أو طريقة تشفير غير مدعومة بعد. يمكنك التواصل مع المطور.</string>
+    <string name="unsupported_text_title">النص غير مدعوم</string>
+    <string name="unsupported_text_detail">هذا النص أو البروتوكول غير مدعوم بعد. تواصل مع المطور لاقتراح إضافته.</string>
+    <string name="catalog_check_action">التحقق من التحديثات</string>
+    <string name="catalog_checking">جار فحص إصدار الدليل…</string>
+    <string name="catalog_downloading">جار تحديث الدليل…</string>
+    <string name="catalog_progress">عناصر الدليل الجاهزة: %1$d%%</string>
+    <string name="app_update_title">يتوفر إصدار جديد</string>
+    <string name="app_update_body">يتوفر SP-DECODE %1$s. افتح قناة Telegram الرسمية للحصول على التحديث.</string>
+    <string name="app_update_open">فتح Telegram</string>
+    <string name="app_update_close">إغلاق</string>
+    <string name="catalog_available_title">يتوفر دليل جديد</string>
+    <string name="catalog_available_body">الإصدار %1$d من الدليل جاهز للتنزيل.</string>
+    <string name="catalog_check_short">فحص الدليل</string>
+</resources>

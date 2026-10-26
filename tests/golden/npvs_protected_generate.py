@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Synthetic NPVS v5 password fixtures and v5/v6 recipient-only framing.
+"""Synthetic NPVS v5 password and v5/v6 recipient documents.
 
-No real export/password or device private key is used. Recipient fixtures test
-recognition/diagnostics only; v6 document decryption is intentionally unverified.
+No real export/password or device private key is embedded. v6 includes the
+APK's recipient binding mask and version-specific source document context.
 """
 from __future__ import annotations
 import base64
@@ -23,8 +23,6 @@ def url(data):
 
 def canonical(obj):
     s=json.dumps(obj,ensure_ascii=False,sort_keys=True,separators=(",",":"))
-    for a,b in (("<","\\u003c"),(">","\\u003e"),("&","\\u0026"),("\u2028","\\u2028"),("\u2029","\\u2029")):
-        s=s.replace(a,b)
     return s.encode()
 
 
@@ -34,7 +32,7 @@ def seal(key,nonce,plain,aad):
     return ciphertext+tag
 
 
-def make(*,password="synthetic-password",version=5,recipient=False):
+def make(*,password="synthetic-password",version=5,recipient=False,identity=None):
     creator=ECC.construct(curve="P-256",d=0x123456789abcdef)
     pub=creator.public_key().export_key(format="SEC1",compress=True)
     cid,salt,nonce=bytes(range(16)),bytes(range(16,32)),bytes(range(32,44))
@@ -44,13 +42,19 @@ def make(*,password="synthetic-password",version=5,recipient=False):
     metadata={"issuedAt":"2026-10-22","policy":policy}
     public_key=None
     if recipient:
-        key=ECC.construct(curve="P-256",d=0x987654321abcdef)
+        key=ECC.import_key(base64.urlsafe_b64decode(identity["privateKey"]+"="*(-len(identity["privateKey"])%4))) if identity else ECC.construct(curve="P-256",d=0x987654321abcdef)
         public=key.public_key().export_key(format="SEC1",compress=True);public_key=url(public)
         fp=hashlib.sha256(public).digest();ephemeral=ECC.construct(curve="P-256",d=0x123abc)
         shared=int((key.pointQ*ephemeral.d).x).to_bytes(32,"big")
-        wrapping=HKDF(shared,32,cid,SHA256,context=b"NPVS-v1-wrap"+fp)
-        aes=AES.new(wrapping,AES.MODE_GCM,nonce=wrapped_nonce);aes.update(cid)
-        cipher,tag=aes.encrypt_and_digest(dek)
+        wrapping=HKDF(shared,32,fp,SHA256,context=b"NPVS-v1-wrap"+cid)
+        aes=AES.new(wrapping,AES.MODE_GCM,nonce=wrapped_nonce);aes.update(fp)
+        recipient_dek=dek
+        if version==6:
+            from decoders.Python.npvs import _whitebox_block
+            kdk=hashlib.sha256(b"npvtunnel/appkey/v2 "+_whitebox_block(salt)+cid).digest()
+            pad=HKDF(kdk,32,salt,SHA256,context=b"NPVS-v6/recipient-binding"+cid)
+            recipient_dek=bytes(a^b for a,b in zip(dek,pad))
+        cipher,tag=aes.encrypt_and_digest(recipient_dek)
         record=fp+ephemeral.public_key().export_key(format="SEC1",compress=True)+wrapped_nonce+cipher+tag
         prefix=b"\x01"+cid+pub+b"\x00\x00\x01"+record+(salt if version==6 else b"")
     else:
@@ -59,9 +63,9 @@ def make(*,password="synthetic-password",version=5,recipient=False):
         prefix=b"\x01"+cid+pub+b"\x01\x00\x00"+struct.pack(">I",600000)+salt+wrapped
     mkey=HKDF(dek,32,nonce,SHA256,context=b"NPVS-v5/metadata")
     mc=seal(mkey,nonce,canonical(metadata),prefix);header=prefix+struct.pack(">I",len(mc))+mc
-    source={"v":5,"configId":url(cid),"issuedAt":metadata["issuedAt"],
+    source={"v":version,"configId":url(cid),"issuedAt":metadata["issuedAt"],
             "creator":{"fp":url(hashlib.sha256(pub).digest()),"pk":url(pub)},"policy":policy,"recipients":None}
-    context=hashlib.sha256(b"NPVS-v5/source-fields-v1/"+canonical(source)+nonce).digest()
+    context=hashlib.sha256(f"NPVS-v{version}/source-fields-v1/".encode()+canonical(source)+nonce).digest()
     document={"configs":[{"name":"Sintético 😀", "sshConfig":{"host":"example.invalid",
         "port":443,"username":"npvs1:"+url("usuario 日本語".encode()),"password":"opaque-secret",
         "enabled":True,"extra":None,"empty":"","payload":"GET / HTTP/1.1\r\n\r\n"}}]}
@@ -82,7 +86,7 @@ def make(*,password="synthetic-password",version=5,recipient=False):
     data=unsigned+DSS.new(creator,"deterministic-rfc6979",encoding="binary").sign(SHA256.new(unsigned))
     expected={"metadata":metadata,"document":document}
     return {"data":data,"expectedRaw":expected,"creator":creator,"publicKey":public_key,
-            "password":password,"dek":dek}
+            "password":password,"dek":dek, "recipientPrivateKey":url(key.export_key(format="DER",use_pkcs8=True)) if recipient else None}
 
 
 if __name__=="__main__":

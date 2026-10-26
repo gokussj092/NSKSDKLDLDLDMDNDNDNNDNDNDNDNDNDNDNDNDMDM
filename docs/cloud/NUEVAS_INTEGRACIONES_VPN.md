@@ -1,13 +1,188 @@
 # Registro de nuevas integraciones VPN
 
-Este registro reúne únicamente las incorporaciones del lote iniciado con
-HTTP SocketClay. Se utilizará como fuente para una futura actualización de
+## MNR TUNNEL PLUS 3.1 (31) — 2026-10-24
+
+`com.hamo.vpn`, `apps/MNR_TUNNEL_PLUS/`, PR #99 sobre HTTP Door `b8168cc`.
+Catálogo real asset **1.0 / 9 servidores / 112 redes**; remoto fijo plusfast
+**14.4 / 14 / 119**, HTTP 200. Los dos JSON completos coinciden con JDK y
+worker: 1149 campos cifrados. Exterior nibbles/AES-CBC, clave SHA256 de HEX
+UTF8; campos con alfabeto U+2000..U+200F. No quitar espacios Unicode. Names,
+flags, IDs y campos desconocidos conservados; wsPayload/wsProxyPayload booleanos.
+
+Nuevo `.stp` C8/bot y texto clipboard, clave fija demondevs. MyPass/DeviceID
+y fecha son validaciones posteriores; no contraseña/HWID para descifrar.
+Dos esquemas exportados local/cloud se mantienen completos sin renombrar.
+Online `mnrtunneludp://` + diez caracteres: bucket fijo hamovpn, objeto
+`mnrtunneludp:/ID.sky` tras normalización Firebase, GET metadata→token→media.
+API `/api/v1/decode/import/mnr` y texto integrado, sesión/cuota/switch/DNS/TLS;
+reconocimiento Android Cloud de enlace/clipboard sin claves locales y sin UI nueva;
+sin red en worker ni URLs arbitrarias. **Flujo online sintético verificado;
+referencia real y `.stp` real pendientes**, además de Android/Termux físicos.
+
+Ficha, PNG original 72125 bytes e interruptor persistente. C0 **240**, C8
+**254**, 26 overrides; mínimo **46 / 46 fichas**. **50 Python / 309 Node** y
+build web correctos; CLI autónoma hizo GET real y guardó 0600. Herramientas,
+JDK y recuperación conservados. `.sft` del helper legado no se registra sin
+ruta activa identificada. Sin binarios/datos reales en Git, fusión, despliegue,
+APK, diseño Android o C11 automáticos.
+
+## HTTP Door 5.0 (5) — 2026-10-24
+
+Paquete `com.httpdoor.vpn`, `apps/HTTP_Door/`, PR #99 sobre `cf6ba54`.
+Nuevo lector `.kyz` C8/bot, DES-ECB/PKCS5 y XML Java Properties. Clave interna
+fija `cinbdf66`; no contraseña/HWID criptográficos. Mantiene restricciones,
+XML exacto, entradas duplicadas y mapa Java. Reutiliza parser de CREEB;
+builder genera un script único para Termux. Tres perfiles sintéticos completos
+iguales a JDK/CLI/worker/HTTP. Pendientes exportación real y Android/Termux.
+
+**No se identificó catálogo incluido o remoto**. `block.json` es Lottie,
+assets son geodatos/licencia; AppUpdater solo contiene un GET genérico a
+localhost. No se consulta ni se registra como fuente de servidores. Sin
+nuevo proveedor, ficha o descarga. Los controles actuales se conservan.
+C0 **240**, C8 **253**, 25 overrides; **45 fichas** y versión mínima **45**
+para refrescar formatos. **43 Python / 296 Node** y validaciones C0/Android/formatos
+correctas. Herramientas/oracle/evidencia conservados, binarios fuera de Git.
+Sin fusión, despliegue, APK, diseño Android ni C11 automáticos.
+
+## BD NET VPN PrinceBuild111 (111) — 2026-10-24
+
+Paquete `dastan.prince.bdfreevpn`, `apps/BD_NET_VPN/`, PR #99 sobre Aura
+`5a5abe5`. Catálogo y métodos `.bdnet`/`bdnet://` preexistentes actualizados.
+Exterior XXTEA modificado de nm; perfiles y campos XOR fijo nativo, sin
+contraseña criptográfica del usuario. La UI comprueba el password después.
+
+Asset real 57 / 20 servidores / 257 Payloads; remoto real **56 / 19 / 255**.
+Se mantienen separados porque el remoto es anterior. Los dos JSON completos
+coinciden con JDK y worker, 187 campos cifrados distintos cada uno. Se
+conserva UTF JNI no canónico y una carga binaria por catálogo con anexo
+`_spdecodeBinaryFields` (hex original y todos los bytes Base64), sin ignorar
+errores o perder datos. Cinco casos del XOR ARM64 original comprobados.
+
+Ficha pública, PNG original e interruptor individual persistente. Mínimo
+**44 / 45 fichas**, C0 **240**, C8 **252**, sin sufijo nuevo. **71 Python /
+295 Node**, build web y descarga/guardado real con la CLI stdlib correctos.
+Herramientas/referencias/recuperación conservadas, datos reales fuera de Git.
+Pendientes exportación `.bdnet` real, Android/Termux y DEX protegido completo;
+el último no impide los lectores basados en helpers visibles y SO.
+Sin fusión, despliegue, APK, diseño Android ni C11 automáticos.
+
+## Aura Net VPN AuraNet_v9 (19) — 2026-10-24
+
+Paquete `civ.snipher.v2ray`, `apps/Aura_Net_VPN/`, PR #99 sobre `a76add0`.
+Se completa `.aura` preexistente con el método del build 19 y se conserva el
+lector histórico. Exportación Encrypt con letra en índice 3, campos y asset
+EO; claves distintas, Argon2id m=8192/t=3/p=1 y AES-GCM con AAD=salt. No pide
+contraseña de usuario. No se añade texto propietario ni cloud por token.
+
+Asset real 1.01 / 4 servidores / 663 redes / 40 campos cifrados distintos;
+GET real 2.18 / 14 / 685 / 424. Ambos documentos íntegros iguales a
+libsodium/JDK y worker aislado. Seis documentos sintéticos adicionales.
+Fuente activa y agente tomados del Go; URL histórica de ultra.py inerte.
+Pendientes `.aura` real y Android/Termux; sin datos reales en Git.
+
+Ficha pública, PNG original y control individual persistente. Mínimo **43 /
+44 fichas**, C0 **240**, C8 **252**, sin sufijo nuevo. **61 Python / 290 Node**
+aprobadas, build web correcto y descarga/guardado real con la CLI autónoma.
+Herramientas y recuperación guardadas. Sin fusión, despliegue, cambios de
+diseño Android, publicación APK ni novedades C11 automáticas.
+
+## APNA VPN 3.9 (30) — 2026-10-24
+
+`apps/APNA_VPN/`, paquete `my.teamapna.tunnel`, PR #99 sobre `323839f`.
+Se completa el lector de catálogo preexistente con fuente remota real activa,
+archivos `.apnavpn`, texto `apnavpn://` y CLI autónoma de biblioteca estándar
+para Termux. Incluido real 289: 19 servidores / 491 payloads; remoto real 456:
+18 / 493. Los dos JSON completos coinciden con Java y worker aislado. El
+actualizador fijo de OpenVPNClient difiere del UpdaterLink obsoleto del asset.
+
+Perfiles con XOR nativo fijo y UTF-8 modificado JNI; `tweak_password` es un
+control posterior, no entrada de clave. Se conservan todos los campos y
+restricciones. Cinco vectores de la función ARM64 original y perfiles
+sintéticos completos contrastados con Java y workers de archivo/texto.
+Pendientes exportación `.apnavpn` real y Android. APK/SO y datos reales fuera
+de Git. Herramientas y recuperación conservadas.
+
+Ficha pública, icono PNG original de 21812 bytes, broker HTTPS fijo validado
+y control individual persistente. Catálogo mínimo **42 / 43 fichas**, C0
+**240 / C8 252**, `.apnavpn` en formatos Cloud. Se preservan estados previos.
+Sin fusión, despliegue, APK, diseño Android ni C11 automáticos.
+Validación: 128 Python / 285 Node aprobadas y build web correcto. El origen
+respondió 200, una solicitud adicional expiró y el GET posterior volvió a 200.
+
+## ANY VPN build 40 y Speicers público — 2026-10-24
+
+`apps/ANY_VPN/`: lector `.dtk` y catálogo, clave interna fija sin contraseña.
+Incluido real 1.1 / 12 servidores / 46 redes; remoto real 5.84 / 13 / 91.
+Dos JSON reales completos y dos `.dtk` sintéticos iguales a JDK y worker
+aislado. Falta `.dtk` exportado real y Android. Script autónomo codec.py para
+Termux, herramientas, oracle y recuperación conservados, sin datos reales en Git.
+
+El usuario pidió ahora **incorporar también Speicers al catálogo**: sustituye
+su exclusión inicial. Ambas fichas con iconos originales, broker fijo validado
+y control individual persistente. Versión mínima 41 / 42 fichas; C0 240 / C8 251
+con `.dtk` en metadatos remotos de formatos. Sin reiniciar switches, fusionar,
+desplegar, publicar APK ni C11. Se reemplaza el test de exclusión de Speicers
+por pruebas de visibilidad, disponibilidad individual y preservación de estados.
+
+## Speicers Pro VPN 104.1.17 (120) — 2026-10-24
+
+Rama del PR #99, desde HEAD fd025ee. `apps/Speicers_Pro_VPN/` entrega un script
+autónomo Python/Termux para descargar el catálogo fijo y abrir campos completos,
+sin root ni contraseña de usuario. GET real 200, versión 35 / 74 servidores;
+asset principal 36 / 75 y secundario 9 / 32. Los tres documentos coinciden
+íntegros con JDK independiente y bridge. Se conservan todos los controles y
+servidores, incluidos deshabilitados; el remoto no se confunde con el asset.
+
+La instrucción inicial fue de exclusión pública; quedó sustituida al pedir el
+usuario su incorporación junto con ANY. Ficha, icono de launcher original y
+broker de descarga con control individual. Server VPN mínimo 41 / 42; no
+publicar esta incorporación en novedades hasta nueva instrucción.
+
+`.sks` reutiliza el método GCM/DES canónico ya registrado, sin cambiar C0 240 /
+C8 250. Vectores JDK correctos; exportación `.sks` real y Android pendientes.
+No se identificó formato propietario de texto ni cloud por token. Retorno de
+pago separado del catálogo; la fuente de usuarios no se descarga. Ver README,
+ANALYSIS, TESTING, `speicers_verify.py`, oracle JDK y RESTORE. Sin despliegue,
+fusión, APK, diseño Android ni C11 automáticos.
+
+Este registro conserva las incorporaciones del lote iniciado con HTTP
+SocketClay y registra por separado los lotes posteriores. Se utilizará como
+fuente para una futura actualización de
 novedades cuando el usuario la solicite. No arrastrar funcionalidades de
 entregas anteriores ni publicar anuncios automáticamente.
 
 - Rama de trabajo: `feat/austroplus-vpn-13-0-1-decoders`.
 - PR: [#96](https://github.com/Gh0stDeveloper/SP-DECODE/pull/96).
 - Inicio del lote: 2026-10-20.
+
+## Continuación del PR #99: Tx Tunnel (2026-10-24)
+
+- **Tx Tunnel, Tx v2.17 (70)**, `co.strongteam.ospro`, `apps/Tx_Tunnel/`.
+  `.tx` ya existía; se completa el lector y se conserva el método histórico,
+  sin contraseña del usuario. No presentarlo como un sufijo nuevo.
+- Catálogos reales: asset **2.0, 23 servidores / 66 redes / 657 campos**;
+  GET oficial **65.62, 27 / 643 / 4231**, HTTP 200. Documentos completos
+  iguales a libsodium/JDK y worker aislado; 4 documentos sintéticos adicionales.
+- `tx-tunnel` con descarga fija validada, controles individuales e icono PNG
+  original **312819 bytes**, mínimo **40 / 40 fichas**. C0 240 / C8 250.
+  **42 Python / 72 Node aprobadas**, 6 documentos / 4900 campos contrastados.
+- Pendiente exportación `.tx` real. No se identificó prefijo de texto propio ni
+  cloud por token. Backend preparado; sin despliegue, APK, Android o C11.
+
+## Lote posterior desde main: MM Tunnel (2026-10-24)
+
+- Rama independiente `feat/mm-tunnel-1-10-11-1-decoders`, por instrucción del
+  usuario; no forma parte del lote histórico del PR #96 descrito abajo.
+- MM Tunnel v1.10.11.1 (45), `apps/MM_Tunnel/`: `.mmt` con nuevo método de
+  exportación y alternativa histórica conservada, sin contraseña del usuario.
+- Catálogo inicial real v1.01 **34 servidores / 555 redes / 3335 campos**,
+  JSON completo igual a libsodium/JDK y worker; seis documentos sintéticos.
+- Remoto POST oficial HTTP 403: **pendiente**, ficha con PNG original y
+  `remote:null`. No anunciar descarga remota activa. No se identificó un nuevo
+  esquema de texto ni cloud de perfiles por token. Pendiente `.mmt` real.
+- **39 Python / 69 Node aprobadas**; mínimo Server VPN **39 / 39 fichas**,
+  C8 **250**, C0 **240**. Sin fusión, VPS, Android, APK o C11 automáticos.
+  Detalles y recuperación en los documentos de la app y `RESTORE.md`.
 
 ## Nuevos Servidores VPN añadidos
 

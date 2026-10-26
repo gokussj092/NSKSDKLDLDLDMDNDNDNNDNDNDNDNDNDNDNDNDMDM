@@ -1,0 +1,245 @@
+{
+  "documents": [
+    {
+      "kind": "file",
+      "mode": "eo",
+      "wire": "CgsMDQ4PEBESExQVFhcYGVNUVVZXWFlaW1xdXhut2KMX2Fx6nRkmwcVtXx+2fx9X9Oz4acPKzka2nHb3yz6WKxMRkBq+aNnQPv/cQDnso4RUGyRaCvbDoc6Ytd9BTiQ7m8/H0W7c0mZgF8y6kgg8JDXHFQPdzrD2XJxMk5sh6VNFaQmi9tuSuEQo6pJwJWqRkE7GJsckTug3OMeJQjV+Va4IecQ7duM1DpsrqEc/9cjrsBHHtqoBq98tOLAeoMTLTiIcX20YYB9pGl8g2QCJmZblepdsLkYL0cR8UZGzC3vn3zff7paW5yxMX4HFVjudc+7or49a71UL5r4NAeLnwsoUjtJm5iHfU6ylWgAkcyEHQLN9mZmDNlqnWDCgnAZSdnmY9YW/sBkhRPw9RmDC3+2wwUgrkxz6E+g5XzHH6nwsQBwZ7aULFNE2nrg/YbQnNvjY7GAyex7DraPq4jjy2fMfRwKBJekJcDFt9xOG9+E8i+Bg1DErMbrlbfjdtH1ZxJOkeqKX2tvcJ9+nhXtOoflDAya+LzOCoghLJhTOdBB7vzcC0jSOizW2gX4I+gJ/BGSWRPoirGW0rM2s34mYGvAkZFkC2zewkLPv4wgAL/RvaLDj5VRLrB3aR67sjLQQo37XZBUxGXPS1wHlX1O7",
+      "outer": {
+        "Name": "Tx 日本語",
+        "TunnelType": "SSH",
+        "Payload": "AQIDBAUGBwgJCgsMDQ4PEEpLTE1OT1BRUlNUVaG/k/EuNV/DhoOQSIGMiDa3lC44ub9GxlsAy3dliLb+MixkQgF3EVwsuL/Z2okbJNlBG0K504c=",
+        "CustomProxy": "AgMEBQYHCAkKCwwNDg8QEUtMTU5PUFFSU1RVVtsTT3Nh23TEGIuT78ftv1F4WxH8ZAMOHqfh+uOZv73n83I088Y=",
+        "SNI": "plain.example.invalid",
+        "ProxyPort": "8080",
+        "unknown": {
+          "types": [
+            false,
+            null,
+            0,
+            42.5
+          ],
+          "json": "{\"keep\":\"string\"}"
+        },
+        "security": {
+          "password": "synthetic metadata",
+          "HWID": "test"
+        }
+      },
+      "expected": {
+        "Name": "Tx 日本語",
+        "TunnelType": "SSH",
+        "Payload": "GET / HTTP/1.1\r\nHost: example.invalid\r\n",
+        "CustomProxy": "proxy.example.invalid",
+        "SNI": "plain.example.invalid",
+        "ProxyPort": "8080",
+        "unknown": {
+          "types": [
+            false,
+            null,
+            0,
+            42.5
+          ],
+          "json": "{\"keep\":\"string\"}"
+        },
+        "security": {
+          "password": "synthetic metadata",
+          "HWID": "test"
+        }
+      }
+    },
+    {
+      "kind": "file",
+      "mode": "plain",
+      "wire": "{\"Name\":\"Tx 日本語\",\"TunnelType\":\"SSH\",\"Payload\":\"AQIDBAUGBwgJCgsMDQ4PEEpLTE1OT1BRUlNUVaG/k/EuNV/DhoOQSIGMiDa3lC44ub9GxlsAy3dliLb+MixkQgF3EVwsuL/Z2okbJNlBG0K504c=\",\"CustomProxy\":\"AgMEBQYHCAkKCwwNDg8QEUtMTU5PUFFSU1RVVtsTT3Nh23TEGIuT78ftv1F4WxH8ZAMOHqfh+uOZv73n83I088Y=\",\"SNI\":\"plain.example.invalid\",\"ProxyPort\":\"8080\",\"unknown\":{\"types\":[false,null,0,42.5],\"json\":\"{\\\"keep\\\":\\\"string\\\"}\"},\"security\":{\"password\":\"synthetic metadata\",\"HWID\":\"test\"}}",
+      "outer": {
+        "Name": "Tx 日本語",
+        "TunnelType": "SSH",
+        "Payload": "AQIDBAUGBwgJCgsMDQ4PEEpLTE1OT1BRUlNUVaG/k/EuNV/DhoOQSIGMiDa3lC44ub9GxlsAy3dliLb+MixkQgF3EVwsuL/Z2okbJNlBG0K504c=",
+        "CustomProxy": "AgMEBQYHCAkKCwwNDg8QEUtMTU5PUFFSU1RVVtsTT3Nh23TEGIuT78ftv1F4WxH8ZAMOHqfh+uOZv73n83I088Y=",
+        "SNI": "plain.example.invalid",
+        "ProxyPort": "8080",
+        "unknown": {
+          "types": [
+            false,
+            null,
+            0,
+            42.5
+          ],
+          "json": "{\"keep\":\"string\"}"
+        },
+        "security": {
+          "password": "synthetic metadata",
+          "HWID": "test"
+        }
+      },
+      "expected": {
+        "Name": "Tx 日本語",
+        "TunnelType": "SSH",
+        "Payload": "GET / HTTP/1.1\r\nHost: example.invalid\r\n",
+        "CustomProxy": "proxy.example.invalid",
+        "SNI": "plain.example.invalid",
+        "ProxyPort": "8080",
+        "unknown": {
+          "types": [
+            false,
+            null,
+            0,
+            42.5
+          ],
+          "json": "{\"keep\":\"string\"}"
+        },
+        "security": {
+          "password": "synthetic metadata",
+          "HWID": "test"
+        }
+      }
+    },
+    {
+      "kind": "catalog",
+      "mode": "eo",
+      "wire": "DA0ODxAREhMUFRYXGBkaG1VWV1hZWltcXV5fYDHa4YBFNzuMeuMSlNFZVOcALqBA9g2VQQo1u3sICXeN99PIcXq3e+xCuJUmJauNvJoK8MGdmTEnVqEk1vk0A+8tpoDdxn83UheNG5dBki7TGm1gDbzh6z2xLUQYsRcp6wcR/fo0etqlsgnkdTIqAmv29M0hY6J4j7IEyp0bGP52rgB8+bBdoKQbGMM1A/dzMAbBBZHDTrDxXPU5v108x/RJzI6mmDd50Lu5NjiMR+OdRkPuC0OjgzBzu4tazkbBgQchwnhwNP/03ovGn5PQV/aM2nL0uBgQqJwkvTnNFScYgE7OHCK8Rzl8RkbBGnl0/DoVJeb5wp9PxgTubnBstE3NQP0BDHmHMO5lAswT3+wPeJoRMf6zp6/V8mf21TOAJnqT8esXgJtH+gC0aNaKt+Mtsazix452AaJ7QH9HeBpmHhgID7oRz+wvKemw78tvIGY2xO9KmkvSM0QMvwA9mVX5fCemq7o6PddD8LshXG8RULVR8yUmBqrmfxDaTHHcOWCTNrwQm1jQKVx90dPtPwX5XYLn2z+84eDb6/yn/kCpcsolDWl8OON4BzhNGQZLbBrAWco/04+/7L1BPIksZ8ZL7NluuUgY7ZlKUMiudwUJgX0YSC9D/mgNGTTZeBIbGiC0cQKQNvaPdUPDGpajbgNAV3/LSrACogyX9EGIr2tz0mwsGUS5EHqmQsAf2ML9dOlWXaAEy1wMhtJh5yYFRr//MKWrBu1SjbI/ivRXBBalpfGaI8VPf4WzBauaHNC1Sjf3n42yjjg6HsYkL6mCqUyqcIbSOigEwgOB+eKlCGYgHv5BI4Z6GvrmECrj4ClaEmvdJsuQHF8R5HzquxmC/7MpUMGtzavZzyEjfC5jCjwJhB2ERjUDggj+qH0162Ww3pWpOXi0xxMHHDpofWtf2Da2txLTL0zUVx02I7fz03BPWlE0XAwPknEsLIZk6dqXsfCE05popbPxkOZBgE9v4g==",
+      "outer": {
+        "Version": "70.0",
+        "ReleaseNotes": "synthetic",
+        "Servers": [
+          {
+            "Name": "server",
+            "ServerIPHost": "AwQFBgcICQoLDA0ODxAREkxNTk9QUVJTVFVWVzVVjFz+koWgWhKOPr39rQvEXdmikdS+lObcTsyqeuzgjqEY"
+          }
+        ],
+        "Networks": [
+          {
+            "Name": "Tx 日本語",
+            "TunnelType": "SSH",
+            "Payload": "AQIDBAUGBwgJCgsMDQ4PEEpLTE1OT1BRUlNUVaG/k/EuNV/DhoOQSIGMiDa3lC44ub9GxlsAy3dliLb+MixkQgF3EVwsuL/Z2okbJNlBG0K504c=",
+            "CustomProxy": "AgMEBQYHCAkKCwwNDg8QEUtMTU5PUFFSU1RVVtsTT3Nh23TEGIuT78ftv1F4WxH8ZAMOHqfh+uOZv73n83I088Y=",
+            "SNI": "plain.example.invalid",
+            "ProxyPort": "8080",
+            "unknown": {
+              "types": [
+                false,
+                null,
+                0,
+                42.5
+              ],
+              "json": "{\"keep\":\"string\"}"
+            },
+            "security": {
+              "password": "synthetic metadata",
+              "HWID": "test"
+            }
+          }
+        ],
+        "DefOVPNPass": "BAUGBwgJCgsMDQ4PEBESE01OT1BRUlNUVVZXWB3MJ0Shek8VXpfG+p+M5Uk="
+      },
+      "expected": {
+        "Version": "70.0",
+        "ReleaseNotes": "synthetic",
+        "Servers": [
+          {
+            "Name": "server",
+            "ServerIPHost": "vpn.example.invalid"
+          }
+        ],
+        "Networks": [
+          {
+            "Name": "Tx 日本語",
+            "TunnelType": "SSH",
+            "Payload": "GET / HTTP/1.1\r\nHost: example.invalid\r\n",
+            "CustomProxy": "proxy.example.invalid",
+            "SNI": "plain.example.invalid",
+            "ProxyPort": "8080",
+            "unknown": {
+              "types": [
+                false,
+                null,
+                0,
+                42.5
+              ],
+              "json": "{\"keep\":\"string\"}"
+            },
+            "security": {
+              "password": "synthetic metadata",
+              "HWID": "test"
+            }
+          }
+        ],
+        "DefOVPNPass": ""
+      }
+    },
+    {
+      "kind": "catalog",
+      "mode": "plain",
+      "wire": "{\"Version\":\"70.0\",\"ReleaseNotes\":\"synthetic\",\"Servers\":[{\"Name\":\"server\",\"ServerIPHost\":\"AwQFBgcICQoLDA0ODxAREkxNTk9QUVJTVFVWVzVVjFz+koWgWhKOPr39rQvEXdmikdS+lObcTsyqeuzgjqEY\"}],\"Networks\":[{\"Name\":\"Tx 日本語\",\"TunnelType\":\"SSH\",\"Payload\":\"AQIDBAUGBwgJCgsMDQ4PEEpLTE1OT1BRUlNUVaG/k/EuNV/DhoOQSIGMiDa3lC44ub9GxlsAy3dliLb+MixkQgF3EVwsuL/Z2okbJNlBG0K504c=\",\"CustomProxy\":\"AgMEBQYHCAkKCwwNDg8QEUtMTU5PUFFSU1RVVtsTT3Nh23TEGIuT78ftv1F4WxH8ZAMOHqfh+uOZv73n83I088Y=\",\"SNI\":\"plain.example.invalid\",\"ProxyPort\":\"8080\",\"unknown\":{\"types\":[false,null,0,42.5],\"json\":\"{\\\"keep\\\":\\\"string\\\"}\"},\"security\":{\"password\":\"synthetic metadata\",\"HWID\":\"test\"}}],\"DefOVPNPass\":\"BAUGBwgJCgsMDQ4PEBESE01OT1BRUlNUVVZXWB3MJ0Shek8VXpfG+p+M5Uk=\"}",
+      "outer": {
+        "Version": "70.0",
+        "ReleaseNotes": "synthetic",
+        "Servers": [
+          {
+            "Name": "server",
+            "ServerIPHost": "AwQFBgcICQoLDA0ODxAREkxNTk9QUVJTVFVWVzVVjFz+koWgWhKOPr39rQvEXdmikdS+lObcTsyqeuzgjqEY"
+          }
+        ],
+        "Networks": [
+          {
+            "Name": "Tx 日本語",
+            "TunnelType": "SSH",
+            "Payload": "AQIDBAUGBwgJCgsMDQ4PEEpLTE1OT1BRUlNUVaG/k/EuNV/DhoOQSIGMiDa3lC44ub9GxlsAy3dliLb+MixkQgF3EVwsuL/Z2okbJNlBG0K504c=",
+            "CustomProxy": "AgMEBQYHCAkKCwwNDg8QEUtMTU5PUFFSU1RVVtsTT3Nh23TEGIuT78ftv1F4WxH8ZAMOHqfh+uOZv73n83I088Y=",
+            "SNI": "plain.example.invalid",
+            "ProxyPort": "8080",
+            "unknown": {
+              "types": [
+                false,
+                null,
+                0,
+                42.5
+              ],
+              "json": "{\"keep\":\"string\"}"
+            },
+            "security": {
+              "password": "synthetic metadata",
+              "HWID": "test"
+            }
+          }
+        ],
+        "DefOVPNPass": "BAUGBwgJCgsMDQ4PEBESE01OT1BRUlNUVVZXWB3MJ0Shek8VXpfG+p+M5Uk="
+      },
+      "expected": {
+        "Version": "70.0",
+        "ReleaseNotes": "synthetic",
+        "Servers": [
+          {
+            "Name": "server",
+            "ServerIPHost": "vpn.example.invalid"
+          }
+        ],
+        "Networks": [
+          {
+            "Name": "Tx 日本語",
+            "TunnelType": "SSH",
+            "Payload": "GET / HTTP/1.1\r\nHost: example.invalid\r\n",
+            "CustomProxy": "proxy.example.invalid",
+            "SNI": "plain.example.invalid",
+            "ProxyPort": "8080",
+            "unknown": {
+              "types": [
+                false,
+                null,
+                0,
+                42.5
+              ],
+              "json": "{\"keep\":\"string\"}"
+            },
+            "security": {
+              "password": "synthetic metadata",
+              "HWID": "test"
+            }
+          }
+        ],
+        "DefOVPNPass": ""
+      }
+    }
+  ],
+  "duplicate": "Hh8gISIjJCUmJygpKissLWdoaWprbG1ub3Bxclb3OkhnDUvA19n+7ojnPTT9hFgUQEIG1JOWJJrXnKAgu0iHnN2La+Nkv5/XYoGZv79EiG2ohaTcKDw="
+}

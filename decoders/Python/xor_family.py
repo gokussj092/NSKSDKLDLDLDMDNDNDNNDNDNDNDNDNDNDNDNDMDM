@@ -79,6 +79,12 @@ class XORDecoder:
 def decode_text(text: str) -> str | None:
     if not isinstance(text,str) or not text or len(text)>2*1024*1024:
         return None
+    if text.lower().startswith("bdnet://"):
+        from decoders.Python.apps.BD_NET_VPN.file_decoder import run as bd_run
+        try:
+            return bd_run(text.encode("utf-8"))
+        except (ValueError, UnicodeError):
+            return None
     prefix=next((p for p in SCHEMES if text.lower().startswith(p)),None)
     if prefix is None:
         return None
@@ -126,7 +132,16 @@ def main():
     if path.suffix.lower() not in FILE_EXTENSIONS:
         print("Unsupported extension",file=sys.stderr)
         return 2
-    result=run(path.read_bytes())
+    if path.suffix.lower() == ".bdnet":
+        if not __package__:
+            sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+        from decoders.Python.apps.BD_NET_VPN.file_decoder import run as bd_run
+        try:
+            result=bd_run(path.read_bytes())
+        except (ValueError, UnicodeError):
+            result=None
+    else:
+        result=run(path.read_bytes())
     if result is None:
         print("Unable to decode XOR configuration",file=sys.stderr)
         return 1

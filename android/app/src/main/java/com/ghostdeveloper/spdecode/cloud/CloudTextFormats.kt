@@ -2,12 +2,34 @@ package com.ghostdeveloper.spdecode.cloud
 
 import com.ghostdeveloper.spdecode.TextProtocolDecoder
 
+/** Versioned public Cloud metadata, never executable routes or decryption keys. */
+data class CloudTextRoute(
+    val prefix:String,val name:String,val suffix:String,val kind:String
+)
+
 /** Explicit Cloud schemes: no format guessing or cross-decoder fallbacks. */
 internal object CloudTextFormats {
-    fun identify(raw:String):TextProtocolDecoder.Input? {
+    private const val MNR_ALPHABET="¹²³⁴⁵⁶⁷⁸⁹⁰·,‽:'′"
+    fun identify(raw:String,routes:List<CloudTextRoute> = emptyList()):TextProtocolDecoder.Input? {
         val value=raw.trim()
+        // Longest prefix first: e.g. npvt-vless:// before npvt://.
+        // The worker independently checks whether a method is really supported.
+        val remote=routes.asSequence()
+            .filter { value.length>it.prefix.length &&
+                value.startsWith(it.prefix,ignoreCase=true) }
+            .maxByOrNull { it.prefix.length }
+        if(remote!=null && value.length<=TextProtocolDecoder.MAX_CHARS)
+            return TextProtocolDecoder.Input("cloud:"+remote.suffix,
+                remote.name,remote.suffix,value)
+        // Once a verified Cloud inventory is installed it is authoritative.
+        // Never accept a legacy hardcoded scheme that the server did not publish.
+        // The fallback below is for old VPS snapshots without text metadata.
+        if(routes.isNotEmpty())return null
         if(value.length !in 6..TextProtocolDecoder.MAX_CHARS)return null
         return when {
+            Regex("^mnrtunneludp://[A-Za-z0-9]{10}$").matches(value) ||
+                (value.length>=64 && value.length%2==0 && value.all { it in MNR_ALPHABET }) ->
+                TextProtocolDecoder.Input("mnr-tunnel-plus","MNR TUNNEL PLUS","stp",value)
             listOf("npvt://","npvt-ssh://","npvt-vless://","npvt-vmess://","npv://")
                 .any { value.startsWith(it,ignoreCase=true) && value.length>it.length } ->
                 TextProtocolDecoder.Input("npv-tunnel","NPV Tunnel","npvs",value)

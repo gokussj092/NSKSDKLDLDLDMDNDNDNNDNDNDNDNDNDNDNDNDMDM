@@ -13,20 +13,38 @@ import struct
 from elf_inspect import ElfImage
 
 
+def find_pclntab(elf):
+    """Modern external linking can merge gopclntab into .data.rel.ro."""
+    signature = b"\xf1\xff\xff\xff\0\0\x04\x08"
+    section = elf.get_section_by_name(".gopclntab")
+    if section is not None:
+        data = section.data()
+        if data[:8] != signature:
+            raise ValueError("Unsupported Go pclntab layout")
+        return data, section["sh_addr"]
+    section = elf.get_section_by_name(".data.rel.ro")
+    if section is None:
+        raise ValueError("Unsupported Go pclntab layout")
+    data = section.data()
+    offset = data.find(signature)
+    if offset < 0 or data.find(signature, offset + 1) >= 0:
+        raise ValueError("Missing or ambiguous embedded Go pclntab")
+    return data[offset:], section["sh_addr"] + offset
+
+
 class GoImage(ElfImage):
     def __init__(self, path):
         super().__init__(path)
-        section = self.elf.get_section_by_name(".gopclntab")
-        if not section or section.data()[:8] != b"\xf1\xff\xff\xff\0\0\x04\x08":
-            raise ValueError("Unsupported Go pclntab layout")
-        data = section.data()
+        data, table_address = find_pclntab(self.elf)
+        if len(data) < 72:
+            raise ValueError("Truncated Go pclntab")
         count, _, start, names, _, _, _, pcln = struct.unpack_from("<8Q", data, 8)
         if not 0 < count < 1_000_000 or pcln + (count + 1) * 8 > len(data):
             raise ValueError("Invalid function table bounds")
         if not start:
             relative = {r["r_offset"]: r["r_addend"] for r in self.relocations if r["r_info_type"] == 1027}
             candidates = {relative[p + 176] for p, value in relative.items()
-                          if value == section["sh_addr"] and p + 176 in relative}
+                          if value == table_address and p + 176 in relative}
             if len(candidates) != 1:
                 raise ValueError("Cannot resolve relocated Go textStart")
             start = candidates.pop()

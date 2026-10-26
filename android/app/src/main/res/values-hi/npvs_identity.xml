@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="npv_title">NPV प्राप्तकर्ता कुंजियाँ</string>
+    <string name="npv_detail">अपने लिए बनी फ़ाइलों में अपनी पहचान उपयोग करें। कुंजियाँ इस डिवाइस पर एन्क्रिप्ट रहती हैं। SP Cloud के साथ उपयोग के लिए सक्षम करें।</string>
+    <string name="npv_enabled">मेरी NPV पहचान उपयोग करें</string>
+    <string name="npv_generate">SP Cloud से बनाएँ</string>
+    <string name="npv_import">कैप्चर किया JSON आयात करें</string>
+    <string name="npv_generated">SP Cloud द्वारा बनाई गई</string>
+    <string name="npv_captured">आधिकारिक ऐप से कैप्चर की गई</string>
+    <string name="npv_file_only">केवल यह फ़ाइल</string>
+    <string name="npv_view">देखें और कॉपी करें</string>
+    <string name="npv_delete">हटाएँ</string>
+    <string name="npv_invalid">NPV कुंजियाँ पढ़ी नहीं जा सकीं। JSON और कुंजियों का मिलान जाँचें।</string>
+    <string name="npv_saved">पहचान सहेजी गई। उपयोग के लिए विकल्प सक्षम करें।</string>
+    <string name="npv_generation_notice">केवल सार्वजनिक कुंजी उस व्यक्ति को दें जो आपका VPN सर्वर या कॉन्फ़िगरेशन बनाता है। निजी कुंजी कभी साझा न करें।</string>
+    <string name="npv_choose_title">NPV पहचान चुनें</string>
+    <string name="npv_send_notice">SP Cloud से फ़ाइल खोलने के लिए पहचान चुनें।</string>
+    <string name="npv_use">चुनी हुई पहचान उपयोग करें</string>
+    <string name="npv_copy_public">सार्वजनिक कुंजी कॉपी करें</string>
+    <string name="npv_copy_private">निजी कुंजी कॉपी करें</string>
+    <string name="npv_reveal">निजी कुंजी दिखाएँ या छिपाएँ</string>
+    <string name="npv_hardware_notice">हार्डवेयर की निजी कुंजी निर्यात नहीं की जा सकती। यह कैप्चर केवल संबंधित फ़ाइल के लिए है।</string>
+    <string name="npv_delete_title">यह पहचान हटाएँ?</string>
+    <string name="npv_delete_warning">यह कुंजी केवल इस डिवाइस पर रहती है। हटाने के बाद SP Cloud इसे पुनः प्राप्त नहीं कर सकता। इस पहचान से एन्क्रिप्ट की गई फ़ाइलों तक पहुँच खो सकती है।</string>
+    <string name="npv_public_label">सार्वजनिक कुंजी · P-256</string>
+    <string name="npv_private_label">निजी कुंजी · PKCS#8</string>
+    <string name="npv_cancel">रद्द करें</string>
+    <string name="npv_already_generated">SP Cloud पहचान पहले से मौजूद है। नई बनाने से पहले उसे हटाएँ।</string>
+</resources>

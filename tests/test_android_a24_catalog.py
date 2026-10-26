@@ -35,7 +35,7 @@ class AndroidA24CatalogTests(unittest.TestCase):
         self.assertEqual(self.doc["androidNativePortSuffixes"], 239)
         self.assertEqual(self.doc["androidPendingNativeSuffixes"], 0)
         self.assertEqual(len(self.doc["entries"]), 239)
-        self.assertEqual(set(self.rows), set(DECODER_REGISTRY) - {"solid","1ftnl","awg","creeb"})
+        self.assertEqual(set(self.rows), set(DECODER_REGISTRY) - {"solid","1ftnl","awg","creeb","kyz","stp"})
         self.assertEqual(len(self.rows), 239)
         self.assertEqual(len(ORIGINAL), 61)
         self.assertEqual(set(PROTO), set(ORIGINAL))
@@ -96,6 +96,8 @@ class AndroidA24CatalogTests(unittest.TestCase):
                 self.assertEqual((row["name"], row["script"], row["originalRuntime"]),
                                  ("CREV", "decoders/Python/crev.py", "python")
                                  if suffix=="crev" else
+                                 ("e-V2Ray", "decoders/Python/EV2RAY.py", "python")
+                                 if suffix=="v2" else
                                  (spec.name, spec.script, spec.runtime))
                 self.assertTrue((ROOT / row["script"]).is_file(), suffix)
         for suffix in ("ace","clay","ultra","7net","itv","izph","flexnet","st","apnalite"):

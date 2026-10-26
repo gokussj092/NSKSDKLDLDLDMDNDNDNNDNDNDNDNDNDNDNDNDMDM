@@ -39,12 +39,12 @@ class NpvsV5InstrumentedTest {
         assertNull(router.decode(context,"wrong.npvs",ByteArray(4*1024*1024+1)))
         assertNull(router.decode(context,"wrong.txt",invalid))
     }
-    @Test fun sourceCanonicalizationEscapesAndSortsKeys() {
-        val header=linkedMapOf<String,Any?>("b" to "<>&","a" to listOf(false,null,"日本語"))
-        // The live encoder uses JSON arrays; validate its mandatory escaped strings.
-        assertEquals("{\"a\":[false,null,\"日本語\"],\"b\":\"\\u003c\\u003e\\u0026\"}",
+    @Test fun sourceCanonicalizationMatchesApkMinimalEscaping() {
+        // The APK preserves HTML and JavaScript separators in signed contexts.
+        assertEquals("{\"a\":[false,null,\"日本語\"],\"b\":\"<>&\u2028\u2029\"}",
             NpvsJson.canonical(org.json.JSONObject()
-                .put("b","<>&").put("a",org.json.JSONArray().put(false)
+                .put("b","<>&\u2028\u2029").put("a",org.json.JSONArray().put(false)
                     .put(org.json.JSONObject.NULL).put("日本語"))))
+        assertEquals("\"\\n\\\"\\\\\\u0001\"",NpvsJson.canonical("\n\"\\\u0001"))
     }
 }

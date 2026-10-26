@@ -16,7 +16,7 @@ function Panel({title,subtitle,children}){
 }
 export default function AdminObservability({mode="analytics"}){
  const [days,setDays]=useState(7),[data,setData]=useState(null),
-  [error,setError]=useState(""),[loading,setLoading]=useState(true);
+  [error,setError]=useState(""),[loading,setLoading]=useState(true),[actionBusy,setActionBusy]=useState(false),[actionNote,setActionNote]=useState("");
  const router=useRouter();
  const refresh=useCallback(async(signal,quiet=false)=>{
   if(!quiet)setLoading(true);
@@ -35,8 +35,46 @@ export default function AdminObservability({mode="analytics"}){
   const controller=new AbortController();
   refresh(controller.signal);
   const timer=setInterval(()=>{if(!controller.signal.aborted)refresh(controller.signal,true);},60000);
-  return()=>{controller.abort();clearInterval(timer);};
+  const notify=()=>{if(!controller.signal.aborted)refresh(controller.signal,true);};
+  window.addEventListener("spdecode:admin-telemetry-changed",notify);
+  return()=>{controller.abort();clearInterval(timer);window.removeEventListener("spdecode:admin-telemetry-changed",notify);};
  },[refresh]);
+ async function clearAlerts(){
+  if(actionBusy||loading)return;
+  if(!window.confirm("¿Vaciar las alertas operativas actuales? Los fallos estadísticos, descifrados y contadores NO se borrarán. Nuevas alertas podrán activarse normalmente."))return;
+  setActionBusy(true);setActionNote("");
+  try{
+   const response=await fetch("/api/admin/alerts/clear",{
+    method:"POST",credentials:"same-origin",cache:"no-store",
+    headers:{"Content-Type":"application/json","X-SPDecode-Admin-Action":"1"},
+    body:JSON.stringify({confirmation:"VACIAR_ALERTAS"}),
+   });
+   if(response.status===401){router.replace("/admin/login");return;}
+   const result=await response.json();
+   if(!response.ok||result.status!=="ok")throw Error("No se pudieron limpiar las alertas.");
+   setActionNote("Se eliminaron "+fmt.format(result.cleared.removedAlerts)+" alertas registradas.");
+   await refresh(undefined,true);
+  }catch(e){setError(e.message||"Error al limpiar alertas.");}
+  finally{setActionBusy(false);}
+ }
+ async function setPause(paused){
+  if(actionBusy||loading)return;
+  if(!window.confirm(paused?"¿Silenciar nuevas alertas durante 60 minutos? Los errores seguirán registrándose y los motores continuarán operando.":"¿Reactivar las alertas automáticas ahora?"))return;
+  setActionBusy(true);setActionNote("");
+  try{
+   const response=await fetch("/api/admin/alerts/pause",{
+    method:"POST",credentials:"same-origin",cache:"no-store",
+    headers:{"Content-Type":"application/json","X-SPDecode-Admin-Action":"1"},
+    body:JSON.stringify({paused}),
+   });
+   if(response.status===401){router.replace("/admin/login");return;}
+   const result=await response.json();
+   if(!response.ok||result.status!=="ok")throw Error("No se pudo modificar la pausa.");
+   setActionNote(paused?"Alertas silenciadas durante un máximo de 60 minutos.":"Alertas automáticas reactivadas.");
+   await refresh(undefined,true);
+  }catch(e){setError(e.message||"No se pudo actualizar el estado.");}
+  finally{setActionBusy(false);}
+ }
  const ops=data?.observability||{},health=data?.health||{};
  const comparison=data?.report?.comparisons||[];
  const perf=ops.performance||[],alerts=ops.alerts||[];
@@ -52,11 +90,22 @@ export default function AdminObservability({mode="analytics"}){
    </div>
   </div>
   {error&&<p role="alert" className="form-message error">{error}</p>}
+  {actionNote&&<p role="status" className="muted">{actionNote}</p>}
   {loading&&<p className="muted" role="status">Consultando telemetría agregada…</p>}
   {data&&<>
-   <div className="sp-admin-charts-grid">
-    <Panel title="Alertas automáticas de proveedores" subtitle="Se actualiza cada minuto; sin correos ni datos de clientes">
+   <div className="sp-admin-charts-grid sp-admin-observability-head">
+    {mode!=="system"&&<Panel title="Alertas automáticas de proveedores" subtitle="Se actualiza cada minuto; sin correos ni datos de clientes">
      <p className="muted">Reglas: tres fallos consecutivos de red/timeout, o al menos cinco errores entre las últimas diez operaciones. Máximo una alerta por condición y hora.</p>
+     <div className="sp-admin-alert-actions">
+      <div><strong>{ops.alertsPausedUntil?"Alertas silenciadas":"Alertas automáticas activas"}</strong>
+       {ops.alertsPausedUntil&&<small className="muted">Reactivación automática: {time(ops.alertsPausedUntil)}</small>}
+       <small className="muted">{alerts.length} alertas retenidas · los errores se siguen contabilizando</small>
+      </div>
+      <div className="sp-admin-toolbar-actions">
+       <button type="button" className="button subtle" disabled={actionBusy||loading} onClick={()=>setPause(!ops.alertsPausedUntil)}>{ops.alertsPausedUntil?"Reactivar alertas":"Silenciar 60 minutos"}</button>
+       <button type="button" className="button subtle" onClick={clearAlerts} disabled={actionBusy||loading||!alerts.length}>{actionBusy?"Limpiando…":"Vaciar alertas"}</button>
+      </div>
+     </div>
      {alerts.length?<div className="sp-admin-alert-list">
       {alerts.slice(0,12).map((a,i)=><div className="sp-admin-alert-row" key={a.at+":"+a.format+":"+i}>
        <strong>{a.format.replace(/^vpn-/,"")}</strong>
@@ -64,15 +113,15 @@ export default function AdminObservability({mode="analytics"}){
        <small className="muted">{time(a.at)} · {a.failures}/{a.recent} operaciones</small>
       </div>)}
      </div>:<p className="muted">No se han disparado alertas recientes.</p>}
-    </Panel>
-    <Panel title="Estado del servidor" subtitle="Medidas seguras y límites de visibilidad del contenedor Docker">
+    </Panel>}
+    {mode==="system"&&<Panel title="Estado del servidor" subtitle="Medidas seguras y límites de visibilidad del contenedor Docker">
      <div className="admin-kv"><span>Worker</span><strong>{health.workerReady?"Disponible":"No disponible"}</strong></div>
      <div className="admin-kv"><span>Redis</span><strong>{health.redisReady?"Disponible":"No disponible"}</strong></div>
      <div className="admin-kv"><span>CPU web (contenedor)</span><strong>{percent(health.cpuPercent)}</strong></div>
      <div className="admin-kv"><span>RAM web (contenedor)</span><strong>{health.memoryUsedBytes===null?"No disponible":(health.memoryUsedBytes/1048576).toFixed(1)+" MiB"}{health.memoryLimitBytes?" / "+(health.memoryLimitBytes/1048576).toFixed(1)+" MiB":""}</strong></div>
      <div className="admin-kv"><span>Cola de trabajo</span><strong>Sin cola persistente</strong></div>
      <p className="muted">La CPU/RAM indicada corresponde al contenedor web, NO a toda la VPS. El uso de CPU puede aparecer tras la segunda lectura. No hay métricas de host ni cola persistente configuradas.</p>
-    </Panel>
+    </Panel>}
    </div>
    {mode!=="system"&&<>
     <Panel title="Antes y después de una corrección" subtitle="Líneas base de reinicios · tasas históricas y operaciones posteriores">
@@ -123,16 +172,16 @@ export default function AdminObservability({mode="analytics"}){
      </Panel>
     </div>
    </>}
-   <Panel title="Historial de acciones administrativas" subtitle="Reinicios registrados sin cuentas, IP ni identificadores de usuario">
+   {mode==="system"&&<Panel title="Historial de acciones administrativas" subtitle="Reinicios, purgas y limpieza de alertas; sin cuentas, IP ni identificadores de usuario">
     <div className="admin-table-wrap"><table className="admin-table"><thead><tr>
-     <th>Fecha UTC</th><th>Acción</th><th>Ámbito</th><th>Formatos</th>
+     <th>Fecha UTC</th><th>Acción</th><th>Ámbito</th><th>Resultado</th>
     </tr></thead><tbody>
      {(ops.actions||[]).slice(0,30).map((a,i)=><tr key={a.at+":"+i}>
-      <td>{time(a.at)}</td><td>Reinicio de errores</td><td>{a.scope==="all"?"Todos":a.format}</td><td>{fmt.format(a.formatsReset||0)}</td>
+      <td>{time(a.at)}</td><td>{a.action==="purge_errors"?"Purga real de errores":a.action==="clear_alerts"?"Limpieza de alertas":a.action==="pause_alerts"?"Silenciar alertas":a.action==="resume_alerts"?"Reactivar alertas":"Reinicio de indicadores"}</td><td>{a.scope==="all"?"Todos":a.format}</td><td>{a.action==="purge_errors"?fmt.format(a.removedFailures||0)+" fallos":a.action==="clear_alerts"?fmt.format(a.removedAlerts||0)+" alertas":fmt.format(a.formatsReset||0)+" formatos"}</td>
      </tr>)}
      {!ops.actions?.length&&<tr><td colSpan={4}>Sin acciones administrativas recientes.</td></tr>}
     </tbody></table></div>
-   </Panel>
+   </Panel>}
   </>}
  </section>;
 }

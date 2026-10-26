@@ -75,6 +75,15 @@ def load_file_engines() -> dict[str, dict[str, str]]:
 # C8 additions are separate from the frozen 240-route C0 inventory.
 # Keep each format pinned to its own source codec; never route HX .hxt into xor_family.
 _C8_FILE_ENGINES = {
+    "v2": ("decoders/Python/apps/MTM_Tunnel_Lite/file_decoder.py", "e-V2Ray / MTM Tunnel Lite"),
+    "stp": ("decoders/Python/apps/MNR_TUNNEL_PLUS/file_decoder.py", "MNR TUNNEL PLUS 3.1"),
+    "kyz": ("decoders/Python/apps/HTTP_Door/file_decoder.py", "HTTP Door 5.0"),
+    "bdnet": ("decoders/Python/apps/BD_NET_VPN/file_decoder.py", "BD NET VPN PrinceBuild111"),
+    "aura": ("decoders/Python/apps/Aura_Net_VPN/file_decoder.py", "Aura Net VPN AuraNet_v9"),
+    "apnavpn": ("decoders/Python/apps/APNA_VPN/file_decoder.py", "APNA VPN 3.9"),
+    "dtk": ("decoders/Python/apps/ANY_VPN/file_decoder.py", "ANY VPN build 40"),
+    "tx": ("decoders/Python/apps/Tx_Tunnel/file_decoder.py", "Tx Tunnel v2.17"),
+    "mmt": ("decoders/Python/apps/MM_Tunnel/file_decoder.py", "MM Tunnel v1.10.11.1"),
     "crev": ("decoders/Python/apps/CREEB_VPN/file_decoder.py", "CREEB VPN 50.0"),
     "creeb": ("decoders/Python/apps/CREEB_INJECTOR/file_decoder.py", "CREEB INJECTOR 38.0"),
     "awg": ("decoders/Python/apps/AboWaged_VPN/file_decoder.py", "AboWaged VPN 1.0"),
@@ -222,10 +231,10 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
     if suffix == "roy" and _is_legacy_roy(contents):
         engine = load_file_engines()["roy"]
     if credentials is not None:
-        allowed = {"password", "hwid"} if suffix == "hc" else {"password", "publicKey"} if suffix == "npvs" else {"password"} if suffix in ("tut", "ua", "1ftnl", "v2box") else None
+        allowed = {"password", "hwid"} if suffix == "hc" else {"password", "publicKey", "recipientKey"} if suffix == "npvs" else {"password"} if suffix in ("tut", "ua", "1ftnl", "v2box") else None
         if allowed is None or not isinstance(credentials, dict) or set(credentials) - allowed:
             raise DecodeFailure("CREDENTIALS_NOT_ALLOWED")
-        for name, maximum in (("password", 4096), ("hwid", 128), ("publicKey", 128)):
+        for name, maximum in (("password", 4096), ("hwid", 128), ("publicKey", 128), ("recipientKey", 16384)):
             value = credentials.get(name)
             if value is not None and (not isinstance(value, str) or not 0 < len(value) <= maximum):
                 raise DecodeFailure("INVALID_CREDENTIALS")
@@ -343,7 +352,7 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
 
 def decode_provider_catalog(provider_id: str, contents: bytes) -> dict:
     """One fixed provider codec, child-isolated; broker performs all network I/O."""
-    if provider_id not in ("creeb-vpn", "abowaged-vpn", "7net-vpn", "xhypher-tunnel-pro", "ut-loop-pro-vpn", "turbomx-vpn", "superflash-vpn", "rmp-tunnel-pro", "rjc-tunnel-pro", "proneet-vpn", "onspace-vpn", "mx-tunnel-pro", "megatunnel", "http-internet-infinito", "24clan-green", "hx-tunnel", "mkk-hyper", "my-tunnel-proxy", "robust-tunnel", "royal-tunnel", "trv-tunnel", "4u-tunnel-lite", "ac-tunnel-vpn", "austroplus-vpn", "http-fenixvpn", "http-jireh", "http-socketclay", "http-wakko", "v2ray-tunnel-plus", "eut-vpn", "focus-vpn-cloud", "freedom-vpn", "tunelguard-vpn", "tunneltweak", "ksh-vpn", "dtunnel-mod"):
+    if provider_id not in ("mtm-tunnel-lite", "mnr-tunnel-plus", "bd-net-vpn", "aura-net-vpn", "apna-vpn", "any-vpn", "speicers-pro-vpn", "tx-tunnel", "mm-tunnel", "creeb-vpn", "abowaged-vpn", "7net-vpn", "xhypher-tunnel-pro", "ut-loop-pro-vpn", "turbomx-vpn", "superflash-vpn", "rmp-tunnel-pro", "rjc-tunnel-pro", "proneet-vpn", "onspace-vpn", "mx-tunnel-pro", "megatunnel", "http-internet-infinito", "24clan-green", "hx-tunnel", "mkk-hyper", "my-tunnel-proxy", "robust-tunnel", "royal-tunnel", "trv-tunnel", "4u-tunnel-lite", "ac-tunnel-vpn", "austroplus-vpn", "http-fenixvpn", "http-jireh", "http-socketclay", "http-wakko", "v2ray-tunnel-plus", "eut-vpn", "focus-vpn-cloud", "freedom-vpn", "tunelguard-vpn", "tunneltweak", "ksh-vpn", "dtunnel-mod"):
         raise DecodeFailure("UNSUPPORTED_FORMAT")
     if not isinstance(contents, bytes) or not contents:
         raise DecodeFailure("INVALID_INPUT")

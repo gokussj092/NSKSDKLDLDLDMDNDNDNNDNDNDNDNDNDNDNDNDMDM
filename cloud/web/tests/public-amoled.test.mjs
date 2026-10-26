@@ -43,9 +43,9 @@ test("ES and EN complete and legal pages remain available",()=>{
  const home=read("app/public/home.jsx"),legal=read("app/public/legal.jsx");
  assert.match(home,/Make your configurations clearer/);
  assert.match(home,/Tus configuraciones, más claras/);
- assert.match(legal,/Política|Privacidad|Privacidad y tratamiento/);
- assert.match(legal,/Privacy and data processing/);
- assert.match(legal,/October 19, 2026/);
+ assert.match(legal,/Política de privacidad de SP-DECODE/);
+ assert.match(legal,/SP-DECODE Privacy Policy/);
+ assert.match(legal,/October 25, 2026/);
  for(const page of ["app/privacy/page.jsx","app/terms/page.jsx","app/support/page.jsx"])
   assert.match(read(page),/PublicLegal/);
 });
@@ -86,4 +86,21 @@ test("Google Play button is disabled and cannot redirect to GitHub",()=>{
  assert.match(home,/<button className="sp-button sp-button-play-pending"[^>]*disabled/);
  assert.match(home,/\{t\.play\}/);
  assert.match(css,/\.sp-button-play-pending:disabled\{cursor:not-allowed\}/);
+});
+
+test("legal documents have accessible navigation, section anchors, a bilingual reader and print stylesheet",()=>{
+ const legal=read("app/public/legal.jsx"),css=read("app/public/public.css");
+ for(const expected of [
+  'sp-legal-breadcrumb','sp-legal-doc-tabs','sp-legal-sidebar',
+  'sp-legal-toc','sp-legal-content','sp-legal-section-number',
+  'sp-legal-contact','sp-legal-print','window.print()',
+  'aria-labelledby','aria-current','sp-legal-hero',
+ ])assert.ok(legal.includes(expected),expected);
+ for(const expected of [
+  '.sp-legal-layout','.sp-legal-toc','.sp-legal-card:target',
+  '@media(max-width:850px)','@media print'
+ ])assert.ok(css.includes(expected),expected);
+ assert.match(legal,/Política de privacidad de SP-DECODE/);
+ assert.match(legal,/SP-DECODE Privacy Policy/);
+ assert.doesNotMatch(legal,/borrador|provisional|suscripci[oó]n|publicidad|\bdraft\b|\bsubscription\b|\badvertising\b/i);
 });

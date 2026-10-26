@@ -35,7 +35,8 @@ internal object CloudUserErrors {
                 "UNSUPPORTED_FORMAT" -> R.string.cloud_failure_unsupported
                 // Explicit unknown export versions are distinct from unsupported
                 // extensions and from incorrect credentials.
-                "UNSUPPORTED_VERSION","UNSUPPORTED_VARIANT","UNSUPPORTED_METHOD" ->
+                "UNSUPPORTED_VERSION","UNSUPPORTED_VARIANT","UNSUPPORTED_METHOD",
+                "UNSUPPORTED_CONFIG_VERSION" ->
                     R.string.unsupported_variant_message
                 // A registered file may use an unrecognized exporter revision.
                 // The existing localized text also warns that the file may be
@@ -112,7 +113,9 @@ internal object CloudUserErrors {
         val code=(cause as? CloudDecodeClient.Failure)?.code?:return false
         return CloudCredentialPolicy.incorrectPassword(code,passwordSubmitted,hwidSubmitted) ||
             CloudCredentialPolicy.npvsProtectionNotice(code,format) ||
-            code in setOf("UNSUPPORTED_VERSION","UNSUPPORTED_VARIANT","UNSUPPORTED_METHOD")
+            code in setOf("UNSUPPORTED_VERSION","UNSUPPORTED_VARIANT","UNSUPPORTED_METHOD",
+                "UNSUPPORTED_CONFIG_VERSION") ||
+            (format!=null && code=="DECODE_FAILED")
     }
 
     fun message(context:Context,cause:Throwable,format:String?=null,

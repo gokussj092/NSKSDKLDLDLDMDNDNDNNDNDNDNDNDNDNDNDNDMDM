@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="npv_title">کلیدهای گیرنده NPV</string>
+    <string name="npv_detail">از هویت خود برای فایل‌های مخصوص خودتان استفاده کنید. کلیدها به‌صورت رمزگذاری‌شده روی این دستگاه ذخیره می‌شوند. برای استفاده با SP Cloud فعال کنید.</string>
+    <string name="npv_enabled">استفاده از هویت‌های NPV من</string>
+    <string name="npv_generate">ساخت با SP Cloud</string>
+    <string name="npv_import">وارد کردن JSON ثبت‌شده</string>
+    <string name="npv_generated">ساخته‌شده با SP Cloud</string>
+    <string name="npv_captured">ثبت‌شده از برنامه رسمی</string>
+    <string name="npv_file_only">فقط این فایل</string>
+    <string name="npv_view">نمایش و کپی</string>
+    <string name="npv_delete">حذف</string>
+    <string name="npv_invalid">خواندن کلیدهای NPV ممکن نشد. JSON و تطابق کلیدها را بررسی کنید.</string>
+    <string name="npv_saved">هویت ذخیره شد. برای استفاده گزینه را فعال کنید.</string>
+    <string name="npv_generation_notice">فقط کلید عمومی را با فردی که سرور یا پیکربندی VPN شما را می‌سازد به اشتراک بگذارید. هرگز کلید خصوصی را به اشتراک نگذارید.</string>
+    <string name="npv_choose_title">انتخاب هویت NPV</string>
+    <string name="npv_send_notice">هویت مناسب برای باز کردن این فایل با SP Cloud را انتخاب کنید.</string>
+    <string name="npv_use">استفاده از هویت انتخاب‌شده</string>
+    <string name="npv_copy_public">کپی کلید عمومی</string>
+    <string name="npv_copy_private">کپی کلید خصوصی</string>
+    <string name="npv_reveal">نمایش یا پنهان کردن کلید خصوصی</string>
+    <string name="npv_hardware_notice">کلید خصوصی سخت‌افزاری قابل استخراج نیست. این داده فقط برای فایل مطابق کار می‌کند.</string>
+    <string name="npv_delete_title">این هویت حذف شود؟</string>
+    <string name="npv_delete_warning">این کلید فقط روی این دستگاه ذخیره می‌شود. پس از حذف، SP Cloud نمی‌تواند آن را بازیابی کند. ممکن است دسترسی به فایل‌های رمزگذاری‌شده برای این هویت را از دست بدهید.</string>
+    <string name="npv_public_label">کلید عمومی · P-256</string>
+    <string name="npv_private_label">کلید خصوصی · PKCS#8</string>
+    <string name="npv_cancel">لغو</string>
+    <string name="npv_already_generated">یک هویت SP Cloud از قبل وجود دارد. پیش از ساخت هویت جدید آن را حذف کنید.</string>
+</resources>

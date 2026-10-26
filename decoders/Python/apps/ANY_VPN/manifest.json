@@ -1,0 +1,36 @@
+{
+  "id": "any-vpn",
+  "name": "ANY VPN",
+  "package": "com.markvpnpro.pinas",
+  "versionName": "16kb-page-size",
+  "versionCode": 40,
+  "engine": "python",
+  "entrypoint": "file_decoder.py",
+  "extensions": ["dtk"],
+  "dependencies": ["pycryptodome==3.23.0"],
+  "credentials": [],
+  "userPasswordCryptographicallyRequired": false,
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "embeddedSource": "DEX c_11.conf",
+    "embeddedVersion": "1.1",
+    "embeddedServers": 12,
+    "embeddedNetworks": 46,
+    "remote": "fixed-official-get",
+    "remoteVerifiedVersion": "5.84",
+    "remoteVerifiedServers": 13,
+    "remoteVerifiedNetworks": 91,
+    "publicVisible": true,
+    "cardDecodeEnabled": true
+  },
+  "icon": {
+    "originalResource": "res/drawable/ic_launcher.png",
+    "bytes": 44411,
+    "sha256": "f111f88d18e14dd0eb934cfdafd0be0a8a74197c66e499be317b7c50fc11b38c"
+  },
+  "proprietaryTextSchemeIdentified": false,
+  "cloudUserProfileSharingIdentified": false,
+  "realFileSampleVerified": false,
+  "androidRuntimeTested": false,
+  "deployment": "not-requested"
+}

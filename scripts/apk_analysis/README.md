@@ -1,5 +1,46 @@
 # Herramientas de análisis APK
 
+MTM Tunnel Lite MTM (40): `mtm_bundle.py` genera la CLI autónoma stdlib desde
+XXTEA canónico HX y `mtm_verify.py` compara catálogos privados completos con
+JDK y workers de catálogo/archivo. Dos respuestas reales verificadas; `.v2`
+conserva e-V2Ray, `.json`/stdin son explícitos en CLI. LSParanoid cruza dos DEX
+con `--call-class` en DEX1; limitaciones del selector original y pasos en
+`RESTORE.md` y `decoders/Python/apps/MTM_Tunnel_Lite/ANALYSIS.md`.
+
+FlexNet B46 en Android virtual: `flexnet_emulator_probe.py` reconstruye un AVD
+con SDK verificado por SHA-256, ejecución por software acotada y controlador
+JSON/ADB en un solo namespace. Android arrancó y registró el APK, pero ANR,
+reinicios y fallos de inicio impidieron una captura válida. No se descifraron
+las muestras ni se confirmó un rechazo de atestación del backend. Dos tests
+del controlador con SDK ficticio; detalles y límites en
+`docs/FLEXNET_V2_4_EMULATOR_PROBE.md`.
+
+FlexNet B46: `flexnet_b46_grant_oracle.py` contrasta 87 casos del binding de
+concesión con el bloque ARM64 original y un vector JDK. El observador
+`flexnet_b46_capture.js` y colector `flexnet_collect_grant.py` preparan la
+recuperación local durante una importación oficial: requieren Android
+instrumentable y **no se han validado en teléfono**. Las tres muestras reales
+siguen sin abrirse. Los mocks del observador no sustituyen esa comprobación.
+Layout, límites y pasos en `docs/FLEXNET_V2_4_AUTHORIZED_IMPORT.md` y RESTORE.
+Para la nueva muestra v6 offline se observa `d.w` y se guarda su v5 interior
+con `--offline-inner`, sin extraer la clave hardware. El host autentica el v5;
+el tag v6 lo verifica la llamada original observada. Ver el documento V6_SAMPLE.
+
+Tx Tunnel build 70: `tx_tunnel_verify.py` reutiliza el comparador de documentos
+completos y la referencia libsodium/JDK, sin copiar el motor histórico. Catálogos
+reales 23/66 y 27/643, 4888 campos; cuatro documentos sintéticos adicionales.
+El origen GET usa appcode 27.0 calculado del tamaño real del APK, no una cuenta.
+`dex_method.py` requiere descriptor original **Lrk1;**, no el `defpackage` de
+JADX, para `g(Context)D` (32 instrucciones). Exportador `NetworkAdapter.u`,
+149 instrucciones. Sin contraseña de usuario; `.tx` real pendiente. Ver RESTORE.
+
+MM Tunnel build 45: `mm_tunnel_verify.py` contrasta JSON completo con libsodium
+Argon2id y JDK AES-GCM independientes, CLI y worker. Seis documentos sintéticos
+y el catálogo real 34/555, incluidos 3335 campos. No imprime valores privados.
+`go_inspect.py` admite pclntab f1 fusionada en `.data.rel.ro`, mantiene textStart
+relocalizado y rechaza tablas ambiguas. Exportación `.mmt` sin contraseña de
+usuario; pendiente muestra real y POST remoto aceptado (HTTP 403). Ver RESTORE.
+
 Hex Custom 10.6.1: `hex_custom_recover.py` es una herramienta de análisis,
 **no un decodificador de archivos**. Separa KVS1 con límites comprobados y
 recupera la tabla JNI de CustomServerShare desde su pool XOR; `--verify-xor`
@@ -187,3 +228,4 @@ XOR con copia C++ modelada y memoria/instrucciones limitadas. Ocho vectores
 sintéticos coinciden con JDK, incluidos UTF-8 modificado y emoji. No se llama
 JNI, controles de firma ni el inicio de la app. `RESTORE.md` deja los comandos
 para reconstruir este avance; no habilitar el proveedor hasta abrir el catálogo.
+

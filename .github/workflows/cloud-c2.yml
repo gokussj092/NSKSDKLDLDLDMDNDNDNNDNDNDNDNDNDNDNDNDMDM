@@ -4,6 +4,24 @@ on:
   pull_request:
     paths:
       - "cloud/**"
+      - "decoders/Python/apps/MTM_Tunnel_Lite/**"
+      - "tests/test_mtm_tunnel_lite.py"
+      - "tests/golden/mtm_oracle.java"
+      - "decoders/Python/apps/MNR_TUNNEL_PLUS/**"
+      - "tests/test_mnr_tunnel_plus.py"
+      - "tests/golden/mnr_oracle.java"
+      - "decoders/Python/apps/HTTP_Door/**"
+      - "decoders/Python/apps/CREEB_INJECTOR/codec.py"
+      - "tests/test_http_door.py"
+      - "tests/golden/http_door_oracle.java"
+      - "decoders/Python/apps/Speicers_Pro_VPN/**"
+      - "decoders/Python/apps/ANY_VPN/**"
+      - "tests/test_any_vpn.py"
+      - "tests/golden/any_vpn_oracle.java"
+      - "scripts/apk_analysis/any_vpn_verify.py"
+      - "tests/test_speicers_pro.py"
+      - "tests/golden/speicers_oracle.java"
+      - "scripts/apk_analysis/speicers_verify.py"
       - "docs/cloud/C0_FORMAT_MATRIX.csv"
       - "docs/cloud/C2_IMPLEMENTATION.md"
       - "tests/test_cloud_c2_golden.py"
@@ -11,6 +29,9 @@ on:
       - "decoders/Python/flex.py"
       - "decoders/Python/flexnet_b42.py"
       - "tests/test_flexnet_b*.py"
+      - "tests/flexnet_b46_capture.test.mjs"
+      - "scripts/apk_analysis/flexnet_b46_capture.js"
+      - "scripts/apk_analysis/flexnet_collect_grant.py"
       - "tests/golden/flexnet_b*"
       - "tests/golden/FlexB*VectorGenerator.java"
       - "decoders/Python/apps/HTTP_Custom/**"
@@ -43,10 +64,24 @@ on:
       - "decoders/Python/apps/SevenNET_VPN/**"
       - "decoders/Python/apps/OneFTunnel/**"
       - "decoders/Python/npvs.py"
+      - "decoders/Python/npvs_identity.py"
+      - "tests/test_npvs_identity.py"
+      - "scripts/apk_analysis/npv_*"
+      - "tests/npv_recipient_capture.test.mjs"
       - "decoders/Python/v2box_export.py"
       - "tests/test_v2box_password.py"
+      - "decoders/Python/apps/BD_NET_VPN/**"
+      - "tests/test_bd_net_vpn.py"
+      - "tests/golden/bd_net*"
+      - "scripts/apk_analysis/bd_net_*.py"
+      - "decoders/Python/apps/Aura_Net_VPN/**"
+      - "tests/test_aura_net_vpn.py"
+      - "tests/golden/aura_net*"
+      - "scripts/apk_analysis/aura_net_verify.py"
       - "decoders/Python/apps/APNA_VPN/**"
       - "tests/test_apna_vpn.py"
+      - "tests/golden/apna_oracle.java"
+      - "scripts/apk_analysis/apna_*.py"
       - "tests/test_npvs_protected.py"
       - "tests/test_npvs_v1_legacy.py"
       - "decoders/Python/npvs_v1.py"
@@ -137,8 +172,20 @@ jobs:
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_http_custom_899 -v
       - name: Verify TunelGuard/Wakko/SocketClay catalogs and file compatibility
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_am_liapp_metadata tests.test_am_tunnel_lite tests.test_sevennet_vpn tests.test_xhypher_tunnel_pro tests.test_ut_loop_pro tests.test_turbomx_vpn tests.test_superflash_vpn tests.test_rmp_tunnel_pro tests.test_rjc_tunnel_pro tests.test_proneet_vpn tests.test_onspace_vpn tests.test_mx_tunnel_pro tests.test_megatunnel tests.test_http_internet_infinito tests.test_freedomvpn tests.test_focus_vpn_cloud tests.test_eut_vpn tests.test_v2ray_tunnel_plus tests.test_tunelguard tests.test_http_wakko tests.test_http_socketclay tests.test_http_fenixvpn tests.test_http_jireh -v
-      - name: Verify APNA VPN modified XXTEA complete catalog and worker
+      - name: Verify BD NET catalog, nested binary recovery, file and text
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_bd_net_vpn -v
+      - name: Verify HTTP Door KYZ, shared Java Properties parser and standalone Termux bundle
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_http_door tests.test_creeb_injector -v
+      - name: Verify MNR complete catalogs, profiles, clipboard and reference handling
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_mnr_tunnel_plus -v
+      - name: Verify MTM complete catalogs, standalone bundle and historical e-V2Ray collision
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_mtm_tunnel_lite -v
+      - name: Verify Aura Net complete catalog, exported profile and historical routes
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_aura_net_vpn -v
+      - name: Verify APNA complete catalog, native profile format, text and worker
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_apna_vpn -v
+      - name: Verify ANY and Speicers complete catalogs and file compatibility
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_speicers_pro tests.test_any_vpn -v
       - name: Verify V2Box fixed-key, password and tag integrity routes
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_v2box_password -v
       - name: Verify NPV text aliases, strict credential errors and legacy envelope isolation
@@ -146,9 +193,13 @@ jobs:
       - name: Verify 1FTunnel files, password handling and complete worker output
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_oneftunnel tests.test_cloud_c8_vpn_registry -v
       - name: Verify NPVS v1 legacy route, v5 protected methods, and recipient diagnostics
-        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_npvs_v1_legacy tests.test_npvs_protected tests.test_npvs_v5.PrimitiveTests tests.test_npvs_v5_embedded tests.test_cloud_c8_npvs_error_classification -v
-      - name: Verify FlexNet v1-v6 compatibility and B46 protected fields
-        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_flexnet_b46 tests.test_flexnet_b42 -v
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_npvs_identity tests.test_npvs_v1_legacy tests.test_npvs_protected tests.test_npvs_v5.PrimitiveTests tests.test_npvs_v5_embedded tests.test_cloud_c8_npvs_error_classification -v
+      - name: Verify scoped NPV capture observer
+        run: node --test tests/npv_recipient_capture.test.mjs
+      - name: Verify FlexNet v1-v6, B46 protected fields and authorized import captures
+        run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_flexnet_b46_grant tests.test_flexnet_b46 tests.test_flexnet_b42 -v
+      - name: Verify FlexNet capture observer flow with host mocks
+        run: node --test tests/flexnet_b46_capture.test.mjs
       - name: C2 verify NUR server catalog remains separate from solid profiles
         run: PYTHONPATH=cloud/workers/python:. python -m unittest tests.test_cloud_c2_nur_catalog -v
       - name: Hat Tunnel complete JSON, real fixture and optional-field regression

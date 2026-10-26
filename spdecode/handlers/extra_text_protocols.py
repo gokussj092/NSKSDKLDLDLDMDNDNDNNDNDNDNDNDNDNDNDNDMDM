@@ -41,12 +41,24 @@ PROTOCOL_HANDLERS = {
 }
 _PREFIXES = tuple(sorted(PROTOCOL_HANDLERS, key=len, reverse=True))
 
+def _mnr_text(value):
+    from decoders.Python.apps.MNR_TUNNEL_PLUS import codec
+    try:
+        raw = codec.download_profile(value) if value.startswith(codec.REFERENCE_PREFIX) else value.encode('utf-8')
+        return codec.render(codec.decode_profile(raw))
+    except (OSError, ValueError):
+        # Do not log urllib causes: they can contain the private download token.
+        return None
+
 
 def _match(message) -> str | None:
     value = getattr(message, "text", "") or ""
     if not isinstance(value,str) or not 0 < len(value) <= MAX_TEXT_CHARS:
         return None
     compact = value.strip().lower()
+    from decoders.Python.apps.MNR_TUNNEL_PLUS.codec import is_profile_text
+    if value.strip().startswith('mnrtunneludp://') or is_profile_text(value.strip()):
+        return '__mnr__'
     prefix = next((item for item in _PREFIXES if compact.startswith(item)), None)
     if prefix is not None:
         return prefix
@@ -70,7 +82,9 @@ def decode_extra_text(message):
     prefix = _match(message)
     if prefix is None:
         return
-    if prefix == "__creeb__":
+    if prefix == "__mnr__":
+        label, decoder = "MNR TUNNEL PLUS", _mnr_text
+    elif prefix == "__creeb__":
         label, decoder = "Creeb Profile Bundle", text_structured_protocols.decode_creeb
     else:
         label, decoder = PROTOCOL_HANDLERS[prefix]

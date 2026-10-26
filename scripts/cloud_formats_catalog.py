@@ -22,7 +22,7 @@ ANDROID = ROOT / "android/app/src/main/assets/decoder_catalog.json"
 # User-input fields already accepted by the C3/C8 worker; never infer credentials.
 CREDENTIAL_FIELDS = {
     "hc": ["password", "hwid"],
-    "npvs": ["password", "publicKey"],
+    "npvs": ["password", "publicKey", "recipientKey"],
     "tut": ["password"],
     "ua": ["password"],
     "1ftnl": ["password"],

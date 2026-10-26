@@ -170,3 +170,13 @@ test("7NET VPN has a named control and can be enabled or disabled without touchi
  availability=Object.fromEntries(overview.providers.map(x=>[x.id,x.enabled]));
  assert.equal(catalog({availability}).apps.find(x=>x.id==="7net-vpn").decodeEnabled,true);
 });
+
+test("Tx Tunnel has a named persistent provider switch",async t=>{
+ const root=await fixture(t),opts={root};
+ assert(PUBLIC_PROVIDER_IDS.includes("tx-tunnel"));
+ assert.equal(providerPrerequisite("tx-tunnel",env),true);
+ assert.equal((await providerOverview(env,opts)).providers.find(x=>x.id==="tx-tunnel").name,"Tx Tunnel");
+ const result=await updateProvider("tx-tunnel",false,env,opts);
+ assert.equal(result.providers.find(x=>x.id==="tx-tunnel").enabled,false);
+ assert.equal(await providerAllowed("tx-tunnel",env,opts),false);
+});

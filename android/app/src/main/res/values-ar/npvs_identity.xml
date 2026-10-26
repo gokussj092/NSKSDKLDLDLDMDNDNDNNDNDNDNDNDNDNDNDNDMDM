@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="npv_title">مفاتيح مستلم NPV</string>
+    <string name="npv_detail">استخدم هويتك للملفات المخصصة لك. تُخزَّن المفاتيح مشفرة على هذا الجهاز. فعّل الخيار لاستخدامها مع SP Cloud.</string>
+    <string name="npv_enabled">استخدام هويات NPV الخاصة بي</string>
+    <string name="npv_generate">إنشاء عبر SP Cloud</string>
+    <string name="npv_import">استيراد JSON ملتقط</string>
+    <string name="npv_generated">تم إنشاؤها عبر SP Cloud</string>
+    <string name="npv_captured">تم التقاطها من التطبيق الرسمي</string>
+    <string name="npv_file_only">لهذا الملف فقط</string>
+    <string name="npv_view">عرض ونسخ</string>
+    <string name="npv_delete">حذف</string>
+    <string name="npv_invalid">تعذرت قراءة مفاتيح NPV. تحقق من JSON وتطابق المفاتيح.</string>
+    <string name="npv_saved">تم حفظ الهوية. فعّل الخيار لاستخدامها.</string>
+    <string name="npv_generation_notice">شارك المفتاح العام فقط مع من ينشئ خادم VPN أو إعداداته لك. لا تشارك المفتاح الخاص مطلقًا.</string>
+    <string name="npv_choose_title">اختيار هوية NPV</string>
+    <string name="npv_send_notice">اختر الهوية لفتح هذا الملف عبر SP Cloud.</string>
+    <string name="npv_use">استخدام الهوية المحددة</string>
+    <string name="npv_copy_public">نسخ المفتاح العام</string>
+    <string name="npv_copy_private">نسخ المفتاح الخاص</string>
+    <string name="npv_reveal">إظهار أو إخفاء المفتاح الخاص</string>
+    <string name="npv_hardware_notice">لا يمكن تصدير المفتاح الخاص الخاص بالعتاد. يعمل هذا الالتقاط مع الملف المطابق فقط.</string>
+    <string name="npv_delete_title">هل تريد حذف هذه الهوية؟</string>
+    <string name="npv_delete_warning">هذا المفتاح محفوظ على هذا الجهاز فقط. إذا حذفته فلن يتمكن SP Cloud من استعادته. قد تفقد الوصول إلى الملفات المشفرة لهذه الهوية.</string>
+    <string name="npv_public_label">المفتاح العام · P-256</string>
+    <string name="npv_private_label">المفتاح الخاص · PKCS#8</string>
+    <string name="npv_cancel">إلغاء</string>
+    <string name="npv_already_generated">توجد هوية SP Cloud بالفعل. احذفها قبل إنشاء أخرى.</string>
+</resources>

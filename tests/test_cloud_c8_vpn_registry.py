@@ -13,7 +13,7 @@ class CloudC8VpnRegistry(unittest.TestCase):
         self.assertEqual(len(canonical),240)
         self.assertEqual(canonical["hxt"]["source"],str((ROOT/"decoders/Python/xor_family.py").resolve()))
         extended=load_runtime_file_engines()
-        self.assertEqual(len(extended),250) # ten new suffixes; eight existing suffixes override C0 routes.
+        self.assertEqual(len(extended),254) # fourteen new suffixes; existing suffix overrides stay separate from C0.
         self.assertIn("/apps/HX_Tunnel_VPN/HX_Tunnel_VPN_archivos.py",extended["hxt"]["source"])
         self.assertNotEqual(canonical["hxt"]["source"],extended["hxt"]["source"])
         self.assertIn("/apps/Royal_Tunnel_VPN/file_decoder.py",extended["roy"]["source"])

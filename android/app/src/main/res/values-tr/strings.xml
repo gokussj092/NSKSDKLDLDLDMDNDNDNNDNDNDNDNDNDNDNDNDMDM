@@ -33,7 +33,7 @@
     <string name="privacy_title">Gizlilik</string>
     <string name="privacy_text">İçe aktarılan dosyalar kopyalanmaz. Çözülen sonuçlar silene kadar yalnızca cihazınızda şifreli saklanır.</string>
     <string name="about_title">SP-DECODE hakkında</string>
-    <string name="about_text">SP-DECODE VPN yapılandırmalarını güvenli Cloud API üzerinden işler. Sonuçlar cihazdaki şifreli geçmişe kaydedilir.</string>
+    <string name="about_text">SP-DECODE VPN yapılandırmalarını SP Cloud üzerinden güvenle işler. Sonuçlar cihazdaki şifreli geçmişe kaydedilir.</string>
     <string name="language_title">Diller</string>
     <string name="language_text">Uygulama dilini seçin. Değişiklik ekranı yeniden başlatır.</string>
     <string name="show">Göster</string>
@@ -183,7 +183,7 @@
     <string name="cloud_http_injector_open">Cloud (Çevrimiçi)</string>
     <string name="cloud_http_injector_hint">ehi.link bağlantısı, Cloud anahtarı veya 💉…🚀 dizisi yapıştırın</string>
     <string name="cloud_http_injector_action">Cloud yapılandırmasını içe aktar</string>
-    <string name="cloud_http_injector_privacy">Cloud hizmeti: referans yalnızca İçe aktar seçildiğinde HTTP Injector Cloud sunucusuna gönderilir. Diğer biçimler SP-DECODE API kullanır.</string>
+    <string name="cloud_http_injector_privacy">SP Cloud hizmeti: referans yalnızca İçe aktar seçildiğinde HTTP Injector Cloud sunucusuna gönderilir. Diğer biçimler SP Cloud kullanır.</string>
     <string name="cloud_http_injector_invalid">Geçersiz Cloud bağlantısı, anahtar veya emoji dizisi. Kaynağı kontrol edin.</string>
     <string name="cloud_http_injector_network_error">HTTP Injector Cloud\'a bağlanılamıyor. Bağlantıyı kontrol edip yeniden deneyin.</string>
     <string name="cloud_http_injector_server_error">HTTP Injector Cloud başvuruyu kabul etmedi. Süresi dolmuş, iptal edilmiş veya hizmet kapalı olabilir.</string>

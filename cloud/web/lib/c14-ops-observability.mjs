@@ -3,6 +3,7 @@
  * Only known service/format codes from c6-ops-store enter this module. */
 import {readFile} from "node:fs/promises";
 const TTL=8*86400, PREFIX="spc14:obs:", ALERTS="spc14:alerts", AUDIT="spc14:admin-actions";
+export const ALERT_PAUSE_KEY="spc14:alerts:pause-until";
 const SAMPLE_LIMIT=20, LIMITS=[100,250,500,1000,2000,5000,10000,20000,45000,120000,300000];
 const CATEGORIES={
  ENGINE_TIMEOUT:"timeout",REMOTE_PROVIDER_UNAVAILABLE:"network",
@@ -73,6 +74,7 @@ export async function recordOpsTelemetry(redis,{format,service,outcome,errorCode
  const highRate=recent.length===10&&failures>=5;
  const alertType=noResponse?"unresponsive":highRate?"failure_ratio":null;
  if(!alertType)return;
+ if(await redis.get(ALERT_PAUSE_KEY))return; // Suppress alerts only; all metrics remain intact.
  const cooldown="spc14:alert-cooldown:"+format+":"+alertType;
  if(await redis.set(cooldown,"1",{EX:3600,NX:true})!=="OK")return;
  await redis.lPush(ALERTS,JSON.stringify({
@@ -113,19 +115,26 @@ export async function readOpsReport(redis,days=7){
     dates.some(d=>alert.at.startsWith(d))&&/^[a-z0-9ɴ][a-z0-9ɴ._-]{0,52}$/.test(alert.format))
     alerts.push(alert);}catch{}
  }
+ const alertPauseRaw=await redis.get(ALERT_PAUSE_KEY);
+ const alertsPausedUntil=alertPauseRaw&&/^\d{13}$/.test(alertPauseRaw)?new Date(Number(alertPauseRaw)).toISOString():null;
  const latest=await redis.lRange(AUDIT,0,49),actions=[];
  for(const raw of latest){
-  try{const v=JSON.parse(raw);if(v.action==="reset_errors"&&typeof v.at==="string")actions.push(v);}catch{}
+  try{const v=JSON.parse(raw);if(["reset_errors","purge_errors","clear_alerts","pause_alerts","resume_alerts"].includes(v.action)&&typeof v.at==="string")actions.push(v);}catch{}
  }
  return {performance,alerts,versions:[...versions].map(([version,count])=>({version,count}))
    .sort((a,b)=>b.count-a.count).slice(0,30),
   formatVersions:[...exporters].map(([k,count])=>{const [format,version]=k.split("|");return {format,version,count};})
    .sort((a,b)=>b.count-a.count).slice(0,80),
-  actions,latencyMethod:"bounded_histogram",retentionDays:8,
+  actions,alertsPausedUntil,latencyMethod:"bounded_histogram",retentionDays:8,
   thresholds:{unresponsive:"3 consecutive network/timeout failures",highFailureRatio:"5 of last 10 operations",cooldownMinutes:60}};
 }
-export async function recordAdminAudit(redis,{scope,format,at,formatsReset}){
- const event={at,action:"reset_errors",scope,format:scope==="format"?format:null,formatsReset};
+export async function recordAdminAudit(redis,{scope,format,at,formatsReset,mode="reset",
+  removedFailures=0,removedIncidents=0,removedAlerts=0}={}){
+ const action=mode==="purge"?"purge_errors":mode==="clear_alerts"?"clear_alerts":
+  mode==="pause_alerts"?"pause_alerts":mode==="resume_alerts"?"resume_alerts":"reset_errors";
+ const event={at,action,scope,format:scope==="format"?format:null,formatsReset};
+ if(action==="purge_errors")Object.assign(event,{removedFailures,removedIncidents,removedAlerts});
+ if(action==="clear_alerts")event.removedAlerts=removedAlerts;
  await redis.lPush(AUDIT,JSON.stringify(event));
  await redis.lTrim(AUDIT,0,99);await redis.expire(AUDIT,TTL);
 }

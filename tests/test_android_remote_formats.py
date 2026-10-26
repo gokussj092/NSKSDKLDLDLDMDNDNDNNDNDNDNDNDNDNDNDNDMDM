@@ -69,8 +69,8 @@ class RemoteFormatsAndroidTests(unittest.TestCase):
         activity=(JAVA/"MainActivity.kt").read_text("utf-8")
         for check in ("AndroidDecoderCatalog.detect(routingName,fileFormats)",
                       "serverVpnCatalog.cachedFormats()",
-                      "R.string.file_extension_unsupported_contact",
-                      "R.string.text_format_unsupported_contact",
+                      "R.string.unsupported_file_detail",
+                      "R.string.unsupported_text_detail",
                       "CloudUserErrors.httpInjectorMessage"):
             self.assertIn(check,activity)
 

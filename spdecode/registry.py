@@ -190,6 +190,28 @@ def load_decoder_registry(path: Path = DECODERS_PATH) -> dict[str, DecoderSpec]:
             script="decoders/Python/apps/CREEB_VPN/file_decoder.py", runtime="python"
         )
 
+    if path.resolve() == DECODERS_PATH.resolve():
+        if "kyz" in registry:
+            raise ValueError("HTTP Door .kyz decoder conflicts with an existing route")
+        registry["kyz"] = DecoderSpec(
+            extension="kyz", name="HTTP Door 5.0",
+            script="decoders/Python/apps/HTTP_Door/file_decoder.py", runtime="python"
+        )
+
+    if path.resolve() == DECODERS_PATH.resolve():
+        if "stp" in registry:
+            raise ValueError("MNR .stp decoder conflicts with an existing route")
+        registry["stp"] = DecoderSpec(
+            extension="stp", name="MNR TUNNEL PLUS 3.1",
+            script="decoders/Python/apps/MNR_TUNNEL_PLUS/file_decoder.py", runtime="python"
+        )
+
+    if path.resolve() == DECODERS_PATH.resolve():
+        registry["v2"] = DecoderSpec(
+            extension="v2", name="e-V2Ray / MTM Tunnel Lite",
+            script="decoders/Python/apps/MTM_Tunnel_Lite/file_decoder.py", runtime="python"
+        )
+
     return registry
 
 

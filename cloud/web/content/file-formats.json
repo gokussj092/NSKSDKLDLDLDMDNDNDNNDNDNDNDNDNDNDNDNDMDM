@@ -191,6 +191,14 @@
       "credentialFields": []
     },
     {
+      "suffix": "apnavpn",
+      "name": "APNA VPN 3.9",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
       "suffix": "bshield",
       "name": "RENZ / BSHIELD",
       "kind": "file",
@@ -346,7 +354,7 @@
     },
     {
       "suffix": "bdnet",
-      "name": "XOR VPN family",
+      "name": "BD NET VPN PrinceBuild111",
       "kind": "file",
       "offlineSupported": true,
       "cloudSupported": true,
@@ -524,7 +532,7 @@
     },
     {
       "suffix": "aura",
-      "name": "AURA TUNNEL",
+      "name": "Aura Net VPN AuraNet_v9",
       "kind": "file",
       "offlineSupported": true,
       "cloudSupported": true,
@@ -714,7 +722,8 @@
       "cloudSupported": true,
       "credentialFields": [
         "password",
-        "publicKey"
+        "publicKey",
+        "recipientKey"
       ]
     },
     {
@@ -998,6 +1007,14 @@
       "credentialFields": []
     },
     {
+      "suffix": "dtk",
+      "name": "ANY VPN build 40",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
       "suffix": "dvd",
       "name": "Generic AES-GCM / PBKDF2",
       "kind": "file",
@@ -1270,6 +1287,14 @@
       "credentialFields": []
     },
     {
+      "suffix": "kyz",
+      "name": "HTTP Door 5.0",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
       "suffix": "lnk",
       "name": "LinkLayer VPN",
       "kind": "file",
@@ -1311,7 +1336,7 @@
     },
     {
       "suffix": "mmt",
-      "name": "MMT TUNNEL",
+      "name": "MM Tunnel v1.10.11.1",
       "kind": "file",
       "offlineSupported": true,
       "cloudSupported": true,
@@ -1570,6 +1595,14 @@
       "name": "Stark VPN",
       "kind": "file",
       "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "stp",
+      "name": "MNR TUNNEL PLUS 3.1",
+      "kind": "file",
+      "offlineSupported": false,
       "cloudSupported": true,
       "credentialFields": []
     },
@@ -1980,7 +2013,7 @@
     },
     {
       "suffix": "tx",
-      "name": "TX TUNNEL",
+      "name": "Tx Tunnel v2.17",
       "kind": "file",
       "offlineSupported": true,
       "cloudSupported": true,
@@ -2006,7 +2039,7 @@
     },
     {
       "suffix": "v2",
-      "name": "e-V2Ray",
+      "name": "e-V2Ray / MTM Tunnel Lite",
       "kind": "file",
       "offlineSupported": true,
       "cloudSupported": true,

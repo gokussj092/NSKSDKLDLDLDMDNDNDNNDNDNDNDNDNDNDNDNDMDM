@@ -1,5 +1,46 @@
 # C8 — Catálogo de VPN, iconos originales y caché
 
+Estado más reciente PR #99 (2026-10-24): **MNR TUNNEL PLUS 3.1 (31)**, fuente
+real GitHub plusfast 14.4 / 14 servidores / 119 redes frente al asset 1.0 /
+9 / 112. Ambos completos iguales a JDK y worker, 1149 campos internos. Nuevo
+`.stp`, clipboard y referencia online `mnrtunneludp://` con Firebase fijo;
+online validado con mocks, referencia real/export/Android/Termux pendientes.
+PNG original y switch individual preservando los anteriores. Mínimo **46 /
+46 fichas**, C0 **240**, C8 **254**, 26 overrides. **50 Python / 309 Node** y
+build web correctos. Ver MNR_TUNNEL_PLUS; no confundir plusfastapp con catálogo.
+Sin fusión, despliegue, APK o C11. Los estados siguientes son históricos.
+
+Estado más reciente del PR #99 (2026-10-24): HTTP Door 5.0 incorpora `.kyz`
+al inventario de archivos, DES/XML sin contraseña de usuario. **No se identificó
+catálogo de servidores**, por lo que no se añade proveedor/ficha. C0 **240**,
+C8 **253**, 25 overrides; se mantienen **45 fichas** y se eleva el mínimo a
+**45** para refrescar metadatos 44. Parser Java compartido de CREEB, script
+Termux reproducible. Tres documentos sintéticos completos iguales a JDK y
+worker; falta `.kyz` real y Android/Termux. 43 Python / 296 Node aprobadas.
+Sin consultar localhost, desplegar, fusionar, APK o C11. Los estados siguientes
+son históricos.
+
+Estado más reciente del PR #99 (2026-10-24): BD NET VPN build 111 añadido
+después de Aura, mínimo **44 / 45 fichas**, C0 **240 / C8 252**, 24 overrides.
+`.bdnet` y `bdnet://` actualizados, campos internos y recuperación binaria
+completos, PNG e interruptor persistente. Remoto real 56 / 19 / 255 frente
+al incluido 57 / 20 / 257; no mezclar versiones. Ver BD_NET_VPN y la guía
+de continuación. Los conteos de las fases siguientes son históricos.
+
+Estado más reciente del PR #99 (2026-10-24): Aura Net build 19 añadido después
+de APNA, catálogo mínimo **43 / 44 fichas**, C0 **240 / C8 252**. `.aura` ya
+existía y conserva su ruta histórica; nuevas claves confirmadas, catálogo
+real completo, PNG original e interruptor individual. Sin nuevo lector
+offline Android. Ver Aura_Net_VPN y SERVER_VPN_NEXT_CHAT_GUIDE. Las fases
+históricas de abajo conservan sus conteos.
+
+Estado actual del PR #99 (2026-10-24): APNA añadido después de ANY/Speicers,
+catálogo mínimo 42 / 43 fichas, C0 240 / C8 252. APNA tiene fuente remota
+fija validada, PNG original y control individual; `.apnavpn`/`apnavpn://`
+usan el lector derivado de DEX/SO (exportación real pendiente). Ver
+`decoders/Python/apps/APNA_VPN/` y SERVER_VPN_NEXT_CHAT_GUIDE para la
+evidencia actual; las fases históricas de abajo conservan sus propios conteos.
+
 - Base: `feat/cloud-c8-vps-installer-updater`, origen de motores: PR #95.
 - Inventario C0 de 240 rutas: congelado. Extensiones extra: .rt, .gol,
   .ua, .nvpnc, .green, .mtp, y .hxt con lector HX independiente.

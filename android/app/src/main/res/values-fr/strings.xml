@@ -32,7 +32,7 @@
     <string name="privacy_title">Confidentialité</string>
     <string name="privacy_text">Les fichiers originaux importés ne sont pas copiés. Les résultats décodés sont chiffrés et conservés uniquement sur cet appareil jusqu’à leur suppression.</string>
     <string name="about_title">À propos de SP-DECODE</string>
-    <string name="about_text">SP-DECODE traite les configurations VPN via son API Cloud sécurisée et conserve les résultats dans un historique chiffré sur cet appareil.</string>
+    <string name="about_text">SP-DECODE traite les configurations VPN en toute sécurité via SP Cloud et conserve les résultats dans un historique chiffré sur cet appareil.</string>
     <string name="language_title">Langues</string>
     <string name="language_text">Choisissez la langue de l’application. Le changement redémarre cet écran.</string>
     <string name="show">Afficher</string>
@@ -182,7 +182,7 @@
     <string name="cloud_http_injector_open">Cloud (en ligne)</string>
     <string name="cloud_http_injector_hint">Collez un lien ehi.link, une clé Cloud ou une séquence 💉…🚀</string>
     <string name="cloud_http_injector_action">Importer la configuration Cloud</string>
-    <string name="cloud_http_injector_privacy">Service Cloud : la référence est transmise à HTTP Injector Cloud uniquement après Importer. Les autres formats utilisent API SP-DECODE.</string>
+    <string name="cloud_http_injector_privacy">Service SP Cloud : la référence est transmise à HTTP Injector Cloud uniquement après Importer. Les autres formats compatibles utilisent SP Cloud.</string>
     <string name="cloud_http_injector_invalid">Lien Cloud, clé ou séquence d’emojis invalide. Vérifiez la référence d’origine.</string>
     <string name="cloud_http_injector_network_error">Connexion à HTTP Injector Cloud impossible. Vérifiez votre réseau et réessayez.</string>
     <string name="cloud_http_injector_server_error">HTTP Injector Cloud a refusé cette référence. Elle a peut-être expiré ou été révoquée, ou le service est indisponible.</string>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unsupported_file_title">Dosya türü desteklenmiyor</string>
+    <string name="unsupported_file_detail">Bu uzantı SP-DECODE tarafından henüz desteklenmiyor. Eklenmesini önermek için geliştiriciyle iletişime geçin.</string>
+    <string name="unsupported_version_title">Dosya sürümü desteklenmiyor</string>
+    <string name="unsupported_version_detail">Bu dosya henüz desteklenmeyen bir sürüm veya şifreleme yöntemi kullanıyor.</string>
+    <string name="unsupported_text_title">Metin desteklenmiyor</string>
+    <string name="unsupported_text_detail">Bu metin veya protokol henüz desteklenmiyor. Geliştiriciyle iletişime geçin.</string>
+    <string name="catalog_check_action">Güncellemeleri kontrol et</string>
+    <string name="catalog_checking">Katalog sürümü kontrol ediliyor…</string>
+    <string name="catalog_downloading">Katalog güncelleniyor…</string>
+    <string name="catalog_progress">Hazır katalog öğeleri: %1$d%%</string>
+    <string name="app_update_title">Yeni sürüm mevcut</string>
+    <string name="app_update_body">SP-DECODE %1$s kullanılabilir. Güncelleme için resmi Telegram kanalını açın.</string>
+    <string name="app_update_open">Telegram aç</string>
+    <string name="app_update_close">Kapat</string>
+    <string name="catalog_available_title">Yeni katalog mevcut</string>
+    <string name="catalog_available_body">Katalog sürümü %1$d indirilmeye hazır.</string>
+    <string name="catalog_check_short">Kataloğu kontrol et</string>
+</resources>

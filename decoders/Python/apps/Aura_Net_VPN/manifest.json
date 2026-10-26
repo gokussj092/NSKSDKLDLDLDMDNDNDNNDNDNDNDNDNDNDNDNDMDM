@@ -1,0 +1,67 @@
+{
+  "id": "aura-net-vpn",
+  "name": "Aura Net VPN",
+  "package": "civ.snipher.v2ray",
+  "versionName": "AuraNet_v9",
+  "versionCode": 19,
+  "engine": "python",
+  "entrypoint": "file_decoder.py",
+  "extensions": [
+    "aura"
+  ],
+  "dependencies": [
+    "argon2-cffi",
+    "pycryptodome==3.23.0"
+  ],
+  "credentials": [],
+  "userPasswordCryptographicallyRequired": false,
+  "cipher": {
+    "kdf": "Argon2id v19",
+    "timeCost": 3,
+    "memoryKiB": 8192,
+    "parallelism": 1,
+    "derivedBytes": 32,
+    "encryption": "AES-256-GCM",
+    "saltBytes": 16,
+    "nonceBytes": 12,
+    "tagBytes": 16,
+    "aad": "salt",
+    "exportMarker": "one ASCII letter at Base64 index 3",
+    "fieldMarker": null
+  },
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "aura-net-vpn",
+    "embeddedAsset": "assets/configfile.json",
+    "embeddedVersion": "1.01",
+    "embeddedServers": 4,
+    "embeddedNetworks": 663,
+    "embeddedEncryptedFields": 40,
+    "remote": "fixed-official-get",
+    "remoteVerifiedVersion": "2.18",
+    "remoteVerifiedServers": 14,
+    "remoteVerifiedNetworks": 685,
+    "remoteEncryptedFields": 424,
+    "publicVisible": true,
+    "cardDecodeEnabled": true
+  },
+  "icon": {
+    "originalResource": "res/drawable/icon.png",
+    "bytes": 126994,
+    "sha256": "5f4f3a82d52822d84d04e9700b5b28ef084a319151431c7d91423ff3366701fe"
+  },
+  "historicalCompatibility": {
+    "extensionAlreadyRegistered": true,
+    "source": "decoders/Python/ultra.py",
+    "legacyKeyProfile": "auranetvpn",
+    "legacyKdfAndKeysChanged": false
+  },
+  "proprietaryTextSchemeIdentified": false,
+  "cloudUserProfileSharingIdentified": false,
+  "realFileSampleVerified": false,
+  "androidRuntimeTested": false,
+  "termuxRuntimeTested": false,
+  "branch": "feat/mm-tunnel-1-10-11-1-decoders",
+  "pullRequest": 99,
+  "deployment": "not-requested"
+}

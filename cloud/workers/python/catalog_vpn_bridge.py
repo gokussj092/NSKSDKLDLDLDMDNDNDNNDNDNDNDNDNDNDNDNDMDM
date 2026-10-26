@@ -7,9 +7,18 @@ import sys
 from pathlib import Path
 
 PROVIDERS = {
+    "mtm-tunnel-lite": "decoders.Python.apps.MTM_Tunnel_Lite.server_catalog_decoder",
+    "mnr-tunnel-plus": "decoders.Python.apps.MNR_TUNNEL_PLUS.server_catalog_decoder",
+    "bd-net-vpn": "decoders.Python.apps.BD_NET_VPN.server_catalog_decoder",
+    "aura-net-vpn": "decoders.Python.apps.Aura_Net_VPN.server_catalog_decoder",
+    "any-vpn": "decoders.Python.apps.ANY_VPN.server_catalog_decoder",
+    "speicers-pro-vpn": "decoders.Python.apps.Speicers_Pro_VPN.server_catalog_decoder",
+    "tx-tunnel": "decoders.Python.apps.Tx_Tunnel.server_catalog_decoder",
+    # Fixed official POST is blocked here; this route accepts offline bytes only.
+    "mm-tunnel": "decoders.Python.apps.MM_Tunnel.server_catalog_decoder",
     "creeb-vpn": "decoders.Python.apps.CREEB_VPN.server_catalog_decoder",
     "abowaged-vpn": "decoders.Python.apps.AboWaged_VPN.server_catalog_decoder",
-    # Offline-only until the official APNA catalog source is validated.
+    # Fixed APK updater validated independently from the stale embedded UpdaterLink.
     "apna-vpn": "decoders.Python.apps.APNA_VPN.server_catalog_decoder",
     "7net-vpn": "decoders.Python.apps.SevenNET_VPN.server_catalog_decoder",
     "xhypher-tunnel-pro": "decoders.Python.apps.Xhypher_Tunnel_Pro.server_catalog_decoder",

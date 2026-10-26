@@ -1,0 +1,35 @@
+{
+  "id": "mnr-tunnel-plus",
+  "name": "MNR TUNNEL PLUS",
+  "package": "com.hamo.vpn",
+  "versionName": "3.1",
+  "versionCode": 31,
+  "engine": "python",
+  "entrypoint": "file_decoder.py",
+  "extensions": ["stp"],
+  "clipboardCiphertext": true,
+  "onlineScheme": "mnrtunneludp://",
+  "online": {
+    "backendRoute": "/api/v1/decode/import/mnr",
+    "textRoute": "/api/v1/decode/text",
+    "referenceIdPattern": "[A-Za-z0-9]{10}",
+    "storageBucket": "hamovpn.firebasestorage.app",
+    "syntheticFlowVerified": true,
+    "liveReferenceVerified": false
+  },
+  "dependencies": ["pycryptodome==3.23.0"],
+  "credentials": [],
+  "userPasswordCryptographicallyRequired": false,
+  "hwidCryptographicallyRequired": false,
+  "catalog": {
+    "status": "verified",
+    "embedded": {"version": "1.0", "servers": 9, "networks": 112, "encryptedFields": 537},
+    "remote": {"version": "14.4", "servers": 14, "networks": 119, "encryptedFields": 612}
+  },
+  "realFileSampleVerified": false,
+  "syntheticProfileDocumentsVerified": 2,
+  "androidOfflineSupported": false,
+  "androidCloudTextRecognition": true,
+  "androidDeviceVerified": false,
+  "deployment": "pending"
+}

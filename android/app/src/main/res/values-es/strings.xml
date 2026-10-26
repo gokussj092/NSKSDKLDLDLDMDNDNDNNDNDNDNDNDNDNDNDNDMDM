@@ -32,7 +32,7 @@
     <string name="privacy_title">Privacidad</string>
     <string name="privacy_text">Los archivos originales no se copian. Los resultados decodificados se guardan cifrados en este dispositivo hasta que los elimines.</string>
     <string name="about_title">Acerca de SP-DECODE</string>
-    <string name="about_text">SP-DECODE procesa configuraciones VPN mediante su API Cloud segura. Los resultados se guardan en el historial cifrado del dispositivo.</string>
+    <string name="about_text">SP-DECODE procesa configuraciones VPN de forma segura mediante SP Cloud. Los resultados se guardan en el historial cifrado del dispositivo.</string>
     <string name="language_title">Idiomas</string>
     <string name="language_text">Elige el idioma de la aplicación. Al cambiarlo se reinicia esta pantalla.</string>
     <string name="show">Mostrar</string>
@@ -182,7 +182,7 @@
     <string name="cloud_http_injector_open">Nube (Online)</string>
     <string name="cloud_http_injector_hint">Pega un enlace ehi.link, una clave cloud o una secuencia 💉…🚀</string>
     <string name="cloud_http_injector_action">Importar configuración cloud</string>
-    <string name="cloud_http_injector_privacy">Servicio Cloud: la referencia se envía a HTTP Injector Cloud solo después de pulsar Importar. Los demás formatos usan la API SP-DECODE.</string>
+    <string name="cloud_http_injector_privacy">Servicio SP Cloud: la referencia se envía a HTTP Injector Cloud solo después de pulsar Importar. Los demás formatos compatibles utilizan SP Cloud.</string>
     <string name="cloud_http_injector_invalid">El enlace, la clave cloud o la secuencia de emojis no son válidos. Revisa la referencia original.</string>
     <string name="cloud_http_injector_network_error">No se pudo conectar con HTTP Injector Cloud. Comprueba tu conexión e inténtalo de nuevo.</string>
     <string name="cloud_http_injector_server_error">HTTP Injector Cloud no aceptó esta referencia. Puede haber caducado, haber sido revocada o el servicio no estar disponible.</string>

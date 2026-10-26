@@ -33,7 +33,7 @@
     <string name="privacy_title">Quyền riêng tư</string>
     <string name="privacy_text">Không sao chép tệp gốc. Kết quả giải mã chỉ được lưu mã hóa trên thiết bị cho đến khi bạn xóa.</string>
     <string name="about_title">Giới thiệu SP-DECODE</string>
-    <string name="about_text">SP-DECODE xử lý cấu hình VPN qua Cloud API bảo mật và lưu kết quả vào lịch sử mã hóa trên thiết bị.</string>
+    <string name="about_text">SP-DECODE xử lý cấu hình VPN an toàn qua SP Cloud và lưu kết quả vào lịch sử mã hóa trên thiết bị.</string>
     <string name="language_title">Ngôn ngữ</string>
     <string name="language_text">Chọn ngôn ngữ ứng dụng. Màn hình sẽ khởi động lại.</string>
     <string name="show">Hiện</string>
@@ -183,7 +183,7 @@
     <string name="cloud_http_injector_open">Cloud (Trực tuyến)</string>
     <string name="cloud_http_injector_hint">Dán liên kết ehi.link, khóa Cloud hoặc chuỗi 💉…🚀</string>
     <string name="cloud_http_injector_action">Nhập cấu hình Cloud</string>
-    <string name="cloud_http_injector_privacy">Dịch vụ Cloud: chỉ gửi tham chiếu tới HTTP Injector Cloud sau khi nhấn Nhập. Định dạng khác dùng API SP-DECODE.</string>
+    <string name="cloud_http_injector_privacy">Dịch vụ SP Cloud: chỉ gửi tham chiếu tới HTTP Injector Cloud sau khi nhấn Nhập. Các định dạng khác dùng SP Cloud.</string>
     <string name="cloud_http_injector_invalid">Liên kết Cloud, khóa hoặc chuỗi emoji không hợp lệ. Kiểm tra tham chiếu.</string>
     <string name="cloud_http_injector_network_error">Không thể kết nối HTTP Injector Cloud. Kiểm tra mạng rồi thử lại.</string>
     <string name="cloud_http_injector_server_error">HTTP Injector Cloud không chấp nhận tham chiếu này. Có thể hết hạn, bị thu hồi hoặc dịch vụ không khả dụng.</string>

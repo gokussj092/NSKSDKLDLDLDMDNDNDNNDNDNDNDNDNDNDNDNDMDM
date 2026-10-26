@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""APNA VPN 3.9 embedded server catalog (Base64 + modified XXTEA).
+"""APNA VPN 3.9: catálogo, archivos y texto, solo biblioteca estándar.
 
-Standard-library-only, offline. XXTEA does not authenticate ciphertext.
-No APK, native SO, external endpoint or Android runtime needed to decode data.
+run() is offline; only the explicit CLI/download path accesses the fixed source.
+Neither modified XXTEA nor the profile XOR format authenticates ciphertext.
 """
 from __future__ import annotations
 
@@ -11,23 +11,66 @@ import base64
 import binascii
 import io
 import json
+import math
 import os
 from pathlib import Path
 import re
 import struct
 import sys
 import zipfile
+from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 MAX_INPUT = 8 * 1024 * 1024
 MAX_BUNDLE = 100 * 1024 * 1024
 DELTA = 0x9E5729B1  # APNA 3.9 Dalvik LBm.b, NOT the standard XXTEA delta
-KEY = b"...|..."  # App-format constant from LBm.a, private worker only
+KEY = b"...|..."  # Fixed catalog-format constant from LBm.a.
+PROFILE_KEY = b"4%PdXch>fkP]"  # Original ARM64 xorWithKey, twelve bytes.
+PROFILE_PREFIX = "apnavpn://"
+CATALOG_URL = "https://paperonboard.com/updater/3c3c4c58d864ca394da16656b4d0c4"
+USER_AGENT = "Dalvik/2.1.0"  # Reproduces the HttpURLConnection platform agent family.
 MASK = 0xFFFFFFFF
 ROOT_KEYS = ("Free_servers", "Payloads")
 
 
 class CatalogError(ValueError):
     """Invalid or unsupported APNA catalog."""
+
+
+def _unique(pairs):
+    obj = {}
+    for key, value in pairs:
+        if key in obj:
+            raise CatalogError("Duplicate JSON key")
+        obj[key] = value
+    return obj
+
+
+def _constant(_):
+    raise CatalogError("Nonfinite JSON number")
+
+
+def parse_document(text):
+    obj = json.loads(text, object_pairs_hook=_unique, parse_constant=_constant)
+    if not isinstance(obj, dict):
+        raise CatalogError("Expected JSON object")
+    pending = [(obj, 0)]
+    nodes = 0
+    while pending:
+        value, depth = pending.pop()
+        nodes += 1
+        if depth > 64 or nodes > 200000:
+            raise CatalogError("JSON structure exceeds limits")
+        if isinstance(value, dict):
+            for key in value:
+                key.encode("utf-8")
+            pending.extend((item, depth+1) for item in value.values())
+        elif isinstance(value, list):
+            pending.extend((item, depth+1) for item in value)
+        elif isinstance(value, str):
+            value.encode("utf-8")
+        elif isinstance(value, float) and not math.isfinite(value):
+            raise CatalogError("Nonfinite JSON number")
+    return obj
 
 
 def _words(raw: bytes) -> list[int]:
@@ -85,10 +128,15 @@ def decode_json_bytes(data: bytes) -> bytes:
         raise CatalogError("Invalid Base64 catalog") from exc
     plaintext = decrypt_binary(ciphertext)
     try:
-        parsed = json.loads(plaintext.decode("utf-8"))
+        parsed = parse_document(plaintext.decode("utf-8"))
         if (not isinstance(parsed, dict) or
+                not isinstance(parsed.get("Version"), str) or not parsed["Version"] or
                 any(not isinstance(parsed.get(section), list) for section in ROOT_KEYS)):
             raise CatalogError("Unexpected APNA catalog schema")
+        for group in ("Free_servers", "Premium_servers", "Vip_servers", "Private_servers", "Payloads"):
+            if group in parsed and (not isinstance(parsed[group], list) or
+                    any(not isinstance(item, dict) for item in parsed[group])):
+                raise CatalogError("Unexpected APNA catalog records")
     except (UnicodeError, ValueError, TypeError, RecursionError) as exc:
         if isinstance(exc, CatalogError):
             raise
@@ -97,8 +145,51 @@ def decode_json_bytes(data: bytes) -> bytes:
 
 
 def run(data: bytes) -> str:
-    """Private worker contract; output is complete unmodified JSON."""
+    """Catalog worker contract; output is complete unmodified JSON."""
     return decode_json_bytes(data).decode("utf-8")
+
+
+def decode_profile_bytes(data: bytes) -> bytes:
+    """Hex -> fixed XOR -> JNI modified UTF-8 -> complete JSON, no password input."""
+    if not isinstance(data, bytes) or not data or len(data) > MAX_INPUT:
+        raise CatalogError("Invalid profile input size")
+    try:
+        token = data.decode("utf-8-sig").strip()
+        if token.lower().startswith(PROFILE_PREFIX):
+            token = token[len(PROFILE_PREFIX):]
+        if not token or len(token) % 2 or not re.fullmatch(r"[0-9a-fA-F]+", token):
+            raise CatalogError("Invalid APNA hex profile")
+        raw = bytes.fromhex(token)
+        plain = bytes(b ^ PROFILE_KEY[i % len(PROFILE_KEY)] for i, b in enumerate(raw))
+        # JNI encodes supplementary characters as surrogate pairs, not four bytes.
+        text = plain.replace(b"\xc0\x80", b"\0").decode("utf-8", "surrogatepass")
+        text = text.encode("utf-16-le", "surrogatepass").decode("utf-16-le")
+        obj = parse_document(text)
+        if not isinstance(obj.get("friendly_name"), str) or not isinstance(obj.get("tweak_password"), str):
+            raise CatalogError("Unexpected APNA profile schema")
+        # tweak_password, expiry, HWID and root flags are post-decryption app checks.
+        return text.encode("utf-8")
+    except (UnicodeError, ValueError, TypeError, RecursionError) as exc:
+        raise CatalogError("Invalid or unsupported APNA profile") from exc
+
+
+class _NoRedirect(HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        raise CatalogError("Fixed source attempted a redirect")
+
+
+def download() -> bytes:
+    request = Request(CATALOG_URL, headers={"User-Agent": USER_AGENT, "Accept-Encoding": "identity"})
+    try:
+        with build_opener(_NoRedirect()).open(request, timeout=25) as response:
+            if response.status != 200 or response.headers.get("Content-Encoding", "identity") != "identity":
+                raise CatalogError("Invalid remote response")
+            data = response.read(MAX_INPUT + 1)
+        if not data or len(data) > MAX_INPUT:
+            raise CatalogError("Remote response exceeds limits")
+        return data
+    except OSError as exc:
+        raise CatalogError("Unable to download official APNA catalog") from exc
 
 
 def _member(archive: zipfile.ZipFile, name: str, limit: int) -> bytes:
@@ -147,29 +238,42 @@ def summary(plaintext: bytes) -> dict:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    src = parser.add_mutually_exclusive_group(required=True)
+    src = parser.add_mutually_exclusive_group()
     src.add_argument("--apks", type=Path, help="Read embedded janu.json from APK/APKS")
     src.add_argument("--input", type=Path, help="Read encrypted janu.json")
     src.add_argument("--stdin", action="store_true", help="Read encrypted Base64 on stdin")
+    src.add_argument("--file", type=Path, help="Read an exported .apnavpn profile")
+    src.add_argument("--text", help="Read an apnavpn:// link")
     parser.add_argument("--summary", action="store_true", help="Print metadata without credentials")
     parser.add_argument("--output", type=Path, help="Write output in a private 0600 file")
     args = parser.parse_args()
     try:
+        is_profile = args.file is not None or args.text is not None
+        remote = all(item is None for item in (args.apks, args.input, args.file, args.text)) and not args.stdin
+        if args.summary and is_profile:
+            raise CatalogError("--summary applies to catalogs only")
         if args.apks:
             encrypted = from_apks(args.apks)
-        elif args.input:
-            if args.input.stat().st_size > MAX_INPUT:
+        elif args.input or args.file:
+            source = args.input or args.file
+            if source.stat().st_size > MAX_INPUT:
                 raise CatalogError("Input too large")
-            encrypted = args.input.read_bytes()
-        else:
+            encrypted = source.read_bytes()
+        elif args.stdin:
             encrypted = sys.stdin.buffer.read(MAX_INPUT + 1)
-        plaintext = decode_json_bytes(encrypted)
+        elif args.text is not None:
+            encrypted = args.text.encode("utf-8")
+        else:
+            encrypted = download()
+        plaintext = decode_profile_bytes(encrypted) if is_profile else decode_json_bytes(encrypted)
         result = (json.dumps(summary(plaintext), ensure_ascii=False, indent=2).encode("utf-8")
                   if args.summary else plaintext)
-        if args.output:
-            fd = os.open(args.output, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+        output_path = args.output or (Path("apna_vpn_catalogo.json") if remote and not args.summary else None)
+        if output_path:
+            fd = os.open(output_path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
             with os.fdopen(fd, "wb") as output:
                 output.write(result + b"\n" if args.summary else result)
+            print(f"Guardado: {output_path}")
         else:
             sys.stdout.buffer.write(result + b"\n" if args.summary else result)
         return 0

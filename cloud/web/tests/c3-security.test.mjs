@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { generateKeyPairSync } from "node:crypto";
+import { generateKeyPairSync, createHash } from "node:crypto";
 import { settings } from "../lib/c3-config.mjs";
 import { checkIntegrityVerdict, verifyPlayToken } from "../lib/c3-integrity.mjs";
 import { createChallenge, issueSession, requireSession, verifySignature } from "../lib/c3-session.mjs";
-import { decodeRequest, sessionRequest, challengeRequest, readinessRequest, capabilitiesRequest, failure } from "../lib/c3-gateway.mjs";
+import { decodeRequest, sessionRequest, challengeRequest, readinessRequest, capabilitiesRequest, failure, npvsIdentityRequest } from "../lib/c3-gateway.mjs";
 import { safeErrorCode, classifyWorkerOutcome } from "../lib/c6-ops-store.mjs";
 import { recordAutomaticIncident } from "../lib/c9-diagnostics.mjs";
 
@@ -46,6 +46,35 @@ test("C3 must fail closed when any required server configuration is missing",()=
 });
 Object.assign(process.env,env);
 const cfg=settings();
+test("NPV key generation requires session and consent, returns matching fresh keys without persistence",async()=>{
+  const redis=new FakeRedis();const {issued}=await authorized(redis);
+  const identity=()=>{
+    const pair=generateKeyPairSync("ec",{namedCurve:"prime256v1"});
+    const jwk=pair.publicKey.export({format:"jwk"});
+    const publicKey=Buffer.concat([Buffer.from([2+(Buffer.from(jwk.y,"base64url")[31]&1)]),Buffer.from(jwk.x,"base64url")]);
+    return {schema:"spdecode.npvs.recipient.v1",kind:"keypair",source:"generated",curve:"P-256",
+      privateKey:pair.privateKey.export({format:"der",type:"pkcs8"}).toString("base64url"),
+      publicKey:publicKey.toString("base64url"),fingerprint:createHash("sha256").update(publicKey).digest("hex")};
+  };
+  let calls=0;const fetchImpl=async(url,opts)=>{
+    calls++;assert.equal(url,"http://decoder-worker:8787/internal/v1/npvs/identity");
+    assert.equal(opts.headers["X-SP-Worker-Token"],cfg.workerToken);
+    assert.deepEqual(JSON.parse(opts.body),{consent:true});return Response.json({identity:identity()});
+  };
+  const options={storeProvider:async()=>redis,fetchImpl};
+  assert.equal((await npvsIdentityRequest(req({consent:true}),options)).status,401);
+  assert.equal((await npvsIdentityRequest(req({},issued.accessToken),options)).status,400);
+  assert.equal(calls,0);
+  const first=await npvsIdentityRequest(req({consent:true},issued.accessToken),options);
+  assert.equal(first.status,201);assert.match(first.headers.get("cache-control"),/no-store/);
+  const second=await npvsIdentityRequest(req({consent:true},issued.accessToken),options);
+  const a=(await first.json()).identity,b=(await second.json()).identity;
+  assert.notEqual(a.publicKey,b.publicKey);
+  assert(!JSON.stringify([...redis.values]).includes(a.privateKey));
+  const invalid=identity();invalid.publicKey=identity().publicKey;
+  const bad=await npvsIdentityRequest(req({consent:true},issued.accessToken),{...options,fetchImpl:async()=>Response.json({identity:invalid})});
+  assert.equal(bad.status,503);assert(!JSON.stringify(await bad.json()).includes(invalid.privateKey));
+});
 test("C3 is enabled only with all server-side security controls configured",()=>{
   assert.equal(cfg.configured,true);
   assert.equal(cfg.packageName,"com.ghostdeveloper.spdecode");

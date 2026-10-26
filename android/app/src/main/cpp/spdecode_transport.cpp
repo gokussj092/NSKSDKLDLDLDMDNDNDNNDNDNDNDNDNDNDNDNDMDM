@@ -54,6 +54,7 @@ bool safePath(const std::string& path) {
     return path == "/api/v1/session/challenge" ||
         path == "/api/v1/session/qa" ||
         path == "/api/v1/session" ||
+        path == "/api/v1/npvs/identity" ||
         path == "/api/v1/decode/file" ||
         path == "/api/v1/decode/text" ||
         path == "/api/v1/decode/import/cloud" ||
@@ -181,6 +182,8 @@ jstring post(JNIEnv* env,jstring pathArg,jstring bodyArg,jstring bearerArg,jstri
     // this header automatically. It is not trusted for authentication.
     if(ok && (path == "/api/v1/decode/file" || path == "/api/v1/decode/text"))
         ok=setHeader(env,conn,connectionClass,setProperty,"X-SPDecode-Credential-Prompts","1");
+    if(ok && path == "/api/v1/server-vpn/catalog")
+        ok=setHeader(env,conn,connectionClass,setProperty,"X-SPDecode-NPV-Identities","1");
     if(ok && !bearer.empty())ok=setHeader(env,conn,connectionClass,setProperty,"Authorization","Bearer "+bearer);
     if(!ok) {
         clearException(env);env->CallVoidMethod(conn,disconnect);

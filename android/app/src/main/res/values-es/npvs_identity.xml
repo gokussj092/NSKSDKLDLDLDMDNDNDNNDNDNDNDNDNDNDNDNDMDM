@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="npv_title">Claves de destinatario NPV</string>
+    <string name="npv_detail">Usa tu identidad para archivos creados para ti. Las claves se guardan cifradas en este dispositivo. Activa esta opción para usarlas con SP Cloud.</string>
+    <string name="npv_enabled">Usar mis identidades NPV</string>
+    <string name="npv_generate">Generar con SP Cloud</string>
+    <string name="npv_import">Importar JSON capturado</string>
+    <string name="npv_generated">Generada por SP Cloud</string>
+    <string name="npv_captured">Capturada de la aplicación oficial</string>
+    <string name="npv_file_only">Solo este archivo</string>
+    <string name="npv_view">Ver y copiar</string>
+    <string name="npv_delete">Eliminar</string>
+    <string name="npv_invalid">No se pudieron leer las claves NPV. Revisa el JSON y que las claves correspondan.</string>
+    <string name="npv_saved">Identidad guardada. Activa la opción para utilizarla.</string>
+    <string name="npv_generation_notice">Comparte solo la clave pública con la persona que creará tu servidor o configuración VPN. Nunca compartas tu clave privada.</string>
+    <string name="npv_choose_title">Seleccionar identidad NPV</string>
+    <string name="npv_send_notice">Elige la identidad con la que abrirás este archivo mediante SP Cloud.</string>
+    <string name="npv_use">Usar identidad elegida</string>
+    <string name="npv_copy_public">Copiar clave pública</string>
+    <string name="npv_copy_private">Copiar clave privada</string>
+    <string name="npv_reveal">Mostrar u ocultar clave privada</string>
+    <string name="npv_hardware_notice">La clave privada del dispositivo no se puede exportar. Esta captura solo funciona con el archivo correspondiente.</string>
+    <string name="npv_delete_title">¿Eliminar esta identidad?</string>
+    <string name="npv_delete_warning">Esta clave solo se guarda en este dispositivo. Si la eliminas, SP Cloud no podrá recuperarla. Podrías perder acceso a archivos cifrados para esta identidad.</string>
+    <string name="npv_public_label">Clave pública · P-256</string>
+    <string name="npv_private_label">Clave privada · PKCS#8</string>
+    <string name="npv_cancel">Cancelar</string>
+    <string name="npv_already_generated">Ya tienes una identidad SP Cloud. Elimínala antes de generar otra.</string>
+</resources>

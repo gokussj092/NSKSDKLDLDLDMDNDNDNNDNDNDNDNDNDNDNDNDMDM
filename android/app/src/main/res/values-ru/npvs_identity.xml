@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="npv_title">Ключи получателя NPV</string>
+    <string name="npv_detail">Используйте свою идентичность для предназначенных вам файлов. Ключи зашифрованы на устройстве. Включите для работы с SP Cloud.</string>
+    <string name="npv_enabled">Использовать мои идентичности NPV</string>
+    <string name="npv_generate">Создать через SP Cloud</string>
+    <string name="npv_import">Импортировать сохранённый JSON</string>
+    <string name="npv_generated">Создано через SP Cloud</string>
+    <string name="npv_captured">Извлечено из официального приложения</string>
+    <string name="npv_file_only">Только для этого файла</string>
+    <string name="npv_view">Просмотреть и копировать</string>
+    <string name="npv_delete">Удалить</string>
+    <string name="npv_invalid">Не удалось прочитать ключи NPV. Проверьте JSON и соответствие ключей.</string>
+    <string name="npv_saved">Идентичность сохранена. Включите её использование.</string>
+    <string name="npv_generation_notice">Передавайте только открытый ключ человеку, создающему ваш VPN-сервер или конфигурацию. Никогда не передавайте закрытый ключ.</string>
+    <string name="npv_choose_title">Выбрать идентичность NPV</string>
+    <string name="npv_send_notice">Выберите идентичность для открытия файла через SP Cloud.</string>
+    <string name="npv_use">Использовать выбранную</string>
+    <string name="npv_copy_public">Копировать открытый ключ</string>
+    <string name="npv_copy_private">Копировать закрытый ключ</string>
+    <string name="npv_reveal">Показать или скрыть закрытый ключ</string>
+    <string name="npv_hardware_notice">Аппаратный закрытый ключ нельзя экспортировать. Эти данные подходят только к соответствующему файлу.</string>
+    <string name="npv_delete_title">Удалить эту идентичность?</string>
+    <string name="npv_delete_warning">Ключ хранится только на этом устройстве. После удаления SP Cloud не сможет его восстановить. Доступ к зашифрованным для него файлам может быть утрачен.</string>
+    <string name="npv_public_label">Открытый ключ · P-256</string>
+    <string name="npv_private_label">Закрытый ключ · PKCS#8</string>
+    <string name="npv_cancel">Отмена</string>
+    <string name="npv_already_generated">Идентичность SP Cloud уже существует. Удалите её перед созданием новой.</string>
+</resources>
