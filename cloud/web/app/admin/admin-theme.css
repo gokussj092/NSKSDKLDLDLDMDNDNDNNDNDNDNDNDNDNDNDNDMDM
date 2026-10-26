@@ -175,3 +175,14 @@ body:has(.sp-admin-frame){background:#000;color:#f7f7f7}
 
 /* A dedicated observability section has one principal panel, not an empty second column. */
 .sp-admin-frame .sp-admin-observability-head>.admin-card{grid-column:1/-1}
+
+/* Operational cleanup is intentionally distinct from non-destructive resets. */
+.sp-admin-frame .sp-admin-purge-panel{display:flex;align-items:center;justify-content:space-between;gap:26px;margin-top:24px;border-color:#674243;background:linear-gradient(115deg,#211719,#141414 75%)}
+.sp-admin-frame .sp-admin-purge-panel>div{max-width:850px;min-width:0}
+.sp-admin-frame .sp-admin-purge-panel h2{font-size:17px;margin:0 0 9px}
+.sp-admin-frame .sp-admin-purge-panel .muted{font-size:12px;margin:7px 0;line-height:1.8}
+.sp-admin-frame .button.sp-admin-destructive{flex-shrink:0;color:#ffdfe0;background:#542d31;border:1px solid #985f63;font-weight:750;padding:12px 17px}
+.sp-admin-frame .button.sp-admin-destructive:hover{background:#633337}
+.sp-admin-frame .sp-admin-alert-actions{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap;margin:14px 0 18px}
+.sp-admin-frame .sp-admin-alert-actions strong{font-size:12px}
+@media(max-width:740px){.sp-admin-frame .sp-admin-purge-panel{display:flex;flex-direction:column;align-items:stretch}.sp-admin-frame .button.sp-admin-destructive{width:100%}}
