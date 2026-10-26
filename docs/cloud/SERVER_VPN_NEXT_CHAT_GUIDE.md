@@ -1,5 +1,24 @@
 # SP-DECODE Cloud — Guía para ampliar Server VPN en otro chat
 
+## HA Tunnel Plus 1.7.1 (76) — 2026-10-26
+
+Rama **nueva desde main** `feat/ha-tunnel-plus-1-7-1-decoders`, base
+`27cc8894469a5742e73c3d2a0a83cdf836663878`, por instrucción actual del usuario.
+`apps/HA_Tunnel_Plus/hat_decoder.py` autónomo/importable entrega el JSON completo
+histórico `.hat`, UTF-16 Java para XOR, BOM/linewrap, opcionales y salida0600
+sin sobrescribir. Cloud `full_hat=True` usa Python; C0/C2 legado y detección
+previa Xhypher renombrado intactos. 2 fixtures reales históricos + 6 vectores
+JCA sintéticos iguales al lector Node completo; **no prueba del build nuevo**.
+Catálogo **52 / 48 fichas**, PNG original y `remote:null`: **servidores pendientes**.
+Los cinco recursos incluidos y constantes de `ProtectedFastSSH.s` están bajo
+DexProtector; updater GET fijo, `methods` cifrado aparte, caché con otra frase.
+No hay URL ni ID/link propio comprobado; no tocar endpoints de facturación.
+El emulador API30 sin KVM sufrió watchdog de system_server; captura completa
+no obtenida. `ha_runtime_capture.py`, ANALYSIS/TESTING/manifest conservan el
+punto de continuación. No presentar catálogo remoto como terminado. C0 **240**,
+C8 **254**, sin nuevas extensiones, sin despliegue/fusión/APK/novedad C11.
+
+
 **Continuación NPV, 2026-10-25:** [análisis y contratos](../NPVS_RECIPIENT_IDENTITIES.md),
 [Termux](../NPV_RECIPIENT_TERMUX.md). Tres RIFI v5 app-key abiertos completos
 tras corregir el escape HTML del contexto; 72 registros contra JCA y worker.

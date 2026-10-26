@@ -5,7 +5,7 @@ import {createHash} from "node:crypto";
 import {publicFormats,FORMAT_DETECTION} from "./file-format-catalog.mjs";
 import {publicTextFormats} from "./text-format-catalog.mjs";
 
-export const CATALOG_VERSION = 51; // Text and online-import metadata, versioned Cloud snapshot.
+export const CATALOG_VERSION = 52; // Text and online-import metadata, versioned Cloud snapshot.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -23,6 +23,8 @@ export function activeCatalogVersion(env=process.env) {
 }
 
 const ITEMS = Object.freeze([
+  // DexProtector resources and the fixed updater still require runtime verification.
+  {id:"ha-tunnel-plus", name:"HA Tunnel Plus", icon:"ha-tunnel-plus.png", remote:null},
   {id:"mtm-tunnel-lite", name:"MTM Tunnel Lite", icon:"mtm-tunnel-lite.png", remote:"mtm-tunnel-lite"},
   {id:"mnr-tunnel-plus", name:"MNR TUNNEL PLUS", icon:"mnr-tunnel-plus.png", remote:"mnr-tunnel-plus"},
   {id:"bd-net-vpn", name:"BD NET VPN", icon:"bd-net-vpn.png", remote:"bd-net-vpn"},

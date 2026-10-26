@@ -252,7 +252,8 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
         # Historical hat.js flattens and drops nested configuration fields.
         # The full-result bridge decrypts the same envelope, preserves every
         # original JSON section and decodes known profilev5 values.
-        engine = {**engine, "source": str(Path(__file__).with_name("hat_complete.js"))}
+        engine = {**engine, "runtime": "python",
+                  "source": "decoders/Python/apps/HA_Tunnel_Plus/hat_decoder.py"}
     if suffix == "aro" and _is_legacy_aro(contents):
         engine = load_file_engines()["aro"]
     # The APK exports prefixed .actun; keep historical raw RENZ .actun inputs.

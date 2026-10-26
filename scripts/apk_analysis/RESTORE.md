@@ -1,5 +1,32 @@
 # Recuperar herramientas después de perder el entorno
 
+## HA Tunnel Plus 1.7.1 (76) — 2026-10-26
+
+Leer `decoders/Python/apps/HA_Tunnel_Plus/{README,ANALYSIS,TESTING}.md`.
+Rama nueva desde main `27cc8894`: `feat/ha-tunnel-plus-1-7-1-decoders`.
+Catálogo52 /48 fichas, HA con PNG original pero desactivado. `.hat` histórico
+completo integrado en Cloud, C0/C2 conservados; catálogo DexProtector pendiente.
+No perder este alcance ni usar `hat_decoder.py` como lector de recursos APK.
+
+```sh
+python scripts/apk_analysis/inspect_apk.py /privado/ha-1.7.1.apk /privado/ha \
+  --asset resources/servers.json --asset resources/methods.json
+python scripts/apk_analysis/decompile.py /privado/ha/dex/classes.dex /privado/ha-jadx
+python -m unittest tests.test_ha_tunnel_plus tests.test_cloud_hat_complete \
+  tests.test_cloud_xhypher_renamed_files tests.test_cloud_c0_inventory -v
+python -m pip install frida==17.24.3 frida-tools==14.11.0
+adb forward tcp:27042 tcp:27042
+python scripts/apk_analysis/ha_runtime_capture.py --apk /privado/ha-1.7.1.apk \
+  --pid PID --output /privado/ha-capture
+```
+
+Abrir la aplicación original antes de adjuntar al PID, componente launcher
+`com.hatunnel.plus/com.hatunnel.plus.jlvfyyvkjayic`. El collector guarda recursos,
+constantes relevantes y un oracle sintético, sin perfiles/cuentas ni acceso
+remoto. Requiere APK exacto y directorio nuevo privado. Solo sintaxis validada;
+captura completa pendiente. No guardar APK/SO/AVD/catálogos reales en Git.
+
+
 ## NPV Tunnel 124.0.37 — 2026-10-25
 
 Leer `docs/NPVS_RECIPIENT_IDENTITIES.md` y `docs/NPV_RECIPIENT_TERMUX.md`.
