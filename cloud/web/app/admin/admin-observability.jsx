@@ -57,6 +57,24 @@ export default function AdminObservability({mode="analytics"}){
   }catch(e){setError(e.message||"Error al limpiar alertas.");}
   finally{setActionBusy(false);}
  }
+ async function setPause(paused){
+  if(actionBusy||loading)return;
+  if(!window.confirm(paused?"¿Silenciar nuevas alertas durante 60 minutos? Los errores seguirán registrándose y los motores continuarán operando.":"¿Reactivar las alertas automáticas ahora?"))return;
+  setActionBusy(true);setActionNote("");
+  try{
+   const response=await fetch("/api/admin/alerts/pause",{
+    method:"POST",credentials:"same-origin",cache:"no-store",
+    headers:{"Content-Type":"application/json","X-SPDecode-Admin-Action":"1"},
+    body:JSON.stringify({paused}),
+   });
+   if(response.status===401){router.replace("/admin/login");return;}
+   const result=await response.json();
+   if(!response.ok||result.status!=="ok")throw Error("No se pudo modificar la pausa.");
+   setActionNote(paused?"Alertas silenciadas durante un máximo de 60 minutos.":"Alertas automáticas reactivadas.");
+   await refresh(undefined,true);
+  }catch(e){setError(e.message||"No se pudo actualizar el estado.");}
+  finally{setActionBusy(false);}
+ }
  const ops=data?.observability||{},health=data?.health||{};
  const comparison=data?.report?.comparisons||[];
  const perf=ops.performance||[],alerts=ops.alerts||[];
@@ -78,7 +96,16 @@ export default function AdminObservability({mode="analytics"}){
    <div className="sp-admin-charts-grid sp-admin-observability-head">
     {mode!=="system"&&<Panel title="Alertas automáticas de proveedores" subtitle="Se actualiza cada minuto; sin correos ni datos de clientes">
      <p className="muted">Reglas: tres fallos consecutivos de red/timeout, o al menos cinco errores entre las últimas diez operaciones. Máximo una alerta por condición y hora.</p>
-     <div className="sp-admin-alert-actions"><strong>{alerts.length} alertas recientes</strong><button type="button" className="button subtle" onClick={clearAlerts} disabled={actionBusy||loading||!alerts.length}>{actionBusy?"Limpiando…":"Vaciar alertas"}</button></div>
+     <div className="sp-admin-alert-actions">
+      <div><strong>{ops.alertsPausedUntil?"Alertas silenciadas":"Alertas automáticas activas"}</strong>
+       {ops.alertsPausedUntil&&<small className="muted">Reactivación automática: {time(ops.alertsPausedUntil)}</small>}
+       <small className="muted">{alerts.length} alertas retenidas · los errores se siguen contabilizando</small>
+      </div>
+      <div className="sp-admin-toolbar-actions">
+       <button type="button" className="button subtle" disabled={actionBusy||loading} onClick={()=>setPause(!ops.alertsPausedUntil)}>{ops.alertsPausedUntil?"Reactivar alertas":"Silenciar 60 minutos"}</button>
+       <button type="button" className="button subtle" onClick={clearAlerts} disabled={actionBusy||loading||!alerts.length}>{actionBusy?"Limpiando…":"Vaciar alertas"}</button>
+      </div>
+     </div>
      {alerts.length?<div className="sp-admin-alert-list">
       {alerts.slice(0,12).map((a,i)=><div className="sp-admin-alert-row" key={a.at+":"+a.format+":"+i}>
        <strong>{a.format.replace(/^vpn-/,"")}</strong>
@@ -150,7 +177,7 @@ export default function AdminObservability({mode="analytics"}){
      <th>Fecha UTC</th><th>Acción</th><th>Ámbito</th><th>Resultado</th>
     </tr></thead><tbody>
      {(ops.actions||[]).slice(0,30).map((a,i)=><tr key={a.at+":"+i}>
-      <td>{time(a.at)}</td><td>{a.action==="purge_errors"?"Purga real de errores":a.action==="clear_alerts"?"Limpieza de alertas":"Reinicio de indicadores"}</td><td>{a.scope==="all"?"Todos":a.format}</td><td>{a.action==="purge_errors"?fmt.format(a.removedFailures||0)+" fallos":a.action==="clear_alerts"?fmt.format(a.removedAlerts||0)+" alertas":fmt.format(a.formatsReset||0)+" formatos"}</td>
+      <td>{time(a.at)}</td><td>{a.action==="purge_errors"?"Purga real de errores":a.action==="clear_alerts"?"Limpieza de alertas":a.action==="pause_alerts"?"Silenciar alertas":a.action==="resume_alerts"?"Reactivar alertas":"Reinicio de indicadores"}</td><td>{a.scope==="all"?"Todos":a.format}</td><td>{a.action==="purge_errors"?fmt.format(a.removedFailures||0)+" fallos":a.action==="clear_alerts"?fmt.format(a.removedAlerts||0)+" alertas":fmt.format(a.formatsReset||0)+" formatos"}</td>
      </tr>)}
      {!ops.actions?.length&&<tr><td colSpan={4}>Sin acciones administrativas recientes.</td></tr>}
     </tbody></table></div>
