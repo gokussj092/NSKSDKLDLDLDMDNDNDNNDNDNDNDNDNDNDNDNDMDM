@@ -85,7 +85,7 @@ class XhypherAliases(unittest.TestCase):
         self.assertNotEqual(hat_result["decoder"]["name"], "RENZ / XHYPHER")
 
         native_bdnet = {"friendly_name": "synthetic-bdnet", "port": 443}
-        bdnet = profile_seal(json.dumps(native_bdnet).encode("utf-8"))
+        bdnet = profile_seal(json.dumps(native_bdnet))
         self.assertFalse(_xhypher_export_in_renamed_file("bdnet", bdnet))
         bdnet_result = decode_file("bdnet", bdnet)
         self.assertEqual(bdnet_result["structuredJson"], native_bdnet)
