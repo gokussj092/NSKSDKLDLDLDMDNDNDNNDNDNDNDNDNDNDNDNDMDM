@@ -25,6 +25,40 @@ contienen ahora un archivo recuperable. Un mock no demuestra que el proveedor
 esté disponible. No se afirma que la web añada otro cifrado ni que se haya
 superado una restricción del proveedor.
 
+## Compatibilidad con la APK ya publicada (sin nueva instalación)
+
+El cliente Cloud de `main` ya descarga protocolos de texto desde el catálogo
+remoto y envía el texto a `POST /api/v1/decode/text`. No reconoce los dos
+dominios HTTPS como importación HTTP Custom ni puede aceptar esos enlaces en el
+cuadro exclusivo de HTTP Injector. Para evitar exigir una APK nueva ahora:
+
+- Registrar `hccloud://` como entrada `kind:"cloud",suffix:"hc"` en el
+  catálogo de textos C10, versión mínima **54**.
+- El usuario pega en el **editor general de Textos** una referencia equivalente
+  con un identificador de proveedor fijo:
+  - Playsmarty: `https://link.playsmarty.uk/ABC123` se escribe
+    `hccloud://playsmarty/ABC123`
+  - Mr Frank: `https://cloudvpn.mrfrankofc.com/Ab12Cd` se escribe
+    `hccloud://mrfrank/Ab12Cd`
+- El broker interpreta ambos prefijos `hccloud://` solo como referencias de
+  los **dos proveedores ya permitidos**. Después aplica la misma política de
+  descargas seguras y envía los bytes sin modificaciones al worker `.hc`.
+  No incorpora fuentes arbitrarias, redirecciones libres ni secretos en el
+  catálogo. Los alias de ejemplo no representan enlaces vigentes.
+- Para enlaces **sin contraseña/HWID**, el resultado puede mostrarse con la
+  APK anterior sin tocar Kotlin/JNI/Play Store. Para enlaces protegidos,
+  ese editor antiguo no dispone del diálogo de credenciales HTTP Custom:
+  devolverá una indicación de incompatibilidad/credenciales y **no volverá
+  a descargar el enlace**. Los enlaces de un solo uso pueden consumirse incluso
+  si el motor solicita credenciales.
+- El flujo futuro de pegar la URL HTTPS original y reutilizar los bytes cifrados
+  durante el diálogo HC **sí requiere** una APK con el código de esta rama.
+  No confundir esta capacidad con la compatibilidad limitada sin APK.
+
+La compatibilidad no requiere nueva pantalla y no altera el importador de
+HTTP Injector. Hay que actualizar **web/API + worker + catálogo** en el VPS
+para habilitarla; modificar GitHub no cambia automáticamente el servicio vivo.
+
 ## Flujo estable en Android
 
 1. El usuario pega una referencia HTTPS de los dos hosts admitidos.
@@ -103,14 +137,15 @@ No se ha desplegado ni modificado el VPS en esta entrega.
 
 ## Catálogo y compatibilidad
 
-Versión mínima **53**, **48 fichas Server VPN**, C0 **240**, C8 **254**.
+Versión mínima **54**, **48 fichas Server VPN**, C0 **240**, C8 **254**.
 `onlineReferenceFormats` y `onlineReferencesSchemaVersion=1` son campos
 aditivos separados: los APK antiguos siguen validando `textFormats` como antes.
 El nuevo Android valida solo los dos prefijos públicos y guarda esos metadatos
 junto al catálogo cifrado. Se actualizan sus textos admitidos sin publicar
-endpoints privados, scripts ni claves. Un APK anterior necesita actualización
-para reconocer estos enlaces y mantener los bytes en el diálogo; actualizar
-solo el VPS no añade ese flujo al cliente antiguo.
+endpoints privados, scripts ni claves. Un APK anterior no puede pegar directamente esas URL HTTPS ni mantener
+los bytes durante el diálogo HC; **sí** puede usar las referencias
+`hccloud://` publicadas por el catálogo para archivos sin credenciales.
+La ruta original de HTTP Injector sigue siendo exclusiva para HTTP Injector.
 
 ## Validación
 
