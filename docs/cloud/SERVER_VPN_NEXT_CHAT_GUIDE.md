@@ -1,5 +1,20 @@
 # SP-DECODE Cloud — Guía para ampliar Server VPN en otro chat
 
+## HTTP Custom online — 2026-10-26
+
+Misma rama/PR #102, después de HA. Ver `HTTP_CUSTOM_ONLINE.md`: descarga una
+vez de `cloudvpn.mrfrankofc.com/{6chars}` o `link.playsmarty.uk/{alias}`;
+API nueva devuelve HC cifrado sin almacenamiento, Android retiene solo RAM
+para diálogo HC de password/HWID y pasa los bytes al mismo motor de archivos.
+Los dos enlaces recibidos ya devolvían404; subida pública de HC sintético dio500.
+**No hay prueba de descarga real vigente ni ejecución Android local**.
+Node339 y Python36 aprobados; cuatro casos Android añadidos para Actions.
+Catálogo mínimo53/48 fichas, C0 240/C8 254 intactos; metadata online separada
+para que APK antiguos sigan aceptando textFormats. Panel `hc-cloud`, switch
+persistente; env `CLOUD_HTTP_CUSTOM_IMPORT_ENABLED` predeterminado true conAPI.
+No es HTTP Injector ni añade ficha Server VPN. Sin fusión/despliegue/C11/APK.
+
+
 ## HA Tunnel Plus 1.7.1 (76) — 2026-10-26
 
 Rama **nueva desde main** `feat/ha-tunnel-plus-1-7-1-decoders`, base

@@ -11,7 +11,7 @@ import {ehiConfigured,nurConfigured} from "./c35-provider.mjs";
 import {activeCatalogVersion,catalog} from "./server-vpn-catalog.mjs";
 
 const ROOT="/app/provider-control";
-const IDS=Object.freeze(["ehi-cloud","nur-tunnel",...providerIds()]);
+const IDS=Object.freeze(["ehi-cloud","hc-cloud","nur-tunnel",...providerIds()]);
 export const PUBLIC_PROVIDER_IDS=IDS;
 const LABELS=Object.freeze({
   "mtm-tunnel-lite":"MTM Tunnel Lite",
@@ -37,6 +37,7 @@ const LABELS=Object.freeze({
   "focus-vpn-cloud":"Focus VPN Cloud",
   "v2ray-tunnel-plus":"V2ray Tunnel Plus",
   "ehi-cloud":"HTTP Injector Cloud",
+  "hc-cloud":"HTTP Custom Cloud",
   "nur-tunnel":"Servidores VPN",
   "http-wakko":"HTTP Wakko",
   "http-socketclay":"HTTP SocketClay",
@@ -70,6 +71,7 @@ function catalogFingerprint(){
     formatsSchemaVersion:snapshot.formatsSchemaVersion,
     formatDetection:snapshot.formatDetection,
     formats:snapshot.formats,
+    onlineReferenceFormats:snapshot.onlineReferenceFormats,
   })).digest("hex");
   return rosterFingerprint;
 }
@@ -127,6 +129,7 @@ export async function synchronizeCatalogVersion(env=process.env,{root=ROOT}={}){
 export function providerPrerequisite(id,env=process.env){
   if(!IDS.includes(id))throw Error("INVALID_PROVIDER");
   if(env.CLOUD_API_ENABLED!=="true")return false;
+  if(id==="hc-cloud")return env.CLOUD_HTTP_CUSTOM_IMPORT_ENABLED!=="false";
   if(id==="ehi-cloud")return ehiConfigured(env);
   if(id==="nur-tunnel")return nurConfigured(env);
   return env.CLOUD_SERVER_VPN_ENABLED==="true";

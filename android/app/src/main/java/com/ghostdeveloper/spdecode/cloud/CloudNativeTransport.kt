@@ -27,7 +27,7 @@ internal object CloudNativeTransport {
             "/api/v1/session/challenge", "/api/v1/session",
             "/api/v1/session/qa", "/api/v1/npvs/identity",
             "/api/v1/decode/file", "/api/v1/decode/text",
-            "/api/v1/decode/import/cloud",
+            "/api/v1/decode/import/cloud", "/api/v1/decode/import/http-custom",
             "/api/v1/decode/import/catalog/remote",
             "/api/v1/server-vpn/catalog", "/api/v1/server-vpn/icon",
             "/api/v1/server-vpn/decode", "/api/v1/server-vpn/watch",

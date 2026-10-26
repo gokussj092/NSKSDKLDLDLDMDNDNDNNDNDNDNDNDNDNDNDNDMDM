@@ -111,9 +111,11 @@ internal object CloudUserErrors {
                         passwordSubmitted:Boolean=false,
                         hwidSubmitted:Boolean=false):Boolean {
         val code=(cause as? CloudDecodeClient.Failure)?.code?:return false
-        return CloudCredentialPolicy.incorrectPassword(code,passwordSubmitted,hwidSubmitted) ||
+        return CloudCredentialPolicy.incorrectPassword(code,
+                passwordSubmitted || (cause as? CloudDecodeClient.Failure)?.passwordSubmitted==true,
+                hwidSubmitted || (cause as? CloudDecodeClient.Failure)?.hwidSubmitted==true) ||
             CloudCredentialPolicy.npvsProtectionNotice(code,format) ||
-            code in setOf("UNSUPPORTED_VERSION","UNSUPPORTED_VARIANT","UNSUPPORTED_METHOD",
+            code in setOf("REMOTE_CONFIG_UNAVAILABLE","UNSUPPORTED_VERSION","UNSUPPORTED_VARIANT","UNSUPPORTED_METHOD",
                 "UNSUPPORTED_CONFIG_VERSION") ||
             (format!=null && code=="DECODE_FAILED")
     }
@@ -125,7 +127,8 @@ internal object CloudUserErrors {
             cause.message=="CLOUD_NATIVE_NETWORK_UNAVAILABLE"
         val failureCode=(cause as? CloudDecodeClient.Failure)?.code
         val incorrect=failureCode!=null && CloudCredentialPolicy.incorrectPassword(
-            failureCode,passwordSubmitted,hwidSubmitted)
+            failureCode,passwordSubmitted || (cause as? CloudDecodeClient.Failure)?.passwordSubmitted==true,
+            hwidSubmitted || (cause as? CloudDecodeClient.Failure)?.hwidSubmitted==true)
         val id=when {
             incorrect -> R.string.cloud_failure_password_incorrect
             disconnected -> R.string.cloud_failure_offline

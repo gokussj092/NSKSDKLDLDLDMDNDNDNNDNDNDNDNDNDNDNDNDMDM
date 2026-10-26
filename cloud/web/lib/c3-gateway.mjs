@@ -4,7 +4,7 @@ import { store, reserveSlot, releaseSlot } from "./c3-store.mjs";
 import { createChallenge, issueSession, issueQaSession, requireSession } from "./c3-session.mjs";
 import { jsonReply, unavailable } from "./responses.mjs";
 import { legacyCredentialError } from "./decoder-client-compat.mjs";
-import { ehiConfigured, nurConfigured, importMnrReference, isExternalImportError } from "./c35-provider.mjs";
+import { ehiConfigured, nurConfigured, importMnrReference, importHttpCustomReference, isHttpCustomReference, isExternalImportError } from "./c35-provider.mjs";
 import {providerAllowed} from "./c12-provider-controls.mjs";
 import { maintenanceEnabled, serviceMaintenanceEnabled, recordWorkerResult } from "./c6-ops-store.mjs";
 import {admissionPolicy} from "./c11-play-admission.mjs";
@@ -120,6 +120,14 @@ function validatePayload(kind,payload) {
     if(payload.credentials!==undefined){
       const pass=payload.credentials?.password;
       const value=payload.text.trim();
+      const hc=isHttpCustomReference(value);
+      if(hc){
+        if(!isRecord(payload.credentials) || Object.keys(payload.credentials).some(key=>!["password","hwid"].includes(key)) ||
+            Object.entries(payload.credentials).some(([key,val])=>typeof val!=="string" || !val.length ||
+              Buffer.byteLength(val,"utf8")>(key==="password"?4096:128)))
+          throw Object.assign(new Error("credentials"),{code:"INVALID_CREDENTIALS"});
+        return;
+      }
       const passwordFormat=value.toLowerCase().startsWith("ua://") ||
         ["1FTnl.","1FT1.","1ftunnel://1FTnl/","1ftunnel://1FT1/"].some(prefix=>value.startsWith(prefix)) ||
         ["npvt://","npvt-ssh://","npvt-vless://","npvt-vmess://","npv://"].some(prefix=>
@@ -343,7 +351,13 @@ export async function decodeRequest(request,kind,options={}) {
     };
     started=performance.now();
     let outcome;
-    if(kind==="text" && payload.text.trim().startsWith("mnrtunneludp://")){
+    if(kind==="text" && isHttpCustomReference(payload.text)){
+      if(!await providerAllowed("hc-cloud"))return failure("REMOTE_NOT_CONFIGURED",503);
+      const data=await importHttpCustomReference(payload.text,options.vendor || {});
+      telemetry={kind:"file",format:"hc",bytes:data.length};
+      outcome=await fetchWorker("file",{format:"hc",dataBase64:data.toString("base64"),
+        ...(payload.credentials?{credentials:payload.credentials}:{})},cfg,options);
+    }else if(kind==="text" && payload.text.trim().startsWith("mnrtunneludp://")){
       if(process.env.CLOUD_SERVER_VPN_ENABLED!=="true" || !await providerAllowed("mnr-tunnel-plus"))
         return failure("REMOTE_NOT_CONFIGURED",503);
       // Pasting an explicit MNR reference into Decode requests that one object.

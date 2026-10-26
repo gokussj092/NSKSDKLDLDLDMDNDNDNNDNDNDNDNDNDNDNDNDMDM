@@ -16,6 +16,8 @@ export const EHI_ENDPOINT = "https://www.ehi.tools/httpinjector/import_config";
 export const NUR_ALLOWED_HOST = "strongteam.co";
 export const EHI_ALLOWED_HOST = "www.ehi.tools";
 export const MNR_ALLOWED_HOST = "firebasestorage.googleapis.com";
+export const HC_HOST = "cloudvpn.mrfrankofc.com";
+export const HC_SHORT_HOST = "link.playsmarty.uk";
 export const MNR_BUCKET = "hamovpn.firebasestorage.app";
 const EHI_BUILD = "244";
 const MAX_REMOTE_BYTES = 8 * 1024 * 1024;
@@ -123,10 +125,40 @@ export async function importMnrReference(value,options={}) {
   return data;
 }
 
+/** Public .hc hosting references, not HTTP Injector's signed cloud protocol. */
+export function parseHttpCustomReference(value) {
+  if(typeof value!=="string" || value.length>256)fail("INVALID_REFERENCE");
+  const input=value.trim();
+  const match=/^https:\/\/(cloudvpn\.mrfrankofc\.com|link\.playsmarty\.uk)\/([A-Za-z0-9_-]{1,64})$/.exec(input);
+  if(!match || (match[1]===HC_HOST && !/^[A-Za-z0-9_-]{6}$/.test(match[2])))
+    fail("INVALID_REFERENCE");
+  return input;
+}
+export function isHttpCustomReference(value) {
+  try{parseHttpCustomReference(value);return true;}catch{return false;}
+}
+export async function importHttpCustomReference(reference,options={}) {
+  const url=parseHttpCustomReference(reference);
+  const bytes=await (options.download||downloadApproved)({url,kind:"hc",maxBytes:MAX_REMOTE_BYTES},options);
+  if(!Buffer.isBuffer(bytes)||!bytes.length||bytes.length>MAX_REMOTE_BYTES)
+    fail("REMOTE_RESPONSE_INVALID");
+  // HTML is a landing/error page, never a downloadable HC payload. Do not
+  // rewrite the bytes: Latin1/UTF-8 carriers are handled by the existing codec.
+  if(/^\s*(?:<!doctype\s+html|<html[\s>])/i.test(bytes.subarray(0,512).toString("utf8")))
+    fail("REMOTE_RESPONSE_INVALID");
+  return bytes;
+}
+
 /* Only hardcoded vendor destinations are accepted. No user URLs, custom ports,
  * userinfo, IP literals or aliases. MNR media has one generated token query.
  */
 export function approvedUrl(address, kind) {
+  if(kind==="hc") {
+    let result;
+    try{result=parseHttpCustomReference(address);}catch{fail("REMOTE_NETWORK_DENIED");}
+    if(result!==address)fail("REMOTE_NETWORK_DENIED");
+    return new URL(result);
+  }
   const expectedHost = kind === "ehi" ? EHI_ALLOWED_HOST : kind === "nur" ? NUR_ALLOWED_HOST : kind === "mnr" ? MNR_ALLOWED_HOST : "";
   if (typeof address !== "string" || address.length > 2048 || !expectedHost)
     fail("REMOTE_NETWORK_DENIED");
@@ -163,7 +195,7 @@ export function publicIpv4(address) {
 
 export async function pinnedAddresses(host, resolver = dns.lookup) {
   // The only legal hosts come from approvedUrl; never accept raw user host.
-  if (![EHI_ALLOWED_HOST, NUR_ALLOWED_HOST, MNR_ALLOWED_HOST].includes(host)) fail("REMOTE_NETWORK_DENIED");
+  if (![EHI_ALLOWED_HOST, NUR_ALLOWED_HOST, MNR_ALLOWED_HOST, HC_HOST, HC_SHORT_HOST].includes(host)) fail("REMOTE_NETWORK_DENIED");
   let answers;
   try { answers = await resolver(host, {all:true, family:4, verbatim:true}); }
   catch { fail("REMOTE_NETWORK_DENIED"); }
@@ -174,7 +206,8 @@ export async function pinnedAddresses(host, resolver = dns.lookup) {
 }
 
 /** Private broker: validated DNS and TLS are pinned per HTTPS hop. NUR
- * follows only bounded SAME-host redirects, unlike Python urllib's broader
+ * follows only bounded SAME-host redirects; HC follows its two-host allowlist.
+ * Unlike Python urllib's broader
  * automatic redirect handling; EHI rejects all redirects as before.
  */
 export async function downloadApproved({url,kind,method="GET",body,headers={},maxBytes=MAX_REMOTE_BYTES},
@@ -182,7 +215,7 @@ export async function downloadApproved({url,kind,method="GET",body,headers={},ma
   const initial=approvedUrl(url,kind);
   const upperLimit=kind==="nur" ? MAX_NUR_BYTES : MAX_REMOTE_BYTES;
   if (!Number.isSafeInteger(maxBytes) || maxBytes<1 || maxBytes>upperLimit ||
-      !["GET","POST"].includes(method))
+      (!["GET","POST"].includes(method) || kind==="hc" && (method!=="GET" || body!==undefined)))
     fail("REMOTE_NETWORK_DENIED");
 
   const timeout=kind==="nur" ? NUR_TIMEOUT_MS : CONNECT_TIMEOUT_MS;
@@ -254,7 +287,7 @@ export async function downloadApproved({url,kind,method="GET",body,headers={},ma
           const status=res.statusCode;
           if(status!==200){
             res.destroy();
-            if(kind==="nur" && method==="GET" &&
+            if(["nur","hc"].includes(kind) && method==="GET" &&
                 [301,302,303,307,308].includes(status)){
               let next;
               try{
@@ -262,18 +295,21 @@ export async function downloadApproved({url,kind,method="GET",body,headers={},ma
                 if(typeof target!=="string" || target.length>2048)
                   throw new Error("missing redirect");
                 next=new URL(target,destination);
-                approvedUrl(next.href,"nur");
-                // No outbound cross-host, downgrade, port, query, SSRF or credentials.
-                if(next.hostname!==initial.hostname)
+                approvedUrl(next.href,kind);
+                // NUR stays same-host; HC can cross only to its other fixed reference host.
+                if(kind==="nur" && next.hostname!==initial.hostname)
                   throw new Error("cross-host redirect denied");
               }catch{
                 return reject("REMOTE_NETWORK_DENIED","REDIRECT_BLOCKED");
               }
               return accept({redirect:next.href});
             }
-            if(["ehi","mnr"].includes(kind) && [404,410].includes(status))
+            if(["ehi","mnr","hc"].includes(kind) && [404,410].includes(status))
               return reject("REMOTE_CONFIG_UNAVAILABLE");
             return reject("REMOTE_PROVIDER_UNAVAILABLE","HTTP_"+String(status));
+          }
+          if(kind==="hc" && /^(?:text\/html|application\/xhtml\+xml)(?:;|$)/i.test(String(res.headers["content-type"]||""))){
+            res.destroy();return reject("REMOTE_RESPONSE_INVALID");
           }
           const encoding=res.headers["content-encoding"];
           if(encoding && encoding!=="identity"){
@@ -322,7 +358,7 @@ export async function downloadApproved({url,kind,method="GET",body,headers={},ma
       }
     }
     if(result.data)return result.data;
-    if(!result.redirect || kind!=="nur" || hops===NUR_REDIRECT_LIMIT)
+    if(!result.redirect || !["nur","hc"].includes(kind) || hops===NUR_REDIRECT_LIMIT)
       failTransport("REMOTE_PROVIDER_UNAVAILABLE","REDIRECT_LIMIT");
     address=result.redirect;
   }

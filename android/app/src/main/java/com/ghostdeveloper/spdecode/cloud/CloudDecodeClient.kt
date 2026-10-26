@@ -41,7 +41,8 @@ internal class CloudDecodeClient(context: Context) {
 
     data class Decoded(val rawText: String, val sourceBytes: Int? = null)
 
-    class Failure(val code: String, val httpStatus: Int) :
+    class Failure(val code: String, val httpStatus: Int,
+        val passwordSubmitted:Boolean=false,val hwidSubmitted:Boolean=false) :
         IOException("SP-DECODE CLOUD: $code")
 
     fun clearSession() {
@@ -298,6 +299,14 @@ internal class CloudDecodeClient(context: Context) {
     }
 
     suspend fun decodeText(text: String, password: ByteArray? = null): String {
+        if(HttpCustomCloudReference.matches(text)) {
+            if(password!=null)throw IOException("CLOUD_CREDENTIALS_NOT_ALLOWED")
+            return HttpCustomOnlineFlow.run(
+                download={downloadHttpCustom(text)},
+                decode={bytes,pw,id->decodeFile("hc",bytes,pw,id)},
+                prompt={pw,id->HttpCustomCloudPrompt.ask(pw,id)},
+            )
+        }
         if(password != null && (!CloudCredentialPolicy.textAcceptsPassword(text) ||
                 password.isEmpty() || password.size > 4096))
             throw IOException("CLOUD_CREDENTIALS_NOT_ALLOWED")
@@ -305,6 +314,32 @@ internal class CloudDecodeClient(context: Context) {
         if(password!=null)body.put("credentials",
             JSONObject().put("password",String(password,Charsets.UTF_8)))
         return decode("/api/v1/decode/text",body).rawText
+    }
+
+    private suspend fun downloadHttpCustom(reference:String):ByteArray {
+        lastDiagnostic=null
+        require(BuildConfig.SPDECODE_CLOUD_ENABLED)
+        requireLegalConsent()
+        val bearer=session()
+        val reply=withContext(Dispatchers.IO){
+            requireLegalConsent()
+            extract(CloudNativeTransport.post("/api/v1/decode/import/http-custom",
+                JSONObject().put("reference",reference.trim()).put("consent",true),bearer))
+        }
+        coroutineContext.ensureActive()
+        if(reply.optString("status")!="success" || reply.optString("kind")!="encrypted_file" ||
+            reply.optString("format")!="hc")throw IOException("CLOUD_INVALID_JSON")
+        val encoded=reply.getString("dataBase64")
+        if(encoded.isEmpty() || encoded.length>4*((MAX_INPUT+2)/3) ||
+            encoded.length%4!=0 || !encoded.matches(Regex("[A-Za-z0-9+/]+={0,2}")))
+            throw IOException("CLOUD_INVALID_INPUT")
+        val bytes=try{Base64.decode(encoded,Base64.NO_WRAP)}
+            catch(_:IllegalArgumentException){throw IOException("CLOUD_INVALID_INPUT")}
+        if(bytes.isEmpty() || bytes.size>MAX_INPUT || reply.optInt("sourceBytes")!=bytes.size ||
+            Base64.encodeToString(bytes,Base64.NO_WRAP)!=encoded){
+            bytes.fill(0);throw IOException("CLOUD_INVALID_INPUT")
+        }
+        return bytes
     }
 
     suspend fun decodeHttpInjectorCloud(reference: String): String =

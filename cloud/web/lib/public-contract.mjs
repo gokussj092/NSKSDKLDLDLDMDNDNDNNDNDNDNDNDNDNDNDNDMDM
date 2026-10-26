@@ -43,7 +43,7 @@ export function clientConfig() {
     transport: "https",
     androidNativeLibrary: "libspdecode.so",
     minimumClientVersion: null,
-    features: { decodeFiles: active, decodeTexts: active, importCloud: active && ehiConfigured(), importCatalog: active, importNurRemote: active && nurConfigured() },
+    features: { decodeFiles: active, decodeTexts: active, importCloud: active && ehiConfigured(), importHttpCustom:active && process.env.CLOUD_HTTP_CUSTOM_IMPORT_ENABLED!=="false", importCatalog: active, importNurRemote: active && nurConfigured() },
   });
 }
 

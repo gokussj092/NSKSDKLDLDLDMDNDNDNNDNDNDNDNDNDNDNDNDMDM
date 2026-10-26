@@ -58,6 +58,7 @@ bool safePath(const std::string& path) {
         path == "/api/v1/decode/file" ||
         path == "/api/v1/decode/text" ||
         path == "/api/v1/decode/import/cloud" ||
+        path == "/api/v1/decode/import/http-custom" ||
         path == "/api/v1/decode/import/catalog/remote" ||
         path == "/api/v1/server-vpn/catalog" ||
         path == "/api/v1/server-vpn/watch" ||
@@ -219,7 +220,8 @@ jstring post(JNIEnv* env,jstring pathArg,jstring bodyArg,jstring bearerArg,jstri
     }
     jbyteArray buffer=env->NewByteArray(8192);
     std::string result;
-    const size_t replyCap=(path=="/api/v1/server-vpn/decode" &&
+    const size_t replyCap=path=="/api/v1/decode/import/http-custom" ? 12U*1024U*1024U :
+        (path=="/api/v1/server-vpn/decode" &&
         body.find("mkk-hyper")!=std::string::npos)
         ? kMaxMkkReplyBytes : kMaxReplyBytes;
     bool oversize=false,readFailed=false;

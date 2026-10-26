@@ -212,10 +212,11 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
         app = replaceOnce(app,
             "        if(pendingServerVpnCatalogVersion!=null && !busy) AlertDialog(",
             "        if(BuildConfig.SPDECODE_CLOUD_ENABLED) com.ghostdeveloper.spdecode.cloud.NpvsRecipientPicker.Content()\n" +
+                "        if(BuildConfig.SPDECODE_CLOUD_ENABLED) com.ghostdeveloper.spdecode.cloud.HttpCustomCloudPrompt.Content()\n" +
                 "        if(pendingServerVpnCatalogVersion!=null && !busy) AlertDialog(")
         app = replaceOnce(app,
             "        if(busy) Dialog(",
-            "        if(busy && !com.ghostdeveloper.spdecode.cloud.NpvsRecipientPicker.isShowing) Dialog(")
+            "        if(busy && !com.ghostdeveloper.spdecode.cloud.NpvsRecipientPicker.isShowing && !com.ghostdeveloper.spdecode.cloud.HttpCustomCloudPrompt.isShowing) Dialog(")
         app = replaceOnce(app,
             "        if(error!=null && !busy) AlertDialog(",
             "        if(largeResultWarning && !busy) " +
