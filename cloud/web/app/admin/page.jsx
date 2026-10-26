@@ -5,5 +5,4 @@ export default function AdminPage(){return <main id="main" className="admin-wrap
  <h1 className="admin-title">Centro de control</h1>
  <p className="muted">Vista rápida de infraestructura y operación. La analítica detallada, los diagnósticos y los controles están en sus secciones correspondientes.</p>
  <AdminDashboard mode="overview"/>
- <AdminReport view="overview"/>
 </main>;}
