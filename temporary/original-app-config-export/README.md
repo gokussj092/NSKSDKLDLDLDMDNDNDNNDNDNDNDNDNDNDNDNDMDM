@@ -6,9 +6,7 @@
 
 ## Objetivo
 
-Guardar en una zona de diagnóstico temporal el script de reencriptación HCX4,
-los archivos originales, la salida de prueba, los JSON de lectura y la evidencia
-de validación. Permite reproducir el caso reportado por el propietario de
+Guardar el script de reencriptación HCX4, los JSON de lectura, hashes y evidencia de validación. Los archivos binarios reales se conservan en un ZIP privado de pruebas (entregado por separado), no en el historial Git. Permite reproducir el caso reportado por el propietario de
 SP-DECODE antes de integrar un exportador a la API o Android.
 
 **Reporte confirmado por el propietario**: HTTP Custom acepta/decripta
@@ -21,10 +19,11 @@ importable**, incluso aunque el decodificador Python lo abra correctamente.
 - `scripts/hc_hcx4_n11_experiment.py`: variante mantenible y aislada del
   experimento de reencriptación; reaprovecha `codec.py` y `_hc_hccfg.py` de
   `main`, sin alterar los motores productivos.
-- `fixtures/http_custom/source_original.hc.b64`: fuente HCX4 íntegra,
-  codificada en Base64 **solo para almacenarla como texto en GitHub**.
-- `fixtures/http_custom/export_rejected.hc.b64`: salida de la prueba histórica,
-  rechazada por el validador JSON de la aplicación original.
+- `fixtures/http_custom/MANIFEST.json`: nombres, longitudes y hashes SHA-256
+  de los dos `.hc` binarios, sin incorporar los bytes confidenciales a Git.
+- Archivo adjunto privado `SP_DECODE_TEMPORARY_EXPORT_LAB_COMPLETE.zip`:
+  fuente HCX4 completa, salida histórica rechazada, otros formatos reservados
+  para futuras pruebas, script original y JSON, conservados fuera de Git.
 - `fixtures/http_custom/source_decoded.json`: JSON legible producido por el
   decodificador de SP-DECODE, no es un sobre HC completo.
 - `fixtures/http_custom/edited_preview.json`: campos editados autorizados por
@@ -34,10 +33,10 @@ importable**, incluso aunque el decodificador Python lo abra correctamente.
 - `docs/HTTP_CUSTOM_IMPORT_TRIAGE.md`: hipótesis, comprobaciones y matriz de
   pruebas controladas.
 
-Las configuraciones son materiales aportados por el propietario y pueden
-contener servidores, usuarios, contraseñas, notas y URLs privadas. **El repositorio
-es privado al momento del alta**. No copiar, imprimir en logs, utilizar en CI
-público ni trasladar a un repositorio público. Base64 no protege secretos.
+Las muestras reales pueden contener servidores, usuarios, contraseñas y URLs
+privadas. **El repositorio es privado al momento del alta**. El ZIP con binarios
+no fue subido a Git; el JSON legible del laboratorio puede contener campos de
+conexión y también debe mantenerse privado. No reenviar ni subir a CI público.
 
 ## Reproducir sin tocar el producto
 
@@ -46,8 +45,8 @@ Desde la raíz del repositorio, en un entorno aislado, con
 
 ```bash
 mkdir -p /tmp/spdecode-export-lab
-base64 -d temporary/original-app-config-export/fixtures/http_custom/source_original.hc.b64 > /tmp/spdecode-export-lab/original.hc
-base64 -d temporary/original-app-config-export/fixtures/http_custom/export_rejected.hc.b64 > /tmp/spdecode-export-lab/previous-rejected.hc
+unzip -p /ruta/privada/SP_DECODE_TEMPORARY_EXPORT_LAB_COMPLETE.zip fixtures/http_custom/source_original.hc > /tmp/spdecode-export-lab/original.hc
+unzip -p /ruta/privada/SP_DECODE_TEMPORARY_EXPORT_LAB_COMPLETE.zip fixtures/http_custom/export_rejected.hc > /tmp/spdecode-export-lab/previous-rejected.hc
 
 python temporary/original-app-config-export/scripts/hc_hcx4_n11_experiment.py \
   --source /tmp/spdecode-export-lab/original.hc \
