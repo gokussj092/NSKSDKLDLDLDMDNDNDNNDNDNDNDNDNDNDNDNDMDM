@@ -1,0 +1,158 @@
+{
+  "locked_source": {
+    "sha256": "167593e228e10c3eaa98333198f0c1c946f328b7b99ab2ef574bc429576ca4ba",
+    "bytes": 4230,
+    "build": 899,
+    "schema": 10,
+    "schedule": "n11",
+    "access_mode": "lock_all",
+    "features": [
+      "ssh"
+    ],
+    "main_capabilities": [
+      "ssh"
+    ],
+    "main_fields": {
+      "s": "int",
+      "t": "int",
+      "c": "list",
+      "g": "dict",
+      "u": "str",
+      "r": "int",
+      "m": "str",
+      "i": "dict"
+    },
+    "protection_fields": {
+      "a": "str",
+      "c": "bool",
+      "f": "bool",
+      "g": "list",
+      "h": "bool",
+      "l": "bool",
+      "m": "bool",
+      "o": "bool",
+      "p": "list",
+      "v": "str",
+      "j": "bool"
+    },
+    "profiles": [
+      {
+        "authenticated_section_payload": "HPR1",
+        "decrypted_profile_payload": "HPC1",
+        "encrypted_sidecar_present": true,
+        "customPayload_option_present": true,
+        "customPayload_option_empty": true,
+        "profile_auxiliary_string_empty": true
+      }
+    ],
+    "authenticated_aead_tags": 5
+  },
+  "owned_open_reference": {
+    "sha256": "0e7abec160052b9588a715ada05eddd1e5787bfe9dc5fa5551aa112f92422c2e",
+    "bytes": 3181,
+    "build": 899,
+    "schema": 10,
+    "schedule": "n11",
+    "access_mode": "none",
+    "features": [
+      "ssh",
+      "profiles"
+    ],
+    "main_capabilities": [
+      "ssh",
+      "profiles"
+    ],
+    "main_fields": {
+      "s": "int",
+      "t": "int",
+      "c": "list",
+      "g": "dict",
+      "u": "str",
+      "r": "int",
+      "m": "str",
+      "i": "dict",
+      "l": "str"
+    },
+    "protection_fields": {
+      "a": "str",
+      "c": "bool",
+      "f": "bool",
+      "g": "list",
+      "h": "bool",
+      "l": "bool",
+      "m": "bool",
+      "o": "bool",
+      "p": "list",
+      "v": "str",
+      "x": "dict",
+      "j": "bool"
+    },
+    "profiles": [
+      {
+        "authenticated_section_payload": "HPC1",
+        "decrypted_profile_payload": "HPC1",
+        "encrypted_sidecar_present": false,
+        "customPayload_option_present": true,
+        "customPayload_option_empty": true,
+        "profile_auxiliary_string_empty": false
+      }
+    ],
+    "authenticated_aead_tags": 3
+  },
+  "rejected_mode_only_none": {
+    "sha256": "3cfe64f49069e219a5cc0d8d840ceb1c9bfa039ebaa6dfb1f6a033ddf8564f60",
+    "bytes": 4208,
+    "build": 899,
+    "schema": 10,
+    "schedule": "n11",
+    "access_mode": "none",
+    "features": [
+      "ssh"
+    ],
+    "main_capabilities": [
+      "ssh"
+    ],
+    "main_fields": {
+      "s": "int",
+      "t": "int",
+      "c": "list",
+      "g": "dict",
+      "u": "str",
+      "r": "int",
+      "m": "str",
+      "i": "dict"
+    },
+    "protection_fields": {
+      "a": "str",
+      "c": "bool",
+      "f": "bool",
+      "g": "list",
+      "h": "bool",
+      "l": "bool",
+      "m": "bool",
+      "o": "bool",
+      "p": "list",
+      "v": "str",
+      "j": "bool"
+    },
+    "profiles": [
+      {
+        "authenticated_section_payload": "HPR1",
+        "decrypted_profile_payload": "HPC1",
+        "encrypted_sidecar_present": true,
+        "customPayload_option_present": true,
+        "customPayload_option_empty": true,
+        "profile_auxiliary_string_empty": true
+      }
+    ],
+    "authenticated_aead_tags": 5
+  },
+  "interpretation": {
+    "none_string_confirmed_in_owner_export": true,
+    "mode_only_none_conversion_rejected_by_owner": true,
+    "structural_difference_confirmed": true,
+    "specific_importer_failure_mechanism_proven": false,
+    "new_open_layout_import_status": "PENDING_MANUAL_TEST",
+    "reference_note_style_and_label_fields_not_assumed_required": true
+  }
+}

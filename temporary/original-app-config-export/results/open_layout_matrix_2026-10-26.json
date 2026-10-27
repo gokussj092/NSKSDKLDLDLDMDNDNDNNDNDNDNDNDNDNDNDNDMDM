@@ -1,0 +1,139 @@
+{
+  "source_sha256": "167593e228e10c3eaa98333198f0c1c946f328b7b99ab2ef574bc429576ca4ba",
+  "owned_reference_sha256": "0e7abec160052b9588a715ada05eddd1e5787bfe9dc5fa5551aa112f92422c2e",
+  "cases": [
+    {
+      "case": "A_owned_open_rewrap",
+      "sha256": "0a4d6cb4f0a5899b23ae48583a45f17244e9ef3b04f635450926df214226e4ce",
+      "bytes": 3209,
+      "import_result": "PENDING_MANUAL_TEST",
+      "changes": "none"
+    },
+    {
+      "case": "D_open_layout",
+      "sha256": "9a4ed51354997ec5d76ceabe1763d1f74c1d9506902f11020f11561ee65c6db8",
+      "bytes": 4004,
+      "access_mode": "none",
+      "features_before": [
+        "ssh"
+      ],
+      "features_after": [
+        "ssh",
+        "profiles"
+      ],
+      "changed_main_paths": [
+        "main.c",
+        "main.g.a"
+      ],
+      "profiles": [
+        {
+          "label": "s0",
+          "hpr1_removed": true,
+          "sidecar_relocated_to_existing_customPayload": true
+        }
+      ],
+      "profile_grammar": "HPC1",
+      "effective_connection_parameters_preserved": true,
+      "unedited_hpc1_binary_fields_preserved": true,
+      "unknown_envelope_values_preserved": true,
+      "pure_python_aead_tags_verified": 3,
+      "import_result": "PENDING_MANUAL_TEST",
+      "editability_result": "PENDING_MANUAL_TEST"
+    },
+    {
+      "case": "E_open_layout_combined",
+      "sha256": "05de1ba8c6e5fecf78f1b47f123600849921941e02052b54cd7730c2abbcb7aa",
+      "bytes": 3893,
+      "access_mode": "none",
+      "features_before": [
+        "ssh"
+      ],
+      "features_after": [
+        "ssh",
+        "profiles"
+      ],
+      "changed_main_paths": [
+        "main.c",
+        "main.g.a",
+        "main.g.v",
+        "main.u"
+      ],
+      "profiles": [
+        {
+          "label": "s0",
+          "hpr1_removed": true,
+          "sidecar_relocated_to_existing_customPayload": true
+        }
+      ],
+      "profile_grammar": "HPC1",
+      "effective_connection_parameters_preserved": true,
+      "unedited_hpc1_binary_fields_preserved": true,
+      "unknown_envelope_values_preserved": true,
+      "pure_python_aead_tags_verified": 3,
+      "import_result": "PENDING_MANUAL_TEST",
+      "editability_result": "PENDING_MANUAL_TEST"
+    },
+    {
+      "case": "diagnostics/B_hpc1_only",
+      "sha256": "182c525a1de178bb273fa8010facd5d039286cdd3c6f63e3f52fd8d774475c55",
+      "bytes": 4080,
+      "access_mode": "none",
+      "features_before": [
+        "ssh"
+      ],
+      "features_after": [
+        "ssh"
+      ],
+      "changed_main_paths": [
+        "main.g.a"
+      ],
+      "profiles": [
+        {
+          "label": "s0",
+          "hpr1_removed": true,
+          "sidecar_relocated_to_existing_customPayload": false
+        }
+      ],
+      "profile_grammar": "HPC1",
+      "effective_connection_parameters_preserved": true,
+      "unedited_hpc1_binary_fields_preserved": true,
+      "unknown_envelope_values_preserved": true,
+      "pure_python_aead_tags_verified": 4,
+      "import_result": "PENDING_MANUAL_TEST",
+      "editability_result": "PENDING_MANUAL_TEST"
+    },
+    {
+      "case": "diagnostics/C_hpc1_profiles",
+      "sha256": "0f1be9aec045c6095eb64b14b28a33e55a6a996cdd0d91d92e04855d90108b2b",
+      "bytes": 4118,
+      "access_mode": "none",
+      "features_before": [
+        "ssh"
+      ],
+      "features_after": [
+        "ssh",
+        "profiles"
+      ],
+      "changed_main_paths": [
+        "main.c",
+        "main.g.a"
+      ],
+      "profiles": [
+        {
+          "label": "s0",
+          "hpr1_removed": true,
+          "sidecar_relocated_to_existing_customPayload": false
+        }
+      ],
+      "profile_grammar": "HPC1",
+      "effective_connection_parameters_preserved": true,
+      "unedited_hpc1_binary_fields_preserved": true,
+      "unknown_envelope_values_preserved": true,
+      "pure_python_aead_tags_verified": 4,
+      "import_result": "PENDING_MANUAL_TEST",
+      "editability_result": "PENDING_MANUAL_TEST"
+    }
+  ],
+  "main_l_and_note_style_not_copied_from_reference": true,
+  "root_cause_status": "Structural incompatibility observed; exact vendor failure pending controlled import"
+}

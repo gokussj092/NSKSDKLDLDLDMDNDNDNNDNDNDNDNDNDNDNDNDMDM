@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Two private follow-up HCX4 files using the native enum value 'none'."""
+"""HISTORICAL NEGATIVE: mode-only 'none' files were rejected by the owner.
+
+Use hc_open_layout_experiment.py with an authorized open reference instead.
+This script only reproduces the rejected transformation with explicit opt-in.
+"""
 
 from __future__ import annotations
 
@@ -16,7 +20,9 @@ from create_hc_import_matrix import NOTE, URL
 CASES = ("D_access_none", "E_combined_none")
 
 
-def generate_followup(raw):
+def generate_followup(raw, *, reproduce_rejected=False):
+    if not reproduce_rejected:
+        raise ValueError('Mode-only transformation is known rejected; use the open-layout experiment')
     original = codec.decrypt(raw)
     env = codec.open_envelope(raw)
     key, aad = codec.derive(env, None, None)
@@ -27,7 +33,7 @@ def generate_followup(raw):
         if index == 1:
             candidate["main"]["g"]["v"], candidate["main"]["u"] = NOTE, URL
         candidate["protections"] = hc._norm_prot(candidate["main"]["g"])
-        output = rewrap(raw, candidate)
+        output = rewrap(raw, candidate, allow_rejected_layout=True)
         new_env = codec.open_envelope(output)
         # Check the independent pure-Python AEAD as well as the codec.
         from audit_hc_matrix import authenticate_pure
@@ -62,7 +68,7 @@ def generate_followup(raw):
                 pure_python_tags_verified=tags,
                 original_profiles_and_sidecars_preserved=True,
                 unedited_restrictions_preserved=True,
-                vendor_import_result="PENDING_MANUAL_TEST",
+                vendor_import_result="NOT_RETESTED_KNOWN_REJECTED_TRANSFORMATION",
                 editability_result="PENDING_MANUAL_TEST",
             )
         )
@@ -73,12 +79,16 @@ def generate_followup(raw):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source", required=True, type=Path)
+    parser.add_argument('--reproduce-rejected-layout', action='store_true',
+                        help='Explicitly reproduce the historical mode-only rejection')
     parser.add_argument(
         "--output-dir", required=True, type=Path, help="Must be a NEW directory"
     )
     args = parser.parse_args()
+    if not args.reproduce_rejected_layout:
+        parser.error('Mode-only files were rejected. Use hc_open_layout_experiment.py --reference OWN_OPEN.hc')
     raw = args.source.read_bytes()
-    outputs, records = generate_followup(raw)
+    outputs, records = generate_followup(raw, reproduce_rejected=True)
     args.output_dir.mkdir(parents=True, exist_ok=False, mode=0o700)
     for case, output in zip(CASES, outputs):
         private_write(args.output_dir / (case + ".hc"), output)
@@ -93,7 +103,7 @@ def main():
         (json.dumps(manifest, indent=2) + "\n").encode(),
     )
     print(
-        "Generated D_access_none and E_combined_none. All local AEAD tags pass. Android import/editability pending."
+        "Reproduced known rejected transformation. Local AEAD is not vendor compatibility."
     )
 
 

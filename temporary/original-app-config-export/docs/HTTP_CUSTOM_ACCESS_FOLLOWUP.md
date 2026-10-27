@@ -2,6 +2,11 @@
 
 Fecha: 2026-10-26, America/Tijuana. Solo laboratorio temporal.
 
+> Seguimiento posterior: ambos candidatos `none` fueron rechazados por el
+> propietario. La nueva referencia abierta y la migración de estructura están en
+> [HTTP_CUSTOM_OPEN_LAYOUT_REFERENCE.md](HTTP_CUSTOM_OPEN_LAYOUT_REFERENCE.md).
+> Los estados pendientes de este registro describen el momento de su creación.
+
 ## Evidencia manual recibida
 
 El propietario probó el paquete privado entregado en `f908b869` e informó:

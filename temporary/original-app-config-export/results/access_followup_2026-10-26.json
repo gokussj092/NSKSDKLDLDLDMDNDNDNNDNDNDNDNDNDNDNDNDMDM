@@ -16,8 +16,8 @@
       "pure_python_tags_verified": 5,
       "original_profiles_and_sidecars_preserved": true,
       "unedited_restrictions_preserved": true,
-      "vendor_import_result": "PENDING_MANUAL_TEST",
-      "editability_result": "PENDING_MANUAL_TEST"
+      "vendor_import_result": "REJECTED_OWNER_REPORTED",
+      "editability_result": "NOT_REACHED"
     },
     {
       "case": "E_combined_none",
@@ -34,8 +34,10 @@
       "pure_python_tags_verified": 5,
       "original_profiles_and_sidecars_preserved": true,
       "unedited_restrictions_preserved": true,
-      "vendor_import_result": "PENDING_MANUAL_TEST",
-      "editability_result": "PENDING_MANUAL_TEST"
+      "vendor_import_result": "REJECTED_OWNER_REPORTED",
+      "editability_result": "NOT_REACHED"
     }
-  ]
+  ],
+  "manual_followup": "Both mode-only none candidates were reported to fail with the same errors.",
+  "superseded_by": "open_layout_matrix_2026-10-26.json"
 }

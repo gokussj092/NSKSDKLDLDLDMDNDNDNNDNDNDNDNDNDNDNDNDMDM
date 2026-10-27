@@ -5,28 +5,29 @@ Trabajo del 26 de octubre de 2026 (America/Tijuana). **No fusionar a main**.
 Solo HTTP Custom 7.11.28 Patch 1, build 899, HCX4 / HCCFG10 / n11 sin
 contraseña/HWID. No se implementa un exportador de producción.
 
-## Estado actual tras prueba manual
+## Estado actual: referencia propia abierta
 
-El propietario confirmó importación correcta de la fuente y de **A, B y C**.
-Fallaron el control rechazado y **D/E**, que cambiaban el acceso a `false`.
-El rechazo queda aislado a `main.g.a = false`; la causa interna de tipo/coerción
-no se distingue solo con esa prueba.
+El propietario confirmó que los dos candidatos `none` también fallaron. Aportó
+`Test Oppen.hc`, creado sin activar bloqueos, que autentica como build 899 y
+confirma el valor `none`. La diferencia adicional comprobada es la estructura:
+la referencia usa **HPC1 directo, `profiles` y ningún sidecar**, mientras los
+candidatos anteriores conservaban HPR1 y la estructura del original bloqueado.
 
-Se recuperó el enum real del APK mediante emulación ARM64 acotada: `none`,
-`lock_all`, `lock_payload_unlock_server`, `unlock_user_pass`. El candidato
-respaldado para la opción `NONE` es **`main.g.a = "none"`**.
-Se generaron `D_access_none.hc` y `E_combined_none.hc`; ambos pasan AEAD local,
-pero **su importación y editabilidad Android siguen pendientes**.
+Se prepararon un control de la referencia y dos candidatos de migración:
+`A_owned_open_rewrap.hc`, `D_open_layout.hc` y `E_open_layout_combined.hc`.
+Conservan los parámetros de conexión; los dos candidatos retiran HPR1, migran
+el custom payload, añaden la capacidad observada y vuelven a derivar/sellar
+las capas. **Importación y edición Android de esta nueva matriz: pendientes.**
+No se afirma todavía cuál validación interna produjo el mensaje del importador.
 
-Ver [el seguimiento y los comandos](docs/HTTP_CUSTOM_ACCESS_FOLLOWUP.md).
-Los datos manuales están en `results/manual_import_report_2026-10-26.json`;
-la evidencia del enum, los nuevos hashes y auditorías, también en `results/`.
+Ver [comparación y reproducción actual](docs/HTTP_CUSTOM_OPEN_LAYOUT_REFERENCE.md).
+Scripts actuales: `compare_hc_layouts.py`, `hc_open_layout_experiment.py` y
+`test_hc_open_layout.py`. Pasan 30 pruebas locales en total.
 
-La matriz original A–E conserva el booleano como negativo reproducible.
-Para los candidatos nuevos usar `scripts/create_hc_access_followup.py`.
-La sonda `scripts/probe_hc_access_modes.py` es opcional, fijada a una biblioteca
-por hash y solo de investigación; no ejecuta el importador ni necesita archivos
-con conexiones.
+Los informes originales y la recuperación del enum se conservan como evidencia
+histórica. `create_hc_access_followup.py` solo puede reproducir la transformación
+rechazada mediante `--reproduce-rejected-layout`; el rewrap simple bloquea ese
+cambio de modo si deja el perfil HPR1 intacto.
 
 ## Correcciones
 

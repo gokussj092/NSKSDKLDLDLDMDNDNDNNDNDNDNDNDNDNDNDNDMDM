@@ -16,5 +16,12 @@
     "url-only",
     "access-mode-only",
     "combined"
-  ]
+  ],
+  "owned_open_reference": {
+    "uploaded_name": "Test Oppen.hc",
+    "sha256": "0e7abec160052b9588a715ada05eddd1e5787bfe9dc5fa5551aa112f92422c2e",
+    "bytes": 3181,
+    "declared_by_owner": "Created and exported without locks",
+    "private_bytes_in_git": false
+  }
 }

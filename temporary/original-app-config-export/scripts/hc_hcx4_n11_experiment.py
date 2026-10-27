@@ -84,7 +84,8 @@ def private_write(path: Path, data: bytes) -> None:
         stream.write(data)
 
 
-def rewrap(raw: bytes, edited: dict, *, allow_access_type_change=False) -> bytes:
+def rewrap(raw: bytes, edited: dict, *, allow_access_type_change=False,
+           allow_rejected_layout=False) -> bytes:
     decoded = codec.decrypt(raw)
     check_changes(decoded, edited, allow_access_type_change=allow_access_type_change)
     depth, outer_clear = open_original(raw)
@@ -96,6 +97,11 @@ def rewrap(raw: bytes, edited: dict, *, allow_access_type_change=False) -> bytes
     if bool(envelope.get('h', False)):
         raise ValueError('Password-protected files are outside this lab workflow')
     key, aad = codec.derive(envelope, None, None)
+    if (decoded['main']['g']['a'] != edited['main']['g']['a']
+            and edited['main']['g']['a'] == 'none' and not allow_rejected_layout
+            and any(hc._dec_section(s, key, aad).startswith(b'HPR1')
+                    for s in hc._sec_list(envelope['j']))):
+        raise ValueError('Known rejected mode-only conversion: HPR1 needs a reference-backed layout migration')
     section = envelope['i']
     section_aad = aad + b'\0' + section['a'].encode('utf-8')
     clear = hc._dec_section(section, key, aad)

@@ -1,0 +1,20 @@
+{
+  "new_layout_tests": {
+    "passed": 7,
+    "failed": 0
+  },
+  "existing_lab_tests": {
+    "passed": 14,
+    "failed": 0
+  },
+  "existing_codec_tests": {
+    "passed": 9,
+    "failed": 0
+  },
+  "real_source_aead_tags": 5,
+  "real_owned_open_reference_aead_tags": 3,
+  "full_open_candidates_aead_tags_each": 3,
+  "manual_status": "Previous none candidates rejected; new layout candidates pending",
+  "effective_connection_parameters_preserved_locally": true,
+  "production_changes": false
+}

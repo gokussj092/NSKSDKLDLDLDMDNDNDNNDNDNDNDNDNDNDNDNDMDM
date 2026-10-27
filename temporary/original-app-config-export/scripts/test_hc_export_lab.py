@@ -82,15 +82,25 @@ class LabTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 rewrap(raw, desired)
 
-    def test_native_none_followup_preserves_all_other_restrictions(self):
+    def test_rejected_none_reproduction_preserves_all_other_restrictions(self):
         from create_hc_access_followup import generate_followup
         raw = fixture()
-        outputs, records = generate_followup(raw)
+        with self.assertRaises(ValueError):
+            generate_followup(raw)
+        outputs, records = generate_followup(raw, reproduce_rejected=True)
         self.assertEqual([r['changed_paths'] for r in records],
                          [['main.g.a'], ['main.g.a', 'main.g.v', 'main.u']])
         self.assertTrue(all(r['unedited_restrictions_preserved'] for r in records))
         for data in outputs:
             self.assertEqual(codec.decrypt(data)['main']['g']['a'], 'none')
+
+    def test_mode_only_none_with_hpr1_is_rejected_by_default(self):
+        raw = fixture()
+        edited = codec.decrypt(raw)
+        edited['main']['g']['a'] = 'none'
+        edited['protections'] = hc._norm_prot(edited['main']['g'])
+        with self.assertRaises(ValueError):
+            rewrap(raw, edited)
 
     def test_python_boolean_integer_equality_cannot_hide_edit(self):
         original = codec.decrypt(fixture())
