@@ -1,0 +1,110 @@
+{
+  "source": {
+    "case": "locked_original",
+    "sha256": "600c0cafc2419aa59a1b3b4b259030af267d646c327e547a44fdce2ff54f05b7",
+    "bytes": 17656,
+    "carrier_hmac_verified": true,
+    "error": null,
+    "frame_adler32_verified": true,
+    "inner_aead_verified": true,
+    "outer_version_code": 229,
+    "inner_version_code": 0
+  },
+  "owned_open": {
+    "case": "owned_open_original",
+    "sha256": "54c9e0cb281661e62b69c997085da0d753a3abd65d383c35a0c5704438563b0a",
+    "bytes": 18952,
+    "carrier_hmac_verified": true,
+    "error": null,
+    "frame_adler32_verified": true,
+    "inner_aead_verified": true,
+    "outer_version_code": 244,
+    "inner_version_code": 0
+  },
+  "source_lock_hash_rule": "modes_then_explicit_salt",
+  "owned_open_lock_hash_rule": "identifier_then_modes",
+  "owned_open_flag_is_false": true,
+  "owned_open_salt_key_absent": true,
+  "cases": [
+    {
+      "case": "A_REWRAP_ORIGINAL.ehi",
+      "sha256": "600c0cafc2419aa59a1b3b4b259030af267d646c327e547a44fdce2ff54f05b7",
+      "bytes": 17656,
+      "carrier_hmac_verified": true,
+      "error": null,
+      "frame_adler32_verified": true,
+      "inner_aead_verified": true,
+      "outer_version_code": 229,
+      "inner_version_code": 0
+    },
+    {
+      "case": "B_NOTE_TEXT_ONLY.ehi",
+      "sha256": "da5695830269e4942657ac4dc1b638de6e2b869852baf1c7fd676757dd5730c8",
+      "bytes": 11240,
+      "carrier_hmac_verified": false,
+      "error": "CARRIER_HMAC_MISMATCH",
+      "frame_adler32_verified": true,
+      "inner_aead_verified": true,
+      "outer_version_code": 229,
+      "inner_version_code": 0
+    },
+    {
+      "case": "C_NOTE_HTML_ONLY.ehi",
+      "sha256": "945dafceab7511ed41587327589a901a13ff5acababbe931fe6c30345292e950",
+      "bytes": 30760,
+      "carrier_hmac_verified": false,
+      "error": "CARRIER_HMAC_MISMATCH",
+      "frame_adler32_verified": true,
+      "inner_aead_verified": true,
+      "outer_version_code": 229,
+      "inner_version_code": 0
+    },
+    {
+      "case": "D_ACCESS_CANDIDATE.ehi",
+      "sha256": "b187033674a034152e584227b068a22374eadc33fb1857192127a0795922d818",
+      "bytes": 17512,
+      "carrier_hmac_verified": false,
+      "error": "CARRIER_HMAC_MISMATCH",
+      "frame_adler32_verified": true,
+      "inner_aead_verified": true,
+      "outer_version_code": 229,
+      "inner_version_code": 0
+    },
+    {
+      "case": "E_ACCESS_HTML_CANDIDATE.ehi",
+      "sha256": "c94153ef336488476d7a32f541624064c5369d7e77b5b21bd266bc1d3a0fdd6a",
+      "bytes": 30584,
+      "carrier_hmac_verified": false,
+      "error": "CARRIER_HMAC_MISMATCH",
+      "frame_adler32_verified": true,
+      "inner_aead_verified": true,
+      "outer_version_code": 229,
+      "inner_version_code": 0
+    },
+    {
+      "case": "FLAG_ONLY.ehi",
+      "sha256": "0791d67c52c3b2ed0916681988ad46ddfbf4d2fcda01793ecce4a780fb7f6ef9",
+      "bytes": 17672,
+      "carrier_hmac_verified": false,
+      "error": "CARRIER_HMAC_MISMATCH",
+      "frame_adler32_verified": true,
+      "inner_aead_verified": true,
+      "outer_version_code": 229,
+      "inner_version_code": 0
+    },
+    {
+      "case": "OUTER_NONE_ONLY.ehi",
+      "sha256": "60cf37984d2731cd6b34e720b99ab9b570ddb48f63117303bbbf52781cc4aa0d",
+      "bytes": 17480,
+      "carrier_hmac_verified": false,
+      "error": "CARRIER_HMAC_MISMATCH",
+      "frame_adler32_verified": true,
+      "inner_aead_verified": true,
+      "outer_version_code": 229,
+      "inner_version_code": 0
+    }
+  ],
+  "stale_carrier_mac_defect_confirmed": true,
+  "new_android_import": "pending",
+  "production_changes": false
+}

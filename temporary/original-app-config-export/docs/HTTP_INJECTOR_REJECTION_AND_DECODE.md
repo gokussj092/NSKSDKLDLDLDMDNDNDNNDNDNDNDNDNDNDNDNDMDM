@@ -1,5 +1,10 @@
 # HTTP Injector: rechazo de variantes y auditoría de la salida
 
+> **Informe histórico, superado parcialmente por Open.ehi:** se recuperaron
+> el HMAC y su clave derivada del APK; los seis casos modificados anteriores
+> fallan esa comprobación. Ver [diagnóstico y nueva matriz](HTTP_INJECTOR_AUTHENTICATED_EXPORT.md).
+> Los hallazgos de tipos y TLS siguen vigentes; producción continúa sin cambios.
+
 Fecha: 2026-10-27, America/Tijuana. Solo laboratorio temporal, misma rama,
 cuenta Goku y repositorio migrado. No hay cambios en los decodificadores
 productivos, Android, API, despliegues ni builds.

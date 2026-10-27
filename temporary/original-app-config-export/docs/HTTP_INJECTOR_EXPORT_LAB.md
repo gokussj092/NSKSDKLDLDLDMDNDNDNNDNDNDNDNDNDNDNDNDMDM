@@ -1,5 +1,11 @@
 # HTTP Injector — exportación experimental y pruebas A–E
 
+> **Seguimiento con Open.ehi:** el MAC exterior fue recuperado y los seis
+> archivos modificados anteriores tienen MAC inválido. Hay una nueva matriz
+> con HMAC recalculado y hash abierto corregido. Ver
+> [corrección autenticada](HTTP_INJECTOR_AUTHENTICATED_EXPORT.md).
+> Las restricciones descritas abajo corresponden a la tanda histórica.
+
 > **Actualización posterior a las pruebas del propietario (2026-10-27):**
 > solo A se importó; B–E fueron rechazados con error de versión. Las pruebas
 > criptográficas descritas abajo verifican capas locales, no compatibilidad.

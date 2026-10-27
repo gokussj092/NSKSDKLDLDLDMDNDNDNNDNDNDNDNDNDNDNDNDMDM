@@ -7,8 +7,9 @@ diagnostics, not a claim about the original importer's lock-hash validation.
 from __future__ import annotations
 import argparse
 import base64
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import hashlib
+import hmac
 import json
 import os
 from pathlib import Path
@@ -25,7 +26,7 @@ ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT))
 from decoders.Python.HTTPINJECTOR import EHIConstants as C, EHIDecryptor as D, _aes_cbc_decrypt
 from tests.golden.a23_batch7 import _xxtea_encrypt
-from lossless_json import parse, replace_values, equal
+from lossless_json import parse, replace_values, equal, put_member
 
 MAX_BYTES = 16 * 1024 * 1024
 
@@ -99,9 +100,21 @@ class EhiDocument:
     upper_hex: bool
     raw_inner: bytes
     inner: dict
+    carrier_mac_key: bytes | None = field(default=None, repr=False)
+
+    @property
+    def field_salt(self):
+        # Open.ehi (244) omits configSalt. This is the existing reader's
+        # default for field codecs, not a value to insert into the outer JSON
+        # or into the master-key concatenation.
+        return self.outer.get('configSalt', 'EVZJNI')
 
 
-def open_profile(source):
+def open_profile(source, *, carrier_mac_key=None, require_carrier_mac=False):
+    if carrier_mac_key is not None and (type(carrier_mac_key) is not bytes or len(carrier_mac_key) != 32):
+        raise EhiLabError('INVALID_CARRIER_MAC_KEY')
+    if require_carrier_mac and carrier_mac_key is None:
+        raise EhiLabError('CARRIER_MAC_KEY_REQUIRED')
     if not isinstance(source, bytes) or not 40 <= len(source) <= MAX_BYTES:
         raise EhiLabError('INVALID_SIZE')
     pos = 0
@@ -128,6 +141,7 @@ def open_profile(source):
     if stored_checksum != zlib.adler32(payload) & 0xffffffff:
         raise EhiLabError('FRAME_ADLER32_MISMATCH')
     matches = []
+    mac_failures = 0
     for index, iv in enumerate(C.BYPASS_IVS + C.STANDARD_IVS):
         try:
             l1 = _aes_cbc_decrypt(payload, C.L1_KEY, iv)
@@ -137,7 +151,12 @@ def open_profile(source):
             iv2 = b64(parts[0])
             if len(iv2) != 16:
                 continue
-            xx_cipher = _aes_cbc_decrypt(b64(parts[2]), C.L2_KEY_STATIC, iv2)
+            second = b64(parts[2])
+            if carrier_mac_key is not None:
+                if not hmac.compare_digest(b64(parts[1]), hmac.digest(carrier_mac_key, iv2 + second, 'sha256')):
+                    mac_failures += 1
+                    continue
+            xx_cipher = _aes_cbc_decrypt(second, C.L2_KEY_STATIC, iv2)
             xx_plain = D._xxtea_decrypt(xx_cipher, C.EOO_MASTER_KEY)
             start = xx_plain.find(b'{')
             if start < 0:
@@ -153,11 +172,13 @@ def open_profile(source):
         except (ValueError, TypeError, UnicodeError, KeyError, struct.error):
             continue
     if len(matches) != 1:
+        if not matches and mac_failures:
+            raise EhiLabError('CARRIER_HMAC_MISMATCH')
         raise EhiLabError('OUTER_DECRYPT_FAILED_OR_AMBIGUOUS')
     index, iv2, middle, prefix, raw_outer, outer = matches[0]
     if index < 3:
         raise EhiLabError('NON_AEAD_VARIANT_NOT_IN_THIS_LAB')
-    salt = outer.get('configSalt')
+    salt = outer.get('configSalt', 'EVZJNI')
     if type(salt) is not str or not salt or not salt.isascii():
         raise EhiLabError('UNSUPPORTED_FIELD_SALT')
     field, upper = decode_field(outer.get('configData'), salt)
@@ -175,7 +196,8 @@ def open_profile(source):
     if not isinstance(inner, dict):
         raise EhiLabError('INNER_OBJECT_REQUIRED')
     return EhiDocument(source, length_offset, payload_offset, size, index, iv2,
-                       middle, prefix, raw_outer, outer, body, upper, raw_inner, inner)
+                       middle, prefix, raw_outer, outer, body, upper, raw_inner, inner,
+                       carrier_mac_key)
 
 
 def reseal(document, *, outer_edits=None, inner_edits=None,
@@ -184,18 +206,21 @@ def reseal(document, *, outer_edits=None, inner_edits=None,
     if set(outer_edits) - {'lockModes', 'lockModesHash'} or set(inner_edits) - {'isConfigLock', 'configMessage'}:
         raise EhiLabError('EDIT_OUTSIDE_LAB_SCOPE')
     for mapping, original in ((outer_edits, document.outer), (inner_edits, document.inner)):
-        if any(k not in original or type(v) is not type(original[k]) for k, v in mapping.items()):
+        if any((k not in original and not (mapping is inner_edits and k == 'configMessage' and type(v) is str))
+               or (k in original and type(v) is not type(original[k])) for k, v in mapping.items()):
             raise EhiLabError('FIELD_MISSING_OR_TYPE_CHANGED')
-    raw_inner = replace_values(document.raw_inner, {(k,): v for k, v in inner_edits.items()})
+    raw_inner = replace_values(document.raw_inner, {(k,): v for k, v in inner_edits.items() if k in document.inner})
+    if 'configMessage' in inner_edits and 'configMessage' not in document.inner:
+        raw_inner = put_member(raw_inner, (), 'configMessage', inner_edits['configMessage'])
     raw_outer = replace_values(document.raw_outer, {(k,): v for k, v in outer_edits.items()})
     outer = parse(raw_outer)
     changed = raw_inner != document.raw_inner or raw_outer != document.raw_outer
     # The owner accepted only the byte-identical A control. Every changed case
     # retained the original carrier middle segment while replacing ciphertext.
-    # Its 32 decoded bytes resemble a MAC, but neither its key nor verification
-    # rule has been recovered. An AEAD round trip does not verify this segment.
-    # Keep historical reproduction possible without presenting it as an export.
-    if changed and not allow_unverified_middle:
+    # The recovered importer confirms HMAC-SHA256(IV2 || ciphertext2). Keep
+    # read-only inspection available, but require its key for modified exports.
+    # The opt-in remains solely for reproducing historical rejected artifacts.
+    if changed and document.carrier_mac_key is None and not allow_unverified_middle:
         raise EhiLabError('MODIFIED_EXPORT_BLOCKED_UNVERIFIED_CARRIER_SEGMENT')
     header = document.aead[:50]
     if changed:
@@ -205,18 +230,23 @@ def reseal(document, *, outer_edits=None, inner_edits=None,
     cipher.update(header[:26])
     ciphertext, tag = cipher.encrypt_and_digest(raw_inner)
     body = header + ciphertext + tag
-    token = encode_field(base64.b64encode(body), outer['configSalt'], document.upper_hex)
+    token = encode_field(base64.b64encode(body), document.field_salt, document.upper_hex)
     if token != outer['configData']:
         raw_outer = replace_values(raw_outer, {('configData',): token})
     xx_cipher = _xxtea_encrypt(document.xx_prefix + raw_outer, C.EOO_MASTER_KEY)
-    second = AES.new(C.L2_KEY_STATIC, AES.MODE_CBC, document.iv2).encrypt(pad(xx_cipher, 16))
-    carrier = base64.b64encode(document.iv2) + b':' + document.middle + b':' + base64.b64encode(second)
+    iv2 = os.urandom(16) if changed and document.carrier_mac_key is not None else document.iv2
+    second = AES.new(C.L2_KEY_STATIC, AES.MODE_CBC, iv2).encrypt(pad(xx_cipher, 16))
+    middle = (base64.b64encode(hmac.digest(document.carrier_mac_key, iv2 + second, 'sha256'))
+              if document.carrier_mac_key is not None else document.middle)
+    carrier = base64.b64encode(iv2) + b':' + middle + b':' + base64.b64encode(second)
     iv = (C.BYPASS_IVS + C.STANDARD_IVS)[document.iv_index]
     first = AES.new(C.L1_KEY, AES.MODE_CBC, iv).encrypt(pad(carrier, 16))
     raw = (document.source[:document.length_offset] + struct.pack('>I', len(first)) +
            struct.pack('>Q', zlib.adler32(first) & 0xffffffff) + first +
            document.source[document.payload_offset+document.payload_size:])
-    after = open_profile(raw)
+    if len(raw) >= 500000:
+        raise EhiLabError('ORIGINAL_IMPORTER_SIZE_LIMIT_EXCEEDED')
+    after = open_profile(raw, carrier_mac_key=document.carrier_mac_key)
     if after.raw_inner != raw_inner or after.raw_outer != raw_outer:
         raise EhiLabError('ROUNDTRIP_PLAINTEXT_MISMATCH')
     expected_outer = dict(document.outer, **outer_edits)
@@ -237,6 +267,48 @@ def access_candidate_edits(document):
     return ({k: document.inner[k] for k in ('lockModes', 'lockModesHash')}, {'isConfigLock': False})
 
 
+def lock_hash_rule(document):
+    """Select only a formula that reproduces this source's existing hash.
+
+    Observed separately in real 229 and 244 exports. Version numbers alone
+    never select a rule, and inner hashes are never transplanted into outer.
+    """
+    outer = document.outer
+    modes, stored = outer.get('lockModes'), outer.get('lockModesHash')
+    if type(modes) is not str or type(stored) is not str:
+        raise EhiLabError('LOCK_HASH_CONTEXT_UNSUPPORTED')
+    candidates = []
+    salt, identifier = outer.get('configSalt'), outer.get('configIdentifier')
+    if type(salt) is str and salt:
+        candidates.append(('modes_then_explicit_salt', modes + salt))
+    if type(identifier) is str and identifier:
+        candidates.append(('identifier_then_modes', identifier + modes))
+    matched = [name for name, text in candidates
+               if hashlib.sha256(text.encode('utf-8')).hexdigest() == stored]
+    if len(matched) != 1:
+        raise EhiLabError('LOCK_HASH_CONTEXT_UNVERIFIED_OR_AMBIGUOUS')
+    return matched[0]
+
+
+def observed_open_access_edits(document):
+    """Recompute a source-verified outer hash; importer acceptance is pending."""
+    lock_hash_rule(document)
+    if (document.inner.get('lockModes') != '["none"]' or
+            type(document.inner.get('isConfigLock')) is not bool):
+        raise EhiLabError('OBSERVED_INNER_ACCESS_LAYOUT_REQUIRED')
+    modes = '["none"]'
+    identifier = document.outer.get('configIdentifier')
+    if type(identifier) is not str or not identifier:
+        raise EhiLabError('OBSERVED_OPEN_IDENTIFIER_REQUIRED')
+    # The recovered exporter uses identifier || modes when isConfigLock is
+    # false. Preserve an explicit source salt for its existing connection
+    # tokens, but do not use the locked-export hash rule for the open target.
+    text = identifier + modes
+    return ({'lockModes': modes,
+             'lockModesHash': hashlib.sha256(text.encode('utf-8')).hexdigest()},
+            {'isConfigLock': False})
+
+
 def private_write(path, raw):
     descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
     with os.fdopen(descriptor, 'wb') as stream:
@@ -249,10 +321,11 @@ def summary(document):
             'inner_json_bytes': len(document.raw_inner), 'iv_index': document.iv_index,
             'source_config_version_code': (document.outer.get('configVersionCode')
                 if type(document.outer.get('configVersionCode')) is int else None),
+            'field_salt_mode': 'explicit' if 'configSalt' in document.outer else 'observed_default_absent',
             'aead_version': document.aead[0], 'authenticated': True,
-            'authentication_scope': 'inner_aead_only',
-            'carrier_integrity_verified': False,
-            'modified_export_status': 'blocked_pending_carrier_integrity',
+            'authentication_scope': 'inner_aead_and_outer_hmac' if document.carrier_mac_key is not None else 'inner_aead_only',
+            'carrier_integrity_verified': document.carrier_mac_key is not None,
+            'modified_export_status': 'local_verified_android_pending' if document.carrier_mac_key is not None else 'blocked_pending_carrier_integrity',
             'frame_checksum': 'adler32_verified',
             'original_app_import': 'pending'}
 
@@ -261,9 +334,14 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('source', type=Path)
     parser.add_argument('--output', type=Path)
+    parser.add_argument('--apk', type=Path, help='APK base 6.5.0 auditado para derivar y verificar HMAC')
     args = parser.parse_args()
     try:
-        document = open_profile(args.source.read_bytes())
+        key = None
+        if args.apk:
+            from ehi_carrier_keys import derive_carrier_keys
+            key = derive_carrier_keys(args.apk.read_bytes())[16:]
+        document = open_profile(args.source.read_bytes(), carrier_mac_key=key)
         result = summary(document)
         if args.output is not None:
             output = reseal(document)

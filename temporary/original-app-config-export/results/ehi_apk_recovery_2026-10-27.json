@@ -1,0 +1,66 @@
+{
+  "input_sha256": "2eeab20e7a2193d63730fbae3dcee8ac439b4f644e45465640ed80c68a92e6e4",
+  "base_apk_sha256": "5dc3976ad0d90c14b79f5848109296998f930c9d36be88fba9115c078f60dfe3",
+  "native_inputs": {
+    "libdatajar.so": "2563039f827ff936035abfbe7aeb0cb9d4bac8bf42f414bb6c68cf7241081a4d",
+    "libDexHelper.so": "1aea4de158534b5bc28958d9b343e31adfe4609495978c4785719398ea271a68",
+    "libdexjniehi.so": "771f0e37d0ebb55a9e3c4543c97ae8dc5652338090817554fa8155be40dc5e29"
+  },
+  "native_recovered": {
+    "libDexHelper-inner.so": "016a59154498155504521464d78fb031a7fda2f23f7a89e45334f1687bd4cb83",
+    "libdexjniehi-inner.so": "b18333c7d87b861cf04d88c42ef7bce79428a3bcfce74ea627995f0fdf0aa097"
+  },
+  "dex": [
+    {
+      "file": "classes2.dex",
+      "pool_offset": 4096,
+      "bytes": 20109364,
+      "sha256": "2fbee281c761da23637f94c43be5f2c339b6bfed3cc865c5bb15fc9bdab92274",
+      "stored_adler32_matches": true,
+      "stored_sha1_matches": false,
+      "header_checksums_rewritten": false
+    },
+    {
+      "file": "classes3.dex",
+      "pool_offset": 20115456,
+      "bytes": 880567,
+      "sha256": "09714307b62d4617feab566a2d8f6e6b1c1b24e4787094c36acc4e49760defa1",
+      "stored_adler32_matches": true,
+      "stored_sha1_matches": false,
+      "header_checksums_rewritten": false
+    },
+    {
+      "file": "classes4.dex",
+      "pool_offset": 20996096,
+      "bytes": 18128951,
+      "sha256": "7bc7eda102245586d99542635f25a048acf4d38514f117cb05df1b2959c29107",
+      "stored_adler32_matches": true,
+      "stored_sha1_matches": false,
+      "header_checksums_rewritten": false
+    },
+    {
+      "file": "classes5.dex",
+      "pool_offset": 39129088,
+      "bytes": 7010399,
+      "sha256": "929ba4c7f4018d98dacc4db7a1b5d1997c5339f2467b9b2fbbe7e2032e6e69db",
+      "stored_adler32_matches": true,
+      "stored_sha1_matches": false,
+      "header_checksums_rewritten": false
+    },
+    {
+      "file": "classes6.dex",
+      "pool_offset": 46141440,
+      "bytes": 536659,
+      "sha256": "9061209f7c9bfaa11ab18915e8756be947c4dc20bf3ff7129165b28bef59e87b",
+      "stored_adler32_matches": true,
+      "stored_sha1_matches": false,
+      "header_checksums_rewritten": false
+    }
+  ],
+  "android_executed": false,
+  "apk_modified_or_built": false,
+  "decompiler_completeness": "not guaranteed; VM/native methods and decompiler errors remain",
+  "jadx_version": "1.5.6",
+  "jadx_complete_run_errors": 167,
+  "pool_encoding": "Zstandard tail plus package-bound SM4-ECB first 128KiB per DEX"
+}

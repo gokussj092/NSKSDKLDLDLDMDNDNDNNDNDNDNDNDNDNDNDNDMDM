@@ -45,5 +45,7 @@
     "existing_ehi_tests_passed": 6,
     "total": 28
   },
-  "modified_exports_blocked_by_default": true
+  "modified_exports_blocked_by_default": true,
+  "superseded_by": "ehi_authenticated_matrix_2026-10-27.json",
+  "carrier_followup": "ehi_carrier_diagnosis_2026-10-27.json"
 }

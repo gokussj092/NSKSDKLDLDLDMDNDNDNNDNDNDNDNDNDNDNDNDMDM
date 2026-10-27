@@ -24,14 +24,20 @@ checksum **Adler-32** que el lector Python existente no verifica.
 **Actualización del propietario:** solo A se importó. B–E fueron rechazados
 con un mensaje de versión. Los dos controles auxiliares no tienen resultados
 individuales confirmados. El paquete anterior es histórico y **no constituye
-una exportación compatible**. Los números de versión no cambiaron; no se ha
-confirmado la causa del mensaje. Las modificaciones quedan bloqueadas por
-defecto hasta resolver la integridad del segmento central del carrier.
+una exportación compatible**. Los números de versión no cambiaron. La
+comparación posterior con `Open.ehi` y el importador recuperado confirmó un
+**HMAC exterior desactualizado** en las seis variantes modificadas. Se
+recuperó su derivación desde el APK y se verificaron ambos originales.
+También se corrigieron la sal exterior ausente y el hash de bloqueo abierto.
 
 El nuevo auditor detecta campos aún sin interpretar, un candidato TLS con
 la sal predeterminada y pérdida de tipos al reconstruir JSON desde texto de
-presentación. Pasan **22 pruebas del laboratorio + 6 del lector existente**.
-No se cambia ningún decodificador productivo, Android ni la API.
+presentación. La nueva matriz con HMAC contiene A–E y tres controles del
+abierto propio: ocho verificaciones completas locales, **Android pendiente**.
+Pasan **32 pruebas del laboratorio + 6 del lector existente**. Sin clave HMAC
+verificada, el escritor sigue bloqueando modificaciones. No se cambia ningún
+decodificador productivo, Android ni la API.
+Ver [corrección autenticada y nueva tanda](docs/HTTP_INJECTOR_AUTHENTICATED_EXPORT.md).
 Ver [investigación y pruebas HTTP Injector](docs/HTTP_INJECTOR_EXPORT_LAB.md).
 Ver [diagnóstico del rechazo y de la salida descifrada](docs/HTTP_INJECTOR_REJECTION_AND_DECODE.md).
 

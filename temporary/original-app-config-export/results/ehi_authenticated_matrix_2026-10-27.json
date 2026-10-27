@@ -1,0 +1,285 @@
+{
+  "locked_source": {
+    "source_sha256": "600c0cafc2419aa59a1b3b4b259030af267d646c327e547a44fdce2ff54f05b7",
+    "bytes": 17656,
+    "outer_json_bytes": 13139,
+    "inner_json_bytes": 3426,
+    "iv_index": 3,
+    "source_config_version_code": 229,
+    "field_salt_mode": "explicit",
+    "aead_version": 1,
+    "authenticated": true,
+    "authentication_scope": "inner_aead_and_outer_hmac",
+    "carrier_integrity_verified": true,
+    "modified_export_status": "local_verified_android_pending",
+    "frame_checksum": "adler32_verified",
+    "original_app_import": "pending"
+  },
+  "owned_open_source": {
+    "source_sha256": "54c9e0cb281661e62b69c997085da0d753a3abd65d383c35a0c5704438563b0a",
+    "bytes": 18952,
+    "outer_json_bytes": 14119,
+    "inner_json_bytes": 3712,
+    "iv_index": 4,
+    "source_config_version_code": 244,
+    "field_salt_mode": "observed_default_absent",
+    "aead_version": 1,
+    "authenticated": true,
+    "authentication_scope": "inner_aead_and_outer_hmac",
+    "carrier_integrity_verified": true,
+    "modified_export_status": "local_verified_android_pending",
+    "frame_checksum": "adler32_verified",
+    "original_app_import": "pending"
+  },
+  "carrier_hmac": "verified_and_recomputed",
+  "cases": [
+    {
+      "file": "A_REWRAP_ORIGINAL.ehi",
+      "sha256": "600c0cafc2419aa59a1b3b4b259030af267d646c327e547a44fdce2ff54f05b7",
+      "bytes": 17656,
+      "source_sha256": "600c0cafc2419aa59a1b3b4b259030af267d646c327e547a44fdce2ff54f05b7",
+      "source_byte_identical": true,
+      "outer_changed_paths": [],
+      "inner_changed_paths": [],
+      "checks": {
+        "openssl_cbc_layers": 2,
+        "libsodium_aead_tags": 1,
+        "openssl_carrier_hmac_verified": true,
+        "argon2id_backend": "argon2-cffi",
+        "argon2id_independent_backend": false
+      },
+      "checksum": "adler32_verified",
+      "connection_tokens_unchanged": true,
+      "unknown_sections_preserved": true,
+      "original_app_import": "pending",
+      "editor_access": "pending",
+      "banner_rendering": "not_tested"
+    },
+    {
+      "file": "B_NOTE_TEXT_HMAC.ehi",
+      "sha256": "6538efb1a70317ac4d369cda7fab43685d5fc27891a56931aaadccdb0d5f76bc",
+      "bytes": 11240,
+      "source_sha256": "600c0cafc2419aa59a1b3b4b259030af267d646c327e547a44fdce2ff54f05b7",
+      "source_byte_identical": false,
+      "outer_changed_paths": [
+        [
+          "configData"
+        ]
+      ],
+      "inner_changed_paths": [
+        [
+          "configMessage"
+        ]
+      ],
+      "checks": {
+        "openssl_cbc_layers": 2,
+        "libsodium_aead_tags": 1,
+        "openssl_carrier_hmac_verified": true,
+        "argon2id_backend": "argon2-cffi",
+        "argon2id_independent_backend": false
+      },
+      "checksum": "adler32_verified",
+      "connection_tokens_unchanged": true,
+      "unknown_sections_preserved": true,
+      "original_app_import": "pending",
+      "editor_access": "pending",
+      "banner_rendering": "not_tested"
+    },
+    {
+      "file": "C_NOTE_HTML_HMAC.ehi",
+      "sha256": "bbbfda6bd97aebd9d8da4ad59644599dd017584555912ce6a68c075bcfd3a3dd",
+      "bytes": 30760,
+      "source_sha256": "600c0cafc2419aa59a1b3b4b259030af267d646c327e547a44fdce2ff54f05b7",
+      "source_byte_identical": false,
+      "outer_changed_paths": [
+        [
+          "configData"
+        ]
+      ],
+      "inner_changed_paths": [
+        [
+          "configMessage"
+        ]
+      ],
+      "checks": {
+        "openssl_cbc_layers": 2,
+        "libsodium_aead_tags": 1,
+        "openssl_carrier_hmac_verified": true,
+        "argon2id_backend": "argon2-cffi",
+        "argon2id_independent_backend": false
+      },
+      "checksum": "adler32_verified",
+      "connection_tokens_unchanged": true,
+      "unknown_sections_preserved": true,
+      "original_app_import": "pending",
+      "editor_access": "pending",
+      "banner_rendering": "pending"
+    },
+    {
+      "file": "D_ACCESS_HMAC_CANDIDATE.ehi",
+      "sha256": "0d615a5c138f59b46f0e54a71ef0a4783ab838352ce54acb2a1d2e8d130b1baa",
+      "bytes": 17512,
+      "source_sha256": "600c0cafc2419aa59a1b3b4b259030af267d646c327e547a44fdce2ff54f05b7",
+      "source_byte_identical": false,
+      "outer_changed_paths": [
+        [
+          "lockModes"
+        ],
+        [
+          "configData"
+        ],
+        [
+          "lockModesHash"
+        ]
+      ],
+      "inner_changed_paths": [
+        [
+          "isConfigLock"
+        ]
+      ],
+      "checks": {
+        "openssl_cbc_layers": 2,
+        "libsodium_aead_tags": 1,
+        "openssl_carrier_hmac_verified": true,
+        "argon2id_backend": "argon2-cffi",
+        "argon2id_independent_backend": false
+      },
+      "checksum": "adler32_verified",
+      "connection_tokens_unchanged": true,
+      "unknown_sections_preserved": true,
+      "original_app_import": "pending",
+      "editor_access": "pending",
+      "banner_rendering": "not_tested"
+    },
+    {
+      "file": "E_ACCESS_HTML_HMAC_CANDIDATE.ehi",
+      "sha256": "4cdec21427ee012b1b118207ab4606f4a38ae8be150050b672c6f07dc0bbc40f",
+      "bytes": 30584,
+      "source_sha256": "600c0cafc2419aa59a1b3b4b259030af267d646c327e547a44fdce2ff54f05b7",
+      "source_byte_identical": false,
+      "outer_changed_paths": [
+        [
+          "lockModes"
+        ],
+        [
+          "configData"
+        ],
+        [
+          "lockModesHash"
+        ]
+      ],
+      "inner_changed_paths": [
+        [
+          "configMessage"
+        ],
+        [
+          "isConfigLock"
+        ]
+      ],
+      "checks": {
+        "openssl_cbc_layers": 2,
+        "libsodium_aead_tags": 1,
+        "openssl_carrier_hmac_verified": true,
+        "argon2id_backend": "argon2-cffi",
+        "argon2id_independent_backend": false
+      },
+      "checksum": "adler32_verified",
+      "connection_tokens_unchanged": true,
+      "unknown_sections_preserved": true,
+      "original_app_import": "pending",
+      "editor_access": "pending",
+      "banner_rendering": "pending"
+    },
+    {
+      "file": "owned_open/O_A_OPEN_REWRAP.ehi",
+      "sha256": "54c9e0cb281661e62b69c997085da0d753a3abd65d383c35a0c5704438563b0a",
+      "bytes": 18952,
+      "source_sha256": "54c9e0cb281661e62b69c997085da0d753a3abd65d383c35a0c5704438563b0a",
+      "source_byte_identical": true,
+      "outer_changed_paths": [],
+      "inner_changed_paths": [],
+      "checks": {
+        "openssl_cbc_layers": 2,
+        "libsodium_aead_tags": 1,
+        "openssl_carrier_hmac_verified": true,
+        "argon2id_backend": "argon2-cffi",
+        "argon2id_independent_backend": false
+      },
+      "checksum": "adler32_verified",
+      "connection_tokens_unchanged": true,
+      "unknown_sections_preserved": true,
+      "original_app_import": "pending",
+      "editor_access": "pending",
+      "banner_rendering": "not_tested"
+    },
+    {
+      "file": "owned_open/O_B_OPEN_TEXT.ehi",
+      "sha256": "188106348f292ffd022325c8d93c223673fdbbbd317e50c014b18aed733fd959",
+      "bytes": 20232,
+      "source_sha256": "54c9e0cb281661e62b69c997085da0d753a3abd65d383c35a0c5704438563b0a",
+      "source_byte_identical": false,
+      "outer_changed_paths": [
+        [
+          "configData"
+        ]
+      ],
+      "inner_changed_paths": [
+        []
+      ],
+      "checks": {
+        "openssl_cbc_layers": 2,
+        "libsodium_aead_tags": 1,
+        "openssl_carrier_hmac_verified": true,
+        "argon2id_backend": "argon2-cffi",
+        "argon2id_independent_backend": false
+      },
+      "checksum": "adler32_verified",
+      "connection_tokens_unchanged": true,
+      "unknown_sections_preserved": true,
+      "original_app_import": "pending",
+      "editor_access": "pending",
+      "banner_rendering": "not_tested"
+    },
+    {
+      "file": "owned_open/O_C_OPEN_HTML.ehi",
+      "sha256": "d25b41fed1a2fca7b87945c4c8d5a3431dd0e6c77a605705d0d44293ab3e4b82",
+      "bytes": 39752,
+      "source_sha256": "54c9e0cb281661e62b69c997085da0d753a3abd65d383c35a0c5704438563b0a",
+      "source_byte_identical": false,
+      "outer_changed_paths": [
+        [
+          "configData"
+        ]
+      ],
+      "inner_changed_paths": [
+        []
+      ],
+      "checks": {
+        "openssl_cbc_layers": 2,
+        "libsodium_aead_tags": 1,
+        "openssl_carrier_hmac_verified": true,
+        "argon2id_backend": "argon2-cffi",
+        "argon2id_independent_backend": false
+      },
+      "checksum": "adler32_verified",
+      "connection_tokens_unchanged": true,
+      "unknown_sections_preserved": true,
+      "original_app_import": "pending",
+      "editor_access": "pending",
+      "banner_rendering": "pending"
+    }
+  ],
+  "original_app_import": "pending",
+  "editor_access": "pending",
+  "banner_rendering": "pending",
+  "connection_network_test": "not_run",
+  "production_changes": false,
+  "date_local": "2026-10-27",
+  "timezone": "America/Tijuana",
+  "tests": {
+    "lab_passed": 32,
+    "existing_reader_passed": 6,
+    "total": 38
+  },
+  "manual_import_status": "pending_for_every_new_case"
+}

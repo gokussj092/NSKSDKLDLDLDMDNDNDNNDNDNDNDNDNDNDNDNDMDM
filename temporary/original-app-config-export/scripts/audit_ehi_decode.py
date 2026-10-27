@@ -62,7 +62,7 @@ def presentation_type(value):
 
 
 def audit_decode(document):
-    legacy = D._decode_inner_fields(document.inner, document.outer['configSalt'])
+    legacy = D._decode_inner_fields(document.inner, document.field_salt)
     fields = []
     for index, (name, value) in enumerate(document.inner.items()):
         current = legacy[name]
@@ -79,7 +79,7 @@ def audit_decode(document):
             record.update(status='message_codec_roundtrip' if roundtrip else 'unresolved_message',
                           exact_codec_roundtrip=roundtrip)
         else:
-            candidate = canonical_text(value, document.outer['configSalt'])
+            candidate = canonical_text(value, document.field_salt)
             if candidate is None:
                 record['status'] = 'original_string_preserved_codec_unresolved'
             elif any(ord(ch) < 32 and ch not in '\t\r\n' or ord(ch) == 127

@@ -11,6 +11,7 @@ import sys
 
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives.padding import PKCS7
+from cryptography.hazmat.primitives import hashes, hmac
 
 from ehi_export_experiment import (open_profile, reseal, access_candidate_edits,
     encode_message, kdf_key, private_write, summary, EhiLabError, C, D)
@@ -51,9 +52,14 @@ def audit(document):
     second = cbc(base64.b64decode(parts[2]), C.L2_KEY_STATIC, base64.b64decode(parts[0]))
     if D._xxtea_decrypt(second, C.EOO_MASTER_KEY) != document.xx_prefix + document.raw_outer:
         raise EhiLabError('INDEPENDENT_CBC_MISMATCH')
+    if document.carrier_mac_key is not None:
+        mac = hmac.HMAC(document.carrier_mac_key, hashes.SHA256())
+        mac.update(base64.b64decode(parts[0]) + base64.b64decode(parts[2]))
+        mac.verify(base64.b64decode(parts[1]))
     if sodium_open(kdf_key(document.outer, document.aead), document.aead) != document.raw_inner:
         raise EhiLabError('INDEPENDENT_AEAD_PLAINTEXT_MISMATCH')
     return {'openssl_cbc_layers': 2, 'libsodium_aead_tags': 1,
+            'openssl_carrier_hmac_verified': document.carrier_mac_key is not None,
             'argon2id_backend': 'argon2-cffi', 'argon2id_independent_backend': False}
 
 
