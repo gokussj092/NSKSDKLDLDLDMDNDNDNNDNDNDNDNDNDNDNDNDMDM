@@ -1,4 +1,8 @@
-# Auditoría de importación HTTP Custom — 2026-10-26
+# Auditoría inicial de importación HTTP Custom — 2026-10-26
+
+> Registro inicial anterior a la prueba del propietario. El estado actual, los
+> resultados A/B/C aceptados y D/E rechazados, y el candidato `none` están en
+> [HTTP_CUSTOM_ACCESS_FOLLOWUP.md](HTTP_CUSTOM_ACCESS_FOLLOWUP.md).
 
 ## Conclusión y alcance
 

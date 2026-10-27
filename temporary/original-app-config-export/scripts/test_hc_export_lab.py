@@ -29,7 +29,8 @@ def fixture(carrier=0):
     clear = clear.replace('1000.0', '1.000e+03').encode()
     env['i']['b'], env['i']['c'] = seal(key, aad + b'\0m', clear)
     env['i']['unknown'] = {'preserve': [False, 0, {}]}
-    env['i']['d'] = copy.deepcopy(env['j'][0]['d'])  # unknown main sidecar stays byte-identical
+    side_nonce, side_cipher = seal(key, aad + b'\0m:x', b'synthetic main sidecar')
+    env['i']['d'] = {'a': side_nonce, 'b': side_cipher}
     return fixture_seal(env, carrier)
 
 
@@ -71,6 +72,25 @@ class LabTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             rewrap(raw, desired)
         rewrap(raw, desired, allow_access_type_change=True)
+
+    def test_unobserved_access_strings_rejected(self):
+        raw = fixture()
+        for mode in ('false', 'unlocked', ''):
+            desired = codec.decrypt(raw)
+            desired['main']['g']['a'] = mode
+            desired['protections'] = hc._norm_prot(desired['main']['g'])
+            with self.assertRaises(ValueError):
+                rewrap(raw, desired)
+
+    def test_native_none_followup_preserves_all_other_restrictions(self):
+        from create_hc_access_followup import generate_followup
+        raw = fixture()
+        outputs, records = generate_followup(raw)
+        self.assertEqual([r['changed_paths'] for r in records],
+                         [['main.g.a'], ['main.g.a', 'main.g.v', 'main.u']])
+        self.assertTrue(all(r['unedited_restrictions_preserved'] for r in records))
+        for data in outputs:
+            self.assertEqual(codec.decrypt(data)['main']['g']['a'], 'none')
 
     def test_python_boolean_integer_equality_cannot_hide_edit(self):
         original = codec.decrypt(fixture())

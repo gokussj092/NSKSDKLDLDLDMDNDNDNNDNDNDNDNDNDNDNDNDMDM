@@ -1,0 +1,43 @@
+{
+  "library_sha256": "62804ffbad47f599ad0bbb71eec31fad41a4ea3a8eb45cee3410742a299af220",
+  "engine": "Unicorn; modeled JNI; offline",
+  "scope": "four enum constants and constructor only; not Android import",
+  "native_xor_loop_verified": true,
+  "initializers_completed": 1174,
+  "enum_class": "dev/epro/r0/K12246845678248903666",
+  "enum_initializer": "0x9c4bcc",
+  "enum_constructor": "0xa65e44",
+  "modes": [
+    {
+      "enum_name": "NONE",
+      "ordinal": 0,
+      "wire_value": "none",
+      "native_string_field": "a",
+      "constructor_store_verified": true
+    },
+    {
+      "enum_name": "LOCK_ALL",
+      "ordinal": 1,
+      "wire_value": "lock_all",
+      "native_string_field": "a",
+      "constructor_store_verified": true
+    },
+    {
+      "enum_name": "LOCK_PAYLOAD_UNLOCK_SERVER",
+      "ordinal": 2,
+      "wire_value": "lock_payload_unlock_server",
+      "native_string_field": "a",
+      "constructor_store_verified": true
+    },
+    {
+      "enum_name": "UNLOCK_USER_PASS",
+      "ordinal": 3,
+      "wire_value": "unlock_user_pass",
+      "native_string_field": "a",
+      "constructor_store_verified": true
+    }
+  ],
+  "original_app_import_tested": false,
+  "full_parser_executed": false,
+  "policies_or_expiry_disabled": false
+}

@@ -1,0 +1,37 @@
+{
+  "lab_tests": {
+    "passed": 13,
+    "failed": 0
+  },
+  "existing_http_custom_899_tests": {
+    "passed": 9,
+    "failed": 0
+  },
+  "native_probe": {
+    "recovered_constants": 4,
+    "native_constructor_stores_verified": 4,
+    "initializers_completed": 1174,
+    "native_xor_loop_verified": true,
+    "full_importer_executed": false
+  },
+  "new_files": {
+    "count": 2,
+    "pure_python_aead_tags_each": 5,
+    "import_and_editability": "PENDING_MANUAL_TEST"
+  },
+  "prior_matrix_manual_import": {
+    "accepted": [
+      "CONTROL_original.hc",
+      "A_baseline_rewrap.hc",
+      "B_note_only.hc",
+      "C_url_only.hc"
+    ],
+    "rejected": [
+      "CONTROL_previous_rejected.hc",
+      "D_access_only.hc",
+      "E_combined.hc"
+    ],
+    "source": "owner report"
+  },
+  "production_changes": false
+}

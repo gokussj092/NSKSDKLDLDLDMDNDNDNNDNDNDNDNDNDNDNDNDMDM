@@ -1,0 +1,41 @@
+{
+  "source_sha256": "167593e228e10c3eaa98333198f0c1c946f328b7b99ab2ef574bc429576ca4ba",
+  "source_bytes": 4230,
+  "purpose": "Replace rejected boolean with native NONE enum; Android follow-up pending",
+  "cases": [
+    {
+      "case": "D_access_none",
+      "sha256": "3cfe64f49069e219a5cc0d8d840ceb1c9bfa039ebaa6dfb1f6a033ddf8564f60",
+      "bytes": 4208,
+      "access_mode": "none",
+      "access_mode_type": "str",
+      "changed_paths": [
+        "main.g.a"
+      ],
+      "local_crypto_roundtrip": true,
+      "pure_python_tags_verified": 5,
+      "original_profiles_and_sidecars_preserved": true,
+      "unedited_restrictions_preserved": true,
+      "vendor_import_result": "PENDING_MANUAL_TEST",
+      "editability_result": "PENDING_MANUAL_TEST"
+    },
+    {
+      "case": "E_combined_none",
+      "sha256": "85d3fefc5e8709bf44c70f9091a0b9b620a70c80865aebdd155a001c4fa58dd9",
+      "bytes": 4155,
+      "access_mode": "none",
+      "access_mode_type": "str",
+      "changed_paths": [
+        "main.g.a",
+        "main.g.v",
+        "main.u"
+      ],
+      "local_crypto_roundtrip": true,
+      "pure_python_tags_verified": 5,
+      "original_profiles_and_sidecars_preserved": true,
+      "unedited_restrictions_preserved": true,
+      "vendor_import_result": "PENDING_MANUAL_TEST",
+      "editability_result": "PENDING_MANUAL_TEST"
+    }
+  ]
+}

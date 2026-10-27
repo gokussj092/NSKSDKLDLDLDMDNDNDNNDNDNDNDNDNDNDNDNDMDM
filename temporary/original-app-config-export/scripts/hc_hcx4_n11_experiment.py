@@ -22,6 +22,8 @@ from decoders.Python import _hc_hccfg as hc
 from lossless_json import differences, equal, parse, replace_values
 
 ALLOWED = {('g', 'a'), ('g', 'v'), ('u',)}
+# Captured from build 899's native enum constructor; see access_enum_2026-10-26.json.
+ACCESS_MODES = frozenset({'none', 'lock_all', 'lock_payload_unlock_server', 'unlock_user_pass'})
 
 
 def seal(key: bytes, aad: bytes, plaintext: bytes) -> tuple[str, str]:
@@ -62,6 +64,8 @@ def check_changes(original: dict, edited: dict, *, allow_access_type_change=Fals
         before, after = old, new
         for name in path:
             before, after = before[name], after[name]
+        if path == ('g', 'a') and isinstance(after, str) and after not in ACCESS_MODES:
+            raise ValueError('Access mode is not present in the observed build-899 enum')
         if type(before) is not type(after) and not (
                 path == ('g', 'a') and allow_access_type_change
                 and isinstance(before, str) and after is False):

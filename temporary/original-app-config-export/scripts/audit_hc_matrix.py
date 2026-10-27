@@ -111,7 +111,7 @@ def main():
     matrix['_directory'] = args.matrix_dir
     report = run(args.source.read_bytes(), args.historical.read_bytes() if args.historical else None, matrix)
     private_write(args.output, (json.dumps(report, indent=2) + '\n').encode())
-    print('Audited all A-E tags with pure-Python AEAD; unedited bytes and metadata match. Android import: PENDING.')
+    print('Audited all supplied cases with pure-Python AEAD; unedited bytes and metadata match. Android import: PENDING.')
 
 
 if __name__ == '__main__':

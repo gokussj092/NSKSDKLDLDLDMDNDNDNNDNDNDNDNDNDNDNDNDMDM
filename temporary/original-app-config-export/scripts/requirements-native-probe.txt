@@ -1,0 +1,4 @@
+# Optional investigation only; not needed to rewrap files.
+capstone==5.0.9
+unicorn==2.1.4
+pyelftools==0.33

@@ -1,0 +1,55 @@
+{
+  "reported_by": "owner in this conversation",
+  "report_date_local": "2026-10-26",
+  "target_app_build": 899,
+  "device_app_build_independently_reconfirmed": false,
+  "hashes_from_delivered_bundle_not_remeasured_on_device": true,
+  "user_statement": "Solo fallaron CONTROL_previous_rejected.hc, D_access_only.hc y E_combined.hc; el resto se importo correctamente.",
+  "cases": [
+    {
+      "file": "A_baseline_rewrap.hc",
+      "expected_sha256": "942ad14a2f13b3e1e0b54a830ffff0a514822becf06c684645d51add5f00a7a9",
+      "import_result": "ACCEPTED_OWNER_REPORTED"
+    },
+    {
+      "file": "B_note_only.hc",
+      "expected_sha256": "e7a75bd34cd7da0364e5c4f15d81a7a325aca32ee55f59460eaef454de18313d",
+      "import_result": "ACCEPTED_OWNER_REPORTED"
+    },
+    {
+      "file": "C_url_only.hc",
+      "expected_sha256": "734067f5567b20c97807007e3e10c0d6138075f04f4af09aff477833b41a6784",
+      "import_result": "ACCEPTED_OWNER_REPORTED"
+    },
+    {
+      "file": "D_access_only.hc",
+      "expected_sha256": "d31a3d46e68441076021290f229767fd14fc435d6deabe95a662414da15be77f",
+      "import_result": "REJECTED_OWNER_REPORTED"
+    },
+    {
+      "file": "E_combined.hc",
+      "expected_sha256": "bc887915e0bea8ba6d233c523085c607d824effae930c48103dc20068dceef53",
+      "import_result": "REJECTED_OWNER_REPORTED"
+    }
+  ],
+  "controls": [
+    {
+      "file": "CONTROL_original.hc",
+      "expected_sha256": "167593e228e10c3eaa98333198f0c1c946f328b7b99ab2ef574bc429576ca4ba",
+      "import_result": "ACCEPTED_OWNER_REPORTED"
+    },
+    {
+      "file": "CONTROL_previous_rejected.hc",
+      "expected_sha256": "78d257386e9a50cc4548f44df0d67cdb37526941952ebcf490a66f6d74ee6f6f",
+      "import_result": "REJECTED_OWNER_REPORTED"
+    }
+  ],
+  "confirmed_isolation": "main.g.a=false rejected while unmodified, note-only and URL-only imports accepted",
+  "not_confirmed": [
+    "Exact importer exception and coercion behavior",
+    "Import of replacement string none",
+    "Editability after import",
+    "Connection and remote update behavior",
+    "Removal of unrelated expiry, password or HWID restrictions"
+  ]
+}
