@@ -14,6 +14,7 @@ from hc_hcx4_n11_experiment import codec, hc, open_original, seal, private_write
 from lossless_json import parse, replace_values, equal, differences
 from create_hc_import_matrix import NOTE, URL
 from audit_hc_matrix import authenticate_pure
+from spdecode_note import replace_note
 
 
 def validate_file(raw):
@@ -109,7 +110,8 @@ def connection_view(decoded):
     return result
 
 
-def convert(raw, reference, *, combined=False, add_profiles=True, relocate=True):
+def convert(raw, reference, *, combined=False, add_profiles=True, relocate=True,
+            personalize_notes=True, note_language='es'):
     env, original = validate_file(raw)
     ref_env, ref_decoded = validate_file(reference)
     if ref_decoded["main"]["g"]["a"] != "none" or "profiles" not in ref_env["f"]:
@@ -133,8 +135,12 @@ def convert(raw, reference, *, combined=False, add_profiles=True, relocate=True)
     if add_profiles:
         edits[("c",)] = features
     if combined:
-        edits[("g", "v")], edits[("u",)] = NOTE, URL
+        edits[("u",)] = URL
+        if not personalize_notes:
+            edits[("g", "v")] = NOTE
     new_main = replace_values(main_clear, edits)
+    if personalize_notes:
+        new_main = replace_note(new_main, note_language)
     new_env["i"]["b"], new_env["i"]["c"] = seal(
         new_key, new_aad + b"\0" + env["i"]["a"].encode(), new_main
     )
@@ -200,6 +206,8 @@ def convert(raw, reference, *, combined=False, add_profiles=True, relocate=True)
         unedited_hpc1_binary_fields_preserved=True,
         unknown_envelope_values_preserved=True,
         pure_python_aead_tags_verified=tags,
+        personalized_html_note=personalize_notes,
+        note_language=note_language if personalize_notes else None,
         import_result="PENDING_MANUAL_TEST",
         editability_result="PENDING_MANUAL_TEST",
     )
@@ -210,6 +218,7 @@ def main():
     parser.add_argument("--source", required=True, type=Path)
     parser.add_argument("--reference", required=True, type=Path)
     parser.add_argument("--output-dir", required=True, type=Path)
+    parser.add_argument('--language', choices=('es','en'), default='es')
     args = parser.parse_args()
     source, reference = args.source.read_bytes(), args.reference.read_bytes()
     reference_env, reference_decoded = validate_file(reference)
@@ -222,10 +231,10 @@ def main():
         )
     ]
     for case, settings in [
-        ("D_open_layout", {}),
-        ("E_open_layout_combined", {"combined": True}),
-        ("diagnostics/B_hpc1_only", {"add_profiles": False, "relocate": False}),
-        ("diagnostics/C_hpc1_profiles", {"relocate": False}),
+        ("D_open_layout", {'note_language': args.language}),
+        ("E_open_layout_combined", {"combined": True, 'note_language': args.language}),
+        ("diagnostics/B_hpc1_only", {"add_profiles": False, "relocate": False, 'personalize_notes': False}),
+        ("diagnostics/C_hpc1_profiles", {"relocate": False, 'personalize_notes': False}),
     ]:
         data, record = convert(source, reference, **settings)
         cases.append((case, data, record))

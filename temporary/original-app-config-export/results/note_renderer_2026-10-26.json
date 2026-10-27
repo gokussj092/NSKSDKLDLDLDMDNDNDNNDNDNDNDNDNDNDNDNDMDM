@@ -1,0 +1,61 @@
+{
+  "library_sha256": "62804ffbad47f599ad0bbb71eec31fad41a4ea3a8eb45cee3410742a299af220",
+  "enum_constructions": [
+    [
+      [
+        "string",
+        "DEFAULT"
+      ],
+      0,
+      [
+        "string",
+        "default"
+      ]
+    ],
+    [
+      [
+        "string",
+        "NOTE"
+      ],
+      1,
+      [
+        "string",
+        "note"
+      ]
+    ],
+    [
+      [
+        "string",
+        "CUSTOM"
+      ],
+      2,
+      [
+        "string",
+        "custom"
+      ]
+    ]
+  ],
+  "render_results": [
+    {
+      "style": "default",
+      "returned": 0
+    },
+    {
+      "style": "note",
+      "returned": [
+        "string",
+        "PLAIN_NOTE_SENTINEL"
+      ]
+    },
+    {
+      "style": "custom",
+      "returned": [
+        "string",
+        "<div>CUSTOM_HTML_SENTINEL</div>"
+      ]
+    }
+  ],
+  "execution": "Unicorn, modeled JNI and synthetic sentinel strings",
+  "android_webview_render_tested": false,
+  "network_used": false
+}

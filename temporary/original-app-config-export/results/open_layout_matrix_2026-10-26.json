@@ -6,7 +6,7 @@
       "case": "A_owned_open_rewrap",
       "sha256": "0a4d6cb4f0a5899b23ae48583a45f17244e9ef3b04f635450926df214226e4ce",
       "bytes": 3209,
-      "import_result": "PENDING_MANUAL_TEST",
+      "import_result": "ACCEPTED_OWNER_REPORTED",
       "changes": "none"
     },
     {
@@ -37,8 +37,8 @@
       "unedited_hpc1_binary_fields_preserved": true,
       "unknown_envelope_values_preserved": true,
       "pure_python_aead_tags_verified": 3,
-      "import_result": "PENDING_MANUAL_TEST",
-      "editability_result": "PENDING_MANUAL_TEST"
+      "import_result": "ACCEPTED_OWNER_REPORTED",
+      "editability_result": "NOT_EXPLICITLY_REPORTED"
     },
     {
       "case": "E_open_layout_combined",
@@ -70,8 +70,8 @@
       "unedited_hpc1_binary_fields_preserved": true,
       "unknown_envelope_values_preserved": true,
       "pure_python_aead_tags_verified": 3,
-      "import_result": "PENDING_MANUAL_TEST",
-      "editability_result": "PENDING_MANUAL_TEST"
+      "import_result": "ACCEPTED_OWNER_REPORTED",
+      "editability_result": "NOT_EXPLICITLY_REPORTED"
     },
     {
       "case": "diagnostics/B_hpc1_only",
@@ -135,5 +135,6 @@
     }
   ],
   "main_l_and_note_style_not_copied_from_reference": true,
-  "root_cause_status": "Structural incompatibility observed; exact vendor failure pending controlled import"
+  "root_cause_status": "Open-layout conversion imported by owner; exact internal exception of earlier layouts not captured",
+  "owner_manual_followup": "Owner confirmed the three primary files imported correctly."
 }

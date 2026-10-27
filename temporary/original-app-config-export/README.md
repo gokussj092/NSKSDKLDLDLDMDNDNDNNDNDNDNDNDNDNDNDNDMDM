@@ -5,29 +5,25 @@ Trabajo del 26 de octubre de 2026 (America/Tijuana). **No fusionar a main**.
 Solo HTTP Custom 7.11.28 Patch 1, build 899, HCX4 / HCCFG10 / n11 sin
 contraseña/HWID. No se implementa un exportador de producción.
 
-## Estado actual: referencia propia abierta
+## Estado actual: estructura importada y nueva nota HTML
 
-El propietario confirmó que los dos candidatos `none` también fallaron. Aportó
-`Test Oppen.hc`, creado sin activar bloqueos, que autentica como build 899 y
-confirma el valor `none`. La diferencia adicional comprobada es la estructura:
-la referencia usa **HPC1 directo, `profiles` y ningún sidecar**, mientras los
-candidatos anteriores conservaban HPR1 y la estructura del original bloqueado.
+El propietario confirmó importación correcta de los tres archivos principales:
+**A_owned_open_rewrap, D_open_layout y E_open_layout_combined**. La estructura
+abierta ya superó esa prueba manual. El reporte y los hashes se conservan en
+`results/open_layout_manual_acceptance_2026-10-26.json` y el manifiesto histórico.
 
-Se prepararon un control de la referencia y dos candidatos de migración:
-`A_owned_open_rewrap.hc`, `D_open_layout.hc` y `E_open_layout_combined.hc`.
-Conservan los parámetros de conexión; los dos candidatos retiran HPR1, migran
-el custom payload, añaden la capacidad observada y vuelven a derivar/sellar
-las capas. **Importación y edición Android de esta nueva matriz: pendientes.**
-No se afirma todavía cuál validación interna produjo el mensaje del importador.
+La nueva nota AMOLED usa los créditos de SP-DECODE, Ghost Developer y
+Ghost Nexora Studio, y enlaces oficiales del sitio, canal y comunidad.
+**Siempre sustituye el contenido anterior o se inserta si no hay nota.**
+El formato observado para HTML es `main.g.x = {v:1,s:"custom",h:HTML}`;
+`main.g.v` se sustituye también por créditos legibles.
 
-Ver [comparación y reproducción actual](docs/HTTP_CUSTOM_OPEN_LAYOUT_REFERENCE.md).
-Scripts actuales: `compare_hc_layouts.py`, `hc_open_layout_experiment.py` y
-`test_hc_open_layout.py`. Pasan 30 pruebas locales en total.
-
-Los informes originales y la recuperación del enum se conservan como evidencia
-histórica. `create_hc_access_followup.py` solo puede reproducir la transformación
-rechazada mediante `--reproduce-rejected-layout`; el rewrap simple bloquea ese
-cambio de modo si deja el perfil HPR1 intacto.
+Ver [diseño, campos y comandos actuales](docs/HTTP_CUSTOM_HTML_NOTES.md).
+Fragmentos y vistas previas en `notes/`; módulo `spdecode_note.py` y comando
+`write_hc_html_note.py` en `scripts/`. El conversor abierto incorpora la nota
+por defecto. Los nuevos F/G con HTML aún necesitan importación y revisión
+visual en HTTP Custom. Pasan 38 pruebas locales; la selección del HTML también
+se contrastó con la rama nativa usando datos sintéticos.
 
 ## Correcciones
 

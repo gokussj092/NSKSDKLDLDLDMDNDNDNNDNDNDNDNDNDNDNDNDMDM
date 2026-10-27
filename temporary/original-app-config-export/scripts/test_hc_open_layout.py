@@ -138,7 +138,8 @@ class OpenLayoutTests(unittest.TestCase):
         old, new = codec.decrypt(raw)["main"], codec.decrypt(out)["main"]
         self.assertEqual(old.keys(), new.keys())
         self.assertEqual(old["unknown"], new["unknown"])
-        self.assertEqual(new["g"].keys(), old["g"].keys())
+        self.assertEqual(new["g"].keys(), old["g"].keys() | {'x'})
+        self.assertEqual(new['g']['x']['s'], 'custom')
         for k in old["g"].keys() - {"a", "v"}:
             self.assertEqual(old["g"][k], new["g"][k])
 

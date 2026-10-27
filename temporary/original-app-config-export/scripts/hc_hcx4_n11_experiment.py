@@ -51,16 +51,25 @@ def carrier_depth(original: bytes) -> int:
     return open_original(original)[0]
 
 
-def check_changes(original: dict, edited: dict, *, allow_access_type_change=False) -> None:
+def check_changes(original: dict, edited: dict, *, allow_access_type_change=False,
+                  allow_note_template=False) -> None:
     if not isinstance(edited, dict) or edited.keys() != original.keys():
         raise ValueError('Edited projection root is incomplete or adds fields')
     for name in original.keys() - {'main', 'protections'}:
         if not equal(original[name], edited[name]):
             raise ValueError('Unexpected changes outside main/protections')
     old, new = original['main'], edited['main']
-    if not isinstance(new, dict) or not set(differences(old, new)) <= ALLOWED:
+    compared_old, compared_new = old, new
+    if allow_note_template:
+        from spdecode_note import validate_note_changes
+        validate_note_changes(old['g'], new['g'])
+        compared_old, compared_new = copy.deepcopy(old), copy.deepcopy(new)
+        for obj in (compared_old, compared_new):
+            for name in ('v', 'x', 'e'):
+                obj['g'].pop(name, None)
+    if not isinstance(new, dict) or not set(differences(compared_old, compared_new)) <= ALLOWED:
         raise ValueError('Only existing main.g.a, main.g.v and main.u may change')
-    for path in differences(old, new):
+    for path in differences(compared_old, compared_new):
         before, after = old, new
         for name in path:
             before, after = before[name], after[name]
@@ -85,9 +94,10 @@ def private_write(path: Path, data: bytes) -> None:
 
 
 def rewrap(raw: bytes, edited: dict, *, allow_access_type_change=False,
-           allow_rejected_layout=False) -> bytes:
+           allow_rejected_layout=False, note_language=None) -> bytes:
     decoded = codec.decrypt(raw)
-    check_changes(decoded, edited, allow_access_type_change=allow_access_type_change)
+    check_changes(decoded, edited, allow_access_type_change=allow_access_type_change,
+                  allow_note_template=note_language is not None)
     depth, outer_clear = open_original(raw)
     envelope = parse(outer_clear)
     if not (type(envelope.get('b')) is int and envelope['b'] == 10
@@ -116,7 +126,13 @@ def rewrap(raw: bytes, edited: dict, *, allow_access_type_change=False,
             value = value[name]
         edits[path] = value
     # Baseline plaintext is BYTE-IDENTICAL. Other cases touch only edited tokens.
-    new_clear = replace_values(clear, edits) if edits else clear
+    if note_language is not None:
+        from spdecode_note import replace_note
+        new_clear = replace_note(clear, note_language)
+        if not equal(parse(new_clear), edited['main']):
+            raise ValueError('Requested HTML note does not match edited main')
+    else:
+        new_clear = replace_values(clear, edits) if edits else clear
     nonce, encrypted = seal(key, section_aad, new_clear)
     outer_new = replace_values(outer_clear, {('i', 'b'): nonce, ('i', 'c'): encrypted})
     nonce, encrypted = seal(codec.OUTER_KEY, codec.OUTER_AAD, outer_new)

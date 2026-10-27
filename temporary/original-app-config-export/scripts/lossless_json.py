@@ -47,12 +47,8 @@ def differences(left, right, path=()) -> list[tuple]:
     return [] if equal(left, right) else [path]
 
 
-def replace_values(raw: bytes, edits: dict[tuple, object]) -> bytes:
-    """Keep every byte outside existing edited value spans, including escapes.
-
-    No added/deleted keys, regex replacement, global reserialization, or
-    duplicate-key guessing. Offsets refer to Unicode text; UTF-8 is lossless.
-    """
+def _value_spans(raw: bytes):
+    """Return strict JSON text and value-token offsets without normalizing it."""
     text = raw.decode('utf-8')
     parse(raw)
     spans = {}
@@ -98,6 +94,12 @@ def replace_values(raw: bytes, edits: dict[tuple, object]) -> bytes:
         return pos
 
     walk(0, ())
+    return text, spans
+
+
+def replace_values(raw: bytes, edits: dict[tuple, object]) -> bytes:
+    """Replace existing value tokens; keep all other UTF-8 bytes intact."""
+    text, spans = _value_spans(raw)
     changes = []
     for path, value in edits.items():
         if path not in spans:
@@ -111,5 +113,29 @@ def replace_values(raw: bytes, edits: dict[tuple, object]) -> bytes:
     for start, end, token in reversed(ordered):
         text = text[:start] + token + text[end:]
     result = text.encode('utf-8')
+    parse(result)
+    return result
+
+
+def put_member(raw: bytes, parent: tuple, name: str, value) -> bytes:
+    """Set a known object member, appending only its token when absent.
+
+    Existing siblings retain their exact raw spelling, escapes and spacing.
+    This does not infer missing parent containers or normalize unknown fields.
+    """
+    if not isinstance(name, str):
+        raise ValueError('JSON object member name must be a string')
+    obj = parse(raw)
+    for part in parent:
+        obj = obj[part]
+    if not isinstance(obj, dict):
+        raise ValueError('JSON parent must already be an object')
+    if name in obj:
+        return replace_values(raw, {parent + (name,): value})
+    text, spans = _value_spans(raw)
+    _, end = spans[parent]
+    token = (',' if obj else '') + json.dumps(name, ensure_ascii=False) + ':'
+    token += json.dumps(value, ensure_ascii=False, allow_nan=False, separators=(',', ':'))
+    result = (text[:end-1] + token + text[end-1:]).encode('utf-8')
     parse(result)
     return result

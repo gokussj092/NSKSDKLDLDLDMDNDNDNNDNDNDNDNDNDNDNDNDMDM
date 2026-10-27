@@ -2,6 +2,11 @@
 
 Fecha: 2026-10-26, America/Tijuana. Rama temporal existente; sin cambios productivos.
 
+> Actualización: el propietario confirmó que A, D y E se importaron
+> correctamente. La nota HTML nueva y su estado de prueba están en
+> [HTTP_CUSTOM_HTML_NOTES.md](HTTP_CUSTOM_HTML_NOTES.md). Los estados pendientes
+> de este registro describen el momento anterior a esa confirmación.
+
 ## Corrección del diagnóstico anterior
 
 El propietario confirmó que **D_access_none.hc y E_combined_none.hc también

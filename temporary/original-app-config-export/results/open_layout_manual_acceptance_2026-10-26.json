@@ -1,0 +1,13 @@
+{
+  "reported_by": "owner in this conversation",
+  "date_local": "2026-10-26",
+  "accepted_primary_files": [
+    "A_owned_open_rewrap.hc",
+    "D_open_layout.hc",
+    "E_open_layout_combined.hc"
+  ],
+  "exact_device_hashes_remeasured": false,
+  "target_build": 899,
+  "new_html_design_status": "PENDING_MANUAL_IMPORT_AND_RENDERING",
+  "scope": "Import acceptance of prior plain-note files; no new claim about connection or unrelated restrictions"
+}
