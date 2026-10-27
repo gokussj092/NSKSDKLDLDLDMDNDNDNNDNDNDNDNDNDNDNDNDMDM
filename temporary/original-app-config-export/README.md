@@ -1,9 +1,40 @@
 # TEMPORARY — Original-App Config Export Lab
 
 Rama exclusiva: `feat/temporary-original-app-config-export-lab`.
-Trabajo del 26 de octubre de 2026 (America/Tijuana). **No fusionar a main**.
-Solo HTTP Custom 7.11.28 Patch 1, build 899, HCX4 / HCCFG10 / n11 sin
-contraseña/HWID. No se implementa un exportador de producción.
+Trabajo inicial del 26 de octubre de 2026 (America/Tijuana), continuación
+Dark Tunnel del 27 de octubre (UTC). **No fusionar a main**.
+HTTP Custom 7.11.28 Patch 1, build 899, HCX4 / HCCFG10 / n11 sin
+contraseña/HWID, y laboratorio Dark Tunnel 1.0.26, build 32.
+No se implementa un exportador de producción.
+
+## Continuación: Dark Tunnel y repositorio migrado
+
+Por instrucción del propietario, esta continuación utiliza exclusivamente la
+cuenta GitHub **gokussj092** y el repositorio privado
+`gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM`, conservando esta rama.
+Su punto de partida era el mismo commit `9cafafeb9e8cb8a1f31be285467004dec393bba5`.
+El nombre de la aplicación y sus créditos se mantienen como SP-DECODE.
+
+Se interpreta la referencia verbal a «Hot Tunnel» como **Dark Tunnel**, porque
+los materiales disponibles son `DarkTunnel_1.0.26.apks` y una muestra `.dark`.
+La muestra está **ya abierta**, con `darktunnel://` + Base64 + JSON VLESS.
+No existe todavía una muestra bloqueada real de Dark Tunnel en los materiales
+disponibles. No confundir los controles artificiales con una exportación del APK.
+
+El lector experimental preserva JSON y MessagePack originales, bytes, claves
+`Password`, secciones desconocidas y capas AES-CFB. El CLI exporta tanto `.dark`
+como el token de texto. El desbloqueo experimental reconstruye SSH y VLESS
+cuando todo el contenido coincide con los esquemas auditados. Las demás
+variantes se rechazan expresamente.
+
+**25 pruebas nuevas + 38 regresiones HTTP Custom pasan; importación Android
+pendiente.** Seis serializadores Go originales fueron ejecutados con valores
+sintéticos y el cifrado se contrastó con un segundo backend. No se ha cambiado
+el lector productivo, el router de textos, Android ni la API.
+
+Ver [diagnóstico, límites y reproducción](docs/DARK_TUNNEL_EXPORT_LAB.md),
+`scripts/dark_tunnel_experiment.py`, `scripts/create_dark_export_matrix.py`
+y los resultados `results/dark_*_2026-10-27.json`.
 
 ## Estado actual: estructura importada y nueva nota HTML
 

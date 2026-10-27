@@ -1,0 +1,73 @@
+{
+  "app": {
+    "package": "net.darktunnel.app",
+    "version": "1.0.26",
+    "version_code": 32
+  },
+  "input_hashes": {
+    "DarkTunnel_1.0.26.apks": "6993486efbcc5a4d9d88a6e84b6a8d2e45ddeab0a45d13ca8a49cb5de1564605",
+    "base.apk": "fa5fbc7473636456d525ee8c8a9f6e9ae168008d64c415867084b623f47e8b2e",
+    "libgojni.so": "dc70bfc8a4c50d874ae7361e40098fedaf96dd6157a9d6370718658fd820adfb"
+  },
+  "python": "3.12.14",
+  "tests": {
+    "dark_export_lab": 25,
+    "existing_http_custom_lab": 29,
+    "production_http_custom_899": 9,
+    "total_passed": 63
+  },
+  "native_probe": {
+    "original_go_serializers_passed": 6,
+    "original_android_app_started": false,
+    "synthetic_only": true,
+    "laboratory_schema_matches_original": true,
+    "native_crypto_constants_match": {
+      "keys": 2,
+      "iv_globals": 4
+    }
+  },
+  "crypto": {
+    "independent_backends": [
+      "PyCryptodome 3.23.0",
+      "cryptography 50.0.2"
+    ],
+    "nist_cfb128_vector": "passed",
+    "key_length_bits": [
+      192,
+      256
+    ],
+    "tested_lengths": [
+      0,
+      1,
+      15,
+      16,
+      17,
+      31,
+      32,
+      257,
+      4097
+    ],
+    "cfb_comparisons_in_generated_controls": 48,
+    "authentication_tag": false
+  },
+  "decompilation": {
+    "tool": "JADX 1.5.6",
+    "exit_code": 3,
+    "whole_apk_errors": 111,
+    "relevant_serializers_and_export_method_available": true,
+    "enum_names_cross_checked_with_original_dex": true
+  },
+  "source_reference": {
+    "provided_dark_bytes": 757,
+    "already_open": true,
+    "original_vendor_version_not_encoded_in_open_container": true,
+    "original_production_reader_returns_none": true
+  },
+  "manual_status": {
+    "original_app_import": "pending",
+    "editable_fields": "pending",
+    "network_connection": "not_tested",
+    "real_vendor_locked_export": "missing"
+  },
+  "production_files_modified": false
+}

@@ -1,0 +1,442 @@
+{
+  "library_sha256": "dc70bfc8a4c50d874ae7361e40098fedaf96dd6157a9d6370718658fd820adfb",
+  "execution": "bounded_original_go_serializers",
+  "synthetic_only": true,
+  "android_import": "pending",
+  "types": {
+    "app": {
+      "serialized_fields": {
+        "VersionCode": "int",
+        "VersionName": "bytes",
+        "Message": "bytes",
+        "ConnectedMessage": "bytes",
+        "Password": "bytes",
+        "ExpiredAtTimestamp": "int",
+        "HardwareIdList": "list",
+        "TunnelType": "str",
+        "IsSshLocked": "bool"
+      },
+      "native_fields": [
+        {
+          "name": "VersionCode",
+          "tag": "",
+          "offset": 0,
+          "kind": 2
+        },
+        {
+          "name": "VersionName",
+          "tag": "",
+          "offset": 8,
+          "kind": 23
+        },
+        {
+          "name": "Message",
+          "tag": "",
+          "offset": 32,
+          "kind": 23
+        },
+        {
+          "name": "ConnectedMessage",
+          "tag": "",
+          "offset": 56,
+          "kind": 23
+        },
+        {
+          "name": "Password",
+          "tag": "",
+          "offset": 80,
+          "kind": 23
+        },
+        {
+          "name": "ExpiredAtTimestamp",
+          "tag": "",
+          "offset": 104,
+          "kind": 6
+        },
+        {
+          "name": "HardwareIdList",
+          "tag": "",
+          "offset": 112,
+          "kind": 23
+        },
+        {
+          "name": "TunnelType",
+          "tag": "",
+          "offset": 136,
+          "kind": 24
+        },
+        {
+          "name": "IsSshLocked",
+          "tag": "",
+          "offset": 152,
+          "kind": 1
+        }
+      ],
+      "bytes": 243,
+      "sha256": "7f7a75b1c1c9e372b995aadd6032c191ccf16515aeacc006089ac57ea4343c06"
+    },
+    "ssh": {
+      "serialized_fields": {
+        "IsEncrypted": "bool",
+        "IsLocked": "bool",
+        "EncryptedHost": "bytes",
+        "EncryptedPort": "bytes",
+        "EncryptedUsername": "bytes",
+        "EncryptedPassword": "bytes"
+      },
+      "native_fields": [
+        {
+          "name": "IsEncrypted",
+          "tag": "",
+          "offset": 0,
+          "kind": 1
+        },
+        {
+          "name": "IsLocked",
+          "tag": "",
+          "offset": 1,
+          "kind": 1
+        },
+        {
+          "name": "Host",
+          "tag": "msg:\"-\"",
+          "offset": 8,
+          "kind": 24
+        },
+        {
+          "name": "Port",
+          "tag": "msg:\"-\"",
+          "offset": 24,
+          "kind": 2
+        },
+        {
+          "name": "Username",
+          "tag": "msg:\"-\"",
+          "offset": 32,
+          "kind": 24
+        },
+        {
+          "name": "Password",
+          "tag": "msg:\"-\"",
+          "offset": 48,
+          "kind": 24
+        },
+        {
+          "name": "EncryptedHost",
+          "tag": "",
+          "offset": 64,
+          "kind": 23
+        },
+        {
+          "name": "EncryptedPort",
+          "tag": "",
+          "offset": 88,
+          "kind": 23
+        },
+        {
+          "name": "EncryptedUsername",
+          "tag": "",
+          "offset": 112,
+          "kind": 23
+        },
+        {
+          "name": "EncryptedPassword",
+          "tag": "",
+          "offset": 136,
+          "kind": 23
+        }
+      ],
+      "bytes": 192,
+      "sha256": "5726d4f3c9ca562355e5fb8cf79d4804136537591f6c28c20679dec63ac73e93"
+    },
+    "inject": {
+      "serialized_fields": {
+        "IsEncrypted": "bool",
+        "EncryptedMode": "bytes",
+        "EncryptedProxyHost": "bytes",
+        "EncryptedProxyPort": "bytes",
+        "EncryptedServerNameIndication": "bytes",
+        "EncryptedPayload": "bytes",
+        "EncryptedDnsttDnsHost": "bytes",
+        "EncryptedDnsttDnsPort": "bytes",
+        "EncryptedDnsttServerName": "bytes",
+        "EncryptedDnsttPubkey": "bytes"
+      },
+      "native_fields": [
+        {
+          "name": "IsEncrypted",
+          "tag": "",
+          "offset": 0,
+          "kind": 1
+        },
+        {
+          "name": "Mode",
+          "tag": "msg:\"-\"",
+          "offset": 8,
+          "kind": 24
+        },
+        {
+          "name": "ProxyHost",
+          "tag": "msg:\"-\"",
+          "offset": 24,
+          "kind": 24
+        },
+        {
+          "name": "ProxyPort",
+          "tag": "msg:\"-\"",
+          "offset": 40,
+          "kind": 2
+        },
+        {
+          "name": "ServerNameIndication",
+          "tag": "msg:\"-\"",
+          "offset": 48,
+          "kind": 24
+        },
+        {
+          "name": "Payload",
+          "tag": "msg:\"-\"",
+          "offset": 64,
+          "kind": 24
+        },
+        {
+          "name": "DnsttDnsHost",
+          "tag": "msg:\"-\"",
+          "offset": 80,
+          "kind": 24
+        },
+        {
+          "name": "DnsttDnsPort",
+          "tag": "msg:\"-\"",
+          "offset": 96,
+          "kind": 2
+        },
+        {
+          "name": "DnsttServerName",
+          "tag": "msg:\"-\"",
+          "offset": 104,
+          "kind": 24
+        },
+        {
+          "name": "DnsttPubkey",
+          "tag": "msg:\"-\"",
+          "offset": 120,
+          "kind": 24
+        },
+        {
+          "name": "PayloadEnhanced",
+          "tag": "msg:\"-\"",
+          "offset": 136,
+          "kind": 1
+        },
+        {
+          "name": "BufferSizeSend",
+          "tag": "msg:\"-\"",
+          "offset": 144,
+          "kind": 2
+        },
+        {
+          "name": "BufferSizeReceive",
+          "tag": "msg:\"-\"",
+          "offset": 152,
+          "kind": 2
+        },
+        {
+          "name": "EncryptedMode",
+          "tag": "",
+          "offset": 160,
+          "kind": 23
+        },
+        {
+          "name": "EncryptedProxyHost",
+          "tag": "",
+          "offset": 184,
+          "kind": 23
+        },
+        {
+          "name": "EncryptedProxyPort",
+          "tag": "",
+          "offset": 208,
+          "kind": 23
+        },
+        {
+          "name": "EncryptedServerNameIndication",
+          "tag": "",
+          "offset": 232,
+          "kind": 23
+        },
+        {
+          "name": "EncryptedPayload",
+          "tag": "",
+          "offset": 256,
+          "kind": 23
+        },
+        {
+          "name": "EncryptedDnsttDnsHost",
+          "tag": "",
+          "offset": 280,
+          "kind": 23
+        },
+        {
+          "name": "EncryptedDnsttDnsPort",
+          "tag": "",
+          "offset": 304,
+          "kind": 23
+        },
+        {
+          "name": "EncryptedDnsttServerName",
+          "tag": "",
+          "offset": 328,
+          "kind": 23
+        },
+        {
+          "name": "EncryptedDnsttPubkey",
+          "tag": "",
+          "offset": 352,
+          "kind": 23
+        }
+      ],
+      "bytes": 482,
+      "sha256": "743c6eef624737c4e3eeb3bdc88e2a5383e32608a7003f7606a5b00f0e1f49b0"
+    },
+    "v2ray": {
+      "serialized_fields": {
+        "IsEncrypted": "bool",
+        "IsInjectModeEnabled": "bool",
+        "EncryptedConfig": "bytes"
+      },
+      "native_fields": [
+        {
+          "name": "IsEncrypted",
+          "tag": "",
+          "offset": 0,
+          "kind": 1
+        },
+        {
+          "name": "IsInjectModeEnabled",
+          "tag": "",
+          "offset": 1,
+          "kind": 1
+        },
+        {
+          "name": "ProxyNetwork",
+          "tag": "msg:\"-\"",
+          "offset": 8,
+          "kind": 24
+        },
+        {
+          "name": "ProxyAddress",
+          "tag": "msg:\"-\"",
+          "offset": 24,
+          "kind": 24
+        },
+        {
+          "name": "TargetHost",
+          "tag": "msg:\"-\"",
+          "offset": 40,
+          "kind": 24
+        },
+        {
+          "name": "TargetPort",
+          "tag": "msg:\"-\"",
+          "offset": 56,
+          "kind": 2
+        },
+        {
+          "name": "Config",
+          "tag": "msg:\"-\"",
+          "offset": 64,
+          "kind": 24
+        },
+        {
+          "name": "HttpSocks5ListenHost",
+          "tag": "msg:\"-\"",
+          "offset": 80,
+          "kind": 24
+        },
+        {
+          "name": "HttpListenPort",
+          "tag": "msg:\"-\"",
+          "offset": 96,
+          "kind": 2
+        },
+        {
+          "name": "Socks5ListenPort",
+          "tag": "msg:\"-\"",
+          "offset": 104,
+          "kind": 2
+        },
+        {
+          "name": "MuxEnabled",
+          "tag": "msg:\"-\"",
+          "offset": 112,
+          "kind": 24
+        },
+        {
+          "name": "EncryptedConfig",
+          "tag": "",
+          "offset": 128,
+          "kind": 23
+        }
+      ],
+      "bytes": 77,
+      "sha256": "a4f62cf17729d9fef590ea22cd654bc3ba01ff612e6bdddeba9f95227efaf885"
+    },
+    "export": {
+      "serialized_fields": {
+        "LockedAppConfig": "dict",
+        "EncryptedLockedConfig": "bytes"
+      },
+      "native_fields": [
+        {
+          "name": "LockedAppConfig",
+          "tag": "",
+          "offset": 0,
+          "kind": 22
+        },
+        {
+          "name": "EncryptedLockedConfig",
+          "tag": "",
+          "offset": 8,
+          "kind": 23
+        }
+      ],
+      "bytes": 314,
+      "sha256": "f88b15527791f4ac392b84bd56d0ecac2ffeea04d1546e0009c23639913f60b5"
+    },
+    "locked": {
+      "serialized_fields": {
+        "InjectConfig": "dict",
+        "SshConfig": "dict",
+        "V2RayConfig": "dict"
+      },
+      "native_fields": [
+        {
+          "name": "InjectConfig",
+          "tag": "",
+          "offset": 0,
+          "kind": 22
+        },
+        {
+          "name": "SshConfig",
+          "tag": "",
+          "offset": 8,
+          "kind": 22
+        },
+        {
+          "name": "V2RayConfig",
+          "tag": "",
+          "offset": 16,
+          "kind": 22
+        }
+      ],
+      "bytes": 787,
+      "sha256": "15c26bb47431880c01150b67cb2dda5456f861a3693fb9e0288abad2ee9e4388"
+    }
+  },
+  "laboratory_schema_matches_original": true,
+  "native_crypto_constants_match": {
+    "keys": 2,
+    "iv_globals": 4
+  }
+}

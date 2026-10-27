@@ -1,0 +1,129 @@
+{
+  "source": {
+    "source_sha256": "761ed05803b4370e42682e1cc7094bb18dd7f9dd2ae5cc515ccd8b32e777bc53",
+    "source_bytes": 757,
+    "json_bytes": 557,
+    "layout": "open_base64_json",
+    "encrypted_layers": 0,
+    "authentication_tag": false,
+    "android_import": "pending"
+  },
+  "source_has_locked_container": false,
+  "vendor_locked_export_confirmed": false,
+  "source_already_open": true,
+  "android_import": "pending",
+  "cases": [
+    {
+      "file": "A_rewrapped.dark",
+      "origin": "source",
+      "purpose": "Rewrap with exact raw JSON/MessagePack bytes",
+      "bytes": 758,
+      "sha256": "9de43b36889f2c509d0251e85fdf89e6db6c727483e94a21131055c6c8d12b71",
+      "layout": "open_base64_json",
+      "local_decode": "passed",
+      "independent_cfb_checks": 0,
+      "android_import": "pending",
+      "connection_test": "not_performed"
+    },
+    {
+      "file": "B_rewrapped_text.txt",
+      "origin": "source",
+      "purpose": "Same native token as A, text transport",
+      "bytes": 758,
+      "sha256": "9de43b36889f2c509d0251e85fdf89e6db6c727483e94a21131055c6c8d12b71",
+      "layout": "open_base64_json",
+      "local_decode": "passed",
+      "independent_cfb_checks": 0,
+      "android_import": "pending",
+      "connection_test": "not_performed"
+    },
+    {
+      "file": "C_open.dark",
+      "origin": "source",
+      "purpose": "Open export; supplied reference may already be open",
+      "bytes": 758,
+      "sha256": "9de43b36889f2c509d0251e85fdf89e6db6c727483e94a21131055c6c8d12b71",
+      "layout": "open_base64_json",
+      "local_decode": "passed",
+      "independent_cfb_checks": 0,
+      "android_import": "pending",
+      "connection_test": "not_performed"
+    },
+    {
+      "file": "D_open_text.txt",
+      "origin": "source",
+      "purpose": "Same native token as C, text transport",
+      "bytes": 758,
+      "sha256": "9de43b36889f2c509d0251e85fdf89e6db6c727483e94a21131055c6c8d12b71",
+      "layout": "open_base64_json",
+      "local_decode": "passed",
+      "independent_cfb_checks": 0,
+      "android_import": "pending",
+      "connection_test": "not_performed"
+    },
+    {
+      "file": "E_reference_restored.dark",
+      "origin": "synthetic_wrapper_on_source",
+      "purpose": "Source values restored from artificial locked wrapper, not a captured locked export",
+      "bytes": 1314,
+      "sha256": "f67b0448e3667746b0411e543d3252cd27c201eeadf8b542e329334202deed74",
+      "layout": "open_base64_json",
+      "local_decode": "passed",
+      "independent_cfb_checks": 0,
+      "android_import": "pending",
+      "connection_test": "not_performed"
+    },
+    {
+      "file": "F_synthetic_ssh_open.dark",
+      "origin": "reserved_synthetic",
+      "purpose": "Synthetic editable SSH model; example.invalid is not a live service",
+      "bytes": 702,
+      "sha256": "62da22b1c9113b5da0ba86aeaa025718fd9f3f2c13239c4e9036405e2af6c1c6",
+      "layout": "open_base64_json",
+      "local_decode": "passed",
+      "independent_cfb_checks": 0,
+      "android_import": "pending",
+      "connection_test": "not_performed"
+    }
+  ],
+  "controls": [
+    {
+      "file": "controls/VLESS_artificial_locked.dark",
+      "origin": "synthetic_wrapper_on_source",
+      "purpose": "Artificial control containing source private values; not vendor-exported",
+      "bytes": 3742,
+      "sha256": "2d17c1ab9e6b06b6d955c8cbc4980c44da5b914144ec656317a0829d812f557b",
+      "layout": "modern_aes_cfb_msgpack",
+      "local_decode": "passed",
+      "independent_cfb_checks": 16,
+      "android_import": "pending",
+      "connection_test": "not_performed"
+    },
+    {
+      "file": "controls/VLESS_artificial_note.dark",
+      "origin": "synthetic_wrapper_on_source",
+      "purpose": "Same control with protected Message replaced; HTML rendering not asserted",
+      "bytes": 3978,
+      "sha256": "6967c13d39dab4e07275ce02f156680c011cb7f92e7a9182c37fd17cb3812e10",
+      "layout": "modern_aes_cfb_msgpack",
+      "local_decode": "passed",
+      "independent_cfb_checks": 16,
+      "android_import": "pending",
+      "connection_test": "not_performed"
+    },
+    {
+      "file": "controls/SSH_artificial_locked.dark",
+      "origin": "reserved_synthetic",
+      "purpose": "Synthetic locked schema control; not vendor-exported",
+      "bytes": 1606,
+      "sha256": "195186578760cff504a475961f0de276284dd6cd0d5edb029df6c61d457ef411",
+      "layout": "modern_aes_cfb_msgpack",
+      "local_decode": "passed",
+      "independent_cfb_checks": 16,
+      "android_import": "pending",
+      "connection_test": "not_performed"
+    }
+  ],
+  "file_text_tokens_identical": true,
+  "effective_vless_reference_preserved": true
+}

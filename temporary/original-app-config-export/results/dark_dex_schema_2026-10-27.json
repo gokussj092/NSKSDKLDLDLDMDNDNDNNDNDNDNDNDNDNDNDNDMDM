@@ -1,0 +1,71 @@
+{
+  "base_apk_sha256": "fa5fbc7473636456d525ee8c8a9f6e9ae168008d64c415867084b623f47e8b2e",
+  "evidence": "original DEX enum constructor const-string operands, checked against serializer Enum.values",
+  "enums": {
+    "Lיˉ/י;": [
+      "Tcp",
+      "Websocket",
+      "Grpc"
+    ],
+    "Lיˈ/ˈ;": [
+      "UNSUPPORTED",
+      "DIRECT",
+      "DIRECT_SNI",
+      "PROXY",
+      "PROXY_SNI",
+      "DNSTT"
+    ],
+    "Lיˈ/ﾞﾞ;": [
+      "UNSUPPORTED",
+      "SSH",
+      "SSH_DNSTT",
+      "OPENVPN",
+      "VMESS",
+      "VLESS",
+      "TROJAN",
+      "SHADOWSOCKS",
+      "V2RAY_CUSTOM_CONFIG"
+    ]
+  },
+  "java_serializer_fields": [
+    "id",
+    "type",
+    "name",
+    "sshTunnelConfig",
+    "sshDnsttTunnelConfig",
+    "openvpnTunnelConfig",
+    "vmessTunnelConfig",
+    "vlessTunnelConfig",
+    "trojanTunnelConfig",
+    "shadowsocksTunnelConfig",
+    "v2rayCustomConfigTunnelConfig",
+    "encryptedLockedConfig"
+  ],
+  "prototype_enum_abbreviations_corrected_before_delivery": true,
+  "android_import": "pending",
+  "transport_probe": {
+    "base_apk_sha256": "fa5fbc7473636456d525ee8c8a9f6e9ae168008d64c415867084b623f47e8b2e",
+    "enum_descriptor": "Lיˉ/י;",
+    "source": "original DEX const-string operands passed to enum constructor",
+    "constructor_descriptor": "Lיˉ/י;-><init>(I Ljava/lang/String; Ljava/lang/String;)V",
+    "members": [
+      {
+        "ordinal": 0,
+        "name": "Tcp",
+        "display": "TCP"
+      },
+      {
+        "ordinal": 1,
+        "name": "Websocket",
+        "display": "Websocket"
+      },
+      {
+        "ordinal": 2,
+        "name": "Grpc",
+        "display": "gRPC"
+      }
+    ],
+    "laboratory_transports_match_original": true,
+    "android_import": "pending"
+  }
+}
