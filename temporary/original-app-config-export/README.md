@@ -16,9 +16,12 @@ importable**, incluso aunque el decodificador Python lo abra correctamente.
 
 ## Archivos
 
-- `scripts/hc_hcx4_n11_experiment.py`: variante mantenible y aislada del
-  experimento de reencriptación; reaprovecha `codec.py` y `_hc_hccfg.py` de
-  `main`, sin alterar los motores productivos.
+- `scripts/hc_hcx4_n11_experiment.py`: reencriptación aislada con las bibliotecas
+  criptográficas canónicas de `main`; no altera los motores productivos.
+- `scripts/create_hc_import_matrix.py`: produce cinco variantes independientes
+  para detectar el campo que causa el rechazo de importación.
+- `scripts/stage_private_fixtures.sh`: restaura las dos muestras HC originales
+  desde el ZIP privado y verifica hashes SHA-256 antes de probar.
 - `fixtures/http_custom/MANIFEST.json`: nombres, longitudes y hashes SHA-256
   de los dos `.hc` binarios, sin incorporar los bytes confidenciales a Git.
 - Archivo adjunto privado `SP_DECODE_TEMPORARY_EXPORT_LAB_COMPLETE.zip`:
@@ -53,6 +56,24 @@ python temporary/original-app-config-export/scripts/hc_hcx4_n11_experiment.py \
   --edited temporary/original-app-config-export/fixtures/http_custom/edited_preview.json \
   --output /tmp/spdecode-export-lab/new-experiment.hc
 ```
+
+
+Para preparar cinco pruebas independientes de importación y registrar sus hashes:
+
+```bash
+bash temporary/original-app-config-export/scripts/stage_private_fixtures.sh \\
+  /ruta/privada/SP_DECODE_TEMPORARY_EXPORT_LAB_COMPLETE.zip \\
+  /tmp/spdecode-export-lab
+
+python temporary/original-app-config-export/scripts/create_hc_import_matrix.py \\
+  --source /tmp/spdecode-export-lab/source_original.hc \\
+  --edited temporary/original-app-config-export/fixtures/http_custom/edited_preview.json \\
+  --output-dir /tmp/spdecode-export-lab/matrix
+```
+
+Probar los cinco .hc **solo con la aplicación original**; registrar su mensaje de
+error sin publicar credenciales. Los cinco pasan antes por autenticación local,
+lo que NO demuestra que el JSON sea aceptable por el importador.
 
 La salida tiene nonces criptográficos aleatorios y normalmente otro SHA-256;
 por tanto comparar **el JSON descifrado** y la estructura del sobre, no los
