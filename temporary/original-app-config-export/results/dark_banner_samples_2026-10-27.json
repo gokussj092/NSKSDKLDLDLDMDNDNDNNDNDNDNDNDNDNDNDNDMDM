@@ -1,0 +1,73 @@
+{
+  "source_sha256": "6967c13d39dab4e07275ce02f156680c011cb7f92e7a9182c37fd17cb3812e10",
+  "changed_field": "LockedAppConfig.Message",
+  "source_protection_flags_preserved": true,
+  "inner_ciphertext_identical": true,
+  "new_open_json_fields": false,
+  "android_import": "pending",
+  "banner_rendering": "pending",
+  "banner_links": "pending",
+  "editor_access": "pending",
+  "cases": [
+    {
+      "file": "01_CONTROL_NOTA_TEXTO.dark",
+      "kind": "control",
+      "bytes": 3978,
+      "sha256": "6967c13d39dab4e07275ce02f156680c011cb7f92e7a9182c37fd17cb3812e10",
+      "independent_cfb_checks": 16,
+      "local_verification": "passed",
+      "android_import": "pending",
+      "banner_rendering": "not_applicable"
+    },
+    {
+      "file": "02_BANNER_COMPATIBLE.dark",
+      "kind": "compatible",
+      "bytes": 4670,
+      "sha256": "89f3cc7205a2765b13c2b11227f7f2311a553fdcf22b03e66814a49a12c4c312",
+      "independent_cfb_checks": 16,
+      "local_verification": "passed",
+      "android_import": "pending",
+      "banner_rendering": "pending",
+      "html_sha256": "b4a0d26054aa7741551a9e16bf85a5659a6658c03efc7e4acf4ccb9cebff333a",
+      "text_file": "02_BANNER_COMPATIBLE.txt"
+    },
+    {
+      "file": "03_BANNER_AMOLED.dark",
+      "kind": "amoled",
+      "bytes": 9402,
+      "sha256": "b4abc151257ea45bcd9b148ed5954fbc7601651a9d8edef9266a36d66491e0bc",
+      "independent_cfb_checks": 16,
+      "local_verification": "passed",
+      "android_import": "pending",
+      "banner_rendering": "pending",
+      "html_sha256": "594ccb194df2222440d86e30f03b77424f0b760d01e37e2337edfb909614e8ea",
+      "text_file": "03_BANNER_AMOLED.txt"
+    }
+  ],
+  "date_local": "2026-10-27",
+  "timezone": "America/Tijuana",
+  "source_control": "controls/VLESS_artificial_note.dark",
+  "source_origin": "artificial VLESS control from previously delivered private package",
+  "tests": {
+    "new_banner_regressions_passed": 6,
+    "existing_dark_regressions_passed": 25,
+    "total_passed": 31
+  },
+  "renderer_evidence": {
+    "base_apk_sha256": "fa5fbc7473636456d525ee8c8a9f6e9ae168008d64c415867084b623f47e8b2e",
+    "note_field": "LockedAppConfig.Message",
+    "code_path": [
+      "C4971/Ca.d",
+      "AbstractC5134",
+      "AbstractC4749.m11071/m11069",
+      "C4774",
+      "AbstractC3372.m9571",
+      "Html.fromHtml(str, 0)"
+    ],
+    "cr_removed": true,
+    "lf_replaced_with_br": true,
+    "html_template_line_breaks_removed": true,
+    "css_browser_fidelity_confirmed": false,
+    "assistant_android_execution": false
+  }
+}

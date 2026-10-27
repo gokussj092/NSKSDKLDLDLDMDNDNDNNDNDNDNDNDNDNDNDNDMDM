@@ -38,6 +38,14 @@ Seis serializadores Go originales fueron ejecutados con valores
 sintéticos y el cifrado se contrastó con un segundo backend. No se ha cambiado
 el lector productivo, el router de textos, Android ni la API.
 
+Las variantes pendientes del banner ahora se generan con
+`scripts/create_dark_banner_matrix.py`: control de texto, HTML básico y diseño
+AMOLED, más los dos tokens TXT equivalentes. Ver
+[archivos y prueba visual del banner](docs/DARK_TUNNEL_BANNER_TESTS.md).
+Solo se sustituye `LockedAppConfig.Message` del control cifrado anterior;
+conexiones y banderas se conservan. **Estos nuevos banners todavía no tienen
+resultado manual de importación, renderizado, enlaces ni acceso al editor.**
+
 Ver [diagnóstico, límites y reproducción](docs/DARK_TUNNEL_EXPORT_LAB.md),
 `scripts/dark_tunnel_experiment.py`, `scripts/create_dark_export_matrix.py`
 y los resultados `results/dark_*_2026-10-27.json`.
