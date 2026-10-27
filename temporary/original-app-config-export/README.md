@@ -27,8 +27,14 @@ como el token de texto. El desbloqueo experimental reconstruye SSH y VLESS
 cuando todo el contenido coincide con los esquemas auditados. Las demás
 variantes se rechazan expresamente.
 
-**25 pruebas nuevas + 38 regresiones HTTP Custom pasan; importación Android
-pendiente.** Seis serializadores Go originales fueron ejecutados con valores
+**El propietario confirmó que las pruebas del paquete fueron correctas y que
+ninguna falló; queda pendiente probar el banner.** La aceptación de importación
+de las variantes A–F se registra como reporte manual global del propietario,
+sin medición independiente de hashes en el dispositivo ni resultados individuales
+de los controles. Ver `results/dark_manual_import_report_2026-10-27.json`.
+
+Las **25 pruebas nuevas + 38 regresiones HTTP Custom** ya habían pasado.
+Seis serializadores Go originales fueron ejecutados con valores
 sintéticos y el cifrado se contrastó con un segundo backend. No se ha cambiado
 el lector productivo, el router de textos, Android ni la API.
 

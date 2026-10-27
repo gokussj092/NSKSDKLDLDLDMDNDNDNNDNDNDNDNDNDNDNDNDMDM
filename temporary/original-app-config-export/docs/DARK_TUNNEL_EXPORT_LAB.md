@@ -2,7 +2,22 @@
 
 Fecha: 2026-10-27 UTC. Rama: `feat/temporary-original-app-config-export-lab`.
 Continuación autorizada después de HTTP Custom. Aplicación: `net.darktunnel.app`,
-versión `1.0.26`, código `32`. **Compatibilidad de importación pendiente**.
+versión `1.0.26`, código `32`. **Importación del paquete aceptada según el
+reporte global del propietario; banner pendiente**.
+
+## Confirmación manual del propietario
+
+El 2026-10-27 (America/Tijuana), el propietario informó que todas las pruebas
+realizadas fueron correctas, ninguna falló y solo queda probar el banner.
+Se asocia el reporte a las seis variantes principales A–F del paquete privado
+entregado en el commit `12ef9209bb07de588b2f2b2726649290cbab262f`.
+
+Los hashes se toman del manifiesto del ZIP entregado; no fueron medidos otra
+vez en el dispositivo. El reporte fue global: no identifica individualmente
+los tres controles, el archivo de banner, la versión instalada ni las pruebas
+de conexión o edición de cada campo. Esas observaciones no se inventan.
+El registro íntegro está en `results/dark_manual_import_report_2026-10-27.json`.
+No se ejecutó Android desde el laboratorio para obtener esta confirmación.
 
 ## Origen y estado de las muestras
 
@@ -46,7 +61,7 @@ Los resultados versionados contienen hashes, recuentos y estados, sin conexiones
 
 La retirada de `Password` está demostrada como pérdida de información de una
 proyección. No se afirma que haya provocado un rechazo de importación Dark
-Tunnel: aún no existe un resultado manual del nuevo exportador.
+Tunnel. El reporte manual posterior del propietario no contiene fallos.
 
 El objeto abierto también contiene algunos nombres antiguos de DNSTT en una
 sección SSH inactiva. El APK 1.0.26 serializa `dnsttUdpDnsHost`,
@@ -118,12 +133,12 @@ remota, ni se afirma haber comprobado todas las restricciones en Android.
 
 | Archivo | Origen y propósito | Resultado local | Android |
 | --- | --- | --- | --- |
-| `A_rewrapped.dark` | Reexportar la referencia abierta | JSON exacto | Pendiente |
-| `B_rewrapped_text.txt` | El mismo token de A para importar texto | Igualdad exacta con A | Pendiente |
-| `C_open.dark` | Modo desbloqueo sobre la referencia ya abierta | JSON exacto; no había bloqueos | Pendiente |
-| `D_open_text.txt` | El mismo token de C | Igualdad exacta con C | Pendiente |
-| `E_reference_restored.dark` | Recuperar los valores de la referencia desde un contenedor artificial | Todos los campos activos efectivos iguales; secciones ajenas preservadas | Pendiente |
-| `F_synthetic_ssh_open.dark` | Reconstrucción SSH con dominio reservado `.invalid` | Conexión sintética íntegra | Pendiente |
+| `A_rewrapped.dark` | Reexportar la referencia abierta | JSON exacto | Aceptado por reporte global del propietario |
+| `B_rewrapped_text.txt` | El mismo token de A para importar texto | Igualdad exacta con A | Aceptado por reporte global del propietario |
+| `C_open.dark` | Modo desbloqueo sobre la referencia ya abierta | JSON exacto; no había bloqueos | Aceptado por reporte global del propietario |
+| `D_open_text.txt` | El mismo token de C | Igualdad exacta con C | Aceptado por reporte global del propietario |
+| `E_reference_restored.dark` | Recuperar los valores de la referencia desde un contenedor artificial | Todos los campos activos efectivos iguales; secciones ajenas preservadas | Aceptado por reporte global del propietario |
+| `F_synthetic_ssh_open.dark` | Reconstrucción SSH con dominio reservado `.invalid` | Conexión sintética íntegra | Aceptado por reporte global del propietario |
 
 **A–D contienen el mismo token. No son cuatro pruebas independientes de
 compatibilidad.** E incorpora explícitamente algunos defaults que la referencia
@@ -223,20 +238,23 @@ reproducible con el APK base fijado por hash:
   /ruta/privada/base.apk
 ```
 
-## Próxima validación manual necesaria
+## Validación restante y alcance de la aceptación
 
-1. Importar A como archivo y B como texto en Dark Tunnel 1.0.26; confirmar que
-   la referencia original también importa en esa misma versión.
-2. Importar E, revisar host, puerto, UUID, SNI, transporte, mux y payload frente
-   a la referencia, y comprobar que el editor permite cambios.
-3. Importar F para comprobar el esquema SSH editable. Su host `.invalid` es
-   deliberadamente sintético; no usarlo para una prueba de conexión.
-4. Aportar una exportación **bloqueada real**, propia/autorizada, indicando
-   versión y opciones de bloqueo utilizadas. Compararla con una exportación
-   abierta hecha por la misma aplicación/configuración.
-5. Repetir rewrap, texto, desbloqueo y nota de forma aislada sobre esa fuente.
-   Registrar hash del archivo exacto y resultado observado; mantener cualquier
-   credencial fuera de capturas, respuestas, logs y GitHub.
+**Pendiente indicado por el propietario: probar el banner.** No se ha confirmado
+su visualización, diseño HTML ni enlaces. No se identifica un archivo concreto
+en este reporte, por lo que tampoco se atribuye aceptación al control con nota.
 
-Hasta entonces el estado es **prototipo local verificado; compatibilidad con
-la aplicación original pendiente**, incluida la validación real de desbloqueo.
+Los ensayos del paquete ya cuentan con aceptación manual global; no hay un
+fallo de importación nuevo que corregir. La confirmación no amplía por sí sola
+el ensayo a formatos cifrados distintos, otras versiones o una exportación
+bloqueada real del proveedor, que sigue sin estar identificada en este paquete.
+Las pruebas de conexión y de cada campo editable no se detallaron por separado.
+F utiliza `.invalid` deliberadamente y no sirve como prueba de conexión.
+
+Para ampliar esa cobertura posteriormente se necesita una exportación bloqueada
+propia/autorizada y su referencia abierta de la misma configuración, con versión
+y opciones utilizadas. Registrar siempre el hash del archivo exacto y el
+resultado observado, sin credenciales en capturas, respuestas, logs o GitHub.
+
+Estado: **importación de las variantes del paquete aceptada según el propietario;
+banner pendiente**. El laboratorio y sus límites de cobertura se mantienen.

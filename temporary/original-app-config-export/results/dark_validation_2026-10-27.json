@@ -64,10 +64,13 @@
     "original_production_reader_returns_none": true
   },
   "manual_status": {
-    "original_app_import": "pending",
-    "editable_fields": "pending",
-    "network_connection": "not_tested",
-    "real_vendor_locked_export": "missing"
+    "original_app_import": "accepted_owner_package_report",
+    "editable_fields": "not_separately_reported",
+    "network_connection": "not_separately_reported",
+    "real_vendor_locked_export": "missing",
+    "banner_rendering": "pending",
+    "manual_report": "dark_manual_import_report_2026-10-27.json",
+    "reported_failures": 0
   },
   "production_files_modified": false
 }

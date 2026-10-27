@@ -6,12 +6,12 @@
     "layout": "open_base64_json",
     "encrypted_layers": 0,
     "authentication_tag": false,
-    "android_import": "pending"
+    "android_import": "not_separately_itemized_owner_report"
   },
   "source_has_locked_container": false,
   "vendor_locked_export_confirmed": false,
   "source_already_open": true,
-  "android_import": "pending",
+  "android_import": "accepted_owner_package_report",
   "cases": [
     {
       "file": "A_rewrapped.dark",
@@ -22,8 +22,9 @@
       "layout": "open_base64_json",
       "local_decode": "passed",
       "independent_cfb_checks": 0,
-      "android_import": "pending",
-      "connection_test": "not_performed"
+      "android_import": "accepted_owner_package_report",
+      "connection_test": "not_performed",
+      "manual_report": "dark_manual_import_report_2026-10-27.json"
     },
     {
       "file": "B_rewrapped_text.txt",
@@ -34,8 +35,9 @@
       "layout": "open_base64_json",
       "local_decode": "passed",
       "independent_cfb_checks": 0,
-      "android_import": "pending",
-      "connection_test": "not_performed"
+      "android_import": "accepted_owner_package_report",
+      "connection_test": "not_performed",
+      "manual_report": "dark_manual_import_report_2026-10-27.json"
     },
     {
       "file": "C_open.dark",
@@ -46,8 +48,9 @@
       "layout": "open_base64_json",
       "local_decode": "passed",
       "independent_cfb_checks": 0,
-      "android_import": "pending",
-      "connection_test": "not_performed"
+      "android_import": "accepted_owner_package_report",
+      "connection_test": "not_performed",
+      "manual_report": "dark_manual_import_report_2026-10-27.json"
     },
     {
       "file": "D_open_text.txt",
@@ -58,8 +61,9 @@
       "layout": "open_base64_json",
       "local_decode": "passed",
       "independent_cfb_checks": 0,
-      "android_import": "pending",
-      "connection_test": "not_performed"
+      "android_import": "accepted_owner_package_report",
+      "connection_test": "not_performed",
+      "manual_report": "dark_manual_import_report_2026-10-27.json"
     },
     {
       "file": "E_reference_restored.dark",
@@ -70,8 +74,9 @@
       "layout": "open_base64_json",
       "local_decode": "passed",
       "independent_cfb_checks": 0,
-      "android_import": "pending",
-      "connection_test": "not_performed"
+      "android_import": "accepted_owner_package_report",
+      "connection_test": "not_performed",
+      "manual_report": "dark_manual_import_report_2026-10-27.json"
     },
     {
       "file": "F_synthetic_ssh_open.dark",
@@ -82,8 +87,9 @@
       "layout": "open_base64_json",
       "local_decode": "passed",
       "independent_cfb_checks": 0,
-      "android_import": "pending",
-      "connection_test": "not_performed"
+      "android_import": "accepted_owner_package_report",
+      "connection_test": "not_performed",
+      "manual_report": "dark_manual_import_report_2026-10-27.json"
     }
   ],
   "controls": [
@@ -96,8 +102,9 @@
       "layout": "modern_aes_cfb_msgpack",
       "local_decode": "passed",
       "independent_cfb_checks": 16,
-      "android_import": "pending",
-      "connection_test": "not_performed"
+      "android_import": "not_individually_reported",
+      "connection_test": "not_performed",
+      "manual_report": "dark_manual_import_report_2026-10-27.json"
     },
     {
       "file": "controls/VLESS_artificial_note.dark",
@@ -108,8 +115,10 @@
       "layout": "modern_aes_cfb_msgpack",
       "local_decode": "passed",
       "independent_cfb_checks": 16,
-      "android_import": "pending",
-      "connection_test": "not_performed"
+      "android_import": "not_individually_reported",
+      "connection_test": "not_performed",
+      "manual_report": "dark_manual_import_report_2026-10-27.json",
+      "banner_rendering": "pending"
     },
     {
       "file": "controls/SSH_artificial_locked.dark",
@@ -120,10 +129,14 @@
       "layout": "modern_aes_cfb_msgpack",
       "local_decode": "passed",
       "independent_cfb_checks": 16,
-      "android_import": "pending",
-      "connection_test": "not_performed"
+      "android_import": "not_individually_reported",
+      "connection_test": "not_performed",
+      "manual_report": "dark_manual_import_report_2026-10-27.json"
     }
   ],
   "file_text_tokens_identical": true,
-  "effective_vless_reference_preserved": true
+  "effective_vless_reference_preserved": true,
+  "manual_report": "dark_manual_import_report_2026-10-27.json",
+  "banner_test": "pending",
+  "reported_failures": 0
 }

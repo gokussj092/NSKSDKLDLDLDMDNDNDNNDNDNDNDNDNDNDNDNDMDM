@@ -1,0 +1,61 @@
+{
+  "date_local": "2026-10-27",
+  "timezone": "America/Tijuana",
+  "reported_by": "owner in this conversation",
+  "report_kind": "global_package_result",
+  "owner_statement": "Todo fue correcto. Solo falta probar con el banner. Todo lo demás correcto. Ninguno falló. Todas las pruebas fueron correctas",
+  "reported_failures": 0,
+  "remaining_test_in_owner_report": "banner",
+  "source_commit": "12ef9209bb07de588b2f2b2726649290cbab262f",
+  "package": {
+    "filename": "SP_DECODE_DARK_TUNNEL_EXPORT_LAB.zip",
+    "sha256": "9a0b87e69e76e6c1fb6bc568b806a8c06a08904cf9148561ef128369d873a17c"
+  },
+  "target_app": {
+    "package": "net.darktunnel.app",
+    "version": "1.0.26",
+    "version_code": 32,
+    "installed_version_separately_reported": false
+  },
+  "accepted_primary_cases": [
+    {
+      "file": "A_rewrapped.dark",
+      "sha256": "9de43b36889f2c509d0251e85fdf89e6db6c727483e94a21131055c6c8d12b71",
+      "basis": "global_owner_report_for_delivered_package"
+    },
+    {
+      "file": "B_rewrapped_text.txt",
+      "sha256": "9de43b36889f2c509d0251e85fdf89e6db6c727483e94a21131055c6c8d12b71",
+      "basis": "global_owner_report_for_delivered_package"
+    },
+    {
+      "file": "C_open.dark",
+      "sha256": "9de43b36889f2c509d0251e85fdf89e6db6c727483e94a21131055c6c8d12b71",
+      "basis": "global_owner_report_for_delivered_package"
+    },
+    {
+      "file": "D_open_text.txt",
+      "sha256": "9de43b36889f2c509d0251e85fdf89e6db6c727483e94a21131055c6c8d12b71",
+      "basis": "global_owner_report_for_delivered_package"
+    },
+    {
+      "file": "E_reference_restored.dark",
+      "sha256": "f67b0448e3667746b0411e543d3252cd27c201eeadf8b542e329334202deed74",
+      "basis": "global_owner_report_for_delivered_package"
+    },
+    {
+      "file": "F_synthetic_ssh_open.dark",
+      "sha256": "62da22b1c9113b5da0ba86aeaa025718fd9f3f2c13239c4e9036405e2af6c1c6",
+      "basis": "global_owner_report_for_delivered_package"
+    }
+  ],
+  "exact_device_hashes_remeasured": false,
+  "individual_control_results": "not_itemized",
+  "banner_file_identified": false,
+  "banner_rendering": "pending",
+  "banner_links": "pending",
+  "network_connection": "not_separately_reported",
+  "per_field_editability": "not_separately_reported",
+  "vendor_exported_locked_sample_confirmed": false,
+  "assistant_android_execution": false
+}
