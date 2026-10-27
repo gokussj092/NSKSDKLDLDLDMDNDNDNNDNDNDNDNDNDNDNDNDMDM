@@ -1,5 +1,13 @@
 # HTTP Injector — exportación experimental y pruebas A–E
 
+> **Actualización posterior a las pruebas del propietario (2026-10-27):**
+> solo A se importó; B–E fueron rechazados con error de versión. Las pruebas
+> criptográficas descritas abajo verifican capas locales, no compatibilidad.
+> Las exportaciones modificadas están ahora bloqueadas por defecto. Ver
+> [diagnóstico actualizado](HTTP_INJECTOR_REJECTION_AND_DECODE.md).
+> La matriz solo puede regenerarse para reproducción histórica con
+> `--reproduce-rejected-exports`.
+
 Fecha: 2026-10-27, America/Tijuana. Cuenta GitHub **gokussj092 / Goku**.
 Repositorio migrado de letras aleatorias, misma rama
 `feat/temporary-original-app-config-export-lab`. Solo archivos del laboratorio;
@@ -28,8 +36,9 @@ importador decompilado por completo.
 2. Longitud del ciphertext como entero big-endian de cuatro bytes y un checksum
    **Adler-32 del ciphertext** almacenado en ocho bytes big-endian.
 3. AES-CBC exterior con clave y IV estándar del lector existente, índice 3.
-4. Carrier `Base64(IV2):campo_intermedio:Base64(ciphertext2)`. Se conserva el
-   campo intermedio exacto y el IV2 original.
+4. Carrier `Base64(IV2):campo_intermedio:Base64(ciphertext2)`. El prototipo
+   conservaba ese campo intermedio sin interpretarlo. Su posible autenticación
+   sigue sin recuperarse; **modificar el contenido está bloqueado por defecto**.
 5. Segundo AES-CBC y XXTEA con palabra de longitud; su inversa reproduce los
    bytes originales, incluido su relleno. Se preserva cualquier prefijo anterior
    al JSON y el JSON exterior completo sin normalización.
@@ -43,7 +52,7 @@ importador decompilado por completo.
    JSON anidados y nombres de campos desconocidos, incluso los concatenados.
 
 La prueba A vuelve a construir todas las capas y es **idéntica byte por byte**
-al archivo fuente. Las variantes modificadas usan salt y nonce AEAD nuevos,
+al archivo fuente. Las variantes históricas modificadas usan salt y nonce AEAD nuevos,
 recalculan el tag, todas las capas externas, la longitud y el checksum. Los
 parámetros de conexión no se descifran para serializarlos otra vez: sus tokens
 originales se mantienen. El lector de presentación no es la fuente de exportación.
@@ -85,7 +94,7 @@ campos exteriores y cambian únicamente `isConfigLock` a `false` en el interior.
 Se recalcula correctamente el cifrado ligado a esos metadatos. **No se conoce
 el algoritmo del hash de bloqueos del importador.** No se inventa un hash ni
 se presenta esa combinación como un desbloqueo aprobado: es un candidato de
-diagnóstico que debe probarse en el APK adjunto. Puede existir una comprobación
+diagnóstico que fue rechazado en la prueba del propietario. Puede existir una comprobación
 adicional sobre la pareja hash/contexto que el roundtrip Python no reproduzca.
 
 ## Archivos entregados
@@ -100,18 +109,17 @@ adicional sobre la pareja hash/contexto que el roundtrip Python no reproduzca.
 | `diagnostics/FLAG_ONLY.ehi` | Solo el flag interior, sin cambiar las restricciones exteriores |
 | `diagnostics/OUTER_NONE_ONLY.ehi` | Solo la pareja exterior, sin cambiar el flag interior |
 
-Probar A primero. Después B/C, y finalmente D/E revisando **también** acceso al
-editor y parámetros de conexión. Si D/E fallan o siguen bloqueados, los dos
-diagnósticos separan el efecto del flag del efecto de los metadatos exteriores.
+El propietario ya probó A–E: solo A se importó. No repetir B–E como una solución
+corregida. Los dos diagnósticos se conservan para investigación histórica.
 No se genera un enlace cloud, texto compartido ni URL de actualización inventada.
 Todos los archivos, originales y JSON privados se conservan fuera de GitHub.
 
-## Resultados locales y límites
+## Resultados locales históricos y límites
 
 - 14 regresiones nuevas de exportación EHI pasan, incluidas la reconstrucción
   exacta, Unicode UTF-16, tipos, campos desconocidos, tags alterados y checksum.
 - Seis regresiones existentes del lector EHI y 32 de Dark Tunnel/política de
-  banner pasan: **52 pruebas** en esta sesión.
+  banner pasaron: **52 pruebas** antes del ensayo manual.
 - Los siete archivos pasan el lector Python existente. Su proyección de conexión
   descifrada conserva todos los campos fuera de la nota y del flag autorizado.
 - OpenSSL/cryptography verifica 14 capas AES-CBC; libsodium verifica siete tags
@@ -119,14 +127,17 @@ Todos los archivos, originales y JSON privados se conservan fuera de GitHub.
   no se afirma tener un segundo backend independiente para esa KDF.
 - Se comprobaron los siete Adler-32 y las diferencias exactas de ambos JSON.
 
-**Importación original, editor, banner y conexión en HTTP Injector pendientes.**
+**A aceptado; B–E rechazados con error de versión por el propietario.**
+El editor, banner y conexión no están aprobados. El seguimiento añade
+22 pruebas de laboratorio y vuelve a comprobar las 6 regresiones del lector.
 La aprobación manual de HTTP Custom/Dark Tunnel no se transfiere a esta app.
 Ver `results/ehi_export_matrix_2026-10-27.json` y `ehi_validation_2026-10-27.json`.
 
 ## Reproducción
 
 Python 3.12, checkout completo del repositorio, entorno privado y libsodium
-disponible en el sistema:
+disponible en el sistema. La última orden reproduce únicamente las variantes
+históricas rechazadas:
 
 ```bash
 python -m venv /ruta/privada/ehi-venv
@@ -136,7 +147,8 @@ python -m venv /ruta/privada/ehi-venv
   temporary/original-app-config-export/scripts/test_ehi_export_lab.py -v
 /ruta/privada/ehi-venv/bin/python \
   temporary/original-app-config-export/scripts/create_ehi_export_matrix.py \
-  --source /ruta/privada/source.ehi --output-dir /ruta/privada/matriz-nueva
+  --source /ruta/privada/source.ehi --output-dir /ruta/privada/matriz-historica \
+  --reproduce-rejected-exports
 ```
 
 CLI individual de inspección segura o rewrap exacto:

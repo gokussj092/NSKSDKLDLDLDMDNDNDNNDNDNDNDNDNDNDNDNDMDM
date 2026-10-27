@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Private EHI A-E trials plus two isolated access diagnostics; Android pending."""
+"""Historical EHI A-E reproduction. Changed files were rejected by the owner."""
 import argparse
 import base64
 import ctypes
@@ -57,10 +57,12 @@ def audit(document):
             'argon2id_backend': 'argon2-cffi', 'argon2id_independent_backend': False}
 
 
-def generate(source, output_dir):
+def generate(source, output_dir, *, reproduce_rejected_exports=False):
     out = Path(output_dir)
     if out.exists():
         raise EhiLabError('NEW_OUTPUT_DIRECTORY_REQUIRED')
+    if not reproduce_rejected_exports:
+        raise EhiLabError('REJECTED_EHI_MATRIX_REPRODUCTION_OPT_IN_REQUIRED')
     original = open_profile(source)
     outer_access, inner_access = access_candidate_edits(original)
     plain = encode_message(plain_note('es'))
@@ -80,11 +82,15 @@ def generate(source, output_dir):
               'preserve_unknown_fields': True, 'original_app_import': 'pending',
               'editable_access': 'pending', 'banner_rendering': 'pending',
               'access_hash_algorithm_confirmed': False,
+              'carrier_integrity_verified': False,
+              'purpose': 'historical_reproduction_of_rejected_candidates',
+              'prior_owner_result': 'A accepted; B-E version-error rejection',
               'access_candidate_basis': 'reuse the observed inner none lockModes/hash tuple; not an invented hash',
               'connection_fields_changed': False}
     files = []
     for name, outer, inner, kind in specs:
-        raw = reseal(original, outer_edits=outer, inner_edits=inner)
+        raw = reseal(original, outer_edits=outer, inner_edits=inner,
+                     allow_unverified_middle=True)
         after = open_profile(raw)
         check = audit(after)
         if name.startswith('A_') and raw != source:
@@ -98,6 +104,7 @@ def generate(source, output_dir):
             'derived_frame_checksum': 'adler32_recomputed_and_verified',
             'byte_identical_to_source': raw == source,
             'local_decode': 'passed', 'original_app_import': 'pending',
+            'carrier_integrity_verified': False,
             'editor_access': 'pending', 'banner_rendering': 'pending' if 'HTML' in name else 'not_tested'})
         files.append((name, raw))
     out.mkdir(parents=True, mode=0o700)
@@ -112,9 +119,12 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--source', required=True, type=Path)
     parser.add_argument('--output-dir', required=True, type=Path)
+    parser.add_argument('--reproduce-rejected-exports', action='store_true',
+        help='diagnóstico histórico: las variantes modificadas fueron rechazadas')
     args = parser.parse_args()
     try:
-        result = generate(args.source.read_bytes(), args.output_dir)
+        result = generate(args.source.read_bytes(), args.output_dir,
+            reproduce_rejected_exports=args.reproduce_rejected_exports)
         print(json.dumps({'files': len(result['cases']), 'source_config_version_code':
             result['source']['source_config_version_code'], 'local_checks': 'passed',
             'original_app_import': 'pending', 'editor_access': 'pending'}))

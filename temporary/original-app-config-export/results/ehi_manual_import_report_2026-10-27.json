@@ -1,0 +1,73 @@
+{
+  "date_local": "2026-10-27",
+  "timezone": "America/Tijuana",
+  "evidence": "owner report, filenames only; device hashes and build not independently checked",
+  "owner_report": "Solo se importo el archivo A_REWRAP_ORIGINAL.ehi,los demás me dijeron que es erorr por versión",
+  "source_sha256": "600c0cafc2419aa59a1b3b4b259030af267d646c327e547a44fdce2ff54f05b7",
+  "apk_supplied": {
+    "version": "6.5.0",
+    "build": 244
+  },
+  "owner_test_app_build_confirmed": false,
+  "cases": [
+    {
+      "file": "A_REWRAP_ORIGINAL.ehi",
+      "delivered_sha256": "600c0cafc2419aa59a1b3b4b259030af267d646c327e547a44fdce2ff54f05b7",
+      "sha256_remeasured_on_device": false,
+      "original_app_import": "ACCEPTED_OWNER_REPORT",
+      "editor_access": "not_confirmed",
+      "banner_rendering": "not_confirmed"
+    },
+    {
+      "file": "B_NOTE_TEXT_ONLY.ehi",
+      "delivered_sha256": "da5695830269e4942657ac4dc1b638de6e2b869852baf1c7fd676757dd5730c8",
+      "sha256_remeasured_on_device": false,
+      "original_app_import": "REJECTED_VERSION_ERROR_OWNER_REPORT",
+      "editor_access": "not_confirmed",
+      "banner_rendering": "not_confirmed"
+    },
+    {
+      "file": "C_NOTE_HTML_ONLY.ehi",
+      "delivered_sha256": "945dafceab7511ed41587327589a901a13ff5acababbe931fe6c30345292e950",
+      "sha256_remeasured_on_device": false,
+      "original_app_import": "REJECTED_VERSION_ERROR_OWNER_REPORT",
+      "editor_access": "not_confirmed",
+      "banner_rendering": "not_confirmed"
+    },
+    {
+      "file": "D_ACCESS_CANDIDATE.ehi",
+      "delivered_sha256": "b187033674a034152e584227b068a22374eadc33fb1857192127a0795922d818",
+      "sha256_remeasured_on_device": false,
+      "original_app_import": "REJECTED_VERSION_ERROR_OWNER_REPORT",
+      "editor_access": "not_confirmed",
+      "banner_rendering": "not_confirmed"
+    },
+    {
+      "file": "E_ACCESS_HTML_CANDIDATE.ehi",
+      "delivered_sha256": "c94153ef336488476d7a32f541624064c5369d7e77b5b21bd266bc1d3a0fdd6a",
+      "sha256_remeasured_on_device": false,
+      "original_app_import": "REJECTED_VERSION_ERROR_OWNER_REPORT",
+      "editor_access": "not_confirmed",
+      "banner_rendering": "not_confirmed"
+    },
+    {
+      "file": "diagnostics/FLAG_ONLY.ehi",
+      "delivered_sha256": "0791d67c52c3b2ed0916681988ad46ddfbf4d2fcda01793ecce4a780fb7f6ef9",
+      "sha256_remeasured_on_device": false,
+      "original_app_import": "NOT_INDIVIDUALLY_CONFIRMED_OWNER_REPORT_SAYS_OTHERS_FAILED",
+      "editor_access": "not_confirmed",
+      "banner_rendering": "not_confirmed"
+    },
+    {
+      "file": "diagnostics/OUTER_NONE_ONLY.ehi",
+      "delivered_sha256": "60cf37984d2731cd6b34e720b99ab9b570ddb48f63117303bbbf52781cc4aa0d",
+      "sha256_remeasured_on_device": false,
+      "original_app_import": "NOT_INDIVIDUALLY_CONFIRMED_OWNER_REPORT_SAYS_OTHERS_FAILED",
+      "editor_access": "not_confirmed",
+      "banner_rendering": "not_confirmed"
+    }
+  ],
+  "compatibility": "REJECTED_FOR_MODIFIED_EXPORTS",
+  "error_root_cause_confirmed": false,
+  "production_changes": false
+}

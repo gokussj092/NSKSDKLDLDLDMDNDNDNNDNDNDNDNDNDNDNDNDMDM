@@ -21,11 +21,19 @@ original byte por byte. Se prepararon cinco casos A–E y dos diagnósticos,
 preservando ambos JSON y las conexiones. Se corrigió la reconstrucción del
 checksum **Adler-32** que el lector Python existente no verifica.
 
-Pasan 52 pruebas locales en esta sesión; la importación, el editor y el banner
-de HTTP Injector siguen pendientes. D/E son candidatos: la pareja none/hash
-se toma del JSON interior observado, pero su validación por el importador aún
-no está confirmada. No se cambia ningún decodificador productivo.
+**Actualización del propietario:** solo A se importó. B–E fueron rechazados
+con un mensaje de versión. Los dos controles auxiliares no tienen resultados
+individuales confirmados. El paquete anterior es histórico y **no constituye
+una exportación compatible**. Los números de versión no cambiaron; no se ha
+confirmado la causa del mensaje. Las modificaciones quedan bloqueadas por
+defecto hasta resolver la integridad del segmento central del carrier.
+
+El nuevo auditor detecta campos aún sin interpretar, un candidato TLS con
+la sal predeterminada y pérdida de tipos al reconstruir JSON desde texto de
+presentación. Pasan **22 pruebas del laboratorio + 6 del lector existente**.
+No se cambia ningún decodificador productivo, Android ni la API.
 Ver [investigación y pruebas HTTP Injector](docs/HTTP_INJECTOR_EXPORT_LAB.md).
+Ver [diagnóstico del rechazo y de la salida descifrada](docs/HTTP_INJECTOR_REJECTION_AND_DECODE.md).
 
 ## Continuación: Dark Tunnel y repositorio migrado
 

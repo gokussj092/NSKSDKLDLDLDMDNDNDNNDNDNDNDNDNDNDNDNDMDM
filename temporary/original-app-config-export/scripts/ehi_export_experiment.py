@@ -178,7 +178,8 @@ def open_profile(source):
                        middle, prefix, raw_outer, outer, body, upper, raw_inner, inner)
 
 
-def reseal(document, *, outer_edits=None, inner_edits=None):
+def reseal(document, *, outer_edits=None, inner_edits=None,
+           allow_unverified_middle=False):
     outer_edits, inner_edits = outer_edits or {}, inner_edits or {}
     if set(outer_edits) - {'lockModes', 'lockModesHash'} or set(inner_edits) - {'isConfigLock', 'configMessage'}:
         raise EhiLabError('EDIT_OUTSIDE_LAB_SCOPE')
@@ -189,6 +190,13 @@ def reseal(document, *, outer_edits=None, inner_edits=None):
     raw_outer = replace_values(document.raw_outer, {(k,): v for k, v in outer_edits.items()})
     outer = parse(raw_outer)
     changed = raw_inner != document.raw_inner or raw_outer != document.raw_outer
+    # The owner accepted only the byte-identical A control. Every changed case
+    # retained the original carrier middle segment while replacing ciphertext.
+    # Its 32 decoded bytes resemble a MAC, but neither its key nor verification
+    # rule has been recovered. An AEAD round trip does not verify this segment.
+    # Keep historical reproduction possible without presenting it as an export.
+    if changed and not allow_unverified_middle:
+        raise EhiLabError('MODIFIED_EXPORT_BLOCKED_UNVERIFIED_CARRIER_SEGMENT')
     header = document.aead[:50]
     if changed:
         header = document.aead[:10] + os.urandom(16) + os.urandom(24)
@@ -242,6 +250,9 @@ def summary(document):
             'source_config_version_code': (document.outer.get('configVersionCode')
                 if type(document.outer.get('configVersionCode')) is int else None),
             'aead_version': document.aead[0], 'authenticated': True,
+            'authentication_scope': 'inner_aead_only',
+            'carrier_integrity_verified': False,
+            'modified_export_status': 'blocked_pending_carrier_integrity',
             'frame_checksum': 'adler32_verified',
             'original_app_import': 'pending'}
 

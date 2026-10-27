@@ -33,8 +33,17 @@
     "dark_export_and_banner_policy_regressions": 32,
     "total_passed_this_session": 52
   },
-  "manual_import": "pending",
-  "editable_access": "pending",
-  "banner_rendering": "pending",
-  "production_changes": false
+  "manual_import": "A accepted; B-E rejected with version error by owner",
+  "editable_access": "not_confirmed",
+  "banner_rendering": "not_confirmed",
+  "production_changes": false,
+  "historical_local_tests_only": true,
+  "carrier_integrity_verified": false,
+  "followup_diagnosis": "ehi_decode_audit_2026-10-27.json",
+  "followup_tests": {
+    "lab_tests_passed": 22,
+    "existing_ehi_tests_passed": 6,
+    "total": 28
+  },
+  "modified_exports_blocked_by_default": true
 }

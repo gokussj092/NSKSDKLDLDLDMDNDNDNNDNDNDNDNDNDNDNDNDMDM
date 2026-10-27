@@ -14,6 +14,7 @@ import zlib
 from ehi_export_experiment import (open_profile, reseal, encode_message, decode_field,
     encode_field, access_candidate_edits, EhiLabError, C, D, kdf_key, private_write)
 from create_ehi_export_matrix import generate, audit, sodium_open
+from audit_ehi_decode import audit_decode, canonical_text, presentation_type, audit_matrix
 from scripts.android_ehi_standard_fixture import make
 from lossless_json import parse, put_member, equal
 
@@ -56,7 +57,8 @@ class EhiExportTests(unittest.TestCase):
     def test_only_authorized_message_token_changes(self):
         before = open_profile(fixture())
         note = encode_message('<b>SP-DECODE</b>\nSynthetic note')
-        after = open_profile(reseal(before, inner_edits={'configMessage': note}))
+        after = open_profile(reseal(before, inner_edits={'configMessage': note},
+                                    allow_unverified_middle=True))
         expected = dict(before.inner, configMessage=note)
         self.assertTrue(equal(after.inner, expected))
         self.assertNotEqual(before.aead[10:50], after.aead[10:50])
@@ -66,7 +68,8 @@ class EhiExportTests(unittest.TestCase):
 
     def test_access_tuple_rekeys_both_layers_and_keeps_connection(self):
         d = open_profile(fixture()); outer, inner = access_candidate_edits(d)
-        after = open_profile(reseal(d, outer_edits=outer, inner_edits=inner))
+        after = open_profile(reseal(d, outer_edits=outer, inner_edits=inner,
+                                    allow_unverified_middle=True))
         self.assertNotEqual(D._generate_master_key(d.outer), D._generate_master_key(after.outer))
         self.assertEqual(after.outer['lockModesHash'], d.inner['lockModesHash'])
         self.assertIs(after.inner['isConfigLock'], False)
@@ -87,7 +90,8 @@ class EhiExportTests(unittest.TestCase):
 
     def test_unknown_frame_longs_and_tail_survive(self):
         source = bytearray(fixture());source[5:13] = b'OPAQUE01';source += b'UNKNOWN_PRIVATE_TRAILER'
-        d = open_profile(bytes(source));out = reseal(d, inner_edits={'configMessage': encode_message('new')})
+        d = open_profile(bytes(source));out = reseal(d, inner_edits={'configMessage': encode_message('new')},
+                                                   allow_unverified_middle=True)
         self.assertEqual(out[:d.length_offset], bytes(source[:d.length_offset]))
         after = open_profile(out)
         self.assertEqual(int.from_bytes(out[d.length_offset+4:d.payload_offset], 'big'),
@@ -126,14 +130,15 @@ class EhiExportTests(unittest.TestCase):
         changed[d.length_offset+4:d.payload_offset]=bytes(8)
         with self.assertRaisesRegex(EhiLabError,'FRAME_ADLER32_MISMATCH'):
             open_profile(bytes(changed))
-        out=reseal(d,inner_edits={'configMessage':encode_message('changed note')})
+        out=reseal(d,inner_edits={'configMessage':encode_message('changed note')},
+                   allow_unverified_middle=True)
         self.assertNotEqual(out[d.length_offset+4:d.payload_offset],d.source[d.length_offset+4:d.payload_offset])
         self.assertEqual(open_profile(out).inner['configMessage'],encode_message('changed note'))
 
     def test_matrix_scope_permissions_and_no_overwrite(self):
         source=fixture()
         with tempfile.TemporaryDirectory() as directory:
-            dest=Path(directory)/'matrix';report=generate(source,dest)
+            dest=Path(directory)/'matrix';report=generate(source,dest,reproduce_rejected_exports=True)
             self.assertEqual(len(report['cases']),7)
             self.assertEqual((dest/'A_REWRAP_ORIGINAL.ehi').read_bytes(),source)
             self.assertFalse(report['access_hash_algorithm_confirmed'])
@@ -145,6 +150,89 @@ class EhiExportTests(unittest.TestCase):
             with self.assertRaises(FileExistsError):private_write(p,b'overwrite')
             self.assertEqual(p.read_bytes(),source)
 
+    def test_modified_exports_blocked_without_carrier_verification(self):
+        d=open_profile(fixture())
+        self.assertEqual(reseal(d),d.source)
+        with self.assertRaisesRegex(EhiLabError,'MODIFIED_EXPORT_BLOCKED_UNVERIFIED_CARRIER_SEGMENT'):
+            reseal(d,inner_edits={'configMessage':encode_message('new note')})
+        with tempfile.TemporaryDirectory() as directory:
+            dest=Path(directory)/'must-not-exist'
+            with self.assertRaisesRegex(EhiLabError,'REJECTED_EHI_MATRIX_REPRODUCTION_OPT_IN_REQUIRED'):
+                generate(d.source,dest)
+            self.assertFalse(dest.exists())
+
+    def test_tls_default_key_candidate_is_bounded_and_does_not_mutate_source(self):
+        d=open_profile(fixture())
+        token=encode_field(b'TLSv1.2','EVZJNI').replace('=','?')
+        dynamic='ABCDEF'
+        d.outer['configSalt']=dynamic
+        d.inner['tlsVersion']=token
+        d.inner['password']=encode_field(b'007030',dynamic)
+        d.inner['lockModes']='["none"]'
+        d.inner['not_a_known_field']='synthetic-unresolved-string'
+        before=dict(d.inner)
+        result=audit_decode(d)
+        tls=next(f for f in result['fields'] if f['known_name']=='tlsVersion')
+        self.assertEqual(tls['default_salt_tls_candidate'],'TLSv1.2')
+        self.assertTrue(tls['default_salt_codec_roundtrip'])
+        self.assertFalse(tls['android_tls_setting_verified'])
+        password=next(f for f in result['fields'] if f['known_name']=='password')
+        self.assertEqual(password['legacy_decoded_type'],'str')
+        self.assertEqual(canonical_text(d.inner['password'],dynamic),'007030')
+        self.assertEqual(d.inner,before)
+        raw=__import__('json').dumps(result)
+        self.assertNotIn('007030',raw)
+        self.assertNotIn('synthetic-unresolved-string',raw)
+        self.assertNotIn('not_a_known_field',raw)
+
+    def test_observed_question_padding_requires_exact_roundtrip(self):
+        token=encode_field(b'TLSv1.2','EVZJNI')
+        self.assertIn('=',token)
+        self.assertEqual(canonical_text(token.replace('=','?'),'EVZJNI'),'TLSv1.2')
+        self.assertIsNone(canonical_text(token[:5]+'?'+token[5:],'EVZJNI'))
+        nul=encode_field(b'\0TLSv1.2','EVZJNI')
+        self.assertEqual(canonical_text(nul,'EVZJNI'),'\0TLSv1.2')
+
+    def test_presentation_reparse_loses_string_types(self):
+        self.assertEqual(presentation_type('81234567'),'int')
+        self.assertEqual(presentation_type('["none"]'),'list')
+        self.assertEqual(presentation_type('literal-string'),'str')
+        self.assertEqual(presentation_type(False),'bool')
+
+    def test_wrong_salt_does_not_become_globally_approved_plaintext(self):
+        d=open_profile(fixture())
+        d.inner['tlsVersion']=encode_field(b'not-a-TLS-enum','EVZJNI')
+        result=audit_decode(d)
+        tls=next(f for f in result['fields'] if f['known_name']=='tlsVersion')
+        self.assertNotIn('default_salt_tls_candidate',tls)
+        self.assertFalse(result['all_fields_fully_interpreted'])
+        self.assertFalse(result['outer_carrier_integrity_verified'])
+
+    def test_audit_exposes_only_known_names_types_and_safe_metadata(self):
+        d=open_profile(fixture())
+        d.inner['secret-personal-field-name']='secret-personal-value'
+        d.inner['configMessage']='invalid-ciphertext-message'
+        result=audit_decode(d)
+        raw=__import__('json').dumps(result)
+        for secret in ('secret-personal-field-name','secret-personal-value','invalid-ciphertext-message'):
+            self.assertNotIn(secret,raw)
+        self.assertTrue(any(f['status']=='unresolved_message' for f in result['fields']))
+
+    def test_matrix_audit_retains_version_error_as_unconfirmed_root_cause(self):
+        d=open_profile(fixture())
+        with tempfile.TemporaryDirectory() as directory:
+            output=Path(directory)/'historical'
+            generate(d.source,output,reproduce_rejected_exports=True)
+            report=audit_matrix(d,output)
+            self.assertFalse(report['version_error_root_cause_confirmed'])
+            self.assertFalse(report['hmac_algorithm_or_key_recovered'])
+            for row in report['cases']:
+                self.assertTrue(row['outer_version_unchanged'])
+                self.assertTrue(row['inner_version_unchanged'])
+                self.assertTrue(row['carrier_middle_unchanged'])
+                self.assertTrue(row['frame_adler32_verified'])
+                self.assertFalse(row['carrier_integrity_verified'])
+
     def test_cli_works_from_another_directory_without_plaintext_logs(self):
         script=Path(__file__).with_name('ehi_export_experiment.py')
         with tempfile.TemporaryDirectory() as directory:
@@ -152,6 +240,18 @@ class EhiExportTests(unittest.TestCase):
             result=subprocess.run([sys.executable,str(script),str(p)],cwd=directory,capture_output=True)
             self.assertEqual(result.returncode,0,result.stderr)
             self.assertNotIn(b'example.org',result.stdout+result.stderr)
+
+    def test_redacted_audit_cli_keeps_private_values_out_of_stdout(self):
+        script=Path(__file__).with_name('audit_ehi_decode.py')
+        with tempfile.TemporaryDirectory() as directory:
+            p=Path(directory)/'source.ehi';p.write_bytes(fixture())
+            result=subprocess.run([sys.executable,str(script),str(p)],cwd=directory,capture_output=True)
+            self.assertEqual(result.returncode,0,result.stderr)
+            report=__import__('json').loads(result.stdout)
+            self.assertFalse(report['all_fields_fully_interpreted'])
+            self.assertEqual(report['source']['authentication_scope'],'inner_aead_only')
+            self.assertNotIn(b'example.org',result.stdout+result.stderr)
+            self.assertNotIn(b'synthetic-parity-test',result.stdout+result.stderr)
 
 
 if __name__=='__main__':unittest.main()
