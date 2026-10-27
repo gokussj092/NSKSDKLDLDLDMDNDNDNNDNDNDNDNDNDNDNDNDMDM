@@ -1,0 +1,20 @@
+{
+  "date_local": "2026-10-27",
+  "timezone": "America/Tijuana",
+  "reported_by": "owner in this conversation",
+  "statement": "Esta correcto pero para dark tunnel no es necesario el baner ya que si se pone se bloquea la configuración, el de http custom igual fue correcto los baners ahora le toca a http injector",
+  "dark_tunnel": {
+    "banner_policy": "OMIT_FROM_OPEN_EXPORT",
+    "banner_editor_access": "locks_configuration_owner_report",
+    "exact_banner_variant_not_itemized": true,
+    "historical_generator_default": "disabled_requires_reproduce_locking_banner_opt_in",
+    "open_exports_without_banner": "previous_owner_accepted"
+  },
+  "http_custom": {
+    "banner_result": "accepted_owner_global_report",
+    "samples_manifest": "html_note_samples_2026-10-26.json",
+    "exact_device_hashes_remeasured": false,
+    "all_css_properties_and_links_individually_reported": false
+  },
+  "next_application": "HTTP Injector"
+}

@@ -5,9 +5,9 @@
   "inner_ciphertext_identical": true,
   "new_open_json_fields": false,
   "android_import": "pending",
-  "banner_rendering": "pending",
+  "banner_rendering": "owner_report_correct_not_variant_itemized",
   "banner_links": "pending",
-  "editor_access": "pending",
+  "editor_access": "locks_configuration_owner_report",
   "cases": [
     {
       "file": "01_CONTROL_NOTA_TEXTO.dark",
@@ -69,5 +69,8 @@
     "html_template_line_breaks_removed": true,
     "css_browser_fidelity_confirmed": false,
     "assistant_android_execution": false
-  }
+  },
+  "owner_report": "banner_owner_decision_2026-10-27.json",
+  "owner_decision": "omit_banner_from_open_exports",
+  "historical_generator_requires_opt_in": true
 }

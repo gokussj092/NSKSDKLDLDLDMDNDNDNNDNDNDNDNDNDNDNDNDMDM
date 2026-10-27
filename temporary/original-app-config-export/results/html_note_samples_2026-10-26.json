@@ -8,10 +8,11 @@
     "profile_ciphertext_byte_identical": true,
     "connection_parameters_unchanged": true,
     "pure_python_aead_tags_verified": 3,
-    "original_app_html_rendering": "PENDING_MANUAL_TEST",
+    "original_app_html_rendering": "ACCEPTED_OWNER_GLOBAL_REPORT",
     "source_sha256": "9a4ed51354997ec5d76ceabe1763d1f74c1d9506902f11020f11561ee65c6db8",
     "output_sha256": "61fc6294fa3b270b16a075976234d1ea731ef1bc6494ea88d697ec265ec3ddfc",
-    "bytes": 14780
+    "bytes": 14780,
+    "manual_report": "banner_owner_decision_2026-10-27.json"
   },
   "G": {
     "language": "es",
@@ -22,9 +23,10 @@
     "profile_ciphertext_byte_identical": true,
     "connection_parameters_unchanged": true,
     "pure_python_aead_tags_verified": 3,
-    "original_app_html_rendering": "PENDING_MANUAL_TEST",
+    "original_app_html_rendering": "ACCEPTED_OWNER_GLOBAL_REPORT",
     "source_sha256": "0e7abec160052b9588a715ada05eddd1e5787bfe9dc5fa5551aa112f92422c2e",
     "output_sha256": "7f7ac2bb2e19e0d957b78fbd26031f3244ff36193f5473842cf6d042d0205dbb",
-    "bytes": 13845
+    "bytes": 13845,
+    "manual_report": "banner_owner_decision_2026-10-27.json"
   }
 }

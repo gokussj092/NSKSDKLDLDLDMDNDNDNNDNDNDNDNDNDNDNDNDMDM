@@ -82,7 +82,11 @@ def verify_change(before, raw, note):
     return after
 
 
-def generate(source, output_dir):
+def generate(source, output_dir, *, reproduce_locking_banner=False):
+    # Owner confirmed that showing a note wrapper locks the editor in Dark
+    # Tunnel. Retain this historical experiment only with explicit opt-in.
+    if not reproduce_locking_banner:
+        raise LabError('DARK_BANNER_LOCKS_EDITOR_REPRODUCTION_OPT_IN_REQUIRED')
     output_dir = Path(output_dir)
     if output_dir.exists():
         raise LabError('NEW_OUTPUT_DIRECTORY_REQUIRED')
@@ -130,9 +134,12 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--source', type=Path, required=True)
     parser.add_argument('--output-dir', type=Path, required=True)
+    parser.add_argument('--reproduce-locking-banner', action='store_true',
+                        help='Historical diagnostic only; owner rejected banners for open Dark exports')
     args = parser.parse_args()
     try:
-        result = generate(args.source.read_bytes(), args.output_dir)
+        result = generate(args.source.read_bytes(), args.output_dir,
+                          reproduce_locking_banner=args.reproduce_locking_banner)
         print(json.dumps({'cases': len(result['cases']), 'connection_preserved': True,
                           'banner_rendering': 'pending'}))
     except (OSError, ValueError, TypeError, KeyError, RecursionError) as error:

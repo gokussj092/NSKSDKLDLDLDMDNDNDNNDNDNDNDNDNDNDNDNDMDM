@@ -7,6 +7,26 @@ HTTP Custom 7.11.28 Patch 1, build 899, HCX4 / HCCFG10 / n11 sin
 contraseña/HWID, y laboratorio Dark Tunnel 1.0.26, build 32.
 No se implementa un exportador de producción.
 
+## Estado actual: HTTP Injector y decisión sobre banners
+
+El propietario confirmó los banners de **HTTP Custom**. Para **Dark Tunnel**,
+informó que añadir el banner bloquea la configuración: sus exportaciones
+abiertas deben ir **sin banner**. El generador histórico exige ahora
+`--reproduce-locking-banner` y está desactivado por defecto.
+Ver `results/banner_owner_decision_2026-10-27.json`.
+
+La siguiente fase usa el APK **HTTP Injector 6.5.0 / build 244** y la muestra
+`.ehi` disponible, con `configVersionCode` 229. El rewrap A reproduce el archivo
+original byte por byte. Se prepararon cinco casos A–E y dos diagnósticos,
+preservando ambos JSON y las conexiones. Se corrigió la reconstrucción del
+checksum **Adler-32** que el lector Python existente no verifica.
+
+Pasan 52 pruebas locales en esta sesión; la importación, el editor y el banner
+de HTTP Injector siguen pendientes. D/E son candidatos: la pareja none/hash
+se toma del JSON interior observado, pero su validación por el importador aún
+no está confirmada. No se cambia ningún decodificador productivo.
+Ver [investigación y pruebas HTTP Injector](docs/HTTP_INJECTOR_EXPORT_LAB.md).
+
 ## Continuación: Dark Tunnel y repositorio migrado
 
 Por instrucción del propietario, esta continuación utiliza exclusivamente la
@@ -28,7 +48,8 @@ cuando todo el contenido coincide con los esquemas auditados. Las demás
 variantes se rechazan expresamente.
 
 **El propietario confirmó que las pruebas del paquete fueron correctas y que
-ninguna falló; queda pendiente probar el banner.** La aceptación de importación
+ninguna falló sin banner. El ensayo posterior con banner bloqueó el editor y
+el propietario descartó su uso en Dark Tunnel.** La aceptación de importación
 de las variantes A–F se registra como reporte manual global del propietario,
 sin medición independiente de hashes en el dispositivo ni resultados individuales
 de los controles. Ver `results/dark_manual_import_report_2026-10-27.json`.
@@ -38,13 +59,14 @@ Seis serializadores Go originales fueron ejecutados con valores
 sintéticos y el cifrado se contrastó con un segundo backend. No se ha cambiado
 el lector productivo, el router de textos, Android ni la API.
 
-Las variantes pendientes del banner ahora se generan con
-`scripts/create_dark_banner_matrix.py`: control de texto, HTML básico y diseño
-AMOLED, más los dos tokens TXT equivalentes. Ver
+El ensayo histórico del banner se conserva en
+`scripts/create_dark_banner_matrix.py`, con opt-in obligatorio para reproducir
+el bloqueo comunicado por el propietario. Ver
 [archivos y prueba visual del banner](docs/DARK_TUNNEL_BANNER_TESTS.md).
 Solo se sustituye `LockedAppConfig.Message` del control cifrado anterior;
-conexiones y banderas se conservan. **Estos nuevos banners todavía no tienen
-resultado manual de importación, renderizado, enlaces ni acceso al editor.**
+conexiones y banderas se conservan, pero su presencia activa el comportamiento
+de configuración bloqueada observado. **No usar banner para exportaciones
+abiertas Dark Tunnel.**
 
 Ver [diagnóstico, límites y reproducción](docs/DARK_TUNNEL_EXPORT_LAB.md),
 `scripts/dark_tunnel_experiment.py`, `scripts/create_dark_export_matrix.py`
@@ -66,8 +88,9 @@ El formato observado para HTML es `main.g.x = {v:1,s:"custom",h:HTML}`;
 Ver [diseño, campos y comandos actuales](docs/HTTP_CUSTOM_HTML_NOTES.md).
 Fragmentos y vistas previas en `notes/`; módulo `spdecode_note.py` y comando
 `write_hc_html_note.py` en `scripts/`. El conversor abierto incorpora la nota
-por defecto. Los nuevos F/G con HTML aún necesitan importación y revisión
-visual en HTTP Custom. Pasan 38 pruebas locales; la selección del HTML también
+por defecto. El propietario confirmó los F/G con HTML mediante un reporte global;
+no se midieron otra vez sus hashes en el dispositivo. Pasan 38 pruebas locales;
+la selección del HTML también
 se contrastó con la rama nativa usando datos sintéticos.
 
 ## Correcciones

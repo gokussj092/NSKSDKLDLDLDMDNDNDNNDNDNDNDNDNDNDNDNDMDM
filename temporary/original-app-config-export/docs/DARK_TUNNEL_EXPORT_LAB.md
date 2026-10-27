@@ -3,7 +3,7 @@
 Fecha: 2026-10-27 UTC. Rama: `feat/temporary-original-app-config-export-lab`.
 Continuación autorizada después de HTTP Custom. Aplicación: `net.darktunnel.app`,
 versión `1.0.26`, código `32`. **Importación del paquete aceptada según el
-reporte global del propietario; banner pendiente**.
+reporte global del propietario; exportación abierta sin banner**.
 
 ## Confirmación manual del propietario
 
@@ -18,6 +18,11 @@ los tres controles, el archivo de banner, la versión instalada ni las pruebas
 de conexión o edición de cada campo. Esas observaciones no se inventan.
 El registro íntegro está en `results/dark_manual_import_report_2026-10-27.json`.
 No se ejecutó Android desde el laboratorio para obtener esta confirmación.
+
+En su reporte posterior, el propietario confirmó que añadir el banner bloquea
+la configuración. Se descarta el banner para las exportaciones abiertas Dark
+Tunnel; ver `results/banner_owner_decision_2026-10-27.json`. El generador del
+ensayo histórico requiere opt-in y no se ejecuta por defecto.
 
 ## Origen y estado de las muestras
 
@@ -240,9 +245,10 @@ reproducible con el APK base fijado por hash:
 
 ## Validación restante y alcance de la aceptación
 
-**Pendiente indicado por el propietario: probar el banner.** No se ha confirmado
-su visualización, diseño HTML ni enlaces. No se identifica un archivo concreto
-en este reporte, por lo que tampoco se atribuye aceptación al control con nota.
+**Decisión final del propietario: no añadir banner**, porque su presencia
+bloquea la configuración. La observación es global, sin desglose de variantes
+o propiedades CSS. Se conserva el ensayo para diagnóstico, desactivado por
+defecto; no se integra el banner en las exportaciones abiertas.
 
 Los ensayos del paquete ya cuentan con aceptación manual global; no hay un
 fallo de importación nuevo que corregir. La confirmación no amplía por sí sola
@@ -257,4 +263,5 @@ y opciones utilizadas. Registrar siempre el hash del archivo exacto y el
 resultado observado, sin credenciales en capturas, respuestas, logs o GitHub.
 
 Estado: **importación de las variantes del paquete aceptada según el propietario;
-banner pendiente**. El laboratorio y sus límites de cobertura se mantienen.
+banner descartado para conservar el acceso al editor**. El laboratorio y sus
+límites de cobertura se mantienen.

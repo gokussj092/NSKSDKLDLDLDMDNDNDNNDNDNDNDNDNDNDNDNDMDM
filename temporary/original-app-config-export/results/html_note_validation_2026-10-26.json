@@ -10,7 +10,8 @@
   "previous_primary_imports": "ACCEPTED_OWNER_REPORTED",
   "native_custom_style_returns_html": true,
   "visual_qa_engine": "WeasyPrint; not Android WebView",
-  "new_html_files_import": "PENDING_MANUAL_TEST",
-  "new_html_rendering": "PENDING_MANUAL_TEST",
-  "production_changes": false
+  "new_html_files_import": "ACCEPTED_OWNER_GLOBAL_REPORT",
+  "new_html_rendering": "ACCEPTED_OWNER_GLOBAL_REPORT",
+  "production_changes": false,
+  "manual_report": "banner_owner_decision_2026-10-27.json"
 }

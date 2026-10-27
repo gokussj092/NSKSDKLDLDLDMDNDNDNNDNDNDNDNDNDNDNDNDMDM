@@ -27,7 +27,7 @@ class DarkBannerTests(unittest.TestCase):
         source = protected_fixture()
         with tempfile.TemporaryDirectory() as directory:
             target = Path(directory)/'banners'
-            report = generate(source, target)
+            report = generate(source, target, reproduce_locking_banner=True)
             self.assertEqual(len(report['cases']), 3)
             for record in report['cases']:
                 data = (target/record['file']).read_bytes()
@@ -42,11 +42,19 @@ class DarkBannerTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             target = Path(directory)/'banners'
             with self.assertRaisesRegex(LabError, 'EXISTING_NOTE_WRAPPER_REQUIRED'):
-                generate(encode_json(b'{"type":"VLESS","name":"Synthetic"}'), target)
+                generate(encode_json(b'{"type":"VLESS","name":"Synthetic"}'), target,
+                         reproduce_locking_banner=True)
             self.assertFalse(target.exists())
             target.mkdir()
             with self.assertRaisesRegex(LabError, 'NEW_OUTPUT_DIRECTORY_REQUIRED'):
+                generate(protected_fixture(), target, reproduce_locking_banner=True)
+
+    def test_owner_policy_disables_banner_generation_by_default(self):
+        with tempfile.TemporaryDirectory() as directory:
+            target = Path(directory)/'banners'
+            with self.assertRaisesRegex(LabError, 'DARK_BANNER_LOCKS_EDITOR'):
                 generate(protected_fixture(), target)
+            self.assertFalse(target.exists())
 
     def test_credits_links_and_no_remote_assets(self):
         for kind in ('compatible', 'amoled'):

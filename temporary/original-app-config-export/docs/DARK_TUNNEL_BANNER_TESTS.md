@@ -1,5 +1,11 @@
 # Archivos de prueba del banner — Dark Tunnel 1.0.26
 
+**Resultado posterior del propietario, 2026-10-27: añadir el banner bloquea
+la configuración. No incluir banner en las exportaciones abiertas Dark Tunnel.**
+Este documento conserva el ensayo histórico. El generador exige ahora
+`--reproduce-locking-banner`; sin esa opción se detiene antes de crear archivos.
+La decisión está en `results/banner_owner_decision_2026-10-27.json`.
+
 Fecha: 2026-10-27 (America/Tijuana). Rama temporal existente, cuenta Goku.
 El paquete previo entregaba un control de nota en texto, pero no las variantes
 con banner HTML. Esta entrega completa esa prueba pendiente. El reporte manual
@@ -70,7 +76,7 @@ Desde el checkout completo, con `requirements-dark-lab.txt` instalado:
 python temporary/original-app-config-export/scripts/test_dark_banner_lab.py -v
 python temporary/original-app-config-export/scripts/create_dark_banner_matrix.py \
   --source /ruta/privada/controls/VLESS_artificial_note.dark \
-  --output-dir /ruta/privada/banner-nuevo
+  --output-dir /ruta/privada/banner-nuevo --reproduce-locking-banner
 ```
 
 Conservar la fuente intacta y registrar para cada variante: importa, banner

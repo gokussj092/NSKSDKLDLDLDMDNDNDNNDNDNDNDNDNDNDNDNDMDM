@@ -1,5 +1,10 @@
 # SP-DECODE — nota HTML personalizada para HTTP Custom
 
+**Actualización 2026-10-27:** el propietario confirmó que los banners HTTP
+Custom fueron correctos. Aceptación manual global del paquete F/G, sin nueva
+medición de hashes en el teléfono ni desglose de cada propiedad CSS o enlace.
+Ver `results/banner_owner_decision_2026-10-27.json`.
+
 Fecha: 2026-10-26, America/Tijuana. Solo laboratorio temporal.
 
 ## Estado confirmado y alcance nuevo
@@ -140,5 +145,6 @@ El ZIP privado contiene:
 
 **Estado:** la estructura anterior ya tiene importación correcta reportada por
 el propietario. Los nuevos archivos con HTML pasan las comprobaciones locales;
-su importación, diseño y enlaces dentro de HTTP Custom están pendientes de la
-prueba manual. No se afirma que la nota elimine restricciones de la configuración.
+su importación y diseño recibieron aceptación global del propietario. Los enlaces
+no se reportaron individualmente. No se afirma que la nota elimine restricciones
+de la configuración.

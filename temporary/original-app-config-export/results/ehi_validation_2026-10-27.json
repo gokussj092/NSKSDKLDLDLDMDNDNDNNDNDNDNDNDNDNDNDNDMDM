@@ -1,0 +1,40 @@
+{
+  "date_local": "2026-10-27",
+  "target_package": "com.evozi.injector",
+  "target_version": "6.5.0",
+  "target_build": 244,
+  "input_hashes": {
+    "HTTP Injector_6.5.0.zip": "2eeab20e7a2193d63730fbae3dcee8ac439b4f644e45465640ed80c68a92e6e4",
+    "base.apk": "5dc3976ad0d90c14b79f5848109296998f930c9d36be88fba9115c078f60dfe3",
+    "libdatajar.so": "2563039f827ff936035abfbe7aeb0cb9d4bac8bf42f414bb6c68cf7241081a4d",
+    "libdexjniehi.so": "771f0e37d0ebb55a9e3c4543c97ae8dc5652338090817554fa8155be40dc5e29"
+  },
+  "source_config_version_code": 229,
+  "original_exporter_app_version_confirmed": false,
+  "source_baseline_bit_identical": true,
+  "all_seven_frames_adler32_verified": true,
+  "all_seven_production_reader_success": true,
+  "decoded_connection_projection_equal": true,
+  "independent_crypto": {
+    "openssl_cbc_layers": 14,
+    "libsodium_xchacha_tags": 7,
+    "argon2id_independently_reimplemented": false
+  },
+  "apk_inspection": {
+    "main_classes_dex_bytes": 22176,
+    "protection": "Secneo wrapper; protected application code not recovered",
+    "jadx_exit_code": 3,
+    "jadx_error_count": 3,
+    "original_importer_lock_hash_algorithm_recovered": false
+  },
+  "tests": {
+    "new_ehi_export_regressions": 14,
+    "ehi_existing_reader_regressions": 6,
+    "dark_export_and_banner_policy_regressions": 32,
+    "total_passed_this_session": 52
+  },
+  "manual_import": "pending",
+  "editable_access": "pending",
+  "banner_rendering": "pending",
+  "production_changes": false
+}
