@@ -1,7 +1,7 @@
 {
   "temporary": true,
   "format": "HTTP Custom HCX4 HCCFG10 n11",
-  "privacy": "private originals are intentionally not in Git history",
+  "privacy": "Private binaries and plaintext are outside Git; repository is public; prior plaintext history remains.",
   "source_sha256": "167593e228e10c3eaa98333198f0c1c946f328b7b99ab2ef574bc429576ca4ba",
   "source_size": 4230,
   "previous_output_sha256": "78d257386e9a50cc4548f44df0d67cdb37526941952ebcf490a66f6d74ee6f6f",
@@ -9,7 +9,7 @@
   "source_filename": "3 long grok.hc",
   "output_filename": "SP_DECODE_HTTP_Custom_Export.hc",
   "local_bundle": "SP_DECODE_TEMPORARY_EXPORT_LAB_COMPLETE.zip",
-  "expected_vendor_result": "JSON_INVALID",
+  "expected_vendor_result": "Historical rejected sample: JSON_INVALID (owner-reported); new A-E: PENDING_MANUAL_TEST",
   "next_tests": [
     "unmodified-rewrap",
     "note-only",

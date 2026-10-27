@@ -17,3 +17,10 @@
 **/credentials*
 **/local-private/
 !fixtures/http_custom/MANIFEST.json
+
+# Clear projections and machine-local analysis
+*decoded*.json
+*preview*.json
+private/
+local/
+work/

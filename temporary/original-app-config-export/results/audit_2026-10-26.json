@@ -1,0 +1,106 @@
+{
+  "scope": "HCX4 HCCFG10 n11 build899, local evidence only",
+  "source_sha256": "167593e228e10c3eaa98333198f0c1c946f328b7b99ab2ef574bc429576ca4ba",
+  "source_bytes": 4230,
+  "source_main_plaintext_bytes": 426,
+  "previous_global_reserialization_bytes": 419,
+  "source_main_projection_type_exact": true,
+  "source_outer_fields": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "n"
+  ],
+  "source_main_fields": [
+    "s",
+    "t",
+    "c",
+    "g",
+    "u",
+    "r",
+    "m",
+    "i"
+  ],
+  "original_access_mode_type": "str",
+  "source_pure_python_aead_tags_verified": 5,
+  "cases": [
+    {
+      "case": "A_baseline_rewrap",
+      "pure_python_aead_tags_verified": 5,
+      "checks": {
+        "hash_matches_generated_manifest": true,
+        "unchanged_raw_json_bytes_preserved": true,
+        "all_non_ciphertext_envelope_fields_preserved": true,
+        "profile_ciphertext_byte_identical": true,
+        "source_main_shape_preserved": true
+      }
+    },
+    {
+      "case": "B_note_only",
+      "pure_python_aead_tags_verified": 5,
+      "checks": {
+        "hash_matches_generated_manifest": true,
+        "unchanged_raw_json_bytes_preserved": true,
+        "all_non_ciphertext_envelope_fields_preserved": true,
+        "profile_ciphertext_byte_identical": true,
+        "source_main_shape_preserved": true
+      }
+    },
+    {
+      "case": "C_url_only",
+      "pure_python_aead_tags_verified": 5,
+      "checks": {
+        "hash_matches_generated_manifest": true,
+        "unchanged_raw_json_bytes_preserved": true,
+        "all_non_ciphertext_envelope_fields_preserved": true,
+        "profile_ciphertext_byte_identical": true,
+        "source_main_shape_preserved": true
+      }
+    },
+    {
+      "case": "D_access_only",
+      "pure_python_aead_tags_verified": 5,
+      "checks": {
+        "hash_matches_generated_manifest": true,
+        "unchanged_raw_json_bytes_preserved": true,
+        "all_non_ciphertext_envelope_fields_preserved": true,
+        "profile_ciphertext_byte_identical": true,
+        "source_main_shape_preserved": true
+      }
+    },
+    {
+      "case": "E_combined",
+      "pure_python_aead_tags_verified": 5,
+      "checks": {
+        "hash_matches_generated_manifest": true,
+        "unchanged_raw_json_bytes_preserved": true,
+        "all_non_ciphertext_envelope_fields_preserved": true,
+        "profile_ciphertext_byte_identical": true,
+        "source_main_shape_preserved": true
+      }
+    }
+  ],
+  "vendor_import_status": "PENDING_MANUAL_TEST",
+  "vendor_invalid_json_root_cause": "UNCONFIRMED",
+  "historical_rejected": {
+    "sha256": "78d257386e9a50cc4548f44df0d67cdb37526941952ebcf490a66f6d74ee6f6f",
+    "bytes": 4207,
+    "main_json_syntax_valid": true,
+    "pure_python_aead_tags_verified": 5,
+    "untouched_envelope_fields_preserved": true,
+    "changed_paths": [
+      "main.g.a",
+      "main.g.v",
+      "main.u"
+    ],
+    "access_mode_type": "bool",
+    "vendor_import": "INVALID_JSON_OWNER_REPORTED"
+  }
+}

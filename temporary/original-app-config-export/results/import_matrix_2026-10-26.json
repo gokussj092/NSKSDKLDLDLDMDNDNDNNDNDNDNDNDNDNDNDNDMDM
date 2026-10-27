@@ -1,0 +1,91 @@
+{
+  "source_sha256": "167593e228e10c3eaa98333198f0c1c946f328b7b99ab2ef574bc429576ca4ba",
+  "source_bytes": 4230,
+  "cases": [
+    {
+      "case": "A_baseline_rewrap",
+      "sha256": "942ad14a2f13b3e1e0b54a830ffff0a514822becf06c684645d51add5f00a7a9",
+      "bytes": 4257,
+      "changed_paths": [],
+      "local_crypto_roundtrip": true,
+      "main_json_syntax_valid": true,
+      "main_plaintext_byte_identical": true,
+      "source_field_types_preserved": true,
+      "vendor_schema_validation": "NOT_EXECUTED",
+      "encrypted_profiles_and_sidecars_identical": true,
+      "all_untouched_envelope_fields_identical": true,
+      "carrier_depth_preserved": true,
+      "vendor_import_result": "PENDING_MANUAL_TEST"
+    },
+    {
+      "case": "B_note_only",
+      "sha256": "e7a75bd34cd7da0364e5c4f15d81a7a325aca32ee55f59460eaef454de18313d",
+      "bytes": 4501,
+      "changed_paths": [
+        "main.g.v"
+      ],
+      "local_crypto_roundtrip": true,
+      "main_json_syntax_valid": true,
+      "main_plaintext_byte_identical": false,
+      "source_field_types_preserved": true,
+      "vendor_schema_validation": "NOT_EXECUTED",
+      "encrypted_profiles_and_sidecars_identical": true,
+      "all_untouched_envelope_fields_identical": true,
+      "carrier_depth_preserved": true,
+      "vendor_import_result": "PENDING_MANUAL_TEST"
+    },
+    {
+      "case": "C_url_only",
+      "sha256": "734067f5567b20c97807007e3e10c0d6138075f04f4af09aff477833b41a6784",
+      "bytes": 3830,
+      "changed_paths": [
+        "main.u"
+      ],
+      "local_crypto_roundtrip": true,
+      "main_json_syntax_valid": true,
+      "main_plaintext_byte_identical": false,
+      "source_field_types_preserved": true,
+      "vendor_schema_validation": "NOT_EXECUTED",
+      "encrypted_profiles_and_sidecars_identical": true,
+      "all_untouched_envelope_fields_identical": true,
+      "carrier_depth_preserved": true,
+      "vendor_import_result": "PENDING_MANUAL_TEST"
+    },
+    {
+      "case": "D_access_only",
+      "sha256": "d31a3d46e68441076021290f229767fd14fc435d6deabe95a662414da15be77f",
+      "bytes": 4172,
+      "changed_paths": [
+        "main.g.a"
+      ],
+      "local_crypto_roundtrip": true,
+      "main_json_syntax_valid": true,
+      "main_plaintext_byte_identical": false,
+      "source_field_types_preserved": false,
+      "vendor_schema_validation": "NOT_EXECUTED",
+      "encrypted_profiles_and_sidecars_identical": true,
+      "all_untouched_envelope_fields_identical": true,
+      "carrier_depth_preserved": true,
+      "vendor_import_result": "PENDING_MANUAL_TEST"
+    },
+    {
+      "case": "E_combined",
+      "sha256": "bc887915e0bea8ba6d233c523085c607d824effae930c48103dc20068dceef53",
+      "bytes": 4111,
+      "changed_paths": [
+        "main.g.a",
+        "main.g.v",
+        "main.u"
+      ],
+      "local_crypto_roundtrip": true,
+      "main_json_syntax_valid": true,
+      "main_plaintext_byte_identical": false,
+      "source_field_types_preserved": false,
+      "vendor_schema_validation": "NOT_EXECUTED",
+      "encrypted_profiles_and_sidecars_identical": true,
+      "all_untouched_envelope_fields_identical": true,
+      "carrier_depth_preserved": true,
+      "vendor_import_result": "PENDING_MANUAL_TEST"
+    }
+  ]
+}

@@ -1,96 +1,96 @@
 # TEMPORARY — Original-App Config Export Lab
 
-> **TEMPORAL / TEMPORARY. SOLO PRUEBAS. NO FUSIONAR A `main`, NO DESPLEGAR, NO PUBLICAR COMO EXPORTADOR FUNCIONAL.**
->
-> Rama: `feat/temporary-original-app-config-export-lab`. Fecha: 2026-10-26. Alcance actual: **HTTP Custom** (HCX4 / HCCFG 10 / `n11`), no las demás aplicaciones.
+Rama exclusiva: `feat/temporary-original-app-config-export-lab`.
+Trabajo del 26 de octubre de 2026 (America/Tijuana). **No fusionar a main**.
+Solo HTTP Custom 7.11.28 Patch 1, build 899, HCX4 / HCCFG10 / n11 sin
+contraseña/HWID. No se implementa un exportador de producción.
 
-## Objetivo
+## Estado comprobado
 
-Guardar el script de reencriptación HCX4, los JSON de lectura, hashes y evidencia de validación. Los archivos binarios reales se conservan en un ZIP privado de pruebas (entregado por separado), no en el historial Git. Permite reproducir el caso reportado por el propietario de
-SP-DECODE antes de integrar un exportador a la API o Android.
+Se auditó el estado `b21d3dbc3bd9f775a62a299d1c33054a7cbf2795`, la muestra
+original y el archivo histórico rechazado del ZIP privado. Ambos autentican
+sus cinco etiquetas AEAD y contienen JSON sintácticamente válido.
 
-**Reporte confirmado por el propietario**: HTTP Custom acepta/decripta
-criptográficamente el archivo reconstruido, pero posteriormente informa un error
-de **formato JSON inválido**. Por tanto, el archivo **NO está certificado como
-importable**, incluso aunque el decodificador Python lo abra correctamente.
+Las nuevas variantes A–E autentican todas sus capas. A preserva **los 426 bytes
+exactos** del JSON principal. B–E sustituyen solo los tokens autorizados,
+conservan escapes y bytes ajenos a la edición. El perfil, HPR1, sidecar,
+metadatos y campos desconocidos quedan intactos.
 
-## Archivos
+**La causa del mensaje JSON inválido del importador sigue sin confirmarse.
+La compatibilidad con la aplicación original está PENDIENTE.** No hay
+Android/ADB/emulador disponible para ejecutar el importador. El APK sí se
+inspeccionó y confirmó como build 899; sus métodos relevantes están trasladados
+a código nativo y no se recuperó un contrato verificable para el modo de acceso.
+No se inventó un valor textual de desbloqueo.
 
-- `scripts/hc_hcx4_n11_experiment.py`: reencriptación aislada con las bibliotecas
-  criptográficas canónicas de `main`; no altera los motores productivos.
-- `scripts/create_hc_import_matrix.py`: produce cinco variantes independientes
-  para detectar el campo que causa el rechazo de importación.
-- `scripts/stage_private_fixtures.sh`: restaura las dos muestras HC originales
-  desde el ZIP privado y verifica hashes SHA-256 antes de probar.
-- `fixtures/http_custom/MANIFEST.json`: nombres, longitudes y hashes SHA-256
-  de los dos `.hc` binarios, sin incorporar los bytes confidenciales a Git.
-- Archivo adjunto privado `SP_DECODE_TEMPORARY_EXPORT_LAB_COMPLETE.zip`:
-  fuente HCX4 completa, salida histórica rechazada, otros formatos reservados
-  para futuras pruebas, script original y JSON, conservados fuera de Git.
-- `fixtures/http_custom/source_decoded.json`: JSON legible producido por el
-  decodificador de SP-DECODE, no es un sobre HC completo.
-- `fixtures/http_custom/edited_preview.json`: campos editados autorizados por
-  el propietario; reproducción precisa del intento rechazado.
-- `fixtures/http_custom/roundtrip_verification.json`: evidencia del experimento
-  local anterior, **no** una certificación de importación Android.
-- `docs/HTTP_CUSTOM_IMPORT_TRIAGE.md`: hipótesis, comprobaciones y matriz de
-  pruebas controladas.
+## Correcciones
 
-Las muestras reales pueden contener servidores, usuarios, contraseñas y URLs
-privadas. **El repositorio es privado al momento del alta**. El ZIP con binarios
-no fue subido a Git; el JSON legible del laboratorio puede contener campos de
-conexión y también debe mantenerse privado. No reenviar ni subir a CI público.
+- Los comandos directos del README anterior fallaban con `ModuleNotFoundError:
+  No module named 'decoders'`; los scripts ahora resuelven el repositorio.
+- El baseline anterior volvía a serializar el JSON (426 → 419 bytes). Ahora
+  conserva el plaintext completo, y el resto usa edición por tokens existentes.
+  La diferencia de serialización **no está demostrada como causa del rechazo**.
+- Comparaciones con tipos exactos evitan que Python acepte `False == 0`.
+  No se permiten cambios fuera de `main.g.a`, `main.g.v` y `main.u`.
+- Cambiar string a booleano se rechaza por defecto. D/E usan una excepción
+  explícita de diagnóstico para reproducir `false`, sin aprobar ese esquema.
+- Creación exclusiva de archivos 0600; matriz y staging exigen directorio
+  nuevo. Hashes del ZIP se validan antes de escribir muestras.
+- Se retiraron del árbol actual los dos JSON legibles con conexiones privadas.
+  El repositorio figura **público** en GitHub. Esta retirada no borra la historia.
 
-## Reproducir sin tocar el producto
+## Reproducir
 
-Desde la raíz del repositorio, en un entorno aislado, con
-`python -m pip install -r requirements.txt`:
+Desde la raíz del repositorio, usar un entorno Python 3.12 con las dependencias
+canónicas, sin modificar los decodificadores:
 
 ```bash
-mkdir -p /tmp/spdecode-export-lab
-unzip -p /ruta/privada/SP_DECODE_TEMPORARY_EXPORT_LAB_COMPLETE.zip fixtures/http_custom/source_original.hc > /tmp/spdecode-export-lab/original.hc
-unzip -p /ruta/privada/SP_DECODE_TEMPORARY_EXPORT_LAB_COMPLETE.zip fixtures/http_custom/export_rejected.hc > /tmp/spdecode-export-lab/previous-rejected.hc
+python -m venv /ruta/privada/hc-venv
+/ruta/privada/hc-venv/bin/python -m pip install -r decoders/Python/apps/HTTP_Custom/requirements.txt
 
-python temporary/original-app-config-export/scripts/hc_hcx4_n11_experiment.py \
-  --source /tmp/spdecode-export-lab/original.hc \
-  --edited temporary/original-app-config-export/fixtures/http_custom/edited_preview.json \
-  --output /tmp/spdecode-export-lab/new-experiment.hc
+bash temporary/original-app-config-export/scripts/stage_private_fixtures.sh \
+  /ruta/privada/SP_DECODE_TEMPORARY_EXPORT_LAB_COMPLETE.zip \
+  /ruta/privada/hc-fixtures-nuevos
+
+/ruta/privada/hc-venv/bin/python temporary/original-app-config-export/scripts/create_hc_import_matrix.py \
+  --source /ruta/privada/hc-fixtures-nuevos/source_original.hc \
+  --output-dir /ruta/privada/hc-matrix-nueva
+
+/ruta/privada/hc-venv/bin/python temporary/original-app-config-export/scripts/audit_hc_matrix.py \
+  --source /ruta/privada/hc-fixtures-nuevos/source_original.hc \
+  --historical /ruta/privada/hc-fixtures-nuevos/export_rejected.hc \
+  --matrix-dir /ruta/privada/hc-matrix-nueva \
+  --output /ruta/privada/hc-audit-nuevo.json
+
+/ruta/privada/hc-venv/bin/python temporary/original-app-config-export/scripts/test_hc_export_lab.py -v
+/ruta/privada/hc-venv/bin/python -m unittest tests.test_http_custom_899 -v
 ```
 
+La matriz no requiere JSON legibles versionados: obtiene `main` del original,
+cambia la nota a los créditos solicitados y la URL a `https://spdecode.xyz`.
+D/E prueban el booleano `false` del intento histórico. Otras opciones o notas
+se pueden proporcionar mediante `--edited` con una proyección **privada**
+completa. El script individual exige `--allow-access-type-change` para
+reproducir expresamente el caso booleano.
 
-Para preparar cinco pruebas independientes de importación y registrar sus hashes:
+No enviar las muestras a servicios externos. Nonces nuevos implican hashes y
+tamaños de carrier UTF-8 diferentes en cada generación; no son una regresión.
+Comparar contenido autenticado, campos y bytes conservados.
 
-```bash
-bash temporary/original-app-config-export/scripts/stage_private_fixtures.sh \\
-  /ruta/privada/SP_DECODE_TEMPORARY_EXPORT_LAB_COMPLETE.zip \\
-  /tmp/spdecode-export-lab
+## Archivos públicos y privados
 
-python temporary/original-app-config-export/scripts/create_hc_import_matrix.py \\
-  --source /tmp/spdecode-export-lab/source_original.hc \\
-  --edited temporary/original-app-config-export/fixtures/http_custom/edited_preview.json \\
-  --output-dir /tmp/spdecode-export-lab/matrix
-```
+| Archivo | Uso |
+| --- | --- |
+| `scripts/hc_hcx4_n11_experiment.py` | Rewrap aislado, sin integración productiva |
+| `scripts/lossless_json.py` | Edición de valores existentes conservando bytes ajenos |
+| `scripts/create_hc_import_matrix.py` | A–E + manifiesto sin plaintext |
+| `scripts/audit_hc_matrix.py` | Segundo backend AEAD puro Python, todos los tags |
+| `scripts/test_hc_export_lab.py` | 11 regresiones sintéticas |
+| `scripts/stage_private_fixtures.sh` | ZIP privado, hashes y protección contra sobrescritura |
+| `results/` | Hashes, rutas de campos, indicadores, sin datos de conexión |
+| `docs/HTTP_CUSTOM_IMPORT_TRIAGE.md` | Diagnóstico y prueba Android pendiente |
+| ZIP privado nuevo de la conversación | Cinco variantes `.hc`, controles y guía de importación |
 
-Probar los cinco .hc **solo con la aplicación original**; registrar su mensaje de
-error sin publicar credenciales. Los cinco pasan antes por autenticación local,
-lo que NO demuestra que el JSON sea aceptable por el importador.
-
-La salida tiene nonces criptográficos aleatorios y normalmente otro SHA-256;
-por tanto comparar **el JSON descifrado** y la estructura del sobre, no los
-bytes exactos contra el intento histórico. No introducir credenciales en
-argumentos de línea de comandos ni enviar el archivo de prueba a una API pública.
-
-**Importante**: los nombres `source_decoded.json` y `edited_preview.json`
-describen una **proyección de lectura** del formato, no un contenedor válido
-para importación directa. El script recupera el contenedor original, reescribe
-solo su sección cifrada `i` (JSON principal) y conserva `j` y los metadatos
-del sobre original. Esa conservación ayuda a evitar perder líneas/secciones
-por usar el JSON de presentación como fuente de exportación.
-
-## Limpieza
-
-Carpeta y rama **temporales**, no destinadas a `main`. Después de las pruebas,
-eliminar esta rama y las copias temporales locales de las muestras. **Borrar una
-carpeta en un nuevo commit no elimina secretos de la historia de Git**:
-si se llegaran a fusionar los fixtures, sería necesario sanear la historia y
-rotar las credenciales expuestas. Mantener `main` y los despliegues sin cambios.
+Los originales, el rechazado, las proyecciones completas y las variantes se
+conservan fuera de Git. No se generó APK/AAB ni se modificó Android, API,
+decodificadores productivos, otras aplicaciones o VPS.
