@@ -1,0 +1,27 @@
+{
+  "source_bytes": 4230,
+  "output_bytes": 4207,
+  "hc_build": 899,
+  "schema": 10,
+  "schedule": "n11",
+  "outer_carrier_utf8_latin1_layers": 1,
+  "main_label": "m",
+  "profile_sections_unchanged": 1,
+  "main_protections": {
+    "a": false,
+    "c": false,
+    "f": false,
+    "g": [],
+    "h": false,
+    "l": false,
+    "m": false,
+    "o": false,
+    "p": [],
+    "v": "SP-DECODE | Exported with SP-DECODE\nDeveloper: Ghost Developer\nOrganization: Ghost Nexora Studio\nTelegram: @GhostDeve",
+    "j": false
+  },
+  "update_url": "https://spdecode.xyz",
+  "sha256": "78d257386e9a50cc4548f44df0d67cdb37526941952ebcf490a66f6d74ee6f6f",
+  "post_write_validation": "HCX4 + HCCFG n11 authenticated; main JSON matched approved preview",
+  "original_app_import": "FAILED: invalid JSON format (owner-reported)"
+}
