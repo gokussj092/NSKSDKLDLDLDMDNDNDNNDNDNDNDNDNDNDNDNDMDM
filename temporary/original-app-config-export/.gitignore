@@ -1,0 +1,19 @@
+# TEMPORARY LAB — never accidentally stage decrypted or regenerated private profiles
+*.hc
+*.ehi
+*.hat
+*.npvs
+*.dark
+*.apks
+*.apk
+*.aab
+*.ipa
+*.zip
+*.tar
+*.tar.gz
+**/.env
+**/.env.*
+**/secret*
+**/credentials*
+**/local-private/
+!fixtures/http_custom/MANIFEST.json
