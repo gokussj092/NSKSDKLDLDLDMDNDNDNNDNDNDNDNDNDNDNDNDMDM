@@ -76,6 +76,8 @@ class WorkerHandler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:
         self.connection.settimeout(15)
+        if self.path not in ("/internal/v1/npvs/identity", "/internal/v1/decode/file", "/internal/v1/decode/text", "/internal/v1/decode/import/catalog", "/internal/v1/decode/import/server-vpn"):
+            return self._json(503, {"error": {"code": "DECODERS_DISABLED"}})
         if not self._authorized():
             return self._json(403, {"error": {"code": "FORBIDDEN"}})
         if not ACTIVE_JOBS.acquire(blocking=False):

@@ -53,9 +53,10 @@ export async function rememberKey(redis, key, level, cfg) {
 
 /** Per-key budgets survive new sessions. Global budgets also cover bearer-only V1. */
 export async function workBudget(redis, claims) {
-  if (!await throttle(redis,"spsec:work:global",120,60)) return false;
-  if (!claims.key) return true;
-  const id=keyId(claims.key);
-  return await throttle(redis,"spsec:work:key-minute:"+id,10,60) &&
-    await throttle(redis,"spsec:work:key-day:"+id,300,86400);
+  if (claims.key) {
+    const id=keyId(claims.key);
+    if (!await throttle(redis,"spsec:work:key-minute:"+id,10,60) ||
+        !await throttle(redis,"spsec:work:key-day:"+id,300,86400)) return false;
+  }
+  return throttle(redis,"spsec:work:global",120,60);
 }

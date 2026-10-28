@@ -12,6 +12,11 @@ import java.util.Base64
 import kotlin.test.*
 
 class PolicyTest {
+    @Test fun revocationParserRejectsSuspendedKeysAndMalformedResponses() {
+        assertEquals(setOf("1","2"),parseRevocations("""{"entries":{"01":{"status":"REVOKED"},"2":{"status":"SUSPENDED"}}}"""))
+        assertFails { parseRevocations("""{"entries":{"1":{"status":"UNKNOWN"}}}""") }
+        assertFails { parseRevocations("{}") }
+    }
     private val factory=KeyAttestationCertPathFactory(FakeCalendar(LocalDate.now()))
     private val challenge=ByteString.copyFrom(ByteArray(32) { it.toByte() })
     private val digest=ByteString.copyFrom(ByteArray(32) { 0xa1.toByte() })

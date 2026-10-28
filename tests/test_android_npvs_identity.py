@@ -43,7 +43,8 @@ class AndroidNpvIdentityTests(unittest.TestCase):
         client=(SOURCE/"CloudDecodeClient.kt").read_text()
         self.assertIn('NpvsRecipientPicker.choose(app,bytes)',client)
         self.assertIn('put("recipientKey",recipient)',client)
-        self.assertIn('CloudNativeTransport.post(CloudOperation.IDENTITY',client)
+        self.assertIn('protectedPost(CloudOperation.IDENTITY',client)
+        self.assertIn('return CloudNativeTransport.post(operation, exact, bearer, id, integrity)', client)
         transport=(SOURCE/"CloudNativeTransport.kt").read_text()
         self.assertIn('operation: Int',transport)
         native=(APP/"src/main/cpp/spdecode_transport.cpp").read_text()
@@ -72,3 +73,4 @@ class AndroidNpvIdentityTests(unittest.TestCase):
 
 
 if __name__=="__main__":unittest.main()
+

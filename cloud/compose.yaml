@@ -75,7 +75,26 @@ services:
     depends_on:
       decoder-worker:
         condition: service_healthy
-      key-attestation:
+      redis:
+        condition: service_healthy
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: ["ALL"]
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,noexec,nosuid
+      - /app/.next/cache:size=32m,nosuid
+    mem_limit: 1024m
+    pids_limit: 128
+    cpus: 1.0
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/v1/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 4
+      start_period: 30s
+
+  key-attestation:
     profiles: ["hardware-security"]
     build:
       context: ./attestation
@@ -98,24 +117,6 @@ services:
     cpus: 1.0
     tmpfs: ["/tmp:size=16m,noexec,nosuid"]
 
-  redis:
-        condition: service_healthy
-    security_opt:
-      - no-new-privileges:true
-    cap_drop: ["ALL"]
-    read_only: true
-    tmpfs:
-      - /tmp:size=32m,noexec,nosuid
-      - /app/.next/cache:size=32m,nosuid
-    mem_limit: 1024m
-    pids_limit: 128
-    cpus: 1.0
-    healthcheck:
-      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/v1/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
-      interval: 30s
-      timeout: 5s
-      retries: 4
-      start_period: 30s
 
   redis:
     image: redis:7.4-alpine

@@ -30,6 +30,16 @@ data class Policy(val packageName: String, val digests: Set<ByteString>, val min
 data class Evidence(val chain: List<String>, val challenge: String, val publicKey: String)
 data class Decision(val valid: Boolean, val publicKey: String? = null, val level: String? = null)
 
+internal fun parseRevocations(text: String): Set<String> {
+    val root = JsonParser.parseString(text).asJsonObject
+    val entries = checkNotNull(root.getAsJsonObject("entries"))
+    return entries.entrySet().map { (serial, entry) ->
+        require(serial.matches(Regex("[a-f0-9]+")))
+        require(entry.asJsonObject["status"].asString in setOf("REVOKED", "SUSPENDED"))
+        serial.lowercase().trimStart('0').ifEmpty { "0" }
+    }.toSet()
+}
+
 /** Fresh CRL required. A failed refresh never extends the lifetime of an old list. */
 class GoogleRevocations {
     private val client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(4))
@@ -46,13 +56,7 @@ class GoogleRevocations {
             require(bytes.size <= 4 * 1024 * 1024 && response.statusCode() == 200)
             String(bytes, Charsets.UTF_8)
         }
-        val root = JsonParser.parseString(text).asJsonObject
-        val entries = checkNotNull(root.getAsJsonObject("entries"))
-        val next = entries.entrySet().map { (serial, entry) ->
-            require(serial.matches(Regex("[a-f0-9]+")))
-            require(entry.asJsonObject["status"].asString in setOf("REVOKED", "SUSPENDED"))
-            serial.lowercase().trimStart('0').ifEmpty { "0" }
-        }.toSet()
+        val next = parseRevocations(text)
         val cacheSeconds = Regex("(?:^|,)\\s*max-age=([0-9]+)")
             .find(response.headers().firstValue("Cache-Control").orElse(""))
             ?.groupValues?.get(1)?.toLongOrNull()?.coerceIn(0,3600) ?: 300

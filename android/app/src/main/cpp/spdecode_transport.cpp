@@ -107,7 +107,7 @@ jstring post(JNIEnv* env,jclass,jint operation,jstring bodyArg,jstring bearerArg
         (!actionChallenge.empty() && (actionChallenge.size()!=36 ||
             !std::all_of(actionChallenge.begin(),actionChallenge.end(),[](unsigned char c){return std::isxdigit(c)||c=='-';}))) ||
         (!actionIntegrity.empty() && (actionIntegrity.size()<80 || actionIntegrity.size()>16384 ||
-            !std::all_of(actionIntegrity.begin(),actionIntegrity.end(),[](unsigned char c){return std::isalnum(c)||c=='_'||c=='-'||c=='.';}))) ||
+            !std::all_of(actionIntegrity.begin(),actionIntegrity.end(),[](unsigned char c){return c>=0x21 && c<=0x7e;}))) ||
         actionChallenge.empty()!=actionIntegrity.empty() || body.empty() || body.size()>kMaxRequestBytes) {
         fail(env,"CLOUD_NATIVE_REQUEST_REJECTED");return nullptr;
     }

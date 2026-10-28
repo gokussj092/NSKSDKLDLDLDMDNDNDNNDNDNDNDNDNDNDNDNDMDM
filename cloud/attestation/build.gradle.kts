@@ -19,7 +19,7 @@ dependencies {
 }
 kotlin { jvmToolchain(21) }
 sourceSets {
-    main { kotlin.srcDir("vendor/src/main/kotlin"); resources.srcDir("vendor"); resources.include("roots.json") }
+    main { kotlin.srcDir("vendor/src/main/kotlin"); resources.srcDir("vendor"); resources.include("roots.json", "LICENSE", "UPSTREAM.md") }
 }
 application { mainClass.set("com.ghostdeveloper.attestation.ServerKt") }
 tasks.test { useJUnitPlatform() }

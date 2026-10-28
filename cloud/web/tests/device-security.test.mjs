@@ -101,3 +101,15 @@ test("private verifier replies cannot substitute a different public key",async()
   assert.equal(await verifyHardware(["YWJj","YWJj"],"x".repeat(43),encode(f.key),cfg,
     {fetchImpl:async()=>Response.json({valid:true,publicKey:encode(f.bootstrap),level:"tee"})}),null);
 });
+test("renewing a session cannot reset a key budget or spend global capacity after key rejection",async()=>{
+  const f=fixture({CLOUD_ACTION_INTEGRITY_REQUIRED:"false"});
+  const token=(await(await enroll(f)).json()).accessToken;
+  for(let i=0;i<10;i++)assert.equal((await f.call(5,{text:"synthetic"},token)).status,200);
+  const challenge=await(await f.call(1,{publicKey:encode(f.key)})).json();
+  assert.equal(challenge.keyAttestationRequired,false);
+  f.options.decodeIntegrity=async()=>verdict(integrityNonce(challenge.nonce,challenge.challengeId,encode(f.key)));
+  const renewed=await f.call(2,{challengeId:challenge.challengeId,integrityToken:"T".repeat(100)});
+  assert.equal(renewed.status,201);
+  assert.equal((await f.call(5,{text:"synthetic"},(await renewed.json()).accessToken)).status,429);
+  assert.equal(f.redis.counts.get("spsec:work:global"),10);
+});

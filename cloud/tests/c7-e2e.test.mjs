@@ -36,6 +36,7 @@ class RedisFake{
  async expire(){return 1;}
  async ping(){return "PONG";}
  async eval(_,{keys,arguments:args}){
+  if(_.includes("spdecode:throttle:v1"))return this.incr(keys[0]);
   const k=keys[0],active=this.slots.get(k)||new Map();
   for(const [id,at] of active){if(at<=Number(args[2]))active.delete(id);}
   if(active.size>=Number(args[1]))return 0;
@@ -279,3 +280,4 @@ test("C7 maintenance closes API before dispatch and disables readiness",async()=
  assert.equal((await readinessRequest(options(redis))).status,503);
  assert.equal(workerCalls,initial);
 });
+

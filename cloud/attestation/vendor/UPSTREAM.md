@@ -10,3 +10,7 @@ The wrapper enforces strict app ID, locked verified boot, public-key equality,
 patch age, security level, and fresh revocation data including suspended keys.
 Update the pinned source and roots together after reviewing upstream changes.
 No trust roots or test roots are accepted from API requests or environment variables.
+
+Test-only helpers from the same revision live in src/test/kotlin/upstream.
+Their default leaf issuer refers to the local factory instance instead of the
+upstream global Certs fixture. They are excluded from the runtime distribution.

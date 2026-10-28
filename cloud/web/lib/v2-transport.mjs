@@ -121,7 +121,9 @@ export async function transportRequest(request,options={}) {
            !await throttle(redis,"spsec:enroll-global",120,3600))return fail("RATE_LIMITED",429);
         const result=await (options.verifyHardware||verifyHardware)(body.certificateChain,
           attestationChallenge(challenge.nonce,body.challengeId,challenge.publicKey),sessionKey,cfg);
-        if(!result || !await rememberKey(redis,sessionKey,result.level,cfg))return fail("INTEGRITY_REJECTED",403);
+        if(result?.valid!==true || result.publicKey!==sessionKey || !["tee","strongbox"].includes(result.level) ||
+           (cfg.hardwareLevel==="strongbox"&&result.level!=="strongbox") ||
+           !await rememberKey(redis,sessionKey,result.level,cfg))return fail("INTEGRITY_REJECTED",403);
         hardware=await registeredKey(redis,sessionKey,cfg);
       }
       if(cfg.requireHardware&&!hardware)return fail("INTEGRITY_REJECTED",403);

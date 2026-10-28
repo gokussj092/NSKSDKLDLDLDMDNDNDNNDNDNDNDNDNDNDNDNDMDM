@@ -221,7 +221,7 @@ internal class KeyAttestationCertFactory(
     publicKey: PublicKey = leafKey.public,
     signingKey: PrivateKey = attestationKey.private,
     subject: X500Name = X500Name("CN=Android Keystore Key"),
-    issuer: X500Name = Certs.factoryAttestation.subject,
+    issuer: X500Name = factoryAttestation.subject,
     notBefore: Date = this.fakeCalendar.lastWeek(),
     notAfter: Date = this.fakeCalendar.nextWeek(),
     extension: Extension? = KEY_DESCRIPTION_EXT,

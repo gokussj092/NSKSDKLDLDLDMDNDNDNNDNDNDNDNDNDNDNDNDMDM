@@ -22,6 +22,7 @@ def prepare(path: Path, project: str, certificates: str, level: str) -> None:
     lines = path.read_text().splitlines()
     current = dict(line.split("=", 1) for line in lines if "=" in line and not line.startswith("#"))
     updates = {
+        "COMPOSE_PROFILES": ",".join(dict.fromkeys([x for x in current.get("COMPOSE_PROFILES", "").split(",") if x] + ["hardware-security"])),
         "CLOUD_KEY_ATTESTATION_TOKEN": current.get("CLOUD_KEY_ATTESTATION_TOKEN") or secrets.token_hex(32),
         "CLOUD_PLAY_CERT_SHA256": ",".join(digests),
         "CLOUD_GOOGLE_CLOUD_PROJECT_NUMBER": project,

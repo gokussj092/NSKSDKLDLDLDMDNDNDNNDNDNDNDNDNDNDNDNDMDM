@@ -93,7 +93,9 @@ test("attestation enforces package, signer, version, licensing, device, optional
     v=>v.appIntegrity.certificateSha256Digest=[],v=>v.appIntegrity.certificateSha256Digest=["b".repeat(43)],
     v=>v.appIntegrity.versionCode="32",v=>delete v.appIntegrity.versionCode,v=>v.appIntegrity.versionCode="33junk",
     v=>v.accountDetails.appLicensingVerdict="UNLICENSED",
-    v=>v.deviceIntegrity.deviceRecognitionVerdict=["MEETS_DEVICE_INTEGRITY"]]){
+    v=>v.deviceIntegrity.deviceRecognitionVerdict=["MEETS_DEVICE_INTEGRITY"],
+    v=>v.deviceIntegrity.deviceAttributes.sdkVersion=32,
+    v=>v.deviceIntegrity.recentDeviceActivity.deviceActivityLevel="LEVEL_4"]){
     const value=verdict("nonce");mutate(value.tokenPayloadExternal);assert.equal(checkIntegrityVerdict(value,cfg),false);
   }
   for(const field of ["requireAccessRisk","requirePlayProtect"]){
