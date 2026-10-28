@@ -43,6 +43,15 @@ def main() -> int:
         return 2
     try:
         raw = Path(sys.argv[1]).read_bytes()
+        if raw.startswith(b"NPVO1\n"):
+            from exports.npv import export, MAGIC, D
+            from exports.lossless import parse
+            payload = sys.stdin.buffer.read(32769)
+            if len(payload) > 32768 or json.loads(payload or b'{}'):
+                raise ValueError("Open format has no credential input")
+            raw = export(raw, {})
+            sys.stdout.write(json.dumps(D._decode_embedded_npvs1(parse(raw[len(MAGIC):])), ensure_ascii=False, indent=2))
+            return 0
         if raw.startswith(b"NPVS"):
             # Explicit version selection BEFORE authentication. Do not retry
             # a failed v1 tag with the v5 codec or vice versa.

@@ -32,13 +32,14 @@ def seal(key,nonce,plain,aad):
     return ciphertext+tag
 
 
-def make(*,password="synthetic-password",version=5,recipient=False,identity=None):
+def make(*,password="synthetic-password",version=5,recipient=False,identity=None,policy_updates=None):
     creator=ECC.construct(curve="P-256",d=0x123456789abcdef)
     pub=creator.public_key().export_key(format="SEC1",compress=True)
     cid,salt,nonce=bytes(range(16)),bytes(range(16,32)),bytes(range(32,44))
     dek=bytes(range(32));wrapped_nonce=bytes(range(48,60))
     policy={"onlyMobileNetwork":False,"attestationLevel":"","expiresAt":None,
             "displayMessage":"Sintético <>& 日本語", "customServerMessage":"", "configVersion":2}
+    if policy_updates is not None: policy.update(policy_updates)
     metadata={"issuedAt":"2026-10-22","policy":policy}
     public_key=None
     if recipient:

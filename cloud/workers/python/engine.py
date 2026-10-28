@@ -213,8 +213,12 @@ def _xhypher_export_in_renamed_file(suffix: str, contents: bytes) -> bool:
     return len(binary) >= 32 and len(binary) % 16 == 0
 
 
-def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS, credentials: dict | None = None, full_hat: bool = False) -> dict:
+def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS, credentials: dict | None = None, full_hat: bool = False, compatible_export: dict | None = None) -> dict:
     """Execute one canonical file engine. The caller must authenticate first."""
+    if compatible_export is not None:
+        from exports.job import validate_options
+        try: validate_options(compatible_export)
+        except ValueError: raise DecodeFailure("INVALID_REQUEST") from None
     if not isinstance(suffix, str) or suffix not in load_runtime_file_engines():
         raise DecodeFailure("UNSUPPORTED_FORMAT")
     if not isinstance(contents, bytes) or not contents:
@@ -289,7 +293,9 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
     protected_v2box = suffix == "v2box"
     credential_input = protected_hc or protected_tut or protected_ua or protected_onef or protected_npvs or protected_v2box
     source = engine["source"]
-    if protected_hc:
+    if suffix == "dark":
+        source = str(Path(__file__).with_name("dark_bridge.py"))
+    elif protected_hc:
         source = str(Path(__file__).with_name("hc_bridge.py"))
     elif protected_tut or protected_onef:
         source = str(Path(source).with_name("worker_bridge.py"))
@@ -368,7 +374,7 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
             structured = json.loads(raw_text)
         except ValueError:
             pass
-        return {
+        result = {
             "apiVersion": "v1",
             "status": "success",
             "format": suffix,
@@ -384,6 +390,10 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
             "isPartial": False,
             "warnings": [],
         }
+        if compatible_export is not None:
+            from exports.job import prepare
+            result["compatibleExport"] = prepare(suffix, contents, credentials, compatible_export, result)
+        return result
 
 
 def decode_provider_catalog(provider_id: str, contents: bytes) -> dict:

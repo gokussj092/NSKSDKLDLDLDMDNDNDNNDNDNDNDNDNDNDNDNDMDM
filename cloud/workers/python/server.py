@@ -112,14 +112,14 @@ class WorkerHandler(BaseHTTPRequestHandler):
                     raise DecodeFailure("INPUT_TOO_LARGE")
                 result = decode_catalog(base64.b64decode(encoded, validate=True))
             else:
-                if not {"format", "dataBase64"} <= set(request) or set(request) - {"format", "dataBase64", "credentials"}:
+                if not {"format", "dataBase64"} <= set(request) or set(request) - {"format", "dataBase64", "credentials", "compatibleExport"}:
                     raise ValueError("file schema")
                 encoded = request["dataBase64"]
                 if not isinstance(encoded, str) or len(encoded) > (MAX_INPUT_BYTES * 4 // 3 + 8):
                     raise DecodeFailure("INPUT_TOO_LARGE")
                 contents = base64.b64decode(encoded, validate=True)
                 result = decode_file(request["format"], contents,
-                                     credentials=request.get("credentials"), full_hat=True)
+                                     credentials=request.get("credentials"), full_hat=True, compatible_export=request.get("compatibleExport"))
         except (ValueError, TypeError, base64.binascii.Error):
             return self._json(400, {"error": {"code": "INVALID_REQUEST"}})
         except DecodeFailure as error:
