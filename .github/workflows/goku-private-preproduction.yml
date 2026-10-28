@@ -1,0 +1,102 @@
+name: SP-DECODE Goku private preproduction APK AAB
+on:
+  push:
+    branches: [ci/goku-private-preprod-1.1.21-32]
+    paths: [.github/workflows/goku-private-preproduction.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  sign:
+    if: github.repository_id == '860667367' && github.ref == 'refs/heads/ci/goku-private-preprod-1.1.21-32'
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify exact source and version
+        shell: bash
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor 71478da1588c398ad5f95051ccaaafd82ee24162 HEAD
+          grep -Eq 'versionName[[:space:]]*=[[:space:]]*"1[.]1[.]21"' android/app/build.gradle.kts
+          grep -Eq 'versionCode[[:space:]]*=[[:space:]]*32([^0-9]|$)' android/app/build.gradle.kts
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.11.1'
+      - name: Android SDK
+        shell: bash
+        run: |
+          set -euo pipefail
+          MANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -n 1)"
+          test -x "$MANAGER"
+          "$MANAGER" --install "platforms;android-36" "build-tools;35.0.0" "platform-tools" "cmake;3.22.1" "ndk;27.2.12479018"
+      - name: Recreate audited local assets
+        run: |
+          python -m pip install -r requirements.txt
+          PYTHONPATH=. python scripts/android_a24_whitebox_export.py --output android/app/src/main/assets/npv_whitebox.bin
+          python scripts/android_s3_security_audit.py
+          python scripts/android_s4_provisioning_audit.py
+      - name: Restore existing keystore - never generate a new identity
+        env:
+          STORE_BASE64: ${{ secrets.SPDECODE_SIGNING_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.SPDECODE_SIGNING_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.SPDECODE_SIGNING_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          for value in "$STORE_BASE64" "$STORE_PASSWORD" "$KEY_ALIAS" "$KEY_PASSWORD"; do
+            test -n "$value" || { echo '::error::Signing secret missing'; exit 1; }
+          done
+          umask 077
+          printf '%s' "$STORE_BASE64" | base64 --decode > "$RUNNER_TEMP/spdecode.p12"
+          keytool -list -storetype PKCS12 -keystore "$RUNNER_TEMP/spdecode.p12" -storepass:env STORE_PASSWORD -alias "$KEY_ALIAS" >/dev/null
+      - name: Build APK and AAB signed with existing keystore
+        working-directory: android
+        env:
+          SPDECODE_RELEASE_STORE_FILE: ${{ runner.temp }}/spdecode.p12
+          SPDECODE_RELEASE_STORE_PASSWORD: ${{ secrets.SPDECODE_SIGNING_STORE_PASSWORD }}
+          SPDECODE_RELEASE_KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
+          SPDECODE_RELEASE_KEY_PASSWORD: ${{ secrets.SPDECODE_SIGNING_KEY_PASSWORD }}
+        run: gradle --no-daemon :app:assembleRelease :app:bundleRelease
+      - name: Verify signatures and audit APK
+        env:
+          STORE_PASSWORD: ${{ secrets.SPDECODE_SIGNING_STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.SPDECODE_SIGNING_KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
+        run: |
+          set -euo pipefail
+          APK=android/app/build/outputs/apk/release/app-release.apk
+          AAB=android/app/build/outputs/bundle/release/app-release.aab
+          TOOLS="$ANDROID_HOME/build-tools/35.0.0"
+          test -s "$APK" && test -s "$AAB"
+          "$TOOLS/zipalign" -P 16 -f 4 "$APK" "$RUNNER_TEMP/aligned.apk"
+          "$TOOLS/apksigner" sign --ks "$RUNNER_TEMP/spdecode.p12" --ks-type PKCS12 --ks-key-alias "$KEY_ALIAS" --ks-pass env:STORE_PASSWORD --key-pass env:KEY_PASSWORD --v1-signing-enabled true --v2-signing-enabled true --v3-signing-enabled true --out "$RUNNER_TEMP/signed.apk" "$RUNNER_TEMP/aligned.apk"
+          cp "$RUNNER_TEMP/signed.apk" "$APK"
+          "$TOOLS/apksigner" verify --verbose "$APK"
+          jarsigner -verify "$AAB"
+          python scripts/android_s_vault_audit.py --apk "$APK"
+          python scripts/android_s2_dex_audit.py --apk "$APK"
+          python scripts/android_s2_extra_audit.py --apk "$APK"
+          python scripts/android_s2_legacy_audit.py --apk "$APK"
+          sha256sum "$APK" "$AAB"
+      - name: Save private build artifacts - NO release, NO deploy
+        uses: actions/upload-artifact@v4
+        with:
+          name: SP-DECODE-1.1.21-32-PRIVATE-APK-AAB
+          retention-days: 14
+          if-no-files-found: error
+          path: |
+            android/app/build/outputs/apk/release/app-release.apk
+            android/app/build/outputs/bundle/release/app-release.aab
+      - name: Delete temporary key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/spdecode.p12" "$RUNNER_TEMP/aligned.apk" "$RUNNER_TEMP/signed.apk"
