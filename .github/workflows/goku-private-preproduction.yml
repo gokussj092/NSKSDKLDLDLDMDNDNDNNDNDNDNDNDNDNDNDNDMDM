@@ -60,9 +60,22 @@ jobs:
           umask 077
           printf '%s' "$STORE_BASE64" | base64 --decode > "$RUNNER_TEMP/spdecode.p12"
           keytool -list -storetype PKCS12 -keystore "$RUNNER_TEMP/spdecode.p12" -storepass:env STORE_PASSWORD -alias "$KEY_ALIAS" >/dev/null
+          # Bind the APK runtime trust pin to the same existing keystore used to sign it.
+          CERT="$(keytool -exportcert -storetype PKCS12 \
+            -keystore "$RUNNER_TEMP/spdecode.p12" -storepass:env STORE_PASSWORD \
+            -alias "$KEY_ALIAS" | sha256sum | awk '{print $1}')"
+          [[ "$CERT" =~ ^[0-9a-f]{64}$ ]] || { echo '::error::Invalid signer fingerprint'; exit 1; }
+          [[ "$CERT" == "0fa9f07f2c47464925f3a7b222c9a39ef887738f678b9c918ec6c4fb96162260" ]] || {
+            echo '::error::Unexpected signing certificate; refusing to ship a new identity'; exit 1;
+          }
+          echo "SPDECODE_TRUSTED_SIGNER_SHA256=$CERT" >> "$GITHUB_ENV"
       - name: Build APK and AAB signed with existing keystore
         working-directory: android
         env:
+          SPDECODE_CLOUD_API_BASE_URL: https://api.spdecode.xyz
+          SPDECODE_CLOUD_RELEASE: "true"
+          SPDECODE_CLOUD_QA_BUILD: "false"
+          SPDECODE_ADI_VERIFICATION_BUILD: "false"
           SPDECODE_RELEASE_STORE_FILE: ${{ runner.temp }}/spdecode.p12
           SPDECODE_RELEASE_STORE_PASSWORD: ${{ secrets.SPDECODE_SIGNING_STORE_PASSWORD }}
           SPDECODE_RELEASE_KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
@@ -82,7 +95,20 @@ jobs:
           "$TOOLS/zipalign" -P 16 -f 4 "$APK" "$RUNNER_TEMP/aligned.apk"
           "$TOOLS/apksigner" sign --ks "$RUNNER_TEMP/spdecode.p12" --ks-type PKCS12 --ks-key-alias "$KEY_ALIAS" --ks-pass env:STORE_PASSWORD --key-pass env:KEY_PASSWORD --v1-signing-enabled true --v2-signing-enabled true --v3-signing-enabled true --out "$RUNNER_TEMP/signed.apk" "$RUNNER_TEMP/aligned.apk"
           cp "$RUNNER_TEMP/signed.apk" "$APK"
-          "$TOOLS/apksigner" verify --verbose "$APK"
+          "$TOOLS/apksigner" verify --verbose --print-certs "$APK" > "$RUNNER_TEMP/apk-certificate.txt"
+          grep -Fi "Signer #1 certificate SHA-256 digest: $SPDECODE_TRUSTED_SIGNER_SHA256" "$RUNNER_TEMP/apk-certificate.txt" >/dev/null
+          python tests/cloud_c5_apk_audit.py "$APK"
+          # ReleaseIntegrity exits silently at startup if this fingerprint is absent.
+          python - "$APK" "$SPDECODE_TRUSTED_SIGNER_SHA256" <<'PY'
+          import re,sys,zipfile
+          apk,expected=sys.argv[1:]
+          with zipfile.ZipFile(apk) as package:
+              dex=b''.join(package.read(n) for n in package.namelist()
+                           if re.fullmatch(r'classes[0-9]*\.dex',n))
+          if expected.encode('ascii') not in dex:
+              raise SystemExit('FATAL: signing fingerprint missing from compiled DEX')
+          print('Android release startup signer pin embedded: OK')
+          PY
           jarsigner -verify "$AAB"
           python scripts/android_s_vault_audit.py --apk "$APK"
           python scripts/android_s2_dex_audit.py --apk "$APK"
@@ -92,7 +118,7 @@ jobs:
       - name: Save private build artifacts - NO release, NO deploy
         uses: actions/upload-artifact@v4
         with:
-          name: SP-DECODE-1.1.21-32-PRIVATE-APK-AAB
+          name: SP-DECODE-1.1.21-32-GOKU-CLOUD-STARTUP-FIX-PRIVATE
           retention-days: 14
           if-no-files-found: error
           path: |
