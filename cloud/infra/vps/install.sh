@@ -11,7 +11,7 @@ source /etc/os-release
 [[ "$ID" == ubuntu || "$ID" == debian ]] || fail "Ubuntu/Debian only"
 DOMAIN="" API_DOMAIN="" PANEL_DOMAIN="" EMAIL="" SUPPORT_EMAIL="soporte@spdecode.xyz"
 REF="feat/cloud-c8-vps-installer-updater" EXPECTED_IP="" WWW=false
-REPO_URL="https://github.com/Gh0stDeveloper/SP-DECODE.git"
+REPO_URL="https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM.git"
 while (($#)); do
   case "$1" in
     --domain) DOMAIN="${2:?}";shift 2;;
@@ -22,7 +22,7 @@ while (($#)); do
     --www) WWW=true;shift;;
     --email) EMAIL="$2";shift 2;;
     --ref) REF="$2";shift 2;;
-    --repo-ssh) REPO_URL="git@github.com:Gh0stDeveloper/SP-DECODE.git";shift;;
+    --repo-ssh) REPO_URL="git@github-spdecode-goku:gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM.git";shift;;
     *) fail "Unknown option: $1";;
   esac
 done
