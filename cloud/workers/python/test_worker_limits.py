@@ -7,9 +7,28 @@ from http.server import ThreadingHTTPServer
 import urllib.error
 import urllib.request
 
-from server import WorkerHandler, ACTIVE_JOBS
+from server import WorkerHandler, ACTIVE_JOBS, HEAVY_JOBS
 
 class WorkerCapacityTests(unittest.TestCase):
+    def test_heavy_job_denial_does_not_leak_normal_capacity(self):
+        handler = object.__new__(WorkerHandler)
+        handler.path = "/internal/v1/decode/import/server-vpn"
+        handler._json = Mock()
+        self.assertTrue(HEAVY_JOBS.acquire(blocking=False))
+        try:
+            with patch.object(WorkerHandler, "_authorized", return_value=True):
+                handler.do_POST()
+            self.assertEqual(handler._json.call_args.args[0], 503)
+        finally:
+            HEAVY_JOBS.release()
+        acquired = []
+        try:
+            for _ in range(4):
+                self.assertTrue(ACTIVE_JOBS.acquire(blocking=False))
+                acquired.append(True)
+        finally:
+            for _ in acquired:
+                ACTIVE_JOBS.release()
     def test_full_capacity_rejects_authorized_job_and_auth_still_runs_first(self):
         held = []
         server = ThreadingHTTPServer(("127.0.0.1", 0), WorkerHandler)

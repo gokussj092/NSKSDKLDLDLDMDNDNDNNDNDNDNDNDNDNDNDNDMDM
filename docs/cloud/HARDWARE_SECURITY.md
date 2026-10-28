@@ -80,6 +80,8 @@ New strict V2 rejects earlier clients that cannot supply the required evidence.
 - Shared Redis leases last 300 seconds, exceeding the worker's bounded execution
   deadline. At most four gateway jobs are reserved globally and two per session.
   The worker independently enforces four active jobs, even if a lease is lost.
+  Only one memory-heavy catalog job runs at once. Nginx limits large file uploads
+  to twelve concurrent requests across V1/V2 before buffering their bodies.
 - A key ID identifies a registered key, not an immutable physical device. New
   keys, reinstallations and device farms require enrollment limits and activity
   analysis. This does not establish a unique person or the truth of arbitrary

@@ -23,6 +23,7 @@ MAX_SERVER_VPN_JSON_BYTES = max(MAX_JSON_BYTES, ((MAX_MKK_BUNDLE_BYTES + 2) // 3
 
 # Independent of session rotation, Redis leases, or multiple web replicas.
 ACTIVE_JOBS = threading.BoundedSemaphore(4)
+HEAVY_JOBS = threading.BoundedSemaphore(1)
 
 class WorkerHandler(BaseHTTPRequestHandler):
     server_version = "SPDecodeWorker/0.2"
@@ -85,9 +86,15 @@ class WorkerHandler(BaseHTTPRequestHandler):
             return self._json(403, {"error": {"code": "FORBIDDEN"}})
         if not ACTIVE_JOBS.acquire(blocking=False):
             return self._json(503, {"error": {"code": "ENGINE_UNAVAILABLE"}})
+        heavy = self.path in ("/internal/v1/decode/import/catalog", "/internal/v1/decode/import/server-vpn")
+        if heavy and not HEAVY_JOBS.acquire(blocking=False):
+            ACTIVE_JOBS.release()
+            return self._json(503, {"error": {"code": "ENGINE_UNAVAILABLE"}})
         try:
             WorkerHandler._execute_post(self)
         finally:
+            if heavy:
+                HEAVY_JOBS.release()
             ACTIVE_JOBS.release()
 
     def _execute_post(self) -> None:
