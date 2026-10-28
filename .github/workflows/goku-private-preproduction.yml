@@ -110,10 +110,15 @@ jobs:
           print('Android release startup signer pin embedded: OK')
           PY
           jarsigner -verify "$AAB"
-          python scripts/android_s_vault_audit.py --apk "$APK"
-          python scripts/android_s2_dex_audit.py --apk "$APK"
-          python scripts/android_s2_extra_audit.py --apk "$APK"
-          python scripts/android_s2_legacy_audit.py --apk "$APK"
+          # Historical S/S2 audits require offline .spv decoder vaults in the APK.
+          # Cloud production builds intentionally exclude ALL of those resources;
+          # tests/cloud_c5_apk_audit.py above enforces that negative packaging contract.
+          # Preserve the original decoder SOURCE audits, but never demand local
+          # decoder resources inside an intentionally isolated Cloud-only APK.
+          python scripts/android_s_vault_audit.py
+          python scripts/android_s2_dex_audit.py
+          python scripts/android_s2_extra_audit.py
+          python scripts/android_s2_legacy_audit.py
           sha256sum "$APK" "$AAB"
       - name: Save private build artifacts - NO release, NO deploy
         uses: actions/upload-artifact@v4
