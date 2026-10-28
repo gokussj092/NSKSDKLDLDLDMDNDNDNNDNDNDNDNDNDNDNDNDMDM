@@ -16,6 +16,8 @@ const rsa=generateKeyPairSync("rsa",{modulusLength:2048});
 const account={type:"service_account",client_email:"c7-test@example.invalid",
   private_key:rsa.privateKey.export({type:"pkcs8",format:"pem"})};
 Object.assign(process.env,{
+ // This is the historical V1 handler/worker parity harness, not V2 admission.
+ CLOUD_LEGACY_API_ENABLED:"true",
  CLOUD_API_ENABLED:"true",CLOUD_TRUST_PROXY:"true",CLOUD_REDIS_URL:"redis://redis:6379",
  CLOUD_WORKER_TOKEN:WORKER_TOKEN,CLOUD_SESSION_SIGNING_KEY:"c7-sign-"+("s".repeat(45)),
  CLOUD_GOOGLE_PLAY_PACKAGE:"com.ghostdeveloper.spdecode",
