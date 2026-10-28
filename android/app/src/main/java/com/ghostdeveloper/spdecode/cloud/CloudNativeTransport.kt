@@ -28,7 +28,7 @@ internal object CloudNativeTransport {
     fun post(operation: Int, payload: JSONObject, bearer: String = "",
              actionChallenge: String = "", actionIntegrity: String = ""): Reply {
         require(BuildConfig.SPDECODE_CLOUD_ENABLED) { "CLOUD_DISABLED" }
-        require(operation in 1..16 && operation != 3) { "CLOUD_ROUTE_DENIED" }
+        require(operation in 1..17 && operation != 3) { "CLOUD_ROUTE_DENIED" }
         val json = payload.toString()
         val proof = CloudRequestProof.sign(operation, BuildConfig.VERSION_NAME, json, bearer)
         val returned = postNative(operation, json, bearer, BuildConfig.VERSION_NAME,

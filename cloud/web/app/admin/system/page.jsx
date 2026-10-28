@@ -1,6 +1,7 @@
 import AdminDashboard from "../admin-dashboard.jsx";
 import AdminObservability from "../admin-observability.jsx";
 import AdminCatalogPush from "../admin-catalog-push.jsx";
+import AdminNotifications from "../admin-notifications.jsx";
 import Link from "next/link";
 export const metadata={title:"Infraestructura y mantenimiento",robots:{index:false,follow:false}};
 export default function SystemPage(){return <main id="main" className="admin-wrap admin-wide">
@@ -10,6 +11,7 @@ export default function SystemPage(){return <main id="main" className="admin-wra
   <AdminDashboard mode="system"/>
   <AdminObservability mode="system"/>
   <AdminCatalogPush/>
+  <AdminNotifications/>
   <section className="admin-card sp-admin-legal-links" aria-labelledby="sp-admin-legal-title">
    <div className="sp-admin-section-heading"><div>
     <h2 id="sp-admin-legal-title">Documentación y soporte</h2>

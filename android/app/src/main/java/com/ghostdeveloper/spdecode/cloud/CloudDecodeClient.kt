@@ -30,13 +30,9 @@ import java.io.IOException
  */
 internal class CloudDecodeClient(context: Context) {
     private val app = context.applicationContext
-    private var token = ""
-    private var expiresAtMs = 0L
-    private val lock = Any()
     private val sessionMutex = CloudRequestProof.enrollmentMutex
     @Volatile private var exportCatalog:CompatibleExportCatalog?=null
     @Volatile private var exportCatalogCheckedAt:Long=0
-    @Volatile private var actionIntegrityRequired = true
     private val standardLock = Mutex()
     private var standardProject = 0L
     private var standardProvider: StandardIntegrityManager.StandardIntegrityTokenProvider? = null
@@ -68,6 +64,12 @@ internal class CloudDecodeClient(context: Context) {
     }
 
     companion object {
+        // All foreground/background clients use the same device key and short-lived session.
+        // Sharing avoids repeated Classic Integrity admissions for concurrent workers.
+        private var token = ""
+        private var expiresAtMs = 0L
+        private val lock = Any()
+        @Volatile private var actionIntegrityRequired = true
         const val MAX_INPUT = 8 * 1024 * 1024
         private const val SAFE_TOKEN_MARGIN_MS = 30_000L
     }
@@ -432,14 +434,20 @@ internal class CloudDecodeClient(context: Context) {
     suspend fun serverVpnCatalog(knownVersion:Int): JSONObject =
         withContext(Dispatchers.IO) {
             requireLegalConsent()
-            extract(CloudNativeTransport.post(CloudOperation.CATALOG,
-                JSONObject().put("knownVersion",knownVersion),session())).also { reply ->
+            val envelope=CatalogEnvelope()
+            envelope.open(extract(CloudNativeTransport.post(CloudOperation.CATALOG,
+                JSONObject().put("knownVersion",knownVersion).put("catalogKey",envelope.publicKey),session())),"catalog").also { reply ->
                 if(!reply.optBoolean("unchanged",false)) {
                     exportCatalog=runCatching {CompatibleExportCatalog.parse(reply.optJSONObject("compatibleExports"))}.getOrNull()
                     exportCatalogCheckedAt=android.os.SystemClock.elapsedRealtime()
                 }
             }
         }
+
+    suspend fun notifications():JSONObject = withContext(Dispatchers.IO) {
+        requireLegalConsent()
+        extract(CloudNativeTransport.post(CloudOperation.NOTIFICATIONS,JSONObject(),session()))
+    }
 
     /** Only the VPS version number is returned; no provider URLs or decoded files. */
     suspend fun watchCatalogVersion(knownVersion:Int):Int = withContext(Dispatchers.IO) {
@@ -462,8 +470,9 @@ internal class CloudDecodeClient(context: Context) {
         require(id.matches(Regex("[a-z0-9-]{1,48}")))
         return withContext(Dispatchers.IO) {
             requireLegalConsent()
-            extract(CloudNativeTransport.post(CloudOperation.ICON,
-                JSONObject().put("id",id),session()))
+            val envelope=CatalogEnvelope()
+            envelope.open(extract(CloudNativeTransport.post(CloudOperation.ICON,
+                JSONObject().put("id",id).put("catalogKey",envelope.publicKey),session())),"icon")
         }
     }
 

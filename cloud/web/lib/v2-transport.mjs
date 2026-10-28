@@ -1,3 +1,4 @@
+import { notificationFeedRequest } from "./app-notifications.mjs";
 import { randomBytes, randomUUID } from "node:crypto";
 import { limits } from "./c3-config.mjs";
 import { v2Settings } from "./v2-config.mjs";
@@ -38,6 +39,7 @@ async function readBytes(request,max) {
   return bytes;
 }
 async function dispatch(operation,request) {
+  if(operation===17)return notificationFeedRequest(request);
   // Explicit imports let Next trace standalone dependencies.
   const handlers={
     4:()=>import("../app/api/v1/npvs/identity/route.js"),
@@ -59,7 +61,7 @@ export async function transportRequest(request,options={}) {
   const cfg=v2Settings(options.env||process.env);
   if(!cfg.configured)return fail("SERVICE_UNAVAILABLE",503);
   const url=new URL(request.url),header=request.headers.get("x-sp-operation")||"";
-  if(request.method!=="POST" || url.search || !/^(1|2|[4-9]|1[0-6])$/.test(header))
+  if(request.method!=="POST" || url.search || !/^(1|2|[4-9]|1[0-7])$/.test(header))
     return fail("INVALID_REQUEST",400); // No QA/beta or arbitrary proxy.
   const op=Number(header);
   try {
@@ -136,6 +138,8 @@ export async function transportRequest(request,options={}) {
       return jsonReply({apiVersion:"v2",accessToken:sign(claims,cfg.signingKey),tokenType:"Bearer",expiresIn:300,
         actionIntegrityRequired:cfg.requireAction},201);
     }
+    if([10,11].includes(op) && claims.versionCode>=35 && !publicKey(JSON.parse(bytes).catalogKey))
+      return fail("INVALID_REQUEST",400);
     const authorized=await acceptBoundProof(redis,request,op,bytes,bearer,claims);
     if(!authorized)return fail("UNAUTHORIZED",401);
     if(authorized.rateLimited)return fail("RATE_LIMITED",429);

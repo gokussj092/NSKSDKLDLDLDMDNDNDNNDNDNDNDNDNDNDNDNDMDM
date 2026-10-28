@@ -6,10 +6,10 @@
     <string name="unsupported_version_detail">इस फ़ाइल में नया संस्करण या एन्क्रिप्शन तरीका है जो अभी समर्थित नहीं है।</string>
     <string name="unsupported_text_title">टेक्स्ट समर्थित नहीं है</string>
     <string name="unsupported_text_detail">यह टेक्स्ट या प्रोटोकॉल अभी समर्थित नहीं है। डेवलपर से संपर्क करें।</string>
-    <string name="catalog_check_action">अपडेट जाँचें</string>
-    <string name="catalog_checking">कैटलॉग संस्करण जाँच रहे हैं…</string>
+    <string name="catalog_check_action">अपडेट करें</string>
+    <string name="catalog_checking">अपडेट हो रहा है</string>
     <string name="catalog_downloading">कैटलॉग अपडेट हो रहा है…</string>
-    <string name="catalog_progress">कैटलॉग आइटम तैयार: %1$d%%</string>
+    <string name="catalog_progress">%1$d%%</string>
     <string name="app_update_title">नया संस्करण उपलब्ध</string>
     <string name="app_update_body">SP-DECODE %1$s उपलब्ध है। अपडेट के लिए आधिकारिक Telegram चैनल खोलें।</string>
     <string name="app_update_open">Telegram खोलें</string>

@@ -6,10 +6,10 @@
     <string name="unsupported_version_detail">Berkas ini menggunakan versi atau metode enkripsi yang belum kompatibel.</string>
     <string name="unsupported_text_title">Format teks tidak didukung</string>
     <string name="unsupported_text_detail">Teks atau protokol ini belum didukung. Hubungi pengembang untuk menyarankan integrasi.</string>
-    <string name="catalog_check_action">Periksa pembaruan</string>
-    <string name="catalog_checking">Memeriksa versi katalog…</string>
+    <string name="catalog_check_action">Perbarui</string>
+    <string name="catalog_checking">Memperbarui</string>
     <string name="catalog_downloading">Memperbarui katalog…</string>
-    <string name="catalog_progress">Item katalog siap: %1$d%%</string>
+    <string name="catalog_progress">%1$d%%</string>
     <string name="app_update_title">Versi baru tersedia</string>
     <string name="app_update_body">SP-DECODE %1$s tersedia. Buka kanal Telegram resmi untuk memperbarui.</string>
     <string name="app_update_open">Buka Telegram</string>

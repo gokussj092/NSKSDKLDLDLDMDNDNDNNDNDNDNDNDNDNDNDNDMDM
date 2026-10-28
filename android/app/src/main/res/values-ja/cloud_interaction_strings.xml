@@ -6,10 +6,10 @@
     <string name="unsupported_version_detail">このファイルには未対応のバージョンまたは暗号化方式が使用されています。</string>
     <string name="unsupported_text_title">未対応のテキスト</string>
     <string name="unsupported_text_detail">このテキストやプロトコルにはまだ対応していません。追加の提案は開発者まで。</string>
-    <string name="catalog_check_action">更新を確認</string>
-    <string name="catalog_checking">カタログのバージョンを確認中…</string>
+    <string name="catalog_check_action">更新</string>
+    <string name="catalog_checking">更新中</string>
     <string name="catalog_downloading">カタログを更新中…</string>
-    <string name="catalog_progress">カタログの準備状況: %1$d%%</string>
+    <string name="catalog_progress">%1$d%%</string>
     <string name="app_update_title">新しいバージョンがあります</string>
     <string name="app_update_body">SP-DECODE %1$s が利用可能です。公式Telegramチャンネルから更新してください。</string>
     <string name="app_update_open">Telegramを開く</string>

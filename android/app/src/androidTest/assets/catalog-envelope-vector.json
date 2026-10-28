@@ -1,0 +1,13 @@
+{
+  "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEtmCEGn0pre2b6bfx3D_lhgVZUSHKHvJl6tl80vnPDrh3BZMWKycSnbXDtqhYgfiAgpKzGcAsNOirBPLuA_mE3Q",
+  "privateKey": "MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgbruwzWliykp_WGT-mlVU25LjWdl2qDy0S70BQQm729WhRANCAAS2YIQafSmt7Zvpt_HcP-WGBVlRIcoe8mXq2XzS-c8OuHcFkxYrJxKdtcO2qFiB-ICCkrMZwCw06KsE8u4D-YTd",
+  "envelope": {
+    "envelope": 1,
+    "purpose": "catalog",
+    "serverKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE54ODU3VY4VzOi0vEKmZo_yEtp4m-zWyik1Cc96k08yojARSPLz6Ba6bQmMuyQU2ek191_N0hYtoS06oyoFUN-A",
+    "salt": "oQ9d1ZO9ZCvLM53HldXjqF-5hf6HVQB1B6dVMYXevUw",
+    "iv": "XXUBeK4yC1b9R4EU",
+    "plainBytes": 61,
+    "data": "wed83x4kDpyXN9hef3vkLiQ02uqiNx0H8lStvw5oCdfeh5_-V3v_bJaxfAB74RAQCT8Y1nvmSMUFoFIGcNXsiYv9U4H-_zH7TLj0l9Rg9RR_SJfXCBNK9xgpIX45VOZomc4"
+  }
+}

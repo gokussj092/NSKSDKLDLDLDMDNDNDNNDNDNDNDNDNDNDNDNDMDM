@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="donations_title">Donaciones</string>
+    <string name="donation_copy_id">Copiar ID</string>
+    <string name="donation_id_copied">ID de Binance copiado</string>
+    <string name="donation_coming_soon">Próximamente</string>
+    <string name="catalog_loading_short">Cargando catálogo</string>
+    <string name="notifications_title">Notificaciones</string>
+    <string name="notifications_description">Recibe avisos del servicio de SP-DECODE. Puedes desactivarlos cuando quieras.</string>
+    <string name="notifications_system_settings">Ajustes del sistema</string>
+    <string name="notifications_enable">Activar</string>
+    <string name="notifications_later">Más tarde</string>
+</resources>

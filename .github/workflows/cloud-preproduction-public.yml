@@ -64,7 +64,7 @@ jobs:
           set -euo pipefail
           test ! -e android/app/src/main/assets/adi-registration.properties
           grep -Fq 'versionCode = 34' android/app/build.gradle.kts
-          grep -Fq 'versionName = "1.1.23"' android/app/build.gradle.kts
+          grep -Fq 'versionName = "1.1.24"' android/app/build.gradle.kts
       - name: Compile signed Cloud release without QA
         working-directory: android
         env:
@@ -86,8 +86,8 @@ jobs:
           grep -Fi 'Signer #1 certificate SHA-256 digest: 0fa9f07f2c47464925f3a7b222c9a39ef887738f678b9c918ec6c4fb96162260' "$RUNNER_TEMP/signature.txt" >/dev/null
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" > "$RUNNER_TEMP/app-badging.txt"
           grep -F "package: name='com.ghostdeveloper.spdecode'" "$RUNNER_TEMP/app-badging.txt" >/dev/null
-          grep -F "versionName='1.1.23'" "$RUNNER_TEMP/app-badging.txt" >/dev/null
-          grep -F "versionCode='34'" "$RUNNER_TEMP/app-badging.txt" >/dev/null
+          grep -F "versionName='1.1.24'" "$RUNNER_TEMP/app-badging.txt" >/dev/null
+          grep -F "versionCode='35'" "$RUNNER_TEMP/app-badging.txt" >/dev/null
           python3 tests/cloud_c5_apk_audit.py "$APK"
           python3 - <<'PY'
           from zipfile import ZipFile
@@ -99,18 +99,18 @@ jobs:
           print('Original signer verified, native API correct, ownership token absent.')
           PY
           mkdir -p dist
-          cp "$APK" dist/SP-DECODE-v1.1.23-Cloud-PREPRODUCTION-signed.apk
+          cp "$APK" dist/SP-DECODE-v1.1.24-Cloud-PREPRODUCTION-signed.apk
           (cd dist && sha256sum *.apk > SHA256SUMS.txt)
-          printf 'SP-DECODE Cloud preproduction\nVersion: 1.1.23 (34)\nPackage: com.ghostdeveloper.spdecode\nAPI: https://api.spdecode.xyz\nQA: disabled\nSigner: permanent release key\nCommit: %s\n' "$GITHUB_SHA" > dist/BUILD_INFO.txt
+          printf 'SP-DECODE Cloud preproduction\nVersion: 1.1.24 (34)\nPackage: com.ghostdeveloper.spdecode\nAPI: https://api.spdecode.xyz\nQA: disabled\nSigner: permanent release key\nCommit: %s\n' "$GITHUB_SHA" > dist/BUILD_INFO.txt
       - name: Publish public GitHub prerelease (not a Google Play release)
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
-          TAG=v1.1.23-cloud-preproduction-ui.1
+          TAG=v1.1.24-cloud-preproduction-ui.1
           cat > "$RUNNER_TEMP/release-notes.txt" <<'NOTES'
-          ## SP-DECODE Cloud v1.1.23 — Preproducción pública
+          ## SP-DECODE Cloud v1.1.24 — Preproducción pública
 
           Incluye la nueva pantalla de idiomas y el rediseño AMOLED de Servidores VPN: búsqueda, favoritos, consulta manual y distinción «Nuevo» exclusivamente para proveedores detectados en catálogos nuevos. El aviso «Nuevo» permanece dos horas en el teléfono.
           
@@ -120,21 +120,21 @@ jobs:
 
           Versión experimental, no aprobada ni distribuida por Google Play. Su instalación no cuenta como inscripción al programa de pruebas cerradas. Compatibilidad variable según formato.
           
-          Conserva com.ghostdeveloper.spdecode, v1.1.23 y versionCode 34. Una APK QA instalada con versionCode superior puede requerir desinstalación previa: realiza copia de seguridad antes.
+          Conserva com.ghostdeveloper.spdecode, v1.1.24 y versionCode 34. Una APK QA instalada con versionCode superior puede requerir desinstalación previa: realiza copia de seguridad antes.
           NOTES
           if gh release view "$TAG" >/dev/null 2>&1; then
             echo "::error::Prerelease already exists; refusing to overwrite existing public binary"
             exit 1
           fi
-          gh release create "$TAG" dist/SP-DECODE-v1.1.23-Cloud-PREPRODUCTION-signed.apk dist/SHA256SUMS.txt dist/BUILD_INFO.txt \
-            --target "$GITHUB_SHA" --title "SP-DECODE Cloud v1.1.23 — Preproducción pública" \
+          gh release create "$TAG" dist/SP-DECODE-v1.1.24-Cloud-PREPRODUCTION-signed.apk dist/SHA256SUMS.txt dist/BUILD_INFO.txt \
+            --target "$GITHUB_SHA" --title "SP-DECODE Cloud v1.1.24 — Preproducción pública" \
             --notes-file "$RUNNER_TEMP/release-notes.txt" --prerelease
           gh release view "$TAG" --json url,assets,isPrerelease \
             --jq '{url: .url, isPrerelease: .isPrerelease, assets: [.assets[].name]}'
       - name: Back up signed preproduction APK in GitHub Actions artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: SP-DECODE-v1.1.23-PUBLIC-CLOUD-PREPRODUCTION-SIGNED
+          name: SP-DECODE-v1.1.24-PUBLIC-CLOUD-PREPRODUCTION-SIGNED
           path: dist/
           if-no-files-found: error
           retention-days: 30

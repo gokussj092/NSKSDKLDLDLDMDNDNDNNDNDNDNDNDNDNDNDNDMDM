@@ -153,7 +153,7 @@ test("V1/QA tokens cannot downgrade V2; epoch, release, signer and Redis revocat
 });
 test("bootstrap validates key, proof, fixed operation, encoding and query before dispatch",async()=>{
   const f=fixture();
-  for(const op of ["3","17","01","/api/v1/decode/file"])assert.equal((await f.call(op,{})).status,400);
+  for(const op of ["3","18","01","/api/v1/decode/file"])assert.equal((await f.call(op,{})).status,400);
   assert.equal((await f.call(1,{publicKey:encoded(pair())})).status,400);
   assert.equal((await f.call(1,{publicKey:encoded(f.key),extra:true})).status,400);
   assert.equal((await f.call(1,{publicKey:encoded(f.key)},"",{"content-encoding":"gzip"})).status,400);
@@ -182,3 +182,10 @@ test("V2 reaches real decoder only after proof and preserves existing worker val
   assert.equal(response.status,200);assert.equal(calls,1);assert.equal((await response.json()).rawText,'{"ok":true}');
 });
 
+
+ test("notification operation requires bound authentication and is metadata only",async()=>{
+  const f=fixture();assert.equal((await f.call(17,{})).status,401);
+  const {token}=await authorize(f);
+  f.options.dispatch=async(op,req)=>{assert.equal(op,17);return Response.json({notices:[]});};
+  assert.equal((await f.call(17,{},token)).status,200);
+ });

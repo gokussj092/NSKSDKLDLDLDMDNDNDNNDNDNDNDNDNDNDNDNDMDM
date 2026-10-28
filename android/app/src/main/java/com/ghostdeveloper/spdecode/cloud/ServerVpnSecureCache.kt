@@ -3,6 +3,8 @@ package com.ghostdeveloper.spdecode.cloud
 import android.content.Context
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
+import java.io.ByteArrayOutputStream
+import java.util.zip.GZIPOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.security.KeyStore
@@ -20,7 +22,8 @@ import javax.crypto.spec.GCMParameterSpec
  */
 internal class ServerVpnSecureCache(context: Context) {
     private val directory = File(context.applicationContext.noBackupFilesDir, "server_vpn_cache/v1")
-    private val magic = byteArrayOf(0x53,0x56,0x43,0x31)
+    private val magic = byteArrayOf(0x53,0x56,0x43,0x32)
+    private val oldMagic = byteArrayOf(0x53,0x56,0x43,0x31)
     private val alias = "spdecode.server-vpn.device-cache.v1"
     private val store = "AndroidKeyStore"
     private val maxPlain = ServerVpnIconPolicy.CACHE_RECORD_BYTES
@@ -55,14 +58,17 @@ internal class ServerVpnSecureCache(context: Context) {
     fun read(name:String):ByteArray? {
         checkName(name)
         val file=File(directory,name)
-        if(!file.isFile || file.length() !in 33L..(maxPlain+32).toLong())return null
+        if(!file.isFile || file.length() !in 33L..(maxPlain+2048).toLong())return null
         return try {
             val bytes=file.readBytes()
-            if(!bytes.copyOfRange(0,4).contentEquals(magic))return null
+            val compressed=bytes.copyOfRange(0,4).contentEquals(magic)
+            if(!compressed && !bytes.copyOfRange(0,4).contentEquals(oldMagic))return null
             val cipher=Cipher.getInstance("AES/GCM/NoPadding")
             cipher.init(Cipher.DECRYPT_MODE,key(),GCMParameterSpec(128,bytes.copyOfRange(4,16)))
-            cipher.updateAAD("spdecode:server-vpn:v1:$name".toByteArray(Charsets.UTF_8))
-            cipher.doFinal(bytes,16,bytes.size-16)
+            cipher.updateAAD("spdecode:server-vpn:v${if(compressed)2 else 1}:$name".toByteArray(Charsets.UTF_8))
+            val plain=cipher.doFinal(bytes,16,bytes.size-16)
+            if(compressed)try {CatalogEnvelope.inflate(plain,maxPlain)}finally{plain.fill(0)}
+            else plain.takeIf {it.size<=maxPlain}
         }catch (_:Exception) {null}
     }
 
@@ -80,8 +86,9 @@ internal class ServerVpnSecureCache(context: Context) {
         val cipher=Cipher.getInstance("AES/GCM/NoPadding")
         cipher.init(Cipher.ENCRYPT_MODE,key())
         require(cipher.iv.size==12)
-        cipher.updateAAD("spdecode:server-vpn:v1:$name".toByteArray(Charsets.UTF_8))
-        val sealed=cipher.doFinal(plain)
+        cipher.updateAAD("spdecode:server-vpn:v2:$name".toByteArray(Charsets.UTF_8))
+        val packed=ByteArrayOutputStream().also {out->GZIPOutputStream(out).use {it.write(plain)}}.toByteArray()
+        val sealed=try {cipher.doFinal(packed)}finally{packed.fill(0)}
         require(directory.isDirectory || directory.mkdirs()) { "Cannot create private cache" }
         val destination=File(directory,name)
         val temporary=File(directory, "temp-"+UUID.randomUUID().toString())
@@ -96,3 +103,4 @@ internal class ServerVpnSecureCache(context: Context) {
         }finally{temporary.delete()}
     }
 }
+

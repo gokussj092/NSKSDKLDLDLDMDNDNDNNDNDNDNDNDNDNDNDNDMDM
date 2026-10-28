@@ -6,10 +6,10 @@
     <string name="unsupported_version_detail">Tệp này dùng phiên bản hoặc phương pháp mã hóa chưa tương thích.</string>
     <string name="unsupported_text_title">Văn bản chưa hỗ trợ</string>
     <string name="unsupported_text_detail">Văn bản hoặc giao thức này chưa được hỗ trợ. Liên hệ nhà phát triển.</string>
-    <string name="catalog_check_action">Kiểm tra cập nhật</string>
-    <string name="catalog_checking">Đang kiểm tra phiên bản danh mục…</string>
+    <string name="catalog_check_action">Cập nhật</string>
+    <string name="catalog_checking">Đang cập nhật</string>
     <string name="catalog_downloading">Đang cập nhật danh mục…</string>
-    <string name="catalog_progress">Mục danh mục sẵn sàng: %1$d%%</string>
+    <string name="catalog_progress">%1$d%%</string>
     <string name="app_update_title">Có phiên bản mới</string>
     <string name="app_update_body">SP-DECODE %1$s đã có. Mở kênh Telegram chính thức để cập nhật.</string>
     <string name="app_update_open">Mở Telegram</string>

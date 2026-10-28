@@ -14,6 +14,9 @@ class CompatibleExportArtifact private constructor(
     private val encoded:String,
 ) {
     val targetAppName:String get()=targets.getValue(suffix).second
+    /** Preserve the source basename; SAF still lets the user choose a destination. */
+    fun filenameFor(original:String):String = CompatibleExportFilename.forSource(original,suffix)
+
     val filename:String get()="config-SP-DECODE.$suffix"
     fun bytes():ByteArray=Base64.decode(encoded,Base64.NO_WRAP)
     fun matches(rawText:String)=decodedSha256==digest(rawText.toByteArray(Charsets.UTF_8))
@@ -99,3 +102,4 @@ internal class CompatibleExportCatalog private constructor(val suffixes:Set<Stri
         }
     }
 }
+

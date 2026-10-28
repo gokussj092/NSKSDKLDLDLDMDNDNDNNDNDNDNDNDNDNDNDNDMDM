@@ -50,7 +50,7 @@ bool safeBase(const std::string& value) {
     })) return false;
     return true;
 }
-bool safeOperation(jint operation) { return operation>=1 && operation<=16 && operation!=3; }
+bool safeOperation(jint operation) { return operation>=1 && operation<=17 && operation!=3; }
 bool safeProof(const std::string& value,size_t min,size_t max) {
     return value.size()>=min && value.size()<=max &&
         std::all_of(value.begin(),value.end(),[](unsigned char c){

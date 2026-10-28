@@ -6,10 +6,10 @@
     <string name="unsupported_version_detail">يستخدم الملف إصدارا أو طريقة تشفير غير مدعومة بعد. يمكنك التواصل مع المطور.</string>
     <string name="unsupported_text_title">النص غير مدعوم</string>
     <string name="unsupported_text_detail">هذا النص أو البروتوكول غير مدعوم بعد. تواصل مع المطور لاقتراح إضافته.</string>
-    <string name="catalog_check_action">التحقق من التحديثات</string>
-    <string name="catalog_checking">جار فحص إصدار الدليل…</string>
+    <string name="catalog_check_action">تحديث</string>
+    <string name="catalog_checking">جارٍ التحديث</string>
     <string name="catalog_downloading">جار تحديث الدليل…</string>
-    <string name="catalog_progress">عناصر الدليل الجاهزة: %1$d%%</string>
+    <string name="catalog_progress">%1$d%%</string>
     <string name="app_update_title">يتوفر إصدار جديد</string>
     <string name="app_update_body">يتوفر SP-DECODE %1$s. افتح قناة Telegram الرسمية للحصول على التحديث.</string>
     <string name="app_update_open">فتح Telegram</string>
