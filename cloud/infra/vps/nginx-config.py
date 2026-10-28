@@ -50,6 +50,7 @@ def generate(domain: str, api: str, panel: str, www: bool) -> str:
     client_max_body_size 12m;
     client_body_timeout 25s;
     client_header_timeout 10s;
+    large_client_header_buffers 4 32k;
     keepalive_timeout 10s;
     server_tokens off;
     add_header Strict-Transport-Security "max-age=31536000" always;

@@ -50,7 +50,7 @@ bool safeBase(const std::string& value) {
     })) return false;
     return true;
 }
-bool safeOperation(jint operation) { return operation>=1 && operation<=15 && operation!=3; }
+bool safeOperation(jint operation) { return operation>=1 && operation<=16 && operation!=3; }
 bool safeProof(const std::string& value,size_t min,size_t max) {
     return value.size()>=min && value.size()<=max &&
         std::all_of(value.begin(),value.end(),[](unsigned char c){
@@ -85,12 +85,14 @@ bool setHeader(JNIEnv* env,jobject conn,jclass cls,jmethodID method,
 // size limits and reading. Android's HttpsURLConnection provides platform TLS
 // certificate/hostname verification; certificate validation is never disabled.
 jstring post(JNIEnv* env,jclass,jint operation,jstring bodyArg,jstring bearerArg,jstring versionArg,
-             jstring timestampArg,jstring nonceArg,jstring proofArg) {
+             jstring timestampArg,jstring nonceArg,jstring proofArg,jstring actionChallengeArg,jstring actionIntegrityArg) {
     const std::string base=cloudOrigin();
     const std::string path=cloudTransportPath();
     const std::string timestamp=utf(env,timestampArg);
     const std::string nonce=utf(env,nonceArg);
     const std::string proof=utf(env,proofArg);
+    const std::string actionChallenge=utf(env,actionChallengeArg);
+    const std::string actionIntegrity=utf(env,actionIntegrityArg);
     const std::string body=utf(env,bodyArg);
     const std::string bearer=utf(env,bearerArg);
     const std::string clientVersion=utf(env,versionArg);
@@ -102,7 +104,11 @@ jstring post(JNIEnv* env,jclass,jint operation,jstring bodyArg,jstring bearerArg
         timestamp.size()<10 || timestamp.size()>11 ||
         !std::all_of(timestamp.begin(),timestamp.end(),[](unsigned char c){return std::isdigit(c);}) ||
         !safeProof(nonce,32,32) || !safeProof(proof,90,100) || !safeBearer(bearer) ||
-        body.empty() || body.size()>kMaxRequestBytes) {
+        (!actionChallenge.empty() && (actionChallenge.size()!=36 ||
+            !std::all_of(actionChallenge.begin(),actionChallenge.end(),[](unsigned char c){return std::isxdigit(c)||c=='-';}))) ||
+        (!actionIntegrity.empty() && (actionIntegrity.size()<80 || actionIntegrity.size()>16384 ||
+            !std::all_of(actionIntegrity.begin(),actionIntegrity.end(),[](unsigned char c){return std::isalnum(c)||c=='_'||c=='-'||c=='.';}))) ||
+        actionChallenge.empty()!=actionIntegrity.empty() || body.empty() || body.size()>kMaxRequestBytes) {
         fail(env,"CLOUD_NATIVE_REQUEST_REJECTED");return nullptr;
     }
     jclass urlClass = env->FindClass("java/net/URL");
@@ -181,6 +187,8 @@ jstring post(JNIEnv* env,jclass,jint operation,jstring bodyArg,jstring bearerArg
     if(ok)ok=setHeader(env,conn,connectionClass,setProperty,"X-SP-Timestamp",timestamp);
     if(ok)ok=setHeader(env,conn,connectionClass,setProperty,"X-SP-Nonce",nonce);
     if(ok)ok=setHeader(env,conn,connectionClass,setProperty,"X-SP-Proof",proof);
+    if(ok && !actionChallenge.empty())ok=setHeader(env,conn,connectionClass,setProperty,"X-SP-Action-Challenge",actionChallenge);
+    if(ok && !actionIntegrity.empty())ok=setHeader(env,conn,connectionClass,setProperty,"X-SP-Action-Integrity",actionIntegrity);
     // Capability negotiation for the new credential dialog. Older APKs omit
     // this header automatically. It is not trusted for authentication.
     if(ok && (operation == 5 || operation == 6))
@@ -277,7 +285,7 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm,void*) {
     jclass bridge=env->FindClass("com/ghostdeveloper/spdecode/cloud/CloudNativeTransport");
     if(!bridge)return JNI_ERR;
     JNINativeMethod methods[]={{const_cast<char*>("postNative"),
-        const_cast<char*>("(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"),
+        const_cast<char*>("(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"),
         reinterpret_cast<void*>(post)}};
     const jint registered=env->RegisterNatives(bridge,methods,1);
     env->DeleteLocalRef(bridge);

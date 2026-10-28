@@ -28,14 +28,16 @@ export async function googleAccessToken(account, { fetchImpl = fetch } = {}) {
   return result.access_token;
 }
 
-export function checkIntegrityVerdict(verdict, { nonce, packageName, now = Date.now(), requireLicensed = true, requireStrong = false,
-  certificateDigests, minimumVersionCode, requirePlayProtect = false, requireAccessRisk = false }) {
+export function checkIntegrityVerdict(verdict, { nonce, requestHash, packageName, now = Date.now(), requireLicensed = true, requireStrong = false,
+  certificateDigests, minimumVersionCode, requirePlayProtect = false, requireAccessRisk = false,
+  minimumDeviceSdk, maxRecentActivity }) {
   const details = verdict?.tokenPayloadExternal?.requestDetails;
   const app = verdict?.tokenPayloadExternal?.appIntegrity;
   const device = verdict?.tokenPayloadExternal?.deviceIntegrity;
   const account = verdict?.tokenPayloadExternal?.accountDetails;
   const recorded = Number(details?.timestampMillis);
-  if (typeof details?.nonce !== "string" || details.nonce !== nonce ||
+  if ((requestHash !== undefined ? (typeof details?.requestHash!=="string" || details.requestHash!==requestHash) :
+      (typeof details?.nonce !== "string" || details.nonce !== nonce)) ||
       details.requestPackageName !== packageName || !Number.isFinite(recorded) ||
       now - recorded > MAX_ATTESTATION_AGE || recorded > now + 5000) return false;
   if (app?.appRecognitionVerdict !== "PLAY_RECOGNIZED" || app.packageName !== packageName) return false;
@@ -51,6 +53,14 @@ export function checkIntegrityVerdict(verdict, { nonce, packageName, now = Date.
   const recognized = device?.deviceRecognitionVerdict;
   if (!Array.isArray(recognized) || !recognized.includes("MEETS_DEVICE_INTEGRITY")) return false;
   if (requireStrong && !recognized.includes("MEETS_STRONG_INTEGRITY")) return false;
+  if (minimumDeviceSdk !== undefined) {
+    const sdk=device?.deviceAttributes?.sdkVersion;
+    if (!Number.isInteger(sdk) || sdk < minimumDeviceSdk) return false;
+  }
+  if (maxRecentActivity !== undefined) {
+    const activity=device?.recentDeviceActivity?.deviceActivityLevel;
+    if (!/^LEVEL_[1-4]$/.test(activity||"") || Number(activity.at(-1)) > maxRecentActivity) return false;
+  }
   if (requireLicensed && account?.appLicensingVerdict !== "LICENSED") return false;
   const environment = verdict.tokenPayloadExternal.environmentDetails;
   if (requirePlayProtect && environment?.playProtectVerdict !== "NO_ISSUES") return false;
@@ -79,5 +89,9 @@ export async function verifyPlayToken(token, nonce, cfg, { fetchImpl = fetch } =
   return checkIntegrityVerdict(await decodePlayToken(token,cfg,{fetchImpl}), {
     nonce, packageName:cfg.packageName,
     requireLicensed:cfg.requireLicensed, requireStrong:cfg.requireStrong,
+    certificateDigests:cfg.certificateDigests,minimumVersionCode:cfg.minimumVersionCode,
+    requirePlayProtect:cfg.requirePlayProtect,requireAccessRisk:cfg.requireAccessRisk,
+    minimumDeviceSdk:cfg.minimumDeviceSdk,maxRecentActivity:cfg.maxRecentActivity,
   });
 }
+

@@ -10,6 +10,7 @@ class RedisFake {
   constructor(){this.kv=new Map();this.hash=new Map();this.counter=new Map();}
   async get(key){return this.kv.get(key)??null;}
   async set(key,value,opts={}){if(opts.NX&&this.kv.has(key))return null;this.kv.set(key,value);return "OK";}
+  async eval(script,opts){if(script.includes("spdecode:throttle:v1"))return this.incr(opts.keys[0]);throw Error("Unsupported Lua");}
   async incr(key){const n=(this.counter.get(key)||0)+1;this.counter.set(key,n);return n;}
   async expire(){return 1;}
   async hIncrBy(key,field,amount){
@@ -169,3 +170,4 @@ test("CSV uses aggregate rows and neutralizes spreadsheet formula prefixes",()=>
  assert.doesNotMatch(report,/row\.rawText|row\.password|row\.privateKey|row\.dataBase64/);
  assert.match(report,/text\/csv;charset=utf-8/);
 });
+

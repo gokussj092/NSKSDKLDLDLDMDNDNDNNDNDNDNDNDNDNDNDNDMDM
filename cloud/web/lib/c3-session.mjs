@@ -1,6 +1,10 @@
 import { createHmac, randomBytes, randomUUID, timingSafeEqual } from "node:crypto";
 import { limits } from "./c3-config.mjs";
 import { boundRequestClaims } from "./v2-bound-request.mjs";
+import { bindVerifiedRequest } from "./v2-bound-request.mjs";
+import { authorizeBoundV1 } from "./bound-auth.mjs";
+import { v2Settings } from "./v2-config.mjs";
+import { workBudget } from "./device-security.mjs";
 import { checkIntegrityVerdict, verifyPlayToken } from "./c3-integrity.mjs";
 import { consumeChallenge, ipKey, rememberSession, reserveChallenge, sessionExists, throttle } from "./c3-store.mjs";
 const json = object => Buffer.from(JSON.stringify(object)).toString("base64url");
@@ -28,6 +32,7 @@ export async function createChallenge(redis, request) {
   const ip = ipKey(request);
   const permitted = await throttle(redis, "spc3:challenge-limit:"+ip, 15, 900);
   if (!permitted) return { error:"RATE_LIMITED", status:429 };
+  if (!await throttle(redis,"spsec:challenge:global",300,60)) return {error:"RATE_LIMITED",status:429};
   const challengeId = randomUUID();
   const nonce = randomBytes(32).toString("base64url");
   if (!await reserveChallenge(redis, challengeId, nonce, ip)) return { error:"SERVICE_UNAVAILABLE", status:503 };
@@ -92,6 +97,13 @@ export async function requireSession(redis, request, cfg) {
   if (bound) return bound;
   const bearer = request.headers.get("authorization") || "";
   if (!bearer.startsWith("Bearer ")) return null;
+  const boundClaims=verifySignature(bearer.slice(7),cfg.signingKey,undefined,"spdecode-android-v2");
+  if (boundClaims) {
+    const result=await authorizeBoundV1(redis,request,bearer.slice(7),boundClaims,v2Settings());
+    if(result&&!result.rateLimited)bindVerifiedRequest(request,result);
+    return result;
+  }
+  if (process.env.CLOUD_V1_REQUIRE_BOUND_SESSION === "true") return null;
   const claims = verifySignature(bearer.slice(7), cfg.signingKey);
   if (!claims || (claims.channel && claims.channel!=="qa") ||
       (claims.channel==="qa" && !cfg.qaActive) ||
@@ -99,5 +111,6 @@ export async function requireSession(redis, request, cfg) {
   const ip = ipKey(request);
   const sessionRate = await throttle(redis,"spc3:request-limit:"+claims.jti,limits.requestsPerSessionMinute,60);
   const networkRate = await throttle(redis,"spc3:network-limit:"+ip,limits.requestsPerIpWindow,60);
-  return sessionRate && networkRate ? claims : {rateLimited:true};
+  return sessionRate && networkRate && await workBudget(redis,claims) ? claims : {rateLimited:true};
 }
+

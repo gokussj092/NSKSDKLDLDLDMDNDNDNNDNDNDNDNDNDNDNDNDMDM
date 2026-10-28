@@ -41,7 +41,7 @@ class FakeRedis{
   async getDel(k){const v=await this.get(k);this.values.delete(k);return v;}
   async incr(k){const c=(this.count.get(k)||0)+1;this.count.set(k,c);return c;}
   async expire(){return 1;}
-  async eval(_,args){
+  async eval(_,args){if(_.includes("spdecode:throttle:v1"))return this.incr(args.keys[0]);
     const k=args.keys[0],ids=this.active.get(k)||new Map();
     if(ids.size>=2)return 0;ids.set(args.arguments[0],Date.now());this.active.set(k,ids);
     return 1;
@@ -498,3 +498,4 @@ test("EHI expired/consumed or removed configurations are not engine failures", a
   assert.equal(response.status,410);
   assert.match((await response.json()).error.message,/caducado|solo uso/);
 });
+

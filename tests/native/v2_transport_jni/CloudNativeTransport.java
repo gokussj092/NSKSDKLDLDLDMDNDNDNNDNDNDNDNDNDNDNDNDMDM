@@ -10,7 +10,7 @@ import javax.net.ssl.HttpsURLConnection;
 public final class CloudNativeTransport {
     static { System.load(System.getProperty("spdecode.native")); }
     private static native String postNative(int operation,String json,String bearer,
-        String version,String timestamp,String nonce,String proof) throws IOException;
+        String version,String timestamp,String nonce,String proof,String actionChallenge,String actionIntegrity) throws IOException;
     private static FakeConnection last;
     private static boolean failUpload;
     private static final String RESPONSE="{\"message\":\"México 👻 漢字\"}";
@@ -33,7 +33,7 @@ public final class CloudNativeTransport {
         }:null);
         String body="{\"text\":\"México 👻 漢字\",\"zero\":\"\\u0000\"}";
         String timestamp="1700000000",nonce="AAECAwQFBgcICQoLDA0ODxAREhMUFRYX",proof="A".repeat(96);
-        check(postNative(6,body,"synthetic.bearer","1.1.22",timestamp,nonce,proof).equals("200\n"+RESPONSE),"UTF-8 reply changed");
+        check(postNative(6,body,"synthetic.bearer","1.1.22",timestamp,nonce,proof,"","").equals("200\n"+RESPONSE),"UTF-8 reply changed");
         check(last.output.toString(StandardCharsets.UTF_8).equals(body),"Uploaded UTF-8 changed");
         check(last.getURL().toString().equals("https://api.spdecode.example/api/v2/transport"),"Wrong destination");
         check(last.getRequestProperty("X-SP-Operation").equals("6"),"Wrong operation");
@@ -43,16 +43,24 @@ public final class CloudNativeTransport {
         check(last.getRequestProperty("Authorization").equals("Bearer synthetic.bearer"),"Wrong bearer");
         check(!last.getInstanceFollowRedirects(),"Redirects allowed");
         check(last.getReadTimeout()==25000,"Ordinary budget changed");
-        postNative(9,"{}","synthetic.bearer","1.1.22",timestamp,nonce,proof);
+        String actionId="00000000-0000-4000-8000-000000000001",actionToken="A".repeat(100);
+        postNative(6,body,"synthetic.bearer","1.1.23",timestamp,nonce,proof,actionId,actionToken);
+        check(last.getRequestProperty("X-SP-Action-Challenge").equals(actionId),"Wrong action challenge");
+        check(last.getRequestProperty("X-SP-Action-Integrity").equals(actionToken),"Wrong action integrity");
+        try {postNative(6,body,"","1.1.23",timestamp,nonce,proof,actionId,actionToken+"\r\n");throw new AssertionError("Header injection accepted");}
+        catch(IOException expected){check(expected.getMessage().equals("CLOUD_NATIVE_REQUEST_REJECTED"),"Wrong header rejection");}
+
+        postNative(9,"{}","synthetic.bearer","1.1.22",timestamp,nonce,proof,"","");
         check(last.getReadTimeout()==165000,"Catalog budget changed");
-        postNative(5,"{\"compatibleExport\":{}}","synthetic.bearer","1.1.22",timestamp,nonce,proof);
+        postNative(5,"{\"compatibleExport\":{}}","synthetic.bearer","1.1.22",timestamp,nonce,proof,"","");
         check(last.getReadTimeout()==55000,"Export budget changed");
-        try {postNative(3,body,"","1.1.22",timestamp,nonce,proof);throw new AssertionError("Reserved op accepted");}
+        try {postNative(3,body,"","1.1.22",timestamp,nonce,proof,"","");throw new AssertionError("Reserved op accepted");}
         catch(IOException expected){check(expected.getMessage().equals("CLOUD_NATIVE_REQUEST_REJECTED"),"Wrong rejection");}
         failUpload=true;
-        try {postNative(6,body,"","1.1.22",timestamp,nonce,proof);throw new AssertionError("Upload failure accepted");}
+        try {postNative(6,body,"","1.1.22",timestamp,nonce,proof,"","");throw new AssertionError("Upload failure accepted");}
         catch(IOException expected){check(expected.getMessage().equals("CLOUD_NATIVE_NETWORK_UNAVAILABLE"),"Wrong network failure");}
         finally {failUpload=false;}
         System.out.println("Real JNI registration, UTF-8, proof headers, destination, budgets and pending-exception cleanup passed");
     }
 }
+

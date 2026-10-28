@@ -15,13 +15,14 @@ class Redis {
   async get(k){return this.values.get(k)??null;}
   async getDel(k){const v=await this.get(k);this.values.delete(k);return v;}
   async incr(k){const n=(this.counts.get(k)||0)+1;this.counts.set(k,n);return n;}
-  async expire(){return 1;} async eval(){return 1;} async zRem(){return 1;}
+  async expire(){return 1;} async eval(script,opts){if(script.includes("spdecode:throttle:v1"))return this.incr(opts.keys[0]);return 1;} async zRem(){return 1;}
 }
 const certificate="a1".repeat(32),rsa=generateKeyPairSync("rsa",{modulusLength:2048});
 const env={CLOUD_API_ENABLED:"true",CLOUD_WORKER_TOKEN:"w".repeat(48),CLOUD_SESSION_SIGNING_KEY:"s".repeat(48),
   CLOUD_REDIS_URL:"redis://redis:6379",CLOUD_TRUST_PROXY:"true",CLOUD_GOOGLE_PLAY_PACKAGE:"com.ghostdeveloper.spdecode",
   CLOUD_GOOGLE_SERVICE_ACCOUNT_JSON:JSON.stringify({type:"service_account",client_email:"test@example.invalid",
     private_key:rsa.privateKey.export({format:"pem",type:"pkcs8"})}),CLOUD_PLAY_CERT_SHA256:certificate,
+  CLOUD_KEY_ATTESTATION_REQUIRED:"false",CLOUD_ACTION_INTEGRITY_REQUIRED:"false",
   CLOUD_MIN_ANDROID_VERSION_CODE:"33",WORKER_INTERNAL_URL:"http://decoder-worker:8787"};
 const pair=()=>generateKeyPairSync("ec",{namedCurve:"prime256v1"});
 const encoded=p=>p.publicKey.export({type:"spki",format:"der"}).toString("base64url");
@@ -29,7 +30,7 @@ const verdict=nonce=>({tokenPayloadExternal:{
   requestDetails:{nonce,requestPackageName:env.CLOUD_GOOGLE_PLAY_PACKAGE,timestampMillis:String(Date.now())},
   appIntegrity:{appRecognitionVerdict:"PLAY_RECOGNIZED",packageName:env.CLOUD_GOOGLE_PLAY_PACKAGE,
     certificateSha256Digest:[Buffer.from(certificate,"hex").toString("base64url")],versionCode:"33"},
-  deviceIntegrity:{deviceRecognitionVerdict:["MEETS_DEVICE_INTEGRITY","MEETS_STRONG_INTEGRITY"]},
+  deviceIntegrity:{deviceAttributes:{sdkVersion:35},recentDeviceActivity:{deviceActivityLevel:"LEVEL_1"},deviceRecognitionVerdict:["MEETS_DEVICE_INTEGRITY","MEETS_STRONG_INTEGRITY"]},
   accountDetails:{appLicensingVerdict:"LICENSED"},
   environmentDetails:{playProtectVerdict:"NO_ISSUES",appAccessRiskVerdict:{appsDetected:["KNOWN_INSTALLED"]}},
 }});
@@ -71,10 +72,11 @@ test("shared Android/server vector signs exact Unicode bytes using DER ECDSA",()
     "x-sp-nonce":v.nonce,"x-sp-proof":v.signature,"x-spdecode-app-version":v.version}});
   assert.equal(verifyProof(req,v.operation,bytes,v.bearer,v.publicKey,Number(v.timestamp)*1000),v.nonce);
 });
-test("old API paths and aliases return 410 by default; operational probes retain access",()=>{
+test("V1 routes remain available; explicit retirement closes them without closing probes",()=>{
   for(const path of ["/api/v1","/api/v1/session","/api/v1/session/qa","/api/v1/decode/file",
     "/api/v1/server-vpn/catalog","/api/v1/unknown-alias"]){
-    assert(legacyApiRetired(path,{}));assert.equal(proxy(new Request("https://example.test"+path)).status,410);
+    assert.equal(legacyApiRetired(path,{}),false);
+    assert(legacyApiRetired(path,{CLOUD_LEGACY_API_ENABLED:"false"}));
     assert.equal(legacyApiRetired(path,{CLOUD_LEGACY_API_ENABLED:"true"}),false);
   }
   for(const path of ["/api/v1/health","/api/v1/ready","/api/admin/login","/api/v2/transport"])
@@ -149,7 +151,7 @@ test("V1/QA tokens cannot downgrade V2; epoch, release, signer and Redis revocat
 });
 test("bootstrap validates key, proof, fixed operation, encoding and query before dispatch",async()=>{
   const f=fixture();
-  for(const op of ["3","16","01","/api/v1/decode/file"])assert.equal((await f.call(op,{})).status,400);
+  for(const op of ["3","17","01","/api/v1/decode/file"])assert.equal((await f.call(op,{})).status,400);
   assert.equal((await f.call(1,{publicKey:encoded(pair())})).status,400);
   assert.equal((await f.call(1,{publicKey:encoded(f.key),extra:true})).status,400);
   assert.equal((await f.call(1,{publicKey:encoded(f.key)},"",{"content-encoding":"gzip"})).status,400);
@@ -177,3 +179,4 @@ test("V2 reaches real decoder only after proof and preserves existing worker val
   const response=await f.call(5,{format:"hc",dataBase64:"YWJj"},token);
   assert.equal(response.status,200);assert.equal(calls,1);assert.equal((await response.json()).rawText,'{"ok":true}');
 });
+

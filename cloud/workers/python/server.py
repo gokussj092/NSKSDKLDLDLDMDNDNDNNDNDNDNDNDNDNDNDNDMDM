@@ -7,6 +7,7 @@ import hmac
 import json
 import os
 import sys
+import threading
 import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
@@ -19,6 +20,9 @@ MAX_JSON_BYTES = (MAX_INPUT_BYTES * 4 // 3) + 65536
 MAX_MKK_BUNDLE_BYTES = 45 * 1024 * 1024
 MAX_SERVER_VPN_JSON_BYTES = max(MAX_JSON_BYTES, ((MAX_MKK_BUNDLE_BYTES + 2) // 3) * 4 + 65536)
 
+
+# Independent of session rotation, Redis leases, or multiple web replicas.
+ACTIVE_JOBS = threading.BoundedSemaphore(4)
 
 class WorkerHandler(BaseHTTPRequestHandler):
     server_version = "SPDecodeWorker/0.2"
@@ -71,6 +75,17 @@ class WorkerHandler(BaseHTTPRequestHandler):
         return self._json(404, {"error": {"code": "NOT_FOUND"}})
 
     def do_POST(self) -> None:
+        self.connection.settimeout(15)
+        if not self._authorized():
+            return self._json(403, {"error": {"code": "FORBIDDEN"}})
+        if not ACTIVE_JOBS.acquire(blocking=False):
+            return self._json(503, {"error": {"code": "ENGINE_UNAVAILABLE"}})
+        try:
+            self._execute_post()
+        finally:
+            ACTIVE_JOBS.release()
+
+    def _execute_post(self) -> None:
         if self.path not in ("/internal/v1/npvs/identity", "/internal/v1/decode/file", "/internal/v1/decode/text", "/internal/v1/decode/import/catalog", "/internal/v1/decode/import/server-vpn"):
             return self._json(503, {"error": {"code": "DECODERS_DISABLED"}})
         if not self._authorized():

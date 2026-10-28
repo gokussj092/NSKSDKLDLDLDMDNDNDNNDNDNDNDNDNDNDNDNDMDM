@@ -76,7 +76,7 @@ class Redis {
  async getDel(k){const v=await this.get(k);this.values.delete(k);return v;}
  async incr(k){const v=(this.count.get(k)||0)+1;this.count.set(k,v);return v;}
  async expire(){return 1;}
- async eval(_,args){const ids=this.active.get(args.keys[0])||new Map();ids.set(args.arguments[0],Date.now());this.active.set(args.keys[0],ids);return 1;}
+ async eval(_,args){if(_.includes("spdecode:throttle:v1"))return this.incr(args.keys[0]);const ids=this.active.get(args.keys[0])||new Map();ids.set(args.arguments[0],Date.now());this.active.set(args.keys[0],ids);return 1;}
  async zRem(k,id){this.active.get(k)?.delete(id);return 1;}
 }
 function send(body,token){return new Request('https://spdecode.test/api/v1/decode/import/http-custom',{method:'POST',headers:{'Content-Type':'application/json','X-Real-IP':'203.0.113.25',...(token?{Authorization:'Bearer '+token}:{})},body:JSON.stringify(body)});}
@@ -169,3 +169,4 @@ test('legacy aliases reject foreign domains and cannot be used as an unrestricte
   assert.throws(()=>parseHttpCustomLegacyReference(source),{code:'INVALID_REFERENCE'});
  }
 });
+

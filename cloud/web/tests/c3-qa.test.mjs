@@ -10,6 +10,7 @@ class RedisFake {
   async get(k){return this.kv.get(k)??null;}
   async set(k,v,opts={}){if(opts.NX&&this.kv.has(k))return null;this.kv.set(k,v);return "OK";}
   async getDel(k){const v=await this.get(k);this.kv.delete(k);return v;}
+  async eval(script,opts){if(script.includes("spdecode:throttle:v1"))return this.incr(opts.keys[0]);throw Error("Unsupported Lua");}
   async incr(k){const v=(this.count.get(k)||0)+1;this.count.set(k,v);return v;}
   async expire(){return 1;}
   async ping(){return "PONG";}
@@ -76,3 +77,4 @@ test("QA refuses anonymous, forged, malformed and expired code flows",async()=>{
     assert.ok([403,503].includes(denied.status));
   }finally{process.env.CLOUD_QA_ENABLED="true";}
 });
+

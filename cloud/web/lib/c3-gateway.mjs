@@ -555,7 +555,7 @@ export async function capabilitiesRequest(options={}) {
 }
 export async function readinessRequest(options={}) {
   if(!enabled())return jsonReply({apiVersion:"v1",status:"not_ready",reason:"CLOUD_SECURITY_GATE_DISABLED"},503);
-  if(process.env.CLOUD_LEGACY_API_ENABLED!=="true" && !v2Settings().configured)
+  if(process.env.CLOUD_LEGACY_API_ENABLED==="false" && !v2Settings().configured)
     return jsonReply({apiVersion:"v2",status:"not_ready",reason:"CLOUD_SECURITY_GATE_DISABLED"},503);
   try {
     const redis=await (options.storeProvider||store)();
@@ -569,3 +569,4 @@ export async function readinessRequest(options={}) {
     return jsonReply({apiVersion:"v1",status:"ready",note:"Service configured; individual decoding results are not exporter-certified."});
   }catch{return jsonReply({apiVersion:"v1",status:"not_ready",reason:"CLOUD_SECURITY_DEPENDENCY_UNAVAILABLE"},503);}
 }
+
