@@ -12,6 +12,7 @@ public final class CloudNativeTransport {
     private static native String postNative(int operation,String json,String bearer,
         String version,String timestamp,String nonce,String proof) throws IOException;
     private static FakeConnection last;
+    private static boolean failUpload;
     private static final String RESPONSE="{\"message\":\"México 👻 漢字\"}";
     private static final class FakeConnection extends HttpsURLConnection {
         final ByteArrayOutputStream output=new ByteArrayOutputStream();
@@ -21,7 +22,7 @@ public final class CloudNativeTransport {
         public String getCipherSuite(){return "synthetic";}
         public Certificate[] getLocalCertificates(){return null;}
         public Certificate[] getServerCertificates(){return new Certificate[0];}
-        public OutputStream getOutputStream(){return output;}
+        public OutputStream getOutputStream() throws IOException {if(failUpload)throw new IOException("synthetic upload failure");return output;}
         public InputStream getInputStream(){return new ByteArrayInputStream(RESPONSE.getBytes(StandardCharsets.UTF_8));}
         public int getResponseCode(){return 200;}
     }
@@ -48,6 +49,10 @@ public final class CloudNativeTransport {
         check(last.getReadTimeout()==55000,"Export budget changed");
         try {postNative(3,body,"","1.1.22",timestamp,nonce,proof);throw new AssertionError("Reserved op accepted");}
         catch(IOException expected){check(expected.getMessage().equals("CLOUD_NATIVE_REQUEST_REJECTED"),"Wrong rejection");}
-        System.out.println("Real JNI registration, UTF-8, proof headers, destination and budgets passed");
+        failUpload=true;
+        try {postNative(6,body,"","1.1.22",timestamp,nonce,proof);throw new AssertionError("Upload failure accepted");}
+        catch(IOException expected){check(expected.getMessage().equals("CLOUD_NATIVE_NETWORK_UNAVAILABLE"),"Wrong network failure");}
+        finally {failUpload=false;}
+        System.out.println("Real JNI registration, UTF-8, proof headers, destination, budgets and pending-exception cleanup passed");
     }
 }

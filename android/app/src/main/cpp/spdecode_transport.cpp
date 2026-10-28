@@ -145,12 +145,12 @@ jstring post(JNIEnv* env,jclass,jint operation,jstring bodyArg,jstring bearerArg
     jstring urlString=env->NewStringUTF((base+path).c_str());
     jobject url=env->NewObject(urlClass,urlCtor,urlString);
     env->DeleteLocalRef(urlString);
-    if (!url || clearException(env)) {
+    if (clearException(env) || !url) {
         fail(env,"CLOUD_NATIVE_URL_REJECTED");return nullptr;
     }
     jobject conn=env->CallObjectMethod(url,open);
     env->DeleteLocalRef(url);
-    if (!conn || clearException(env)) {
+    if (clearException(env) || !conn) {
         fail(env,"CLOUD_NATIVE_CONNECT_FAILED");return nullptr;
     }
     if (!env->IsInstanceOf(conn,httpsClass)) {
@@ -196,7 +196,7 @@ jstring post(JNIEnv* env,jclass,jint operation,jstring bodyArg,jstring bearerArg
         fail(env,"CLOUD_NATIVE_HEADERS_FAILED");return nullptr;
     }
     jobject os=env->CallObjectMethod(conn,getOutput);
-    if(!os || clearException(env)) {
+    if(clearException(env) || !os) {
         env->CallVoidMethod(conn,disconnect);env->DeleteLocalRef(conn);
         fail(env,"CLOUD_NATIVE_NETWORK_UNAVAILABLE");return nullptr;
     }
@@ -263,7 +263,7 @@ jstring post(JNIEnv* env,jclass,jint operation,jstring bodyArg,jstring bearerArg
     jstring decoded=static_cast<jstring>(env->NewObject(stringClass,stringUtf8Ctor,raw,encoding));
     env->DeleteLocalRef(raw);
     env->DeleteLocalRef(encoding);
-    if(decoded==nullptr || clearException(env)){
+    if(clearException(env) || decoded==nullptr){
         fail(env,"CLOUD_NATIVE_RESPONSE_ENCODING");return nullptr;
     }
     return decoded;
