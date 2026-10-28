@@ -116,11 +116,53 @@ Las ocho muestras pasan Adler-32, HMAC exterior, CBC/XXTEA y AEAD interior.
 OpenSSL/cryptography verifica independientemente los HMAC y las dos capas CBC;
 libsodium verifica los tags XChaCha. Argon2id sigue con argon2-cffi.
 
-**Importación Android, editor, banner y conexión: pendientes para esta tanda.**
-Probar primero O_A y luego O_B/O_C; después A/B/C/D/E. B/C siguen restringidos
-por diseño: sirven para aislar notas. D/E son candidatos de acceso editable,
-sin aprobación previa a la prueba del propietario. No se generan nuevos
+El estado al generar esta tanda era pendiente para Android. El siguiente
+reporte manual sustituye ese estado inicial; no modifica los hashes ni los
+resultados criptográficos históricos de `ehi_authenticated_matrix_2026-10-27.json`.
+B/C conservan las restricciones originales por diseño. No se generan nuevos
 archivos Dark Tunnel con banner.
+
+## Resultado manual posterior: A y E se importaron
+
+El propietario informó: «Solo estos archivos si se lograron importar», y
+nombró `E_ACCESS_HTML_HMAC_CANDIDATE.ehi` y `A_REWRAP_ORIGINAL.ehi`.
+El reporte completo sin datos de conexión está en
+`results/ehi_authenticated_manual_import_2026-10-27.json`.
+
+| Caso principal | Importación según el propietario | Editor / banner / conexión |
+| --- | --- | --- |
+| A | Aceptada; control idéntico al original | No confirmados |
+| B | Rechazada | No confirmados |
+| C | Rechazada | No confirmados |
+| D | Rechazada | No confirmados |
+| E | **Aceptada; primera variante modificada aceptada de esta tanda** | No confirmados |
+
+Los tres controles `owned_open/` están comprendidos en la frase global, pero
+no fueron nombrados individualmente. Se conserva esa incertidumbre: no se
+declara demostrado un fallo del rewrap idéntico de `Open.ehi`. El propietario
+no indicó en este mensaje el texto del error, la versión/build usada ni hashes
+medidos en el dispositivo. No se atribuye automáticamente el mensaje de
+versión de la tanda anterior a estos nuevos rechazos.
+
+Se verificaron otra vez los hashes de los cinco archivos entregados y sus
+capas mediante el lector estricto y el auditor independiente: todos pasan.
+Entre D y E, el **único valor JSON interior diferente es `configMessage`**;
+el JSON exterior, salvo `configData`, es idéntico. Los bytes interiores solo
+cambian en el token de esa nota. Ambos mantienen los mismos campos de acceso
+y los demás campos de conexión. Cada reencriptación modificada utiliza sal
+AEAD, nonce e IV CBC nuevos; esos bytes aleatorios no se mantuvieron constantes.
+
+Esto justifica investigar la nota y sus validaciones en el estado abierto,
+pero **no demuestra que la nota original cause el rechazo de D**, ni explica
+por sí solo B/C. Tampoco demuestra que el banner de E se haya renderizado o
+que el editor y la conexión funcionen. Se conserva E sin regenerarlo como
+referencia importada. No se declara resuelto el exportador general ni se
+introduce una corrección especulativa en los decodificadores productivos.
+
+La causa anterior del MAC desactualizado sigue demostrada. La aceptación de
+E confirma un avance real después de corregirla; los rechazos B/C/D muestran
+que aún falta aislar otras condiciones del importador. Estado actual:
+**compatibilidad parcial de importación, validación funcional pendiente**.
 
 ## Reproducir
 

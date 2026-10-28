@@ -1,0 +1,122 @@
+{
+  "date_local": "2026-10-27",
+  "timezone": "America/Tijuana",
+  "tested_package": "SP_DECODE_EHI_HMAC_CORREGIDO_PRUEBAS.zip",
+  "package_sha256": "36c24625c90690685d96c742d0e8ceb4febc9b715d7277d4a3a50a7fd358b6b4",
+  "generation_commit": "06e0e59f96755433082cade145234e97bc20bd4c",
+  "owner_report": "Solo estos archivos si se lograron importar\n\nE_ACCESS_HTML_HMAC_CANDIDATE.ehi\nA_REWRAP_ORIGINAL.ehi",
+  "evidence": "Owner report by filename; no device hash, screenshot, log or app build supplied in this follow-up.",
+  "owner_test_app_build_confirmed": false,
+  "cases": [
+    {
+      "file": "A_REWRAP_ORIGINAL.ehi",
+      "delivered_sha256": "600c0cafc2419aa59a1b3b4b259030af267d646c327e547a44fdce2ff54f05b7",
+      "sha256_remeasured_on_device": false,
+      "original_app_import": "ACCEPTED_OWNER_REPORT",
+      "current_error_message": "not_applicable",
+      "editor_access": "not_confirmed",
+      "banner_rendering": "not_confirmed",
+      "connection_test": "not_confirmed"
+    },
+    {
+      "file": "B_NOTE_TEXT_HMAC.ehi",
+      "delivered_sha256": "6538efb1a70317ac4d369cda7fab43685d5fc27891a56931aaadccdb0d5f76bc",
+      "sha256_remeasured_on_device": false,
+      "original_app_import": "REJECTED_OWNER_REPORT_ERROR_UNSPECIFIED",
+      "current_error_message": "not_supplied",
+      "editor_access": "not_confirmed",
+      "banner_rendering": "not_confirmed",
+      "connection_test": "not_confirmed"
+    },
+    {
+      "file": "C_NOTE_HTML_HMAC.ehi",
+      "delivered_sha256": "bbbfda6bd97aebd9d8da4ad59644599dd017584555912ce6a68c075bcfd3a3dd",
+      "sha256_remeasured_on_device": false,
+      "original_app_import": "REJECTED_OWNER_REPORT_ERROR_UNSPECIFIED",
+      "current_error_message": "not_supplied",
+      "editor_access": "not_confirmed",
+      "banner_rendering": "not_confirmed",
+      "connection_test": "not_confirmed"
+    },
+    {
+      "file": "D_ACCESS_HMAC_CANDIDATE.ehi",
+      "delivered_sha256": "0d615a5c138f59b46f0e54a71ef0a4783ab838352ce54acb2a1d2e8d130b1baa",
+      "sha256_remeasured_on_device": false,
+      "original_app_import": "REJECTED_OWNER_REPORT_ERROR_UNSPECIFIED",
+      "current_error_message": "not_supplied",
+      "editor_access": "not_confirmed",
+      "banner_rendering": "not_confirmed",
+      "connection_test": "not_confirmed"
+    },
+    {
+      "file": "E_ACCESS_HTML_HMAC_CANDIDATE.ehi",
+      "delivered_sha256": "4cdec21427ee012b1b118207ab4606f4a38ae8be150050b672c6f07dc0bbc40f",
+      "sha256_remeasured_on_device": false,
+      "original_app_import": "ACCEPTED_OWNER_REPORT",
+      "current_error_message": "not_applicable",
+      "editor_access": "not_confirmed",
+      "banner_rendering": "not_confirmed",
+      "connection_test": "not_confirmed"
+    },
+    {
+      "file": "owned_open/O_A_OPEN_REWRAP.ehi",
+      "delivered_sha256": "54c9e0cb281661e62b69c997085da0d753a3abd65d383c35a0c5704438563b0a",
+      "sha256_remeasured_on_device": false,
+      "original_app_import": "NOT_INDIVIDUALLY_NAMED_OWNER_REPORT_SAYS_ONLY_A_AND_E_IMPORTED",
+      "current_error_message": "not_supplied",
+      "editor_access": "not_confirmed",
+      "banner_rendering": "not_confirmed",
+      "connection_test": "not_confirmed"
+    },
+    {
+      "file": "owned_open/O_B_OPEN_TEXT.ehi",
+      "delivered_sha256": "188106348f292ffd022325c8d93c223673fdbbbd317e50c014b18aed733fd959",
+      "sha256_remeasured_on_device": false,
+      "original_app_import": "NOT_INDIVIDUALLY_NAMED_OWNER_REPORT_SAYS_ONLY_A_AND_E_IMPORTED",
+      "current_error_message": "not_supplied",
+      "editor_access": "not_confirmed",
+      "banner_rendering": "not_confirmed",
+      "connection_test": "not_confirmed"
+    },
+    {
+      "file": "owned_open/O_C_OPEN_HTML.ehi",
+      "delivered_sha256": "d25b41fed1a2fca7b87945c4c8d5a3431dd0e6c77a605705d0d44293ab3e4b82",
+      "sha256_remeasured_on_device": false,
+      "original_app_import": "NOT_INDIVIDUALLY_NAMED_OWNER_REPORT_SAYS_ONLY_A_AND_E_IMPORTED",
+      "current_error_message": "not_supplied",
+      "editor_access": "not_confirmed",
+      "banner_rendering": "not_confirmed",
+      "connection_test": "not_confirmed"
+    }
+  ],
+  "comparison_rechecked": {
+    "delivered_A_to_E_hashes": "matched_private_files",
+    "A_to_E_local_carrier_and_aead_checks": "passed",
+    "D_to_E_inner_changed_paths": [
+      [
+        "configMessage"
+      ]
+    ],
+    "D_to_E_outer_except_configData": "identical",
+    "D_to_E_raw_inner": "only_message_token_replaced",
+    "unrelated_inner_fields_A_to_E": "unchanged",
+    "random_crypto_material": "Fresh AEAD salt, nonce and CBC IV differ across changed exports; these were not held constant."
+  },
+  "compatibility": "PARTIAL_IMPORT_ACCEPTANCE_OWNER_REPORT",
+  "modified_export_accepted": [
+    "E_ACCESS_HTML_HMAC_CANDIDATE.ehi"
+  ],
+  "editor_access": "not_confirmed",
+  "banner_rendering": "not_confirmed",
+  "connection_test": "not_confirmed",
+  "remaining_rejection_root_cause_confirmed": false,
+  "interpretation": [
+    "E is the first modified authenticated case accepted in this matrix.",
+    "A remains a byte-identical baseline, not evidence of modified export support.",
+    "D/E isolate the message token at the JSON level, but do not prove a note-related root cause.",
+    "The earlier carrier MAC defect remains demonstrated; repairing it did not resolve every current rejection.",
+    "Do not inherit the previous version-error message for this new report.",
+    "The owned_open cases were not individually named; obtain their individual outcomes before asserting rewrap or note failures."
+  ],
+  "production_changes": false
+}
