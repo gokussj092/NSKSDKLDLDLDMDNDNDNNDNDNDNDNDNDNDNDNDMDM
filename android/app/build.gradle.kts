@@ -130,6 +130,15 @@ if(enableCloud) {
 if(providers.environmentVariable("SPDECODE_CLOUD_RELEASE").orNull=="true") {
     require(enableCloud) { "Production Cloud requires SPDECODE_CLOUD_API_BASE_URL" }
 }
+// Distribution must never accidentally package historical local engines.
+gradle.taskGraph.whenReady {
+    val distributesRelease=allTasks.any { it.project==project &&
+        it.name in setOf("assembleRelease","packageRelease","bundleRelease") }
+    if(distributesRelease) {
+        require(enableCloud) { "Release distribution requires the Cloud-only source set" }
+        require(!enableQaBuild) { "Release distribution must not enable the legacy QA launcher" }
+    }
+}
 // C5 Cloud build compiles a STRICT allowlisted copy of client-only sources.
 // Original decoders remain in git for legacy regression and the server, but
 // are not a Kotlin/Java input and cannot be recovered from a Cloud APK.
@@ -581,8 +590,8 @@ android {
         applicationId = "com.ghostdeveloper.spdecode"
         minSdk = 24
         targetSdk = 36
-        versionCode = 32
-        versionName = "1.1.21"
+        versionCode = 33
+        versionName = "1.1.22"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // A public API origin is not a secret; all server secrets stay in the VPS.
         buildConfigField("boolean", "SPDECODE_CLOUD_ENABLED", enableCloud.toString())

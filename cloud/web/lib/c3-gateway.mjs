@@ -1,5 +1,6 @@
 import { randomUUID, createPrivateKey, createPublicKey, createHash, ECDH } from "node:crypto";
 import { settings, limits } from "./c3-config.mjs";
+import { v2Settings } from "./v2-config.mjs";
 import { store, reserveSlot, releaseSlot } from "./c3-store.mjs";
 import { createChallenge, issueSession, issueQaSession, requireSession } from "./c3-session.mjs";
 import { jsonReply, unavailable } from "./responses.mjs";
@@ -554,6 +555,8 @@ export async function capabilitiesRequest(options={}) {
 }
 export async function readinessRequest(options={}) {
   if(!enabled())return jsonReply({apiVersion:"v1",status:"not_ready",reason:"CLOUD_SECURITY_GATE_DISABLED"},503);
+  if(process.env.CLOUD_LEGACY_API_ENABLED!=="true" && !v2Settings().configured)
+    return jsonReply({apiVersion:"v2",status:"not_ready",reason:"CLOUD_SECURITY_GATE_DISABLED"},503);
   try {
     const redis=await (options.storeProvider||store)();
     if((await redis.ping())!=="PONG")throw Error("REDIS_OFFLINE");
