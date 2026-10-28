@@ -16,6 +16,7 @@ class FakeRedis {
   async incr(k){const v=(this.counters.get(k)||0)+1;this.counters.set(k,v);return v;}
   async expire(){return 1;}
   async eval(script,{keys,arguments:args}){
+    if(script.includes("spdecode:throttle:v1"))return this.incr(keys[0]);
     const k=keys[0],map=this.slots.get(k)||new Map();
     for(const [id,time] of map){if(time<=Number(args[2]))map.delete(id);}
     if(map.size>=Number(args[1]))return 0;
@@ -273,10 +274,14 @@ test("C3 challenge and session routes can be exercised with injected verifier; r
 });
 test("readiness is not a false positive when worker is offline",async()=>{
   const redis=new FakeRedis();
+  const previous=process.env.CLOUD_PLAY_CERT_SHA256;
+  process.env.CLOUD_PLAY_CERT_SHA256="a1".repeat(32);
   const notReady=await readinessRequest({storeProvider:async()=>redis,fetchImpl:async()=>({ok:false})});
   assert.equal(notReady.status,503);
   const ready=await readinessRequest({storeProvider:async()=>redis,fetchImpl:async()=>({ok:true})});
   assert.equal(ready.status,200);
+  if(previous===undefined)delete process.env.CLOUD_PLAY_CERT_SHA256;
+  else process.env.CLOUD_PLAY_CERT_SHA256=previous;
 });
 test("capabilities require live private worker metadata, never invented certification",async()=>{
   const cap=await capabilitiesRequest({fetchImpl:async()=>({ok:true,json:async()=>({
@@ -404,3 +409,4 @@ test("legacy NPVS without password still receives the complete successful JSON",
   const result=await response.json();
   assert.deepEqual(result.structuredJson.configs,[{id:1},{id:2}]);
 });
+

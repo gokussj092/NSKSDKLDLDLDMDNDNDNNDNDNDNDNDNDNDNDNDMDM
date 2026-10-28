@@ -101,8 +101,9 @@ test("Android retains checked encrypted cache, opt-in lifecycle and WorkManager 
  for(const part of ["digest(bytes)!=checksum","vault.write(\"catalog\",fresh","announcedVersion>previousVersion"])
   assert.ok(repository.includes(part),part);
  assert.ok(client.includes("watchCatalogVersion"));
- assert.ok(bridge.includes('"/api/v1/server-vpn/watch"'));
- assert.ok(cpp.includes('path == "/api/v1/server-vpn/watch"'));
+ assert.ok(bridge.includes("operation: Int"));
+ assert.ok(client.includes("CloudOperation.WATCH"));
+ assert.ok(cpp.includes("operation == 13"));
  for(const part of [updates,manifest,gradle,compose,legal])
   assert.doesNotMatch(part,/Firebase Cloud Messaging|FCM|firebase-messaging|CLOUD_FCM_|SPDECODE_FCM_/i);
 });

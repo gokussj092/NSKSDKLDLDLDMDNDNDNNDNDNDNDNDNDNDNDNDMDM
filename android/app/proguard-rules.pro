@@ -18,3 +18,8 @@
 # manifest keep rules; no broad -keep com.ghostdeveloper.spdecode.**
 # Signer public digest is not a secret. Bundled format keys remain reversible;
 # R8 is defense in depth, not a cryptographic secret vault.
+
+# JNI_OnLoad registers exactly this private bridge by name and descriptor.
+-keepclasseswithmembers,includedescriptorclasses class com.ghostdeveloper.spdecode.cloud.CloudNativeTransport {
+    native <methods>;
+}

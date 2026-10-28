@@ -47,9 +47,8 @@ class CloudC4Tests(unittest.TestCase):
             'setConnectTimeout', 'setReadTimeout', 'setChunkedStreamingMode',
             'setRequestProperty', '"Authorization"', '"Accept-Encoding"',
             'CLOUD_NATIVE_RESPONSE_TOO_LARGE', 'postNative',
-            '"/api/v1/decode/file"', '"/api/v1/decode/text"',
-            '"/api/v1/decode/import/cloud"',
-            '"/api/v1/decode/import/catalog/remote"',
+            "safeOperation", "cloudTransportPath()", "JNI_OnLoad",
+            '"X-SP-Proof"', '"X-SP-Nonce"',
         ):
             self.assertIn(marker,source)
         self.assertNotIn('setHostnameVerifier',source)
@@ -61,9 +60,10 @@ class CloudC4Tests(unittest.TestCase):
     def test_play_integrity_is_official_classic_nonce_flow(self):
         source=CLIENT.read_text("utf-8")
         for marker in ("IntegrityManagerFactory.create","IntegrityTokenRequest.builder().setNonce(nonce)",
-                       "response.token()", "/api/v1/session/challenge",
-                       "/api/v1/session", "accessToken", "CLOUD_PARTIAL_RESULT_REJECTED"):
+                       "response.token()", "CloudOperation.CHALLENGE",
+                       "CloudOperation.SESSION", "CloudRequestProof.integrityNonce", "accessToken", "CLOUD_PARTIAL_RESULT_REJECTED"):
             self.assertIn(marker, source)
+        self.assertNotIn("/api/",source)
         self.assertNotIn("CLOUD_WORKER_TOKEN",source)
         self.assertNotIn("CLOUD_SESSION_SIGNING_KEY",source)
         self.assertNotIn("CLOUD_EHI_SIGN_KEY",source)
@@ -73,7 +73,7 @@ class CloudC4Tests(unittest.TestCase):
         self.assertIn("SPDECODE_CLOUD_API_BASE_URL",source)
         self.assertIn("SPDECODE_CLOUD_ORIGIN",source)
         self.assertNotIn("SPDECODE_CLOUD_API_BASE_URL",JNI.read_text("utf-8"))
-        self.assertIn("SPDECODE_CLOUD_ORIGIN",NATIVE.read_text("utf-8"))
+        self.assertIn("cloudOrigin()",NATIVE.read_text("utf-8"))
         self.assertIn("SPDECODE_CLOUD_RELEASE",source)
         self.assertIn('parsed.scheme=="https"',source)
         self.assertIn('buildConfigField("boolean", "SPDECODE_CLOUD_ENABLED"',source)

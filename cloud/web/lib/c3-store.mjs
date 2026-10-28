@@ -22,8 +22,10 @@ export function ipKey(request) {
   return digest("spdecode-ip:v1:" + ip);
 }
 export async function throttle(redis, key, limit, seconds) {
-  const count = await redis.incr(key);
-  if (count === 1) await redis.expire(key, seconds);
+  const count = await redis.eval(`-- spdecode:throttle:v1
+local count = redis.call('INCR', KEYS[1])
+if count == 1 or redis.call('TTL', KEYS[1]) < 0 then redis.call('EXPIRE', KEYS[1], ARGV[1]) end
+return count`, {keys:[key],arguments:[String(seconds)]});
   return count <= limit;
 }
 export async function reserveChallenge(redis, id, nonce, ip) {
@@ -48,21 +50,24 @@ export async function sessionExists(redis, jti) {
  * Every lease has a TTL so a crash cannot hold the slot indefinitely.
  */
 const reserveScript = `
-local key = KEYS[1]
 local value = ARGV[1]
 local limit = tonumber(ARGV[2])
-redis.call('ZREMRANGEBYSCORE', key, '-inf', tonumber(ARGV[3]))
-if redis.call('ZCARD', key) >= limit then return 0 end
-redis.call('ZADD', key, ARGV[4], value)
-redis.call('EXPIRE', key, 60)
+for _, key in ipairs(KEYS) do redis.call('ZREMRANGEBYSCORE', key, '-inf', tonumber(ARGV[3])) end
+if redis.call('ZCARD', KEYS[1]) >= limit or redis.call('ZCARD', KEYS[2]) >= tonumber(ARGV[6]) then return 0 end
+for _, key in ipairs(KEYS) do
+  redis.call('ZADD', key, ARGV[4], value)
+  redis.call('EXPIRE', key, ARGV[5])
+end
 return 1
 `;
 export async function reserveSlot(redis, jti, requestId) {
   return (await redis.eval(reserveScript, {
-    keys: ["spc3:active:" + jti],
-    arguments: [requestId, "2", String(Date.now() - 60000), String(Date.now())],
+    keys: ["spc3:active:" + jti, "spsec:active:global"],
+    arguments: [requestId, "2", String(Date.now() - 300000), String(Date.now()), "300", "4"],
   })) === 1;
 }
 export async function releaseSlot(redis, jti, requestId) {
   await redis.zRem("spc3:active:" + jti, requestId);
+  await redis.zRem("spsec:active:global", requestId);
 }
+

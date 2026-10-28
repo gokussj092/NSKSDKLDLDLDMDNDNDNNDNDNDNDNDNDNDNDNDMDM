@@ -50,7 +50,7 @@ class Redis {
  constructor(jti){this.values=new Map([["spc3:session:"+jti,"1"]]);}
  async get(key){return this.values.get(key)??null;}
  async incr(key){const next=Number(this.values.get(key)||0)+1;this.values.set(key,String(next));return next;}
- async expire(){return 1;} async eval(){return 1;} async zRem(){return 1;}
+ async expire(){return 1;} async eval(script,opts){if(script.includes("spdecode:throttle:v1"))return this.incr(opts.keys[0]);return 1;} async zRem(){return 1;}
 }
 function authenticatedRequest(env){
  const now=Math.floor(Date.now()/1000),jti=randomUUID();
@@ -107,3 +107,4 @@ test("worker result must contain matching complete server and user documents",as
  ])await assert.rejects(()=>fetchWorker("server-vpn",{providerId:"onspace-vpn"},{workerToken:"w".repeat(48)},
   {fetchImpl:async()=>Response.json(bad)}),/INVALID_WORKER_RESULT/);
 });
+

@@ -28,35 +28,70 @@ export async function googleAccessToken(account, { fetchImpl = fetch } = {}) {
   return result.access_token;
 }
 
-export function checkIntegrityVerdict(verdict, { nonce, packageName, now = Date.now(), requireLicensed = true, requireStrong = false }) {
+export function checkIntegrityVerdict(verdict, { nonce, requestHash, packageName, now = Date.now(), requireLicensed = true, requireStrong = false,
+  certificateDigests, minimumVersionCode, requirePlayProtect = false, requireAccessRisk = false,
+  minimumDeviceSdk, maxRecentActivity }) {
   const details = verdict?.tokenPayloadExternal?.requestDetails;
   const app = verdict?.tokenPayloadExternal?.appIntegrity;
   const device = verdict?.tokenPayloadExternal?.deviceIntegrity;
   const account = verdict?.tokenPayloadExternal?.accountDetails;
   const recorded = Number(details?.timestampMillis);
-  if (typeof details?.nonce !== "string" || details.nonce !== nonce ||
+  if ((requestHash !== undefined ? (typeof details?.requestHash!=="string" || details.requestHash!==requestHash) :
+      (typeof details?.nonce !== "string" || details.nonce !== nonce)) ||
       details.requestPackageName !== packageName || !Number.isFinite(recorded) ||
-      Math.abs(now - recorded) > MAX_ATTESTATION_AGE) return false;
+      now - recorded > MAX_ATTESTATION_AGE || recorded > now + 5000) return false;
   if (app?.appRecognitionVerdict !== "PLAY_RECOGNIZED" || app.packageName !== packageName) return false;
+  if (certificateDigests) {
+    const certificates = app.certificateSha256Digest;
+    if (!Array.isArray(certificates) || !certificates.length || !certificateDigests.length ||
+        certificates.some(value => typeof value !== "string" ||
+          !/^[A-Za-z0-9_-]{43}=?$/.test(value) ||
+          !certificateDigests.includes(Buffer.from(value,"base64url").toString("hex")))) return false;
+  }
+  if (minimumVersionCode !== undefined && (!/^[1-9][0-9]{0,9}$/.test(String(app.versionCode)) ||
+      !Number.isSafeInteger(Number(app.versionCode)) || Number(app.versionCode) < minimumVersionCode)) return false;
   const recognized = device?.deviceRecognitionVerdict;
   if (!Array.isArray(recognized) || !recognized.includes("MEETS_DEVICE_INTEGRITY")) return false;
   if (requireStrong && !recognized.includes("MEETS_STRONG_INTEGRITY")) return false;
+  if (minimumDeviceSdk !== undefined) {
+    const sdk=device?.deviceAttributes?.sdkVersion;
+    if (!Number.isInteger(sdk) || sdk < minimumDeviceSdk) return false;
+  }
+  if (maxRecentActivity !== undefined) {
+    const activity=device?.recentDeviceActivity?.deviceActivityLevel;
+    if (!/^LEVEL_[1-4]$/.test(activity||"") || Number(activity.at(-1)) > maxRecentActivity) return false;
+  }
   if (requireLicensed && account?.appLicensingVerdict !== "LICENSED") return false;
+  const environment = verdict.tokenPayloadExternal.environmentDetails;
+  if (requirePlayProtect && environment?.playProtectVerdict !== "NO_ISSUES") return false;
+  if (requireAccessRisk) {
+    const detected = environment?.appAccessRiskVerdict?.appsDetected;
+    if (!Array.isArray(detected) || !detected.length || detected.some(value =>
+      !["KNOWN_INSTALLED","UNKNOWN_INSTALLED"].includes(value))) return false;
+  }
   return true;
 }
 
-export async function verifyPlayToken(token, nonce, cfg, { fetchImpl = fetch } = {}) {
-  if (typeof token !== "string" || token.length < 80 || token.length > 16384) return false;
+export async function decodePlayToken(token, cfg, { fetchImpl = fetch } = {}) {
+  if (typeof token !== "string" || token.length < 80 || token.length > 16384) return null;
   const access = await googleAccessToken(cfg.account, { fetchImpl });
   // The destination is fixed, derived only from validated server configuration.
   const response = await fetchImpl(PLAY_API + encodeURIComponent(cfg.packageName) + ":decodeIntegrityToken", {
-    method:"POST", signal:AbortSignal.timeout(10000),
+    method:"POST", signal:AbortSignal.timeout(10000), redirect:"error",
     headers:{"Content-Type":"application/json",Authorization:"Bearer "+access},
     body:JSON.stringify({integrityToken:token}),
   });
-  if (!response.ok) return false;
-  return checkIntegrityVerdict(await response.json(), {
+  if (!response.ok) return null;
+  return response.json();
+}
+
+export async function verifyPlayToken(token, nonce, cfg, { fetchImpl = fetch } = {}) {
+  return checkIntegrityVerdict(await decodePlayToken(token,cfg,{fetchImpl}), {
     nonce, packageName:cfg.packageName,
     requireLicensed:cfg.requireLicensed, requireStrong:cfg.requireStrong,
+    certificateDigests:cfg.certificateDigests,minimumVersionCode:cfg.minimumVersionCode,
+    requirePlayProtect:cfg.requirePlayProtect,requireAccessRisk:cfg.requireAccessRisk,
+    minimumDeviceSdk:cfg.minimumDeviceSdk,maxRecentActivity:cfg.maxRecentActivity,
   });
 }
+

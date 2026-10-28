@@ -1,4 +1,4 @@
-name: Compatible export 1.1.21 integration
+name: Compatible export 1.1.22 integration
 on:
   push:
     branches: ["feat/temporary-original-app-config-export-lab"]

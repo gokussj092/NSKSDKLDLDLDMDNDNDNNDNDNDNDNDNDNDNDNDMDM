@@ -17,8 +17,13 @@ export function settings(env = process.env) {
     Number.isSafeInteger(qaExpiration) && qaExpiration>now &&
     qaExpiration<=now+24*3600;
   const validPackage = /^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$/.test(packageName);
+  const rawCertificates=env.CLOUD_PLAY_CERT_SHA256 || "";
+  const certificates=rawCertificates.split(",").map(x=>x.trim().toLowerCase());
+  const validCertificates=!rawCertificates || (certificates.length<=4 && certificates.every(x=>/^[a-f0-9]{64}$/.test(x)));
+  const validSwitches=["CLOUD_V1_REQUIRE_BOUND_SESSION","CLOUD_LEGACY_API_ENABLED"].every(key=>
+    env[key]===undefined || ["true","false"].includes(env[key]));
   const configured = env.CLOUD_API_ENABLED === "true" &&
-    workerToken.length >= 32 && signingKey.length >= 32 && validPackage &&
+    workerToken.length >= 32 && signingKey.length >= 32 && validPackage && validCertificates && validSwitches &&
     (Boolean(account) || qaActive || env.CLOUD_BETA_ADMISSION_ENABLED === "true") && /^rediss?:\/\//.test(env.CLOUD_REDIS_URL || "") &&
     env.CLOUD_TRUST_PROXY === "true";
   return {
@@ -28,6 +33,7 @@ export function settings(env = process.env) {
     redisUrl: env.CLOUD_REDIS_URL,
     requireLicensed: env.CLOUD_REQUIRE_LICENSED !== "false",
     requireStrong: env.CLOUD_REQUIRE_STRONG_INTEGRITY === "true",
+    ...(rawCertificates?{certificateDigests:certificates}:{}),
     allowedOrigin: env.CLOUD_ANDROID_ORIGIN || "",
   };
 }
@@ -41,3 +47,4 @@ export const limits = Object.freeze({
   requestsPerIpWindow: 20,
   maxActivePerSession: 2,
 });
+

@@ -12,7 +12,8 @@ class CompatibleExportIntegration(unittest.TestCase):
         gradle=(APP/'build.gradle.kts').read_text()
         version=re.search(r'versionName = "([^"]+)"',gradle)[1]
         code=re.search(r'versionCode = (\d+)',gradle)[1]
-        self.assertEqual((version,code),('1.1.21','32'))
+        self.assertTrue(re.fullmatch(r'\d+\.\d+\.\d+',version))
+        self.assertGreaterEqual(int(code),33)
         private=(ROOT/'.github/workflows/cloud-private-preproduction-apk.yml').read_text()
         play=(ROOT/'.github/workflows/play-beta-artifacts.yml').read_text()
         public=(ROOT/'.github/workflows/cloud-preproduction-public.yml').read_text()

@@ -21,6 +21,22 @@ services:
       # Requires explicit VPS opt-in AND time-limited Redis/admin action.
       CLOUD_BETA_ADMISSION_ENABLED: ${CLOUD_BETA_ADMISSION_ENABLED:-false}
       CLOUD_REQUIRE_STRONG_INTEGRITY: ${CLOUD_REQUIRE_STRONG_INTEGRITY:-false}
+      CLOUD_LEGACY_API_ENABLED: ${CLOUD_LEGACY_API_ENABLED:-true}
+      CLOUD_PLAY_CERT_SHA256: ${CLOUD_PLAY_CERT_SHA256:-}
+      CLOUD_MIN_ANDROID_VERSION_CODE: ${CLOUD_MIN_ANDROID_VERSION_CODE:-33}
+      CLOUD_V2_SESSION_EPOCH: ${CLOUD_V2_SESSION_EPOCH:-1}
+      CLOUD_V2_REQUIRE_STRONG_INTEGRITY: ${CLOUD_V2_REQUIRE_STRONG_INTEGRITY:-true}
+      CLOUD_V2_REQUIRE_PLAY_PROTECT: ${CLOUD_V2_REQUIRE_PLAY_PROTECT:-false}
+      CLOUD_V2_REQUIRE_ACCESS_RISK: ${CLOUD_V2_REQUIRE_ACCESS_RISK:-false}
+      CLOUD_KEY_ATTESTATION_REQUIRED: ${CLOUD_KEY_ATTESTATION_REQUIRED:-true}
+      CLOUD_KEY_ATTESTATION_LEVEL: ${CLOUD_KEY_ATTESTATION_LEVEL:-tee}
+      CLOUD_KEY_ATTESTATION_URL: http://key-attestation:8788/verify
+      CLOUD_KEY_ATTESTATION_TOKEN: ${CLOUD_KEY_ATTESTATION_TOKEN:-}
+      CLOUD_ACTION_INTEGRITY_REQUIRED: ${CLOUD_ACTION_INTEGRITY_REQUIRED:-true}
+      CLOUD_GOOGLE_CLOUD_PROJECT_NUMBER: ${CLOUD_GOOGLE_CLOUD_PROJECT_NUMBER:-}
+      CLOUD_INTEGRITY_MIN_DEVICE_SDK: ${CLOUD_INTEGRITY_MIN_DEVICE_SDK:-33}
+      CLOUD_INTEGRITY_MAX_RECENT_ACTIVITY: ${CLOUD_INTEGRITY_MAX_RECENT_ACTIVITY:-3}
+      CLOUD_V1_REQUIRE_BOUND_SESSION: ${CLOUD_V1_REQUIRE_BOUND_SESSION:-false}
       # C6 admin disabled unless every independent server-side value is provisioned.
       CLOUD_ADMIN_ENABLED: ${CLOUD_ADMIN_ENABLED:-false}
       CLOUD_ADMIN_USERNAME: ${CLOUD_ADMIN_USERNAME:-}
@@ -68,12 +84,39 @@ services:
     tmpfs:
       - /tmp:size=32m,noexec,nosuid
       - /app/.next/cache:size=32m,nosuid
+    mem_limit: 1024m
+    pids_limit: 128
+    cpus: 1.0
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/v1/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 30s
       timeout: 5s
       retries: 4
       start_period: 30s
+
+  key-attestation:
+    profiles: ["hardware-security"]
+    build:
+      context: ./attestation
+    restart: unless-stopped
+    init: true
+    environment:
+      CLOUD_KEY_ATTESTATION_TOKEN: ${CLOUD_KEY_ATTESTATION_TOKEN:-}
+      CLOUD_GOOGLE_PLAY_PACKAGE: ${CLOUD_GOOGLE_PLAY_PACKAGE:-}
+      CLOUD_PLAY_CERT_SHA256: ${CLOUD_PLAY_CERT_SHA256:-}
+      CLOUD_MIN_ANDROID_VERSION_CODE: ${CLOUD_MIN_ANDROID_VERSION_CODE:-33}
+      CLOUD_KEY_ATTESTATION_LEVEL: ${CLOUD_KEY_ATTESTATION_LEVEL:-tee}
+      CLOUD_KEY_MAX_PATCH_AGE_MONTHS: ${CLOUD_KEY_MAX_PATCH_AGE_MONTHS:-12}
+    # Private API; edge permits only outbound Google revocation checks. No host ports.
+    networks: [private, edge]
+    read_only: true
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 384m
+    pids_limit: 64
+    cpus: 1.0
+    tmpfs: ["/tmp:size=16m,noexec,nosuid"]
+
 
   redis:
     image: redis:7.4-alpine

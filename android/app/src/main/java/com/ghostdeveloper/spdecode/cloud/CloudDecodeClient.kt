@@ -3,14 +3,20 @@ package com.ghostdeveloper.spdecode.cloud
 import android.content.Context
 import android.util.Base64
 import com.ghostdeveloper.spdecode.BuildConfig
+import com.ghostdeveloper.spdecode.ReleaseIntegrity
 import com.ghostdeveloper.spdecode.parity.HcHccfgPort
 import com.google.android.play.core.integrity.IntegrityManagerFactory
 import com.google.android.play.core.integrity.IntegrityTokenRequest
+import com.google.android.play.core.integrity.StandardIntegrityManager
+import com.google.android.gms.tasks.Task
+import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.json.JSONObject
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -27,12 +33,19 @@ internal class CloudDecodeClient(context: Context) {
     private var token = ""
     private var expiresAtMs = 0L
     private val lock = Any()
+    private val sessionMutex = CloudRequestProof.enrollmentMutex
     @Volatile private var exportCatalog:CompatibleExportCatalog?=null
     @Volatile private var exportCatalogCheckedAt:Long=0
+    @Volatile private var actionIntegrityRequired = true
+    private val standardLock = Mutex()
+    private var standardProject = 0L
+    private var standardProvider: StandardIntegrityManager.StandardIntegrityTokenProvider? = null
+    private val standardManager by lazy { IntegrityManagerFactory.createStandard(app) }
     private val integrityManager by lazy { IntegrityManagerFactory.create(app) }
 
     /** Client-side defense-in-depth; server sessions still require Play Integrity. */
     private fun requireLegalConsent() {
+        if(!ReleaseIntegrity.isTrusted(app)) throw Failure("INTEGRITY_REJECTED",403)
         if(!CloudLegalConsent.accepted(app)) throw Failure("LEGAL_CONSENT_REQUIRED",403)
     }
 
@@ -60,6 +73,7 @@ internal class CloudDecodeClient(context: Context) {
     }
 
     private fun extract(reply: CloudNativeTransport.Reply): JSONObject {
+        if (reply.status == 401) clearSession()
         if (reply.status !in 200..299) {
             val code = reply.body.optJSONObject("error")?.optString("code")
                 ?.takeIf { it.matches(Regex("[A-Z_]{3,50}")) } ?: "SERVICE_UNAVAILABLE"
@@ -87,40 +101,38 @@ internal class CloudDecodeClient(context: Context) {
             }
         }
 
-    private suspend fun session(): String {
+    private suspend fun session(): String = sessionMutex.withLock {
         synchronized(lock) {
             if (token.isNotBlank() && System.currentTimeMillis() + SAFE_TOKEN_MARGIN_MS < expiresAtMs)
-                return token
+                return@withLock token
         }
         // No fallback to local decryptors when attestation or networking fails.
         val challenge = withContext(Dispatchers.IO) {
-            extract(CloudNativeTransport.post("/api/v1/session/challenge", JSONObject()))
+            extract(CloudNativeTransport.post(CloudOperation.CHALLENGE,
+                JSONObject().put("publicKey", CloudRequestProof.publicKey())))
         }
         val nonce = challenge.getString("nonce")
-        // The server decides; the client cannot override enforcement.
-        val integrityRequired=challenge.optBoolean("integrityRequired",true)
         val challengeId = challenge.getString("challengeId")
+        if (!nonce.matches(Regex("[A-Za-z0-9_-]{43}")) ||
+            !challengeId.matches(Regex("[0-9a-f-]{36}")) ||
+            challenge.optString("apiVersion") != "v2" ||
+            !challenge.optBoolean("integrityRequired", false))
+            throw IOException("CLOUD_INVALID_NONCE")
+        // V2 requires real Google Play admission, bound to this installation key.
+        if (BuildConfig.SPDECODE_QA_BUILD) throw IOException("CLOUD_INTEGRITY_UNAVAILABLE")
+        val certificates = if (challenge.optBoolean("keyAttestationRequired", false)) {
+            withContext(Dispatchers.IO) { CloudRequestProof.attest(
+                challenge.getString("attestationChallenge"), challenge.getString("hardwareLevel")) }
+        } else null
+        val verdict = requestIntegrityToken(CloudRequestProof.integrityNonce(nonce, challengeId))
         coroutineContext.ensureActive()
-        val code=if(BuildConfig.SPDECODE_QA_BUILD)CloudQaMemory.get() else ""
-        // Private QA must never silently attempt Play Integrity after the
-        // volatile test code is lost (e.g., Android killed the process).
-        if(BuildConfig.SPDECODE_QA_BUILD && code.isEmpty())
-            throw IOException("CLOUD_QA_CODE_REQUIRED")
-        val (endpoint,body)=if(code.isNotEmpty()) {
-            "/api/v1/session/qa" to
-                JSONObject().put("challengeId",challengeId).put("qaCode",code)
-        } else if(integrityRequired) {
-            val verdict=requestIntegrityToken(nonce)
-            coroutineContext.ensureActive()
-            "/api/v1/session" to
-                JSONObject().put("challengeId",challengeId).put("integrityToken",verdict)
-        } else {
-            // Strictly short-lived operator-approved beta; no integrity token is forged.
-            "/api/v1/session" to JSONObject().put("challengeId",challengeId)
-        }
+        val operation = CloudOperation.SESSION
+        val body = JSONObject().put("challengeId",challengeId).put("integrityToken",verdict)
+        if (certificates != null) body.put("publicKey", CloudRequestProof.publicKey()).put("certificateChain", certificates)
         val reply=withContext(Dispatchers.IO) {
-            extract(CloudNativeTransport.post(endpoint,body))
+            extract(CloudNativeTransport.post(operation,body))
         }
+        actionIntegrityRequired = reply.optBoolean("actionIntegrityRequired", false)
         val access = reply.getString("accessToken")
         val seconds = reply.getLong("expiresIn")
         if (!access.matches(Regex("[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+")) ||
@@ -129,7 +141,43 @@ internal class CloudDecodeClient(context: Context) {
             token = access
             expiresAtMs = System.currentTimeMillis() + seconds * 1000
         }
-        return access
+        access
+    }
+
+    private suspend fun <T> awaitPlay(task: Task<T>): T = suspendCancellableCoroutine { cont ->
+        task.addOnSuccessListener { if (cont.isActive) cont.resume(it) }
+            .addOnFailureListener { if (cont.isActive) cont.resumeWithException(IOException("CLOUD_INTEGRITY_UNAVAILABLE")) }
+    }
+
+    private suspend fun protectedPost(operation: Int, payload: JSONObject, bearer: String): CloudNativeTransport.Reply {
+        if (!actionIntegrityRequired) return CloudNativeTransport.post(operation, payload, bearer)
+        val exact = JSONObject(payload.toString())
+        val hash = java.security.MessageDigest.getInstance("SHA-256")
+            .digest(exact.toString().toByteArray(Charsets.UTF_8)).joinToString("") { "%02x".format(it.toInt() and 255) }
+        val challenge = extract(CloudNativeTransport.post(CloudOperation.ACTION_CHALLENGE,
+            JSONObject().put("operation", operation).put("bodySha256", hash), bearer))
+        val project = challenge.getString("cloudProjectNumber").toLongOrNull()
+            ?.takeIf { it > 0L } ?: throw IOException("CLOUD_INTEGRITY_UNAVAILABLE")
+        val requestHash = challenge.getString("requestHash")
+        val id = challenge.getString("challengeId")
+        if (!requestHash.matches(Regex("[A-Za-z0-9_-]{43}")) || !id.matches(Regex("[0-9a-f-]{36}")))
+            throw IOException("CLOUD_INVALID_NONCE")
+        val provider = standardLock.withLock {
+            if (standardProvider == null || standardProject != project) {
+                standardProvider = withTimeout(60_000L) { awaitPlay(standardManager.prepareIntegrityToken(
+                    StandardIntegrityManager.PrepareIntegrityTokenRequest.builder().setCloudProjectNumber(project).build())) }
+                standardProject = project
+            }
+            checkNotNull(standardProvider)
+        }
+        val integrity = try { withTimeout(30_000L) { awaitPlay(provider.request(
+            StandardIntegrityManager.StandardIntegrityTokenRequest.builder().setRequestHash(requestHash).build())).token() } }
+        catch (error: Exception) {
+            standardLock.withLock { standardProvider = null }
+            throw error
+        }
+        coroutineContext.ensureActive()
+        return CloudNativeTransport.post(operation, exact, bearer, id, integrity)
     }
 
     /**
@@ -138,9 +186,9 @@ internal class CloudDecodeClient(context: Context) {
      * never accept arbitrary incomplete file/NUR/EHI results.
      */
     private fun allowsMkkHyperPartial(
-        endpoint:String,payload:JSONObject,response:JSONObject
+        operation:Int,payload:JSONObject,response:JSONObject
     ):Boolean {
-        if(endpoint!="/api/v1/server-vpn/decode" ||
+        if(operation!=CloudOperation.DECODE_SERVER ||
             payload.optString("id")!="mkk-hyper" ||
             response.optString("kind")!="vpn_catalog" ||
             response.optString("providerId")!="mkk-hyper")return false
@@ -169,7 +217,7 @@ internal class CloudDecodeClient(context: Context) {
         return succeeded>0 && failed>0 && succeeded==report.optInt("successfulSources",-1)
     }
 
-    private suspend fun decode(endpoint: String, payload: JSONObject): Decoded {
+    private suspend fun decode(operation: Int, payload: JSONObject): Decoded {
         require(BuildConfig.SPDECODE_CLOUD_ENABLED) { "CLOUD_DISABLED" }
         withContext(Dispatchers.IO) { requireLegalConsent() }
         coroutineContext.ensureActive()
@@ -180,22 +228,22 @@ internal class CloudDecodeClient(context: Context) {
             withContext(Dispatchers.IO) {
                 // Never store request payloads or credentials in a diagnostic.
                 requireLegalConsent()
-                extract(CloudNativeTransport.post(endpoint,payload,bearer))
+                extract(protectedPost(operation,payload,bearer))
             }
         }catch(failure:Failure) {
             // Only whitelisted enum-like codes and known format labels are retained in RAM.
             if(!CloudCredentialPolicy.expectedCredentialResponse(failure.code) &&
                 failure.httpStatus>=400 &&
                 failure.code.matches(Regex("[A-Z][A-Z0-9_]{2,49}"))) {
-                val service=when(endpoint){
-                    "/api/v1/decode/import/cloud"->"httpInjector"
-                    "/api/v1/server-vpn/decode","/api/v1/decode/import/catalog/remote"->"serverVpn"
+                val service=when(operation){
+                    CloudOperation.IMPORT_CLOUD->"httpInjector"
+                    CloudOperation.DECODE_SERVER,CloudOperation.IMPORT_CATALOG->"serverVpn"
                     else->"files"
                 }
                 val raw=when(service){
                     "httpInjector"->"ehi"
                     "serverVpn"->payload.optString("id","nur-catalog")
-                    else->payload.optString("format",if(endpoint.endsWith("/text"))"text" else "other")
+                    else->payload.optString("format",if(operation == CloudOperation.TEXT)"text" else "other")
                 }
                 val safe=raw.takeIf{it.matches(Regex("[a-z0-9][a-z0-9._-]{0,31}"))}?:"other"
                 lastDiagnostic=Diagnostic(service,safe,failure.code)
@@ -205,13 +253,13 @@ internal class CloudDecodeClient(context: Context) {
         coroutineContext.ensureActive()
         if (response.optString("status") != "success" ||
             (response.optBoolean("isPartial",true) &&
-             !allowsMkkHyperPartial(endpoint,payload,response)))
+             !allowsMkkHyperPartial(operation,payload,response)))
             throw IOException("CLOUD_PARTIAL_RESULT_REJECTED")
         if (!response.has("rawText") || response.isNull("rawText"))
             throw IOException("CLOUD_MISSING_RESULT")
         val text = response.getString("rawText")
         if (text.isBlank()) throw IOException("CLOUD_EMPTY_RESULT")
-        val isMkk=endpoint=="/api/v1/server-vpn/decode" &&
+        val isMkk=operation==CloudOperation.DECODE_SERVER &&
             payload.optString("id")=="mkk-hyper"
         val maximum=if(isMkk)32*1024*1024 else 4*1024*1024
         if(text.length>maximum || text.toByteArray(Charsets.UTF_8).size>maximum)
@@ -297,7 +345,7 @@ internal class CloudDecodeClient(context: Context) {
                     .put("language",if(locale=="es")"es" else "en"))
             }
         }
-        val decoded=decode("/api/v1/decode/file",body)
+        val decoded=decode(CloudOperation.FILE,body)
         val artifact=if(onCompatibleExport!=null)runCatching {
             CompatibleExportArtifact.parse(decoded.compatibleExport,format,decoded.rawText,
                 CompatibleExportArtifact.digest(bytes))
@@ -312,7 +360,7 @@ internal class CloudDecodeClient(context: Context) {
         val bearer=session()
         val result=withContext(Dispatchers.IO){
             requireLegalConsent()
-            extract(CloudNativeTransport.post("/api/v1/npvs/identity",
+            extract(protectedPost(CloudOperation.IDENTITY,
                 JSONObject().put("consent",true),bearer)).getJSONObject("identity")
         }
         NpvsIdentityVault.validate(result)
@@ -335,7 +383,7 @@ internal class CloudDecodeClient(context: Context) {
         val body=JSONObject().put("text",text)
         if(password!=null)body.put("credentials",
             JSONObject().put("password",String(password,Charsets.UTF_8)))
-        return decode("/api/v1/decode/text",body).rawText
+        return decode(CloudOperation.TEXT,body).rawText
     }
 
     private suspend fun downloadHttpCustom(reference:String):ByteArray {
@@ -345,7 +393,7 @@ internal class CloudDecodeClient(context: Context) {
         val bearer=session()
         val reply=withContext(Dispatchers.IO){
             requireLegalConsent()
-            extract(CloudNativeTransport.post("/api/v1/decode/import/http-custom",
+            extract(protectedPost(CloudOperation.IMPORT_HTTP_CUSTOM,
                 JSONObject().put("reference",reference.trim()).put("consent",true),bearer))
         }
         coroutineContext.ensureActive()
@@ -365,27 +413,27 @@ internal class CloudDecodeClient(context: Context) {
     }
 
     suspend fun decodeHttpInjectorCloud(reference: String): String =
-        decode("/api/v1/decode/import/cloud",
+        decode(CloudOperation.IMPORT_CLOUD,
             JSONObject().put("reference",reference).put("consent",true)).rawText
 
     suspend fun decodeNurCatalog(): Decoded =
-        decode("/api/v1/decode/import/catalog/remote",JSONObject().put("consent",true))
+        decode(CloudOperation.IMPORT_CATALOG,JSONObject().put("consent",true))
 
-    /** Public What's New. No auth, device identifiers or decoded payloads. */
+    /** Release notes use the authenticated V2 transport. */
     suspend fun whatsNew(knownVersion:Int,locale:String):JSONObject = withContext(Dispatchers.IO) {
         requireLegalConsent()
         require(knownVersion in 0..999999999)
         require(locale.matches(Regex("[A-Za-z-]{2,16}")))
-        extract(CloudNativeTransport.post("/api/v1/whats-new",
-            JSONObject().put("knownVersion",knownVersion).put("locale",locale)))
+        extract(CloudNativeTransport.post(CloudOperation.WHATS_NEW,
+            JSONObject().put("knownVersion",knownVersion).put("locale",locale),session()))
     }
 
-    /** Public presentation metadata only; never contains provider endpoints. */
+    /** Public presentation metadata only; never contains provider operations. */
     suspend fun serverVpnCatalog(knownVersion:Int): JSONObject =
         withContext(Dispatchers.IO) {
             requireLegalConsent()
-            extract(CloudNativeTransport.post("/api/v1/server-vpn/catalog",
-                JSONObject().put("knownVersion",knownVersion))).also { reply ->
+            extract(CloudNativeTransport.post(CloudOperation.CATALOG,
+                JSONObject().put("knownVersion",knownVersion),session())).also { reply ->
                 if(!reply.optBoolean("unchanged",false)) {
                     exportCatalog=runCatching {CompatibleExportCatalog.parse(reply.optJSONObject("compatibleExports"))}.getOrNull()
                     exportCatalogCheckedAt=android.os.SystemClock.elapsedRealtime()
@@ -397,8 +445,8 @@ internal class CloudDecodeClient(context: Context) {
     suspend fun watchCatalogVersion(knownVersion:Int):Int = withContext(Dispatchers.IO) {
         requireLegalConsent()
         require(knownVersion in 0..999999999)
-        val reply=extract(CloudNativeTransport.post("/api/v1/server-vpn/watch",
-            JSONObject().put("knownVersion",knownVersion)))
+        val reply=extract(CloudNativeTransport.post(CloudOperation.WATCH,
+            JSONObject().put("knownVersion",knownVersion),session()))
         val version=reply.optInt("catalogVersion",0)
         if(version !in 1..999999999)throw IOException("CLOUD_INVALID_CATALOG_VERSION")
         version
@@ -406,7 +454,7 @@ internal class CloudDecodeClient(context: Context) {
 
     suspend fun decodeServerVpnProvider(id:String): Decoded {
         require(id.matches(Regex("[a-z0-9-]{1,48}")))
-        return decode("/api/v1/server-vpn/decode",
+        return decode(CloudOperation.DECODE_SERVER,
             JSONObject().put("id",id).put("consent",true))
     }
 
@@ -414,8 +462,8 @@ internal class CloudDecodeClient(context: Context) {
         require(id.matches(Regex("[a-z0-9-]{1,48}")))
         return withContext(Dispatchers.IO) {
             requireLegalConsent()
-            extract(CloudNativeTransport.post("/api/v1/server-vpn/icon",
-                JSONObject().put("id",id)))
+            extract(CloudNativeTransport.post(CloudOperation.ICON,
+                JSONObject().put("id",id),session()))
         }
     }
 
@@ -426,7 +474,7 @@ internal class CloudDecodeClient(context: Context) {
             .put("service",details.service).put("format",details.format)
             .put("code",details.code).put("appVersion",BuildConfig.VERSION_NAME)
         val response=withContext(Dispatchers.IO){
-            extract(CloudNativeTransport.post("/api/v1/telemetry",data,session()))
+            extract(CloudNativeTransport.post(CloudOperation.TELEMETRY,data,session()))
         }
         val id=response.optString("reportId")
         if(!id.matches(Regex("[0-9a-f-]{36}")))throw IOException("CLOUD_REPORT_RESPONSE_INVALID")
@@ -440,8 +488,9 @@ internal class CloudDecodeClient(context: Context) {
         val data=JSONObject().put("type","activity")
             .put("installationId",installationId).put("consent",true)
         withContext(Dispatchers.IO){
-            extract(CloudNativeTransport.post("/api/v1/telemetry",data,session()))
+            extract(CloudNativeTransport.post(CloudOperation.TELEMETRY,data,session()))
         }
     }
 
 }
+

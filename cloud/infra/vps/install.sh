@@ -88,6 +88,8 @@ CLOUD_SUPPORT_EMAIL=$SUPPORT_EMAIL
 CLOUD_GOOGLE_PLAY_PACKAGE=com.ghostdeveloper.spdecode
 CLOUD_WORKER_TOKEN=$(openssl rand -hex 32)
 CLOUD_SESSION_SIGNING_KEY=$(openssl rand -hex 32)
+CLOUD_KEY_ATTESTATION_TOKEN=$(openssl rand -hex 32)
+CLOUD_LEGACY_API_ENABLED=true
 CLOUD_ADMIN_SESSION_KEY=$(openssl rand -hex 32)
 CLOUD_EHI_IMPORT_ENABLED=false
 CLOUD_NUR_FETCH_ENABLED=false
@@ -157,3 +159,4 @@ docker compose --project-name spdecode --env-file /etc/spdecode/cloud.env \
  -f cloud/compose.yaml up -d --build
 log "Installed. API and admin disabled, maintenance enabled. Do not publish until C7/C8 approval."
 spdecode status
+

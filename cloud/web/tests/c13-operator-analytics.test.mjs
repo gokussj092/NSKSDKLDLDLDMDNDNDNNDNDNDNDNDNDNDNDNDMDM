@@ -10,7 +10,8 @@ class FakeRedis{
  constructor(){this.strings=new Map();this.hashes=new Map();this.counters=new Map();this.lists=new Map();}
  async get(k){return this.strings.get(k)??null;}
  async set(k,v,opts={}){if(opts.NX&&this.strings.has(k))return null;this.strings.set(k,v);return "OK";}
- async incr(k){const n=(this.counters.get(k)||0)+1;this.counters.set(k,n);return n;}
+ async eval(script,opts){if(script.includes("spdecode:throttle:v1"))return this.incr(opts.keys[0]);throw Error("Unsupported Lua");}
+  async incr(k){const n=(this.counters.get(k)||0)+1;this.counters.set(k,n);return n;}
  async mGet(keys){return keys.map(k=>String(this.counters.get(k)||0));}
  async expire(){return 1;}
  async hGetAll(k){return this.hashes.get(k)||{};}
@@ -120,3 +121,4 @@ test("reset endpoint is authenticated, CSRF protected, allowlisted and never era
  assert.equal((await usageReport(redis,7)).successfulDecodes,1);
  assert.equal((await usageReport(redis,7)).failedDecodes,0);
 });
+

@@ -111,6 +111,7 @@ test("Android caches, localizes 14 supported languages and records seen news sep
  assert.match(activity,/cloudWhatsNew=cloudWhatsNew/);
  assert.match(ui,/cloudWhatsNew\.items\.forEach/);
  assert.match(ui,/verticalScroll\(rememberScrollState\(\)\)/);
- assert.match(native,/path == "\/api\/v1\/whats-new"/);
+ assert.match(client,/CloudOperation\.WHATS_NEW/);
+ assert.match(native,/safeOperation/);
  assert.doesNotMatch(JSON.stringify(fixture),/http:\/\//);
 });

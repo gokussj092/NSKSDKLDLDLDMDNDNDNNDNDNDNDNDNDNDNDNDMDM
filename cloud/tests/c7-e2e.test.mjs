@@ -16,6 +16,8 @@ const rsa=generateKeyPairSync("rsa",{modulusLength:2048});
 const account={type:"service_account",client_email:"c7-test@example.invalid",
   private_key:rsa.privateKey.export({type:"pkcs8",format:"pem"})};
 Object.assign(process.env,{
+ // This is the historical V1 handler/worker parity harness, not V2 admission.
+ CLOUD_LEGACY_API_ENABLED:"true",
  CLOUD_API_ENABLED:"true",CLOUD_TRUST_PROXY:"true",CLOUD_REDIS_URL:"redis://redis:6379",
  CLOUD_WORKER_TOKEN:WORKER_TOKEN,CLOUD_SESSION_SIGNING_KEY:"c7-sign-"+("s".repeat(45)),
  CLOUD_GOOGLE_PLAY_PACKAGE:"com.ghostdeveloper.spdecode",
@@ -34,6 +36,7 @@ class RedisFake{
  async expire(){return 1;}
  async ping(){return "PONG";}
  async eval(_,{keys,arguments:args}){
+  if(_.includes("spdecode:throttle:v1"))return this.incr(keys[0]);
   const k=keys[0],active=this.slots.get(k)||new Map();
   for(const [id,at] of active){if(at<=Number(args[2]))active.delete(id);}
   if(active.size>=Number(args[1]))return 0;
@@ -277,3 +280,4 @@ test("C7 maintenance closes API before dispatch and disables readiness",async()=
  assert.equal((await readinessRequest(options(redis))).status,503);
  assert.equal(workerCalls,initial);
 });
+

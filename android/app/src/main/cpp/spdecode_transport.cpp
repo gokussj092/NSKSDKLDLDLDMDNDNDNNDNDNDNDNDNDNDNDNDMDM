@@ -50,22 +50,12 @@ bool safeBase(const std::string& value) {
     })) return false;
     return true;
 }
-bool safePath(const std::string& path) {
-    return path == "/api/v1/session/challenge" ||
-        path == "/api/v1/session/qa" ||
-        path == "/api/v1/session" ||
-        path == "/api/v1/npvs/identity" ||
-        path == "/api/v1/decode/file" ||
-        path == "/api/v1/decode/text" ||
-        path == "/api/v1/decode/import/cloud" ||
-        path == "/api/v1/decode/import/http-custom" ||
-        path == "/api/v1/decode/import/catalog/remote" ||
-        path == "/api/v1/server-vpn/catalog" ||
-        path == "/api/v1/server-vpn/watch" ||
-        path == "/api/v1/whats-new" ||
-        path == "/api/v1/server-vpn/icon" ||
-        path == "/api/v1/server-vpn/decode" ||
-        path == "/api/v1/telemetry";
+bool safeOperation(jint operation) { return operation>=1 && operation<=16 && operation!=3; }
+bool safeProof(const std::string& value,size_t min,size_t max) {
+    return value.size()>=min && value.size()<=max &&
+        std::all_of(value.begin(),value.end(),[](unsigned char c){
+            return std::isalnum(c) || c=='-' || c=='_';
+        });
 }
 bool safeBearer(const std::string& token) {
     if (token.size()>2048) return false;
@@ -94,9 +84,15 @@ bool setHeader(JNIEnv* env,jobject conn,jclass cls,jmethodID method,
 // C++ owns network initiation, route verification, HTTP method, request headers,
 // size limits and reading. Android's HttpsURLConnection provides platform TLS
 // certificate/hostname verification; certificate validation is never disabled.
-jstring post(JNIEnv* env,jstring pathArg,jstring bodyArg,jstring bearerArg,jstring versionArg) {
-    const std::string base=SPDECODE_CLOUD_ORIGIN;
-    const std::string path=utf(env,pathArg);
+jstring post(JNIEnv* env,jclass,jint operation,jstring bodyArg,jstring bearerArg,jstring versionArg,
+             jstring timestampArg,jstring nonceArg,jstring proofArg,jstring actionChallengeArg,jstring actionIntegrityArg) {
+    const std::string base=cloudOrigin();
+    const std::string path=cloudTransportPath();
+    const std::string timestamp=utf(env,timestampArg);
+    const std::string nonce=utf(env,nonceArg);
+    const std::string proof=utf(env,proofArg);
+    const std::string actionChallenge=utf(env,actionChallengeArg);
+    const std::string actionIntegrity=utf(env,actionIntegrityArg);
     const std::string body=utf(env,bodyArg);
     const std::string bearer=utf(env,bearerArg);
     const std::string clientVersion=utf(env,versionArg);
@@ -104,8 +100,15 @@ jstring post(JNIEnv* env,jstring pathArg,jstring bodyArg,jstring bearerArg,jstri
         std::all_of(clientVersion.begin(),clientVersion.end(),[](unsigned char c){
             return std::isdigit(c) || c=='.';
         }) && std::count(clientVersion.begin(),clientVersion.end(),'.')==2;
-    if (!validVersion || !safeBase(base) || !safePath(path) || !safeBearer(bearer) ||
-        body.empty() || body.size()>kMaxRequestBytes) {
+    if (!validVersion || !safeBase(base) || !safeOperation(operation) ||
+        timestamp.size()<10 || timestamp.size()>11 ||
+        !std::all_of(timestamp.begin(),timestamp.end(),[](unsigned char c){return std::isdigit(c);}) ||
+        !safeProof(nonce,32,32) || !safeProof(proof,90,100) || !safeBearer(bearer) ||
+        (!actionChallenge.empty() && (actionChallenge.size()!=36 ||
+            !std::all_of(actionChallenge.begin(),actionChallenge.end(),[](unsigned char c){return std::isxdigit(c)||c=='-';}))) ||
+        (!actionIntegrity.empty() && (actionIntegrity.size()<80 || actionIntegrity.size()>16384 ||
+            !std::all_of(actionIntegrity.begin(),actionIntegrity.end(),[](unsigned char c){return c>=0x21 && c<=0x7e;}))) ||
+        actionChallenge.empty()!=actionIntegrity.empty() || body.empty() || body.size()>kMaxRequestBytes) {
         fail(env,"CLOUD_NATIVE_REQUEST_REJECTED");return nullptr;
     }
     jclass urlClass = env->FindClass("java/net/URL");
@@ -148,12 +151,12 @@ jstring post(JNIEnv* env,jstring pathArg,jstring bodyArg,jstring bearerArg,jstri
     jstring urlString=env->NewStringUTF((base+path).c_str());
     jobject url=env->NewObject(urlClass,urlCtor,urlString);
     env->DeleteLocalRef(urlString);
-    if (!url || clearException(env)) {
+    if (clearException(env) || !url) {
         fail(env,"CLOUD_NATIVE_URL_REJECTED");return nullptr;
     }
     jobject conn=env->CallObjectMethod(url,open);
     env->DeleteLocalRef(url);
-    if (!conn || clearException(env)) {
+    if (clearException(env) || !conn) {
         fail(env,"CLOUD_NATIVE_CONNECT_FAILED");return nullptr;
     }
     if (!env->IsInstanceOf(conn,httpsClass)) {
@@ -162,31 +165,37 @@ jstring post(JNIEnv* env,jstring pathArg,jstring bodyArg,jstring bearerArg,jstri
     }
     jstring method=jstr(env,"POST");
     env->CallVoidMethod(conn,setMethod,method);
+    bool ok=!env->ExceptionCheck();
     env->DeleteLocalRef(method);
-    env->CallVoidMethod(conn,setRedirect,JNI_FALSE);
-    env->CallVoidMethod(conn,setConnect,kConnectTimeoutMs);
+    if(ok){env->CallVoidMethod(conn,setRedirect,JNI_FALSE);ok=!env->ExceptionCheck();}
+    if(ok){env->CallVoidMethod(conn,setConnect,kConnectTimeoutMs);ok=!env->ExceptionCheck();}
     // Do not relax ordinary decoder/session timeouts. NUR server catalog
     // can require up to 120s on the remote worker for nested Argon2id fields.
-    const jint readTimeout = (path == "/api/v1/decode/import/catalog/remote" ||
-        path == "/api/v1/server-vpn/decode")
-        ? kNurCatalogReadTimeoutMs : (path == "/api/v1/decode/file" &&
+    const jint readTimeout = (operation == 9 ||
+        operation == 12)
+        ? kNurCatalogReadTimeoutMs : (operation == 5 &&
             body.find("\"compatibleExport\"") != std::string::npos ? 55000 : kReadTimeoutMs);
-    env->CallVoidMethod(conn,setRead,readTimeout);
-    env->CallVoidMethod(conn,setOutput,JNI_TRUE);
-    env->CallVoidMethod(conn,setLength,8192);
-    bool ok=!env->ExceptionCheck();
+    if(ok){env->CallVoidMethod(conn,setRead,readTimeout);ok=!env->ExceptionCheck();}
+    if(ok){env->CallVoidMethod(conn,setOutput,JNI_TRUE);ok=!env->ExceptionCheck();}
+    if(ok){env->CallVoidMethod(conn,setLength,8192);ok=!env->ExceptionCheck();}
     if(ok)ok=setHeader(env,conn,connectionClass,setProperty,"Content-Type","application/json");
     if(ok)ok=setHeader(env,conn,connectionClass,setProperty,"Accept","application/json");
     if(ok)ok=setHeader(env,conn,connectionClass,setProperty,"Accept-Encoding","identity");
     if(ok)ok=setHeader(env,conn,connectionClass,setProperty,"Cache-Control","no-store");
     if(ok)ok=setHeader(env,conn,connectionClass,setProperty,"X-SPDecode-App-Version",clientVersion);
+    if(ok)ok=setHeader(env,conn,connectionClass,setProperty,"X-SP-Operation",std::to_string(operation));
+    if(ok)ok=setHeader(env,conn,connectionClass,setProperty,"X-SP-Timestamp",timestamp);
+    if(ok)ok=setHeader(env,conn,connectionClass,setProperty,"X-SP-Nonce",nonce);
+    if(ok)ok=setHeader(env,conn,connectionClass,setProperty,"X-SP-Proof",proof);
+    if(ok && !actionChallenge.empty())ok=setHeader(env,conn,connectionClass,setProperty,"X-SP-Action-Challenge",actionChallenge);
+    if(ok && !actionIntegrity.empty())ok=setHeader(env,conn,connectionClass,setProperty,"X-SP-Action-Integrity",actionIntegrity);
     // Capability negotiation for the new credential dialog. Older APKs omit
     // this header automatically. It is not trusted for authentication.
-    if(ok && (path == "/api/v1/decode/file" || path == "/api/v1/decode/text"))
+    if(ok && (operation == 5 || operation == 6))
         ok=setHeader(env,conn,connectionClass,setProperty,"X-SPDecode-Credential-Prompts","1");
-    if(ok && path == "/api/v1/server-vpn/catalog")
+    if(ok && operation == 10)
         ok=setHeader(env,conn,connectionClass,setProperty,"X-SPDecode-NPV-Identities","1");
-    if(ok && (path == "/api/v1/decode/file" || path == "/api/v1/server-vpn/catalog" || path == "/api/v1/server-vpn/watch"))
+    if(ok && (operation == 5 || operation == 10 || operation == 13))
         ok=setHeader(env,conn,connectionClass,setProperty,"X-SPDecode-Compatible-Export","1");
     if(ok && !bearer.empty())ok=setHeader(env,conn,connectionClass,setProperty,"Authorization","Bearer "+bearer);
     if(!ok) {
@@ -195,7 +204,7 @@ jstring post(JNIEnv* env,jstring pathArg,jstring bodyArg,jstring bearerArg,jstri
         fail(env,"CLOUD_NATIVE_HEADERS_FAILED");return nullptr;
     }
     jobject os=env->CallObjectMethod(conn,getOutput);
-    if(!os || clearException(env)) {
+    if(clearException(env) || !os) {
         env->CallVoidMethod(conn,disconnect);env->DeleteLocalRef(conn);
         fail(env,"CLOUD_NATIVE_NETWORK_UNAVAILABLE");return nullptr;
     }
@@ -223,8 +232,8 @@ jstring post(JNIEnv* env,jstring pathArg,jstring bodyArg,jstring bearerArg,jstri
     }
     jbyteArray buffer=env->NewByteArray(8192);
     std::string result;
-    const size_t replyCap=path=="/api/v1/decode/import/http-custom" ? 12U*1024U*1024U :
-        (path=="/api/v1/server-vpn/decode" &&
+    const size_t replyCap=operation==8 ? 12U*1024U*1024U :
+        (operation==12 &&
         body.find("mkk-hyper")!=std::string::npos)
         ? kMaxMkkReplyBytes : kMaxReplyBytes;
     bool oversize=false,readFailed=false;
@@ -262,15 +271,23 @@ jstring post(JNIEnv* env,jstring pathArg,jstring bodyArg,jstring bearerArg,jstri
     jstring decoded=static_cast<jstring>(env->NewObject(stringClass,stringUtf8Ctor,raw,encoding));
     env->DeleteLocalRef(raw);
     env->DeleteLocalRef(encoding);
-    if(decoded==nullptr || clearException(env)){
+    if(clearException(env) || decoded==nullptr){
         fail(env,"CLOUD_NATIVE_RESPONSE_ENCODING");return nullptr;
     }
     return decoded;
 }
 }
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_com_ghostdeveloper_spdecode_cloud_CloudNativeTransport_postNative(
-    JNIEnv* env,jobject,jstring endpoint,jstring body,jstring bearer,jstring clientVersion) {
-    return post(env,endpoint,body,bearer,clientVersion);
+// Register the private bridge; export only JNI_OnLoad.
+extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm,void*) {
+    JNIEnv* env=nullptr;
+    if(vm->GetEnv(reinterpret_cast<void**>(&env),JNI_VERSION_1_6)!=JNI_OK)return JNI_ERR;
+    jclass bridge=env->FindClass("com/ghostdeveloper/spdecode/cloud/CloudNativeTransport");
+    if(!bridge)return JNI_ERR;
+    JNINativeMethod methods[]={{const_cast<char*>("postNative"),
+        const_cast<char*>("(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"),
+        reinterpret_cast<void*>(post)}};
+    const jint registered=env->RegisterNatives(bridge,methods,1);
+    env->DeleteLocalRef(bridge);
+    return registered==JNI_OK?JNI_VERSION_1_6:JNI_ERR;
 }

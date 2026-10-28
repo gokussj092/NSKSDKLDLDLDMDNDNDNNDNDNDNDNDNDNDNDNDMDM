@@ -12,7 +12,8 @@ class Redis{
  async set(k,v,{NX}={}){if(NX&&this.values.has(k))return null;this.values.set(k,v);return "OK";}
  async getDel(k){const a=await this.get(k);this.values.delete(k);return a;}
  async del(k){return this.values.delete(k)?1:0;}
- async incr(k){const n=(this.counts.get(k)||0)+1;this.counts.set(k,n);return n;}
+ async eval(script,opts){if(script.includes("spdecode:throttle:v1"))return this.incr(opts.keys[0]);throw Error("Unsupported Lua");}
+  async incr(k){const n=(this.counts.get(k)||0)+1;this.counts.set(k,n);return n;}
  async expire(){return 1;}
  async ping(){return "PONG";}
 }
@@ -99,6 +100,7 @@ test("signed Play AAB and external beta APK are generated without changing appli
   assert.ok(workflow.includes("SP-DECODE-v"+version+"-play-closed-test-signed.aab"));
   assert.ok(workflow.includes("SP-DECODE-v"+version+"-beta-external-signed.apk"));
  assert.match(integrity,/PLAY_APP_SIGNER_SHA256/);
- assert.match(client,/integrityRequired=challenge\.optBoolean\("integrityRequired",true\)/);
- assert.match(client,/if\(integrityRequired\)/);
+ assert.match(client,/CloudRequestProof\.integrityNonce/);
+ assert.match(client,/!challenge\.optBoolean\("integrityRequired", false\)/);
 });
+

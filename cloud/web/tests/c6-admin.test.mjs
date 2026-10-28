@@ -17,6 +17,7 @@ class RedisFake{
   async get(k){return this.data.get(k)??null;}
   async getDel(k){const v=await this.get(k);this.data.delete(k);return v;}
   async del(k){return this.data.delete(k)?1:0;}
+  async eval(script,opts){if(script.includes("spdecode:throttle:v1"))return this.incr(opts.keys[0]);throw Error("Unsupported Lua");}
   async incr(k){const c=Number(this.count.get(k)||0)+1;this.count.set(k,c);return c;}
   async expire(){return 1;}
   async ping(){return "PONG";}
@@ -262,3 +263,4 @@ test("provider availability API rejects cross-origin, unauthenticated and arbitr
     enabled:"yes"},cookie),args);
   assert.equal(response.status,400);
 });
+

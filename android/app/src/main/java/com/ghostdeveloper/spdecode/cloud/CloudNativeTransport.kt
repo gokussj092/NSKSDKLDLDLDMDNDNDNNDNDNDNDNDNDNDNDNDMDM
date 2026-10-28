@@ -12,30 +12,27 @@ internal object CloudNativeTransport {
     init { System.loadLibrary("spdecode") }
 
     @JvmStatic private external fun postNative(
-        endpoint: String,
+        operation: Int,
         json: String,
         bearer: String,
         clientVersion: String,
+        timestamp: String,
+        nonce: String,
+        proof: String,
+        actionChallenge: String,
+        actionIntegrity: String,
     ): String
 
     data class Reply(val status: Int, val body: JSONObject)
 
-    fun post(endpoint: String, payload: JSONObject, bearer: String = ""): Reply {
+    fun post(operation: Int, payload: JSONObject, bearer: String = "",
+             actionChallenge: String = "", actionIntegrity: String = ""): Reply {
         require(BuildConfig.SPDECODE_CLOUD_ENABLED) { "CLOUD_DISABLED" }
-        // Fixed route allowlist; do not let the UI provide a full URL.
-        require(endpoint in setOf(
-            "/api/v1/session/challenge", "/api/v1/session",
-            "/api/v1/session/qa", "/api/v1/npvs/identity",
-            "/api/v1/decode/file", "/api/v1/decode/text",
-            "/api/v1/decode/import/cloud", "/api/v1/decode/import/http-custom",
-            "/api/v1/decode/import/catalog/remote",
-            "/api/v1/server-vpn/catalog", "/api/v1/server-vpn/icon",
-            "/api/v1/server-vpn/decode", "/api/v1/server-vpn/watch",
-            "/api/v1/whats-new", "/api/v1/telemetry",
-        )) { "CLOUD_ROUTE_DENIED" }
-        val returned = postNative(
-            endpoint, payload.toString(), bearer, BuildConfig.VERSION_NAME
-        )
+        require(operation in 1..16 && operation != 3) { "CLOUD_ROUTE_DENIED" }
+        val json = payload.toString()
+        val proof = CloudRequestProof.sign(operation, BuildConfig.VERSION_NAME, json, bearer)
+        val returned = postNative(operation, json, bearer, BuildConfig.VERSION_NAME,
+            proof.timestamp, proof.nonce, proof.signature, actionChallenge, actionIntegrity)
         val newline = returned.indexOf('\n')
         if (newline !in 3..4) throw IOException("CLOUD_INVALID_HTTP_ENVELOPE")
         val status = returned.substring(0, newline).toIntOrNull()
@@ -46,3 +43,4 @@ internal object CloudNativeTransport {
         return Reply(status, document)
     }
 }
+

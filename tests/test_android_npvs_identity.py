@@ -43,11 +43,12 @@ class AndroidNpvIdentityTests(unittest.TestCase):
         client=(SOURCE/"CloudDecodeClient.kt").read_text()
         self.assertIn('NpvsRecipientPicker.choose(app,bytes)',client)
         self.assertIn('put("recipientKey",recipient)',client)
-        self.assertIn('CloudNativeTransport.post("/api/v1/npvs/identity"',client)
+        self.assertIn('protectedPost(CloudOperation.IDENTITY',client)
+        self.assertIn('return CloudNativeTransport.post(operation, exact, bearer, id, integrity)', client)
         transport=(SOURCE/"CloudNativeTransport.kt").read_text()
-        self.assertIn('"/api/v1/npvs/identity"',transport)
+        self.assertIn('operation: Int',transport)
         native=(APP/"src/main/cpp/spdecode_transport.cpp").read_text()
-        self.assertIn('path == "/api/v1/npvs/identity"',native)
+        self.assertIn('safeOperation',native)
         self.assertIn('if(isRecipientNpvs && (password!=null || hwid!=null))',client)
         self.assertIn('if(credentials.length()>0)body.put("credentials",credentials)',client)
         self.assertNotIn('if(recipient!=null)body.put("credentials",JSONObject()',client)
@@ -72,3 +73,4 @@ class AndroidNpvIdentityTests(unittest.TestCase):
 
 
 if __name__=="__main__":unittest.main()
+

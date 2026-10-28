@@ -242,6 +242,8 @@ jobs:
               f.write('CLOUD_WORKER_TOKEN='+'c'*64+'\n')
               f.write('CLOUD_SESSION_SIGNING_KEY='+'s'*64+'\n')
               f.write('CLOUD_GOOGLE_PLAY_PACKAGE=com.ghostdeveloper.spdecode\n')
+              # Historical V1 QA smoke only; never a production default.
+              f.write('CLOUD_LEGACY_API_ENABLED=true\n')
           p.chmod(0o600)
           PY
           sudo docker compose --project-name spdecode --env-file /etc/spdecode/cloud.env \

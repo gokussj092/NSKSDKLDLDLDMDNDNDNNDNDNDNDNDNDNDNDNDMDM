@@ -1,0 +1,42 @@
+name: SP-DECODE hardware security
+on:
+  pull_request:
+    paths: ["cloud/**", "android/**", ".github/workflows/hardware-security.yml"]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verifier:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.14.3"
+      - name: Compile official verifier and exercise signed synthetic chains
+        working-directory: cloud/attestation
+        run: gradle --no-daemon test installDist
+      - name: Build private nonroot runtime
+        run: docker build -t spdecode-key-attestation cloud/attestation
+  redis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      redis:
+        image: redis:7.4-alpine
+        ports: ["6379:6379"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Actual Redis atomicity and concurrency across sessions
+        working-directory: cloud/web
+        env:
+          REDIS_SECURITY_TEST: "true"
+        run: node --test tests/redis-security.test.mjs

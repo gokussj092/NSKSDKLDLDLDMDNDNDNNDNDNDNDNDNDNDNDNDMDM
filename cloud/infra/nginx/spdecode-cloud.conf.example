@@ -1,6 +1,7 @@
 # Review before use. C3 is NOT approved for public production deployment yet.
 # Replace domain, cert files, enable HTTPS, and keep port 3000 loopback-bound.
 # Do not forward untrusted X-Real-IP or X-Forwarded-For from a client.
+limit_req_zone $binary_remote_addr zone=spdecode_v2_edge:10m rate=10r/s;
 server {
     listen 80;
     server_name spdecode.example.com;
@@ -34,9 +35,10 @@ server {
         proxy_set_header Authorization $http_authorization;
         proxy_connect_timeout 4s;
         proxy_send_timeout 15s;
-        # decode + optional isolated export: broker budget up to 50 seconds.
-        # The VPS three-host generator restricts the extension to /decode/file.
-        proxy_read_timeout 65s;
+        # V2 multiplexes operations; workers retain their own short deadlines.
+        proxy_read_timeout 155s;
+        limit_req zone=spdecode_v2_edge burst=60 nodelay;
+        limit_req_status 429;
         proxy_redirect off;
     }
 

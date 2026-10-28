@@ -15,6 +15,7 @@ class ActionRedis {
  async lPush(key,value){this.events.push({key,value:JSON.parse(value)});return this.events.length;}
  async lTrim(){return 1;}
  async eval(script,options){
+  if(script.includes("spdecode:throttle:v1"))return this.incr(options.keys[0]);
   this.calls.push({script,options});
   if(options.keys.length===34)return [4,3,2,6];
   if(options.keys.length===1)return 2;
@@ -118,3 +119,4 @@ test("destructive routes enforce session, CSRF and exact typed confirmation",asy
  assert.equal((await paused.json()).alerts.paused,true);
  assert.equal(redis.calls.length,2);
 });
+

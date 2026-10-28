@@ -10,7 +10,8 @@ class FakeRedis{
  constructor(){this.strings=new Map();this.hashes=new Map();this.lists=new Map();this.counters=new Map();}
  async get(k){return this.strings.get(k)??null;}
  async set(k,v,{NX}={}){if(NX&&this.strings.has(k))return null;this.strings.set(k,v);return "OK";}
- async incr(k){const n=(this.counters.get(k)||0)+1;this.counters.set(k,n);return n;}
+ async eval(script,opts){if(script.includes("spdecode:throttle:v1"))return this.incr(opts.keys[0]);throw Error("Unsupported Lua");}
+  async incr(k){const n=(this.counters.get(k)||0)+1;this.counters.set(k,n);return n;}
  async expire(){return 1;}
  async mGet(keys){return keys.map(x=>String(this.counters.get(x)||0));}
  async hGetAll(k){return this.hashes.get(k)||{};}
@@ -97,3 +98,4 @@ test("private observability endpoint authenticates and validates bounded date ra
  assert.equal(json.health.workerReady,true);
  assert.match(response.headers.get("cache-control"),/no-store/);
 });
+
