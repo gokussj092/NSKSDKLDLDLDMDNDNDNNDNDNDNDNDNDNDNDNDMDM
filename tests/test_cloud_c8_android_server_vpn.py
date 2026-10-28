@@ -23,7 +23,7 @@ class PhaseVServerVpnIntegration(unittest.TestCase):
     def test_native_https_only_strict_routes_and_remote_budget(self):
         source=CPP.read_text("utf-8")
         self.assertIn('operation == 10',source)
-        self.assertIn('operation == 11',source)
+        self.assertIn('const val ICON = 11',(CLOUD/'CloudOperation.kt').read_text('utf-8'))
         self.assertIn('operation == 12',source)
         self.assertIn('operation == 9',source)
         self.assertIn('kNurCatalogReadTimeoutMs = 165000',source)

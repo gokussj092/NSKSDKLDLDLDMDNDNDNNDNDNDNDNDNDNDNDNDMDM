@@ -12,10 +12,10 @@ LOCALES=("values","values-es","values-fr","values-de","values-in",
          "values-tr","values-vi","values-hi","values-ja","values-it")
 
 class CloudUserErrorsContracts(unittest.TestCase):
-    def test_qa_never_silently_falls_back_to_integrity(self):
+    def test_qa_build_cannot_admit_v2_with_or_without_a_legacy_code(self):
         source=(JAVA/"cloud/CloudDecodeClient.kt").read_text("utf-8")
-        self.assertIn('if(BuildConfig.SPDECODE_QA_BUILD && code.isEmpty())',source)
-        self.assertIn('throw IOException("CLOUD_QA_CODE_REQUIRED")',source)
+        self.assertIn('if (BuildConfig.SPDECODE_QA_BUILD) throw IOException("CLOUD_INTEGRITY_UNAVAILABLE")',source)
+        self.assertNotIn('CloudQaMemory.get()',source)
         self.assertIn('cloudClient.inspectHcRequirements(preview)',(JAVA/"MainActivity.kt").read_text("utf-8"))
         self.assertIn('"HWID_PASSWORD_REQUIRED"->true to true',source)
 
