@@ -10,8 +10,11 @@ import { maintenanceEnabled, serviceMaintenanceEnabled, recordWorkerResult } fro
 import {admissionPolicy} from "./c11-play-admission.mjs";
 import {publicFormats} from "./file-format-catalog.mjs";
 
+import {negotiatesExport,exportPolicy,exportAllowed,EXPORT_PROFILE} from "./compatible-export-policy.mjs";
+
 const ERROR_MESSAGES = Object.freeze({
   INVALID_REQUEST:"Solicitud inválida.",
+  EXPORT_CLIENT_UNSUPPORTED:"Actualiza SP-DECODE para utilizar la exportación compatible.",
   UNAUTHORIZED:"Sesión no autorizada o caducada.",
   RATE_LIMITED:"Límite de solicitudes alcanzado.",
   INPUT_TOO_LARGE:"Archivo o texto demasiado grande.",
@@ -93,9 +96,15 @@ const encodedBytes = value => {
 function validatePayload(kind,payload) {
   if (!isRecord(payload))throw Object.assign(new Error("schema"),{code:"INVALID_REQUEST"});
   if(kind==="file"){
-    if (Object.keys(payload).some(x=>!["format","dataBase64","credentials"].includes(x)) ||
+    if (Object.keys(payload).some(x=>!["format","dataBase64","credentials","compatibleExport"].includes(x)) ||
         typeof payload.format!=="string" || !/^[\p{L}\p{N}][\p{L}\p{N}._-]{0,63}$/u.test(payload.format))
       throw Object.assign(new Error("format"),{code:"INVALID_REQUEST"});
+    if(payload.compatibleExport!==undefined){
+      const e=payload.compatibleExport;
+      if(!isRecord(e)||Object.keys(e).some(k=>!["profile","language"].includes(k))||
+        e.profile!==EXPORT_PROFILE||(e.language!==undefined&&!["es","en"].includes(e.language)))
+        throw Object.assign(new Error("export schema"),{code:"INVALID_REQUEST"});
+    }
     if (payload.credentials!==undefined){
       // Metadata is curated and validated on the server. Never trust an
       // Android-supplied credential policy or executable route.
@@ -148,7 +157,8 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
   if(base!=="http://decoder-worker:8787")throw Error("UNSAFE_WORKER_ORIGIN");
   const suffix={file:"file",text:"text",catalog:"import/catalog","server-vpn":"import/server-vpn"}[kind];
   const response=await fetchImpl(base+"/internal/v1/decode/"+suffix,{
-    method:"POST",signal:AbortSignal.timeout((kind==="catalog"||kind==="server-vpn")?135000:25000),
+    method:"POST",signal:AbortSignal.timeout((kind==="catalog"||kind==="server-vpn")?135000:
+      kind==="file"&&payload.compatibleExport?50000:25000),
     headers:{"Content-Type":"application/json","X-SP-Worker-Token":cfg.workerToken},
     body:JSON.stringify(payload),
     redirect:"error",
@@ -348,6 +358,16 @@ export async function decodeRequest(request,kind,options={}) {
     const max=kind==="text"?1024*1024:limits.maxJsonBodyBytes;
     const payload=await boundedBody(request,max);
     validatePayload(kind,payload);
+    const requestedExport=kind==="file"&&payload.compatibleExport!==undefined;
+    let workerPayload=payload,exportUnavailable=null;
+    if(requestedExport){
+      if(!negotiatesExport(request))return failure("EXPORT_CLIENT_UNSUPPORTED",426);
+      const policy=await (options.exportPolicyProvider||exportPolicy)();
+      if(!exportAllowed(request,policy)){
+        workerPayload={...payload};delete workerPayload.compatibleExport;
+        exportUnavailable={status:"unavailable",code:policy.enabled?"EXPORT_CLIENT_UPDATE_REQUIRED":"EXPORT_DISABLED"};
+      }
+    }
     const requestId=randomUUID();
     if(!await reserveSlot(redis,claims.jti,requestId))return failure("RATE_LIMITED",429);
     lease=requestId;
@@ -379,7 +399,13 @@ export async function decodeRequest(request,kind,options={}) {
       // No arbitrary URL, storage listing, credential lookup or worker egress.
       const data=await importMnrReference(payload.text,options.vendor || {});
       outcome=await fetchWorker("file",{format:"stp",dataBase64:data.toString("base64")},cfg,options);
-    }else outcome=await fetchWorker(kind,payload,cfg,options);
+    }else outcome=await fetchWorker(kind,workerPayload,cfg,options);
+    if(kind==="file"&&outcome.ok){
+      const body=await outcome.json();
+      if(!requestedExport)delete body.compatibleExport;
+      else if(exportUnavailable)body.compatibleExport=exportUnavailable;
+      outcome=jsonReply(body,200);
+    }
     let errorCode="";
     if(!outcome.ok){
       try{errorCode=(await outcome.clone().json()).error?.code||"";}catch{}

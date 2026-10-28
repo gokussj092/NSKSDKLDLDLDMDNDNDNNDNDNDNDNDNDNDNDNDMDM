@@ -2,6 +2,7 @@
 import {useCallback,useEffect,useState} from "react";
 import {useRouter} from "next/navigation";
 import Link from "next/link";
+import AdminCompatibleExport from "./admin-compatible-export";
 const requestOptions=body=>({method:"POST",cache:"no-store",credentials:"same-origin",
  headers:{"Content-Type":"application/json","X-SPDecode-Admin-Action":"1"},body:JSON.stringify(body)});
 const serviceList=[
@@ -141,6 +142,7 @@ export default function AdminDashboard({mode="system"}){
      </p>}
     </section>
    </div>
+   <AdminCompatibleExport/>
    <section className="admin-card sp-admin-services">
     <div className="sp-admin-section-heading"><div><h2>Distribución beta y Google Play Integrity</h2>
      <p className="muted">Esta política afecta a nuevas sesiones Cloud, no a la firma local ni a la seguridad de Google Play.</p></div></div>

@@ -40,17 +40,29 @@ podrá guardarse después de reiniciar, sin conservar la contraseña/HWID/key
 de apertura. Los registros históricos antiguos sin artefacto requieren
 volver a descifrar la fuente. No reconstruir desde JSON de presentación.
 
-## Pendiente a continuación
+## Hito 2: API, catálogo y panel
 
-1. Catálogo/capacidades negociadas para clientes >=1.1.21, compatibles con
-   clientes antiguos; controles persistentes de habilitación y versión mínima
-   desde el panel, respetando sesiones y mantenimiento.
-2. DTO Android, artefacto cifrado en historial, guardado binario y opción
+- Protocolo aditivo `X-SPDecode-Compatible-Export: 1` y versión >=1.1.21.
+  Los clientes anteriores conservan el esquema y la versión de catálogo.
+- El panel administra habilitación y versión mínima (nunca inferior a 1.1.21).
+  Configuración desactivada por defecto, persistente en `provider-control`,
+  escrituras atómicas, revisiones concurrentes y autenticación/CSRF existentes.
+- El apagado de exportación conserva el descifrado y su JSON. La capacidad
+  nueva no reemplaza autenticación, mantenimiento ni autorización de archivos.
+- Interruptor de emergencia `CLOUD_COMPATIBLE_EXPORT_LOCKED` conectado al
+  compose y a la allowlist del CLI; no se ha cambiado ningún VPS.
+- Las 355 pruebas Node del sitio/API pasan, incluyendo versión antigua,
+  versión mínima, manipulación de opciones, persistencia y controles del panel.
+  `next build` también pasó. La compilación no activa servicios externos.
+
+## Trabajo Android presente y pendiente de cerrar
+
+1. DTO Android, artefacto cifrado en historial, guardado binario y opción
    Exportar para [aplicación], también desde el historial.
-3. Mantener los nueve archivos C0 congelados: integrar la fila por las copias
+2. Mantener los nueve archivos C0 congelados: integrar la fila por las copias
    Cloud generadas en Gradle y actualizar sus pruebas/anchors.
-4. Versión 1.1.21 / versionCode 32 y workflows/auditorías correspondientes.
-5. Regresiones, compilación Kotlin Cloud si hay SDK accesible, pruebas
+3. Versión 1.1.21 / versionCode 32 y workflows/auditorías correspondientes.
+4. Regresiones, compilación Kotlin Cloud si hay SDK accesible, pruebas
    gateway-worker y verificación de que los clientes antiguos no reciben
    el nuevo esquema. No publicar APK/AAB ni activar servicios en VPS.
 

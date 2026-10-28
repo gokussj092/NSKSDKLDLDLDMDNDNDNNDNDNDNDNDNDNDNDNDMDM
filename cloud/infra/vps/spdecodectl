@@ -80,7 +80,7 @@ update(){
 set_env(){
   local key="$1" value="$2"
   case "$key" in
-    CLOUD_API_ENABLED|CLOUD_ADMIN_ENABLED|CLOUD_FORCE_MAINTENANCE|CLOUD_PUBLIC_SITE_INDEX)
+    CLOUD_API_ENABLED|CLOUD_ADMIN_ENABLED|CLOUD_FORCE_MAINTENANCE|CLOUD_COMPATIBLE_EXPORT_LOCKED|CLOUD_PUBLIC_SITE_INDEX)
       [[ "$value" == true || "$value" == false ]] || die "Expected true or false";;
     CLOUD_ADMIN_USERNAME)
       [[ "$value" =~ ^[a-zA-Z][a-zA-Z0-9._-]{2,63}$ ]] || die "Username: 3-64 letters/numbers/._- and starts with letter";;

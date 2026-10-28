@@ -1,5 +1,6 @@
 import {RECHECK_SECONDS,catalog} from "../../../../../lib/server-vpn-catalog.mjs";
 import {providerOverview} from "../../../../../lib/c12-provider-controls.mjs";
+import {negotiatesExport,exportPolicy,projectedCatalogVersion,exportCatalog} from "../../../../../lib/compatible-export-policy.mjs";
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
 const reply=(body,status=200)=>Response.json(body,{status,headers:{"Cache-Control":"no-store","X-Content-Type-Options":"nosniff"}});
@@ -14,7 +15,8 @@ export async function POST(request) {
   }catch {return reply({error:{code:"INVALID_REQUEST"}},400);}
   try {
     const summary=await providerOverview(process.env,{syncCatalog:true});
-    const currentVersion=summary.catalogVersion;
+    const policy=negotiatesExport(request)?await exportPolicy():null;
+    const currentVersion=policy?projectedCatalogVersion(request,summary.catalogVersion,policy):summary.catalogVersion;
     if(input.knownVersion===currentVersion)
       return reply({apiVersion:"v1",catalogVersion:currentVersion,recheckAfterSeconds:RECHECK_SECONDS,unchanged:true});
     const availability=Object.fromEntries(summary.providers.map(p=>[p.id,p.enabled]));
@@ -24,6 +26,7 @@ export async function POST(request) {
     if(request.headers.get("x-spdecode-npv-identities")!=="1")
       result.formats=result.formats.map(entry=>({...entry,
         credentialFields:entry.credentialFields.filter(field=>field!=="recipientKey")}));
-    return reply({...result,unchanged:false});
+    const compatibleExports=policy?exportCatalog(request,policy):null;
+    return reply({...result,...(compatibleExports?{compatibleExports}:{}),unchanged:false});
   }catch{return reply({error:{code:"SERVICE_UNAVAILABLE"}},503);}
 }

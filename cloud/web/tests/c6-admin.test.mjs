@@ -6,6 +6,10 @@ import {loginRequest,statusRequest,maintenanceRequest,logoutRequest,providerCont
 import {maintenanceEnabled,serviceMaintenanceEnabled,serviceMaintenanceStates,recordWorkerResult,aggregateMetrics} from "../lib/c6-ops-store.mjs";
 import {decodeRequest,challengeRequest} from "../lib/c3-gateway.mjs";
 import {externalImportRequest} from "../lib/c35-gateway.mjs";
+import {compatibleExportAdmin} from '../lib/compatible-export-admin.mjs';
+import {mkdtemp,rm} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
 
 class RedisFake{
   constructor(){this.data=new Map();this.count=new Map();}
@@ -60,6 +64,22 @@ const getReq=(cookie="",ip="198.51.100.4")=>new Request(env.CLOUD_ADMIN_PUBLIC_O
 });
 const redisFactory=redis=>({storeProvider:async()=>redis,fetchImpl:async()=>({ok:true})});
 const cookieOnly=reply=>reply.headers.get("set-cookie").split(";")[0];
+test('export policy panel requires administrator session, CSRF and current revision',async t=>{
+  const root=await mkdtemp(join(tmpdir(),'spdecode-export-admin-'));
+  t.after(()=>rm(root,{recursive:true,force:true}));
+  const redis=new RedisFake(),args={...redisFactory(redis),policyOptions:{root,env:{}}};
+  assert.equal((await compatibleExportAdmin(getReq(),args)).status,401);
+  const login=await loginRequest(request('/api/admin/login',{username,password}),args);
+  assert.equal(login.status,200);const cookie=cookieOnly(login);
+  const first=await compatibleExportAdmin(getReq(cookie),args);
+  assert.equal((await first.json()).compatibleExports.enabled,false);
+  const body={enabled:true,minimumAppVersion:'1.1.21',expectedRevision:0};
+  assert.equal((await compatibleExportAdmin(request('/api/admin/compatible-exports',body,cookie,{noAction:true}),args)).status,403);
+  assert.equal((await compatibleExportAdmin(request('/api/admin/compatible-exports',body,cookie),args)).status,200);
+  assert.equal((await compatibleExportAdmin(request('/api/admin/compatible-exports',body,cookie),args)).status,409);
+  const state=await compatibleExportAdmin(getReq(cookie),args);
+  assert.equal((await state.json()).compatibleExports.revision,1);
+});
 
 test("C6 configuration fails closed on missing password hash, origin, Redis or proxy",()=>{
   assert.equal(adminSettings({}).enabled,false);

@@ -15,6 +15,10 @@ venv/
 
 # Node.js
 node_modules/
+.next/
+android/.gradle/
+android/**/build/
+android/local.properties
 npm-debug.log*
 
 # Tests and tooling

@@ -46,6 +46,44 @@ test("C3 must fail closed when any required server configuration is missing",()=
 });
 Object.assign(process.env,env);
 const cfg=settings();
+test('compatible artifacts are opt-in, version gated and preserve successful decoding when disabled',async()=>{
+  const redis=new FakeRedis(),{issued}=await authorized(redis);
+  const base={format:'hc',dataBase64:'YWJj'};
+  const option={profile:'original-app-open-v1',language:'es'};
+  const make=(payload,v='1.1.21',protocol='1')=>{
+    const r=req(payload,issued.accessToken);r.headers.set('x-spdecode-app-version',v);
+    r.headers.set('x-spdecode-compatible-export',protocol);return r;
+  };
+  let calls=0,last;
+  const options={storeProvider:async()=>redis,
+    exportPolicyProvider:async()=>({enabled:true,minimumAppVersion:'1.1.21'}),
+    fetchImpl:async(url,opts)=>{
+      calls++;last=JSON.parse(opts.body);
+      return Response.json({status:'success',rawText:'{"connection":"preserved"}',
+        structuredJson:{connection:'preserved'},isPartial:false,warnings:[],compatibleExport:{status:'ready'}});
+    }};
+  const old=await decodeRequest(make(base,'1.1.20',''),'file',options);
+  assert.equal(old.status,200);assert.equal((await old.json()).compatibleExport,undefined);
+  const unsupported=await decodeRequest(make({...base,compatibleExport:option},'1.1.20'),'file',options);
+  assert.equal(unsupported.status,426);assert.equal(calls,1);
+  const ready=await decodeRequest(make({...base,compatibleExport:option}),'file',options);
+  assert.equal((await ready.json()).compatibleExport.status,'ready');assert.deepEqual(last.compatibleExport,option);
+  for(const [policy,code] of [[{enabled:false,minimumAppVersion:'1.1.21'},'EXPORT_DISABLED'],
+    [{enabled:true,minimumAppVersion:'1.1.22'},'EXPORT_CLIENT_UPDATE_REQUIRED']]){
+    const response=await decodeRequest(make({...base,compatibleExport:option}),'file',{
+      ...options,exportPolicyProvider:async()=>policy});
+    assert.equal(response.status,200);const body=await response.json();
+    assert.equal(body.rawText,'{"connection":"preserved"}');assert.equal(body.compatibleExport.code,code);
+    assert.equal(last.compatibleExport,undefined);
+  }
+  const before=calls;
+  for(const bad of [{profile:'unknown'},{...option,password:'must-not-be-stored'},null]){
+    assert.equal((await decodeRequest(make({...base,compatibleExport:bad}),'file',options)).status,400);
+  }
+  assert.equal(calls,before);
+  assert.equal((await decodeRequest(make({...base,compatibleExport:option}),'file',{
+    ...options,exportPolicyProvider:async()=>{throw Error('corrupt policy');}})).status,503);
+});
 test("NPV key generation requires session and consent, returns matching fresh keys without persistence",async()=>{
   const redis=new FakeRedis();const {issued}=await authorized(redis);
   const identity=()=>{
