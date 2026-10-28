@@ -155,6 +155,8 @@ jobs:
           SPDECODE_RELEASE_STORE_PASSWORD: ${{ secrets.SPDECODE_SIGNING_STORE_PASSWORD }}
           SPDECODE_RELEASE_KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
           SPDECODE_RELEASE_KEY_PASSWORD: ${{ secrets.SPDECODE_SIGNING_KEY_PASSWORD }}
+          SPDECODE_CLOUD_API_BASE_URL: https://api.spdecode.xyz
+          SPDECODE_CLOUD_RELEASE: "true"
         run: gradle --no-daemon :app:assembleRelease
       - name: Align and explicitly sign V1/V2/V3 using the permanent repository keystore
         env:

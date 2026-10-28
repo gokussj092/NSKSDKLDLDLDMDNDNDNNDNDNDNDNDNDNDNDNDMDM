@@ -70,8 +70,8 @@ jobs:
       - name: Assert unchanged app identity and safe preproduction configuration
         run: |
           set -euo pipefail
-          grep -Fq 'versionCode = 32' android/app/build.gradle.kts
-          grep -Fq 'versionName = "1.1.21"' android/app/build.gradle.kts
+          grep -Fq 'versionCode = 33' android/app/build.gradle.kts
+          grep -Fq 'versionName = "1.1.22"' android/app/build.gradle.kts
           grep -Fq 'applicationId = "com.ghostdeveloper.spdecode"' android/app/build.gradle.kts
           test ! -e android/app/src/main/assets/adi-registration.properties
       - name: Build signed private Cloud preproduction APK and Play-candidate AAB
@@ -110,8 +110,8 @@ jobs:
           "$ANDROID_HOME/build-tools/35.0.0/zipalign" -c -P 16 -v 4 "$APK"
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" > "$RUNNER_TEMP/badging.txt"
           grep -F "package: name='com.ghostdeveloper.spdecode'" "$RUNNER_TEMP/badging.txt"
-          grep -F "versionName='1.1.21'" "$RUNNER_TEMP/badging.txt"
-          grep -F "versionCode='32'" "$RUNNER_TEMP/badging.txt"
+          grep -F "versionName='1.1.22'" "$RUNNER_TEMP/badging.txt"
+          grep -F "versionCode='33'" "$RUNNER_TEMP/badging.txt"
           python3 tests/cloud_c5_apk_audit.py "$APK"
           python3 - <<'PY'
           from zipfile import ZipFile
@@ -123,14 +123,14 @@ jobs:
               assert native and all(b'https://api.spdecode.xyz' in archive.read(x) for x in native)
           PY
           mkdir -p dist
-          cp "$APK" dist/SP-DECODE-v1.1.21-build32-CLOUD-PREPRODUCTION-PRIVATE.apk
-          cp "$AAB" dist/SP-DECODE-v1.1.21-build32-PLAY-CANDIDATE-PRIVATE.aab
+          cp "$APK" dist/SP-DECODE-v1.1.22-build33-CLOUD-PREPRODUCTION-PRIVATE.apk
+          cp "$AAB" dist/SP-DECODE-v1.1.22-build33-PLAY-CANDIDATE-PRIVATE.aab
           (cd dist && sha256sum *.apk *.aab > SHA256SUMS.txt)
-          printf 'SP-DECODE PRIVATE Cloud preproduction\nVersion: 1.1.21 (32)\nPackage: com.ghostdeveloper.spdecode\nAPI: https://api.spdecode.xyz\nQA: disabled\nSigner: permanent APK keystore\nSource commit: %s\nPlay AAB: private candidate; upload key acceptance requires Play Console verification\nPublished: no\n' "$GITHUB_SHA" > dist/BUILD_INFO.txt
+          printf 'SP-DECODE PRIVATE Cloud preproduction\nVersion: 1.1.22 (33)\nPackage: com.ghostdeveloper.spdecode\nAPI: https://api.spdecode.xyz\nQA: disabled\nSigner: permanent APK keystore\nSource commit: %s\nPlay AAB: private candidate; upload key acceptance requires Play Console verification\nPublished: no\n' "$GITHUB_SHA" > dist/BUILD_INFO.txt
       - name: Upload PRIVATE signed APK and AAB to this Actions run only
         uses: actions/upload-artifact@v4
         with:
-          name: SP-DECODE-v1.1.21-32-PRIVATE-PREPRODUCTION-APK-AAB
+          name: SP-DECODE-v1.1.22-33-PRIVATE-PREPRODUCTION-APK-AAB
           path: dist/
           if-no-files-found: error
           retention-days: 14

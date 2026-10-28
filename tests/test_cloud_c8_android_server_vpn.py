@@ -22,14 +22,14 @@ WEB=ROOT/"cloud/web"
 class PhaseVServerVpnIntegration(unittest.TestCase):
     def test_native_https_only_strict_routes_and_remote_budget(self):
         source=CPP.read_text("utf-8")
-        self.assertIn('path == "/api/v1/server-vpn/catalog"',source)
-        self.assertIn('path == "/api/v1/server-vpn/icon"',source)
-        self.assertIn('path == "/api/v1/server-vpn/decode"',source)
-        self.assertIn('path == "/api/v1/decode/import/catalog/remote"',source)
+        self.assertIn('operation == 10',source)
+        self.assertIn('operation == 11',source)
+        self.assertIn('operation == 12',source)
+        self.assertIn('operation == 9',source)
         self.assertIn('kNurCatalogReadTimeoutMs = 165000',source)
         self.assertRegex(source,
-            r'path == "/api/v1/decode/import/catalog/remote"\s*\|\|\s*'
-            r'path == "/api/v1/server-vpn/decode"')
+            r'operation == 9\s*\|\|\s*'
+            r'operation == 12')
         self.assertNotIn('setHostnameVerifier',source)
         self.assertNotIn('setSSLSocketFactory',source)
 

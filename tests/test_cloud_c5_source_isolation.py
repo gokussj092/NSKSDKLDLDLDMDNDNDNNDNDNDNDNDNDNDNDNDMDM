@@ -6,6 +6,10 @@ APP=ROOT/"android/app"
 GRADLE=(APP/"build.gradle.kts").read_text("utf-8")
 CLOUD=APP/"src/cloud/java/com/ghostdeveloper/spdecode"
 class CloudC5SourceIsolation(unittest.TestCase):
+    def test_release_distribution_cannot_package_legacy_engines_or_qa(self):
+        assert 'gradle.taskGraph.whenReady' in GRADLE
+        assert 'require(enableCloud) { "Release distribution requires the Cloud-only source set" }' in GRADLE
+        assert 'require(!enableQaBuild)' in GRADLE
     def test_original_sources_excluded(self):
         assert 'exclude("com/ghostdeveloper/spdecode/parity/**")' in GRADLE
         for name in ["TextProtocolDecoder.kt","TextPhaseGPort.kt","HttpInjectorCloudPort.kt","NurTunnelServerCatalog.kt"]:

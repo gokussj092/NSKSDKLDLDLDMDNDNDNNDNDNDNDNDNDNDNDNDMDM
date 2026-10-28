@@ -51,7 +51,8 @@ test("native JNI, Cloud consent and settings provide transparent anonymous capac
  assert.match(kotlin,/installationId\(context\)/);
  assert.match(kotlin,/delete\(INSTALL_ID\)/);
  assert.match(client,/reportFailure/);assert.match(client,/registerOptInActivity/);
- assert.match(native,/\/api\/v1\/telemetry/);
+ assert.match(client,/CloudOperation\.TELEMETRY/);
+ assert.doesNotMatch(native,/\/api\/v1\//);
  assert.match(main,/syncOptInUsage/);assert.match(main,/sendCurrentFailureReport/);
  assert.match(app,/canReportError/);assert.match(app,/onReportError/);
  const settings=read("android/app/src/main/java/com/ghostdeveloper/spdecode/FunctionalSettingsPanel.kt");
