@@ -81,8 +81,13 @@ test('compatible artifacts are opt-in, version gated and preserve successful dec
     assert.equal((await decodeRequest(make({...base,compatibleExport:bad}),'file',options)).status,400);
   }
   assert.equal(calls,before);
-  assert.equal((await decodeRequest(make({...base,compatibleExport:option}),'file',{
-    ...options,exportPolicyProvider:async()=>{throw Error('corrupt policy');}})).status,503);
+  const degraded=await decodeRequest(make({...base,compatibleExport:option}),'file',{
+    ...options,exportPolicyProvider:async()=>{throw Error('corrupt policy');}});
+  assert.equal(degraded.status,200);
+  const body=await degraded.json();
+  assert.equal(body.compatibleExport.code,'EXPORT_POLICY_UNAVAILABLE');
+  assert.equal(body.rawText,'{"connection":"preserved"}');
+  assert.equal(last.compatibleExport,undefined);
 });
 test("NPV key generation requires session and consent, returns matching fresh keys without persistence",async()=>{
   const redis=new FakeRedis();const {issued}=await authorized(redis);

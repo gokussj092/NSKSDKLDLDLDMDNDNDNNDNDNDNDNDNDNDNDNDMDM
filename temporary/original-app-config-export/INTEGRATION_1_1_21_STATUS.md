@@ -49,6 +49,8 @@ volver a descifrar la fuente. No reconstruir desde JSON de presentación.
   escrituras atómicas, revisiones concurrentes y autenticación/CSRF existentes.
 - El apagado de exportación conserva el descifrado y su JSON. La capacidad
   nueva no reemplaza autenticación, mantenimiento ni autorización de archivos.
+- Una política ilegible bloquea solo la preparación, con código fijo
+  `EXPORT_POLICY_UNAVAILABLE`; el worker recibe el decode normal sin opción.
 - Interruptor de emergencia `CLOUD_COMPATIBLE_EXPORT_LOCKED` conectado al
   compose y a la allowlist del CLI; no se ha cambiado ningún VPS.
 - Las 355 pruebas Node del sitio/API pasan, incluyendo versión antigua,

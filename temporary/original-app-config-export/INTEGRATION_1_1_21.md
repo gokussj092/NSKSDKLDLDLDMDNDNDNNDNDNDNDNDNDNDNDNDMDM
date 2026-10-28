@@ -76,6 +76,9 @@ Una variante no soportada, timeout o exceso de tamaño devuelve exportación
 también conserva el descifrado: `EXPORT_DISABLED` o
 `EXPORT_CLIENT_UPDATE_REQUIRED`. Pedir explícitamente esta opción sin negociar
 el protocolo devuelve 426. Las solicitudes antiguas sin la opción no cambian.
+Si la política persistente es ilegible, se desactiva esa preparación con
+`EXPORT_POLICY_UNAVAILABLE` y se conserva el JSON. Los controles de sesión y
+mantenimiento continúan bloqueando solicitudes como antes.
 
 ## Habilitación para pruebas
 

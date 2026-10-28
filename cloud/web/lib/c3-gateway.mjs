@@ -362,10 +362,13 @@ export async function decodeRequest(request,kind,options={}) {
     let workerPayload=payload,exportUnavailable=null;
     if(requestedExport){
       if(!negotiatesExport(request))return failure("EXPORT_CLIENT_UNSUPPORTED",426);
-      const policy=await (options.exportPolicyProvider||exportPolicy)();
-      if(!exportAllowed(request,policy)){
+      let policy=null;
+      try{policy=await (options.exportPolicyProvider||exportPolicy)();}
+      catch{ /* Export failure must not discard a valid decode. */ }
+      if(!policy||!exportAllowed(request,policy)){
         workerPayload={...payload};delete workerPayload.compatibleExport;
-        exportUnavailable={status:"unavailable",code:policy.enabled?"EXPORT_CLIENT_UPDATE_REQUIRED":"EXPORT_DISABLED"};
+        exportUnavailable={status:"unavailable",code:!policy?"EXPORT_POLICY_UNAVAILABLE":
+          policy.enabled?"EXPORT_CLIENT_UPDATE_REQUIRED":"EXPORT_DISABLED"};
       }
     }
     const requestId=randomUUID();
