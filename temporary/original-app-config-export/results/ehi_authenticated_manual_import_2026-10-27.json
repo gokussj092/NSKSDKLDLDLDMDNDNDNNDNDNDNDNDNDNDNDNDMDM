@@ -22,31 +22,34 @@
       "file": "B_NOTE_TEXT_HMAC.ehi",
       "delivered_sha256": "6538efb1a70317ac4d369cda7fab43685d5fc27891a56931aaadccdb0d5f76bc",
       "sha256_remeasured_on_device": false,
-      "original_app_import": "REJECTED_OWNER_REPORT_ERROR_UNSPECIFIED",
-      "current_error_message": "not_supplied",
+      "original_app_import": "REJECTED_INVALID_OR_DAMAGED_CONFIGURATION_OWNER_REPORT",
+      "current_error_message": "Configuración inválida / configuración o archivo dañado",
       "editor_access": "not_confirmed",
       "banner_rendering": "not_confirmed",
-      "connection_test": "not_confirmed"
+      "connection_test": "not_confirmed",
+      "error_message_precision": "owner_paraphrase_not_exact_ui_text"
     },
     {
       "file": "C_NOTE_HTML_HMAC.ehi",
       "delivered_sha256": "bbbfda6bd97aebd9d8da4ad59644599dd017584555912ce6a68c075bcfd3a3dd",
       "sha256_remeasured_on_device": false,
-      "original_app_import": "REJECTED_OWNER_REPORT_ERROR_UNSPECIFIED",
-      "current_error_message": "not_supplied",
+      "original_app_import": "REJECTED_INVALID_OR_DAMAGED_CONFIGURATION_OWNER_REPORT",
+      "current_error_message": "Configuración inválida / configuración o archivo dañado",
       "editor_access": "not_confirmed",
       "banner_rendering": "not_confirmed",
-      "connection_test": "not_confirmed"
+      "connection_test": "not_confirmed",
+      "error_message_precision": "owner_paraphrase_not_exact_ui_text"
     },
     {
       "file": "D_ACCESS_HMAC_CANDIDATE.ehi",
       "delivered_sha256": "0d615a5c138f59b46f0e54a71ef0a4783ab838352ce54acb2a1d2e8d130b1baa",
       "sha256_remeasured_on_device": false,
-      "original_app_import": "REJECTED_OWNER_REPORT_ERROR_UNSPECIFIED",
-      "current_error_message": "not_supplied",
+      "original_app_import": "REJECTED_INVALID_OR_DAMAGED_CONFIGURATION_OWNER_REPORT",
+      "current_error_message": "Configuración inválida / configuración o archivo dañado",
       "editor_access": "not_confirmed",
       "banner_rendering": "not_confirmed",
-      "connection_test": "not_confirmed"
+      "connection_test": "not_confirmed",
+      "error_message_precision": "owner_paraphrase_not_exact_ui_text"
     },
     {
       "file": "E_ACCESS_HTML_HMAC_CANDIDATE.ehi",
@@ -54,8 +57,8 @@
       "sha256_remeasured_on_device": false,
       "original_app_import": "ACCEPTED_OWNER_REPORT",
       "current_error_message": "not_applicable",
-      "editor_access": "not_confirmed",
-      "banner_rendering": "not_confirmed",
+      "editor_access": "ACCEPTED_OWNER_REPORT",
+      "banner_rendering": "ACCEPTED_OWNER_REPORT",
       "connection_test": "not_confirmed"
     },
     {
@@ -102,21 +105,33 @@
     "unrelated_inner_fields_A_to_E": "unchanged",
     "random_crypto_material": "Fresh AEAD salt, nonce and CBC IV differ across changed exports; these were not held constant."
   },
-  "compatibility": "PARTIAL_IMPORT_ACCEPTANCE_OWNER_REPORT",
+  "compatibility": "E_IMPORT_EDITOR_AND_HTML_ACCEPTED_OWNER_REPORT_OTHER_VARIANTS_UNRESOLVED",
   "modified_export_accepted": [
     "E_ACCESS_HTML_HMAC_CANDIDATE.ehi"
   ],
-  "editor_access": "not_confirmed",
-  "banner_rendering": "not_confirmed",
+  "editor_access": "ACCEPTED_OWNER_REPORT_FOR_E_ONLY",
+  "banner_rendering": "ACCEPTED_OWNER_REPORT_FOR_E_ONLY",
   "connection_test": "not_confirmed",
   "remaining_rejection_root_cause_confirmed": false,
   "interpretation": [
-    "E is the first modified authenticated case accepted in this matrix.",
+    "E is accepted by the owner for import, configuration editing and HTML banner rendering in this delivered sample.",
     "A remains a byte-identical baseline, not evidence of modified export support.",
+    "B/C/D are reported as invalid or damaged configuration/file; this is an approximate description, not the exact UI message.",
     "D/E isolate the message token at the JSON level, but do not prove a note-related root cause.",
     "The earlier carrier MAC defect remains demonstrated; repairing it did not resolve every current rejection.",
-    "Do not inherit the previous version-error message for this new report.",
-    "The owned_open cases were not individually named; obtain their individual outcomes before asserting rewrap or note failures."
+    "The new invalid/damaged description supersedes the previously unspecified current error; do not reuse the earlier version-error label.",
+    "The owned_open cases were not individually named; their individual outcomes remain unconfirmed.",
+    "Network connection and compatibility with other profiles remain unconfirmed."
   ],
-  "production_changes": false
+  "production_changes": false,
+  "owner_followup_report": "El archivo E sí permite editar la configuración y muestra correctamente el banner. Los otros archivos muestran error como configuración o archivo dañado; configuración inválida (descripción aproximada del propietario).",
+  "accepted_workflow_scope": {
+    "file": "E_ACCESS_HTML_HMAC_CANDIDATE.ehi",
+    "sha256": "4cdec21427ee012b1b118207ab4606f4a38ae8be150050b672c6f07dc0bbc40f",
+    "import": "ACCEPTED_OWNER_REPORT",
+    "editor_access": "ACCEPTED_OWNER_REPORT",
+    "banner_rendering": "ACCEPTED_OWNER_REPORT",
+    "connection_test": "not_confirmed",
+    "generalization_to_other_profiles": "not_validated"
+  }
 }

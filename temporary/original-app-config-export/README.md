@@ -34,11 +34,13 @@ El nuevo auditor detecta campos aún sin interpretar, un candidato TLS con
 la sal predeterminada y pérdida de tipos al reconstruir JSON desde texto de
 presentación. La nueva matriz con HMAC contiene A–E y tres controles del
 abierto propio: ocho verificaciones completas locales. **El propietario
-confirma ahora importación de A y E_ACCESS_HTML_HMAC_CANDIDATE; B/C/D fueron
-rechazados, sin indicar el mensaje de error en esta tanda.** Los tres controles
-`owned_open/` no fueron nombrados individualmente. La compatibilidad es
-parcial: acceso al editor, presentación del banner y conexión de E todavía
-no están confirmados. La causa de los rechazos restantes sigue abierta.
+confirma importación de A y E_ACCESS_HTML_HMAC_CANDIDATE, y confirma que E
+permite editar la configuración y muestra correctamente el banner. B/C/D
+fueron rechazados como configuración inválida o archivo dañado, según una
+descripción aproximada del mensaje.** Los tres controles `owned_open/` no
+fueron nombrados individualmente. El flujo E queda validado manualmente para
+esta muestra en importación, editor y HTML. Conexión, otros perfiles y causa
+de los rechazos restantes siguen pendientes.
 Ver `results/ehi_authenticated_manual_import_2026-10-27.json`.
 Pasan **32 pruebas del laboratorio + 6 del lector existente**. Sin clave HMAC
 verificada, el escritor sigue bloqueando modificaciones. No se cambia ningún

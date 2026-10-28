@@ -132,17 +132,26 @@ El reporte completo sin datos de conexión está en
 | Caso principal | Importación según el propietario | Editor / banner / conexión |
 | --- | --- | --- |
 | A | Aceptada; control idéntico al original | No confirmados |
-| B | Rechazada | No confirmados |
-| C | Rechazada | No confirmados |
-| D | Rechazada | No confirmados |
-| E | **Aceptada; primera variante modificada aceptada de esta tanda** | No confirmados |
+| B | Rechazada: configuración inválida o archivo dañado, descripción aproximada | No confirmados |
+| C | Rechazada: configuración inválida o archivo dañado, descripción aproximada | No confirmados |
+| D | Rechazada: configuración inválida o archivo dañado, descripción aproximada | No confirmados |
+| E | **Aceptada** | **Editor y banner correctos; conexión no confirmada** |
 
 Los tres controles `owned_open/` están comprendidos en la frase global, pero
 no fueron nombrados individualmente. Se conserva esa incertidumbre: no se
 declara demostrado un fallo del rewrap idéntico de `Open.ehi`. El propietario
-no indicó en este mensaje el texto del error, la versión/build usada ni hashes
-medidos en el dispositivo. No se atribuye automáticamente el mensaje de
-versión de la tanda anterior a estos nuevos rechazos.
+no indicó en su primer mensaje el texto del error. En la aclaración posterior
+describió «configuración inválida» o «configuración o archivo dañado», sin
+recordar el texto exacto. Se registra como paráfrasis, no como una cadena
+literal del importador. La versión/build usada y los hashes medidos en el
+dispositivo siguen sin confirmar. No se atribuye el mensaje de versión de
+la tanda anterior a estos nuevos rechazos.
+
+En esa misma aclaración confirmó que **E permite editar la configuración y
+muestra correctamente el banner**. Se valida manualmente este flujo para la
+muestra entregada, SHA-256
+`4cdec21427ee012b1b118207ab4606f4a38ae8be150050b672c6f07dc0bbc40f`.
+No se extiende la aceptación a otros perfiles ni a una conexión VPN real.
 
 Se verificaron otra vez los hashes de los cinco archivos entregados y sus
 capas mediante el lector estricto y el auditor independiente: todos pasan.
@@ -154,15 +163,17 @@ AEAD, nonce e IV CBC nuevos; esos bytes aleatorios no se mantuvieron constantes.
 
 Esto justifica investigar la nota y sus validaciones en el estado abierto,
 pero **no demuestra que la nota original cause el rechazo de D**, ni explica
-por sí solo B/C. Tampoco demuestra que el banner de E se haya renderizado o
-que el editor y la conexión funcionen. Se conserva E sin regenerarlo como
-referencia importada. No se declara resuelto el exportador general ni se
+por sí solo B/C. El funcionamiento del editor y del banner de E se respalda
+por la prueba manual posterior, no por esta comparación local. La conexión
+sigue pendiente. Se conserva E sin regenerarlo como referencia aceptada
+para importación, edición y HTML. No se declara resuelto el exportador general ni se
 introduce una corrección especulativa en los decodificadores productivos.
 
 La causa anterior del MAC desactualizado sigue demostrada. La aceptación de
 E confirma un avance real después de corregirla; los rechazos B/C/D muestran
 que aún falta aislar otras condiciones del importador. Estado actual:
-**compatibilidad parcial de importación, validación funcional pendiente**.
+**E validado manualmente para importación, edición y HTML en esta muestra;
+conexión, otros perfiles y rechazos restantes pendientes**.
 
 ## Reproducir
 
