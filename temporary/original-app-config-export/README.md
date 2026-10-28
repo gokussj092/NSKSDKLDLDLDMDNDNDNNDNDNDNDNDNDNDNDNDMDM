@@ -7,6 +7,27 @@ HTTP Custom 7.11.28 Patch 1, build 899, HCX4 / HCCFG10 / n11 sin
 contraseña/HWID, y laboratorio Dark Tunnel 1.0.26, build 32.
 No se implementa un exportador de producción.
 
+## Fase actual: NPV Tunnel 124.0.37 / build 577
+
+El propietario autorizó avanzar a NPV y aportó el APK, una referencia abierta
+NPVO1 y una protegida NPVS v5 app-key 2. Se reutiliza `decoders/Python/npvs.py`
+sin modificarlo. La importación abierta observada en el APK usa `NPVO1\n`
+y el mismo documento `configs`, con sus tokens `npvs1:` intactos.
+
+Se preparan cinco casos privados: A/B controles idénticos, C reencriptación
+autenticada v5, D candidato abierto editable y E referencia abierta cifrada
+con plantilla explícita de metadatos. No se añade banner. C/E no se anuncian
+como editables: D es el ensayo del formato abierto. Conexiones y tipos se
+conservan; C preserva también metadatos y registros JSON originales byte a byte.
+Las nuevas exportaciones cifradas tienen una identidad de firma propia.
+
+Pasan 14 pruebas nuevas y 19 regresiones; siete pruebas opcionales de otra
+muestra histórica se omiten. Los tres contenedores cifrados se contrastan con
+cryptography/OpenSSL y el oráculo JDK existente, que autentica 58 registros.
+Los cinco resultados están **pendientes de importación y edición en Android**.
+Ver [método, alcance y reproducción NPV](docs/NPV_TUNNEL_EXPORT_LAB.md) y
+`results/npvs_validation_2026-10-27.json`.
+
 ## Estado actual: HTTP Injector y decisión sobre banners
 
 El propietario confirmó los banners de **HTTP Custom**. Para **Dark Tunnel**,

@@ -1,0 +1,63 @@
+{
+  "date_local": "2026-10-27",
+  "timezone": "America/Tijuana",
+  "application": "NPV Tunnel",
+  "version": "124.0.37",
+  "build": 577,
+  "branch": "feat/temporary-original-app-config-export-lab",
+  "tests": {
+    "new_lab_passed": 14,
+    "existing_passed": 19,
+    "existing_skipped": 7,
+    "total_passed": 33,
+    "failures": 0,
+    "skipped_reason": "Different historical 5443-byte private fixture not supplied; the current supplied samples were verified separately."
+  },
+  "private_samples_verified": 5,
+  "byte_identical_controls": 2,
+  "fresh_signed_v5_exports": 2,
+  "protected_to_NPVO1": 1,
+  "cryptography_OpenSSL": {
+    "signed_files": 3,
+    "ecdsa_signatures": 3,
+    "authenticated_records": 58,
+    "chacha20_poly1305_tags": 64,
+    "metadata_context": "verified",
+    "inventory_hmac": "verified",
+    "raw_metadata_and_records": "verified"
+  },
+  "existing_JDK_oracle": {
+    "complete_documents": 3,
+    "authenticated_records": 58,
+    "status": "passed",
+    "isolated_worker": false
+  },
+  "whitebox": {
+    "backend": "existing_evaluator_shared_between_verifiers",
+    "native_vector_regression": 3,
+    "new_native_execution": false,
+    "native_libraries_identical_to_previous_audit": true
+  },
+  "preservation": {
+    "connection_fields_changed": false,
+    "document_types_and_raw_tokens_preserved": true,
+    "unknown_json_fields_preserved": true,
+    "npvs1_tokens_preserved": true,
+    "C_raw_metadata_and_records_preserved": true,
+    "new_signing_identity_for_C_and_E": true,
+    "original_signer_private_key_available": false
+  },
+  "banner_added": false,
+  "original_app_import": "pending",
+  "editor_access": "pending",
+  "network_connection": "not_tested",
+  "production_changes": false,
+  "limitations": [
+    "NPVO1 is open JSON, not an authenticated encrypted container.",
+    "C/E test reencryption; D is the editable import candidate.",
+    "Open conversion only supports the observed empty policy; other policies are rejected.",
+    "Password, recipient, v6 and legacy export are not implemented.",
+    "JADX reported 266 errors; relevant DEX checks passed, no complete decompilation claimed.",
+    "No Android app, APK build, VPS deployment, or VPN connection was run."
+  ]
+}

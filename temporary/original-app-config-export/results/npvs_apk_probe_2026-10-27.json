@@ -1,0 +1,28 @@
+{
+  "application": "NPV Tunnel",
+  "version": "124.0.37",
+  "build": 577,
+  "apks_sha256": "a771e9c184cf07c149a30a4935ba6fdb100bd94a52dce94413b4a9892a8ff3c3",
+  "base_apk_sha256": "1999c5748b1ab1cc9a314573052665c96619cdd3bef570704e778ad5b5901a74",
+  "native_libraries": {
+    "libgojni.so": "ea5c68f088256b648b91c0ca009ad7f6d144e5d107608f622a5f564c9bc8891b",
+    "libnpvtunnel.so": "6ba05d3ac27f28b1b058b1162c0c0de0009fff47fc876b7e924f3288b1fd7c89"
+  },
+  "previously_audited_native_binaries_identical": true,
+  "static_dex_checks": {
+    "open_import_prefix": true,
+    "open_import_error_path": true,
+    "secret_string_npvs1_decode": true,
+    "secret_string_npvs1_encode": true,
+    "config_list_schema": true,
+    "config_body_schema": true
+  },
+  "original_apk_executed": false,
+  "android_import": "pending",
+  "banner_added": false,
+  "note_support": "string_fields_observed_HTML_rendering_not_verified",
+  "date_local": "2026-10-27",
+  "timezone": "America/Tijuana",
+  "jadx_errors": 266,
+  "jadx_complete_decompilation": false
+}

@@ -1,0 +1,3 @@
+pycryptodome==3.23.0
+cryptography==50.0.2
+# Only the optional static APK probe additionally needs androguard==4.1.4.
