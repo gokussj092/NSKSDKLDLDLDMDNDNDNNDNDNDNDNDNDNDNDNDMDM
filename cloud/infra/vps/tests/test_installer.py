@@ -166,6 +166,8 @@ class VPSInstallerTests(unittest.TestCase):
         normal=api.split("location ^~ /api/v1/ {",1)[1].split("}",1)[0]
         self.assertIn("proxy_read_timeout 155s;",catalog)
         self.assertIn("proxy_read_timeout 35s;",normal)
+        file_route=output.split("location = /api/v1/decode/file {",1)[1].split("}",1)[0]
+        self.assertIn("proxy_read_timeout 65s;",file_route)
         public=output.split("server_name spdecode.xyz;",1)[1].split("server_name api.spdecode.xyz;",1)[0]
         self.assertNotIn("location = /api/v1/decode/import/catalog/remote {",public)
         self.assertIn("location ^~ /api/v1/ { return 404; }",public)
@@ -179,7 +181,8 @@ class VPSInstallerTests(unittest.TestCase):
         self.assertIn("preexec_fn=partial(_child_limits,CATALOG_TIMEOUT_SECONDS)",engine)
         # Preserve NUR's 135-second bridge budget and extend the same bound
         # only to the separately allowlisted VPN provider-catalog endpoint.
-        self.assertIn('(kind==="catalog"||kind==="server-vpn")?135000:25000',gateway)
+        self.assertIn('(kind==="catalog"||kind==="server-vpn")?135000:',gateway)
+        self.assertIn('kind==="file"&&payload.compatibleExport?50000:25000',gateway)
         self.assertIn('"server-vpn":"import/server-vpn"',gateway)
         self.assertIn("kNurCatalogReadTimeoutMs = 165000",native)
         self.assertIn('path == "/api/v1/server-vpn/decode"',native)

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="compatible_export_for">%1$s के लिए निर्यात करें</string>
+    <string name="compatible_export_redecode">संगत निर्यात सक्षम करके इस फ़ाइल को फिर से डिक्रिप्ट करें।</string>
+    <string name="compatible_export_failed">संगत फ़ाइल सहेजी नहीं जा सकी।</string>
+</resources>

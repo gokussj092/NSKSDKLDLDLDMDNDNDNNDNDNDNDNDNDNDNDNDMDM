@@ -1,6 +1,10 @@
 package com.ghostdeveloper.spdecode.cloud
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.ui.unit.dp
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material.icons.outlined.FileDownload
@@ -30,8 +34,21 @@ import com.ghostdeveloper.spdecode.ResultPresentation
  * cards. No changes to dimensions, card background, list layout or navigation.
  */
 @Composable
-fun CloudHistoryEntryActions(onExport: () -> Unit, onDelete: () -> Unit) {
+fun CloudHistoryEntryActions(onExport: () -> Unit, onDelete: () -> Unit, entry:DecodeView?=null) {
+    var exportDialog by remember(entry?.id) { mutableStateOf(false) }
     var expanded by remember { mutableStateOf(false) }
+    if(exportDialog && entry!=null) AlertDialog(
+        onDismissRequest={exportDialog=false},
+        title={Text(stringResource(R.string.export_question))},
+        text={Column(verticalArrangement=Arrangement.spacedBy(10.dp)) {
+            OutlinedButton(onClick={onExport();exportDialog=false}) {
+                Text(stringResource(R.string.json_option))
+            }
+            CompatibleExportButton(entry,onDone={exportDialog=false})
+        }},
+        confirmButton={TextButton(onClick={exportDialog=false}){Text(stringResource(R.string.cancel))}},
+        containerColor=Color.Black,
+    )
     Box {
         IconButton(onClick = { expanded = true }) {
             Icon(Icons.Outlined.MoreVert,
@@ -48,7 +65,7 @@ fun CloudHistoryEntryActions(onExport: () -> Unit, onDelete: () -> Unit) {
                 leadingIcon = { Icon(Icons.Outlined.FileDownload, null) },
                 onClick = {
                     expanded = false
-                    onExport()
+                    if(entry==null)onExport() else exportDialog=true
                 },
             )
             DropdownMenuItem(

@@ -269,6 +269,10 @@ def unlock_configuration(document):
             or any(type(v) is not str for v in app['HardwareIdList'])
             or type(app['TunnelType']) is not str or type(app['IsSshLocked']) is not bool):
         raise LabError('UNSUPPORTED_APP_FIELD_TYPES')
+    # The open schema has no observed expiry carrier. Do not silently discard
+    # a restriction merely because the access wrapper can be decrypted.
+    if app['ExpiredAtTimestamp'] != 0:
+        raise LabError('DARK_EXPIRY_NOT_REPRESENTABLE')
     tunnel_type = document.outer['type']
     if tunnel_type not in ('SSH', 'VLESS') or app['TunnelType'] != tunnel_type:
         raise LabError('LOCKED_TUNNEL_TYPE_NOT_YET_AUDITED')

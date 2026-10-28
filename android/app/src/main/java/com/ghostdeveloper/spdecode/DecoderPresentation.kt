@@ -9,6 +9,7 @@ data class DecodeView(
     val id:String=java.util.UUID.randomUUID().toString(),
     val savedAtMillis:Long=System.currentTimeMillis(),
     val favorite:Boolean=false,
+    val compatibleExport:com.ghostdeveloper.spdecode.cloud.CompatibleExportArtifact?=null,
 ) {
     val document:ResultDocument by lazy(LazyThreadSafetyMode.PUBLICATION) {
         ResultPresentation.parse(rawText,extension)

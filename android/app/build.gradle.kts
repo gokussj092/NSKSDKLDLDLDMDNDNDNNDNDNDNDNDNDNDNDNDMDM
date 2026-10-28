@@ -234,6 +234,7 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
                                     stringResource(R.string.history_delete_one),tint=Secondary)
                             }""",
             """                            com.ghostdeveloper.spdecode.cloud.CloudHistoryEntryActions(
+                                entry=entry,
                                 onExport={onExportHistory(entry)},
                                 onDelete={deletingAll=false;deletion=setOf(entry.id)},
                             )""")
@@ -405,13 +406,13 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
                     }
                     val supported=remoteFormat""")
         batch=replaceOnce(batch,
-            "cloudClient.decodeFile(supported.suffix,input,password=secret)",
+            "cloudClient.decodeFile(supported.suffix,input,password=secret,",
             """cloudClient.decodeFile(supported.suffix,input,password=secret,
-                                    allowPasswordFromCatalog="password" in supported.credentialFields)""")
+                                    allowPasswordFromCatalog="password" in supported.credentialFields,""")
         batch=replaceOnce(batch,
-            "cloudPassword?:hcPassword,hcHwid)",
+            "cloudPassword?:hcPassword,hcHwid,",
             """cloudPassword?:hcPassword,hcHwid,
-                                allowPasswordFromCatalog="password" in supported.credentialFields)""")
+                                allowPasswordFromCatalog="password" in supported.credentialFields,""")
         batch=replaceOnce(batch,
             "CloudCredentialPolicy.fileNeedsPasswordDialog(supported.suffix) &&",
             """(CloudCredentialPolicy.fileNeedsPasswordDialog(supported.suffix) ||
@@ -481,6 +482,27 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
             "                    tab=0\n                }\n                if(generation==importGeneration",
             "                    tab=if(previewDeferred)1 else 0\n                }\n                if(generation==importGeneration")
         activity=activity.substring(0,batchStart)+batch+activity.substring(batchEnd)
+
+        // Compatible export changes only the generated Cloud menu; C0 source
+        // hashes and the clipboard's three existing options stay intact.
+        app = replaceOnce(app,
+            """                            Triple(ResultExport.ORIGINAL,R.string.original_option,Icons.Outlined.Code)
+                        ).forEach""",
+            """                        ).let { options ->
+                            if(copy || current.extension !in com.ghostdeveloper.spdecode.cloud.CompatibleExportArtifact.targets)
+                                options + Triple(ResultExport.ORIGINAL,R.string.original_option,Icons.Outlined.Code)
+                            else options
+                        }.forEach""")
+        app = replaceOnce(app,
+            """                        }
+                    }
+                },
+                confirmButton={TextButton(onClick={dialog=null}){""",
+            """                        }
+                        if(!copy) com.ghostdeveloper.spdecode.cloud.CompatibleExportButton(current,onDone={dialog=null})
+                    }
+                },
+                confirmButton={TextButton(onClick={dialog=null}){""")
 
         listOf(appPath to app, activityPath to activity).forEach { (name,content)->
             val output=cloudHistoryUiRoot.get().file(name).asFile
@@ -559,8 +581,8 @@ android {
         applicationId = "com.ghostdeveloper.spdecode"
         minSdk = 24
         targetSdk = 36
-        versionCode = 31
-        versionName = "1.1.20"
+        versionCode = 32
+        versionName = "1.1.21"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // A public API origin is not a secret; all server secrets stay in the VPS.
         buildConfigField("boolean", "SPDECODE_CLOUD_ENABLED", enableCloud.toString())

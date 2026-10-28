@@ -21,6 +21,62 @@ from tests.golden.npvs_protected_generate import make
 
 
 class CompatibleExportTests(unittest.TestCase):
+    def test_dark_native_open_and_expiry_guard_preserve_connection_without_banner(self):
+        import msgpack
+        from exports import dark
+        lab = str(ROOT/'temporary/original-app-config-export/scripts')
+        sys.path.insert(0,lab)
+        try:
+            from test_dark_export_lab import protected_fixture
+            source = protected_fixture()
+        finally: sys.path.remove(lab)
+        document = dark.decode(source)
+        with self.assertRaisesRegex(ValueError,'DARK_EXPIRY_NOT_REPRESENTABLE'):
+            dark.unlock_configuration(document)
+        document.export['LockedAppConfig']['ExpiredAtTimestamp'] = 0
+        # Authenticate a newly constructed, explicitly synthetic protected file.
+        outer = dict(document.outer)
+        outer['encryptedLockedConfig'] = base64.b64encode(dark.crypt(
+            msgpack.packb(document.export,use_bin_type=True),dark.DTConstants.KEY_256)).decode()
+        source = dark.encode_json(json.dumps(outer).encode())
+        result = decode_file('dark',source,compatible_export={'profile':PROFILE})
+        self.assertEqual(result['compatibleExport']['status'],'ready')
+        output = base64.b64decode(result['compatibleExport']['dataBase64'])
+        reopened = dark.decode(output)
+        self.assertFalse(reopened.protected)
+        self.assertEqual(reopened.outer['sshTunnelConfig']['sshConfig']['password'],'SYNTHETIC_SECRET_ñ')
+        self.assertEqual(reopened.outer['sshTunnelConfig']['injectConfig']['unknown'],[False,0])
+        self.assertNotIn(b'SP-DECODE',reopened.raw_json)
+        self.assertEqual(dark.unlock_configuration(reopened),output)
+
+    def test_ehi_accepted_path_recomputes_hmac_and_inserts_or_replaces_note(self):
+        from exports.injector import export as export_ehi, carrier_key
+        from exports.ehi import open_profile, D
+        lab = str(ROOT/'temporary/original-app-config-export/scripts')
+        sys.path.insert(0,lab)
+        try:
+            import test_ehi_authenticated_lab as fixture
+            for note in (True,False):
+                with patch.object(fixture,'MAC_KEY',carrier_key()):
+                    source = fixture.authenticated_fixture(note=note)
+                before = open_profile(source,carrier_mac_key=carrier_key(),require_carrier_mac=True)
+                output = export_ehi(source,{},'es')
+                after = open_profile(output,carrier_mac_key=carrier_key(),require_carrier_mac=True)
+                self.assertFalse(after.inner['isConfigLock'])
+                self.assertEqual(after.outer['lockModes'],'["none"]')
+                self.assertIn('configMessage',after.inner)
+                self.assertIn('SP-DECODE',D._decode_config_message(after.inner['configMessage']))
+                self.assertEqual(after.inner['unknown'],before.inner['unknown'])
+                self.assertEqual(after.outer['unknown'],before.outer['unknown'])
+                self.assertNotEqual(after.middle,before.middle)
+                self.assertNotEqual(after.iv2,before.iv2)
+                self.assertNotEqual(after.aead[10:50],before.aead[10:50])
+                prepared = decode_file('ehi',source,compatible_export={'profile':PROFILE})
+                self.assertEqual(prepared['compatibleExport']['status'],'ready')
+                bad = bytearray(source);bad[-1] ^= 1
+                with self.assertRaises(ValueError): export_ehi(bytes(bad),{})
+        finally: sys.path.remove(lab)
+
     def test_remove_known_member_keeps_neighbor_tokens_and_empty_objects(self):
         for raw in (b'{"k":1,"keep":1e+03}', b'{"keep":1e+03,"k":1}',
                     b'{"a":1, "k":1, "keep":1e+03}', b'{ "k" : 1 }'):

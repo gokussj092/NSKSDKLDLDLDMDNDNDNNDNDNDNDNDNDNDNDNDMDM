@@ -62,7 +62,7 @@ class SecureDecodeHistory(context: Context) {
             error("Unable to create private history directory")
         }
         val json = JSONObject()
-            .put("version", 2)
+            .put("version", 3)
             .put("id", record.id)
             .put("filename", record.filename)
             .put("extension", record.extension)
@@ -70,6 +70,7 @@ class SecureDecodeHistory(context: Context) {
             .put("fileBytes", record.fileBytes)
             .put("savedAtMillis", record.savedAtMillis)
             .put("favorite", record.favorite)
+            .put("compatibleExport", record.compatibleExport?.also { require(it.matches(record.rawText)) }?.toJson() ?: JSONObject.NULL)
             .toString().toByteArray(Charsets.UTF_8)
         val cipher = Cipher.getInstance("AES/GCM/NoPadding")
         cipher.init(Cipher.ENCRYPT_MODE, secretKey)
@@ -153,7 +154,7 @@ class SecureDecodeHistory(context: Context) {
         }
         val objectData = JSONObject(payload.toString(Charsets.UTF_8))
         val version = objectData.getInt("version")
-        require(version == 1 || version == 2)
+        require(version in 1..3)
         val id = objectData.getString("id")
         require(file.name == "${id}.bin" && UUID.fromString(id).toString() == id)
         return DecodeView(
@@ -164,6 +165,10 @@ class SecureDecodeHistory(context: Context) {
             id = id,
             savedAtMillis = objectData.getLong("savedAtMillis"),
             favorite = if(version >= 2) objectData.optBoolean("favorite",false) else false,
+            compatibleExport = if(version >= 3) runCatching {
+                com.ghostdeveloper.spdecode.cloud.CompatibleExportArtifact.parse(
+                    objectData.optJSONObject("compatibleExport"),objectData.getString("extension"),objectData.getString("rawText"))
+            }.getOrNull() else null,
         )
     }
 

@@ -72,7 +72,7 @@ jobs:
           import re
           file=Path("android/app/build.gradle.kts")
           src=file.read_text()
-          src,n=re.subn(r'versionCode = \d+', 'versionCode = 31', src)
+          src,n=re.subn(r'versionCode = \d+', 'versionCode = 32', src)
           assert n==1
           src,n=re.subn(r'versionName = "[^"]+"', 'versionName = "1.2.5-qa"', src)
           assert n==1
@@ -145,7 +145,7 @@ jobs:
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" > "$RUNNER_TEMP/qa-badging.txt"
           grep -F "package: name='com.ghostdeveloper.spdecode'" "$RUNNER_TEMP/qa-badging.txt"
           grep -F "versionName='1.2.5-qa'" "$RUNNER_TEMP/qa-badging.txt"
-          grep -F "versionCode='31'" "$RUNNER_TEMP/qa-badging.txt"
+          grep -F "versionCode='32'" "$RUNNER_TEMP/qa-badging.txt"
           python3 tests/cloud_c5_apk_audit.py "$APK"
           python3 - <<'PY'
           from zipfile import ZipFile

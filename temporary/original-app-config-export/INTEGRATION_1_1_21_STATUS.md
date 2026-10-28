@@ -27,7 +27,7 @@ no garantiza sobrevivir otra limpieza: cada hito se guarda en esta rama.
   huella **pública** del certificado auditado, sin necesitar distribuir su APK.
 - Dark conserva la política sin banner. El bridge distingue JSON abierto de
   los contenedores protegidos antes de elegir el lector.
-- 10 pruebas nuevas pasan. Las cuatro muestras originales recuperadas de
+- 12 pruebas de exportación y tres contratos de integración pasan. Las cuatro muestras originales recuperadas de
   las entregas privadas producen artefactos locales verificados.
 - Las ampliaciones de credenciales tienen comprobación criptográfica local;
   todavía requieren nuevas importaciones manuales en las apps originales.
@@ -55,16 +55,49 @@ volver a descifrar la fuente. No reconstruir desde JSON de presentación.
   versión mínima, manipulación de opciones, persistencia y controles del panel.
   `next build` también pasó. La compilación no activa servicios externos.
 
-## Trabajo Android presente y pendiente de cerrar
+## Hito 3: Android 1.1.21 y validación
 
-1. DTO Android, artefacto cifrado en historial, guardado binario y opción
-   Exportar para [aplicación], también desde el historial.
-2. Mantener los nueve archivos C0 congelados: integrar la fila por las copias
-   Cloud generadas en Gradle y actualizar sus pruebas/anchors.
-3. Versión 1.1.21 / versionCode 32 y workflows/auditorías correspondientes.
-4. Regresiones, compilación Kotlin Cloud si hay SDK accesible, pruebas
-   gateway-worker y verificación de que los clientes antiguos no reciben
-   el nuevo esquema. No publicar APK/AAB ni activar servicios en VPS.
+- DTO con SHA-256 de fuente, texto y artefacto, límites y metadatos fijos.
+- Historial cifrado v3 compatible con v1/v2. Guardado binario con SAF desde
+  el resultado o el registro seleccionado, sin almacenar claves de apertura.
+- Exportar para [aplicación] sustituye Original solamente en el menú Exportar
+  Cloud de los cuatro formatos. Copiar y las nueve fuentes C0 se conservan.
+- Versión 1.1.21 / 32 y cinco workflows históricos actualizados. Workflow
+  adicional de validación para esta rama, sin empaquetado ni publicación.
+- `compileDebugKotlin` y `compileDebugAndroidTestKotlin`: **BUILD SUCCESSFUL**.
+  Compilan las pruebas de integridad/historial; no se ejecutaron en Android.
+- Regresiones Cloud: 94 pasan; worker: 16; instalador/controles VPS: 56.
+  Los contratos nuevos y relacionados de Android se verificaron por separado.
+- C++ del transporte pasa comprobación de sintaxis con JNI. Auditoría S.3
+  final sin hallazgos de credenciales/logs en los 2023 archivos rastreados.
+- No se generó APK/AAB, desplegó VPS ni fusionó main. Compatibilidad de la
+  **integración nueva** pendiente de prueba en teléfono y aplicaciones VPN.
+
+## Fallos reproducidos y correcciones
+
+- Workflow Play seguía buscando nombres 1.1.20: falló su regresión al cambiar
+  Gradle. Se actualizaron nombres, asserts y códigos de los workflows afectados.
+- `prepareCloudHistoryUiSource` esperaba la firma vieja de `decodeFile` y
+  rechazó el build. Se actualizaron ambos anchors conservando el permiso de
+  password anunciado por catálogo y el callback del artefacto. Compilación pasa.
+- Tres casos de regresión requerían PHP ausente en el entorno; con PHP local
+  pasan sin modificar sus goldens ni los decodificadores.
+- Dark abierto fallaba en el lector protegido antiguo; el bridge identifica
+  el contenedor antes de elegir el lector. No hace fallback tras fallo de auth.
+- El presupuesto de 25s del decode era menor que decode + export aislado:
+  se amplía solo esa solicitud a 50s en broker y 55s en Android. La ruta
+  Nginx de archivo espera 65s; los otros presupuestos se conservan.
+- La revisión del formato Dark confirmó que la salida abierta no conserva el
+  carrier de expiración del wrapper: ahora rechaza expiración no cero para
+  exportación. El JSON descifrado sigue disponible. Hay prueba sintética.
+
+## Próxima prueba manual
+
+Seguir `INTEGRATION_1_1_21.md`: actualizar web/worker e instalar la app por el
+procedimiento del operador; activar la tarjeta del panel con mínimo 1.1.21.
+Verificar resultado, historial tras reinicio, guardado SAF e importación real
+HC/Dark/EHI/NPV; controles password/HWID/private key y clientes 1.1.20/1.1.21.
+Notificaciones quedan aplazadas. No declarar compatibilidad global por roundtrip.
 
 Este archivo debe actualizarse en cada hito; los commits remotos son el
 respaldo durable del código. No guardar el repositorio otra vez como archivo

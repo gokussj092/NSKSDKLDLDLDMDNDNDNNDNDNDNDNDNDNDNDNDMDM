@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="compatible_export_for">%1$s için dışa aktar</string>
+    <string name="compatible_export_redecode">Uyumlu dışa aktarma etkinken bu dosyanın şifresini yeniden çözün.</string>
+    <string name="compatible_export_failed">Uyumlu dosya kaydedilemedi.</string>
+</resources>

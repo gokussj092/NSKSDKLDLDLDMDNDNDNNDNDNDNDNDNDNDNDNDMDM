@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="compatible_export_for">Export for %1$s</string>
+    <string name="compatible_export_redecode">Decode this file again with compatible export enabled to save it for its original app.</string>
+    <string name="compatible_export_failed">The compatible file could not be saved.</string>
+</resources>

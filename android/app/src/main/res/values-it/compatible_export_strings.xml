@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="compatible_export_for">Esporta per %1$s</string>
+    <string name="compatible_export_redecode">Decifra nuovamente il file con l’esportazione compatibile attivata.</string>
+    <string name="compatible_export_failed">Impossibile salvare il file compatibile.</string>
+</resources>

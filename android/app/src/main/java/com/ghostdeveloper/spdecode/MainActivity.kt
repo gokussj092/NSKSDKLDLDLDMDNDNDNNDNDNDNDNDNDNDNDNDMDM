@@ -1384,6 +1384,7 @@ class MainActivity : ComponentActivity() {
                         if(prepared==null && cloudPrepared==null)input.fill(0)
                         throw DecodeFailure(R.string.cloud_failure_password)
                     }
+                    var preparedCompatibleExport:com.ghostdeveloper.spdecode.cloud.CompatibleExportArtifact?=null
                     val text=try {
                         if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
                             // Never fall back to local decoders after a Cloud error.
@@ -1391,10 +1392,12 @@ class MainActivity : ComponentActivity() {
                                 val secret=withContext(Dispatchers.IO) {
                                     privateCredentialVault.use(privateCredentialId){it.copyOf()}
                                 }
-                                try { cloudClient.decodeFile(supported.suffix,input,password=secret) }
+                                try { cloudClient.decodeFile(supported.suffix,input,password=secret,
+                                    onCompatibleExport={preparedCompatibleExport=it}) }
                                 finally { secret.fill(0) }
                             }else cloudClient.decodeFile(supported.suffix,input,
-                                cloudPassword?:hcPassword,hcHwid)
+                                cloudPassword?:hcPassword,hcHwid,
+                                onCompatibleExport={preparedCompatibleExport=it})
                         } else withContext(Dispatchers.Default) {
                             if(privateCredentialId!=null){
                                 privateCredentialVault.use(privateCredentialId){secret->
@@ -1424,7 +1427,8 @@ class MainActivity : ComponentActivity() {
                     }finally {
                         if(prepared==null && cloudPrepared==null)input.fill(0)
                     }?:throw DecodeFailure(R.string.unsupported_variant_message)
-                    val processed=DecodeView(name,supported.suffix,text,inputSize)
+                    val processed=DecodeView(name,supported.suffix,text,inputSize,
+                        compatibleExport=preparedCompatibleExport)
                     progressStage=2
                     val saved=try {
                         withContext(Dispatchers.IO){historyStore.save(processed)}

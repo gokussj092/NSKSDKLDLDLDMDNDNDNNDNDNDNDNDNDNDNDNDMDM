@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="compatible_export_for">تصدير إلى %1$s</string>
+    <string name="compatible_export_redecode">فك تشفير هذا الملف مرة أخرى مع تفعيل التصدير المتوافق.</string>
+    <string name="compatible_export_failed">تعذر حفظ الملف المتوافق.</string>
+</resources>

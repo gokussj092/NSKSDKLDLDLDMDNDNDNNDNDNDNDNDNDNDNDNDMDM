@@ -27,6 +27,8 @@ internal class CloudDecodeClient(context: Context) {
     private var token = ""
     private var expiresAtMs = 0L
     private val lock = Any()
+    @Volatile private var exportCatalog:CompatibleExportCatalog?=null
+    @Volatile private var exportCatalogCheckedAt:Long=0
     private val integrityManager by lazy { IntegrityManagerFactory.create(app) }
 
     /** Client-side defense-in-depth; server sessions still require Play Integrity. */
@@ -39,7 +41,7 @@ internal class CloudDecodeClient(context: Context) {
         private set
     fun clearLastDiagnostic(){lastDiagnostic=null}
 
-    data class Decoded(val rawText: String, val sourceBytes: Int? = null)
+    data class Decoded(val rawText: String, val sourceBytes: Int? = null, val compatibleExport:JSONObject?=null)
 
     class Failure(val code: String, val httpStatus: Int,
         val passwordSubmitted:Boolean=false,val hwidSubmitted:Boolean=false) :
@@ -224,7 +226,7 @@ internal class CloudDecodeClient(context: Context) {
                 response.optJSONObject("structuredJson")?.optString("provider")!="mkk-hyper")
                 throw IOException("CLOUD_INVALID_JSON")
         }
-        return Decoded(text,response.optInt("sourceBytes",0).takeIf { it > 0 })
+        return Decoded(text,response.optInt("sourceBytes",0).takeIf { it > 0 },response.optJSONObject("compatibleExport"))
     }
 
     /**
@@ -254,7 +256,8 @@ internal class CloudDecodeClient(context: Context) {
 
     suspend fun decodeFile(format: String, bytes: ByteArray,
                            password: ByteArray? = null, hwid: String? = null,
-                           allowPasswordFromCatalog: Boolean = false): String {
+                           allowPasswordFromCatalog: Boolean = false,
+                           onCompatibleExport:((CompatibleExportArtifact?)->Unit)?=null): String {
         if (bytes.isEmpty() || bytes.size > MAX_INPUT) throw IOException("CLOUD_INVALID_INPUT")
         // Match the validated Unicode suffix contract, not a frozen ASCII list.
         // The server still decides whether a decoder for the suffix exists.
@@ -281,7 +284,26 @@ internal class CloudDecodeClient(context: Context) {
         if(password!=null)credentials.put("password",String(password,Charsets.UTF_8))
         if(hwid!=null)credentials.put("hwid",hwid)
         if(credentials.length()>0)body.put("credentials",credentials)
-        return decode("/api/v1/decode/file",body).rawText
+        if(onCompatibleExport!=null && format in CompatibleExportArtifact.targets) {
+            val now=android.os.SystemClock.elapsedRealtime()
+            if(exportCatalogCheckedAt==0L||now-exportCatalogCheckedAt>15*60_000L) {
+                try {serverVpnCatalog(0)}
+                catch(e:CancellationException){throw e}
+                catch(_:Exception){exportCatalog=null;exportCatalogCheckedAt=now}
+            }
+            if(exportCatalog?.suffixes?.contains(format)==true) {
+                val locale=app.resources.configuration.locales[0].language
+                body.put("compatibleExport",JSONObject().put("profile",CompatibleExportArtifact.PROFILE)
+                    .put("language",if(locale=="es")"es" else "en"))
+            }
+        }
+        val decoded=decode("/api/v1/decode/file",body)
+        val artifact=if(onCompatibleExport!=null)runCatching {
+            CompatibleExportArtifact.parse(decoded.compatibleExport,format,decoded.rawText,
+                CompatibleExportArtifact.digest(bytes))
+        }.getOrNull() else null
+        onCompatibleExport?.invoke(artifact)
+        return decoded.rawText
     }
 
     suspend fun generateNpvsIdentity():JSONObject {
@@ -363,7 +385,12 @@ internal class CloudDecodeClient(context: Context) {
         withContext(Dispatchers.IO) {
             requireLegalConsent()
             extract(CloudNativeTransport.post("/api/v1/server-vpn/catalog",
-                JSONObject().put("knownVersion",knownVersion)))
+                JSONObject().put("knownVersion",knownVersion))).also { reply ->
+                if(!reply.optBoolean("unchanged",false)) {
+                    exportCatalog=runCatching {CompatibleExportCatalog.parse(reply.optJSONObject("compatibleExports"))}.getOrNull()
+                    exportCatalogCheckedAt=android.os.SystemClock.elapsedRealtime()
+                }
+            }
         }
 
     /** Only the VPS version number is returned; no provider URLs or decoded files. */

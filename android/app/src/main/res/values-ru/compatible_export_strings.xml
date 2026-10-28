@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="compatible_export_for">Экспорт для %1$s</string>
+    <string name="compatible_export_redecode">Расшифруйте файл повторно с включённым совместимым экспортом.</string>
+    <string name="compatible_export_failed">Не удалось сохранить совместимый файл.</string>
+</resources>

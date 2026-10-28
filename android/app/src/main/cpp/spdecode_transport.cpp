@@ -169,7 +169,8 @@ jstring post(JNIEnv* env,jstring pathArg,jstring bodyArg,jstring bearerArg,jstri
     // can require up to 120s on the remote worker for nested Argon2id fields.
     const jint readTimeout = (path == "/api/v1/decode/import/catalog/remote" ||
         path == "/api/v1/server-vpn/decode")
-        ? kNurCatalogReadTimeoutMs : kReadTimeoutMs;
+        ? kNurCatalogReadTimeoutMs : (path == "/api/v1/decode/file" &&
+            body.find("\"compatibleExport\"") != std::string::npos ? 55000 : kReadTimeoutMs);
     env->CallVoidMethod(conn,setRead,readTimeout);
     env->CallVoidMethod(conn,setOutput,JNI_TRUE);
     env->CallVoidMethod(conn,setLength,8192);
@@ -185,6 +186,8 @@ jstring post(JNIEnv* env,jstring pathArg,jstring bodyArg,jstring bearerArg,jstri
         ok=setHeader(env,conn,connectionClass,setProperty,"X-SPDecode-Credential-Prompts","1");
     if(ok && path == "/api/v1/server-vpn/catalog")
         ok=setHeader(env,conn,connectionClass,setProperty,"X-SPDecode-NPV-Identities","1");
+    if(ok && (path == "/api/v1/decode/file" || path == "/api/v1/server-vpn/catalog" || path == "/api/v1/server-vpn/watch"))
+        ok=setHeader(env,conn,connectionClass,setProperty,"X-SPDecode-Compatible-Export","1");
     if(ok && !bearer.empty())ok=setHeader(env,conn,connectionClass,setProperty,"Authorization","Bearer "+bearer);
     if(!ok) {
         clearException(env);env->CallVoidMethod(conn,disconnect);
