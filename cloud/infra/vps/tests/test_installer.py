@@ -240,4 +240,17 @@ class VPSInstallerTests(unittest.TestCase):
         worker=yml.split("\n  decoder-worker:",1)[1]
         for word in ("CLOUD_EHI_SIGN_KEY:","CLOUD_ADMIN_SESSION_KEY:"):
             self.assertNotIn(word,worker)
+    def test_goku_private_repo_source_is_explicitly_allowed(self):
+        cli=(VPS/"spdecodectl").read_text()
+        installer=(VPS/"install.sh").read_text()
+        for url in (
+            "https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM.git",
+            "git@github.com:gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM.git",
+            "git@github-spdecode-goku:gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM.git",
+        ):
+            self.assertIn(url,cli)
+        self.assertIn("REPO_URL=\"https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM.git\"",installer)
+        self.assertIn("REPO_URL=\"git@github-spdecode-goku:gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM.git\"",installer)
+        self.assertIn('*) die "Untrusted repo" ;;',cli)
+
 if __name__=="__main__":unittest.main()
