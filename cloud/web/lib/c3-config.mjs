@@ -20,8 +20,10 @@ export function settings(env = process.env) {
   const rawCertificates=env.CLOUD_PLAY_CERT_SHA256 || "";
   const certificates=rawCertificates.split(",").map(x=>x.trim().toLowerCase());
   const validCertificates=!rawCertificates || (certificates.length<=4 && certificates.every(x=>/^[a-f0-9]{64}$/.test(x)));
+  const validSwitches=["CLOUD_V1_REQUIRE_BOUND_SESSION","CLOUD_LEGACY_API_ENABLED"].every(key=>
+    env[key]===undefined || ["true","false"].includes(env[key]));
   const configured = env.CLOUD_API_ENABLED === "true" &&
-    workerToken.length >= 32 && signingKey.length >= 32 && validPackage && validCertificates &&
+    workerToken.length >= 32 && signingKey.length >= 32 && validPackage && validCertificates && validSwitches &&
     (Boolean(account) || qaActive || env.CLOUD_BETA_ADMISSION_ENABLED === "true") && /^rediss?:\/\//.test(env.CLOUD_REDIS_URL || "") &&
     env.CLOUD_TRUST_PROXY === "true";
   return {

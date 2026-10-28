@@ -18,9 +18,11 @@ class Redis {
 const encode=p=>p.publicKey.export({type:"spki",format:"der"}).toString("base64url");
 const pair=()=>generateKeyPairSync("ec",{namedCurve:"prime256v1"});
 const signer="a1".repeat(32);
+const serviceKey=generateKeyPairSync("rsa",{modulusLength:2048});
 const env={CLOUD_API_ENABLED:"true",CLOUD_WORKER_TOKEN:"w".repeat(48),CLOUD_SESSION_SIGNING_KEY:"s".repeat(48),
   CLOUD_REDIS_URL:"redis://redis:6379",CLOUD_TRUST_PROXY:"true",CLOUD_GOOGLE_PLAY_PACKAGE:"com.ghostdeveloper.spdecode",
-  CLOUD_GOOGLE_SERVICE_ACCOUNT_JSON:JSON.stringify({type:"service_account",client_email:"audit@example.invalid",private_key:"-----BEGIN PRIVATE KEY----- synthetic"}),
+  CLOUD_GOOGLE_SERVICE_ACCOUNT_JSON:JSON.stringify({type:"service_account",client_email:"audit@example.invalid",
+    private_key:serviceKey.privateKey.export({type:"pkcs8",format:"pem"})}),
   CLOUD_PLAY_CERT_SHA256:signer,CLOUD_KEY_ATTESTATION_TOKEN:"k".repeat(48),CLOUD_GOOGLE_CLOUD_PROJECT_NUMBER:"123456789012"};
 function verdict(binding,standard=false) {return {tokenPayloadExternal:{
   requestDetails:{[standard?"requestHash":"nonce"]:binding,requestPackageName:env.CLOUD_GOOGLE_PLAY_PACKAGE,timestampMillis:String(Date.now())},

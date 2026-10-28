@@ -73,6 +73,7 @@ internal class CloudDecodeClient(context: Context) {
     }
 
     private fun extract(reply: CloudNativeTransport.Reply): JSONObject {
+        if (reply.status == 401) clearSession()
         if (reply.status !in 200..299) {
             val code = reply.body.optJSONObject("error")?.optString("code")
                 ?.takeIf { it.matches(Regex("[A-Z_]{3,50}")) } ?: "SERVICE_UNAVAILABLE"

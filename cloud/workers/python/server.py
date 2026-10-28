@@ -29,6 +29,10 @@ class WorkerHandler(BaseHTTPRequestHandler):
     sys_version = ""
     protocol_version = "HTTP/1.0"
 
+    def setup(self) -> None:
+        super().setup()
+        self.connection.settimeout(15)
+
     def log_message(self, fmt: str, *args: object) -> None:
         # Deliberately no paths, payloads or headers in logs.
         return
@@ -75,7 +79,6 @@ class WorkerHandler(BaseHTTPRequestHandler):
         return self._json(404, {"error": {"code": "NOT_FOUND"}})
 
     def do_POST(self) -> None:
-        self.connection.settimeout(15)
         if self.path not in ("/internal/v1/npvs/identity", "/internal/v1/decode/file", "/internal/v1/decode/text", "/internal/v1/decode/import/catalog", "/internal/v1/decode/import/server-vpn"):
             return self._json(503, {"error": {"code": "DECODERS_DISABLED"}})
         if not self._authorized():
@@ -83,7 +86,7 @@ class WorkerHandler(BaseHTTPRequestHandler):
         if not ACTIVE_JOBS.acquire(blocking=False):
             return self._json(503, {"error": {"code": "ENGINE_UNAVAILABLE"}})
         try:
-            self._execute_post()
+            WorkerHandler._execute_post(self)
         finally:
             ACTIVE_JOBS.release()
 

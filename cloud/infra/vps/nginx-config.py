@@ -96,16 +96,22 @@ def generate(domain: str, api: str, panel: str, www: bool) -> str:
     # the ordinary 25s worker deadline when export was not requested.
     location = /api/v1/decode/file {{
         access_log off;
+        limit_req zone=spdecode_v2_edge burst=60 nodelay;
+        limit_req_status 429;
 {common_headers().replace("proxy_read_timeout 35s;", "proxy_read_timeout 65s;")}
     }}
     # Large NUR catalogs perform Argon2id for individual protected fields.
     # The extended HTTP wait applies to this EXACT API route only.
     location = /api/v1/decode/import/catalog/remote {{
         access_log off;
+        limit_req zone=spdecode_v2_edge burst=60 nodelay;
+        limit_req_status 429;
 {common_headers().replace("proxy_read_timeout 35s;", "proxy_read_timeout 155s;")}
     }}
     location ^~ /api/v1/ {{
         access_log off;
+        limit_req zone=spdecode_v2_edge burst=60 nodelay;
+        limit_req_status 429;
 {common_headers()}
     }}
     location / {{ return 404; }}
