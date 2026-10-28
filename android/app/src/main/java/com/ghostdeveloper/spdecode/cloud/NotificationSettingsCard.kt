@@ -35,7 +35,10 @@ internal fun NotificationSettingsCard() {
                 else {CloudNotifications.setEnabled(context,value);enabled=CloudNotifications.enabled(context)}
             })},colors=ListItemDefaults.colors(containerColor=MaterialTheme.colorScheme.surfaceVariant))
         TextButton(onClick={
-            context.startActivity(Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE,context.packageName))
+            val intent=if(Build.VERSION.SDK_INT>=26)
+                Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE,context.packageName)
+            else Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,android.net.Uri.parse("package:"+context.packageName))
+            context.startActivity(intent)
         },modifier=Modifier.padding(horizontal=16.dp)){Text(stringResource(R.string.notifications_system_settings))}
     }
 }

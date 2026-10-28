@@ -17,6 +17,13 @@ concurrency:
   group: spdecode-production-sign-${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
   cancel-in-progress: false
 
+# Public Firebase identifiers only; an empty configuration keeps periodic delivery.
+env:
+  ORG_GRADLE_PROJECT_noticeFirebaseAPP_ID: ${{ vars.SPDECODE_NOTICE_FIREBASE_APP_ID }}
+  ORG_GRADLE_PROJECT_noticeFirebaseAPI_KEY: ${{ vars.SPDECODE_NOTICE_FIREBASE_API_KEY }}
+  ORG_GRADLE_PROJECT_noticeFirebasePROJECT_ID: ${{ vars.SPDECODE_NOTICE_FIREBASE_PROJECT_ID }}
+  ORG_GRADLE_PROJECT_noticeFirebaseSENDER_ID: ${{ vars.SPDECODE_NOTICE_FIREBASE_SENDER_ID }}
+
 jobs:
   preflight:
     name: Require successful main validation at exact revision

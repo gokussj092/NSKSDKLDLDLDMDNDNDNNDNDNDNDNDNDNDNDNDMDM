@@ -21,7 +21,7 @@ class CloudC5SourceIsolation(unittest.TestCase):
         assert 'if (!enableCloud) implementation("org.bouncycastle:bcprov-jdk18on:1.86")' in GRADLE
     def test_only_non_decrypting_adapters(self):
         source="\n".join(p.read_text("utf-8") for p in CLOUD.rglob("*.kt"))
-        assert len(list(CLOUD.rglob("*.kt")))==4
+        assert len(list(CLOUD.rglob("*.kt")))==5  # Four inert decoder adapters plus optional push bootstrap.
         for x in ["SIGN_KEY","RESPONSE_KEY","SecretKeySpec","Cipher.getInstance","XChaCha","HKDF","SecureAssetVault","hc-envelope-seal","libspdecode_cloud.so"]:
             assert x not in source,x
         assert "fun decode(context:Context,input:Input):String? = null" in source

@@ -44,3 +44,29 @@ test('publication requires admin and CSRF; replay cannot duplicate; expired noti
 test('without Firebase credentials no external request is attempted',async()=>{
  assert.equal(await pushNotice(randomUUID(),{env:{},fetchImpl:()=>{throw Error('unexpected network')}}),'periodic');
 });
+test('FCM uses separate OAuth scope and sends only an identifier hint to the fixed project',async()=>{
+ const {generateKeyPairSync,verify}=await import('node:crypto');
+ const pair=generateKeyPairSync('rsa',{modulusLength:2048}),id=randomUUID();
+ const account={type:'service_account',project_id:'notice-project',client_email:'notices@notice-project.iam.gserviceaccount.com',
+  private_key:pair.privateKey.export({format:'pem',type:'pkcs8'})};
+ const calls=[];
+ const result=await pushNotice(id,{env:{CLOUD_NOTICE_FCM_SERVICE_ACCOUNT_JSON:JSON.stringify(account)},fetchImpl:async(url,opts)=>{
+  calls.push(url);assert.equal(opts.redirect,'error');
+  if(calls.length===1) {
+   assert.equal(url,'https://oauth2.googleapis.com/token');
+   const jwt=new URLSearchParams(opts.body).get('assertion'),parts=jwt.split('.');
+   assert(verify('RSA-SHA256',Buffer.from(parts.slice(0,2).join('.')),pair.publicKey,Buffer.from(parts[2],'base64url')));
+   const claims=JSON.parse(Buffer.from(parts[1],'base64url'));
+   assert.equal(claims.scope,'https://www.googleapis.com/auth/firebase.messaging');
+   assert.equal(claims.exp-claims.iat,300);
+   return Response.json({token_type:'Bearer',access_token:'synthetic-oauth'});
+  }
+  assert.equal(url,'https://fcm.googleapis.com/v1/projects/notice-project/messages:send');
+  assert.equal(opts.headers.Authorization,'Bearer synthetic-oauth');
+  const data=JSON.parse(opts.body);assert.deepEqual(data.message.data,{noticeId:id});
+  assert.equal(data.message.topic,'spdecode-notices-v1');assert.equal(data.message.android.priority,'normal');
+  assert.equal(data.message.notification,undefined);
+  return Response.json({name:'synthetic-message'});
+ }});
+ assert.equal(result,'push');assert.equal(calls.length,2);
+});
