@@ -24,9 +24,31 @@ Las nuevas exportaciones cifradas tienen una identidad de firma propia.
 Pasan 14 pruebas nuevas y 19 regresiones; siete pruebas opcionales de otra
 muestra histórica se omiten. Los tres contenedores cifrados se contrastan con
 cryptography/OpenSSL y el oráculo JDK existente, que autentica 58 registros.
-Los cinco resultados están **pendientes de importación y edición en Android**.
+**El propietario confirma que los cinco archivos se importaron sin errores.**
+Se registra como aceptación global del paquete; edición por archivo, conexión
+y build instalado no se detallaron por separado. Ver
+`results/npvs_manual_import_report_2026-10-27.json`.
 Ver [método, alcance y reproducción NPV](docs/NPV_TUNNEL_EXPORT_LAB.md) y
 `results/npvs_validation_2026-10-27.json`.
+
+## Propuesta de integración Android/API para pruebas
+
+Se auditó el menú de exportación actual, el cliente Cloud, su transporte JNI,
+gateway y worker. La propuesta conserva JSON y texto ordenado, y sustituye la
+fila de texto original por **Exportar para [aplicación]** cuando la API haya
+preparado un archivo válido para esa variante.
+
+La beta propuesta prepara el artefacto durante el descifrado autorizado y lo
+mantiene temporalmente en RAM de Android, sin conservar las credenciales en
+un ticket servidor. No se reconstruye desde el JSON de presentación. Contraseña
+del archivo, HWID y destinatarios se eliminan de la nueva envoltura solo con
+conversión y validación verificadas; credenciales de conexión se conservan.
+
+La lectura productiva de HC/NPVS ya contempla otras credenciales, pero sus
+escritores del laboratorio aún no cubren todas esas variantes. Esos casos
+requieren ampliar y probar los adaptadores antes de habilitar el botón.
+Ver [plan concreto de integración QA](docs/ANDROID_API_COMPATIBLE_EXPORT_PLAN.md).
+Este cambio documenta la propuesta; no modifica ni activa Android/API ni despliega.
 
 ## Estado actual: HTTP Injector y decisión sobre banners
 

@@ -56,8 +56,9 @@ no se presenta como una decompilación completa. Se pudieron revisar estas rutas
   de Base64. Esos tokens también están presentes en la referencia abierta.
   No deben eliminarse ni confundirse con un fallo de descifrado.
 
-Estas son comprobaciones estáticas. **Importación, edición y conexión en
-Android permanecen pendientes para los archivos nuevos.**
+Estas son comprobaciones estáticas. Al generar la tanda, importación, edición
+y conexión estaban pendientes. El reporte manual posterior de abajo actualiza
+la importación, sin convertir las comprobaciones estáticas en ejecución Android.
 
 ## Sin banner
 
@@ -168,5 +169,21 @@ de 5443 bytes no es ninguno de estos adjuntos; sus siete tests opcionales se
 omiten, sin presentarlos como pasados. Las muestras actuales sí se verifican
 completas por tres recorridos criptográficos.
 
+## Aceptación manual posterior
+
+El propietario informó que **ninguno de los cinco archivos dio error**.
+Se registra importación aceptada globalmente para A/B/C/D/E, con los hashes del
+paquete entregado, en `results/npvs_manual_import_report_2026-10-27.json`.
+No se detallaron por separado edición por archivo, conexión real ni build
+instalado; tampoco se midieron hashes en el dispositivo. La aceptación no se
+extiende a otros modos NPVS, políticas o versiones. Sigue sin añadirse banner.
+
+El propietario solicitó después una propuesta para Android/API que retire
+contraseña del archivo, HWID o destinatarios tras un descifrado autorizado.
+El escritor actual sigue limitado a v5 app-key sin destinatarios; no se anuncia
+todavía conversión de passphrase/recipient por esta prueba. El plan y las
+ampliaciones necesarias están en `ANDROID_API_COMPATIBLE_EXPORT_PLAN.md`.
+
 Resultados sin secretos en `results/npvs_*_2026-10-27.json`. Compatibilidad
-actual: **local verificada; importación original Android pendiente**.
+actual: **local verificada e importación de los cinco casos aceptada por el
+propietario; otras variantes y pruebas funcionales no individualizadas**.

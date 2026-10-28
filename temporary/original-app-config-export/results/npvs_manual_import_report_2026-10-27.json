@@ -1,0 +1,62 @@
+{
+  "date_local": "2026-10-27",
+  "timezone": "America/Tijuana",
+  "report_kind": "global_owner_acceptance_for_delivered_package",
+  "owner_statement": "Esta vez a la primera lo hice correcto todo. Ninguno, ninguno, ninguno dio error.",
+  "package": {
+    "filename": "SP_DECODE_NPV_EXPORT_PRUEBAS.zip",
+    "sha256": "5ca812678925f19501e03619ca8054fc71493379a55e66d42761dd123f5607c9",
+    "generation_commit": "4a1898af9c0c09393ed79b43ecaad79648d9490e"
+  },
+  "target_app": {
+    "name": "NPV Tunnel",
+    "supplied_version": "124.0.37",
+    "supplied_build": 577,
+    "installed_build_independently_confirmed": false
+  },
+  "cases": [
+    {
+      "file": "A_OPEN_ORIGINAL.npvs",
+      "delivered_sha256": "7a5768a4bcf555b4a01f7f3200665ec087f259ef6855dad539752cfd06c46a36",
+      "original_app_import": "ACCEPTED_GLOBAL_OWNER_REPORT",
+      "editor_access": "not_individually_itemized",
+      "network_connection": "not_individually_itemized"
+    },
+    {
+      "file": "B_PROTECTED_ORIGINAL.npvs",
+      "delivered_sha256": "160e63ac51279f8576ba25bed5b26a34a99b2dafd3a99a8fb2673c306f1fce30",
+      "original_app_import": "ACCEPTED_GLOBAL_OWNER_REPORT",
+      "editor_access": "not_individually_itemized",
+      "network_connection": "not_individually_itemized"
+    },
+    {
+      "file": "C_PROTECTED_REENCRYPTED.npvs",
+      "delivered_sha256": "c82771db9060edb0a6e1ad630863fd4874d8893c825c9b6ef3edf795ea375291",
+      "original_app_import": "ACCEPTED_GLOBAL_OWNER_REPORT",
+      "editor_access": "not_individually_itemized",
+      "network_connection": "not_individually_itemized"
+    },
+    {
+      "file": "D_OPEN_EDITABLE_CANDIDATE.npvs",
+      "delivered_sha256": "4c6503b184da99ea0a93003b9be1d9f21ae94e4bd7719c0ee626e78b293501ec",
+      "original_app_import": "ACCEPTED_GLOBAL_OWNER_REPORT",
+      "editor_access": "not_individually_itemized",
+      "network_connection": "not_individually_itemized"
+    },
+    {
+      "file": "E_OWNED_OPEN_ENCRYPTED.npvs",
+      "delivered_sha256": "2f072bf21274d4883b43156b641319a80549780b582c7593da19721944998023",
+      "original_app_import": "ACCEPTED_GLOBAL_OWNER_REPORT",
+      "editor_access": "not_individually_itemized",
+      "network_connection": "not_individually_itemized"
+    }
+  ],
+  "reported_failures": 0,
+  "device_hashes_remeasured": false,
+  "assistant_android_execution": false,
+  "banner_added": false,
+  "scope": "Acceptance applies to the five delivered samples, not every NPVS mode, policy or app version.",
+  "password_protected_export": "not_validated",
+  "recipient_private_key_export": "not_validated",
+  "production_changes": false
+}
