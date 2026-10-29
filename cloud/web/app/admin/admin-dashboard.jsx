@@ -96,6 +96,25 @@ export default function AdminDashboard({mode="system"}){
   }catch(e){setError(e.message||"No se pudo cambiar la política V1.");await refresh();}
   finally{setBusy(false);}
  }
+ async function changeV2(){
+  if(!data?.v2Policy||busy)return;
+  const enabled=!data.v2Policy.enabled;
+  const message=enabled?
+   "¿Habilitar la API V2? Se seguirán exigiendo Play Integrity y las verificaciones criptográficas; la configuración privada del servidor debe estar completa.":
+   "¿Deshabilitar API V2? Se rechazarán las nuevas peticiones V2, incluidas las de Android 1.1.24. V1 y el panel permanecerán disponibles.";
+  if(!window.confirm(message))return;
+  setBusy(true);setError("");
+  try {
+   const response=await fetch("/api/admin/v2-availability",
+    requestOptions({enabled,confirmation:enabled?"API_V2_ACTIVAR":"API_V2_DESACTIVAR",
+      expectedRevision:data.v2Policy.revision}));
+   if(!response.ok)throw Error(response.status===409?
+    "La política V2 cambió. Actualiza el estado e inténtalo de nuevo.":
+    "El servidor rechazó el cambio V2 ("+response.status+").");
+   await refresh();
+  }catch(e){setError(e.message||"No se pudo actualizar V2.");await refresh();}
+  finally{setBusy(false);}
+ }
  async function logout(){
   setBusy(true);
   try{
@@ -164,7 +183,7 @@ export default function AdminDashboard({mode="system"}){
    </div>
    <AdminCompatibleExport/>
    <section className="admin-card sp-admin-services">
-    <div className="sp-admin-section-heading"><div><h2>Control de API V1</h2>
+    <div className="sp-admin-section-heading"><div><h2>Control de API V1 y V2</h2>
      <p className="muted">La disponibilidad tiene prioridad sobre la protección avanzada. V2 conserva su seguridad independiente.</p></div></div>
     {[['apiEnabled','API V1 habilitada',data.v1Policy?.apiEnabled?
       'V1 disponible con la política de protección seleccionada.':'Todas las rutas V1 están deshabilitadas.'],
@@ -178,6 +197,19 @@ export default function AdminDashboard({mode="system"}){
         aria-checked={Boolean(data.v1Policy?.[field])} disabled={busy||!data.v1Policy} onClick={()=>changeV1(field)}><span/></button>
       </div>
     ))}
+     <div className="sp-admin-switch-row">
+      <div><strong>API V2 habilitada</strong>
+       <small className="muted">{data.v2Policy?.enabled?
+        "V2 permite solicitudes autenticadas con todas sus verificaciones obligatorias.":
+        "Las rutas V2 están deshabilitadas y rechazan nuevas peticiones."}</small>
+       <small className="sp-admin-status-note">{data.v2Policy?.configured?
+        "Requisitos V2 configurados en el servidor.":
+        "Los requisitos de V2 no están completos; este control no omite Play Integrity ni la atestación."}</small>
+      </div>
+      <button type="button" className="sp-admin-switch" role="switch"
+       aria-label="API V2 habilitada" aria-checked={Boolean(data.v2Policy?.enabled)}
+       disabled={busy||!data.v2Policy} onClick={changeV2}><span/></button>
+     </div>
    </section>
    <section className="admin-card sp-admin-services">
     <div className="sp-admin-section-heading"><div><h2>Distribución beta y Google Play Integrity</h2>

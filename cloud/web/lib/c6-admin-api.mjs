@@ -6,6 +6,8 @@ import {throttle} from "./c3-store.mjs";
 import { settings } from "./c3-config.mjs";
 import {admissionPolicy,setAdmissionPolicy} from "./c11-play-admission.mjs";
 import {v1ProtectionStatus,v1PolicyStatus,changeV1Policy} from "./v1-protection-policy.mjs";
+import {v2PolicyStatus,changeV2Availability} from "./v2-availability-policy.mjs";
+import {v2Settings} from "./v2-config.mjs";
 import {providerOverview,updateProvider,PUBLIC_PROVIDER_IDS} from "./c12-provider-controls.mjs";
 import { ehiConfigured,nurConfigured } from "./c35-provider.mjs";
 import { jsonReply } from "./responses.mjs";
@@ -51,9 +53,9 @@ export async function statusRequest(request,options={}) {
   try{
     const redis=await (options.storeProvider||opsStore)();
     if(!await authenticateAdmin(redis,request))return error("UNAUTHORIZED",401);
-    const [maintenance,legacyMetrics,ping,serviceMaintenance,playAdmission,providerControls,v1Protection,v1Policy]=await Promise.all([
+    const [maintenance,legacyMetrics,ping,serviceMaintenance,playAdmission,providerControls,v1Protection,v1Policy,v2PolicyState]=await Promise.all([
       maintenanceEnabled(redis),aggregateMetrics(redis),redis.ping(),serviceMaintenanceStates(redis),
-      admissionPolicy(redis),providerOverview(),v1ProtectionStatus(),v1PolicyStatus(),
+      admissionPolicy(redis),providerOverview(),v1ProtectionStatus(),v1PolicyStatus(),v2PolicyStatus(),
     ]);
     // Show reset-adjusted current errors when detailed aggregate hashes exist.
     // The legacy counter remains a fallback for prior deployments/tests.
@@ -77,6 +79,7 @@ export async function statusRequest(request,options={}) {
         workerReady,ehiImportConfigured:ehiConfigured(),
         nurCatalogImportConfigured:nurConfigured()},
       maintenance,serviceMaintenance,playAdmission,providerControls,v1Protection,v1Policy,
+      v2Policy:{...v2PolicyState,configured:v2Settings().configured},
       maintenanceLocked:process.env.CLOUD_FORCE_MAINTENANCE==="true",metrics,
       observation:"Counters are aggregate-only; no user content or keys are logged.",
     });
@@ -124,6 +127,34 @@ async function v1PolicyRequest(request,field,options) {
   return api({v1Policy},200,{"Cache-Control":"private, no-store"});
  }catch(e) {
   if(['V1_POLICY_CONFLICT','STORE_BUSY'].includes(e.message))return error(e.message,409);
+  return error("SERVICE_UNAVAILABLE",503);
+ }
+}
+
+/** Authenticated independent V2 availability control; never relaxes V2 integrity. */
+export async function v2AvailabilityRequest(request,options={}) {
+ const cfg=adminSettings();if(!cfg.enabled)return error("ADMIN_DISABLED",503);
+ if(!validMutation(request,cfg))return error("CSRF_REJECTED",403);
+ try {
+  const redis=await (options.storeProvider||opsStore)();
+  if(!await authenticateAdmin(redis,request,cfg))return error("UNAUTHORIZED",401);
+  if(!await throttle(redis,"spc6:v2-policy:rate",10,60))return error("RATE_LIMITED",429);
+  const body=await parseSmallJson(request,256);
+  if(!own(body,["enabled","confirmation","expectedRevision"])||
+     typeof body.enabled!=="boolean"||
+     body.confirmation!==(body.enabled?"API_V2_ACTIVAR":"API_V2_DESACTIVAR")||
+     !Number.isSafeInteger(body.expectedRevision)||body.expectedRevision<0)
+    return error("INVALID_REQUEST",400);
+  const v2Policy=await changeV2Availability(body.enabled,body.expectedRevision,options.policyOptions);
+  try {
+   await redis.lPush("spc6:v2-availability:audit",JSON.stringify({
+     at:Date.now(),enabled:body.enabled,revision:v2Policy.revision}));
+   await redis.lTrim("spc6:v2-availability:audit",0,99);
+   await redis.expire("spc6:v2-availability:audit",8*86400);
+  }catch{}
+  return api({v2Policy:{...v2Policy,configured:v2Settings().configured}},200,{"Cache-Control":"private, no-store"});
+ }catch(e){
+  if(["V2_POLICY_CONFLICT","STORE_BUSY"].includes(e?.message))return error(e.message,409);
   return error("SERVICE_UNAVAILABLE",503);
  }
 }
