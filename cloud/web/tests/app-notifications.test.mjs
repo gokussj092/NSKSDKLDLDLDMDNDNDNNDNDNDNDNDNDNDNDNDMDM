@@ -22,7 +22,9 @@ class Redis {
 const req=(body,cookie='',action=true)=>new Request('https://panel.example.test/api/admin/notifications',{method:'POST',
  headers:{'Content-Type':'application/json',Origin:'https://panel.example.test',Cookie:cookie,...(action?{'X-SPDecode-Admin-Action':'1'}:{})},body:JSON.stringify(body)});
 test('publication requires admin and CSRF; replay cannot duplicate; expired notices omitted',async()=>{
- const redis=new Redis(),options={storeProvider:async()=>redis,push:async()=>{throw Error('offline');}};
+ let saved=[];
+ const redis=new Redis(),options={storeProvider:async()=>redis,push:async()=>{throw Error('offline');},
+  readFeed:async()=>saved,writeFeed:async items=>{saved=items;}};
  const input={id:randomUUID(),title:'Servicio',body:'Aviso de prueba'};
  assert.equal((await adminNotices(req(input),options)).status,401);
  const login=await loginRequest(req({username:'admin',password}),{...options,turnstileVerifier:async()=>({ok:true})});
