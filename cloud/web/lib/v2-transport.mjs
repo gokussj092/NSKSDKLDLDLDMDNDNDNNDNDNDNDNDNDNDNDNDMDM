@@ -2,6 +2,8 @@ import { notificationFeedRequest } from "./app-notifications.mjs";
 import { randomBytes, randomUUID } from "node:crypto";
 import { limits } from "./c3-config.mjs";
 import { v2Settings } from "./v2-config.mjs";
+import {v2PlayPolicyStatus} from "./v2-play-policy.mjs";
+import {v2PolicyStatus} from "./v2-availability-policy.mjs";
 import { store, ipKey, throttle } from "./c3-store.mjs";
 import { sign, verifySignature } from "./c3-session.mjs";
 import { decodePlayToken, checkIntegrityVerdict } from "./c3-integrity.mjs";
@@ -58,7 +60,16 @@ async function dispatch(operation,request) {
   return (await handlers[operation]()).POST(request);
 }
 export async function transportRequest(request,options={}) {
-  const cfg=v2Settings(options.env||process.env);
+  // Check both server-controlled policies before processing even a bootstrap request.
+  let availability,playPolicy;
+  try{
+    [availability,playPolicy]=await Promise.all([
+      (options.availabilityPolicyLoader||v2PolicyStatus)(),
+      (options.playPolicyLoader||v2PlayPolicyStatus)()
+    ]);
+  }catch{return fail("SERVICE_UNAVAILABLE",503);}
+  if(!availability.enabled)return fail("V2_API_DISABLED",410);
+  const cfg=v2Settings(options.env||process.env,{playIntegrityRequired:playPolicy.integrityRequired});
   if(!cfg.configured)return fail("SERVICE_UNAVAILABLE",503);
   const url=new URL(request.url),header=request.headers.get("x-sp-operation")||"";
   if(request.method!=="POST" || url.search || !/^(1|2|[4-9]|1[0-7])$/.test(header))
@@ -92,11 +103,13 @@ export async function transportRequest(request,options={}) {
         return fail("INVALID_REQUEST",400);
       const challengeId=randomUUID(),nonce=randomBytes(32).toString("base64url");
       const registered=await registeredKey(redis,body.publicKey,cfg);
+      // A beta session must have a hardware-verified app version and signing identity.
+      // Previously registered strict-mode keys without version evidence re-enroll.
       const hardwareNeeded=cfg.requireHardware&&!registered;
       const value={nonce,publicKey:body.publicKey,ip,created:Date.now(),hardwareNeeded};
       if(await redis.set("spc2:challenge:"+challengeId,JSON.stringify(value),{EX:120,NX:true})!=="OK")
         return fail("SERVICE_UNAVAILABLE",503);
-      return jsonReply({apiVersion:"v2",challengeId,nonce,expiresIn:120,integrityRequired:true,
+      return jsonReply({apiVersion:"v2",challengeId,nonce,expiresIn:120,integrityRequired:cfg.playIntegrityRequired,
         keyAttestationRequired:hardwareNeeded,hardwareLevel:cfg.hardwareLevel,
         ...(hardwareNeeded?{attestationChallenge:attestationChallenge(nonce,challengeId,body.publicKey)}:{})},201);
     }
@@ -105,7 +118,9 @@ export async function transportRequest(request,options={}) {
       const body=JSON.parse(bytes);
       if(!record(body) || !["challengeId,integrityToken","certificateChain,challengeId,integrityToken,publicKey"].includes(Object.keys(body).sort().join(",")) ||
          !/^[0-9a-f-]{36}$/.test(body.challengeId) || typeof body.integrityToken!=="string" ||
-         body.integrityToken.length<80 || body.integrityToken.length>16384)return fail("INVALID_REQUEST",400);
+         (cfg.playIntegrityRequired ?
+          (body.integrityToken.length<80||body.integrityToken.length>16384) :
+          body.integrityToken!==""))return fail("INVALID_REQUEST",400);
       const raw=await redis.getDel("spc2:challenge:"+body.challengeId);
       if(!raw)return fail("EXPIRED_CHALLENGE",401);
       const challenge=JSON.parse(raw);
@@ -115,8 +130,11 @@ export async function transportRequest(request,options={}) {
       if(!challenge.hardwareNeeded&&(body.publicKey!==undefined||body.certificateChain!==undefined))return fail("INVALID_REQUEST",400);
       const nonce=integrityNonce(challenge.nonce,body.challengeId,sessionKey);
       // Injection is server-test only. HTTP callers never provide verdict JSON.
-      const verdict=await (options.decodeIntegrity||decodePlayToken)(body.integrityToken,cfg);
-      if(!checkIntegrityVerdict(verdict,{...cfg,nonce}))return fail("INTEGRITY_REJECTED",403);
+      let verdict=null;
+      if(cfg.playIntegrityRequired){
+        verdict=await (options.decodeIntegrity||decodePlayToken)(body.integrityToken,cfg);
+        if(!checkIntegrityVerdict(verdict,{...cfg,nonce}))return fail("INTEGRITY_REJECTED",403);
+      }
       let hardware=await registeredKey(redis,sessionKey,cfg);
       if(challenge.hardwareNeeded) {
         if(!await throttle(redis,"spsec:enroll-ip:"+ip,12,3600) ||
@@ -125,15 +143,26 @@ export async function transportRequest(request,options={}) {
           attestationChallenge(challenge.nonce,body.challengeId,challenge.publicKey),sessionKey,cfg);
         if(result?.valid!==true || result.publicKey!==sessionKey || !["tee","strongbox"].includes(result.level) ||
            (cfg.hardwareLevel==="strongbox"&&result.level!=="strongbox") ||
-           !await rememberKey(redis,sessionKey,result.level,cfg))return fail("INTEGRITY_REJECTED",403);
+           (!cfg.playIntegrityRequired&&(!Number.isSafeInteger(result.versionCode)||
+              result.versionCode<cfg.minimumVersionCode)) ||
+           !await rememberKey(redis,sessionKey,result.level,cfg,result.versionCode))
+          return fail("INTEGRITY_REJECTED",403);
         hardware=await registeredKey(redis,sessionKey,cfg);
       }
       if(cfg.requireHardware&&!hardware)return fail("INTEGRITY_REJECTED",403);
-      const app=verdict.tokenPayloadExternal.appIntegrity;
+      // In beta, the hardware verifier attests the package, version and signing cert;
+      // neither a caller-provided version nor a self-declared signature is accepted.
+      if(!cfg.playIntegrityRequired && (!hardware || !Number.isSafeInteger(hardware.versionCode) ||
+         hardware.versionCode<cfg.minimumVersionCode))return fail("INTEGRITY_REJECTED",403);
+      const app=verdict?.tokenPayloadExternal?.appIntegrity;
       const now=Math.floor(Date.now()/1000),jti=randomUUID();
       const claims={iss:"spdecode-cloud",aud:audience,scope:"decode",iat:now,exp:now+300,jti,
-        key:sessionKey,hardware:!!hardware,versionCode:Number(app.versionCode),
-        certificates:app.certificateSha256Digest.map(x=>Buffer.from(x,"base64url").toString("hex")),epoch:cfg.epoch};
+        key:sessionKey,hardware:!!hardware,
+        playIntegrityVerified:cfg.playIntegrityRequired,
+        versionCode:cfg.playIntegrityRequired?Number(app.versionCode):hardware.versionCode,
+        certificates:cfg.playIntegrityRequired?
+          app.certificateSha256Digest.map(x=>Buffer.from(x,"base64url").toString("hex")):
+          cfg.certificateDigests.slice(),epoch:cfg.epoch};
       if(await redis.set("spc2:session:"+jti,"1",{EX:300,NX:true})!=="OK")return fail("SERVICE_UNAVAILABLE",503);
       return jsonReply({apiVersion:"v2",accessToken:sign(claims,cfg.signingKey),tokenType:"Bearer",expiresIn:300,
         actionIntegrityRequired:cfg.requireAction},201);

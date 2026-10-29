@@ -28,7 +28,8 @@ import java.util.concurrent.TimeUnit
 data class Policy(val packageName: String, val digests: Set<ByteString>, val minimumVersion: BigInteger,
                   val level: String, val patchMonths: Long)
 data class Evidence(val chain: List<String>, val challenge: String, val publicKey: String)
-data class Decision(val valid: Boolean, val publicKey: String? = null, val level: String? = null)
+data class Decision(val valid: Boolean, val publicKey: String? = null,
+                    val level: String? = null, val versionCode: Long? = null)
 
 internal fun parseRevocations(text: String): Set<String> {
     val root = JsonParser.parseString(text).asJsonObject
@@ -99,7 +100,8 @@ fun decide(evidence: Evidence, policy: Policy, verifier: Verifier): Decision {
     val attributes = description.hardwareEnforced
     if (listOf(attributes.osPatchLevel, attributes.vendorPatchLevel, attributes.bootPatchLevel)
         .any { it == null || it.yearMonth.isBefore(floor) || it.yearMonth.isAfter(ceiling) }) return Decision(false)
-    return Decision(true, key, level)
+    // App package version is taken only from Google's hardware-validated attestationApplicationId.
+    return Decision(true, key, level, app.packages.single().version.longValueExact())
 }
 
 private fun reply(exchange: HttpExchange, status: Int, value: Any) {

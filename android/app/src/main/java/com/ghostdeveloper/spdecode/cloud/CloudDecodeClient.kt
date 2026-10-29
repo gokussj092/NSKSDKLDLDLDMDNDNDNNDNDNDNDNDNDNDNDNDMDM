@@ -115,18 +115,22 @@ internal class CloudDecodeClient(context: Context) {
         }
         val nonce = challenge.getString("nonce")
         val challengeId = challenge.getString("challengeId")
+        val playRequired = challenge.optBoolean("integrityRequired", true)
         if (!nonce.matches(Regex("[A-Za-z0-9_-]{43}")) ||
             !challengeId.matches(Regex("[0-9a-f-]{36}")) ||
-            challenge.optString("apiVersion") != "v2" ||
-            !challenge.optBoolean("integrityRequired", false))
+            challenge.optString("apiVersion") != "v2")
             throw IOException("CLOUD_INVALID_NONCE")
-        // V2 requires real Google Play admission, bound to this installation key.
-        if (BuildConfig.SPDECODE_QA_BUILD) throw IOException("CLOUD_INTEGRITY_UNAVAILABLE")
+        // A Telegram beta may omit Play tokens ONLY when server policy explicitly allows it.
+        // Hardware attestation remains mandatory for all beta sessions.
+        if (playRequired && BuildConfig.SPDECODE_QA_BUILD)
+            throw IOException("CLOUD_INTEGRITY_UNAVAILABLE")
         val certificates = if (challenge.optBoolean("keyAttestationRequired", false)) {
             withContext(Dispatchers.IO) { CloudRequestProof.attest(
                 challenge.getString("attestationChallenge"), challenge.getString("hardwareLevel")) }
         } else null
-        val verdict = requestIntegrityToken(CloudRequestProof.integrityNonce(nonce, challengeId))
+        val verdict = if (playRequired)
+            requestIntegrityToken(CloudRequestProof.integrityNonce(nonce, challengeId))
+        else ""
         coroutineContext.ensureActive()
         val operation = CloudOperation.SESSION
         val body = JSONObject().put("challengeId",challengeId).put("integrityToken",verdict)

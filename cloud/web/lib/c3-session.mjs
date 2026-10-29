@@ -4,6 +4,7 @@ import { boundRequestClaims } from "./v2-bound-request.mjs";
 import { bindVerifiedRequest } from "./v2-bound-request.mjs";
 import { authorizeBoundV1 } from "./bound-auth.mjs";
 import { v2Settings } from "./v2-config.mjs";
+import {v2PlayPolicyStatus} from "./v2-play-policy.mjs";
 import {v1ProtectionRequired,v1PolicyStatus} from "./v1-protection-policy.mjs";
 import { workBudget } from "./device-security.mjs";
 import { checkIntegrityVerdict, verifyPlayToken } from "./c3-integrity.mjs";
@@ -101,7 +102,9 @@ export async function requireSession(redis, request, cfg) {
   if (!bearer.startsWith("Bearer ")) return null;
   const boundClaims=verifySignature(bearer.slice(7),cfg.signingKey,undefined,"spdecode-android-v2");
   if (boundClaims) {
-    const result=await authorizeBoundV1(redis,request,bearer.slice(7),boundClaims,v2Settings());
+    const playPolicy=await v2PlayPolicyStatus();
+    const result=await authorizeBoundV1(redis,request,bearer.slice(7),boundClaims,
+      v2Settings(process.env,{playIntegrityRequired:playPolicy.integrityRequired}));
     if(result&&!result.rateLimited)bindVerifiedRequest(request,result);
     return result;
   }
