@@ -48,7 +48,9 @@ instalar desde Google Play con una cuenta tester autorizada.
 Por defecto V2 requiere clave atestada TEE o StrongBox, dispositivo Android 13+,
 Strong Integrity, licencia y actividad reciente evaluada. Las operaciones 4–9 y
 12 requieren además un token Standard Integrity con requestHash específico.
-El perfil StrongBox es explícito y no cae a TEE. Google, Redis o verificador
+El perfil StrongBox es explícito y no cae a TEE.
+
+La rama de integración incluye en Panel → Infraestructura un interruptor «Exigir sesión protegida V2 en rutas V1». Apagado por defecto, mantiene V1; encendido exige sesiones vinculadas en operaciones V1 autenticadas, lo que bloqueará a clientes antiguos que no implementan ese transporte. El valor se guarda de forma atómica en el volumen `provider-control` y sobrevive a reinicios. No actúa retroactivamente sobre APK distribuidas, ni cambia el control propio de las rutas V2. La variable `CLOUD_V1_REQUIRE_BOUND_SESSION=true` impone el modo estricto desde el VPS e impide desactivarlo en el panel. Para activarlo desde el panel se requiere que V2 esté completamente configurado. Los endpoints públicos de metadatos/catálogo deben tratarse como un acceso separado; el interruptor no los transforma en operaciones autenticadas. Google, Redis o verificador
 indisponibles no activan una aceptación alternativa.
 
 LIAPP puede añadirse al artefacto final siguiendo sus instrucciones oficiales.
