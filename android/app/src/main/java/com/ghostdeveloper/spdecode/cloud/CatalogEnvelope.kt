@@ -55,7 +55,8 @@ internal class CatalogEnvelope(private val pair:java.security.KeyPair=KeyPairGen
             init(SecretKeySpec(key,"HmacSHA256"))
         }.doFinal(value)
         internal fun inflate(bytes:ByteArray,limit:Int):ByteArray {
-            require(limit in 1..MAX_PLAIN)
+            // The wire envelope is capped at MAX_PLAIN by open(); existing cache records allow 6 MiB.
+            require(limit in 1..maxOf(MAX_PLAIN,ServerVpnIconPolicy.CACHE_RECORD_BYTES))
             val out=ByteArrayOutputStream()
             GZIPInputStream(ByteArrayInputStream(bytes)).use {stream->
                 val buffer=ByteArray(8192)

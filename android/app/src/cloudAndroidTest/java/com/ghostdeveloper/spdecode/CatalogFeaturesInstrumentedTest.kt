@@ -48,14 +48,22 @@ class CatalogFeaturesInstrumentedTest {
         val source="catalog 👻".repeat(500).toByteArray()
         val file=File(context.noBackupFilesDir,"server_vpn_cache/v1/$name")
         try {
-            cache.write(name,source);assertArrayEquals(source,cache.read(name))
+            cache.write(name,source);assertArrayEquals("Compressed SVC2 round trip",source,cache.read(name))
             assertEquals(0x32,file.readBytes()[3].toInt());assertTrue(file.length()<source.size)
             val ks=KeyStore.getInstance("AndroidKeyStore").apply {load(null)}
             val key=ks.getKey("spdecode.server-vpn.device-cache.v1",null) as SecretKey
             val cipher=Cipher.getInstance("AES/GCM/NoPadding").apply {init(Cipher.ENCRYPT_MODE,key)
                 updateAAD("spdecode:server-vpn:v1:$name".toByteArray())}
             file.writeBytes(byteArrayOf(0x53,0x56,0x43,0x31)+cipher.iv+cipher.doFinal(source))
-            assertArrayEquals(source,cache.read(name))
+            assertArrayEquals("Legacy SVC1 round trip",source,cache.read(name))
+            val maximum=ByteArray(ServerVpnIconPolicy.CACHE_RECORD_BYTES) { (it % 31).toByte() }
+            cache.write(name,maximum)
+            assertArrayEquals("Existing 6 MiB cache budget remains readable",maximum,cache.read(name))
+            val packed=java.io.ByteArrayOutputStream().also {out->
+                java.util.zip.GZIPOutputStream(out).use {it.write(maximum)}
+            }.toByteArray()
+            try {CatalogEnvelope.inflate(packed,CatalogEnvelope.MAX_PLAIN);fail("Wire decompression exceeded 4 MiB")}
+            catch(_:IllegalArgumentException) { /* Wire and cache retain independent bounded budgets. */ }
             cache.write(name,source)
             val damaged=file.readBytes();damaged[damaged.lastIndex]=(damaged.last().toInt() xor 1).toByte();file.writeBytes(damaged)
             assertNull(cache.read(name))
