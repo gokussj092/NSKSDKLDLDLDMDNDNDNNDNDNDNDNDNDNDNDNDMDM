@@ -70,7 +70,7 @@ jobs:
         run: |
           set -euo pipefail
           test ! -e android/app/src/main/assets/adi-registration.properties
-          grep -Fq 'versionCode = 34' android/app/build.gradle.kts
+          grep -Fq 'versionCode = 35' android/app/build.gradle.kts
           grep -Fq 'versionName = "1.1.24"' android/app/build.gradle.kts
       - name: Compile signed Cloud release without QA
         working-directory: android
@@ -108,7 +108,7 @@ jobs:
           mkdir -p dist
           cp "$APK" dist/SP-DECODE-v1.1.24-Cloud-PREPRODUCTION-signed.apk
           (cd dist && sha256sum *.apk > SHA256SUMS.txt)
-          printf 'SP-DECODE Cloud preproduction\nVersion: 1.1.24 (34)\nPackage: com.ghostdeveloper.spdecode\nAPI: https://api.spdecode.xyz\nQA: disabled\nSigner: permanent release key\nCommit: %s\n' "$GITHUB_SHA" > dist/BUILD_INFO.txt
+          printf 'SP-DECODE Cloud preproduction\nVersion: 1.1.24 (35)\nPackage: com.ghostdeveloper.spdecode\nAPI: https://api.spdecode.xyz\nQA: disabled\nSigner: permanent release key\nCommit: %s\n' "$GITHUB_SHA" > dist/BUILD_INFO.txt
       - name: Publish public GitHub prerelease (not a Google Play release)
         env:
           GH_TOKEN: ${{ github.token }}
@@ -127,7 +127,7 @@ jobs:
 
           Versión experimental, no aprobada ni distribuida por Google Play. Su instalación no cuenta como inscripción al programa de pruebas cerradas. Compatibilidad variable según formato.
           
-          Conserva com.ghostdeveloper.spdecode, v1.1.24 y versionCode 34. Una APK QA instalada con versionCode superior puede requerir desinstalación previa: realiza copia de seguridad antes.
+          Conserva com.ghostdeveloper.spdecode, v1.1.24 y versionCode 35. Una APK QA instalada con versionCode superior puede requerir desinstalación previa: realiza copia de seguridad antes.
           NOTES
           if gh release view "$TAG" >/dev/null 2>&1; then
             echo "::error::Prerelease already exists; refusing to overwrite existing public binary"
