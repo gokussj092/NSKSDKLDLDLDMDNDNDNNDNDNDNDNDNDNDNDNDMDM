@@ -14,25 +14,25 @@ export function validNotice(n,now=Date.now()) {
     Number.isSafeInteger(n.createdAt) && n.createdAt<=now+5000 && n.createdAt>=now-7*86400000 &&
     Number.isSafeInteger(n.expiresAt) && n.expiresAt>now && n.expiresAt<=n.createdAt+7*86400000;
 }
-async function notices(now=Date.now()) {
-  const list=await readNoticeState();
+async function notices(now=Date.now(),readFeed=readNoticeState) {
+  const list=await readFeed();
   return list.filter(n=>validNotice(n,now));
 }
-export async function notificationFeedRequest(request,{storeProvider=store}={}) {
+export async function notificationFeedRequest(request,{readFeed=readNoticeState}={}) {
   if(!boundRequestClaims(request))return reply({error:{code:'UNAUTHORIZED'}},401);
   try {
     const text=await request.text();if(text.length>16 || text.trim()!=='{}')return reply({error:{code:'INVALID_REQUEST'}},400);
-    return reply({notices:await notices()});
+    return reply({notices:await notices(Date.now(),readFeed)});
   }catch{return reply({error:{code:'SERVICE_UNAVAILABLE'}},503);}
 }
-export async function adminNotices(request,{storeProvider=opsStore,push=pushNotice}={}) {
+export async function adminNotices(request,{storeProvider=opsStore,push=pushNotice,readFeed=readNoticeState,writeFeed=writeNoticeState}={}) {
   const cfg=adminSettings();if(!cfg.enabled)return reply({code:'ADMIN_DISABLED'},503);
   if(request.method==='POST'&&!validMutation(request,cfg))return reply({code:'CSRF_REJECTED'},403);
   let redis,lock;
   try {
     redis=await storeProvider();
     if(!await authenticateAdmin(redis,request,cfg))return reply({code:'UNAUTHORIZED'},401);
-    if(request.method==='GET')return reply({notices:await notices(),pushConfigured:!!pushAccount()});
+    if(request.method==='GET')return reply({notices:await notices(Date.now(),readFeed),pushConfigured:!!pushAccount()});
     if(request.method!=='POST')return reply({code:'METHOD_NOT_ALLOWED'},405);
     // Bounded stream even when Content-Length is absent or dishonest.
     const reader=request.body?.getReader();if(!reader)return reply({code:'INVALID_REQUEST'},400);
@@ -45,10 +45,10 @@ export async function adminNotices(request,{storeProvider=opsStore,push=pushNoti
       return reply({code:'INVALID_REQUEST'},400);
     if(!await throttle(redis,'spnotice:publish-rate',5,60))return reply({code:'RATE_LIMITED'},429);
     lock=randomUUID();if(await redis.set(LOCK,lock,{NX:true,EX:30})!=='OK'){lock=null;return reply({code:'BUSY'},409);}
-    const current=await notices();
+    const current=await notices(Date.now(),readFeed);
     if(current.some(n=>n.id===input.id))return reply({status:'already-published'});
     const now=Date.now(),notice={...input,createdAt:now,expiresAt:now+7*86400000};
-    await writeNoticeState([...current,notice].slice(-20));
+    await writeFeed([...current,notice].slice(-20));
     // Commit the feed first. FCM failure never discards a published notice.
     let delivery;try{delivery=await push(notice.id);}catch{delivery='periodic-push-failed';}
     return reply({status:'published',delivery,id:notice.id},201);
