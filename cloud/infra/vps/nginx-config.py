@@ -29,6 +29,7 @@ def common_headers() -> str:
     proxy_set_header X-Forwarded-For $remote_addr;
     proxy_set_header X-Forwarded-Proto https;
     proxy_set_header Connection "";
+    proxy_set_header X-Middleware-Subrequest "";
     proxy_connect_timeout 5s;
     proxy_send_timeout 25s;
     proxy_read_timeout 35s;
@@ -134,18 +135,18 @@ def generate(domain: str, api: str, panel: str, www: bool) -> str:
 }}''',
         f'''server {{
 {header(api)}
-    limit_conn spdecode_uploads 12;
 {v1_gate_locations()}
     location = /api/health/live {{
 {common_headers()}
     }}
     location = /api/v1 {{
 {v1_auth()}
-{common_headers()}
+        try_files /__spdecode_v1_dispatch_9f41b__ @spdecode_v1_general;
     }}
     limit_conn_status 429;
     # Android-only API; no public website or operator panel on this host.
     location = /api/v2/transport {{
+        limit_conn spdecode_uploads 12;
         access_log off;
         limit_req zone=spdecode_v2_edge burst=60 nodelay;
         limit_req_status 429;
@@ -159,7 +160,11 @@ def generate(domain: str, api: str, panel: str, www: bool) -> str:
     # the ordinary 25s worker deadline when export was not requested.
     location = /api/v1/decode/file {{
 {v1_auth()}
+        try_files /__spdecode_v1_dispatch_9f41b__ @spdecode_v1_file;
+    }}
+    location @spdecode_v1_file {{
         access_log off;
+        limit_conn spdecode_uploads 12;
         limit_req zone=spdecode_v2_edge burst=60 nodelay;
         limit_req_status 429;
 {common_headers().replace("proxy_read_timeout 35s;", "proxy_read_timeout 65s;")}
@@ -168,14 +173,22 @@ def generate(domain: str, api: str, panel: str, www: bool) -> str:
     # The extended HTTP wait applies to this EXACT API route only.
     location = /api/v1/decode/import/catalog/remote {{
 {v1_auth()}
+        try_files /__spdecode_v1_dispatch_9f41b__ @spdecode_v1_catalog;
+    }}
+    location @spdecode_v1_catalog {{
         access_log off;
+        limit_conn spdecode_uploads 12;
         limit_req zone=spdecode_v2_edge burst=60 nodelay;
         limit_req_status 429;
 {common_headers().replace("proxy_read_timeout 35s;", "proxy_read_timeout 155s;")}
     }}
     location ^~ /api/v1/ {{
 {v1_auth()}
+        try_files /__spdecode_v1_dispatch_9f41b__ @spdecode_v1_general;
+    }}
+    location @spdecode_v1_general {{
         access_log off;
+        limit_conn spdecode_uploads 12;
         limit_req zone=spdecode_v2_edge burst=60 nodelay;
         limit_req_status 429;
 {common_headers()}
