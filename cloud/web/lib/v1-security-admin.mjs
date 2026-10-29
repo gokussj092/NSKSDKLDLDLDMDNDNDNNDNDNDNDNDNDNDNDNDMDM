@@ -1,3 +1,4 @@
+import {randomUUID} from 'node:crypto';
 import {adminSettings,authenticateAdmin,validMutation} from './c6-admin-auth.mjs';
 import {opsStore} from './c6-ops-store.mjs';
 import {legacyProtectionStatus,setLegacyProtection} from './v1-compat-policy.mjs';
@@ -26,10 +27,10 @@ export async function adminV1Protection(request,{storeProvider=opsStore,read=leg
        typeof body.strict!=='boolean' ||
        body.confirmation!==(body.strict?'ACTIVAR_V1_ESTRICTO':'DESACTIVAR_V1_ESTRICTO'))
       return reply({code:'INVALID_REQUEST'},400);
-    const lock='spc6:v1-security:admin-lock';
-    if(await redis.set(lock,'1',{NX:true,EX:10})!=='OK')return reply({code:'BUSY'},409);
+    const lock='spc6:v1-security:admin-lock',token=randomUUID();
+    if(await redis.set(lock,token,{NX:true,EX:30})!=='OK')return reply({code:'BUSY'},409);
     try{return reply({policy:await write(body.strict)});}
-    finally{await redis.del(lock).catch(()=>{});}
+    finally{await redis.eval("if redis.call('GET',KEYS[1]) == ARGV[1] then return redis.call('DEL',KEYS[1]) end return 0",{keys:[lock],arguments:[token]}).catch(()=>{});}
   }catch(error){
     if(error?.message==='V2_NOT_CONFIGURED')return reply({code:'V2_NOT_CONFIGURED'},409);
     if(error?.message==='V1_POLICY_LOCKED')return reply({code:'V1_POLICY_LOCKED'},409);

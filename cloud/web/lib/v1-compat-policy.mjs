@@ -18,7 +18,7 @@ export async function legacyProtectionStatus(env=process.env,{root=ROOT}={}){
     Object.keys(parsed).sort().join(',')!=='strict,updatedAt' ||
     typeof parsed.strict!=='boolean' ||
     typeof parsed.updatedAt!=='string' ||
-    !/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$/.test(parsed.updatedAt))
+    !/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}[.][0-9]{3}Z$/.test(parsed.updatedAt))
     throw Error('V1_POLICY_INVALID');
   return {strict:parsed.strict,locked:false};
 }

@@ -18,14 +18,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - name: Check server Node tests
-        working-directory: cloud/web
-        run: npm test
-      - name: Build web
+      - name: Install dependencies and check server tests
         working-directory: cloud/web
         run: |
           npm install --no-audit --no-fund
-          npm run build
+          npm test
+      - name: Build web
+        working-directory: cloud/web
+        run: npm run build
       - name: Check Docker compose syntax
         run: docker compose -f cloud/compose.yaml config --quiet
   signed-qa:
