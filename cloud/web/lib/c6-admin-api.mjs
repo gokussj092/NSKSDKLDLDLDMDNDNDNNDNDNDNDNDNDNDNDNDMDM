@@ -7,6 +7,7 @@ import { settings } from "./c3-config.mjs";
 import {admissionPolicy,setAdmissionPolicy} from "./c11-play-admission.mjs";
 import {v1ProtectionStatus,v1PolicyStatus,changeV1Policy} from "./v1-protection-policy.mjs";
 import {v2PolicyStatus,changeV2Availability} from "./v2-availability-policy.mjs";
+import {v2PlayPolicyStatus,changeV2PlayPolicy} from "./v2-play-policy.mjs";
 import {v2Settings} from "./v2-config.mjs";
 import {providerOverview,updateProvider,PUBLIC_PROVIDER_IDS} from "./c12-provider-controls.mjs";
 import { ehiConfigured,nurConfigured } from "./c35-provider.mjs";
@@ -53,9 +54,9 @@ export async function statusRequest(request,options={}) {
   try{
     const redis=await (options.storeProvider||opsStore)();
     if(!await authenticateAdmin(redis,request))return error("UNAUTHORIZED",401);
-    const [maintenance,legacyMetrics,ping,serviceMaintenance,playAdmission,providerControls,v1Protection,v1Policy,v2PolicyState]=await Promise.all([
+    const [maintenance,legacyMetrics,ping,serviceMaintenance,playAdmission,providerControls,v1Protection,v1Policy,v2PolicyState,v2PlayPolicy]=await Promise.all([
       maintenanceEnabled(redis),aggregateMetrics(redis),redis.ping(),serviceMaintenanceStates(redis),
-      admissionPolicy(redis),providerOverview(),v1ProtectionStatus(),v1PolicyStatus(),v2PolicyStatus(),
+      admissionPolicy(redis),providerOverview(),v1ProtectionStatus(),v1PolicyStatus(),v2PolicyStatus(),v2PlayPolicyStatus(),
     ]);
     // Show reset-adjusted current errors when detailed aggregate hashes exist.
     // The legacy counter remains a fallback for prior deployments/tests.
@@ -79,7 +80,8 @@ export async function statusRequest(request,options={}) {
         workerReady,ehiImportConfigured:ehiConfigured(),
         nurCatalogImportConfigured:nurConfigured()},
       maintenance,serviceMaintenance,playAdmission,providerControls,v1Protection,v1Policy,
-      v2Policy:{...v2PolicyState,configured:v2Settings().configured},
+      v2Policy:{...v2PolicyState,configured:v2Settings(process.env,{playIntegrityRequired:v2PlayPolicy.integrityRequired}).configured},
+      v2PlayPolicy,
       maintenanceLocked:process.env.CLOUD_FORCE_MAINTENANCE==="true",metrics,
       observation:"Counters are aggregate-only; no user content or keys are logged.",
     });
@@ -155,6 +157,34 @@ export async function v2AvailabilityRequest(request,options={}) {
   return api({v2Policy:{...v2Policy,configured:v2Settings().configured}},200,{"Cache-Control":"private, no-store"});
  }catch(e){
   if(["V2_POLICY_CONFLICT","STORE_BUSY"].includes(e?.message))return error(e.message,409);
+  return error("SERVICE_UNAVAILABLE",503);
+ }
+}
+
+/** Play Integrity is an independent TESTER switch; turning it off always expires in 15 days. */
+export async function v2PlayIntegrityRequest(request,options={}){
+ const cfg=adminSettings();if(!cfg.enabled)return error("ADMIN_DISABLED",503);
+ if(!validMutation(request,cfg))return error("CSRF_REJECTED",403);
+ try{
+  const redis=await (options.storeProvider||opsStore)();
+  if(!await authenticateAdmin(redis,request,cfg))return error("UNAUTHORIZED",401);
+  if(!await throttle(redis,"spc6:v2-play:rate",6,60))return error("RATE_LIMITED",429);
+  const body=await parseSmallJson(request,256);
+  if(!own(body,["integrityRequired","confirmation","expectedRevision"])||
+     typeof body.integrityRequired!=="boolean"||
+     body.confirmation!==(body.integrityRequired?"V2_PLAY_ACTIVAR":"V2_PLAY_BETA_15_DIAS")||
+     !Number.isSafeInteger(body.expectedRevision)||body.expectedRevision<0)
+     return error("INVALID_REQUEST",400);
+  const v2PlayPolicy=await changeV2PlayPolicy(body.integrityRequired,body.expectedRevision,options.policyOptions);
+  try{
+   await redis.lPush("spc6:v2-play:audit",JSON.stringify({
+    at:Date.now(),integrityRequired:body.integrityRequired,revision:v2PlayPolicy.revision}));
+   await redis.lTrim("spc6:v2-play:audit",0,99);
+   await redis.expire("spc6:v2-play:audit",8*86400);
+  }catch{}
+  return api({v2PlayPolicy},200,{"Cache-Control":"private, no-store"});
+ }catch(e){
+  if(["V2_PLAY_POLICY_CONFLICT","STORE_BUSY"].includes(e?.message))return error(e.message,409);
   return error("SERVICE_UNAVAILABLE",503);
  }
 }

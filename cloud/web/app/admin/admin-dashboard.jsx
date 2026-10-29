@@ -115,6 +115,25 @@ export default function AdminDashboard({mode="system"}){
   }catch(e){setError(e.message||"No se pudo actualizar V2.");await refresh();}
   finally{setBusy(false);}
  }
+ async function changeV2Play(){
+  if(!data?.v2PlayPolicy||busy)return;
+  const required=!data.v2PlayPolicy.integrityRequired;
+  const warning=required?
+   "¿Exigir nuevamente Google Play Integrity para V2? Los testers con APK descargadas fuera de Play podrían perder acceso inmediatamente; las sesiones de prueba se revocarán.":
+   "¿Habilitar por un máximo de 15 días la beta V2 sin Google Play Integrity? Solo se conservarán las verificaciones criptográficas y la atestación de hardware del paquete y su firma. Esta protección es inferior a la verificación de Google Play. No activa V2 si no está configurada.";
+  if(!window.confirm(warning))return;
+  setBusy(true);setError("");
+  try{
+   const response=await fetch("/api/admin/v2-play-integrity",
+    requestOptions({integrityRequired:required,confirmation:required?"V2_PLAY_ACTIVAR":"V2_PLAY_BETA_15_DIAS",
+      expectedRevision:data.v2PlayPolicy.revision}));
+   if(!response.ok)throw Error(response.status===409?
+    "La configuración cambió. Actualiza el estado e inténtalo de nuevo.":
+    "No se pudo cambiar la verificación Play de V2 ("+response.status+").");
+   await refresh();
+  }catch(e){setError(e.message||"Error de política Play V2.");await refresh();}
+  finally{setBusy(false);}
+ }
  async function logout(){
   setBusy(true);
   try{
@@ -209,6 +228,20 @@ export default function AdminDashboard({mode="system"}){
       <button type="button" className="sp-admin-switch" role="switch"
        aria-label="API V2 habilitada" aria-checked={Boolean(data.v2Policy?.enabled)}
        disabled={busy||!data.v2Policy} onClick={changeV2}><span/></button>
+     </div>
+     <div className="sp-admin-switch-row">
+      <div><strong>Exigir Google Play Integrity en V2</strong>
+       <small className="muted">{data.v2PlayPolicy?.integrityRequired?
+        "Play Integrity y verificaciones de operaciones obligatorias. Requiere APK reconocida por Google Play.":
+        "Beta temporal: se mantiene atestación de hardware, paquete, certificado y solicitudes firmadas; se omiten los tokens Play."}</small>
+       {!data.v2PlayPolicy?.integrityRequired&&<small className="sp-admin-status-note">
+        {"Caduca automáticamente (UTC): "+new Date(data.v2PlayPolicy.betaUntil).toLocaleString("es-MX",{timeZone:"UTC"})}
+       </small>}
+      </div>
+      <button type="button" className="sp-admin-switch" role="switch"
+       aria-label="Exigir Google Play Integrity en V2"
+       aria-checked={data.v2PlayPolicy?.integrityRequired??true}
+       disabled={busy||!data.v2PlayPolicy} onClick={changeV2Play}><span/></button>
      </div>
    </section>
    <section className="admin-card sp-admin-services">
