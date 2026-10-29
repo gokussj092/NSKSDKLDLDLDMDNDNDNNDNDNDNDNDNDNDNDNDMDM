@@ -17,6 +17,7 @@ services:
       CLOUD_TRUST_PROXY: ${CLOUD_TRUST_PROXY:-false}
       CLOUD_GOOGLE_PLAY_PACKAGE: ${CLOUD_GOOGLE_PLAY_PACKAGE:-}
       CLOUD_NOTICE_FCM_SERVICE_ACCOUNT_JSON: ${CLOUD_NOTICE_FCM_SERVICE_ACCOUNT_JSON:-}
+      CLOUD_NOTICE_STORE_PATH: /app/notices/feed.json
       CLOUD_GOOGLE_SERVICE_ACCOUNT_JSON: ${CLOUD_GOOGLE_SERVICE_ACCOUNT_JSON:-}
       CLOUD_REQUIRE_LICENSED: ${CLOUD_REQUIRE_LICENSED:-true}
       # Requires explicit VPS opt-in AND time-limited Redis/admin action.
@@ -67,6 +68,7 @@ services:
     # named volume. Redis sessions/challenges remain ephemeral and isolated.
     volumes:
       - provider-control:/app/provider-control:rw
+      - notice-feed:/app/notices:rw
     ports:
       # Bound to host loopback only; public HTTPS reverse proxy is a later phase.
       - "127.0.0.1:3000:3000"
@@ -169,6 +171,7 @@ services:
 
 volumes:
   provider-control: {}
+  notice-feed: {}
 
 networks:
   edge: {}

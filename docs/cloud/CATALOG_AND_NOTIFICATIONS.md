@@ -17,7 +17,7 @@ La caché SVC2 comprime antes de AES-GCM con clave Android Keystore no exportabl
 
 ## Publicación de notificaciones
 
-En Panel → Infraestructura hay un formulario de título (80 caracteres) y mensaje (500). Requiere sesión administrativa, Origin/CSRF, límite de 5 publicaciones/minuto y bloqueo Redis. Los avisos caducan a los 7 días; se retienen los 20 últimos. Redis debe tener la persistencia operativa habitual. No admite enlaces, intents o destinos ejecutables como campos adicionales. No uses el canal para secretos.
+En Panel → Infraestructura hay un formulario de título (80 caracteres) y mensaje (500). Requiere sesión administrativa, Origin/CSRF, límite de 5 publicaciones/minuto y bloqueo Redis. Los avisos caducan a los 7 días; se retienen los 20 últimos. El historial se guarda de forma atómica en el volumen Docker `notice-feed` (ruta `/app/notices/feed.json`), separado de Redis; Redis conserva únicamente los bloqueos y límites temporales del publicador. El archivo de avisos no contiene credenciales ni identificadores de usuario. Respáldalo antes de un cambio de volumen. No admite enlaces, intents o destinos ejecutables como campos adicionales. No uses el canal para secretos.
 
 La app obtiene el contenido por la operación V2 17: exige sesión ligada a clave, prueba por petición y límites de metadatos. No se crea un endpoint V1 público sin autenticación. Android comprueba el consentimiento Cloud y el permiso antes de consultar o mostrar. El canal muestra texto, abre exclusivamente MainActivity y conserva identificadores para no repetir avisos.
 

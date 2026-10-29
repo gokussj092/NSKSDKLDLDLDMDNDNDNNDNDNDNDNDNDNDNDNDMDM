@@ -4,6 +4,7 @@ import {opsStore} from './c6-ops-store.mjs';
 import {store,throttle} from './c3-store.mjs';
 import {boundRequestClaims} from './v2-bound-request.mjs';
 import {pushAccount,pushNotice} from './notice-push.mjs';
+import {readStoredFeed,writeStoredFeed} from './notice-store.mjs';
 const KEY='spnotice:feed:v1',LOCK='spnotice:publish-lock';
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 const reply=(body,status=200)=>Response.json(body,{status,headers:{'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'}});
@@ -14,6 +15,8 @@ export function validNotice(n,now=Date.now()) {
     Number.isSafeInteger(n.expiresAt) && n.expiresAt>now && n.expiresAt<=n.createdAt+7*86400000;
 }
 async function notices(redis,now=Date.now()) {
+  const saved=await readStoredFeed();
+  if(saved!==null)return saved.filter(n=>validNotice(n,now));
   const raw=await redis.get(KEY);if(!raw)return [];
   if(raw.length>100000)throw Error('FEED_INVALID');
   const list=JSON.parse(raw);if(!Array.isArray(list)||list.length>20)throw Error('FEED_INVALID');
@@ -49,7 +52,10 @@ export async function adminNotices(request,{storeProvider=opsStore,push=pushNoti
     const current=await notices(redis);
     if(current.some(n=>n.id===input.id))return reply({status:'already-published'});
     const now=Date.now(),notice={...input,createdAt:now,expiresAt:now+7*86400000};
-    await redis.set(KEY,JSON.stringify([...current,notice].slice(-20)),{EX:8*86400});
+    const next=[...current,notice].slice(-20);
+    // The durable feed is committed first. Redis remains ephemeral for locks and sessions.
+    await writeStoredFeed(next);
+    await redis.set(KEY,JSON.stringify(next),{EX:8*86400});
     // Commit the feed first. FCM failure never discards a published notice.
     let delivery;try{delivery=await push(notice.id);}catch{delivery='periodic-push-failed';}
     return reply({status:'published',delivery,id:notice.id},201);
