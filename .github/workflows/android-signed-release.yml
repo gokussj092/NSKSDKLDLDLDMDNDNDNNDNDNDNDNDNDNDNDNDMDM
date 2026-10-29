@@ -28,7 +28,7 @@ jobs:
   preflight:
     name: Require successful main validation at exact revision
     if: >-
-      github.repository == 'Gh0stDeveloper/SP-DECODE' &&
+      github.repository == 'gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM' &&
       (
         (
           github.event_name == 'workflow_run' &&

@@ -1,0 +1,34 @@
+name: SP-DECODE V1 compatibility private QA
+on:
+  pull_request:
+    paths:
+      - "cloud/**"
+      - "android/**"
+      - ".github/workflows/cloud-v1-compat-qa.yml"
+      - ".github/workflows/cloud-private-preproduction-apk.yml"
+permissions:
+  contents: read
+jobs:
+  server-tests:
+    if: github.repository == 'gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM' && github.head_ref == 'fix/v1-strict-toggle-notice-persistence' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Check server Node tests
+        working-directory: cloud/web
+        run: npm test
+      - name: Build web
+        working-directory: cloud/web
+        run: |
+          npm install --no-audit --no-fund
+          npm run build
+      - name: Check Docker compose syntax
+        run: docker compose -f cloud/compose.yaml config --quiet
+  signed-qa:
+    needs: server-tests
+    uses: ./.github/workflows/cloud-private-preproduction-apk.yml
+    secrets: inherit

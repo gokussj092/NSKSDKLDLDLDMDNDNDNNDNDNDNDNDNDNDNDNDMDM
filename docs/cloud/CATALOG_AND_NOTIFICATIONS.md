@@ -17,7 +17,7 @@ La caché SVC2 comprime antes de AES-GCM con clave Android Keystore no exportabl
 
 ## Publicación de notificaciones
 
-En Panel → Infraestructura hay un formulario de título (80 caracteres) y mensaje (500). Requiere sesión administrativa, Origin/CSRF, límite de 5 publicaciones/minuto y bloqueo Redis. Los avisos caducan a los 7 días; se retienen los 20 últimos. Redis debe tener la persistencia operativa habitual. No admite enlaces, intents o destinos ejecutables como campos adicionales. No uses el canal para secretos.
+En Panel → Infraestructura hay un formulario de título (80 caracteres) y mensaje (500). Requiere sesión administrativa, Origin/CSRF, límite de 5 publicaciones/minuto y bloqueo Redis. Los avisos caducan a los 7 días; se retienen los 20 últimos. Los avisos se guardan en el volumen privado y persistente notice-feed; Redis continúa temporal para sesiones, bloqueos y límites. El historial de 20 avisos sobrevive a recreaciones de Redis. No admite enlaces, intents o destinos ejecutables como campos adicionales. No uses el canal para secretos.
 
 La app obtiene el contenido por la operación V2 17: exige sesión ligada a clave, prueba por petición y límites de metadatos. No se crea un endpoint V1 público sin autenticación. Android comprueba el consentimiento Cloud y el permiso antes de consultar o mostrar. El canal muestra texto, abre exclusivamente MainActivity y conserva identificadores para no repetir avisos.
 
@@ -40,3 +40,9 @@ La integración usa prioridad normal para no prometer entrega inmediata durante 
 Pruebas Node: Unicode, claves efímeras distintas, compresión, receptor incorrecto, alteraciones de AAD/cifrado, claves inválidas y límites; autenticación/CSRF/idempotencia/caducidad del publicador; nueva operación protegida. Vector sintético Node → Android, pruebas de caché SVC1/SVC2/tampering, UI Compose y nombres Unicode en instrumentación API35. Las claves del vector son exclusivamente de prueba.
 
 La configuración FCM real, permisos, recepción en teléfonos físicos, distribución por Play cerrada y la transformación de LIAPP requieren validación con tus credenciales y artefacto protegido. Se mantiene NO-GO para publicación estable.
+
+## Compatibilidad V1 desde el panel
+
+Infraestructura incorpora «Exigir sesiones V2 para operaciones V1». Está apagado por defecto y su configuración booleana se guarda atómicamente en el volumen provider-control. Activarlo requiere V2 completamente configurado; bloqueará a APK anteriores sin pruebas vinculadas. El interruptor no introduce atestación en binarios antiguos ni convierte las rutas V1 públicas en V2. El ajuste privado CLOUD_V1_REQUIRE_BOUND_SESSION=true sigue teniendo prioridad y no puede desactivarse desde el panel. El acceso administrativo exige sesión, Origin/CSRF y confirmación explícita.
+
+Para migrar desde 1.1.21: conservar el interruptor apagado, probar autenticación/descifrado/catálogos contra el entorno aislado, publicar V2 sólo al comprobar integridad real. Los avisos permanecen 7 días, 20 máximo; respaldar el volumen notice-feed antes de cambiar producción.
