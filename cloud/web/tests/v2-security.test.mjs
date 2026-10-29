@@ -193,6 +193,7 @@ test("V2 reaches real decoder only after proof and preserves existing worker val
 test("temporary V2 Telegram mode requires hardware app identity and revokes beta sessions when Play resumes",async()=>{
   const f=fixture({CLOUD_KEY_ATTESTATION_REQUIRED:"true",
     CLOUD_KEY_ATTESTATION_TOKEN:"k".repeat(48),
+    CLOUD_GOOGLE_CLOUD_PROJECT_NUMBER:"78511444369",
     CLOUD_ACTION_INTEGRITY_REQUIRED:"true"});
   f.options.playPolicyLoader=async()=>({integrityRequired:false,betaUntil:new Date(Date.now()+3600000).toISOString()});
   let decoded=0,verified=0;
@@ -223,9 +224,9 @@ test("temporary V2 Telegram mode requires hardware app identity and revokes beta
     assert.equal((await request.json()).knownVersion,1);
     return Response.json({status:"ok"});
   };
-  assert.equal((await f.call(10,{knownVersion:1},body.accessToken)).status,200);
+  assert.equal((await f.call(14,{knownVersion:1},body.accessToken)).status,200);
   f.options.playPolicyLoader=async()=>({integrityRequired:true,betaUntil:null});
-  assert.equal((await f.call(10,{knownVersion:1},body.accessToken)).status,401);
+  assert.equal((await f.call(14,{knownVersion:1},body.accessToken)).status,401);
 });
 test("V2 beta rejects invalid hardware version, forged Play token and unavailable transport",async()=>{
   const f=fixture({CLOUD_KEY_ATTESTATION_REQUIRED:"true",CLOUD_KEY_ATTESTATION_TOKEN:"k".repeat(48)});
