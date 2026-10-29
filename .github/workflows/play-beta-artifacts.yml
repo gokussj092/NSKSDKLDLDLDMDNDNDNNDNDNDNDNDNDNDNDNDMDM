@@ -21,6 +21,7 @@ jobs:
   signed-artifacts:
     if: >-
       github.repository == 'gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM' &&
+      github.event.repository.private == true &&
       (github.ref == 'refs/heads/feat/catalog-notifications-donations' || github.ref == 'refs/heads/main') &&
       github.event_name != 'pull_request'
     runs-on: ubuntu-latest
