@@ -13,6 +13,8 @@ export function pushAccount(env=process.env) {
 export async function pushNotice(id,{env=process.env,fetchImpl=fetch,validateOnly=false}={}) {
   if(!/^[0-9a-f-]{36}$/.test(id)||typeof validateOnly!=='boolean')throw Error('PUSH_INVALID');
   const account=pushAccount(env);if(!account)return 'periodic';
+  const targetProject=env.CLOUD_NOTICE_FCM_PROJECT_ID||account.project_id;
+  if(!/^[a-z][a-z0-9-]{4,60}$/.test(targetProject))throw Error('PUSH_INVALID');
   const now=Math.floor(Date.now()/1000);
   const unsigned=encode({alg:'RS256',typ:'JWT'})+'.'+encode({iss:account.client_email,aud:TOKEN,
     scope:'https://www.googleapis.com/auth/firebase.messaging',iat:now,exp:now+300});
@@ -24,7 +26,7 @@ export async function pushNotice(id,{env=process.env,fetchImpl=fetch,validateOnl
   if(!response.ok)throw Error('PUSH_UNAVAILABLE');
   const auth=await response.json();
   if(typeof auth.access_token!=='string'||auth.access_token.length>8192||auth.token_type?.toLowerCase()!=='bearer')throw Error('PUSH_UNAVAILABLE');
-  const sent=await fetchImpl('https://fcm.googleapis.com/v1/projects/'+account.project_id+'/messages:send',{
+  const sent=await fetchImpl('https://fcm.googleapis.com/v1/projects/'+targetProject+'/messages:send',{
     method:'POST',redirect:'error',signal:AbortSignal.timeout(8000),
     headers:{'Authorization':'Bearer '+auth.access_token,'Content-Type':'application/json'},
     body:JSON.stringify({...(validateOnly?{validate_only:true}:{}),message:{topic:'spdecode-notices-v1',data:{noticeId:id},

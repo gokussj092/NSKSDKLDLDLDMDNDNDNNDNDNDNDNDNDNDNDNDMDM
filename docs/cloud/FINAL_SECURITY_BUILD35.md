@@ -37,7 +37,7 @@ La configuración real en la VPS y la recepción en teléfonos requieren acceso 
 
 ## Artefactos privados y firma
 
-Validate llama al workflow privado en esta misma rama tras sus dos trabajos generales. El preparador exige además las once validaciones independientes del SHA exacto y rechaza un HEAD obsoleto. No necesita una nueva rama ni un dispatch externo. Un dispatch manual de Actions conserva los mismos controles.
+Validate llama al workflow privado en esta misma rama tras sus dos trabajos generales. El preparador exige además las once validaciones independientes del SHA exacto y rechaza un HEAD obsoleto. No necesita una nueva rama ni un dispatch externo. La entrada manual `cloud-real-api-test-apk.yml` delega en el mismo flujo canónico; deja de reescribir la versión a 1.2.5-qa (33) y no habilita el lanzador QA en este artefacto. Un dispatch manual de Actions conserva los mismos controles.
 
 Secretos obligatorios: `SPDECODE_SIGNING_KEYSTORE_BASE64`, `SPDECODE_SIGNING_STORE_PASSWORD`, `SPDECODE_SIGNING_KEY_ALIAS`, `SPDECODE_SIGNING_KEY_PASSWORD`. Solo se informa el nombre de cualquier secreto ausente. No se crea otra keystore.
 

@@ -29,7 +29,7 @@ class VPSInstallerTests(unittest.TestCase):
         self.assertIn("location ^~ /api/v1/",config)
         self.assertIn("location ^~ /api/admin/",config)
         self.assertIn("location ^~ /_next/",config)
-        self.assertIn("location ^~ /api/v1/ { return 404; }",config)
+        self.assertIn("location @spdecode_v1_unrouted { return 404; }",config)
         self.assertIn("location ^~ /api/admin { return 404; }",config)
         self.assertNotIn("allow 198.51.100.12/32;",config)
         self.assertNotIn("deny all;",config)
@@ -47,7 +47,11 @@ class VPSInstallerTests(unittest.TestCase):
         self.assertIn("location ^~ /api/admin/",panel)
         self.assertIn("location ^~ /admin",panel)
         self.assertIn("location / { return 404; }",panel)
-        self.assertNotIn("location ^~ /api/v1/",panel)
+        entry=panel.split("location ^~ /api/v1/ {",1)[1].split("}",1)[0]
+        self.assertIn("auth_request /_spdecode_v1_gate;",entry)
+        self.assertIn("@spdecode_v1_unrouted",entry)
+        self.assertNotIn("proxy_pass",entry)
+        self.assertIn("location @spdecode_v1_unrouted { return 404; }",panel)
         cli=(VPS/"spdecodectl").read_text()
         self.assertIn("panel_routes(){",cli)
         self.assertIn("sync-routes)",cli)
@@ -162,15 +166,19 @@ class VPSInstallerTests(unittest.TestCase):
               capture_output=True,text=True,check=True).stdout
         api=output.split("server_name api.spdecode.xyz;",1)[1].split("server_name panel.spdecode.xyz;",1)[0]
         self.assertIn("location = /api/v1/decode/import/catalog/remote {",api)
-        catalog=api.split("location = /api/v1/decode/import/catalog/remote {",1)[1].split("}",1)[0]
-        normal=api.split("location ^~ /api/v1/ {",1)[1].split("}",1)[0]
+        entry=api.split("location = /api/v1/decode/import/catalog/remote {",1)[1].split("}",1)[0]
+        self.assertIn("auth_request /_spdecode_v1_gate;",entry)
+        self.assertIn("@spdecode_v1_catalog",entry)
+        self.assertNotIn("limit_req ",entry)
+        catalog=api.split("location @spdecode_v1_catalog {",1)[1].split("}",1)[0]
+        normal=api.split("location @spdecode_v1_general {",1)[1].split("}",1)[0]
         self.assertIn("proxy_read_timeout 155s;",catalog)
         self.assertIn("proxy_read_timeout 35s;",normal)
-        file_route=output.split("location = /api/v1/decode/file {",1)[1].split("}",1)[0]
+        file_route=api.split("location @spdecode_v1_file {",1)[1].split("}",1)[0]
         self.assertIn("proxy_read_timeout 65s;",file_route)
         public=output.split("server_name spdecode.xyz;",1)[1].split("server_name api.spdecode.xyz;",1)[0]
         self.assertNotIn("location = /api/v1/decode/import/catalog/remote {",public)
-        self.assertIn("location ^~ /api/v1/ { return 404; }",public)
+        self.assertIn("location @spdecode_v1_unrouted { return 404; }",public)
     def test_nur_catalog_gets_independent_worker_cpu_and_walltime_caps(self):
         engine=(ROOT/"cloud/workers/python/engine.py").read_text()
         native=(ROOT/"android/app/src/main/cpp/spdecode_transport.cpp").read_text()
