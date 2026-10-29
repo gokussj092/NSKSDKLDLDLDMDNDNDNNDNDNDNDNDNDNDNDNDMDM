@@ -17,7 +17,7 @@ La caché SVC2 comprime antes de AES-GCM con clave Android Keystore no exportabl
 
 ## Publicación de notificaciones
 
-En Panel → Infraestructura hay un formulario de título (80 caracteres) y mensaje (500). Requiere sesión administrativa, Origin/CSRF, límite de 5 publicaciones/minuto y bloqueo Redis. Los avisos caducan a los 7 días; se retienen los 20 últimos. Redis debe tener la persistencia operativa habitual. No admite enlaces, intents o destinos ejecutables como campos adicionales. No uses el canal para secretos.
+En Panel → Infraestructura hay un formulario de título (80 caracteres) y mensaje (500). Requiere sesión administrativa, Origin/CSRF, límite de 5 publicaciones/minuto y bloqueo Redis. Los avisos caducan a los 7 días; se retienen los 20 últimos. El historial se almacena en el volumen dedicado `notice-feed` (máximo 20 avisos, consulta limitada a 7 días). Redis continúa temporal, sin AOF ni sesiones persistentes; sus bloqueos y límites de publicación no se guardan en disco. La pérdida del volumen `notice-feed` sí elimina el historial. No admite enlaces, intents o destinos ejecutables como campos adicionales. No uses el canal para secretos.
 
 La app obtiene el contenido por la operación V2 17: exige sesión ligada a clave, prueba por petición y límites de metadatos. No se crea un endpoint V1 público sin autenticación. Android comprueba el consentimiento Cloud y el permiso antes de consultar o mostrar. El canal muestra texto, abre exclusivamente MainActivity y conserva identificadores para no repetir avisos.
 
@@ -33,7 +33,7 @@ No se ha creado ni configurado un proyecto Firebase con este cambio. Para la ent
 4. Activa notificaciones en Ajustes y concede POST_NOTIFICATIONS en Android13+. Firebase no se inicializa antes del consentimiento. La suscripción recibe solo un UUID de aviso por el tema `spdecode-notices-v1`; el contenido se obtiene después de la API autenticada. No envía archivos ni contraseñas a Firebase.
 5. Publica un aviso desde el panel y comprueba su recepción con app abierta y cerrada, caducidad, duplicados, denegación del permiso y revocación Cloud. Una señal FCM enviada no certifica que el teléfono la haya recibido. Si falla FCM, el aviso publicado queda disponible por consulta periódica.
 
-La integración usa prioridad normal para no prometer entrega inmediata durante Doze. La política de privacidad ES/EN declara el uso opcional de Firebase y sus identificadores. Revisa Data Safety de Play y cualquier licencia/SDK LIAPP antes de publicar. No se ha enviado ningún aviso real, fusionado el PR, desplegado la VPS ni publicado un artefacto por preparar este cambio.
+La integración usa prioridad normal para no prometer entrega inmediata durante Doze. La política de privacidad ES/EN declara el uso opcional de Firebase y sus identificadores. Revisa Data Safety de Play y cualquier licencia/SDK LIAPP antes de publicar. El PR de integración de compatibilidad añade almacenamiento persistente y corrige las rutas de compilación para Goku. La app aún requiere prueba física, envío FCM real y despliegue controlado; no publicar como estable sin esas validaciones.
 
 ## Validación
 

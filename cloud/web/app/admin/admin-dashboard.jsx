@@ -76,6 +76,21 @@ export default function AdminDashboard({mode="system"}){
   }catch(e){setError(e.message||"No se pudo actualizar la política.");}
   finally{setBusy(false);}
  }
+ async function changeV1Protection(){
+  if(!data?.v1Protection||busy||data.v1Protection.locked||
+     !data.v1Protection.v2Ready||data.maintenance)return;
+  const enabled=!data.v1Protection.enabled;
+  const warning=enabled?
+   "¿Activar la protección V2 obligatoria para las operaciones V1? Las APK antiguas que usan sesiones V1 dejarán de descifrar o consultar catálogos hasta que desactives este control.":"¿Restaurar el modo compatible V1? Las sesiones antiguas volverán a admitirse con sus controles habituales.";
+  if(!window.confirm(warning))return;
+  setBusy(true);setError("");
+  try{
+   const response=await fetch("/api/admin/v1-security",requestOptions({enabled}));
+   if(!response.ok)throw Error("No se pudo cambiar la política V1 ("+response.status+").");
+   await refresh();
+  }catch(e){setError(e.message||"No se pudo actualizar la protección V1.");}
+  finally{setBusy(false);}
+ }
  async function logout(){
   setBusy(true);
   try{
@@ -142,6 +157,27 @@ export default function AdminDashboard({mode="system"}){
      </p>}
     </section>
    </div>
+   <section className="admin-card sp-admin-services">
+    <div className="sp-admin-section-heading"><div>
+     <h2>Protección de clientes V1</h2>
+     <p className="muted">Control de compatibilidad para APK anteriores. No modifica las protecciones obligatorias de V2.</p>
+    </div></div>
+    <div className="sp-admin-switch-row">
+     <div><strong>Exigir sesión protegida V2 en rutas V1</strong>
+      <small className="muted">{data.v1Protection?.enabled?
+       "Modo estricto: las sesiones V1 anteriores no serán aceptadas.":"Modo compatible: las APK anteriores conservan la autenticación V1."}</small>
+      <small className="sp-admin-status-note">{data.v1Protection?.locked?
+       "Impuesto desde la configuración privada del VPS":!data.v1Protection?.v2Ready?
+       "Requiere configurar primero el verificador V2 en el VPS":
+       "El cambio se conserva tras reiniciar los servicios."}</small>
+     </div>
+     <button className="sp-admin-switch" role="switch" aria-label="Protección estricta V1"
+      aria-checked={Boolean(data.v1Protection?.enabled)}
+      disabled={busy||data.maintenance||!data.v1Protection?.v2Ready||data.v1Protection?.locked}
+      onClick={changeV1Protection}><span/></button>
+    </div>
+    <p className="muted">La activación puede impedir que las APK antiguas utilicen el servicio. No puede añadir hardware, atestación ni código nuevo a una APK ya distribuida. V2 conserva sus propias verificaciones, con independencia de este interruptor.</p>
+   </section>
    <AdminCompatibleExport/>
    <section className="admin-card sp-admin-services">
     <div className="sp-admin-section-heading"><div><h2>Distribución beta y Google Play Integrity</h2>
