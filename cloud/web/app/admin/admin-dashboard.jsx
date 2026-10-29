@@ -76,6 +76,22 @@ export default function AdminDashboard({mode="system"}){
   }catch(e){setError(e.message||"No se pudo actualizar la política.");}
   finally{setBusy(false);}
  }
+ async function changeV1Protection(){
+  if(!data?.v1Protection||busy||data.v1Protection.locked)return;
+  const enabled=!data.v1Protection.enabled;
+  const warning=enabled?
+   "¿Exigir una sesión vinculada V2 para operaciones protegidas de V1? Las APK antiguas sin soporte V2 pueden perder acceso a Cloud hasta que desactives este control. No modifica V2.":
+   "¿Volver al acceso V1 compatible? Se conservan las verificaciones y límites existentes.";
+  if(!window.confirm(warning))return;
+  setBusy(true);setError("");
+  try{
+   const confirmation=enabled?"ACTIVAR_V1_PROTECCION":"DESACTIVAR_V1_PROTECCION";
+   const res=await fetch("/api/admin/v1-protection",requestOptions({enabled,confirmation}));
+   if(!res.ok)throw Error("El servidor rechazó el cambio ("+res.status+").");
+   await refresh();
+  }catch(e){setError(e.message||"No se pudo cambiar la protección V1.");}
+  finally{setBusy(false);}
+ }
  async function logout(){
   setBusy(true);
   try{
@@ -143,6 +159,25 @@ export default function AdminDashboard({mode="system"}){
     </section>
    </div>
    <AdminCompatibleExport/>
+   <section className="admin-card sp-admin-services">
+    <div className="sp-admin-section-heading"><div><h2>Protección de clientes V1</h2>
+     <p className="muted">Modo de compatibilidad de sesiones. No desactiva los límites V1 existentes ni la protección de V2.</p></div></div>
+    <div className="sp-admin-switch-row">
+     <div><strong>Exigir sesión V2 para operaciones V1 protegidas</strong>
+      <small className="muted">{data.v1Protection?.enabled?
+       "Activado: las operaciones V1 con autenticación exigen una sesión vinculada V2.":
+       "Desactivado: las versiones antiguas conservan su acceso V1 habitual."}</small>
+      <small className="sp-admin-status-note">{data.v1Protection?.locked?
+       "Control bloqueado por la configuración de la VPS.":
+       "Activarlo puede bloquear APK antiguas sin V2. Se puede revertir desde el panel."}</small>
+     </div>
+     <button className="sp-admin-switch" role="switch" type="button"
+      aria-label="Protección reforzada de clientes V1"
+      aria-checked={Boolean(data.v1Protection?.enabled)}
+      disabled={busy||!data.v1Protection||data.v1Protection.locked}
+      onClick={changeV1Protection}><span/></button>
+    </div>
+   </section>
    <section className="admin-card sp-admin-services">
     <div className="sp-admin-section-heading"><div><h2>Distribución beta y Google Play Integrity</h2>
      <p className="muted">Esta política afecta a nuevas sesiones Cloud, no a la firma local ni a la seguridad de Google Play.</p></div></div>

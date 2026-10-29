@@ -4,6 +4,7 @@ import { boundRequestClaims } from "./v2-bound-request.mjs";
 import { bindVerifiedRequest } from "./v2-bound-request.mjs";
 import { authorizeBoundV1 } from "./bound-auth.mjs";
 import { v2Settings } from "./v2-config.mjs";
+import {v1ProtectionRequired} from "./v1-protection-policy.mjs";
 import { workBudget } from "./device-security.mjs";
 import { checkIntegrityVerdict, verifyPlayToken } from "./c3-integrity.mjs";
 import { consumeChallenge, ipKey, rememberSession, reserveChallenge, sessionExists, throttle } from "./c3-store.mjs";
@@ -103,7 +104,7 @@ export async function requireSession(redis, request, cfg) {
     if(result&&!result.rateLimited)bindVerifiedRequest(request,result);
     return result;
   }
-  if (process.env.CLOUD_V1_REQUIRE_BOUND_SESSION === "true") return null;
+  if (await v1ProtectionRequired()) return null;
   const claims = verifySignature(bearer.slice(7), cfg.signingKey);
   if (!claims || (claims.channel && claims.channel!=="qa") ||
       (claims.channel==="qa" && !cfg.qaActive) ||
