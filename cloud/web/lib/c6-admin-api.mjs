@@ -2,9 +2,10 @@ import { adminSettings, adminLogin, authenticateAdmin, validMutation,
   cookieHeader, deleteCookie, revokeAdmin } from "./c6-admin-auth.mjs";
 import { opsStore, maintenanceEnabled, setMaintenance, aggregateMetrics, usageReport,
   SERVICE_IDS,serviceMaintenanceStates,setServiceMaintenance,resetErrorBaselines } from "./c6-ops-store.mjs";
+import {throttle} from "./c3-store.mjs";
 import { settings } from "./c3-config.mjs";
 import {admissionPolicy,setAdmissionPolicy} from "./c11-play-admission.mjs";
-import {v1ProtectionStatus,setV1Protection} from "./v1-protection-policy.mjs";
+import {v1ProtectionStatus,v1PolicyStatus,changeV1Policy} from "./v1-protection-policy.mjs";
 import {providerOverview,updateProvider,PUBLIC_PROVIDER_IDS} from "./c12-provider-controls.mjs";
 import { ehiConfigured,nurConfigured } from "./c35-provider.mjs";
 import { jsonReply } from "./responses.mjs";
@@ -50,9 +51,9 @@ export async function statusRequest(request,options={}) {
   try{
     const redis=await (options.storeProvider||opsStore)();
     if(!await authenticateAdmin(redis,request))return error("UNAUTHORIZED",401);
-    const [maintenance,legacyMetrics,ping,serviceMaintenance,playAdmission,providerControls,v1Protection]=await Promise.all([
+    const [maintenance,legacyMetrics,ping,serviceMaintenance,playAdmission,providerControls,v1Protection,v1Policy]=await Promise.all([
       maintenanceEnabled(redis),aggregateMetrics(redis),redis.ping(),serviceMaintenanceStates(redis),
-      admissionPolicy(redis),providerOverview(),v1ProtectionStatus(),
+      admissionPolicy(redis),providerOverview(),v1ProtectionStatus(),v1PolicyStatus(),
     ]);
     // Show reset-adjusted current errors when detailed aggregate hashes exist.
     // The legacy counter remains a fallback for prior deployments/tests.
@@ -75,7 +76,7 @@ export async function statusRequest(request,options={}) {
       services:{apiConfigured:cfg.configured,redisConnected:ping==="PONG",
         workerReady,ehiImportConfigured:ehiConfigured(),
         nurCatalogImportConfigured:nurConfigured()},
-      maintenance,serviceMaintenance,playAdmission,providerControls,v1Protection,
+      maintenance,serviceMaintenance,playAdmission,providerControls,v1Protection,v1Policy,
       maintenanceLocked:process.env.CLOUD_FORCE_MAINTENANCE==="true",metrics,
       observation:"Counters are aggregate-only; no user content or keys are logged.",
     });
@@ -101,29 +102,28 @@ export async function maintenanceRequest(request,options={}) {
     return error("SERVICE_UNAVAILABLE",503);
   }
 }
-/** Admin-only reversible V1 bearer policy; V2 remains enforced independently. */
-export async function v1ProtectionRequest(request,options={}){
- const cfg=adminSettings();
- if(!cfg.enabled)return error("ADMIN_DISABLED",503);
+/** Closed administrative controls; availability has priority over protection. */
+export const v1ProtectionRequest=(request,options={})=>v1PolicyRequest(request,'advancedProtection',options);
+export const v1AvailabilityRequest=(request,options={})=>v1PolicyRequest(request,'apiEnabled',options);
+async function v1PolicyRequest(request,field,options) {
+ const cfg=adminSettings();if(!cfg.enabled)return error("ADMIN_DISABLED",503);
  if(!validMutation(request,cfg))return error("CSRF_REJECTED",403);
- try{
+ try {
   const redis=await (options.storeProvider||opsStore)();
   if(!await authenticateAdmin(redis,request,cfg))return error("UNAUTHORIZED",401);
-  const body=await parseSmallJson(request,192);
-  if(!own(body,["enabled","confirmation"])||typeof body.enabled!=="boolean"||
-    body.confirmation!==(body.enabled?"ACTIVAR_V1_PROTECCION":"DESACTIVAR_V1_PROTECCION"))
-    return error("INVALID_REQUEST",400);
-  const v1Protection=await setV1Protection(body.enabled);
-  // Best-effort bounded audit without credentials or device metadata.
-  try{
-   await redis.lPush("spc6:v1-protection:audit",JSON.stringify({at:Date.now(),enabled:v1Protection.enabled}));
-   await redis.lTrim("spc6:v1-protection:audit",0,99);
-   await redis.expire("spc6:v1-protection:audit",8*86400);
+  if(!await throttle(redis,"spc6:v1-policy:rate",10,60))return error("RATE_LIMITED",429);
+  const body=await parseSmallJson(request,256);
+  const confirmation=(field==='apiEnabled'?'API_V1_':'V1_PROTECCION_')+(body?.enabled?'ACTIVAR':'DESACTIVAR');
+  if(!own(body,["enabled","confirmation","expectedRevision"])||typeof body.enabled!=="boolean"||body.confirmation!==confirmation||
+    !Number.isSafeInteger(body.expectedRevision)||body.expectedRevision<0)return error("INVALID_REQUEST",400);
+  const v1Policy=await changeV1Policy(field,body.enabled,body.expectedRevision,options.policyOptions);
+  try {
+   await redis.lPush("spc6:v1-protection:audit",JSON.stringify({at:Date.now(),field,enabled:body.enabled,revision:v1Policy.revision}));
+   await redis.lTrim("spc6:v1-protection:audit",0,99);await redis.expire("spc6:v1-protection:audit",8*86400);
   }catch{}
-  return api({v1Protection},200,{"Cache-Control":"private, no-store"});
- }catch(e){
-  if(e?.message==="V1_POLICY_LOCKED")return error("V1_POLICY_LOCKED",409);
-  if(e?.message==="V1_POLICY_BUSY")return error("V1_POLICY_BUSY",409);
+  return api({v1Policy},200,{"Cache-Control":"private, no-store"});
+ }catch(e) {
+  if(['V1_POLICY_CONFLICT','STORE_BUSY'].includes(e.message))return error(e.message,409);
   return error("SERVICE_UNAVAILABLE",503);
  }
 }

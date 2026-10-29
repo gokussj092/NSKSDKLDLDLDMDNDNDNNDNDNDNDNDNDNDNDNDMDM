@@ -1,7 +1,4 @@
-import { legacyApiRetired } from "./lib/v2-config.mjs";
-export function proxy(request) {
-  if(legacyApiRetired(new URL(request.url).pathname))
-    return Response.json({error:{code:"CLIENT_UPDATE_REQUIRED"}},{status:410,
-      headers:{"Cache-Control":"no-store","X-Content-Type-Options":"nosniff"}});
-}
-export const config={matcher:["/api/v1/:path*"]};
+import {v1Gate} from './lib/v1-gate.mjs';
+export async function proxy(request){return v1Gate(request);}
+// Match encoded prefixes too. The guard reads storage only for normalized V1 paths.
+export const config={matcher:['/:path*']};

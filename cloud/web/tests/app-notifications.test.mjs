@@ -70,3 +70,13 @@ test('FCM uses separate OAuth scope and sends only an identifier hint to the fix
  }});
  assert.equal(result,'push');assert.equal(calls.length,2);
 });
+test('FCM diagnostic uses validate_only and never transmits notice text',async()=>{
+ const {generateKeyPairSync}=await import('node:crypto');const pair=generateKeyPairSync('rsa',{modulusLength:2048});
+ const account={type:'service_account',project_id:'sp-decode-android',client_email:'notices@sp-decode-android.iam.gserviceaccount.com',private_key:pair.privateKey.export({format:'pem',type:'pkcs8'})};
+ const id=randomUUID();let calls=0;
+ assert.equal(await pushNotice(id,{env:{CLOUD_NOTICE_FCM_SERVICE_ACCOUNT_JSON:JSON.stringify(account)},validateOnly:true,fetchImpl:async(url,options)=>{
+  if(++calls===1)return Response.json({token_type:'Bearer',access_token:'synthetic-token'});
+  const body=JSON.parse(options.body);assert.equal(body.validate_only,true);assert.deepEqual(body.message.data,{noticeId:id});
+  assert.equal(body.message.notification,undefined);return Response.json({});
+ }}),'push');assert.equal(calls,2);
+});

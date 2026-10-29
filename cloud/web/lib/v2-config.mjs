@@ -31,7 +31,5 @@ export function v2Settings(env = process.env) {
 }
 export function legacyApiRetired(pathname, env = process.env) {
   return env.CLOUD_LEGACY_API_ENABLED === "false" &&
-    (pathname === "/api/v1" || pathname.startsWith("/api/v1/")) &&
-    !["/api/v1/health","/api/v1/ready"].includes(pathname.replace(/\/$/,""));
+    (pathname === "/api/v1" || pathname.startsWith("/api/v1/"));
 }
-

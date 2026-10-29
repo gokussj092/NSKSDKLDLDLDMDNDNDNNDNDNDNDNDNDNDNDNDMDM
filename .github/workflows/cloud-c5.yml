@@ -4,6 +4,7 @@ on:
     branches: ["feat/cloud-c5-apk-secret-minimization"]
   pull_request:
     paths:
+      - ".github/workflows/cloud-private-preproduction-apk.yml"
       - "android/app/**"
       - "tests/test_cloud_c5_source_isolation.py"
       - "tests/cloud_c5_apk_audit.py"

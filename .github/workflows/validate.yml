@@ -400,12 +400,15 @@ jobs:
           retention-days: 30
 
   private-preproduction:
-    name: Private 1.1.22 APK and AAB after complete Android QA
+    name: Private 1.1.24 (35) APK and AAB after complete Android QA
     needs: [validate, android-parity]
     if: >-
-      github.repository == 'Gh0stDeveloper/SP-DECODE' &&
+      github.repository == 'gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM' &&
       github.event_name == 'pull_request' &&
-      github.head_ref == 'feat/mm-tunnel-1-10-11-1-decoders' &&
+      github.head_ref == 'feat/catalog-notifications-donations' &&
       github.event.pull_request.head.repo.full_name == github.repository
+    permissions:
+      contents: write
+      actions: read
     uses: ./.github/workflows/cloud-private-preproduction-apk.yml
     secrets: inherit

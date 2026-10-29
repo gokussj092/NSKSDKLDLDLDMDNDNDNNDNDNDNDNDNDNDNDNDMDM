@@ -10,7 +10,8 @@ export function pushAccount(env=process.env) {
   }catch{return null;}
 }
 /** Sends only a wake-up hint. Notice text must be fetched with the device-bound session. */
-export async function pushNotice(id,{env=process.env,fetchImpl=fetch}={}) {
+export async function pushNotice(id,{env=process.env,fetchImpl=fetch,validateOnly=false}={}) {
+  if(!/^[0-9a-f-]{36}$/.test(id)||typeof validateOnly!=='boolean')throw Error('PUSH_INVALID');
   const account=pushAccount(env);if(!account)return 'periodic';
   const now=Math.floor(Date.now()/1000);
   const unsigned=encode({alg:'RS256',typ:'JWT'})+'.'+encode({iss:account.client_email,aud:TOKEN,
@@ -26,7 +27,7 @@ export async function pushNotice(id,{env=process.env,fetchImpl=fetch}={}) {
   const sent=await fetchImpl('https://fcm.googleapis.com/v1/projects/'+account.project_id+'/messages:send',{
     method:'POST',redirect:'error',signal:AbortSignal.timeout(8000),
     headers:{'Authorization':'Bearer '+auth.access_token,'Content-Type':'application/json'},
-    body:JSON.stringify({message:{topic:'spdecode-notices-v1',data:{noticeId:id},
+    body:JSON.stringify({...(validateOnly?{validate_only:true}:{}),message:{topic:'spdecode-notices-v1',data:{noticeId:id},
       android:{priority:'normal',ttl:'86400s',collapse_key:'spdecode-notices'}}})});
   if(!sent.ok)throw Error('PUSH_UNAVAILABLE');
   return 'push';

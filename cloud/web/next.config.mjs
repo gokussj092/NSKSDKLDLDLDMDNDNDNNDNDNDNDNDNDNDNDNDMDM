@@ -1,6 +1,8 @@
 /** C6 information site + API; no administrative caching or framing. */
 export default {
   poweredByHeader:false,
+  skipTrailingSlashRedirect:true,
+  skipProxyUrlNormalize:true,
   reactStrictMode:true,
   async headers(){
     return [

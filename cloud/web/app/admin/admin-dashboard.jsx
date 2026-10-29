@@ -76,20 +76,24 @@ export default function AdminDashboard({mode="system"}){
   }catch(e){setError(e.message||"No se pudo actualizar la política.");}
   finally{setBusy(false);}
  }
- async function changeV1Protection(){
-  if(!data?.v1Protection||busy||data.v1Protection.locked)return;
-  const enabled=!data.v1Protection.enabled;
-  const warning=enabled?
-   "¿Exigir una sesión vinculada V2 para operaciones protegidas de V1? Las APK antiguas sin soporte V2 pueden perder acceso a Cloud hasta que desactives este control. No modifica V2.":
-   "¿Volver al acceso V1 compatible? Se conservan las verificaciones y límites existentes.";
+ async function changeV1(field){
+  if(!data?.v1Policy||busy)return;
+  const enabled=!data.v1Policy[field];
+  const protection=field==="advancedProtection";
+  const warning=protection?(enabled?
+   "¿Activar la protección avanzada V1? Las versiones antiguas de Android podrían perder acceso hasta actualizarse. V2 no cambia.":
+   "¿Desactivar la protección avanzada V1? Se conservan la autenticación y los límites actuales de V1."):(enabled?
+   "¿Habilitar API V1 con la política de protección seleccionada?":
+   "¿Deshabilitar completamente API V1? Se rechazarán todas sus rutas, incluidas autenticación, salud, catálogos y descifrado. V2 y el panel seguirán disponibles.");
   if(!window.confirm(warning))return;
   setBusy(true);setError("");
   try{
-   const confirmation=enabled?"ACTIVAR_V1_PROTECCION":"DESACTIVAR_V1_PROTECCION";
-   const res=await fetch("/api/admin/v1-protection",requestOptions({enabled,confirmation}));
-   if(!res.ok)throw Error("El servidor rechazó el cambio ("+res.status+").");
+   const confirmation=(protection?"V1_PROTECCION_":"API_V1_")+(enabled?"ACTIVAR":"DESACTIVAR");
+   const res=await fetch(protection?"/api/admin/v1-protection":"/api/admin/v1-availability",
+    requestOptions({enabled,confirmation,expectedRevision:data.v1Policy.revision}));
+   if(!res.ok)throw Error(res.status===409?"La política cambió. Actualiza el estado e inténtalo de nuevo.":"El servidor rechazó el cambio ("+res.status+").");
    await refresh();
-  }catch(e){setError(e.message||"No se pudo cambiar la protección V1.");}
+  }catch(e){setError(e.message||"No se pudo cambiar la política V1.");await refresh();}
   finally{setBusy(false);}
  }
  async function logout(){
@@ -160,23 +164,20 @@ export default function AdminDashboard({mode="system"}){
    </div>
    <AdminCompatibleExport/>
    <section className="admin-card sp-admin-services">
-    <div className="sp-admin-section-heading"><div><h2>Protección de clientes V1</h2>
-     <p className="muted">Modo de compatibilidad de sesiones. No desactiva los límites V1 existentes ni la protección de V2.</p></div></div>
-    <div className="sp-admin-switch-row">
-     <div><strong>Exigir sesión V2 para operaciones V1 protegidas</strong>
-      <small className="muted">{data.v1Protection?.enabled?
-       "Activado: las operaciones V1 con autenticación exigen una sesión vinculada V2.":
-       "Desactivado: las versiones antiguas conservan su acceso V1 habitual."}</small>
-      <small className="sp-admin-status-note">{data.v1Protection?.locked?
-       "Control bloqueado por la configuración de la VPS.":
-       "Activarlo puede bloquear APK antiguas sin V2. Se puede revertir desde el panel."}</small>
-     </div>
-     <button className="sp-admin-switch" role="switch" type="button"
-      aria-label="Protección reforzada de clientes V1"
-      aria-checked={Boolean(data.v1Protection?.enabled)}
-      disabled={busy||!data.v1Protection||data.v1Protection.locked}
-      onClick={changeV1Protection}><span/></button>
-    </div>
+    <div className="sp-admin-section-heading"><div><h2>Control de API V1</h2>
+     <p className="muted">La disponibilidad tiene prioridad sobre la protección avanzada. V2 conserva su seguridad independiente.</p></div></div>
+    {[['apiEnabled','API V1 habilitada',data.v1Policy?.apiEnabled?
+      'V1 disponible con la política de protección seleccionada.':'Todas las rutas V1 están deshabilitadas.'],
+      ['advancedProtection','Protección avanzada V1',data.v1Policy?.advancedProtection?
+      'Las operaciones autenticadas de V1 exigen sesión vinculada y prueba V2.':'Se conserva la autenticación y seguridad habitual de V1.']].map(([field,title,note])=>(
+      <div className="sp-admin-switch-row" key={field}>
+       <div><strong>{title}</strong><small className="muted">{note}</small>
+        {field==='advancedProtection'&&<small className="sp-admin-status-note">Activarlo puede impedir el acceso de versiones antiguas hasta actualizarse.</small>}
+       </div>
+       <button className="sp-admin-switch" role="switch" type="button" aria-label={title}
+        aria-checked={Boolean(data.v1Policy?.[field])} disabled={busy||!data.v1Policy} onClick={()=>changeV1(field)}><span/></button>
+      </div>
+    ))}
    </section>
    <section className="admin-card sp-admin-services">
     <div className="sp-admin-section-heading"><div><h2>Distribución beta y Google Play Integrity</h2>
