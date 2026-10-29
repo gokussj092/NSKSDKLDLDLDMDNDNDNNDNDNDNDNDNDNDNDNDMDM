@@ -69,7 +69,7 @@ jobs:
           gradle-version: "8.11.1"
       - name: Install required Android build toolchain
         run: |
-          set -euo pipefail
+          set -e -u -o pipefail
           MANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -n 1)"
           "$MANAGER" --install "platforms;android-36" "build-tools;35.0.0" "platform-tools" "cmake;3.22.1" "ndk;27.2.12479018"
       - name: Restore permanent signing certificate from existing Actions Secrets
@@ -81,7 +81,7 @@ jobs:
           PLAY_CERT: ${{ secrets.SPDECODE_PLAY_APP_SIGNER_SHA256 || vars.SPDECODE_PLAY_APP_SIGNER_SHA256 }}
           PLAY_UPLOAD_CERT: ${{ secrets.SPDECODE_PLAY_UPLOAD_CERT_SHA256 || vars.SPDECODE_PLAY_UPLOAD_CERT_SHA256 }}
         run: |
-          set -euo pipefail
+          set -e -u -o pipefail
           test -n "$STORE_BASE64" && test -n "$STORE_PASSWORD" && test -n "$KEY_ALIAS" && test -n "$KEY_PASSWORD" || {
             echo "::error::Permanent GitHub Actions signing secrets are required. Do not generate temporary keys."
             exit 1
@@ -112,7 +112,7 @@ jobs:
           echo "SPDECODE_PLAY_APP_SIGNER_SHA256=$PLAY_CERT" >> "$GITHUB_ENV"
       - name: Assert unchanged app identity and safe preproduction configuration
         run: |
-          set -euo pipefail
+          set -e -u -o pipefail
           grep -Fq 'versionCode = 35' android/app/build.gradle.kts
           grep -Fq 'versionName = "1.1.24"' android/app/build.gradle.kts
           grep -Fq 'applicationId = "com.ghostdeveloper.spdecode"' android/app/build.gradle.kts
@@ -132,7 +132,7 @@ jobs:
         run: python3 scripts/ci/verify_aab_locales.py android/app/build/outputs/bundle/release/app-release.aab
       - name: Validate permanent signatures, APK identity, Cloud origin and both outputs
         run: |
-          set -euo pipefail
+          set -e -u -o pipefail
           APK=android/app/build/outputs/apk/release/app-release.apk
           AAB=android/app/build/outputs/bundle/release/app-release.aab
           test -s "$APK" && test -s "$AAB"
@@ -200,12 +200,13 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
-          persist-credentials: true
+          persist-credentials: false
       - name: Delete only the unchanged redundant branch using an exact SHA lease
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          set -euo pipefail
+          set -e -u -o pipefail
+          gh auth setup-git
           branch='fix/v1-protection-notice-persistence-build35'
           expected='42cda84f6a2c89f19bdee95a201c768b9322f3dd'
           current="$(git ls-remote origin "refs/heads/$branch" | cut -f1)"
