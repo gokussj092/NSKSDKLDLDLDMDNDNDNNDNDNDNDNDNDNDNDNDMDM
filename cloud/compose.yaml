@@ -67,6 +67,7 @@ services:
     # named volume. Redis sessions/challenges remain ephemeral and isolated.
     volumes:
       - provider-control:/app/provider-control:rw
+      - notice-feed:/app/notice-feed:rw
     ports:
       # Bound to host loopback only; public HTTPS reverse proxy is a later phase.
       - "127.0.0.1:3000:3000"
@@ -169,6 +170,7 @@ services:
 
 volumes:
   provider-control: {}
+  notice-feed: {}
 
 networks:
   edge: {}

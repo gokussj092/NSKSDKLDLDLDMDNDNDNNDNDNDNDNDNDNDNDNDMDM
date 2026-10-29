@@ -2,9 +2,10 @@ import {randomUUID} from 'node:crypto';
 import {adminSettings,authenticateAdmin,validMutation} from './c6-admin-auth.mjs';
 import {opsStore} from './c6-ops-store.mjs';
 import {store,throttle} from './c3-store.mjs';
+import {readNoticeState,writeNoticeState} from './notice-feed-store.mjs';
 import {boundRequestClaims} from './v2-bound-request.mjs';
 import {pushAccount,pushNotice} from './notice-push.mjs';
-const KEY='spnotice:feed:v1',LOCK='spnotice:publish-lock';
+const LOCK='spnotice:publish-lock';
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 const reply=(body,status=200)=>Response.json(body,{status,headers:{'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'}});
 const clean=(s,max)=>typeof s==='string'&&s.trim().length>0&&s===s.trim()&&s.length<=max&&!/[\x00-\x08\x0b-\x1f\x7f\u202a-\u202e\u2066-\u2069]/.test(s);
@@ -13,17 +14,15 @@ export function validNotice(n,now=Date.now()) {
     Number.isSafeInteger(n.createdAt) && n.createdAt<=now+5000 && n.createdAt>=now-7*86400000 &&
     Number.isSafeInteger(n.expiresAt) && n.expiresAt>now && n.expiresAt<=n.createdAt+7*86400000;
 }
-async function notices(redis,now=Date.now()) {
-  const raw=await redis.get(KEY);if(!raw)return [];
-  if(raw.length>100000)throw Error('FEED_INVALID');
-  const list=JSON.parse(raw);if(!Array.isArray(list)||list.length>20)throw Error('FEED_INVALID');
+async function notices(now=Date.now()) {
+  const list=await readNoticeState();
   return list.filter(n=>validNotice(n,now));
 }
 export async function notificationFeedRequest(request,{storeProvider=store}={}) {
   if(!boundRequestClaims(request))return reply({error:{code:'UNAUTHORIZED'}},401);
   try {
     const text=await request.text();if(text.length>16 || text.trim()!=='{}')return reply({error:{code:'INVALID_REQUEST'}},400);
-    return reply({notices:await notices(await storeProvider())});
+    return reply({notices:await notices()});
   }catch{return reply({error:{code:'SERVICE_UNAVAILABLE'}},503);}
 }
 export async function adminNotices(request,{storeProvider=opsStore,push=pushNotice}={}) {
@@ -33,7 +32,7 @@ export async function adminNotices(request,{storeProvider=opsStore,push=pushNoti
   try {
     redis=await storeProvider();
     if(!await authenticateAdmin(redis,request,cfg))return reply({code:'UNAUTHORIZED'},401);
-    if(request.method==='GET')return reply({notices:await notices(redis),pushConfigured:!!pushAccount()});
+    if(request.method==='GET')return reply({notices:await notices(),pushConfigured:!!pushAccount()});
     if(request.method!=='POST')return reply({code:'METHOD_NOT_ALLOWED'},405);
     // Bounded stream even when Content-Length is absent or dishonest.
     const reader=request.body?.getReader();if(!reader)return reply({code:'INVALID_REQUEST'},400);
@@ -46,10 +45,10 @@ export async function adminNotices(request,{storeProvider=opsStore,push=pushNoti
       return reply({code:'INVALID_REQUEST'},400);
     if(!await throttle(redis,'spnotice:publish-rate',5,60))return reply({code:'RATE_LIMITED'},429);
     lock=randomUUID();if(await redis.set(LOCK,lock,{NX:true,EX:30})!=='OK'){lock=null;return reply({code:'BUSY'},409);}
-    const current=await notices(redis);
+    const current=await notices();
     if(current.some(n=>n.id===input.id))return reply({status:'already-published'});
     const now=Date.now(),notice={...input,createdAt:now,expiresAt:now+7*86400000};
-    await redis.set(KEY,JSON.stringify([...current,notice].slice(-20)),{EX:8*86400});
+    await writeNoticeState([...current,notice].slice(-20));
     // Commit the feed first. FCM failure never discards a published notice.
     let delivery;try{delivery=await push(notice.id);}catch{delivery='periodic-push-failed';}
     return reply({status:'published',delivery,id:notice.id},201);

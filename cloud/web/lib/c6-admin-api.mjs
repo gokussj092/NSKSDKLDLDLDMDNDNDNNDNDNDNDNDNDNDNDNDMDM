@@ -3,6 +3,8 @@ import { adminSettings, adminLogin, authenticateAdmin, validMutation,
 import { opsStore, maintenanceEnabled, setMaintenance, aggregateMetrics, usageReport,
   SERVICE_IDS,serviceMaintenanceStates,setServiceMaintenance,resetErrorBaselines } from "./c6-ops-store.mjs";
 import { settings } from "./c3-config.mjs";
+import {v2Settings} from './v2-config.mjs';
+import {readV1Protection,setV1Protection} from './v1-security-policy.mjs';
 import {admissionPolicy,setAdmissionPolicy} from "./c11-play-admission.mjs";
 import {providerOverview,updateProvider,PUBLIC_PROVIDER_IDS} from "./c12-provider-controls.mjs";
 import { ehiConfigured,nurConfigured } from "./c35-provider.mjs";
@@ -75,6 +77,7 @@ export async function statusRequest(request,options={}) {
         workerReady,ehiImportConfigured:ehiConfigured(),
         nurCatalogImportConfigured:nurConfigured()},
       maintenance,serviceMaintenance,playAdmission,providerControls,
+      v1Protection:{...await readV1Protection(),v2Ready:v2Settings().configured},
       maintenanceLocked:process.env.CLOUD_FORCE_MAINTENANCE==="true",metrics,
       observation:"Counters are aggregate-only; no user content or keys are logged.",
     });
@@ -100,6 +103,25 @@ export async function maintenanceRequest(request,options={}) {
     return error("SERVICE_UNAVAILABLE",503);
   }
 }
+/** Authenticated, CSRF-protected strict V1 compatibility control. */
+export async function v1ProtectionRequest(request,options={}) {
+  const cfg=adminSettings();
+  if(!cfg.enabled)return error('ADMIN_DISABLED',503);
+  if(!validMutation(request,cfg))return error('CSRF_REJECTED',403);
+  try{
+    const redis=await (options.storeProvider||opsStore)();
+    if(!await authenticateAdmin(redis,request,cfg))return error('UNAUTHORIZED',401);
+    const body=await parseSmallJson(request,128);
+    if(!own(body,['enabled'])||typeof body.enabled!=='boolean')return error('INVALID_REQUEST',400);
+    if(body.enabled&&!v2Settings().configured)return error('V2_NOT_READY',409);
+    const state=await setV1Protection(body.enabled);
+    return api({v1Protection:{...state,v2Ready:v2Settings().configured}},200,{'Cache-Control':'private, no-store'});
+  }catch(e){
+    if(['V1_POLICY_LOCKED','V1_RETIRED','V1_POLICY_BUSY'].includes(e?.message))return error(e.message,409);
+    return error('SERVICE_UNAVAILABLE',503);
+  }
+}
+
 export async function logoutRequest(request,options={}) {
   const cfg=adminSettings();
   if(!cfg.enabled)return error("ADMIN_DISABLED",503);
