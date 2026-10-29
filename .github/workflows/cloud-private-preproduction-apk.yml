@@ -25,6 +25,7 @@ jobs:
       actions: read
     if: >-
       github.repository == 'gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM' &&
+      github.event.repository.private == true &&
       ((github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/feat/catalog-notifications-donations') ||
       (github.event_name == 'pull_request' && github.head_ref == 'feat/catalog-notifications-donations' && github.event.pull_request.head.repo.full_name == github.repository))
     runs-on: ubuntu-latest
@@ -177,27 +178,21 @@ jobs:
           printf 'SP-DECODE PRIVATE Cloud preproduction\nVersion: 1.1.24 (35)\nPackage: com.ghostdeveloper.spdecode\nAPI: https://api.spdecode.xyz\nQA: disabled\nSigner: permanent APK keystore\nSource commit: %s\nPlay AAB: private candidate; upload key acceptance requires Play Console verification\nPublished: no\n' "$SOURCE_SHA" > dist/BUILD_INFO.txt
           cat dist/SHA256SUMS.txt
           cat dist/BUILD_INFO.txt
-      - name: Require repository privacy before storing signed artifacts
+      - name: Require repository remains private before storing signed artifacts
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           python3 - <<'PY'
-          import json, os, subprocess, time
+          import json, os, subprocess
           repo = os.environ['GITHUB_REPOSITORY']
           def api(path):
-              return json.loads(subprocess.check_output(['gh', 'api', 'repos/' + repo + path], text=True))
-          print('Signed APK/AAB verified. Artifacts will be uploaded only after the repository is private.', flush=True)
-          for attempt in range(136):
-              if api('')['private']:
-                  break
-              if attempt == 135:
-                  raise SystemExit('Repository remained public for 45 minutes; signed artifacts were not uploaded.')
-              if attempt % 6 == 0:
-                  print('Waiting for repository visibility to become private before artifact upload.', flush=True)
-              time.sleep(20)
+              return json.loads(subprocess.check_output(
+                  ['gh', 'api', 'repos/' + repo + path], text=True))
+          # No polling or 45-minute wait. Public builds must never publish signed private assets.
+          if not api('')['private']:
+              raise SystemExit('Repository is public; signed preproduction artifacts are private-only and will not be uploaded.')
           assert api('/branches/feat/catalog-notifications-donations')['commit']['sha'] == os.environ['SOURCE_SHA'], 'Source changed before artifact upload'
-          assert api('')['private'], 'Repository became public; refusing artifact upload'
-          print('Repository is private and source revision is current; private artifact upload permitted.', flush=True)
+          print('Private repository and exact source confirmed; signed artifact upload permitted.')
           PY
       - name: Upload PRIVATE signed APK and AAB to this Actions run only
         uses: actions/upload-artifact@v4
@@ -213,6 +208,7 @@ jobs:
   cleanup-redundant-branch:
     if: >-
       github.repository == 'gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM' &&
+      github.event.repository.private == true &&
       ((github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/feat/catalog-notifications-donations') ||
       (github.event_name == 'pull_request' && github.head_ref == 'feat/catalog-notifications-donations' && github.event.pull_request.head.repo.full_name == github.repository))
     runs-on: ubuntu-latest

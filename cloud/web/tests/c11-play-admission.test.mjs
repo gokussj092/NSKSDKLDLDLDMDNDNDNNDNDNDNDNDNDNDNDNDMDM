@@ -101,6 +101,19 @@ test("signed Play AAB and external beta APK are generated without changing appli
   assert.ok(workflow.includes("SP-DECODE-v"+version+"-beta-external-signed.apk"));
  assert.match(integrity,/PLAY_APP_SIGNER_SHA256/);
  assert.match(client,/CloudRequestProof\.integrityNonce/);
- assert.match(client,/!challenge\.optBoolean\("integrityRequired", false\)/);
+ assert.match(client,/val playRequired = challenge\.optBoolean\("integrityRequired", true\)/);
+ assert.match(client,/val verdict = if \(playRequired\)/);
+ assert.match(client,/if \(playRequired && BuildConfig\.SPDECODE_QA_BUILD\)/);
 });
 
+
+test("private signed artifacts cannot run in public repositories or wait for visibility",()=>{
+ const read=p=>readFileSync(new URL("../../../"+p,import.meta.url),"utf8");
+ const workflow=read(".github/workflows/cloud-private-preproduction-apk.yml");
+ const caller=read(".github/workflows/validate.yml");
+ assert.match(caller,/github\.event\.repository\.private == true/);
+ assert.equal(workflow.match(/github\.event\.repository\.private == true/g)?.length,2);
+ assert.match(workflow,/if not api\(''\)\['private'\]/);
+ assert.doesNotMatch(workflow,/time\.sleep\(/);
+ assert.match(workflow,/github\.event\.pull_request\.head\.repo\.full_name == github\.repository/);
+});
