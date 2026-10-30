@@ -26,6 +26,18 @@ int main(){
     assert(generated.message.find("SPDECODE-POP-V2\nPOST\n5\n")==0);
     const auto suffix=spdecode::makeAliasSuffix();
     assert(suffix.size()==8);
+    assert(spdecode::validClassicChallenge(std::string(43,'A'),
+        "11111111-1111-1111-1111-111111111111","v2"));
+    assert(!spdecode::validClassicChallenge(std::string(42,'A'),
+        "11111111-1111-1111-1111-111111111111","v2"));
+    assert(!spdecode::validClassicChallenge(std::string(43,'A'),
+        "11111111-1111-1111-1111-111111111111","v1"));
+    assert(spdecode::validActionChallenge(std::string(43,'B'),
+        "11111111-1111-1111-1111-111111111111",123));
+    assert(!spdecode::validActionChallenge(std::string(43,'B'),
+        "11111111-1111-1111-1111-111111111111",0));
+    assert(spdecode::validPlayNonce(std::string(43,'C')));
+    assert(!spdecode::validPlayNonce("bad token"));
     const auto play=spdecode::playNonce(std::string(43,'A'),
         "11111111-1111-1111-1111-111111111111",std::string(120,'B'));
     assert(play.size()==43);

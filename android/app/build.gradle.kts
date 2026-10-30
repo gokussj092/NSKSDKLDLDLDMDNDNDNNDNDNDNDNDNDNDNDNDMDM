@@ -748,8 +748,8 @@ dependencies {
     // Classic Play Integrity nonce flow; the verdict is verified in C3 server-side.
     implementation("com.google.android.play:integrity:1.6.0")
     implementation("androidx.work:work-runtime-ktx:2.10.4")
-    // Lightweight Argon2id + XChaCha20-Poly1305 primitives for standard .ehi.
-    implementation("org.bouncycastle:bcprov-jdk18on:1.86") // HPKE RFC9180 also required by Cloud V2
+    // Legacy decoders require BC; Cloud HPKE uses pinned native Mbed TLS.
+    if (!enableCloud) implementation("org.bouncycastle:bcprov-jdk18on:1.86")
     implementation("androidx.activity:activity-ktx:1.10.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.0")
     implementation("androidx.datastore:datastore-preferences:1.1.7")

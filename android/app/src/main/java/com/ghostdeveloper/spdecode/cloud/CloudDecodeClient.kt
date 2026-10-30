@@ -74,7 +74,7 @@ internal class CloudDecodeClient(context: Context) {
 
     private suspend fun requestIntegrityToken(nonce: String): String =
         suspendCancellableCoroutine { cont ->
-            if (nonce.length !in 16..500 || !nonce.matches(Regex("[A-Za-z0-9_-]+"))) {
+            if (!CloudNativeTransport.validPlayNonce(nonce)) {
                 cont.resumeWithException(IOException("CLOUD_INVALID_NONCE"))
                 return@suspendCancellableCoroutine
             }
@@ -102,9 +102,8 @@ internal class CloudDecodeClient(context: Context) {
         val nonce = challenge.getString("nonce")
         val challengeId = challenge.getString("challengeId")
         val playRequired = challenge.optBoolean("integrityRequired", true)
-        if (!nonce.matches(Regex("[A-Za-z0-9_-]{43}")) ||
-            !challengeId.matches(Regex("[0-9a-f-]{36}")) ||
-            challenge.optString("apiVersion") != "v2")
+        if (!CloudNativeTransport.validClassicChallenge(
+                nonce,challengeId,challenge.optString("apiVersion")))
             throw IOException("CLOUD_INVALID_NONCE")
         // An external beta may omit Play tokens ONLY when server policy explicitly allows it.
         // Hardware attestation remains mandatory for all beta sessions.
@@ -152,7 +151,7 @@ internal class CloudDecodeClient(context: Context) {
             ?.takeIf { it > 0L } ?: throw IOException("CLOUD_INTEGRITY_UNAVAILABLE")
         val requestHash = challenge.getString("requestHash")
         val id = challenge.getString("challengeId")
-        if (!requestHash.matches(Regex("[A-Za-z0-9_-]{43}")) || !id.matches(Regex("[0-9a-f-]{36}")))
+        if (!CloudNativeTransport.validActionChallenge(requestHash,id,project))
             throw IOException("CLOUD_INVALID_NONCE")
         val provider = standardLock.withLock {
             if (standardProvider == null || standardProject != project) {

@@ -103,6 +103,33 @@ RequestProof prepareProof(int operation,const std::string& version,
                               proof.timestamp,proof.nonce);
     return proof;
 }
+namespace {
+bool urlChars(const std::string& value, std::size_t min, std::size_t max) {
+    if(value.size()<min || value.size()>max)return false;
+    for(unsigned char c:value) {
+        if(!((c>='a'&&c<='z')||(c>='A'&&c<='Z')||
+             (c>='0'&&c<='9')||c=='-'||c=='_'))return false;
+    }
+    return true;
+}
+bool challengeIdChars(const std::string& value) {
+    if(value.size()!=36)return false;
+    for(unsigned char c:value)
+        if(!((c>='0'&&c<='9')||(c>='a'&&c<='f')||c=='-'))return false;
+    return true;
+}
+}
+bool validClassicChallenge(const std::string& nonce,const std::string& id,
+                           const std::string& version) {
+    return urlChars(nonce,43,43) && challengeIdChars(id) && version=="v2";
+}
+bool validActionChallenge(const std::string& hash,const std::string& id,
+                          std::int64_t project) {
+    return project>0 && urlChars(hash,43,43) && challengeIdChars(id);
+}
+bool validPlayNonce(const std::string& nonce){
+    return urlChars(nonce,16,500);
+}
 std::string makeAliasSuffix(){
     // Eight URL-safe Base64 characters encode the first six random bytes.
     return randomNonce().substr(0,8);

@@ -364,6 +364,17 @@ void discardHpke(JNIEnv*,jclass,jlong stateHandle){
 // Native proof serialization. Actual P-256 private-key signing remains in
 // Android Keystore; its key material never leaves the platform.
 namespace {
+jboolean nativeValidClassicChallenge(JNIEnv* env,jclass,jstring nonce,jstring id,jstring version) {
+    return spdecode::validClassicChallenge(utf(env,nonce),utf(env,id),utf(env,version)) ?
+        JNI_TRUE : JNI_FALSE;
+}
+jboolean nativeValidActionChallenge(JNIEnv* env,jclass,jstring hash,jstring id,jlong project) {
+    return spdecode::validActionChallenge(utf(env,hash),utf(env,id),
+        static_cast<std::int64_t>(project)) ? JNI_TRUE : JNI_FALSE;
+}
+jboolean nativeValidPlayNonce(JNIEnv* env,jclass,jstring nonce) {
+    return spdecode::validPlayNonce(utf(env,nonce)) ? JNI_TRUE : JNI_FALSE;
+}
 jstring nativePlayNonce(JNIEnv* env,jclass,jstring nonce,jstring id,jstring publicKey) {
     try {
         const auto value=spdecode::playNonce(utf(env,nonce),utf(env,id),utf(env,publicKey));
@@ -634,6 +645,15 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm,void*) {
         {const_cast<char*>("nativePlayNonce"),
         const_cast<char*>("(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"),
         reinterpret_cast<void*>(nativePlayNonce)},
+        {const_cast<char*>("nativeValidClassicChallenge"),
+        const_cast<char*>("(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z"),
+        reinterpret_cast<void*>(nativeValidClassicChallenge)},
+        {const_cast<char*>("nativeValidActionChallenge"),
+        const_cast<char*>("(Ljava/lang/String;Ljava/lang/String;J)Z"),
+        reinterpret_cast<void*>(nativeValidActionChallenge)},
+        {const_cast<char*>("nativeValidPlayNonce"),
+        const_cast<char*>("(Ljava/lang/String;)Z"),
+        reinterpret_cast<void*>(nativeValidPlayNonce)},
         {const_cast<char*>("nativeHashWire"),
         const_cast<char*>("([B)Ljava/lang/String;"),
         reinterpret_cast<void*>(nativeHashWire)},
@@ -661,7 +681,7 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm,void*) {
         reinterpret_cast<void*>(nativeClearSession)},
         {const_cast<char*>("nativeInvalidateSession"),const_cast<char*>("(Ljava/lang/String;)V"),
         reinterpret_cast<void*>(nativeInvalidateSession)}};
-    const jint registered=env->RegisterNatives(bridge,methods,16);
+    const jint registered=env->RegisterNatives(bridge,methods,19);
     env->DeleteLocalRef(bridge);
     return registered==JNI_OK?JNI_VERSION_1_6:JNI_ERR;
 }

@@ -58,6 +58,7 @@ jobs:
           AAB=android/app/build/outputs/bundle/release/app-release.aab
           test -s "$APK" && test -s "$AAB"
           test -s android/app/build/outputs/mapping/release/mapping.txt
+          python3 tests/test_cloud_c5_source_isolation.py
           python3 scripts/ci/verify_aab_locales.py "$AAB"
           python3 tests/cloud_c5_apk_audit.py "$APK"
           python3 - <<'PY'
@@ -71,6 +72,7 @@ jobs:
           assert 'mbedtls_gcm_auth_decrypt' in Path('android/app/src/main/cpp/spdecode_hpke.cpp').read_text()
           with ZipFile(apk) as z:
               names=z.namelist()
+              assert not any('org/bouncycastle/x509/CertPathReviewerMessages' in n for n in names), 'BC resource in Cloud APK'
               libs=[n for n in names if n.endswith('/libspdecode.so')]
               assert len(libs)>=4,libs
               for name in libs:

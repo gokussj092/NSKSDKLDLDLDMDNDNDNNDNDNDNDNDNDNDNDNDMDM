@@ -58,6 +58,18 @@ internal object CloudNativeTransport {
     @JvmStatic private external fun nativePlayNonce(
         nonce: String, challengeId: String, publicKey: String
     ): String
+    @JvmStatic private external fun nativeValidClassicChallenge(
+        nonce: String, challengeId: String, apiVersion: String
+    ): Boolean
+    @JvmStatic private external fun nativeValidActionChallenge(
+        requestHash: String, challengeId: String, cloudProjectNumber: Long
+    ): Boolean
+    @JvmStatic private external fun nativeValidPlayNonce(nonce: String): Boolean
+    fun validClassicChallenge(nonce: String, challengeId: String, apiVersion: String): Boolean =
+        nativeValidClassicChallenge(nonce, challengeId, apiVersion)
+    fun validActionChallenge(requestHash: String, challengeId: String, project: Long): Boolean =
+        nativeValidActionChallenge(requestHash, challengeId, project)
+    fun validPlayNonce(nonce: String): Boolean = nativeValidPlayNonce(nonce)
     @JvmStatic private external fun nativePrepareProof(
         operation: Int, version: String, wire: ByteArray, bearer: String
     ): Array<String>
