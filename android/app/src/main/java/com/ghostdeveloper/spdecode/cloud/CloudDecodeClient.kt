@@ -159,6 +159,7 @@ internal class CloudDecodeClient(context: Context) {
                                       attachment:ByteArray?=null): CloudNativeTransport.Reply {
         val exact = JSONObject(payload.toString())
         val prepared=CloudNativeTransport.prepare(operation,exact,attachment)
+        try {
         if (!actionIntegrityRequired) return CloudNativeTransport.post(operation,exact,bearer,prepared=prepared)
         // Standard Integrity is bound to the final encrypted bytes, NOT to a
         // separately serialized plaintext JSON document. The same prepared
@@ -189,6 +190,7 @@ internal class CloudDecodeClient(context: Context) {
         }
         coroutineContext.ensureActive()
         return CloudNativeTransport.post(operation, exact, bearer, id, integrity, prepared=prepared)
+        } finally { prepared.discard() }
     }
 
     /**
