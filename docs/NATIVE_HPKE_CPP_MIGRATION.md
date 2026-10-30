@@ -30,12 +30,22 @@ consumes the native state. `discard()` can be called again safely.
 
 ## Remaining Android platform security work
 
-`CloudRequestProof.kt` still uses **Android Keystore** to create protected
-private signing keys, obtain hardware attestation certificates and sign
-ECDSA proofs. `CloudDecodeClient.kt` still invokes the official Play
-Integrity SDK and performs session orchestration. These services require the
-Android platform. Moving their orchestration into JNI is a separate, highly
-regression-prone task: it is **not** claimed completed here.
+`spdecode_security.cpp` constructs the V2 PoP canonical proof, produces
+cryptographically random Base64URL request nonces, calculates request hashes,
+and derives the Play Integrity nonce. `spdecode_transport.cpp` verifies
+the local package and allowed certificate fingerprints using Android
+PackageManager APIs via JNI, including its previous basic debugger check.
+The native bridge invokes the official Android Keystore JCA signer for
+ECDSA proofs, without exporting the non-exportable P-256 private key.
+
+`CloudRequestProof.kt` still uses **Android Keystore** to create and rotate
+protected signing keys and retrieve hardware attestation certificates;
+`CloudDecodeClient.kt` still invokes the official Play Integrity SDK,
+manages short-lived sessions and handles Android coroutines.
+These platform services and lifecycle contracts are **not** fully moved to
+C++, and the app still has inspectable DEX code. Server-side Play Integrity
+and hardware-attestation verification remain authoritative; native-only
+checks are defense in depth.
 
 Native code does not turn the public recipient key into a secret. A determined
 analyst with full process access may inspect calls, memory and ciphertext
