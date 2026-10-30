@@ -155,11 +155,16 @@ internal class CloudDecodeClient(context: Context) {
             .addOnFailureListener { if (cont.isActive) cont.resumeWithException(IOException("CLOUD_INTEGRITY_UNAVAILABLE")) }
     }
 
-    private suspend fun protectedPost(operation: Int, payload: JSONObject, bearer: String): CloudNativeTransport.Reply {
-        if (!actionIntegrityRequired) return CloudNativeTransport.post(operation, payload, bearer)
+    private suspend fun protectedPost(operation: Int, payload: JSONObject, bearer: String,
+                                      attachment:ByteArray?=null): CloudNativeTransport.Reply {
         val exact = JSONObject(payload.toString())
+        val prepared=CloudNativeTransport.prepare(operation,exact,attachment)
+        if (!actionIntegrityRequired) return CloudNativeTransport.post(operation,exact,bearer,prepared=prepared)
+        // Standard Integrity is bound to the final encrypted bytes, NOT to a
+        // separately serialized plaintext JSON document. The same prepared
+        // ciphertext is reused after the challenge; never seal it twice.
         val hash = java.security.MessageDigest.getInstance("SHA-256")
-            .digest(exact.toString().toByteArray(Charsets.UTF_8)).joinToString("") { "%02x".format(it.toInt() and 255) }
+            .digest(prepared.wire).joinToString("") { "%02x".format(it.toInt() and 255) }
         val challenge = extract(CloudNativeTransport.post(CloudOperation.ACTION_CHALLENGE,
             JSONObject().put("operation", operation).put("bodySha256", hash), bearer))
         val project = challenge.getString("cloudProjectNumber").toLongOrNull()
@@ -183,7 +188,7 @@ internal class CloudDecodeClient(context: Context) {
             throw error
         }
         coroutineContext.ensureActive()
-        return CloudNativeTransport.post(operation, exact, bearer, id, integrity)
+        return CloudNativeTransport.post(operation, exact, bearer, id, integrity, prepared=prepared)
     }
 
     /**
@@ -223,7 +228,7 @@ internal class CloudDecodeClient(context: Context) {
         return succeeded>0 && failed>0 && succeeded==report.optInt("successfulSources",-1)
     }
 
-    private suspend fun decode(operation: Int, payload: JSONObject): Decoded {
+    private suspend fun decode(operation: Int, payload: JSONObject, attachment:ByteArray?=null): Decoded {
         require(BuildConfig.SPDECODE_CLOUD_ENABLED) { "CLOUD_DISABLED" }
         withContext(Dispatchers.IO) { requireLegalConsent() }
         coroutineContext.ensureActive()
@@ -234,7 +239,7 @@ internal class CloudDecodeClient(context: Context) {
             withContext(Dispatchers.IO) {
                 // Never store request payloads or credentials in a diagnostic.
                 requireLegalConsent()
-                extract(protectedPost(operation,payload,bearer))
+                extract(protectedPost(operation,payload,bearer,attachment))
             }
         }catch(failure:Failure) {
             // Only whitelisted enum-like codes and known format labels are retained in RAM.
@@ -325,7 +330,6 @@ internal class CloudDecodeClient(context: Context) {
             throw IOException("CLOUD_CREDENTIALS_NOT_ALLOWED")
         val body = JSONObject()
             .put("format", format)
-            .put("dataBase64", Base64.encodeToString(bytes, Base64.NO_WRAP))
         val isRecipientNpvs=format=="npvs" &&
             NpvsRecipientProbe.fingerprints(bytes).isNotEmpty()
         // The signed NPVS recipient envelope is mutually exclusive with
@@ -351,7 +355,7 @@ internal class CloudDecodeClient(context: Context) {
                     .put("language",if(locale=="es")"es" else "en"))
             }
         }
-        val decoded=decode(CloudOperation.FILE,body)
+        val decoded=decode(CloudOperation.FILE,body,bytes)
         val artifact=if(onCompatibleExport!=null)runCatching {
             CompatibleExportArtifact.parse(decoded.compatibleExport,format,decoded.rawText,
                 CompatibleExportArtifact.digest(bytes))
