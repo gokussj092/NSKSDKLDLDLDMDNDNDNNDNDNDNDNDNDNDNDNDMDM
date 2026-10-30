@@ -11,9 +11,21 @@ import java.io.IOException
 internal object CloudNativeTransport {
     init { System.loadLibrary("spdecode") }
 
-    @JvmStatic private external fun nativeHpkePublicPin(): ByteArray
-    // 8-byte key identifier + 32-byte public X25519 key; reconstructed by C++.
-    fun hpkePublicPin(): ByteArray = nativeHpkePublicPin()
+    // All HPKE key agreement, message framing, AEAD and reply authentication
+    // execute in libspdecode.so. Kotlin handles only JSON/Android integration.
+    @JvmStatic private external fun nativePrepareHpke(
+        operation: Int, metadata: ByteArray, attachment: ByteArray?
+    ): ByteArray
+    @JvmStatic private external fun nativeOpenHpke(
+        handle: Long, status: Int, wire: ByteArray, response: ByteArray
+    ): ByteArray
+    @JvmStatic private external fun nativeDiscardHpke(handle: Long)
+
+    fun prepareHpke(operation: Int, metadata: ByteArray, attachment: ByteArray?): ByteArray =
+        nativePrepareHpke(operation, metadata, attachment)
+    fun openHpke(handle: Long, status: Int, wire: ByteArray, response: ByteArray): ByteArray =
+        nativeOpenHpke(handle, status, wire, response)
+    fun discardHpke(handle: Long) = nativeDiscardHpke(handle)
 
     @JvmStatic private external fun postNativeEncrypted(
         operation: Int,
