@@ -2,6 +2,7 @@ package com.ghostdeveloper.spdecode
 
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.Manifest
 import android.content.Intent
 import android.content.Context
 import android.content.res.Configuration
@@ -38,6 +39,7 @@ import com.ghostdeveloper.spdecode.cloud.CloudTextRoute
 import com.ghostdeveloper.spdecode.cloud.CloudCatalogUpdates
 import com.ghostdeveloper.spdecode.cloud.CloudLegalConsent
 import com.ghostdeveloper.spdecode.cloud.CloudLegalConsentDialog
+import com.ghostdeveloper.spdecode.cloud.CloudNotifications
 import com.ghostdeveloper.spdecode.cloud.ServerVpnApp
 import com.ghostdeveloper.spdecode.cloud.ServerVpnCatalogRepository
 import com.ghostdeveloper.spdecode.parity.AndroidDecoderCatalog
@@ -76,6 +78,23 @@ import java.util.Date
  */
 class MainActivity : ComponentActivity() {
     private companion object { const val MAX_BYTES=1024*1024 }
+    private val notificationPermissionLauncher=registerForActivityResult(
+        ActivityResultContracts.RequestPermission()) { granted ->
+        if(granted && BuildConfig.SPDECODE_CLOUD_ENABLED &&
+           CloudLegalConsent.accepted(this)) CloudNotifications.setEnabled(this,true)
+    }
+    private fun askNotificationsOnEntry() {
+        if(!BuildConfig.SPDECODE_CLOUD_ENABLED || !CloudLegalConsent.accepted(this))return
+        if(CloudNotifications.allowed(this)) {
+            CloudNotifications.setEnabled(this,true)
+            return
+        }
+        if(Build.VERSION.SDK_INT>=33 &&
+           !settings.getBoolean("notification_permission_asked_on_entry_v2",false)) {
+            settings.edit().putBoolean("notification_permission_asked_on_entry_v2",true).apply()
+            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
     private val scope=CoroutineScope(SupervisorJob()+Dispatchers.Main.immediate)
     private val cloudClient by lazy { CloudDecodeClient(this) }
     private val serverVpnCatalog by lazy { ServerVpnCatalogRepository(this,cloudClient) }
@@ -436,7 +455,10 @@ class MainActivity : ComponentActivity() {
                     !showCloudLegal)refreshServerVpn()
             }
         }
-        if(!showCloudLegal){refreshServerVpn();syncOptInUsage();CloudCatalogUpdates.ensureScheduled(this);refreshCloudWhatsNew()}
+        if(!showCloudLegal){
+            refreshServerVpn();syncOptInUsage();CloudCatalogUpdates.ensureScheduled(this);refreshCloudWhatsNew()
+            window.decorView.post {if(!isFinishing && !isDestroyed)askNotificationsOnEntry()}
+        }
         if(savedInstanceState==null && !settings.getBoolean("first_run_guide_completed",false))
             guideStep=0
         @Suppress("DEPRECATION")
@@ -654,6 +676,7 @@ class MainActivity : ComponentActivity() {
                         try {
                             CloudLegalConsent.accept(this@MainActivity)
                             showCloudLegal=false
+                            window.decorView.post {if(!isFinishing && !isDestroyed)askNotificationsOnEntry()}
                             refreshServerVpn()
                             refreshCloudWhatsNew()
                             probeUpdatesOnEntry()
@@ -710,6 +733,7 @@ class MainActivity : ComponentActivity() {
         // bypassed by a later process attachment. Defense-in-depth recheck.
         if(!ReleaseIntegrity.isTrusted(this)) finishAndRemoveTask()
         if(!showCloudLegal){
+            askNotificationsOnEntry()
             refreshServerVpn()
             syncOptInUsage()
             CloudCatalogUpdates.ensureScheduled(this)
