@@ -1,0 +1,53 @@
+name: Native HPKE C++ RFC9180 interoperability check
+on:
+  push:
+    branches: [security/hpke-native-cpp-migration]
+    paths:
+      - .github/workflows/native-hpke-interoperability.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+concurrency:
+  group: spdecode-native-hpke-interoperability-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  native-node-crypto:
+    if: github.repository_owner == 'gokussj092' && github.ref == 'refs/heads/security/hpke-native-cpp-migration'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Fetch authenticated official Mbed TLS 3.6.7 archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 --output "$RUNNER_TEMP/mbedtls.tar.bz2" \
+            https://github.com/Mbed-TLS/mbedtls/releases/download/mbedtls-3.6.7/mbedtls-3.6.7.tar.bz2
+          echo "a7e8bcbec0e6f761b4af24f25677626b35f762f68eef79c08677a363212d11f6  $RUNNER_TEMP/mbedtls.tar.bz2" | sha256sum -c -
+          mkdir "$RUNNER_TEMP/mbedtls"
+          tar -xf "$RUNNER_TEMP/mbedtls.tar.bz2" -C "$RUNNER_TEMP/mbedtls" --strip-components=1
+      - name: Compile Mbed TLS crypto library for Linux host
+        shell: bash
+        run: |
+          set -euo pipefail
+          cmake -S "$RUNNER_TEMP/mbedtls" -B "$RUNNER_TEMP/mbedtls-build" \
+            -DENABLE_TESTING=OFF -DENABLE_PROGRAMS=OFF \
+            -DUSE_SHARED_MBEDTLS_LIBRARY=OFF -DUSE_STATIC_MBEDTLS_LIBRARY=ON
+          cmake --build "$RUNNER_TEMP/mbedtls-build" --target mbedcrypto --parallel 2
+      - name: Compile native client and run real JS server roundtrip
+        shell: bash
+        run: |
+          set -euo pipefail
+          g++ -std=c++17 -O2 -Wall -Wextra -Werror \
+            -I "$RUNNER_TEMP/mbedtls/include" \
+            tests/native_hpke_cli.cpp android/app/src/main/cpp/spdecode_hpke.cpp \
+            "$RUNNER_TEMP/mbedtls-build/library/libmbedcrypto.a" -lpthread \
+            -o "$RUNNER_TEMP/native_hpke_cli"
+          (cd cloud/web && npm install --no-audit --no-fund)
+          node tests/native_hpke_node_roundtrip.mjs "$RUNNER_TEMP/native_hpke_cli"

@@ -204,26 +204,25 @@ PreparedEnvelope hpkePrepare(int operation,const Bytes& metadata,
 
     Bytes kemContext;append(kemContext,enc);append(kemContext,publicKey);
     Bytes dhBytes(dh.begin(),dh.end());
-    const Hash eae=labeledExtract({},kKemSuite,sizeof(kKemSuite),"eae_prk",dhBytes);
+    Hash eae=labeledExtract({},kKemSuite,sizeof(kKemSuite),"eae_prk",dhBytes);
     cleanse(dhBytes);cleanse(dh);
-    const Bytes sharedSecret=labeledExpand(eae,kKemSuite,sizeof(kKemSuite),
+    Bytes sharedSecret=labeledExpand(eae,kKemSuite,sizeof(kKemSuite),
                                           "shared_secret",kemContext,32);
-    Hash eaeMutable=eae;cleanse(eaeMutable);
+    cleanse(eae);
     Bytes infoHashData;appendAscii(infoHashData,kInfo);
     const Hash pskIdHash=labeledExtract({},kHpkeSuite,sizeof(kHpkeSuite),"psk_id_hash",{});
     const Hash infoHash=labeledExtract({},kHpkeSuite,sizeof(kHpkeSuite),
                                       "info_hash",infoHashData);
     Bytes scheduleContext; scheduleContext.push_back(0); // HPKE base mode.
     append(scheduleContext,pskIdHash);append(scheduleContext,infoHash);
-    const Hash secret=labeledExtract(sharedSecret,kHpkeSuite,sizeof(kHpkeSuite),"secret",{});
-    Bytes secretCopy=sharedSecret;cleanse(secretCopy);
+    Hash secret=labeledExtract(sharedSecret,kHpkeSuite,sizeof(kHpkeSuite),"secret",{});
+    cleanse(sharedSecret);
     Bytes key=labeledExpand(secret,kHpkeSuite,sizeof(kHpkeSuite),"key",scheduleContext,32);
     Bytes nonce=labeledExpand(secret,kHpkeSuite,sizeof(kHpkeSuite),"base_nonce",scheduleContext,12);
-    const Hash exporter=labeledExtract({},kHpkeSuite,sizeof(kHpkeSuite),"unused",{});
-    (void)exporter; // replaced below by exporter_secret from HPKE key schedule
-    const Bytes exporterSecret=labeledExpand(secret,kHpkeSuite,sizeof(kHpkeSuite),
+    Bytes exporterSecret=labeledExpand(secret,kHpkeSuite,sizeof(kHpkeSuite),
                                               "exp",scheduleContext,32);
     Hash exporterKey{};std::copy(exporterSecret.begin(),exporterSecret.end(),exporterKey.begin());
+    cleanse(exporterSecret);cleanse(secret);
     Bytes exportContext;appendAscii(exportContext,kExport);
     Bytes responseMaterial=labeledExpand(exporterKey,kHpkeSuite,sizeof(kHpkeSuite),
                                          "sec",exportContext,44);
