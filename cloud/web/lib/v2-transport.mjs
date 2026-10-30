@@ -199,10 +199,15 @@ export async function transportRequest(request,options={}) {
     if(op===16) {
       if(!await throttle(redis,"spsec:action-rate:"+sha256(claims.key),20,60))return failSecure("RATE_LIMITED",429);
       const value=await actionChallenge(redis,claims,JSON.parse(bytes),cfg);
-      return value?jsonReply(value,201):fail("INVALID_REQUEST",400);
+      return value?sendSecure(jsonReply(value,201)):failSecure("INVALID_REQUEST",400);
     }
     if(!await verifyAction(redis,request,op,bytes,claims,cfg,options))return failSecure("INTEGRITY_REJECTED",403);
-    const headers=new Headers(request.headers);headers.delete("content-length");
+    const headers=new Headers(request.headers);
+    headers.delete("content-length");
+    // The worker-facing internal route receives the authenticated clear JSON,
+    // never the encrypted binary envelope or its octet-stream Content-Type.
+    headers.set("content-type","application/json");
+    headers.delete("x-sp-envelope");
     const internal=new Request(new URL("/api/v1/"+routes[op],url),{
       method:"POST",headers,body:bytes,signal:request.signal});
     bindVerifiedRequest(internal,claims);
