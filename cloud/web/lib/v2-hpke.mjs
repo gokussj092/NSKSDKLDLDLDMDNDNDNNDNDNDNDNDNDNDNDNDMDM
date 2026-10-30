@@ -76,14 +76,41 @@ export function openRequest(wire,recipient,meta){
   cipher.setAAD(aad("request",meta.operation,meta.version,meta.timestamp,meta.nonce,meta.bearer));
   cipher.setAuthTag(tag);
   const clear=Buffer.concat([cipher.update(ciphertext),cipher.final()]);
-  return {clear,reply:(status,responseBytes)=>{
+  const makeCipher=status=>{
     const {key,nonce}=responseSecret(ctx.exporter,wire);
-    const box=createCipheriv("aes-256-gcm",key,nonce);
-    box.setAAD(aad("response",meta.operation,meta.version,meta.timestamp,meta.nonce,meta.bearer,wire,status));
-    return Buffer.concat([RESPONSE_MAGIC,box.update(responseBytes),box.final(),box.getAuthTag()]);
-  }};
+    const cipher=createCipheriv("aes-256-gcm",key,nonce);
+    cipher.setAAD(aad("response",meta.operation,meta.version,meta.timestamp,meta.nonce,meta.bearer,wire,status));
+    return {cipher,key,nonce};
+  };
+  return {clear,
+    reply:(status,responseBytes)=>{
+      const {cipher,key,nonce}=makeCipher(status);
+      try{return Buffer.concat([RESPONSE_MAGIC,cipher.update(responseBytes),cipher.final(),cipher.getAuthTag()]);}
+      finally {key.fill(0);nonce.fill(0);}
+    },
+    replyStream:(status,body)=>new ReadableStream({
+      async start(controller) {
+        const {cipher,key,nonce}=makeCipher(status),reader=body.getReader();
+        controller.enqueue(RESPONSE_MAGIC);
+        try {
+          for(;;) {
+            const {value,done}=await reader.read();
+            if(done)break;
+            const encrypted=cipher.update(Buffer.from(value));
+            if(encrypted.length)controller.enqueue(encrypted);
+          }
+          const last=cipher.final();
+          if(last.length)controller.enqueue(last);
+          controller.enqueue(cipher.getAuthTag());
+          controller.close();
+        } catch(error) {controller.error(error);}
+        finally {reader.releaseLock();key.fill(0);nonce.fill(0);}
+      },
+    }),
+  };
 }
-export async function encryptedReply(context,status,response){
-  const bytes=Buffer.from(await response.arrayBuffer());
-  return new Response(context.reply(status,bytes),{status,headers:{"Content-Type":"application/octet-stream","Cache-Control":"no-store","X-Content-Type-Options":"nosniff"}});
+export function encryptedReply(context,status,response){
+  const body=response.body?context.replyStream(status,response.body):
+    context.reply(status,Buffer.alloc(0));
+  return new Response(body,{status,headers:{"Content-Type":"application/octet-stream","Cache-Control":"no-store","X-Content-Type-Options":"nosniff"}});
 }

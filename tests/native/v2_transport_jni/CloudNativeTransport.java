@@ -9,8 +9,13 @@ import javax.net.ssl.HttpsURLConnection;
 /** Real native bridge with mocked TLS, not a certificate verification test. */
 public final class CloudNativeTransport {
     static { System.load(System.getProperty("spdecode.native")); }
-    private static native String postNative(int operation,String json,String bearer,
+    private static native byte[] postNative(int operation,byte[] binary,String bearer,
         String version,String timestamp,String nonce,String proof,String actionChallenge,String actionIntegrity) throws IOException;
+    private static String postNative(int operation,String json,String bearer,
+        String version,String timestamp,String nonce,String proof,String actionChallenge,String actionIntegrity) throws IOException {
+        return new String(postNative(operation,json.getBytes(StandardCharsets.UTF_8),bearer,
+            version,timestamp,nonce,proof,actionChallenge,actionIntegrity),StandardCharsets.UTF_8);
+    }
     private static FakeConnection last;
     private static boolean failUpload;
     private static final String RESPONSE="{\"message\":\"México 👻 漢字\"}";
@@ -35,6 +40,7 @@ public final class CloudNativeTransport {
         String timestamp="1700000000",nonce="AAECAwQFBgcICQoLDA0ODxAREhMUFRYX",proof="A".repeat(96);
         check(postNative(6,body,"synthetic.bearer","1.1.22",timestamp,nonce,proof,"","").equals("200\n"+RESPONSE),"UTF-8 reply changed");
         check(last.output.toString(StandardCharsets.UTF_8).equals(body),"Uploaded UTF-8 changed");
+        check("application/octet-stream".equals(last.getRequestProperty("Content-Type")),"Binary Content-Type missing");
         check(last.getURL().toString().equals("https://api.spdecode.example/api/v2/transport"),"Wrong destination");
         check(last.getRequestProperty("X-SP-Operation").equals("6"),"Wrong operation");
         check(last.getRequestProperty("X-SP-Proof").equals(proof),"Wrong proof");
