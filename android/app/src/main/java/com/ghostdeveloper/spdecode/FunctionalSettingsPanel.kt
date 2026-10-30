@@ -197,7 +197,7 @@ fun FunctionalSettingsPanel(
                         checkedTrackColor=TitleText))
             }
         }
-        DeviceCredentialSettingsSection()
+        // Settings additions injected here by the Android Gradle task.
         SettingsCard {
             Row(verticalAlignment=Alignment.CenterVertically) {
                 Icon(Icons.Outlined.HelpOutline,null,tint=TitleText)

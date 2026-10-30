@@ -154,7 +154,7 @@ val prepareQaSettingsSource = tasks.register("prepareQaSettingsSource") {
     outputs.dir(qaSettingsRoot)
     doLast {
         val original = qaSettingsSource.asFile.readText(Charsets.UTF_8)
-        val anchor = "        DeviceCredentialSettingsSection()"
+        val anchor = "        // Settings additions injected here by the Android Gradle task."
         require(original.indexOf(anchor) >= 0 &&
             original.indexOf(anchor) == original.lastIndexOf(anchor)) {
             "QA Settings injection anchor absent or ambiguous; do not ship a build"
