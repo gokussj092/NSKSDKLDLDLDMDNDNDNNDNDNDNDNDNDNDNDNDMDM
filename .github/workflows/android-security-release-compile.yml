@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   release-compile:
-    if: github.repository == 'gokussj092/NSKSDKLDLDLDMDNDNNDNDNDNDNDNDNDNDNDNDMDM' && github.ref == 'refs/heads/security/v2-hpke-x25519-encrypted-transport'
+    if: github.repository_owner == 'gokussj092' && github.ref == 'refs/heads/security/v2-hpke-x25519-encrypted-transport'
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
