@@ -25,7 +25,6 @@ jobs:
       SPDECODE_CLOUD_RELEASE: "true"
       SPDECODE_CLOUD_QA_BUILD: "false"
       SPDECODE_CLOUD_API_BASE_URL: https://api.spdecode.xyz
-      SPDECODE_V2_HPKE_PINS: ${{ vars.SPDECODE_V2_HPKE_PINS }}
       ORG_GRADLE_PROJECT_noticeFirebaseAPP_ID: ${{ vars.SPDECODE_NOTICE_FIREBASE_APP_ID || '1:78511444369:android:167638a0365236f1ab4a30' }}
       ORG_GRADLE_PROJECT_noticeFirebaseAPI_KEY: ${{ vars.SPDECODE_NOTICE_FIREBASE_API_KEY || 'AIzaSyCXHGfZDisaa9Viat01K7DvNYGgr5XVnoM' }}
       ORG_GRADLE_PROJECT_noticeFirebasePROJECT_ID: ${{ vars.SPDECODE_NOTICE_FIREBASE_PROJECT_ID || 'sp-decode-android' }}
@@ -72,11 +71,7 @@ jobs:
             echo "Revision: $GITHUB_SHA"
             echo "Branch: $GITHUB_REF_NAME"
             echo "Build: Cloud-enabled DEBUG, not signed with the Google Play production certificate"
-            if [[ -z "${SPDECODE_V2_HPKE_PINS:-}" ]]; then
-              echo "HPKE: No public pin configured; Cloud decode cannot be tested until a matching server key is provisioned"
-            else
-              echo "HPKE: Public pin supplied; server must separately be configured with the matching private key"
-            fi
+            echo "HPKE: native C++ embeds public pin shares; server private key must match"
             echo "Install: If a production-signed SP-DECODE is present, it cannot be upgraded with this debug certificate"
           } > dist/BUILD_INFO.txt
       - name: Upload APK for physical-device testing

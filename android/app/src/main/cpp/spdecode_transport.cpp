@@ -6,6 +6,21 @@
 #include "cloud_origin.h"
 
 namespace {
+// PUBLIC X25519 trust anchor, stored as two byte shares (no plaintext key or
+// kid:base64url literal). Reversible obfuscation, NOT secret encryption.
+// The server's private key must NEVER be packaged in an Android binary.
+constexpr jsize kHpkePinLength=40;
+volatile const unsigned char kHpkePinPartA[kHpkePinLength]={0x4d, 0xd5, 0x69, 0x60, 0xc8, 0xca, 0xdc, 0x25, 0x57, 0xad, 0x5d, 0xec, 0xab, 0x06, 0xc2, 0xd1, 0x7f, 0xdc, 0x54, 0x2f, 0x29, 0x04, 0x36, 0x1a, 0xc4, 0x11, 0x8b, 0x45, 0xda, 0xf7, 0x36, 0x6f, 0x02, 0xaa, 0x4c, 0x05, 0x79, 0xab, 0xc0, 0x14};
+volatile const unsigned char kHpkePinPartB[kHpkePinLength]={0xc4, 0xba, 0x70, 0x36, 0xec, 0xeb, 0xa1, 0x67, 0xdd, 0x93, 0x92, 0x48, 0x0e, 0xc4, 0xba, 0xb9, 0x7f, 0x35, 0xeb, 0xa1, 0xa0, 0x66, 0xdc, 0x92, 0x48, 0x57, 0x0d, 0xc3, 0xb9, 0x7f, 0x7e, 0x34, 0xea, 0xa0, 0x66, 0x65, 0xdb, 0x91, 0x57, 0x0d};
+jbyteArray nativeHpkePublicPin(JNIEnv* env,jclass) {
+    jbyte bytes[kHpkePinLength]{};
+    for(jsize i=0;i<kHpkePinLength;++i)
+        bytes[i]=static_cast<jbyte>(kHpkePinPartA[i]^kHpkePinPartB[i]);
+    jbyteArray result=env->NewByteArray(kHpkePinLength);
+    if(result!=nullptr)env->SetByteArrayRegion(result,0,kHpkePinLength,bytes);
+    return result;
+}
+
 constexpr size_t kMaxRequestBytes = 12 * 1024 * 1024;
 constexpr size_t kMaxReplyBytes = 6 * 1024 * 1024;
 // Server-VPN MKK only: the signed JSON envelope carries both raw and structured data.
@@ -267,8 +282,10 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm,void*) {
     if(!bridge)return JNI_ERR;
     JNINativeMethod methods[]={{const_cast<char*>("postNativeEncrypted"),
         const_cast<char*>("(I[BLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)[B"),
-        reinterpret_cast<void*>(post)}};
-    const jint registered=env->RegisterNatives(bridge,methods,1);
+        reinterpret_cast<void*>(post)},
+        {const_cast<char*>("nativeHpkePublicPin"),const_cast<char*>("()[B"),
+        reinterpret_cast<void*>(nativeHpkePublicPin)}};
+    const jint registered=env->RegisterNatives(bridge,methods,2);
     env->DeleteLocalRef(bridge);
     return registered==JNI_OK?JNI_VERSION_1_6:JNI_ERR;
 }

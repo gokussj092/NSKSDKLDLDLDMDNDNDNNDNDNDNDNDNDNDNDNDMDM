@@ -1,6 +1,6 @@
 # SP-DECODE V2 — HPKE application transport (preproduction)
 
-**State:** code integration for the isolated `security/v2-hpke-x25519-encrypted-transport` branch; NOT verified by an Android build, device interoperability run, or production deployment. Do not activate in production until all release gates pass. **V1 is unchanged.** No V3.
+**State:** code integration for the isolated `security/v2-hpke-x25519-encrypted-transport` branch; DEBUG and unsigned R8 artifacts were compiled before native pin integration. Native pin bridge requires a fresh build and device interoperability test; no production deployment. Do not activate in production until all release gates pass. **V1 is unchanged.** No V3.
 
 ## Scope and trust
 
@@ -59,7 +59,7 @@ Action challenge (op 16) receives the SHA-256 of the **already prepared, final e
 
 ## Keys and rotation
 
-Build the Android client with explicit PUBLIC pins: `SPDECODE_V2_HPKE_PINS=kid16hex:base64url_raw32[,kid:base64url_raw32]`. Only the first pin is active for encryption; other pins facilitate a staged app release. Android recomputes SHA-256(raw X25519 pubkey)[0:8] and fails closed on mismatch/missing pins.
+The Android PUBLIC X25519 pin is embedded as two masked byte shares in `spdecode_transport.cpp`, compiled into `libspdecode.so` and returned through JNI as 8 identifier bytes followed by 32 public-key bytes. No plaintext Base64 pin is stored in Kotlin, BuildConfig or application resources. This is reversible obfuscation of a PUBLIC trust anchor, not secret encryption. Key rotation requires a reviewed native pin update and a newly signed Android build. The server's PRIVATE recipient key stays on the VPS, never in the APK/AAB.
 
 On a secured operator machine, **outside the repository**, run:
 ```sh

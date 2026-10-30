@@ -1,7 +1,5 @@
 package com.ghostdeveloper.spdecode.cloud
 
-import android.util.Base64
-import com.ghostdeveloper.spdecode.BuildConfig
 import org.bouncycastle.crypto.hpke.HPKE
 import org.json.JSONObject
 import java.io.IOException
@@ -29,7 +27,6 @@ internal object V2HpkeEnvelope {
     private const val MAX_FILE=8*1024*1024
     private const val MAX_REQUEST=11*1024*1024
     private const val MAX_REPLY=96*1024*1024
-    private const val FLAGS=Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING
 
     data class Prepared(
         val wire:ByteArray,
@@ -65,18 +62,15 @@ internal object V2HpkeEnvelope {
     }
     private fun sha256(data:ByteArray)=MessageDigest.getInstance("SHA-256").digest(data)
     private fun pin():Pair<ByteArray,ByteArray> {
-        val values=BuildConfig.SPDECODE_V2_HPKE_PINS
-        if(values.isEmpty())throw IOException("CLOUD_HPKE_PIN_MISSING")
-        val first=values.split(',').first().split(':')
-        if(first.size!=2 || !first[0].matches(Regex("[a-f0-9]{16}")) ||
-            !first[1].matches(Regex("[A-Za-z0-9_-]{43}")))
-            throw IOException("CLOUD_HPKE_PIN_INVALID")
-        val raw=Base64.decode(first[1],FLAGS)
-        val kid=sha256(raw).copyOfRange(0,8)
-        val actual=kid.joinToString("") { "%02x".format(it.toInt() and 255) }
-        if(raw.size!=32 || Base64.encodeToString(raw,FLAGS)!=first[1] ||
-            first[0]!=actual)throw IOException("CLOUD_HPKE_PIN_INVALID")
-        return kid to raw
+        val material=CloudNativeTransport.hpkePublicPin()
+        try {
+            if(material.size!=40)throw IOException("CLOUD_HPKE_PIN_MISSING")
+            val id=material.copyOfRange(0,8)
+            val key=material.copyOfRange(8,40)
+            if(!MessageDigest.isEqual(id,sha256(key).copyOfRange(0,8)))
+                throw IOException("CLOUD_HPKE_PIN_INVALID")
+            return id to key
+        } finally { material.fill(0) }
     }
     fun prepare(operation:Int,metadata:JSONObject,attachment:ByteArray?=null):Prepared {
         require(operation in 1..17 && operation!=3)

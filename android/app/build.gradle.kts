@@ -646,12 +646,7 @@ android {
         buildConfigField("boolean", "SPDECODE_CLOUD_ENABLED", enableCloud.toString())
         buildConfigField("boolean", "SPDECODE_QA_BUILD", enableQaBuild.toString())
         // Public trust anchors; never package any recipient private key.
-        val hpkePins=providers.environmentVariable("SPDECODE_V2_HPKE_PINS").orNull.orEmpty().trim()
-        require(hpkePins.isEmpty() ||
-            hpkePins.matches(Regex("([a-f0-9]{16}:[A-Za-z0-9_-]{43})(,[a-f0-9]{16}:[A-Za-z0-9_-]{43}){0,2}"))) {
-            "SPDECODE_V2_HPKE_PINS expects kid:base64url32[,kid:base64url32]"
-        }
-        buildConfigField("String","SPDECODE_V2_HPKE_PINS","\"$hpkePins\"")
+        // Public HPKE pin lives as masked bytes in native C++, not in BuildConfig.
 
         // Public Firebase application identifiers. Service-account keys stay exclusively on the VPS.
         mapOf("APP_ID" to "1:[0-9]+:android:[a-f0-9]+", "API_KEY" to "[A-Za-z0-9_-]{30,80}",

@@ -11,6 +11,10 @@ import java.io.IOException
 internal object CloudNativeTransport {
     init { System.loadLibrary("spdecode") }
 
+    @JvmStatic private external fun nativeHpkePublicPin(): ByteArray
+    // 8-byte key identifier + 32-byte public X25519 key; reconstructed by C++.
+    fun hpkePublicPin(): ByteArray = nativeHpkePublicPin()
+
     @JvmStatic private external fun postNativeEncrypted(
         operation: Int,
         wire: ByteArray,

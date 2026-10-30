@@ -23,7 +23,6 @@ jobs:
       SPDECODE_CLOUD_API_BASE_URL: https://api.spdecode.xyz
       SPDECODE_CLOUD_RELEASE: "true"
       SPDECODE_CLOUD_QA_BUILD: "false"
-      SPDECODE_V2_HPKE_PINS: ${{ vars.SPDECODE_V2_HPKE_PINS }}
       ORG_GRADLE_PROJECT_noticeFirebaseAPP_ID: ${{ vars.SPDECODE_NOTICE_FIREBASE_APP_ID || '1:78511444369:android:167638a0365236f1ab4a30' }}
       ORG_GRADLE_PROJECT_noticeFirebaseAPI_KEY: ${{ vars.SPDECODE_NOTICE_FIREBASE_API_KEY || 'AIzaSyCXHGfZDisaa9Viat01K7DvNYGgr5XVnoM' }}
       ORG_GRADLE_PROJECT_noticeFirebasePROJECT_ID: ${{ vars.SPDECODE_NOTICE_FIREBASE_PROJECT_ID || 'sp-decode-android' }}
@@ -65,10 +64,7 @@ jobs:
             echo "Source commit: $GITHUB_SHA"
             echo "Build type: RELEASE with R8/minification; NOT debug."
             echo "Unsigned outputs: NOT installable or valid for Google Play upload."
-            if [[ -z "${SPDECODE_V2_HPKE_PINS:-}" ]]; then
-              echo "No HPKE public pin configured; Cloud transport will not work."
-            fi
-          } > dist/BUILD_INFO.txt
+            } > dist/BUILD_INFO.txt
       - name: Archive release compilation result
         uses: actions/upload-artifact@v4
         with:
