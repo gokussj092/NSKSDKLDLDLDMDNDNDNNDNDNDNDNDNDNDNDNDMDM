@@ -8,6 +8,7 @@
 #include "spdecode_hpke.h"
 #include "spdecode_security.h"
 #include <mbedtls/platform_util.h>
+#include <mbedtls/sha256.h>
 #include <cctype>
 #include <string>
 
@@ -412,6 +413,122 @@ jobjectArray nativePrepareProof(JNIEnv* env,jclass,jint op,jstring ver,jbyteArra
 }
 }
 
+// Verify release signer with Android's PackageManager, without Java/Kotlin
+// policy branches. This is defense in depth, not the admission authority.
+namespace {
+bool parseFingerprint(const std::string& raw,std::array<unsigned char,32>& out){
+    if(raw.size()!=64)return false;
+    const auto value=[](char c)->int {
+        if(c>='0'&&c<='9')return c-'0';
+        if(c>='a'&&c<='f')return c-'a'+10;
+        if(c>='A'&&c<='F')return c-'A'+10;
+        return -1;
+    };
+    for(size_t i=0;i<32;++i){
+        int a=value(raw[i*2]),b=value(raw[i*2+1]);
+        if(a<0||b<0)return false;
+        out[i]=static_cast<unsigned char>((a<<4)|b);
+    }
+    return true;
+}
+jboolean verifyReleaseSigner(JNIEnv* env,jclass,jobject context,
+                            jstring packageExpected,jstring uploadDigest,
+                            jstring playDigest,jboolean debugBuild) {
+    if(debugBuild==JNI_TRUE)return JNI_TRUE; // Preserve debug build semantics.
+    if(context==nullptr)return JNI_FALSE;
+    try{
+        const std::string expected=utf(env,packageExpected);
+        if(expected.empty())return JNI_FALSE;
+        std::vector<std::array<unsigned char,32>> fingerprints;
+        for(jstring digest:{uploadDigest,playDigest}){
+            const std::string source=utf(env,digest);
+            std::array<unsigned char,32> parsed{};
+            if(parseFingerprint(source,parsed) &&
+               std::find(fingerprints.begin(),fingerprints.end(),parsed)==fingerprints.end())
+                fingerprints.push_back(parsed);
+        }
+        if(fingerprints.empty()||env->ExceptionCheck())return JNI_FALSE;
+        jclass ctxClass=env->FindClass("android/content/Context");
+        const jmethodID getName=env->GetMethodID(ctxClass,"getPackageName","()Ljava/lang/String;");
+        const jmethodID getInfo=env->GetMethodID(ctxClass,"getApplicationInfo",
+                                              "()Landroid/content/pm/ApplicationInfo;");
+        const jmethodID getPm=env->GetMethodID(ctxClass,"getPackageManager",
+                                             "()Landroid/content/pm/PackageManager;");
+        if(!getName||!getInfo||!getPm||env->ExceptionCheck())return JNI_FALSE;
+        auto name=static_cast<jstring>(env->CallObjectMethod(context,getName));
+        if(!name||env->ExceptionCheck()||utf(env,name)!=expected)return JNI_FALSE;
+        auto info=env->CallObjectMethod(context,getInfo);
+        jclass infoClass=env->FindClass("android/content/pm/ApplicationInfo");
+        const jfieldID flagsField=env->GetFieldID(infoClass,"flags","I");
+        if(!info||!flagsField||env->ExceptionCheck()||
+           (env->GetIntField(info,flagsField)&2)!=0)return JNI_FALSE;
+        jclass debugClass=env->FindClass("android/os/Debug");
+        const jmethodID connected=env->GetStaticMethodID(debugClass,"isDebuggerConnected","()Z");
+        const jmethodID waiting=env->GetStaticMethodID(debugClass,"waitingForDebugger","()Z");
+        if(!connected||!waiting||env->ExceptionCheck()||
+           env->CallStaticBooleanMethod(debugClass,connected)==JNI_TRUE||
+           env->CallStaticBooleanMethod(debugClass,waiting)==JNI_TRUE||
+           env->ExceptionCheck())return JNI_FALSE;
+        auto pm=env->CallObjectMethod(context,getPm);
+        if(!pm||env->ExceptionCheck())return JNI_FALSE;
+        jclass version=env->FindClass("android/os/Build$VERSION");
+        const jfieldID sdkField=env->GetStaticFieldID(version,"SDK_INT","I");
+        if(!sdkField||env->ExceptionCheck())return JNI_FALSE;
+        const jint sdk=env->GetStaticIntField(version,sdkField);
+        jclass pmClass=env->FindClass("android/content/pm/PackageManager");
+        if(sdk>=28){
+            const jmethodID hasCert=env->GetMethodID(pmClass,"hasSigningCertificate",
+                                         "(Ljava/lang/String;[BI)Z");
+            if(!hasCert||env->ExceptionCheck())return JNI_FALSE;
+            for(const auto& digest:fingerprints){
+                auto value=env->NewByteArray(32);
+                if(value==nullptr||env->ExceptionCheck())return JNI_FALSE;
+                env->SetByteArrayRegion(value,0,32,
+                                     reinterpret_cast<const jbyte*>(digest.data()));
+                if(env->ExceptionCheck())return JNI_FALSE;
+                const auto match=env->CallBooleanMethod(pm,hasCert,name,value,1);
+                env->DeleteLocalRef(value);
+                if(env->ExceptionCheck())return JNI_FALSE;
+                if(match==JNI_TRUE)return JNI_TRUE;
+            }
+            return JNI_FALSE;
+        }
+        // Legacy API 24..27: match the single real signing certificate.
+        const jmethodID getPackage=env->GetMethodID(pmClass,"getPackageInfo",
+                                               "(Ljava/lang/String;I)Landroid/content/pm/PackageInfo;");
+        if(!getPackage||env->ExceptionCheck())return JNI_FALSE;
+        auto infoOld=env->CallObjectMethod(pm,getPackage,name,64);
+        if(!infoOld||env->ExceptionCheck())return JNI_FALSE;
+        auto infoOldClass=env->FindClass("android/content/pm/PackageInfo");
+        const jfieldID signatures=env->GetFieldID(infoOldClass,"signatures",
+                                               "[Landroid/content/pm/Signature;");
+        if(!signatures||env->ExceptionCheck())return JNI_FALSE;
+        auto certs=static_cast<jobjectArray>(env->GetObjectField(infoOld,signatures));
+        if(!certs||env->ExceptionCheck()||env->GetArrayLength(certs)!=1)return JNI_FALSE;
+        jclass signatureClass=env->FindClass("android/content/pm/Signature");
+        const jmethodID toBytes=env->GetMethodID(signatureClass,"toByteArray","()[B");
+        auto signature=env->GetObjectArrayElement(certs,0);
+        auto data=static_cast<jbyteArray>(env->CallObjectMethod(signature,toBytes));
+        if(!data||env->ExceptionCheck())return JNI_FALSE;
+        const jsize count=env->GetArrayLength(data);
+        if(count<=0||count>16384)return JNI_FALSE;
+        std::vector<unsigned char> encoded(static_cast<size_t>(count));
+        env->GetByteArrayRegion(data,0,count,
+                                reinterpret_cast<jbyte*>(encoded.data()));
+        if(env->ExceptionCheck())return JNI_FALSE;
+        std::array<unsigned char,32> result{};
+        if(mbedtls_sha256(encoded.data(),encoded.size(),result.data(),0)!=0)
+            return JNI_FALSE;
+        for(const auto& fingerprint:fingerprints)
+            if(result==fingerprint)return JNI_TRUE;
+        return JNI_FALSE;
+    }catch(const std::exception&) {
+        if(env->ExceptionCheck())env->ExceptionClear();
+        return JNI_FALSE;
+    }
+}
+}
+
 // Register the private bridge; export only JNI_OnLoad.
 extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm,void*) {
     JNIEnv* env=nullptr;
@@ -438,8 +555,11 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm,void*) {
         reinterpret_cast<void*>(nativeFormatProof)},
         {const_cast<char*>("nativePrepareProof"),
         const_cast<char*>("(ILjava/lang/String;[BLjava/lang/String;)[Ljava/lang/String;"),
-        reinterpret_cast<void*>(nativePrepareProof)}};
-    const jint registered=env->RegisterNatives(bridge,methods,8);
+        reinterpret_cast<void*>(nativePrepareProof)},
+        {const_cast<char*>("nativeVerifyReleaseSigner"),
+        const_cast<char*>("(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)Z"),
+        reinterpret_cast<void*>(verifyReleaseSigner)}};
+    const jint registered=env->RegisterNatives(bridge,methods,9);
     env->DeleteLocalRef(bridge);
     return registered==JNI_OK?JNI_VERSION_1_6:JNI_ERR;
 }

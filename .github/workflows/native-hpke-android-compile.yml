@@ -8,6 +8,7 @@ on:
       - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudRequestProof.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudNativeTransport.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudDecodeClient.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/ReleaseIntegrity.kt
   workflow_dispatch:
 
 permissions:
