@@ -1,5 +1,6 @@
 name: SP-DECODE Security Branch Android QA APK
 # Single branch-specific build; never creates GitHub Releases, Play uploads or VPS deployments.
+# Build retry 2: remove stale notification prompt sources before Kotlin compilation.
 on:
   push:
     branches:
