@@ -89,8 +89,6 @@ internal object CloudNotifications {
         val retained=(0 until list.length()).map {list.getJSONObject(it).getString("id")}.toSet()
         prefs(c).edit().putStringSet("seen",seen.intersect(retained)).apply()
     }
-    fun exportPromptPending(c:Context)=!prefs(c).getBoolean("export-prompt-shown",false)&&!enabled(c)
-    fun markExportPrompt(c:Context){prefs(c).edit().putBoolean("export-prompt-shown",true).apply()}
 }
 
 internal class CloudNoticeWorker(c:Context,p:WorkerParameters):CoroutineWorker(c,p) {
