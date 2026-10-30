@@ -82,6 +82,8 @@ jobs:
           SPDECODE_RELEASE_KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
           SPDECODE_RELEASE_KEY_PASSWORD: ${{ secrets.SPDECODE_SIGNING_KEY_PASSWORD }}
         run: gradle --no-daemon :app:assembleRelease :app:bundleRelease
+      - name: Reject missing or mismatched release signer pins before publishing
+        run: python3 scripts/ci/verify_release_signer_pins.py
       - name: Verify Play AAB includes all XML locales without language splits
         run: python3 scripts/ci/verify_aab_locales.py android/app/build/outputs/bundle/release/app-release.aab
       - name: Verify signed APK and AAB and prepare versioned artifacts
