@@ -163,6 +163,27 @@ PY
   fi
   export ANDROID_HOME="$SDK" ANDROID_SDK_ROOT="$SDK"
   export JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64"
+  # The app fails closed without an authenticated server HPKE public key.
+  # Read only the PUBLIC pin from the protected server keyring; never copy
+  # the recipient private key into generated Android build sources.
+  if [[ -z "${SPDECODE_V2_HPKE_PINS:-}" && -f "$CFG/keys/v2-hpke-keyring.json" ]]; then
+    SPDECODE_V2_HPKE_PINS=$(python3 - "$CFG/keys/v2-hpke-keyring.json" <<'PY'
+import base64,hashlib,json,pathlib,sys
+entries=json.loads(pathlib.Path(sys.argv[1]).read_text())
+assert isinstance(entries,list) and 1<=len(entries)<=3
+pins=[]
+for entry in entries:
+    encoded=entry["publicKey"]
+    raw=base64.urlsafe_b64decode(encoded+"="*((-len(encoded))%4))
+    assert len(raw)==32
+    kid=hashlib.sha256(raw).digest()[:8].hex()
+    pins.append(kid+":"+encoded)
+print(",".join(pins))
+PY
+)
+    export SPDECODE_V2_HPKE_PINS
+  fi
+  [[ -n "${SPDECODE_V2_HPKE_PINS:-}" ]] || fail "HPKE public pin missing; provision the server keyring before release build"
   SPDECODE_TRUSTED_SIGNER_SHA256=$(keytool -exportcert -storetype PKCS12 \
     -keystore "$SPDECODE_RELEASE_STORE_FILE" \
     -storepass:env SPDECODE_RELEASE_STORE_PASSWORD \
