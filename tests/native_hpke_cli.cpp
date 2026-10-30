@@ -1,5 +1,5 @@
 // Host-only test tool. Never included in Android release artifacts.
-#include "../../android/app/src/main/cpp/spdecode_hpke.h"
+#include "../android/app/src/main/cpp/spdecode_hpke.h"
 #include <array>
 #include <cstdint>
 #include <iostream>
