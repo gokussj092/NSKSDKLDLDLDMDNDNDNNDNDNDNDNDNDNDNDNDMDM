@@ -1,0 +1,38 @@
+name: Cloud V2 HPKE Smoke
+on:
+  push:
+    branches: [security/v2-hpke-x25519-encrypted-transport]
+    paths:
+      - .github/workflows/cloud-v2-hpke-smoke.yml
+      - cloud/web/lib/v2-hpke.mjs
+      - cloud/web/tests/v2-hpke.test.mjs
+      - cloud/web/package.json
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: spdecode-cloud-hpke-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  hpke-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install pinned HPKE dependency
+        working-directory: cloud/web
+        run: npm install --no-audit --no-fund --ignore-scripts
+      - name: Test HPKE encryption, authentication, replay framing and response
+        working-directory: cloud/web
+        run: node --test tests/v2-hpke.test.mjs
+      - name: Compile server Next.js frontend and API routes
+        working-directory: cloud/web
+        run: npm run build
