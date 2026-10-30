@@ -81,7 +81,13 @@ jobs:
             pinned="$(printf '%s' "$PLAY_UPLOAD_CERT" | tr -d ':[:space:]' | tr '[:upper:]' '[:lower:]')"
             test "$cert" = "$pinned" || { echo "::error::Play upload certificate mismatch"; exit 1; }
           fi
+          # The Activity refuses to launch when BOTH embedded signer digests are empty.
+          # Carry the VERIFIED permanent APK certificate to Android BuildConfig.
           echo "SPDECODE_RELEASE_STORE_FILE=$RUNNER_TEMP/spdecode-build35.p12" >> "$GITHUB_ENV"
+          echo "SPDECODE_TRUSTED_SIGNER_SHA256=$cert" >> "$GITHUB_ENV"
+          # Play signs its installs with a distinct public App Signing certificate.
+          # Verified against the Play candidate workflow certificate pin.
+          echo "SPDECODE_PLAY_APP_SIGNER_SHA256=64760393e52521294b40a1fd978b5bae732b7d8604bd222ca01166a25407854b" >> "$GITHUB_ENV"
       - name: Validate production identity and exclude registration token
         run: |
           grep -Fq 'versionCode = 35' android/app/build.gradle.kts
@@ -117,15 +123,56 @@ jobs:
           python3 scripts/android_16kb_elf_audit.py "$apk" "$aab"
           python3 tests/cloud_c5_apk_audit.py "$apk"
           python3 scripts/audit_v2_apk.py "$apk" --origin https://api.spdecode.xyz
+          # Regression gate: a signed release with blank BuildConfig signer pins
+          # silently closes on MainActivity.onCreate (no crash report).
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          roots=list(Path("android/app/build/generated/source/buildConfig").rglob("BuildConfig.java"))
+          matched=[p for p in roots if str(p).endswith("/release/com/ghostdeveloper/spdecode/BuildConfig.java")]
+          if len(matched)!=1: raise SystemExit("Release BuildConfig source missing")
+          text=matched[0].read_text()
+          for key, expected in {
+              "TRUSTED_SIGNER_SHA256": "0fa9f07f2c47464925f3a7b222c9a39ef887738f678b9c918ec6c4fb96162260",
+              "PLAY_APP_SIGNER_SHA256": "64760393e52521294b40a1fd978b5bae732b7d8604bd222ca01166a25407854b",
+          }.items():
+              pattern=r'\b'+key+r'\s*=\s*"'+expected+r'"'
+              if not re.search(pattern,text):
+                  raise SystemExit("Release startup signer pin missing: "+key)
+          print("Both release startup signer pins embedded in BuildConfig")
+          PY
           mkdir -p dist
-          cp "$apk" dist/SP-DECODE-v1.1.24-35-CI-APPROVED-SIGNED.apk
-          cp "$aab" dist/SP-DECODE-v1.1.24-35-CI-APPROVED-SIGNED.aab
+          cp "$apk" dist/SP-DECODE-v1.1.24-35-STARTUP-FIX-SIGNED.apk
+          cp "$aab" dist/SP-DECODE-v1.1.24-35-STARTUP-FIX-SIGNED.aab
           (cd dist && sha256sum *.apk *.aab > SHA256SUMS.txt)
           printf 'Version: 1.1.24 (35)\nSource SHA: %s\nAPI: https://api.spdecode.xyz\nPermanent signer verified\nNo Google Play upload or public Release performed\n' "$SOURCE_SHA" > dist/BUILD_INFO.txt
+      - name: Verify actual signed APK opens MainActivity on Android 15 emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          cores: 2
+          ram-size: 2048M
+          disk-size: 4096M
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          script: |
+            set -euo pipefail
+            apk=android/app/build/outputs/apk/release/app-release.apk
+            adb install -r "$apk"
+            adb shell am force-stop com.ghostdeveloper.spdecode || true
+            adb shell am start -W -n com.ghostdeveloper.spdecode/.MainActivity
+            sleep 8
+            adb shell dumpsys activity activities > "$RUNNER_TEMP/release-activity.txt"
+            if ! grep -E '(topResumedActivity|mResumedActivity)=.*com[.]ghostdeveloper[.]spdecode/.*MainActivity' "$RUNNER_TEMP/release-activity.txt" >/dev/null; then
+              echo "::error::Signed release does not keep its MainActivity in foreground"
+              exit 1
+            fi
+            echo "Signed release MainActivity remains foreground after launch"
       - name: Upload signed APK and AAB to GitHub Actions
         uses: actions/upload-artifact@v4
         with:
-          name: SP-DECODE-v1.1.24-35-CI-APPROVED-SIGNED-APK-AAB
+          name: SP-DECODE-v1.1.24-35-STARTUP-FIX-SIGNED-APK-AAB
           path: dist/
           if-no-files-found: error
           retention-days: 14
