@@ -62,5 +62,7 @@ jobs:
             "$RUNNER_TEMP/mbedtls-build/library/libmbedcrypto.a" -lpthread \
             -o "$RUNNER_TEMP/native_security_contract"
           "$RUNNER_TEMP/native_security_contract"
-          (cd cloud/web && npm install --no-audit --no-fund)
+          # npm metadata occasionally selects nonexistent tslib 2.9.1.
+          # Pin the published 2.8.1 only in this disposable CI checkout.
+          (cd cloud/web && npm pkg set overrides.tslib=2.8.1 && npm install --no-audit --no-fund --no-package-lock)
           node tests/native_hpke_node_roundtrip.mjs "$RUNNER_TEMP/native_hpke_cli"
