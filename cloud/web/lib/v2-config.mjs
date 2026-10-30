@@ -1,11 +1,12 @@
 import { settings } from "./c3-config.mjs";
-export function v2Settings(env = process.env) {
+export function v2Settings(env = process.env,{playIntegrityRequired=true}={}) {
   const base = settings(env);
   const certificateDigests = (env.CLOUD_PLAY_CERT_SHA256 || "").split(",").map(x=>x.trim().toLowerCase());
   const minimumVersionCode = Number(env.CLOUD_MIN_ANDROID_VERSION_CODE || "33");
   const epoch = env.CLOUD_V2_SESSION_EPOCH || "1";
   const requireHardware=env.CLOUD_KEY_ATTESTATION_REQUIRED !== "false";
-  const requireAction=env.CLOUD_ACTION_INTEGRITY_REQUIRED !== "false";
+  // Action Integrity requires Play token verification. The beta profile cannot pretend to provide it.
+  const requireAction=playIntegrityRequired && env.CLOUD_ACTION_INTEGRITY_REQUIRED !== "false";
   const cloudProjectNumber=env.CLOUD_GOOGLE_CLOUD_PROJECT_NUMBER || "";
   const maxRecentActivity=Number(env.CLOUD_INTEGRITY_MAX_RECENT_ACTIVITY || "3");
   const minimumDeviceSdk=Number(env.CLOUD_INTEGRITY_MIN_DEVICE_SDK || "33");
@@ -18,8 +19,17 @@ export function v2Settings(env = process.env) {
     (!requireAction || /^[1-9][0-9]{5,18}$/.test(cloudProjectNumber)) &&
     Number.isInteger(maxRecentActivity) && maxRecentActivity>=1 && maxRecentActivity<=4 &&
     Number.isInteger(minimumDeviceSdk) && minimumDeviceSdk>=24 && minimumDeviceSdk<=100;
-  return {...base, configured: base.configured && Boolean(base.account) && valid,
-    certificateDigests, minimumVersionCode, epoch, requireLicensed:true,
+  const betaCore=env.CLOUD_API_ENABLED==="true" &&
+    (env.CLOUD_WORKER_TOKEN||"").length>=32 && (env.CLOUD_SESSION_SIGNING_KEY||"").length>=32 &&
+    /^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$/.test(base.packageName) &&
+    /^rediss?:\/\//.test(env.CLOUD_REDIS_URL||"") &&
+    env.CLOUD_TRUST_PROXY==="true" &&
+    [ "CLOUD_V1_REQUIRE_BOUND_SESSION","CLOUD_LEGACY_API_ENABLED" ].every(
+      key=>env[key]===undefined||["true","false"].includes(env[key]));
+  const betaSafe=!playIntegrityRequired && requireHardware;
+  return {...base, configured:valid && (playIntegrityRequired ?
+    (base.configured && Boolean(base.account)):(betaCore && betaSafe)),
+    certificateDigests, minimumVersionCode, epoch, playIntegrityRequired, requireLicensed:true,
     requireStrong:env.CLOUD_V2_REQUIRE_STRONG_INTEGRITY !== "false",
     requirePlayProtect:env.CLOUD_V2_REQUIRE_PLAY_PROTECT === "true",
     requireAccessRisk:env.CLOUD_V2_REQUIRE_ACCESS_RISK === "true",
@@ -31,7 +41,5 @@ export function v2Settings(env = process.env) {
 }
 export function legacyApiRetired(pathname, env = process.env) {
   return env.CLOUD_LEGACY_API_ENABLED === "false" &&
-    (pathname === "/api/v1" || pathname.startsWith("/api/v1/")) &&
-    !["/api/v1/health","/api/v1/ready"].includes(pathname.replace(/\/$/,""));
+    (pathname === "/api/v1" || pathname.startsWith("/api/v1/"));
 }
-

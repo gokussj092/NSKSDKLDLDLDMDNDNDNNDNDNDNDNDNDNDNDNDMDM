@@ -6,10 +6,10 @@
     <string name="unsupported_version_detail">Este arquivo usa uma versão ou método de criptografia ainda não compatível.</string>
     <string name="unsupported_text_title">Texto não suportado</string>
     <string name="unsupported_text_detail">Este texto ou protocolo ainda não é compatível. Contate o desenvolvedor.</string>
-    <string name="catalog_check_action">Verificar atualizações</string>
-    <string name="catalog_checking">Verificando a versão do catálogo…</string>
+    <string name="catalog_check_action">Atualizar</string>
+    <string name="catalog_checking">Atualizando</string>
     <string name="catalog_downloading">Atualizando catálogo…</string>
-    <string name="catalog_progress">Itens do catálogo prontos: %1$d%%</string>
+    <string name="catalog_progress">%1$d%%</string>
     <string name="app_update_title">Nova versão disponível</string>
     <string name="app_update_body">SP-DECODE %1$s está disponível. Acesse o canal oficial do Telegram para atualizar.</string>
     <string name="app_update_open">Abrir Telegram</string>

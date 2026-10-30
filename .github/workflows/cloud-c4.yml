@@ -5,6 +5,7 @@ on:
     branches: ["feat/cloud-c4-android-jni"]
   pull_request:
     paths:
+      - ".github/workflows/cloud-private-preproduction-apk.yml"
       - "android/app/src/main/cpp/**"
       - "android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/**"
       - "android/app/src/main/java/com/ghostdeveloper/spdecode/MainActivity.kt"

@@ -9,6 +9,7 @@ export async function validBoundClaims(redis, claims, cfg) {
     Number.isSafeInteger(claims.versionCode) && claims.versionCode >= cfg.minimumVersionCode &&
     Array.isArray(claims.certificates) && claims.certificates.length > 0 &&
     claims.certificates.every(x=>cfg.certificateDigests.includes(x)) &&
+    (claims.playIntegrityVerified!==false||cfg.playIntegrityRequired===false) &&
     typeof claims.key === "string" && !await redis.get("spsec:revoked:"+keyId(claims.key)) &&
     (!cfg.requireHardware || (claims.hardware === true && !!await registeredKey(redis,claims.key,cfg))) &&
     await redis.get("spc2:session:"+claims.jti) === "1";

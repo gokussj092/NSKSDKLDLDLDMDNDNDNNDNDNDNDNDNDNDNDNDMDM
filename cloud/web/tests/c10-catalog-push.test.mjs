@@ -82,7 +82,7 @@ test("invalid requests, disallowed fields, excessive bodies and wrong methods fa
  assert.equal(response.status,200);
  assert.equal((await response.json()).catalogVersion>=11,true);
 });
-test("Android retains checked encrypted cache, opt-in lifecycle and WorkManager recovery without Firebase",()=>{
+test("Android retains checked encrypted cache, opt-in lifecycle and WorkManager recovery independently from service-notice push",()=>{
  const updates=src("android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudCatalogUpdates.kt");
  const repository=src("android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/ServerVpnCatalogRepository.kt");
  const activity=src("android/app/src/main/java/com/ghostdeveloper/spdecode/MainActivity.kt");
@@ -104,6 +104,7 @@ test("Android retains checked encrypted cache, opt-in lifecycle and WorkManager 
  assert.ok(bridge.includes("operation: Int"));
  assert.ok(client.includes("CloudOperation.WATCH"));
  assert.ok(cpp.includes("operation == 13"));
- for(const part of [updates,manifest,gradle,compose,legal])
+ assert.match(gradle,/if \(enableCloud\) implementation\("com.google.firebase:firebase-messaging:/);
+ for(const part of [updates,manifest])
   assert.doesNotMatch(part,/Firebase Cloud Messaging|FCM|firebase-messaging|CLOUD_FCM_|SPDECODE_FCM_/i);
 });

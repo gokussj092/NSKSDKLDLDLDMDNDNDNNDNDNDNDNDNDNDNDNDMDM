@@ -6,10 +6,10 @@
     <string name="unsupported_version_detail">В файле используется версия или метод шифрования, который пока не поддерживается.</string>
     <string name="unsupported_text_title">Текст не поддерживается</string>
     <string name="unsupported_text_detail">Этот текст или протокол пока не поддерживается. Свяжитесь с разработчиком.</string>
-    <string name="catalog_check_action">Проверить обновления</string>
-    <string name="catalog_checking">Проверка версии каталога…</string>
+    <string name="catalog_check_action">Обновить</string>
+    <string name="catalog_checking">Обновление</string>
     <string name="catalog_downloading">Обновление каталога…</string>
-    <string name="catalog_progress">Элементы каталога готовы: %1$d%%</string>
+    <string name="catalog_progress">%1$d%%</string>
     <string name="app_update_title">Доступна новая версия</string>
     <string name="app_update_body">Доступен SP-DECODE %1$s. Откройте официальный канал Telegram для обновления.</string>
     <string name="app_update_open">Открыть Telegram</string>

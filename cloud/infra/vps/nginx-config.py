@@ -29,10 +29,43 @@ def common_headers() -> str:
     proxy_set_header X-Forwarded-For $remote_addr;
     proxy_set_header X-Forwarded-Proto https;
     proxy_set_header Connection "";
+    proxy_set_header X-Middleware-Subrequest "";
     proxy_connect_timeout 5s;
     proxy_send_timeout 25s;
     proxy_read_timeout 35s;
     proxy_redirect off;'''
+
+
+def v1_auth() -> str:
+    return """        auth_request /_spdecode_v1_gate;
+        error_page 403 = @spdecode_v1_disabled;
+        error_page 500 502 503 504 = @spdecode_v1_policy_failed;"""
+
+
+def v1_gate_locations() -> str:
+    return '''    location = /_spdecode_v1_gate {
+        internal;
+        proxy_pass http://127.0.0.1:3000/api/internal/v1-policy;
+        proxy_method GET;
+        proxy_pass_request_body off;
+        proxy_pass_request_headers off;
+        proxy_set_header Content-Length "";
+        proxy_set_header Host $host;
+        proxy_connect_timeout 2s;
+        proxy_read_timeout 3s;
+        proxy_cache off;
+    }
+    location @spdecode_v1_disabled {
+        default_type application/json;
+        add_header Cache-Control "no-store" always;
+        return 410 '{"error":{"code":"V1_API_DISABLED"}}';
+    }
+    location @spdecode_v1_policy_failed {
+        default_type application/json;
+        add_header Cache-Control "no-store" always;
+        return 503 '{"error":{"code":"V1_POLICY_UNAVAILABLE"}}';
+    }
+    location ^~ /api/internal/ { return 404; }'''
 
 
 def generate(domain: str, api: str, panel: str, www: bool) -> str:
@@ -68,6 +101,16 @@ def generate(domain: str, api: str, panel: str, www: bool) -> str:
     server_name {http_hosts};
     root /var/www/spdecode-acme;
     location ^~ /.well-known/acme-challenge/ {{ try_files $uri =404; }}
+{v1_gate_locations()}
+    location = /api/v1 {{
+{v1_auth()}
+        try_files /__spdecode_https_only_9f41b__ @spdecode_https_only;
+    }}
+    location ^~ /api/v1/ {{
+{v1_auth()}
+        try_files /__spdecode_https_only_9f41b__ @spdecode_https_only;
+    }}
+    location @spdecode_https_only {{ return 308 https://{api}$request_uri; }}
     location / {{ return 308 https://{domain}$request_uri; }}
 }}''',
         f'''server {{
@@ -75,7 +118,16 @@ def generate(domain: str, api: str, panel: str, www: bool) -> str:
     # The public site cannot call administrative or decoding endpoints.
     location ^~ /admin {{ return 404; }}
     location ^~ /api/admin {{ return 404; }}
-    location ^~ /api/v1/ {{ return 404; }}
+{v1_gate_locations()}
+    location = /api/v1 {{
+{v1_auth()}
+        try_files /__spdecode_unrouted_9f41b__ @spdecode_v1_unrouted;
+    }}
+    location ^~ /api/v1/ {{
+{v1_auth()}
+        try_files /__spdecode_unrouted_9f41b__ @spdecode_v1_unrouted;
+    }}
+    location @spdecode_v1_unrouted {{ return 404; }}
     location ^~ /api/v2/ {{ return 404; }}
     location / {{
 {common_headers()}
@@ -83,10 +135,18 @@ def generate(domain: str, api: str, panel: str, www: bool) -> str:
 }}''',
         f'''server {{
 {header(api)}
-    limit_conn spdecode_uploads 12;
+{v1_gate_locations()}
+    location = /api/health/live {{
+{common_headers()}
+    }}
+    location = /api/v1 {{
+{v1_auth()}
+        try_files /__spdecode_v1_dispatch_9f41b__ @spdecode_v1_general;
+    }}
     limit_conn_status 429;
     # Android-only API; no public website or operator panel on this host.
     location = /api/v2/transport {{
+        limit_conn spdecode_uploads 12;
         access_log off;
         limit_req zone=spdecode_v2_edge burst=60 nodelay;
         limit_req_status 429;
@@ -99,7 +159,12 @@ def generate(domain: str, api: str, panel: str, www: bool) -> str:
     # A file may run decode + isolated export sequentially. The broker keeps
     # the ordinary 25s worker deadline when export was not requested.
     location = /api/v1/decode/file {{
+{v1_auth()}
+        try_files /__spdecode_v1_dispatch_9f41b__ @spdecode_v1_file;
+    }}
+    location @spdecode_v1_file {{
         access_log off;
+        limit_conn spdecode_uploads 12;
         limit_req zone=spdecode_v2_edge burst=60 nodelay;
         limit_req_status 429;
 {common_headers().replace("proxy_read_timeout 35s;", "proxy_read_timeout 65s;")}
@@ -107,13 +172,23 @@ def generate(domain: str, api: str, panel: str, www: bool) -> str:
     # Large NUR catalogs perform Argon2id for individual protected fields.
     # The extended HTTP wait applies to this EXACT API route only.
     location = /api/v1/decode/import/catalog/remote {{
+{v1_auth()}
+        try_files /__spdecode_v1_dispatch_9f41b__ @spdecode_v1_catalog;
+    }}
+    location @spdecode_v1_catalog {{
         access_log off;
+        limit_conn spdecode_uploads 12;
         limit_req zone=spdecode_v2_edge burst=60 nodelay;
         limit_req_status 429;
 {common_headers().replace("proxy_read_timeout 35s;", "proxy_read_timeout 155s;")}
     }}
     location ^~ /api/v1/ {{
+{v1_auth()}
+        try_files /__spdecode_v1_dispatch_9f41b__ @spdecode_v1_general;
+    }}
+    location @spdecode_v1_general {{
         access_log off;
+        limit_conn spdecode_uploads 12;
         limit_req zone=spdecode_v2_edge burst=60 nodelay;
         limit_req_status 429;
 {common_headers()}
@@ -122,6 +197,16 @@ def generate(domain: str, api: str, panel: str, www: bool) -> str:
 }}''',
         f'''server {{
 {header(panel)}
+{v1_gate_locations()}
+    location = /api/v1 {{
+{v1_auth()}
+        try_files /__spdecode_unrouted_9f41b__ @spdecode_v1_unrouted;
+    }}
+    location ^~ /api/v1/ {{
+{v1_auth()}
+        try_files /__spdecode_unrouted_9f41b__ @spdecode_v1_unrouted;
+    }}
+    location @spdecode_v1_unrouted {{ return 404; }}
     # Public login page. Actual admin endpoints require username + password
     # with signed HTTPS-only session cookies, CSRF protection and throttling.
     access_log off;

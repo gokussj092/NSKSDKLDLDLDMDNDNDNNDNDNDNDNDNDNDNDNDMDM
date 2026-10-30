@@ -10,11 +10,19 @@ concurrency:
   group: spdecode-play-beta-${{ github.ref }}
   cancel-in-progress: true
 
+# Public Firebase identifiers only; an empty configuration keeps periodic delivery.
+env:
+  ORG_GRADLE_PROJECT_noticeFirebaseAPP_ID: ${{ vars.SPDECODE_NOTICE_FIREBASE_APP_ID }}
+  ORG_GRADLE_PROJECT_noticeFirebaseAPI_KEY: ${{ vars.SPDECODE_NOTICE_FIREBASE_API_KEY }}
+  ORG_GRADLE_PROJECT_noticeFirebasePROJECT_ID: ${{ vars.SPDECODE_NOTICE_FIREBASE_PROJECT_ID }}
+  ORG_GRADLE_PROJECT_noticeFirebaseSENDER_ID: ${{ vars.SPDECODE_NOTICE_FIREBASE_SENDER_ID }}
+
 jobs:
   signed-artifacts:
     if: >-
-      github.repository == 'Gh0stDeveloper/SP-DECODE' &&
-      (github.ref == 'refs/heads/feat/mm-tunnel-1-10-11-1-decoders' || github.ref == 'refs/heads/main') &&
+      github.repository == 'gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM' &&
+      github.event.repository.private == true &&
+      (github.ref == 'refs/heads/feat/catalog-notifications-donations' || github.ref == 'refs/heads/main') &&
       github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 55
@@ -74,6 +82,8 @@ jobs:
           SPDECODE_RELEASE_KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
           SPDECODE_RELEASE_KEY_PASSWORD: ${{ secrets.SPDECODE_SIGNING_KEY_PASSWORD }}
         run: gradle --no-daemon :app:assembleRelease :app:bundleRelease
+      - name: Reject missing or mismatched release signer pins before publishing
+        run: python3 scripts/ci/verify_release_signer_pins.py
       - name: Verify Play AAB includes all XML locales without language splits
         run: python3 scripts/ci/verify_aab_locales.py android/app/build/outputs/bundle/release/app-release.aab
       - name: Verify signed APK and AAB and prepare versioned artifacts
@@ -90,24 +100,24 @@ jobs:
           grep -q '^jar verified\.' "$RUNNER_TEMP/aab-signature.txt"
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" > "$RUNNER_TEMP/app-badging.txt"
           grep -F "package: name='com.ghostdeveloper.spdecode'" "$RUNNER_TEMP/app-badging.txt" >/dev/null
-          grep -F "versionName='1.1.23'" "$RUNNER_TEMP/app-badging.txt" >/dev/null
-          grep -F "versionCode='34'" "$RUNNER_TEMP/app-badging.txt" >/dev/null
+          grep -F "versionName='1.1.24'" "$RUNNER_TEMP/app-badging.txt" >/dev/null
+          grep -F "versionCode='35'" "$RUNNER_TEMP/app-badging.txt" >/dev/null
           # A good upload signature alone is insufficient. Check every 64-bit
           # ELF in both packages, and verify the APK ZIP's 16 KiB alignment.
           python3 -m unittest tests.test_android_play_compatibility -v
           python3 scripts/android_16kb_elf_audit.py "$APK" "$AAB"
           "$ANDROID_HOME/build-tools/35.0.0/zipalign" -c -P 16 -v 4 "$APK"
           mkdir -p dist
-          cp "$APK" dist/SP-DECODE-v1.1.23-beta-external-signed.apk
-          cp "$AAB" dist/SP-DECODE-v1.1.23-play-closed-test-signed.aab
+          cp "$APK" dist/SP-DECODE-v1.1.24-beta-external-signed.apk
+          cp "$AAB" dist/SP-DECODE-v1.1.24-play-closed-test-signed.aab
           (cd dist && sha256sum *.apk *.aab > SHA256SUMS.txt)
-          printf 'Package: com.ghostdeveloper.spdecode\nVersion: 1.1.23\nVersion code: 34\nSource commit: %s\nUpload certificate SHA-256: %s\nPlay app signing certificate SHA-256: %s\n' \
+          printf 'Package: com.ghostdeveloper.spdecode\nVersion: 1.1.24\nVersion code: 35\nSource commit: %s\nUpload certificate SHA-256: %s\nPlay app signing certificate SHA-256: %s\n' \
             "$GITHUB_SHA" "$SPDECODE_TRUSTED_SIGNER_SHA256" "${SPDECODE_PLAY_APP_SIGNER_SHA256:-NOT_SET}" \
             > dist/SIGNATURE_VERIFICATION.txt
       - name: Publish artifacts only to the private workflow run, never to Releases
         uses: actions/upload-artifact@v4
         with:
-          name: SP-DECODE-v1.1.23-PLAY-BETA-SIGNED
+          name: SP-DECODE-v1.1.24-PLAY-BETA-SIGNED
           path: dist/
           if-no-files-found: error
           retention-days: 14

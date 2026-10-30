@@ -38,6 +38,10 @@ jobs:
         env:
           NEXT_TELEMETRY_DISABLED: "1"
         run: npm run build
+      - name: Install isolated HTTP integration tools
+        run: sudo apt-get update && sudo apt-get install -y nginx redis-server openssl
+      - name: Real Nginx and Next V1 policy matrix with Redis and Android 1.1.21 contract
+        run: node scripts/ci/test_v1_live.mjs
       - name: Check server-only admin routes and public pages
         working-directory: cloud/web
         run: |

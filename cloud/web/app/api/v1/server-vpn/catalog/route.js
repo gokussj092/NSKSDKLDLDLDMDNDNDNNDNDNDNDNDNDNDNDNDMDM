@@ -1,3 +1,4 @@
+import {sealCatalog,validCatalogKey} from "../../../../../lib/catalog-envelope.mjs";
 import {RECHECK_SECONDS,catalog} from "../../../../../lib/server-vpn-catalog.mjs";
 import {providerOverview} from "../../../../../lib/c12-provider-controls.mjs";
 import {negotiatesExport,exportPolicy,projectedCatalogVersion,exportCatalog} from "../../../../../lib/compatible-export-policy.mjs";
@@ -10,7 +11,8 @@ export async function POST(request) {
     if(Number(request.headers.get("content-length")||0)>2048) throw Error("body");
     input=await request.json();
     if(!input || typeof input!=="object" || Array.isArray(input) ||
-       Object.keys(input).some(k=>k!=="knownVersion") ||
+       Object.keys(input).some(k=>k!=="knownVersion" && k!=="catalogKey") ||
+       (input.catalogKey!==undefined && !validCatalogKey(input.catalogKey)) ||
        (input.knownVersion!==undefined && (!Number.isSafeInteger(input.knownVersion) || input.knownVersion<0))) throw Error("schema");
   }catch {return reply({error:{code:"INVALID_REQUEST"}},400);}
   try {
@@ -18,7 +20,7 @@ export async function POST(request) {
     const policy=negotiatesExport(request)?await exportPolicy():null;
     const currentVersion=policy?projectedCatalogVersion(request,summary.catalogVersion,policy):summary.catalogVersion;
     if(input.knownVersion===currentVersion)
-      return reply({apiVersion:"v1",catalogVersion:currentVersion,recheckAfterSeconds:RECHECK_SECONDS,unchanged:true});
+      return replyFor({apiVersion:"v1",catalogVersion:currentVersion,recheckAfterSeconds:RECHECK_SECONDS,unchanged:true},input.catalogKey);
     const availability=Object.fromEntries(summary.providers.map(p=>[p.id,p.enabled]));
     const result=catalog({availability,version:currentVersion});
     // Existing APKs reject unknown credential names. Keep their snapshot
@@ -27,6 +29,8 @@ export async function POST(request) {
       result.formats=result.formats.map(entry=>({...entry,
         credentialFields:entry.credentialFields.filter(field=>field!=="recipientKey")}));
     const compatibleExports=policy?exportCatalog(request,policy):null;
-    return reply({...result,...(compatibleExports?{compatibleExports}:{}),unchanged:false});
+    return replyFor({...result,...(compatibleExports?{compatibleExports}:{}),unchanged:false},input.catalogKey);
   }catch{return reply({error:{code:"SERVICE_UNAVAILABLE"}},503);}
 }
+
+function replyFor(body,key){return reply(key?sealCatalog(body,key,"catalog"):body);}

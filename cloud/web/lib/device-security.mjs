@@ -14,6 +14,8 @@ export async function registeredKey(redis, key, cfg) {
     const value = JSON.parse(raw);
     if (value.epoch !== cfg.epoch || !Number.isSafeInteger(value.expires) || value.expires <= Date.now() ||
         value.expires > Date.now()+86400000 ||
+        (cfg.playIntegrityRequired===false&&
+         (!Number.isSafeInteger(value.versionCode)||value.versionCode<cfg.minimumVersionCode)) ||
         !["tee", "strongbox"].includes(value.level) ||
         (cfg.hardwareLevel === "strongbox" && value.level !== "strongbox")) return null;
     return value;
@@ -45,9 +47,11 @@ export async function verifyHardware(chain, challenge, publicKey, cfg, {fetchImp
     (cfg.hardwareLevel !== "strongbox" || result.level === "strongbox") ? result : null;
 }
 
-export async function rememberKey(redis, key, level, cfg) {
+export async function rememberKey(redis, key, level, cfg, versionCode=null) {
   if (await redis.get("spsec:revoked:" + keyId(key))) return false;
-  const value={level,epoch:cfg.epoch,expires:Date.now()+86400000};
+  const value={level,epoch:cfg.epoch,expires:Date.now()+86400000,
+    ...(Number.isSafeInteger(versionCode)&&versionCode>=cfg.minimumVersionCode?
+      {versionCode}:{})};
   return await redis.set(keyRecordName(key),JSON.stringify(value),{EX:86400}) === "OK";
 }
 

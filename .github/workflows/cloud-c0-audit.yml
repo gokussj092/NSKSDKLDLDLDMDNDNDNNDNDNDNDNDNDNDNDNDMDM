@@ -3,6 +3,7 @@ name: SP-DECODE Cloud C0 baseline
 on:
   pull_request:
     paths:
+      - ".github/workflows/cloud-private-preproduction-apk.yml"
       - "android/app/src/main/assets/decoder_catalog.json"
       - "android/app/src/main/java/com/ghostdeveloper/spdecode/**"
       - "decoders/**"

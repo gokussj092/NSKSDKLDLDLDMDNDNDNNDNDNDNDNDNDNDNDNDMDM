@@ -26,12 +26,16 @@ class PolicyTest {
         { if(googleRoots) GoogleTrustAnchors() else setOf(TrustAnchor(factory.root,null)) },
         { revoked }, { Instant.now() },app,
         ConstraintConfig(attestationApplicationId=AttestationApplicationIdConstraint.STRICT))
-    private fun description(locked:Boolean=true, patch:YearMonth=YearMonth.now(), level:SecurityLevel=SecurityLevel.TRUSTED_ENVIRONMENT)=KeyDescription(
+    private fun description(locked:Boolean=true, patch:YearMonth=YearMonth.now(),
+        level:SecurityLevel=SecurityLevel.TRUSTED_ENVIRONMENT,
+        vendorPatch:YearMonth?=patch, bootPatch:YearMonth?=patch,
+        osPatch:YearMonth?=patch)=KeyDescription(
         BigInteger.valueOf(400),level,BigInteger.valueOf(400),level,challenge,ByteString.EMPTY,
         AuthorizationList(attestationApplicationId=app),
         AuthorizationList(origin=Origin.GENERATED,
             rootOfTrust=RootOfTrust(ByteString.copyFrom(ByteArray(32)),locked,VerifiedBootState.VERIFIED),
-            osPatchLevel=PatchLevel(patch),vendorPatchLevel=PatchLevel(patch),bootPatchLevel=PatchLevel(patch)))
+            osPatchLevel=osPatch?.let { PatchLevel(it) },vendorPatchLevel=vendorPatch?.let { PatchLevel(it) },
+            bootPatchLevel=bootPatch?.let { PatchLevel(it) }))
     private fun evidence(description:KeyDescription=description()):Evidence {
         val chain=factory.generateCertPath(description).certificatesWithAnchor
         return Evidence(chain.map { Base64.getEncoder().encodeToString(it.encoded) },
@@ -43,6 +47,18 @@ class PolicyTest {
     }
     @Test fun productionRootsRejectSyntheticCertificateAuthority() {
         assertFalse(decide(evidence(),policy,verifier(googleRoots=true)).valid)
+    }
+    @Test fun acceptsValidHardwareWithoutOptionalVendorAndBootPatches() {
+        // Android's schema permits omitted vendor/boot patch fields.
+        val optionalMissing=evidence(description(vendorPatch=null,bootPatch=null))
+        assertTrue(decide(optionalMissing,policy,verifier()).valid)
+    }
+    @Test fun rejectsMissingOrStaleMandatorySystemPatch() {
+        assertFalse(decide(evidence(description(osPatch=null)),policy,verifier()).valid)
+        assertFalse(decide(evidence(description(osPatch=YearMonth.now().minusMonths(13))),
+            policy,verifier()).valid)
+        assertFalse(decide(evidence(description(vendorPatch=YearMonth.now().minusMonths(13))),
+            policy,verifier()).valid)
     }
     @Test fun rejectsWrongChallengeAndPublicKey() {
         val e=evidence()

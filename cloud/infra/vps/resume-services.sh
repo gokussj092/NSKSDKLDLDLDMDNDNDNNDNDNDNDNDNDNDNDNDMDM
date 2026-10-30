@@ -32,7 +32,7 @@ if ! "${compose[@]}" up -d --build; then
   die "Container unhealthy. No certificate or signing key changes were made."
 fi
 for i in $(seq 1 18); do
-  if curl --noproxy '*' --proxy '' -fsS --connect-timeout 2 --max-time 4 http://127.0.0.1:3000/api/v1/health >/dev/null; then
+  if curl --noproxy '*' --proxy '' -fsS --connect-timeout 2 --max-time 4 http://127.0.0.1:3000/api/health/live >/dev/null; then
     install -m 0755 "$REPO/cloud/infra/vps/spdecodectl" /usr/local/bin/spdecode.next
     mv -f /usr/local/bin/spdecode.next /usr/local/bin/spdecode
     log "Containers healthy, spdecode CLI installed. API/admin still fail closed."

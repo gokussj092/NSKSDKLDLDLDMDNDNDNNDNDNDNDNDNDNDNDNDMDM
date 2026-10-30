@@ -25,6 +25,7 @@ fun CompatibleExportButton(entry:DecodeView,onDone:()->Unit={}) {
     val context=LocalContext.current
     val scope=rememberCoroutineScope()
     val artifact=entry.compatibleExport
+    var notificationPrompt by remember {mutableStateOf(false)}
     var writing by remember(entry.id){mutableStateOf(false)}
     val launcher=rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/octet-stream")){uri->
         if(uri==null){writing=false;onDone()}
@@ -44,13 +45,15 @@ fun CompatibleExportButton(entry:DecodeView,onDone:()->Unit={}) {
                 throw cancelled
             } catch(_:Exception) { false }
             Toast.makeText(context,if(ok)R.string.saved else R.string.compatible_export_failed,Toast.LENGTH_SHORT).show()
-            writing=false;onDone()
+            writing=false
+            if(ok && CloudNotifications.exportPromptPending(context))notificationPrompt=true else onDone()
         }
     }
+    if(notificationPrompt)ExportNotificationPrompt {notificationPrompt=false;onDone()}
     if(artifact!=null) {
         OutlinedButton(modifier=Modifier.fillMaxWidth(),enabled=!writing,onClick={
             writing=true
-            try {launcher.launch(artifact.filename)}
+            try {launcher.launch(artifact.filenameFor(entry.filename))}
             catch(_:Exception){writing=false;Toast.makeText(context,R.string.compatible_export_failed,Toast.LENGTH_SHORT).show()}
         }) {
             Icon(Icons.Outlined.FileDownload,null)
@@ -61,3 +64,4 @@ fun CompatibleExportButton(entry:DecodeView,onDone:()->Unit={}) {
         Text(stringResource(R.string.compatible_export_redecode),style=MaterialTheme.typography.bodySmall)
     }
 }
+

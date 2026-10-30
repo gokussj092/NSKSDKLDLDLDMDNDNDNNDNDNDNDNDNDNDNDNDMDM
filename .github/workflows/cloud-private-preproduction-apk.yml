@@ -3,20 +3,65 @@ name: SP-DECODE private Cloud preproduction APK and AAB
 # Never publishes a release or deploys a server.
 on:
   workflow_call:
+  workflow_dispatch:
 permissions:
   contents: read
+  actions: read
 concurrency:
   group: spdecode-private-preprod-${{ github.ref }}
   cancel-in-progress: false
+# Public Android client identifiers supplied by the owner. Repository variables
+# can override these defaults after transfer; no service-account material belongs here.
+env:
+  ORG_GRADLE_PROJECT_noticeFirebaseAPP_ID: ${{ vars.SPDECODE_NOTICE_FIREBASE_APP_ID || '1:78511444369:android:167638a0365236f1ab4a30' }}
+  ORG_GRADLE_PROJECT_noticeFirebaseAPI_KEY: ${{ vars.SPDECODE_NOTICE_FIREBASE_API_KEY || 'AIzaSyCXHGfZDisaa9Viat01K7DvNYGgr5XVnoM' }}
+  ORG_GRADLE_PROJECT_noticeFirebasePROJECT_ID: ${{ vars.SPDECODE_NOTICE_FIREBASE_PROJECT_ID || 'sp-decode-android' }}
+  ORG_GRADLE_PROJECT_noticeFirebaseSENDER_ID: ${{ vars.SPDECODE_NOTICE_FIREBASE_SENDER_ID || '78511444369' }}
+
 jobs:
   private-signed-apk:
-    if: github.repository == 'Gh0stDeveloper/SP-DECODE' && github.event_name == 'pull_request' && github.head_ref == 'feat/mm-tunnel-1-10-11-1-decoders' && github.event.pull_request.head.repo.full_name == github.repository
+    permissions:
+      contents: read
+      actions: read
+    if: >-
+      github.repository == 'gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM' &&
+      github.event.repository.private == true &&
+      ((github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/feat/catalog-notifications-donations') ||
+      (github.event_name == 'pull_request' && github.head_ref == 'feat/catalog-notifications-donations' && github.event.pull_request.head.repo.full_name == github.repository))
     runs-on: ubuntu-latest
-    timeout-minutes: 65
+    timeout-minutes: 115
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Require successful validation of this exact source revision
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/ci/require_private_candidate.py
+      - name: Verify required permanent secrets and Firebase public configuration
+        env:
+          SPDECODE_SIGNING_KEYSTORE_BASE64: ${{ secrets.SPDECODE_SIGNING_KEYSTORE_BASE64 }}
+          SPDECODE_SIGNING_STORE_PASSWORD: ${{ secrets.SPDECODE_SIGNING_STORE_PASSWORD }}
+          SPDECODE_SIGNING_KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
+          SPDECODE_SIGNING_KEY_PASSWORD: ${{ secrets.SPDECODE_SIGNING_KEY_PASSWORD }}
+        run: |
+          python3 - <<'PYCODE'
+          import os,sys
+          names=['SPDECODE_SIGNING_KEYSTORE_BASE64','SPDECODE_SIGNING_STORE_PASSWORD','SPDECODE_SIGNING_KEY_ALIAS','SPDECODE_SIGNING_KEY_PASSWORD']
+          missing=[key for key in names if not os.environ.get(key)]
+          if missing:
+              for key in missing: print('::error::Missing required secret: '+key)
+              sys.exit(1)
+          cfg={k:os.environ.get('ORG_GRADLE_PROJECT_noticeFirebase'+k,'') for k in ['APP_ID','API_KEY','PROJECT_ID','SENDER_ID']}
+          assert cfg['PROJECT_ID']=='sp-decode-android','Firebase project ID mismatch'
+          assert cfg['SENDER_ID']=='78511444369','Firebase sender ID mismatch'
+          assert cfg['APP_ID'].startswith('1:78511444369:android:'),'Firebase Android app ID mismatch'
+          assert len(cfg['API_KEY'])>=30,'Missing Firebase public API key variable'
+          print('Permanent signing secrets present; expected Firebase public project configured. Values suppressed.')
+          PYCODE
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -26,7 +71,7 @@ jobs:
           gradle-version: "8.11.1"
       - name: Install required Android build toolchain
         run: |
-          set -euo pipefail
+          set -e -u -o pipefail
           MANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -n 1)"
           "$MANAGER" --install "platforms;android-36" "build-tools;35.0.0" "platform-tools" "cmake;3.22.1" "ndk;27.2.12479018"
       - name: Restore permanent signing certificate from existing Actions Secrets
@@ -38,7 +83,7 @@ jobs:
           PLAY_CERT: ${{ secrets.SPDECODE_PLAY_APP_SIGNER_SHA256 || vars.SPDECODE_PLAY_APP_SIGNER_SHA256 }}
           PLAY_UPLOAD_CERT: ${{ secrets.SPDECODE_PLAY_UPLOAD_CERT_SHA256 || vars.SPDECODE_PLAY_UPLOAD_CERT_SHA256 }}
         run: |
-          set -euo pipefail
+          set -e -u -o pipefail
           test -n "$STORE_BASE64" && test -n "$STORE_PASSWORD" && test -n "$KEY_ALIAS" && test -n "$KEY_PASSWORD" || {
             echo "::error::Permanent GitHub Actions signing secrets are required. Do not generate temporary keys."
             exit 1
@@ -69,9 +114,9 @@ jobs:
           echo "SPDECODE_PLAY_APP_SIGNER_SHA256=$PLAY_CERT" >> "$GITHUB_ENV"
       - name: Assert unchanged app identity and safe preproduction configuration
         run: |
-          set -euo pipefail
-          grep -Fq 'versionCode = 34' android/app/build.gradle.kts
-          grep -Fq 'versionName = "1.1.23"' android/app/build.gradle.kts
+          set -e -u -o pipefail
+          grep -Fq 'versionCode = 35' android/app/build.gradle.kts
+          grep -Fq 'versionName = "1.1.24"' android/app/build.gradle.kts
           grep -Fq 'applicationId = "com.ghostdeveloper.spdecode"' android/app/build.gradle.kts
           test ! -e android/app/src/main/assets/adi-registration.properties
       - name: Build signed private Cloud preproduction APK and Play-candidate AAB
@@ -85,11 +130,13 @@ jobs:
           SPDECODE_RELEASE_KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
           SPDECODE_RELEASE_KEY_PASSWORD: ${{ secrets.SPDECODE_SIGNING_KEY_PASSWORD }}
         run: gradle --no-daemon :app:assembleRelease :app:bundleRelease
+      - name: Reject missing or mismatched release signer pins before publishing
+        run: python3 scripts/ci/verify_release_signer_pins.py
       - name: Verify Play AAB includes all XML locales without language splits
         run: python3 scripts/ci/verify_aab_locales.py android/app/build/outputs/bundle/release/app-release.aab
       - name: Validate permanent signatures, APK identity, Cloud origin and both outputs
         run: |
-          set -euo pipefail
+          set -e -u -o pipefail
           APK=android/app/build/outputs/apk/release/app-release.apk
           AAB=android/app/build/outputs/bundle/release/app-release.aab
           test -s "$APK" && test -s "$AAB"
@@ -110,27 +157,49 @@ jobs:
           "$ANDROID_HOME/build-tools/35.0.0/zipalign" -c -P 16 -v 4 "$APK"
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" > "$RUNNER_TEMP/badging.txt"
           grep -F "package: name='com.ghostdeveloper.spdecode'" "$RUNNER_TEMP/badging.txt"
-          grep -F "versionName='1.1.23'" "$RUNNER_TEMP/badging.txt"
-          grep -F "versionCode='34'" "$RUNNER_TEMP/badging.txt"
+          grep -F "versionName='1.1.24'" "$RUNNER_TEMP/badging.txt"
+          grep -F "versionCode='35'" "$RUNNER_TEMP/badging.txt"
           python3 tests/cloud_c5_apk_audit.py "$APK"
-          python3 - <<'PY'
+          python3 scripts/audit_v2_apk.py "$APK" --origin https://api.spdecode.xyz
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump xmltree "$APK" AndroidManifest.xml > "$RUNNER_TEMP/manifest.txt"
+          grep -F 'android.permission.POST_NOTIFICATIONS' "$RUNNER_TEMP/manifest.txt" >/dev/null
+          grep -F 'com.google.firebase.MESSAGING_EVENT' "$RUNNER_TEMP/manifest.txt" >/dev/null
+          python3 - "$APK" <<'PY'
+          import sys
           from zipfile import ZipFile
-          apk='android/app/build/outputs/apk/release/app-release.apk'
-          with ZipFile(apk) as archive:
-              names=archive.namelist()
-              assert 'assets/adi-registration.properties' not in names
-              native=[x for x in names if x.endswith('/libspdecode.so')]
-              assert native and all(b'https://api.spdecode.xyz' in archive.read(x) for x in native)
+          with ZipFile(sys.argv[1]) as z:
+              dex=b''.join(z.read(n) for n in z.namelist() if n.endswith('.dex'))
+              assert b'sp-decode-android' in dex,'Firebase project absent from final APK'
+              assert b'1:78511444369:android:' in dex,'Firebase app ID absent from final APK'
+              assert not any(n.endswith(('.p12','.jks','.keystore')) for n in z.namelist())
           PY
           mkdir -p dist
-          cp "$APK" dist/SP-DECODE-v1.1.23-build34-CLOUD-PREPRODUCTION-PRIVATE.apk
-          cp "$AAB" dist/SP-DECODE-v1.1.23-build34-PLAY-CANDIDATE-PRIVATE.aab
+          cp "$APK" dist/SP-DECODE-v1.1.24-build35-CLOUD-PREPRODUCTION-PRIVATE.apk
+          cp "$AAB" dist/SP-DECODE-v1.1.24-build35-PLAY-CANDIDATE-PRIVATE.aab
           (cd dist && sha256sum *.apk *.aab > SHA256SUMS.txt)
-          printf 'SP-DECODE PRIVATE Cloud preproduction\nVersion: 1.1.23 (34)\nPackage: com.ghostdeveloper.spdecode\nAPI: https://api.spdecode.xyz\nQA: disabled\nSigner: permanent APK keystore\nSource commit: %s\nPlay AAB: private candidate; upload key acceptance requires Play Console verification\nPublished: no\n' "$GITHUB_SHA" > dist/BUILD_INFO.txt
+          printf 'SP-DECODE PRIVATE Cloud preproduction\nVersion: 1.1.24 (35)\nPackage: com.ghostdeveloper.spdecode\nAPI: https://api.spdecode.xyz\nQA: disabled\nSigner: permanent APK keystore\nSource commit: %s\nPlay AAB: private candidate; upload key acceptance requires Play Console verification\nPublished: no\n' "$SOURCE_SHA" > dist/BUILD_INFO.txt
+          cat dist/SHA256SUMS.txt
+          cat dist/BUILD_INFO.txt
+      - name: Require repository remains private before storing signed artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import json, os, subprocess
+          repo = os.environ['GITHUB_REPOSITORY']
+          def api(path):
+              return json.loads(subprocess.check_output(
+                  ['gh', 'api', 'repos/' + repo + path], text=True))
+          # No polling or 45-minute wait. Public builds must never publish signed private assets.
+          if not api('')['private']:
+              raise SystemExit('Repository is public; signed preproduction artifacts are private-only and will not be uploaded.')
+          assert api('/branches/feat/catalog-notifications-donations')['commit']['sha'] == os.environ['SOURCE_SHA'], 'Source changed before artifact upload'
+          print('Private repository and exact source confirmed; signed artifact upload permitted.')
+          PY
       - name: Upload PRIVATE signed APK and AAB to this Actions run only
         uses: actions/upload-artifact@v4
         with:
-          name: SP-DECODE-v1.1.23-34-PRIVATE-PREPRODUCTION-APK-AAB
+          name: SP-DECODE-v1.1.24-35-PRIVATE-PREPRODUCTION-APK-AAB
           path: dist/
           if-no-files-found: error
           retention-days: 14
@@ -138,3 +207,32 @@ jobs:
         if: always()
         run: rm -f "$RUNNER_TEMP/spdecode-private-preprod.p12"
 
+  cleanup-redundant-branch:
+    if: >-
+      github.repository == 'gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM' &&
+      github.event.repository.private == true &&
+      ((github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/feat/catalog-notifications-donations') ||
+      (github.event_name == 'pull_request' && github.head_ref == 'feat/catalog-notifications-donations' && github.event.pull_request.head.repo.full_name == github.repository))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Delete only the unchanged redundant branch using an exact SHA lease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -e -u -o pipefail
+          gh auth setup-git
+          branch='fix/v1-protection-notice-persistence-build35'
+          expected='42cda84f6a2c89f19bdee95a201c768b9322f3dd'
+          current="$(git ls-remote origin "refs/heads/$branch" | cut -f1)"
+          if [[ -z "$current" ]]; then echo 'Redundant branch already absent'; exit 0; fi
+          if [[ "$current" != "$expected" ]]; then echo 'Branch changed; preserving all work'; exit 0; fi
+          git merge-base --is-ancestor "$expected" HEAD
+          git push --force-with-lease="refs/heads/$branch:$expected" origin ":refs/heads/$branch"
+          echo 'Deleted only the verified unchanged redundant branch'

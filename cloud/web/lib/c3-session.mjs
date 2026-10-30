@@ -4,6 +4,8 @@ import { boundRequestClaims } from "./v2-bound-request.mjs";
 import { bindVerifiedRequest } from "./v2-bound-request.mjs";
 import { authorizeBoundV1 } from "./bound-auth.mjs";
 import { v2Settings } from "./v2-config.mjs";
+import {v2PlayPolicyStatus} from "./v2-play-policy.mjs";
+import {v1ProtectionRequired,v1PolicyStatus} from "./v1-protection-policy.mjs";
 import { workBudget } from "./device-security.mjs";
 import { checkIntegrityVerdict, verifyPlayToken } from "./c3-integrity.mjs";
 import { consumeChallenge, ipKey, rememberSession, reserveChallenge, sessionExists, throttle } from "./c3-store.mjs";
@@ -95,15 +97,18 @@ export async function requireSession(redis, request, cfg) {
   // V2 context is in-process only; HTTP headers cannot create it.
   const bound = boundRequestClaims(request);
   if (bound) return bound;
+  if(!(await v1PolicyStatus()).apiEnabled)return null;
   const bearer = request.headers.get("authorization") || "";
   if (!bearer.startsWith("Bearer ")) return null;
   const boundClaims=verifySignature(bearer.slice(7),cfg.signingKey,undefined,"spdecode-android-v2");
   if (boundClaims) {
-    const result=await authorizeBoundV1(redis,request,bearer.slice(7),boundClaims,v2Settings());
+    const playPolicy=await v2PlayPolicyStatus();
+    const result=await authorizeBoundV1(redis,request,bearer.slice(7),boundClaims,
+      v2Settings(process.env,{playIntegrityRequired:playPolicy.integrityRequired}));
     if(result&&!result.rateLimited)bindVerifiedRequest(request,result);
     return result;
   }
-  if (process.env.CLOUD_V1_REQUIRE_BOUND_SESSION === "true") return null;
+  if (await v1ProtectionRequired()) return null;
   const claims = verifySignature(bearer.slice(7), cfg.signingKey);
   if (!claims || (claims.channel && claims.channel!=="qa") ||
       (claims.channel==="qa" && !cfg.qaActive) ||
@@ -113,4 +118,3 @@ export async function requireSession(redis, request, cfg) {
   const networkRate = await throttle(redis,"spc3:network-limit:"+ip,limits.requestsPerIpWindow,60);
   return sessionRate && networkRate && await workBudget(redis,claims) ? claims : {rateLimited:true};
 }
-

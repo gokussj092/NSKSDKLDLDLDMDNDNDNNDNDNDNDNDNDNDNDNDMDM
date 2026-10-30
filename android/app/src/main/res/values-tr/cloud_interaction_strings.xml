@@ -6,10 +6,10 @@
     <string name="unsupported_version_detail">Bu dosya henüz desteklenmeyen bir sürüm veya şifreleme yöntemi kullanıyor.</string>
     <string name="unsupported_text_title">Metin desteklenmiyor</string>
     <string name="unsupported_text_detail">Bu metin veya protokol henüz desteklenmiyor. Geliştiriciyle iletişime geçin.</string>
-    <string name="catalog_check_action">Güncellemeleri kontrol et</string>
-    <string name="catalog_checking">Katalog sürümü kontrol ediliyor…</string>
+    <string name="catalog_check_action">Güncelle</string>
+    <string name="catalog_checking">Güncelleniyor</string>
     <string name="catalog_downloading">Katalog güncelleniyor…</string>
-    <string name="catalog_progress">Hazır katalog öğeleri: %1$d%%</string>
+    <string name="catalog_progress">%1$d%%</string>
     <string name="app_update_title">Yeni sürüm mevcut</string>
     <string name="app_update_body">SP-DECODE %1$s kullanılabilir. Güncelleme için resmi Telegram kanalını açın.</string>
     <string name="app_update_open">Telegram aç</string>

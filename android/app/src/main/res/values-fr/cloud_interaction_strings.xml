@@ -6,10 +6,10 @@
     <string name="unsupported_version_detail">Ce fichier utilise une version ou une méthode de chiffrement non encore prise en charge.</string>
     <string name="unsupported_text_title">Texte non pris en charge</string>
     <string name="unsupported_text_detail">Ce texte ou protocole ne figure pas encore dans SP-DECODE. Contactez le développeur.</string>
-    <string name="catalog_check_action">Vérifier les mises à jour</string>
-    <string name="catalog_checking">Vérification de la version du catalogue…</string>
+    <string name="catalog_check_action">Actualiser</string>
+    <string name="catalog_checking">Actualisation</string>
     <string name="catalog_downloading">Mise à jour du catalogue…</string>
-    <string name="catalog_progress">Éléments du catalogue prêts : %1$d%%</string>
+    <string name="catalog_progress">%1$d%%</string>
     <string name="app_update_title">Nouvelle version disponible</string>
     <string name="app_update_body">SP-DECODE %1$s est disponible. Consultez le canal Telegram officiel pour la mise à jour.</string>
     <string name="app_update_open">Ouvrir Telegram</string>

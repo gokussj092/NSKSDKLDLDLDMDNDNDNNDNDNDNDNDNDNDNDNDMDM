@@ -28,7 +28,15 @@ import java.util.concurrent.TimeUnit
 data class Policy(val packageName: String, val digests: Set<ByteString>, val minimumVersion: BigInteger,
                   val level: String, val patchMonths: Long)
 data class Evidence(val chain: List<String>, val challenge: String, val publicKey: String)
-data class Decision(val valid: Boolean, val publicKey: String? = null, val level: String? = null)
+data class Decision(val valid: Boolean, val publicKey: String? = null,
+                    val level: String? = null, val versionCode: Long? = null)
+
+// Log bounded, non-identifying rejection categories only. Never log certificates,
+// package names, public keys, challenges, serials, URLs or exception messages.
+private fun reject(reason: String): Decision {
+    System.err.println("SP_ATTEST_REJECT=$reason")
+    return Decision(false)
+}
 
 internal fun parseRevocations(text: String): Set<String> {
     val root = JsonParser.parseString(text).asJsonObject
@@ -79,27 +87,47 @@ fun decide(evidence: Evidence, policy: Policy, verifier: Verifier): Decision {
         certificate
     }
     val result = verifier.verify(chain, ChallengeMatcher(Base64.getUrlDecoder().decode(evidence.challenge)))
-    if (result !is VerificationResult.Success || !result.deviceLocked ||
-        result.verifiedBootState != VerifiedBootState.VERIFIED) return Decision(false)
+    if (result !is VerificationResult.Success) {
+        val category = when (result) {
+            is VerificationResult.ChallengeMismatch -> "CHALLENGE"
+            is VerificationResult.PathValidationFailure -> "CERT_PATH"
+            is VerificationResult.ChainParsingFailure -> "CHAIN_FORMAT"
+            is VerificationResult.ExtensionParsingFailure -> "CERT_EXTENSION"
+            is VerificationResult.ConstraintViolation -> "CERT_CONSTRAINT"
+            else -> "CERT_INVALID"
+        }
+        return reject(category)
+    }
+    if (!result.deviceLocked || result.verifiedBootState != VerifiedBootState.VERIFIED)
+        return reject("VERIFIED_BOOT")
     val level = when (result.securityLevel) {
         SecurityLevel.STRONG_BOX -> "strongbox"
         SecurityLevel.TRUSTED_ENVIRONMENT -> "tee"
-        else -> return Decision(false)
+        else -> return reject("SECURITY_LEVEL")
     }
-    if (policy.level == "strongbox" && level != "strongbox") return Decision(false)
+    if (policy.level == "strongbox" && level != "strongbox") return reject("SECURITY_LEVEL")
     val key = Base64.getUrlEncoder().withoutPadding().encodeToString(result.publicKey.encoded)
-    if (key != evidence.publicKey) return Decision(false)
+    if (key != evidence.publicKey) return reject("KEY_MISMATCH")
     // Parse only after the library validated the chain and its extension placement.
     val description = checkNotNull(KeyDescription.parseFrom(chain.first()))
-    val app = description.softwareEnforced.attestationApplicationId ?: return Decision(false)
+    val app = description.softwareEnforced.attestationApplicationId ?: return reject("APP_ID_MISSING")
     if (app.packages.size != 1 || app.packages.none { it.name == policy.packageName && it.version >= policy.minimumVersion } ||
-        app.signatures.isEmpty() || app.signatures.any { it !in policy.digests }) return Decision(false)
+        app.signatures.isEmpty() || app.signatures.any { it !in policy.digests }) return reject("APP_ID_MISMATCH")
     val floor = YearMonth.now(java.time.ZoneOffset.UTC).minusMonths(policy.patchMonths)
     val ceiling = YearMonth.now(java.time.ZoneOffset.UTC).plusMonths(1)
     val attributes = description.hardwareEnforced
-    if (listOf(attributes.osPatchLevel, attributes.vendorPatchLevel, attributes.bootPatchLevel)
-        .any { it == null || it.yearMonth.isBefore(floor) || it.yearMonth.isAfter(ceiling) }) return Decision(false)
-    return Decision(true, key, level)
+    // Android's attestation schema marks vendorPatchLevel and bootPatchLevel OPTIONAL.
+    // A missing optional field is not evidence of an old or untrusted device.
+    // Require a current hardware-enforced OS patch, and reject any present
+    // vendor/boot patch if it is outside the established security window.
+    val osPatch = attributes.osPatchLevel ?: return reject("OS_PATCH_MISSING")
+    if (osPatch.yearMonth.isBefore(floor) || osPatch.yearMonth.isAfter(ceiling))
+        return reject("OS_PATCH_OUTDATED")
+    if (listOfNotNull(attributes.vendorPatchLevel, attributes.bootPatchLevel)
+        .any { it.yearMonth.isBefore(floor) || it.yearMonth.isAfter(ceiling) })
+        return reject("VENDOR_BOOT_PATCH_OUTDATED")
+    // App package version is taken only from Google's hardware-validated attestationApplicationId.
+    return Decision(true, key, level, app.packages.single().version.longValueExact())
 }
 
 private fun reply(exchange: HttpExchange, status: Int, value: Any) {
@@ -145,7 +173,10 @@ fun main() {
                 val evidence = Gson().fromJson(String(bytes, Charsets.UTF_8), Evidence::class.java)
                 reply(exchange, 200, decide(evidence, policy, verifier))
             }
-        } catch (_: Exception) { reply(exchange, 403, Decision(false)) }
+        } catch (_: Exception) {
+            // Never return or log exception messages: they can contain device details.
+            reply(exchange, 403, reject("VERIFICATION_EXCEPTION"))
+        }
         finally { exchange.close() }
     }
     server.start()

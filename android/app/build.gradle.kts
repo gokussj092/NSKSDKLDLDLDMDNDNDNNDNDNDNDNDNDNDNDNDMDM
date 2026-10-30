@@ -159,8 +159,10 @@ val prepareQaSettingsSource = tasks.register("prepareQaSettingsSource") {
             original.indexOf(anchor) == original.lastIndexOf(anchor)) {
             "QA Settings injection anchor absent or ambiguous; do not ship a build"
         }
-        val source = original.replace(anchor,
+        val source = original.replace("https://t.me/CodeBreakersHub", "https://t.me/+Ntu6EJMirrAwMzgx").replace(anchor,
             (if(enableQaBuild) "        com.ghostdeveloper.spdecode.cloud.CloudQaSettingsCard()\n" else "") +
+            "        com.ghostdeveloper.spdecode.cloud.DonationSettingsCard()\n" +
+            "        com.ghostdeveloper.spdecode.cloud.NotificationSettingsCard()\n" +
             "        com.ghostdeveloper.spdecode.cloud.NpvsIdentitySettings()\n" + anchor)
         val output = qaSettingsRoot.get().file(qaSettingsRelativePath).asFile
         output.parentFile.mkdirs()
@@ -513,6 +515,53 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
                 },
                 confirmButton={TextButton(onClick={dialog=null}){""")
 
+        app = replaceOnce(app,
+            """            OutlinedButton(
+                onClick=onRefreshServerVpn,enabled=enableServerVpnRefresh,
+                modifier=Modifier.testTag("server_vpn_manual_refresh"),
+                contentPadding=PaddingValues(horizontal=12.dp,vertical=7.dp),
+            ) {
+                if(refreshingServerVpn) CircularProgressIndicator(
+                    modifier=Modifier.size(17.dp),strokeWidth=2.dp,color=White)
+                else Icon(Icons.Outlined.Refresh,null,tint=White,
+                    modifier=Modifier.size(17.dp))
+                Spacer(Modifier.width(6.dp))
+                Text(stringResource(if(refreshingServerVpn) R.string.catalog_checking
+                    else R.string.catalog_check_action),fontSize=12.sp,color=White)
+            }
+""",
+            """            com.ghostdeveloper.spdecode.cloud.CatalogRefreshControl(
+                refreshingServerVpn,enableServerVpnRefresh,onRefreshServerVpn)
+""")
+        app = replaceOnce(app,
+            "        if(catalogLoading) Row(verticalAlignment=Alignment.CenterVertically) {",
+            """        if(BuildConfig.SPDECODE_CLOUD_ENABLED && cloudFormats.isEmpty() && catalogLoading) {
+            com.ghostdeveloper.spdecode.cloud.CatalogEmptyLoading(catalogProgress,Modifier.weight(1f))
+            return@Column
+        }
+        if(catalogLoading) Row(verticalAlignment=Alignment.CenterVertically) {""")
+        app = replaceOnce(app,
+            "            if(catalogLoading) {\n                Row(verticalAlignment=Alignment.CenterVertically) {",
+            """            if(apps.isEmpty() && catalogLoading) {
+                com.ghostdeveloper.spdecode.cloud.CatalogEmptyLoading(catalogProgress,Modifier.weight(1f))
+                return@Column
+            }
+            if(catalogLoading) {
+                Row(verticalAlignment=Alignment.CenterVertically) {""")
+        activity = replaceOnce(activity,
+            "        super.onResume()",
+            """        super.onResume()
+        com.ghostdeveloper.spdecode.cloud.CloudNotifications.ensureScheduled(this)
+        com.ghostdeveloper.spdecode.cloud.CloudNotifications.enqueue(this)""")
+        activity = replaceOnce(activity,
+            "                            CloudLegalConsent.revoke(this@MainActivity)",
+            """                            com.ghostdeveloper.spdecode.cloud.CloudNotifications.setEnabled(this@MainActivity,false)
+                            CloudLegalConsent.revoke(this@MainActivity)""")
+        activity = replaceOnce(activity,"https://t.me/CodeBreakersHub","https://t.me/+Ntu6EJMirrAwMzgx")
+        activity = replaceOnce(activity,
+            "serverVpnCatalog.refreshIfDue(force=force)",
+            "serverVpnCatalog.refreshIfDue(force=force,onProgress={percent->scope.launch {catalogProgress=percent}})")
+
         listOf(appPath to app, activityPath to activity).forEach { (name,content)->
             val output=cloudHistoryUiRoot.get().file(name).asFile
             output.parentFile.mkdirs()
@@ -572,6 +621,7 @@ android {
     }
     if (enableCloud) {
         // Cloud source inputs are isolated from all 107 local engine classes.
+        sourceSets.getByName("main").manifest.srcFile("src/cloud/AndroidManifest.xml")
         sourceSets.getByName("main").java.setSrcDirs(listOf(cloudSourceRoot))
         sourceSets.getByName("main").assets.setSrcDirs(listOf(cloudAssetRoot))
         // The Cloud binary deliberately excludes local decoder implementations.
@@ -590,12 +640,22 @@ android {
         applicationId = "com.ghostdeveloper.spdecode"
         minSdk = 24
         targetSdk = 36
-        versionCode = 34
-        versionName = "1.1.23"
+        versionCode = 35
+        versionName = "1.1.24"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // A public API origin is not a secret; all server secrets stay in the VPS.
         buildConfigField("boolean", "SPDECODE_CLOUD_ENABLED", enableCloud.toString())
         buildConfigField("boolean", "SPDECODE_QA_BUILD", enableQaBuild.toString())
+        // Public Firebase application identifiers. Service-account keys stay exclusively on the VPS.
+        mapOf("APP_ID" to "1:[0-9]+:android:[a-f0-9]+", "API_KEY" to "[A-Za-z0-9_-]{30,80}",
+            "PROJECT_ID" to "[a-z][a-z0-9-]{4,60}", "SENDER_ID" to "[0-9]{5,30}").forEach { (key,pattern)->
+            val value=providers.gradleProperty("noticeFirebase$key").orNull.orEmpty()
+            require(value.isEmpty() || value.matches(Regex(pattern))) { "Invalid Firebase public identifier" }
+            buildConfigField("String","NOTICE_FIREBASE_$key", "\"$value\"")
+        }
+        val noticeKeys=listOf("APP_ID","API_KEY","PROJECT_ID","SENDER_ID").map {
+            providers.gradleProperty("noticeFirebase$it").orNull.orEmpty().isNotEmpty() }
+        require(noticeKeys.all {it} || noticeKeys.none {it}) { "Firebase notice config must be complete" }
         manifestPlaceholders["spdecodeQaEnabled"] = enableQaBuild.toString()
         externalNativeBuild {
             cmake {
@@ -682,6 +742,7 @@ dependencies {
     // Release lint: ActivityResultContracts requires Fragment >=1.3.0.
     implementation("androidx.fragment:fragment:1.8.9")
     implementation("com.google.code.gson:gson:2.13.1")
+    if (enableCloud) implementation("com.google.firebase:firebase-messaging:25.0.0")
     // Classic Play Integrity nonce flow; the verdict is verified in C3 server-side.
     implementation("com.google.android.play:integrity:1.6.0")
     implementation("androidx.work:work-runtime-ktx:2.10.4")

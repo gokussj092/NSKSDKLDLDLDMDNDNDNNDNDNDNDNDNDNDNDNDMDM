@@ -153,7 +153,7 @@ test("V1/QA tokens cannot downgrade V2; epoch, release, signer and Redis revocat
 });
 test("bootstrap validates key, proof, fixed operation, encoding and query before dispatch",async()=>{
   const f=fixture();
-  for(const op of ["3","17","01","/api/v1/decode/file"])assert.equal((await f.call(op,{})).status,400);
+  for(const op of ["3","18","01","/api/v1/decode/file"])assert.equal((await f.call(op,{})).status,400);
   assert.equal((await f.call(1,{publicKey:encoded(pair())})).status,400);
   assert.equal((await f.call(1,{publicKey:encoded(f.key),extra:true})).status,400);
   assert.equal((await f.call(1,{publicKey:encoded(f.key)},"",{"content-encoding":"gzip"})).status,400);
@@ -182,3 +182,65 @@ test("V2 reaches real decoder only after proof and preserves existing worker val
   assert.equal(response.status,200);assert.equal(calls,1);assert.equal((await response.json()).rawText,'{"ok":true}');
 });
 
+
+ test("notification operation requires bound authentication and is metadata only",async()=>{
+  const f=fixture();assert.equal((await f.call(17,{})).status,401);
+  const {token}=await authorize(f);
+  f.options.dispatch=async(op,req)=>{assert.equal(op,17);return Response.json({notices:[]});};
+  assert.equal((await f.call(17,{},token)).status,200);
+ });
+
+test("temporary V2 Telegram mode requires hardware app identity and revokes beta sessions when Play resumes",async()=>{
+  const f=fixture({CLOUD_KEY_ATTESTATION_REQUIRED:"true",
+    CLOUD_KEY_ATTESTATION_TOKEN:"k".repeat(48),
+    CLOUD_GOOGLE_CLOUD_PROJECT_NUMBER:"78511444369",
+    CLOUD_ACTION_INTEGRITY_REQUIRED:"true"});
+  f.options.playPolicyLoader=async()=>({integrityRequired:false,betaUntil:new Date(Date.now()+3600000).toISOString()});
+  let decoded=0,verified=0;
+  f.options.decodeIntegrity=async()=>{decoded++;throw Error("Google should not be requested in hardware-only beta");};
+  f.options.verifyHardware=async(chain,_challenge,key,options)=>{
+    verified++;
+    assert.equal(options.playIntegrityRequired,false);
+    assert.equal(chain.length,2);
+    return {valid:true,publicKey:key,level:"tee",versionCode:35};
+  };
+  const c=await (await f.call(1,{publicKey:encoded(f.key)})).json();
+  assert.equal(c.integrityRequired,false);
+  assert.equal(c.keyAttestationRequired,true);
+  const session=await f.call(2,{
+    challengeId:c.challengeId,integrityToken:"",
+    publicKey:encoded(f.key),certificateChain:["YQ==","Yg=="]
+  });
+  assert.equal(session.status,201);
+  assert.equal(decoded,0);
+  assert.equal(verified,1);
+  const body=await session.json();
+  assert.equal(body.actionIntegrityRequired,false);
+  const claims=JSON.parse(Buffer.from(body.accessToken.split(".")[0],"base64url").toString());
+  assert.equal(claims.playIntegrityVerified,false);
+  assert.equal(claims.versionCode,35);
+  assert.deepEqual(claims.certificates,[certificate]);
+  f.options.dispatch=async(_op,request)=>{
+    assert.equal((await request.json()).knownVersion,1);
+    return Response.json({status:"ok"});
+  };
+  assert.equal((await f.call(14,{knownVersion:1},body.accessToken)).status,200);
+  f.options.playPolicyLoader=async()=>({integrityRequired:true,betaUntil:null});
+  assert.equal((await f.call(14,{knownVersion:1},body.accessToken)).status,401);
+});
+test("V2 beta rejects invalid hardware version, forged Play token and unavailable transport",async()=>{
+  const f=fixture({CLOUD_KEY_ATTESTATION_REQUIRED:"true",CLOUD_KEY_ATTESTATION_TOKEN:"k".repeat(48)});
+  f.options.playPolicyLoader=async()=>({integrityRequired:false,betaUntil:new Date(Date.now()+3600000).toISOString()});
+  f.options.verifyHardware=async(_chain,_challenge,key)=>({valid:true,publicKey:key,level:"tee",versionCode:32});
+  const c=await (await f.call(1,{publicKey:encoded(f.key)})).json();
+  const bad=await f.call(2,{challengeId:c.challengeId,integrityToken:"",
+    publicKey:encoded(f.key),certificateChain:["YQ==","Yg=="]});
+  assert.equal(bad.status,403);
+  const second=await(await f.call(1,{publicKey:encoded(f.key)})).json();
+  assert.equal((await f.call(2,{challengeId:second.challengeId,integrityToken:"T".repeat(100),
+    publicKey:encoded(f.key),certificateChain:["YQ==","Yg=="]})).status,400);
+  f.options.availabilityPolicyLoader=async()=>({enabled:false,revision:1});
+  assert.equal((await f.call(1,{publicKey:encoded(f.key)})).status,410);
+  f.options.availabilityPolicyLoader=async()=>{throw Error("policy storage offline");};
+  assert.equal((await f.call(1,{publicKey:encoded(f.key)})).status,503);
+});

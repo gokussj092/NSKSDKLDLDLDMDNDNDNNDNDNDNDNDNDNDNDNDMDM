@@ -16,6 +16,9 @@ services:
       CLOUD_REDIS_URL: redis://redis:6379
       CLOUD_TRUST_PROXY: ${CLOUD_TRUST_PROXY:-false}
       CLOUD_GOOGLE_PLAY_PACKAGE: ${CLOUD_GOOGLE_PLAY_PACKAGE:-}
+      CLOUD_NOTICE_FCM_SERVICE_ACCOUNT_JSON: ${CLOUD_NOTICE_FCM_SERVICE_ACCOUNT_JSON:-}
+      CLOUD_NOTICE_STORE_PATH: /app/notices/feed.json
+      CLOUD_NOTICE_FCM_PROJECT_ID: sp-decode-android
       CLOUD_GOOGLE_SERVICE_ACCOUNT_JSON: ${CLOUD_GOOGLE_SERVICE_ACCOUNT_JSON:-}
       CLOUD_REQUIRE_LICENSED: ${CLOUD_REQUIRE_LICENSED:-true}
       # Requires explicit VPS opt-in AND time-limited Redis/admin action.
@@ -66,6 +69,7 @@ services:
     # named volume. Redis sessions/challenges remain ephemeral and isolated.
     volumes:
       - provider-control:/app/provider-control:rw
+      - notice-feed:/app/notices:rw
     ports:
       # Bound to host loopback only; public HTTPS reverse proxy is a later phase.
       - "127.0.0.1:3000:3000"
@@ -88,7 +92,7 @@ services:
     pids_limit: 128
     cpus: 1.0
     healthcheck:
-      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/v1/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/health/live').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 30s
       timeout: 5s
       retries: 4
@@ -168,6 +172,7 @@ services:
 
 volumes:
   provider-control: {}
+  notice-feed: {}
 
 networks:
   edge: {}

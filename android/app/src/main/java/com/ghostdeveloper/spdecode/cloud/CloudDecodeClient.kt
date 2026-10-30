@@ -30,13 +30,9 @@ import java.io.IOException
  */
 internal class CloudDecodeClient(context: Context) {
     private val app = context.applicationContext
-    private var token = ""
-    private var expiresAtMs = 0L
-    private val lock = Any()
     private val sessionMutex = CloudRequestProof.enrollmentMutex
     @Volatile private var exportCatalog:CompatibleExportCatalog?=null
     @Volatile private var exportCatalogCheckedAt:Long=0
-    @Volatile private var actionIntegrityRequired = true
     private val standardLock = Mutex()
     private var standardProject = 0L
     private var standardProvider: StandardIntegrityManager.StandardIntegrityTokenProvider? = null
@@ -68,6 +64,12 @@ internal class CloudDecodeClient(context: Context) {
     }
 
     companion object {
+        // All foreground/background clients use the same device key and short-lived session.
+        // Sharing avoids repeated Classic Integrity admissions for concurrent workers.
+        private var token = ""
+        private var expiresAtMs = 0L
+        private val lock = Any()
+        @Volatile private var actionIntegrityRequired = true
         const val MAX_INPUT = 8 * 1024 * 1024
         private const val SAFE_TOKEN_MARGIN_MS = 30_000L
     }
@@ -113,18 +115,22 @@ internal class CloudDecodeClient(context: Context) {
         }
         val nonce = challenge.getString("nonce")
         val challengeId = challenge.getString("challengeId")
+        val playRequired = challenge.optBoolean("integrityRequired", true)
         if (!nonce.matches(Regex("[A-Za-z0-9_-]{43}")) ||
             !challengeId.matches(Regex("[0-9a-f-]{36}")) ||
-            challenge.optString("apiVersion") != "v2" ||
-            !challenge.optBoolean("integrityRequired", false))
+            challenge.optString("apiVersion") != "v2")
             throw IOException("CLOUD_INVALID_NONCE")
-        // V2 requires real Google Play admission, bound to this installation key.
-        if (BuildConfig.SPDECODE_QA_BUILD) throw IOException("CLOUD_INTEGRITY_UNAVAILABLE")
+        // An external beta may omit Play tokens ONLY when server policy explicitly allows it.
+        // Hardware attestation remains mandatory for all beta sessions.
+        if (playRequired && BuildConfig.SPDECODE_QA_BUILD)
+            throw IOException("CLOUD_INTEGRITY_UNAVAILABLE")
         val certificates = if (challenge.optBoolean("keyAttestationRequired", false)) {
             withContext(Dispatchers.IO) { CloudRequestProof.attest(
                 challenge.getString("attestationChallenge"), challenge.getString("hardwareLevel")) }
         } else null
-        val verdict = requestIntegrityToken(CloudRequestProof.integrityNonce(nonce, challengeId))
+        val verdict = if (playRequired)
+            requestIntegrityToken(CloudRequestProof.integrityNonce(nonce, challengeId))
+        else ""
         coroutineContext.ensureActive()
         val operation = CloudOperation.SESSION
         val body = JSONObject().put("challengeId",challengeId).put("integrityToken",verdict)
@@ -432,14 +438,20 @@ internal class CloudDecodeClient(context: Context) {
     suspend fun serverVpnCatalog(knownVersion:Int): JSONObject =
         withContext(Dispatchers.IO) {
             requireLegalConsent()
-            extract(CloudNativeTransport.post(CloudOperation.CATALOG,
-                JSONObject().put("knownVersion",knownVersion),session())).also { reply ->
+            val envelope=CatalogEnvelope()
+            envelope.open(extract(CloudNativeTransport.post(CloudOperation.CATALOG,
+                JSONObject().put("knownVersion",knownVersion).put("catalogKey",envelope.publicKey),session())),"catalog").also { reply ->
                 if(!reply.optBoolean("unchanged",false)) {
                     exportCatalog=runCatching {CompatibleExportCatalog.parse(reply.optJSONObject("compatibleExports"))}.getOrNull()
                     exportCatalogCheckedAt=android.os.SystemClock.elapsedRealtime()
                 }
             }
         }
+
+    suspend fun notifications():JSONObject = withContext(Dispatchers.IO) {
+        requireLegalConsent()
+        extract(CloudNativeTransport.post(CloudOperation.NOTIFICATIONS,JSONObject(),session()))
+    }
 
     /** Only the VPS version number is returned; no provider URLs or decoded files. */
     suspend fun watchCatalogVersion(knownVersion:Int):Int = withContext(Dispatchers.IO) {
@@ -462,8 +474,9 @@ internal class CloudDecodeClient(context: Context) {
         require(id.matches(Regex("[a-z0-9-]{1,48}")))
         return withContext(Dispatchers.IO) {
             requireLegalConsent()
-            extract(CloudNativeTransport.post(CloudOperation.ICON,
-                JSONObject().put("id",id),session()))
+            val envelope=CatalogEnvelope()
+            envelope.open(extract(CloudNativeTransport.post(CloudOperation.ICON,
+                JSONObject().put("id",id).put("catalogKey",envelope.publicKey),session())),"icon")
         }
     }
 

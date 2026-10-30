@@ -72,4 +72,14 @@ jobs:
           disk-size: 4096M
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          script: cd android && gradle --no-daemon :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.ghostdeveloper.spdecode.CloudTransportProofInstrumentedTest
+          script: cd android && gradle --no-daemon :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.ghostdeveloper.spdecode.CloudTransportProofInstrumentedTest,com.ghostdeveloper.spdecode.CatalogFeaturesInstrumentedTest
+      - name: Retain Android test reports for review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloud-android-test-reports
+          retention-days: 7
+          if-no-files-found: ignore
+          path: |
+            android/app/build/reports/androidTests/
+            android/app/build/outputs/androidTest-results/
