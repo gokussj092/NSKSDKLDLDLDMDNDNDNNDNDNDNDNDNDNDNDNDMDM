@@ -108,6 +108,22 @@ internal object CloudRequestProof {
         listOf("SPDECODE-POP-V2", "POST", operation.toString(), version,
             timestamp, nonce, hex(bearer), hex(body)).joinToString("\n")
 
+    /** Proof of possession binds the exact binary ciphertext as transmitted by JNI. */
+    fun signBytes(operation: Int, version: String, bytes: ByteArray, bearer: String): Proof {
+        val timestamp = (System.currentTimeMillis() / 1000).toString()
+        val nonce = encode(ByteArray(24).also(random::nextBytes))
+        val bodyDigest = MessageDigest.getInstance("SHA-256").digest(bytes)
+            .joinToString("") { "%02x".format(it.toInt() and 255) }
+        val msg = listOf("SPDECODE-POP-V2", "POST", operation.toString(),
+            version, timestamp, nonce, hex(bearer), bodyDigest).joinToString("\\n")
+        val signature = Signature.getInstance("SHA256withECDSA").run {
+            initSign(entry(bearer).privateKey)
+            update(msg.toByteArray(Charsets.UTF_8))
+            sign()
+        }
+        return Proof(timestamp, nonce, encode(signature))
+    }
+
     fun sign(operation: Int, version: String, body: String, bearer: String): Proof {
         val timestamp = (System.currentTimeMillis() / 1000).toString()
         val nonce = encode(ByteArray(24).also(random::nextBytes))
