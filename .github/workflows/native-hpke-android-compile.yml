@@ -62,7 +62,8 @@ jobs:
           kotlin=Path('android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/V2HpkeEnvelope.kt').read_text()
           assert 'org.bouncycastle' not in kotlin
           assert 'javax.crypto.Cipher' not in kotlin
-          assert 'SHA-256' in Path('android/app/src/main/cpp/spdecode_hpke.cpp').read_text()
+          assert 'MBEDTLS_MD_SHA256' in Path('android/app/src/main/cpp/spdecode_hpke.cpp').read_text()
+          assert 'mbedtls_gcm_auth_decrypt' in Path('android/app/src/main/cpp/spdecode_hpke.cpp').read_text()
           with ZipFile(apk) as z:
               names=z.namelist()
               libs=[n for n in names if n.endswith('/libspdecode.so')]
