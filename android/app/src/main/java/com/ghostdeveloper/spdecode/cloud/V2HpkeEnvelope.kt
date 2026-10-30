@@ -43,7 +43,7 @@ internal object V2HpkeEnvelope {
                 val header=ByteBuffer.wrap(bytes,0,REPLY_HEADER).order(ByteOrder.BIG_ENDIAN)
                 val magic=ByteArray(4).also(header::get)
                 if(!magic.contentEquals("SPR2".toByteArray(Charsets.US_ASCII)) ||
-                    header.get().toInt()!=1 || header.short.toInt() and 0xffff != status)
+                    header.get().toInt()!=1 || (header.short.toInt() and 0xffff) != status)
                     throw IOException("CLOUD_HPKE_REPLY_INVALID")
                 val id=ByteArray(16).also(header::get)
                 val encryptedBytes=header.int

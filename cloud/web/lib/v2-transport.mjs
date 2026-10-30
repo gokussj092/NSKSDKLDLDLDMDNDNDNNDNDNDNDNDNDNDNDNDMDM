@@ -201,16 +201,16 @@ async function jsonTransportRequest(request,options={}) {
  * hashes bind the outer ciphertext rather than a reserialized JSON payload.
  * Older private beta clients remain on their JSON path until HPKE_ONLY.
  */
-async function readHpkeBytes(request) {
+async function readHpkeBytes(request,limit) {
   if(request.headers.has("content-encoding")||!request.body)throw Error("HPKE_INVALID");
   const length=request.headers.get("content-length");
-  if(length && (!/^\\d+$/.test(length)||Number(length)>HPKE_MAX_BYTES))throw Error("INPUT_TOO_LARGE");
+  if(length && (!/^\d+$/.test(length)||Number(length)>limit))throw Error("INPUT_TOO_LARGE");
   const reader=request.body.getReader(),parts=[];let size=0;
   try {
     for(;;) {
       const {done,value}=await reader.read();if(done)break;
       size+=value.byteLength;
-      if(size>HPKE_MAX_BYTES){await reader.cancel();throw Error("INPUT_TOO_LARGE");}
+      if(size>limit){await reader.cancel();throw Error("INPUT_TOO_LARGE");}
       parts.push(Buffer.from(value));
     }
   }finally{reader.releaseLock();}
@@ -251,7 +251,8 @@ export async function transportRequest(request,options={}) {
     const redis=await (options.storeProvider||store)();
     if(!await throttle(redis,"spc2:hpke-edge:"+ipKey(request),180,60))
       return fail("RATE_LIMITED",429);
-    const wire=await readHpkeBytes(request);
+    const max=op===5?HPKE_MAX_BYTES:(op===6?1024*1024+512:bodyLimit(op)+512);
+    const wire=await readHpkeBytes(request,max);
     opened=await openHpkeRequest(wire,op,env);
     if(await redis.set("spc2:hpke-replay:"+opened.replayId,"1",{EX:150,NX:true})!=="OK")
       return fail("INVALID_REQUEST",400);

@@ -161,6 +161,10 @@ class MainActivity : ComponentActivity() {
 
     private fun requestNoticePermissionAfterConsent() {
         if (!BuildConfig.SPDECODE_CLOUD_ENABLED || !CloudLegalConsent.accepted(this)) return
+        val savedNoticePreferences = getSharedPreferences("spdecode-notifications", MODE_PRIVATE)
+        // Honour a previous explicit in-app opt-out when upgrading.
+        if (savedNoticePreferences.contains("enabled") &&
+            !savedNoticePreferences.getBoolean("enabled", false)) return
         if (android.os.Build.VERSION.SDK_INT < 33) {
             com.ghostdeveloper.spdecode.cloud.CloudNotifications.setEnabled(this, true)
             return
