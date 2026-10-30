@@ -1,5 +1,12 @@
 #include <jni.h>
 #include <algorithm>
+#include <array>
+#include <cstdint>
+#include <stdexcept>
+#include <vector>
+
+#include "spdecode_hpke.h"
+#include <mbedtls/platform_util.h>
 #include <cctype>
 #include <string>
 
@@ -12,13 +19,11 @@ namespace {
 constexpr jsize kHpkePinLength=40;
 volatile const unsigned char kHpkePinPartA[kHpkePinLength]={0x4d, 0xd5, 0x69, 0x60, 0xc8, 0xca, 0xdc, 0x25, 0x57, 0xad, 0x5d, 0xec, 0xab, 0x06, 0xc2, 0xd1, 0x7f, 0xdc, 0x54, 0x2f, 0x29, 0x04, 0x36, 0x1a, 0xc4, 0x11, 0x8b, 0x45, 0xda, 0xf7, 0x36, 0x6f, 0x02, 0xaa, 0x4c, 0x05, 0x79, 0xab, 0xc0, 0x14};
 volatile const unsigned char kHpkePinPartB[kHpkePinLength]={0xc4, 0xba, 0x70, 0x36, 0xec, 0xeb, 0xa1, 0x67, 0xdd, 0x93, 0x92, 0x48, 0x0e, 0xc4, 0xba, 0xb9, 0x7f, 0x35, 0xeb, 0xa1, 0xa0, 0x66, 0xdc, 0x92, 0x48, 0x57, 0x0d, 0xc3, 0xb9, 0x7f, 0x7e, 0x34, 0xea, 0xa0, 0x66, 0x65, 0xdb, 0x91, 0x57, 0x0d};
-jbyteArray nativeHpkePublicPin(JNIEnv* env,jclass) {
-    jbyte bytes[kHpkePinLength]{};
-    for(jsize i=0;i<kHpkePinLength;++i)
-        bytes[i]=static_cast<jbyte>(kHpkePinPartA[i]^kHpkePinPartB[i]);
-    jbyteArray result=env->NewByteArray(kHpkePinLength);
-    if(result!=nullptr)env->SetByteArrayRegion(result,0,kHpkePinLength,bytes);
-    return result;
+std::array<unsigned char,40> nativePublicHpkePin() {
+    std::array<unsigned char,40> pin{};
+    for(size_t i=0;i<pin.size();++i)
+        pin[i]=static_cast<unsigned char>(kHpkePinPartA[i]^kHpkePinPartB[i]);
+    return pin;
 }
 
 constexpr size_t kMaxRequestBytes = 12 * 1024 * 1024;
@@ -274,6 +279,77 @@ jbyteArray post(JNIEnv* env,jclass,jint operation,jbyteArray bodyArg,jstring bea
 }
 }
 
+// The native boundary owns HPKE key agreement, HKDF, AEAD, wire framing and
+// decrypted response verification. No derived cryptographic key is passed
+// through Java/Kotlin. Android services (Keystore, Play, TLS) retain JNI access.
+namespace {
+std::vector<unsigned char> nativeRead(JNIEnv* env,jbyteArray input,size_t limit) {
+    if(input==nullptr)return {};
+    const jsize length=env->GetArrayLength(input);
+    if(length<0||static_cast<size_t>(length)>limit)
+        throw std::runtime_error("CLOUD_HPKE_NATIVE_INPUT");
+    std::vector<unsigned char> bytes(static_cast<size_t>(length));
+    if(length>0)env->GetByteArrayRegion(input,0,length,
+        reinterpret_cast<jbyte*>(bytes.data()));
+    if(env->ExceptionCheck())throw std::runtime_error("CLOUD_HPKE_NATIVE_INPUT");
+    return bytes;
+}
+jbyteArray nativeWrite(JNIEnv* env,const std::vector<unsigned char>& bytes){
+    if(bytes.size()>static_cast<size_t>(INT32_MAX))
+        throw std::runtime_error("CLOUD_HPKE_NATIVE_SIZE");
+    jbyteArray result=env->NewByteArray(static_cast<jsize>(bytes.size()));
+    if(result!=nullptr&&!bytes.empty())
+        env->SetByteArrayRegion(result,0,static_cast<jsize>(bytes.size()),
+                                reinterpret_cast<const jbyte*>(bytes.data()));
+    return result;
+}
+jbyteArray prepareHpke(JNIEnv* env,jclass,jint operation,
+                       jbyteArray metadataArg,jbyteArray attachmentArg){
+    try{
+        if(metadataArg==nullptr)throw std::runtime_error("CLOUD_HPKE_METADATA_MISSING");
+        auto metadata=nativeRead(env,metadataArg,1024U*1024U);
+        auto attachment=nativeRead(env,attachmentArg,8U*1024U*1024U);
+        auto prepared=spdecode::hpkePrepare(operation,metadata,attachment,nativePublicHpkePin());
+        std::vector<unsigned char> result;
+        result.reserve(8+prepared.wire.size());
+        for(int shift=56;shift>=0;shift-=8)
+            result.push_back(static_cast<unsigned char>(prepared.handle>>shift));
+        result.insert(result.end(),prepared.wire.begin(),prepared.wire.end());
+        jbyteArray encoded=nativeWrite(env,result);
+        if(encoded==nullptr||env->ExceptionCheck()){
+            spdecode::hpkeDiscard(prepared.handle);
+            fail(env,"CLOUD_HPKE_NATIVE_MEMORY");return nullptr;
+        }
+        return encoded;
+    }catch(const std::exception&){
+        fail(env,"CLOUD_HPKE_ENCRYPT_FAILED");return nullptr;
+    }
+}
+jbyteArray openHpke(JNIEnv* env,jclass,jlong stateHandle,jint status,
+                    jbyteArray wireArg,jbyteArray responseArg){
+    const auto handle=static_cast<std::uint64_t>(stateHandle);
+    try{
+        if(wireArg==nullptr||responseArg==nullptr)
+            throw std::runtime_error("CLOUD_HPKE_REPLY_INVALID");
+        auto wire=nativeRead(env,wireArg,11U*1024U*1024U);
+        auto reply=nativeRead(env,responseArg,96U*1024U*1024U+27+16);
+        auto clear=spdecode::hpkeOpen(handle,status,wire,reply);
+        jbyteArray result=nativeWrite(env,clear);
+        if(!clear.empty())mbedtls_platform_zeroize(clear.data(),clear.size());
+        if(result==nullptr||env->ExceptionCheck()){
+            fail(env,"CLOUD_HPKE_NATIVE_MEMORY");return nullptr;
+        }
+        return result;
+    }catch(const std::exception&){
+        spdecode::hpkeDiscard(handle);
+        fail(env,"CLOUD_HPKE_REPLY_INVALID");return nullptr;
+    }
+}
+void discardHpke(JNIEnv*,jclass,jlong stateHandle){
+    spdecode::hpkeDiscard(static_cast<std::uint64_t>(stateHandle));
+}
+}
+
 // Register the private bridge; export only JNI_OnLoad.
 extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm,void*) {
     JNIEnv* env=nullptr;
@@ -283,9 +359,13 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm,void*) {
     JNINativeMethod methods[]={{const_cast<char*>("postNativeEncrypted"),
         const_cast<char*>("(I[BLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)[B"),
         reinterpret_cast<void*>(post)},
-        {const_cast<char*>("nativeHpkePublicPin"),const_cast<char*>("()[B"),
-        reinterpret_cast<void*>(nativeHpkePublicPin)}};
-    const jint registered=env->RegisterNatives(bridge,methods,2);
+        {const_cast<char*>("nativePrepareHpke"),const_cast<char*>("(I[B[B)[B"),
+        reinterpret_cast<void*>(prepareHpke)},
+        {const_cast<char*>("nativeOpenHpke"),const_cast<char*>("(JI[B[B)[B"),
+        reinterpret_cast<void*>(openHpke)},
+        {const_cast<char*>("nativeDiscardHpke"),const_cast<char*>("(J)V"),
+        reinterpret_cast<void*>(discardHpke)}};
+    const jint registered=env->RegisterNatives(bridge,methods,4);
     env->DeleteLocalRef(bridge);
     return registered==JNI_OK?JNI_VERSION_1_6:JNI_ERR;
 }
