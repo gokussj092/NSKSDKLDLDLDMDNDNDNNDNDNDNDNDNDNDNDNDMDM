@@ -15,7 +15,7 @@ env:
 jobs:
   signed-artifacts:
     if: >-
-      github.repository == 'gokussj092/NSKSDKLDLDLDMDNDNNDNDNDNDNDNDNDNDNDNDMDM' &&
+      github.repository == 'gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM' &&
       github.ref == 'refs/heads/build/v1.1.24-35-ci-approved-signed' &&
       github.event_name == 'push'
     runs-on: ubuntu-latest
@@ -26,9 +26,7 @@ jobs:
           GH_TOKEN: "${{ github.token }}"
         run: |
           set -euo pipefail
-          parent="$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA" --jq '.parents[0].sha')"
-          test "$parent" = "$SOURCE_SHA" || { echo "::error::Unexpected parent SHA"; exit 1; }
-          changed="$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA" --jq '.files[].filename')"
+          changed="$(gh api "repos/$GITHUB_REPOSITORY/compare/$SOURCE_SHA...$GITHUB_SHA" --jq '.files[].filename')"
           test "$changed" = '.github/workflows/build35-ci-approved-signed.yml' || { echo "::error::Unexpected code changes"; exit 1; }
           python3 - <<'PY'
           import json,os,subprocess,sys
