@@ -162,7 +162,6 @@ val prepareQaSettingsSource = tasks.register("prepareQaSettingsSource") {
         val source = original.replace("https://t.me/CodeBreakersHub", "https://t.me/+Ntu6EJMirrAwMzgx").replace(anchor,
             (if(enableQaBuild) "        com.ghostdeveloper.spdecode.cloud.CloudQaSettingsCard()\n" else "") +
             "        com.ghostdeveloper.spdecode.cloud.DonationSettingsCard()\n" +
-            "        com.ghostdeveloper.spdecode.cloud.NotificationSettingsCard()\n" +
             "        com.ghostdeveloper.spdecode.cloud.NpvsIdentitySettings()\n" + anchor)
         val output = qaSettingsRoot.get().file(qaSettingsRelativePath).asFile
         output.parentFile.mkdirs()
