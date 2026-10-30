@@ -645,6 +645,14 @@ android {
         // A public API origin is not a secret; all server secrets stay in the VPS.
         buildConfigField("boolean", "SPDECODE_CLOUD_ENABLED", enableCloud.toString())
         buildConfigField("boolean", "SPDECODE_QA_BUILD", enableQaBuild.toString())
+        // Public trust anchors; never package any recipient private key.
+        val hpkePins=providers.environmentVariable("SPDECODE_V2_HPKE_PINS").orNull.orEmpty().trim()
+        require(hpkePins.isEmpty() ||
+            hpkePins.matches(Regex("([a-f0-9]{16}:[A-Za-z0-9_-]{43})(,[a-f0-9]{16}:[A-Za-z0-9_-]{43}){0,2}"))) {
+            "SPDECODE_V2_HPKE_PINS expects kid:base64url32[,kid:base64url32]"
+        }
+        buildConfigField("String","SPDECODE_V2_HPKE_PINS","\\\"$hpkePins\\\"")
+
         // Public Firebase application identifiers. Service-account keys stay exclusively on the VPS.
         mapOf("APP_ID" to "1:[0-9]+:android:[a-f0-9]+", "API_KEY" to "[A-Za-z0-9_-]{30,80}",
             "PROJECT_ID" to "[a-z][a-z0-9-]{4,60}", "SENDER_ID" to "[0-9]{5,30}").forEach { (key,pattern)->
@@ -746,7 +754,7 @@ dependencies {
     implementation("com.google.android.play:integrity:1.6.0")
     implementation("androidx.work:work-runtime-ktx:2.10.4")
     // Lightweight Argon2id + XChaCha20-Poly1305 primitives for standard .ehi.
-    if (!enableCloud) implementation("org.bouncycastle:bcprov-jdk18on:1.86")
+    implementation("org.bouncycastle:bcprov-jdk18on:1.86") // HPKE RFC9180 also required by Cloud V2
     implementation("androidx.activity:activity-ktx:1.10.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.0")
     implementation("androidx.datastore:datastore-preferences:1.1.7")
