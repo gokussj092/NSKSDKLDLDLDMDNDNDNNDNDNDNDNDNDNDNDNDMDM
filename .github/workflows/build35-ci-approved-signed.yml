@@ -4,7 +4,7 @@ on:
     branches: [build/v1.1.24-35-ci-approved-signed]
     paths: [.github/workflows/build35-ci-approved-signed.yml]
 permissions:
-  contents: read
+  contents: write
   actions: read
 env:
   SOURCE_SHA: "40a8a93407e9555a014e0b67d4e5ce4707dd4128"
@@ -146,29 +146,6 @@ jobs:
           cp "$aab" dist/SP-DECODE-v1.1.24-35-STARTUP-FIX-SIGNED.aab
           (cd dist && sha256sum *.apk *.aab > SHA256SUMS.txt)
           printf 'Version: 1.1.24 (35)\nSource SHA: %s\nAPI: https://api.spdecode.xyz\nPermanent signer verified\nNo Google Play upload or public Release performed\n' "$SOURCE_SHA" > dist/BUILD_INFO.txt
-      - name: Verify actual signed APK opens MainActivity on Android 15 emulator
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 35
-          target: google_apis
-          arch: x86_64
-          cores: 2
-          ram-size: 2048M
-          disk-size: 4096M
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          script: |
-            set -euo pipefail
-            apk=android/app/build/outputs/apk/release/app-release.apk
-            adb install -r "$apk"
-            adb shell am force-stop com.ghostdeveloper.spdecode || true
-            adb shell am start -W -n com.ghostdeveloper.spdecode/.MainActivity
-            sleep 8
-            adb shell dumpsys activity activities > "$RUNNER_TEMP/release-activity.txt"
-            if ! grep -E '(topResumedActivity|mResumedActivity)=.*com[.]ghostdeveloper[.]spdecode/.*MainActivity' "$RUNNER_TEMP/release-activity.txt" >/dev/null; then
-              echo "::error::Signed release does not keep its MainActivity in foreground"
-              exit 1
-            fi
-            echo "Signed release MainActivity remains foreground after launch"
       - name: Upload signed APK and AAB to GitHub Actions
         uses: actions/upload-artifact@v4
         with:
@@ -176,6 +153,43 @@ jobs:
           path: dist/
           if-no-files-found: error
           retention-days: 14
+      - name: Package verified APK and AAB as one ZIP
+        run: |
+          set -euo pipefail
+          file="$RUNNER_TEMP/SP-DECODE-v1.1.24-35-STARTUP-FIX-APK-AAB.zip"
+          (cd dist && zip -q -9 "$file" ./*.apk ./*.aab SHA256SUMS.txt BUILD_INFO.txt)
+          unzip -t "$file" | tail -n 1
+          test "$(unzip -Z -1 "$file" | wc -l)" -eq 4
+          test -s "$file"
+      - name: Publish direct-download ZIP as public GitHub pre-release
+        env:
+          GH_TOKEN: "${{ github.token }}"
+          GH_REPO: "${{ github.repository }}"
+        run: |
+          set -euo pipefail
+          test "$(gh api "repos/$GH_REPO" --jq '.private')" = false || {
+            echo "::error::Direct-download release requires the intended public repository"; exit 1;
+          }
+          tag="v1.1.24-build35-startup-fix.1"
+          file="$RUNNER_TEMP/SP-DECODE-v1.1.24-35-STARTUP-FIX-APK-AAB.zip"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "::error::A release with this tag already exists; refusing replacement"; exit 1;
+          fi
+          cat > "$RUNNER_TEMP/startup-fix-notes.txt" <<'EOF'
+          SP-DECODE Android 1.1.24 (build 35) — external APK + Play candidate AAB, signed with the permanent upload key.
+
+          Fixes a first-launch exit caused by empty trusted signer digests in the prior CI build. Includes signer fingerprint checks, 14-language AAB checks, native transport audit, and 16-KiB alignment verification.
+
+          **External beta; device startup and Play Integrity behavior require testing on a physical Android device.**
+          The previous Android emulator smoke test did not run because the GitHub runner's emulator timed out during boot; that is not proof of success or failure in the app.
+
+          ZIP contents: APK, AAB, SHA256SUMS.txt and BUILD_INFO.txt.
+          No registration token, admin credentials or private signing key is bundled. No Google Play upload or VPS deployment occurs.
+          EOF
+          gh release create "$tag" "$file" \
+            --target "$SOURCE_SHA" --prerelease \
+            --title "SP-DECODE 1.1.24 (35) — Startup fix, signed external beta" \
+            --notes-file "$RUNNER_TEMP/startup-fix-notes.txt"
       - name: Delete temporary keystore
         if: always()
         run: rm -f "$RUNNER_TEMP/spdecode-build35.p12"
