@@ -28,7 +28,7 @@ V1 remains unchanged.
 - The initial iteration retains JSON Base64 for file contents inside the
   encrypted envelope; there is NO bandwidth reduction until a later
   raw-file binary payload path is implemented.
-- Existing Native JNI test harness must be adapted to the new binary method.
+- The native JNI contract was adapted to binary input/output. No tests were run.
 - This branch has not been compiled, deployed or validated against a phone.
 - Do not merge before passing cryptographic cross-language tests and Android
   and worker integration checks.
@@ -39,3 +39,14 @@ ML-KEM-768 + X25519 (post-quantum + classical). This is NOT network V2.
 Future export formats should have versioned recipient keys, authenticated
 metadata and careful key lifecycle. Do not include a universal private
 decryption key inside the APK.
+
+## Current branch progress
+Android and Node.js HPKE implementations, binary JNI transport, V2 API envelope gate,
+streamed server response encryption, and one-time system notification prompt
+are committed. The server gate is deliberately opt-in; the new Android client
+fails closed if the bootstrap does not advertise mandatory HPKE.
+The V1 public API is not modified. The previous V2 test APK cannot work
+with a server that turns on mandatory HPKE until an updated V2 APK is installed.
+No APK build, no on-device check, no CI workflow and no VPS deployment occurred.
+Mandatory future release gate: cross-language RFC9180 vectors, emulator/physical
+Android, decryption + notifications, Google Play policy on/off, and workload P95.

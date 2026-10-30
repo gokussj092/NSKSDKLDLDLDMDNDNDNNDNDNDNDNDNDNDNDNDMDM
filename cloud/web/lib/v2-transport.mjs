@@ -99,6 +99,9 @@ export async function transportRequest(request,options={}) {
     // encryption for admission and authenticated operations when enabled.
     const recipient=cfg.hpkeRequired?hpkeServerKey(options.env||process.env):null;
     const encrypted=cfg.hpkeRequired && op!==1;
+    // Check anonymous admission budget before any X25519 private-key work.
+    if(op===2 && !await throttle(redis,"spc2:admission-rate:"+ip,20,900))
+      return fail("RATE_LIMITED",429);
     const wire=await readBytes(request,bodyLimit(op)+(encrypted?64:0),encrypted);
     if(encrypted)envelope=openRequest(wire,recipient,{
       operation:op,version:request.headers.get("x-spdecode-app-version")||"",
@@ -138,7 +141,6 @@ export async function transportRequest(request,options={}) {
         ...(hardwareNeeded?{attestationChallenge:attestationChallenge(nonce,challengeId,body.publicKey)}:{})},201);
     }
     if(op===2) {
-      if(!await throttle(redis,"spc2:admission-rate:"+ip,20,900))return failSecure("RATE_LIMITED",429);
       const body=JSON.parse(bytes);
       if(!record(body) || !["challengeId,integrityToken","certificateChain,challengeId,integrityToken,publicKey"].includes(Object.keys(body).sort().join(",")) ||
          !/^[0-9a-f-]{36}$/.test(body.challengeId) || typeof body.integrityToken!=="string" ||

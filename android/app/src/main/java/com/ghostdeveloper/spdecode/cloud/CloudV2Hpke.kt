@@ -78,17 +78,17 @@ internal object CloudV2Hpke {
                         private val timestamp:String,private val nonce:String,
                         private val bearer:String) {
         fun openReply(status:Int,body:ByteArray):ByteArray {
-            if(body.size<4+16 || !body.copyOfRange(0,4).contentEquals(resMagic))
+            if(body.size<4+16 || !body.copyOfRange(0,4).contentEquals(CloudV2Hpke.resMagic))
                 throw IOException("CLOUD_HPKE_RESPONSE_REQUIRED")
-            val fingerprint=sha(requestWire)
-            val key=labeledExpand(suite,exporter,"sec",
+            val fingerprint=CloudV2Hpke.sha(requestWire)
+            val key=CloudV2Hpke.labeledExpand(CloudV2Hpke.suite,exporter,"sec",
                 "SPDECODE-REPLY-KEY".toByteArray(Charsets.US_ASCII)+fingerprint,32)
-            val iv=labeledExpand(suite,exporter,"sec",
+            val iv=CloudV2Hpke.labeledExpand(CloudV2Hpke.suite,exporter,"sec",
                 "SPDECODE-REPLY-NONCE".toByteArray(Charsets.US_ASCII)+fingerprint,12)
             return try {
                 val cipher=Cipher.getInstance("AES/GCM/NoPadding")
                 cipher.init(Cipher.DECRYPT_MODE,SecretKeySpec(key,"AES"),GCMParameterSpec(128,iv))
-                cipher.updateAAD(aad("response",op,version,timestamp,nonce,bearer,requestWire,status))
+                cipher.updateAAD(CloudV2Hpke.aad("response",op,version,timestamp,nonce,bearer,requestWire,status))
                 cipher.doFinal(body,4,body.size-4)
             } catch(_:Exception){throw IOException("CLOUD_HPKE_AUTH_FAILED")}
             finally {key.fill(0);iv.fill(0);exporter.fill(0)}
