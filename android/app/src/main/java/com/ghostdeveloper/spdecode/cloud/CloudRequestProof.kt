@@ -115,7 +115,7 @@ internal object CloudRequestProof {
         val bodyDigest = MessageDigest.getInstance("SHA-256").digest(bytes)
             .joinToString("") { "%02x".format(it.toInt() and 255) }
         val msg = listOf("SPDECODE-POP-V2", "POST", operation.toString(),
-            version, timestamp, nonce, hex(bearer), bodyDigest).joinToString("\\n")
+            version, timestamp, nonce, hex(bearer), bodyDigest).joinToString("\n")
         val signature = Signature.getInstance("SHA256withECDSA").run {
             initSign(entry(bearer).privateKey)
             update(msg.toByteArray(Charsets.UTF_8))
