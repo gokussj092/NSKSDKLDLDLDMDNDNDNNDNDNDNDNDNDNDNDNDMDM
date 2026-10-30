@@ -4,6 +4,10 @@ on:
     branches: [security/hpke-native-cpp-migration]
     paths:
       - .github/workflows/native-hpke-interoperability.yml
+      - android/app/src/main/cpp/spdecode_hpke.cpp
+      - android/app/src/main/cpp/spdecode_hpke.h
+      - tests/native_hpke_cli.cpp
+      - tests/native_hpke_node_roundtrip.mjs
   workflow_dispatch:
 
 permissions:
