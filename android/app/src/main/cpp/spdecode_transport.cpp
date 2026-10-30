@@ -14,6 +14,14 @@ constexpr jint kConnectTimeoutMs = 10000;
 constexpr jint kReadTimeoutMs = 25000;
 constexpr jint kNurCatalogReadTimeoutMs = 165000; // heavy server-side Argon2id
 
+std::string binary(JNIEnv* env, jbyteArray value) {
+    if(value==nullptr)return {};
+    const jsize n=env->GetArrayLength(value);
+    if(n<0)return {};
+    std::string result(static_cast<size_t>(n),'\0');
+    if(n>0)env->GetByteArrayRegion(value,0,n,reinterpret_cast<jbyte*>(&result[0]));
+    return result;
+}
 std::string utf(JNIEnv* env, jstring value) {
     if (value == nullptr) return {};
     const char* chars = env->GetStringUTFChars(value, nullptr);
@@ -84,7 +92,7 @@ bool setHeader(JNIEnv* env,jobject conn,jclass cls,jmethodID method,
 // C++ owns network initiation, route verification, HTTP method, request headers,
 // size limits and reading. Android's HttpsURLConnection provides platform TLS
 // certificate/hostname verification; certificate validation is never disabled.
-jstring post(JNIEnv* env,jclass,jint operation,jstring bodyArg,jstring bearerArg,jstring versionArg,
+jbyteArray post(JNIEnv* env,jclass,jint operation,jbyteArray bodyArg,jstring bearerArg,jstring versionArg,
              jstring timestampArg,jstring nonceArg,jstring proofArg,jstring actionChallengeArg,jstring actionIntegrityArg) {
     const std::string base=cloudOrigin();
     const std::string path=cloudTransportPath();
@@ -93,7 +101,7 @@ jstring post(JNIEnv* env,jclass,jint operation,jstring bodyArg,jstring bearerArg
     const std::string proof=utf(env,proofArg);
     const std::string actionChallenge=utf(env,actionChallengeArg);
     const std::string actionIntegrity=utf(env,actionIntegrityArg);
-    const std::string body=utf(env,bodyArg);
+    const std::string body=binary(env,bodyArg);
     const std::string bearer=utf(env,bearerArg);
     const std::string clientVersion=utf(env,versionArg);
     const bool validVersion=clientVersion.size()>=5 && clientVersion.size()<=11 &&
@@ -117,9 +125,8 @@ jstring post(JNIEnv* env,jclass,jint operation,jstring bodyArg,jstring bearerArg
     jclass httpsClass=env->FindClass("javax/net/ssl/HttpsURLConnection");
     jclass streamClass=env->FindClass("java/io/InputStream");
     jclass outputClass=env->FindClass("java/io/OutputStream");
-    jclass stringClass=env->FindClass("java/lang/String");
     if (!urlClass || !connectionClass || !httpClass || !httpsClass ||
-        !streamClass || !outputClass || !stringClass) {
+        !streamClass || !outputClass) {
         fail(env,"CLOUD_NATIVE_JNI_UNAVAILABLE");return nullptr;
     }
     const jmethodID urlCtor=env->GetMethodID(urlClass,"<init>","(Ljava/lang/String;)V");
@@ -140,11 +147,11 @@ jstring post(JNIEnv* env,jclass,jint operation,jstring bodyArg,jstring bearerArg
     const jmethodID closeOutput=env->GetMethodID(outputClass,"close","()V");
     const jmethodID read=env->GetMethodID(streamClass,"read","([BII)I");
     const jmethodID closeInput=env->GetMethodID(streamClass,"close","()V");
-    const jmethodID bytesMethod=env->GetMethodID(stringClass,"getBytes","(Ljava/lang/String;)[B");
+    // A binary HPKE envelope never passes through a Java UTF-8 String.
     if (!urlCtor || !open || !setMethod || !setRedirect || !setConnect ||
         !setRead || !setOutput || !setProperty || !setLength ||
         !getOutput || !getInput || !getError || !statusMethod || !disconnect ||
-        !write || !closeOutput || !read || !closeInput || !bytesMethod) {
+        !write || !closeOutput || !read || !closeInput) {
         fail(env,"CLOUD_NATIVE_METHOD_UNAVAILABLE");return nullptr;
     }
 
@@ -171,14 +178,13 @@ jstring post(JNIEnv* env,jclass,jint operation,jstring bodyArg,jstring bearerArg
     if(ok){env->CallVoidMethod(conn,setConnect,kConnectTimeoutMs);ok=!env->ExceptionCheck();}
     // Do not relax ordinary decoder/session timeouts. NUR server catalog
     // can require up to 120s on the remote worker for nested Argon2id fields.
-    const jint readTimeout = (operation == 9 ||
-        operation == 12)
-        ? kNurCatalogReadTimeoutMs : (operation == 5 &&
-            body.find("\"compatibleExport\"") != std::string::npos ? 55000 : kReadTimeoutMs);
+    const jint readTimeout = (operation == 9 || operation == 12)
+        ? kNurCatalogReadTimeoutMs : (operation == 5 ? 55000 : kReadTimeoutMs);
     if(ok){env->CallVoidMethod(conn,setRead,readTimeout);ok=!env->ExceptionCheck();}
     if(ok){env->CallVoidMethod(conn,setOutput,JNI_TRUE);ok=!env->ExceptionCheck();}
     if(ok){env->CallVoidMethod(conn,setLength,8192);ok=!env->ExceptionCheck();}
-    if(ok)ok=setHeader(env,conn,connectionClass,setProperty,"Content-Type","application/json");
+    if(ok)ok=setHeader(env,conn,connectionClass,setProperty,"Content-Type",
+        operation==1?"application/json":"application/octet-stream");
     if(ok)ok=setHeader(env,conn,connectionClass,setProperty,"Accept","application/json");
     if(ok)ok=setHeader(env,conn,connectionClass,setProperty,"Accept-Encoding","identity");
     if(ok)ok=setHeader(env,conn,connectionClass,setProperty,"Cache-Control","no-store");
@@ -208,11 +214,12 @@ jstring post(JNIEnv* env,jclass,jint operation,jstring bodyArg,jstring bearerArg
         env->CallVoidMethod(conn,disconnect);env->DeleteLocalRef(conn);
         fail(env,"CLOUD_NATIVE_NETWORK_UNAVAILABLE");return nullptr;
     }
-    jstring bodyString=env->NewStringUTF(body.c_str());
-    jstring utf8=env->NewStringUTF("UTF-8");
-    jbyteArray bodyBytes=static_cast<jbyteArray>(env->CallObjectMethod(bodyString,bytesMethod,utf8));
-    env->DeleteLocalRef(bodyString);env->DeleteLocalRef(utf8);
-    if(bodyBytes && !env->ExceptionCheck())env->CallVoidMethod(os,write,bodyBytes);
+    jbyteArray bodyBytes=env->NewByteArray(static_cast<jsize>(body.size()));
+    if(bodyBytes && !env->ExceptionCheck()){
+        env->SetByteArrayRegion(bodyBytes,0,static_cast<jsize>(body.size()),
+            reinterpret_cast<const jbyte*>(body.data()));
+        if(!env->ExceptionCheck())env->CallVoidMethod(os,write,bodyBytes);
+    }
     if(bodyBytes)env->DeleteLocalRef(bodyBytes);
     if(!env->ExceptionCheck())env->CallVoidMethod(os,closeOutput);
     env->DeleteLocalRef(os);
@@ -232,10 +239,10 @@ jstring post(JNIEnv* env,jclass,jint operation,jstring bodyArg,jstring bearerArg
     }
     jbyteArray buffer=env->NewByteArray(8192);
     std::string result;
+    // HPKE hides provider IDs: keep the existing larger MKK-safe cap
+    // for operation 12, rather than inspecting encrypted request bytes.
     const size_t replyCap=operation==8 ? 12U*1024U*1024U :
-        (operation==12 &&
-        body.find("mkk-hyper")!=std::string::npos)
-        ? kMaxMkkReplyBytes : kMaxReplyBytes;
+        operation==12 ? kMaxMkkReplyBytes : kMaxReplyBytes;
     bool oversize=false,readFailed=false;
     for(;;) {
         const jint n=env->CallIntMethod(input,read,buffer,0,8192);
@@ -265,16 +272,7 @@ jstring post(JNIEnv* env,jclass,jint operation,jstring bodyArg,jstring bearerArg
     if(raw==nullptr){fail(env,"CLOUD_NATIVE_RESPONSE_MEMORY");return nullptr;}
     env->SetByteArrayRegion(raw,0,static_cast<jsize>(envelope.size()),
                             reinterpret_cast<const jbyte*>(envelope.data()));
-    const jmethodID stringUtf8Ctor=env->GetMethodID(stringClass,"<init>",
-                                                   "([BLjava/lang/String;)V");
-    jstring encoding=jstr(env,"UTF-8");
-    jstring decoded=static_cast<jstring>(env->NewObject(stringClass,stringUtf8Ctor,raw,encoding));
-    env->DeleteLocalRef(raw);
-    env->DeleteLocalRef(encoding);
-    if(clearException(env) || decoded==nullptr){
-        fail(env,"CLOUD_NATIVE_RESPONSE_ENCODING");return nullptr;
-    }
-    return decoded;
+    return raw;
 }
 }
 
@@ -285,7 +283,7 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm,void*) {
     jclass bridge=env->FindClass("com/ghostdeveloper/spdecode/cloud/CloudNativeTransport");
     if(!bridge)return JNI_ERR;
     JNINativeMethod methods[]={{const_cast<char*>("postNative"),
-        const_cast<char*>("(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"),
+        const_cast<char*>("(I[BLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)[B"),
         reinterpret_cast<void*>(post)}};
     const jint registered=env->RegisterNatives(bridge,methods,1);
     env->DeleteLocalRef(bridge);
