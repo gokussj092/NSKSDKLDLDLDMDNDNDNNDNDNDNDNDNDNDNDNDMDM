@@ -43,7 +43,11 @@ std::uint32_t read32(const unsigned char* p){
     return (std::uint32_t(p[0])<<24)|(std::uint32_t(p[1])<<16)|
            (std::uint32_t(p[2])<<8)|std::uint32_t(p[3]);
 }
-void append(Bytes& out,const unsigned char* p,size_t n){out.insert(out.end(),p,p+n);}
+void append(Bytes& out,const unsigned char* p,size_t n){
+    if(n==0)return; // Avoid pointer arithmetic on an empty vector's null data().
+    if(p==nullptr)invalid();
+    out.insert(out.end(),p,p+n);
+}
 void append(Bytes& out,const Bytes& b){append(out,b.data(),b.size());}
 template<size_t N> void append(Bytes& out,const std::array<unsigned char,N>& v){
     append(out,v.data(),v.size());
@@ -55,6 +59,10 @@ void cleanse(Bytes& b){if(!b.empty())mbedtls_platform_zeroize(b.data(),b.size())
 template<size_t N> void cleanse(std::array<unsigned char,N>& b){
     mbedtls_platform_zeroize(b.data(),b.size());
 }
+struct WipeOnExit {
+    Bytes& bytes;
+    ~WipeOnExit(){cleanse(bytes);}
+};
 bool equal(const unsigned char* a,const unsigned char* b,size_t size){
     unsigned diff=0;
     for(size_t i=0;i<size;++i)diff|=static_cast<unsigned>(a[i]^b[i]);
@@ -218,7 +226,9 @@ PreparedEnvelope hpkePrepare(int operation,const Bytes& metadata,
     Hash secret=labeledExtract(sharedSecret,kHpkeSuite,sizeof(kHpkeSuite),"secret",{});
     cleanse(sharedSecret);
     Bytes key=labeledExpand(secret,kHpkeSuite,sizeof(kHpkeSuite),"key",scheduleContext,32);
+    WipeOnExit wipeKey{key};
     Bytes nonce=labeledExpand(secret,kHpkeSuite,sizeof(kHpkeSuite),"base_nonce",scheduleContext,12);
+    WipeOnExit wipeNonce{nonce};
     Bytes exporterSecret=labeledExpand(secret,kHpkeSuite,sizeof(kHpkeSuite),
                                               "exp",scheduleContext,32);
     Hash exporterKey{};std::copy(exporterSecret.begin(),exporterSecret.end(),exporterKey.begin());
@@ -234,7 +244,9 @@ PreparedEnvelope hpkePrepare(int operation,const Bytes& metadata,
     std::copy(responseMaterial.begin(),responseMaterial.end(),state.material.begin());
     cleanse(responseMaterial);
 
-    Bytes payload;payload.reserve(4+metadata.size()+attachment.size());
+    Bytes payload;
+    WipeOnExit wipePayload{payload};
+    payload.reserve(4+metadata.size()+attachment.size());
     put32(payload,metadata.size());append(payload,metadata);append(payload,attachment);
     Bytes header;header.reserve(kHeader);
     appendAscii(header,"SPH2");header.push_back(1);
