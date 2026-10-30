@@ -120,7 +120,7 @@ internal class CloudDecodeClient(context: Context) {
             !challengeId.matches(Regex("[0-9a-f-]{36}")) ||
             challenge.optString("apiVersion") != "v2")
             throw IOException("CLOUD_INVALID_NONCE")
-        // A Telegram beta may omit Play tokens ONLY when server policy explicitly allows it.
+        // An external beta may omit Play tokens ONLY when server policy explicitly allows it.
         // Hardware attestation remains mandatory for all beta sessions.
         if (playRequired && BuildConfig.SPDECODE_QA_BUILD)
             throw IOException("CLOUD_INTEGRITY_UNAVAILABLE")

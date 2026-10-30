@@ -117,7 +117,7 @@ test("private signed artifacts cannot run in public repositories or wait for vis
  assert.match(signedJob, /github\.event\.repository\.private == true/);
  const publicValidation=read(".github/workflows/cloud-c6.yml");
  assert.match(publicValidation, /workflow_dispatch:/);
- assert.doesNotMatch(publicValidation, /github\\.event\\.repository\\.private == true/);
+ assert.doesNotMatch(publicValidation, /github\.event\.repository\.private == true/);
  assert.match(caller,/github\.event\.repository\.private == true/);
  assert.equal(workflow.match(/github\.event\.repository\.private == true/g)?.length,2);
  assert.match(workflow,/if not api\(''\)\['private'\]/);
