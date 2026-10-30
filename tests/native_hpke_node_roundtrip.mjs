@@ -3,7 +3,7 @@
 import assert from "node:assert/strict";
 import {spawn} from "node:child_process";
 import {generateKeyPairSync,createHash} from "node:crypto";
-import {openHpkeRequest,sealHpkeReply} from "../../cloud/web/lib/v2-hpke.mjs";
+import {openHpkeRequest,sealHpkeReply} from "../cloud/web/lib/v2-hpke.mjs";
 
 const cli=process.argv[2];
 assert.ok(cli,"Native CLI path missing");
