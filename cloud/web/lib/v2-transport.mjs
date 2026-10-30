@@ -88,6 +88,8 @@ async function jsonTransportRequest(request,options={}) {
       if(!authorization.startsWith("Bearer "))return fail("UNAUTHORIZED",401);
       bearer=authorization.slice(7);claims=verifySignature(bearer,cfg.signingKey,undefined,audience);
       if(!await validBoundClaims(redis,claims,cfg))return fail("UNAUTHORIZED",401);
+      if(claims.hpke===true && !options.hpkeWireBytes)
+        return fail("ENCRYPTED_TRANSPORT_REQUIRED",426);
     }
     const bytes=await readBytes(request,bodyLimit(op));
     if(op===1) {
@@ -107,7 +109,8 @@ async function jsonTransportRequest(request,options={}) {
       // A beta session must have a hardware-verified app version and signing identity.
       // Previously registered strict-mode keys without version evidence re-enroll.
       const hardwareNeeded=cfg.requireHardware&&!registered;
-      const value={nonce,publicKey:body.publicKey,ip,created:Date.now(),hardwareNeeded};
+      const value={nonce,publicKey:body.publicKey,ip,created:Date.now(),hardwareNeeded,
+        hpke:Boolean(options.hpkeWireBytes)};
       if(await redis.set("spc2:challenge:"+challengeId,JSON.stringify(value),{EX:120,NX:true})!=="OK")
         return fail("SERVICE_UNAVAILABLE",503);
       return jsonReply({apiVersion:"v2",challengeId,nonce,expiresIn:120,integrityRequired:cfg.playIntegrityRequired,
@@ -126,7 +129,8 @@ async function jsonTransportRequest(request,options={}) {
       if(!raw)return fail("EXPIRED_CHALLENGE",401);
       const challenge=JSON.parse(raw);
       const sessionKey=challenge.hardwareNeeded?body.publicKey:challenge.publicKey;
-      if(challenge.ip!==ip || Date.now()-challenge.created>120000 || challenge.created>Date.now()+5000 ||
+      if(challenge.ip!==ip || Boolean(challenge.hpke)!==Boolean(options.hpkeWireBytes) ||
+         Date.now()-challenge.created>120000 || challenge.created>Date.now()+5000 ||
          !verifyProof(request,op,options.hpkeWireBytes||bytes,"",sessionKey))return fail("INTEGRITY_REJECTED",403);
       if(!challenge.hardwareNeeded&&(body.publicKey!==undefined||body.certificateChain!==undefined))return fail("INVALID_REQUEST",400);
       const nonce=integrityNonce(challenge.nonce,body.challengeId,sessionKey);
@@ -158,7 +162,7 @@ async function jsonTransportRequest(request,options={}) {
       const app=verdict?.tokenPayloadExternal?.appIntegrity;
       const now=Math.floor(Date.now()/1000),jti=randomUUID();
       const claims={iss:"spdecode-cloud",aud:audience,scope:"decode",iat:now,exp:now+300,jti,
-        key:sessionKey,hardware:!!hardware,
+        key:sessionKey,hardware:!!hardware,hpke:Boolean(options.hpkeWireBytes),
         playIntegrityVerified:cfg.playIntegrityRequired,
         versionCode:cfg.playIntegrityRequired?Number(app.versionCode):hardware.versionCode,
         certificates:cfg.playIntegrityRequired?
@@ -239,6 +243,8 @@ export async function transportRequest(request,options={}) {
   if(request.method!=="POST"||url.search||!/^(1|2|[4-9]|1[0-7])$/.test(name))
     return fail("INVALID_REQUEST",400);
   const op=Number(name);
+  if(op>=4 && !(request.headers.get("authorization")||"").startsWith("Bearer "))
+    return fail("UNAUTHORIZED",401);
   let opened;
   try {
     // Apply independent edge throttling before accepting large crypto payloads.
