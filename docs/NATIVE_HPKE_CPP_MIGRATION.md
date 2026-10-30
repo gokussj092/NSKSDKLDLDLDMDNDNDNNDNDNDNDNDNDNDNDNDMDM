@@ -40,8 +40,16 @@ ECDSA proofs, without exporting the non-exportable P-256 private key.
 
 `CloudRequestProof.kt` still uses **Android Keystore** to create and rotate
 protected signing keys and retrieve hardware attestation certificates;
-`CloudDecodeClient.kt` still invokes the official Play Integrity SDK,
-manages short-lived sessions and handles Android coroutines.
+`CloudDecodeClient.kt` still invokes the official Play Integrity SDK and
+handles Android coroutines. The short-lived process-only bearer cache,
+30-second renewal margin, action-integrity flag, token format/TTL checks and
+expiry now live in thread-safe `spdecode_session.cpp`. The transport exposes
+five registered JNI methods: `nativeCacheSession`, `nativeGetSession`,
+`nativeRequiresActionIntegrity`, `nativeClearSession`, and
+`nativeInvalidateSession`. HTTP 401 evicts only the matching bearer so a late
+401 from an old request cannot clear a newer cached session. A temporary
+Kotlin String is still needed to deliver bearer authorization and PoP; this
+migration does not make tokens invisible to an attacker controlling the process.
 These platform services and lifecycle contracts are **not** fully moved to
 C++, and the app still has inspectable DEX code. Server-side Play Integrity
 and hardware-attestation verification remain authoritative; native-only
@@ -50,6 +58,20 @@ checks are defense in depth.
 Native code does not turn the public recipient key into a secret. A determined
 analyst with full process access may inspect calls, memory and ciphertext
 after decryption; backend access controls and Play attestation remain essential.
+
+## Session migration (new, requires verification)
+
+- C++ session state is process-local only; no tokens are persisted.
+- Native cache uses a monotonic clock, synchronized access, 30-second renewal
+  margin, bounded TTL and string format, and Mbed TLS zeroization on eviction.
+- Added a host regression suite at `tests/native_session_contract.cpp` for
+  expiry, input rejection, stale-401 safety and concurrency. It runs within
+  the pre-existing native interop workflow on this isolated branch.
+- Release R8, ABI, HPKE regression and real-device Keystore/Play session
+  results are **pending** until the workflows/device checks have completed.
+- No backend routes, HPKE keys or VPS configurations have changed.
+- Recovery: revert the native session commit on this branch and rebuild;
+  preserve the original preproduction APK and server in place.
 
 ## Validation gates
 

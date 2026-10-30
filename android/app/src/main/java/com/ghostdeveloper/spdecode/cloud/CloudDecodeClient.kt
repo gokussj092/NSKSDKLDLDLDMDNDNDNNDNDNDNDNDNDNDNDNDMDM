@@ -56,26 +56,14 @@ internal class CloudDecodeClient(context: Context) {
         val passwordSubmitted:Boolean=false,val hwidSubmitted:Boolean=false) :
         IOException("SP-DECODE CLOUD: $code")
 
-    fun clearSession() {
-        synchronized(lock) {
-            token=""
-            expiresAtMs=0L
-        }
-    }
+    fun clearSession() = CloudNativeTransport.clearCachedSession()
 
     companion object {
-        // All foreground/background clients use the same device key and short-lived session.
-        // Sharing avoids repeated Classic Integrity admissions for concurrent workers.
-        private var token = ""
-        private var expiresAtMs = 0L
-        private val lock = Any()
-        @Volatile private var actionIntegrityRequired = true
         const val MAX_INPUT = 8 * 1024 * 1024
-        private const val SAFE_TOKEN_MARGIN_MS = 30_000L
     }
 
     private fun extract(reply: CloudNativeTransport.Reply): JSONObject {
-        if (reply.status == 401) clearSession()
+        // Native transport clears only the bearer that actually received HTTP 401.
         if (reply.status !in 200..299) {
             val code = reply.body.optJSONObject("error")?.optString("code")
                 ?.takeIf { it.matches(Regex("[A-Z_]{3,50}")) } ?: "SERVICE_UNAVAILABLE"
@@ -104,10 +92,8 @@ internal class CloudDecodeClient(context: Context) {
         }
 
     private suspend fun session(): String = sessionMutex.withLock {
-        synchronized(lock) {
-            if (token.isNotBlank() && System.currentTimeMillis() + SAFE_TOKEN_MARGIN_MS < expiresAtMs)
-                return@withLock token
-        }
+        CloudNativeTransport.cachedSession().takeIf { it.isNotBlank() }
+            ?.let { return@withLock it }
         // No fallback to local decryptors when attestation or networking fails.
         val challenge = withContext(Dispatchers.IO) {
             extract(CloudNativeTransport.post(CloudOperation.CHALLENGE,
@@ -138,15 +124,10 @@ internal class CloudDecodeClient(context: Context) {
         val reply=withContext(Dispatchers.IO) {
             extract(CloudNativeTransport.post(operation,body))
         }
-        actionIntegrityRequired = reply.optBoolean("actionIntegrityRequired", false)
         val access = reply.getString("accessToken")
         val seconds = reply.getLong("expiresIn")
-        if (!access.matches(Regex("[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+")) ||
-            seconds !in 1L..300L) throw IOException("CLOUD_INVALID_SESSION")
-        synchronized(lock) {
-            token = access
-            expiresAtMs = System.currentTimeMillis() + seconds * 1000
-        }
+        CloudNativeTransport.cacheSession(access,seconds,
+            reply.optBoolean("actionIntegrityRequired",false))
         access
     }
 
@@ -160,7 +141,7 @@ internal class CloudDecodeClient(context: Context) {
         val exact = JSONObject(payload.toString())
         val prepared=CloudNativeTransport.prepare(operation,exact,attachment)
         try {
-        if (!actionIntegrityRequired) return CloudNativeTransport.post(operation,exact,bearer,prepared=prepared)
+        if (!CloudNativeTransport.actionIntegrityRequired()) return CloudNativeTransport.post(operation,exact,bearer,prepared=prepared)
         // Standard Integrity is bound to the final encrypted bytes, NOT to a
         // separately serialized plaintext JSON document. The same prepared
         // ciphertext is reused after the challenge; never seal it twice.

@@ -29,6 +29,19 @@ internal object CloudNativeTransport {
         nativeOpenHpke(handle, status, wire, response)
     fun discardHpke(handle: Long) = nativeDiscardHpke(handle)
 
+    // Native RAM-only session cache; temporary bearer copies still cross JNI.
+    @JvmStatic private external fun nativeCacheSession(token: String, seconds: Long, actionRequired: Boolean)
+    @JvmStatic private external fun nativeGetSession(): String
+    @JvmStatic private external fun nativeRequiresActionIntegrity(): Boolean
+    @JvmStatic private external fun nativeClearSession()
+    @JvmStatic private external fun nativeInvalidateSession(token: String)
+    fun cacheSession(token: String, seconds: Long, actionRequired: Boolean) =
+        nativeCacheSession(token, seconds, actionRequired)
+    fun cachedSession(): String = nativeGetSession()
+    fun actionIntegrityRequired(): Boolean = nativeRequiresActionIntegrity()
+    fun clearCachedSession() = nativeClearSession()
+    private fun invalidateCachedSession(token: String) = nativeInvalidateSession(token)
+
     @JvmStatic private external fun nativeSignHardware(key: PrivateKey, message: ByteArray): ByteArray
     @JvmStatic private external fun nativeAliasSuffix(): String
     fun signWithKeystore(key: PrivateKey, message: ByteArray): ByteArray =
@@ -98,8 +111,11 @@ internal object CloudNativeTransport {
                 ?:throw IOException("CLOUD_INVALID_HTTP_STATUS")
             if(status !in 100..599)throw IOException("CLOUD_INVALID_HTTP_STATUS")
             val body=returned.copyOfRange(newline+1,returned.size)
-            if(body.size>=4 && body.copyOfRange(0,4).contentEquals("SPR2".toByteArray(Charsets.US_ASCII)))
-                return Reply(status,encrypted.open(status,body))
+            if(body.size>=4 && body.copyOfRange(0,4).contentEquals("SPR2".toByteArray(Charsets.US_ASCII))) {
+                val opened=encrypted.open(status,body)
+                if(status==401) invalidateCachedSession(bearer)
+                return Reply(status,opened)
+            }
             // The edge can reject a request before HPKE authentication. No plaintext
             // SUCCESS, tokens, decoded results, or application data are accepted.
             if(status in 200..299)throw IOException("CLOUD_HPKE_REPLY_REQUIRED")
@@ -107,6 +123,7 @@ internal object CloudNativeTransport {
                 JSONObject(String(body,Charsets.UTF_8)).optJSONObject("error")
                     ?.optString("code").orEmpty().takeIf {it.matches(Regex("[A-Z_]{3,50}"))}
             }catch(_:Exception){null}
+            if(status==401) invalidateCachedSession(bearer)
             return Reply(status,JSONObject().put("error",JSONObject()
                 .put("code",code?:"SERVICE_UNAVAILABLE")))
         }finally {encrypted.discard()}
