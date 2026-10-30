@@ -103,6 +103,10 @@ RequestProof prepareProof(int operation,const std::string& version,
                               proof.timestamp,proof.nonce);
     return proof;
 }
+std::string makeAliasSuffix(){
+    // Eight URL-safe Base64 characters encode the first six random bytes.
+    return randomNonce().substr(0,8);
+}
 std::string playNonce(const std::string& nonce,const std::string& id,
                       const std::string& publicKey) {
     if(nonce.size()!=43||id.size()!=36||publicKey.size()<120||publicKey.size()>128)

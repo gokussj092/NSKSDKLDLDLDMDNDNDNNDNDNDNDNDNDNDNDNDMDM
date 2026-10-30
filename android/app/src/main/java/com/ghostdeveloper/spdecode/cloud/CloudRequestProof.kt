@@ -10,14 +10,11 @@ import kotlinx.coroutines.sync.Mutex
 import android.util.Base64
 import java.security.KeyPairGenerator
 import java.security.KeyStore
-import java.security.SecureRandom
-import java.security.Signature
 import java.security.spec.ECGenParameterSpec
 
 /** Hardware-attested installation keys and signed requests. Trust is decided by the backend. */
 internal object CloudRequestProof {
     private const val ALIAS = "spdecode.transport.v2"
-    private val random = SecureRandom()
     val enrollmentMutex = Mutex()
     private const val HARDWARE_PREFIX = "spdecode.transport.v3."
     private val store: KeyStore by lazy { KeyStore.getInstance("AndroidKeyStore").apply { load(null) } }
@@ -61,7 +58,7 @@ internal object CloudRequestProof {
             if (now - created > 600_000L && alias != activeAlias) store.deleteEntry(alias)
         }
         if (aliases().size >= 8) throw java.io.IOException("CLOUD_KEY_ENROLLMENT_LIMIT")
-        val alias = HARDWARE_PREFIX + now + "." + encode(ByteArray(6).also(random::nextBytes))
+        val alias = HARDWARE_PREFIX + now + "." + CloudNativeTransport.hardwareAliasSuffix()
         fun generate(strong: Boolean) {
             val spec = KeyGenParameterSpec.Builder(alias, KeyProperties.PURPOSE_SIGN)
                 .setAlgorithmParameterSpec(ECGenParameterSpec("secp256r1"))
@@ -108,10 +105,11 @@ internal object CloudRequestProof {
     fun signBytes(operation: Int, version: String, bytes: ByteArray, bearer: String): Proof {
         val parts = CloudNativeTransport.prepareRequestProof(operation, version, bytes, bearer)
         if(parts.size != 3)throw java.io.IOException("CLOUD_NATIVE_PROOF_INVALID")
-        val signature = Signature.getInstance("SHA256withECDSA").run {
-            initSign(entry(bearer).privateKey)
-            update(parts[2].toByteArray(Charsets.UTF_8))
-            sign()
+        val input = parts[2].toByteArray(Charsets.UTF_8)
+        val signature = try {
+            CloudNativeTransport.signWithKeystore(entry(bearer).privateKey, input)
+        } finally {
+            input.fill(0)
         }
         return Proof(parts[0], parts[1], encode(signature))
     }

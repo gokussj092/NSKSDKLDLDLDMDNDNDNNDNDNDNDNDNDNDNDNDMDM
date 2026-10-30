@@ -413,6 +413,60 @@ jobjectArray nativePrepareProof(JNIEnv* env,jclass,jint op,jstring ver,jbyteArra
 }
 }
 
+// Operate Android's non-exportable P-256 signing key via official JCA,
+// but keep app-specific algorithm selection and call graph inside JNI.
+namespace {
+jbyteArray signHardwareProof(JNIEnv* env,jclass,jobject privateKey,jbyteArray message){
+    if(privateKey==nullptr||message==nullptr){fail(env,"CLOUD_NATIVE_SIGN_FAILED");return nullptr;}
+    const jsize length=env->GetArrayLength(message);
+    if(length<80||length>4096){fail(env,"CLOUD_NATIVE_SIGN_FAILED");return nullptr;}
+    jclass signatureClass=env->FindClass("java/security/Signature");
+    if(signatureClass==nullptr||env->ExceptionCheck()){
+        fail(env,"CLOUD_NATIVE_SIGN_FAILED");return nullptr;
+    }
+    const jmethodID factory=env->GetStaticMethodID(signatureClass,"getInstance",
+        "(Ljava/lang/String;)Ljava/security/Signature;");
+    const jmethodID init=env->GetMethodID(signatureClass,"initSign",
+        "(Ljava/security/PrivateKey;)V");
+    const jmethodID update=env->GetMethodID(signatureClass,"update","([B)V");
+    const jmethodID sign=env->GetMethodID(signatureClass,"sign","()[B");
+    if(!factory||!init||!update||!sign||env->ExceptionCheck()){
+        fail(env,"CLOUD_NATIVE_SIGN_FAILED");return nullptr;
+    }
+    jstring algorithm=env->NewStringUTF("SHA256withECDSA");
+    if(algorithm==nullptr||env->ExceptionCheck()){
+        fail(env,"CLOUD_NATIVE_SIGN_FAILED");return nullptr;
+    }
+    jobject provider=env->CallStaticObjectMethod(signatureClass,factory,algorithm);
+    env->DeleteLocalRef(algorithm);
+    if(provider==nullptr||env->ExceptionCheck()){
+        fail(env,"CLOUD_NATIVE_SIGN_FAILED");return nullptr;
+    }
+    env->CallVoidMethod(provider,init,privateKey);
+    if(!env->ExceptionCheck())env->CallVoidMethod(provider,update,message);
+    auto signature=env->ExceptionCheck()?nullptr:
+        static_cast<jbyteArray>(env->CallObjectMethod(provider,sign));
+    env->DeleteLocalRef(provider);
+    if(!signature||env->ExceptionCheck()){
+        fail(env,"CLOUD_NATIVE_SIGN_FAILED");return nullptr;
+    }
+    const jsize size=env->GetArrayLength(signature);
+    if(size<64||size>80){
+        env->DeleteLocalRef(signature);
+        fail(env,"CLOUD_NATIVE_SIGN_FAILED");return nullptr;
+    }
+    return signature;
+}
+jstring nativeAliasSuffix(JNIEnv* env,jclass){
+    try{
+        const auto suffix=spdecode::makeAliasSuffix();
+        return env->NewStringUTF(suffix.c_str());
+    }catch(const std::exception&){
+        fail(env,"CLOUD_NATIVE_RANDOM_FAILED");return nullptr;
+    }
+}
+}
+
 // Verify release signer with Android's PackageManager, without Java/Kotlin
 // policy branches. This is defense in depth, not the admission authority.
 namespace {
@@ -558,8 +612,13 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm,void*) {
         reinterpret_cast<void*>(nativePrepareProof)},
         {const_cast<char*>("nativeVerifyReleaseSigner"),
         const_cast<char*>("(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)Z"),
-        reinterpret_cast<void*>(verifyReleaseSigner)}};
-    const jint registered=env->RegisterNatives(bridge,methods,9);
+        reinterpret_cast<void*>(verifyReleaseSigner)},
+        {const_cast<char*>("nativeSignHardware"),
+        const_cast<char*>("(Ljava/security/PrivateKey;[B)[B"),
+        reinterpret_cast<void*>(signHardwareProof)},
+        {const_cast<char*>("nativeAliasSuffix"),const_cast<char*>("()Ljava/lang/String;"),
+        reinterpret_cast<void*>(nativeAliasSuffix)}};
+    const jint registered=env->RegisterNatives(bridge,methods,11);
     env->DeleteLocalRef(bridge);
     return registered==JNI_OK?JNI_VERSION_1_6:JNI_ERR;
 }

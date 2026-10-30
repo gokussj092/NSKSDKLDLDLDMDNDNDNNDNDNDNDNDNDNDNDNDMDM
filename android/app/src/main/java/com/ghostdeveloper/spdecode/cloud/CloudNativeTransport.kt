@@ -2,6 +2,7 @@ package com.ghostdeveloper.spdecode.cloud
 
 import com.ghostdeveloper.spdecode.BuildConfig
 import android.content.Context
+import java.security.PrivateKey
 import org.json.JSONObject
 import java.io.IOException
 
@@ -27,6 +28,12 @@ internal object CloudNativeTransport {
     fun openHpke(handle: Long, status: Int, wire: ByteArray, response: ByteArray): ByteArray =
         nativeOpenHpke(handle, status, wire, response)
     fun discardHpke(handle: Long) = nativeDiscardHpke(handle)
+
+    @JvmStatic private external fun nativeSignHardware(key: PrivateKey, message: ByteArray): ByteArray
+    @JvmStatic private external fun nativeAliasSuffix(): String
+    fun signWithKeystore(key: PrivateKey, message: ByteArray): ByteArray =
+        nativeSignHardware(key, message)
+    fun hardwareAliasSuffix(): String = nativeAliasSuffix()
 
     @JvmStatic private external fun nativeVerifyReleaseSigner(
         context: Context, expectedPackage: String, uploadCert: String, playCert: String, debugBuild: Boolean

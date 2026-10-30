@@ -24,6 +24,8 @@ int main(){
         reinterpret_cast<const unsigned char*>(data.data()),data.size(),bearer);
     assert(generated.nonce.size()==32);
     assert(generated.message.find("SPDECODE-POP-V2\nPOST\n5\n")==0);
+    const auto suffix=spdecode::makeAliasSuffix();
+    assert(suffix.size()==8);
     const auto play=spdecode::playNonce(std::string(43,'A'),
         "11111111-1111-1111-1111-111111111111",std::string(120,'B'));
     assert(play.size()==43);
