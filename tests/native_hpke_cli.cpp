@@ -36,11 +36,25 @@ int main(int argc,char** argv) {
         std::array<unsigned char,40> pin{};
         std::copy(pinBytes.begin(),pinBytes.end(),pin.begin());
         std::string json=argv[2];
+        const std::vector<unsigned char> metadata(json.begin(),json.end());
+        // Reject a public key whose key ID does not match its SHA-256 digest.
+        auto invalidPin=pin;
+        invalidPin[0]^=1;
+        bool invalidPinRejected=false;
+        try { (void)spdecode::hpkePrepare(6,metadata,{},invalidPin); }
+        catch(const std::exception&){invalidPinRejected=true;}
+        if(!invalidPinRejected)throw std::runtime_error("mismatched pin accepted");
         auto prepared=spdecode::hpkePrepare(
             6,std::vector<unsigned char>(json.begin(),json.end()),{},pin);
         std::cout<<hex(prepared.wire)<<std::endl;
         std::string reply;std::getline(std::cin,reply);
-        const auto plaintext=spdecode::hpkeOpen(prepared.handle,200,prepared.wire,parse(reply));
+        const auto ciphertext=parse(reply);
+        const auto plaintext=spdecode::hpkeOpen(prepared.handle,200,prepared.wire,ciphertext);
+        // The reply context is single-use: reject a second open of the same handle.
+        bool replayRejected=false;
+        try { (void)spdecode::hpkeOpen(prepared.handle,200,prepared.wire,ciphertext); }
+        catch(const std::exception&){replayRejected=true;}
+        if(!replayRejected)throw std::runtime_error("replayed response accepted");
         std::cout<<std::string(plaintext.begin(),plaintext.end())<<std::endl;
         return 0;
     }catch(const std::exception& e){
