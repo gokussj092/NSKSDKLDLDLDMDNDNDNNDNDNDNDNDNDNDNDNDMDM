@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "spdecode_hpke.h"
+#include "spdecode_security.h"
 #include <mbedtls/platform_util.h>
 #include <cctype>
 #include <string>
@@ -358,6 +359,59 @@ void discardHpke(JNIEnv*,jclass,jlong stateHandle){
 }
 }
 
+// Native proof serialization. Actual P-256 private-key signing remains in
+// Android Keystore; its key material never leaves the platform.
+namespace {
+jstring nativePlayNonce(JNIEnv* env,jclass,jstring nonce,jstring id,jstring publicKey) {
+    try {
+        const auto value=spdecode::playNonce(utf(env,nonce),utf(env,id),utf(env,publicKey));
+        return env->NewStringUTF(value.c_str());
+    }catch(const std::exception&){fail(env,"CLOUD_NATIVE_NONCE_INVALID");return nullptr;}
+}
+jstring nativeHashWire(JNIEnv* env,jclass,jbyteArray body){
+    try {
+        if(body==nullptr)throw std::runtime_error("missing");
+        const auto data=nativeRead(env,body,kMaxRequestBytes);
+        const auto text=spdecode::sha256Hex(data.data(),data.size());
+        return env->NewStringUTF(text.c_str());
+    }catch(const std::exception&){fail(env,"CLOUD_NATIVE_HASH_FAILED");return nullptr;}
+}
+jstring nativeFormatProof(JNIEnv* env,jclass,jint op,jstring ver,jbyteArray body,
+                         jstring bearer,jstring stamp,jstring nonce){
+    try {
+        if(body==nullptr)throw std::runtime_error("missing");
+        auto bytes=nativeRead(env,body,kMaxRequestBytes);
+        ScrubOnExit scrub{bytes};
+        const auto output=spdecode::formatProof(op,utf(env,ver),bytes.data(),
+                          bytes.size(),utf(env,bearer),utf(env,stamp),utf(env,nonce));
+        return env->NewStringUTF(output.c_str());
+    }catch(const std::exception&){fail(env,"CLOUD_NATIVE_PROOF_INVALID");return nullptr;}
+}
+jobjectArray nativePrepareProof(JNIEnv* env,jclass,jint op,jstring ver,jbyteArray body,
+                                jstring bearer) {
+    try {
+        if(body==nullptr)throw std::runtime_error("missing");
+        auto bytes=nativeRead(env,body,kMaxRequestBytes);
+        ScrubOnExit scrub{bytes};
+        const auto proof=spdecode::prepareProof(op,utf(env,ver),bytes.data(),
+                                               bytes.size(),utf(env,bearer));
+        const jclass stringClass=env->FindClass("java/lang/String");
+        if(!stringClass||env->ExceptionCheck())throw std::runtime_error("String");
+        jobjectArray array=env->NewObjectArray(3,stringClass,nullptr);
+        if(!array||env->ExceptionCheck())throw std::runtime_error("array");
+        const std::array<std::string,3> parts={proof.timestamp,proof.nonce,proof.message};
+        for(int i=0;i<3;++i) {
+            jstring element=env->NewStringUTF(parts[i].c_str());
+            if(!element||env->ExceptionCheck())throw std::runtime_error("element");
+            env->SetObjectArrayElement(array,i,element);
+            env->DeleteLocalRef(element);
+            if(env->ExceptionCheck())throw std::runtime_error("set");
+        }
+        return array;
+    }catch(const std::exception&){fail(env,"CLOUD_NATIVE_PROOF_INVALID");return nullptr;}
+}
+}
+
 // Register the private bridge; export only JNI_OnLoad.
 extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm,void*) {
     JNIEnv* env=nullptr;
@@ -372,8 +426,20 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm,void*) {
         {const_cast<char*>("nativeOpenHpke"),const_cast<char*>("(JI[B[B)[B"),
         reinterpret_cast<void*>(openHpke)},
         {const_cast<char*>("nativeDiscardHpke"),const_cast<char*>("(J)V"),
-        reinterpret_cast<void*>(discardHpke)}};
-    const jint registered=env->RegisterNatives(bridge,methods,4);
+        reinterpret_cast<void*>(discardHpke)},
+        {const_cast<char*>("nativePlayNonce"),
+        const_cast<char*>("(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"),
+        reinterpret_cast<void*>(nativePlayNonce)},
+        {const_cast<char*>("nativeHashWire"),
+        const_cast<char*>("([B)Ljava/lang/String;"),
+        reinterpret_cast<void*>(nativeHashWire)},
+        {const_cast<char*>("nativeFormatProof"),
+        const_cast<char*>("(ILjava/lang/String;[BLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"),
+        reinterpret_cast<void*>(nativeFormatProof)},
+        {const_cast<char*>("nativePrepareProof"),
+        const_cast<char*>("(ILjava/lang/String;[BLjava/lang/String;)[Ljava/lang/String;"),
+        reinterpret_cast<void*>(nativePrepareProof)}};
+    const jint registered=env->RegisterNatives(bridge,methods,8);
     env->DeleteLocalRef(bridge);
     return registered==JNI_OK?JNI_VERSION_1_6:JNI_ERR;
 }

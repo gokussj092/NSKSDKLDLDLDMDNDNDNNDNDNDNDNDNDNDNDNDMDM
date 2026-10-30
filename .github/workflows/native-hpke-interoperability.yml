@@ -8,6 +8,9 @@ on:
       - android/app/src/main/cpp/spdecode_hpke.h
       - tests/native_hpke_cli.cpp
       - tests/native_hpke_node_roundtrip.mjs
+      - android/app/src/main/cpp/spdecode_security.cpp
+      - android/app/src/main/cpp/spdecode_security.h
+      - tests/native_security_contract.cpp
   workflow_dispatch:
 
 permissions:
@@ -53,5 +56,11 @@ jobs:
             tests/native_hpke_cli.cpp android/app/src/main/cpp/spdecode_hpke.cpp \
             "$RUNNER_TEMP/mbedtls-build/library/libmbedcrypto.a" -lpthread \
             -o "$RUNNER_TEMP/native_hpke_cli"
+          g++ -std=c++17 -O2 -Wall -Wextra -Werror \
+            -I "$RUNNER_TEMP/mbedtls/include" \
+            tests/native_security_contract.cpp android/app/src/main/cpp/spdecode_security.cpp \
+            "$RUNNER_TEMP/mbedtls-build/library/libmbedcrypto.a" -lpthread \
+            -o "$RUNNER_TEMP/native_security_contract"
+          "$RUNNER_TEMP/native_security_contract"
           (cd cloud/web && npm install --no-audit --no-fund)
           node tests/native_hpke_node_roundtrip.mjs "$RUNNER_TEMP/native_hpke_cli"

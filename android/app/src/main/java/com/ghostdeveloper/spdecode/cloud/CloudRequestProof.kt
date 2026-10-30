@@ -10,7 +10,6 @@ import kotlinx.coroutines.sync.Mutex
 import android.util.Base64
 import java.security.KeyPairGenerator
 import java.security.KeyStore
-import java.security.MessageDigest
 import java.security.SecureRandom
 import java.security.Signature
 import java.security.spec.ECGenParameterSpec
@@ -95,45 +94,28 @@ internal object CloudRequestProof {
     }
     private fun encode(bytes: ByteArray): String = Base64.encodeToString(bytes,
         Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING)
-    private fun digest(value: String): ByteArray =
-        MessageDigest.getInstance("SHA-256").digest(value.toByteArray(Charsets.UTF_8))
-    private fun hex(value: String): String = digest(value).joinToString("") { "%02x".format(it.toInt() and 255) }
     fun publicKey(): String = encode(entry().certificate.publicKey.encoded)
     fun integrityNonce(nonce: String, challengeId: String): String =
-        encode(digest(listOf("SPDECODE-KEY-V2", nonce, challengeId, publicKey()).joinToString("\n")))
+        CloudNativeTransport.playIntegrityNonce(nonce, challengeId, publicKey())
 
     data class Proof(val timestamp: String, val nonce: String, val signature: String)
     internal fun message(operation: Int, version: String, body: String, bearer: String,
                          timestamp: String, nonce: String): String =
-        listOf("SPDECODE-POP-V2", "POST", operation.toString(), version,
-            timestamp, nonce, hex(bearer), hex(body)).joinToString("\n")
+        CloudNativeTransport.formatRequestProof(operation, version,
+            body.toByteArray(Charsets.UTF_8), bearer, timestamp, nonce)
 
-    /** Proof of possession binds the exact binary ciphertext as transmitted by JNI. */
+    /** Hardware-backed signature over exact native-formatted ciphertext proof. */
     fun signBytes(operation: Int, version: String, bytes: ByteArray, bearer: String): Proof {
-        val timestamp = (System.currentTimeMillis() / 1000).toString()
-        val nonce = encode(ByteArray(24).also(random::nextBytes))
-        val bodyDigest = MessageDigest.getInstance("SHA-256").digest(bytes)
-            .joinToString("") { "%02x".format(it.toInt() and 255) }
-        val msg = listOf("SPDECODE-POP-V2", "POST", operation.toString(),
-            version, timestamp, nonce, hex(bearer), bodyDigest).joinToString("\n")
+        val parts = CloudNativeTransport.prepareRequestProof(operation, version, bytes, bearer)
+        if(parts.size != 3)throw java.io.IOException("CLOUD_NATIVE_PROOF_INVALID")
         val signature = Signature.getInstance("SHA256withECDSA").run {
             initSign(entry(bearer).privateKey)
-            update(msg.toByteArray(Charsets.UTF_8))
+            update(parts[2].toByteArray(Charsets.UTF_8))
             sign()
         }
-        return Proof(timestamp, nonce, encode(signature))
+        return Proof(parts[0], parts[1], encode(signature))
     }
 
-    fun sign(operation: Int, version: String, body: String, bearer: String): Proof {
-        val timestamp = (System.currentTimeMillis() / 1000).toString()
-        val nonce = encode(ByteArray(24).also(random::nextBytes))
-        val message = message(operation, version, body, bearer, timestamp, nonce)
-        val signature = Signature.getInstance("SHA256withECDSA").run {
-            initSign(entry(bearer).privateKey)
-            update(message.toByteArray(Charsets.UTF_8))
-            sign()
-        }
-        return Proof(timestamp, nonce, encode(signature))
-    }
+    fun sign(operation: Int, version: String, body: String, bearer: String): Proof =
+        signBytes(operation, version, body.toByteArray(Charsets.UTF_8), bearer)
 }
-

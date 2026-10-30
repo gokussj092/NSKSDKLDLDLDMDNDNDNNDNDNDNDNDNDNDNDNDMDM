@@ -27,6 +27,27 @@ internal object CloudNativeTransport {
         nativeOpenHpke(handle, status, wire, response)
     fun discardHpke(handle: Long) = nativeDiscardHpke(handle)
 
+    @JvmStatic private external fun nativePlayNonce(
+        nonce: String, challengeId: String, publicKey: String
+    ): String
+    @JvmStatic private external fun nativePrepareProof(
+        operation: Int, version: String, wire: ByteArray, bearer: String
+    ): Array<String>
+    @JvmStatic private external fun nativeFormatProof(
+        operation: Int, version: String, wire: ByteArray, bearer: String,
+        timestamp: String, nonce: String
+    ): String
+    @JvmStatic private external fun nativeHashWire(wire: ByteArray): String
+
+    fun playIntegrityNonce(nonce: String, challengeId: String, publicKey: String): String =
+        nativePlayNonce(nonce, challengeId, publicKey)
+    fun prepareRequestProof(operation: Int, version: String, wire: ByteArray, bearer: String): Array<String> =
+        nativePrepareProof(operation, version, wire, bearer)
+    fun formatRequestProof(operation: Int, version: String, wire: ByteArray, bearer: String,
+                           timestamp: String, nonce: String): String =
+        nativeFormatProof(operation, version, wire, bearer, timestamp, nonce)
+    fun requestHashHex(wire: ByteArray): String = nativeHashWire(wire)
+
     @JvmStatic private external fun postNativeEncrypted(
         operation: Int,
         wire: ByteArray,

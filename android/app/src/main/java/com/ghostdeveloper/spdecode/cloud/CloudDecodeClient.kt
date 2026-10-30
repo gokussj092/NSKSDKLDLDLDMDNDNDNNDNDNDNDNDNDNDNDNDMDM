@@ -164,8 +164,7 @@ internal class CloudDecodeClient(context: Context) {
         // Standard Integrity is bound to the final encrypted bytes, NOT to a
         // separately serialized plaintext JSON document. The same prepared
         // ciphertext is reused after the challenge; never seal it twice.
-        val hash = java.security.MessageDigest.getInstance("SHA-256")
-            .digest(prepared.wire).joinToString("") { "%02x".format(it.toInt() and 255) }
+        val hash = CloudNativeTransport.requestHashHex(prepared.wire)
         val challenge = extract(CloudNativeTransport.post(CloudOperation.ACTION_CHALLENGE,
             JSONObject().put("operation", operation).put("bodySha256", hash), bearer))
         val project = challenge.getString("cloudProjectNumber").toLongOrNull()

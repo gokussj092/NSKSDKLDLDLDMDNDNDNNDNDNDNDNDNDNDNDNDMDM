@@ -4,6 +4,10 @@ on:
     branches: [security/hpke-native-cpp-migration]
     paths:
       - .github/workflows/native-hpke-android-compile.yml
+      - android/app/src/main/cpp/**
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudRequestProof.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudNativeTransport.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudDecodeClient.kt
   workflow_dispatch:
 
 permissions:
