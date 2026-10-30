@@ -283,6 +283,12 @@ jbyteArray post(JNIEnv* env,jclass,jint operation,jbyteArray bodyArg,jstring bea
 // decrypted response verification. No derived cryptographic key is passed
 // through Java/Kotlin. Android services (Keystore, Play, TLS) retain JNI access.
 namespace {
+struct ScrubOnExit {
+    std::vector<unsigned char>& bytes;
+    ~ScrubOnExit(){
+        if(!bytes.empty())mbedtls_platform_zeroize(bytes.data(),bytes.size());
+    }
+};
 std::vector<unsigned char> nativeRead(JNIEnv* env,jbyteArray input,size_t limit) {
     if(input==nullptr)return {};
     const jsize length=env->GetArrayLength(input);
@@ -308,7 +314,9 @@ jbyteArray prepareHpke(JNIEnv* env,jclass,jint operation,
     try{
         if(metadataArg==nullptr)throw std::runtime_error("CLOUD_HPKE_METADATA_MISSING");
         auto metadata=nativeRead(env,metadataArg,1024U*1024U);
+        ScrubOnExit scrubMetadata{metadata};
         auto attachment=nativeRead(env,attachmentArg,8U*1024U*1024U);
+        ScrubOnExit scrubAttachment{attachment};
         auto prepared=spdecode::hpkePrepare(operation,metadata,attachment,nativePublicHpkePin());
         std::vector<unsigned char> result;
         result.reserve(8+prepared.wire.size());
@@ -334,8 +342,8 @@ jbyteArray openHpke(JNIEnv* env,jclass,jlong stateHandle,jint status,
         auto wire=nativeRead(env,wireArg,11U*1024U*1024U);
         auto reply=nativeRead(env,responseArg,96U*1024U*1024U+27+16);
         auto clear=spdecode::hpkeOpen(handle,status,wire,reply);
+        ScrubOnExit scrubClear{clear};
         jbyteArray result=nativeWrite(env,clear);
-        if(!clear.empty())mbedtls_platform_zeroize(clear.data(),clear.size());
         if(result==nullptr||env->ExceptionCheck()){
             fail(env,"CLOUD_HPKE_NATIVE_MEMORY");return nullptr;
         }
