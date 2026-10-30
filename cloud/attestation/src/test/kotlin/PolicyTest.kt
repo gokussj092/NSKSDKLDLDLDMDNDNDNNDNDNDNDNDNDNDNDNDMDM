@@ -34,8 +34,8 @@ class PolicyTest {
         AuthorizationList(attestationApplicationId=app),
         AuthorizationList(origin=Origin.GENERATED,
             rootOfTrust=RootOfTrust(ByteString.copyFrom(ByteArray(32)),locked,VerifiedBootState.VERIFIED),
-            osPatchLevel=osPatch?.let(::PatchLevel),vendorPatchLevel=vendorPatch?.let(::PatchLevel),
-            bootPatchLevel=bootPatch?.let(::PatchLevel)))
+            osPatchLevel=osPatch?.let { PatchLevel(it) },vendorPatchLevel=vendorPatch?.let { PatchLevel(it) },
+            bootPatchLevel=bootPatch?.let { PatchLevel(it) }))
     private fun evidence(description:KeyDescription=description()):Evidence {
         val chain=factory.generateCertPath(description).certificatesWithAnchor
         return Evidence(chain.map { Base64.getEncoder().encodeToString(it.encoded) },
