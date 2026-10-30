@@ -108,10 +108,21 @@ internal object CloudRequestProof {
         listOf("SPDECODE-POP-V2", "POST", operation.toString(), version,
             timestamp, nonce, hex(bearer), hex(body)).joinToString("\n")
 
-    fun sign(operation: Int, version: String, body: String, bearer: String): Proof {
+    fun sign(operation: Int, version: String, body: String, bearer: String): Proof =
+        signBytes(operation, version, body.toByteArray(Charsets.UTF_8), bearer)
+
+    /** Sign exactly what crosses HTTPS: HPKE ciphertext, not sensitive JSON. */
+    fun signBytes(operation: Int, version: String, body: ByteArray, bearer: String): Proof {
         val timestamp = (System.currentTimeMillis() / 1000).toString()
         val nonce = encode(ByteArray(24).also(random::nextBytes))
-        val message = message(operation, version, body, bearer, timestamp, nonce)
+        return signBytesWithMetadata(operation,version,body,bearer,timestamp,nonce)
+    }
+
+    fun signBytesWithMetadata(operation:Int,version:String,body:ByteArray,bearer:String,
+                              timestamp:String,nonce:String):Proof {
+        val message = listOf("SPDECODE-POP-V2", "POST", operation.toString(),version,
+            timestamp,nonce,hex(bearer),MessageDigest.getInstance("SHA-256").digest(body)
+            .joinToString("") { "%02x".format(it.toInt() and 255) }).joinToString("\n")
         val signature = Signature.getInstance("SHA256withECDSA").run {
             initSign(entry(bearer).privateKey)
             update(message.toByteArray(Charsets.UTF_8))

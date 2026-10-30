@@ -60,6 +60,7 @@ internal class CloudDecodeClient(context: Context) {
         synchronized(lock) {
             token=""
             expiresAtMs=0L
+            CloudV2Hpke.clear()
         }
     }
 
@@ -120,6 +121,11 @@ internal class CloudDecodeClient(context: Context) {
             !challengeId.matches(Regex("[0-9a-f-]{36}")) ||
             challenge.optString("apiVersion") != "v2")
             throw IOException("CLOUD_INVALID_NONCE")
+        // A new V2 client never silently falls back to plaintext, even when
+        // optional Google Play verdicts are disabled by server policy.
+        if(!challenge.optBoolean("hpkeRequired",false))
+            throw IOException("CLOUD_V2_HPKE_REQUIRED")
+        CloudV2Hpke.configure(challenge.getString("hpkePublicKey"))
         // An external beta may omit Play tokens ONLY when server policy explicitly allows it.
         // Hardware attestation remains mandatory for all beta sessions.
         if (playRequired && BuildConfig.SPDECODE_QA_BUILD)
