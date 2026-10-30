@@ -52,7 +52,7 @@ setup(){
   local manager="$SDK/cmdline-tools/latest/bin/sdkmanager"
   yes | "$manager" --sdk_root="$SDK" --licenses >/dev/null || true
   "$manager" --sdk_root="$SDK" \
-    "platforms;android-35" "build-tools;35.0.0" \
+    "platforms;android-36" "build-tools;35.0.0" \
     "cmake;3.22.1" "ndk;27.2.12479018" "platform-tools"
   "$GRADLE" --version >/dev/null
   log "Android toolchain ready. No signing key was generated."
