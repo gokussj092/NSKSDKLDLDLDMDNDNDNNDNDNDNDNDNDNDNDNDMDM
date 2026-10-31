@@ -140,7 +140,7 @@ internal class CloudDecodeClient(context: Context) {
         val exact = JSONObject(payload.toString())
         val prepared=CloudNativeTransport.prepare(operation,exact,attachment)
         try {
-        if (!CloudNativeTransport.actionIntegrityRequired()) return CloudNativeTransport.post(operation,exact,bearer,prepared=prepared)
+        if (!CloudNativeTransport.actionIntegrityRequired(bearer)) return CloudNativeTransport.post(operation,exact,bearer,prepared=prepared)
         // Standard Integrity is bound to the final encrypted bytes, NOT to a
         // separately serialized plaintext JSON document. The same prepared
         // ciphertext is reused after the challenge; never seal it twice.

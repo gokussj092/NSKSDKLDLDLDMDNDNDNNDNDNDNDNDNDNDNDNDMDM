@@ -102,13 +102,27 @@ after decryption; backend access controls and Play attestation remain essential.
   `CloudKeystorePlatform.kt`; private keys are **never** copied into C++.
   All signatures still run with the platform's `SHA256withECDSA` API.
 - Native policy caps managed aliases at eight after pruning stale, inactive
-  enrollment keys older than ten minutes. It preserves the active alias and
+  enrollment keys older than ten minutes, including malformed inactive legacy
+  aliases to avoid permanent enrollment-limit exhaustion. It preserves the active alias and
   never replaces a required StrongBox attestation with a TEE fallback.
   On systems without StrongBox, a TEE fallback is allowed **only** for a
   challenge permitting TEE, as in the previous implementation.
 - Native attestation returns real certificate-chain DER encodings from
   Android's KeyStore and requires 2..8 certificates. The backend still validates
   real certificate chains and hardware security level.
+- Retired obsolete Kotlin-to-native direct-Key and alias-suffix wrappers;
+  the private key is selected by the native orchestrator from a bearer hint,
+  and the wrapper now registers exactly 19 native methods.
+- PoP proof construction and Keystore-backed ECDSA signing now execute through
+  one registered `nativeSignRequestProof` call. Canonical proof message strings
+  are not returned to Kotlin; its adapter only receives timestamp, nonce and
+  Base64URL signature. The platform JCA signer still consumes a temporary
+  Java byte array; this cannot be eliminated without replacing Keystore.
+- Session Standard Integrity policy is queried for the **exact bearer**,
+  rejecting an accidental relaxed policy from a newer concurrent session.
+  Absent server policy defaults to action-integrity required.
+- Added `tests/native_jni_contract.py` as a cheap pre-build check of all
+  Kotlin method descriptors versus `RegisterNatives`, including bridge existence.
 - New tests: host `native_keystore_policy_contract.cpp` and Android
   `CloudTransportProofInstrumentedTest.kt` updated for enrolled aliases and
   non-exportable keys. The instrumented tests **require an actual Android

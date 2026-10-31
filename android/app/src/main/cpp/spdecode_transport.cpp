@@ -9,6 +9,7 @@
 #include "spdecode_security.h"
 #include "spdecode_session.h"
 #include "spdecode_keystore.h"
+#include <mbedtls/base64.h>
 #include <mbedtls/platform_util.h>
 #include <mbedtls/sha256.h>
 #include <cctype>
@@ -401,29 +402,6 @@ jstring nativeFormatProof(JNIEnv* env,jclass,jint op,jstring ver,jbyteArray body
         return env->NewStringUTF(output.c_str());
     }catch(const std::exception&){fail(env,"CLOUD_NATIVE_PROOF_INVALID");return nullptr;}
 }
-jobjectArray nativePrepareProof(JNIEnv* env,jclass,jint op,jstring ver,jbyteArray body,
-                                jstring bearer) {
-    try {
-        if(body==nullptr)throw std::runtime_error("missing");
-        auto bytes=nativeRead(env,body,kMaxRequestBytes);
-        ScrubOnExit scrub{bytes};
-        const auto proof=spdecode::prepareProof(op,utf(env,ver),bytes.data(),
-                                               bytes.size(),utf(env,bearer));
-        const jclass stringClass=env->FindClass("java/lang/String");
-        if(!stringClass||env->ExceptionCheck())throw std::runtime_error("String");
-        jobjectArray array=env->NewObjectArray(3,stringClass,nullptr);
-        if(!array||env->ExceptionCheck())throw std::runtime_error("array");
-        const std::array<std::string,3> parts={proof.timestamp,proof.nonce,proof.message};
-        for(int i=0;i<3;++i) {
-            jstring element=env->NewStringUTF(parts[i].c_str());
-            if(!element||env->ExceptionCheck())throw std::runtime_error("element");
-            env->SetObjectArrayElement(array,i,element);
-            env->DeleteLocalRef(element);
-            if(env->ExceptionCheck())throw std::runtime_error("set");
-        }
-        return array;
-    }catch(const std::exception&){fail(env,"CLOUD_NATIVE_PROOF_INVALID");return nullptr;}
-}
 }
 
 // Operate Android's non-exportable P-256 signing key via official JCA,
@@ -476,19 +454,70 @@ jstring nativeHardwarePublicKey(JNIEnv* env,jclass) {
 jobjectArray nativeAttestHardwareKey(JNIEnv* env,jclass,jstring challenge,jstring level) {
     return spdecode::createHardwareAttestation(env,challenge,level);
 }
-jbyteArray nativeSignForBearer(JNIEnv* env,jclass,jstring bearer,jbyteArray message) {
-    jobject key=spdecode::privateSigningKeyForBearer(env,bearer);
-    if(!key||env->ExceptionCheck())return nullptr;
-    auto result=signHardwareProof(env,nullptr,key,message);
-    env->DeleteLocalRef(key);
-    return result;
-}
-jstring nativeAliasSuffix(JNIEnv* env,jclass){
+jobjectArray nativeSignRequestProof(JNIEnv* env,jclass,jint operation,jstring version,
+                                   jbyteArray wire,jstring bearer) {
     try{
-        const auto suffix=spdecode::makeAliasSuffix();
-        return env->NewStringUTF(suffix.c_str());
+        if(!wire||!version||!bearer)throw std::runtime_error("CLOUD_NATIVE_PROOF_INVALID");
+        auto bytes=nativeRead(env,wire,kMaxRequestBytes);
+        ScrubOnExit wipeWire{bytes};
+        const auto versionText=utf(env,version);
+        auto bearerText=utf(env,bearer);
+        struct WipeBearer {
+            std::string& text;
+            ~WipeBearer(){if(!text.empty())mbedtls_platform_zeroize(text.data(),text.size());}
+        } wipeBearer{bearerText};
+        auto proof=spdecode::prepareProof(operation,versionText,bytes.data(),
+                                         bytes.size(),bearerText);
+        struct WipeProof {
+            spdecode::RequestProof& value;
+            ~WipeProof(){if(!value.message.empty())
+                mbedtls_platform_zeroize(value.message.data(),value.message.size());}
+        } wipeProof{proof};
+        auto key=spdecode::privateSigningKeyForBearer(env,bearer);
+        if(!key||env->ExceptionCheck())return nullptr;
+        jbyteArray message=env->NewByteArray(static_cast<jsize>(proof.message.size()));
+        if(!message||env->ExceptionCheck()){env->DeleteLocalRef(key);return nullptr;}
+        env->SetByteArrayRegion(message,0,static_cast<jsize>(proof.message.size()),
+            reinterpret_cast<const jbyte*>(proof.message.data()));
+        auto signature=env->ExceptionCheck()?nullptr:
+            signHardwareProof(env,nullptr,key,message);
+        // JCA has already consumed the bytes. Clear the temporary Java array.
+        const std::vector<jbyte> zero(proof.message.size(),0);
+        if(!env->ExceptionCheck())env->SetByteArrayRegion(message,0,
+            static_cast<jsize>(zero.size()),zero.data());
+        env->DeleteLocalRef(message);
+        env->DeleteLocalRef(key);
+        if(!signature||env->ExceptionCheck())return nullptr;
+        const jsize size=env->GetArrayLength(signature);
+        std::vector<unsigned char> raw(static_cast<size_t>(size));
+        env->GetByteArrayRegion(signature,0,size,reinterpret_cast<jbyte*>(raw.data()));
+        env->DeleteLocalRef(signature);
+        if(env->ExceptionCheck())return nullptr;
+        std::vector<unsigned char> encoded(((raw.size()+2)/3)*4+4);
+        size_t outputSize=0;
+        const int rc=mbedtls_base64_encode(encoded.data(),encoded.size(),&outputSize,
+                                           raw.data(),raw.size());
+        mbedtls_platform_zeroize(raw.data(),raw.size());
+        if(rc!=0)throw std::runtime_error("CLOUD_NATIVE_SIGN_FAILED");
+        std::string b64(reinterpret_cast<const char*>(encoded.data()),outputSize);
+        for(char& c:b64){if(c=='+')c='-';else if(c=='/')c='_';}
+        while(!b64.empty()&&b64.back()=='=')b64.pop_back();
+        auto text=env->FindClass("java/lang/String");
+        if(!text||env->ExceptionCheck())return nullptr;
+        jobjectArray out=env->NewObjectArray(3,text,nullptr);
+        if(!out||env->ExceptionCheck())return nullptr;
+        const std::array<std::string,3> parts={proof.timestamp,proof.nonce,b64};
+        for(jsize i=0;i<3;++i){
+            jstring part=env->NewStringUTF(parts[static_cast<size_t>(i)].c_str());
+            if(!part||env->ExceptionCheck())return nullptr;
+            env->SetObjectArrayElement(out,i,part);
+            env->DeleteLocalRef(part);
+            if(env->ExceptionCheck())return nullptr;
+        }
+        return out;
     }catch(const std::exception&){
-        fail(env,"CLOUD_NATIVE_RANDOM_FAILED");return nullptr;
+        if(!env->ExceptionCheck())fail(env,"CLOUD_NATIVE_SIGN_FAILED");
+        return nullptr;
     }
 }
 }
@@ -674,25 +703,17 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm,void*) {
         {const_cast<char*>("nativeFormatProof"),
         const_cast<char*>("(ILjava/lang/String;[BLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"),
         reinterpret_cast<void*>(nativeFormatProof)},
-        {const_cast<char*>("nativePrepareProof"),
-        const_cast<char*>("(ILjava/lang/String;[BLjava/lang/String;)[Ljava/lang/String;"),
-        reinterpret_cast<void*>(nativePrepareProof)},
         {const_cast<char*>("nativeVerifyReleaseSigner"),
         const_cast<char*>("(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)Z"),
         reinterpret_cast<void*>(verifyReleaseSigner)},
-        {const_cast<char*>("nativeSignHardware"),
-        const_cast<char*>("(Ljava/security/PrivateKey;[B)[B"),
-        reinterpret_cast<void*>(signHardwareProof)},
-        {const_cast<char*>("nativeAliasSuffix"),const_cast<char*>("()Ljava/lang/String;"),
-        reinterpret_cast<void*>(nativeAliasSuffix)},
         {const_cast<char*>("nativeHardwarePublicKey"),const_cast<char*>("()Ljava/lang/String;"),
         reinterpret_cast<void*>(nativeHardwarePublicKey)},
         {const_cast<char*>("nativeAttestHardwareKey"),
         const_cast<char*>("(Ljava/lang/String;Ljava/lang/String;)[Ljava/lang/String;"),
         reinterpret_cast<void*>(nativeAttestHardwareKey)},
-        {const_cast<char*>("nativeSignForBearer"),
-        const_cast<char*>("(Ljava/lang/String;[B)[B"),
-        reinterpret_cast<void*>(nativeSignForBearer)},
+        {const_cast<char*>("nativeSignRequestProof"),
+        const_cast<char*>("(ILjava/lang/String;[BLjava/lang/String;)[Ljava/lang/String;"),
+        reinterpret_cast<void*>(nativeSignRequestProof)},
         {const_cast<char*>("nativeCacheSession"),const_cast<char*>("(Ljava/lang/String;JZ)V"),
         reinterpret_cast<void*>(nativeCacheSession)},
         {const_cast<char*>("nativeGetSession"),const_cast<char*>("()Ljava/lang/String;"),
@@ -703,7 +724,7 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm,void*) {
         reinterpret_cast<void*>(nativeClearSession)},
         {const_cast<char*>("nativeInvalidateSession"),const_cast<char*>("(Ljava/lang/String;)V"),
         reinterpret_cast<void*>(nativeInvalidateSession)}};
-    const jint registered=env->RegisterNatives(bridge,methods,22);
+    const jint registered=env->RegisterNatives(bridge,methods,19);
     env->DeleteLocalRef(bridge);
     return registered==JNI_OK?JNI_VERSION_1_6:JNI_ERR;
 }

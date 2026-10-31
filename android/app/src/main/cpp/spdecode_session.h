@@ -12,7 +12,7 @@ public:
     void store(const std::string& bearer, std::int64_t ttlSeconds,
                bool actionIntegrity, Clock::time_point now = Clock::now());
     std::string get(Clock::time_point now = Clock::now());
-    bool requiresActionIntegrity() const;
+    bool requiresActionIntegrityFor(const std::string& bearer) const;
     void clear();
     void clearIfMatches(const std::string& bearer);
     ~SessionCache();

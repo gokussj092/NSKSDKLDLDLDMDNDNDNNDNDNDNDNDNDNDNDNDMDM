@@ -21,7 +21,7 @@ int main(){
                                     1000000600000LL));
     assert(!shouldPurgeKeystoreAlias("spdecode.transport.v3.1000000000000.AAAAAAAA",
                                      "spdecode.transport.v3.1000000000000.AAAAAAAA",1000000900000LL));
-    assert(!shouldPurgeKeystoreAlias("spdecode.transport.v3.corrupt.AAAAAAAA","",1000000900000LL));
+    assert(shouldPurgeKeystoreAlias("spdecode.transport.v3.corrupt.AAAAAAAA","",1000000900000LL));
     assert(validEnrollmentChallenge(std::string(43,'A'),"tee"));
     assert(validEnrollmentChallenge(std::string(43,'A'),"strongbox"));
     assert(!validEnrollmentChallenge(std::string(42,'A'),"tee"));

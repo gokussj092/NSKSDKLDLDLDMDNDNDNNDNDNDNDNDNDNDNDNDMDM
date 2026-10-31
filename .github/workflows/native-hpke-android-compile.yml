@@ -7,6 +7,7 @@ on:
       - android/app/src/main/cpp/**
       - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudRequestProof.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudKeystorePlatform.kt
+      - tests/native_jni_contract.py
       - android/app/proguard-rules.pro
       - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudNativeTransport.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudDecodeClient.kt
@@ -43,6 +44,8 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.11.1"
+      - name: Verify all native registration signatures before building
+        run: python3 tests/native_jni_contract.py
       - name: Install SDK Android 36, NDK 27 and CMake
         shell: bash
         run: |

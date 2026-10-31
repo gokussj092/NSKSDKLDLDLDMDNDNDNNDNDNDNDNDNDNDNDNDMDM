@@ -36,12 +36,13 @@ bool shouldPurgeKeystoreAlias(const std::string& alias,const std::string& active
         return false;
     const auto start=std::char_traits<char>::length(kPrefix);
     const auto dot=alias.find('.',start);
-    if(dot==std::string::npos||dot==start)return false;
+    const auto end=dot==std::string::npos?alias.size():dot;
+    if(end==start)return now>600000;
     std::int64_t created=0;
-    for(std::size_t i=start;i<dot;++i){
+    for(std::size_t i=start;i<end;++i){
         const unsigned char c=static_cast<unsigned char>(alias[i]);
         if(c<'0'||c>'9'||created>(std::numeric_limits<std::int64_t>::max()-9)/10)
-            return false;
+            return now>600000; // historical cleanup for malformed inactive aliases
         created=created*10+(c-'0');
     }
     return created<=now && now-created>600000;

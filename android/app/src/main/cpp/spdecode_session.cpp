@@ -48,8 +48,11 @@ std::string SessionCache::get(Clock::time_point now) {
     }
     return bearer_;
 }
-bool SessionCache::requiresActionIntegrity() const {
+bool SessionCache::requiresActionIntegrityFor(const std::string& bearer) const {
     std::lock_guard<std::mutex> guard(mutex_);
+    // Never apply a newer session's relaxed policy to an old bearer token.
+    if(bearer.empty() || bearer!=bearer_ ||
+       deadline_<=Clock::now()+std::chrono::seconds(30))return true;
     return actionIntegrity_;
 }
 void SessionCache::clear() {

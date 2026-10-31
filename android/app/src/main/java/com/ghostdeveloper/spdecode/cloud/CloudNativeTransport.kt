@@ -2,7 +2,6 @@ package com.ghostdeveloper.spdecode.cloud
 
 import com.ghostdeveloper.spdecode.BuildConfig
 import android.content.Context
-import java.security.PrivateKey
 import org.json.JSONObject
 import java.io.IOException
 
@@ -44,18 +43,14 @@ internal object CloudNativeTransport {
 
     @JvmStatic private external fun nativeHardwarePublicKey(): String
     @JvmStatic private external fun nativeAttestHardwareKey(challenge: String, level: String): Array<String>
-    @JvmStatic private external fun nativeSignForBearer(bearer: String, message: ByteArray): ByteArray
+    @JvmStatic private external fun nativeSignRequestProof(
+        operation: Int, version: String, wire: ByteArray, bearer: String
+    ): Array<String>
     fun hardwarePublicKey(): String = nativeHardwarePublicKey()
     fun attestHardwareKey(challenge: String, level: String): Array<String> =
         nativeAttestHardwareKey(challenge,level)
-    fun signForBearer(bearer: String, message: ByteArray): ByteArray =
-        nativeSignForBearer(bearer,message)
-
-    @JvmStatic private external fun nativeSignHardware(key: PrivateKey, message: ByteArray): ByteArray
-    @JvmStatic private external fun nativeAliasSuffix(): String
-    fun signWithKeystore(key: PrivateKey, message: ByteArray): ByteArray =
-        nativeSignHardware(key, message)
-    fun hardwareAliasSuffix(): String = nativeAliasSuffix()
+    fun signRequestProof(operation: Int, version: String, wire: ByteArray, bearer: String): Array<String> =
+        nativeSignRequestProof(operation,version,wire,bearer)
 
     @JvmStatic private external fun nativeVerifyReleaseSigner(
         context: Context, expectedPackage: String, uploadCert: String, playCert: String, debugBuild: Boolean
@@ -79,9 +74,6 @@ internal object CloudNativeTransport {
     fun validActionChallenge(requestHash: String, challengeId: String, project: Long): Boolean =
         nativeValidActionChallenge(requestHash, challengeId, project)
     fun validPlayNonce(nonce: String): Boolean = nativeValidPlayNonce(nonce)
-    @JvmStatic private external fun nativePrepareProof(
-        operation: Int, version: String, wire: ByteArray, bearer: String
-    ): Array<String>
     @JvmStatic private external fun nativeFormatProof(
         operation: Int, version: String, wire: ByteArray, bearer: String,
         timestamp: String, nonce: String
@@ -90,8 +82,6 @@ internal object CloudNativeTransport {
 
     fun playIntegrityNonce(nonce: String, challengeId: String, publicKey: String): String =
         nativePlayNonce(nonce, challengeId, publicKey)
-    fun prepareRequestProof(operation: Int, version: String, wire: ByteArray, bearer: String): Array<String> =
-        nativePrepareProof(operation, version, wire, bearer)
     fun formatRequestProof(operation: Int, version: String, wire: ByteArray, bearer: String,
                            timestamp: String, nonce: String): String =
         nativeFormatProof(operation, version, wire, bearer, timestamp, nonce)

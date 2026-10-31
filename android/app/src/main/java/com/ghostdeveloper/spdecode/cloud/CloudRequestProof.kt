@@ -1,6 +1,5 @@
 package com.ghostdeveloper.spdecode.cloud
 
-import android.util.Base64
 import kotlinx.coroutines.sync.Mutex
 import org.json.JSONArray
 import java.io.IOException
@@ -31,14 +30,9 @@ internal object CloudRequestProof {
             body.toByteArray(Charsets.UTF_8), bearer, timestamp, nonce)
 
     fun signBytes(operation: Int, version: String, bytes: ByteArray, bearer: String): Proof {
-        val parts = CloudNativeTransport.prepareRequestProof(operation, version, bytes, bearer)
+        val parts=CloudNativeTransport.signRequestProof(operation,version,bytes,bearer)
         if(parts.size!=3) throw IOException("CLOUD_NATIVE_PROOF_INVALID")
-        val input=parts[2].toByteArray(Charsets.UTF_8)
-        val signature=try {
-            CloudNativeTransport.signForBearer(bearer,input)
-        } finally { input.fill(0) }
-        return Proof(parts[0],parts[1],
-            Base64.encodeToString(signature,Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING))
+        return Proof(parts[0],parts[1],parts[2])
     }
 
     fun sign(operation: Int, version: String, body: String, bearer: String): Proof =
