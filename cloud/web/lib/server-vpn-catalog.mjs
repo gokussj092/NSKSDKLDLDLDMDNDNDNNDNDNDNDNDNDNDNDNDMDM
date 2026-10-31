@@ -5,7 +5,7 @@ import {createHash} from "node:crypto";
 import {publicFormats,FORMAT_DETECTION} from "./file-format-catalog.mjs";
 import {publicTextFormats,publicOnlineReferenceFormats} from "./text-format-catalog.mjs";
 
-export const CATALOG_VERSION = 57; // JyFast VPN Ultra 9: verified free/premium catalogs and original icon.
+export const CATALOG_VERSION = 58; // Refresh shared V1/V2 catalog after HTTP Jireh and JyFast server rollout.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
