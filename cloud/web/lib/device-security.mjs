@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { throttle } from "./c3-store.mjs";
+import {v2DevicePolicyStatus} from "./v2-device-admission-policy.mjs";
 
 export const keyId = key => createHash("sha256").update(key).digest("hex");
 export const attestationChallenge = (nonce, id, bootstrapKey) => createHash("sha256")
@@ -23,15 +24,22 @@ export async function registeredKey(redis, key, cfg) {
 }
 
 /** Only this private service verifies certificates. No HTTP-supplied verdict is trusted. */
-export async function verifyHardware(chain, challenge, publicKey, cfg, {fetchImpl = fetch} = {}) {
+export async function verifyHardware(chain, challenge, publicKey, cfg, {fetchImpl = fetch,policyLoader = v2DevicePolicyStatus} = {}) {
   if (!Array.isArray(chain) || chain.length < 2 || chain.length > 8 ||
       chain.some(x => typeof x !== "string" || x.length > 8192 || !/^[A-Za-z0-9+/]+={0,2}$/.test(x))) return null;
   if (cfg.attestationUrl !== "http://key-attestation:8788/verify" || cfg.attestationToken.length < 32)
     throw Error("ATTESTATION_NOT_CONFIGURED");
+  // Server-to-server policy is never provided by Android and cannot weaken
+  // trust anchor, APK signer, Keystore level or challenge verification.
+  const policy=await policyLoader();
+  const devicePolicy=policy.relaxed?{
+    patchMonths:policy.patchMonths,enforcePatch:policy.enforcePatch,
+    enforceBoot:policy.enforceBoot,expiresAt:Date.parse(policy.expiresAt),
+  }:null;
   const response = await fetchImpl(cfg.attestationUrl, {
     method:"POST", redirect:"error", signal:AbortSignal.timeout(10000), cache:"no-store",
     headers:{"Content-Type":"application/json", "X-SP-Attestation-Token":cfg.attestationToken},
-    body:JSON.stringify({chain,challenge,publicKey}),
+    body:JSON.stringify({chain,challenge,publicKey,...(devicePolicy?{devicePolicy}:{})}),
   });
   if (!response.ok) return null;
   const reader = response.body.getReader(); let size = 0; const parts = [];
