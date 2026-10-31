@@ -148,8 +148,11 @@ test("admin overview, analytics, diagnostics and services have distinct responsi
  const ops=read("../app/admin/admin-observability.jsx");
  assert.match(home,/AdminDashboard mode="overview"/);
  assert.doesNotMatch(home,/AdminReport/);
- assert.match(system,/AdminDashboard mode="system"/);
- assert.match(system,/AdminObservability mode="system"/);
+ assert.match(system,/AdminDashboard mode="infrastructure"/);
+ assert.doesNotMatch(system,/AdminObservability/);
+ assert.match(read("../app/admin/observability/page.jsx"),/AdminObservability mode="system"/);
+ assert.match(read("../app/admin/alerts/page.jsx"),/AdminObservability mode="alerts"/);
+ assert.match(read("../app/admin/performance/page.jsx"),/AdminObservability mode="performance"/);
  assert.match(analytics,/AdminReport view="analytics"/);
  assert.match(issues,/AdminReport view="reports"/);
  assert.match(dashboard,/mode==="overview"/);
@@ -157,7 +160,7 @@ test("admin overview, analytics, diagnostics and services have distinct responsi
  assert.match(report,/sp-admin-filter-grid/);
  assert.match(report,/downloadAggregateCsv/);
  assert.match(report,/view==="reports"&&<button/);
- assert.match(ops,/mode!=="system"&&<Panel title="Alertas/);
+ assert.match(ops,/mode==="alerts"&&<Panel title="Alertas/);
  assert.match(ops,/mode==="system"&&<Panel title="Estado/);
  assert.match(ops,/mode==="system"&&<Panel title="Historial/);
 });
