@@ -7,6 +7,7 @@ on:
       - android/app/src/main/cpp/**
       - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudRequestProof.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudKeystorePlatform.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CatalogEnvelope.kt
       - tests/native_jni_contract.py
       - android/app/proguard-rules.pro
       - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudNativeTransport.kt

@@ -14,6 +14,10 @@ on:
       - android/app/src/main/cpp/spdecode_keystore_policy.cpp
       - android/app/src/main/cpp/spdecode_keystore_policy.h
       - tests/native_keystore_policy_contract.cpp
+      - android/app/src/main/cpp/spdecode_catalog.cpp
+      - android/app/src/main/cpp/spdecode_catalog.h
+      - tests/native_catalog_cli.cpp
+      - tests/native_catalog_roundtrip.mjs
       - tests/native_session_contract.cpp
   workflow_dispatch:
 
@@ -80,3 +84,9 @@ jobs:
           # Pin the published 2.8.1 only in this disposable CI checkout.
           (cd cloud/web && npm pkg set overrides.tslib=2.8.1 && npm install --no-audit --no-fund --no-package-lock)
           node tests/native_hpke_node_roundtrip.mjs "$RUNNER_TEMP/native_hpke_cli"
+          g++ -std=c++17 -O2 -Wall -Wextra -Werror \
+            -I "$RUNNER_TEMP/mbedtls/include" \
+            tests/native_catalog_cli.cpp android/app/src/main/cpp/spdecode_catalog.cpp \
+            "$RUNNER_TEMP/mbedtls-build/library/libmbedcrypto.a" -lpthread \
+            -o "$RUNNER_TEMP/native_catalog_cli"
+          node tests/native_catalog_roundtrip.mjs "$RUNNER_TEMP/native_catalog_cli"

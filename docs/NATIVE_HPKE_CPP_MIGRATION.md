@@ -140,6 +140,8 @@ after decryption; backend access controls and Play attestation remain essential.
 | `spdecode_hpke.cpp`, `spdecode_security.cpp`, `spdecode_session.cpp` | Native C++ | HPKE, proof framing, nonce format, short-lived bearer cache |
 | `spdecode_transport.cpp` | Native C++ with Android JNI | HTTPS policy, responses, signer checks, Keystore signing |
 | `V2HpkeEnvelope.kt` | Interface adapter | JSON and opaque native handle, not key schedule |
+| `CatalogEnvelope.kt` | Crypto migrated; Android adapter | Ephemeral JCA P-256 key generation, GZIP inflate, JSON |
+| `spdecode_catalog.cpp` | Native C++ | Catalog/icon ECDH, HKDF-SHA256, AES-256-GCM authentication |
 | `CloudNativeTransport.kt` | JNI/platform adapter | Temporary strings/bytes are still visible during system calls |
 | `ReleaseIntegrity.kt` | JNI adapter | Local APK signer check only; not authoritative admission |
 | `CloudRequestProof.kt` | Native-oriented facade | PoP and certificate JSON marshaling only |
@@ -153,6 +155,27 @@ A successful host build does not test StrongBox/TEE, live Play Integrity, or
 on-device key migration. Those require a real Android handset and unchanged
 production-compatible backend. Native storage reduces Kotlin cache exposure
 but cannot hide a bearer already delivered to the Java HTTPS APIs.
+
+## Catalog envelope crypto migration
+
+- The existing catalog/icon wire format and Node.js server implementation
+  are unchanged. New `spdecode_catalog.cpp` uses pinned native Mbed TLS for
+  strict, canonical base64url, P-256 SPKI/PKCS#8 parsing, ECDH, HKDF-SHA256
+  and AES-256-GCM response authentication.
+- The native routine authenticates the purpose, recipient and server SPKI,
+  plaintext size, salt, IV and ciphertext/tag. It rejects malformed P-256
+  points and never returns unauthenticated payload bytes.
+- `CatalogEnvelope.kt` retains platform-generated ephemeral JCA keypairs
+  (not the non-exportable Keystore installation signing key), the unchanged
+  4 MiB GZIP output bound and JSON UI composition. PKCS#8 bytes are erased
+  on the Kotlin side after the native call; native copies are zeroized.
+  Full native ownership of ephemeral key generation would be a further
+  improvement, not claimed here.
+- Added `native_catalog_cli.cpp` and `native_catalog_roundtrip.mjs` to
+  test the unchanged Node.js backend against actual C++ decryption and
+  reject modified keys, purpose, length, tags and ciphertext. CI must pass.
+- On-device catalog/icon flow and legacy compressed cache compatibility still
+  require real Android device validation before considering a signed release.
 
 ## Validation gates
 

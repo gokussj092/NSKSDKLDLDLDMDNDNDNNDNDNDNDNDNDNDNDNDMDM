@@ -36,7 +36,7 @@ FetchContent_Declare(spdecode_mbedtls
 )
 FetchContent_MakeAvailable(spdecode_mbedtls)
 add_library(spdecode SHARED spdecode_transport.cpp spdecode_hpke.cpp spdecode_security.cpp spdecode_session.cpp
-    spdecode_keystore.cpp spdecode_keystore_policy.cpp)
+    spdecode_keystore.cpp spdecode_keystore_policy.cpp spdecode_catalog.cpp)
 target_link_libraries(spdecode PRIVATE mbedcrypto)
 target_include_directories(spdecode PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
 set_target_properties(spdecode PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)

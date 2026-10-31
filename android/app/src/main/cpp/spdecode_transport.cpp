@@ -9,6 +9,7 @@
 #include "spdecode_security.h"
 #include "spdecode_session.h"
 #include "spdecode_keystore.h"
+#include "spdecode_catalog.h"
 #include <mbedtls/base64.h>
 #include <mbedtls/platform_util.h>
 #include <mbedtls/sha256.h>
@@ -361,6 +362,23 @@ jbyteArray openHpke(JNIEnv* env,jclass,jlong stateHandle,jint status,
 void discardHpke(JNIEnv*,jclass,jlong stateHandle){
     spdecode::hpkeDiscard(static_cast<std::uint64_t>(stateHandle));
 }
+jbyteArray nativeOpenCatalog(JNIEnv* env,jclass,jbyteArray privateArg,
+                             jstring recipient,jstring purpose,jstring sender,
+                             jstring salt,jstring iv,jint plainBytes,jstring data) {
+    try{
+        if(!privateArg||!recipient||!purpose||!sender||!salt||!iv||!data)
+            throw std::runtime_error("CLOUD_CATALOG_AUTH_FAILED");
+        auto key=nativeRead(env,privateArg,2048);
+        ScrubOnExit wipeKey{key};
+        auto packed=spdecode::openCatalog(key,utf(env,recipient),utf(env,purpose),
+            utf(env,sender),utf(env,salt),utf(env,iv),plainBytes,utf(env,data));
+        ScrubOnExit wipePacked{packed};
+        return nativeWrite(env,packed);
+    }catch(const std::exception&){
+        if(!env->ExceptionCheck())fail(env,"CLOUD_CATALOG_AUTH_FAILED");
+        return nullptr;
+    }
+}
 }
 
 // Native proof serialization. Actual P-256 private-key signing remains in
@@ -659,8 +677,10 @@ jstring nativeGetSession(JNIEnv* env,jclass){
     ScrubString scrub{bearer};
     return env->NewStringUTF(bearer.c_str());
 }
-jboolean nativeRequiresActionIntegrity(JNIEnv*,jclass){
-    return spdecode::sharedSession().requiresActionIntegrity()?JNI_TRUE:JNI_FALSE;
+jboolean nativeRequiresActionIntegrityFor(JNIEnv* env,jclass,jstring bearerArg){
+    auto bearer=utf(env,bearerArg);
+    ScrubString scrub{bearer};
+    return spdecode::sharedSession().requiresActionIntegrityFor(bearer)?JNI_TRUE:JNI_FALSE;
 }
 void nativeClearSession(JNIEnv*,jclass){spdecode::sharedSession().clear();}
 void nativeInvalidateSession(JNIEnv* env,jclass,jstring bearerArg){
@@ -681,6 +701,9 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm,void*) {
         reinterpret_cast<void*>(post)},
         {const_cast<char*>("nativePrepareHpke"),const_cast<char*>("(I[B[B)[B"),
         reinterpret_cast<void*>(prepareHpke)},
+        {const_cast<char*>("nativeOpenCatalog"),
+        const_cast<char*>("([BLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;)[B"),
+        reinterpret_cast<void*>(nativeOpenCatalog)},
         {const_cast<char*>("nativeOpenHpke"),const_cast<char*>("(JI[B[B)[B"),
         reinterpret_cast<void*>(openHpke)},
         {const_cast<char*>("nativeDiscardHpke"),const_cast<char*>("(J)V"),
@@ -718,13 +741,14 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm,void*) {
         reinterpret_cast<void*>(nativeCacheSession)},
         {const_cast<char*>("nativeGetSession"),const_cast<char*>("()Ljava/lang/String;"),
         reinterpret_cast<void*>(nativeGetSession)},
-        {const_cast<char*>("nativeRequiresActionIntegrity"),const_cast<char*>("()Z"),
-        reinterpret_cast<void*>(nativeRequiresActionIntegrity)},
+        {const_cast<char*>("nativeRequiresActionIntegrityFor"),
+        const_cast<char*>("(Ljava/lang/String;)Z"),
+        reinterpret_cast<void*>(nativeRequiresActionIntegrityFor)},
         {const_cast<char*>("nativeClearSession"),const_cast<char*>("()V"),
         reinterpret_cast<void*>(nativeClearSession)},
         {const_cast<char*>("nativeInvalidateSession"),const_cast<char*>("(Ljava/lang/String;)V"),
         reinterpret_cast<void*>(nativeInvalidateSession)}};
-    const jint registered=env->RegisterNatives(bridge,methods,19);
+    const jint registered=env->RegisterNatives(bridge,methods,20);
     env->DeleteLocalRef(bridge);
     return registered==JNI_OK?JNI_VERSION_1_6:JNI_ERR;
 }

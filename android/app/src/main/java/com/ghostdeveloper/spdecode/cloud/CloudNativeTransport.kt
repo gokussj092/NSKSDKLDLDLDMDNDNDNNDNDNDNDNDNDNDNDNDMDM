@@ -31,13 +31,13 @@ internal object CloudNativeTransport {
     // Native RAM-only session cache; temporary bearer copies still cross JNI.
     @JvmStatic private external fun nativeCacheSession(token: String, seconds: Long, actionRequired: Boolean)
     @JvmStatic private external fun nativeGetSession(): String
-    @JvmStatic private external fun nativeRequiresActionIntegrity(): Boolean
+    @JvmStatic private external fun nativeRequiresActionIntegrityFor(bearer: String): Boolean
     @JvmStatic private external fun nativeClearSession()
     @JvmStatic private external fun nativeInvalidateSession(token: String)
     fun cacheSession(token: String, seconds: Long, actionRequired: Boolean) =
         nativeCacheSession(token, seconds, actionRequired)
     fun cachedSession(): String = nativeGetSession()
-    fun actionIntegrityRequired(): Boolean = nativeRequiresActionIntegrity()
+    fun actionIntegrityRequired(bearer: String): Boolean = nativeRequiresActionIntegrityFor(bearer)
     fun clearCachedSession() = nativeClearSession()
     private fun invalidateCachedSession(token: String) = nativeInvalidateSession(token)
 
@@ -51,6 +51,15 @@ internal object CloudNativeTransport {
         nativeAttestHardwareKey(challenge,level)
     fun signRequestProof(operation: Int, version: String, wire: ByteArray, bearer: String): Array<String> =
         nativeSignRequestProof(operation,version,wire,bearer)
+
+    @JvmStatic private external fun nativeOpenCatalog(
+        privatePkcs8: ByteArray, recipient: String, purpose: String, serverKey: String,
+        salt: String, iv: String, plainBytes: Int, data: String
+    ): ByteArray
+    fun openCatalog(privatePkcs8: ByteArray, recipient: String, purpose: String,
+                    serverKey: String, salt: String, iv: String,
+                    plainBytes: Int, data: String): ByteArray =
+        nativeOpenCatalog(privatePkcs8,recipient,purpose,serverKey,salt,iv,plainBytes,data)
 
     @JvmStatic private external fun nativeVerifyReleaseSigner(
         context: Context, expectedPackage: String, uploadCert: String, playCert: String, debugBuild: Boolean
