@@ -8,7 +8,7 @@ class CloudSignedAPKAuditTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             apk=pathlib.Path(folder)/"test.apk"
             with zipfile.ZipFile(apk,"w") as z:
-                z.writestr("lib/arm64-v8a/libspdecode.so",b"test native")
+                z.writestr("lib/arm64-v8a/libv7q3.so",b"test native")
                 z.writestr("classes.dex",dex_content)
                 z.writestr("assets/decoder_catalog.json","{}")
                 for name in extra_assets:z.writestr(name,b"synthetic")

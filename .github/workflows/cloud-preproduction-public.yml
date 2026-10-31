@@ -101,7 +101,7 @@ jobs:
           with ZipFile('android/app/build/outputs/apk/release/app-release.apk') as apk:
               entries=apk.namelist()
               assert 'assets/adi-registration.properties' not in entries
-              native=[name for name in entries if name.endswith('/libspdecode.so')]
+              native=[name for name in entries if name.endswith('/libv7q3.so')]
               assert native and all(b'https://api.spdecode.xyz' in apk.read(name) for name in native)
           print('Original signer verified, native API correct, ownership token absent.')
           PY

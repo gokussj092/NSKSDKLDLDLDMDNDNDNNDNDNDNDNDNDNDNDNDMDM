@@ -23,3 +23,9 @@
 -keepclasseswithmembers,includedescriptorclasses class com.ghostdeveloper.spdecode.cloud.CloudNativeTransport {
     native <methods>;
 }
+
+# Native Keystore orchestrator resolves these platform-only bridges by name.
+# Keep the class and only the @JvmStatic API required by JNI reflection.
+-keep class com.ghostdeveloper.spdecode.cloud.CloudKeystorePlatform {
+    public static *;
+}

@@ -1,0 +1,78 @@
+name: SP-DECODE Security Branch Release Compile (Unsigned)
+# Static preproduction build only. Never touches production signing secrets.
+on:
+  push:
+    branches:
+      - security/v2-hpke-x25519-encrypted-transport
+    paths:
+      - .github/workflows/android-security-release-compile.yml
+      - android/app/src/main/cpp/**
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/V2HpkeEnvelope.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudNativeTransport.kt
+      - android/app/build.gradle.kts
+  workflow_dispatch:
+
+permissions:
+  contents: read
+concurrency:
+  group: spdecode-security-release-compile-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  release-compile:
+    if: github.repository_owner == 'gokussj092' && github.ref == 'refs/heads/security/v2-hpke-x25519-encrypted-transport'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      SPDECODE_CLOUD_API_BASE_URL: https://api.spdecode.xyz
+      SPDECODE_CLOUD_RELEASE: "true"
+      SPDECODE_CLOUD_QA_BUILD: "false"
+      ORG_GRADLE_PROJECT_noticeFirebaseAPP_ID: ${{ vars.SPDECODE_NOTICE_FIREBASE_APP_ID || '1:78511444369:android:167638a0365236f1ab4a30' }}
+      ORG_GRADLE_PROJECT_noticeFirebaseAPI_KEY: ${{ vars.SPDECODE_NOTICE_FIREBASE_API_KEY || 'AIzaSyCXHGfZDisaa9Viat01K7DvNYGgr5XVnoM' }}
+      ORG_GRADLE_PROJECT_noticeFirebasePROJECT_ID: ${{ vars.SPDECODE_NOTICE_FIREBASE_PROJECT_ID || 'sp-decode-android' }}
+      ORG_GRADLE_PROJECT_noticeFirebaseSENDER_ID: ${{ vars.SPDECODE_NOTICE_FIREBASE_SENDER_ID || '78511444369' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.11.1"
+      - name: Install Android platform and native tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -n 1)"
+          "$SDKMANAGER" --install "platforms;android-36" "build-tools;35.0.0" "platform-tools" "cmake;3.22.1" "ndk;27.2.12479018"
+      - name: Compile release R8 Android APK and AAB (not DEBUG)
+        working-directory: android
+        run: gradle --no-daemon --max-workers=2 :app:assembleRelease :app:bundleRelease
+      - name: Validate compiled outputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=android/app/build/outputs/apk/release/app-release-unsigned.apk
+          AAB=android/app/build/outputs/bundle/release/app-release.aab
+          test -s "$APK" && test -s "$AAB"
+          test -s android/app/build/outputs/mapping/release/mapping.txt
+          python3 scripts/ci/verify_aab_locales.py "$AAB"
+          mkdir -p dist
+          cp "$APK" dist/SP-DECODE-v1.1.24-b35-UNSIGNED-RELEASE.apk
+          cp "$AAB" dist/SP-DECODE-v1.1.24-b35-UNSIGNED-RELEASE.aab
+          (cd dist && sha256sum *.apk *.aab > SHA256SUMS.txt)
+          {
+            echo "Source commit: $GITHUB_SHA"
+            echo "Build type: RELEASE with R8/minification; NOT debug."
+            echo "Unsigned outputs: NOT installable or valid for Google Play upload."
+            } > dist/BUILD_INFO.txt
+      - name: Archive release compilation result
+        uses: actions/upload-artifact@v4
+        with:
+          name: SP-DECODE-SECURITY-RELEASE-UNSIGNED-APK-AAB
+          path: dist/
+          if-no-files-found: error
+          retention-days: 7

@@ -151,6 +151,37 @@ class MainActivity : ComponentActivity() {
         set(value){sessionVm.reveal=value}
     private var stagedExport:String?=null
 
+    private val noticePermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted && CloudLegalConsent.accepted(this)) {
+            com.ghostdeveloper.spdecode.cloud.CloudNotifications.setEnabled(this, true)
+        }
+    }
+
+    private fun requestNoticePermissionAfterConsent() {
+        if (!BuildConfig.SPDECODE_CLOUD_ENABLED || !CloudLegalConsent.accepted(this)) return
+        val savedNoticePreferences = getSharedPreferences("spdecode-notifications", MODE_PRIVATE)
+        // Honour a previous explicit in-app opt-out when upgrading.
+        if (savedNoticePreferences.contains("enabled") &&
+            !savedNoticePreferences.getBoolean("enabled", false)) return
+        if (android.os.Build.VERSION.SDK_INT < 33) {
+            com.ghostdeveloper.spdecode.cloud.CloudNotifications.setEnabled(this, true)
+            return
+        }
+        if (com.ghostdeveloper.spdecode.cloud.CloudNotifications.allowed(this)) {
+            com.ghostdeveloper.spdecode.cloud.CloudNotifications.setEnabled(this, true)
+            return
+        }
+        val flags = getSharedPreferences("spdecode-notifications", MODE_PRIVATE)
+        if (!flags.getBoolean("startup-permission-requested-v1", false)) {
+            // Persist before launching: process death must not cause repeated prompts.
+            flags.edit().putBoolean("startup-permission-requested-v1", true).apply()
+            noticePermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
+
+
     private fun syncOptInUsage() {
         if(!BuildConfig.SPDECODE_CLOUD_ENABLED||!CloudLegalConsent.accepted(this))return
         scope.launch {
@@ -426,6 +457,7 @@ class MainActivity : ComponentActivity() {
         showWhatsNew=!BuildConfig.SPDECODE_CLOUD_ENABLED &&
             settings.getLong("last_seen_whats_new_version",0L)<runningVersionCode
         showCloudLegal=BuildConfig.SPDECODE_CLOUD_ENABLED && !CloudLegalConsent.accepted(this)
+        if (!showCloudLegal) requestNoticePermissionAfterConsent()
         catalogUpdatesEnabled=CloudCatalogUpdates.enabled(this)
         if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
             // Refresh the visible provider list as soon as a background push completes.
@@ -654,6 +686,7 @@ class MainActivity : ComponentActivity() {
                         try {
                             CloudLegalConsent.accept(this@MainActivity)
                             showCloudLegal=false
+                            requestNoticePermissionAfterConsent()
                             refreshServerVpn()
                             refreshCloudWhatsNew()
                             probeUpdatesOnEntry()

@@ -10,7 +10,7 @@ def audit(path,origin):
         assert dex,"No DEX"
         for value in [origin.encode(),b"/api/v1/",b"/api/v2/transport"]:
             assert value not in dex,"API address remains in DEX"
-        libraries=[n for n in apk.namelist() if n.endswith("/libspdecode.so")]
+        libraries=[n for n in apk.namelist() if n.endswith("/libv7q3.so")]
         assert libraries,"Missing native transport"
         for name in libraries:
             raw=apk.read(name)

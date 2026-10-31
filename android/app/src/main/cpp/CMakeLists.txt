@@ -23,13 +23,28 @@ endfunction()
 spdecode_encode("${SPDECODE_CLOUD_ORIGIN}" SPDECODE_ORIGIN_BYTES)
 spdecode_encode("/api/v2/transport" SPDECODE_PATH_BYTES)
 configure_file(cloud_origin.h.in "${CMAKE_CURRENT_BINARY_DIR}/cloud_origin.h" @ONLY)
-add_library(spdecode SHARED spdecode_transport.cpp)
-target_include_directories(spdecode PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
-set_target_properties(spdecode PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
-target_compile_options(spdecode PRIVATE -Wall -Wextra -Werror -fvisibility=hidden
+# Native RFC 9180 crypto from the official pinned Mbed TLS source archive.
+# Compile on GitHub runner, never on the VPS. Do not use unverified HEAD.
+include(FetchContent)
+set(ENABLE_PROGRAMS OFF CACHE BOOL "" FORCE)
+set(ENABLE_TESTING OFF CACHE BOOL "" FORCE)
+set(USE_SHARED_MBEDTLS_LIBRARY OFF CACHE BOOL "" FORCE)
+set(USE_STATIC_MBEDTLS_LIBRARY ON CACHE BOOL "" FORCE)
+FetchContent_Declare(spdecode_mbedtls
+  URL https://github.com/Mbed-TLS/mbedtls/releases/download/mbedtls-3.6.7/mbedtls-3.6.7.tar.bz2
+  URL_HASH SHA256=a7e8bcbec0e6f761b4af24f25677626b35f762f68eef79c08677a363212d11f6
+)
+FetchContent_MakeAvailable(spdecode_mbedtls)
+# Opaque ELF basename reduces casual metadata; not a security boundary.
+add_library(v7q3 SHARED spdecode_transport.cpp spdecode_hpke.cpp spdecode_security.cpp spdecode_session.cpp
+    spdecode_keystore.cpp spdecode_keystore_policy.cpp spdecode_catalog.cpp spdecode_runtime_guard.cpp)
+target_link_libraries(v7q3 PRIVATE mbedcrypto)
+target_include_directories(v7q3 PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
+set_target_properties(v7q3 PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
+target_compile_options(v7q3 PRIVATE -Wall -Wextra -Werror -fvisibility=hidden
   -fvisibility-inlines-hidden -fstack-protector-strong -D_FORTIFY_SOURCE=2
   -ffunction-sections -fdata-sections)
-target_link_options(spdecode PRIVATE
+target_link_options(v7q3 PRIVATE
   -Wl,-z,relro,-z,now
   -Wl,-z,noexecstack -Wl,--gc-sections -Wl,--exclude-libs,ALL
   "-Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/spdecode.exports"

@@ -110,7 +110,7 @@ jobs:
           path="android/app/build/outputs/bundle/release/app-release.aab"
           with ZipFile(path) as z:
               assert "base/manifest/AndroidManifest.xml" in z.namelist()
-              assert any(n.startswith("base/lib/") and n.endswith("/libspdecode.so") for n in z.namelist())
+              assert any(n.startswith("base/lib/") and n.endswith("/libv7q3.so") for n in z.namelist())
               assert not any(n.endswith(".spv") for n in z.namelist())
           print("C8 CI-only AAB contains native Cloud library, no legacy vault")
           PY

@@ -14,8 +14,8 @@ export async function validBoundClaims(redis, claims, cfg) {
     (!cfg.requireHardware || (claims.hardware === true && !!await registeredKey(redis,claims.key,cfg))) &&
     await redis.get("spc2:session:"+claims.jti) === "1";
 }
-export async function acceptBoundProof(redis,request,op,bytes,bearer,claims) {
-  const nonce=verifyProof(request,op,bytes,bearer,claims.key);
+export async function acceptBoundProof(redis,request,op,bytes,bearer,claims,wireBytes=bytes) {
+  const nonce=verifyProof(request,op,wireBytes,bearer,claims.key);
   if (!nonce || await redis.set("spc2:proof:"+claims.jti+":"+sha256(nonce),"1",{EX:90,NX:true})!=="OK") return null;
   const lightweight=metadata.has(op), ip=ipKey(request);
   if (!await throttle(redis,"spc2:"+(lightweight?"metadata:":"work:")+claims.jti,lightweight?180:10,60) ||

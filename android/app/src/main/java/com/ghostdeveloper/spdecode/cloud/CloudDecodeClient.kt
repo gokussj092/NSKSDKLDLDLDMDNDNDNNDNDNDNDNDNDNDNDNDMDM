@@ -56,26 +56,14 @@ internal class CloudDecodeClient(context: Context) {
         val passwordSubmitted:Boolean=false,val hwidSubmitted:Boolean=false) :
         IOException("SP-DECODE CLOUD: $code")
 
-    fun clearSession() {
-        synchronized(lock) {
-            token=""
-            expiresAtMs=0L
-        }
-    }
+    fun clearSession() = CloudNativeTransport.clearCachedSession()
 
     companion object {
-        // All foreground/background clients use the same device key and short-lived session.
-        // Sharing avoids repeated Classic Integrity admissions for concurrent workers.
-        private var token = ""
-        private var expiresAtMs = 0L
-        private val lock = Any()
-        @Volatile private var actionIntegrityRequired = true
         const val MAX_INPUT = 8 * 1024 * 1024
-        private const val SAFE_TOKEN_MARGIN_MS = 30_000L
     }
 
     private fun extract(reply: CloudNativeTransport.Reply): JSONObject {
-        if (reply.status == 401) clearSession()
+        // Native transport clears only the bearer that actually received HTTP 401.
         if (reply.status !in 200..299) {
             val code = reply.body.optJSONObject("error")?.optString("code")
                 ?.takeIf { it.matches(Regex("[A-Z_]{3,50}")) } ?: "SERVICE_UNAVAILABLE"
@@ -86,7 +74,7 @@ internal class CloudDecodeClient(context: Context) {
 
     private suspend fun requestIntegrityToken(nonce: String): String =
         suspendCancellableCoroutine { cont ->
-            if (nonce.length !in 16..500 || !nonce.matches(Regex("[A-Za-z0-9_-]+"))) {
+            if (!CloudNativeTransport.validPlayNonce(nonce)) {
                 cont.resumeWithException(IOException("CLOUD_INVALID_NONCE"))
                 return@suspendCancellableCoroutine
             }
@@ -104,10 +92,8 @@ internal class CloudDecodeClient(context: Context) {
         }
 
     private suspend fun session(): String = sessionMutex.withLock {
-        synchronized(lock) {
-            if (token.isNotBlank() && System.currentTimeMillis() + SAFE_TOKEN_MARGIN_MS < expiresAtMs)
-                return@withLock token
-        }
+        CloudNativeTransport.cachedSession().takeIf { it.isNotBlank() }
+            ?.let { return@withLock it }
         // No fallback to local decryptors when attestation or networking fails.
         val challenge = withContext(Dispatchers.IO) {
             extract(CloudNativeTransport.post(CloudOperation.CHALLENGE,
@@ -116,9 +102,8 @@ internal class CloudDecodeClient(context: Context) {
         val nonce = challenge.getString("nonce")
         val challengeId = challenge.getString("challengeId")
         val playRequired = challenge.optBoolean("integrityRequired", true)
-        if (!nonce.matches(Regex("[A-Za-z0-9_-]{43}")) ||
-            !challengeId.matches(Regex("[0-9a-f-]{36}")) ||
-            challenge.optString("apiVersion") != "v2")
+        if (!CloudNativeTransport.validClassicChallenge(
+                nonce,challengeId,challenge.optString("apiVersion")))
             throw IOException("CLOUD_INVALID_NONCE")
         // An external beta may omit Play tokens ONLY when server policy explicitly allows it.
         // Hardware attestation remains mandatory for all beta sessions.
@@ -138,15 +123,10 @@ internal class CloudDecodeClient(context: Context) {
         val reply=withContext(Dispatchers.IO) {
             extract(CloudNativeTransport.post(operation,body))
         }
-        actionIntegrityRequired = reply.optBoolean("actionIntegrityRequired", false)
         val access = reply.getString("accessToken")
         val seconds = reply.getLong("expiresIn")
-        if (!access.matches(Regex("[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+")) ||
-            seconds !in 1L..300L) throw IOException("CLOUD_INVALID_SESSION")
-        synchronized(lock) {
-            token = access
-            expiresAtMs = System.currentTimeMillis() + seconds * 1000
-        }
+        CloudNativeTransport.cacheSession(access,seconds,
+            reply.optBoolean("actionIntegrityRequired",true))
         access
     }
 
@@ -155,18 +135,23 @@ internal class CloudDecodeClient(context: Context) {
             .addOnFailureListener { if (cont.isActive) cont.resumeWithException(IOException("CLOUD_INTEGRITY_UNAVAILABLE")) }
     }
 
-    private suspend fun protectedPost(operation: Int, payload: JSONObject, bearer: String): CloudNativeTransport.Reply {
-        if (!actionIntegrityRequired) return CloudNativeTransport.post(operation, payload, bearer)
+    private suspend fun protectedPost(operation: Int, payload: JSONObject, bearer: String,
+                                      attachment:ByteArray?=null): CloudNativeTransport.Reply {
         val exact = JSONObject(payload.toString())
-        val hash = java.security.MessageDigest.getInstance("SHA-256")
-            .digest(exact.toString().toByteArray(Charsets.UTF_8)).joinToString("") { "%02x".format(it.toInt() and 255) }
+        val prepared=CloudNativeTransport.prepare(operation,exact,attachment)
+        try {
+        if (!CloudNativeTransport.actionIntegrityRequired(bearer)) return CloudNativeTransport.post(operation,exact,bearer,prepared=prepared)
+        // Standard Integrity is bound to the final encrypted bytes, NOT to a
+        // separately serialized plaintext JSON document. The same prepared
+        // ciphertext is reused after the challenge; never seal it twice.
+        val hash = CloudNativeTransport.requestHashHex(prepared.wire)
         val challenge = extract(CloudNativeTransport.post(CloudOperation.ACTION_CHALLENGE,
             JSONObject().put("operation", operation).put("bodySha256", hash), bearer))
         val project = challenge.getString("cloudProjectNumber").toLongOrNull()
             ?.takeIf { it > 0L } ?: throw IOException("CLOUD_INTEGRITY_UNAVAILABLE")
         val requestHash = challenge.getString("requestHash")
         val id = challenge.getString("challengeId")
-        if (!requestHash.matches(Regex("[A-Za-z0-9_-]{43}")) || !id.matches(Regex("[0-9a-f-]{36}")))
+        if (!CloudNativeTransport.validActionChallenge(requestHash,id,project))
             throw IOException("CLOUD_INVALID_NONCE")
         val provider = standardLock.withLock {
             if (standardProvider == null || standardProject != project) {
@@ -183,7 +168,8 @@ internal class CloudDecodeClient(context: Context) {
             throw error
         }
         coroutineContext.ensureActive()
-        return CloudNativeTransport.post(operation, exact, bearer, id, integrity)
+        return CloudNativeTransport.post(operation, exact, bearer, id, integrity, prepared=prepared)
+        } finally { prepared.discard() }
     }
 
     /**
@@ -223,7 +209,7 @@ internal class CloudDecodeClient(context: Context) {
         return succeeded>0 && failed>0 && succeeded==report.optInt("successfulSources",-1)
     }
 
-    private suspend fun decode(operation: Int, payload: JSONObject): Decoded {
+    private suspend fun decode(operation: Int, payload: JSONObject, attachment:ByteArray?=null): Decoded {
         require(BuildConfig.SPDECODE_CLOUD_ENABLED) { "CLOUD_DISABLED" }
         withContext(Dispatchers.IO) { requireLegalConsent() }
         coroutineContext.ensureActive()
@@ -234,7 +220,7 @@ internal class CloudDecodeClient(context: Context) {
             withContext(Dispatchers.IO) {
                 // Never store request payloads or credentials in a diagnostic.
                 requireLegalConsent()
-                extract(protectedPost(operation,payload,bearer))
+                extract(protectedPost(operation,payload,bearer,attachment))
             }
         }catch(failure:Failure) {
             // Only whitelisted enum-like codes and known format labels are retained in RAM.
@@ -325,7 +311,6 @@ internal class CloudDecodeClient(context: Context) {
             throw IOException("CLOUD_CREDENTIALS_NOT_ALLOWED")
         val body = JSONObject()
             .put("format", format)
-            .put("dataBase64", Base64.encodeToString(bytes, Base64.NO_WRAP))
         val isRecipientNpvs=format=="npvs" &&
             NpvsRecipientProbe.fingerprints(bytes).isNotEmpty()
         // The signed NPVS recipient envelope is mutually exclusive with
@@ -351,7 +336,7 @@ internal class CloudDecodeClient(context: Context) {
                     .put("language",if(locale=="es")"es" else "en"))
             }
         }
-        val decoded=decode(CloudOperation.FILE,body)
+        val decoded=decode(CloudOperation.FILE,body,bytes)
         val artifact=if(onCompatibleExport!=null)runCatching {
             CompatibleExportArtifact.parse(decoded.compatibleExport,format,decoded.rawText,
                 CompatibleExportArtifact.digest(bytes))
@@ -438,13 +423,14 @@ internal class CloudDecodeClient(context: Context) {
     suspend fun serverVpnCatalog(knownVersion:Int): JSONObject =
         withContext(Dispatchers.IO) {
             requireLegalConsent()
-            val envelope=CatalogEnvelope()
+            CatalogEnvelope().use { envelope ->
             envelope.open(extract(CloudNativeTransport.post(CloudOperation.CATALOG,
                 JSONObject().put("knownVersion",knownVersion).put("catalogKey",envelope.publicKey),session())),"catalog").also { reply ->
                 if(!reply.optBoolean("unchanged",false)) {
                     exportCatalog=runCatching {CompatibleExportCatalog.parse(reply.optJSONObject("compatibleExports"))}.getOrNull()
                     exportCatalogCheckedAt=android.os.SystemClock.elapsedRealtime()
                 }
+            }
             }
         }
 
@@ -474,9 +460,10 @@ internal class CloudDecodeClient(context: Context) {
         require(id.matches(Regex("[a-z0-9-]{1,48}")))
         return withContext(Dispatchers.IO) {
             requireLegalConsent()
-            val envelope=CatalogEnvelope()
-            envelope.open(extract(CloudNativeTransport.post(CloudOperation.ICON,
-                JSONObject().put("id",id).put("catalogKey",envelope.publicKey),session())),"icon")
+            CatalogEnvelope().use { envelope ->
+                envelope.open(extract(CloudNativeTransport.post(CloudOperation.ICON,
+                    JSONObject().put("id",id).put("catalogKey",envelope.publicKey),session())),"icon")
+            }
         }
     }
 

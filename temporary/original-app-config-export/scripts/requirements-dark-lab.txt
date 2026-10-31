@@ -1,5 +1,5 @@
 # Existing crypto/MessagePack versions; independent backend used by tests only.
 pycryptodome==3.23.0
-msgpack==1.1.1
+msgpack==1.2.4
 cryptography==50.0.2
 # Optional original serializer probe: also install requirements-native-probe.txt.

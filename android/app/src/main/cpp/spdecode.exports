@@ -1,4 +1,4 @@
-SPDECODE_2 {
+V_1 {
   global: JNI_OnLoad;
   local: *;
 };

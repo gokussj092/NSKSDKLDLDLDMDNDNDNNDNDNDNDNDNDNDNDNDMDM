@@ -46,9 +46,23 @@ class CloudTransportProofInstrumentedTest {
         assertEquals(key,CloudRequestProof.publicKey())
         assertNotEquals(proof.nonce,CloudRequestProof.sign(CloudOperation.TEXT,"1.1.22",body,"synthetic.bearer").nonce)
         val store=KeyStore.getInstance("AndroidKeyStore").apply { load(null) }
-        val entry=store.getEntry("spdecode.transport.v2",null) as KeyStore.PrivateKeyEntry
-        assertNull(entry.privateKey.encoded)
+        val matching=store.aliases().toList().filter {
+            it=="spdecode.transport.v2" || it.startsWith("spdecode.transport.v3.")
+        }.mapNotNull { store.getEntry(it,null) as? KeyStore.PrivateKeyEntry }
+            .singleOrNull { Base64.encodeToString(it.certificate.publicKey.encoded,
+                Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING)==key }
+        assertNotNull("The native-selected alias must resolve to a real AndroidKeyStore entry",matching)
+        assertNull(matching!!.privateKey.encoded)
     }
+    @Test fun invalidAttestationChallengeIsRejectedBeforeGeneratingKeys() {
+        try {
+            CloudRequestProof.attest("invalid-challenge","strongbox")
+            fail("Invalid native challenge was accepted")
+        } catch (expected: java.io.IOException) {
+            assertTrue(expected.message!!.startsWith("CLOUD_ATTESTATION_"))
+        }
+    }
+
     @Test fun nativeLibraryRegistersBridgeAndInvalidOperationFailsBeforeNetwork() {
         try { CloudNativeTransport.post(3,JSONObject());fail("Reserved operation accepted") }
         catch (_: IllegalArgumentException) { /* object initialization loaded real JNI */ }

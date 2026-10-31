@@ -154,7 +154,7 @@ val prepareQaSettingsSource = tasks.register("prepareQaSettingsSource") {
     outputs.dir(qaSettingsRoot)
     doLast {
         val original = qaSettingsSource.asFile.readText(Charsets.UTF_8)
-        val anchor = "        DeviceCredentialSettingsSection()"
+        val anchor = "        // Settings additions injected here by the Android Gradle task."
         require(original.indexOf(anchor) >= 0 &&
             original.indexOf(anchor) == original.lastIndexOf(anchor)) {
             "QA Settings injection anchor absent or ambiguous; do not ship a build"
@@ -162,7 +162,6 @@ val prepareQaSettingsSource = tasks.register("prepareQaSettingsSource") {
         val source = original.replace("https://t.me/CodeBreakersHub", "https://t.me/+Ntu6EJMirrAwMzgx").replace(anchor,
             (if(enableQaBuild) "        com.ghostdeveloper.spdecode.cloud.CloudQaSettingsCard()\n" else "") +
             "        com.ghostdeveloper.spdecode.cloud.DonationSettingsCard()\n" +
-            "        com.ghostdeveloper.spdecode.cloud.NotificationSettingsCard()\n" +
             "        com.ghostdeveloper.spdecode.cloud.NpvsIdentitySettings()\n" + anchor)
         val output = qaSettingsRoot.get().file(qaSettingsRelativePath).asFile
         output.parentFile.mkdirs()
@@ -646,6 +645,9 @@ android {
         // A public API origin is not a secret; all server secrets stay in the VPS.
         buildConfigField("boolean", "SPDECODE_CLOUD_ENABLED", enableCloud.toString())
         buildConfigField("boolean", "SPDECODE_QA_BUILD", enableQaBuild.toString())
+        // Public trust anchors; never package any recipient private key.
+        // Public HPKE pin lives as masked bytes in native C++, not in BuildConfig.
+
         // Public Firebase application identifiers. Service-account keys stay exclusively on the VPS.
         mapOf("APP_ID" to "1:[0-9]+:android:[a-f0-9]+", "API_KEY" to "[A-Za-z0-9_-]{30,80}",
             "PROJECT_ID" to "[a-z][a-z0-9-]{4,60}", "SENDER_ID" to "[0-9]{5,30}").forEach { (key,pattern)->
@@ -746,7 +748,7 @@ dependencies {
     // Classic Play Integrity nonce flow; the verdict is verified in C3 server-side.
     implementation("com.google.android.play:integrity:1.6.0")
     implementation("androidx.work:work-runtime-ktx:2.10.4")
-    // Lightweight Argon2id + XChaCha20-Poly1305 primitives for standard .ehi.
+    // Legacy decoders require BC; Cloud HPKE uses pinned native Mbed TLS.
     if (!enableCloud) implementation("org.bouncycastle:bcprov-jdk18on:1.86")
     implementation("androidx.activity:activity-ktx:1.10.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.0")

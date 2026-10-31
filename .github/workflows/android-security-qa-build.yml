@@ -1,0 +1,84 @@
+name: SP-DECODE Security Branch Android QA APK
+# Single branch-specific build; never creates GitHub Releases, Play uploads or VPS deployments.
+# Build retry 2: remove stale notification prompt sources before Kotlin compilation.
+on:
+  push:
+    branches:
+      - security/v2-hpke-x25519-encrypted-transport
+    paths:
+      - .github/workflows/android-security-qa-build.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: spdecode-security-qa-apk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  assemble-qa:
+    name: Assemble installable Android Cloud debug APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    env:
+      SPDECODE_CLOUD_RELEASE: "true"
+      SPDECODE_CLOUD_QA_BUILD: "false"
+      SPDECODE_CLOUD_API_BASE_URL: https://api.spdecode.xyz
+      ORG_GRADLE_PROJECT_noticeFirebaseAPP_ID: ${{ vars.SPDECODE_NOTICE_FIREBASE_APP_ID || '1:78511444369:android:167638a0365236f1ab4a30' }}
+      ORG_GRADLE_PROJECT_noticeFirebaseAPI_KEY: ${{ vars.SPDECODE_NOTICE_FIREBASE_API_KEY || 'AIzaSyCXHGfZDisaa9Viat01K7DvNYGgr5XVnoM' }}
+      ORG_GRADLE_PROJECT_noticeFirebasePROJECT_ID: ${{ vars.SPDECODE_NOTICE_FIREBASE_PROJECT_ID || 'sp-decode-android' }}
+      ORG_GRADLE_PROJECT_noticeFirebaseSENDER_ID: ${{ vars.SPDECODE_NOTICE_FIREBASE_SENDER_ID || '78511444369' }}
+    steps:
+      - name: Checkout exact security branch revision
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Set up Gradle 8.11.1
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.11.1"
+      - name: Install Android SDK and native toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          MANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -n 1)"
+          test -x "$MANAGER"
+          "$MANAGER" --install "platforms;android-36" "build-tools;35.0.0" "platform-tools" "cmake;3.22.1" "ndk;27.2.12479018"
+      - name: Validate remaining device credential import contract
+        run: python3 scripts/android_s4_provisioning_audit.py
+      - name: Build Cloud-enabled debug APK and native JNI transport
+        working-directory: android
+        run: gradle --no-daemon --max-workers=2 :app:assembleDebug
+      - name: Verify package and signed installable debug artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=android/app/build/outputs/apk/debug/app-debug.apk
+          test -s "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK" > "$RUNNER_TEMP/apk-verify.txt"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | grep -F "package: name='com.ghostdeveloper.spdecode'"
+          python3 scripts/android_s4_provisioning_audit.py --apk "$APK"
+          mkdir -p dist
+          cp "$APK" dist/SP-DECODE-v1.1.24-b35-HPKE-security-QA-DEBUG.apk
+          (cd dist && sha256sum *.apk > SHA256SUMS.txt)
+          {
+            echo "Revision: $GITHUB_SHA"
+            echo "Branch: $GITHUB_REF_NAME"
+            echo "Build: Cloud-enabled DEBUG, not signed with the Google Play production certificate"
+            echo "HPKE: native C++ embeds public pin shares; server private key must match"
+            echo "Install: If a production-signed SP-DECODE is present, it cannot be upgraded with this debug certificate"
+          } > dist/BUILD_INFO.txt
+      - name: Upload APK for physical-device testing
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: SP-DECODE-SECURITY-HPKE-QA-DEBUG-APK
+          path: dist/
+          if-no-files-found: error
+          retention-days: 14

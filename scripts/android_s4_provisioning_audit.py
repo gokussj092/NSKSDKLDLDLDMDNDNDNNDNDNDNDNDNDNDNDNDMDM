@@ -31,7 +31,7 @@ RELEASE=Path(".github/workflows/android-signed-release.yml")
 
 def source(root:Path=ROOT)->dict:
     vault=(root/STORE).read_text("utf-8")
-    ui=(root/UI).read_text("utf-8")
+    ui_retired=not (root/UI).exists()
     settings=(root/SETTINGS).read_text("utf-8")
     import_dialog=(root/IMPORT_DIALOG).read_text("utf-8")
     activity=(root/ACTIVITY).read_text("utf-8")
@@ -62,12 +62,10 @@ def source(root:Path=ROOT)->dict:
             "fun export(", "fun reveal(", "fun toClipboard(", "android.util.Log",
             "SharedPreferences", "Room.databaseBuilder", "SecureAssetVault.read(",
         )),
-       "secure-entry-dialog": "SecureFlagPolicy.SecureOn" in ui and
-            "PasswordVisualTransformation()" in ui and "secret=\"\"" in ui,
-       "ui-delete-with-confirmation": "s4_vault_delete_confirm" in ui and
-            "vault.delete(id)" in ui,
-       "not-used-by-legacy-decoders": "DeviceCredentialSettingsSection()" in settings and
-            "AndroidOfflineDecoderRouter" not in vault,
+       "provisioning-settings-removed": ui_retired and
+            "DeviceCredentialSettingsSection()" not in settings and
+            "Settings additions injected here by the Android Gradle task." in settings,
+       "not-used-by-legacy-decoders": "AndroidOfflineDecoderRouter" not in vault,
        "per-file-explicit-choice": "PrivateCredentialImportDialog(" in activity and
             "choosePrivateCredential(id:String?)" in activity and
             "onClick = { onChoose(entry.id) }" in import_dialog,
@@ -101,7 +99,7 @@ def source(root:Path=ROOT)->dict:
             "P1-P11" in physical_guide and "NO APLICABLE" in physical_guide,
        "signer-remains-external": "SPDECODE_SIGNING_KEYSTORE_BASE64" in release and
             'keytool' in release and 'storepass:env STORE_PASSWORD' in release,
-       "no-secret-autofill-via-intent": "Intent(" not in ui and "ClipData" not in ui,
+       "no-secret-autofill-via-intent": "Intent(" not in import_dialog and "ClipData" not in import_dialog,
     }
     langs=["values","values-es","values-pt-rBR","values-ar"]
     translations={}

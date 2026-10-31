@@ -15,6 +15,7 @@ import { routes,metadata,bodyLimit } from "./v2-routes.mjs";
 import { attestationChallenge,registeredKey,rememberKey,verifyHardware } from "./device-security.mjs";
 import { validBoundClaims,acceptBoundProof } from "./bound-auth.mjs";
 import { actionChallenge,verifyAction } from "./action-integrity.mjs";
+import { openHpkeRequest, unpackHpkeBody, sealHpkeReply, isHpkeEnabled, requiresHpke, HPKE_MAX_BYTES } from "./v2-hpke.mjs";
 
 const fail=(code,status)=>jsonReply({error:{code}},status);
 const record=value=>value && typeof value==="object" && !Array.isArray(value);
@@ -59,7 +60,7 @@ async function dispatch(operation,request) {
   };
   return (await handlers[operation]()).POST(request);
 }
-export async function transportRequest(request,options={}) {
+async function jsonTransportRequest(request,options={}) {
   // Check both server-controlled policies before processing even a bootstrap request.
   let availability,playPolicy;
   try{
@@ -87,6 +88,8 @@ export async function transportRequest(request,options={}) {
       if(!authorization.startsWith("Bearer "))return fail("UNAUTHORIZED",401);
       bearer=authorization.slice(7);claims=verifySignature(bearer,cfg.signingKey,undefined,audience);
       if(!await validBoundClaims(redis,claims,cfg))return fail("UNAUTHORIZED",401);
+      if(claims.hpke===true && !options.hpkeWireBytes)
+        return fail("ENCRYPTED_TRANSPORT_REQUIRED",426);
     }
     const bytes=await readBytes(request,bodyLimit(op));
     if(op===1) {
@@ -95,7 +98,7 @@ export async function transportRequest(request,options={}) {
       const body=JSON.parse(bytes);
       if(!record(body) || Object.keys(body).join(",")!=="publicKey" || !publicKey(body.publicKey))
         return fail("INVALID_REQUEST",400);
-      const proofNonce=verifyProof(request,op,bytes,"",body.publicKey);
+      const proofNonce=verifyProof(request,op,options.hpkeWireBytes||bytes,"",body.publicKey);
       if(!proofNonce)return fail("INVALID_REQUEST",400);
       const keyId=sha256(body.publicKey);
       if(!await throttle(redis,"spc2:key-admission:"+keyId,20,900))return fail("RATE_LIMITED",429);
@@ -106,7 +109,8 @@ export async function transportRequest(request,options={}) {
       // A beta session must have a hardware-verified app version and signing identity.
       // Previously registered strict-mode keys without version evidence re-enroll.
       const hardwareNeeded=cfg.requireHardware&&!registered;
-      const value={nonce,publicKey:body.publicKey,ip,created:Date.now(),hardwareNeeded};
+      const value={nonce,publicKey:body.publicKey,ip,created:Date.now(),hardwareNeeded,
+        hpke:Boolean(options.hpkeWireBytes)};
       if(await redis.set("spc2:challenge:"+challengeId,JSON.stringify(value),{EX:120,NX:true})!=="OK")
         return fail("SERVICE_UNAVAILABLE",503);
       return jsonReply({apiVersion:"v2",challengeId,nonce,expiresIn:120,integrityRequired:cfg.playIntegrityRequired,
@@ -125,8 +129,9 @@ export async function transportRequest(request,options={}) {
       if(!raw)return fail("EXPIRED_CHALLENGE",401);
       const challenge=JSON.parse(raw);
       const sessionKey=challenge.hardwareNeeded?body.publicKey:challenge.publicKey;
-      if(challenge.ip!==ip || Date.now()-challenge.created>120000 || challenge.created>Date.now()+5000 ||
-         !verifyProof(request,op,bytes,"",sessionKey))return fail("INTEGRITY_REJECTED",403);
+      if(challenge.ip!==ip || Boolean(challenge.hpke)!==Boolean(options.hpkeWireBytes) ||
+         Date.now()-challenge.created>120000 || challenge.created>Date.now()+5000 ||
+         !verifyProof(request,op,options.hpkeWireBytes||bytes,"",sessionKey))return fail("INTEGRITY_REJECTED",403);
       if(!challenge.hardwareNeeded&&(body.publicKey!==undefined||body.certificateChain!==undefined))return fail("INVALID_REQUEST",400);
       const nonce=integrityNonce(challenge.nonce,body.challengeId,sessionKey);
       // Injection is server-test only. HTTP callers never provide verdict JSON.
@@ -157,7 +162,7 @@ export async function transportRequest(request,options={}) {
       const app=verdict?.tokenPayloadExternal?.appIntegrity;
       const now=Math.floor(Date.now()/1000),jti=randomUUID();
       const claims={iss:"spdecode-cloud",aud:audience,scope:"decode",iat:now,exp:now+300,jti,
-        key:sessionKey,hardware:!!hardware,
+        key:sessionKey,hardware:!!hardware,hpke:Boolean(options.hpkeWireBytes),
         playIntegrityVerified:cfg.playIntegrityRequired,
         versionCode:cfg.playIntegrityRequired?Number(app.versionCode):hardware.versionCode,
         certificates:cfg.playIntegrityRequired?
@@ -169,7 +174,7 @@ export async function transportRequest(request,options={}) {
     }
     if([10,11].includes(op) && claims.versionCode>=35 && !publicKey(JSON.parse(bytes).catalogKey))
       return fail("INVALID_REQUEST",400);
-    const authorized=await acceptBoundProof(redis,request,op,bytes,bearer,claims);
+    const authorized=await acceptBoundProof(redis,request,op,bytes,bearer,claims,options.hpkeWireBytes||bytes);
     if(!authorized)return fail("UNAUTHORIZED",401);
     if(authorized.rateLimited)return fail("RATE_LIMITED",429);
     if(op===16) {
@@ -177,7 +182,7 @@ export async function transportRequest(request,options={}) {
       const value=await actionChallenge(redis,claims,JSON.parse(bytes),cfg);
       return value?jsonReply(value,201):fail("INVALID_REQUEST",400);
     }
-    if(!await verifyAction(redis,request,op,bytes,claims,cfg,options))return fail("INTEGRITY_REJECTED",403);
+    if(!await verifyAction(redis,request,op,options.hpkeWireBytes||bytes,claims,cfg,options))return fail("INTEGRITY_REJECTED",403);
     const headers=new Headers(request.headers);headers.delete("content-length");
     const internal=new Request(new URL("/api/v1/"+routes[op],url),{
       method:"POST",headers,body:bytes,signal:request.signal});
@@ -190,3 +195,84 @@ export async function transportRequest(request,options={}) {
   }
 }
 
+
+/** V2 encrypted branch uses the EXACT existing admission, Play, hardware,
+ * PoP, action-integrity and worker contracts after decrypting. All PoP/action
+ * hashes bind the outer ciphertext rather than a reserialized JSON payload.
+ * Older private beta clients remain on their JSON path until HPKE_ONLY.
+ */
+async function readHpkeBytes(request,limit) {
+  if(request.headers.has("content-encoding")||!request.body)throw Error("HPKE_INVALID");
+  const length=request.headers.get("content-length");
+  if(length && (!/^\d+$/.test(length)||Number(length)>limit))throw Error("INPUT_TOO_LARGE");
+  const reader=request.body.getReader(),parts=[];let size=0;
+  try {
+    for(;;) {
+      const {done,value}=await reader.read();if(done)break;
+      size+=value.byteLength;
+      if(size>limit){await reader.cancel();throw Error("INPUT_TOO_LARGE");}
+      parts.push(Buffer.from(value));
+    }
+  }finally{reader.releaseLock();}
+  return Buffer.concat(parts,size);
+}
+async function boundedReply(reply) {
+  const max=96*1024*1024;
+  if(Number(reply.headers.get("content-length"))>max)throw Error("HPKE_REPLY_TOO_LARGE");
+  const reader=reply.body?.getReader();if(!reader)return Buffer.alloc(0);
+  const chunks=[];let size=0;
+  try {
+    for(;;) {
+      const {done,value}=await reader.read();if(done)break;
+      size+=value.byteLength;
+      if(size>max){await reader.cancel();throw Error("HPKE_REPLY_TOO_LARGE");}
+      chunks.push(Buffer.from(value));
+    }
+  }finally{reader.releaseLock();}
+  return Buffer.concat(chunks,size);
+}
+export async function transportRequest(request,options={}) {
+  const type=request.headers.get("content-type")?.split(";")[0]?.trim().toLowerCase();
+  const env=options.env||process.env;
+  if(type!=="application/octet-stream") {
+    if(requiresHpke(env))return fail("ENCRYPTED_TRANSPORT_REQUIRED",426);
+    return jsonTransportRequest(request,options);
+  }
+  if(!isHpkeEnabled(env))return fail("SERVICE_UNAVAILABLE",503);
+  const url=new URL(request.url),name=request.headers.get("x-sp-operation")||"";
+  if(request.method!=="POST"||url.search||!/^(1|2|[4-9]|1[0-7])$/.test(name))
+    return fail("INVALID_REQUEST",400);
+  const op=Number(name);
+  if(op>=4 && !(request.headers.get("authorization")||"").startsWith("Bearer "))
+    return fail("UNAUTHORIZED",401);
+  let opened;
+  try {
+    // Apply independent edge throttling before accepting large crypto payloads.
+    const redis=await (options.storeProvider||store)();
+    if(!await throttle(redis,"spc2:hpke-edge:"+ipKey(request),180,60))
+      return fail("RATE_LIMITED",429);
+    const max=op===5?HPKE_MAX_BYTES:(op===6?1024*1024+512:bodyLimit(op)+512);
+    const wire=await readHpkeBytes(request,max);
+    opened=await openHpkeRequest(wire,op,env);
+    if(await redis.set("spc2:hpke-replay:"+opened.replayId,"1",{EX:150,NX:true})!=="OK")
+      return fail("INVALID_REQUEST",400);
+    const decoded=unpackHpkeBody(opened.plaintext,op);
+    const headers=new Headers(request.headers);
+    headers.set("content-type","application/json");
+    headers.delete("content-length");headers.delete("content-encoding");
+    const internal=new Request(request.url,{method:"POST",headers,body:decoded,signal:request.signal});
+    const response=await jsonTransportRequest(internal,{...options,hpkeWireBytes:wire});
+    const responseBytes=await boundedReply(response);
+    const ciphertext=sealHpkeReply(opened,response.status,responseBytes);
+    return new Response(ciphertext,{status:response.status,headers:{
+      "Content-Type":"application/octet-stream","Cache-Control":"no-store","X-Content-Type-Options":"nosniff"
+    }});
+  }catch(error) {
+    // Do not disclose key IDs, invalid tags, keyring state or parsing exceptions.
+    return fail(error?.message==="INPUT_TOO_LARGE"?"INPUT_TOO_LARGE":"INVALID_REQUEST",
+      error?.message==="INPUT_TOO_LARGE"?413:400);
+  }finally {
+    if(opened?.plaintext)opened.plaintext.fill(0);
+    if(opened?.responseMaterial)opened.responseMaterial.fill(0);
+  }
+}
