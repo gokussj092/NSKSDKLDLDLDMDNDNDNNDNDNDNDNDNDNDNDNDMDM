@@ -43,5 +43,77 @@ jobs:
           python3 -m unittest \
             tests.test_cloud_c4_android_bridge \
             tests.test_android_npvs_identity -v
+      - name: R0 NPVS R8 and HPKE deployment regression tests
+        run: |
+          python3 -m unittest tests.test_r0_r8_npvs_contract tests.test_r0_hpke_update_guard -v
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install Cloud HPKE test dependencies (runner only)
+        working-directory: cloud/web
+        run: |
+          npm pkg set overrides.tslib=2.8.1
+          npm install --no-audit --no-fund --ignore-scripts --no-package-lock
+      - name: Authenticate Node HPKE request/reply and session contracts
+        working-directory: cloud/web
+        run: node --test tests/v2-hpke.test.mjs tests/v2-security.test.mjs
       - name: Check VPS operator script syntax (no changes to running VPS)
         run: bash -n cloud/infra/vps/spdecodectl
+
+  r8-unsigned:
+    needs: r0-host-contracts
+    if: github.repository_owner == 'gokussj092' && github.ref == 'refs/heads/feat/post-native-security'
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    env:
+      SPDECODE_CLOUD_API_BASE_URL: https://api.spdecode.xyz
+      SPDECODE_CLOUD_RELEASE: "true"
+      SPDECODE_CLOUD_QA_BUILD: "false"
+      ORG_GRADLE_PROJECT_noticeFirebaseAPP_ID: ${{ vars.SPDECODE_NOTICE_FIREBASE_APP_ID }}
+      ORG_GRADLE_PROJECT_noticeFirebaseAPI_KEY: ${{ vars.SPDECODE_NOTICE_FIREBASE_API_KEY }}
+      ORG_GRADLE_PROJECT_noticeFirebasePROJECT_ID: ${{ vars.SPDECODE_NOTICE_FIREBASE_PROJECT_ID }}
+      ORG_GRADLE_PROJECT_noticeFirebaseSENDER_ID: ${{ vars.SPDECODE_NOTICE_FIREBASE_SENDER_ID }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.11.1"
+      - name: Install SDK Android 36, NDK 27 and CMake
+        shell: bash
+        run: |
+          set -euo pipefail
+          SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -n 1)"
+          "$SDKMANAGER" --install "platforms;android-36" "build-tools;35.0.0" "platform-tools" "cmake;3.22.1" "ndk;27.2.12479018"
+      - name: Compile unsigned release APK and AAB with R8 (no signing credentials)
+        working-directory: android
+        run: gradle --no-daemon --max-workers=2 :app:assembleRelease :app:bundleRelease
+      - name: Audit R8 mapping, Android locales, native ABIs and NPVS client isolation
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=android/app/build/outputs/apk/release/app-release-unsigned.apk
+          AAB=android/app/build/outputs/bundle/release/app-release.aab
+          MAPPING=android/app/build/outputs/mapping/release/mapping.txt
+          test -s "$APK" && test -s "$AAB" && test -s "$MAPPING"
+          python3 tests/native_jni_contract.py
+          python3 scripts/ci/verify_aab_locales.py "$AAB"
+          python3 tests/cloud_c5_apk_audit.py "$APK"
+          python3 - <<'PY'
+          from pathlib import Path
+          import zipfile,re
+          mapping=Path("android/app/build/outputs/mapping/release/mapping.txt").read_text()
+          for name in ("CloudNativeTransport","CloudKeystorePlatform"):
+              full="com.ghostdeveloper.spdecode.cloud."+name
+              assert re.search(r"^"+re.escape(full)+r" -> "+re.escape(full)+r":$",mapping,re.M), "R8 renamed native bridge "+name
+          with zipfile.ZipFile("android/app/build/outputs/apk/release/app-release-unsigned.apk") as archive:
+              abis={p.split("/")[1] for p in archive.namelist() if re.fullmatch(r"lib/[^/]+/libv7q3\\.so",p)}
+              assert len(abis)>=4,"Native ABI coverage incomplete"
+          print("PASS R8 preserved JNI names, Cloud assets isolation, locales and 4+ ABIs")
+          PY
+      # Deliberately no signed APK, no Play upload, no deployment, no artifact upload.
