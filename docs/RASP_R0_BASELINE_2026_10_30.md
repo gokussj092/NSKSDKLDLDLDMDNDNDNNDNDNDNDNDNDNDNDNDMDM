@@ -142,6 +142,12 @@ Registrar únicamente códigos de resultado, versión y métricas agregadas (sin
 - En `41164831421` (`c69071b77e3350e4a3a7300aefda249b5e17922c`), **host SUCCESS**: 23 firmas JNI, cinco tests de pins de firma, contrato C++ RASP, diez tests C4/NPVS, doce nuevos tests R0/R8/HPKE y 18 pruebas Node HPKE/V2. El proceso Node usó overrides de tslib sólo en el checkout efímero del runner.
 - **Compilación release R8/AAB de este run:** consultar resultado de `r8-unsigned` al finalizar. Mientras esté ejecutándose, no declararla PASS. Las compilaciones anteriores de otra revisión (`41154662634` unsigned, `41156789776` signed) sí fueron success, pero no sustituyen un resultado sobre esta rama.
 
+### Aclaración de compatibilidad NPVS
+
+En la revisión de código **no se encontró un motor privado NPVS nuevo que deba trasladarse al APK**. El motor de descifrado de v1/v5/v6 permanece en el worker y la app Cloud sólo contiene inspectores estructurales acotados para contraseña/destinatario, consentimiento de usuario y material seleccionado en el vault local. Las peticiones ya viajan como HPKE autenticado en C++ con Play Integrity/PoP separado. Por eso R0 añade contratos de regresión en lugar de introducir una segunda implementación offline.
+
+**Riesgo pendiente de R3:** las identidades NPVS importadas/generadas no son necesariamente claves privadas no exportables del hardware: pueden ser PKCS#8 dentro de registros AES-GCM protegidos por AndroidKeyStore y pasar momentáneamente por memoria JVM. No confundirlas con la identidad PoP de hardware que sí es no exportable. No prometer «anti-dump total» y no desactivar la exportación explícita del usuario sin revisión de compatibilidad.
+
 ### Límites de compatibilidad
 
 Los tests de código y una compilación R8 verifican preservación de contratos y empaquetado, **no** la capacidad de NPVS de descifrar correctamente un archivo en una instalación física de Play con su verdict real. Para completar R0 quedan los casos de la sección 7, la disponibilidad real VPS/HPKE y un ensayo de rollback con Docker/Compose en staging. No declarar terminada la fase si faltan esos resultados.
