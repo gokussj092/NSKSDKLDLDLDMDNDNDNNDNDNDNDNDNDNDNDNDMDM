@@ -112,7 +112,7 @@ jobs:
               full="com.ghostdeveloper.spdecode.cloud."+name
               assert re.search(r"^"+re.escape(full)+r" -> "+re.escape(full)+r":$",mapping,re.M), "R8 renamed native bridge "+name
           with zipfile.ZipFile("android/app/build/outputs/apk/release/app-release-unsigned.apk") as archive:
-              abis={p.split("/")[1] for p in archive.namelist() if re.fullmatch(r"lib/[^/]+/libv7q3\\.so",p)}
+              abis={p.split("/")[1] for p in archive.namelist() if re.fullmatch(r"lib/[^/]+/libv7q3\.so",p)}
               assert len(abis)>=4,"Native ABI coverage incomplete"
           print("PASS R8 preserved JNI names, Cloud assets isolation, locales and 4+ ABIs")
           PY
