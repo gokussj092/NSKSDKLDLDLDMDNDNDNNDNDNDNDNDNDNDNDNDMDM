@@ -410,6 +410,20 @@ internal class CloudDecodeClient(context: Context) {
         decode(CloudOperation.IMPORT_CLOUD,
             JSONObject().put("reference",reference).put("consent",true)).rawText
 
+    /** The broker, not Android, selects external service URLs or worker code. */
+    suspend fun decodeOnlineReference(provider:String,reference:String):String =
+        when(provider) {
+            "hc" -> HttpCustomOnlineFlow.run(
+                download={downloadHttpCustom(reference)},
+                decode={bytes,pw,id->decodeFile("hc",bytes,pw,id)},
+                prompt={pw,id->HttpCustomCloudPrompt.ask(pw,id)},
+            )
+            "ehi" -> decodeHttpInjectorCloud(reference)
+            else -> decode(CloudOperation.IMPORT_CLOUD,JSONObject()
+                .put("provider",provider).put("reference",reference)
+                .put("consent",true)).rawText
+        }
+
     suspend fun decodeNurCatalog(): Decoded =
         decode(CloudOperation.IMPORT_CATALOG,JSONObject().put("consent",true))
 

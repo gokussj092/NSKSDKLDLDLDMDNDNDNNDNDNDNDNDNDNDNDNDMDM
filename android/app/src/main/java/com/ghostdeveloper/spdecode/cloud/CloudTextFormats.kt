@@ -12,13 +12,10 @@ internal object CloudTextFormats {
     private const val MNR_ALPHABET="¹²³⁴⁵⁶⁷⁸⁹⁰·,‽:'′"
     fun identify(raw:String,routes:List<CloudTextRoute> = emptyList()):TextProtocolDecoder.Input? {
         val value=raw.trim()
-        if(HttpCustomCloudReference.matches(value) && (routes.isEmpty() ||
-            routes.any { it.kind=="cloud" && it.suffix=="hc" && value.startsWith(it.prefix) }))
-            return TextProtocolDecoder.Input("http-custom-cloud","HTTP Custom Cloud","hc",value)
         // Longest prefix first: e.g. npvt-vless:// before npvt://.
         // The worker independently checks whether a method is really supported.
         val remote=routes.asSequence()
-            .filter { it.prefix !in HttpCustomCloudReference.prefixes && value.length>it.prefix.length &&
+            .filter { it.kind!="cloud" && value.length>it.prefix.length &&
                 value.startsWith(it.prefix,ignoreCase=true) }
             .maxByOrNull { it.prefix.length }
         if(remote!=null && value.length<=TextProtocolDecoder.MAX_CHARS)

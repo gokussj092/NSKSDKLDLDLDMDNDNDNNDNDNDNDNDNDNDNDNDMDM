@@ -92,7 +92,7 @@ fun SpDecodeApp(
     canReportError:Boolean=false,
     onReportError:()->Unit={},
     onDecodeText:(String)->Unit={},
-    onDecodeCloud:(String)->Unit={},
+    onDecodeCloud:(String,String)->Unit={},
     onDecodeServerCatalog:()->Unit={},
     onDecodeServerApp:(String)->Unit={}, 
     serverVpnApps:List<ServerVpnApp> = emptyList(),
@@ -139,7 +139,7 @@ fun SpDecodeApp(
                     0->HomeScreen(current,session,busy,reveal,hideCredentials,onImport,onCancel,onReveal,
                         onCopy={dialog="copy"},onExport={dialog="export"},onSelect=onSelect,
                         onClearResult=onClearResult,onDecodeText=onDecodeText,
-                        onDecodeCloud=onDecodeCloud,
+                        onDecodeCloud=onDecodeCloud,cloudTextFormats=cloudTextFormats,
                         highlightGuide=if(!whatsNew && !busy)guideStep else null)
                     1->HistoryScreen(session,onSelect,onDeleteSelected,onClear,onImportMultiple,onFavorite)
                     2->FormatsScreen(cloudFormats,cloudTextFormats,serverVpnLoading,catalogProgress)
@@ -408,7 +408,8 @@ private fun HomeScreen(
     onSelect:(DecodeView)->Unit,
     onClearResult:()->Unit,
     onDecodeText:(String)->Unit,
-    onDecodeCloud:(String)->Unit,
+    onDecodeCloud:(String,String)->Unit,
+    cloudTextFormats:List<CloudTextRoute>,
     highlightGuide:Int?=null,
 ) {
     Column(
@@ -503,14 +504,15 @@ private fun HomeScreen(
         ) {
             Icon(Icons.Outlined.Cloud,null,modifier=Modifier.size(19.dp))
             Spacer(Modifier.width(8.dp))
-            Text(stringResource(R.string.cloud_http_injector_open),
+            Text(stringResource(R.string.cloud_global_title),
                 fontSize=13.sp)
         }
-        if(cloudExpanded) HttpInjectorCloudPanel(
+        if(cloudExpanded) GlobalCloudImportPanel(
             enabled=!busy,
-            onDecode={input->
+            routes=cloudTextFormats,
+            onDecode={provider,input->
                 awaitingCloudResult=true
-                onDecodeCloud(input)
+                onDecodeCloud(provider,input)
             },
         )
         if(textExpanded) TextDecoderPanel(
