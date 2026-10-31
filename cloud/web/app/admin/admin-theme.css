@@ -236,3 +236,31 @@ body:has(.sp-admin-frame){background:#000;color:#f7f7f7}
  .sp-admin-frame .sp-admin-content .admin-wrap{width:calc(100% - 28px);margin:25px auto 52px}
 }
 @media(prefers-reduced-motion:no-preference){.sp-admin-sidebar{transition:transform .2s ease}}
+
+
+/* Isolated notification composer and live user preview. */
+.sp-admin-notice-page{margin-top:19px}
+.sp-admin-notice-page .admin-grid{align-items:start}
+.sp-admin-notice-templates{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 22px}
+.sp-admin-notice-templates .button{font-size:11px;padding:9px 12px;min-height:34px}
+.sp-admin-notice-form label{display:block;position:relative;color:#ddd;font-size:13px;font-weight:650;margin:16px 0}
+.sp-admin-notice-form input,.sp-admin-notice-form textarea{display:block;width:100%;background:#0c0c0c;color:#f7f7f7;border:1px solid #404040;border-radius:12px;padding:14px;font:inherit;resize:vertical;margin-top:8px}
+.sp-admin-notice-form textarea{min-height:152px;line-height:1.6}
+.sp-admin-notice-form input::placeholder,.sp-admin-notice-form textarea::placeholder{color:#999}
+.sp-admin-notice-count{float:right;color:#aaa;font-variant-numeric:tabular-nums;font-size:11px;font-weight:400}
+.sp-admin-notice-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.sp-admin-notice-preview{background:linear-gradient(160deg,#282828,#181818);border:1px solid #4c4c4c;border-radius:18px;padding:22px 19px;margin:21px 0 28px;overflow-wrap:anywhere;min-height:161px}
+.sp-admin-notice-preview-app{display:flex;gap:10px;align-items:center;margin-bottom:15px;font-size:12px}
+.sp-admin-notice-preview-app small{margin-left:auto;color:#b8b8b8}
+.sp-admin-notice-preview-mark{display:grid;place-items:center;width:31px;height:31px;background:#eee;color:#111;border-radius:9px;font-size:10px;font-weight:850}
+.sp-admin-notice-preview>strong{display:block;font-size:15px}
+.sp-admin-notice-preview>p{margin:7px 0 0;color:#d2d2d2;font-size:13px;white-space:pre-wrap}
+.sp-admin-notice-result{margin:14px 0;padding:13px 17px;border:1px solid #555;border-radius:11px;background:#252525;color:#f4f4f4;font-size:13px}
+.sp-admin-notice-history{margin-top:24px}
+.sp-admin-notice-list{display:grid;gap:11px}
+.sp-admin-notice-history-row{display:flex;gap:20px;align-items:flex-start;justify-content:space-between;border:1px solid #353535;border-radius:13px;padding:15px;background:#202020}
+.sp-admin-notice-history-row>div{min-width:0;overflow-wrap:anywhere}
+.sp-admin-notice-history-row strong{font-size:14px}
+.sp-admin-notice-history-row p{white-space:pre-wrap;margin:5px 0 0;color:#bdbdbd;font-size:12px}
+.sp-admin-notice-history-row small{color:#aaa;font-size:11px;line-height:1.65;flex:0 0 186px}
+@media(max-width:560px){.sp-admin-notice-history-row{display:block}.sp-admin-notice-history-row small{display:block;margin-top:12px}.sp-admin-notice-actions .button{width:100%}}
