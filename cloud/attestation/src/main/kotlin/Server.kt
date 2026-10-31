@@ -22,6 +22,8 @@ import java.time.Instant
 import java.time.YearMonth
 import java.util.Base64
 import java.util.concurrent.ArrayBlockingQueue
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 
@@ -38,7 +40,10 @@ data class Decision(val valid: Boolean, val publicKey: String? = null,
 
 // Log bounded, non-identifying rejection categories only. Never log certificates,
 // package names, public keys, challenges, serials, URLs or exception messages.
+private val startedAt = System.currentTimeMillis()
+private val rejectCounts = ConcurrentHashMap<String,AtomicLong>()
 private fun reject(reason: String): Decision {
+    rejectCounts.computeIfAbsent(reason) { AtomicLong(0) }.incrementAndGet()
     System.err.println("SP_ATTEST_REJECT=$reason")
     return Decision(false)
 }
@@ -179,6 +184,18 @@ fun main() {
     server.createContext("/ready") { exchange ->
         try { revocations.current(); reply(exchange, 200, mapOf("ready" to true)) }
         catch (_: Exception) { reply(exchange, 503, mapOf("ready" to false)) }
+        finally { exchange.close() }
+    }
+    server.createContext("/stats") { exchange ->
+        try {
+            val supplied = exchange.requestHeaders.getFirst("X-SP-Attestation-Token") ?: ""
+            if (!MessageDigest.isEqual(token.toByteArray(), supplied.toByteArray()) ||
+                exchange.requestMethod != "GET" || exchange.requestURI.rawPath != "/stats" ||
+                exchange.requestURI.rawQuery != null) reply(exchange,403,mapOf("error" to "UNAUTHORIZED"))
+            else reply(exchange,200,mapOf(
+                "uptimeSeconds" to (System.currentTimeMillis()-startedAt)/1000L,
+                "rejections" to rejectCounts.entries.associate { it.key to it.value.get() }.toSortedMap()))
+        }catch (_:Exception) { reply(exchange,503,mapOf("error" to "UNAVAILABLE")) }
         finally { exchange.close() }
     }
     server.createContext("/verify") { exchange ->
