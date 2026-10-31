@@ -42,7 +42,7 @@ class R0R8NpvsContracts(unittest.TestCase):
         self.assertIn("JNI_OnLoad;",exports)
         self.assertIn("local: *;",exports)
         for flag in ("-fstack-protector-strong","-D_FORTIFY_SOURCE=2",
-                     "-Wl,-z,relro","-Wl,-z,now","-Wl,-z,noexecstack"):
+                     "-Wl,-z,relro,-z,now","-Wl,-z,noexecstack"):
             self.assertIn(flag,cmake)
 
     def test_cloud_hpke_reuses_standard_play_integrity_authenticated_wire(self):
