@@ -25,7 +25,7 @@ El usuario autorizó implementar todas las fases R0–R6 en este turno, superand
 - Interoperabilidad C++ Mbed TLS 3.6.7 ↔ Node: HPKE RFC9180 PASS y catálogo P-256 PASS. Archivo oficial comprobado con el SHA256 existente del proyecto; no se cambiaron dependencias/keys de producción.
 - Sintaxis C++ JNI comprobada con cabeceras JDK oficiales, `-DNDEBUG -O2 -Wall -Wextra -Werror`.
 - DSO de laboratorio: original → MATCH; W+X → CHANGED; bytes RX alterados → CHANGED; restauración → MATCH; archivo eliminado → UNKNOWN. No se ejecuta la función con bytes alterados ni se toca otro proceso.
-- Batería Node amplia en el entorno local, antes de añadir el último test HPKE-only: base **404 tests, 346 pass, 56 fail, 2 skip**; candidata **411 tests, 353 pass, 56 fail, 2 skip**. Mismos nombres de fallos; ninguno nuevo. Son fallos heredados de catálogo/proveedores/fixtures; no se desactivaron ni se declara verde global. Los tests nuevos dirigidos sí pasan. Investigar la deuda antes de promoción.
+- Batería Node completa ejecutada correctamente desde `cloud/web`: base **404 tests, 402 pass, 0 fail, 2 skip**; candidata **412 tests, 410 pass, 0 fail, 2 skip**. Los 56 fallos vistos inicialmente eran un error de invocación desde la raíz (los fixtures resuelven archivos desde `process.cwd()`), no deuda heredada. No se desactivó ningún test para obtener este resultado.
 - Docker y Android SDK/dispositivo no están disponibles localmente. Las tareas respectivas se prepararon en CI; registrar su resultado observado abajo. La mera existencia del workflow no es evidencia de ejecución.
 
 ## Fronteras y comportamiento
@@ -58,7 +58,7 @@ Contadores: `spsec:rasp:<día>:<build-acotada>:<estado|bucket-latencia>`, TTL 8 
 
 ## Memoria y compatibilidad NPVS
 
-NPVS v1/v5/v6 sigue en worker. Las identidades se guardan con AES-GCM/Android Keystore en noBackupFilesDir. Las listas y pickers ya no conservan cada JSONObject privado descifrado: los Entry contienen metadatos y una lectura explícita de material. El formato de disco, consentimiento, exportación del usuario, contraseña y credenciales de destinatario no cambian. El material elegido y Strings visibles necesitan memoria JVM transitoria, que no puede borrarse con garantías de C++.
+NPVS v1/v5/v6 sigue en worker. Las identidades se guardan con AES-GCM/Android Keystore en noBackupFilesDir. Las listas y pickers ya no conservan cada JSONObject privado descifrado: los Entry contienen metadatos y una lectura explícita de material. El diálogo carga el material en IO al tocar Ver, captura errores de registros ausentes/corruptos y libera su referencia al cerrarse. El formato de disco, consentimiento, exportación del usuario, contraseña y credenciales de destinatario no cambian. El material elegido y Strings visibles necesitan memoria JVM transitoria, que no puede borrarse con garantías de C++.
 
 Los nuevos guard RAII cubren salida excepcional de HKDF/HPKE, claves derivadas, constructor RNG/AEAD y buffers AEAD fallidos. Los contextos HPKE son one-shot, tienen límite 64 y expiran a 300 s al acceder a la tabla; `finally` de Kotlin descarta los normales. El plazo contempla 60 s de preparación Play + 30 s de token + 10 s conexión + 165 s del catálogo pesado, evitando cortar una respuesta NUR válida. No hay hilo permanente que prometa borrado instantáneo durante inactividad. Los datos necesarios para mostrar/exportar siguen siendo observables con control del proceso/SO.
 
@@ -77,3 +77,9 @@ No hay evidencia física adjunta a este checkpoint. R0/R6 permanecen con gates a
 ### Primera ejecución remota de esta implementación
 
 Run `41167255787`, SHA `65206a327a770c2d6121baa255d92a89c12ceb2c`: host completo SUCCESS. R8 detectó en arm64 una deducción de tipos distinta entre `Elf64_Xword` y `uintptr_t` en el comparador de código. Se corrigió con conversión explícita tras el límite de tamaño; el DSO host volvió a superar manipulación/restauración. No promover ese primer SHA. Se añadió además un test del presupuesto de tiempo Play+NUR y se ajustó la expiración HPKE a 300 s. Los textos de pantalla privada cubren los 14 idiomas. La siguiente ejecución debe validar el checkpoint corregido.
+
+### Checkpoint corregido validado
+
+Run `41167495336`, SHA `ce7a68dd6abc62d470a82419f4de6a6cf9d292ee`: **host SUCCESS, isolated-compose SUCCESS, r8-unsigned SUCCESS**. APK y AAB release con R8 compilaron sin firma; auditoría de las cuatro ABIs, JNI, aislamiento de motores, 14 idiomas y ELF PASS. No se publicaron artefactos ni se tocó el VPS.
+
+La revisión final del diálogo NPVS cambió su carga explícita de material privado a IO con manejo de errores, para evitar hacer la lectura/Keystore dentro de la recomposición. Ese ajuste se valida en el siguiente checkpoint; no modifica protocolo, identidad ni almacenamiento. Se amplió la etapa Node a `npm test` desde `cloud/web` para registrar también la batería completa en CI.
