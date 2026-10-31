@@ -117,9 +117,9 @@ CatalogBytes openCatalog(const CatalogBytes& privatePkcs8,const std::string& rec
     auto* peerEc=mbedtls_pk_ec(peer.pk);
     auto* recipientEc=mbedtls_pk_ec(recipientKey.pk);
     if(!ownEc||!peerEc||!recipientEc ||
-       ownEc->MBEDTLS_PRIVATE(grp).MBEDTLS_PRIVATE(id)!=MBEDTLS_ECP_DP_SECP256R1 ||
-       peerEc->MBEDTLS_PRIVATE(grp).MBEDTLS_PRIVATE(id)!=MBEDTLS_ECP_DP_SECP256R1 ||
-       recipientEc->MBEDTLS_PRIVATE(grp).MBEDTLS_PRIVATE(id)!=MBEDTLS_ECP_DP_SECP256R1)invalid();
+       ownEc->MBEDTLS_PRIVATE(grp).id!=MBEDTLS_ECP_DP_SECP256R1 ||
+       peerEc->MBEDTLS_PRIVATE(grp).id!=MBEDTLS_ECP_DP_SECP256R1 ||
+       recipientEc->MBEDTLS_PRIVATE(grp).id!=MBEDTLS_ECP_DP_SECP256R1)invalid();
     required(mbedtls_ecp_check_pubkey(&peerEc->MBEDTLS_PRIVATE(grp),&peerEc->MBEDTLS_PRIVATE(Q)));
     required(mbedtls_ecp_check_pubkey(&recipientEc->MBEDTLS_PRIVATE(grp),&recipientEc->MBEDTLS_PRIVATE(Q)));
     // The recipient SPKI is authenticated as part of the GCM AAD; a
