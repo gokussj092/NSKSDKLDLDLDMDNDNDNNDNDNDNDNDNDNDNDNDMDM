@@ -1,0 +1,30 @@
+name: SP-DECODE V1-only Update Notice QA
+# One focused Node test run; no APK build, no secrets, no production deployment.
+on:
+  push:
+    branches: ["feat/cloud-selector-private-card-notification-chime"]
+    paths: [".github/workflows/cloud-v1-news-isolation-qa.yml"]
+permissions:
+  contents: read
+jobs:
+  verify-news:
+    if: github.repository_owner == 'gokussj092'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify V1 publication, 14 locales and V2 separation
+        working-directory: cloud/web
+        run: node --test tests/whats-new.test.mjs
+      - name: Verify V2 editorial snapshot is unchanged
+        working-directory: cloud/web
+        run: |
+          node --input-type=module -e '
+            import {loadNews,loadV1News} from "./lib/whats-new.mjs";
+            if(loadNews().version!==5 || loadV1News().version!==6)process.exit(1);
+          '
