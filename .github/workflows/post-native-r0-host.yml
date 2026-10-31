@@ -33,5 +33,10 @@ jobs:
             android/app/src/main/cpp/spdecode_runtime_guard.cpp \
             -o "$RUNNER_TEMP/native_runtime_guard_contract"
           "$RUNNER_TEMP/native_runtime_guard_contract"
+      - name: Verify C0 UI rebaseline, Cloud bridge and NPVS privacy contracts
+        run: |
+          python3 -m unittest \
+            tests.test_cloud_c4_android_bridge \
+            tests.test_android_npvs_identity -v
       - name: Check VPS operator script syntax (no changes to running VPS)
         run: bash -n cloud/infra/vps/spdecodectl
