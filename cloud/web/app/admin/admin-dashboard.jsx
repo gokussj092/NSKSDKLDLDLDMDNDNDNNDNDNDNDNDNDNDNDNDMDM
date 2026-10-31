@@ -27,7 +27,7 @@ export default function AdminDashboard({mode="system"}){
   setPatchMonths(p.patchMonths);
   setEnforcePatch(p.enforcePatch);
   setEnforceBoot(p.enforceBoot);
- },[data?.v2DevicePolicy?.revision]);
+ },[data?.v2DevicePolicy?.revision,data?.v2DevicePolicy?.expiresAt]);
  useEffect(()=>{setClock(Date.now());const t=setInterval(()=>setClock(Date.now()),60000);return()=>clearInterval(t);},[]);
  const router=useRouter();
  const refresh=useCallback(async()=>{
