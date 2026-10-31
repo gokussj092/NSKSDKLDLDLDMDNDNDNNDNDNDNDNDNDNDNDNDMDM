@@ -7,4 +7,4 @@ unicorn==2.1.4
 pycryptodome==3.23.0
 
 # Optional exact-geometry flat VectorDrawable rendering (analysis only):
-CairoSVG==2.8.2
+CairoSVG==2.9.1

@@ -57,19 +57,29 @@ The prior source-only CI checks passed for commit `0c8cd7a`:
    `msgpack==1.1.1`. `GHSA-j586-36cw-2gc2` affects <1.2.3
    (denial of service through memory leaks) and 1.2.4 adds October 2026
    memory-allocation hardening. Both manifests now pin **1.2.4**.
-4. `requests==2.32.4` meets the published fix for
-   `GHSA-9hjg-9r4m-mvj7`; no change based on that advisory.
-5. `cloud/attestation`'s `protobuf-javalite==4.28.3` is newer than
+4. `requests==2.32.4` was **still vulnerable** to
+   `GHSA-gc5v-m9x4-r6x2` (the archive-extraction temp-file reuse advisory;
+   fixed >=2.33.0). This branch now pins **2.33.1**. Standard HTTP
+   requests do not invoke the affected utility directly, but patching the
+   manifest eliminates the known version exposure.
+5. `scripts/apk_analysis/requirements.txt` pinned `CairoSVG==2.8.2`.
+   `GHSA-f38f-5xpm-9r7c` is fixed in 2.9.0; the subsequent
+   `GHSA-c3jg-qh8m-j3h2` SVG path-complexity DoS is fixed in 2.9.1.
+   This branch now pins **2.9.1**. This is an optional local APK analysis
+   tool, not the Android Cloud runtime.
+6. `cloud/attestation`'s `protobuf-javalite==4.28.3` is newer than
    the 4.28.2 patch threshold for `GHSA-735f-pc8j-v9w8`.
    `bcpkix-jdk18on==1.86` is newer than earlier Bouncy Castle
    hardening fixes; this does not constitute a full transitive scan.
-
 References:
 - https://github.com/advisories/GHSA-673q-mjm6-r5xr
 - https://github.com/advisories/GHSA-2464-fhr4-w9xw
 - https://github.com/advisories/GHSA-p3m5-59mp-jv5r
 - https://github.com/react/react/security/advisories/GHSA-xqc2-xf4c-x3h3
 - https://github.com/advisories/GHSA-j586-36cw-2gc2
+- https://github.com/advisories/GHSA-f38f-5xpm-9r7c
+- https://github.com/advisories/GHSA-c3jg-qh8m-j3h2
+- https://github.com/advisories/GHSA-gc5v-m9x4-r6x2
 - https://github.com/msgpack/msgpack-python/blob/main/CHANGELOG.md
 
 ## Dependabot access and verification gap
@@ -77,8 +87,14 @@ References:
 The installed GitHub connector supports repository files, PRs, workflows and
 commits, **but denied** the authenticated `/dependabot/alerts`,
 `/code-scanning/alerts`, `/secret-scanning/alerts`, and SBOM endpoints.
-Consequently the real private inbox counts, alert numbers, dismissals,
-affected manifest paths, and remediation status were **not verified**.
+The user supplied a Dependabot alert-list snapshot with **10 open alerts**:
+- #3, #4, #5: Next.js (website).
+- #2, #8, #9, #10: MessagePack (worker and Dark Tunnel lab).
+- #6, #7: CairoSVG (APK analysis tool).
+- #1: Requests (worker).
+This snapshot verifies the visible alert list, **not** the current live status
+or whether GitHub has refreshed its dependency graph; direct API access is still
+unavailable. Do not dismiss any alerts based on an unmerged branch.
 The repository currently has **no** `.github/dependabot.yml` updater config,
 which is separate from GitHub's automatic vulnerability alerts.
 Do not infer zero alerts from a missing Dependabot updater config.
