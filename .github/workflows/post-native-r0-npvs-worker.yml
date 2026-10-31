@@ -1,0 +1,43 @@
+name: Post-native R0 NPVS worker compatibility
+
+# One scoped check, no APK signing, app update, production credentials or VPS.
+on:
+  push:
+    branches: ["feat/post-native-security"]
+    paths: [".github/workflows/post-native-r0-npvs-worker.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: spdecode-r0-npvs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  npvs-worker:
+    if: github.repository_owner == 'gokussj092'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install pinned Python decoder dependencies
+        run: python -m pip install -r requirements.txt
+      - name: NPVS v1/v5/v6 signed fixtures, passphrase, recipient and worker contracts
+        env:
+          PYTHONPATH: "cloud/workers/python:."
+        run: |
+          python -m unittest \
+            tests.test_npvs_identity \
+            tests.test_npvs_v1_legacy \
+            tests.test_npvs_protected \
+            tests.test_npvs_v5_embedded \
+            tests.test_npv_cloud_password_integration \
+            tests.test_cloud_c8_npvs_error_classification \
+            tests.test_cloud_npvs_packaging \
+            -v
