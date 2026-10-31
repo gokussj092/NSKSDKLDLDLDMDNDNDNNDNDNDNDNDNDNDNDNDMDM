@@ -77,6 +77,67 @@ class CompatibleExportTests(unittest.TestCase):
                 with self.assertRaises(ValueError): export_ehi(bytes(bad),{})
         finally: sys.path.remove(lab)
 
+    def test_ehi_expiry_timestamp_becomes_no_expiry_with_valid_hmac(self):
+        from exports.injector import export as export_ehi, carrier_key
+        from exports.ehi import open_profile, reseal
+        lab = str(ROOT/'temporary/original-app-config-export/scripts')
+        sys.path.insert(0,lab)
+        try:
+            import test_ehi_authenticated_lab as fixture
+            key = carrier_key()
+            with patch.object(fixture,'MAC_KEY',key):
+                source = fixture.authenticated_fixture()
+            doc = open_profile(source,carrier_mac_key=key,require_carrier_mac=True)
+            doc.outer['configExpiryTimestamp'] = 1783836049
+            doc.inner['configExpiryTimestamp'] = 1783836049
+            doc.raw_outer = json.dumps(doc.outer,separators=(',',':')).encode()
+            doc.raw_inner = json.dumps(doc.inner,separators=(',',':')).encode()
+            signed_source = reseal(doc)
+            before = open_profile(signed_source,carrier_mac_key=key,require_carrier_mac=True)
+            self.assertEqual(before.outer['configExpiryTimestamp'],1783836049)
+            opened = export_ehi(signed_source,{})
+            checked = open_profile(opened,carrier_mac_key=key,require_carrier_mac=True)
+            self.assertEqual(checked.outer['configExpiryTimestamp'],0)
+            self.assertEqual(checked.inner['configExpiryTimestamp'],0)
+            self.assertEqual(checked.outer['lockModes'],'["none"]')
+            self.assertFalse(checked.inner['isConfigLock'])
+            self.assertEqual(checked.inner['serverHost'],before.inner['serverHost'])
+            self.assertEqual(checked.inner['unknown'],before.inner['unknown'])
+            self.assertNotEqual(checked.middle,before.middle)
+        finally: sys.path.remove(lab)
+
+    def test_dark_ssh_dnstt_open_candidate_preserves_all_connection_fields(self):
+        import msgpack
+        from exports import dark
+        lab = str(ROOT/'temporary/original-app-config-export/scripts')
+        sys.path.insert(0,lab)
+        try:
+            from test_dark_export_lab import protected_fixture, sample_values
+            protected = dark.decode(protected_fixture())
+            envelope = protected.export
+            envelope['LockedAppConfig']['TunnelType'] = 'SSH_DNSTT'
+            envelope['LockedAppConfig']['ExpiredAtTimestamp'] = 0
+            outer = {
+                'type':'SSH_DNSTT',
+                'name':'Synthetic owner DNSTT',
+                'encryptedLockedConfig':base64.urlsafe_b64encode(
+                    dark.crypt(msgpack.packb(envelope,use_bin_type=True),
+                               dark.DTConstants.KEY_256)).decode(),
+            }
+            source = dark.encode_json(json.dumps(outer).encode())
+            opened = dark.decode(dark.unlock_configuration(dark.decode(source)))
+            self.assertFalse(opened.protected)
+            self.assertEqual(opened.outer['type'],'SSH_DNSTT')
+            self.assertEqual(opened.outer['encryptedLockedConfig'],'')
+            self.assertNotIn('sshTunnelConfig',opened.outer)
+            cfg = opened.outer['sshDnsttTunnelConfig']
+            self.assertTrue(cfg['injectConfig']['enabled'])
+            for original, target in dark.SSH_NAMES.items():
+                self.assertEqual(cfg['sshConfig'][target],sample_values()['SshConfig'][original])
+            for original, target in dark.INJECT_NAMES.items():
+                self.assertEqual(cfg['injectConfig'][target],sample_values()['InjectConfig'][original])
+        finally: sys.path.remove(lab)
+
     def test_remove_known_member_keeps_neighbor_tokens_and_empty_objects(self):
         for raw in (b'{"k":1,"keep":1e+03}', b'{"keep":1e+03,"k":1}',
                     b'{"a":1, "k":1, "keep":1e+03}', b'{ "k" : 1 }'):

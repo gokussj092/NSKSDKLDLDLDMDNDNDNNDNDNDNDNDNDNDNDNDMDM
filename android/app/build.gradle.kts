@@ -162,7 +162,8 @@ val prepareQaSettingsSource = tasks.register("prepareQaSettingsSource") {
         val source = original.replace("https://t.me/CodeBreakersHub", "https://t.me/+Ntu6EJMirrAwMzgx").replace(anchor,
             (if(enableQaBuild) "        com.ghostdeveloper.spdecode.cloud.CloudQaSettingsCard()\n" else "") +
             "        com.ghostdeveloper.spdecode.cloud.DonationSettingsCard()\n" +
-            "        com.ghostdeveloper.spdecode.cloud.NpvsIdentitySettings()\n" + anchor)
+            "        com.ghostdeveloper.spdecode.cloud.NpvsIdentitySettings()\n" +
+            "        com.ghostdeveloper.spdecode.cloud.PrivateScreenSettings()\n" + anchor)
         val output = qaSettingsRoot.get().file(qaSettingsRelativePath).asFile
         output.parentFile.mkdirs()
         output.writeText(source, Charsets.UTF_8)
@@ -365,8 +366,8 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
             activity=activity.substring(0,from)+section+activity.substring(to)
         }
         updateResultBlock("    private fun decodeText(userText:String,password:ByteArray?=null) {",
-            "    private fun decodeCloud(reference:String) {","record","stored")
-        updateResultBlock("    private fun decodeCloud(reference:String) {",
+            "    private fun decodeCloud(provider:String,reference:String) {","record","stored")
+        updateResultBlock("    private fun decodeCloud(provider:String,reference:String) {",
             "    private fun decodeNurServers() {","record","stored")
         updateResultBlock("    private fun decodeNurServers() {",
             "    private fun clearVisibleResult() {","record","saved")
@@ -561,6 +562,39 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
             "serverVpnCatalog.refreshIfDue(force=force)",
             "serverVpnCatalog.refreshIfDue(force=force,onProgress={percent->scope.launch {catalogProgress=percent}})")
 
+
+        // Cloud-only UI adaptation; the C0-locked original screens stay unchanged.
+        app = replaceOnce(app,"onDecodeCloud:(String)->Unit={}",
+            "onDecodeCloud:(String,String)->Unit={_,_->}")
+        app = replaceOnce(app,
+            "onDecodeCloud=onDecodeCloud,\n                        highlightGuide=",
+            "onDecodeCloud=onDecodeCloud,cloudTextFormats=cloudTextFormats,\n                        highlightGuide=")
+        app = replaceOnce(app,
+            "    onDecodeCloud:(String)->Unit,\n    highlightGuide:Int?=null,",
+            "    onDecodeCloud:(String,String)->Unit,\n    cloudTextFormats:List<CloudTextRoute>,\n    highlightGuide:Int?=null,")
+        app = replaceOnce(app,
+            "Text(stringResource(R.string.cloud_http_injector_open),",
+            "Text(stringResource(R.string.cloud_global_title),")
+        app = replaceOnce(app,
+            """if(cloudExpanded) HttpInjectorCloudPanel(
+            enabled=!busy,
+            onDecode={input->
+                awaitingCloudResult=true
+                onDecodeCloud(input)
+            },
+        )""",
+            """if(cloudExpanded) GlobalCloudImportPanel(
+            enabled=!busy,
+            routes=cloudTextFormats,
+            onDecode={provider,input->
+                awaitingCloudResult=true
+                onDecodeCloud(provider,input)
+            },
+        )""")
+        app = replaceOnce(app,
+            "2->FormatsScreen(cloudFormats,cloudTextFormats,serverVpnLoading,catalogProgress)",
+            "2->FormatsScreen(cloudFormats,cloudTextFormats.filterNot{it.kind==\"cloud\"&&it.suffix==\"hc\"},serverVpnLoading,catalogProgress)")
+
         listOf(appPath to app, activityPath to activity).forEach { (name,content)->
             val output=cloudHistoryUiRoot.get().file(name).asFile
             output.parentFile.mkdirs()
@@ -639,8 +673,8 @@ android {
         applicationId = "com.ghostdeveloper.spdecode"
         minSdk = 24
         targetSdk = 36
-        versionCode = 35
-        versionName = "1.1.24"
+        versionCode = 40
+        versionName = "1.1.25"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // A public API origin is not a secret; all server secrets stay in the VPS.
         buildConfigField("boolean", "SPDECODE_CLOUD_ENABLED", enableCloud.toString())

@@ -34,6 +34,10 @@ services:
       CLOUD_V2_HPKE_KEYRING: ${CLOUD_V2_HPKE_KEYRING:-}
       CLOUD_V2_REQUIRE_STRONG_INTEGRITY: ${CLOUD_V2_REQUIRE_STRONG_INTEGRITY:-true}
       CLOUD_V2_REQUIRE_PLAY_PROTECT: ${CLOUD_V2_REQUIRE_PLAY_PROTECT:-false}
+      # Supplemental RASP rollout; kill-switch does not alter Play/PoP/HPKE.
+      CLOUD_RASP_MODE: ${CLOUD_RASP_MODE:-observe}
+      CLOUD_RASP_MIN_VERSION_CODE: ${CLOUD_RASP_MIN_VERSION_CODE:-38}
+      CLOUD_RASP_ACCESS_MODE: ${CLOUD_RASP_ACCESS_MODE:-observe}
       CLOUD_V2_REQUIRE_ACCESS_RISK: ${CLOUD_V2_REQUIRE_ACCESS_RISK:-false}
       CLOUD_KEY_ATTESTATION_REQUIRED: ${CLOUD_KEY_ATTESTATION_REQUIRED:-true}
       CLOUD_KEY_ATTESTATION_LEVEL: ${CLOUD_KEY_ATTESTATION_LEVEL:-tee}
@@ -68,6 +72,9 @@ services:
       # Must increase on every roster, icon or provider-availability change.
       CLOUD_SERVER_VPN_CATALOG_VERSION: ${CLOUD_SERVER_VPN_CATALOG_VERSION:-11}
       # Optional versioned release notes. Validated server-side, no APK update required.
+      # Legacy V1-only editorial notice; never shared with bound V2 transport.
+      CLOUD_WHATS_NEW_V1_JSON: ${CLOUD_WHATS_NEW_V1_JSON:-}
+      # Existing V2 editorial notice and optional override are preserved.
       CLOUD_WHATS_NEW_JSON: ${CLOUD_WHATS_NEW_JSON:-}
     # Only nonsecret, allowlisted provider switches live in this persistent
     # named volume. Redis sessions/challenges remain ephemeral and isolated.

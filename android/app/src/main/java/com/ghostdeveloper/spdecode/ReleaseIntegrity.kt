@@ -4,8 +4,8 @@ import android.content.Context
 import com.ghostdeveloper.spdecode.cloud.CloudNativeTransport
 
 /**
- * JNI adapter only: package identity, debugger and signing-certificate
- * evaluation execute inside libspdecode.so through Android system APIs.
+ * JNI adapter only: package identity and signing-certificate
+ * evaluation execute inside libv7q3.so through Android system APIs.
  * Backend Play Integrity and hardware attestation remain independent.
  */
 internal object ReleaseIntegrity {

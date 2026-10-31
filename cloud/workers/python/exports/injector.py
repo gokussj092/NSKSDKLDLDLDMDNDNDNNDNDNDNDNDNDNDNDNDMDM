@@ -31,4 +31,6 @@ def export(raw, credentials, language='es'):
     checked = open_profile(output, carrier_mac_key=key, require_carrier_mac=True)
     if checked.inner.get('isConfigLock') is not False or checked.outer.get('lockModes') != '["none"]':
         raise ValueError('EHI_STILL_LOCKED')
+    if 'configExpiryTimestamp' in original.outer and checked.outer.get('configExpiryTimestamp') != 0:
+        raise ValueError('EHI_EXPIRY_NOT_REMOVED')
     return output

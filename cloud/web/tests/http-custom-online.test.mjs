@@ -170,3 +170,28 @@ test('legacy aliases reject foreign domains and cannot be used as an unrestricte
  }
 });
 
+
+test('unified Cloud route defaults to Injector, routes HC by explicit provider and rejects unknown hosts',async()=>{
+ const redis=new Redis(),bearer=await session(redis);let downloads=0;
+ const opts={storeProvider:async()=>redis,
+   vendor:{download:async()=>{downloads++;return encrypted;}}};
+ assert.equal((await externalImportRequest(send({reference:short,consent:true,provider:'hc'}),'cloud',opts)).status,401);
+ assert.equal((await externalImportRequest(send({reference:short,consent:true,provider:'other'},bearer),'cloud',opts)).status,400);
+ assert.equal((await externalImportRequest(send({reference:short,consent:true,provider:'hc',url:'https://evil.invalid'},bearer),'cloud',opts)).status,400);
+ assert.equal((await externalImportRequest(send({reference:'https://127.0.0.1/secret',consent:true,provider:'hc'},bearer),'cloud',opts)).status,400);
+ assert.equal((await externalImportRequest(send({reference:short,consent:false,provider:'hc'},bearer),'cloud',opts)).status,400);
+ assert.equal(downloads,0);
+ const valid=await externalImportRequest(send({reference:short,consent:true,provider:'hc'},bearer),'cloud',opts);
+ assert.equal(valid.status,200);
+ const data=await valid.json();
+ assert.equal(data.kind,'encrypted_file');
+ assert.equal(data.format,'hc');
+ assert.deepEqual(Buffer.from(data.dataBase64,'base64'),encrypted);
+ assert.equal(downloads,1);
+ for(const active of redis.active.values())assert.equal(active.size,0);
+ // Older clients omit the provider; they must remain wired to EHI (not HC).
+ const legacy=await externalImportRequest(send({reference:'TEST1234',consent:true},bearer),'cloud',opts);
+ assert.equal(legacy.status,503);
+ assert.equal((await legacy.json()).error.code,'REMOTE_NOT_CONFIGURED');
+ assert.equal(downloads,1);
+});

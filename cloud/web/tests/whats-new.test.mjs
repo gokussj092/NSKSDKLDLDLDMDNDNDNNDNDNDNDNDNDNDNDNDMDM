@@ -1,9 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
-import {loadNews,validateNews,localizeNews,whatsNewRequest} from "../lib/whats-new.mjs";
+import {loadNews,loadV1News,validateNews,localizeNews,whatsNewRequest} from "../lib/whats-new.mjs";
+import {bindVerifiedRequest} from "../lib/v2-bound-request.mjs";
 import {POST as route} from "../app/api/v1/whats-new/route.js";
 const fixture=JSON.parse(readFileSync(new URL("../content/whats-new.json",import.meta.url),"utf8"));
+const v1Fixture=JSON.parse(readFileSync(new URL("../content/whats-new-v1.json",import.meta.url),"utf8"));
 const query=(knownVersion=0,locale="en")=>new Request("https://api.spdecode.xyz/api/v1/whats-new",{
  method:"POST",headers:{"content-type":"application/json"},
  body:JSON.stringify({knownVersion,locale})
@@ -41,24 +43,65 @@ test("v5 notes cover HA, HC Cloud and the 1.1.20 release in all 14 locales",()=>
  assert(!JSON.stringify(news).includes("<a "));
 });
 
-test("v4 readers receive v5 once and v5 snapshots remain unchanged",async()=>{
- const response=await route(query(4,"es"));
- assert.equal(response.status,200);
- assert.equal(response.headers.get("Cache-Control"),"no-store");
- const body=await response.json();
- assert.equal(body.unchanged,false);
- assert.equal(body.version,5);
- assert.equal(body.locale,"es");
- assert.equal(body.items.length,3);
- const same=await (await route(query(5,"es"))).json();
- assert.deepEqual(same,{apiVersion:"v1",version:5,recheckAfterSeconds:1800,unchanged:true});
+test("V1-only v6 notice covers all 14 locales, update, Play status and tester contact",async()=>{
+ const catalog=validateNews(v1Fixture);
+ assert.equal(catalog.version,6);
+ assert.equal(catalog.publishedAt,"2026-10-31");
+ assert.deepEqual(catalog.items.map(x=>x.id),
+  ["update-1125-v1","google-play-1125-pending-v1","join-play-testers-v1"]);
+ assert.deepEqual(catalog.items.map(x=>x.type),["support","support","support"]);
+ assert(Buffer.byteLength(readFileSync(new URL("../content/whats-new-v1.json",import.meta.url)))<=16384);
+ assert.deepEqual(Object.keys(catalog.title).sort(),[...locales].sort());
  for(const locale of locales){
-   const response=await route(query(4,locale));
-   assert.equal(response.status,200);
-   const doc=await response.json();
-   assert.equal(doc.locale,locale);
-   assert.equal(doc.title,fixture.title[locale]);
+  assert(catalog.subtitle[locale].includes("1.1.25"),locale);
+  assert(catalog.items[0].title[locale].includes("1.1.25"),locale);
+  assert(catalog.items[0].description[locale].includes("https://t.me/GhostDeve"),locale);
+  assert(catalog.items[1].description[locale].includes("Google Play"),locale);
+  assert(catalog.items[2].description[locale].includes("Ghost Developer"),locale);
+  assert(catalog.items[2].description[locale].includes("https://t.me/Gh0stDeveloper"),locale);
+  const response=await route(query(5,locale));
+  assert.equal(response.status,200);
+  assert.equal(response.headers.get("Cache-Control"),"no-store");
+  const data=await response.json();
+  assert.equal(data.unchanged,false);
+  assert.equal(data.version,6);
+  assert.equal(data.locale,locale);
+  assert.equal(data.title,catalog.title[locale]);
+  assert.equal(data.items.length,3);
+  assert.equal(data.items[0].description,catalog.items[0].description[locale]);
  }
+ const unchanged=await (await route(query(6,"es"))).json();
+ assert.deepEqual(unchanged,{apiVersion:"v1",version:6,recheckAfterSeconds:1800,unchanged:true});
+ assert.equal((await (await route(query(4,"es"))).json()).version,6);
+});
+test("authenticated V2 operation 14 never receives the V1 mandatory update",async()=>{
+ const direct=query(0,"es");
+ const userSpoof=new Request(direct,{headers:{
+  "content-type":"application/json","x-spdecode-api-version":"v2",
+  "x-spdecode-v2-authenticated":"true"
+ }});
+ const directBody=await (await whatsNewRequest(userSpoof)).json();
+ assert.equal(directBody.version,6);
+ assert(directBody.items.some(x=>x.id==="update-1125-v1"));
+ const signed=query(0,"es");
+ bindVerifiedRequest(signed,{aud:"spdecode-android-v2",versionCode:40});
+ const signedBody=await (await whatsNewRequest(signed)).json();
+ assert.equal(signedBody.version,5);
+ assert.deepEqual(signedBody.items.map(x=>x.id),fixture.items.map(x=>x.id));
+ assert(!JSON.stringify(signedBody).includes("update-1125-v1"));
+ assert(!JSON.stringify(signedBody).includes("join-play-testers-v1"));
+ const v2Unchanged=query(5,"es");
+ bindVerifiedRequest(v2Unchanged,{aud:"spdecode-android-v2",versionCode:40});
+ const oldBody=await (await whatsNewRequest(v2Unchanged)).json();
+ assert.deepEqual(oldBody,{apiVersion:"v1",version:5,recheckAfterSeconds:1800,unchanged:true});
+});
+test("V1 and V2 editorial override environments are independently scoped",()=>{
+ assert.equal(loadV1News().version,6);
+ assert.equal(loadNews().version,5);
+ assert.equal(loadV1News({CLOUD_WHATS_NEW_JSON:JSON.stringify(fixture)}).version,6);
+ assert.equal(loadNews({CLOUD_WHATS_NEW_V1_JSON:JSON.stringify(v1Fixture)}).version,5);
+ assert.equal(loadV1News({CLOUD_WHATS_NEW_V1_JSON:JSON.stringify(fixture)}).version,5);
+ assert.equal(loadNews({CLOUD_WHATS_NEW_JSON:JSON.stringify(v1Fixture)}).version,6);
 });
 test("server publication is independent of Android versionCode",async()=>{
  const next=structuredClone(fixture);

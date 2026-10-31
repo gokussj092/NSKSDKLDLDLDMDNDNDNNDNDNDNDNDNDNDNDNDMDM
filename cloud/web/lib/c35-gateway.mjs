@@ -25,14 +25,32 @@ export async function externalImportRequest(request,kind,opts={}) {
     // Authorize before reading any uploaded body or opening external socket.
     redis=await (opts.storeProvider||store)();
     if(await maintenanceEnabled(redis))return failure("SERVICE_UNAVAILABLE",503);
-    if(await serviceMaintenanceEnabled(redis,kind==="hc"?"files":kind==="ehi"?"httpInjector":"serverVpn"))
+    // Keep the legacy exact-provider entrypoints unchanged. The unified
+    // endpoint authorizes the session before it even reads the provider input.
+    if(kind!=="cloud" && await serviceMaintenanceEnabled(redis,
+        kind==="hc"?"files":kind==="ehi"?"httpInjector":"serverVpn"))
       return failure("SERVICE_MAINTENANCE",503);
-    if(!await providerAllowed(kind==="hc"?"hc-cloud":kind==="ehi"?"ehi-cloud":kind==="mnr"?"mnr-tunnel-plus":"nur-tunnel"))
+    if(kind!=="cloud" && !await providerAllowed(
+        kind==="hc"?"hc-cloud":kind==="ehi"?"ehi-cloud":kind==="mnr"?"mnr-tunnel-plus":"nur-tunnel"))
       return failure("REMOTE_NOT_CONFIGURED",503);
     claims=await requireSession(redis,request,settings());
     if (!claims) return failure("UNAUTHORIZED",401);
     if (claims.rateLimited) return failure("RATE_LIMITED",429);
     const body=await boundedBody(request,4096);
+    if(kind==="cloud") {
+      // Old APKs omit provider and are always HTTP Injector.
+      const hasProvider=Object.hasOwn(body||{},"provider");
+      if(!ownKeys(body,hasProvider?["provider","reference","consent"]:["reference","consent"]))
+        return failure("INVALID_REQUEST",400);
+      kind=hasProvider?body.provider:"ehi";
+      if(!["ehi","hc"].includes(kind))return failure("INVALID_REQUEST",400);
+      delete body.provider;
+      if(kind==="ehi"&&!ehiConfigured())return failure("REMOTE_NOT_CONFIGURED",503);
+      if(await serviceMaintenanceEnabled(redis,kind==="hc"?"files":"httpInjector"))
+        return failure("SERVICE_MAINTENANCE",503);
+      if(!await providerAllowed(kind==="hc"?"hc-cloud":"ehi-cloud"))
+        return failure("REMOTE_NOT_CONFIGURED",503);
+    }
     if(kind==="ehi" || kind==="mnr" || kind==="hc") {
       if(!ownKeys(body,["reference","consent"])||body.consent!==true)
         return failure("USER_CONSENT_REQUIRED",400);

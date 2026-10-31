@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="private_screen_title">Màn hình riêng tư</string>
+    <string name="private_screen_detail">Ngăn chụp và ghi màn hình trong ứng dụng này. Tắt khi bạn cần chia sẻ ảnh chụp màn hình.</string>
+</resources>

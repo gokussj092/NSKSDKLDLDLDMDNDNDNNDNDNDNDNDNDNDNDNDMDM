@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="private_screen_title">Приватный экран</string>
+    <string name="private_screen_detail">Запрещает снимки и запись экрана в приложении. Отключите, чтобы поделиться снимком экрана.</string>
+</resources>

@@ -22,18 +22,28 @@ import java.time.Instant
 import java.time.YearMonth
 import java.util.Base64
 import java.util.concurrent.ArrayBlockingQueue
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 
 data class Policy(val packageName: String, val digests: Set<ByteString>, val minimumVersion: BigInteger,
                   val level: String, val patchMonths: Long)
-data class Evidence(val chain: List<String>, val challenge: String, val publicKey: String)
+/** Trusted web service only (shared attestation bearer); never accept policy from Android. */
+data class DeviceAdmission(val patchMonths: Long, val enforcePatch: Boolean,
+                           val enforceBoot: Boolean, val expiresAt: Long)
+data class Evidence(val chain: List<String>, val challenge: String, val publicKey: String,
+                    val devicePolicy: DeviceAdmission? = null)
+
 data class Decision(val valid: Boolean, val publicKey: String? = null,
                     val level: String? = null, val versionCode: Long? = null)
 
 // Log bounded, non-identifying rejection categories only. Never log certificates,
 // package names, public keys, challenges, serials, URLs or exception messages.
+private val startedAt = System.currentTimeMillis()
+private val rejectCounts = ConcurrentHashMap<String,AtomicLong>()
 private fun reject(reason: String): Decision {
+    rejectCounts.computeIfAbsent(reason) { AtomicLong(0) }.incrementAndGet()
     System.err.println("SP_ATTEST_REJECT=$reason")
     return Decision(false)
 }
@@ -98,7 +108,19 @@ fun decide(evidence: Evidence, policy: Policy, verifier: Verifier): Decision {
         }
         return reject(category)
     }
-    if (!result.deviceLocked || result.verifiedBootState != VerifiedBootState.VERIFIED)
+    // Compatibility switches are short-lived and supplied only by the authenticated
+    // backend, NOT by a caller APK. Invalid/expired claims fail closed.
+    val candidate = evidence.devicePolicy
+    val dynamic = if (candidate != null) {
+        val now = System.currentTimeMillis()
+        if (candidate.patchMonths !in listOf(12L,18L,24L,36L,48L) ||
+            candidate.expiresAt <= now || candidate.expiresAt > now + 48L*3600L*1000L ||
+            (candidate.patchMonths == 12L && candidate.enforcePatch && candidate.enforceBoot))
+            return reject("POLICY_INVALID")
+        candidate
+    } else null
+    val enforceBoot = dynamic?.enforceBoot ?: true
+    if (enforceBoot && (!result.deviceLocked || result.verifiedBootState != VerifiedBootState.VERIFIED))
         return reject("VERIFIED_BOOT")
     val level = when (result.securityLevel) {
         SecurityLevel.STRONG_BOX -> "strongbox"
@@ -113,19 +135,22 @@ fun decide(evidence: Evidence, policy: Policy, verifier: Verifier): Decision {
     val app = description.softwareEnforced.attestationApplicationId ?: return reject("APP_ID_MISSING")
     if (app.packages.size != 1 || app.packages.none { it.name == policy.packageName && it.version >= policy.minimumVersion } ||
         app.signatures.isEmpty() || app.signatures.any { it !in policy.digests }) return reject("APP_ID_MISMATCH")
-    val floor = YearMonth.now(java.time.ZoneOffset.UTC).minusMonths(policy.patchMonths)
+    val enforcePatch = dynamic?.enforcePatch ?: true
+    val floor = YearMonth.now(java.time.ZoneOffset.UTC).minusMonths(dynamic?.patchMonths ?: policy.patchMonths)
     val ceiling = YearMonth.now(java.time.ZoneOffset.UTC).plusMonths(1)
     val attributes = description.hardwareEnforced
     // Android's attestation schema marks vendorPatchLevel and bootPatchLevel OPTIONAL.
     // A missing optional field is not evidence of an old or untrusted device.
     // Require a current hardware-enforced OS patch, and reject any present
     // vendor/boot patch if it is outside the established security window.
-    val osPatch = attributes.osPatchLevel ?: return reject("OS_PATCH_MISSING")
-    if (osPatch.yearMonth.isBefore(floor) || osPatch.yearMonth.isAfter(ceiling))
-        return reject("OS_PATCH_OUTDATED")
-    if (listOfNotNull(attributes.vendorPatchLevel, attributes.bootPatchLevel)
-        .any { it.yearMonth.isBefore(floor) || it.yearMonth.isAfter(ceiling) })
-        return reject("VENDOR_BOOT_PATCH_OUTDATED")
+    if (enforcePatch) {
+        val osPatch = attributes.osPatchLevel ?: return reject("OS_PATCH_MISSING")
+        if (osPatch.yearMonth.isBefore(floor) || osPatch.yearMonth.isAfter(ceiling))
+            return reject("OS_PATCH_OUTDATED")
+        if (listOfNotNull(attributes.vendorPatchLevel, attributes.bootPatchLevel)
+            .any { it.yearMonth.isBefore(floor) || it.yearMonth.isAfter(ceiling) })
+            return reject("VENDOR_BOOT_PATCH_OUTDATED")
+    }
     // App package version is taken only from Google's hardware-validated attestationApplicationId.
     return Decision(true, key, level, app.packages.single().version.longValueExact())
 }
@@ -159,6 +184,18 @@ fun main() {
     server.createContext("/ready") { exchange ->
         try { revocations.current(); reply(exchange, 200, mapOf("ready" to true)) }
         catch (_: Exception) { reply(exchange, 503, mapOf("ready" to false)) }
+        finally { exchange.close() }
+    }
+    server.createContext("/stats") { exchange ->
+        try {
+            val supplied = exchange.requestHeaders.getFirst("X-SP-Attestation-Token") ?: ""
+            if (!MessageDigest.isEqual(token.toByteArray(), supplied.toByteArray()) ||
+                exchange.requestMethod != "GET" || exchange.requestURI.rawPath != "/stats" ||
+                exchange.requestURI.rawQuery != null) reply(exchange,403,mapOf("error" to "UNAUTHORIZED"))
+            else reply(exchange,200,mapOf(
+                "uptimeSeconds" to (System.currentTimeMillis()-startedAt)/1000L,
+                "rejections" to rejectCounts.entries.associate { it.key to it.value.get() }.toSortedMap()))
+        }catch (_:Exception) { reply(exchange,503,mapOf("error" to "UNAVAILABLE")) }
         finally { exchange.close() }
     }
     server.createContext("/verify") { exchange ->

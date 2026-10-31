@@ -244,3 +244,87 @@ test("V2 beta rejects invalid hardware version, forged Play token and unavailabl
   f.options.availabilityPolicyLoader=async()=>{throw Error("policy storage offline");};
   assert.equal((await f.call(1,{publicKey:encoded(f.key)})).status,503);
 });
+
+test('RASP is bound by exact PoP bytes, stripped before worker, observes legacy and revokes only affected session',async()=>{
+  const f=fixture({CLOUD_RASP_MODE:'enforce',CLOUD_RASP_MIN_VERSION_CODE:'35'});
+  const baseAuthorize=async()=>{
+    const c=await(await f.call(1,{publicKey:encoded(f.key)})).json();
+    f.options.decodeIntegrity=async()=>{const v=verdict(integrityNonce(c.nonce,c.challengeId,encoded(f.key)));
+      v.tokenPayloadExternal.appIntegrity.versionCode='35';return v;};
+    const res=await f.call(2,{challengeId:c.challengeId,integrityToken:'T'.repeat(100)});
+    assert.equal(res.status,201);const body=await res.json();assert.equal(body.raspEnforce,true);return body.accessToken;
+  };
+  const token=await baseAuthorize();let calls=0;
+  f.options.dispatch=async(_op,req)=>{calls++;assert.deepEqual(await req.json(),{text:'fixture'});return Response.json({ok:true});};
+  const report={v:1,signals:0,evaluated:15,elapsedUs:100};
+  assert.equal((await f.call(6,{text:'fixture',_rasp:report},token)).status,200);
+  const signed=request(6,{text:'fixture',_rasp:report},f.key,token);
+  const changed=JSON.stringify({text:'fixture',_rasp:{...report,signals:4}});
+  assert.equal((await transportRequest(new Request(signed.url,{method:'POST',headers:signed.headers,body:changed}),f.options)).status,401);
+  const other=await baseAuthorize();
+  assert.equal((await f.call(6,{text:'fixture',_rasp:{...report,signals:4}},token)).status,403);
+  assert.equal((await f.call(6,{text:'fixture',_rasp:report},token)).status,401);
+  assert.equal((await f.call(6,{text:'fixture',_rasp:report},other)).status,200);
+  assert.equal(calls,2);
+  // Turning supplemental RASP off cannot rescue a revoked session, but allows
+  // an independently authenticated one to continue despite reported evidence.
+  f.options.env={...f.options.env,CLOUD_RASP_MODE:'off'};
+  assert.equal((await f.call(6,{text:'fixture',_rasp:{...report,signals:4}},other)).status,200);
+  assert.equal((await f.call(6,{text:'fixture',_rasp:report},token)).status,401);
+});
+test('a forged clean RASP report cannot bypass independent Play, proof or version policy',async()=>{
+  const f=fixture({CLOUD_RASP_MODE:'off'}),{token}=await authorize(f);
+  f.options.dispatch=async()=>Response.json({ok:true});
+  const body={text:'fixture',_rasp:{v:1,signals:0,evaluated:15,elapsedUs:1}};
+  assert.equal((await transportRequest(request(6,body,pair(),token),f.options)).status,401);
+  f.options.env={...f.options.env,CLOUD_MIN_ANDROID_VERSION_CODE:'34'};
+  assert.equal((await f.call(6,body,token)).status,401);
+});
+
+test('HPKE-only RASP admission authenticates encrypted reports and rejects wire replay/tamper',async()=>{
+  const {CipherSuite,DhkemX25519HkdfSha256,HkdfSha256,Aes256Gcm}=await import('@hpke/core');
+  const {createDecipheriv}=await import('node:crypto');
+  const suite=new CipherSuite({kem:new DhkemX25519HkdfSha256(),kdf:new HkdfSha256(),aead:new Aes256Gcm()});
+  const receiver=generateKeyPairSync('x25519'),pub=receiver.publicKey.export({format:'jwk'}).x;
+  const raw=Buffer.from(pub,'base64url'),kid=createHash('sha256').update(raw).digest().subarray(0,8);
+  const f=fixture({CLOUD_V2_HPKE_ENABLED:'true',CLOUD_V2_HPKE_ONLY:'true',
+    CLOUD_V2_HPKE_KEYRING:JSON.stringify([{publicKey:pub,privateKey:receiver.privateKey.export({format:'jwk'}).d}]),
+    CLOUD_RASP_MODE:'enforce',CLOUD_RASP_MIN_VERSION_CODE:'35'});
+  let last;
+  async function call(op,body,bearer=''){
+    const recipientPublicKey=await suite.kem.importKey('raw',raw,true);
+    const sender=await suite.createSenderContext({recipientPublicKey,info:Buffer.from('SPDECODE-V2-HPKE-TRANSPORT-1')});
+    const json=Buffer.from(JSON.stringify(body)),pt=Buffer.alloc(4+json.length);
+    pt.writeUInt32BE(json.length);json.copy(pt,4);
+    const h=Buffer.alloc(71);h.write('SPH2');h[4]=1;h.writeUInt16BE(32,5);h.writeUInt16BE(1,7);h.writeUInt16BE(2,9);
+    kid.copy(h,11);randomBytes(16).copy(h,19);Buffer.from(sender.enc).copy(h,35);h.writeUInt32BE(pt.length+16,67);
+    const wire=Buffer.concat([h,Buffer.from(await sender.seal(pt,Buffer.concat([h,Buffer.from([op])])))]);
+    const req=request(op,body,f.key,bearer),headers=new Headers(req.headers);
+    headers.set('content-type','application/octet-stream');
+    headers.set('x-sp-proof',ecSign('sha256',Buffer.from(proofMessage(op,'1.1.22',headers.get('x-sp-timestamp'),
+      headers.get('x-sp-nonce'),bearer,wire)),f.key.privateKey).toString('base64url'));
+    last=new Request(req.url,{method:'POST',headers,body:wire});
+    const res=await transportRequest(last.clone(),f.options),bytes=Buffer.from(await res.arrayBuffer());
+    assert.equal(bytes.toString('ascii',0,4),'SPR2');
+    const material=Buffer.from(await sender.export(Buffer.from('SPDECODE-V2-HPKE-RESPONSE-KEY-NONCE-1'),44));
+    const decipher=createDecipheriv('aes-256-gcm',material.subarray(0,32),material.subarray(32));
+    decipher.setAAD(Buffer.concat([Buffer.from('SPDECODE-V2-HPKE-RESPONSE-AAD-1'),createHash('sha256').update(wire).digest(),bytes.subarray(0,27)]));
+    decipher.setAuthTag(bytes.subarray(-16));
+    const reply=JSON.parse(Buffer.concat([decipher.update(bytes.subarray(27,-16)),decipher.final()]));material.fill(0);
+    return {status:res.status,body:reply};
+  }
+  const c=await call(1,{publicKey:encoded(f.key)});assert.equal(c.status,201);
+  f.options.decodeIntegrity=async()=>{const v=verdict(integrityNonce(c.body.nonce,c.body.challengeId,encoded(f.key)));
+    v.tokenPayloadExternal.appIntegrity.versionCode='35';return v;};
+  const session=await call(2,{challengeId:c.body.challengeId,integrityToken:'T'.repeat(100)});
+  assert.equal(session.status,201);const token=session.body.accessToken;
+  let dispatches=0;f.options.dispatch=async(_op,req)=>{dispatches++;assert.deepEqual(await req.json(),{text:'fixture'});return Response.json({ok:true});};
+  const body={text:'fixture',_rasp:{v:1,signals:0,evaluated:15,elapsedUs:111}};
+  assert.equal((await call(6,body,token)).status,200);
+  assert.equal((await transportRequest(last.clone(),f.options)).status,400);
+  const tampered=Buffer.from(await last.clone().arrayBuffer());tampered[tampered.length-17]^=1;
+  assert.equal((await transportRequest(new Request(last.url,{method:'POST',headers:last.headers,body:tampered}),f.options)).status,400);
+  assert.equal(dispatches,1);
+  assert.equal((await call(6,{...body,_rasp:{...body._rasp,signals:4}},token)).status,403);
+  assert.equal(dispatches,1);
+});

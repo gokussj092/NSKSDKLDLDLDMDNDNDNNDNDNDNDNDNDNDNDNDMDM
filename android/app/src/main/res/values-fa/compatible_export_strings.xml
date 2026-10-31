@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="compatible_export_for">صدور برای %1$s</string>
-    <string name="compatible_export_redecode">با فعال بودن صدور سازگار، این فایل را دوباره رمزگشایی کنید.</string>
+    <string name="compatible_export_redecode">برای فعال‌سازی خروجی به %1$s، این فایل را دوباره وارد کنید.</string>
     <string name="compatible_export_failed">ذخیره فایل سازگار ممکن نشد.</string>
 </resources>

@@ -71,6 +71,28 @@ class PolicyTest {
         assertFalse(decide(evidence(description(level=SecurityLevel.SOFTWARE)),policy,verifier()).valid)
         assertFalse(decide(evidence(),policy.copy(packageName="com.other.app"),verifier()).valid)
     }
+    @Test fun compatibilityPolicyAcceptsOlderPatchesOnlyDuringBoundedWindow() {
+        val oldPatch=YearMonth.now().minusMonths(30)
+        val unmodified=evidence(description(patch=oldPatch))
+        assertFalse(decide(unmodified,policy,verifier()).valid)
+        val approved=DeviceAdmission(36,true,true,System.currentTimeMillis()+3600000)
+        assertTrue(decide(unmodified.copy(devicePolicy=approved),policy,verifier()).valid)
+        assertFalse(decide(unmodified.copy(devicePolicy=approved.copy(patchMonths=24)),
+            policy,verifier()).valid)
+        assertFalse(decide(unmodified.copy(devicePolicy=approved.copy(expiresAt=System.currentTimeMillis()-1000)),
+            policy,verifier()).valid)
+    }
+    @Test fun compatibilitySwitchesCanRelaxPatchAndBootWithoutSkippingTrustRootsOrIdentity() {
+        val test=DeviceAdmission(48,false,false,System.currentTimeMillis()+3600000)
+        val oldUnlocked=evidence(description(locked=false,patch=YearMonth.now().minusMonths(50)))
+        assertFalse(decide(oldUnlocked,policy,verifier()).valid)
+        assertTrue(decide(oldUnlocked.copy(devicePolicy=test),policy,verifier()).valid)
+        assertFalse(decide(oldUnlocked.copy(devicePolicy=test.copy(enforceBoot=true)),policy,verifier()).valid)
+        assertFalse(decide(oldUnlocked.copy(devicePolicy=test),policy,verifier(googleRoots=true)).valid)
+        assertFalse(decide(oldUnlocked.copy(devicePolicy=test),policy.copy(packageName="com.wrong.app"),verifier()).valid)
+        assertFalse(decide(oldUnlocked.copy(devicePolicy=test.copy(expiresAt=System.currentTimeMillis()+72*3600000)),
+            policy,verifier()).valid)
+    }
     @Test fun strongboxPolicyRejectsTeeAndRevokedChains() {
         assertFalse(decide(evidence(),policy.copy(level="strongbox"),verifier()).valid)
         val e=evidence()

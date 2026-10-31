@@ -1,6 +1,7 @@
 /** Server-controlled What's New. No HTML, links, credentials or decoder details. */
 import {readFileSync} from "node:fs";
 import {join} from "node:path";
+import {boundRequestClaims} from "./v2-bound-request.mjs";
 
 const MAX_JSON=16384,MAX_ITEMS=12;
 const languages=new Set(["en","es","ar","fa","fr","id","ru","de","pt-BR",
@@ -33,9 +34,17 @@ export function validateNews(input){
  }
  return input;
 }
+/** Existing V2 editorial publication. Its version, payload and overrides stay intact. */
 export function loadNews(env=process.env){
  const raw=env.CLOUD_WHATS_NEW_JSON||
   readFileSync(join(process.cwd(),"content","whats-new.json"),"utf8");
+ if(Buffer.byteLength(raw,"utf8")>MAX_JSON)throw Error("INVALID_RELEASE_NOTES");
+ return validateNews(JSON.parse(raw));
+}
+/** Separate V1 publication; never used by authenticated V2 transport requests. */
+export function loadV1News(env=process.env){
+ const raw=env.CLOUD_WHATS_NEW_V1_JSON||
+  readFileSync(join(process.cwd(),"content","whats-new-v1.json"),"utf8");
  if(Buffer.byteLength(raw,"utf8")>MAX_JSON)throw Error("INVALID_RELEASE_NOTES");
  return validateNews(JSON.parse(raw));
 }
@@ -62,7 +71,7 @@ export function androidUpdateHint(env=process.env){
 }
 
 export const RECHECK_AFTER=1800;
-export async function whatsNewRequest(request,{source=loadNews}={}){
+export async function whatsNewRequest(request,{source=loadV1News,v2Source=loadNews}={}){
  const json=(payload,status=200)=>Response.json(payload,{status,
   headers:{"Cache-Control":"no-store","X-Content-Type-Options":"nosniff"}});
  let input;
@@ -78,7 +87,10 @@ export async function whatsNewRequest(request,{source=loadNews}={}){
    return json({error:{code:"INVALID_REQUEST"}},400);
  }catch{return json({error:{code:"INVALID_REQUEST"}},400);}
  try{
-  const contents=source();
+  // V2 internally dispatches operation 14 to the legacy route, but binds
+  // verified claims to the exact in-memory Request (never to user headers).
+  // V1-only update notices MUST NOT leak into V2 through this shared handler.
+  const contents=boundRequestClaims(request)?v2Source():source();
   const head={apiVersion:"v1",version:contents.version,
    recheckAfterSeconds:RECHECK_AFTER,...(androidUpdateHint()?{appUpdate:androidUpdateHint()}:{})};
   if(contents.version<=input.knownVersion)return json({...head,unchanged:true});

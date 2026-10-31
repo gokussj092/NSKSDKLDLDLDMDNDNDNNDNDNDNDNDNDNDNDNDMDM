@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_global_title">ابر (آنلاین)</string>
+    <string name="cloud_global_auto">تشخیص خودکار</string>
+    <string name="cloud_global_hint">پیوند، کلید یا کد ابری پشتیبانی‌شده را وارد کنید</string>
+    <string name="cloud_global_action">وارد کردن از ابر</string>
+    <string name="cloud_global_detail">ارائه‌دهنده را انتخاب کنید یا بگذارید SP-DECODE تشخیص دهد. فقط سرویس‌های مجاز.</string>
+    <string name="cloud_global_invalid">این شناسه مربوط به ارائه‌دهندهٔ ابری مجاز نیست.</string>
+</resources>

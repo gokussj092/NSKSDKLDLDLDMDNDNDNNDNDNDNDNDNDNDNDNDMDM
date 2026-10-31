@@ -1,6 +1,8 @@
+import { raspSettings } from "./rasp-policy.mjs";
 import { settings } from "./c3-config.mjs";
 export function v2Settings(env = process.env,{playIntegrityRequired=true}={}) {
   const base = settings(env);
+  const rasp=raspSettings(env);
   const certificateDigests = (env.CLOUD_PLAY_CERT_SHA256 || "").split(",").map(x=>x.trim().toLowerCase());
   const minimumVersionCode = Number(env.CLOUD_MIN_ANDROID_VERSION_CODE || "33");
   const epoch = env.CLOUD_V2_SESSION_EPOCH || "1";
@@ -10,7 +12,7 @@ export function v2Settings(env = process.env,{playIntegrityRequired=true}={}) {
   const cloudProjectNumber=env.CLOUD_GOOGLE_CLOUD_PROJECT_NUMBER || "";
   const maxRecentActivity=Number(env.CLOUD_INTEGRITY_MAX_RECENT_ACTIVITY || "3");
   const minimumDeviceSdk=Number(env.CLOUD_INTEGRITY_MIN_DEVICE_SDK || "33");
-  const valid = certificateDigests.length > 0 && certificateDigests.length <= 4 &&
+  const valid = (rasp.accessMode!=="enforce" || (playIntegrityRequired && requireAction)) && certificateDigests.length > 0 && certificateDigests.length <= 4 &&
     certificateDigests.every(x=>/^[a-f0-9]{64}$/.test(x)) &&
     Number.isSafeInteger(minimumVersionCode) && minimumVersionCode >= 33 && minimumVersionCode <= 2147483647 &&
     /^[A-Za-z0-9_-]{1,32}$/.test(epoch) &&
@@ -27,9 +29,9 @@ export function v2Settings(env = process.env,{playIntegrityRequired=true}={}) {
     [ "CLOUD_V1_REQUIRE_BOUND_SESSION","CLOUD_LEGACY_API_ENABLED" ].every(
       key=>env[key]===undefined||["true","false"].includes(env[key]));
   const betaSafe=!playIntegrityRequired && requireHardware;
-  return {...base, configured:valid && (playIntegrityRequired ?
+  return {...base, configured:valid && rasp.configured && (playIntegrityRequired ?
     (base.configured && Boolean(base.account)):(betaCore && betaSafe)),
-    certificateDigests, minimumVersionCode, epoch, playIntegrityRequired, requireLicensed:true,
+    rasp, certificateDigests, minimumVersionCode, epoch, playIntegrityRequired, requireLicensed:true,
     requireStrong:env.CLOUD_V2_REQUIRE_STRONG_INTEGRITY !== "false",
     requirePlayProtect:env.CLOUD_V2_REQUIRE_PLAY_PROTECT === "true",
     requireAccessRisk:env.CLOUD_V2_REQUIRE_ACCESS_RISK === "true",

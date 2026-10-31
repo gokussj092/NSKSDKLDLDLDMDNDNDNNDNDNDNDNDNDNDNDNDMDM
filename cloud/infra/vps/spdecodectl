@@ -69,18 +69,68 @@ deploy(){
     *) die "Expected api|web|panel|worker|all";;
   esac
 }
-update(){
-  local kind="$1" ref="$2"
-  preflight
-  [[ "$kind" =~ ^(api|web|panel|worker|engines|all)$ ]] || die "Bad component"
-  sync_ref "$ref"
-  if ! (deploy "$kind"); then
-    log "Deployment failed; restoring previous source and rebuilding"
-    git -C "$REPO" reset --hard "$(cat "$ROOT/previous.sha")" >/dev/null
-    (deploy "$kind") || log "ALERT: rollback failed, manual inspection required"
+
+# Compare public HPKE key IDs before and after a deployment. Never print
+# private key material, parsed env or the full Compose configuration.
+hpke_runtime_ids(){
+  compose exec -T web node --input-type=module -e '
+    try {
+      const enabled=process.env.CLOUD_V2_HPKE_ENABLED==="true";
+      if(!enabled) {
+        if(process.env.CLOUD_V2_HPKE_ONLY==="true")process.exit(31);
+        process.stdout.write("OFF");process.exit(0);
+      }
+      const {hpkeKeyIds}=await import("/app/lib/v2-hpke.mjs");
+      const ids=hpkeKeyIds().sort();
+      if(!ids.length||ids.some(id=>!/^[a-f0-9]{16}$/.test(id)))process.exit(32);
+      process.stdout.write(ids.join(","));
+    }catch{process.exit(33);}
+  ' 2>/dev/null
+}
+hpke_expected_before_update(){
+  local state
+  state=$(hpke_runtime_ids) || die "HPKE preflight: active web keyring cannot be verified"
+  if [[ "$state" != OFF ]]; then
+    grep -Eq '^CLOUD_V2_HPKE_ENABLED=true$' "$ENVFILE" ||
+      die "HPKE preflight: missing persistent ENABLED=true"
+    grep -Eq '^CLOUD_V2_HPKE_KEYRING=.+' "$ENVFILE" ||
+      die "HPKE preflight: keyring not present in protected cloud.env"
+  elif grep -Eq '^CLOUD_V2_HPKE_ENABLED=true$' "$ENVFILE"; then
+    die "HPKE preflight: configured enabled but running web is OFF"
+  fi
+  printf '%s' "$state"
+}
+hpke_confirm_after_update(){
+  local before="$1" after
+  after=$(hpke_runtime_ids) || { log "HPKE postflight unavailable";return 1; }
+  if [[ "$before" != "$after" ]]; then
+    log "HPKE postflight mismatch; restoring earlier code"
     return 1
   fi
-  # Atomic deployment of the control CLI when its own source changes.
+  log "HPKE postflight consistent (no keyring or secrets printed)"
+}
+update(){
+  local kind="$1" ref="$2" hpke_before=OFF
+  preflight
+  [[ "$kind" =~ ^(api|web|panel|worker|engines|all)$ ]] || die "Bad component"
+  if [[ "$kind" =~ ^(api|web|panel|all)$ ]]; then
+    hpke_before=$(hpke_expected_before_update) || return 1
+  fi
+  sync_ref "$ref"
+  if ! (deploy "$kind" && {
+    if [[ "$kind" =~ ^(api|web|panel|all)$ ]]; then
+      hpke_confirm_after_update "$hpke_before"
+    fi
+  }); then
+    log "Deployment or HPKE postflight failed; restoring previous source and rebuilding"
+    git -C "$REPO" reset --hard "$(cat "$ROOT/previous.sha")" >/dev/null
+    (deploy "$kind" && {
+      if [[ "$kind" =~ ^(api|web|panel|all)$ ]]; then
+        hpke_confirm_after_update "$hpke_before"
+      fi
+    }) || log "ALERT: rollback failed, manual inspection required"
+    return 1
+  fi
   install -m 0755 "$REPO/cloud/infra/vps/spdecodectl" /usr/local/bin/spdecode.next
   mv -f /usr/local/bin/spdecode.next /usr/local/bin/spdecode
   compose ps

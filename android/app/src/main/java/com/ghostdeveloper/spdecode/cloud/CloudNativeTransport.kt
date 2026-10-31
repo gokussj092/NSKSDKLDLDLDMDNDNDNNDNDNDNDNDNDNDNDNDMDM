@@ -12,6 +12,11 @@ import java.io.IOException
 internal object CloudNativeTransport {
     init { System.loadLibrary("v7q3") }
 
+    @JvmStatic private external fun nativeRuntimeReport(): String
+    @JvmStatic private external fun nativeConfigureRasp(enforce: Boolean)
+    fun runtimeReport(): String = nativeRuntimeReport()
+    fun configureRasp(enforce: Boolean) = nativeConfigureRasp(enforce)
+
     // All HPKE key agreement, message framing, AEAD and reply authentication
     // execute in libv7q3.so. Kotlin handles only JSON/Android integration.
     @JvmStatic private external fun nativePrepareHpke(

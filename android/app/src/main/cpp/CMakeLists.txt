@@ -37,13 +37,24 @@ FetchContent_Declare(spdecode_mbedtls
 FetchContent_MakeAvailable(spdecode_mbedtls)
 # Opaque ELF basename reduces casual metadata; not a security boundary.
 add_library(v7q3 SHARED spdecode_transport.cpp spdecode_hpke.cpp spdecode_security.cpp spdecode_session.cpp
-    spdecode_keystore.cpp spdecode_keystore_policy.cpp spdecode_catalog.cpp spdecode_runtime_guard.cpp)
-target_link_libraries(v7q3 PRIVATE mbedcrypto)
+    spdecode_keystore.cpp spdecode_keystore_policy.cpp spdecode_catalog.cpp spdecode_runtime_guard.cpp
+    spdecode_code_integrity.cpp)
+target_compile_definitions(v7q3 PRIVATE SPDECODE_ELF_GUARD=1)
+target_link_libraries(v7q3 PRIVATE mbedcrypto dl)
 target_include_directories(v7q3 PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
 set_target_properties(v7q3 PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
 target_compile_options(v7q3 PRIVATE -Wall -Wextra -Werror -fvisibility=hidden
   -fvisibility-inlines-hidden -fstack-protector-strong -D_FORTIFY_SOURCE=2
   -ffunction-sections -fdata-sections)
+# Backward-compatible ARM64 branch protection; CFI requires staged JNI/ABI QA.
+if(ANDROID_ABI STREQUAL "arm64-v8a")
+  target_compile_options(v7q3 PRIVATE -mbranch-protection=standard)
+endif()
+option(SPDECODE_ENABLE_CFI "Enable Clang LTO/CFI for staged QA" OFF)
+if(SPDECODE_ENABLE_CFI AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  target_compile_options(v7q3 PRIVATE -flto=thin -fsanitize=cfi)
+  target_link_options(v7q3 PRIVATE -flto=thin -fsanitize=cfi)
+endif()
 target_link_options(v7q3 PRIVATE
   -Wl,-z,relro,-z,now
   -Wl,-z,noexecstack -Wl,--gc-sections -Wl,--exclude-libs,ALL

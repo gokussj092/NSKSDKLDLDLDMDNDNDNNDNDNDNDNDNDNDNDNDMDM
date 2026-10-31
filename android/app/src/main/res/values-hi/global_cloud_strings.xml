@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_global_title">क्लाउड (ऑनलाइन)</string>
+    <string name="cloud_global_auto">अपने आप पहचानें</string>
+    <string name="cloud_global_hint">समर्थित क्लाउड लिंक, कुंजी या कोड चिपकाएँ</string>
+    <string name="cloud_global_action">क्लाउड से आयात करें</string>
+    <string name="cloud_global_detail">प्रदाता चुनें या SP-DECODE को पहचानने दें। केवल स्वीकृत सेवाएँ।</string>
+    <string name="cloud_global_invalid">यह संदर्भ किसी स्वीकृत क्लाउड प्रदाता से मेल नहीं खाता।</string>
+</resources>

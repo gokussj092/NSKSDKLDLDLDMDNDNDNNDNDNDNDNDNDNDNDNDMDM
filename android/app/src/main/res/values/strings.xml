@@ -212,4 +212,6 @@
     <string name="nur_servers_invalid_url">Enter a valid HTTPS URL for the server list.</string>
     <string name="nur_servers_failed">Unable to download, authenticate or decode the server catalog.</string>
     <string name="language_screen_title">Select language</string>
+    <string name="private_screen_title">Private screen</string>
+    <string name="private_screen_detail">Prevent screenshots and screen recording in this app. Turn off when you need to share a screenshot.</string>
 </resources>

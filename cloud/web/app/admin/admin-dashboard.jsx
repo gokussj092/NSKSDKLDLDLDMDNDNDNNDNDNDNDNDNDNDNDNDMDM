@@ -16,6 +16,19 @@ export default function AdminDashboard({mode="system"}){
  const [data,setData]=useState(null),[busy,setBusy]=useState(false);
  const [error,setError]=useState(""),[loading,setLoading]=useState(true);
  const [providerQuery,setProviderQuery]=useState(""),[providerFilter,setProviderFilter]=useState("all");
+ const [clock,setClock]=useState(null);
+ const [patchMonths,setPatchMonths]=useState(12);
+ const [enforcePatch,setEnforcePatch]=useState(true);
+ const [enforceBoot,setEnforceBoot]=useState(true);
+ const [testHours,setTestHours]=useState(24);
+ useEffect(()=>{
+  const p=data?.v2DevicePolicy;
+  if(!p)return;
+  setPatchMonths(p.patchMonths);
+  setEnforcePatch(p.enforcePatch);
+  setEnforceBoot(p.enforceBoot);
+ },[data?.v2DevicePolicy?.revision,data?.v2DevicePolicy?.expiresAt]);
+ useEffect(()=>{setClock(Date.now());const t=setInterval(()=>setClock(Date.now()),60000);return()=>clearInterval(t);},[]);
  const router=useRouter();
  const refresh=useCallback(async()=>{
   try{
@@ -96,6 +109,25 @@ export default function AdminDashboard({mode="system"}){
   }catch(e){setError(e.message||"No se pudo cambiar la política V1.");await refresh();}
   finally{setBusy(false);}
  }
+ async function changeRetirement(){
+  if(!data?.v1Policy||busy)return;
+  const active=Boolean(data.v1Policy.retireAt),action=active?"cancel":"schedule";
+  if(!window.confirm(active?
+   "¿Cancelar la desactivación programada de API V1? No activará una API apagada manualmente.":
+   "¿Programar el cierre de API V1 dentro de 48 horas? El servidor rechazará todas las peticiones V1, pero V2, el panel y la web permanecerán disponibles."))return;
+  setBusy(true);setError("");
+  try{
+   const res=await fetch("/api/admin/v1-retirement",requestOptions({
+    action,expectedRevision:data.v1Policy.revision,
+    confirmation:active?"API_V1_CANCELAR_PROGRAMACION":"API_V1_PROGRAMAR_48H"}));
+   const reply=await res.json();
+   if(!res.ok||reply.status!=="ok")throw Error(res.status===409?
+    "Conflicto de revisión; actualiza el estado e inténtalo de nuevo.":
+    "No fue posible guardar la desactivación programada ("+res.status+").");
+   await refresh();
+  }catch(e){setError(e.message||"Error al cambiar la programación.");await refresh();}
+  finally{setBusy(false);}
+ }
  async function changeV2(){
   if(!data?.v2Policy||busy)return;
   const enabled=!data.v2Policy.enabled;
@@ -134,6 +166,26 @@ export default function AdminDashboard({mode="system"}){
   }catch(e){setError(e.message||"Error de política Play V2.");await refresh();}
   finally{setBusy(false);}
  }
+ async function saveDevicePolicy(reset=false){
+  if(!data?.v2DevicePolicy||busy)return;
+  const months=reset?12:patchMonths,patch=reset?true:enforcePatch,boot=reset?true:enforceBoot;
+  const relaxed=months!==12||!patch||!boot;
+  if(!window.confirm(relaxed?
+    "¿Aplicar durante "+testHours+" horas el perfil de compatibilidad? Se reducirá la seguridad de los dispositivos admitidos. Siguen vigentes los certificados de Google, la firma APK, la atestación criptográfica y HPKE.":
+    "¿Restaurar la seguridad estricta de V2 inmediatamente? Algunos dispositivos antiguos podrían perder acceso."))return;
+  setBusy(true);setError("");
+  try{
+    const res=await fetch("/api/admin/v2-device-admission",requestOptions({
+      patchMonths:months,enforcePatch:patch,enforceBoot:boot,
+      durationHours:testHours,expectedRevision:data.v2DevicePolicy.revision,
+      confirmation:"V2_DISPOSITIVOS_CONFIGURAR"}));
+    const answer=await res.json();
+    if(!res.ok||answer.status!=="ok")throw Error(res.status===409?
+      "La política ha cambiado. Vuelve a cargar el panel.":"No se guardó la política ("+res.status+").");
+    await refresh();
+  }catch(err){setError(err.message||"Error al guardar la política.");await refresh();}
+  finally{setBusy(false);}
+ }
  async function logout(){
   setBusy(true);
   try{
@@ -153,7 +205,7 @@ export default function AdminDashboard({mode="system"}){
      <article className="admin-card"><span className="muted">Servicios disponibles</span><strong>{[data.services.apiConfigured,data.services.redisConnected,data.services.workerReady].filter(Boolean).length}/3</strong><small className="muted">API, Redis y worker</small></article>
      <article className="admin-card"><span className="muted">Estado general</span><strong className="sp-admin-status-text">{data.maintenance?"Mantenimiento":"Operativo"}</strong><small className="muted">Según control global</small></article>
     </div>
-    <div className="admin-grid">
+   <div className="admin-grid">
      <section className="admin-card">
       <h2>Estado de la infraestructura</h2>
       {[["API configurada",data.services.apiConfigured],["Redis",data.services.redisConnected],["Worker",data.services.workerReady]].map(([name,ok])=><div className="admin-kv" key={name}><span>{name}</span><Health ok={ok}/></div>)}
@@ -174,6 +226,7 @@ export default function AdminDashboard({mode="system"}){
      <Link href="/admin/system">Administrar disponibilidad y servicios</Link>
     </div>
    </>:<>
+    {mode==="infrastructure"&&<>
    <div className="admin-grid">
     <section className="admin-card">
      <h2>Infraestructura</h2>
@@ -200,10 +253,25 @@ export default function AdminDashboard({mode="system"}){
      </p>}
     </section>
    </div>
-   <AdminCompatibleExport/>
-   <section className="admin-card sp-admin-services">
-    <div className="sp-admin-section-heading"><div><h2>Control de API V1 y V2</h2>
-     <p className="muted">La disponibilidad tiene prioridad sobre la protección avanzada. V2 conserva su seguridad independiente.</p></div></div>
+   </>}
+   {mode==="exports"&&<AdminCompatibleExport/>}
+   {mode==="api-v1"&&<section className="admin-card sp-admin-services">
+    <h2>Administración de API V1</h2>
+    <p className="muted">Desactivación programada independiente de V2. Se aplicará en cada solicitud a partir de la fecha del servidor, sin jobs ni procesos adicionales.</p>
+    <div className="sp-admin-retirement">
+     <h3>Retirar API V1 a las 48 horas</h3>
+     <p className="muted">Al programar se guarda la fecha exacta en el volumen persistente. Una vez vencido el plazo, todas las rutas V1 se rechazarán. La API V2 y el panel conservarán su funcionamiento.</p>
+     <p className="muted">Para volver a cambiar la disponibilidad manual de V1, cancela primero la fecha de retiro. El botón no publica ni actualiza Android.</p>
+     {data.v1Policy?.retireAt?
+       <><strong className="sp-admin-deadline">Fecha de cierre: {new Date(data.v1Policy.retireAt).toLocaleString("es-MX",{dateStyle:"full",timeStyle:"short"})}</strong>
+       <p role="status" className="muted">{data.v1Policy.retired?"API V1 ya está retirada.":
+        clock===null?"Consultando tiempo restante…":
+        "Restante: "+Math.max(0,Math.floor((data.v1Policy.retireAt-clock)/3600000))+" h "+Math.max(0,Math.floor(((data.v1Policy.retireAt-clock)%3600000)/60000))+" min"}</p></>
+       :<p className="muted">Todavía no se ha programado una fecha de cierre.</p>}
+     <button className="button subtle" type="button" onClick={changeRetirement}
+      disabled={busy||!data.v1Policy||(!data.v1Policy.retireAt&&!data.v1Policy.apiEnabled)}>
+      {data.v1Policy?.retireAt?"Cancelar fecha de cierre":"Programar cierre en 48 horas"}</button>
+    </div>
     {[['apiEnabled','API V1 habilitada',data.v1Policy?.apiEnabled?
       'V1 disponible con la política de protección seleccionada.':'Todas las rutas V1 están deshabilitadas.'],
       ['advancedProtection','Protección avanzada V1',data.v1Policy?.advancedProtection?
@@ -213,9 +281,13 @@ export default function AdminDashboard({mode="system"}){
         {field==='advancedProtection'&&<small className="sp-admin-status-note">Activarlo puede impedir el acceso de versiones antiguas hasta actualizarse.</small>}
        </div>
        <button className="sp-admin-switch" role="switch" type="button" aria-label={title}
-        aria-checked={Boolean(data.v1Policy?.[field])} disabled={busy||!data.v1Policy} onClick={()=>changeV1(field)}><span/></button>
+        aria-checked={Boolean(data.v1Policy?.[field])} disabled={busy||!data.v1Policy||(field==="apiEnabled"&&Boolean(data.v1Policy.retireAt))} onClick={()=>changeV1(field)}><span/></button>
       </div>
     ))}
+   </section>}
+   {mode==="api-v2"&&<section className="admin-card sp-admin-services">
+    <h2>API V2 y verificación</h2>
+    <p className="muted">Administración independiente de disponibilidad y Play Integrity de V2.</p>
      <div className="sp-admin-switch-row">
       <div><strong>API V2 habilitada</strong>
        <small className="muted">{data.v2Policy?.enabled?
@@ -243,7 +315,67 @@ export default function AdminDashboard({mode="system"}){
        aria-checked={data.v2PlayPolicy?.integrityRequired??true}
        disabled={busy||!data.v2PlayPolicy} onClick={changeV2Play}><span/></button>
      </div>
+   <section className="sp-admin-attestation-stats" aria-label="Motivos de rechazo de dispositivos">
+    <h3>Diagnóstico agregado de atestación</h3>
+    <p className="muted">Número de rechazos registrados desde que arrancó el servicio de atestación. Un teléfono puede generar varios rechazos al reintentar.</p>
+    {data.attestationDiagnostics?
+     <><p className="muted">Tiempo activo: {Math.floor(data.attestationDiagnostics.uptimeSeconds/3600)} horas.</p>
+      <div className="sp-admin-attestation-rows">
+       {Object.entries(data.attestationDiagnostics.rejections)
+        .sort((a,b)=>b[1]-a[1]).map(([reason,count])=>
+        <div key={reason} className="sp-admin-attestation-row">
+         <code>{reason}</code><strong>{fmt.format(count)}</strong>
+        </div>)}
+       {Object.keys(data.attestationDiagnostics.rejections).length===0&&
+        <p className="muted">Aún no se han registrado rechazos.</p>}
+      </div></>:
+     <p className="muted">Sin métricas del servicio. Verifica que el contenedor de atestación esté actualizado y disponible.</p>}
+    <p className="muted">Estos datos no permiten determinar si un dispositivo está rooteado. Solo muestran el motivo técnico de rechazo, sin IP, claves ni identificadores.</p>
    </section>
+   <div className="sp-admin-device-policy">
+     <h3>Compatibilidad y seguridad de dispositivos V2</h3>
+     <p className="muted">Perfil temporal para diagnosticar la atestación de teléfonos nuevos y antiguos. No modifica la API V1.</p>
+     <label htmlFor="v2-patch-years">Antigüedad máxima del parche</label>
+     <select id="v2-patch-years" value={patchMonths} disabled={busy} onChange={e=>setPatchMonths(Number(e.target.value))}>
+      <option value={12}>1 año (12 meses) · estricto</option>
+      <option value={18}>1 año y medio</option>
+      <option value={24}>2 años</option>
+      <option value={36}>3 años</option>
+      <option value={48}>4 años</option>
+     </select>
+     <div className="sp-admin-switch-row">
+      <div><strong>Exigir parches Android, vendor y boot recientes</strong>
+       <small className="muted">Si se desactiva, se aceptan parches antiguos durante la ventana de pruebas.</small></div>
+      <button className="sp-admin-switch" type="button" role="switch" aria-label="Comprobar parches V2"
+       aria-checked={enforcePatch} disabled={busy} onClick={()=>setEnforcePatch(v=>!v)}><span/></button>
+     </div>
+     <div className="sp-admin-switch-row">
+      <div><strong>Exigir Verified Boot y bootloader bloqueado</strong>
+       <small className="muted">No indica de forma inequívoca si hay root; conserva la validación de certificados y la identidad APK.</small></div>
+      <button className="sp-admin-switch" type="button" role="switch" aria-label="Comprobar arranque V2"
+       aria-checked={enforceBoot} disabled={busy} onClick={()=>setEnforceBoot(v=>!v)}><span/></button>
+     </div>
+     <label htmlFor="v2-device-duration">Duración de la excepción (restauración automática)</label>
+     <select id="v2-device-duration" value={testHours} disabled={busy} onChange={e=>setTestHours(Number(e.target.value))}>
+      <option value={1}>1 hora</option><option value={6}>6 horas</option>
+      <option value={24}>24 horas</option><option value={48}>48 horas</option>
+     </select>
+     <p className="sp-admin-device-status" role="status">
+      {data.v2DevicePolicy?.relaxed?
+       "Perfil temporal activo hasta "+new Date(data.v2DevicePolicy.expiresAt).toLocaleString("es-MX"):
+       "Perfil estricto activo: 12 meses y arranque verificado."}
+     </p>
+     <p className="muted">Aunque desactives ambos controles, siguen obligatorios Google Key Attestation, el certificado de confianza, la identidad y firma de SP-DECODE, las pruebas de sesión y el cifrado HPKE.</p>
+     <div className="sp-admin-device-actions">
+      <button className="button primary" type="button" disabled={busy||!data.v2DevicePolicy}
+       onClick={()=>saveDevicePolicy(false)}>Guardar perfil de pruebas</button>
+      <button className="button subtle" type="button" disabled={busy||!data.v2DevicePolicy}
+       onClick={()=>saveDevicePolicy(true)}>Restaurar perfil estricto</button>
+     </div>
+   </div>
+   </section>}
+
+   {mode==="play"&&<>
    <section className="admin-card sp-admin-services">
     <div className="sp-admin-section-heading"><div><h2>Distribución beta y Google Play Integrity</h2>
      <p className="muted">Esta política afecta a nuevas sesiones Cloud, no a la firma local ni a la seguridad de Google Play.</p></div></div>
@@ -260,7 +392,9 @@ export default function AdminDashboard({mode="system"}){
       disabled={busy||data.playAdmission?.locked} onClick={changePlayAdmission}><span/></button>
     </div>
     <p className="muted">No utilices este modo como protección contra aplicaciones alteradas: durante la beta no hay autenticación criptográfica del origen del cliente. Se restablece automáticamente después de 15 días; puedes desactivarlo antes.</p>
-   </section>
+   </section>   </>}
+
+   {mode==="providers"&&<>
    <section className="admin-card sp-admin-services">
     <div className="sp-admin-section-heading"><div>
      <h2>Disponibilidad de importaciones remotas</h2>
@@ -296,7 +430,9 @@ export default function AdminDashboard({mode="system"}){
      </div>;
     })}
     <p className="muted">Los cambios se guardan en un volumen de configuración independiente, incluso al reiniciar Redis o los contenedores. La versión del catálogo aumenta cuando cambias un proveedor; actualiza Server VPN en la aplicación. La activación de HTTP Injector requiere las claves originales del proveedor, que no se muestran aquí.</p>
-   </section>
+   </section>   </>}
+
+   {mode==="maintenance"&&<>
    <section className="admin-card sp-admin-services">
     <div className="sp-admin-section-heading">
      <div><h2>Mantenimiento por servicio</h2><p className="muted">Puedes pausar un servicio sin detener los demás. La protección general siempre prevalece.</p></div>
@@ -312,7 +448,8 @@ export default function AdminDashboard({mode="system"}){
      </div>;
     })}
     <p className="muted">Los estados se guardan en Redis. Las protecciones impuestas desde el VPS no se pueden anular aquí.</p>
-   </section>
+   </section>   </>}
+
    </>}
   </>}
   <div className="admin-actions">

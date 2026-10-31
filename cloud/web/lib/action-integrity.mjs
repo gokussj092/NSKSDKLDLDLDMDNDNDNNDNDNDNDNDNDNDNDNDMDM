@@ -1,3 +1,4 @@
+import { denyAccessRisk } from "./rasp-policy.mjs";
 import { randomUUID,randomBytes,createHash } from "node:crypto";
 import { decodePlayToken,checkIntegrityVerdict } from "./c3-integrity.mjs";
 import { sha256 } from "./v2-proof.mjs";
@@ -21,5 +22,6 @@ export async function verifyAction(redis,request,op,bytes,claims,cfg,{decodeInte
   if(value.jti!==claims.jti || value.operation!==op || value.bodySha256!==sha256(bytes) ||
      Date.now()-value.created>120000 || value.created>Date.now()+5000)return false;
   const verdict=await decodeIntegrity(token,cfg);
-  return checkIntegrityVerdict(verdict,{...cfg,requestHash:value.requestHash});
+  return checkIntegrityVerdict(verdict,{...cfg,requestHash:value.requestHash}) &&
+    !denyAccessRisk(verdict,cfg,claims.versionCode);
 }

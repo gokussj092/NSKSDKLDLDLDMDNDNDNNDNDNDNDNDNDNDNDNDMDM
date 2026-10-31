@@ -14,6 +14,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+      - name: Install Cloud web test dependencies
+        working-directory: cloud/web
+        run: npm install --no-audit --no-fund --ignore-scripts --no-package-lock
       - name: Adversarial transport and existing API tests
         working-directory: cloud/web
         run: npm test

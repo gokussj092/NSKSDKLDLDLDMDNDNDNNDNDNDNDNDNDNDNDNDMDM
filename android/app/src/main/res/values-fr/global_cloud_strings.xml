@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_global_title">Cloud (en ligne)</string>
+    <string name="cloud_global_auto">Détection automatique</string>
+    <string name="cloud_global_hint">Collez un lien, une clé ou un code Cloud pris en charge</string>
+    <string name="cloud_global_action">Importer depuis le Cloud</string>
+    <string name="cloud_global_detail">Sélectionnez un fournisseur ou laissez SP-DECODE le détecter. Services autorisés uniquement.</string>
+    <string name="cloud_global_invalid">Cette référence ne correspond pas à un fournisseur Cloud autorisé.</string>
+</resources>

@@ -150,6 +150,16 @@ class MainActivity : ComponentActivity() {
         get()=sessionVm.reveal
         set(value){sessionVm.reveal=value}
     private var stagedExport:String?=null
+    private var runtimeObservation:Job?=null
+
+    // Event-driven own-process inspection off the main thread. No permanent
+    // service, package scans, timers, or raw module/debug logs.
+    private fun observeRuntime() {
+        runtimeObservation?.cancel()
+        runtimeObservation=scope.launch(Dispatchers.IO) {
+            runCatching { com.ghostdeveloper.spdecode.cloud.CloudNativeTransport.runtimeReport() }
+        }
+    }
 
     private val noticePermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -570,7 +580,7 @@ class MainActivity : ComponentActivity() {
                     !reportBusy && cloudClient.lastDiagnostic!=null,
                 onReportError={sendCurrentFailureReport()},
                 onDecodeText={input->decodeText(input)},
-                onDecodeCloud={reference->decodeCloud(reference)},
+                onDecodeCloud={provider,reference->decodeCloud(provider,reference)},
                 onDecodeServerCatalog={decodeNurServers()},
                 onDecodeServerApp={id->decodeServerVpnProvider(id)},
                 onLegalLink={which->
@@ -739,9 +749,14 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        // A signature/debuggable check that runs only at cold start can be
-        // bypassed by a later process attachment. Defense-in-depth recheck.
-        if(!ReleaseIntegrity.isTrusted(this)) finishAndRemoveTask()
+        if(!ReleaseIntegrity.isTrusted(this)) {
+            finishAndRemoveTask()
+            return
+        }
+        observeRuntime()
+        if(settings.getBoolean("private-screen",false))
+            window.addFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE)
+        else window.clearFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE)
         if(!showCloudLegal){
             refreshServerVpn()
             syncOptInUsage()
@@ -1032,16 +1047,13 @@ class MainActivity : ComponentActivity() {
      * User-triggered, opt-in ONLINE import. No network request is made by any
      * offline file/text decoder, and a failed fetch never saves a result.
      */
-    private fun decodeCloud(reference:String) {
+    private fun decodeCloud(provider:String,reference:String) {
         if(!requireCloudLegal())return
         if(busy)return
-        if(reference.isBlank() || reference.length>1024) {
-            message=getString(R.string.cloud_http_injector_invalid)
-            return
-        }
-        val parsed=try { HttpInjectorCloudPort.parseReference(reference) }
-        catch(_:HttpInjectorCloudPort.CloudException) {
-            message=getString(R.string.cloud_http_injector_invalid)
+        val target=com.ghostdeveloper.spdecode.cloud.CloudOnlineReference.resolve(
+            reference,provider,textRoutes)
+        if(target==null) {
+            message=getString(R.string.cloud_global_invalid)
             return
         }
         val generation=++importGeneration
@@ -1051,19 +1063,21 @@ class MainActivity : ComponentActivity() {
             progressStage=1
             progressPosition=1
             progressTotal=1
-            progressFilename=getString(R.string.cloud_http_injector_title)
+            progressFilename=target.name
             message=null
             reveal=false
             try {
                 historyLoad?.await()
                 val decoded=if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
-                    cloudClient.decodeHttpInjectorCloud(parsed)
-                } else withContext(Dispatchers.IO) {
+                    cloudClient.decodeOnlineReference(target.provider,target.reference)
+                } else if(target.provider=="ehi") withContext(Dispatchers.IO) {
+                    val parsed=HttpInjectorCloudPort.parseReference(target.reference)
                     HttpInjectorCloudPort.decodeOnline(this@MainActivity,parsed)
-                }
+                } else throw java.io.IOException("CLOUD_INVALID_INPUT")
                 progressStage=2
+                // Persist the decoded document, never the original cloud URL/token.
                 val record=DecodeView(
-                    "http-injector-cloud.ehi","ehi",decoded,
+                    target.filename,target.suffix,decoded,
                     reference.toByteArray(Charsets.UTF_8).size
                 )
                 val stored=try {
@@ -1083,25 +1097,22 @@ class MainActivity : ComponentActivity() {
                 tab=0
             }catch(e:CancellationException){throw e}
             catch(e:CloudDecodeClient.Failure) {
-                if(generation==importGeneration) {
-                    message=if(BuildConfig.SPDECODE_CLOUD_ENABLED)
+                if(generation==importGeneration)
+                    message=if(target.provider=="ehi")
                         CloudUserErrors.httpInjectorMessage(this@MainActivity,e)
-                        else getString(R.string.cloud_http_injector_network_error)
-                }
+                        else CloudUserErrors.message(this@MainActivity,e)
             }catch(e:HttpInjectorCloudPort.CloudException) {
-                if(generation==importGeneration) {
-                    message=getString(when(e.reason) {
-                        HttpInjectorCloudPort.Reason.REFERENCE->R.string.cloud_http_injector_invalid
-                        HttpInjectorCloudPort.Reason.NETWORK->R.string.cloud_http_injector_network_error
-                        HttpInjectorCloudPort.Reason.SERVER->R.string.cloud_http_injector_server_error
-                        HttpInjectorCloudPort.Reason.INTEGRITY->R.string.cloud_http_injector_integrity_error
-                        HttpInjectorCloudPort.Reason.DECODER->R.string.cloud_http_injector_decoder_error
-                    })
-                }
+                if(generation==importGeneration)message=getString(when(e.reason) {
+                    HttpInjectorCloudPort.Reason.REFERENCE->R.string.cloud_http_injector_invalid
+                    HttpInjectorCloudPort.Reason.NETWORK->R.string.cloud_http_injector_network_error
+                    HttpInjectorCloudPort.Reason.SERVER->R.string.cloud_http_injector_server_error
+                    HttpInjectorCloudPort.Reason.INTEGRITY->R.string.cloud_http_injector_integrity_error
+                    HttpInjectorCloudPort.Reason.DECODER->R.string.cloud_http_injector_decoder_error
+                })
             }catch(error:Exception){
                 if(generation==importGeneration)
                     message=if(BuildConfig.SPDECODE_CLOUD_ENABLED)
-                        com.ghostdeveloper.spdecode.cloud.CloudUserErrors.message(this@MainActivity,error)
+                        CloudUserErrors.message(this@MainActivity,error)
                         else getString(R.string.cloud_http_injector_network_error)
             }finally {
                 if(generation==importGeneration) {

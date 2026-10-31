@@ -195,3 +195,90 @@ body:has(.sp-admin-frame){background:#000;color:#f7f7f7}
 .sp-admin-frame .sp-admin-legal-grid strong{font-size:13px;color:#f7f7f7}
 .sp-admin-frame .sp-admin-legal-grid span{font-size:11px;color:#b1b1b1;line-height:1.65}
 @media(max-width:670px){.sp-admin-frame .sp-admin-legal-grid{grid-template-columns:1fr}}
+
+
+/* AMOLED administration: left sidebar, 15 dedicated navigation destinations. */
+.sp-admin-shell{--side-width:264px;display:grid;grid-template-columns:var(--side-width) minmax(0,1fr);grid-template-rows:64px minmax(0,1fr);min-height:65vh;position:relative}
+.sp-admin-shell[data-expanded="false"]{grid-template-columns:0 minmax(0,1fr)}
+.sp-admin-toolbar{grid-column:2;grid-row:1;background:#090909;border-bottom:1px solid #2b2b2b;display:flex;gap:15px;align-items:center;padding:0 25px;min-width:0}
+.sp-admin-toolbar strong{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sp-admin-toolbar small{margin-left:auto;color:#929292;font-size:12px}
+.sp-admin-hamburger{width:43px;height:43px;border:1px solid #3a3a3a;background:#222;color:#fff;border-radius:12px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;flex-shrink:0;cursor:pointer}
+.sp-admin-hamburger:hover{background:#333}
+.sp-admin-hamburger span{width:18px;height:2px;border-radius:2px;background:#f7f7f7}
+.sp-admin-sidebar{grid-column:1;grid-row:1/3;background:#101010;border-right:1px solid #2c2c2c;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;overflow:hidden;z-index:11}
+.sp-admin-shell[data-expanded="false"] .sp-admin-sidebar{visibility:hidden;border:0;width:0;pointer-events:none}
+.sp-admin-sidebar-brand{display:flex;flex-direction:column;gap:4px;padding:24px 23px 18px;border-bottom:1px solid #292929}
+.sp-admin-sidebar-brand strong{font-size:17px;letter-spacing:-.035em}
+.sp-admin-sidebar-brand span{font-size:11px;color:#aaa}
+.sp-admin-sidebar-scroll{overflow-y:auto;flex:1;padding:12px 10px 28px;scrollbar-color:#555 #171717;scrollbar-width:thin}
+.sp-admin-nav-group{margin-bottom:15px}
+.sp-admin-nav-group h2{margin:18px 12px 9px;font-size:10px;text-transform:uppercase;color:#888;letter-spacing:.13em}
+.sp-admin-nav-group a{display:flex;gap:11px;align-items:center;color:#b7b7b7;padding:12px;border-radius:12px;margin:3px 0;text-decoration:none;border:1px solid transparent;font-size:13px;font-weight:600}
+.sp-admin-nav-group a:hover{background:#252525;color:#fff}
+.sp-admin-nav-group a.current,.sp-admin-nav-group a[aria-current="page"]{background:#292929;border-color:#4c4c4c;color:#fff}
+.sp-admin-nav-icon{width:21px;display:inline-block;flex:0 0 21px;text-align:center;font-size:19px;font-weight:500}
+.sp-admin-content{grid-column:2;grid-row:2;min-width:0}
+.sp-admin-frame .sp-admin-content .admin-wrap{width:min(1160px,calc(100% - 44px));margin:32px auto 64px}
+.sp-admin-menu-backdrop{display:none}
+.sp-admin-retirement{background:#202020;border:1px solid #484848;border-radius:15px;padding:21px;margin:18px 0}
+.sp-admin-retirement h3{font-size:16px;margin:0 0 8px}
+.sp-admin-retirement p{margin:0 0 16px}
+.sp-admin-deadline{display:block;font-size:14px;margin:14px 0}
+@media(max-width:979px){
+ .sp-admin-shell,.sp-admin-shell[data-expanded="false"]{grid-template-columns:minmax(0,1fr);grid-template-rows:64px minmax(0,1fr)}
+ .sp-admin-toolbar,.sp-admin-content{grid-column:1}
+ .sp-admin-toolbar{padding:0 15px}
+ .sp-admin-toolbar small{display:none}
+ .sp-admin-sidebar{position:fixed;top:0;left:0;width:min(300px,85vw);height:100dvh;z-index:101;box-shadow:0 20px 70px #000;border-right:1px solid #404040;visibility:visible}
+ .sp-admin-shell[data-expanded="false"] .sp-admin-sidebar{transform:translateX(-110%);width:min(300px,85vw);visibility:hidden}
+ .sp-admin-shell[data-expanded="true"] .sp-admin-menu-backdrop{display:block;position:fixed;inset:0;background:rgba(0,0,0,.72);border:0;z-index:100}
+ .sp-admin-frame .sp-admin-content .admin-wrap{width:calc(100% - 28px);margin:25px auto 52px}
+}
+@media(prefers-reduced-motion:no-preference){.sp-admin-sidebar{transition:transform .2s ease}}
+
+
+/* Isolated notification composer and live user preview. */
+.sp-admin-notice-page{margin-top:19px}
+.sp-admin-notice-page .admin-grid{align-items:start}
+.sp-admin-notice-templates{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 22px}
+.sp-admin-notice-templates .button{font-size:11px;padding:9px 12px;min-height:34px}
+.sp-admin-notice-form label{display:block;position:relative;color:#ddd;font-size:13px;font-weight:650;margin:16px 0}
+.sp-admin-notice-form input,.sp-admin-notice-form textarea{display:block;width:100%;background:#0c0c0c;color:#f7f7f7;border:1px solid #404040;border-radius:12px;padding:14px;font:inherit;resize:vertical;margin-top:8px}
+.sp-admin-notice-form textarea{min-height:152px;line-height:1.6}
+.sp-admin-notice-form input::placeholder,.sp-admin-notice-form textarea::placeholder{color:#999}
+.sp-admin-notice-count{float:right;color:#aaa;font-variant-numeric:tabular-nums;font-size:11px;font-weight:400}
+.sp-admin-notice-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.sp-admin-notice-preview{background:linear-gradient(160deg,#282828,#181818);border:1px solid #4c4c4c;border-radius:18px;padding:22px 19px;margin:21px 0 28px;overflow-wrap:anywhere;min-height:161px}
+.sp-admin-notice-preview-app{display:flex;gap:10px;align-items:center;margin-bottom:15px;font-size:12px}
+.sp-admin-notice-preview-app small{margin-left:auto;color:#b8b8b8}
+.sp-admin-notice-preview-mark{display:grid;place-items:center;width:31px;height:31px;background:#eee;color:#111;border-radius:9px;font-size:10px;font-weight:850}
+.sp-admin-notice-preview>strong{display:block;font-size:15px}
+.sp-admin-notice-preview>p{margin:7px 0 0;color:#d2d2d2;font-size:13px;white-space:pre-wrap}
+.sp-admin-notice-result{margin:14px 0;padding:13px 17px;border:1px solid #555;border-radius:11px;background:#252525;color:#f4f4f4;font-size:13px}
+.sp-admin-notice-history{margin-top:24px}
+.sp-admin-notice-list{display:grid;gap:11px}
+.sp-admin-notice-history-row{display:flex;gap:20px;align-items:flex-start;justify-content:space-between;border:1px solid #353535;border-radius:13px;padding:15px;background:#202020}
+.sp-admin-notice-history-row>div{min-width:0;overflow-wrap:anywhere}
+.sp-admin-notice-history-row strong{font-size:14px}
+.sp-admin-notice-history-row p{white-space:pre-wrap;margin:5px 0 0;color:#bdbdbd;font-size:12px}
+.sp-admin-notice-history-row small{color:#aaa;font-size:11px;line-height:1.65;flex:0 0 186px}
+@media(max-width:560px){.sp-admin-notice-history-row{display:block}.sp-admin-notice-history-row small{display:block;margin-top:12px}.sp-admin-notice-actions .button{width:100%}}
+
+/* V2 device-admission QA: grouped controls, clear risk summary and mobile layout. */
+.sp-admin-device-policy{margin-top:24px;padding:22px;border:1px solid #3f3f3f;background:#191919;border-radius:16px}
+.sp-admin-device-policy h3{font-size:17px;letter-spacing:-.02em;margin:0 0 7px}
+.sp-admin-device-policy>label{display:block;font-size:12px;font-weight:700;margin:19px 0 8px;color:#eee}
+.sp-admin-device-policy>select{display:block;width:100%;padding:13px 15px;background:#0b0b0b;color:#eee;border:1px solid #555;border-radius:11px;font:inherit}
+.sp-admin-device-policy .sp-admin-switch-row{margin:16px 0;border:1px solid #333;border-radius:12px;padding:16px}
+.sp-admin-device-policy .sp-admin-switch-row small{display:block;margin-top:5px}
+.sp-admin-device-status{background:#292929;border:1px solid #505050;padding:11px 14px;border-radius:10px;font-weight:650;font-size:12px}
+.sp-admin-device-actions{display:flex;flex-wrap:wrap;gap:11px;margin-top:18px}
+@media(max-width:580px){.sp-admin-device-policy{padding:14px}.sp-admin-device-actions .button{width:100%}}
+
+.sp-admin-attestation-stats{margin-top:24px;padding:20px;border-radius:16px;border:1px solid #383838;background:#141414}
+.sp-admin-attestation-stats h3{font-size:16px;margin:0 0 7px}
+.sp-admin-attestation-rows{display:grid;gap:7px;margin:15px 0}
+.sp-admin-attestation-row{padding:9px 11px;border-radius:10px;display:flex;justify-content:space-between;align-items:center;gap:12px;background:#222;border:1px solid #393939}
+.sp-admin-attestation-row code{font-size:11px;overflow-wrap:anywhere;color:#ccc}
+.sp-admin-attestation-row strong{font-variant-numeric:tabular-nums;font-size:15px}

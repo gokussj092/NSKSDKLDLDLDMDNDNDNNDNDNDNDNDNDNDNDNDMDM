@@ -203,8 +203,18 @@ def open_profile(source, *, carrier_mac_key=None, require_carrier_mac=False):
 def reseal(document, *, outer_edits=None, inner_edits=None,
            allow_unverified_middle=False):
     outer_edits, inner_edits = outer_edits or {}, inner_edits or {}
-    if set(outer_edits) - {'lockModes', 'lockModesHash'} or set(inner_edits) - {'isConfigLock', 'configMessage'}:
+    if set(outer_edits) - {'lockModes', 'lockModesHash', 'configExpiryTimestamp'} or set(inner_edits) - {'isConfigLock', 'configMessage', 'configExpiryTimestamp'}:
         raise EhiLabError('EDIT_OUTSIDE_LAB_SCOPE')
+    if 'configExpiryTimestamp' in outer_edits and (
+            type(document.outer.get('configExpiryTimestamp')) is not int or
+            type(outer_edits['configExpiryTimestamp']) is not int or
+            outer_edits['configExpiryTimestamp'] != 0):
+        raise EhiLabError('UNSUPPORTED_EXPIRY_METADATA')
+    if 'configExpiryTimestamp' in inner_edits and (
+            type(document.inner.get('configExpiryTimestamp')) is not int or
+            type(inner_edits['configExpiryTimestamp']) is not int or
+            inner_edits['configExpiryTimestamp'] != 0):
+        raise EhiLabError('UNSUPPORTED_EXPIRY_METADATA')
     for mapping, original in ((outer_edits, document.outer), (inner_edits, document.inner)):
         if any((k not in original and not (mapping is inner_edits and k == 'configMessage' and type(v) is str))
                or (k in original and type(v) is not type(original[k])) for k, v in mapping.items()):
@@ -304,9 +314,24 @@ def observed_open_access_edits(document):
     # false. Preserve an explicit source salt for its existing connection
     # tokens, but do not use the locked-export hash rule for the open target.
     text = identifier + modes
-    return ({'lockModes': modes,
-             'lockModesHash': hashlib.sha256(text.encode('utf-8')).hexdigest()},
-            {'isConfigLock': False})
+    outer_edits = {'lockModes': modes,
+                   'lockModesHash': hashlib.sha256(text.encode('utf-8')).hexdigest()}
+    # The timestamp participates in the Argon2 master-key transcript. Reset
+    # to the observed no-expiry integer and authenticate both carrier layers.
+    if 'configExpiryTimestamp' in document.outer:
+        expiry = document.outer['configExpiryTimestamp']
+        if type(expiry) is not int or expiry < 0:
+            raise EhiLabError('UNSUPPORTED_EXPIRY_METADATA')
+        if expiry != 0:
+            outer_edits['configExpiryTimestamp'] = 0
+    inner_edits = {'isConfigLock': False}
+    if 'configExpiryTimestamp' in document.inner:
+        expiry = document.inner['configExpiryTimestamp']
+        if type(expiry) is not int or expiry < 0:
+            raise EhiLabError('UNSUPPORTED_EXPIRY_METADATA')
+        if expiry != 0:
+            inner_edits['configExpiryTimestamp'] = 0
+    return (outer_edits, inner_edits)
 
 
 def private_write(path, raw):

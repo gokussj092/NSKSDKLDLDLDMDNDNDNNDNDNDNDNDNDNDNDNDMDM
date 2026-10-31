@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="private_screen_title">निजी स्क्रीन</string>
+    <string name="private_screen_detail">इस ऐप में स्क्रीनशॉट और स्क्रीन रिकॉर्डिंग रोकता है। स्क्रीनशॉट साझा करने के लिए इसे बंद करें।</string>
+</resources>

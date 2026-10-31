@@ -103,6 +103,27 @@ test("private verifier replies cannot substitute a different public key",async()
   assert.equal(await verifyHardware(["YWJj","YWJj"],"x".repeat(43),encode(f.key),cfg,
     {fetchImpl:async()=>Response.json({valid:true,publicKey:encode(f.bootstrap),level:"tee"})}),null);
 });
+test("server signs only trusted time-bound device policies, never client-supplied values",async()=>{
+ const f=fixture(),cfg=v2Settings(f.options.env);
+ let sent;
+ const fetchImpl=async(_url,options)=>{sent=JSON.parse(options.body);
+  return Response.json({valid:true,publicKey:encode(f.key),level:"tee"});};
+ const relaxed={patchMonths:48,enforcePatch:false,enforceBoot:false,
+  expiresAt:new Date(Date.now()+3600000).toISOString(),relaxed:true,revision:7};
+ const decision=await verifyHardware(["YWJj","YWJj"],"x".repeat(43),encode(f.key),
+   cfg,{fetchImpl,policyLoader:async()=>relaxed});
+ assert.equal(decision.valid,true);
+ assert.deepEqual(Object.keys(sent).sort(),["chain","challenge","devicePolicy","publicKey"]);
+ assert.equal(sent.devicePolicy.patchMonths,48);
+ assert.equal(sent.devicePolicy.enforceBoot,false);
+ assert.equal(sent.devicePolicy.enforcePatch,false);
+ assert(Number.isSafeInteger(sent.devicePolicy.expiresAt));
+ await verifyHardware(["YWJj","YWJj"],"x".repeat(43),encode(f.key),
+   cfg,{fetchImpl,policyLoader:async()=>({
+    patchMonths:12,enforcePatch:true,enforceBoot:true,expiresAt:null,relaxed:false,revision:8})});
+ assert(!Object.hasOwn(sent,"devicePolicy"));
+});
+
 test("renewing a session cannot reset a key budget or spend global capacity after key rejection",async()=>{
   const f=fixture({CLOUD_ACTION_INTEGRITY_REQUIRED:"false"});
   const token=(await(await enroll(f)).json()).accessToken;

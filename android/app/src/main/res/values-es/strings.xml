@@ -212,4 +212,6 @@
     <string name="nur_servers_invalid_url">Introduce una URL HTTPS válida para la lista de servidores.</string>
     <string name="nur_servers_failed">No se pudo descargar, autenticar o descifrar el catálogo de servidores.</string>
     <string name="language_screen_title">Seleccionar idioma</string>
+    <string name="private_screen_title">Pantalla privada</string>
+    <string name="private_screen_detail">Evita capturas y grabaciones de pantalla en esta app. Desactívala cuando necesites compartir una captura.</string>
 </resources>

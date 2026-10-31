@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_global_title">Đám mây (Trực tuyến)</string>
+    <string name="cloud_global_auto">Tự động nhận diện</string>
+    <string name="cloud_global_hint">Dán liên kết, khóa hoặc mã Cloud được hỗ trợ</string>
+    <string name="cloud_global_action">Nhập từ đám mây</string>
+    <string name="cloud_global_detail">Chọn nhà cung cấp hoặc để SP-DECODE tự nhận diện. Chỉ hỗ trợ dịch vụ được cho phép.</string>
+    <string name="cloud_global_invalid">Tham chiếu này không khớp với nhà cung cấp Cloud được hỗ trợ.</string>
+</resources>

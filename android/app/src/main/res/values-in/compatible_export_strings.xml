@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="compatible_export_for">Ekspor untuk %1$s</string>
-    <string name="compatible_export_redecode">Dekripsi ulang berkas ini dengan ekspor kompatibel diaktifkan.</string>
+    <string name="compatible_export_redecode">Impor ulang berkas ini untuk mengaktifkan ekspor ke %1$s.</string>
     <string name="compatible_export_failed">Berkas kompatibel tidak dapat disimpan.</string>
 </resources>

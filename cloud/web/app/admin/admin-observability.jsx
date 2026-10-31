@@ -94,7 +94,7 @@ export default function AdminObservability({mode="analytics"}){
   {loading&&<p className="muted" role="status">Consultando telemetría agregada…</p>}
   {data&&<>
    <div className="sp-admin-charts-grid sp-admin-observability-head">
-    {mode!=="system"&&<Panel title="Alertas automáticas de proveedores" subtitle="Se actualiza cada minuto; sin correos ni datos de clientes">
+    {mode==="alerts"&&<Panel title="Alertas automáticas de proveedores" subtitle="Se actualiza cada minuto; sin correos ni datos de clientes">
      <p className="muted">Reglas: tres fallos consecutivos de red/timeout, o al menos cinco errores entre las últimas diez operaciones. Máximo una alerta por condición y hora.</p>
      <div className="sp-admin-alert-actions">
       <div><strong>{ops.alertsPausedUntil?"Alertas silenciadas":"Alertas automáticas activas"}</strong>
@@ -123,7 +123,7 @@ export default function AdminObservability({mode="analytics"}){
      <p className="muted">La CPU/RAM indicada corresponde al contenedor web, NO a toda la VPS. El uso de CPU puede aparecer tras la segunda lectura. No hay métricas de host ni cola persistente configuradas.</p>
     </Panel>}
    </div>
-   {mode!=="system"&&<>
+   {mode==="performance"&&<>
     <Panel title="Antes y después de una corrección" subtitle="Líneas base de reinicios · tasas históricas y operaciones posteriores">
      <div className="admin-table-wrap"><table className="admin-table"><thead><tr>
       <th>Extensión / proveedor</th><th>Reinicio (UTC)</th><th>Antes</th><th>Errores nuevos</th><th>Después</th>

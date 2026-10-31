@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="private_screen_title">プライベート画面</string>
+    <string name="private_screen_detail">このアプリでのスクリーンショットと画面録画を防ぎます。スクリーンショットを共有するときはオフにしてください。</string>
+</resources>

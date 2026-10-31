@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="private_screen_title">Privater Bildschirm</string>
+    <string name="private_screen_detail">Verhindert Screenshots und Bildschirmaufnahmen in dieser App. Zum Teilen eines Screenshots deaktivieren.</string>
+</resources>

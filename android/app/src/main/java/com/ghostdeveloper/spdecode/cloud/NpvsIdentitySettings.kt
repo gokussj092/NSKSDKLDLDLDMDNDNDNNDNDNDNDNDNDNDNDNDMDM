@@ -33,7 +33,7 @@ internal fun NpvsIdentitySettings() {
     var enabled by remember{mutableStateOf(false)}
     var working by remember{mutableStateOf(false)}
     var message by remember{mutableStateOf<String?>(null)}
-    var shown by remember{mutableStateOf<NpvsIdentityVault.Entry?>(null)}
+    var shown by remember{mutableStateOf<Pair<NpvsIdentityVault.Entry,org.json.JSONObject>?>(null)}
     var revealPrivate by remember{mutableStateOf(false)}
     var consent by remember{mutableStateOf(false)}
     var deleteTarget by remember{mutableStateOf<NpvsIdentityVault.Entry?>(null)}
@@ -78,7 +78,15 @@ internal fun NpvsIdentitySettings() {
                 Text((if(entry.source=="generated")stringResource(R.string.npv_generated) else stringResource(R.string.npv_captured))+
                     " · "+entry.fingerprint.take(16),color=Color.White)
                 Row {
-                    TextButton(onClick={shown=entry;revealPrivate=false},enabled=!working){Text(stringResource(R.string.npv_view))}
+                    TextButton(onClick={working=true;scope.launch {
+                        try {
+                            // Load on explicit view, off the UI thread. Missing
+                            // or corrupt records report an error without crashing Compose.
+                            val material=withContext(Dispatchers.IO){entry.material}
+                            shown=entry to material;revealPrivate=false
+                        }catch(_:Exception){message=context.getString(R.string.npv_invalid)}
+                        finally{working=false}
+                    }},enabled=!working){Text(stringResource(R.string.npv_view))}
                     TextButton(onClick={deleteTarget=entry},enabled=!working){
                         Text(stringResource(R.string.npv_delete))}
                 }
@@ -101,7 +109,7 @@ internal fun NpvsIdentitySettings() {
                     }
                     val value=client.generateNpvsIdentity()
                     val entry=withContext(Dispatchers.IO){vault.save(value).also{refresh()}}
-                    shown=entry;revealPrivate=false;message=null
+                    shown=entry to value;revealPrivate=false;message=null
                 }catch(error:Exception){message=CloudUserErrors.message(context,error)}finally{working=false}
             }
         }){Text(stringResource(R.string.npv_generate))}},dismissButton={TextButton(onClick={consent=false}){Text(stringResource(R.string.npv_cancel),color=Color.White)}},
@@ -117,7 +125,7 @@ internal fun NpvsIdentitySettings() {
                 scope.launch {
                     try{
                         withContext(Dispatchers.IO){vault.delete(entry.id);refresh()}
-                        if(shown?.id==entry.id)shown=null
+                        if(shown?.first?.id==entry.id)shown=null
                     }catch(_:Exception){message=context.getString(R.string.npv_invalid)}
                     finally{working=false}
                 }
@@ -131,7 +139,7 @@ internal fun NpvsIdentitySettings() {
             properties=DialogProperties(securePolicy=SecureFlagPolicy.SecureOn)
         )
     }
-    shown?.let{entry->
+    shown?.let{(entry,material)->
         fun copy(value:String,sensitive:Boolean){
             val clip=ClipData.newPlainText("NPV",value)
             if(sensitive && android.os.Build.VERSION.SDK_INT>=24)clip.description.extras=PersistableBundle().apply {
@@ -143,7 +151,7 @@ internal fun NpvsIdentitySettings() {
             properties=DialogProperties(securePolicy=SecureFlagPolicy.SecureOn),
             title={Text(stringResource(R.string.npv_title))},text={Column(verticalArrangement=Arrangement.spacedBy(10.dp)){
                 if(entry.kind=="keypair"){
-                    val public=entry.material.getString("publicKey");val private=entry.material.getString("privateKey")
+                    val public=material.getString("publicKey");val private=material.getString("privateKey")
                     OutlinedTextField(value=public,onValueChange={},readOnly=true,label={Text(stringResource(R.string.npv_public_label))})
                     TextButton(onClick={copy(public,false)}){Text(stringResource(R.string.npv_copy_public))}
                     OutlinedTextField(value=private,onValueChange={},readOnly=true,label={Text(stringResource(R.string.npv_private_label))},

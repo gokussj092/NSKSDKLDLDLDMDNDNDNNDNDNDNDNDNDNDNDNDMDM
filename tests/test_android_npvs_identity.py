@@ -10,7 +10,7 @@ SOURCE=APP/"src/main/java/com/ghostdeveloper/spdecode/cloud"
 class AndroidNpvIdentityTests(unittest.TestCase):
     def test_only_generated_cloud_settings_get_the_new_section(self):
         gradle=(APP/"build.gradle.kts").read_text()
-        self.assertIn('"        com.ghostdeveloper.spdecode.cloud.NpvsIdentitySettings()\\n" + anchor',gradle)
+        self.assertIn('"        com.ghostdeveloper.spdecode.cloud.NpvsIdentitySettings()\\n" +',gradle)
         settings=(SOURCE.parent/"FunctionalSettingsPanel.kt").read_text()
         self.assertNotIn("NpvsIdentitySettings",settings)
         self.assertIn('dependsOn(prepareQaSettingsSource)',gradle)
@@ -44,7 +44,13 @@ class AndroidNpvIdentityTests(unittest.TestCase):
         self.assertIn('NpvsRecipientPicker.choose(app,bytes)',client)
         self.assertIn('put("recipientKey",recipient)',client)
         self.assertIn('protectedPost(CloudOperation.IDENTITY',client)
-        self.assertIn('return CloudNativeTransport.post(operation, exact, bearer, id, integrity)', client)
+        # Standard Play Integrity covers the same prepared HPKE wire that is sent.
+        # Do not regress to a second encryption after requestHash was attested.
+        self.assertIn('val prepared=CloudNativeTransport.prepare(operation,exact,attachment)', client)
+        self.assertIn('CloudNativeTransport.requestHashHex(prepared.wire)', client)
+        self.assertIn('return CloudNativeTransport.post(operation, exact, bearer, id, integrity, prepared=prepared)', client)
+        self.assertIn('finally { prepared.discard() }', client)
+        self.assertNotIn('return CloudNativeTransport.post(operation, exact, bearer, id, integrity)', client)
         transport=(SOURCE/"CloudNativeTransport.kt").read_text()
         self.assertIn('operation: Int',transport)
         native=(APP/"src/main/cpp/spdecode_transport.cpp").read_text()

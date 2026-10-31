@@ -5,9 +5,10 @@ import { opsStore, maintenanceEnabled, setMaintenance, aggregateMetrics, usageRe
 import {throttle} from "./c3-store.mjs";
 import { settings } from "./c3-config.mjs";
 import {admissionPolicy,setAdmissionPolicy} from "./c11-play-admission.mjs";
-import {v1ProtectionStatus,v1PolicyStatus,changeV1Policy} from "./v1-protection-policy.mjs";
+import {v1ProtectionStatus,v1PolicyStatus,changeV1Policy,changeV1Retirement} from "./v1-protection-policy.mjs";
 import {v2PolicyStatus,changeV2Availability} from "./v2-availability-policy.mjs";
 import {v2PlayPolicyStatus,changeV2PlayPolicy} from "./v2-play-policy.mjs";
+import {v2DevicePolicyStatus,changeV2DevicePolicy,PATCH_MONTHS,TEST_HOURS} from "./v2-device-admission-policy.mjs";
 import {v2Settings} from "./v2-config.mjs";
 import {providerOverview,updateProvider,PUBLIC_PROVIDER_IDS} from "./c12-provider-controls.mjs";
 import { ehiConfigured,nurConfigured } from "./c35-provider.mjs";
@@ -54,9 +55,9 @@ export async function statusRequest(request,options={}) {
   try{
     const redis=await (options.storeProvider||opsStore)();
     if(!await authenticateAdmin(redis,request))return error("UNAUTHORIZED",401);
-    const [maintenance,legacyMetrics,ping,serviceMaintenance,playAdmission,providerControls,v1Protection,v1Policy,v2PolicyState,v2PlayPolicy]=await Promise.all([
+    const [maintenance,legacyMetrics,ping,serviceMaintenance,playAdmission,providerControls,v1Protection,v1Policy,v2PolicyState,v2PlayPolicy,v2DevicePolicy]=await Promise.all([
       maintenanceEnabled(redis),aggregateMetrics(redis),redis.ping(),serviceMaintenanceStates(redis),
-      admissionPolicy(redis),providerOverview(),v1ProtectionStatus(),v1PolicyStatus(),v2PolicyStatus(),v2PlayPolicyStatus(),
+      admissionPolicy(redis),providerOverview(),v1ProtectionStatus(),v1PolicyStatus(),v2PolicyStatus(),v2PlayPolicyStatus(),v2DevicePolicyStatus(),
     ]);
     // Show reset-adjusted current errors when detailed aggregate hashes exist.
     // The legacy counter remains a fallback for prior deployments/tests.
@@ -75,13 +76,41 @@ export async function statusRequest(request,options={}) {
         workerReady=response.ok;
       }catch{}
     }
+    // Aggregate-only attestation diagnostics, accessible only after admin login.
+    // Use the private service DNS and its server-only token. Never expose keys,
+    // certificates, device identifiers or individual network addresses.
+    let attestationDiagnostics=null;
+    if(process.env.CLOUD_KEY_ATTESTATION_URL==="http://key-attestation:8788/verify" &&
+       (process.env.CLOUD_KEY_ATTESTATION_TOKEN||"").length>=32){
+      try{
+        const report=await (options.fetchImpl||fetch)("http://key-attestation:8788/stats",{
+          method:"GET",cache:"no-store",redirect:"error",signal:AbortSignal.timeout(2500),
+          headers:{"X-SP-Attestation-Token":process.env.CLOUD_KEY_ATTESTATION_TOKEN}});
+        if(report.ok){
+          const summary=await report.json();
+          const known=["OS_PATCH_OUTDATED","VENDOR_BOOT_PATCH_OUTDATED","OS_PATCH_MISSING",
+            "VERIFIED_BOOT","CERT_PATH","CHAIN_FORMAT","CERT_EXTENSION",
+            "CERT_CONSTRAINT","CERT_INVALID","SECURITY_LEVEL","KEY_MISMATCH",
+            "APP_ID_MISSING","APP_ID_MISMATCH","POLICY_INVALID","VERIFICATION_EXCEPTION"];
+          if(Number.isSafeInteger(summary.uptimeSeconds) && summary.uptimeSeconds>=0 &&
+             summary.rejections && typeof summary.rejections==="object" && !Array.isArray(summary.rejections)){
+            const counts={};
+            for(const key of known){
+              const n=summary.rejections[key];
+              if(Number.isSafeInteger(n)&&n>=0)counts[key]=n;
+            }
+            attestationDiagnostics={uptimeSeconds:summary.uptimeSeconds,rejections:counts};
+          }
+        }
+      }catch{}
+    }
     return api({
       services:{apiConfigured:cfg.configured,redisConnected:ping==="PONG",
         workerReady,ehiImportConfigured:ehiConfigured(),
         nurCatalogImportConfigured:nurConfigured()},
       maintenance,serviceMaintenance,playAdmission,providerControls,v1Protection,v1Policy,
       v2Policy:{...v2PolicyState,configured:v2Settings(process.env,{playIntegrityRequired:v2PlayPolicy.integrityRequired}).configured},
-      v2PlayPolicy,
+      v2PlayPolicy,v2DevicePolicy,attestationDiagnostics,
       maintenanceLocked:process.env.CLOUD_FORCE_MAINTENANCE==="true",metrics,
       observation:"Counters are aggregate-only; no user content or keys are logged.",
     });
@@ -133,6 +162,36 @@ async function v1PolicyRequest(request,field,options) {
  }
 }
 
+/** Admin-only 48-hour cutoff for API V1, independent of V2 policy. */
+export async function v1RetirementRequest(request,options={}) {
+ const cfg=adminSettings();if(!cfg.enabled)return error("ADMIN_DISABLED",503);
+ if(!validMutation(request,cfg))return error("CSRF_REJECTED",403);
+ try{
+  const redis=await (options.storeProvider||opsStore)();
+  if(!await authenticateAdmin(redis,request,cfg))return error("UNAUTHORIZED",401);
+  if(!await throttle(redis,"spc6:v1-policy:rate",10,60))return error("RATE_LIMITED",429);
+  const body=await parseSmallJson(request,256);
+  if(!own(body,["action","confirmation","expectedRevision"])||
+    !["schedule","cancel"].includes(body.action)||
+    body.confirmation!==(body.action==="schedule"?"API_V1_PROGRAMAR_48H":"API_V1_CANCELAR_PROGRAMACION")||
+    !Number.isSafeInteger(body.expectedRevision)||body.expectedRevision<0)
+    return error("INVALID_REQUEST",400);
+  const v1Policy=await changeV1Retirement(body.action,body.expectedRevision,options.policyOptions);
+  try{
+   await redis.lPush("spc6:v1-protection:audit",JSON.stringify({
+    at:Date.now(),field:"retirement",action:body.action,retireAt:v1Policy.retireAt??null,
+    revision:v1Policy.revision}));
+   await redis.lTrim("spc6:v1-protection:audit",0,99);
+   await redis.expire("spc6:v1-protection:audit",8*86400);
+  }catch{}
+  return api({v1Policy},200,{"Cache-Control":"private, no-store"});
+ }catch(e){
+  if(["V1_POLICY_CONFLICT","STORE_BUSY"].includes(e?.message))return error(e.message,409);
+  if(e?.message==="V1_POLICY_INVALID")return error(e.message,400);
+  return error("SERVICE_UNAVAILABLE",503);
+ }
+}
+
 /** Authenticated independent V2 availability control; never relaxes V2 integrity. */
 export async function v2AvailabilityRequest(request,options={}) {
  const cfg=adminSettings();if(!cfg.enabled)return error("ADMIN_DISABLED",503);
@@ -157,6 +216,37 @@ export async function v2AvailabilityRequest(request,options={}) {
   return api({v2Policy:{...v2Policy,configured:v2Settings().configured}},200,{"Cache-Control":"private, no-store"});
  }catch(e){
   if(["V2_POLICY_CONFLICT","STORE_BUSY"].includes(e?.message))return error(e.message,409);
+  return error("SERVICE_UNAVAILABLE",503);
+ }
+}
+
+/** Session-authenticated QA controls; core attestation chain and APK signatures remain mandatory. */
+export async function v2DeviceAdmissionRequest(request,options={}){
+ const cfg=adminSettings();if(!cfg.enabled)return error("ADMIN_DISABLED",503);
+ if(!validMutation(request,cfg))return error("CSRF_REJECTED",403);
+ try{
+  const redis=await (options.storeProvider||opsStore)();
+  if(!await authenticateAdmin(redis,request,cfg))return error("UNAUTHORIZED",401);
+  if(!await throttle(redis,"spc6:v2-device:rate",6,60))return error("RATE_LIMITED",429);
+  const body=await parseSmallJson(request,512);
+  if(!own(body,["patchMonths","enforcePatch","enforceBoot","durationHours","expectedRevision","confirmation"])||
+   !PATCH_MONTHS.includes(body.patchMonths)||typeof body.enforcePatch!=="boolean"||
+   typeof body.enforceBoot!=="boolean"||!TEST_HOURS.includes(body.durationHours)||
+   !Number.isSafeInteger(body.expectedRevision)||body.expectedRevision<0||
+   body.confirmation!=="V2_DISPOSITIVOS_CONFIGURAR")
+   return error("INVALID_REQUEST",400);
+  const policy=await changeV2DevicePolicy(body,options.policyOptions);
+  try {
+   await redis.lPush("spc6:v2-device-policy:audit",JSON.stringify({
+    at:Date.now(),patchMonths:policy.patchMonths,enforcePatch:policy.enforcePatch,
+    enforceBoot:policy.enforceBoot,expiresAt:policy.expiresAt,revision:policy.revision}));
+   await redis.lTrim("spc6:v2-device-policy:audit",0,99);
+   await redis.expire("spc6:v2-device-policy:audit",8*86400);
+  }catch{}
+  return api({v2DevicePolicy:policy},200,{"Cache-Control":"private, no-store"});
+ }catch(e){
+  if(["V2_DEVICE_POLICY_CONFLICT","STORE_BUSY"].includes(e?.message))return error(e.message,409);
+  if(e?.message==="V2_DEVICE_POLICY_INVALID")return error(e.message,400);
   return error("SERVICE_UNAVAILABLE",503);
  }
 }

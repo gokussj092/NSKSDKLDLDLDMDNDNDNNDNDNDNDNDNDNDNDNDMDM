@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="compatible_export_for">Xuất cho %1$s</string>
-    <string name="compatible_export_redecode">Giải mã lại tệp này khi đã bật xuất tương thích.</string>
+    <string name="compatible_export_redecode">Nhập lại tệp này để bật xuất sang %1$s.</string>
     <string name="compatible_export_failed">Không thể lưu tệp tương thích.</string>
 </resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_global_title">クラウド（オンライン）</string>
+    <string name="cloud_global_auto">自動検出</string>
+    <string name="cloud_global_hint">対応するクラウドリンク、キー、またはコードを貼り付け</string>
+    <string name="cloud_global_action">クラウドからインポート</string>
+    <string name="cloud_global_detail">プロバイダーを選択するか、SP-DECODE に自動検出させてください。許可されたサービスのみ。</string>
+    <string name="cloud_global_invalid">この参照は対応するクラウドプロバイダーと一致しません。</string>
+</resources>

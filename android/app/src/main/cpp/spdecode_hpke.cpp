@@ -12,6 +12,8 @@
 #include <array>
 #include <cstdint>
 #include <cstring>
+#include <chrono>
+#include <exception>
 #include <map>
 #include <mutex>
 #include <stdexcept>
@@ -59,9 +61,18 @@ void cleanse(Bytes& b){if(!b.empty())mbedtls_platform_zeroize(b.data(),b.size())
 template<size_t N> void cleanse(std::array<unsigned char,N>& b){
     mbedtls_platform_zeroize(b.data(),b.size());
 }
+template<class Container> struct WipeScope {
+    Container& bytes;
+    ~WipeScope(){cleanse(bytes);}
+};
 struct WipeOnExit {
     Bytes& bytes;
     ~WipeOnExit(){cleanse(bytes);}
+};
+struct WipeOnFailure {
+    Bytes& bytes;
+    int depth=std::uncaught_exceptions();
+    ~WipeOnFailure(){if(std::uncaught_exceptions()>depth)cleanse(bytes);}
 };
 bool equal(const unsigned char* a,const unsigned char* b,size_t size){
     unsigned diff=0;
@@ -81,7 +92,7 @@ Hash hmac(const Hash& key,const Bytes& value){
     return out;
 }
 Hash extract(const Bytes& salt,const Bytes& input){
-    Hash s{};
+    Hash s{};WipeScope<Hash> scrubSalt{s};
     if(!salt.empty()){
         if(salt.size()!=s.size())invalid();
         std::copy(salt.begin(),salt.end(),s.begin());
@@ -92,13 +103,13 @@ Hash extract(const Bytes& salt,const Bytes& input){
 }
 Bytes expand(const Hash& key,const Bytes& info,size_t length){
     if(length>255*32)invalid();
-    Bytes out;out.reserve(length);
-    Bytes previous;
+    Bytes out;WipeOnFailure scrubPartial{out};out.reserve(length);
+    Bytes previous;WipeOnExit scrubPrevious{previous};
     for(unsigned counter=1;out.size()<length;++counter){
-        Bytes block=previous;
+        Bytes block=previous;WipeOnExit scrubBlock{block};
         append(block,info);
         block.push_back(static_cast<unsigned char>(counter));
-        Hash next=hmac(key,block);
+        Hash next=hmac(key,block);WipeScope<Hash> scrubNext{next};
         cleanse(block);
         previous.assign(next.begin(),next.end());
         cleanse(next);
@@ -110,7 +121,7 @@ Bytes expand(const Hash& key,const Bytes& info,size_t length){
 }
 Hash labeledExtract(const Bytes& salt,const unsigned char* suite,size_t suiteLength,
                    const char* label,const Bytes& ikm){
-    Bytes value;appendAscii(value,"HPKE-v1");
+    Bytes value;WipeOnExit scrubValue{value};appendAscii(value,"HPKE-v1");
     append(value,suite,suiteLength);appendAscii(value,label);append(value,ikm);
     const Hash result=extract(salt,value);
     cleanse(value);
@@ -131,8 +142,9 @@ struct Rng {
         mbedtls_entropy_init(&entropy);
         mbedtls_ctr_drbg_init(&ctr);
         static const unsigned char personal[]="spdecode-native-hpke-v1";
-        required(mbedtls_ctr_drbg_seed(&ctr,mbedtls_entropy_func,&entropy,
-                                      personal,sizeof(personal)-1));
+        const auto rc=mbedtls_ctr_drbg_seed(&ctr,mbedtls_entropy_func,&entropy,
+                                      personal,sizeof(personal)-1);
+        if(rc!=0){mbedtls_ctr_drbg_free(&ctr);mbedtls_entropy_free(&entropy);invalid();}
     }
     ~Rng(){mbedtls_ctr_drbg_free(&ctr);mbedtls_entropy_free(&entropy);}
     void generate(unsigned char* p,size_t n){required(mbedtls_ctr_drbg_random(&ctr,p,n));}
@@ -150,7 +162,11 @@ struct Ecdh {
         mbedtls_ecp_point_init(&peer);
         mbedtls_mpi_init(&secret);
         mbedtls_mpi_init(&dh);
-        required(mbedtls_ecp_group_load(&grp,MBEDTLS_ECP_DP_CURVE25519));
+        if(mbedtls_ecp_group_load(&grp,MBEDTLS_ECP_DP_CURVE25519)!=0){
+            mbedtls_mpi_free(&dh);mbedtls_mpi_free(&secret);
+            mbedtls_ecp_point_free(&peer);mbedtls_ecp_point_free(&point);
+            mbedtls_ecp_group_free(&grp);invalid();
+        }
     }
     ~Ecdh(){
         mbedtls_mpi_free(&dh);mbedtls_mpi_free(&secret);
@@ -163,12 +179,16 @@ struct Gcm {
     mbedtls_gcm_context ctx;
     explicit Gcm(const unsigned char* key){
         mbedtls_gcm_init(&ctx);
-        required(mbedtls_gcm_setkey(&ctx,MBEDTLS_CIPHER_ID_AES,key,256));
+        if(mbedtls_gcm_setkey(&ctx,MBEDTLS_CIPHER_ID_AES,key,256)!=0){
+            mbedtls_gcm_free(&ctx);invalid();
+        }
     }
     ~Gcm(){mbedtls_gcm_free(&ctx);}
     Gcm(const Gcm&)=delete;Gcm& operator=(const Gcm&)=delete;
 };
+using Clock=std::chrono::steady_clock;
 struct Stored {
+    Clock::time_point created=Clock::now();
     std::array<unsigned char,44> material{};
     std::array<unsigned char,16> id{};
     Hash requestHash{};
@@ -176,6 +196,15 @@ struct Stored {
 };
 std::mutex locks;
 std::map<std::uint64_t,Stored> active;
+void expireLocked(){
+    // Includes Standard Integrity preparation/request plus the existing 165s
+    // heavy-catalog HTTP budget. A 120s response TTL breaks valid NUR replies.
+    const auto deadline=Clock::now()-std::chrono::seconds(300);
+    for(auto it=active.begin();it!=active.end();){
+        if(it->second.created<=deadline)it=active.erase(it);
+        else ++it;
+    }
+}
 
 } // namespace
 
@@ -205,6 +234,7 @@ PreparedEnvelope hpkePrepare(int operation,const Bytes& metadata,
     required(mbedtls_ecdh_compute_shared(&ecdh.grp,&ecdh.dh,&ecdh.peer,&ecdh.secret,
                                         mbedtls_ctr_drbg_random,&rng.ctr));
     std::array<unsigned char,32> dh{};
+    WipeScope<decltype(dh)> scrub_dh{dh};
     required(mbedtls_mpi_write_binary_le(&ecdh.dh,dh.data(),dh.size()));
     // RFC 9180 DHKEM(X25519,HKDF-SHA256) rejects all-zero shared secrets.
     std::array<unsigned char,32> zero{};
@@ -212,10 +242,13 @@ PreparedEnvelope hpkePrepare(int operation,const Bytes& metadata,
 
     Bytes kemContext;append(kemContext,enc);append(kemContext,publicKey);
     Bytes dhBytes(dh.begin(),dh.end());
+    WipeScope<decltype(dhBytes)> scrub_dhBytes{dhBytes};
     Hash eae=labeledExtract({},kKemSuite,sizeof(kKemSuite),"eae_prk",dhBytes);
+    WipeScope<decltype(eae)> scrub_eae{eae};
     cleanse(dhBytes);cleanse(dh);
     Bytes sharedSecret=labeledExpand(eae,kKemSuite,sizeof(kKemSuite),
                                           "shared_secret",kemContext,32);
+    WipeScope<decltype(sharedSecret)> scrub_sharedSecret{sharedSecret};
     cleanse(eae);
     Bytes infoHashData;appendAscii(infoHashData,kInfo);
     const Hash pskIdHash=labeledExtract({},kHpkeSuite,sizeof(kHpkeSuite),"psk_id_hash",{});
@@ -224,6 +257,7 @@ PreparedEnvelope hpkePrepare(int operation,const Bytes& metadata,
     Bytes scheduleContext; scheduleContext.push_back(0); // HPKE base mode.
     append(scheduleContext,pskIdHash);append(scheduleContext,infoHash);
     Hash secret=labeledExtract(sharedSecret,kHpkeSuite,sizeof(kHpkeSuite),"secret",{});
+    WipeScope<decltype(secret)> scrub_secret{secret};
     cleanse(sharedSecret);
     Bytes key=labeledExpand(secret,kHpkeSuite,sizeof(kHpkeSuite),"key",scheduleContext,32);
     WipeOnExit wipeKey{key};
@@ -231,11 +265,13 @@ PreparedEnvelope hpkePrepare(int operation,const Bytes& metadata,
     WipeOnExit wipeNonce{nonce};
     Bytes exporterSecret=labeledExpand(secret,kHpkeSuite,sizeof(kHpkeSuite),
                                               "exp",scheduleContext,32);
-    Hash exporterKey{};std::copy(exporterSecret.begin(),exporterSecret.end(),exporterKey.begin());
+    WipeScope<decltype(exporterSecret)> scrub_exporterSecret{exporterSecret};
+    Hash exporterKey{};WipeScope<decltype(exporterKey)> scrubExporterKey{exporterKey};std::copy(exporterSecret.begin(),exporterSecret.end(),exporterKey.begin());
     cleanse(exporterSecret);cleanse(secret);
     Bytes exportContext;appendAscii(exportContext,kExport);
     Bytes responseMaterial=labeledExpand(exporterKey,kHpkeSuite,sizeof(kHpkeSuite),
                                          "sec",exportContext,44);
+    WipeScope<decltype(responseMaterial)> scrub_responseMaterial{responseMaterial};
     cleanse(exporterKey);
     if(key.size()!=32||nonce.size()!=12||responseMaterial.size()!=44)invalid();
 
@@ -266,6 +302,7 @@ PreparedEnvelope hpkePrepare(int operation,const Bytes& metadata,
     std::uint64_t handle=0;
     {
         std::lock_guard<std::mutex> guard(locks);
+        expireLocked();
         if(active.size()>=64)invalid();
         for(int i=0;i<8;++i){
             rng.generate(reinterpret_cast<unsigned char*>(&handle),sizeof(handle));
@@ -283,6 +320,7 @@ std::vector<unsigned char> hpkeOpen(std::uint64_t handle,int status,
     Stored state;
     {
         std::lock_guard<std::mutex> guard(locks);
+        expireLocked();
         auto it=active.find(handle);
         if(it==active.end())invalid();
         state=std::move(it->second);
@@ -302,10 +340,11 @@ std::vector<unsigned char> hpkeOpen(std::uint64_t handle,int status,
     Gcm gcm(state.material.data());
     const size_t encryptedLength=response.size()-kReplyHeader-16;
     Bytes plaintext(encryptedLength);
-    required(mbedtls_gcm_auth_decrypt(&gcm.ctx,encryptedLength,
+    try { required(mbedtls_gcm_auth_decrypt(&gcm.ctx,encryptedLength,
        state.material.data()+32,12,aad.data(),aad.size(),
        response.data()+kReplyHeader+encryptedLength,16,
        response.data()+kReplyHeader,plaintext.data()));
+    }catch(...){cleanse(plaintext);throw;}
     return plaintext;
 }
 

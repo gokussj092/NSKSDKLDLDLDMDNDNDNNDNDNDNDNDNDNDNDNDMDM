@@ -1,3 +1,4 @@
+import { raspActions, decideRasp, recordRasp } from "./rasp-policy.mjs";
 import { notificationFeedRequest } from "./app-notifications.mjs";
 import { randomBytes, randomUUID } from "node:crypto";
 import { limits } from "./c3-config.mjs";
@@ -170,7 +171,8 @@ async function jsonTransportRequest(request,options={}) {
           cfg.certificateDigests.slice(),epoch:cfg.epoch};
       if(await redis.set("spc2:session:"+jti,"1",{EX:300,NX:true})!=="OK")return fail("SERVICE_UNAVAILABLE",503);
       return jsonReply({apiVersion:"v2",accessToken:sign(claims,cfg.signingKey),tokenType:"Bearer",expiresIn:300,
-        actionIntegrityRequired:cfg.requireAction},201);
+        actionIntegrityRequired:cfg.requireAction,
+        raspEnforce:cfg.rasp.mode==="enforce"&&claims.versionCode>=cfg.rasp.minVersion},201);
     }
     if([10,11].includes(op) && claims.versionCode>=35 && !publicKey(JSON.parse(bytes).catalogKey))
       return fail("INVALID_REQUEST",400);
@@ -183,9 +185,26 @@ async function jsonTransportRequest(request,options={}) {
       return value?jsonReply(value,201):fail("INVALID_REQUEST",400);
     }
     if(!await verifyAction(redis,request,op,options.hpkeWireBytes||bytes,claims,cfg,options))return fail("INTEGRITY_REJECTED",403);
+    // Only evaluate reports AFTER independent authentication, replay/budget
+    // checks and action Integrity. Parse/strip after proof verification so the
+    // authenticated bytes are never replaced by a reserialized body.
+    const payload=JSON.parse(bytes);
+    let dispatchBytes=bytes;
+    if(raspActions.has(op)) {
+      const decision=decideRasp(payload?._rasp,claims.versionCode,cfg.rasp);
+      await recordRasp(redis,decision,claims.versionCode,cfg.rasp);
+      if(decision.deny) {
+        await redis.getDel("spc2:session:"+claims.jti);
+        return fail("INTEGRITY_REJECTED",403);
+      }
+      if(record(payload)&&Object.hasOwn(payload,"_rasp")) {
+        delete payload._rasp;
+        dispatchBytes=Buffer.from(JSON.stringify(payload));
+      }
+    }
     const headers=new Headers(request.headers);headers.delete("content-length");
     const internal=new Request(new URL("/api/v1/"+routes[op],url),{
-      method:"POST",headers,body:bytes,signal:request.signal});
+      method:"POST",headers,body:dispatchBytes,signal:request.signal});
     bindVerifiedRequest(internal,claims);
     return await (options.dispatch||dispatch)(op,internal);
   } catch(error) {
