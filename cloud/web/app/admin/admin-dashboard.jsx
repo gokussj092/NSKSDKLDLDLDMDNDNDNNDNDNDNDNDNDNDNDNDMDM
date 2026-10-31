@@ -16,6 +16,8 @@ export default function AdminDashboard({mode="system"}){
  const [data,setData]=useState(null),[busy,setBusy]=useState(false);
  const [error,setError]=useState(""),[loading,setLoading]=useState(true);
  const [providerQuery,setProviderQuery]=useState(""),[providerFilter,setProviderFilter]=useState("all");
+ const [clock,setClock]=useState(null);
+ useEffect(()=>{setClock(Date.now());const t=setInterval(()=>setClock(Date.now()),60000);return()=>clearInterval(t);},[]);
  const router=useRouter();
  const refresh=useCallback(async()=>{
   try{
@@ -96,6 +98,25 @@ export default function AdminDashboard({mode="system"}){
   }catch(e){setError(e.message||"No se pudo cambiar la política V1.");await refresh();}
   finally{setBusy(false);}
  }
+ async function changeRetirement(){
+  if(!data?.v1Policy||busy)return;
+  const active=Boolean(data.v1Policy.retireAt),action=active?"cancel":"schedule";
+  if(!window.confirm(active?
+   "¿Cancelar la desactivación programada de API V1? No activará una API apagada manualmente.":
+   "¿Programar el cierre de API V1 dentro de 48 horas? El servidor rechazará todas las peticiones V1, pero V2, el panel y la web permanecerán disponibles."))return;
+  setBusy(true);setError("");
+  try{
+   const res=await fetch("/api/admin/v1-retirement",requestOptions({
+    action,expectedRevision:data.v1Policy.revision,
+    confirmation:active?"API_V1_CANCELAR_PROGRAMACION":"API_V1_PROGRAMAR_48H"}));
+   const reply=await res.json();
+   if(!res.ok||reply.status!=="ok")throw Error(res.status===409?
+    "Conflicto de revisión; actualiza el estado e inténtalo de nuevo.":
+    "No fue posible guardar la desactivación programada ("+res.status+").");
+   await refresh();
+  }catch(e){setError(e.message||"Error al cambiar la programación.");await refresh();}
+  finally{setBusy(false);}
+ }
  async function changeV2(){
   if(!data?.v2Policy||busy)return;
   const enabled=!data.v2Policy.enabled;
@@ -153,7 +174,8 @@ export default function AdminDashboard({mode="system"}){
      <article className="admin-card"><span className="muted">Servicios disponibles</span><strong>{[data.services.apiConfigured,data.services.redisConnected,data.services.workerReady].filter(Boolean).length}/3</strong><small className="muted">API, Redis y worker</small></article>
      <article className="admin-card"><span className="muted">Estado general</span><strong className="sp-admin-status-text">{data.maintenance?"Mantenimiento":"Operativo"}</strong><small className="muted">Según control global</small></article>
     </div>
-    <div className="admin-grid">
+    {mode==="infrastructure"&&<>
+   <div className="admin-grid">
      <section className="admin-card">
       <h2>Estado de la infraestructura</h2>
       {[["API configurada",data.services.apiConfigured],["Redis",data.services.redisConnected],["Worker",data.services.workerReady]].map(([name,ok])=><div className="admin-kv" key={name}><span>{name}</span><Health ok={ok}/></div>)}
@@ -200,10 +222,24 @@ export default function AdminDashboard({mode="system"}){
      </p>}
     </section>
    </div>
-   <AdminCompatibleExport/>
-   <section className="admin-card sp-admin-services">
-    <div className="sp-admin-section-heading"><div><h2>Control de API V1 y V2</h2>
-     <p className="muted">La disponibilidad tiene prioridad sobre la protección avanzada. V2 conserva su seguridad independiente.</p></div></div>
+   </>}
+   {mode==="exports"&&<AdminCompatibleExport/>}
+   {mode==="api-v1"&&<section className="admin-card sp-admin-services">
+    <h2>Administración de API V1</h2>
+    <p className="muted">Desactivación programada independiente de V2. Se aplicará en cada solicitud a partir de la fecha del servidor, sin jobs ni procesos adicionales.</p>
+    <div className="sp-admin-retirement">
+     <h3>Retirar API V1 a las 48 horas</h3>
+     <p className="muted">Al programar se guarda la fecha exacta en el volumen persistente. Una vez vencido el plazo, todas las rutas V1 se rechazarán. La API V2 y el panel conservarán su funcionamiento.</p>
+     {data.v1Policy?.retireAt?
+       <><strong className="sp-admin-deadline">Fecha de cierre: {new Date(data.v1Policy.retireAt).toLocaleString("es-MX",{dateStyle:"full",timeStyle:"short"})}</strong>
+       <p role="status" className="muted">{data.v1Policy.retired?"API V1 ya está retirada.":
+        clock===null?"Consultando tiempo restante…":
+        "Restante: "+Math.max(0,Math.floor((data.v1Policy.retireAt-clock)/3600000))+" h "+Math.max(0,Math.floor(((data.v1Policy.retireAt-clock)%3600000)/60000))+" min"}</p></>
+       :<p className="muted">Todavía no se ha programado una fecha de cierre.</p>}
+     <button className="button subtle" type="button" onClick={changeRetirement}
+      disabled={busy||!data.v1Policy||(!data.v1Policy.retireAt&&!data.v1Policy.apiEnabled)}>
+      {data.v1Policy?.retireAt?"Cancelar fecha de cierre":"Programar cierre en 48 horas"}</button>
+    </div>
     {[['apiEnabled','API V1 habilitada',data.v1Policy?.apiEnabled?
       'V1 disponible con la política de protección seleccionada.':'Todas las rutas V1 están deshabilitadas.'],
       ['advancedProtection','Protección avanzada V1',data.v1Policy?.advancedProtection?
@@ -216,6 +252,10 @@ export default function AdminDashboard({mode="system"}){
         aria-checked={Boolean(data.v1Policy?.[field])} disabled={busy||!data.v1Policy} onClick={()=>changeV1(field)}><span/></button>
       </div>
     ))}
+   </section>}
+   {mode==="api-v2"&&<section className="admin-card sp-admin-services">
+    <h2>API V2 y verificación</h2>
+    <p className="muted">Administración independiente de disponibilidad y Play Integrity de V2.</p>
      <div className="sp-admin-switch-row">
       <div><strong>API V2 habilitada</strong>
        <small className="muted">{data.v2Policy?.enabled?
@@ -243,7 +283,9 @@ export default function AdminDashboard({mode="system"}){
        aria-checked={data.v2PlayPolicy?.integrityRequired??true}
        disabled={busy||!data.v2PlayPolicy} onClick={changeV2Play}><span/></button>
      </div>
-   </section>
+   </section>}
+
+   {mode==="play"&&<>
    <section className="admin-card sp-admin-services">
     <div className="sp-admin-section-heading"><div><h2>Distribución beta y Google Play Integrity</h2>
      <p className="muted">Esta política afecta a nuevas sesiones Cloud, no a la firma local ni a la seguridad de Google Play.</p></div></div>
@@ -260,7 +302,9 @@ export default function AdminDashboard({mode="system"}){
       disabled={busy||data.playAdmission?.locked} onClick={changePlayAdmission}><span/></button>
     </div>
     <p className="muted">No utilices este modo como protección contra aplicaciones alteradas: durante la beta no hay autenticación criptográfica del origen del cliente. Se restablece automáticamente después de 15 días; puedes desactivarlo antes.</p>
-   </section>
+   </section>   </>}
+
+   {mode==="providers"&&<>
    <section className="admin-card sp-admin-services">
     <div className="sp-admin-section-heading"><div>
      <h2>Disponibilidad de importaciones remotas</h2>
@@ -296,7 +340,9 @@ export default function AdminDashboard({mode="system"}){
      </div>;
     })}
     <p className="muted">Los cambios se guardan en un volumen de configuración independiente, incluso al reiniciar Redis o los contenedores. La versión del catálogo aumenta cuando cambias un proveedor; actualiza Server VPN en la aplicación. La activación de HTTP Injector requiere las claves originales del proveedor, que no se muestran aquí.</p>
-   </section>
+   </section>   </>}
+
+   {mode==="maintenance"&&<>
    <section className="admin-card sp-admin-services">
     <div className="sp-admin-section-heading">
      <div><h2>Mantenimiento por servicio</h2><p className="muted">Puedes pausar un servicio sin detener los demás. La protección general siempre prevalece.</p></div>
@@ -312,7 +358,8 @@ export default function AdminDashboard({mode="system"}){
      </div>;
     })}
     <p className="muted">Los estados se guardan en Redis. Las protecciones impuestas desde el VPS no se pueden anular aquí.</p>
-   </section>
+   </section>   </>}
+
    </>}
   </>}
   <div className="admin-actions">
