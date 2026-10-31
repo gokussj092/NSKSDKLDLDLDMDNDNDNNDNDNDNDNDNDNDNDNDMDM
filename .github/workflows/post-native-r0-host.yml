@@ -1,7 +1,12 @@
 name: Post-native R0 host security baseline
 
-# Manual only: do not consume Actions minutes on every push or require Android signing.
+# Low-cost host contract run only when this workflow changes on the R0 branch.
+# No Android builds, signing secrets, VPS deployments or general push fan-out.
 on:
+  push:
+    branches: ["feat/post-native-security"]
+    paths:
+      - ".github/workflows/post-native-r0-host.yml"
   workflow_dispatch:
 
 permissions:
