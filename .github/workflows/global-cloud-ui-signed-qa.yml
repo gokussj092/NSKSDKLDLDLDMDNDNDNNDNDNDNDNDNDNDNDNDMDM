@@ -1,4 +1,5 @@
 name: SP-DECODE Global Cloud UI and Export Signed Release
+# QA retry: generated two-argument callback now has matching default lambda.
 # QA retry: canonical Git blob hash uses NUL byte, not a literal backslash-zero.
 # This is not a Play upload or production deployment; only owner-controlled
 # pushes to this exact development branch can start the signed artifact job.

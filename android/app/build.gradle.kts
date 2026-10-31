@@ -565,7 +565,7 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
 
         // Cloud-only UI adaptation; the C0-locked original screens stay unchanged.
         app = replaceOnce(app,"onDecodeCloud:(String)->Unit={}",
-            "onDecodeCloud:(String,String)->Unit={}")
+            "onDecodeCloud:(String,String)->Unit={_,_->}")
         app = replaceOnce(app,
             "onDecodeCloud=onDecodeCloud,\n                        highlightGuide=",
             "onDecodeCloud=onDecodeCloud,cloudTextFormats=cloudTextFormats,\n                        highlightGuide=")
