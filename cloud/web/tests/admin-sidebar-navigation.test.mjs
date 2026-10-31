@@ -72,3 +72,25 @@ test("retirement policy persists, uses a strict administrative route and never c
  assert(route.includes("v1RetirementRequest"));
  assert(!policy.includes("v2Policy"));
 });
+
+test("V2 hardware panel supports patch age, boot controls and private aggregate diagnostics",()=>{
+ const page=read("app/admin/admin-dashboard.jsx");
+ const api=read("lib/c6-admin-api.mjs");
+ const verifier=read("lib/device-security.mjs");
+ for(const patch of [12,18,24,36,48])
+  assert(page.includes('<option value={'+patch+'}>'),String(patch));
+ assert(page.includes('role="switch" aria-label="Comprobar parches V2"'));
+ assert(page.includes('role="switch" aria-label="Comprobar arranque V2"'));
+ assert(page.includes('"/api/admin/v2-device-admission"'));
+ assert(page.includes('"V2_DISPOSITIVOS_CONFIGURAR"'));
+ assert(page.includes("Restaurar perfil estricto"));
+ assert(page.includes("data.attestationDiagnostics.rejections"));
+ assert(api.includes("authenticateAdmin(redis,request,cfg)"));
+ assert(api.includes("validMutation(request,cfg)"));
+ assert(api.includes("changeV2DevicePolicy"));
+ assert(api.includes('"http://key-attestation:8788/stats"'));
+ assert(verifier.includes("policyLoader = v2DevicePolicyStatus"));
+ assert(verifier.includes("devicePolicy:Date.parse")===false);
+ assert(verifier.includes("Date.parse(policy.expiresAt)"));
+ assert(read("app/api/admin/v2-device-admission/route.js").includes("v2DeviceAdmissionRequest"));
+});
