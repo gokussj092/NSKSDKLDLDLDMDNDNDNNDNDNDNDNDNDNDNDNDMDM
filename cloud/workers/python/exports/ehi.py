@@ -203,12 +203,17 @@ def open_profile(source, *, carrier_mac_key=None, require_carrier_mac=False):
 def reseal(document, *, outer_edits=None, inner_edits=None,
            allow_unverified_middle=False):
     outer_edits, inner_edits = outer_edits or {}, inner_edits or {}
-    if set(outer_edits) - {'lockModes', 'lockModesHash', 'configExpiryTimestamp'} or set(inner_edits) - {'isConfigLock', 'configMessage'}:
+    if set(outer_edits) - {'lockModes', 'lockModesHash', 'configExpiryTimestamp'} or set(inner_edits) - {'isConfigLock', 'configMessage', 'configExpiryTimestamp'}:
         raise EhiLabError('EDIT_OUTSIDE_LAB_SCOPE')
     if 'configExpiryTimestamp' in outer_edits and (
             type(document.outer.get('configExpiryTimestamp')) is not int or
             type(outer_edits['configExpiryTimestamp']) is not int or
             outer_edits['configExpiryTimestamp'] != 0):
+        raise EhiLabError('UNSUPPORTED_EXPIRY_METADATA')
+    if 'configExpiryTimestamp' in inner_edits and (
+            type(document.inner.get('configExpiryTimestamp')) is not int or
+            type(inner_edits['configExpiryTimestamp']) is not int or
+            inner_edits['configExpiryTimestamp'] != 0):
         raise EhiLabError('UNSUPPORTED_EXPIRY_METADATA')
     for mapping, original in ((outer_edits, document.outer), (inner_edits, document.inner)):
         if any((k not in original and not (mapping is inner_edits and k == 'configMessage' and type(v) is str))
@@ -319,7 +324,14 @@ def observed_open_access_edits(document):
             raise EhiLabError('UNSUPPORTED_EXPIRY_METADATA')
         if expiry != 0:
             outer_edits['configExpiryTimestamp'] = 0
-    return (outer_edits, {'isConfigLock': False})
+    inner_edits = {'isConfigLock': False}
+    if 'configExpiryTimestamp' in document.inner:
+        expiry = document.inner['configExpiryTimestamp']
+        if type(expiry) is not int or expiry < 0:
+            raise EhiLabError('UNSUPPORTED_EXPIRY_METADATA')
+        if expiry != 0:
+            inner_edits['configExpiryTimestamp'] = 0
+    return (outer_edits, inner_edits)
 
 
 def private_write(path, raw):
