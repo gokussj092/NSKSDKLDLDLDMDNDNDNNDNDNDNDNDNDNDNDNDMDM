@@ -76,13 +76,41 @@ export async function statusRequest(request,options={}) {
         workerReady=response.ok;
       }catch{}
     }
+    // Aggregate-only attestation diagnostics, accessible only after admin login.
+    // Use the private service DNS and its server-only token. Never expose keys,
+    // certificates, device identifiers or individual network addresses.
+    let attestationDiagnostics=null;
+    if(process.env.CLOUD_KEY_ATTESTATION_URL==="http://key-attestation:8788/verify" &&
+       (process.env.CLOUD_KEY_ATTESTATION_TOKEN||"").length>=32){
+      try{
+        const report=await (options.fetchImpl||fetch)("http://key-attestation:8788/stats",{
+          method:"GET",cache:"no-store",redirect:"error",signal:AbortSignal.timeout(2500),
+          headers:{"X-SP-Attestation-Token":process.env.CLOUD_KEY_ATTESTATION_TOKEN}});
+        if(report.ok){
+          const summary=await report.json();
+          const known=["OS_PATCH_OUTDATED","VENDOR_BOOT_PATCH_OUTDATED","OS_PATCH_MISSING",
+            "VERIFIED_BOOT","CERT_PATH","CHAIN_FORMAT","CERT_EXTENSION",
+            "CERT_CONSTRAINT","CERT_INVALID","SECURITY_LEVEL","KEY_MISMATCH",
+            "APP_ID_MISSING","APP_ID_MISMATCH","POLICY_INVALID","VERIFICATION_EXCEPTION"];
+          if(Number.isSafeInteger(summary.uptimeSeconds) && summary.uptimeSeconds>=0 &&
+             summary.rejections && typeof summary.rejections==="object" && !Array.isArray(summary.rejections)){
+            const counts={};
+            for(const key of known){
+              const n=summary.rejections[key];
+              if(Number.isSafeInteger(n)&&n>=0)counts[key]=n;
+            }
+            attestationDiagnostics={uptimeSeconds:summary.uptimeSeconds,rejections:counts};
+          }
+        }
+      }catch{}
+    }
     return api({
       services:{apiConfigured:cfg.configured,redisConnected:ping==="PONG",
         workerReady,ehiImportConfigured:ehiConfigured(),
         nurCatalogImportConfigured:nurConfigured()},
       maintenance,serviceMaintenance,playAdmission,providerControls,v1Protection,v1Policy,
       v2Policy:{...v2PolicyState,configured:v2Settings(process.env,{playIntegrityRequired:v2PlayPolicy.integrityRequired}).configured},
-      v2PlayPolicy,v2DevicePolicy,
+      v2PlayPolicy,v2DevicePolicy,attestationDiagnostics,
       maintenanceLocked:process.env.CLOUD_FORCE_MAINTENANCE==="true",metrics,
       observation:"Counters are aggregate-only; no user content or keys are logged.",
     });
