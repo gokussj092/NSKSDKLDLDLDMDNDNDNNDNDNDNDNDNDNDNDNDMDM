@@ -87,3 +87,41 @@ Requiere red para instalar dependencias públicas. No imprimir variables `CLOUD_
 - Aprobación explícita antes de fusionar o promover nuevos controles.
 
 **Estado checkpoint:** R0 parcial. No hay justificación para declarar R1–R6 implementadas ni desplegar el estado actual a producción.
+
+## 6. Evidencia R0 adicional (auditoría de la rama)
+
+### Regresiones previas identificadas por CI, sin nueva ejecución
+
+- **Validate/main**: run `41158379188` falló en pruebas unitarias: hash de `FunctionalSettingsPanel.kt` desactualizado y test NPVS que esperaba una llamada anterior a HPKE. El trabajo de fase R0 cambia sólo el baseline aprobado y el contrato de test; **no** modifica la funcionalidad Kotlin.
+- **V2 bound transport**: run `41158317638` falló porque `@hpke/core` no estaba instalado al ejecutar la batería de tests Node. El workflow de la rama ahora instala dependencias de `cloud/web` antes de ejecutar `npm test`. **Sin resultado nuevo de CI aún**.
+- **C0/C4/C5**: runs `41158317507`, `41158317565`, `41158317459` fallaron por los mismos contratos anteriores; no se recomienda repetir todos los pipelines hasta superar primero el gate host R0.
+
+### Auditoría de la excepción C0: revisión exacta
+
+Se comparó el Git blob anterior `af689df583243df41864d27fea3302e526f05a84` con el blob `94c75029f5931a49c51e56f729ed7c772706769a` de `FunctionalSettingsPanel.kt`. **Única línea lógica sustituida:** `DeviceCredentialSettingsSection()` → `// Settings additions injected here by the Android Gradle task.`. El script `scripts/android_s4_provisioning_audit.py` exige expresamente que la sección de aprovisionamiento anterior se haya retirado y que exista el anchor único, y `android/app/build.gradle.kts` utiliza ese anchor para insertar los ajustes Cloud en una copia generada. Los otros **ocho** archivos del manifiesto C0 coincidían ya con sus SHA de Git; no fueron rebaselined. La actualización del hash C0 retiene las nueve comprobaciones, sin deshabilitarlas.
+
+### Contrato NPVS tras migración HPKE
+
+La suite `tests/test_android_npvs_identity.py` ahora exige que `protectedPost` pase **el mismo `prepared` wire cifrado** cuando obtiene el token Play Standard ligado a `requestHashHex(prepared.wire)` y que descarte el estado al finalizar. El contrato viejo sólo verificaba una llamada anterior con cinco argumentos y rechazaba la nueva llamada correcta. Esto preserva la verificación de material cifrado; **no introduce bypass**.
+
+### Siguiente gate ejecutable de bajo coste
+
+El workflow manual `.github/workflows/post-native-r0-host.yml` incluye ahora JNI, pins con fixtures, guard de instrumentación C++, **C4/UI rebaseline** y **NPVS**, más comprobación de sintaxis del operador VPS. Se debe ejecutar **una sola vez** sobre el último SHA de la rama antes de decidir si habilitar PR o CI más amplio. Como la acción es `workflow_dispatch` y las herramientas conectadas de este chat no realizan dispatch, **queda pendiente y no se informa como PASS**.
+
+## 7. QA físico y condiciones de salida de R0
+
+Registrar únicamente códigos de resultado, versión y métricas agregadas (sin contenidos VPN, HPKE private keys ni tokens):
+
+| Prueba en Android | Evidencia mínima | Gate |
+| --- | --- | --- |
+| APK firmada por Google Play/internal y build 37 | Instalación, versión, canal y firma esperada | Firma válida y sin cierre prematuro |
+| Un archivo de fixture no sensible vía HPKE | Tiempo, status, errorCode tipado y éxito | Respuesta cifrada autenticada; no sólo HTTP 200 del health |
+| Regreso foreground y arranque frío | Misma instalación / estado UI | Sin crash/denegación espontánea |
+| ADB activado sin debugger adjunto | Resultado de acción legítima | Sin bloqueo sólo por ADB |
+| Termux/Shizuku instalados, sin instrumentar SP-DECODE | Resultado de acción legítima | Sin bloqueo por presencia de herramientas |
+| APK de laboratorio re-firmada (sin datos reales) | Resultado local/servidor | Operaciones sensibles rechazadas |
+| Debbuger/hook controlado del proceso propio | Código de diagnóstico y estado | Rechazo de operación sensible y recuperación normal |
+| Android físico (al menos dos OEM y varias API) | Inicio, rendimiento, p50/p95 de operación | Sin falsos positivos observados en matriz acordada |
+| VPS tras recrear web | HPKE_ENABLED, KID compatible, salud E2E, sin secretos | Sin errores 503 de configuración y rollback revisado |
+
+**Pendiente:** no confundir pruebas de código host o hashes de fuente con Play Integrity real, anti-dump, integridad de segmentos ELF en dispositivo, ni con una aplicación lista para producción. La fase R0 no se declarará cerrada hasta verificar estos gates.
