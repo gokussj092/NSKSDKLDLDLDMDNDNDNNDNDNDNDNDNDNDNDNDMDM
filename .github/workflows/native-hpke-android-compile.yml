@@ -79,7 +79,7 @@ jobs:
           with ZipFile(apk) as z:
               names=z.namelist()
               assert not any('org/bouncycastle/x509/CertPathReviewerMessages' in n for n in names), 'BC resource in Cloud APK'
-              libs=[n for n in names if n.endswith('/libspdecode.so')]
+              libs=[n for n in names if n.endswith('/libv7q3.so')]
               assert len(libs)>=4,libs
               for name in libs:
                   payload=z.read(name)

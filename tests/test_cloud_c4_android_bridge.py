@@ -18,8 +18,8 @@ GRADLE = ROOT / "android/app/build.gradle.kts"
 class CloudC4Tests(unittest.TestCase):
     def test_build_loads_exact_native_library_name(self):
         source = JNI.read_text("utf-8")
-        self.assertIn('System.loadLibrary("spdecode")', source)
-        self.assertIn('add_library(spdecode SHARED', (APP/"cpp/CMakeLists.txt").read_text("utf-8"))
+        self.assertIn('System.loadLibrary("v7q3")', source)
+        self.assertIn('add_library(v7q3 SHARED', (APP/"cpp/CMakeLists.txt").read_text("utf-8"))
         self.assertNotIn("libspdecode_cloud.so", source + NATIVE.read_text("utf-8"))
 
     def test_four_user_flows_have_no_offline_fallback_in_cloud_branch(self):

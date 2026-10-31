@@ -149,7 +149,7 @@ jobs:
               names=set(z.namelist())
               assert 'BundleConfig.pb' in names
               assert 'base/manifest/AndroidManifest.xml' in names
-              assert any(x.startswith('base/lib/') and x.endswith('/libspdecode.so') for x in names)
+              assert any(x.startswith('base/lib/') and x.endswith('/libv7q3.so') for x in names)
               assert 'base/assets/adi-registration.properties' not in names
           PY
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK" > "$RUNNER_TEMP/apk-cert.txt"

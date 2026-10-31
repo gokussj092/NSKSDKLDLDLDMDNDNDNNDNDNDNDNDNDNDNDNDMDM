@@ -2,6 +2,7 @@
 #include <mbedtls/base64.h>
 #include <mbedtls/platform_util.h>
 #include <cstdio>
+#include <iostream>
 #include <cstdlib>
 #include <stdexcept>
 #include <string>
@@ -20,6 +21,26 @@ std::vector<unsigned char> decode(std::string s) {
 }
 }
 int main(int argc,char** argv) {
+    if(argc==2 && std::string(argv[1])=="--live") {
+        try{
+            auto recipient=spdecode::beginCatalog();
+            std::fprintf(stderr,"%s\n",recipient.publicKey.c_str());
+            std::fflush(stderr);
+            std::string purpose,sender,salt,iv,length,data;
+            if(!std::getline(std::cin,purpose) ||
+               !std::getline(std::cin,sender) ||
+               !std::getline(std::cin,salt) ||
+               !std::getline(std::cin,iv) ||
+               !std::getline(std::cin,length) ||
+               !std::getline(std::cin,data)) {
+                spdecode::discardCatalog(recipient.handle);
+                return 4;
+            }
+            const auto packed=spdecode::openCatalogHandle(recipient.handle,
+                recipient.publicKey,purpose,sender,salt,iv,std::stoi(length),data);
+            return std::fwrite(packed.data(),1,packed.size(),stdout)==packed.size()?0:5;
+        }catch(const std::exception&){return 1;}
+    }
     if(argc!=9)return 2;
     try {
         auto privateKey=decode(argv[1]);

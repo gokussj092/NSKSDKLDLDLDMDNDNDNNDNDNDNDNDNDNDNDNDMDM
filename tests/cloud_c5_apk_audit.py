@@ -8,8 +8,8 @@ ROOT=Path(__file__).resolve().parents[1]
 if len(sys.argv)!=2:raise SystemExit("Usage: python tests/cloud_c5_apk_audit.py cloud.apk")
 with zipfile.ZipFile(sys.argv[1]) as z:
     names=z.namelist()
-    native=[p for p in names if re.fullmatch(r"lib/[^/]+/libspdecode\.so",p)]
-    assert native,"libspdecode.so not present"
+    native=[p for p in names if re.fullmatch(r"lib/[^/]+/libv7q3\.so",p)]
+    assert native,"libv7q3.so not present"
     assets=[p for p in names if p.startswith("assets/")]
     # Release builds can add Android Gradle Plugin's generated ART/dexopt
     # baseline profiles. They contain optimization data, not decoder secrets.

@@ -423,13 +423,14 @@ internal class CloudDecodeClient(context: Context) {
     suspend fun serverVpnCatalog(knownVersion:Int): JSONObject =
         withContext(Dispatchers.IO) {
             requireLegalConsent()
-            val envelope=CatalogEnvelope()
+            CatalogEnvelope().use { envelope ->
             envelope.open(extract(CloudNativeTransport.post(CloudOperation.CATALOG,
                 JSONObject().put("knownVersion",knownVersion).put("catalogKey",envelope.publicKey),session())),"catalog").also { reply ->
                 if(!reply.optBoolean("unchanged",false)) {
                     exportCatalog=runCatching {CompatibleExportCatalog.parse(reply.optJSONObject("compatibleExports"))}.getOrNull()
                     exportCatalogCheckedAt=android.os.SystemClock.elapsedRealtime()
                 }
+            }
             }
         }
 
@@ -459,9 +460,10 @@ internal class CloudDecodeClient(context: Context) {
         require(id.matches(Regex("[a-z0-9-]{1,48}")))
         return withContext(Dispatchers.IO) {
             requireLegalConsent()
-            val envelope=CatalogEnvelope()
-            envelope.open(extract(CloudNativeTransport.post(CloudOperation.ICON,
-                JSONObject().put("id",id).put("catalogKey",envelope.publicKey),session())),"icon")
+            CatalogEnvelope().use { envelope ->
+                envelope.open(extract(CloudNativeTransport.post(CloudOperation.ICON,
+                    JSONObject().put("id",id).put("catalogKey",envelope.publicKey),session())),"icon")
+            }
         }
     }
 

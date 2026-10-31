@@ -52,8 +52,8 @@ def audit_archive(path: Path) -> list[str]:
     verified: list[str] = []
     with zipfile.ZipFile(path) as archive:
         names = archive.namelist()
-        if not any(name.endswith("/libspdecode.so") for name in names):
-            raise ValueError(f"{path.name}: libspdecode.so missing")
+        if not any(name.endswith("/libv7q3.so") for name in names):
+            raise ValueError(f"{path.name}: libv7q3.so missing")
         for name in sorted(names):
             if not name.endswith(".so") or not any(abi in "/" + name for abi in SUPPORTED_64):
                 continue

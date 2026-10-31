@@ -6,14 +6,14 @@ import org.json.JSONObject
 import java.io.IOException
 
 /**
- * Only libspdecode.so establishes HTTPS connections. Payload and response
+ * Only libv7q3.so establishes HTTPS connections. Payload and response
  * remain opaque binary ciphertext until they reach the trusted endpoints.
  */
 internal object CloudNativeTransport {
-    init { System.loadLibrary("spdecode") }
+    init { System.loadLibrary("v7q3") }
 
     // All HPKE key agreement, message framing, AEAD and reply authentication
-    // execute in libspdecode.so. Kotlin handles only JSON/Android integration.
+    // execute in libv7q3.so. Kotlin handles only JSON/Android integration.
     @JvmStatic private external fun nativePrepareHpke(
         operation: Int, metadata: ByteArray, attachment: ByteArray?
     ): ByteArray
@@ -52,6 +52,21 @@ internal object CloudNativeTransport {
     fun signRequestProof(operation: Int, version: String, wire: ByteArray, bearer: String): Array<String> =
         nativeSignRequestProof(operation,version,wire,bearer)
 
+    // Single-use native P-256 key, never serialized into DEX/JVM memory.
+    @JvmStatic private external fun nativeBeginCatalog(): Array<String>
+    @JvmStatic private external fun nativeOpenCatalogHandle(
+        handle: Long, recipient: String, purpose: String, serverKey: String,
+        salt: String, iv: String, plainBytes: Int, data: String
+    ): ByteArray
+    @JvmStatic private external fun nativeDiscardCatalogHandle(handle: Long)
+    fun beginCatalog(): Array<String> = nativeBeginCatalog()
+    fun openCatalogHandle(handle: Long, recipient: String, purpose: String,
+                          serverKey: String, salt: String, iv: String,
+                          plainBytes: Int, data: String): ByteArray =
+        nativeOpenCatalogHandle(handle,recipient,purpose,serverKey,salt,iv,plainBytes,data)
+    fun discardCatalogHandle(handle: Long) = nativeDiscardCatalogHandle(handle)
+
+    // Compatibility fixture API; production catalog requests use native handles.
     @JvmStatic private external fun nativeOpenCatalog(
         privatePkcs8: ByteArray, recipient: String, purpose: String, serverKey: String,
         salt: String, iv: String, plainBytes: Int, data: String

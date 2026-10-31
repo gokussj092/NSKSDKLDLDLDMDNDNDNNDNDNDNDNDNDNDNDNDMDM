@@ -278,3 +278,44 @@ Do not execute any Android/Next.js build on the limited VPS, do not change
 Keep v1.1.24 build 36 and original `security/v2-hpke-x25519-encrypted-transport`
 branch as the known-good baseline. No VPS deployment or backend change is
 required for the native crypto migration.
+
+## Native P-256 recipients and narrow runtime instrumentation checks (unvalidated)
+
+This new branch-only patch **does not change** `versionName=1.1.24` or
+`versionCode=35` in Gradle; **it does not issue a Play upload**.
+
+- `CatalogEnvelope.kt` no longer creates a Java/JCA P-256 keypair.
+  C++ Mbed TLS generates a fresh P-256 keypair, provides a public SPKI and
+  a cryptographically random opaque handle, and keeps DER private bytes in a
+  synchronized native-only pending map (64-entry cap, 180-second pruning).
+  Keys are consumed once even when authentication fails; callers use
+  `Closeable.use` to discard on network errors. No Kotlin keypair or
+  ephemeral private key encoding is used by production catalog/icon paths.
+- An older JNI `openCatalog(privatePkcs8,...)` entry remains strictly
+  for synthetic Android instrumented fixtures. The production code invokes
+  `openCatalogHandle` instead. Future removal of the fixture bridge can
+  further narrow the JNI surface after device fixtures are migrated.
+- Real Node server ↔ native-generated-key interoperability has a new
+  interactive CLI test. **A test present in source is not yet a passed CI.**
+- The native library basename is `libv7q3.so` instead of the descriptive
+  `libspdecode.so`. `System.loadLibrary`, Android CMake, the APK audits,
+  and Cloud workflows must use the same name. Native symbol exports remain
+  restricted to `JNI_OnLoad`. This is **reversible metadata obfuscation**,
+  not encryption or protection against runtime hooking.
+- Added `spdecode_runtime_guard.cpp`: checks for attached tracer PID
+  and specific loaded instrumentation modules in the **own process**.
+  Release signer verification rejects a positive risk signal. Debug
+  builds retain their former behavior. No blocking based solely on root,
+  emulator use, VPN software or unrelated installed packages.
+  The detector is bypassable on a compromised process and is not a
+  substitute for the server's admission checks. No definitive claim of
+  advanced multi-layer RASP without physical-device QA.
+- Existing Android Keystore aliases, encrypted-cache paths, magic bytes,
+  and AES-GCM AAD identifiers are **intentionally unchanged**, to avoid
+  invalidating users' previously encrypted local records. Source names do
+  not themselves become separate ELF modules.
+
+Release gate: Android release and native host CI must pass for the **new
+head**, then test signed APK on actual phones (Play Integrity, TEE/StrongBox,
+the RASP false-positive rate, catalog/icon caching and JNI loading). No
+new signed release is produced automatically by these changes.

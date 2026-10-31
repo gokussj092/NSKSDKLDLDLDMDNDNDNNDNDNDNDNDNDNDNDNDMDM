@@ -121,7 +121,7 @@ jobs:
             echo "Commit: $GITHUB_SHA"
             echo "Release: v1.1.24 code 36"
             echo "Signed: existing permanent SP-DECODE upload certificate"
-            echo "HPKE: public X25519 trust anchor stored as masked bytes in libspdecode.so"
+            echo "HPKE: public X25519 trust anchor stored as masked bytes in libv7q3.so"
             echo "No Android DEBUG, no private HPKE key, no Play upload, no VPS deployment"
           } > dist/BUILD_INFO.txt
       - name: Archive owner's test APK and AAB

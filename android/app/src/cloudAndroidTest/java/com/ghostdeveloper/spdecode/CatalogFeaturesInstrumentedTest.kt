@@ -29,8 +29,15 @@ class CatalogFeaturesInstrumentedTest {
         val factory=KeyFactory.getInstance("EC")
         val pair=KeyPair(factory.generatePublic(X509EncodedKeySpec(bytes(fixture.getString("publicKey")))),
             factory.generatePrivate(PKCS8EncodedKeySpec(bytes(fixture.getString("privateKey")))))
-        val client=CatalogEnvelope(pair);val envelope=fixture.getJSONObject("envelope")
-        val result=client.open(envelope,"catalog")
+        val envelope=fixture.getJSONObject("envelope")
+        fun openFixture(source:JSONObject,purpose:String):JSONObject {
+            val packed=CloudNativeTransport.openCatalog(pair.private.encoded,
+                fixture.getString("publicKey"),purpose,source.getString("serverKey"),
+                source.getString("salt"),source.getString("iv"),source.getInt("plainBytes"),
+                source.getString("data"))
+            return JSONObject(String(CatalogEnvelope.inflate(packed,source.getInt("plainBytes"))))
+        }
+        val result=openFixture(envelope,"catalog")
         assertEquals("México 👻 漢字",result.getJSONArray("apps").getJSONObject(0).getString("name"))
         assertEquals(73,result.getInt("catalogVersion"))
         for(kind in listOf("length","ciphertext","purpose")) {
@@ -38,10 +45,13 @@ class CatalogFeaturesInstrumentedTest {
             if(kind=="length")bad.put("plainBytes",bad.getInt("plainBytes")+1)
             if(kind=="ciphertext") {val data=bytes(bad.getString("data"));data[0]=(data[0].toInt() xor 1).toByte();
                 bad.put("data",Base64.encodeToString(data,Base64.URL_SAFE or Base64.NO_PADDING or Base64.NO_WRAP))}
-            try{client.open(bad,if(kind=="purpose")"icon" else "catalog");fail("Tampered envelope accepted")}
+            try{openFixture(bad,if(kind=="purpose")"icon" else "catalog");fail("Tampered envelope accepted")}
             catch(_:Exception){ /* Expected authenticated rejection. AssertionError is not swallowed. */ }
         }
-        try{CatalogEnvelope().open(envelope,"catalog");fail("Wrong recipient accepted")}catch(_:Exception){}
+        CatalogEnvelope().use { recipient ->
+            try{recipient.open(envelope,"catalog");fail("Wrong recipient accepted")}
+            catch(_:Exception){ /* Native-generated key must not authenticate saved fixture. */ }
+        }
     }
     @Test fun cacheReadsLegacyRecordsAndWritesCompressedAuthenticatedRecords() {
         val cache=ServerVpnSecureCache(context);val name="instrument-notice-catalog"

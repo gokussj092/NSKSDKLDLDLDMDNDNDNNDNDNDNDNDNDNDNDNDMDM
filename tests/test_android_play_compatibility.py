@@ -36,11 +36,11 @@ class AndroidPlayCompatibility(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             p = Path(folder) / "test.aab"
             with zipfile.ZipFile(p, "w") as bundle:
-                bundle.writestr("base/lib/arm64-v8a/libspdecode.so", fake_elf64(4096))
+                bundle.writestr("base/lib/arm64-v8a/libv7q3.so", fake_elf64(4096))
             with self.assertRaisesRegex(ValueError, "alignment fails"):
                 audit_archive(p)
             with zipfile.ZipFile(p, "w") as bundle:
-                bundle.writestr("base/lib/arm64-v8a/libspdecode.so", fake_elf64(16384))
+                bundle.writestr("base/lib/arm64-v8a/libv7q3.so", fake_elf64(16384))
             self.assertEqual(len(audit_archive(p)), 1)
 
     def test_edge_to_edge_generated_cloud_activity_and_safe_insets(self):

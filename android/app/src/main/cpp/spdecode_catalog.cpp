@@ -9,6 +9,10 @@
 #include <mbedtls/private_access.h>
 #include <mbedtls/platform_util.h>
 #include <algorithm>
+#include <chrono>
+#include <cinttypes>
+#include <map>
+#include <mutex>
 #include <array>
 #include <cstdint>
 #include <stdexcept>
@@ -32,7 +36,7 @@ struct Rng {
     Rng(){
         mbedtls_entropy_init(&entropy);
         mbedtls_ctr_drbg_init(&drbg);
-        const unsigned char personal[]="spdecode-catalog-native-v1";
+        const unsigned char personal[]="v3.2/9s";
         required(mbedtls_ctr_drbg_seed(&drbg,mbedtls_entropy_func,&entropy,
                                       personal,sizeof(personal)-1));
     }
@@ -89,7 +93,96 @@ std::array<unsigned char,32> mac(const unsigned char* key,std::size_t keyLength,
     required(mbedtls_md_hmac(md,key,keyLength,data,size,result.data()));
     return result;
 }
+
+// Per-request native-only P-256 ephemeral key material. All exported handles
+// are random, bounded and single-use. Do not retain native pointers in Java.
+struct PendingCatalog {
+    Bytes privateDer;
+    std::string publicKey;
+    std::chrono::steady_clock::time_point created;
+};
+std::mutex pendingMutex;
+std::map<std::uint64_t,PendingCatalog> pending;
+constexpr std::size_t kMaxPending=64;
+constexpr auto kPendingTtl=std::chrono::seconds(180);
+
+void pruneCatalogLocked(){
+    const auto now=std::chrono::steady_clock::now();
+    for(auto it=pending.begin();it!=pending.end();){
+        if(now-it->second.created>kPendingTtl){
+            wipe(it->second.privateDer);
+            it=pending.erase(it);
+        }else ++it;
+    }
+}
+std::string encodeUrl(const unsigned char* bytes,std::size_t length){
+    Bytes result(((length+2)/3)*4+4);
+    size_t size=0;
+    required(mbedtls_base64_encode(result.data(),result.size(),&size,bytes,length));
+    std::string out(reinterpret_cast<const char*>(result.data()),size);
+    for(char& c:out)if(c=='+')c='-';else if(c=='/')c='_';
+    while(!out.empty()&&out.back()=='=')out.pop_back();
+    return out;
+}
 } // namespace
+
+CatalogRecipient beginCatalog(){
+    Rng rng;
+    Key key;
+    required(mbedtls_pk_setup(&key.pk,mbedtls_pk_info_from_type(MBEDTLS_PK_ECKEY)));
+    required(mbedtls_ecp_gen_key(MBEDTLS_ECP_DP_SECP256R1,mbedtls_pk_ec(key.pk),
+                                 mbedtls_ctr_drbg_random,&rng.drbg));
+    Bytes pub(256);
+    const int pubSize=mbedtls_pk_write_pubkey_der(&key.pk,pub.data(),pub.size());
+    if(pubSize!=91)invalid();
+    const auto recipient=encodeUrl(pub.data()+pub.size()-pubSize,
+                                   static_cast<size_t>(pubSize));
+    Bytes der(512);
+    Scrub scrubDer{der};
+    const int derSize=mbedtls_pk_write_key_der(&key.pk,der.data(),der.size());
+    if(derSize<48||derSize>512)invalid();
+    Bytes secret(der.end()-derSize,der.end());
+    Scrub scrubSecret{secret};
+    std::uint64_t handle=0;
+    std::array<unsigned char,8> random{};
+    std::lock_guard<std::mutex> lock(pendingMutex);
+    pruneCatalogLocked();
+    if(pending.size()>=kMaxPending)invalid();
+    for(int attempts=0;attempts<16;++attempts){
+        required(mbedtls_ctr_drbg_random(&rng.drbg,random.data(),random.size()));
+        handle=0;
+        for(auto c:random)handle=(handle<<8)|c;
+        handle &= 0x7fffffffffffffffULL; // representable by Java Long
+        if(handle!=0 && pending.count(handle)==0)break;
+        handle=0;
+    }
+    if(handle==0)invalid();
+    pending.emplace(handle,PendingCatalog{std::move(secret),recipient,
+                                         std::chrono::steady_clock::now()});
+    return CatalogRecipient{handle,recipient};
+}
+void discardCatalog(std::uint64_t handle){
+    std::lock_guard<std::mutex> lock(pendingMutex);
+    const auto it=pending.find(handle);
+    if(it!=pending.end()){wipe(it->second.privateDer);pending.erase(it);}
+}
+CatalogBytes openCatalogHandle(std::uint64_t handle,const std::string& recipient,
+   const std::string& purpose,const std::string& sender,const std::string& salt,
+   const std::string& iv,int plainBytes,const std::string& data){
+    PendingCatalog entry;
+    {
+        std::lock_guard<std::mutex> lock(pendingMutex);
+        pruneCatalogLocked();
+        auto it=pending.find(handle);
+        if(handle==0||it==pending.end())invalid();
+        entry=std::move(it->second);
+        pending.erase(it);
+    }
+    Scrub wipeEntry{entry.privateDer};
+    if(entry.publicKey!=recipient)invalid();
+    return openCatalog(entry.privateDer,recipient,purpose,sender,
+                       salt,iv,plainBytes,data);
+}
 
 CatalogBytes openCatalog(const CatalogBytes& privatePkcs8,const std::string& recipient,
                          const std::string& purpose,const std::string& sender,

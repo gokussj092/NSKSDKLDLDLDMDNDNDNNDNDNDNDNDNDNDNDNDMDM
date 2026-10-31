@@ -10,6 +10,7 @@
 #include "spdecode_session.h"
 #include "spdecode_keystore.h"
 #include "spdecode_catalog.h"
+#include "spdecode_runtime_guard.h"
 #include <mbedtls/base64.h>
 #include <mbedtls/platform_util.h>
 #include <mbedtls/sha256.h>
@@ -362,6 +363,59 @@ jbyteArray openHpke(JNIEnv* env,jclass,jlong stateHandle,jint status,
 void discardHpke(JNIEnv*,jclass,jlong stateHandle){
     spdecode::hpkeDiscard(static_cast<std::uint64_t>(stateHandle));
 }
+jobjectArray nativeBeginCatalog(JNIEnv* env,jclass){
+    try{
+        const auto issued=spdecode::beginCatalog();
+        auto str=env->FindClass("java/lang/String");
+        if(!str||env->ExceptionCheck()){
+            spdecode::discardCatalog(issued.handle);
+            return nullptr;
+        }
+        auto out=env->NewObjectArray(2,str,nullptr);
+        if(!out||env->ExceptionCheck()){
+            spdecode::discardCatalog(issued.handle);
+            return nullptr;
+        }
+        const std::array<std::string,2> values={issued.publicKey,std::to_string(issued.handle)};
+        for(jsize i=0;i<2;++i){
+            auto item=env->NewStringUTF(values[static_cast<size_t>(i)].c_str());
+            if(!item||env->ExceptionCheck()){
+                spdecode::discardCatalog(issued.handle);
+                return nullptr;
+            }
+            env->SetObjectArrayElement(out,i,item);
+            env->DeleteLocalRef(item);
+            if(env->ExceptionCheck()){
+                spdecode::discardCatalog(issued.handle);
+                return nullptr;
+            }
+        }
+        return out;
+    }catch(const std::exception&){
+        if(!env->ExceptionCheck())fail(env,"CLOUD_CATALOG_KEY_UNAVAILABLE");
+        return nullptr;
+    }
+}
+jbyteArray nativeOpenCatalogHandle(JNIEnv* env,jclass,jlong handle,
+                 jstring recipient,jstring purpose,jstring sender,
+                 jstring salt,jstring iv,jint plainBytes,jstring data){
+    const auto token=static_cast<std::uint64_t>(handle);
+    try{
+        if(!recipient||!purpose||!sender||!salt||!iv||!data)
+            throw std::runtime_error("CLOUD_CATALOG_AUTH_FAILED");
+        auto packed=spdecode::openCatalogHandle(token,utf(env,recipient),utf(env,purpose),
+            utf(env,sender),utf(env,salt),utf(env,iv),plainBytes,utf(env,data));
+        ScrubOnExit scrubPacked{packed};
+        return nativeWrite(env,packed);
+    }catch(const std::exception&){
+        spdecode::discardCatalog(token);
+        if(!env->ExceptionCheck())fail(env,"CLOUD_CATALOG_AUTH_FAILED");
+        return nullptr;
+    }
+}
+void nativeDiscardCatalogHandle(JNIEnv*,jclass,jlong handle){
+    spdecode::discardCatalog(static_cast<std::uint64_t>(handle));
+}
 jbyteArray nativeOpenCatalog(JNIEnv* env,jclass,jbyteArray privateArg,
                              jstring recipient,jstring purpose,jstring sender,
                              jstring salt,jstring iv,jint plainBytes,jstring data) {
@@ -562,7 +616,7 @@ jboolean verifyReleaseSigner(JNIEnv* env,jclass,jobject context,
                             jstring packageExpected,jstring uploadDigest,
                             jstring playDigest,jboolean debugBuild) {
     if(debugBuild==JNI_TRUE)return JNI_TRUE; // Preserve debug build semantics.
-    if(context==nullptr)return JNI_FALSE;
+    if(context==nullptr||spdecode::runtimeRisk()!=0)return JNI_FALSE;
     try{
         const std::string expected=utf(env,packageExpected);
         if(expected.empty())return JNI_FALSE;
@@ -701,6 +755,13 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm,void*) {
         reinterpret_cast<void*>(post)},
         {const_cast<char*>("nativePrepareHpke"),const_cast<char*>("(I[B[B)[B"),
         reinterpret_cast<void*>(prepareHpke)},
+        {const_cast<char*>("nativeBeginCatalog"),const_cast<char*>("()[Ljava/lang/String;"),
+        reinterpret_cast<void*>(nativeBeginCatalog)},
+        {const_cast<char*>("nativeOpenCatalogHandle"),
+        const_cast<char*>("(JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;)[B"),
+        reinterpret_cast<void*>(nativeOpenCatalogHandle)},
+        {const_cast<char*>("nativeDiscardCatalogHandle"),const_cast<char*>("(J)V"),
+        reinterpret_cast<void*>(nativeDiscardCatalogHandle)},
         {const_cast<char*>("nativeOpenCatalog"),
         const_cast<char*>("([BLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;)[B"),
         reinterpret_cast<void*>(nativeOpenCatalog)},
@@ -748,7 +809,7 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm,void*) {
         reinterpret_cast<void*>(nativeClearSession)},
         {const_cast<char*>("nativeInvalidateSession"),const_cast<char*>("(Ljava/lang/String;)V"),
         reinterpret_cast<void*>(nativeInvalidateSession)}};
-    const jint registered=env->RegisterNatives(bridge,methods,20);
+    const jint registered=env->RegisterNatives(bridge,methods,23);
     env->DeleteLocalRef(bridge);
     return registered==JNI_OK?JNI_VERSION_1_6:JNI_ERR;
 }

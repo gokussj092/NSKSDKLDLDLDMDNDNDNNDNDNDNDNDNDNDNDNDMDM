@@ -35,15 +35,16 @@ FetchContent_Declare(spdecode_mbedtls
   URL_HASH SHA256=a7e8bcbec0e6f761b4af24f25677626b35f762f68eef79c08677a363212d11f6
 )
 FetchContent_MakeAvailable(spdecode_mbedtls)
-add_library(spdecode SHARED spdecode_transport.cpp spdecode_hpke.cpp spdecode_security.cpp spdecode_session.cpp
-    spdecode_keystore.cpp spdecode_keystore_policy.cpp spdecode_catalog.cpp)
-target_link_libraries(spdecode PRIVATE mbedcrypto)
-target_include_directories(spdecode PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
-set_target_properties(spdecode PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
-target_compile_options(spdecode PRIVATE -Wall -Wextra -Werror -fvisibility=hidden
+# Opaque ELF basename reduces casual metadata; not a security boundary.
+add_library(v7q3 SHARED spdecode_transport.cpp spdecode_hpke.cpp spdecode_security.cpp spdecode_session.cpp
+    spdecode_keystore.cpp spdecode_keystore_policy.cpp spdecode_catalog.cpp spdecode_runtime_guard.cpp)
+target_link_libraries(v7q3 PRIVATE mbedcrypto)
+target_include_directories(v7q3 PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
+set_target_properties(v7q3 PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
+target_compile_options(v7q3 PRIVATE -Wall -Wextra -Werror -fvisibility=hidden
   -fvisibility-inlines-hidden -fstack-protector-strong -D_FORTIFY_SOURCE=2
   -ffunction-sections -fdata-sections)
-target_link_options(spdecode PRIVATE
+target_link_options(v7q3 PRIVATE
   -Wl,-z,relro,-z,now
   -Wl,-z,noexecstack -Wl,--gc-sections -Wl,--exclude-libs,ALL
   "-Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/spdecode.exports"

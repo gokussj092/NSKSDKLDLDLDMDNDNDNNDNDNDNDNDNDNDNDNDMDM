@@ -21,14 +21,14 @@ but it is not the same as a shipped Cloud security regression.
 | HTTPS transport, pin/signature policy, route allowlist | `spdecode_transport.cpp` | Native JNI; origin configured in native CMake. Public origin is not a secret. |
 | PoP canonical message and ECDSA request signing orchestration | `spdecode_security.cpp`, `spdecode_transport.cpp` | Native with Android JCA secure-key operations through JNI. |
 | Session cache, expiration, stale-401 invalidation, bearer-specific Standard policy | `spdecode_session.cpp` | Native; Kotlin bearer copies still necessary for boundary API. |
-| Cloud catalog P-256 ECDH/HKDF/AES-GCM tag verification | `spdecode_catalog.cpp` | Native, positive/negative interoperability tests passed. |
+| Cloud catalog P-256 ECDH/HKDF/AES-GCM tag verification | `spdecode_catalog.cpp` | Native, with native-generated ephemeral P-256 key route awaiting new CI. |
 | Android Keystore alias selection, enrollment policy, StrongBox fallback | `spdecode_keystore.cpp`, `spdecode_keystore_policy.cpp` | Native policy + Android platform calls; backend validates attestation. |
 | Non-exportable private key generation, ECDSA signing, certificate extraction | `CloudKeystorePlatform.kt` + JCA/JNI | Intentionally Android-only provider; moving private keys to a C++ heap would weaken protection. |
 | Classic/Standard Play Integrity token requests | `CloudDecodeClient.kt` | Must use official Google SDK and asynchronous Android APIs. Server verdict is authoritative; native format checks are not an admission substitute. |
-| Ephemeral catalog P-256 keypair generation | `CatalogEnvelope.kt` | **Remaining possible native hardening.** JCA creates ephemeral key; temporary PKCS#8 bytes cross JNI before zeroization. No server or Keystore installation private key is exported. |
+| Ephemeral catalog P-256 keypair generation | `CatalogEnvelope.kt` | Now generated in C++ by Mbed TLS, held behind an opaque one-use native handle; no JVM PKCS#8 crossing on production path. Host CI and real device verification pending. |
 | Legal consent, credential dialog/policy and JSON rendering | `CloudLegalConsent.kt`, `CloudCredentialPolicy.kt`, UI | User/platform presentation/validation remain Kotlin; the server must enforce sensitive policy. Do not mistake an obfuscated UI branch for a security boundary. |
 | Encrypted local history, credential vault, server catalog cache, NPV identities | `SecureDecodeHistory.kt`, `DevicePrivateCredentialVault.kt`, `ServerVpnSecureCache.kt`, `NpvsIdentityVault.kt` | AndroidKeyStore AES-GCM and file I/O are intentionally Android platform operations. Audit future key loss, concurrency, IV and backup risks on real devices. |
-| Runtime anti-debug/Frida/overlay/abuse checks | C++ basic debugger + signing check | **Not a claim of comprehensive RASP**; no untested blanket blocking before device compatibility review. |
+| Runtime anti-debug/Frida/overlay/abuse checks | Native signing/debugger plus process maps/TracerPid guard | New narrow high-confidence anti-instrumentation signals; real-device compatibility still pending. Not a comprehensive RASP claim. |
 
 **Finding:** Do not claim that absolutely all security-sensitive Kotlin/Java
 code has moved to C++. JNI, Play SDK and KeyStore are trusted platform
@@ -127,3 +127,26 @@ affected default branch, dependency graph and deployments are updated.
 - `tests/test_dependency_security_floors.py` is a zero-network guard against
   reintroducing the known direct-version vulnerabilities. It cannot replace
   GitHub Dependabot alerts, SBOM scanning, lockfile scans or device testing.
+
+## Additional defense-in-depth scope
+
+An opaque native ELF basename (`libv7q3.so`) replaces `libspdecode.so`
+in the new release flow. This does not hide API hostnames from an adversary
+able to inspect memory, nor does it obfuscate the stable domain and wire
+protocol. Kotlin/DEX source file paths are **not** packaged as source trees
+inside the APK. Identifier names used in persisted Android Keystore aliases,
+cache directories, GCM AAD values or previous SVC1/SVC2 records **must not**
+be renamed without a compatible decrypt/migrate/rewrap path.
+
+The new catalog route generates native P-256 keys and retains them in a
+size/TTL-limited, single-use native cache. The per-request public key is
+passed to the server, while the private key is not copied into the JVM.
+Only a test-fixture compatibility JNI method still accepts a private PKCS8
+blob, and it is not called by the Cloud production client.
+
+RASP now checks the current app process for tracer attachments and selected
+mapped Frida/Xposed/Substrate native libraries at release signer verification.
+It is deliberately narrow; dynamic detection can be evaded and can cause
+device-specific false positives. Real-device tests are mandatory before
+labeling it production safe. There is no claim that all security code is
+native: Keystore key handling and Play SDK tokens require Android APIs.

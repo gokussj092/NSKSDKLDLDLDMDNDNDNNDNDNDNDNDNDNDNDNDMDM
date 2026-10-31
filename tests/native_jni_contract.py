@@ -36,10 +36,13 @@ assert declared==registered, {
 }
 count=re.search(r"RegisterNatives\(bridge,methods,(\d+)\)",cpp)
 assert count and int(count.group(1))==len(registered),(count,len(registered))
-assert len(registered)>=20,len(registered)
+assert len(registered)>=23,len(registered)
 platform=(root/"android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudKeystorePlatform.kt").read_text()
 required=("aliases","contains","delete","publicKey","privateKey","chain","generate")
 for method in required:
     assert re.search(r"@JvmStatic\s+fun\s+"+method+r"\s*\(",platform),method
 assert "privateKey.encoded" not in platform
+catalog=(root/"android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CatalogEnvelope.kt").read_text()
+assert "KeyPairGenerator" not in catalog and "PKCS8EncodedKeySpec" not in catalog
+assert "beginCatalog()" in catalog and "openCatalogHandle" in catalog
 print(f"PASS {len(registered)} native Kotlin JNI descriptors and Keystore platform bridge")

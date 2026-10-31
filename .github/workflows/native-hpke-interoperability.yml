@@ -19,6 +19,9 @@ on:
       - tests/native_catalog_cli.cpp
       - tests/native_catalog_roundtrip.mjs
       - tests/native_session_contract.cpp
+      - android/app/src/main/cpp/spdecode_runtime_guard.cpp
+      - android/app/src/main/cpp/spdecode_runtime_guard.h
+      - tests/native_runtime_guard_contract.cpp
   workflow_dispatch:
 
 permissions:
@@ -80,6 +83,10 @@ jobs:
             "$RUNNER_TEMP/mbedtls-build/library/libmbedcrypto.a" -lpthread \
             -o "$RUNNER_TEMP/native_session_contract"
           "$RUNNER_TEMP/native_session_contract"
+          g++ -std=c++17 -O2 -Wall -Wextra -Werror \
+            tests/native_runtime_guard_contract.cpp android/app/src/main/cpp/spdecode_runtime_guard.cpp \
+            -o "$RUNNER_TEMP/native_runtime_guard_contract"
+          "$RUNNER_TEMP/native_runtime_guard_contract"
           # npm metadata occasionally selects nonexistent tslib 2.9.1.
           # Pin the published 2.8.1 only in this disposable CI checkout.
           (cd cloud/web && npm pkg set overrides.tslib=2.8.1 && npm install --no-audit --no-fund --no-package-lock)
