@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="compatible_export_for">Exporter pour %1$s</string>
-    <string name="compatible_export_redecode">Déchiffrez à nouveau ce fichier avec l’exportation compatible activée.</string>
+    <string name="compatible_export_redecode">Importez à nouveau ce fichier pour activer son exportation vers %1$s.</string>
     <string name="compatible_export_failed">Impossible d’enregistrer le fichier compatible.</string>
 </resources>

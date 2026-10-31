@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="compatible_export_for">%1$s 用にエクスポート</string>
-    <string name="compatible_export_redecode">互換エクスポートを有効にして、このファイルをもう一度復号してください。</string>
+    <string name="compatible_export_redecode">%1$s へのエクスポートを有効にするには、このファイルを再度インポートしてください。</string>
     <string name="compatible_export_failed">互換ファイルを保存できませんでした。</string>
 </resources>

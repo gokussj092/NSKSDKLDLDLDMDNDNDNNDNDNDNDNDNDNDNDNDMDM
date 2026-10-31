@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="compatible_export_for">Exportar para %1$s</string>
-    <string name="compatible_export_redecode">Vuelve a descifrar este archivo con la exportación compatible habilitada para guardarlo para su aplicación original.</string>
+    <string name="compatible_export_redecode">Vuelve a importar este archivo para habilitar la exportación a %1$s.</string>
     <string name="compatible_export_failed">No se pudo guardar el archivo compatible.</string>
 </resources>

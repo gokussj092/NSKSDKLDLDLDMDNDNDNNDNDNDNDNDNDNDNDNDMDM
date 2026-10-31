@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="compatible_export_for">Für %1$s exportieren</string>
-    <string name="compatible_export_redecode">Entschlüssle diese Datei erneut mit aktiviertem kompatiblen Export.</string>
+    <string name="compatible_export_redecode">Importiere diese Datei erneut, um den Export nach %1$s zu aktivieren.</string>
     <string name="compatible_export_failed">Die kompatible Datei konnte nicht gespeichert werden.</string>
 </resources>

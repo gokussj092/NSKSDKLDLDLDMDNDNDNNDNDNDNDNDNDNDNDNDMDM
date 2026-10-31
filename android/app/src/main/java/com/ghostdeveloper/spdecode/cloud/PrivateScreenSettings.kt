@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -26,7 +27,7 @@ internal fun PrivateScreenSettings() {
     var enabled by remember { mutableStateOf(prefs.getBoolean("private-screen",false)) }
     Column(Modifier.fillMaxWidth().padding(16.dp)) {
         Row {
-            Text(stringResource(R.string.private_screen_title),Modifier.weight(1f))
+            Text(stringResource(R.string.private_screen_title),Modifier.weight(1f),color=Color.White)
             Switch(checked=enabled,onCheckedChange={ value ->
                 enabled=value
                 prefs.edit().putBoolean("private-screen",value).apply()
@@ -36,6 +37,6 @@ internal fun PrivateScreenSettings() {
                 }
             })
         }
-        Text(stringResource(R.string.private_screen_detail),style=MaterialTheme.typography.bodySmall)
+        Text(stringResource(R.string.private_screen_detail),style=MaterialTheme.typography.bodySmall,color=Color(0xFFABABAB))
     }
 }
