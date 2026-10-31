@@ -126,6 +126,21 @@ Propuesta futura para la rama feat/post-native-security (revisión y PR separado
 - **Versionado:** asociación explícita commit ↔ APK build ↔ key IDs admitidos ↔ política Play, más despliegue canario antes de producción.
 - **Auditabilidad:** verificar paquetes y dependencias transitivas reales, no únicamente las versiones declaradas. La fuente del incidente no era Next.js 16.4.3 ni msgpack 1.2.4.
 
+## 6A. Implementación de no regresión en la rama post-native (sin despliegue)
+
+**Estado: implementado en código y probado con estado sintético; NO desplegado en VPS.**
+
+Se agregó una comprobación acotada en `cloud/infra/vps/spdecodectl`, dentro de `spdecode update api|web|panel|all`. Antes de `sync_ref`:
+
+- Consulta dentro del contenedor web los KID públicos derivados con `hpkeKeyIds()`, o `OFF` si HPKE estaba desactivado, sin imprimir variables ni el keyring.
+- Si el contenedor tenía HPKE activo, exige que `cloud.env` protegido conserve `CLOUD_V2_HPKE_ENABLED=true` y una entrada no vacía `CLOUD_V2_HPKE_KEYRING`. No rota ni fabrica claves.
+- Si el archivo protegido dice que HPKE debe estar activo pero el contenedor informa `OFF`, impide la actualización.
+- Después de recrear web y superar HTTP liveness, exige conservar **exactamente el mismo conjunto de KID** públicos. Si se pierden o cambian, señala fallo, restaura el commit anterior y ejecuta el procedimiento existente de reconstrucción/rollback. Una rotación deliberada deberá tener procedimiento separado.
+
+Las pruebas `tests/test_r0_hpke_update_guard.py` simulan flags faltantes, keyring ausente, lectura no disponible, regresión a `OFF`, cambio de KID y casos válidos; nunca invocan Docker real ni cargan la clave privada. La ejecución host CI está registrada en el documento R0.
+
+**Limitaciones antes de producción:** este guard sólo preserva un HPKE que ya estaba operativo. No sustituye la declaración obligatoria de KID para un VPS recién instalado, ni valida `Play Integrity`, sesión, respuesta HPKE o worker. Sólo cubre `update` de web/API/panel/all; los caminos de `restart`, instalador y cambios manuales de configuración aún requieren tratamiento. El rollback actual revierte código y reconstruye contenedores, pero no puede restaurar mágicamente una configuración `cloud.env` alterada externamente. Sigue siendo indispensable respaldo del keyring fuera de Git y validación E2E de Android físico. **No promover este control como garantía integral de deploy hasta ejecutar simulaciones Docker y rollback real en staging.**
+
 ## 7. Estado de trabajos/CI y criterios de cierre
 
 - Merge completado: PR #108, SHA ffcfb888.
