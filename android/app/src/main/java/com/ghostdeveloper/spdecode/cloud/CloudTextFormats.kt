@@ -15,7 +15,7 @@ internal object CloudTextFormats {
         // Longest prefix first: e.g. npvt-vless:// before npvt://.
         // The worker independently checks whether a method is really supported.
         val remote=routes.asSequence()
-            .filter { it.kind!="cloud" && value.length>it.prefix.length &&
+            .filter { !(it.kind=="cloud" && it.suffix=="hc") && value.length>it.prefix.length &&
                 value.startsWith(it.prefix,ignoreCase=true) }
             .maxByOrNull { it.prefix.length }
         if(remote!=null && value.length<=TextProtocolDecoder.MAX_CHARS)
