@@ -1,5 +1,6 @@
 name: SP-DECODE 1.1.25 UI and Custom Notification Signed Release
 # Owner-controlled build of signed APK and Play AAB; no publishing or VPS deployment.
+# Align the historical manual Play-beta workflow metadata with 1.1.25 before CI.
 # Ordinary source pushes will not trigger this costly workflow.
 on:
   push:
