@@ -315,6 +315,23 @@ export default function AdminDashboard({mode="system"}){
        aria-checked={data.v2PlayPolicy?.integrityRequired??true}
        disabled={busy||!data.v2PlayPolicy} onClick={changeV2Play}><span/></button>
      </div>
+   <section className="sp-admin-attestation-stats" aria-label="Motivos de rechazo de dispositivos">
+    <h3>Diagnóstico agregado de atestación</h3>
+    <p className="muted">Número de rechazos registrados desde que arrancó el servicio de atestación. Un teléfono puede generar varios rechazos al reintentar.</p>
+    {data.attestationDiagnostics?
+     <><p className="muted">Tiempo activo: {Math.floor(data.attestationDiagnostics.uptimeSeconds/3600)} horas.</p>
+      <div className="sp-admin-attestation-rows">
+       {Object.entries(data.attestationDiagnostics.rejections)
+        .sort((a,b)=>b[1]-a[1]).map(([reason,count])=>
+        <div key={reason} className="sp-admin-attestation-row">
+         <code>{reason}</code><strong>{fmt.format(count)}</strong>
+        </div>)}
+       {Object.keys(data.attestationDiagnostics.rejections).length===0&&
+        <p className="muted">Aún no se han registrado rechazos.</p>}
+      </div></>:
+     <p className="muted">Sin métricas del servicio. Verifica que el contenedor de atestación esté actualizado y disponible.</p>}
+    <p className="muted">Estos datos no permiten determinar si un dispositivo está rooteado. Solo muestran el motivo técnico de rechazo, sin IP, claves ni identificadores.</p>
+   </section>
    <div className="sp-admin-device-policy">
      <h3>Compatibilidad y seguridad de dispositivos V2</h3>
      <p className="muted">Perfil temporal para diagnosticar la atestación de teléfonos nuevos y antiguos. No modifica la API V1.</p>
