@@ -54,7 +54,7 @@ class GlobalCloudUiContracts(unittest.TestCase):
         for filename in ("SpDecodeApp.kt","HttpInjectorCloudPanel.kt"):
             path="android/app/src/main/java/com/ghostdeveloper/spdecode/"+filename
             content=(ROOT/path).read_bytes()
-            actual=hashlib.sha1(b"blob "+str(len(content)).encode()+b"\\0"+content).hexdigest()
+            actual=hashlib.sha1(b"blob "+str(len(content)).encode()+bytes([0])+content).hexdigest()
             self.assertEqual(actual,baseline["uiGitBlobSha1"][path])
 
     def test_cloud_source_injection_and_existing_routes_are_kept(self):
