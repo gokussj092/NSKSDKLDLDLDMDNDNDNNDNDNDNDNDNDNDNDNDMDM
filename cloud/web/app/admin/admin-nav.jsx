@@ -6,7 +6,7 @@ export const groups=[
  {label:"General",links:[["Resumen","/admin","◫"],["Analítica","/admin/analytics","▥"],["Incidencias","/admin/reports","≡"],["Diagnóstico","/admin/diagnostics","⌕"]]},
  {label:"Infraestructura",links:[["Estado del servidor","/admin/system","▤"],["Mantenimiento","/admin/maintenance","◉"],["API V1 y retiro","/admin/api-v1","◷"],["API V2","/admin/api-v2","⬡"],["Google Play","/admin/play","▯"]]},
  {label:"Servicios",links:[["Proveedores VPN","/admin/providers","◈"],["Exportaciones","/admin/exports","▧"],["Catálogo VPN","/admin/catalog","⟳"],["Notificaciones","/admin/notifications","♧"]]},
- {label:"Supervisión",links:[["Observabilidad","/admin/observability","⌁"],["Documentación","/admin/resources","▣"]]}
+ {label:"Supervisión",links:[["Observabilidad","/admin/observability","⌁"],["Alertas","/admin/alerts","!"],["Rendimiento P95","/admin/performance","▥"],["Documentación","/admin/resources","▣"]]}
 ];
 export default function AdminNav({children}){
  const pathname=usePathname(),[expanded,setExpanded]=useState(false);
