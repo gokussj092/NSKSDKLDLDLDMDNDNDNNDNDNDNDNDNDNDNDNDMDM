@@ -274,7 +274,7 @@ def unlock_configuration(document):
     if app['ExpiredAtTimestamp'] != 0:
         raise LabError('DARK_EXPIRY_NOT_REPRESENTABLE')
     tunnel_type = document.outer['type']
-    if tunnel_type not in ('SSH', 'VLESS') or app['TunnelType'] != tunnel_type:
+    if tunnel_type not in ('SSH', 'SSH_DNSTT', 'VLESS') or app['TunnelType'] != tunnel_type:
         raise LabError('LOCKED_TUNNEL_TYPE_NOT_YET_AUDITED')
     if set(document.locked) != {'SshConfig', 'InjectConfig', 'V2RayConfig'}:
         raise LabError('UNSUPPORTED_CONNECTION_SECTIONS')
@@ -288,17 +288,29 @@ def unlock_configuration(document):
     clear_v2ray = (decrypted_group(v2ray, GROUP_FIELDS['V2RayConfig'], ('IsInjectModeEnabled',))
                    if v2ray is not None else None)
     raw = document.raw_json
-    if tunnel_type == 'SSH':
+    if tunnel_type in ('SSH', 'SSH_DNSTT'):
         if clear_v2ray is not None and (clear_v2ray['Config'] or v2ray['IsInjectModeEnabled']):
             raise LabError('UNUSED_V2RAY_SECTION_HAS_DATA')
-        # This is the flag emitted by C4967.m11201 for SSH.
-        source_branch = document.outer.get('sshTunnelConfig')
-        if (not isinstance(source_branch, dict) or
-                not isinstance(source_branch.get('injectConfig'), dict) or
-                source_branch['injectConfig'].get('enabled') is not True):
-            raise LabError('UNSUPPORTED_SSH_INJECT_FLAGS')
-        branch = 'sshTunnelConfig'
+        branch = 'sshTunnelConfig' if tunnel_type == 'SSH' else 'sshDnsttTunnelConfig'
+        source_branch = document.outer.get(branch)
+        if tunnel_type == 'SSH':
+            if (not isinstance(source_branch, dict) or
+                    not isinstance(source_branch.get('injectConfig'), dict) or
+                    source_branch['injectConfig'].get('enabled') is not True):
+                raise LabError('UNSUPPORTED_SSH_INJECT_FLAGS')
+        else:
+            # DEX declares a distinct sshDnsttTunnelConfig open branch.
+            # Recover all fields from the complete encrypted source.
+            if source_branch is not None and (
+                    not isinstance(source_branch, dict) or
+                    ('injectConfig' in source_branch and not isinstance(source_branch['injectConfig'], dict))):
+                raise LabError('UNSUPPORTED_DNSTT_OPEN_LAYOUT')
+            if not (inject['DnsttDnsHost'] and inject['DnsttServerName'] and
+                    inject['DnsttPubkey'] and inject['DnsttDnsPort']):
+                raise LabError('DNSTT_PARAMETERS_REQUIRED')
         raw = _put_fields(raw, (branch, 'sshConfig'), {SSH_NAMES[k]: v for k, v in ssh.items()})
+        if tunnel_type == 'SSH_DNSTT':
+            raw = _put_fields(raw, (branch, 'injectConfig'), {'enabled': True})
     else:
         if ssh != {'Host': '', 'Port': 80, 'Username': '', 'Password': ''} or clear_v2ray is None:
             raise LabError('UNUSED_SSH_SECTION_HAS_DATA')
@@ -317,8 +329,8 @@ def unlock_configuration(document):
     if check.protected:
         raise LabError('LOCK_WRAPPER_REMAINS')
     comparisons = [('injectConfig', {INJECT_NAMES[k]: v for k, v in inject.items()})]
-    comparisons.append(('sshConfig', {SSH_NAMES[k]: v for k, v in ssh.items()}) if tunnel_type == 'SSH'
-                       else ('v2rayConfig', vless))
+    comparisons.append(('sshConfig', {SSH_NAMES[k]: v for k, v in ssh.items()})
+                       if tunnel_type in ('SSH', 'SSH_DNSTT') else ('v2rayConfig', vless))
     for section, expected in comparisons:
         actual = check.outer[branch][section]
         if not all(equal(actual[k], v) for k, v in expected.items()):
