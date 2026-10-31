@@ -49,6 +49,41 @@ class GlobalCloudUiContracts(unittest.TestCase):
             self.assertTrue(strings["private_screen_title"])
             self.assertTrue(strings["private_screen_detail"])
 
+    def test_cloud_provider_picker_is_vertical_accessible_and_keeps_routes(self):
+        ui=text("android/app/src/main/java/com/ghostdeveloper/spdecode/GlobalCloudImportPanel.kt")
+        self.assertNotIn("horizontalScroll",ui)
+        self.assertNotIn("FilterChip(",ui)
+        self.assertIn("Role.RadioButton",ui)
+        self.assertIn(".selectable(",ui)
+        self.assertIn('selected="auto"',ui)
+        self.assertIn("providers.forEach",ui)
+        self.assertIn("CloudOnlineReference.options(routes)",ui)
+        self.assertIn("onDecode(selected,reference)",ui)
+
+    def test_private_screen_uses_full_settings_card_and_secure_flag(self):
+        ui=text("android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/PrivateScreenSettings.kt")
+        self.assertIn("RoundedCornerShape(16.dp)",ui)
+        self.assertIn("Color(0xFF242424)",ui)
+        self.assertIn("Icons.Outlined.Lock",ui)
+        self.assertIn("FLAG_SECURE",ui)
+        self.assertIn('putBoolean("private-screen",value)',ui)
+
+    def test_notification_sound_and_channel_contract(self):
+        import wave
+        ui=text("android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudNotifications.kt")
+        self.assertIn('CHANNEL="service-notices-chime-v2"',ui)
+        self.assertIn('LEGACY_CHANNEL="service-notices-v1"',ui)
+        self.assertIn("setUsage(AudioAttributes.USAGE_NOTIFICATION)",ui)
+        self.assertIn('"/raw/spdecode_notification"',ui)
+        self.assertIn("manager.createNotificationChannel(channel)",ui)
+        self.assertIn("previous.sound==null",ui)
+        sound=ANDROID/"src/main/res/raw/spdecode_notification.wav"
+        with wave.open(str(sound)) as audio:
+            self.assertEqual(audio.getnchannels(),1)
+            self.assertEqual(audio.getsampwidth(),2)
+            self.assertGreater(audio.getnframes(),audio.getframerate()//2)
+            self.assertLess(audio.getnframes(),audio.getframerate()*2)
+
     def test_frozen_c0_ui_remains_bit_for_bit_unchanged(self):
         baseline=json.loads(text("docs/cloud/C0_UI_BASELINE.json"))
         for filename in ("SpDecodeApp.kt","HttpInjectorCloudPanel.kt"):

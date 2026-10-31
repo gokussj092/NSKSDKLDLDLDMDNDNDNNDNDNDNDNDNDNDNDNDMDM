@@ -8,6 +8,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import android.media.AudioAttributes
+import android.net.Uri
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -25,10 +27,38 @@ internal object CloudNoticePush {
 
 internal object CloudNotifications {
     private const val PREFS="spdecode-notifications"
-    private const val CHANNEL="service-notices-v1"
+    private const val CHANNEL="service-notices-chime-v2"
+    private const val LEGACY_CHANNEL="service-notices-v1"
     private const val PERIODIC="service-notices-recovery"
     private const val IMMEDIATE="service-notices-refresh"
     private fun prefs(c:Context)=c.applicationContext.getSharedPreferences(PREFS,Context.MODE_PRIVATE)
+
+    // Stable resource name instead of a generated R.raw integer, which can
+    // change during Play updates. Android notification channels own their sound.
+    private fun notificationSound(c:Context):Uri =
+        Uri.parse("android.resource://" + c.packageName + "/raw/spdecode_notification")
+
+    private fun ensureSoundChannel(c:Context) {
+        if(Build.VERSION.SDK_INT<26)return
+        val manager=c.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        // Preserve a previous system-level mute or reduced importance when
+        // moving from v1. Do not forcibly re-enable silenced notifications.
+        val previous=manager.getNotificationChannel(LEGACY_CHANNEL)
+        val importance=if(previous!=null && previous.importance<NotificationManager.IMPORTANCE_DEFAULT)
+            previous.importance else NotificationManager.IMPORTANCE_DEFAULT
+        val channel=NotificationChannel(
+            CHANNEL,c.getString(R.string.notifications_title),importance)
+        if(previous!=null && previous.sound==null) {
+            channel.setSound(null,null)
+        } else {
+            val attributes=AudioAttributes.Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                .build()
+            channel.setSound(notificationSound(c),attributes)
+        }
+        manager.createNotificationChannel(channel)
+    }
     fun enabled(c:Context)=BuildConfig.SPDECODE_CLOUD_ENABLED && prefs(c).getBoolean("enabled",false)
     fun allowed(c:Context)=Build.VERSION.SDK_INT<33 || ContextCompat.checkSelfPermission(c,
         Manifest.permission.POST_NOTIFICATIONS)==PackageManager.PERMISSION_GRANTED
@@ -64,10 +94,7 @@ internal object CloudNotifications {
         if(!enabled(c)||!allowed(c)||!CloudLegalConsent.accepted(c))return
         val manager=NotificationManagerCompat.from(c)
         if(!manager.areNotificationsEnabled())return
-        if(Build.VERSION.SDK_INT>=26) {
-            (c.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
-                .createNotificationChannel(NotificationChannel(CHANNEL,c.getString(R.string.notifications_title),NotificationManager.IMPORTANCE_DEFAULT))
-        }
+        ensureSoundChannel(c)
         val list=body.getJSONArray("notices");require(list.length()<=20)
         val seen=prefs(c).getStringSet("seen",emptySet()).orEmpty().toMutableSet()
         val now=System.currentTimeMillis()
@@ -80,11 +107,14 @@ internal object CloudNotifications {
             // Explicit immutable destination: no server-supplied deep links, intents or components.
             val intent=Intent(c,MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             val tap=PendingIntent.getActivity(c,0,intent,PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
-            val notification=NotificationCompat.Builder(c,CHANNEL).setSmallIcon(R.drawable.ic_service_notice)
+            val notice=NotificationCompat.Builder(c,CHANNEL).setSmallIcon(R.drawable.ic_service_notice)
                 .setContentTitle(title).setContentText(text).setStyle(NotificationCompat.BigTextStyle().bigText(text))
                 .setContentIntent(tap).setAutoCancel(true).setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
-                .setTimeoutAfter(expiry-now).build()
-            try {manager.notify(id,0,notification);seen.add(id)}catch(_:SecurityException){return}
+                .setTimeoutAfter(expiry-now)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            // Below Android 8 no channel exists, so attach the same sound.
+            if(Build.VERSION.SDK_INT<26)notice.setSound(notificationSound(c))
+            try {manager.notify(id,0,notice.build());seen.add(id)}catch(_:SecurityException){return}
         }
         val retained=(0 until list.length()).map {list.getJSONObject(it).getString("id")}.toSet()
         prefs(c).edit().putStringSet("seen",seen.intersect(retained)).apply()
