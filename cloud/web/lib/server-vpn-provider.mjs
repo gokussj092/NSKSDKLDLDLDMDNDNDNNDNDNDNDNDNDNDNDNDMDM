@@ -72,8 +72,10 @@ const PROVIDERS = Object.freeze({
     headers:{"ngrok-skip-browser-warning":"true","x-app-version":"51","x-cfg-keyed":"1"},
   },
   "http-jireh": {
-    url:"https://raw.githubusercontent.com/alvarofelizzola/GEN-JIREH/refs/heads/main/GENERADOR",
-    agent:"HTTP Jireh/2.0",
+    // Build 13 moved NETWORK to Dropbox; the former GitHub URL is stale.
+    // Use the fixed raw-content host so no cross-origin redirect is needed.
+    url:"https://dl.dropboxusercontent.com/scl/fi/9p6vvoa8jfch3ribneckq/HTTPJIREH1117?rlkey=05z97u9cg8tv4k5xem9m1uxu2&st=huezcplw&dl=1",
+    agent:"HTTP Jireh/2.2",
   },
   "http-fenixvpn": {
     url:"https://raw.githubusercontent.com/Fenix1998x/GEN-SERVIDORES-NUEVO-24-08-2027/refs/heads/main/Fenix",
@@ -244,7 +246,7 @@ export async function downloadVpnCatalog(id,source=id==="v2ray-tunnel-plus"?"bas
         continue;
       }
       if(answer.redirect!==undefined){
-        if(["tunneldoom-vpn","mtm-tunnel-lite","mnr-tunnel-plus","bd-net-vpn","aura-net-vpn","apna-vpn","any-vpn","speicers-pro-vpn","7net-vpn","xhypher-tunnel-pro","focus-vpn-cloud","freedom-vpn","http-internet-infinito","megatunnel","mx-tunnel-pro","rjc-tunnel-pro","rmp-tunnel-pro"].includes(id)||Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
+        if(["tunneldoom-vpn","mtm-tunnel-lite","mnr-tunnel-plus","bd-net-vpn","aura-net-vpn","apna-vpn","any-vpn","speicers-pro-vpn","7net-vpn","xhypher-tunnel-pro","focus-vpn-cloud","freedom-vpn","http-internet-infinito","megatunnel","mx-tunnel-pro","rjc-tunnel-pro","rmp-tunnel-pro","http-jireh"].includes(id)||Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
         const next=answer.redirect;
         if(typeof next!=="string"||next.length>2048)fail("REMOTE_NETWORK_DENIED");
         target=new URL(next,dest).href;

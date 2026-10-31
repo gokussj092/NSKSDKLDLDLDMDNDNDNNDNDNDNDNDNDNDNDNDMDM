@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Download HTTP Jireh 2.0's fixed server catalog and print complete JSON."""
+"""Download HTTP Jireh 2.2's fixed catalog; retain the 2.0 offline codec."""
 from __future__ import annotations
 import argparse
 from pathlib import Path
@@ -11,8 +11,11 @@ if __package__:
 else:
     from codec import DecodeError, MAX_BYTES, decode_catalog, render
 
-CATALOG_URL = "https://raw.githubusercontent.com/alvarofelizzola/GEN-JIREH/refs/heads/main/GENERADOR"
-USERS_URL = "https://raw.githubusercontent.com/alvarofelizzola/USER-JIREH/refs/heads/main/USUARIO"
+# HTTP Jireh 2.2 / build 13, res/raw/dnsd_conf NETWORK and NETWORK2.
+# Dropbox's fixed raw-content host returns the encrypted bytes without redirects.
+# Do not fall back to GitHub: that old source still returns a stale catalog.
+CATALOG_URL = "https://dl.dropboxusercontent.com/scl/fi/9p6vvoa8jfch3ribneckq/HTTPJIREH1117?rlkey=05z97u9cg8tv4k5xem9m1uxu2&st=huezcplw&dl=1"
+USERS_URL = "https://dl.dropboxusercontent.com/scl/fi/levagd0tny8izfpvgsilo/USUARIOSJIREH?rlkey=f4a0zwurd23nmk61ya6ptxf4u&st=bneujzqr&dl=1"
 
 
 class _NoRedirect(HTTPRedirectHandler):
@@ -21,7 +24,7 @@ class _NoRedirect(HTTPRedirectHandler):
 
 
 def download(*, users=False) -> bytes:
-    request = Request(USERS_URL if users else CATALOG_URL, headers={"User-Agent": "HTTP Jireh/2.0", "Accept-Encoding": "identity"})
+    request = Request(USERS_URL if users else CATALOG_URL, headers={"User-Agent": "HTTP Jireh/2.2", "Accept-Encoding": "identity"})
     try:
         with build_opener(_NoRedirect()).open(request, timeout=25) as response:
             if response.status != 200 or response.headers.get("Content-Encoding", "identity") != "identity":
