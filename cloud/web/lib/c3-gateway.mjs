@@ -214,6 +214,19 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
        typeof decoded.rawText!=="string" || !decoded.rawText.length ||
        Buffer.byteLength(decoded.rawText,"utf8")>(isMkk?32*1024*1024:4*1024*1024))
       throw Error("INVALID_WORKER_RESULT");
+    if(kind==="server-vpn" && payload?.providerId==="jyfast-vpn-ultra"){
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId ||
+         !isRecord(parsed) || parsed.provider!==payload.providerId || parsed.complete!==true ||
+         !isRecord(parsed.catalogs) || Object.keys(parsed.catalogs).sort().join(",")!=="free,premium" ||
+         ["free","premium"].some(mode=>!isRecord(parsed.catalogs[mode]) ||
+           typeof parsed.catalogs[mode].Version!=="string" || !parsed.catalogs[mode].Version ||
+           !Array.isArray(parsed.catalogs[mode].Servers) || !parsed.catalogs[mode].Servers.length ||
+           parsed.catalogs[mode].Servers.some(item=>!isRecord(item) || typeof item.Name!=="string")) ||
+         JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))
+        throw Error("INVALID_WORKER_RESULT");
+    }
     if(kind==="server-vpn" && ["http-socketclay","http-wakko","onspace-vpn","superflash-vpn","turbomx-vpn"].includes(payload?.providerId)){
       let parsed;
       try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
@@ -569,4 +582,3 @@ export async function readinessRequest(options={}) {
     return jsonReply({apiVersion:"v1",status:"ready",note:"Service configured; individual decoding results are not exporter-certified."});
   }catch{return jsonReply({apiVersion:"v1",status:"not_ready",reason:"CLOUD_SECURITY_DEPENDENCY_UNAVAILABLE"},503);}
 }
-

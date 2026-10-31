@@ -1,11 +1,13 @@
 /**
  * C8 public VPN catalog broker. Fixed approved providers ONLY.
- * DNS is revalidated, every HTTPS connection is bound to one vetted IPv4,
- * redirects are constrained to the original HTTPS origin, and only temporary
- * socket errors may retry on another validated IP (NUR C3.5 policy).
+ * DNS is revalidated and every connection is bound to one vetted IPv4.
+ * HTTPS is required except the fixed JyFast APK URLs on HTTP port 85.
+ * Redirects stay on the original origin (paired sources refuse all redirects);
+ * only temporary socket errors may retry on a vetted IP (NUR C3.5 policy).
  */
 import dns from "node:dns/promises";
 import https from "node:https";
+import http from "node:http";
 import {publicIpv4} from "./c35-provider.mjs";
 
 const ABOWAGED_SOURCES=Object.freeze({
@@ -36,8 +38,15 @@ const V2PLUS_SOURCES=Object.freeze({
   base64:"https://raw.githubusercontent.com/roosterkid/openproxylist/main/V2RAY_BASE64.txt",
   raw:"https://raw.githubusercontent.com/roosterkid/openproxylist/main/V2RAY_RAW.txt",
 });
-const PAIRED_SOURCES=Object.freeze({"abowaged-vpn":ABOWAGED_SOURCES,"turbomx-vpn":TURBOMX_SOURCES,"superflash-vpn":SUPERFLASH_SOURCES,"onspace-vpn":ONSPACE_SOURCES,"http-socketclay":SOCKETCLAY_SOURCES,"http-wakko":WAKKO_SOURCES,"v2ray-tunnel-plus":V2PLUS_SOURCES});
+// Original APK 9 source uses HTTP on port 85; this exception is restricted
+// to these two fixed vendor paths and is never selected by a client URL.
+const JYFAST_SOURCES=Object.freeze({
+  free:"http://dev.jenrri.shop:85/ignix_update.php?cfg=free",
+  premium:"http://dev.jenrri.shop:85/ignix_update.php?cfg=premium",
+});
+const PAIRED_SOURCES=Object.freeze({"jyfast-vpn-ultra":JYFAST_SOURCES,"abowaged-vpn":ABOWAGED_SOURCES,"turbomx-vpn":TURBOMX_SOURCES,"superflash-vpn":SUPERFLASH_SOURCES,"onspace-vpn":ONSPACE_SOURCES,"http-socketclay":SOCKETCLAY_SOURCES,"http-wakko":WAKKO_SOURCES,"v2ray-tunnel-plus":V2PLUS_SOURCES});
 const PROVIDERS = Object.freeze({
+  "jyfast-vpn-ultra": {url:JYFAST_SOURCES.free,agent:"JyFast VPN Ultra/9",headers:{"X-IGNIX-SIG":"10c7440b8feac5cee6a54959e7599ff26bd27153"}},
   "tunneldoom-vpn": {url:"https://panel.tunneldoom.space/config.json",agent:"Dalvik/2.1.0"},
   "mtm-tunnel-lite": {url:"https://xtmtunnel.xyz/updater/527543543860c45bf4238f2a1b56c3",agent:"Dalvik/2.1.0"},
   "mnr-tunnel-plus": {url:"https://raw.githubusercontent.com/buttacuore2025/up/refs/heads/main/plusfast",agent:"MNR TUNNEL PLUS/3.1"},
@@ -163,8 +172,10 @@ function pinnedGet(url,ip,agent,timeout,headers={}){
       if(settled)return;settled=true;
       if(err)reject(err);else resolve(data);
     };
-    const req=https.request(parsed,{
-      method:"GET",agent:false,rejectUnauthorized:true,minVersion:"TLSv1.2",
+    const transport=parsed.protocol==="http:"?http:https;
+    const req=transport.request(parsed,{
+      method:"GET",agent:false,
+      ...(parsed.protocol==="https:"?{rejectUnauthorized:true,minVersion:"TLSv1.2"}:{}),
       timeout,
       headers:{...headers,"User-Agent":agent,"Accept-Encoding":"identity","Connection":"close"},
       lookup:(host,options,callback)=>{
@@ -206,7 +217,7 @@ function pinnedGet(url,ip,agent,timeout,headers={}){
   });
 }
 
-export async function downloadVpnCatalog(id,source=id==="v2ray-tunnel-plus"?"base64":"servers"){
+export async function downloadVpnCatalog(id,source=id==="jyfast-vpn-ultra"?"free":id==="v2ray-tunnel-plus"?"base64":"servers"){
   const provider=PROVIDERS[id];
   if(!provider)fail("UNSUPPORTED_FORMAT");
   if(!providerEnabled(id))fail("REMOTE_NOT_CONFIGURED");
@@ -215,7 +226,9 @@ export async function downloadVpnCatalog(id,source=id==="v2ray-tunnel-plus"?"bas
   if(Object.hasOwn(PAIRED_SOURCES,id) && !Object.hasOwn(PAIRED_SOURCES[id],source))fail("UNSUPPORTED_FORMAT");
   const initial=new URL(id==="mkk-hyper"?MKK_SOURCES[source]:
     Object.hasOwn(PAIRED_SOURCES,id)?PAIRED_SOURCES[id][source]:provider.url);
-  if(initial.protocol!=="https:"||initial.port||initial.username||initial.password||
+  const jyfast=id==="jyfast-vpn-ultra";
+  if((jyfast ? (initial.protocol!=="http:"||initial.port!=="85"||initial.hostname!=="dev.jenrri.shop")
+               : (initial.protocol!=="https:"||initial.port)) || initial.username||initial.password||
      initial.hash)fail("REMOTE_NETWORK_DENIED");
   const deadline=Date.now()+DEADLINE_MS;
   let target=initial.href;
@@ -224,8 +237,8 @@ export async function downloadVpnCatalog(id,source=id==="v2ray-tunnel-plus"?"bas
     if(visited.has(target))fail("REMOTE_NETWORK_DENIED");
     visited.add(target);
     const dest=new URL(target);
-    if(dest.protocol!=="https:"||dest.host!==initial.host||dest.username||
-       dest.password||dest.search!==initial.search||dest.hash||dest.port)fail("REMOTE_NETWORK_DENIED");
+    if(dest.protocol!==initial.protocol||dest.host!==initial.host||dest.username||
+       dest.password||dest.search!==initial.search||dest.hash||dest.port!==initial.port)fail("REMOTE_NETWORK_DENIED");
     const addresses=await vettedIpv4(dest.hostname);
     let redirected=false;
     // A single-address CDN sometimes drops one request. Retry once on the

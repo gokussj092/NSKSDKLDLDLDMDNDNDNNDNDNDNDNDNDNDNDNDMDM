@@ -52,8 +52,8 @@ export async function decodeServerVpn(request,opts={}){
       // Each omitted source is explicitly marked REMOTE_TOO_LARGE. Remaining
       // sources are passed intact, with the worker's partial warning visible.
       bytes=bundle.payload;
-    }else if(["abowaged-vpn","http-socketclay","http-wakko","v2ray-tunnel-plus","onspace-vpn","superflash-vpn","turbomx-vpn"].includes(providerId)){
-      const names=providerId==="abowaged-vpn"?["servers","udp"]:providerId==="v2ray-tunnel-plus"?["base64","raw"]:["servers","users"];
+    }else if(["jyfast-vpn-ultra","abowaged-vpn","http-socketclay","http-wakko","v2ray-tunnel-plus","onspace-vpn","superflash-vpn","turbomx-vpn"].includes(providerId)){
+      const names=providerId==="jyfast-vpn-ultra"?["free","premium"]:providerId==="abowaged-vpn"?["servers","udp"]:providerId==="v2ray-tunnel-plus"?["base64","raw"]:["servers","users"];
       const sources=await Promise.all(names.map(async name=>[name,await downloadVpnCatalog(providerId,name)]));
       bytes=packPairedVpnCatalogs(providerId,Object.fromEntries(sources));
     }else{

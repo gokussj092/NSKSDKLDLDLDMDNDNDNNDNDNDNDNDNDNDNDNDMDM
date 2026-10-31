@@ -24,7 +24,7 @@ class Arm64Function:
             self.uc.mem_write(segment['p_vaddr'], segment.data())
         for r in self.image.relocations:
             if r['r_info_type'] == 1027:  # R_AARCH64_RELATIVE, base zero
-                self.uc.mem_write(r['r_offset'], struct.pack('<Q', r['r_addend']))
+                self.uc.mem_write(r['r_offset'], struct.pack('<Q', r['r_addend'] & ((1 << 64) - 1)))
         for address, size in ((self.STACK, 0x100000), (self.TLS, 4096),
                               (self.HEAP, 0x1000000), (self.STOP, 4096)):
             self.uc.mem_map(address, size)
@@ -32,7 +32,7 @@ class Arm64Function:
         self.next_alloc = self.HEAP
         self.observers = {}
         self.error = None
-        self.uc.hook_add(UC_HOOK_CODE, self._step)
+        self.step_hook = self.uc.hook_add(UC_HOOK_CODE, self._step)
 
     def alloc(self, data):
         if isinstance(data, int):

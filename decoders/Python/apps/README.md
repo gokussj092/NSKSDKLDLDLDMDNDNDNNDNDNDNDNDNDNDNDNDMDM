@@ -69,3 +69,4 @@ productores se mantienen en `tests/golden`, y las pruebas en `tests`.
 - [SuperFlash VPN 184.0.1](SuperFlash_VPN/README.md): SV5C v2 firmado, registros XChaCha20-Poly1305 y campos AES-CBC/ROT5; 268 servidores y una entrada de usuarios reales comparados íntegramente con nativo/libsodium/JDK, CLI y worker. Dos fuentes, control e icono original integrados; herramientas ELF/ARM64 guardadas.
 
 - [TurboMX VPN 143.1.26](TurboMX_VPN/README.md): SV5C v2/release 143 con firma, clave y contexto propios; 268 servidores y una entrada de usuarios reales comparados íntegramente con nativo/libsodium/JDK, CLI y worker. Reutiliza la primitiva SV5C preservando SuperFlash; descarga dual, control e icono original integrados.
+- [JyFast VPN Ultra 9](JyFast_VPN_Ultra/README.md): catálogos gratuito y prémium completos, campos Rt/AES-CBC y archivos `.sks` con motor GCM/DES compartido. Fuentes fijas, icono original y control individual; versión 10 pendiente de APK verificable.
