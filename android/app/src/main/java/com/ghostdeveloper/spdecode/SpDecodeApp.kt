@@ -142,7 +142,7 @@ fun SpDecodeApp(
                         onDecodeCloud=onDecodeCloud,cloudTextFormats=cloudTextFormats,
                         highlightGuide=if(!whatsNew && !busy)guideStep else null)
                     1->HistoryScreen(session,onSelect,onDeleteSelected,onClear,onImportMultiple,onFavorite)
-                    2->FormatsScreen(cloudFormats,cloudTextFormats,serverVpnLoading,catalogProgress)
+                    2->FormatsScreen(cloudFormats,cloudTextFormats.filterNot{it.kind=="cloud"&&it.suffix=="hc"},serverVpnLoading,catalogProgress)
                     3->ServerVpnScreen(busy,serverVpnApps,serverVpnLoading,serverVpnUnavailable,
                         onDecodeServerCatalog,onDecodeServerApp,catalogProgress)
                     else->FunctionalSettingsPanel(selectedLanguage,hideCredentials,
