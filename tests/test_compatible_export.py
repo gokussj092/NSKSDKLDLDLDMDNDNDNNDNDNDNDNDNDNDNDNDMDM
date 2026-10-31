@@ -89,13 +89,16 @@ class CompatibleExportTests(unittest.TestCase):
                 source = fixture.authenticated_fixture()
             doc = open_profile(source,carrier_mac_key=key,require_carrier_mac=True)
             doc.outer['configExpiryTimestamp'] = 1783836049
+            doc.inner['configExpiryTimestamp'] = 1783836049
             doc.raw_outer = json.dumps(doc.outer,separators=(',',':')).encode()
+            doc.raw_inner = json.dumps(doc.inner,separators=(',',':')).encode()
             signed_source = reseal(doc)
             before = open_profile(signed_source,carrier_mac_key=key,require_carrier_mac=True)
             self.assertEqual(before.outer['configExpiryTimestamp'],1783836049)
             opened = export_ehi(signed_source,{})
             checked = open_profile(opened,carrier_mac_key=key,require_carrier_mac=True)
             self.assertEqual(checked.outer['configExpiryTimestamp'],0)
+            self.assertEqual(checked.inner['configExpiryTimestamp'],0)
             self.assertEqual(checked.outer['lockModes'],'["none"]')
             self.assertFalse(checked.inner['isConfigLock'])
             self.assertEqual(checked.inner['serverHost'],before.inner['serverHost'])
