@@ -30,6 +30,10 @@ struct Scrub {
     Bytes& bytes;
     ~Scrub(){wipe(bytes);}
 };
+template<std::size_t N> struct ScrubArray {
+    std::array<unsigned char,N>& value;
+    ~ScrubArray(){mbedtls_platform_zeroize(value.data(),value.size());}
+};
 struct Rng {
     mbedtls_entropy_context entropy;
     mbedtls_ctr_drbg_context drbg;
@@ -37,8 +41,10 @@ struct Rng {
         mbedtls_entropy_init(&entropy);
         mbedtls_ctr_drbg_init(&drbg);
         const unsigned char personal[]="v3.2/9s";
-        required(mbedtls_ctr_drbg_seed(&drbg,mbedtls_entropy_func,&entropy,
-                                      personal,sizeof(personal)-1));
+        if(mbedtls_ctr_drbg_seed(&drbg,mbedtls_entropy_func,&entropy,
+                                      personal,sizeof(personal)-1)!=0){
+            mbedtls_ctr_drbg_free(&drbg);mbedtls_entropy_free(&entropy);invalid();
+        }
     }
     ~Rng(){mbedtls_ctr_drbg_free(&drbg);mbedtls_entropy_free(&entropy);}
 };
@@ -224,12 +230,14 @@ CatalogBytes openCatalog(const CatalogBytes& privatePkcs8,const std::string& rec
     Scrub wipeShared{sharedBytes};
     required(mbedtls_mpi_write_binary(&shared.dh,sharedBytes.data(),32));
     auto prk=mac(salt.data(),salt.size(),sharedBytes.data(),sharedBytes.size());
+    ScrubArray<32> scrubPrk{prk};
     Bytes info;
     Scrub wipeInfo{info};
     const std::string label="SPDECODE-CATALOG-1:"+purpose;
     info.insert(info.end(),label.begin(),label.end());
     info.push_back(1);
     auto key=mac(prk.data(),prk.size(),info.data(),info.size());
+    ScrubArray<32> scrubKey{key};
     mbedtls_platform_zeroize(prk.data(),prk.size());
     const std::string aad="SPDECODE-CATALOG-1\n"+purpose+"\n"+
                           recipient+"\n"+sender+"\n"+std::to_string(plainBytes);
@@ -238,9 +246,10 @@ CatalogBytes openCatalog(const CatalogBytes& privatePkcs8,const std::string& rec
     mbedtls_platform_zeroize(key.data(),key.size());
     Bytes packed(data.size()-16);
     // The final 16 bytes are the authenticated tag and are never decrypted.
-    required(mbedtls_gcm_auth_decrypt(&gcm.ctx,packed.size(),
+    try { required(mbedtls_gcm_auth_decrypt(&gcm.ctx,packed.size(),
         iv.data(),iv.size(),reinterpret_cast<const unsigned char*>(aad.data()),aad.size(),
         data.data()+packed.size(),16,data.data(),packed.data()));
+    }catch(...){wipe(packed);throw;}
     return packed;
 }
 } // namespace spdecode

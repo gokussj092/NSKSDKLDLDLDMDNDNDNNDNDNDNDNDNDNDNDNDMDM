@@ -21,11 +21,15 @@ import javax.crypto.spec.GCMParameterSpec
 /** Separate, opt-in NPV identities. No backups, preferences, history or telemetry. */
 internal class NpvsIdentityVault(context:Context) {
     private val directory=File(context.applicationContext.noBackupFilesDir,"npvs-identities-v1")
-    data class Entry(val id:String,val material:JSONObject) {
-        val fingerprint:String get()=material.getString("fingerprint")
-        val source:String get()=material.getString("source")
-        val kind:String get()=material.getString("kind")
+    // Lists/pickers retain public metadata only. Decrypt private material on
+    // explicit selection/export, rather than keeping every identity in UI RAM.
+    class Entry internal constructor(val id:String,val fingerprint:String,
+        val source:String,val kind:String,val fileSha256:String,
+        private val loadMaterial:()->JSONObject) {
+        val material:JSONObject get()=loadMaterial()
     }
+    private fun summary(id:String,value:JSONObject)=Entry(id,value.getString("fingerprint"),
+        value.getString("source"),value.getString("kind"),value.optString("fileSha256")) { readMaterial(id) }
     private fun key():SecretKey {
         val store=KeyStore.getInstance("AndroidKeyStore").apply{load(null)}
         (store.getKey("spdecode.npvs.identity.v1",null) as? SecretKey)?.let{return it}
@@ -54,7 +58,7 @@ internal class NpvsIdentityVault(context:Context) {
         validate(value)
         val stored=entries()
         val existing=stored.firstOrNull { it.fingerprint==value.getString("fingerprint") &&
-            it.kind==value.getString("kind") && it.material.optString("fileSha256")==value.optString("fileSha256") }
+            it.kind==value.getString("kind") && it.fileSha256==value.optString("fileSha256") }
         // One generated SP Cloud keypair per installation until explicitly deleted.
         // Imported captured identities remain independently selectable.
         if(value.optString("source")=="generated" && value.optString("kind")=="keypair")
@@ -64,18 +68,23 @@ internal class NpvsIdentityVault(context:Context) {
         val id=existing?.id?:UUID.randomUUID().toString()
         val bytes=value.toString().toByteArray()
         try{write(id,bytes)}finally{bytes.fill(0)}
-        return Entry(id,value)
+        return summary(id,value)
+    }
+    private fun readMaterial(id:String):JSONObject {
+        val path=file(id)
+        require(path.length() in 29L..16412L)
+        val raw=AtomicFile(path).readFully()
+        try {
+            val cipher=Cipher.getInstance("AES/GCM/NoPadding")
+            cipher.init(Cipher.DECRYPT_MODE,key(),GCMParameterSpec(128,raw.copyOfRange(0,12)))
+            cipher.updateAAD(id.toByteArray());val clear=cipher.doFinal(raw,12,raw.size-12)
+            try{return parse(String(clear,Charsets.UTF_8))}finally{clear.fill(0)}
+        }finally{raw.fill(0)}
     }
     fun entries():List<Entry> = directory.listFiles().orEmpty()
         .filter{it.name.endsWith(".npvk")}.map { path ->
-            require(path.length() in 29L..16412L)
-            val id=path.name.removeSuffix(".npvk");val raw=AtomicFile(file(id)).readFully()
-            try {
-                val cipher=Cipher.getInstance("AES/GCM/NoPadding")
-                cipher.init(Cipher.DECRYPT_MODE,key(),GCMParameterSpec(128,raw.copyOfRange(0,12)))
-                cipher.updateAAD(id.toByteArray());val clear=cipher.doFinal(raw,12,raw.size-12)
-                try{Entry(id,parse(String(clear,Charsets.UTF_8)))}finally{clear.fill(0)}
-            }finally{raw.fill(0)}
+            val id=path.name.removeSuffix(".npvk")
+            summary(id,readMaterial(id))
         }.sortedBy{it.id}
     fun delete(id:String){AtomicFile(file(id)).delete()}
     fun enabled():Boolean=File(directory,"enabled").exists()
@@ -87,7 +96,7 @@ internal class NpvsIdentityVault(context:Context) {
         if(fingerprints.isEmpty())return emptyList()
         val hash=hex(MessageDigest.getInstance("SHA-256").digest(bytes))
         return entries().filter{it.fingerprint in fingerprints &&
-            (it.kind=="keypair" || it.material.optString("fileSha256")==hash)}
+            (it.kind=="keypair" || it.fileSha256==hash)}
     }
     companion object {
         fun hex(bytes:ByteArray)=bytes.joinToString(""){"%02x".format(it.toInt() and 255)}

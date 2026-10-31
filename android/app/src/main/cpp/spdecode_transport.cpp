@@ -1,6 +1,7 @@
 #include <jni.h>
 #include <algorithm>
 #include <array>
+#include <atomic>
 #include <cstdint>
 #include <stdexcept>
 #include <vector>
@@ -54,6 +55,49 @@ void fail(JNIEnv* env, const char* message) {
     const jclass io = env->FindClass("java/io/IOException");
     if (io != nullptr) env->ThrowNew(io, message);
 }
+// Authenticated session policy controls supplemental RASP enforcement only.
+// A hooked client cannot change the independent server admission policy.
+std::atomic<bool> enforceRuntime{false};
+bool sensitiveOperation(int op){return (op>=4&&op<=10)||op==12||op==13;}
+spdecode::RuntimeEvidence runtimeSnapshot(JNIEnv* env){
+    auto result=spdecode::runtimeEvidence();
+    jclass debug=env->FindClass("android/os/Debug");
+    if(debug && !env->ExceptionCheck()){
+        auto attached=env->GetStaticMethodID(debug,"isDebuggerConnected","()Z");
+        auto waiting=env->GetStaticMethodID(debug,"waitingForDebugger","()Z");
+        if(attached && waiting && !env->ExceptionCheck()){
+            const auto a=env->CallStaticBooleanMethod(debug,attached);
+            const auto w=env->CallStaticBooleanMethod(debug,waiting);
+            if(!env->ExceptionCheck()){
+                result.evaluated|=spdecode::DebuggerChecked;
+                if(a==JNI_TRUE||w==JNI_TRUE)result.signals|=spdecode::JavaDebugger;
+            }
+        }
+    }
+    if(debug)env->DeleteLocalRef(debug);
+    if(env->ExceptionCheck())env->ExceptionClear();
+    return result;
+}
+bool allowSensitiveRuntime(JNIEnv* env){
+#if defined(NDEBUG)
+    if(enforceRuntime.load() && runtimeSnapshot(env).highRisk()){
+        spdecode::sharedSession().clear();
+        fail(env,"CLOUD_INTEGRITY_REJECTED");return false;
+    }
+#else
+    (void)env; // Debug fixtures remain instrumentable, never server-authorized by this.
+#endif
+    return true;
+}
+jstring nativeRuntimeReport(JNIEnv* env,jclass){
+    try{
+        const auto report=spdecode::runtimeEvidenceJson(runtimeSnapshot(env));
+        return env->NewStringUTF(report.c_str());
+    }catch(const std::exception&){
+        return env->NewStringUTF("{\"v\":1,\"signals\":0,\"evaluated\":0,\"elapsedUs\":0}");
+    }
+}
+void nativeConfigureRasp(JNIEnv*,jclass,jboolean enforce){enforceRuntime.store(enforce==JNI_TRUE);}
 bool clearException(JNIEnv* env) {
     if (!env->ExceptionCheck()) return false;
     env->ExceptionClear();
@@ -113,6 +157,7 @@ bool setHeader(JNIEnv* env,jobject conn,jclass cls,jmethodID method,
 // certificate/hostname verification; certificate validation is never disabled.
 jbyteArray post(JNIEnv* env,jclass,jint operation,jbyteArray bodyArg,jstring bearerArg,jstring versionArg,
              jstring timestampArg,jstring nonceArg,jstring proofArg,jstring actionChallengeArg,jstring actionIntegrityArg) {
+    if(sensitiveOperation(operation) && !allowSensitiveRuntime(env))return nullptr;
     const std::string base=cloudOrigin();
     const std::string path=cloudTransportPath();
     const std::string timestamp=utf(env,timestampArg);
@@ -319,6 +364,7 @@ jbyteArray nativeWrite(JNIEnv* env,const std::vector<unsigned char>& bytes){
 jbyteArray prepareHpke(JNIEnv* env,jclass,jint operation,
                        jbyteArray metadataArg,jbyteArray attachmentArg){
     try{
+        if(sensitiveOperation(operation) && !allowSensitiveRuntime(env))return nullptr;
         if(metadataArg==nullptr)throw std::runtime_error("CLOUD_HPKE_METADATA_MISSING");
         auto metadata=nativeRead(env,metadataArg,1024U*1024U);
         ScrubOnExit scrubMetadata{metadata};
@@ -365,6 +411,7 @@ void discardHpke(JNIEnv*,jclass,jlong stateHandle){
 }
 jobjectArray nativeBeginCatalog(JNIEnv* env,jclass){
     try{
+        if(!allowSensitiveRuntime(env))return nullptr;
         const auto issued=spdecode::beginCatalog();
         auto str=env->FindClass("java/lang/String");
         if(!str||env->ExceptionCheck()){
@@ -403,6 +450,7 @@ jbyteArray nativeOpenCatalogHandle(JNIEnv* env,jclass,jlong handle,
     try{
         if(!recipient||!purpose||!sender||!salt||!iv||!data)
             throw std::runtime_error("CLOUD_CATALOG_AUTH_FAILED");
+        if(!allowSensitiveRuntime(env)){spdecode::discardCatalog(token);return nullptr;}
         auto packed=spdecode::openCatalogHandle(token,utf(env,recipient),utf(env,purpose),
             utf(env,sender),utf(env,salt),utf(env,iv),plainBytes,utf(env,data));
         ScrubOnExit scrubPacked{packed};
@@ -615,8 +663,12 @@ bool parseFingerprint(const std::string& raw,std::array<unsigned char,32>& out){
 jboolean verifyReleaseSigner(JNIEnv* env,jclass,jobject context,
                             jstring packageExpected,jstring uploadDigest,
                             jstring playDigest,jboolean debugBuild) {
+    struct ClearPending {
+        JNIEnv* env;
+        ~ClearPending(){if(env->ExceptionCheck())env->ExceptionClear();}
+    } clearPending{env};
     if(debugBuild==JNI_TRUE)return JNI_TRUE; // Preserve debug build semantics.
-    if(context==nullptr||spdecode::runtimeRisk()!=0)return JNI_FALSE;
+    if(context==nullptr)return JNI_FALSE;
     try{
         const std::string expected=utf(env,packageExpected);
         if(expected.empty())return JNI_FALSE;
@@ -643,13 +695,6 @@ jboolean verifyReleaseSigner(JNIEnv* env,jclass,jobject context,
         const jfieldID flagsField=env->GetFieldID(infoClass,"flags","I");
         if(!info||!flagsField||env->ExceptionCheck()||
            (env->GetIntField(info,flagsField)&2)!=0)return JNI_FALSE;
-        jclass debugClass=env->FindClass("android/os/Debug");
-        const jmethodID connected=env->GetStaticMethodID(debugClass,"isDebuggerConnected","()Z");
-        const jmethodID waiting=env->GetStaticMethodID(debugClass,"waitingForDebugger","()Z");
-        if(!connected||!waiting||env->ExceptionCheck()||
-           env->CallStaticBooleanMethod(debugClass,connected)==JNI_TRUE||
-           env->CallStaticBooleanMethod(debugClass,waiting)==JNI_TRUE||
-           env->ExceptionCheck())return JNI_FALSE;
         auto pm=env->CallObjectMethod(context,getPm);
         if(!pm||env->ExceptionCheck())return JNI_FALSE;
         jclass version=env->FindClass("android/os/Build$VERSION");
@@ -657,52 +702,56 @@ jboolean verifyReleaseSigner(JNIEnv* env,jclass,jobject context,
         if(!sdkField||env->ExceptionCheck())return JNI_FALSE;
         const jint sdk=env->GetStaticIntField(version,sdkField);
         jclass pmClass=env->FindClass("android/content/pm/PackageManager");
-        if(sdk>=28){
-            const jmethodID hasCert=env->GetMethodID(pmClass,"hasSigningCertificate",
-                                         "(Ljava/lang/String;[BI)Z");
-            if(!hasCert||env->ExceptionCheck())return JNI_FALSE;
-            for(const auto& digest:fingerprints){
-                auto value=env->NewByteArray(32);
-                if(value==nullptr||env->ExceptionCheck())return JNI_FALSE;
-                env->SetByteArrayRegion(value,0,32,
-                                     reinterpret_cast<const jbyte*>(digest.data()));
-                if(env->ExceptionCheck())return JNI_FALSE;
-                const auto match=env->CallBooleanMethod(pm,hasCert,name,value,1);
-                env->DeleteLocalRef(value);
-                if(env->ExceptionCheck())return JNI_FALSE;
-                if(match==JNI_TRUE)return JNI_TRUE;
-            }
-            return JNI_FALSE;
-        }
-        // Legacy API 24..27: match the single real signing certificate.
         const jmethodID getPackage=env->GetMethodID(pmClass,"getPackageInfo",
                                                "(Ljava/lang/String;I)Landroid/content/pm/PackageInfo;");
         if(!getPackage||env->ExceptionCheck())return JNI_FALSE;
-        auto infoOld=env->CallObjectMethod(pm,getPackage,name,64);
-        if(!infoOld||env->ExceptionCheck())return JNI_FALSE;
-        auto infoOldClass=env->FindClass("android/content/pm/PackageInfo");
-        const jfieldID signatures=env->GetFieldID(infoOldClass,"signatures",
-                                               "[Landroid/content/pm/Signature;");
-        if(!signatures||env->ExceptionCheck())return JNI_FALSE;
-        auto certs=static_cast<jobjectArray>(env->GetObjectField(infoOld,signatures));
-        if(!certs||env->ExceptionCheck()||env->GetArrayLength(certs)!=1)return JNI_FALSE;
+        auto packageInfo=env->CallObjectMethod(pm,getPackage,name,sdk>=28?0x08000000:64);
+        if(!packageInfo||env->ExceptionCheck())return JNI_FALSE;
+        auto packageInfoClass=env->FindClass("android/content/pm/PackageInfo");
+        jobjectArray certs=nullptr;
+        if(sdk>=28){
+            const auto signingField=env->GetFieldID(packageInfoClass,"signingInfo",
+                "Landroid/content/pm/SigningInfo;");
+            if(!signingField||env->ExceptionCheck())return JNI_FALSE;
+            auto signing=env->GetObjectField(packageInfo,signingField);
+            auto signingClass=env->FindClass("android/content/pm/SigningInfo");
+            const auto contents=env->GetMethodID(signingClass,"getApkContentsSigners",
+                "()[Landroid/content/pm/Signature;");
+            if(!signing||!contents||env->ExceptionCheck())return JNI_FALSE;
+            certs=static_cast<jobjectArray>(env->CallObjectMethod(signing,contents));
+        }else{
+            const auto signatures=env->GetFieldID(packageInfoClass,"signatures",
+                "[Landroid/content/pm/Signature;");
+            if(!signatures||env->ExceptionCheck())return JNI_FALSE;
+            certs=static_cast<jobjectArray>(env->GetObjectField(packageInfo,signatures));
+        }
+        if(!certs||env->ExceptionCheck())return JNI_FALSE;
+        const auto signerCount=env->GetArrayLength(certs);
+        if(signerCount<1||signerCount>4)return JNI_FALSE;
         jclass signatureClass=env->FindClass("android/content/pm/Signature");
         const jmethodID toBytes=env->GetMethodID(signatureClass,"toByteArray","()[B");
-        auto signature=env->GetObjectArrayElement(certs,0);
-        auto data=static_cast<jbyteArray>(env->CallObjectMethod(signature,toBytes));
-        if(!data||env->ExceptionCheck())return JNI_FALSE;
-        const jsize count=env->GetArrayLength(data);
-        if(count<=0||count>16384)return JNI_FALSE;
-        std::vector<unsigned char> encoded(static_cast<size_t>(count));
-        env->GetByteArrayRegion(data,0,count,
-                                reinterpret_cast<jbyte*>(encoded.data()));
-        if(env->ExceptionCheck())return JNI_FALSE;
-        std::array<unsigned char,32> result{};
-        if(mbedtls_sha256(encoded.data(),encoded.size(),result.data(),0)!=0)
-            return JNI_FALSE;
-        for(const auto& fingerprint:fingerprints)
-            if(result==fingerprint)return JNI_TRUE;
-        return JNI_FALSE;
+        if(!toBytes||env->ExceptionCheck())return JNI_FALSE;
+        // Every CURRENT signer must be explicitly authorized. An allowed
+        // historical signer or one allowed signer in a multi-signed APK is
+        // insufficient. Play App Signing and authorized QA pins stay distinct.
+        for(jsize index=0;index<signerCount;++index){
+            auto signature=env->GetObjectArrayElement(certs,index);
+            if(!signature||env->ExceptionCheck())return JNI_FALSE;
+            auto data=static_cast<jbyteArray>(env->CallObjectMethod(signature,toBytes));
+            if(!data||env->ExceptionCheck())return JNI_FALSE;
+            const jsize count=env->GetArrayLength(data);
+            if(count<=0||count>16384)return JNI_FALSE;
+            std::vector<unsigned char> encoded(static_cast<size_t>(count));
+            env->GetByteArrayRegion(data,0,count,reinterpret_cast<jbyte*>(encoded.data()));
+            if(env->ExceptionCheck())return JNI_FALSE;
+            std::array<unsigned char,32> result{};
+            if(mbedtls_sha256(encoded.data(),encoded.size(),result.data(),0)!=0)return JNI_FALSE;
+            bool matched=false;
+            for(const auto& fingerprint:fingerprints)matched|=result==fingerprint;
+            env->DeleteLocalRef(data);env->DeleteLocalRef(signature);
+            if(!matched)return JNI_FALSE;
+        }
+        return JNI_TRUE;
     }catch(const std::exception&) {
         if(env->ExceptionCheck())env->ExceptionClear();
         return JNI_FALSE;
@@ -750,7 +799,12 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm,void*) {
     if(vm->GetEnv(reinterpret_cast<void**>(&env),JNI_VERSION_1_6)!=JNI_OK)return JNI_ERR;
     jclass bridge=env->FindClass("com/ghostdeveloper/spdecode/cloud/CloudNativeTransport");
     if(!bridge)return JNI_ERR;
-    JNINativeMethod methods[]={{const_cast<char*>("postNativeEncrypted"),
+    JNINativeMethod methods[]={
+        {const_cast<char*>("nativeRuntimeReport"),const_cast<char*>("()Ljava/lang/String;"),
+        reinterpret_cast<void*>(nativeRuntimeReport)},
+        {const_cast<char*>("nativeConfigureRasp"),const_cast<char*>("(Z)V"),
+        reinterpret_cast<void*>(nativeConfigureRasp)},
+        {const_cast<char*>("postNativeEncrypted"),
         const_cast<char*>("(I[BLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)[B"),
         reinterpret_cast<void*>(post)},
         {const_cast<char*>("nativePrepareHpke"),const_cast<char*>("(I[B[B)[B"),
@@ -809,7 +863,7 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm,void*) {
         reinterpret_cast<void*>(nativeClearSession)},
         {const_cast<char*>("nativeInvalidateSession"),const_cast<char*>("(Ljava/lang/String;)V"),
         reinterpret_cast<void*>(nativeInvalidateSession)}};
-    const jint registered=env->RegisterNatives(bridge,methods,23);
+    const jint registered=env->RegisterNatives(bridge,methods,25);
     env->DeleteLocalRef(bridge);
     return registered==JNI_OK?JNI_VERSION_1_6:JNI_ERR;
 }

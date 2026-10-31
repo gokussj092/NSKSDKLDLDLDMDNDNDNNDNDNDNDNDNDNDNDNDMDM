@@ -37,7 +37,7 @@ class R0R8NpvsContracts(unittest.TestCase):
         self.assertIn("-keep class com.ghostdeveloper.spdecode.cloud.CloudKeystorePlatform",rules)
         self.assertNotIn("-keep class com.ghostdeveloper.spdecode.**",rules)
         self.assertIn("System.loadLibrary(\"v7q3\")",kotlin)
-        self.assertIn("RegisterNatives(bridge,methods,23)",native)
+        self.assertIn("RegisterNatives(bridge,methods,25)",native)
         self.assertIn('add_library(v7q3 SHARED',cmake)
         self.assertIn("JNI_OnLoad;",exports)
         self.assertIn("local: *;",exports)

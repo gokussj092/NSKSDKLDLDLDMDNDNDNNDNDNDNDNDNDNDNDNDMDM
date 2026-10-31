@@ -1,5 +1,7 @@
 # SP-DECODE — R0: línea base verificable de RASP y seguridad de despliegue
 
+> Continuación autorizada R0–R6: consultar `RASP_R0_R6_IMPLEMENTATION_2026_10_30.md` para la implementación nueva y sus gates reales. Los estados «R1–R6 no iniciadas» de este registro son históricos. No se ha autorizado promoción a main/producción.
+
 **Fecha:** 2026-10-30  
 **Rama:** `feat/post-native-security`  
 **Alcance de este checkpoint:** inventario de código, ampliación de contrato RASP no intrusivo y corrección puntual del setup Node en CI. **No está cerrada la fase R0; no se ha implementado R1–R6.**  

@@ -1,7 +1,7 @@
-name: Post-native R0 host security baseline
+name: Post-native R0-R6 implementation validation
 
 # Low-cost host contract run only when this workflow changes on the R0 branch.
-# No Android builds, signing secrets, VPS deployments or general push fan-out.
+# One host + unsigned R8 + isolated Compose checkpoint; no production operations.
 on:
   push:
     branches: ["feat/post-native-security"]
@@ -20,11 +20,15 @@ jobs:
   r0-host-contracts:
     if: github.repository_owner == 'gokussj092'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
       - name: Verify JNI mapping without Gradle or Android SDK
         run: python3 tests/native_jni_contract.py
       - name: Verify signing certificate pin contract with synthetic fixtures
@@ -45,7 +49,9 @@ jobs:
             tests.test_android_npvs_identity -v
       - name: R0 NPVS R8 and HPKE deployment regression tests
         run: |
-          python3 -m unittest tests.test_r0_r8_npvs_contract tests.test_r0_hpke_update_guard -v
+          python3 -m unittest tests.test_r0_r8_npvs_contract tests.test_r0_hpke_update_guard \
+            tests.test_native_code_integrity tests.test_rasp_release_gate \
+            tests.test_android_production_workflow -v
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
@@ -56,7 +62,9 @@ jobs:
           npm install --no-audit --no-fund --ignore-scripts --no-package-lock
       - name: Authenticate Node HPKE request/reply and session contracts
         working-directory: cloud/web
-        run: node --test tests/v2-hpke.test.mjs tests/v2-security.test.mjs
+        run: node --test tests/v2-hpke.test.mjs tests/v2-security.test.mjs tests/rasp-policy.test.mjs
+      - name: Native crypto interoperability and JNI syntax on candidate code
+        run: bash scripts/ci/run_post_native_crypto.sh
       - name: Check VPS operator script syntax (no changes to running VPS)
         run: bash -n cloud/infra/vps/spdecodectl
 
@@ -104,6 +112,7 @@ jobs:
           python3 tests/native_jni_contract.py
           python3 scripts/ci/verify_aab_locales.py "$AAB"
           python3 tests/cloud_c5_apk_audit.py "$APK"
+          python3 scripts/ci/audit_native_elf.py "$APK"
           python3 - <<'PY'
           from pathlib import Path
           import zipfile,re
@@ -117,3 +126,19 @@ jobs:
           print("PASS R8 preserved JNI names, Cloud assets isolation, locales and 4+ ABIs")
           PY
       # Deliberately no signed APK, no Play upload, no deployment, no artifact upload.
+
+  isolated-compose:
+    needs: r0-host-contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Build isolated synthetic HPKE staging image (no published ports)
+        run: docker build -t spdecode-rasp-stage:test -f tests/staging/rasp-hpke.Dockerfile .
+      - name: Exercise operator gates against real recreated Compose containers
+        run: python3 tests/staging/test_hpke_compose.py

@@ -143,7 +143,7 @@ internal fun NpvsIdentitySettings() {
             properties=DialogProperties(securePolicy=SecureFlagPolicy.SecureOn),
             title={Text(stringResource(R.string.npv_title))},text={Column(verticalArrangement=Arrangement.spacedBy(10.dp)){
                 if(entry.kind=="keypair"){
-                    val public=entry.material.getString("publicKey");val private=entry.material.getString("privateKey")
+                    val material=entry.material;val public=material.getString("publicKey");val private=material.getString("privateKey")
                     OutlinedTextField(value=public,onValueChange={},readOnly=true,label={Text(stringResource(R.string.npv_public_label))})
                     TextButton(onClick={copy(public,false)}){Text(stringResource(R.string.npv_copy_public))}
                     OutlinedTextField(value=private,onValueChange={},readOnly=true,label={Text(stringResource(R.string.npv_private_label))},

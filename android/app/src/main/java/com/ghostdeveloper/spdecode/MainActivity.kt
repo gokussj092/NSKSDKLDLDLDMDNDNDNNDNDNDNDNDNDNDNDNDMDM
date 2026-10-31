@@ -150,6 +150,16 @@ class MainActivity : ComponentActivity() {
         get()=sessionVm.reveal
         set(value){sessionVm.reveal=value}
     private var stagedExport:String?=null
+    private var runtimeObservation:Job?=null
+
+    // Event-driven own-process inspection off the main thread. No permanent
+    // service, package scans, timers, or raw module/debug logs.
+    private fun observeRuntime() {
+        runtimeObservation?.cancel()
+        runtimeObservation=scope.launch(Dispatchers.IO) {
+            runCatching { com.ghostdeveloper.spdecode.cloud.CloudNativeTransport.runtimeReport() }
+        }
+    }
 
     private val noticePermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -739,9 +749,14 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        // A signature/debuggable check that runs only at cold start can be
-        // bypassed by a later process attachment. Defense-in-depth recheck.
-        if(!ReleaseIntegrity.isTrusted(this)) finishAndRemoveTask()
+        if(!ReleaseIntegrity.isTrusted(this)) {
+            finishAndRemoveTask()
+            return
+        }
+        observeRuntime()
+        if(settings.getBoolean("private-screen",false))
+            window.addFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE)
+        else window.clearFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE)
         if(!showCloudLegal){
             refreshServerVpn()
             syncOptInUsage()

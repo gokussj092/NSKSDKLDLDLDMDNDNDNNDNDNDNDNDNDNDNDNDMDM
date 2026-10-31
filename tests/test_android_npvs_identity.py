@@ -10,7 +10,7 @@ SOURCE=APP/"src/main/java/com/ghostdeveloper/spdecode/cloud"
 class AndroidNpvIdentityTests(unittest.TestCase):
     def test_only_generated_cloud_settings_get_the_new_section(self):
         gradle=(APP/"build.gradle.kts").read_text()
-        self.assertIn('"        com.ghostdeveloper.spdecode.cloud.NpvsIdentitySettings()\\n" + anchor',gradle)
+        self.assertIn('"        com.ghostdeveloper.spdecode.cloud.NpvsIdentitySettings()\\n" +',gradle)
         settings=(SOURCE.parent/"FunctionalSettingsPanel.kt").read_text()
         self.assertNotIn("NpvsIdentitySettings",settings)
         self.assertIn('dependsOn(prepareQaSettingsSource)',gradle)

@@ -123,6 +123,9 @@ internal class CloudDecodeClient(context: Context) {
         val reply=withContext(Dispatchers.IO) {
             extract(CloudNativeTransport.post(operation,body))
         }
+        // This response has been authenticated by native HPKE. The mode only
+        // controls supplemental local RASP; the server still checks every proof.
+        CloudNativeTransport.configureRasp(reply.optBoolean("raspEnforce", false))
         val access = reply.getString("accessToken")
         val seconds = reply.getLong("expiresIn")
         CloudNativeTransport.cacheSession(access,seconds,

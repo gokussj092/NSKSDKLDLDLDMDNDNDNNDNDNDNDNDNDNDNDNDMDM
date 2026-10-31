@@ -34,7 +34,13 @@ internal object V2HpkeEnvelope {
     }
 
     fun prepare(operation: Int, metadata: JSONObject, attachment: ByteArray? = null): Prepared {
-        val json = metadata.toString().toByteArray(Charsets.UTF_8)
+        // Copy metadata so the caller's JSON is never mutated. This report is
+        // advisory and bound by the SAME HPKE ciphertext/PoP/action hash.
+        val bound = JSONObject(metadata.toString())
+        if (operation in setOf(4, 5, 6, 7, 8, 9, 10, 12, 13)) {
+            bound.put("_rasp", JSONObject(CloudNativeTransport.runtimeReport()))
+        }
+        val json = bound.toString().toByteArray(Charsets.UTF_8)
         val combined = try {
             CloudNativeTransport.prepareHpke(operation, json, attachment)
         } finally {
