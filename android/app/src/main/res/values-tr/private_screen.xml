@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="private_screen_title">Özel ekran</string>
+    <string name="private_screen_detail">Bu uygulamada ekran görüntülerini ve ekran kaydını engeller. Ekran görüntüsü paylaşmak için kapatın.</string>
+</resources>

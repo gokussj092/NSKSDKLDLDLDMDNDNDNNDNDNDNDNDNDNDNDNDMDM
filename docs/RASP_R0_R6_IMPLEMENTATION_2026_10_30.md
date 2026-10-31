@@ -20,7 +20,7 @@ El usuario autorizó implementar todas las fases R0–R6 en este turno, superand
 ## Evidencia local reproducida
 
 - 25 descriptores JNI Kotlin/C++ coinciden, más puente Android Keystore preservado.
-- 30 pruebas Python de R0/R8/NPVS, actualización HPKE, UI/firmas, modificación de ELF real y validador de evidencia: PASS.
+- 31 pruebas Python de R0/R8/NPVS, actualización HPKE, UI/firmas, modificación de ELF real y validador de evidencia: PASS.
 - 26 pruebas Node HPKE/V2/RASP: PASS. Incluyen bootstrap/sesión/operación usando HPKE-only real, respuesta autenticada, reporte alterado, replay, revocación selectiva y kill-switch que no rescata sesiones revocadas.
 - Interoperabilidad C++ Mbed TLS 3.6.7 ↔ Node: HPKE RFC9180 PASS y catálogo P-256 PASS. Archivo oficial comprobado con el SHA256 existente del proyecto; no se cambiaron dependencias/keys de producción.
 - Sintaxis C++ JNI comprobada con cabeceras JDK oficiales, `-DNDEBUG -O2 -Wall -Wextra -Werror`.
@@ -60,9 +60,9 @@ Contadores: `spsec:rasp:<día>:<build-acotada>:<estado|bucket-latencia>`, TTL 8 
 
 NPVS v1/v5/v6 sigue en worker. Las identidades se guardan con AES-GCM/Android Keystore en noBackupFilesDir. Las listas y pickers ya no conservan cada JSONObject privado descifrado: los Entry contienen metadatos y una lectura explícita de material. El formato de disco, consentimiento, exportación del usuario, contraseña y credenciales de destinatario no cambian. El material elegido y Strings visibles necesitan memoria JVM transitoria, que no puede borrarse con garantías de C++.
 
-Los nuevos guard RAII cubren salida excepcional de HKDF/HPKE, claves derivadas, constructor RNG/AEAD y buffers AEAD fallidos. Los contextos HPKE son one-shot, tienen límite 64 y expiran a 120 s al acceder a la tabla; `finally` de Kotlin descarta los normales. No hay hilo permanente que prometa borrado instantáneo durante inactividad. Los datos necesarios para mostrar/exportar siguen siendo observables con control del proceso/SO.
+Los nuevos guard RAII cubren salida excepcional de HKDF/HPKE, claves derivadas, constructor RNG/AEAD y buffers AEAD fallidos. Los contextos HPKE son one-shot, tienen límite 64 y expiran a 300 s al acceder a la tabla; `finally` de Kotlin descarta los normales. El plazo contempla 60 s de preparación Play + 30 s de token + 10 s conexión + 165 s del catálogo pesado, evitando cortar una respuesta NUR válida. No hay hilo permanente que prometa borrado instantáneo durante inactividad. Los datos necesarios para mostrar/exportar siguen siendo observables con control del proceso/SO.
 
-La opción de Ajustes **Pantalla privada** aplica FLAG_SECURE, persiste la elección y permite desactivarla para soporte/capturas. Default desactivado. No añade permisos; el manifest conserva allowBackup=false.
+La opción de Ajustes **Pantalla privada** aplica FLAG_SECURE, persiste la elección y permite desactivarla para soporte/capturas. Default desactivado; textos en los 14 idiomas existentes. No añade permisos; el manifest conserva allowBackup=false.
 
 ## CI y pruebas restantes
 
@@ -73,3 +73,7 @@ Compose construye una imagen de laboratorio sin puertos públicos y genera clave
 `scripts/ci/rasp_release_gate.py evidence.json --commit <SHA>` rechaza evidencia ausente/stale. Exige fabricantes, APIs frontera, canales, falsos positivos cero, p95 con presupuesto declarado, CPU/RAM/batería, pruebas de recuperación y staging. APIs por debajo del mínimo del servidor verifican denegación de política sin crash, sin fingir soporte de descifrado. Una matriz completa registrada manualmente aún requiere revisar sus referencias originales.
 
 No hay evidencia física adjunta a este checkpoint. R0/R6 permanecen con gates abiertos. Las pruebas Android incluidas deben ejecutarse en la matriz real; su fuente no acredita ejecución.
+
+### Primera ejecución remota de esta implementación
+
+Run `41167255787`, SHA `65206a327a770c2d6121baa255d92a89c12ceb2c`: host completo SUCCESS. R8 detectó en arm64 una deducción de tipos distinta entre `Elf64_Xword` y `uintptr_t` en el comparador de código. Se corrigió con conversión explícita tras el límite de tamaño; el DSO host volvió a superar manipulación/restauración. No promover ese primer SHA. Se añadió además un test del presupuesto de tiempo Play+NUR y se ajustó la expiración HPKE a 300 s. Los textos de pantalla privada cubren los 14 idiomas. La siguiente ejecución debe validar el checkpoint corregido.

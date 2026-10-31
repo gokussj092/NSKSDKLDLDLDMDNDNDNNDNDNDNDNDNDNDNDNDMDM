@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="private_screen_title">Tela privada</string>
+    <string name="private_screen_detail">Impede capturas e gravações de tela neste app. Desative quando precisar compartilhar uma captura.</string>
+</resources>

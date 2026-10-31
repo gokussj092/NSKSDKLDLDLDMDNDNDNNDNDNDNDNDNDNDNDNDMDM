@@ -27,6 +27,14 @@ class R0R8NpvsContracts(unittest.TestCase):
         self.assertIn('exclude("com/ghostdeveloper/spdecode/parity/**")',gradle)
         self.assertIn('java.setSrcDirs(listOf(cloudSourceRoot))',gradle)
 
+    def test_hpke_context_outlives_play_and_heavy_catalog_budget(self):
+        import re
+        hpke=read(CPP/"spdecode_hpke.cpp")
+        transport=read(CPP/"spdecode_transport.cpp")
+        ttl=int(re.search(r"Clock::now\(\)-std::chrono::seconds\((\d+)\)",hpke).group(1))
+        read_ms=int(re.search(r"kNurCatalogReadTimeoutMs = (\d+)",transport).group(1))
+        self.assertGreater(ttl*1000,60_000+30_000+10_000+read_ms)
+
     def test_r8_keeps_exact_registered_jni_and_keystore_bridge(self):
         rules=read(APP/"proguard-rules.pro")
         native=read(CPP/"spdecode_transport.cpp")

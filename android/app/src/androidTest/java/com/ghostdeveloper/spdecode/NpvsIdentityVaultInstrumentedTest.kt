@@ -70,6 +70,8 @@ class NpvsIdentityVaultInstrumentedTest {
         reopened.enable(true);assertEquals(entry.id,reopened.matching(raw).single().id)
         reopened.enable(false);assertTrue(reopened.matching(raw).isEmpty())
         reopened.delete(entry.id);assertTrue(reopened.entries().isEmpty())
+        // A list entry must not retain private JSON after the vault file is gone.
+        assertTrue(runCatching{entry.material}.isFailure)
     }
     @Test fun hardwareAgreementMatchesOnlyItsExactFile(){
         val value=identity();val raw=frame(value.getString("fingerprint"));val vault=NpvsIdentityVault(context)

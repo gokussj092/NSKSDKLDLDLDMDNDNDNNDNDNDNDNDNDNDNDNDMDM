@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="private_screen_title">Layar pribadi</string>
+    <string name="private_screen_detail">Mencegah tangkapan dan perekaman layar di aplikasi ini. Nonaktifkan saat perlu membagikan tangkapan layar.</string>
+</resources>

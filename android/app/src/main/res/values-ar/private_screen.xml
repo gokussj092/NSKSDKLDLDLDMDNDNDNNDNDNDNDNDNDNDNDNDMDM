@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="private_screen_title">شاشة خاصة</string>
+    <string name="private_screen_detail">منع لقطات الشاشة وتسجيلها في هذا التطبيق. عطّل الخيار عند الحاجة إلى مشاركة لقطة شاشة.</string>
+</resources>

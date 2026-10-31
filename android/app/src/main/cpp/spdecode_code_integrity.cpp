@@ -48,7 +48,7 @@ int inspect(dl_phdr_info* info,std::size_t,void* data){
         if((p.p_flags&PF_W) || !(p.p_flags&PF_R))return 1;
         if(p.p_filesz>kMaxCode-checked)return 1;
         auto cursor=static_cast<std::uintptr_t>(info->dlpi_addr+p.p_vaddr);
-        const auto end=cursor+p.p_filesz;
+        const std::uintptr_t end=cursor+static_cast<std::uintptr_t>(p.p_filesz);
         if(end<cursor)return 1;
         while(cursor<end){
             const auto it=std::find_if(state.maps->begin(),state.maps->end(),[&](const Mapping& m){

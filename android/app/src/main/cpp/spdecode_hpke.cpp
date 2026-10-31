@@ -197,7 +197,9 @@ struct Stored {
 std::mutex locks;
 std::map<std::uint64_t,Stored> active;
 void expireLocked(){
-    const auto deadline=Clock::now()-std::chrono::seconds(120);
+    // Includes Standard Integrity preparation/request plus the existing 165s
+    // heavy-catalog HTTP budget. A 120s response TTL breaks valid NUR replies.
+    const auto deadline=Clock::now()-std::chrono::seconds(300);
     for(auto it=active.begin();it!=active.end();){
         if(it->second.created<=deadline)it=active.erase(it);
         else ++it;

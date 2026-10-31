@@ -1,6 +1,7 @@
 name: Post-native R0-R6 implementation validation
 
-# Low-cost host contract run only when this workflow changes on the R0 branch.
+# Candidate checkpoint: explicit NDK integer conversion and heavy-catalog TTL fix.
+# Runs only when this workflow changes on the post-native branch.
 # One host + unsigned R8 + isolated Compose checkpoint; no production operations.
 on:
   push:

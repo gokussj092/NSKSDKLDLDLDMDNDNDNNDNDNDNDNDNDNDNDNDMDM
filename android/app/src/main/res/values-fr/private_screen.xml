@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="private_screen_title">Écran privé</string>
+    <string name="private_screen_detail">Empêche les captures et enregistrements d’écran dans cette application. Désactivez cette option pour partager une capture.</string>
+</resources>
