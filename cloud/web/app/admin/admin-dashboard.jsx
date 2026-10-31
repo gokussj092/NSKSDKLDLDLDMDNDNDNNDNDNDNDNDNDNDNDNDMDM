@@ -230,6 +230,7 @@ export default function AdminDashboard({mode="system"}){
     <div className="sp-admin-retirement">
      <h3>Retirar API V1 a las 48 horas</h3>
      <p className="muted">Al programar se guarda la fecha exacta en el volumen persistente. Una vez vencido el plazo, todas las rutas V1 se rechazarán. La API V2 y el panel conservarán su funcionamiento.</p>
+     <p className="muted">Para volver a cambiar la disponibilidad manual de V1, cancela primero la fecha de retiro. El botón no publica ni actualiza Android.</p>
      {data.v1Policy?.retireAt?
        <><strong className="sp-admin-deadline">Fecha de cierre: {new Date(data.v1Policy.retireAt).toLocaleString("es-MX",{dateStyle:"full",timeStyle:"short"})}</strong>
        <p role="status" className="muted">{data.v1Policy.retired?"API V1 ya está retirada.":
@@ -249,7 +250,7 @@ export default function AdminDashboard({mode="system"}){
         {field==='advancedProtection'&&<small className="sp-admin-status-note">Activarlo puede impedir el acceso de versiones antiguas hasta actualizarse.</small>}
        </div>
        <button className="sp-admin-switch" role="switch" type="button" aria-label={title}
-        aria-checked={Boolean(data.v1Policy?.[field])} disabled={busy||!data.v1Policy} onClick={()=>changeV1(field)}><span/></button>
+        aria-checked={Boolean(data.v1Policy?.[field])} disabled={busy||!data.v1Policy||(field==="apiEnabled"&&Boolean(data.v1Policy.retireAt))} onClick={()=>changeV1(field)}><span/></button>
       </div>
     ))}
    </section>}
