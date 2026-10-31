@@ -196,9 +196,13 @@ Latest validated migration commit: `0c8cd7a1e962576067e38d67ac00177791e13dc2`.
 
 Builds in this document are static release compilation artifacts, **unsigned**, not evidence
 of correct execution on a handset. The current `versionCode` in the branch is
-still 35; this is not eligible for a new version after previously signed build 37.
-Choose an unused code **greater than 37** only when generating the later signed
-preproduction build.
+still 35. The previously signed build 37 is a GitHub Actions artifact,
+not proof that Play Console has accepted versionCode 37. The developer reports
+that the highest Play-uploaded build is approximately 34; verify the exact
+highest code across Play tracks before uploading. VersionName stays 1.1.24.
+For a new owner test artifact, the existing signed-workflow code 37 can be
+reused if Play has not accepted 37. A higher code is not automatically required
+merely because an APK was signed locally.
 
 ### Diagnostic history
 
@@ -266,7 +270,10 @@ remain separate work.
    using the unchanged original signing key. Test with and without Play
    distribution policy as applicable.
 5. With CI green, create a **preproduction-only signed** APK/AAB using the
-   original upload keystore and an unused versionCode greater than 37.
+   original upload keystore. Preserve versionName 1.1.24, and use a
+   versionCode higher than the *highest actually uploaded to Play*. The
+   existing preproduction workflow targets code 37 without committing a
+   Gradle version bump; reconfirm it is unused in Play Console.
    Test that artifact on a physical Android handset before considering a merge.
    Never publish to production without device security and functionality approval.
 
@@ -295,8 +302,9 @@ This new branch-only patch **does not change** `versionName=1.1.24` or
   for synthetic Android instrumented fixtures. The production code invokes
   `openCatalogHandle` instead. Future removal of the fixture bridge can
   further narrow the JNI surface after device fixtures are migrated.
-- Real Node server ↔ native-generated-key interoperability has a new
-  interactive CLI test. **A test present in source is not yet a passed CI.**
+- Real Node server ↔ native-generated-key interoperability passed
+  in workflow 41154662597 (commit 1fc1387). Real Android validation
+  remains separate.
 - The native library basename is `libv7q3.so` instead of the descriptive
   `libspdecode.so`. `System.loadLibrary`, Android CMake, the APK audits,
   and Cloud workflows must use the same name. Native symbol exports remain
