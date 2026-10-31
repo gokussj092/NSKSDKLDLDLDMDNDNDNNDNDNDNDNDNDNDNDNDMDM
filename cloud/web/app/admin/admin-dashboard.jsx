@@ -174,7 +174,6 @@ export default function AdminDashboard({mode="system"}){
      <article className="admin-card"><span className="muted">Servicios disponibles</span><strong>{[data.services.apiConfigured,data.services.redisConnected,data.services.workerReady].filter(Boolean).length}/3</strong><small className="muted">API, Redis y worker</small></article>
      <article className="admin-card"><span className="muted">Estado general</span><strong className="sp-admin-status-text">{data.maintenance?"Mantenimiento":"Operativo"}</strong><small className="muted">Según control global</small></article>
     </div>
-    {mode==="infrastructure"&&<>
    <div className="admin-grid">
      <section className="admin-card">
       <h2>Estado de la infraestructura</h2>
@@ -196,6 +195,7 @@ export default function AdminDashboard({mode="system"}){
      <Link href="/admin/system">Administrar disponibilidad y servicios</Link>
     </div>
    </>:<>
+    {mode==="infrastructure"&&<>
    <div className="admin-grid">
     <section className="admin-card">
      <h2>Infraestructura</h2>
