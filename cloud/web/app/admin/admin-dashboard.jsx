@@ -17,6 +17,17 @@ export default function AdminDashboard({mode="system"}){
  const [error,setError]=useState(""),[loading,setLoading]=useState(true);
  const [providerQuery,setProviderQuery]=useState(""),[providerFilter,setProviderFilter]=useState("all");
  const [clock,setClock]=useState(null);
+ const [patchMonths,setPatchMonths]=useState(12);
+ const [enforcePatch,setEnforcePatch]=useState(true);
+ const [enforceBoot,setEnforceBoot]=useState(true);
+ const [testHours,setTestHours]=useState(24);
+ useEffect(()=>{
+  const p=data?.v2DevicePolicy;
+  if(!p)return;
+  setPatchMonths(p.patchMonths);
+  setEnforcePatch(p.enforcePatch);
+  setEnforceBoot(p.enforceBoot);
+ },[data?.v2DevicePolicy?.revision]);
  useEffect(()=>{setClock(Date.now());const t=setInterval(()=>setClock(Date.now()),60000);return()=>clearInterval(t);},[]);
  const router=useRouter();
  const refresh=useCallback(async()=>{
@@ -155,6 +166,26 @@ export default function AdminDashboard({mode="system"}){
   }catch(e){setError(e.message||"Error de política Play V2.");await refresh();}
   finally{setBusy(false);}
  }
+ async function saveDevicePolicy(reset=false){
+  if(!data?.v2DevicePolicy||busy)return;
+  const months=reset?12:patchMonths,patch=reset?true:enforcePatch,boot=reset?true:enforceBoot;
+  const relaxed=months!==12||!patch||!boot;
+  if(!window.confirm(relaxed?
+    "¿Aplicar durante "+testHours+" horas el perfil de compatibilidad? Se reducirá la seguridad de los dispositivos admitidos. Siguen vigentes los certificados de Google, la firma APK, la atestación criptográfica y HPKE.":
+    "¿Restaurar la seguridad estricta de V2 inmediatamente? Algunos dispositivos antiguos podrían perder acceso."))return;
+  setBusy(true);setError("");
+  try{
+    const res=await fetch("/api/admin/v2-device-admission",requestOptions({
+      patchMonths:months,enforcePatch:patch,enforceBoot:boot,
+      durationHours:testHours,expectedRevision:data.v2DevicePolicy.revision,
+      confirmation:"V2_DISPOSITIVOS_CONFIGURAR"}));
+    const answer=await res.json();
+    if(!res.ok||answer.status!=="ok")throw Error(res.status===409?
+      "La política ha cambiado. Vuelve a cargar el panel.":"No se guardó la política ("+res.status+").");
+    await refresh();
+  }catch(err){setError(err.message||"Error al guardar la política.");await refresh();}
+  finally{setBusy(false);}
+ }
  async function logout(){
   setBusy(true);
   try{
@@ -284,6 +315,47 @@ export default function AdminDashboard({mode="system"}){
        aria-checked={data.v2PlayPolicy?.integrityRequired??true}
        disabled={busy||!data.v2PlayPolicy} onClick={changeV2Play}><span/></button>
      </div>
+   <div className="sp-admin-device-policy">
+     <h3>Compatibilidad y seguridad de dispositivos V2</h3>
+     <p className="muted">Perfil temporal para diagnosticar la atestación de teléfonos nuevos y antiguos. No modifica la API V1.</p>
+     <label htmlFor="v2-patch-years">Antigüedad máxima del parche</label>
+     <select id="v2-patch-years" value={patchMonths} disabled={busy} onChange={e=>setPatchMonths(Number(e.target.value))}>
+      <option value={12}>1 año (12 meses) · estricto</option>
+      <option value={18}>1 año y medio</option>
+      <option value={24}>2 años</option>
+      <option value={36}>3 años</option>
+      <option value={48}>4 años</option>
+     </select>
+     <div className="sp-admin-switch-row">
+      <div><strong>Exigir parches Android, vendor y boot recientes</strong>
+       <small className="muted">Si se desactiva, se aceptan parches antiguos durante la ventana de pruebas.</small></div>
+      <button className="sp-admin-switch" type="button" role="switch" aria-label="Comprobar parches V2"
+       aria-checked={enforcePatch} disabled={busy} onClick={()=>setEnforcePatch(v=>!v)}><span/></button>
+     </div>
+     <div className="sp-admin-switch-row">
+      <div><strong>Exigir Verified Boot y bootloader bloqueado</strong>
+       <small className="muted">No indica de forma inequívoca si hay root; conserva la validación de certificados y la identidad APK.</small></div>
+      <button className="sp-admin-switch" type="button" role="switch" aria-label="Comprobar arranque V2"
+       aria-checked={enforceBoot} disabled={busy} onClick={()=>setEnforceBoot(v=>!v)}><span/></button>
+     </div>
+     <label htmlFor="v2-device-duration">Duración de la excepción (restauración automática)</label>
+     <select id="v2-device-duration" value={testHours} disabled={busy} onChange={e=>setTestHours(Number(e.target.value))}>
+      <option value={1}>1 hora</option><option value={6}>6 horas</option>
+      <option value={24}>24 horas</option><option value={48}>48 horas</option>
+     </select>
+     <p className="sp-admin-device-status" role="status">
+      {data.v2DevicePolicy?.relaxed?
+       "Perfil temporal activo hasta "+new Date(data.v2DevicePolicy.expiresAt).toLocaleString("es-MX"):
+       "Perfil estricto activo: 12 meses y arranque verificado."}
+     </p>
+     <p className="muted">Aunque desactives ambos controles, siguen obligatorios Google Key Attestation, el certificado de confianza, la identidad y firma de SP-DECODE, las pruebas de sesión y el cifrado HPKE.</p>
+     <div className="sp-admin-device-actions">
+      <button className="button primary" type="button" disabled={busy||!data.v2DevicePolicy}
+       onClick={()=>saveDevicePolicy(false)}>Guardar perfil de pruebas</button>
+      <button className="button subtle" type="button" disabled={busy||!data.v2DevicePolicy}
+       onClick={()=>saveDevicePolicy(true)}>Restaurar perfil estricto</button>
+     </div>
+   </div>
    </section>}
 
    {mode==="play"&&<>
