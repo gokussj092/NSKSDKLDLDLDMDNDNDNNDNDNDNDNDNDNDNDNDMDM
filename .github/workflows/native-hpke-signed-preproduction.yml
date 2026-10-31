@@ -1,14 +1,9 @@
 name: SP-DECODE Native C++ HPKE Signed Preproduction
 # This is not a Play upload or production deployment; only owner-controlled
 # pushes to this exact development branch can start the signed artifact job.
-# One-time gated preproduction signing after matching native/Android CI success.
-# Only an edit to this workflow on the isolated branch starts the signed job.
+# Preproduction signing requires an explicit workflow_dispatch.
+# Pushing source changes must never automatically consume signing secrets.
 on:
-  push:
-    branches:
-      - security/hpke-native-cpp-migration
-    paths:
-      - .github/workflows/native-hpke-signed-preproduction.yml
   workflow_dispatch:
 
 permissions:
