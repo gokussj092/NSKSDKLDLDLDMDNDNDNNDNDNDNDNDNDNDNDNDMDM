@@ -6,6 +6,7 @@
 #include <mbedtls/gcm.h>
 #include <mbedtls/md.h>
 #include <mbedtls/pk.h>
+#include <mbedtls/private_access.h>
 #include <mbedtls/platform_util.h>
 #include <algorithm>
 #include <array>
@@ -116,16 +117,16 @@ CatalogBytes openCatalog(const CatalogBytes& privatePkcs8,const std::string& rec
     auto* peerEc=mbedtls_pk_ec(peer.pk);
     auto* recipientEc=mbedtls_pk_ec(recipientKey.pk);
     if(!ownEc||!peerEc||!recipientEc ||
-       ownEc->grp.id!=MBEDTLS_ECP_DP_SECP256R1 ||
-       peerEc->grp.id!=MBEDTLS_ECP_DP_SECP256R1 ||
-       recipientEc->grp.id!=MBEDTLS_ECP_DP_SECP256R1)invalid();
-    required(mbedtls_ecp_check_pubkey(&peerEc->grp,&peerEc->Q));
-    required(mbedtls_ecp_check_pubkey(&recipientEc->grp,&recipientEc->Q));
+       ownEc->MBEDTLS_PRIVATE(grp).MBEDTLS_PRIVATE(id)!=MBEDTLS_ECP_DP_SECP256R1 ||
+       peerEc->MBEDTLS_PRIVATE(grp).MBEDTLS_PRIVATE(id)!=MBEDTLS_ECP_DP_SECP256R1 ||
+       recipientEc->MBEDTLS_PRIVATE(grp).MBEDTLS_PRIVATE(id)!=MBEDTLS_ECP_DP_SECP256R1)invalid();
+    required(mbedtls_ecp_check_pubkey(&peerEc->MBEDTLS_PRIVATE(grp),&peerEc->MBEDTLS_PRIVATE(Q)));
+    required(mbedtls_ecp_check_pubkey(&recipientEc->MBEDTLS_PRIVATE(grp),&recipientEc->MBEDTLS_PRIVATE(Q)));
     // The recipient SPKI is authenticated as part of the GCM AAD; a
     // mismatched private key cannot authenticate the server ciphertext.
     Shared shared;
-    required(mbedtls_ecdh_compute_shared(&ownEc->grp,&shared.dh,&peerEc->Q,
-        &ownEc->d,mbedtls_ctr_drbg_random,&rng.drbg));
+    required(mbedtls_ecdh_compute_shared(&ownEc->MBEDTLS_PRIVATE(grp),&shared.dh,&peerEc->MBEDTLS_PRIVATE(Q),
+        &ownEc->MBEDTLS_PRIVATE(d),mbedtls_ctr_drbg_random,&rng.drbg));
     Bytes sharedBytes(32);
     Scrub wipeShared{sharedBytes};
     required(mbedtls_mpi_write_binary(&shared.dh,sharedBytes.data(),32));
