@@ -1071,7 +1071,8 @@ class MainActivity : ComponentActivity() {
                 val decoded=if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
                     cloudClient.decodeOnlineReference(target.provider,target.reference)
                 } else if(target.provider=="ehi") withContext(Dispatchers.IO) {
-                    HttpInjectorCloudPort.decodeOnline(this@MainActivity,target.reference)
+                    val parsed=HttpInjectorCloudPort.parseReference(target.reference)
+                    HttpInjectorCloudPort.decodeOnline(this@MainActivity,parsed)
                 } else throw java.io.IOException("CLOUD_INVALID_INPUT")
                 progressStage=2
                 // Persist the decoded document, never the original cloud URL/token.

@@ -92,7 +92,7 @@ fun SpDecodeApp(
     canReportError:Boolean=false,
     onReportError:()->Unit={},
     onDecodeText:(String)->Unit={},
-    onDecodeCloud:(String,String)->Unit={},
+    onDecodeCloud:(String)->Unit={},
     onDecodeServerCatalog:()->Unit={},
     onDecodeServerApp:(String)->Unit={}, 
     serverVpnApps:List<ServerVpnApp> = emptyList(),
@@ -139,10 +139,10 @@ fun SpDecodeApp(
                     0->HomeScreen(current,session,busy,reveal,hideCredentials,onImport,onCancel,onReveal,
                         onCopy={dialog="copy"},onExport={dialog="export"},onSelect=onSelect,
                         onClearResult=onClearResult,onDecodeText=onDecodeText,
-                        onDecodeCloud=onDecodeCloud,cloudTextFormats=cloudTextFormats,
+                        onDecodeCloud=onDecodeCloud,
                         highlightGuide=if(!whatsNew && !busy)guideStep else null)
                     1->HistoryScreen(session,onSelect,onDeleteSelected,onClear,onImportMultiple,onFavorite)
-                    2->FormatsScreen(cloudFormats,cloudTextFormats.filterNot{it.kind=="cloud"&&it.suffix=="hc"},serverVpnLoading,catalogProgress)
+                    2->FormatsScreen(cloudFormats,cloudTextFormats,serverVpnLoading,catalogProgress)
                     3->ServerVpnScreen(busy,serverVpnApps,serverVpnLoading,serverVpnUnavailable,
                         onDecodeServerCatalog,onDecodeServerApp,catalogProgress)
                     else->FunctionalSettingsPanel(selectedLanguage,hideCredentials,
@@ -408,8 +408,7 @@ private fun HomeScreen(
     onSelect:(DecodeView)->Unit,
     onClearResult:()->Unit,
     onDecodeText:(String)->Unit,
-    onDecodeCloud:(String,String)->Unit,
-    cloudTextFormats:List<CloudTextRoute>,
+    onDecodeCloud:(String)->Unit,
     highlightGuide:Int?=null,
 ) {
     Column(
@@ -504,15 +503,14 @@ private fun HomeScreen(
         ) {
             Icon(Icons.Outlined.Cloud,null,modifier=Modifier.size(19.dp))
             Spacer(Modifier.width(8.dp))
-            Text(stringResource(R.string.cloud_global_title),
+            Text(stringResource(R.string.cloud_http_injector_open),
                 fontSize=13.sp)
         }
-        if(cloudExpanded) GlobalCloudImportPanel(
+        if(cloudExpanded) HttpInjectorCloudPanel(
             enabled=!busy,
-            routes=cloudTextFormats,
-            onDecode={provider,input->
+            onDecode={input->
                 awaitingCloudResult=true
-                onDecodeCloud(provider,input)
+                onDecodeCloud(input)
             },
         )
         if(textExpanded) TextDecoderPanel(
