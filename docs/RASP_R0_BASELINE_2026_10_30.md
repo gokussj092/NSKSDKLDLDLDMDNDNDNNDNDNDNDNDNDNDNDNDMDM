@@ -125,3 +125,23 @@ Registrar únicamente códigos de resultado, versión y métricas agregadas (sin
 | VPS tras recrear web | HPKE_ENABLED, KID compatible, salud E2E, sin secretos | Sin errores 503 de configuración y rollback revisado |
 
 **Pendiente:** no confundir pruebas de código host o hashes de fuente con Play Integrity real, anti-dump, integridad de segmentos ELF en dispositivo, ni con una aplicación lista para producción. La fase R0 no se declarará cerrada hasta verificar estos gates.
+
+## 8. Compatibilidad R8 y NPVS — continuación verificable
+
+**Rama de implementación:** `feat/post-native-security`. Todo permanece fuera de `main`; no hay cambios de claves ni de versiones.
+
+### Controles agregados
+
+- `tests/test_r0_r8_npvs_contract.py`: comprueba de manera estática que R8 sigue activo en release, que `CloudNativeTransport` y `CloudKeystorePlatform` están protegidos frente a renombrados de JNI, que la biblioteca nativa sólo exporta `JNI_OnLoad`, y que el flujo NPVS v5/v6 exige selección de identidad, consentimiento, noBackupFilesDir, AndroidKeyStore AES-GCM y envío mediante el mismo ciphertext HPKE autenticado con Standard Play Integrity.
+- `tests/test_r0_hpke_update_guard.py`: prueba el nuevo preflight/postflight del operador VPS sin docker real, pruebas con keyrings sintéticos y rechazo de downgrade, cambio de KID o falta de configuración.
+- `.github/workflows/post-native-r0-host.yml`: añade pruebas Node `v2-hpke`/`v2-security`; segunda etapa sólo tras host verde para compilar una **release R8 sin firma** y auditar APK/AAB, idiomas, claves del APK excluidas, huellas JNI preservadas y las cuatro ABIs previstas, sin publicar artefactos ni arrancar otro workflow.
+
+### Evidencias CI
+
+- En el primer intento ampliado (`41164743456`) se detectaron fallos de validación en el test y la inserción inicial del operador; se corrigieron antes de la siguiente ejecución. **No promocionar ese commit.**
+- En `41164831421` (`c69071b77e3350e4a3a7300aefda249b5e17922c`), **host SUCCESS**: 23 firmas JNI, cinco tests de pins de firma, contrato C++ RASP, diez tests C4/NPVS, doce nuevos tests R0/R8/HPKE y 18 pruebas Node HPKE/V2. El proceso Node usó overrides de tslib sólo en el checkout efímero del runner.
+- **Compilación release R8/AAB de este run:** consultar resultado de `r8-unsigned` al finalizar. Mientras esté ejecutándose, no declararla PASS. Las compilaciones anteriores de otra revisión (`41154662634` unsigned, `41156789776` signed) sí fueron success, pero no sustituyen un resultado sobre esta rama.
+
+### Límites de compatibilidad
+
+Los tests de código y una compilación R8 verifican preservación de contratos y empaquetado, **no** la capacidad de NPVS de descifrar correctamente un archivo en una instalación física de Play con su verdict real. Para completar R0 quedan los casos de la sección 7, la disponibilidad real VPS/HPKE y un ensayo de rollback con Docker/Compose en staging. No declarar terminada la fase si faltan esos resultados.
