@@ -265,8 +265,10 @@ remain separate work.
 4. Validate true Android installation and cloud session against the VPS
    using the unchanged original signing key. Test with and without Play
    distribution policy as applicable.
-5. Only after physical device approval, create separately signed APK/AAB
-   with an unused versionCode, then consider merging this branch.
+5. With CI green, create a **preproduction-only signed** APK/AAB using the
+   original upload keystore and an unused versionCode greater than 37.
+   Test that artifact on a physical Android handset before considering a merge.
+   Never publish to production without device security and functionality approval.
 
 Do not execute any Android/Next.js build on the limited VPS, do not change
 `CLOUD_V2_HPKE_ONLY` or rotate the HPKE keys as part of this migration.
