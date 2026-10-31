@@ -1,0 +1,37 @@
+name: Post-native R0 host security baseline
+
+# Manual only: do not consume Actions minutes on every push or require Android signing.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: spdecode-r0-host-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  r0-host-contracts:
+    if: github.repository_owner == 'gokussj092'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify JNI mapping without Gradle or Android SDK
+        run: python3 tests/native_jni_contract.py
+      - name: Verify signing certificate pin contract with synthetic fixtures
+        run: python3 -m unittest discover -s tests/ci -p 'test_release_signer_pins.py' -v
+      - name: Compile and run narrowly scoped native RASP host tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          g++ -std=c++17 -O2 -Wall -Wextra -Werror \
+            tests/native_runtime_guard_contract.cpp \
+            android/app/src/main/cpp/spdecode_runtime_guard.cpp \
+            -o "$RUNNER_TEMP/native_runtime_guard_contract"
+          "$RUNNER_TEMP/native_runtime_guard_contract"
+      - name: Check VPS operator script syntax (no changes to running VPS)
+        run: bash -n cloud/infra/vps/spdecodectl
