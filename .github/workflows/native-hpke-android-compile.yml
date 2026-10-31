@@ -6,6 +6,8 @@ on:
       - .github/workflows/native-hpke-android-compile.yml
       - android/app/src/main/cpp/**
       - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudRequestProof.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudKeystorePlatform.kt
+      - android/app/proguard-rules.pro
       - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudNativeTransport.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudDecodeClient.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/ReleaseIntegrity.kt
@@ -58,7 +60,7 @@ jobs:
           AAB=android/app/build/outputs/bundle/release/app-release.aab
           test -s "$APK" && test -s "$AAB"
           test -s android/app/build/outputs/mapping/release/mapping.txt
-          python3 tests/test_cloud_c5_source_isolation.py
+          python3 -m unittest tests.test_cloud_c5_source_isolation
           python3 scripts/ci/verify_aab_locales.py "$AAB"
           python3 tests/cloud_c5_apk_audit.py "$APK"
           python3 - <<'PY'

@@ -126,7 +126,7 @@ internal class CloudDecodeClient(context: Context) {
         val access = reply.getString("accessToken")
         val seconds = reply.getLong("expiresIn")
         CloudNativeTransport.cacheSession(access,seconds,
-            reply.optBoolean("actionIntegrityRequired",false))
+            reply.optBoolean("actionIntegrityRequired",true))
         access
     }
 

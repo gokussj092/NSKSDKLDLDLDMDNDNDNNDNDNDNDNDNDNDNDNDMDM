@@ -8,6 +8,7 @@
 #include "spdecode_hpke.h"
 #include "spdecode_security.h"
 #include "spdecode_session.h"
+#include "spdecode_keystore.h"
 #include <mbedtls/platform_util.h>
 #include <mbedtls/sha256.h>
 #include <cctype>
@@ -469,6 +470,19 @@ jbyteArray signHardwareProof(JNIEnv* env,jclass,jobject privateKey,jbyteArray me
     }
     return signature;
 }
+jstring nativeHardwarePublicKey(JNIEnv* env,jclass) {
+    return spdecode::currentHardwarePublicKey(env);
+}
+jobjectArray nativeAttestHardwareKey(JNIEnv* env,jclass,jstring challenge,jstring level) {
+    return spdecode::createHardwareAttestation(env,challenge,level);
+}
+jbyteArray nativeSignForBearer(JNIEnv* env,jclass,jstring bearer,jbyteArray message) {
+    jobject key=spdecode::privateSigningKeyForBearer(env,bearer);
+    if(!key||env->ExceptionCheck())return nullptr;
+    auto result=signHardwareProof(env,nullptr,key,message);
+    env->DeleteLocalRef(key);
+    return result;
+}
 jstring nativeAliasSuffix(JNIEnv* env,jclass){
     try{
         const auto suffix=spdecode::makeAliasSuffix();
@@ -671,6 +685,14 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm,void*) {
         reinterpret_cast<void*>(signHardwareProof)},
         {const_cast<char*>("nativeAliasSuffix"),const_cast<char*>("()Ljava/lang/String;"),
         reinterpret_cast<void*>(nativeAliasSuffix)},
+        {const_cast<char*>("nativeHardwarePublicKey"),const_cast<char*>("()Ljava/lang/String;"),
+        reinterpret_cast<void*>(nativeHardwarePublicKey)},
+        {const_cast<char*>("nativeAttestHardwareKey"),
+        const_cast<char*>("(Ljava/lang/String;Ljava/lang/String;)[Ljava/lang/String;"),
+        reinterpret_cast<void*>(nativeAttestHardwareKey)},
+        {const_cast<char*>("nativeSignForBearer"),
+        const_cast<char*>("(Ljava/lang/String;[B)[B"),
+        reinterpret_cast<void*>(nativeSignForBearer)},
         {const_cast<char*>("nativeCacheSession"),const_cast<char*>("(Ljava/lang/String;JZ)V"),
         reinterpret_cast<void*>(nativeCacheSession)},
         {const_cast<char*>("nativeGetSession"),const_cast<char*>("()Ljava/lang/String;"),
@@ -681,7 +703,7 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm,void*) {
         reinterpret_cast<void*>(nativeClearSession)},
         {const_cast<char*>("nativeInvalidateSession"),const_cast<char*>("(Ljava/lang/String;)V"),
         reinterpret_cast<void*>(nativeInvalidateSession)}};
-    const jint registered=env->RegisterNatives(bridge,methods,19);
+    const jint registered=env->RegisterNatives(bridge,methods,22);
     env->DeleteLocalRef(bridge);
     return registered==JNI_OK?JNI_VERSION_1_6:JNI_ERR;
 }

@@ -11,6 +11,9 @@ on:
       - android/app/src/main/cpp/spdecode_security.cpp
       - android/app/src/main/cpp/spdecode_security.h
       - tests/native_security_contract.cpp
+      - android/app/src/main/cpp/spdecode_keystore_policy.cpp
+      - android/app/src/main/cpp/spdecode_keystore_policy.h
+      - tests/native_keystore_policy_contract.cpp
       - tests/native_session_contract.cpp
   workflow_dispatch:
 
@@ -63,6 +66,10 @@ jobs:
             "$RUNNER_TEMP/mbedtls-build/library/libmbedcrypto.a" -lpthread \
             -o "$RUNNER_TEMP/native_security_contract"
           "$RUNNER_TEMP/native_security_contract"
+          g++ -std=c++17 -O2 -Wall -Wextra -Werror \
+            tests/native_keystore_policy_contract.cpp android/app/src/main/cpp/spdecode_keystore_policy.cpp \
+            -o "$RUNNER_TEMP/native_keystore_policy_contract"
+          "$RUNNER_TEMP/native_keystore_policy_contract"
           g++ -std=c++17 -O2 -Wall -Wextra -Werror \
             -I "$RUNNER_TEMP/mbedtls/include" \
             tests/native_session_contract.cpp android/app/src/main/cpp/spdecode_session.cpp \

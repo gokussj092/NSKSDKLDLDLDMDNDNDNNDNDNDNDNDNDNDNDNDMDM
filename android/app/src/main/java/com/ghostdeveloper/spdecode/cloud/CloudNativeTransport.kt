@@ -42,6 +42,15 @@ internal object CloudNativeTransport {
     fun clearCachedSession() = nativeClearSession()
     private fun invalidateCachedSession(token: String) = nativeInvalidateSession(token)
 
+    @JvmStatic private external fun nativeHardwarePublicKey(): String
+    @JvmStatic private external fun nativeAttestHardwareKey(challenge: String, level: String): Array<String>
+    @JvmStatic private external fun nativeSignForBearer(bearer: String, message: ByteArray): ByteArray
+    fun hardwarePublicKey(): String = nativeHardwarePublicKey()
+    fun attestHardwareKey(challenge: String, level: String): Array<String> =
+        nativeAttestHardwareKey(challenge,level)
+    fun signForBearer(bearer: String, message: ByteArray): ByteArray =
+        nativeSignForBearer(bearer,message)
+
     @JvmStatic private external fun nativeSignHardware(key: PrivateKey, message: ByteArray): ByteArray
     @JvmStatic private external fun nativeAliasSuffix(): String
     fun signWithKeystore(key: PrivateKey, message: ByteArray): ByteArray =
