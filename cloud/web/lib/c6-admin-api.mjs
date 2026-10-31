@@ -5,7 +5,7 @@ import { opsStore, maintenanceEnabled, setMaintenance, aggregateMetrics, usageRe
 import {throttle} from "./c3-store.mjs";
 import { settings } from "./c3-config.mjs";
 import {admissionPolicy,setAdmissionPolicy} from "./c11-play-admission.mjs";
-import {v1ProtectionStatus,v1PolicyStatus,changeV1Policy} from "./v1-protection-policy.mjs";
+import {v1ProtectionStatus,v1PolicyStatus,changeV1Policy,changeV1Retirement} from "./v1-protection-policy.mjs";
 import {v2PolicyStatus,changeV2Availability} from "./v2-availability-policy.mjs";
 import {v2PlayPolicyStatus,changeV2PlayPolicy} from "./v2-play-policy.mjs";
 import {v2Settings} from "./v2-config.mjs";
@@ -129,6 +129,36 @@ async function v1PolicyRequest(request,field,options) {
   return api({v1Policy},200,{"Cache-Control":"private, no-store"});
  }catch(e) {
   if(['V1_POLICY_CONFLICT','STORE_BUSY'].includes(e.message))return error(e.message,409);
+  return error("SERVICE_UNAVAILABLE",503);
+ }
+}
+
+/** Admin-only 48-hour cutoff for API V1, independent of V2 policy. */
+export async function v1RetirementRequest(request,options={}) {
+ const cfg=adminSettings();if(!cfg.enabled)return error("ADMIN_DISABLED",503);
+ if(!validMutation(request,cfg))return error("CSRF_REJECTED",403);
+ try{
+  const redis=await (options.storeProvider||opsStore)();
+  if(!await authenticateAdmin(redis,request,cfg))return error("UNAUTHORIZED",401);
+  if(!await throttle(redis,"spc6:v1-policy:rate",10,60))return error("RATE_LIMITED",429);
+  const body=await parseSmallJson(request,256);
+  if(!own(body,["action","confirmation","expectedRevision"])||
+    !["schedule","cancel"].includes(body.action)||
+    body.confirmation!==(body.action==="schedule"?"API_V1_PROGRAMAR_48H":"API_V1_CANCELAR_PROGRAMACION")||
+    !Number.isSafeInteger(body.expectedRevision)||body.expectedRevision<0)
+    return error("INVALID_REQUEST",400);
+  const v1Policy=await changeV1Retirement(body.action,body.expectedRevision,options.policyOptions);
+  try{
+   await redis.lPush("spc6:v1-protection:audit",JSON.stringify({
+    at:Date.now(),field:"retirement",action:body.action,retireAt:v1Policy.retireAt??null,
+    revision:v1Policy.revision}));
+   await redis.lTrim("spc6:v1-protection:audit",0,99);
+   await redis.expire("spc6:v1-protection:audit",8*86400);
+  }catch{}
+  return api({v1Policy},200,{"Cache-Control":"private, no-store"});
+ }catch(e){
+  if(["V1_POLICY_CONFLICT","STORE_BUSY"].includes(e?.message))return error(e.message,409);
+  if(e?.message==="V1_POLICY_INVALID")return error(e.message,400);
   return error("SERVICE_UNAVAILABLE",503);
  }
 }
