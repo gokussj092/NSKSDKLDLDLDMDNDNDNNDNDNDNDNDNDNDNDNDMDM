@@ -264,3 +264,14 @@ body:has(.sp-admin-frame){background:#000;color:#f7f7f7}
 .sp-admin-notice-history-row p{white-space:pre-wrap;margin:5px 0 0;color:#bdbdbd;font-size:12px}
 .sp-admin-notice-history-row small{color:#aaa;font-size:11px;line-height:1.65;flex:0 0 186px}
 @media(max-width:560px){.sp-admin-notice-history-row{display:block}.sp-admin-notice-history-row small{display:block;margin-top:12px}.sp-admin-notice-actions .button{width:100%}}
+
+/* V2 device-admission QA: grouped controls, clear risk summary and mobile layout. */
+.sp-admin-device-policy{margin-top:24px;padding:22px;border:1px solid #3f3f3f;background:#191919;border-radius:16px}
+.sp-admin-device-policy h3{font-size:17px;letter-spacing:-.02em;margin:0 0 7px}
+.sp-admin-device-policy>label{display:block;font-size:12px;font-weight:700;margin:19px 0 8px;color:#eee}
+.sp-admin-device-policy>select{display:block;width:100%;padding:13px 15px;background:#0b0b0b;color:#eee;border:1px solid #555;border-radius:11px;font:inherit}
+.sp-admin-device-policy .sp-admin-switch-row{margin:16px 0;border:1px solid #333;border-radius:12px;padding:16px}
+.sp-admin-device-policy .sp-admin-switch-row small{display:block;margin-top:5px}
+.sp-admin-device-status{background:#292929;border:1px solid #505050;padding:11px 14px;border-radius:10px;font-weight:650;font-size:12px}
+.sp-admin-device-actions{display:flex;flex-wrap:wrap;gap:11px;margin-top:18px}
+@media(max-width:580px){.sp-admin-device-policy{padding:14px}.sp-admin-device-actions .button{width:100%}}
