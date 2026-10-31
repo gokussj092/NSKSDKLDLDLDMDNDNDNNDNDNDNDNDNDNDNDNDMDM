@@ -64,6 +64,10 @@ node --test tests/v2-hpke.test.mjs
 
 Requiere red para instalar dependencias públicas. No imprimir variables `CLOUD_V2_HPKE_KEYRING`, private keys ni tokens durante diagnósticos.
 
+### CI manual preparada (NO ejecutada)
+
+`.github/workflows/post-native-r0-host.yml` permite lanzar `workflow_dispatch` desde la rama `feat/post-native-security` y comprueba JNI, certificados con fixtures sintéticos, el contrato C++ de RASP y `bash -n` del operador VPS. No incluye Gradle, firma, generación APK/AAB, descarga de dependencias Android ni operaciones en el VPS. **La mera creación del workflow no equivale a un resultado de ejecución; no se lanzó ninguna corrida desde este checkpoint.**
+
 ## 4. Decisiones y riesgos abiertos
 
 1. **Prioridad operativa HPKE:** preflight/postflight del keyring y KID dentro del proceso web, con checks sin volcar secretos. No implantar cambios de VPS hasta definir aceptación de coexistencia y rollback. Liveness HTTP no constituye readiness del transporte.
