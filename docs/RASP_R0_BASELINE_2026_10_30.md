@@ -140,7 +140,7 @@ Registrar únicamente códigos de resultado, versión y métricas agregadas (sin
 
 - En el primer intento ampliado (`41164743456`) se detectaron fallos de validación en el test y la inserción inicial del operador; se corrigieron antes de la siguiente ejecución. **No promocionar ese commit.**
 - En `41164831421` (`c69071b77e3350e4a3a7300aefda249b5e17922c`), **host SUCCESS**: 23 firmas JNI, cinco tests de pins de firma, contrato C++ RASP, diez tests C4/NPVS, doce nuevos tests R0/R8/HPKE y 18 pruebas Node HPKE/V2. El proceso Node usó overrides de tslib sólo en el checkout efímero del runner.
-- **Compilación release R8/AAB de este run:** consultar resultado de `r8-unsigned` al finalizar. Mientras esté ejecutándose, no declararla PASS. Las compilaciones anteriores de otra revisión (`41154662634` unsigned, `41156789776` signed) sí fueron success, pero no sustituyen un resultado sobre esta rama.
+- **Compilación release R8/AAB de este run:** `r8-unsigned` **SUCCESS** en [`41164831421`](https://github.com/gokussj092/NSKSDKLDLDMDNDNNDNDNDNDNDNDNDNDNDNDNDMDM/actions/runs/41164831421), mismo SHA `c69071b7`. Gradle `assembleRelease`+`bundleRelease` pasó, 14 idiomas completos y LANGUAGE splits desactivados, 4+ ABI `libv7q3.so`, 23 descriptores JNI, nombres de CloudNativeTransport/CloudKeystorePlatform preservados en mapping R8 y auditoría física del APK sin decodificadores/secretos offline. **APK/AAB unsigned y no publicados**. Los dos builds anteriores (`41154662634` y `41156789776`) también fueron success en otra revisión.
 
 ### Aclaración de compatibilidad NPVS
 
@@ -151,3 +151,5 @@ En la revisión de código **no se encontró un motor privado NPVS nuevo que deb
 ### Límites de compatibilidad
 
 Los tests de código y una compilación R8 verifican preservación de contratos y empaquetado, **no** la capacidad de NPVS de descifrar correctamente un archivo en una instalación física de Play con su verdict real. Para completar R0 quedan los casos de la sección 7, la disponibilidad real VPS/HPKE y un ensayo de rollback con Docker/Compose en staging. No declarar terminada la fase si faltan esos resultados.
+
+**Validación NPVS real del worker (fixtures sintéticos):** añadido workflow aislado `.github/workflows/post-native-r0-npvs-worker.yml`, ejecutable en la rama sin firma ni Docker/VPS. Corresponde al run `41165254521`; su conclusión debe registrarse por separado y no se presume éxito hasta que termine.
