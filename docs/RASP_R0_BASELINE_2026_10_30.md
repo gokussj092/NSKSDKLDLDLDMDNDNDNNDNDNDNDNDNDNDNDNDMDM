@@ -64,9 +64,9 @@ node --test tests/v2-hpke.test.mjs
 
 Requiere red para instalar dependencias públicas. No imprimir variables `CLOUD_V2_HPKE_KEYRING`, private keys ni tokens durante diagnósticos.
 
-### CI manual preparada (NO ejecutada)
+### CI host ejecutada y verificada (2026-10-30)
 
-`.github/workflows/post-native-r0-host.yml` permite lanzar `workflow_dispatch` desde la rama `feat/post-native-security` y comprueba JNI, certificados con fixtures sintéticos, el contrato C++ de RASP y `bash -n` del operador VPS. No incluye Gradle, firma, generación APK/AAB, descarga de dependencias Android ni operaciones en el VPS. **La mera creación del workflow no equivale a un resultado de ejecución; no se lanzó ninguna corrida desde este checkpoint.**
+`.github/workflows/post-native-r0-host.yml` permite lanzar `workflow_dispatch` desde la rama `feat/post-native-security` y comprueba JNI, certificados con fixtures sintéticos, el contrato C++ de RASP y `bash -n` del operador VPS. No incluye Gradle, firma, generación APK/AAB, descarga de dependencias Android ni operaciones en el VPS. **Actualización verificada:** run `41164324659` en commit `7997b4b2b47e3e8e8b9b493a81a37ab219f31c07`, conclusión **success**. Comprobados 23 descriptores JNI, cinco fixtures de certificados, contrato de señales nativas, diez pruebas C4/NPVS y sintaxis Bash del operador. No se compiló Android.
 
 ## 4. Decisiones y riesgos abiertos
 
@@ -106,7 +106,7 @@ La suite `tests/test_android_npvs_identity.py` ahora exige que `protectedPost` p
 
 ### Siguiente gate ejecutable de bajo coste
 
-El workflow manual `.github/workflows/post-native-r0-host.yml` incluye ahora JNI, pins con fixtures, guard de instrumentación C++, **C4/UI rebaseline** y **NPVS**, más comprobación de sintaxis del operador VPS. Se debe ejecutar **una sola vez** sobre el último SHA de la rama antes de decidir si habilitar PR o CI más amplio. Como la acción es `workflow_dispatch` y las herramientas conectadas de este chat no realizan dispatch, **queda pendiente y no se informa como PASS**.
+El workflow manual `.github/workflows/post-native-r0-host.yml` incluye ahora JNI, pins con fixtures, guard de instrumentación C++, **C4/UI rebaseline** y **NPVS**, más comprobación de sintaxis del operador VPS. Se debe ejecutar **una sola vez** sobre el último SHA de la rama antes de decidir si habilitar PR o CI más amplio. Se configuró excepcionalmente un disparador `push` restringido a cambios de **ese workflow** dentro de la rama R0, y se verificó **success** en run [`41164324659`](https://github.com/gokussj092/NSKSDKLDLDMDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/41164324659). El resto del pipeline global no se ejecutó. La ejecución no prueba funcionamiento real de Android ni dependencias Node.
 
 ## 7. QA físico y condiciones de salida de R0
 
