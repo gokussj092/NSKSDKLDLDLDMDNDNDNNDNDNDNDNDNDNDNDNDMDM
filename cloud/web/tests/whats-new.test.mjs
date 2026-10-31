@@ -54,7 +54,7 @@ test("V1-only v6 notice covers all 14 locales, update, Play status and tester co
  assert.deepEqual(Object.keys(catalog.title).sort(),[...locales].sort());
  for(const locale of locales){
   assert(catalog.subtitle[locale].includes("1.1.25"),locale);
-  assert(catalog.items[0].description[locale].includes("1.1.25"),locale);
+  assert(catalog.items[0].title[locale].includes("1.1.25"),locale);
   assert(catalog.items[0].description[locale].includes("https://t.me/GhostDeve"),locale);
   assert(catalog.items[1].description[locale].includes("Google Play"),locale);
   assert(catalog.items[2].description[locale].includes("Ghost Developer"),locale);
