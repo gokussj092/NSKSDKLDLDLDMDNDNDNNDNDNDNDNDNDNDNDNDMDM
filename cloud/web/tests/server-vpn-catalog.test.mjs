@@ -34,6 +34,16 @@ test("version match returns only a cheap unchanged response",async()=>{
  const data=await response.json();assert.equal(data.unchanged,true);
  assert.equal(data.catalogVersion,CATALOG_VERSION);assert(!("apps" in data));
 });
+test("release 58 invalidates the previous release-57 Android catalog cache",async()=>{
+ const response=await list(body({knownVersion:57}));
+ assert.equal(response.status,200);
+ const data=await response.json();
+ assert.equal(data.unchanged,false);
+ assert.equal(data.catalogVersion,CATALOG_VERSION);
+ assert.equal(CATALOG_VERSION,58);
+ assert(data.apps.some(x=>x.id==="http-jireh"));
+ assert(data.apps.some(x=>x.id==="jyfast-vpn-ultra"));
+});
 test("new version returns catalog and invalid bodies fail closed",async()=>{
  const response=await list(body({knownVersion:0}));
  const data=await response.json();assert.equal(response.status,200);
