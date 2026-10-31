@@ -58,6 +58,7 @@ test("V1-only v6 notice covers all 14 locales, update, Play status and tester co
   assert(catalog.items[0].description[locale].includes("https://t.me/GhostDeve"),locale);
   assert(catalog.items[1].description[locale].includes("Google Play"),locale);
   assert(catalog.items[2].description[locale].includes("Ghost Developer"),locale);
+  assert(catalog.items[2].description[locale].includes("https://t.me/Gh0stDeveloper"),locale);
   const response=await route(query(5,locale));
   assert.equal(response.status,200);
   assert.equal(response.headers.get("Cache-Control"),"no-store");
