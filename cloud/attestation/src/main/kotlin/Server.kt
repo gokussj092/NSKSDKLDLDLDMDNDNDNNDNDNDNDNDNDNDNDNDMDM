@@ -27,7 +27,12 @@ import java.util.concurrent.TimeUnit
 
 data class Policy(val packageName: String, val digests: Set<ByteString>, val minimumVersion: BigInteger,
                   val level: String, val patchMonths: Long)
-data class Evidence(val chain: List<String>, val challenge: String, val publicKey: String)
+/** Trusted web service only (shared attestation bearer); never accept policy from Android. */
+data class DeviceAdmission(val patchMonths: Long, val enforcePatch: Boolean,
+                           val enforceBoot: Boolean, val expiresAt: Long)
+data class Evidence(val chain: List<String>, val challenge: String, val publicKey: String,
+                    val devicePolicy: DeviceAdmission? = null)
+
 data class Decision(val valid: Boolean, val publicKey: String? = null,
                     val level: String? = null, val versionCode: Long? = null)
 
@@ -98,7 +103,19 @@ fun decide(evidence: Evidence, policy: Policy, verifier: Verifier): Decision {
         }
         return reject(category)
     }
-    if (!result.deviceLocked || result.verifiedBootState != VerifiedBootState.VERIFIED)
+    // Compatibility switches are short-lived and supplied only by the authenticated
+    // backend, NOT by a caller APK. Invalid/expired claims fail closed.
+    val candidate = evidence.devicePolicy
+    val dynamic = if (candidate != null) {
+        val now = System.currentTimeMillis()
+        if (candidate.patchMonths !in listOf(12L,18L,24L,36L,48L) ||
+            candidate.expiresAt <= now || candidate.expiresAt > now + 48L*3600L*1000L ||
+            (candidate.patchMonths == 12L && candidate.enforcePatch && candidate.enforceBoot))
+            return reject("POLICY_INVALID")
+        candidate
+    } else null
+    val enforceBoot = dynamic?.enforceBoot ?: true
+    if (enforceBoot && (!result.deviceLocked || result.verifiedBootState != VerifiedBootState.VERIFIED))
         return reject("VERIFIED_BOOT")
     val level = when (result.securityLevel) {
         SecurityLevel.STRONG_BOX -> "strongbox"
@@ -113,19 +130,22 @@ fun decide(evidence: Evidence, policy: Policy, verifier: Verifier): Decision {
     val app = description.softwareEnforced.attestationApplicationId ?: return reject("APP_ID_MISSING")
     if (app.packages.size != 1 || app.packages.none { it.name == policy.packageName && it.version >= policy.minimumVersion } ||
         app.signatures.isEmpty() || app.signatures.any { it !in policy.digests }) return reject("APP_ID_MISMATCH")
-    val floor = YearMonth.now(java.time.ZoneOffset.UTC).minusMonths(policy.patchMonths)
+    val enforcePatch = dynamic?.enforcePatch ?: true
+    val floor = YearMonth.now(java.time.ZoneOffset.UTC).minusMonths(dynamic?.patchMonths ?: policy.patchMonths)
     val ceiling = YearMonth.now(java.time.ZoneOffset.UTC).plusMonths(1)
     val attributes = description.hardwareEnforced
     // Android's attestation schema marks vendorPatchLevel and bootPatchLevel OPTIONAL.
     // A missing optional field is not evidence of an old or untrusted device.
     // Require a current hardware-enforced OS patch, and reject any present
     // vendor/boot patch if it is outside the established security window.
-    val osPatch = attributes.osPatchLevel ?: return reject("OS_PATCH_MISSING")
-    if (osPatch.yearMonth.isBefore(floor) || osPatch.yearMonth.isAfter(ceiling))
-        return reject("OS_PATCH_OUTDATED")
-    if (listOfNotNull(attributes.vendorPatchLevel, attributes.bootPatchLevel)
-        .any { it.yearMonth.isBefore(floor) || it.yearMonth.isAfter(ceiling) })
-        return reject("VENDOR_BOOT_PATCH_OUTDATED")
+    if (enforcePatch) {
+        val osPatch = attributes.osPatchLevel ?: return reject("OS_PATCH_MISSING")
+        if (osPatch.yearMonth.isBefore(floor) || osPatch.yearMonth.isAfter(ceiling))
+            return reject("OS_PATCH_OUTDATED")
+        if (listOfNotNull(attributes.vendorPatchLevel, attributes.bootPatchLevel)
+            .any { it.yearMonth.isBefore(floor) || it.yearMonth.isAfter(ceiling) })
+            return reject("VENDOR_BOOT_PATCH_OUTDATED")
+    }
     // App package version is taken only from Google's hardware-validated attestationApplicationId.
     return Decision(true, key, level, app.packages.single().version.longValueExact())
 }
