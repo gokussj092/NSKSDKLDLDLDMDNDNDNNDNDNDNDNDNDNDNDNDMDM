@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-10-30 · **Rama base de continuidad:** feat/post-native-security · **Estado:** DISEÑO/PENDIENTE, no implementado en este commit. **Objetivo:** aumentar el costo de ingeniería inversa y reducir el abuso de la API preservando funciones legítimas y compatibilidad.
 
-## 0. Instrucción para el próximo chat
+> **Seguimiento 2026-10-30 (checkpoint posterior):** R0 **INICIADA, NO CERRADA**. Consultar `docs/RASP_R0_BASELINE_2026_10_30.md`: inventario del código revisado, nuevas pruebas host del guard nativo (con casos benignos de ADB/Termux/Shizuku/VPN) y corrección de instalación Node en el workflow V2. Sin compilación Android, despliegue VPS ni cambio del código de detección. Falta CI actualizado y validación E2E HPKE en dispositivo físico. R1–R6 siguen pendientes.\n\n## 0. Instrucción para el próximo chat
 
 Leer **este documento** y **docs/HPKE_VPS_DEPLOYMENT_SAFETY_RUNBOOK_2026_10_30.md**, examinar el estado real de la rama y verificar si el usuario ya confirmó el descifrado E2E de la Build 37 después de reactivar HPKE. **No asumir que el mero HTTP 200 de /health/live equivale a descifrado.** El usuario solicitó documentar hoy; no se autorizó implementar RASP nuevo, iniciar builds o desplegar VPS en este turno.
 
