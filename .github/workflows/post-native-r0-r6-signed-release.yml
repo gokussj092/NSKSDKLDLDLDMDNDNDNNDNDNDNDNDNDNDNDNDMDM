@@ -1,0 +1,225 @@
+name: SP-DECODE R0-R6 Signed Release Testing Package
+# This is not a Play upload or production deployment; only owner-controlled
+# pushes to this exact development branch can start the signed artifact job.
+# Preproduction signing requires an explicit workflow_dispatch.
+# Pushing source changes must never automatically consume signing secrets.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: spdecode-r0-r6-signed-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  signed-release:
+    if: github.repository_owner == 'gokussj092' && github.ref == 'refs/heads/feat/post-native-security' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 65
+    env:
+      SPDECODE_CLOUD_API_BASE_URL: https://api.spdecode.xyz
+      SPDECODE_CLOUD_RELEASE: "true"
+      SPDECODE_CLOUD_QA_BUILD: "false"
+      SPDECODE_PLAY_APP_SIGNER_SHA256: "64760393e52521294b40a1fd978b5bae732b7d8604bd222ca01166a25407854b"
+      ORG_GRADLE_PROJECT_noticeFirebaseAPP_ID: ${{ vars.SPDECODE_NOTICE_FIREBASE_APP_ID || '1:78511444369:android:167638a0365236f1ab4a30' }}
+      ORG_GRADLE_PROJECT_noticeFirebaseAPI_KEY: ${{ vars.SPDECODE_NOTICE_FIREBASE_API_KEY || 'AIzaSyCXHGfZDisaa9Viat01K7DvNYGgr5XVnoM' }}
+      ORG_GRADLE_PROJECT_noticeFirebasePROJECT_ID: ${{ vars.SPDECODE_NOTICE_FIREBASE_PROJECT_ID || 'sp-decode-android' }}
+      ORG_GRADLE_PROJECT_noticeFirebaseSENDER_ID: ${{ vars.SPDECODE_NOTICE_FIREBASE_SENDER_ID || '78511444369' }}
+    steps:
+      - name: Check out exact security revision
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.11.1"
+      - name: Install Android 36 and native toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          MANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -n 1)"
+          "$MANAGER" --install "platforms;android-36" "build-tools;35.0.0" "platform-tools" "cmake;3.22.1" "ndk;27.2.12479018"
+      - name: Verify security source and build configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/android_s3_security_audit.py
+          python3 scripts/android_s4_provisioning_audit.py
+          python3 scripts/ci/verify_aab_locales.py --source-only
+      - name: Set signed RASP test version code 38 in runner only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('android/app/build.gradle.kts')
+          t=p.read_text()
+          assert t.count('versionCode = 35') == 1
+          p.write_text(t.replace('versionCode = 35','versionCode = 38',1))
+          PY
+      - name: Load existing upload keystore from Actions Secrets
+        shell: bash
+        env:
+          STORE_BASE64: ${{ secrets.SPDECODE_SIGNING_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.SPDECODE_SIGNING_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.SPDECODE_SIGNING_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          test -n "$STORE_BASE64" && test -n "$STORE_PASSWORD" && test -n "$KEY_ALIAS" && test -n "$KEY_PASSWORD"
+          umask 077
+          printf '%s' "$STORE_BASE64" | base64 --decode > "$RUNNER_TEMP/spdecode-test-release.p12"
+          keytool -list -keystore "$RUNNER_TEMP/spdecode-test-release.p12" -storetype PKCS12 -storepass:env STORE_PASSWORD -alias "$KEY_ALIAS" >/dev/null
+          CERT="$(keytool -exportcert -keystore "$RUNNER_TEMP/spdecode-test-release.p12" -storetype PKCS12 -storepass:env STORE_PASSWORD -alias "$KEY_ALIAS" | sha256sum | cut -d' ' -f1)"
+          test "$CERT" = "0fa9f07f2c47464925f3a7b222c9a39ef887738f678b9c918ec6c4fb96162260"
+          echo "SPDECODE_RELEASE_STORE_FILE=$RUNNER_TEMP/spdecode-test-release.p12" >> "$GITHUB_ENV"
+          echo "SPDECODE_TRUSTED_SIGNER_SHA256=$CERT" >> "$GITHUB_ENV"
+          echo "Original upload signing certificate verified."
+      - name: Build signed APK and signed AAB, release type with R8
+        working-directory: android
+        env:
+          SPDECODE_RELEASE_STORE_PASSWORD: ${{ secrets.SPDECODE_SIGNING_STORE_PASSWORD }}
+          SPDECODE_RELEASE_KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
+          SPDECODE_RELEASE_KEY_PASSWORD: ${{ secrets.SPDECODE_SIGNING_KEY_PASSWORD }}
+        run: gradle --no-daemon --max-workers=2 :app:assembleRelease :app:bundleRelease
+      - name: Check BuildConfig signing anchors
+        run: python3 scripts/ci/verify_release_signer_pins.py
+      - name: Verify signed binaries and package metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=android/app/build/outputs/apk/release/app-release.apk
+          AAB=android/app/build/outputs/bundle/release/app-release.aab
+          TOOLS="$ANDROID_HOME/build-tools/35.0.0"
+          test -s "$APK" && test -s "$AAB"
+          "$TOOLS/apksigner" verify --verbose --print-certs "$APK" > "$RUNNER_TEMP/signature.txt"
+          grep -F "Signer #1 certificate SHA-256 digest: $SPDECODE_TRUSTED_SIGNER_SHA256" "$RUNNER_TEMP/signature.txt" >/dev/null
+          jarsigner -verify "$AAB" > "$RUNNER_TEMP/bundle-verify.txt"
+          grep -F 'jar verified.' "$RUNNER_TEMP/bundle-verify.txt" >/dev/null
+          "$TOOLS/aapt" dump badging "$APK" > "$RUNNER_TEMP/package.txt"
+          grep -F "package: name='com.ghostdeveloper.spdecode'" "$RUNNER_TEMP/package.txt" >/dev/null
+          grep -F "versionCode='37'" "$RUNNER_TEMP/package.txt" >/dev/null
+          grep -F "versionName='1.1.24'" "$RUNNER_TEMP/package.txt" >/dev/null
+          "$TOOLS/zipalign" -c -P 16 -v 4 "$APK" >/dev/null
+          python3 scripts/ci/verify_aab_locales.py "$AAB"
+          python3 scripts/android_s4_provisioning_audit.py --apk "$APK"
+          python3 tests/cloud_c5_apk_audit.py "$APK"
+          python3 - <<'PY'
+          from zipfile import ZipFile
+          from pathlib import Path
+          with ZipFile('android/app/build/outputs/apk/release/app-release.apk') as apk:
+              libs=[name for name in apk.namelist() if name.endswith('/libv7q3.so')]
+              assert len(libs)>=4,libs
+              for name in libs:
+                  data=apk.read(name)
+                  assert b'HPKE-v1' in data and b'SPH2' in data,name
+          facade=Path('android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/V2HpkeEnvelope.kt').read_text()
+          assert 'org.bouncycastle' not in facade and 'javax.crypto.Cipher' not in facade
+          print('R0-R6 native C++ HPKE release package verified.')
+          PY
+          mkdir -p dist
+          cp "$APK" dist/SP-DECODE-1.1.24-b38-R0-R6-SIGNED-RELEASE-TEST.apk
+          cp "$AAB" dist/SP-DECODE-1.1.24-b38-R0-R6-SIGNED-RELEASE-TEST.aab
+          (cd dist && sha256sum *.apk *.aab > SHA256SUMS.txt)
+          {
+            echo "Commit: $GITHUB_SHA"
+            echo "Release: v1.1.24 code 38"
+            echo "Signed: existing permanent SP-DECODE upload certificate"
+            echo "HPKE: public X25519 trust anchor stored as masked bytes in libv7q3.so"
+            echo "No Android DEBUG, no private HPKE key, no Play upload, no VPS deployment"
+          } > dist/BUILD_INFO.txt
+      - name: Audit native ELF across four ABIs and R8 mapping
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/ci/audit_native_elf.py android/app/build/outputs/apk/release/app-release.apk
+          test -s android/app/build/outputs/mapping/release/mapping.txt
+          python3 tests/native_jni_contract.py
+      - name: Package VPS staging instructions (no credentials)
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > dist/VPS-TEST-INSTRUCTIONS.md <<'GUIDE'
+          # SP-DECODE R0–R6 | APK release firmado / VPS de prueba
+          APK: v1.1.24 código 38, tipo release, R8, firmada con certificado de SUBIDA
+          de Google Play. No es una APK re-firmada por Google Play. Si el backend
+          exige certificado Play, prueba el AAB en pista interna de Play Console.
+
+          ## Validación previa de seguridad (como root por SSH)
+          sudo spdecode status
+          sudo spdecode backup
+          sudo test -s /etc/spdecode/cloud.env
+          sudo test -s /etc/spdecode/keys/v2-hpke-keyring.json
+          sudo stat -c '%a' /etc/spdecode/cloud.env
+          sudo grep -Eq '^CLOUD_V2_HPKE_ENABLED=true
+        uses: actions/upload-artifact@v4
+        with:
+          name: SP-DECODE-R0-R6-v1.1.24-B38-SIGNED-RELEASE-AND-VPS-TEST
+          path: dist/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Remove temporary keystore
+        if: always()
+        shell: bash
+        run: rm -f "$RUNNER_TEMP/spdecode-test-release.p12"
+ /etc/spdecode/cloud.env
+          sudo grep -Eq '^CLOUD_V2_HPKE_KEYRING=.+' /etc/spdecode/cloud.env
+          # Nunca usar cat/printenv/docker compose config sobre claves privadas.
+
+          ## Probar primero en VPS staging
+          # Requiere Docker Compose con redes y secretos AISLADOS de producción;
+          # NO publicar puertos ni apuntar el tráfico real al entorno de ensayo.
+          # Realizar backup de configuración/volúmenes fuera del VPS antes de
+          # cualquier actualización de la instancia de producción.
+
+          ## Actualizar el VPS SOLO si el preflight anterior es correcto
+          sudo spdecode update all feat/post-native-security
+          sudo spdecode status
+          curl -fsS --max-time 12 https://api.spdecode.xyz/api/health/live
+          # Comprobar la ruta HPKE E2E usando la APK/AAB y un fixture NO sensible.
+          # No habilitar CLOUD_RASP_MODE=enforce antes de probar la matriz Android.
+
+          ## Si aparecen errores
+          sudo spdecode rollback
+          sudo spdecode status
+          # Restaurar cloud.env/keyring desde el backup cifrado si se alteraron.
+          # Nunca copiar estos ficheros a GitHub, Telegram o un reporte.
+          GUIDE
+          cat > dist/TEST-MATRIX.md <<'MATRIX'
+          # Matriz manual para cerrar R0–R6
+          [ ] Firma y paquete verificados en APK directa (upload certificate)
+          [ ] AAB de prueba interna instalado desde Play (Play App Signing)
+          [ ] En ambos canales: arranque en frío, foreground y NPVS v1/v5/v6
+          [ ] Petición de prueba: HPKE -> Play Integrity -> worker -> respuesta
+          [ ] ADB, Termux, Shizuku y VPN legítimos sin falsos positivos
+          [ ] Debugger/hook de laboratorio detectado; cambio de binario rechazado
+          [ ] CPU/RAM, batería y latencia p50/p95, 2 OEM / APIs frontera
+          [ ] Actualización/rollback real completo de staging sin perder HPKE
+          [ ] Calibración del servidor en observe antes de enforce
+          MATRIX
+          {
+            echo "Build type: release / R8, not debug"
+            echo "Source SHA: $GITHUB_SHA"
+            echo "Version: 1.1.24 (versionCode 38 in CI runner only)"
+            echo "Signer: existing GitHub Secrets upload keystore; NOT Play app signing"
+            echo "VPS: unchanged; never deploy automatically"
+            echo "Production main: unchanged"
+          } > dist/RELEASE-TEST-INFO.txt
+          (cd dist && sha256sum *.apk *.aab > SHA256SUMS.txt)
+      - name: Archive owner's test APK and AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: SP-DECODE-1.1.24-B38-NATIVE-HPKE-SIGNED-APK-AAB
+          path: dist/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Remove temporary keystore
+        if: always()
+        shell: bash
+        run: rm -f "$RUNNER_TEMP/spdecode-test-release.p12"
