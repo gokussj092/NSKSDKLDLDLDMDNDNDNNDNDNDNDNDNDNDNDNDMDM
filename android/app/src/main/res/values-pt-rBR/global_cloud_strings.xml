@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_global_title">Nuvem (Online)</string>
+    <string name="cloud_global_auto">Detectar automaticamente</string>
+    <string name="cloud_global_hint">Cole um link, chave ou código Cloud compatível</string>
+    <string name="cloud_global_action">Importar da Nuvem</string>
+    <string name="cloud_global_detail">Selecione um provedor ou deixe o SP-DECODE identificá-lo. Somente serviços autorizados.</string>
+    <string name="cloud_global_invalid">A referência não corresponde a um provedor Cloud permitido.</string>
+</resources>

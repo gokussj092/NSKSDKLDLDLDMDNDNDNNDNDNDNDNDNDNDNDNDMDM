@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_global_title">السحابة (عبر الإنترنت)</string>
+    <string name="cloud_global_auto">الكشف التلقائي</string>
+    <string name="cloud_global_hint">ألصق رابطًا أو مفتاحًا أو رمزًا سحابيًا مدعومًا</string>
+    <string name="cloud_global_action">استيراد من السحابة</string>
+    <string name="cloud_global_detail">اختر مزودًا أو دع SP-DECODE يتعرف عليه. الخدمات المعتمدة فقط.</string>
+    <string name="cloud_global_invalid">هذا المرجع لا يطابق مزودًا سحابيًا معتمدًا.</string>
+</resources>

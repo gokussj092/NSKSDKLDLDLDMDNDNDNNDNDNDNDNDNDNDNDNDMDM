@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_global_title">Облако (онлайн)</string>
+    <string name="cloud_global_auto">Определять автоматически</string>
+    <string name="cloud_global_hint">Вставьте поддерживаемую облачную ссылку, ключ или код</string>
+    <string name="cloud_global_action">Импорт из облака</string>
+    <string name="cloud_global_detail">Выберите поставщика или позвольте SP-DECODE определить его. Только разрешённые сервисы.</string>
+    <string name="cloud_global_invalid">Ссылка не относится к поддерживаемому облачному поставщику.</string>
+</resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_global_title">Cloud (Online)</string>
+    <string name="cloud_global_auto">Deteksi otomatis</string>
+    <string name="cloud_global_hint">Tempel tautan, kunci, atau kode Cloud yang didukung</string>
+    <string name="cloud_global_action">Impor dari Cloud</string>
+    <string name="cloud_global_detail">Pilih penyedia atau biarkan SP-DECODE mendeteksinya. Hanya layanan yang disetujui.</string>
+    <string name="cloud_global_invalid">Referensi ini tidak sesuai dengan penyedia Cloud yang diizinkan.</string>
+</resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cloud_global_title">Bulut (Çevrimiçi)</string>
+    <string name="cloud_global_auto">Otomatik algıla</string>
+    <string name="cloud_global_hint">Desteklenen Cloud bağlantısını, anahtarını veya kodunu yapıştır</string>
+    <string name="cloud_global_action">Buluttan içe aktar</string>
+    <string name="cloud_global_detail">Bir sağlayıcı seçin veya SP-DECODE otomatik algılasın. Yalnızca onaylı hizmetler.</string>
+    <string name="cloud_global_invalid">Bu referans desteklenen bir Cloud sağlayıcısıyla eşleşmiyor.</string>
+</resources>
