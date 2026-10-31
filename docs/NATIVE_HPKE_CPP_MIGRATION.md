@@ -70,9 +70,10 @@ after decryption; backend access controls and Play attestation remain essential.
 - Added a host regression suite at `tests/native_session_contract.cpp` for
   expiry, input rejection, stale-401 safety and concurrency. It runs within
   the pre-existing native interop workflow on this isolated branch.
-- The prior session release build and native interoperability passed for
-  `d1a6ad2b`; this Keystore change requires its **own** CI results.
-  Real-device Keystore/Play session validation remains pending.
+- Host and Android release builds passed for the Keystore migration
+  (`41148188691` and `41148188746`) and for the current catalog/security
+  head (`41149344926` and `41149344918`). Real-device Keystore/Play
+  session validation remains pending.
 - No backend routes, HPKE keys or VPS configurations have changed.
 - Recovery: revert the native session commit on this branch and rebuild;
   preserve the original preproduction APK and server in place.
@@ -89,7 +90,8 @@ after decryption; backend access controls and Play attestation remain essential.
 - Host contract cases cover accepted and rejected formats. The Android
   compilation workflow also runs Cloud source-isolation tests and verifies
   obsolete Bouncy Castle X509 resources do not appear in the release APK.
-- All new changes need CI confirmation and real-device validation.
+- Host + Android CI passed for the current native migration; **real-device**
+  admission, security level and UX validation are still required.
 
 ## Android Keystore migration, branch-only
 
@@ -173,9 +175,84 @@ but cannot hide a bearer already delivered to the Java HTTPS APIs.
   improvement, not claimed here.
 - Added `native_catalog_cli.cpp` and `native_catalog_roundtrip.mjs` to
   test the unchanged Node.js backend against actual C++ decryption and
-  reject modified keys, purpose, length, tags and ciphertext. CI must pass.
+  reject modified keys, purpose, length, tags and ciphertext. The
+  cross-runtime test passed in workflow `41149344926`.
 - On-device catalog/icon flow and legacy compressed cache compatibility still
   require real Android device validation before considering a signed release.
+
+## Verified branch status and release decision (October 30–31, 2026)
+
+Latest validated migration commit: `0c8cd7a1e962576067e38d67ac00177791e13dc2`.
+
+| Verification | GitHub Actions | Outcome |
+| --- | --- | --- |
+| Mbed TLS host C++ / HPKE ↔ Node.js, native proof/session/Keystore policy | `41149344926` | **SUCCESS** |
+| Catalog/icon P-256 ECDH, HKDF and authenticated AES-GCM ↔ unchanged Node.js; modified tag/purpose/length/key rejection | `41149344926` | **SUCCESS** |
+| Kotlin ↔ JNI descriptor/name/count gate | `41149344918` | **SUCCESS** (20 methods registered in source) |
+| Android NDK 27, SDK 36, release R8, APK+AAB compilation, 4 ABI ELF, HPKE library/static APK audit | `41149344918` | **SUCCESS** |
+| AAB locales, Cloud-only source isolation, obsolete Bouncy Castle resources absent | `41149344918` | **SUCCESS** |
+| Release APK/AAB signed with original keystore | — | **NOT RUN** |
+| StrongBox, TEE, server-side hardware attestation / live Play Integrity, cloud decoding and catalog rendering on physical Android | — | **NOT RUN** |
+
+Builds in this document are static release compilation artifacts, **unsigned**, not evidence
+of correct execution on a handset. The current `versionCode` in the branch is
+still 35; this is not eligible for a new version after previously signed build 37.
+Choose an unused code **greater than 37** only when generating the later signed
+preproduction build.
+
+### Diagnostic history
+
+- `511d9b3` host tests passed but Android NDK build failed: obsolete
+  `requiresActionIntegrity()` JNI use after native API change. Fixed by
+  bearer-specific `requiresActionIntegrityFor(bearer)` in `e8f6166`.
+- `e8f6166` host+Android compile initially failed on old Mbed TLS
+  `mbedtls_ecp_keypair.grp/Q/d` member access. `1083807` added Mbed TLS
+  private-access macros, then `0c8cd7a` corrected the public `ecp_group.id`
+  field. Both workflows passed afterward.
+- No change to VPS, HPKE recipient keys, API paths, server admission controls,
+  production signing config, or `main`.
+
+### Remaining intentional Android and presentation boundaries
+
+- Kotlin invokes the official Classic/Standard Play Integrity SDK, manages
+  asynchronous token-provider lifetime and Android coroutines; C++ controls
+  request/challenge format and bearer-associated policy, **the backend** verifies
+  the real verdict. This is not a local-only bypass.
+- `CloudKeystorePlatform.kt` invokes Android's secure non-exportable signing
+  keys, StrongBox/TEE generation and X.509 certificate extraction; native C++
+  owns alias/policy decisions and uses JCA through JNI.
+- `CatalogEnvelope.kt` still requests **ephemeral** P-256 key generation
+  through JCA, passes a temporary PKCS#8 encoding to JNI (immediately scrubbed
+  on the Kotlin copy), performs bounded GZIP inflation and JSON display parsing.
+  The cryptographic ECDH/HKDF/AEAD itself now executes natively. Further native
+  management of ephemeral keys is optional hardening, not a missing private
+  server secret.
+- `NpvsIdentityVault.kt` and `ServerVpnSecureCache.kt` deliberately use
+  Android Keystore AES-GCM for local user identities/cache. Removing Keystore to
+  reduce DEX code would risk exposing persistent keys. Their platform adapters
+  are distinct from the Cloud request admission path.
+- No runtime RASP/instrumentation protections added in this phase: false
+  positives, Play compatibility and device behavior require a separate trial.
+
+### Physical Android verification gates
+
+1. Install a **new signed preproduction artifact** with the original upload
+   keystore and appropriate release signer fingerprints; verify first launch,
+   exact package, no crash, 14 locales and all supported ABIs.
+2. Test old installed KeyStore `v2` alias, new `v3` hardware enrollment,
+   TEE-only device, StrongBox-supported device, StrongBox-required rejection,
+   app restart and concurrent requests.
+3. Test authenticated HPKE Cloud session, Classic admission, Standard
+   action integrity, 401 renewal, replay/modified response rejection and
+   cancellation; confirm server-side attestation and Play verdicts.
+4. Fetch server/provider catalog and icons, decode sample files, validate
+   encrypted cache legacy SVC1 and current SVC2, and check export gating.
+5. Capture sanitized nonsecret logs, classify any device-specific regressions
+   before any Play deployment.
+
+This branch is **ready for a device test planning gate**, not yet a production
+release certification. Signed artifact generation and device validation
+remain separate work.
 
 ## Validation gates
 
