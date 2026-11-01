@@ -1,5 +1,12 @@
 # Herramientas de análisis APK
 
+**Descarga obligatoria antes de validar un proveedor:** seguir la
+[guía de paridad de petición](../../docs/cloud/SERVER_VPN_NEXT_CHAT_GUIDE.md#regla-obligatoria-paridad-de-la-descarga-original--2026-11-01).
+URL, método, cuerpos, User-Agent, Authorization, claves y firmas necesarios
+forman parte del método. Incorporarlos como constantes o secretos del backend
+y probar la descarga real con la petición completa; mocks y assets no bastan.
+No publicar credenciales reales. Documentar también su provisión al desplegar.
+
 MTM Tunnel Lite MTM (40): `mtm_bundle.py` genera la CLI autónoma stdlib desde
 XXTEA canónico HX y `mtm_verify.py` compara catálogos privados completos con
 JDK y workers de catálogo/archivo. Dos respuestas reales verificadas; `.v2`

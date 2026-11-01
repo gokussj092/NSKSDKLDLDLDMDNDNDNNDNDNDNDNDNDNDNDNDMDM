@@ -14,6 +14,7 @@ const ROOT="/app/provider-control";
 const IDS=Object.freeze(["ehi-cloud","hc-cloud","nur-tunnel",...providerIds()]);
 export const PUBLIC_PROVIDER_IDS=IDS;
 const LABELS=Object.freeze({
+  "izph-vpn-pro":"IZPH VPN PRO",
   "vip-snipher-pro":"VIP Snipher Pro",
   "netcol-vpn":"Netcol VPN",
   "wolf-custom-vpn":"Wolf Custom VPN",

@@ -1,5 +1,24 @@
 # Registro de nuevas integraciones VPN
 
+## IZPH VPN PRO 6.0 (60) — 2026-11-01
+
+Paquete com.izphprov2.net, versión actual del APK y Google Play6.0.
+Fuente exacta del actualizador GET sin cabeceras personalizadas:
+HTTP200 real, catálogo3234, **84 servidores /303 redes**,480620bytes.
+Asset1000.0.1208,60/110. Los dos documentos completos iguales a Java,
+Python, CLI y worker aislado;13 casos nativos contando el borde sintético.
+La CLI repitió el GET real y el gateway validó la respuesta real del worker
+con transporte interno simulado. Node al proveedor se prueba con mocks.
+
+Se corrige Threefish inverso en izph.py, preservación de ceros legítimos y
+SSCommand. Carpeta IZPH_VPN_PRO, broker/ficha/PNG original/switch persistente,
+**59 /54 fichas**, C0 240/C8 254/28 overrides intactos.
+**22 Python /152 Node aprobadas**, sin skips. Guía de nuevas integraciones
+actualizada: todos los datos de la petición original son obligatorios y
+debe funcionar la descarga real antes de dar por validado el método.
+Originales duraderos, hashes, límites y recuperación en el handoff de IZPH.
+Sin despliegue, merge, Android, Actions ni trabajo nuevo de90NET.
+
 ## Actualización TunnelDOOM 4.3.0 (430) — 2026-10-26
 
 Se descargaron 4.2.7 (427) y 4.3.0 (430) de APKPure, paquete y versiones

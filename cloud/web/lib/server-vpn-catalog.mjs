@@ -24,6 +24,7 @@ export function activeCatalogVersion(env=process.env) {
 }
 
 const ITEMS = Object.freeze([
+  {id:"izph-vpn-pro", name:"IZPH VPN PRO", icon:"izph-vpn-pro.png", remote:"izph-vpn-pro"},
   // Build 29 authenticated updater and complete 8.0.61 catalog verified.
   {id:"vip-snipher-pro", name:"VIP Snipher Pro", icon:"vip-snipher-pro.png", remote:"vip-snipher-pro"},
   {id:"netcol-vpn", name:"Netcol VPN", icon:"netcol-vpn.png", remote:"netcol-vpn"},

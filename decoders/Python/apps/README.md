@@ -20,6 +20,7 @@ productores se mantienen en `tests/golden`, y las pruebas en `tests`.
 
 | Aplicación | Catálogo | Archivos/textos | Icono y documentación |
 | --- | --- | --- | --- |
+| IZPH VPN PRO 6.0 | [Catálogo HTTP200, 84 servidores /303 redes](IZPH_VPN_PRO/server_catalog_decoder.py) | IZPH histórico corregido; export real6.0 pendiente | [Carpeta](IZPH_VPN_PRO/README.md) |
 | VIP Snipher Pro 2.9 | [Catálogo autenticado HTTP200, 47 servidores /273 redes](VIP_Snipher_Pro/server_catalog_decoder.py) | RENZ histórico, sin nueva certificación de perfil | [Carpeta](VIP_Snipher_Pro/README.md) |
 | 24clan VPN Green 3.3 | [Script](24clan_VPN_Green/24clan_VPN_Green.py) | [.green](24clan_VPN_Green/24clan_VPN_Green_archivos.py) | [Carpeta](24clan_VPN_Green/README.md) |
 | HX Tunnel VPN Hx-Build14 | [Script](HX_Tunnel_VPN/HX_Tunnel_VPN.py) | [.hxt](HX_Tunnel_VPN/HX_Tunnel_VPN_archivos.py) | [Carpeta](HX_Tunnel_VPN/README.md) |

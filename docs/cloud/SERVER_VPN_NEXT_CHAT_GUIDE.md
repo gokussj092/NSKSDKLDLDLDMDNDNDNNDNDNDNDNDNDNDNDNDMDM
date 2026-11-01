@@ -1,5 +1,58 @@
 # SP-DECODE Cloud — Guía para ampliar Server VPN en otro chat
 
+## Regla obligatoria: paridad de la descarga original — 2026-11-01
+
+**Una integración de catálogo remoto no está validada hasta que el script
+descarga correctamente desde la fuente vigente de la app y descifra la respuesta
+real completa.** Un lector offline, un asset incluido, un mock HTTP200 o un GET
+sin las cabeceras originales no sustituyen esta comprobación.
+
+1. Verificar paquete, versión, build y firma del original actual. El índice de
+   un mirror puede estar atrasado; contrastar la ficha vigente y el binario.
+2. Seguir el actualizador activo hasta la petición final: URL, método, query,
+   cuerpo, Content-Type, User-Agent, Authorization/Bearer, API keys, cookies,
+   firmas y demás valores necesarios. Incorporar también sus cálculos y pasos
+   previos cuando existan. No limitarse a copiar la URL.
+3. **Todos los datos necesarios deben estar incorporados**: constantes públicas
+   en código y/o credenciales como secretos del backend, según corresponda.
+   No omitir la autorización incluida para el actualizador de la app. Reutilizar
+   esos datos únicamente para esa fuente y operación; no publicar tokens reales
+   en Git, fixtures, logs, resultados ni argumentos de comandos.
+4. Si se usa un secreto, registrar su nombre y consumidor, pasarlo por Compose
+   al servicio que descarga, documentar su provisión desde el original verificado
+   y probar la petición con su valor real. Una variable vacía, un TODO o una
+   prueba con un token ficticio no acreditan una descarga operativa. El despliegue
+   debe provisionarlo; el código no puede darlo por disponible sin comprobarlo.
+5. Ejecutar la descarga real desde el script con la petición completa. Verificar
+   éxito HTTP, bytes no vacíos, límites, ausencia de HTML/error y descifrado total.
+   Registrar fecha, versión de catálogo, SHA256, bytes, listas y recuentos sin
+   publicar entradas privadas. Comparar el documento entero con una referencia
+   independiente y comprobar CLI/worker, sin truncar ni filtrar registros.
+6. Si la app descarga y el script falla, investigar primero las diferencias de
+   autenticación, cabeceras, versiones, cuerpos y flujo. Un404 sin autorización
+   no demuestra que la fuente esté caída ni justifica sustituirla por el asset
+   antiguo. No marcar la integración remota como terminada mientras falle.
+7. Conservar DNS/TLS y destino fijo; una credencial no debe viajar a otro origen
+   o ruta por redirección. Mantener switches individuales y evitar exponer la
+   petición del proveedor al cliente o al worker que solo descifra bytes.
+8. Documentar por separado descarga real, transporte simulado, paridad de
+   descifrado, configuración de despliegue y prueba del VPS. Los mocks sirven
+   para regresiones; no reemplazan la descarga real ni una prueba de producción.
+
+Caso comprobado: VIP Snipher Pro 2.9 devolvía404 sin Authorization; con la
+cabecera del mismo APK devolvió200 y el catálogo 8.0.61 completo, 47 servidores
+y 273 redes. Ver [su validación](../../decoders/Python/apps/VIP_Snipher_Pro/TESTING.md).
+Esta regla complementa las secciones históricas siguientes y es obligatoria
+para las nuevas integraciones, incluida IZPH VPN PRO.
+
+Estado de este lote: cuenta Goku, rama `fix/http-jireh-current-method`, revisión
+fuente59 conservada por instrucción del propietario y54 fichas tras IZPH6.0.
+VIP ya tiene descarga autenticada HTTP200; IZPH usa GET público HTTP200 sin
+cabeceras personalizadas. 90NET sigue pospuesto. No se ha desplegado ni
+fusionado main. Detalles vigentes en el
+[handoff de IZPH](IZPH_VPN_PRO_HANDOFF_2026_11_01.md); los registros siguientes
+conservan sus fechas y ramas históricas.
+
 ## Actualización TunnelDOOM 4.3.0 (430) — 2026-10-26
 
 Se descargaron 4.2.7 (427) y 4.3.0 (430) de APKPure, paquete y versiones
@@ -338,13 +391,13 @@ El nombre y el icono se muestran en un único catálogo Android existente. No in
 - Los archivos con contraseñas/HWID se prueban con autorización y datos de prueba; no incluir información real en PR o CI.
 - El adaptador de descarga nunca aceptará una ubicación arbitraria proporcionada por la aplicación.
 - La interfaz pública no expondrá información interna de la API ni detalles operativos del servidor.
-- Todas las pruebas automatizadas deben terminar correctamente antes de habilitar un método.
+- Todas las pruebas automatizadas deben terminar correctamente antes de habilitar un método. La descarga real con la petición completa es obligatoria según la regla de paridad al inicio de esta guía.
 - Abrir PR independiente, sin fusionar a main, desplegar ni publicar APK sin autorización.
 - Adjuntar listado de archivos creados, rutas del backend actualizadas y compatibilidad confirmada.
 
 ## Instrucción reutilizable para un nuevo chat
 
-> Trabaja en el repositorio Gh0stDeveloper/SP-DECODE, en la rama de trabajo indicada. Analiza el APK y ejemplos que te proporcionaré y para los que cuento con autorización. Dentro de decoders/Python/apps crea o reutiliza una única carpeta por aplicación. Extrae por separado el decodificador de archivos y el del catálogo de servidores, si existen. Integra las rutas Python y los metadatos del catálogo en el backend Cloud, con pruebas reales de paridad y el icono original autorizado. No modifiques el diseño Android ni la web administrativa; en Android solo se autoriza la política general de carga/caché de iconos descrita en esta guía. No registres información sensible en archivos publicados. Deja el trabajo en un PR sin fusionar y documenta los pendientes.
+> Trabaja con el conector Goku (gokussj092) en el repositorio vigente y la rama de trabajo indicados por el usuario. Analiza el APK y ejemplos que te proporcionaré y para los que cuento con autorización. Dentro de decoders/Python/apps crea o reutiliza una única carpeta por aplicación. Extrae por separado el decodificador de archivos y el del catálogo de servidores, si existen. Integra las rutas Python y los metadatos del catálogo en el backend Cloud, con pruebas reales de paridad y el icono original autorizado. No modifiques el diseño Android ni la web administrativa; en Android solo se autoriza la política general de carga/caché de iconos descrita en esta guía. No registres información sensible en archivos publicados. Deja el trabajo en un PR sin fusionar y documenta los pendientes.
 
 ## Pendientes hasta el próximo análisis
 

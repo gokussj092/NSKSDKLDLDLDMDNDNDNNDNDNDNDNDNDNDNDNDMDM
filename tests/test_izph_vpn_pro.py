@@ -1,0 +1,113 @@
+"""Independent synthetic vectors; no real catalogs, APKs or VPN accounts."""
+import base64
+import json
+from pathlib import Path
+import subprocess
+import sys
+import unittest
+from unittest.mock import patch
+from urllib.error import HTTPError
+from decoders.Python.apps.IZPH_VPN_PRO import codec, server_catalog_decoder as catalog
+
+ROOT = Path(__file__).resolve().parents[1]
+APP = ROOT / 'decoders/Python/apps/IZPH_VPN_PRO'
+V = json.loads((ROOT / 'tests/golden/izph_vectors.json').read_text())
+
+def seal(text):
+    # Construct malformed inner documents through the independent encoder.
+    line = '10\t' + base64.b64encode(text.encode()).decode() + '\n'
+    result = subprocess.run(['java', str(ROOT / 'tests/golden/izph_oracle.java')],
+                            input=line, text=True, capture_output=True, check=True, timeout=30)
+    return base64.b64decode(result.stdout.strip(), validate=True)
+
+class IzphCatalogTests(unittest.TestCase):
+    def test_independent_java_vectors_for_all_modes_and_complete_nested_document(self):
+        for mode, fn in enumerate((codec.decode_main, codec.decode_special, codec.decode_sensitive)):
+            self.assertEqual(fn(V['cipher'][str(mode)]), V['plain'][str(mode)])
+        self.assertEqual(codec.decode_catalog(V['catalog'].encode()), V['expected'])
+        self.assertEqual(json.loads(catalog.run(V['catalog'].encode())), V['expected'])
+
+    def test_unknown_ciphertext_types_and_empty_values_are_preserved(self):
+        doc = codec.decode_catalog(V['catalog'].encode())
+        server = doc['Servers'][0]
+        self.assertEqual(server['UnknownCipher'], V['cipher']['1'])
+        self.assertEqual(server['Obfs'], '');self.assertIsNone(server['CustomCert'])
+        self.assertIs(server['UseCustomCert'], False)
+        self.assertIs(doc['Networks'][0]['EnableWS'], True)
+        self.assertIs(type(server['Protocol']), int)
+        self.assertEqual(doc['unknown'], V['expected']['unknown'])
+
+    def test_isolated_worker_and_historical_format_inventory(self):
+        from cloud.workers.python.engine import decode_provider_catalog, load_runtime_file_engines
+        result = decode_provider_catalog('izph-vpn-pro', V['catalog'].encode())
+        self.assertEqual(result['structuredJson'], V['expected'])
+        self.assertEqual(json.loads(result['rawText']), V['expected'])
+        self.assertFalse(result['isPartial']);self.assertFalse(result['exporterCertified'])
+        inventory = load_runtime_file_engines()
+        self.assertEqual(len(inventory), 254)
+        self.assertTrue(inventory['izph']['source'].endswith('/izph.py'))
+        self.assertNotIn('js', inventory);self.assertNotIn('rj', inventory)
+
+    def test_rejects_bad_encoding_padding_duplicate_keys_and_partial_documents(self):
+        for data in (b'private-sentinel', b'<html/>', b'', V['catalog'][:-8].encode()):
+            with self.assertRaises(codec.DecodeError) as error:catalog.run(data)
+            self.assertNotIn('private-sentinel', str(error.exception))
+        for text in ('{"Version":"a","Version":"b","Servers":[],"Networks":[]}',
+                     '{"Version":NaN}', '{"Version":"1","Servers":[],"Networks":[]}',
+                     '{"Version":"1","Servers":[{"Name":"bad"}],"Networks":[{"Name":"bad"}]}'):
+            with self.assertRaises(codec.DecodeError):catalog.run(seal(text))
+        for fn in (codec.decode_main, codec.decode_special, codec.decode_sensitive):
+            with self.assertRaises(ValueError):fn('invalid')
+
+    def test_whole_document_rejects_one_invalid_known_field(self):
+        outer = codec.open_outer(V['catalog'].encode())
+        outer['Networks'][0]['Payload'] = 'invalid'
+        with self.assertRaises(codec.DecodeError):catalog.run(seal(json.dumps(outer)))
+        outer['Networks'][0]['Payload'] = False
+        with self.assertRaises(codec.DecodeError):catalog.run(seal(json.dumps(outer)))
+
+    def test_input_depth_and_output_limits(self):
+        with self.assertRaises(codec.DecodeError):catalog.run(b'x' * (codec.MAX_BYTES + 1))
+        outer = codec.open_outer(V['catalog'].encode())
+        node = []
+        for _ in range(66):node = [node]
+        outer['unknown'] = node
+        with self.assertRaises(codec.DecodeError):catalog.run(seal(json.dumps(outer)))
+        with self.assertRaises(codec.DecodeError):codec.render({'x': 'x' * codec.MAX_BYTES})
+
+    def test_fixed_source_errors_are_sanitized_and_never_fall_back(self):
+        self.assertIn('/kiranoble/config/', catalog.SOURCE)
+        self.assertEqual(catalog.USER_AGENT, 'IZPH VPN PRO/6.0')
+        class Opener:
+            def open(self, request, timeout):
+                self_request = request.full_url
+                if self_request != catalog.SOURCE or timeout != 25:raise AssertionError('wrong source')
+                raise HTTPError(catalog.SOURCE, 404, 'private-sentinel', {}, None)
+        with patch.object(catalog, 'build_opener', return_value=Opener()):
+            with self.assertRaises(codec.DecodeError) as error:catalog.download()
+            self.assertNotIn('private-sentinel', str(error.exception))
+        with self.assertRaises(codec.DecodeError):catalog._NoRedirect().redirect_request(None, None, None, None, None, None)
+
+    def test_stdin_cli_from_outside_repo_returns_all_data(self):
+        result = subprocess.run([sys.executable, str(APP / 'server_catalog_decoder.py'), '--stdin'],
+                                input=V['catalog'].encode(), cwd='/tmp', capture_output=True, timeout=30)
+        self.assertEqual(result.returncode, 0)
+        self.assertEqual(json.loads(result.stdout), V['expected']);self.assertEqual(result.stderr, b'')
+
+    def test_historical_threefish_matches_independent_multi_block_stream(self):
+        from decoders.Python import izph
+        raw = base64.b64decode(V['cipher']['1'])
+        self.assertGreater(len(raw), 32)
+        self.assertEqual(izph.izph_threefish256_decrypt(raw, codec.HKDF32),
+                         base64.b64decode(V['threefishStream']))
+        self.assertEqual(izph.izph_decrypt_type1(V['cipher']['1'].encode()).decode(), V['plain']['1'])
+
+    def test_legitimate_ciphertext_zero_is_preserved_for_catalog_and_historical_reader(self):
+        from decoders.Python import izph
+        edge = V['zeroEdge']
+        stream = base64.b64decode(edge['stream'])
+        self.assertNotEqual(len(stream.rstrip(bytes(1))) % 16, 0)
+        self.assertEqual(codec.decode_special(edge['cipher']), edge['plain'])
+        self.assertEqual(izph.izph_decrypt_type1(edge['cipher'].encode()).decode(), edge['plain'])
+
+if __name__ == '__main__':unittest.main()
