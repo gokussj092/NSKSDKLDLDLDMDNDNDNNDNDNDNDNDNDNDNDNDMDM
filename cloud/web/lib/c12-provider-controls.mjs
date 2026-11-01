@@ -14,6 +14,7 @@ const ROOT="/app/provider-control";
 const IDS=Object.freeze(["ehi-cloud","hc-cloud","nur-tunnel",...providerIds()]);
 export const PUBLIC_PROVIDER_IDS=IDS;
 const LABELS=Object.freeze({
+  "wolf-custom-vpn":"Wolf Custom VPN",
   "jyfast-vpn-ultra":"JyFast VPN Ultra",
   "tunneldoom-vpn":"TunnelDOOM VPN",
   "mtm-tunnel-lite":"MTM Tunnel Lite",

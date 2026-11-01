@@ -70,3 +70,5 @@ productores se mantienen en `tests/golden`, y las pruebas en `tests`.
 
 - [TurboMX VPN 143.1.26](TurboMX_VPN/README.md): SV5C v2/release 143 con firma, clave y contexto propios; 268 servidores y una entrada de usuarios reales comparados íntegramente con nativo/libsodium/JDK, CLI y worker. Reutiliza la primitiva SV5C preservando SuperFlash; descarga dual, control e icono original integrados.
 - [JyFast VPN Ultra 9](JyFast_VPN_Ultra/README.md): catálogos gratuito y prémium completos, campos Rt/AES-CBC y archivos `.sks` con motor GCM/DES compartido. Fuentes fijas, icono original y control individual; versión 10 pendiente de APK verificable.
+
+- [Wolf Custom VPN v2.8.1.2 (13)](Wolf_Custom_VPN/README.md): fuente activa, catálogo completo y `.wolf` AES-GCM con dos claves nativas; 164 servidores / 2015 redes y 13267 campos comparados con JCA y worker. Conserva lector histórico, icono original y control individual; archivo exportado real pendiente.

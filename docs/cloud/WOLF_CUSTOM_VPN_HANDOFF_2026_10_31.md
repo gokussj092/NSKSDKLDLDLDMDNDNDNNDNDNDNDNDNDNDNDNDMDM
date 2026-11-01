@@ -1,31 +1,89 @@
-# Wolf Custom VPN: recuperación y continuidad (2026-10-31)
+# Wolf Custom VPN: integración y recuperación persistente
 
-Solicitud actual: incorporar `core.vpn3jx.xtreme` al catálogo SP-DECODE. Continuar en `fix/http-jireh-current-method`, cuenta/conector Goku. No fusionar main, desplegar, compilar Android ni activar GitHub Actions automáticamente. Los cambios anteriores Jireh/JyFast están en `1db49db1b054a40a1347f8989693dd5da8604adf`.
+Estado actualizado el **2026-10-31**. Este documento sustituye el punto inicial
+`7a6eb25a` de esta misma rama. La integración verificada está en
+`decoders/Python/apps/Wolf_Custom_VPN/`; consultar sus `README.md`, `TESTING.md`+y `manifest.json` para el método, hashes y alcance exacto.
 
-## Entrada persistente confirmada
+## Estado que debe recuperar el siguiente chat
 
-- Nombre real: **Wolf Custom VPN**, paquete `core.vpn3jx.xtreme`.
-- APK analizado: **v2.8.1.2, versionCode 13**, confirmado por manifiesto binario; no deducido de la ficha web.
-- XAPK original: **59349423 bytes**, SHA-256 `d82f07a06fb9b0e1e42e1b0010601c65697bd595057b6a323db5eec5ad59a58d`.
-- Base APK: **30511568 bytes**, SHA-256 `7511b35542ba6ab0f75bfc01808038d53d007a90cd5567c5133e748ae7c83660`.
-- Certificado firmante SHA-256: `bd6515d3f58f73aa59ae99ae1d2aff74c4e2665c3bd677fbefea77222e88fc6b`.
-- Archivo duradero: `Wolf-Custom-VPN-2.8.1.2-build13.xapk`, Library **`libfile_2db70a357b208191b86e7a7f93ed05de`**. Guardado y metadatos aplicados correctamente. Contiene base y splits ARM64/en/mdpi; recuperar desde Library para no depender de una descarga futura.
-- Descarga que funcionó: `https://d.apkpure.com/b/XAPK/core.vpn3jx.xtreme?version=latest`. `d.apkpure.net/b/APK/...` también devolvió el XAPK. La primera URL net/XAPK respondió 403 por una respuesta antigua; no usar esa respuesta como prueba de que el APK no existe. El espejo mostró metadatos v1.10 antiguos, por eso manda el manifiesto del archivo.
+- Repo Goku: `gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM`.
+- Rama: `fix/http-jireh-current-method`. Jireh/JyFast previos y los cambios de
+  caché de revisión 58 se conservan; la nueva revisión mínima es **59**.
+- Wolf Custom VPN, paquete `core.vpn3jx.xtreme`, **v2.8.1.2 / build 13**.
+- Fuente activa: `https://strongteam.co/api/wolfcustom/newv1.txt`, recuperada
+  desde `ConfigUpdate.b`. No usar la fuente histórica `/api/wolf/` como fallback.
+- Método moderno: Base64(nonce12 || ciphertext || tag16), AES-256-GCM sin AAD,
+  dos claves de 32 bytes directos, verificadas en ARM64 de `libgojni.so` y
+  `libgoinjector.so`. No usar el KDF Argon2 del lector Wolf antiguo para estos
+  catálogos. `wolf_native_constants.py` verifica bibliotecas y bindings.
+- Catálogo incluido **1.01: 1 servidor / 3 redes / 31 campos cifrados**.
+  Remoto observado **6.45: 164 servidores / 2015 redes / 13267 campos**.
+  Muestra previa 6.44: 164 / 2014 / 13260. Los tres JSON completos coinciden
+  entre JCA, Python y worker, con `isPartial=false`. Los recuentos pueden variar.
+- Nueva tarjeta, PNG del launcher, broker fijo y control individual
+  `wolf-custom-vpn`; **51 tarjetas**. Los switches persistentes se conservan.
+- `.wolf` moderno es un NetworkList exportado por `NetworkAdapter.v`, validado
+  con fixtures JCA. Conserva fallback histórico y `.wolftunnel` anterior.
+  C0 **240**, inventario efectivo **254**, overrides C8 **28**.
+- **34 Python / 140 Node aprobadas**, sin skips. Prueba de caché 57 conservada
+  y nueva prueba de actualización desde 58. Sin suite completa ni APK/CI nuevos.
+- El catálogo lógico actual lo consumen V1/V2 por sus rutas existentes;
+  esta integración no crea inventarios separados. Leer también
+  `docs/cloud/CATALOGS_UPDATE_RUNBOOK.md` antes de hablar de un despliegue.
 
-## Estado al guardar este punto
+## Archivo duradero, independiente de la limpieza local
 
-**Investigación en curso; incorporación aún no certificada.** No se ha habilitado un proveedor nuevo en este punto. El motor histórico `decoders/Python/ultra.py` ya tiene `wolfcustom`, `.wolf` y `.wolftunnel`, con fuente histórica `https://strongteam.co/api/wolf/`. Esos datos todavía no se validaron contra build 13: no activarlos por inferencia.
+**`Wolf-Custom-VPN-2.8.1.2-build13.xapk`** está guardado en ChatGPT Library:
+**`libfile_2db70a357b208191b86e7a7f93ed05de`**. La creación finalizó correctamente
+y se aplicaron sus metadatos al archivo local. Contiene los cuatro APKs
+originales: base, ARM64, idioma en y mdpi. Materializar por ese ID usando la
+habilidad Library; no depender de que APKPure siga ofreciendo esta versión.
 
-El APK trae `assets/configfile.json` cifrado y plantillas `custom1.json`, `custom2.json`, `v2inject.json`, etc. El launcher usa `res/mipmap-anydpi-v26/ic_launcher.xml`. Hay cadenas LSParanoid y fuentes `com/vpn/sandok`, `com/v2ray/ang`; localizar el actualizador/codec real, no confundir bibliotecas de Xray o Hysteria con cifrado de catálogo.
+- XAPK: **59349423 bytes**, SHA-256
+  `d82f07a06fb9b0e1e42e1b0010601c65697bd595057b6a323db5eec5ad59a58d`.
+- Base APK: **30511568 bytes**, SHA-256
+  `7511b35542ba6ab0f75bfc01808038d53d007a90cd5567c5133e748ae7c83660`.
+- Firma SHA-256:
+  `bd6515d3f58f73aa59ae99ae1d2aff74c4e2665c3bd677fbefea77222e88fc6b`.
 
-ARM64 viene en `config.arm64_v8a.apk`: `libgojni.so` (30686992 bytes, principalmente AndroidLibXrayLite), `libuz.so` (24745536 bytes) y otras libs. El lector Go existente sí lee libgojni; libuz devuelve `Unsupported Go pclntab layout`. Esto no demuestra protección del método activo. JADX 1.5.6 verificado está decompilando el base APK.
+La descarga que funcionó fue
+`https://d.apkpure.com/b/XAPK/core.vpn3jx.xtreme?version=latest`; una URL net
+devolvió primero 403 y la web mostró v1.10 antigua. El manifiesto binario del
+archivo descargado confirmó v2.8.1.2 / 13. No sustituir esa evidencia por el
+título de una página o un enlace con el nombre `latest`.
 
-## Recuperar entorno tras limpieza
+## Reconstrucción tras limpieza
 
-1. Recuperar la rama y leer este documento junto con `docs/cloud/SERVER_VPN_NEXT_CHAT_GUIDE.md`; el estado final por app tendrá prioridad sobre este punto intermedio.
-2. Materializar el XAPK por el ID Library anterior, comprobar SHA-256 y extraer los cuatro APKs del ZIP. El binario no va en Git.
-3. Crear entorno Python con `scripts/apk_analysis/requirements.txt`; usar `decompile.py --install` para JADX con hashes fijados y `dex_method.py` para validar instrucciones originales. No depender de una ruta `/tmp` previa.
-4. Rutas locales temporales durante este punto: `investigation/wolf/`, fuentes JADX `investigation/wolf/jadx/`, checkout parcial `spdecode/`, venv `jireh-venv/`. Son prescindibles; el binario original y las herramientas versionadas permiten reconstruirlas.
-5. Validar documento completo y campos con referencia independiente, lector/CLI y worker aislado; usar vectores sintéticos en Git. Identificar fuente activa desde el APK y comprobar GET real antes de habilitarla.
-6. Conservar icono original. Añadir carpeta `decoders/Python/apps/Wolf_Custom_VPN/`, metadata/control/broker/bridge solo según evidencia. Mantener `.wolf` histórico y no inventar esquemas ni requisitos de contraseña.
-7. Guardar código, pruebas y pendientes en commits `[skip ci]`, con lease del HEAD verificado. No guardar APKs, catálogos reales ni credenciales descifradas en Git. Aplicar pruebas puntuales; el usuario tiene poco crédito restante.
+1. Recuperar el HEAD actual de la rama con Goku y leer los documentos por app.
+2. Materializar el XAPK guardado y verificar su SHA-256 antes de extraerlo.
+3. Crear un entorno Python con `scripts/apk_analysis/requirements.txt`, las
+   dependencias por app y un JDK. Extraer ambas bibliotecas ARM64 del split.
+4. `decompile.py --install` recupera JADX con checksum. Su salida parcial no
+   certifica el método: usar `dex_method.py` para las rutas originales y
+   `paranoid_strings.py` para las cadenas LSParanoid. Este último resolvió
+   6081 llamadas literales en 327 fuentes; esos volcados privados no van en Git.
+5. Ejecutar `wolf_native_constants.py /ruta/lib/arm64-v8a`. Después,
+   `wolf_verify.py /ruta/catalogo-cifrado --worker` compara el documento entero
+   y todos los valores que autentican con ambas claves mediante JCA/Python y
+   el worker real. Solo imprime hashes/recuentos, no configuraciones.
+6. Usar las pruebas dirigidas documentadas en `TESTING.md`. El launcher original
+   WebP y su PNG con los mismos píxeles están en Git; no es necesario redibujar.
+
+El checkout parcial `spdecode/`, venv `jireh-venv/` y `investigation/wolf/` fueron
+temporales. Sus catálogos, configuraciones y volcados privados son prescindibles
+para recuperar el método; no adjuntarlos a Git ni exponer credenciales reales.
+La herramienta, fixtures sintéticos, documentación y binario original duradero
+son suficientes para continuar.
+
+## Pendientes y autorización
+
+Pendientes: `.wolf` real exportado en teléfono, ejecución de la app original,
+conexión VPN y despliegue VPS. Las lecturas nativas y los vectores sintéticos
+no certifican esos flujos. El transporte Node hacia el proveedor real no se
+probó desde este entorno: se comprobaron sus controles con DNS/HTTPS simulados,
+y la descarga real con Python. No afirmar que ya aparece en producción.
+
+No fusionar `main`, desplegar, publicar APK/novedades, borrar `switches.json`
+ni activar GitHub Actions automáticamente. Guardar cambios en commits
+`[skip ci]` con lease del HEAD verificado. El usuario pidió persistencia para
+continuar incluso si se agota su crédito o se borra el entorno temporal.

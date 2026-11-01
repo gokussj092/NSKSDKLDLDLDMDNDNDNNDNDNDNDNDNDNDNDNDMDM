@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 PROVIDERS = {
+    "wolf-custom-vpn": "decoders.Python.apps.Wolf_Custom_VPN.server_catalog_decoder",
     "jyfast-vpn-ultra": "decoders.Python.apps.JyFast_VPN_Ultra.server_catalog_decoder",
     "tunneldoom-vpn": "decoders.Python.apps.TunnelDOOM_VPN.server_catalog_decoder",
     "mtm-tunnel-lite": "decoders.Python.apps.MTM_Tunnel_Lite.server_catalog_decoder",
