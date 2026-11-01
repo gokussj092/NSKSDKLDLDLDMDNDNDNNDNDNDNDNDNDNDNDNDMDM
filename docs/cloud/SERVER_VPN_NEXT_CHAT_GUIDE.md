@@ -1,3 +1,31 @@
+# Estado vigente — FlexNet B46, tres archivos v6 todavía pendientes
+
+2026-11-01. El propietario seleccionó ahora **Flex Net VPN** y exige
+descifrar un archivo real. Goku, `fix/http-jireh-current-method`, base2083046.
+Esto actualiza la selección de app; no cierra UT Loop ni las demás pendientes.
+
+FREE NET.flex, Free Internet³.flex y Uyu.flex: FLXCFGv6/mode1/suite1/build46,
+misma época4794b014b661a5f4deb5523bf3b65ece. Los dos APK2.4 son idénticos
+al ya analizado. La ruta `d.w` (50 instrucciones) ya existe en el DEX;
+`d.s` exige Keystore hardware y `d.l` provisiona las épocas con atestación.
+Se contrastó Dalvik porque JADX invierte ramas en el pseudocódigo de setup.
+
+**0/3 descifrados.** Ambos CLI reales:6 ejecuciones, exit1,
+OFFLINE_KEY_REQUIRED, sin stdout/JSON. ZIP de captura contiene herramientas,
+no una captura real. Sin Android conectado; no hubo nueva prueba Frida/emulador.
+TLS con el certificado original falla antes de HTTP; causa no establecida.
+27 Python/5 Node aprobadas con vectores/mocks no sustituyen el archivo real.
+No se modificó el lector ni se añadió proveedor, fusión, despliegue o CI manual.
+
+Continuar con setup/clave autorizados o captura real del v5 interior
+en una importación oficial instrumentable, validar el documento entero
+y mantener explícito el límite del tag exterior.
+[Evidencia, hashes y siguiente requisito](../FLEXNET_V2_4_REINVESTIGACION_2026_11_01.md).
+MM conserva su descarga real validada y falta desplegar; UT Loop conserva
+su bloqueo documentado sin nueva petición OTA en esta entrega.
+
+---
+
 # Estado vigente — UT Loop Pro VPN reinvestigado, descarga pendiente
 
 2026-11-01. El propietario pidió expresamente UT Loop tras MM; no retomar otras

@@ -1,5 +1,11 @@
 # FlexNet — compatibilidad B42 y B46
 
+**Reinvestigación 2026-11-01: 0/3 muestras v6 nuevas descifradas.**
+FREE NET.flex, Free Internet³.flex y Uyu.flex comparten época offline;
+ambos CLI requieren su clave autorizada y no producen JSON.
+La ruta de apertura ya está en el DEX; no se recuperó un setup legítimo ni
+una captura real. [Evidencia y requisito de cierre](../../../../docs/FLEXNET_V2_4_REINVESTIGACION_2026_11_01.md).
+
 Actualización para FlexNet **V 2.4 / build 46**, conservando V 2.3 / B42 y los
 formatos históricos. El nombre de carpeta/módulo B42 se mantiene para no romper
 imports. El punto de entrada `decoders/Python/flex.py` admite `.flex`/`.flexnet`
