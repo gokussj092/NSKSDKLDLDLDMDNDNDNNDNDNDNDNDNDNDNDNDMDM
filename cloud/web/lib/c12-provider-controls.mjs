@@ -14,6 +14,7 @@ const ROOT="/app/provider-control";
 const IDS=Object.freeze(["ehi-cloud","hc-cloud","nur-tunnel",...providerIds()]);
 export const PUBLIC_PROVIDER_IDS=IDS;
 const LABELS=Object.freeze({
+  "zig-tunnel":"ZiG Tunnel",
   "enaa-tunnel":"Enaa Tunnel",
   "alfaisal-tunnel-plus":"ALFAISAL Tunnel+",
   "izph-vpn-pro":"IZPH VPN PRO",

@@ -30,6 +30,7 @@ de cada carpeta no sustituyen esa nueva investigación ni describen el VPS actua
 
 | Aplicación | Catálogo | Archivos/textos | Icono y documentación |
 | --- | --- | --- | --- |
+| ZiG Tunnel Play1.0 | [HTTP200, 15 servidores /3 HTTP /1 SSL](ZiG_Tunnel/server_catalog_decoder.py) | Sin nueva extensión de perfil inferida | [Carpeta](ZiG_Tunnel/README.md) |
 | Enaa Tunnel Enna-1.07 | [HTTP200, 45 servidores /515 redes](Enaa_Tunnel/server_catalog_decoder.py) | [.enaa Cloud, método confirmado](Enaa_Tunnel/file_decoder.py) | [Carpeta](Enaa_Tunnel/README.md) |
 | ALFAISAL Tunnel+ build39 | [Catálogo firmado HTTP200, 4 servidores /51 redes /103 SSL](ALFAISAL_Tunnel_Plus/server_catalog_decoder.py) | Sin formato de perfil nuevo identificado | [Carpeta](ALFAISAL_Tunnel_Plus/README.md) |
 | IZPH VPN PRO 6.0 | [Catálogo HTTP200, 84 servidores /303 redes](IZPH_VPN_PRO/server_catalog_decoder.py) | IZPH histórico corregido; export real6.0 pendiente | [Carpeta](IZPH_VPN_PRO/README.md) |

@@ -14,7 +14,7 @@ import {fetchWorker} from "../lib/c3-gateway.mjs";
 
 test("Aura Net original PNG, public format and card follow availability",()=>{
   const doc=catalog({availability:{"aura-net-vpn":true}});
-  assert.equal(CATALOG_VERSION,59);assert.equal(doc.apps.length,56);
+  assert.equal(CATALOG_VERSION,59);assert.equal(doc.apps.length,57);
   const card=doc.apps.find(x=>x.id==="aura-net-vpn");
   assert.equal(card.name,"Aura Net VPN");assert.equal(card.decodeEnabled,true);
   assert.equal(card.iconSha256,"5f4f3a82d52822d84d04e9700b5b28ef084a319151431c7d91423ff3366701fe");

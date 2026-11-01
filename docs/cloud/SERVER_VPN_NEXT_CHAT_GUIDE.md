@@ -1,5 +1,16 @@
 # SP-DECODE Cloud — Guía para ampliar Server VPN en otro chat
 
+## Enaa y ZiG Tunnel integradas en orden — 2026-11-01
+
+Enaa cerrada en45b9a3e, después ZiG Play1.0/build1: GET real HTTP200,
+catálogo2.3,15 servidores/3 HTTP/1 SSL. XXTEA772515655 y doble resta UTF16,
+JSON entero igual al original Java, CLI y worker. Mirror ZiG1.2/build3 con
+firma distinta: no equivale a la versión viva1.0 de Play y no se certifica.
+Resultado del lote: **fuente59 /57 fichas /255 formatos C8**, C0 conserva240.
+No se crea una extensión por default_config.hs. No secretos HTTP nuevos.
+18 Python /166 Node aprobadas; transporte Node simulado y sin despliegue.
+[Handoff y originales](ENAA_ZIG_TUNNEL_HANDOFF_2026_11_01.md).
+
 ## Enaa Tunnel completada; Zig Tunnel siguiente — 2026-11-01
 
 Por orden del propietario, procesar primero com.enaa.tunnel y después

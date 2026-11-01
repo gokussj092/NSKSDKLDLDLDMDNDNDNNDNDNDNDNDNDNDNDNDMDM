@@ -38,7 +38,7 @@ test("Netcol refuses same-origin and foreign redirects",async t=>{
 
 test("Netcol launcher PNG, public format and card follow availability",()=>{
   const doc=catalog({availability:{"netcol-vpn":true}});
-  assert.equal(CATALOG_VERSION,59);assert.equal(doc.apps.length,56);
+  assert.equal(CATALOG_VERSION,59);assert.equal(doc.apps.length,57);
   const card=doc.apps.find(x=>x.id==="netcol-vpn");
   assert.equal(card.name,"Netcol VPN");assert.equal(card.decodeEnabled,true);
   assert.equal(card.iconSha256,"1cf1a5995d31294a39ffcc03630af88bfcee91577ba061852cc82eb7da9d0b39");

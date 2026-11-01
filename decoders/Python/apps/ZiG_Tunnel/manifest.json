@@ -1,0 +1,169 @@
+{
+  "id": "zig-tunnel",
+  "name": "ZiG Tunnel",
+  "package": "com.zigtunnel",
+  "compatibleVersions": [
+    "1.0"
+  ],
+  "versionCode": 1,
+  "engine": "python-zig-xxtea772515655-utf16shift",
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "source": "https://zimbotunnel.co.zw/default_config.hs",
+    "method": "GET",
+    "userAgent": "okhttp/5.3.2",
+    "requiresBackendSecrets": false,
+    "originalFlow": [
+      "OpenVPNClient.E",
+      "AsyncTaskC0193Lm",
+      "C0699g4.f"
+    ],
+    "embeddedResource": "res/raw/default_config.hs",
+    "embeddedProof": {
+      "source": "included.enc",
+      "bytes": 8652,
+      "sha256": "2da9124c62562cb3fbc92b52fef41b8b10ba947e872d424df29fb45c995ba246",
+      "version": "0",
+      "servers": 1,
+      "networks": {
+        "HTTPNetworks": 1,
+        "SSLNetworks": 0
+      },
+      "fields": 9,
+      "uniqueFields": 7,
+      "completeJavaEqual": true,
+      "completeWorkerEqual": true,
+      "rawBytes": 2012
+    },
+    "remoteProof": {
+      "source": "remote.enc",
+      "bytes": 370560,
+      "sha256": "2d01368fee662eb0973d0b2ae4ac688448f303c058ba6685660a1722887ee117",
+      "version": "2.3",
+      "servers": 15,
+      "networks": {
+        "HTTPNetworks": 3,
+        "SSLNetworks": 1
+      },
+      "fields": 77,
+      "uniqueFields": 29,
+      "completeJavaEqual": true,
+      "completeWorkerEqual": true,
+      "rawBytes": 34328
+    },
+    "liveCliDownloadEqual": true,
+    "realWorkerGatewayEqual": true,
+    "workerGatewayRawBytes": 34328,
+    "nodeProviderTransport": "mocked",
+    "internalHttpTransport": "simulated",
+    "catalogVersion": 59,
+    "publicCards": 57
+  },
+  "fieldContract": {
+    "root": [
+      "config_url",
+      "account_api",
+      "upload_get_api",
+      "upload_post_api",
+      "AppConfPass",
+      "Ovpn_Cert"
+    ],
+    "Servers": [
+      "ServerIP",
+      "ServerCloudFront",
+      "ServerHTTP",
+      "ProxyHost",
+      "Username",
+      "Password",
+      "ovpnCertificate"
+    ],
+    "networkLists": [
+      "HTTPNetworks",
+      "DirectNetworks",
+      "DNSNetworks",
+      "UDPNetworks",
+      "SSLNetworks"
+    ],
+    "networkFields": [
+      "NetworkPayload",
+      "NetworkFrontQuery",
+      "NetworkBackQuery",
+      "SquidProxy",
+      "SSLSNI",
+      "SSLPayload"
+    ],
+    "preserveUnknownAndJsonSettings": true
+  },
+  "format": {
+    "primitive": "XXTEA",
+    "delta": 772515655,
+    "key": "UTF8 4669 zero-filled to16 bytes",
+    "wordOrder": "little-endian",
+    "lengthWord": true,
+    "postprocess": "UTF8 then subtract4669 twice per UTF16 code unit with wrap16",
+    "authenticated": false
+  },
+  "files": {
+    "newRoute": false,
+    "writerCertified": false,
+    "newTextScheme": false,
+    "note": "Resource .hs is a full app catalog; no global profile suffix inferred"
+  },
+  "dependencies": {
+    "python": ">=3.10",
+    "pycryptodome": "3.23.0",
+    "supportFiles": [
+      "../HTTP_FenixVPN/codec.py",
+      "../HTTP_FenixVPN/field_names.json"
+    ]
+  },
+  "sourceBaseApkSha256": "ba0a374ad191ca1b31e3654a62e77f8ce741713b2c58a8757de32ee07dfaa1ac",
+  "signer": {
+    "sha1": "242c140c399ef3321235eded917322e53a7de686",
+    "sha256": "9e83eda7a6c6b6c1c358cb07f224b470dff69d23ad4a1097e47e544c600b6d8e"
+  },
+  "originalInput": {
+    "filename": "ZiG-Tunnel-1.0-build1-armeabi-v7a.xapk",
+    "bytes": 50260248,
+    "sha256": "b0ad45525bc33d3ebc1ae85ddd7b62dcab10ae68a457eaffd71a313958bffad4",
+    "libraryFileId": "libfile_b6d5ff6b104481918081878aa2ec3452"
+  },
+  "mirrorVariantNotCertified": {
+    "version": "1.2",
+    "build": 3,
+    "sha256": "fe7bbaccd3b2feecfe2eeb793262c7608218ba02a90373563f99c76bad9c6ae3",
+    "signerSha1": "0e0a9a5a79e7cce8e140fb4b3012fd65077002c2",
+    "googlePlayVersion": "1.0",
+    "compatibilityValidated": false,
+    "libraryFileId": "libfile_8d2851278a1881918aa444482495721e"
+  },
+  "icon": {
+    "source": "res/mipmap/ic_launcher.png",
+    "width": 500,
+    "height": 500,
+    "bytes": 186687,
+    "sha256": "ff64e345b56a89e0738d1999a98d1eb8aa6dd093ae6d5d90a85b120d148de4bc",
+    "policy": "Exact original PNG, no conversion or resize"
+  },
+  "validation": {
+    "checkedOn": "2026-11-01",
+    "pythonFocusedTests": 18,
+    "newZigPythonTests": 9,
+    "nodeFocusedTests": 166,
+    "newZigNodeTests": 6,
+    "skips": 0,
+    "completeJavaEqual": true,
+    "realCliDownloadEqual": true,
+    "realWorkerEqual": true,
+    "androidVpnTested": false,
+    "deployed": false,
+    "jadxVersion": "1.5.6",
+    "jadxErrors": 31,
+    "c0Routes": 240,
+    "c8Routes": 255
+  },
+  "remoteOriginal": {
+    "filename": "ZiG-Tunnel-remote-2.3.enc",
+    "libraryFileId": "libfile_9ed00892c07081919347dfae9ecbec1f"
+  }
+}

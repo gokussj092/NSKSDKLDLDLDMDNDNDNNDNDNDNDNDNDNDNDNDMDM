@@ -1,5 +1,18 @@
 # Registro de nuevas integraciones VPN
 
+## ZiG Tunnel Play1.0 (1) — 2026-11-01
+
+Segunda app, después del commit Enaa45b9a3e. Versión1.0 confirmada en el
+HTML vivo de Play; el mirror1.2/build3 tiene otra firma y no se certifica.
+GET fijo con User-Agent okhttp/5.3.2: **HTTP200 real,2.3,15 servidores,
+3 HTTPNetworks/1 SSLNetwork**,370560bytes. Método Java XXTEA delta772515655,
+clave4669/doble restaUTF16, todas las secciones conservadas. Incluido0,1/1/0.
+JSON completo igual al Java original, CLI, worker y gateway con HTTP interno
+simulado. **18 Python /166 Node aprobadas** para las dos apps.
+Ficha/broker/control/icono original, fuente59/**57 fichas**. C8 sigue255,
+C0 sigue240; no inferir una ruta .hs por el recurso del catálogo.
+No secretos HTTP adicionales ni despliegue. [Continuidad](ENAA_ZIG_TUNNEL_HANDOFF_2026_11_01.md).
+
 ## Enaa Tunnel Enna-1.07 (7) — 2026-11-01
 
 Fuente nativa GET con User-Agent Enaa Tunnel, HTTP200 real: **4.26,
