@@ -28,7 +28,7 @@ def download(*, authorization: str | None = None) -> bytes:
     }
     if authorization is not None:
         # A credential supplied by the operator for this fixed source only.
-        # Never accept control characters or reuse the APK developer's token.
+        # Never accept control characters or serialize the credential in output.
         if (not isinstance(authorization, str) or len(authorization) > 2048 or
                 not authorization.startswith(('Bearer ', 'token ')) or
                 not authorization.partition(' ')[2] or
@@ -54,7 +54,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('file', nargs='?', type=Path)
     parser.add_argument('--stdin', action='store_true')
-    parser.add_argument('--download', action='store_true', help='Reintentar la fuente fija, observada HTTP 404')
+    parser.add_argument('--download', action='store_true', help='Descargar la fuente fija con la autorización configurada')
     args = parser.parse_args()
     if sum((args.file is not None, args.stdin, args.download)) != 1:
         parser.error('Elige un archivo, --stdin o --download.')

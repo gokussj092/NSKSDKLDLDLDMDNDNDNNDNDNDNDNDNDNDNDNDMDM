@@ -1,41 +1,41 @@
 # VIP Snipher Pro 2.9 (29)
 
-Paquete `dev.renz.soft.vipsnipherpro`. Lector completo **offline** de catálogo,
-worker privado y ficha `vip-snipher-pro` con el PNG original. Catálogo mínimo
-**59**, conservado por instrucción del propietario para el lote aún sin
-desplegar; **53 fichas**. No modifica Android, el panel ni los switches.
+Paquete `dev.renz.soft.vipsnipherpro`. Descarga autenticada de la fuente exacta
+del APK, lector completo de catálogo, worker privado y ficha `vip-snipher-pro`
+con el PNG original. Catálogo fuente **59**, conservado por instrucción del
+propietario para el lote aún sin desplegar; **53 fichas**. Android sin cambios.
 
-**Descarga remota pendiente:** el GET fijo recuperado del actualizador devuelve
-HTTP **404** en peticiones anónimas desde este entorno, confirmado de nuevo
-el 2026-11-01:
+**Descarga real validada el 2026-11-01:** GET autenticado **HTTP200**, **323244
+bytes**, catálogo **8.0.61 /47 servidores /273 redes**:
 
 `https://raw.githubusercontent.com/Civ3snipher/NEW-VIP-SNIPHER-PRO-3/refs/heads/main/update.json?ref=main`
 
-La URL histórica sin `-3` también devuelve 404. No se reemplaza por una fuente
-inventada ni por el asset antiguo. La ficha conserva `remote:null`, incluso
-con el interruptor global activado, y no hay un broker público de descarga.
-El worker puede procesar bytes autorizados offline. Para habilitar la descarga
-es necesario obtener y contrastar un catálogo real de la fuente vigente.
+La URL coincide literalmente con `VIPSNIPHERPROMain.P()`. Su
+`s.getHeaders()` añade `Accept: application/json`,
+`X-GitHub-Api-Version: 2022-11-28` y `Authorization`. La comprobación utilizó
+la misma credencial incluida en el APK, únicamente en memoria y contra esa
+fuente fija. No se guardó su valor en Git ni se accedió a otros endpoints.
+Las respuestas 404 previas correspondían a peticiones sin autorización.
 
-**Versión y cabeceras revisadas:** el HTML vigente de Google Play sigue
-anunciando **2.9**; el original analizado es **2.9 / build29**, también el más
-reciente listado por APKPure. `VIPSNIPHERPROMain.s.getHeaders()` añade
-`Accept: application/json`, `X-GitHub-Api-Version: 2022-11-28` y una
-autorización propia del desarrollador. No añade un `User-Agent` personalizado.
-La herramienta envía por defecto las dos cabeceras públicas; su
-`VIP Snipher Pro/2.9` identifica a la herramienta, no al cliente Android.
-No copia ni utiliza la autorización del APK. Tres peticiones sin ella
-(agente por defecto, de herramienta y Dalvik) devolvieron 404. Esto no prueba
-que falle una petición autenticada de la app ni que el servicio esté caído.
+El HTML vigente de Google Play sigue anunciando **2.9**; el original analizado
+es **2.9 /build29**, también el último listado por APKPure. El actualizador
+no declara User-Agent propio. `VIP Snipher Pro/2.9` identifica a esta herramienta.
 
-Para solicitar la **misma URL exacta del APK**, la herramienta permite que el
-operador suministre una autorización válida mediante el secreto de entorno
-`SPDECODE_VIP_SNIPHER_AUTHORIZATION` (valor completo `Bearer …` o `token …`).
-Solo `--download` lee ese secreto; el lector offline y el worker no lo necesitan.
-No se guarda en el código, en los resultados ni en argumentos de línea de
-comandos. La descarga permanece limitada a esa fuente y no sigue redirecciones.
-Este soporte no acredita acceso al repositorio del proveedor: no se dispone de
-una credencial autorizada del operador y no se ha validado un catálogo remoto.
+## Configuración del servidor
+
+El backend lee la cabecera completa de `SPDECODE_VIP_SNIPHER_AUTHORIZATION`
+como secreto de entorno; Compose la transmite solo a `web`. Su valor no forma
+parte del código, catálogo público, estado de switches, errores ni petición
+interna al worker. Para el despliegue del lote 59 debe provisionarse en
+`/etc/spdecode/cloud.env` desde la cabecera del mismo original guardado.
+El valor se mantiene fuera del repositorio y de argumentos de comandos.
+
+La ficha ya tiene broker remoto. Requiere la autorización configurada, el
+interruptor global y la disponibilidad individual; sin el secreto no ofrece
+descarga. El panel puede desactivarla conservando el estado de los demás
+proveedores. Solo se acepta el GET de la URL fija, DNS público y TLS verificado;
+se rechazan todas las redirecciones, incluidas las del mismo host. No hay
+fallback al asset antiguo ni URL/credencial suministrada por el cliente.
 
 ## Uso
 
@@ -43,7 +43,7 @@ una credencial autorizada del operador y no se ha validado un catálogo remoto.
 python -m pip install -r requirements.txt
 python server_catalog_decoder.py copia-catalogo.txt
 python server_catalog_decoder.py --stdin < copia-catalogo.txt
-# Reintento explícito de la única fuente del build; actualmente HTTP 404:
+# Descarga de la misma fuente; configurar antes el secreto de autorización:
 python server_catalog_decoder.py --download
 ```
 
@@ -104,6 +104,12 @@ aportó un perfil exportado de build29; no se anuncia una actualización o
 certificación de ese exportador. La importación `.js/.rj` vista en el APK es
 actualización de catálogo, no una justificación para capturar esos sufijos
 globalmente. C0 **240**, C8 **254**, overrides **28**, intactos.
+
+Catálogo remoto real **8.0.61: 47 servidores /273 redes**, 2829 campos
+conocidos/1974 no vacíos; igualdad completa Java/Python/CLI/worker. Seis casos
+de primitivas ARM64 remotos iguales. El gateway valida también la respuesta
+real completa del worker con transporte interno simulado; no se afirma
+transporte Node real al proveedor. Ver TESTING.md para todas las métricas.
 
 PNG original exacto `res/i/cb.png`: **512×512, 25374 bytes**, SHA256
 `6a2ecaacc5fdf2a20f23cf31a58838854d7573dfb58c738274e150c31978e1e6`.

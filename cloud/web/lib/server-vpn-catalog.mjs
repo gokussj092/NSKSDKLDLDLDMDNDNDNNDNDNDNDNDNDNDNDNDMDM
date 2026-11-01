@@ -4,6 +4,7 @@ import {join} from "node:path";
 import {createHash} from "node:crypto";
 import {publicFormats,FORMAT_DETECTION} from "./file-format-catalog.mjs";
 import {publicTextFormats,publicOnlineReferenceFormats} from "./text-format-catalog.mjs";
+import {providerEnabled} from "./server-vpn-provider.mjs";
 
 export const CATALOG_VERSION = 59; // Same pending server release 59, per owner instruction.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
@@ -23,8 +24,8 @@ export function activeCatalogVersion(env=process.env) {
 }
 
 const ITEMS = Object.freeze([
-  // Build 29 embedded catalog verified; anonymous updater requests return HTTP 404.
-  {id:"vip-snipher-pro", name:"VIP Snipher Pro", icon:"vip-snipher-pro.png", remote:null},
+  // Build 29 authenticated updater and complete 8.0.61 catalog verified.
+  {id:"vip-snipher-pro", name:"VIP Snipher Pro", icon:"vip-snipher-pro.png", remote:"vip-snipher-pro"},
   {id:"netcol-vpn", name:"Netcol VPN", icon:"netcol-vpn.png", remote:"netcol-vpn"},
   {id:"wolf-custom-vpn", name:"Wolf Custom VPN", icon:"wolf-custom-vpn.png", remote:"wolf-custom-vpn"},
   {id:"jyfast-vpn-ultra", name:"JyFast VPN Ultra", icon:"jyfast-vpn-ultra.png", remote:"jyfast-vpn-ultra"},
@@ -122,7 +123,9 @@ export function catalog({availability=null,version=activeCatalogVersion()}={}) {
       iconSha256:iconFor(x.id).sha256,
       iconMimeType:"image/png",
       // No decode button for a provider until its remote broker is enabled.
-      decodeEnabled:x.remote==="nur" ? (availability?.["nur-tunnel"] ?? process.env.CLOUD_NUR_FETCH_ENABLED==="true") :
+      decodeEnabled:x.remote==="vip-snipher-pro" ?
+        providerEnabled(x.remote) && (availability?.[x.id] ?? true) :
+        x.remote==="nur" ? (availability?.["nur-tunnel"] ?? process.env.CLOUD_NUR_FETCH_ENABLED==="true") :
         Boolean(x.remote) && (availability?.[x.id] ?? process.env.CLOUD_SERVER_VPN_ENABLED==="true"),
     })),
   };

@@ -1,61 +1,99 @@
 # VIP Snipher Pro y 90NET: estado y recuperación
 
-Fecha: 2026-10-31. Repo Goku
+Actualizado: **2026-11-01**. Repo Goku
 `gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM`.
-Rama `fix/http-jireh-current-method`, sobre Netcol `9d5c778e`.
-`main` no fusionó esta rama al iniciar; se continúa aquí. Mantener **59** por
-la instrucción expresa del propietario para el lote aún no actualizado en VPS.
-No desplegar, fusionar, generar APK ni lanzar Actions; commit `[skip ci]`.
+Rama `fix/http-jireh-current-method`, sobre `2c7a56c4`.
+Mantener **59** para el lote aún sin desplegar, por instrucción del propietario.
+No fusionar main, desplegar, generar APK ni lanzar Actions; commit `[skip ci]`.
 
-## VIP Snipher Pro: lector offline verificado
+## VIP: fuente autenticada y catálogo completo validados
 
-Paquete `dev.renz.soft.vipsnipherpro`, **2.9 / 29**, obtenido de APKPure. Firma
-binaria y versión comprobadas; lector en `decoders/Python/apps/VIP_Snipher_Pro/`.
-Catálogo real incluido **3.0.22 / 14 servidores / 280 redes**, **2441 campos**,
-1750 no vacíos. JSON completo igual a JCA, Python, CLI y worker aislado. Ocho
-casos de primitivas ARM64 originales, sin JNI/Android. Gateway interno recibe
-el resultado real completo con transporte simulado; `isPartial:false`.
+Paquete `dev.renz.soft.vipsnipherpro`, **2.9 /29**. Google Play consultado de
+nuevo anuncia 2.9; APKPure también lista 2.9/29 como último build.
+Lector en `decoders/Python/apps/VIP_Snipher_Pro/`.
 
-Métodos: modo0 AES128CBC/XXTEA/restar2, modo1 Threefish256 con tweak siempre
-(0,0)/AES128CBC, modo2 PBKDF2/XXTEA/AES256CBC con IV prefijado. Se preservan
-todos los campos y estructuras; dos bordes de ceros Threefish comprobados.
-No MAC; no presentar padding/JSON como autenticación criptográfica.
+La URL exacta de `VIPSNIPHERPROMain.P()` es:
+`https://raw.githubusercontent.com/Civ3snipher/NEW-VIP-SNIPHER-PRO-3/refs/heads/main/update.json?ref=main`.
 
-**Bloqueo remoto real:** URL fija del build termina en
-`Civ3snipher/NEW-VIP-SNIPHER-PRO-3/refs/heads/main/update.json?ref=main`,
-HTTP404 desde este entorno. URL histórica sin `-3` y API pública de ese repo
-también404. No se afirma caída global del servicio. No reemplazarla por otra
-fuente sin evidencia. Ficha e icono originales con `remote:null`; no hay broker
-público ni switch de descarga para una fuente no validada. Worker offline sí
-registrado. **53 fichas / revisión fuente59**, C0 240 / C8 254 /28 overrides.
-Rutas `.vipsnipherpro` y `vipsnipherpro://` históricas intactas, sin certificación
-de un export de build29. No registrar `.js/.rj` genéricos.
+`s.getHeaders()` declara `Accept: application/json`,
+`X-GitHub-Api-Version: 2022-11-28` y `Authorization`; no declara un
+User-Agent propio. Las pruebas anteriores sin autorización devolvían 404.
+**La petición con la credencial del mismo APK devolvió HTTP200**, sin
+redirección, usando únicamente esa fuente. No se probaron otros endpoints.
 
-**51 Python /150 Node aprobadas**, sin skips, con regresiones del lote anterior
-y metadata254 intacta. Comandos, hashes y límites en README/TESTING/manifest de
-la app. Original PNG512×512 exacto en ficha y carpeta, sin conversión.
+Catálogo remoto **8.0.61 /47 servidores /273 redes**, **323244 bytes**,
+**2829 campos /1974 no vacíos** (1546 modo0,368 modo1,60 modo2).
+SHA256 **1d68e41fedfd42dead2f6a1285c39494108ca9fe2f949578dd1cda2470aa49e5**.
+Documento completo igual a Java independiente, Python, CLI y worker aislado;
+**6 casos nativos ARM64** remotos iguales. CLI stdout 221911 bytes.
+El resultado real completo pasa `fetchWorker` con HTTP interno simulado,
+`isPartial:false`,47/273. No se afirma egress Node real ni sesión Android.
 
-## Original duradero y reproducción
+El asset incluido sigue **3.0.22 /14 servidores /280 redes**,
+2441 campos/1750 no vacíos, con 8 casos nativos previos y dos bordes Threefish.
+No sustituir el catálogo remoto por el asset antiguo.
 
-Original guardado y finalizado correctamente:
-**VIP-Snipher-Pro-2.9-build29.xapk**, ID
-**`libfile_fb815e6716cc81918ad90bc29bfbd9b6`**.
-SHA256 **0738801b6fffa10afd01c4b61f091e193dfd976b322a37b5cf7a891821663f44**,
-59683358 bytes. Contiene base, ARM64 y splits de idiomas/densidad.
+Métodos: modo0 AES128CBC/XXTEA/restar2; modo1 Threefish256 con tweak siempre
+(0,0)/AES128CBC; modo2 PBKDF2/XXTEA/AES256CBC con IV prefijado.
+Preservar campos, listas y tipos; no hay MAC. El JNI completo no se ejecutó.
 
-Tras limpieza, recuperar el checkout actual de la rama y materializar ese
-original. No confiar en que `latest` mantenga el build. Extraer
-`dev.renz.soft.vipsnipherpro.apk` y `config.arm64_v8a.apk` con zipfile; de ellos
+## Backend y validación de integración
+
+El broker `vip-snipher-pro` ya está registrado con la misma URL y cabeceras.
+La cabecera completa se suministra mediante
+`SPDECODE_VIP_SNIPHER_AUTHORIZATION` como secreto de backend. Compose la
+transmite solo a web. No se ha guardado su valor en Git ni se ha desplegado.
+Al desplegar el lote 59 debe provisionarse desde la cabecera del original APK
+guardado. No poner su valor en argumentos de comandos, logs o fixtures.
+
+El proveedor requiere el secreto válido, switch global y disponibilidad
+individual. Sin secreto queda deshabilitado antes de DNS; el panel puede
+desactivarlo manteniendo los demás switches. Se rechazan DNS privados y todas
+las redirecciones para que la autorización no salga de la URL fija. El secreto
+no se envía a otros proveedores ni al worker ni se devuelve al cliente.
+
+**11 Python /99 Node aprobadas, sin skips**, incluidas 8 Node específicas VIP.
+Las pruebas de red Node utilizan mocks y credenciales ficticias. GET real
+autenticado y paridad del catálogo remoto real verificados aparte.
+Catálogo fuente **59 /53 fichas**; C0 240 /C8 254 /28 overrides intactos.
+Rutas históricas `.vipsnipherpro`/`vipsnipherpro://` conservadas.
+No hay certificación de un perfil exportado de build29 ni nuevas rutas .js/.rj.
+PNG512×512 original exacto en ficha y carpeta, sin conversión.
+
+## Originales duraderos y reproducción
+
+Original APK/XAPK:
+**VIP-Snipher-Pro-2.9-build29.xapk**,
+ID **`libfile_fb815e6716cc81918ad90bc29bfbd9b6`**,
+59683358 bytes, SHA256
+**0738801b6fffa10afd01c4b61f091e193dfd976b322a37b5cf7a891821663f44**.
+
+Catálogo remoto cifrado descargado:
+**updater-authenticated.enc**,
+ID **`libfile_4ba67f90a4188191b2017f22d42df8ce`**,
+323244 bytes, SHA256
+**1d68e41fedfd42dead2f6a1285c39494108ca9fe2f949578dd1cda2470aa49e5**.
+No se ha guardado una copia descifrada duradera ni publicado entradas reales.
+
+Tras limpieza, recuperar el checkout actual de la rama y esos originales.
+No confiar en `latest` para mantener el build. Del XAPK extraer
+`dev.renz.soft.vipsnipherpro.apk` y `config.arm64_v8a.apk`; de ellos,
 `res/aa/d.js`, `res/i/cb.png` y `lib/arm64-v8a/libovpn3.so`.
-Verificar los hashes del manifest antes de analizar. Recrear dependencias de
-`scripts/apk_analysis/requirements.txt`, app requirements y JDK.
+Verificar hashes del manifest antes de analizar. Recrear requirements del
+lector/análisis y JDK.
 
-`vip_snipher_verify.py asset --native libovpn3.so --runtime` compara todo el
-JSON e imprime solo métricas/hashes. Oracles y vectores en
-`tests/golden/vip_snipher*`. `decompile.py`, `elf_inspect.py`, `arm64_function.py`
-y `paranoid_strings.py` conservan el análisis. LSParanoid de este build:
-clase `defpackage/sl.java`, `--chunk-field a --method a --call-class sl`.
-Los originales, strings e investigación temporal no se suben a Git.
+`vip_snipher_verify.py catalogo.enc --native libovpn3.so --runtime` compara
+todo el JSON e imprime solo métricas/hashes. Oracles y vectores sintéticos en
+`tests/golden/vip_snipher*`. Para recuperar la cabecera exacta sin publicarla,
+JADX fijado y `paranoid_strings.py` resuelven
+`defpackage/sl.java`, `--chunk-field a --method a --call-class sl`.
+Usar en memoria la cabecera de `VIPSNIPHERPROMain.s.getHeaders()` solo para la
+fuente fija. Los originales y fuentes resueltas contienen secretos: no subirlos
+a Git ni imprimir la cabecera.
+
+## 90NET VPN: pospuesto expresamente
+
+El usuario pidió dejarlo para después; no se hicieron nuevos intentos.
 
 ## 90NET VPN: bloqueado por ausencia de entrada verificable
 
@@ -65,7 +103,7 @@ Paquete confirmado por ficha Google Play: **`com.ninetynetvpn.org`**, nombre
 mediante APK ni se recuperó su método**. No asumir que usa el mismo método de
 MNR/AboWaged por compartir desarrollador.
 
-Intentos de adquisición en esta sesión:
+Intentos anteriores de adquisición:
 
 - APKPure descarga normal XAPK y APK: HTTP404; páginas `.net/.com`:410.
 - APKCombo página y ruta de descarga:503 en este entorno.
@@ -83,36 +121,3 @@ público directo vigente.** Entonces comprobar paquete/versión/firma y seguir
 el flujo normal de análisis y paridad. No hay ficha, icono, motor ni proveedor
 inventado de90NET en esta entrega. Estos pendientes no quedan completados por
 el simple hecho de conservar esta documentación.
-
-## Revisión final de VIP, 2026-11-01
-
-Sobre `a8b16501` de la misma rama, sin modificar main ni desplegar. Google Play
-sigue anunciando **2.9** en el HTML consultado de nuevo; APKPure lista
-**2.9 /29** como último build. Se recuperó el original guardado, se verificaron
-los hashes y se resolvieron de nuevo **1824 literales /71 fuentes**.
-
-`VIPSNIPHERPROMain.s.getHeaders()` envía `Accept: application/json`,
-`X-GitHub-Api-Version: 2022-11-28` y una autorización del desarrollador.
-**No hay User-Agent propio en ese método. No reutilizar ni publicar la
-autorización encontrada en el APK.** La herramienta incorpora exclusivamente
-las cabeceras públicas. Su agente `VIP Snipher Pro/2.9` es un identificador
-de herramienta, no un valor extraído de Android.
-
-Pruebas anónimas con agente por defecto, de herramienta y Dalvik: todas404.
-Este resultado no describe la petición autenticada original ni prueba caída
-global. `remote:null` permanece; el lector offline y el worker sí funcionan.
-Para cerrar la descarga automática falta una fuente accesible autorizada y
-un catálogo real completo contrastado. No sustituirla por el asset antiguo.
-
-Validación final: **8 Python /4 Node**, sin skips, más el documento original
-completo **14 servidores /280 redes** con igualdad Java/Python/worker/CLI y
-**8 casos nativos**. Catálogo59 y53 fichas intactos. 90NET queda expresamente
-para después por instrucción del usuario.
-
-La URL del actualizador ya coincide exactamente con el APK y se conserva.
-La CLI soporta además una autorización válida suministrada por el operador
-mediante `SPDECODE_VIP_SNIPHER_AUTHORIZATION`, solo en `--download`. No contiene
-el token del desarrollador. **11 pruebas Python aprobadas**, incluidas tres
-nuevas de cabecera/destino fijo, rechazo previo al transporte y secreto de CLI;
-las pruebas usan únicamente un valor ficticio. No se ha probado autorización
-real contra el proveedor ni cambia el estado remoto pendiente.

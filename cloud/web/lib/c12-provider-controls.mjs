@@ -6,7 +6,7 @@
 import {readFile,open,rename,unlink,access} from "node:fs/promises";
 import {join} from "node:path";
 import {randomUUID,createHash} from "node:crypto";
-import {providerIds} from "./server-vpn-provider.mjs";
+import {providerIds,providerEnabled} from "./server-vpn-provider.mjs";
 import {ehiConfigured,nurConfigured} from "./c35-provider.mjs";
 import {activeCatalogVersion,catalog} from "./server-vpn-catalog.mjs";
 
@@ -14,6 +14,7 @@ const ROOT="/app/provider-control";
 const IDS=Object.freeze(["ehi-cloud","hc-cloud","nur-tunnel",...providerIds()]);
 export const PUBLIC_PROVIDER_IDS=IDS;
 const LABELS=Object.freeze({
+  "vip-snipher-pro":"VIP Snipher Pro",
   "netcol-vpn":"Netcol VPN",
   "wolf-custom-vpn":"Wolf Custom VPN",
   "jyfast-vpn-ultra":"JyFast VPN Ultra",
@@ -136,7 +137,7 @@ export function providerPrerequisite(id,env=process.env){
   if(id==="hc-cloud")return env.CLOUD_HTTP_CUSTOM_IMPORT_ENABLED!=="false";
   if(id==="ehi-cloud")return ehiConfigured(env);
   if(id==="nur-tunnel")return nurConfigured(env);
-  return env.CLOUD_SERVER_VPN_ENABLED==="true";
+  return providerEnabled(id,env);
 }
 export function providerEffective(id,state,env=process.env){
   if(!valid(state))throw Error("PROVIDER_STATE_INVALID");

@@ -46,6 +46,11 @@ const JYFAST_SOURCES=Object.freeze({
 });
 const PAIRED_SOURCES=Object.freeze({"jyfast-vpn-ultra":JYFAST_SOURCES,"abowaged-vpn":ABOWAGED_SOURCES,"turbomx-vpn":TURBOMX_SOURCES,"superflash-vpn":SUPERFLASH_SOURCES,"onspace-vpn":ONSPACE_SOURCES,"http-socketclay":SOCKETCLAY_SOURCES,"http-wakko":WAKKO_SOURCES,"v2ray-tunnel-plus":V2PLUS_SOURCES});
 const PROVIDERS = Object.freeze({
+  "vip-snipher-pro": {
+    url:"https://raw.githubusercontent.com/Civ3snipher/NEW-VIP-SNIPHER-PRO-3/refs/heads/main/update.json?ref=main",
+    agent:"VIP Snipher Pro/2.9",
+    headers:{"Accept":"application/json","X-GitHub-Api-Version":"2022-11-28"},
+  },
   "netcol-vpn": {url:"https://raw.githubusercontent.com/jdavidag/setting/main/tO6oD1drTvL2.json",agent:"Netcol VPN/14.2"},
   "wolf-custom-vpn": {url:"https://strongteam.co/api/wolfcustom/newv1.txt",agent:"Wolf Custom VPN"},
   "jyfast-vpn-ultra": {url:JYFAST_SOURCES.free,agent:"JyFast VPN Ultra/9",headers:{"X-IGNIX-SIG":"10c7440b8feac5cee6a54959e7599ff26bd27153"}},
@@ -151,7 +156,11 @@ export class VpnProviderError extends Error {
 }
 function fail(code){throw new VpnProviderError(code);}
 export function providerEnabled(id,env=process.env){
-  return Object.hasOwn(PROVIDERS,id) && env.CLOUD_SERVER_VPN_ENABLED==="true";
+  if(!Object.hasOwn(PROVIDERS,id) || env.CLOUD_SERVER_VPN_ENABLED!=="true")return false;
+  if(id!=="vip-snipher-pro")return true;
+  const authorization=env.SPDECODE_VIP_SNIPHER_AUTHORIZATION;
+  return typeof authorization==="string" && authorization.length<=2048 &&
+    /^(Bearer|token) [!-~]+$/.test(authorization) && !/[\r\n]/.test(authorization);
 }
 export function providerIds(){return Object.keys(PROVIDERS);}
 
@@ -223,6 +232,10 @@ export async function downloadVpnCatalog(id,source=id==="jyfast-vpn-ultra"?"free
   const provider=PROVIDERS[id];
   if(!provider)fail("UNSUPPORTED_FORMAT");
   if(!providerEnabled(id))fail("REMOTE_NOT_CONFIGURED");
+  // Read the secret per request, only for the fixed VIP updater. Never expose it
+  // in the public catalog, worker payload, provider switches or error messages.
+  const headers=id==="vip-snipher-pro" ?
+    {...provider.headers,Authorization:process.env.SPDECODE_VIP_SNIPHER_AUTHORIZATION} : provider.headers;
   if(id!=="mkk-hyper" && !Object.hasOwn(PAIRED_SOURCES,id) && source!=="servers")fail("UNSUPPORTED_FORMAT");
   if(id==="mkk-hyper" && !Object.hasOwn(MKK_SOURCES,source))fail("UNSUPPORTED_FORMAT");
   if(Object.hasOwn(PAIRED_SOURCES,id) && !Object.hasOwn(PAIRED_SOURCES[id],source))fail("UNSUPPORTED_FORMAT");
@@ -250,7 +263,7 @@ export async function downloadVpnCatalog(id,source=id==="jyfast-vpn-ultra"?"free
       const remaining=deadline-Date.now();
       if(remaining<=0)fail("REMOTE_PROVIDER_UNAVAILABLE");
       let answer;
-      try{answer=await pinnedGet(target,ip,provider.agent,Math.min(CONNECT_MS,remaining),provider.headers);}
+      try{answer=await pinnedGet(target,ip,provider.agent,Math.min(CONNECT_MS,remaining),headers);}
       catch(error){
         if(error instanceof VpnProviderError){
           if(!error.retryable)throw error;
@@ -261,7 +274,7 @@ export async function downloadVpnCatalog(id,source=id==="jyfast-vpn-ultra"?"free
         continue;
       }
       if(answer.redirect!==undefined){
-        if(["netcol-vpn","wolf-custom-vpn","tunneldoom-vpn","mtm-tunnel-lite","mnr-tunnel-plus","bd-net-vpn","aura-net-vpn","apna-vpn","any-vpn","speicers-pro-vpn","7net-vpn","xhypher-tunnel-pro","focus-vpn-cloud","freedom-vpn","http-internet-infinito","megatunnel","mx-tunnel-pro","rjc-tunnel-pro","rmp-tunnel-pro","http-jireh"].includes(id)||Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
+        if(["vip-snipher-pro","netcol-vpn","wolf-custom-vpn","tunneldoom-vpn","mtm-tunnel-lite","mnr-tunnel-plus","bd-net-vpn","aura-net-vpn","apna-vpn","any-vpn","speicers-pro-vpn","7net-vpn","xhypher-tunnel-pro","focus-vpn-cloud","freedom-vpn","http-internet-infinito","megatunnel","mx-tunnel-pro","rjc-tunnel-pro","rmp-tunnel-pro","http-jireh"].includes(id)||Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
         const next=answer.redirect;
         if(typeof next!=="string"||next.length>2048)fail("REMOTE_NETWORK_DENIED");
         target=new URL(next,dest).href;

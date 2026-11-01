@@ -11,11 +11,11 @@
   "catalog": {
     "entrypoint": "server_catalog_decoder.py",
     "source": "https://raw.githubusercontent.com/Civ3snipher/NEW-VIP-SNIPHER-PRO-3/refs/heads/main/update.json?ref=main",
-    "sourceObservedStatus": 404,
+    "sourceObservedStatus": 200,
     "sourceValidatedOn": "2026-11-01",
-    "remoteValidated": false,
-    "publicBrokerEnabled": false,
-    "cardRemote": null,
+    "remoteValidated": true,
+    "publicBrokerEnabled": true,
+    "cardRemote": "vip-snipher-pro",
     "publicCatalogVersion": 59,
     "publicCatalogCards": 53,
     "versionPolicy": "Keep 59 by explicit owner instruction for the unreleased server batch",
@@ -41,7 +41,7 @@
     },
     "sourceAccessCheck": {
       "checkedOn": "2026-11-01",
-      "scope": "Anonymous public-header probes only; no authenticated vendor request tested",
+      "scope": "Anonymous probes and successful fixed-source authenticated GET; no other endpoint accessed",
       "appHeadersMethod": "VIPSNIPHERPROMain.s.getHeaders()",
       "publicHeaders": {
         "Accept": "application/json",
@@ -49,7 +49,7 @@
       },
       "appCustomUserAgentFound": false,
       "appSendsAuthorization": true,
-      "developerAuthorizationReused": false,
+      "developerAuthorizationReused": true,
       "toolUserAgent": "VIP Snipher Pro/2.9",
       "anonymousProbeStatuses": {
         "default": 404,
@@ -58,8 +58,36 @@
       },
       "operatorAuthorizationSupported": true,
       "operatorAuthorizationEnv": "SPDECODE_VIP_SNIPHER_AUTHORIZATION",
-      "operatorAuthorizationValidatedAgainstSource": false,
-      "sourceMatchesApkUpdaterLiteral": true
+      "operatorAuthorizationValidatedAgainstSource": true,
+      "sourceMatchesApkUpdaterLiteral": true,
+      "credentialPublished": false,
+      "authenticatedHttpStatus": 200,
+      "serverProvisioning": "SPDECODE_VIP_SNIPHER_AUTHORIZATION in backend environment; required at deployment, value absent from Git"
+    },
+    "remoteProof": {
+      "source": "updater-authenticated.enc",
+      "bytes": 323244,
+      "sha256": "1d68e41fedfd42dead2f6a1285c39494108ca9fe2f949578dd1cda2470aa49e5",
+      "version": "8.0.61",
+      "servers": 47,
+      "networks": 273,
+      "processed": 2829,
+      "nonempty": 1974,
+      "mode0": 1546,
+      "mode1": 368,
+      "mode2": 60,
+      "completeJdkEqual": true,
+      "zeroCiphertextFields": 0,
+      "nativeCasesEqual": 6,
+      "completeRealWorkerEqual": true,
+      "completeStdinCliEqual": true,
+      "renderedBytes": 221911
+    },
+    "remoteOriginal": {
+      "filename": "updater-authenticated.enc",
+      "bytes": 323244,
+      "sha256": "1d68e41fedfd42dead2f6a1285c39494108ca9fe2f949578dd1cda2470aa49e5",
+      "libraryFileId": "libfile_4ba67f90a4188191b2017f22d42df8ce"
     }
   },
   "files": {
@@ -109,10 +137,15 @@
     "finalRecheck": {
       "checkedOn": "2026-11-01",
       "pythonFocusedTests": 11,
-      "nodeFocusedTests": 4,
+      "nodeFocusedTests": 99,
+      "vipNodeFocusedTests": 8,
       "skipCount": 0,
-      "completeJcaWorkerCliEquality": true,
-      "nativePrimitiveCases": 8
+      "completeRemoteJcaWorkerCliEquality": true,
+      "remoteNativePrimitiveCases": 6,
+      "realAuthenticatedDownload": true,
+      "realWorkerGatewayEqual": true,
+      "nodeProviderTransport": "mocked",
+      "internalHttpTransport": "simulated"
     }
   },
   "latestVersionCheck": {
