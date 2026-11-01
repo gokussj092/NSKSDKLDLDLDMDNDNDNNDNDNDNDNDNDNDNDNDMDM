@@ -28,25 +28,30 @@ def independent_document(ref,wire):
     if not text.startswith('{'):
         text=ref.open_many([(text,len(text.replace('\r','').replace('\n',''))%4==1)])[0]
     obj=json.loads(text)
+    # Independently transcribed source contexts. Info is displayed directly;
+    # URI is Boolean; unknown metadata never enters the field decryptor.
+    root=('DefOVPNUser','DefOVPNPass','HysteriaUser','HysteriaOBFS','DefaultOVPNCert')
+    server=('ServerIPHost','OVPNUser','OVPNPass','UDP_obfs','UDP_user','CustomCertificate',
+            'SlowDNSHost','SlowDNSKey','V2rayUUID','V2rayPath','H2pass','TrojanPass')
+    network=('Payload','CustomProxy','SNI','V2rayConfig','BugDNS','V2rayAddress','V2rayHost','V2raySNI')
+    records=([(obj,network)] if 'Servers' not in obj else
+             [(obj,root)]+[(s,server) for s in obj['Servers']]+[(n,network) for n in obj['Networks']])
     found={}
-    def collect(x):
-        if isinstance(x,dict):
-            for v in x.values():collect(v)
-        elif isinstance(x,list):
-            for v in x:collect(v)
-        elif isinstance(x,str):
+    for record,names in records:
+        for name in names:
+            x=record.get(name)
+            if not isinstance(x,str):continue
             try:
                 b=base64.b64decode(x,validate=True)
                 if len(b)>=44:found[x]=None
             except (ValueError,UnicodeError):pass
-    collect(obj)
     if found:
         found.update(zip(found,ref.open_many([(s,False) for s in found])))
-    def replace(x):
-        if isinstance(x,dict):return {k:replace(v) for k,v in x.items()}
-        if isinstance(x,list):return [replace(v) for v in x]
-        return found.get(x,x) if isinstance(x,str) else x
-    return replace(obj),len(found)
+    for record,names in records:
+        for name in names:
+            value=record.get(name)
+            if isinstance(value,str) and value in found:record[name]=found[value]
+    return obj,len(found)
 
 
 def main():

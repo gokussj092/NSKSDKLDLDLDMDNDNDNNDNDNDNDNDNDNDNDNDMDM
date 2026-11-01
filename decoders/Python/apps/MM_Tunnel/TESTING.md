@@ -1,3 +1,57 @@
+# Validación vigente — MM Tunnel v1.10.30.2 (47)
+
+Fecha2026-11-01. Prevalece sobre el resultado histórico build45 de abajo.
+
+- **29 pruebas Python aprobadas**, sin omisiones:11 MM,1 registro C8,
+  8 Enaa y9 ZiG. Incluyen compatibilidad histórica .mmt, GCM alterado,
+  metadatos Base64, contextos desconocidos, tipos/duplicados/límites,
+  CLI/stdin y worker completo; el POST exige hash, Content-Type y UA originales.
+- **129 pruebas Node aprobadas**, sin omisiones: MM y regresiones de catálogos,
+  proveedor, C12, sincronización, contrato worker, formatos y los proveedores
+  Enaa/ZiG/ALFAISAL/IZPH/VIP. TLS/IP/DNS, POST/cuerpo/longitud/UA, rechazo de
+  redirecciones, fuente fija, errores, sesión/cuota, switches persistentes y
+  rechazo de worker parcial/inconsistente. Transportes Node simulados.
+- **7 documentos completos** iguales a libsodium Argon2id + Java/JCA AES-GCM:
+  seis fixtures sintéticos y el catálogo remoto real. **3411 campos distintos
+  por documento** contrastados en total,3399 en el remoto. Worker aislado
+  no parcial, presupuesto120s conservado. La lectura completa directa tardó
+  87.63s en este entorno; otros entornos pueden variar.
+- **CLI real sin argumento, fuera del checkout:** descarga HTTP200 nueva y
+  descifrado completo igual al resultado independiente y al worker.
+- Gateway probado con sesión/cuota y **todos los822713 bytes cifrados** y el
+  JSON real validado de500239 bytes; transporte externo Node y respuesta HTTP
+  interna del worker simulados. Siete comprobaciones de replay satisfactorias;
+  no se afirma una nueva descarga externa Node ni despliegue en producción.
+- `cloud_formats_catalog.py` aprobado: C0240,C8255; solo cambia el nombre
+  público del lector .mmt a la versión vigente. Inventario Android congelado.
+- `mm_tunnel_source_check.py`: verifica el XAPK actual y la receta nativa
+  hash POST por cargas PC-relativas ARM, sin ejecutar código del APK.
+
+```bash
+PYTHONPATH=. python -m unittest tests.test_mm_tunnel tests.test_cloud_c8_vpn_registry \
+  tests.test_enaa_tunnel tests.test_zig_tunnel -v
+python scripts/cloud_formats_catalog.py
+python scripts/apk_analysis/mm_tunnel_source_check.py /ruta/MM-Tunnel-v1.10.30.2-build47.xapk
+python scripts/apk_analysis/mm_tunnel_verify.py --worker --catalog /ruta/MM-Tunnel-remote-2.46.enc
+# Requiere Internet; stdout contiene datos VPN privados: guardar fuera de Git.
+python decoders/Python/apps/MM_Tunnel/server_catalog_decoder.py > /ruta/privada/catalogo.json
+cd cloud/web
+node --test tests/mm-tunnel.test.mjs tests/server-vpn-catalog.test.mjs \
+  tests/server-vpn-provider.test.mjs tests/c12-provider-controls.test.mjs \
+  tests/server-vpn-version-sync.test.mjs tests/server-vpn-worker-contract.test.mjs \
+  tests/file-formats.test.mjs tests/text-format-catalog.test.mjs \
+  tests/enaa-tunnel.test.mjs tests/zig-tunnel.test.mjs \
+  tests/alfaisal-tunnel-plus.test.mjs tests/izph-vpn-pro.test.mjs tests/vip-snipher-pro.test.mjs
+```
+
+Siguen pendientes exportación .mmt real, importación Android, fusión y despliegue.
+No hubo compilación APK/AAB ni ejecución voluntaria de GitHub Actions.
+Original/cifrado se conservan fuera de Git; recuperación y hashes en el handoff.
+
+---
+
+## Evidencia histórica build45 (no representa la descarga vigente)
+
 # Validación — MM Tunnel v1.10.11.1 (45)
 
 Fecha: 2026-10-24. Las pruebas guardan solo fixtures sintéticos. No hay muestra

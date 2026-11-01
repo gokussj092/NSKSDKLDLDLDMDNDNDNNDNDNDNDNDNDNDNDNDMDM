@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
-"""Offline MM catalog reader and fixed official POST downloader.
-
-The remote response is not yet validated: do not enable the public broker.
-"""
+"""MM Tunnel build 47: offline catalog reader and fixed original POST."""
 from __future__ import annotations
 import argparse
 from pathlib import Path
@@ -15,7 +12,8 @@ if str(ROOT) not in sys.path:
 from decoders.Python.apps.MM_Tunnel.codec import DecodeError, MAX_BYTES, decode_catalog, render
 
 SOURCE = "https://strongteam.co/api/mmtunnel/"
-POST_BODY = b"type=xsandokUpdatex"
+# CU builds url.Values with the key "hash"; "type" is not accepted.
+POST_BODY = b"hash=xsandokUpdatex"
 
 
 def run(data: bytes) -> str:

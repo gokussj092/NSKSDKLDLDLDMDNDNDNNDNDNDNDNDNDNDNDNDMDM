@@ -1,4 +1,4 @@
-"""MM build 45: independent golden documents, malformed input and worker parity."""
+"""MM builds 45/47: original hash POST, complete JSON and worker parity."""
 import base64
 import copy
 import json
@@ -70,6 +70,14 @@ class MMTunnelTests(unittest.TestCase):
         profile["Payload"]="plain.example.invalid"
         self.assertEqual(codec.decode_file(json.dumps(profile).encode()),profile)
 
+    def test_metadata_and_unknown_field_contexts_never_enter_the_kdf(self):
+        profile={"Name":"synthetic","TunnelType":"SSH","Info":"A"*64,"URI":False,
+                 "future":{"Payload":"A"*64,"ServerIPHost":"B"*64}}
+        self.assertEqual(codec.decode_file(json.dumps(profile).encode()),profile)
+        catalog={"Version":"synthetic","Servers":[{"Name":"s","Payload":"A"*64}],
+                 "Networks":[profile],"future":{"OVPNPass":"B"*64}}
+        self.assertEqual(codec.decode_catalog(json.dumps(catalog).encode()),catalog)
+
     def test_historical_mmt_both_aad_variants_and_other_suffixes_unchanged(self):
         from decoders.Python import ultra
         from tests.test_ultra_sandok import config_fixture
@@ -84,7 +92,7 @@ class MMTunnelTests(unittest.TestCase):
     def test_real_worker_file_and_catalog_complete_json_and_registry(self):
         from cloud.workers.python.engine import decode_file,decode_provider_catalog,load_file_engines,load_runtime_file_engines
         canonical=load_file_engines();runtime=load_runtime_file_engines()
-        self.assertEqual(len(canonical),240);self.assertEqual(len(runtime),254)
+        self.assertEqual(len(canonical),240);self.assertEqual(len(runtime),255)
         self.assertIn('/apps/MM_Tunnel/',runtime['mmt']['source'])
         self.assertEqual(runtime['mm'],canonical['mm'])
         self.assertEqual(runtime['md'],canonical['md'])
@@ -121,7 +129,9 @@ class MMTunnelTests(unittest.TestCase):
             request=builder.return_value.open.call_args.args[0]
             self.assertEqual(request.full_url,'https://strongteam.co/api/mmtunnel/')
             self.assertEqual(request.get_method(),'POST')
-            self.assertEqual(request.data,b'type=xsandokUpdatex')
+            self.assertEqual(request.data,b'hash=xsandokUpdatex')
+            self.assertEqual(request.get_header('Content-type'),'application/x-www-form-urlencoded')
+            self.assertEqual(request.get_header('User-agent'),'Go-http-client/1.1')
         with self.assertRaises(ValueError):server_catalog_decoder._NoRedirect().redirect_request(None,None,302,'',{},'https://bad.invalid/')
 
 

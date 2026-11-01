@@ -2,9 +2,9 @@
 
 Fecha: **2026-11-01**. Directiva del propietario de SP-DECODE para retomar las
 integraciones remotas incompletas y evitar repetirlas en próximas aplicaciones.
-Cuenta Goku; rama `fix/http-jireh-current-method`. Inventario contrastado con
-el commit **2ba7df0139ff3c51297637e01558b8f276d49d98**, revisión fuente **59**,
-**55 fichas**. Esta entrega es documental: no activa proveedores ni despliega.
+Cuenta Goku; rama `fix/http-jireh-current-method`. Inventario actualizado tras completar MM Tunnel build47, sobre el commit
+**64ea621350d0a0695b5203869de38a243c8ab57c**: revisión fuente **59**,
+**57 fichas**, **9 con remote:null**. Integración en código; no desplegada.
 
 ## Directiva de continuidad
 
@@ -25,7 +25,7 @@ integrarse. Primero hay que contrastar lo que envía la app y lo que envía el
 script. Si faltan cabeceras, claves, firmas, registro o sesión, la integración
 remota sigue pendiente aunque su lector offline funcione.
 
-La lista siguiente incluye **las 10 fichas con `remote:null` en el código**.
+La lista siguiente incluye **las 9 fichas con `remote:null` en el código**.
 Es un inventario de integración, no una consulta al VPS ni una nueva prueba de
 sus endpoints. Los resultados HTTP citados son históricos; no describen su
 estado actual ni prueban la causa de cada fallo. Los originales indicados son
@@ -36,7 +36,6 @@ los últimos documentados, no una afirmación de que hoy sean los más recientes
 | Aplicación e ID | Último original documentado | Evidencia del pendiente | Trabajo que debe completarse |
 | --- | --- | --- | --- |
 | **HA Tunnel Plus** (`ha-tunnel-plus`) | 1.7.1 /76; `com.hatunnel.plus` | Recursos, constantes y URL del actualizador protegidos por DexProtector. El lector histórico `.hat` no acredita el catálogo actual. | Recuperar la ruta activa de ResourceUpdater y sus recursos/claves; reproducir la petición y abrir todas sus secciones. [Evidencia](../../decoders/Python/apps/HA_Tunnel_Plus/README.md). |
-| **MM Tunnel** (`mm-tunnel`) | v1.10.11.1 /45; `co.strongteam.marvsudp` | Catálogo incluido 1.01, 34 servidores y555 redes validado; POST fijo documentado con403. Falta respuesta remota aceptada. | Contrastar cuerpo, cabeceras y pasos de acceso del actualizador vigente; completar descarga y broker, sin usar el asset como sustituto. [Evidencia](../../decoders/Python/apps/MM_Tunnel/README.md). |
 | **CREEB VPN** (`creeb-vpn`) | 50.0 /50; `com.creebtunnel.vpn` | Incluido1.0.0, 1 servidor/1 ajuste validado. Flujo Play Integrity observado; GET devolvió HTML y POST sin token405. No se probó una atestación válida. | Reconstruir el flujo oficial de actualización y sus datos de autorización; validar respuesta completa. Es distinta de CREEB INJECTOR. [Evidencia](../../decoders/Python/apps/CREEB_VPN/README.md). |
 | **AM TUNNEL LITE VPN** (`am-tunnel-lite-vpn`) | AM /63; `app.vpn.amtunnellite` | Auxiliar de campos XOR y metadatos LIAPP comprobados; el sobre de `pdrv2.json` no está abierto. URL extraída agotó timeout, sin status HTTP. | Recuperar las clases consumidoras y el método exterior, confirmar fuente y petición, abrir todo el catálogo y completar worker/broker. Una primitiva de campos no basta. [Evidencia](../../decoders/Python/apps/AM_TUNNEL_LITE_VPN/README.md). |
 | **UT Loop Pro VPN** (`ut-loop-pro-vpn`) | 22.10.26 /65; `loop.uchetechs.vpn.pro` | Catálogo inicial y verificación RSA/GCM implementados. OTA devolvió200 HTML; falta acceso OTA válido y respuesta firmada real. | Completar la gestión oficial de X-Api-Key, X-Ota-Access y X-Ota-Iid. Tratar premium por separado, solo con entitlement válido; mantener firma y GCM obligatorios. [Evidencia](../../decoders/Python/apps/UT_Loop_Pro_VPN/README.md). |
@@ -52,6 +51,20 @@ provisión privada, no de haber demostrado ya el descifrado del catálogo.
 En HA y AM también falta recuperar parte del propio método. En las demás,
 el soporte offline existente se conserva como evidencia y punto de partida;
 no debe presentarse como una integración remota terminada.
+
+## Historial de casos resueltos en código
+
+**MM Tunnel v1.10.30.2/build47 — 2026-11-01:** se corrigió la clave del
+formulario del actualizador: el script enviaba type y el original vigente usa
+hash. Descarga real HTTP200,822713 bytes,2.46,38 servidores/557 redes,3399
+campos protegidos distintos; JSON entero igual a referencia independiente,
+CLI y worker. Broker/C12/ficha/gateway conectados. Constante del actualizador
+reutilizada, sin secreto privado adicional.29 Python/129 Node aprobadas;
+transportes Node simulados, despliegue pendiente. [Evidencia y recuperación](MM_TUNNEL_REINTEGRACION_2026_11_01.md).
+
+Por instrucción del propietario, detenerse después de MM y reportar; la cola
+solicitada restante es CREEB VPN,AM TUNNEL LITE VPN,UT Loop Pro VPN,
+ProNeet VPN,EUT VPN,TunelGuard VPN, en ese orden, una por entrega.
 
 ## Procedimiento obligatorio para cada caso y para nuevas apps
 
@@ -107,7 +120,7 @@ no debe presentarse como una integración remota terminada.
    backend desplegado. Respetar el procedimiento VPS/HPKE, sus respaldos y
    verificaciones, y la autorización de despliegue del propietario. Ajustar la
    versión efectiva de catálogo cuando se publique el cambio según su política;
-   esta revisión documental mantiene la fuente 59 y las 55 fichas.
+   esta revisión documental mantiene la fuente 59 y las 57 fichas.
 
 ## Criterio de cierre y forma de reportar
 
@@ -130,7 +143,7 @@ secretos y pruebas de broker/worker/gateway. Moverla a un historial de casos
 resueltos y recalcular pendientes desde el código; no borrar el antecedente ni
 retirar la fila únicamente por haber añadido un proveedor o un botón.
 
-## Desactivaciones que no equivalen a estas 10 integraciones pendientes
+## Desactivaciones que no equivalen a estas 9 integraciones pendientes
 
 - Un switch del panel, mantenimiento o `CLOUD_SERVER_VPN_ENABLED=false` puede
   desactivar proveedores ya integrados. Se comprueba en el VPS, no se deduce

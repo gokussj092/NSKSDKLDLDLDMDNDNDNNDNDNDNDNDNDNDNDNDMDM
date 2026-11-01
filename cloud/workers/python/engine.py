@@ -85,7 +85,7 @@ _C8_FILE_ENGINES = {
     "apnavpn": ("decoders/Python/apps/APNA_VPN/file_decoder.py", "APNA VPN 3.9"),
     "dtk": ("decoders/Python/apps/ANY_VPN/file_decoder.py", "ANY VPN build 40"),
     "tx": ("decoders/Python/apps/Tx_Tunnel/file_decoder.py", "Tx Tunnel v2.17"),
-    "mmt": ("decoders/Python/apps/MM_Tunnel/file_decoder.py", "MM Tunnel v1.10.11.1"),
+    "mmt": ("decoders/Python/apps/MM_Tunnel/file_decoder.py", "MM Tunnel v1.10.30.2"),
     "crev": ("decoders/Python/apps/CREEB_VPN/file_decoder.py", "CREEB VPN 50.0"),
     "creeb": ("decoders/Python/apps/CREEB_INJECTOR/file_decoder.py", "CREEB INJECTOR 38.0"),
     "awg": ("decoders/Python/apps/AboWaged_VPN/file_decoder.py", "AboWaged VPN 1.0"),

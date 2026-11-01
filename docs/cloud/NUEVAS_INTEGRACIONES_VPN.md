@@ -1,3 +1,16 @@
+# Reintegración cerrada en código: MM Tunnel — 2026-11-01
+
+Versión vigente **v1.10.30.2/build47**. Corregido el formulario de descarga
+**type -> hash**, recuperado del actualizador nativo original. HTTP200 real,
+catálogo2.46,38 servidores/557 redes; JSON completo igual a referencia
+independiente, CLI y worker. Ficha y broker/C12/gateway conectados; metadatos
+Info/URI y contextos desconocidos se conservan.29 Python/129 Node aprobadas;
+HTTP Node simulado, sin despliegue. Fuente59/57 fichas/C8255 conservados.
+Se reporta solo MM; CREEB es la siguiente de la cola solicitada.
+[Detalle, originales y recuperación](MM_TUNNEL_REINTEGRACION_2026_11_01.md).
+
+---
+
 # Registro de nuevas integraciones VPN
 
 ## ZiG Tunnel Play1.0 (1) — 2026-11-01

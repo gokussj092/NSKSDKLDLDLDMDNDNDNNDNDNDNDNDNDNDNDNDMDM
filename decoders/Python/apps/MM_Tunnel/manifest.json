@@ -2,13 +2,22 @@
   "id": "mm-tunnel",
   "name": "MM Tunnel",
   "package": "co.strongteam.marvsudp",
-  "versionName": "v1.10.11.1",
-  "versionCode": 45,
+  "versionName": "v1.10.30.2",
+  "versionCode": 47,
   "engine": "python",
   "entrypoint": "file_decoder.py",
-  "extensions": ["mmt"],
-  "formats": ["argon2id-aes256-gcm-inserted-letter-export", "eo-do-aes256-gcm", "direct-import-json"],
-  "dependencies": ["pycryptodome==3.23.0", "argon2-cffi==25.1.0"],
+  "extensions": [
+    "mmt"
+  ],
+  "formats": [
+    "argon2id-aes256-gcm-inserted-letter-export",
+    "eo-do-aes256-gcm",
+    "direct-import-json"
+  ],
+  "dependencies": [
+    "pycryptodome==3.23.0",
+    "argon2-cffi==25.1.0"
+  ],
   "credentials": [],
   "userPasswordCryptographicallyRequired": false,
   "legacyMmtFallback": "decoders/Python/ultra.py:decrypt_ultra_file",
@@ -20,9 +29,15 @@
     "embeddedServers": 34,
     "embeddedNetworks": 555,
     "embeddedEncryptedFields": 3335,
-    "remote": null,
-    "remoteStatus": "official_post_http_403",
-    "cardDecodeEnabled": false
+    "remote": "fixed-original-hash-post",
+    "remoteStatus": "http_200_full_catalog_verified",
+    "cardDecodeEnabled": true,
+    "remoteVersion": "2.46",
+    "remoteServers": 38,
+    "remoteNetworks": 557,
+    "remoteBytes": 822713,
+    "remoteEncryptedFields": 3399,
+    "remoteSha256": "d36899110cd6976e8e43935fdd6a0e19952f8a3f12716f8a36fd7642fecc6241"
   },
   "icon": {
     "originalResource": "res/drawable/icon.png",
@@ -34,5 +49,13 @@
   "cloudUserProfileSharingIdentified": false,
   "realFileSampleVerified": false,
   "syntheticDocumentsVerified": 6,
-  "deployment": "pending"
+  "deployment": "pending",
+  "compatibleVersionCodes": [
+    45,
+    47
+  ],
+  "originalSha256": "8cf714a8545caa92a85bf956af8ab61a8edc3f385914533877d34ef29338b1e1",
+  "requestMethod": "POST",
+  "privateBackendCredentialsRequired": false,
+  "deployed": false
 }

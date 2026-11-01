@@ -1,3 +1,26 @@
+# Estado vigente — MM Tunnel reintegrado, 2026-11-01
+
+Goku, `fix/http-jireh-current-method`, continuación desde64ea621 (ZiG).
+MM Tunnel **v1.10.30.2/build47**: POST original **hash=xsandokUpdatex**;
+el script usaba type. **HTTP200, catálogo2.46,38 servidores/557 redes**,
+3399 campos protegidos distintos. CLI real, referencia libsodium/JCA y worker
+coinciden íntegramente. Broker/C12/ficha habilitados en código;29 Python y129
+Node aprobadas. Transporte Node simulado; producción no actualizada.
+La constante requerida ya estaba en el proyecto; no hay secreto privado nuevo.
+
+**El usuario pidió una por entrega y reportar tras MM. No continuar CREEB en
+esta misma entrega.** Cola posterior: CREEB VPN -> AM TUNNEL LITE VPN ->
+UT Loop Pro VPN -> ProNeet VPN -> EUT VPN -> TunelGuard VPN.
+
+Se mantienen57 fichas, fuente59,C0240/C8255. Quedan9 fichas remote:null.
+.mmt conserva su lector y legado; no hay exportación real nueva ni escritor
+certificado. main, Android, panel y VPS no se modificaron.
+Al desplegar, elevar la versión efectiva del catálogo por encima de la existente
+mediante el runbook autorizado, conservando secretos/HPKE y switches.
+[Handoff completo y recuperación](MM_TUNNEL_REINTEGRACION_2026_11_01.md).
+
+---
+
 # SP-DECODE Cloud — Guía para ampliar Server VPN en otro chat
 
 ## Enaa y ZiG Tunnel integradas en orden — 2026-11-01

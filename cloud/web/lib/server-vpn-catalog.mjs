@@ -45,8 +45,8 @@ const ITEMS = Object.freeze([
   {id:"any-vpn", name:"ANY VPN", icon:"any-vpn.png", remote:"any-vpn"},
   {id:"speicers-pro-vpn", name:"Speicers Pro VPN", icon:"speicers-pro-vpn.png", remote:"speicers-pro-vpn"},
   {id:"tx-tunnel", name:"Tx Tunnel", icon:"tx-tunnel.png", remote:"tx-tunnel"},
-  // Embedded catalog verified; official fixed POST returned HTTP 403.
-  {id:"mm-tunnel", name:"MM Tunnel", icon:"mm-tunnel.png", remote:null},
+  // Build 47 original hash POST and full remote catalog verified.
+  {id:"mm-tunnel", name:"MM Tunnel", icon:"mm-tunnel.png", remote:"mm-tunnel"},
   // Embedded catalog works; remote Play Integrity response remains unvalidated.
   {id:"creeb-vpn", name:"CREEB VPN", icon:"creeb-vpn.png", remote:null},
   {id:"abowaged-vpn", name:"AboWaged VPN", icon:"abowaged-vpn.png", remote:"abowaged-vpn"},

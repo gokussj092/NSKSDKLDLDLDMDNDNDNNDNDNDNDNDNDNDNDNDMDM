@@ -45,7 +45,7 @@ test("extension precedence, native/cloud overlap and credential metadata",()=>{
   assert.equal(candidates("backup.sksrv.png")[0].suffix,"sksrv.png");
   assert.equal(formats.find(x=>x.suffix==="npvs").credentialFields.join(","),"password,publicKey,recipientKey");
   assert.equal(formats.find(x=>x.suffix==="hc").credentialFields.join(","),"password,hwid");
-  assert.equal(formats.find(x=>x.suffix==="mmt").name,"MM Tunnel v1.10.11.1");
+  assert.equal(formats.find(x=>x.suffix==="mmt").name,"MM Tunnel v1.10.30.2");
   assert.deepEqual(formats.find(x=>x.suffix==="mmt").credentialFields,[]);
   assert.equal(formats.find(x=>x.suffix==="1ftnl").offlineSupported,false);
   assert.equal(formats.find(x=>x.suffix==="1ftnl").cloudSupported,true);

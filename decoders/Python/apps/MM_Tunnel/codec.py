@@ -1,4 +1,4 @@
-"""MM Tunnel v1.10.11.1 (45): source-confirmed Argon2id/AES-GCM envelopes.
+"""MM Tunnel builds 45/47: source-confirmed Argon2id/AES-GCM envelopes.
 
 No Android/SO, user password, network, clock or device identity is needed.
 Only authentic inner fields are returned; malformed protected fields fail closed.
@@ -18,13 +18,18 @@ MAX_BYTES = 8 * 1024 * 1024
 MAX_FIELDS = 8192
 FILE_SECRET = b"iOi/hqT/TocUv0UbDImfWPGR1mfSdzzX"
 FIELD_SECRET = b"NewDecryptLibPassword"
-PROTECTED_FIELDS = frozenset({
+TOP_FIELDS = frozenset({
     "DefOVPNUser", "DefOVPNPass", "HysteriaUser", "HysteriaOBFS", "DefaultOVPNCert",
+})
+SERVER_FIELDS = frozenset({
     "ServerIPHost", "OVPNUser", "OVPNPass", "UDP_obfs", "UDP_user", "CustomCertificate",
     "SlowDNSHost", "SlowDNSKey", "V2rayUUID", "H2pass", "TrojanPass", "V2rayPath",
-    "Payload", "CustomProxy", "SNI", "V2rayConfig", "BugDNS", "V2rayAddress",
-    "V2rayHost", "V2raySNI", "Info", "URI",
 })
+NETWORK_FIELDS = frozenset({
+    "Payload", "CustomProxy", "SNI", "V2rayConfig", "BugDNS", "V2rayAddress",
+    "V2rayHost", "V2raySNI",
+})
+PROTECTED_FIELDS = TOP_FIELDS | SERVER_FIELDS | NETWORK_FIELDS
 
 
 class DecodeError(ValueError):
@@ -101,38 +106,50 @@ def open_envelope(text: str, *, exported: bool = False) -> str:
         raise DecodeError("AUTHENTICATION_FAILED") from exc
 
 
-def decode_fields(obj):
+def decode_fields(obj, *, profile=False):
     # Cache is private to this document. No decoded credentials survive a request.
     cache = {}
     nodes = 0
 
-    def walk(value, key="", depth=0):
+    def validate(value, depth=0):
         nonlocal nodes
         nodes += 1
         if depth > 48 or nodes > 200000:
             raise DecodeError("JSON_LIMIT")
         if isinstance(value, dict):
-            return {k: walk(v, k, depth + 1) for k, v in value.items()}
-        if isinstance(value, list):
-            return [walk(v, "", depth + 1) for v in value]
+            for v in value.values():
+                validate(v, depth + 1)
+        elif isinstance(value, list):
+            for v in value:
+                validate(v, depth + 1)
         if isinstance(value, float) and not math.isfinite(value):
             raise DecodeError("INVALID_JSON")
-        if isinstance(value, str) and key in PROTECTED_FIELDS:
+
+    def fields(record, names):
+        result = record.copy()
+        for name in names:
+            value = record.get(name)
+            if not isinstance(value, str):
+                continue
             # Plaintext is permitted by Hometab.Companion.a. Only shaped Base64
             # envelopes enter the KDF; damaged tags never become partial output.
             normalized = value.replace("\r", "").replace("\n", "")
             if len(normalized) < 60 or not re.fullmatch(r"[A-Za-z0-9+/]*={0,2}", normalized):
-                return value
-            if normalized in cache:
-                return cache[normalized]
-            if len(cache) >= MAX_FIELDS:
-                raise DecodeError("FIELD_LIMIT")
-            clear = open_envelope(value)
-            cache[normalized] = clear
-            return clear
-        return value
+                continue
+            if normalized not in cache:
+                if len(cache) >= MAX_FIELDS:
+                    raise DecodeError("FIELD_LIMIT")
+                cache[normalized] = open_envelope(value)
+            result[name] = cache[normalized]
+        return result
 
-    return walk(obj)
+    validate(obj)
+    if profile:
+        return fields(obj, NETWORK_FIELDS)
+    result = fields(obj, TOP_FIELDS)
+    for key, names in (("Servers", SERVER_FIELDS), ("Networks", NETWORK_FIELDS)):
+        result[key] = [fields(record, names) for record in obj[key]]
+    return result
 
 
 def decode_file(data: bytes):
@@ -149,7 +166,7 @@ def decode_file(data: bytes):
     if (not isinstance(obj, dict) or not isinstance(obj.get("Name"), str)
             or not isinstance(obj.get("TunnelType"), str)):
         raise DecodeError("INVALID_MM_PROFILE")
-    return decode_fields(obj)
+    return decode_fields(obj, profile=True)
 
 
 def decode_catalog(data: bytes):

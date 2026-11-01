@@ -47,6 +47,9 @@ const JYFAST_SOURCES=Object.freeze({
 });
 const PAIRED_SOURCES=Object.freeze({"jyfast-vpn-ultra":JYFAST_SOURCES,"abowaged-vpn":ABOWAGED_SOURCES,"turbomx-vpn":TURBOMX_SOURCES,"superflash-vpn":SUPERFLASH_SOURCES,"onspace-vpn":ONSPACE_SOURCES,"http-socketclay":SOCKETCLAY_SOURCES,"http-wakko":WAKKO_SOURCES,"v2ray-tunnel-plus":V2PLUS_SOURCES});
 const PROVIDERS = Object.freeze({
+  "mm-tunnel": {url:"https://strongteam.co/api/mmtunnel/",agent:"Go-http-client/1.1",
+    headers:{"Content-Type":"application/x-www-form-urlencoded"},
+    method:"POST",body:Buffer.from("hash=xsandokUpdatex")},
   "zig-tunnel": {url:"https://zimbotunnel.co.zw/default_config.hs",agent:"okhttp/5.3.2"},
   "enaa-tunnel": {url:"https://strongteam.co/api/wolftunnellite/enaav1.txt",agent:"Enaa Tunnel"},
   "alfaisal-tunnel-plus": {url:ALFAISAL_SOURCE,agent:"ALFAISAL Tunnel+/39"},
@@ -314,7 +317,8 @@ export async function downloadVpnCatalog(id,source=id==="jyfast-vpn-ultra"?"free
       const remaining=deadline-Date.now();
       if(remaining<=0)fail("REMOTE_PROVIDER_UNAVAILABLE");
       let answer;
-      try{answer=await pinnedRequest(target,ip,provider.agent,Math.min(CONNECT_MS,remaining),headers);}
+      try{answer=await pinnedRequest(target,ip,provider.agent,Math.min(CONNECT_MS,remaining),headers,
+        {method:provider.method??"GET",body:provider.body??null});}
       catch(error){
         if(error instanceof VpnProviderError){
           if(!error.retryable)throw error;
@@ -325,7 +329,7 @@ export async function downloadVpnCatalog(id,source=id==="jyfast-vpn-ultra"?"free
         continue;
       }
       if(answer.redirect!==undefined){
-        if(["zig-tunnel","enaa-tunnel","izph-vpn-pro","vip-snipher-pro","netcol-vpn","wolf-custom-vpn","tunneldoom-vpn","mtm-tunnel-lite","mnr-tunnel-plus","bd-net-vpn","aura-net-vpn","apna-vpn","any-vpn","speicers-pro-vpn","7net-vpn","xhypher-tunnel-pro","focus-vpn-cloud","freedom-vpn","http-internet-infinito","megatunnel","mx-tunnel-pro","rjc-tunnel-pro","rmp-tunnel-pro","http-jireh"].includes(id)||Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
+        if(["mm-tunnel","zig-tunnel","enaa-tunnel","izph-vpn-pro","vip-snipher-pro","netcol-vpn","wolf-custom-vpn","tunneldoom-vpn","mtm-tunnel-lite","mnr-tunnel-plus","bd-net-vpn","aura-net-vpn","apna-vpn","any-vpn","speicers-pro-vpn","7net-vpn","xhypher-tunnel-pro","focus-vpn-cloud","freedom-vpn","http-internet-infinito","megatunnel","mx-tunnel-pro","rjc-tunnel-pro","rmp-tunnel-pro","http-jireh"].includes(id)||Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
         const next=answer.redirect;
         if(typeof next!=="string"||next.length>2048)fail("REMOTE_NETWORK_DENIED");
         target=new URL(next,dest).href;

@@ -72,7 +72,7 @@ test("only registered icon identifiers are served",async()=>{
 
 import {providerIds,providerEnabled,downloadVpnCatalog} from "../lib/server-vpn-provider.mjs";
 test("only fixed catalog providers are eligible for remote broker",async()=>{
-  assert.deepEqual(providerIds().sort(),["24clan-green","4u-tunnel-lite","7net-vpn","abowaged-vpn","ac-tunnel-vpn","alfaisal-tunnel-plus","any-vpn","apna-vpn","aura-net-vpn","austroplus-vpn","bd-net-vpn","enaa-tunnel","focus-vpn-cloud","freedom-vpn","http-fenixvpn","http-internet-infinito","http-jireh","http-socketclay","http-wakko","hx-tunnel","izph-vpn-pro","jyfast-vpn-ultra","ksh-vpn","megatunnel","mkk-hyper","mnr-tunnel-plus","mtm-tunnel-lite","mx-tunnel-pro","my-tunnel-proxy","netcol-vpn","onspace-vpn","rjc-tunnel-pro","rmp-tunnel-pro","robust-tunnel","speicers-pro-vpn","superflash-vpn","trv-tunnel","tunneldoom-vpn","tunneltweak","turbomx-vpn","tx-tunnel","v2ray-tunnel-plus","vip-snipher-pro","wolf-custom-vpn","xhypher-tunnel-pro","zig-tunnel"]);
+  assert.deepEqual(providerIds().sort(),["24clan-green","4u-tunnel-lite","7net-vpn","abowaged-vpn","ac-tunnel-vpn","alfaisal-tunnel-plus","any-vpn","apna-vpn","aura-net-vpn","austroplus-vpn","bd-net-vpn","enaa-tunnel","focus-vpn-cloud","freedom-vpn","http-fenixvpn","http-internet-infinito","http-jireh","http-socketclay","http-wakko","hx-tunnel","izph-vpn-pro","jyfast-vpn-ultra","ksh-vpn","megatunnel","mkk-hyper","mm-tunnel","mnr-tunnel-plus","mtm-tunnel-lite","mx-tunnel-pro","my-tunnel-proxy","netcol-vpn","onspace-vpn","rjc-tunnel-pro","rmp-tunnel-pro","robust-tunnel","speicers-pro-vpn","superflash-vpn","trv-tunnel","tunneldoom-vpn","tunneltweak","turbomx-vpn","tx-tunnel","v2ray-tunnel-plus","vip-snipher-pro","wolf-custom-vpn","xhypher-tunnel-pro","zig-tunnel"]);
   for(const id of providerIds()) assert.equal(providerEnabled(id,{CLOUD_SERVER_VPN_ENABLED:"false"}),false);
   assert.equal(providerEnabled("https://attacker.invalid/",{CLOUD_SERVER_VPN_ENABLED:"true"}),false);
   await assert.rejects(()=>downloadVpnCatalog("https://attacker.invalid/"),{code:"UNSUPPORTED_FORMAT"});
@@ -308,14 +308,14 @@ test("CREEB VPN remains disabled even with global availability",()=>{
  assert.equal(app.iconSha256,createHash("sha256").update(iconFor("creeb-vpn").bytes).digest("hex"));
 });
 
-test("MM Tunnel keeps its original PNG and waits for an accepted remote POST",()=>{
+test("MM Tunnel keeps its original PNG and enables the validated hash POST",()=>{
  const app=catalog({availability:{"mm-tunnel":true}}).apps.find(x=>x.id==="mm-tunnel");
  assert.equal(app.name,"MM Tunnel");
  assert.equal(app.iconSha256,"be2bb0a69da20838aaa46c388ab898a33b84cab59ccdad7413b76eac21b7b211");
  assert.equal(iconFor("mm-tunnel").bytes.length,109337);
- assert.equal(app.decodeEnabled,false);
- assert.equal(providerEnabled("mm-tunnel",{CLOUD_SERVER_VPN_ENABLED:"true"}),false);
- assert(!providerIds().includes("mm-tunnel"));
+ assert.equal(app.decodeEnabled,true);
+ assert.equal(providerEnabled("mm-tunnel",{CLOUD_SERVER_VPN_ENABLED:"true"}),true);
+ assert(providerIds().includes("mm-tunnel"));
 });
 
 test("Tx original icon and verified fixed catalog follow individual availability",()=>{

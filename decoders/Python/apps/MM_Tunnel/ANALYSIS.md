@@ -1,3 +1,42 @@
+# Reinvestigación vigente: MM Tunnel build47 — 2026-11-01
+
+Prevalece sobre el análisis histórico del build45 que se conserva abajo.
+Se trabaja con Goku en `fix/http-jireh-current-method`, sobre64ea621;
+main5a1c93a no contiene esta rama. No se crea una rama desde un main anterior.
+Alcance autorizado: resolver MM y reportar antes de continuar con CREEB.
+
+Google Play consultado en vivo muestra **v1.10.30.2**. El XAPK de APKPure
+coincide: build47, armeabi-v7a, minSDK32/targetSDK37. Signer SHA1
+`b3d1c77b6cdb2f8b2c154c937de6b26669584d9a`; SHA256
+`4cfc4aae2984b26da41ab2ec71000edf1e8f5a73a738292fd452235a9e6456c3`.
+No se afirma una descarga directa desde Play. JADX1.5.6 terminó exit3 con78
+errores generales; las rutas indicadas se recuperaron, no todo el APK.
+LSParanoid:7706 cadenas en500 fuentes, inventario9738; no se publica.
+
+En `libgojni.so` ARM32, Go pclntab f1 en0x12fadb8/textStart0x2efa08:
+36934 funciones. `CU`0xfd7154(1696 bytes) construye url.Values con **hash**
+(0x10d5b4,len4) y la constante original(0x118bef,len14); codifica formulario,
+`NewRequestWithContext(POST,https://strongteam.co/api/mmtunnel/,reader)`,
+Content-Type application/x-www-form-urlencoded y cliente HTTP nuevo con
+User-Agent predeterminado Go-http-client/1.1. No añade sesión, Authorization,
+cookies, firma ni metadatos de instalación en esta ruta.
+El script anterior usaba **type**: recuperar una URL y una constante sin la
+clave real del formulario dejó una integración incompleta.
+
+La respuesta se abre con `decrypt`0xfd2e0c y contiene Version2.46,38/557.
+`DO`0xfd3b58 conserva los parámetros y clave de campos del build45; la clave de
+exportación tampoco cambia. `mm_tunnel_source_check.py` verifica los hashes
+exactos y las instrucciones ARM de las cargas PC-relativas, sin ejecutar el APK.
+`NetworkAdapter.v` mantiene la exportación .mmt; HomeFragment usa Info sin DO
+y URI como Boolean, por lo que ahora se conservan y se limitan los contextos.
+
+La recuperación, hashes, descargas reales, límites y separación entre pruebas
+simuladas y producción están en el handoff de esta reintegración.
+
+---
+
+## Análisis histórico build45 (superado en descarga por la investigación anterior)
+
 # Análisis de MM Tunnel — 2026-10-24
 
 Rama nueva `feat/mm-tunnel-1-10-11-1-decoders`, creada desde `main`
