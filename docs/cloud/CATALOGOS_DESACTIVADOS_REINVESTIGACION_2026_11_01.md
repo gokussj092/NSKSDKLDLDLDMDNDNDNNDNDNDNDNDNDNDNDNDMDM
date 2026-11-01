@@ -38,7 +38,7 @@ los últimos documentados, no una afirmación de que hoy sean los más recientes
 | **HA Tunnel Plus** (`ha-tunnel-plus`) | 1.7.1 /76; `com.hatunnel.plus` | Recursos, constantes y URL del actualizador protegidos por DexProtector. El lector histórico `.hat` no acredita el catálogo actual. | Recuperar la ruta activa de ResourceUpdater y sus recursos/claves; reproducir la petición y abrir todas sus secciones. [Evidencia](../../decoders/Python/apps/HA_Tunnel_Plus/README.md). |
 | **CREEB VPN** (`creeb-vpn`) | 50.0 /50; `com.creebtunnel.vpn` | Incluido1.0.0, 1 servidor/1 ajuste validado. Flujo Play Integrity observado; GET devolvió HTML y POST sin token405. No se probó una atestación válida. | Reconstruir el flujo oficial de actualización y sus datos de autorización; validar respuesta completa. Es distinta de CREEB INJECTOR. [Evidencia](../../decoders/Python/apps/CREEB_VPN/README.md). |
 | **AM TUNNEL LITE VPN** (`am-tunnel-lite-vpn`) | AM /63; `app.vpn.amtunnellite` | Auxiliar de campos XOR y metadatos LIAPP comprobados; el sobre de `pdrv2.json` no está abierto. URL extraída agotó timeout, sin status HTTP. | Recuperar las clases consumidoras y el método exterior, confirmar fuente y petición, abrir todo el catálogo y completar worker/broker. Una primitiva de campos no basta. [Evidencia](../../decoders/Python/apps/AM_TUNNEL_LITE_VPN/README.md). |
-| **UT Loop Pro VPN** (`ut-loop-pro-vpn`) | 22.10.26 /65; `loop.uchetechs.vpn.pro` | Catálogo inicial y verificación RSA/GCM implementados. OTA devolvió200 HTML; falta acceso OTA válido y respuesta firmada real. | Completar la gestión oficial de X-Api-Key, X-Ota-Access y X-Ota-Iid. Tratar premium por separado, solo con entitlement válido; mantener firma y GCM obligatorios. [Evidencia](../../decoders/Python/apps/UT_Loop_Pro_VPN/README.md). |
+| **UT Loop Pro VPN** (`ut-loop-pro-vpn`) | 22.10.26 /65 confirmado vigente el2026-11-01; `loop.uchetechs.vpn.pro` | Reinvestigado: corregido GET original sin sesión cacheada, API key cotejada. GET real y CLI vuelven a devolver200 HTML195, no catálogo firmado. Incluido1.0/1 servidor/1 tweak igual a JCA/CLI/worker. | Revalidar fuente desde una red/VPS que acceda; si exige sesión, obtener acceso oficial con Integrity y renovación. HTML no demuestra falta de token. No habilitar aún. [Handoff](UT_LOOP_PRO_REINVESTIGACION_2026_11_01.md). |
 | **ProNeet VPN** (`proneet-vpn`) | 27.11 /88; `com.proneet.vpn` | Ambos modos incluidos validados; las dos URLs remotas devolvieron200 con un solo LF el 2026-10-22. | Volver al actualizador de la versión vigente y confirmar ambas fuentes. Descargar y validar **modo usuario y modo token** completos, conservando sus versiones por separado. [Evidencia](../../decoders/Python/apps/ProNeet_VPN/README.md). |
 | **EUT VPN** (`eut-vpn`) | 2.4.1 /370; `xyz.eutvpn.app` | Lector de recursos implementado. Catálogo sin sesión devolvió401 Missing token; init-session vacío403 unsupported_integrity_env. No hubo sesión válida ni catálogo real. | Completar petición, parámetros NativeKeys y sesión oficial válida; definir provisión, vigencia y renovación autorizada en backend antes de integrar el broker. Las variables actuales de CLI no habilitan la ficha. [Evidencia](../../decoders/Python/apps/EUT_VPN/README.md). |
 | **TunelGuard VPN** (`tunelguard-vpn`) | 12.8 /128; `tunnel.guard.vpn` | Incluido0.1, 1 servidor/1 ajuste y lector STGCM2.TG validados. La fuente GitHub extraída devolvió404 en la investigación previa. | Verificar versión y actualizador actuales, URL exacta y posible autorización requerida; integrar la fuente que la app utiliza y demostrar descarga y descifrado completos. [Evidencia](../../decoders/Python/apps/TunelGuard_VPN/README.md). |
@@ -51,6 +51,16 @@ provisión privada, no de haber demostrado ya el descifrado del catálogo.
 En HA y AM también falta recuperar parte del propio método. En las demás,
 el soporte offline existente se conserva como evidencia y punto de partida;
 no debe presentarse como una integración remota terminada.
+
+## Reinvestigación en curso: UT Loop Pro VPN
+
+El propietario seleccionó UT Loop expresamente después de MM, sin dar por
+completas CREEB ni AM. Revisión2026-11-01: mismo build65 vigente y original
+recuperado. La app permite GET con API key aun sin acceso cacheado; el script
+lo bloqueaba previamente y ahora reproduce ese caso. La fuente sigue entregando
+HTML195 aquí, también desde la CLI corregida. Se revalidó el catálogo incluido,
+no una OTA firmada real.7 Python/50 Node aprobadas; ficha desactivada y **9
+pendientes** conservados. [Evidencia y próximo requisito](UT_LOOP_PRO_REINVESTIGACION_2026_11_01.md).
 
 ## Historial de casos resueltos en código
 

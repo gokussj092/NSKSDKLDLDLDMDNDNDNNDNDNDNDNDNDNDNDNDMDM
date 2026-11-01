@@ -1,3 +1,51 @@
+# Validación vigente — UT Loop Pro VPN22.10.26/build65
+
+Reinvestigación2026-11-01, sobre22bbdd27 en fix/http-jireh-current-method.
+**La descarga OTA firmada real sigue pendiente.**
+
+- **7 Python aprobadas,0 omisiones:**6 UT Loop y1 registro C8. Nuevos casos
+  del GET original sin sesión, sesión completa opcional, par incompleto rechazado,
+  User-Agent, fuentes/métodos/cuerpo fijo premium, HTML,401,transporte, tamaño,
+  codificación, firma obligatoria y diagnóstico sin credenciales/configuraciones.
+  Se conservan banners, JDK, CLI, worker, tipos y errores de RSA/GCM/esquema.
+- **50 Node aprobadas,0 omisiones:** catálogo, versión/switches persistentes y
+  ficha UT Loop todavía desactivada. No se añade allowlist ni transporte Node.
+- Original recién descargado:22.10.26/65; base/dex idénticos al análisis previo,
+  firmado FC692B18...A1D6. Clave pública RSA idéntica al original.
+- Asset real revalidado:1544 bytes,1.0,1 servidor/1 tweak; JSON entero igual a
+  Java/JCA independiente, CLI desde /tmp y worker real aislado no parcial.
+- **GET real con API key original, sin acceso cacheado**, y **CLI --probe real**:
+  HTTP200,text/html,195 bytes,hash5b131ca1...bcd5d7. Ambos devuelven Site Unavailable;
+  el CLI sale1 con REMOTE_HTML_RESPONSE y stdout contiene solo diagnóstico.
+- No se usaron accesos ficticios contra el servicio. No hay sesión aceptada,
+  respuesta OTA/premium firmada real ni evidencia de la causa del HTML.
+- No se volvió a llamar nonce/access sin Integrity legítimo. Las denegaciones
+  automáticas que citaba la documentación anterior son históricas; no son una
+  nueva denegación de herramientas en esta entrega.
+- Generador de formatos aprobado, C0240/C8255 conservados. PNG, source59,
+  57 fichas y9 remote:null sin cambios. Sin CI manual, fusión, APK ni despliegue.
+
+```bash
+PYTHONPATH=. python -m unittest tests.test_ut_loop_pro tests.test_cloud_c8_vpn_registry -v
+python scripts/cloud_formats_catalog.py
+# Una petición real fija; no muestra datos privados del catálogo.
+python decoders/Python/apps/UT_Loop_Pro_VPN/server_catalog_decoder.py --probe
+cd cloud/web
+node --test tests/server-vpn-catalog.test.mjs tests/server-vpn-version-sync.test.mjs tests/c12-provider-controls.test.mjs
+```
+
+El User-Agent predeterminado del CLI es un prefijo Dalvik, no la identidad exacta
+de un teléfono. UT_LOOP_USER_AGENT admite el valor real de una instalación propia.
+Los tests usan un firmante sintético solo dentro del test; producción conserva
+su clave RSA original y nunca acepta ese firmante de pruebas.
+
+Recuperación, hashes completos, flujo de renovación y próximo requisito real
+en el [handoff](../../../../docs/cloud/UT_LOOP_PRO_REINVESTIGACION_2026_11_01.md).
+
+---
+
+## Evidencia histórica2026-10-22 (la exigencia incondicional de sesión fue corregida)
+
 # Validación — UT Loop Pro VPN 22.10.26
 
 2026-10-22, base del PR #96: `cf10003bc11b745501fd69d3117676258ef58887`.

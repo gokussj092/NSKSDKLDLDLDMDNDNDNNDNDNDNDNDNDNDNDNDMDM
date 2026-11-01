@@ -1,3 +1,15 @@
+# Reinvestigación pendiente de cierre: UT Loop Pro VPN — 2026-11-01
+
+Versión vigente22.10.26/build65. Corregido el intento GET que la app sí realiza
+sin una sesión cacheada; se conserva la API key original y se corrige el UA del
+script, con diagnóstico --probe. **No se obtuvo catálogo remoto firmado**:
+GET y CLI devuelven HTTP200 con HTML195. Incluido1.0/1 servidor/1 tweak igual
+a JCA/CLI/worker;7 Python/50 Node aprobadas. UT Loop sigue desactivada;
+fuente59/57 fichas/255 formatos/9 pendientes conservados. No es una integración
+remota terminada ni un despliegue. [Evidencia](UT_LOOP_PRO_REINVESTIGACION_2026_11_01.md).
+
+---
+
 # Reintegración cerrada en código: MM Tunnel — 2026-11-01
 
 Versión vigente **v1.10.30.2/build47**. Corregido el formulario de descarga

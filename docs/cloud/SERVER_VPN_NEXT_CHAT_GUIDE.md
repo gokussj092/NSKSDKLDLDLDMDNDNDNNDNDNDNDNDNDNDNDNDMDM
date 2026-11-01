@@ -1,3 +1,28 @@
+# Estado vigente — UT Loop Pro VPN reinvestigado, descarga pendiente
+
+2026-11-01. El propietario pidió expresamente UT Loop tras MM; no retomar otras
+apps en esta entrega ni marcar CREEB/AM completas por haber cambiado la selección.
+Goku, `fix/http-jireh-current-method`, sobre22bbdd27.
+
+UT Loop **22.10.26/build65** sigue vigente; APK base idéntico al anterior.
+Se corrige el GET original con X-Api-Key **sin exigir sesión cacheada**: la app
+solo añade X-Ota-Access/X-Ota-Iid si OtaAccess obtiene una. Se retira el UA
+inventado; CLI usa prefijo Dalvik y permite el agente real del operador.
+Se añade --probe con metadatos sin datos VPN/credenciales.
+
+**GET real y CLI real: HTTP200 HTML195, no OTA firmada. No está cerrada ni se
+habilitó la descarga.** El HTML no acredita que falten tokens ni una caída global.
+Hace falta revalidar la fuente desde una red/VPS que acceda y, si exige sesión,
+obtenerla mediante el flujo oficial de Integrity y resolver renovación.
+No se enviaron tokens fabricados ni se llamó registro sin Integrity legítimo.
+
+Incluido1.0/1 servidor/1 tweak igual a JCA, CLI y worker;7 Python/50 Node
+aprobadas. Original guardado; [handoff completo](UT_LOOP_PRO_REINVESTIGACION_2026_11_01.md).
+Se conservan fuente59/57 fichas/C0240/C8255/9 remote:null, MM22bbdd27 y
+main. Sin fusión, despliegue, compilación Android ni CI manual.
+
+---
+
 # Estado vigente — MM Tunnel reintegrado, 2026-11-01
 
 Goku, `fix/http-jireh-current-method`, continuación desde64ea621 (ZiG).
