@@ -1,5 +1,21 @@
 # SP-DECODE Cloud — Guía para ampliar Server VPN en otro chat
 
+## Reinvestigación obligatoria de catálogos desactivados — 2026-11-01
+
+Por instrucción del propietario, **retomar las integraciones remotas incompletas**
+y aplicar también a cada nueva app el procedimiento validado con VIP, IZPH y
+ALFAISAL: petición completa, datos de acceso incorporados y descarga real con
+descifrado íntegro. No considerar soporte remoto terminado un asset offline,
+un mock, un GET sin autorización o una ficha con icono y descarga desactivada.
+
+Inventario verificado en 2ba7df0: **10 de 55 fichas con `remote:null`**.
+La [lista y procedimiento de reinvestigación](CATALOGOS_DESACTIVADOS_REINVESTIGACION_2026_11_01.md)
+identifica las 10 apps, evidencia histórica, trabajo concreto y criterio de cierre.
+Es obligatoria para continuar esos casos. DTunnel Mod ya descargó con su CLI;
+falta conectar el acceso privado al broker. No atribuir todos los pendientes
+a la misma causa ni confundirlos con switches del panel o secretos sin provisionar.
+Mantenerlos pendientes hasta demostrar el método remoto y su integración real.
+
 ## Regla obligatoria: paridad de la descarga original — 2026-11-01
 
 **Una integración de catálogo remoto no está validada hasta que el script

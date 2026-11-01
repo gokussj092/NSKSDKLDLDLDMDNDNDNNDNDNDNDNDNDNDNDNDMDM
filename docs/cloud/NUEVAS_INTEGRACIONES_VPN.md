@@ -1,5 +1,21 @@
 # Registro de nuevas integraciones VPN
 
+## Revisión documental de catálogos desactivados — 2026-11-01
+
+Reabrir por instrucción del propietario las **10 integraciones remotas pendientes**:
+HA Tunnel Plus, MM Tunnel, CREEB VPN, AM TUNNEL LITE VPN, UT Loop Pro VPN,
+ProNeet VPN, EUT VPN, TunelGuard VPN, DTunnel Mod y Royal Tunnel VPN.
+Inventario del código 2ba7df0, fuente 59 /55 fichas, no estado del VPS.
+DTunnel Mod ya tiene descarga CLI real validada; queda pendiente el broker y
+su acceso privado. Los fallos HTTP de los demás son observaciones históricas,
+no nuevas consultas ni prueba suficiente de una causa concreta.
+
+[Lista completa, evidencia y procedimiento](CATALOGOS_DESACTIVADOS_REINVESTIGACION_2026_11_01.md).
+Aplicar a estos casos y nuevas apps la paridad de VIP/IZPH/ALFAISAL: incorporar
+petición y datos necesarios, secretos fuera de GitHub, descarga real completa,
+comparación independiente y broker/worker/gateway/control verificados.
+Esta entrega solo añade documentación; no activa, despliega ni cambia versiones.
+
 ## ALFAISAL Tunnel+ build39 — 2026-11-01
 
 Paquete app.ovpninject5.vpn, Version -39WH-wake/39, vigente en Play y APK.

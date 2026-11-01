@@ -7,6 +7,12 @@ forman parte del método. Incorporarlos como constantes o secretos del backend
 y probar la descarga real con la petición completa; mocks y assets no bastan.
 No publicar credenciales reales. Documentar también su provisión al desplegar.
 
+**Retomar catálogos desactivados:** el propietario requiere nueva investigación
+de las 10 integraciones remotas pendientes y el mismo estándar para próximas apps.
+Ver [inventario y criterio de cierre](../../docs/cloud/CATALOGOS_DESACTIVADOS_REINVESTIGACION_2026_11_01.md).
+No cerrar con un asset, un mock o una petición que omita los datos de la app.
+Las causas y versiones anteriores son puntos de partida, no diagnósticos actuales.
+
 MTM Tunnel Lite MTM (40): `mtm_bundle.py` genera la CLI autónoma stdlib desde
 XXTEA canónico HX y `mtm_verify.py` compara catálogos privados completos con
 JDK y workers de catálogo/archivo. Dos respuestas reales verificadas; `.v2`

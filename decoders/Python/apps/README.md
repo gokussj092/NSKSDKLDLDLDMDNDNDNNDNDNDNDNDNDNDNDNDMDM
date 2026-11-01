@@ -16,6 +16,16 @@ Pueden reutilizar primitivas comunes; no requieren el APK para ejecutarse.
 Los lectores son ejecutables independientes. Las muestras sintéticas y sus
 productores se mantienen en `tests/golden`, y las pruebas en `tests`.
 
+## Catálogos remotos pendientes
+
+Por instrucción del propietario, reinvestigar las **10 fichas con descarga
+remota desactivada por integración pendiente**. Inventario, evidencia y trabajo
+concreto en [Catálogos desactivados: reinvestigación obligatoria](../../../docs/cloud/CATALOGOS_DESACTIVADOS_REINVESTIGACION_2026_11_01.md).
+Un lector offline no completa la integración remota. Para estos casos y nuevas
+apps se exige petición completa, acceso provisionado, descarga real y JSON
+íntegro contrastado, como VIP Snipher Pro, IZPH y ALFAISAL. Los estados históricos
+de cada carpeta no sustituyen esa nueva investigación ni describen el VPS actual.
+
 ## Aplicaciones
 
 | Aplicación | Catálogo | Archivos/textos | Icono y documentación |
