@@ -1,0 +1,54 @@
+{
+  "id": "netcol-vpn",
+  "name": "Netcol VPN",
+  "package": "com.netcol.vpn",
+  "compatibleVersions": ["14.2"],
+  "versionCode": 142,
+  "engine": "python-block-nibble-sha256hex-aes-cbc-and-blowfish-fields",
+  "engineVersion": 1,
+  "files": {
+    "extensions": [],
+    "textPrefixes": [],
+    "exporterCertified": false,
+    "validation": "No proprietary exported file or link format identified in analyzed routes; no file reader registered"
+  },
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "netcol-vpn",
+    "sourceAppVersion": "14.2",
+    "publicCatalogVersion": 59,
+    "versionPolicy": "Keep pending release 59 per explicit owner instruction; no revision increment for this addition",
+    "format": "Block-symbol nibbles -> Base64 -> AES-256-CBC/PKCS7, SHA256(uppercase UTF8 password hex), zero IV; seven Base64/Blowfish-CBC/PKCS5 fields with two fixed keys and IV abcdefgh",
+    "cloudSource": "https://raw.githubusercontent.com/jdavidag/setting/main/tO6oD1drTvL2.json",
+    "sourceDiscovery": "APK Firebase Remote Config NEW_URL_UPDATE, HTTP 200; source pinned after verification, no runtime discovery",
+    "deploymentEnabledByDefault": false,
+    "validatedOn": "2026-10-31",
+    "localObserved": {"version": "0", "servers": 2, "decodedFields": 14, "identicalAssets": 2},
+    "remoteObserved": {"version": "162", "servers": 172, "decodedFields": 1204},
+    "validation": "Complete independent JCA/Python/isolated-worker JSON parity, real CLI and full gateway contract; isPartial=false",
+    "nodeTransportValidation": "Mocked public/private DNS, fixed HTTPS and no redirects; live provider transport not verified"
+  },
+  "icon": {
+    "file": "Netcol_VPN.png",
+    "originalFile": "Netcol_VPN.webp",
+    "source": "base APK:res/mipmap-xxxhdpi-v4/ic_launcher.webp",
+    "width": 192,
+    "height": 192,
+    "bytes": 19306,
+    "sha256": "1cf1a5995d31294a39ffcc03630af88bfcee91577ba061852cc82eb7da9d0b39",
+    "originalSha256": "0c5bfb9bfa5250413d300133b1339b4a2ff80ad7716664b3573d3bd07ba12f28",
+    "policy": "Original WebP preserved; PNG conversion verified pixel-identical"
+  },
+  "dependencies": {
+    "python": ">=3.10",
+    "pycryptodome": "3.23.0",
+    "supportFiles": ["codec.py", "../HTTP_FenixVPN/codec.py", "../HTTP_FenixVPN/field_names.json"]
+  },
+  "sourceApkSha256": "1f449d216199f5f6ebc55087e6e8cbe8248aafa3fe158e898d9abbc17d68dd7a",
+  "sourceXapkSha256": "f5ff0468b89c847916b5164f665e406afe2cfb3861e994c228df385f3bd9007a",
+  "sourceSignerSha256": "deee85eccbd9a67c1ed7dc6bf74f00bd5eef7432f88637b789919f2f7dd94f92",
+  "sourceDownload": "https://d.apkpure.net/b/XAPK/com.netcol.vpn?version=latest",
+  "persistentSourceLibraryId": "libfile_e75eaf1858108191be9bc2e88a598ec2",
+  "branch": "fix/http-jireh-current-method",
+  "limitations": ["Android runtime/VPN connection not tested", "No proprietary exported-file format identified", "No VPS deployment or full test suite executed", "Native CBC format has no MAC"]
+}

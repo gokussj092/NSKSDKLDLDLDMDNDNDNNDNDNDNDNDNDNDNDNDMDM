@@ -5,7 +5,7 @@ import {createHash} from "node:crypto";
 import {publicFormats,FORMAT_DETECTION} from "./file-format-catalog.mjs";
 import {publicTextFormats,publicOnlineReferenceFormats} from "./text-format-catalog.mjs";
 
-export const CATALOG_VERSION = 59; // Wolf Custom VPN build 13: native GCM catalog and .wolf override.
+export const CATALOG_VERSION = 59; // Wolf + Netcol: same pending server release, per owner instruction.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -23,6 +23,7 @@ export function activeCatalogVersion(env=process.env) {
 }
 
 const ITEMS = Object.freeze([
+  {id:"netcol-vpn", name:"Netcol VPN", icon:"netcol-vpn.png", remote:"netcol-vpn"},
   {id:"wolf-custom-vpn", name:"Wolf Custom VPN", icon:"wolf-custom-vpn.png", remote:"wolf-custom-vpn"},
   {id:"jyfast-vpn-ultra", name:"JyFast VPN Ultra", icon:"jyfast-vpn-ultra.png", remote:"jyfast-vpn-ultra"},
   // Build 430 fixed updater validated against the complete real catalog.

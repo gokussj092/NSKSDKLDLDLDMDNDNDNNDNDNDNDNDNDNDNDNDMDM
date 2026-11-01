@@ -72,3 +72,5 @@ productores se mantienen en `tests/golden`, y las pruebas en `tests`.
 - [JyFast VPN Ultra 9](JyFast_VPN_Ultra/README.md): catálogos gratuito y prémium completos, campos Rt/AES-CBC y archivos `.sks` con motor GCM/DES compartido. Fuentes fijas, icono original y control individual; versión 10 pendiente de APK verificable.
 
 - [Wolf Custom VPN v2.8.1.2 (13)](Wolf_Custom_VPN/README.md): fuente activa, catálogo completo y `.wolf` AES-GCM con dos claves nativas; 164 servidores / 2015 redes y 13267 campos comparados con JCA y worker. Conserva lector histórico, icono original y control individual; archivo exportado real pendiente.
+
+- [Netcol VPN 14.2 (142)](Netcol_VPN/README.md): fuente activa resuelta mediante Firebase, sobre Unicode/AES-CBC y siete campos Blowfish; 172 servidores y 1204 campos completos iguales a JCA y worker. Icono y control individual; revisión 59 conservada por petición del propietario, sin inventar formato de archivo.
