@@ -24,6 +24,7 @@ export function activeCatalogVersion(env=process.env) {
 }
 
 const ITEMS = Object.freeze([
+  {id:"enaa-tunnel",name:"Enaa Tunnel",icon:"enaa-tunnel.png",remote:"enaa-tunnel"},
   {id:"alfaisal-tunnel-plus",name:"ALFAISAL Tunnel+",icon:"alfaisal-tunnel-plus.png",remote:"alfaisal-tunnel-plus"},
   {id:"izph-vpn-pro", name:"IZPH VPN PRO", icon:"izph-vpn-pro.png", remote:"izph-vpn-pro"},
   // Build 29 authenticated updater and complete 8.0.61 catalog verified.

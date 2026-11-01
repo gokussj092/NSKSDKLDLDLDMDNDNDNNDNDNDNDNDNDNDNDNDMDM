@@ -603,6 +603,14 @@
       "credentialFields": []
     },
     {
+      "suffix": "enaa",
+      "name": "Enaa Tunnel Enna-1.07",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
       "suffix": "epro",
       "name": "ePro Tunnel",
       "kind": "file",

@@ -1,0 +1,132 @@
+{
+  "id": "enaa-tunnel",
+  "name": "Enaa Tunnel",
+  "package": "com.enaa.tunnel",
+  "compatibleVersions": [
+    "Enna-1.07"
+  ],
+  "versionCode": 7,
+  "engine": "python-enaa-argon2id8192-aes256gcm",
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "source": "https://strongteam.co/api/wolftunnellite/enaav1.txt",
+    "requestMethod": "GET",
+    "userAgent": "Enaa Tunnel",
+    "requiresBackendSecrets": false,
+    "realHttpStatus": 200,
+    "sourceValidatedOn": "2026-11-01",
+    "realCliDownloadEqual": true,
+    "embeddedProof": {
+      "source": "configfile.json",
+      "bytes": 709920,
+      "sha256": "d8c8887fac8d53c68b1a143031cade84a6887525c0a79e6b5e144576bc013edb",
+      "version": "3.20",
+      "servers": 28,
+      "networks": 465,
+      "fields": 3303,
+      "uniqueFields": 3303,
+      "fullIndependentEqual": true
+    },
+    "remoteProof": {
+      "source": "remote.enc",
+      "bytes": 810149,
+      "sha256": "981ce266f94f10eaed2489401d71ce4ce9415d86bc48a6076e1f0284c4bd37b2",
+      "version": "4.26",
+      "servers": 45,
+      "networks": 515,
+      "fields": 3555,
+      "uniqueFields": 3555,
+      "fullIndependentEqual": true,
+      "completeWorkerEqual": true,
+      "workerSeconds": 38.92,
+      "liveCliDownloadEqual": true,
+      "renderedBytes": 463584
+    },
+    "realWorkerGatewayEqual": true,
+    "workerGatewayRawBytes": 463583,
+    "nodeProviderTransport": "mocked",
+    "internalHttpTransport": "simulated",
+    "catalogVersion": 59,
+    "publicCards": 56
+  },
+  "format": {
+    "keyDerivation": "Argon2id v19",
+    "timeCost": 3,
+    "memoryKiB": 8192,
+    "parallelism": 1,
+    "keyBytes": 32,
+    "envelope": "salt16/nonce12/ciphertext/tag16",
+    "aad": "salt16",
+    "exportMarker": "ASCII letter inserted at Base64 index3; not in EO fields",
+    "fieldSchema": "explicit root/Servers/Networks contexts; unknowns preserved"
+  },
+  "files": {
+    "entrypoint": "file_decoder.py",
+    "extension": "enaa",
+    "exporter": "NetworkAdapter.u -> Libv2ray.encrypt",
+    "importer": "ConfigFileParser",
+    "runtimeRoute": "C8 Cloud",
+    "realExportSample": false,
+    "writerCertified": false,
+    "newTextScheme": false
+  },
+  "dependencies": {
+    "python": ">=3.10",
+    "pycryptodome": "3.23.0",
+    "argon2-cffi": "25.1.0",
+    "supportFiles": [
+      "../HTTP_FenixVPN/codec.py",
+      "../HTTP_FenixVPN/field_names.json"
+    ]
+  },
+  "sourceBaseApkSha256": "9c522d331ed2b20b23ee20cd743c9ff514bcd0d273eeb482f4077efb53e78847",
+  "sourceNativeSha256": "06b2d8a4cac00c8885b4732b27b56eb88a986233a47c0d54e86785c5d4e8c057",
+  "signer": {
+    "sha1": "2eeaf6dcf62bf865a28db59209de7ed3e9840e04",
+    "sha256": "37cb0bc3be08ca620c454d3d4947641e16b783ed5854748c814a3d0ec013ff3d"
+  },
+  "originalInput": {
+    "filename": "Enaa-Tunnel-Enna-1.07-build7.xapk",
+    "bytes": 53323023,
+    "sha256": "105f5447988349d93c7214e430c13d8a725cbeae6aaf6e74bf1e5d56a6571b5f",
+    "libraryFileId": "libfile_ad5ca39c2e2c819184def3a2b6faf031"
+  },
+  "icon": {
+    "resource": "res/mipmap-xxxhdpi-v4/ic_launcher.webp",
+    "width": 192,
+    "height": 192,
+    "webpBytes": 10410,
+    "webpSha256": "df02eeb58f036af2bcb0e2aa0628735f76cebcc8f14db64056879950b96fff1a",
+    "pngBytes": 14892,
+    "pngSha256": "d22a77414e61a6fb14ee1d347471419adb17504d54aac5761cea542c6c599efa",
+    "pixelIdentical": true
+  },
+  "analysis": {
+    "jadxVersion": "1.5.6",
+    "jadxErrors": 58,
+    "nativePackage": "github.com/2dust/AndroidLibXrayLite",
+    "CU": "0x1a4e3e0",
+    "DO": "0x1a4b660",
+    "EO": "0x1a4b1f0",
+    "Encrypt": "0x1a4a9a0",
+    "decrypt": "0x1a4ad00",
+    "password": "0x39a223/18 bytes"
+  },
+  "validation": {
+    "pythonTests": 9,
+    "nodeTests": 160,
+    "skips": 0,
+    "completeIndependentJcaLibsodiumEqual": true,
+    "realWorkerEqual": true,
+    "realCliDownloadEqual": true,
+    "androidVpnTested": false,
+    "deployed": false,
+    "c0Routes": 240,
+    "c8Routes": 255,
+    "c8Overrides": 29
+  },
+  "remoteOriginal": {
+    "filename": "Enaa-Tunnel-remote-4.26.enc",
+    "libraryFileId": "libfile_632a0f92eb0881919291311917b18906"
+  }
+}

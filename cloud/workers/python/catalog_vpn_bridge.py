@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 PROVIDERS = {
+    "enaa-tunnel": "decoders.Python.apps.Enaa_Tunnel.server_catalog_decoder",
     "alfaisal-tunnel-plus": "decoders.Python.apps.ALFAISAL_Tunnel_Plus.server_catalog_decoder",
     "izph-vpn-pro": "decoders.Python.apps.IZPH_VPN_PRO.server_catalog_decoder",
     "vip-snipher-pro": "decoders.Python.apps.VIP_Snipher_Pro.server_catalog_decoder",

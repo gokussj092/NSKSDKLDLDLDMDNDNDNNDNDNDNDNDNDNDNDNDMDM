@@ -1,0 +1,339 @@
+{
+  "documents": [
+    {
+      "kind": "file",
+      "mode": "export",
+      "wire": "CgsQMDQ4PEBESExQVFhcYGWVmZ2hpamtsbW5vcEloiSq1QM2hDOVAeOFuEIi3RR19tAf03ZxoN1I3IgicsFon/2xT2p1eR+vlTXo6c3iIHDj9jG+8k8jAHCN55akCCAyVEXmA9wuTBrcYTfxXOR0NXgJkULxAXNpUKHINoMal1igf1wAwSK1IKcaVxzbmnIIXoMb/GSjllgxTNaqVH5dzZKJUNub0vrfUbnD0lYXOoJaj3FTW2v8XmEwx4POm/I093E89srdWcKyyX43Lm0Bi3C7kwtQoPlGo2BoNBCwl8bKGosMuRmmDmnmKYlEMA/PslUd9fxcXHUivA9o7gJl4UUS4d0MjWCLGQBF0C6AFTUvO+5+MRPdez0WlH2Gnb6vmWp0NVPyH37scwDswfYdOIJiqWijKmOnQuUfYxdJ3GRCCNnFmrzbaO+5rMvKLgWije5DwaTgjv7SKlY3hX2zmo4DNve8ukALtC3UhQUndRWSS4g5S/MddoU2m2Q==",
+      "outer": {
+        "Name": "Prueba 日本語",
+        "TunnelType": "SSH",
+        "Payload": "AwQFBgcICQoLDA0ODxAREl5fYGFiY2RlZmdoacAWNlqoWqeLaroaz691dkuJ3ckFBCtS18x2Rye9lh0PiuvuE6hRaNz2Bu9nbvRKAnb+wYvah/9juRdxGlixEA==",
+        "SNI": "plain.example.invalid",
+        "URI": null,
+        "ProxyPort": "8080",
+        "Enabled": false,
+        "future": {
+          "list": [
+            0,
+            false,
+            null,
+            "keep"
+          ],
+          "passwordHash": "synthetic metadata"
+        }
+      },
+      "expected": {
+        "Name": "Prueba 日本語",
+        "TunnelType": "SSH",
+        "Payload": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+        "SNI": "plain.example.invalid",
+        "URI": null,
+        "ProxyPort": "8080",
+        "Enabled": false,
+        "future": {
+          "list": [
+            0,
+            false,
+            null,
+            "keep"
+          ],
+          "passwordHash": "synthetic metadata"
+        }
+      }
+    },
+    {
+      "kind": "file",
+      "mode": "eo",
+      "wire": "CwwNDg8QERITFBUWFxgZGmZnaGlqa2xtbm9wcS+ztSlE6oPOsB+hkd1CdQJVVodDwylImHaOmKQHybUmkmqsaW7WIgVic1OIBq8Rq9MszbRdN4p+/xW9KAtzH9SsTBH7bQEsPmDAcgO05E/7tEp70U9w/zXbEkPeB7oY9aHonPS65wNH+ZIcDfnQxnqYZmIUgtWzY9rPu2DvkGUzcodPY1kGDsYX1AnVEs1TMBs4+k1+BJwgut81vc8eQGoK9Vv1Vgo/ICy7ZHOnmV3vT9Tm0wJc4x68Um+4g0ENF2woZMa393aTRaEOyMnvfoBLI2corFmRZMegW1jc/vvc4oFppiXcfLpSpkvNDzO3yioyEcU4YMTwiY+aUx2jsEdvp0VYCdehyJ5X9I5SqNemBHUQMeBNGKd1RoIoHQCPbdIV+kX51XTcEReuPmz+zb8lZl3sF+E4pT2QEcS3FKRI5lBhcy8i5x6rUO6M8H0unkeKjs5z6mYYDnaDOCwXBg==",
+      "outer": {
+        "Name": "Prueba 日本語",
+        "TunnelType": "SSH",
+        "Payload": "AwQFBgcICQoLDA0ODxAREl5fYGFiY2RlZmdoacAWNlqoWqeLaroaz691dkuJ3ckFBCtS18x2Rye9lh0PiuvuE6hRaNz2Bu9nbvRKAnb+wYvah/9juRdxGlixEA==",
+        "SNI": "plain.example.invalid",
+        "URI": null,
+        "ProxyPort": "8080",
+        "Enabled": false,
+        "future": {
+          "list": [
+            0,
+            false,
+            null,
+            "keep"
+          ],
+          "passwordHash": "synthetic metadata"
+        }
+      },
+      "expected": {
+        "Name": "Prueba 日本語",
+        "TunnelType": "SSH",
+        "Payload": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+        "SNI": "plain.example.invalid",
+        "URI": null,
+        "ProxyPort": "8080",
+        "Enabled": false,
+        "future": {
+          "list": [
+            0,
+            false,
+            null,
+            "keep"
+          ],
+          "passwordHash": "synthetic metadata"
+        }
+      }
+    },
+    {
+      "kind": "file",
+      "mode": "plain",
+      "wire": "{\"Name\":\"Prueba 日本語\",\"TunnelType\":\"SSH\",\"Payload\":\"AwQFBgcICQoLDA0ODxAREl5fYGFiY2RlZmdoacAWNlqoWqeLaroaz691dkuJ3ckFBCtS18x2Rye9lh0PiuvuE6hRaNz2Bu9nbvRKAnb+wYvah/9juRdxGlixEA==\",\"SNI\":\"plain.example.invalid\",\"URI\":null,\"ProxyPort\":\"8080\",\"Enabled\":false,\"future\":{\"list\":[0,false,null,\"keep\"],\"passwordHash\":\"synthetic metadata\"}}",
+      "outer": {
+        "Name": "Prueba 日本語",
+        "TunnelType": "SSH",
+        "Payload": "AwQFBgcICQoLDA0ODxAREl5fYGFiY2RlZmdoacAWNlqoWqeLaroaz691dkuJ3ckFBCtS18x2Rye9lh0PiuvuE6hRaNz2Bu9nbvRKAnb+wYvah/9juRdxGlixEA==",
+        "SNI": "plain.example.invalid",
+        "URI": null,
+        "ProxyPort": "8080",
+        "Enabled": false,
+        "future": {
+          "list": [
+            0,
+            false,
+            null,
+            "keep"
+          ],
+          "passwordHash": "synthetic metadata"
+        }
+      },
+      "expected": {
+        "Name": "Prueba 日本語",
+        "TunnelType": "SSH",
+        "Payload": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+        "SNI": "plain.example.invalid",
+        "URI": null,
+        "ProxyPort": "8080",
+        "Enabled": false,
+        "future": {
+          "list": [
+            0,
+            false,
+            null,
+            "keep"
+          ],
+          "passwordHash": "synthetic metadata"
+        }
+      }
+    },
+    {
+      "kind": "catalog",
+      "mode": "export",
+      "wire": "DQ4QPEBESExQVFhcYGRobHGhpamtsbW5vcHFycwRC8KDU1bvVUY2jo4cUSjJ0xP708KirFD5BMDvAMRyRorL+3NjGP3BVx0SfHuJqAg9ME+N4u86t1TjwLayUEWMxynuSVCApcmilL9lfWyBOtSm8B+lTGcAtFgyt5z1DD+a+OZMrumYfbpNNPsytWEFR5/QBhe3F0qNzumt8NvHq0oGf2WqV51tIAXkbwc7/T/WXsJ95nN+7SKgQ0+LGi7jjEQzTUZS5k+DvS0LEyfdM/+yl5BU1GiLZlEl6C1T5MseKefrGOG1zXfab/q/Z9xX/pmcTudeq0SyvgCS+wkUgQbkY/w9ZGlvbBUJC0rebPYASXoSKp9JyPqtefDEmkimWA7HsOrY8pstRIYaL7OCSZOIMT/foK14vzYYjj0EtwhAOK9esfmAYLIk4vZRo2GiUqXMbL0vYiaD8d2eUk2KUYUQPjJoQQ4+t/GlD7/wKO0SbFIhFxFBd2zm//Xq18ESob4vwiAqMSFWY/XP1QdLU7Z6PAs9NjVlrcdrdsfbd341vl5OEhYSZeAExfOBnvTwfjvu7r0ZGvGibSk31WeFNJAnmsvNE/JcqcnSI7qQBleyfhg1D6sdletK7EAj5Totp+Y8BCHJOg5KkRS+ljeZVd55JwY11qoNZar5kgZER5hSQfwY/pG3892WlXHlFZgJSs+qBUalZX8zriX5Zk2NcX8Y+o4LwtAQtYgEUwdurKAvK20aQNpEIQdEd67JHuBEjYo/JUKToOSvvLe7redYA8fjribwtaeX4jXaSDY3ZNZHRO2Uom5E1uI1CApKZRubO3d36WEFAMT+YbKzld9EsoxoBU/0yRajQbq4BaVmrnfX4HIs7wLMDSSjZBZk=",
+      "outer": {
+        "Version": "test.7",
+        "Servers": [
+          {
+            "Name": "synthetic",
+            "ServerIPHost": "BAUGBwgJCgsMDQ4PEBESE19gYWJjZGVmZ2hpagTJL+A7yayNQx7pjY2hm681yzQTpMxQIDo+pKf2FkZgcuKr",
+            "SSH_Port": "22"
+          }
+        ],
+        "Networks": [
+          {
+            "Name": "Prueba 日本語",
+            "TunnelType": "SSH",
+            "Payload": "AwQFBgcICQoLDA0ODxAREl5fYGFiY2RlZmdoacAWNlqoWqeLaroaz691dkuJ3ckFBCtS18x2Rye9lh0PiuvuE6hRaNz2Bu9nbvRKAnb+wYvah/9juRdxGlixEA==",
+            "SNI": "plain.example.invalid",
+            "URI": null,
+            "ProxyPort": "8080",
+            "Enabled": false,
+            "future": {
+              "list": [
+                0,
+                false,
+                null,
+                "keep"
+              ],
+              "passwordHash": "synthetic metadata"
+            }
+          }
+        ],
+        "ReleaseNotes": "Prueba",
+        "DefOVPNPass": "CAkKCwwNDg8QERITFBUWF2NkZWZnaGlqa2xtbpKul63MBetBK19MJGCCTII="
+      },
+      "expected": {
+        "Version": "test.7",
+        "Servers": [
+          {
+            "Name": "synthetic",
+            "ServerIPHost": "vpn.example.invalid",
+            "SSH_Port": "22"
+          }
+        ],
+        "Networks": [
+          {
+            "Name": "Prueba 日本語",
+            "TunnelType": "SSH",
+            "Payload": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "SNI": "plain.example.invalid",
+            "URI": null,
+            "ProxyPort": "8080",
+            "Enabled": false,
+            "future": {
+              "list": [
+                0,
+                false,
+                null,
+                "keep"
+              ],
+              "passwordHash": "synthetic metadata"
+            }
+          }
+        ],
+        "ReleaseNotes": "Prueba",
+        "DefOVPNPass": ""
+      }
+    },
+    {
+      "kind": "catalog",
+      "mode": "eo",
+      "wire": "Dg8QERITFBUWFxgZGhscHWlqa2xtbm9wcXJzdEKhbBTMpc6jylvNOIufGai+yny1gUHT0Y+w2exEJv0FYVti9/nbtcXASylm+ayrptL3h4gSUWdkmx0zBfZxyl/Kmlv/6zy1J3S1lvf2NU5PFz/9Yjw9pxtJJVpKIaaZst6B2Ut9Ft+EutZbfP0RTVg8RCA5i3SrZ7yFzg10T0MA5Cd5dPIuGxZGWY9cvpEh6oEtZublFIBUP9L1d4KFrWfmdNpuGvh9QTvhKJCtVC51l4WLzJicBnEfPY+WZXiEBnGaLApiNUSGphGdGGS6daF3sRzng0i/rJPhf/u18kIqd/f4RJDM5GMKXqhPjNGM9wZ92BLvT70Grh/oKGD/YICnczuQLZ5R1M9xm7k9U4FAx13lpRP1kFn42I6WMDVX/rQbBvi4P120HhkB4g3msCjTh0YxVwX3kjDgZv/iLm/WHjghGoJf3q9fyTt02oG1WU85AQSrPbIdjnJ713zlsgxe/2i3n2e2gdInhsuU+LRLOrTHuZ6IrP+BNyT1bqqsRSjHVN+STJI8TcHMJcZxynOrQ5149smJ7kwEE7TyJ3+e0m5HpNVXndDoX5ux+7kGPy1IHD3dYRWU5vtTgK4WTQyTengGlDnrJcEUfLjFg7/6joUcLRgELLCg3DsLRAYZ0Oi0dIyqXA+wi8JkkkeH66weTBq5m/0/Jzoss0BPmyVJXCpZlVGI0coV57+k1jdtyilqsHe5me3NGeZaIf+ougaXtp9InZLoX09PUGqEhKPwukhw93atYsrAD8eSpqY+ggEkCt/pdRp6hKSe3M58f5gHrieE0Lj9l/ac63cPxHgN6p6UomW+NY1LolgOL8eh/WAo2jo1GJ/WVk5xMVg=",
+      "outer": {
+        "Version": "test.7",
+        "Servers": [
+          {
+            "Name": "synthetic",
+            "ServerIPHost": "BAUGBwgJCgsMDQ4PEBESE19gYWJjZGVmZ2hpagTJL+A7yayNQx7pjY2hm681yzQTpMxQIDo+pKf2FkZgcuKr",
+            "SSH_Port": "22"
+          }
+        ],
+        "Networks": [
+          {
+            "Name": "Prueba 日本語",
+            "TunnelType": "SSH",
+            "Payload": "AwQFBgcICQoLDA0ODxAREl5fYGFiY2RlZmdoacAWNlqoWqeLaroaz691dkuJ3ckFBCtS18x2Rye9lh0PiuvuE6hRaNz2Bu9nbvRKAnb+wYvah/9juRdxGlixEA==",
+            "SNI": "plain.example.invalid",
+            "URI": null,
+            "ProxyPort": "8080",
+            "Enabled": false,
+            "future": {
+              "list": [
+                0,
+                false,
+                null,
+                "keep"
+              ],
+              "passwordHash": "synthetic metadata"
+            }
+          }
+        ],
+        "ReleaseNotes": "Prueba",
+        "DefOVPNPass": "CAkKCwwNDg8QERITFBUWF2NkZWZnaGlqa2xtbpKul63MBetBK19MJGCCTII="
+      },
+      "expected": {
+        "Version": "test.7",
+        "Servers": [
+          {
+            "Name": "synthetic",
+            "ServerIPHost": "vpn.example.invalid",
+            "SSH_Port": "22"
+          }
+        ],
+        "Networks": [
+          {
+            "Name": "Prueba 日本語",
+            "TunnelType": "SSH",
+            "Payload": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "SNI": "plain.example.invalid",
+            "URI": null,
+            "ProxyPort": "8080",
+            "Enabled": false,
+            "future": {
+              "list": [
+                0,
+                false,
+                null,
+                "keep"
+              ],
+              "passwordHash": "synthetic metadata"
+            }
+          }
+        ],
+        "ReleaseNotes": "Prueba",
+        "DefOVPNPass": ""
+      }
+    },
+    {
+      "kind": "catalog",
+      "mode": "plain",
+      "wire": "{\"Version\":\"test.7\",\"Servers\":[{\"Name\":\"synthetic\",\"ServerIPHost\":\"BAUGBwgJCgsMDQ4PEBESE19gYWJjZGVmZ2hpagTJL+A7yayNQx7pjY2hm681yzQTpMxQIDo+pKf2FkZgcuKr\",\"SSH_Port\":\"22\"}],\"Networks\":[{\"Name\":\"Prueba 日本語\",\"TunnelType\":\"SSH\",\"Payload\":\"AwQFBgcICQoLDA0ODxAREl5fYGFiY2RlZmdoacAWNlqoWqeLaroaz691dkuJ3ckFBCtS18x2Rye9lh0PiuvuE6hRaNz2Bu9nbvRKAnb+wYvah/9juRdxGlixEA==\",\"SNI\":\"plain.example.invalid\",\"URI\":null,\"ProxyPort\":\"8080\",\"Enabled\":false,\"future\":{\"list\":[0,false,null,\"keep\"],\"passwordHash\":\"synthetic metadata\"}}],\"ReleaseNotes\":\"Prueba\",\"DefOVPNPass\":\"CAkKCwwNDg8QERITFBUWF2NkZWZnaGlqa2xtbpKul63MBetBK19MJGCCTII=\"}",
+      "outer": {
+        "Version": "test.7",
+        "Servers": [
+          {
+            "Name": "synthetic",
+            "ServerIPHost": "BAUGBwgJCgsMDQ4PEBESE19gYWJjZGVmZ2hpagTJL+A7yayNQx7pjY2hm681yzQTpMxQIDo+pKf2FkZgcuKr",
+            "SSH_Port": "22"
+          }
+        ],
+        "Networks": [
+          {
+            "Name": "Prueba 日本語",
+            "TunnelType": "SSH",
+            "Payload": "AwQFBgcICQoLDA0ODxAREl5fYGFiY2RlZmdoacAWNlqoWqeLaroaz691dkuJ3ckFBCtS18x2Rye9lh0PiuvuE6hRaNz2Bu9nbvRKAnb+wYvah/9juRdxGlixEA==",
+            "SNI": "plain.example.invalid",
+            "URI": null,
+            "ProxyPort": "8080",
+            "Enabled": false,
+            "future": {
+              "list": [
+                0,
+                false,
+                null,
+                "keep"
+              ],
+              "passwordHash": "synthetic metadata"
+            }
+          }
+        ],
+        "ReleaseNotes": "Prueba",
+        "DefOVPNPass": "CAkKCwwNDg8QERITFBUWF2NkZWZnaGlqa2xtbpKul63MBetBK19MJGCCTII="
+      },
+      "expected": {
+        "Version": "test.7",
+        "Servers": [
+          {
+            "Name": "synthetic",
+            "ServerIPHost": "vpn.example.invalid",
+            "SSH_Port": "22"
+          }
+        ],
+        "Networks": [
+          {
+            "Name": "Prueba 日本語",
+            "TunnelType": "SSH",
+            "Payload": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "SNI": "plain.example.invalid",
+            "URI": null,
+            "ProxyPort": "8080",
+            "Enabled": false,
+            "future": {
+              "list": [
+                0,
+                false,
+                null,
+                "keep"
+              ],
+              "passwordHash": "synthetic metadata"
+            }
+          }
+        ],
+        "ReleaseNotes": "Prueba",
+        "DefOVPNPass": ""
+      }
+    }
+  ],
+  "kdf": {
+    "password": "synthetic test key",
+    "saltHex": "000102030405060708090a0b0c0d0e0f",
+    "keyHex": "63a35e12a439718636a359bf28dc65b6a1b3fe3aac1b48d22cf1b6aa1d18c4d2"
+  }
+}

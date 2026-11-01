@@ -1,5 +1,17 @@
 # Registro de nuevas integraciones VPN
 
+## Enaa Tunnel Enna-1.07 (7) — 2026-11-01
+
+Fuente nativa GET con User-Agent Enaa Tunnel, HTTP200 real: **4.26,
+45 servidores /515 redes**,810149bytes. Argon2id3/8192/1 y AES256-GCM
+con salt AAD; letra extra para remoto/export .enaa. Incluido3.20,28/465.
+Ambos documentos completos iguales a libsodium/JCA; CLI descarga real y worker.
+`.enaa` confirmado en exportador/importador y añadido a C8:255 formatos,
+C0 sigue240. Perfil real independiente pendiente, sin writer certificado.
+Ficha/broker/worker/control/icono original, **59 /56 fichas**.
+9 Python /160 Node aprobadas. No secretos HTTP adicionales, no despliegue.
+[Continuidad y originales](ENAA_ZIG_TUNNEL_HANDOFF_2026_11_01.md).
+
 ## Revisión documental de catálogos desactivados — 2026-11-01
 
 Reabrir por instrucción del propietario las **10 integraciones remotas pendientes**:

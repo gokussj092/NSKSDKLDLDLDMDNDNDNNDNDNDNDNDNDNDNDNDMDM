@@ -1,5 +1,15 @@
 # SP-DECODE Cloud — Guía para ampliar Server VPN en otro chat
 
+## Enaa Tunnel completada; Zig Tunnel siguiente — 2026-11-01
+
+Por orden del propietario, procesar primero com.enaa.tunnel y después
+com.zigtunnel, sin mezclarlas. Enaa Enna-1.07/7: GET nativo HTTP200 real,
+4.26,45 servidores/515 redes; Argon2id3/8192/1/AES-GCM y .enaa C8.
+JSON completo igual a libsodium/JCA, CLI y worker. Fuente59,56 fichas y
+255 formatos efectivos; C0 conserva240. No requiere secreto HTTP adicional.
+[Handoff](ENAA_ZIG_TUNNEL_HANDOFF_2026_11_01.md) y carpeta Enaa_Tunnel.
+Los recuentos anteriores de55 fichas/254 formatos quedan como históricos.
+
 ## Reinvestigación obligatoria de catálogos desactivados — 2026-11-01
 
 Por instrucción del propietario, **retomar las integraciones remotas incompletas**

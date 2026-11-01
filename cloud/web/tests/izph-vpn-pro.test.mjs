@@ -38,14 +38,14 @@ test("IZPH refuses same-origin and foreign redirects",async t=>{
 
 test("IZPH launcher PNG, public format and card follow availability",()=>{
   const doc=catalog({availability:{"izph-vpn-pro":true}});
-  assert.equal(CATALOG_VERSION,59);assert.equal(doc.apps.length,55);
+  assert.equal(CATALOG_VERSION,59);assert.equal(doc.apps.length,56);
   const card=doc.apps.find(x=>x.id==="izph-vpn-pro");
   assert.equal(card.name,"IZPH VPN PRO");assert.equal(card.decodeEnabled,true);
   assert.equal(card.iconSha256,"66ba9cb37ebf9c2ec8ea71bff78be16b886c794b2c13c9f6d40d9c36bb1442cb");
   assert.equal(iconFor("izph-vpn-pro").bytes.length,156041);
   assert(PUBLIC_PROVIDER_IDS.includes("izph-vpn-pro"));
   assert.equal(catalog({availability:{"izph-vpn-pro":false}}).apps.find(x=>x.id==="izph-vpn-pro").decodeEnabled,false);
-  assert.equal(doc.formats.length,254);
+  assert.equal(doc.formats.length,255);
   assert(doc.formats.some(x=>x.suffix==="izph"));
   assert(!JSON.stringify(card).includes("https://"));
 });

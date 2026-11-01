@@ -9,7 +9,7 @@ import {PUBLIC_PROVIDER_IDS,updateProvider,providerOverview} from "../lib/c12-pr
 
 test("ANY and Speicers are public cards with original icons and operator availability",()=>{
   const doc=catalog({availability:{"any-vpn":true,"speicers-pro-vpn":true}});
-  assert.equal(doc.apps.length,55);
+  assert.equal(doc.apps.length,56);
   assert.equal(CATALOG_VERSION,59);
   const expected={
     "any-vpn":["ANY VPN",44411,"f111f88d18e14dd0eb934cfdafd0be0a8a74197c66e499be317b7c50fc11b38c"],

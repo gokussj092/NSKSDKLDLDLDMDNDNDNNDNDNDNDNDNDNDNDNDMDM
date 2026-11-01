@@ -25,13 +25,13 @@ function enabled(t){
 test("VIP Snipher original icon and download follow secret configuration and availability",t=>{
   enabled(t);
   const doc=catalog({availability:{"vip-snipher-pro":true}});
-  assert.equal(CATALOG_VERSION,59);assert.equal(doc.apps.length,55);
+  assert.equal(CATALOG_VERSION,59);assert.equal(doc.apps.length,56);
   const card=doc.apps.find(x=>x.id==="vip-snipher-pro");
   assert.equal(card.name,"VIP Snipher Pro");assert.equal(card.decodeEnabled,true);
   assert.equal(card.iconSha256,"6a2ecaacc5fdf2a20f23cf31a58838854d7573dfb58c738274e150c31978e1e6");
   assert.equal(iconFor(card.id).bytes.length,25374);
   assert(!JSON.stringify(card).includes("https://"));
-  assert.equal(doc.formats.length,254);
+  assert.equal(doc.formats.length,255);
   assert(!doc.formats.some(x=>x.suffix==="js"||x.suffix==="rj"));
   assert.equal(catalog({availability:{"vip-snipher-pro":false}}).apps.find(x=>x.id===card.id).decodeEnabled,false);
   delete process.env.SPDECODE_VIP_SNIPHER_AUTHORIZATION;
