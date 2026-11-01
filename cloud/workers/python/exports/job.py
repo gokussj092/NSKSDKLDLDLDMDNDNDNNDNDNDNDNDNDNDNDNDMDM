@@ -13,6 +13,7 @@ PROFILE = 'original-app-open-v1'
 MAX_ARTIFACT = 1024*1024
 MAX_REPLY = 6*1024*1024-8192
 TARGETS = {
+    'hat': ('ha-tunnel-plus', 'HA Tunnel Plus'),
     'hc': ('http-custom', 'HTTP Custom'),
     'dark': ('dark-tunnel', 'Dark Tunnel'),
     'ehi': ('http-injector', 'HTTP Injector'),

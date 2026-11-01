@@ -8,9 +8,9 @@ import {POST as getIcon} from "../app/api/v1/server-vpn/icon/route.js";
 const body=(content)=>new Request("https://api.spdecode.xyz/api/v1/server-vpn/test",{
   method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(content),
 });
-test("HA Tunnel original PNG is available while its protected updater remains unverified",()=>{
+test("HA Tunnel original PNG and the validated fixed updater are available",()=>{
  const app=catalog({availability:{"ha-tunnel-plus":true}}).apps.find(x=>x.id==="ha-tunnel-plus");
- assert.equal(app.name,"HA Tunnel Plus");assert.equal(app.decodeEnabled,false);
+ assert.equal(app.name,"HA Tunnel Plus");assert.equal(app.decodeEnabled,true);
  assert.equal(app.iconSha256,"42aa9743f5d430933257f0023af2182f2dcc6ae41a8930a9ca38e9f397ac3ab8");
  assert.equal(iconFor(app.id).bytes.length,20416);
 });
@@ -72,7 +72,7 @@ test("only registered icon identifiers are served",async()=>{
 
 import {providerIds,providerEnabled,downloadVpnCatalog} from "../lib/server-vpn-provider.mjs";
 test("only fixed catalog providers are eligible for remote broker",async()=>{
-  assert.deepEqual(providerIds().sort(),["24clan-green","4u-tunnel-lite","7net-vpn","abowaged-vpn","ac-tunnel-vpn","alfaisal-tunnel-plus","any-vpn","apna-vpn","aura-net-vpn","austroplus-vpn","bd-net-vpn","enaa-tunnel","focus-vpn-cloud","freedom-vpn","http-fenixvpn","http-internet-infinito","http-jireh","http-socketclay","http-wakko","hx-tunnel","izph-vpn-pro","jyfast-vpn-ultra","ksh-vpn","megatunnel","mkk-hyper","mm-tunnel","mnr-tunnel-plus","mtm-tunnel-lite","mx-tunnel-pro","my-tunnel-proxy","netcol-vpn","onspace-vpn","rjc-tunnel-pro","rmp-tunnel-pro","robust-tunnel","speicers-pro-vpn","superflash-vpn","trv-tunnel","tunneldoom-vpn","tunneltweak","turbomx-vpn","tx-tunnel","ultra-tunnel","v2ray-tunnel-plus","vip-snipher-pro","wolf-custom-vpn","xhypher-tunnel-pro","zig-tunnel"]);
+  assert.deepEqual(providerIds().sort(),["24clan-green","4u-tunnel-lite","7net-vpn","abowaged-vpn","ac-tunnel-vpn","alfaisal-tunnel-plus","any-vpn","apna-vpn","aura-net-vpn","austroplus-vpn","bd-net-vpn","enaa-tunnel","focus-vpn-cloud","freedom-vpn","ha-tunnel-plus","http-fenixvpn","http-internet-infinito","http-jireh","http-socketclay","http-wakko","hx-tunnel","izph-vpn-pro","jyfast-vpn-ultra","ksh-vpn","megatunnel","mkk-hyper","mm-tunnel","mnr-tunnel-plus","mtm-tunnel-lite","mx-tunnel-pro","my-tunnel-proxy","netcol-vpn","onspace-vpn","rjc-tunnel-pro","rmp-tunnel-pro","robust-tunnel","speicers-pro-vpn","superflash-vpn","trv-tunnel","tunneldoom-vpn","tunneltweak","turbomx-vpn","tx-tunnel","ultra-tunnel","v2ray-tunnel-plus","vip-snipher-pro","wolf-custom-vpn","xhypher-tunnel-pro","zig-tunnel"]);
   for(const id of providerIds()) assert.equal(providerEnabled(id,{CLOUD_SERVER_VPN_ENABLED:"false"}),false);
   assert.equal(providerEnabled("https://attacker.invalid/",{CLOUD_SERVER_VPN_ENABLED:"true"}),false);
   await assert.rejects(()=>downloadVpnCatalog("https://attacker.invalid/"),{code:"UNSUPPORTED_FORMAT"});

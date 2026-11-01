@@ -4,6 +4,7 @@ import {join} from 'node:path';
 import {randomUUID} from 'node:crypto';
 
 export const EXPORT_HEADER='x-spdecode-compatible-export';
+export const HAT_EXPORT_HEADER='x-spdecode-compatible-export-hat';
 export const EXPORT_PROFILE='original-app-open-v1';
 export const EXPORT_PROTOCOL_FLOOR='1.1.21';
 const ROOT='/app/provider-control';
@@ -13,6 +14,7 @@ const FORMATS=Object.freeze([
  {suffix:'dark',targetAppId:'dark-tunnel',name:'Dark Tunnel',banner:'none'},
  {suffix:'ehi',targetAppId:'http-injector',name:'HTTP Injector',banner:'spdecode-html'},
  {suffix:'npvs',targetAppId:'npv-tunnel',name:'NPV Tunnel',banner:'none'},
+ {suffix:'hat',targetAppId:'ha-tunnel-plus',name:'HA Tunnel Plus',banner:'none'},
 ]);
 
 export function version(value){
@@ -26,6 +28,11 @@ export function atLeast(value,floor){
 export function negotiatesExport(request){
  return request.headers.get(EXPORT_HEADER)==='1' &&
   atLeast(request.headers.get('x-spdecode-app-version'),EXPORT_PROTOCOL_FLOOR);
+}
+// Old Android clients accept at most four fixed targets. Advertise HA only
+// to clients that explicitly understand the additive fifth target.
+export function negotiatesHatExport(request){
+ return negotiatesExport(request)&&request.headers.get(HAT_EXPORT_HEADER)==='1';
 }
 function valid(p){
  return p&&typeof p==='object'&&!Array.isArray(p)&&
@@ -78,7 +85,7 @@ export function exportAllowed(request,policy){
   atLeast(request.headers.get('x-spdecode-app-version'),policy.minimumAppVersion);
 }
 export function projectedCatalogVersion(request,base,policy){
- const result=negotiatesExport(request)?base+policy.revision+1:base;
+ const result=negotiatesExport(request)?base+policy.revision+(negotiatesHatExport(request)?2:1):base;
  if(!Number.isSafeInteger(result)||result<1||result>=1_000_000_000)throw Error('CATALOG_VERSION_INVALID');
  return result;
 }
@@ -87,5 +94,5 @@ export function exportCatalog(request,policy){
  const allowed=exportAllowed(request,policy);
  return {schemaVersion:1,revision:policy.revision,enabled:allowed,
   minimumAppVersion:policy.minimumAppVersion,profile:EXPORT_PROFILE,
-  maxArtifactBytes:1024*1024,formats:allowed?FORMATS.map(x=>({...x})):[]};
+  maxArtifactBytes:1024*1024,formats:allowed?FORMATS.filter(x=>x.suffix!=='hat'||negotiatesHatExport(request)).map(x=>({...x})):[]};
 }

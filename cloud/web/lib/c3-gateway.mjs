@@ -11,7 +11,7 @@ import { maintenanceEnabled, serviceMaintenanceEnabled, recordWorkerResult } fro
 import {admissionPolicy} from "./c11-play-admission.mjs";
 import {publicFormats} from "./file-format-catalog.mjs";
 
-import {negotiatesExport,exportPolicy,exportAllowed,EXPORT_PROFILE} from "./compatible-export-policy.mjs";
+import {negotiatesExport,negotiatesHatExport,exportPolicy,exportAllowed,EXPORT_PROFILE} from "./compatible-export-policy.mjs";
 
 const ERROR_MESSAGES = Object.freeze({
   INVALID_REQUEST:"Solicitud inválida.",
@@ -214,6 +214,18 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
        typeof decoded.rawText!=="string" || !decoded.rawText.length ||
        Buffer.byteLength(decoded.rawText,"utf8")>(isMkk?32*1024*1024:4*1024*1024))
       throw Error("INVALID_WORKER_RESULT");
+    if(kind==="server-vpn" && payload?.providerId==="ha-tunnel-plus"){
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId ||
+         !isRecord(parsed) || ["servers","methods","allowed_apps"].some(name=>
+           !isRecord(parsed[name]) || typeof parsed[name].version!=="string" || !parsed[name].version) ||
+         ["servers","methods"].some(name=>!Array.isArray(parsed[name].data) || !parsed[name].data.length ||
+           parsed[name].data.some(x=>!isRecord(x))) ||
+         parsed.methods.data.some(x=>!isRecord(x.conf)) || !isRecord(parsed.allowed_apps.data) ||
+         Object.values(parsed.allowed_apps.data).some(x=>!Array.isArray(x)||x.some(v=>!isRecord(v))) ||
+         JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))throw Error("INVALID_WORKER_RESULT");
+    }
     if(kind==="server-vpn" && payload?.providerId==="netcol-vpn"){
       let parsed;
       try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
@@ -413,7 +425,8 @@ export async function decodeRequest(request,kind,options={}) {
       let policy=null;
       try{policy=await (options.exportPolicyProvider||exportPolicy)();}
       catch{ /* Export failure must not discard a valid decode. */ }
-      if(!policy||!exportAllowed(request,policy)){
+      const clientSupportsFormat=payload.format.toLowerCase()!=="hat"||negotiatesHatExport(request);
+      if(!policy||!exportAllowed(request,policy)||!clientSupportsFormat){
         workerPayload={...payload};delete workerPayload.compatibleExport;
         exportUnavailable={status:"unavailable",code:!policy?"EXPORT_POLICY_UNAVAILABLE":
           policy.enabled?"EXPORT_CLIENT_UPDATE_REQUIRED":"EXPORT_DISABLED"};

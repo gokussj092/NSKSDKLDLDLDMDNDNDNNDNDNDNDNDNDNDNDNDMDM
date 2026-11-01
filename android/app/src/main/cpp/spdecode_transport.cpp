@@ -265,6 +265,8 @@ jbyteArray post(JNIEnv* env,jclass,jint operation,jbyteArray bodyArg,jstring bea
         ok=setHeader(env,conn,connectionClass,setProperty,"X-SPDecode-NPV-Identities","1");
     if(ok && (operation == 5 || operation == 10 || operation == 13))
         ok=setHeader(env,conn,connectionClass,setProperty,"X-SPDecode-Compatible-Export","1");
+    if(ok && (operation == 5 || operation == 10 || operation == 13))
+        ok=setHeader(env,conn,connectionClass,setProperty,"X-SPDecode-Compatible-Export-Hat","1");
     if(ok && !bearer.empty())ok=setHeader(env,conn,connectionClass,setProperty,"Authorization","Bearer "+bearer);
     if(!ok) {
         clearException(env);env->CallVoidMethod(conn,disconnect);

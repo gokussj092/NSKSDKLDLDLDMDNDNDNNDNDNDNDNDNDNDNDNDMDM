@@ -1,3 +1,29 @@
+# Selección actual — HA Tunnel Plus, código verificado, 2026-11-01
+
+El propietario aportó HA1.7.1/code76 MOD sin la protección anterior.
+Su firma es diferente; no se certifica equivalencia binaria con el original.
+Se recuperaron925 cadenas y los cinco recursos. **GET HTTP200 real,
+13 servidores /644 métodos /4 grupos**, JSON entero igual a JCA,
+CLI de descarga real y worker aislado. Broker/ficha/C12/gateway conectados.
+
+Unlocked incorpora `.hat` como quinto destino negociado, preserva perfiles
+completos y notas; dos archivos reales históricos exportados/reabiertos y
+comparados con Java. Android anuncia capacidad adicional; clientes anteriores
+conservan los cuatro destinos. Switch Unlocked sin activar automáticamente.
+**Importación física y exportación nueva ejecutando el MOD pendientes.**
+42+19 Python /114 Node correctas, JNI25; replay real con HTTP/Redis simulados.
+Node directo falla DNS EAI_AGAIN: **VPS y despliegue pendientes**.
+Fuente59/58 fichas,8 remote:null, C0240/C8255 intactos; respetar versión
+efectiva monotónica del runbook, no reiniciar switches.
+[Documentación y recuperación](../../decoders/Python/apps/HA_Tunnel_Plus/README.md).
+
+HTTP Custom continúa **0/2 interiores n13**, solo HCX4 autenticado;
+[documentación guardada](HTTP_CUSTOM_11_N13_REINVESTIGACION_2026_11_01.md).
+Ultra/MM sin desplegar; UT Loop/FlexNet pendientes. Sin merge/deploy,
+Actions manuales, APK ni C11 en esta entrega. Rama fix/http-jireh-current-method.
+
+---
+
 # Selección actual — HTTP Custom HCCFG 11/n13 pendiente, 2026-11-01
 
 Dos archivos nuevos aportados: HCX4 autenticado, esquema11/n13 con bloque

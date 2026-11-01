@@ -14,6 +14,7 @@ const ROOT="/app/provider-control";
 const IDS=Object.freeze(["ehi-cloud","hc-cloud","nur-tunnel",...providerIds()]);
 export const PUBLIC_PROVIDER_IDS=IDS;
 const LABELS=Object.freeze({
+  "ha-tunnel-plus":"HA Tunnel Plus",
   "ultra-tunnel":"Ultra Tunnel",
   "mm-tunnel":"MM Tunnel",
   "zig-tunnel":"ZiG Tunnel",

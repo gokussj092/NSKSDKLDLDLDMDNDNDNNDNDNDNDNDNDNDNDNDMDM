@@ -1,3 +1,24 @@
+# HA Tunnel Plus 1.7.1 (76) ✅ — código verificado, 2026-11-01
+
+Catálogo remoto real HTTP200,296647 bytes: **13 servidores /644 métodos /
+4 grupos**, todo el JSON igual a JCA, CLI con GET real y worker. Cinco assets
+incluidos recuperados aparte. Muestra MOD aportada con firma diferente del
+original protegido, sin certificar equivalencia binaria. Ficha, broker fijo,
+C12 y validación completa gateway conectados; fuente59/58 fichas,8 pendientes,
+C0240/C8255 intactos. No se añaden extensiones.
+
+Unlocked `.hat` reproduce la rama abierta del exportador, perfil entero y nota
+sin protecciones conocidas. Dos archivos reales históricos reabiertos iguales
+a Java/worker; quinto destino anunciado solo con capacidad adicional del
+cliente actualizado, cuatro anteriores intactos. **Importación Android,
+exportación nueva ejecutando la app y transporte real Node en VPS pendientes**
+(DNS EAI_AGAIN aquí).42+19 Python /114 Node, JNI25 y replay real con HTTP/Redis
+simulados correctos. Sin fusión, despliegue, build APK, CI manual ni C11.
+[Herramientas, evidencia y límites](../../decoders/Python/apps/HA_Tunnel_Plus/README.md).
+HTTP Custom n13 sigue pendiente; su documentación ya fue guardada.
+
+---
+
 # Ultra Tunnel — descarga integrada en código, 2026-11-01
 
 Paquete co.strongteam.ultra, v1.0.8.8/build59. GET fijo con User-Agent

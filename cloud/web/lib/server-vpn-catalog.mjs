@@ -36,8 +36,8 @@ const ITEMS = Object.freeze([
   {id:"jyfast-vpn-ultra", name:"JyFast VPN Ultra", icon:"jyfast-vpn-ultra.png", remote:"jyfast-vpn-ultra"},
   // Build 430 fixed updater validated against the complete real catalog.
   {id:"tunneldoom-vpn", name:"TunnelDOOM VPN", icon:"tunneldoom-vpn.png", remote:"tunneldoom-vpn"},
-  // DexProtector resources and the fixed updater still require runtime verification.
-  {id:"ha-tunnel-plus", name:"HA Tunnel Plus", icon:"ha-tunnel-plus.png", remote:null},
+  // Unpacked build 76 updater: real response and complete methods catalog verified.
+  {id:"ha-tunnel-plus", name:"HA Tunnel Plus", icon:"ha-tunnel-plus.png", remote:"ha-tunnel-plus"},
   {id:"mtm-tunnel-lite", name:"MTM Tunnel Lite", icon:"mtm-tunnel-lite.png", remote:"mtm-tunnel-lite"},
   {id:"mnr-tunnel-plus", name:"MNR TUNNEL PLUS", icon:"mnr-tunnel-plus.png", remote:"mnr-tunnel-plus"},
   {id:"bd-net-vpn", name:"BD NET VPN", icon:"bd-net-vpn.png", remote:"bd-net-vpn"},

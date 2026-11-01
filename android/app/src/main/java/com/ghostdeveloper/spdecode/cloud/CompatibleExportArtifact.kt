@@ -37,6 +37,7 @@ class CompatibleExportArtifact private constructor(
         val targets=mapOf("hc" to ("http-custom" to "HTTP Custom"),
             "dark" to ("dark-tunnel" to "Dark Tunnel"),
             "ehi" to ("http-injector" to "HTTP Injector"),
+            "hat" to ("ha-tunnel-plus" to "HA Tunnel Plus"),
             "npvs" to ("npv-tunnel" to "NPV Tunnel"))
         fun digest(bytes:ByteArray):String=MessageDigest.getInstance("SHA-256")
             .digest(bytes).joinToString(""){"%02x".format(it)}
@@ -88,7 +89,7 @@ internal class CompatibleExportCatalog private constructor(val suffixes:Set<Stri
             require(root.getString("minimumAppVersion").matches(Regex("[0-9]+\\.[0-9]+\\.[0-9]+")))
             require(root.getInt("maxArtifactBytes") in 1..CompatibleExportArtifact.MAX_BYTES)
             val array=root.getJSONArray("formats")
-            require(array.length() in 0..4)
+            require(array.length() in 0..CompatibleExportArtifact.targets.size)
             val suffixes=HashSet<String>()
             for(i in 0 until array.length()) {
                 val item=array.getJSONObject(i)
