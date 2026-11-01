@@ -1,0 +1,88 @@
+{
+  "id": "vip-snipher-pro",
+  "name": "VIP Snipher Pro",
+  "package": "dev.renz.soft.vipsnipherpro",
+  "compatibleVersions": [
+    "2.9"
+  ],
+  "versionCode": 29,
+  "engine": "python-renz-cbc-customxxtea-threefish256-pbkdf2",
+  "engineVersion": 1,
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "source": "https://raw.githubusercontent.com/Civ3snipher/NEW-VIP-SNIPHER-PRO-3/refs/heads/main/update.json?ref=main",
+    "sourceObservedStatus": 404,
+    "sourceValidatedOn": "2026-10-31",
+    "remoteValidated": false,
+    "publicBrokerEnabled": false,
+    "cardRemote": null,
+    "publicCatalogVersion": 59,
+    "publicCatalogCards": 53,
+    "versionPolicy": "Keep 59 by explicit owner instruction for the unreleased server batch",
+    "embeddedResource": "res/aa/d.js",
+    "embeddedProof": {
+      "source": "included.enc",
+      "bytes": 252864,
+      "sha256": "ef42646432cb20c3519c9dbee6a545a2a533ecb4a5616880ac9ad7230bcc99fb",
+      "version": "3.0.22",
+      "servers": 14,
+      "networks": 280,
+      "processed": 2441,
+      "nonempty": 1750,
+      "mode0": 1300,
+      "mode1": 422,
+      "mode2": 28,
+      "completeJdkEqual": true,
+      "zeroCiphertextFields": 2,
+      "nativeCasesEqual": 8,
+      "completeRealWorkerEqual": true,
+      "completeStdinCliEqual": true,
+      "renderedBytes": 172889
+    }
+  },
+  "files": {
+    "newRoute": false,
+    "historicalRoute": "renz.py / .vipsnipherpro / vipsnipherpro://",
+    "validation": "Existing inventory preserved; no real exported profile of build 29 supplied; no new .js/.rj global routes"
+  },
+  "dependencies": {
+    "python": ">=3.10",
+    "pycryptodome": "3.23.0",
+    "supportFiles": [
+      "../../renz.py",
+      "../HTTP_FenixVPN/codec.py",
+      "../HTTP_FenixVPN/field_names.json"
+    ]
+  },
+  "sourceApkSha256": "40d856fdbe24824f855be5f16b3341cdfa3e7d82a8c8d622891b60cac94e9b3e",
+  "sourceNativeSha256": "0e9f382d7d7249a55c9fcfcd21a1e02c01c98b506a7d95c518a1931e7c809a66",
+  "signer": {
+    "sha1": "919db7ea6a4d674af519b34f9a23edf4ef77d56c",
+    "sha256": "ec45a7f96f15fcf31cec5b3c29c342041e7e901de252292a24336cc5b8ede24c"
+  },
+  "originalInput": {
+    "filename": "VIP-Snipher-Pro-2.9-build29.xapk",
+    "bytes": 59683358,
+    "sha256": "0738801b6fffa10afd01c4b61f091e193dfd976b322a37b5cf7a891821663f44",
+    "libraryFileId": "libfile_fb815e6716cc81918ad90bc29bfbd9b6"
+  },
+  "icon": {
+    "file": "VIP_Snipher_Pro.png",
+    "source": "base.apk:res/i/cb.png",
+    "width": 512,
+    "height": 512,
+    "bytes": 25374,
+    "sha256": "6a2ecaacc5fdf2a20f23cf31a58838854d7573dfb58c738274e150c31978e1e6",
+    "policy": "Exact existing original PNG, no redraw, resize or conversion"
+  },
+  "validation": {
+    "pythonFocusedTests": 51,
+    "nodeFocusedTests": 150,
+    "skipCount": 0,
+    "completeJcaWorkerCliEquality": true,
+    "nativePrimitiveCases": 8,
+    "nativeFullJniExecuted": false,
+    "androidVpnConnectionTested": false,
+    "deployed": false
+  }
+}

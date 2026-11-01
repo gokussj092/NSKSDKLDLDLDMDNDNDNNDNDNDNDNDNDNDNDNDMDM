@@ -1,0 +1,79 @@
+{
+  "generator": "vip_snipher_oracle.java, JCA + independent Threefish/XXTEA, synthetic data only",
+  "plain": {
+    "0": "Prueba España — 日本\nvalor 0",
+    "1": "GET /synthetic/[host] HTTP/1.1\r\nHost: test.invalid\r\n\r\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "2": "synthetic-user-🔒\n"
+  },
+  "cipher": {
+    "0": "GEn6fiM7/Yjr7CXI/Xrrp65jotoClVSSUcvhhaB0N3sSCq7M/UTqTCEq31FpLwMS",
+    "1": "2oZdrWW1TxpbO3b4ny4QQXOkjxqcwRbFdXogs4xhWX9M3RyacOHDUMImTpzsirahbNxIkO3LtstUW9B5te6dkwhiTzpThhWOwbsQYp2lEAGy/OfTGwZ2QiteZYW7XbfgdqZgQUY4OHvIVVKE1384UgmrlRbDgRdAaTugICN85lTSgQYtG6yxqqmczeMOq568T/0hI7aOV05gFP6wxZ2P5A==",
+    "2": "C4XYJMkuU8AErLftp248KwEQD5pONSuyQAxntGSRwi93141WMu2CpjXM6QATRnW7TiOwDw=="
+  },
+  "catalog": "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",
+  "expected": {
+    "Version": "synthetic-29",
+    "Username": "synthetic-user-🔒\n",
+    "Password": "synthetic-user-🔒\n",
+    "Servers": [
+      {
+        "Name": "Prueba España — 日本\nvalor 0",
+        "Subname": "Prueba España — 日本\nvalor 0",
+        "ServerIPHost": "GET /synthetic/[host] HTTP/1.1\r\nHost: test.invalid\r\n\r\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "OpenVPNTCPPort": "Prueba España — 日本\nvalor 0",
+        "OpenVPNSSLPort": "Prueba España — 日本\nvalor 0",
+        "UDPSSLPort": "Prueba España — 日本\nvalor 0",
+        "CloudfrontDNS": "Prueba España — 日本\nvalor 0",
+        "flag": "Prueba España — 日本\nvalor 0",
+        "Obfs": "",
+        "CustomCert": null,
+        "Username": "synthetic-user-🔒\n",
+        "Password": "synthetic-user-🔒\n",
+        "Protocol": 1,
+        "UseCustomCert": false,
+        "V2Ray": {
+          "UUID": "Prueba España — 日本\nvalor 0",
+          "PATH": "GET /synthetic/[host] HTTP/1.1\r\nHost: test.invalid\r\n\r\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "V2RayHost": "GET /synthetic/[host] HTTP/1.1\r\nHost: test.invalid\r\n\r\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "DNSMode": 2
+        },
+        "SlowDNS": {
+          "NSNameServer": "Prueba España — 日本\nvalor 0",
+          "PubKey": "Prueba España — 日本\nvalor 0"
+        },
+        "UnknownCipher": "2oZdrWW1TxpbO3b4ny4QQXOkjxqcwRbFdXogs4xhWX9M3RyacOHDUMImTpzsirahbNxIkO3LtstUW9B5te6dkwhiTzpThhWOwbsQYp2lEAGy/OfTGwZ2QiteZYW7XbfgdqZgQUY4OHvIVVKE1384UgmrlRbDgRdAaTugICN85lTSgQYtG6yxqqmczeMOq568T/0hI7aOV05gFP6wxZ2P5A=="
+      }
+    ],
+    "Networks": [
+      {
+        "Name": "Prueba España — 日本\nvalor 0",
+        "Info": "Prueba España — 日本\nvalor 0",
+        "DNSResolver": "Prueba España — 日本\nvalor 0",
+        "TLSVersion": "Prueba España — 日本\nvalor 0",
+        "SNIHost": "GET /synthetic/[host] HTTP/1.1\r\nHost: test.invalid\r\n\r\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "Payload": "GET /synthetic/[host] HTTP/1.1\r\nHost: test.invalid\r\n\r\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "TunnelType": 2,
+        "EnableWS": true,
+        "ProxySettings": {
+          "Squid": "Prueba España — 日本\nvalor 0",
+          "Port": "Prueba España — 日本\nvalor 0"
+        },
+        "V2Ray": {
+          "SNIHost": "GET /synthetic/[host] HTTP/1.1\r\nHost: test.invalid\r\n\r\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "CustomV2RAYConfig": "GET /synthetic/[host] HTTP/1.1\r\nHost: test.invalid\r\n\r\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "UseCustomV2RAYConfig": true
+        }
+      }
+    ],
+    "unknown": {
+      "values": [
+        true,
+        false,
+        null,
+        0,
+        "é"
+      ],
+      "cipher": "GEn6fiM7/Yjr7CXI/Xrrp65jotoClVSSUcvhhaB0N3sSCq7M/UTqTCEq31FpLwMS"
+    }
+  }
+}

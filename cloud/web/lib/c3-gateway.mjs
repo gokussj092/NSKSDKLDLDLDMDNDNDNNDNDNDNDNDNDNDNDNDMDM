@@ -307,7 +307,7 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
          parsed.Servers.some(x=>!isRecord(x)) || parsed.Networks.some(x=>!isRecord(x)) ||
          JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))throw Error("INVALID_WORKER_RESULT");
     }
-    if(kind==="server-vpn" && ["7net-vpn","xhypher-tunnel-pro"].includes(payload?.providerId)){
+    if(kind==="server-vpn" && ["7net-vpn","xhypher-tunnel-pro","vip-snipher-pro"].includes(payload?.providerId)){
       let parsed;
       try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
       if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId ||

@@ -20,6 +20,7 @@ productores se mantienen en `tests/golden`, y las pruebas en `tests`.
 
 | Aplicación | Catálogo | Archivos/textos | Icono y documentación |
 | --- | --- | --- | --- |
+| VIP Snipher Pro 2.9 | [Lector offline; remoto HTTP404](VIP_Snipher_Pro/server_catalog_decoder.py) | RENZ histórico, sin nueva certificación de perfil | [Carpeta](VIP_Snipher_Pro/README.md) |
 | 24clan VPN Green 3.3 | [Script](24clan_VPN_Green/24clan_VPN_Green.py) | [.green](24clan_VPN_Green/24clan_VPN_Green_archivos.py) | [Carpeta](24clan_VPN_Green/README.md) |
 | HX Tunnel VPN Hx-Build14 | [Script](HX_Tunnel_VPN/HX_Tunnel_VPN.py) | [.hxt](HX_Tunnel_VPN/HX_Tunnel_VPN_archivos.py) | [Carpeta](HX_Tunnel_VPN/README.md) |
 | MKK Hyper VPN 2.9.2 | [Script](MKK_Hyper_VPN/MKK_Hyper_VPN.py) | [Texto mkk://](MKK_Hyper_VPN/MKK_Hyper_VPN_textos.py) | [Carpeta](MKK_Hyper_VPN/README.md) |
