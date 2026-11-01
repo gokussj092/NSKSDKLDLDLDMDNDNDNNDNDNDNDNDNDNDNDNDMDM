@@ -1,3 +1,27 @@
+# Estado vigente — Ultra Tunnel integrado en código, 2026-11-01
+
+El propietario seleccionó **Ultra Tunnel**, paquete co.strongteam.ultra.
+Goku, `fix/http-jireh-current-method`, base6d9dc8c.
+Original v1.0.8.8/build59: GET fijo con User-Agent Ultra Tunnel, sin sesión ni
+secreto privado adicional. Descarga real HTTP200: **5.18,47 servidores/917 redes**,
+5034 campos protegidos distintos. JSON entero igual a libsodium/JCA,
+CLI de descarga real y worker aislado (62.61s, no parcial).
+
+Ficha ultra-tunnel, PNG original512x512/306646 bytes, broker/worker/controlC12
+y contrato gateway conectados. **Fuente59/58 fichas**;9 remote:null.
+C0 conserva240 y C8 conserva255. No hay cambios en lectores Ultra/Sandok,
+APK Android, escritores o panel. 9 Python/97 Node aprobadas;7 replay con
+datos reales y HTTP/Redis simulados. Node directo dio REMOTE_NETWORK_DENIED;
+DNS EAI_AGAIN. **Falta desplegar y probar la ruta Node real en el VPS.**
+
+[Handoff completo](ULTRA_TUNNEL_HANDOFF_2026_11_01.md) y
+[CLI/pruebas](../../decoders/Python/apps/Ultra_Tunnel/README.md).
+Original y respuesta cifrada guardados privadamente por sus nombres.
+No se fusionó, desplegó, lanzó CI manual ni compiló Android.
+MM conserva despliegue pendiente; UT Loop y FlexNet no se dan por resueltos.
+
+---
+
 # Estado vigente — FlexNet B46, tres archivos v6 todavía pendientes
 
 2026-11-01. El propietario seleccionó ahora **Flex Net VPN** y exige

@@ -1,5 +1,13 @@
 # Herramientas de análisis APK
 
+Ultra Tunnel build59: `ultra_tunnel_source_check.py` verifica CU/DO/decrypt y
+la petición GET/UA del SO exacto, sin ejecutar JNI ni imprimir claves.
+`ultra_tunnel_verify.py` contrasta todo el JSON con libsodium/JCA y solo
+emite metadatos. Remoto5.18/47 servidores/917 redes/5034 campos igual a
+CLI de descarga y worker. Node directo falla DNS aquí; VPS pendiente.
+[Receta y hashes](../../docs/cloud/ULTRA_TUNNEL_HANDOFF_2026_11_01.md).
+
+
 **Descarga obligatoria antes de validar un proveedor:** seguir la
 [guía de paridad de petición](../../docs/cloud/SERVER_VPN_NEXT_CHAT_GUIDE.md#regla-obligatoria-paridad-de-la-descarga-original--2026-11-01).
 URL, método, cuerpos, User-Agent, Authorization, claves y firmas necesarios

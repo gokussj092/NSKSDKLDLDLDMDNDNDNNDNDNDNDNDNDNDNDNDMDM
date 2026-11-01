@@ -1,3 +1,17 @@
+# Ultra Tunnel — descarga integrada en código, 2026-11-01
+
+Paquete co.strongteam.ultra, v1.0.8.8/build59. GET fijo con User-Agent
+Ultra Tunnel, sin sesión privada adicional. HTTP200 real, catálogo5.18:
+**47 servidores/917 redes/5034 campos protegidos**; JSON entero igual a
+libsodium/JCA, CLI real y worker aislado no parcial. Ficha/broker/control
+individual/icono PNG original conectados: **fuente59/58 fichas**, C8255 intacto.
+9 Python/97 Node aprobadas y7 replay con datos reales, transportes simulados.
+Node directo no alcanzó el origen (DNS EAI_AGAIN). **Despliegue y prueba VPS
+pendientes**, sin fusión/CI manual/APK. UT Loop y FlexNet siguen pendientes.
+[Handoff](ULTRA_TUNNEL_HANDOFF_2026_11_01.md).
+
+---
+
 # Reinvestigación pendiente de cierre: UT Loop Pro VPN — 2026-11-01
 
 Versión vigente22.10.26/build65. Corregido el intento GET que la app sí realiza

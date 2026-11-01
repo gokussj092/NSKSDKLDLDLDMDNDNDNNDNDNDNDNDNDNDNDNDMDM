@@ -24,6 +24,7 @@ export function activeCatalogVersion(env=process.env) {
 }
 
 const ITEMS = Object.freeze([
+  {id:"ultra-tunnel",name:"Ultra Tunnel",icon:"ultra-tunnel.png",remote:"ultra-tunnel"},
   {id:"zig-tunnel",name:"ZiG Tunnel",icon:"zig-tunnel.png",remote:"zig-tunnel"},
   {id:"enaa-tunnel",name:"Enaa Tunnel",icon:"enaa-tunnel.png",remote:"enaa-tunnel"},
   {id:"alfaisal-tunnel-plus",name:"ALFAISAL Tunnel+",icon:"alfaisal-tunnel-plus.png",remote:"alfaisal-tunnel-plus"},

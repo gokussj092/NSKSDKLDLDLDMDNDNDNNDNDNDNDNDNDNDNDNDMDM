@@ -38,7 +38,7 @@ test("Enaa refuses same-origin and foreign redirects",async t=>{
 
 test("Enaa launcher PNG, public format and card follow availability",()=>{
   const doc=catalog({availability:{"enaa-tunnel":true}});
-  assert.equal(CATALOG_VERSION,59);assert.equal(doc.apps.length,57);
+  assert.equal(CATALOG_VERSION,59);assert.equal(doc.apps.length,58);
   const card=doc.apps.find(x=>x.id==="enaa-tunnel");
   assert.equal(card.name,"Enaa Tunnel");assert.equal(card.decodeEnabled,true);
   assert.equal(card.iconSha256,"d22a77414e61a6fb14ee1d347471419adb17504d54aac5761cea542c6c599efa");

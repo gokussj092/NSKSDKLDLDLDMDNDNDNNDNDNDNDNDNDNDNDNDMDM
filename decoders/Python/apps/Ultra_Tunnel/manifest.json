@@ -1,0 +1,95 @@
+{
+  "id": "ultra-tunnel",
+  "packageName": "co.strongteam.ultra",
+  "appVersion": "v1.0.8.8",
+  "versionCode": 59,
+  "abi": "arm64-v8a",
+  "entrypoint": "server_catalog_decoder.py",
+  "validatedOn": "2026-11-01",
+  "branch": "fix/http-jireh-current-method",
+  "analyzedBaseCommit": "6d9dc8c89e2f8248ea75776658947d86671ba0c4",
+  "deploymentValidated": false,
+  "source": {
+    "url": "https://strongteam.co/api/ultrasystem/ultrav3.txt",
+    "method": "GET",
+    "userAgent": "Ultra Tunnel",
+    "body": null,
+    "requiresPrivateSecret": false,
+    "requiresSessionRenewal": false,
+    "redirectsAllowed": false
+  },
+  "crypto": {
+    "kdf": "Argon2id v19",
+    "timeCost": 3,
+    "memoryKiB": 8192,
+    "parallelism": 1,
+    "keyBytes": 32,
+    "cipher": "AES-256-GCM",
+    "saltBytes": 16,
+    "nonceBytes": 12,
+    "tagBytes": 16,
+    "aad": "salt",
+    "remoteMarkerIndex": 3,
+    "constants": "Existing decoders/Python/ultra.py VPNS_SD.ultratunnel, matched to original SO",
+    "innerFields": "Original root/Servers/Networks getter contexts"
+  },
+  "realValidation": {
+    "pythonDownload": true,
+    "cliDownload": true,
+    "independentFullJsonEqual": true,
+    "isolatedWorkerFullJsonEqual": true,
+    "isPartial": false,
+    "httpStatus": 200,
+    "bytes": 1384477,
+    "sha256": "60d0638e9c1e7f84d4baaf6ce135e3b7c33a27c6e474f54229856b02863f5134",
+    "catalogVersion": "5.18",
+    "servers": 47,
+    "networks": 917,
+    "protectedFields": 5034,
+    "uniqueFields": 5034,
+    "directDecodeSeconds": 61.48,
+    "isolatedWorkerSeconds": 62.61,
+    "nodeDirectDownload": false,
+    "nodeDirectError": "REMOTE_NETWORK_DENIED; host DNS EAI_AGAIN",
+    "nodeTransportTests": "Mocks plus 7 private replay checks with real encrypted and isolated-worker data"
+  },
+  "original": {
+    "xapkBytes": 58547704,
+    "xapkSha256": "ef468443c9e1c17e3bf8d18f227b4c7c64462f05a4104ba3c9735dc5519e6109",
+    "baseSha256": "196ac85cd4bb713abf49985d8f4c82c2db7adf2a675677440f8234bf58fa8c9e",
+    "nativeSha256": "32840bca9b80405d90563c4e910433a4d36c8c83a93d4b0132eee35ae7537c87",
+    "signerSha256": "b8795cdd896d40eac94ded52601628b56166f6ec50536409ec77c22a754772f9",
+    "source": "https://d.apkpure.net/b/XAPK/co.strongteam.ultra?version=latest",
+    "jadxErrors": 177
+  },
+  "icon": {
+    "resource": "res/drawable/icon.png",
+    "bytes": 306646,
+    "width": 512,
+    "height": 512,
+    "sha256": "d382fd15f5a0fa172031bd57227ba596ac9b96b6857efce2f63ecd3e6457c74c",
+    "transformation": "none"
+  },
+  "tests": {
+    "python": 9,
+    "node": 97,
+    "privateGatewayReplay": 7,
+    "skipped": 0,
+    "fullProjectSuite": false
+  },
+  "publicCatalog": {
+    "sourceVersion": 59,
+    "cards": 58,
+    "fileFormats": 255
+  },
+  "fileDecoderChanges": false,
+  "preservedPrivateReferences": [
+    "Ultra-Tunnel-v1.0.8.8-build59-arm64.xapk",
+    "Ultra-Tunnel-remote-5.18.enc"
+  ],
+  "pending": [
+    "VPS rollout and native Node download",
+    "Physical Android catalog flow",
+    "Current-build real profile export validation"
+  ]
+}

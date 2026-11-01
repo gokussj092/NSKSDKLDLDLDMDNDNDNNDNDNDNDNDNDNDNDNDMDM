@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 PROVIDERS = {
+    "ultra-tunnel": "decoders.Python.apps.Ultra_Tunnel.server_catalog_decoder",
     "zig-tunnel": "decoders.Python.apps.ZiG_Tunnel.server_catalog_decoder",
     "enaa-tunnel": "decoders.Python.apps.Enaa_Tunnel.server_catalog_decoder",
     "alfaisal-tunnel-plus": "decoders.Python.apps.ALFAISAL_Tunnel_Plus.server_catalog_decoder",

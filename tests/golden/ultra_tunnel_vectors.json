@@ -1,0 +1,282 @@
+{
+  "documents": [
+    {
+      "mode": "plain",
+      "wire": "{\"Version\":\"test.59\",\"DefOVPNUser\":\"CwwNDg8QERITFBUWFxgZGmRlZmdoaWprbG1ub1ZI4jbJzoXzzXJD9UyWX1c=\",\"DefOVPNPass\":\"CwwNDg8QERITFBUWFxgZGmRlZmdoaWprbG1ub1ZI4jbJzoXzzXJD9UyWX1c=\",\"HysteriaUser\":\"CwwNDg8QERITFBUWFxgZGmRlZmdoaWprbG1ub1ZI4jbJzoXzzXJD9UyWX1c=\",\"HysteriaOBFS\":\"CwwNDg8QERITFBUWFxgZGmRlZmdoaWprbG1ub1ZI4jbJzoXzzXJD9UyWX1c=\",\"DefaultOVPNCert\":\"CwwNDg8QERITFBUWFxgZGmRlZmdoaWprbG1ub1ZI4jbJzoXzzXJD9UyWX1c=\",\"Servers\":[{\"Name\":\"Prueba 日本\",\"ServerIPHost\":\"CQoLDA0ODxAREhMUFRYXGGJjZGVmZ2hpamtsbTb3Jq5iR3YVrHLiJazcEXh3qWQ2dDYuc+O/cLLqatw/0Zq8\",\"OVPNUser\":\"CQoLDA0ODxAREhMUFRYXGGJjZGVmZ2hpamtsbTb3Jq5iR3YVrHLiJazcEXh3qWQ2dDYuc+O/cLLqatw/0Zq8\",\"OVPNPass\":\"CQoLDA0ODxAREhMUFRYXGGJjZGVmZ2hpamtsbTb3Jq5iR3YVrHLiJazcEXh3qWQ2dDYuc+O/cLLqatw/0Zq8\",\"UDP_obfs\":\"CQoLDA0ODxAREhMUFRYXGGJjZGVmZ2hpamtsbTb3Jq5iR3YVrHLiJazcEXh3qWQ2dDYuc+O/cLLqatw/0Zq8\",\"UDP_user\":\"CQoLDA0ODxAREhMUFRYXGGJjZGVmZ2hpamtsbTb3Jq5iR3YVrHLiJazcEXh3qWQ2dDYuc+O/cLLqatw/0Zq8\",\"CustomCertificate\":\"CQoLDA0ODxAREhMUFRYXGGJjZGVmZ2hpamtsbTb3Jq5iR3YVrHLiJazcEXh3qWQ2dDYuc+O/cLLqatw/0Zq8\",\"SlowDNSHost\":\"CQoLDA0ODxAREhMUFRYXGGJjZGVmZ2hpamtsbTb3Jq5iR3YVrHLiJazcEXh3qWQ2dDYuc+O/cLLqatw/0Zq8\",\"SlowDNSKey\":\"CQoLDA0ODxAREhMUFRYXGGJjZGVmZ2hpamtsbTb3Jq5iR3YVrHLiJazcEXh3qWQ2dDYuc+O/cLLqatw/0Zq8\",\"V2rayUUID\":\"CQoLDA0ODxAREhMUFRYXGGJjZGVmZ2hpamtsbTb3Jq5iR3YVrHLiJazcEXh3qWQ2dDYuc+O/cLLqatw/0Zq8\",\"V2rayPath\":\"CQoLDA0ODxAREhMUFRYXGGJjZGVmZ2hpamtsbTb3Jq5iR3YVrHLiJazcEXh3qWQ2dDYuc+O/cLLqatw/0Zq8\",\"H2pass\":\"CQoLDA0ODxAREhMUFRYXGGJjZGVmZ2hpamtsbTb3Jq5iR3YVrHLiJazcEXh3qWQ2dDYuc+O/cLLqatw/0Zq8\",\"TrojanPass\":\"CQoLDA0ODxAREhMUFRYXGGJjZGVmZ2hpamtsbTb3Jq5iR3YVrHLiJazcEXh3qWQ2dDYuc+O/cLLqatw/0Zq8\",\"port\":443,\"Enabled\":false},{\"Name\":\"Prueba 日本\",\"ServerIPHost\":\"CQoLDA0ODxAREhMUFRYXGGJjZGVmZ2hpamtsbTb3Jq5iR3YVrHLiJazcEXh3qWQ2dDYuc+O/cLLqatw/0Zq8\",\"OVPNUser\":\"CQoLDA0ODxAREhMUFRYXGGJjZGVmZ2hpamtsbTb3Jq5iR3YVrHLiJazcEXh3qWQ2dDYuc+O/cLLqatw/0Zq8\",\"OVPNPass\":\"CQoLDA0ODxAREhMUFRYXGGJjZGVmZ2hpamtsbTb3Jq5iR3YVrHLiJazcEXh3qWQ2dDYuc+O/cLLqatw/0Zq8\",\"UDP_obfs\":\"CQoLDA0ODxAREhMUFRYXGGJjZGVmZ2hpamtsbTb3Jq5iR3YVrHLiJazcEXh3qWQ2dDYuc+O/cLLqatw/0Zq8\",\"UDP_user\":\"CQoLDA0ODxAREhMUFRYXGGJjZGVmZ2hpamtsbTb3Jq5iR3YVrHLiJazcEXh3qWQ2dDYuc+O/cLLqatw/0Zq8\",\"CustomCertificate\":\"CQoLDA0ODxAREhMUFRYXGGJjZGVmZ2hpamtsbTb3Jq5iR3YVrHLiJazcEXh3qWQ2dDYuc+O/cLLqatw/0Zq8\",\"SlowDNSHost\":\"CQoLDA0ODxAREhMUFRYXGGJjZGVmZ2hpamtsbTb3Jq5iR3YVrHLiJazcEXh3qWQ2dDYuc+O/cLLqatw/0Zq8\",\"SlowDNSKey\":\"CQoLDA0ODxAREhMUFRYXGGJjZGVmZ2hpamtsbTb3Jq5iR3YVrHLiJazcEXh3qWQ2dDYuc+O/cLLqatw/0Zq8\",\"V2rayUUID\":\"CQoLDA0ODxAREhMUFRYXGGJjZGVmZ2hpamtsbTb3Jq5iR3YVrHLiJazcEXh3qWQ2dDYuc+O/cLLqatw/0Zq8\",\"V2rayPath\":\"CQoLDA0ODxAREhMUFRYXGGJjZGVmZ2hpamtsbTb3Jq5iR3YVrHLiJazcEXh3qWQ2dDYuc+O/cLLqatw/0Zq8\",\"H2pass\":\"CQoLDA0ODxAREhMUFRYXGGJjZGVmZ2hpamtsbTb3Jq5iR3YVrHLiJazcEXh3qWQ2dDYuc+O/cLLqatw/0Zq8\",\"TrojanPass\":\"CQoLDA0ODxAREhMUFRYXGGJjZGVmZ2hpamtsbTb3Jq5iR3YVrHLiJazcEXh3qWQ2dDYuc+O/cLLqatw/0Zq8\",\"port\":443,\"Enabled\":false}],\"Networks\":[{\"Name\":\"Unicode ñ\",\"Payload\":\"BwgJCgsMDQ4PEBESExQVFmBhYmNkZWZnaGlqa6O9WhnZOrW7DvS/s3KVY2TsmrA+SeVCRlJbHKuLF2zSySScdv811OOQqRWZQJ2xAMHSTkg0wMVRJUnVAjbT4g==\",\"CustomProxy\":\"BwgJCgsMDQ4PEBESExQVFmBhYmNkZWZnaGlqa6O9WhnZOrW7DvS/s3KVY2TsmrA+SeVCRlJbHKuLF2zSySScdv811OOQqRWZQJ2xAMHSTkg0wMVRJUnVAjbT4g==\",\"SNI\":\"BwgJCgsMDQ4PEBESExQVFmBhYmNkZWZnaGlqa6O9WhnZOrW7DvS/s3KVY2TsmrA+SeVCRlJbHKuLF2zSySScdv811OOQqRWZQJ2xAMHSTkg0wMVRJUnVAjbT4g==\",\"V2rayConfig\":\"BwgJCgsMDQ4PEBESExQVFmBhYmNkZWZnaGlqa6O9WhnZOrW7DvS/s3KVY2TsmrA+SeVCRlJbHKuLF2zSySScdv811OOQqRWZQJ2xAMHSTkg0wMVRJUnVAjbT4g==\",\"BugDNS\":\"BwgJCgsMDQ4PEBESExQVFmBhYmNkZWZnaGlqa6O9WhnZOrW7DvS/s3KVY2TsmrA+SeVCRlJbHKuLF2zSySScdv811OOQqRWZQJ2xAMHSTkg0wMVRJUnVAjbT4g==\",\"V2rayAddress\":\"BwgJCgsMDQ4PEBESExQVFmBhYmNkZWZnaGlqa6O9WhnZOrW7DvS/s3KVY2TsmrA+SeVCRlJbHKuLF2zSySScdv811OOQqRWZQJ2xAMHSTkg0wMVRJUnVAjbT4g==\",\"V2rayHost\":\"BwgJCgsMDQ4PEBESExQVFmBhYmNkZWZnaGlqa6O9WhnZOrW7DvS/s3KVY2TsmrA+SeVCRlJbHKuLF2zSySScdv811OOQqRWZQJ2xAMHSTkg0wMVRJUnVAjbT4g==\",\"V2raySNI\":\"BwgJCgsMDQ4PEBESExQVFmBhYmNkZWZnaGlqa6O9WhnZOrW7DvS/s3KVY2TsmrA+SeVCRlJbHKuLF2zSySScdv811OOQqRWZQJ2xAMHSTkg0wMVRJUnVAjbT4g==\",\"Info\":\"BwgJCgsMDQ4PEBESExQVFmBhYmNkZWZnaGlqa6O9WhnZOrW7DvS/s3KVY2TsmrA+SeVCRlJbHKuLF2zSySScdv811OOQqRWZQJ2xAMHSTkg0wMVRJUnVAjbT4g==\",\"URI\":true,\"future\":{\"values\":[false,null,\"keep\"]}},{\"Name\":\"Unicode ñ\",\"Payload\":\"BwgJCgsMDQ4PEBESExQVFmBhYmNkZWZnaGlqa6O9WhnZOrW7DvS/s3KVY2TsmrA+SeVCRlJbHKuLF2zSySScdv811OOQqRWZQJ2xAMHSTkg0wMVRJUnVAjbT4g==\",\"CustomProxy\":\"BwgJCgsMDQ4PEBESExQVFmBhYmNkZWZnaGlqa6O9WhnZOrW7DvS/s3KVY2TsmrA+SeVCRlJbHKuLF2zSySScdv811OOQqRWZQJ2xAMHSTkg0wMVRJUnVAjbT4g==\",\"SNI\":\"BwgJCgsMDQ4PEBESExQVFmBhYmNkZWZnaGlqa6O9WhnZOrW7DvS/s3KVY2TsmrA+SeVCRlJbHKuLF2zSySScdv811OOQqRWZQJ2xAMHSTkg0wMVRJUnVAjbT4g==\",\"V2rayConfig\":\"BwgJCgsMDQ4PEBESExQVFmBhYmNkZWZnaGlqa6O9WhnZOrW7DvS/s3KVY2TsmrA+SeVCRlJbHKuLF2zSySScdv811OOQqRWZQJ2xAMHSTkg0wMVRJUnVAjbT4g==\",\"BugDNS\":\"BwgJCgsMDQ4PEBESExQVFmBhYmNkZWZnaGlqa6O9WhnZOrW7DvS/s3KVY2TsmrA+SeVCRlJbHKuLF2zSySScdv811OOQqRWZQJ2xAMHSTkg0wMVRJUnVAjbT4g==\",\"V2rayAddress\":\"BwgJCgsMDQ4PEBESExQVFmBhYmNkZWZnaGlqa6O9WhnZOrW7DvS/s3KVY2TsmrA+SeVCRlJbHKuLF2zSySScdv811OOQqRWZQJ2xAMHSTkg0wMVRJUnVAjbT4g==\",\"V2rayHost\":\"BwgJCgsMDQ4PEBESExQVFmBhYmNkZWZnaGlqa6O9WhnZOrW7DvS/s3KVY2TsmrA+SeVCRlJbHKuLF2zSySScdv811OOQqRWZQJ2xAMHSTkg0wMVRJUnVAjbT4g==\",\"V2raySNI\":\"BwgJCgsMDQ4PEBESExQVFmBhYmNkZWZnaGlqa6O9WhnZOrW7DvS/s3KVY2TsmrA+SeVCRlJbHKuLF2zSySScdv811OOQqRWZQJ2xAMHSTkg0wMVRJUnVAjbT4g==\",\"Info\":\"BwgJCgsMDQ4PEBESExQVFmBhYmNkZWZnaGlqa6O9WhnZOrW7DvS/s3KVY2TsmrA+SeVCRlJbHKuLF2zSySScdv811OOQqRWZQJ2xAMHSTkg0wMVRJUnVAjbT4g==\",\"URI\":true,\"future\":{\"values\":[false,null,\"keep\"]}}],\"unknown\":\"BwgJCgsMDQ4PEBESExQVFmBhYmNkZWZnaGlqa6O9WhnZOrW7DvS/s3KVY2TsmrA+SeVCRlJbHKuLF2zSySScdv811OOQqRWZQJ2xAMHSTkg0wMVRJUnVAjbT4g==\"}",
+      "expected": {
+        "Version": "test.59",
+        "DefOVPNUser": "",
+        "DefOVPNPass": "",
+        "HysteriaUser": "",
+        "HysteriaOBFS": "",
+        "DefaultOVPNCert": "",
+        "Servers": [
+          {
+            "Name": "Prueba 日本",
+            "ServerIPHost": "vpn.example.invalid",
+            "OVPNUser": "vpn.example.invalid",
+            "OVPNPass": "vpn.example.invalid",
+            "UDP_obfs": "vpn.example.invalid",
+            "UDP_user": "vpn.example.invalid",
+            "CustomCertificate": "vpn.example.invalid",
+            "SlowDNSHost": "vpn.example.invalid",
+            "SlowDNSKey": "vpn.example.invalid",
+            "V2rayUUID": "vpn.example.invalid",
+            "V2rayPath": "vpn.example.invalid",
+            "H2pass": "vpn.example.invalid",
+            "TrojanPass": "vpn.example.invalid",
+            "port": 443,
+            "Enabled": false
+          },
+          {
+            "Name": "Prueba 日本",
+            "ServerIPHost": "vpn.example.invalid",
+            "OVPNUser": "vpn.example.invalid",
+            "OVPNPass": "vpn.example.invalid",
+            "UDP_obfs": "vpn.example.invalid",
+            "UDP_user": "vpn.example.invalid",
+            "CustomCertificate": "vpn.example.invalid",
+            "SlowDNSHost": "vpn.example.invalid",
+            "SlowDNSKey": "vpn.example.invalid",
+            "V2rayUUID": "vpn.example.invalid",
+            "V2rayPath": "vpn.example.invalid",
+            "H2pass": "vpn.example.invalid",
+            "TrojanPass": "vpn.example.invalid",
+            "port": 443,
+            "Enabled": false
+          }
+        ],
+        "Networks": [
+          {
+            "Name": "Unicode ñ",
+            "Payload": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "CustomProxy": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "SNI": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "V2rayConfig": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "BugDNS": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "V2rayAddress": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "V2rayHost": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "V2raySNI": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "Info": "BwgJCgsMDQ4PEBESExQVFmBhYmNkZWZnaGlqa6O9WhnZOrW7DvS/s3KVY2TsmrA+SeVCRlJbHKuLF2zSySScdv811OOQqRWZQJ2xAMHSTkg0wMVRJUnVAjbT4g==",
+            "URI": true,
+            "future": {
+              "values": [
+                false,
+                null,
+                "keep"
+              ]
+            }
+          },
+          {
+            "Name": "Unicode ñ",
+            "Payload": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "CustomProxy": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "SNI": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "V2rayConfig": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "BugDNS": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "V2rayAddress": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "V2rayHost": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "V2raySNI": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "Info": "BwgJCgsMDQ4PEBESExQVFmBhYmNkZWZnaGlqa6O9WhnZOrW7DvS/s3KVY2TsmrA+SeVCRlJbHKuLF2zSySScdv811OOQqRWZQJ2xAMHSTkg0wMVRJUnVAjbT4g==",
+            "URI": true,
+            "future": {
+              "values": [
+                false,
+                null,
+                "keep"
+              ]
+            }
+          }
+        ],
+        "unknown": "BwgJCgsMDQ4PEBESExQVFmBhYmNkZWZnaGlqa6O9WhnZOrW7DvS/s3KVY2TsmrA+SeVCRlJbHKuLF2zSySScdv811OOQqRWZQJ2xAMHSTkg0wMVRJUnVAjbT4g=="
+      }
+    },
+    {
+      "mode": "bundled",
+      "wire": "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",
+      "expected": {
+        "Version": "test.59",
+        "DefOVPNUser": "",
+        "DefOVPNPass": "",
+        "HysteriaUser": "",
+        "HysteriaOBFS": "",
+        "DefaultOVPNCert": "",
+        "Servers": [
+          {
+            "Name": "Prueba 日本",
+            "ServerIPHost": "vpn.example.invalid",
+            "OVPNUser": "vpn.example.invalid",
+            "OVPNPass": "vpn.example.invalid",
+            "UDP_obfs": "vpn.example.invalid",
+            "UDP_user": "vpn.example.invalid",
+            "CustomCertificate": "vpn.example.invalid",
+            "SlowDNSHost": "vpn.example.invalid",
+            "SlowDNSKey": "vpn.example.invalid",
+            "V2rayUUID": "vpn.example.invalid",
+            "V2rayPath": "vpn.example.invalid",
+            "H2pass": "vpn.example.invalid",
+            "TrojanPass": "vpn.example.invalid",
+            "port": 443,
+            "Enabled": false
+          },
+          {
+            "Name": "Prueba 日本",
+            "ServerIPHost": "vpn.example.invalid",
+            "OVPNUser": "vpn.example.invalid",
+            "OVPNPass": "vpn.example.invalid",
+            "UDP_obfs": "vpn.example.invalid",
+            "UDP_user": "vpn.example.invalid",
+            "CustomCertificate": "vpn.example.invalid",
+            "SlowDNSHost": "vpn.example.invalid",
+            "SlowDNSKey": "vpn.example.invalid",
+            "V2rayUUID": "vpn.example.invalid",
+            "V2rayPath": "vpn.example.invalid",
+            "H2pass": "vpn.example.invalid",
+            "TrojanPass": "vpn.example.invalid",
+            "port": 443,
+            "Enabled": false
+          }
+        ],
+        "Networks": [
+          {
+            "Name": "Unicode ñ",
+            "Payload": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "CustomProxy": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "SNI": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "V2rayConfig": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "BugDNS": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "V2rayAddress": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "V2rayHost": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "V2raySNI": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "Info": "BwgJCgsMDQ4PEBESExQVFmBhYmNkZWZnaGlqa6O9WhnZOrW7DvS/s3KVY2TsmrA+SeVCRlJbHKuLF2zSySScdv811OOQqRWZQJ2xAMHSTkg0wMVRJUnVAjbT4g==",
+            "URI": true,
+            "future": {
+              "values": [
+                false,
+                null,
+                "keep"
+              ]
+            }
+          },
+          {
+            "Name": "Unicode ñ",
+            "Payload": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "CustomProxy": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "SNI": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "V2rayConfig": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "BugDNS": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "V2rayAddress": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "V2rayHost": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "V2raySNI": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "Info": "BwgJCgsMDQ4PEBESExQVFmBhYmNkZWZnaGlqa6O9WhnZOrW7DvS/s3KVY2TsmrA+SeVCRlJbHKuLF2zSySScdv811OOQqRWZQJ2xAMHSTkg0wMVRJUnVAjbT4g==",
+            "URI": true,
+            "future": {
+              "values": [
+                false,
+                null,
+                "keep"
+              ]
+            }
+          }
+        ],
+        "unknown": "BwgJCgsMDQ4PEBESExQVFmBhYmNkZWZnaGlqa6O9WhnZOrW7DvS/s3KVY2TsmrA+SeVCRlJbHKuLF2zSySScdv811OOQqRWZQJ2xAMHSTkg0wMVRJUnVAjbT4g=="
+      }
+    },
+    {
+      "mode": "remote",
+      "wire": "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",
+      "expected": {
+        "Version": "test.59",
+        "DefOVPNUser": "",
+        "DefOVPNPass": "",
+        "HysteriaUser": "",
+        "HysteriaOBFS": "",
+        "DefaultOVPNCert": "",
+        "Servers": [
+          {
+            "Name": "Prueba 日本",
+            "ServerIPHost": "vpn.example.invalid",
+            "OVPNUser": "vpn.example.invalid",
+            "OVPNPass": "vpn.example.invalid",
+            "UDP_obfs": "vpn.example.invalid",
+            "UDP_user": "vpn.example.invalid",
+            "CustomCertificate": "vpn.example.invalid",
+            "SlowDNSHost": "vpn.example.invalid",
+            "SlowDNSKey": "vpn.example.invalid",
+            "V2rayUUID": "vpn.example.invalid",
+            "V2rayPath": "vpn.example.invalid",
+            "H2pass": "vpn.example.invalid",
+            "TrojanPass": "vpn.example.invalid",
+            "port": 443,
+            "Enabled": false
+          },
+          {
+            "Name": "Prueba 日本",
+            "ServerIPHost": "vpn.example.invalid",
+            "OVPNUser": "vpn.example.invalid",
+            "OVPNPass": "vpn.example.invalid",
+            "UDP_obfs": "vpn.example.invalid",
+            "UDP_user": "vpn.example.invalid",
+            "CustomCertificate": "vpn.example.invalid",
+            "SlowDNSHost": "vpn.example.invalid",
+            "SlowDNSKey": "vpn.example.invalid",
+            "V2rayUUID": "vpn.example.invalid",
+            "V2rayPath": "vpn.example.invalid",
+            "H2pass": "vpn.example.invalid",
+            "TrojanPass": "vpn.example.invalid",
+            "port": 443,
+            "Enabled": false
+          }
+        ],
+        "Networks": [
+          {
+            "Name": "Unicode ñ",
+            "Payload": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "CustomProxy": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "SNI": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "V2rayConfig": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "BugDNS": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "V2rayAddress": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "V2rayHost": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "V2raySNI": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "Info": "BwgJCgsMDQ4PEBESExQVFmBhYmNkZWZnaGlqa6O9WhnZOrW7DvS/s3KVY2TsmrA+SeVCRlJbHKuLF2zSySScdv811OOQqRWZQJ2xAMHSTkg0wMVRJUnVAjbT4g==",
+            "URI": true,
+            "future": {
+              "values": [
+                false,
+                null,
+                "keep"
+              ]
+            }
+          },
+          {
+            "Name": "Unicode ñ",
+            "Payload": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "CustomProxy": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "SNI": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "V2rayConfig": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "BugDNS": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "V2rayAddress": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "V2rayHost": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "V2raySNI": "GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+            "Info": "BwgJCgsMDQ4PEBESExQVFmBhYmNkZWZnaGlqa6O9WhnZOrW7DvS/s3KVY2TsmrA+SeVCRlJbHKuLF2zSySScdv811OOQqRWZQJ2xAMHSTkg0wMVRJUnVAjbT4g==",
+            "URI": true,
+            "future": {
+              "values": [
+                false,
+                null,
+                "keep"
+              ]
+            }
+          }
+        ],
+        "unknown": "BwgJCgsMDQ4PEBESExQVFmBhYmNkZWZnaGlqa6O9WhnZOrW7DvS/s3KVY2TsmrA+SeVCRlJbHKuLF2zSySScdv811OOQqRWZQJ2xAMHSTkg0wMVRJUnVAjbT4g=="
+      }
+    }
+  ],
+  "kdf": {
+    "password": "synthetic test key",
+    "saltHex": "000102030405060708090a0b0c0d0e0f",
+    "keyHex": "63a35e12a439718636a359bf28dc65b6a1b3fe3aac1b48d22cf1b6aa1d18c4d2"
+  }
+}
