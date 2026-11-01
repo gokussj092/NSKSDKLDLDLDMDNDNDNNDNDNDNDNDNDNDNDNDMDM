@@ -83,3 +83,28 @@ público directo vigente.** Entonces comprobar paquete/versión/firma y seguir
 el flujo normal de análisis y paridad. No hay ficha, icono, motor ni proveedor
 inventado de90NET en esta entrega. Estos pendientes no quedan completados por
 el simple hecho de conservar esta documentación.
+
+## Revisión final de VIP, 2026-11-01
+
+Sobre `a8b16501` de la misma rama, sin modificar main ni desplegar. Google Play
+sigue anunciando **2.9** en el HTML consultado de nuevo; APKPure lista
+**2.9 /29** como último build. Se recuperó el original guardado, se verificaron
+los hashes y se resolvieron de nuevo **1824 literales /71 fuentes**.
+
+`VIPSNIPHERPROMain.s.getHeaders()` envía `Accept: application/json`,
+`X-GitHub-Api-Version: 2022-11-28` y una autorización del desarrollador.
+**No hay User-Agent propio en ese método. No reutilizar ni publicar la
+autorización encontrada en el APK.** La herramienta incorpora exclusivamente
+las cabeceras públicas. Su agente `VIP Snipher Pro/2.9` es un identificador
+de herramienta, no un valor extraído de Android.
+
+Pruebas anónimas con agente por defecto, de herramienta y Dalvik: todas404.
+Este resultado no describe la petición autenticada original ni prueba caída
+global. `remote:null` permanece; el lector offline y el worker sí funcionan.
+Para cerrar la descarga automática falta una fuente accesible autorizada y
+un catálogo real completo contrastado. No sustituirla por el asset antiguo.
+
+Validación final: **8 Python /4 Node**, sin skips, más el documento original
+completo **14 servidores /280 redes** con igualdad Java/Python/worker/CLI y
+**8 casos nativos**. Catálogo59 y53 fichas intactos. 90NET queda expresamente
+para después por instrucción del usuario.

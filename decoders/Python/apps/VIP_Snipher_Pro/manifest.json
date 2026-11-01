@@ -12,7 +12,7 @@
     "entrypoint": "server_catalog_decoder.py",
     "source": "https://raw.githubusercontent.com/Civ3snipher/NEW-VIP-SNIPHER-PRO-3/refs/heads/main/update.json?ref=main",
     "sourceObservedStatus": 404,
-    "sourceValidatedOn": "2026-10-31",
+    "sourceValidatedOn": "2026-11-01",
     "remoteValidated": false,
     "publicBrokerEnabled": false,
     "cardRemote": null,
@@ -38,6 +38,24 @@
       "completeRealWorkerEqual": true,
       "completeStdinCliEqual": true,
       "renderedBytes": 172889
+    },
+    "sourceAccessCheck": {
+      "checkedOn": "2026-11-01",
+      "scope": "Anonymous public-header probes only; no authenticated vendor request tested",
+      "appHeadersMethod": "VIPSNIPHERPROMain.s.getHeaders()",
+      "publicHeaders": {
+        "Accept": "application/json",
+        "X-GitHub-Api-Version": "2022-11-28"
+      },
+      "appCustomUserAgentFound": false,
+      "appSendsAuthorization": true,
+      "developerAuthorizationReused": false,
+      "toolUserAgent": "VIP Snipher Pro/2.9",
+      "anonymousProbeStatuses": {
+        "default": 404,
+        "tool": 404,
+        "dalvik": 404
+      }
     }
   },
   "files": {
@@ -83,6 +101,22 @@
     "nativePrimitiveCases": 8,
     "nativeFullJniExecuted": false,
     "androidVpnConnectionTested": false,
-    "deployed": false
+    "deployed": false,
+    "finalRecheck": {
+      "checkedOn": "2026-11-01",
+      "pythonFocusedTests": 8,
+      "nodeFocusedTests": 4,
+      "skipCount": 0,
+      "completeJcaWorkerCliEquality": true,
+      "nativePrimitiveCases": 8
+    }
+  },
+  "latestVersionCheck": {
+    "checkedOn": "2026-11-01",
+    "googlePlayVersion": "2.9",
+    "mirrorLatestVersion": "2.9",
+    "mirrorLatestVersionCode": 29,
+    "googlePlaySource": "https://play.google.com/store/apps/details?id=dev.renz.soft.vipsnipherpro",
+    "mirrorSource": "https://apkpure.net/vip-snipher-pro-tunneling/dev.renz.soft.vipsnipherpro/versions"
   }
 }

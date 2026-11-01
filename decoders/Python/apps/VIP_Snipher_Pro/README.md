@@ -6,7 +6,8 @@ worker privado y ficha `vip-snipher-pro` con el PNG original. Catálogo mínimo
 desplegar; **53 fichas**. No modifica Android, el panel ni los switches.
 
 **Descarga remota pendiente:** el GET fijo recuperado del actualizador devuelve
-HTTP **404** desde este entorno el 2026-10-31:
+HTTP **404** en peticiones anónimas desde este entorno, confirmado de nuevo
+el 2026-11-01:
 
 `https://raw.githubusercontent.com/Civ3snipher/NEW-VIP-SNIPHER-PRO-3/refs/heads/main/update.json?ref=main`
 
@@ -15,6 +16,17 @@ inventada ni por el asset antiguo. La ficha conserva `remote:null`, incluso
 con el interruptor global activado, y no hay un broker público de descarga.
 El worker puede procesar bytes autorizados offline. Para habilitar la descarga
 es necesario obtener y contrastar un catálogo real de la fuente vigente.
+
+**Versión y cabeceras revisadas:** el HTML vigente de Google Play sigue
+anunciando **2.9**; el original analizado es **2.9 / build29**, también el más
+reciente listado por APKPure. `VIPSNIPHERPROMain.s.getHeaders()` añade
+`Accept: application/json`, `X-GitHub-Api-Version: 2022-11-28` y una
+autorización propia del desarrollador. No añade un `User-Agent` personalizado.
+La herramienta reproduce únicamente las dos cabeceras públicas; su
+`VIP Snipher Pro/2.9` identifica a la herramienta, no al cliente Android.
+No copia ni utiliza la autorización del APK. Tres peticiones sin ella
+(agente por defecto, de herramienta y Dalvik) devolvieron 404. Esto no prueba
+que falle una petición autenticada de la app ni que el servicio esté caído.
 
 ## Uso
 

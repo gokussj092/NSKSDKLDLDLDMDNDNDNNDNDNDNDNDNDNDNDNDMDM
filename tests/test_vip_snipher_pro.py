@@ -82,6 +82,10 @@ class VipSnipherTests(unittest.TestCase):
             def open(self, request, timeout):
                 self_request = request.full_url
                 if self_request != catalog.SOURCE or timeout != 25:raise AssertionError('wrong source')
+                headers = {key.lower(): value for key, value in request.header_items()}
+                if headers != {'user-agent': 'VIP Snipher Pro/2.9', 'accept': 'application/json',
+                               'x-github-api-version': '2022-11-28', 'accept-encoding': 'identity'}:
+                    raise AssertionError('unexpected public request headers')
                 raise HTTPError(catalog.SOURCE, 404, 'private-sentinel', {}, None)
         with patch.object(catalog, 'build_opener', return_value=Opener()):
             with self.assertRaises(codec.DecodeError) as error:catalog.download()

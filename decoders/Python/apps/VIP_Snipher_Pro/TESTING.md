@@ -80,3 +80,31 @@ del panel se conservan; ningún servicio VPS se modificó.
 No se probó perfil exportado de build29, importador/exportador Android,
 conexión VPN real ni transporte Node al proveedor. APK/SO y documentos reales
 no se publican en Git. Original duradero e instrucciones en el handoff.
+
+## Cierre de versión y cabeceras, 2026-11-01
+
+Google Play consultado de nuevo anuncia **2.9** en su HTML; APKPure mantiene
+**2.9 /29** como último build. Se recuperó el original duradero y se verificaron
+otra vez sus hashes, el asset y el SO contra el manifest. El actualizador
+`VIPSNIPHERPROMain.s.getHeaders()` declara `Accept: application/json`,
+`X-GitHub-Api-Version: 2022-11-28` y autorización del desarrollador. No declara
+User-Agent propio; tampoco se encontraron literales `User-Agent`/`http.agent`
+en las 71 fuentes resueltas. No se copia, publica ni utiliza esa autorización.
+
+La descarga explícita de la herramienta ahora envía ambas cabeceras públicas.
+La prueba de HTTP404 verifica el conjunto exacto de cabeceras, de modo que una
+cabecera adicional de autorización también haría fallar la prueba. Repetición
+real anónima con agente por defecto, de herramienta y Dalvik: **404/404/404**.
+No se afirma un resultado para la petición autenticada de la aplicación.
+
+Validación final específica: **8 Python /4 Node**, todas aprobadas, sin skips.
+Se repitió además `vip_snipher_verify.py` sobre el asset original con
+`--native ... --runtime`: documento completo **14 servidores /280 redes**,
+igualdad Java/Python/worker/CLI y **8 casos nativos**. Estos resultados son
+adicionales a los grupos de regresión históricos de esta integración.
+
+```sh
+python -m unittest tests.test_vip_snipher_pro
+cd cloud/web
+node --test tests/vip-snipher-pro.test.mjs
+```

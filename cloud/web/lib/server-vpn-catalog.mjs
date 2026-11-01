@@ -23,7 +23,7 @@ export function activeCatalogVersion(env=process.env) {
 }
 
 const ITEMS = Object.freeze([
-  // Build 29 embedded catalog verified; the fixed APK updater returns HTTP 404.
+  // Build 29 embedded catalog verified; anonymous updater requests return HTTP 404.
   {id:"vip-snipher-pro", name:"VIP Snipher Pro", icon:"vip-snipher-pro.png", remote:null},
   {id:"netcol-vpn", name:"Netcol VPN", icon:"netcol-vpn.png", remote:"netcol-vpn"},
   {id:"wolf-custom-vpn", name:"Wolf Custom VPN", icon:"wolf-custom-vpn.png", remote:"wolf-custom-vpn"},

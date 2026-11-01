@@ -10,6 +10,7 @@ else:
     from codec import DecodeError, MAX_BYTES, decode_catalog, render
 
 SOURCE = 'https://raw.githubusercontent.com/Civ3snipher/NEW-VIP-SNIPHER-PRO-3/refs/heads/main/update.json?ref=main'
+# Tool identifier, not a custom User-Agent recovered from the Android app.
 USER_AGENT = 'VIP Snipher Pro/2.9'
 
 class _NoRedirect(HTTPRedirectHandler):
@@ -18,7 +19,14 @@ class _NoRedirect(HTTPRedirectHandler):
 
 def download() -> bytes:
     try:
-        req = Request(SOURCE, headers={'User-Agent': USER_AGENT, 'Accept-Encoding': 'identity'})
+        # Only the public headers from VIPSNIPHERPROMain.s.getHeaders().
+        # The app's developer-owned Authorization is deliberately not reused.
+        req = Request(SOURCE, headers={
+            'User-Agent': USER_AGENT,
+            'Accept': 'application/json',
+            'X-GitHub-Api-Version': '2022-11-28',
+            'Accept-Encoding': 'identity',
+        })
         with build_opener(_NoRedirect()).open(req, timeout=25) as response:
             if response.status != 200 or response.headers.get('Content-Encoding', 'identity') != 'identity':
                 raise DecodeError('Respuesta VIP Snipher Pro incompatible.')
