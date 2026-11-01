@@ -55,7 +55,11 @@
         "default": 404,
         "tool": 404,
         "dalvik": 404
-      }
+      },
+      "operatorAuthorizationSupported": true,
+      "operatorAuthorizationEnv": "SPDECODE_VIP_SNIPHER_AUTHORIZATION",
+      "operatorAuthorizationValidatedAgainstSource": false,
+      "sourceMatchesApkUpdaterLiteral": true
     }
   },
   "files": {
@@ -104,7 +108,7 @@
     "deployed": false,
     "finalRecheck": {
       "checkedOn": "2026-11-01",
-      "pythonFocusedTests": 8,
+      "pythonFocusedTests": 11,
       "nodeFocusedTests": 4,
       "skipCount": 0,
       "completeJcaWorkerCliEquality": true,

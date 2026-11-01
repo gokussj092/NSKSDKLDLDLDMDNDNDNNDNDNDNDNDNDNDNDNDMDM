@@ -22,11 +22,20 @@ anunciando **2.9**; el original analizado es **2.9 / build29**, también el más
 reciente listado por APKPure. `VIPSNIPHERPROMain.s.getHeaders()` añade
 `Accept: application/json`, `X-GitHub-Api-Version: 2022-11-28` y una
 autorización propia del desarrollador. No añade un `User-Agent` personalizado.
-La herramienta reproduce únicamente las dos cabeceras públicas; su
+La herramienta envía por defecto las dos cabeceras públicas; su
 `VIP Snipher Pro/2.9` identifica a la herramienta, no al cliente Android.
 No copia ni utiliza la autorización del APK. Tres peticiones sin ella
 (agente por defecto, de herramienta y Dalvik) devolvieron 404. Esto no prueba
 que falle una petición autenticada de la app ni que el servicio esté caído.
+
+Para solicitar la **misma URL exacta del APK**, la herramienta permite que el
+operador suministre una autorización válida mediante el secreto de entorno
+`SPDECODE_VIP_SNIPHER_AUTHORIZATION` (valor completo `Bearer …` o `token …`).
+Solo `--download` lee ese secreto; el lector offline y el worker no lo necesitan.
+No se guarda en el código, en los resultados ni en argumentos de línea de
+comandos. La descarga permanece limitada a esa fuente y no sigue redirecciones.
+Este soporte no acredita acceso al repositorio del proveedor: no se dispone de
+una credencial autorizada del operador y no se ha validado un catálogo remoto.
 
 ## Uso
 

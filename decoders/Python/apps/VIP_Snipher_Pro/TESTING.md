@@ -108,3 +108,12 @@ python -m unittest tests.test_vip_snipher_pro
 cd cloud/web
 node --test tests/vip-snipher-pro.test.mjs
 ```
+
+La fuente no se sustituyó: `SOURCE` coincide literalmente con el argumento de
+`VIPSNIPHERPROMain.P()`. Se añadió autorización opcional del operador para la
+petición fija mediante `SPDECODE_VIP_SNIPHER_AUTHORIZATION`, leída solo por
+`--download`. **11 pruebas Python aprobadas** tras este cambio: las tres
+adicionales comprueban destino y método exactos, cabecera con credencial
+ficticia, rechazo de controles antes de abrir transporte, y lectura del secreto
+por la CLI sin incluirlo en la salida. No se utilizó una credencial real ni se
+certifica la descarga autenticada; `remoteValidated:false` permanece.

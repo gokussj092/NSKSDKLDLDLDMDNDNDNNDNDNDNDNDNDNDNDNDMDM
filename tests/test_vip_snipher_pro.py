@@ -1,6 +1,8 @@
 """Independent synthetic vectors; no real catalogs, APKs or VPN accounts."""
 import base64
 import json
+import io
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -97,5 +99,47 @@ class VipSnipherTests(unittest.TestCase):
                                 input=V['catalog'].encode(), cwd='/tmp', capture_output=True, timeout=30)
         self.assertEqual(result.returncode, 0)
         self.assertEqual(json.loads(result.stdout), V['expected']);self.assertEqual(result.stderr, b'')
+
+    def test_operator_authorization_is_sent_only_to_the_exact_app_source(self):
+        owner = self
+        credential = 'Bearer synthetic-vip-test-credential'
+        data = V['catalog'].encode()
+        class Response:
+            status = 200
+            headers = {}
+            def __enter__(self):return self
+            def __exit__(self, *args):return False
+            def read(self, limit):
+                owner.assertEqual(limit, codec.MAX_BYTES + 1)
+                return data
+        class Opener:
+            def open(self, request, timeout):
+                owner.assertEqual(request.full_url, catalog.SOURCE)
+                owner.assertEqual(request.get_header('Authorization'), credential)
+                owner.assertEqual(request.get_method(), 'GET')
+                owner.assertEqual(timeout, 25)
+                return Response()
+        with patch.object(catalog, 'build_opener', return_value=Opener()):
+            self.assertEqual(catalog.download(authorization=credential), data)
+
+    def test_invalid_authorization_is_rejected_before_transport_without_echoing_it(self):
+        with patch.object(catalog, 'build_opener') as transport:
+            for credential in ('Bearer private-sentinel\r\nX-Injected: yes',
+                               'Bearer ', 'Basic private-sentinel', 'Bearer ' + 'x' * 2048):
+                with self.assertRaises(codec.DecodeError) as error:
+                    catalog.download(authorization=credential)
+                self.assertNotIn('private-sentinel', str(error.exception))
+            transport.assert_not_called()
+
+    def test_explicit_download_cli_reads_only_its_scoped_authorization_secret(self):
+        credential = 'Bearer synthetic-vip-test-credential'
+        with patch.dict(os.environ, {catalog.AUTHORIZATION_ENV: credential}), \
+             patch.object(sys, 'argv', ['server_catalog_decoder.py', '--download']), \
+             patch.object(catalog, 'download', return_value=V['catalog'].encode()) as download, \
+             patch.object(sys, 'stdout', new_callable=io.StringIO) as output:
+            self.assertEqual(catalog.main(), 0)
+            download.assert_called_once_with(authorization=credential)
+            self.assertEqual(json.loads(output.getvalue()), V['expected'])
+            self.assertNotIn(credential, output.getvalue())
 
 if __name__ == '__main__':unittest.main()

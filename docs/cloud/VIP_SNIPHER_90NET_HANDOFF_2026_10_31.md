@@ -108,3 +108,11 @@ Validación final: **8 Python /4 Node**, sin skips, más el documento original
 completo **14 servidores /280 redes** con igualdad Java/Python/worker/CLI y
 **8 casos nativos**. Catálogo59 y53 fichas intactos. 90NET queda expresamente
 para después por instrucción del usuario.
+
+La URL del actualizador ya coincide exactamente con el APK y se conserva.
+La CLI soporta además una autorización válida suministrada por el operador
+mediante `SPDECODE_VIP_SNIPHER_AUTHORIZATION`, solo en `--download`. No contiene
+el token del desarrollador. **11 pruebas Python aprobadas**, incluidas tres
+nuevas de cabecera/destino fijo, rechazo previo al transporte y secreto de CLI;
+las pruebas usan únicamente un valor ficticio. No se ha probado autorización
+real contra el proveedor ni cambia el estado remoto pendiente.

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Download the fixed VIP Snipher Pro build 29 source or decode saved catalog bytes."""
 import argparse
+import os
 from pathlib import Path
 import sys
 from urllib.request import Request, HTTPRedirectHandler, build_opener
@@ -12,21 +13,30 @@ else:
 SOURCE = 'https://raw.githubusercontent.com/Civ3snipher/NEW-VIP-SNIPHER-PRO-3/refs/heads/main/update.json?ref=main'
 # Tool identifier, not a custom User-Agent recovered from the Android app.
 USER_AGENT = 'VIP Snipher Pro/2.9'
+AUTHORIZATION_ENV = 'SPDECODE_VIP_SNIPHER_AUTHORIZATION'
 
 class _NoRedirect(HTTPRedirectHandler):
     def redirect_request(self, *args, **kwargs):
         raise DecodeError('La fuente VIP Snipher Pro intentó redirigir la descarga.')
 
-def download() -> bytes:
+def download(*, authorization: str | None = None) -> bytes:
+    headers = {
+        'User-Agent': USER_AGENT,
+        'Accept': 'application/json',
+        'X-GitHub-Api-Version': '2022-11-28',
+        'Accept-Encoding': 'identity',
+    }
+    if authorization is not None:
+        # A credential supplied by the operator for this fixed source only.
+        # Never accept control characters or reuse the APK developer's token.
+        if (not isinstance(authorization, str) or len(authorization) > 2048 or
+                not authorization.startswith(('Bearer ', 'token ')) or
+                not authorization.partition(' ')[2] or
+                any(ord(c) < 32 or ord(c) > 126 for c in authorization)):
+            raise DecodeError('Autorización VIP Snipher Pro inválida.')
+        headers['Authorization'] = authorization
     try:
-        # Only the public headers from VIPSNIPHERPROMain.s.getHeaders().
-        # The app's developer-owned Authorization is deliberately not reused.
-        req = Request(SOURCE, headers={
-            'User-Agent': USER_AGENT,
-            'Accept': 'application/json',
-            'X-GitHub-Api-Version': '2022-11-28',
-            'Accept-Encoding': 'identity',
-        })
+        req = Request(SOURCE, headers=headers)
         with build_opener(_NoRedirect()).open(req, timeout=25) as response:
             if response.status != 200 or response.headers.get('Content-Encoding', 'identity') != 'identity':
                 raise DecodeError('Respuesta VIP Snipher Pro incompatible.')
@@ -55,7 +65,7 @@ def main() -> int:
         elif args.stdin:
             data = sys.stdin.buffer.read(MAX_BYTES + 1)
         else:
-            data = download()
+            data = download(authorization=os.environ.get(AUTHORIZATION_ENV) or None)
         print(run(data))
         return 0
     except (ValueError, OSError, RecursionError):
