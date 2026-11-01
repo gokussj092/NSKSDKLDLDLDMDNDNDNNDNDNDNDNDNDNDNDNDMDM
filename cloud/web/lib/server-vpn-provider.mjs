@@ -8,6 +8,7 @@
 import dns from "node:dns/promises";
 import https from "node:https";
 import http from "node:http";
+import {ALFAISAL_SOURCE,ALFAISAL_METADATA,alfaisalConfigured,alfaisalRequest} from "./alfaisal-protocol.mjs";
 import {publicIpv4} from "./c35-provider.mjs";
 
 const ABOWAGED_SOURCES=Object.freeze({
@@ -46,6 +47,7 @@ const JYFAST_SOURCES=Object.freeze({
 });
 const PAIRED_SOURCES=Object.freeze({"jyfast-vpn-ultra":JYFAST_SOURCES,"abowaged-vpn":ABOWAGED_SOURCES,"turbomx-vpn":TURBOMX_SOURCES,"superflash-vpn":SUPERFLASH_SOURCES,"onspace-vpn":ONSPACE_SOURCES,"http-socketclay":SOCKETCLAY_SOURCES,"http-wakko":WAKKO_SOURCES,"v2ray-tunnel-plus":V2PLUS_SOURCES});
 const PROVIDERS = Object.freeze({
+  "alfaisal-tunnel-plus": {url:ALFAISAL_SOURCE,agent:"ALFAISAL Tunnel+/39"},
   "izph-vpn-pro": {url:"https://raw.githubusercontent.com/kiranoble/config/refs/heads/main/izph49",agent:"IZPH VPN PRO/6.0"},
   "vip-snipher-pro": {
     url:"https://raw.githubusercontent.com/Civ3snipher/NEW-VIP-SNIPHER-PRO-3/refs/heads/main/update.json?ref=main",
@@ -158,6 +160,7 @@ export class VpnProviderError extends Error {
 function fail(code){throw new VpnProviderError(code);}
 export function providerEnabled(id,env=process.env){
   if(!Object.hasOwn(PROVIDERS,id) || env.CLOUD_SERVER_VPN_ENABLED!=="true")return false;
+  if(id==="alfaisal-tunnel-plus")return alfaisalConfigured(env);
   if(id!=="vip-snipher-pro")return true;
   const authorization=env.SPDECODE_VIP_SNIPHER_AUTHORIZATION;
   return typeof authorization==="string" && authorization.length<=2048 &&
@@ -175,7 +178,7 @@ async function vettedIpv4(host) {
   return [...new Set(list.map(item=>item.address))].slice(0,8);
 }
 
-function pinnedGet(url,ip,agent,timeout,headers={}){
+function pinnedRequest(url,ip,agent,timeout,headers={}, {method="GET",body=null}={}){
   return new Promise((resolve,reject)=>{
     const parsed=new URL(url);
     let settled=false,bytes=0;
@@ -186,10 +189,10 @@ function pinnedGet(url,ip,agent,timeout,headers={}){
     };
     const transport=parsed.protocol==="http:"?http:https;
     const req=transport.request(parsed,{
-      method:"GET",agent:false,
+      method,agent:false,
       ...(parsed.protocol==="https:"?{rejectUnauthorized:true,minVersion:"TLSv1.2"}:{}),
       timeout,
-      headers:{...headers,"User-Agent":agent,"Accept-Encoding":"identity","Connection":"close"},
+      headers:{...headers,...(body?{"Content-Length":String(body.length)}:{}),"User-Agent":agent,"Accept-Encoding":"identity","Connection":"close"},
       lookup:(host,options,callback)=>{
         if(host!==parsed.hostname)return callback(Object.assign(new Error("hostname"),{code:"EHOSTUNREACH"}));
         if(options?.all)return callback(null,[{address:ip,family:4}]);
@@ -225,14 +228,59 @@ function pinnedGet(url,ip,agent,timeout,headers={}){
     });
     req.on("timeout",()=>req.destroy(Object.assign(new Error("timeout"),{code:"ETIMEDOUT"})));
     req.on("error",err=>finish(err));
-    req.end();
+    req.end(body??undefined);
   });
+}
+
+// The build39 app uses metadata policy + a signed POST, not a public GET.
+async function downloadAlfaisal(provider){
+  const config={SPDECODE_ALFAISAL_API_KEY:process.env.SPDECODE_ALFAISAL_API_KEY,
+    SPDECODE_ALFAISAL_SIGNING_KEY:process.env.SPDECODE_ALFAISAL_SIGNING_KEY,
+    SPDECODE_ALFAISAL_DEVICE_UUID:process.env.SPDECODE_ALFAISAL_DEVICE_UUID};
+  const deadline=Date.now()+DEADLINE_MS;
+  async function request(url,headers,options={}){
+    const dest=new URL(url);
+    // Both paths are build39 literals. Never follow metadata-provided URLs.
+    if(dest.origin!==new URL(ALFAISAL_SOURCE).origin ||
+       ![ALFAISAL_METADATA,ALFAISAL_SOURCE].includes(dest.origin+dest.pathname))fail("REMOTE_NETWORK_DENIED");
+    const addresses=await vettedIpv4(dest.hostname);
+    const remaining=deadline-Date.now();
+    if(remaining<=0)fail("REMOTE_PROVIDER_UNAVAILABLE");
+    let answer;
+    try{answer=await pinnedRequest(url,addresses[0],provider.agent,
+      Math.min(options.method==="POST"?20000:10000,remaining),headers,options);}
+    catch(error){
+      if(error instanceof VpnProviderError)throw error;
+      fail("REMOTE_PROVIDER_UNAVAILABLE");
+    }
+    // A signed POST is never retried with a reused nonce, even on a 503.
+    if(Object.hasOwn(answer,"redirect"))fail("REMOTE_NETWORK_DENIED");
+    if(!Buffer.isBuffer(answer.data)||!answer.data.length)fail("REMOTE_RESPONSE_INVALID");
+    return answer.data;
+  }
+  const metadata=new URL(ALFAISAL_METADATA);
+  metadata.searchParams.set("json_client_capability","2");
+  metadata.searchParams.set("device_uuid",config.SPDECODE_ALFAISAL_DEVICE_UUID);
+  const raw=await request(metadata.href,{Accept:"application/json"});
+  if(raw.length>1024*1024)fail("REMOTE_RESPONSE_INVALID");
+  let policy;
+  try{policy=JSON.parse(raw.toString("utf8"));}catch{fail("REMOTE_RESPONSE_INVALID");}
+  if(!policy||Array.isArray(policy)||(policy.success!==undefined&&policy.success!==true)||policy.json_requires_integrity!==false)
+    fail("REMOTE_PROVIDER_UNAVAILABLE");
+  const signed=alfaisalRequest(config);
+  const data=await request(ALFAISAL_SOURCE,signed.headers,{method:"POST",body:signed.body});
+  if(data.subarray(0,64).toString("utf8").trimStart().startsWith("<"))fail("REMOTE_RESPONSE_INVALID");
+  return data;
 }
 
 export async function downloadVpnCatalog(id,source=id==="jyfast-vpn-ultra"?"free":id==="v2ray-tunnel-plus"?"base64":"servers"){
   const provider=PROVIDERS[id];
   if(!provider)fail("UNSUPPORTED_FORMAT");
   if(!providerEnabled(id))fail("REMOTE_NOT_CONFIGURED");
+  if(id==="alfaisal-tunnel-plus"){
+    if(source!=="servers")fail("UNSUPPORTED_FORMAT");
+    return downloadAlfaisal(provider);
+  }
   // Read the secret per request, only for the fixed VIP updater. Never expose it
   // in the public catalog, worker payload, provider switches or error messages.
   const headers=id==="vip-snipher-pro" ?
@@ -264,7 +312,7 @@ export async function downloadVpnCatalog(id,source=id==="jyfast-vpn-ultra"?"free
       const remaining=deadline-Date.now();
       if(remaining<=0)fail("REMOTE_PROVIDER_UNAVAILABLE");
       let answer;
-      try{answer=await pinnedGet(target,ip,provider.agent,Math.min(CONNECT_MS,remaining),headers);}
+      try{answer=await pinnedRequest(target,ip,provider.agent,Math.min(CONNECT_MS,remaining),headers);}
       catch(error){
         if(error instanceof VpnProviderError){
           if(!error.retryable)throw error;

@@ -46,10 +46,15 @@ Esta regla complementa las secciones históricas siguientes y es obligatoria
 para las nuevas integraciones, incluida IZPH VPN PRO.
 
 Estado de este lote: cuenta Goku, rama `fix/http-jireh-current-method`, revisión
-fuente59 conservada por instrucción del propietario y54 fichas tras IZPH6.0.
+fuente59 conservada por instrucción del propietario y55 fichas tras ALFAISAL build39.
 VIP ya tiene descarga autenticada HTTP200; IZPH usa GET público HTTP200 sin
-cabeceras personalizadas. 90NET sigue pospuesto. No se ha desplegado ni
+cabeceras personalizadas. ALFAISAL usa metadata y POST firmado con dos claves
+y una instalación propia registrada: HTTP200,4.0.20,4/51/103, tres listas
+completas. Sus tres secretos de backend ya están guardados y probados;
+Compose los propaga solo a web. No registrar una instancia por descarga.
+90NET sigue pospuesto. No se ha desplegado ni
 fusionado main. Detalles vigentes en el
+[handoff de ALFAISAL](ALFAISAL_TUNNEL_PLUS_HANDOFF_2026_11_01.md) y el
 [handoff de IZPH](IZPH_VPN_PRO_HANDOFF_2026_11_01.md); los registros siguientes
 conservan sus fechas y ramas históricas.
 

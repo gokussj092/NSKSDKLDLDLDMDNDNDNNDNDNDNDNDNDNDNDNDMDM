@@ -1,5 +1,23 @@
 # Registro de nuevas integraciones VPN
 
+## ALFAISAL Tunnel+ build39 — 2026-11-01
+
+Paquete app.ovpninject5.vpn, Version -39WH-wake/39, vigente en Play y APK.
+Descarga real validada con metadata y POST firmado original: **HTTP200,
+4.0.20,4 servidores /51 Networks /103 SSLNetworks**,141420bytes.
+Se reutilizan API key y HMAC del mismo APK y una instalación de prueba propia
+registrada una sola vez. Tres secretos backend probados y guardados privados;
+Compose solo los pasa a web. Si exige integridad, falla sin fabricar tokens.
+
+CBC256/JCA, documento completo igual a CLI y worker. Tres Squid antiguos se
+conservan por el catch CBC original; no se descartan registros. Bootstrap0.0.0,
+1/0/1, separado. Gateway comprobado con respuesta real y HTTP interno simulado;
+transporte Node al proveedor con mocks, descarga real por Python.
+Ficha/broker/switch/icono original, **59 /55 fichas**;254 formatos intactos.
+**33 Python /163 Node aprobadas,0 skips**. Hashes, originales y configuración
+privada duraderos en [handoff](ALFAISAL_TUNNEL_PLUS_HANDOFF_2026_11_01.md).
+Sin deploy, merge, build Android ni Actions. 90NET sigue pospuesto.
+
 ## IZPH VPN PRO 6.0 (60) — 2026-11-01
 
 Paquete com.izphprov2.net, versión actual del APK y Google Play6.0.

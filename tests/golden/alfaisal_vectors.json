@@ -1,0 +1,146 @@
+{
+  "provenance": "Independent Java JCA transcription of build39 gb.a, gb.m$a and g3 signing; synthetic data only",
+  "plain": [
+    "usuario-é",
+    "pássword☃",
+    "ssh-user",
+    "ssh-secret",
+    "CONNECT [host_port] HTTP/1.1[crlf]X: مثال[crlf][crlf]",
+    "sni.example.test",
+    "proxy.example.test",
+    "root-user",
+    "root-pass"
+  ],
+  "cipher": [
+    "9+cr4/1M4fzxWtC55xEyUQ==",
+    "AmzXlORDL06BjI74zorAvg==",
+    "EpF2JUhW2haazoHHjwNVOg==",
+    "memGzfHoR8KMyqOq8qUk0Q==",
+    "wsiORENy6WLT7EB8NDhiUEXpDYcQ1DdIkDDvxqJIVXKyno3fDqPCIQZtwDjsFgKJEgAc3gzNOfJg6iwoxHBFdg==",
+    "38fhyZWvM24ntgpRdnSfh/NVmF7fo5FmDdAatvljXVI=",
+    "N7i3VGlRtDMENbemPdPvEHVMZzBf3hKnVt0AwsTKUoE=",
+    "65THns1idUGZHrMHlh3Kug==",
+    "yHIbTx/8KpmS5yylA3z7dg=="
+  ],
+  "legacyProxy": "AAAAAAAAAAAAAAAAAAAAAA==",
+  "outer": {
+    "Version": "oracle-39",
+    "FREE": true,
+    "Servers": [
+      {
+        "Name": "servidor ☃",
+        "Username": "9+cr4/1M4fzxWtC55xEyUQ==",
+        "Password": "AmzXlORDL06BjI74zorAvg==",
+        "SSHUsername": "EpF2JUhW2haazoHHjwNVOg==",
+        "SSHPassword": "memGzfHoR8KMyqOq8qUk0Q==",
+        "IP": "host.example.test",
+        "Port": 443,
+        "UnknownCipher": "9+cr4/1M4fzxWtC55xEyUQ=="
+      }
+    ],
+    "Networks": [
+      {
+        "Name": "normal",
+        "Payload": "wsiORENy6WLT7EB8NDhiUEXpDYcQ1DdIkDDvxqJIVXKyno3fDqPCIQZtwDjsFgKJEgAc3gzNOfJg6iwoxHBFdg==",
+        "SNIHost": "38fhyZWvM24ntgpRdnSfh/NVmF7fo5FmDdAatvljXVI=",
+        "ProxySettings": {
+          "Squid": "N7i3VGlRtDMENbemPdPvEHVMZzBf3hKnVt0AwsTKUoE=",
+          "Port": "8080"
+        },
+        "FrontQuery": "legacy-unchanged",
+        "Protocol": 7
+      }
+    ],
+    "SSLNetworks": [
+      {
+        "Name": "SSL",
+        "Payload": "wsiORENy6WLT7EB8NDhiUEXpDYcQ1DdIkDDvxqJIVXKyno3fDqPCIQZtwDjsFgKJEgAc3gzNOfJg6iwoxHBFdg==",
+        "SNIHost": "",
+        "ProxySettings": {
+          "Squid": "AAAAAAAAAAAAAAAAAAAAAA==",
+          "Port": 443
+        },
+        "extra": [
+          true,
+          null,
+          3
+        ]
+      }
+    ],
+    "Username": "65THns1idUGZHrMHlh3Kug==",
+    "Password": "yHIbTx/8KpmS5yylA3z7dg==",
+    "unknown": {
+      "preserve": [
+        "é",
+        true,
+        null,
+        3
+      ]
+    }
+  },
+  "catalog": "35e5T32yDGt48xXwsutyqEXTXxSm+YUS9Z/1XYUuMzLfVe26IGTiU/oN58iaOZLokZNydtmGZ5DfIZK/lcXAeHCd6hhwQmIp2t7stPiZdJ//YeJetMb4EW2gqMFiio2IEwqRVCfLIDaUlAqcE6S0w+gI0wnzmv2L1/hjqq1N+28TKsA8ZltNP4epzrbk94byNGV/WVRjeUNzUB6Bzq1OyEWRUSkwXAbC26kjOBue/eHFf6QGLoD1fhd65YO69xR1ClVOZo5Canz9xqQeNh9cS6ZiFozfMp2eP1wAoIfb9yBuR74d2TebuhNXmpmgOKGOaDlxbyBaIMYkgXKTdxnI84pIl1au7WWDvl7Pgfcf5udoHdwLt4KzarHTxFoMVngJUjCqqdwhm7j07pi2QbErV5adzhvlECOgrmYmipteLYC1rcdIVToHY5G4vugbo+OwXp0aAYLKEw7dRyaWjwgL62Wkv1fzd5CfjSGMj1mHVMILTz6prBGmE0gWjCU0te0IuZ+nNsrKOJ5NNW0TbUQfLv993STHqm1aKcWe/hbnVrey8kympei7mFlYoE+rcok4PDglnL0C9uQN0zqxrAiS7VXZfsWlUAmzx/6Lgot0pSu/V2B+qVF4H8rUmVVqs2DWH7wh6T2/U6lQsUVZiRkH56/739+OqjLb4B5U11bSuxATReYkCt+e7WbhcXjXSj0R7zvPR2gdeZ/WojCEWwMle+8GLqEmoxZl5eg1IlbBEhjAkcoE7AVxLWDJni5mdv8BZDnyPeQNOvPt/qVMWf7yZDy8cE4/8I8jekQ+/rVhEdr7kyERNlzw34k8MZRYCUkb7+lmAkQAzJgplOhO6yv87fJoJ2yGi0vFYkZtbhCOaUUvoBVNeDkBEL/i9AcA1TcfsFrhrUABk3Rac8rOrrQJ+Mla7VPt7CFkIAr2DUWskPe4pBq6C8ob5MNsUnZr+Cf1MR6RlExiuH/C9gEVPN5UloqfOy06SHxLin7VpZCoJSTurcIpE9+YIecFERNURkuah7qVbAknY+gYYwh7h5E9/x0o3Ao90qeOV7V3FzmS/kx9it1TTfAiMEBPNOn+cdzB4W3isfeDHF1l5eMQI+HYPfKLU5k2GJcBWYi+SSUeysTBGxI+OyXKAQPOaHD0sllHaZxE9zvVSJDLYv1WuwICw7xM4S/uoOjCourquOg8Reh+toSpVI9HD2fPh1XvfKb3gZ2QC06DlTE8xX6b/945LxHeJQdPQ0UEyqL746POZjPu53Codv53p3gq+kdYUAAmOSVy5MFNNZ7C9BFlcZqOgjuhw3AqrpRxy+bKGXyzSUU=",
+  "expected": {
+    "Version": "oracle-39",
+    "FREE": true,
+    "Servers": [
+      {
+        "Name": "servidor ☃",
+        "Username": "usuario-é",
+        "Password": "pássword☃",
+        "SSHUsername": "ssh-user",
+        "SSHPassword": "ssh-secret",
+        "IP": "host.example.test",
+        "Port": 443,
+        "UnknownCipher": "9+cr4/1M4fzxWtC55xEyUQ=="
+      }
+    ],
+    "Networks": [
+      {
+        "Name": "normal",
+        "Payload": "CONNECT [host_port] HTTP/1.1[crlf]X: مثال[crlf][crlf]",
+        "SNIHost": "sni.example.test",
+        "ProxySettings": {
+          "Squid": "proxy.example.test",
+          "Port": "8080"
+        },
+        "FrontQuery": "legacy-unchanged",
+        "Protocol": 7
+      }
+    ],
+    "SSLNetworks": [
+      {
+        "Name": "SSL",
+        "Payload": "CONNECT [host_port] HTTP/1.1[crlf]X: مثال[crlf][crlf]",
+        "SNIHost": "",
+        "ProxySettings": {
+          "Squid": "AAAAAAAAAAAAAAAAAAAAAA==",
+          "Port": 443
+        },
+        "extra": [
+          true,
+          null,
+          3
+        ]
+      }
+    ],
+    "Username": "root-user",
+    "Password": "root-pass",
+    "unknown": {
+      "preserve": [
+        "é",
+        true,
+        null,
+        3
+      ]
+    }
+  },
+  "request": {
+    "apiKey": "synthetic-api-key-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "signingKey": "synthetic-signing-text-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+    "deviceUuid": "synthetic-device-0000000000000001",
+    "timestamp": 1700000000,
+    "nonce": "0123456789abcdef0123456789abcdef",
+    "body": "{\"device_uuid\":\"synthetic-device-0000000000000001\",\"integrity_token\":\"\",\"integrity_request_id\":\"\",\"integrity_request_hash\":\"\",\"integrity_operation\":\"json_update\",\"json_client_capability\":2,\"json_direct_requested\":1}",
+    "signature": "5bd4427506206cafff3c4861a6a3719ac591bea2ebd5a55c81a1d75924571ecc"
+  }
+}

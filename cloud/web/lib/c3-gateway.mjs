@@ -307,6 +307,16 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
          parsed.Servers.some(x=>!isRecord(x)) || parsed.Networks.some(x=>!isRecord(x)) ||
          JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))throw Error("INVALID_WORKER_RESULT");
     }
+    if(kind==="server-vpn" && payload?.providerId==="alfaisal-tunnel-plus"){
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId ||
+         !isRecord(parsed) || typeof parsed.Version!=="string" || !parsed.Version ||
+         ["Servers","Networks","SSLNetworks"].some(k=>!Array.isArray(parsed[k])) ||
+         !parsed.Servers.length || !(parsed.Networks.length+parsed.SSLNetworks.length) ||
+         ["Servers","Networks","SSLNetworks"].some(k=>parsed[k].some(x=>!isRecord(x)||typeof x.Name!=="string")) ||
+         JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))throw Error("INVALID_WORKER_RESULT");
+    }
     if(kind==="server-vpn" && ["7net-vpn","xhypher-tunnel-pro","vip-snipher-pro","izph-vpn-pro"].includes(payload?.providerId)){
       let parsed;
       try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}

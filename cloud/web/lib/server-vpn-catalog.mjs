@@ -24,6 +24,7 @@ export function activeCatalogVersion(env=process.env) {
 }
 
 const ITEMS = Object.freeze([
+  {id:"alfaisal-tunnel-plus",name:"ALFAISAL Tunnel+",icon:"alfaisal-tunnel-plus.png",remote:"alfaisal-tunnel-plus"},
   {id:"izph-vpn-pro", name:"IZPH VPN PRO", icon:"izph-vpn-pro.png", remote:"izph-vpn-pro"},
   // Build 29 authenticated updater and complete 8.0.61 catalog verified.
   {id:"vip-snipher-pro", name:"VIP Snipher Pro", icon:"vip-snipher-pro.png", remote:"vip-snipher-pro"},
@@ -124,7 +125,7 @@ export function catalog({availability=null,version=activeCatalogVersion()}={}) {
       iconSha256:iconFor(x.id).sha256,
       iconMimeType:"image/png",
       // No decode button for a provider until its remote broker is enabled.
-      decodeEnabled:x.remote==="vip-snipher-pro" ?
+      decodeEnabled:["vip-snipher-pro","alfaisal-tunnel-plus"].includes(x.remote) ?
         providerEnabled(x.remote) && (availability?.[x.id] ?? true) :
         x.remote==="nur" ? (availability?.["nur-tunnel"] ?? process.env.CLOUD_NUR_FETCH_ENABLED==="true") :
         Boolean(x.remote) && (availability?.[x.id] ?? process.env.CLOUD_SERVER_VPN_ENABLED==="true"),

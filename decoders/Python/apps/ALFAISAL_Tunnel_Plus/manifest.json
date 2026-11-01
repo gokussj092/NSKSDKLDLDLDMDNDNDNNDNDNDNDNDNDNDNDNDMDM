@@ -1,0 +1,167 @@
+{
+  "id": "alfaisal-tunnel-plus",
+  "name": "ALFAISAL Tunnel+",
+  "package": "app.ovpninject5.vpn",
+  "compatibleVersions": [
+    "Version -39WH-wake"
+  ],
+  "versionCode": 39,
+  "engine": "python-alfaisal-aes256cbc",
+  "engineVersion": 1,
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "metadataSource": "https://panel.alfaisalvpn.com/api/app_settings.php",
+    "source": "https://panel.alfaisalvpn.com/api/protected_json.php",
+    "requestMethod": "GET metadata then signed POST",
+    "appRequestLocations": [
+      "OpenVPNClient.J1/W7",
+      "bb.a.d",
+      "g3.y0",
+      "g3.f1.i/g3.x0"
+    ],
+    "headers": [
+      "Content-Type",
+      "Accept",
+      "Cache-Control",
+      "X-API-KEY",
+      "X-TIMESTAMP",
+      "X-NONCE",
+      "X-SIGNATURE"
+    ],
+    "hmac": "SHA256 with UTF8 text key, timestamp.nonce.exactCompactBody",
+    "backendSecretEnv": [
+      "SPDECODE_ALFAISAL_API_KEY",
+      "SPDECODE_ALFAISAL_SIGNING_KEY",
+      "SPDECODE_ALFAISAL_DEVICE_UUID"
+    ],
+    "registeredOwnTestInstallation": true,
+    "automaticRegistrationPerDownload": false,
+    "requiresCurrentIntegrityPolicyFalse": true,
+    "sourceObservedStatus": 200,
+    "sourceValidatedOn": "2026-11-01",
+    "realCliDownloadEqual": true,
+    "remoteValidated": true,
+    "publicBrokerEnabledWhenConfigured": true,
+    "publicCatalogVersion": 59,
+    "publicCatalogCards": 55,
+    "embeddedResource": "R.raw.servers -> res/0k.js",
+    "embeddedProof": {
+      "Networks": 0,
+      "SSLNetworks": 1,
+      "Servers": 1,
+      "bytes": 1196,
+      "cbcFallbackFields": 0,
+      "completeJcaEqual": true,
+      "nonemptyFields": 5,
+      "sha256": "cc3243bf5af67fdddede02a092f0adc6e3d6cecd9d7bf80813d6dadc93597d72",
+      "source": "included.enc",
+      "uniqueFields": 4,
+      "version": "0.0.0",
+      "workerAndCliEqual": true
+    },
+    "remoteProof": {
+      "Networks": 51,
+      "SSLNetworks": 103,
+      "Servers": 4,
+      "bytes": 141420,
+      "cbcFallbackFields": 3,
+      "completeJcaEqual": true,
+      "nonemptyFields": 428,
+      "sha256": "b6300b5218fadbee8b57001fe3612274f7328511a21c4e7903e7bf504c3c8016",
+      "source": "remote.enc",
+      "uniqueFields": 127,
+      "version": "4.0.20",
+      "workerAndCliEqual": true
+    },
+    "remoteGatewayEqual": true,
+    "remoteGatewayRawBytes": 89469,
+    "nodeProviderTransport": "mocked",
+    "internalHttpTransport": "simulated",
+    "deployed": false
+  },
+  "fieldContract": {
+    "root": [
+      "Username",
+      "Password"
+    ],
+    "Servers": [
+      "Username",
+      "Password",
+      "SSHUsername",
+      "SSHPassword"
+    ],
+    "Networks": [
+      "Payload",
+      "SNIHost",
+      "ProxySettings.Squid"
+    ],
+    "SSLNetworks": [
+      "Payload",
+      "SNIHost",
+      "ProxySettings.Squid"
+    ],
+    "legacyCbcFallback": "gb.m$a.b returns original field on GeneralSecurityException; 3 legacy proxy fields preserved",
+    "outerCbcFallback": false,
+    "preserveUnknownsAndTypes": true
+  },
+  "files": {
+    "newRoute": false,
+    "exporterCertified": false,
+    "validation": "No proprietary exported profile identified; resource .js does not define a public file format"
+  },
+  "dependencies": {
+    "python": ">=3.10",
+    "pycryptodome": "3.23.0",
+    "supportFiles": [
+      "../HTTP_FenixVPN/codec.py",
+      "../HTTP_FenixVPN/field_names.json"
+    ]
+  },
+  "originalInput": {
+    "filename": "ALFAISAL-Tunnel-Plus-39WH-wake-build39.apk",
+    "bytes": 85117813,
+    "sha256": "deb89699b10ddd2c425a8f094cbdadc92059d4d93aac3d6c790b036ff662f0ea",
+    "libraryFileId": "libfile_49b49b439dd4819185151355ff12efef"
+  },
+  "signer": {
+    "sha1": "26f53fb5938dd7220980aa578bb5d882910a6bf0",
+    "sha256": "323e6af4a9c1493a56e62f14f9fe673fcf1df21aa6bc14ed09081b49c0462235"
+  },
+  "remoteOriginal": {
+    "filename": "remote.enc",
+    "libraryFileId": "libfile_c496ce0d4a3881919945f0e0de0f9f3b"
+  },
+  "privateBackendConfiguration": {
+    "filename": "ALFAISAL-backend-secrets.env",
+    "libraryFileId": "libfile_4887525611e08191b1f0d392f3c96144",
+    "valuesCommitted": false
+  },
+  "icon": {
+    "file": "ALFAISAL_Tunnel_Plus.png",
+    "source": "res/tt.png",
+    "width": 192,
+    "height": 192,
+    "bytes": 24520,
+    "sha256": "17c87ccc847a7babf655170044967e9120609793381800c664b73a17ad1ebaff",
+    "policy": "Exact original PNG"
+  },
+  "validation": {
+    "checkedOn": "2026-11-01",
+    "pythonFocusedTests": 33,
+    "newPythonTests": 11,
+    "nodeFocusedTests": 163,
+    "newNodeTests": 11,
+    "skipCount": 0,
+    "completeJcaWorkerCliEquality": true,
+    "realCliDownload": true,
+    "androidVpnConnectionTested": false,
+    "deployed": false
+  },
+  "latestVersionCheck": {
+    "checkedOn": "2026-11-01",
+    "googlePlayVersion": "Version -39WH-wake",
+    "downloadedApkVersion": "Version -39WH-wake",
+    "downloadedVersionCode": 39,
+    "source": "https://play.google.com/store/apps/details?id=app.ovpninject5.vpn"
+  }
+}
