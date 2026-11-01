@@ -1,5 +1,11 @@
 # HTTP Custom — archivos .hc
 
+**Investigación 2026-11-01:** las dos muestras nuevas HCCFG 11/n13 con Extra
+Protection autentican HCX4, pero **0/2 están descifradas**. El motor sigue
+habilitado para HCCFG 10/n11/n12 y sus rutas históricas. No se anuncia soporte
+de la versión nueva hasta verificar su JSON interior completo.
+[Evidencia y siguiente requisito](../../../../docs/cloud/HTTP_CUSTOM_11_N13_REINVESTIGACION_2026_11_01.md).
+
 ![HTTP Custom](HTTP_Custom.png)
 
 APK analizado: **HTTP Custom 7.11.28 - Patch 1**, `xyz.easypro.httpcustom`,
@@ -81,9 +87,10 @@ no la mera presencia de cadenas en el APK.
 - `protections`: nombres legibles; sus claves originales siguen en `main`.
 - `other_sections`: contenido de secciones adicionales; el binario se
   representa en Base64. Los sidecars de perfiles conservan texto o bytes hex.
-- `envelope`: JSON exterior completo, incluidas identidades, slots y campos
-  desconocidos. Contiene material de la configuración de entrada: el
-  resultado se entrega al usuario y no forma parte de este repositorio.
+
+La salida pública del lector no incluye el envelope ni una clave `format`;
+conserva las cinco claves verificadas por los tests. La apertura del envelope
+se usa internamente para autenticar y seleccionar el motor.
 
 No se aplanan opciones que puedan sobrescribir host, puerto u otros campos.
 El bloqueo visual de payload se conserva en los metadatos; no impide leer

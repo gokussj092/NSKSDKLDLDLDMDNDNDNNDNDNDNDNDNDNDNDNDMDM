@@ -1,3 +1,18 @@
+# Selección actual — HTTP Custom HCCFG 11/n13 pendiente, 2026-11-01
+
+Dos archivos nuevos aportados: HCX4 autenticado, esquema11/n13 con bloque
+Extra Protection; metadatos n921/n914. **0/2 interiores descifrados**, sin JSON
+completo verificado. Original Play/APK8.0.10/914 y firma contrastados; análisis
+nativo recupera familia4 para n13. Falta una activación/importación oficial
+legítima y el material que entrega al codec; no hay Android conectado.
+No habilitar la variante por cambiar la allowlist.33 regresiones anteriores
+aprobadas; lectores, catálogo59/58 fichas y C0/C8 conservados.
+[Evidencia y continuidad](HTTP_CUSTOM_11_N13_REINVESTIGACION_2026_11_01.md).
+Sin fusión/despliegue/Actions/APK. Ultra y MM conservan despliegue pendiente;
+UT Loop y FlexNet siguen pendientes.
+
+---
+
 # Estado vigente — Ultra Tunnel integrado en código, 2026-11-01
 
 El propietario seleccionó **Ultra Tunnel**, paquete co.strongteam.ultra.
