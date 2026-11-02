@@ -83,3 +83,15 @@ Durante la primera ejecución del PR #109 se observaron y corrigieron estos punt
 - El empaquetado manual de Play en `.github/workflows/play-beta-artifacts.yml` queda apuntando a 1.1.26/build41; no fue lanzado. No hay aplicación QA distribuible.
 
 **El PR no debe fusionarse ni publicarse hasta que los workflows contra el HEAD posterior a estas correcciones terminen y se revisen sus fallos, además de pasar validación física, firma permanente, VPS y el resto de evidencias de release.**
+
+## Validación posterior a correcciones C0–C7
+
+La ejecución de integración `41534170991` **aprobó** la auditoría C0 sobre el commit `8e4e8bae`. Los otros trabajos de ese mismo commit mostraron más aserciones heredadas de los cambios previos de navegación, Cloud y catálogo; en la rama se ajustaron únicamente comprobaciones sustentadas por la implementación actual, conservando el motor, autenticación y los gates de publicación.
+
+- La interfaz principal ahora abre HTTP Injector Cloud a través de `decodeOnlineReference`, no con el nombre de función anterior. Los tests C4 reflejan el flujo unificado y tres hashes UI aprobados; los otros seis siguen bloqueados por la línea base original.
+- En C5 se comprueba el retorno del preanálisis HC por la función actual `decodeFile("hc",bytes,onCompatibleExport=...)`.
+- Los tests de metadatos se adaptan a los campos aditivos `methodRevision`/`maintenance`; los contadores de formatos reflejan `.hexcm`.
+- Los diagnósticos V2 se presentan en el componente independiente `AdminV2Diagnostics`. La política de expiración se obtiene del proveedor de políticas, no se parsea en el verificador local.
+- La operación V2 18 sigue requiriendo sesión autenticada; se conserva el error 401 para uso sin bearer.
+
+**Decisión actual:** NO-GO. Sin evidencia nueva de artefactos firmados ni prueba física. El nuevo HEAD exige reejecutar los gates antes de considerar que la fase 8 está completada.
