@@ -66,7 +66,7 @@ public final class CloudNativeTransport {
         }:null);
         byte[] ciphertext=new byte[]{0x53,0x50,0x52,0x32,0x00,0x08,0x16,0x01,0x02,(byte)0xff};
         String timestamp="1700000000",nonce="AAECAwQFBgcICQoLDA0ODxAREhMUFRYX",proof="A".repeat(96);
-        check(postNativeEncrypted(6,ciphertext,"synthetic.bearer","1.1.22",timestamp,nonce,proof,"","").equals("200\n"+RESPONSE),"UTF-8 reply changed");
+        check(new String(postNativeEncrypted(6,ciphertext,"synthetic.bearer","1.1.22",timestamp,nonce,proof,"",""),StandardCharsets.UTF_8).equals("200\n"+RESPONSE),"UTF-8 reply changed");
         check(java.util.Arrays.equals(last.output.toByteArray(),ciphertext),"Opaque ciphertext upload changed");
         check(last.getURL().toString().equals("https://api.spdecode.example/api/v2/transport"),"Wrong destination");
         check(last.getRequestProperty("X-SP-Operation").equals("6"),"Wrong operation");
@@ -85,7 +85,7 @@ public final class CloudNativeTransport {
 
         postNativeEncrypted(9,ciphertext,"synthetic.bearer","1.1.22",timestamp,nonce,proof,"","");
         check(last.getReadTimeout()==165000,"Catalog budget changed");
-        postNativeEncrypted(5,"{\"compatibleExport\":{}}","synthetic.bearer","1.1.22",timestamp,nonce,proof,"","");
+        postNativeEncrypted(5,ciphertext,"synthetic.bearer","1.1.22",timestamp,nonce,proof,"","");
         check(last.getReadTimeout()==55000,"Export budget changed");
         try {postNativeEncrypted(3,ciphertext,"","1.1.22",timestamp,nonce,proof,"","");throw new AssertionError("Reserved op accepted");}
         catch(IOException expected){check(expected.getMessage().equals("CLOUD_NATIVE_REQUEST_REJECTED"),"Wrong rejection");}
