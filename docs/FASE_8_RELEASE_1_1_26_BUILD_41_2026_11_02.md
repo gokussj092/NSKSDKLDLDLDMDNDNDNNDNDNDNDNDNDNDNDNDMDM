@@ -63,3 +63,9 @@ El plan general está en `docs/PLAN_ANDROID_1_1_26_BUILD_41_2026_11_02.md`, la a
 Al redactar este documento, **no hay resultados nuevos** de CI/firma o de un dispositivo físico que permitan declarar GO. Un PR abierto no equivale a pruebas aprobadas. Registrar cada job, su run ID, SHA y conclusión en una revisión posterior.
 
 **Acciones prohibidas en este ciclo:** generar/distribuir una app QA, usar claves temporales de firmado, fusionar a main sin autorización, modificar la rama offline, desplegar VPS, afirmar que APK/AAB están firmados sin resultados, activar suscripciones/créditos o análisis APK reales.
+
+## PR de validación
+- PR borrador: https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/pull/109
+- Rama fuente: `fix/http-jireh-current-method`, destino `main`.
+- Este cambio documental adicional se confirma **sin `[skip ci]`** para que el evento synchronize del PR ejecute las validaciones. No realiza ninguna fusión ni publicación.
+- Los resultados de los checks deben leerse de GitHub Actions; hasta entonces no atribuirles estado de aprobación.
