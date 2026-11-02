@@ -154,7 +154,9 @@ test("V1/QA tokens cannot downgrade V2; epoch, release, signer and Redis revocat
 });
 test("bootstrap validates key, proof, fixed operation, encoding and query before dispatch",async()=>{
   const f=fixture();
-  for(const op of ["3","18","01","/api/v1/decode/file"])assert.equal((await f.call(op,{})).status,400);
+  for(const op of ["3","01","/api/v1/decode/file"])assert.equal((await f.call(op,{})).status,400);
+   // Feedback operation 18 is valid but requires an authenticated V2 session.
+   assert.equal((await f.call(18,{})).status,401);
   assert.equal((await f.call(1,{publicKey:encoded(pair())})).status,400);
   assert.equal((await f.call(1,{publicKey:encoded(f.key),extra:true})).status,400);
   assert.equal((await f.call(1,{publicKey:encoded(f.key)},"",{"content-encoding":"gzip"})).status,400);
