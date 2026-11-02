@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "version": 7,
+  "version": 8,
   "publishedAt": "2026-11-01",
   "title": {
     "en": "SP-DECODE Cloud — What's New",
@@ -19,20 +19,20 @@
     "it": "SP-DECODE Cloud — Novità"
   },
   "subtitle": {
-    "en": "New: Enaa, ZiG and Ultra. Improved: HA, MM and Speicers.",
-    "es": "Nuevos: Enaa, ZiG y Ultra. Mejoras: HA, MM y Speicers.",
-    "ar": "جديد: Enaa وZiG وUltra. تحسينات HA وMM وSpeicers.",
-    "fa": "جدید: Enaa، ZiG و Ultra. بهبود HA، MM و Speicers.",
-    "fr": "Nouveaux : Enaa, ZiG, Ultra. Améliorations : HA, MM, Speicers.",
-    "id": "Baru: Enaa, ZiG, Ultra. Peningkatan: HA, MM, Speicers.",
-    "ru": "Новые: Enaa, ZiG, Ultra. Обновлены HA, MM и Speicers.",
-    "de": "Neu: Enaa, ZiG, Ultra. Verbesserungen: HA, MM, Speicers.",
-    "pt-BR": "Novos: Enaa, ZiG, Ultra. Melhorias: HA, MM, Speicers.",
-    "tr": "Yeni: Enaa, ZiG, Ultra. İyileştirmeler: HA, MM, Speicers.",
-    "vi": "Mới: Enaa, ZiG, Ultra. Cải tiến: HA, MM, Speicers.",
-    "hi": "नए: Enaa, ZiG, Ultra। HA, MM और Speicers में सुधार।",
-    "ja": "新規：Enaa、ZiG、Ultra。HA、MM、Speicersを改善。",
-    "it": "Nuovi: Enaa, ZiG, Ultra. Migliorati HA, MM, Speicers."
+    "en": "New: Enaa, ZiG and Ultra. Improved: HA and MM.",
+    "es": "Nuevos: Enaa, ZiG y Ultra. Mejoras: HA y MM.",
+    "ar": "جديد: Enaa وZiG وUltra. تحسينات HA وMM.",
+    "fa": "جدید: Enaa، ZiG و Ultra. بهبود HA و MM.",
+    "fr": "Nouveaux : Enaa, ZiG, Ultra. Améliorations : HA et MM.",
+    "id": "Baru: Enaa, ZiG, Ultra. Peningkatan: HA dan MM.",
+    "ru": "Новые: Enaa, ZiG, Ultra. Обновлены HA и MM.",
+    "de": "Neu: Enaa, ZiG, Ultra. Verbesserungen: HA und MM.",
+    "pt-BR": "Novos: Enaa, ZiG, Ultra. Melhorias: HA e MM.",
+    "tr": "Yeni: Enaa, ZiG, Ultra. İyileştirmeler: HA ve MM.",
+    "vi": "Mới: Enaa, ZiG, Ultra. Cải tiến: HA và MM.",
+    "hi": "नए: Enaa, ZiG, Ultra। HA और MM में सुधार।",
+    "ja": "新規：Enaa、ZiG、Ultra。HAとMMを改善。",
+    "it": "Nuovi: Enaa, ZiG, Ultra. Migliorati HA e MM."
   },
   "items": [
     {
@@ -141,42 +141,6 @@
         "hi": "कैटलॉग डाउनलोड और सर्वर/नेटवर्क डिकोडिंग सुधारी गई।",
         "ja": "カタログ取得とサーバー・ネットワークの復号を修正。",
         "it": "Corretti il download del catalogo e la decodifica completa di server e reti."
-      }
-    },
-    {
-      "id": "speicers-pro-vpn-v7",
-      "type": "improvement",
-      "title": {
-        "en": "Speicers Pro VPN",
-        "es": "Speicers Pro VPN",
-        "ar": "Speicers Pro VPN",
-        "fa": "Speicers Pro VPN",
-        "fr": "Speicers Pro VPN",
-        "id": "Speicers Pro VPN",
-        "ru": "Speicers Pro VPN",
-        "de": "Speicers Pro VPN",
-        "pt-BR": "Speicers Pro VPN",
-        "tr": "Speicers Pro VPN",
-        "vi": "Speicers Pro VPN",
-        "hi": "Speicers Pro VPN",
-        "ja": "Speicers Pro VPN",
-        "it": "Speicers Pro VPN"
-      },
-      "description": {
-        "en": "The working GitHub catalog stays enabled. New SPCF1 decoding is supported; the other update feed remains pending.",
-        "es": "La fuente funcional de GitHub sigue activa. Nuevo soporte SPCF1; la otra API de actualización está pendiente.",
-        "ar": "مصدر GitHub الفعال ما زال نشطاً. أضيف SPCF1؛ مصدر التحديث الآخر قيد الانتظار.",
-        "fa": "منبع فعال GitHub حفظ شده است. SPCF1 افزوده شد؛ منبع به‌روزرسانی دیگر هنوز آماده نیست.",
-        "fr": "La source GitHub active est conservée. SPCF1 ajouté ; le nouveau flux reste indisponible.",
-        "id": "Sumber GitHub yang berfungsi tetap aktif. SPCF1 ditambahkan; sumber pembaruan lain masih tertunda.",
-        "ru": "Рабочий источник GitHub остаётся активным. Добавлен SPCF1; новый источник обновлений пока недоступен.",
-        "de": "Funktionierende GitHub-Quelle bleibt aktiv. SPCF1 ergänzt; neuer Update-Feed noch ausstehend.",
-        "pt-BR": "A fonte GitHub funcional segue ativa. SPCF1 adicionado; novo feed ainda pendente.",
-        "tr": "Çalışan GitHub kaynağı açık kaldı. SPCF1 eklendi; yeni güncelleme kaynağı henüz hazır değil.",
-        "vi": "Nguồn GitHub đang hoạt động vẫn được bật. Đã thêm SPCF1; nguồn cập nhật mới còn chờ.",
-        "hi": "GitHub का काम करने वाला स्रोत सक्रिय है। SPCF1 जोड़ा गया; नया अपडेट स्रोत अभी लंबित है।",
-        "ja": "動作するGitHubソースは維持。SPCF1に対応、新しい更新元は確認待ち。",
-        "it": "La fonte GitHub funzionante resta attiva. Aggiunto SPCF1; il nuovo feed è ancora in attesa."
       }
     }
   ]
