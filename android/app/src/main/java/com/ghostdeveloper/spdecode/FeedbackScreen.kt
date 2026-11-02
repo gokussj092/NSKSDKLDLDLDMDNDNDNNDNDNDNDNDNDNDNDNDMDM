@@ -24,7 +24,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import java.util.UUID
 
-internal data class FeedbackDraft(
+data class FeedbackDraft(
     val category:String,
     val appLink:String,
     val description:String,
