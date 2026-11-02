@@ -354,3 +354,14 @@ descifradores; no se incrementa la versión Android, no se fusiona a `main`,
 no se toca la rama offline. Commit con `[skip ci]`: la compilación real de APK
 y la ejecución de pruebas Android requieren un runner/SDK y quedan señaladas
 como pendientes hasta verificación específica.
+
+
+## Implementación — Fase 7: arquitectura comercial (solo documentación)
+
+**Rama:** `fix/http-jireh-current-method`. **Estado:** arquitectura documentada, sin compras ni análisis reales activados. La especificación técnica y comercial está en [Fase 7 — suscripciones, créditos y análisis de APK](FASE_7_ARQUITECTURA_SUSCRIPCIONES_CREDITOS_APK_2026_11_02.md).
+
+**Modelo preservado:** acceso mediante suscripción (precio y frecuencia pendientes); cada análisis aceptado equivale a **1 crédito**; precio previsto **USD 4 por crédito**, que no es la cuota de suscripción. La pantalla Android de **Próximamente** sigue sin importar ni analizar APK o cobrar.
+
+**Diseño futuro:** Google Play Billing para bienes digitales de Play, verificación de compras en backend, ledger transaccional/idempotente, reserva y consumo único de crédito por trabajo, reconciliación y reembolsos, identidad recuperable, análisis estático en sandbox separado, aislamiento y retención de APK, flags desactivados y kill switch. Las reglas comerciales todavía sin decidir se identifican explícitamente en la nueva documentación; no se convierten en comportamientos de producción.
+
+**Sin cambios de ejecución:** no se crean productos Play Console, endpoints, pagos, tablas, módulos Android activos, migraciones ni CI. No cambia Gradle (sigue 1.1.25/build 40), VPS, descifradores, API V2 en producción, `main` ni `feat/version-offline-apk`. La fase 8 puede continuar con QA y preparación 1.1.26 sin depender del futuro módulo de cobros.
