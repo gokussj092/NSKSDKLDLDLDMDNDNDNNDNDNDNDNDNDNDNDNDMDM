@@ -1,5 +1,16 @@
 # SP-DECODE Cloud — Guía de actualización de catálogos
 
+## Publicación pendiente — catálogo 60 y novedades V2 v7 (2026-11-01)
+
+**Código preparado en `fix/http-jireh-current-method`, no desplegado desde este chat.** El código incluye 58 fichas Server VPN y 255 formatos C8. Tras el corte de 55 fichas, se añadieron Enaa Tunnel, ZiG Tunnel y Ultra Tunnel. HA Tunnel Plus y MM Tunnel recibieron métodos de descarga remota; Speicers Pro VPN conserva el origen GitHub comprobado, mientras su feed nuevo requiere un manifiesto firmado que aún no se publicó. No presentar el feed nuevo como operativo.
+
+- `cloud/web/lib/server-vpn-catalog.mjs`: `CATALOG_VERSION=60` (mínimo del código). La versión real del VPS anteriormente era **215686715**; el volumen `provider-control/switches.json` y la huella C12 deben generar la próxima versión efectiva **mayor que la anterior**, sin reiniciarla ni borrar switches. No imponer manualmente 60 en producción ni borrar el volumen.
+- `cloud/web/content/whats-new.json`: **V2 v7**, 2026-11-01, cuatro ítems en 14 idiomas sobre 3 apps nuevas, HA, MM y Speicers. `whats-new-v1.json` mantiene **V1 v6** y su actualización obligatoria.
+- El texto de V2 se entrega mediante petición autenticada V2/operación 14. La ruta `/api/v1/whats-new` sin autorización V2 siempre responde **V1**. No usar ese endpoint público para concluir que V2 sigue mostrando el anuncio anterior.
+- **Antes de desplegar**, hacer backup y preflight HPKE; comprobar si `CLOUD_WHATS_NEW_JSON` en `/etc/spdecode/cloud.env` anula el documento V2. Si existe un override obsoleto, quitar *solo* esa variable o actualizarla al documento v7. No tocar `CLOUD_WHATS_NEW_V1_JSON` ni imprimir secretos.
+- Actualizar desde el VPS con `sudo spdecode update all fix/http-jireh-current-method`, después `sudo spdecode status`. Comprobar `/api/v1/server-vpn/catalog` con `knownVersion:0`: **58 fichas**, versión efectiva mayor que la previamente publicada y `decodeEnabled` según switches/secretos. Comprobar desde el contenedor web `loadNews().version === 7` y `loadV1News().version === 6`, y desde un cliente V2 autenticado la tarjeta localizada. Validar descargadores desde VPS antes de anunciar disponibilidad pública.
+- Los tests de texto, catálogo y versiones fueron ajustados; **el entorno de este chat solo permite verificación estática del contenido en GitHub, no ejecutó toda la suite ni un despliegue del VPS**.
+
 Documento de referencia para próximos chats/PR. **Leer antes de integrar un proveedor o redactar novedades.** Las listas de Server VPN y What's New son **sistemas distintos**, con versiones y cachés independientes. Este documento recoge el estado del código a octubre de 2026; volver a comprobarlo si cambia la implementación.
 
 ## Actualización del catálogo compartido V1/V2 — 31 de octubre de 2026 (revisión 58)
