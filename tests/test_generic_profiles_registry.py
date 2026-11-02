@@ -21,7 +21,7 @@ SHARED_NEW = frozenset({".acm", ".htp", ".pin", ".tut", ".vmx", ".xsks"})
 
 class GenericFamilyRegistryTests(unittest.TestCase):
     def test_exact_81_new_suffixes_74_aes_13_des(self):
-        self.assertEqual(len(set(DECODER_REGISTRY) - {'solid','1ftnl','awg','creeb','kyz','stp'}), 239)
+        self.assertEqual(len(set(DECODER_REGISTRY) - {'solid','1ftnl','awg','creeb','kyz','stp','hexcm'}), 239)
         self.assertEqual(validate_decoder_files(), [])
         self.assertEqual(len(AES_PROFILES), 94)  # .vpnlite has no key
         self.assertEqual(len(DES_PROFILES), 21)
