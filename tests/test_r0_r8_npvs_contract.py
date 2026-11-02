@@ -46,7 +46,7 @@ class R0R8NpvsContracts(unittest.TestCase):
         self.assertNotIn("-keep class com.ghostdeveloper.spdecode.**",rules)
         self.assertIn("System.loadLibrary(\"v7q3\")",kotlin)
         self.assertIn("RegisterNatives(bridge,methods,static_cast<jint>(sizeof(methods)/sizeof(methods[0])))",native)
-        self.assertEqual(len(re.findall(r'const_cast<char\\*>\\("(?:native[A-Za-z]+|postNativeEncrypted)"\\)',native)),27)
+        self.assertEqual(len(re.findall(r'const_cast<char\*>\("(?:native[A-Za-z]+|postNativeEncrypted)"\)',native)),27)
         self.assertIn('nativeRuntimeReport',native)
         self.assertIn('add_library(v7q3 SHARED',cmake)
         self.assertIn("JNI_OnLoad;",exports)
