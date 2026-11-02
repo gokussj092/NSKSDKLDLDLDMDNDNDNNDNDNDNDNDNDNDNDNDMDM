@@ -365,3 +365,13 @@ como pendientes hasta verificación específica.
 **Diseño futuro:** Google Play Billing para bienes digitales de Play, verificación de compras en backend, ledger transaccional/idempotente, reserva y consumo único de crédito por trabajo, reconciliación y reembolsos, identidad recuperable, análisis estático en sandbox separado, aislamiento y retención de APK, flags desactivados y kill switch. Las reglas comerciales todavía sin decidir se identifican explícitamente en la nueva documentación; no se convierten en comportamientos de producción.
 
 **Sin cambios de ejecución:** no se crean productos Play Console, endpoints, pagos, tablas, módulos Android activos, migraciones ni CI. No cambia Gradle (sigue 1.1.25/build 40), VPS, descifradores, API V2 en producción, `main` ni `feat/version-offline-apk`. La fase 8 puede continuar con QA y preparación 1.1.26 sin depender del futuro módulo de cobros.
+
+## Implementación — Fase 8: candidata 1.1.26/build 41, sin aplicación QA
+
+Se prepara la versión de Gradle **1.1.26 / versionCode 41** únicamente en `fix/http-jireh-current-method`. Ver la matriz y gates de validación en [Fase 8 — QA técnico y preparación de release](FASE_8_RELEASE_1_1_26_BUILD_41_2026_11_02.md).
+
+**Corrección expresa de producto:** la aplicación QA separada ya no se utiliza. No se publica ningún APK debug/QA. Las pruebas Android internas pueden usar el APK debug temporal del emulador, pero solo el artefacto **release** de la aplicación principal se considera candidato distribuible. El flujo público y la firma permanente continúan restringidos a `main` y sus controles exact-SHA.
+
+Se incluyen nuevos tests Python de paridad en 14 idiomas, versión/build, estados y pantalla «Próximamente»; la validación del APK/AAB compilados verifica **armeabi-v7a, arm64-v8a, x86, x86_64** con cabeceras ELF. Se mantiene el CI para tests Android, R8 y auditorías de seguridad, sin distribuir su arnés debug. La fase 7 permanece documental, sin cobros.
+
+**Pendiente para declarar fase 8 completa:** ver resultados efectivos de los jobs CI, comprobar integración Cloud V2/VPS, firma permanente, 16KiB e instalación/actualización física. No hay publicación, despliegue de servidor, merge en `main` ni cambios en la rama offline por este registro.
