@@ -29,7 +29,8 @@ class C8WorkerIntegrationTests(unittest.TestCase):
         self.assertEqual(len(extended),256)
         from engine import _C8_FILE_ENGINES
         overlays=set(_C8_FILE_ENGINES)
-        self.assertEqual(len(overlays),28)
+        self.assertEqual(len(overlays),30)
+        self.assertIn('hexcm',overlays)
         self.assertEqual({k:v for k,v in extended.items() if k not in overlays},
                          {k:v for k,v in base.items() if k not in overlays})
         for ext in overlays:
