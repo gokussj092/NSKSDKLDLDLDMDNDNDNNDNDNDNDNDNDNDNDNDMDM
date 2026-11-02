@@ -2,6 +2,17 @@
 
 > [Procedimiento obligatorio de futuras actualizaciones: Server VPN y novedades](CATALOGS_UPDATE_RUNBOOK.md)
 
+## Publicación V2 v7 — 1 de noviembre de 2026
+
+- **Solo V2:** `cloud/web/content/whats-new.json` actualizado de 5 a **7** (`publishedAt: 2026-11-01`) en los 14 idiomas `en,es,ar,fa,fr,id,ru,de,pt-BR,tr,vi,hi,ja,it`. La versión editorial 6 se reserva al documento **V1**, que permanece en `cloud/web/content/whats-new-v1.json` **sin cambios**.
+- **Contenido nuevo:** Enaa Tunnel (`.enaa`), ZiG Tunnel y Ultra Tunnel, todos con descargadores remotos y métodos comprobados en desarrollo; HA Tunnel Plus con catálogo y compatibilidad Unlocked `.hat` condicionada por las capacidades/switches; MM Tunnel con petición remota corregida; Speicers Pro con la descarga histórica funcional de GitHub conservada y lector SPCF1 para el formato actual. **No** se anuncia la API nueva de Speicers como descarga operativa: la fuente actual de actualización no ha publicado todavía un manifiesto válido.
+- **Catálogo Server VPN:** `CATALOG_VERSION=60`, **58 fichas** y 255 extensiones de archivo. En VPS, la versión efectiva persistente puede ser mayor (p. ej., 215686715 antes del despliegue); `synchronizeCatalogVersion()` elevará monotónicamente el contador al detectar la huella nueva, sin reiniciar `switches.json` ni los switches de proveedores.
+- **Rutas V1/V2:** `POST /api/v1/whats-new` sin un contexto verificado devuelve únicamente novedades V1. La operación interna autenticada V2 (14) usa la nueva v7. Cabeceras proporcionadas por el cliente no convierten una llamada V1 en V2.
+- **Override:** `CLOUD_WHATS_NEW_JSON` dentro de `/etc/spdecode/cloud.env` reemplaza por completo la publicación V2 empaquetada; comprobar si existe y retirar **solo esa variable** de forma segura si contiene una versión anterior. No tocar `CLOUD_WHATS_NEW_V1_JSON`, el aviso de actualización V1 ni ningún secreto.
+- **Antes de anunciarlo como disponible en producción:** `sudo spdecode backup`, verificar persistencia HPKE y ejecutar `sudo spdecode update all fix/http-jireh-current-method`. A continuación comprobar el catálogo de 58 fichas, la versión efectiva superior a la previa, que los proveedores aparecen habilitados donde corresponde, y mediante `loadNews()`/operación autenticada V2 la nueva tarjeta v7. El despliegue y las descargas desde el VPS aún **no se ejecutan** desde esta entrega.
+- **Pruebas:** las aserciones de catálogo de Node se alinearon a fuente 60 y 58 fichas, y `whats-new.test.mjs` valida idiomas, textos V2 y aislamiento V1. El cambio de rama no constituye por sí solo evidencia de ejecución de esas pruebas ni de CI.
+
+
 The Android Cloud dialog is now populated from `POST /api/v1/whats-new`, not bundled announcements tied to `versionCode`.
 
 ## Content and localization
