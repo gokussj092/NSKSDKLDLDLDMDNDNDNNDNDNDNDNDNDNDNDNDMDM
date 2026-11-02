@@ -38,14 +38,14 @@ test("HA refuses same-origin and foreign redirects",async t=>{
 
 test("HA launcher PNG, public format and card follow availability",()=>{
   const doc=catalog({availability:{"ha-tunnel-plus":true}});
-  assert.equal(CATALOG_VERSION,60);assert.equal(doc.apps.length,58);
+  assert.equal(CATALOG_VERSION,62);assert.equal(doc.apps.length,58);
   const card=doc.apps.find(x=>x.id==="ha-tunnel-plus");
   assert.equal(card.name,"HA Tunnel Plus");assert.equal(card.decodeEnabled,true);
   assert.equal(card.iconSha256,"42aa9743f5d430933257f0023af2182f2dcc6ae41a8930a9ca38e9f397ac3ab8");
   assert.equal(iconFor("ha-tunnel-plus").bytes.length,20416);
   assert(PUBLIC_PROVIDER_IDS.includes("ha-tunnel-plus"));
   assert.equal(catalog({availability:{"ha-tunnel-plus":false}}).apps.find(x=>x.id==="ha-tunnel-plus").decodeEnabled,false);
-  assert.equal(doc.formats.length,255);
+  assert.equal(doc.formats.length,256);
   assert(doc.formats.some(x=>x.suffix==="hat"));
   assert(!JSON.stringify(card).includes("https://"));
 });
