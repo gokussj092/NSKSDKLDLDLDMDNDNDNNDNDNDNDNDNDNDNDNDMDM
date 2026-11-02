@@ -84,7 +84,8 @@ test("V2 hardware panel supports patch age, boot controls and private aggregate 
  assert(page.includes('"/api/admin/v2-device-admission"'));
  assert(page.includes('"V2_DISPOSITIVOS_CONFIGURAR"'));
  assert(page.includes("Restaurar perfil estricto"));
- assert(page.includes("data.attestationDiagnostics.rejections"));
+ assert(page.includes("<AdminV2Diagnostics hardware={data.attestationDiagnostics} play={data.admissionDiagnostics}/>"));
+ assert(read("app/admin/admin-v2-diagnostics.jsx").includes("hardware.rejections"));
  assert(api.includes("authenticateAdmin(redis,request,cfg)"));
  assert(api.includes("validMutation(request,cfg)"));
  assert(api.includes("changeV2DevicePolicy"));
