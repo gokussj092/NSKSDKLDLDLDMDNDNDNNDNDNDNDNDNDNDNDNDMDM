@@ -92,7 +92,7 @@ class MMTunnelTests(unittest.TestCase):
     def test_real_worker_file_and_catalog_complete_json_and_registry(self):
         from cloud.workers.python.engine import decode_file,decode_provider_catalog,load_file_engines,load_runtime_file_engines
         canonical=load_file_engines();runtime=load_runtime_file_engines()
-        self.assertEqual(len(canonical),240);self.assertEqual(len(runtime),255)
+        self.assertEqual(len(canonical),240);self.assertEqual(len(runtime),256)
         self.assertIn('/apps/MM_Tunnel/',runtime['mmt']['source'])
         self.assertEqual(runtime['mm'],canonical['mm'])
         self.assertEqual(runtime['md'],canonical['md'])
