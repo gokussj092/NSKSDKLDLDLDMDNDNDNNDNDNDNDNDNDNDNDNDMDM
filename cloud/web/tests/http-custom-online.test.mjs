@@ -120,7 +120,7 @@ test('unavailable source skips worker, releases lease and respects the persisten
  finally{delete process.env.CLOUD_HTTP_CUSTOM_IMPORT_ENABLED;}
 });
 test('online HTTPS metadata is additive and leaves the legacy text schema valid',()=>{
- const c=catalog();assert.equal(c.catalogVersion,59);validatePublicTextFormats({schemaVersion:1,formats:c.textFormats});
+ const c=catalog();assert.equal(c.catalogVersion,60);validatePublicTextFormats({schemaVersion:1,formats:c.textFormats});
  assert.equal(c.onlineReferencesSchemaVersion,1);assert.equal(c.onlineReferenceCount,2);
  assert.deepEqual(c.onlineReferenceFormats.map(x=>x.prefix).sort(),['https://cloudvpn.mrfrankofc.com/','https://link.playsmarty.uk/'].sort());
  assert(c.onlineReferenceFormats.every(x=>x.suffix==='hc'&&x.kind==='cloud'));
