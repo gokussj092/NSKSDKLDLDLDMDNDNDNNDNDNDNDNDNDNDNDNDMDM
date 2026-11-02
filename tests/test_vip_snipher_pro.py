@@ -46,7 +46,7 @@ class VipSnipherTests(unittest.TestCase):
         self.assertEqual(json.loads(result['rawText']), V['expected'])
         self.assertFalse(result['isPartial']);self.assertFalse(result['exporterCertified'])
         inventory = load_runtime_file_engines()
-        self.assertEqual(len(inventory), 254)
+        self.assertEqual(len(inventory), 256)
         self.assertTrue(inventory['vipsnipherpro']['source'].endswith('/renz.py'))
         self.assertNotIn('js', inventory);self.assertNotIn('rj', inventory)
 
