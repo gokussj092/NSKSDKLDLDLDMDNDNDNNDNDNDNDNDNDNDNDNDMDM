@@ -29,11 +29,11 @@ class NativeTrustBoundaryTests(unittest.TestCase):
     def test_no_embedded_api_routes_or_backend_secrets_in_android_kotlin(self):
         # This includes the original sources; legacy decoders are excluded from
         # Cloud production by Gradle, and are not exempted from API route checks.
-        urls = re.compile(r'https?://(?:api|panel)\\.spdecode\\.xyz|(?:[\'"])/api/(?:v1|v2)/')
+        urls = re.compile(r'https?://(?:api|panel)\.spdecode\.xyz|(?:[\'"])/api/(?:v1|v2)/')
         secret_values = re.compile(
             r'(?:CLOUD_WORKER_TOKEN|CLOUD_SESSION_SIGNING_KEY|'
             r'CLOUD_EHI_SIGN_KEY|SPDECODE_VIP_SNIPHER_AUTHORIZATION|'
-            r'SPDECODE_ALFAISAL_API_KEY)\\s*[=:]\\s*[\'"]')
+            r'SPDECODE_ALFAISAL_API_KEY)\s*[=:]\s*[\'"]')
         for path in MAIN.rglob("*.kt"):
             with self.subTest(file=str(path.relative_to(MAIN))):
                 source = path.read_text(encoding="utf-8")
