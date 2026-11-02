@@ -17,7 +17,7 @@ class DirectoryAndLanguageNavigation(unittest.TestCase):
         self.assertNotIn('testTag("server_vpn_manual_refresh")',code)
         self.assertNotIn("manualRefreshIsNew",code)
         self.assertNotIn("featureRemaining(",code)
-        self.assertIn("if(app.id in newProviderIds)",code)
+        self.assertIn("newlyAdded=app.id in newProviderIds",code)
         self.assertIn("ServerVpnNewTag()",code)
         self.assertIn("snapshot.nextExpiryMs",code)
 
@@ -25,7 +25,7 @@ class DirectoryAndLanguageNavigation(unittest.TestCase):
         src=(SRC/"FunctionalSettingsPanel.kt").read_text("utf-8")
         screen=(SRC/"LanguageSelectionScreen.kt").read_text("utf-8")
         self.assertIn("languagePage by rememberSaveable",src)
-        self.assertIn("BackHandler(enabled=languagePage)",src)
+        self.assertIn("BackHandler(enabled=languagePage || formatsPage || feedbackPage || aboutPage)",src)
         self.assertIn("LanguageSelectionScreen(",src)
         self.assertNotIn("languageSheet",src)
         self.assertNotIn("ModalBottomSheet",src)
