@@ -1,3 +1,29 @@
+# Revisión posterior de la API — 2026-11-01
+
+La conexión ya se consiguió en dos GET nuevos con las cabeceras del APK.
+Ambos devolvieron **HTTP404, application/json,57 bytes**:
+`{"error":"Todavía no hay una actualización publicada."}`
+
+Se probaron User-Agent Dalvik/2.1.0 y su variante Android11 completa, con
+Accept application/json y Cache-Control no-cache. CONNECT200 y TLS completado;
+no es el timeout previo. No se enviaron cookies, cuenta o tokens inventados.
+La ruta consultada es exactamente `https://gen.spei.click/updates/servers.json`.
+El actualizador original trata404/410 en ese manifiesto como ausencia de una
+publicación (retorna null), separado de una firma/tag inválidos o HTTP403.
+
+Esto confirma que la petición llega y que el endpoint informa que no hay una
+actualización publicada. No entrega el manifiesto firmado ni la URL/hash del
+archivo SPCF1, por lo que **no hay catálogo remoto123 descargado**. El JSON de
+73 servidores procede del incluido; el remoto histórico de74 sigue separado.
+
+La CLI ahora distingue ese estado con `NoUpdatePublished`, mensaje específico
+y exit3; no genera JSON, no usa el incluido sin --apk ni cae al feed antiguo.
+Un404 del segundo archivo no se clasifica como ausencia de publicación.
+37 pruebas Python correctas,0 skips. Broker, Unlocked y despliegue sin cambios.
+La evidencia de timeout que sigue se conserva como observación anterior.
+
+---
+
 # Reinvestigación de Speicers Pro 104.1.20/build123 — 2026-11-01
 
 Google Play anuncia Version123 (actualizado28-oct-2026). XAPK obtenido de

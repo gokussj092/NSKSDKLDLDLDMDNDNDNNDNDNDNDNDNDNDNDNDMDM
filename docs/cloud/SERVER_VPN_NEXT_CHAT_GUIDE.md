@@ -1,3 +1,15 @@
+# Speicers123 — API accesible, sin actualización publicada, 2026-11-01
+
+Revisión posterior: dos GET originales al manifiesto completaron CONNECT/TLS
+y recibieron **HTTP404/JSON57: «Todavía no hay una actualización publicada»**.
+Sustituye el timeout como observación más reciente. La petición llega; no hay
+manifiesto/archivo firmado remoto obtenido. Incluido73 y remoto histórico74
+siguen separados. CLI exit3 para404/410 del manifiesto, sin JSON ni fallback;
+37 Python correctas. Broker/Unlocked/Android/despliegue conservan sus límites.
+[Evidencia](../../decoders/Python/apps/Speicers_Pro_VPN/ANALYSIS.md).
+
+---
+
 # Selección actual — Speicers Pro build123, remoto pendiente, 2026-11-01
 
 El propietario seleccionó netfree.mx.store. Ya había soporte104.1.17/code120.

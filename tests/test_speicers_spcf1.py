@@ -3,6 +3,11 @@ import base64
 import hashlib
 import hmac
 import json
+import io
+from contextlib import redirect_stderr
+from pathlib import Path
+import tempfile
+from urllib.error import HTTPError
 import unittest
 from unittest.mock import patch
 from Crypto.Cipher import AES
@@ -81,6 +86,32 @@ class SpeicersSpcfTests(unittest.TestCase):
         for changed in ({'size':len(data)+1},{'count':1},{'sha256':'a'*64,'url':codec.UPDATE_ORIGIN+'/updates/servers/1/'+'a'*64+'.png'}):
             with patch.object(codec,'_request_update',side_effect=[self.signed({**manifest,**changed}),data]):
                 with self.assertRaises(ValueError):codec.download()
+
+    def test_manifest_404_410_is_no_publication_but_artifact_404_is_failure(self):
+        class Opener:
+            def __init__(self,status):self.status=status
+            def open(self,request,timeout):
+                raise HTTPError(request.full_url,self.status,'synthetic',{},None)
+        for status in (404,410):
+            with patch.object(codec,'build_opener',return_value=Opener(status)):
+                with self.assertRaises(codec.NoUpdatePublished):
+                    codec._request_update(codec.UPDATE_MANIFEST_URL,16000,'application/json')
+                with self.assertRaises(codec.DecodeError) as error:
+                    codec._request_update(codec.UPDATE_ORIGIN+'/updates/servers/1/'+('a'*64)+'.png',3000000,'application/octet-stream')
+                self.assertNotIsInstance(error.exception,codec.NoUpdatePublished)
+        with patch.object(codec,'build_opener',return_value=Opener(403)):
+            with self.assertRaises(codec.DecodeError) as error:
+                codec._request_update(codec.UPDATE_MANIFEST_URL,16000,'application/json')
+            self.assertNotIsInstance(error.exception,codec.NoUpdatePublished)
+
+    def test_cli_no_publication_exit3_never_writes_or_falls_back(self):
+        with tempfile.TemporaryDirectory() as folder:
+            target=Path(folder)/'must-not-exist.json';stderr=io.StringIO()
+            with patch.object(codec.sys,'argv',['script','-o',str(target)]), \
+                 patch.object(codec,'download',side_effect=codec.NoUpdatePublished('No update')), \
+                 patch.object(codec,'download_legacy',side_effect=AssertionError('fallback')),redirect_stderr(stderr):
+                self.assertEqual(codec.main(),3)
+            self.assertFalse(target.exists());self.assertEqual(stderr.getvalue(),'No update\n')
 
     def test_original_update_headers_and_bounds(self):
         class Response:

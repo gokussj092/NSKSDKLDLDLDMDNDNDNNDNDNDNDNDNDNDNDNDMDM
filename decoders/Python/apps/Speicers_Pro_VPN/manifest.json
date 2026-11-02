@@ -54,8 +54,17 @@
     "embeddedFields": 799,
     "fullJcaCliWorkerEqual": true,
     "remoteManifest": "https://gen.spei.click/updates/servers.json",
-    "remoteState": "pending-real-download; proxy-CONNECT-timeout",
+    "remoteState": "no-active-publication; HTTP404 JSON from official manifest endpoint",
     "publicBroker": "unchanged-build120-legacy-source",
-    "unlocked": "source-layout-recovered; real-sks-and-Android-import-pending"
+    "unlocked": "source-layout-recovered; real-sks-and-Android-import-pending",
+    "remoteObservation": {
+      "status": 404,
+      "bytes": 57,
+      "message": "Todavía no hay una actualización publicada.",
+      "successfulRequests": 2,
+      "signedManifestObtained": false,
+      "remoteCatalogObtained": false,
+      "cliNoPublicationExit": 3
+    }
   }
 }

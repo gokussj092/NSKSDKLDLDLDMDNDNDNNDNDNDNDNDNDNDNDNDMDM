@@ -14,6 +14,7 @@ from pathlib import Path
 import sys
 import unicodedata
 from urllib.request import HTTPRedirectHandler, Request, build_opener
+from urllib.error import HTTPError
 import zipfile
 
 from Crypto.Cipher import AES
@@ -52,6 +53,10 @@ FIELD_NAMES = {
 
 class DecodeError(ValueError):
     """Errors never include catalog contents or remote response bodies."""
+
+
+class NoUpdatePublished(DecodeError):
+    """Original updater treats manifest HTTP404/410 as no published update."""
 
 
 def bounded(data):
@@ -288,6 +293,10 @@ def _request_update(url, limit, accept):
             if response.status != 200 or response.headers.get("Content-Encoding", "identity") != "identity":
                 raise DecodeError("Respuesta de actualización inválida.")
             data = response.read(limit + 1)
+    except HTTPError as exc:
+        if url == UPDATE_MANIFEST_URL and exc.code in (404, 410):
+            raise NoUpdatePublished("La API no tiene una actualización publicada; use --apk para el catálogo incluido.") from exc
+        raise DecodeError("Respuesta de actualización inválida.") from exc
     except OSError as exc:
         raise DecodeError("No se pudo descargar la actualización oficial.") from exc
     if not 0 < len(data) <= limit:
@@ -339,6 +348,9 @@ def main():
         records = obj.get("Servers", obj.get("servers", []))
         print(f"Guardado: {args.output} | versión {obj.get('Version', obj.get('version'))} | {len(records)} servidores")
         return 0
+    except NoUpdatePublished as exc:
+        print(str(exc), file=sys.stderr)
+        return 3
     except (OSError, ValueError, KeyError, zipfile.BadZipFile) as exc:
         print(str(exc) if isinstance(exc, DecodeError) else "No se pudo leer o guardar; el destino debe ser un archivo nuevo.", file=sys.stderr)
         return 1

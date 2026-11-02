@@ -9,8 +9,9 @@ un manifiesto firmado y una segunda descarga vinculada por URL/tamaño/hash.
 El lector/CLI y worker aceptan SPCF1 además de WakkoDev y el asset de glifos.
 
 **73 servidores /799 campos interiores del incluido**, JSON entero igual a
-JCA y worker aislado. **El remoto SPCF1 actual sigue pendiente:** el proxy
-agotó el CONNECT antes de HTTP; no se obtuvo el manifiesto ni su archivo.
+JCA y worker aislado. **El remoto SPCF1 actual sigue pendiente:** en la revisión posterior la API
+sí respondió HTTP404 con «Todavía no hay una actualización publicada».
+La CLI devuelve exit3 sin JSON. No se obtuvo el manifiesto ni su archivo.
 No se afirma una descarga nueva exitosa a partir del incluido o de mocks.
 
 La fuente GitHub anterior se descargó realmente mediante el conector y abrió

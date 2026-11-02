@@ -7,7 +7,7 @@ python scripts/apk_analysis/speicers_verify.py /privado/config-SPCF1.png \
   /privado/config-glifos.json /privado/respuesta-historica.enc
 ```
 
-35 pruebas Python aprobadas,0 skips. Seis nuevas prueban firmas antes de KDF,
+37 pruebas Python aprobadas,0 skips. Ocho nuevas prueban firmas antes de KDF,
 GCM, parámetros firmados, path fijo, dos GET, cabeceras, límites, hash/tamaño/
 versión/conteo y ausencia de fallback al feed histórico. Clave RSA de los tests
 creada en memoria, solo sintética; no se guarda ni es la del proveedor.
@@ -19,7 +19,10 @@ El verificador compara recursivamente todo el JSON con tipos y worker aislado.
 Tres entradas reales verificadas: incluido123 v1/73 servidores/799 campos,
 secundario v9/32 y remoto histórico120 v35/74/797. La CLI --apk123 y --input
 histórico produjeron JSON completos privados0600. Ninguna es el feed remoto123.
-**La descarga123 sigue pendiente:** timeout antes de HTTP en el manifiesto;
+**La descarga123 sigue pendiente:** la revisión posterior obtuvo HTTP404
+con JSON «Todavía no hay una actualización publicada». Dos pruebas nuevas
+verifican404/410 solo en el manifiesto y exit3 sin archivo ni fallback.
+El timeout antes de HTTP fue la observación anterior;
 pruebas controladas no se anuncian como éxito real. No se cambia el broker,
 catálogo público o Unlocked. No hay `.sks` real123 ni Android físico.
 Véase ANALYSIS.md para hashes, cabeceras y evidencia del bloqueo.
