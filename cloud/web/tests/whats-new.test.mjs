@@ -13,33 +13,32 @@ const query=(knownVersion=0,locale="en")=>new Request("https://api.spdecode.xyz/
 const src=path=>readFileSync(new URL("../../../"+path,import.meta.url),"utf8");
 
 const locales=["en","es","ar","fa","fr","id","ru","de","pt-BR","tr","vi","hi","ja","it"];
-test("v5 notes cover HA, HC Cloud and the 1.1.20 release in all 14 locales",()=>{
+test("V2 v7 news covers new catalogs and updated decoders in all 14 locales",()=>{
  const news=validateNews(fixture);
- assert.equal(news.version,5);
- assert.equal(news.publishedAt,"2026-10-26");
+ assert.equal(news.version,7);
+ assert.equal(news.publishedAt,"2026-11-01");
  assert.deepEqual(news.items.map(x=>x.id),[
-   "ha-tunnel-plus-v5","http-custom-online-v5","app-update-1120-v5"]);
- assert.deepEqual(news.items.map(x=>x.type),["improvement","feature","support"]);
- assert(readFileSync(new URL("../content/whats-new.json",import.meta.url)).length<=16384);
+  "new-server-vpn-apps-v7","ha-tunnel-plus-v7","mm-tunnel-v7","speicers-pro-vpn-v7"]);
+ assert.deepEqual(news.items.map(x=>x.type),["feature","improvement","fix","improvement"]);
+ assert(Buffer.byteLength(readFileSync(new URL("../content/whats-new.json",import.meta.url)))<=16384);
+ assert.deepEqual(Object.keys(news.subtitle).sort(),[...locales].sort());
  for(const locale of locales){
-   const translated=localizeNews(news,locale);
-   assert.equal(translated.locale,locale);
-   assert.equal(translated.title,news.title[locale]);
-   assert.equal(translated.subtitle,news.subtitle[locale]);
-   assert.equal(translated.items.length,3);
-   translated.items.forEach((item,i)=>{
-     assert.equal(item.title,news.items[i].title[locale]);
-     assert.equal(item.description,news.items[i].description[locale]);
-   });
-   assert(translated.subtitle.includes("1.1.20"),locale);
-   assert(translated.items[0].description.includes(".hat"),locale);
-   assert(translated.items[1].description.includes("hccloud://"),locale);
-   assert(translated.items[2].description.includes("1.1.20"),locale);
-   assert(translated.items[2].description.includes("https://t.me/GhostDeve/377"),locale);
-   assert(translated.items[2].description.includes("Google Play Store"),locale);
+  const translated=localizeNews(news,locale);
+  assert.equal(translated.locale,locale);
+  assert.equal(translated.title,news.title[locale]);
+  assert.equal(translated.subtitle,news.subtitle[locale]);
+  assert.equal(translated.items.length,4);
+  translated.items.forEach((item,i)=>{
+   assert.equal(item.title,news.items[i].title[locale]);
+   assert.equal(item.description,news.items[i].description[locale]);
+  });
+  assert(translated.items[0].description.includes(".enaa"),locale);
+  assert(translated.items[1].description.includes(".hat"),locale);
+  assert(translated.items[3].description.includes("SPCF1"),locale);
+  assert(translated.items[3].description.includes("GitHub"),locale);
  }
  assert.equal(localizeNews(news,"unknown").title,news.title.en);
- assert(!JSON.stringify(news).includes("Password:"));
+ assert(!JSON.stringify(news).includes("update-1125-v1"));
  assert(!JSON.stringify(news).includes("<a "));
 });
 
@@ -86,21 +85,21 @@ test("authenticated V2 operation 14 never receives the V1 mandatory update",asyn
  const signed=query(0,"es");
  bindVerifiedRequest(signed,{aud:"spdecode-android-v2",versionCode:40});
  const signedBody=await (await whatsNewRequest(signed)).json();
- assert.equal(signedBody.version,5);
+ assert.equal(signedBody.version,7);
  assert.deepEqual(signedBody.items.map(x=>x.id),fixture.items.map(x=>x.id));
  assert(!JSON.stringify(signedBody).includes("update-1125-v1"));
  assert(!JSON.stringify(signedBody).includes("join-play-testers-v1"));
- const v2Unchanged=query(5,"es");
+ const v2Unchanged=query(7,"es");
  bindVerifiedRequest(v2Unchanged,{aud:"spdecode-android-v2",versionCode:40});
  const oldBody=await (await whatsNewRequest(v2Unchanged)).json();
- assert.deepEqual(oldBody,{apiVersion:"v1",version:5,recheckAfterSeconds:1800,unchanged:true});
+ assert.deepEqual(oldBody,{apiVersion:"v1",version:7,recheckAfterSeconds:1800,unchanged:true});
 });
 test("V1 and V2 editorial override environments are independently scoped",()=>{
  assert.equal(loadV1News().version,6);
- assert.equal(loadNews().version,5);
+ assert.equal(loadNews().version,7);
  assert.equal(loadV1News({CLOUD_WHATS_NEW_JSON:JSON.stringify(fixture)}).version,6);
- assert.equal(loadNews({CLOUD_WHATS_NEW_V1_JSON:JSON.stringify(v1Fixture)}).version,5);
- assert.equal(loadV1News({CLOUD_WHATS_NEW_V1_JSON:JSON.stringify(fixture)}).version,5);
+ assert.equal(loadNews({CLOUD_WHATS_NEW_V1_JSON:JSON.stringify(v1Fixture)}).version,7);
+ assert.equal(loadV1News({CLOUD_WHATS_NEW_V1_JSON:JSON.stringify(fixture)}).version,7);
  assert.equal(loadNews({CLOUD_WHATS_NEW_JSON:JSON.stringify(v1Fixture)}).version,6);
 });
 test("server publication is independent of Android versionCode",async()=>{
