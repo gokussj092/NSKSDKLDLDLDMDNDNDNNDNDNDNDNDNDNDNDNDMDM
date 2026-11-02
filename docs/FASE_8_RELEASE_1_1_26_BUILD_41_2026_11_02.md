@@ -69,3 +69,17 @@ Al redactar este documento, **no hay resultados nuevos** de CI/firma o de un dis
 - Rama fuente: `fix/http-jireh-current-method`, destino `main`.
 - Este cambio documental adicional se confirma **sin `[skip ci]`** para que el evento synchronize del PR ejecute las validaciones. No realiza ninguna fusión ni publicación.
 - Los resultados de los checks deben leerse de GitHub Actions; hasta entonces no atribuirles estado de aprobación.
+
+## Registro de correcciones detectadas por CI (no evidencia de GO)
+
+Durante la primera ejecución del PR #109 se observaron y corrigieron estos puntos en la **rama de desarrollo**:
+- El nuevo formato `.hexcm` de Hex Tunnel se separa del inventario C0 histórico de 239 rutas sin desregistrarlo.
+- El bloqueo de hash de nueve fuentes UI se conserva; las modificaciones aprobadas de tres fuentes tienen hashes exactos en `docs/cloud/C0_UI_APPROVED_1_1_26.json` sin modificar el baseline original.
+- Se restablece el contrato `SERVER_VPN_METHODS`; el catálogo incluye los campos aditivos `methodRevision` y `maintenance` por proveedor, con bloqueo de descifrado en mantenimiento.
+- El generador de muestras Threefish de IZPH invierte correctamente el orden MIX/permutación; no se altera el motor real.
+- Se actualizan las pruebas ancladas al catálogo 60/61 y a los 254/255 formatos antiguos para el piso 62 y 256 formatos, conservando las rutas históricas.
+- La operación 18 de sugerencias sigue siendo **válida y autenticada**, no se convierte en desconocida para satisfacer un test antiguo.
+- El consentimiento del operador para la publicación de 1.1.26 **no** está otorgado. `release/android-readiness.json` continúa en NO-GO.
+- El empaquetado manual de Play en `.github/workflows/play-beta-artifacts.yml` queda apuntando a 1.1.26/build41; no fue lanzado. No hay aplicación QA distribuible.
+
+**El PR no debe fusionarse ni publicarse hasta que los workflows contra el HEAD posterior a estas correcciones terminen y se revisen sus fallos, además de pasar validación física, firma permanente, VPS y el resto de evidencias de release.**
