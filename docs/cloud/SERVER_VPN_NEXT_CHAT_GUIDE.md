@@ -1,3 +1,19 @@
+# CREEB VPN50.0 — reinvestigado, remoto pendiente, 2026-11-01
+
+Versión50.0 reconfirmada en Play vivo, original privado recuperado y hashes
+idénticos. La documentación anterior omitía GET digest/bypassActive previo
+al POST con Integrity. Se reconstruyó y cotejó con Dalvik; script actualizado
+admite una solicitud original fresca en archivo0600, sin fabricar token.
+Prueba real GET200 HTML195→POST de fallo sin token405 HTML163; sin JSON remoto.
+**No se ensayó un token Play Integrity válido**, no hay Android conectado;
+ese POST autorizado sigue pendiente, no se presume su fallo ni éxito.
+Incluido1.0.0/1 servidor/1 tweak completo igual a JDK/CLI/worker, separado.
+26 Python correctas; remote:null y ficha desactivada. C0240/C8255, fuente59/
+58 fichas/8 pendientes, switches y UI intactos. Sin merge/deploy/APK/C11/CI manual.
+[Flujo, evidencia y siguiente requisito](../../decoders/Python/apps/CREEB_VPN/ANALYSIS.md).
+
+---
+
 # Speicers123 — API accesible, sin actualización publicada, 2026-11-01
 
 Revisión posterior: dos GET originales al manifiesto completaron CONNECT/TLS
