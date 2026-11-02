@@ -70,8 +70,21 @@ class CloudC0BaselineTests(unittest.TestCase):
             "android/app/src/main/java/com/ghostdeveloper/spdecode/MainActivity.kt",
             manifest["uiGitBlobSha1"],
         )
+        # Keep all nine immutable source hashes in the historical baseline;
+        # only the three explicitly reviewed Phase 1–6 UI files may use
+        # their version-scoped exact blob hashes in the approved delta.
+        delta_path=ROOT/"docs/cloud/C0_UI_APPROVED_1_1_26.json"
+        approved=json.loads(delta_path.read_text(encoding="utf-8"))
+        overrides=approved["uiGitBlobSha1"]
+        self.assertEqual(set(overrides),{
+            "android/app/src/main/java/com/ghostdeveloper/spdecode/FirstRunGuide.kt",
+            "android/app/src/main/java/com/ghostdeveloper/spdecode/FunctionalSettingsPanel.kt",
+            "android/app/src/main/java/com/ghostdeveloper/spdecode/SpDecodeApp.kt",
+        })
+        self.assertEqual(approved["targetVersion"],"1.1.26")
         for name, sha in manifest["uiGitBlobSha1"].items():
-            self.assertEqual(git_blob_sha1((ROOT / name).read_bytes()), sha)
+            self.assertEqual(git_blob_sha1((ROOT / name).read_bytes()),
+                             overrides.get(name,sha))
 
     def test_packaged_source_material_is_classified_by_filename_only(self):
         validate_packaged_material_inventory()
