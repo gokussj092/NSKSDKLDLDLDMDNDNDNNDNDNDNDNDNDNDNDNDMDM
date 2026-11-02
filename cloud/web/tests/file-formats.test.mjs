@@ -65,12 +65,12 @@ test("HTTP Door publishes its file route and refreshes cached v44 metadata witho
   const format=publicFormats().find(x=>x.suffix==="kyz");
   assert.deepEqual(format,{suffix:"kyz",name:"HTTP Door 5.0",kind:"file",
     offlineSupported:false,cloudSupported:true,credentialFields:[]});
-  assert.equal(CATALOG_VERSION,59);
+  assert.equal(CATALOG_VERSION,60);
   const response=await endpoint(request(44));
   assert.equal(response.status,200);
   const body=await response.json();
   assert.equal(body.unchanged,false);
-  assert.equal(body.apps.length,57);
+  assert.equal(body.apps.length,58);
   assert(!body.apps.some(x=>x.id==="http-door"));
   assert(body.formats.some(x=>x.suffix==="kyz"));
 });
@@ -84,7 +84,7 @@ test("catalog response is backwards-compatible and uses the existing version con
   });
   assert.equal(result.formatCount,publicFormats().length);
   assert.equal(result.formats.length,publicFormats().length);
-  assert.equal(result.apps.length,57);
+  assert.equal(result.apps.length,58);
   const payload=JSON.stringify(result);
   for(const forbidden of [
     "decoders/Python/",'"script":',"source_script","originalRuntime",
@@ -95,7 +95,7 @@ test("catalog response is backwards-compatible and uses the existing version con
   const body=await response.json();
   assert.equal(body.unchanged,false);
   assert.equal(body.formats.length,publicFormats().length);
-  assert.equal(body.apps.length,57);
+  assert.equal(body.apps.length,58);
   const unchanged=await endpoint(request(body.catalogVersion));
   assert.equal(unchanged.status,200);
   const hint=await unchanged.json();
