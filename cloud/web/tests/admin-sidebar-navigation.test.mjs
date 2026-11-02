@@ -92,7 +92,7 @@ test("V2 hardware panel supports patch age, boot controls and private aggregate 
  assert(api.includes('"http://key-attestation:8788/stats"'));
  assert(verifier.includes("policyLoader = v2DevicePolicyStatus"));
  assert(verifier.includes("devicePolicy:Date.parse")===false);
- assert(verifier.includes("Date.parse(policy.expiresAt)"));
+ assert(verifier.includes("enforceBoot:policy.enforceBoot"));
  assert(read("app/api/admin/v2-device-admission/route.js").includes("v2DeviceAdmissionRequest"));
 });
 
