@@ -47,7 +47,7 @@ class NetcolTests(unittest.TestCase):
         self.assertEqual(json.loads(result['rawText']), V['expected'])
         self.assertFalse(result['isPartial'])
         inventory = load_runtime_file_engines()
-        self.assertEqual(len(inventory), 254);self.assertNotIn('netcol', inventory)
+        self.assertEqual(len(inventory), 256);self.assertNotIn('netcol', inventory)
 
     def test_bad_symbols_lengths_padding_and_json_are_rejected_without_input_echo(self):
         for data in (b'private-sentinel', b'<html/>', '▙'.encode(), '▙▙'.encode(), V['catalog'][:-12].encode()):
