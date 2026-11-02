@@ -216,4 +216,18 @@
     <string name="apk_analysis_coming_soon">Demnächst verfügbar</string>
     <string name="settings_formats_title">Unterstützte Formate</string>
     <string name="settings_formats_detail">Kompatible Dateiendungen und Textprotokolle ansehen.</string>
+    <string name="apk_analysis_intro_title">Von der APK zum technischen Analysebericht</string>
+    <string name="apk_analysis_intro_detail">Nach der Freischaltung untersucht die statische Analyse Manifest, Metadaten, Ressourcen und native Bibliotheken als Grundlage für Decoder-Skripte.</string>
+    <string name="apk_analysis_steps_title">Geplanter Ablauf</string>
+    <string name="apk_analysis_step_import">Eine APK mit Analyseberechtigung auswählen</string>
+    <string name="apk_analysis_step_inspect">Metadaten, Ressourcen und Bibliotheken untersuchen</string>
+    <string name="apk_analysis_step_report">Einen strukturierten technischen Bericht erstellen</string>
+    <string name="apk_analysis_subscription_title">Zugang mit Abonnement</string>
+    <string name="apk_analysis_subscription_detail">Ein Abonnement wird erforderlich sein. Tarife und Zahlungsbedingungen stehen noch nicht fest.</string>
+    <string name="apk_analysis_credit_cost">1 APK = 1 Guthabenpunkt</string>
+    <string name="apk_analysis_credit_price">1 Guthabenpunkt = 4 USD</string>
+    <string name="apk_analysis_price_note">4 USD ist der geplante Preis pro Guthabenpunkt, nicht die Abonnementgebühr.</string>
+    <string name="apk_analysis_safety_note">Die geplante Analyse erfolgt statisch: Die APK wird weder installiert noch ausgeführt.</string>
+    <string name="apk_analysis_import_unavailable">APK importieren (nicht verfügbar)</string>
+    <string name="apk_analysis_no_charge">Der Dienst ist noch inaktiv. Es werden keine APKs gesendet und keine Punkte berechnet.</string>
 </resources>

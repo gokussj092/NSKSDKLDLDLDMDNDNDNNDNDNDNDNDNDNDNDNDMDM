@@ -216,4 +216,18 @@
     <string name="apk_analysis_coming_soon">Скоро</string>
     <string name="settings_formats_title">Поддерживаемые форматы</string>
     <string name="settings_formats_detail">Просмотрите совместимые расширения файлов и текстовые протоколы.</string>
+    <string name="apk_analysis_intro_title">От APK к техническому отчёту</string>
+    <string name="apk_analysis_intro_detail">После запуска статический анализ изучит манифест, метаданные, ресурсы и нативные библиотеки для подготовки скриптов декодирования.</string>
+    <string name="apk_analysis_steps_title">Планируемый процесс</string>
+    <string name="apk_analysis_step_import">Выбрать APK, на анализ которого у вас есть разрешение</string>
+    <string name="apk_analysis_step_inspect">Изучить метаданные, ресурсы и библиотеки</string>
+    <string name="apk_analysis_step_report">Подготовить структурированный технический отчёт</string>
+    <string name="apk_analysis_subscription_title">Доступ по подписке</string>
+    <string name="apk_analysis_subscription_detail">Потребуется подписка. Тарифы и условия оплаты пока не определены.</string>
+    <string name="apk_analysis_credit_cost">1 APK = 1 кредит</string>
+    <string name="apk_analysis_credit_price">1 кредит = 4 USD</string>
+    <string name="apk_analysis_price_note">4 USD — планируемая цена одного кредита, а не стоимость подписки.</string>
+    <string name="apk_analysis_safety_note">Планируется статический анализ: APK не устанавливается и не запускается.</string>
+    <string name="apk_analysis_import_unavailable">Импорт APK (недоступно)</string>
+    <string name="apk_analysis_no_charge">Сервис пока не работает. APK не отправляются, кредиты не списываются.</string>
 </resources>

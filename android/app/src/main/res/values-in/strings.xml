@@ -216,4 +216,18 @@
     <string name="apk_analysis_coming_soon">Segera hadir</string>
     <string name="settings_formats_title">Format yang didukung</string>
     <string name="settings_formats_detail">Lihat ekstensi berkas dan protokol teks yang kompatibel.</string>
+    <string name="apk_analysis_intro_title">Dari APK menjadi laporan riset teknis</string>
+    <string name="apk_analysis_intro_detail">Saat tersedia, analisis statis akan memeriksa manifes, metadata, sumber daya, dan pustaka native untuk membantu menyiapkan skrip dekoder.</string>
+    <string name="apk_analysis_steps_title">Alur yang direncanakan</string>
+    <string name="apk_analysis_step_import">Pilih APK yang boleh Anda analisis</string>
+    <string name="apk_analysis_step_inspect">Periksa metadata, sumber daya, dan pustaka</string>
+    <string name="apk_analysis_step_report">Siapkan laporan teknis terstruktur</string>
+    <string name="apk_analysis_subscription_title">Akses dengan langganan</string>
+    <string name="apk_analysis_subscription_detail">Langganan akan diperlukan. Paket dan ketentuan pembayaran belum ditentukan.</string>
+    <string name="apk_analysis_credit_cost">1 APK = 1 kredit</string>
+    <string name="apk_analysis_credit_price">1 kredit = 4 USD</string>
+    <string name="apk_analysis_price_note">4 USD adalah harga yang direncanakan per kredit, bukan biaya langganan.</string>
+    <string name="apk_analysis_safety_note">Analisis yang direncanakan bersifat statis: APK tidak dipasang atau dijalankan.</string>
+    <string name="apk_analysis_import_unavailable">Impor APK (belum tersedia)</string>
+    <string name="apk_analysis_no_charge">Layanan belum aktif. Tidak ada APK yang dikirim atau kredit yang dipotong.</string>
 </resources>

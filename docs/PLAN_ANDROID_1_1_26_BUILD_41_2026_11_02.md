@@ -184,3 +184,25 @@ Para continuar, leer este plan y la documentación de compatibilidad enlazada al
 Rama: `fix/http-jireh-current-method`. Se traslada Formatos a **Ajustes → Formatos soportados** mediante pantalla propia y retorno a Ajustes. La lista conserva búsqueda y protocolos de texto desde la misma caché local o en memoria; abrirla no genera peticiones nuevas. La antigua pestaña ofrece **Análisis de APK / Próximamente** sin importación, ejecución, análisis ni cobros.
 
 Se actualizan el tutorial, los 14 idiomas y pruebas de instrumentación de navegación. Compilación y pruebas Android remotas pendientes; el commit se prepara con `[skip ci]` por ahorro de GitHub Actions. La versión y build Gradle no cambian.
+
+## Implementación Fase 2 — Presentación del módulo de APK
+
+La sección **Análisis de APK** de la tercera pestaña tiene una vista AMOLED desplazable,
+compatible con pantallas compactas: estado «Próximamente», explicación del análisis
+estático previsto, tres pasos de flujo, modalidad de suscripción futura y precios
+propuestos por crédito. Se aclara que **1 APK = 1 crédito**, **1 crédito = 4 USD**,
+y que los 4 USD **no representan la cuota de suscripción**.
+
+El botón «Importar APK» permanece deshabilitado: no abre el selector de archivos,
+no instala ni ejecuta paquetes, no realiza solicitudes, no registra usuarios,
+no cobra ni descuenta créditos. Los detalles definitivos de suscripción están por
+definir. El contenido nuevo se localiza en los 14 idiomas de la aplicación.
+
+Archivos de fase: `ApkAnalysisComingSoonScreen.kt`, recursos Android
+`values*/strings.xml`, prueba instrumentada de estado y navegación y retirada
+del placeholder mínimo de `SpDecodeApp.kt`. Este commit no altera motores
+de descifrado, seguridad de V2, lógica del VPS ni versión Gradle.
+
+**QA:** revisiones estáticas y recursos; compilación Android y ejecución
+instrumentada pendientes. Evitar workflows de Actions hasta una validación
+consolidada de varias fases.

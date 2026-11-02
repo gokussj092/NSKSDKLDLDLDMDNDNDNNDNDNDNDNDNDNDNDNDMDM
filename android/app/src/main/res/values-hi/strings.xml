@@ -217,4 +217,18 @@
     <string name="apk_analysis_coming_soon">जल्द आ रहा है</string>
     <string name="settings_formats_title">समर्थित प्रारूप</string>
     <string name="settings_formats_detail">संगत फ़ाइल एक्सटेंशन और टेक्स्ट प्रोटोकॉल देखें।</string>
+    <string name="apk_analysis_intro_title">APK से तकनीकी शोध रिपोर्ट तक</string>
+    <string name="apk_analysis_intro_detail">उपलब्ध होने पर स्थिर विश्लेषण मैनिफ़ेस्ट, मेटाडेटा, संसाधन और नेटिव लाइब्रेरी की जाँच करेगा ताकि डिकोडर स्क्रिप्ट तैयार करने में मदद मिले।</string>
+    <string name="apk_analysis_steps_title">प्रस्तावित प्रक्रिया</string>
+    <string name="apk_analysis_step_import">वह APK चुनें जिसका विश्लेषण करने की अनुमति आपके पास है</string>
+    <string name="apk_analysis_step_inspect">मेटाडेटा, संसाधन और लाइब्रेरी की जाँच करें</string>
+    <string name="apk_analysis_step_report">संरचित तकनीकी रिपोर्ट तैयार करें</string>
+    <string name="apk_analysis_subscription_title">सदस्यता से पहुँच</string>
+    <string name="apk_analysis_subscription_detail">सदस्यता आवश्यक होगी। योजनाएँ और भुगतान शर्तें अभी तय नहीं हुई हैं।</string>
+    <string name="apk_analysis_credit_cost">1 APK = 1 क्रेडिट</string>
+    <string name="apk_analysis_credit_price">1 क्रेडिट = 4 USD</string>
+    <string name="apk_analysis_price_note">4 USD प्रति क्रेडिट प्रस्तावित मूल्य है, सदस्यता शुल्क नहीं।</string>
+    <string name="apk_analysis_safety_note">प्रस्तावित विश्लेषण स्थिर है: APK इंस्टॉल या चलाया नहीं जाएगा।</string>
+    <string name="apk_analysis_import_unavailable">APK आयात करें (अनुपलब्ध)</string>
+    <string name="apk_analysis_no_charge">सेवा अभी सक्रिय नहीं है। कोई APK भेजा या क्रेडिट काटा नहीं जाता।</string>
 </resources>

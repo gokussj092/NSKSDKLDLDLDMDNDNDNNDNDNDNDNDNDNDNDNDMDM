@@ -217,4 +217,18 @@
     <string name="apk_analysis_coming_soon">Yakında</string>
     <string name="settings_formats_title">Desteklenen biçimler</string>
     <string name="settings_formats_detail">Uyumlu dosya uzantılarını ve metin protokollerini görüntüleyin.</string>
+    <string name="apk_analysis_intro_title">APK dosyasından teknik araştırma raporuna</string>
+    <string name="apk_analysis_intro_detail">Kullanıma açıldığında statik analiz, kod çözücü betikleri hazırlamak için manifesti, meta verileri, kaynakları ve yerel kitaplıkları inceleyecek.</string>
+    <string name="apk_analysis_steps_title">Planlanan işlem</string>
+    <string name="apk_analysis_step_import">Analiz izniniz olan bir APK seçin</string>
+    <string name="apk_analysis_step_inspect">Meta verileri, kaynakları ve kitaplıkları inceleyin</string>
+    <string name="apk_analysis_step_report">Yapılandırılmış bir teknik rapor hazırlayın</string>
+    <string name="apk_analysis_subscription_title">Abonelik ile erişim</string>
+    <string name="apk_analysis_subscription_detail">Abonelik gerekecek. Planlar ve ödeme koşulları henüz belirlenmedi.</string>
+    <string name="apk_analysis_credit_cost">1 APK = 1 kredi</string>
+    <string name="apk_analysis_credit_price">1 kredi = 4 USD</string>
+    <string name="apk_analysis_price_note">4 USD, abonelik ücreti değil, kredi başına planlanan fiyattır.</string>
+    <string name="apk_analysis_safety_note">Planlanan analiz statiktir: APK yüklenmez veya çalıştırılmaz.</string>
+    <string name="apk_analysis_import_unavailable">APK içe aktar (kullanılamıyor)</string>
+    <string name="apk_analysis_no_charge">Hizmet henüz aktif değil. APK gönderilmez ve kredi tahsil edilmez.</string>
 </resources>

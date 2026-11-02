@@ -216,4 +216,18 @@
     <string name="apk_analysis_coming_soon">به‌زودی</string>
     <string name="settings_formats_title">قالب‌های پشتیبانی‌شده</string>
     <string name="settings_formats_detail">پسوندهای فایل و پروتکل‌های متنی سازگار را ببینید.</string>
+    <string name="apk_analysis_intro_title">از فایل APK تا گزارش فنی پژوهشی</string>
+    <string name="apk_analysis_intro_detail">پس از فعال شدن، تحلیل ایستا مانیفست، فراداده، منابع و کتابخانه‌های بومی را برای کمک به تهیه اسکریپت‌های رمزگشایی بررسی خواهد کرد.</string>
+    <string name="apk_analysis_steps_title">روند برنامه‌ریزی‌شده</string>
+    <string name="apk_analysis_step_import">یک فایل APK که مجاز به تحلیل آن هستید انتخاب کنید</string>
+    <string name="apk_analysis_step_inspect">فراداده، منابع و کتابخانه‌ها را بررسی کنید</string>
+    <string name="apk_analysis_step_report">یک گزارش فنی ساختاریافته تهیه کنید</string>
+    <string name="apk_analysis_subscription_title">دسترسی با اشتراک</string>
+    <string name="apk_analysis_subscription_detail">اشتراک لازم خواهد بود. طرح‌ها و شرایط پرداخت هنوز تعیین نشده‌اند.</string>
+    <string name="apk_analysis_credit_cost">۱ APK = ۱ اعتبار</string>
+    <string name="apk_analysis_credit_price">۱ اعتبار = 4 USD</string>
+    <string name="apk_analysis_price_note">4 USD قیمت پیشنهادی هر اعتبار است، نه هزینه اشتراک.</string>
+    <string name="apk_analysis_safety_note">تحلیل برنامه‌ریزی‌شده ایستا است: APK نصب یا اجرا نخواهد شد.</string>
+    <string name="apk_analysis_import_unavailable">وارد کردن APK (غیرفعال)</string>
+    <string name="apk_analysis_no_charge">این سرویس هنوز فعال نیست. هیچ APK ارسال و هیچ اعتباری کسر نمی‌شود.</string>
 </resources>

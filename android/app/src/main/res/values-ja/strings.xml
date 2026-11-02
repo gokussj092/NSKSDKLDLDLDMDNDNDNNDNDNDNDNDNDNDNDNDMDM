@@ -217,4 +217,18 @@
     <string name="apk_analysis_coming_soon">近日公開</string>
     <string name="settings_formats_title">対応フォーマット</string>
     <string name="settings_formats_detail">対応するファイル拡張子とテキストプロトコルを確認できます。</string>
+    <string name="apk_analysis_intro_title">APKから技術調査レポートへ</string>
+    <string name="apk_analysis_intro_detail">提供開始後、静的解析によってマニフェスト、メタデータ、リソース、ネイティブライブラリを調査し、デコーダー用スクリプトの作成に役立てます。</string>
+    <string name="apk_analysis_steps_title">予定されている手順</string>
+    <string name="apk_analysis_step_import">解析の許可があるAPKを選択</string>
+    <string name="apk_analysis_step_inspect">メタデータ、リソース、ライブラリを調査</string>
+    <string name="apk_analysis_step_report">整理された技術レポートを作成</string>
+    <string name="apk_analysis_subscription_title">サブスクリプションで利用</string>
+    <string name="apk_analysis_subscription_detail">利用にはサブスクリプションが必要です。プランと支払い条件は未定です。</string>
+    <string name="apk_analysis_credit_cost">APK 1件 = 1クレジット</string>
+    <string name="apk_analysis_credit_price">1クレジット = 4 USD</string>
+    <string name="apk_analysis_price_note">4 USDはクレジット1件あたりの予定価格で、サブスクリプション料金ではありません。</string>
+    <string name="apk_analysis_safety_note">予定される解析は静的解析です。APKのインストールや実行は行いません。</string>
+    <string name="apk_analysis_import_unavailable">APKを読み込む（利用不可）</string>
+    <string name="apk_analysis_no_charge">サービスはまだ開始されていません。APKの送信やクレジットの請求はありません。</string>
 </resources>

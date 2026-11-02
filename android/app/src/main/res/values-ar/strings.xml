@@ -216,4 +216,18 @@
     <string name="apk_analysis_coming_soon">قريبًا</string>
     <string name="settings_formats_title">الصيغ المدعومة</string>
     <string name="settings_formats_detail">تصفح امتدادات الملفات وبروتوكولات النص المدعومة.</string>
+    <string name="apk_analysis_intro_title">من ملف APK إلى تقرير بحث تقني</string>
+    <string name="apk_analysis_intro_detail">عند توفر الميزة، سيفحص التحليل الثابت ملف البيان والبيانات الوصفية والموارد والمكتبات الأصلية للمساعدة في إعداد نصوص فك التشفير.</string>
+    <string name="apk_analysis_steps_title">آلية العمل المخطط لها</string>
+    <string name="apk_analysis_step_import">اختيار ملف APK لديك إذن بتحليله</string>
+    <string name="apk_analysis_step_inspect">فحص البيانات الوصفية والموارد والمكتبات</string>
+    <string name="apk_analysis_step_report">إعداد تقرير تقني منظم</string>
+    <string name="apk_analysis_subscription_title">الوصول عبر الاشتراك</string>
+    <string name="apk_analysis_subscription_detail">سيكون الاشتراك مطلوبًا. لم تُحدد الخطط وشروط الدفع بعد.</string>
+    <string name="apk_analysis_credit_cost">ملف APK واحد = رصيد واحد</string>
+    <string name="apk_analysis_credit_price">رصيد واحد = 4 USD</string>
+    <string name="apk_analysis_price_note">4 USD هو السعر المقترح للرصيد الواحد وليس رسم الاشتراك.</string>
+    <string name="apk_analysis_safety_note">التحليل المخطط له ثابت: لن يتم تثبيت APK أو تشغيله.</string>
+    <string name="apk_analysis_import_unavailable">استيراد APK (غير متاح)</string>
+    <string name="apk_analysis_no_charge">الخدمة غير مفعلة بعد. لا يتم إرسال ملفات APK أو خصم الأرصدة.</string>
 </resources>

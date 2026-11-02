@@ -216,4 +216,18 @@
     <string name="apk_analysis_coming_soon">Em breve</string>
     <string name="settings_formats_title">Formatos compatíveis</string>
     <string name="settings_formats_detail">Consulte extensões de arquivos e protocolos de texto compatíveis.</string>
+    <string name="apk_analysis_intro_title">De um APK a um relatório para pesquisa</string>
+    <string name="apk_analysis_intro_detail">Quando disponível, a análise estática examinará manifesto, metadados, recursos e bibliotecas nativas para ajudar a preparar scripts de decodificação.</string>
+    <string name="apk_analysis_steps_title">Fluxo planejado</string>
+    <string name="apk_analysis_step_import">Selecionar um APK que você tem autorização para analisar</string>
+    <string name="apk_analysis_step_inspect">Examinar metadados, recursos e bibliotecas</string>
+    <string name="apk_analysis_step_report">Preparar um relatório técnico estruturado</string>
+    <string name="apk_analysis_subscription_title">Acesso com assinatura</string>
+    <string name="apk_analysis_subscription_detail">Será necessária uma assinatura. Planos e condições de cobrança ainda não foram definidos.</string>
+    <string name="apk_analysis_credit_cost">1 APK = 1 crédito</string>
+    <string name="apk_analysis_credit_price">1 crédito = 4 USD</string>
+    <string name="apk_analysis_price_note">4 USD é o preço previsto por crédito, não a mensalidade da assinatura.</string>
+    <string name="apk_analysis_safety_note">A análise planejada é estática: o APK não é instalado nem executado.</string>
+    <string name="apk_analysis_import_unavailable">Importar APK (indisponível)</string>
+    <string name="apk_analysis_no_charge">O serviço ainda não está ativo. Nenhum APK é enviado e nenhum crédito é cobrado.</string>
 </resources>

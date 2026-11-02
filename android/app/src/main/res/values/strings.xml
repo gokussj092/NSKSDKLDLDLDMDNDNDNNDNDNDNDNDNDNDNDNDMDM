@@ -218,4 +218,18 @@
     <string name="apk_analysis_coming_soon">Coming soon</string>
     <string name="settings_formats_title">Supported formats</string>
     <string name="settings_formats_detail">Browse compatible file extensions and text protocols.</string>
+    <string name="apk_analysis_intro_title">An APK can become an investigation-ready report</string>
+    <string name="apk_analysis_intro_detail">When available, static analysis will examine the manifest, metadata, resources and native libraries to help prepare decoder scripts.</string>
+    <string name="apk_analysis_steps_title">Planned workflow</string>
+    <string name="apk_analysis_step_import">Select an APK you are authorized to analyze</string>
+    <string name="apk_analysis_step_inspect">Inspect its metadata, resources and libraries</string>
+    <string name="apk_analysis_step_report">Prepare a structured technical report</string>
+    <string name="apk_analysis_subscription_title">Subscription required</string>
+    <string name="apk_analysis_subscription_detail">Access will require a subscription. Plans and billing terms are not defined yet.</string>
+    <string name="apk_analysis_credit_cost">1 APK = 1 credit</string>
+    <string name="apk_analysis_credit_price">1 credit = 4 USD</string>
+    <string name="apk_analysis_price_note">4 USD is the proposed price per credit, not the subscription fee.</string>
+    <string name="apk_analysis_safety_note">The planned analysis is static: an APK is not installed or executed.</string>
+    <string name="apk_analysis_import_unavailable">Import APK (unavailable)</string>
+    <string name="apk_analysis_no_charge">The service is not active. No APK is submitted and no credits are charged.</string>
 </resources>

@@ -6,6 +6,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.hasSetTextAction
@@ -70,12 +71,17 @@ class FunctionalUiInstrumentedTest {
         ui.onNodeWithTag("settings_formats_entry").assertExists()
     }
 
-    @Test fun formerFormatsTabShowsOnlyApkComingSoon(){
+    @Test fun apkPreviewShowsPricingAndDisablesImport(){
         awaitStartup()
         val ctx=ui.activity
         ui.onNodeWithContentDescription(ctx.getString(R.string.apk_analysis_title)).performClick()
         ui.onNodeWithTag("apk_analysis_placeholder").assertExists()
         ui.onNodeWithText(ctx.getString(R.string.apk_analysis_coming_soon)).assertExists()
+        ui.onNodeWithText(ctx.getString(R.string.apk_analysis_credit_cost)).assertExists()
+        ui.onNodeWithText(ctx.getString(R.string.apk_analysis_credit_price)).assertExists()
+        ui.onNodeWithText(ctx.getString(R.string.apk_analysis_price_note)).assertExists()
+        ui.onNodeWithText(ctx.getString(R.string.apk_analysis_no_charge)).assertExists()
+        ui.onNodeWithTag("apk_analysis_import_disabled").assertIsNotEnabled()
         ui.onNode(hasSetTextAction()).assertDoesNotExist()
     }
 

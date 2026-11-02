@@ -777,24 +777,6 @@ private fun HistoryScreen(
 }
 
 @Composable
-private fun ApkAnalysisComingSoonScreen() {
-    Column(
-        Modifier.fillMaxSize().testTag("apk_analysis_placeholder")
-            .padding(horizontal=24.dp,vertical=24.dp),
-        horizontalAlignment=Alignment.CenterHorizontally,
-        verticalArrangement=Arrangement.Center,
-    ) {
-        Icon(Icons.Outlined.Android,null,tint=White,modifier=Modifier.size(52.dp))
-        Spacer(Modifier.height(18.dp))
-        Text(stringResource(R.string.apk_analysis_title),fontSize=24.sp,
-            fontWeight=FontWeight.Bold,color=White)
-        Spacer(Modifier.height(8.dp))
-        Text(stringResource(R.string.apk_analysis_coming_soon),fontSize=15.sp,
-            color=Secondary,textAlign=TextAlign.Center)
-    }
-}
-
-@Composable
 internal fun FormatsScreen(cloudFormats:List<AndroidDecoderCatalog.Format>,
     textFormats:List<CloudTextRoute>,catalogLoading:Boolean=false,
     catalogProgress:Int?=null,onBack:(()->Unit)?=null) {

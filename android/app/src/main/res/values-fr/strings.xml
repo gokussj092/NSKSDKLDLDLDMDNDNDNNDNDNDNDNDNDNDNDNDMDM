@@ -216,4 +216,18 @@
     <string name="apk_analysis_coming_soon">Prochainement</string>
     <string name="settings_formats_title">Formats pris en charge</string>
     <string name="settings_formats_detail">Consultez les extensions de fichiers et protocoles texte compatibles.</string>
+    <string name="apk_analysis_intro_title">Un APK transformé en rapport de recherche</string>
+    <string name="apk_analysis_intro_detail">Une fois disponible, l’analyse statique examinera le manifeste, les métadonnées, les ressources et les bibliothèques natives pour aider à préparer des scripts de décodage.</string>
+    <string name="apk_analysis_steps_title">Fonctionnement prévu</string>
+    <string name="apk_analysis_step_import">Sélectionner un APK que vous êtes autorisé à analyser</string>
+    <string name="apk_analysis_step_inspect">Examiner les métadonnées, ressources et bibliothèques</string>
+    <string name="apk_analysis_step_report">Préparer un rapport technique structuré</string>
+    <string name="apk_analysis_subscription_title">Accès par abonnement</string>
+    <string name="apk_analysis_subscription_detail">Un abonnement sera nécessaire. Les offres et modalités de paiement restent à définir.</string>
+    <string name="apk_analysis_credit_cost">1 APK = 1 crédit</string>
+    <string name="apk_analysis_credit_price">1 crédit = 4 USD</string>
+    <string name="apk_analysis_price_note">4 USD correspond au prix prévu du crédit, et non au tarif de l’abonnement.</string>
+    <string name="apk_analysis_safety_note">L’analyse prévue est statique : l’APK ne sera ni installé ni exécuté.</string>
+    <string name="apk_analysis_import_unavailable">Importer un APK (indisponible)</string>
+    <string name="apk_analysis_no_charge">Le service est inactif. Aucun APK ne sera envoyé et aucun crédit ne sera débité.</string>
 </resources>
