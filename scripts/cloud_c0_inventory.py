@@ -96,11 +96,14 @@ def validate_reference_mapping(doc: dict) -> None:
     # New file suffixes are C8 overlays, never mutations of the frozen C0 set.
     extra = DECODER_REGISTRY.get("1ftnl")
     door = DECODER_REGISTRY.get("kyz")
-    if (set(DECODER_REGISTRY) - {"1ftnl", "awg", "creeb", "kyz", "stp"} != expected or
+    hexcm = DECODER_REGISTRY.get("hexcm")
+    if (set(DECODER_REGISTRY) - {"1ftnl", "awg", "creeb", "kyz", "stp", "hexcm"} != expected or
         (extra is not None and (extra.script != "decoders/Python/apps/OneFTunnel/file_decoder.py"
                                 or extra.runtime != "python")) or
         (door is not None and (door.script != "decoders/Python/apps/HTTP_Door/file_decoder.py"
-                              or door.runtime != "python"))):
+                              or door.runtime != "python")) or
+        (hexcm is not None and (hexcm.script != "decoders/Python/apps/Hex_Tunnel/file_decoder.py"
+                               or hexcm.runtime != "python"))):
         fail("Android and bot registry suffix sets differ")
     for row in doc["entries"]:
         suffix = row["suffix"]
