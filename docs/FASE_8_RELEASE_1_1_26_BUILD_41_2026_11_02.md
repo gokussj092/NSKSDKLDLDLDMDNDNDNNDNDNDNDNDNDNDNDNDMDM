@@ -115,3 +115,13 @@ La ejecución de integración `41534170991` **aprobó** la auditoría C0 sobre e
 - La verificación de los productos de pago y la contabilidad son siempre **del servidor**: una aplicación Android no puede autoacreditar ni verificar compras definitivamente. Google Play Billing requiere el SDK Android como interfaz de plataforma; cualquier futura política de validación cliente sensible será nativa y la autorización definitiva server-side. No existe un flujo de cobro activo.
 - No hay rutas API, secretos backend, claves HPKE ni certificados privados nuevos en Kotlin. `libv7q3.so` conserva origen/rutas y enlace de criptografía nativa. Los resultados visibles, controles Android y el token de Play, cuando exista el SDK, pueden necesitar una interfaz JNI mínima; no se considerarán secretos del servidor ni fuente de autoridad.
 - **NO-GO** hasta validar los workflows y el APK/AAB firmados. Sin fusión, sin QA distribuible y sin despliegue.
+
+## Estado de revisión CI de compilación (2026-11-02; cambios pendientes de certificación final)
+
+Sobre `6318a1db6be0ea8c630d6589b0103ee9946de580`:
+- Aprobados C0, C1, C2, C3, C4, C5, C6, C7 y seguridad de hardware (9 de 12 workflows).
+- El job de Python de `Validate SP-DECODE` aprobó todos los tests; el job instrumentado Android falló en **compilación de pruebas**, no por una regresión confirmada del APK: tres archivos `androidTest` tenían imports Compose inválidos (`assertExists`, `assertDoesNotExist`, `performScrollTo`). Se corrigen eliminando imports de métodos existentes en `SemanticsNodeInteraction` e importando la acción de scroll.
+- C8 ya tiene verdes los dos jobs de VPS/docker; la compilación APK/AAB CI-only y V2 aún estaban en curso en el momento de esa revisión.
+- Se mantiene validación fail-closed y prohibición de distribución/pago hasta completar todos los gates y firma permanente.
+
+**Esta actualización desencadena CI sobre la revisión actual posterior a las tres correcciones de instrumentación**. La versión oficial sigue en estado **NO-GO**.
