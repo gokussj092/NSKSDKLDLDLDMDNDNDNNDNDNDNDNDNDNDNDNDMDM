@@ -92,7 +92,6 @@ class RemoteFormatsAndroidTests(unittest.TestCase):
         repository=(JAVA/"cloud/ServerVpnCatalogRepository.kt").read_text("utf-8")
         model=(JAVA/"parity/AndroidDecoderCatalog.kt").read_text("utf-8")
         for token in (
-            'if(newTab==2)refreshServerVpn()',
             'serverVpnCatalog.cachedFormats().also { fileFormats=it }',
             'AndroidDecoderCatalog.detect(routingName,latestFileFormats)',
             'CloudCatalogUpdates.enabled(this@MainActivity)',
@@ -100,6 +99,8 @@ class RemoteFormatsAndroidTests(unittest.TestCase):
             'allowPasswordFromCatalog="password" in supported.credentialFields',
         ):
             self.assertIn(token,gradle)
+        self.assertNotIn('if(newTab==2)refreshServerVpn()', (JAVA/'MainActivity.kt').read_text('utf-8'))
+        self.assertNotIn('if(newTab==3)refreshServerVpn()', (JAVA/'MainActivity.kt').read_text('utf-8'))
         self.assertIn('credentialFields=credentialNames.toSet()',repository)
         self.assertIn('val credentialFields: Set<String> = emptySet()',model)
         self.assertIn('allowPasswordFromCatalog: Boolean = false',client)
