@@ -97,6 +97,9 @@ const ITEMS = Object.freeze([
   {id:"royal-tunnel", name:"Royal Tunnel VPN", icon:"royal-tunnel.png", remote:null},
 ]);
 
+/** Public, ordered method identifiers used by the operator method-status controls. */
+export const SERVER_VPN_METHODS = Object.freeze(ITEMS.map(({id,name}) => Object.freeze({id,name})));
+
 const base = () => join(process.cwd(),"public","server-vpn-icons");
 export function iconFor(id) {
   const item = ITEMS.find(x => x.id === id);
