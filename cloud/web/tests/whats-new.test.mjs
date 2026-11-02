@@ -13,13 +13,13 @@ const query=(knownVersion=0,locale="en")=>new Request("https://api.spdecode.xyz/
 const src=path=>readFileSync(new URL("../../../"+path,import.meta.url),"utf8");
 
 const locales=["en","es","ar","fa","fr","id","ru","de","pt-BR","tr","vi","hi","ja","it"];
-test("V2 v7 news covers new catalogs and updated decoders in all 14 locales",()=>{
+test("V2 v8 news excludes Speicers while preserving other updates in 14 locales",()=>{
  const news=validateNews(fixture);
- assert.equal(news.version,7);
+ assert.equal(news.version,8);
  assert.equal(news.publishedAt,"2026-11-01");
  assert.deepEqual(news.items.map(x=>x.id),[
-  "new-server-vpn-apps-v7","ha-tunnel-plus-v7","mm-tunnel-v7","speicers-pro-vpn-v7"]);
- assert.deepEqual(news.items.map(x=>x.type),["feature","improvement","fix","improvement"]);
+  "new-server-vpn-apps-v7","ha-tunnel-plus-v7","mm-tunnel-v7"]);
+ assert.deepEqual(news.items.map(x=>x.type),["feature","improvement","fix"]);
  assert(Buffer.byteLength(readFileSync(new URL("../content/whats-new.json",import.meta.url)))<=16384);
  assert.deepEqual(Object.keys(news.subtitle).sort(),[...locales].sort());
  for(const locale of locales){
@@ -27,15 +27,15 @@ test("V2 v7 news covers new catalogs and updated decoders in all 14 locales",()=
   assert.equal(translated.locale,locale);
   assert.equal(translated.title,news.title[locale]);
   assert.equal(translated.subtitle,news.subtitle[locale]);
-  assert.equal(translated.items.length,4);
+  assert.equal(translated.items.length,3);
   translated.items.forEach((item,i)=>{
    assert.equal(item.title,news.items[i].title[locale]);
    assert.equal(item.description,news.items[i].description[locale]);
   });
   assert(translated.items[0].description.includes(".enaa"),locale);
   assert(translated.items[1].description.includes(".hat"),locale);
-  assert(translated.items[3].description.includes("SPCF1"),locale);
-  assert(translated.items[3].description.includes("GitHub"),locale);
+  assert(!translated.subtitle.includes("Speicers"),locale);
+  assert(!JSON.stringify(translated).includes("Speicers"),locale);
  }
  assert.equal(localizeNews(news,"unknown").title,news.title.en);
  assert(!JSON.stringify(news).includes("update-1125-v1"));
@@ -85,21 +85,21 @@ test("authenticated V2 operation 14 never receives the V1 mandatory update",asyn
  const signed=query(0,"es");
  bindVerifiedRequest(signed,{aud:"spdecode-android-v2",versionCode:40});
  const signedBody=await (await whatsNewRequest(signed)).json();
- assert.equal(signedBody.version,7);
+ assert.equal(signedBody.version,8);
  assert.deepEqual(signedBody.items.map(x=>x.id),fixture.items.map(x=>x.id));
  assert(!JSON.stringify(signedBody).includes("update-1125-v1"));
  assert(!JSON.stringify(signedBody).includes("join-play-testers-v1"));
- const v2Unchanged=query(7,"es");
+ const v2Unchanged=query(8,"es");
  bindVerifiedRequest(v2Unchanged,{aud:"spdecode-android-v2",versionCode:40});
  const oldBody=await (await whatsNewRequest(v2Unchanged)).json();
- assert.deepEqual(oldBody,{apiVersion:"v1",version:7,recheckAfterSeconds:1800,unchanged:true});
+ assert.deepEqual(oldBody,{apiVersion:"v1",version:8,recheckAfterSeconds:1800,unchanged:true});
 });
 test("V1 and V2 editorial override environments are independently scoped",()=>{
  assert.equal(loadV1News().version,6);
- assert.equal(loadNews().version,7);
+ assert.equal(loadNews().version,8);
  assert.equal(loadV1News({CLOUD_WHATS_NEW_JSON:JSON.stringify(fixture)}).version,6);
- assert.equal(loadNews({CLOUD_WHATS_NEW_V1_JSON:JSON.stringify(v1Fixture)}).version,7);
- assert.equal(loadV1News({CLOUD_WHATS_NEW_V1_JSON:JSON.stringify(fixture)}).version,7);
+ assert.equal(loadNews({CLOUD_WHATS_NEW_V1_JSON:JSON.stringify(v1Fixture)}).version,8);
+ assert.equal(loadV1News({CLOUD_WHATS_NEW_V1_JSON:JSON.stringify(fixture)}).version,8);
  assert.equal(loadNews({CLOUD_WHATS_NEW_JSON:JSON.stringify(v1Fixture)}).version,6);
 });
 test("server publication is independent of Android versionCode",async()=>{
