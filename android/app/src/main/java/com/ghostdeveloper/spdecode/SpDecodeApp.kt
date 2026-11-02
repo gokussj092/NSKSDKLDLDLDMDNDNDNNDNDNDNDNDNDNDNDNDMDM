@@ -915,13 +915,18 @@ private fun ServerVpnScreen(
     }
     val newBadgeStore=remember(context) { ServerVpnNewBadges(context) }
     var newProviderIds by remember { mutableStateOf<Set<String>>(emptySet()) }
-    // NEW applies only to newly incorporated server VPN providers.
+    var updatedProviderIds by remember { mutableStateOf<Set<String>>(emptySet()) }
+    // New providers and method revisions use independent device-local timers.
     LaunchedEffect(apps,newBadgeStore) {
         if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
             while(true) {
                 val snapshot=newBadgeStore.observeCatalog(apps.map { it.id }.toSet())
+                val methodSnapshot=newBadgeStore.observeMethods(
+                    apps.associate { it.id to it.methodRevision })
                 newProviderIds=snapshot.ids
-                val nearest=snapshot.nextExpiryMs ?:break
+                updatedProviderIds=methodSnapshot.ids
+                val nearest=listOfNotNull(snapshot.nextExpiryMs,
+                    methodSnapshot.nextExpiryMs).minOrNull() ?:break
                 // The same device clock controls the expiry even when the user
                 // remains on this screen; reopening never restarts the timer.
                 delay(nearest.coerceAtLeast(1L))
@@ -1047,14 +1052,24 @@ private fun ServerVpnScreen(
                                             fontWeight=FontWeight.SemiBold,
                                             maxLines=2,overflow=TextOverflow.Ellipsis)
                                         
-                                        Text(stringResource(if(app.decodeEnabled)
-                                            R.string.server_vpn_catalog_enabled
-                                            else R.string.server_vpn_catalog_disabled),
-                                            color=Secondary,fontSize=11.sp)
-                                    }
-                                    if(app.id in newProviderIds) {
-                                        ServerVpnNewTag()
-                                        Spacer(Modifier.width(5.dp))
+                                        Text(stringResource(when {
+                                            app.maintenance -> R.string.server_vpn_maintenance_detail
+                                            app.decodeEnabled -> R.string.server_vpn_catalog_enabled
+                                            else -> R.string.server_vpn_catalog_disabled
+                                        }),color=Secondary,fontSize=11.sp)
+                                        when(ServerVpnBadgePriority.resolve(
+                                            maintenance=app.maintenance,
+                                            updated=app.id in updatedProviderIds,
+                                            newlyAdded=app.id in newProviderIds)) {
+                                            ServerVpnBadgeType.MAINTENANCE -> ServerVpnStatusTag(
+                                                R.string.server_vpn_maintenance_badge,
+                                                "server_vpn_maintenance_badge")
+                                            ServerVpnBadgeType.UPDATED -> ServerVpnStatusTag(
+                                                R.string.server_vpn_updated_badge,
+                                                "server_vpn_updated_badge")
+                                            ServerVpnBadgeType.NEW -> ServerVpnNewTag()
+                                            null -> Unit
+                                        }
                                     }
                                     val isFavorite=app.id in favoriteIds
                                     IconButton(
@@ -1082,7 +1097,7 @@ private fun ServerVpnScreen(
                                                 if(app.id=="nur-tunnel")onDecodeCatalog()
                                                 else onDecodeApp(app.id)
                                             },
-                                            enabled=!busy && app.decodeEnabled,
+                                            enabled=!busy && app.decodeEnabled && !app.maintenance,
                                             modifier=Modifier.fillMaxWidth()
                                                 .heightIn(min=50.dp),
                                             shape=RoundedCornerShape(13.dp),
@@ -1153,6 +1168,20 @@ private fun ServerVpnScreen(
         }
             }
         }
+    }
+}
+
+/** Neutral accessible labels; maintenance has priority over Updated and New. */
+@Composable
+private fun ServerVpnStatusTag(label:Int,tag:String) {
+    Surface(
+        color=Raised,shape=RoundedCornerShape(10.dp),
+        border=BorderStroke(1.dp,Color(0xFF818181)),
+        modifier=Modifier.testTag(tag),
+    ) {
+        Text(stringResource(label),color=White,fontSize=10.sp,
+            maxLines=1,fontWeight=FontWeight.SemiBold,
+            modifier=Modifier.padding(horizontal=7.dp,vertical=4.dp))
     }
 }
 

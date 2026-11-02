@@ -19,4 +19,7 @@
     <string name="server_vpn_catalog_current">Danh mục máy chủ VPN đã được cập nhật.</string>
     <string name="server_vpn_catalog_updated">Đã cập nhật danh mục máy chủ VPN.</string>
     <string name="server_vpn_catalog_update_error">Không thể kiểm tra hoặc tải danh mục. Vui lòng thử lại.</string>
+    <string name="server_vpn_updated_badge">Đã cập nhật</string>
+    <string name="server_vpn_maintenance_badge">Đang bảo trì</string>
+    <string name="server_vpn_maintenance_detail">Phương thức đang được bảo trì tạm thời</string>
 </resources>

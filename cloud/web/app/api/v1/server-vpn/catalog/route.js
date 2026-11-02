@@ -22,7 +22,9 @@ export async function POST(request) {
     if(input.knownVersion===currentVersion)
       return replyFor({apiVersion:"v1",catalogVersion:currentVersion,recheckAfterSeconds:RECHECK_SECONDS,unchanged:true},input.catalogKey);
     const availability=Object.fromEntries(summary.providers.map(p=>[p.id,p.enabled]));
-    const result=catalog({availability,version:currentVersion});
+    const methodStates=Object.fromEntries((summary.methodStatuses||[])
+      .map(({id,methodRevision,maintenance})=>[id,{methodRevision,maintenance}]));
+    const result=catalog({availability,methodStates,version:currentVersion});
     if(request.headers.get("x-spdecode-catalog-bundle")==="1"){
       const icons=result.apps.map(app=>{
         const icon=iconFor(app.id);

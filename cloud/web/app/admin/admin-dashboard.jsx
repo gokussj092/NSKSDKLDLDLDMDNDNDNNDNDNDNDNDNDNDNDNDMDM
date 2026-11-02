@@ -76,6 +76,23 @@ export default function AdminDashboard({mode="system"}){
   }catch(e){setError(e.message||"No se pudo actualizar el proveedor.");}
   finally{setBusy(false);}
  }
+ async function changeMethodStatus(id,operation,maintenance,name){
+  if(!data?.providerControls||busy||data.maintenanceLocked)return;
+  const action=operation==="revision"?"Registrar una actualización de método":
+   (maintenance?"Poner en mantenimiento":"Finalizar mantenimiento");
+  if(!window.confirm("¿"+action+" para "+name+
+    "? Se publicará una nueva versión de catálogo y la aplicación mostrará el estado correspondiente."))return;
+  setBusy(true);setError("");
+  try{
+   const body=operation==="revision"?{id,operation}:{id,operation,maintenance};
+   const response=await fetch("/api/admin/provider-methods",requestOptions(body));
+   const result=await response.json();
+   if(!response.ok)throw Error("No se pudo actualizar el método ("+response.status+").");
+   setData(prev=>({...prev,providerControls:result.providerControls}));
+   await refresh();
+  }catch(e){setError(e.message||"No se pudo guardar el estado del método.");}
+  finally{setBusy(false);}
+ }
  async function changePlayAdmission(){
   if(!data?.playAdmission||busy||data.playAdmission.locked)return;
   const required=!data.playAdmission.integrityRequired;
@@ -397,6 +414,30 @@ export default function AdminDashboard({mode="system"}){
      </div>;
     })}
     <p className="muted">Los cambios se guardan en un volumen de configuración independiente, incluso al reiniciar Redis o los contenedores. La versión del catálogo aumenta cuando cambias un proveedor; actualiza Server VPN en la aplicación. La activación de HTTP Injector requiere las claves originales del proveedor, que no se muestran aquí.</p>
+   </section>
+   <section className="admin-card sp-admin-services">
+    <div className="sp-admin-section-heading"><div>
+      <h2>Estados de métodos Server VPN</h2>
+      <p className="muted">«Actualizado» se publica exclusivamente al registrar una revisión del método. «En mantenimiento» es un estado explícito que bloquea nuevas operaciones del método. Cambiar disponibilidad o iconos no crea estas etiquetas.</p>
+    </div></div>
+    {(data.providerControls?.methodStatuses||[]).filter(method=>
+      method.name.toLowerCase().includes(providerQuery.trim().toLowerCase())||
+      method.id.toLowerCase().includes(providerQuery.trim().toLowerCase())
+    ).map(method=><div className="sp-admin-switch-row" key={"method:"+method.id}>
+      <div><strong>{method.name}</strong>
+        <small className="muted">Revisión del método: {method.methodRevision} · {method.maintenance?"En mantenimiento":"Sin mantenimiento"}</small>
+      </div>
+      <div style={{display:"flex",alignItems:"center",gap:"8px",flexWrap:"wrap"}}>
+        <button type="button" className="button subtle" disabled={busy||data.maintenanceLocked}
+          onClick={()=>changeMethodStatus(method.id,"revision",undefined,method.name)}
+          aria-label={"Registrar actualización: "+method.name}>Marcar actualizado</button>
+        <button type="button" className="sp-admin-switch" role="switch"
+          aria-label={"Mantenimiento del método: "+method.name}
+          aria-checked={Boolean(method.maintenance)} disabled={busy||data.maintenanceLocked}
+          onClick={()=>changeMethodStatus(method.id,"maintenance",!method.maintenance,method.name)}><span/></button>
+      </div>
+    </div>)}
+    <p className="muted">Los estados se incorporan a la misma respuesta versionada del catálogo. No se consultan por tarjeta.</p>
    </section>   </>}
 
    {mode==="maintenance"&&<>

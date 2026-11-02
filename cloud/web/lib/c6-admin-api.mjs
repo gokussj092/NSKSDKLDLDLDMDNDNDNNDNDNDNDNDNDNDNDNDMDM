@@ -11,7 +11,7 @@ import {v2PlayPolicyStatus,changeV2PlayPolicy,changeV2PlaySettings} from "./v2-p
 import {v2DevicePolicyStatus,changeV2DevicePolicy,PATCH_MONTHS,TEST_HOURS} from "./v2-device-admission-policy.mjs";
 import {admissionDiagnostics} from "./v2-admission-diagnostics.mjs";
 import {v2Settings} from "./v2-config.mjs";
-import {providerOverview,updateProvider,PUBLIC_PROVIDER_IDS} from "./c12-provider-controls.mjs";
+import {providerOverview,updateProvider,updateMethodState,PUBLIC_PROVIDER_IDS} from "./c12-provider-controls.mjs";
 import { ehiConfigured,nurConfigured } from "./c35-provider.mjs";
 import { jsonReply } from "./responses.mjs";
 import {readOpsReport,hostHealth} from "./c14-ops-observability.mjs";
@@ -366,6 +366,33 @@ export async function providerControlRequest(request,options={}){
   if(cause?.message==="PROVIDER_BUSY")return error("PROVIDER_BUSY",409);
   return error("SERVICE_UNAVAILABLE",503);
  }
+}
+
+/** Authenticated method metadata: revision increments and explicit maintenance only.
+ * Identifiers are validated against the fixed Server VPN roster by the state store. */
+export async function providerMethodRequest(request,options={}){
+  const cfg=adminSettings();
+  if(!cfg.enabled)return error("ADMIN_DISABLED",503);
+  if(!validMutation(request,cfg))return error("CSRF_REJECTED",403);
+  try{
+    const redis=await (options.storeProvider||opsStore)();
+    if(!await authenticateAdmin(redis,request,cfg))return error("UNAUTHORIZED",401);
+    const body=await parseSmallJson(request,256);
+    if(!body || typeof body!=="object" || Array.isArray(body) ||
+       typeof body.id!=="string" ||
+       !["revision","maintenance"].includes(body.operation) ||
+       Object.keys(body).some(k=>!["id","operation","maintenance"].includes(k)) ||
+       (body.operation==="maintenance" && typeof body.maintenance!=="boolean") ||
+       (body.operation==="revision" && Object.hasOwn(body,"maintenance")))
+      return error("INVALID_REQUEST",400);
+    const providerControls=await updateMethodState(body.id,body.operation,body.maintenance);
+    return api({providerControls},200,{"Cache-Control":"private, no-store"});
+  }catch(cause){
+    if(cause?.message==="INVALID_METHOD_STATE")return error("INVALID_REQUEST",400);
+    if(["MAINTENANCE_LOCKED","PROVIDER_BUSY","METHOD_REVISION_EXHAUSTED"].includes(cause?.message))
+      return error(cause.message,409);
+    return error("SERVICE_UNAVAILABLE",503);
+  }
 }
 
 /** Reset per-format error baselines only; success/warnings/usage history remain untouched. */

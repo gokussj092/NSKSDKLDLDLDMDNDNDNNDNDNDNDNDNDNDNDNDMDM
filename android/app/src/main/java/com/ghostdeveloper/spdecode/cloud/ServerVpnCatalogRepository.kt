@@ -20,6 +20,8 @@ data class ServerVpnApp(
     val name:String,
     val icon:Bitmap,
     val decodeEnabled:Boolean,
+    val methodRevision:Int=0,
+    val maintenance:Boolean=false,
 )
 
 /** All app images are the original, hash-checked PNGs supplied by the API. */
@@ -72,7 +74,19 @@ internal class ServerVpnCatalogRepository(
             val bytes=vault.read("icon-$id")?:return emptyList()
             if(digest(bytes)!=checksum)return emptyList()
             val bitmap=image(bytes)?:return emptyList()
-            apps.add(ServerVpnApp(id,name,bitmap,app.optBoolean("decodeEnabled",false)))
+            val revision=if(app.has("methodRevision")) {
+                val raw=app.opt("methodRevision")
+                if(raw !is Number || raw.toDouble()!=raw.toInt().toDouble() ||
+                    raw.toInt() !in 0..1_000_000)return emptyList()
+                raw.toInt()
+            }else 0
+            val maintenance=if(app.has("maintenance")) {
+                val raw=app.opt("maintenance")
+                if(raw !is Boolean)return emptyList()
+                raw
+            }else false
+            apps.add(ServerVpnApp(id,name,bitmap,
+                app.optBoolean("decodeEnabled",false) && !maintenance,revision,maintenance))
         }
         return apps
     }
@@ -184,6 +198,7 @@ internal class ServerVpnCatalogRepository(
     suspend fun cached():List<ServerVpnApp> = withContext(Dispatchers.IO) {
         verifiedApps(stored()).also { apps ->
             newBadges.observeCatalog(apps.map { it.id }.toSet())
+            newBadges.observeMethods(apps.associate { it.id to it.methodRevision })
         }
     }
 
@@ -199,6 +214,7 @@ internal class ServerVpnCatalogRepository(
             // Establish the previous verified catalog as the local baseline before
             // incorporating newly published entries (also from background sync).
             newBadges.observeCatalog(available.map { it.id }.toSet())
+            newBadges.observeMethods(available.associate { it.id to it.methodRevision })
             val now=System.currentTimeMillis()
             val last=previous?.optLong("checkedAtMillis",0L)?:0L
             val previousVersion=previous?.optInt("catalogVersion",0)?:0
@@ -292,6 +308,7 @@ internal class ServerVpnCatalogRepository(
                 onProgress?.invoke(100)
                 verifiedApps(fresh).ifEmpty { available }.also { apps ->
                     newBadges.observeCatalog(apps.map { it.id }.toSet())
+            newBadges.observeMethods(apps.associate { it.id to it.methodRevision })
                 }
             }catch(error:CancellationException){throw error}
              catch(error:Exception){if(force)throw error else available}

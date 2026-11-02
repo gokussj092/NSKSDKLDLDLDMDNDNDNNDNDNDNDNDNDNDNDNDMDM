@@ -185,24 +185,42 @@ Rama: `fix/http-jireh-current-method`. Se traslada Formatos a **Ajustes → Form
 
 Se actualizan el tutorial, los 14 idiomas y pruebas de instrumentación de navegación. Compilación y pruebas Android remotas pendientes; el commit se prepara con `[skip ci]` por ahorro de GitHub Actions. La versión y build Gradle no cambian.
 
-## Implementación Fase 2 — Presentación del módulo de APK
+## Implementación Fase 3 — Estados de métodos Server VPN
 
-La sección **Análisis de APK** de la tercera pestaña tiene una vista AMOLED desplazable,
-compatible con pantallas compactas: estado «Próximamente», explicación del análisis
-estático previsto, tres pasos de flujo, modalidad de suscripción futura y precios
-propuestos por crédito. Se aclara que **1 APK = 1 crédito**, **1 crédito = 4 USD**,
-y que los 4 USD **no representan la cuota de suscripción**.
+**Rama:** `fix/http-jireh-current-method`. Se incorpora un contrato aditivo
+`apps[].methodRevision` (entero 0..1 000 000) y `apps[].maintenance`
+(booleano, explícito) en la respuesta **existente** del catálogo de Server VPN.
+Las versiones Android anteriores ignoran los campos opcionales. No hay endpoints
+por tarjeta ni búsquedas adicionales para etiquetas.
 
-El botón «Importar APK» permanece deshabilitado: no abre el selector de archivos,
-no instala ni ejecuta paquetes, no realiza solicitudes, no registra usuarios,
-no cobra ni descuenta créditos. Los detalles definitivos de suscripción están por
-definir. El contenido nuevo se localiza en los 14 idiomas de la aplicación.
+- **Nuevo:** mecanismo local original, 2 horas después de añadir una app; sin
+  activar todos los proveedores durante la primera instalación.
+- **Actualizado:** cuando el operador registra una **nueva revisión del método**
+  desde el panel; el cliente compara revisiones verificadas almacenadas
+  localmente y muestra la etiqueta durante 2 horas. Cambios de versión global,
+  iconos o switches no incrementan `methodRevision`.
+- **En mantenimiento:** el operador marca explícitamente la aplicación. La
+  API incluye `maintenance:true`, bloquea operaciones del proveedor y
+  Android desactiva la acción. No se infiere de fallas de red, credenciales,
+  un método desconfigurado ni de un switch deshabilitado.
+- Si coinciden estados, prioridad visual: **mantenimiento, actualizado, nuevo**.
+  Las etiquetas tienen traducción en los 14 idiomas; no dependen solo del color.
 
-Archivos de fase: `ApkAnalysisComingSoonScreen.kt`, recursos Android
-`values*/strings.xml`, prueba instrumentada de estado y navegación y retirada
-del placeholder mínimo de `SpDecodeApp.kt`. Este commit no altera motores
-de descifrado, seguridad de V2, lógica del VPS ni versión Gradle.
+**Persistencia del servidor:** el mismo volumen privado de controles de
+proveedores guarda `methodRevisions` y `maintenance` con escritura atómica,
+bloqueo, validación por lista fija de identificadores y aumento monotónico
+de `catalogVersion` cuando cambia algo real. Los cambios operativos aparecen
+en `/admin/providers` y se realizan mediante
+`POST /api/admin/provider-methods` con la misma autenticación y CSRF del panel.
+El botón «Marcar actualizado» es explícito y no se activa al actualizar iconos.
+Sin nuevas credenciales ni filtraciones de claves.
 
-**QA:** revisiones estáticas y recursos; compilación Android y ejecución
-instrumentada pendientes. Evitar workflows de Actions hasta una validación
-consolidada de varias fases.
+**Publicación y compatibilidad:** versión base del catálogo elevada a 62 para
+invalidar cachés al desplegar. El VPS sigue usando su versión monotónica
+persistida; no sustituirla por 62 ni reducirla. El operador debe actualizar
+y comprobar el servidor antes de esperar cambios en las APK conectadas.
+
+**QA:** se añaden pruebas Node de revisión, mantenimiento, persistencia,
+invalidación, aislamiento de ID y no reactivación; pruebas Android de prioridad
+y expiración local. Compilación y ejecuciones automatizadas pendientes:
+evitar GitHub Actions hasta validación agrupada de fases.
