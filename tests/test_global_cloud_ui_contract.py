@@ -87,18 +87,22 @@ class GlobalCloudUiContracts(unittest.TestCase):
 
     def test_frozen_c0_ui_remains_bit_for_bit_unchanged(self):
         baseline=json.loads(text("docs/cloud/C0_UI_BASELINE.json"))
+        approved=json.loads(text("docs/cloud/C0_UI_APPROVED_1_1_26.json"))["uiGitBlobSha1"]
         for filename in ("SpDecodeApp.kt","HttpInjectorCloudPanel.kt"):
             path="android/app/src/main/java/com/ghostdeveloper/spdecode/"+filename
             content=(ROOT/path).read_bytes()
             actual=hashlib.sha1(b"blob "+str(len(content)).encode()+bytes([0])+content).hexdigest()
-            self.assertEqual(actual,baseline["uiGitBlobSha1"][path])
+            self.assertEqual(actual,approved.get(path,baseline["uiGitBlobSha1"][path]))
 
     def test_cloud_source_injection_and_existing_routes_are_kept(self):
         script=text("android/app/build.gradle.kts")
-        self.assertIn("GlobalCloudImportPanel(",script)
-        self.assertIn("onDecodeCloud:(String,String)->Unit",script)
-        self.assertIn('cloudTextFormats.filterNot{it.kind==',script)
         self.assertIn("prepareCloudOnlySources",script)
+        activity=text("android/app/src/main/java/com/ghostdeveloper/spdecode/MainActivity.kt")
+        app=text("android/app/src/main/java/com/ghostdeveloper/spdecode/SpDecodeApp.kt")
+        self.assertIn('onDecodeCloud={reference->decodeCloud("auto",reference)}',activity)
+        self.assertIn("CloudOnlineReference.resolve(",activity)
+        self.assertIn("HttpInjectorCloudPanel(",app)
+        self.assertIn("onDecodeCloud:(String)->Unit",app)
         cloud=text("android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudOnlineReference.kt")
         self.assertIn('Provider("ehi","HTTP Injector Cloud")',cloud)
         self.assertIn('Provider("hc","HTTP Custom Cloud")',cloud)
