@@ -138,7 +138,7 @@
     <string name="native_decoder_mixed_short">ترکیبی</string>
     <string name="clear_current_result">پاک کردن نتیجه نمایش‌داده‌شده</string>
     <string name="guide_settings_title">راهنمای تعاملی</string>
-    <string name="guide_settings_detail">بخش‌ها را به‌ترتیب خانه، تاریخچه، فرمت‌ها، سرورهای VPN و تنظیمات ببینید. راهنما را هر زمان می‌توانید تکرار کنید.</string>
+    <string name="guide_settings_detail">خانه، تاریخچه، تحلیل APK، سرورهای VPN و تنظیمات را بررسی کنید. راهنما را هر زمان می‌توانید دوباره شروع کنید.</string>
     <string name="guide_replay">شروع راهنما</string>
     <string name="settings_version">نسخه %1$s</string>
     <string name="settings_build_code">شماره ساخت %1$d</string>
@@ -199,7 +199,7 @@
     <string name="hc_auth_enter_manually">ورود دستی رمز عبور</string>
     <string name="hc_auth_input_invalid">رمز عبور لازم و/یا HWID معتبر 32 نویسه‌ای را وارد کنید.</string>
     <string name="hc_auth_failed">احراز اصالت این فایل محافظت‌شده HTTP Custom ممکن نشد. رمز عبور یا HWID را بررسی کنید؛ فایل ممکن است خراب باشد یا از گونه‌ای پشتیبانی‌نشده استفاده کند.</string>
-    <string name="guide_step_six">فرمت‌ها: برنامه‌ها و پسوندهای پشتیبانی‌شده را ببینید.</string>
+    <string name="guide_step_six">تحلیل APK: این قابلیت به‌زودی ارائه می‌شود.</string>
     <string name="guide_step_seven">سرورهای VPN: یک برنامه انتخاب کنید و فهرست سرورهای آن را رمزگشایی کنید.</string>
     <string name="guide_step_eight">تنظیمات: زبان را تغییر دهید، حریم خصوصی را بخوانید و برنامه را تنظیم کنید.</string>
     <string name="server_vpn">سرورهای VPN</string>
@@ -212,4 +212,8 @@
     <string name="nur_servers_invalid_url">نشانی HTTPS معتبر برای فهرست سرورها وارد کنید.</string>
     <string name="nur_servers_failed">دریافت، تأیید اصالت یا رمزگشایی فهرست سرورها انجام نشد.</string>
     <string name="language_screen_title">انتخاب زبان</string>
+    <string name="apk_analysis_title">تحلیل APK</string>
+    <string name="apk_analysis_coming_soon">به‌زودی</string>
+    <string name="settings_formats_title">قالب‌های پشتیبانی‌شده</string>
+    <string name="settings_formats_detail">پسوندهای فایل و پروتکل‌های متنی سازگار را ببینید.</string>
 </resources>

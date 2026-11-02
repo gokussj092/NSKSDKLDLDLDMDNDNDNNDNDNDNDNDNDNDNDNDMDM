@@ -5,6 +5,7 @@ import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.hasSetTextAction
@@ -40,7 +41,7 @@ class FunctionalUiInstrumentedTest {
         ui.onNodeWithText(ctx.getString(R.string.illustrative)).assertExists()
         ui.onNodeWithContentDescription(ctx.getString(R.string.home)).assertExists()
         ui.onNodeWithContentDescription(ctx.getString(R.string.history)).assertExists()
-        ui.onNodeWithContentDescription(ctx.getString(R.string.formats)).assertExists()
+        ui.onNodeWithContentDescription(ctx.getString(R.string.apk_analysis_title)).assertExists()
         ui.onNodeWithContentDescription(ctx.getString(R.string.settings)).assertExists()
     }
 
@@ -56,14 +57,26 @@ class FunctionalUiInstrumentedTest {
         ui.onNodeWithText(ctx.getString(R.string.result)).assertExists()
     }
 
-    @Test fun formatsTabExposesExperimentalSuffixesNotCertified(){
+    @Test fun formatsAvailableFromSettingsAndCanGoBack(){
         awaitStartup()
         val ctx=ui.activity
-        ui.onNodeWithContentDescription(ctx.getString(R.string.formats)).performClick()
+        ui.onNodeWithContentDescription(ctx.getString(R.string.settings)).performClick()
+        ui.onNodeWithTag("settings_formats_entry").performClick()
         ui.onNode(hasSetTextAction()).performTextInput("sksrv.png")
         ui.onNodeWithText(".sksrv.png").assertExists()
         ui.onNodeWithText("SKS Server").assertExists()
         ui.onNodeWithText(ctx.getString(R.string.catalog_note)).assertExists()
+        ui.onNodeWithTag("settings_formats_back").performClick()
+        ui.onNodeWithTag("settings_formats_entry").assertExists()
+    }
+
+    @Test fun formerFormatsTabShowsOnlyApkComingSoon(){
+        awaitStartup()
+        val ctx=ui.activity
+        ui.onNodeWithContentDescription(ctx.getString(R.string.apk_analysis_title)).performClick()
+        ui.onNodeWithTag("apk_analysis_placeholder").assertExists()
+        ui.onNodeWithText(ctx.getString(R.string.apk_analysis_coming_soon)).assertExists()
+        ui.onNode(hasSetTextAction()).assertDoesNotExist()
     }
 
     @Test fun settingsTabClarifiesLocalEncryptedPersistentHistory(){

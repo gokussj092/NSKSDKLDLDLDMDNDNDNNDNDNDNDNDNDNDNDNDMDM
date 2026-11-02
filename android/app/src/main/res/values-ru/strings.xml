@@ -138,7 +138,7 @@
     <string name="native_decoder_mixed_short">Смешанный</string>
     <string name="clear_current_result">Очистить отображаемый результат</string>
     <string name="guide_settings_title">Интерактивное руководство</string>
-    <string name="guide_settings_detail">Изучайте разделы по порядку: Главная, История, Форматы, VPN-серверы, Настройки. Руководство можно повторить.</string>
+    <string name="guide_settings_detail">Изучите Главную, Историю, Анализ APK, VPN-серверы и Настройки. Руководство можно запустить повторно в любое время.</string>
     <string name="guide_replay">Начать обучение</string>
     <string name="settings_version">Версия %1$s</string>
     <string name="settings_build_code">Сборка %1$d</string>
@@ -199,7 +199,7 @@
     <string name="hc_auth_enter_manually">Ввести пароль вручную</string>
     <string name="hc_auth_input_invalid">Введите нужный пароль и/или корректный HWID из 32 символов.</string>
     <string name="hc_auth_failed">Не удалось проверить подлинность защищённого файла HTTP Custom. Проверьте пароль и/или HWID; файл также может быть повреждён или использовать неподдерживаемый вариант.</string>
-    <string name="guide_step_six">Форматы: просматривайте поддерживаемые приложения и расширения.</string>
+    <string name="guide_step_six">Анализ APK: эта функция скоро появится.</string>
     <string name="guide_step_seven">VPN-серверы: выберите приложение и декодируйте его каталог серверов.</string>
     <string name="guide_step_eight">Настройки: выберите язык, прочтите сведения о конфиденциальности и настройте приложение.</string>
     <string name="server_vpn">VPN-серверы</string>
@@ -212,4 +212,8 @@
     <string name="nur_servers_invalid_url">Введите корректный HTTPS-адрес списка серверов.</string>
     <string name="nur_servers_failed">Не удалось загрузить, проверить или расшифровать каталог серверов.</string>
     <string name="language_screen_title">Выбрать язык</string>
+    <string name="apk_analysis_title">Анализ APK</string>
+    <string name="apk_analysis_coming_soon">Скоро</string>
+    <string name="settings_formats_title">Поддерживаемые форматы</string>
+    <string name="settings_formats_detail">Просмотрите совместимые расширения файлов и текстовые протоколы.</string>
 </resources>

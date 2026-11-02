@@ -589,8 +589,8 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
             },
         )""")
         app = replaceOnce(app,
-            "2->FormatsScreen(cloudFormats,cloudTextFormats,serverVpnLoading,catalogProgress)",
-            "2->FormatsScreen(cloudFormats,cloudTextFormats.filterNot{it.kind==\"cloud\"&&it.suffix==\"hc\"},serverVpnLoading,catalogProgress)")
+            "supportedFormats=cloudFormats,supportedTextFormats=cloudTextFormats,",
+            "supportedFormats=cloudFormats,supportedTextFormats=cloudTextFormats.filterNot{it.kind==\"cloud\"&&it.suffix==\"hc\"},")
 
         listOf(appPath to app, activityPath to activity).forEach { (name,content)->
             val output=cloudHistoryUiRoot.get().file(name).asFile

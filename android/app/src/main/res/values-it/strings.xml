@@ -139,7 +139,7 @@
     <string name="native_decoder_mixed_short">Misto</string>
     <string name="clear_current_result">Cancella risultato visualizzato</string>
     <string name="guide_settings_title">Guida interattiva</string>
-    <string name="guide_settings_detail">Segui Home, Cronologia, Formati, Server VPN e Impostazioni. Puoi riavviare la guida.</string>
+    <string name="guide_settings_detail">Esplora Home, Cronologia, Analisi APK, Server VPN e Impostazioni. Puoi riavviare la guida in qualsiasi momento.</string>
     <string name="guide_replay">Avvia guida</string>
     <string name="settings_version">Versione %1$s</string>
     <string name="settings_build_code">Build %1$d</string>
@@ -200,7 +200,7 @@
     <string name="hc_auth_enter_manually">Inserisci password manualmente</string>
     <string name="hc_auth_input_invalid">Inserisci la password richiesta e/o un HWID valido di 32 caratteri.</string>
     <string name="hc_auth_failed">Impossibile autenticare il file HTTP Custom protetto. Controlla password/HWID; il file potrebbe essere danneggiato o non supportato.</string>
-    <string name="guide_step_six">Formati: sfoglia app ed estensioni supportate.</string>
+    <string name="guide_step_six">Analisi APK: questa funzione sarà presto disponibile.</string>
     <string name="guide_step_seven">Server VPN: scegli un\'app e decodifica il suo catalogo server.</string>
     <string name="guide_step_eight">Impostazioni: scegli la lingua, consulta la privacy e gestisci le preferenze.</string>
     <string name="server_vpn">Server VPN</string>
@@ -213,4 +213,8 @@
     <string name="nur_servers_invalid_url">Inserisci un URL HTTPS valido per l\'elenco server.</string>
     <string name="nur_servers_failed">Impossibile scaricare, verificare o decodificare il catalogo server.</string>
     <string name="language_screen_title">Seleziona lingua</string>
+    <string name="apk_analysis_title">Analisi APK</string>
+    <string name="apk_analysis_coming_soon">Prossimamente</string>
+    <string name="settings_formats_title">Formati supportati</string>
+    <string name="settings_formats_detail">Consulta le estensioni dei file e i protocolli di testo compatibili.</string>
 </resources>

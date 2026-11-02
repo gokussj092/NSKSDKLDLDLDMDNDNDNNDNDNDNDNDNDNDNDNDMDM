@@ -138,7 +138,7 @@
     <string name="native_decoder_mixed_short">Gemischt</string>
     <string name="clear_current_result">Angezeigtes Ergebnis löschen</string>
     <string name="guide_settings_title">Interaktive Anleitung</string>
-    <string name="guide_settings_detail">Folge der Reihenfolge Startseite, Verlauf, Formate, VPN-Server und Einstellungen. Starte die Anleitung jederzeit erneut.</string>
+    <string name="guide_settings_detail">Entdecke Startseite, Verlauf, APK-Analyse, VPN-Server und Einstellungen. Du kannst die Anleitung jederzeit neu starten.</string>
     <string name="guide_replay">Geführte Tour starten</string>
     <string name="settings_version">Version %1$s</string>
     <string name="settings_build_code">Build %1$d</string>
@@ -199,7 +199,7 @@
     <string name="hc_auth_enter_manually">Passwort manuell eingeben</string>
     <string name="hc_auth_input_invalid">Gib das benötigte Passwort und/oder eine gültige HWID mit 32 Zeichen ein.</string>
     <string name="hc_auth_failed">Diese geschützte HTTP Custom-Datei konnte nicht authentifiziert werden. Prüfe Passwort und/oder HWID; die Datei könnte beschädigt sein oder eine nicht unterstützte Variante verwenden.</string>
-    <string name="guide_step_six">Formate: Durchsuche unterstützte Apps und Dateiendungen.</string>
+    <string name="guide_step_six">APK-Analyse: Diese Funktion kommt demnächst.</string>
     <string name="guide_step_seven">VPN-Server: Wähle eine App und entschlüssele ihren Serverkatalog.</string>
     <string name="guide_step_eight">Einstellungen: Ändere die Sprache, lies die Datenschutzhinweise und passe die App an.</string>
     <string name="server_vpn">VPN-Server</string>
@@ -212,4 +212,8 @@
     <string name="nur_servers_invalid_url">Gib eine gültige HTTPS-URL für die Serverliste ein.</string>
     <string name="nur_servers_failed">Serverliste konnte nicht heruntergeladen, authentifiziert oder entschlüsselt werden.</string>
     <string name="language_screen_title">Sprache auswählen</string>
+    <string name="apk_analysis_title">APK-Analyse</string>
+    <string name="apk_analysis_coming_soon">Demnächst verfügbar</string>
+    <string name="settings_formats_title">Unterstützte Formate</string>
+    <string name="settings_formats_detail">Kompatible Dateiendungen und Textprotokolle ansehen.</string>
 </resources>

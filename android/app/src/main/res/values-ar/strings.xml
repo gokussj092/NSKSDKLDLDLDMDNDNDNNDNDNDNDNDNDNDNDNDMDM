@@ -138,7 +138,7 @@
     <string name="native_decoder_mixed_short">مختلط</string>
     <string name="clear_current_result">مسح النتيجة المعروضة</string>
     <string name="guide_settings_title">دليل تفاعلي</string>
-    <string name="guide_settings_detail">اتبع الترتيب: الرئيسية ثم السجل ثم الصيغ ثم خوادم VPN ثم الإعدادات. يمكنك إعادة الدليل في أي وقت.</string>
+    <string name="guide_settings_detail">استكشف الرئيسية والسجل وتحليل APK وخوادم VPN والإعدادات. يمكنك إعادة تشغيل الدليل في أي وقت.</string>
     <string name="guide_replay">بدء الجولة الإرشادية</string>
     <string name="settings_version">الإصدار %1$s</string>
     <string name="settings_build_code">رقم البناء %1$d</string>
@@ -199,7 +199,7 @@
     <string name="hc_auth_enter_manually">إدخال كلمة المرور يدويًا</string>
     <string name="hc_auth_input_invalid">أدخل كلمة المرور المطلوبة و/أو معرّف HWID صالحًا مكوّنًا من 32 حرفًا.</string>
     <string name="hc_auth_failed">تعذرت مصادقة ملف HTTP Custom المحمي. تحقق من كلمة المرور و/أو HWID؛ فقد يكون الملف تالفًا أو يستخدم صيغة غير مدعومة.</string>
-    <string name="guide_step_six">الصيغ: تصفح التطبيقات والامتدادات المدعومة.</string>
+    <string name="guide_step_six">تحليل APK: ستتوفر هذه الميزة قريبًا.</string>
     <string name="guide_step_seven">خوادم VPN: اختر تطبيقًا وفك تشفير قائمة خوادمه.</string>
     <string name="guide_step_eight">الإعدادات: غيّر اللغة وراجع الخصوصية واضبط تفضيلات التطبيق.</string>
     <string name="server_vpn">خوادم VPN</string>
@@ -212,4 +212,8 @@
     <string name="nur_servers_invalid_url">أدخل رابط HTTPS صالحًا لقائمة الخوادم.</string>
     <string name="nur_servers_failed">تعذر تنزيل قائمة الخوادم أو التحقق منها أو فك تشفيرها.</string>
     <string name="language_screen_title">اختيار اللغة</string>
+    <string name="apk_analysis_title">تحليل APK</string>
+    <string name="apk_analysis_coming_soon">قريبًا</string>
+    <string name="settings_formats_title">الصيغ المدعومة</string>
+    <string name="settings_formats_detail">تصفح امتدادات الملفات وبروتوكولات النص المدعومة.</string>
 </resources>

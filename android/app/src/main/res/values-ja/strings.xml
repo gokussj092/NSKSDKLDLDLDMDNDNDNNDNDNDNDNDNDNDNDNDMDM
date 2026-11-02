@@ -139,7 +139,7 @@
     <string name="native_decoder_mixed_short">混在</string>
     <string name="clear_current_result">表示中の結果を消去</string>
     <string name="guide_settings_title">操作ガイド</string>
-    <string name="guide_settings_detail">ホーム、履歴、形式、VPN サーバー、設定の順に確認できます。いつでもやり直せます。</string>
+    <string name="guide_settings_detail">ホーム、履歴、APK解析、VPNサーバー、設定を確認しましょう。このガイドはいつでも再開できます。</string>
     <string name="guide_replay">ガイドを開始</string>
     <string name="settings_version">バージョン %1$s</string>
     <string name="settings_build_code">ビルド %1$d</string>
@@ -200,7 +200,7 @@
     <string name="hc_auth_enter_manually">パスワードを手入力</string>
     <string name="hc_auth_input_invalid">必要なパスワードと、該当する場合は有効な32文字の HWID を入力してください。</string>
     <string name="hc_auth_failed">保護された HTTP Custom ファイルを認証できません。パスワード/HWID を確認してください。破損または未対応の可能性もあります。</string>
-    <string name="guide_step_six">形式: 対応アプリと拡張子を確認します。</string>
+    <string name="guide_step_six">APK解析：この機能は近日公開予定です。</string>
     <string name="guide_step_seven">VPN サーバー: アプリを選び、サーバーカタログをデコードします。</string>
     <string name="guide_step_eight">設定: 言語を選び、プライバシーを確認し、アプリの設定を管理します。</string>
     <string name="server_vpn">VPN サーバー</string>
@@ -213,4 +213,8 @@
     <string name="nur_servers_invalid_url">サーバー一覧の有効な HTTPS URL を入力してください。</string>
     <string name="nur_servers_failed">サーバーカタログの取得、検証、またはデコードに失敗しました。</string>
     <string name="language_screen_title">言語を選択</string>
+    <string name="apk_analysis_title">APK解析</string>
+    <string name="apk_analysis_coming_soon">近日公開</string>
+    <string name="settings_formats_title">対応フォーマット</string>
+    <string name="settings_formats_detail">対応するファイル拡張子とテキストプロトコルを確認できます。</string>
 </resources>

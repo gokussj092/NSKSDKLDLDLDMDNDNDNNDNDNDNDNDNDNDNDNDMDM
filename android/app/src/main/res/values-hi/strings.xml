@@ -139,7 +139,7 @@
     <string name="native_decoder_mixed_short">मिश्रित</string>
     <string name="clear_current_result">दिखाया परिणाम साफ़ करें</string>
     <string name="guide_settings_title">इंटरैक्टिव गाइड</string>
-    <string name="guide_settings_detail">होम, इतिहास, प्रारूप, VPN सर्वर और सेटिंग को क्रम में देखें। गाइड फिर शुरू कर सकते हैं।</string>
+    <string name="guide_settings_detail">होम, इतिहास, APK विश्लेषण, VPN सर्वर और सेटिंग्स देखें। आप इस गाइड को कभी भी फिर शुरू कर सकते हैं।</string>
     <string name="guide_replay">गाइड शुरू करें</string>
     <string name="settings_version">संस्करण %1$s</string>
     <string name="settings_build_code">बिल्ड %1$d</string>
@@ -200,7 +200,7 @@
     <string name="hc_auth_enter_manually">पासवर्ड स्वयं दर्ज करें</string>
     <string name="hc_auth_input_invalid">आवश्यक पासवर्ड और/या मान्य 32-अक्षर HWID दर्ज करें।</string>
     <string name="hc_auth_failed">सुरक्षित HTTP Custom फ़ाइल सत्यापित नहीं हुई। पासवर्ड/HWID जाँचें; फ़ाइल खराब या असमर्थित रूप की हो सकती है।</string>
-    <string name="guide_step_six">प्रारूप: समर्थित ऐप और एक्सटेंशन देखें।</string>
+    <string name="guide_step_six">APK विश्लेषण: यह सुविधा जल्द उपलब्ध होगी।</string>
     <string name="guide_step_seven">VPN सर्वर: ऐप चुनें और सर्वर कैटलॉग डिकोड करें।</string>
     <string name="guide_step_eight">सेटिंग: भाषा चुनें, गोपनीयता देखें और ऐप विकल्प सँभालें।</string>
     <string name="server_vpn">VPN सर्वर</string>
@@ -213,4 +213,8 @@
     <string name="nur_servers_invalid_url">सर्वर सूची के लिए मान्य HTTPS URL दर्ज करें।</string>
     <string name="nur_servers_failed">सर्वर कैटलॉग डाउनलोड, सत्यापित या डिकोड नहीं हुआ।</string>
     <string name="language_screen_title">भाषा चुनें</string>
+    <string name="apk_analysis_title">APK विश्लेषण</string>
+    <string name="apk_analysis_coming_soon">जल्द आ रहा है</string>
+    <string name="settings_formats_title">समर्थित प्रारूप</string>
+    <string name="settings_formats_detail">संगत फ़ाइल एक्सटेंशन और टेक्स्ट प्रोटोकॉल देखें।</string>
 </resources>

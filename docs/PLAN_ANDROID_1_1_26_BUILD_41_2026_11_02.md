@@ -178,3 +178,9 @@ Orden sugerido: reorganizar navegación y Acerca de; añadir la pantalla Próxim
 ## Continuidad entre chats
 
 Para continuar, leer este plan y la documentación de compatibilidad enlazada al inicio. No confundir especificación con funciones ya entregadas: este cambio solo añade documentación. Mantener las mejoras existentes de seguridad y solicitudes al implementar la navegación nueva. Las demás ideas no descritas aquí quedan fuera de alcance hasta que el propietario las concrete.
+
+## Registro de implementación — Fase 1 (navegación)
+
+Rama: `fix/http-jireh-current-method`. Se traslada Formatos a **Ajustes → Formatos soportados** mediante pantalla propia y retorno a Ajustes. La lista conserva búsqueda y protocolos de texto desde la misma caché local o en memoria; abrirla no genera peticiones nuevas. La antigua pestaña ofrece **Análisis de APK / Próximamente** sin importación, ejecución, análisis ni cobros.
+
+Se actualizan el tutorial, los 14 idiomas y pruebas de instrumentación de navegación. Compilación y pruebas Android remotas pendientes; el commit se prepara con `[skip ci]` por ahorro de GitHub Actions. La versión y build Gradle no cambian.

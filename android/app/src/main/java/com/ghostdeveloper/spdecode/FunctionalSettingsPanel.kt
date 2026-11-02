@@ -16,6 +16,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.testTag
+import com.ghostdeveloper.spdecode.parity.AndroidDecoderCatalog
+import com.ghostdeveloper.spdecode.cloud.CloudTextRoute
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,18 +47,30 @@ fun FunctionalSettingsPanel(
     onCatalogUpdates:(Boolean)->Unit={},
     usageAnalyticsEnabled:Boolean=false,
     onUsageAnalytics:(Boolean)->Unit={},
+    supportedFormats:List<AndroidDecoderCatalog.Format> = emptyList(),
+    supportedTextFormats:List<CloudTextRoute> = emptyList(),
+    catalogLoading:Boolean=false,
+    catalogProgress:Int?=null,
 ){
     var clearDialog by remember { mutableStateOf(false) }
     var languagePage by rememberSaveable { mutableStateOf(false) }
+    var formatsPage by rememberSaveable { mutableStateOf(false) }
     var retentionDialog by remember { mutableStateOf(false) }
     var withdrawDialog by remember { mutableStateOf(false) }
-    BackHandler(enabled=languagePage) { languagePage=false }
+    BackHandler(enabled=languagePage || formatsPage) {
+        if(formatsPage) formatsPage=false else languagePage=false
+    }
     if(languagePage) {
         LanguageSelectionScreen(
             selectedLanguage=language,
             onBack={languagePage=false},
             onSelect={tag->if(language!=tag)onLanguage(tag)},
         )
+        return
+    }
+    if(formatsPage) {
+        FormatsScreen(supportedFormats,supportedTextFormats,catalogLoading,catalogProgress,
+            onBack={formatsPage=false})
         return
     }
     Column(
@@ -88,6 +103,25 @@ fun FunctionalSettingsPanel(
                 }
                 Icon(Icons.Outlined.ChevronRight,
                     stringResource(R.string.language_title),tint=MutedText)
+            }
+        }
+        SettingsCard {
+            Row(
+                modifier=Modifier.fillMaxWidth().testTag("settings_formats_entry")
+                    .clickable{formatsPage=true}.padding(vertical=5.dp),
+                verticalAlignment=Alignment.CenterVertically,
+            ) {
+                Icon(Icons.Outlined.Code,null,tint=TitleText,modifier=Modifier.size(25.dp))
+                Spacer(Modifier.width(13.dp))
+                Column(modifier=Modifier.weight(1f),
+                    verticalArrangement=Arrangement.spacedBy(4.dp)) {
+                    Text(stringResource(R.string.settings_formats_title),
+                        color=TitleText,fontWeight=FontWeight.SemiBold,fontSize=16.sp)
+                    Text(stringResource(R.string.settings_formats_detail),
+                        color=MutedText,fontSize=13.sp)
+                }
+                Icon(Icons.Outlined.ChevronRight,
+                    stringResource(R.string.settings_formats_title),tint=MutedText)
             }
         }
         SettingsCard{

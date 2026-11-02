@@ -138,7 +138,7 @@
     <string name="native_decoder_mixed_short">Mixte</string>
     <string name="clear_current_result">Effacer le résultat affiché</string>
     <string name="guide_settings_title">Guide interactif</string>
-    <string name="guide_settings_detail">Découvrez dans l’ordre Accueil, Historique, Formats, Serveurs VPN et Paramètres. Relancez le guide à tout moment.</string>
+    <string name="guide_settings_detail">Explorez Accueil, Historique, Analyse APK, Serveurs VPN et Paramètres. Vous pouvez relancer ce guide à tout moment.</string>
     <string name="guide_replay">Démarrer le guide</string>
     <string name="settings_version">Version %1$s</string>
     <string name="settings_build_code">Build %1$d</string>
@@ -199,7 +199,7 @@
     <string name="hc_auth_enter_manually">Saisir le mot de passe manuellement</string>
     <string name="hc_auth_input_invalid">Saisissez le mot de passe requis et/ou un HWID valide de 32 caractères.</string>
     <string name="hc_auth_failed">Impossible d’authentifier ce fichier HTTP Custom protégé. Vérifiez le mot de passe et/ou le HWID ; le fichier peut aussi être endommagé ou utiliser une variante non compatible.</string>
-    <string name="guide_step_six">Formats : parcourez les applications et extensions compatibles.</string>
+    <string name="guide_step_six">Analyse APK : cette fonction sera bientôt disponible.</string>
     <string name="guide_step_seven">Serveurs VPN : choisissez une application et décodez son catalogue de serveurs.</string>
     <string name="guide_step_eight">Paramètres : choisissez la langue, consultez la confidentialité et réglez vos préférences.</string>
     <string name="server_vpn">Serveurs VPN</string>
@@ -212,4 +212,8 @@
     <string name="nur_servers_invalid_url">Saisissez une URL HTTPS valide pour la liste des serveurs.</string>
     <string name="nur_servers_failed">Impossible de télécharger, authentifier ou décoder le catalogue des serveurs.</string>
     <string name="language_screen_title">Choisir la langue</string>
+    <string name="apk_analysis_title">Analyse APK</string>
+    <string name="apk_analysis_coming_soon">Prochainement</string>
+    <string name="settings_formats_title">Formats pris en charge</string>
+    <string name="settings_formats_detail">Consultez les extensions de fichiers et protocoles texte compatibles.</string>
 </resources>

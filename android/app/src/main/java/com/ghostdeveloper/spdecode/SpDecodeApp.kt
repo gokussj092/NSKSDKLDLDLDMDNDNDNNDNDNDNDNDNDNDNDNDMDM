@@ -142,7 +142,7 @@ fun SpDecodeApp(
                         onDecodeCloud=onDecodeCloud,
                         highlightGuide=if(!whatsNew && !busy)guideStep else null)
                     1->HistoryScreen(session,onSelect,onDeleteSelected,onClear,onImportMultiple,onFavorite)
-                    2->FormatsScreen(cloudFormats,cloudTextFormats,serverVpnLoading,catalogProgress)
+                    2->ApkAnalysisComingSoonScreen()
                     3->ServerVpnScreen(busy,serverVpnApps,serverVpnLoading,serverVpnUnavailable,
                         onDecodeServerCatalog,onDecodeServerApp,catalogProgress)
                     else->FunctionalSettingsPanel(selectedLanguage,hideCredentials,
@@ -150,7 +150,9 @@ fun SpDecodeApp(
                         retentionDays,onRetention,onShowGuide=onGuideRestart,
                         onLegalLink=onLegalLink,onWithdrawConsent=onWithdrawCloudConsent,
                         catalogUpdatesEnabled=catalogUpdatesEnabled,onCatalogUpdates=onCatalogUpdates,
-                        usageAnalyticsEnabled=usageAnalyticsEnabled,onUsageAnalytics=onUsageAnalytics)
+                        usageAnalyticsEnabled=usageAnalyticsEnabled,onUsageAnalytics=onUsageAnalytics,
+                         supportedFormats=cloudFormats,supportedTextFormats=cloudTextFormats,
+                         catalogLoading=serverVpnLoading,catalogProgress=catalogProgress)
                 }
                 if(guideStep!=null && !whatsNew && !busy && error==null && dialog==null) {
                     CenteredFirstRunGuide(guideStep,onGuideNext,onGuideSkip)
@@ -775,8 +777,27 @@ private fun HistoryScreen(
 }
 
 @Composable
-private fun FormatsScreen(cloudFormats:List<AndroidDecoderCatalog.Format>,
-    textFormats:List<CloudTextRoute>,catalogLoading:Boolean=false,catalogProgress:Int?=null) {
+private fun ApkAnalysisComingSoonScreen() {
+    Column(
+        Modifier.fillMaxSize().testTag("apk_analysis_placeholder")
+            .padding(horizontal=24.dp,vertical=24.dp),
+        horizontalAlignment=Alignment.CenterHorizontally,
+        verticalArrangement=Arrangement.Center,
+    ) {
+        Icon(Icons.Outlined.Android,null,tint=White,modifier=Modifier.size(52.dp))
+        Spacer(Modifier.height(18.dp))
+        Text(stringResource(R.string.apk_analysis_title),fontSize=24.sp,
+            fontWeight=FontWeight.Bold,color=White)
+        Spacer(Modifier.height(8.dp))
+        Text(stringResource(R.string.apk_analysis_coming_soon),fontSize=15.sp,
+            color=Secondary,textAlign=TextAlign.Center)
+    }
+}
+
+@Composable
+internal fun FormatsScreen(cloudFormats:List<AndroidDecoderCatalog.Format>,
+    textFormats:List<CloudTextRoute>,catalogLoading:Boolean=false,
+    catalogProgress:Int?=null,onBack:(()->Unit)?=null) {
     val context = LocalContext.current
     val baseline = remember(context) { AndroidDecoderCatalog.read(context) }
     val formats = if(BuildConfig.SPDECODE_CLOUD_ENABLED && cloudFormats.isNotEmpty())
@@ -792,7 +813,18 @@ private fun FormatsScreen(cloudFormats:List<AndroidDecoderCatalog.Format>,
             .sortedBy { it.first.lowercase(java.util.Locale.ROOT) }
     }
     Column(Modifier.fillMaxSize().padding(horizontal = 20.dp, vertical = 12.dp)) {
-        Text(stringResource(R.string.formats), fontSize = 24.sp, fontWeight = FontWeight.Bold)
+        if(onBack!=null) {
+            Row(verticalAlignment=Alignment.CenterVertically) {
+                IconButton(onClick=onBack,modifier=Modifier.testTag("settings_formats_back")) {
+                    Icon(Icons.Outlined.ArrowBack,
+                        stringResource(R.string.settings),tint=White)
+                }
+                Text(stringResource(R.string.settings),color=Secondary,fontSize=14.sp)
+            }
+            Spacer(Modifier.height(5.dp))
+        }
+        Text(stringResource(R.string.settings_formats_title),
+            fontSize = 24.sp, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(8.dp))
         Text(stringResource(R.string.catalog_note), fontSize = 13.sp,
             color = Secondary, lineHeight = 20.sp)
@@ -1174,7 +1206,7 @@ private fun BottomTabs(active:Int,onTab:(Int)->Unit,spotlight:Int?=null) {
     val tabs=listOf(
         Triple(R.string.home,Icons.Outlined.Home,0),
         Triple(R.string.history,Icons.Outlined.History,1),
-        Triple(R.string.formats,Icons.Outlined.Code,2),
+        Triple(R.string.apk_analysis_title,Icons.Outlined.Android,2),
         Triple(R.string.server_vpn,Icons.Outlined.Dns,3),
         Triple(R.string.settings,Icons.Outlined.Settings,4)
     )
@@ -1194,7 +1226,7 @@ private fun BottomTabs(active:Int,onTab:(Int)->Unit,spotlight:Int?=null) {
                 verticalArrangement=Arrangement.spacedBy(4.dp)){
                 Icon(icon,stringResource(label),
                     tint=if(selected)White else Secondary,modifier=Modifier.size(21.dp))
-                Text(stringResource(label),fontSize=11.sp,
+                Text(if(index==2) "APK" else stringResource(label),fontSize=11.sp,
                     color=if(selected)White else Secondary,
                     maxLines=1,overflow=TextOverflow.Ellipsis)
             }
