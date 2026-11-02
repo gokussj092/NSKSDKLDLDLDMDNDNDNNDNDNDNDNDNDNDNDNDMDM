@@ -26,7 +26,7 @@ class C8WorkerIntegrationTests(unittest.TestCase):
         base=load_file_engines()
         extended=load_runtime_file_engines()
         self.assertEqual(len(base),240)
-        self.assertEqual(len(extended),254)
+        self.assertEqual(len(extended),256)
         from engine import _C8_FILE_ENGINES
         overlays=set(_C8_FILE_ENGINES)
         self.assertEqual(len(overlays),28)
