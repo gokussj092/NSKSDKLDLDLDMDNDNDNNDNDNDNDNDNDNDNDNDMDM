@@ -43,7 +43,7 @@ class GenericFamilyRegistryTests(unittest.TestCase):
         self.assertEqual(aes_new & des_new, SHARED_NEW)
         self.assertEqual(len(des_new - aes_new), 7)
         self.assertEqual(len(aes_new - des_new), 68)
-        self.assertEqual(len(DECODER_REGISTRY) - len(generated) - 6, 158)
+        self.assertEqual(len(DECODER_REGISTRY) - len(generated) - 7, 158)  # Seven Cloud overlays, incl. hexcm
         for suffix, spec in generated.items():
             with self.subTest(suffix=suffix):
                 self.assertEqual(get_supported_extension("FILE" + suffix.upper()),
