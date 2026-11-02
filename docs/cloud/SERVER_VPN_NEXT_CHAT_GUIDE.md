@@ -1,3 +1,28 @@
+# Selección actual — Speicers Pro build123, remoto pendiente, 2026-11-01
+
+El propietario seleccionó netfree.mx.store. Ya había soporte104.1.17/code120.
+Se obtuvo104.1.20/code123 con firma coincidente y ZIP íntegro: formato nuevo
+**SPCF1**, RSA3072/SHA256 + HMAC/PBKDF2-600000/AES256-GCM. Lector/CLI/worker
+actualizados manteniendo WakkoDev/glifos. Incluido real v1/73 servidores/
+799 campos y secundario v9/32, JSON entero igual a JCA y worker aislado.
+
+**No está cerrada la integración remota123.** Su actualizador usa manifiesto
+firmado `gen.spei.click/updates/servers.json` y descarga de archivo vinculada
+por URL/tamaño/hash/conteo. Proxy CONNECT agotó timeout, HTTP000/0 bytes;
+la CLI nueva no produce JSON. No se obtuvo manifiesto ni archivo remoto nuevo.
+El GitHub anterior sí descargó realmente y abrió v35/74/797, pero es fuente
+histórica120; no sustituye esa prueba. Broker público anterior conservado.
+
+`.sks` mantiene formato GCM/DES/XML y se recuperó su rama abierta, pero no hay
+archivo real123 ni importación Android; **Unlocked pendiente**, sin escritor
+nuevo anunciado.35 Python +19 worker correctas, datos reales fuera de Git.
+[Recuperación y evidencia](../../decoders/Python/apps/Speicers_Pro_VPN/ANALYSIS.md).
+Rama fix/http-jireh-current-method, base6bd5d4f. Fuente59/58/C0240/C8255,
+iconos/switches/Android/Unlocked y C11 intactos. Sin merge/deploy/Actions/APK.
+HA y su pendiente físico conservados; HC0/2 n13, UT Loop/FlexNet pendientes.
+
+---
+
 # Selección actual — HA Tunnel Plus, código verificado, 2026-11-01
 
 El propietario aportó HA1.7.1/code76 MOD sin la protección anterior.

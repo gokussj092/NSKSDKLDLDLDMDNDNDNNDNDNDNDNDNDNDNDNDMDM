@@ -1,3 +1,21 @@
+# Speicers Pro 104.1.20/build123 — remoto actual pendiente, 2026-11-01
+
+Revisión del paquete netfree.mx.store, ya integrado para build120.
+SPCF1 nuevo con RSA3072/SHA256/HMAC/PBKDF2-600000/GCM incorporado al lector,
+CLI y worker; formatos anteriores conservados. Incluido real v1/73 servidores/
+799 campos y secundario v9/32 iguales íntegros a JCA y worker aislado.
+GitHub histórico real v35/74/797 abierto; **no es la descarga123**.
+
+La app actual usa manifiesto firmado y segundo GET bajo gen.spei.click.
+**Sin descarga real de ese feed:** timeout de Proxy CONNECT, HTTP000/0 bytes;
+CLI falla sin salidaJSON. No se cambia el broker anterior ni se anuncia
+integración remota actual terminada. `.sks` real123/Unlocked/Android pendientes.
+35 Python+19 worker correctas; fuente59/58/C0240/C8255 y UI intactos.
+Sin merge/deploy/buildAPK/Actions manuales/C11.
+[Hashes, método y continuación](../../decoders/Python/apps/Speicers_Pro_VPN/ANALYSIS.md).
+
+---
+
 # HA Tunnel Plus 1.7.1 (76) ✅ — código verificado, 2026-11-01
 
 Catálogo remoto real HTTP200,296647 bytes: **13 servidores /644 métodos /

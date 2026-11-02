@@ -132,7 +132,7 @@ class SpeicersTests(unittest.TestCase):
         response.__enter__.return_value=response
         opener=MagicMock();opener.open.return_value=response
         with patch.object(codec,'build_opener',return_value=opener):
-            self.assertEqual(codec.download(),body)
+            self.assertEqual(codec.download_legacy(),body)
         args,kwargs=opener.open.call_args
         self.assertEqual(args[0].full_url,codec.CATALOG_URL)
         self.assertEqual(args[0].get_method(),'GET')

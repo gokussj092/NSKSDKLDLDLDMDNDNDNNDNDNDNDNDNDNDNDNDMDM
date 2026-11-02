@@ -40,5 +40,22 @@
     "originalResource": "res/mipmap-xxxhdpi/ic_launcher.png",
     "bytes": 34275,
     "sha256": "8c49bc17d883ffee1275b113a12e1d4696b95e1bfba57dd0ebe8346e82be6e91"
+  },
+  "latestInvestigation": {
+    "versionName": "104.1.20",
+    "versionCode": 123,
+    "apkSha256": "b064d225c6a7c150d922057ad1304886b3dd3100b07d3d19a85057c0f4918427",
+    "certificateSha256": "0df454e6429e1e131aff6f49e1337cb5ef4c1abcd87427d22a5258c07f6d8c9e",
+    "catalogFormat": "SPCF1",
+    "signature": "RSA-3072 PKCS1v1.5 SHA256",
+    "cipher": "HMAC-SHA256/PBKDF2-SHA256-600000/AES-256-GCM",
+    "embeddedVersion": "1",
+    "embeddedServers": 73,
+    "embeddedFields": 799,
+    "fullJcaCliWorkerEqual": true,
+    "remoteManifest": "https://gen.spei.click/updates/servers.json",
+    "remoteState": "pending-real-download; proxy-CONNECT-timeout",
+    "publicBroker": "unchanged-build120-legacy-source",
+    "unlocked": "source-layout-recovered; real-sks-and-Android-import-pending"
   }
 }

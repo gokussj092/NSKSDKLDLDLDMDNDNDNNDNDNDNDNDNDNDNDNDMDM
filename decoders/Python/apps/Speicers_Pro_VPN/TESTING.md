@@ -1,3 +1,31 @@
+# Revisión build123 — 2026-11-01
+
+```sh
+python -m unittest tests.test_speicers_pro tests.test_speicers_spcf1 \
+  tests.test_http_fenixvpn tests.test_cloud_c8_vpn_registry -v
+python scripts/apk_analysis/speicers_verify.py /privado/config-SPCF1.png \
+  /privado/config-glifos.json /privado/respuesta-historica.enc
+```
+
+35 pruebas Python aprobadas,0 skips. Seis nuevas prueban firmas antes de KDF,
+GCM, parámetros firmados, path fijo, dos GET, cabeceras, límites, hash/tamaño/
+versión/conteo y ausencia de fallback al feed histórico. Clave RSA de los tests
+creada en memoria, solo sintética; no se guarda ni es la del proveedor.
+La variante SPCF1 requiere JDK17 y JAR oficial JADX1.5.6 con hash fijado,
+instalado por `scripts/apk_analysis/decompile.py --install`, para Gson.
+JCA verifica firma auténtica y AEAD del incluido, no importa el codec Python.
+El verificador compara recursivamente todo el JSON con tipos y worker aislado.
+
+Tres entradas reales verificadas: incluido123 v1/73 servidores/799 campos,
+secundario v9/32 y remoto histórico120 v35/74/797. La CLI --apk123 y --input
+histórico produjeron JSON completos privados0600. Ninguna es el feed remoto123.
+**La descarga123 sigue pendiente:** timeout antes de HTTP en el manifiesto;
+pruebas controladas no se anuncian como éxito real. No se cambia el broker,
+catálogo público o Unlocked. No hay `.sks` real123 ni Android físico.
+Véase ANALYSIS.md para hashes, cabeceras y evidencia del bloqueo.
+
+---
+
 # Validación y límites
 
 2026-10-24: comparación JSON **completa**, sin guardar datos privados en Git.

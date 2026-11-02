@@ -12,13 +12,20 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from decoders.Python.apps.Speicers_Pro_VPN import server_catalog_decoder as codec
 from cloud.workers.python.catalog_vpn_bridge import decode
+from cloud.workers.python.exports.lossless import equal
 
 
 def verify(path):
     source = codec._read(path)
     actual = codec.decode_catalog(source)
     oracle = ROOT / "tests/golden/speicers_oracle.java"
-    reference = json.loads(subprocess.run(["java", str(oracle), "outer", str(path)], check=True, capture_output=True, timeout=45).stdout)
+    if source.lstrip().startswith(b"SPCF1"):
+        from scripts.apk_analysis.decompile import verified_jar, CACHE, VERSION
+        jar = verified_jar(CACHE / f"jadx-{VERSION}-all.jar")
+        command = ["java", "--class-path", str(jar), str(ROOT / "tests/golden/Speicers123Oracle.java"), "outer", str(path)]
+    else:
+        command = ["java", str(oracle), "outer", str(path)]
+    reference = json.loads(subprocess.run(command, check=True, capture_output=True, timeout=45).stdout)
     fields = []
     if "Servers" in reference:
         for item in reference["Servers"]:
@@ -33,11 +40,14 @@ def verify(path):
         assert len(fields) == len(values), "Oracle omitted fields"
         for (item, key, _), value in zip(fields, values):
             item[key] = base64.b64decode(value, validate=True).decode("utf-8")
-    assert actual == reference, "Complete JDK document differs"
-    assert actual == json.loads(decode("speicers-pro-vpn", source)), "Complete worker document differs"
+    assert equal(actual, reference), "Complete JDK document differs"
+    assert equal(actual, json.loads(decode("speicers-pro-vpn", source))), "Complete worker document differs"
+    from cloud.workers.python.engine import decode_provider_catalog
+    isolated = decode_provider_catalog("speicers-pro-vpn", source)
+    assert isolated["isPartial"] is False and equal(actual, isolated["structuredJson"]), "Isolated worker differs"
     return {"version": actual.get("Version", actual.get("version")),
             "records": len(actual.get("Servers", actual.get("servers", []))),
-            "fields": len(fields), "jdkEqual": True, "workerEqual": True}
+            "fields": len(fields), "jdkEqual": True, "workerEqual": True, "isolatedWorkerEqual": True}
 
 
 def main():
