@@ -550,7 +550,7 @@ class MainActivity : ComponentActivity() {
                     !reportBusy && cloudClient.lastDiagnostic!=null,
                 onReportError={sendCurrentFailureReport()},
                 onDecodeText={input->decodeText(input)},
-                onDecodeCloud={provider,reference->decodeCloud(provider,reference)},
+                onDecodeCloud={reference->decodeCloud("auto",reference)},
                 onDecodeServerCatalog={decodeNurServers()},
                 onDecodeServerApp={id->decodeServerVpnProvider(id)},
                 onLegalLink={which->
