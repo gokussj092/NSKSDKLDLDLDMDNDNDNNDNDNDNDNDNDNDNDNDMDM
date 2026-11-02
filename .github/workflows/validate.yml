@@ -292,7 +292,7 @@ jobs:
           PYTHONPATH=. python scripts/android_c_ultra_profiles.py --check
           PYTHONPATH=. python scripts/android_d_renz_profiles.py --check
 
-      - name: Build SP-DECODE full-result language/settings alpha APK and tests
+      - name: Build internal Android instrumentation harness (not a distributable QA app)
         working-directory: android
         run: gradle --no-daemon :app:assembleDebug :app:assembleAndroidTest
 
@@ -336,6 +336,12 @@ jobs:
           python scripts/audit_v2_apk.py \
             android/app/build/outputs/apk/release/app-release-unsigned.apk \
             --origin https://api.spdecode.example
+
+      - name: Verify production candidate native ELF compatibility across all four ABIs
+        run: |
+          python scripts/ci/verify_phase8_native_abis.py \
+            --apk android/app/build/outputs/apk/release/app-release-unsigned.apk \
+            --aab android/app/build/outputs/bundle/release/app-release.aab
 
       - name: Reclaim unused runner toolchains for Android emulator storage
         run: |
@@ -390,17 +396,6 @@ jobs:
             android/app/build/reports/androidTests/
           if-no-files-found: ignore
           retention-days: 14
-
-      - name: Upload functional SP-DECODE alpha debug APK
-        if: success()
-        # Optional diagnostic upload: artifact quota must not invalidate passing tests.
-        continue-on-error: true
-        uses: actions/upload-artifact@v4
-        with:
-          name: SP-DECODE-Android-CI-CI-DEBUG-NOT-PRODUCTION
-          path: android/app/build/outputs/apk/debug/app-debug.apk
-          if-no-files-found: error
-          retention-days: 30
 
   private-preproduction:
     name: Private 1.1.24 (35) APK and AAB after complete Android QA
