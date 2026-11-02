@@ -84,7 +84,7 @@ test("public metadata contains the original icon and honors per-provider availab
  assert.equal(app.name,"JyFast VPN Ultra");assert.equal(app.decodeEnabled,true);
  assert.equal(app.iconSha256,"05e176023754019f84135e0247d0db91370a450536ddbc7b035c626e0a094ae8");
  assert.equal(catalog({availability:{"jyfast-vpn-ultra":false}}).apps.find(x=>x.id===app.id).decodeEnabled,false);
- assert.deepEqual(Object.keys(app).sort(),["decodeEnabled","iconMimeType","iconSha256","id","name"]);
+ assert.deepEqual(Object.keys(app).sort(),["decodeEnabled","iconMimeType","iconSha256","id","maintenance","methodRevision","name"]);
 });
 test("JyFast admin control preserves an existing disabled provider and advances the version",async t=>{
  const root=await mkdtemp(join(tmpdir(),"jyfast-control-"));t.after(()=>rm(root,{recursive:true,force:true}));
