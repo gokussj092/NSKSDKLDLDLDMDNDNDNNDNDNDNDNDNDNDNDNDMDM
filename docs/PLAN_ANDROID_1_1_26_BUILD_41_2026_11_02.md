@@ -262,3 +262,46 @@ informe opcional, idempotencia y acceso autenticado; pruebas instrumentadas
 Android de habilitación de envío por categoría. Compilación Android e
 instrumentación no ejecutadas para no saturar GitHub Actions. Las ramas
 `main` y `feat/version-offline-apk` no se modifican.
+
+
+## Implementación — Fase 5: Bandeja administrativa de solicitudes
+
+**Panel VPS:** nueva página independiente \`/admin/requests\`, visible en el menú
+lateral como **Solicitudes**. Recibe el contenido que el Android V2 envía
+voluntariamente durante la fase 4: nuevas propuestas de método APK, reportes
+de errores con selección de casillas e informes opcionales, y sugerencias.
+
+**Bandeja:** 20 solicitudes por página, máximo 500 identificadores vigentes,
+con filtros de categoría, estado y prioridad. Estadísticas agregadas por
+estado y categoría dentro del mismo GET; no se crean consultas por tarjeta.
+Cada entrada indica referencia UUID, fecha, versión/build de la app, el
+enlace público aportado (si es método), errores marcados, texto del usuario
+y fecha de última revisión. Los enlaces **no se abren ni descargan de forma
+automática** y, cuando se abren manualmente, se aíslan con
+\`noopener noreferrer\` y \`no-referrer\`.
+
+**Gestión interna:** estados \`new\`, \`reviewing\`, \`in_progress\`,
+\`resolved\`, \`rejected\`, \`archived\`; prioridades \`low\`, \`normal\`,
+\`high\`; nota interna de hasta 600 caracteres. El operador pulsa
+**Guardar seguimiento** para registrar los cambios. La API usa
+\`expectedRevision\` con comprobación y escritura atómica en Redis;
+un segundo operador no puede pisar silenciosamente una revisión nueva.
+Archivado es un estado recuperable y no borra el contenido de inmediato.
+
+**Seguridad:** \`GET/POST /api/admin/feedback\`, autenticación de sesión
+administrativa igual a las demás secciones y CSRF obligatorio en POST.
+Respuesta \`private, no-store\`, validación de tipos, filtros y tamaños;
+no se devuelven registros a clientes Android ni existe endpoint público
+de búsqueda. Se usa el almacenamiento ya creado en fase 4:
+\`spfeedback:pending\` (IDs) y \`spfeedback:record:<uuid>\` (datos).
+Las escrituras usan \`SET KEEPTTL\` para **no ampliar** el vencimiento
+individual de 90 días. No hay notificación al usuario ni importación APK
+en esta fase.
+
+**QA añadida:** pruebas Node de lista limitada, datos caducados, filtros,
+estadísticas, autorización, CSRF, actualización con revisión esperada y
+preservación de TTL; prueba de estructura de la página, navegación y
+renderizado seguro. Compilación Next.js y ejecución de pruebas integrales
+**pendientes** hasta validación consolidada; este commit utiliza
+\`[skip ci]\` para no saturar GitHub Actions. No se cambian la versión
+Android, \`main\`, ni la rama offline.
