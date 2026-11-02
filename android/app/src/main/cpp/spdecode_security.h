@@ -8,6 +8,9 @@ struct RequestProof {
     std::string nonce;
     std::string message;
 };
+struct ActionBinding { std::string id; std::string requestHash; };
+ActionBinding inlineActionBinding(int operation,const std::string& bearer,
+                                 const unsigned char* data,std::size_t size);
 std::string sha256Hex(const unsigned char* data, std::size_t size);
 std::string formatProof(int operation, const std::string& version,
                         const unsigned char* data, std::size_t length,

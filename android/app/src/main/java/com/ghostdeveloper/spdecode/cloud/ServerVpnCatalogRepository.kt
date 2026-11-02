@@ -204,12 +204,14 @@ internal class ServerVpnCatalogRepository(
             val previousVersion=previous?.optInt("catalogVersion",0)?:0
             val recipientMetadata=cachedFormats.firstOrNull{it.suffix=="npvs"}
                 ?.credentialFields?.contains("recipientKey")==true
-            val urgent=announcedVersion>previousVersion || !recipientMetadata
+            val completeCache=available.isNotEmpty() &&
+                available.size==(previous?.optJSONArray("apps")?.length()?:0)
+            val urgent=announcedVersion>previousVersion || !recipientMetadata || !completeCache
             if(!force && !urgent && available.isNotEmpty() && cachedFormats.isNotEmpty() && last>0 && now>=last &&
                 now-last<versionCheckMillis) return@withContext available
             try {
                 // Manual refresh still uses the version contract; metadata changes must bump version.
-                val knownVersion=if(available.isEmpty() || cachedFormats.isEmpty() || !recipientMetadata)0 else previousVersion
+                val knownVersion=if(!completeCache || cachedFormats.isEmpty() || !recipientMetadata)0 else previousVersion
                 val remote=client.serverVpnCatalog(knownVersion)
                 if(remote.optBoolean("unchanged",false)) {
                     if(available.isEmpty() || remote.optInt("catalogVersion")!=knownVersion)
@@ -228,6 +230,15 @@ internal class ServerVpnCatalogRepository(
                 require(!remote.has("textSchemaVersion") || remoteTexts.isNotEmpty())
                 val array=remote.optJSONArray("apps")?:throw IllegalStateException("Missing app list")
                 if(array.length() !in 1..100)throw IllegalStateException("Invalid app count")
+                val bundle=remote.optJSONObject("iconBundle")?:throw IllegalStateException("Catalog bundle required")
+                val icons=bundle.getJSONArray("icons")
+                require(bundle.getInt("version")==1 && bundle.getInt("count")==array.length() && icons.length()==array.length())
+                val bundled=HashMap<String,JSONObject>()
+                for(index in 0 until icons.length()) {
+                    val icon=icons.getJSONObject(index)
+                    val id=icon.getString("id")
+                    require(id.matches(Regex("[a-z0-9-]{1,48}")) && bundled.put(id,icon)==null)
+                }
                 val candidates=ArrayList<Pair<String,ByteArray>>()
                 val seen=mutableSetOf<String>()
                 for(i in 0 until array.length()) {
@@ -241,8 +252,10 @@ internal class ServerVpnCatalogRepository(
                         entry.optString("iconMimeType")!="image/png")
                         throw IllegalStateException("Invalid app metadata")
                     var bytes=vault.read("icon-$id")
+                    val response=bundled[id]?:throw IllegalStateException("Missing bundled icon")
+                    if(response.optString("sha256")!=checksum || response.optString("mimeType")!="image/png")
+                        throw IllegalStateException("Icon metadata mismatch")
                     if(bytes==null || digest(bytes)!=checksum || image(bytes)==null) {
-                        val response=client.serverVpnIcon(id)
                         if(response.optString("id")!=id || response.optString("sha256")!=checksum ||
                             response.optString("mimeType")!="image/png")
                             throw IllegalStateException("Icon metadata mismatch")
@@ -281,7 +294,7 @@ internal class ServerVpnCatalogRepository(
                     newBadges.observeCatalog(apps.map { it.id }.toSet())
                 }
             }catch(error:CancellationException){throw error}
-             catch(_:Exception){available}
+             catch(error:Exception){if(force)throw error else available}
         }
     }
 }

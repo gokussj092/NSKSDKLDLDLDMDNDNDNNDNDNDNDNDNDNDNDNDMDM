@@ -57,3 +57,21 @@ test("V2 device controls require real admin, same-origin CSRF, bounded schema an
   assert.equal((await v2DevicePolicyStatus({root})).enforceBoot,true);
  }finally{await rm(root,{recursive:true,force:true});}
 });
+
+test('permanent Play settings require authenticated admin, CSRF, exact schema and revision',async()=>{
+ const {v2PlayIntegrityRequest}=await import('../lib/c6-admin-api.mjs');
+ const {compatiblePlayDefaults}=await import('../lib/v2-play-policy.mjs');
+ const root=await mkdtemp(join(tmpdir(),'sp-play-admin-')),redis=new Redis(),options={storeProvider:async()=>redis,policyOptions:{root}};
+ const {version,revision,...settings}=compatiblePlayDefaults();
+ const body={settings,expectedRevision:0,confirmation:'V2_PLAY_CONFIGURAR'};
+ try{
+  assert.equal((await v2PlayIntegrityRequest(req(body),options)).status,401);
+  const login=await loginRequest(req({username:'admin',password}),options);
+  const cookie=login.headers.get('set-cookie').split(';')[0];
+  assert.equal((await v2PlayIntegrityRequest(req(body,cookie,'https://evil.example.test'),options)).status,403);
+  assert.equal((await v2PlayIntegrityRequest(req({...body,settings:{...settings,requireSdk:'false'}},cookie),options)).status,400);
+  const ok=await v2PlayIntegrityRequest(req(body,cookie),options);assert.equal(ok.status,200);
+  const policy=(await ok.json()).v2PlayPolicy;assert.equal(policy.permanent,true);assert.equal(policy.integrityRequired,false);
+  assert.equal((await v2PlayIntegrityRequest(req(body,cookie),options)).status,409);
+ }finally{await rm(root,{recursive:true,force:true});}
+});

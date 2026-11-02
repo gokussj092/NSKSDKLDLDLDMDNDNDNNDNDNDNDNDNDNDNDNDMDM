@@ -4,10 +4,12 @@ import { randomBytes, randomUUID } from "node:crypto";
 import { limits } from "./c3-config.mjs";
 import { v2Settings } from "./v2-config.mjs";
 import {v2PlayPolicyStatus} from "./v2-play-policy.mjs";
+import {v2DevicePolicyStatus} from "./v2-device-admission-policy.mjs";
+import {recordAdmission,playSignals} from "./v2-admission-diagnostics.mjs";
 import {v2PolicyStatus} from "./v2-availability-policy.mjs";
 import { store, ipKey, throttle } from "./c3-store.mjs";
 import { sign, verifySignature } from "./c3-session.mjs";
-import { decodePlayToken, checkIntegrityVerdict } from "./c3-integrity.mjs";
+import { decodePlayToken, checkIntegrityVerdict, integrityVerdictReason } from "./c3-integrity.mjs";
 import { integrityNonce, publicKey, verifyProof, sha256 } from "./v2-proof.mjs";
 import { bindVerifiedRequest } from "./v2-bound-request.mjs";
 import { maintenanceEnabled } from "./c6-ops-store.mjs";
@@ -61,17 +63,19 @@ async function dispatch(operation,request) {
   };
   return (await handlers[operation]()).POST(request);
 }
-async function jsonTransportRequest(request,options={}) {
+async function jsonTransportCore(request,options={}) {
   // Check both server-controlled policies before processing even a bootstrap request.
-  let availability,playPolicy;
+  let availability,playPolicy,devicePolicy;
   try{
-    [availability,playPolicy]=await Promise.all([
+    [availability,playPolicy,devicePolicy]=await Promise.all([
       (options.availabilityPolicyLoader||v2PolicyStatus)(),
-      (options.playPolicyLoader||v2PlayPolicyStatus)()
+      (options.playPolicyLoader||v2PlayPolicyStatus)(),
+      (options.devicePolicyLoader||v2DevicePolicyStatus)()
     ]);
   }catch{return fail("SERVICE_UNAVAILABLE",503);}
   if(!availability.enabled)return fail("V2_API_DISABLED",410);
-  const cfg=v2Settings(options.env||process.env,{playIntegrityRequired:playPolicy.integrityRequired});
+  const cfg={...v2Settings(options.env||process.env,{playIntegrityRequired:playPolicy.integrityRequired,playPolicy:playPolicy.version===2?playPolicy:null}),
+    deviceRevision:devicePolicy.revision};
   if(!cfg.configured)return fail("SERVICE_UNAVAILABLE",503);
   const url=new URL(request.url),header=request.headers.get("x-sp-operation")||"";
   if(request.method!=="POST" || url.search || !/^(1|2|[4-9]|1[0-7])$/.test(header))
@@ -111,10 +115,12 @@ async function jsonTransportRequest(request,options={}) {
       // Previously registered strict-mode keys without version evidence re-enroll.
       const hardwareNeeded=cfg.requireHardware&&!registered;
       const value={nonce,publicKey:body.publicKey,ip,created:Date.now(),hardwareNeeded,
+        transportRevision:request.headers.get("x-spdecode-transport")==="2"?2:1,
         hpke:Boolean(options.hpkeWireBytes)};
       if(await redis.set("spc2:challenge:"+challengeId,JSON.stringify(value),{EX:120,NX:true})!=="OK")
         return fail("SERVICE_UNAVAILABLE",503);
-      return jsonReply({apiVersion:"v2",challengeId,nonce,expiresIn:120,integrityRequired:cfg.playIntegrityRequired,
+       return jsonReply({apiVersion:"v2",challengeId,nonce,expiresIn:120,integrityRequired:cfg.playIntegrityRequired,
+         integrityRequested:cfg.playIntegrityRequested&&Boolean(cfg.account),playMode:cfg.playMode,
         keyAttestationRequired:hardwareNeeded,hardwareLevel:cfg.hardwareLevel,
         ...(hardwareNeeded?{attestationChallenge:attestationChallenge(nonce,challengeId,body.publicKey)}:{})},201);
     }
@@ -123,9 +129,8 @@ async function jsonTransportRequest(request,options={}) {
       const body=JSON.parse(bytes);
       if(!record(body) || !["challengeId,integrityToken","certificateChain,challengeId,integrityToken,publicKey"].includes(Object.keys(body).sort().join(",")) ||
          !/^[0-9a-f-]{36}$/.test(body.challengeId) || typeof body.integrityToken!=="string" ||
-         (cfg.playIntegrityRequired ?
-          (body.integrityToken.length<80||body.integrityToken.length>16384) :
-          body.integrityToken!==""))return fail("INVALID_REQUEST",400);
+         (body.integrityToken.length>16384 || (body.integrityToken!==""&&body.integrityToken.length<80) ||
+          (cfg.playIntegrityRequired&&body.integrityToken==="")))return fail("INVALID_REQUEST",400);
       const raw=await redis.getDel("spc2:challenge:"+body.challengeId);
       if(!raw)return fail("EXPIRED_CHALLENGE",401);
       const challenge=JSON.parse(raw);
@@ -136,11 +141,22 @@ async function jsonTransportRequest(request,options={}) {
       if(!challenge.hardwareNeeded&&(body.publicKey!==undefined||body.certificateChain!==undefined))return fail("INVALID_REQUEST",400);
       const nonce=integrityNonce(challenge.nonce,body.challengeId,sessionKey);
       // Injection is server-test only. HTTP callers never provide verdict JSON.
-      let verdict=null;
-      if(cfg.playIntegrityRequired){
-        verdict=await (options.decodeIntegrity||decodePlayToken)(body.integrityToken,cfg);
-        if(!checkIntegrityVerdict(verdict,{...cfg,nonce}))return fail("INTEGRITY_REJECTED",403);
-      }
+       let verdict=null;
+       if(body.integrityToken!==""&&cfg.playMode!=="off"){
+         try{verdict=await (options.decodeIntegrity||decodePlayToken)(body.integrityToken,cfg);}
+         catch{
+           await recordAdmission(redis,"SESSION","UNAVAILABLE","PLAY_UNAVAILABLE");
+           if(cfg.playIntegrityRequired)return fail("INTEGRITY_UNAVAILABLE",503);
+         }
+       }
+       const playReason=verdict===null?"PLAY_NOT_PROVIDED":integrityVerdictReason(verdict,{...cfg,nonce});
+       const playValid=playReason===null;
+       if(cfg.playIntegrityRequired&&!playValid){
+         await recordAdmission(redis,"SESSION","OBSERVED",playReason,playSignals(verdict));
+         return fail("PLAY_POLICY_REJECTED",403);
+       }
+       if(!cfg.playIntegrityRequired)await recordAdmission(redis,"SESSION","OBSERVED",
+         cfg.playMode==="off"?"PLAY_DISABLED":verdict?(playValid?"PLAY_VALID":playReason):"PLAY_NOT_PROVIDED",playSignals(verdict));
       let hardware=await registeredKey(redis,sessionKey,cfg);
       if(challenge.hardwareNeeded) {
         if(!await throttle(redis,"spsec:enroll-ip:"+ip,12,3600) ||
@@ -152,7 +168,7 @@ async function jsonTransportRequest(request,options={}) {
            (!cfg.playIntegrityRequired&&(!Number.isSafeInteger(result.versionCode)||
               result.versionCode<cfg.minimumVersionCode)) ||
            !await rememberKey(redis,sessionKey,result.level,cfg,result.versionCode))
-          return fail("INTEGRITY_REJECTED",403);
+           {await recordAdmission(redis,"SESSION","OBSERVED","HARDWARE_ATTESTATION");return fail("ATTESTATION_REJECTED",403);}
         hardware=await registeredKey(redis,sessionKey,cfg);
       }
       if(cfg.requireHardware&&!hardware)return fail("INTEGRITY_REJECTED",403);
@@ -162,16 +178,19 @@ async function jsonTransportRequest(request,options={}) {
          hardware.versionCode<cfg.minimumVersionCode))return fail("INTEGRITY_REJECTED",403);
       const app=verdict?.tokenPayloadExternal?.appIntegrity;
       const now=Math.floor(Date.now()/1000),jti=randomUUID();
-      const claims={iss:"spdecode-cloud",aud:audience,scope:"decode",iat:now,exp:now+300,jti,
+       const sessionSeconds=challenge.transportRevision===2?(cfg.sessionSeconds||1800):Math.min(300,cfg.sessionSeconds||300);
+       const claims={iss:"spdecode-cloud",aud:audience,scope:"decode",iat:now,exp:now+sessionSeconds,jti,
+         policyRevision:cfg.policyRevision,deviceRevision:cfg.deviceRevision,
         key:sessionKey,hardware:!!hardware,hpke:Boolean(options.hpkeWireBytes),
         playIntegrityVerified:cfg.playIntegrityRequired,
         versionCode:cfg.playIntegrityRequired?Number(app.versionCode):hardware.versionCode,
         certificates:cfg.playIntegrityRequired?
           app.certificateSha256Digest.map(x=>Buffer.from(x,"base64url").toString("hex")):
           cfg.certificateDigests.slice(),epoch:cfg.epoch};
-      if(await redis.set("spc2:session:"+jti,"1",{EX:300,NX:true})!=="OK")return fail("SERVICE_UNAVAILABLE",503);
-      return jsonReply({apiVersion:"v2",accessToken:sign(claims,cfg.signingKey),tokenType:"Bearer",expiresIn:300,
+       if(await redis.set("spc2:session:"+jti,"1",{EX:sessionSeconds,NX:true})!=="OK")return fail("SERVICE_UNAVAILABLE",503);
+       return jsonReply({apiVersion:"v2",accessToken:sign(claims,cfg.signingKey),tokenType:"Bearer",expiresIn:sessionSeconds,
         actionIntegrityRequired:cfg.requireAction,
+         actionIntegrityProtocol:"inline-v2",cloudProjectNumber:cfg.cloudProjectNumber,
         raspEnforce:cfg.rasp.mode==="enforce"&&claims.versionCode>=cfg.rasp.minVersion},201);
     }
     if([10,11].includes(op) && claims.versionCode>=35 && !publicKey(JSON.parse(bytes).catalogKey))
@@ -184,7 +203,15 @@ async function jsonTransportRequest(request,options={}) {
       const value=await actionChallenge(redis,claims,JSON.parse(bytes),cfg);
       return value?jsonReply(value,201):fail("INVALID_REQUEST",400);
     }
-    if(!await verifyAction(redis,request,op,options.hpkeWireBytes||bytes,claims,cfg,options))return fail("INTEGRITY_REJECTED",403);
+    try {
+      if(!await verifyAction(redis,request,op,options.hpkeWireBytes||bytes,claims,cfg,options)){
+        await recordAdmission(redis,"ACTION","REJECTED","PLAY_ACTION");
+        return fail("INTEGRITY_REJECTED",403);
+      }
+    }catch{
+      await recordAdmission(redis,"ACTION","UNAVAILABLE","PLAY_UNAVAILABLE");
+      return fail("INTEGRITY_UNAVAILABLE",503);
+    }
     // Only evaluate reports AFTER independent authentication, replay/budget
     // checks and action Integrity. Parse/strip after proof verification so the
     // authenticated bytes are never replaced by a reserialized body.
@@ -212,6 +239,18 @@ async function jsonTransportRequest(request,options={}) {
     if(error?.message==="INVALID_REQUEST")return fail("INVALID_REQUEST",400);
     return fail("SERVICE_UNAVAILABLE",503);
   }
+}
+
+async function jsonTransportRequest(request,options={}) {
+  const response=await jsonTransportCore(request,options);
+  if(request.headers.get("x-sp-operation")==="2"){
+    try {
+      const redis=await (options.storeProvider||store)();
+      const reason=response.ok?"SESSION_ISSUED":(await response.clone().json()).error?.code||"SESSION_FAILED";
+      await recordAdmission(redis,"SESSION",response.ok?"ACCEPTED":"REJECTED",reason);
+    }catch{ /* Metrics do not change the terminal decision. */ }
+  }
+  return response;
 }
 
 

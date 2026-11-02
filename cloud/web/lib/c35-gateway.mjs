@@ -52,7 +52,8 @@ export async function externalImportRequest(request,kind,opts={}) {
         return failure("REMOTE_NOT_CONFIGURED",503);
     }
     if(kind==="ehi" || kind==="mnr" || kind==="hc") {
-      if(!ownKeys(body,["reference","consent"])||body.consent!==true)
+      const combined=kind==="hc"&&body?.decode===true;
+      if(!ownKeys(body,combined?["reference","consent","decode"]:["reference","consent"])||body.consent!==true)
         return failure("USER_CONSENT_REQUIRED",400);
       if(kind==="hc")parseHttpCustomReference(body.reference);
       else if(kind==="mnr")parseMnrReference(body.reference);else parseEhiReference(body.reference);
@@ -66,13 +67,25 @@ export async function externalImportRequest(request,kind,opts={}) {
     started=performance.now();
     const vendor=opts.vendor || {};
     if(kind==="hc"){
-      // Return encrypted bytes once. The Android file path holds them only in
-      // RAM for password/HWID interaction; no server cache, retry or plaintext.
-      const bytes=await importHttpCustomReference(body.reference,vendor);
-      try{await recordWorkerResult(redis,"success",{kind:"file",format:"hc",bytes:bytes.length,
-        latencyMs:performance.now()-started,appVersion:request.headers.get("x-spdecode-app-version")});}catch{}
-      return jsonReply({apiVersion:"v1",status:"success",kind:"encrypted_file",format:"hc",
-        sourceBytes:bytes.length,dataBase64:bytes.toString("base64")},200);
+      const bytes=Buffer.from(await importHttpCustomReference(body.reference,vendor));
+      try {
+        if(body.decode===true){
+          // Fetch and decode in one authenticated operation. Only credential-gated
+          // inputs return the original encrypted file for the existing RAM-only dialog.
+          const response=await fetchWorker("file",{format:"hc",dataBase64:bytes.toString("base64")},settings(),opts);
+          const code=response.ok?"":(await response.clone().json()).error?.code||"";
+          try{await recordWorkerResult(redis,response.ok?"success":"failed",{kind:"file",format:"hc",bytes:bytes.length,
+            errorCode:code,latencyMs:performance.now()-started,appVersion:request.headers.get("x-spdecode-app-version")});}catch{}
+          if(!["PASSWORD_REQUIRED","HWID_REQUIRED","HWID_PASSWORD_REQUIRED"].includes(code))return response;
+          return jsonReply({apiVersion:"v1",status:"credentials_required",kind:"encrypted_file",format:"hc",code,
+            sourceBytes:bytes.length,dataBase64:bytes.toString("base64")},200);
+        }
+        // Older clients keep their original download-only contract.
+        try{await recordWorkerResult(redis,"success",{kind:"file",format:"hc",bytes:bytes.length,
+          latencyMs:performance.now()-started,appVersion:request.headers.get("x-spdecode-app-version")});}catch{}
+        return jsonReply({apiVersion:"v1",status:"success",kind:"encrypted_file",format:"hc",
+          sourceBytes:bytes.length,dataBase64:bytes.toString("base64")},200);
+      }finally{bytes.fill(0);}
     }
     if(kind==="mnr"){
       const bytes=await importMnrReference(body.reference,vendor);

@@ -176,8 +176,9 @@ jbyteArray post(JNIEnv* env,jclass,jint operation,jbyteArray bodyArg,jstring bea
         timestamp.size()<10 || timestamp.size()>11 ||
         !std::all_of(timestamp.begin(),timestamp.end(),[](unsigned char c){return std::isdigit(c);}) ||
         !safeProof(nonce,32,32) || !safeProof(proof,90,100) || !safeBearer(bearer) ||
-        (!actionChallenge.empty() && (actionChallenge.size()!=36 ||
-            !std::all_of(actionChallenge.begin(),actionChallenge.end(),[](unsigned char c){return std::isxdigit(c)||c=='-';}))) ||
+        (!actionChallenge.empty() && !((actionChallenge.size()==36 &&
+            std::all_of(actionChallenge.begin(),actionChallenge.end(),[](unsigned char c){return std::isxdigit(c)||c=='-';})) ||
+            (actionChallenge.size()==35&&actionChallenge.substr(0,3)=="i2."&&safeProof(actionChallenge.substr(3),32,32)))) ||
         (!actionIntegrity.empty() && (actionIntegrity.size()<80 || actionIntegrity.size()>16384 ||
             !std::all_of(actionIntegrity.begin(),actionIntegrity.end(),[](unsigned char c){return c>=0x21 && c<=0x7e;}))) ||
         actionChallenge.empty()!=actionIntegrity.empty() || bodySize<=0 || static_cast<size_t>(bodySize)>kMaxRequestBytes) {
@@ -252,6 +253,8 @@ jbyteArray post(JNIEnv* env,jclass,jint operation,jbyteArray bodyArg,jstring bea
     if(ok)ok=setHeader(env,conn,connectionClass,setProperty,"Cache-Control","no-store");
     if(ok)ok=setHeader(env,conn,connectionClass,setProperty,"X-SPDecode-App-Version",clientVersion);
     if(ok)ok=setHeader(env,conn,connectionClass,setProperty,"X-SP-Operation",std::to_string(operation));
+    if(ok)ok=setHeader(env,conn,connectionClass,setProperty,"X-SPDecode-Transport","2");
+    if(ok && operation==10)ok=setHeader(env,conn,connectionClass,setProperty,"X-SPDecode-Catalog-Bundle","1");
     if(ok)ok=setHeader(env,conn,connectionClass,setProperty,"X-SP-Timestamp",timestamp);
     if(ok)ok=setHeader(env,conn,connectionClass,setProperty,"X-SP-Nonce",nonce);
     if(ok)ok=setHeader(env,conn,connectionClass,setProperty,"X-SP-Proof",proof);
@@ -297,7 +300,7 @@ jbyteArray post(JNIEnv* env,jclass,jint operation,jbyteArray bodyArg,jstring bea
     }
     jbyteArray buffer=env->NewByteArray(8192);
     std::string result;
-    const size_t replyCap=operation==12 ? kMaxMkkReplyBytes :
+    const size_t replyCap=operation==10 ? 48U*1024U*1024U : operation==12 ? kMaxMkkReplyBytes :
         (operation==8 ? 12U*1024U*1024U : kMaxReplyBytes);
     bool oversize=false,readFailed=false;
     for(;;) {
@@ -788,6 +791,22 @@ jboolean nativeRequiresActionIntegrityFor(JNIEnv* env,jclass,jstring bearerArg){
     return spdecode::sharedSession().requiresActionIntegrityFor(bearer)?JNI_TRUE:JNI_FALSE;
 }
 void nativeClearSession(JNIEnv*,jclass){spdecode::sharedSession().clear();}
+void nativeConfigureAction(JNIEnv* env,jclass,jstring bearerArg,jlong project,jboolean inlineMode){
+    auto bearer=utf(env,bearerArg);ScrubString scrub{bearer};
+    spdecode::sharedSession().configureAction(bearer,static_cast<std::int64_t>(project),inlineMode==JNI_TRUE);
+}
+jstring nativeInlineAction(JNIEnv* env,jclass,jint op,jbyteArray wire,jstring bearerArg){
+    auto bearer=utf(env,bearerArg);ScrubString scrub{bearer};
+    const auto project=spdecode::sharedSession().inlineActionProject(bearer);
+    if(project<=0)return env->NewStringUTF("{}");
+    try{
+        auto bytes=nativeRead(env,wire,kMaxRequestBytes);
+        const auto binding=spdecode::inlineActionBinding(op,bearer,bytes.data(),bytes.size());
+        const std::string json="{\"challengeId\":\""+binding.id+"\",\"requestHash\":\""+
+            binding.requestHash+"\",\"cloudProjectNumber\":\""+std::to_string(project)+"\"}";
+        return env->NewStringUTF(json.c_str());
+    }catch(const std::exception&){fail(env,"CLOUD_INVALID_ACTION_BINDING");return nullptr;}
+}
 void nativeInvalidateSession(JNIEnv* env,jclass,jstring bearerArg){
     auto bearer=utf(env,bearerArg);
     ScrubString scrub{bearer};
@@ -858,6 +877,10 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm,void*) {
         reinterpret_cast<void*>(nativeCacheSession)},
         {const_cast<char*>("nativeGetSession"),const_cast<char*>("()Ljava/lang/String;"),
         reinterpret_cast<void*>(nativeGetSession)},
+        {const_cast<char*>("nativeConfigureAction"),const_cast<char*>("(Ljava/lang/String;JZ)V"),
+        reinterpret_cast<void*>(nativeConfigureAction)},
+        {const_cast<char*>("nativeInlineAction"),const_cast<char*>("(I[BLjava/lang/String;)Ljava/lang/String;"),
+        reinterpret_cast<void*>(nativeInlineAction)},
         {const_cast<char*>("nativeRequiresActionIntegrityFor"),
         const_cast<char*>("(Ljava/lang/String;)Z"),
         reinterpret_cast<void*>(nativeRequiresActionIntegrityFor)},
@@ -865,7 +888,7 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm,void*) {
         reinterpret_cast<void*>(nativeClearSession)},
         {const_cast<char*>("nativeInvalidateSession"),const_cast<char*>("(Ljava/lang/String;)V"),
         reinterpret_cast<void*>(nativeInvalidateSession)}};
-    const jint registered=env->RegisterNatives(bridge,methods,25);
+    const jint registered=env->RegisterNatives(bridge,methods,static_cast<jint>(sizeof(methods)/sizeof(methods[0])));
     env->DeleteLocalRef(bridge);
     return registered==JNI_OK?JNI_VERSION_1_6:JNI_ERR;
 }

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_download_confirm_body">क्या पूरा कैटलॉग, फ़ॉर्मैट और आइकन एक ही अनुरोध में डाउनलोड करें?</string>
+</resources>

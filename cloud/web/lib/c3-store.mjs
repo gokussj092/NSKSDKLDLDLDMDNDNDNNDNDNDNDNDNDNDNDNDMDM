@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { settings } from "./c3-config.mjs";
 let promise;
 export async function store() {
-  if (!settings().configured) throw Error("C3_NOT_CONFIGURED");
+  if (!/^rediss?:\/\//.test(settings().redisUrl||"")) throw Error("C3_NOT_CONFIGURED");
   if (!promise) {
     promise = import("redis").then(async ({ createClient }) => {
       const client = createClient({ url: settings().redisUrl, socket: { connectTimeout: 3000, reconnectStrategy: false } });

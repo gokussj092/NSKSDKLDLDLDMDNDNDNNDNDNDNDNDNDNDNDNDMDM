@@ -237,31 +237,13 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    /** Recover missed VPS announcements whenever the app becomes active. */
+    /** Pending push hints are local state; navigation never probes the network. */
     private fun probeUpdatesOnEntry(){
-        if(!BuildConfig.SPDECODE_CLOUD_ENABLED || showCloudLegal ||
-            entryProbeJob?.isActive==true)return
-        entryProbeJob=scope.launch {
-            try{
-                val latest=cloudClient.watchCatalogVersion(0)
-                if(latest>serverVpnCatalog.currentVersion() &&
-                    latest>settings.getInt("last_dismissed_catalog_version",0))
-                    pendingServerVpnCatalogVersion=latest
-            }catch(error:CancellationException){throw error}
-             catch(_:Exception){ /* Offline: the next foreground connection retries. */ }
-            try{
-                val remote=cloudClient.whatsNew(0,"en").optJSONObject("appUpdate")
-                val code=remote?.optInt("versionCode",0)?:0
-                val name=remote?.optString("versionName").orEmpty()
-                if(code>BuildConfig.VERSION_CODE &&
-                    code>settings.getInt("last_seen_app_update_code",0) &&
-                    name.matches(Regex("[0-9]+\\.[0-9]+\\.[0-9]+"))) {
-                    availableAppUpdate=name
-                    availableAppUpdateCode=code
-                }
-            }catch(error:CancellationException){throw error}
-             catch(_:Exception){ /* No update prompt unless verified HTTPS succeeds. */ }
-        }
+        if(!BuildConfig.SPDECODE_CLOUD_ENABLED || showCloudLegal)return
+        val latest=CloudCatalogUpdates.pendingVersion(this)
+        if(latest>serverVpnCatalog.currentVersion() &&
+            latest>settings.getInt("last_dismissed_catalog_version",0))
+            pendingServerVpnCatalogVersion=latest
     }
 
     /** Server publication version is independent of the APK versionCode. */
@@ -275,6 +257,12 @@ class MainActivity : ComponentActivity() {
                 if(next!=null) {
                     cloudWhatsNew=next
                     showWhatsNew=true
+                }
+                val update=cloudNewsRepository.cachedAppUpdate()
+                if(update!=null && update.first>BuildConfig.VERSION_CODE &&
+                    update.first>settings.getInt("last_seen_app_update_code",0)) {
+                    availableAppUpdate=update.second
+                    availableAppUpdateCode=update.first
                 }
             }catch(error:CancellationException){throw error}
              catch(_:Exception){ /* News failure must never prevent decoding or login. */ }
@@ -306,30 +294,11 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    /** Manual tap: probe version only, never download before user consent. */
+    /** The refresh button asks locally; the confirmed action makes one catalog request. */
     private fun checkServerVpnUpdates() {
         if(!BuildConfig.SPDECODE_CLOUD_ENABLED || showCloudLegal || busy ||
             serverVpnRefresh?.isActive==true)return
-        pendingServerVpnCatalogVersion=null
-        catalogProgress=null
-        serverVpnLoading=true
-        serverVpnRefresh=scope.launch {
-            try {
-                // knownVersion=0 returns immediately from the VPS version watch.
-                val remoteVersion=cloudClient.watchCatalogVersion(0)
-                if(remoteVersion<=serverVpnCatalog.currentVersion() &&
-                    serverVpnCatalog.hasCachedFormats()) {
-                    toast(R.string.server_vpn_catalog_current)
-                }else {
-                    pendingServerVpnCatalogVersion=remoteVersion
-                }
-            }catch(error:CancellationException){throw error}
-             catch(_:Exception){toast(R.string.server_vpn_catalog_update_error)}
-            finally {
-                serverVpnUnavailable=serverVpnApps.isEmpty()
-                serverVpnLoading=false
-            }
-        }
+        pendingServerVpnCatalogVersion=0 // manual refresh; no invented remote version
     }
 
     /** A confirmed manual download is the only non-opt-in update path. */
@@ -347,7 +316,7 @@ class MainActivity : ComponentActivity() {
                     onProgress={percent->scope.launch { catalogProgress=percent }})
                 fileFormats=serverVpnCatalog.cachedFormats()
                     textRoutes=serverVpnCatalog.cachedTextFormats()
-                toast(if(serverVpnCatalog.currentVersion()>=version)
+                toast(if(version==0 || serverVpnCatalog.currentVersion()>=version)
                     R.string.server_vpn_catalog_updated
                     else R.string.server_vpn_catalog_update_error)
             }catch(error:CancellationException){throw error}
@@ -538,9 +507,7 @@ class MainActivity : ComponentActivity() {
                     if(newTab==4 && guideStep!=null)guideStep=null
                     tab=newTab
                     reveal=false
-                    if(newTab==2 && CloudCatalogUpdates.enabled(this@MainActivity))
-                        refreshServerVpn()
-                    if(newTab==3)refreshServerVpn()
+                    // Both screens use the already loaded, encrypted catalog snapshot.
                     scope.launch {
                         try { historyPreferences.setLastTab(newTab) }
                         catch(e:CancellationException){throw e}

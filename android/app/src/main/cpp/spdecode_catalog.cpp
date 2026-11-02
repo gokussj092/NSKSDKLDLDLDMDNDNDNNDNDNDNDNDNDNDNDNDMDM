@@ -22,7 +22,7 @@
 namespace spdecode {
 namespace {
 using Bytes=CatalogBytes;
-constexpr std::size_t kMaxPlain=4U*1024U*1024U;
+constexpr std::size_t kMaxPlain=32U*1024U*1024U;
 [[noreturn]] void invalid() { throw std::runtime_error("CLOUD_CATALOG_AUTH_FAILED"); }
 void required(int rc) { if(rc!=0)invalid(); }
 void wipe(Bytes& b){if(!b.empty())mbedtls_platform_zeroize(b.data(),b.size());}
@@ -195,7 +195,7 @@ CatalogBytes openCatalog(const CatalogBytes& privatePkcs8,const std::string& rec
                          const std::string& saltText,const std::string& ivText,
                          int plainBytes,const std::string& dataText){
     if((purpose!="catalog"&&purpose!="icon")||plainBytes<1||
-       static_cast<std::size_t>(plainBytes)>kMaxPlain||
+       static_cast<std::size_t>(plainBytes)>(purpose=="icon"?4U*1024U*1024U:kMaxPlain)||
        privatePkcs8.size()<48||privatePkcs8.size()>2048)invalid();
     auto recipientDer=decode(recipient,91,91);
     auto serverDer=decode(sender,91,91);

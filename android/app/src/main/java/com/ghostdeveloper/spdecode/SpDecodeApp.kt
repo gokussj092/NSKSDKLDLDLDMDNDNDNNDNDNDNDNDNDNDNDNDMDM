@@ -165,8 +165,9 @@ fun SpDecodeApp(
             icon={Image(painter=painterResource(R.drawable.ic_launcher_foreground),
                 contentDescription=null,modifier=Modifier.size(46.dp))},
             title={Text(stringResource(R.string.catalog_available_title))},
-            text={Text(stringResource(R.string.catalog_available_body,
-                pendingServerVpnCatalogVersion),color=Secondary)},
+            text={Text(if(pendingServerVpnCatalogVersion==0)
+                stringResource(R.string.catalog_download_confirm_body)
+                else stringResource(R.string.catalog_available_body,pendingServerVpnCatalogVersion),color=Secondary)},
             confirmButton={TextButton(onClick=onConfirmServerVpnUpdate) {
                 Text(stringResource(R.string.server_vpn_catalog_download),color=White)
             }},

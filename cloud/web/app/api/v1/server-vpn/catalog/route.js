@@ -1,5 +1,5 @@
 import {sealCatalog,validCatalogKey} from "../../../../../lib/catalog-envelope.mjs";
-import {RECHECK_SECONDS,catalog} from "../../../../../lib/server-vpn-catalog.mjs";
+import {RECHECK_SECONDS,catalog,iconFor} from "../../../../../lib/server-vpn-catalog.mjs";
 import {providerOverview} from "../../../../../lib/c12-provider-controls.mjs";
 import {negotiatesExport,exportPolicy,projectedCatalogVersion,exportCatalog} from "../../../../../lib/compatible-export-policy.mjs";
 export const runtime="nodejs";
@@ -23,6 +23,13 @@ export async function POST(request) {
       return replyFor({apiVersion:"v1",catalogVersion:currentVersion,recheckAfterSeconds:RECHECK_SECONDS,unchanged:true},input.catalogKey);
     const availability=Object.fromEntries(summary.providers.map(p=>[p.id,p.enabled]));
     const result=catalog({availability,version:currentVersion});
+    if(request.headers.get("x-spdecode-catalog-bundle")==="1"){
+      const icons=result.apps.map(app=>{
+        const icon=iconFor(app.id);
+        return {id:app.id,sha256:icon.sha256,mimeType:"image/png",contentBase64:icon.bytes.toString("base64")};
+      });
+      result.iconBundle={version:1,count:icons.length,icons};
+    }
     // Existing APKs reject unknown credential names. Keep their snapshot
     // valid while newer clients explicitly negotiate recipient identities.
     if(request.headers.get("x-spdecode-npv-identities")!=="1")

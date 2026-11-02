@@ -36,16 +36,22 @@ data class Evidence(val chain: List<String>, val challenge: String, val publicKe
                     val devicePolicy: DeviceAdmission? = null)
 
 data class Decision(val valid: Boolean, val publicKey: String? = null,
-                    val level: String? = null, val versionCode: Long? = null)
+                    val level: String? = null, val versionCode: Long? = null,
+                    val reason: String? = null, val observations: List<String> = emptyList())
 
 // Log bounded, non-identifying rejection categories only. Never log certificates,
 // package names, public keys, challenges, serials, URLs or exception messages.
-private val startedAt = System.currentTimeMillis()
+private val startedAt = System.nanoTime()
 private val rejectCounts = ConcurrentHashMap<String,AtomicLong>()
-private fun reject(reason: String): Decision {
+private val acceptedCount = AtomicLong(0)
+private val observationCounts = ConcurrentHashMap<String,AtomicLong>()
+private val pathReasonCounts = ConcurrentHashMap<String,AtomicLong>()
+private fun reject(reason: String, detail: String? = null): Decision {
     rejectCounts.computeIfAbsent(reason) { AtomicLong(0) }.incrementAndGet()
     System.err.println("SP_ATTEST_REJECT=$reason")
-    return Decision(false)
+    if (reason == "CERT_PATH" && detail != null && detail.matches(Regex("[A-Z][A-Z0-9_]{1,80}")))
+        pathReasonCounts.computeIfAbsent(detail) { AtomicLong(0) }.incrementAndGet()
+    return Decision(false, reason = reason)
 }
 
 internal fun parseRevocations(text: String): Set<String> {
@@ -106,7 +112,10 @@ fun decide(evidence: Evidence, policy: Policy, verifier: Verifier): Decision {
             is VerificationResult.ConstraintViolation -> "CERT_CONSTRAINT"
             else -> "CERT_INVALID"
         }
-        return reject(category)
+        val detail = if (result is VerificationResult.PathValidationFailure)
+            result.cause.reason.toString().takeIf { it.matches(Regex("[A-Z][A-Z0-9_]{1,80}")) } ?: "OTHER"
+            else null
+        return reject(category, detail)
     }
     // Compatibility switches are short-lived and supplied only by the authenticated
     // backend, NOT by a caller APK. Invalid/expired claims fail closed.
@@ -114,14 +123,11 @@ fun decide(evidence: Evidence, policy: Policy, verifier: Verifier): Decision {
     val dynamic = if (candidate != null) {
         val now = System.currentTimeMillis()
         if (candidate.patchMonths !in listOf(12L,18L,24L,36L,48L) ||
-            candidate.expiresAt <= now || candidate.expiresAt > now + 48L*3600L*1000L ||
-            (candidate.patchMonths == 12L && candidate.enforcePatch && candidate.enforceBoot))
+            candidate.expiresAt <= now || candidate.expiresAt > now + 48L*3600L*1000L)
             return reject("POLICY_INVALID")
         candidate
     } else null
     val enforceBoot = dynamic?.enforceBoot ?: true
-    if (enforceBoot && (!result.deviceLocked || result.verifiedBootState != VerifiedBootState.VERIFIED))
-        return reject("VERIFIED_BOOT")
     val level = when (result.securityLevel) {
         SecurityLevel.STRONG_BOX -> "strongbox"
         SecurityLevel.TRUSTED_ENVIRONMENT -> "tee"
@@ -143,16 +149,26 @@ fun decide(evidence: Evidence, policy: Policy, verifier: Verifier): Decision {
     // A missing optional field is not evidence of an old or untrusted device.
     // Require a current hardware-enforced OS patch, and reject any present
     // vendor/boot patch if it is outside the established security window.
-    if (enforcePatch) {
-        val osPatch = attributes.osPatchLevel ?: return reject("OS_PATCH_MISSING")
-        if (osPatch.yearMonth.isBefore(floor) || osPatch.yearMonth.isAfter(ceiling))
-            return reject("OS_PATCH_OUTDATED")
-        if (listOfNotNull(attributes.vendorPatchLevel, attributes.bootPatchLevel)
-            .any { it.yearMonth.isBefore(floor) || it.yearMonth.isAfter(ceiling) })
-            return reject("VENDOR_BOOT_PATCH_OUTDATED")
-    }
+    val observations = mutableListOf<String>()
+    if (!result.deviceLocked || result.verifiedBootState != VerifiedBootState.VERIFIED)
+        observations.add("VERIFIED_BOOT")
+    val osPatch = attributes.osPatchLevel
+    if (osPatch == null) observations.add("OS_PATCH_MISSING")
+    else if (osPatch.yearMonth.isBefore(floor) || osPatch.yearMonth.isAfter(ceiling))
+        observations.add("OS_PATCH_OUTDATED")
+    if (attributes.vendorPatchLevel == null) observations.add("VENDOR_PATCH_UNKNOWN")
+    if (attributes.bootPatchLevel == null) observations.add("BOOT_PATCH_UNKNOWN")
+    if (listOfNotNull(attributes.vendorPatchLevel, attributes.bootPatchLevel)
+        .any { it.yearMonth.isBefore(floor) || it.yearMonth.isAfter(ceiling) })
+        observations.add("VENDOR_BOOT_PATCH_OUTDATED")
+    for (signal in observations)
+        observationCounts.computeIfAbsent(signal) { AtomicLong(0) }.incrementAndGet()
+    if (enforceBoot && "VERIFIED_BOOT" in observations) return reject("VERIFIED_BOOT")
+    if (enforcePatch) for (reason in listOf("OS_PATCH_MISSING", "OS_PATCH_OUTDATED", "VENDOR_BOOT_PATCH_OUTDATED"))
+        if (reason in observations) return reject(reason)
     // App package version is taken only from Google's hardware-validated attestationApplicationId.
-    return Decision(true, key, level, app.packages.single().version.longValueExact())
+    acceptedCount.incrementAndGet()
+    return Decision(true, key, level, app.packages.single().version.longValueExact(), observations = observations)
 }
 
 private fun reply(exchange: HttpExchange, status: Int, value: Any) {
@@ -192,9 +208,22 @@ fun main() {
             if (!MessageDigest.isEqual(token.toByteArray(), supplied.toByteArray()) ||
                 exchange.requestMethod != "GET" || exchange.requestURI.rawPath != "/stats" ||
                 exchange.requestURI.rawQuery != null) reply(exchange,403,mapOf("error" to "UNAUTHORIZED"))
-            else reply(exchange,200,mapOf(
-                "uptimeSeconds" to (System.currentTimeMillis()-startedAt)/1000L,
-                "rejections" to rejectCounts.entries.associate { it.key to it.value.get() }.toSortedMap()))
+            else {
+              val rejections=rejectCounts.entries.associate { it.key to it.value.get() }.toSortedMap()
+              val accepted=acceptedCount.get()
+              val rejected=rejections.values.sum()
+              reply(exchange,200,mapOf(
+                "schemaVersion" to 2,
+                "accepted" to accepted,
+                "rejected" to rejected,
+                "total" to (accepted + rejected),
+                "unit" to "verification_attempts",
+                "observations" to observationCounts.entries.associate { it.key to it.value.get() }.toSortedMap(),
+                "certificatePathReasons" to pathReasonCounts.entries.associate { it.key to it.value.get() }.toSortedMap(),
+                "rootDetection" to "unknown",
+                "uptimeSeconds" to (System.nanoTime()-startedAt)/1_000_000_000L,
+                "rejections" to rejections))
+            }
         }catch (_:Exception) { reply(exchange,503,mapOf("error" to "UNAVAILABLE")) }
         finally { exchange.close() }
     }

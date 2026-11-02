@@ -24,6 +24,8 @@ void SessionCache::clearLocked() {
     scrub(bearer_);
     deadline_=Clock::time_point{};
     actionIntegrity_=true;
+    inlineAction_=false;
+    actionProject_=0;
 }
 SessionCache::~SessionCache() {
     std::lock_guard<std::mutex> guard(mutex_);
@@ -31,7 +33,7 @@ SessionCache::~SessionCache() {
 }
 void SessionCache::store(const std::string& bearer,std::int64_t ttlSeconds,
                          bool actionIntegrity,Clock::time_point now) {
-    if(!validBearer(bearer) || ttlSeconds<1 || ttlSeconds>300)
+    if(!validBearer(bearer) || ttlSeconds<1 || ttlSeconds>3600)
         throw std::invalid_argument("CLOUD_INVALID_SESSION");
     std::lock_guard<std::mutex> guard(mutex_);
     clearLocked();
@@ -54,6 +56,18 @@ bool SessionCache::requiresActionIntegrityFor(const std::string& bearer) const {
     if(bearer.empty() || bearer!=bearer_ ||
        deadline_<=Clock::now()+std::chrono::seconds(30))return true;
     return actionIntegrity_;
+}
+void SessionCache::configureAction(const std::string& bearer,std::int64_t project,bool inlineMode) {
+    std::lock_guard<std::mutex> guard(mutex_);
+    if(bearer.empty()||bearer!=bearer_)return;
+    inlineAction_=inlineMode&&project>0;
+    actionProject_=inlineAction_?project:0;
+}
+std::int64_t SessionCache::inlineActionProject(const std::string& bearer) const {
+    std::lock_guard<std::mutex> guard(mutex_);
+    if(bearer.empty()||bearer!=bearer_||!inlineAction_||
+       deadline_<=Clock::now()+std::chrono::seconds(30))return 0;
+    return actionProject_;
 }
 void SessionCache::clear() {
     std::lock_guard<std::mutex> guard(mutex_);

@@ -27,7 +27,7 @@ internal class CatalogEnvelope : Closeable {
         require(body.getInt("envelope")==1 && body.getString("purpose")==purpose)
         require(purpose=="catalog" || purpose=="icon")
         val size=body.getInt("plainBytes")
-        require(size in 1..MAX_PLAIN)
+        require(size in 1..(if(purpose=="icon")4*1024*1024 else MAX_PLAIN))
         val packed=CloudNativeTransport.openCatalogHandle(consume(),publicKey,purpose,
             body.getString("serverKey"),body.getString("salt"),body.getString("iv"),
             size,body.getString("data"))
@@ -44,7 +44,7 @@ internal class CatalogEnvelope : Closeable {
     }
 
     companion object {
-        const val MAX_PLAIN=4*1024*1024
+        const val MAX_PLAIN=32*1024*1024
         internal fun inflate(bytes:ByteArray,limit:Int):ByteArray {
             require(limit in 1..maxOf(MAX_PLAIN,ServerVpnIconPolicy.CACHE_RECORD_BYTES))
             val out=ByteArrayOutputStream()

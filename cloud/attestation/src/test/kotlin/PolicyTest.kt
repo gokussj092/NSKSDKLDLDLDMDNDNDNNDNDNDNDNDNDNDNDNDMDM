@@ -51,7 +51,10 @@ class PolicyTest {
     @Test fun acceptsValidHardwareWithoutOptionalVendorAndBootPatches() {
         // Android's schema permits omitted vendor/boot patch fields.
         val optionalMissing=evidence(description(vendorPatch=null,bootPatch=null))
-        assertTrue(decide(optionalMissing,policy,verifier()).valid)
+        val accepted=decide(optionalMissing,policy,verifier())
+        assertTrue(accepted.valid)
+        assertTrue("VENDOR_PATCH_UNKNOWN" in accepted.observations)
+        assertTrue("BOOT_PATCH_UNKNOWN" in accepted.observations)
     }
     @Test fun rejectsMissingOrStaleMandatorySystemPatch() {
         assertFalse(decide(evidence(description(osPatch=null)),policy,verifier()).valid)
@@ -86,7 +89,10 @@ class PolicyTest {
         val test=DeviceAdmission(48,false,false,System.currentTimeMillis()+3600000)
         val oldUnlocked=evidence(description(locked=false,patch=YearMonth.now().minusMonths(50)))
         assertFalse(decide(oldUnlocked,policy,verifier()).valid)
-        assertTrue(decide(oldUnlocked.copy(devicePolicy=test),policy,verifier()).valid)
+        val accepted=decide(oldUnlocked.copy(devicePolicy=test),policy,verifier())
+        assertTrue(accepted.valid)
+        assertTrue("VERIFIED_BOOT" in accepted.observations)
+        assertTrue("OS_PATCH_OUTDATED" in accepted.observations)
         assertFalse(decide(oldUnlocked.copy(devicePolicy=test.copy(enforceBoot=true)),policy,verifier()).valid)
         assertFalse(decide(oldUnlocked.copy(devicePolicy=test),policy,verifier(googleRoots=true)).valid)
         assertFalse(decide(oldUnlocked.copy(devicePolicy=test),policy.copy(packageName="com.wrong.app"),verifier()).valid)

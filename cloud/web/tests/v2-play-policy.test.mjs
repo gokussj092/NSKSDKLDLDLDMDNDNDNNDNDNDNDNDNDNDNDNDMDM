@@ -3,46 +3,48 @@ import assert from 'node:assert/strict';
 import {mkdtemp,rm,readFile,writeFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-import {v2PlayPolicyStatus,changeV2PlayPolicy,MAX_V2_BETA_MS} from '../lib/v2-play-policy.mjs';
+import {v2PlayPolicyStatus,changeV2PlayPolicy,changeV2PlaySettings,compatiblePlayDefaults} from '../lib/v2-play-policy.mjs';
 import {v2Settings} from '../lib/v2-config.mjs';
-test('V2 Play check defaults ON, persists OFF for at most 15 days, and expires closed',async()=>{
- const root=await mkdtemp(join(tmpdir(),'spdecode-v2-play-')),now=1782600000000;
- try{
-  assert.deepEqual(await v2PlayPolicyStatus({root,now}),
-   {integrityRequired:true,betaUntil:null,revision:0});
-  const off=await changeV2PlayPolicy(false,0,{root,now});
-  assert.equal(off.integrityRequired,false);
-  assert.equal(new Date(off.betaUntil).getTime(),now+MAX_V2_BETA_MS);
-  assert.deepEqual(await v2PlayPolicyStatus({root,now:now+1000}),off);
-  assert.deepEqual(await v2PlayPolicyStatus({root,now:now+MAX_V2_BETA_MS}),
-   {integrityRequired:true,betaUntil:null,revision:1});
-  assert.deepEqual(await changeV2PlayPolicy(true,1,{root,now}),
-   {integrityRequired:true,betaUntil:null,revision:2});
-  await assert.rejects(changeV2PlayPolicy(false,0,{root,now}),/V2_PLAY_POLICY_CONFLICT/);
-  assert.equal(JSON.parse(await readFile(join(root,'v2-play-integrity.json'),'utf8')).integrityRequired,true);
- }finally{await rm(root,{recursive:true,force:true});}
-});
-test('corrupted policy rejects reads and invalid writes',async()=>{
+const draft=()=>{const {version,revision,...settings}=compatiblePlayDefaults();return settings;};
+test('Play observes permanently; independent strict settings persist, CAS prevents lost changes',async()=>{
  const root=await mkdtemp(join(tmpdir(),'spdecode-v2-play-'));
  try{
-  for(const text of ['{broken','{}','{"version":1,"integrityRequired":false,"betaUntil":0,"revision":0}']){
-   await writeFile(join(root,'v2-play-integrity.json'),text);
-   await assert.rejects(v2PlayPolicyStatus({root}));
-  }
-  await assert.rejects(changeV2PlayPolicy('off',0,{root}),/V2_PLAY_POLICY_INVALID/);
+  const initial=await v2PlayPolicyStatus({root});
+  assert.equal(initial.mode,'observe');assert.equal(initial.integrityRequired,false);
+  assert.equal(initial.permanent,true);assert.equal(initial.betaUntil,null);
+  const strict=await changeV2PlaySettings({...draft(),mode:'enforce',deviceIntegrity:'strong',requireLicensed:true,requireAction:true},0,{root});
+  assert.equal(strict.integrityRequired,true);assert.equal(strict.requireAction,true);
+  const observe=await changeV2PlayPolicy(false,1,{root});
+  assert.equal(observe.mode,'observe');assert.equal(observe.requireLicensed,true);
+  assert.equal((await v2PlayPolicyStatus({root,now:Date.now()+365*86400000})).mode,'observe');
+  await assert.rejects(changeV2PlayPolicy(true,0,{root}),/CONFLICT/);
+  const off=await changeV2PlaySettings({...draft(),mode:'off'},2,{root});
+  assert.equal(off.integrityRequested,false);
+  assert.equal(JSON.parse(await readFile(join(root,'v2-play-integrity.json'),'utf8')).mode,'off');
  }finally{await rm(root,{recursive:true,force:true});}
 });
-test('beta mode still requires a valid signed app certificate and hardware attestation',()=>{
+test('v1 profiles migrate once to compatible defaults with monotonic revision',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'spdecode-v2-migrate-'));
+ try{
+  await writeFile(join(root,'v2-play-integrity.json'),JSON.stringify({version:1,integrityRequired:true,betaUntil:0,revision:9}));
+  assert.equal((await v2PlayPolicyStatus({root})).revision,10);
+  assert.equal((await v2PlayPolicyStatus({root})).revision,10);
+  for(const bad of [{...draft(),mode:'anything'},{...draft(),requireSdk:'false'},
+    {...draft(),sessionSeconds:7200},{...draft(),minimumDeviceSdk:23},{...draft(),extra:true}])
+    await assert.rejects(changeV2PlaySettings(bad,10,{root}),/INVALID/);
+  await writeFile(join(root,'v2-play-integrity.json'),'{broken');
+  await assert.rejects(v2PlayPolicyStatus({root}),/INVALID/);
+ }finally{await rm(root,{recursive:true,force:true});}
+});
+test('observing Google still requires signed app identity, hardware attestation and trusted proxy',()=>{
  const e={CLOUD_API_ENABLED:'true',CLOUD_REDIS_URL:'redis://redis:6379',
   CLOUD_WORKER_TOKEN:'w'.repeat(48),CLOUD_SESSION_SIGNING_KEY:'s'.repeat(48),
-  CLOUD_GOOGLE_PLAY_PACKAGE:'com.ghostdeveloper.spdecode',
-  CLOUD_PLAY_CERT_SHA256:'a1'.repeat(32),CLOUD_TRUST_PROXY:'true',
-  CLOUD_KEY_ATTESTATION_TOKEN:'a'.repeat(64)};
- assert(!v2Settings(e).configured);
- assert(v2Settings(e,{playIntegrityRequired:false}).configured);
- assert(!v2Settings({...e,CLOUD_PLAY_CERT_SHA256:''},{playIntegrityRequired:false}).configured);
- assert(!v2Settings({...e,CLOUD_KEY_ATTESTATION_REQUIRED:'false'},{playIntegrityRequired:false}).configured);
- assert(!v2Settings({...e,CLOUD_KEY_ATTESTATION_TOKEN:''},{playIntegrityRequired:false}).configured);
- assert(!v2Settings({...e,CLOUD_TRUST_PROXY:'false'},{playIntegrityRequired:false}).configured);
- assert.equal(v2Settings(e,{playIntegrityRequired:false}).requireAction,false);
+  CLOUD_GOOGLE_PLAY_PACKAGE:'com.ghostdeveloper.spdecode',CLOUD_PLAY_CERT_SHA256:'a1'.repeat(32),
+  CLOUD_TRUST_PROXY:'true',CLOUD_KEY_ATTESTATION_TOKEN:'a'.repeat(64)};
+ const options={playIntegrityRequired:false,playPolicy:{...compatiblePlayDefaults(),integrityRequested:true}};
+ assert(v2Settings(e,options).configured);
+ assert.equal(v2Settings(e,options).minimumDeviceSdk,24);
+ assert.equal(v2Settings(e,options).requireAction,false);
+ for(const delta of [{CLOUD_PLAY_CERT_SHA256:''},{CLOUD_KEY_ATTESTATION_REQUIRED:'false'},
+   {CLOUD_KEY_ATTESTATION_TOKEN:''},{CLOUD_TRUST_PROXY:'false'}])assert(!v2Settings({...e,...delta},options).configured);
 });

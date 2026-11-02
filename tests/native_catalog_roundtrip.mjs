@@ -64,3 +64,6 @@ async function nativeIssuedRoundtrip(document,purpose) {
 assert.deepEqual(await nativeIssuedRoundtrip(source,'catalog'),source);
 assert.deepEqual(await nativeIssuedRoundtrip({icons:['NPV']},'icon'),{icons:['NPV']});
 console.log('PASS native C++ generated/kept P-256 + unchanged Node.js authenticated envelope');
+const bundled={iconBundle:{icons:[{id:'synthetic',contentBase64:'a'.repeat(5*1024*1024)}]}};
+assert.deepEqual(await nativeIssuedRoundtrip(bundled,'catalog'),bundled);
+console.log('PASS native catalog above 4 MiB with the 32 MiB catalog bound');

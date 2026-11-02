@@ -295,11 +295,8 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
         activity = replaceOnce(activity,
             "                error=message,",
             "                error=message,\n                noticeOnly=messageIsCredentialNotice,")
-        // In Cloud builds, the Formats screen must display the last cached
-        // remote inventory regardless of the user's automatic-sync setting.
-        activity = replaceOnce(activity,
-            "if(newTab==2 && CloudCatalogUpdates.enabled(this@MainActivity))\n                        refreshServerVpn()",
-            "if(newTab==2)refreshServerVpn()")
+        // Navigation already uses the in-memory catalog snapshot. Do not add
+        // refresh hooks when generating Cloud UI sources.
         // Android 15/16: Cloud builds opt into edge-to-edge on older devices too.
         // The original C0 UI sources stay byte-for-byte unchanged.
         activity = replaceOnce(activity,

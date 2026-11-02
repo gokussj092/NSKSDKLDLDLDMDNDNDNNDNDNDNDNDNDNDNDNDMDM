@@ -35,7 +35,10 @@ assert declared==registered, {
     if declared.get(name)!=registered.get(name)
 }
 count=re.search(r"RegisterNatives\(bridge,methods,(\d+)\)",cpp)
-assert count and int(count.group(1))==len(registered),(count,len(registered))
+if count:
+    assert int(count.group(1))==len(registered),(count,len(registered))
+else:
+    assert "RegisterNatives(bridge,methods,static_cast<jint>(sizeof(methods)/sizeof(methods[0])))" in cpp
 assert len(registered)>=23,len(registered)
 platform=(root/"android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudKeystorePlatform.kt").read_text()
 required=("aliases","contains","delete","publicKey","privateKey","chain","generate")
