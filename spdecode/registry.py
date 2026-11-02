@@ -212,6 +212,14 @@ def load_decoder_registry(path: Path = DECODERS_PATH) -> dict[str, DecoderSpec]:
             script="decoders/Python/apps/MTM_Tunnel_Lite/file_decoder.py", runtime="python"
         )
 
+    if path.resolve() == DECODERS_PATH.resolve():
+        if "hexcm" in registry:
+            raise ValueError("Hex Tunnel .hexcm decoder conflicts with an existing route")
+        registry["hexcm"] = DecoderSpec(
+            extension="hexcm", name="Hex Tunnel / HexVPN 1.7.3-Rev",
+            script="decoders/Python/apps/Hex_Tunnel/file_decoder.py", runtime="python"
+        )
+
     return registry
 
 

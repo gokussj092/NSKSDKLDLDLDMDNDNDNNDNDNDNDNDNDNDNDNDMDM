@@ -1,3 +1,18 @@
+# HEX Tunnel / HexVPN 1.7.3-Rev — `.hexcm` integrado, 2026-11-01
+
+Lector recuperado e integrado en `apps/Hex_Tunnel/file_decoder.py`, router C8,
+bot e inventario público de archivos. Catálogo fuente **61**, **256** formatos
+Cloud; C0 conserva 240 y Server VPN conserva 58 proveedores. `hexcm` es Cloud,
+sin credenciales externas ni motor offline Android. Seis muestras autorizadas
+completas, 26 campos de servidor por muestra y firma válida, comparadas con JCA.
+Las restricciones ID/compañía/inicio por ID se preservan en el resultado; el ID
+no es clave de cifrado en estas muestras. Doce vectores sintéticos válidos
+simples/dobles y diez inválidos reproducibles, sin datos reales en Git.
+Copias recifradas privadas verificadas; importación Android pendiente, Unlocked
+no habilitado ni certificado. No se añade proveedor ni catálogo de servidores.
+El análisis antiguo de `com.hex.custom.jotchuast` 10.6.1 sigue separado.
+Estado, recuperación y límites: `decoders/Python/apps/Hex_Tunnel/README.md`.
+
 # CREEB VPN50.0 — reinvestigado, remoto pendiente, 2026-11-01
 
 Versión50.0 reconfirmada en Play vivo, original privado recuperado y hashes

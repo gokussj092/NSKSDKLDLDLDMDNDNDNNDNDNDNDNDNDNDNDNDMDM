@@ -30,6 +30,7 @@ de cada carpeta no sustituyen esa nueva investigación ni describen el VPS actua
 
 | Aplicación | Catálogo | Archivos/textos | Icono y documentación |
 | --- | --- | --- | --- |
+| Hex Tunnel / HexVPN 1.7.3-Rev | Solo archivos, sin proveedor de servidores | [.hexcm Cloud, JSON firmado completo](Hex_Tunnel/file_decoder.py) | [Método y pruebas](Hex_Tunnel/README.md) |
 | MM Tunnel v1.10.30.2 | [POST HTTP200, 38 servidores /557 redes](MM_Tunnel/server_catalog_decoder.py) | [.mmt Cloud y legado conservado](MM_Tunnel/file_decoder.py) | [Carpeta](MM_Tunnel/README.md) |
 | ZiG Tunnel Play1.0 | [HTTP200, 15 servidores /3 HTTP /1 SSL](ZiG_Tunnel/server_catalog_decoder.py) | Sin nueva extensión de perfil inferida | [Carpeta](ZiG_Tunnel/README.md) |
 | Enaa Tunnel Enna-1.07 | [HTTP200, 45 servidores /515 redes](Enaa_Tunnel/server_catalog_decoder.py) | [.enaa Cloud, método confirmado](Enaa_Tunnel/file_decoder.py) | [Carpeta](Enaa_Tunnel/README.md) |

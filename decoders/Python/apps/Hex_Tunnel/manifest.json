@@ -1,0 +1,25 @@
+{
+  "id": "hex-tunnel",
+  "name": "Hex Tunnel / HexVPN",
+  "package": "com.hex.tunnel.jotchuast",
+  "versionName": "1.7.3-Rev",
+  "versionCode": 73,
+  "kind": "file",
+  "extensions": ["hexcm"],
+  "fileDecoder": "file_decoder.py",
+  "serverCatalogDecoder": null,
+  "runtime": "python",
+  "dependencies": ["pycryptodome"],
+  "requiresApkAtRuntime": false,
+  "requiresUserCredentials": false,
+  "cloudSupported": true,
+  "androidOfflineSupported": false,
+  "compatibleExportCertified": false,
+  "validation": {
+    "authorizedRealFiles": 6,
+    "syntheticValidCases": 12,
+    "syntheticRejectedCases": 10,
+    "reference": "JDK JCA",
+    "androidImportTested": false
+  }
+}

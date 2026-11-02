@@ -1,0 +1,590 @@
+{
+  "producer": "JDK 17 JCA PBKDF2/AES-GCM/ChaCha20-Poly1305/SHA-256",
+  "realUserFilesIncluded": false,
+  "documents": [
+    {
+      "name": "single-open",
+      "variant": "single",
+      "wire": "AAECAwQFBgcICQoLDA0ODyAhIiMkJSYnKCkqK+ItbOJNlNObfGqhvnVarOSYsEnfshXtNRM+3FI5urCQT+S42KDeRGG/KetGf7mydbBgTczdaVst/8X2udC8K4PswkCAlS+6Xmv6+BHTecieqnXj4WgiBvKMQHXh8uzx3y4aQaPFNJ2AOB6vidqiurNSwKwM6QGzwNTKxX1rOdyZzABou5Bg8/sx4quJzJKwwQy98RhFp74atKlIkam6LVm0SefA9ku+Jotw+1HOi7gzXnEZWFs1PfvLT6xxXIoMdMxTQWd8C4zAotKCXqTNuh+sNxi7Yq1ZIK+4wWXRiNDXCh8K0QnQ07A0HSjQM7XeF2sDN1zqsmutqcpQcdcQPNJaR5Snee+6KvIOMUUcLzkXLFSYbkrFJ329uLPhNUmZK9kuf8lrwVITUAmztq5QPDFfveJMvGD4KqPCzFeuTV+3fodiv92YazyGqL3MXFfenVq2WVvaEWUjpN+v3NrpUsk9Y5nYC0rPxUiWqEhi9tOaTCn7XKa9uG/ZCWrLKJG0jl4bb1yFAs7LWhdlAo7+0ZwFpZaa4yhMwEhycEaUkkAld/FXe7fujMcTk9L7k/k2BWt0q8JxpWVirHtqP9/hVBoLqDWy2GUDd652+wanY57i+6ahh+b9FfOjdxnd7P/yMBJivy3iA9/M1VP84NuVr3t2vQrOOdxctNe5e/73AUZJiv/RTnlaxCVY0Cyo4Z+yvvSaCefA6HCUBA+xEyqIRNkPoAaAxFLiP3zb0Xpo+13ip6jLDGhJ+X7Wn/Ov6SwcBK6QrAWlV1hgvIvJn8KktB/uGLxzSxnMy85/XTq4YMR0F9ty31CsJju9q0at6Xq31BhSveCRHQ==",
+      "expected": {
+        "version": 1,
+        "server": {
+          "name": "Prueba 🔐",
+          "serverType": 1,
+          "tunnelType": 2,
+          "serverIp": "vpn.example.invalid",
+          "serverPort": 22,
+          "user": "synthetic",
+          "password": "fixture-only",
+          "payload": "GET / HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+          "future": {
+            "array": [
+              null,
+              false,
+              1234567890123,
+              1.25
+            ],
+            "unicode": "ñ / 漢字\u0000"
+          }
+        },
+        "meta": {
+          "blocked": false,
+          "blockRoot": false,
+          "blockCompany": false,
+          "countryIso": "mx",
+          "company": "TEST",
+          "exportedAt": 1700000000000,
+          "expiresAt": 0,
+          "blockId": false,
+          "loginById": false,
+          "useUuid": false
+        },
+        "unknownRoot": [
+          "preserve",
+          true
+        ],
+        "signature": "64abe942252e5800ee383366e6edd3d42a83bc82bce78ba90a94ba8222be3150"
+      }
+    },
+    {
+      "name": "double-open",
+      "variant": "double",
+      "wire": "AAECAwQFBgcICQoLDA0ODyAhIiMkJSYnKCkqK8hKXMRu1+iyQCP/xgotr82HvGSZpFj4LjAtxEJi9NuUfOLp86en5bt895FTDoz4T6A2WLPdTnxqjIHi8++kPdzB6X6P0n/NDTe8nVDEctGO6Qri7CovN+WoXmbp9fKx4R1kea7QN7efKhPC7euXqYRti6suyj7gw4HOrwtPMPTcxUsunYw8wqYF4fGruvHV20bl5jpjmphL++xmqZqNKQCbMdzi0lHGRcUv1H+ShZJ8U3tjLXQYfsbRC6l2OZkzPs4/ClU2EqzZp5HdMeLvsD2ODBuoK6puMJqf/k3mzNTXAzxh2Gi1gLMuIjWaDMW+LycgA3v5hyXAgJBkX4sIO4pAcKfzfeWxZJ9SfAUQLnlmeQ7QDB3ECDrRqrDiA2HKfZxBbHKvhEJvBt89LDGq/Thz66se6DbSL+WVkFWxQFbncOZR5PPDZDujvbSTfkv7qDfkUk3fJFkb+sSproj5QdQHP9yfB37EyGC5tExi1Pu3IlyrZ5D3iTapA2GVL42VvHk5Tg6PT+f8DA5+F5T6mJEkm/rzpA5Cp3knOFCJm1sBcfxdbJni1r5w9aSgkvAyYhMRqpYJuTJx4Ds0P82idjdD5VLunmgkYLhH3DD0Eo3FppHz/bPeD/efIDLF0+yXWTk3mi3VTbiLzXnY4oez3wh28w7UD8se4POfevfyO09srqbTXw5yngZe5jOXwpqj5uurC6LD9CqCE1KnRAC2V8gfrXXhwiTaEEOxrXo/gwXR/qeUDGZikHDS1PahzSIoVbOUjQjaAAI1kabJ3O+LkHu8OO8LLDvClYMsI0r+ZZBVQr4+uCin7sn4LNjjVQdgDH1Qy6mSo/vu0Jzo8lRMjRmvR/1cmHGKZz+gDpWNBwpnLkBQSJfnvqJSbG+eoXXlvm+6g2OPZ6yR+Reg01cI1liNIA6W4rceLBOle0jRuaztCnXGjJsJIYKN2899+xaCMo2VaZ65jHmpzEXUTEZVX06ZLkLHYRXNHwVnX8Krjw9ZT0QmEOLYYh+ZY/U2uDElqQGkONeGqm2+auPjOe1k+DFMx2w2nEyzpIrGTw9LzYa8HZuMmMnflNPAYzpFBwD7fSyxyJ73VeyEVqIHXS9nit5fxtI/flwflJkLBGGEwhSCfkc5DhTqK8yqBAILwl4bYDD6q0/tVSpG",
+      "expected": {
+        "version": 1,
+        "server": {
+          "name": "Prueba 🔐",
+          "serverType": 1,
+          "tunnelType": 2,
+          "serverIp": "vpn.example.invalid",
+          "serverPort": 22,
+          "user": "synthetic",
+          "password": "fixture-only",
+          "payload": "GET / HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+          "future": {
+            "array": [
+              null,
+              false,
+              1234567890123,
+              1.25
+            ],
+            "unicode": "ñ / 漢字\u0000"
+          }
+        },
+        "meta": {
+          "blocked": false,
+          "blockRoot": false,
+          "blockCompany": false,
+          "countryIso": "mx",
+          "company": "TEST",
+          "exportedAt": 1700000000000,
+          "expiresAt": 0,
+          "blockId": false,
+          "loginById": false,
+          "useUuid": false
+        },
+        "unknownRoot": [
+          "preserve",
+          true
+        ],
+        "signature": "64abe942252e5800ee383366e6edd3d42a83bc82bce78ba90a94ba8222be3150"
+      }
+    },
+    {
+      "name": "inner-tag-open",
+      "reject": true,
+      "wire": "AAECAwQFBgcICQoLDA0ODyAhIiMkJSYnKCkqK8hKXMRu1+iyQCP/xgotr82HvGSZpFj4LjAtxEJi9NuUfOLp86en5bt895FTDoz4T6A2WLPdTnxqjIHi8++kPdzB6X6P0n/NDTe8nVDEctGO6Qri7CovN+WoXmbp9fKx4R1kea7QN7efKhPC7euXqYRti6suyj7gw4HOrwtPMPTcxUsunYw8wqYF4fGruvHV20bl5jpjmphL++xmqZqNKQCbMdzi0lHGRcUv1H+ShZJ8U3tjLXQYfsbRC6l2OZkzPs4/ClU2EqzZp5HdMeLvsD2ODBuoK6puMJqf/k3mzNTXAzxh2Gi1gLMuIjWaDMW+LycgA3v5hyXAgJBkX4sIO4pAcKfzfeWxZJ9SfAUQLnlmeQ7QDB3ECDrRqrDiA2HKfZxBbHKvhEJvBt89LDGq/Thz66se6DbSL+WVkFWxQFbncOZR5PPDZDujvbSTfkv7qDfkUk3fJFkb+sSproj5QdQHP9yfB37EyGC5tExi1Pu3IlyrZ5D3iTapA2GVL42VvHk5Tg6PT+f8DA5+F5T6mJEkm/rzpA5Cp3knOFCJm1sBcfxdbJni1r5w9aSgkvAyYhMRqpYJuTJx4Ds0P82idjdD5VLunmgkYLhH3DD0Eo3FppHz/bPeD/efIDLF0+yXWTk3mi3VTbiLzXnY4oez3wh28w7UD8se4POfevfyO09srqbTXw5yngZe5jOXwpqj5uurC6LD9CqCE1KnRAC2V8gfrXXhwiTaEEOxrXo/gwXR/qeUDGZikHDS1PahzSIoVbOUjQjaAAI1kabJ3O+LkHu8OO8LLDvClYMsI0r+ZZBVQr4+uCin7sn4LNjjVQdgDH1Qy6mSo/vu0Jzo8lRMjRmvR/1cmHGKZz+gDpWNBwpnLkBQSJfnvqJSbG+eoXXlvm+6g2OPZ6yR+Reg01cI1liNIA6W4rceLBOle0jRuaztCnXGjJsJIYKN2899+xaCMo2VaZ65jHmpzEXUTEZVX06ZLkLHYRXNHwVnX8Krjw9ZT0QmEOLYYh+ZY/U2uDElqQGkONeGqm2+auPjOe1k+DFMx2w2nEyzpIrGTw9LzYa8HZuMmMnflNPAYzpFBwD7fSyxyJ73VeyEVqIHXS9nit5fxtI/flwflJkLBGGEwhSCfkc5DhTqK8s7CQpRh7a9aq6bDZXQvaU1"
+    },
+    {
+      "name": "single-locked",
+      "variant": "single",
+      "wire": "AAECAwQFBgcICQoLDA0ODyAhIiMkJSYnKCkqK+ItbOJNlNObfGqhvnVarOSYsEnfshXtNRM+3FI5urCQT+S42KDeRGG/KetGf7mydbBgTczdaVst/8X2udC8K4PswkCAlS+6Xmv6+BHTecieqnXj4WgiBvKMQHXh8uzx3y4aQaPFNJ2AOB6vidqiurNSwKwM6QGzwNTKxX1rOdyZzABou5Bg8/sx4quJzJKwwQy98RhFp74atKlIkam6LVm0SefA9ku+Jotw+1HOi7gzXnEZWFs1PfvLT6xxXIoMdMxTQWd8C4zAotKCXqTNuh+sNxi7Yq1ZIK+4wWXRiNDXCh8K0QnQ07A0HSjQM7XeF2sDN1zqsmutqcpQcdcQPNJaR5Snee+6KvIOMUUcLzkXLFSYbkrFJ329uLPhNUmZK9kuf8lrwVITUAmztq5QPDFfveJMvGD4KqPCzFeuTV+3fodiv92YazyGqL3eT07I1FT2V1jWGVwepMT5xIbuX9YrKpeYBUnDzWC6qlVz+cTBVHX8Ubmr8WGYBXDQMpe/vmQHIkSdTduRVBkkDozjwJMS/o6ClTlaxz58fgGJml84ceBWXoK4lMwVlNL7k/k2BWt0q8JtqyJ/pGJxKMnTYUwToim8mGsAe6ZU1kC/P5nv5LDoiaj+Hf2kWyLtwbnqbBVvoDurDYjKw2Pc/NbTtydxsBXYIY1S48y8fv/vGHp0iuSHVhgjlidPxjq/5Yz1sKycDvf4mX7FHgG4HD+JQ85IuB7AkATnZSjV0CloqF7jqqaYXTkbqyTQz6GhvShIWP3GrFKlB1M1vNiXmcXz4B3iQ+57HRnEns0vB2rpNpByHNwlzQ+ndz90kmfeaTwWxSfQ/TW4",
+      "expected": {
+        "version": 1,
+        "server": {
+          "name": "Prueba 🔐",
+          "serverType": 1,
+          "tunnelType": 2,
+          "serverIp": "vpn.example.invalid",
+          "serverPort": 22,
+          "user": "synthetic",
+          "password": "fixture-only",
+          "payload": "GET / HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+          "future": {
+            "array": [
+              null,
+              false,
+              1234567890123,
+              1.25
+            ],
+            "unicode": "ñ / 漢字\u0000"
+          }
+        },
+        "meta": {
+          "blocked": true,
+          "blockRoot": false,
+          "blockCompany": false,
+          "countryIso": "mx",
+          "company": "TEST",
+          "exportedAt": 1700000000000,
+          "expiresAt": 0,
+          "blockId": false,
+          "loginById": false,
+          "useUuid": false
+        },
+        "unknownRoot": [
+          "preserve",
+          true
+        ],
+        "signature": "bbbd8175a2f1d86ca47ab5cd812187edc213fb0f4e4154931fa1aa1bbcd6c86b"
+      }
+    },
+    {
+      "name": "double-locked",
+      "variant": "double",
+      "wire": "AAECAwQFBgcICQoLDA0ODyAhIiMkJSYnKCkqK8hKXMRu1+iyQCP/xgotr82HvGSZpFj4LjAtxEJi9NuUfOLp86en5bt895FTDoz4T6A2WLPdTnxqjIHi8++kPdzB6X6P0n/NDTe8nVDEctGO6Qri7CovN+WoXmbp9fKx4R1kea7QN7efKhPC7euXqYRti6suyj7gw4HOrwtPMPTcxUsunYw8wqYF4fGruvHV20bl5jpjmphL++xmqZqNKQCbMdzi0lHGRcUv1H+ShZJ8U3tjLXQYfsbRC6l2OZkzPs4/ClU2EqzZp5HdMeLvsD2ODBuoK6puMJqf/k3mzNTXAzxh2Gi1gLMuIjWaDMW+LycgA3v5hyXAgJBkX4sIO4pAcKfzfeWxZJ9SfAUQLnlmeQ7QDB3ECDrRqrDiA2HKfZxBbHKvhEJvBt89LDGq/Thz66se6DbSL+WVkFWxQFbncOZR5PPDZDujvbSTfkv7qDfkUk3fJFkb+sSproj5QdQHP9yfB37EyGC5tExi1Pu3IlyrZ5D3iTapA2GVL42VvHk5Tg6PT+f8DA5+F5T6mJEkm/rzpA5Cp3knOFCJm1sBcfxdbJni1r5w9aSgkvAyYhMRqpYJuTJx4Ds0P82idjdD5VLunmgkYLhExCH2O8vOpbvzybO6H8GrbAzF1d21QRY3hjbQXpmWyEfYvoeJ5QBG5TTaCtga8fSuQKSoOxAiq9yXRxNI1zBYzxWJwaSV2O2CIqf/9xOFLhKVBwGIU/of5wT2wRHFBX+2iAk7qljUpvKqCjwUvj/d7YGvyWksA+XWq13YfSQKkabJ3O+LkHu8OO8LLDy5i9lWHUL4I/FERZ1xhT+ewNP5LO3jVCFsCH9G07qBjtK316KR61Nupy2+KPFFnV+GXT3WDveeUyNBKnpuGpTFlKhFWjrfl2Plsmr7i3uWZ6CS4ASoy31N502DGjyV4oI4NxK4RUiahLTLWWD7kptjPYiGtcN54yioBpuVcaG9nlyQzRXQEX17DnmaPkbIXCuUQk5rXIu8qRQOF0RZH/bIYTSZc/EttVEquhW3M/vF8UyUN7bSF/Jv6xcN9j82ynqw+Yi8Bg9f2qS6Hu2pjMnx4pTcNhMaBwCnJyyIy4DjUu/fe6IfVChsrJMX7LUcUmk92rY+bmaX/3e7aEQVawLjJpUs9F8s2ZSMGOMPuJA/TzvD",
+      "expected": {
+        "version": 1,
+        "server": {
+          "name": "Prueba 🔐",
+          "serverType": 1,
+          "tunnelType": 2,
+          "serverIp": "vpn.example.invalid",
+          "serverPort": 22,
+          "user": "synthetic",
+          "password": "fixture-only",
+          "payload": "GET / HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+          "future": {
+            "array": [
+              null,
+              false,
+              1234567890123,
+              1.25
+            ],
+            "unicode": "ñ / 漢字\u0000"
+          }
+        },
+        "meta": {
+          "blocked": true,
+          "blockRoot": false,
+          "blockCompany": false,
+          "countryIso": "mx",
+          "company": "TEST",
+          "exportedAt": 1700000000000,
+          "expiresAt": 0,
+          "blockId": false,
+          "loginById": false,
+          "useUuid": false
+        },
+        "unknownRoot": [
+          "preserve",
+          true
+        ],
+        "signature": "bbbd8175a2f1d86ca47ab5cd812187edc213fb0f4e4154931fa1aa1bbcd6c86b"
+      }
+    },
+    {
+      "name": "inner-tag-locked",
+      "reject": true,
+      "wire": "AAECAwQFBgcICQoLDA0ODyAhIiMkJSYnKCkqK8hKXMRu1+iyQCP/xgotr82HvGSZpFj4LjAtxEJi9NuUfOLp86en5bt895FTDoz4T6A2WLPdTnxqjIHi8++kPdzB6X6P0n/NDTe8nVDEctGO6Qri7CovN+WoXmbp9fKx4R1kea7QN7efKhPC7euXqYRti6suyj7gw4HOrwtPMPTcxUsunYw8wqYF4fGruvHV20bl5jpjmphL++xmqZqNKQCbMdzi0lHGRcUv1H+ShZJ8U3tjLXQYfsbRC6l2OZkzPs4/ClU2EqzZp5HdMeLvsD2ODBuoK6puMJqf/k3mzNTXAzxh2Gi1gLMuIjWaDMW+LycgA3v5hyXAgJBkX4sIO4pAcKfzfeWxZJ9SfAUQLnlmeQ7QDB3ECDrRqrDiA2HKfZxBbHKvhEJvBt89LDGq/Thz66se6DbSL+WVkFWxQFbncOZR5PPDZDujvbSTfkv7qDfkUk3fJFkb+sSproj5QdQHP9yfB37EyGC5tExi1Pu3IlyrZ5D3iTapA2GVL42VvHk5Tg6PT+f8DA5+F5T6mJEkm/rzpA5Cp3knOFCJm1sBcfxdbJni1r5w9aSgkvAyYhMRqpYJuTJx4Ds0P82idjdD5VLunmgkYLhExCH2O8vOpbvzybO6H8GrbAzF1d21QRY3hjbQXpmWyEfYvoeJ5QBG5TTaCtga8fSuQKSoOxAiq9yXRxNI1zBYzxWJwaSV2O2CIqf/9xOFLhKVBwGIU/of5wT2wRHFBX+2iAk7qljUpvKqCjwUvj/d7YGvyWksA+XWq13YfSQKkabJ3O+LkHu8OO8LLDy5i9lWHUL4I/FERZ1xhT+ewNP5LO3jVCFsCH9G07qBjtK316KR61Nupy2+KPFFnV+GXT3WDveeUyNBKnpuGpTFlKhFWjrfl2Plsmr7i3uWZ6CS4ASoy31N502DGjyV4oI4NxK4RUiahLTLWWD7kptjPYiGtcN54yioBpuVcaG9nlyQzRXQEX17DnmaPkbIXCuUQk5rXIu8qRQOF0RZH/bIYTSZc/EttVEquhW3M/vF8UyUN7bSF/Jv6xcN9j82ynqw+Yi8Bg9f2qS6Hu2pjMnx4pTcNhMaBwCnJyyIy4DjUu/fe6IfVChsrJMX7LUcUmk92rY+bmaX/3e7aEQVawLjIpX9T0rwVMpZZmJRwLffnaLD"
+    },
+    {
+      "name": "single-id",
+      "variant": "single",
+      "wire": "AAECAwQFBgcICQoLDA0ODyAhIiMkJSYnKCkqK+ItbOJNlNObfGqhvnVarOSYsEnfshXtNRM+3FI5urCQT+S42KDeRGG/KetGf7mydbBgTczdaVst/8X2udC8K4PswkCAlS+6Xmv6+BHTecieqnXj4WgiBvKMQHXh8uzx3y4aQaPFNJ2AOB6vidqiurNSwKwM6QGzwNTKxX1rOdyZzABou5Bg8/sx4quJzJKwwQy98RhFp74atKlIkam6LVm0SefA9ku+Jotw+1HOi7gzXnEZWFs1PfvLT6xxXIoMdMxTQWd8C4zAotKCXqTNuh+sNxi7Yq1ZIK+4wWXRiNDXCh8K0QnQ07A0HSjQM7XeF2sDN1zqsmutqcpQcdcQPNJaR5Snee+6KvIOMUUcLzkXLFSYbkrFJ329uLPhNUmZK9kuf8lrwVITUAmztq5QPDFfveJMvGD4KqPCzFeuTV+3fodiv92YazyGqL3eT07I1FT2V1jWGVwepMT5xIbuX9YrKpeYBUnDzWC6qlVz+cTBVHX8Ubmr8WGYBXDQMpe/vmQHIkSdTduRVBkkDozjwJMS/o6ClTlaxz58fgGJml84ceBWXoK4lMwVlNL7k/k2BWt0q8JtqyJ/pGJxKMnTYUwToim8mGsAe6ZU1kC/LYr28vnmx6v2E/qIYBLAh6G2axhwtnKlWo7c80PA8ZDL6yB8rwORfsMc+cG8WfTOF0RugLKfTnMw1GYegGn6q9C2/ruKHvSVhG6FQ1PgSnPFUMkJ5lnE0Buvf2yMjiY1uQHV/f+PHjd36DaXybb8/mwcQubXukTya0xxrYGWw8GzpFqzWOdoHhqUy88pBz7rMJd3EIl+2kCz4Yq7fJifVHYbAgNZmb2d74uwt8SQhgoYgByIfthP/Q2ab2Wgc/uhBngxMQoKEeHg5+QT3Lng84I+QQ3+C7eXTQ==",
+      "expected": {
+        "version": 1,
+        "server": {
+          "name": "Prueba 🔐",
+          "serverType": 1,
+          "tunnelType": 2,
+          "serverIp": "vpn.example.invalid",
+          "serverPort": 22,
+          "user": "synthetic",
+          "password": "fixture-only",
+          "payload": "GET / HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+          "future": {
+            "array": [
+              null,
+              false,
+              1234567890123,
+              1.25
+            ],
+            "unicode": "ñ / 漢字\u0000"
+          }
+        },
+        "meta": {
+          "blocked": true,
+          "blockRoot": false,
+          "blockCompany": false,
+          "countryIso": "mx",
+          "company": "TEST",
+          "exportedAt": 1700000000000,
+          "expiresAt": 0,
+          "blockId": true,
+          "loginById": false,
+          "useUuid": false,
+          "blockIdValue": "0123456789abcdef0123456789abcdef"
+        },
+        "unknownRoot": [
+          "preserve",
+          true
+        ],
+        "signature": "eba4c7b6ab1f4c952bd31893d04a108cf550425943fcacb848eb7928e7130233"
+      }
+    },
+    {
+      "name": "double-id",
+      "variant": "double",
+      "wire": "AAECAwQFBgcICQoLDA0ODyAhIiMkJSYnKCkqK8hKXMRu1+iyQCP/xgotr82HvGSZpFj4LjAtxEJi9NuUfOLp86en5bt895FTDoz4T6A2WLPdTnxqjIHi8++kPdzB6X6P0n/NDTe8nVDEctGO6Qri7CovN+WoXmbp9fKx4R1kea7QN7efKhPC7euXqYRti6suyj7gw4HOrwtPMPTcxUsunYw8wqYF4fGruvHV20bl5jpjmphL++xmqZqNKQCbMdzi0lHGRcUv1H+ShZJ8U3tjLXQYfsbRC6l2OZkzPs4/ClU2EqzZp5HdMeLvsD2ODBuoK6puMJqf/k3mzNTXAzxh2Gi1gLMuIjWaDMW+LycgA3v5hyXAgJBkX4sIO4pAcKfzfeWxZJ9SfAUQLnlmeQ7QDB3ECDrRqrDiA2HKfZxBbHKvhEJvBt89LDGq/Thz66se6DbSL+WVkFWxQFbncOZR5PPDZDujvbSTfkv7qDfkUk3fJFkb+sSproj5QdQHP9yfB37EyGC5tExi1Pu3IlyrZ5D3iTapA2GVL42VvHk5Tg6PT+f8DA5+F5T6mJEkm/rzpA5Cp3knOFCJm1sBcfxdbJni1r5w9aSgkvAyYhMRqpYJuTJx4Ds0P82idjdD5VLunmgkYLhExCH2O8vOpbvzybO6H8GrbAzF1d21QRY3hjbQXpmWyEfYvoeJ5QBG5TTaCtga8fSuQKSoOxAiq9yXRxNI1zBYzxWJwaSV2O2CIqf/9xOFLhKVBwGIU/of5wT2wRHFBX+2iAk7qljUpvKqCjwUvj/d7YGvyWksA+XWq13YfSQKkabJ3O+LkHu8OO8LLDy5i9lWHUL4I/FERZ1xhT+ewNP5LO3jVCFsCH9G07qBjtLw25/G+Q5+0xm+V8tDmme8PTnUduiiVB1EOGlIU4bV5odGf2+ipWKS43mXsmeVXbTO+zqJ1k4c2WmACjyq4Os8ABOBZ0KJrZLtDFn4nIt4NpKSm9B3oyyrMpjrabG9/DvIySvTV2lWUmOxOiKQWxWIBV0QdYu9zj5ZCEN4AfvDdR3CYuo8rw81txiXCv7JpmqWLqH/Fttk+zcLyzMg0Vuvko3FSxxJ8KOaHaaqiODMpdPacEYbBymmfSymjoD0UueUeLILWDtBmtNTxfcfDU021Y4wCWy91Q+HHnYYCTb0ApBJLx+M3VCKRQ1rAVVzrrfP+XvC/03vpSVRcvWUhTjnGnLzGKRbs/3T0EBCByG5/ZMxypKSLnN+YsTOghVx0GfuCRfeZuQoAJeJTCqwUjQz0A==",
+      "expected": {
+        "version": 1,
+        "server": {
+          "name": "Prueba 🔐",
+          "serverType": 1,
+          "tunnelType": 2,
+          "serverIp": "vpn.example.invalid",
+          "serverPort": 22,
+          "user": "synthetic",
+          "password": "fixture-only",
+          "payload": "GET / HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+          "future": {
+            "array": [
+              null,
+              false,
+              1234567890123,
+              1.25
+            ],
+            "unicode": "ñ / 漢字\u0000"
+          }
+        },
+        "meta": {
+          "blocked": true,
+          "blockRoot": false,
+          "blockCompany": false,
+          "countryIso": "mx",
+          "company": "TEST",
+          "exportedAt": 1700000000000,
+          "expiresAt": 0,
+          "blockId": true,
+          "loginById": false,
+          "useUuid": false,
+          "blockIdValue": "0123456789abcdef0123456789abcdef"
+        },
+        "unknownRoot": [
+          "preserve",
+          true
+        ],
+        "signature": "eba4c7b6ab1f4c952bd31893d04a108cf550425943fcacb848eb7928e7130233"
+      }
+    },
+    {
+      "name": "inner-tag-id",
+      "reject": true,
+      "wire": "AAECAwQFBgcICQoLDA0ODyAhIiMkJSYnKCkqK8hKXMRu1+iyQCP/xgotr82HvGSZpFj4LjAtxEJi9NuUfOLp86en5bt895FTDoz4T6A2WLPdTnxqjIHi8++kPdzB6X6P0n/NDTe8nVDEctGO6Qri7CovN+WoXmbp9fKx4R1kea7QN7efKhPC7euXqYRti6suyj7gw4HOrwtPMPTcxUsunYw8wqYF4fGruvHV20bl5jpjmphL++xmqZqNKQCbMdzi0lHGRcUv1H+ShZJ8U3tjLXQYfsbRC6l2OZkzPs4/ClU2EqzZp5HdMeLvsD2ODBuoK6puMJqf/k3mzNTXAzxh2Gi1gLMuIjWaDMW+LycgA3v5hyXAgJBkX4sIO4pAcKfzfeWxZJ9SfAUQLnlmeQ7QDB3ECDrRqrDiA2HKfZxBbHKvhEJvBt89LDGq/Thz66se6DbSL+WVkFWxQFbncOZR5PPDZDujvbSTfkv7qDfkUk3fJFkb+sSproj5QdQHP9yfB37EyGC5tExi1Pu3IlyrZ5D3iTapA2GVL42VvHk5Tg6PT+f8DA5+F5T6mJEkm/rzpA5Cp3knOFCJm1sBcfxdbJni1r5w9aSgkvAyYhMRqpYJuTJx4Ds0P82idjdD5VLunmgkYLhExCH2O8vOpbvzybO6H8GrbAzF1d21QRY3hjbQXpmWyEfYvoeJ5QBG5TTaCtga8fSuQKSoOxAiq9yXRxNI1zBYzxWJwaSV2O2CIqf/9xOFLhKVBwGIU/of5wT2wRHFBX+2iAk7qljUpvKqCjwUvj/d7YGvyWksA+XWq13YfSQKkabJ3O+LkHu8OO8LLDy5i9lWHUL4I/FERZ1xhT+ewNP5LO3jVCFsCH9G07qBjtLw25/G+Q5+0xm+V8tDmme8PTnUduiiVB1EOGlIU4bV5odGf2+ipWKS43mXsmeVXbTO+zqJ1k4c2WmACjyq4Os8ABOBZ0KJrZLtDFn4nIt4NpKSm9B3oyyrMpjrabG9/DvIySvTV2lWUmOxOiKQWxWIBV0QdYu9zj5ZCEN4AfvDdR3CYuo8rw81txiXCv7JpmqWLqH/Fttk+zcLyzMg0Vuvko3FSxxJ8KOaHaaqiODMpdPacEYbBymmfSymjoD0UueUeLILWDtBmtNTxfcfDU021Y4wCWy91Q+HHnYYCTb0ApBJLx+M3VCKRQ1rAVVzrrfP+XvC/03vpSVRcvWUhTjnGnLzGKRbs/3T0EBCByG5/ZMxypKSLnN+YsTOghVx0GfhmbmgFxjaGzfqLzCaIB0ZkQ=="
+    },
+    {
+      "name": "single-carrier",
+      "variant": "single",
+      "wire": "AAECAwQFBgcICQoLDA0ODyAhIiMkJSYnKCkqK+ItbOJNlNObfGqhvnVarOSYsEnfshXtNRM+3FI5urCQT+S42KDeRGG/KetGf7mydbBgTczdaVst/8X2udC8K4PswkCAlS+6Xmv6+BHTecieqnXj4WgiBvKMQHXh8uzx3y4aQaPFNJ2AOB6vidqiurNSwKwM6QGzwNTKxX1rOdyZzABou5Bg8/sx4quJzJKwwQy98RhFp74atKlIkam6LVm0SefA9ku+Jotw+1HOi7gzXnEZWFs1PfvLT6xxXIoMdMxTQWd8C4zAotKCXqTNuh+sNxi7Yq1ZIK+4wWXRiNDXCh8K0QnQ07A0HSjQM7XeF2sDN1zqsmutqcpQcdcQPNJaR5Snee+6KvIOMUUcLzkXLFSYbkrFJ329uLPhNUmZK9kuf8lrwVITUAmztq5QPDFfveJMvGD4KqPCzFeuTV+3fodiv92YazyGqL3eT07I1FT2V1jWGVwepMT5xIbuX9YrKpeYBUnDzWC6qlVz+cTBVGfvSK/i/yCUH2vKNJyPhHhKOlzSWIGfWlgoDJHyz4RJ5pb0hC9dsTByORyBhUI+YOFza9Sgn8oSlNL7k/k2BWt0q95j7D93vXlmPvvmN1QZvif8lmgMc4R5kFjjOJTw8vnmx6v2E/qIYBLAh6G2axhwtnKlWo7c80PA8ZDL6yB8rwPAcIMF+Mm5f+f2JEd0kbKfN2FxlDBZ0C279sv76KqbHs+Jly/fEAi3CT6OVIlQoAvBkVGwbS7V0Hg+r1e/oqeeDz4a8naEz/34uy8aBKmXqwakBQNru97IlcL+4xmyS7h4SUuUypR4VznvZpUjFttlkkQy1+dIkEC9RTllq746Khg=",
+      "expected": {
+        "version": 1,
+        "server": {
+          "name": "Prueba 🔐",
+          "serverType": 1,
+          "tunnelType": 2,
+          "serverIp": "vpn.example.invalid",
+          "serverPort": 22,
+          "user": "synthetic",
+          "password": "fixture-only",
+          "payload": "GET / HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+          "future": {
+            "array": [
+              null,
+              false,
+              1234567890123,
+              1.25
+            ],
+            "unicode": "ñ / 漢字\u0000"
+          }
+        },
+        "meta": {
+          "blocked": true,
+          "blockRoot": false,
+          "blockCompany": true,
+          "countryIso": "mx",
+          "company": "TEST",
+          "exportedAt": 1700000000000,
+          "expiresAt": 0,
+          "blockId": false,
+          "loginById": false,
+          "useUuid": false
+        },
+        "unknownRoot": [
+          "preserve",
+          true
+        ],
+        "signature": "7cc7307750da8807e33680ac8a75cdc4c733c8e698b921d1e223a58f21e43221"
+      }
+    },
+    {
+      "name": "double-carrier",
+      "variant": "double",
+      "wire": "AAECAwQFBgcICQoLDA0ODyAhIiMkJSYnKCkqK8hKXMRu1+iyQCP/xgotr82HvGSZpFj4LjAtxEJi9NuUfOLp86en5bt895FTDoz4T6A2WLPdTnxqjIHi8++kPdzB6X6P0n/NDTe8nVDEctGO6Qri7CovN+WoXmbp9fKx4R1kea7QN7efKhPC7euXqYRti6suyj7gw4HOrwtPMPTcxUsunYw8wqYF4fGruvHV20bl5jpjmphL++xmqZqNKQCbMdzi0lHGRcUv1H+ShZJ8U3tjLXQYfsbRC6l2OZkzPs4/ClU2EqzZp5HdMeLvsD2ODBuoK6puMJqf/k3mzNTXAzxh2Gi1gLMuIjWaDMW+LycgA3v5hyXAgJBkX4sIO4pAcKfzfeWxZJ9SfAUQLnlmeQ7QDB3ECDrRqrDiA2HKfZxBbHKvhEJvBt89LDGq/Thz66se6DbSL+WVkFWxQFbncOZR5PPDZDujvbSTfkv7qDfkUk3fJFkb+sSproj5QdQHP9yfB37EyGC5tExi1Pu3IlyrZ5D3iTapA2GVL42VvHk5Tg6PT+f8DA5+F5T6mJEkm/rzpA5Cp3knOFCJm1sBcfxdbJni1r5w9aSgkvAyYhMRqpYJuTJx4Ds0P82idjdD5VLunmgkYLhExCH2O8vOpbvzybO6H8GrbAzF1d21QRY3hjbQXpmWyEfYvoeJ5QBG5TTaCtga8fSuQKTvAl9wrOb2GyVYoBBe9jeLx8aVqfOGCPrD8yXfOCjgRBHFQ/ga0gjBiyDzDUO3zho89wLspaeLBXRfhDLS/afryTE4ELvz8ETHRwYKkabJ3O+LkHu8OO8LKTyMjtxGN1n+MO1Sc74x3jme9pb8Au3tVBdWEHcNxLzKjei40rXg+Q5+0xm+V8tDmme8PTnUduiiVB1EOGlIU4bV5odGf2+ipWKS43mXsmeVXbTO+zmN2Hgb+26CCg6K7J0SDRP9RWuJrY3mCHPznJBWJYKNn9NouRLLHpT4V7GzgECOjjy1C0VrAm6aLlqMdRbBHwZ7WIqrmAgWGG5ZH+LlQwubQsc1tQwxqBaNNN6Ep1yUd7GzDe1e4DFNvDM3nHq0+8mxeQpclIK2HZi9jc724ozPY0JTXTmmfASbxJD3L/CCeOIbXi94q54H8cUbcmsowsgLB2bA9GubYWhdc3XWUpUUZ9UsHqMQAkCnBqHvrL0n",
+      "expected": {
+        "version": 1,
+        "server": {
+          "name": "Prueba 🔐",
+          "serverType": 1,
+          "tunnelType": 2,
+          "serverIp": "vpn.example.invalid",
+          "serverPort": 22,
+          "user": "synthetic",
+          "password": "fixture-only",
+          "payload": "GET / HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+          "future": {
+            "array": [
+              null,
+              false,
+              1234567890123,
+              1.25
+            ],
+            "unicode": "ñ / 漢字\u0000"
+          }
+        },
+        "meta": {
+          "blocked": true,
+          "blockRoot": false,
+          "blockCompany": true,
+          "countryIso": "mx",
+          "company": "TEST",
+          "exportedAt": 1700000000000,
+          "expiresAt": 0,
+          "blockId": false,
+          "loginById": false,
+          "useUuid": false
+        },
+        "unknownRoot": [
+          "preserve",
+          true
+        ],
+        "signature": "7cc7307750da8807e33680ac8a75cdc4c733c8e698b921d1e223a58f21e43221"
+      }
+    },
+    {
+      "name": "inner-tag-carrier",
+      "reject": true,
+      "wire": "AAECAwQFBgcICQoLDA0ODyAhIiMkJSYnKCkqK8hKXMRu1+iyQCP/xgotr82HvGSZpFj4LjAtxEJi9NuUfOLp86en5bt895FTDoz4T6A2WLPdTnxqjIHi8++kPdzB6X6P0n/NDTe8nVDEctGO6Qri7CovN+WoXmbp9fKx4R1kea7QN7efKhPC7euXqYRti6suyj7gw4HOrwtPMPTcxUsunYw8wqYF4fGruvHV20bl5jpjmphL++xmqZqNKQCbMdzi0lHGRcUv1H+ShZJ8U3tjLXQYfsbRC6l2OZkzPs4/ClU2EqzZp5HdMeLvsD2ODBuoK6puMJqf/k3mzNTXAzxh2Gi1gLMuIjWaDMW+LycgA3v5hyXAgJBkX4sIO4pAcKfzfeWxZJ9SfAUQLnlmeQ7QDB3ECDrRqrDiA2HKfZxBbHKvhEJvBt89LDGq/Thz66se6DbSL+WVkFWxQFbncOZR5PPDZDujvbSTfkv7qDfkUk3fJFkb+sSproj5QdQHP9yfB37EyGC5tExi1Pu3IlyrZ5D3iTapA2GVL42VvHk5Tg6PT+f8DA5+F5T6mJEkm/rzpA5Cp3knOFCJm1sBcfxdbJni1r5w9aSgkvAyYhMRqpYJuTJx4Ds0P82idjdD5VLunmgkYLhExCH2O8vOpbvzybO6H8GrbAzF1d21QRY3hjbQXpmWyEfYvoeJ5QBG5TTaCtga8fSuQKTvAl9wrOb2GyVYoBBe9jeLx8aVqfOGCPrD8yXfOCjgRBHFQ/ga0gjBiyDzDUO3zho89wLspaeLBXRfhDLS/afryTE4ELvz8ETHRwYKkabJ3O+LkHu8OO8LKTyMjtxGN1n+MO1Sc74x3jme9pb8Au3tVBdWEHcNxLzKjei40rXg+Q5+0xm+V8tDmme8PTnUduiiVB1EOGlIU4bV5odGf2+ipWKS43mXsmeVXbTO+zmN2Hgb+26CCg6K7J0SDRP9RWuJrY3mCHPznJBWJYKNn9NouRLLHpT4V7GzgECOjjy1C0VrAm6aLlqMdRbBHwZ7WIqrmAgWGG5ZH+LlQwubQsc1tQwxqBaNNN6Ep1yUd7GzDe1e4DFNvDM3nHq0+8mxeQpclIK2HZi9jc724ozPY0JTXTmmfASbxJD3L/CCeOIbXi94q54H8cUbcmsowsgLB2bA9GubYWhdc3XGUpWQMKcZZfbqBzlHmSKlyL+T"
+    },
+    {
+      "name": "single-id-carrier",
+      "variant": "single",
+      "wire": "AAECAwQFBgcICQoLDA0ODyAhIiMkJSYnKCkqK+ItbOJNlNObfGqhvnVarOSYsEnfshXtNRM+3FI5urCQT+S42KDeRGG/KetGf7mydbBgTczdaVst/8X2udC8K4PswkCAlS+6Xmv6+BHTecieqnXj4WgiBvKMQHXh8uzx3y4aQaPFNJ2AOB6vidqiurNSwKwM6QGzwNTKxX1rOdyZzABou5Bg8/sx4quJzJKwwQy98RhFp74atKlIkam6LVm0SefA9ku+Jotw+1HOi7gzXnEZWFs1PfvLT6xxXIoMdMxTQWd8C4zAotKCXqTNuh+sNxi7Yq1ZIK+4wWXRiNDXCh8K0QnQ07A0HSjQM7XeF2sDN1zqsmutqcpQcdcQPNJaR5Snee+6KvIOMUUcLzkXLFSYbkrFJ329uLPhNUmZK9kuf8lrwVITUAmztq5QPDFfveJMvGD4KqPCzFeuTV+3fodiv92YazyGqL3eT07I1FT2V1jWGVwepMT5xIbuX9YrKpeYBUnDzWC6qlVz+cTBVGfvSK/i/yCUH2vKNJyPhHhKOlzSWIGfWlgoDJHyz4RJ5pb0hC9dsTByORyBhUI+YOFza9Sgn8oSlNL7k/k2BWt0q95j7D93vXlmPvvmN1QZvif8lmgMc4R5kFjxK43mu/eoxKP4FNazUD+Gn/2xZgdm/3zyXJjs01/Nt4iX7C1juUqfPs0f9cmedMb5Gl1+x6qHXHIz1WEfg2j1qoi1/7yLHaKUh2+CQlDhRXKdU8gO51qAj0qhKHeJiyctoD3o/eTZBlYOujSA36Dr+n9bTL7RvVTKGkIgt4+fzNSyo030QP8vGE+Typ8vUWvpa8AlRYx310K3vYjpdZXPBCUcVgBQkO3D6dq0t8WWiwgZ30rcf4xO/lHPbmagdPHzBno3N1lYAL5NlNsovHfugkXJxvTnN1b4",
+      "expected": {
+        "version": 1,
+        "server": {
+          "name": "Prueba 🔐",
+          "serverType": 1,
+          "tunnelType": 2,
+          "serverIp": "vpn.example.invalid",
+          "serverPort": 22,
+          "user": "synthetic",
+          "password": "fixture-only",
+          "payload": "GET / HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+          "future": {
+            "array": [
+              null,
+              false,
+              1234567890123,
+              1.25
+            ],
+            "unicode": "ñ / 漢字\u0000"
+          }
+        },
+        "meta": {
+          "blocked": true,
+          "blockRoot": false,
+          "blockCompany": true,
+          "countryIso": "mx",
+          "company": "TEST",
+          "exportedAt": 1700000000000,
+          "expiresAt": 0,
+          "blockId": true,
+          "loginById": false,
+          "useUuid": false,
+          "blockIdValue": "0123456789abcdef0123456789abcdef"
+        },
+        "unknownRoot": [
+          "preserve",
+          true
+        ],
+        "signature": "ec7f5314cc9f4af080f81c14c4c35291383d4433462955b697d0c495277356aa"
+      }
+    },
+    {
+      "name": "double-id-carrier",
+      "variant": "double",
+      "wire": "AAECAwQFBgcICQoLDA0ODyAhIiMkJSYnKCkqK8hKXMRu1+iyQCP/xgotr82HvGSZpFj4LjAtxEJi9NuUfOLp86en5bt895FTDoz4T6A2WLPdTnxqjIHi8++kPdzB6X6P0n/NDTe8nVDEctGO6Qri7CovN+WoXmbp9fKx4R1kea7QN7efKhPC7euXqYRti6suyj7gw4HOrwtPMPTcxUsunYw8wqYF4fGruvHV20bl5jpjmphL++xmqZqNKQCbMdzi0lHGRcUv1H+ShZJ8U3tjLXQYfsbRC6l2OZkzPs4/ClU2EqzZp5HdMeLvsD2ODBuoK6puMJqf/k3mzNTXAzxh2Gi1gLMuIjWaDMW+LycgA3v5hyXAgJBkX4sIO4pAcKfzfeWxZJ9SfAUQLnlmeQ7QDB3ECDrRqrDiA2HKfZxBbHKvhEJvBt89LDGq/Thz66se6DbSL+WVkFWxQFbncOZR5PPDZDujvbSTfkv7qDfkUk3fJFkb+sSproj5QdQHP9yfB37EyGC5tExi1Pu3IlyrZ5D3iTapA2GVL42VvHk5Tg6PT+f8DA5+F5T6mJEkm/rzpA5Cp3knOFCJm1sBcfxdbJni1r5w9aSgkvAyYhMRqpYJuTJx4Ds0P82idjdD5VLunmgkYLhExCH2O8vOpbvzybO6H8GrbAzF1d21QRY3hjbQXpmWyEfYvoeJ5QBG5TTaCtga8fSuQKTvAl9wrOb2GyVYoBBe9jeLx8aVqfOGCPrD8yXfOCjgRBHFQ/ga0gjBiyDzDUO3zho89wLspaeLBXRfhDLS/afryTE4ELvz8ETHRwYKkabJ3O+LkHu8OO8LKTyMjtxGN1n+MO1Sc74x3jme9pb8Au3tVBdWEHcNxLzKgtr21KLB8g1cpBy8V+lYk2aKSCTAK66NVBlLN1BDSIv0vYVBVG+EoGLi/EWqz2KUTriVoBCs1lNBlluCCCSf5LcgNS+oZEeLqrTFDEn8k4RCOpOS1uJ05yynMZ+UV7Su2iPLyTvPU2kjXmKxIWyNWwXKAV1nXNuhiwsRTXUvBvuZTwqRY8Q8pTYXrxCOJ9bJyEy+N4TzEt9a5zlAy2Al1VrJp4z4TwZIyoGtGraujefyoZXQdAMZXjn3fAamyJLjQuidUaU+SzRRpNZTqKpADWw+m4srBnyp/xSbHkgmEXX3Cp5dBTWM3XrfWg1NGAVkj/zM7nvf/lTo7CJRDfWVh1r/GnKUEKJP1PX6xX99AzObtPIn6tq9WVAXR+DJ3RwuyHC74OkTKU6TONvfb51O7yzRug==",
+      "expected": {
+        "version": 1,
+        "server": {
+          "name": "Prueba 🔐",
+          "serverType": 1,
+          "tunnelType": 2,
+          "serverIp": "vpn.example.invalid",
+          "serverPort": 22,
+          "user": "synthetic",
+          "password": "fixture-only",
+          "payload": "GET / HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+          "future": {
+            "array": [
+              null,
+              false,
+              1234567890123,
+              1.25
+            ],
+            "unicode": "ñ / 漢字\u0000"
+          }
+        },
+        "meta": {
+          "blocked": true,
+          "blockRoot": false,
+          "blockCompany": true,
+          "countryIso": "mx",
+          "company": "TEST",
+          "exportedAt": 1700000000000,
+          "expiresAt": 0,
+          "blockId": true,
+          "loginById": false,
+          "useUuid": false,
+          "blockIdValue": "0123456789abcdef0123456789abcdef"
+        },
+        "unknownRoot": [
+          "preserve",
+          true
+        ],
+        "signature": "ec7f5314cc9f4af080f81c14c4c35291383d4433462955b697d0c495277356aa"
+      }
+    },
+    {
+      "name": "inner-tag-id-carrier",
+      "reject": true,
+      "wire": "AAECAwQFBgcICQoLDA0ODyAhIiMkJSYnKCkqK8hKXMRu1+iyQCP/xgotr82HvGSZpFj4LjAtxEJi9NuUfOLp86en5bt895FTDoz4T6A2WLPdTnxqjIHi8++kPdzB6X6P0n/NDTe8nVDEctGO6Qri7CovN+WoXmbp9fKx4R1kea7QN7efKhPC7euXqYRti6suyj7gw4HOrwtPMPTcxUsunYw8wqYF4fGruvHV20bl5jpjmphL++xmqZqNKQCbMdzi0lHGRcUv1H+ShZJ8U3tjLXQYfsbRC6l2OZkzPs4/ClU2EqzZp5HdMeLvsD2ODBuoK6puMJqf/k3mzNTXAzxh2Gi1gLMuIjWaDMW+LycgA3v5hyXAgJBkX4sIO4pAcKfzfeWxZJ9SfAUQLnlmeQ7QDB3ECDrRqrDiA2HKfZxBbHKvhEJvBt89LDGq/Thz66se6DbSL+WVkFWxQFbncOZR5PPDZDujvbSTfkv7qDfkUk3fJFkb+sSproj5QdQHP9yfB37EyGC5tExi1Pu3IlyrZ5D3iTapA2GVL42VvHk5Tg6PT+f8DA5+F5T6mJEkm/rzpA5Cp3knOFCJm1sBcfxdbJni1r5w9aSgkvAyYhMRqpYJuTJx4Ds0P82idjdD5VLunmgkYLhExCH2O8vOpbvzybO6H8GrbAzF1d21QRY3hjbQXpmWyEfYvoeJ5QBG5TTaCtga8fSuQKTvAl9wrOb2GyVYoBBe9jeLx8aVqfOGCPrD8yXfOCjgRBHFQ/ga0gjBiyDzDUO3zho89wLspaeLBXRfhDLS/afryTE4ELvz8ETHRwYKkabJ3O+LkHu8OO8LKTyMjtxGN1n+MO1Sc74x3jme9pb8Au3tVBdWEHcNxLzKgtr21KLB8g1cpBy8V+lYk2aKSCTAK66NVBlLN1BDSIv0vYVBVG+EoGLi/EWqz2KUTriVoBCs1lNBlluCCCSf5LcgNS+oZEeLqrTFDEn8k4RCOpOS1uJ05yynMZ+UV7Su2iPLyTvPU2kjXmKxIWyNWwXKAV1nXNuhiwsRTXUvBvuZTwqRY8Q8pTYXrxCOJ9bJyEy+N4TzEt9a5zlAy2Al1VrJp4z4TwZIyoGtGraujefyoZXQdAMZXjn3fAamyJLjQuidUaU+SzRRpNZTqKpADWw+m4srBnyp/xSbHkgmEXX3Cp5dBTWM3XrfWg1NGAVkj/zM7nvf/lTo7CJRDfWVh1r/GnKUEKJP1PX6xX99AzObtPIn6tq9WVAXR+DJ3RwuyEq7bHZL6E0MBpeS9nCyWz4DPA=="
+    },
+    {
+      "name": "single-login-id",
+      "variant": "single",
+      "wire": "AAECAwQFBgcICQoLDA0ODyAhIiMkJSYnKCkqK+ItbOJNlNObfGqhvnVarOSYsEnfshXtNRM+3FI5urCQT+S42KDeRGG/KetGf7mydbBgTczdaVst/8X2udC8K4PswkCAlS+6Xmv6+BHTecieqnXj4WgiBvKMQHXh8uzx3y4aQaPFNJ2AOB6vidqiurNSwKwM6QGzwNTKxX1rOdyZzABou5Bg8/sx4quJzJKwwQy98RhFp74atKlIkam6LVm0SefA9ku+Jotw+1HOi7gzXnEZWFs1PfvLT6xxXIoMdMxTQWd8C4zAotKCXqTNuh+sNxi7Yq1ZIK+4wWXRiNDXCh8K0QnQ07A0HSjQM7XeF2sDN1zqsmutqcpQcdcQPNJaR5Snee+6KvIOMUUcLzkXLFSYbkrFJ329uLPhNUmZK9kuf8lrwVITUAmztq5QPDFfveJMvGD4KqPCzFeuTV+3fodiv92YazyGqL3eT07I1FT2V1jWGVwepMT5xIbuX9YrKpeYBUnDzWC6qlVz+cTBVHX8Ubmr8WGYBXDQMpe/vmQHIkSdTduRVBkkDozjwJMS/o6ClTlaxz58fgGJml84ceBWXoK4lMwVlNL7k/k2BWt0q8JtqyJ/pGJxKMnTYUwToim8mGsAe6ZU1kC/P5nv5LDoiaj+Hf2kWyLtwbnqfgZ2tnKlWo7c80PA8ZDL6yB8rwORfs0f8cu5UunREn56ieXATnkj1mQYhmv4pd7vpbmMGPbA02yHRVXiSH3LCZIL4F/GlwChIDXAkCYxoADw/MKUU3kO8B3H3Lf8/38LFq+B5EXlQwUO8sqCxMepsFyjCLhoQVqQm554XGrpN58nF9N02Eu3st+9d5adAiAXVQJcxLueu9zhu8+R3g4e1RuMeNxDqlGdb2CsJfDzCXlkNApYGvX88punMvaCd/crhKI1yCXjB/wM",
+      "expected": {
+        "version": 1,
+        "server": {
+          "name": "Prueba 🔐",
+          "serverType": 1,
+          "tunnelType": 2,
+          "serverIp": "vpn.example.invalid",
+          "serverPort": 22,
+          "user": "synthetic",
+          "password": "fixture-only",
+          "payload": "GET / HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+          "future": {
+            "array": [
+              null,
+              false,
+              1234567890123,
+              1.25
+            ],
+            "unicode": "ñ / 漢字\u0000"
+          }
+        },
+        "meta": {
+          "blocked": true,
+          "blockRoot": false,
+          "blockCompany": false,
+          "countryIso": "mx",
+          "company": "TEST",
+          "exportedAt": 1700000000000,
+          "expiresAt": 0,
+          "blockId": false,
+          "loginById": true,
+          "useUuid": false,
+          "loginByIdValue": "0123456789abcdef0123456789abcdef"
+        },
+        "unknownRoot": [
+          "preserve",
+          true
+        ],
+        "signature": "ed2f9bce9639379f7f73712f8605eeeaba894a053deef4cdbb25d3780f52a86a"
+      }
+    },
+    {
+      "name": "double-login-id",
+      "variant": "double",
+      "wire": "AAECAwQFBgcICQoLDA0ODyAhIiMkJSYnKCkqK8hKXMRu1+iyQCP/xgotr82HvGSZpFj4LjAtxEJi9NuUfOLp86en5bt895FTDoz4T6A2WLPdTnxqjIHi8++kPdzB6X6P0n/NDTe8nVDEctGO6Qri7CovN+WoXmbp9fKx4R1kea7QN7efKhPC7euXqYRti6suyj7gw4HOrwtPMPTcxUsunYw8wqYF4fGruvHV20bl5jpjmphL++xmqZqNKQCbMdzi0lHGRcUv1H+ShZJ8U3tjLXQYfsbRC6l2OZkzPs4/ClU2EqzZp5HdMeLvsD2ODBuoK6puMJqf/k3mzNTXAzxh2Gi1gLMuIjWaDMW+LycgA3v5hyXAgJBkX4sIO4pAcKfzfeWxZJ9SfAUQLnlmeQ7QDB3ECDrRqrDiA2HKfZxBbHKvhEJvBt89LDGq/Thz66se6DbSL+WVkFWxQFbncOZR5PPDZDujvbSTfkv7qDfkUk3fJFkb+sSproj5QdQHP9yfB37EyGC5tExi1Pu3IlyrZ5D3iTapA2GVL42VvHk5Tg6PT+f8DA5+F5T6mJEkm/rzpA5Cp3knOFCJm1sBcfxdbJni1r5w9aSgkvAyYhMRqpYJuTJx4Ds0P82idjdD5VLunmgkYLhExCH2O8vOpbvzybO6H8GrbAzF1d21QRY3hjbQXpmWyEfYvoeJ5QBG5TTaCtga8fSuQKSoOxAiq9yXRxNI1zBYzxWJwaSV2O2CIqf/9xOFLhKVBwGIU/of5wT2wRHFBX+2iAk7qljUpvKqCjwUvj/d7YGvyWksA+XWq13YfSQKkabJ3O+LkHu8OO8LLDy5i9lWHUL4I/FERZ1xhT+ewNP5LO3jVCFsCH9G07qBjtK316KR61Nupy2+KPFFnV+GXT3WDveeUyNTN09AU4bV5odGf2+ipWKS43mXsmeVXbTO+zqJ1lNBll+CIA6z+6FNBx24d0WakKjtCnD8kotSPoiSoch5vgGWEZjRcbe9wXmKyUTbTWp8Wm2wEEGHcy+RH157coS/tQsJEldOH/vDMgrCJf4/mFEc+QW4JNDD3Gq/Lv//Ed9d5CNM2GEA0UizsMjqbg1bjOafHov9puPlqo3PYEJbWSnsIAaxxJ3jUu/efrULXS1nqNFR86pHTV0umYsWDn6q7zaWHmZYSzXKHcdaVxuA00CBAwJrQw9wlPzz+nu46lTv5CVeRNyGhxH/LXKlDL9br/Xg20NQZhy4ifE36pGLO05vfOXO4yJd0lvFrH+sspvNWAEneY6InZFZ35xPrFk=",
+      "expected": {
+        "version": 1,
+        "server": {
+          "name": "Prueba 🔐",
+          "serverType": 1,
+          "tunnelType": 2,
+          "serverIp": "vpn.example.invalid",
+          "serverPort": 22,
+          "user": "synthetic",
+          "password": "fixture-only",
+          "payload": "GET / HTTP/1.1\r\nHost: example.invalid\r\n\r\n",
+          "future": {
+            "array": [
+              null,
+              false,
+              1234567890123,
+              1.25
+            ],
+            "unicode": "ñ / 漢字\u0000"
+          }
+        },
+        "meta": {
+          "blocked": true,
+          "blockRoot": false,
+          "blockCompany": false,
+          "countryIso": "mx",
+          "company": "TEST",
+          "exportedAt": 1700000000000,
+          "expiresAt": 0,
+          "blockId": false,
+          "loginById": true,
+          "useUuid": false,
+          "loginByIdValue": "0123456789abcdef0123456789abcdef"
+        },
+        "unknownRoot": [
+          "preserve",
+          true
+        ],
+        "signature": "ed2f9bce9639379f7f73712f8605eeeaba894a053deef4cdbb25d3780f52a86a"
+      }
+    },
+    {
+      "name": "inner-tag-login-id",
+      "reject": true,
+      "wire": "AAECAwQFBgcICQoLDA0ODyAhIiMkJSYnKCkqK8hKXMRu1+iyQCP/xgotr82HvGSZpFj4LjAtxEJi9NuUfOLp86en5bt895FTDoz4T6A2WLPdTnxqjIHi8++kPdzB6X6P0n/NDTe8nVDEctGO6Qri7CovN+WoXmbp9fKx4R1kea7QN7efKhPC7euXqYRti6suyj7gw4HOrwtPMPTcxUsunYw8wqYF4fGruvHV20bl5jpjmphL++xmqZqNKQCbMdzi0lHGRcUv1H+ShZJ8U3tjLXQYfsbRC6l2OZkzPs4/ClU2EqzZp5HdMeLvsD2ODBuoK6puMJqf/k3mzNTXAzxh2Gi1gLMuIjWaDMW+LycgA3v5hyXAgJBkX4sIO4pAcKfzfeWxZJ9SfAUQLnlmeQ7QDB3ECDrRqrDiA2HKfZxBbHKvhEJvBt89LDGq/Thz66se6DbSL+WVkFWxQFbncOZR5PPDZDujvbSTfkv7qDfkUk3fJFkb+sSproj5QdQHP9yfB37EyGC5tExi1Pu3IlyrZ5D3iTapA2GVL42VvHk5Tg6PT+f8DA5+F5T6mJEkm/rzpA5Cp3knOFCJm1sBcfxdbJni1r5w9aSgkvAyYhMRqpYJuTJx4Ds0P82idjdD5VLunmgkYLhExCH2O8vOpbvzybO6H8GrbAzF1d21QRY3hjbQXpmWyEfYvoeJ5QBG5TTaCtga8fSuQKSoOxAiq9yXRxNI1zBYzxWJwaSV2O2CIqf/9xOFLhKVBwGIU/of5wT2wRHFBX+2iAk7qljUpvKqCjwUvj/d7YGvyWksA+XWq13YfSQKkabJ3O+LkHu8OO8LLDy5i9lWHUL4I/FERZ1xhT+ewNP5LO3jVCFsCH9G07qBjtK316KR61Nupy2+KPFFnV+GXT3WDveeUyNTN09AU4bV5odGf2+ipWKS43mXsmeVXbTO+zqJ1lNBll+CIA6z+6FNBx24d0WakKjtCnD8kotSPoiSoch5vgGWEZjRcbe9wXmKyUTbTWp8Wm2wEEGHcy+RH157coS/tQsJEldOH/vDMgrCJf4/mFEc+QW4JNDD3Gq/Lv//Ed9d5CNM2GEA0UizsMjqbg1bjOafHov9puPlqo3PYEJbWSnsIAaxxJ3jUu/efrULXS1nqNFR86pHTV0umYsWDn6q7zaWHmZYSzXKHcdaVxuA00CBAwJrQw9wlPzz+nu46lTv5CVeRNyGhxH/LXKlDL9br/Xg20NQZhy4ifE36pGLO05vfOXO4yJd0lvFrH/rsjQaPxsxwIkFoNoEqegO9Bo="
+    },
+    {
+      "name": "signature",
+      "reject": true,
+      "wire": "AAECAwQFBgcICQoLDA0ODyAhIiMkJSYnKCkqK+ItbOJNlNObfGqhvnVarOSYsEnfshXtNRM+3FI5urC4H+zxmKybwJ8Jg7JIP6a4ZK1gW7qef19jtpGnt4a6LIrnz2CMly+6Xnvm6lKGO47L6Ayj82IwQLLSXiCpo7Gxg3sEGP2DZcHZbAyzm5n3+PUHgsxTq0WhytbI2W8ueonb3gp6+Nk+t6NktL9zADDMOP2k7wAS0TUKzkVo"
+    },
+    {
+      "name": "duplicate",
+      "reject": true,
+      "wire": "AAECAwQFBgcICQoLDA0ODyAhIiMkJSYnKCkqK+ItbOJNlNObfGqhvnVarOSYsEnfshXtNRM+3FI5urC4H+zxmKybwJ8Jg7JIP6a4ZK1gW7qef19jtpH2ucalKo7iy3Db3z7qETyr9kDFYtmVuUjmsTciSqDQVyGs9+O4h3sCS/6EbZPaZFm0ypn1q6cO18hXrEHwmNCd3md4fImN2Q9zrtpo4qRipPfS34b30A+qsVtP4+0OrPbqXlohDBOOWs5IsSTDUQCO"
+    },
+    {
+      "name": "nonfinite",
+      "reject": true,
+      "wire": "AAECAwQFBgcICQoLDA0ODyAhIiMkJSYnKCkqK+ItbOJNlNObfGqhvnVarOSYsEnfshXtNQV9i3l6zu/sH/y4zqDcjoUJ26UFPqGyY+Q/WfnIalty6dap8sOnJJn83HHb32j7AGC34lDUaNuau1qnoGNjSLbXVnT/pLKz0i4EH/6HYpSLaF+6mJrwrfMOi5hUo02gyIDI3msqfoyOjQJ++Ipqpe7CxKbGhf/A6t71x9gbvi7V"
+    },
+    {
+      "name": "version",
+      "reject": true,
+      "wire": "AAECAwQFBgcICQoLDA0ODyAhIiMkJSYnKCkqK+ItbOJNlNObfGqhvXVarOSYsEnfshXtNRM+3FI5urC4H+zxmKybwJ8Jg7JIP6a4ZK1gW7qef19jtpGnt4a6LIrnz2CMly+6Xnu16AaAMt3L6Qj19TM0Q7PTCiehqrOx0X0ETfqEYJeLblrmyc30qvNUgcRRrUajzdXA2D0tL4yN214proo8s/BktL9ZdeGAE99G0QuvuD3rSm/l"
+    }
+  ]
+}

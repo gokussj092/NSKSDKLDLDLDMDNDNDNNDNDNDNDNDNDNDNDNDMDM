@@ -409,6 +409,14 @@
       "credentialFields": []
     },
     {
+      "suffix": "hexcm",
+      "name": "Hex Tunnel / HexVPN 1.7.3-Rev",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
       "suffix": "hsome",
       "name": "XOR VPN family",
       "kind": "file",
