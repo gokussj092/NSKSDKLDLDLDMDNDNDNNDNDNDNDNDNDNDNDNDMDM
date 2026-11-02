@@ -95,3 +95,14 @@ La ejecución de integración `41534170991` **aprobó** la auditoría C0 sobre e
 - La operación V2 18 sigue requiriendo sesión autenticada; se conserva el error 401 para uso sin bearer.
 
 **Decisión actual:** NO-GO. Sin evidencia nueva de artefactos firmados ni prueba física. El nuevo HEAD exige reejecutar los gates antes de considerar que la fase 8 está completada.
+
+## Correcciones en curso — validación nativa, compilación y regresiones (2026-11-02)
+
+**Política estricta:** endpoints de transporte/API Cloud y validación criptográfica permanecen en **libv7q3.so**; se añade prueba `tests/test_android_native_trust_boundary.py` para impedir direcciones privadas, rutas API y secretos backend en Kotlin. Se conserva Android Keystore/Google Play SDK como puente de plataforma sin trasladar la autoridad de compra al cliente. El módulo comercial permanece deshabilitado y sin creditar saldo; ninguna compra puede considerarse validada sin verificación transaccional del backend.
+
+- Kotlin: `FeedbackDraft` deja de ser `internal` en firmas públicas, y Nube global enlaza el callback de una referencia al selector automático existente.
+- JNI host: prueba JVM actualizada a los **27** métodos reales registrados por `JNI_OnLoad`, prueba HTTP sobre bytes opacos y stub de Context *solo* para host. Gradle y las fuentes Android de producción no reciben el stub.
+- Catálogo: pruebas conservan el conjunto original C0 de 239 excluyendo `hexcm`, y comprueban las 256 rutas de archivo del worker extendido sin quitar ningún método.
+- Ningún release firmado, producto de compra, despliegue o merge se activa por estas correcciones.
+
+**Se ejecuta un nuevo ciclo CI en este commit para identificar regresiones todavía existentes. El estado se mantiene NO-GO hasta evidencia completa de APK/AAB release, JNI, R8 y hardware real.**
