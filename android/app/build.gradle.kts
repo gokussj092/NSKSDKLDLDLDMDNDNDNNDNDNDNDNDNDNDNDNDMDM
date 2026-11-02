@@ -283,6 +283,12 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
                 }
             },""")
         var activity = originalRoot.file("MainActivity.kt").asFile.readText(Charsets.UTF_8)
+        // Global Cloud panel has two arguments, unlike the single-input legacy
+        // panel in the main source set. Adapt only the generated Cloud Activity.
+        // Never add an API endpoint, key or server policy to Kotlin.
+        activity = replaceOnce(activity,
+            """                onDecodeCloud={reference->decodeCloud("auto",reference)},""",
+            """                onDecodeCloud={provider,reference->decodeCloud(provider,reference)},""")
         // Only the Cloud artifact uses the verified downloadable text inventory.
         // Preserve C0's legacy fallback without leaking it into Cloud builds.
         activity = replaceOnce(activity,
