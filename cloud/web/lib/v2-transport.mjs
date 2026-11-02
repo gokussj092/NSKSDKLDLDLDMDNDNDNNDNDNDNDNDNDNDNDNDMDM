@@ -60,6 +60,7 @@ async function dispatch(operation,request) {
     13:()=>import("../app/api/v1/server-vpn/watch/route.js"),
     14:()=>import("../app/api/v1/whats-new/route.js"),
     15:()=>import("../app/api/v1/telemetry/route.js"),
+    18:()=>import("../app/api/v1/feedback/route.js"),
   };
   return (await handlers[operation]()).POST(request);
 }
@@ -78,7 +79,7 @@ async function jsonTransportCore(request,options={}) {
     deviceRevision:devicePolicy.revision};
   if(!cfg.configured)return fail("SERVICE_UNAVAILABLE",503);
   const url=new URL(request.url),header=request.headers.get("x-sp-operation")||"";
-  if(request.method!=="POST" || url.search || !/^(1|2|[4-9]|1[0-7])$/.test(header))
+  if(request.method!=="POST" || url.search || !/^(1|2|[4-9]|1[0-8])$/.test(header))
     return fail("INVALID_REQUEST",400); // No QA/beta or arbitrary proxy.
   const op=Number(header);
   try {
@@ -298,7 +299,7 @@ export async function transportRequest(request,options={}) {
   }
   if(!isHpkeEnabled(env))return fail("SERVICE_UNAVAILABLE",503);
   const url=new URL(request.url),name=request.headers.get("x-sp-operation")||"";
-  if(request.method!=="POST"||url.search||!/^(1|2|[4-9]|1[0-7])$/.test(name))
+  if(request.method!=="POST"||url.search||!/^(1|2|[4-9]|1[0-8])$/.test(name))
     return fail("INVALID_REQUEST",400);
   const op=Number(name);
   if(op>=4 && !(request.headers.get("authorization")||"").startsWith("Bearer "))

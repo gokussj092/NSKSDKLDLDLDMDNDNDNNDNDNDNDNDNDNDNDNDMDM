@@ -530,6 +530,7 @@ class MainActivity : ComponentActivity() {
                 onLanguage={tag->setLanguage(tag)},
                 onMaskCredentials={value->hideCredentials=value;settings.edit().putBoolean("mask_credentials",value).apply()},
                 onExternalLink={url->openExternal(url)},
+                onFeedbackSubmit={draft-> cloudClient.submitFeedback(draft)},
                 onSelect={selectResult(it)},
                 onClear={clearHistory()},
                 onClearResult={clearVisibleResult()},

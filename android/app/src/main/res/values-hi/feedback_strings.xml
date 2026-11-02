@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feedback_title">त्रुटियाँ और सुझाव</string>
+    <string name="feedback_settings_detail">समस्याएँ रिपोर्ट करें या नई APK विधियाँ सुझाएँ</string>
+    <string name="feedback_intro">अनुरोध का प्रकार चुनें। भेजें दबाने तक कोई डेटा नहीं भेजा जाएगा।</string>
+    <string name="feedback_category">अनुरोध का प्रकार</string>
+    <string name="feedback_category_method">नई APK विधि जोड़ें</string>
+    <string name="feedback_category_bug">त्रुटि रिपोर्ट करें</string>
+    <string name="feedback_category_suggestion">सुधार सुझाएँ</string>
+    <string name="feedback_method_help">Google Play, Uptodown या अन्य प्रदाता का लिंक डालें और बताएँ कि क्या जोड़ना है।</string>
+    <string name="feedback_app_link">ऐप लिंक</string>
+    <string name="feedback_app_link_hint">https://play.google.com/store/apps/details?id=...</string>
+    <string name="feedback_bug_instruction">सभी हुई त्रुटियाँ चुनें (कम से कम एक)।</string>
+    <string name="feedback_issue_decode">फ़ाइल डिक्रिप्शन विफल</string>
+    <string name="feedback_issue_catalog">VPN कैटलॉग डाउनलोड विफल</string>
+    <string name="feedback_issue_import">फ़ाइल आयात में समस्या</string>
+    <string name="feedback_issue_export">निर्यात या अनलॉक कॉन्फ़िगरेशन विफल</string>
+    <string name="feedback_issue_crash">ऐप अचानक बंद हुआ</string>
+    <string name="feedback_issue_cloud">क्लाउड या सर्वर एक्सेस समस्या</string>
+    <string name="feedback_issue_other">अन्य त्रुटि</string>
+    <string name="feedback_optional_report">अतिरिक्त रिपोर्ट (वैकल्पिक)</string>
+    <string name="feedback_description_required">आप क्या जोड़ना या सुधारना चाहते हैं?</string>
+    <string name="feedback_report_hint">चरण या विवरण लिख सकते हैं, लेकिन अनिवार्य नहीं है।</string>
+    <string name="feedback_description_hint">वांछित विधि, फ़ाइल, कैटलॉग या सुधार का वर्णन करें।</string>
+    <string name="feedback_privacy_note">पासवर्ड, निजी कुंजी, डिक्रिप्ट की गई कॉन्फ़िगरेशन या संवेदनशील लॉग न लिखें। केवल चुनी गई जानकारी भेजी जाती है।</string>
+    <string name="feedback_error">अनुरोध नहीं भेजा जा सका। आपके उत्तर सुरक्षित हैं।</string>
+    <string name="feedback_received">अनुरोध प्राप्त हुआ। संदर्भ: %1$s</string>
+    <string name="feedback_send">अनुरोध भेजें</string>
+    <string name="feedback_sending">भेजा जा रहा है…</string>
+</resources>

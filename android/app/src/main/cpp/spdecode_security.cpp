@@ -81,7 +81,7 @@ std::string formatProof(int op,const std::string& version,
                         const unsigned char* body,std::size_t size,
                         const std::string& bearer,const std::string& timestamp,
                         const std::string& nonce){
-    if(op<1||op>17||op==3||!acceptableVersion(version)||bearer.size()>2048||
+    if(op<1||op>18||op==3||!acceptableVersion(version)||bearer.size()>2048||
        timestamp.size()<10||timestamp.size()>11||!acceptableNonce(nonce)||
        size>12U*1024U*1024U)invalid();
     for(char c:timestamp)if(c<'0'||c>'9')invalid();
@@ -130,7 +130,7 @@ bool validActionChallenge(const std::string& hash,const std::string& id,
 }
 ActionBinding inlineActionBinding(int op,const std::string& bearer,
                                  const unsigned char* data,std::size_t size) {
-    if((op!=4&&op!=5&&op!=6&&op!=7&&op!=8&&op!=9&&op!=12)||
+    if((op!=4&&op!=5&&op!=6&&op!=7&&op!=8&&op!=9&&op!=12&&op!=18)||
        bearer.empty()||bearer.size()>2048||size>12U*1024U*1024U)invalid();
     for(unsigned char c:bearer)if(!((c>='a'&&c<='z')||(c>='A'&&c<='Z')||
         (c>='0'&&c<='9')||c=='-'||c=='_'||c=='.'))invalid();

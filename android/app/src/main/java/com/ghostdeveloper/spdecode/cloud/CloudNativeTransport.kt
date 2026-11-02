@@ -135,7 +135,7 @@ internal object CloudNativeTransport {
     data class Reply(val status: Int, val body: JSONObject)
     fun prepare(operation:Int,payload:JSONObject,attachment:ByteArray?=null):V2HpkeEnvelope.Prepared {
         require(BuildConfig.SPDECODE_CLOUD_ENABLED) { "CLOUD_DISABLED" }
-        require(operation in 1..17 && operation!=3) { "CLOUD_ROUTE_DENIED" }
+        require(operation in 1..18 && operation!=3) { "CLOUD_ROUTE_DENIED" }
         return V2HpkeEnvelope.prepare(operation,payload,attachment)
     }
 

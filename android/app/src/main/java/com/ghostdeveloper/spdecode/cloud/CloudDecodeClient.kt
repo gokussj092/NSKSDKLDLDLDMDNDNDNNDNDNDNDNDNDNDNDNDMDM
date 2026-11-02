@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Base64
 import com.ghostdeveloper.spdecode.BuildConfig
 import com.ghostdeveloper.spdecode.ReleaseIntegrity
+import com.ghostdeveloper.spdecode.FeedbackDraft
 import com.ghostdeveloper.spdecode.parity.HcHccfgPort
 import com.google.android.play.core.integrity.IntegrityManagerFactory
 import com.google.android.play.core.integrity.IntegrityTokenRequest
@@ -507,6 +508,28 @@ internal class CloudDecodeClient(context: Context) {
                     JSONObject().put("id",id).put("catalogKey",envelope.publicKey),session())),"icon")
             }
         }
+    }
+
+    /** Voluntary feedback uses the existing V2 HPKE, PoP and action Integrity path.
+     * No imported VPN files, decoded JSON, device logs or private keys are sent. */
+    suspend fun submitFeedback(draft:FeedbackDraft):String {
+        requireLegalConsent()
+        require(draft.submissionId.matches(Regex("[0-9a-fA-F-]{36}")))
+        val payload=JSONObject()
+            .put("category",draft.category)
+            .put("appLink",draft.appLink)
+            .put("description",draft.description)
+            .put("issues",org.json.JSONArray(draft.issues))
+            .put("submissionId",draft.submissionId)
+            .put("appVersion",BuildConfig.VERSION_NAME)
+            .put("appBuild",BuildConfig.VERSION_CODE)
+        val response=withContext(Dispatchers.IO) {
+            extract(protectedPost(CloudOperation.FEEDBACK,payload,session()))
+        }
+        if(response.optString("status")!="received")throw IOException("FEEDBACK_NOT_ACCEPTED")
+        val id=response.optString("requestId")
+        if(!id.matches(Regex("[0-9a-fA-F-]{36}")))throw IOException("FEEDBACK_INVALID_RECEIPT")
+        return id
     }
 
     /** Explicit user action only: never uploads the source file or a free-text note. */

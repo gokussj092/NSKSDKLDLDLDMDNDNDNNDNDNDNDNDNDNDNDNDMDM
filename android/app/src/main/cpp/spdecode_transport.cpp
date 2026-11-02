@@ -58,7 +58,7 @@ void fail(JNIEnv* env, const char* message) {
 // Authenticated session policy controls supplemental RASP enforcement only.
 // A hooked client cannot change the independent server admission policy.
 std::atomic<bool> enforceRuntime{false};
-bool sensitiveOperation(int op){return (op>=4&&op<=10)||op==12||op==13;}
+bool sensitiveOperation(int op){return (op>=4&&op<=10)||op==12||op==13||op==18;}
 spdecode::RuntimeEvidence runtimeSnapshot(JNIEnv* env){
     auto result=spdecode::runtimeEvidence();
     jclass debug=env->FindClass("android/os/Debug");
@@ -121,7 +121,7 @@ bool safeBase(const std::string& value) {
     })) return false;
     return true;
 }
-bool safeOperation(jint operation) { return operation>=1 && operation<=17 && operation!=3; }
+bool safeOperation(jint operation) { return operation>=1 && operation<=18 && operation!=3; }
 bool safeProof(const std::string& value,size_t min,size_t max) {
     return value.size()>=min && value.size()<=max &&
         std::all_of(value.begin(),value.end(),[](unsigned char c){

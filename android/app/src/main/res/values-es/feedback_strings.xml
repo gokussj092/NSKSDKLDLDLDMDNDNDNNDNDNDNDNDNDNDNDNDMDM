@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feedback_title">Errores y sugerencias</string>
+    <string name="feedback_settings_detail">Reporta problemas o solicita nuevos métodos de APK</string>
+    <string name="feedback_intro">Elige el tipo de solicitud. No se envía nada hasta pulsar Enviar.</string>
+    <string name="feedback_category">Tipo de solicitud</string>
+    <string name="feedback_category_method">Añadir nuevo método de APK</string>
+    <string name="feedback_category_bug">Reportar un error</string>
+    <string name="feedback_category_suggestion">Sugerir una mejora</string>
+    <string name="feedback_method_help">Pega un enlace de Google Play, Uptodown u otro proveedor y explica qué deseas integrar.</string>
+    <string name="feedback_app_link">Enlace de la aplicación</string>
+    <string name="feedback_app_link_hint">https://play.google.com/store/apps/details?id=...</string>
+    <string name="feedback_bug_instruction">Marca todos los errores que presentaste (al menos uno).</string>
+    <string name="feedback_issue_decode">Falló el descifrado de archivos</string>
+    <string name="feedback_issue_catalog">Falló la descarga del catálogo VPN</string>
+    <string name="feedback_issue_import">Problemas al importar archivos</string>
+    <string name="feedback_issue_export">Falló la exportación o configuración unlocked</string>
+    <string name="feedback_issue_crash">La aplicación se cerró inesperadamente</string>
+    <string name="feedback_issue_cloud">Problemas de acceso a la nube o servidor</string>
+    <string name="feedback_issue_other">Otro error</string>
+    <string name="feedback_optional_report">Informe adicional (opcional)</string>
+    <string name="feedback_description_required">¿Qué deseas integrar o mejorar?</string>
+    <string name="feedback_report_hint">Puedes describir los pasos o detalles, pero no es obligatorio.</string>
+    <string name="feedback_description_hint">Explica qué método, archivos, catálogo o mejora deseas.</string>
+    <string name="feedback_privacy_note">No incluyas contraseñas, claves privadas, configuraciones descifradas ni registros sensibles. Solo se envía lo seleccionado.</string>
+    <string name="feedback_error">No se pudo enviar la solicitud. Tus respuestas se conservan para reintentar.</string>
+    <string name="feedback_received">Solicitud recibida. Referencia: %1$s</string>
+    <string name="feedback_send">Enviar solicitud</string>
+    <string name="feedback_sending">Enviando…</string>
+</resources>

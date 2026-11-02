@@ -113,7 +113,7 @@ Este formulario envía una propuesta de integración; no es el flujo de análisi
 
 ### Reporte de errores
 
-Pedir una descripción del problema y los pasos para reproducirlo. Permitir identificar la función, el método o la aplicación afectada y, cuando ayude, el resultado esperado frente al obtenido.
+El formulario permite marcar **una o varias casillas** correspondientes a errores concretos: descifrado, descarga del catálogo VPN, importación, exportación/unlocked, cierre inesperado, acceso Cloud/servidor u otros. Seleccionar **al menos una casilla** es obligatorio. El informe escrito sobre los pasos, detalles o resultados observados es **opcional**; no se fuerza texto cuando hay una casilla marcada.
 
 La versión y build de SP-DECODE pueden adjuntarse como contexto técnico visible. No adjuntar automáticamente contraseñas, claves privadas, archivos importados, contenidos descifrados ni registros completos.
 
@@ -224,3 +224,41 @@ y comprobar el servidor antes de esperar cambios en las APK conectadas.
 invalidación, aislamiento de ID y no reactivación; pruebas Android de prioridad
 y expiración local. Compilación y ejecuciones automatizadas pendientes:
 evitar GitHub Actions hasta validación agrupada de fases.
+
+## Implementación — Fase 4: Errores y sugerencias
+
+**Android (14 idiomas):** Ajustes → Errores y sugerencias abre una pantalla propia,
+con tres categorías: solicitud de método APK, reporte de error y mejora. En
+**nuevo método APK** se abre un campo de URL pública (Google Play, Uptodown u
+otro proveedor HTTP/HTTPS) y una descripción de lo que se desea integrar.
+En **reporte de error** se presentan siete casillas multi-selección; marcar
+una o varias es obligatorio y el informe de texto es opcional. En mejoras
+se solicita una descripción. No hay carga de archivos ni cobros por sugerir.
+El formulario retiene campos y selecciones si falla la transmisión y
+solo muestra un identificador cuando el servidor responde con aceptación.
+
+**Transporte:** operación nueva `18` en el **mismo endpoint cifrado HPKE V2**,
+con sesión, prueba firmada (PoP), vinculación Play Integrity y RASP. No se
+introduce un endpoint Android público alternativo que salte estas barreras.
+La recepción interna `POST /api/v1/feedback` requiere contexto de solicitud
+verificado por V2; una llamada directa se rechaza.
+
+**Datos:** el servidor valida categoría y campo obligatorio, prohíbe URL locales,
+credenciales en URL, esquemas no HTTP y propiedades extra. No descarga ni
+ejecuta la APK. Solo recibe la URL y lo que el usuario escribe o selecciona,
+además de versión/build instalada. No adjunta automáticamente archivos,
+resultados descifrados, capturas, credenciales ni registros de diagnóstico.
+Límite de cinco solicitudes/hora por clave de sesión de dispositivo,
+idempotencia por ID de envío, y referencia UUID emitida por servidor.
+
+**Persistencia y futura fase 5:** Redis registra solicitudes pendientes en
+`spfeedback:pending` por identificador, cada contenido en
+`spfeedback:record:<uuid>` con TTL de **90 días**, máximo 500 IDs en cola.
+La vista de administración, revisión y resolución de solicitudes pertenece
+a la fase 5; esta fase establece la recepción, sin UI administrativa nueva.
+
+**Verificaciones:** pruebas Node de esquema, fuentes variadas, casillas,
+informe opcional, idempotencia y acceso autenticado; pruebas instrumentadas
+Android de habilitación de envío por categoría. Compilación Android e
+instrumentación no ejecutadas para no saturar GitHub Actions. Las ramas
+`main` y `feat/version-offline-apk` no se modifican.

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feedback_title">خطاها و پیشنهادها</string>
+    <string name="feedback_settings_detail">مشکلات را گزارش کنید یا روش‌های جدید APK پیشنهاد دهید</string>
+    <string name="feedback_intro">نوع درخواست را انتخاب کنید. تا زدن دکمه ارسال، داده‌ای فرستاده نمی‌شود.</string>
+    <string name="feedback_category">نوع درخواست</string>
+    <string name="feedback_category_method">افزودن روش جدید APK</string>
+    <string name="feedback_category_bug">گزارش خطا</string>
+    <string name="feedback_category_suggestion">پیشنهاد بهبود</string>
+    <string name="feedback_method_help">پیوند Google Play یا Uptodown یا ارائه‌دهنده دیگری را وارد کنید و توضیح دهید چه چیزی اضافه شود.</string>
+    <string name="feedback_app_link">پیوند برنامه</string>
+    <string name="feedback_app_link_hint">https://play.google.com/store/apps/details?id=...</string>
+    <string name="feedback_bug_instruction">همه خطاهای رخ‌داده را علامت بزنید (حداقل یکی).</string>
+    <string name="feedback_issue_decode">رمزگشایی فایل ناموفق بود</string>
+    <string name="feedback_issue_catalog">دریافت فهرست VPN ناموفق بود</string>
+    <string name="feedback_issue_import">مشکل در وارد کردن فایل</string>
+    <string name="feedback_issue_export">خطا در خروجی گرفتن یا باز کردن قفل پیکربندی</string>
+    <string name="feedback_issue_crash">برنامه ناگهان بسته شد</string>
+    <string name="feedback_issue_cloud">مشکل دسترسی به ابر یا سرور</string>
+    <string name="feedback_issue_other">خطای دیگر</string>
+    <string name="feedback_optional_report">گزارش تکمیلی (اختیاری)</string>
+    <string name="feedback_description_required">چه چیزی باید اضافه یا بهتر شود؟</string>
+    <string name="feedback_report_hint">می‌توانید مراحل یا جزئیات را توضیح دهید، اما الزامی نیست.</string>
+    <string name="feedback_description_hint">روش، فایل‌ها، فهرست یا بهبود موردنظر را شرح دهید.</string>
+    <string name="feedback_privacy_note">گذرواژه، کلید خصوصی، پیکربندی رمزگشایی‌شده یا گزارش حساس وارد نکنید. فقط اطلاعات انتخابی ارسال می‌شود.</string>
+    <string name="feedback_error">ارسال ناموفق بود. پاسخ‌ها نگه داشته شدند.</string>
+    <string name="feedback_received">درخواست دریافت شد. شناسه: %1$s</string>
+    <string name="feedback_send">ارسال درخواست</string>
+    <string name="feedback_sending">در حال ارسال…</string>
+</resources>

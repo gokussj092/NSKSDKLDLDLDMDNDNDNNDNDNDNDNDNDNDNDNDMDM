@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feedback_title">Hatalar ve öneriler</string>
+    <string name="feedback_settings_detail">Sorunları bildirin veya yeni APK yöntemleri isteyin</string>
+    <string name="feedback_intro">İstek türünü seçin. Gönder düğmesine basana kadar veri gönderilmez.</string>
+    <string name="feedback_category">İstek türü</string>
+    <string name="feedback_category_method">Yeni APK yöntemi ekle</string>
+    <string name="feedback_category_bug">Hata bildir</string>
+    <string name="feedback_category_suggestion">İyileştirme öner</string>
+    <string name="feedback_method_help">Google Play, Uptodown veya başka bir sağlayıcı bağlantısı ekleyin ve neyin entegre edilmesini istediğinizi açıklayın.</string>
+    <string name="feedback_app_link">Uygulama bağlantısı</string>
+    <string name="feedback_app_link_hint">https://play.google.com/store/apps/details?id=...</string>
+    <string name="feedback_bug_instruction">Karşılaştığınız tüm hataları işaretleyin (en az birini).</string>
+    <string name="feedback_issue_decode">Dosya şifresi çözülemedi</string>
+    <string name="feedback_issue_catalog">VPN kataloğu indirilemedi</string>
+    <string name="feedback_issue_import">Dosya içe aktarma sorunu</string>
+    <string name="feedback_issue_export">Dışa aktarma veya kilidi açılmış yapılandırma hatası</string>
+    <string name="feedback_issue_crash">Uygulama beklenmedik şekilde kapandı</string>
+    <string name="feedback_issue_cloud">Bulut veya sunucu erişim sorunu</string>
+    <string name="feedback_issue_other">Diğer hata</string>
+    <string name="feedback_optional_report">Ek rapor (isteğe bağlı)</string>
+    <string name="feedback_description_required">Neyin eklenmesini veya iyileştirilmesini istersiniz?</string>
+    <string name="feedback_report_hint">Adımları açıklayabilirsiniz ancak zorunlu değildir.</string>
+    <string name="feedback_description_hint">İstenen yöntemi, dosyaları, kataloğu veya iyileştirmeyi açıklayın.</string>
+    <string name="feedback_privacy_note">Parola, özel anahtar, çözülen yapılandırma veya hassas kayıt eklemeyin. Yalnızca seçtiğiniz bilgiler gönderilir.</string>
+    <string name="feedback_error">İstek gönderilemedi. Yanıtlarınız korundu.</string>
+    <string name="feedback_received">İstek alındı. Referans: %1$s</string>
+    <string name="feedback_send">İsteği gönder</string>
+    <string name="feedback_sending">Gönderiliyor…</string>
+</resources>

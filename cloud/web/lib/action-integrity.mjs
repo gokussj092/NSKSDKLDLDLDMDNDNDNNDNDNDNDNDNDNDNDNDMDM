@@ -2,7 +2,7 @@ import { denyAccessRisk } from "./rasp-policy.mjs";
 import { randomUUID,randomBytes,createHash } from "node:crypto";
 import { decodePlayToken,checkIntegrityVerdict } from "./c3-integrity.mjs";
 import { sha256 } from "./v2-proof.mjs";
-export const protectedActions=new Set([4,5,6,7,8,9,12]);
+export const protectedActions=new Set([4,5,6,7,8,9,12,18]);
 export function inlineActionHash(bearer,op,bodySha256,id){
  if(typeof bearer!=="string"||bearer.length>2048||!protectedActions.has(op)||
   !/^[a-f0-9]{64}$/.test(bodySha256)||!/^i2\.[A-Za-z0-9_-]{32}$/.test(id))return null;

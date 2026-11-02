@@ -120,6 +120,7 @@ fun SpDecodeApp(
     onCatalogUpdates:(Boolean)->Unit={},
     usageAnalyticsEnabled:Boolean=false,
     onUsageAnalytics:(Boolean)->Unit={},
+    onFeedbackSubmit:suspend (FeedbackDraft)->String={throw IllegalStateException("FEEDBACK_UNAVAILABLE")},
 ){
     var dialog by remember{mutableStateOf<String?>(null)}
     SpDecodeAmoledTheme {
@@ -152,7 +153,8 @@ fun SpDecodeApp(
                         catalogUpdatesEnabled=catalogUpdatesEnabled,onCatalogUpdates=onCatalogUpdates,
                         usageAnalyticsEnabled=usageAnalyticsEnabled,onUsageAnalytics=onUsageAnalytics,
                          supportedFormats=cloudFormats,supportedTextFormats=cloudTextFormats,
-                         catalogLoading=serverVpnLoading,catalogProgress=catalogProgress)
+                         catalogLoading=serverVpnLoading,catalogProgress=catalogProgress,
+                         onFeedbackSubmit=onFeedbackSubmit)
                 }
                 if(guideStep!=null && !whatsNew && !busy && error==null && dialog==null) {
                     CenteredFirstRunGuide(guideStep,onGuideNext,onGuideSkip)

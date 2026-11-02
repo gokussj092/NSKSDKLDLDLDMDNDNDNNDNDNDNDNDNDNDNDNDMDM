@@ -2,7 +2,7 @@
  * No report can authorize a request or bypass Play, hardware, rate limits or replay.
  * Presence of developer tools is not part of this protocol.
  */
-export const raspActions=new Set([4,5,6,7,8,9,10,12,13]);
+export const raspActions=new Set([4,5,6,7,8,9,10,12,13,18]);
 const modes=new Set(["off","observe","enforce"]);
 const accessLabels=new Set(["KNOWN_INSTALLED","UNKNOWN_INSTALLED","KNOWN_CAPTURING",
   "UNKNOWN_CAPTURING","KNOWN_CONTROLLING","UNKNOWN_CONTROLLING","KNOWN_OVERLAYS","UNKNOWN_OVERLAYS"]);
