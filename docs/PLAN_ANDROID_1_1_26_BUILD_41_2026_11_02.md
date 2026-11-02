@@ -1,0 +1,180 @@
+# SP-DECODE 1.1.26 — build 41: plan de navegación y funciones
+
+Fecha: 2 de noviembre de 2026. Estado: **especificación solicitada; implementación pendiente**.
+
+## Alcance y versión
+
+El propietario solicita preparar la siguiente versión de trabajo: **1.1.26, build 41**, sucesora de **1.1.25, build 40**. Este documento registra decisiones de producto y criterios para su implementación posterior. Su incorporación no modifica código, pantallas, cobros ni los valores actuales de Gradle.
+
+El trabajo comprende trasladar Formatos a Ajustes, reservar su posición de navegación para análisis de APK, distinguir estados de métodos del catálogo, añadir errores y sugerencias, y dar a Acerca de su propia pantalla. Debe conservarse el diseño de la aplicación.
+
+Las mejoras de compatibilidad, atestación y reducción de solicitudes ya preparadas siguen formando parte de la base de trabajo. Véase [Compatibilidad administrable y solicitudes Android](ADMIN_COMPATIBILIDAD_Y_SOLICITUDES_2026_11_02.md).
+
+## 1. Formatos soportados dentro de Ajustes
+
+La sección Formatos deja su posición actual de la navegación principal. En **Ajustes → Formatos soportados** habrá una entrada que abre una pantalla propia.
+
+Esa pantalla conserva la información de formatos y protocolos admitidos, sus descripciones y distinciones actuales. Debe reutilizar el catálogo verificado guardado en el dispositivo. Abrirla o volver a ella no debe iniciar una descarga ni otra consulta al servidor.
+
+La lista completa no se incrusta en Ajustes: solo se muestra su entrada de acceso, con título, icono y descripción breve. Al volver se regresa a Ajustes y se conserva su estado de navegación.
+
+Revisar la preferencia de última pestaña, los accesos existentes y la navegación hacia atrás al cambiar el destino de la antigua sección.
+
+## 2. Nuevo espacio para aplicaciones y análisis de APK
+
+La posición que deja Formatos se destina al futuro módulo para importar una APK y obtener material útil para preparar un script. **Aplicaciones / Análisis de APK** es un nombre de trabajo; el texto final del botón queda pendiente.
+
+La intención del módulo es reducir la búsqueda manual: el usuario aporta la APK y obtiene un informe organizado que puede entregar al desarrollador o al asistente para investigar e implementar el método correspondiente.
+
+### Presentación prevista inicialmente
+
+En 1.1.26 se prepara una pantalla con el estado visible **Próximamente**, acorde con las demás secciones. Debe explicar brevemente el propósito del análisis, su acceso por suscripción y el coste por APK.
+
+Mientras el servicio no esté activo, esa pantalla no debe simular análisis, aceptar un envío que no pueda procesarse ni cobrar créditos. Los controles de importación o análisis se presentan como no disponibles. La pantalla informativa sí puede abrirse.
+
+### Flujo futuro cuando se active el servicio
+
+1. Importar voluntariamente un archivo APK mediante el selector de archivos.
+2. Mostrar el archivo seleccionado y los datos identificables de la aplicación.
+3. Mostrar el acceso por suscripción, el saldo y el coste antes de confirmar el análisis.
+4. Procesar el archivo y presentar progreso, cancelación, errores o resultado.
+5. Permitir guardar o compartir un informe que sirva de base para crear el script.
+
+Importar una APK no significa instalarla, abrir una aplicación instalada ni ejecutar su código. La primera propuesta técnica es analizarla estáticamente. Si más adelante se necesita otro tipo de análisis, debe especificarse por separado.
+
+### Material que debe preparar el análisis
+
+El alcance exacto se definirá durante la implementación, priorizando:
+
+- Nombre de la aplicación, paquete, versión, build, huella del archivo y metadatos de firma disponibles.
+- Inventario de manifiesto, recursos, assets, archivos de configuración y bibliotecas relevantes.
+- Referencias útiles para investigar formatos, catálogos o comunicación de la aplicación, con su ubicación de origen.
+- Observaciones técnicas, datos no disponibles y límites del análisis, diferenciando hechos comprobados de candidatos por investigar.
+- Informe legible y datos estructurados que permitan continuar el trabajo sin volver a buscar todo desde cero.
+
+El resultado es **material de investigación para preparar el script**. Una APK importada no demuestra por sí sola que se haya recuperado un método, obtenido un catálogo válido o construido un script funcional. Los hallazgos deben conservar su procedencia y no presentarse como un descifrado ya verificado.
+
+### Modelo comercial solicitado
+
+| Concepto | Definición |
+| --- | --- |
+| Acceso al módulo activo | Bajo suscripción |
+| Coste de una APK | 1 crédito |
+| Precio de un crédito | 4 USD |
+| Estado inicial de la pantalla | Próximamente |
+| Cuota y periodicidad de suscripción | Por definir |
+| Créditos incluidos en la suscripción | Por definir |
+
+No se asume que la suscripción cueste 4 USD: ese importe corresponde a **un crédito**. Tampoco se asumen planes, paquetes, renovaciones ni promociones que el propietario no haya definido.
+
+Antes de activar pagos deben resolverse el canal de compra, la relación entre suscripción y créditos, la caducidad del saldo y el tratamiento de cancelaciones, archivos inválidos, APK repetidas, resultados parciales y análisis fallidos.
+
+El consumo debe validarse en el servidor y evitar cargos duplicados por reintentos de una misma operación. El momento exacto de reserva, descuento y eventual devolución del crédito queda pendiente de definición.
+
+Esta especificación asigna ese precio al análisis de APK; no introduce cambios comerciales para las funciones actuales.
+
+## 3. Estados de los métodos del catálogo Server VPN
+
+Mantener la etiqueta **Nuevo** e incorporar **Actualizado** y **En mantenimiento** para que el usuario distinga qué ocurrió con cada método.
+
+| Etiqueta | Significado | Comportamiento previsto |
+| --- | --- | --- |
+| Nuevo | Se incorporó un método o una aplicación al catálogo | Conservar la indicación actual de novedad |
+| Actualizado | Cambió el método de una aplicación ya incluida | Indicar la actualización de esa entrada |
+| En mantenimiento | El método está temporalmente sujeto a mantenimiento | Mostrar su situación y evitar una operación que el servidor haya deshabilitado |
+
+**Actualizado** se refiere a un cambio del método: no debe aparecer en todas las tarjetas solo porque aumentó la versión general del catálogo o cambió un icono.
+
+**En mantenimiento** debe ser un estado explícito comunicado por el servidor. No se deduce automáticamente de una descarga fallida, falta de credenciales, ausencia de conexión o cualquier método deshabilitado por otra razón.
+
+Propuesta de presentación: si coinciden estados, dar prioridad visual a En mantenimiento, después a Actualizado y luego a Nuevo. El detalle puede conservar información adicional. La duración y el mecanismo para dar por vistas las etiquetas deben definirse sin hacerlas reaparecer en cada descarga.
+
+Cada entrada necesita datos de revisión del método y estado de mantenimiento. Esos datos deben viajar en la **misma respuesta del catálogo**, junto con los datos ya existentes: no crear consultas por tarjeta, por etiqueta ni al cambiar de pestaña. El servidor sigue decidiendo la disponibilidad real de la operación.
+
+Las etiquetas deben tener texto accesible, contraste suficiente y traducción; el significado no puede depender solo del color.
+
+## 4. Errores y sugerencias en Ajustes
+
+Añadir **Ajustes → Errores y sugerencias**, con su propia pantalla. Debe servir tanto para proponer aplicaciones o métodos como para reportar problemas o sugerir mejoras.
+
+Tipos previstos:
+
+- Sugerir aplicación o método.
+- Reportar un error.
+- Proponer una mejora u otro comentario.
+
+### Solicitud de una aplicación o método
+
+El formulario debe permitir pegar el enlace de la aplicación —por ejemplo, su ficha o fuente oficial— y describir **qué se quiere integrar**: archivos, catálogo de servidores, exportación u otra función concreta.
+
+Para esta categoría se requieren un enlace válido y una descripción. No basta con enviar un enlace sin explicar lo solicitado.
+
+Este formulario envía una propuesta de integración; no es el flujo de análisis de APK y no debe descontar un crédito por enviar una sugerencia.
+
+### Reporte de errores
+
+Pedir una descripción del problema y los pasos para reproducirlo. Permitir identificar la función, el método o la aplicación afectada y, cuando ayude, el resultado esperado frente al obtenido.
+
+La versión y build de SP-DECODE pueden adjuntarse como contexto técnico visible. No adjuntar automáticamente contraseñas, claves privadas, archivos importados, contenidos descifrados ni registros completos.
+
+### Envío y recepción
+
+Validar campos, mostrar el estado de envío, conservar el texto si falla la conexión y confirmar la recepción únicamente cuando el servidor la haya aceptado. Evitar duplicados por pulsaciones repetidas y devolver una referencia de solicitud.
+
+La recepción y gestión desde el panel administrativo es la propuesta inicial; el destino definitivo, las categorías de seguimiento y la opción de contacto con el usuario quedan pendientes. No se configura un envío automático a correo o Telegram en esta etapa documental.
+
+Abrir el formulario no envía solicitudes. El envío ocurre cuando el usuario confirma.
+
+## 5. Acerca de en una pantalla propia
+
+En Ajustes se conserva una entrada breve **Acerca de SP-DECODE** que abre una pantalla dedicada. Se trasladan allí los bloques informativos extensos para que Ajustes quede más limpio.
+
+La pantalla debe organizar la información del proyecto y desarrollador, versión y build instaladas, canales oficiales existentes, privacidad, términos y licencias. Los agradecimientos, enlaces de apoyo o donación que ya existan pueden agruparse allí según el diseño final.
+
+La versión mostrada se obtiene de la aplicación instalada; no se fija permanentemente en un texto de 1.1.26. Los enlaces deben ser los oficiales confirmados del proyecto.
+
+## 6. Navegación y diseño
+
+| Acceso | Destino previsto |
+| --- | --- |
+| Antigua posición principal de Formatos | Aplicaciones / Análisis de APK, con Próximamente |
+| Ajustes → Formatos soportados | Pantalla de formatos |
+| Ajustes → Errores y sugerencias | Formulario por tipo de solicitud |
+| Ajustes → Acerca de SP-DECODE | Pantalla informativa independiente |
+
+Conservar el tema AMOLED y los demás temas admitidos, tipografía, iconografía, tarjetas, espaciados, transiciones y estilo de controles de la aplicación actual. La reorganización no implica cambiar su identidad visual.
+
+Traducir los textos nuevos a los **14 idiomas actuales**, incluyendo estados, ayuda, validaciones y accesibilidad. Revisar RTL, tamaños de letra grandes y pantallas compactas. Ajustes debe ofrecer entradas claras, no mostrar de nuevo todo el contenido de cada pantalla.
+
+Mantener la navegación hacia atrás y no perder el catálogo, el historial ni las preferencias al reorganizar las secciones.
+
+## 7. Plan de implementación posterior
+
+| Trabajo | Estado en este documento |
+| --- | --- |
+| Destino 1.1.26 y build 41 | Registrado; cambio de Gradle pendiente |
+| Mover Formatos a Ajustes | Especificado; implementación pendiente |
+| Pantalla de APK con Próximamente | Especificada; implementación pendiente |
+| Análisis real de APK y suscripción/créditos | Función futura; decisiones de servicio y cobro pendientes |
+| Etiquetas Actualizado y En mantenimiento | Especificadas; contrato de catálogo, panel y cliente pendientes |
+| Errores y sugerencias | Especificado; pantalla y recepción pendientes |
+| Acerca de independiente | Especificado; implementación pendiente |
+
+Orden sugerido: reorganizar navegación y Acerca de; añadir la pantalla Próximamente; incorporar los estados del catálogo y su administración; implementar errores y sugerencias; cerrar después el diseño técnico y comercial del análisis de APK antes de activarlo.
+
+## 8. Criterios de aceptación para la futura implementación
+
+- Formatos se abre desde Ajustes y ya no ocupa su antigua posición principal.
+- El espacio nuevo muestra Próximamente y el modelo de créditos indicado, sin análisis ni cobros ficticios.
+- Nuevo, Actualizado y En mantenimiento describen estados distintos y corresponden a datos reales del método.
+- No aumenta el número de consultas del catálogo por abrir pantallas o mostrar etiquetas.
+- Es posible proponer una app mediante enlace y descripción, y reportar errores desde el mismo apartado.
+- Los formularios tienen validación, estados de envío y confirmación de recepción verificable.
+- Acerca de tiene pantalla propia y Ajustes queda más despejado, conservando el diseño.
+- Los textos nuevos están completos en los 14 idiomas y la navegación funciona en RTL y con accesibilidad.
+- El cambio efectivo a versionName 1.1.26 y versionCode 41 se realiza con la implementación y validación de esa versión, no por añadir este documento.
+- Antes de activar análisis de pago se validan el procesamiento de APK, los límites de recursos, la privacidad y la retención de archivos, los pagos y el consumo de créditos sin duplicados.
+
+## Continuidad entre chats
+
+Para continuar, leer este plan y la documentación de compatibilidad enlazada al inicio. No confundir especificación con funciones ya entregadas: este cambio solo añade documentación. Mantener las mejoras existentes de seguridad y solicitudes al implementar la navegación nueva. Las demás ideas no descritas aquí quedan fuera de alcance hasta que el propietario las concrete.
