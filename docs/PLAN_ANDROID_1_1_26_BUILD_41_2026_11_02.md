@@ -305,3 +305,52 @@ renderizado seguro. Compilación Next.js y ejecución de pruebas integrales
 **pendientes** hasta validación consolidada; este commit utiliza
 \`[skip ci]\` para no saturar GitHub Actions. No se cambian la versión
 Android, \`main\`, ni la rama offline.
+
+
+## Implementación — Fase 6: «Acerca de SP-DECODE» (primer diseño aprobado)
+
+**Diseño:** pantalla independiente de Ajustes, AMOLED negro y gris, tarjetas
+compactas y la misma jerarquía visual que el primer prototipo aprobado por el
+usuario. Se descarta el diseño alternativo morado. No se altera la navegación
+principal de cinco pestañas, la pantalla de formatos ni el formulario de
+solicitudes. En Ajustes aparece una única opción «Acerca de SP-DECODE», sin las
+antiguas tarjetas expandidas de versión y desarrollador. El botón físico Atrás,
+así como la flecha de la pantalla, regresan a Ajustes.
+
+**Identidad:** icono oficial vectorial ya disponible en
+`R.drawable.ic_launcher_foreground`, nombre del producto, descripción breve,
+versión y build desde `BuildConfig.VERSION_NAME` y
+`BuildConfig.VERSION_CODE`, nunca fijados a 1.1.26/41. La versión actual
+de Gradle se mantiene intacta. El total de idiomas se calcula de
+`SupportedLanguages.options` excluyendo `system`, que no es un idioma.
+
+**Tarjetas:** información de la aplicación (desarrollador, idiomas, versión),
+funciones principales (archivos VPN, catálogo Server VPN, JSON/unlocked,
+historial), seguridad y privacidad (Cloud V2 HPKE e integridad solamente en
+builds Cloud; historial local cifrado en modo sin Cloud), enlaces legales
+existentes y comunidad. Los documentos legales reutilizan el callback
+`onLegalLink` (privacidad/términos) y no se duplican en Ajustes.
+Se conserva «Retirar consentimiento Cloud» dentro de los ajustes de privacidad
+porque es un control operativo y no una página informativa.
+
+**Enlaces oficiales:** destinos fijos centralizados en `AboutOfficialLinks`:
+`https://spdecode.xyz`, `https://t.me/GhostDeve`,
+`https://t.me/+Ntu6EJMirrAwMzgx` (invitación correcta a la comunidad) y
+`https://t.me/Gh0stDeveloper`. Se elimina la referencia anterior a
+`https://t.me/CodeBreakersHub`. `MainActivity.openExternal` mantiene
+una allowlist estricta de esos cuatro URL; no permite enlaces arbitrarios.
+Abrir «Acerca de» no origina conexiones de red.
+
+**Traducciones y pruebas:** 21 cadenas nuevas en cada una de las 14 carpetas
+de idiomas de Android, sin duplicar las traducciones existentes. Se añade una
+prueba instrumentada de la pantalla, lectura de versión/idiomas, retroceso,
+enlace oficial y accesos a política/términos; se adapta la prueba previa
+de Ajustes a la nueva navegación. La copia generada de Ajustes para builds
+Cloud/QA conserva el punto de inyección de sus tarjetas; se retira solamente
+una sustitución obsoleta del enlace anterior de Telegram.
+
+**Límites de esta fase:** sin cambios al VPS, catálogo, exportaciones o
+descifradores; no se incrementa la versión Android, no se fusiona a `main`,
+no se toca la rama offline. Commit con `[skip ci]`: la compilación real de APK
+y la ejecución de pruebas Android requieren un runner/SDK y quedan señaladas
+como pendientes hasta verificación específica.

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_screen_entry_detail">نسخه، امنیت و پیوندهای رسمی</string>
+    <string name="about_screen_description">ابزار تحلیل و رمزگشایی پیکربندی‌های VPN</string>
+    <string name="about_screen_version_badge">نسخه %1$s · ساخت %2$d</string>
+    <string name="about_screen_info">اطلاعات برنامه</string>
+    <string name="about_screen_languages">زبان‌های موجود</string>
+    <string name="about_screen_installed">نسخه نصب‌شده</string>
+    <string name="about_screen_features">ویژگی‌های اصلی</string>
+    <string name="about_screen_feature_decode">رمزگشایی فایل‌های VPN</string>
+    <string name="about_screen_feature_catalog">فهرست Server VPN</string>
+    <string name="about_screen_feature_export">خروجی JSON و unlocked</string>
+    <string name="about_screen_feature_history">تاریخچه نتایج</string>
+    <string name="about_screen_security">امنیت و حریم خصوصی</string>
+    <string name="about_screen_cloud_security">ارتباطات Cloud V2 بر اساس تنظیمات سرویس از رمزنگاری HPKE و بررسی یکپارچگی استفاده می‌کند.</string>
+    <string name="about_screen_local_security">تاریخچه محلی در این دستگاه رمزگذاری شده است.</string>
+    <string name="about_screen_privacy">سیاست حریم خصوصی</string>
+    <string name="about_screen_terms">شرایط استفاده</string>
+    <string name="about_screen_links">انجمن و پیوندهای رسمی</string>
+    <string name="about_screen_website">وب‌سایت رسمی</string>
+    <string name="about_screen_community_detail">انجمن رسمی تلگرام</string>
+    <string name="about_screen_credit">توسعه‌یافته توسط Ghost Developer</string>
+    <string name="about_screen_copyright">SP-DECODE · تمامی حقوق محفوظ است</string>
+</resources>

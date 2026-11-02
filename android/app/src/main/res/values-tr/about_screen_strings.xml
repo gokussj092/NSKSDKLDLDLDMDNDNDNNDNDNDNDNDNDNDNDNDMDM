@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_screen_entry_detail">Sürüm, güvenlik ve resmî bağlantılar</string>
+    <string name="about_screen_description">VPN yapılandırmalarını analiz etme ve çözümleme aracı</string>
+    <string name="about_screen_version_badge">Sürüm %1$s · Derleme %2$d</string>
+    <string name="about_screen_info">Uygulama bilgileri</string>
+    <string name="about_screen_languages">Kullanılabilir diller</string>
+    <string name="about_screen_installed">Yüklü sürüm</string>
+    <string name="about_screen_features">Temel özellikler</string>
+    <string name="about_screen_feature_decode">VPN dosyalarını çözümleme</string>
+    <string name="about_screen_feature_catalog">Server VPN kataloğu</string>
+    <string name="about_screen_feature_export">JSON ve unlocked dışa aktarma</string>
+    <string name="about_screen_feature_history">Sonuç geçmişi</string>
+    <string name="about_screen_security">Güvenlik ve gizlilik</string>
+    <string name="about_screen_cloud_security">Cloud V2 iletişimi, hizmet yapılandırmasına göre HPKE şifrelemesi ve bütünlük kontrolleri kullanır.</string>
+    <string name="about_screen_local_security">Yerel geçmiş bu cihazda şifrelenir.</string>
+    <string name="about_screen_privacy">Gizlilik politikası</string>
+    <string name="about_screen_terms">Kullanım koşulları</string>
+    <string name="about_screen_links">Topluluk ve resmî bağlantılar</string>
+    <string name="about_screen_website">Resmî web sitesi</string>
+    <string name="about_screen_community_detail">Resmî Telegram topluluğu</string>
+    <string name="about_screen_credit">Geliştiren: Ghost Developer</string>
+    <string name="about_screen_copyright">SP-DECODE · Tüm hakları saklıdır</string>
+</resources>

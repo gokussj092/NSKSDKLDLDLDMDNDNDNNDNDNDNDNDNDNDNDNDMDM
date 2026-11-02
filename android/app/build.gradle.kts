@@ -159,7 +159,7 @@ val prepareQaSettingsSource = tasks.register("prepareQaSettingsSource") {
             original.indexOf(anchor) == original.lastIndexOf(anchor)) {
             "QA Settings injection anchor absent or ambiguous; do not ship a build"
         }
-        val source = original.replace("https://t.me/CodeBreakersHub", "https://t.me/+Ntu6EJMirrAwMzgx").replace(anchor,
+        val source = original.replace(anchor,
             (if(enableQaBuild) "        com.ghostdeveloper.spdecode.cloud.CloudQaSettingsCard()\n" else "") +
             "        com.ghostdeveloper.spdecode.cloud.DonationSettingsCard()\n" +
             "        com.ghostdeveloper.spdecode.cloud.NpvsIdentitySettings()\n" +
@@ -554,7 +554,6 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
             "                            CloudLegalConsent.revoke(this@MainActivity)",
             """                            com.ghostdeveloper.spdecode.cloud.CloudNotifications.setEnabled(this@MainActivity,false)
                             CloudLegalConsent.revoke(this@MainActivity)""")
-        activity = replaceOnce(activity,"https://t.me/CodeBreakersHub","https://t.me/+Ntu6EJMirrAwMzgx")
         activity = replaceOnce(activity,
             "serverVpnCatalog.refreshIfDue(force=force)",
             "serverVpnCatalog.refreshIfDue(force=force,onProgress={percent->scope.launch {catalogProgress=percent}})")

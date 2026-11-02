@@ -402,10 +402,12 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun openExternal(url:String){
+        // Exact official destinations only. Never accept an arbitrary URL.
         if(url !in setOf(
-            "https://t.me/Gh0stDeveloper",
-            "https://t.me/CodeBreakersHub",
-            "https://t.me/GhostDeve"
+            AboutOfficialLinks.WEBSITE,
+            AboutOfficialLinks.CHANNEL,
+            AboutOfficialLinks.COMMUNITY,
+            AboutOfficialLinks.CONTACT,
         ))return
         try {startActivity(Intent(Intent.ACTION_VIEW,Uri.parse(url)))}
         catch(_:ActivityNotFoundException){toast(R.string.read_error)}

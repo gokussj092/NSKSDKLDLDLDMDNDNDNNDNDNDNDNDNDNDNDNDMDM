@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_screen_entry_detail">الإصدار والأمان والروابط الرسمية</string>
+    <string name="about_screen_description">أداة لتحليل وفك تشفير إعدادات VPN</string>
+    <string name="about_screen_version_badge">الإصدار %1$s · البناء %2$d</string>
+    <string name="about_screen_info">معلومات التطبيق</string>
+    <string name="about_screen_languages">اللغات المتاحة</string>
+    <string name="about_screen_installed">الإصدار المثبت</string>
+    <string name="about_screen_features">الميزات الرئيسية</string>
+    <string name="about_screen_feature_decode">فك تشفير ملفات VPN</string>
+    <string name="about_screen_feature_catalog">كتالوج Server VPN</string>
+    <string name="about_screen_feature_export">تصدير JSON و unlocked</string>
+    <string name="about_screen_feature_history">سجل النتائج</string>
+    <string name="about_screen_security">الأمان والخصوصية</string>
+    <string name="about_screen_cloud_security">تستخدم اتصالات Cloud V2 تشفير HPKE وفحوصات السلامة وفق إعدادات الخدمة.</string>
+    <string name="about_screen_local_security">السجل المحلي مشفر على هذا الجهاز.</string>
+    <string name="about_screen_privacy">سياسة الخصوصية</string>
+    <string name="about_screen_terms">شروط الاستخدام</string>
+    <string name="about_screen_links">المجتمع والروابط الرسمية</string>
+    <string name="about_screen_website">الموقع الرسمي</string>
+    <string name="about_screen_community_detail">مجتمع تيليجرام الرسمي</string>
+    <string name="about_screen_credit">تطوير Ghost Developer</string>
+    <string name="about_screen_copyright">SP-DECODE · جميع الحقوق محفوظة</string>
+</resources>

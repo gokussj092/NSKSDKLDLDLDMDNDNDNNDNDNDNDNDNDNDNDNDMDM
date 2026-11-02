@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_screen_entry_detail">Versão, segurança e links oficiais</string>
+    <string name="about_screen_description">Ferramenta de análise e decodificação de configurações VPN</string>
+    <string name="about_screen_version_badge">Versão %1$s · Build %2$d</string>
+    <string name="about_screen_info">Informações do aplicativo</string>
+    <string name="about_screen_languages">Idiomas disponíveis</string>
+    <string name="about_screen_installed">Versão instalada</string>
+    <string name="about_screen_features">Principais recursos</string>
+    <string name="about_screen_feature_decode">Decodificação de arquivos VPN</string>
+    <string name="about_screen_feature_catalog">Catálogo Server VPN</string>
+    <string name="about_screen_feature_export">Exportação JSON e unlocked</string>
+    <string name="about_screen_feature_history">Histórico de resultados</string>
+    <string name="about_screen_security">Segurança e privacidade</string>
+    <string name="about_screen_cloud_security">As comunicações do Cloud V2 utilizam criptografia HPKE e verificações de integridade conforme a configuração do serviço.</string>
+    <string name="about_screen_local_security">O histórico local permanece criptografado neste dispositivo.</string>
+    <string name="about_screen_privacy">Política de privacidade</string>
+    <string name="about_screen_terms">Termos de uso</string>
+    <string name="about_screen_links">Comunidade e links oficiais</string>
+    <string name="about_screen_website">Site oficial</string>
+    <string name="about_screen_community_detail">Comunidade oficial do Telegram</string>
+    <string name="about_screen_credit">Desenvolvido por Ghost Developer</string>
+    <string name="about_screen_copyright">SP-DECODE · Todos os direitos reservados</string>
+</resources>
