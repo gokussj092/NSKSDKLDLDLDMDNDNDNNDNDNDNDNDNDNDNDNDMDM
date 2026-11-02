@@ -109,7 +109,7 @@ export function iconFor(id) {
     throw Error("INVALID_ORIGINAL_ICON");
   return {id:item.id, bytes, sha256:createHash("sha256").update(bytes).digest("hex")};
 }
-export function catalog({availability=null,version=activeCatalogVersion()}={}) {
+export function catalog({availability=null,methodStates=null,version=activeCatalogVersion()}={}) {
   return {
     apiVersion:"v1",
     catalogVersion:version,
@@ -128,10 +128,13 @@ export function catalog({availability=null,version=activeCatalogVersion()}={}) {
     apps: ITEMS.map(x=>({
       id:x.id,
       name:x.name,
+      methodRevision:Number.isSafeInteger(methodStates?.[x.id]?.methodRevision) && methodStates[x.id].methodRevision>=0 ? methodStates[x.id].methodRevision : 0,
+      maintenance:methodStates?.[x.id]?.maintenance===true,
       iconSha256:iconFor(x.id).sha256,
       iconMimeType:"image/png",
       // No decode button for a provider until its remote broker is enabled.
-      decodeEnabled:["vip-snipher-pro","alfaisal-tunnel-plus"].includes(x.remote) ?
+      decodeEnabled:methodStates?.[x.id]?.maintenance===true ? false :
+        ["vip-snipher-pro","alfaisal-tunnel-plus"].includes(x.remote) ?
         providerEnabled(x.remote) && (availability?.[x.id] ?? true) :
         x.remote==="nur" ? (availability?.["nur-tunnel"] ?? process.env.CLOUD_NUR_FETCH_ENABLED==="true") :
         Boolean(x.remote) && (availability?.[x.id] ?? process.env.CLOUD_SERVER_VPN_ENABLED==="true"),
