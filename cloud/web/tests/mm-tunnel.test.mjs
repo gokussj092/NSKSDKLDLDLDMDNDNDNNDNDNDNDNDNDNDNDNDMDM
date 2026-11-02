@@ -43,14 +43,14 @@ test("MM refuses same-origin and foreign redirects",async t=>{
 
 test("MM original PNG, mmt metadata and card follow availability",()=>{
   const doc=catalog({availability:{"mm-tunnel":true}});
-  assert.equal(CATALOG_VERSION,60);assert.equal(doc.apps.length,58);
+  assert.equal(CATALOG_VERSION,62);assert.equal(doc.apps.length,58);
   const card=doc.apps.find(x=>x.id==="mm-tunnel");
   assert.equal(card.name,"MM Tunnel");assert.equal(card.decodeEnabled,true);
   assert.equal(card.iconSha256,"be2bb0a69da20838aaa46c388ab898a33b84cab59ccdad7413b76eac21b7b211");
   assert.equal(iconFor("mm-tunnel").bytes.length,109337);
   assert(PUBLIC_PROVIDER_IDS.includes("mm-tunnel"));
   assert.equal(catalog({availability:{"mm-tunnel":false}}).apps.find(x=>x.id==="mm-tunnel").decodeEnabled,false);
-  assert.equal(doc.formats.length,255);
+  assert.equal(doc.formats.length,256);
   assert(doc.formats.some(x=>x.suffix==="mmt" && x.name==="MM Tunnel v1.10.30.2"));
   assert(!JSON.stringify(card).includes("https://"));
 });
