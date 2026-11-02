@@ -106,3 +106,12 @@ La ejecución de integración `41534170991` **aprobó** la auditoría C0 sobre e
 - Ningún release firmado, producto de compra, despliegue o merge se activa por estas correcciones.
 
 **Se ejecuta un nuevo ciclo CI en este commit para identificar regresiones todavía existentes. El estado se mantiene NO-GO hasta evidencia completa de APK/AAB release, JNI, R8 y hardware real.**
+
+## Corrección de compilación Cloud y regresión aislada — siguiente ronda
+
+- Las fuentes normales del formulario usan `onDecodeCloud(String)`; el panel global Cloud generado usa `onDecodeCloud(String,String)`. `prepareCloudHistoryUiSource` adapta **solo** `MainActivity.kt` generada a la segunda firma, conservando la fuente y el hash UI de la aplicación principal.
+- Verificada por CI anterior la inscripción real de los 27 métodos JNI y el transporte binario HTTP de host. Ese CI encontró después una incompatibilidad Kotlin de callback; corregida en el generador Gradle, que debe validarse de nuevo.
+- Los tests reflejan el catálogo 256/30 overlays y preservan la base 239. Se actualizó el cifrador independiente sintético Threefish de IZPH (no el decoder real).
+- La verificación de los productos de pago y la contabilidad son siempre **del servidor**: una aplicación Android no puede autoacreditar ni verificar compras definitivamente. Google Play Billing requiere el SDK Android como interfaz de plataforma; cualquier futura política de validación cliente sensible será nativa y la autorización definitiva server-side. No existe un flujo de cobro activo.
+- No hay rutas API, secretos backend, claves HPKE ni certificados privados nuevos en Kotlin. `libv7q3.so` conserva origen/rutas y enlace de criptografía nativa. Los resultados visibles, controles Android y el token de Play, cuando exista el SDK, pueden necesitar una interfaz JNI mínima; no se considerarán secretos del servidor ni fuente de autoridad.
+- **NO-GO** hasta validar los workflows y el APK/AAB firmados. Sin fusión, sin QA distribuible y sin despliegue.
