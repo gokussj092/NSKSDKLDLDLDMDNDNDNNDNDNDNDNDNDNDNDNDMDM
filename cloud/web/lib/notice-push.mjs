@@ -10,8 +10,11 @@ export function pushAccount(env=process.env) {
   }catch{return null;}
 }
 /** Sends only a wake-up hint. Notice text must be fetched with the device-bound session. */
-export async function pushNotice(id,{env=process.env,fetchImpl=fetch,validateOnly=false}={}) {
-  if(!/^[0-9a-f-]{36}$/.test(id)||typeof validateOnly!=='boolean')throw Error('PUSH_INVALID');
+export async function pushNotice(id,{env=process.env,fetchImpl=fetch,validateOnly=false,
+ priority='normal',ttlSeconds=86400}={}) {
+  if(!/^[0-9a-f-]{36}$/.test(id)||typeof validateOnly!=='boolean'||
+    !['normal','high'].includes(priority)||!Number.isInteger(ttlSeconds)||
+    ttlSeconds<0||ttlSeconds>86400)throw Error('PUSH_INVALID');
   const account=pushAccount(env);if(!account)return 'periodic';
   const targetProject=env.CLOUD_NOTICE_FCM_PROJECT_ID||account.project_id;
   if(!/^[a-z][a-z0-9-]{4,60}$/.test(targetProject))throw Error('PUSH_INVALID');
@@ -30,7 +33,7 @@ export async function pushNotice(id,{env=process.env,fetchImpl=fetch,validateOnl
     method:'POST',redirect:'error',signal:AbortSignal.timeout(8000),
     headers:{'Authorization':'Bearer '+auth.access_token,'Content-Type':'application/json'},
     body:JSON.stringify({...(validateOnly?{validate_only:true}:{}),message:{topic:'spdecode-notices-v1',data:{noticeId:id},
-      android:{priority:'normal',ttl:'86400s',collapse_key:'spdecode-notices'}}})});
+      android:{priority,ttl:ttlSeconds+'s',collapse_key:'spdecode-notices'}}})});
   if(!sent.ok)throw Error('PUSH_UNAVAILABLE');
   return 'push';
 }

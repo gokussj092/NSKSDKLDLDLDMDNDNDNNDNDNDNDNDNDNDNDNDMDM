@@ -5,10 +5,21 @@ import {withFileLock,atomicJson} from './durable-json.mjs';
 const ROOT='/app/notices',FILE='feed.json',EXPECTED='/app/notices/feed.json';
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 const clean=(s,max)=>typeof s==='string'&&s.trim().length>0&&s===s.trim()&&s.length<=max&&!/[\x00-\x08\x0b-\x1f\x7f\u202a-\u202e\u2066-\u2069]/.test(s);
+/** Strict legacy compatibility: old 5-key entries remain readable, without synthetic defaults written to disk. */
+export const NOTICE_TYPES=Object.freeze(['general','update','maintenance','catalog','security']);
+export const NOTICE_IMPORTANCE=Object.freeze(['normal','important']);
+export const NOTICE_DELIVERY=Object.freeze(['push','poll']);
+export const NOTICE_TTL_HOURS=Object.freeze([6,24,72,168]);
 export function validStoredNotice(n) {
- return n&&typeof n==='object'&&!Array.isArray(n)&&Object.keys(n).sort().join(',')==='body,createdAt,expiresAt,id,title'&&
-  uuid.test(n.id)&&clean(n.title,80)&&clean(n.body,500)&&Number.isSafeInteger(n.createdAt)&&n.createdAt>0&&
-  Number.isSafeInteger(n.expiresAt)&&n.expiresAt>n.createdAt&&n.expiresAt<=n.createdAt+7*86400000;
+ if(!n||typeof n!=='object'||Array.isArray(n))return false;
+ const keys=Object.keys(n).sort().join(',');
+ const legacy=keys==='body,createdAt,expiresAt,id,title';
+ const modern=keys==='body,createdAt,delivery,expiresAt,id,importance,title,type';
+ return (legacy||modern)&&uuid.test(n.id)&&clean(n.title,80)&&clean(n.body,500)&&
+  Number.isSafeInteger(n.createdAt)&&n.createdAt>0&&Number.isSafeInteger(n.expiresAt)&&
+  n.expiresAt>n.createdAt&&n.expiresAt<=n.createdAt+7*86400000&&
+  (!modern||(NOTICE_TYPES.includes(n.type)&&NOTICE_IMPORTANCE.includes(n.importance)&&
+    NOTICE_DELIVERY.includes(n.delivery)));
 }
 function validate(feed){
  if(!Array.isArray(feed)||feed.length>20||!feed.every(validStoredNotice)||new Set(feed.map(n=>n.id)).size!==feed.length)
