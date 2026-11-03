@@ -101,6 +101,10 @@
     <string name="decode_progress_reading">Чтение выбранного файла…</string>
     <string name="decode_progress_decoding">Декодирование конфигурации через Cloud…</string>
     <string name="decode_progress_saving">Сохранение зашифрованного результата…</string>
+    <string name="decode_progress_wait">Пожалуйста, подождите…</string>
+    <string name="decode_progress_sending">Отправка…</string>
+    <string name="decode_progress_processing">Обработка…</string>
+    <string name="decode_progress_downloading_results">Загрузка результатов…</string>
     <string name="history_search">Поиск по имени файла или расширению</string>
     <string name="history_favorites">Избранное</string>
     <string name="history_sort">Сортировка</string>
