@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 PROVIDERS = {
+    "fnf-tunnel-bd": "decoders.Python.apps.FNF_TUNNEL_BD.server_catalog_decoder",
     "alsaher-vip": "decoders.Python.apps.ALSAHER_VIP.server_catalog_decoder",
     "halcon-r-net": "decoders.Python.apps.Halcon_R_Net.server_catalog_decoder",
     "ha-tunnel-plus": "decoders.Python.apps.HA_Tunnel_Plus.server_catalog_decoder",

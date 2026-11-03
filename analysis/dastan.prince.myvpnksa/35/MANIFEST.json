@@ -1,0 +1,913 @@
+{
+  "schema_version": 1,
+  "package_name": "dastan.prince.myvpnksa",
+  "app_name": "FNF TUNNEL BD",
+  "version_name": "PrinceBuild35",
+  "version_code": 35,
+  "observed_at": "2026-11-03",
+  "source_category": "store-linked public mirror",
+  "authorization_note": "Owner requested APK analysis, real original updater download and Cloud-only catalog integration. No Android changes, authentication bypass, merge or deployment.",
+  "status": "VERIFIED",
+  "targets": [
+    {
+      "kind": "catalog",
+      "status": "VERIFIED_REAL",
+      "remote_http": 200,
+      "remote_version": "82.0",
+      "counts": {
+        "Premium_servers": 0,
+        "Vip_servers": 0,
+        "Private_servers": 0,
+        "Free_servers": 28,
+        "Payloads": 1193
+      },
+      "included_version": "49.9",
+      "included_counts": {
+        "Premium_servers": 0,
+        "Vip_servers": 0,
+        "Private_servers": 0,
+        "Payloads": 1025,
+        "Free_servers": 22
+      },
+      "java_cli_worker_whole_document_equal": true,
+      "node_vps_transport": "PENDING"
+    },
+    {
+      "kind": "files",
+      "status": "NOT_INVESTIGATED"
+    },
+    {
+      "kind": "text",
+      "status": "NOT_INVESTIGATED"
+    },
+    {
+      "kind": "export",
+      "status": "NOT_CERTIFIED"
+    }
+  ],
+  "limitations": [
+    "APKPure sample; official Play signing equivalence/latest version unverified.",
+    "JADX exit3 with18/9 errors; relevant catalog sources and independent real outputs checked.",
+    "Node direct transport denied here; Node/VPS real test pending. Replay uses simulated HTTP.",
+    "Catalog fields plaintext; no nested XOR or file/text/export support inferred.",
+    "No Android changes/builds, merge or VPS deployment.",
+    "No VPN connection/account functionality tested; unauthenticated XXTEA is not an integrity guarantee.",
+    "PyPI archive hashes absent; transitive licensing and Phase7 automatic approval remain NEEDS_REVIEW."
+  ],
+  "inputs": [
+    {
+      "type": "xapk",
+      "bytes": 37576106,
+      "sha256": "9bf63096a5443dcaa61a5b0135f2c46604f7bd1c86e1770e4f153a6d4ec3c6aa",
+      "source": "APKPure exact build35 URL in REPRODUCE"
+    },
+    {
+      "type": "apk",
+      "bytes": 9428879,
+      "sha256": "8a2d72c7c8005a979e221dffb1b8fba550512e2fa925ed1dbde16c7ff1066e38",
+      "source": "XAPK/base package APK"
+    },
+    {
+      "type": "included_catalog",
+      "bytes": 506496,
+      "sha256": "c6c31eb2b126c933300bd741cca46e6ae034b2a4dc481a0f9611e28cfa7d4a06",
+      "source": "assets/gremlin.json"
+    },
+    {
+      "type": "native_inspected_only",
+      "bytes": 3193936,
+      "sha256": "9a6468a9d84980a6e90ba4326a08bf1f1b19285d124fa767b37cb52fb6bf6377",
+      "source": "config.arm64_v8a.apk/lib/arm64-v8a/libputils.so"
+    },
+    {
+      "type": "remote_catalog",
+      "bytes": 613664,
+      "sha256": "cb3a9c0eb85332343b0c256622853e50bc93b1913c122ce37881385b1a628c0d",
+      "source": "fixed original public updater in server_catalog_decoder.py"
+    },
+    {
+      "type": "icon",
+      "bytes": 52532,
+      "sha256": "e246d35183770494e3ed2f8e17f62a47d2f64fed3b6d3ce0491684575bf18823",
+      "source": "res/drawable/ic_app_icon.png"
+    }
+  ],
+  "tooling": [
+    {
+      "path": "analysis/dastan.prince.myvpnksa/35/tools/finalize.py",
+      "sha256": "4777df188e78856b5d8c15cfd7666d463ee65e2038b5c2170b6c903fa130609d",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    },
+    {
+      "path": "analysis/dastan.prince.myvpnksa/35/tools/history/recover_v1_inner_xor.py",
+      "sha256": "785e295c8d334646fc6257f7cc7af4d1070b7b8ccecb4739149891550d36455f",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    },
+    {
+      "path": "analysis/dastan.prince.myvpnksa/35/tools/make_vectors.py",
+      "sha256": "19ed45a2d817f68b50bb1bf19dde1b5d8beb39c8d7b7f88793ec107498a5bed3",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    },
+    {
+      "path": "analysis/dastan.prince.myvpnksa/35/tools/prepare.py",
+      "sha256": "3b2cd74320a7e4f70d64906cabfd9e2d8ca6d655b7b014f7ecf99e8ca043b0c2",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    },
+    {
+      "path": "analysis/dastan.prince.myvpnksa/35/tools/probe_node.mjs",
+      "sha256": "694527f64acd4cc9e1fae5cfbb17e5f49afba5769a5fd82267496b379098b833",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    },
+    {
+      "path": "analysis/dastan.prince.myvpnksa/35/tools/recover.py",
+      "sha256": "60ff625e9322814b6fd0bab6bd5a52305374819fa3f7118a19ce0d923128fe2c",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    },
+    {
+      "path": "analysis/dastan.prince.myvpnksa/35/tools/run_checks.py",
+      "sha256": "3363bb8593acd4a11e89e476f170e7d15674f272ef6262307de450dc1df5c5b8",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    },
+    {
+      "path": "analysis/dastan.prince.myvpnksa/35/tools/verify.py",
+      "sha256": "db367ffdd7ce4a7c3e717d4471f3f1be04cc885e6936935b7347915abcfd12c5",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    }
+  ],
+  "dependencies": [
+    {
+      "id": "pypi:alembic",
+      "name": "alembic",
+      "type": "PyPI",
+      "version": "1.20.1",
+      "source": [
+        "Homepage, https://alembic.sqlalchemy.org",
+        "Documentation, https://alembic.sqlalchemy.org/en/latest/",
+        "Changelog, https://alembic.sqlalchemy.org/en/latest/changelog.html",
+        "Source, https://github.com/sqlalchemy/alembic/",
+        "Issue Tracker, https://github.com/sqlalchemy/alembic/issues/"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:androguard",
+      "name": "androguard",
+      "type": "PyPI",
+      "version": "4.1.4",
+      "source": [
+        "Homepage, https://github.com/androguard/androguard"
+      ],
+      "license": "Apache Licence, Version 2.0",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:apkInspector",
+      "name": "apkInspector",
+      "type": "PyPI",
+      "version": "1.3.7",
+      "source": [
+        "Repository, https://github.com/erev0s/apkInspector"
+      ],
+      "license": "Apache-2.0",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:asn1crypto",
+      "name": "asn1crypto",
+      "type": "PyPI",
+      "version": "1.5.1",
+      "source": [
+        "https://github.com/wbond/asn1crypto"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:asttokens",
+      "name": "asttokens",
+      "type": "PyPI",
+      "version": "3.0.2",
+      "source": [
+        "Documentation, https://asttokens.readthedocs.io/en/latest/index.html",
+        "Issue Tracker, https://github.com/gristlabs/asttokens/issues"
+      ],
+      "license": "Apache 2.0",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:capstone",
+      "name": "capstone",
+      "type": "PyPI",
+      "version": "5.0.9",
+      "source": [
+        "https://www.capstone-engine.org"
+      ],
+      "license": "UNKNOWN",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:cffi",
+      "name": "cffi",
+      "type": "PyPI",
+      "version": "2.1.1",
+      "source": [
+        "Documentation, https://cffi.readthedocs.io/",
+        "Changelog, https://cffi.readthedocs.io/en/latest/whatsnew.html",
+        "Download, https://github.com/python-cffi/cffi/releases",
+        "Contact, https://groups.google.com/forum/#!forum/python-cffi",
+        "Source Code, https://github.com/python-cffi/cffi",
+        "Issue Tracker, https://github.com/python-cffi/cffi/issues"
+      ],
+      "license": "MIT-0",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:click",
+      "name": "click",
+      "type": "PyPI",
+      "version": "8.5.0",
+      "source": [
+        "Changes, https://click.palletsprojects.com/page/changes/",
+        "Chat, https://discord.gg/pallets",
+        "Documentation, https://click.palletsprojects.com/",
+        "Donate, https://palletsprojects.com/donate",
+        "Source, https://github.com/pallets/click/"
+      ],
+      "license": "BSD-3-Clause",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:colorama",
+      "name": "colorama",
+      "type": "PyPI",
+      "version": "0.4.6",
+      "source": [
+        "Homepage, https://github.com/tartley/colorama"
+      ],
+      "license": "UNKNOWN",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:cryptography",
+      "name": "cryptography",
+      "type": "PyPI",
+      "version": "50.0.2",
+      "source": [
+        "changelog, https://cryptography.io/en/latest/changelog/",
+        "documentation, https://cryptography.io/",
+        "homepage, https://github.com/pyca/cryptography",
+        "issues, https://github.com/pyca/cryptography/issues",
+        "source, https://github.com/pyca/cryptography/"
+      ],
+      "license": "Apache-2.0 OR BSD-3-Clause",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:dataset",
+      "name": "dataset",
+      "type": "PyPI",
+      "version": "2.0.0",
+      "source": [
+        "Homepage, https://github.com/pudo/dataset",
+        "Repository, https://github.com/pudo/dataset",
+        "Documentation, https://dataset.readthedocs.io/"
+      ],
+      "license": "Copyright (c) 2013, Open Knowledge Foundation, Friedrich Lindenberg,",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:executing",
+      "name": "executing",
+      "type": "PyPI",
+      "version": "2.3.0",
+      "source": [
+        "Homepage, https://github.com/alexmojaki/executing",
+        "Repository, https://github.com/alexmojaki/executing"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:ipython",
+      "name": "ipython",
+      "type": "PyPI",
+      "version": "9.18.1",
+      "source": [
+        "Homepage, https://ipython.org",
+        "Documentation, https://ipython.readthedocs.io/",
+        "Funding, https://jupyter.org/about#donate",
+        "Source, https://github.com/ipython/ipython",
+        "Tracker, https://github.com/ipython/ipython/issues"
+      ],
+      "license": "BSD-3-Clause",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:ipython_pygments_lexers",
+      "name": "ipython_pygments_lexers",
+      "type": "PyPI",
+      "version": "1.1.1",
+      "source": [
+        "Source, https://github.com/ipython/ipython-pygments-lexers"
+      ],
+      "license": "UNKNOWN",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:jedi",
+      "name": "jedi",
+      "type": "PyPI",
+      "version": "0.20.1",
+      "source": [
+        "Documentation, https://jedi.readthedocs.io/en/latest/"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:loguru",
+      "name": "loguru",
+      "type": "PyPI",
+      "version": "0.7.3",
+      "source": [
+        "Changelog, https://github.com/Delgan/loguru/blob/master/CHANGELOG.rst",
+        "Documentation, https://loguru.readthedocs.io/en/stable/index.html",
+        "Homepage, https://github.com/Delgan/loguru"
+      ],
+      "license": "UNKNOWN",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:lxml",
+      "name": "lxml",
+      "type": "PyPI",
+      "version": "6.1.3",
+      "source": [
+        "Source, https://github.com/lxml/lxml",
+        "Bug Tracker, https://bugs.launchpad.net/lxml"
+      ],
+      "license": "BSD-3-Clause",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:Mako",
+      "name": "Mako",
+      "type": "PyPI",
+      "version": "1.4.3",
+      "source": [
+        "Homepage, https://www.makotemplates.org/",
+        "Documentation, https://docs.makotemplates.org",
+        "Issue Tracker, https://github.com/sqlalchemy/mako"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:MarkupSafe",
+      "name": "MarkupSafe",
+      "type": "PyPI",
+      "version": "3.0.4",
+      "source": [
+        "Donate, https://palletsprojects.com/donate",
+        "Documentation, https://markupsafe.palletsprojects.com/",
+        "Changes, https://markupsafe.palletsprojects.com/page/changes/",
+        "Source, https://github.com/pallets/markupsafe/",
+        "Chat, https://discord.gg/pallets"
+      ],
+      "license": "BSD-3-Clause",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:matplotlib-inline",
+      "name": "matplotlib-inline",
+      "type": "PyPI",
+      "version": "0.2.2",
+      "source": [
+        "Homepage, https://github.com/ipython/matplotlib-inline"
+      ],
+      "license": "BSD-3-Clause",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:mutf8",
+      "name": "mutf8",
+      "type": "PyPI",
+      "version": "1.1.0",
+      "source": [
+        "Homepage, https://github.com/TkTech/mutf8",
+        "Source, https://github.com/TkTech/mutf8",
+        "Issues, https://github.com/TkTech/mutf8/issues"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:networkx",
+      "name": "networkx",
+      "type": "PyPI",
+      "version": "3.7",
+      "source": [
+        "Homepage, https://networkx.org/",
+        "Bug Tracker, https://github.com/networkx/networkx/issues",
+        "Documentation, https://networkx.org/documentation/stable/",
+        "Source Code, https://github.com/networkx/networkx"
+      ],
+      "license": "BSD-3-Clause",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:parso",
+      "name": "parso",
+      "type": "PyPI",
+      "version": "0.8.7",
+      "source": [
+        "https://github.com/davidhalter/parso"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:pexpect",
+      "name": "pexpect",
+      "type": "PyPI",
+      "version": "4.9.0",
+      "source": [
+        "Bug Tracker, https://github.com/pexpect/pexpect/issues",
+        "Documentation, https://pexpect.readthedocs.io/",
+        "Source Code, https://github.com/pexpect/pexpect",
+        "History, https://pexpect.readthedocs.io/en/stable/history.html"
+      ],
+      "license": "ISC license",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:pillow",
+      "name": "pillow",
+      "type": "PyPI",
+      "version": "13.0.0",
+      "source": [
+        "Release notes, https://pillow.readthedocs.io/en/stable/releasenotes/index.html",
+        "Changelog, https://github.com/python-pillow/Pillow/releases",
+        "Documentation, https://pillow.readthedocs.io",
+        "Funding, https://tidelift.com/lifter/search/pypi/pillow",
+        "Homepage, https://python-pillow.org",
+        "Mastodon, https://fosstodon.org/@pillow",
+        "Security, https://pillow.readthedocs.io/en/stable/handbook/security.html",
+        "Source, https://github.com/python-pillow/Pillow"
+      ],
+      "license": "MIT-CMU",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:pip",
+      "name": "pip",
+      "type": "PyPI",
+      "version": "25.0.1",
+      "source": [
+        "Homepage, https://pip.pypa.io/",
+        "Documentation, https://pip.pypa.io",
+        "Source, https://github.com/pypa/pip",
+        "Changelog, https://pip.pypa.io/en/stable/news/"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:prompt_toolkit",
+      "name": "prompt_toolkit",
+      "type": "PyPI",
+      "version": "3.0.53",
+      "source": [
+        "Homepage, https://github.com/prompt-toolkit/python-prompt-toolkit",
+        "Documentation, https://python-prompt-toolkit.readthedocs.io/en/stable/"
+      ],
+      "license": "UNKNOWN",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:psutil",
+      "name": "psutil",
+      "type": "PyPI",
+      "version": "7.2.2",
+      "source": [
+        "https://github.com/giampaolo/psutil"
+      ],
+      "license": "BSD-3-Clause",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:ptyprocess",
+      "name": "ptyprocess",
+      "type": "PyPI",
+      "version": "0.7.0",
+      "source": [
+        "https://github.com/pexpect/ptyprocess"
+      ],
+      "license": "UNKNOWN",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:pure_eval",
+      "name": "pure_eval",
+      "type": "PyPI",
+      "version": "0.2.4",
+      "source": [
+        "http://github.com/alexmojaki/pure_eval"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:pycparser",
+      "name": "pycparser",
+      "type": "PyPI",
+      "version": "3.12",
+      "source": [
+        "Homepage, https://github.com/eliben/pycparser"
+      ],
+      "license": "BSD-3-Clause",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:pycryptodome",
+      "name": "pycryptodome",
+      "type": "PyPI",
+      "version": "3.23.0",
+      "source": [
+        "Source, https://github.com/Legrandin/pycryptodome/",
+        "Changelog, https://www.pycryptodome.org/src/changelog"
+      ],
+      "license": "BSD, Public Domain",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:pydot",
+      "name": "pydot",
+      "type": "PyPI",
+      "version": "4.0.1",
+      "source": [
+        "Homepage, https://github.com/pydot/pydot",
+        "Changelog, https://github.com/pydot/pydot/blob/main/ChangeLog",
+        "Bug Tracker, https://github.com/pydot/pydot/issues"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:pyelftools",
+      "name": "pyelftools",
+      "type": "PyPI",
+      "version": "0.33",
+      "source": [
+        "Homepage, https://github.com/eliben/pyelftools",
+        "Repository, https://github.com/eliben/pyelftools.git",
+        "Issues, https://github.com/eliben/pyelftools/issues"
+      ],
+      "license": "Public domain",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:Pygments",
+      "name": "Pygments",
+      "type": "PyPI",
+      "version": "2.21.0",
+      "source": [
+        "Homepage, https://pygments.org",
+        "Documentation, https://pygments.org/docs",
+        "Source, https://github.com/pygments/pygments",
+        "Bug Tracker, https://github.com/pygments/pygments/issues",
+        "Changelog, https://github.com/pygments/pygments/blob/master/CHANGES"
+      ],
+      "license": "BSD-2-Clause",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:pyparsing",
+      "name": "pyparsing",
+      "type": "PyPI",
+      "version": "3.3.3",
+      "source": [
+        "Documentation, https://pyparsing-docs.readthedocs.io/en/latest/",
+        "Homepage, https://github.com/pyparsing/pyparsing/",
+        "Source, https://github.com/pyparsing/pyparsing.git"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:PyYAML",
+      "name": "PyYAML",
+      "type": "PyPI",
+      "version": "6.0.3",
+      "source": [
+        "Bug Tracker, https://github.com/yaml/pyyaml/issues",
+        "CI, https://github.com/yaml/pyyaml/actions",
+        "Documentation, https://pyyaml.org/wiki/PyYAMLDocumentation",
+        "Mailing lists, http://lists.sourceforge.net/lists/listinfo/yaml-core",
+        "Source Code, https://github.com/yaml/pyyaml"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:SQLAlchemy",
+      "name": "SQLAlchemy",
+      "type": "PyPI",
+      "version": "2.1.6",
+      "source": [
+        "Homepage, https://www.sqlalchemy.org",
+        "Documentation, https://docs.sqlalchemy.org",
+        "Changelog, https://docs.sqlalchemy.org/latest/changelog/index.html",
+        "Source Code, https://github.com/sqlalchemy/sqlalchemy",
+        "Issue Tracker, https://github.com/sqlalchemy/sqlalchemy/issues",
+        "Discussions, https://github.com/sqlalchemy/sqlalchemy/discussions"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:stack-data",
+      "name": "stack-data",
+      "type": "PyPI",
+      "version": "0.6.3",
+      "source": [
+        "http://github.com/alexmojaki/stack_data"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:traitlets",
+      "name": "traitlets",
+      "type": "PyPI",
+      "version": "5.16.1",
+      "source": [
+        "Homepage, https://github.com/ipython/traitlets",
+        "Documentation, https://traitlets.readthedocs.io",
+        "Source, https://github.com/ipython/traitlets",
+        "Tracker, https://github.com/ipython/traitlets/issues"
+      ],
+      "license": "BSD 3-Clause License",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:typing_extensions",
+      "name": "typing_extensions",
+      "type": "PyPI",
+      "version": "4.16.0",
+      "source": [
+        "Bug Tracker, https://github.com/python/typing_extensions/issues",
+        "Changes, https://github.com/python/typing_extensions/blob/main/CHANGELOG.md",
+        "Documentation, https://typing-extensions.readthedocs.io/",
+        "Home, https://github.com/python/typing_extensions",
+        "Q & A, https://github.com/python/typing/discussions",
+        "Repository, https://github.com/python/typing_extensions"
+      ],
+      "license": "PSF-2.0",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:wcwidth",
+      "name": "wcwidth",
+      "type": "PyPI",
+      "version": "0.9.4",
+      "source": [
+        "Homepage, https://github.com/jquast/wcwidth"
+      ],
+      "license": "UNKNOWN",
+      "review": "NEEDS_REVIEW",
+      "lockfile": "analysis/dastan.prince.myvpnksa/35/dependencies.lock.json",
+      "use": "inspection environment; direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "CPython",
+      "name": "CPython",
+      "type": "runtime/tool",
+      "version": "3.12.14",
+      "source": "https://www.python.org/",
+      "license": "PSF",
+      "review": "MANUAL_USE_ONLY",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "OpenJDK",
+      "name": "OpenJDK",
+      "type": "runtime/tool",
+      "version": "17.0.20",
+      "source": "https://openjdk.org/",
+      "license": "GPL-2.0 WITH Classpath-exception-2.0",
+      "review": "MANUAL_USE_ONLY",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "JADX",
+      "name": "JADX",
+      "type": "runtime/tool",
+      "version": "1.5.6",
+      "source": "https://github.com/skylot/jadx",
+      "license": "Apache-2.0",
+      "review": "MANUAL_USE_ONLY",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "Node.js",
+      "name": "Node.js",
+      "type": "runtime/tool",
+      "version": "24.22.1",
+      "source": "https://nodejs.org/",
+      "license": "MIT and bundled component licenses",
+      "review": "MANUAL_USE_ONLY",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "curl",
+      "name": "curl",
+      "type": "runtime/tool",
+      "version": "8.5.0",
+      "source": "https://curl.se/",
+      "license": "curl",
+      "review": "MANUAL_USE_ONLY",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "GNU readelf",
+      "name": "GNU readelf",
+      "type": "runtime/tool",
+      "version": "2.42",
+      "source": "https://www.gnu.org/software/binutils/",
+      "license": "GPL-3.0-or-later",
+      "review": "MANUAL_USE_ONLY",
+      "lockfile": "dependencies.lock.json"
+    }
+  ],
+  "code_paths": {
+    "codec": "decoders/Python/apps/FNF_TUNNEL_BD/codec.py",
+    "cli": "decoders/Python/apps/FNF_TUNNEL_BD/server_catalog_decoder.py",
+    "worker": "cloud/workers/python/catalog_vpn_bridge.py",
+    "engine": "cloud/workers/python/engine.py",
+    "broker": "cloud/web/lib/server-vpn-provider.mjs",
+    "public_metadata": "cloud/web/lib/server-vpn-catalog.mjs",
+    "controls": "cloud/web/lib/c12-provider-controls.mjs",
+    "contract": "cloud/web/lib/c3-gateway.mjs",
+    "tests": [
+      "tests/test_fnf_tunnel_bd.py",
+      "cloud/web/tests/fnf-tunnel-bd.test.mjs"
+    ]
+  },
+  "evidence_refs": [
+    "ANALYSIS.md",
+    "REPRODUCE.md",
+    "RESULTS.md",
+    "DEPENDENCIES.md",
+    "generated/recovery.json",
+    "generated/verification.json",
+    "generated/checks.json"
+  ],
+  "network_requirements": [
+    "HTTPS original fixed public updater"
+  ],
+  "manual_steps": [],
+  "unresolved_questions": [
+    "Real Node transport and operator rollout in VPS."
+  ],
+  "shared_tooling": [
+    {
+      "path": "scripts/apk_analysis/inspect_apk.py",
+      "sha256": "3207559b8bf015e374c695614cb3cb65b22eb6c960373ec863e81c91ad8606cb",
+      "source_commit": "28cb4057fadae5eeaf139f059bca4fba52e41ca9"
+    },
+    {
+      "path": "scripts/apk_analysis/decompile.py",
+      "sha256": "dd04a05c2cb46bae494af412733d9e27b71167fc86f787371e76dfbddd50a3dd",
+      "source_commit": "28cb4057fadae5eeaf139f059bca4fba52e41ca9"
+    },
+    {
+      "path": "scripts/apk_analysis/paranoid_strings.py",
+      "sha256": "cf91fd861d68e9767a6be966d8608aa59f33a97a063182354d9a1132167ef587",
+      "source_commit": "28cb4057fadae5eeaf139f059bca4fba52e41ca9"
+    },
+    {
+      "path": "scripts/apk_analysis/elf_inspect.py",
+      "sha256": "b20adfae49329677c313fddb4674a6964a26867b9a27868e6da906fd5aeddee1",
+      "source_commit": "28cb4057fadae5eeaf139f059bca4fba52e41ca9"
+    },
+    {
+      "path": "scripts/apk_analysis/bd_net_verify.py",
+      "sha256": "2616bbabbd7e955ce227e0bcfd9ccf5e95583def5a890eb2abfa1d67ab012b4b",
+      "source_commit": "28cb4057fadae5eeaf139f059bca4fba52e41ca9"
+    },
+    {
+      "path": "tests/golden/bd_net_oracle.java",
+      "sha256": "e27a6587ff3cc8d11794ad06b57c854c260b6fc4546075b35796695bdc344b3b",
+      "source_commit": "28cb4057fadae5eeaf139f059bca4fba52e41ca9"
+    },
+    {
+      "path": "tests/golden/apna_oracle.java",
+      "sha256": "14e3ef73578e5817271d51ad3cbf49b896282bfbd0cbcb1d46d1614f36cce87a",
+      "source_commit": "28cb4057fadae5eeaf139f059bca4fba52e41ca9"
+    },
+    {
+      "path": "decoders/Python/apps/BD_NET_VPN/codec.py",
+      "sha256": "2517cbeb9adb1aa8aa6f1883f9719b87737e2bdcc722b69af6576d5388b2eed7",
+      "source_commit": "28cb4057fadae5eeaf139f059bca4fba52e41ca9"
+    },
+    {
+      "path": "analysis/com.halcon.connect/1391/tools/dependency_inventory.py",
+      "sha256": "ec181cd81869c3c7f1d8015b9055642f1b701b6c8f7a600aa72b5d486ef86fc4",
+      "source_commit": "28cb4057fadae5eeaf139f059bca4fba52e41ca9"
+    }
+  ],
+  "fixture_hashes": [
+    {
+      "path": "tests/fixtures/catalog.txt",
+      "sha256": "8b2756348de28289c56ba363df418b7dfef161371c738d03c3f5b5dac71e9230"
+    },
+    {
+      "path": "tests/fixtures/expected.json",
+      "sha256": "22e4a8d66a00dd637be17b01e80b7a0b9c98627d74feb316c0cb0588e7e864d1"
+    }
+  ]
+}

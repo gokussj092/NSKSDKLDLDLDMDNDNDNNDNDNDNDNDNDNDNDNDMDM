@@ -1,0 +1,1089 @@
+{
+  "schema_version": 1,
+  "environment": {
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "java": "openjdk version \"17.0.20\" 2026-07-21\nOpenJDK Runtime Environment (build 17.0.20+8-1-24.04-Ubuntu)\nOpenJDK 64-Bit Server VM (build 17.0.20+8-1-24.04-Ubuntu, mixed mode, sharing)",
+    "curl": "curl 8.5.0 (x86_64-pc-linux-gnu) libcurl/8.5.0 OpenSSL/3.0.13 zlib/1.3 brotli/1.1.0 zstd/1.5.5 libidn2/2.3.7 libpsl/0.21.2 (+libidn2/2.3.7) libssh/0.10.6/openssl/zlib nghttp2/1.59.0 librtmp/2.3 OpenLDAP/2.6.7\nRelease-Date: 2023-12-06, security patched: 8.5.0-2ubuntu10.13\nProtocols: dict file ftp ftps gopher gophers http https imap imaps ldap ldaps mqtt pop3 pop3s rtmp rtsp scp sftp smb smbs smtp smtps telnet tftp\nFeatures: alt-svc AsynchDNS brotli GSS-API HSTS HTTP2 HTTPS-proxy IDN IPv6 Kerberos Largefile libz NTLM PSL SPNEGO SSL threadsafe TLS-SRP UnixSockets zstd",
+    "node": "v24.22.1",
+    "readelf": "GNU readelf (GNU Binutils for Ubuntu) 2.42",
+    "architecture": "x86_64"
+  },
+  "python_packages": [
+    {
+      "id": "pypi:alembic",
+      "name": "alembic",
+      "version": "1.20.1",
+      "source": [
+        "Homepage, https://alembic.sqlalchemy.org",
+        "Documentation, https://alembic.sqlalchemy.org/en/latest/",
+        "Changelog, https://alembic.sqlalchemy.org/en/latest/changelog.html",
+        "Source, https://github.com/sqlalchemy/alembic/",
+        "Issue Tracker, https://github.com/sqlalchemy/alembic/issues/"
+      ],
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [
+        "SQLAlchemy>=2.0",
+        "Mako",
+        "typing-extensions>=4.12",
+        "tomli; python_version < \"3.11\"",
+        "tzdata; extra == \"tz\""
+      ],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:androguard",
+      "name": "androguard",
+      "version": "4.1.4",
+      "source": [
+        "Homepage, https://github.com/androguard/androguard"
+      ],
+      "license": "Apache Licence, Version 2.0",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [
+        "apkInspector (>=1.1.7)",
+        "asn1crypto (>=0.24.0)",
+        "click (>=7.0)",
+        "colorama (>=0.4.1)",
+        "cryptography (>=46.0.6)",
+        "dataset",
+        "ipython (>=5.0.0)",
+        "loguru",
+        "lxml (>=4.3.0)",
+        "mutf8",
+        "networkx",
+        "pydot (>=1.4.1)",
+        "pygments (>=2.3.1)",
+        "pyyaml"
+      ],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:apkInspector",
+      "name": "apkInspector",
+      "version": "1.3.7",
+      "source": [
+        "Repository, https://github.com/erev0s/apkInspector"
+      ],
+      "license": "Apache-2.0",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:asn1crypto",
+      "name": "asn1crypto",
+      "version": "1.5.1",
+      "source": [
+        "https://github.com/wbond/asn1crypto"
+      ],
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:asttokens",
+      "name": "asttokens",
+      "version": "3.0.2",
+      "source": [
+        "Documentation, https://asttokens.readthedocs.io/en/latest/index.html",
+        "Issue Tracker, https://github.com/gristlabs/asttokens/issues"
+      ],
+      "license": "Apache 2.0",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [
+        "astroid<5,>=2; extra == \"astroid\"",
+        "astroid<5,>=2; extra == \"test\"",
+        "pytest<9.0; extra == \"test\"",
+        "pytest-cov; extra == \"test\"",
+        "pytest-xdist; extra == \"test\""
+      ],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:capstone",
+      "name": "capstone",
+      "version": "5.0.9",
+      "source": [
+        "https://www.capstone-engine.org"
+      ],
+      "license": "UNKNOWN",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [
+        "importlib-resources ; python_version < \"3.9\""
+      ],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:cffi",
+      "name": "cffi",
+      "version": "2.1.1",
+      "source": [
+        "Documentation, https://cffi.readthedocs.io/",
+        "Changelog, https://cffi.readthedocs.io/en/latest/whatsnew.html",
+        "Download, https://github.com/python-cffi/cffi/releases",
+        "Contact, https://groups.google.com/forum/#!forum/python-cffi",
+        "Source Code, https://github.com/python-cffi/cffi",
+        "Issue Tracker, https://github.com/python-cffi/cffi/issues"
+      ],
+      "license": "MIT-0",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [
+        "pycparser; implementation_name != \"PyPy\""
+      ],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:click",
+      "name": "click",
+      "version": "8.5.0",
+      "source": [
+        "Changes, https://click.palletsprojects.com/page/changes/",
+        "Chat, https://discord.gg/pallets",
+        "Documentation, https://click.palletsprojects.com/",
+        "Donate, https://palletsprojects.com/donate",
+        "Source, https://github.com/pallets/click/"
+      ],
+      "license": "BSD-3-Clause",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:colorama",
+      "name": "colorama",
+      "version": "0.4.6",
+      "source": [
+        "Homepage, https://github.com/tartley/colorama"
+      ],
+      "license": "UNKNOWN",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:cryptography",
+      "name": "cryptography",
+      "version": "50.0.2",
+      "source": [
+        "changelog, https://cryptography.io/en/latest/changelog/",
+        "documentation, https://cryptography.io/",
+        "homepage, https://github.com/pyca/cryptography",
+        "issues, https://github.com/pyca/cryptography/issues",
+        "source, https://github.com/pyca/cryptography/"
+      ],
+      "license": "Apache-2.0 OR BSD-3-Clause",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [
+        "cffi>=2.0.0 ; platform_python_implementation != 'PyPy'",
+        "typing-extensions>=4.13.2 ; python_full_version < '3.11'",
+        "bcrypt>=3.1.5 ; extra == 'ssh'"
+      ],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:dataset",
+      "name": "dataset",
+      "version": "2.0.0",
+      "source": [
+        "Homepage, https://github.com/pudo/dataset",
+        "Repository, https://github.com/pudo/dataset",
+        "Documentation, https://dataset.readthedocs.io/"
+      ],
+      "license": "Copyright (c) 2013, Open Knowledge Foundation, Friedrich Lindenberg,",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [
+        "alembic>=0.6.2",
+        "sqlalchemy<3.0.0,>=1.4.0",
+        "build; extra == 'dev'",
+        "cryptography; extra == 'dev'",
+        "mypy; extra == 'dev'",
+        "psycopg2-binary; extra == 'dev'",
+        "pymysql; extra == 'dev'",
+        "pytest; extra == 'dev'",
+        "ruff; extra == 'dev'",
+        "twine; extra == 'dev'"
+      ],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:executing",
+      "name": "executing",
+      "version": "2.3.0",
+      "source": [
+        "Homepage, https://github.com/alexmojaki/executing",
+        "Repository, https://github.com/alexmojaki/executing"
+      ],
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [
+        "pysource-minimize>=0.10.1; extra == \"tests\"",
+        "asttokens>=2.1.0; extra == \"tests\"",
+        "ipython; extra == \"tests\"",
+        "pytest; extra == \"tests\"",
+        "coverage[toml]; extra == \"tests\"",
+        "coverage-enable-subprocess; extra == \"tests\"",
+        "littleutils; extra == \"tests\"",
+        "rich; python_version >= \"3.11\" and extra == \"tests\""
+      ],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:ipython",
+      "name": "ipython",
+      "version": "9.18.1",
+      "source": [
+        "Homepage, https://ipython.org",
+        "Documentation, https://ipython.readthedocs.io/",
+        "Funding, https://jupyter.org/about#donate",
+        "Source, https://github.com/ipython/ipython",
+        "Tracker, https://github.com/ipython/ipython/issues"
+      ],
+      "license": "BSD-3-Clause",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [
+        "colorama>=0.4.4; sys_platform == \"win32\"",
+        "ipython-pygments-lexers>=1.0.0",
+        "jedi>=0.18.2",
+        "matplotlib-inline>=0.1.6",
+        "pexpect>4.6; sys_platform != \"win32\" and sys_platform != \"emscripten\"",
+        "prompt_toolkit<3.1.0,>=3.0.41",
+        "psutil>=7; sys_platform != \"emscripten\" and sys_platform != \"cygwin\" and sys_platform != \"android\"",
+        "pygments>=2.14.0",
+        "stack_data>=0.6.0",
+        "traitlets>=5.13.0",
+        "typing_extensions>=4.6; python_version < \"3.12\"",
+        "black; extra == \"black\"",
+        "docrepr; extra == \"doc\"",
+        "intersphinx_registry; extra == \"doc\"",
+        "ipykernel; extra == \"doc\"",
+        "ipython[matplotlib,test]; extra == \"doc\"",
+        "setuptools>=80.0; extra == \"doc\"",
+        "sphinx_toml==0.0.4; extra == \"doc\"",
+        "sphinx-rtd-theme>=0.1.8; extra == \"doc\"",
+        "sphinx>=8.0; extra == \"doc\"",
+        "typing_extensions; extra == \"doc\"",
+        "pytest>=7.0.0; extra == \"test\"",
+        "pytest-asyncio>=1.0.0; extra == \"test\"",
+        "testpath>=0.2; extra == \"test\"",
+        "packaging>=23.0.0; extra == \"test\"",
+        "setuptools>=80.0; extra == \"test\"",
+        "ipython[test]; extra == \"test-extra\"",
+        "curio; extra == \"test-extra\"",
+        "jupyter_ai; extra == \"test-extra\"",
+        "ipython[matplotlib]; extra == \"test-extra\"",
+        "nbformat; extra == \"test-extra\"",
+        "nbclient; extra == \"test-extra\"",
+        "ipykernel>6.30; extra == \"test-extra\"",
+        "numpy>=2.0; extra == \"test-extra\"",
+        "pandas>2.1; extra == \"test-extra\"",
+        "trio>=0.22.0; extra == \"test-extra\"",
+        "matplotlib>3.9; extra == \"matplotlib\"",
+        "ipython[doc,matplotlib,test,test_extra]; extra == \"all\"",
+        "argcomplete>=3.0; extra == \"all\""
+      ],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:ipython_pygments_lexers",
+      "name": "ipython_pygments_lexers",
+      "version": "1.1.1",
+      "source": [
+        "Source, https://github.com/ipython/ipython-pygments-lexers"
+      ],
+      "license": "UNKNOWN",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [
+        "pygments"
+      ],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:jedi",
+      "name": "jedi",
+      "version": "0.20.1",
+      "source": [
+        "Documentation, https://jedi.readthedocs.io/en/latest/"
+      ],
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [
+        "parso <0.9.0,>=0.8.7",
+        "Django ; extra == 'dev'",
+        "attrs ; extra == 'dev'",
+        "colorama ; extra == 'dev'",
+        "docopt ; extra == 'dev'",
+        "flake8 ==7.1.2 ; extra == 'dev'",
+        "pytest <9.0.0 ; extra == 'dev'",
+        "types-setuptools ==80.9.0.20250529 ; extra == 'dev'",
+        "typing-extensions ; extra == 'dev'",
+        "zuban ==0.7.0 ; extra == 'dev'",
+        "Jinja2 ==3.1.6 ; extra == 'docs'",
+        "MarkupSafe ==3.0.3 ; extra == 'docs'",
+        "Pygments ==2.20.0 ; extra == 'docs'",
+        "Sphinx ==9.1.0 ; extra == 'docs'",
+        "alabaster ==1.0.0 ; extra == 'docs'",
+        "babel ==2.18.0 ; extra == 'docs'",
+        "certifi ==2026.4.22 ; extra == 'docs'",
+        "charset-normalizer ==3.4.7 ; extra == 'docs'",
+        "docutils ==0.22.4 ; extra == 'docs'",
+        "idna ==3.13 ; extra == 'docs'",
+        "imagesize ==2.0.0 ; extra == 'docs'",
+        "iniconfig ==2.3.0 ; extra == 'docs'",
+        "packaging ==26.2 ; extra == 'docs'",
+        "pluggy ==1.6.0 ; extra == 'docs'",
+        "pytest ==9.0.3 ; extra == 'docs'",
+        "requests ==2.33.1 ; extra == 'docs'",
+        "roman-numerals ==4.1.0 ; extra == 'docs'",
+        "snowballstemmer ==3.0.1 ; extra == 'docs'",
+        "sphinx-rtd-theme ==3.1.0 ; extra == 'docs'",
+        "sphinxcontrib-applehelp ==2.0.0 ; extra == 'docs'",
+        "sphinxcontrib-devhelp ==2.0.0 ; extra == 'docs'",
+        "sphinxcontrib-htmlhelp ==2.1.0 ; extra == 'docs'",
+        "sphinxcontrib-jquery ==4.1 ; extra == 'docs'",
+        "sphinxcontrib-jsmath ==1.0.1 ; extra == 'docs'",
+        "sphinxcontrib-qthelp ==2.0.0 ; extra == 'docs'",
+        "sphinxcontrib-serializinghtml ==2.0.0 ; extra == 'docs'",
+        "urllib3 ==2.6.3 ; extra == 'docs'"
+      ],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:loguru",
+      "name": "loguru",
+      "version": "0.7.3",
+      "source": [
+        "Changelog, https://github.com/Delgan/loguru/blob/master/CHANGELOG.rst",
+        "Documentation, https://loguru.readthedocs.io/en/stable/index.html",
+        "Homepage, https://github.com/Delgan/loguru"
+      ],
+      "license": "UNKNOWN",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [
+        "colorama>=0.3.4 ; sys_platform=='win32'",
+        "aiocontextvars>=0.2.0 ; python_version<'3.7'",
+        "win32-setctime>=1.0.0 ; sys_platform=='win32'",
+        "pre-commit==4.0.1  ; extra == \"dev\" and ( python_version>='3.9')",
+        "tox==3.27.1  ; extra == \"dev\" and ( python_version<'3.8')",
+        "tox==4.23.2  ; extra == \"dev\" and ( python_version>='3.8')",
+        "pytest==6.1.2  ; extra == \"dev\" and ( python_version<'3.8')",
+        "pytest==8.3.2  ; extra == \"dev\" and ( python_version>='3.8')",
+        "pytest-cov==2.12.1  ; extra == \"dev\" and ( python_version<'3.8')",
+        "pytest-cov==5.0.0  ; extra == \"dev\" and ( python_version>='3.8' and python_version<'3.9')",
+        "pytest-cov==6.0.0  ; extra == \"dev\" and ( python_version>='3.9')",
+        "pytest-mypy-plugins==1.9.3  ; extra == \"dev\" and ( python_version>='3.6' and python_version<'3.8')",
+        "pytest-mypy-plugins==3.1.0  ; extra == \"dev\" and ( python_version>='3.8')",
+        "colorama==0.4.5  ; extra == \"dev\" and ( python_version<'3.8')",
+        "colorama==0.4.6  ; extra == \"dev\" and ( python_version>='3.8')",
+        "freezegun==1.1.0  ; extra == \"dev\" and ( python_version<'3.8')",
+        "freezegun==1.5.0  ; extra == \"dev\" and ( python_version>='3.8')",
+        "exceptiongroup==1.1.3  ; extra == \"dev\" and ( python_version>='3.7' and python_version<'3.11')",
+        "mypy==v0.910  ; extra == \"dev\" and ( python_version<'3.6')",
+        "mypy==v0.971  ; extra == \"dev\" and ( python_version>='3.6' and python_version<'3.7')",
+        "mypy==v1.4.1  ; extra == \"dev\" and ( python_version>='3.7' and python_version<'3.8')",
+        "mypy==v1.13.0  ; extra == \"dev\" and ( python_version>='3.8')",
+        "Sphinx==8.1.3  ; extra == \"dev\" and ( python_version>='3.11')",
+        "sphinx-rtd-theme==3.0.2  ; extra == \"dev\" and ( python_version>='3.11')",
+        "myst-parser==4.0.0  ; extra == \"dev\" and ( python_version>='3.11')",
+        "build==1.2.2  ; extra == \"dev\" and ( python_version>='3.11')",
+        "twine==6.0.1  ; extra == \"dev\" and ( python_version>='3.11')"
+      ],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:lxml",
+      "name": "lxml",
+      "version": "6.1.3",
+      "source": [
+        "Source, https://github.com/lxml/lxml",
+        "Bug Tracker, https://bugs.launchpad.net/lxml"
+      ],
+      "license": "BSD-3-Clause",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [
+        "cssselect>=0.7; extra == \"cssselect\"",
+        "html5lib; extra == \"html5\"",
+        "BeautifulSoup4; extra == \"htmlsoup\"",
+        "lxml_html_clean; extra == \"html-clean\""
+      ],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:Mako",
+      "name": "Mako",
+      "version": "1.4.3",
+      "source": [
+        "Homepage, https://www.makotemplates.org/",
+        "Documentation, https://docs.makotemplates.org",
+        "Issue Tracker, https://github.com/sqlalchemy/mako"
+      ],
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [
+        "MarkupSafe>=2.0",
+        "pytest; extra == \"testing\"",
+        "Babel; extra == \"babel\"",
+        "lingua>=4.16; extra == \"lingua\""
+      ],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:MarkupSafe",
+      "name": "MarkupSafe",
+      "version": "3.0.4",
+      "source": [
+        "Donate, https://palletsprojects.com/donate",
+        "Documentation, https://markupsafe.palletsprojects.com/",
+        "Changes, https://markupsafe.palletsprojects.com/page/changes/",
+        "Source, https://github.com/pallets/markupsafe/",
+        "Chat, https://discord.gg/pallets"
+      ],
+      "license": "BSD-3-Clause",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:matplotlib-inline",
+      "name": "matplotlib-inline",
+      "version": "0.2.2",
+      "source": [
+        "Homepage, https://github.com/ipython/matplotlib-inline"
+      ],
+      "license": "BSD-3-Clause",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [
+        "traitlets",
+        "flake8 ; extra == \"test\"",
+        "nbdime ; extra == \"test\"",
+        "nbval ; extra == \"test\"",
+        "notebook ; extra == \"test\"",
+        "pytest ; extra == \"test\"",
+        "matplotlib ; extra == \"test\""
+      ],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:mutf8",
+      "name": "mutf8",
+      "version": "1.1.0",
+      "source": [
+        "Homepage, https://github.com/TkTech/mutf8",
+        "Source, https://github.com/TkTech/mutf8",
+        "Issues, https://github.com/TkTech/mutf8/issues"
+      ],
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [
+        "pytest; extra == \"test\"",
+        "pytest-benchmark; extra == \"test\""
+      ],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:networkx",
+      "name": "networkx",
+      "version": "3.7",
+      "source": [
+        "Homepage, https://networkx.org/",
+        "Bug Tracker, https://github.com/networkx/networkx/issues",
+        "Documentation, https://networkx.org/documentation/stable/",
+        "Source Code, https://github.com/networkx/networkx"
+      ],
+      "license": "BSD-3-Clause",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [
+        "asv>=0.6.5; extra == \"benchmarking\"",
+        "py-rattler<0.22,>=0.21; extra == \"benchmarking\"",
+        "virtualenv; extra == \"benchmarking\"",
+        "numpy>=2.2; extra == \"default\"",
+        "scipy>=1.15; extra == \"default\"",
+        "matplotlib>=3.10; extra == \"default\"",
+        "pandas>=2.3; extra == \"default\"",
+        "pre-commit>=4.1; extra == \"developer\"",
+        "mypy>=1.15; extra == \"developer\"",
+        "sphinx>=8.0; extra == \"doc\"",
+        "pydata-sphinx-theme>=0.16; extra == \"doc\"",
+        "sphinx-gallery>=0.18; extra == \"doc\"",
+        "numpydoc>=1.8.0; extra == \"doc\"",
+        "pillow>=10; extra == \"doc\"",
+        "texext>=0.6.7; extra == \"doc\"",
+        "myst-nb>=1.1; extra == \"doc\"",
+        "intersphinx-registry; extra == \"doc\"",
+        "osmnx>=2.0.0; extra == \"example\"",
+        "momepy>=0.7.2; extra == \"example\"",
+        "contextily>=1.6; extra == \"example\"",
+        "seaborn>=0.13; extra == \"example\"",
+        "cairocffi>=1.7; extra == \"example\"",
+        "igraph>=0.11; extra == \"example\"",
+        "scikit-learn>=1.6; extra == \"example\"",
+        "iplotx>=0.9.0; extra == \"example\"",
+        "hiveplotlib>=0.28; extra == \"example\"",
+        "lxml>=4.6; extra == \"extra\"",
+        "pygraphviz>=2.0; extra == \"extra\"",
+        "pydot>=3.0.1; extra == \"extra\"",
+        "sympy>=1.10; extra == \"extra\"",
+        "build>=0.10; extra == \"release\"",
+        "twine>=4.0; extra == \"release\"",
+        "wheel>=0.40; extra == \"release\"",
+        "changelist==0.5; extra == \"release\"",
+        "pytest>=7.2; extra == \"test\"",
+        "pytest-cov>=4.0; extra == \"test\"",
+        "pytest-xdist>=3.0; extra == \"test\"",
+        "pytest-mpl; extra == \"test-extras\"",
+        "pytest-randomly; extra == \"test-extras\""
+      ],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:parso",
+      "name": "parso",
+      "version": "0.8.7",
+      "source": [
+        "https://github.com/davidhalter/parso"
+      ],
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [
+        "flake8 ==5.0.4 ; extra == 'qa'",
+        "types-setuptools ==67.2.0.1 ; extra == 'qa'",
+        "zuban ==0.5.1 ; extra == 'qa'",
+        "docopt ; extra == 'testing'",
+        "pytest ; extra == 'testing'"
+      ],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:pexpect",
+      "name": "pexpect",
+      "version": "4.9.0",
+      "source": [
+        "Bug Tracker, https://github.com/pexpect/pexpect/issues",
+        "Documentation, https://pexpect.readthedocs.io/",
+        "Source Code, https://github.com/pexpect/pexpect",
+        "History, https://pexpect.readthedocs.io/en/stable/history.html"
+      ],
+      "license": "ISC license",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [
+        "ptyprocess (>=0.5)"
+      ],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:pillow",
+      "name": "pillow",
+      "version": "13.0.0",
+      "source": [
+        "Release notes, https://pillow.readthedocs.io/en/stable/releasenotes/index.html",
+        "Changelog, https://github.com/python-pillow/Pillow/releases",
+        "Documentation, https://pillow.readthedocs.io",
+        "Funding, https://tidelift.com/lifter/search/pypi/pillow",
+        "Homepage, https://python-pillow.org",
+        "Mastodon, https://fosstodon.org/@pillow",
+        "Security, https://pillow.readthedocs.io/en/stable/handbook/security.html",
+        "Source, https://github.com/python-pillow/Pillow"
+      ],
+      "license": "MIT-CMU",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [
+        "furo; extra == \"docs\"",
+        "olefile; extra == \"docs\"",
+        "sphinx>=8.2; extra == \"docs\"",
+        "sphinx-autobuild; extra == \"docs\"",
+        "sphinx-copybutton; extra == \"docs\"",
+        "sphinx-inline-tabs; extra == \"docs\"",
+        "sphinxext-opengraph; extra == \"docs\"",
+        "olefile; extra == \"fpx\"",
+        "olefile; extra == \"mic\"",
+        "arro3-compute; extra == \"test-arrow\"",
+        "arro3-core; extra == \"test-arrow\"",
+        "nanoarrow; extra == \"test-arrow\"",
+        "pyarrow; extra == \"test-arrow\"",
+        "coverage>=7.4.2; extra == \"tests\"",
+        "defusedxml; extra == \"tests\"",
+        "markdown2; extra == \"tests\"",
+        "olefile; extra == \"tests\"",
+        "packaging; extra == \"tests\"",
+        "psutil; (sys_platform == \"linux\" or sys_platform == \"darwin\") and extra == \"tests\"",
+        "pytest; extra == \"tests\"",
+        "pytest-cov; extra == \"tests\"",
+        "pytest-timeout; extra == \"tests\"",
+        "pytest-xdist; extra == \"tests\"",
+        "setuptools; extra == \"tests\"",
+        "trove-classifiers>=2024.10.12; extra == \"tests\"",
+        "defusedxml; extra == \"xmp\""
+      ],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:pip",
+      "name": "pip",
+      "version": "25.0.1",
+      "source": [
+        "Homepage, https://pip.pypa.io/",
+        "Documentation, https://pip.pypa.io",
+        "Source, https://github.com/pypa/pip",
+        "Changelog, https://pip.pypa.io/en/stable/news/"
+      ],
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:prompt_toolkit",
+      "name": "prompt_toolkit",
+      "version": "3.0.53",
+      "source": [
+        "Homepage, https://github.com/prompt-toolkit/python-prompt-toolkit",
+        "Documentation, https://python-prompt-toolkit.readthedocs.io/en/stable/"
+      ],
+      "license": "UNKNOWN",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [
+        "wcwidth>=0.1.4"
+      ],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:psutil",
+      "name": "psutil",
+      "version": "7.2.2",
+      "source": [
+        "https://github.com/giampaolo/psutil"
+      ],
+      "license": "BSD-3-Clause",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [
+        "psleak ; extra == 'dev'",
+        "pytest ; extra == 'dev'",
+        "pytest-instafail ; extra == 'dev'",
+        "pytest-xdist ; extra == 'dev'",
+        "setuptools ; extra == 'dev'",
+        "abi3audit ; extra == 'dev'",
+        "black ; extra == 'dev'",
+        "check-manifest ; extra == 'dev'",
+        "coverage ; extra == 'dev'",
+        "packaging ; extra == 'dev'",
+        "pylint ; extra == 'dev'",
+        "pyperf ; extra == 'dev'",
+        "pypinfo ; extra == 'dev'",
+        "pytest-cov ; extra == 'dev'",
+        "requests ; extra == 'dev'",
+        "rstcheck ; extra == 'dev'",
+        "ruff ; extra == 'dev'",
+        "sphinx ; extra == 'dev'",
+        "sphinx-rtd-theme ; extra == 'dev'",
+        "toml-sort ; extra == 'dev'",
+        "twine ; extra == 'dev'",
+        "validate-pyproject[all] ; extra == 'dev'",
+        "virtualenv ; extra == 'dev'",
+        "vulture ; extra == 'dev'",
+        "wheel ; extra == 'dev'",
+        "colorama ; (os_name == \"nt\") and extra == 'dev'",
+        "pyreadline3 ; (os_name == \"nt\") and extra == 'dev'",
+        "pywin32 ; (os_name == \"nt\" and implementation_name != \"pypy\") and extra == 'dev'",
+        "wheel ; (os_name == \"nt\" and implementation_name != \"pypy\") and extra == 'dev'",
+        "wmi ; (os_name == \"nt\" and implementation_name != \"pypy\") and extra == 'dev'",
+        "psleak ; extra == 'test'",
+        "pytest ; extra == 'test'",
+        "pytest-instafail ; extra == 'test'",
+        "pytest-xdist ; extra == 'test'",
+        "setuptools ; extra == 'test'",
+        "pywin32 ; (os_name == \"nt\" and implementation_name != \"pypy\") and extra == 'test'",
+        "wheel ; (os_name == \"nt\" and implementation_name != \"pypy\") and extra == 'test'",
+        "wmi ; (os_name == \"nt\" and implementation_name != \"pypy\") and extra == 'test'"
+      ],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:ptyprocess",
+      "name": "ptyprocess",
+      "version": "0.7.0",
+      "source": [
+        "https://github.com/pexpect/ptyprocess"
+      ],
+      "license": "UNKNOWN",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:pure_eval",
+      "name": "pure_eval",
+      "version": "0.2.4",
+      "source": [
+        "http://github.com/alexmojaki/pure_eval"
+      ],
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [
+        "pytest; extra == \"tests\""
+      ],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:pycparser",
+      "name": "pycparser",
+      "version": "3.12",
+      "source": [
+        "Homepage, https://github.com/eliben/pycparser"
+      ],
+      "license": "BSD-3-Clause",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:pycryptodome",
+      "name": "pycryptodome",
+      "version": "3.23.0",
+      "source": [
+        "Source, https://github.com/Legrandin/pycryptodome/",
+        "Changelog, https://www.pycryptodome.org/src/changelog"
+      ],
+      "license": "BSD, Public Domain",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:pydot",
+      "name": "pydot",
+      "version": "4.0.1",
+      "source": [
+        "Homepage, https://github.com/pydot/pydot",
+        "Changelog, https://github.com/pydot/pydot/blob/main/ChangeLog",
+        "Bug Tracker, https://github.com/pydot/pydot/issues"
+      ],
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [
+        "pyparsing>=3.1.0",
+        "ruff; extra == \"lint\"",
+        "mypy; extra == \"types\"",
+        "pydot[lint]; extra == \"dev\"",
+        "pydot[types]; extra == \"dev\"",
+        "chardet; extra == \"dev\"",
+        "parameterized; extra == \"dev\"",
+        "pydot[dev]; extra == \"tests\"",
+        "tox; extra == \"tests\"",
+        "pytest; extra == \"tests\"",
+        "pytest-cov; extra == \"tests\"",
+        "pytest-xdist[psutil]; extra == \"tests\"",
+        "zest.releaser[recommended]; extra == \"release\""
+      ],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:pyelftools",
+      "name": "pyelftools",
+      "version": "0.33",
+      "source": [
+        "Homepage, https://github.com/eliben/pyelftools",
+        "Repository, https://github.com/eliben/pyelftools.git",
+        "Issues, https://github.com/eliben/pyelftools/issues"
+      ],
+      "license": "Public domain",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:Pygments",
+      "name": "Pygments",
+      "version": "2.21.0",
+      "source": [
+        "Homepage, https://pygments.org",
+        "Documentation, https://pygments.org/docs",
+        "Source, https://github.com/pygments/pygments",
+        "Bug Tracker, https://github.com/pygments/pygments/issues",
+        "Changelog, https://github.com/pygments/pygments/blob/master/CHANGES"
+      ],
+      "license": "BSD-2-Clause",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [
+        "colorama>=0.4.6; extra == 'windows-terminal'"
+      ],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:pyparsing",
+      "name": "pyparsing",
+      "version": "3.3.3",
+      "source": [
+        "Documentation, https://pyparsing-docs.readthedocs.io/en/latest/",
+        "Homepage, https://github.com/pyparsing/pyparsing/",
+        "Source, https://github.com/pyparsing/pyparsing.git"
+      ],
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [
+        "railroad-diagrams ; extra == \"diagrams\"",
+        "jinja2 ; extra == \"diagrams\""
+      ],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:PyYAML",
+      "name": "PyYAML",
+      "version": "6.0.3",
+      "source": [
+        "Bug Tracker, https://github.com/yaml/pyyaml/issues",
+        "CI, https://github.com/yaml/pyyaml/actions",
+        "Documentation, https://pyyaml.org/wiki/PyYAMLDocumentation",
+        "Mailing lists, http://lists.sourceforge.net/lists/listinfo/yaml-core",
+        "Source Code, https://github.com/yaml/pyyaml"
+      ],
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:SQLAlchemy",
+      "name": "SQLAlchemy",
+      "version": "2.1.6",
+      "source": [
+        "Homepage, https://www.sqlalchemy.org",
+        "Documentation, https://docs.sqlalchemy.org",
+        "Changelog, https://docs.sqlalchemy.org/latest/changelog/index.html",
+        "Source Code, https://github.com/sqlalchemy/sqlalchemy",
+        "Issue Tracker, https://github.com/sqlalchemy/sqlalchemy/issues",
+        "Discussions, https://github.com/sqlalchemy/sqlalchemy/discussions"
+      ],
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [
+        "typing-extensions>=4.6.0",
+        "greenlet>=1; extra == \"asyncio\"",
+        "mypy>=2.4; extra == \"mypy\"",
+        "types-greenlet>=2; extra == \"mypy\"",
+        "pyodbc; extra == \"mssql\"",
+        "pymssql; extra == \"mssql-pymssql\"",
+        "pyodbc; extra == \"mssql-pyodbc\"",
+        "mssql-python>=1.9.0; extra == \"mssql-python\"",
+        "mysqlclient>=1.4.0; extra == \"mysql\"",
+        "mysql-connector-python; extra == \"mysql-connector\"",
+        "mariadb!=1.1.10,!=1.1.2,!=1.1.5,>=1.0.1; extra == \"mariadb-connector\"",
+        "oracledb>=2.0.1; extra == \"oracle\"",
+        "cx_oracle>=8; extra == \"oracle-cxoracle\"",
+        "oracledb>=2.0.1; extra == \"oracle-oracledb\"",
+        "psycopg!=3.1.15,>=3.0.7; extra == \"postgresql\"",
+        "pg8000>=1.29.3; extra == \"postgresql-pg8000\"",
+        "sqlalchemy[asyncio]; extra == \"postgresql-asyncpg\"",
+        "asyncpg; extra == \"postgresql-asyncpg\"",
+        "psycopg2-binary; extra == \"postgresql-psycopg2binary\"",
+        "psycopg2cffi; extra == \"postgresql-psycopg2cffi\"",
+        "psycopg!=3.1.15,>=3.0.7; extra == \"postgresql-psycopg\"",
+        "psycopg[binary]!=3.1.15,>=3.0.7; extra == \"postgresql-psycopgbinary\"",
+        "pymysql; extra == \"pymysql\"",
+        "cymysql; extra == \"cymysql\"",
+        "sqlalchemy[asyncio]; extra == \"aiomysql\"",
+        "aiomysql; extra == \"aiomysql\"",
+        "sqlalchemy[asyncio]; extra == \"aioodbc\"",
+        "aioodbc; extra == \"aioodbc\"",
+        "sqlalchemy[asyncio]; extra == \"asyncmy\"",
+        "asyncmy>=0.2.12; extra == \"asyncmy\"",
+        "sqlalchemy[asyncio]; extra == \"aiosqlite\"",
+        "aiosqlite; extra == \"aiosqlite\"",
+        "sqlcipher3_binary; extra == \"sqlcipher\""
+      ],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:stack-data",
+      "name": "stack-data",
+      "version": "0.6.3",
+      "source": [
+        "http://github.com/alexmojaki/stack_data"
+      ],
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [
+        "executing >=1.2.0",
+        "asttokens >=2.1.0",
+        "pure-eval",
+        "pytest ; extra == 'tests'",
+        "typeguard ; extra == 'tests'",
+        "pygments ; extra == 'tests'",
+        "littleutils ; extra == 'tests'",
+        "cython ; extra == 'tests'"
+      ],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:traitlets",
+      "name": "traitlets",
+      "version": "5.16.1",
+      "source": [
+        "Homepage, https://github.com/ipython/traitlets",
+        "Documentation, https://traitlets.readthedocs.io",
+        "Source, https://github.com/ipython/traitlets",
+        "Tracker, https://github.com/ipython/traitlets/issues"
+      ],
+      "license": "BSD 3-Clause License",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [
+        "myst-parser; extra == 'docs'",
+        "pydata-sphinx-theme; extra == 'docs'",
+        "sphinx; extra == 'docs'",
+        "argcomplete>=3.0.3; (python_version < '3.12') and extra == 'test'",
+        "argcomplete>=3.5.2; (python_version >= '3.12') and extra == 'test'",
+        "mypy>=2.0; (implementation_name != 'pypy') and extra == 'test'",
+        "pre-commit; extra == 'test'",
+        "pytest-mock; extra == 'test'",
+        "pytest-mypy-testing; (implementation_name != 'pypy') and extra == 'test'",
+        "pytest<10.0,>=7.0; extra == 'test'"
+      ],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:typing_extensions",
+      "name": "typing_extensions",
+      "version": "4.16.0",
+      "source": [
+        "Bug Tracker, https://github.com/python/typing_extensions/issues",
+        "Changes, https://github.com/python/typing_extensions/blob/main/CHANGELOG.md",
+        "Documentation, https://typing-extensions.readthedocs.io/",
+        "Home, https://github.com/python/typing_extensions",
+        "Q & A, https://github.com/python/typing/discussions",
+        "Repository, https://github.com/python/typing_extensions"
+      ],
+      "license": "PSF-2.0",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    },
+    {
+      "id": "pypi:wcwidth",
+      "name": "wcwidth",
+      "version": "0.9.4",
+      "source": [
+        "Homepage, https://github.com/jquast/wcwidth"
+      ],
+      "license": "UNKNOWN",
+      "license_review": "NEEDS_REVIEW",
+      "requires_dist": [],
+      "distribution_sha256": null,
+      "hash_note": "Distribution archive hash was not retained during pip installation."
+    }
+  ],
+  "shared_scripts": [
+    {
+      "path": "scripts/apk_analysis/inspect_apk.py",
+      "sha256": "3207559b8bf015e374c695614cb3cb65b22eb6c960373ec863e81c91ad8606cb"
+    },
+    {
+      "path": "scripts/apk_analysis/decompile.py",
+      "sha256": "dd04a05c2cb46bae494af412733d9e27b71167fc86f787371e76dfbddd50a3dd"
+    },
+    {
+      "path": "scripts/apk_analysis/elf_inspect.py",
+      "sha256": "b20adfae49329677c313fddb4674a6964a26867b9a27868e6da906fd5aeddee1"
+    },
+    {
+      "path": "scripts/apk_analysis/requirements.txt",
+      "sha256": "d8e6584b366fcde750f250464517b124e475d223f3bc0bda3ce58d1b9c271475"
+    }
+  ],
+  "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7",
+  "jadx": {
+    "version": "1.5.6",
+    "source": "https://github.com/skylot/jadx/releases/tag/v1.5.6",
+    "license": "Apache-2.0",
+    "zip_sha256": "545ea2be9c242511bc145755cf4bda2485ade42966e096f8b4d3da2a230e8974",
+    "jar_sha256": "fe3e12c45acf75f92369685fd02d1d7a7323385dc725680a9b98a0dac0ea554b"
+  },
+  "shared_sources": [
+    {
+      "path": "scripts/apk_analysis/inspect_apk.py",
+      "sha256": "3207559b8bf015e374c695614cb3cb65b22eb6c960373ec863e81c91ad8606cb",
+      "source_commit": "28cb4057fadae5eeaf139f059bca4fba52e41ca9"
+    },
+    {
+      "path": "scripts/apk_analysis/decompile.py",
+      "sha256": "dd04a05c2cb46bae494af412733d9e27b71167fc86f787371e76dfbddd50a3dd",
+      "source_commit": "28cb4057fadae5eeaf139f059bca4fba52e41ca9"
+    },
+    {
+      "path": "scripts/apk_analysis/paranoid_strings.py",
+      "sha256": "cf91fd861d68e9767a6be966d8608aa59f33a97a063182354d9a1132167ef587",
+      "source_commit": "28cb4057fadae5eeaf139f059bca4fba52e41ca9"
+    },
+    {
+      "path": "scripts/apk_analysis/elf_inspect.py",
+      "sha256": "b20adfae49329677c313fddb4674a6964a26867b9a27868e6da906fd5aeddee1",
+      "source_commit": "28cb4057fadae5eeaf139f059bca4fba52e41ca9"
+    },
+    {
+      "path": "scripts/apk_analysis/bd_net_verify.py",
+      "sha256": "2616bbabbd7e955ce227e0bcfd9ccf5e95583def5a890eb2abfa1d67ab012b4b",
+      "source_commit": "28cb4057fadae5eeaf139f059bca4fba52e41ca9"
+    },
+    {
+      "path": "tests/golden/bd_net_oracle.java",
+      "sha256": "e27a6587ff3cc8d11794ad06b57c854c260b6fc4546075b35796695bdc344b3b",
+      "source_commit": "28cb4057fadae5eeaf139f059bca4fba52e41ca9"
+    },
+    {
+      "path": "tests/golden/apna_oracle.java",
+      "sha256": "14e3ef73578e5817271d51ad3cbf49b896282bfbd0cbcb1d46d1614f36cce87a",
+      "source_commit": "28cb4057fadae5eeaf139f059bca4fba52e41ca9"
+    },
+    {
+      "path": "decoders/Python/apps/BD_NET_VPN/codec.py",
+      "sha256": "2517cbeb9adb1aa8aa6f1883f9719b87737e2bdcc722b69af6576d5388b2eed7",
+      "source_commit": "28cb4057fadae5eeaf139f059bca4fba52e41ca9"
+    },
+    {
+      "path": "analysis/com.halcon.connect/1391/tools/dependency_inventory.py",
+      "sha256": "ec181cd81869c3c7f1d8015b9055642f1b701b6c8f7a600aa72b5d486ef86fc4",
+      "source_commit": "28cb4057fadae5eeaf139f059bca4fba52e41ca9"
+    }
+  ]
+}

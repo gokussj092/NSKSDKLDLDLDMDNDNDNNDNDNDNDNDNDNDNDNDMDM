@@ -6,7 +6,7 @@ import {publicFormats,FORMAT_DETECTION} from "./file-format-catalog.mjs";
 import {publicTextFormats,publicOnlineReferenceFormats} from "./text-format-catalog.mjs";
 import {providerEnabled} from "./server-vpn-provider.mjs";
 
-export const CATALOG_VERSION = 64; // ALSAHER VIP catalog; VPS preserves its higher monotonic version.
+export const CATALOG_VERSION = 65; // FNF TUNNEL BD catalog; VPS preserves its higher monotonic version.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -24,6 +24,7 @@ export function activeCatalogVersion(env=process.env) {
 }
 
 const ITEMS = Object.freeze([
+  {id:"fnf-tunnel-bd",name:"FNF TUNNEL BD",icon:"fnf-tunnel-bd.png",remote:"fnf-tunnel-bd"},
   {id:"alsaher-vip",name:"ALSAHER VIP",icon:"alsaher-vip.png",remote:"alsaher-vip"},
   {id:"halcon-r-net",name:"HALCON RAMOS Conectividad",icon:"halcon-r-net.png",remote:"halcon-r-net"},
   {id:"ultra-tunnel",name:"Ultra Tunnel",icon:"ultra-tunnel.png",remote:"ultra-tunnel"},

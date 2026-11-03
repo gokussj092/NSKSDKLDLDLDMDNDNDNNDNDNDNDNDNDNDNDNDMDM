@@ -1,0 +1,39 @@
+{
+  "baseApkSha256": "8a2d72c7c8005a979e221dffb1b8fba550512e2fa925ed1dbde16c7ff1066e38",
+  "nativeSha256": "9a6468a9d84980a6e90ba4326a08bf1f1b19285d124fa767b37cb52fb6bf6377",
+  "source": "https://raw.githubusercontent.com/pipoyrichards/FNFTUNNELBD/refs/heads/main/FEB52025",
+  "deltaMatches": true,
+  "profileKeyMatches": true,
+  "xorAddress": "0x1466d4",
+  "xorBytes": 548,
+  "disassemblySha256": "04d02be667e57f69163b1ea9495d13e60f904d07860d87be40aac175feb84d40",
+  "http": {
+    "status": 200,
+    "contentType": "text/plain; charset=utf-8",
+    "bytes": 613664,
+    "sha256": "cb3a9c0eb85332343b0c256622853e50bc93b1913c122ce37881385b1a628c0d"
+  },
+  "remote": {
+    "provider": "fnf-tunnel-bd",
+    "complete": true,
+    "version": "82.0",
+    "sections": [
+      "Premium_servers",
+      "Vip_servers",
+      "Private_servers",
+      "Free_servers",
+      "Payloads",
+      "Version",
+      "Changelogs"
+    ],
+    "serverCounts": {
+      "Free_servers": 28,
+      "Premium_servers": 0,
+      "Vip_servers": 0,
+      "Private_servers": 0
+    },
+    "payloadCount": 1193,
+    "plaintextBytes": 460241,
+    "binaryFieldsPreserved": 0
+  }
+}

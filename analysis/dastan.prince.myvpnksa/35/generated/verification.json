@@ -1,0 +1,53 @@
+[
+  {
+    "source": "gremlin.json",
+    "bytes": 506496,
+    "sha256": "c6c31eb2b126c933300bd741cca46e6ae034b2a4dc481a0f9611e28cfa7d4a06",
+    "version": "49.9",
+    "counts": {
+      "Premium_servers": 0,
+      "Vip_servers": 0,
+      "Private_servers": 0,
+      "Payloads": 1025,
+      "Free_servers": 22
+    },
+    "whole_java_equal": true,
+    "whole_cli_equal": true,
+    "whole_worker_equal": true,
+    "inner_decryption": "none; preserve original plaintext fields"
+  },
+  {
+    "source": "remote.enc",
+    "bytes": 613664,
+    "sha256": "cb3a9c0eb85332343b0c256622853e50bc93b1913c122ce37881385b1a628c0d",
+    "version": "82.0",
+    "counts": {
+      "Premium_servers": 0,
+      "Vip_servers": 0,
+      "Private_servers": 0,
+      "Free_servers": 28,
+      "Payloads": 1193
+    },
+    "whole_java_equal": true,
+    "whole_cli_equal": true,
+    "whole_worker_equal": true,
+    "inner_decryption": "none; preserve original plaintext fields"
+  },
+  {
+    "source": "downloaded.enc",
+    "bytes": 613664,
+    "sha256": "cb3a9c0eb85332343b0c256622853e50bc93b1913c122ce37881385b1a628c0d",
+    "version": "82.0",
+    "counts": {
+      "Premium_servers": 0,
+      "Vip_servers": 0,
+      "Private_servers": 0,
+      "Free_servers": 28,
+      "Payloads": 1193
+    },
+    "whole_java_equal": true,
+    "whole_cli_equal": true,
+    "whole_worker_equal": true,
+    "inner_decryption": "none; preserve original plaintext fields"
+  }
+]
