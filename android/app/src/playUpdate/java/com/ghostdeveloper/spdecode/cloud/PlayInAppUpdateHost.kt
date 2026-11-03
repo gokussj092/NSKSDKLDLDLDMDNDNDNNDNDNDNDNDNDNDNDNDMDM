@@ -156,9 +156,11 @@ internal fun PlayInAppUpdateHost(
                 exclusiveCallback(true)
             }
         }
-        manager.registerListener(listener)
+        // On a side-loaded AAB or a device without working Play services,
+        // failure to register is nonfatal; availability remains Play-owned.
+        val registered = runCatching { manager.registerListener(listener) }.isSuccess
         onDispose {
-            manager.unregisterListener(listener)
+            if (registered) runCatching { manager.unregisterListener(listener) }
             exclusiveCallback(false)
         }
     }
@@ -264,7 +266,7 @@ private fun PlayUpdateDialog(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Image(painterResource(R.mipmap.ic_launcher),null,Modifier.size(48.dp))
+                    Image(painterResource(R.drawable.ic_launcher_foreground),null,Modifier.size(48.dp))
                     Spacer(Modifier.width(12.dp))
                     Column {
                         Text(title,color=Color(0xFFF7F7F7),
