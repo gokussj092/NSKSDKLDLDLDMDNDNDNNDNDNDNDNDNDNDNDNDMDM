@@ -96,7 +96,7 @@ test('protocol 2 accepts any vetted exporter from registry without a client allo
  assert.throws(()=>validateExportRegistry({...expanded,
   formats:expanded.formats.map(f=>f.suffix==='hexcm'?{...f,targetAppId:'../bad'}:f)}),/EXPORT_REGISTRY_INVALID/);
  assert.throws(()=>validateExportRegistry({...expanded,
-  formats:expanded.formats.map(f=>f.suffix==='hexcm'?{...f,name:'\\u202eunsafe'}:f)}),/EXPORT_REGISTRY_INVALID/);
+  formats:expanded.formats.map(f=>f.suffix==='hexcm'?{...f,name:'\u202eunsafe'}:f)}),/EXPORT_REGISTRY_INVALID/);
  assert.throws(()=>validateExportRegistry({...expanded,
   formats:[...registry.formats,{...future,suffix:'unknown-nonexistent'}]}),/EXPORT_REGISTRY_INVALID/);
 });
