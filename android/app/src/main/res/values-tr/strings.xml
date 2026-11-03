@@ -102,6 +102,10 @@
     <string name="decode_progress_reading">Dosya okunuyor…</string>
     <string name="decode_progress_decoding">Yapılandırma Cloud üzerinden çözülüyor…</string>
     <string name="decode_progress_saving">Şifreli sonuç kaydediliyor…</string>
+    <string name="decode_progress_wait">Lütfen bekleyin…</string>
+    <string name="decode_progress_sending">Gönderiliyor…</string>
+    <string name="decode_progress_processing">İşleniyor…</string>
+    <string name="decode_progress_downloading_results">Sonuçlar indiriliyor…</string>
     <string name="history_search">Dosya adı veya uzantıyla ara</string>
     <string name="history_favorites">Favoriler</string>
     <string name="history_sort">Sırala</string>
