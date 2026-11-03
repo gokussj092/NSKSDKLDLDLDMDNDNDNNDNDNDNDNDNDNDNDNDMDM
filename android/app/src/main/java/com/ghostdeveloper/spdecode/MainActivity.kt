@@ -127,6 +127,7 @@ class MainActivity : ComponentActivity() {
         set(value){sessionVm.tab=value}
     private var busy by mutableStateOf(false)
     private var progressStage by mutableIntStateOf(0)
+    private var cloudProgressPhase by mutableStateOf<Int?>(null)
     private var progressFilename by mutableStateOf<String?>(null)
     private var progressPosition by mutableIntStateOf(1)
     private var progressTotal by mutableIntStateOf(1)
@@ -498,6 +499,7 @@ class MainActivity : ComponentActivity() {
                 busy=busy,
                 error=message,
                 progressStage=progressStage,
+                cloudProgressPhase=cloudProgressPhase,
                 progressFilename=progressFilename,
                 progressPosition=progressPosition,
                 progressTotal=progressTotal,
@@ -897,6 +899,13 @@ class MainActivity : ComponentActivity() {
         importFiles(listOf(request.uri), cloudPrepared=request,cloudPassword=pass)
     }
 
+    /** UI-only phases; cancelled imports cannot update later requests. */
+    private suspend fun markCloudProgress(generation:Int,phase:CloudDecodeClient.TransferPhase) {
+        withContext(Dispatchers.Main.immediate) {
+            if(generation==importGeneration && busy) cloudProgressPhase=phase.ordinal
+        }
+    }
+
     private fun cancelImport() {
         // An obsolete worker must not close the new import's progress dialog.
         importGeneration++
@@ -904,6 +913,7 @@ class MainActivity : ComponentActivity() {
         job=null
         busy=false
         progressFilename=null
+        cloudProgressPhase=null
     }
 
     // The Android editor accepts a complete pasted configuration once.
@@ -930,6 +940,7 @@ class MainActivity : ComponentActivity() {
         job=scope.launch {
             busy=true
             progressStage=1
+            cloudProgressPhase=if(BuildConfig.SPDECODE_CLOUD_ENABLED) 0 else null
             progressPosition=1
             progressTotal=1
             progressFilename=getString(R.string.text_decode_title)
@@ -938,7 +949,8 @@ class MainActivity : ComponentActivity() {
             try {
                 historyLoad?.await()
                 val decoded=if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
-                    cloudClient.decodeText(userText,password)
+                    cloudClient.decodeText(userText,password,
+                        onPhase={phase->markCloudProgress(generation,phase)})
                 } else withContext(Dispatchers.Default) {
                     TextProtocolDecoder.decode(this@MainActivity,candidate)
                 }
@@ -1008,6 +1020,7 @@ class MainActivity : ComponentActivity() {
                     busy=false
                     progressFilename=null
                     progressStage=0
+                    cloudProgressPhase=null
                 }
             }
         }
@@ -1031,6 +1044,7 @@ class MainActivity : ComponentActivity() {
         job=scope.launch {
             busy=true
             progressStage=1
+            cloudProgressPhase=if(BuildConfig.SPDECODE_CLOUD_ENABLED) 0 else null
             progressPosition=1
             progressTotal=1
             progressFilename=target.name
@@ -1039,7 +1053,8 @@ class MainActivity : ComponentActivity() {
             try {
                 historyLoad?.await()
                 val decoded=if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
-                    cloudClient.decodeOnlineReference(target.provider,target.reference)
+                    cloudClient.decodeOnlineReference(target.provider,target.reference,
+                        onPhase={phase->markCloudProgress(generation,phase)})
                 } else if(target.provider=="ehi") withContext(Dispatchers.IO) {
                     val parsed=HttpInjectorCloudPort.parseReference(target.reference)
                     HttpInjectorCloudPort.decodeOnline(this@MainActivity,parsed)
@@ -1089,6 +1104,7 @@ class MainActivity : ComponentActivity() {
                     busy=false
                     progressFilename=null
                     progressStage=0
+                    cloudProgressPhase=null
                 }
             }
         }
@@ -1103,6 +1119,7 @@ class MainActivity : ComponentActivity() {
         job=scope.launch {
             busy=true
             progressStage=1
+            cloudProgressPhase=if(BuildConfig.SPDECODE_CLOUD_ENABLED) 0 else null
             progressPosition=1
             progressTotal=1
             progressFilename=getString(R.string.nur_tunnel_name)
@@ -1111,7 +1128,8 @@ class MainActivity : ComponentActivity() {
             try {
                 historyLoad?.await()
                 val pair=if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
-                    val decoded=cloudClient.decodeNurCatalog()
+                    val decoded=cloudClient.decodeNurCatalog(
+                        onPhase={phase->markCloudProgress(generation,phase)})
                     Pair(decoded.rawText,decoded.sourceBytes ?: 0)
                 } else withContext(Dispatchers.IO) {
                     val url=NurTunnelServerCatalog.defaultUrl(this@MainActivity)
@@ -1151,6 +1169,7 @@ class MainActivity : ComponentActivity() {
                 if(generation==importGeneration) {
                     busy=false
                     progressStage=0
+                    cloudProgressPhase=null
                     progressFilename=null
                 }
             }
@@ -1190,6 +1209,7 @@ class MainActivity : ComponentActivity() {
         job=scope.launch {
             busy=true
             progressStage=1
+            cloudProgressPhase=0
             progressPosition=1
             progressTotal=1
             progressFilename=provider.name
@@ -1197,7 +1217,8 @@ class MainActivity : ComponentActivity() {
             reveal=false
             try {
                 historyLoad?.await()
-                val decoded=cloudClient.decodeServerVpnProvider(id)
+                val decoded=cloudClient.decodeServerVpnProvider(id,
+                    onPhase={phase->markCloudProgress(generation,phase)})
                 progressStage=2
                 val record=DecodeView("server-vpn-$id.json","vpnservers",
                     decoded.rawText,decoded.sourceBytes?:0)
@@ -1223,6 +1244,7 @@ class MainActivity : ComponentActivity() {
                 if(generation==importGeneration) {
                     busy=false
                     progressStage=0
+                    cloudProgressPhase=null
                     progressFilename=null
                 }
             }
@@ -1252,6 +1274,7 @@ class MainActivity : ComponentActivity() {
         job=scope.launch {
             busy=true
             progressStage=0
+            cloudProgressPhase=null
             progressFilename=null
             progressPosition=1
             progressTotal=inputs.size
@@ -1344,6 +1367,7 @@ class MainActivity : ComponentActivity() {
                     progressPosition=index
                     progressTotal=total
                     progressStage=0
+                    cloudProgressPhase=null
                     val name=prepared?.filename?:cloudPrepared?.name
                         ?:withContext(Dispatchers.IO){displayName(uri)}
                     progressFilename=name
@@ -1388,6 +1412,7 @@ class MainActivity : ComponentActivity() {
                             else -> MAX_BYTES
                         })}
                     progressStage=1
+                    cloudProgressPhase=if(BuildConfig.SPDECODE_CLOUD_ENABLED) 0 else null
                     val inputSize=input.size
                     if(!BuildConfig.SPDECODE_CLOUD_ENABLED &&
                         supported.suffix=="v2box" && cloudPassword==null &&
@@ -1407,11 +1432,13 @@ class MainActivity : ComponentActivity() {
                                     privateCredentialVault.use(privateCredentialId){it.copyOf()}
                                 }
                                 try { cloudClient.decodeFile(supported.suffix,input,password=secret,
-                                    onCompatibleExport={preparedCompatibleExport=it}) }
+                                    onCompatibleExport={preparedCompatibleExport=it},
+                                     onPhase={phase->markCloudProgress(generation,phase)}) }
                                 finally { secret.fill(0) }
                             }else cloudClient.decodeFile(supported.suffix,input,
                                 cloudPassword?:hcPassword,hcHwid,
-                                onCompatibleExport={preparedCompatibleExport=it})
+                                onCompatibleExport={preparedCompatibleExport=it},
+                                 onPhase={phase->markCloudProgress(generation,phase)})
                         } else withContext(Dispatchers.Default) {
                             if(privateCredentialId!=null){
                                 privateCredentialVault.use(privateCredentialId){secret->
@@ -1508,6 +1535,7 @@ class MainActivity : ComponentActivity() {
                 prepared?.bytes?.fill(0)
                 if(generation==importGeneration) {
                     busy=false
+                    cloudProgressPhase=null
                     progressFilename=null
                     progressPosition=1
                     progressTotal=1
