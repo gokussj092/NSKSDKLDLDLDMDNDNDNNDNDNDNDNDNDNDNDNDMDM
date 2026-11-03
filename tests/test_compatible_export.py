@@ -14,13 +14,21 @@ from engine import decode_file, DecodeFailure
 from exports.lossless import remove_member, parse
 from exports.http_custom import export as export_hc, codec
 from exports.npv import export as export_npv, MAGIC
-from exports.job import PROFILE, prepare
+from exports.job import PROFILE, TARGETS, prepare
 from decoders.Python.npvs_identity import generate
 from tests.golden import http_custom_899 as hc_fixture
 from tests.golden.npvs_protected_generate import make
 
 
 class CompatibleExportTests(unittest.TestCase):
+    def test_export_registration_is_shared_and_requires_real_worker_methods(self):
+        registered=json.loads((ROOT/'cloud/web/content/compatible-export-formats.json').read_text())
+        self.assertEqual(registered['schemaVersion'],1)
+        self.assertEqual(set(TARGETS),{f['suffix'] for f in registered['formats']})
+        self.assertEqual(TARGETS['hat'],('ha-tunnel-plus','HA Tunnel Plus'))
+        self.assertNotIn('hexcm',TARGETS,
+            'A decoder without a verified file writer must not claim unlocked support')
+
     def test_dark_native_open_and_expiry_guard_preserve_connection_without_banner(self):
         import msgpack
         from exports import dark

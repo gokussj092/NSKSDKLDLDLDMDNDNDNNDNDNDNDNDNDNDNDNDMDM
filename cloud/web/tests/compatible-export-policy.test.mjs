@@ -4,7 +4,8 @@ import {mkdtemp,rm,readFile,writeFile,stat} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {atLeast,negotiatesExport,exportPolicy,setExportPolicy,exportAllowed,
- projectedCatalogVersion,exportCatalog} from '../lib/compatible-export-policy.mjs';
+ projectedCatalogVersion,exportCatalog,negotiatesDynamicExport,exportRegistry,
+ validateExportRegistry} from '../lib/compatible-export-policy.mjs';
 
 const request=(v='1.1.21',protocol='1')=>new Request('https://example.test/catalog',{
  headers:{'x-spdecode-app-version':v,'x-spdecode-compatible-export':protocol}});
@@ -72,4 +73,30 @@ test('VPS emergency lock overrides panel and corrupt state fails closed',async t
  await writeFile(join(opts.root,'compatible-export.json'),'{"enabled":true}');
  await assert.rejects(exportPolicy(opts),/EXPORT_POLICY_INVALID/);
  assert.equal(await readFile(join(opts.root,'compatible-export.json'),'utf8'),'{"enabled":true}');
+});
+
+test('protocol 2 accepts any vetted exporter from registry without a client allowlist',()=>{
+ const old=request('1.1.25','2');
+ assert(!negotiatesDynamicExport(old),'old versions must not select schema 2');
+ const dynamic=request('1.1.26','2');
+ const p={schemaVersion:1,revision:4,enabled:true,minimumAppVersion:'1.1.21'};
+ assert(negotiatesDynamicExport(dynamic));
+ assert.equal(exportCatalog(dynamic,p).schemaVersion,2);
+ assert.deepEqual(exportCatalog(dynamic,p).formats.map(f=>f.suffix),
+  ['hc','dark','ehi','npvs','hat']);
+ assert.equal(exportCatalog(request('1.1.26','1'),p).schemaVersion,1);
+ assert(projectedCatalogVersion(dynamic,59,p)>projectedCatalogVersion(request('1.1.26','1'),59,p));
+ const registry=exportRegistry();
+ const future={suffix:'hexcm',targetAppId:'hex-tunnel',name:'Hex Tunnel',banner:'none'};
+ const expanded=validateExportRegistry({...registry,revision:registry.revision+1,
+  formats:[...registry.formats,future]});
+ assert.equal(expanded.formats.at(-1).suffix,'hexcm');
+ assert.throws(()=>validateExportRegistry({...expanded,
+  formats:[...expanded.formats,future]}),/EXPORT_REGISTRY_INVALID/);
+ assert.throws(()=>validateExportRegistry({...expanded,
+  formats:expanded.formats.map(f=>f.suffix==='hexcm'?{...f,targetAppId:'../bad'}:f)}),/EXPORT_REGISTRY_INVALID/);
+ assert.throws(()=>validateExportRegistry({...expanded,
+  formats:expanded.formats.map(f=>f.suffix==='hexcm'?{...f,name:'\\u202eunsafe'}:f)}),/EXPORT_REGISTRY_INVALID/);
+ assert.throws(()=>validateExportRegistry({...expanded,
+  formats:[...registry.formats,{...future,suffix:'unknown-nonexistent'}]}),/EXPORT_REGISTRY_INVALID/);
 });

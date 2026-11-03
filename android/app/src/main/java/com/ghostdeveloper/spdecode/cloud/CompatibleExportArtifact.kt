@@ -105,7 +105,8 @@ internal class CompatibleExportCatalog private constructor(val suffixes:Set<Stri
             require(root.getString("minimumAppVersion").matches(Regex("[0-9]+\\.[0-9]+\\.[0-9]+")))
             require(root.getInt("maxArtifactBytes") in 1..CompatibleExportArtifact.MAX_BYTES)
             val array=root.getJSONArray("formats")
-            require(array.length() in 0..if(schema==1)CompatibleExportArtifact.legacyTargets.size else 64)
+            val limit=if(schema==1)CompatibleExportArtifact.legacyTargets.size else 64
+            require(array.length() in 0..limit)
             val suffixes=HashSet<String>()
             for(i in 0 until array.length()) {
                 val item=array.getJSONObject(i)
