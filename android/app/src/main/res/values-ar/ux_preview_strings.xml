@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="apk_import_button">استيراد APK</string>
+    <string name="apk_future_message">سيصبح تحليل ملفات APK متاحًا في تحديث قادم.</string>
+    <string name="apk_credits_title">مركز الرصيد</string>
+    <string name="apk_credits_intro">إدارة أرصدة وعمليات شراء تحليل APK مستقبلًا.</string>
+    <string name="apk_credits_notice">سيظهر الرصيد وخيارات الشراء عند تفعيل الخدمة.</string>
+    <string name="apk_credits_buy_title">شراء الأرصدة</string>
+    <string name="apk_credits_one">رصيد واحد</string>
+    <string name="apk_credits_buy_one">شراء رصيد · قريبًا</string>
+    <string name="apk_credits_packages">باقات الأرصدة</string>
+    <string name="apk_credits_buy_package">شراء باقة · قريبًا</string>
+    <string name="apk_credits_prices_title">الأسعار</string>
+    <string name="apk_credits_subscriptions">الاشتراكات</string>
+    <string name="apk_credits_button">الأرصدة: 1+</string>
+    <string name="apk_credits_back">رجوع</string>
+    <string name="feedback_details_title">تفاصيل الطلب</string>
+    <string name="feedback_method_description">اطلب دعم ملفات جديدة أو كتالوجات VPN.</string>
+    <string name="feedback_bug_description">أبلغ عن مشاكل فك التشفير أو التوافق أو التطبيق.</string>
+    <string name="feedback_suggestion_description">اقترح ميزات جديدة أو تحسينات للتصميم.</string>
+    <string name="feedback_extra_title">معلومات إضافية (اختياري)</string>
+    <string name="feedback_extra_hint">الإصدار أو الصيغة أو تفاصيل أخرى</string>
+</resources>
