@@ -2,13 +2,11 @@ package com.ghostdeveloper.spdecode
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Android
+import androidx.compose.material.icons.outlined.CreditCard
 import androidx.compose.material.icons.outlined.Description
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,197 +19,141 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-// Phase 2 is a purely informative preview. Do not add file pickers, network
-// calls, account or credit logic here before the paid service is approved.
-private val PreviewCard = Color(0xFF242424)
-private val PreviewText = Color(0xFFF7F7F7)
-private val PreviewMuted = Color(0xFFABABAB)
-private val PreviewBorder = Color(0xFF383838)
+// Cloud-only placeholder: no APK picker, client-side analysis, billing, or balance API.
+private val previewCard=Color(0xFF242424)
+private val previewText=Color(0xFFF7F7F7)
+private val previewMuted=Color(0xFFABABAB)
+private val previewBorder=Color(0xFF383838)
 
 @Composable
 internal fun ApkAnalysisComingSoonScreen() {
     Column(
-        modifier = Modifier.fillMaxSize().testTag("apk_analysis_placeholder")
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 20.dp, vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier=Modifier.fillMaxSize().testTag("apk_analysis_placeholder")
+            .padding(horizontal=20.dp,vertical=16.dp),
+        verticalArrangement=Arrangement.spacedBy(16.dp),
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = stringResource(R.string.apk_analysis_title),
-                modifier = Modifier.weight(1f),
-                color = PreviewText,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-            )
-            Surface(
-                color = PreviewCard,
-                shape = RoundedCornerShape(30.dp),
-                border = BorderStroke(1.dp, PreviewBorder),
-            ) {
-                Text(
-                    stringResource(R.string.apk_analysis_coming_soon),
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 7.dp),
-                    color = PreviewText,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 11.sp,
-                )
-            }
-        }
-
-        Surface(
-            color = PreviewCard,
-            shape = RoundedCornerShape(18.dp),
-            border = BorderStroke(1.dp, PreviewBorder),
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Column(
-                modifier = Modifier.padding(20.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                Surface(
-                    color = Color(0xFF353535),
-                    shape = RoundedCornerShape(16.dp),
-                ) {
-                    Icon(
-                        Icons.Outlined.Android,
-                        contentDescription = null,
-                        tint = PreviewText,
-                        modifier = Modifier.padding(14.dp).size(34.dp),
-                    )
-                }
-                Text(
-                    stringResource(R.string.apk_analysis_intro_title),
-                    color = PreviewText,
-                    fontSize = 19.sp,
-                    fontWeight = FontWeight.SemiBold,
-                )
-                Text(
-                    stringResource(R.string.apk_analysis_intro_detail),
-                    color = PreviewMuted,
-                    fontSize = 14.sp,
-                    lineHeight = 21.sp,
-                )
-            }
-        }
-
-        Text(
-            stringResource(R.string.apk_analysis_steps_title),
-            color = PreviewText,
-            fontSize = 17.sp,
-            fontWeight = FontWeight.SemiBold,
-        )
-        Surface(
-            color = PreviewCard,
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                PreviewStep("01", R.string.apk_analysis_step_import)
-                HorizontalDivider(color = PreviewBorder)
-                PreviewStep("02", R.string.apk_analysis_step_inspect)
-                HorizontalDivider(color = PreviewBorder)
-                PreviewStep("03", R.string.apk_analysis_step_report)
-            }
-        }
-
-        Surface(
-            color = PreviewCard,
-            shape = RoundedCornerShape(16.dp),
-            border = BorderStroke(1.dp, PreviewBorder),
-            modifier = Modifier.fillMaxWidth().testTag("apk_analysis_pricing"),
-        ) {
-            Column(
-                modifier = Modifier.padding(18.dp),
-                verticalArrangement = Arrangement.spacedBy(11.dp),
-            ) {
-                Text(
-                    stringResource(R.string.apk_analysis_subscription_title),
-                    color = PreviewText,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 17.sp,
-                )
-                Text(
-                    stringResource(R.string.apk_analysis_subscription_detail),
-                    color = PreviewMuted,
-                    fontSize = 13.sp,
-                    lineHeight = 19.sp,
-                )
-                HorizontalDivider(color = PreviewBorder)
-                Text(
-                    stringResource(R.string.apk_analysis_credit_cost),
-                    color = PreviewText,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 15.sp,
-                )
-                Text(
-                    stringResource(R.string.apk_analysis_credit_price),
-                    color = PreviewText,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 15.sp,
-                )
-                Text(
-                    stringResource(R.string.apk_analysis_price_note),
-                    color = PreviewMuted,
-                    fontSize = 12.sp,
-                    lineHeight = 18.sp,
-                )
-            }
-        }
-
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalAlignment = Alignment.Top,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Icon(Icons.Outlined.Info, contentDescription = null,
-                tint = PreviewMuted, modifier = Modifier.size(19.dp))
-            Text(
-                stringResource(R.string.apk_analysis_safety_note),
-                color = PreviewMuted,
-                fontSize = 12.sp,
-                lineHeight = 18.sp,
-                modifier = Modifier.weight(1f),
-            )
-        }
-
-        // A disabled button is intentionally inert: no picker, purchase or charge.
+        Text(stringResource(R.string.apk_analysis_title),
+            color=previewText,fontSize=24.sp,fontWeight=FontWeight.Bold)
+        // Disabled intentionally: the service is not yet enabled, and no APK is read or uploaded.
         OutlinedButton(
-            onClick = {},
-            enabled = false,
-            modifier = Modifier.fillMaxWidth().testTag("apk_analysis_import_disabled"),
-            shape = RoundedCornerShape(13.dp),
+            onClick={},enabled=false,
+            modifier=Modifier.fillMaxWidth().testTag("apk_analysis_import_disabled"),
+            shape=RoundedCornerShape(13.dp),
         ) {
-            Icon(Icons.Outlined.Description, contentDescription = null)
+            Icon(Icons.Outlined.Description,null)
             Spacer(Modifier.width(8.dp))
-            Text(stringResource(R.string.apk_analysis_import_unavailable))
+            Text(stringResource(R.string.apk_import_button))
         }
-        Text(
-            stringResource(R.string.apk_analysis_no_charge),
-            color = PreviewMuted,
-            fontSize = 12.sp,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
-        )
+        Box(Modifier.fillMaxWidth().weight(1f),
+            contentAlignment=Alignment.Center) {
+            Column(
+                Modifier.padding(horizontal=16.dp),
+                horizontalAlignment=Alignment.CenterHorizontally,
+                verticalArrangement=Arrangement.spacedBy(15.dp),
+            ) {
+                Surface(color=previewCard,shape=RoundedCornerShape(18.dp),
+                    border=BorderStroke(1.dp,previewBorder)) {
+                    Icon(Icons.Outlined.Android,null,tint=previewText,
+                        modifier=Modifier.padding(18.dp).size(34.dp))
+                }
+                Text(stringResource(R.string.apk_analysis_coming_soon),
+                    color=previewText,fontWeight=FontWeight.Bold,
+                    fontSize=25.sp,textAlign=TextAlign.Center)
+                Text(stringResource(R.string.apk_future_message),
+                    color=previewMuted,fontSize=14.sp,lineHeight=21.sp,
+                    textAlign=TextAlign.Center)
+            }
+        }
     }
 }
 
 @Composable
-private fun PreviewStep(number: String, label: Int) {
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 13.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(13.dp),
+internal fun ApkCreditsComingSoonScreen() {
+    Column(
+        modifier=Modifier.fillMaxSize().testTag("apk_credits_screen")
+            .padding(horizontal=20.dp,vertical=16.dp),
+        verticalArrangement=Arrangement.spacedBy(15.dp),
     ) {
+        Text(stringResource(R.string.apk_credits_title),color=previewText,
+            fontSize=24.sp,fontWeight=FontWeight.Bold)
+        Text(stringResource(R.string.apk_credits_intro),
+            color=previewMuted,fontSize=13.sp,lineHeight=19.sp)
         Surface(
-            shape = RoundedCornerShape(10.dp),
-            color = Color(0xFF353535),
+            color=previewCard,shape=RoundedCornerShape(18.dp),
+            border=BorderStroke(1.dp,previewBorder),
+            modifier=Modifier.fillMaxWidth(),
         ) {
-            Text(number, color = PreviewText, fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp))
+            Column(Modifier.padding(22.dp),
+                horizontalAlignment=Alignment.CenterHorizontally,
+                verticalArrangement=Arrangement.spacedBy(12.dp)) {
+                Icon(Icons.Outlined.CreditCard,null,tint=previewText,
+                    modifier=Modifier.size(34.dp))
+                Text(stringResource(R.string.apk_credits_title),color=previewText,
+                    fontWeight=FontWeight.Bold,fontSize=20.sp)
+                CreditSoonBadge()
+                Text(stringResource(R.string.apk_credits_notice),
+                    color=previewMuted,fontSize=13.sp,lineHeight=19.sp,
+                    textAlign=TextAlign.Center)
+            }
         }
-        Text(stringResource(label), color = PreviewText,
-            fontSize = 14.sp, lineHeight = 20.sp, modifier = Modifier.weight(1f))
+        Surface(
+            color=previewCard,shape=RoundedCornerShape(18.dp),
+            border=BorderStroke(1.dp,previewBorder),
+            modifier=Modifier.fillMaxWidth().testTag("apk_credits_buy"),
+        ) {
+            Column(Modifier.padding(17.dp),
+                verticalArrangement=Arrangement.spacedBy(12.dp)) {
+                Text(stringResource(R.string.apk_credits_buy_title),
+                    color=previewText,fontWeight=FontWeight.SemiBold,fontSize=17.sp)
+                CreditPriceLine(R.string.apk_credits_one)
+                OutlinedButton(onClick={},enabled=false,
+                    modifier=Modifier.fillMaxWidth().testTag("apk_buy_one_disabled"),
+                    shape=RoundedCornerShape(12.dp)) {
+                    Text(stringResource(R.string.apk_credits_buy_one))
+                }
+                HorizontalDivider(color=previewBorder)
+                CreditPriceLine(R.string.apk_credits_packages)
+                OutlinedButton(onClick={},enabled=false,
+                    modifier=Modifier.fillMaxWidth().testTag("apk_buy_bundle_disabled"),
+                    shape=RoundedCornerShape(12.dp)) {
+                    Text(stringResource(R.string.apk_credits_buy_package))
+                }
+            }
+        }
+        Surface(
+            color=previewCard,shape=RoundedCornerShape(18.dp),
+            border=BorderStroke(1.dp,previewBorder),
+            modifier=Modifier.fillMaxWidth().testTag("apk_credits_prices"),
+        ) {
+            Column(Modifier.padding(17.dp),
+                verticalArrangement=Arrangement.spacedBy(13.dp)) {
+                Text(stringResource(R.string.apk_credits_prices_title),
+                    color=previewText,fontWeight=FontWeight.SemiBold,fontSize=17.sp)
+                CreditPriceLine(R.string.apk_credits_prices_title)
+                CreditPriceLine(R.string.apk_credits_subscriptions)
+            }
+        }
+        // No "1 APK = 1 credit" or proposed USD pricing on this screen.
+        // Balance, purchases, payments and subscriptions remain unavailable.
+    }
+}
+
+@Composable
+private fun CreditPriceLine(label:Int) {
+    Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically,
+        horizontalArrangement=Arrangement.spacedBy(12.dp)) {
+        Text(stringResource(label),color=previewMuted,fontSize=13.sp,
+            modifier=Modifier.weight(1f))
+        CreditSoonBadge()
+    }
+}
+
+@Composable
+private fun CreditSoonBadge() {
+    Surface(color=Color(0xFF333333),shape=RoundedCornerShape(20.dp),
+        border=BorderStroke(1.dp,previewBorder)) {
+        Text(stringResource(R.string.apk_analysis_coming_soon),
+            color=previewText,fontWeight=FontWeight.SemiBold,fontSize=11.sp,
+            modifier=Modifier.padding(horizontal=10.dp,vertical=5.dp))
     }
 }
