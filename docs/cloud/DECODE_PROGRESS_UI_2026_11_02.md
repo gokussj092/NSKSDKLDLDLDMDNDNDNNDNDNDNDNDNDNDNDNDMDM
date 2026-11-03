@@ -20,3 +20,6 @@ La incorporación es de UI: `CloudDecodeClient.TransferPhase` únicamente enumer
 - Las verificaciones históricas de descifrado Android offline siguen fuera del pipeline Cloud; no se vuelven a integrar en el APK de producción.
 
 No fusionar a `main`, no incrementar versión ni distribuir APK/AAB de producción sin revisión de los gates.
+
+## Revisión adicional de preautorización HTTP Custom
+La comprobación de requisitos de contraseña/HWID para archivos `.hc` también utiliza el diálogo y los hitos Cloud durante la petición previa al servidor. La ventana de progreso se cierra antes de mostrar el selector de credenciales. Los contratos C4/C5/C8 se adaptaron a las nuevas firmas de callback y siguen comprobando el aislamiento de motores locales y datos protegidos.
