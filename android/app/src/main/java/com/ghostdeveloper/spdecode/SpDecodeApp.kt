@@ -137,7 +137,8 @@ fun SpDecodeApp(
                 showCreditsBack=activeTab==2 && creditsPage,
                 onCredits={creditsPage=true},
                 onCreditsBack={creditsPage=false},
-                showServerVpnRefresh=(activeTab==2 || activeTab==3) &&
+                showServerVpnRefresh=(activeTab==3 ||
+                    (activeTab==2 && !creditsPage)) &&
                     BuildConfig.SPDECODE_CLOUD_ENABLED,
                 refreshingServerVpn=serverVpnLoading,
                 enableServerVpnRefresh=!busy && !serverVpnLoading,
@@ -401,20 +402,33 @@ private fun BrandHeader(
                 maxLines=1,overflow=TextOverflow.Ellipsis)
         }
         if(showServerVpnRefresh) {
-            OutlinedButton(
-                onClick=onRefreshServerVpn,enabled=enableServerVpnRefresh,
-                modifier=Modifier.testTag("server_vpn_manual_refresh"),
-                contentPadding=PaddingValues(horizontal=12.dp,vertical=7.dp),
-            ) {
-                if(refreshingServerVpn) CircularProgressIndicator(
-                    modifier=Modifier.size(17.dp),strokeWidth=2.dp,color=White)
-                else Icon(Icons.Outlined.Refresh,null,tint=White,
-                    modifier=Modifier.size(17.dp))
-                Spacer(Modifier.width(6.dp))
-                Text(stringResource(if(refreshingServerVpn) R.string.catalog_checking
-                    else R.string.catalog_check_action),fontSize=12.sp,color=White)
+            if(showCreditsAction) {
+                // Keep the APK refresh control without squeezing the brand and Credits button.
+                IconButton(onClick=onRefreshServerVpn,
+                    enabled=enableServerVpnRefresh,
+                    modifier=Modifier.testTag("server_vpn_manual_refresh")) {
+                    if(refreshingServerVpn) CircularProgressIndicator(
+                        modifier=Modifier.size(18.dp),strokeWidth=2.dp,color=White)
+                    else Icon(Icons.Outlined.Refresh,
+                        stringResource(R.string.catalog_check_action),tint=White,
+                        modifier=Modifier.size(20.dp))
+                }
+            } else {
+                OutlinedButton(
+                    onClick=onRefreshServerVpn,enabled=enableServerVpnRefresh,
+                    modifier=Modifier.testTag("server_vpn_manual_refresh"),
+                    contentPadding=PaddingValues(horizontal=12.dp,vertical=7.dp),
+                ) {
+                    if(refreshingServerVpn) CircularProgressIndicator(
+                        modifier=Modifier.size(17.dp),strokeWidth=2.dp,color=White)
+                    else Icon(Icons.Outlined.Refresh,null,tint=White,
+                        modifier=Modifier.size(17.dp))
+                    Spacer(Modifier.width(6.dp))
+                    Text(stringResource(if(refreshingServerVpn) R.string.catalog_checking
+                        else R.string.catalog_check_action),fontSize=12.sp,color=White)
+                }
             }
-            Spacer(Modifier.width(8.dp))
+            Spacer(Modifier.width(4.dp))
         }
         if(showCreditsAction) {
             OutlinedButton(onClick=onCredits,
