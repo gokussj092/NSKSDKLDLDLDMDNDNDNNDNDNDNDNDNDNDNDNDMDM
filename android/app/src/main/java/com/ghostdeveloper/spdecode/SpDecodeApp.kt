@@ -1,5 +1,6 @@
 package com.ghostdeveloper.spdecode
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -124,12 +125,18 @@ fun SpDecodeApp(
     onFeedbackSubmit:suspend (FeedbackDraft)->String={throw IllegalStateException("FEEDBACK_UNAVAILABLE")},
 ){
     var dialog by remember{mutableStateOf<String?>(null)}
+    var creditsPage by rememberSaveable { mutableStateOf(false) }
+    BackHandler(enabled=creditsPage && activeTab==2) { creditsPage=false }
     SpDecodeAmoledTheme {
         Column(
             modifier=Modifier.fillMaxSize().background(Background).safeDrawingPadding()
         ) {
             BrandHeader(
                 onSettings={onTab(4)},
+                showCreditsAction=activeTab==2 && !creditsPage,
+                showCreditsBack=activeTab==2 && creditsPage,
+                onCredits={creditsPage=true},
+                onCreditsBack={creditsPage=false},
                 showServerVpnRefresh=(activeTab==2 || activeTab==3) &&
                     BuildConfig.SPDECODE_CLOUD_ENABLED,
                 refreshingServerVpn=serverVpnLoading,
@@ -144,7 +151,8 @@ fun SpDecodeApp(
                         onDecodeCloud=onDecodeCloud,
                         highlightGuide=if(!whatsNew && !busy)guideStep else null)
                     1->HistoryScreen(session,onSelect,onDeleteSelected,onClear,onImportMultiple,onFavorite)
-                    2->ApkAnalysisComingSoonScreen()
+                    2->if(creditsPage) ApkCreditsComingSoonScreen()
+                        else ApkAnalysisComingSoonScreen()
                     3->ServerVpnScreen(busy,serverVpnApps,serverVpnLoading,serverVpnUnavailable,
                         onDecodeServerCatalog,onDecodeServerApp,catalogProgress)
                     else->FunctionalSettingsPanel(selectedLanguage,hideCredentials,
@@ -161,7 +169,7 @@ fun SpDecodeApp(
                     CenteredFirstRunGuide(guideStep,onGuideNext,onGuideSkip)
                 }
             }
-            BottomTabs(activeTab,onTab,
+            BottomTabs(activeTab,onTab={destination->creditsPage=false;onTab(destination)},
                 spotlight=if(guideStep!=null && !whatsNew && !busy)
                     FirstRunGuide.targetTab(guideStep) else null)
         }
@@ -365,6 +373,10 @@ fun SpDecodeApp(
 @Composable
 private fun BrandHeader(
     onSettings:()->Unit,
+    showCreditsAction:Boolean=false,
+    showCreditsBack:Boolean=false,
+    onCredits:()->Unit={},
+    onCreditsBack:()->Unit={},
     showServerVpnRefresh:Boolean=false,
     refreshingServerVpn:Boolean=false,
     enableServerVpnRefresh:Boolean=true,
@@ -382,7 +394,8 @@ private fun BrandHeader(
         }
         Spacer(Modifier.width(11.dp))
         Column(Modifier.weight(1f)){
-            Text("SP-DECODE",color=White,fontSize=23.sp,fontWeight=FontWeight.Bold,
+            Text("SP-DECODE",color=White,
+                fontSize=if(showCreditsAction)21.sp else 23.sp,fontWeight=FontWeight.Bold,
                 maxLines=1)
             Text(stringResource(R.string.subtitle),color=Secondary,fontSize=14.sp,
                 maxLines=1,overflow=TextOverflow.Ellipsis)
@@ -403,7 +416,28 @@ private fun BrandHeader(
             }
             Spacer(Modifier.width(8.dp))
         }
-        IconButton(onClick=onSettings){
+        if(showCreditsAction) {
+            OutlinedButton(onClick=onCredits,
+                modifier=Modifier.testTag("apk_credits_open"),
+                contentPadding=PaddingValues(horizontal=8.dp,vertical=7.dp),
+                shape=RoundedCornerShape(13.dp)) {
+                Icon(Icons.Outlined.CreditCard,null,tint=White,
+                    modifier=Modifier.size(16.dp))
+                Spacer(Modifier.width(5.dp))
+                Text(stringResource(R.string.apk_credits_button),
+                    color=White,fontSize=11.sp,maxLines=1)
+            }
+        } else if(showCreditsBack) {
+            OutlinedButton(onClick=onCreditsBack,
+                modifier=Modifier.testTag("apk_credits_back"),
+                contentPadding=PaddingValues(horizontal=9.dp,vertical=7.dp)) {
+                Icon(Icons.Outlined.ArrowBack,null,tint=White,
+                    modifier=Modifier.size(17.dp))
+                Spacer(Modifier.width(5.dp))
+                Text(stringResource(R.string.apk_credits_back),
+                    color=White,fontSize=12.sp)
+            }
+        } else IconButton(onClick=onSettings){
             Icon(Icons.Outlined.Tune,stringResource(R.string.options),tint=Secondary)
         }
     }
