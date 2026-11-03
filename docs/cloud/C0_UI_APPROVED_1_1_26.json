@@ -3,12 +3,12 @@
   "targetVersion": "1.1.26",
   "targetBuild": 41,
   "baseline": "docs/cloud/C0_UI_BASELINE.json",
-  "scope": "Approved UI changes in phases 1, 2 and 6 (navigation, Settings, About), plus the owner-requested three-stage Cloud decode progress dialog (2026-11-02); other C0 UI files remain pinned",
-  "approvalContext": "Owner approved the first AMOLED About design and authorized implementing phases 1–8; on 2026-11-02 additionally requested display of Sending, Processing and Downloading results for Cloud files, texts, links and Server VPN decode requests.",
+  "scope": "Approved navigation, Settings and About screens; Cloud progress UI; and owner-approved APK, Credits and Feedback AMOLED UX updates (2026-11-02). All other pinned C0 files remain unchanged.",
+  "approvalContext": "Owner explicitly approved the interactive previews for APK, Credits and Errors/Suggestions. Credits hides the proposed 1 APK/1 credit usage note; feedback details remain hidden until a request category is selected.",
   "uiGitBlobSha1": {
     "android/app/src/main/java/com/ghostdeveloper/spdecode/FirstRunGuide.kt": "6c660863c821ac64dfa81a4e51b025503dd143ef",
     "android/app/src/main/java/com/ghostdeveloper/spdecode/FunctionalSettingsPanel.kt": "f4b4c1132713b2c591e00e54eb2b7ea6bdf9e664",
-    "android/app/src/main/java/com/ghostdeveloper/spdecode/SpDecodeApp.kt": "72e564bdb903fded2b60e9a20bddcc396912a863"
+    "android/app/src/main/java/com/ghostdeveloper/spdecode/SpDecodeApp.kt": "3ff93e8f90f72ee68f4af138d8b7a9bf784dc7f9"
   },
-  "notes": "The immutable C0_UI_BASELINE.json is unchanged. SpDecodeApp.kt hash updated only for the requested UI-only transfer milestones. Unexpected differences in any of the nine pinned C0 files are still rejected. This approval introduces no decryption engine, endpoint, or secret into Kotlin."
+  "notes": "Original C0_UI_BASELINE.json is unchanged. SpDecodeApp.kt exact hash tracks authorized presentation-only updates; no billing, APK importing, local decryption or security bypass is enabled."
 }
