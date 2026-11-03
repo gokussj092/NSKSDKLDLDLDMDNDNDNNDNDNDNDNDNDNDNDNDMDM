@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "revision": 1,
+  "formats": [
+    {
+      "suffix": "hc",
+      "targetAppId": "http-custom",
+      "name": "HTTP Custom",
+      "banner": "spdecode-html"
+    },
+    {
+      "suffix": "dark",
+      "targetAppId": "dark-tunnel",
+      "name": "Dark Tunnel",
+      "banner": "none"
+    },
+    {
+      "suffix": "ehi",
+      "targetAppId": "http-injector",
+      "name": "HTTP Injector",
+      "banner": "spdecode-html"
+    },
+    {
+      "suffix": "npvs",
+      "targetAppId": "npv-tunnel",
+      "name": "NPV Tunnel",
+      "banner": "none"
+    },
+    {
+      "suffix": "hat",
+      "targetAppId": "ha-tunnel-plus",
+      "name": "HA Tunnel Plus",
+      "banner": "none"
+    }
+  ]
+}
