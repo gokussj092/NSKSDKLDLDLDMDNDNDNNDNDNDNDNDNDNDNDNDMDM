@@ -25,12 +25,18 @@ class CloudC4Tests(unittest.TestCase):
     def test_four_user_flows_have_no_offline_fallback_in_cloud_branch(self):
         source = ACTIVITY.read_text("utf-8")
         for route in (
-            "cloudClient.decodeText(userText,password)",
-            "cloudClient.decodeOnlineReference(target.provider,target.reference)",
-            "cloudClient.decodeNurCatalog()",
+            "cloudClient.decodeText(userText,password,",
+            "cloudClient.decodeOnlineReference(target.provider,target.reference,",
+            "cloudClient.decodeNurCatalog(",
+            "cloudClient.decodeServerVpnProvider(id,",
             "cloudClient.decodeFile(supported.suffix,input",
         ):
             self.assertIn(route, source)
+        # All six Cloud decode paths now carry an actual progress callback,
+        # including both credential paths for imported files.
+        self.assertEqual(
+            source.count("onPhase={phase->markCloudProgress(generation,phase)}"), 6
+        )
         self.assertIn("if(BuildConfig.SPDECODE_CLOUD_ENABLED)", source)
         self.assertIn("val routingName=ImportFilenameNormalizer.forDetection(name)", source)
         self.assertIn("else AndroidOfflineDecoderRouter.decode(this@MainActivity,routingName,input)",source)
