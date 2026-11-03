@@ -102,6 +102,10 @@
     <string name="decode_progress_reading">ファイルを読み込み中…</string>
     <string name="decode_progress_decoding">Cloud で設定をデコード中…</string>
     <string name="decode_progress_saving">暗号化した結果を保存中…</string>
+    <string name="decode_progress_wait">しばらくお待ちください…</string>
+    <string name="decode_progress_sending">送信中…</string>
+    <string name="decode_progress_processing">処理中…</string>
+    <string name="decode_progress_downloading_results">結果をダウンロード中…</string>
     <string name="history_search">ファイル名または拡張子で検索</string>
     <string name="history_favorites">お気に入り</string>
     <string name="history_sort">並べ替え</string>
