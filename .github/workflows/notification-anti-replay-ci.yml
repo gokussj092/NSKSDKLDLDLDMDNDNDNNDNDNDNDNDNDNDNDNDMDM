@@ -9,6 +9,7 @@ on:
       - cloud/web/lib/notice-push.mjs
       - cloud/web/lib/app-notifications.mjs
       - cloud/web/app/admin/admin-notifications.jsx
+      - cloud/web/app/admin/admin-theme.css
       - cloud/web/tests/app-notifications.test.mjs
       - cloud/web/tests/notice-store.test.mjs
       - cloud/web/tests/c11-play-admission.test.mjs
@@ -41,9 +42,12 @@ jobs:
         run: npm install --ignore-scripts --no-audit --no-fund --no-package-lock
       - name: Notification security, delivery, persistence and first-install tests
         working-directory: cloud/web
-        run: node --test tests/app-notifications.test.mjs tests/notice-store.test.mjs
+        run: node --test tests/app-notifications.test.mjs tests/notice-store.test.mjs tests/c11-play-admission.test.mjs
       - name: Protect Android and admin anti-replay source contract
         run: python3 -m unittest tests.test_notice_anti_replay_contract -v
+      - name: Compile notification management UI in production mode
+        working-directory: cloud/web
+        run: npm run build
       - name: Syntax check modified Node source
         run: |
           node --check cloud/web/lib/app-notifications.mjs
