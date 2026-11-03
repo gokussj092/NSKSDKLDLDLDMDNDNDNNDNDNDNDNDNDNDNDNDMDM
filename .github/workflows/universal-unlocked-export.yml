@@ -46,11 +46,21 @@ jobs:
           python-version: "3.12"
       - name: Install synthetic export fixture dependencies
         run: python -m pip install -r requirements.txt
+      - name: Isolated Python worker genuine export tests
+        run: python -m unittest tests.test_compatible_export -v
       - name: Dynamic export policy and legacy compatibility
         working-directory: cloud/web
         run: node --test tests/compatible-export-policy.test.mjs
-      - name: Isolated Python worker genuine export tests
-        run: python -m unittest tests.test_compatible_export -v
+      - name: Verify no static Android export allowlist
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          src=Path('android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudDecodeClient.kt').read_text()
+          parsed=Path('android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CompatibleExportArtifact.kt').read_text()
+          assert 'format in CompatibleExportArtifact.targets' not in src
+          assert 'require(suffix in targets)' not in parsed
+          assert 'if(onCompatibleExport!=null)' in src
+          PY
       - name: Android source isolation and generated UI contracts
         run: python -m unittest tests.test_compatible_export_integration tests.test_cloud_c5_source_isolation -v
       - name: Check Node syntax
