@@ -55,6 +55,9 @@ internal class CloudDecodeClient(context: Context) {
 
     data class Decoded(val rawText: String, val sourceBytes: Int? = null, val compatibleExport:JSONObject?=null)
 
+    /** Presentation-only milestones: backend request details stay in native transport. */
+    enum class TransferPhase { SENDING, PROCESSING, DOWNLOADING_RESULTS }
+
     class Failure(val code: String, val httpStatus: Int,
         val passwordSubmitted:Boolean=false,val hwidSubmitted:Boolean=false) :
         IOException("SP-DECODE CLOUD: $code")
@@ -225,12 +228,15 @@ internal class CloudDecodeClient(context: Context) {
         return succeeded>0 && failed>0 && succeeded==report.optInt("successfulSources",-1)
     }
 
-    private suspend fun decode(operation: Int, payload: JSONObject, attachment:ByteArray?=null): Decoded {
+    private suspend fun decode(operation: Int, payload: JSONObject, attachment:ByteArray?=null,
+                               onPhase:suspend (TransferPhase)->Unit = {}): Decoded {
         require(BuildConfig.SPDECODE_CLOUD_ENABLED) { "CLOUD_DISABLED" }
         withContext(Dispatchers.IO) { requireLegalConsent() }
         coroutineContext.ensureActive()
         lastDiagnostic=null
+        onPhase(TransferPhase.SENDING)
         val bearer = session()
+        onPhase(TransferPhase.PROCESSING)
         coroutineContext.ensureActive()
         val response = try {
             withContext(Dispatchers.IO) {
@@ -259,6 +265,7 @@ internal class CloudDecodeClient(context: Context) {
             throw failure
         }
         coroutineContext.ensureActive()
+        onPhase(TransferPhase.DOWNLOADING_RESULTS)
         return decodedResponse(operation,payload,response)
     }
 
@@ -320,7 +327,8 @@ internal class CloudDecodeClient(context: Context) {
     suspend fun decodeFile(format: String, bytes: ByteArray,
                            password: ByteArray? = null, hwid: String? = null,
                            allowPasswordFromCatalog: Boolean = false,
-                           onCompatibleExport:((CompatibleExportArtifact?)->Unit)?=null): String {
+                           onCompatibleExport:((CompatibleExportArtifact?)->Unit)?=null,
+                           onPhase:suspend (TransferPhase)->Unit = {}): String {
         if (bytes.isEmpty() || bytes.size > MAX_INPUT) throw IOException("CLOUD_INVALID_INPUT")
         // Match the validated Unicode suffix contract, not a frozen ASCII list.
         // The server still decides whether a decoder for the suffix exists.
@@ -339,6 +347,8 @@ internal class CloudDecodeClient(context: Context) {
                 cached.digest==CompatibleExportArtifact.digest(bytes)) {
                 requireLegalConsent()
                 onCompatibleExport?.invoke(cached.artifact)
+                // A successful probe already downloaded this authenticated result.
+                onPhase(TransferPhase.DOWNLOADING_RESULTS)
                 return cached.text
             }
         }
@@ -362,7 +372,7 @@ internal class CloudDecodeClient(context: Context) {
             body.put("compatibleExport",JSONObject().put("profile",CompatibleExportArtifact.PROFILE)
                 .put("language",if(locale=="es")"es" else "en"))
         }
-        val decoded=decode(CloudOperation.FILE,body,bytes)
+        val decoded=decode(CloudOperation.FILE,body,bytes,onPhase)
         val artifact=if(onCompatibleExport!=null)runCatching {
             CompatibleExportArtifact.parse(decoded.compatibleExport,format,decoded.rawText,
                 CompatibleExportArtifact.digest(bytes))
@@ -385,10 +395,11 @@ internal class CloudDecodeClient(context: Context) {
         return result
     }
 
-    suspend fun decodeText(text: String, password: ByteArray? = null): String {
+    suspend fun decodeText(text: String, password: ByteArray? = null,
+                           onPhase:suspend (TransferPhase)->Unit = {}): String {
         if(HttpCustomCloudReference.matches(text)) {
             if(password!=null)throw IOException("CLOUD_CREDENTIALS_NOT_ALLOWED")
-            return decodeHttpCustomReference(text)
+            return decodeHttpCustomReference(text,onPhase)
         }
         if(password != null && (!CloudCredentialPolicy.textAcceptsPassword(text) ||
                 password.isEmpty() || password.size > 4096))
@@ -396,20 +407,24 @@ internal class CloudDecodeClient(context: Context) {
         val body=JSONObject().put("text",text)
         if(password!=null)body.put("credentials",
             JSONObject().put("password",String(password,Charsets.UTF_8)))
-        return decode(CloudOperation.TEXT,body).rawText
+        return decode(CloudOperation.TEXT,body,onPhase=onPhase).rawText
     }
 
-    private suspend fun decodeHttpCustomReference(reference:String):String {
+    private suspend fun decodeHttpCustomReference(reference:String,
+        onPhase:suspend (TransferPhase)->Unit = {}):String {
         lastDiagnostic=null
         require(BuildConfig.SPDECODE_CLOUD_ENABLED)
         requireLegalConsent()
         val payload=JSONObject().put("reference",reference.trim()).put("consent",true).put("decode",true)
+        onPhase(TransferPhase.SENDING)
         val bearer=session()
+        onPhase(TransferPhase.PROCESSING)
         val reply=withContext(Dispatchers.IO){
             requireLegalConsent()
             extract(protectedPost(CloudOperation.IMPORT_HTTP_CUSTOM,payload,bearer))
         }
         coroutineContext.ensureActive()
+        onPhase(TransferPhase.DOWNLOADING_RESULTS)
         if(reply.optString("status")=="success")
             return decodedResponse(CloudOperation.IMPORT_HTTP_CUSTOM,payload,reply).rawText
         val locks=when(reply.optString("code")){
@@ -434,29 +449,32 @@ internal class CloudDecodeClient(context: Context) {
         try {
             val credentials=HttpCustomCloudPrompt.ask(locks.first,locks.second)
                 ?:throw CancellationException("Cloud import cancelled")
-            try {return decodeFile("hc",bytes,credentials.password,credentials.hwid)}
+            try {return decodeFile("hc",bytes,credentials.password,credentials.hwid,
+                onPhase=onPhase)}
             catch(failure:Failure){throw Failure(failure.code,failure.httpStatus,
                 credentials.password!=null,credentials.hwid!=null)}
             finally{credentials.password?.fill(0)}
         }finally{bytes.fill(0)}
     }
 
-    suspend fun decodeHttpInjectorCloud(reference: String): String =
+    suspend fun decodeHttpInjectorCloud(reference: String,
+        onPhase:suspend (TransferPhase)->Unit = {}): String =
         decode(CloudOperation.IMPORT_CLOUD,
-            JSONObject().put("reference",reference).put("consent",true)).rawText
+            JSONObject().put("reference",reference).put("consent",true),onPhase=onPhase).rawText
 
     /** The broker, not Android, selects external service URLs or worker code. */
-    suspend fun decodeOnlineReference(provider:String,reference:String):String =
+    suspend fun decodeOnlineReference(provider:String,reference:String,
+        onPhase:suspend (TransferPhase)->Unit = {}):String =
         when(provider) {
-            "hc" -> decodeHttpCustomReference(reference)
-            "ehi" -> decodeHttpInjectorCloud(reference)
+            "hc" -> decodeHttpCustomReference(reference,onPhase)
+            "ehi" -> decodeHttpInjectorCloud(reference,onPhase)
             else -> decode(CloudOperation.IMPORT_CLOUD,JSONObject()
                 .put("provider",provider).put("reference",reference)
-                .put("consent",true)).rawText
+                .put("consent",true),onPhase=onPhase).rawText
         }
 
-    suspend fun decodeNurCatalog(): Decoded =
-        decode(CloudOperation.IMPORT_CATALOG,JSONObject().put("consent",true))
+    suspend fun decodeNurCatalog(onPhase:suspend (TransferPhase)->Unit = {}): Decoded =
+        decode(CloudOperation.IMPORT_CATALOG,JSONObject().put("consent",true),onPhase=onPhase)
 
     /** Release notes use the authenticated V2 transport. */
     suspend fun whatsNew(knownVersion:Int,locale:String):JSONObject = withContext(Dispatchers.IO) {
@@ -493,10 +511,11 @@ internal class CloudDecodeClient(context: Context) {
         version
     }
 
-    suspend fun decodeServerVpnProvider(id:String): Decoded {
+    suspend fun decodeServerVpnProvider(id:String,
+        onPhase:suspend (TransferPhase)->Unit = {}): Decoded {
         require(id.matches(Regex("[a-z0-9-]{1,48}")))
         return decode(CloudOperation.DECODE_SERVER,
-            JSONObject().put("id",id).put("consent",true))
+            JSONObject().put("id",id).put("consent",true),onPhase=onPhase)
     }
 
     suspend fun serverVpnIcon(id:String): JSONObject {
