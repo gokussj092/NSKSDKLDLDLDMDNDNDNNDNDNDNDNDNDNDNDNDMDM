@@ -32,11 +32,11 @@ class CloudC4Tests(unittest.TestCase):
             "cloudClient.decodeFile(supported.suffix,input",
         ):
             self.assertIn(route, source)
-        # All six Cloud decode paths now carry an actual progress callback,
-        # including both credential paths for imported files.
+        # Six decode routes plus HC preflight each deliver request-bound phases.
         self.assertEqual(
             source.count("onPhase={phase->markCloudProgress(generation,phase)}"), 6
         )
+        self.assertIn("onPhase={phase->markCloudProgress(phaseGeneration,phase)}", source)
         self.assertIn("if(BuildConfig.SPDECODE_CLOUD_ENABLED)", source)
         self.assertIn("val routingName=ImportFilenameNormalizer.forDetection(name)", source)
         self.assertIn("else AndroidOfflineDecoderRouter.decode(this@MainActivity,routingName,input)",source)
