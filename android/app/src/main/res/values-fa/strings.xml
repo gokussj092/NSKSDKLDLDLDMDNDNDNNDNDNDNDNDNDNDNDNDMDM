@@ -101,6 +101,10 @@
     <string name="decode_progress_reading">در حال خواندن فایل انتخاب‌شده…</string>
     <string name="decode_progress_decoding">در حال رمزگشایی تنظیمات از طریق Cloud…</string>
     <string name="decode_progress_saving">در حال ذخیره نتیجه رمزگذاری‌شده…</string>
+    <string name="decode_progress_wait">لطفاً منتظر بمانید…</string>
+    <string name="decode_progress_sending">در حال ارسال…</string>
+    <string name="decode_progress_processing">در حال پردازش…</string>
+    <string name="decode_progress_downloading_results">در حال دریافت نتایج…</string>
     <string name="history_search">جستجو با نام فایل یا پسوند</string>
     <string name="history_favorites">علاقه‌مندی‌ها</string>
     <string name="history_sort">مرتب‌سازی</string>
