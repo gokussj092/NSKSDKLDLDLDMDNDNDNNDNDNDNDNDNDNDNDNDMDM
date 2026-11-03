@@ -101,6 +101,10 @@
     <string name="decode_progress_reading">Lendo arquivo selecionado…</string>
     <string name="decode_progress_decoding">Decodificando configuração na Cloud…</string>
     <string name="decode_progress_saving">Salvando resultado criptografado…</string>
+    <string name="decode_progress_wait">Aguarde…</string>
+    <string name="decode_progress_sending">Enviando…</string>
+    <string name="decode_progress_processing">Processando…</string>
+    <string name="decode_progress_downloading_results">Baixando resultados…</string>
     <string name="history_search">Buscar por nome ou extensão</string>
     <string name="history_favorites">Favoritos</string>
     <string name="history_sort">Ordenar</string>
