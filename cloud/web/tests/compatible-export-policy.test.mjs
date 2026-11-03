@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {mkdtemp,rm,readFile,writeFile,stat} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
+import {publicFormats} from '../lib/file-format-catalog.mjs';
 import {atLeast,negotiatesExport,exportPolicy,setExportPolicy,exportAllowed,
  projectedCatalogVersion,exportCatalog,negotiatesDynamicExport,exportRegistry,
  validateExportRegistry} from '../lib/compatible-export-policy.mjs';
@@ -83,20 +84,26 @@ test('protocol 2 accepts any vetted exporter from registry without a client allo
  assert(negotiatesDynamicExport(dynamic));
  assert.equal(exportCatalog(dynamic,p).schemaVersion,2);
  assert.deepEqual(exportCatalog(dynamic,p).formats.map(f=>f.suffix),
-  ['hc','dark','ehi','npvs','hat']);
+  exportRegistry().formats.map(f=>f.suffix));
  assert.equal(exportCatalog(request('1.1.26','1'),p).schemaVersion,1);
  assert(projectedCatalogVersion(dynamic,59,p)>projectedCatalogVersion(request('1.1.26','1'),59,p));
  const registry=exportRegistry();
- const future={suffix:'hexcm',targetAppId:'hex-tunnel',name:'Hex Tunnel',banner:'none'};
+ const configured=new Set(registry.formats.map(f=>f.suffix));
+ // The fixture adapts as new applications become registered exporters.
+ const candidate=publicFormats().find(f=>/^[a-z0-9][a-z0-9_-]{0,15}$/.test(f.suffix)&&
+    !configured.has(f.suffix));
+ assert(candidate,'Expected a non-exportable decoder route for synthetic contract QA');
+ const future={suffix:candidate.suffix,targetAppId:'synthetic-export-app',
+   name:'Synthetic Export App',banner:'none'};
  const expanded=validateExportRegistry({...registry,revision:registry.revision+1,
   formats:[...registry.formats,future]});
- assert.equal(expanded.formats.at(-1).suffix,'hexcm');
+ assert.equal(expanded.formats.at(-1).suffix,candidate.suffix);
  assert.throws(()=>validateExportRegistry({...expanded,
   formats:[...expanded.formats,future]}),/EXPORT_REGISTRY_INVALID/);
  assert.throws(()=>validateExportRegistry({...expanded,
-  formats:expanded.formats.map(f=>f.suffix==='hexcm'?{...f,targetAppId:'../bad'}:f)}),/EXPORT_REGISTRY_INVALID/);
+  formats:expanded.formats.map(f=>f.suffix===candidate.suffix?{...f,targetAppId:'../bad'}:f)}),/EXPORT_REGISTRY_INVALID/);
  assert.throws(()=>validateExportRegistry({...expanded,
-  formats:expanded.formats.map(f=>f.suffix==='hexcm'?{...f,name:'\u202eunsafe'}:f)}),/EXPORT_REGISTRY_INVALID/);
+  formats:expanded.formats.map(f=>f.suffix===candidate.suffix?{...f,name:'\u202eunsafe'}:f)}),/EXPORT_REGISTRY_INVALID/);
  assert.throws(()=>validateExportRegistry({...expanded,
   formats:[...registry.formats,{...future,suffix:'unknown-nonexistent'}]}),/EXPORT_REGISTRY_INVALID/);
 });

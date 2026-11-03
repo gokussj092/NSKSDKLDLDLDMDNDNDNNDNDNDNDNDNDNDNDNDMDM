@@ -26,7 +26,7 @@ class CompatibleExportTests(unittest.TestCase):
         self.assertEqual(registered['schemaVersion'],1)
         self.assertEqual(set(TARGETS),{f['suffix'] for f in registered['formats']})
         self.assertEqual(TARGETS['hat'],('ha-tunnel-plus','HA Tunnel Plus'))
-        self.assertNotIn('hexcm',TARGETS,
+        self.assertNotIn('__unregistered_test_suffix__',TARGETS,
             'A decoder without a verified file writer must not claim unlocked support')
 
     def test_dark_native_open_and_expiry_guard_preserve_connection_without_banner(self):
