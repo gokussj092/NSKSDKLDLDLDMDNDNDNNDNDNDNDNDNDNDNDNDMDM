@@ -3,12 +3,12 @@
   "targetVersion": "1.1.26",
   "targetBuild": 41,
   "baseline": "docs/cloud/C0_UI_BASELINE.json",
-  "scope": "Approved changes from phases 1, 2 and 6: reorganized navigation, independent Settings destinations and About screen; retain other pinned C0 UI files exactly",
-  "approvalContext": "User selected the first AMOLED About design and authorized continuing through phase 8 on 2026-11-02. Only three preexisting C0 files differ; added screens are separate.",
+  "scope": "Approved UI changes in phases 1, 2 and 6 (navigation, Settings, About), plus the owner-requested three-stage Cloud decode progress dialog (2026-11-02); other C0 UI files remain pinned",
+  "approvalContext": "Owner approved the first AMOLED About design and authorized implementing phases 1–8; on 2026-11-02 additionally requested display of Sending, Processing and Downloading results for Cloud files, texts, links and Server VPN decode requests.",
   "uiGitBlobSha1": {
     "android/app/src/main/java/com/ghostdeveloper/spdecode/FirstRunGuide.kt": "6c660863c821ac64dfa81a4e51b025503dd143ef",
     "android/app/src/main/java/com/ghostdeveloper/spdecode/FunctionalSettingsPanel.kt": "f4b4c1132713b2c591e00e54eb2b7ea6bdf9e664",
-    "android/app/src/main/java/com/ghostdeveloper/spdecode/SpDecodeApp.kt": "959716ecd841c1b9c69707863280f1612d94bed8"
+    "android/app/src/main/java/com/ghostdeveloper/spdecode/SpDecodeApp.kt": "72e564bdb903fded2b60e9a20bddcc396912a863"
   },
-  "notes": "The original C0_UI_BASELINE.json is not modified. Unexpected differences in any of the 9 pinned files, including the 3 approved paths, are still rejected. No decoder or security code is authorized by this delta."
+  "notes": "The immutable C0_UI_BASELINE.json is unchanged. SpDecodeApp.kt hash updated only for the requested UI-only transfer milestones. Unexpected differences in any of the nine pinned C0 files are still rejected. This approval introduces no decryption engine, endpoint, or secret into Kotlin."
 }
