@@ -22,9 +22,10 @@ from tests.golden.npvs_protected_generate import make
 
 class CompatibleExportTests(unittest.TestCase):
     def test_export_registration_is_shared_and_requires_real_worker_methods(self):
-        registered=json.loads((ROOT/'cloud/web/content/compatible-export-formats.json').read_text())
+        registered=json.loads((ROOT/'cloud/web/content/file-formats.json').read_text())
         self.assertEqual(registered['schemaVersion'],1)
-        self.assertEqual(set(TARGETS),{f['suffix'] for f in registered['formats']})
+        self.assertGreaterEqual(registered['unlockedRevision'],1)
+        self.assertEqual(set(TARGETS),{f['suffix'] for f in registered['formats'] if 'unlockedExport' in f})
         self.assertEqual(TARGETS['hat'],('ha-tunnel-plus','HA Tunnel Plus'))
         self.assertNotIn('__unregistered_test_suffix__',TARGETS,
             'A decoder without a verified file writer must not claim unlocked support')

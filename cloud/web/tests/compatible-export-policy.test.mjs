@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {mkdtemp,rm,readFile,writeFile,stat} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-import {publicFormats} from '../lib/file-format-catalog.mjs';
+import {publicFormats,fileFormatUnlockedExports,validatePublicFormats} from '../lib/file-format-catalog.mjs';
 import {atLeast,negotiatesExport,exportPolicy,setExportPolicy,exportAllowed,
  projectedCatalogVersion,exportCatalog,negotiatesDynamicExport,exportRegistry,
  validateExportRegistry} from '../lib/compatible-export-policy.mjs';
@@ -106,4 +106,30 @@ test('protocol 2 accepts any vetted exporter from registry without a client allo
   formats:expanded.formats.map(f=>f.suffix===candidate.suffix?{...f,name:'\u202eunsafe'}:f)}),/EXPORT_REGISTRY_INVALID/);
  assert.throws(()=>validateExportRegistry({...expanded,
   formats:[...registry.formats,{...future,suffix:'unknown-nonexistent'}]}),/EXPORT_REGISTRY_INVALID/);
+});
+
+test('single format catalog controls Unlocked capabilities and preserves v1 schema',()=>{
+ const capabilities=fileFormatUnlockedExports();
+ const published=exportRegistry();
+ assert.equal(capabilities.revision,published.revision);
+ assert.deepEqual(capabilities.formats.map(x=>x.suffix).sort(),
+  published.formats.map(x=>x.suffix).sort());
+ assert(publicFormats().every(x=>!Object.hasOwn(x,'unlockedExport')));
+ const fixture={schemaVersion:1,detection:{rule:'longest-filename-suffix',
+   caseInsensitive:true,separator:'.'},unlockedRevision:2,
+   formats:[{suffix:'test',name:'Synthetic',kind:'file',offlineSupported:false,
+     cloudSupported:true,credentialFields:[],
+     unlockedExport:{targetAppId:'synthetic-app',name:'Synthetic App',banner:'none'}}]};
+ assert.deepEqual(Object.keys(validatePublicFormats(fixture)[0]).sort(),
+  ['suffix','name','kind','offlineSupported','cloudSupported','credentialFields'].sort());
+ assert.throws(()=>validatePublicFormats({...fixture,unlockedRevision:undefined}),
+  /UNLOCKED_REVISION_MISSING/);
+ assert.throws(()=>validatePublicFormats({...fixture,
+  formats:[{...fixture.formats[0],unlockedExport:{
+   targetAppId:'../invalid',name:'Synthetic App',banner:'none'}}]}),
+  /UNLOCKED_ENTRY_INVALID/);
+ assert.throws(()=>validatePublicFormats({...fixture,
+  formats:[{...fixture.formats[0],unlockedExport:{
+   targetAppId:'synthetic-app',name:'\u202eControl',banner:'none'}}]}),
+  /UNLOCKED_ENTRY_INVALID/);
 });
