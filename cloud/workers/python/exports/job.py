@@ -13,13 +13,14 @@ PROFILE = 'original-app-open-v1'
 MAX_ARTIFACT = 1024*1024
 MAX_REPLY = 6*1024*1024-8192
 def _registered_targets():
-    # A single vetted registry is shared by the Cloud catalog and this worker.
-    # The bridge still requires a real exporter for each suffix; unsupported
-    # variants fail closed rather than fabricating usable configuration files.
-    path = Path(__file__).resolve().parents[4] / 'cloud/web/content/compatible-export-formats.json'
+    # Source of truth: unlockedExport flags in the existing file-format catalog.
+    # exports/bridge.py must still have a tested real writer for each suffix.
+    path = Path(__file__).resolve().parents[4] / 'cloud/web/content/file-formats.json'
     data = json.loads(path.read_text(encoding='utf-8'))
-    formats = data['formats']
-    if data['schemaVersion'] != 1 or not 5 <= len(formats) <= 64:
+    formats = [dict(suffix=f['suffix'], **f['unlockedExport'])
+               for f in data['formats'] if 'unlockedExport' in f]
+    if data['schemaVersion'] != 1 or not 5 <= len(formats) <= 64 or \
+            type(data.get('unlockedRevision')) is not int or data['unlockedRevision'] < 1:
         raise ValueError('EXPORT_REGISTRY_INVALID')
     result = {}
     for f in formats:

@@ -584,7 +584,12 @@
       "kind": "file",
       "offlineSupported": true,
       "cloudSupported": true,
-      "credentialFields": []
+      "credentialFields": [],
+      "unlockedExport": {
+        "targetAppId": "dark-tunnel",
+        "name": "Dark Tunnel",
+        "banner": "none"
+      }
     },
     {
       "suffix": "deep",
@@ -740,7 +745,12 @@
         "password",
         "publicKey",
         "recipientKey"
-      ]
+      ],
+      "unlockedExport": {
+        "targetAppId": "npv-tunnel",
+        "name": "NPV Tunnel",
+        "banner": "none"
+      }
     },
     {
       "suffix": "npvt",
@@ -1060,7 +1070,12 @@
       "kind": "file",
       "offlineSupported": true,
       "cloudSupported": true,
-      "credentialFields": []
+      "credentialFields": [],
+      "unlockedExport": {
+        "targetAppId": "http-injector",
+        "name": "HTTP Injector",
+        "banner": "spdecode-html"
+      }
     },
     {
       "suffix": "ena",
@@ -1164,7 +1179,12 @@
       "kind": "file",
       "offlineSupported": true,
       "cloudSupported": true,
-      "credentialFields": []
+      "credentialFields": [],
+      "unlockedExport": {
+        "targetAppId": "ha-tunnel-plus",
+        "name": "HA Tunnel Plus",
+        "banner": "none"
+      }
     },
     {
       "suffix": "hbd",
@@ -1897,7 +1917,12 @@
       "credentialFields": [
         "password",
         "hwid"
-      ]
+      ],
+      "unlockedExport": {
+        "targetAppId": "http-custom",
+        "name": "HTTP Custom",
+        "banner": "spdecode-html"
+      }
     },
     {
       "suffix": "hq",
@@ -2069,5 +2094,6 @@
       "cloudSupported": true,
       "credentialFields": []
     }
-  ]
+  ],
+  "unlockedRevision": 1
 }

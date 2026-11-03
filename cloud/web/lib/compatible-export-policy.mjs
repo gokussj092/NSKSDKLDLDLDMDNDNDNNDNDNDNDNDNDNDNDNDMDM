@@ -2,8 +2,7 @@
 import {readFile,mkdir,open,rename,unlink,stat} from 'node:fs/promises';
 import {join} from 'node:path';
 import {randomUUID} from 'node:crypto';
-import {readFileSync} from 'node:fs';
-import {publicFormats} from './file-format-catalog.mjs';
+import {publicFormats,fileFormatUnlockedExports} from './file-format-catalog.mjs';
 
 export const EXPORT_HEADER='x-spdecode-compatible-export';
 export const HAT_EXPORT_HEADER='x-spdecode-compatible-export-hat';
@@ -11,8 +10,8 @@ export const EXPORT_PROFILE='original-app-open-v1';
 export const EXPORT_PROTOCOL_FLOOR='1.1.21';
 const ROOT='/app/provider-control';
 const DEFAULT=Object.freeze({schemaVersion:1,revision:0,enabled:false,minimumAppVersion:EXPORT_PROTOCOL_FLOOR});
-// One curated, static export registry shared with the isolated Python worker.
-// A decoder becoming available does NOT make its output safely exportable.
+// Derive Unlocked capability from the existing file-format catalog.
+// Decoder support alone must never imply an export writer exists.
 const LEGACY_SUFFIXES=Object.freeze(['hc','dark','ehi','npvs','hat']);
 export function validateExportRegistry(registry,{knownFormats=publicFormats()}={}) {
  const same=(v,keys)=>v&&typeof v==='object'&&!Array.isArray(v)&&
@@ -42,9 +41,17 @@ export function validateExportRegistry(registry,{knownFormats=publicFormats()}={
 let registryCache=null;
 export function exportRegistry() {
  if(registryCache)return registryCache;
- const bytes=readFileSync(new URL('../content/compatible-export-formats.json',import.meta.url),'utf8');
- if(Buffer.byteLength(bytes)>32768)throw Error('EXPORT_REGISTRY_INVALID');
- registryCache=validateExportRegistry(JSON.parse(bytes));
+ const raw=fileFormatUnlockedExports();
+ const order=new Map(LEGACY_SUFFIXES.map((suffix,index)=>[suffix,index]));
+ const formats=raw.formats.slice().sort((a,b)=>{
+  const ai=order.get(a.suffix),bi=order.get(b.suffix);
+  if(ai!==undefined&&bi!==undefined)return ai-bi;
+  if(ai!==undefined)return -1;
+  if(bi!==undefined)return 1;
+  return a.suffix.localeCompare(b.suffix);
+ });
+ registryCache=validateExportRegistry({schemaVersion:1,
+  revision:raw.revision,formats});
  return registryCache;
 }
 export function negotiatesDynamicExport(request) {
