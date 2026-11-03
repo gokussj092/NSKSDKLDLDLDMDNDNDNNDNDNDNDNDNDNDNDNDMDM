@@ -367,7 +367,7 @@ internal class CloudDecodeClient(context: Context) {
         if(password!=null)credentials.put("password",String(password,Charsets.UTF_8))
         if(hwid!=null)credentials.put("hwid",hwid)
         if(credentials.length()>0)body.put("credentials",credentials)
-        if(onCompatibleExport!=null && format in CompatibleExportArtifact.targets) {
+        if(onCompatibleExport!=null) {
             // The server decides export availability in this same decode response.
             val locale=app.resources.configuration.locales[0].language
             body.put("compatibleExport",JSONObject().put("profile",CompatibleExportArtifact.PROFILE)

@@ -521,7 +521,7 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
             """                            Triple(ResultExport.ORIGINAL,R.string.original_option,Icons.Outlined.Code)
                         ).forEach""",
             """                        ).let { options ->
-                            if(copy || current.extension !in com.ghostdeveloper.spdecode.cloud.CompatibleExportArtifact.targets)
+                            if(copy || current.compatibleExport==null)
                                 options + Triple(ResultExport.ORIGINAL,R.string.original_option,Icons.Outlined.Code)
                             else options
                         }.forEach""")

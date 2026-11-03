@@ -193,6 +193,13 @@ internal class ServerVpnCatalogRepository(
     suspend fun cachedFormats():List<AndroidDecoderCatalog.Format> =
         withContext(Dispatchers.IO) { verifiedFormats(stored()) }
 
+    /** Optional catalog capabilities; only server-built ready artifacts enable saving. */
+    suspend fun cachedCompatibleExportSuffixes():Set<String> =
+        withContext(Dispatchers.IO) {
+            try { CompatibleExportCatalog.parse(stored()?.optJSONObject("compatibleExports")).suffixes }
+            catch (_:Exception) { emptySet() }
+        }
+
     fun hasCachedFormats():Boolean = verifiedFormats(stored()).isNotEmpty()
 
     suspend fun cached():List<ServerVpnApp> = withContext(Dispatchers.IO) {
@@ -242,6 +249,7 @@ internal class ServerVpnCatalogRepository(
                 // Reject an incomplete format snapshot before touching the encrypted cache.
                 val remoteFormats=validateFormats(remote)
                 require(remoteFormats.isNotEmpty())
+                CompatibleExportCatalog.parse(remote.optJSONObject("compatibleExports"))
                 val remoteTexts=validateTextFormats(remote)
                 require(!remote.has("textSchemaVersion") || remoteTexts.isNotEmpty())
                 val array=remote.optJSONArray("apps")?:throw IllegalStateException("Missing app list")
@@ -296,6 +304,8 @@ internal class ServerVpnCatalogRepository(
                     .put("formatCount",remote.getInt("formatCount"))
                     .put("formatDetection",remote.getJSONObject("formatDetection"))
                     .put("formats",remote.getJSONArray("formats"))
+                if(remote.has("compatibleExports"))fresh.put(
+                    "compatibleExports",remote.getJSONObject("compatibleExports"))
                 if(remote.has("textSchemaVersion")) fresh
                     .put("textSchemaVersion",remote.getInt("textSchemaVersion"))
                     .put("textCount",remote.getInt("textCount"))
