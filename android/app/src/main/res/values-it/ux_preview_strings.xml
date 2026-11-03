@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="apk_import_button">Importa APK</string>
+    <string name="apk_future_message">Analisi APK disponibile in un prossimo aggiornamento.</string>
+    <string name="apk_credits_title">Centro crediti</string>
+    <string name="apk_credits_intro">Gestisci i futuri crediti e acquisti per analizzare APK.</string>
+    <string name="apk_credits_notice">Saldo e acquisti saranno disponibili al lancio del servizio.</string>
+    <string name="apk_credits_buy_title">Acquista crediti</string>
+    <string name="apk_credits_one">1 credito</string>
+    <string name="apk_credits_buy_one">Acquista 1 credito · Prossimamente</string>
+    <string name="apk_credits_packages">Pacchetti crediti</string>
+    <string name="apk_credits_buy_package">Acquista pacchetto · Prossimamente</string>
+    <string name="apk_credits_prices_title">Prezzi</string>
+    <string name="apk_credits_subscriptions">Abbonamenti</string>
+    <string name="apk_credits_button">Crediti: 1+</string>
+    <string name="apk_credits_back">Indietro</string>
+    <string name="feedback_details_title">Dettagli della richiesta</string>
+    <string name="feedback_method_description">Richiedi il supporto per nuovi file o cataloghi server VPN.</string>
+    <string name="feedback_bug_description">Segnala problemi di decodifica, compatibilità o app.</string>
+    <string name="feedback_suggestion_description">Proponi nuove funzioni o miglioramenti grafici.</string>
+    <string name="feedback_extra_title">Informazioni aggiuntive (facoltative)</string>
+    <string name="feedback_extra_hint">Versione, formato interessato o altri dettagli</string>
+</resources>
