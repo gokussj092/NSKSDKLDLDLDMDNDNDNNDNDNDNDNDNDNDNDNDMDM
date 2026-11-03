@@ -18,7 +18,7 @@ concurrency:
 jobs:
   review-apk:
     if: >-
-      github.repository == 'gokussj092/NSKSDKLDLDLDMDNDNNDNDNDNDNDNDNDNDNDNDMDM' &&
+      github.repository == 'gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM' &&
       github.event.repository.private == true &&
       github.event_name == 'pull_request' &&
       github.head_ref == 'fix/http-jireh-current-method' &&
