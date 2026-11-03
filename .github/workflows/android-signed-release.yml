@@ -191,11 +191,11 @@ jobs:
             "$RUNNER_TEMP/production-aligned.apk"
           mv "$RUNNER_TEMP/production-v1-v2-v3.apk" "$APK"
           unset SPDECODE_STORE_PASS SPDECODE_KEY_PASS
-      - name: Verify production APK excludes plaintext decoder resources
+      - name: Verify Cloud-only production APK excludes local decoders, vault assets and provider secrets
         run: |
           set -euo pipefail
-          python scripts/android_s_vault_audit.py \
-            --apk android/app/build/outputs/apk/release/app-release.apk
+          python tests/cloud_c5_apk_audit.py \
+            android/app/build/outputs/apk/release/app-release.apk
 
       - name: Verify signed production APK has no migrated decoder DEX literals
         run: |
