@@ -77,6 +77,31 @@ Campos mínimos que el validador CI deberá exigir:
 - No inventar catálogos, servidores, respuestas HTTP, certificados ni JSON «descifrado».
 - Si el método no está confirmado, conservar la hipótesis y los scripts bajo estado PENDING y un plan de siguiente prueba; no activarlo públicamente.
 
+## 2.1. Registro obligatorio de herramientas, librerías y dependencias
+
+La regla estricta cubre **scripts propios, herramientas nuevas y de terceros, librerías, paquetes, runtimes, plugins y dependencias directas/transitivas relevantes** utilizados realmente durante una investigación, corrección o prueba. Guardar solo el script de descifrado NO satisface esta política. Esta exigencia documental es vigente; la instalación automática y el bloqueo en CI permanecen PENDIENTES.
+
+### Expediente obligatorio por aplicación y build
+
+- `DEPENDENCIES.md`: inventario legible con nombre **inequívoco** y propósito de cada herramienta/librería, comando o `import`, versión realmente utilizada, lenguaje/ecosistema (PyPI, npm, Maven, Cargo, apt, binario oficial, etc.), URL de origen oficial, licencia, sistema/arquitectura/ABI, si requiere red y limitaciones conocidas. Diferenciar herramienta propia, de terceros y herramienta compartida. Si «Hydra» u otro nombre puede referirse a productos distintos, identificar el proyecto exacto antes de registrarlo.
+- `dependencies.lock.json` o lockfile nativo equivalente, referenciado en MANIFEST: versiones fijadas, hashes de distribución cuando existan y dependencias transitivas necesarias para reproducción. Para Python, `requirements.txt` con versiones fijadas o lockfile equivalente; para Java/Node/NDK, versiones y lockfiles/gradle locks apropiados. No inventar versiones o hashes ausentes; marcarlos `UNKNOWN` con motivo y estado `NEEDS_REVIEW`.
+- `MANIFEST.json.dependencies`: ID de dependencia, nombre/proveedor, tipo, versión, procedencia, ruta o referencia de lockfile, licencia/estado de revisión y relación con `tooling`, scripts y evidencias. Añadir entradas cada vez que se introduce o cambia una dependencia.
+- `REPRODUCE.md`: preparación de entorno aislado, instalación y verificación desde fuentes permitidas, versiones exactas, comandos de ejecución, hashes/outputs esperados y requisitos de permisos, sin secretos.
+- `RESULTS.md`: registrar qué versiones y herramientas se ejecutaron de verdad, pruebas que pasaron/fallaron, incompatibilidades, fallos de instalación y limitaciones. Una dependencia citada no significa que esté instalada o validada.
+
+### Herramientas propias, de terceros y reutilización futura
+
+1. Conservar físicamente en `tools/` TODOS los scripts propios escritos o modificados para descubrir/probar el método, incluidos auxiliares e intentos fallidos relevantes. No borrar scripts solo porque el método ya funciona.
+2. Para herramientas de terceros, conservar **nombre, versión, fuente, licencia, checksums disponibles y receta de instalación**; no incorporar automáticamente binarios, paquetes, wheels, JAR o código ajeno al repositorio sin derecho de redistribución. Registrar expresamente herramientas nuevas, no únicamente herramientas ya conocidas.
+3. Referenciar scripts compartidos de `scripts/apk_analysis/` mediante ruta, interfaz, versión/commit/hash; mantener fuente única y detectar los expedientes consumidores al actualizar herramientas compartidas.
+4. Mantener a futuro un **registro central versionado** de herramientas y bibliotecas autorizadas, con ID único, finalidad, licencias, versiones permitidas, dependencias, compatibilidad, pruebas de sandbox y estado `UNREVIEWED` / `APPROVED` / `REJECTED` / `MAINTENANCE`. Los expedientes deberán referenciar el ID y versión efectivos.
+5. La Fase 7 **solo podrá reutilizar automáticamente herramientas aprobadas** mediante adaptadores y recetas declaradas, en sandbox efímero sin privilegios ni secretos. Prohibir que una APK o una IA dicte comandos de instalación o ejecución arbitrarios. La aprobación requiere revisar origen, licencias, seguridad, uso de red, recursos y pruebas reproducibles.
+6. Herramientas para fuerza bruta, explotación o pruebas activas de servicios de terceros quedan fuera de la ejecución automática por defecto; una investigación manual excepcional requiere permiso y alcance explícitos. Nunca se deben sortear controles de autenticación ajenos.
+7. Cada actualización de dependencia/herramienta exige actualizar inventario, lockfile, referencias y pruebas de regresión del método y sus consumidores.
+8. El validador CI pendiente (sección 5) **deberá exigir** `DEPENDENCIES.md`, referencia a lockfile o excepción justificada, `MANIFEST.json.dependencies`, scripts accesibles, coherencia de versiones/hashes y licencias revisadas. No afirmar que existe hoy ese bloqueo automático.
+
+**Ejemplos meramente ilustrativos:** PyCryptodome (paquete Python normalmente importado como `Crypto`), implementaciones de Argon2 como `argon2-cffi`, JADX, apktool y una herramienta «Hydra» específicamente identificada. Los ejemplos NO acreditan que esas dependencias estén instaladas, usadas ni aprobadas en SP-DECODE.
+
 ## 3. Prohibiciones y manejo de materiales
 
 - PROHIBIDO subir a Git: archivos APK/APKS/XAPK privados sin derechos de redistribución, muestras de clientes, perfiles VPN reales con credenciales, JSON descifrado sensible, private keys, claves de firma, usuarios/contraseñas, tokens, Google Play Integrity tokens, cookies, secretos de proveedores o logs con datos personales.
