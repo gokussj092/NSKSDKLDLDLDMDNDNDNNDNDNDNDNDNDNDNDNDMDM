@@ -32,3 +32,16 @@ test('corruption is preserved and fails closed; expiry, unknown fields, unavaila
   await assert.rejects(transactStoredFeed(notice(),{root:join(root,'missing'),env}));
  }finally{await rm(root,{recursive:true,force:true});}
 });
+
+test('typed notices persist without altering legacy records; malformed classification fails closed',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'typed-notices-'));const options={root,env};
+ try{
+  const old=notice(),modern={...notice(),type:'security',importance:'important',delivery:'push'};
+  await writeStoredFeed([old,modern],options);
+  assert.deepEqual(await readStoredFeed(options),[old,modern]);
+  for(const bad of [{...modern,type:'unknown'},{...modern,delivery:'all'}, {...modern,importance:'severe'}, {...modern,extra:'x'}]){
+   await assert.rejects(writeStoredFeed([bad],options),/NOTICE_STORE_INVALID/);
+  }
+ }finally{await rm(root,{recursive:true,force:true});}
+});
+
