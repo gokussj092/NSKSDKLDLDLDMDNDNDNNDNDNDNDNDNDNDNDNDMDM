@@ -102,6 +102,10 @@
     <string name="decode_progress_reading">Đang đọc tệp…</string>
     <string name="decode_progress_decoding">Đang giải mã cấu hình qua Cloud…</string>
     <string name="decode_progress_saving">Đang lưu kết quả mã hóa…</string>
+    <string name="decode_progress_wait">Vui lòng chờ…</string>
+    <string name="decode_progress_sending">Đang gửi…</string>
+    <string name="decode_progress_processing">Đang xử lý…</string>
+    <string name="decode_progress_downloading_results">Đang tải kết quả…</string>
     <string name="history_search">Tìm theo tên tệp hoặc phần mở rộng</string>
     <string name="history_favorites">Yêu thích</string>
     <string name="history_sort">Sắp xếp</string>
