@@ -244,8 +244,12 @@ body:has(.sp-admin-frame){background:#000;color:#f7f7f7}
 .sp-admin-notice-templates{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 22px}
 .sp-admin-notice-templates .button{font-size:11px;padding:9px 12px;min-height:34px}
 .sp-admin-notice-form label{display:block;position:relative;color:#ddd;font-size:13px;font-weight:650;margin:16px 0}
-.sp-admin-notice-form input,.sp-admin-notice-form textarea{display:block;width:100%;background:#0c0c0c;color:#f7f7f7;border:1px solid #404040;border-radius:12px;padding:14px;font:inherit;resize:vertical;margin-top:8px}
+.sp-admin-notice-form input,.sp-admin-notice-form textarea,.sp-admin-notice-form select{display:block;width:100%;background:#0c0c0c;color:#f7f7f7;border:1px solid #404040;border-radius:12px;padding:14px;font:inherit;resize:vertical;margin-top:8px}
 .sp-admin-notice-form textarea{min-height:152px;line-height:1.6}
+.sp-admin-notice-form select{min-height:45px;appearance:auto;cursor:pointer}
+.sp-admin-notice-form :is(input,textarea,select):focus-visible{outline:2px solid #f7f7f7;outline-offset:2px}
+.sp-admin-notice-form select:disabled{opacity:.6;cursor:not-allowed}
+
 .sp-admin-notice-form input::placeholder,.sp-admin-notice-form textarea::placeholder{color:#999}
 .sp-admin-notice-count{float:right;color:#aaa;font-variant-numeric:tabular-nums;font-size:11px;font-weight:400}
 .sp-admin-notice-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
@@ -253,6 +257,7 @@ body:has(.sp-admin-frame){background:#000;color:#f7f7f7}
 .sp-admin-notice-preview-app{display:flex;gap:10px;align-items:center;margin-bottom:15px;font-size:12px}
 .sp-admin-notice-preview-app small{margin-left:auto;color:#b8b8b8}
 .sp-admin-notice-preview-mark{display:grid;place-items:center;width:31px;height:31px;background:#eee;color:#111;border-radius:9px;font-size:10px;font-weight:850}
+.sp-admin-notice-preview>small{display:block;color:#aaa;font-size:11px;margin:0 0 10px}
 .sp-admin-notice-preview>strong{display:block;font-size:15px}
 .sp-admin-notice-preview>p{margin:7px 0 0;color:#d2d2d2;font-size:13px;white-space:pre-wrap}
 .sp-admin-notice-result{margin:14px 0;padding:13px 17px;border:1px solid #555;border-radius:11px;background:#252525;color:#f4f4f4;font-size:13px}
