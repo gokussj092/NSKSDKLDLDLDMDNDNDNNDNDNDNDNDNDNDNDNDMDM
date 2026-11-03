@@ -165,7 +165,8 @@ class PhaseVServerVpnIntegration(unittest.TestCase):
         self.assertIn('presentDecodedRecord(',source)
         self.assertIn('CloudLargeResultNotice(',source)
         client=(CLOUD/"CloudDecodeClient.kt").read_text("utf-8")
-        self.assertIn('suspend fun decodeServerVpnProvider(id:String)',client)
+        self.assertIn('suspend fun decodeServerVpnProvider(id:String,',client)
+        self.assertIn('onPhase:suspend (TransferPhase)->Unit = {}',client)
         self.assertIn('JSONObject().put("id",id).put("consent",true)',client)
 
 if __name__=="__main__":
