@@ -1,3 +1,65 @@
+# Actualización vigente: catálogo real verificado e integrado en código
+
+El propietario autorizó expresamente la petición firmada y pidió aplicar la
+regla de paridad de descarga original de SERVER_VPN_NEXT_CHAT_GUIDE.md
+(sección 2026-11-01). La autorización pendiente del intento anterior quedó resuelta;
+no se volvió a pedir. Se ejecutó la solicitud original con valores reales,
+sin imprimir ni publicar claves.
+
+**Resultado real: HTTP200/text/plain,645168 bytes cifrados, catálogo635,
+101 servidores.** La descarga CLI también obtuvo el mismo documento completo.
+Java/JCA, codec de producción y worker aislado coinciden en todo el JSON,
+no solo en recuentos o muestras. Ver generated/primary.summary.json y
+real_catalog.summary.json. Ninguna entrada VPN real se incorporó a Git.
+
+## Corrección confirmada frente a la primera hipótesis
+
+El primer intento GCM falló por derivar la huella de Base64(DER). La lectura
+JNI 0xe4740–0xe4794 copia directamente los bytes DER, libera el array con modo2
+(SHA256 recibe esos bytes), y convierte el hex a mayúsculas. **La derivación
+correcta usa SHA256(DER).upper**, sin Base64. El cambio autentica el tag real;
+no se probaron claves al azar. La revisión equivocada se conserva en
+`tools/history/recover_v2_base64_certificate.py`. El host elegido sigue siendo
+producción. El oráculo JCA autentica independientemente los mismos645168 bytes.
+
+## Implementación y pruebas actuales
+
+- `decoders/Python/apps/Halcon_R_Net/`: lector, CLI de descarga, esquema completo,
+  validación de límites y errores sanitizados. Campos desconocidos conservados.
+- Broker fijo Node con POST timestamp/SHA256, DNS público/TLS y rechazo de
+  redirecciones. No retransmite secretos a otra ruta ni reintenta el POST.
+- Worker allowlisted: solo el hijo Halcon recibe la contraseña de contenido;
+  no recibe el secreto de firma ni tokens del worker. Los otros hijos siguen
+  con entorno mínimo. Compose propaga las dos variables necesarias.
+- Ficha con icono original, controles individuales persistentes y contrato
+  estricto de esquema/igualdad rawText–structuredJson, sin permitir parciales.
+- Mínimo fuente del catálogo63,59 fichas; versión efectiva superior del VPS y
+  switches existentes conservados. Sin formatos de archivo nuevos ni cambio Android.
+- Icono legacy original WebP xxxhdpi→PNG sin modificar píxeles:192x192,
+  71433 bytes, SHA256859825df9e151d9b77039cc7f4a42b75feb3b9ea823999fa567ec823a173f143.
+- 22 Python (10 del proveedor y12 del expediente) y33 Node correctas. Se corrigió
+  una longitud de credencial sintética y se añadió la comprobación explícita
+  de igualdad del JSON tras detectar el fallo en la primera ejecución Node.
+
+## Límite de despliegue
+
+La llamada real desde Node devolvió REMOTE_NETWORK_DENIED en este entorno.
+No se infiere caída ni rechazo del proveedor: Python sí descargó realmente.
+`replay_real.mjs` validó el broker y el contrato Node con bytes y resultado real,
+pero **HTTP/DNS simulados**. La conexión Node real en VPS permanece pendiente,
+así como Android físico. No se ha fusionado a main ni desplegado.
+
+Dependencias y herramientas nuevas usadas: Node24.22.1 y sus módulos nativos;
+Pillow13.0.0 para conversión sin pérdida. No se instalaron paquetes npm nuevos.
+Las recetas, revisiones, pruebas, hashes e inventario están en el expediente.
+
+---
+
+## Registro histórico del primer intento (anterior a la autorización)
+
+Los estados PENDING y la hipótesis Base64 de lo que sigue describen aquel
+intento y quedan sustituidos por la actualización vigente anterior.
+
 # Halcon build1391 — investigación pendiente de catálogo real
 
 Fecha local: 2026-11-02, America/Tijuana. Rama de trabajo:

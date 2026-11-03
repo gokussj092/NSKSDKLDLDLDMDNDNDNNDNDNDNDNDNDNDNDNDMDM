@@ -1,14 +1,10 @@
 # com.halcon.connect — Halcon R Net / HALCON RAMOS Conectividad
 
-| Build | Versión | Expediente | Catálogo real | Estado operativo |
+| Build | Versión | Expediente | Catálogo real | Estado |
 | --- | --- | --- | --- | --- |
-| 1391 | 4.1.4 | [2026-11-02](1391/ANALYSIS.md) | No obtenido; incluido vacío y respaldo404 | PENDING, sin ficha ni broker habilitados |
+|1391|4.1.4|[Investigación](1391/ANALYSIS.md)|POST200,635/101 servidores, íntegro igual a JCA/CLI/worker|Integrado en código; Node real en VPS pendiente|
 
-Se leyó [la política obligatoria](../METHOD_EVIDENCE_POLICY.md), incluida la
-sección2.1 sobre dependencias. La interpretación criptográfica de este expediente
-solo está contrastada con vectores sintéticos JCA. No anunciar soporte de catálogo,
-actualización operativa, descifrado real ni producción.
-
-La petición principal requiere autorización explícita tras el bloqueo de
-revisión automática. Conservar los scripts, resultados fallidos y lockfiles antes
-de continuar; no sustituir este pendiente por el resultado de otra aplicación.
+El usuario autorizó la petición principal después del bloqueo inicial. El
+historial no se elimina: herramientas y fallos están conservados. No declarar
+producción verificada por las pruebas sintéticas ni por el replay Node con red
+simulada. [Proveedor y provisión](../../decoders/Python/apps/Halcon_R_Net/README.md).

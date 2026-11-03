@@ -38,7 +38,7 @@ test("Ultra refuses same-origin and foreign redirects",async t=>{
 
 test("Ultra launcher PNG, public format and card follow availability",()=>{
   const doc=catalog({availability:{"ultra-tunnel":true}});
-  assert.equal(CATALOG_VERSION,62);assert.equal(doc.apps.length,58);
+  assert.equal(CATALOG_VERSION,63);assert.equal(doc.apps.length,59);
   const card=doc.apps.find(x=>x.id==="ultra-tunnel");
   assert.equal(card.name,"Ultra Tunnel");assert.equal(card.decodeEnabled,true);
   assert.equal(card.iconSha256,"d382fd15f5a0fa172031bd57227ba596ac9b96b6857efce2f63ecd3e6457c74c");

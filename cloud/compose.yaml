@@ -70,6 +70,8 @@ services:
       CLOUD_NUR_CATALOG_URL: ${CLOUD_NUR_CATALOG_URL:-}
       CLOUD_SERVER_VPN_ENABLED: ${CLOUD_SERVER_VPN_ENABLED:-false}
       SPDECODE_VIP_SNIPHER_AUTHORIZATION: ${SPDECODE_VIP_SNIPHER_AUTHORIZATION:-}
+      SPDECODE_HALCON_REQUEST_SECRET: ${SPDECODE_HALCON_REQUEST_SECRET:-}
+      SPDECODE_HALCON_CATALOG_PASSWORD: ${SPDECODE_HALCON_CATALOG_PASSWORD:-}
       SPDECODE_ALFAISAL_API_KEY: ${SPDECODE_ALFAISAL_API_KEY:-}
       SPDECODE_ALFAISAL_SIGNING_KEY: ${SPDECODE_ALFAISAL_SIGNING_KEY:-}
       SPDECODE_ALFAISAL_DEVICE_UUID: ${SPDECODE_ALFAISAL_DEVICE_UUID:-}
@@ -167,7 +169,9 @@ services:
       WORKER_BIND_HOST: 0.0.0.0
       WORKER_PORT: "8787"
       CLOUD_WORKER_TOKEN: ${CLOUD_WORKER_TOKEN:-}
-    # Deliberately no host port, no credentials, no shared decoder volumes.
+      SPDECODE_HALCON_CATALOG_PASSWORD: ${SPDECODE_HALCON_CATALOG_PASSWORD:-}
+    # No host port/account credentials/shared volumes. Halcon's content key is
+    # forwarded only to its allowlisted catalog child, never other decoders.
     networks:
       - private
     security_opt:

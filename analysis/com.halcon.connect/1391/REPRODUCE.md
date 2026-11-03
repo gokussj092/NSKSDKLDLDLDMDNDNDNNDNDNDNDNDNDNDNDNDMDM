@@ -81,27 +81,57 @@ Resultado observado:12 pruebas correctas, comparación JCA completa y cmp sin
 diferencias. Contraseña e IV determinista de este bloque son **solo de prueba**.
 El objeto de ejemplo no es un catálogo Halcon real ni define su esquema.
 
-## Red del catálogo y bloqueo explícito
+## Petición real autorizada y reproducción completa
 
-Solo se verificó el respaldo público con:
+El propietario autorizó expresamente la petición firmada después del bloqueo
+inicial. La restricción anterior de aprobación quedó resuelta. Conservar el
+historial; no repetir solicitudes de permiso para la misma fuente/operación.
+La documentación de paridad exige conservar todos los datos originales y
+comprobar la descarga real completa.
+
+**Corrección respecto al primer intento:** recover.py actual usa SHA256(DER)
+en mayúsculas, sin Base64. La revisión equivocada está conservada en history.
+Volver a generar la receta privada con el script actual antes de esta prueba.
 
 ```bash
-.venv-halcon/bin/python analysis/com.halcon.connect/1391/tools/probe.py "$PRIVATE_DIR/recovery/recipe.json" "$PRIVATE_DIR/probe" --source backup
+.venv-halcon/bin/python analysis/com.halcon.connect/1391/tools/probe.py "$PRIVATE_DIR/recovery/recipe.json" "$PRIVATE_DIR/probe" --source primary --authorized-primary
+.venv-halcon/bin/python analysis/com.halcon.connect/1391/tools/verify_real.py "$PRIVATE_DIR/probe/primary.response" "$PRIVATE_DIR/recovery/recipe.json" "$PRIVATE_DIR/verified" --download
+node analysis/com.halcon.connect/1391/tools/replay_real.mjs "$PRIVATE_DIR/probe/primary.response" "$PRIVATE_DIR/recovery/recipe.json" "$PRIVATE_DIR/verified/worker-result.json"
+.venv-halcon/bin/python analysis/com.halcon.connect/1391/tools/provision_secrets.py "$PRIVATE_DIR/recovery/recipe.json" "$PRIVATE_DIR/HALCON-backend-secrets.env"
 ```
 
-Esperado observado: exit3, HTTP404, text/plain,14 bytes, hash en RESULTS.
-No hay credenciales de cuenta, identificador de dispositivo, cookies o tokens
-en esa petición. El script prohíbe redirecciones y destinos no reconocidos.
+Resultados reales observados: HTTP 200, 645168 bytes; versión 635, 101 servidores.
+verify_real compara todo con JCA y worker aislado y comprueba una descarga
+real adicional desde la CLI operativa. replay_real usa esos bytes y resultados
+reales, pero **simula HTTP/DNS**: no es una prueba de red del VPS. Node directo
+devolvió REMOTE_NETWORK_DENIED en el entorno; esa prueba en VPS sigue pendiente.
+No hay nuevos paquetes npm: Node 24.22.1 y módulos nativos.
 
-**No ejecutar primary ahora.** Auto-review rechazó enviar la firma derivada
-de APK sin autorización explícita del propietario. Tras obtener esa autorización,
-la propuesta revisable es el mismo script `--source primary --authorized-primary`.
-La opción no concede permiso por sí misma. No ejecutar variantes de history;
-conservan fallos y revisiones, no son recetas aprobadas.
+El respaldo público sigue devolviendo 404 y no sustituye la descarga principal:
 
-Después de una respuesta real autorizada, probar el candidato local con
-`envelope_candidate.py RESPUESTA RECIPE_JSON SALIDA_PRIVADA`; autenticar el sobre
-no certifica por sí solo campos nativos, esquema o integración del broker.
+```bash
+.venv-halcon/bin/python analysis/com.halcon.connect/1391/tools/probe.py "$PRIVATE_DIR/recovery/recipe.json" "$PRIVATE_DIR/probe-backup" --source backup
+```
+
+No ejecutar scripts de history como receta actual. No guardar response,
+reference.json, recipe.json, env, worker-result.json ni CLI real dentro de Git.
+Los dos secretos de provisión solo van al backend, con consumidores detallados
+para web y el hijo Halcon en el README operativo; no cambiar otros proveedores.
+
+## Pruebas operativas e icono
+
+```bash
+.venv-halcon/bin/python -m unittest discover -s tests -p test_halcon_r_net.py -v
+node --test cloud/web/tests/halcon-r-net.test.mjs cloud/web/tests/server-vpn-provider.test.mjs cloud/web/tests/server-vpn-worker-contract.test.mjs
+.venv-halcon/bin/python analysis/com.halcon.connect/1391/tools/extract_icon.py "$PRIVATE_DIR/unpacked/apks/com.halcon.connect.apk" "$PRIVATE_DIR/halcon-r-net.png"
+```
+
+10 Python operativas y 12 del expediente: 22 en total. Node: 33 pruebas,
+incluidas 7 Halcon. El icono no fue dibujado ni redimensionado: el WebP
+legacy original de 192x192 se convierte a PNG con igualdad de píxeles.
+El fixture operativo catalog.envelope fue producido con el mismo oráculo JCA,
+password sintética `S` repetida 65 veces + `A` repetida 64 veces. Nunca usar
+esa contraseña sintética ni el IV determinista en datos reales.
 
 ## Dependencias y trazabilidad
 

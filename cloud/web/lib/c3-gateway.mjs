@@ -1,4 +1,5 @@
 import { randomUUID, createPrivateKey, createPublicKey, createHash, ECDH } from "node:crypto";
+import {isDeepStrictEqual} from "node:util";
 import { settings, limits } from "./c3-config.mjs";
 import { v2Settings } from "./v2-config.mjs";
 import { store, reserveSlot, releaseSlot } from "./c3-store.mjs";
@@ -214,6 +215,18 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
        typeof decoded.rawText!=="string" || !decoded.rawText.length ||
        Buffer.byteLength(decoded.rawText,"utf8")>(isMkk?32*1024*1024:4*1024*1024))
       throw Error("INVALID_WORKER_RESULT");
+    if(kind==="server-vpn" && payload?.providerId==="halcon-r-net"){
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      const fields=["serverName","serverHost","serverPort","serverFlag","serverInfo","proxyHost","proxyPort",
+        "payload","sni","vipApiUrl","methodCountry","mode","username","password"];
+      if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId || !isRecord(parsed) ||
+         !isDeepStrictEqual(parsed,decoded.structuredJson) ||
+         typeof parsed.version!=="string" || !parsed.version || typeof parsed.releaseNotes!=="string" ||
+         !Array.isArray(parsed.servers) || !parsed.servers.length ||
+         parsed.servers.some(s=>!isRecord(s) || fields.some(k=>typeof s[k]!=="string") ||
+           !s.serverName || !Number.isSafeInteger(s.tunnelType)))throw Error("INVALID_WORKER_RESULT");
+    }
     if(kind==="server-vpn" && payload?.providerId==="ha-tunnel-plus"){
       let parsed;
       try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}

@@ -6,7 +6,6 @@ VIP, license, reward, device access, or Play Integrity credentials.
 """
 from __future__ import annotations
 import argparse
-import base64
 import hashlib
 import json
 from pathlib import Path
@@ -37,7 +36,9 @@ def recover(library: Path, apk: Path):
     if len(certificates) != 1:
         raise ValueError('Expected one original certificate')
     image = ElfImage(library)
-    certificate_hash = hashlib.sha256(base64.b64encode(certificates[0])).hexdigest().upper()
+    # GetByteArrayElements -> byte-for-byte std::string -> SHA256, then uppercase.
+    # The JNI routine hashes the DER bytes directly; there is no Base64 call.
+    certificate_hash = hashlib.sha256(certificates[0]).hexdigest().upper()
     fragments = b''.join(xor_literal(image, a, 8) for a in range(0xc29f0, 0xc2a28, 8))
     fragments += xor_literal(image, 0xc2a28, 9)
     expected = xor_literal(image, 0xc22f8, 64).decode()

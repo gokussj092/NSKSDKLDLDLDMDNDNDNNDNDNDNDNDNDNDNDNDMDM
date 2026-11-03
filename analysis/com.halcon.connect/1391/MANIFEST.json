@@ -7,19 +7,21 @@
   "version_code": 1391,
   "observed_at": "2026-11-02T23:41:32-08:00",
   "source_category": "public_mirror",
-  "authorization_note": "El propietario de SP-DECODE solicitó investigar este paquete. Análisis estático y pruebas locales. No se presupone autorización de redistribución ni permiso para repetir autenticación del proveedor; prueba principal pendiente de autorización explícita.",
-  "status": "PENDING",
+  "authorization_note": "El propietario autorizó expresamente repetir el POST firmado original con el material incluido en la APK, para obtener y validar un catálogo real. No se autoriza redistribuir el APK; no se almacena en Git.",
+  "status": "VERIFIED",
   "targets": [
     {
       "id": "catalog",
       "type": "catalog",
       "extensions": [],
-      "status": "PENDING",
-      "envelope": "VERIFIED_SYNTHETIC_ONLY",
-      "real_catalog": "NOT_VERIFIED_REAL",
-      "remote_primary": "AUTHENTICATED_REPLAY_REQUIRES_OWNER_APPROVAL",
+      "status": "VERIFIED",
+      "envelope": "VERIFIED_REAL",
+      "real_catalog": "635",
+      "servers": 101,
+      "remote_primary": "HTTP_200_ORIGINAL_AUTHORIZED_POST",
       "remote_backup": "HTTP_404",
-      "embedded": "EMPTY_OBJECT"
+      "embedded": "EMPTY_OBJECT",
+      "node_real_transport": "NETWORK_UNAVAILABLE_HERE_VPS_PENDING"
     }
   ],
   "inputs": [
@@ -70,71 +72,120 @@
     {
       "id": "halcon1391:EnvelopeOracle",
       "path": "analysis/com.halcon.connect/1391/tools/EnvelopeOracle.java",
-      "sha256": "8f8ce71ec06e0a5226ce4ad32665c6f2ef730785ee2bf53b7b96aedd3973f4c6",
-      "purpose": "research recipe or historical revision; see REPRODUCE.md",
+      "sha256": "67c6028dcc517e2ea119f50abdf6a75ed890a32037541bdd2b151ff20f514587",
+      "purpose": "manual research, reproducibility, real verification or retained historical revision",
       "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7"
     },
     {
       "id": "halcon1391:acquire",
       "path": "analysis/com.halcon.connect/1391/tools/acquire.py",
       "sha256": "640e625b8e0694db3549e53ef55d43b1b6f73f7438aaeb276e0d739d2507afa4",
-      "purpose": "research recipe or historical revision; see REPRODUCE.md",
+      "purpose": "manual research, reproducibility, real verification or retained historical revision",
       "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7"
     },
     {
       "id": "halcon1391:dependency_inventory",
       "path": "analysis/com.halcon.connect/1391/tools/dependency_inventory.py",
       "sha256": "ec181cd81869c3c7f1d8015b9055642f1b701b6c8f7a600aa72b5d486ef86fc4",
-      "purpose": "research recipe or historical revision; see REPRODUCE.md",
+      "purpose": "manual research, reproducibility, real verification or retained historical revision",
       "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7"
     },
     {
       "id": "halcon1391:envelope_candidate",
       "path": "analysis/com.halcon.connect/1391/tools/envelope_candidate.py",
       "sha256": "4d046a0a8118b91bbeba3e9b47c1c7a380b98e10430159b07426418a0b6c2ee5",
-      "purpose": "research recipe or historical revision; see REPRODUCE.md",
+      "purpose": "manual research, reproducibility, real verification or retained historical revision",
+      "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7"
+    },
+    {
+      "id": "halcon1391:extract_icon",
+      "path": "analysis/com.halcon.connect/1391/tools/extract_icon.py",
+      "sha256": "735e1fc476f169133abc020f5840d0277dd2068bf7bfc982bc2639b481360f3a",
+      "purpose": "manual research, reproducibility, real verification or retained historical revision",
+      "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7"
+    },
+    {
+      "id": "halcon1391:finalize_evidence",
+      "path": "analysis/com.halcon.connect/1391/tools/finalize_evidence.py",
+      "sha256": "545cdab063823a639e8650823fb1458e1dec16ad61b93713b2fe2d9c6859e465",
+      "purpose": "manual research, reproducibility, real verification or retained historical revision",
+      "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7"
+    },
+    {
+      "id": "halcon1391:EnvelopeOracle_v1",
+      "path": "analysis/com.halcon.connect/1391/tools/history/EnvelopeOracle_v1.java",
+      "sha256": "8f8ce71ec06e0a5226ce4ad32665c6f2ef730785ee2bf53b7b96aedd3973f4c6",
+      "purpose": "manual research, reproducibility, real verification or retained historical revision",
       "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7"
     },
     {
       "id": "halcon1391:probe_v1",
       "path": "analysis/com.halcon.connect/1391/tools/history/probe_v1.py",
       "sha256": "da048779d8c609f1f6db3139375f74ed5efa188b861bfe8d8ee65d22af90a0ff",
-      "purpose": "research recipe or historical revision; see REPRODUCE.md",
+      "purpose": "manual research, reproducibility, real verification or retained historical revision",
       "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7"
     },
     {
       "id": "halcon1391:probe_v2_auth_pending",
       "path": "analysis/com.halcon.connect/1391/tools/history/probe_v2_auth_pending.py",
       "sha256": "1cebe8f7e223c896cf9b04385a8834108ceae04e0960f60d5bde3fece42c514a",
-      "purpose": "research recipe or historical revision; see REPRODUCE.md",
+      "purpose": "manual research, reproducibility, real verification or retained historical revision",
       "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7"
     },
     {
       "id": "halcon1391:recover_v1",
       "path": "analysis/com.halcon.connect/1391/tools/history/recover_v1.py",
       "sha256": "9da057b8015e917c7d7c61b93a0aed8a4e3ae1e4295759ec59e01f87a5b99e82",
-      "purpose": "research recipe or historical revision; see REPRODUCE.md",
+      "purpose": "manual research, reproducibility, real verification or retained historical revision",
+      "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7"
+    },
+    {
+      "id": "halcon1391:recover_v2_base64_certificate",
+      "path": "analysis/com.halcon.connect/1391/tools/history/recover_v2_base64_certificate.py",
+      "sha256": "3c3ea716ffaac51efc8abc7d19895bf068955a033c6e89e521d488b546c741a1",
+      "purpose": "manual research, reproducibility, real verification or retained historical revision",
       "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7"
     },
     {
       "id": "halcon1391:inventory",
       "path": "analysis/com.halcon.connect/1391/tools/inventory.py",
       "sha256": "1fc31c71475a3df90e87625027c08ae93e993202b8b88dee86f84fa1b96ab7ab",
-      "purpose": "research recipe or historical revision; see REPRODUCE.md",
+      "purpose": "manual research, reproducibility, real verification or retained historical revision",
       "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7"
     },
     {
       "id": "halcon1391:probe",
       "path": "analysis/com.halcon.connect/1391/tools/probe.py",
       "sha256": "06eccf1cdc8f21b37fef33641df5a15dd99fa3a5a3cb02d78da07940a6fca6a2",
-      "purpose": "research recipe or historical revision; see REPRODUCE.md",
+      "purpose": "manual research, reproducibility, real verification or retained historical revision",
+      "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7"
+    },
+    {
+      "id": "halcon1391:provision_secrets",
+      "path": "analysis/com.halcon.connect/1391/tools/provision_secrets.py",
+      "sha256": "8411fae310f67dc07188b04c3c92f81ec875ed9969809d39b069cb7443b7407a",
+      "purpose": "manual research, reproducibility, real verification or retained historical revision",
       "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7"
     },
     {
       "id": "halcon1391:recover",
       "path": "analysis/com.halcon.connect/1391/tools/recover.py",
-      "sha256": "3c3ea716ffaac51efc8abc7d19895bf068955a033c6e89e521d488b546c741a1",
-      "purpose": "research recipe or historical revision; see REPRODUCE.md",
+      "sha256": "7efc890722de57022a77b11bafb041f0dac3eaeb45a6571d1d1b80c77b4da14f",
+      "purpose": "manual research, reproducibility, real verification or retained historical revision",
+      "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7"
+    },
+    {
+      "id": "halcon1391:replay_real",
+      "path": "analysis/com.halcon.connect/1391/tools/replay_real.mjs",
+      "sha256": "6c7e604181bbb0c0b408811e594b14190f8895380df16ee53db0238f4d845a5a",
+      "purpose": "manual research, reproducibility, real verification or retained historical revision",
+      "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7"
+    },
+    {
+      "id": "halcon1391:verify_real",
+      "path": "analysis/com.halcon.connect/1391/tools/verify_real.py",
+      "sha256": "20bb06efaf39e5a7d5c3947722c24e7bacbf2f4d4f073052a64e140cc39616ea",
+      "purpose": "manual research, reproducibility, real verification or retained historical revision",
       "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7"
     }
   ],
@@ -827,6 +878,16 @@
       "license_review": "NEEDS_REVIEW",
       "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
       "used_by": "manual research and synthetic verification"
+    },
+    {
+      "id": "runtime:node",
+      "name": "Node.js",
+      "version": "24.22.1",
+      "type": "runtime",
+      "source": "https://nodejs.org/",
+      "license": "MIT and bundled components; NEEDS_REVIEW",
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "used_by": "Node broker/contract tests and real-bytes replay; builtin modules only"
     }
   ],
   "runtimes": {
@@ -845,10 +906,20 @@
     }
   ],
   "code_paths": {
-    "operational_decoder": null,
-    "catalog_broker": null,
-    "worker": null,
-    "candidate_envelope": "analysis/com.halcon.connect/1391/tools/envelope_candidate.py"
+    "operational_decoder": "decoders/Python/apps/Halcon_R_Net/codec.py",
+    "catalog_cli": "decoders/Python/apps/Halcon_R_Net/server_catalog_decoder.py",
+    "catalog_broker": "cloud/web/lib/server-vpn-provider.mjs",
+    "updater_protocol": "cloud/web/lib/halcon-protocol.mjs",
+    "worker": "cloud/workers/python/catalog_vpn_bridge.py",
+    "worker_isolation": "cloud/workers/python/engine.py",
+    "public_metadata": "cloud/web/lib/server-vpn-catalog.mjs",
+    "worker_contract": "cloud/web/lib/c3-gateway.mjs",
+    "provider_controls": "cloud/web/lib/c12-provider-controls.mjs",
+    "deployment": "cloud/compose.yaml",
+    "tests": [
+      "tests/test_halcon_r_net.py",
+      "cloud/web/tests/halcon-r-net.test.mjs"
+    ]
   },
   "evidence_refs": [
     "ANALYSIS.md",
@@ -859,30 +930,44 @@
     "generated/input_inventory.json",
     "tests/test_envelope.py",
     "tests/fixtures/expected.json",
-    "tests/fixtures/synthetic.envelope"
+    "tests/fixtures/synthetic.envelope",
+    "generated/primary.summary.json",
+    "generated/real_catalog.summary.json",
+    "tools/verify_real.py",
+    "tools/replay_real.mjs",
+    "../../../tests/test_halcon_r_net.py"
   ],
   "limitations": [
-    "No se obtuvo un catálogo real autenticado ni se conoce su esquema completo.",
-    "No afirmar que 4.1.4 es la última versión oficial: Play y mirror muestran fechas distintas.",
-    "APK no ejecutada ni instalada. Sin prueba de Android/Termux ni firma de APK contrastada con un original descargado desde Play.",
-    "JADX classes.dex terminó con 22 errores; classes2.dex sin errores.",
-    "La lógica de campos por servidor y flags/configuración adicional sigue sin validación real.",
-    "Revisión de licencias transitivas pendiente. Herramientas no aprobadas para autoejecución Fase7."
+    "Node direct broker returned REMOTE_NETWORK_DENIED in this executor; actual Node/VPS transport unverified.",
+    "Android/Termux not executed; no Play-original signature comparison; latest official build not certified.",
+    "No new file/text/export format claimed; no VIP/payment/account endpoints tested.",
+    "JADX DEX1 had22 errors; relevant DEX2 completed successfully.",
+    "Third-party license review/automatic Phase7 approval remain separate and pending."
   ],
   "network_requirements": [
-    "GETs públicos de Play/APKPure para adquisición, PyPI y release oficial JADX para preparar herramientas.",
-    "Respaldo público devuelve404. Repetición de POST autenticado principal BLOQUEADA por auto-review; no reintentar sin autorización explícita."
+    "Authorized fixed original POST with real provisioned signing secret; no redirects.",
+    "Public backup404 is historical failure, never substituted for main response.",
+    "Real Node/VPS validation still required."
   ],
   "manual_steps": [
-    "Aprobar expresamente el POST firmado del actualizador observado o aportar una respuesta de catálogo obtenida legítimamente, sin tokens/cuentas en chat.",
-    "Autenticar sobre real, contrastar documento completo y esquema/campos con oráculo antes de implementar proveedor operativo."
+    "Provision both real variables from private verified recipe/env artifact; preserve existing env and switches.",
+    "Deploy only after owner instruction and test real Node path on VPS; no automatic merge/deploy in this change."
   ],
   "unresolved_questions": [
-    "Versión última oficial y equivalencia de firma Play/mirror.",
-    "Respuesta real de la fuente principal y compatibilidad del sobre nativo.",
-    "Esquema real completo y tratamiento de campos nativos por servidor."
+    "Actual Node/VPS transport and Android physical verification.",
+    "Latest official build and exact Play mirror signature equivalence."
   ],
   "fixtures": [
+    {
+      "path": "tests/fixtures/catalog.envelope",
+      "type": "SYNTHETIC",
+      "sha256": "0140de616666e68dd1eae6f94b6fec040d9d4618a6c12804221f7a46aab34cd6"
+    },
+    {
+      "path": "tests/fixtures/catalog.expected.json",
+      "type": "SYNTHETIC",
+      "sha256": "ab6cc22c8616868aa611b6661cc01f72d899c4c6bb4aaf67d3c0ec3cf76709f5"
+    },
     {
       "path": "tests/fixtures/expected.json",
       "type": "SYNTHETIC",
@@ -895,11 +980,51 @@
     }
   ],
   "tests": {
-    "python": 12,
+    "python": 22,
+    "node": 33,
     "result": "PASS",
-    "scope": "synthetic crypto, malformed inputs, full JSON fidelity",
-    "independent_oracle": "OpenJDK17 JCA AES/GCM, generated and reopened synthetic fixture; real catalog unverified"
+    "independent_oracle": "OpenJDK17 JCA, complete real635/101 JSON equal to production CLI and isolated worker",
+    "actual_downloads": "Research probe POST HTTP200 plus production Python CLI download, both real",
+    "node_transport": "Real attempt failed environment network validation; real-bytes replay with mocked HTTP passed"
   },
   "integration_enabled": false,
-  "dependency_lockfile": "dependencies.lock.json"
+  "dependency_lockfile": "dependencies.lock.json",
+  "code_integrated": true,
+  "verification_scope": "VERIFIED_REAL_PYTHON_CLI_JCA_ISOLATED_WORKER",
+  "production_deployment_verified": false,
+  "conditional_enablement": "Both provisioned backend secrets, global Server VPN enabled and individual switch allowed",
+  "runtime_source_hashes": [
+    {
+      "path": "decoders/Python/apps/Halcon_R_Net/codec.py",
+      "sha256": "a768d55922ab9f7f7bc84b2d4f4ecaee9e0898a0c977d306234d36e4978628de"
+    },
+    {
+      "path": "decoders/Python/apps/Halcon_R_Net/server_catalog_decoder.py",
+      "sha256": "3fb75997655a5d301958dc03b256c16295c9e8714f39ebb87eda7865f429c1cc"
+    },
+    {
+      "path": "cloud/web/lib/halcon-protocol.mjs",
+      "sha256": "9b1e21a57d54e55a94e37cd44b0e3374c8fdc12a77fbdbe0d8a6bdc7fcd204c3"
+    }
+  ],
+  "secret_consumers": {
+    "SPDECODE_HALCON_REQUEST_SECRET": [
+      "web updater",
+      "Python catalog download CLI"
+    ],
+    "SPDECODE_HALCON_CATALOG_PASSWORD": [
+      "web configuration readiness",
+      "Halcon-only worker child",
+      "Python CLI"
+    ]
+  },
+  "icon": {
+    "source": "res/mipmap-xxxhdpi-v4/ic_launcher.webp",
+    "width": 192,
+    "height": 192,
+    "source_sha256": "4fef8deb94cf12ff617f61cf034b249e71ee7984fd5ce7a70aba919103552db9",
+    "png_sha256": "859825df9e151d9b77039cc7f4a42b75feb3b9ea823999fa567ec823a173f143",
+    "png_bytes": 71433,
+    "conversion": "Pillow PNG; original pixels verified identical"
+  }
 }

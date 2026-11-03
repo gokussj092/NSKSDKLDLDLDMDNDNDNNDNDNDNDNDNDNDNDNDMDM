@@ -9,6 +9,7 @@ import dns from "node:dns/promises";
 import https from "node:https";
 import http from "node:http";
 import {ALFAISAL_SOURCE,ALFAISAL_METADATA,alfaisalConfigured,alfaisalRequest} from "./alfaisal-protocol.mjs";
+import {HALCON_SOURCE,halconConfigured,halconRequest} from "./halcon-protocol.mjs";
 import {publicIpv4} from "./c35-provider.mjs";
 
 const ABOWAGED_SOURCES=Object.freeze({
@@ -47,6 +48,7 @@ const JYFAST_SOURCES=Object.freeze({
 });
 const PAIRED_SOURCES=Object.freeze({"jyfast-vpn-ultra":JYFAST_SOURCES,"abowaged-vpn":ABOWAGED_SOURCES,"turbomx-vpn":TURBOMX_SOURCES,"superflash-vpn":SUPERFLASH_SOURCES,"onspace-vpn":ONSPACE_SOURCES,"http-socketclay":SOCKETCLAY_SOURCES,"http-wakko":WAKKO_SOURCES,"v2ray-tunnel-plus":V2PLUS_SOURCES});
 const PROVIDERS = Object.freeze({
+  "halcon-r-net": {url:HALCON_SOURCE,agent:"Dalvik/2.1.0"},
   // ResourceUpdater GET; Volley uses Android's default Dalvik agent family.
   "ha-tunnel-plus": {url:"https://www.hatunnel.me/resources/main.txt",agent:"Dalvik/2.1.0"},
   "ultra-tunnel": {url:"https://strongteam.co/api/ultrasystem/ultrav3.txt",agent:"Ultra Tunnel"},
@@ -168,6 +170,7 @@ export class VpnProviderError extends Error {
 function fail(code){throw new VpnProviderError(code);}
 export function providerEnabled(id,env=process.env){
   if(!Object.hasOwn(PROVIDERS,id) || env.CLOUD_SERVER_VPN_ENABLED!=="true")return false;
+  if(id==="halcon-r-net")return halconConfigured(env);
   if(id==="alfaisal-tunnel-plus")return alfaisalConfigured(env);
   if(id!=="vip-snipher-pro")return true;
   const authorization=env.SPDECODE_VIP_SNIPHER_AUTHORIZATION;
@@ -281,10 +284,32 @@ async function downloadAlfaisal(provider){
   return data;
 }
 
+async function downloadHalcon(provider){
+  const dest=new URL(HALCON_SOURCE);
+  const addresses=await vettedIpv4(dest.hostname);
+  const signed=halconRequest();
+  let answer;
+  try{answer=await pinnedRequest(HALCON_SOURCE,addresses[0],provider.agent,DEADLINE_MS,
+    signed.headers,{method:"POST",body:signed.body});}
+  catch(error){
+    if(error instanceof VpnProviderError)throw error;
+    fail("REMOTE_PROVIDER_UNAVAILABLE");
+  }
+  // Never forward signed headers to another path/origin or retry a signed POST.
+  if(Object.hasOwn(answer,"redirect"))fail("REMOTE_NETWORK_DENIED");
+  if(!Buffer.isBuffer(answer.data)||!answer.data.length||
+     answer.data.subarray(0,64).toString("utf8").trimStart().startsWith("<"))fail("REMOTE_RESPONSE_INVALID");
+  return answer.data;
+}
+
 export async function downloadVpnCatalog(id,source=id==="jyfast-vpn-ultra"?"free":id==="v2ray-tunnel-plus"?"base64":"servers"){
   const provider=PROVIDERS[id];
   if(!provider)fail("UNSUPPORTED_FORMAT");
   if(!providerEnabled(id))fail("REMOTE_NOT_CONFIGURED");
+  if(id==="halcon-r-net"){
+    if(source!=="servers")fail("UNSUPPORTED_FORMAT");
+    return downloadHalcon(provider);
+  }
   if(id==="alfaisal-tunnel-plus"){
     if(source!=="servers")fail("UNSUPPORTED_FORMAT");
     return downloadAlfaisal(provider);

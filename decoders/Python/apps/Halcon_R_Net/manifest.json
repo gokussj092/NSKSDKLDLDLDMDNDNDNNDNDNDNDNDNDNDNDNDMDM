@@ -1,0 +1,19 @@
+{
+  "id": "halcon-r-net",
+  "packageName": "com.halcon.connect",
+  "name": "HALCON RAMOS Conectividad",
+  "versionName": "4.1.4",
+  "versionCode": 1391,
+  "engine": "symbol-base64-sha256-aes256-gcm",
+  "catalog": {
+    "supported": true,
+    "verifiedVersion": "635",
+    "verifiedServers": 101,
+    "source": "fixed-original-updater",
+    "requiresBackendSecrets": true
+  },
+  "files": [],
+  "text": [],
+  "evidence": "analysis/com.halcon.connect/1391/MANIFEST.json",
+  "productionDeploymentVerified": false
+}

@@ -1,3 +1,33 @@
+# Resultado vigente — VERIFIED_REAL, integración de código
+
+| Prueba | Resultado observado |
+| --- | --- |
+| POST original autorizado | HTTP200, text/plain,645168 bytes |
+| Catálogo autenticado | Versión635,101 servidores |
+| Java/JCA frente a Python/CLI/worker | JSON completo igual, sin truncar registros |
+| CLI con descarga real | Documento completo igual a referencia JCA |
+| Pruebas Python |22 correctas:10 proveedor+12 expediente |
+| Node focal y regresión de broker/contrato |33 correctas;7 Halcon repetidas tras endurecer validación de secretos |
+| Node con bytes reales | Replay correcto de broker+contrato, HTTP simulado |
+| Node con red real | REMOTE_NETWORK_DENIED del entorno; VPS pendiente |
+| Icono original |192x192/71433 bytes, píxeles idénticos al launcher WebP |
+| Catálogo fuente |63,59 fichas; habilitación condicionada a secretos y switches |
+
+SHA256 del sobre real:
+`f112a2704421f5b53a82fb859ce925d12f5d8f10280943b8df7597baa49c88f5`.
+Referencia JCA80617 bytes (formato original, incluye espacios):
+`bd09071797d4c3175216ff958ce180273936ba970394eb4a49bc28d0d056620a`.
+La salida CLI usa otra indentación/escape; se comparó el objeto entero.
+
+No se usó un catálogo estático ni sintético para declarar la descarga real.
+Los fixtures CI sí son sintéticos y están separados. Se conserva el404 del
+respaldo y el primer MAC failure como evidencia histórica. No hay prueba de
+producción ni publicación Android. Secretos y JSON reales permanecen fuera de Git.
+
+---
+
+## Registro histórico del primer intento
+
 # Resultados reales y límites
 
 Estado del método: **PENDING**. Descargas reales de catálogo verificadas: **0**.

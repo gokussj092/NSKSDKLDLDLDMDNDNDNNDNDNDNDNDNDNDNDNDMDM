@@ -12,7 +12,8 @@ import javax.crypto.spec.SecretKeySpec;
 public final class EnvelopeOracle {
     public static void main(String[] args) throws Exception {
         if (args.length != 3) throw new IllegalArgumentException("encode|decode input output");
-        String password = System.getenv("HALCON_SYNTHETIC_PASSWORD");
+        String password = System.getenv("HALCON_CATALOG_PASSWORD");
+        if (password == null) password = System.getenv("HALCON_SYNTHETIC_PASSWORD");
         if (password == null || password.isEmpty()) throw new IllegalArgumentException("Missing test password");
         byte[] key = MessageDigest.getInstance("SHA-256").digest(password.getBytes(StandardCharsets.UTF_8));
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");

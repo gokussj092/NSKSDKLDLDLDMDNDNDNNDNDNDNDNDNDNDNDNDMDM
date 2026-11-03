@@ -95,3 +95,11 @@ fallo del proveedor. Las herramientas de este expediente NO son adaptadores
 aprobados para ejecutar automáticamente sobre APK futuras.
 
 Versiones de utilidades efectivamente disponibles: ripgrep 15.2.0 (rev e89fff89ac); GNU bash, version 5.2.21(1)-release (x86_64-pc-linux-gnu); GNU readelf (GNU Binutils for Ubuntu) 2.42; GNU strings (GNU Binutils for Ubuntu) 2.42; cmp (GNU diffutils) 3.10; git version 2.51.1.
+
+## Herramientas adicionales del cierre autorizado
+
+- Node.js **24.22.1**, https://nodejs.org/, licencia MIT/componentes incluidos: pruebas del broker, contrato y replay real. Solo módulos nativos; no paquetes npm nuevos.
+- Pillow **13.0.0** se ejecutó ahora realmente para convertir el launcher WebP original en PNG sin cambiar píxeles; WebP incluido **1.6.0**. Fuente https://chromium.googlesource.com/webm/libwebp; licencia transitiva pendiente de revisión.
+- Java/JCA se ejecutó también con los bytes reales del catálogo; igualdad completa con CLI y worker. El material privado se pasa por entorno, nunca argumentos ni stdout.
+- recover.py corregido: SHA256(DER) directo; revisión Base64 errónea conservada. probe.py autorizado por el propietario en esta continuación.
+- La transferencia privada de entregables usa los helpers actuales de ChatGPT Library; no son dependencia del método ni del worker y no se incorporan al runtime.

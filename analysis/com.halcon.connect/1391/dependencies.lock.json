@@ -1043,5 +1043,21 @@
     "strings": "GNU strings (GNU Binutils for Ubuntu) 2.42",
     "cmp": "cmp (GNU diffutils) 3.10",
     "git": "git version 2.51.1"
+  },
+  "node": {
+    "id": "runtime:node",
+    "name": "Node.js",
+    "version": "24.22.1",
+    "type": "runtime",
+    "source": "https://nodejs.org/",
+    "license": "MIT and bundled components; NEEDS_REVIEW",
+    "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+    "used_by": "Node broker/contract tests and real-bytes replay; builtin modules only"
+  },
+  "pillow_bundled_webp": {
+    "version": "1.6.0",
+    "source": "https://chromium.googlesource.com/webm/libwebp",
+    "use": "original launcher format conversion",
+    "license_review": "NEEDS_REVIEW"
   }
 }

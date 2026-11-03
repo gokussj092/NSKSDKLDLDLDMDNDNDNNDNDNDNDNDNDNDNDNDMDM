@@ -27,4 +27,4 @@ El archivo histórico [SOCKSIP_VER8_VER7_VER6_STUDY.md](SOCKSIP_VER8_VER7_VER6_S
 
 ## Expedientes por aplicación
 
-- [com.halcon.connect /1391 — Halcon R Net](com.halcon.connect/README.md): PENDING; sobre sintético contrastado con JCA, respaldo404 y petición principal pendiente de autorización explícita. No habilitado en catálogo.
+- [com.halcon.connect /1391 — Halcon R Net](com.halcon.connect/README.md): VERIFIED_REAL: petición autorizada200, catálogo635/101 completo igual a JCA/CLI/worker; integrado en código. Prueba de Node real en VPS pendiente.

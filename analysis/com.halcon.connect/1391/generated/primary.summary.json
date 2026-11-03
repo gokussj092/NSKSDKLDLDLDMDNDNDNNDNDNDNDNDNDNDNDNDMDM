@@ -1,0 +1,10 @@
+{
+  "source": "primary",
+  "method": "POST",
+  "observed_at": 1793692575,
+  "http": 200,
+  "content_type": "text/plain",
+  "bytes": 645168,
+  "sha256": "f112a2704421f5b53a82fb859ce925d12f5d8f10280943b8df7597baa49c88f5",
+  "html": false
+}

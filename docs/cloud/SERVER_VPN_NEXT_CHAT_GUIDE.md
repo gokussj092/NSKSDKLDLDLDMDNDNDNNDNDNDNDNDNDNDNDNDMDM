@@ -1,16 +1,21 @@
-# Halcon R Net / HALCON RAMOS Conectividad — catálogo pendiente, 2026-11-02
+# Halcon R Net / HALCON RAMOS Conectividad — integrado en código, 2026-11-02
 
-Paquete `com.halcon.connect`, muestra pública4.1.4/build1391 verificada por
-manifiesto. Expediente conforme a nueva política en
-[analysis/com.halcon.connect/1391](../../analysis/com.halcon.connect/1391/ANALYSIS.md),
-con scripts reales, revisiones fallidas,12 pruebas sintéticas/JCA,42 versiones
-Python fijadas y límites explícitos. **No hay catálogo real autenticado**:
-getDefaultConfig devuelve `{}` y respaldo GET404/text/plain/14 bytes.
-La validación del POST principal firmado quedó **bloqueada por auto-review**
-por faltar autorización explícita para usar material autenticador de la APK.
-No reintentar por otra vía; solicitar permiso o una respuesta legítima.
-No activar ficha/broker/worker, cambiar versión de catálogo ni anunciar soporte.
-Sin cambio de métodos operativos, Android, main, VPS o publicación.
+com.halcon.connect4.1.4/build1391: propietario autorizó expresamente el POST
+firmado tras el bloqueo inicial. Aplicada la regla de paridad de descarga
+original de esta guía. **HTTP200 real/645168 bytes, catálogo635/101 servidores**;
+Java/JCA, CLI con descarga real y worker aislado iguales en el documento entero.
+Corrección clave: SHA256 del certificado DER directo, sin Base64.
+
+Lector/CLI Halcon_R_Net, broker Node fijo, worker/contrato, Compose, control
+individual e icono original PNG192x192 añadidos. Fuente63/59 fichas; C0240 y
+formatos256 intactos. Requiere SPDECODE_HALCON_REQUEST_SECRET (web/CLI) y
+SPDECODE_HALCON_CATALOG_PASSWORD (clave solo del hijo Halcon, web valida provisión).
+Valores reales probados y entregados privadamente; nunca Git/fixtures/cliente.
+
+22 Python/33 Node correctas. Node directo devolvió REMOTE_NETWORK_DENIED aquí;
+replay con bytes reales+HTTP simulado correcto. **Probar Node real en VPS** antes
+de declarar producción verificada. Sin merge/deploy/APK ni reset de switches.
+[Expediente y revisiones](../../analysis/com.halcon.connect/1391/ANALYSIS.md).
 
 ---
 

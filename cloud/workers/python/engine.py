@@ -401,7 +401,7 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
 
 def decode_provider_catalog(provider_id: str, contents: bytes) -> dict:
     """One fixed provider codec, child-isolated; broker performs all network I/O."""
-    if provider_id not in ("ha-tunnel-plus", "ultra-tunnel", "zig-tunnel", "enaa-tunnel", "alfaisal-tunnel-plus", "izph-vpn-pro", "vip-snipher-pro", "netcol-vpn", "wolf-custom-vpn", "jyfast-vpn-ultra", "tunneldoom-vpn", "mtm-tunnel-lite", "mnr-tunnel-plus", "bd-net-vpn", "aura-net-vpn", "apna-vpn", "any-vpn", "speicers-pro-vpn", "tx-tunnel", "mm-tunnel", "creeb-vpn", "abowaged-vpn", "7net-vpn", "xhypher-tunnel-pro", "ut-loop-pro-vpn", "turbomx-vpn", "superflash-vpn", "rmp-tunnel-pro", "rjc-tunnel-pro", "proneet-vpn", "onspace-vpn", "mx-tunnel-pro", "megatunnel", "http-internet-infinito", "24clan-green", "hx-tunnel", "mkk-hyper", "my-tunnel-proxy", "robust-tunnel", "royal-tunnel", "trv-tunnel", "4u-tunnel-lite", "ac-tunnel-vpn", "austroplus-vpn", "http-fenixvpn", "http-jireh", "http-socketclay", "http-wakko", "v2ray-tunnel-plus", "eut-vpn", "focus-vpn-cloud", "freedom-vpn", "tunelguard-vpn", "tunneltweak", "ksh-vpn", "dtunnel-mod"):
+    if provider_id not in ("halcon-r-net", "ha-tunnel-plus", "ultra-tunnel", "zig-tunnel", "enaa-tunnel", "alfaisal-tunnel-plus", "izph-vpn-pro", "vip-snipher-pro", "netcol-vpn", "wolf-custom-vpn", "jyfast-vpn-ultra", "tunneldoom-vpn", "mtm-tunnel-lite", "mnr-tunnel-plus", "bd-net-vpn", "aura-net-vpn", "apna-vpn", "any-vpn", "speicers-pro-vpn", "tx-tunnel", "mm-tunnel", "creeb-vpn", "abowaged-vpn", "7net-vpn", "xhypher-tunnel-pro", "ut-loop-pro-vpn", "turbomx-vpn", "superflash-vpn", "rmp-tunnel-pro", "rjc-tunnel-pro", "proneet-vpn", "onspace-vpn", "mx-tunnel-pro", "megatunnel", "http-internet-infinito", "24clan-green", "hx-tunnel", "mkk-hyper", "my-tunnel-proxy", "robust-tunnel", "royal-tunnel", "trv-tunnel", "4u-tunnel-lite", "ac-tunnel-vpn", "austroplus-vpn", "http-fenixvpn", "http-jireh", "http-socketclay", "http-wakko", "v2ray-tunnel-plus", "eut-vpn", "focus-vpn-cloud", "freedom-vpn", "tunelguard-vpn", "tunneltweak", "ksh-vpn", "dtunnel-mod"):
         raise DecodeFailure("UNSUPPORTED_FORMAT")
     if not isinstance(contents, bytes) or not contents:
         raise DecodeFailure("INVALID_INPUT")
@@ -412,6 +412,13 @@ def decode_provider_catalog(provider_id: str, contents: bytes) -> dict:
         raise DecodeFailure("INPUT_TOO_LARGE")
     bridge=Path(__file__).with_name("catalog_vpn_bridge.py")
     with tempfile.TemporaryDirectory(prefix="spdecode-c8-catalog-") as folder:
+        child_env=_child_env(folder)
+        if provider_id=="halcon-r-net":
+            # Content key only; request signing material never reaches a decoder.
+            key=os.environ.get("SPDECODE_HALCON_CATALOG_PASSWORD", "")
+            if not key:
+                raise DecodeFailure("REMOTE_NOT_CONFIGURED")
+            child_env["SPDECODE_HALCON_CATALOG_PASSWORD"]=key
         source=Path(folder)/"catalog.enc"
         target=Path(folder)/"stdout"
         source.write_bytes(contents)
@@ -420,7 +427,7 @@ def decode_provider_catalog(provider_id: str, contents: bytes) -> dict:
             with target.open("wb") as output:
                 proc=subprocess.Popen(
                     [sys.executable,str(bridge),provider_id,str(source)],
-                    cwd=ROOT,env=_child_env(folder),stdin=subprocess.DEVNULL,
+                    cwd=ROOT,env=child_env,stdin=subprocess.DEVNULL,
                     stdout=output,stderr=subprocess.DEVNULL,close_fds=True,
                     start_new_session=True,preexec_fn=partial(_child_limits,CATALOG_TIMEOUT_SECONDS,
                                                 MAX_MKK_OUTPUT_BYTES if provider_id=="mkk-hyper"
