@@ -1,5 +1,8 @@
 # SP-DECODE — Fase 7: arquitectura de suscripciones, créditos y análisis de APK
 
+> **Anexo pendiente aprobado para planificación:** [dos modalidades de análisis automático de APK (informe o código asistido por IA)](FASE_7_APK_AUTOANALISIS_DOS_SALIDAS_PENDING_2026_11_02.md). El registro obligatorio de herramientas es [analysis/METHOD_EVIDENCE_POLICY.md](../analysis/METHOD_EVIDENCE_POLICY.md). Estos anexos no habilitan operaciones, cobros ni análisis real.
+
+
 **Fecha:** 2026-11-02  
 **Rama:** `fix/http-jireh-current-method`  
 **Objetivo de versión:** 1.1.26 / build 41 (no modifica Gradle).  
