@@ -26,7 +26,7 @@ jobs:
           node-version: "22"
       - name: Install dependencies
         working-directory: cloud/web
-        run: npm ci --no-audit --no-fund
+        run: npm install --no-audit --no-fund
       - name: Execute all Cloud tests (preserve failure exit status)
         working-directory: cloud/web
         run: |
