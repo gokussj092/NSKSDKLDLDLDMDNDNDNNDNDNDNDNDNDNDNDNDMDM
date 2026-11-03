@@ -64,6 +64,7 @@ fun SpDecodeApp(
     busy:Boolean,
     error:String?,
     progressStage:Int,
+    cloudProgressPhase:Int?=null,
     progressFilename:String?,
     progressPosition:Int,
     progressTotal:Int,
@@ -264,6 +265,16 @@ fun SpDecodeApp(
                         2->R.string.decode_progress_saving
                         else->R.string.decode_progress_decoding
                     }),color=Secondary,fontSize=14.sp,textAlign=TextAlign.Center)
+                    if(BuildConfig.SPDECODE_CLOUD_ENABLED && cloudProgressPhase!=null) {
+                        Text(stringResource(R.string.decode_progress_wait),
+                            color=Secondary,fontSize=13.sp,textAlign=TextAlign.Center)
+                        Text(stringResource(when(cloudProgressPhase) {
+                            0->R.string.decode_progress_sending
+                            1->R.string.decode_progress_processing
+                            else->R.string.decode_progress_downloading_results
+                        }),color=White,fontSize=15.sp,fontWeight=FontWeight.SemiBold,
+                            textAlign=TextAlign.Center)
+                    }
                     if(progressTotal>1) Text(
                         stringResource(R.string.batch_progress_count,progressPosition,progressTotal),
                         color=White,fontSize=13.sp)
