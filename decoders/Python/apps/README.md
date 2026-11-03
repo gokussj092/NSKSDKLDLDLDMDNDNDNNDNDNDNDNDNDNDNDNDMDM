@@ -1,5 +1,8 @@
 # Decodificadores organizados por aplicación
 
+> **REQUISITO DE INTEGRACIÓN (2026-11-02):** todo proveedor nuevo o revisión de versión debe tener un expediente de herramientas, scripts y pruebas en [analysis/](../../../analysis/README.md) conforme a [su política obligatoria](../../../analysis/METHOD_EVIDENCE_POLICY.md). Un README/ANALYSIS.md de proveedor y un codec final NO sustituyen el registro de todos los scripts usados. Se acepta estado PENDING cuando no hubo verificación real; no se declara soportado sin pruebas.
+
+
 Cada aplicación de este lote tiene su propia carpeta, con nombres
 reconocibles y espacios representados mediante guiones bajos:
 
