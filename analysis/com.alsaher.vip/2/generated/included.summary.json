@@ -1,0 +1,19 @@
+[
+  {
+    "source": "mtk.hs",
+    "bytes": 72096,
+    "sha256": "fdd5e77b9161b6a17bf9b1287eba694d9237a97c6d6dd389b232963ae725fb76",
+    "version": "9.9.9",
+    "counts": {
+      "Servers": 4,
+      "HTTPNetworks": 4,
+      "SSLNetworks": 1,
+      "JSONsettings": 1
+    },
+    "encrypted_fields": 29,
+    "unique_encrypted_fields": 13,
+    "whole_java_equal": true,
+    "whole_cli_equal": true,
+    "whole_worker_equal": true
+  }
+]

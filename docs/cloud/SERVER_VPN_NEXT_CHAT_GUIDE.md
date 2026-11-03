@@ -1,3 +1,23 @@
+# ALSAHER VIP 1.1/build2 — catálogo Cloud integrado en código, 2026-11-03
+
+El propietario aportó com.alsaher.vip desde Archive.org y pidió **solo Cloud,
+sin modificar ni esperar compilaciones Android**. APK hash5b68209e…6432a1a.
+Actualizador GET raw GitHub, User-Agent original okhttp/4.12.0; sin secretos nuevos.
+**Descarga real HTTP200/80552 bytes:9.9.58,14 servidores/3 HTTP/9 SSL**,
+76 campos cifrados/33 distintos. Incluido9.9.9/4/4/1 separado. Los dos JSON
+completos coinciden con referencia Java, CLI y worker aislado.
+
+Familia XXTEA(delta772515655)+doble resta UTF16 idéntica a ZiG: motor reutilizado,
+sin modificarlo. Codec/CLI ALSAHER_VIP, broker/worker/contrato, controles e icono
+original1024x1024/205869 bytes conectados. Fuente64/60 fichas; formatos256 y
+versiones superiores del VPS conservados. No se infieren archivos `.hs`.
+9 Python/38 Node correctas. Node real aquí:REMOTE_NETWORK_DENIED; replay con
+bytes/resultados reales y HTTP simulado correcto. **Node/VPS pendiente**, no
+confundir con la descarga Python real validada. Sin merge/deploy/Android.
+[Expediente obligatorio y reproducción](../../analysis/com.alsaher.vip/2/ANALYSIS.md).
+
+---
+
 # Halcon R Net / HALCON RAMOS Conectividad — integrado en código, 2026-11-02
 
 com.halcon.connect4.1.4/build1391: propietario autorizó expresamente el POST

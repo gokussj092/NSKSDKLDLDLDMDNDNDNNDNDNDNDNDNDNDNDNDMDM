@@ -28,3 +28,5 @@ El archivo histórico [SOCKSIP_VER8_VER7_VER6_STUDY.md](SOCKSIP_VER8_VER7_VER6_S
 ## Expedientes por aplicación
 
 - [com.halcon.connect /1391 — Halcon R Net](com.halcon.connect/README.md): VERIFIED_REAL: petición autorizada200, catálogo635/101 completo igual a JCA/CLI/worker; integrado en código. Prueba de Node real en VPS pendiente.
+
+- [com.alsaher.vip / 2 — ALSAHER VIP](com.alsaher.vip/README.md): VERIFIED_REAL; catálogo remoto9.9.58/14 servidores/3 HTTP/9 SSL, JSON entero igual a Java/CLI/worker. Solo Cloud; Node/VPS pendiente.

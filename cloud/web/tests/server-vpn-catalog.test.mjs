@@ -16,7 +16,7 @@ test("HA Tunnel original PNG and the validated fixed updater are available",()=>
 });
 test("original provider PNGs match the public digest and never contain secrets",()=>{
  const values=catalog();assert.equal(values.catalogVersion,CATALOG_VERSION);
- assert.equal(RECHECK_SECONDS,900);assert.equal(values.apps.length,59);
+ assert.equal(RECHECK_SECONDS,900);assert.equal(values.apps.length,60);
  const ids=new Set();
  for(const app of values.apps) {
    assert(!ids.has(app.id));ids.add(app.id);
@@ -40,14 +40,14 @@ test("current catalog still invalidates the release-57 Android catalog cache",as
  const data=await response.json();
  assert.equal(data.unchanged,false);
  assert.equal(data.catalogVersion,CATALOG_VERSION);
- assert.equal(CATALOG_VERSION,63);
+ assert.equal(CATALOG_VERSION,64);
  assert(data.apps.some(x=>x.id==="http-jireh"));
  assert(data.apps.some(x=>x.id==="jyfast-vpn-ultra"));
 });
 test("new version returns catalog and invalid bodies fail closed",async()=>{
  const response=await list(body({knownVersion:0}));
  const data=await response.json();assert.equal(response.status,200);
- assert.equal(data.unchanged,false);assert.equal(data.apps.length,59);
+ assert.equal(data.unchanged,false);assert.equal(data.apps.length,60);
  for(const invalid of [{knownVersion:-1},{url:"http://127.0.0.1/"},{knownVersion:"1"}]) {
    assert.equal((await list(body(invalid))).status,400);
  }

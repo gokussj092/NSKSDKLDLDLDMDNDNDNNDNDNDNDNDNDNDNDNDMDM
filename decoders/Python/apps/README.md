@@ -33,6 +33,7 @@ de cada carpeta no sustituyen esa nueva investigación ni describen el VPS actua
 
 | Aplicación | Catálogo | Archivos/textos | Icono y documentación |
 | --- | --- | --- | --- |
+| ALSAHER VIP 1.1 (2) | [GET real,9.9.58/14 servidores/3 HTTP/9 SSL](ALSAHER_VIP/server_catalog_decoder.py) | Sin nuevos formatos inferidos | [Expediente y límites](ALSAHER_VIP/README.md) |
 | HALCON RAMOS Conectividad / Halcon R Net 4.1.4 (1391) | [POST firmado HTTP200, catálogo635/101 servidores](Halcon_R_Net/server_catalog_decoder.py) | Sin nuevos formatos de archivo/texto inferidos | [Expediente y límites VPS](Halcon_R_Net/README.md) |
 | Hex Tunnel / HexVPN 1.7.3-Rev | Solo archivos, sin proveedor de servidores | [.hexcm Cloud, JSON firmado completo](Hex_Tunnel/file_decoder.py) | [Método y pruebas](Hex_Tunnel/README.md) |
 | MM Tunnel v1.10.30.2 | [POST HTTP200, 38 servidores /557 redes](MM_Tunnel/server_catalog_decoder.py) | [.mmt Cloud y legado conservado](MM_Tunnel/file_decoder.py) | [Carpeta](MM_Tunnel/README.md) |

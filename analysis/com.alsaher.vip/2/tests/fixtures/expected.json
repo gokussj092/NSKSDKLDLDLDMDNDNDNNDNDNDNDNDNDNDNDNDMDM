@@ -1,0 +1,54 @@
+{
+  "FileName": "synthetic-alsaher",
+  "Version": "synthetic-2",
+  "ReleaseNotes": "test",
+  "config_url": "https://example.org/catalog",
+  "cloud_get_api": "https://example.org/get",
+  "cloud_post_api": "https://example.org/post",
+  "account_api": "",
+  "AppConfPass": "",
+  "Servers": [
+    {
+      "Name": "Example",
+      "ServerIP": "vpn.example.org",
+      "ProxyHost": "proxy.example.org",
+      "Username": "synthetic-user",
+      "Password": "synthetic-password",
+      "TcpPort": "443",
+      "AutoLogIn": false,
+      "unknown": {
+        "preserve": [
+          true,
+          null,
+          7
+        ]
+      }
+    }
+  ],
+  "HTTPNetworks": [
+    {
+      "Name": "HTTP sample",
+      "NetworkPayload": "Prueba 日本語 😀\nGET / HTTP/1.1\r\nHost: example.org\r\n",
+      "SquidProxy": "proxy.example.org",
+      "UseDefProxy": true
+    }
+  ],
+  "SSLNetworks": [
+    {
+      "Name": "SSL sample",
+      "SSLSNI": "example.org",
+      "SquidProxy": "",
+      "SSLPort": "443"
+    }
+  ],
+  "JSONsettings": [
+    {
+      "mLocalPort": "1080",
+      "mCompression": true,
+      "unknown": "preserve"
+    }
+  ],
+  "unknownRoot": {
+    "preserve": true
+  }
+}
