@@ -58,7 +58,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          MAIN_SHA="$(git ls-remote origin refs/heads/main | cut -f1)"
+          MAIN_SHA="$(gh api --method GET "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')"
           if [[ "$SOURCE_SHA" != "$MAIN_SHA" ]]; then
             echo "Skipping old main commit: $SOURCE_SHA (current: $MAIN_SHA)"
             echo "eligible=false" >> "$GITHUB_OUTPUT"
