@@ -101,6 +101,10 @@
     <string name="decode_progress_reading">Membaca berkas terpilih…</string>
     <string name="decode_progress_decoding">Mendekode konfigurasi melalui Cloud…</string>
     <string name="decode_progress_saving">Menyimpan hasil terenkripsi…</string>
+    <string name="decode_progress_wait">Harap tunggu…</string>
+    <string name="decode_progress_sending">Mengirim…</string>
+    <string name="decode_progress_processing">Memproses…</string>
+    <string name="decode_progress_downloading_results">Mengunduh hasil…</string>
     <string name="history_search">Cari berdasarkan nama atau ekstensi berkas</string>
     <string name="history_favorites">Favorit</string>
     <string name="history_sort">Urutkan</string>
