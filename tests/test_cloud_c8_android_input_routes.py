@@ -42,7 +42,8 @@ class CloudC8ClientRouting(unittest.TestCase):
         activity = (ANDROID / "MainActivity.kt").read_text("utf-8")
         self.assertIn('CloudTextFormats.identify(userText,textRoutes) else null', activity)
         self.assertIn('serverVpnCatalog.cachedTextFormats()', activity)
-        self.assertIn('cloudClient.decodeText(userText,password)', activity)
+        self.assertIn('cloudClient.decodeText(userText,password,', activity)
+        self.assertIn('onPhase={phase->markCloudProgress(generation,phase)}', activity)
         # The downloaded, validated catalog is authoritative in Cloud builds.
         self.assertIn('AndroidDecoderCatalog.detect(routingName,fileFormats)', activity)
         self.assertIn('CloudFileFormats.detect(routingName) else null', activity)
