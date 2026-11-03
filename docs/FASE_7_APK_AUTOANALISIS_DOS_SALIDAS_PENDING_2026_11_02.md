@@ -160,6 +160,70 @@ MODO B:
 
 No empezar A1 hasta que A0 esté implementada y haya un corpus pequeño pero confiable. No fusionar, compilar APK de distribución ni desplegar worker/cobros sin aprobación.
 
+## 8.1. Escalamiento a soporte humano — ruta de recuperación aprobada como requisito
+
+**Decisión de producto:** cuando el servidor no logra obtener y verificar el resultado solicitado, crea un **caso de revisión humana**. El propietario de SP-DECODE y sus colaboradores autorizados podrán retomar el análisis manualmente, apoyarse en asistentes de IA durante una sesión iniciada por ellos, y entregar el resultado final desde un apartado privado del panel. No significa que ChatGPT vigile el panel ni resuelva tareas de manera autónoma en segundo plano.
+
+**No es un tercer producto ni un tercer modo de compra**: el usuario sigue seleccionando MODO A (informe) o MODO B (informe + código); la revisión humana es una ruta de recuperación de cualquiera de los dos.
+
+### Flujo de estados
+
+~~~text
+APK autorizada → análisis estático → [modo B] generación/test
+        ├── entregable validado ------------------------------→ READY_FOR_DELIVERY → DELIVERED
+        ├── información faltante -----------------------------→ NEEDS_USER_INPUT → reintentar / soporte
+        ├── límite, fallo, incertidumbre o test fallido ------→ NEEDS_HUMAN_REVIEW
+        │                                                       ↓
+        │                                           HUMAN_CLAIMED → HUMAN_IN_PROGRESS
+        │                                                       ↓
+        │                                    HUMAN_NEEDS_USER_INPUT (si aplica)
+        │                                                       ↓
+        │                                  HUMAN_VALIDATION → READY_FOR_DELIVERY
+        │                                                       ↓
+        └───────────────────────────────────────── entrega privada desde panel → DELIVERED
+                                    o FAILED_FINAL / CANCELLED (sin entrega válida)
+~~~
+
+- Escalar únicamente después de intentos automáticos acotados o ante incertidumbre; prohibir bucles de IA y reintentos facturables sin límite.
+- Cada transición se registra con timestamps, motivo, actor y resumen saneado; un caso no cambia a DELIVERED solo porque se adjuntó un archivo.
+- Si el usuario puede aportar voluntariamente una muestra propia o información adicional, utilizar NEEDS_USER_INPUT; nunca solicitar contraseñas de terceros o tokens privados para derrotar controles ajenos.
+- En HUMAN_VALIDATION realizar pruebas reproducibles y contraste independiente cuando se afirme compatibilidad real. Si no es posible, ofrecer informe parcial claramente etiquetado y sujeto a aceptación, o cerrar como fallo técnico.
+- La ruta manual conserva el **modo contratado**: A entrega informe; B entrega informe y fuente con tests si se pudo validar. No sustituir B por solo A sin aprobación explícita y ajuste de crédito según política aprobada.
+
+### Panel administrativo — futura sección «Soporte APK»
+
+Debe estar separada de notificaciones, catálogo y solicitudes/sugerencias. Para administradores autorizados:
+- Bandeja de Pendientes / En revisión / Esperando datos / Listos para entrega / Entregados / No resueltos, filtros por fecha, paquete/versión, modo A/B y antigüedad.
+- Detalle de caso: identificador opaco, hash del APK, cuenta autorizada pseudónima, modalidad, reporte inicial saneado, herramientas y scripts usados, hallazgos verificados/no verificados, fallos y pruebas pendientes.
+- Tomar caso / asignar responsable / reasignar / notas internas / estado, con control de concurrencia para evitar duplicidad y auditoría.
+- Acceso temporal al APK original **solo si el usuario consintió revisión humana** y el rol lo requiere; escaneo, almacenamiento temporal cifrado, aislamiento y TTL; nunca mostrar secretos ni archivos privados en logs o mensajes públicos.
+- Carga desde panel de informe JSON, archivos de resultado y, para modo B, proyecto fuente + tests. Validar tamaño, formato, esquema, checksum, malware y ZIP seguro antes de publicar.
+- Botón **Entregar resultado**: confirmar destinatario y ficheros exactos, estado de validación y revisor; operación autorizada, auditada e idempotente. Descarga con sesión de la cuenta dueña y enlaces temporales, no URL pública.
+- Permitir devolver el caso al usuario para datos adicionales, rechazar análisis sin autorización o finalizar como no resuelto. El código generado nunca se publica automáticamente en el catálogo global.
+
+### Vista de usuario, estado y notificaciones
+
+- Ante fallo automático: mostrar **«Tu análisis requiere revisión manual»**, indicar el modo solicitado y que se intentará revisar; no asegurar fecha límite, éxito garantizado ni intervención inmediata.
+- El historial privado de APK muestra estado y permite al usuario responder a solicitudes de datos, seguir esperando o cancelar conforme a la política comercial.
+- Cuando esté READY_FOR_DELIVERY / DELIVERED, avisar por notificación opt-in o dentro de la app: «Tu análisis está disponible», **sin incluir nombre sensible, credenciales, hashes privados ni enlaces de descarga en el push**.
+- Entregar solamente al propietario autenticado del trabajo. No exponer notas internas ni datos de otras cuentas; cualquier mensaje al usuario debe ser legible/localizado.
+
+### Créditos, tiempos y finalización
+
+- **Derivar a soporte no consume el crédito**: el caso sigue pendiente y la reserva se administra de modo idempotente. Definir tiempo máximo de reserva, liberación y cualquier re-reserva de forma transparente; evitar doble cobro o reserva permanente.
+- **No cobrar por un análisis no resuelto**. Confirmar consumo solo al entregar el resultado útil acordado. Entregables parciales requieren aceptación expresa y tratamiento comercial aprobado.
+- Cancelación durante revisión y sobrepasar el plazo máximo publicado deben permitir cierre sin cobro cuando no exista entrega válida.
+- No habilitar una cola infinita sin límites de trabajos, ni prometer soporte humano 24/7. Medir volumen y tiempos durante beta y publicar plazos solo cuando sean operativamente sostenibles.
+
+### Evidencia y privacidad
+
+- Si un nuevo método se integra posteriormente al catálogo general, es obligatorio generar expediente conforme a analysis/METHOD_EVIDENCE_POLICY.md. Un informe privado para un usuario no es certificación pública.
+- Consentimiento específico para que personal autorizado examine una APK privada y consentimiento separado para remitir contexto saneado a OpenAI/DeepSeek; minimizar acceso, controlar retención y permitir eliminación conforme a la política.
+- La base de conocimientos de análisis se alimenta únicamente con scripts, patrones y fixtures sanos/autorizados; no incorporar automáticamente APK de clientes, secretos ni datos de terceros.
+- El soporte humano realiza análisis en un entorno segregado, nunca dentro de los contenedores de producción con secretos VPS; no falsificar atestación ni burlar autenticación de terceros.
+
+**Estado:** DOCUMENTADO, NO IMPLEMENTADO. Sin tickets, tablas, UI, rutas, despliegues o tareas automáticas. Esta ruta debe cubrirse en A2 (estados), A6 (panel) y A7 (derechos/contabilidad).
+
 ## 9. Decisiones pendientes del propietario
 
 - Si el modo B debe costar igual o diferente del modo A; mantener política existente como referencia, no inventar un nuevo precio.
