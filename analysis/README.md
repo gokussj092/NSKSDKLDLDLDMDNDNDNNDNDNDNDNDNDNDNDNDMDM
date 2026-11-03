@@ -24,3 +24,7 @@ Un resultado **no confirmado** también se archiva, con estado PENDING, PARTIAL 
 [Análisis automático de APK — dos salidas](../docs/FASE_7_APK_AUTOANALISIS_DOS_SALIDAS_PENDING_2026_11_02.md): A) informe estructurado con metadatos y hallazgos; B) código propuesto por IA más pruebas de validación. Ambas funciones permanecen deshabilitadas y pendientes de desarrollo.
 
 El archivo histórico [SOCKSIP_VER8_VER7_VER6_STUDY.md](SOCKSIP_VER8_VER7_VER6_STUDY.md) se conserva; no es un expediente por paquete/build de la nueva política.
+
+## Expedientes por aplicación
+
+- [com.halcon.connect /1391 — Halcon R Net](com.halcon.connect/README.md): PENDING; sobre sintético contrastado con JCA, respaldo404 y petición principal pendiente de autorización explícita. No habilitado en catálogo.

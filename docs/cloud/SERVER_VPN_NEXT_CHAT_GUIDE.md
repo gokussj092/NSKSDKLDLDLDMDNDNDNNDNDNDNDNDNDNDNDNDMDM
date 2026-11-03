@@ -1,3 +1,19 @@
+# Halcon R Net / HALCON RAMOS Conectividad — catálogo pendiente, 2026-11-02
+
+Paquete `com.halcon.connect`, muestra pública4.1.4/build1391 verificada por
+manifiesto. Expediente conforme a nueva política en
+[analysis/com.halcon.connect/1391](../../analysis/com.halcon.connect/1391/ANALYSIS.md),
+con scripts reales, revisiones fallidas,12 pruebas sintéticas/JCA,42 versiones
+Python fijadas y límites explícitos. **No hay catálogo real autenticado**:
+getDefaultConfig devuelve `{}` y respaldo GET404/text/plain/14 bytes.
+La validación del POST principal firmado quedó **bloqueada por auto-review**
+por faltar autorización explícita para usar material autenticador de la APK.
+No reintentar por otra vía; solicitar permiso o una respuesta legítima.
+No activar ficha/broker/worker, cambiar versión de catálogo ni anunciar soporte.
+Sin cambio de métodos operativos, Android, main, VPS o publicación.
+
+---
+
 # HEX Tunnel / HexVPN 1.7.3-Rev — `.hexcm` integrado, 2026-11-01
 
 Lector recuperado e integrado en `apps/Hex_Tunnel/file_decoder.py`, router C8,
