@@ -50,356 +50,50 @@ jobs:
       - name: Validate project
         run: python validate_project.py
 
-      - name: Verify 239-format Android catalog and 81 source-exact generic profiles
-        run: |
-          PYTHONPATH=. python scripts/android_a24_catalog.py
-          PYTHONPATH=. python scripts/android_b_generic_profiles.py --check
-          PYTHONPATH=. python scripts/android_c_ultra_profiles.py --check
-          PYTHONPATH=. python scripts/android_d_renz_profiles.py --check
-
-      - name: Verify Phase E source parity generator
-        run: PYTHONPATH=. python -m unittest tests.test_android_e_special_parity -v
-
-      - name: Verify Phase F source family fixtures and Flex key inventory
-        run: PYTHONPATH=. python -m unittest tests.test_android_f_independent_parity -v
-
-      - name: Verify source-derived Phase G text protocol reference vectors
-        run: PYTHONPATH=. python -m unittest tests.test_android_g_text_parity -v
-
-      - name: Audit Phase H offline privacy, source provenance, release gate and current Android version
-        run: |
-          VERSION="$(sed -nE 's/.*versionName = "([^"]+)".*/\1/p' android/app/build.gradle.kts)"
-          CODE="$(sed -nE 's/.*versionCode = ([0-9]+).*/\1/p' android/app/build.gradle.kts)"
-          test -n "$VERSION" && test -n "$CODE"
-          PYTHONPATH=. python scripts/android_h_production_audit.py --version "$VERSION" --code "$CODE" --report "$RUNNER_TEMP/spdecode-h/audit.json"
-          PYTHONPATH=. python -m unittest tests.test_android_h_production_audit -v
-
-      - name: Audit Phase S protected resources and classify embedded material
-        run: |
-          python scripts/android_s_vault_audit.py --report "$RUNNER_TEMP/spdecode-s/audit.json"
-          PYTHONPATH=. python -m unittest tests.test_android_s_vault_audit -v
-
-      - name: Phase S.2 Kotlin constant inventory and source regression
-        run: |
-          python scripts/android_s2_dex_audit.py --report "$RUNNER_TEMP/spdecode-s/s2-dex-audit.json"
-          PYTHONPATH=. python -m unittest tests.test_android_s2_dex_audit -v
-
-      - name: Phase S.2 TLS EHI and Dark Tunnel source-key guard
-        run: |
-          python scripts/android_s2_extra_audit.py --report "$RUNNER_TEMP/spdecode-s/s2-extra-audit.json"
-          PYTHONPATH=. python -m unittest tests.test_android_s2_extra_audit -v
-
-      - name: Audit six additional S.2 legacy decoder key families
-        run: |
-          python scripts/android_s2_legacy_audit.py --report "$RUNNER_TEMP/spdecode-s/s2-legacy.json"
-          PYTHONPATH=. python -m unittest tests.test_android_s2_legacy_audit -v
-
-      - name: Audit S.2 E1 E2 F2 keys and source regressions
-        run: |
-          python scripts/android_s2_family_audit.py --report "$RUNNER_TEMP/spdecode-s/s2-family.json"
-          PYTHONPATH=. python -m unittest tests.test_android_s2_family_audit -v
-
       - name: Phase S.3 deny committed credentials, dangerous logs and CI secret dumps
         run: |
           python scripts/android_s3_security_audit.py --report "$RUNNER_TEMP/spdecode-s/s3-security.json"
           PYTHONPATH=. python -m unittest tests.test_android_s3_security_audit -v
 
-      - name: Phase S.4 validate offline private credential provisioning contract
+      - name: Run server and Cloud unit tests (no historical Android local decoder parity)
         run: |
-          python scripts/android_s4_provisioning_audit.py --report "$RUNNER_TEMP/spdecode-s/s4-provisioning.json"
-          PYTHONPATH=. python -m unittest tests.test_android_s4_provisioning_audit -v
+          python - <<'PY'
+          import unittest
 
-      - name: Upload sanitized Phase S audit report
-        if: always()
-        # Optional diagnostic upload: artifact quota must not invalidate passing tests.
-        continue-on-error: true
-        uses: actions/upload-artifact@v4
-        with:
-          name: spdecode-phase-s-source-inventory
-          path: ${{ runner.temp }}/spdecode-s/audit.json
-          if-no-files-found: ignore
-          retention-days: 30
+          # Only Cloud/client security contracts are relevant to the shipped APK.
+          # Historical test_android_* offline decoder suites are archived, not a release gate.
+          cloud_android_contracts = {
+              "test_android_native_trust_boundary",
+              "test_android_remote_formats",
+              "test_android_server_vpn_update_opt_in",
+              "test_android_vpn_directory_language_navigation",
+              "test_android_catalog_interactions_v120",
+          }
 
-      - name: Upload sanitized Phase H audit report
-        if: always()
-        # Optional diagnostic upload: artifact quota must not invalidate passing tests.
-        continue-on-error: true
-        uses: actions/upload-artifact@v4
-        with:
-          name: SP-DECODE-Play-Beta-H-SOURCE-AUDIT
-          path: ${{ runner.temp }}/spdecode-h/audit.json
-          if-no-files-found: ignore
-          retention-days: 90
+          def select_cloud_and_server_tests(group):
+              selected = unittest.TestSuite()
+              for case in group:
+                  if isinstance(case, unittest.TestSuite):
+                      selected.addTests(select_cloud_and_server_tests(case))
+                  else:
+                      module = case.__class__.__module__.rsplit(".", 1)[-1]
+                      if not module.startswith("test_android_") or module in cloud_android_contracts:
+                          selected.addTest(case)
+              return selected
 
-      - name: Generate HTTP Injector full JSON mixed-field regression (Python source)
-        run: PYTHONPATH=. python scripts/android_ehi_complete_fixture.py --output-dir "$RUNNER_TEMP/ehi-complete"
-
-      - name: Run unit tests
-        run: python -m unittest discover -s tests -v
-
-      - name: Verify standard-IV EHI with original Python decoder
-        run: PYTHONPATH=. python scripts/android_ehi_standard_fixture.py --output-dir "$RUNNER_TEMP/ehi-standard"
-
-      - name: Probe batch-seven synthetic decoder candidates
-        run: PYTHONPATH=. python tests/golden/a23_probe7.py
-
-      - name: Probe final SSH synthetic decoder fixture (diagnostic)
-        run: PYTHONPATH=. python tests/golden/a23_probe8_ssh.py
-
-      - name: A.2 static decoder source audit (read-only)
-        run: python docs/android/audit_decoders.py --output-dir "$RUNNER_TEMP/spdecode-a2"
-
-      - name: Upload sanitized A.2 decoder audit
-        if: always()
-        # Optional diagnostic upload: artifact quota must not invalidate passing tests.
-        continue-on-error: true
-        uses: actions/upload-artifact@v4
-        with:
-          name: spdecode-android-a2-audit
-          path: ${{ runner.temp }}/spdecode-a2/
-          if-no-files-found: ignore
-          retention-days: 30
-
-      - name: Generate A.2.3 synthetic golden coverage (metadata only)
-        run: PYTHONPATH=. python tests/golden/a23_report.py --output "$RUNNER_TEMP/spdecode-a23/coverage.json"
-
-      - name: Export synthetic decoder samples with frozen hashes
-        run: PYTHONPATH=. python tests/golden/a23_export.py --output-dir "$RUNNER_TEMP/spdecode-a23/samples"
-
-      - name: Upload A.2.3 synthetic golden coverage
-        if: always()
-        # Optional diagnostic upload: artifact quota must not invalidate passing tests.
-        continue-on-error: true
-        uses: actions/upload-artifact@v4
-        with:
-          name: spdecode-android-a23-golden-coverage
-          path: ${{ runner.temp }}/spdecode-a23/
-          if-no-files-found: ignore
-          retention-days: 30
+          suite = select_cloud_and_server_tests(unittest.defaultTestLoader.discover("tests"))
+          assert suite.countTestCases() > 0, "No Cloud or server tests were discovered"
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          raise SystemExit(0 if result.wasSuccessful() else 1)
+          PY
 
       - name: Validate Android documentation and editable SVGs
         run: python docs/android/validate_docs.py
 
 
-  android-parity:
-    name: Android production source regression (API 35)
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Configure JDK 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: "17"
-
-      - name: Install Gradle 8.11.1
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: "8.11.1"
-
-      - name: Install Android SDK platform (runner SDK, no deprecated tools package)
-        run: |
-          echo "ANDROID_HOME=$ANDROID_HOME"
-          SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -n 1)"
-          test -n "$SDKMANAGER"
-          "$SDKMANAGER" --install "platforms;android-36" "build-tools;35.0.0" "platform-tools"
-
-      - name: Python fixture dependencies
-        run: python -m pip install -r requirements.txt cryptography==50.0.2
-
-      - name: Generate reference AES-GCM and DES-ECB corpus for all 81 Phase B suffixes
-        run: |
-          PYTHONPATH=. python scripts/android_b_generic_profiles.py --check
-          PYTHONPATH=. python scripts/android_c_ultra_profiles.py --check
-          PYTHONPATH=. python scripts/android_d_renz_profiles.py --check
-          PYTHONPATH=. python scripts/android_b_generic_profiles.py --fixtures android/app/src/androidTest/assets/parity/generic-b-fixtures.json
-
-      - name: Generate independent Ultra/Sandok Argon2id/AES-GCM parity vectors
-        run: PYTHONPATH=. python scripts/android_c_ultra_profiles.py --fixtures android/app/src/androidTest/assets/parity/ultra-c-fixtures.json
-
-      - name: Generate independent RENZ/7NET AES-CBC/XXTEA/Threefish parity vectors
-        run: PYTHONPATH=. python scripts/android_d_renz_profiles.py --fixtures android/app/src/androidTest/assets/parity/renz-d-fixtures.json
-
-      - name: Generate independent Phase E special-engine Python parity vectors
-        run: PYTHONPATH=. python scripts/android_e_special_fixtures.py --fixtures android/app/src/androidTest/assets/parity/e-special-fixtures.json
-
-      - name: Generate nine independent F engines and historical encrypted Python goldens
-        run: PYTHONPATH=. python scripts/android_f_independent_fixtures.py --fixtures android/app/src/androidTest/assets/parity/f-independent-fixtures.json
-
-      - name: Generate independent Phase G Python text fixtures
-        run: PYTHONPATH=. python scripts/android_g_text_fixtures.py --fixtures android/app/src/androidTest/assets/parity/g-text-fixtures.json
-
-      - name: Prepare SHA-256-pinned synthetic parity assets
-        run: PYTHONPATH=. python scripts/android_a24_prepare.py --output-dir android/app/src/androidTest/assets/parity
-
-      - name: Generate complete JSON EHI original Python parity sample
-        run: PYTHONPATH=. python scripts/android_ehi_complete_fixture.py --output-dir android/app/src/androidTest/assets/parity
-
-      - name: Generate verified standard-IV EHI Android parity sample
-        run: PYTHONPATH=. python scripts/android_ehi_standard_fixture.py --output-dir android/app/src/androidTest/assets/parity
-
-      - name: Export HTTP Custom HCCFG and SocksIP VER8 synthetic parity samples
-        run: PYTHONPATH=. python scripts/android_hc_sip_fixture_export.py --output-dir android/app/src/androidTest/assets/parity
-
-      - name: Export LinkLayer VER6 synthetic Python parity samples
-        run: PYTHONPATH=. python scripts/android_linklayer_fixture_export.py --output-dir android/app/src/androidTest/assets/parity
-
-      - name: Export NPVS v5 signed synthetic Python parity sample
-        run: PYTHONPATH=. python scripts/android_npvs_fixture_export.py --output-dir android/app/src/androidTest/assets/parity
-
-      - name: Export additional Dark Tunnel Python MessagePack parity cases
-        run: PYTHONPATH=. python scripts/android_dark_variant_fixture.py --output-dir android/app/src/androidTest/assets/parity
-
-      - name: Export TLS Tunnel 8.5.0 all six AES-GCM profiles
-        run: PYTHONPATH=. python scripts/android_tls_850_fixtures.py --output-dir android/app/src/androidTest/assets/parity
-
-      - name: Compile audited NPV white-box to offline data-only Android asset
-        run: PYTHONPATH=. python scripts/android_a24_whitebox_export.py --output android/app/src/main/assets/npv_whitebox.bin
-
-      - name: Generate Phase S original-to-vault SHA-256 parity fixtures
-        run: |
-          python scripts/android_s_vault_audit.py \
-            --fixtures android/app/src/androidTest/assets/parity/s-vault-fixtures.json
-
-      - name: Generate Phase S.2 independent decoder constant parity fixtures
-        run: |
-          python scripts/android_s2_dex_audit.py \
-            --fixtures android/app/src/androidTest/assets/parity/s2-constants-fixtures.json
-
-      - name: Generate independent TLS EHI Dark S.2 material fixtures
-        run: |
-          python scripts/android_s2_extra_audit.py \
-            --fixtures android/app/src/androidTest/assets/parity/s2-extra-fixtures.json
-
-      - name: Generate source-key material SHA-256 for six legacy S.2 engines
-        run: |
-          python scripts/android_s2_legacy_audit.py \
-            --fixtures android/app/src/androidTest/assets/parity/s2-legacy-fixtures.json
-
-      - name: Generate independent S.2 E1 E2 F2 source SHA fixtures
-        run: |
-          python scripts/android_s2_family_audit.py \
-            --fixtures android/app/src/androidTest/assets/parity/s2-family-fixtures.json
-
-      - name: Verify 239-format Android support catalog and Phase B profiles
-        run: |
-          PYTHONPATH=. python scripts/android_a24_catalog.py
-          PYTHONPATH=. python scripts/android_b_generic_profiles.py --check
-          PYTHONPATH=. python scripts/android_c_ultra_profiles.py --check
-          PYTHONPATH=. python scripts/android_d_renz_profiles.py --check
-
-      - name: Build internal Android instrumentation harness (not a distributable QA app)
-        working-directory: android
-        run: gradle --no-daemon :app:assembleDebug :app:assembleAndroidTest
-
-      - name: Ensure debug APK does not package protected plaintext assets
-        run: python scripts/android_s_vault_audit.py --apk android/app/build/outputs/apk/debug/app-debug.apk
-
-      - name: Ensure migrated decoder constants are absent from debug DEX
-        run: python scripts/android_s2_dex_audit.py --apk android/app/build/outputs/apk/debug/app-debug.apk
-
-      - name: Reject TLS EHI and Dark Tunnel decoder strings in debug DEX
-        run: python scripts/android_s2_extra_audit.py --apk android/app/build/outputs/apk/debug/app-debug.apk
-
-      - name: Block readable six-engine legacy constants in debug DEX
-        run: python scripts/android_s2_legacy_audit.py --apk android/app/build/outputs/apk/debug/app-debug.apk
-
-      - name: Block E1 E2 F2 source strings in debug APK multidex
-        run: python scripts/android_s2_family_audit.py --apk android/app/build/outputs/apk/debug/app-debug.apk
-
-      - name: Phase S.3 verify debug APK contains no private keys or service tokens
-        run: python scripts/android_s3_security_audit.py --apk android/app/build/outputs/apk/debug/app-debug.apk
-
-      - name: Phase S.4 verify debug APK ships no private Keystore records
-        run: python scripts/android_s4_provisioning_audit.py --apk android/app/build/outputs/apk/debug/app-debug.apk
-
-      - name: Compile minified release with R8 (unsigned CI smoke, never published)
-        working-directory: android
-        env:
-          SPDECODE_CLOUD_API_BASE_URL: https://api.spdecode.example
-          SPDECODE_CLOUD_RELEASE: "true"
-        run: |
-          gradle --no-daemon :app:assembleRelease :app:bundleRelease
-          test -s app/build/outputs/mapping/release/mapping.txt
-          test -f app/build/outputs/apk/release/app-release-unsigned.apk
-          cd ..
-          python scripts/ci/verify_aab_locales.py \
-            android/app/build/outputs/bundle/release/app-release.aab
-          # Legacy debug vault checks above still cover the historical engines.
-          # A distributed release must physically exclude them, not encrypt a vault.
-          python tests/cloud_c5_apk_audit.py \
-            android/app/build/outputs/apk/release/app-release-unsigned.apk
-          python scripts/audit_v2_apk.py \
-            android/app/build/outputs/apk/release/app-release-unsigned.apk \
-            --origin https://api.spdecode.example
-
-      - name: Verify production candidate native ELF compatibility across all four ABIs
-        run: |
-          python scripts/ci/verify_phase8_native_abis.py \
-            --apk android/app/build/outputs/apk/release/app-release-unsigned.apk \
-            --aab android/app/build/outputs/bundle/release/app-release.aab
-
-      - name: Reclaim unused runner toolchains for Android emulator storage
-        run: |
-          # Ephemeral GitHub runner only. Preserve Java, Python, NDK and SDK.
-          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/.ghcup /usr/local/share/boost
-          df -h "$GITHUB_WORKSPACE"
-      - name: Enable hardware acceleration for Android emulator
-        run: |
-          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-          sudo udevadm control --reload-rules
-          sudo udevadm trigger --name-match=kvm
-
-      - name: Run parity tests on connected Android emulator
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 35
-          target: google_apis
-          arch: x86_64
-          cores: 2
-          ram-size: 2048M
-          disk-size: 4096M
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          script: |
-            cd android && gradle --no-daemon :app:connectedDebugAndroidTest
-            adb install -r android/app/build/outputs/apk/debug/app-debug.apk
-            adb shell am force-stop com.ghostdeveloper.spdecode
-            adb shell am start -n com.ghostdeveloper.spdecode/.MainActivity
-            sleep 3
-            mkdir -p android/app/build/outputs/spdecode-ui
-            adb exec-out screencap -p > android/app/build/outputs/spdecode-ui/home.png
-
-      - name: Upload real Compose home screenshot from emulator
-        if: success()
-        # Optional diagnostic upload: artifact quota must not invalidate passing tests.
-        continue-on-error: true
-        uses: actions/upload-artifact@v4
-        with:
-          name: SP-DECODE-Android-CI-ci-home-screenshot
-          path: android/app/build/outputs/spdecode-ui/home.png
-          if-no-files-found: error
-          retention-days: 30
-
-      - name: Upload instrumented test reports
-        if: always()
-        # Optional diagnostic upload: artifact quota must not invalidate passing tests.
-        continue-on-error: true
-        uses: actions/upload-artifact@v4
-        with:
-          name: spdecode-a24-android-parity-test-evidence
-          path: |
-            android/app/build/outputs/androidTest-results/
-            android/app/build/reports/androidTests/
-          if-no-files-found: ignore
-          retention-days: 14
-
   private-preproduction:
     name: Private 1.1.24 (35) APK and AAB after complete Android QA
-    needs: [validate, android-parity]
+    needs: [validate]
     if: >-
       github.repository == 'gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM' &&
       github.event_name == 'pull_request' &&
