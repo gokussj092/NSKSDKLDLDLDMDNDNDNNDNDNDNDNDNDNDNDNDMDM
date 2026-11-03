@@ -622,20 +622,20 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
         if (enablePlayAab) {
             app=replaceOnce(app,
                 "    onFeedbackSubmit:suspend (FeedbackDraft)->String={throw IllegalStateException(\"FEEDBACK_UNAVAILABLE\")},",
-                "    onModalVisible:(Boolean)->Unit={},\\n" +
+                "    onModalVisible:(Boolean)->Unit={},\n" +
                     "    onFeedbackSubmit:suspend (FeedbackDraft)->String={throw IllegalStateException(\"FEEDBACK_UNAVAILABLE\")},")
             app=replaceOnce(app,
                 "    var dialog by remember{mutableStateOf<String?>(null)}",
-                "    var dialog by remember{mutableStateOf<String?>(null)}\\n" +
+                "    var dialog by remember{mutableStateOf<String?>(null)}\n" +
                     "    LaunchedEffect(dialog) { onModalVisible(dialog != null) }")
             activity=replaceOnce(activity,
                 "    private var showLargeResultWarning by mutableStateOf(false)",
                 "    private var showLargeResultWarning by mutableStateOf(false)\n" +
-                    "    private var playUpdateVisible by mutableStateOf(false)\\n" +
+                    "    private var playUpdateVisible by mutableStateOf(false)\n" +
                     "    private var internalDialogVisible by mutableStateOf(false)")
             activity=replaceOnce(activity,
                 "                onFeedbackSubmit={draft-> cloudClient.submitFeedback(draft)},",
-                "                onFeedbackSubmit={draft-> cloudClient.submitFeedback(draft)},\\n" +
+                "                onFeedbackSubmit={draft-> cloudClient.submitFeedback(draft)},\n" +
                     "                onModalVisible={internalDialogVisible=it},")
             activity=replaceOnce(activity,
                 "                availableAppUpdate=availableAppUpdate,",
