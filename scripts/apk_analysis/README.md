@@ -1,5 +1,8 @@
 # Herramientas de análisis APK
 
+> **POLÍTICA OBLIGATORIA (2026-11-02):** por cada método de aplicación nuevo o actualizado, archivar en [analysis/](../../analysis/README.md) los scripts propios utilizados, comandos exactos, herramientas, tests y evidencias por versión, siguiendo [METHOD_EVIDENCE_POLICY.md](../../analysis/METHOD_EVIDENCE_POLICY.md). Los scripts compartidos de esta carpeta permanecen aquí; el expediente debe registrar rutas/hashes y un wrapper de reproducción. Sin expediente, el método no está cerrado.
+
+
 Ultra Tunnel build59: `ultra_tunnel_source_check.py` verifica CU/DO/decrypt y
 la petición GET/UA del SO exacto, sin ejecutar JNI ni imprimir claves.
 `ultra_tunnel_verify.py` contrasta todo el JSON con libsodium/JCA y solo
