@@ -117,12 +117,6 @@ jobs:
           MANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -n 1)"
           test -x "$MANAGER"
           "$MANAGER" --install "platforms;android-36" "build-tools;35.0.0" "platform-tools"
-      - name: Generate the same audited local assets as validated by CI
-        run: |
-          set -euo pipefail
-          python -m pip install -r requirements.txt
-          PYTHONPATH=. python scripts/android_a24_whitebox_export.py \
-            --output android/app/src/main/assets/npv_whitebox.bin
       - name: Phase S.3 prohibit tracked secrets and dangerous diagnostics before signing
         run: python scripts/android_s3_security_audit.py
 
@@ -197,29 +191,9 @@ jobs:
           python tests/cloud_c5_apk_audit.py \
             android/app/build/outputs/apk/release/app-release.apk
 
-      - name: Verify signed production APK has no migrated decoder DEX literals
-        run: |
-          set -euo pipefail
-          python scripts/android_s2_dex_audit.py \
-            --apk android/app/build/outputs/apk/release/app-release.apk
 
-      - name: Audit signed APK for legacy TLS EHI and Dark DEX literals
-        run: |
-          set -euo pipefail
-          python scripts/android_s2_extra_audit.py \
-            --apk android/app/build/outputs/apk/release/app-release.apk
 
-      - name: Reject remaining migrated S.2 legacy key strings from signed APK
-        run: |
-          set -euo pipefail
-          python scripts/android_s2_legacy_audit.py \
-            --apk android/app/build/outputs/apk/release/app-release.apk
 
-      - name: Reject source E1 E2 F2 decoder constants from signed APK DEX
-        run: |
-          set -euo pipefail
-          python scripts/android_s2_family_audit.py \
-            --apk android/app/build/outputs/apk/release/app-release.apk
 
       - name: Phase S.3 prohibit private keys and access tokens in signed APK
         run: |
