@@ -22,7 +22,7 @@ jobs:
     if: >-
       github.repository == 'gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM' &&
       github.event.repository.private == true &&
-      (github.ref == 'refs/heads/feat/catalog-notifications-donations' || github.ref == 'refs/heads/main') &&
+      (github.ref == 'refs/heads/fix/http-jireh-current-method' || github.ref == 'refs/heads/feat/catalog-notifications-donations' || github.ref == 'refs/heads/main') &&
       github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 55
@@ -73,7 +73,7 @@ jobs:
           echo "SPDECODE_TRUSTED_SIGNER_SHA256=$UPLOAD_CERT" >> "$GITHUB_ENV"
           echo "SPDECODE_PLAY_APP_SIGNER_SHA256=$PLAY_CERT" >> "$GITHUB_ENV"
           echo "SPDECODE_RELEASE_STORE_FILE=$RUNNER_TEMP/spdecode-beta.p12" >> "$GITHUB_ENV"
-      - name: Build cloud-enabled, signed APK and Play AAB
+      - name: Build cloud-enabled, signed Telegram APK first
         working-directory: android
         env:
           SPDECODE_CLOUD_API_BASE_URL: https://api.spdecode.xyz
@@ -81,7 +81,16 @@ jobs:
           SPDECODE_RELEASE_STORE_PASSWORD: ${{ secrets.SPDECODE_SIGNING_STORE_PASSWORD }}
           SPDECODE_RELEASE_KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
           SPDECODE_RELEASE_KEY_PASSWORD: ${{ secrets.SPDECODE_SIGNING_KEY_PASSWORD }}
-        run: gradle --no-daemon :app:assembleRelease :app:bundleRelease
+        run: gradle --no-daemon :app:assembleRelease
+      - name: Build signed Google Play AAB with Play In-App Updates only
+        working-directory: android
+        env:
+          SPDECODE_CLOUD_API_BASE_URL: https://api.spdecode.xyz
+          SPDECODE_CLOUD_RELEASE: "true"
+          SPDECODE_RELEASE_STORE_PASSWORD: ${{ secrets.SPDECODE_SIGNING_STORE_PASSWORD }}
+          SPDECODE_RELEASE_KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
+          SPDECODE_RELEASE_KEY_PASSWORD: ${{ secrets.SPDECODE_SIGNING_KEY_PASSWORD }}
+        run: gradle --no-daemon -PspdecodePlayAab=true :app:bundleRelease
       - name: Reject missing or mismatched release signer pins before publishing
         run: python3 scripts/ci/verify_release_signer_pins.py
       - name: Verify Play AAB includes all XML locales without language splits
@@ -95,6 +104,7 @@ jobs:
           APK=android/app/build/outputs/apk/release/app-release.apk
           AAB=android/app/build/outputs/bundle/release/app-release.aab
           test -s "$APK" && test -s "$AAB"
+          python3 scripts/ci/verify_play_update_artifacts.py "$APK" "$AAB"
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK" > "$RUNNER_TEMP/apk-signature.txt"
           jarsigner -verify "$AAB" > "$RUNNER_TEMP/aab-signature.txt"
           grep -q '^jar verified\.' "$RUNNER_TEMP/aab-signature.txt"
@@ -104,7 +114,7 @@ jobs:
           grep -F "versionCode='41'" "$RUNNER_TEMP/app-badging.txt" >/dev/null
           # A good upload signature alone is insufficient. Check every 64-bit
           # ELF in both packages, and verify the APK ZIP's 16 KiB alignment.
-          python3 -m unittest tests.test_android_play_compatibility -v
+          python3 -m unittest tests.test_android_play_compatibility tests.test_android_play_update_artifact_contract -v
           python3 scripts/android_16kb_elf_audit.py "$APK" "$AAB"
           "$ANDROID_HOME/build-tools/35.0.0/zipalign" -c -P 16 -v 4 "$APK"
           mkdir -p dist
