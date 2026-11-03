@@ -72,8 +72,16 @@ class CatalogFeaturesInstrumentedTest {
             val packed=java.io.ByteArrayOutputStream().also {out->
                 java.util.zip.GZIPOutputStream(out).use {it.write(maximum)}
             }.toByteArray()
-            try {CatalogEnvelope.inflate(packed,CatalogEnvelope.MAX_PLAIN);fail("Wire decompression exceeded 4 MiB")}
-            catch(_:IllegalArgumentException) { /* Wire and cache retain independent bounded budgets. */ }
+            // Cloud catalog has a 32 MiB envelope budget; icon content stays capped at 4 MiB.
+            // Assert both bounds without confusing catalog data with icon payloads.
+            assertArrayEquals("Cloud catalog budget accepts the 6 MiB fixture",
+                maximum,CatalogEnvelope.inflate(packed,CatalogEnvelope.MAX_PLAIN))
+            try {
+                CatalogEnvelope.inflate(packed,4*1024*1024)
+                fail("Icon envelope accepted more than its 4 MiB budget")
+            } catch(_:IllegalArgumentException) {
+                /* Expected: icon and catalog retain independent decompression budgets. */
+            }
             cache.write(name,source)
             val damaged=file.readBytes();damaged[damaged.lastIndex]=(damaged.last().toInt() xor 1).toByte();file.writeBytes(damaged)
             assertNull(cache.read(name))
