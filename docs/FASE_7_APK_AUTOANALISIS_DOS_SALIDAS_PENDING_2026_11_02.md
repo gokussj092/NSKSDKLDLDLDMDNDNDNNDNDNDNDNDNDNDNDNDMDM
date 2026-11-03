@@ -103,6 +103,16 @@ Proponer servicios nuevos SEPARADOS del worker Cloud actual: AnalysisOrchestrato
 - Antes de habilitar autoanálisis, completar la regla obligatoria documental y **activar CI que bloquea nuevos métodos sin expediente**. Sin ese gate, la automatización no tiene base confiable.
 - Trabajos que incluyen información parcialmente no verificable producen informe parcial, no generación afirmada como válida.
 
+### Registro de herramientas y librerías: requisito de la etapa A0
+
+Antes de habilitar el autoanálisis se deberá aplicar sin excepciones la política `analysis/METHOD_EVIDENCE_POLICY.md` (sección **2.1, Registro obligatorio de herramientas, librerías y dependencias**):
+
+- Cada análisis por paquete/build guarda sus scripts propios de investigación y pruebas, incluidos auxiliares, además de `DEPENDENCIES.md`, `MANIFEST.json.dependencies`, lockfiles/requirements, comandos de instalación/verificación y resultados reproducibles. El servidor reutilizará referencias a herramientas compartidas, no duplicados sin mantenimiento.
+- La futura base central indexará herramientas propias y externas con origen, versión exacta, licencia, checksum cuando corresponda, plataforma, dependencias, capacidad, límites y estado de revisión. Ejemplos de familias posibles (NO integraciones confirmadas): PyCryptodome, una implementación concreta de Argon2, JADX, apktool y cualquier herramienta nueva identificada inequívocamente.
+- Las herramientas nuevas inician en estado `UNREVIEWED`; solo se convertirán en candidatas a ejecución en Fase 7 si pasan revisión técnica, legal y de seguridad y se aprueban. Una IA no instalará librerías ni ejecutará comandos arbitrarios y nunca accederá a secretos del VPS.
+- Fase **A0** incluirá el futuro gate de CI que compruebe manifiestos de dependencias, rutas de scripts, lockfiles, licencias y consistencia de versiones, respetando baseline de métodos heredados. **Ese control no existe todavía**.
+- Documentación y recopilación de evidencias **ahora**; diseño técnico, implementación y despliegue del índice, gestor de dependencias, sandbox y CI **después**, como trabajo pendiente de la Fase 7.
+
 ## 5. IA: OpenAI API frente a DeepSeek API
 
 **No existe una API «de ChatGPT» incorporada automáticamente por tener una conversación o una suscripción ChatGPT.** Para usar modelos de OpenAI desde tu servidor se requiere acceso y facturación separados a OpenAI API según la cuenta y tarifas vigentes. DeepSeek dispone de una API compatible con formatos de OpenAI, pero **NO debe asumirse gratuita ni ilimitada**. Su documentación pública actual indica facturación por tokens, con tarifas que cambian; verificar siempre antes de elegir.
