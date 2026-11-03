@@ -102,6 +102,10 @@
     <string name="decode_progress_reading">फ़ाइल पढ़ी जा रही है…</string>
     <string name="decode_progress_decoding">Cloud पर कॉन्फ़िगरेशन डिकोड हो रहा है…</string>
     <string name="decode_progress_saving">एन्क्रिप्टेड परिणाम सहेजा जा रहा है…</string>
+    <string name="decode_progress_wait">कृपया प्रतीक्षा करें…</string>
+    <string name="decode_progress_sending">भेजा जा रहा है…</string>
+    <string name="decode_progress_processing">प्रक्रिया जारी है…</string>
+    <string name="decode_progress_downloading_results">परिणाम डाउनलोड किए जा रहे हैं…</string>
     <string name="history_search">फ़ाइल नाम या एक्सटेंशन से खोजें</string>
     <string name="history_favorites">पसंदीदा</string>
     <string name="history_sort">क्रमबद्ध करें</string>
