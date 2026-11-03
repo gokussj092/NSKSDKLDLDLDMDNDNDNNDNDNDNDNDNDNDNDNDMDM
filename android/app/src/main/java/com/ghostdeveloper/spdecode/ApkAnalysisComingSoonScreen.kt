@@ -2,6 +2,8 @@ package com.ghostdeveloper.spdecode
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Android
@@ -71,6 +73,7 @@ internal fun ApkAnalysisComingSoonScreen() {
 internal fun ApkCreditsComingSoonScreen() {
     Column(
         modifier=Modifier.fillMaxSize().testTag("apk_credits_screen")
+            .verticalScroll(rememberScrollState())
             .padding(horizontal=20.dp,vertical=16.dp),
         verticalArrangement=Arrangement.spacedBy(15.dp),
     ) {
@@ -129,7 +132,7 @@ internal fun ApkCreditsComingSoonScreen() {
                 verticalArrangement=Arrangement.spacedBy(13.dp)) {
                 Text(stringResource(R.string.apk_credits_prices_title),
                     color=previewText,fontWeight=FontWeight.SemiBold,fontSize=17.sp)
-                CreditPriceLine(R.string.apk_credits_prices_title)
+                CreditPriceLine(R.string.apk_credits_one)
                 CreditPriceLine(R.string.apk_credits_subscriptions)
             }
         }
