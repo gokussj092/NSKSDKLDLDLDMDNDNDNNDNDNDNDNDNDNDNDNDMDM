@@ -301,10 +301,11 @@ internal class CloudDecodeClient(context: Context) {
      * Existing password/HWID dialog is opened only when the real Cloud worker
      * returns a sanitized lock requirement. A successful result is reused once in RAM.
      */
-    suspend fun inspectHcRequirements(bytes:ByteArray):HcHccfgPort.Requirements? =
+    suspend fun inspectHcRequirements(bytes:ByteArray,
+        onPhase:suspend (TransferPhase)->Unit = {}):HcHccfgPort.Requirements? =
         try {
             var artifact:CompatibleExportArtifact?=null
-            val text=decodeFile("hc",bytes,onCompatibleExport={artifact=it})
+            val text=decodeFile("hc",bytes,onCompatibleExport={artifact=it},onPhase=onPhase)
             hcProbeSuccess=ProbeSuccess(CompatibleExportArtifact.digest(bytes),text,artifact,
                 android.os.SystemClock.elapsedRealtime()+60_000L)
             null
