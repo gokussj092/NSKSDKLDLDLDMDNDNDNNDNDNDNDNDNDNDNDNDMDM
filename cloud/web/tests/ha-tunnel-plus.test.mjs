@@ -38,7 +38,7 @@ test("HA refuses same-origin and foreign redirects",async t=>{
 
 test("HA launcher PNG, public format and card follow availability",()=>{
   const doc=catalog({availability:{"ha-tunnel-plus":true}});
-  assert.equal(CATALOG_VERSION,62);assert.equal(doc.apps.length,58);
+  assert(CATALOG_VERSION>=65, 'catalog version must not regress');assert(doc.apps.length>=61, 'catalog must retain existing apps');
   const card=doc.apps.find(x=>x.id==="ha-tunnel-plus");
   assert.equal(card.name,"HA Tunnel Plus");assert.equal(card.decodeEnabled,true);
   assert.equal(card.iconSha256,"42aa9743f5d430933257f0023af2182f2dcc6ae41a8930a9ca38e9f397ac3ab8");

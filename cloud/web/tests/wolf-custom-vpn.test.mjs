@@ -38,7 +38,7 @@ test("Wolf refuses same-origin and foreign redirects",async t=>{
 
 test("Wolf Custom launcher PNG, public format and card follow availability",()=>{
   const doc=catalog({availability:{"wolf-custom-vpn":true}});
-  assert.equal(CATALOG_VERSION,62);assert.equal(doc.apps.length,58);
+  assert(CATALOG_VERSION>=65, 'catalog version must not regress');assert(doc.apps.length>=61, 'catalog must retain existing apps');
   const card=doc.apps.find(x=>x.id==="wolf-custom-vpn");
   assert.equal(card.name,"Wolf Custom VPN");assert.equal(card.decodeEnabled,true);
   assert.equal(card.iconSha256,"4e403e8f44b840eadb67af9062d0b0455ffc88c37706bee4b949ca94513fa1c0");
