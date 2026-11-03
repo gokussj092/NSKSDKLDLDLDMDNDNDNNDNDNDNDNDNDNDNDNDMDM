@@ -1,0 +1,94 @@
+name: SP-DECODE CI regression diagnostics (branch only)
+# Runs actual tests without secrets; failures are retained, never hidden.
+on:
+  push:
+    branches: [fix/http-jireh-current-method]
+    paths:
+      - .github/workflows/ci-regression-diagnostics.yml
+      - cloud/web/**
+      - cloud/workers/python/exports/**
+      - tests/**
+      - android/app/build.gradle.kts
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  node-contracts:
+    name: Exact Cloud npm tests and diagnostic report
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install dependencies
+        working-directory: cloud/web
+        run: npm ci --no-audit --no-fund
+      - name: Execute all Cloud tests (preserve failure exit status)
+        working-directory: cloud/web
+        run: |
+          set +e
+          npm test > "$RUNNER_TEMP/cloud-npm-tests.log" 2>&1
+          status=$?
+          grep -E '^(not ok |# fail |# tests |# pass |# Subtest: )' "$RUNNER_TEMP/cloud-npm-tests.log" | tail -n 100 || true
+          exit "$status"
+      - name: Upload test failure diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloud-npm-test-report
+          path: ${{ runner.temp }}/cloud-npm-tests.log
+          if-no-files-found: ignore
+          retention-days: 2
+
+  python-contracts:
+    name: Exact Python selected release-gate tests and diagnostic report
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Python test dependencies
+        run: python -m pip install -r requirements.txt cryptography==50.0.2
+      - name: Execute selected release-gate contracts (preserve failure exit status)
+        run: |
+          set +e
+          python - <<'PY' > "$RUNNER_TEMP/cloud-python-tests.log" 2>&1
+          import unittest
+          cloud_android_contracts = {
+              "test_android_native_trust_boundary",
+              "test_android_remote_formats",
+              "test_android_server_vpn_update_opt_in",
+              "test_android_vpn_directory_language_navigation",
+              "test_android_catalog_interactions_v120",
+          }
+          def select_cloud_and_server_tests(group):
+              selected=unittest.TestSuite()
+              for case in group:
+                  if isinstance(case,unittest.TestSuite):
+                      selected.addTests(select_cloud_and_server_tests(case))
+                  else:
+                      module=case.__class__.__module__.rsplit(".",1)[-1]
+                      if not module.startswith("test_android_") or module in cloud_android_contracts:
+                          selected.addTest(case)
+              return selected
+          suite=select_cloud_and_server_tests(unittest.defaultTestLoader.discover("tests"))
+          result=unittest.TextTestRunner(verbosity=2).run(suite)
+          raise SystemExit(0 if result.wasSuccessful() else 1)
+          PY
+          status=$?
+          tail -n 100 "$RUNNER_TEMP/cloud-python-tests.log"
+          exit "$status"
+      - name: Upload test failure diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloud-python-test-report
+          path: ${{ runner.temp }}/cloud-python-tests.log
+          if-no-files-found: ignore
+          retention-days: 2

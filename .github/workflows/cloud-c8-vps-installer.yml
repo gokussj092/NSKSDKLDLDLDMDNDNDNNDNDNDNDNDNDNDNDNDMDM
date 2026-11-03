@@ -94,13 +94,18 @@ jobs:
         env:
           SPDECODE_CLOUD_API_BASE_URL: https://api.spdecode.example
           SPDECODE_CLOUD_RELEASE: "true"
-        run: gradle --no-daemon :app:assembleRelease :app:bundleRelease
+        run: |
+          # The Telegram APK must NEVER include Play's update library.
+          gradle --no-daemon :app:assembleRelease
+          # AAB uses a distinct compile with the official Play-only feature.
+          gradle --no-daemon -PspdecodePlayAab=true :app:bundleRelease
       - name: Audit exact APK + AAB output, signatures and Cloud-only content
         run: |
           APK=android/app/build/outputs/apk/release/app-release.apk
           AAB=android/app/build/outputs/bundle/release/app-release.aab
           test -s "$APK"
           test -s "$AAB"
+          python scripts/ci/verify_play_update_artifacts.py "$APK" "$AAB"
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK" > /tmp/apk-signature.txt
           "$ANDROID_HOME/build-tools/35.0.0/zipalign" -c -P 16 -v 4 "$APK"
           jarsigner -verify -certs "$AAB" | grep 'jar verified'
