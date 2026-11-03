@@ -28,6 +28,6 @@ class CloudC5SourceIsolation(unittest.TestCase):
     def test_hccfg_inspection_over_network(self):
         activity=(APP/"src/main/java/com/ghostdeveloper/spdecode/MainActivity.kt").read_text("utf-8")
         client=(APP/"src/main/java/com/ghostdeveloper/spdecode/cloud/CloudDecodeClient.kt").read_text("utf-8")
-        assert "cloudClient.inspectHcRequirements(preview)" in activity
+        assert "cloudClient.inspectHcRequirements(preview," in activity
         assert 'decodeFile("hc",bytes,onCompatibleExport=' in client
 if __name__=="__main__":unittest.main()
