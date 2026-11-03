@@ -81,3 +81,64 @@ test('FCM diagnostic uses validate_only and never transmits notice text',async()
   assert.equal(body.message.notification,undefined);return Response.json({});
  }}),'push');assert.equal(calls,2);
 });
+
+test('new notifications are typed, have bounded expiry, and periodic-only avoids FCM',async()=>{
+ const redis=new Redis(),pushed=[];
+ const options={storeProvider:async()=>redis,push:async(id,opts)=>{pushed.push({id,opts});return 'push';}};
+ const login=await loginRequest(req({username:'admin',password}),{...options,turnstileVerifier:async()=>({ok:true})});
+ assert.equal(login.status,200);const cookie=login.headers.get('set-cookie').split(';')[0];
+ const input={id:randomUUID(),title:'Catálogo actualizado',body:'Consulta los cambios',
+   type:'catalog',importance:'normal',delivery:'poll',ttlHours:6};
+ for(const invalid of [
+  {...input,type:'unknown'},
+  {...input,importance:'admin'},
+  {...input,delivery:'topic:all'},
+  {...input,ttlHours:999},
+  {...input,url:'https://invalid.example'}
+ ])assert.equal((await adminNotices(req(invalid,cookie),options)).status,400);
+ const before=Date.now();
+ const response=await adminNotices(req(input,cookie),options);
+ assert.equal(response.status,201);
+ const result=await response.json();
+ assert.equal(result.delivery,'periodic');assert.equal(pushed.length,0);
+ const read=new Request('https://example.test/notifications',{method:'POST',body:'{}'});
+ bindVerifiedRequest(read,{key:'eligible-session'});
+ const feed=await (await notificationFeedRequest(read,options)).json();
+ assert(Number.isSafeInteger(feed.serverTime)&&feed.serverTime>=before);
+ assert.equal(feed.notices.length,1);
+ const saved=feed.notices[0];
+ assert.equal(saved.type,'catalog');
+ assert.equal(saved.importance,'normal');
+ assert.equal(saved.delivery,'poll');
+ assert.equal(saved.expiresAt-saved.createdAt,6*3600000);
+ assert.equal(await (await adminNotices(req(input,cookie),options)).json().then(x=>x.status),'already-published');
+ const important={...input,id:randomUUID(),type:'security',importance:'important',delivery:'push',ttlHours:24};
+ assert.equal((await adminNotices(req(important,cookie),options)).status,201);
+ assert.equal(pushed.length,1);
+ assert.deepEqual(pushed[0].opts,{priority:'high',ttlSeconds:86400});
+});
+test('high-priority FCM remains a payload-free hint with a validated bounded TTL',async()=>{
+ const {generateKeyPairSync}=await import('node:crypto');
+ const pair=generateKeyPairSync('rsa',{modulusLength:2048});
+ const account={type:'service_account',project_id:'notice-project',client_email:'notices@notice-project.iam.gserviceaccount.com',
+  private_key:pair.privateKey.export({format:'pem',type:'pkcs8'})};
+ let calls=0;
+ const sent=await pushNotice(randomUUID(),{
+  env:{CLOUD_NOTICE_FCM_SERVICE_ACCOUNT_JSON:JSON.stringify(account)},
+  priority:'high',ttlSeconds:21600,
+  fetchImpl:async(_url,options)=>{
+   if(++calls===1)return Response.json({token_type:'Bearer',access_token:'synthetic'});
+   const msg=JSON.parse(options.body).message;
+   assert.equal(msg.android.priority,'high');
+   assert.equal(msg.android.ttl,'21600s');
+   assert.equal(msg.notification,undefined);
+   assert.deepEqual(Object.keys(msg.data),['noticeId']);
+   return Response.json({name:'sent-for-test'});
+  }
+ });
+ assert.equal(sent,'push');
+ assert.equal(calls,2);
+ await assert.rejects(pushNotice(randomUUID(),{env:{},priority:'emergency'}),/PUSH_INVALID/);
+ await assert.rejects(pushNotice(randomUUID(),{env:{},ttlSeconds:86401}),/PUSH_INVALID/);
+});
+

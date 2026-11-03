@@ -7,6 +7,19 @@ import sys
 from pathlib import Path
 
 PROVIDERS = {
+    "fnf-tunnel-bd": "decoders.Python.apps.FNF_TUNNEL_BD.server_catalog_decoder",
+    "alsaher-vip": "decoders.Python.apps.ALSAHER_VIP.server_catalog_decoder",
+    "halcon-r-net": "decoders.Python.apps.Halcon_R_Net.server_catalog_decoder",
+    "ha-tunnel-plus": "decoders.Python.apps.HA_Tunnel_Plus.server_catalog_decoder",
+    "ultra-tunnel": "decoders.Python.apps.Ultra_Tunnel.server_catalog_decoder",
+    "zig-tunnel": "decoders.Python.apps.ZiG_Tunnel.server_catalog_decoder",
+    "enaa-tunnel": "decoders.Python.apps.Enaa_Tunnel.server_catalog_decoder",
+    "alfaisal-tunnel-plus": "decoders.Python.apps.ALFAISAL_Tunnel_Plus.server_catalog_decoder",
+    "izph-vpn-pro": "decoders.Python.apps.IZPH_VPN_PRO.server_catalog_decoder",
+    "vip-snipher-pro": "decoders.Python.apps.VIP_Snipher_Pro.server_catalog_decoder",
+    "netcol-vpn": "decoders.Python.apps.Netcol_VPN.server_catalog_decoder",
+    "wolf-custom-vpn": "decoders.Python.apps.Wolf_Custom_VPN.server_catalog_decoder",
+    "jyfast-vpn-ultra": "decoders.Python.apps.JyFast_VPN_Ultra.server_catalog_decoder",
     "tunneldoom-vpn": "decoders.Python.apps.TunnelDOOM_VPN.server_catalog_decoder",
     "mtm-tunnel-lite": "decoders.Python.apps.MTM_Tunnel_Lite.server_catalog_decoder",
     "mnr-tunnel-plus": "decoders.Python.apps.MNR_TUNNEL_PLUS.server_catalog_decoder",
@@ -15,7 +28,7 @@ PROVIDERS = {
     "any-vpn": "decoders.Python.apps.ANY_VPN.server_catalog_decoder",
     "speicers-pro-vpn": "decoders.Python.apps.Speicers_Pro_VPN.server_catalog_decoder",
     "tx-tunnel": "decoders.Python.apps.Tx_Tunnel.server_catalog_decoder",
-    # Fixed official POST is blocked here; this route accepts offline bytes only.
+    # Build 47 hash POST is performed by the broker; this worker stays offline.
     "mm-tunnel": "decoders.Python.apps.MM_Tunnel.server_catalog_decoder",
     "creeb-vpn": "decoders.Python.apps.CREEB_VPN.server_catalog_decoder",
     "abowaged-vpn": "decoders.Python.apps.AboWaged_VPN.server_catalog_decoder",

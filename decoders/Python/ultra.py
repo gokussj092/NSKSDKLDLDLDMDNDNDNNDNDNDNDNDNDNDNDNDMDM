@@ -511,6 +511,14 @@ def run(file_bytes: bytes, extension: str = ".ultra") -> str | None:
     ext = "." + extension.lower().lstrip(".")
     if ext not in ULTRA_EXTS:
         return None
+    if ext == ".wolf":
+        if not __package__:
+            sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+        from decoders.Python.apps.Wolf_Custom_VPN.file_decoder import run as wolf_run
+        try:
+            return wolf_run(file_bytes)
+        except (ValueError, RecursionError):
+            return None
     if ext == ".aura":
         if not __package__:
             sys.path.insert(0, str(Path(__file__).resolve().parents[2]))

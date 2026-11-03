@@ -23,6 +23,7 @@ const env={CLOUD_API_ENABLED:"true",CLOUD_WORKER_TOKEN:"w".repeat(48),CLOUD_SESS
   CLOUD_GOOGLE_SERVICE_ACCOUNT_JSON:JSON.stringify({type:"service_account",client_email:"test@example.invalid",
     private_key:rsa.privateKey.export({format:"pem",type:"pkcs8"})}),CLOUD_PLAY_CERT_SHA256:certificate,
   CLOUD_KEY_ATTESTATION_REQUIRED:"false",CLOUD_ACTION_INTEGRITY_REQUIRED:"false",
+  CLOUD_V2_REQUIRE_STRONG_INTEGRITY:"true",CLOUD_INTEGRITY_MIN_DEVICE_SDK:"33",
   CLOUD_MIN_ANDROID_VERSION_CODE:"33",WORKER_INTERNAL_URL:"http://decoder-worker:8787"};
 const pair=()=>generateKeyPairSync("ec",{namedCurve:"prime256v1"});
 const encoded=p=>p.publicKey.export({type:"spki",format:"der"}).toString("base64url");
@@ -44,7 +45,7 @@ function request(op,body,key,bearer="",extra={}) {
     ...(bearer?{authorization:"Bearer "+bearer}:{}),...extra},body:bytes});
 }
 function fixture(changes={}) {
-  const redis=new Redis(),key=pair(),options={env:{...env,...changes},storeProvider:async()=>redis};
+  const redis=new Redis(),key=pair(),options={env:{...env,...changes},storeProvider:async()=>redis,playPolicyLoader:async()=>({integrityRequired:true}),devicePolicyLoader:async()=>({revision:0})};
   return {redis,key,options,call:(op,body,token="",headers={})=>transportRequest(request(op,body,key,token,headers),options)};
 }
 async function authorize(f) {
@@ -153,7 +154,9 @@ test("V1/QA tokens cannot downgrade V2; epoch, release, signer and Redis revocat
 });
 test("bootstrap validates key, proof, fixed operation, encoding and query before dispatch",async()=>{
   const f=fixture();
-  for(const op of ["3","18","01","/api/v1/decode/file"])assert.equal((await f.call(op,{})).status,400);
+  for(const op of ["3","01","/api/v1/decode/file"])assert.equal((await f.call(op,{})).status,400);
+   // Feedback operation 18 is valid but requires an authenticated V2 session.
+   assert.equal((await f.call(18,{})).status,401);
   assert.equal((await f.call(1,{publicKey:encoded(pair())})).status,400);
   assert.equal((await f.call(1,{publicKey:encoded(f.key),extra:true})).status,400);
   assert.equal((await f.call(1,{publicKey:encoded(f.key)},"",{"content-encoding":"gzip"})).status,400);
@@ -236,9 +239,10 @@ test("V2 beta rejects invalid hardware version, forged Play token and unavailabl
   const bad=await f.call(2,{challengeId:c.challengeId,integrityToken:"",
     publicKey:encoded(f.key),certificateChain:["YQ==","Yg=="]});
   assert.equal(bad.status,403);
+  f.options.decodeIntegrity=async()=>null;
   const second=await(await f.call(1,{publicKey:encoded(f.key)})).json();
   assert.equal((await f.call(2,{challengeId:second.challengeId,integrityToken:"T".repeat(100),
-    publicKey:encoded(f.key),certificateChain:["YQ==","Yg=="]})).status,400);
+    publicKey:encoded(f.key),certificateChain:["YQ==","Yg=="]})).status,403);
   f.options.availabilityPolicyLoader=async()=>({enabled:false,revision:1});
   assert.equal((await f.call(1,{publicKey:encoded(f.key)})).status,410);
   f.options.availabilityPolicyLoader=async()=>{throw Error("policy storage offline");};
@@ -327,4 +331,49 @@ test('HPKE-only RASP admission authenticates encrypted reports and rejects wire 
   assert.equal(dispatches,1);
   assert.equal((await call(6,{...body,_rasp:{...body._rasp,signals:4}},token)).status,403);
   assert.equal(dispatches,1);
+});
+
+test('compatible Play observation survives Google outage while hardware remains mandatory',async()=>{
+  const {compatiblePlayDefaults}=await import('../lib/v2-play-policy.mjs');
+  const f=fixture({CLOUD_KEY_ATTESTATION_REQUIRED:'true',CLOUD_KEY_ATTESTATION_TOKEN:'k'.repeat(48)});
+  f.options.playPolicyLoader=async()=>({...compatiblePlayDefaults(),integrityRequired:false,integrityRequested:true});
+  f.options.decodeIntegrity=async()=>{throw Error('Google unavailable');};
+  f.options.verifyHardware=async(_chain,_challenge,key)=>({valid:true,publicKey:key,level:'tee',versionCode:35});
+  const c=await(await f.call(1,{publicKey:encoded(f.key)},'',{'x-spdecode-transport':'2'})).json();
+  const result=await f.call(2,{challengeId:c.challengeId,integrityToken:'T'.repeat(100),publicKey:encoded(f.key),certificateChain:['YQ==','Yg==']});
+  assert.equal(result.status,201);const session=await result.json();assert.equal(session.expiresIn,1800);
+  assert.equal(session.actionIntegrityRequired,false);
+  f.options.devicePolicyLoader=async()=>({revision:1});f.options.verifyHardware=async()=>null;
+  const next=await(await f.call(1,{publicKey:encoded(f.key)})).json();
+  assert.equal((await f.call(2,{challengeId:next.challengeId,integrityToken:'',publicKey:encoded(f.key),certificateChain:['YQ==','Yg==']})).status,403);
+});
+
+test('inline action performs one operation POST, binds exact body and bearer, and rejects replay with a fresh proof',async()=>{
+  const {inlineActionHash}=await import('../lib/action-integrity.mjs');
+  const {sha256}=await import('../lib/v2-proof.mjs');
+  const f=fixture({CLOUD_ACTION_INTEGRITY_REQUIRED:'true',CLOUD_GOOGLE_CLOUD_PROJECT_NUMBER:'123456789012'});
+  const {token}=await authorize(f),body={format:'hc',dataBase64:'YWJj'};
+  const id='i2.'+randomBytes(24).toString('base64url'),hash=inlineActionHash(token,5,sha256(JSON.stringify(body)),id);
+  f.options.decodeIntegrity=async()=>{const v=verdict('');v.tokenPayloadExternal.requestDetails.requestHash=hash;return v;};
+  let dispatches=0,requests=0;f.options.dispatch=async()=>{dispatches++;return Response.json({ok:true});};
+  const headers={'x-sp-action-challenge':id,'x-sp-action-integrity':'T'.repeat(100)};
+  const call=async(...args)=>{requests++;return f.call(...args);};
+  assert.equal((await call(5,body,token,headers)).status,200);assert.equal(requests,1);assert.equal(dispatches,1);
+  assert.equal((await call(5,body,token,headers)).status,403);assert.equal(dispatches,1);
+  const different='i2.'+randomBytes(24).toString('base64url');
+  assert.equal((await call(5,{...body,dataBase64:'YWJk'},token,{...headers,'x-sp-action-challenge':different})).status,403);
+  assert.notEqual(hash,inlineActionHash(token+'x',5,sha256(JSON.stringify(body)),id));
+  assert.notEqual(hash,inlineActionHash(token,6,sha256(JSON.stringify(body)),id));
+  assert.equal(dispatches,1);
+});
+
+test('basic integrity, licensing and missing optional SDK can be configured independently',()=>{
+  const v=verdict('nonce'),cfg={...v2Settings(env),nonce:'nonce',deviceIntegrity:'basic',requireStrong:false,requireLicensed:false,minimumDeviceSdk:24,requireSdk:false};
+  v.tokenPayloadExternal.deviceIntegrity.deviceRecognitionVerdict=['MEETS_BASIC_INTEGRITY'];
+  delete v.tokenPayloadExternal.deviceIntegrity.deviceAttributes;
+  v.tokenPayloadExternal.accountDetails.appLicensingVerdict='UNLICENSED';
+  assert(checkIntegrityVerdict(v,cfg));
+  assert.equal(checkIntegrityVerdict(v,{...cfg,requireSdk:true}),false);
+  assert.equal(checkIntegrityVerdict(v,{...cfg,requireLicensed:true}),false);
+  assert.equal(checkIntegrityVerdict(v,{...cfg,deviceIntegrity:'device'}),false);
 });

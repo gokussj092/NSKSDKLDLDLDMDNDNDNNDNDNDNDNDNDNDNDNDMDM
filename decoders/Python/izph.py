@@ -203,9 +203,10 @@ def izph_threefish256_decrypt_block(block, key, tweak):
             state[i] = (state[i] - ak[i]) & IZPH_MASK64
         for step in range(3, -1, -1):
             rot = IZPH_THREEFISH256_ROTATIONS[(grp * 4 + step) % 8]
+            # Undo the round permutation before undoing its two MIX pairs.
+            state = [state[IZPH_THREEFISH256_INV_PERMUTE[i]] for i in range(4)]
             state[0], state[1] = izph_threefish256_mix_inv(state[0], state[1], rot[0])
             state[2], state[3] = izph_threefish256_mix_inv(state[2], state[3], rot[1])
-            state = [state[IZPH_THREEFISH256_INV_PERMUTE[i]] for i in range(4)]
     ak = sub[0]
     for i in range(4):
         state[i] = (state[i] - ak[i]) & IZPH_MASK64
@@ -255,8 +256,12 @@ def izph_decrypt_type1(payload: bytes) -> bytes:
         b64 = izph_base64_decode_android(text)
     except:
         raise IZPHError("type1 decode fail")
-    s2 = izph_threefish256_decrypt(b64, key32).rstrip(b'\x00')
-    return izph_aes128_cbc_fixed(s2, key16)
+    s2 = izph_threefish256_decrypt(b64, key32)
+    # Zero fill follows AES ciphertext, whose last byte can itself be zero.
+    size = ((len(s2.rstrip(b'\x00')) + 15) // 16) * 16
+    if not size:
+        raise IZPHError("empty Threefish body")
+    return izph_aes128_cbc_fixed(s2[:size], key16)
 
 def izph_decrypt_type2(payload: bytes) -> bytes:
     key32 = izph_get_pbkdf2_key()
@@ -358,7 +363,7 @@ def izph_decode_nested_text(value: str, hint_kind: int, path: str, issues: list,
 # ----- Object decoders (Network, Server) -----
 def izph_decode_network_object(obj: dict, index: int, issues: list, strict: bool) -> dict:
     path = f"Networks[{index}]"
-    keys = ("Name", "SNIHost", "Payload", "Info", "DNSServerHost", "DNSResolver", "TLSVersion")
+    keys = ("Name", "SNIHost", "Payload", "Info", "DNSServerHost", "DNSResolver", "TLSVersion", "SSCommand")
     for key in keys:
         value = obj.get(key)
         if not isinstance(value, str) or not value:

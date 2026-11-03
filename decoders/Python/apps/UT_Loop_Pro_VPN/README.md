@@ -1,88 +1,90 @@
 # UT Loop Pro VPN — 22.10.26 (65)
 
-Paquete `loop.uchetechs.vpn.pro`. Proveedor estable `ut-loop-pro-vpn`.
-Análisis e integración de backend en la rama del PR #96; no requiere APK,
-bibliotecas nativas ni Android para ejecutar los lectores. Python >=3.10 y
-`pip install -r requirements.txt`.
+Paquete `loop.uchetechs.vpn.pro`, proveedor `ut-loop-pro-vpn`.
+**Reinvestigado el2026-11-01; la descarga remota sigue pendiente y la ficha
+permanece desactivada.** No confundir el lector del catálogo incluido con una
+respuesta OTA firmada real.
 
-## Métodos recuperados
+## Corrección del flujo original
 
-| Entrada | Lector | Tratamiento confirmado |
-| --- | --- | --- |
-| Actualización OTA o respuesta premium firmada | `server_catalog_decoder.py` | Sobre JSON `data`/`sig`, RSA PKCS#1 v1.5 SHA-256 sobre el texto exacto de `data`; Base64, nonce de 12 bytes, AES-256-GCM y tag de 16 bytes. Clave SHA-256/esquema XOR máscara del APK. |
-| Copia local del catálogo inicial o caché SQLite | mismo lector | Mismo AES-GCM; copia Base64 sin envoltura RSA. Solo entrada offline explícita; las descargas siempre exigen firma. |
-| Banner SSH moderno | `banner_decoder.py` | GCM, AAD `utloop-banner-v1`; material de ambos certificados admitidos, expansión SHA-256 y máscaras originales. |
-| Banner SSH heredado | mismo auxiliar | XXTEA little-endian, delta propio `-1704280`, clave `uchehacks`, longitud al final y portador entre comillas. |
+Google Play en vivo y el XAPK descargado coinciden en22.10.26/build65. El APK
+base es idéntico al anteriormente analizado. En `core.h.a`, la app siempre
+intenta el GET del catálogo con su X-Api-Key; **solo añade X-Ota-Access y
+X-Ota-Iid si OtaAccess.d devuelve una sesión**. Si no la obtiene, todavía realiza
+el GET. El script exigía ese par antes de intentar la descarga, por lo que no
+reproducía esta rama original. Ahora acepta ambos ausentes y rechaza un par
+incompleto o inválido; no genera identificadores, tokens ni atestaciones.
 
-La firma o el tag de un catálogo inválido rechazan la entrada completa, sin
-fallback a un documento parcial. El banner conserva el fallback heredado del
-APK porque ambos usan el mismo portador HTML; XXTEA no proporciona autenticación.
-Este auxiliar no se registra como formato de perfil o proveedor adicional.
+El original no fija un User-Agent personalizado en esta ruta. Se retiró el
+nombre inventado UT Loop Pro VPN/22.10.26. El CLI usa el prefijo Dalvik/2.1.0;
+**no se afirma que sea el http.agent completo de un teléfono concreto**.
+`UT_LOOP_USER_AGENT` permite suministrar el agente real de una instalación propia.
+La constante X-Api-Key ya versionada coincide con el APK y se reutiliza solo en
+las fuentes fijas; no se publica ninguna sesión nueva.
 
-El JSON descifrado se devuelve íntegro: servidores, Tweaks, datos SSH/SSL/DNS,
-UDP/HUDP/OpenVPN/V2Ray/Trojan/VLESS/WireGuard cuando estén presentes, tipos,
-listas, duplicados, valores vacíos y campos desconocidos. No se aplican filtros
-de interfaz, no se generan credenciales y no se activan sesiones VPN. El catálogo
-inicial real contiene **un servidor y un tweak, versión 1.0**; el documento completo
-coincide con la referencia independiente JDK, CLI y worker aislado.
+Prueba real de esa rama y repetición por la CLI corregida: **HTTP200, text/html,
+195 bytes**, SHA256 `5b131ca14aa96311d3432b0062c7443d3b0e6346ec279bd376a75f0a76bcd5d7`,
+HTML Site Unavailable. **No es un catálogo** y no prueba que la falta de sesión
+sea la causa ni que el servicio esté caído para todos. No se obtuvo una respuesta
+firmada de producción ni se habilitó el broker.
 
-## Uso offline
+## Uso y diagnóstico
+
+Python3.10+, PyCryptodome3.23.0. Los lectores funcionan sin Android/SO.
 
 ```bash
-python server_catalog_decoder.py copia-cifrada.txt
-python server_catalog_decoder.py --stdin < copia-cifrada.txt
-python banner_decoder.py banner-ssh.txt
+python -m pip install -r decoders/Python/apps/UT_Loop_Pro_VPN/requirements.txt
+# GET real; solo metadata y recuentos, sin imprimir configuraciones ni credenciales.
+python decoders/Python/apps/UT_Loop_Pro_VPN/server_catalog_decoder.py --probe
+# GET real; si tiene éxito imprime el catálogo privado completo.
+python decoders/Python/apps/UT_Loop_Pro_VPN/server_catalog_decoder.py --download
+# Entrada offline explícita, no equivale a validar una descarga.
+python decoders/Python/apps/UT_Loop_Pro_VPN/server_catalog_decoder.py --stdin < copia.enc
 ```
 
-API reproducible: `run(data: bytes) -> str`. El catálogo se registra en el bridge
-fijo y la allowlist del worker privado de Cloud. No se identificó un formato de
-archivo exportado/importado en este build; no se inventa una extensión ni se
-modifican rutas históricas de archivos.
+Si hay una sesión oficial propia vigente, suministrar el par
+`UT_LOOP_OTA_ACCESS`/`UT_LOOP_OTA_IID` privadamente. Ninguno se sube a Git ni se
+incluye en fixtures. `--probe` entrega status/error, código, HTTP, tamaño y hash;
+solo en éxito verifica firma y GCM y devuelve versión/recuentos. Distingue HTML,
+rechazo401/403, fallo de transporte, tamaño/codificación y catálogo/firma inválidos.
+No acepta URLs del cliente ni redirecciones; no reintenta con accesos inventados.
 
-## Acceso remoto pendiente
+La prueba desde una red/VPS que alcance la API debe preceder a atribuir el HTML
+a la autorización. Si la API exige sesión, se requiere una obtenida por el flujo
+oficial y una solución autorizada de renovación; dos variables vacías no cierran
+la integración. El único catálogo real revalidado aquí es el incluido:1.0,1/1.
 
-Fuente del APK: `https://api.utloop.xyz/v1/ota/config?package=loop.uchetechs.vpn.pro`.
-El código del APK usa `X-Api-Key`, `X-Ota-Access` y `X-Ota-Iid`. El acceso OTA se
-obtiene con Play Integrity oficial; el lector no lo fabrica. Consulta autorizada
-del 2026-10-22 desde este entorno: **HTTP 200, text/html, 195 bytes**, página
-`Site Unavailable`, sin documento firmado. Esto no permite atribuir una caída
-general al proveedor, afirmar error de token ni contar servidores remotos.
+## Sesión OTA y premium
 
-La fuente premium separada del APK es un POST fijo a
-`https://api.utloop.xyz/v1/premium/config` con `packageName` y `entitlement` oficial.
-Su firma y cifrado son los mismos; no se proporcionó una respuesta premium real
-ni un entitlement válido. No se fusiona el catálogo premium con placeholders,
-se rellenan stubs ni se afirma recuperar contenido de una suscripción.
+OtaAccess obtiene un nonce mediante POST /v1/nonce, solicita un token real de
+Google Play Integrity con ese nonce y envía packageName,integrityToken,nonce,iid
+a POST /v1/ota/access. El iid es propio, generado una vez y persistente.
+El access es emitido por el servicio; **no está incorporado como constante**.
+La app respeta ttl, renueva anticipadamente, invalida la caché ante401 y aplica
+espera ante403. No se encontró material previo legítimo aportado para este caso.
+No se hicieron solicitudes nuevas a las rutas de registro sin un token válido.
 
-El CLI admite `--download` con `UT_LOOP_OTA_ACCESS` y `UT_LOOP_OTA_IID`, y
-`--premium` con `UT_LOOP_ENTITLEMENT` suministrados expresamente por el operador.
-Solo URLs fijas, límites de 8 MiB, TLS del sistema y ninguna redirección; antes de
-aceptar una descarga exige la firma RSA real y GCM. Estas ramas de solicitud se
-verificaron con transporte controlado, **no con una sesión remota válida**.
+Premium es un POST separado a /v1/premium/config con packageName y entitlement
+oficial, mediante --premium/UT_LOOP_ENTITLEMENT. Se conserva el lector, pero no
+se solicitó contenido de suscripción ni se tiene una respuesta premium real.
 
-La ficha pública conserva el **PNG original exacto, 601×601, 74425 bytes**, y
-`remote:null`: descifrado remoto desactivado incluso con una disponibilidad
-forzada. No se añade el proveedor a la allowlist pública ni al control de
-activación remota hasta verificar un catálogo oficial completo y su acceso.
-Catálogo mínimo **31**, **33 fichas**, versión persistente monotónica existente.
+## Cifrado y alcance
 
-Las comprobaciones adicionales de las rutas de acceso fueron bloqueadas por
-revisión automática al considerarse sondeo de API con una clave extraída fuera
-de la lectura de catálogo autorizada. No se reintentaron ni se utilizan sus
-resultados como evidencia. El acceso OTA/premium sigue pendiente.
+OTA exige data/sig, RSA PKCS#1v1.5 SHA256 sobre el texto exacto de data, después
+Base64 de nonce12/AES256-GCM/tag16. La clave resulta del esquema/máscara del APK.
+La firma o GCM inválidos rechazan el documento completo. Una descarga nunca
+acepta la copia sin firma destinada al uso offline.
 
-El almacenamiento local de preferencias usa Android Keystore y migración XXTEA;
-no constituye un feed o formato exportado. No se extraen claves de dispositivos
-ni se presenta ese almacenamiento como un lector de perfiles.
+El catálogo incluido completo vuelve a coincidir con Java/JCA, CLI fuera del
+checkout y worker aislado: versión1.0,1 servidor/1 tweak,1544 bytes Base64.
+Se preservan todas las listas, protocolos, tipos y desconocidos sin filtrar UI.
+El auxiliar de banners SSH moderno GCM y heredado XXTEA se conserva sin cambios;
+no se registra como perfil. No hay extensión exportada confirmada en este build.
 
-## Evidencia y herramientas
+Se conserva el PNG original601x601/74425 bytes, su ficha con remote:null,
+fuente59/57 fichas/C0240/C8255. **7 pruebas Python y50 Node aprobadas**;
+no prueban una descarga OTA exitosa, producción, sesión VPN ni importación Android.
 
-- `TESTING.md`, `manifest.json` y `tests/golden/ut_loop_pro_*`.
-- APK: `util.r`, `db.a`, `core.h`, `util.h`, `util.OtaAccess`, `util.t`,
-  `util.c/n/d` y consumidores de `MainActivity` / `SSHTunnelService`.
-- Herramientas existentes de `scripts/apk_analysis/` más el nuevo
-  `stringfog_strings.py`: 2438 llamadas literales resueltas en 71 archivos.
-- JADX finalizó con 21 errores generales; las rutas criptográficas indicadas se
-  inspeccionaron y contrastaron con JCA. No se afirma descompilación perfecta.
-- Sin APK/SO, catálogo real, datos descifrados, tokens o inventarios privados en
-  Git. No se fusiona, despliega, publica APK o anuncia novedades automáticamente.
+Ver [TESTING.md](TESTING.md), [manifest.json](manifest.json) y
+[reinvestigación y recuperación](../../../../docs/cloud/UT_LOOP_PRO_REINVESTIGACION_2026_11_01.md).
+Sin fusión, despliegue ni APK/AAB nuevos.

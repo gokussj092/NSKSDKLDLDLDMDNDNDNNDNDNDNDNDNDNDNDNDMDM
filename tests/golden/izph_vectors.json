@@ -1,0 +1,87 @@
+{
+  "plain": {
+    "0": "IZPH synthetic mode0 é 🌎",
+    "1": "IZPH synthetic mode1 payload [host] é🌎 payload [host] é🌎 payload [host] é🌎 payload [host] é🌎 payload [host] é🌎 payload [host] é🌎 payload [host] é🌎 payload [host] é🌎 payload [host] é🌎 payload [host] é🌎 payload [host] é🌎 payload [host] é🌎 ",
+    "2": "synthetic password +/é🌎"
+  },
+  "cipher": {
+    "0": "brrPe5WsuSJYAePdz5O7A70e8k1WcmPleCAw0u7Fba8x1JHHbhAE1fOoTU0vxZQ4",
+    "1": "2u5fHgK+gXCN4cdvsUX7RBn0qaOCpIiNohoDNPhmURvP0aEMKT4d59aQYMz5gk5jQqE5w2jgy5i5vPpvRqh89bp5OZqU89pXzfDOfM2KY0ps3QYhIqoSZ2R6vMR68sDO463Klc9rw4gLY46d4xJUMuCOTzM/kmPKCZTyz9pJ3Hv0Wd7hPhFVC4dbjcYGsgNvHDhDWTNcAPAHKoUKMSGjP9OpWy5knteKBPYDFf4ojq7YvJa8DMVbS9eceo2cPF90rBm/yi+Fo7ob3sMzNNdN1VyYZeHksq94BuFpfpgsfF7A1d5Ogs2JvHMNgG0V19+rkTb2eprktROsDT1EuRrISW+e/vYLJkx7BlfB7qQXkhM1/QCL97JPbpg4jJoBL/2q",
+    "2": "D+496y0sKjcEC5JFKj5BhuaWyk8x8X/1MzxHyTVcTAABRZRblh+SbdKrjvgj0T1GYEYalA=="
+  },
+  "threefishStream": "lqcCUa9P3yXrCJi2niHKIV5Ifmk/4e8k+TJGyWDUCREhVVNQGRfssxNuTj1Gj/tAyoV+QfvtswlB1UKVHZoDncqGbogEfegKqiCeTPlz+keKba14hRT8WyPUQJE8NzeKkWFhHumw8zkJf48jdRVWpaLP4tcmHuNWcKLEemydjD6tvtSPbmdJ7VrkHdkx9n0KiW1f7UOJqw+J7WyrQIVo7KA4WLG8Wo4PxT7A1VqdXoyekcpPKiO/72/VXvGdAUJJEY3nR6y4xZda1xfBFX4pBCsOTx6sWigI2viRCXpsbU6eRG8DFI1WVgfyq2kmIE1uEU+YTraYW+qp66pxJ2hV+UydVY/e+R7vv7jW7xZawHSxOZQQH+/VrOe7zulVniKX",
+  "catalog": "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",
+  "expected": {
+    "Version": "synthetic-60",
+    "Username": "synthetic-user-🔒\n",
+    "Password": "synthetic-user-🔒\n",
+    "Servers": [
+      {
+        "Name": "Prueba España — 日本\nvalor 0",
+        "Subname": "Prueba España — 日本\nvalor 0",
+        "ServerIPHost": "GET /synthetic/[host] HTTP/1.1\r\nHost: test.invalid\r\n\r\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "OpenVPNTCPPort": "Prueba España — 日本\nvalor 0",
+        "OpenVPNSSLPort": "Prueba España — 日本\nvalor 0",
+        "UDPSSLPort": "Prueba España — 日本\nvalor 0",
+        "CloudfrontDNS": "Prueba España — 日本\nvalor 0",
+        "flag": "Prueba España — 日本\nvalor 0",
+        "Obfs": "",
+        "CustomCert": null,
+        "Username": "synthetic-user-🔒\n",
+        "Password": "synthetic-user-🔒\n",
+        "Protocol": 1,
+        "UseCustomCert": false,
+        "V2Ray": {
+          "UUID": "Prueba España — 日本\nvalor 0",
+          "PATH": "GET /synthetic/[host] HTTP/1.1\r\nHost: test.invalid\r\n\r\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "V2RayHost": "GET /synthetic/[host] HTTP/1.1\r\nHost: test.invalid\r\n\r\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "DNSMode": 2
+        },
+        "SlowDNS": {
+          "NSNameServer": "Prueba España — 日本\nvalor 0",
+          "PubKey": "Prueba España — 日本\nvalor 0"
+        },
+        "UnknownCipher": "2u5fHgK+gXCN4cdvsUX7RBn0qaOCpIiNohoDNPhmURvP0aEMKT4d59aQYMz5gk5jQqE5w2jgy5i5vPpvRqh89bp5OZqU89pXzfDOfM2KY0ps3QYhIqoSZ2R6vMR68sDO463Klc9rw4gLY46d4xJUMuCOTzM/kmPKCZTyz9pJ3Hv0Wd7hPhFVC4dbjcYGsgNvHDhDWTNcAPAHKoUKMSGjP9OpWy5knteKBPYDFf4ojq7YvJa8DMVbS9eceo2cPF90rBm/yi+Fo7ob3sMzNNdN1VyYZeHksq94BuFpfpgsfF7A1d5Ogs2JvHMNgG0V19+rkTb2eprktROsDT1EuRrISW+e/vYLJkx7BlfB7qQXkhM1/QCL97JPbpg4jJoBL/2q",
+        "ServerHTTP": "literal-unused"
+      }
+    ],
+    "Networks": [
+      {
+        "Name": "Prueba España — 日本\nvalor 0",
+        "Info": "Prueba España — 日本\nvalor 0",
+        "DNSResolver": "Prueba España — 日本\nvalor 0",
+        "TLSVersion": "Prueba España — 日本\nvalor 0",
+        "SNIHost": "GET /synthetic/[host] HTTP/1.1\r\nHost: test.invalid\r\n\r\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "Payload": "GET /synthetic/[host] HTTP/1.1\r\nHost: test.invalid\r\n\r\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "TunnelType": 2,
+        "EnableWS": true,
+        "ProxySettings": {
+          "Squid": "Prueba España — 日本\nvalor 0",
+          "Port": "Prueba España — 日本\nvalor 0"
+        },
+        "V2Ray": {
+          "SNIHost": "GET /synthetic/[host] HTTP/1.1\r\nHost: test.invalid\r\n\r\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "CustomV2RAYConfig": "GET /synthetic/[host] HTTP/1.1\r\nHost: test.invalid\r\n\r\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "UseCustomV2RAYConfig": true
+        },
+        "DNSServerHost": "literal-unused",
+        "SSCommand": "sslocal synthetic --flag=é"
+      }
+    ],
+    "unknown": {
+      "values": [
+        true,
+        false,
+        null,
+        0,
+        "é"
+      ],
+      "cipher": "GEn6fiM7/Yjr7CXI/Xrrp65jotoClVSSUcvhhaB0N3sSCq7M/UTqTCEq31FpLwMS"
+    }
+  },
+  "zeroEdge": {
+    "plain": "synthetic zero edge 244",
+    "cipher": "qLsy2AU/9uij4LryPbRHNbYeMUaflxsztJmzSydv+QE=",
+    "stream": "CMn/y95HG2WV7f58sxjsRS1OwQeXeEdZkq8llrqojgA="
+  }
+}

@@ -27,7 +27,8 @@ internal object CloudUserErrors {
                 "INVALID_CREDENTIALS" -> R.string.cloud_failure_credentials
                 "LEGAL_CONSENT_REQUIRED","USER_CONSENT_REQUIRED" -> R.string.cloud_failure_consent
                 "QA_DISABLED","QA_ACCESS_DENIED" -> R.string.cloud_failure_qa
-                "INTEGRITY_REJECTED" -> R.string.cloud_failure_integrity
+                "INTEGRITY_REJECTED","PLAY_POLICY_REJECTED","ATTESTATION_REJECTED" -> R.string.cloud_failure_integrity
+                "INTEGRITY_UNAVAILABLE" -> R.string.cloud_failure_unavailable
                 "UNAUTHORIZED","EXPIRED_CHALLENGE" -> R.string.cloud_failure_session
                 "RATE_LIMITED" -> R.string.cloud_failure_rate
                 "INPUT_TOO_LARGE","OUTPUT_TOO_LARGE","REMOTE_TOO_LARGE" -> R.string.cloud_failure_large

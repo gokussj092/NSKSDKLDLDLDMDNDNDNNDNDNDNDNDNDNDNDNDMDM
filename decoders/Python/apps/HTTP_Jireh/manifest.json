@@ -3,9 +3,10 @@
   "name": "HTTP Jireh",
   "package": "com.jirehvpn",
   "compatibleVersions": [
-    "2.0"
+    "2.0",
+    "2.2"
   ],
-  "versionCode": 11,
+  "versionCode": 13,
   "engine": "python-nibble-sha256-aes-cbc-rot22-and-shared-sks",
   "engineVersion": 1,
   "files": {
@@ -19,7 +20,7 @@
     ],
     "sharedEngine": "../HTTP_FenixVPN/codec.py",
     "exporterCertified": false,
-    "validation": "APK import paths and independent synthetic Java vectors; real exported file not supplied",
+    "validation": "2.0 APK import paths and independent synthetic Java vectors; real 2.2 export/import not certified",
     "textPrefixes": [],
     "legacyCompatibility": "Existing .sks historical JSON d/v route preserved"
   },
@@ -27,16 +28,18 @@
     "entrypoint": "server_catalog_decoder.py",
     "providerId": "http-jireh",
     "format": "nibble alphabet -> Base64 -> AES-256-CBC, SHA256(uppercase password hex), zero IV; Base64/AES-128-CBC/zero IV/Java ROT22 for known fields",
-    "validatedOn": "2026-10-19",
+    "validatedOn": "2026-10-31",
     "localServersObserved": 1,
-    "remoteServersObserved": 109,
+    "remoteServersObserved": 145,
     "localUsersObserved": 1,
     "remoteUsersObserved": 1,
-    "decodedRemoteServerFields": 1744,
-    "validation": "Complete JSON parity with normalized independent Java oracle; offline worker and real CLI",
+    "decodedRemoteServerFields": 2320,
+    "validation": "Complete JSON parity with normalized independent Java oracle; real 2.2 embedded and remote catalogs, offline isolated worker and real CLI",
     "cloudSource": "servers only; standalone --users fetches fixed separate user catalog",
     "publicCatalogVersion": 10,
-    "deploymentEnabledByDefault": false
+    "deploymentEnabledByDefault": false,
+    "sourceAppVersion": "2.2",
+    "sourceMigration": "APK NETWORK/NETWORK2 now use fixed Dropbox raw-content URLs; no fallback to the stale GitHub sources"
   },
   "icon": {
     "file": "HTTP_Jireh.png",
@@ -57,8 +60,12 @@
       "../HTTP_FenixVPN/field_names.json"
     ]
   },
-  "sourceApkSha256": "d97c8cc35769acaf257d76c58f978a9e5716f6e7752486002e166bc230d7ff91",
+  "sourceApkSha256": "0f47c48aa6ec20b3ed4d9ff8bad0a159b79bc68e94b49df3ac4789812eb948ea",
   "branch": "feat/austroplus-vpn-13-0-1-decoders",
   "pullRequest": 96,
-  "baseMainCommit": "e6cbb5926372aa6b7d36105802bf366a2138c98e"
+  "baseMainCommit": "e6cbb5926372aa6b7d36105802bf366a2138c98e",
+  "previousSourceApkSha256": "d97c8cc35769acaf257d76c58f978a9e5716f6e7752486002e166bc230d7ff91",
+  "sourceXapkSha256": "768e50e7dde95d4bd44af8ad540c050f47d51e645c02665d96588a89817e104c",
+  "sourceSignerSha256": "c22f4a72f74b5bd6be76137ad8de8afc5c3904d11b33d1a3ce647cd02a5fac30",
+  "sourceDownload": "https://d.apkpure.net/b/XAPK/com.jirehvpn?version=latest"
 }

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feedback_title">Errors and suggestions</string>
+    <string name="feedback_settings_detail">Report problems or request new APK methods</string>
+    <string name="feedback_intro">Choose the type of request. Nothing is submitted until you tap Send.</string>
+    <string name="feedback_category">Request type</string>
+    <string name="feedback_category_method">Add a new APK method</string>
+    <string name="feedback_category_bug">Report an error</string>
+    <string name="feedback_category_suggestion">Suggest an improvement</string>
+    <string name="feedback_method_help">Paste a Google Play, Uptodown or other provider link and explain what should be integrated.</string>
+    <string name="feedback_app_link">App link</string>
+    <string name="feedback_app_link_hint">https://play.google.com/store/apps/details?id=...</string>
+    <string name="feedback_bug_instruction">Select every issue you experienced (at least one).</string>
+    <string name="feedback_issue_decode">File decryption failed</string>
+    <string name="feedback_issue_catalog">VPN catalog download failed</string>
+    <string name="feedback_issue_import">File import problem</string>
+    <string name="feedback_issue_export">Export or unlocked configuration failed</string>
+    <string name="feedback_issue_crash">App crashed or closed</string>
+    <string name="feedback_issue_cloud">Cloud or server access problem</string>
+    <string name="feedback_issue_other">Other error</string>
+    <string name="feedback_optional_report">Additional report (optional)</string>
+    <string name="feedback_description_required">What would you like integrated or improved?</string>
+    <string name="feedback_report_hint">You can describe the steps or details, but it is not required.</string>
+    <string name="feedback_description_hint">Explain the method, files, catalog or improvement you want.</string>
+    <string name="feedback_privacy_note">Do not include passwords, private keys, decoded configurations or sensitive logs. Only selected information is sent.</string>
+    <string name="feedback_error">Could not send the request. Your answers are preserved; retry later.</string>
+    <string name="feedback_received">Request received. Reference: %1$s</string>
+    <string name="feedback_send">Send request</string>
+    <string name="feedback_sending">Sending…</string>
+</resources>

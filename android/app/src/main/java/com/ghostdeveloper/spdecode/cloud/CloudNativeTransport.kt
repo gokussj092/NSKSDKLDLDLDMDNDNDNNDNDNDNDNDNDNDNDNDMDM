@@ -36,12 +36,16 @@ internal object CloudNativeTransport {
     // Native RAM-only session cache; temporary bearer copies still cross JNI.
     @JvmStatic private external fun nativeCacheSession(token: String, seconds: Long, actionRequired: Boolean)
     @JvmStatic private external fun nativeGetSession(): String
+    @JvmStatic private external fun nativeConfigureAction(bearer: String, project: Long, inlineMode: Boolean)
+    @JvmStatic private external fun nativeInlineAction(operation: Int, wire: ByteArray, bearer: String): String
     @JvmStatic private external fun nativeRequiresActionIntegrityFor(bearer: String): Boolean
     @JvmStatic private external fun nativeClearSession()
     @JvmStatic private external fun nativeInvalidateSession(token: String)
     fun cacheSession(token: String, seconds: Long, actionRequired: Boolean) =
         nativeCacheSession(token, seconds, actionRequired)
     fun cachedSession(): String = nativeGetSession()
+    fun configureAction(bearer: String, project: Long, inlineMode: Boolean) = nativeConfigureAction(bearer,project,inlineMode)
+    fun inlineAction(operation: Int, wire: ByteArray, bearer: String): JSONObject = JSONObject(nativeInlineAction(operation,wire,bearer))
     fun actionIntegrityRequired(bearer: String): Boolean = nativeRequiresActionIntegrityFor(bearer)
     fun clearCachedSession() = nativeClearSession()
     private fun invalidateCachedSession(token: String) = nativeInvalidateSession(token)
@@ -131,7 +135,7 @@ internal object CloudNativeTransport {
     data class Reply(val status: Int, val body: JSONObject)
     fun prepare(operation:Int,payload:JSONObject,attachment:ByteArray?=null):V2HpkeEnvelope.Prepared {
         require(BuildConfig.SPDECODE_CLOUD_ENABLED) { "CLOUD_DISABLED" }
-        require(operation in 1..17 && operation!=3) { "CLOUD_ROUTE_DENIED" }
+        require(operation in 1..18 && operation!=3) { "CLOUD_ROUTE_DENIED" }
         return V2HpkeEnvelope.prepare(operation,payload,attachment)
     }
 

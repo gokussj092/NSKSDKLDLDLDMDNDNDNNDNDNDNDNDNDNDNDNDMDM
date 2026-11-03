@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="apk_import_button">Nhập APK</string>
+    <string name="apk_future_message">Tính năng phân tích APK sẽ có trong bản cập nhật sắp tới.</string>
+    <string name="apk_credits_title">Trung tâm tín dụng</string>
+    <string name="apk_credits_intro">Quản lý tín dụng và giao dịch mua phân tích APK trong tương lai.</string>
+    <string name="apk_credits_notice">Số dư và tính năng mua sẽ có khi dịch vụ ra mắt.</string>
+    <string name="apk_credits_buy_title">Mua tín dụng</string>
+    <string name="apk_credits_one">1 tín dụng</string>
+    <string name="apk_credits_buy_one">Mua 1 tín dụng · Sắp ra mắt</string>
+    <string name="apk_credits_packages">Gói tín dụng</string>
+    <string name="apk_credits_buy_package">Mua gói · Sắp ra mắt</string>
+    <string name="apk_credits_prices_title">Giá</string>
+    <string name="apk_credits_subscriptions">Gói đăng ký</string>
+    <string name="apk_credits_button">Tín dụng: 1+</string>
+    <string name="apk_credits_back">Quay lại</string>
+    <string name="feedback_details_title">Chi tiết yêu cầu</string>
+    <string name="feedback_method_description">Đề xuất hỗ trợ tệp mới hoặc danh mục máy chủ VPN.</string>
+    <string name="feedback_bug_description">Báo lỗi giải mã, tương thích hoặc ứng dụng.</string>
+    <string name="feedback_suggestion_description">Đề xuất tính năng hoặc cải tiến giao diện.</string>
+    <string name="feedback_extra_title">Thông tin bổ sung (không bắt buộc)</string>
+    <string name="feedback_extra_hint">Phiên bản, định dạng bị ảnh hưởng hoặc chi tiết khác</string>
+</resources>

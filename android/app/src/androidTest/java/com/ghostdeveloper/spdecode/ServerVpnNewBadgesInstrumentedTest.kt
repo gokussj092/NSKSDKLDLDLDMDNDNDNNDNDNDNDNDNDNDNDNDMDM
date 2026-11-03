@@ -66,4 +66,26 @@ class ServerVpnNewBadgesInstrumentedTest {
         assertTrue(tracker.observeCatalog(
             setOf("provider-a","provider-b"),start+60).ids.isEmpty())
     }
+
+    @Test fun methodRevisionsOnlyMarkExplicitChangesAndDoNotReappear()=withStore { tracker ->
+        assertTrue(tracker.observeMethods(mapOf("provider-a" to 3),start).ids.isEmpty())
+        val updated=tracker.observeMethods(mapOf("provider-a" to 4),start+100)
+        assertEquals(setOf("provider-a"),updated.ids)
+        assertTrue(tracker.observeMethods(mapOf("provider-a" to 4),
+            start+100+ServerVpnNewBadges.DURATION_MS).ids.isEmpty())
+        assertTrue(tracker.observeMethods(mapOf("provider-a" to 4),start+100).ids.isEmpty())
+        assertEquals(setOf("provider-a"),tracker.observeMethods(
+            mapOf("provider-a" to 5),start+200).ids)
+    }
+
+    @Test fun methodStatusesHaveDeterministicPriority(){
+        assertEquals(ServerVpnBadgeType.MAINTENANCE,
+            ServerVpnBadgePriority.resolve(true,true,true))
+        assertEquals(ServerVpnBadgeType.UPDATED,
+            ServerVpnBadgePriority.resolve(false,true,true))
+        assertEquals(ServerVpnBadgeType.NEW,
+            ServerVpnBadgePriority.resolve(false,false,true))
+        assertNull(ServerVpnBadgePriority.resolve(false,false,false))
+    }
+
 }

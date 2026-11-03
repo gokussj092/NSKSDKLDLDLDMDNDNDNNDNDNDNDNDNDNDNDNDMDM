@@ -2,7 +2,7 @@ package com.ghostdeveloper.spdecode.cloud
 
 internal object CompatibleExportFilename {
     fun forSource(original:String,suffix:String):String {
-        require(suffix.matches(Regex("[a-z0-9]{1,8}")))
+        require(suffix.matches(Regex("[a-z0-9][a-z0-9_-]{0,15}")))
         val leaf=original.replace('\\','/').substringAfterLast('/')
         val base=leaf.substringBeforeLast('.',leaf).filterNot {
             it.isISOControl() || it in "<>:\"/\\|?*" || it in '\u202a'..'\u202e' || it in '\u2066'..'\u2069'

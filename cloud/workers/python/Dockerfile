@@ -23,6 +23,8 @@ COPY cloud/workers/python/engine.py cloud/workers/python/server.py cloud/workers
 COPY cloud/workers/python/mkk_bundle.py cloud/workers/python/ultra_custom_bridge.py cloud/workers/python/npvs_bridge.py ./cloud/workers/python/
 COPY cloud/workers/python/dark_bridge.py ./cloud/workers/python/
 COPY cloud/workers/python/exports/ ./cloud/workers/python/exports/
+# Same verified file-format catalog shared by web and worker (no private keys).
+COPY cloud/web/content/file-formats.json ./cloud/web/content/file-formats.json
 # VPS installer clones the source as root with umask 077: files can be 0600
 # and directories 0700. Docker COPY preserves modes. The restricted runtime
 # UID 65532 cannot read server.py or traverse decoders/ unless we normalize

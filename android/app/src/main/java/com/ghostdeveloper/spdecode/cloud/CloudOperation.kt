@@ -18,5 +18,6 @@ internal object CloudOperation {
     const val TELEMETRY = 15
     const val ACTION_CHALLENGE = 16
     const val NOTIFICATIONS = 17
+    const val FEEDBACK = 18
 }
 

@@ -1,0 +1,55 @@
+name: SP-DECODE Notification anti-replay and admin controls
+# Isolated tests: no Firebase secrets, live audience, publication or deployment.
+on:
+  push:
+    branches: [fix/http-jireh-current-method]
+    paths:
+      - .github/workflows/notification-anti-replay-ci.yml
+      - cloud/web/lib/notice-store.mjs
+      - cloud/web/lib/notice-push.mjs
+      - cloud/web/lib/app-notifications.mjs
+      - cloud/web/app/admin/admin-notifications.jsx
+      - cloud/web/app/admin/admin-theme.css
+      - cloud/web/tests/app-notifications.test.mjs
+      - cloud/web/tests/notice-store.test.mjs
+      - cloud/web/tests/c11-play-admission.test.mjs
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudNotifications.kt
+      - android/app/src/cloudAndroidTest/java/com/ghostdeveloper/spdecode/cloud/NoticeSubscriptionPolicyInstrumentedTest.kt
+      - tests/test_notice_anti_replay_contract.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: spdecode-notice-anti-replay-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  notification-contract:
+    if: github.repository_owner == 'gokussj092' && github.ref == 'refs/heads/fix/http-jireh-current-method'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install backend dependencies without lifecycle scripts
+        working-directory: cloud/web
+        run: npm install --ignore-scripts --no-audit --no-fund --no-package-lock
+      - name: Notification security, delivery, persistence and first-install tests
+        working-directory: cloud/web
+        run: node --test tests/app-notifications.test.mjs tests/notice-store.test.mjs tests/c11-play-admission.test.mjs
+      - name: Protect Android and admin anti-replay source contract
+        run: python3 -m unittest tests.test_notice_anti_replay_contract -v
+      - name: Compile notification management UI in production mode
+        working-directory: cloud/web
+        run: npm run build
+      - name: Syntax check modified Node source
+        run: |
+          node --check cloud/web/lib/app-notifications.mjs
+          node --check cloud/web/lib/notice-push.mjs
+          node --check cloud/web/lib/notice-store.mjs

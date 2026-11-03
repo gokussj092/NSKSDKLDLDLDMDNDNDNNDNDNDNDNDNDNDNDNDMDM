@@ -108,7 +108,9 @@ jobs:
           SPDECODE_RELEASE_STORE_PASSWORD: ${{ secrets.SPDECODE_SIGNING_STORE_PASSWORD }}
           SPDECODE_RELEASE_KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
           SPDECODE_RELEASE_KEY_PASSWORD: ${{ secrets.SPDECODE_SIGNING_KEY_PASSWORD }}
-        run: gradle --no-daemon --max-workers=2 :app:assembleRelease :app:bundleRelease
+        run: |
+          gradle --no-daemon --max-workers=2 :app:assembleRelease
+          gradle --no-daemon --max-workers=2 -PspdecodePlayAab=true :app:bundleRelease
       - name: Check BuildConfig signing anchors
         run: python3 scripts/ci/verify_release_signer_pins.py
       - name: Verify signed binaries and package metadata
@@ -117,6 +119,7 @@ jobs:
           set -euo pipefail
           APK=android/app/build/outputs/apk/release/app-release.apk
           AAB=android/app/build/outputs/bundle/release/app-release.aab
+          python3 scripts/ci/verify_play_update_artifacts.py "$APK" "$AAB"
           TOOLS="$ANDROID_HOME/build-tools/35.0.0"
           test -s "$APK" && test -s "$AAB"
           "$TOOLS/apksigner" verify --verbose --print-certs "$APK" > "$RUNNER_TEMP/signature.txt"

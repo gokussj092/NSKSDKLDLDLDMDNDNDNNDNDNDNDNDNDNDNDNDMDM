@@ -1,0 +1,65 @@
+{
+  "id": "jyfast-vpn-ultra",
+  "name": "JyFast VPN Ultra",
+  "package": "http.jyfast.vpnultra",
+  "compatibleVersions": ["9"],
+  "versionCode": 9,
+  "engine": "python-rt-symbol-sha256-aes-cbc-and-shared-sks",
+  "engineVersion": 1,
+  "files": {
+    "entrypoint": "file_decoder.py",
+    "extensions": ["sks"],
+    "formats": [
+      "AES-128-GCM/PBKDF2-HMAC-SHA256/1000 salt32 nonce12 tag16",
+      "legacy raw DES-ECB/PKCS5"
+    ],
+    "sharedEngine": "../HTTP_FenixVPN/codec.py",
+    "exporterCertified": false,
+    "validation": "APK 9 r6.b import path and synthetic GCM/DES vectors; no real JyFast export supplied",
+    "textPrefixes": []
+  },
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "jyfast-vpn-ultra",
+    "format": "Rt custom symbols -> Base64 -> AES-256-CBC/PKCS7, direct SHA256(UTF8 password), zero IV; same method for 22 known fields",
+    "validatedOn": "2026-10-31",
+    "sourceAppVersion": "9",
+    "cloudSource": "fixed free and premium GETs, complete paired bundle; custom 404 excluded",
+    "bundleKind": "spdecode-jyfast-vpn-ultra-catalogs-v1",
+    "publicCatalogVersion": 57,
+    "deploymentEnabledByDefault": false,
+    "remoteCatalogsObserved": {
+      "free": {"version": "33", "servers": 44, "decodedFields": 387},
+      "premium": {"version": "27", "servers": 49, "decodedFields": 400}
+    },
+    "validation": "Complete JSON parity with independent JCA oracle, real Python downloads and isolated worker; isPartial=false",
+    "nodeTransportValidation": "Mocked public/private DNS, fixed HTTP port 85 and certificate header, no redirects; live Node network not verified",
+    "embeddedCatalogsValidated": false
+  },
+  "icon": {
+    "file": "JyFast_VPN_Ultra.png",
+    "source": "base APK:res/drawable/nezu.png",
+    "width": 512,
+    "height": 512,
+    "bytes": 83968,
+    "sha256": "05e176023754019f84135e0247d0db91370a450536ddbc7b035c626e0a094ae8",
+    "policy": "preserve exact original PNG"
+  },
+  "dependencies": {
+    "python": ">=3.10",
+    "pycryptodome": "3.23.0",
+    "supportFiles": ["codec.py", "../HTTP_FenixVPN/codec.py", "../HTTP_FenixVPN/field_names.json"]
+  },
+  "sourceApkSha256": "266561adfefdc2245fd0ad6dd74dc44cbdc3e07ac7034790315de9e6464869eb",
+  "sourceXapkSha256": "1c1a900695e1ee6b3906806a37278d2407e99f505b906749ace28d71c650611e",
+  "sourceSignerSha256": "5bd175715917cb6be21bc3fa5b25000edc92ec4aa224c27f93d4cd76cb9c60f8",
+  "sourceDownload": "https://d.apkpure.net/b/XAPK/http.jyfast.vpnultra?version=latest",
+  "branch": "fix/http-jireh-current-method",
+  "limitations": [
+    "Version 10 APK not acquired or certified",
+    "custom source returns 404",
+    "Embedded assets not decrypted with current remote mode keys",
+    "Native JNI model verifies strings only, not full Android execution",
+    "Real SKS export, Android VPN connection and VPS deployment not verified"
+  ]
+}

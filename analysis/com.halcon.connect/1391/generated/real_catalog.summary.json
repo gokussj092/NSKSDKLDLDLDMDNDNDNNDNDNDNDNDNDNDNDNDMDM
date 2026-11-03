@@ -1,0 +1,22 @@
+{
+  "scope": "VERIFIED_REAL",
+  "version": "635",
+  "servers": 101,
+  "encrypted_bytes": 645168,
+  "encrypted_sha256": "f112a2704421f5b53a82fb859ce925d12f5d8f10280943b8df7597baa49c88f5",
+  "reference_bytes": 80617,
+  "reference_sha256": "bd09071797d4c3175216ff958ce180273936ba970394eb4a49bc28d0d056620a",
+  "jca_cli_worker_full_document_equal": true,
+  "cli_real_download_full_document_equal": null,
+  "earlier_cli_real_download_full_document_equal": true,
+  "node_real_broker": {
+    "status": "NETWORK_UNAVAILABLE",
+    "error": "REMOTE_NETWORK_DENIED",
+    "vps_test": "PENDING"
+  },
+  "node_replay": {
+    "status": "PASS",
+    "transport": "SIMULATED_HTTP_REAL_BYTES",
+    "full_document_contract": true
+  }
+}

@@ -19,4 +19,7 @@
     <string name="server_vpn_catalog_current">VPN sunucu kataloğu güncel.</string>
     <string name="server_vpn_catalog_updated">VPN sunucu kataloğu güncellendi.</string>
     <string name="server_vpn_catalog_update_error">Katalog kontrol edilemedi veya indirilemedi. Tekrar deneyin.</string>
+    <string name="server_vpn_updated_badge">Güncellendi</string>
+    <string name="server_vpn_maintenance_badge">Bakımda</string>
+    <string name="server_vpn_maintenance_detail">Yöntem geçici olarak bakımda</string>
 </resources>

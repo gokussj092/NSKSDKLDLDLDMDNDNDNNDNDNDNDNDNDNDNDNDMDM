@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_screen_entry_detail">Phiên bản, bảo mật và liên kết chính thức</string>
+    <string name="about_screen_description">Công cụ phân tích và giải mã cấu hình VPN</string>
+    <string name="about_screen_version_badge">Phiên bản %1$s · Bản dựng %2$d</string>
+    <string name="about_screen_info">Thông tin ứng dụng</string>
+    <string name="about_screen_languages">Ngôn ngữ hiện có</string>
+    <string name="about_screen_installed">Phiên bản đã cài</string>
+    <string name="about_screen_features">Tính năng chính</string>
+    <string name="about_screen_feature_decode">Giải mã tệp VPN</string>
+    <string name="about_screen_feature_catalog">Danh mục Server VPN</string>
+    <string name="about_screen_feature_export">Xuất JSON và unlocked</string>
+    <string name="about_screen_feature_history">Lịch sử kết quả</string>
+    <string name="about_screen_security">Bảo mật và quyền riêng tư</string>
+    <string name="about_screen_cloud_security">Kết nối Cloud V2 dùng mã hóa HPKE và kiểm tra tính toàn vẹn theo cấu hình dịch vụ.</string>
+    <string name="about_screen_local_security">Lịch sử cục bộ được mã hóa trên thiết bị này.</string>
+    <string name="about_screen_privacy">Chính sách quyền riêng tư</string>
+    <string name="about_screen_terms">Điều khoản sử dụng</string>
+    <string name="about_screen_links">Cộng đồng và liên kết chính thức</string>
+    <string name="about_screen_website">Trang web chính thức</string>
+    <string name="about_screen_community_detail">Cộng đồng Telegram chính thức</string>
+    <string name="about_screen_credit">Phát triển bởi Ghost Developer</string>
+    <string name="about_screen_copyright">SP-DECODE · Bảo lưu mọi quyền</string>
+</resources>

@@ -7,10 +7,11 @@ import { settings } from "./c3-config.mjs";
 import {admissionPolicy,setAdmissionPolicy} from "./c11-play-admission.mjs";
 import {v1ProtectionStatus,v1PolicyStatus,changeV1Policy,changeV1Retirement} from "./v1-protection-policy.mjs";
 import {v2PolicyStatus,changeV2Availability} from "./v2-availability-policy.mjs";
-import {v2PlayPolicyStatus,changeV2PlayPolicy} from "./v2-play-policy.mjs";
+import {v2PlayPolicyStatus,changeV2PlayPolicy,changeV2PlaySettings} from "./v2-play-policy.mjs";
 import {v2DevicePolicyStatus,changeV2DevicePolicy,PATCH_MONTHS,TEST_HOURS} from "./v2-device-admission-policy.mjs";
+import {admissionDiagnostics} from "./v2-admission-diagnostics.mjs";
 import {v2Settings} from "./v2-config.mjs";
-import {providerOverview,updateProvider,PUBLIC_PROVIDER_IDS} from "./c12-provider-controls.mjs";
+import {providerOverview,updateProvider,updateMethodState,PUBLIC_PROVIDER_IDS} from "./c12-provider-controls.mjs";
 import { ehiConfigured,nurConfigured } from "./c35-provider.mjs";
 import { jsonReply } from "./responses.mjs";
 import {readOpsReport,hostHealth} from "./c14-ops-observability.mjs";
@@ -87,9 +88,9 @@ export async function statusRequest(request,options={}) {
           method:"GET",cache:"no-store",redirect:"error",signal:AbortSignal.timeout(2500),
           headers:{"X-SP-Attestation-Token":process.env.CLOUD_KEY_ATTESTATION_TOKEN}});
         if(report.ok){
-          const summary=await report.json();
+          const summary=await parseSmallJson(report,16384);
           const known=["OS_PATCH_OUTDATED","VENDOR_BOOT_PATCH_OUTDATED","OS_PATCH_MISSING",
-            "VERIFIED_BOOT","CERT_PATH","CHAIN_FORMAT","CERT_EXTENSION",
+            "VERIFIED_BOOT","CHALLENGE","CERT_PATH","CHAIN_FORMAT","CERT_EXTENSION",
             "CERT_CONSTRAINT","CERT_INVALID","SECURITY_LEVEL","KEY_MISMATCH",
             "APP_ID_MISSING","APP_ID_MISMATCH","POLICY_INVALID","VERIFICATION_EXCEPTION"];
           if(Number.isSafeInteger(summary.uptimeSeconds) && summary.uptimeSeconds>=0 &&
@@ -99,18 +100,31 @@ export async function statusRequest(request,options={}) {
               const n=summary.rejections[key];
               if(Number.isSafeInteger(n)&&n>=0)counts[key]=n;
             }
-            attestationDiagnostics={uptimeSeconds:summary.uptimeSeconds,rejections:counts};
+            const countMap=value=>Object.fromEntries(Object.entries(value||{}).filter(([key,n])=>
+              /^[A-Z][A-Z0-9_]{1,63}$/.test(key)&&Number.isSafeInteger(n)&&n>=0));
+            const accepted=Number.isSafeInteger(summary.accepted)&&summary.accepted>=0?summary.accepted:null;
+            const rejected=Object.values(counts).reduce((a,b)=>a+b,0);
+            const total=accepted===null?null:accepted+rejected;
+            attestationDiagnostics={uptimeSeconds:summary.uptimeSeconds,rejections:counts,
+              accepted,rejected,total,rejectionPercent:total?Math.round(10000*rejected/total)/100:null,
+              unit:"verification_attempts",rootDetection:"unknown",
+              observations:countMap(summary.observations),certificatePathReasons:countMap(summary.certificatePathReasons),
+              updatedAt:new Date().toISOString()};
           }
         }
       }catch{}
     }
+    const v2Runtime=v2Settings(process.env,{playIntegrityRequired:v2PlayPolicy.integrityRequired,playPolicy:v2PlayPolicy});
     return api({
       services:{apiConfigured:cfg.configured,redisConnected:ping==="PONG",
         workerReady,ehiImportConfigured:ehiConfigured(),
         nurCatalogImportConfigured:nurConfigured()},
       maintenance,serviceMaintenance,playAdmission,providerControls,v1Protection,v1Policy,
-      v2Policy:{...v2PolicyState,configured:v2Settings(process.env,{playIntegrityRequired:v2PlayPolicy.integrityRequired}).configured},
+      v2Policy:{...v2PolicyState,configured:v2Settings(process.env,{playIntegrityRequired:v2PlayPolicy.integrityRequired,playPolicy:v2PlayPolicy}).configured},
       v2PlayPolicy,v2DevicePolicy,attestationDiagnostics,
+      v2Runtime:{googleConfigured:Boolean(v2Runtime.account),hardwareRequired:v2Runtime.requireHardware,
+       actionRequired:v2Runtime.requireAction,raspMode:v2Runtime.rasp.mode,raspAccessMode:v2Runtime.rasp.accessMode},
+      admissionDiagnostics:await admissionDiagnostics(redis),
       maintenanceLocked:process.env.CLOUD_FORCE_MAINTENANCE==="true",metrics,
       observation:"Counters are aggregate-only; no user content or keys are logged.",
     });
@@ -227,7 +241,7 @@ export async function v2DeviceAdmissionRequest(request,options={}){
  try{
   const redis=await (options.storeProvider||opsStore)();
   if(!await authenticateAdmin(redis,request,cfg))return error("UNAUTHORIZED",401);
-  if(!await throttle(redis,"spc6:v2-device:rate",6,60))return error("RATE_LIMITED",429);
+  if(!await throttle(redis,"spc6:v2-device:rate",30,60))return error("RATE_LIMITED",429);
   const body=await parseSmallJson(request,512);
   if(!own(body,["patchMonths","enforcePatch","enforceBoot","durationHours","expectedRevision","confirmation"])||
    !PATCH_MONTHS.includes(body.patchMonths)||typeof body.enforcePatch!=="boolean"||
@@ -251,30 +265,35 @@ export async function v2DeviceAdmissionRequest(request,options={}){
  }
 }
 
-/** Play Integrity is an independent TESTER switch; turning it off always expires in 15 days. */
+/** Authenticated permanent Play settings with optimistic concurrency and audit. */
 export async function v2PlayIntegrityRequest(request,options={}){
  const cfg=adminSettings();if(!cfg.enabled)return error("ADMIN_DISABLED",503);
  if(!validMutation(request,cfg))return error("CSRF_REJECTED",403);
  try{
   const redis=await (options.storeProvider||opsStore)();
   if(!await authenticateAdmin(redis,request,cfg))return error("UNAUTHORIZED",401);
-  if(!await throttle(redis,"spc6:v2-play:rate",6,60))return error("RATE_LIMITED",429);
-  const body=await parseSmallJson(request,256);
-  if(!own(body,["integrityRequired","confirmation","expectedRevision"])||
-     typeof body.integrityRequired!=="boolean"||
-     body.confirmation!==(body.integrityRequired?"V2_PLAY_ACTIVAR":"V2_PLAY_BETA_15_DIAS")||
-     !Number.isSafeInteger(body.expectedRevision)||body.expectedRevision<0)
-     return error("INVALID_REQUEST",400);
-  const v2PlayPolicy=await changeV2PlayPolicy(body.integrityRequired,body.expectedRevision,options.policyOptions);
+  if(!await throttle(redis,"spc6:v2-play:rate",30,60))return error("RATE_LIMITED",429);
+  const body=await parseSmallJson(request,2048);
+  const modern=own(body,["settings","confirmation","expectedRevision"]);
+  const legacy=own(body,["integrityRequired","confirmation","expectedRevision"]);
+  if((!modern&&!legacy)||!Number.isSafeInteger(body.expectedRevision)||body.expectedRevision<0||
+     (modern?body.confirmation!=="V2_PLAY_CONFIGURAR":
+       typeof body.integrityRequired!=="boolean"||body.confirmation!==
+         (body.integrityRequired?"V2_PLAY_ACTIVAR":"V2_PLAY_BETA_15_DIAS")))return error("INVALID_REQUEST",400);
+  const v2PlayPolicy=modern?
+    await changeV2PlaySettings(body.settings,body.expectedRevision,options.policyOptions):
+    await changeV2PlayPolicy(body.integrityRequired,body.expectedRevision,options.policyOptions);
   try{
    await redis.lPush("spc6:v2-play:audit",JSON.stringify({
-    at:Date.now(),integrityRequired:body.integrityRequired,revision:v2PlayPolicy.revision}));
+    at:Date.now(),mode:v2PlayPolicy.mode,deviceIntegrity:v2PlayPolicy.deviceIntegrity,
+    requireLicensed:v2PlayPolicy.requireLicensed,requireAction:v2PlayPolicy.requireAction,revision:v2PlayPolicy.revision}));
    await redis.lTrim("spc6:v2-play:audit",0,99);
    await redis.expire("spc6:v2-play:audit",8*86400);
   }catch{}
   return api({v2PlayPolicy},200,{"Cache-Control":"private, no-store"});
  }catch(e){
   if(["V2_PLAY_POLICY_CONFLICT","STORE_BUSY"].includes(e?.message))return error(e.message,409);
+  if(e?.message==="V2_PLAY_POLICY_INVALID")return error(e.message,400);
   return error("SERVICE_UNAVAILABLE",503);
  }
 }
@@ -347,6 +366,33 @@ export async function providerControlRequest(request,options={}){
   if(cause?.message==="PROVIDER_BUSY")return error("PROVIDER_BUSY",409);
   return error("SERVICE_UNAVAILABLE",503);
  }
+}
+
+/** Authenticated method metadata: revision increments and explicit maintenance only.
+ * Identifiers are validated against the fixed Server VPN roster by the state store. */
+export async function providerMethodRequest(request,options={}){
+  const cfg=adminSettings();
+  if(!cfg.enabled)return error("ADMIN_DISABLED",503);
+  if(!validMutation(request,cfg))return error("CSRF_REJECTED",403);
+  try{
+    const redis=await (options.storeProvider||opsStore)();
+    if(!await authenticateAdmin(redis,request,cfg))return error("UNAUTHORIZED",401);
+    const body=await parseSmallJson(request,256);
+    if(!body || typeof body!=="object" || Array.isArray(body) ||
+       typeof body.id!=="string" ||
+       !["revision","maintenance"].includes(body.operation) ||
+       Object.keys(body).some(k=>!["id","operation","maintenance"].includes(k)) ||
+       (body.operation==="maintenance" && typeof body.maintenance!=="boolean") ||
+       (body.operation==="revision" && Object.hasOwn(body,"maintenance")))
+      return error("INVALID_REQUEST",400);
+    const providerControls=await updateMethodState(body.id,body.operation,body.maintenance);
+    return api({providerControls},200,{"Cache-Control":"private, no-store"});
+  }catch(cause){
+    if(cause?.message==="INVALID_METHOD_STATE")return error("INVALID_REQUEST",400);
+    if(["MAINTENANCE_LOCKED","PROVIDER_BUSY","METHOD_REVISION_EXHAUSTED"].includes(cause?.message))
+      return error(cause.message,409);
+    return error("SERVICE_UNAVAILABLE",503);
+  }
 }
 
 /** Reset per-format error baselines only; success/warnings/usage history remain untouched. */

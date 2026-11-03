@@ -17,10 +17,15 @@ class CompatibleExportIntegration(unittest.TestCase):
         private=(ROOT/'.github/workflows/cloud-private-preproduction-apk.yml').read_text()
         play=(ROOT/'.github/workflows/play-beta-artifacts.yml').read_text()
         public=(ROOT/'.github/workflows/cloud-preproduction-public.yml').read_text()
-        for source in (private,play,public):
-            self.assertIn(f"versionName='{version}'",source)
-            self.assertIn(f"versionCode='{code}'",source)
-            self.assertIn('SP-DECODE-v'+version,source)
+        # Only the active Play signing candidate tracks the app version;
+        # legacy preproduction workflows are pinned to old historical builds
+        # and must not silently move signing/publication to the new branch.
+        self.assertIn(f"versionName='{version}'",play)
+        self.assertIn(f"versionCode='{code}'",play)
+        self.assertIn('SP-DECODE-v'+version,play)
+        for historical in (private,public):
+            self.assertIn("versionName='1.1.24'",historical)
+            self.assertIn("versionCode='35'",historical)
         workflow=(ROOT/'.github/workflows/compatible-export-integration.yml').read_text()
         self.assertIn(':app:compileDebugKotlin',workflow)
         self.assertIn(':app:compileDebugAndroidTestKotlin',workflow)

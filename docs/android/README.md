@@ -1,5 +1,7 @@
 # SP-DECODE Android — documentación oficial
 
+> **Plan solicitado — 1.1.26, build 41 (2026-11-02):** traslado de Formatos a Ajustes, futuro análisis de APK con Próximamente y créditos, estados de métodos, errores/sugerencias y Acerca de independiente. **Solo documentación; implementación pendiente.** [Leer el plan vigente de esta ampliación](../PLAN_ANDROID_1_1_26_BUILD_41_2026_11_02.md). Las restricciones offline y las numeraciones iniciales del resto de esta página describen el diseño histórico; no sustituyen las decisiones actuales de esta ampliación Cloud.
+
 > **Parche v1.0.7 — HTTP Injector (.ehi):** conserva los campos que fallan en el descifrado interno, mantiene el JSON completo con payloads multilínea y preserva el descifrado original. Firma de producción con la keystore definitiva tras CI `main`. La publicación estable usa aceptación manual del propietario acotada a esta versión y no es certificación independiente de 239 exportadores. [Informe 1.0.7](EHI_COMPLETE_JSON_1_0_7.md).
 
 

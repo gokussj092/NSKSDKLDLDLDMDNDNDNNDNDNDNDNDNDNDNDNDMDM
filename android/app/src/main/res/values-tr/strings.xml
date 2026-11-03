@@ -102,6 +102,10 @@
     <string name="decode_progress_reading">Dosya okunuyor…</string>
     <string name="decode_progress_decoding">Yapılandırma Cloud üzerinden çözülüyor…</string>
     <string name="decode_progress_saving">Şifreli sonuç kaydediliyor…</string>
+    <string name="decode_progress_wait">Lütfen bekleyin…</string>
+    <string name="decode_progress_sending">Gönderiliyor…</string>
+    <string name="decode_progress_processing">İşleniyor…</string>
+    <string name="decode_progress_downloading_results">Sonuçlar indiriliyor…</string>
     <string name="history_search">Dosya adı veya uzantıyla ara</string>
     <string name="history_favorites">Favoriler</string>
     <string name="history_sort">Sırala</string>
@@ -139,7 +143,7 @@
     <string name="native_decoder_mixed_short">Karma</string>
     <string name="clear_current_result">Gösterilen sonucu temizle</string>
     <string name="guide_settings_title">Etkileşimli rehber</string>
-    <string name="guide_settings_detail">Ana sayfa, Geçmiş, Biçimler, VPN Sunucuları ve Ayarlar\'ı sırayla izleyin. Rehberi tekrar açabilirsiniz.</string>
+    <string name="guide_settings_detail">Ana Sayfa, Geçmiş, APK Analizi, VPN Sunucuları ve Ayarlar bölümlerini keşfedin. Rehberi istediğiniz zaman yeniden başlatabilirsiniz.</string>
     <string name="guide_replay">Rehberi başlat</string>
     <string name="settings_version">Sürüm %1$s</string>
     <string name="settings_build_code">Derleme %1$d</string>
@@ -200,7 +204,7 @@
     <string name="hc_auth_enter_manually">Parolayı elle gir</string>
     <string name="hc_auth_input_invalid">Gerekli parolayı ve/veya geçerli 32 karakterli HWID\'yi girin.</string>
     <string name="hc_auth_failed">Korumalı HTTP Custom dosyası doğrulanamadı. Parola/HWID\'yi kontrol edin; dosya hasarlı veya desteklenmeyen türde olabilir.</string>
-    <string name="guide_step_six">Biçimler: desteklenen uygulamaları ve uzantıları inceleyin.</string>
+    <string name="guide_step_six">APK analizi: bu özellik yakında kullanıma sunulacak.</string>
     <string name="guide_step_seven">VPN Sunucuları: uygulama seçip sunucu kataloğunu çözün.</string>
     <string name="guide_step_eight">Ayarlar: dili, gizliliği ve uygulama tercihlerini yönetin.</string>
     <string name="server_vpn">VPN Sunucuları</string>
@@ -213,4 +217,22 @@
     <string name="nur_servers_invalid_url">Sunucu listesi için geçerli bir HTTPS URL girin.</string>
     <string name="nur_servers_failed">Sunucu kataloğu indirilemedi, doğrulanamadı veya çözülemedi.</string>
     <string name="language_screen_title">Dil seç</string>
+    <string name="apk_analysis_title">APK Analizi</string>
+    <string name="apk_analysis_coming_soon">Yakında</string>
+    <string name="settings_formats_title">Desteklenen biçimler</string>
+    <string name="settings_formats_detail">Uyumlu dosya uzantılarını ve metin protokollerini görüntüleyin.</string>
+    <string name="apk_analysis_intro_title">APK dosyasından teknik araştırma raporuna</string>
+    <string name="apk_analysis_intro_detail">Kullanıma açıldığında statik analiz, kod çözücü betikleri hazırlamak için manifesti, meta verileri, kaynakları ve yerel kitaplıkları inceleyecek.</string>
+    <string name="apk_analysis_steps_title">Planlanan işlem</string>
+    <string name="apk_analysis_step_import">Analiz izniniz olan bir APK seçin</string>
+    <string name="apk_analysis_step_inspect">Meta verileri, kaynakları ve kitaplıkları inceleyin</string>
+    <string name="apk_analysis_step_report">Yapılandırılmış bir teknik rapor hazırlayın</string>
+    <string name="apk_analysis_subscription_title">Abonelik ile erişim</string>
+    <string name="apk_analysis_subscription_detail">Abonelik gerekecek. Planlar ve ödeme koşulları henüz belirlenmedi.</string>
+    <string name="apk_analysis_credit_cost">1 APK = 1 kredi</string>
+    <string name="apk_analysis_credit_price">1 kredi = 4 USD</string>
+    <string name="apk_analysis_price_note">4 USD, abonelik ücreti değil, kredi başına planlanan fiyattır.</string>
+    <string name="apk_analysis_safety_note">Planlanan analiz statiktir: APK yüklenmez veya çalıştırılmaz.</string>
+    <string name="apk_analysis_import_unavailable">APK içe aktar (kullanılamıyor)</string>
+    <string name="apk_analysis_no_charge">Hizmet henüz aktif değil. APK gönderilmez ve kredi tahsil edilmez.</string>
 </resources>

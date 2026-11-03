@@ -3,7 +3,7 @@
     {
       "kind": "file",
       "mode": "export",
-      "wire": "CgsQMDQ4PEBESExQVFhcYGWVmZ2hpamtsbW5vcKahmyrTZ2jr7k2StacuHoxqTiFS/0+FbvJjNEPrCh65010s4+aRDgCpmxHXKGLQQLHreYGD9LjDw31eSgbWXqrjP+QpNYL3sNWSz1ogvZDEv7ydSsiEc1Zob+7kFeWdWfsvQzriTS3WCGA8jesBhQ96HAbbGRAzBG7kb2e/PlLZQCw+s8MAz6AfQbryjfvI6cTJH7uyt9nfxYUsyOADPugHUjHgcIeYelNURVsfAdGfJss7NJ+0sFeY4q66G665EULZ9xkbb9IMoDTWVrQ5TlhGYH77hytXbbtEgAISH8DudawCAjZ4dfC98/v0boKVbh3i4oeKmfNbqPzWjfLu27uhLbDu8Wdqw7HfrWfWAvCxMgLazh+VaPXPc7f11CalnKRH4ofWubz/fUJ3llnqTc+8vnG1kVEsVnSmXE9W2ntOsqEbS9vdEcugw2eDeh8xOapKTaRP6k8Vfs3cznQiUw==",
+      "wire": "CgsQMDQ4PEBESExQVFhcYGWVmZ2hpamtsbW5vcKahmyrTZ2jr7k2StacuHoxqTiFS/0+FbvJjNEPrCh65010s4+aRDgCpmxHXKGLQQLHreYGD9LjDw31eSgbWXqrjP+QpNYL3sNWSz1ogvZDEv7ydSsiEc1Zob+7kFeWdWfsvQzriTS3WCGA8jesBhQ96HAbbGRAzBG7kb2e/PlLZQCw+s8MAz6AfQbryjfvI6cTJH7uyt9nfxYUsyOADPugHUjHgcIeYelNURVsfAdGfJss7NJ+0sFeY4q66G665EULZ9xkbb9IMoDTWVrQ5TlhGYH77hytXbbtEgAISH8DudawCAjZ4dfC98/v0boKVbh3i4oeKmfNbqPzWjfLu27uhLbDu3nx42eGArRzsYd2ZADe5tQXkBdLvXoXRuQmRsYkqga3ynY2cYS8Up3nYf/mSjVS8sWMFNQ/Fbnd571Jqh4k5Kvf5JOuF41LAdEAqosYvM/iHonA+pwb143Lc+btbGcEoaE8IwdW1tY0QXXUlsYMJ57J4H+2mNpLQT6AR2xwMAxE8wN9kqSlNcVAtPX4CVjJJk2UNOv+QdzA8LkVSoaiVUjEVhUG6D8CogLAE2K3gIRYhUrqQKgeD5mKrTnlO2THAHH9ei6krmZZ0H2bsUUGF4ECMcgLQhWvna+o6o83D+ekLRStEQd7HTmrQ33JvMMofCkAfJIxLD2sFwCq77WyqLzSjjFU20/8+iU4G/jyOLuds94gl07wbh6rbHSfZLzykP2GZvvZtZDQ9QACY6m0RiSortTdBjDva4L/0iynBGPI0azprg4HXElywPTvX+SBXVqgpa8Z339axlTnDO/Y4AoxmQqnSRqKUe3aOIy4ya2H8CfClYIC7Gbwlwog6jStMUZxD7nRdyKnH8JmCmf3F4rQLn90=",
       "outer": {
         "Name": "Prueba 日本語",
         "TunnelType": "SSH",
@@ -12,6 +12,7 @@
         "URI": null,
         "ProxyPort": "8080",
         "Enabled": false,
+        "Info": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
         "future": {
           "list": [
             0,
@@ -19,7 +20,9 @@
             null,
             "keep"
           ],
-          "passwordHash": "synthetic metadata"
+          "passwordHash": "synthetic metadata",
+          "Payload": "AwQFBgcICQoLDA0ODxAREl5fYGFiY2RlZmdoaaHPmYPqnOkxD8XDT+zaAZop78gfFKOoa8aknE7Gx6Y/7wCqnnZqxWctAabhU92Wz+PCvCWFRiF0eRrdeajACA==",
+          "ServerIPHost": "BAUGBwgJCgsMDQ4PEBESE19gYWJjZGVmZ2hpaiwBlyGo2kk78GjD7Ps75sUV+Orc1g4YVFHhJWFIp75dIgwi"
         }
       },
       "expected": {
@@ -30,6 +33,7 @@
         "URI": null,
         "ProxyPort": "8080",
         "Enabled": false,
+        "Info": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
         "future": {
           "list": [
             0,
@@ -37,14 +41,16 @@
             null,
             "keep"
           ],
-          "passwordHash": "synthetic metadata"
+          "passwordHash": "synthetic metadata",
+          "Payload": "AwQFBgcICQoLDA0ODxAREl5fYGFiY2RlZmdoaaHPmYPqnOkxD8XDT+zaAZop78gfFKOoa8aknE7Gx6Y/7wCqnnZqxWctAabhU92Wz+PCvCWFRiF0eRrdeajACA==",
+          "ServerIPHost": "BAUGBwgJCgsMDQ4PEBESE19gYWJjZGVmZ2hpaiwBlyGo2kk78GjD7Ps75sUV+Orc1g4YVFHhJWFIp75dIgwi"
         }
       }
     },
     {
       "kind": "file",
       "mode": "eo",
-      "wire": "CwwNDg8QERITFBUWFxgZGmZnaGlqa2xtbm9wcS/brBkmjEDBkByRVv779kLDkkw+BuTGjDjEmuZlmlhcgmLJd8ik5VuzsviToHZQ8wNE5FZX/q5D/atetv5JTHwpqsju2/f3s3A25z08yuvmzrz3Htg7Qa7rLtCDPn8ZymaSDiO7AlSNotTXFGnsvcswGVVkUGNMyHhuwDyEzs4OxjdGmzGX0fR0RGj5xT4GJOtY9IVpyNWAa9fjXPoq+LcyXaOZqsar/gOrnKNAwgoaUUiOamuIAV3/tLSPaQAFxYh0UNoKzX/ULClLc+1dRHXDNiXld3nrgG26t817yK4OxeG18YVovenSNN8V6AjP4T4uWwp0/iHaxrWQPuhTjShlDp/twDpw9KjJPXqlMm6q1kPqUjOU1LpPfrdqKNsufDK9SPz0g3HgFU4BRAEgkofPq5etL8GEZIkuyuikHeHeJd/jW6dJ+1XsU24soxUZguaA7LHqdbr7CqkWPLwFPg==",
+      "wire": "CwwNDg8QERITFBUWFxgZGmZnaGlqa2xtbm9wcS/brBkmjEDBkByRVv779kLDkkw+BuTGjDjEmuZlmlhcgmLJd8ik5VuzsviToHZQ8wNE5FZX/q5D/atetv5JTHwpqsju2/f3s3A25z08yuvmzrz3Htg7Qa7rLtCDPn8ZymaSDiO7AlSNotTXFGnsvcswGVVkUGNMyHhuwDyEzs4OxjdGmzGX0fR0RGj5xT4GJOtY9IVpyNWAa9fjXPoq+LcyXaOZqsar/gOrnKNAwgoaUUiOamuIAV3/tLSPaQAFxYh0UNoKzX/ULClLc+1dRHXDNiXld3nrgG26t817yK4OxeG18YVovenSNN8V6AjP4T4uWwp0/iHaxrWQPuhTjShlDp/t7yFi7viWPQGfUUOC5HaJKSnluZ1vU4VORfQaUR/QK9bQp0CDCSNidSESoLHhmLKkD/OtB/JN+NCLKMj6EPfBOottznXJc1tvrUoCHtn0vLqRt20/6JSwYr/OOCHCouuUdE2NDC/OmB5P0Vh8Nc840WO7aBNfv/lqiLNJrZcMyqaoaG6Lf8ZC7a2jyz69eFXEsBVTLbYLF+XNu8ayLviAkOxwTPJXiDp484sJkvJvj9yYtwlzeQX2FEeHfK6FN02nL5kx9OrlYWtrEKSXdi23nxkra5ZMeQoJqNYJaOZKsZHm7GAfuM3PDBnZGWHRUE1BiX5Pr2t7qFWdlQ8uND6JhvxQkp7tpf6Xh+QUCkYu5SNbmifugHivL4rAP1twKaW43UkZtV5BUk5cPDMM1RIHTTzJNRsSiFrExZ1ZT5Ai6O8q/g42lMHmp6Gm+D/2ezTciLcK/qQhcAu+s9GxG3Jxdza5+tzgB9PNTpwBWF1qh70nC+h4eUM+ZiCKU3XlHf05/mbbByxLfrkH3sDmqZW8y3fx5rM=",
       "outer": {
         "Name": "Prueba 日本語",
         "TunnelType": "SSH",
@@ -53,6 +59,7 @@
         "URI": null,
         "ProxyPort": "8080",
         "Enabled": false,
+        "Info": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
         "future": {
           "list": [
             0,
@@ -60,7 +67,9 @@
             null,
             "keep"
           ],
-          "passwordHash": "synthetic metadata"
+          "passwordHash": "synthetic metadata",
+          "Payload": "AwQFBgcICQoLDA0ODxAREl5fYGFiY2RlZmdoaaHPmYPqnOkxD8XDT+zaAZop78gfFKOoa8aknE7Gx6Y/7wCqnnZqxWctAabhU92Wz+PCvCWFRiF0eRrdeajACA==",
+          "ServerIPHost": "BAUGBwgJCgsMDQ4PEBESE19gYWJjZGVmZ2hpaiwBlyGo2kk78GjD7Ps75sUV+Orc1g4YVFHhJWFIp75dIgwi"
         }
       },
       "expected": {
@@ -71,6 +80,7 @@
         "URI": null,
         "ProxyPort": "8080",
         "Enabled": false,
+        "Info": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
         "future": {
           "list": [
             0,
@@ -78,14 +88,16 @@
             null,
             "keep"
           ],
-          "passwordHash": "synthetic metadata"
+          "passwordHash": "synthetic metadata",
+          "Payload": "AwQFBgcICQoLDA0ODxAREl5fYGFiY2RlZmdoaaHPmYPqnOkxD8XDT+zaAZop78gfFKOoa8aknE7Gx6Y/7wCqnnZqxWctAabhU92Wz+PCvCWFRiF0eRrdeajACA==",
+          "ServerIPHost": "BAUGBwgJCgsMDQ4PEBESE19gYWJjZGVmZ2hpaiwBlyGo2kk78GjD7Ps75sUV+Orc1g4YVFHhJWFIp75dIgwi"
         }
       }
     },
     {
       "kind": "file",
       "mode": "plain",
-      "wire": "{\"Name\":\"Prueba 日本語\",\"TunnelType\":\"SSH\",\"Payload\":\"AwQFBgcICQoLDA0ODxAREl5fYGFiY2RlZmdoaaHPmYPqnOkxD8XDT+zaAZop78gfFKOoa8aknE7Gx6Y/7wCqnnZqxWctAabhU92Wz+PCvCWFRiF0eRrdeajACA==\",\"SNI\":\"plain.example.invalid\",\"URI\":null,\"ProxyPort\":\"8080\",\"Enabled\":false,\"future\":{\"list\":[0,false,null,\"keep\"],\"passwordHash\":\"synthetic metadata\"}}",
+      "wire": "{\"Name\":\"Prueba 日本語\",\"TunnelType\":\"SSH\",\"Payload\":\"AwQFBgcICQoLDA0ODxAREl5fYGFiY2RlZmdoaaHPmYPqnOkxD8XDT+zaAZop78gfFKOoa8aknE7Gx6Y/7wCqnnZqxWctAabhU92Wz+PCvCWFRiF0eRrdeajACA==\",\"SNI\":\"plain.example.invalid\",\"URI\":null,\"ProxyPort\":\"8080\",\"Enabled\":false,\"Info\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\"future\":{\"list\":[0,false,null,\"keep\"],\"passwordHash\":\"synthetic metadata\",\"Payload\":\"AwQFBgcICQoLDA0ODxAREl5fYGFiY2RlZmdoaaHPmYPqnOkxD8XDT+zaAZop78gfFKOoa8aknE7Gx6Y/7wCqnnZqxWctAabhU92Wz+PCvCWFRiF0eRrdeajACA==\",\"ServerIPHost\":\"BAUGBwgJCgsMDQ4PEBESE19gYWJjZGVmZ2hpaiwBlyGo2kk78GjD7Ps75sUV+Orc1g4YVFHhJWFIp75dIgwi\"}}",
       "outer": {
         "Name": "Prueba 日本語",
         "TunnelType": "SSH",
@@ -94,6 +106,7 @@
         "URI": null,
         "ProxyPort": "8080",
         "Enabled": false,
+        "Info": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
         "future": {
           "list": [
             0,
@@ -101,7 +114,9 @@
             null,
             "keep"
           ],
-          "passwordHash": "synthetic metadata"
+          "passwordHash": "synthetic metadata",
+          "Payload": "AwQFBgcICQoLDA0ODxAREl5fYGFiY2RlZmdoaaHPmYPqnOkxD8XDT+zaAZop78gfFKOoa8aknE7Gx6Y/7wCqnnZqxWctAabhU92Wz+PCvCWFRiF0eRrdeajACA==",
+          "ServerIPHost": "BAUGBwgJCgsMDQ4PEBESE19gYWJjZGVmZ2hpaiwBlyGo2kk78GjD7Ps75sUV+Orc1g4YVFHhJWFIp75dIgwi"
         }
       },
       "expected": {
@@ -112,6 +127,7 @@
         "URI": null,
         "ProxyPort": "8080",
         "Enabled": false,
+        "Info": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
         "future": {
           "list": [
             0,
@@ -119,14 +135,16 @@
             null,
             "keep"
           ],
-          "passwordHash": "synthetic metadata"
+          "passwordHash": "synthetic metadata",
+          "Payload": "AwQFBgcICQoLDA0ODxAREl5fYGFiY2RlZmdoaaHPmYPqnOkxD8XDT+zaAZop78gfFKOoa8aknE7Gx6Y/7wCqnnZqxWctAabhU92Wz+PCvCWFRiF0eRrdeajACA==",
+          "ServerIPHost": "BAUGBwgJCgsMDQ4PEBESE19gYWJjZGVmZ2hpaiwBlyGo2kk78GjD7Ps75sUV+Orc1g4YVFHhJWFIp75dIgwi"
         }
       }
     },
     {
       "kind": "catalog",
       "mode": "export",
-      "wire": "DQ4QPEBESExQVFhcYGRobHGhpamtsbW5vcHFyc4TFKoNw+OlPc6DYcu0wSEIb9/zk19Hv+GyEzJQq7l9Kjp1X1zlFJT6tiGUeXmlpYh5Akmma2Rn6vc4Wl/9hcs+GbOoo8c2vREZaMDDHGz5ghpa9wMWPN3RaYpApqtIw6KrpPun1+K59w03Ry3eSA0fAaZeNo2TnMoSbHD73GEGhhCixxkCPt6AIggJ/LRqAShvq3to71CMRPZ6ScQBQRkXtrowlBtfm117JmkC67RgdNvzb0IaROjSwt1NA9BuvJpwRD+Vtx/+wByYZQxvarowEcpzhz7vxsbrKutKS9E8+5IcxV7QtQdUWJLez2xXsrEzioSdC528XaTLCbdxnMFPJ2ScnFl+rqeQUtKujy2Ur7ZrS8fBYJtHI0maixtM5lRBz/DUEghG5m8sOvj+XH4NT+NUfF40bkCV9HmsfRC1cMhe0H+OWrb21OJK82kCA8NH5H5dxoOMfUGZv8HvSjMjV4MTTH01XNS9XQfM+QazpWcCqrmSTZENU1etFFWls4UnXCfMafrqul1uHyIVLvoXHp2KEstKGFtJ2+yPEIGzrZwYzZ9i0iSTa2AbaOvgNZDv9c6/tiGd6yLTd+qUuMod7C2J1hCW5GUq9WrzI3J0QZVhW0oFNoiAtVxjG0scalcVn/Gc+1Zi6irjnlieO5s18yerMiqkSrZKJ6f8Eeo+LciRbkDiXrXKWzomzNHvdj+RTYVQkabzr99PgFPkhutxeu0Tkr33Ypbor7WuNHIUohfn6diX/7PNd4x8VHheoqAhk+Oh/4jw0Ze8An52SUIPNbsjd7plyA75t6EBI1qTmY309Y0+ceSno2dhQMYBAgtupyjNiYxa1T2ZSLZhP",
+      "wire": "DQ4QPEBESExQVFhcYGRobHGhpamtsbW5vcHFyc4TFKoNw+OlPc6DYcu0wSEIb9/zk19Hv+GyEzJQq7l9Kjp1X1zlFJT6tiGUeXmlpYh5Akmma2Rn6vc4Wl/9hcs+GbOoo8c2vREZaMDDHGz5ghpa9wMWPN3RaYpApqtIw6KrpPun1+K59w03Ry3eSA0fAaZeNo2TnMoSbHD73GEGhhCixxkCPt6AIggJ/LRqAShvq3to71CMRPZ6ScQBQRkXtrowlBtfm117JmkC67RgdNvzb0IaROjSwt1NA9BuvJpwRD+Vtx/+wByYZQxvarowEcpzhz7vxsbrKutKS9E8+5IcxV7QtQdUWJLez2xXsrEzioSdC528XaTLCbdxnMFPJ2ScnFl+rqeQUtKujy2Ur7ZrS8fBYJtHI0maixtM5lRBz/DUEghG5m8sOvj+XH4NT+NUfF40bkCV9HmsfRC1cMhe0H+OWrb21OJK82kCA8NH5H5dxoOMfUGZv8HvSjMjV4MTTH01XNS9XQfM+QazpWcCqrmSTZENU1etFFWls4UnXCfMafrqul1uHyIVLvoXHp2KEstKGFtJ2+yPEIGzrZwYzZ9i0iSTa2AbaOvgNZDv9c6/tiGd6yLTd+oo1IJ0rVGIOvkaUMXiIOcfSrfA3RXVk9uxilg0AOnvs9uMr9tkKn1Ye56qMpIvCnwe8z64Hqtj0pZw7iaehy54oXrqrVwRu0zbItlrOmamzeiTH3u10fVRjIMXh+eXzDe8m95AH9Wyt61nrkIRZ0TTcTt55tc/+TwLA+s5xph1mKDyPiCZD2dZa8B86S9k+kIi0Ht6ODNHQ4IRLNe4Ns1lqyI3FT08SbymJAVjsgt4pa7zWS7GTy4aSlqJRRHsXXMiq0rgzDtwvsKIjPh/i3Hct+rPN7APPCuZWnyAzcnu+VIazV4K6czJ6j0Tbkbj8SEUSSA/oOPxxUqdmltjFWxSM0P3zP+I/jTtYrYAeIpv+jJvFWVLOJAReLnc6XGjNh1ENIUb3TvN+mAljBV8dAlbQ4adUwkGDLlfKcOetFEkWVYX1YfJ2Sv/vBvBZgrUvus8b9CY6t+1a5PdaXRgaRGtZP97UhOmo3S4JX8Iq1+IZtws6YQGySKOnf3b6CE+hoQw0STVdLVSU3FGYH11GnvX2+aGpFiYtdgmlcs+z4FbO8oF2GT0MKlpGrMp4NA0ioQ5tf5ayShlV20Rj0Y4RICDylABBLtRKQdmb/OV6bgi+4YbkbPIJIG8jDgdB/5qXcRS+zWMdRS7YGXkwpgA02A6g40mRyG1WuKM5bw==",
       "outer": {
         "Version": "test.45",
         "Servers": [
@@ -145,6 +163,7 @@
             "URI": null,
             "ProxyPort": "8080",
             "Enabled": false,
+            "Info": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
             "future": {
               "list": [
                 0,
@@ -152,7 +171,9 @@
                 null,
                 "keep"
               ],
-              "passwordHash": "synthetic metadata"
+              "passwordHash": "synthetic metadata",
+              "Payload": "AwQFBgcICQoLDA0ODxAREl5fYGFiY2RlZmdoaaHPmYPqnOkxD8XDT+zaAZop78gfFKOoa8aknE7Gx6Y/7wCqnnZqxWctAabhU92Wz+PCvCWFRiF0eRrdeajACA==",
+              "ServerIPHost": "BAUGBwgJCgsMDQ4PEBESE19gYWJjZGVmZ2hpaiwBlyGo2kk78GjD7Ps75sUV+Orc1g4YVFHhJWFIp75dIgwi"
             }
           }
         ],
@@ -177,6 +198,7 @@
             "URI": null,
             "ProxyPort": "8080",
             "Enabled": false,
+            "Info": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
             "future": {
               "list": [
                 0,
@@ -184,7 +206,9 @@
                 null,
                 "keep"
               ],
-              "passwordHash": "synthetic metadata"
+              "passwordHash": "synthetic metadata",
+              "Payload": "AwQFBgcICQoLDA0ODxAREl5fYGFiY2RlZmdoaaHPmYPqnOkxD8XDT+zaAZop78gfFKOoa8aknE7Gx6Y/7wCqnnZqxWctAabhU92Wz+PCvCWFRiF0eRrdeajACA==",
+              "ServerIPHost": "BAUGBwgJCgsMDQ4PEBESE19gYWJjZGVmZ2hpaiwBlyGo2kk78GjD7Ps75sUV+Orc1g4YVFHhJWFIp75dIgwi"
             }
           }
         ],
@@ -195,7 +219,7 @@
     {
       "kind": "catalog",
       "mode": "eo",
-      "wire": "Dg8QERITFBUWFxgZGhscHWlqa2xtbm9wcXJzdL4RCWcJj1AhADJeV4okeblqGz87Ut6YJzUDr9ruOwsiA5MUghn6SY8y0UIMmTlmRyJko13/3pT2iIzfnXdxLmrAqSyo8jTgsYKbitUgvuEe3ojTMZ4Of/1wVXvPcQMvsaY4wF0C86D8ZlAnkVU5Lc4ipZrn6suF1EAxk0nfLw6P67VwK0w4rUQ/TmjzKB1eqdlSLvkOT3+xaTs/liYFpEjX1pJuVzXc8U1eInJCMBk7m9NjW7RTdwSi2sKdWgLib5/rYLmy9wSU0t+FIAxdZLt8pX88qrKnijPZRLuvFmuTHuLctIYPOB6RuQmv29gNnmYlUsHucXSawLPARNv7d3TYPzcCr84vToNwwCuMxm16wLtaUMRciMQdHqlpO0nTjyiNDT8NkikKJtCIJep6l+U3VxN3U4sFjixCl00K2WbzWk6cWyy0QKQ25wjpLQTcP0NmJ03Wt4wcc/VnFSZ/Jydw4RWf0bAN9MAfkdpMnwFlNJltQ3T+niukFxdZxHprl6r0Ufk5lpI13kjqm5gx4M08w5jFACKGNyaoL9bqg/BQ8kePIg3u/ZV2nJgPBKOCVpBYnFa8oOl4RMMZsNxelunokDmJRIynB+rEgJq2TsxDHVh1BJQn8smySeOCMb4p8hYjED15lvrf+YFW99+/BAHHGSZOMD7gO5IubbKNhrXmSe6ZsuTFPHtdpS3Z42l2V9c7g9OKqBkIustjKTxYEO652G59nAO8+fL0JH0sm5HiKbHi5QXXKvmlo0YdAlDZM3dPnQDjTP8WIEN9hC4r6lPM3AwIwUh09ISsshiza6JQZpmCR9NvXKX8S0jTXfbgw69KHP79TSr9iubPzxEH",
+      "wire": "Dg8QERITFBUWFxgZGhscHWlqa2xtbm9wcXJzdL4RCWcJj1AhADJeV4okeblqGz87Ut6YJzUDr9ruOwsiA5MUghn6SY8y0UIMmTlmRyJko13/3pT2iIzfnXdxLmrAqSyo8jTgsYKbitUgvuEe3ojTMZ4Of/1wVXvPcQMvsaY4wF0C86D8ZlAnkVU5Lc4ipZrn6suF1EAxk0nfLw6P67VwK0w4rUQ/TmjzKB1eqdlSLvkOT3+xaTs/liYFpEjX1pJuVzXc8U1eInJCMBk7m9NjW7RTdwSi2sKdWgLib5/rYLmy9wSU0t+FIAxdZLt8pX88qrKnijPZRLuvFmuTHuLctIYPOB6RuQmv29gNnmYlUsHucXSawLPARNv7d3TYPzcCr84vToNwwCuMxm16wLtaUMRciMQdHqlpO0nTjyiNDT8NkikKJtCIJep6l+U3VxN3U4sFjixCl00K2WbzWk6cWyy0QKQ25wjpLQTcP0NmJ03Wt4wcc/VnFSZ/Jydw4RWf0bAN9MAfkdpMnwFlNJltQ3T+niukFxdZxHprl6r0Ufk5lpI13kjqm5gx4M08w5jFACKGNyaoL9bqg/BQ8kePIg3u/ZV2nJgPBKOCVpBYnFa8oOl4RMMZsPNFhPO4zznyfu+KL9jx4+GsP6FkPXVHIPkIxuSfJICoFZoYkQpOcwxZpMjp17Jz/v+NLWK8ehR2HwvJH6cGT9OhooDGbM6s8eqaJ1MF8g3ZrTZsBt4cn9PN4WACtP1wMCpfXaLglkY02CePzMyGGCJ9ycqzGYfm3CLoPMSJ5kRuNHv+E1lovD7GXtwYDnVDizsNpA6PvhUFz1VNwtTM6QGRdYtzSqutS7V6JNT4EE6qB8pnMlzVyxB62eo051WtpJ1Bf7t6B8kyQT2FGctSC9bpxH/8xF1aQaaaDp/R01zArj4kbTN6sTsPdvbDfNyckSl2vKgb62ArlrvYhOBq0NuCQF6Tlc5Oy+Bq72bFniq60wQwhT9jPk3q1UYWFARS3a8/7SO9VB7G31TdpXVqP//dWQBGbVCoPB9ACh1r7c/Hbn7M6BDz9riXduw1/fcEFJ81fH8lfk7blaZUy0F9mwdZ6VSBCTF+p+4OCz7pmpMrOnVEz16emWBAtxxFmdJdlSf7iub0b+tprVcqo7bUzDtTyDrbjFwqN3fiecUfTj5K7PTgpPeHLelrXPApqxaWk2UDW9RhueDm+XQEOs20OxZBHc9mSTxbsfTZGm3PY3F6Bfc7h7k1QIu6/tYesas7PAheu0voNoG0QlxD8sjLd4VgJCq60Cz3+/B3IQ==",
       "outer": {
         "Version": "test.45",
         "Servers": [
@@ -214,6 +238,7 @@
             "URI": null,
             "ProxyPort": "8080",
             "Enabled": false,
+            "Info": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
             "future": {
               "list": [
                 0,
@@ -221,7 +246,9 @@
                 null,
                 "keep"
               ],
-              "passwordHash": "synthetic metadata"
+              "passwordHash": "synthetic metadata",
+              "Payload": "AwQFBgcICQoLDA0ODxAREl5fYGFiY2RlZmdoaaHPmYPqnOkxD8XDT+zaAZop78gfFKOoa8aknE7Gx6Y/7wCqnnZqxWctAabhU92Wz+PCvCWFRiF0eRrdeajACA==",
+              "ServerIPHost": "BAUGBwgJCgsMDQ4PEBESE19gYWJjZGVmZ2hpaiwBlyGo2kk78GjD7Ps75sUV+Orc1g4YVFHhJWFIp75dIgwi"
             }
           }
         ],
@@ -246,6 +273,7 @@
             "URI": null,
             "ProxyPort": "8080",
             "Enabled": false,
+            "Info": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
             "future": {
               "list": [
                 0,
@@ -253,7 +281,9 @@
                 null,
                 "keep"
               ],
-              "passwordHash": "synthetic metadata"
+              "passwordHash": "synthetic metadata",
+              "Payload": "AwQFBgcICQoLDA0ODxAREl5fYGFiY2RlZmdoaaHPmYPqnOkxD8XDT+zaAZop78gfFKOoa8aknE7Gx6Y/7wCqnnZqxWctAabhU92Wz+PCvCWFRiF0eRrdeajACA==",
+              "ServerIPHost": "BAUGBwgJCgsMDQ4PEBESE19gYWJjZGVmZ2hpaiwBlyGo2kk78GjD7Ps75sUV+Orc1g4YVFHhJWFIp75dIgwi"
             }
           }
         ],
@@ -264,7 +294,7 @@
     {
       "kind": "catalog",
       "mode": "plain",
-      "wire": "{\"Version\":\"test.45\",\"Servers\":[{\"Name\":\"synthetic\",\"ServerIPHost\":\"BAUGBwgJCgsMDQ4PEBESE19gYWJjZGVmZ2hpaiwBlyGo2kk78GjD7Ps75sUV+Orc1g4YVFHhJWFIp75dIgwi\",\"SSH_Port\":\"22\"}],\"Networks\":[{\"Name\":\"Prueba 日本語\",\"TunnelType\":\"SSH\",\"Payload\":\"AwQFBgcICQoLDA0ODxAREl5fYGFiY2RlZmdoaaHPmYPqnOkxD8XDT+zaAZop78gfFKOoa8aknE7Gx6Y/7wCqnnZqxWctAabhU92Wz+PCvCWFRiF0eRrdeajACA==\",\"SNI\":\"plain.example.invalid\",\"URI\":null,\"ProxyPort\":\"8080\",\"Enabled\":false,\"future\":{\"list\":[0,false,null,\"keep\"],\"passwordHash\":\"synthetic metadata\"}}],\"ReleaseNotes\":\"Prueba\",\"DefOVPNPass\":\"CAkKCwwNDg8QERITFBUWF2NkZWZnaGlqa2xtbrXRrZyXUOoaKQfO7z45EkI=\"}",
+      "wire": "{\"Version\":\"test.45\",\"Servers\":[{\"Name\":\"synthetic\",\"ServerIPHost\":\"BAUGBwgJCgsMDQ4PEBESE19gYWJjZGVmZ2hpaiwBlyGo2kk78GjD7Ps75sUV+Orc1g4YVFHhJWFIp75dIgwi\",\"SSH_Port\":\"22\"}],\"Networks\":[{\"Name\":\"Prueba 日本語\",\"TunnelType\":\"SSH\",\"Payload\":\"AwQFBgcICQoLDA0ODxAREl5fYGFiY2RlZmdoaaHPmYPqnOkxD8XDT+zaAZop78gfFKOoa8aknE7Gx6Y/7wCqnnZqxWctAabhU92Wz+PCvCWFRiF0eRrdeajACA==\",\"SNI\":\"plain.example.invalid\",\"URI\":null,\"ProxyPort\":\"8080\",\"Enabled\":false,\"Info\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\"future\":{\"list\":[0,false,null,\"keep\"],\"passwordHash\":\"synthetic metadata\",\"Payload\":\"AwQFBgcICQoLDA0ODxAREl5fYGFiY2RlZmdoaaHPmYPqnOkxD8XDT+zaAZop78gfFKOoa8aknE7Gx6Y/7wCqnnZqxWctAabhU92Wz+PCvCWFRiF0eRrdeajACA==\",\"ServerIPHost\":\"BAUGBwgJCgsMDQ4PEBESE19gYWJjZGVmZ2hpaiwBlyGo2kk78GjD7Ps75sUV+Orc1g4YVFHhJWFIp75dIgwi\"}}],\"ReleaseNotes\":\"Prueba\",\"DefOVPNPass\":\"CAkKCwwNDg8QERITFBUWF2NkZWZnaGlqa2xtbrXRrZyXUOoaKQfO7z45EkI=\"}",
       "outer": {
         "Version": "test.45",
         "Servers": [
@@ -283,6 +313,7 @@
             "URI": null,
             "ProxyPort": "8080",
             "Enabled": false,
+            "Info": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
             "future": {
               "list": [
                 0,
@@ -290,7 +321,9 @@
                 null,
                 "keep"
               ],
-              "passwordHash": "synthetic metadata"
+              "passwordHash": "synthetic metadata",
+              "Payload": "AwQFBgcICQoLDA0ODxAREl5fYGFiY2RlZmdoaaHPmYPqnOkxD8XDT+zaAZop78gfFKOoa8aknE7Gx6Y/7wCqnnZqxWctAabhU92Wz+PCvCWFRiF0eRrdeajACA==",
+              "ServerIPHost": "BAUGBwgJCgsMDQ4PEBESE19gYWJjZGVmZ2hpaiwBlyGo2kk78GjD7Ps75sUV+Orc1g4YVFHhJWFIp75dIgwi"
             }
           }
         ],
@@ -315,6 +348,7 @@
             "URI": null,
             "ProxyPort": "8080",
             "Enabled": false,
+            "Info": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
             "future": {
               "list": [
                 0,
@@ -322,7 +356,9 @@
                 null,
                 "keep"
               ],
-              "passwordHash": "synthetic metadata"
+              "passwordHash": "synthetic metadata",
+              "Payload": "AwQFBgcICQoLDA0ODxAREl5fYGFiY2RlZmdoaaHPmYPqnOkxD8XDT+zaAZop78gfFKOoa8aknE7Gx6Y/7wCqnnZqxWctAabhU92Wz+PCvCWFRiF0eRrdeajACA==",
+              "ServerIPHost": "BAUGBwgJCgsMDQ4PEBESE19gYWJjZGVmZ2hpaiwBlyGo2kk78GjD7Ps75sUV+Orc1g4YVFHhJWFIp75dIgwi"
             }
           }
         ],

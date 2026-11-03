@@ -101,6 +101,10 @@
     <string name="decode_progress_reading">Чтение выбранного файла…</string>
     <string name="decode_progress_decoding">Декодирование конфигурации через Cloud…</string>
     <string name="decode_progress_saving">Сохранение зашифрованного результата…</string>
+    <string name="decode_progress_wait">Пожалуйста, подождите…</string>
+    <string name="decode_progress_sending">Отправка…</string>
+    <string name="decode_progress_processing">Обработка…</string>
+    <string name="decode_progress_downloading_results">Загрузка результатов…</string>
     <string name="history_search">Поиск по имени файла или расширению</string>
     <string name="history_favorites">Избранное</string>
     <string name="history_sort">Сортировка</string>
@@ -138,7 +142,7 @@
     <string name="native_decoder_mixed_short">Смешанный</string>
     <string name="clear_current_result">Очистить отображаемый результат</string>
     <string name="guide_settings_title">Интерактивное руководство</string>
-    <string name="guide_settings_detail">Изучайте разделы по порядку: Главная, История, Форматы, VPN-серверы, Настройки. Руководство можно повторить.</string>
+    <string name="guide_settings_detail">Изучите Главную, Историю, Анализ APK, VPN-серверы и Настройки. Руководство можно запустить повторно в любое время.</string>
     <string name="guide_replay">Начать обучение</string>
     <string name="settings_version">Версия %1$s</string>
     <string name="settings_build_code">Сборка %1$d</string>
@@ -199,7 +203,7 @@
     <string name="hc_auth_enter_manually">Ввести пароль вручную</string>
     <string name="hc_auth_input_invalid">Введите нужный пароль и/или корректный HWID из 32 символов.</string>
     <string name="hc_auth_failed">Не удалось проверить подлинность защищённого файла HTTP Custom. Проверьте пароль и/или HWID; файл также может быть повреждён или использовать неподдерживаемый вариант.</string>
-    <string name="guide_step_six">Форматы: просматривайте поддерживаемые приложения и расширения.</string>
+    <string name="guide_step_six">Анализ APK: эта функция скоро появится.</string>
     <string name="guide_step_seven">VPN-серверы: выберите приложение и декодируйте его каталог серверов.</string>
     <string name="guide_step_eight">Настройки: выберите язык, прочтите сведения о конфиденциальности и настройте приложение.</string>
     <string name="server_vpn">VPN-серверы</string>
@@ -212,4 +216,22 @@
     <string name="nur_servers_invalid_url">Введите корректный HTTPS-адрес списка серверов.</string>
     <string name="nur_servers_failed">Не удалось загрузить, проверить или расшифровать каталог серверов.</string>
     <string name="language_screen_title">Выбрать язык</string>
+    <string name="apk_analysis_title">Анализ APK</string>
+    <string name="apk_analysis_coming_soon">Скоро</string>
+    <string name="settings_formats_title">Поддерживаемые форматы</string>
+    <string name="settings_formats_detail">Просмотрите совместимые расширения файлов и текстовые протоколы.</string>
+    <string name="apk_analysis_intro_title">От APK к техническому отчёту</string>
+    <string name="apk_analysis_intro_detail">После запуска статический анализ изучит манифест, метаданные, ресурсы и нативные библиотеки для подготовки скриптов декодирования.</string>
+    <string name="apk_analysis_steps_title">Планируемый процесс</string>
+    <string name="apk_analysis_step_import">Выбрать APK, на анализ которого у вас есть разрешение</string>
+    <string name="apk_analysis_step_inspect">Изучить метаданные, ресурсы и библиотеки</string>
+    <string name="apk_analysis_step_report">Подготовить структурированный технический отчёт</string>
+    <string name="apk_analysis_subscription_title">Доступ по подписке</string>
+    <string name="apk_analysis_subscription_detail">Потребуется подписка. Тарифы и условия оплаты пока не определены.</string>
+    <string name="apk_analysis_credit_cost">1 APK = 1 кредит</string>
+    <string name="apk_analysis_credit_price">1 кредит = 4 USD</string>
+    <string name="apk_analysis_price_note">4 USD — планируемая цена одного кредита, а не стоимость подписки.</string>
+    <string name="apk_analysis_safety_note">Планируется статический анализ: APK не устанавливается и не запускается.</string>
+    <string name="apk_analysis_import_unavailable">Импорт APK (недоступно)</string>
+    <string name="apk_analysis_no_charge">Сервис пока не работает. APK не отправляются, кредиты не списываются.</string>
 </resources>

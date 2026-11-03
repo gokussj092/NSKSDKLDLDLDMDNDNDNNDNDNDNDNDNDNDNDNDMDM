@@ -1,0 +1,36 @@
+[
+  {
+    "source": "remote.enc",
+    "bytes": 80552,
+    "sha256": "b8900e20f929652f9c1da615b19aba0dcd83d804a1a9006a5575bd10ebf085f3",
+    "version": "9.9.58",
+    "counts": {
+      "Servers": 14,
+      "HTTPNetworks": 3,
+      "SSLNetworks": 9,
+      "JSONsettings": 1
+    },
+    "encrypted_fields": 76,
+    "unique_encrypted_fields": 33,
+    "whole_java_equal": true,
+    "whole_cli_equal": true,
+    "whole_worker_equal": true
+  },
+  {
+    "source": "downloaded.enc",
+    "bytes": 80552,
+    "sha256": "b8900e20f929652f9c1da615b19aba0dcd83d804a1a9006a5575bd10ebf085f3",
+    "version": "9.9.58",
+    "counts": {
+      "Servers": 14,
+      "HTTPNetworks": 3,
+      "SSLNetworks": 9,
+      "JSONsettings": 1
+    },
+    "encrypted_fields": 76,
+    "unique_encrypted_fields": 33,
+    "whole_java_equal": true,
+    "whole_cli_equal": true,
+    "whole_worker_equal": true
+  }
+]

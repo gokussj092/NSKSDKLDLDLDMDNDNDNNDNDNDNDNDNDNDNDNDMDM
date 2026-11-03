@@ -409,6 +409,14 @@
       "credentialFields": []
     },
     {
+      "suffix": "hexcm",
+      "name": "Hex Tunnel / HexVPN 1.7.3-Rev",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
       "suffix": "hsome",
       "name": "XOR VPN family",
       "kind": "file",
@@ -576,7 +584,12 @@
       "kind": "file",
       "offlineSupported": true,
       "cloudSupported": true,
-      "credentialFields": []
+      "credentialFields": [],
+      "unlockedExport": {
+        "targetAppId": "dark-tunnel",
+        "name": "Dark Tunnel",
+        "banner": "none"
+      }
     },
     {
       "suffix": "deep",
@@ -599,6 +612,14 @@
       "name": "HTTP Injector Lite",
       "kind": "file",
       "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "enaa",
+      "name": "Enaa Tunnel Enna-1.07",
+      "kind": "file",
+      "offlineSupported": false,
       "cloudSupported": true,
       "credentialFields": []
     },
@@ -724,7 +745,12 @@
         "password",
         "publicKey",
         "recipientKey"
-      ]
+      ],
+      "unlockedExport": {
+        "targetAppId": "npv-tunnel",
+        "name": "NPV Tunnel",
+        "banner": "none"
+      }
     },
     {
       "suffix": "npvt",
@@ -792,7 +818,7 @@
     },
     {
       "suffix": "wolf",
-      "name": "WOLF TUNNEL",
+      "name": "Wolf Custom VPN v2.8.1.2",
       "kind": "file",
       "offlineSupported": true,
       "cloudSupported": true,
@@ -1044,7 +1070,12 @@
       "kind": "file",
       "offlineSupported": true,
       "cloudSupported": true,
-      "credentialFields": []
+      "credentialFields": [],
+      "unlockedExport": {
+        "targetAppId": "http-injector",
+        "name": "HTTP Injector",
+        "banner": "spdecode-html"
+      }
     },
     {
       "suffix": "ena",
@@ -1148,7 +1179,12 @@
       "kind": "file",
       "offlineSupported": true,
       "cloudSupported": true,
-      "credentialFields": []
+      "credentialFields": [],
+      "unlockedExport": {
+        "targetAppId": "ha-tunnel-plus",
+        "name": "HA Tunnel Plus",
+        "banner": "none"
+      }
     },
     {
       "suffix": "hbd",
@@ -1336,7 +1372,7 @@
     },
     {
       "suffix": "mmt",
-      "name": "MM Tunnel v1.10.11.1",
+      "name": "MM Tunnel v1.10.30.2",
       "kind": "file",
       "offlineSupported": true,
       "cloudSupported": true,
@@ -1881,7 +1917,12 @@
       "credentialFields": [
         "password",
         "hwid"
-      ]
+      ],
+      "unlockedExport": {
+        "targetAppId": "http-custom",
+        "name": "HTTP Custom",
+        "banner": "spdecode-html"
+      }
     },
     {
       "suffix": "hq",
@@ -2053,5 +2094,6 @@
       "cloudSupported": true,
       "credentialFields": []
     }
-  ]
+  ],
+  "unlockedRevision": 1
 }

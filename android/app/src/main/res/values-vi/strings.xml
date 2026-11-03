@@ -102,6 +102,10 @@
     <string name="decode_progress_reading">Đang đọc tệp…</string>
     <string name="decode_progress_decoding">Đang giải mã cấu hình qua Cloud…</string>
     <string name="decode_progress_saving">Đang lưu kết quả mã hóa…</string>
+    <string name="decode_progress_wait">Vui lòng chờ…</string>
+    <string name="decode_progress_sending">Đang gửi…</string>
+    <string name="decode_progress_processing">Đang xử lý…</string>
+    <string name="decode_progress_downloading_results">Đang tải kết quả…</string>
     <string name="history_search">Tìm theo tên tệp hoặc phần mở rộng</string>
     <string name="history_favorites">Yêu thích</string>
     <string name="history_sort">Sắp xếp</string>
@@ -139,7 +143,7 @@
     <string name="native_decoder_mixed_short">Hỗn hợp</string>
     <string name="clear_current_result">Xóa kết quả đang hiển thị</string>
     <string name="guide_settings_title">Hướng dẫn tương tác</string>
-    <string name="guide_settings_detail">Làm theo hướng dẫn qua Trang chủ, Lịch sử, Định dạng, Máy chủ VPN và Cài đặt. Có thể bắt đầu lại.</string>
+    <string name="guide_settings_detail">Khám phá Trang chủ, Lịch sử, Phân tích APK, Máy chủ VPN và Cài đặt. Bạn có thể mở lại hướng dẫn bất cứ lúc nào.</string>
     <string name="guide_replay">Bắt đầu hướng dẫn</string>
     <string name="settings_version">Phiên bản %1$s</string>
     <string name="settings_build_code">Bản dựng %1$d</string>
@@ -200,7 +204,7 @@
     <string name="hc_auth_enter_manually">Nhập mật khẩu thủ công</string>
     <string name="hc_auth_input_invalid">Nhập mật khẩu cần thiết và/hoặc HWID hợp lệ gồm 32 ký tự.</string>
     <string name="hc_auth_failed">Không thể xác thực tệp HTTP Custom. Kiểm tra mật khẩu/HWID; tệp có thể hỏng hoặc chưa được hỗ trợ.</string>
-    <string name="guide_step_six">Định dạng: xem ứng dụng và phần mở rộng được hỗ trợ.</string>
+    <string name="guide_step_six">Phân tích APK: tính năng này sẽ sớm ra mắt.</string>
     <string name="guide_step_seven">Máy chủ VPN: chọn ứng dụng và giải mã danh mục máy chủ.</string>
     <string name="guide_step_eight">Cài đặt: chọn ngôn ngữ, xem quyền riêng tư và quản lý tùy chọn.</string>
     <string name="server_vpn">Máy chủ VPN</string>
@@ -213,4 +217,22 @@
     <string name="nur_servers_invalid_url">Nhập URL HTTPS hợp lệ cho danh sách máy chủ.</string>
     <string name="nur_servers_failed">Không thể tải, xác thực hoặc giải mã danh mục máy chủ.</string>
     <string name="language_screen_title">Chọn ngôn ngữ</string>
+    <string name="apk_analysis_title">Phân tích APK</string>
+    <string name="apk_analysis_coming_soon">Sắp ra mắt</string>
+    <string name="settings_formats_title">Định dạng được hỗ trợ</string>
+    <string name="settings_formats_detail">Xem các phần mở rộng tệp và giao thức văn bản tương thích.</string>
+    <string name="apk_analysis_intro_title">Từ APK đến báo cáo nghiên cứu kỹ thuật</string>
+    <string name="apk_analysis_intro_detail">Khi ra mắt, tính năng phân tích tĩnh sẽ xem xét tệp manifest, siêu dữ liệu, tài nguyên và thư viện gốc để hỗ trợ chuẩn bị tập lệnh giải mã.</string>
+    <string name="apk_analysis_steps_title">Quy trình dự kiến</string>
+    <string name="apk_analysis_step_import">Chọn APK mà bạn được phép phân tích</string>
+    <string name="apk_analysis_step_inspect">Xem xét siêu dữ liệu, tài nguyên và thư viện</string>
+    <string name="apk_analysis_step_report">Tạo báo cáo kỹ thuật có cấu trúc</string>
+    <string name="apk_analysis_subscription_title">Truy cập bằng gói đăng ký</string>
+    <string name="apk_analysis_subscription_detail">Sẽ cần đăng ký. Các gói và điều khoản thanh toán chưa được xác định.</string>
+    <string name="apk_analysis_credit_cost">1 APK = 1 tín dụng</string>
+    <string name="apk_analysis_credit_price">1 tín dụng = 4 USD</string>
+    <string name="apk_analysis_price_note">4 USD là giá dự kiến cho mỗi tín dụng, không phải phí đăng ký.</string>
+    <string name="apk_analysis_safety_note">Phân tích dự kiến là phân tích tĩnh: APK sẽ không được cài đặt hoặc chạy.</string>
+    <string name="apk_analysis_import_unavailable">Nhập APK (chưa khả dụng)</string>
+    <string name="apk_analysis_no_charge">Dịch vụ chưa hoạt động. Không APK nào được gửi và không tín dụng nào bị trừ.</string>
 </resources>

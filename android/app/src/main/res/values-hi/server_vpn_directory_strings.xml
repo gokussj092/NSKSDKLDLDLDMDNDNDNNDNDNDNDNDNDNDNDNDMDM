@@ -19,4 +19,7 @@
     <string name="server_vpn_catalog_current">VPN सर्वर कैटलॉग अद्यतन है।</string>
     <string name="server_vpn_catalog_updated">VPN सर्वर कैटलॉग अपडेट हो गया।</string>
     <string name="server_vpn_catalog_update_error">कैटलॉग की जाँच या डाउनलोड नहीं हो सका। फिर प्रयास करें।</string>
+    <string name="server_vpn_updated_badge">अपडेट किया गया</string>
+    <string name="server_vpn_maintenance_badge">रखरखाव जारी</string>
+    <string name="server_vpn_maintenance_detail">इस विधि का अस्थायी रखरखाव जारी है</string>
 </resources>

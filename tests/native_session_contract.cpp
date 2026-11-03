@@ -32,13 +32,21 @@ int main() {
         catch(const std::invalid_argument&){rejected=true;}
         assert(rejected);
     }
-    for(auto ttl:{0,301}) {
+    for(auto ttl:{0,3601}) {
         bool rejected=false;
         try{cache.store("a.b",ttl,true,now);}
         catch(const std::invalid_argument&){rejected=true;}
         assert(rejected);
     }
+    cache.store("long.session",3600,true);
+    assert(cache.get(Cache::Clock::now()+seconds(1800))=="long.session");
+    cache.configureAction("stolen.token",123,true);
+    assert(cache.inlineActionProject("long.session")==0);
+    cache.configureAction("long.session",123,true);
+    assert(cache.inlineActionProject("long.session")==123);
+    assert(cache.inlineActionProject("stolen.token")==0);
     cache.store("first.token",120,true);
+    assert(cache.inlineActionProject("first.token")==0);
     std::vector<std::thread> workers;
     for(int i=0;i<8;++i)workers.emplace_back([&cache,i](){
         for(int j=0;j<100;++j){
@@ -52,3 +60,4 @@ int main() {
     assert(cache.get().empty());
     std::cout<<"PASS native session TTL, invalidation and concurrency\n";
 }
+

@@ -58,8 +58,6 @@ fun CompatibleExportButton(entry:DecodeView,onDone:()->Unit={}) {
             Spacer(Modifier.width(9.dp))
             Text(stringResource(R.string.compatible_export_for,artifact.targetAppName))
         }
-    } else if(entry.extension in CompatibleExportArtifact.targets) {
-        Text(stringResource(R.string.compatible_export_redecode,CompatibleExportArtifact.targets.getValue(entry.extension).second),style=MaterialTheme.typography.bodySmall)
     }
 }
 

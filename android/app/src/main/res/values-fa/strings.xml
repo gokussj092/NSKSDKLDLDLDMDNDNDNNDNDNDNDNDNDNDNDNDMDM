@@ -101,6 +101,10 @@
     <string name="decode_progress_reading">در حال خواندن فایل انتخاب‌شده…</string>
     <string name="decode_progress_decoding">در حال رمزگشایی تنظیمات از طریق Cloud…</string>
     <string name="decode_progress_saving">در حال ذخیره نتیجه رمزگذاری‌شده…</string>
+    <string name="decode_progress_wait">لطفاً منتظر بمانید…</string>
+    <string name="decode_progress_sending">در حال ارسال…</string>
+    <string name="decode_progress_processing">در حال پردازش…</string>
+    <string name="decode_progress_downloading_results">در حال دریافت نتایج…</string>
     <string name="history_search">جستجو با نام فایل یا پسوند</string>
     <string name="history_favorites">علاقه‌مندی‌ها</string>
     <string name="history_sort">مرتب‌سازی</string>
@@ -138,7 +142,7 @@
     <string name="native_decoder_mixed_short">ترکیبی</string>
     <string name="clear_current_result">پاک کردن نتیجه نمایش‌داده‌شده</string>
     <string name="guide_settings_title">راهنمای تعاملی</string>
-    <string name="guide_settings_detail">بخش‌ها را به‌ترتیب خانه، تاریخچه، فرمت‌ها، سرورهای VPN و تنظیمات ببینید. راهنما را هر زمان می‌توانید تکرار کنید.</string>
+    <string name="guide_settings_detail">خانه، تاریخچه، تحلیل APK، سرورهای VPN و تنظیمات را بررسی کنید. راهنما را هر زمان می‌توانید دوباره شروع کنید.</string>
     <string name="guide_replay">شروع راهنما</string>
     <string name="settings_version">نسخه %1$s</string>
     <string name="settings_build_code">شماره ساخت %1$d</string>
@@ -199,7 +203,7 @@
     <string name="hc_auth_enter_manually">ورود دستی رمز عبور</string>
     <string name="hc_auth_input_invalid">رمز عبور لازم و/یا HWID معتبر 32 نویسه‌ای را وارد کنید.</string>
     <string name="hc_auth_failed">احراز اصالت این فایل محافظت‌شده HTTP Custom ممکن نشد. رمز عبور یا HWID را بررسی کنید؛ فایل ممکن است خراب باشد یا از گونه‌ای پشتیبانی‌نشده استفاده کند.</string>
-    <string name="guide_step_six">فرمت‌ها: برنامه‌ها و پسوندهای پشتیبانی‌شده را ببینید.</string>
+    <string name="guide_step_six">تحلیل APK: این قابلیت به‌زودی ارائه می‌شود.</string>
     <string name="guide_step_seven">سرورهای VPN: یک برنامه انتخاب کنید و فهرست سرورهای آن را رمزگشایی کنید.</string>
     <string name="guide_step_eight">تنظیمات: زبان را تغییر دهید، حریم خصوصی را بخوانید و برنامه را تنظیم کنید.</string>
     <string name="server_vpn">سرورهای VPN</string>
@@ -212,4 +216,22 @@
     <string name="nur_servers_invalid_url">نشانی HTTPS معتبر برای فهرست سرورها وارد کنید.</string>
     <string name="nur_servers_failed">دریافت، تأیید اصالت یا رمزگشایی فهرست سرورها انجام نشد.</string>
     <string name="language_screen_title">انتخاب زبان</string>
+    <string name="apk_analysis_title">تحلیل APK</string>
+    <string name="apk_analysis_coming_soon">به‌زودی</string>
+    <string name="settings_formats_title">قالب‌های پشتیبانی‌شده</string>
+    <string name="settings_formats_detail">پسوندهای فایل و پروتکل‌های متنی سازگار را ببینید.</string>
+    <string name="apk_analysis_intro_title">از فایل APK تا گزارش فنی پژوهشی</string>
+    <string name="apk_analysis_intro_detail">پس از فعال شدن، تحلیل ایستا مانیفست، فراداده، منابع و کتابخانه‌های بومی را برای کمک به تهیه اسکریپت‌های رمزگشایی بررسی خواهد کرد.</string>
+    <string name="apk_analysis_steps_title">روند برنامه‌ریزی‌شده</string>
+    <string name="apk_analysis_step_import">یک فایل APK که مجاز به تحلیل آن هستید انتخاب کنید</string>
+    <string name="apk_analysis_step_inspect">فراداده، منابع و کتابخانه‌ها را بررسی کنید</string>
+    <string name="apk_analysis_step_report">یک گزارش فنی ساختاریافته تهیه کنید</string>
+    <string name="apk_analysis_subscription_title">دسترسی با اشتراک</string>
+    <string name="apk_analysis_subscription_detail">اشتراک لازم خواهد بود. طرح‌ها و شرایط پرداخت هنوز تعیین نشده‌اند.</string>
+    <string name="apk_analysis_credit_cost">۱ APK = ۱ اعتبار</string>
+    <string name="apk_analysis_credit_price">۱ اعتبار = 4 USD</string>
+    <string name="apk_analysis_price_note">4 USD قیمت پیشنهادی هر اعتبار است، نه هزینه اشتراک.</string>
+    <string name="apk_analysis_safety_note">تحلیل برنامه‌ریزی‌شده ایستا است: APK نصب یا اجرا نخواهد شد.</string>
+    <string name="apk_analysis_import_unavailable">وارد کردن APK (غیرفعال)</string>
+    <string name="apk_analysis_no_charge">این سرویس هنوز فعال نیست. هیچ APK ارسال و هیچ اعتباری کسر نمی‌شود.</string>
 </resources>

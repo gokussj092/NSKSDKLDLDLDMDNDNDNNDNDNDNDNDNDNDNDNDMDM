@@ -1,94 +1,81 @@
 # HA Tunnel Plus 1.7.1 (76)
 
-Paquete `com.hatunnel.plus`. Rama independiente
-`feat/ha-tunnel-plus-1-7-1-decoders`, creada desde `main` en
-`27cc8894469a5742e73c3d2a0a83cdf836663878`.
+Paquete `com.hatunnel.plus`. Catálogo remoto integrado en código y descarga
+real completa verificada el 2026-11-01: **13 servidores / 644 métodos / 4 grupos
+de aplicaciones**. Nuevo exportador `.hat` abierto conectado a Unlocked,
+contrastado con dos archivos reales históricos y una referencia Java
+independiente. **Importación física en Android y despliegue pendientes.**
+No se certifica una exportación nueva creada ejecutando el APK.
 
-**Archivos históricos `.hat`: lector completo verificado. Catálogo remoto de
-1.7.1: pendiente de recuperar sus recursos y constantes DexProtector.** No
-confundir ambos soportes. La ficha muestra el PNG original con `remote:null` y
-`decodeEnabled:false`, incluso si se fuerza su disponibilidad. Catálogo mínimo
-52, 48 fichas. No hay despliegue, fusión ni anuncio C11 en esta entrega.
+La muestra MOD aportada permite recuperar recursos y constantes; tiene una
+firma diferente del APK protegido anterior. [ANALYSIS.md](ANALYSIS.md) distingue
+su procedencia y el alcance comprobado, sin afirmar equivalencia binaria.
 
-## Archivos y Termux
+## Descargar el catálogo completo
 
-`hat_decoder.py` es autónomo e importable. Conserva todo el JSON: configuración,
-perfil, descripción, protecciones, campos desconocidos, listas, nulos y opciones
-anidadas. Sustituye el recorte del antiguo script Python por JSON estructurado.
-Admite Base64 con BOM o saltos de línea, valida el sobre y devuelve errores sin
-incluir la entrada. Solo transforma los cuatro campos `profilev5` conocidos;
-los opcionales ausentes/nulos/textos siguen disponibles.
+Solo Python y PyCryptodome; también puede ejecutarse en Termux:
 
 ```sh
-pkg install python
 python -m pip install pycryptodome
-python hat_decoder.py configuracion.hat -o resultado.json
-python hat_decoder.py configuracion.hat --raw-fields -o original.json
-cat configuracion.hat | python hat_decoder.py -
+python server_catalog_decoder.py -o /privado/catalogo.json
+python server_catalog_decoder.py /privado/respuesta-original.txt -o /privado/catalogo.json
+cat /privado/respuesta-original.txt | python server_catalog_decoder.py -
+python server_catalog_decoder.py --apk /privado/ha-171-mod.apk -o /privado/incluido.json
 ```
 
-El archivo de salida se crea con permisos 0600 y nunca sobrescribe otro archivo.
-Sin `-o`, el contenido completo se imprime en terminal. `--raw-fields` conserva
-los portadores originales: un texto que casualmente sea Base64 no puede
-distinguirse inequívocamente del XOR sin metadatos del exportador.
+Sin entrada ejecuta el GET fijo `https://www.hatunnel.me/resources/main.txt`,
+User-Agent `Dalvik/2.1.0`, sin body, autenticación ni renovación de sesión.
+Volley no define cabeceras adicionales; Android añade su UA por defecto.
+La cadena completa de UA depende del dispositivo y no fue capturada aquí.
+`Accept-Encoding: identity` es una medida del transporte del script/broker,
+no una cabecera personalizada recuperada de la aplicación.
 
-Formato histórico verificado: Base64 → AES-128-ECB/PKCS7 → UTF-8 → JSON;
-cuatro campos `profilev5` usan Base64/UTF-8/XOR por unidades UTF-16 Java.
-ECB no autentica el documento. Validar padding y JSON no demuestra autoría.
-La constante histórica no se presenta como recuperada de este APK protegido.
+`methods` es Base64 → AES-128-ECB/PKCS7 → JSON; la clave es los primeros
+16 bytes de SHA-1 de la frase estática del actualizador. Las otras dos secciones
+son objetos JSON (también se admite su representación como cadena, conforme
+al consumidor Android). Se conservan todas las secciones, registros y campos
+desconocidos, sin recorte de `conf`, flags o notas. El JSON exterior real
+contiene un LF literal en el Base64: se admite como Android JSONTokener sin
+reemplazar contenido mediante regex. El JSON interior sigue siendo estricto;
+duplicados, esquemas incompletos y respuestas HTML se rechazan.
 
-La API Cloud con `full_hat=True` usa este mismo script. C0 y stdout C2 legado
-siguen con su ruta original. La detección previa de portadores Xhypher completos
-renombrados a `.hat`/`.bdnet` sigue intacta. No se añade una extensión inventada
-ni se registra `.json` como formato general de HA Tunnel.
+La salida `-o` se crea 0600, sin sobrescritura. Sin `-o` imprime el documento
+completo: úsese una terminal privada. Límite 8 MiB, timeout 25 s, TLS normal,
+sin redirecciones ni URLs elegidas por el llamante. `--apk` es una operación
+separada sobre los cinco recursos incluidos; no sustituye la descarga real.
 
-## Catálogo e importaciones
-
-La aplicación contiene `resources/servers.json`, `methods.json`, `customs.json`,
-`allowed_apps.json` y `whatsnew.json`. Son recursos protegidos por DexProtector,
-no JSON que pueda abrir el lector `.hat`. El actualizador `ResourceUpdater`
-hace GET a una URL protegida; `MainActivity.processUpdate` trata `servers` y
-`allowed_apps` como cadenas JSON y aplica `AESEncryption.decrypt` a `methods`
-con otra constante protegida. La caché SQLite tiene su propia clave.
-
-No se habilita broker ni selector administrativo de descarga sin conocer y
-validar esa fuente fija y sus bytes completos. Tampoco se confirma un protocolo
-independiente de texto/enlace/ID cloud: no se inventa uno por analogía con otras
-aplicaciones. Los endpoints de facturación/intercambio de tokens no son el
-catálogo y no se consultaron.
-
-En `ExportActivity`, password, identificador del dispositivo y caducidad se
-agregan a `protextras` antes del cifrado exterior. Password e identificador se
-comparan mediante hashes después de abrir el documento; no son directamente la
-clave AES del archivo. Las cadenas, digest y transformación actuales permanecen
-protegidos. No se afirma compatibilidad 100 % de 1.7.1 sin la comparación real.
-
-## Evidencia y continuación
-
-[ANALYSIS.md](ANALYSIS.md) conserva hashes, consumidores y tokens concretos.
-[TESTING.md](TESTING.md) distingue pruebas sintéticas, muestras históricas y
-Android pendiente. `manifest.json` registra ese alcance para futuras sesiones.
-
-`scripts/apk_analysis/ha_runtime_capture.py` permite leer constantes y recursos
-incluidos desde el APK original en un dispositivo de pruebas autorizado. No
-extrae perfiles del usuario ni inicia VPN, cambia verificaciones o utiliza
-cuentas. Debe ejecutarse con el PID explícito de la aplicación ya abierta;
-requiere el APK de SHA-256 exacto y Frida 17.24.3. Guarda todo fuera de Git en un
-directorio privado nuevo y produce solo recuentos en stdout. Incluye un vector
-sintético de las funciones originales para contrastar el cifrado y `hideParams`.
-La herramienta tiene comprobada su sintaxis; la captura completa sigue pendiente.
+## Leer y exportar archivos
 
 ```sh
-python -m pip install frida==17.24.3 frida-tools==14.11.0
-# Iniciar Frida server coincidente en el dispositivo de pruebas propio.
-adb forward tcp:27042 tcp:27042
-adb shell pidof com.hatunnel.plus
-python scripts/apk_analysis/ha_runtime_capture.py \
-  --apk /privado/ha-1.7.1.apk --pid PID --output /privado/ha-capture
+python hat_decoder.py configuracion.hat -o /privado/resultado.json
+python hat_decoder.py configuracion.hat --raw-fields -o /privado/original.json
 ```
 
-Los siguientes pasos son recuperar esos recursos, reproducir el algoritmo con
-una referencia original, validar la respuesta completa del GET fijo y solo
-entonces habilitar proveedor/switch. No usar esta ficha como anuncio de soporte
-remoto terminado. APK, SO, AVD, inventarios completos, capturas, configuraciones
-y credenciales reales quedan fuera del repositorio.
+`hat_decoder.py` conserva el documento entero y la ruta histórica. La constante
+AES histórica coincide con la recuperada de esta muestra 1.7.1. El lector
+completo se usa con `full_hat=True` o al solicitar exportación compatible;
+C0/C2 y la detección por contenido de Xhypher renombrado se conservan.
+
+Unlocked usa `cloud/workers/python/exports/hat.py`: escribe el esquema abierto
+de `ExportActivity.getContent`, `{profile: perfil completo, description: nota}`,
+y lo vuelve a cifrar como `.hat`. Recupera los cuatro campos de `profilev5`,
+retira sus contenedores de protección conocidos y conserva campos de conexión,
+notas, metadatos desconocidos y tokens numéricos originales. No añade banner.
+Variantes ambiguas, `profilev4` no vacío o protecciones desconocidas producen
+`EXPORT_VARIANT_UNSUPPORTED`; el descifrado exitoso sigue disponible.
+
+HA es el quinto formato negociado de Unlocked. El cliente Android actualizado
+anuncia la capacidad adicional y acepta su artefacto; los clientes anteriores
+siguen recibiendo exactamente los cuatro formatos previos. Se conserva el
+switch administrativo existente y el estado desactivado por defecto, sin
+activar producción automáticamente. No se introduce un protocolo cloud por ID.
+
+## Estado del repositorio
+
+Ficha e icono original, broker con DNS/TLS fijo, worker, validación del gateway
+y control C12 conectados. Fuente Server VPN **59 / 58 fichas**, ocho `remote:null`;
+C0 **240**, C8 **255** intactos. El despliegue deberá seguir el runbook de
+versiones/cachés. [TESTING.md](TESTING.md) contiene comandos reproducibles,
+evidencia real y límites. APK, inventarios de cadenas, respuestas y archivos
+reales permanecen fuera de Git; las constantes públicas del formato no son
+credenciales privadas de una sesión.

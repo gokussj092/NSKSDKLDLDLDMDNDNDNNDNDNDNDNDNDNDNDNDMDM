@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="apk_import_button">APK içe aktar</string>
+    <string name="apk_future_message">APK analizi gelecek bir güncellemede kullanıma sunulacak.</string>
+    <string name="apk_credits_title">Kredi merkezi</string>
+    <string name="apk_credits_intro">Gelecekteki APK analiz kredilerinizi ve satın alımlarınızı yönetin.</string>
+    <string name="apk_credits_notice">Bakiye ve satın alma işlemleri hizmet açıldığında kullanılabilir olacak.</string>
+    <string name="apk_credits_buy_title">Kredi satın al</string>
+    <string name="apk_credits_one">1 kredi</string>
+    <string name="apk_credits_buy_one">1 kredi satın al · Yakında</string>
+    <string name="apk_credits_packages">Kredi paketleri</string>
+    <string name="apk_credits_buy_package">Paket satın al · Yakında</string>
+    <string name="apk_credits_prices_title">Fiyatlar</string>
+    <string name="apk_credits_subscriptions">Abonelikler</string>
+    <string name="apk_credits_button">Krediler: 1+</string>
+    <string name="apk_credits_back">Geri</string>
+    <string name="feedback_details_title">İstek ayrıntıları</string>
+    <string name="feedback_method_description">Yeni dosya veya VPN sunucu katalogları için destek isteyin.</string>
+    <string name="feedback_bug_description">Şifre çözme, uyumluluk veya uygulama sorunlarını bildirin.</string>
+    <string name="feedback_suggestion_description">Yeni özellikler veya arayüz iyileştirmeleri önerin.</string>
+    <string name="feedback_extra_title">Ek bilgiler (isteğe bağlı)</string>
+    <string name="feedback_extra_hint">Sürüm, etkilenen biçim veya diğer ayrıntılar</string>
+</resources>

@@ -57,7 +57,7 @@ class CatalogInteractions(unittest.TestCase):
  def test_history_no_longer_shows_batch_button(self):
   ui=(JAVA/"SpDecodeApp.kt").read_text("utf-8")
   start=ui.index("private fun HistoryScreen(")
-  end=ui.index("private fun FormatsScreen(")
+  end=ui.index("private fun ServerVpnScreen(")
   screen=ui[start:end]
   self.assertNotIn("history_import_batch",screen)
   self.assertIn('testTag("server_vpn_manual_refresh")',ui)

@@ -1,3 +1,35 @@
+# Revisión2026-11-01
+
+26 pruebas Python aprobadas,0 skips:
+
+```sh
+python -m unittest tests.test_creeb_remote_request tests.test_creeb_vpn \
+  tests.test_creeb_injector tests.test_cloud_c8_vpn_registry -v
+```
+
+Siete nuevas sobre preflight/digest/caché/flag del servidor, solicitud privada
+sin cambiar token/nonce, tipo de petición/cabeceras, diagnóstico offline,
+rechazo total de HTML y JSON completo/0600 con transportes simulados.
+Los tokens de fixtures son sintéticos, nunca se envían al proveedor.
+No prueban una atestación real.26=19 anteriores+7 nuevas.
+
+`creeb_vpn_verify.py --catalog /privado/data.creeb --worker`:6 documentos
+enteros iguales a JDK/CLI/worker, de los que5 son sintéticos y1 incluido real
+1.0.0/1 servidor/1 ajuste. Hashes del original iguales a los ya documentados.
+Dalvik de mv0.doInBackground182, onPostExecute245 y lv0.doInBackground185
+contrastó la secuencia de red, más nonce/reintento. JADX parcial52 errores.
+
+Prueba real del script actualizado: GET200 HTML195→POST sin token405 HTML163,
+exit1/catalogValid:false y ningún JSON remoto. No se obtuvo token válido de
+Play Integrity, ni hay Android conectado. La ruta completa con ese token
+fresco sigue sin probarse. No se anuncia remoto operativo o integración cerrada.
+Los hashes y diagnóstico de fallo no se atribuyen a rechazo de Integrity.
+
+Sin cambios de broker/icono/UI/contadores, suites Node no repetidas porque no
+se modifica web. No se ejecutó CI manual, build Android o despliegue.
+
+---
+
 # Validación — 2026-10-23
 
 - **19 pruebas Python aprobadas**: 9 de CREEB VPN, 9 regresiones CREEB INJECTOR

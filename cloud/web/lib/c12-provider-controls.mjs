@@ -6,14 +6,28 @@
 import {readFile,open,rename,unlink,access} from "node:fs/promises";
 import {join} from "node:path";
 import {randomUUID,createHash} from "node:crypto";
-import {providerIds} from "./server-vpn-provider.mjs";
+import {providerIds,providerEnabled} from "./server-vpn-provider.mjs";
 import {ehiConfigured,nurConfigured} from "./c35-provider.mjs";
-import {activeCatalogVersion,catalog} from "./server-vpn-catalog.mjs";
+import {activeCatalogVersion,catalog,SERVER_VPN_METHODS} from "./server-vpn-catalog.mjs";
 
 const ROOT="/app/provider-control";
 const IDS=Object.freeze(["ehi-cloud","hc-cloud","nur-tunnel",...providerIds()]);
 export const PUBLIC_PROVIDER_IDS=IDS;
 const LABELS=Object.freeze({
+  "fnf-tunnel-bd":"FNF TUNNEL BD",
+  "alsaher-vip":"ALSAHER VIP",
+  "halcon-r-net":"HALCON RAMOS Conectividad",
+  "ha-tunnel-plus":"HA Tunnel Plus",
+  "ultra-tunnel":"Ultra Tunnel",
+  "mm-tunnel":"MM Tunnel",
+  "zig-tunnel":"ZiG Tunnel",
+  "enaa-tunnel":"Enaa Tunnel",
+  "alfaisal-tunnel-plus":"ALFAISAL Tunnel+",
+  "izph-vpn-pro":"IZPH VPN PRO",
+  "vip-snipher-pro":"VIP Snipher Pro",
+  "netcol-vpn":"Netcol VPN",
+  "wolf-custom-vpn":"Wolf Custom VPN",
+  "jyfast-vpn-ultra":"JyFast VPN Ultra",
   "tunneldoom-vpn":"TunnelDOOM VPN",
   "mtm-tunnel-lite":"MTM Tunnel Lite",
   "mnr-tunnel-plus":"MNR TUNNEL PLUS",
@@ -56,7 +70,14 @@ const LABELS=Object.freeze({
   "trv-tunnel":"TRV TUNNEL",
   "4u-tunnel-lite":"4U TUNNEL LITE",
 });
-const empty=()=>({version:0,disabled:[]});
+const METHOD_IDS=new Set(SERVER_VPN_METHODS.map(item=>item.id));
+const MAX_METHOD_REVISION=1_000_000;
+const empty=()=>({version:0,disabled:[],methodRevisions:{},maintenance:[]});
+const methodRevision=(state,id)=>state.methodRevisions?.[id]??0;
+const methodMaintenance=(state,id)=>state.maintenance?.includes(id)??false;
+const methodStatuses=state=>SERVER_VPN_METHODS.map(({id,name})=>({
+  id,name,methodRevision:methodRevision(state,id),maintenance:methodMaintenance(state,id),
+}));
 let rosterFingerprint=null;
 // Include the release floor so enabling a previously visible offline card also
 // invalidates cached availability, even when IDs/names/icons do not change.
@@ -82,7 +103,18 @@ const valid=s=>s && typeof s==="object" && !Array.isArray(s) &&
   s.disabled.every(x=>typeof x==="string" && IDS.includes(x)) &&
   new Set(s.disabled).size===s.disabled.length &&
   (s.catalogFingerprint===undefined ||
-    (typeof s.catalogFingerprint==="string" && /^[a-f0-9]{64}$/.test(s.catalogFingerprint)));
+    (typeof s.catalogFingerprint==="string" && /^[a-f0-9]{64}$/.test(s.catalogFingerprint))) &&
+  (s.maintenance===undefined ||
+    (Array.isArray(s.maintenance) && s.maintenance.length<=METHOD_IDS.size &&
+     s.maintenance.every(id=>typeof id==="string" && METHOD_IDS.has(id)) &&
+     new Set(s.maintenance).size===s.maintenance.length)) &&
+  (s.methodRevisions===undefined ||
+    (s.methodRevisions!==null && typeof s.methodRevisions==="object" &&
+     !Array.isArray(s.methodRevisions) &&
+     Object.keys(s.methodRevisions).length<=METHOD_IDS.size &&
+     Object.entries(s.methodRevisions).every(([id,revision])=>
+       METHOD_IDS.has(id) && Number.isSafeInteger(revision) &&
+       revision>=0 && revision<=MAX_METHOD_REVISION)));
 
 export async function loadProviderState(root=ROOT){
   const STATE=join(root,"switches.json");
@@ -133,11 +165,12 @@ export function providerPrerequisite(id,env=process.env){
   if(id==="hc-cloud")return env.CLOUD_HTTP_CUSTOM_IMPORT_ENABLED!=="false";
   if(id==="ehi-cloud")return ehiConfigured(env);
   if(id==="nur-tunnel")return nurConfigured(env);
-  return env.CLOUD_SERVER_VPN_ENABLED==="true";
+  return providerEnabled(id,env);
 }
 export function providerEffective(id,state,env=process.env){
   if(!valid(state))throw Error("PROVIDER_STATE_INVALID");
-  return providerPrerequisite(id,env) && !state.disabled.includes(id);
+  return providerPrerequisite(id,env) && !state.disabled.includes(id) &&
+    !methodMaintenance(state,id);
 }
 export async function providerAllowed(id,env=process.env,{root=ROOT}={}){
   return providerEffective(id,await loadProviderState(root),env);
@@ -150,6 +183,7 @@ export async function providerOverview(env=process.env,{root=ROOT,syncCatalog=fa
       id,name:LABELS[id],configured:providerPrerequisite(id,env),
       enabled:providerEffective(id,state,env),
     })),
+    methodStatuses:methodStatuses(state),
   };
 }
 // Cross-request lock, needed because Next.js splits API routes into bundles.
@@ -197,6 +231,49 @@ export async function updateProvider(id,enable,env=process.env,{root=ROOT}={}){
         id:k,name:LABELS[k],configured:providerPrerequisite(k,env),
         enabled:providerEffective(k,updated,env),
       })),
+      methodStatuses:methodStatuses(updated),
+    };
+  },root);
+}
+
+/** Operator-only method metadata; never infer a revision from a catalog version.
+ * 'maintenance' is an explicit operational state and gates decoding.
+ */
+export async function updateMethodState(id,operation,maintenance,env=process.env,{root=ROOT}={}){
+  if(!METHOD_IDS.has(id) ||
+     !["revision","maintenance"].includes(operation) ||
+     (operation==="maintenance" && typeof maintenance!=="boolean") ||
+     (operation==="revision" && maintenance!==undefined))throw Error("INVALID_METHOD_STATE");
+  if(env.CLOUD_FORCE_MAINTENANCE==="true")throw Error("MAINTENANCE_LOCKED");
+  return locked(async()=>{
+    const state=await loadProviderState(root);
+    const was=methodMaintenance(state,id);
+    if(operation==="maintenance" && was===maintenance)return providerOverview(env,{root});
+    const methodRevisions={...(state.methodRevisions||{})};
+    const maintained=new Set(state.maintenance||[]);
+    if(operation==="revision"){
+      const next=methodRevision(state,id)+1;
+      if(next>MAX_METHOD_REVISION)throw Error("METHOD_REVISION_EXHAUSTED");
+      methodRevisions[id]=next;
+    }else if(maintenance)maintained.add(id);else maintained.delete(id);
+    const floor=Math.floor(Date.now()/1000)-1_577_836_800;
+    const version=Math.max(state.version,activeCatalogVersion(env),floor)+1;
+    if(version>=1_000_000_000)throw Error("CATALOG_VERSION_EXHAUSTED");
+    const next={...state,version,methodRevisions,maintenance:[...maintained].sort()};
+    const tmp=join(root,".switches-"+randomUUID());
+    const target=join(root,"switches.json");
+    const handle=await open(tmp,"wx",0o600);
+    try{await handle.writeFile(JSON.stringify(next)+"\n","utf8");await handle.sync();}
+    finally{await handle.close();}
+    try{await rename(tmp,target);}
+    catch(error){await unlink(tmp).catch(()=>{});throw error;}
+    return {
+      catalogVersion:version,
+      providers:IDS.map(k=>({
+        id:k,name:LABELS[k],configured:providerPrerequisite(k,env),
+        enabled:providerEffective(k,next,env),
+      })),
+      methodStatuses:methodStatuses(next),
     };
   },root);
 }

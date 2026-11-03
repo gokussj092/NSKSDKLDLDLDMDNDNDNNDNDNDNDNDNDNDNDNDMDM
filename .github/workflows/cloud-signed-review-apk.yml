@@ -1,0 +1,151 @@
+name: SP-DECODE private signed APK review (no AAB)
+# Owner-authorized private 1.1.26 build for review; never publishes or deploys.
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    paths:
+      - ".github/workflows/cloud-signed-review-apk.yml"
+      - "android/**"
+      - "tests/test_cloud_transfer_progress.py"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: spdecode-private-review-apk-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  review-apk:
+    if: >-
+      github.repository == 'gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM' &&
+      github.event.repository.private == true &&
+      github.event_name == 'pull_request' &&
+      github.head_ref == 'fix/http-jireh-current-method' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout exact review source, without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Configure Python and install the repository's CI dependencies
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install Cloud contract test dependencies
+        run: python -m pip install -r requirements.txt cryptography==50.0.2
+
+      - name: Validate Cloud progress and native boundary contracts
+        run: |
+          python3 -m unittest \
+            tests.test_cloud_transfer_progress \
+            tests.test_cloud_c4_android_bridge \
+            tests.test_cloud_c8_android_input_routes \
+            tests.test_cloud_c8_android_server_vpn \
+            tests.test_cloud_c5_source_isolation -v
+          python3 scripts/cloud_c0_inventory.py
+
+      - name: Configure Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Configure Gradle 8.11.1
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.11.1"
+
+      - name: Install Android SDK, CMake and NDK
+        run: |
+          set -euo pipefail
+          MANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -n 1)"
+          test -n "$MANAGER"
+          "$MANAGER" --install "platforms;android-36" "build-tools;35.0.0" \
+            "platform-tools" "cmake;3.22.1" "ndk;27.2.12479018"
+
+      - name: Restore permanent GitHub Secrets signing key and check trusted identities
+        env:
+          STORE_BASE64: ${{ secrets.SPDECODE_SIGNING_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.SPDECODE_SIGNING_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.SPDECODE_SIGNING_KEY_PASSWORD }}
+          PLAY_CERT: ${{ secrets.SPDECODE_PLAY_APP_SIGNER_SHA256 || vars.SPDECODE_PLAY_APP_SIGNER_SHA256 }}
+        run: |
+          set -euo pipefail
+          test -n "$STORE_BASE64" && test -n "$STORE_PASSWORD" &&
+            test -n "$KEY_ALIAS" && test -n "$KEY_PASSWORD" || {
+              echo "::error::Permanent signing Secrets missing; no test key will be created."
+              exit 1
+            }
+          umask 077
+          printf '%s' "$STORE_BASE64" | base64 --decode > "$RUNNER_TEMP/spdecode-review.p12"
+          keytool -list -storetype PKCS12 \
+            -keystore "$RUNNER_TEMP/spdecode-review.p12" \
+            -storepass:env STORE_PASSWORD -alias "$KEY_ALIAS" >/dev/null
+          SIGNER="$(keytool -exportcert -storetype PKCS12 \
+            -keystore "$RUNNER_TEMP/spdecode-review.p12" \
+            -storepass:env STORE_PASSWORD -alias "$KEY_ALIAS" |
+            sha256sum | cut -d' ' -f1)"
+          test "$SIGNER" = "0fa9f07f2c47464925f3a7b222c9a39ef887738f678b9c918ec6c4fb96162260" || {
+            echo "::error::Signing certificate differs from the permanent original."
+            exit 1
+          }
+          PLAY_CERT="$(printf '%s' "$PLAY_CERT" | tr -d '[:space:]:' | tr '[:upper:]' '[:lower:]')"
+          test "$PLAY_CERT" = "64760393e52521294b40a1fd978b5bae732b7d8604bd222ca01166a25407854b" || {
+            echo "::error::Google Play App Signing certificate pin missing or changed."
+            exit 1
+          }
+          echo "SPDECODE_TRUSTED_SIGNER_SHA256=$SIGNER" >> "$GITHUB_ENV"
+          echo "SPDECODE_PLAY_APP_SIGNER_SHA256=$PLAY_CERT" >> "$GITHUB_ENV"
+          echo "SPDECODE_RELEASE_STORE_FILE=$RUNNER_TEMP/spdecode-review.p12" >> "$GITHUB_ENV"
+
+      - name: Compile only the Cloud release APK with the permanent key
+        working-directory: android
+        env:
+          SPDECODE_CLOUD_API_BASE_URL: https://api.spdecode.xyz
+          SPDECODE_CLOUD_RELEASE: "true"
+          SPDECODE_CLOUD_QA_BUILD: "false"
+          SPDECODE_ADI_VERIFICATION_BUILD: "false"
+          SPDECODE_RELEASE_STORE_PASSWORD: ${{ secrets.SPDECODE_SIGNING_STORE_PASSWORD }}
+          SPDECODE_RELEASE_KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
+          SPDECODE_RELEASE_KEY_PASSWORD: ${{ secrets.SPDECODE_SIGNING_KEY_PASSWORD }}
+        run: gradle --no-daemon :app:assembleRelease
+
+      - name: Verify APK signature, version, Cloud isolation and alignment
+        run: |
+          set -euo pipefail
+          APK="android/app/build/outputs/apk/release/app-release.apk"
+          test -s "$APK"
+          python3 scripts/ci/verify_release_signer_pins.py
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK" > "$RUNNER_TEMP/review-cert.txt"
+          grep -Fi "Signer #1 certificate SHA-256 digest: $SPDECODE_TRUSTED_SIGNER_SHA256" "$RUNNER_TEMP/review-cert.txt" > /dev/null
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" > "$RUNNER_TEMP/review-badging.txt"
+          grep -F "package: name='com.ghostdeveloper.spdecode'" "$RUNNER_TEMP/review-badging.txt" > /dev/null
+          grep -F "versionName='1.1.26'" "$RUNNER_TEMP/review-badging.txt" > /dev/null
+          grep -F "versionCode='41'" "$RUNNER_TEMP/review-badging.txt" > /dev/null
+          "$ANDROID_HOME/build-tools/35.0.0/zipalign" -c -P 16 -v 4 "$APK" > /dev/null
+          python3 tests/cloud_c5_apk_audit.py "$APK"
+          python3 scripts/audit_v2_apk.py "$APK" --origin https://api.spdecode.xyz
+          mkdir -p review
+          cp "$APK" "review/SP-DECODE-v1.1.26-build41-CLOUD-SIGNED-REVIEW.apk"
+          sha256sum review/*.apk >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload APK only to private Actions run
+        uses: actions/upload-artifact@v4
+        with:
+          name: SP-DECODE-1.1.26-build41-permanent-signed-review-APK
+          path: review/*.apk
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
+
+      - name: Destroy temporary signing key from runner
+        if: always()
+        run: rm -f "$RUNNER_TEMP/spdecode-review.p12"

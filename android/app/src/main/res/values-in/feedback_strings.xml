@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feedback_title">Kesalahan dan saran</string>
+    <string name="feedback_settings_detail">Laporkan masalah atau minta metode APK baru</string>
+    <string name="feedback_intro">Pilih jenis permintaan. Tidak ada data dikirim sebelum Anda menekan Kirim.</string>
+    <string name="feedback_category">Jenis permintaan</string>
+    <string name="feedback_category_method">Tambahkan metode APK baru</string>
+    <string name="feedback_category_bug">Laporkan kesalahan</string>
+    <string name="feedback_category_suggestion">Sarankan peningkatan</string>
+    <string name="feedback_method_help">Tempel tautan Google Play, Uptodown, atau penyedia lain dan jelaskan integrasi yang diinginkan.</string>
+    <string name="feedback_app_link">Tautan aplikasi</string>
+    <string name="feedback_app_link_hint">https://play.google.com/store/apps/details?id=...</string>
+    <string name="feedback_bug_instruction">Centang semua masalah yang dialami (minimal satu).</string>
+    <string name="feedback_issue_decode">Dekripsi berkas gagal</string>
+    <string name="feedback_issue_catalog">Unduhan katalog VPN gagal</string>
+    <string name="feedback_issue_import">Masalah impor berkas</string>
+    <string name="feedback_issue_export">Ekspor atau konfigurasi terbuka gagal</string>
+    <string name="feedback_issue_crash">Aplikasi tertutup tiba-tiba</string>
+    <string name="feedback_issue_cloud">Masalah akses Cloud atau server</string>
+    <string name="feedback_issue_other">Kesalahan lainnya</string>
+    <string name="feedback_optional_report">Laporan tambahan (opsional)</string>
+    <string name="feedback_description_required">Apa yang ingin ditambahkan atau ditingkatkan?</string>
+    <string name="feedback_report_hint">Anda boleh menjelaskan langkahnya, tetapi tidak wajib.</string>
+    <string name="feedback_description_hint">Jelaskan metode, berkas, katalog, atau peningkatan yang diinginkan.</string>
+    <string name="feedback_privacy_note">Jangan sertakan kata sandi, kunci privat, konfigurasi yang didekripsi, atau log sensitif. Hanya informasi pilihan Anda yang dikirim.</string>
+    <string name="feedback_error">Permintaan gagal dikirim. Jawaban Anda disimpan.</string>
+    <string name="feedback_received">Permintaan diterima. Referensi: %1$s</string>
+    <string name="feedback_send">Kirim permintaan</string>
+    <string name="feedback_sending">Mengirim…</string>
+</resources>

@@ -1,5 +1,8 @@
 # Decodificadores organizados por aplicación
 
+> **REQUISITO DE INTEGRACIÓN (2026-11-02):** todo proveedor nuevo o revisión de versión debe tener un expediente de herramientas, scripts y pruebas en [analysis/](../../../analysis/README.md) conforme a [su política obligatoria](../../../analysis/METHOD_EVIDENCE_POLICY.md). Un README/ANALYSIS.md de proveedor y un codec final NO sustituyen el registro de todos los scripts usados. Se acepta estado PENDING cuando no hubo verificación real; no se declara soportado sin pruebas.
+
+
 Cada aplicación de este lote tiene su propia carpeta, con nombres
 reconocibles y espacios representados mediante guiones bajos:
 
@@ -16,10 +19,30 @@ Pueden reutilizar primitivas comunes; no requieren el APK para ejecutarse.
 Los lectores son ejecutables independientes. Las muestras sintéticas y sus
 productores se mantienen en `tests/golden`, y las pruebas en `tests`.
 
+## Catálogos remotos pendientes
+
+Por instrucción del propietario, reinvestigar las **9 fichas con descarga
+remota desactivada por integración pendiente**. Inventario, evidencia y trabajo
+concreto en [Catálogos desactivados: reinvestigación obligatoria](../../../docs/cloud/CATALOGOS_DESACTIVADOS_REINVESTIGACION_2026_11_01.md).
+Un lector offline no completa la integración remota. Para estos casos y nuevas
+apps se exige petición completa, acceso provisionado, descarga real y JSON
+íntegro contrastado, como VIP Snipher Pro, IZPH y ALFAISAL. Los estados históricos
+de cada carpeta no sustituyen esa nueva investigación ni describen el VPS actual.
+
 ## Aplicaciones
 
 | Aplicación | Catálogo | Archivos/textos | Icono y documentación |
 | --- | --- | --- | --- |
+| FNF TUNNEL BD PrinceBuild35 (35) | [GET real,82.0/28 servidores/1193 payloads](FNF_TUNNEL_BD/server_catalog_decoder.py) | Sin nuevos formatos inferidos | [Expediente y límites](FNF_TUNNEL_BD/README.md) |
+| ALSAHER VIP 1.1 (2) | [GET real,9.9.58/14 servidores/3 HTTP/9 SSL](ALSAHER_VIP/server_catalog_decoder.py) | Sin nuevos formatos inferidos | [Expediente y límites](ALSAHER_VIP/README.md) |
+| HALCON RAMOS Conectividad / Halcon R Net 4.1.4 (1391) | [POST firmado HTTP200, catálogo635/101 servidores](Halcon_R_Net/server_catalog_decoder.py) | Sin nuevos formatos de archivo/texto inferidos | [Expediente y límites VPS](Halcon_R_Net/README.md) |
+| Hex Tunnel / HexVPN 1.7.3-Rev | Solo archivos, sin proveedor de servidores | [.hexcm Cloud, JSON firmado completo](Hex_Tunnel/file_decoder.py) | [Método y pruebas](Hex_Tunnel/README.md) |
+| MM Tunnel v1.10.30.2 | [POST HTTP200, 38 servidores /557 redes](MM_Tunnel/server_catalog_decoder.py) | [.mmt Cloud y legado conservado](MM_Tunnel/file_decoder.py) | [Carpeta](MM_Tunnel/README.md) |
+| ZiG Tunnel Play1.0 | [HTTP200, 15 servidores /3 HTTP /1 SSL](ZiG_Tunnel/server_catalog_decoder.py) | Sin nueva extensión de perfil inferida | [Carpeta](ZiG_Tunnel/README.md) |
+| Enaa Tunnel Enna-1.07 | [HTTP200, 45 servidores /515 redes](Enaa_Tunnel/server_catalog_decoder.py) | [.enaa Cloud, método confirmado](Enaa_Tunnel/file_decoder.py) | [Carpeta](Enaa_Tunnel/README.md) |
+| ALFAISAL Tunnel+ build39 | [Catálogo firmado HTTP200, 4 servidores /51 redes /103 SSL](ALFAISAL_Tunnel_Plus/server_catalog_decoder.py) | Sin formato de perfil nuevo identificado | [Carpeta](ALFAISAL_Tunnel_Plus/README.md) |
+| IZPH VPN PRO 6.0 | [Catálogo HTTP200, 84 servidores /303 redes](IZPH_VPN_PRO/server_catalog_decoder.py) | IZPH histórico corregido; export real6.0 pendiente | [Carpeta](IZPH_VPN_PRO/README.md) |
+| VIP Snipher Pro 2.9 | [Catálogo autenticado HTTP200, 47 servidores /273 redes](VIP_Snipher_Pro/server_catalog_decoder.py) | RENZ histórico, sin nueva certificación de perfil | [Carpeta](VIP_Snipher_Pro/README.md) |
 | 24clan VPN Green 3.3 | [Script](24clan_VPN_Green/24clan_VPN_Green.py) | [.green](24clan_VPN_Green/24clan_VPN_Green_archivos.py) | [Carpeta](24clan_VPN_Green/README.md) |
 | HX Tunnel VPN Hx-Build14 | [Script](HX_Tunnel_VPN/HX_Tunnel_VPN.py) | [.hxt](HX_Tunnel_VPN/HX_Tunnel_VPN_archivos.py) | [Carpeta](HX_Tunnel_VPN/README.md) |
 | MKK Hyper VPN 2.9.2 | [Script](MKK_Hyper_VPN/MKK_Hyper_VPN.py) | [Texto mkk://](MKK_Hyper_VPN/MKK_Hyper_VPN_textos.py) | [Carpeta](MKK_Hyper_VPN/README.md) |
@@ -69,3 +92,8 @@ productores se mantienen en `tests/golden`, y las pruebas en `tests`.
 - [SuperFlash VPN 184.0.1](SuperFlash_VPN/README.md): SV5C v2 firmado, registros XChaCha20-Poly1305 y campos AES-CBC/ROT5; 268 servidores y una entrada de usuarios reales comparados íntegramente con nativo/libsodium/JDK, CLI y worker. Dos fuentes, control e icono original integrados; herramientas ELF/ARM64 guardadas.
 
 - [TurboMX VPN 143.1.26](TurboMX_VPN/README.md): SV5C v2/release 143 con firma, clave y contexto propios; 268 servidores y una entrada de usuarios reales comparados íntegramente con nativo/libsodium/JDK, CLI y worker. Reutiliza la primitiva SV5C preservando SuperFlash; descarga dual, control e icono original integrados.
+- [JyFast VPN Ultra 9](JyFast_VPN_Ultra/README.md): catálogos gratuito y prémium completos, campos Rt/AES-CBC y archivos `.sks` con motor GCM/DES compartido. Fuentes fijas, icono original y control individual; versión 10 pendiente de APK verificable.
+
+- [Wolf Custom VPN v2.8.1.2 (13)](Wolf_Custom_VPN/README.md): fuente activa, catálogo completo y `.wolf` AES-GCM con dos claves nativas; 164 servidores / 2015 redes y 13267 campos comparados con JCA y worker. Conserva lector histórico, icono original y control individual; archivo exportado real pendiente.
+
+- [Netcol VPN 14.2 (142)](Netcol_VPN/README.md): fuente activa resuelta mediante Firebase, sobre Unicode/AES-CBC y siete campos Blowfish; 172 servidores y 1204 campos completos iguales a JCA y worker. Icono y control individual; revisión 59 conservada por petición del propietario, sin inventar formato de archivo.

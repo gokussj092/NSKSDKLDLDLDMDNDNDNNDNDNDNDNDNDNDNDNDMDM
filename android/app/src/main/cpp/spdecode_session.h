@@ -13,6 +13,8 @@ public:
                bool actionIntegrity, Clock::time_point now = Clock::now());
     std::string get(Clock::time_point now = Clock::now());
     bool requiresActionIntegrityFor(const std::string& bearer) const;
+    void configureAction(const std::string& bearer, std::int64_t project, bool inlineMode);
+    std::int64_t inlineActionProject(const std::string& bearer) const;
     void clear();
     void clearIfMatches(const std::string& bearer);
     ~SessionCache();
@@ -22,6 +24,8 @@ private:
     std::string bearer_;
     Clock::time_point deadline_{};
     bool actionIntegrity_ = true;
+    bool inlineAction_ = false;
+    std::int64_t actionProject_ = 0;
 };
 SessionCache& sharedSession();
 } // namespace spdecode

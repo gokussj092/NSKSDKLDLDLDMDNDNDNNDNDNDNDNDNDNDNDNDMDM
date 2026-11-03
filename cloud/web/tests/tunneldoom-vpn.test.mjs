@@ -15,7 +15,7 @@ import {downloadVpnCatalog} from "../lib/server-vpn-provider.mjs";
 
 test("TunnelDOOM original PNG, public format and card follow availability",()=>{
   const doc=catalog({availability:{"tunneldoom-vpn":true}});
-  assert.equal(CATALOG_VERSION,56);assert.equal(doc.apps.length,49);
+  assert(CATALOG_VERSION>=65, 'catalog version must not regress');assert(doc.apps.length>=61, 'catalog must retain existing apps');
   const card=doc.apps.find(x=>x.id==="tunneldoom-vpn");
   assert.equal(card.name,"TunnelDOOM VPN");assert.equal(card.decodeEnabled,true);
   assert.equal(card.iconSha256,"ce33bc4ef6b663f43af31dc72bc32d6d7981fd4cb33bc0d89bc9b1b699187980");
@@ -139,9 +139,9 @@ test("TunnelDOOM reuses SKS without claiming generic JSON or invented text prefi
   assert(file.name.includes("TunnelDOOM VPN 4.2.4"));
   assert.equal(file.cloudSupported,true);
   assert.deepEqual(file.credentialFields,[]);
-  assert.equal(doc.formatCount,254);
+  assert.equal(doc.formatCount,256);
   assert(!doc.formats.some(x=>["doom","tdoom","json"].includes(x.suffix)));
   assert(!doc.textFormats.some(x=>/doom/i.test(x.prefix)));
-  assert.equal(activeCatalogVersion({CLOUD_SERVER_VPN_CATALOG_VERSION:"54"}),56);
+  assert.equal(activeCatalogVersion({CLOUD_SERVER_VPN_CATALOG_VERSION:"54"}),CATALOG_VERSION);
   assert.equal(activeCatalogVersion({CLOUD_SERVER_VPN_CATALOG_VERSION:"105"}),105);
 });

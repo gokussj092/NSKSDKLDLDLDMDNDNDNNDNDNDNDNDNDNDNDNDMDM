@@ -66,7 +66,9 @@ def generate():
     address=seal("vpn.example.invalid",counter=4)
     profile={"Name":"Prueba 日本語","TunnelType":"SSH","Payload":inner,
              "SNI":"plain.example.invalid","URI":None,"ProxyPort":"8080","Enabled":False,
-             "future":{"list":[0,False,None,"keep"],"passwordHash":"synthetic metadata"}}
+             "Info":"A"*64,
+             "future":{"list":[0,False,None,"keep"],"passwordHash":"synthetic metadata",
+                       "Payload":inner,"ServerIPHost":address}}
     expected=dict(profile,Payload="GET /日本 HTTP/1.1\r\nHost: example.invalid\r\n\r\n")
     catalog={"Version":"test.45","Servers":[{"Name":"synthetic","ServerIPHost":address,"SSH_Port":"22"}],
              "Networks":[profile],"ReleaseNotes":"Prueba","DefOVPNPass":seal("",counter=8)}

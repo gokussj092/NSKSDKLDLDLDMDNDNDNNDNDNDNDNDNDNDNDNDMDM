@@ -5,7 +5,7 @@ import {tmpdir} from "node:os";
 import {join} from "node:path";
 import {
   PUBLIC_PROVIDER_IDS,providerPrerequisite,providerEffective,
-  loadProviderState,providerOverview,providerAllowed,updateProvider,
+  loadProviderState,providerOverview,providerAllowed,updateProvider,updateMethodState,
 } from "../lib/c12-provider-controls.mjs";
 import {catalog,activeCatalogVersion} from "../lib/server-vpn-catalog.mjs";
 
@@ -179,4 +179,69 @@ test("Tx Tunnel has a named persistent provider switch",async t=>{
  const result=await updateProvider("tx-tunnel",false,env,opts);
  assert.equal(result.providers.find(x=>x.id==="tx-tunnel").enabled,false);
  assert.equal(await providerAllowed("tx-tunnel",env,opts),false);
+});
+
+
+test("explicit method revision is separate from catalog and icon version",async t=>{
+  const root=await fixture(t),opts={root};
+  const initial=await providerOverview(env,opts);
+  const method=initial.methodStatuses.find(x=>x.id==="http-jireh");
+  assert.deepEqual(
+    {revision:method.methodRevision,maintenance:method.maintenance},
+    {revision:0,maintenance:false},
+  );
+  const initialCatalog=catalog({version:initial.catalogVersion});
+  assert.equal(initialCatalog.apps.find(x=>x.id==="http-jireh").methodRevision,0);
+  assert.equal(initialCatalog.apps.find(x=>x.id==="http-jireh").maintenance,false);
+  const updated=await updateMethodState("http-jireh","revision",undefined,env,opts);
+  assert(updated.catalogVersion>initial.catalogVersion);
+  const revised=updated.methodStatuses.find(x=>x.id==="http-jireh");
+  assert.equal(revised.methodRevision,1);
+  assert.equal(revised.maintenance,false);
+  const metadata=Object.fromEntries(updated.methodStatuses.map(x=>[x.id,x]));
+  assert.equal(catalog({methodStates:metadata,version:updated.catalogVersion})
+    .apps.find(x=>x.id==="http-jireh").methodRevision,1);
+  // Incrementing the global version alone never changes the method revision.
+  assert.equal(catalog({methodStates:metadata,version:updated.catalogVersion+1})
+    .apps.find(x=>x.id==="http-jireh").methodRevision,1);
+  assert.equal((await updateMethodState("http-jireh","revision",undefined,env,opts))
+    .methodStatuses.find(x=>x.id==="http-jireh").methodRevision,2);
+});
+
+test("maintenance is explicit, persistent and blocks provider admission",async t=>{
+  const root=await fixture(t),opts={root};
+  assert.equal(await providerAllowed("http-jireh",env,opts),true);
+  const blocked=await updateMethodState("http-jireh","maintenance",true,env,opts);
+  assert.equal(await providerAllowed("http-jireh",env,opts),false);
+  assert.equal(blocked.methodStatuses.find(x=>x.id==="http-jireh").maintenance,true);
+  const availability=Object.fromEntries(blocked.providers.map(x=>[x.id,x.enabled]));
+  const methods=Object.fromEntries(blocked.methodStatuses.map(x=>[x.id,x]));
+  const item=catalog({availability,methodStates:methods,version:blocked.catalogVersion})
+    .apps.find(x=>x.id==="http-jireh");
+  assert.equal(item.decodeEnabled,false);
+  assert.equal(item.maintenance,true);
+  const repeat=await updateMethodState("http-jireh","maintenance",true,env,opts);
+  assert.equal(repeat.catalogVersion,blocked.catalogVersion);
+  assert.deepEqual(JSON.parse(await readFile(join(root,"switches.json"),"utf8")).maintenance,
+    ["http-jireh"]);
+  const restored=await updateMethodState("http-jireh","maintenance",false,env,opts);
+  assert(restored.catalogVersion>blocked.catalogVersion);
+  assert.equal(await providerAllowed("http-jireh",env,opts),true);
+  assert.equal(restored.methodStatuses.find(x=>x.id==="http-jireh").maintenance,false);
+});
+
+test("method updates reject arbitrary IDs and invalid maintenance values",async t=>{
+  const root=await fixture(t),opts={root};
+  await assert.rejects(()=>updateMethodState("../fake","revision",undefined,env,opts),
+    /INVALID_METHOD_STATE/);
+  await assert.rejects(()=>updateMethodState("http-jireh","maintenance","yes",env,opts),
+    /INVALID_METHOD_STATE/);
+  await assert.rejects(()=>updateMethodState("http-jireh","revision",true,env,opts),
+    /INVALID_METHOD_STATE/);
+  await assert.rejects(()=>updateMethodState("http-jireh","maintenance",true,
+    {...env,CLOUD_FORCE_MAINTENANCE:"true"},opts),/MAINTENANCE_LOCKED/);
+  await writeFile(join(root,"switches.json"),JSON.stringify({
+    version:2,disabled:[],methodRevisions:{"../../bad":4},maintenance:[],
+  }));
+  await assert.rejects(()=>loadProviderState(root),/PROVIDER_STATE_INVALID/);
 });

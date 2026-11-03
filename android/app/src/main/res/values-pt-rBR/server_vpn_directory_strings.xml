@@ -18,4 +18,7 @@
     <string name="server_vpn_catalog_current">O catálogo de servidores VPN está atualizado.</string>
     <string name="server_vpn_catalog_updated">Catálogo de servidores VPN atualizado.</string>
     <string name="server_vpn_catalog_update_error">Não foi possível verificar ou baixar o catálogo. Tente novamente.</string>
+    <string name="server_vpn_updated_badge">Atualizado</string>
+    <string name="server_vpn_maintenance_badge">Em manutenção</string>
+    <string name="server_vpn_maintenance_detail">Método temporariamente em manutenção</string>
 </resources>

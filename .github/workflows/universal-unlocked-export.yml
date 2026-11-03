@@ -1,0 +1,96 @@
+name: SP-DECODE Universal Unlocked export validation
+# No signing credentials, Play deployment, VPS deployment or live user files.
+on:
+  push:
+    branches: [fix/http-jireh-current-method]
+    paths:
+      - .github/workflows/universal-unlocked-export.yml
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CompatibleExport*
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudDecodeClient.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/ServerVpnCatalogRepository.kt
+      - android/app/src/main/cpp/spdecode_transport.cpp
+      - android/app/src/cloudAndroidTest/java/com/ghostdeveloper/spdecode/CompatibleExportInstrumentedTest.kt
+      - android/app/build.gradle.kts
+      - cloud/web/content/compatible-export-formats.json
+      - cloud/web/lib/compatible-export-policy.mjs
+      - cloud/web/lib/c3-gateway.mjs
+      - cloud/web/tests/compatible-export-policy.test.mjs
+      - cloud/workers/python/exports/job.py
+      - cloud/workers/python/exports/bridge.py
+      - cloud/workers/python/Dockerfile
+      - tests/test_compatible_export.py
+      - docs/cloud/UNLOCKED_DYNAMIC_CLOUD_EXPORT_2026_11_03.md
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: spdecode-unlocked-universal-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contracts:
+    if: github.repository_owner == 'gokussj092' && github.ref == 'refs/heads/fix/http-jireh-current-method'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install synthetic export fixture dependencies
+        run: python -m pip install -r requirements.txt cryptography
+      - name: Isolated Python worker genuine export tests
+        run: python -m unittest tests.test_compatible_export -v
+      - name: Dynamic export policy and legacy compatibility
+        working-directory: cloud/web
+        run: node --test tests/compatible-export-policy.test.mjs
+      - name: Verify no static Android export allowlist
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          src=Path('android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudDecodeClient.kt').read_text()
+          parsed=Path('android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CompatibleExportArtifact.kt').read_text()
+          assert 'format in CompatibleExportArtifact.targets' not in src
+          assert 'require(suffix in targets)' not in parsed
+          assert 'if(onCompatibleExport!=null)' in src
+          PY
+      - name: Android source isolation and generated UI contracts
+        run: python -m unittest tests.test_compatible_export_integration tests.test_cloud_c5_source_isolation -v
+      - name: Check Node syntax
+        run: |
+          node --check cloud/web/lib/compatible-export-policy.mjs
+          node --check cloud/web/lib/c3-gateway.mjs
+
+  android-compile:
+    if: github.repository_owner == 'gokussj092' && github.ref == 'refs/heads/fix/http-jireh-current-method'
+    runs-on: ubuntu-latest
+    timeout-minutes: 65
+    env:
+      SPDECODE_CLOUD_API_BASE_URL: https://api.spdecode.xyz
+      SPDECODE_CLOUD_RELEASE: "true"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.11.1"
+      - name: Install Android platform and native toolchain
+        run: |
+          set -euo pipefail
+          MANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -n 1)"
+          "$MANAGER" --install "platforms;android-36" "build-tools;35.0.0" "platform-tools" "cmake;3.22.1" "ndk;27.2.12479018"
+      - name: Compile Cloud-enabled Android and instrumented export tests
+        working-directory: android
+        run: gradle --no-daemon --max-workers=2 :app:compileDebugKotlin :app:compileDebugAndroidTestKotlin

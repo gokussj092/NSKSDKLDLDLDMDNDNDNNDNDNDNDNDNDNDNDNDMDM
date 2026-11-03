@@ -101,6 +101,10 @@
     <string name="decode_progress_reading">Ausgewählte Datei wird gelesen…</string>
     <string name="decode_progress_decoding">Konfiguration wird über Cloud decodiert…</string>
     <string name="decode_progress_saving">Verschlüsseltes Ergebnis wird gespeichert…</string>
+    <string name="decode_progress_wait">Bitte warten…</string>
+    <string name="decode_progress_sending">Wird gesendet…</string>
+    <string name="decode_progress_processing">Wird verarbeitet…</string>
+    <string name="decode_progress_downloading_results">Ergebnisse werden heruntergeladen…</string>
     <string name="history_search">Nach Dateiname oder Endung suchen</string>
     <string name="history_favorites">Favoriten</string>
     <string name="history_sort">Sortieren</string>
@@ -138,7 +142,7 @@
     <string name="native_decoder_mixed_short">Gemischt</string>
     <string name="clear_current_result">Angezeigtes Ergebnis löschen</string>
     <string name="guide_settings_title">Interaktive Anleitung</string>
-    <string name="guide_settings_detail">Folge der Reihenfolge Startseite, Verlauf, Formate, VPN-Server und Einstellungen. Starte die Anleitung jederzeit erneut.</string>
+    <string name="guide_settings_detail">Entdecke Startseite, Verlauf, APK-Analyse, VPN-Server und Einstellungen. Du kannst die Anleitung jederzeit neu starten.</string>
     <string name="guide_replay">Geführte Tour starten</string>
     <string name="settings_version">Version %1$s</string>
     <string name="settings_build_code">Build %1$d</string>
@@ -199,7 +203,7 @@
     <string name="hc_auth_enter_manually">Passwort manuell eingeben</string>
     <string name="hc_auth_input_invalid">Gib das benötigte Passwort und/oder eine gültige HWID mit 32 Zeichen ein.</string>
     <string name="hc_auth_failed">Diese geschützte HTTP Custom-Datei konnte nicht authentifiziert werden. Prüfe Passwort und/oder HWID; die Datei könnte beschädigt sein oder eine nicht unterstützte Variante verwenden.</string>
-    <string name="guide_step_six">Formate: Durchsuche unterstützte Apps und Dateiendungen.</string>
+    <string name="guide_step_six">APK-Analyse: Diese Funktion kommt demnächst.</string>
     <string name="guide_step_seven">VPN-Server: Wähle eine App und entschlüssele ihren Serverkatalog.</string>
     <string name="guide_step_eight">Einstellungen: Ändere die Sprache, lies die Datenschutzhinweise und passe die App an.</string>
     <string name="server_vpn">VPN-Server</string>
@@ -212,4 +216,22 @@
     <string name="nur_servers_invalid_url">Gib eine gültige HTTPS-URL für die Serverliste ein.</string>
     <string name="nur_servers_failed">Serverliste konnte nicht heruntergeladen, authentifiziert oder entschlüsselt werden.</string>
     <string name="language_screen_title">Sprache auswählen</string>
+    <string name="apk_analysis_title">APK-Analyse</string>
+    <string name="apk_analysis_coming_soon">Demnächst verfügbar</string>
+    <string name="settings_formats_title">Unterstützte Formate</string>
+    <string name="settings_formats_detail">Kompatible Dateiendungen und Textprotokolle ansehen.</string>
+    <string name="apk_analysis_intro_title">Von der APK zum technischen Analysebericht</string>
+    <string name="apk_analysis_intro_detail">Nach der Freischaltung untersucht die statische Analyse Manifest, Metadaten, Ressourcen und native Bibliotheken als Grundlage für Decoder-Skripte.</string>
+    <string name="apk_analysis_steps_title">Geplanter Ablauf</string>
+    <string name="apk_analysis_step_import">Eine APK mit Analyseberechtigung auswählen</string>
+    <string name="apk_analysis_step_inspect">Metadaten, Ressourcen und Bibliotheken untersuchen</string>
+    <string name="apk_analysis_step_report">Einen strukturierten technischen Bericht erstellen</string>
+    <string name="apk_analysis_subscription_title">Zugang mit Abonnement</string>
+    <string name="apk_analysis_subscription_detail">Ein Abonnement wird erforderlich sein. Tarife und Zahlungsbedingungen stehen noch nicht fest.</string>
+    <string name="apk_analysis_credit_cost">1 APK = 1 Guthabenpunkt</string>
+    <string name="apk_analysis_credit_price">1 Guthabenpunkt = 4 USD</string>
+    <string name="apk_analysis_price_note">4 USD ist der geplante Preis pro Guthabenpunkt, nicht die Abonnementgebühr.</string>
+    <string name="apk_analysis_safety_note">Die geplante Analyse erfolgt statisch: Die APK wird weder installiert noch ausgeführt.</string>
+    <string name="apk_analysis_import_unavailable">APK importieren (nicht verfügbar)</string>
+    <string name="apk_analysis_no_charge">Der Dienst ist noch inaktiv. Es werden keine APKs gesendet und keine Punkte berechnet.</string>
 </resources>

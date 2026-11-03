@@ -11,11 +11,15 @@ import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.activity.compose.BackHandler
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.testTag
+import com.ghostdeveloper.spdecode.parity.AndroidDecoderCatalog
+import com.ghostdeveloper.spdecode.cloud.CloudTextRoute
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,18 +48,48 @@ fun FunctionalSettingsPanel(
     onCatalogUpdates:(Boolean)->Unit={},
     usageAnalyticsEnabled:Boolean=false,
     onUsageAnalytics:(Boolean)->Unit={},
+    supportedFormats:List<AndroidDecoderCatalog.Format> = emptyList(),
+    supportedTextFormats:List<CloudTextRoute> = emptyList(),
+    catalogLoading:Boolean=false,
+    catalogProgress:Int?=null,
+    onFeedbackSubmit:suspend (FeedbackDraft)->String={throw IllegalStateException("FEEDBACK_UNAVAILABLE")},
 ){
     var clearDialog by remember { mutableStateOf(false) }
     var languagePage by rememberSaveable { mutableStateOf(false) }
+    var formatsPage by rememberSaveable { mutableStateOf(false) }
+    var feedbackPage by rememberSaveable { mutableStateOf(false) }
+    var aboutPage by rememberSaveable { mutableStateOf(false) }
+    val pageState=rememberSaveableStateHolder()
     var retentionDialog by remember { mutableStateOf(false) }
     var withdrawDialog by remember { mutableStateOf(false) }
-    BackHandler(enabled=languagePage) { languagePage=false }
+    BackHandler(enabled=languagePage || formatsPage || feedbackPage || aboutPage) {
+        when { aboutPage -> aboutPage=false
+            feedbackPage -> feedbackPage=false
+            formatsPage -> formatsPage=false
+            else -> languagePage=false }
+    }
     if(languagePage) {
         LanguageSelectionScreen(
             selectedLanguage=language,
             onBack={languagePage=false},
             onSelect={tag->if(language!=tag)onLanguage(tag)},
         )
+        return
+    }
+    if(formatsPage) {
+        FormatsScreen(supportedFormats,supportedTextFormats,catalogLoading,catalogProgress,
+            onBack={formatsPage=false})
+        return
+    }
+    if(feedbackPage){
+        pageState.SaveableStateProvider("feedback-form") {
+            FeedbackScreen(onBack={feedbackPage=false},onSend=onFeedbackSubmit)
+        }
+        return
+    }
+    if(aboutPage){
+        AboutScreen(onBack={aboutPage=false},onExternalLink=onExternalLink,
+            onLegalLink=onLegalLink)
         return
     }
     Column(
@@ -88,6 +122,40 @@ fun FunctionalSettingsPanel(
                 }
                 Icon(Icons.Outlined.ChevronRight,
                     stringResource(R.string.language_title),tint=MutedText)
+            }
+        }
+        SettingsCard {
+            Row(
+                modifier=Modifier.fillMaxWidth().testTag("settings_formats_entry")
+                    .clickable{formatsPage=true}.padding(vertical=5.dp),
+                verticalAlignment=Alignment.CenterVertically,
+            ) {
+                Icon(Icons.Outlined.Code,null,tint=TitleText,modifier=Modifier.size(25.dp))
+                Spacer(Modifier.width(13.dp))
+                Column(modifier=Modifier.weight(1f),
+                    verticalArrangement=Arrangement.spacedBy(4.dp)) {
+                    Text(stringResource(R.string.settings_formats_title),
+                        color=TitleText,fontWeight=FontWeight.SemiBold,fontSize=16.sp)
+                    Text(stringResource(R.string.settings_formats_detail),
+                        color=MutedText,fontSize=13.sp)
+                }
+                Icon(Icons.Outlined.ChevronRight,
+                    stringResource(R.string.settings_formats_title),tint=MutedText)
+            }
+        }
+        if(BuildConfig.SPDECODE_CLOUD_ENABLED) SettingsCard {
+            Row(Modifier.fillMaxWidth().testTag("settings_feedback_entry")
+                    .clickable{feedbackPage=true}.padding(vertical=5.dp),
+                verticalAlignment=Alignment.CenterVertically){
+                Icon(Icons.Outlined.Feedback,null,tint=TitleText,modifier=Modifier.size(25.dp))
+                Spacer(Modifier.width(13.dp))
+                Column(Modifier.weight(1f)){
+                    Text(stringResource(R.string.feedback_title),color=TitleText,
+                        fontWeight=FontWeight.SemiBold,fontSize=16.sp)
+                    Text(stringResource(R.string.feedback_settings_detail),
+                        color=MutedText,fontSize=13.sp)
+                }
+                Icon(Icons.Outlined.ChevronRight,null,tint=MutedText)
             }
         }
         SettingsCard{
@@ -145,24 +213,10 @@ fun FunctionalSettingsPanel(
                 Spacer(Modifier.width(8.dp))
                 Text(stringResource(R.string.delete_session))
             }
-        }
-        if(BuildConfig.SPDECODE_CLOUD_ENABLED) SettingsCard {
-            Row(verticalAlignment=Alignment.CenterVertically) {
-                Icon(Icons.Outlined.Lock,null,tint=TitleText)
-                Spacer(Modifier.width(10.dp))
-                Text(stringResource(R.string.cloud_legal_title),color=TitleText,
-                    fontWeight=FontWeight.SemiBold,fontSize=17.sp)
-            }
-            OutlinedButton(onClick={onLegalLink("terms")},
-                modifier=Modifier.fillMaxWidth()) {
-                Text(stringResource(R.string.cloud_legal_terms))
-            }
-            OutlinedButton(onClick={onLegalLink("privacy")},
-                modifier=Modifier.fillMaxWidth()) {
-                Text(stringResource(R.string.cloud_legal_privacy))
-            }
-            OutlinedButton(onClick={withdrawDialog=true},
-                modifier=Modifier.fillMaxWidth()) {
+            // Consent withdrawal remains accessible without duplicating legal links.
+            if(BuildConfig.SPDECODE_CLOUD_ENABLED) OutlinedButton(
+                onClick={withdrawDialog=true},modifier=Modifier.fillMaxWidth()
+            ) {
                 Text(stringResource(R.string.cloud_legal_withdraw))
             }
         }
@@ -213,42 +267,24 @@ fun FunctionalSettingsPanel(
                 Text(stringResource(R.string.guide_replay))
             }
         }
+        // One entry only: version and developer credits live in AboutScreen.
         SettingsCard {
-            Row(verticalAlignment=Alignment.CenterVertically) {
-                Icon(Icons.Outlined.Info,null,tint=TitleText)
-                Spacer(Modifier.width(10.dp))
-                Text(stringResource(R.string.about_title),color=TitleText,
-                    fontWeight=FontWeight.SemiBold,fontSize=17.sp)
+            Row(
+                modifier=Modifier.fillMaxWidth().testTag("settings_about_entry")
+                    .clickable{aboutPage=true}.padding(vertical=5.dp),
+                verticalAlignment=Alignment.CenterVertically,
+            ){
+                Icon(Icons.Outlined.Info,null,tint=TitleText,
+                    modifier=Modifier.size(25.dp))
+                Spacer(Modifier.width(13.dp))
+                Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(4.dp)){
+                    Text(stringResource(R.string.about_title),color=TitleText,
+                        fontWeight=FontWeight.SemiBold,fontSize=16.sp)
+                    Text(stringResource(R.string.about_screen_entry_detail),
+                        color=MutedText,fontSize=13.sp)
+                }
+                Icon(Icons.Outlined.ChevronRight,null,tint=MutedText)
             }
-            Text(stringResource(R.string.settings_version,BuildConfig.VERSION_NAME),
-                color=TitleText,fontSize=15.sp)
-            Text(stringResource(R.string.settings_build_code,BuildConfig.VERSION_CODE),
-                color=MutedText,fontSize=12.sp)
-            Text(stringResource(R.string.settings_security_offline),
-                color=MutedText,fontSize=13.sp,lineHeight=19.sp)
-            Text(stringResource(R.string.about_text),color=MutedText,
-                fontSize=12.sp,lineHeight=18.sp)
-        }
-        SettingsCard{
-            Row(verticalAlignment=Alignment.CenterVertically){
-                Icon(Icons.Outlined.PersonOutline,null,tint=TitleText)
-                Spacer(Modifier.width(10.dp))
-                Text(stringResource(R.string.developer_credits),color=TitleText,
-                    fontWeight=FontWeight.SemiBold,fontSize=17.sp)
-            }
-            Text("Ghost Developer",color=TitleText,fontSize=16.sp,
-                fontWeight=FontWeight.SemiBold)
-            Text(stringResource(R.string.contribute_invitation),
-                color=MutedText,fontSize=13.sp,lineHeight=19.sp)
-            LinkRow(Icons.Outlined.AccountCircle,
-                stringResource(R.string.contact_developer),
-                "https://t.me/Gh0stDeveloper",onExternalLink)
-            LinkRow(Icons.Outlined.Groups,
-                stringResource(R.string.telegram_group),
-                "https://t.me/CodeBreakersHub",onExternalLink)
-            LinkRow(Icons.Outlined.Campaign,
-                stringResource(R.string.telegram_channel),
-                "https://t.me/GhostDeve",onExternalLink)
         }
         Spacer(Modifier.height(6.dp))
     }
@@ -328,23 +364,5 @@ fun FunctionalSettingsPanel(
     ) {
         Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(12.dp),
             content=content)
-    }
-}
-@Composable private fun LinkRow(
-    icon:androidx.compose.ui.graphics.vector.ImageVector,
-    text:String,url:String,onExternalLink:(String)->Unit
-){
-    Surface(
-        modifier=Modifier.fillMaxWidth().clickable{onExternalLink(url)},
-        color=Pane,shape=RoundedCornerShape(8.dp)
-    ){
-        Row(Modifier.fillMaxWidth().padding(vertical=9.dp),
-            verticalAlignment=Alignment.CenterVertically){
-            Icon(icon,null,tint=MutedText,modifier=Modifier.size(20.dp))
-            Spacer(Modifier.width(12.dp))
-            Text(text,color=TitleText,modifier=Modifier.weight(1f),fontSize=13.sp)
-            Icon(Icons.Outlined.OpenInNew,null,tint=MutedText,
-                modifier=Modifier.size(18.dp))
-        }
     }
 }

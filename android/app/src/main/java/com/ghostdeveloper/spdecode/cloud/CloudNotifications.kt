@@ -20,6 +20,25 @@ import com.ghostdeveloper.spdecode.R
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CancellationException
 
+/** Subscription policy: never replay notices published before user opt-in.
+ * Convert local opt-in elapsed time to the trusted server clock at first sync;
+ * device clock offset cancels, including incorrectly configured time zones.
+ */
+internal object NoticeSubscriptionPolicy {
+    const val MAX_ALERTS_PER_SYNC=3
+    private const val MAX_LOOKBACK=7L*24*60*60*1000
+    fun cutoff(serverTime:Long,enabledAtWall:Long,deviceTime:Long):Long {
+        require(serverTime>0)
+        val elapsed=if(enabledAtWall>0)
+            (deviceTime-enabledAtWall).coerceIn(0L,MAX_LOOKBACK) else 0L
+        return serverTime-elapsed
+    }
+    fun eligible(createdAt:Long,expiresAt:Long,serverTime:Long,cutoff:Long):Boolean =
+        createdAt>=cutoff && createdAt<=serverTime+5000L &&
+            createdAt>=serverTime-MAX_LOOKBACK && expiresAt>serverTime &&
+            expiresAt<=createdAt+MAX_LOOKBACK
+}
+
 /** Optional push implementation is installed only by the Cloud source set. */
 internal object CloudNoticePush {
     var configure:(Context,Boolean)->Unit={_,_->}
@@ -64,7 +83,18 @@ internal object CloudNotifications {
         Manifest.permission.POST_NOTIFICATIONS)==PackageManager.PERMISSION_GRANTED
     fun setEnabled(c:Context,value:Boolean) {
         if(value && (!CloudLegalConsent.accepted(c)||!allowed(c)))return
-        prefs(c).edit().putBoolean("enabled",value).apply()
+        val preferences=prefs(c)
+        val wasEnabled=preferences.getBoolean("enabled",false)
+        val edit=preferences.edit().putBoolean("enabled",value)
+        if(value && !wasEnabled) {
+            // Persist before subscription, WorkManager and FCM can fetch.
+            edit.putLong("opt_in_at_wall",System.currentTimeMillis())
+                .remove("eligible_since_server")
+        } else if(!value) {
+            // Re-subscribing never resurrects stale notices.
+            edit.remove("opt_in_at_wall").remove("eligible_since_server")
+        }
+        edit.commit()
         CloudNoticePush.configure(c,value)
         if(value) {ensureScheduled(c);enqueue(c)} else {
             WorkManager.getInstance(c).cancelUniqueWork(PERIODIC)
@@ -96,28 +126,74 @@ internal object CloudNotifications {
         if(!manager.areNotificationsEnabled())return
         ensureSoundChannel(c)
         val list=body.getJSONArray("notices");require(list.length()<=20)
-        val seen=prefs(c).getStringSet("seen",emptySet()).orEmpty().toMutableSet()
-        val now=System.currentTimeMillis()
-        for(i in 0 until list.length()) {
-            val n=list.getJSONObject(i);val id=n.getString("id")
-            val title=n.getString("title");val text=n.getString("body")
-            val created=n.getLong("createdAt");val expiry=n.getLong("expiresAt")
-            if(!id.matches(Regex("[0-9a-f-]{36}"))||id in seen||title.isBlank()||title.length>80||text.isBlank()||text.length>500||
-                created>now+5000||created<now-7*86400000L||expiry<=now||expiry>created+7*86400000L)continue
-            // Explicit immutable destination: no server-supplied deep links, intents or components.
-            val intent=Intent(c,MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-            val tap=PendingIntent.getActivity(c,0,intent,PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
-            val notice=NotificationCompat.Builder(c,CHANNEL).setSmallIcon(R.drawable.ic_service_notice)
-                .setContentTitle(title).setContentText(text).setStyle(NotificationCompat.BigTextStyle().bigText(text))
-                .setContentIntent(tap).setAutoCancel(true).setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
-                .setTimeoutAfter(expiry-now)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            // Below Android 8 no channel exists, so attach the same sound.
-            if(Build.VERSION.SDK_INT<26)notice.setSound(notificationSound(c))
-            try {manager.notify(id,0,notice.build());seen.add(id)}catch(_:SecurityException){return}
+        // A missing server timestamp fails closed: older servers cannot safely
+        // distinguish published-before-opt-in from newly published notices.
+        val serverTime=body.optLong("serverTime",0L)
+        if(serverTime<=0L)return
+        val preferences=prefs(c)
+        var cutoff=preferences.getLong("eligible_since_server",0L)
+        if(cutoff<=0L) {
+            // Older installations migrated from the legacy no-cutoff client
+            // intentionally discard their first backlog; new opt-ins keep
+            // notices created after the opt-in even before their first sync.
+            cutoff=NoticeSubscriptionPolicy.cutoff(serverTime,
+                preferences.getLong("opt_in_at_wall",0L),System.currentTimeMillis())
+            preferences.edit().putLong("eligible_since_server",cutoff).commit()
         }
-        val retained=(0 until list.length()).map {list.getJSONObject(it).getString("id")}.toSet()
-        prefs(c).edit().putStringSet("seen",seen.intersect(retained)).apply()
+        val seen=preferences.getStringSet("seen",emptySet()).orEmpty().toMutableSet()
+        val eligible=mutableListOf<org.json.JSONObject>()
+        val retained=mutableSetOf<String>()
+        for(i in 0 until list.length()) {
+            val n=list.getJSONObject(i)
+            val id=n.optString("id")
+            retained.add(id)
+            val title=n.optString("title");val text=n.optString("body")
+            val created=n.optLong("createdAt",0L);val expiry=n.optLong("expiresAt",0L)
+            val type=n.optString("type","general")
+            val importance=n.optString("importance","normal")
+            val delivery=n.optString("delivery","push")
+            if(!id.matches(Regex("[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}")) ||
+                id in seen || title.isBlank() || title.length>80 || text.isBlank() || text.length>500 ||
+                type !in setOf("general","update","maintenance","catalog","security") ||
+                importance !in setOf("normal","important") ||
+                delivery !in setOf("push","poll") ||
+                !NoticeSubscriptionPolicy.eligible(created,expiry,serverTime,cutoff))continue
+            eligible.add(n)
+        }
+        // Never create a notification storm after a long time offline.
+        // Important notices take precedence, then most recent publication.
+        val sorted=eligible.sortedWith(
+            compareByDescending<org.json.JSONObject>{it.optString("importance")=="important"}
+                .thenByDescending{it.optLong("createdAt")})
+        for((index,n) in sorted.withIndex()) {
+            val id=n.getString("id")
+            if(index>=NoticeSubscriptionPolicy.MAX_ALERTS_PER_SYNC) {
+                // Mark omitted older notices processed so they do not flood
+                // subsequent reconnects. Admin history remains available.
+                seen.add(id)
+                continue
+            }
+            val title=n.getString("title");val text=n.getString("body")
+            val expiry=n.getLong("expiresAt")
+            val intent=Intent(c,MainActivity::class.java)
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            val tap=PendingIntent.getActivity(c,0,intent,
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+            val notification=NotificationCompat.Builder(c,CHANNEL)
+                .setSmallIcon(R.drawable.ic_service_notice)
+                .setContentTitle(title).setContentText(text)
+                .setStyle(NotificationCompat.BigTextStyle().bigText(text))
+                .setContentIntent(tap).setAutoCancel(true)
+                .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
+                .setTimeoutAfter(expiry-serverTime)
+                .setPriority(if(n.optString("importance")=="important")
+                    NotificationCompat.PRIORITY_HIGH else NotificationCompat.PRIORITY_DEFAULT)
+            // Android 8+ notification channel preferences always take precedence.
+            if(Build.VERSION.SDK_INT<26)notification.setSound(notificationSound(c))
+            try {manager.notify(id,0,notification.build());seen.add(id)}
+            catch(_:SecurityException){break}
+        }
+        preferences.edit().putStringSet("seen",seen.intersect(retained)).apply()
     }
 }
 

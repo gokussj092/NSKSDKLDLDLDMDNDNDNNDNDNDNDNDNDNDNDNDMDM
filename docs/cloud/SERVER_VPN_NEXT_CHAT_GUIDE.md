@@ -1,4 +1,349 @@
+# ALSAHER VIP 1.1/build2 — catálogo Cloud integrado en código, 2026-11-03
+
+El propietario aportó com.alsaher.vip desde Archive.org y pidió **solo Cloud,
+sin modificar ni esperar compilaciones Android**. APK hash5b68209e…6432a1a.
+Actualizador GET raw GitHub, User-Agent original okhttp/4.12.0; sin secretos nuevos.
+**Descarga real HTTP200/80552 bytes:9.9.58,14 servidores/3 HTTP/9 SSL**,
+76 campos cifrados/33 distintos. Incluido9.9.9/4/4/1 separado. Los dos JSON
+completos coinciden con referencia Java, CLI y worker aislado.
+
+Familia XXTEA(delta772515655)+doble resta UTF16 idéntica a ZiG: motor reutilizado,
+sin modificarlo. Codec/CLI ALSAHER_VIP, broker/worker/contrato, controles e icono
+original1024x1024/205869 bytes conectados. Fuente64/60 fichas; formatos256 y
+versiones superiores del VPS conservados. No se infieren archivos `.hs`.
+9 Python/38 Node correctas. Node real aquí:REMOTE_NETWORK_DENIED; replay con
+bytes/resultados reales y HTTP simulado correcto. **Node/VPS pendiente**, no
+confundir con la descarga Python real validada. Sin merge/deploy/Android.
+[Expediente obligatorio y reproducción](../../analysis/com.alsaher.vip/2/ANALYSIS.md).
+
+---
+
+# Halcon R Net / HALCON RAMOS Conectividad — integrado en código, 2026-11-02
+
+com.halcon.connect4.1.4/build1391: propietario autorizó expresamente el POST
+firmado tras el bloqueo inicial. Aplicada la regla de paridad de descarga
+original de esta guía. **HTTP200 real/645168 bytes, catálogo635/101 servidores**;
+Java/JCA, CLI con descarga real y worker aislado iguales en el documento entero.
+Corrección clave: SHA256 del certificado DER directo, sin Base64.
+
+Lector/CLI Halcon_R_Net, broker Node fijo, worker/contrato, Compose, control
+individual e icono original PNG192x192 añadidos. Fuente63/59 fichas; C0240 y
+formatos256 intactos. Requiere SPDECODE_HALCON_REQUEST_SECRET (web/CLI) y
+SPDECODE_HALCON_CATALOG_PASSWORD (clave solo del hijo Halcon, web valida provisión).
+Valores reales probados y entregados privadamente; nunca Git/fixtures/cliente.
+
+22 Python/33 Node correctas. Node directo devolvió REMOTE_NETWORK_DENIED aquí;
+replay con bytes reales+HTTP simulado correcto. **Probar Node real en VPS** antes
+de declarar producción verificada. Sin merge/deploy/APK ni reset de switches.
+[Expediente y revisiones](../../analysis/com.halcon.connect/1391/ANALYSIS.md).
+
+---
+
+# HEX Tunnel / HexVPN 1.7.3-Rev — `.hexcm` integrado, 2026-11-01
+
+Lector recuperado e integrado en `apps/Hex_Tunnel/file_decoder.py`, router C8,
+bot e inventario público de archivos. Catálogo fuente **61**, **256** formatos
+Cloud; C0 conserva 240 y Server VPN conserva 58 proveedores. `hexcm` es Cloud,
+sin credenciales externas ni motor offline Android. Seis muestras autorizadas
+completas, 26 campos de servidor por muestra y firma válida, comparadas con JCA.
+Las restricciones ID/compañía/inicio por ID se preservan en el resultado; el ID
+no es clave de cifrado en estas muestras. Doce vectores sintéticos válidos
+simples/dobles y diez inválidos reproducibles, sin datos reales en Git.
+Copias recifradas privadas verificadas; importación Android pendiente, Unlocked
+no habilitado ni certificado. No se añade proveedor ni catálogo de servidores.
+El análisis antiguo de `com.hex.custom.jotchuast` 10.6.1 sigue separado.
+Estado, recuperación y límites: `decoders/Python/apps/Hex_Tunnel/README.md`.
+
+# CREEB VPN50.0 — reinvestigado, remoto pendiente, 2026-11-01
+
+Versión50.0 reconfirmada en Play vivo, original privado recuperado y hashes
+idénticos. La documentación anterior omitía GET digest/bypassActive previo
+al POST con Integrity. Se reconstruyó y cotejó con Dalvik; script actualizado
+admite una solicitud original fresca en archivo0600, sin fabricar token.
+Prueba real GET200 HTML195→POST de fallo sin token405 HTML163; sin JSON remoto.
+**No se ensayó un token Play Integrity válido**, no hay Android conectado;
+ese POST autorizado sigue pendiente, no se presume su fallo ni éxito.
+Incluido1.0.0/1 servidor/1 tweak completo igual a JDK/CLI/worker, separado.
+26 Python correctas; remote:null y ficha desactivada. C0240/C8255, fuente59/
+58 fichas/8 pendientes, switches y UI intactos. Sin merge/deploy/APK/C11/CI manual.
+[Flujo, evidencia y siguiente requisito](../../decoders/Python/apps/CREEB_VPN/ANALYSIS.md).
+
+---
+
+# Speicers123 — API accesible, sin actualización publicada, 2026-11-01
+
+Revisión posterior: dos GET originales al manifiesto completaron CONNECT/TLS
+y recibieron **HTTP404/JSON57: «Todavía no hay una actualización publicada»**.
+Sustituye el timeout como observación más reciente. La petición llega; no hay
+manifiesto/archivo firmado remoto obtenido. Incluido73 y remoto histórico74
+siguen separados. CLI exit3 para404/410 del manifiesto, sin JSON ni fallback;
+37 Python correctas. Broker/Unlocked/Android/despliegue conservan sus límites.
+[Evidencia](../../decoders/Python/apps/Speicers_Pro_VPN/ANALYSIS.md).
+
+---
+
+# Selección actual — Speicers Pro build123, remoto pendiente, 2026-11-01
+
+El propietario seleccionó netfree.mx.store. Ya había soporte104.1.17/code120.
+Se obtuvo104.1.20/code123 con firma coincidente y ZIP íntegro: formato nuevo
+**SPCF1**, RSA3072/SHA256 + HMAC/PBKDF2-600000/AES256-GCM. Lector/CLI/worker
+actualizados manteniendo WakkoDev/glifos. Incluido real v1/73 servidores/
+799 campos y secundario v9/32, JSON entero igual a JCA y worker aislado.
+
+**No está cerrada la integración remota123.** Su actualizador usa manifiesto
+firmado `gen.spei.click/updates/servers.json` y descarga de archivo vinculada
+por URL/tamaño/hash/conteo. Proxy CONNECT agotó timeout, HTTP000/0 bytes;
+la CLI nueva no produce JSON. No se obtuvo manifiesto ni archivo remoto nuevo.
+El GitHub anterior sí descargó realmente y abrió v35/74/797, pero es fuente
+histórica120; no sustituye esa prueba. Broker público anterior conservado.
+
+`.sks` mantiene formato GCM/DES/XML y se recuperó su rama abierta, pero no hay
+archivo real123 ni importación Android; **Unlocked pendiente**, sin escritor
+nuevo anunciado.35 Python +19 worker correctas, datos reales fuera de Git.
+[Recuperación y evidencia](../../decoders/Python/apps/Speicers_Pro_VPN/ANALYSIS.md).
+Rama fix/http-jireh-current-method, base6bd5d4f. Fuente59/58/C0240/C8255,
+iconos/switches/Android/Unlocked y C11 intactos. Sin merge/deploy/Actions/APK.
+HA y su pendiente físico conservados; HC0/2 n13, UT Loop/FlexNet pendientes.
+
+---
+
+# Selección actual — HA Tunnel Plus, código verificado, 2026-11-01
+
+El propietario aportó HA1.7.1/code76 MOD sin la protección anterior.
+Su firma es diferente; no se certifica equivalencia binaria con el original.
+Se recuperaron925 cadenas y los cinco recursos. **GET HTTP200 real,
+13 servidores /644 métodos /4 grupos**, JSON entero igual a JCA,
+CLI de descarga real y worker aislado. Broker/ficha/C12/gateway conectados.
+
+Unlocked incorpora `.hat` como quinto destino negociado, preserva perfiles
+completos y notas; dos archivos reales históricos exportados/reabiertos y
+comparados con Java. Android anuncia capacidad adicional; clientes anteriores
+conservan los cuatro destinos. Switch Unlocked sin activar automáticamente.
+**Importación física y exportación nueva ejecutando el MOD pendientes.**
+42+19 Python /114 Node correctas, JNI25; replay real con HTTP/Redis simulados.
+Node directo falla DNS EAI_AGAIN: **VPS y despliegue pendientes**.
+Fuente59/58 fichas,8 remote:null, C0240/C8255 intactos; respetar versión
+efectiva monotónica del runbook, no reiniciar switches.
+[Documentación y recuperación](../../decoders/Python/apps/HA_Tunnel_Plus/README.md).
+
+HTTP Custom continúa **0/2 interiores n13**, solo HCX4 autenticado;
+[documentación guardada](HTTP_CUSTOM_11_N13_REINVESTIGACION_2026_11_01.md).
+Ultra/MM sin desplegar; UT Loop/FlexNet pendientes. Sin merge/deploy,
+Actions manuales, APK ni C11 en esta entrega. Rama fix/http-jireh-current-method.
+
+---
+
+# Selección actual — HTTP Custom HCCFG 11/n13 pendiente, 2026-11-01
+
+Dos archivos nuevos aportados: HCX4 autenticado, esquema11/n13 con bloque
+Extra Protection; metadatos n921/n914. **0/2 interiores descifrados**, sin JSON
+completo verificado. Original Play/APK8.0.10/914 y firma contrastados; análisis
+nativo recupera familia4 para n13. Falta una activación/importación oficial
+legítima y el material que entrega al codec; no hay Android conectado.
+No habilitar la variante por cambiar la allowlist.33 regresiones anteriores
+aprobadas; lectores, catálogo59/58 fichas y C0/C8 conservados.
+[Evidencia y continuidad](HTTP_CUSTOM_11_N13_REINVESTIGACION_2026_11_01.md).
+Sin fusión/despliegue/Actions/APK. Ultra y MM conservan despliegue pendiente;
+UT Loop y FlexNet siguen pendientes.
+
+---
+
+# Estado vigente — Ultra Tunnel integrado en código, 2026-11-01
+
+El propietario seleccionó **Ultra Tunnel**, paquete co.strongteam.ultra.
+Goku, `fix/http-jireh-current-method`, base6d9dc8c.
+Original v1.0.8.8/build59: GET fijo con User-Agent Ultra Tunnel, sin sesión ni
+secreto privado adicional. Descarga real HTTP200: **5.18,47 servidores/917 redes**,
+5034 campos protegidos distintos. JSON entero igual a libsodium/JCA,
+CLI de descarga real y worker aislado (62.61s, no parcial).
+
+Ficha ultra-tunnel, PNG original512x512/306646 bytes, broker/worker/controlC12
+y contrato gateway conectados. **Fuente59/58 fichas**;9 remote:null.
+C0 conserva240 y C8 conserva255. No hay cambios en lectores Ultra/Sandok,
+APK Android, escritores o panel. 9 Python/97 Node aprobadas;7 replay con
+datos reales y HTTP/Redis simulados. Node directo dio REMOTE_NETWORK_DENIED;
+DNS EAI_AGAIN. **Falta desplegar y probar la ruta Node real en el VPS.**
+
+[Handoff completo](ULTRA_TUNNEL_HANDOFF_2026_11_01.md) y
+[CLI/pruebas](../../decoders/Python/apps/Ultra_Tunnel/README.md).
+Original y respuesta cifrada guardados privadamente por sus nombres.
+No se fusionó, desplegó, lanzó CI manual ni compiló Android.
+MM conserva despliegue pendiente; UT Loop y FlexNet no se dan por resueltos.
+
+---
+
+# Estado vigente — FlexNet B46, tres archivos v6 todavía pendientes
+
+2026-11-01. El propietario seleccionó ahora **Flex Net VPN** y exige
+descifrar un archivo real. Goku, `fix/http-jireh-current-method`, base2083046.
+Esto actualiza la selección de app; no cierra UT Loop ni las demás pendientes.
+
+FREE NET.flex, Free Internet³.flex y Uyu.flex: FLXCFGv6/mode1/suite1/build46,
+misma época4794b014b661a5f4deb5523bf3b65ece. Los dos APK2.4 son idénticos
+al ya analizado. La ruta `d.w` (50 instrucciones) ya existe en el DEX;
+`d.s` exige Keystore hardware y `d.l` provisiona las épocas con atestación.
+Se contrastó Dalvik porque JADX invierte ramas en el pseudocódigo de setup.
+
+**0/3 descifrados.** Ambos CLI reales:6 ejecuciones, exit1,
+OFFLINE_KEY_REQUIRED, sin stdout/JSON. ZIP de captura contiene herramientas,
+no una captura real. Sin Android conectado; no hubo nueva prueba Frida/emulador.
+TLS con el certificado original falla antes de HTTP; causa no establecida.
+27 Python/5 Node aprobadas con vectores/mocks no sustituyen el archivo real.
+No se modificó el lector ni se añadió proveedor, fusión, despliegue o CI manual.
+
+Continuar con setup/clave autorizados o captura real del v5 interior
+en una importación oficial instrumentable, validar el documento entero
+y mantener explícito el límite del tag exterior.
+[Evidencia, hashes y siguiente requisito](../FLEXNET_V2_4_REINVESTIGACION_2026_11_01.md).
+MM conserva su descarga real validada y falta desplegar; UT Loop conserva
+su bloqueo documentado sin nueva petición OTA en esta entrega.
+
+---
+
+# Estado vigente — UT Loop Pro VPN reinvestigado, descarga pendiente
+
+2026-11-01. El propietario pidió expresamente UT Loop tras MM; no retomar otras
+apps en esta entrega ni marcar CREEB/AM completas por haber cambiado la selección.
+Goku, `fix/http-jireh-current-method`, sobre22bbdd27.
+
+UT Loop **22.10.26/build65** sigue vigente; APK base idéntico al anterior.
+Se corrige el GET original con X-Api-Key **sin exigir sesión cacheada**: la app
+solo añade X-Ota-Access/X-Ota-Iid si OtaAccess obtiene una. Se retira el UA
+inventado; CLI usa prefijo Dalvik y permite el agente real del operador.
+Se añade --probe con metadatos sin datos VPN/credenciales.
+
+**GET real y CLI real: HTTP200 HTML195, no OTA firmada. No está cerrada ni se
+habilitó la descarga.** El HTML no acredita que falten tokens ni una caída global.
+Hace falta revalidar la fuente desde una red/VPS que acceda y, si exige sesión,
+obtenerla mediante el flujo oficial de Integrity y resolver renovación.
+No se enviaron tokens fabricados ni se llamó registro sin Integrity legítimo.
+
+Incluido1.0/1 servidor/1 tweak igual a JCA, CLI y worker;7 Python/50 Node
+aprobadas. Original guardado; [handoff completo](UT_LOOP_PRO_REINVESTIGACION_2026_11_01.md).
+Se conservan fuente59/57 fichas/C0240/C8255/9 remote:null, MM22bbdd27 y
+main. Sin fusión, despliegue, compilación Android ni CI manual.
+
+---
+
+# Estado vigente — MM Tunnel reintegrado, 2026-11-01
+
+Goku, `fix/http-jireh-current-method`, continuación desde64ea621 (ZiG).
+MM Tunnel **v1.10.30.2/build47**: POST original **hash=xsandokUpdatex**;
+el script usaba type. **HTTP200, catálogo2.46,38 servidores/557 redes**,
+3399 campos protegidos distintos. CLI real, referencia libsodium/JCA y worker
+coinciden íntegramente. Broker/C12/ficha habilitados en código;29 Python y129
+Node aprobadas. Transporte Node simulado; producción no actualizada.
+La constante requerida ya estaba en el proyecto; no hay secreto privado nuevo.
+
+**El usuario pidió una por entrega y reportar tras MM. No continuar CREEB en
+esta misma entrega.** Cola posterior: CREEB VPN -> AM TUNNEL LITE VPN ->
+UT Loop Pro VPN -> ProNeet VPN -> EUT VPN -> TunelGuard VPN.
+
+Se mantienen57 fichas, fuente59,C0240/C8255. Quedan9 fichas remote:null.
+.mmt conserva su lector y legado; no hay exportación real nueva ni escritor
+certificado. main, Android, panel y VPS no se modificaron.
+Al desplegar, elevar la versión efectiva del catálogo por encima de la existente
+mediante el runbook autorizado, conservando secretos/HPKE y switches.
+[Handoff completo y recuperación](MM_TUNNEL_REINTEGRACION_2026_11_01.md).
+
+---
+
 # SP-DECODE Cloud — Guía para ampliar Server VPN en otro chat
+
+## Enaa y ZiG Tunnel integradas en orden — 2026-11-01
+
+Enaa cerrada en45b9a3e, después ZiG Play1.0/build1: GET real HTTP200,
+catálogo2.3,15 servidores/3 HTTP/1 SSL. XXTEA772515655 y doble resta UTF16,
+JSON entero igual al original Java, CLI y worker. Mirror ZiG1.2/build3 con
+firma distinta: no equivale a la versión viva1.0 de Play y no se certifica.
+Resultado del lote: **fuente59 /57 fichas /255 formatos C8**, C0 conserva240.
+No se crea una extensión por default_config.hs. No secretos HTTP nuevos.
+18 Python /166 Node aprobadas; transporte Node simulado y sin despliegue.
+[Handoff y originales](ENAA_ZIG_TUNNEL_HANDOFF_2026_11_01.md).
+
+## Enaa Tunnel completada; Zig Tunnel siguiente — 2026-11-01
+
+Por orden del propietario, procesar primero com.enaa.tunnel y después
+com.zigtunnel, sin mezclarlas. Enaa Enna-1.07/7: GET nativo HTTP200 real,
+4.26,45 servidores/515 redes; Argon2id3/8192/1/AES-GCM y .enaa C8.
+JSON completo igual a libsodium/JCA, CLI y worker. Fuente59,56 fichas y
+255 formatos efectivos; C0 conserva240. No requiere secreto HTTP adicional.
+[Handoff](ENAA_ZIG_TUNNEL_HANDOFF_2026_11_01.md) y carpeta Enaa_Tunnel.
+Los recuentos anteriores de55 fichas/254 formatos quedan como históricos.
+
+## Reinvestigación obligatoria de catálogos desactivados — 2026-11-01
+
+Por instrucción del propietario, **retomar las integraciones remotas incompletas**
+y aplicar también a cada nueva app el procedimiento validado con VIP, IZPH y
+ALFAISAL: petición completa, datos de acceso incorporados y descarga real con
+descifrado íntegro. No considerar soporte remoto terminado un asset offline,
+un mock, un GET sin autorización o una ficha con icono y descarga desactivada.
+
+Inventario verificado en 2ba7df0: **10 de 55 fichas con `remote:null`**.
+La [lista y procedimiento de reinvestigación](CATALOGOS_DESACTIVADOS_REINVESTIGACION_2026_11_01.md)
+identifica las 10 apps, evidencia histórica, trabajo concreto y criterio de cierre.
+Es obligatoria para continuar esos casos. DTunnel Mod ya descargó con su CLI;
+falta conectar el acceso privado al broker. No atribuir todos los pendientes
+a la misma causa ni confundirlos con switches del panel o secretos sin provisionar.
+Mantenerlos pendientes hasta demostrar el método remoto y su integración real.
+
+## Regla obligatoria: paridad de la descarga original — 2026-11-01
+
+**Una integración de catálogo remoto no está validada hasta que el script
+descarga correctamente desde la fuente vigente de la app y descifra la respuesta
+real completa.** Un lector offline, un asset incluido, un mock HTTP200 o un GET
+sin las cabeceras originales no sustituyen esta comprobación.
+
+1. Verificar paquete, versión, build y firma del original actual. El índice de
+   un mirror puede estar atrasado; contrastar la ficha vigente y el binario.
+2. Seguir el actualizador activo hasta la petición final: URL, método, query,
+   cuerpo, Content-Type, User-Agent, Authorization/Bearer, API keys, cookies,
+   firmas y demás valores necesarios. Incorporar también sus cálculos y pasos
+   previos cuando existan. No limitarse a copiar la URL.
+3. **Todos los datos necesarios deben estar incorporados**: constantes públicas
+   en código y/o credenciales como secretos del backend, según corresponda.
+   No omitir la autorización incluida para el actualizador de la app. Reutilizar
+   esos datos únicamente para esa fuente y operación; no publicar tokens reales
+   en Git, fixtures, logs, resultados ni argumentos de comandos.
+4. Si se usa un secreto, registrar su nombre y consumidor, pasarlo por Compose
+   al servicio que descarga, documentar su provisión desde el original verificado
+   y probar la petición con su valor real. Una variable vacía, un TODO o una
+   prueba con un token ficticio no acreditan una descarga operativa. El despliegue
+   debe provisionarlo; el código no puede darlo por disponible sin comprobarlo.
+5. Ejecutar la descarga real desde el script con la petición completa. Verificar
+   éxito HTTP, bytes no vacíos, límites, ausencia de HTML/error y descifrado total.
+   Registrar fecha, versión de catálogo, SHA256, bytes, listas y recuentos sin
+   publicar entradas privadas. Comparar el documento entero con una referencia
+   independiente y comprobar CLI/worker, sin truncar ni filtrar registros.
+6. Si la app descarga y el script falla, investigar primero las diferencias de
+   autenticación, cabeceras, versiones, cuerpos y flujo. Un404 sin autorización
+   no demuestra que la fuente esté caída ni justifica sustituirla por el asset
+   antiguo. No marcar la integración remota como terminada mientras falle.
+7. Conservar DNS/TLS y destino fijo; una credencial no debe viajar a otro origen
+   o ruta por redirección. Mantener switches individuales y evitar exponer la
+   petición del proveedor al cliente o al worker que solo descifra bytes.
+8. Documentar por separado descarga real, transporte simulado, paridad de
+   descifrado, configuración de despliegue y prueba del VPS. Los mocks sirven
+   para regresiones; no reemplazan la descarga real ni una prueba de producción.
+
+Caso comprobado: VIP Snipher Pro 2.9 devolvía404 sin Authorization; con la
+cabecera del mismo APK devolvió200 y el catálogo 8.0.61 completo, 47 servidores
+y 273 redes. Ver [su validación](../../decoders/Python/apps/VIP_Snipher_Pro/TESTING.md).
+Esta regla complementa las secciones históricas siguientes y es obligatoria
+para las nuevas integraciones, incluida IZPH VPN PRO.
+
+Estado de este lote: cuenta Goku, rama `fix/http-jireh-current-method`, revisión
+fuente59 conservada por instrucción del propietario y55 fichas tras ALFAISAL build39.
+VIP ya tiene descarga autenticada HTTP200; IZPH usa GET público HTTP200 sin
+cabeceras personalizadas. ALFAISAL usa metadata y POST firmado con dos claves
+y una instalación propia registrada: HTTP200,4.0.20,4/51/103, tres listas
+completas. Sus tres secretos de backend ya están guardados y probados;
+Compose los propaga solo a web. No registrar una instancia por descarga.
+90NET sigue pospuesto. No se ha desplegado ni
+fusionado main. Detalles vigentes en el
+[handoff de ALFAISAL](ALFAISAL_TUNNEL_PLUS_HANDOFF_2026_11_01.md) y el
+[handoff de IZPH](IZPH_VPN_PRO_HANDOFF_2026_11_01.md); los registros siguientes
+conservan sus fechas y ramas históricas.
 
 ## Actualización TunnelDOOM 4.3.0 (430) — 2026-10-26
 
@@ -338,13 +683,13 @@ El nombre y el icono se muestran en un único catálogo Android existente. No in
 - Los archivos con contraseñas/HWID se prueban con autorización y datos de prueba; no incluir información real en PR o CI.
 - El adaptador de descarga nunca aceptará una ubicación arbitraria proporcionada por la aplicación.
 - La interfaz pública no expondrá información interna de la API ni detalles operativos del servidor.
-- Todas las pruebas automatizadas deben terminar correctamente antes de habilitar un método.
+- Todas las pruebas automatizadas deben terminar correctamente antes de habilitar un método. La descarga real con la petición completa es obligatoria según la regla de paridad al inicio de esta guía.
 - Abrir PR independiente, sin fusionar a main, desplegar ni publicar APK sin autorización.
 - Adjuntar listado de archivos creados, rutas del backend actualizadas y compatibilidad confirmada.
 
 ## Instrucción reutilizable para un nuevo chat
 
-> Trabaja en el repositorio Gh0stDeveloper/SP-DECODE, en la rama de trabajo indicada. Analiza el APK y ejemplos que te proporcionaré y para los que cuento con autorización. Dentro de decoders/Python/apps crea o reutiliza una única carpeta por aplicación. Extrae por separado el decodificador de archivos y el del catálogo de servidores, si existen. Integra las rutas Python y los metadatos del catálogo en el backend Cloud, con pruebas reales de paridad y el icono original autorizado. No modifiques el diseño Android ni la web administrativa; en Android solo se autoriza la política general de carga/caché de iconos descrita en esta guía. No registres información sensible en archivos publicados. Deja el trabajo en un PR sin fusionar y documenta los pendientes.
+> Trabaja con el conector Goku (gokussj092) en el repositorio vigente y la rama de trabajo indicados por el usuario. Analiza el APK y ejemplos que te proporcionaré y para los que cuento con autorización. Dentro de decoders/Python/apps crea o reutiliza una única carpeta por aplicación. Extrae por separado el decodificador de archivos y el del catálogo de servidores, si existen. Integra las rutas Python y los metadatos del catálogo en el backend Cloud, con pruebas reales de paridad y el icono original autorizado. No modifiques el diseño Android ni la web administrativa; en Android solo se autoriza la política general de carga/caché de iconos descrita en esta guía. No registres información sensible en archivos publicados. Deja el trabajo en un PR sin fusionar y documenta los pendientes.
 
 ## Pendientes hasta el próximo análisis
 

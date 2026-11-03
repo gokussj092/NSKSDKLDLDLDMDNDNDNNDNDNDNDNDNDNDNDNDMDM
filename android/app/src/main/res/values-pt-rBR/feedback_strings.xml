@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feedback_title">Erros e sugestões</string>
+    <string name="feedback_settings_detail">Relate problemas ou solicite novos métodos de APK</string>
+    <string name="feedback_intro">Escolha o tipo de solicitação. Nada será enviado até tocar em Enviar.</string>
+    <string name="feedback_category">Tipo de solicitação</string>
+    <string name="feedback_category_method">Adicionar novo método de APK</string>
+    <string name="feedback_category_bug">Relatar erro</string>
+    <string name="feedback_category_suggestion">Sugerir melhoria</string>
+    <string name="feedback_method_help">Cole um link do Google Play, Uptodown ou outro provedor e explique o que deseja integrar.</string>
+    <string name="feedback_app_link">Link do aplicativo</string>
+    <string name="feedback_app_link_hint">https://play.google.com/store/apps/details?id=...</string>
+    <string name="feedback_bug_instruction">Marque todos os erros que ocorreram (pelo menos um).</string>
+    <string name="feedback_issue_decode">Falha ao descriptografar arquivos</string>
+    <string name="feedback_issue_catalog">Falha ao baixar catálogo VPN</string>
+    <string name="feedback_issue_import">Problema ao importar arquivos</string>
+    <string name="feedback_issue_export">Falha na exportação ou configuração desbloqueada</string>
+    <string name="feedback_issue_crash">O aplicativo fechou inesperadamente</string>
+    <string name="feedback_issue_cloud">Problema de acesso à nuvem ou servidor</string>
+    <string name="feedback_issue_other">Outro erro</string>
+    <string name="feedback_optional_report">Relatório adicional (opcional)</string>
+    <string name="feedback_description_required">O que deseja integrar ou melhorar?</string>
+    <string name="feedback_report_hint">Você pode descrever as etapas, mas isso não é obrigatório.</string>
+    <string name="feedback_description_hint">Explique o método, os arquivos, o catálogo ou a melhoria desejada.</string>
+    <string name="feedback_privacy_note">Não inclua senhas, chaves privadas, configurações decifradas ou registros sensíveis. Apenas os dados escolhidos serão enviados.</string>
+    <string name="feedback_error">Não foi possível enviar. Suas respostas foram preservadas.</string>
+    <string name="feedback_received">Solicitação recebida. Referência: %1$s</string>
+    <string name="feedback_send">Enviar solicitação</string>
+    <string name="feedback_sending">Enviando…</string>
+</resources>

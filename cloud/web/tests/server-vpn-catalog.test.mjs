@@ -8,15 +8,15 @@ import {POST as getIcon} from "../app/api/v1/server-vpn/icon/route.js";
 const body=(content)=>new Request("https://api.spdecode.xyz/api/v1/server-vpn/test",{
   method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(content),
 });
-test("HA Tunnel original PNG is available while its protected updater remains unverified",()=>{
+test("HA Tunnel original PNG and the validated fixed updater are available",()=>{
  const app=catalog({availability:{"ha-tunnel-plus":true}}).apps.find(x=>x.id==="ha-tunnel-plus");
- assert.equal(app.name,"HA Tunnel Plus");assert.equal(app.decodeEnabled,false);
+ assert.equal(app.name,"HA Tunnel Plus");assert.equal(app.decodeEnabled,true);
  assert.equal(app.iconSha256,"42aa9743f5d430933257f0023af2182f2dcc6ae41a8930a9ca38e9f397ac3ab8");
  assert.equal(iconFor(app.id).bytes.length,20416);
 });
 test("original provider PNGs match the public digest and never contain secrets",()=>{
  const values=catalog();assert.equal(values.catalogVersion,CATALOG_VERSION);
- assert.equal(RECHECK_SECONDS,900);assert.equal(values.apps.length,49);
+ assert.equal(RECHECK_SECONDS,900);assert.equal(values.apps.length,61);
  const ids=new Set();
  for(const app of values.apps) {
    assert(!ids.has(app.id));ids.add(app.id);
@@ -34,13 +34,31 @@ test("version match returns only a cheap unchanged response",async()=>{
  const data=await response.json();assert.equal(data.unchanged,true);
  assert.equal(data.catalogVersion,CATALOG_VERSION);assert(!("apps" in data));
 });
+test("current catalog still invalidates the release-57 Android catalog cache",async()=>{
+ const response=await list(body({knownVersion:57}));
+ assert.equal(response.status,200);
+ const data=await response.json();
+ assert.equal(data.unchanged,false);
+ assert.equal(data.catalogVersion,CATALOG_VERSION);
+ assert.equal(CATALOG_VERSION,65);
+ assert(data.apps.some(x=>x.id==="http-jireh"));
+ assert(data.apps.some(x=>x.id==="jyfast-vpn-ultra"));
+});
 test("new version returns catalog and invalid bodies fail closed",async()=>{
  const response=await list(body({knownVersion:0}));
  const data=await response.json();assert.equal(response.status,200);
- assert.equal(data.unchanged,false);assert.equal(data.apps.length,49);
+ assert.equal(data.unchanged,false);assert.equal(data.apps.length,61);
  for(const invalid of [{knownVersion:-1},{url:"http://127.0.0.1/"},{knownVersion:"1"}]) {
    assert.equal((await list(body(invalid))).status,400);
  }
+});
+test("Wolf catalog refreshes a release-58 cache with its original icon",async()=>{
+ const response=await list(body({knownVersion:58}));
+ const data=await response.json();
+ assert.equal(response.status,200);assert.equal(data.unchanged,false);
+ assert.equal(data.catalogVersion,CATALOG_VERSION);assert(CATALOG_VERSION>58);
+ assert.equal(data.apps.find(x=>x.id==="wolf-custom-vpn").iconSha256,
+   "4e403e8f44b840eadb67af9062d0b0455ffc88c37706bee4b949ca94513fa1c0");
 });
 test("only registered icon identifiers are served",async()=>{
  const found=await getIcon(body({id:"hx-tunnel"}));
@@ -54,7 +72,7 @@ test("only registered icon identifiers are served",async()=>{
 
 import {providerIds,providerEnabled,downloadVpnCatalog} from "../lib/server-vpn-provider.mjs";
 test("only fixed catalog providers are eligible for remote broker",async()=>{
-  assert.deepEqual(providerIds().sort(),["24clan-green","4u-tunnel-lite","7net-vpn","abowaged-vpn","ac-tunnel-vpn","any-vpn","apna-vpn","aura-net-vpn","austroplus-vpn","bd-net-vpn","focus-vpn-cloud","freedom-vpn","http-fenixvpn","http-internet-infinito","http-jireh","http-socketclay","http-wakko","hx-tunnel","ksh-vpn","megatunnel","mkk-hyper","mnr-tunnel-plus","mtm-tunnel-lite","mx-tunnel-pro","my-tunnel-proxy","onspace-vpn","rjc-tunnel-pro","rmp-tunnel-pro","robust-tunnel","speicers-pro-vpn","superflash-vpn","trv-tunnel","tunneldoom-vpn","tunneltweak","turbomx-vpn","tx-tunnel","v2ray-tunnel-plus","xhypher-tunnel-pro"]);
+  assert.deepEqual(providerIds().sort(),["24clan-green","4u-tunnel-lite","7net-vpn","abowaged-vpn","ac-tunnel-vpn","alfaisal-tunnel-plus","alsaher-vip","any-vpn","apna-vpn","aura-net-vpn","austroplus-vpn","bd-net-vpn","enaa-tunnel","fnf-tunnel-bd","focus-vpn-cloud","freedom-vpn","ha-tunnel-plus","halcon-r-net","http-fenixvpn","http-internet-infinito","http-jireh","http-socketclay","http-wakko","hx-tunnel","izph-vpn-pro","jyfast-vpn-ultra","ksh-vpn","megatunnel","mkk-hyper","mm-tunnel","mnr-tunnel-plus","mtm-tunnel-lite","mx-tunnel-pro","my-tunnel-proxy","netcol-vpn","onspace-vpn","rjc-tunnel-pro","rmp-tunnel-pro","robust-tunnel","speicers-pro-vpn","superflash-vpn","trv-tunnel","tunneldoom-vpn","tunneltweak","turbomx-vpn","tx-tunnel","ultra-tunnel","v2ray-tunnel-plus","vip-snipher-pro","wolf-custom-vpn","xhypher-tunnel-pro","zig-tunnel"]);
   for(const id of providerIds()) assert.equal(providerEnabled(id,{CLOUD_SERVER_VPN_ENABLED:"false"}),false);
   assert.equal(providerEnabled("https://attacker.invalid/",{CLOUD_SERVER_VPN_ENABLED:"true"}),false);
   await assert.rejects(()=>downloadVpnCatalog("https://attacker.invalid/"),{code:"UNSUPPORTED_FORMAT"});
@@ -290,14 +308,14 @@ test("CREEB VPN remains disabled even with global availability",()=>{
  assert.equal(app.iconSha256,createHash("sha256").update(iconFor("creeb-vpn").bytes).digest("hex"));
 });
 
-test("MM Tunnel keeps its original PNG and waits for an accepted remote POST",()=>{
+test("MM Tunnel keeps its original PNG and enables the validated hash POST",()=>{
  const app=catalog({availability:{"mm-tunnel":true}}).apps.find(x=>x.id==="mm-tunnel");
  assert.equal(app.name,"MM Tunnel");
  assert.equal(app.iconSha256,"be2bb0a69da20838aaa46c388ab898a33b84cab59ccdad7413b76eac21b7b211");
  assert.equal(iconFor("mm-tunnel").bytes.length,109337);
- assert.equal(app.decodeEnabled,false);
- assert.equal(providerEnabled("mm-tunnel",{CLOUD_SERVER_VPN_ENABLED:"true"}),false);
- assert(!providerIds().includes("mm-tunnel"));
+ assert.equal(app.decodeEnabled,true);
+ assert.equal(providerEnabled("mm-tunnel",{CLOUD_SERVER_VPN_ENABLED:"true"}),true);
+ assert(providerIds().includes("mm-tunnel"));
 });
 
 test("Tx original icon and verified fixed catalog follow individual availability",()=>{

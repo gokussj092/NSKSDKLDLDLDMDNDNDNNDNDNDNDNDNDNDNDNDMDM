@@ -110,6 +110,12 @@ internal object VaultBuildKey {
 val cloudOrigin=providers.environmentVariable("SPDECODE_CLOUD_API_BASE_URL").orNull.orEmpty().trim()
 val enableCloud=cloudOrigin.isNotEmpty()
 val enableQaBuild=providers.environmentVariable("SPDECODE_CLOUD_QA_BUILD").orNull=="true"
+// Play In-App Updates is an AAB-only compile-time feature, not a runtime switch.
+// Ordinary signed APKs (Telegram), legacy/QA builds and ownership proofs omit it.
+val enablePlayAab=providers.gradleProperty("spdecodePlayAab").orNull=="true"
+require(!enablePlayAab || (enableCloud && !enableQaBuild)) {
+    "Play update AAB requires a non-QA Cloud build"
+}
 require(!enableQaBuild || enableCloud) { "QA mode requires Cloud API" }
 if(enableCloud) {
     val parsed=URI(cloudOrigin)
@@ -134,6 +140,17 @@ if(providers.environmentVariable("SPDECODE_CLOUD_RELEASE").orNull=="true") {
 gradle.taskGraph.whenReady {
     val distributesRelease=allTasks.any { it.project==project &&
         it.name in setOf("assembleRelease","packageRelease","bundleRelease") }
+    val hasPlayBundle=allTasks.any { it.project==project && it.name=="bundleRelease" }
+    if(hasPlayBundle) require(enablePlayAab) {
+        "Every release AAB must enable -PspdecodePlayAab=true and be built separately"
+    }
+    if(enablePlayAab) {
+        require(hasPlayBundle &&
+            allTasks.none { it.project==project &&
+                it.name in setOf("assembleRelease","packageRelease") }) {
+            "Play AAB must be built separately: -PspdecodePlayAab=true :app:bundleRelease"
+        }
+    }
     if(distributesRelease) {
         require(enableCloud) { "Release distribution requires the Cloud-only source set" }
         require(!enableQaBuild) { "Release distribution must not enable the legacy QA launcher" }
@@ -159,7 +176,7 @@ val prepareQaSettingsSource = tasks.register("prepareQaSettingsSource") {
             original.indexOf(anchor) == original.lastIndexOf(anchor)) {
             "QA Settings injection anchor absent or ambiguous; do not ship a build"
         }
-        val source = original.replace("https://t.me/CodeBreakersHub", "https://t.me/+Ntu6EJMirrAwMzgx").replace(anchor,
+        val source = original.replace(anchor,
             (if(enableQaBuild) "        com.ghostdeveloper.spdecode.cloud.CloudQaSettingsCard()\n" else "") +
             "        com.ghostdeveloper.spdecode.cloud.DonationSettingsCard()\n" +
             "        com.ghostdeveloper.spdecode.cloud.NpvsIdentitySettings()\n" +
@@ -175,6 +192,7 @@ val cloudHistoryUiRoot = layout.buildDirectory.dir("generated/cloud-history-ui/j
 val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") {
     val originalRoot = layout.projectDirectory.dir("src/main/java/com/ghostdeveloper/spdecode")
     inputs.files(originalRoot.file("SpDecodeApp.kt"), originalRoot.file("MainActivity.kt"))
+    inputs.property("spdecodePlayAab",enablePlayAab)
     outputs.dir(cloudHistoryUiRoot)
     doLast {
         fun replaceOnce(source:String, old:String, replacement:String):String {
@@ -283,6 +301,12 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
                 }
             },""")
         var activity = originalRoot.file("MainActivity.kt").asFile.readText(Charsets.UTF_8)
+        // Global Cloud panel has two arguments, unlike the single-input legacy
+        // panel in the main source set. Adapt only the generated Cloud Activity.
+        // Never add an API endpoint, key or server policy to Kotlin.
+        activity = replaceOnce(activity,
+            """                onDecodeCloud={reference->decodeCloud("auto",reference)},""",
+            """                onDecodeCloud={provider,reference->decodeCloud(provider,reference)},""")
         // Only the Cloud artifact uses the verified downloadable text inventory.
         // Preserve C0's legacy fallback without leaking it into Cloud builds.
         activity = replaceOnce(activity,
@@ -295,11 +319,8 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
         activity = replaceOnce(activity,
             "                error=message,",
             "                error=message,\n                noticeOnly=messageIsCredentialNotice,")
-        // In Cloud builds, the Formats screen must display the last cached
-        // remote inventory regardless of the user's automatic-sync setting.
-        activity = replaceOnce(activity,
-            "if(newTab==2 && CloudCatalogUpdates.enabled(this@MainActivity))\n                        refreshServerVpn()",
-            "if(newTab==2)refreshServerVpn()")
+        // Navigation already uses the in-memory catalog snapshot. Do not add
+        // refresh hooks when generating Cloud UI sources.
         // Android 15/16: Cloud builds opt into edge-to-edge on older devices too.
         // The original C0 UI sources stay byte-for-byte unchanged.
         activity = replaceOnce(activity,
@@ -500,7 +521,7 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
             """                            Triple(ResultExport.ORIGINAL,R.string.original_option,Icons.Outlined.Code)
                         ).forEach""",
             """                        ).let { options ->
-                            if(copy || current.extension !in com.ghostdeveloper.spdecode.cloud.CompatibleExportArtifact.targets)
+                            if(copy || current.compatibleExport==null)
                                 options + Triple(ResultExport.ORIGINAL,R.string.original_option,Icons.Outlined.Code)
                             else options
                         }.forEach""")
@@ -515,23 +536,25 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
                 },
                 confirmButton={TextButton(onClick={dialog=null}){""")
 
+        // Refresh stays compact in APK; in Server VPN Cloud builds use the
+        // authenticated catalog-refresh component only for the full-size control.
         app = replaceOnce(app,
-            """            OutlinedButton(
-                onClick=onRefreshServerVpn,enabled=enableServerVpnRefresh,
-                modifier=Modifier.testTag("server_vpn_manual_refresh"),
-                contentPadding=PaddingValues(horizontal=12.dp,vertical=7.dp),
-            ) {
-                if(refreshingServerVpn) CircularProgressIndicator(
-                    modifier=Modifier.size(17.dp),strokeWidth=2.dp,color=White)
-                else Icon(Icons.Outlined.Refresh,null,tint=White,
-                    modifier=Modifier.size(17.dp))
-                Spacer(Modifier.width(6.dp))
-                Text(stringResource(if(refreshingServerVpn) R.string.catalog_checking
-                    else R.string.catalog_check_action),fontSize=12.sp,color=White)
-            }
+            """                OutlinedButton(
+                    onClick=onRefreshServerVpn,enabled=enableServerVpnRefresh,
+                    modifier=Modifier.testTag("server_vpn_manual_refresh"),
+                    contentPadding=PaddingValues(horizontal=12.dp,vertical=7.dp),
+                ) {
+                    if(refreshingServerVpn) CircularProgressIndicator(
+                        modifier=Modifier.size(17.dp),strokeWidth=2.dp,color=White)
+                    else Icon(Icons.Outlined.Refresh,null,tint=White,
+                        modifier=Modifier.size(17.dp))
+                    Spacer(Modifier.width(6.dp))
+                    Text(stringResource(if(refreshingServerVpn) R.string.catalog_checking
+                        else R.string.catalog_check_action),fontSize=12.sp,color=White)
+                }
 """,
-            """            com.ghostdeveloper.spdecode.cloud.CatalogRefreshControl(
-                refreshingServerVpn,enableServerVpnRefresh,onRefreshServerVpn)
+            """                com.ghostdeveloper.spdecode.cloud.CatalogRefreshControl(
+                    refreshingServerVpn,enableServerVpnRefresh,onRefreshServerVpn)
 """)
         app = replaceOnce(app,
             "        if(catalogLoading) Row(verticalAlignment=Alignment.CenterVertically) {",
@@ -557,7 +580,6 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
             "                            CloudLegalConsent.revoke(this@MainActivity)",
             """                            com.ghostdeveloper.spdecode.cloud.CloudNotifications.setEnabled(this@MainActivity,false)
                             CloudLegalConsent.revoke(this@MainActivity)""")
-        activity = replaceOnce(activity,"https://t.me/CodeBreakersHub","https://t.me/+Ntu6EJMirrAwMzgx")
         activity = replaceOnce(activity,
             "serverVpnCatalog.refreshIfDue(force=force)",
             "serverVpnCatalog.refreshIfDue(force=force,onProgress={percent->scope.launch {catalogProgress=percent}})")
@@ -592,9 +614,58 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
             },
         )""")
         app = replaceOnce(app,
-            "2->FormatsScreen(cloudFormats,cloudTextFormats,serverVpnLoading,catalogProgress)",
-            "2->FormatsScreen(cloudFormats,cloudTextFormats.filterNot{it.kind==\"cloud\"&&it.suffix==\"hc\"},serverVpnLoading,catalogProgress)")
+            "supportedFormats=cloudFormats,supportedTextFormats=cloudTextFormats,",
+            "supportedFormats=cloudFormats,supportedTextFormats=cloudTextFormats.filterNot{it.kind==\"cloud\"&&it.suffix==\"hc\"},")
 
+        // C0 remains immutable. Only the Play AAB receives the official
+        // updater host and the suppression of Telegram's external APK prompt.
+        if (enablePlayAab) {
+            app=replaceOnce(app,
+                "    onFeedbackSubmit:suspend (FeedbackDraft)->String={throw IllegalStateException(\"FEEDBACK_UNAVAILABLE\")},",
+                "    onModalVisible:(Boolean)->Unit={},\n" +
+                    "    onFeedbackSubmit:suspend (FeedbackDraft)->String={throw IllegalStateException(\"FEEDBACK_UNAVAILABLE\")},")
+            app=replaceOnce(app,
+                "    var dialog by remember{mutableStateOf<String?>(null)}",
+                "    var dialog by remember{mutableStateOf<String?>(null)}\n" +
+                    "    LaunchedEffect(dialog) { onModalVisible(dialog != null) }")
+            activity=replaceOnce(activity,
+                "    private var showLargeResultWarning by mutableStateOf(false)",
+                "    private var showLargeResultWarning by mutableStateOf(false)\n" +
+                    "    private var playUpdateVisible by mutableStateOf(false)\n" +
+                    "    private var internalDialogVisible by mutableStateOf(false)")
+            activity=replaceOnce(activity,
+                "                onFeedbackSubmit={draft-> cloudClient.submitFeedback(draft)},",
+                "                onFeedbackSubmit={draft-> cloudClient.submitFeedback(draft)},\n" +
+                    "                onModalVisible={internalDialogVisible=it},")
+            activity=replaceOnce(activity,
+                "                availableAppUpdate=availableAppUpdate,",
+                "                availableAppUpdate=null,")
+            activity=replaceOnce(activity,
+                "                whatsNew=showWhatsNew,",
+                "                whatsNew=showWhatsNew && !playUpdateVisible,")
+            activity=replaceOnce(activity,
+                "                pendingServerVpnCatalogVersion=pendingServerVpnCatalogVersion,",
+                "                pendingServerVpnCatalogVersion=if(playUpdateVisible) null else pendingServerVpnCatalogVersion,")
+            activity=replaceOnce(activity,
+                "            if(!busy) pendingCloudPasswordFile?.let { candidate ->",
+                """            // The Play host does not exist in the Telegram APK.
+            if (!showBrandedSplash) com.ghostdeveloper.spdecode.cloud.PlayInAppUpdateHost(
+                allowPresentation=!busy && !showCloudLegal &&
+                    (!showWhatsNew || playUpdateVisible) && message==null &&
+                    (pendingServerVpnCatalogVersion==null || playUpdateVisible) &&
+                    pendingCloudPasswordFile==null && pendingCloudPasswordText==null &&
+                    pendingCredentialImport==null && guideStep==null &&
+                    !internalDialogVisible &&
+                    !com.ghostdeveloper.spdecode.cloud.NpvsRecipientPicker.isShowing &&
+                    !com.ghostdeveloper.spdecode.cloud.HttpCustomCloudPrompt.isShowing,
+                language=selectedLanguage,
+                onExclusive={ active ->
+                    playUpdateVisible=active
+                    if(active) availableAppUpdate=null
+                },
+            )
+            if(!busy) pendingCloudPasswordFile?.let { candidate ->""")
+        }
         listOf(appPath to app, activityPath to activity).forEach { (name,content)->
             val output=cloudHistoryUiRoot.get().file(name).asFile
             output.parentFile.mkdirs()
@@ -619,6 +690,7 @@ val prepareCloudOnlySources = tasks.register<Sync>("prepareCloudOnlySources") {
         into("com/ghostdeveloper/spdecode/parity")
     }
     from("src/cloud/java")
+    if (enablePlayAab) from("src/playUpdate/java")
     dependsOn(prepareCloudHistoryUiSource)
     from(cloudHistoryUiRoot)
     dependsOn(prepareQaSettingsSource)
@@ -629,6 +701,7 @@ val prepareCloudAssets = tasks.register<Sync>("prepareCloudAssets") {
     // No encrypted vault files, generated runtime vault key, network provider
     // endpoints, profile tables or other original decoder source materials.
     from("src/main/assets/decoder_catalog.json")
+    if (enablePlayAab) from("src/playUpdate/assets/spdecode-play-updates-enabled.marker")
     // Google package-name ownership proof is a temporary CI-only APK. It is
     // NEVER included in ordinary Play AABs, external beta APKs or debug APKs.
     if (providers.environmentVariable("SPDECODE_ADI_VERIFICATION_BUILD").orNull == "true") {
@@ -673,12 +746,13 @@ android {
         applicationId = "com.ghostdeveloper.spdecode"
         minSdk = 24
         targetSdk = 36
-        versionCode = 40
-        versionName = "1.1.25"
+        versionCode = 41
+        versionName = "1.1.26"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // A public API origin is not a secret; all server secrets stay in the VPS.
         buildConfigField("boolean", "SPDECODE_CLOUD_ENABLED", enableCloud.toString())
         buildConfigField("boolean", "SPDECODE_QA_BUILD", enableQaBuild.toString())
+        buildConfigField("boolean", "SPDECODE_PLAY_UPDATES", enablePlayAab.toString())
         // Public trust anchors; never package any recipient private key.
         // Public HPKE pin lives as masked bytes in native C++, not in BuildConfig.
 
@@ -779,6 +853,10 @@ dependencies {
     implementation("androidx.fragment:fragment:1.8.9")
     implementation("com.google.code.gson:gson:2.13.1")
     if (enableCloud) implementation("com.google.firebase:firebase-messaging:25.0.0")
+    if (enablePlayAab) {
+        implementation("com.google.android.play:app-update:2.1.0")
+        implementation("androidx.lifecycle:lifecycle-runtime-compose:2.9.0")
+    }
     // Classic Play Integrity nonce flow; the verdict is verified in C3 server-side.
     implementation("com.google.android.play:integrity:1.6.0")
     implementation("androidx.work:work-runtime-ktx:2.10.4")

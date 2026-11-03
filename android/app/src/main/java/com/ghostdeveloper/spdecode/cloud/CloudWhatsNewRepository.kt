@@ -16,7 +16,8 @@ data class CloudNewsNotice(val version:Int,val title:String,val subtitle:String,
 
 internal class CloudWhatsNewRepository(context:Context,private val client:CloudDecodeClient) {
     private val vault=ServerVpnSecureCache(context)
-    private val mutex=Mutex()
+    private val schedule=context.applicationContext.getSharedPreferences("spdecode-news-schedule",Context.MODE_PRIVATE)
+    companion object { private val mutex=Mutex() }
     private val supported=setOf("en","es","ar","fa","fr","id","ru","de","pt-BR",
         "tr","vi","hi","ja","it")
 
@@ -57,6 +58,15 @@ internal class CloudWhatsNewRepository(context:Context,private val client:CloudD
         return CloudNewsNotice(version,title,subtitle,date,items)
     }
 
+    suspend fun cachedAppUpdate():Pair<Int,String>? = withContext(Dispatchers.IO) {
+        try {
+            val update=vault.read("whats-new")?.toString(Charsets.UTF_8)?.let(::JSONObject)?.optJSONObject("appUpdate")
+            val code=update?.optInt("versionCode",0)?:0
+            val name=update?.optString("versionName").orEmpty()
+            if(code>0 && name.matches(Regex("[0-9]+\\.[0-9]+\\.[0-9]+"))) code to name else null
+        }catch(_:Exception){null}
+    }
+
     /** Only a fully validated snapshot is stored in the device-bound encrypted vault. */
     suspend fun latestUnseen(selected:String,lastSeen:Int):CloudNewsNotice? = mutex.withLock {
         withContext(Dispatchers.IO) {
@@ -67,10 +77,23 @@ internal class CloudWhatsNewRepository(context:Context,private val client:CloudD
             val stored=if(cached?.optString("locale")==locale)cached?.let(::parse) else null
             val knownVersion=stored?.version ?: 0
             var latest=stored
+            val now=System.currentTimeMillis()
+            val nextCheck=schedule.getLong("next-"+locale,0L)
+            if(nextCheck>now && nextCheck-now<=6*60*60_000L)
+                return@withContext latest?.takeIf { it.version>lastSeen }
+            // Persist an attempt cooldown too, so offline resumes never hammer the server.
+            schedule.edit().putLong("next-"+locale,now+15*60_000L).apply()
             try{
                 val remote=client.whatsNew(knownVersion,locale)
                 val remoteVersion=remote.optInt("version",0)
                 if(remoteVersion>=knownVersion && remoteVersion in 1..999999999){
+                    schedule.edit().putLong("next-"+locale,now+6*60*60_000L).apply()
+                    if(remote.optBoolean("unchanged",false) && cached!=null && stored!=null) {
+                        // App releases may change independently of the news version.
+                        remote.optJSONObject("appUpdate")?.let { cached.put("appUpdate",it) }
+                        val raw=cached.toString().toByteArray(Charsets.UTF_8)
+                        if(raw.size<=16384)vault.write("whats-new",raw)
+                    }
                     if(!remote.optBoolean("unchanged",false)){
                         val incoming=parse(remote)
                         if(incoming!=null && incoming.version==remoteVersion &&

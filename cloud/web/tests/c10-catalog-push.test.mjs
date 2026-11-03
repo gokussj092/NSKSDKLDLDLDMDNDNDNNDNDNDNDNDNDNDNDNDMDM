@@ -93,7 +93,7 @@ test("Android retains checked encrypted cache, opt-in lifecycle and WorkManager 
  const gradle=src("android/app/build.gradle.kts");
  const compose=src("cloud/compose.yaml");
  const legal=src("cloud/web/app/public/legal.jsx");
- for(const part of ["watchWhileVisible","CoroutineWorker","ExistingPeriodicWorkPolicy.UPDATE",
+ for(const part of ["watchWhileVisible","CoroutineWorker","ExistingPeriodicWorkPolicy.KEEP",
   "CloudLegalConsent.accepted","NetworkType.CONNECTED","onVersionHint"])
   assert.ok(updates.includes(part),part);
  for(const part of ["catalogWatchJob?.cancel()","override fun onStop","startCatalogWatch()"])

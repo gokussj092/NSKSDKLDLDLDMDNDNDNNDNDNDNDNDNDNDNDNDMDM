@@ -4,8 +4,9 @@ import {join} from "node:path";
 import {createHash} from "node:crypto";
 import {publicFormats,FORMAT_DETECTION} from "./file-format-catalog.mjs";
 import {publicTextFormats,publicOnlineReferenceFormats} from "./text-format-catalog.mjs";
+import {providerEnabled} from "./server-vpn-provider.mjs";
 
-export const CATALOG_VERSION = 56; // Text and online-import metadata, versioned Cloud snapshot.
+export const CATALOG_VERSION = 65; // FNF TUNNEL BD catalog; VPS preserves its higher monotonic version.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -23,10 +24,23 @@ export function activeCatalogVersion(env=process.env) {
 }
 
 const ITEMS = Object.freeze([
+  {id:"fnf-tunnel-bd",name:"FNF TUNNEL BD",icon:"fnf-tunnel-bd.png",remote:"fnf-tunnel-bd"},
+  {id:"alsaher-vip",name:"ALSAHER VIP",icon:"alsaher-vip.png",remote:"alsaher-vip"},
+  {id:"halcon-r-net",name:"HALCON RAMOS Conectividad",icon:"halcon-r-net.png",remote:"halcon-r-net"},
+  {id:"ultra-tunnel",name:"Ultra Tunnel",icon:"ultra-tunnel.png",remote:"ultra-tunnel"},
+  {id:"zig-tunnel",name:"ZiG Tunnel",icon:"zig-tunnel.png",remote:"zig-tunnel"},
+  {id:"enaa-tunnel",name:"Enaa Tunnel",icon:"enaa-tunnel.png",remote:"enaa-tunnel"},
+  {id:"alfaisal-tunnel-plus",name:"ALFAISAL Tunnel+",icon:"alfaisal-tunnel-plus.png",remote:"alfaisal-tunnel-plus"},
+  {id:"izph-vpn-pro", name:"IZPH VPN PRO", icon:"izph-vpn-pro.png", remote:"izph-vpn-pro"},
+  // Build 29 authenticated updater and complete 8.0.61 catalog verified.
+  {id:"vip-snipher-pro", name:"VIP Snipher Pro", icon:"vip-snipher-pro.png", remote:"vip-snipher-pro"},
+  {id:"netcol-vpn", name:"Netcol VPN", icon:"netcol-vpn.png", remote:"netcol-vpn"},
+  {id:"wolf-custom-vpn", name:"Wolf Custom VPN", icon:"wolf-custom-vpn.png", remote:"wolf-custom-vpn"},
+  {id:"jyfast-vpn-ultra", name:"JyFast VPN Ultra", icon:"jyfast-vpn-ultra.png", remote:"jyfast-vpn-ultra"},
   // Build 430 fixed updater validated against the complete real catalog.
   {id:"tunneldoom-vpn", name:"TunnelDOOM VPN", icon:"tunneldoom-vpn.png", remote:"tunneldoom-vpn"},
-  // DexProtector resources and the fixed updater still require runtime verification.
-  {id:"ha-tunnel-plus", name:"HA Tunnel Plus", icon:"ha-tunnel-plus.png", remote:null},
+  // Unpacked build 76 updater: real response and complete methods catalog verified.
+  {id:"ha-tunnel-plus", name:"HA Tunnel Plus", icon:"ha-tunnel-plus.png", remote:"ha-tunnel-plus"},
   {id:"mtm-tunnel-lite", name:"MTM Tunnel Lite", icon:"mtm-tunnel-lite.png", remote:"mtm-tunnel-lite"},
   {id:"mnr-tunnel-plus", name:"MNR TUNNEL PLUS", icon:"mnr-tunnel-plus.png", remote:"mnr-tunnel-plus"},
   {id:"bd-net-vpn", name:"BD NET VPN", icon:"bd-net-vpn.png", remote:"bd-net-vpn"},
@@ -35,8 +49,8 @@ const ITEMS = Object.freeze([
   {id:"any-vpn", name:"ANY VPN", icon:"any-vpn.png", remote:"any-vpn"},
   {id:"speicers-pro-vpn", name:"Speicers Pro VPN", icon:"speicers-pro-vpn.png", remote:"speicers-pro-vpn"},
   {id:"tx-tunnel", name:"Tx Tunnel", icon:"tx-tunnel.png", remote:"tx-tunnel"},
-  // Embedded catalog verified; official fixed POST returned HTTP 403.
-  {id:"mm-tunnel", name:"MM Tunnel", icon:"mm-tunnel.png", remote:null},
+  // Build 47 original hash POST and full remote catalog verified.
+  {id:"mm-tunnel", name:"MM Tunnel", icon:"mm-tunnel.png", remote:"mm-tunnel"},
   // Embedded catalog works; remote Play Integrity response remains unvalidated.
   {id:"creeb-vpn", name:"CREEB VPN", icon:"creeb-vpn.png", remote:null},
   {id:"abowaged-vpn", name:"AboWaged VPN", icon:"abowaged-vpn.png", remote:"abowaged-vpn"},
@@ -86,6 +100,9 @@ const ITEMS = Object.freeze([
   {id:"royal-tunnel", name:"Royal Tunnel VPN", icon:"royal-tunnel.png", remote:null},
 ]);
 
+/** Public, ordered method identifiers used by the operator method-status controls. */
+export const SERVER_VPN_METHODS = Object.freeze(ITEMS.map(({id,name}) => Object.freeze({id,name})));
+
 const base = () => join(process.cwd(),"public","server-vpn-icons");
 export function iconFor(id) {
   const item = ITEMS.find(x => x.id === id);
@@ -95,7 +112,7 @@ export function iconFor(id) {
     throw Error("INVALID_ORIGINAL_ICON");
   return {id:item.id, bytes, sha256:createHash("sha256").update(bytes).digest("hex")};
 }
-export function catalog({availability=null,version=activeCatalogVersion()}={}) {
+export function catalog({availability=null,methodStates=null,version=activeCatalogVersion()}={}) {
   return {
     apiVersion:"v1",
     catalogVersion:version,
@@ -114,10 +131,15 @@ export function catalog({availability=null,version=activeCatalogVersion()}={}) {
     apps: ITEMS.map(x=>({
       id:x.id,
       name:x.name,
+      methodRevision:Number.isSafeInteger(methodStates?.[x.id]?.methodRevision) && methodStates[x.id].methodRevision>=0 ? methodStates[x.id].methodRevision : 0,
+      maintenance:methodStates?.[x.id]?.maintenance===true,
       iconSha256:iconFor(x.id).sha256,
       iconMimeType:"image/png",
       // No decode button for a provider until its remote broker is enabled.
-      decodeEnabled:x.remote==="nur" ? (availability?.["nur-tunnel"] ?? process.env.CLOUD_NUR_FETCH_ENABLED==="true") :
+      decodeEnabled:methodStates?.[x.id]?.maintenance===true ? false :
+        ["halcon-r-net","vip-snipher-pro","alfaisal-tunnel-plus"].includes(x.remote) ?
+        providerEnabled(x.remote) && (availability?.[x.id] ?? true) :
+        x.remote==="nur" ? (availability?.["nur-tunnel"] ?? process.env.CLOUD_NUR_FETCH_ENABLED==="true") :
         Boolean(x.remote) && (availability?.[x.id] ?? process.env.CLOUD_SERVER_VPN_ENABLED==="true"),
     })),
   };

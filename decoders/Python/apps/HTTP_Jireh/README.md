@@ -1,8 +1,11 @@
-# HTTP Jireh 2.0
+# HTTP Jireh 2.0 / 2.2
 
-APK analizado: `com.jirehvpn`, versión **2.0**, versionCode **11**.
-Carpeta independiente dentro de `decoders/Python/apps/`; rama
-`feat/austroplus-vpn-13-0-1-decoders`, PR #96. No requiere el APK para ejecutar los lectores.
+APK actual analizado: `com.jirehvpn`, versión **2.2**, versionCode **13**,
+descargado de APKPure el 2026-10-31. La integración original de **2.0 / build 11**
+se conserva para archivos y catálogos sin red. Carpeta independiente dentro de
+`decoders/Python/apps/`; integración inicial en PR #96 y actualización en
+`fix/http-jireh-current-method`, desde `main` (`5a1c93a4`).
+No requiere el APK para ejecutar los lectores.
 
 ## Uso
 
@@ -27,10 +30,15 @@ Dentro del repositorio no hace falta copiar nada.
 
 ## Catálogos y métodos confirmados
 
-- Servidores: `https://raw.githubusercontent.com/alvarofelizzola/GEN-JIREH/refs/heads/main/GENERADOR`.
-- Usuarios: `https://raw.githubusercontent.com/alvarofelizzola/USER-JIREH/refs/heads/main/USUARIO`.
+- Servidores: `https://dl.dropboxusercontent.com/scl/fi/9p6vvoa8jfch3ribneckq/HTTPJIREH1117?rlkey=05z97u9cg8tv4k5xem9m1uxu2&st=huezcplw&dl=1`.
+- Usuarios: `https://dl.dropboxusercontent.com/scl/fi/levagd0tny8izfpvgsilo/USUARIOSJIREH?rlkey=f4a0zwurd23nmk61ya6ptxf4u&st=bneujzqr&dl=1`.
 - Ambas direcciones proceden de `res/raw/dnsd_conf`, propiedades `NETWORK` y
-  `NETWORK2`, seleccionadas por `AsyncTaskC3937` y `AsyncTaskC3912`.
+  `NETWORK2`. El APK 2.2 usa `www.dropbox.com`; se fija el host de contenido
+  `dl.dropboxusercontent.com` con la misma ruta y consulta. Ambas descargas
+  devolvieron HTTP 200 sin redirecciones y el JSON completo se validó con Java.
+  Las fuentes GitHub de 2.0 se retiraron del descargador: la de servidores aún
+  responde, pero devolvió versión 1129 con un solo perfil, frente a versión
+  1134 y 145 perfiles en Dropbox. No se usa como fallback silencioso.
 - Copias incluidas: `assets/config/config.json` y `assets/flags/st.png`.
   La segunda es texto cifrado, aunque su nombre termine en PNG. Las copias
   privadas actualizadas se llaman `Config.json` y `st.png`.
@@ -48,16 +56,20 @@ Dentro del repositorio no hace falta copiar nada.
   el campo vacío opcional permanece vacío. No se intentan descifrar valores
   desconocidos solo porque se parezcan a Base64.
 
-Trazas: `p125o00O0oO/AbstractC3936` y `C3940` (sobre y constante),
+Trazas originales de 2.0: `p125o00O0oO/AbstractC3936` y `C3940` (sobre y constante),
 `p124o00O0o0o/AbstractC3935` (campos), `C3911` (usuarios), y
 `com/jireh/http/JirehActivity.o000o0OO`, `o000Oo0o`, `o00Oo0`, `o00O0O`
 (consumidores, clave de recurso y rotación `26 - 4`).
+En 2.2, `JirehActivity.o000Oo0o(Context)` continúa leyendo `SSH_SSL` del
+recurso de propiedades. Las dos copias incluidas y los dos catálogos actuales
+mantienen paridad completa con el mismo oráculo Java: no se cambian las claves,
+la rotación ni el formato criptográfico para corregir una migración de fuente.
 
 ## Archivos .sks
 
 `ConfigImportFileActivity` acepta `.sks` y llama a
 `p129o00O0oo0/AbstractC3975.OooO00o` → `OooO0O0` → `Properties.loadFromXML`.
-Se confirmaron directamente dos variantes en este APK:
+Se confirmaron directamente dos variantes en el APK 2.0:
 
 1. `Base64(salt32).Base64(nonce12).Base64(ciphertext+tag16)`,
    PBKDF2-HMAC-SHA256, 1000 iteraciones, clave de 128 bits y constante
@@ -84,6 +96,14 @@ Verificado el 2026-10-19: copia incluida con **1 servidor** y **1 usuario**;
 catálogos remotos con **109 servidores** y **1 usuario**. Paridad JSON completa
 Java/Python, incluyendo **1744 campos cifrados de servidores remotos** y seis
 de usuarios. El número remoto puede cambiar cuando el proveedor actualice.
+
+Revalidado el **2026-10-31 con 2.2**: copia incluida con **1 servidor** y
+**1 usuario**; fuentes actuales con **145 servidores** y **1 usuario**.
+Coinciden los documentos completos con Java, incluidos los **2320 campos
+cifrados** de servidores remotos. El CLI actualizado descargó ambos catálogos
+y el worker aislado devolvió los 145 servidores con `isPartial=false`.
+Se aprobaron **13 pruebas Python y 26 Node**. La importación real de un `.sks`
+exportado desde 2.2 y la conexión VPN en un teléfono siguen sin certificarse.
 
 Cloud usa el ID fijo `http-jireh`, descarga solo el catálogo de servidores y
 llama a `run(data: bytes) -> str` sin red dentro del worker. Catálogo público

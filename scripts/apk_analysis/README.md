@@ -1,5 +1,29 @@
 # Herramientas de análisis APK
 
+> **POLÍTICA OBLIGATORIA (2026-11-02):** por cada método de aplicación nuevo o actualizado, archivar en [analysis/](../../analysis/README.md) los scripts propios utilizados, comandos exactos, herramientas, tests y evidencias por versión, siguiendo [METHOD_EVIDENCE_POLICY.md](../../analysis/METHOD_EVIDENCE_POLICY.md). Los scripts compartidos de esta carpeta permanecen aquí; el expediente debe registrar rutas/hashes y un wrapper de reproducción. Sin expediente, el método no está cerrado.
+
+
+Ultra Tunnel build59: `ultra_tunnel_source_check.py` verifica CU/DO/decrypt y
+la petición GET/UA del SO exacto, sin ejecutar JNI ni imprimir claves.
+`ultra_tunnel_verify.py` contrasta todo el JSON con libsodium/JCA y solo
+emite metadatos. Remoto5.18/47 servidores/917 redes/5034 campos igual a
+CLI de descarga y worker. Node directo falla DNS aquí; VPS pendiente.
+[Receta y hashes](../../docs/cloud/ULTRA_TUNNEL_HANDOFF_2026_11_01.md).
+
+
+**Descarga obligatoria antes de validar un proveedor:** seguir la
+[guía de paridad de petición](../../docs/cloud/SERVER_VPN_NEXT_CHAT_GUIDE.md#regla-obligatoria-paridad-de-la-descarga-original--2026-11-01).
+URL, método, cuerpos, User-Agent, Authorization, claves y firmas necesarios
+forman parte del método. Incorporarlos como constantes o secretos del backend
+y probar la descarga real con la petición completa; mocks y assets no bastan.
+No publicar credenciales reales. Documentar también su provisión al desplegar.
+
+**Retomar catálogos desactivados:** el propietario requiere nueva investigación
+de las 10 integraciones remotas pendientes y el mismo estándar para próximas apps.
+Ver [inventario y criterio de cierre](../../docs/cloud/CATALOGOS_DESACTIVADOS_REINVESTIGACION_2026_11_01.md).
+No cerrar con un asset, un mock o una petición que omita los datos de la app.
+Las causas y versiones anteriores son puntos de partida, no diagnósticos actuales.
+
 MTM Tunnel Lite MTM (40): `mtm_bundle.py` genera la CLI autónoma stdlib desde
 XXTEA canónico HX y `mtm_verify.py` compara catálogos privados completos con
 JDK y workers de catálogo/archivo. Dos respuestas reales verificadas; `.v2`

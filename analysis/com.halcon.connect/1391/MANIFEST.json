@@ -1,0 +1,1030 @@
+{
+  "schema_version": 1,
+  "package_name": "com.halcon.connect",
+  "app_name": "Halcon R Net",
+  "store_name": "HALCON RAMOS Conectividad",
+  "version_name": "4.1.4",
+  "version_code": 1391,
+  "observed_at": "2026-11-02T23:41:32-08:00",
+  "source_category": "public_mirror",
+  "authorization_note": "El propietario autorizó expresamente repetir el POST firmado original con el material incluido en la APK, para obtener y validar un catálogo real. No se autoriza redistribuir el APK; no se almacena en Git.",
+  "status": "VERIFIED",
+  "targets": [
+    {
+      "id": "catalog",
+      "type": "catalog",
+      "extensions": [],
+      "status": "VERIFIED",
+      "envelope": "VERIFIED_REAL",
+      "real_catalog": "635",
+      "servers": 101,
+      "remote_primary": "HTTP_200_ORIGINAL_AUTHORIZED_POST",
+      "remote_backup": "HTTP_404",
+      "embedded": "EMPTY_OBJECT",
+      "node_real_transport": "NETWORK_UNAVAILABLE_HERE_VPS_PENDING"
+    }
+  ],
+  "inputs": [
+    {
+      "path": "halcon-1391.xapk",
+      "bytes": 34644705,
+      "sha256": "f90ef42a4c610afd35eb5ea496cccfc3fb3ded473cf8949d8a1056a51b879077",
+      "type": "xapk",
+      "source": "https://apkpure.com/halcon-ramos-conectividad/com.halcon.connect/download"
+    },
+    {
+      "path": "com.halcon.connect.apk",
+      "bytes": 12884825,
+      "sha256": "bd5a259b37427914a44a3e49f7ad4f9a8b22823285f6dc9d94f4e809036b8aac",
+      "type": "apk",
+      "source": "entry in pinned public XAPK"
+    },
+    {
+      "path": "config.arm64_v8a.apk",
+      "bytes": 21607500,
+      "sha256": "36e08e29ba9ff1cdad10e04176f046e6726accf98f98ead5e6fc46c5458c0560",
+      "type": "apk",
+      "source": "entry in pinned public XAPK"
+    },
+    {
+      "path": "config.en.apk",
+      "bytes": 61849,
+      "sha256": "e54e53232eb3f0eb86caba285a52f6df447ddda4278565da073d4ba35c2844dc",
+      "type": "apk",
+      "source": "entry in pinned public XAPK"
+    },
+    {
+      "path": "config.xxxhdpi.apk",
+      "bytes": 88270,
+      "sha256": "334fb8a21548a5bf46ca7dc97615d272482b7edd7ba71987f08f612dcdd9522c",
+      "type": "apk",
+      "source": "entry in pinned public XAPK"
+    },
+    {
+      "type": "native_library",
+      "path": "lib/arm64-v8a/libnative-security.so",
+      "bytes": 1475672,
+      "sha256": "e42ea94147e04390f27c35f1d2e067e10c4c5a170f4a70b3ac59f56fc18c04d0",
+      "source": "config.arm64_v8a.apk"
+    }
+  ],
+  "tooling": [
+    {
+      "id": "halcon1391:EnvelopeOracle",
+      "path": "analysis/com.halcon.connect/1391/tools/EnvelopeOracle.java",
+      "sha256": "67c6028dcc517e2ea119f50abdf6a75ed890a32037541bdd2b151ff20f514587",
+      "purpose": "manual research, reproducibility, real verification or retained historical revision",
+      "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7"
+    },
+    {
+      "id": "halcon1391:acquire",
+      "path": "analysis/com.halcon.connect/1391/tools/acquire.py",
+      "sha256": "640e625b8e0694db3549e53ef55d43b1b6f73f7438aaeb276e0d739d2507afa4",
+      "purpose": "manual research, reproducibility, real verification or retained historical revision",
+      "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7"
+    },
+    {
+      "id": "halcon1391:dependency_inventory",
+      "path": "analysis/com.halcon.connect/1391/tools/dependency_inventory.py",
+      "sha256": "ec181cd81869c3c7f1d8015b9055642f1b701b6c8f7a600aa72b5d486ef86fc4",
+      "purpose": "manual research, reproducibility, real verification or retained historical revision",
+      "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7"
+    },
+    {
+      "id": "halcon1391:envelope_candidate",
+      "path": "analysis/com.halcon.connect/1391/tools/envelope_candidate.py",
+      "sha256": "4d046a0a8118b91bbeba3e9b47c1c7a380b98e10430159b07426418a0b6c2ee5",
+      "purpose": "manual research, reproducibility, real verification or retained historical revision",
+      "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7"
+    },
+    {
+      "id": "halcon1391:extract_icon",
+      "path": "analysis/com.halcon.connect/1391/tools/extract_icon.py",
+      "sha256": "735e1fc476f169133abc020f5840d0277dd2068bf7bfc982bc2639b481360f3a",
+      "purpose": "manual research, reproducibility, real verification or retained historical revision",
+      "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7"
+    },
+    {
+      "id": "halcon1391:finalize_evidence",
+      "path": "analysis/com.halcon.connect/1391/tools/finalize_evidence.py",
+      "sha256": "545cdab063823a639e8650823fb1458e1dec16ad61b93713b2fe2d9c6859e465",
+      "purpose": "manual research, reproducibility, real verification or retained historical revision",
+      "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7"
+    },
+    {
+      "id": "halcon1391:EnvelopeOracle_v1",
+      "path": "analysis/com.halcon.connect/1391/tools/history/EnvelopeOracle_v1.java",
+      "sha256": "8f8ce71ec06e0a5226ce4ad32665c6f2ef730785ee2bf53b7b96aedd3973f4c6",
+      "purpose": "manual research, reproducibility, real verification or retained historical revision",
+      "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7"
+    },
+    {
+      "id": "halcon1391:probe_v1",
+      "path": "analysis/com.halcon.connect/1391/tools/history/probe_v1.py",
+      "sha256": "da048779d8c609f1f6db3139375f74ed5efa188b861bfe8d8ee65d22af90a0ff",
+      "purpose": "manual research, reproducibility, real verification or retained historical revision",
+      "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7"
+    },
+    {
+      "id": "halcon1391:probe_v2_auth_pending",
+      "path": "analysis/com.halcon.connect/1391/tools/history/probe_v2_auth_pending.py",
+      "sha256": "1cebe8f7e223c896cf9b04385a8834108ceae04e0960f60d5bde3fece42c514a",
+      "purpose": "manual research, reproducibility, real verification or retained historical revision",
+      "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7"
+    },
+    {
+      "id": "halcon1391:recover_v1",
+      "path": "analysis/com.halcon.connect/1391/tools/history/recover_v1.py",
+      "sha256": "9da057b8015e917c7d7c61b93a0aed8a4e3ae1e4295759ec59e01f87a5b99e82",
+      "purpose": "manual research, reproducibility, real verification or retained historical revision",
+      "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7"
+    },
+    {
+      "id": "halcon1391:recover_v2_base64_certificate",
+      "path": "analysis/com.halcon.connect/1391/tools/history/recover_v2_base64_certificate.py",
+      "sha256": "3c3ea716ffaac51efc8abc7d19895bf068955a033c6e89e521d488b546c741a1",
+      "purpose": "manual research, reproducibility, real verification or retained historical revision",
+      "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7"
+    },
+    {
+      "id": "halcon1391:inventory",
+      "path": "analysis/com.halcon.connect/1391/tools/inventory.py",
+      "sha256": "1fc31c71475a3df90e87625027c08ae93e993202b8b88dee86f84fa1b96ab7ab",
+      "purpose": "manual research, reproducibility, real verification or retained historical revision",
+      "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7"
+    },
+    {
+      "id": "halcon1391:probe",
+      "path": "analysis/com.halcon.connect/1391/tools/probe.py",
+      "sha256": "06eccf1cdc8f21b37fef33641df5a15dd99fa3a5a3cb02d78da07940a6fca6a2",
+      "purpose": "manual research, reproducibility, real verification or retained historical revision",
+      "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7"
+    },
+    {
+      "id": "halcon1391:provision_secrets",
+      "path": "analysis/com.halcon.connect/1391/tools/provision_secrets.py",
+      "sha256": "8411fae310f67dc07188b04c3c92f81ec875ed9969809d39b069cb7443b7407a",
+      "purpose": "manual research, reproducibility, real verification or retained historical revision",
+      "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7"
+    },
+    {
+      "id": "halcon1391:recover",
+      "path": "analysis/com.halcon.connect/1391/tools/recover.py",
+      "sha256": "7efc890722de57022a77b11bafb041f0dac3eaeb45a6571d1d1b80c77b4da14f",
+      "purpose": "manual research, reproducibility, real verification or retained historical revision",
+      "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7"
+    },
+    {
+      "id": "halcon1391:replay_real",
+      "path": "analysis/com.halcon.connect/1391/tools/replay_real.mjs",
+      "sha256": "6c7e604181bbb0c0b408811e594b14190f8895380df16ee53db0238f4d845a5a",
+      "purpose": "manual research, reproducibility, real verification or retained historical revision",
+      "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7"
+    },
+    {
+      "id": "halcon1391:verify_real",
+      "path": "analysis/com.halcon.connect/1391/tools/verify_real.py",
+      "sha256": "20bb06efaf39e5a7d5c3947722c24e7bacbf2f4d4f073052a64e140cc39616ea",
+      "purpose": "manual research, reproducibility, real verification or retained historical revision",
+      "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7"
+    }
+  ],
+  "shared_tooling": [
+    {
+      "path": "scripts/apk_analysis/inspect_apk.py",
+      "sha256": "3207559b8bf015e374c695614cb3cb65b22eb6c960373ec863e81c91ad8606cb"
+    },
+    {
+      "path": "scripts/apk_analysis/decompile.py",
+      "sha256": "dd04a05c2cb46bae494af412733d9e27b71167fc86f787371e76dfbddd50a3dd"
+    },
+    {
+      "path": "scripts/apk_analysis/elf_inspect.py",
+      "sha256": "b20adfae49329677c313fddb4674a6964a26867b9a27868e6da906fd5aeddee1"
+    },
+    {
+      "path": "scripts/apk_analysis/requirements.txt",
+      "sha256": "d8e6584b366fcde750f250464517b124e475d223f3bc0bda3ce58d1b9c271475"
+    }
+  ],
+  "dependencies": [
+    {
+      "id": "pypi:alembic",
+      "name": "alembic",
+      "type": "PyPI",
+      "version": "1.20.1",
+      "source": [
+        "Homepage, https://alembic.sqlalchemy.org",
+        "Documentation, https://alembic.sqlalchemy.org/en/latest/",
+        "Changelog, https://alembic.sqlalchemy.org/en/latest/changelog.html",
+        "Source, https://github.com/sqlalchemy/alembic/",
+        "Issue Tracker, https://github.com/sqlalchemy/alembic/issues/"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:androguard",
+      "name": "androguard",
+      "type": "PyPI",
+      "version": "4.1.4",
+      "source": [
+        "Homepage, https://github.com/androguard/androguard"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "Apache Licence, Version 2.0",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:apkInspector",
+      "name": "apkInspector",
+      "type": "PyPI",
+      "version": "1.3.7",
+      "source": [
+        "Repository, https://github.com/erev0s/apkInspector"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "Apache-2.0",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:asn1crypto",
+      "name": "asn1crypto",
+      "type": "PyPI",
+      "version": "1.5.1",
+      "source": [
+        "https://github.com/wbond/asn1crypto"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:asttokens",
+      "name": "asttokens",
+      "type": "PyPI",
+      "version": "3.0.2",
+      "source": [
+        "Documentation, https://asttokens.readthedocs.io/en/latest/index.html",
+        "Issue Tracker, https://github.com/gristlabs/asttokens/issues"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "Apache 2.0",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:capstone",
+      "name": "capstone",
+      "type": "PyPI",
+      "version": "5.0.9",
+      "source": [
+        "https://www.capstone-engine.org"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "UNKNOWN",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:cffi",
+      "name": "cffi",
+      "type": "PyPI",
+      "version": "2.1.1",
+      "source": [
+        "Documentation, https://cffi.readthedocs.io/",
+        "Changelog, https://cffi.readthedocs.io/en/latest/whatsnew.html",
+        "Download, https://github.com/python-cffi/cffi/releases",
+        "Contact, https://groups.google.com/forum/#!forum/python-cffi",
+        "Source Code, https://github.com/python-cffi/cffi",
+        "Issue Tracker, https://github.com/python-cffi/cffi/issues"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "MIT-0",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:click",
+      "name": "click",
+      "type": "PyPI",
+      "version": "8.5.0",
+      "source": [
+        "Changes, https://click.palletsprojects.com/page/changes/",
+        "Chat, https://discord.gg/pallets",
+        "Documentation, https://click.palletsprojects.com/",
+        "Donate, https://palletsprojects.com/donate",
+        "Source, https://github.com/pallets/click/"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "BSD-3-Clause",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:colorama",
+      "name": "colorama",
+      "type": "PyPI",
+      "version": "0.4.6",
+      "source": [
+        "Homepage, https://github.com/tartley/colorama"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "UNKNOWN",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:cryptography",
+      "name": "cryptography",
+      "type": "PyPI",
+      "version": "50.0.2",
+      "source": [
+        "changelog, https://cryptography.io/en/latest/changelog/",
+        "documentation, https://cryptography.io/",
+        "homepage, https://github.com/pyca/cryptography",
+        "issues, https://github.com/pyca/cryptography/issues",
+        "source, https://github.com/pyca/cryptography/"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "Apache-2.0 OR BSD-3-Clause",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:dataset",
+      "name": "dataset",
+      "type": "PyPI",
+      "version": "2.0.0",
+      "source": [
+        "Homepage, https://github.com/pudo/dataset",
+        "Repository, https://github.com/pudo/dataset",
+        "Documentation, https://dataset.readthedocs.io/"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "Copyright (c) 2013, Open Knowledge Foundation, Friedrich Lindenberg,",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:executing",
+      "name": "executing",
+      "type": "PyPI",
+      "version": "2.3.0",
+      "source": [
+        "Homepage, https://github.com/alexmojaki/executing",
+        "Repository, https://github.com/alexmojaki/executing"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:ipython",
+      "name": "ipython",
+      "type": "PyPI",
+      "version": "9.18.1",
+      "source": [
+        "Homepage, https://ipython.org",
+        "Documentation, https://ipython.readthedocs.io/",
+        "Funding, https://jupyter.org/about#donate",
+        "Source, https://github.com/ipython/ipython",
+        "Tracker, https://github.com/ipython/ipython/issues"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "BSD-3-Clause",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:ipython_pygments_lexers",
+      "name": "ipython_pygments_lexers",
+      "type": "PyPI",
+      "version": "1.1.1",
+      "source": [
+        "Source, https://github.com/ipython/ipython-pygments-lexers"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "UNKNOWN",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:jedi",
+      "name": "jedi",
+      "type": "PyPI",
+      "version": "0.20.1",
+      "source": [
+        "Documentation, https://jedi.readthedocs.io/en/latest/"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:loguru",
+      "name": "loguru",
+      "type": "PyPI",
+      "version": "0.7.3",
+      "source": [
+        "Changelog, https://github.com/Delgan/loguru/blob/master/CHANGELOG.rst",
+        "Documentation, https://loguru.readthedocs.io/en/stable/index.html",
+        "Homepage, https://github.com/Delgan/loguru"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "UNKNOWN",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:lxml",
+      "name": "lxml",
+      "type": "PyPI",
+      "version": "6.1.3",
+      "source": [
+        "Source, https://github.com/lxml/lxml",
+        "Bug Tracker, https://bugs.launchpad.net/lxml"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "BSD-3-Clause",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:Mako",
+      "name": "Mako",
+      "type": "PyPI",
+      "version": "1.4.3",
+      "source": [
+        "Homepage, https://www.makotemplates.org/",
+        "Documentation, https://docs.makotemplates.org",
+        "Issue Tracker, https://github.com/sqlalchemy/mako"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:MarkupSafe",
+      "name": "MarkupSafe",
+      "type": "PyPI",
+      "version": "3.0.4",
+      "source": [
+        "Donate, https://palletsprojects.com/donate",
+        "Documentation, https://markupsafe.palletsprojects.com/",
+        "Changes, https://markupsafe.palletsprojects.com/page/changes/",
+        "Source, https://github.com/pallets/markupsafe/",
+        "Chat, https://discord.gg/pallets"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "BSD-3-Clause",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:matplotlib-inline",
+      "name": "matplotlib-inline",
+      "type": "PyPI",
+      "version": "0.2.2",
+      "source": [
+        "Homepage, https://github.com/ipython/matplotlib-inline"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "BSD-3-Clause",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:mutf8",
+      "name": "mutf8",
+      "type": "PyPI",
+      "version": "1.1.0",
+      "source": [
+        "Homepage, https://github.com/TkTech/mutf8",
+        "Source, https://github.com/TkTech/mutf8",
+        "Issues, https://github.com/TkTech/mutf8/issues"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:networkx",
+      "name": "networkx",
+      "type": "PyPI",
+      "version": "3.7",
+      "source": [
+        "Homepage, https://networkx.org/",
+        "Bug Tracker, https://github.com/networkx/networkx/issues",
+        "Documentation, https://networkx.org/documentation/stable/",
+        "Source Code, https://github.com/networkx/networkx"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "BSD-3-Clause",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:parso",
+      "name": "parso",
+      "type": "PyPI",
+      "version": "0.8.7",
+      "source": [
+        "https://github.com/davidhalter/parso"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:pexpect",
+      "name": "pexpect",
+      "type": "PyPI",
+      "version": "4.9.0",
+      "source": [
+        "Bug Tracker, https://github.com/pexpect/pexpect/issues",
+        "Documentation, https://pexpect.readthedocs.io/",
+        "Source Code, https://github.com/pexpect/pexpect",
+        "History, https://pexpect.readthedocs.io/en/stable/history.html"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "ISC license",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:pillow",
+      "name": "pillow",
+      "type": "PyPI",
+      "version": "13.0.0",
+      "source": [
+        "Release notes, https://pillow.readthedocs.io/en/stable/releasenotes/index.html",
+        "Changelog, https://github.com/python-pillow/Pillow/releases",
+        "Documentation, https://pillow.readthedocs.io",
+        "Funding, https://tidelift.com/lifter/search/pypi/pillow",
+        "Homepage, https://python-pillow.org",
+        "Mastodon, https://fosstodon.org/@pillow",
+        "Security, https://pillow.readthedocs.io/en/stable/handbook/security.html",
+        "Source, https://github.com/python-pillow/Pillow"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "MIT-CMU",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:pip",
+      "name": "pip",
+      "type": "PyPI",
+      "version": "25.0.1",
+      "source": [
+        "Homepage, https://pip.pypa.io/",
+        "Documentation, https://pip.pypa.io",
+        "Source, https://github.com/pypa/pip",
+        "Changelog, https://pip.pypa.io/en/stable/news/"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:prompt_toolkit",
+      "name": "prompt_toolkit",
+      "type": "PyPI",
+      "version": "3.0.53",
+      "source": [
+        "Homepage, https://github.com/prompt-toolkit/python-prompt-toolkit",
+        "Documentation, https://python-prompt-toolkit.readthedocs.io/en/stable/"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "UNKNOWN",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:psutil",
+      "name": "psutil",
+      "type": "PyPI",
+      "version": "7.2.2",
+      "source": [
+        "https://github.com/giampaolo/psutil"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "BSD-3-Clause",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:ptyprocess",
+      "name": "ptyprocess",
+      "type": "PyPI",
+      "version": "0.7.0",
+      "source": [
+        "https://github.com/pexpect/ptyprocess"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "UNKNOWN",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:pure_eval",
+      "name": "pure_eval",
+      "type": "PyPI",
+      "version": "0.2.4",
+      "source": [
+        "http://github.com/alexmojaki/pure_eval"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:pycparser",
+      "name": "pycparser",
+      "type": "PyPI",
+      "version": "3.12",
+      "source": [
+        "Homepage, https://github.com/eliben/pycparser"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "BSD-3-Clause",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:pycryptodome",
+      "name": "pycryptodome",
+      "type": "PyPI",
+      "version": "3.23.0",
+      "source": [
+        "Source, https://github.com/Legrandin/pycryptodome/",
+        "Changelog, https://www.pycryptodome.org/src/changelog"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "BSD, Public Domain",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:pydot",
+      "name": "pydot",
+      "type": "PyPI",
+      "version": "4.0.1",
+      "source": [
+        "Homepage, https://github.com/pydot/pydot",
+        "Changelog, https://github.com/pydot/pydot/blob/main/ChangeLog",
+        "Bug Tracker, https://github.com/pydot/pydot/issues"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:pyelftools",
+      "name": "pyelftools",
+      "type": "PyPI",
+      "version": "0.33",
+      "source": [
+        "Homepage, https://github.com/eliben/pyelftools",
+        "Repository, https://github.com/eliben/pyelftools.git",
+        "Issues, https://github.com/eliben/pyelftools/issues"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "Public domain",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:Pygments",
+      "name": "Pygments",
+      "type": "PyPI",
+      "version": "2.21.0",
+      "source": [
+        "Homepage, https://pygments.org",
+        "Documentation, https://pygments.org/docs",
+        "Source, https://github.com/pygments/pygments",
+        "Bug Tracker, https://github.com/pygments/pygments/issues",
+        "Changelog, https://github.com/pygments/pygments/blob/master/CHANGES"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "BSD-2-Clause",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:pyparsing",
+      "name": "pyparsing",
+      "type": "PyPI",
+      "version": "3.3.3",
+      "source": [
+        "Documentation, https://pyparsing-docs.readthedocs.io/en/latest/",
+        "Homepage, https://github.com/pyparsing/pyparsing/",
+        "Source, https://github.com/pyparsing/pyparsing.git"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:PyYAML",
+      "name": "PyYAML",
+      "type": "PyPI",
+      "version": "6.0.3",
+      "source": [
+        "Bug Tracker, https://github.com/yaml/pyyaml/issues",
+        "CI, https://github.com/yaml/pyyaml/actions",
+        "Documentation, https://pyyaml.org/wiki/PyYAMLDocumentation",
+        "Mailing lists, http://lists.sourceforge.net/lists/listinfo/yaml-core",
+        "Source Code, https://github.com/yaml/pyyaml"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:SQLAlchemy",
+      "name": "SQLAlchemy",
+      "type": "PyPI",
+      "version": "2.1.6",
+      "source": [
+        "Homepage, https://www.sqlalchemy.org",
+        "Documentation, https://docs.sqlalchemy.org",
+        "Changelog, https://docs.sqlalchemy.org/latest/changelog/index.html",
+        "Source Code, https://github.com/sqlalchemy/sqlalchemy",
+        "Issue Tracker, https://github.com/sqlalchemy/sqlalchemy/issues",
+        "Discussions, https://github.com/sqlalchemy/sqlalchemy/discussions"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:stack-data",
+      "name": "stack-data",
+      "type": "PyPI",
+      "version": "0.6.3",
+      "source": [
+        "http://github.com/alexmojaki/stack_data"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "MIT",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:traitlets",
+      "name": "traitlets",
+      "type": "PyPI",
+      "version": "5.16.1",
+      "source": [
+        "Homepage, https://github.com/ipython/traitlets",
+        "Documentation, https://traitlets.readthedocs.io",
+        "Source, https://github.com/ipython/traitlets",
+        "Tracker, https://github.com/ipython/traitlets/issues"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "BSD 3-Clause License",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:typing_extensions",
+      "name": "typing_extensions",
+      "type": "PyPI",
+      "version": "4.16.0",
+      "source": [
+        "Bug Tracker, https://github.com/python/typing_extensions/issues",
+        "Changes, https://github.com/python/typing_extensions/blob/main/CHANGELOG.md",
+        "Documentation, https://typing-extensions.readthedocs.io/",
+        "Home, https://github.com/python/typing_extensions",
+        "Q & A, https://github.com/python/typing/discussions",
+        "Repository, https://github.com/python/typing_extensions"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "PSF-2.0",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:wcwidth",
+      "name": "wcwidth",
+      "type": "PyPI",
+      "version": "0.9.4",
+      "source": [
+        "Homepage, https://github.com/jquast/wcwidth"
+      ],
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "license": "UNKNOWN",
+      "license_review": "NEEDS_REVIEW",
+      "used_by": "isolated analysis environment; purpose in DEPENDENCIES.md"
+    },
+    {
+      "id": "tool:CPython",
+      "name": "CPython",
+      "version": "3.12.14",
+      "type": "runtime/tool",
+      "source": "https://www.python.org/",
+      "license": "PSF",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "used_by": "manual research and synthetic verification"
+    },
+    {
+      "id": "tool:OpenJDK",
+      "name": "OpenJDK",
+      "version": "17.0.20+8-1-24.04-Ubuntu",
+      "type": "runtime/tool",
+      "source": "https://openjdk.org/",
+      "license": "GPL-2.0 WITH Classpath-exception-2.0",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "used_by": "manual research and synthetic verification"
+    },
+    {
+      "id": "tool:JADX",
+      "name": "JADX",
+      "version": "1.5.6",
+      "type": "runtime/tool",
+      "source": "https://github.com/skylot/jadx",
+      "license": "Apache-2.0",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "used_by": "manual research and synthetic verification"
+    },
+    {
+      "id": "tool:curl",
+      "name": "curl",
+      "version": "8.5.0",
+      "type": "runtime/tool",
+      "source": "https://curl.se/",
+      "license": "curl",
+      "license_review": "NEEDS_REVIEW",
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "used_by": "manual research and synthetic verification"
+    },
+    {
+      "id": "runtime:node",
+      "name": "Node.js",
+      "version": "24.22.1",
+      "type": "runtime",
+      "source": "https://nodejs.org/",
+      "license": "MIT and bundled components; NEEDS_REVIEW",
+      "lockfile": "analysis/com.halcon.connect/1391/dependencies.lock.json",
+      "used_by": "Node broker/contract tests and real-bytes replay; builtin modules only"
+    }
+  ],
+  "runtimes": {
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "java": "openjdk version \"17.0.20\" 2026-07-21\nOpenJDK Runtime Environment (build 17.0.20+8-1-24.04-Ubuntu)\nOpenJDK 64-Bit Server VM (build 17.0.20+8-1-24.04-Ubuntu, mixed mode, sharing)",
+    "curl": "curl 8.5.0 (x86_64-pc-linux-gnu) libcurl/8.5.0 OpenSSL/3.0.13 zlib/1.3 brotli/1.1.0 zstd/1.5.5 libidn2/2.3.7 libpsl/0.21.2 (+libidn2/2.3.7) libssh/0.10.6/openssl/zlib nghttp2/1.59.0 librtmp/2.3 OpenLDAP/2.6.7\nRelease-Date: 2023-12-06, security patched: 8.5.0-2ubuntu10.13\nProtocols: dict file ftp ftps gopher gophers http https imap imaps ldap ldaps mqtt pop3 pop3s rtmp rtsp scp sftp smb smbs smtp smtps telnet tftp\nFeatures: alt-svc AsynchDNS brotli GSS-API HSTS HTTP2 HTTPS-proxy IDN IPv6 Kerberos Largefile libz NTLM PSL SPNEGO SSL threadsafe TLS-SRP UnixSockets zstd"
+  },
+  "other_dependencies": [
+    {
+      "version": "1.5.6",
+      "source": "https://github.com/skylot/jadx/releases/tag/v1.5.6",
+      "license": "Apache-2.0",
+      "zip_sha256": "545ea2be9c242511bc145755cf4bda2485ade42966e096f8b4d3da2a230e8974",
+      "jar_sha256": "fe3e12c45acf75f92369685fd02d1d7a7323385dc725680a9b98a0dac0ea554b"
+    }
+  ],
+  "code_paths": {
+    "operational_decoder": "decoders/Python/apps/Halcon_R_Net/codec.py",
+    "catalog_cli": "decoders/Python/apps/Halcon_R_Net/server_catalog_decoder.py",
+    "catalog_broker": "cloud/web/lib/server-vpn-provider.mjs",
+    "updater_protocol": "cloud/web/lib/halcon-protocol.mjs",
+    "worker": "cloud/workers/python/catalog_vpn_bridge.py",
+    "worker_isolation": "cloud/workers/python/engine.py",
+    "public_metadata": "cloud/web/lib/server-vpn-catalog.mjs",
+    "worker_contract": "cloud/web/lib/c3-gateway.mjs",
+    "provider_controls": "cloud/web/lib/c12-provider-controls.mjs",
+    "deployment": "cloud/compose.yaml",
+    "tests": [
+      "tests/test_halcon_r_net.py",
+      "cloud/web/tests/halcon-r-net.test.mjs"
+    ]
+  },
+  "evidence_refs": [
+    "ANALYSIS.md",
+    "RESULTS.md",
+    "REPRODUCE.md",
+    "DEPENDENCIES.md",
+    "generated/backup.summary.json",
+    "generated/input_inventory.json",
+    "tests/test_envelope.py",
+    "tests/fixtures/expected.json",
+    "tests/fixtures/synthetic.envelope",
+    "generated/primary.summary.json",
+    "generated/real_catalog.summary.json",
+    "tools/verify_real.py",
+    "tools/replay_real.mjs",
+    "../../../tests/test_halcon_r_net.py"
+  ],
+  "limitations": [
+    "Node direct broker returned REMOTE_NETWORK_DENIED in this executor; actual Node/VPS transport unverified.",
+    "Android/Termux not executed; no Play-original signature comparison; latest official build not certified.",
+    "No new file/text/export format claimed; no VIP/payment/account endpoints tested.",
+    "JADX DEX1 had22 errors; relevant DEX2 completed successfully.",
+    "Third-party license review/automatic Phase7 approval remain separate and pending."
+  ],
+  "network_requirements": [
+    "Authorized fixed original POST with real provisioned signing secret; no redirects.",
+    "Public backup404 is historical failure, never substituted for main response.",
+    "Real Node/VPS validation still required."
+  ],
+  "manual_steps": [
+    "Provision both real variables from private verified recipe/env artifact; preserve existing env and switches.",
+    "Deploy only after owner instruction and test real Node path on VPS; no automatic merge/deploy in this change."
+  ],
+  "unresolved_questions": [
+    "Actual Node/VPS transport and Android physical verification.",
+    "Latest official build and exact Play mirror signature equivalence."
+  ],
+  "fixtures": [
+    {
+      "path": "tests/fixtures/catalog.envelope",
+      "type": "SYNTHETIC",
+      "sha256": "0140de616666e68dd1eae6f94b6fec040d9d4618a6c12804221f7a46aab34cd6"
+    },
+    {
+      "path": "tests/fixtures/catalog.expected.json",
+      "type": "SYNTHETIC",
+      "sha256": "ab6cc22c8616868aa611b6661cc01f72d899c4c6bb4aaf67d3c0ec3cf76709f5"
+    },
+    {
+      "path": "tests/fixtures/expected.json",
+      "type": "SYNTHETIC",
+      "sha256": "6cdc0db676fc1526edc2653b5661054a104d652f25496909ea09f272874aeb19"
+    },
+    {
+      "path": "tests/fixtures/synthetic.envelope",
+      "type": "SYNTHETIC",
+      "sha256": "e5672b267fcba732610d06e91106b7490fe7960f8d27577aba344ca570ede321"
+    }
+  ],
+  "tests": {
+    "python": 22,
+    "node": 33,
+    "result": "PASS",
+    "independent_oracle": "OpenJDK17 JCA, complete real635/101 JSON equal to production CLI and isolated worker",
+    "actual_downloads": "Research probe POST HTTP200 plus production Python CLI download, both real",
+    "node_transport": "Real attempt failed environment network validation; real-bytes replay with mocked HTTP passed"
+  },
+  "integration_enabled": false,
+  "dependency_lockfile": "dependencies.lock.json",
+  "code_integrated": true,
+  "verification_scope": "VERIFIED_REAL_PYTHON_CLI_JCA_ISOLATED_WORKER",
+  "production_deployment_verified": false,
+  "conditional_enablement": "Both provisioned backend secrets, global Server VPN enabled and individual switch allowed",
+  "runtime_source_hashes": [
+    {
+      "path": "decoders/Python/apps/Halcon_R_Net/codec.py",
+      "sha256": "a768d55922ab9f7f7bc84b2d4f4ecaee9e0898a0c977d306234d36e4978628de"
+    },
+    {
+      "path": "decoders/Python/apps/Halcon_R_Net/server_catalog_decoder.py",
+      "sha256": "3fb75997655a5d301958dc03b256c16295c9e8714f39ebb87eda7865f429c1cc"
+    },
+    {
+      "path": "cloud/web/lib/halcon-protocol.mjs",
+      "sha256": "9b1e21a57d54e55a94e37cd44b0e3374c8fdc12a77fbdbe0d8a6bdc7fcd204c3"
+    }
+  ],
+  "secret_consumers": {
+    "SPDECODE_HALCON_REQUEST_SECRET": [
+      "web updater",
+      "Python catalog download CLI"
+    ],
+    "SPDECODE_HALCON_CATALOG_PASSWORD": [
+      "web configuration readiness",
+      "Halcon-only worker child",
+      "Python CLI"
+    ]
+  },
+  "icon": {
+    "source": "res/mipmap-xxxhdpi-v4/ic_launcher.webp",
+    "width": 192,
+    "height": 192,
+    "source_sha256": "4fef8deb94cf12ff617f61cf034b249e71ee7984fd5ce7a70aba919103552db9",
+    "png_sha256": "859825df9e151d9b77039cc7f4a42b75feb3b9ea823999fa567ec823a173f143",
+    "png_bytes": 71433,
+    "conversion": "Pillow PNG; original pixels verified identical"
+  }
+}

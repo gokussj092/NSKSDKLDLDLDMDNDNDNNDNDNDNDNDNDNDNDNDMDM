@@ -11,7 +11,7 @@ function open(e,p,purpose='catalog') {
  const cipher=createDecipheriv('aes-256-gcm',key,Buffer.from(e.iv,'base64url'));
  cipher.setAAD(Buffer.from(['SPDECODE-CATALOG-1',purpose,encoded(p),e.serverKey,String(e.plainBytes)].join('\n')));
  const data=Buffer.from(e.data,'base64url');cipher.setAuthTag(data.subarray(-16));
- return JSON.parse(gunzipSync(Buffer.concat([cipher.update(data.subarray(0,-16)),cipher.final()]),{maxOutputLength:4*1024*1024}));
+ return JSON.parse(gunzipSync(Buffer.concat([cipher.update(data.subarray(0,-16)),cipher.final()]),{maxOutputLength:32*1024*1024}));
 }
 test('compressed catalog envelope decrypts Unicode and never repeats ephemeral key, salt or IV',()=>{
  const p=pair(),source={apps:[{name:'México 👻 漢字',metadata:'hello'.repeat(30000)}]};
@@ -31,5 +31,5 @@ test('reject non-P256, noncanonical keys, arbitrary purposes and huge plaintext'
  const p=pair(),wrong=generateKeyPairSync('ec',{namedCurve:'secp384r1'});
  for(const key of ['',encoded(wrong),encoded(p)+'=',null])assert.equal(validCatalogKey(key),false);
  assert.throws(()=>sealCatalog({},encoded(p),'arbitrary'));
- assert.throws(()=>sealCatalog({data:'a'.repeat(4*1024*1024)},encoded(p),'catalog'));
+ assert.throws(()=>sealCatalog({data:'a'.repeat(32*1024*1024)},encoded(p),'catalog'));
 });

@@ -120,7 +120,7 @@ test('unavailable source skips worker, releases lease and respects the persisten
  finally{delete process.env.CLOUD_HTTP_CUSTOM_IMPORT_ENABLED;}
 });
 test('online HTTPS metadata is additive and leaves the legacy text schema valid',()=>{
- const c=catalog();assert.equal(c.catalogVersion,56);validatePublicTextFormats({schemaVersion:1,formats:c.textFormats});
+ const c=catalog();assert(c.catalogVersion>=65, 'catalog version must not regress');validatePublicTextFormats({schemaVersion:1,formats:c.textFormats});
  assert.equal(c.onlineReferencesSchemaVersion,1);assert.equal(c.onlineReferenceCount,2);
  assert.deepEqual(c.onlineReferenceFormats.map(x=>x.prefix).sort(),['https://cloudvpn.mrfrankofc.com/','https://link.playsmarty.uk/'].sort());
  assert(c.onlineReferenceFormats.every(x=>x.suffix==='hc'&&x.kind==='cloud'));
@@ -194,4 +194,27 @@ test('unified Cloud route defaults to Injector, routes HC by explicit provider a
  assert.equal(legacy.status,503);
  assert.equal((await legacy.json()).error.code,'REMOTE_NOT_CONFIGURED');
  assert.equal(downloads,1);
+});
+
+test('new HC import downloads and decodes once in one authenticated operation',async()=>{
+ const redis=new Redis(),bearer=await session(redis);let downloads=0,workers=0;
+ const result=await externalImportRequest(send({reference:short,consent:true,decode:true},bearer),'hc',{
+  storeProvider:async()=>redis,vendor:{download:async()=>{downloads++;return encrypted;}},
+  fetchImpl:async(_url,options)=>{workers++;assert.deepEqual(Buffer.from(JSON.parse(options.body).dataBase64,'base64'),encrypted);
+   return Response.json({status:'success',kind:'file',format:'hc',isPartial:false,rawText:'{"ok":true}',structuredJson:{ok:true}});}
+ });
+ assert.equal(result.status,200);assert.deepEqual((await result.json()).structuredJson,{ok:true});
+ assert.equal(downloads,1);assert.equal(workers,1);
+ for(const active of redis.active.values())assert.equal(active.size,0);
+});
+test('credential-gated combined import returns original encrypted input without retry or server retention',async()=>{
+ const redis=new Redis(),bearer=await session(redis);let downloads=0,workers=0;
+ const result=await externalImportRequest(send({reference:short,consent:true,decode:true},bearer),'hc',{
+  storeProvider:async()=>redis,vendor:{download:async()=>{downloads++;return encrypted;}},
+  fetchImpl:async()=>{workers++;return Response.json({status:'error',error:{code:'HWID_PASSWORD_REQUIRED'}},{status:422});}
+ });
+ assert.equal(result.status,200);const doc=await result.json();assert.equal(doc.status,'credentials_required');
+ assert.equal(doc.code,'HWID_PASSWORD_REQUIRED');assert.deepEqual(Buffer.from(doc.dataBase64,'base64'),encrypted);
+ assert.equal(downloads,1);assert.equal(workers,1);
+ assert(!JSON.stringify([...redis.values]).includes(doc.dataBase64));
 });

@@ -18,4 +18,7 @@
     <string name="server_vpn_catalog_current">فهرست سرورهای VPN به‌روز است.</string>
     <string name="server_vpn_catalog_updated">فهرست سرورهای VPN به‌روزرسانی شد.</string>
     <string name="server_vpn_catalog_update_error">بررسی یا دانلود فهرست ممکن نشد. دوباره تلاش کنید.</string>
+    <string name="server_vpn_updated_badge">به‌روزرسانی شده</string>
+    <string name="server_vpn_maintenance_badge">در حال نگهداری</string>
+    <string name="server_vpn_maintenance_detail">روش به‌طور موقت در حال نگهداری است</string>
 </resources>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feedback_title">Ошибки и предложения</string>
+    <string name="feedback_settings_detail">Сообщайте об ошибках и предлагайте новые методы APK</string>
+    <string name="feedback_intro">Выберите тип обращения. Данные отправятся только после нажатия Отправить.</string>
+    <string name="feedback_category">Тип обращения</string>
+    <string name="feedback_category_method">Добавить метод APK</string>
+    <string name="feedback_category_bug">Сообщить об ошибке</string>
+    <string name="feedback_category_suggestion">Предложить улучшение</string>
+    <string name="feedback_method_help">Вставьте ссылку на Google Play, Uptodown или другой источник и опишите нужную интеграцию.</string>
+    <string name="feedback_app_link">Ссылка на приложение</string>
+    <string name="feedback_app_link_hint">https://play.google.com/store/apps/details?id=...</string>
+    <string name="feedback_bug_instruction">Отметьте все возникшие ошибки (не менее одной).</string>
+    <string name="feedback_issue_decode">Не удалось расшифровать файл</string>
+    <string name="feedback_issue_catalog">Не удалось загрузить VPN-каталог</string>
+    <string name="feedback_issue_import">Ошибка импорта файла</string>
+    <string name="feedback_issue_export">Ошибка экспорта или снятия блокировки конфигурации</string>
+    <string name="feedback_issue_crash">Приложение аварийно закрылось</string>
+    <string name="feedback_issue_cloud">Проблема доступа к облаку или серверу</string>
+    <string name="feedback_issue_other">Другая ошибка</string>
+    <string name="feedback_optional_report">Дополнительное описание (необязательно)</string>
+    <string name="feedback_description_required">Что вы хотите добавить или улучшить?</string>
+    <string name="feedback_report_hint">Опишите шаги при желании. Это необязательно.</string>
+    <string name="feedback_description_hint">Опишите нужный метод, файлы, каталог или улучшение.</string>
+    <string name="feedback_privacy_note">Не указывайте пароли, личные ключи, расшифрованные конфигурации и секретные журналы. Передаются только выбранные данные.</string>
+    <string name="feedback_error">Не удалось отправить. Ваши ответы сохранены.</string>
+    <string name="feedback_received">Заявка принята. Номер: %1$s</string>
+    <string name="feedback_send">Отправить заявку</string>
+    <string name="feedback_sending">Отправка…</string>
+</resources>

@@ -1,0 +1,54 @@
+{
+  "FileName": "synthetic-alsaher",
+  "Version": "synthetic-2",
+  "ReleaseNotes": "test",
+  "config_url": "0vIogl4uBbrTL3HizUjcs6NnuZLBd4G48j0yhzYHUr+bRsr0131RaKgFShGP5DqBMrsp4UQo1+b868XaeZIdumPRFMZnUEHrQBnUFonY0Ly3586hUFRKig==",
+  "cloud_get_api": "958fp+3bKd8Jof24xj6YveH8O0eACfMCIrYKxLf8eyubNAYLN9eoOIhrvN3fNDOgVxo3tfcN30lPZYiZjBL7EnNBZGuIDwSFTAHiyg==",
+  "cloud_post_api": "oCID4M9N5twKTzDYiPuBEeAYT63Wu7mHVIEEUaAmiszW7gWOzGrtOophRu8O1/Xk5rhpnGxlFghCq7pinlD3LExDcKeduIkzNPYmIA==",
+  "account_api": "",
+  "AppConfPass": "",
+  "Servers": [
+    {
+      "Name": "Example",
+      "ServerIP": "eeECSy0zH0kTZPLbgnXYRcL7H/60A+W9VMVatTAMTksFdsGR2RhhJEAbPlixBdNfoTZaNQ==",
+      "ProxyHost": "JKqViofeHtBn/De2uTbxx92ZRKhDV4J/SZHhUozu8gIjJb0q7G13qdCOXsLObTnFebKx30GR0mg=",
+      "Username": "8suuJK0ECJnc/kWpJsWFyKEOy4E8PpyaoznhoMKIDhAtEzAvhCt6eEH6lYkApqjy",
+      "Password": "RbXe0vkCJJtcaIlEFqX+XPXkxabEx+yd9qy/rwuol5oqWk0sG/KcH3o9y67GjzgUG6RsRa3lXgkZNeYq",
+      "TcpPort": "443",
+      "AutoLogIn": false,
+      "unknown": {
+        "preserve": [
+          true,
+          null,
+          7
+        ]
+      }
+    }
+  ],
+  "HTTPNetworks": [
+    {
+      "Name": "HTTP sample",
+      "NetworkPayload": "eKdw2hIylDRluJ1FHX5jJISA3uu7+LFEwrDw90ITmPw6LbI6JGYHQD8st6YVkAKjiZRwM6n1a43+uyCHukn2nDKpr5Eo6erUn+ggEYPunbM6uSgNWsPHVGzaDocJyD4fsUHumQrTSbWxHlQxPFsp2hL2BCUx1XxVpkwjP8hYZKw0WcpqFiA2oLjgr2U6sjIob2UxpiJGUXg=",
+      "SquidProxy": "JKqViofeHtBn/De2uTbxx92ZRKhDV4J/SZHhUozu8gIjJb0q7G13qdCOXsLObTnFebKx30GR0mg=",
+      "UseDefProxy": true
+    }
+  ],
+  "SSLNetworks": [
+    {
+      "Name": "SSL sample",
+      "SSLSNI": "JT7aIbs8N1LVRtpF26KdXmj26s+bc341vkOnzPqxVDQxGP5fMshFtA==",
+      "SquidProxy": "",
+      "SSLPort": "443"
+    }
+  ],
+  "JSONsettings": [
+    {
+      "mLocalPort": "1080",
+      "mCompression": true,
+      "unknown": "preserve"
+    }
+  ],
+  "unknownRoot": {
+    "preserve": true
+  }
+}

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_download_confirm_body">Скачать полный каталог, форматы и значки одним запросом?</string>
+</resources>

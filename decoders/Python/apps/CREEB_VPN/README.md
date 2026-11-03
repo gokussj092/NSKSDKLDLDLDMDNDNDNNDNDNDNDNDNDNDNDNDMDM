@@ -1,3 +1,23 @@
+# Revisión vigente50.0/build50 — 2026-11-01
+
+Versión50.0 reconfirmada en HTML vivo de Play; el original privado recuperado
+coincide en todos sus hashes con el ya analizado. **Remoto todavía pendiente.**
+Se recuperó el paso omitido: GET JSON digest/bypassActive previo al POST con
+Play Integrity y nonce. Hoy ese GET devuelve HTML200/195 y el POST de fallo
+sin token devuelve HTML405/163. Falta ensayar el POST original con un token
+válido y su nonce/diagnostics reales; no se deduce que ese POST también falle.
+
+El script `scripts/apk_analysis/creeb_vpn_remote_probe.py` ejecuta la secuencia,
+acepta una solicitud original fresca desde archivo0600 y valida todo el
+catálogo antes de escribir JSON. Conserva valores privados fuera de Git; no
+fabrica atestaciones ni reusa automáticamente tokens. La prueba real actual
+termina exit1/catalogValid:false, sin archivo JSON remoto.
+Incluido1.0.0/1 servidor/1 tweak otra vez igual a JDK/CLI/worker; **esto no
+completa la descarga remota**.26 Python correctas. Sin broker habilitado,
+fusión, despliegue, APK ni C11. [Flujo, hashes y límites](ANALYSIS.md).
+
+---
+
 # CREEB VPN 50.0 (50)
 
 Paquete `com.creebtunnel.vpn`. Lector offline de archivos `.crev` y catálogo

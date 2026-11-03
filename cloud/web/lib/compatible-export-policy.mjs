@@ -2,18 +2,63 @@
 import {readFile,mkdir,open,rename,unlink,stat} from 'node:fs/promises';
 import {join} from 'node:path';
 import {randomUUID} from 'node:crypto';
+import {publicFormats,fileFormatUnlockedExports} from './file-format-catalog.mjs';
 
 export const EXPORT_HEADER='x-spdecode-compatible-export';
+export const HAT_EXPORT_HEADER='x-spdecode-compatible-export-hat';
 export const EXPORT_PROFILE='original-app-open-v1';
 export const EXPORT_PROTOCOL_FLOOR='1.1.21';
 const ROOT='/app/provider-control';
 const DEFAULT=Object.freeze({schemaVersion:1,revision:0,enabled:false,minimumAppVersion:EXPORT_PROTOCOL_FLOOR});
-const FORMATS=Object.freeze([
- {suffix:'hc',targetAppId:'http-custom',name:'HTTP Custom',banner:'spdecode-html'},
- {suffix:'dark',targetAppId:'dark-tunnel',name:'Dark Tunnel',banner:'none'},
- {suffix:'ehi',targetAppId:'http-injector',name:'HTTP Injector',banner:'spdecode-html'},
- {suffix:'npvs',targetAppId:'npv-tunnel',name:'NPV Tunnel',banner:'none'},
-]);
+// Derive Unlocked capability from the existing file-format catalog.
+// Decoder support alone must never imply an export writer exists.
+const LEGACY_SUFFIXES=Object.freeze(['hc','dark','ehi','npvs','hat']);
+export function validateExportRegistry(registry,{knownFormats=publicFormats()}={}) {
+ const same=(v,keys)=>v&&typeof v==='object'&&!Array.isArray(v)&&
+   Object.keys(v).sort().join(',')===keys.slice().sort().join(',');
+ if(!same(registry,['schemaVersion','revision','formats'])||
+    registry.schemaVersion!==1||!Number.isSafeInteger(registry.revision)||
+    registry.revision<1||registry.revision>100000 ||
+    !Array.isArray(registry.formats)||registry.formats.length<LEGACY_SUFFIXES.length||
+    registry.formats.length>64)throw Error('EXPORT_REGISTRY_INVALID');
+ const allowed=new Set(knownFormats.map(f=>f.suffix));
+ const observed=new Set(),identities=new Set();
+ for(const f of registry.formats) {
+  if(!same(f,['suffix','targetAppId','name','banner']) ||
+     typeof f.suffix!=='string'||!/^[a-z0-9][a-z0-9_-]{0,15}$/.test(f.suffix)||
+     !allowed.has(f.suffix)||observed.has(f.suffix) ||
+     typeof f.targetAppId!=='string'||!/^[a-z0-9][a-z0-9-]{0,47}$/.test(f.targetAppId)||
+     identities.has(f.targetAppId) ||
+     typeof f.name!=='string'||f.name!==f.name.trim()||f.name.length<1||
+     f.name.length>80||/[\x00-\x1f\x7f\u202a-\u202e\u2066-\u2069]/.test(f.name)||
+     !['none','spdecode-html'].includes(f.banner)) throw Error('EXPORT_REGISTRY_INVALID');
+  observed.add(f.suffix);identities.add(f.targetAppId);
+ }
+ if(LEGACY_SUFFIXES.some(s=>!observed.has(s)))throw Error('EXPORT_REGISTRY_INVALID');
+ return Object.freeze({schemaVersion:1,revision:registry.revision,
+  formats:Object.freeze(registry.formats.map(f=>Object.freeze({...f})))});
+}
+let registryCache=null;
+export function exportRegistry() {
+ if(registryCache)return registryCache;
+ const raw=fileFormatUnlockedExports();
+ const order=new Map(LEGACY_SUFFIXES.map((suffix,index)=>[suffix,index]));
+ const formats=raw.formats.slice().sort((a,b)=>{
+  const ai=order.get(a.suffix),bi=order.get(b.suffix);
+  if(ai!==undefined&&bi!==undefined)return ai-bi;
+  if(ai!==undefined)return -1;
+  if(bi!==undefined)return 1;
+  return a.suffix.localeCompare(b.suffix);
+ });
+ registryCache=validateExportRegistry({schemaVersion:1,
+  revision:raw.revision,formats});
+ return registryCache;
+}
+export function negotiatesDynamicExport(request) {
+ return negotiatesExport(request)&&
+   request.headers.get(EXPORT_HEADER)==='2'&&
+   atLeast(request.headers.get('x-spdecode-app-version'),'1.1.26');
+}
 
 export function version(value){
  if(typeof value!=='string'||!/^(0|[1-9][0-9]{0,3})\.(0|[1-9][0-9]{0,3})\.(0|[1-9][0-9]{0,3})$/.test(value))return null;
@@ -24,8 +69,13 @@ export function atLeast(value,floor){
  for(let i=0;i<3;i++){if(a[i]!==b[i])return a[i]>b[i];}return true;
 }
 export function negotiatesExport(request){
- return request.headers.get(EXPORT_HEADER)==='1' &&
+ return ['1','2'].includes(request.headers.get(EXPORT_HEADER))&&
   atLeast(request.headers.get('x-spdecode-app-version'),EXPORT_PROTOCOL_FLOOR);
+}
+// Old Android clients accept at most four fixed targets. Advertise HA only
+// to clients that explicitly understand the additive fifth target.
+export function negotiatesHatExport(request){
+ return negotiatesExport(request)&&request.headers.get(HAT_EXPORT_HEADER)==='1';
 }
 function valid(p){
  return p&&typeof p==='object'&&!Array.isArray(p)&&
@@ -78,14 +128,21 @@ export function exportAllowed(request,policy){
   atLeast(request.headers.get('x-spdecode-app-version'),policy.minimumAppVersion);
 }
 export function projectedCatalogVersion(request,base,policy){
- const result=negotiatesExport(request)?base+policy.revision+1:base;
+ const result=negotiatesDynamicExport(request)
+  ?base+policy.revision+exportRegistry().revision+4
+  :negotiatesExport(request)?base+policy.revision+(negotiatesHatExport(request)?2:1):base;
  if(!Number.isSafeInteger(result)||result<1||result>=1_000_000_000)throw Error('CATALOG_VERSION_INVALID');
  return result;
 }
 export function exportCatalog(request,policy){
  if(!negotiatesExport(request))return null;
  const allowed=exportAllowed(request,policy);
- return {schemaVersion:1,revision:policy.revision,enabled:allowed,
+ const registry=exportRegistry();
+ const dynamic=negotiatesDynamicExport(request);
+ const formats=allowed?(dynamic?registry.formats:
+   registry.formats.filter(f=>LEGACY_SUFFIXES.includes(f.suffix)&&
+     (f.suffix!=='hat'||negotiatesHatExport(request)))):[];
+ return {schemaVersion:dynamic?2:1,revision:policy.revision,enabled:allowed,
   minimumAppVersion:policy.minimumAppVersion,profile:EXPORT_PROFILE,
-  maxArtifactBytes:1024*1024,formats:allowed?FORMATS.map(x=>({...x})):[]};
+  maxArtifactBytes:1024*1024,formats:formats.map(f=>({...f}))};
 }

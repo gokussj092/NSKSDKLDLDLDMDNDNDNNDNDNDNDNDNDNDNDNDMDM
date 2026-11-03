@@ -1,3 +1,117 @@
+# Revisión posterior de la API — 2026-11-01
+
+La conexión ya se consiguió en dos GET nuevos con las cabeceras del APK.
+Ambos devolvieron **HTTP404, application/json,57 bytes**:
+`{"error":"Todavía no hay una actualización publicada."}`
+
+Se probaron User-Agent Dalvik/2.1.0 y su variante Android11 completa, con
+Accept application/json y Cache-Control no-cache. CONNECT200 y TLS completado;
+no es el timeout previo. No se enviaron cookies, cuenta o tokens inventados.
+La ruta consultada es exactamente `https://gen.spei.click/updates/servers.json`.
+El actualizador original trata404/410 en ese manifiesto como ausencia de una
+publicación (retorna null), separado de una firma/tag inválidos o HTTP403.
+
+Esto confirma que la petición llega y que el endpoint informa que no hay una
+actualización publicada. No entrega el manifiesto firmado ni la URL/hash del
+archivo SPCF1, por lo que **no hay catálogo remoto123 descargado**. El JSON de
+73 servidores procede del incluido; el remoto histórico de74 sigue separado.
+
+La CLI ahora distingue ese estado con `NoUpdatePublished`, mensaje específico
+y exit3; no genera JSON, no usa el incluido sin --apk ni cae al feed antiguo.
+Un404 del segundo archivo no se clasifica como ausencia de publicación.
+37 pruebas Python correctas,0 skips. Broker, Unlocked y despliegue sin cambios.
+La evidencia de timeout que sigue se conserva como observación anterior.
+
+---
+
+# Reinvestigación de Speicers Pro 104.1.20/build123 — 2026-11-01
+
+Google Play anuncia Version123 (actualizado28-oct-2026). XAPK obtenido de
+APKPure, paquete/netfree.mx.store y104.1.20/code123 comprobados en AndroidManifest.
+Se completó una descarga parcial mediante Range; ZIP y CRC completos correctos.
+XAPK40752825 bytes SHA256:
+`e3c46d1b467b16647c2546cb8525a4fc0c6258c2c79b9bca9f9ef4715d42d09d`.
+Base APK SHA256 `b064d225c6a7c150d922057ad1304886b3dd3100b07d3d19a85057c0f4918427`.
+Certificado SHA1 `2efc2d2925f21963455e4e55994f9d810f45b707`,
+SHA256 `0df454e6429e1e131aff6f49e1337cb5ef4c1abcd87427d22a5258c07f6d8c9e`.
+Launcher netfree.mx.store.SplashActivity. DEX SHA256
+`46a5a731c24b0bc0cd0479cd519a6d3f1a81dc96fa25cafd54888435ea66c1e4`.
+JADX1.5.6:18 errores generales; no es una descompilación completa.
+
+## Método nuevo recuperado
+
+`pUiqFaC0z1g3yNQA.BOwrZmfITwTJm50`: prefijo SPCF1 LF, JSON exterior
+{payload,signature,alg}. RSA3072 PKCS1v1.5 SHA256 verifica el ASCII del payload
+Base64URL con la clave pública del APK; no se usa una clave privada del proveedor.
+Payload v1/app netfree.mx.store/kind servers_file/format SPCF1,
+key_id a8d4e7d79e33bcb8 y600000 iteraciones exactas.
+
+`oEPOtrv5uGtfWoMYzqE`: XOR de dos tablas públicas32 bytes → clave HMAC.
+HMAC-SHA256 de `SPEICERS_FILE_PASSWORD_V1` +NUL+ frase LICENSE:NIGHT_MODE;
+Base64URL sin padding del digest es password ASCII de PBKDF2-SHA256/600000/256.
+Salt32, nonce12, AES-GCM/tag16. AAD ASCII:
+`SPCF1|netfree.mx.store|servers|<key_id>|600000|<salt Base64URL original>`.
+No se alteran firmas o tags; un error autenticado no cae al lector antiguo.
+La frase y las claves interiores del build120 siguen coincidiendo. Tras abrir,
+se descifran todos los campos interiores, conservando metadatos/flags/unknowns.
+Las constantes publicadas son del formato de la app, no secretos de sesión.
+
+`Uw7kqwPItX8IYS7mRB7.REhg2Fdx8QoajncCp` usa GET al manifiesto fijo
+`https://gen.spei.click/updates/servers.json`, límite16000 bytes.
+`gIigaNpNFxBVoAoGPyqEVD.NsgL2JskSlda` verifica su misma firma RS256.
+Se exige v1/app/kind server_update/origin https://gen.spei.click/format SPCF1,
+min_app_code121. Versión decimal sin ceros iniciales,1..2147483647,
+sha256 hex64, size1..3000000 y count0..10000. URL exacta reconstruida:
+`https://gen.spei.click/updates/servers/<version>/<sha256>.png`.
+Segunda descarga sin redirecciones, valida tamaño/hash y firma/SPCF1, después
+igualdad de Version y número de Servers. Accept y Cache-Control originales
+recuperados, sin autenticación/sesión adicional. No se eligieron otras rutas.
+
+## Evidencia real y bloqueo observado
+
+| Entrada real | Resultado completo |
+| --- | --- |
+| APK123 assets/flags/config.png,141487 bytes | Firma original y GCM válidos, versión1,73 servidores,799 campos |
+| APK123 assets/config/config.json,96000 bytes | Glifos anterior, versión9,32 servidores |
+| GitHub histórico servidores_pro,105132 bytes | versión35,74 servidores,797 campos |
+
+Los tres documentos enteros coinciden con JCA, CLI/lector y worker aislado;
+ningún perfil, bandera, campo desconocido o servidor se recorta. El resultado
+incluido no demuestra descarga del nuevo feed. La referencia JCA123 es
+`tests/golden/Speicers123Oracle.java`, independiente del Python.
+
+Fuente histórica descargada por Goku desde el repositorio del proveedor,
+commit f065becde43a99b4e33632808a5d5cf936f567dd, blob
+`a7807d8e77336a4b86497288e719cc3e8f538ba4`; SHA256 cuerpo
+`713af873fc262136f9a51302f1119e6e09d10e5386a9e1fbe9e4054b25d16d16`.
+Se conserva como evidencia histórica, sin presentar como respuesta123.
+
+**Feed123 NO validado:** Python timeout al pedir el manifiesto; curl con
+cabeceras Android terminó HTTP000/0 bytes, exit28,
+`Proxy CONNECT aborted due to timeout`. La búsqueda web directa también lo
+marcó inaccesible. No hay respuesta HTTP del origen ni evidencia para afirmar
+que el servidor esté caído o que rechace claves/cabeceras. La CLI nueva real
+falla sin producir JSON. No se recuperó su manifiesto ni el archivo remoto.
+El broker preexistente conserva el origen histórico y no se activa el nuevo.
+
+## Archivos y Unlocked
+
+ConfigParser mantiene `.sks`, clave GCM/PBKDF2-SHA256/1000/128/nonce12 y DES
+histórico; la ruta exporta Properties XML. La rama abierta escribe
+file.proteger=0, bloquearRoot=0, file.pedirLogin=0 y file.validade=0; contraseña
+e ID de usuario no son la clave del sobre. No se han obtenido ni probado un
+`.sks` exportado real123 o una importación física. No se registra escritor
+Unlocked ni sufijo nuevo basándose solo en esquema o vectores sintéticos.
+
+Continuar con descarga real del manifiesto/archivo desde un entorno con acceso
+al origen, ejecutar speicers_verify.py sobre sus bytes y comparar el documento
+entero antes de cambiar el broker. Para certificar Unlocked falta un `.sks`
+real de este build y posterior importación Android. No fabricar perfiles desde
+el catálogo como sustituto. APK, Java, cuerpos y JSON reales fuera de Git.
+Sin fusión, despliegue, compilación APK, Actions manuales o novedades C11.
+
+---
+
 # Evidencia de Speicers Pro 104.1.17
 
 Muestra autorizada de 2026-10-24, paquete `netfree.mx.store`, código 120.

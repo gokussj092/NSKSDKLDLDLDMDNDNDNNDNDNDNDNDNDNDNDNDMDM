@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feedback_title">エラーとご意見</string>
+    <string name="feedback_settings_detail">不具合報告や新しいAPK方式の追加依頼</string>
+    <string name="feedback_intro">依頼の種類を選択してください。送信を押すまでデータは送られません。</string>
+    <string name="feedback_category">依頼の種類</string>
+    <string name="feedback_category_method">新しいAPK方式を追加</string>
+    <string name="feedback_category_bug">エラーを報告</string>
+    <string name="feedback_category_suggestion">改善を提案</string>
+    <string name="feedback_method_help">Google Play、Uptodown、その他の配布元のリンクと、追加したい機能を入力してください。</string>
+    <string name="feedback_app_link">アプリのリンク</string>
+    <string name="feedback_app_link_hint">https://play.google.com/store/apps/details?id=...</string>
+    <string name="feedback_bug_instruction">発生したエラーをすべて選択してください（1件以上）。</string>
+    <string name="feedback_issue_decode">ファイルの復号に失敗</string>
+    <string name="feedback_issue_catalog">VPNカタログのダウンロードに失敗</string>
+    <string name="feedback_issue_import">ファイルの読み込みで問題</string>
+    <string name="feedback_issue_export">エクスポートまたはロック解除に失敗</string>
+    <string name="feedback_issue_crash">アプリが突然終了した</string>
+    <string name="feedback_issue_cloud">クラウドまたはサーバーへの接続に問題</string>
+    <string name="feedback_issue_other">その他のエラー</string>
+    <string name="feedback_optional_report">追加の報告（任意）</string>
+    <string name="feedback_description_required">追加または改善してほしい内容</string>
+    <string name="feedback_report_hint">手順や詳細は任意で入力できます。</string>
+    <string name="feedback_description_hint">希望する方式、ファイル、カタログ、改善点を説明してください。</string>
+    <string name="feedback_privacy_note">パスワード、秘密鍵、復号された設定、機密ログは入力しないでください。選択した内容だけが送信されます。</string>
+    <string name="feedback_error">送信できませんでした。入力内容は保持されます。</string>
+    <string name="feedback_received">依頼を受け付けました。受付番号：%1$s</string>
+    <string name="feedback_send">依頼を送信</string>
+    <string name="feedback_sending">送信中…</string>
+</resources>

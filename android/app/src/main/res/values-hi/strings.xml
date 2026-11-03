@@ -102,6 +102,10 @@
     <string name="decode_progress_reading">फ़ाइल पढ़ी जा रही है…</string>
     <string name="decode_progress_decoding">Cloud पर कॉन्फ़िगरेशन डिकोड हो रहा है…</string>
     <string name="decode_progress_saving">एन्क्रिप्टेड परिणाम सहेजा जा रहा है…</string>
+    <string name="decode_progress_wait">कृपया प्रतीक्षा करें…</string>
+    <string name="decode_progress_sending">भेजा जा रहा है…</string>
+    <string name="decode_progress_processing">प्रक्रिया जारी है…</string>
+    <string name="decode_progress_downloading_results">परिणाम डाउनलोड किए जा रहे हैं…</string>
     <string name="history_search">फ़ाइल नाम या एक्सटेंशन से खोजें</string>
     <string name="history_favorites">पसंदीदा</string>
     <string name="history_sort">क्रमबद्ध करें</string>
@@ -139,7 +143,7 @@
     <string name="native_decoder_mixed_short">मिश्रित</string>
     <string name="clear_current_result">दिखाया परिणाम साफ़ करें</string>
     <string name="guide_settings_title">इंटरैक्टिव गाइड</string>
-    <string name="guide_settings_detail">होम, इतिहास, प्रारूप, VPN सर्वर और सेटिंग को क्रम में देखें। गाइड फिर शुरू कर सकते हैं।</string>
+    <string name="guide_settings_detail">होम, इतिहास, APK विश्लेषण, VPN सर्वर और सेटिंग्स देखें। आप इस गाइड को कभी भी फिर शुरू कर सकते हैं।</string>
     <string name="guide_replay">गाइड शुरू करें</string>
     <string name="settings_version">संस्करण %1$s</string>
     <string name="settings_build_code">बिल्ड %1$d</string>
@@ -200,7 +204,7 @@
     <string name="hc_auth_enter_manually">पासवर्ड स्वयं दर्ज करें</string>
     <string name="hc_auth_input_invalid">आवश्यक पासवर्ड और/या मान्य 32-अक्षर HWID दर्ज करें।</string>
     <string name="hc_auth_failed">सुरक्षित HTTP Custom फ़ाइल सत्यापित नहीं हुई। पासवर्ड/HWID जाँचें; फ़ाइल खराब या असमर्थित रूप की हो सकती है।</string>
-    <string name="guide_step_six">प्रारूप: समर्थित ऐप और एक्सटेंशन देखें।</string>
+    <string name="guide_step_six">APK विश्लेषण: यह सुविधा जल्द उपलब्ध होगी।</string>
     <string name="guide_step_seven">VPN सर्वर: ऐप चुनें और सर्वर कैटलॉग डिकोड करें।</string>
     <string name="guide_step_eight">सेटिंग: भाषा चुनें, गोपनीयता देखें और ऐप विकल्प सँभालें।</string>
     <string name="server_vpn">VPN सर्वर</string>
@@ -213,4 +217,22 @@
     <string name="nur_servers_invalid_url">सर्वर सूची के लिए मान्य HTTPS URL दर्ज करें।</string>
     <string name="nur_servers_failed">सर्वर कैटलॉग डाउनलोड, सत्यापित या डिकोड नहीं हुआ।</string>
     <string name="language_screen_title">भाषा चुनें</string>
+    <string name="apk_analysis_title">APK विश्लेषण</string>
+    <string name="apk_analysis_coming_soon">जल्द आ रहा है</string>
+    <string name="settings_formats_title">समर्थित प्रारूप</string>
+    <string name="settings_formats_detail">संगत फ़ाइल एक्सटेंशन और टेक्स्ट प्रोटोकॉल देखें।</string>
+    <string name="apk_analysis_intro_title">APK से तकनीकी शोध रिपोर्ट तक</string>
+    <string name="apk_analysis_intro_detail">उपलब्ध होने पर स्थिर विश्लेषण मैनिफ़ेस्ट, मेटाडेटा, संसाधन और नेटिव लाइब्रेरी की जाँच करेगा ताकि डिकोडर स्क्रिप्ट तैयार करने में मदद मिले।</string>
+    <string name="apk_analysis_steps_title">प्रस्तावित प्रक्रिया</string>
+    <string name="apk_analysis_step_import">वह APK चुनें जिसका विश्लेषण करने की अनुमति आपके पास है</string>
+    <string name="apk_analysis_step_inspect">मेटाडेटा, संसाधन और लाइब्रेरी की जाँच करें</string>
+    <string name="apk_analysis_step_report">संरचित तकनीकी रिपोर्ट तैयार करें</string>
+    <string name="apk_analysis_subscription_title">सदस्यता से पहुँच</string>
+    <string name="apk_analysis_subscription_detail">सदस्यता आवश्यक होगी। योजनाएँ और भुगतान शर्तें अभी तय नहीं हुई हैं।</string>
+    <string name="apk_analysis_credit_cost">1 APK = 1 क्रेडिट</string>
+    <string name="apk_analysis_credit_price">1 क्रेडिट = 4 USD</string>
+    <string name="apk_analysis_price_note">4 USD प्रति क्रेडिट प्रस्तावित मूल्य है, सदस्यता शुल्क नहीं।</string>
+    <string name="apk_analysis_safety_note">प्रस्तावित विश्लेषण स्थिर है: APK इंस्टॉल या चलाया नहीं जाएगा।</string>
+    <string name="apk_analysis_import_unavailable">APK आयात करें (अनुपलब्ध)</string>
+    <string name="apk_analysis_no_charge">सेवा अभी सक्रिय नहीं है। कोई APK भेजा या क्रेडिट काटा नहीं जाता।</string>
 </resources>

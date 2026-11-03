@@ -18,7 +18,7 @@ class CloudUserErrorsContracts(unittest.TestCase):
         self.assertIn('if (playRequired && BuildConfig.SPDECODE_QA_BUILD)',source)
         self.assertIn('CloudRequestProof.attest(',source)
         self.assertNotIn('CloudQaMemory.get()',source)
-        self.assertIn('cloudClient.inspectHcRequirements(preview)',(JAVA/"MainActivity.kt").read_text("utf-8"))
+        self.assertIn('cloudClient.inspectHcRequirements(preview,',(JAVA/"MainActivity.kt").read_text("utf-8"))
         self.assertIn('"HWID_PASSWORD_REQUIRED"->true to true',source)
 
     def test_bounded_status_and_no_transport_details_in_dialogs(self):

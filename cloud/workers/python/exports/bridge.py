@@ -27,6 +27,8 @@ def main():
             from cloud.workers.python.exports.injector import export
         elif suffix == 'npvs':
             from cloud.workers.python.exports.npv import export
+        elif suffix == 'hat':
+            from cloud.workers.python.exports.hat import export
         elif suffix == 'dark':
             from cloud.workers.python.exports.dark import decode, unlock_configuration
             def export(data, credentials, language):

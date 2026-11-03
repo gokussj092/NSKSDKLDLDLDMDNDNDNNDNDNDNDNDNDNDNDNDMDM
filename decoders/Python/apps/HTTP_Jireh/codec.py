@@ -1,4 +1,4 @@
-"""HTTP Jireh 2.0: APK-derived nibble/AES-CBC catalog and ROT22 fields."""
+"""HTTP Jireh 2.0/2.2: APK-derived nibble/AES-CBC catalog and ROT22 fields."""
 from __future__ import annotations
 import hashlib
 import json
@@ -81,7 +81,7 @@ def decode_catalog(data: bytes, *, catalog_key: bytes = CATALOG_KEY,
         shared._validate(result)
         return result
     except (ValueError, UnicodeError, RecursionError, TypeError) as exc:
-        raise DecodeError("Catálogo inválido o no compatible con HTTP Jireh 2.0.") from exc
+        raise DecodeError("Catálogo inválido o no compatible con HTTP Jireh 2.0/2.2.") from exc
 
 
 def decode_profile(data: bytes) -> dict:

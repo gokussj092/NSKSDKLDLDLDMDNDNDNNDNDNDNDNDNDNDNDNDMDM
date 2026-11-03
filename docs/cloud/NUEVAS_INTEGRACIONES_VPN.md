@@ -1,4 +1,188 @@
+# CREEB VPN50.0 — reinvestigado, remoto pendiente, 2026-11-01
+
+Versión50.0 reconfirmada en Play vivo, original privado recuperado y hashes
+idénticos. La documentación anterior omitía GET digest/bypassActive previo
+al POST con Integrity. Se reconstruyó y cotejó con Dalvik; script actualizado
+admite una solicitud original fresca en archivo0600, sin fabricar token.
+Prueba real GET200 HTML195→POST de fallo sin token405 HTML163; sin JSON remoto.
+**No se ensayó un token Play Integrity válido**, no hay Android conectado;
+ese POST autorizado sigue pendiente, no se presume su fallo ni éxito.
+Incluido1.0.0/1 servidor/1 tweak completo igual a JDK/CLI/worker, separado.
+26 Python correctas; remote:null y ficha desactivada. C0240/C8255, fuente59/
+58 fichas/8 pendientes, switches y UI intactos. Sin merge/deploy/APK/C11/CI manual.
+[Flujo, evidencia y siguiente requisito](../../decoders/Python/apps/CREEB_VPN/ANALYSIS.md).
+
+---
+
+# Speicers123 — API accesible, sin actualización publicada, 2026-11-01
+
+Revisión posterior: dos GET originales al manifiesto completaron CONNECT/TLS
+y recibieron **HTTP404/JSON57: «Todavía no hay una actualización publicada»**.
+Sustituye el timeout como observación más reciente. La petición llega; no hay
+manifiesto/archivo firmado remoto obtenido. Incluido73 y remoto histórico74
+siguen separados. CLI exit3 para404/410 del manifiesto, sin JSON ni fallback;
+37 Python correctas. Broker/Unlocked/Android/despliegue conservan sus límites.
+[Evidencia](../../decoders/Python/apps/Speicers_Pro_VPN/ANALYSIS.md).
+
+---
+
+# Speicers Pro 104.1.20/build123 — remoto actual pendiente, 2026-11-01
+
+Revisión del paquete netfree.mx.store, ya integrado para build120.
+SPCF1 nuevo con RSA3072/SHA256/HMAC/PBKDF2-600000/GCM incorporado al lector,
+CLI y worker; formatos anteriores conservados. Incluido real v1/73 servidores/
+799 campos y secundario v9/32 iguales íntegros a JCA y worker aislado.
+GitHub histórico real v35/74/797 abierto; **no es la descarga123**.
+
+La app actual usa manifiesto firmado y segundo GET bajo gen.spei.click.
+**Sin descarga real de ese feed:** timeout de Proxy CONNECT, HTTP000/0 bytes;
+CLI falla sin salidaJSON. No se cambia el broker anterior ni se anuncia
+integración remota actual terminada. `.sks` real123/Unlocked/Android pendientes.
+35 Python+19 worker correctas; fuente59/58/C0240/C8255 y UI intactos.
+Sin merge/deploy/buildAPK/Actions manuales/C11.
+[Hashes, método y continuación](../../decoders/Python/apps/Speicers_Pro_VPN/ANALYSIS.md).
+
+---
+
+# HA Tunnel Plus 1.7.1 (76) ✅ — código verificado, 2026-11-01
+
+Catálogo remoto real HTTP200,296647 bytes: **13 servidores /644 métodos /
+4 grupos**, todo el JSON igual a JCA, CLI con GET real y worker. Cinco assets
+incluidos recuperados aparte. Muestra MOD aportada con firma diferente del
+original protegido, sin certificar equivalencia binaria. Ficha, broker fijo,
+C12 y validación completa gateway conectados; fuente59/58 fichas,8 pendientes,
+C0240/C8255 intactos. No se añaden extensiones.
+
+Unlocked `.hat` reproduce la rama abierta del exportador, perfil entero y nota
+sin protecciones conocidas. Dos archivos reales históricos reabiertos iguales
+a Java/worker; quinto destino anunciado solo con capacidad adicional del
+cliente actualizado, cuatro anteriores intactos. **Importación Android,
+exportación nueva ejecutando la app y transporte real Node en VPS pendientes**
+(DNS EAI_AGAIN aquí).42+19 Python /114 Node, JNI25 y replay real con HTTP/Redis
+simulados correctos. Sin fusión, despliegue, build APK, CI manual ni C11.
+[Herramientas, evidencia y límites](../../decoders/Python/apps/HA_Tunnel_Plus/README.md).
+HTTP Custom n13 sigue pendiente; su documentación ya fue guardada.
+
+---
+
+# Ultra Tunnel — descarga integrada en código, 2026-11-01
+
+Paquete co.strongteam.ultra, v1.0.8.8/build59. GET fijo con User-Agent
+Ultra Tunnel, sin sesión privada adicional. HTTP200 real, catálogo5.18:
+**47 servidores/917 redes/5034 campos protegidos**; JSON entero igual a
+libsodium/JCA, CLI real y worker aislado no parcial. Ficha/broker/control
+individual/icono PNG original conectados: **fuente59/58 fichas**, C8255 intacto.
+9 Python/97 Node aprobadas y7 replay con datos reales, transportes simulados.
+Node directo no alcanzó el origen (DNS EAI_AGAIN). **Despliegue y prueba VPS
+pendientes**, sin fusión/CI manual/APK. UT Loop y FlexNet siguen pendientes.
+[Handoff](ULTRA_TUNNEL_HANDOFF_2026_11_01.md).
+
+---
+
+# Reinvestigación pendiente de cierre: UT Loop Pro VPN — 2026-11-01
+
+Versión vigente22.10.26/build65. Corregido el intento GET que la app sí realiza
+sin una sesión cacheada; se conserva la API key original y se corrige el UA del
+script, con diagnóstico --probe. **No se obtuvo catálogo remoto firmado**:
+GET y CLI devuelven HTTP200 con HTML195. Incluido1.0/1 servidor/1 tweak igual
+a JCA/CLI/worker;7 Python/50 Node aprobadas. UT Loop sigue desactivada;
+fuente59/57 fichas/255 formatos/9 pendientes conservados. No es una integración
+remota terminada ni un despliegue. [Evidencia](UT_LOOP_PRO_REINVESTIGACION_2026_11_01.md).
+
+---
+
+# Reintegración cerrada en código: MM Tunnel — 2026-11-01
+
+Versión vigente **v1.10.30.2/build47**. Corregido el formulario de descarga
+**type -> hash**, recuperado del actualizador nativo original. HTTP200 real,
+catálogo2.46,38 servidores/557 redes; JSON completo igual a referencia
+independiente, CLI y worker. Ficha y broker/C12/gateway conectados; metadatos
+Info/URI y contextos desconocidos se conservan.29 Python/129 Node aprobadas;
+HTTP Node simulado, sin despliegue. Fuente59/57 fichas/C8255 conservados.
+Se reporta solo MM; CREEB es la siguiente de la cola solicitada.
+[Detalle, originales y recuperación](MM_TUNNEL_REINTEGRACION_2026_11_01.md).
+
+---
+
 # Registro de nuevas integraciones VPN
+
+## ZiG Tunnel Play1.0 (1) — 2026-11-01
+
+Segunda app, después del commit Enaa45b9a3e. Versión1.0 confirmada en el
+HTML vivo de Play; el mirror1.2/build3 tiene otra firma y no se certifica.
+GET fijo con User-Agent okhttp/5.3.2: **HTTP200 real,2.3,15 servidores,
+3 HTTPNetworks/1 SSLNetwork**,370560bytes. Método Java XXTEA delta772515655,
+clave4669/doble restaUTF16, todas las secciones conservadas. Incluido0,1/1/0.
+JSON completo igual al Java original, CLI, worker y gateway con HTTP interno
+simulado. **18 Python /166 Node aprobadas** para las dos apps.
+Ficha/broker/control/icono original, fuente59/**57 fichas**. C8 sigue255,
+C0 sigue240; no inferir una ruta .hs por el recurso del catálogo.
+No secretos HTTP adicionales ni despliegue. [Continuidad](ENAA_ZIG_TUNNEL_HANDOFF_2026_11_01.md).
+
+## Enaa Tunnel Enna-1.07 (7) — 2026-11-01
+
+Fuente nativa GET con User-Agent Enaa Tunnel, HTTP200 real: **4.26,
+45 servidores /515 redes**,810149bytes. Argon2id3/8192/1 y AES256-GCM
+con salt AAD; letra extra para remoto/export .enaa. Incluido3.20,28/465.
+Ambos documentos completos iguales a libsodium/JCA; CLI descarga real y worker.
+`.enaa` confirmado en exportador/importador y añadido a C8:255 formatos,
+C0 sigue240. Perfil real independiente pendiente, sin writer certificado.
+Ficha/broker/worker/control/icono original, **59 /56 fichas**.
+9 Python /160 Node aprobadas. No secretos HTTP adicionales, no despliegue.
+[Continuidad y originales](ENAA_ZIG_TUNNEL_HANDOFF_2026_11_01.md).
+
+## Revisión documental de catálogos desactivados — 2026-11-01
+
+Reabrir por instrucción del propietario las **10 integraciones remotas pendientes**:
+HA Tunnel Plus, MM Tunnel, CREEB VPN, AM TUNNEL LITE VPN, UT Loop Pro VPN,
+ProNeet VPN, EUT VPN, TunelGuard VPN, DTunnel Mod y Royal Tunnel VPN.
+Inventario del código 2ba7df0, fuente 59 /55 fichas, no estado del VPS.
+DTunnel Mod ya tiene descarga CLI real validada; queda pendiente el broker y
+su acceso privado. Los fallos HTTP de los demás son observaciones históricas,
+no nuevas consultas ni prueba suficiente de una causa concreta.
+
+[Lista completa, evidencia y procedimiento](CATALOGOS_DESACTIVADOS_REINVESTIGACION_2026_11_01.md).
+Aplicar a estos casos y nuevas apps la paridad de VIP/IZPH/ALFAISAL: incorporar
+petición y datos necesarios, secretos fuera de GitHub, descarga real completa,
+comparación independiente y broker/worker/gateway/control verificados.
+Esta entrega solo añade documentación; no activa, despliega ni cambia versiones.
+
+## ALFAISAL Tunnel+ build39 — 2026-11-01
+
+Paquete app.ovpninject5.vpn, Version -39WH-wake/39, vigente en Play y APK.
+Descarga real validada con metadata y POST firmado original: **HTTP200,
+4.0.20,4 servidores /51 Networks /103 SSLNetworks**,141420bytes.
+Se reutilizan API key y HMAC del mismo APK y una instalación de prueba propia
+registrada una sola vez. Tres secretos backend probados y guardados privados;
+Compose solo los pasa a web. Si exige integridad, falla sin fabricar tokens.
+
+CBC256/JCA, documento completo igual a CLI y worker. Tres Squid antiguos se
+conservan por el catch CBC original; no se descartan registros. Bootstrap0.0.0,
+1/0/1, separado. Gateway comprobado con respuesta real y HTTP interno simulado;
+transporte Node al proveedor con mocks, descarga real por Python.
+Ficha/broker/switch/icono original, **59 /55 fichas**;254 formatos intactos.
+**33 Python /163 Node aprobadas,0 skips**. Hashes, originales y configuración
+privada duraderos en [handoff](ALFAISAL_TUNNEL_PLUS_HANDOFF_2026_11_01.md).
+Sin deploy, merge, build Android ni Actions. 90NET sigue pospuesto.
+
+## IZPH VPN PRO 6.0 (60) — 2026-11-01
+
+Paquete com.izphprov2.net, versión actual del APK y Google Play6.0.
+Fuente exacta del actualizador GET sin cabeceras personalizadas:
+HTTP200 real, catálogo3234, **84 servidores /303 redes**,480620bytes.
+Asset1000.0.1208,60/110. Los dos documentos completos iguales a Java,
+Python, CLI y worker aislado;13 casos nativos contando el borde sintético.
+La CLI repitió el GET real y el gateway validó la respuesta real del worker
+con transporte interno simulado. Node al proveedor se prueba con mocks.
+
+Se corrige Threefish inverso en izph.py, preservación de ceros legítimos y
+SSCommand. Carpeta IZPH_VPN_PRO, broker/ficha/PNG original/switch persistente,
+**59 /54 fichas**, C0 240/C8 254/28 overrides intactos.
+**22 Python /152 Node aprobadas**, sin skips. Guía de nuevas integraciones
+actualizada: todos los datos de la petición original son obligatorios y
+debe funcionar la descarga real antes de dar por validado el método.
+Originales duraderos, hashes, límites y recuperación en el handoff de IZPH.
+Sin despliegue, merge, Android, Actions ni trabajo nuevo de90NET.
 
 ## Actualización TunnelDOOM 4.3.0 (430) — 2026-10-26
 

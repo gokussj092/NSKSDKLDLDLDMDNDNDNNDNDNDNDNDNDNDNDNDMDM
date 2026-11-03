@@ -5,13 +5,10 @@ import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkerParameters
 import androidx.work.WorkManager
-import androidx.work.workDataOf
 import com.ghostdeveloper.spdecode.BuildConfig
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CancellationException
@@ -51,7 +48,8 @@ internal object CloudCatalogUpdates {
             .setBackoffCriteria(BackoffPolicy.EXPONENTIAL,30,TimeUnit.SECONDS)
             .build()
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-            BACKUP,ExistingPeriodicWorkPolicy.UPDATE,fallback)
+            BACKUP,ExistingPeriodicWorkPolicy.KEEP,fallback)
+        WorkManager.getInstance(context).cancelUniqueWork(PUSH_WORK_NAME)
     }
 
     fun pendingVersion(context:Context):Int =
@@ -70,33 +68,26 @@ internal object CloudCatalogUpdates {
         if(!rawVersion.matches(Regex("[1-9][0-9]{0,8}")))return
         val version=rawVersion.toIntOrNull()?:return
         markOffered(context,version)
-        val constraints=Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
-        val work=OneTimeWorkRequestBuilder<CloudCatalogSyncWorker>()
-            .setInputData(workDataOf("catalogVersion" to version))
-            .setConstraints(constraints)
-            .setBackoffCriteria(BackoffPolicy.EXPONENTIAL,30,TimeUnit.SECONDS)
-            .build()
-        WorkManager.getInstance(context).enqueueUniqueWork(
-            PUSH_WORK_NAME,ExistingWorkPolicy.REPLACE,work)
+        // A push already supplies a version hint. Verify/download only after the user's tap.
     }
 
-    /** The VPS returns a version over native HTTPS; this coroutine runs only while visible. */
+    /** Only reads local push hints while visible. Network recovery is opt-in and daily. */
     suspend fun watchWhileVisible(
         context:Context,client:CloudDecodeClient,repository:ServerVpnCatalogRepository,
         onAvailable:(Int)->Unit
     ) {
-        while(currentCoroutineContext().isActive && BuildConfig.SPDECODE_CLOUD_ENABLED &&
+        while(currentCoroutineContext().isActive && enabled(context) &&
             CloudLegalConsent.accepted(context)){
             try {
                 val local=repository.currentVersion()
-                val hint=client.watchCatalogVersion(local)
+                val hint=pendingVersion(context)
                 if(hint>local) {
                     markOffered(context,hint)
                     onAvailable(hint)
-                    delay(15000)
-                }else delay(2000)
+                }
+                delay(60_000)
             }catch(error:CancellationException){throw error}
-             catch(_:Exception){delay(15000)}
+             catch(_:Exception){delay(60_000)}
         }
     }
 }
@@ -115,6 +106,6 @@ internal class CloudCatalogSyncWorker(
             CloudCatalogUpdates.markOffered(applicationContext,maxOf(requested,remote))
             Result.success()
         }catch(error:CancellationException){throw error}
-         catch(_:Exception){if(runAttemptCount<4)Result.retry() else Result.failure()}
+         catch(_:Exception){Result.failure()}
     }
 }

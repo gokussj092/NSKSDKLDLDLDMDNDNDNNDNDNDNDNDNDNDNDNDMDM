@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_screen_entry_detail">バージョン・セキュリティ・公式リンク</string>
+    <string name="about_screen_description">VPN設定の解析と復号を行うツール</string>
+    <string name="about_screen_version_badge">バージョン %1$s · ビルド %2$d</string>
+    <string name="about_screen_info">アプリ情報</string>
+    <string name="about_screen_languages">対応言語数</string>
+    <string name="about_screen_installed">インストール済みバージョン</string>
+    <string name="about_screen_features">主な機能</string>
+    <string name="about_screen_feature_decode">VPNファイルの復号</string>
+    <string name="about_screen_feature_catalog">Server VPN カタログ</string>
+    <string name="about_screen_feature_export">JSON・unlocked エクスポート</string>
+    <string name="about_screen_feature_history">結果の履歴</string>
+    <string name="about_screen_security">セキュリティとプライバシー</string>
+    <string name="about_screen_cloud_security">Cloud V2 の通信ではサービス設定に従い HPKE 暗号化と完全性チェックを使用します。</string>
+    <string name="about_screen_local_security">ローカル履歴はこの端末で暗号化されています。</string>
+    <string name="about_screen_privacy">プライバシーポリシー</string>
+    <string name="about_screen_terms">利用規約</string>
+    <string name="about_screen_links">コミュニティと公式リンク</string>
+    <string name="about_screen_website">公式サイト</string>
+    <string name="about_screen_community_detail">公式 Telegram コミュニティ</string>
+    <string name="about_screen_credit">開発者: Ghost Developer</string>
+    <string name="about_screen_copyright">SP-DECODE · 無断転載禁止</string>
+</resources>

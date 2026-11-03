@@ -101,6 +101,10 @@
     <string name="decode_progress_reading">Leyendo archivo seleccionado…</string>
     <string name="decode_progress_decoding">Descodificando configuración en Cloud…</string>
     <string name="decode_progress_saving">Guardando resultado cifrado…</string>
+    <string name="decode_progress_wait">Por favor, espere…</string>
+    <string name="decode_progress_sending">Enviando…</string>
+    <string name="decode_progress_processing">Procesando…</string>
+    <string name="decode_progress_downloading_results">Descargando resultados…</string>
     <string name="history_search">Buscar por nombre o extensión</string>
     <string name="history_favorites">Favoritos</string>
     <string name="history_sort">Ordenar</string>
@@ -138,7 +142,7 @@
     <string name="native_decoder_mixed_short">Mixto</string>
     <string name="clear_current_result">Limpiar resultado visible</string>
     <string name="guide_settings_title">Guía interactiva</string>
-    <string name="guide_settings_detail">Recorre Inicio, Historial, Formatos, Servidores VPN y Ajustes, en ese orden. Puedes repetir la guía cuando quieras.</string>
+    <string name="guide_settings_detail">Explora Inicio, Historial, Análisis de APK, Servidores VPN y Ajustes. Puedes reiniciar esta guía cuando quieras.</string>
     <string name="guide_replay">Iniciar recorrido guiado</string>
     <string name="settings_version">Versión %1$s</string>
     <string name="settings_build_code">Compilación %1$d</string>
@@ -199,7 +203,7 @@
     <string name="hc_auth_enter_manually">Introducir contraseña manualmente</string>
     <string name="hc_auth_input_invalid">Introduce la contraseña requerida y/o un HWID válido de 32 caracteres.</string>
     <string name="hc_auth_failed">No se pudo autenticar este archivo HTTP Custom protegido. Comprueba la contraseña y/o el HWID; también es posible que el archivo esté dañado o utilice una variante no compatible.</string>
-    <string name="guide_step_six">Formatos: explora las aplicaciones y extensiones compatibles.</string>
+    <string name="guide_step_six">Análisis de APK: esta función estará disponible próximamente.</string>
     <string name="guide_step_seven">Servidores VPN: elige una aplicación y descifra su catálogo de servidores.</string>
     <string name="guide_step_eight">Ajustes: cambia el idioma, consulta la privacidad y personaliza la aplicación.</string>
     <string name="server_vpn">Servidores VPN</string>
@@ -214,4 +218,22 @@
     <string name="language_screen_title">Seleccionar idioma</string>
     <string name="private_screen_title">Pantalla privada</string>
     <string name="private_screen_detail">Evita capturas y grabaciones de pantalla en esta app. Desactívala cuando necesites compartir una captura.</string>
+    <string name="apk_analysis_title">Análisis de APK</string>
+    <string name="apk_analysis_coming_soon">Próximamente</string>
+    <string name="settings_formats_title">Formatos soportados</string>
+    <string name="settings_formats_detail">Consulta las extensiones de archivos y los protocolos de texto compatibles.</string>
+    <string name="apk_analysis_intro_title">De una APK a un informe para investigación</string>
+    <string name="apk_analysis_intro_detail">Cuando esté disponible, el análisis estático revisará el manifiesto, los metadatos, los recursos y las bibliotecas nativas para ayudar a preparar scripts de descifrado.</string>
+    <string name="apk_analysis_steps_title">Proceso previsto</string>
+    <string name="apk_analysis_step_import">Seleccionar una APK que tengas autorización para analizar</string>
+    <string name="apk_analysis_step_inspect">Examinar metadatos, recursos y bibliotecas</string>
+    <string name="apk_analysis_step_report">Preparar un informe técnico estructurado</string>
+    <string name="apk_analysis_subscription_title">Acceso con suscripción</string>
+    <string name="apk_analysis_subscription_detail">Se requerirá una suscripción. Los planes y las condiciones de cobro aún no están definidos.</string>
+    <string name="apk_analysis_credit_cost">1 APK = 1 crédito</string>
+    <string name="apk_analysis_credit_price">1 crédito = 4 USD</string>
+    <string name="apk_analysis_price_note">4 USD es el precio previsto por crédito, no la cuota de suscripción.</string>
+    <string name="apk_analysis_safety_note">El análisis previsto es estático: no instala ni ejecuta la APK.</string>
+    <string name="apk_analysis_import_unavailable">Importar APK (no disponible)</string>
+    <string name="apk_analysis_no_charge">El servicio aún no está activo. No se envían APK ni se cobran créditos.</string>
 </resources>

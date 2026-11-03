@@ -1,0 +1,66 @@
+name: SP-DECODE Play AAB-only In-App Updates compile check
+# Unsigned branch QA; no signing secrets, Google Play publishing, or VPS changes.
+on:
+  push:
+    branches: [fix/http-jireh-current-method]
+    paths:
+      - .github/workflows/android-play-update-aab-compile.yml
+      - android/app/build.gradle.kts
+      - android/app/src/playUpdate/**
+      - scripts/ci/verify_play_update_artifacts.py
+      - tests/test_android_play_update_artifact_contract.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: spdecode-play-aab-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-play-isolation:
+    if: github.repository_owner == 'gokussj092' && github.ref == 'refs/heads/fix/http-jireh-current-method'
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    env:
+      SPDECODE_CLOUD_API_BASE_URL: https://api.spdecode.xyz
+      SPDECODE_CLOUD_RELEASE: "true"
+      SPDECODE_CLOUD_QA_BUILD: "false"
+      ORG_GRADLE_PROJECT_noticeFirebaseAPP_ID: ${{ vars.SPDECODE_NOTICE_FIREBASE_APP_ID || '1:78511444369:android:167638a0365236f1ab4a30' }}
+      ORG_GRADLE_PROJECT_noticeFirebaseAPI_KEY: ${{ vars.SPDECODE_NOTICE_FIREBASE_API_KEY || 'AIzaSyCXHGfZDisaa9Viat01K7DvNYGgr5XVnoM' }}
+      ORG_GRADLE_PROJECT_noticeFirebasePROJECT_ID: ${{ vars.SPDECODE_NOTICE_FIREBASE_PROJECT_ID || 'sp-decode-android' }}
+      ORG_GRADLE_PROJECT_noticeFirebaseSENDER_ID: ${{ vars.SPDECODE_NOTICE_FIREBASE_SENDER_ID || '78511444369' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.11.1"
+      - name: Set up Android SDK and native toolchain
+        run: |
+          set -euo pipefail
+          MANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -n 1)"
+          "$MANAGER" --install "platforms;android-36" "build-tools;35.0.0" "platform-tools" "cmake;3.22.1" "ndk;27.2.12479018"
+      - name: Unit and integration contracts
+        run: python3 -m unittest tests.test_android_play_update_artifact_contract -v
+      - name: Build external Telegram APK without Play libraries
+        working-directory: android
+        run: gradle --no-daemon --max-workers=2 :app:assembleRelease
+      - name: Build Google Play AAB separately with official Play Core
+        working-directory: android
+        run: gradle --no-daemon --max-workers=2 -PspdecodePlayAab=true :app:bundleRelease
+      - name: Assert binary distribution and language resources
+        run: |
+          set -euo pipefail
+          APK=android/app/build/outputs/apk/release/app-release-unsigned.apk
+          AAB=android/app/build/outputs/bundle/release/app-release.aab
+          test -s "$APK" && test -s "$AAB"
+          python3 scripts/ci/verify_play_update_artifacts.py "$APK" "$AAB"
+          python3 scripts/ci/verify_aab_locales.py "$AAB"
+          test -s android/app/build/outputs/mapping/release/mapping.txt

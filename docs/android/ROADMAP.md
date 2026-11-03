@@ -1,5 +1,7 @@
 # Roadmap de ingeniería — SP-DECODE Android
 
+> **Ampliación planificada — 1.1.26, build 41:** [plan de navegación y funciones](../PLAN_ANDROID_1_1_26_BUILD_41_2026_11_02.md). Incluye Formatos en Ajustes, análisis de APK con Próximamente, créditos, etiquetas del catálogo, errores/sugerencias y Acerca de. Estado: solo documentación. Las fases siguientes conservan el seguimiento histórico; esta ampliación no se declara implementada ni cerrada.
+
 **Política:** existe APK Android alpha; no considerarla release de producción ni formatos certificados. No declarar fase cerrada sin código, CI y evidencia. Desarrollo en ramas de subfase y PR; actualizar docs/android/HANDOFF.md y status.json. Conservar todas las funciones actuales del bot.
 
 ## Actualización de seguimiento (2026-10-09)

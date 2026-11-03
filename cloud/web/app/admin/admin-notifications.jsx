@@ -2,17 +2,31 @@
 import {useCallback,useEffect,useRef,useState} from "react";
 import {useRouter} from "next/navigation";
 
-const samples=[
- {name:"Mensaje personalizado",title:"",body:""},
- {name:"Actualización",title:"SP-DECODE · Actualización disponible",body:"Hay una nueva actualización de SP-DECODE. Consulta el canal oficial para conocer los detalles."},
- {name:"Mantenimiento",title:"SP-DECODE · Mantenimiento",body:"Estamos realizando tareas de mantenimiento. Algunas funciones pueden no estar disponibles temporalmente."},
- {name:"Catálogo VPN",title:"SP-DECODE · Catálogo actualizado",body:"Ya puedes comprobar si hay nuevas versiones del catálogo Server VPN desde la aplicación."}
+const categories=[
+ {value:"general",label:"General"},{value:"update",label:"Actualización"},
+ {value:"maintenance",label:"Mantenimiento"},{value:"catalog",label:"Catálogo VPN"},
+ {value:"security",label:"Seguridad"}
 ];
+const urgencies=[{value:"normal",label:"Normal"},{value:"important",label:"Importante (entrega FCM prioritaria)"}];
+const methods=[{value:"push",label:"FCM + recuperación periódica"},
+ {value:"poll",label:"Solo consulta periódica (sin envío FCM)"}];
+const expirations=[{value:6,label:"6 horas"},{value:24,label:"24 horas"},
+ {value:72,label:"3 días"},{value:168,label:"7 días"}];
+const samples=[
+ {name:"Mensaje personalizado",type:"general",title:"",body:""},
+ {name:"Actualización",type:"update",title:"SP-DECODE · Actualización disponible",body:"Hay una nueva actualización de SP-DECODE. Consulta el canal oficial para conocer los detalles."},
+ {name:"Mantenimiento",type:"maintenance",title:"SP-DECODE · Mantenimiento",body:"Estamos realizando tareas de mantenimiento. Algunas funciones pueden no estar disponibles temporalmente."},
+ {name:"Catálogo VPN",type:"catalog",title:"SP-DECODE · Catálogo actualizado",body:"Ya puedes comprobar si hay nuevas versiones del catálogo Server VPN desde la aplicación."},
+ {name:"Seguridad",type:"security",title:"SP-DECODE · Aviso de seguridad",body:"Se han realizado mejoras de seguridad. Revisa las novedades de la aplicación."}
+];
+const labelFor=(choices,key)=>choices.find(x=>x.value===key)?.label||"General";
 const action=body=>({method:"POST",cache:"no-store",credentials:"same-origin",
  headers:{"Content-Type":"application/json","X-SPDecode-Admin-Action":"1"},body:JSON.stringify(body)});
 const time=t=>Number.isSafeInteger(t)?new Date(t).toLocaleString("es-MX",{dateStyle:"medium",timeStyle:"short"}):"Sin fecha";
 export default function AdminNotifications(){
  const [title,setTitle]=useState(""),[body,setBody]=useState("");
+ const [type,setType]=useState("general"),[importance,setImportance]=useState("normal");
+ const [delivery,setDelivery]=useState("push"),[ttlHours,setTtlHours]=useState(24);
  const [busy,setBusy]=useState(false),[result,setResult]=useState("");
  const [list,setList]=useState([]),[loading,setLoading]=useState(true);
  const [pushConfigured,setPushConfigured]=useState(false);
@@ -33,17 +47,24 @@ export default function AdminNotifications(){
  function editBody(v){setBody(v);pending.current=null;}
  function useTemplate(i){
   const selected=samples[i];if(!selected)return;
-  setTitle(selected.title);setBody(selected.body);pending.current=null;setResult("");
+  setTitle(selected.title);setBody(selected.body);setType(selected.type);
+  setImportance("normal");setDelivery("push");setTtlHours(24);pending.current=null;setResult("");
  }
  async function publish(e){
   e.preventDefault();if(busy||!title.trim()||!body.trim())return;
   const t=title.trim(),message=body.trim();
   if(t.length>80||message.length>500)return;
-  if(!window.confirm("¿Publicar este aviso a los dispositivos suscritos? Caducará en 7 días y no es posible editarlo después."))return;
+  const confirmation="¿Publicar este aviso para usuarios que ya activaron notificaciones?\n"+
+   "Categoría: "+labelFor(categories,type)+"\n"+
+   "Urgencia: "+labelFor(urgencies,importance)+"\n"+
+   "Entrega: "+labelFor(methods,delivery)+"\n"+
+   "Caducidad: "+labelFor(expirations,ttlHours)+"\n"+
+   "Los nuevos usuarios NO recibirán notificaciones anteriores. El aviso no podrá editarse.";
+  if(!window.confirm(confirmation))return;
   setBusy(true);setResult("");
   if(!pending.current)pending.current=crypto.randomUUID();
   try{
-   const r=await fetch("/api/admin/notifications",action({id:pending.current,title:t,body:message}));
+   const r=await fetch("/api/admin/notifications",action({id:pending.current,title:t,body:message,type,importance,delivery,ttlHours}));
    if(r.status===401){router.replace("/admin/login");return;}
    const data=await r.json();
    if(!r.ok)throw Error("No se pudo publicar el aviso ("+r.status+").");
@@ -76,6 +97,27 @@ export default function AdminNotifications(){
       disabled={busy}>{s.name}</button>)}
     </div>
     <form onSubmit={publish} className="admin-form sp-admin-notice-form">
+     <label>Tipo de notificación
+      <select value={type} onChange={e=>{setType(e.target.value);pending.current=null;}} disabled={busy}>
+       {categories.map(c=><option key={c.value} value={c.value}>{c.label}</option>)}
+      </select>
+     </label>
+     <label>Urgencia
+      <select value={importance} onChange={e=>{setImportance(e.target.value);pending.current=null;}} disabled={busy}>
+       {urgencies.map(c=><option key={c.value} value={c.value}>{c.label}</option>)}
+      </select>
+     </label>
+     <label>Método de entrega
+      <select value={delivery} onChange={e=>{setDelivery(e.target.value);pending.current=null;}} disabled={busy}>
+       {methods.map(c=><option key={c.value} value={c.value}>{c.label}</option>)}
+      </select>
+     </label>
+     <label>Caducidad
+      <select value={ttlHours} onChange={e=>{setTtlHours(Number(e.target.value));pending.current=null;}} disabled={busy}>
+       {expirations.map(c=><option key={c.value} value={c.value}>{c.label}</option>)}
+      </select>
+     </label>
+     <p className="muted">Destinatarios: instalaciones con notificaciones habilitadas antes de la publicación. Las versiones actualizadas no recuperan avisos anteriores a la activación. «Importante» da prioridad a la señal FCM, sin alterar los permisos ni los ajustes de sonido del sistema.</p>
      <label>Título <span className="sp-admin-notice-count">{title.length}/80</span>
       <input required maxLength={80} value={title} onChange={e=>editTitle(e.target.value)}
        placeholder="Ejemplo: Actualización de SP-DECODE" disabled={busy}/>
@@ -87,7 +129,7 @@ export default function AdminNotifications(){
      <div className="sp-admin-notice-actions">
       <button className="button primary" type="submit" disabled={busy||!title.trim()||!body.trim()}>
        {busy?"Publicando…":"Confirmar y publicar aviso"}</button>
-      <button type="button" className="button subtle" disabled={busy} onClick={()=>{editTitle("");editBody("");setResult("");}}>Limpiar</button>
+      <button type="button" className="button subtle" disabled={busy} onClick={()=>{editTitle("");editBody("");setType("general");setImportance("normal");setDelivery("push");setTtlHours(24);setResult("");}}>Limpiar</button>
      </div>
     </form>
    </section>
@@ -96,11 +138,13 @@ export default function AdminNotifications(){
     <p className="muted">La apariencia final depende de la versión del sistema, permisos y ajustes del usuario.</p>
     <div className="sp-admin-notice-preview" aria-label="Vista previa del aviso" role="status">
       <div className="sp-admin-notice-preview-app"><span className="sp-admin-notice-preview-mark">SP</span><strong>SP-DECODE</strong><small>Ahora</small></div>
+      <small>{labelFor(categories,type)} · {labelFor(urgencies,importance)}</small>
       <strong>{title.trim()||"Título de la notificación"}</strong>
       <p>{body.trim()||"El mensaje se mostrará aquí mientras escribes."}</p>
     </div>
     <div className="admin-kv"><span>Estado de FCM</span><strong>{loading?"Consultando…":pushConfigured?"Configurado":"No configurado"}</strong></div>
-    <div className="admin-kv"><span>Caducidad</span><strong>7 días</strong></div>
+    <div className="admin-kv"><span>Entrega</span><strong>{labelFor(methods,delivery)}</strong></div>
+    <div className="admin-kv"><span>Caducidad</span><strong>{labelFor(expirations,ttlHours)}</strong></div>
     <button type="button" className="button subtle" onClick={verifyPush} disabled={busy}>Validar conexión FCM sin enviar</button>
     <p className="muted">FCM puede despertar la comprobación de avisos, pero no garantiza que todos los dispositivos reciban un aviso inmediatamente.</p>
    </section>
@@ -114,7 +158,9 @@ export default function AdminNotifications(){
    {loading?<p className="muted">Cargando avisos…</p>:
     list.length===0?<p className="muted">No hay avisos publicados vigentes.</p>:
     <div className="sp-admin-notice-list">{list.map(n=><article className="sp-admin-notice-history-row" key={n.id}>
-      <div><strong>{n.title}</strong><p>{n.body}</p></div>
+      <div><strong>{n.title}</strong>
+       <p className="muted">{labelFor(categories,n.type||"general")} · {labelFor(urgencies,n.importance||"normal")} · {labelFor(methods,n.delivery||"push")}</p>
+       <p>{n.body}</p></div>
       <small>Publicado: {time(n.createdAt)}<br/>Caduca: {time(n.expiresAt)}</small>
     </article>)}</div>}
   </section>

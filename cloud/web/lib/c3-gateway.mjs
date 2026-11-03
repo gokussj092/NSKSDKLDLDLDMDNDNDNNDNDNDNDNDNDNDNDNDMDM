@@ -1,4 +1,5 @@
 import { randomUUID, createPrivateKey, createPublicKey, createHash, ECDH } from "node:crypto";
+import {isDeepStrictEqual} from "node:util";
 import { settings, limits } from "./c3-config.mjs";
 import { v2Settings } from "./v2-config.mjs";
 import { store, reserveSlot, releaseSlot } from "./c3-store.mjs";
@@ -11,7 +12,7 @@ import { maintenanceEnabled, serviceMaintenanceEnabled, recordWorkerResult } fro
 import {admissionPolicy} from "./c11-play-admission.mjs";
 import {publicFormats} from "./file-format-catalog.mjs";
 
-import {negotiatesExport,exportPolicy,exportAllowed,EXPORT_PROFILE} from "./compatible-export-policy.mjs";
+import {negotiatesExport,negotiatesHatExport,negotiatesDynamicExport,exportPolicy,exportAllowed,EXPORT_PROFILE} from "./compatible-export-policy.mjs";
 
 const ERROR_MESSAGES = Object.freeze({
   INVALID_REQUEST:"Solicitud inválida.",
@@ -214,6 +215,75 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
        typeof decoded.rawText!=="string" || !decoded.rawText.length ||
        Buffer.byteLength(decoded.rawText,"utf8")>(isMkk?32*1024*1024:4*1024*1024))
       throw Error("INVALID_WORKER_RESULT");
+    if(kind==="server-vpn" && payload?.providerId==="fnf-tunnel-bd"){
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId || !isRecord(parsed) ||
+         !isDeepStrictEqual(parsed,decoded.structuredJson) || typeof parsed.Version!=="string" || !parsed.Version ||
+         !Array.isArray(parsed.Free_servers) || !parsed.Free_servers.length ||
+         !Array.isArray(parsed.Payloads) || !parsed.Payloads.length ||
+         ["Free_servers","Premium_servers","Vip_servers","Private_servers","Payloads"].some(k=>
+           Object.hasOwn(parsed,k) && (!Array.isArray(parsed[k]) || parsed[k].some(row=>!isRecord(row)))))
+        throw Error("INVALID_WORKER_RESULT");
+    }
+    if(kind==="server-vpn" && payload?.providerId==="alsaher-vip"){
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId || !isRecord(parsed) ||
+         !isDeepStrictEqual(parsed,decoded.structuredJson) || typeof parsed.Version!=="string" || !parsed.Version ||
+         !Array.isArray(parsed.Servers) || !parsed.Servers.length ||
+         ["Servers","HTTPNetworks","SSLNetworks"].some(k=>!Array.isArray(parsed[k]) ||
+           parsed[k].some(row=>!isRecord(row) || typeof row.Name!=="string")) ||
+         !(parsed.HTTPNetworks.length || parsed.SSLNetworks.length) ||
+         !Array.isArray(parsed.JSONsettings) || parsed.JSONsettings.some(row=>!isRecord(row)))throw Error("INVALID_WORKER_RESULT");
+    }
+    if(kind==="server-vpn" && payload?.providerId==="halcon-r-net"){
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      const fields=["serverName","serverHost","serverPort","serverFlag","serverInfo","proxyHost","proxyPort",
+        "payload","sni","vipApiUrl","methodCountry","mode","username","password"];
+      if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId || !isRecord(parsed) ||
+         !isDeepStrictEqual(parsed,decoded.structuredJson) ||
+         typeof parsed.version!=="string" || !parsed.version || typeof parsed.releaseNotes!=="string" ||
+         !Array.isArray(parsed.servers) || !parsed.servers.length ||
+         parsed.servers.some(s=>!isRecord(s) || fields.some(k=>typeof s[k]!=="string") ||
+           !s.serverName || !Number.isSafeInteger(s.tunnelType)))throw Error("INVALID_WORKER_RESULT");
+    }
+    if(kind==="server-vpn" && payload?.providerId==="ha-tunnel-plus"){
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId ||
+         !isRecord(parsed) || ["servers","methods","allowed_apps"].some(name=>
+           !isRecord(parsed[name]) || typeof parsed[name].version!=="string" || !parsed[name].version) ||
+         ["servers","methods"].some(name=>!Array.isArray(parsed[name].data) || !parsed[name].data.length ||
+           parsed[name].data.some(x=>!isRecord(x))) ||
+         parsed.methods.data.some(x=>!isRecord(x.conf)) || !isRecord(parsed.allowed_apps.data) ||
+         Object.values(parsed.allowed_apps.data).some(x=>!Array.isArray(x)||x.some(v=>!isRecord(v))) ||
+         JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))throw Error("INVALID_WORKER_RESULT");
+    }
+    if(kind==="server-vpn" && payload?.providerId==="netcol-vpn"){
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId ||
+         !isRecord(parsed) || typeof parsed.Version!=="string" || !parsed.Version ||
+         !Array.isArray(parsed.Servers) || !parsed.Servers.length ||
+         parsed.Servers.some(item=>!isRecord(item) || typeof item.Name!=="string") ||
+         JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))
+        throw Error("INVALID_WORKER_RESULT");
+    }
+    if(kind==="server-vpn" && payload?.providerId==="jyfast-vpn-ultra"){
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId ||
+         !isRecord(parsed) || parsed.provider!==payload.providerId || parsed.complete!==true ||
+         !isRecord(parsed.catalogs) || Object.keys(parsed.catalogs).sort().join(",")!=="free,premium" ||
+         ["free","premium"].some(mode=>!isRecord(parsed.catalogs[mode]) ||
+           typeof parsed.catalogs[mode].Version!=="string" || !parsed.catalogs[mode].Version ||
+           !Array.isArray(parsed.catalogs[mode].Servers) || !parsed.catalogs[mode].Servers.length ||
+           parsed.catalogs[mode].Servers.some(item=>!isRecord(item) || typeof item.Name!=="string")) ||
+         JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))
+        throw Error("INVALID_WORKER_RESULT");
+    }
     if(kind==="server-vpn" && ["http-socketclay","http-wakko","onspace-vpn","superflash-vpn","turbomx-vpn"].includes(payload?.providerId)){
       let parsed;
       try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
@@ -275,7 +345,7 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
            Object.hasOwn(parsed,name) && (!Array.isArray(parsed[name]) || parsed[name].some(x=>!isRecord(x)))) ||
          JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))throw Error("INVALID_WORKER_RESULT");
     }
-    if(kind==="server-vpn" && payload?.providerId==="aura-net-vpn"){
+    if(kind==="server-vpn" && ["aura-net-vpn","wolf-custom-vpn"].includes(payload?.providerId)){
       let parsed;
       try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
       if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId ||
@@ -284,14 +354,38 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
          parsed.Servers.some(x=>!isRecord(x)) || parsed.Networks.some(x=>!isRecord(x)) ||
          JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))throw Error("INVALID_WORKER_RESULT");
     }
-    if(kind==="server-vpn" && ["7net-vpn","xhypher-tunnel-pro"].includes(payload?.providerId)){
+    if(kind==="server-vpn" && payload?.providerId==="alfaisal-tunnel-plus"){
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId ||
+         !isRecord(parsed) || typeof parsed.Version!=="string" || !parsed.Version ||
+         ["Servers","Networks","SSLNetworks"].some(k=>!Array.isArray(parsed[k])) ||
+         !parsed.Servers.length || !(parsed.Networks.length+parsed.SSLNetworks.length) ||
+         ["Servers","Networks","SSLNetworks"].some(k=>parsed[k].some(x=>!isRecord(x)||typeof x.Name!=="string")) ||
+         JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))throw Error("INVALID_WORKER_RESULT");
+    }
+    if(kind==="server-vpn" && payload?.providerId==="zig-tunnel"){
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      const lists=["HTTPNetworks","DirectNetworks","DNSNetworks","UDPNetworks","SSLNetworks"];
+      if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId ||
+         !isRecord(parsed) || typeof parsed.Version!=="string" || !parsed.Version ||
+         !Array.isArray(parsed.Servers) || !parsed.Servers.length ||
+         parsed.Servers.some(x=>!isRecord(x)||typeof x.Name!=="string") ||
+         !lists.some(k=>Array.isArray(parsed[k])) ||
+         lists.some(k=>Object.hasOwn(parsed,k)&&(!Array.isArray(parsed[k])||parsed[k].some(x=>!isRecord(x)||typeof x.Name!=="string"))) ||
+         JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))throw Error("INVALID_WORKER_RESULT");
+    }
+    if(kind==="server-vpn" && ["ultra-tunnel","mm-tunnel","enaa-tunnel","7net-vpn","xhypher-tunnel-pro","vip-snipher-pro","izph-vpn-pro"].includes(payload?.providerId)){
       let parsed;
       try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
       if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId ||
          !isRecord(parsed) || !Object.hasOwn(parsed,"Version") ||
+         (["ultra-tunnel","mm-tunnel","enaa-tunnel"].includes(payload.providerId) && (typeof parsed.Version!=="string" || !parsed.Version)) ||
          !Array.isArray(parsed.Servers) || !parsed.Servers.length ||
          !Array.isArray(parsed.Networks) || !parsed.Networks.length ||
          parsed.Servers.some(x=>!isRecord(x)) || parsed.Networks.some(x=>!isRecord(x)) ||
+         (payload.providerId==="ultra-tunnel" && (parsed.Servers.some(x=>typeof x.Name!=="string") || parsed.Networks.some(x=>typeof x.Name!=="string"))) ||
          JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))throw Error("INVALID_WORKER_RESULT");
     }
     if(kind==="server-vpn" && payload?.providerId==="v2ray-tunnel-plus"){
@@ -366,7 +460,11 @@ export async function decodeRequest(request,kind,options={}) {
       let policy=null;
       try{policy=await (options.exportPolicyProvider||exportPolicy)();}
       catch{ /* Export failure must not discard a valid decode. */ }
-      if(!policy||!exportAllowed(request,policy)){
+      // Legacy clients need the HA opt-in, but dynamic clients are not
+      // restricted to compiled per-application export target lists.
+      const clientSupportsFormat=negotiatesDynamicExport(request)||
+        payload.format.toLowerCase()!=="hat"||negotiatesHatExport(request);
+      if(!policy||!exportAllowed(request,policy)||!clientSupportsFormat){
         workerPayload={...payload};delete workerPayload.compatibleExport;
         exportUnavailable={status:"unavailable",code:!policy?"EXPORT_POLICY_UNAVAILABLE":
           policy.enabled?"EXPORT_CLIENT_UPDATE_REQUIRED":"EXPORT_DISABLED"};
@@ -569,4 +667,3 @@ export async function readinessRequest(options={}) {
     return jsonReply({apiVersion:"v1",status:"ready",note:"Service configured; individual decoding results are not exporter-certified."});
   }catch{return jsonReply({apiVersion:"v1",status:"not_ready",reason:"CLOUD_SECURITY_DEPENDENCY_UNAVAILABLE"},503);}
 }
-

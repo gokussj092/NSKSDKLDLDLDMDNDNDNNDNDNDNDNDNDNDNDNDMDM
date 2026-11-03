@@ -8,6 +8,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.performScrollToNode
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Assert.*
@@ -20,7 +21,7 @@ import org.junit.runner.RunWith
 class SettingsEnhancementsInstrumentedTest {
     @get:Rule val ui=createAndroidComposeRule<MainActivity>()
 
-    @Test fun settingsShowsLanguagesPrivacyVersionAndTelegramOnlyLinks(){
+    @Test fun settingsNavigatesToStandaloneAboutWithVersionAndOfficialLinks(){
         val ctx=ui.activity
         ui.waitUntil(10000) {
             ui.onAllNodesWithContentDescription(ctx.getString(R.string.settings))
@@ -43,12 +44,18 @@ class SettingsEnhancementsInstrumentedTest {
         ui.onNodeWithTag("settings_language_back").performClick()
         ui.onNodeWithTag("settings_language_screen").assertDoesNotExist()
         ui.onNodeWithText(ctx.getString(R.string.mask_passwords_title)).assertExists()
-        // Telegram is the sole contact surface. No repository/source links.
+        // Phase 6 moves all version and community data into a dedicated destination.
+        ui.onNodeWithTag("settings_about_entry").performScrollTo().performClick()
+        ui.onNodeWithTag("about_screen").assertExists()
         ui.onNodeWithText(ctx.getString(R.string.contact_developer)).assertExists()
         ui.onNodeWithText(ctx.getString(R.string.telegram_group)).assertExists()
         ui.onNodeWithText(ctx.getString(R.string.telegram_channel)).assertExists()
-        ui.onNodeWithText(ctx.getString(R.string.settings_version,BuildConfig.VERSION_NAME))
-            .assertExists()
+        ui.onNodeWithText(
+            ctx.getString(R.string.about_screen_version_badge,
+                BuildConfig.VERSION_NAME,BuildConfig.VERSION_CODE)
+        ).assertExists()
+        ui.onNodeWithTag("about_back").performClick()
+        ui.onNodeWithTag("about_screen").assertDoesNotExist()
         ui.onNodeWithText(ctx.getString(R.string.guide_replay)).assertExists()
     }
 }

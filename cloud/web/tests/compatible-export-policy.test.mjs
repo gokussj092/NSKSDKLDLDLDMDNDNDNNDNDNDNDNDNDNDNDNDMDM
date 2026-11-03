@@ -3,8 +3,10 @@ import assert from 'node:assert/strict';
 import {mkdtemp,rm,readFile,writeFile,stat} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
+import {publicFormats,fileFormatUnlockedExports,validatePublicFormats} from '../lib/file-format-catalog.mjs';
 import {atLeast,negotiatesExport,exportPolicy,setExportPolicy,exportAllowed,
- projectedCatalogVersion,exportCatalog} from '../lib/compatible-export-policy.mjs';
+ projectedCatalogVersion,exportCatalog,negotiatesDynamicExport,exportRegistry,
+ validateExportRegistry} from '../lib/compatible-export-policy.mjs';
 
 const request=(v='1.1.21',protocol='1')=>new Request('https://example.test/catalog',{
  headers:{'x-spdecode-app-version':v,'x-spdecode-compatible-export':protocol}});
@@ -50,6 +52,19 @@ test('concurrent admin edits cannot overwrite each other',async t=>{
  assert.equal(results.find(x=>x.status==='rejected').reason.code,'EXPORT_POLICY_CONFLICT');
  assert.equal((await exportPolicy(opts)).revision,1);
 });
+test('HA export is additive and old clients retain the exact four-target catalog',()=>{
+ const policy={schemaVersion:1,revision:4,enabled:true,minimumAppVersion:'1.1.21'};
+ const old=request(),current=request();current.headers.set('x-spdecode-compatible-export-hat','1');
+ assert.deepEqual(exportCatalog(old,policy).formats.map(x=>x.suffix),['hc','dark','ehi','npvs']);
+ const formats=exportCatalog(current,policy).formats;
+ assert.deepEqual(formats.map(x=>x.suffix),['hc','dark','ehi','npvs','hat']);
+ assert.deepEqual(formats.at(-1),{suffix:'hat',targetAppId:'ha-tunnel-plus',name:'HA Tunnel Plus',banner:'none'});
+ assert.equal(projectedCatalogVersion(current,59,policy),projectedCatalogVersion(old,59,policy)+1);
+ for(const invalid of ['0','true','2']){
+  current.headers.set('x-spdecode-compatible-export-hat',invalid);
+  assert.equal(exportCatalog(current,policy).formats.length,4);
+ }
+});
 test('VPS emergency lock overrides panel and corrupt state fails closed',async t=>{
  const opts=await fixture(t);
  await setExportPolicy({enabled:true,minimumAppVersion:'1.1.21',expectedRevision:0},opts);
@@ -59,4 +74,62 @@ test('VPS emergency lock overrides panel and corrupt state fails closed',async t
  await writeFile(join(opts.root,'compatible-export.json'),'{"enabled":true}');
  await assert.rejects(exportPolicy(opts),/EXPORT_POLICY_INVALID/);
  assert.equal(await readFile(join(opts.root,'compatible-export.json'),'utf8'),'{"enabled":true}');
+});
+
+test('protocol 2 accepts any vetted exporter from registry without a client allowlist',()=>{
+ const old=request('1.1.25','2');
+ assert(!negotiatesDynamicExport(old),'old versions must not select schema 2');
+ const dynamic=request('1.1.26','2');
+ const p={schemaVersion:1,revision:4,enabled:true,minimumAppVersion:'1.1.21'};
+ assert(negotiatesDynamicExport(dynamic));
+ assert.equal(exportCatalog(dynamic,p).schemaVersion,2);
+ assert.deepEqual(exportCatalog(dynamic,p).formats.map(f=>f.suffix),
+  exportRegistry().formats.map(f=>f.suffix));
+ assert.equal(exportCatalog(request('1.1.26','1'),p).schemaVersion,1);
+ assert(projectedCatalogVersion(dynamic,59,p)>projectedCatalogVersion(request('1.1.26','1'),59,p));
+ const registry=exportRegistry();
+ const configured=new Set(registry.formats.map(f=>f.suffix));
+ // The fixture adapts as new applications become registered exporters.
+ const candidate=publicFormats().find(f=>/^[a-z0-9][a-z0-9_-]{0,15}$/.test(f.suffix)&&
+    !configured.has(f.suffix));
+ assert(candidate,'Expected a non-exportable decoder route for synthetic contract QA');
+ const future={suffix:candidate.suffix,targetAppId:'synthetic-export-app',
+   name:'Synthetic Export App',banner:'none'};
+ const expanded=validateExportRegistry({...registry,revision:registry.revision+1,
+  formats:[...registry.formats,future]});
+ assert.equal(expanded.formats.at(-1).suffix,candidate.suffix);
+ assert.throws(()=>validateExportRegistry({...expanded,
+  formats:[...expanded.formats,future]}),/EXPORT_REGISTRY_INVALID/);
+ assert.throws(()=>validateExportRegistry({...expanded,
+  formats:expanded.formats.map(f=>f.suffix===candidate.suffix?{...f,targetAppId:'../bad'}:f)}),/EXPORT_REGISTRY_INVALID/);
+ assert.throws(()=>validateExportRegistry({...expanded,
+  formats:expanded.formats.map(f=>f.suffix===candidate.suffix?{...f,name:'\u202eunsafe'}:f)}),/EXPORT_REGISTRY_INVALID/);
+ assert.throws(()=>validateExportRegistry({...expanded,
+  formats:[...registry.formats,{...future,suffix:'unknown-nonexistent'}]}),/EXPORT_REGISTRY_INVALID/);
+});
+
+test('single format catalog controls Unlocked capabilities and preserves v1 schema',()=>{
+ const capabilities=fileFormatUnlockedExports();
+ const published=exportRegistry();
+ assert.equal(capabilities.revision,published.revision);
+ assert.deepEqual(capabilities.formats.map(x=>x.suffix).sort(),
+  published.formats.map(x=>x.suffix).sort());
+ assert(publicFormats().every(x=>!Object.hasOwn(x,'unlockedExport')));
+ const fixture={schemaVersion:1,detection:{rule:'longest-filename-suffix',
+   caseInsensitive:true,separator:'.'},unlockedRevision:2,
+   formats:[{suffix:'test',name:'Synthetic',kind:'file',offlineSupported:false,
+     cloudSupported:true,credentialFields:[],
+     unlockedExport:{targetAppId:'synthetic-app',name:'Synthetic App',banner:'none'}}]};
+ assert.deepEqual(Object.keys(validatePublicFormats(fixture)[0]).sort(),
+  ['suffix','name','kind','offlineSupported','cloudSupported','credentialFields'].sort());
+ assert.throws(()=>validatePublicFormats({...fixture,unlockedRevision:undefined}),
+  /UNLOCKED_REVISION_MISSING/);
+ assert.throws(()=>validatePublicFormats({...fixture,
+  formats:[{...fixture.formats[0],unlockedExport:{
+   targetAppId:'../invalid',name:'Synthetic App',banner:'none'}}]}),
+  /UNLOCKED_ENTRY_INVALID/);
+ assert.throws(()=>validatePublicFormats({...fixture,
+  formats:[{...fixture.formats[0],unlockedExport:{
+   targetAppId:'synthetic-app',name:'\u202eControl',banner:'none'}}]}),
+  /UNLOCKED_ENTRY_INVALID/);
 });

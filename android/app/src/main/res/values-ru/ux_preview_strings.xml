@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="apk_import_button">Импорт APK</string>
+    <string name="apk_future_message">Анализ APK станет доступен в одном из следующих обновлений.</string>
+    <string name="apk_credits_title">Центр кредитов</string>
+    <string name="apk_credits_intro">Управляйте будущими кредитами и покупками для анализа APK.</string>
+    <string name="apk_credits_notice">Баланс и покупки станут доступны после запуска сервиса.</string>
+    <string name="apk_credits_buy_title">Купить кредиты</string>
+    <string name="apk_credits_one">1 кредит</string>
+    <string name="apk_credits_buy_one">Купить 1 кредит · Скоро</string>
+    <string name="apk_credits_packages">Пакеты кредитов</string>
+    <string name="apk_credits_buy_package">Купить пакет · Скоро</string>
+    <string name="apk_credits_prices_title">Цены</string>
+    <string name="apk_credits_subscriptions">Подписки</string>
+    <string name="apk_credits_button">Кредиты: 1+</string>
+    <string name="apk_credits_back">Назад</string>
+    <string name="feedback_details_title">Детали обращения</string>
+    <string name="feedback_method_description">Предложите поддержку новых файлов или каталогов VPN-серверов.</string>
+    <string name="feedback_bug_description">Сообщите об ошибках расшифровки, совместимости или приложения.</string>
+    <string name="feedback_suggestion_description">Предложите новые функции или улучшения интерфейса.</string>
+    <string name="feedback_extra_title">Дополнительная информация (необязательно)</string>
+    <string name="feedback_extra_hint">Версия, формат или другие сведения</string>
+</resources>

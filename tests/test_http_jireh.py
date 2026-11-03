@@ -1,4 +1,4 @@
-"""HTTP Jireh 2.0 vectors: Java parity, whole documents and Cloud routing."""
+"""HTTP Jireh 2.0/2.2: Java parity, whole documents and current Cloud routing."""
 from __future__ import annotations
 import base64
 import hashlib
@@ -119,12 +119,16 @@ class JirehTests(unittest.TestCase):
             def open(self, request, timeout):
                 self.seen.append(request.full_url)
                 if timeout != 25: raise AssertionError("deadline")
+                if request.get_header("User-agent") != "HTTP Jireh/2.2": raise AssertionError("current app version")
                 return Response()
         opener = Opener()
         with patch.object(catalog, "build_opener", return_value=opener):
             self.assertEqual(catalog.download(), V["catalog"].encode())
             catalog.download(users=True)
-            self.assertEqual(opener.seen, [catalog.CATALOG_URL, catalog.USERS_URL])
+            self.assertEqual(opener.seen, [
+                "https://dl.dropboxusercontent.com/scl/fi/9p6vvoa8jfch3ribneckq/HTTPJIREH1117?rlkey=05z97u9cg8tv4k5xem9m1uxu2&st=huezcplw&dl=1",
+                "https://dl.dropboxusercontent.com/scl/fi/levagd0tny8izfpvgsilo/USUARIOSJIREH?rlkey=f4a0zwurd23nmk61ya6ptxf4u&st=bneujzqr&dl=1",
+            ])
             for bad in (b"", b"<html/>", b"x" * (codec.MAX_BYTES + 1)):
                 with patch.object(Response, "data", bad), self.assertRaises(codec.DecodeError): catalog.download()
             with patch.object(Response, "headers", {"Content-Encoding": "gzip"}), self.assertRaises(codec.DecodeError): catalog.download()

@@ -1,0 +1,139 @@
+{
+  "id": "izph-vpn-pro",
+  "name": "IZPH VPN PRO",
+  "package": "com.izphprov2.net",
+  "compatibleVersions": [
+    "6.0"
+  ],
+  "versionCode": 60,
+  "engine": "python-izph-cbc-customxxtea-threefish256-pbkdf2",
+  "engineVersion": 1,
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "source": "https://raw.githubusercontent.com/kiranoble/config/refs/heads/main/izph49",
+    "requestMethod": "GET",
+    "appRequestLocation": "IZPHPROMain.V() / Volley StringRequest",
+    "appCustomHeaders": {},
+    "appAuthorizationRequired": false,
+    "toolUserAgent": "IZPH VPN PRO/6.0",
+    "sourceObservedStatus": 200,
+    "sourceValidatedOn": "2026-11-01",
+    "realCliDownloadEqual": true,
+    "remoteValidated": true,
+    "publicBrokerEnabled": true,
+    "cardRemote": "izph-vpn-pro",
+    "publicCatalogVersion": 59,
+    "publicCatalogCards": 54,
+    "versionPolicy": "Keep59 by explicit owner instruction for this unreleased server batch",
+    "embeddedResource": "R.raw.g /servers/0x7f110006 -> res/ae/e.rj",
+    "embeddedProof": {
+      "source": "included.enc",
+      "bytes": 279596,
+      "sha256": "3300d7238a43f8710cc418366944c5a85e8d01fe4120318158461e7bb86559b1",
+      "version": "1000.0.1208",
+      "servers": 60,
+      "networks": 110,
+      "processed": 1598,
+      "nonempty": 1224,
+      "mode0": 878,
+      "mode1": 246,
+      "mode2": 100,
+      "completeJdkEqual": true,
+      "zeroCiphertextFields": 0,
+      "nativeCasesEqual": 6,
+      "completeRealWorkerEqual": true,
+      "completeStdinCliEqual": true,
+      "renderedBytes": 153284
+    },
+    "remoteProof": {
+      "source": "remote.enc",
+      "bytes": 480620,
+      "sha256": "40e2155da7be0d23bf54fedc239b4cb3adfd2f4dd103dffa3bb8944c0241269e",
+      "version": "3234",
+      "servers": 84,
+      "networks": 303,
+      "processed": 3692,
+      "nonempty": 2560,
+      "mode0": 1939,
+      "mode1": 471,
+      "mode2": 150,
+      "completeJdkEqual": true,
+      "zeroCiphertextFields": 0,
+      "nativeCasesEqual": 6,
+      "completeRealWorkerEqual": true,
+      "completeStdinCliEqual": true,
+      "renderedBytes": 322051
+    }
+  },
+  "files": {
+    "newRoute": false,
+    "historicalRoute": "izph.py / .izph / izph://",
+    "validation": "Historical primitive corrected against independent Java/native; no exported build60 profile supplied; no new .rj/.json global routes"
+  },
+  "dependencies": {
+    "python": ">=3.10",
+    "pycryptodome": "3.23.0",
+    "supportFiles": [
+      "../../izph.py",
+      "../HTTP_FenixVPN/codec.py",
+      "../HTTP_FenixVPN/field_names.json"
+    ]
+  },
+  "fixes": [
+    "Inverse Threefish round permutation before inverse MIX",
+    "Preserve legitimate final AES ciphertext zero",
+    "Historical network SSCommand field"
+  ],
+  "sourceApkSha256": "127e4124714108d56b1eb20d9cc61ea69eb5f3cf01ac9f76ca8c8f8c27d8d4c7",
+  "sourceNativeSha256": "3c6ad15db5484317c557ae1c1935b102f264c86420552cd53d449045a09ca8c5",
+  "signer": {
+    "sha1": "b54eb2646f84cafdab35d6c55bd7e01608cdd43d",
+    "sha256": "c1d7cc7d6f31cf485d9c293f568f606792a27d15ad8176b1dbe5539ece5c9fc8"
+  },
+  "originalInput": {
+    "filename": "IZPH-VPN-PRO-6.0-build60.xapk",
+    "bytes": 70977739,
+    "sha256": "202e41a764200958803af9ef95a62f6d0737bad7848c09fb116a449025e87b64",
+    "libraryFileId": "libfile_a15ccafb31208191a0160f6bbcbbc6d0"
+  },
+  "remoteOriginal": {
+    "filename": "remote.enc",
+    "bytes": 480620,
+    "sha256": "40e2155da7be0d23bf54fedc239b4cb3adfd2f4dd103dffa3bb8944c0241269e",
+    "libraryFileId": "libfile_7adc7c99a8c08191afcdd165d30c128d"
+  },
+  "icon": {
+    "file": "IZPH_VPN_PRO.png",
+    "source": "base.apk:res/h/cd.png",
+    "width": 512,
+    "height": 512,
+    "bytes": 156041,
+    "sha256": "66ba9cb37ebf9c2ec8ea71bff78be16b886c794b2c13c9f6d40d9c36bb1442cb",
+    "policy": "Exact original PNG; no redraw, resize or conversion"
+  },
+  "validation": {
+    "checkedOn": "2026-11-01",
+    "pythonFocusedTests": 22,
+    "izphNewPythonTests": 10,
+    "nodeFocusedTests": 152,
+    "izphNodeTests": 6,
+    "skipCount": 0,
+    "nativePrimitiveCases": 13,
+    "completeJcaWorkerCliEquality": true,
+    "realCliDownload": true,
+    "realWorkerGatewayEqual": true,
+    "nodeProviderTransport": "mocked",
+    "internalHttpTransport": "simulated",
+    "fullJniExecuted": false,
+    "androidVpnConnectionTested": false,
+    "deployed": false
+  },
+  "latestVersionCheck": {
+    "checkedOn": "2026-11-01",
+    "googlePlayVersion": "6.0",
+    "downloadedApkVersion": "6.0",
+    "downloadedVersionCode": 60,
+    "staleMirrorIndexVersion": "5.9",
+    "source": "https://play.google.com/store/apps/details?id=com.izphprov2.net"
+  }
+}

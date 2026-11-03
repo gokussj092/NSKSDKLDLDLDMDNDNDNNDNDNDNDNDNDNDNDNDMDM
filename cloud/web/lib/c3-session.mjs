@@ -4,6 +4,7 @@ import { boundRequestClaims } from "./v2-bound-request.mjs";
 import { bindVerifiedRequest } from "./v2-bound-request.mjs";
 import { authorizeBoundV1 } from "./bound-auth.mjs";
 import { v2Settings } from "./v2-config.mjs";
+import {v2DevicePolicyStatus} from "./v2-device-admission-policy.mjs";
 import {v2PlayPolicyStatus} from "./v2-play-policy.mjs";
 import {v1ProtectionRequired,v1PolicyStatus} from "./v1-protection-policy.mjs";
 import { workBudget } from "./device-security.mjs";
@@ -26,7 +27,7 @@ export function verifySignature(token, key, now = Math.floor(Date.now()/1000), a
     if (p.iss !== "spdecode-cloud" || p.aud !== audience || p.scope !== "decode" ||
         typeof p.jti !== "string" || !/^[0-9a-f-]{36}$/.test(p.jti) ||
         !Number.isInteger(p.iat) || !Number.isInteger(p.exp) ||
-        p.exp <= now || p.iat > now + 5 || p.exp - p.iat > limits.sessionTtlSeconds) return null;
+        p.exp <= now || p.iat > now + 5 || p.exp - p.iat > (audience==="spdecode-android-v2"?3600:limits.sessionTtlSeconds)) return null;
     return p;
   } catch { return null; }
 }
@@ -104,7 +105,8 @@ export async function requireSession(redis, request, cfg) {
   if (boundClaims) {
     const playPolicy=await v2PlayPolicyStatus();
     const result=await authorizeBoundV1(redis,request,bearer.slice(7),boundClaims,
-      v2Settings(process.env,{playIntegrityRequired:playPolicy.integrityRequired}));
+      {...v2Settings(process.env,{playIntegrityRequired:playPolicy.integrityRequired,playPolicy}),
+       deviceRevision:(await v2DevicePolicyStatus()).revision});
     if(result&&!result.rateLimited)bindVerifiedRequest(request,result);
     return result;
   }

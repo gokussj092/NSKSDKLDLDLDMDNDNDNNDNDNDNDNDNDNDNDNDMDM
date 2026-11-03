@@ -24,6 +24,14 @@ int main(){
         reinterpret_cast<const unsigned char*>(data.data()),data.size(),bearer);
     assert(generated.nonce.size()==32);
     assert(generated.message.find("SPDECODE-POP-V2\nPOST\n5\n")==0);
+    const auto action=spdecode::inlineActionBinding(5,bearer,
+        reinterpret_cast<const unsigned char*>(data.data()),data.size());
+    assert(action.id.size()==35 && action.id.substr(0,3)=="i2.");
+    assert(spdecode::validActionChallenge(action.requestHash,action.id,123));
+    const auto again=spdecode::inlineActionBinding(5,bearer,
+        reinterpret_cast<const unsigned char*>(data.data()),data.size());
+    assert(action.id!=again.id && action.requestHash!=again.requestHash);
+    std::cout<<"INLINE "<<action.id<<" "<<action.requestHash<<"\n";
     const auto suffix=spdecode::makeAliasSuffix();
     assert(suffix.size()==8);
     assert(spdecode::validClassicChallenge(std::string(43,'A'),
@@ -49,3 +57,4 @@ int main(){
     assert(rejected);
     std::cout<<"PASS native V2 proof and Integrity nonce protocol\n";
 }
+

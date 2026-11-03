@@ -4,13 +4,14 @@ import {opsStore} from './c6-ops-store.mjs';
 import {store,throttle} from './c3-store.mjs';
 import {boundRequestClaims} from './v2-bound-request.mjs';
 import {pushAccount,pushNotice} from './notice-push.mjs';
-import {noticeStorageEnabled,transactStoredFeed,validStoredNotice} from './notice-store.mjs';
+import {noticeStorageEnabled,transactStoredFeed,validStoredNotice,
+ NOTICE_TYPES,NOTICE_IMPORTANCE,NOTICE_DELIVERY,NOTICE_TTL_HOURS} from './notice-store.mjs';
 const KEY='spnotice:feed:v1',LOCK='spnotice:publish-lock';
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 const reply=(body,status=200)=>Response.json(body,{status,headers:{'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'}});
 const clean=(s,max)=>typeof s==='string'&&s.trim().length>0&&s===s.trim()&&s.length<=max&&!/[\x00-\x08\x0b-\x1f\x7f\u202a-\u202e\u2066-\u2069]/.test(s);
 export function validNotice(n,now=Date.now()) {
-  return n && UUID.test(n.id) && clean(n.title,80) && clean(n.body,500) &&
+  return validStoredNotice(n) && UUID.test(n.id) && clean(n.title,80) && clean(n.body,500) &&
     Number.isSafeInteger(n.createdAt) && n.createdAt<=now+5000 && n.createdAt>=now-7*86400000 &&
     Number.isSafeInteger(n.expiresAt) && n.expiresAt>now && n.expiresAt<=n.createdAt+7*86400000;
 }
@@ -29,7 +30,10 @@ export async function notificationFeedRequest(request,{storeProvider=store,stora
   if(!boundRequestClaims(request))return reply({error:{code:'UNAUTHORIZED'}},401);
   try {
     const text=await request.text();if(text.length>16 || text.trim()!=='{}')return reply({error:{code:'INVALID_REQUEST'}},400);
-    return reply({notices:await notices(await storeProvider(),storageOptions)});
+    const feed=await notices(await storeProvider(),storageOptions);
+    // Trusted server clock lets Android establish a subscription cutoff without
+    // relying on the device clock being in sync with the VPS.
+    return reply({notices:feed,serverTime:Date.now()});
   }catch{return reply({error:{code:'SERVICE_UNAVAILABLE'}},503);}
 }
 export async function adminNotices(request,{storeProvider=opsStore,push=pushNotice,storageOptions={}}={}) {
@@ -48,10 +52,19 @@ export async function adminNotices(request,{storeProvider=opsStore,push=pushNoti
       size+=value.length;if(size>4096){await reader.cancel();return reply({code:'INVALID_REQUEST'},400);}parts.push(Buffer.from(value));}}
     finally{reader.releaseLock();}
     let input;try{input=JSON.parse(Buffer.concat(parts).toString('utf8'));}catch{return reply({code:'INVALID_REQUEST'},400);}
-    if(!input||Object.keys(input).sort().join(',')!=='body,id,title'||!UUID.test(input.id)||!clean(input.title,80)||!clean(input.body,500))
+    const keys=input&&typeof input==='object'&&!Array.isArray(input)
+      ?Object.keys(input).sort().join(','):'';
+    const legacy=keys==='body,id,title';
+    const modern=keys==='body,delivery,id,importance,title,ttlHours,type';
+    if(!(legacy||modern)||!UUID.test(input.id)||!clean(input.title,80)||!clean(input.body,500)||
+      (modern&&(!NOTICE_TYPES.includes(input.type)||!NOTICE_IMPORTANCE.includes(input.importance)||
+        !NOTICE_DELIVERY.includes(input.delivery)||!NOTICE_TTL_HOURS.includes(input.ttlHours))))
       return reply({code:'INVALID_REQUEST'},400);
     if(!await throttle(redis,'spnotice:publish-rate',5,60))return reply({code:'RATE_LIMITED'},429);
-    const now=Date.now(),notice={...input,createdAt:now,expiresAt:now+7*86400000};
+    const now=Date.now();
+    const notice={id:input.id,title:input.title,body:input.body,
+      createdAt:now,expiresAt:now+(modern?input.ttlHours:168)*3600000,
+      ...(modern?{type:input.type,importance:input.importance,delivery:input.delivery}:{})};
     if(noticeStorageEnabled(storageOptions.env||process.env)) {
       const saved=await transactStoredFeed(notice,{...storageOptions,legacy:()=>legacyFeed(redis)});
       if(saved.duplicate)return reply({status:'already-published'});
@@ -63,7 +76,15 @@ export async function adminNotices(request,{storeProvider=opsStore,push=pushNoti
       await redis.set(KEY,JSON.stringify([...current,notice].slice(-20)),{EX:8*86400});
     }
     // Commit the feed first. FCM failure never discards a published notice.
-    let delivery;try{delivery=await push(notice.id);}catch{delivery='periodic-push-failed';}
+    let delivery='periodic';
+    if(notice.delivery!=='poll') {
+      try {
+        delivery=await push(notice.id,{
+          priority:notice.importance==='important'?'high':'normal',
+          ttlSeconds:Math.min(86400,Math.max(0,Math.ceil((notice.expiresAt-Date.now())/1000))),
+        });
+      }catch{delivery='periodic-push-failed';}
+    }
     return reply({status:'published',delivery,id:notice.id},201);
   }catch{return reply({code:'SERVICE_UNAVAILABLE'},503);}
   finally {if(redis&&lock)await redis.eval("if redis.call('GET',KEYS[1]) == ARGV[1] then return redis.call('DEL',KEYS[1]) end return 0",{keys:[LOCK],arguments:[lock]}).catch(()=>{});}

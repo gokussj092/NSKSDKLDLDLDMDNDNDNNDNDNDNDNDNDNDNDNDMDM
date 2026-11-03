@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feedback_title">Lỗi và đề xuất</string>
+    <string name="feedback_settings_detail">Báo lỗi hoặc đề xuất phương thức APK mới</string>
+    <string name="feedback_intro">Chọn loại yêu cầu. Dữ liệu chỉ được gửi khi bạn nhấn Gửi.</string>
+    <string name="feedback_category">Loại yêu cầu</string>
+    <string name="feedback_category_method">Thêm phương thức APK mới</string>
+    <string name="feedback_category_bug">Báo lỗi</string>
+    <string name="feedback_category_suggestion">Đề xuất cải tiến</string>
+    <string name="feedback_method_help">Dán liên kết Google Play, Uptodown hoặc nhà cung cấp khác và mô tả nội dung cần tích hợp.</string>
+    <string name="feedback_app_link">Liên kết ứng dụng</string>
+    <string name="feedback_app_link_hint">https://play.google.com/store/apps/details?id=...</string>
+    <string name="feedback_bug_instruction">Đánh dấu tất cả lỗi đã gặp (ít nhất một lỗi).</string>
+    <string name="feedback_issue_decode">Giải mã tệp thất bại</string>
+    <string name="feedback_issue_catalog">Không thể tải danh mục VPN</string>
+    <string name="feedback_issue_import">Lỗi nhập tệp</string>
+    <string name="feedback_issue_export">Lỗi xuất hoặc cấu hình đã mở khóa</string>
+    <string name="feedback_issue_crash">Ứng dụng bị đóng đột ngột</string>
+    <string name="feedback_issue_cloud">Lỗi truy cập đám mây hoặc máy chủ</string>
+    <string name="feedback_issue_other">Lỗi khác</string>
+    <string name="feedback_optional_report">Báo cáo bổ sung (tùy chọn)</string>
+    <string name="feedback_description_required">Bạn muốn tích hợp hoặc cải thiện điều gì?</string>
+    <string name="feedback_report_hint">Có thể mô tả các bước nhưng không bắt buộc.</string>
+    <string name="feedback_description_hint">Mô tả phương thức, tệp, danh mục hoặc cải tiến mong muốn.</string>
+    <string name="feedback_privacy_note">Không gửi mật khẩu, khóa riêng, cấu hình đã giải mã hoặc nhật ký nhạy cảm. Chỉ thông tin bạn chọn được gửi.</string>
+    <string name="feedback_error">Không thể gửi. Nội dung đã nhập được giữ lại.</string>
+    <string name="feedback_received">Đã nhận yêu cầu. Mã tham chiếu: %1$s</string>
+    <string name="feedback_send">Gửi yêu cầu</string>
+    <string name="feedback_sending">Đang gửi…</string>
+</resources>

@@ -8,7 +8,7 @@ import {androidUpdateHint} from "../lib/whats-new.mjs";
 test("Cloud catalog advertises bounded file, text and online reference formats",()=>{
  const formats=publicTextFormats();
  const published=catalog();
- assert.equal(CATALOG_VERSION,56);
+ assert.equal(CATALOG_VERSION,65); // Current file-format catalog floor includes .hexcm
  assert.equal(published.textSchemaVersion,1);
  assert.equal(published.textCount,formats.length);
  assert.deepEqual(published.textFormats,formats);
@@ -24,7 +24,7 @@ test("Cloud catalog advertises bounded file, text and online reference formats",
      x.name==="Dark Tunnel" && x.kind==="text"));
  assert(formats.every(x=>!("url" in x)&&!("route" in x)&&!("key" in x)));
  assert.equal(new Set(formats.map(x=>x.prefix.toLowerCase())).size,formats.length);
- assert.equal(published.formats.length,254);
+ assert.equal(published.formats.length,256);
 });
 
 test("Untrusted catalog cannot select worker modules, URLs, scripts or duplicate prefixes",()=>{

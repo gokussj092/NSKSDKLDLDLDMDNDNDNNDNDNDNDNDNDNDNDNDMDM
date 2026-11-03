@@ -101,6 +101,10 @@
     <string name="decode_progress_reading">Reading selected file…</string>
     <string name="decode_progress_decoding">Decoding configuration through Cloud…</string>
     <string name="decode_progress_saving">Saving encrypted result…</string>
+    <string name="decode_progress_wait">Please wait…</string>
+    <string name="decode_progress_sending">Sending…</string>
+    <string name="decode_progress_processing">Processing…</string>
+    <string name="decode_progress_downloading_results">Downloading results…</string>
     <string name="history_search">Search by filename or extension</string>
     <string name="history_favorites">Favorites</string>
     <string name="history_sort">Sort</string>
@@ -138,7 +142,7 @@
     <string name="native_decoder_mixed_short">Mixed</string>
     <string name="clear_current_result">Clear displayed result</string>
     <string name="guide_settings_title">Interactive guide</string>
-    <string name="guide_settings_detail">Follow Home, History, Formats, VPN Servers and Settings in order. You can restart this guide any time.</string>
+    <string name="guide_settings_detail">Explore Home, History, APK Analysis, VPN Servers and Settings. You can restart this guide at any time.</string>
     <string name="guide_replay">Start guided tour</string>
     <string name="settings_version">Version %1$s</string>
     <string name="settings_build_code">Build %1$d</string>
@@ -199,7 +203,7 @@
     <string name="hc_auth_enter_manually">Enter password manually</string>
     <string name="hc_auth_input_invalid">Enter the required password and/or a valid 32-character HWID.</string>
     <string name="hc_auth_failed">This protected HTTP Custom file could not be authenticated. Check the password and/or HWID; the file may also be damaged or use an unsupported variant.</string>
-    <string name="guide_step_six">Formats: browse supported applications and extensions.</string>
+    <string name="guide_step_six">APK analysis: this feature is coming soon.</string>
     <string name="guide_step_seven">VPN Servers: choose an application and decode its server catalog.</string>
     <string name="guide_step_eight">Settings: choose a language, review privacy information and manage app preferences.</string>
     <string name="server_vpn">Server VPN</string>
@@ -214,4 +218,22 @@
     <string name="language_screen_title">Select language</string>
     <string name="private_screen_title">Private screen</string>
     <string name="private_screen_detail">Prevent screenshots and screen recording in this app. Turn off when you need to share a screenshot.</string>
+    <string name="apk_analysis_title">APK Analysis</string>
+    <string name="apk_analysis_coming_soon">Coming soon</string>
+    <string name="settings_formats_title">Supported formats</string>
+    <string name="settings_formats_detail">Browse compatible file extensions and text protocols.</string>
+    <string name="apk_analysis_intro_title">An APK can become an investigation-ready report</string>
+    <string name="apk_analysis_intro_detail">When available, static analysis will examine the manifest, metadata, resources and native libraries to help prepare decoder scripts.</string>
+    <string name="apk_analysis_steps_title">Planned workflow</string>
+    <string name="apk_analysis_step_import">Select an APK you are authorized to analyze</string>
+    <string name="apk_analysis_step_inspect">Inspect its metadata, resources and libraries</string>
+    <string name="apk_analysis_step_report">Prepare a structured technical report</string>
+    <string name="apk_analysis_subscription_title">Subscription required</string>
+    <string name="apk_analysis_subscription_detail">Access will require a subscription. Plans and billing terms are not defined yet.</string>
+    <string name="apk_analysis_credit_cost">1 APK = 1 credit</string>
+    <string name="apk_analysis_credit_price">1 credit = 4 USD</string>
+    <string name="apk_analysis_price_note">4 USD is the proposed price per credit, not the subscription fee.</string>
+    <string name="apk_analysis_safety_note">The planned analysis is static: an APK is not installed or executed.</string>
+    <string name="apk_analysis_import_unavailable">Import APK (unavailable)</string>
+    <string name="apk_analysis_no_charge">The service is not active. No APK is submitted and no credits are charged.</string>
 </resources>

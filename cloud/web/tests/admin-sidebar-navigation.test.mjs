@@ -4,7 +4,7 @@ import {readFileSync} from "node:fs";
 const read=path=>readFileSync(new URL("../"+path,import.meta.url),"utf8");
 test("AMOLED admin has left hamburger navigation and a distinct route for every section",()=>{
  const nav=read("app/admin/admin-nav.jsx"),layout=read("app/admin/layout.jsx"),css=read("app/admin/admin-theme.css");
- const routes=["","analytics","reports","diagnostics","system","maintenance","api-v1","api-v2",
+ const routes=["","analytics","reports","requests","diagnostics","system","maintenance","api-v1","api-v2",
    "play","providers","exports","catalog","notifications","observability","alerts","performance","resources"];
  const matches=[...nav.matchAll(/"\/admin(?:\/([a-z0-9-]+))?"/g)].map(m=>m[1]||"").filter(x=>x!=="login");
  assert.deepEqual(matches,routes);
@@ -84,13 +84,41 @@ test("V2 hardware panel supports patch age, boot controls and private aggregate 
  assert(page.includes('"/api/admin/v2-device-admission"'));
  assert(page.includes('"V2_DISPOSITIVOS_CONFIGURAR"'));
  assert(page.includes("Restaurar perfil estricto"));
- assert(page.includes("data.attestationDiagnostics.rejections"));
+ assert(page.includes("<AdminV2Diagnostics hardware={data.attestationDiagnostics} play={data.admissionDiagnostics}/>"));
+ assert(read("app/admin/admin-v2-diagnostics.jsx").includes("hardware.rejections"));
  assert(api.includes("authenticateAdmin(redis,request,cfg)"));
  assert(api.includes("validMutation(request,cfg)"));
  assert(api.includes("changeV2DevicePolicy"));
  assert(api.includes('"http://key-attestation:8788/stats"'));
  assert(verifier.includes("policyLoader = v2DevicePolicyStatus"));
  assert(verifier.includes("devicePolicy:Date.parse")===false);
- assert(verifier.includes("Date.parse(policy.expiresAt)"));
+ assert(verifier.includes("enforceBoot:policy.enforceBoot"));
  assert(read("app/api/admin/v2-device-admission/route.js").includes("v2DeviceAdmissionRequest"));
+});
+
+
+test("feedback inbox is a standalone, secured and accessible admin page",()=>{
+ const page=read("app/admin/requests/page.jsx");
+ const ui=read("app/admin/admin-feedback.jsx");
+ const api=read("app/api/admin/feedback/route.js");
+ const logic=read("lib/feedback-admin.mjs");
+ const styles=read("app/admin/admin-theme.css");
+ assert.match(page,/AdminFeedback/);
+ assert.match(page,/id="main"/);
+ assert.match(api,/export const GET=feedbackAdminRequest/);
+ assert.match(api,/export const POST=feedbackAdminRequest/);
+ assert.match(logic,/authenticateAdmin/);
+ assert.match(logic,/validMutation/);
+ assert.match(logic,/KEEPTTL/);
+ assert.match(logic,/REVISION_CONFLICT/);
+ assert.match(logic,/private, no-store/);
+ assert.match(ui,/credentials:"same-origin"/);
+ assert.match(ui,/X-SPDecode-Admin-Action/);
+ assert.match(ui,/aria-expanded/);
+ assert.match(ui,/rel="noopener noreferrer"/);
+ assert.match(ui,/referrerPolicy="no-referrer"/);
+ assert.match(ui,/Nota interna/);
+ assert.match(ui,/expectedRevision:selected.revision/);
+ assert.match(styles,/sp-feedback-filters/);
+ assert.doesNotMatch(ui,/dangerouslySetInnerHTML|innerHTML/);
 });

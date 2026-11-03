@@ -92,7 +92,10 @@ test("signed Play AAB and external beta APK are generated without changing appli
  assert.match(gradle,/applicationId = "com\.ghostdeveloper\.spdecode"/);
  assert.match(gradle,/targetSdk = 36/);
  assert.match(gradle,/compileSdk = 36/);
- assert.match(workflow,/:app:assembleRelease :app:bundleRelease/);
+ // Play updater is AAB-only: these must be isolated Gradle invocations.
+ assert.match(workflow,/run: gradle --no-daemon :app:assembleRelease/);
+ assert.match(workflow,/run: gradle --no-daemon -PspdecodePlayAab=true :app:bundleRelease/);
+ assert.match(workflow,/verify_play_update_artifacts\.py/);
  assert.match(workflow,/SPDECODE_SIGNING_KEYSTORE_BASE64/);
   const version=gradle.match(/versionName = "(\d+\.\d+\.\d+)"/)?.[1];
   const code=gradle.match(/versionCode = (\d+)/)?.[1];

@@ -45,7 +45,7 @@ function activeKeys(env=process.env) {
 }
 function cleanHeader(raw,op) {
   if(!Buffer.isBuffer(raw)||raw.length<HPKE_HEADER_BYTES+16||raw.length>HPKE_MAX_BYTES||
-     !Number.isInteger(op)||op<1||op>17||op===3||
+     !Number.isInteger(op)||op<1||op>18||op===3||
      raw.toString("ascii",0,4)!=="SPH2"||raw[4]!==1||
      raw.readUInt16BE(5)!==0x20||raw.readUInt16BE(7)!==1||raw.readUInt16BE(9)!==2||
      raw.readUInt32BE(67)!==raw.length-HPKE_HEADER_BYTES)throw Error("HPKE_INVALID");

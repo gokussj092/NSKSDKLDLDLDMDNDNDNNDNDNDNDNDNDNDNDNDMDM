@@ -6,6 +6,8 @@ import { verifyAction } from "./action-integrity.mjs";
 
 export async function validBoundClaims(redis, claims, cfg) {
   return !!claims && !claims.channel && claims.epoch === cfg.epoch &&
+    (claims.policyRevision??0)===(cfg.policyRevision??0)&&
+    (claims.deviceRevision??0)===(cfg.deviceRevision??0)&&
     Number.isSafeInteger(claims.versionCode) && claims.versionCode >= cfg.minimumVersionCode &&
     Array.isArray(claims.certificates) && claims.certificates.length > 0 &&
     claims.certificates.every(x=>cfg.certificateDigests.includes(x)) &&

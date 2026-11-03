@@ -90,6 +90,23 @@ test('compatible artifacts are opt-in, version gated and preserve successful dec
   assert.equal(body.rawText,'{"connection":"preserved"}');
   assert.equal(last.compatibleExport,undefined);
 });
+test('HA export requires the additive target capability while retaining a successful decode',async()=>{
+ const redis=new FakeRedis(),{issued}=await authorized(redis);
+ const payload={format:'hat',dataBase64:'YWJj',compatibleExport:{profile:'original-app-open-v1'}};
+ let forwarded;
+ const options={storeProvider:async()=>redis,
+  exportPolicyProvider:async()=>({enabled:true,minimumAppVersion:'1.1.21'}),
+  fetchImpl:async(_url,opts)=>{forwarded=JSON.parse(opts.body);return Response.json({status:'success',
+   rawText:'{"profile":{"preserved":true}}',structuredJson:{profile:{preserved:true}},isPartial:false,warnings:[],
+   ...(forwarded.compatibleExport?{compatibleExport:{status:'ready'}}:{})});}};
+ const make=hat=>{const r=req(payload,issued.accessToken);r.headers.set('x-spdecode-app-version','1.1.24');
+  r.headers.set('x-spdecode-compatible-export','1');if(hat)r.headers.set('x-spdecode-compatible-export-hat','1');return r;};
+ const old=await decodeRequest(make(false),'file',options);assert.equal(old.status,200);
+ const oldBody=await old.json();assert.equal(oldBody.compatibleExport.code,'EXPORT_CLIENT_UPDATE_REQUIRED');
+ assert.deepEqual(oldBody.structuredJson,{profile:{preserved:true}});assert.equal(forwarded.compatibleExport,undefined);
+ const current=await decodeRequest(make(true),'file',options);assert.equal(current.status,200);
+ assert.equal((await current.json()).compatibleExport.status,'ready');assert.deepEqual(forwarded.compatibleExport,payload.compatibleExport);
+});
 test("NPV key generation requires session and consent, returns matching fresh keys without persistence",async()=>{
   const redis=new FakeRedis();const {issued}=await authorized(redis);
   const identity=()=>{

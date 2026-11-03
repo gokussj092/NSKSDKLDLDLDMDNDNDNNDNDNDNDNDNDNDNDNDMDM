@@ -38,7 +38,7 @@ function req(op,body,key,bearer="",headers={},path="/api/v2/transport") {
     "x-real-ip":"192.0.2.12","x-sp-operation":String(op),"x-spdecode-app-version":"1.1.23",
     "x-sp-timestamp":ts,"x-sp-nonce":nonce,"x-sp-proof":proof,...(bearer?{authorization:"Bearer "+bearer}:{}),...headers},body:bytes});
 }
-function fixture(changes={}) {const redis=new Redis(),bootstrap=pair(),key=pair(),options={env:{...env,...changes},storeProvider:async()=>redis,
+function fixture(changes={}) {const redis=new Redis(),bootstrap=pair(),key=pair(),options={env:{...env,...changes},storeProvider:async()=>redis,playPolicyLoader:async()=>({integrityRequired:true}),devicePolicyLoader:async()=>({revision:0}),
   dispatch:async()=>Response.json({ok:true})};return {redis,bootstrap,key,options,
     call:(op,body,bearer="",headers={})=>transportRequest(req(op,body,key,bearer,headers),options)};}
 async function enroll(f,{hardware=true}={}) {
@@ -48,7 +48,7 @@ async function enroll(f,{hardware=true}={}) {
   f.options.verifyHardware=async(chain,challenge,key,cfg)=>{
     assert.equal(challenge,attestationChallenge(c.nonce,c.challengeId,encode(f.bootstrap)));
     assert.equal(key,encode(f.key));assert.equal(cfg.requireHardware,true);
-    return hardware?{valid:true,publicKey:key,level:"tee"}:null;
+    return hardware?{valid:true,publicKey:key,level:"tee",versionCode:34}:null;
   };
   const result=await f.call(2,{challengeId:c.challengeId,integrityToken:"T".repeat(100),
     publicKey:encode(f.key),certificateChain:["YWJj","YWJj"]});
@@ -121,7 +121,9 @@ test("server signs only trusted time-bound device policies, never client-supplie
  await verifyHardware(["YWJj","YWJj"],"x".repeat(43),encode(f.key),
    cfg,{fetchImpl,policyLoader:async()=>({
     patchMonths:12,enforcePatch:true,enforceBoot:true,expiresAt:null,relaxed:false,revision:8})});
- assert(!Object.hasOwn(sent,"devicePolicy"));
+ assert.equal(sent.devicePolicy.enforcePatch,true);
+ assert.equal(sent.devicePolicy.enforceBoot,true);
+ assert(sent.devicePolicy.expiresAt>Date.now());
 });
 
 test("renewing a session cannot reset a key budget or spend global capacity after key rejection",async()=>{

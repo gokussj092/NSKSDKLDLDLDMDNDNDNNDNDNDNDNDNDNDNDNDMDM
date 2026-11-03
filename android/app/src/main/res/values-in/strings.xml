@@ -101,6 +101,10 @@
     <string name="decode_progress_reading">Membaca berkas terpilih…</string>
     <string name="decode_progress_decoding">Mendekode konfigurasi melalui Cloud…</string>
     <string name="decode_progress_saving">Menyimpan hasil terenkripsi…</string>
+    <string name="decode_progress_wait">Harap tunggu…</string>
+    <string name="decode_progress_sending">Mengirim…</string>
+    <string name="decode_progress_processing">Memproses…</string>
+    <string name="decode_progress_downloading_results">Mengunduh hasil…</string>
     <string name="history_search">Cari berdasarkan nama atau ekstensi berkas</string>
     <string name="history_favorites">Favorit</string>
     <string name="history_sort">Urutkan</string>
@@ -138,7 +142,7 @@
     <string name="native_decoder_mixed_short">Campuran</string>
     <string name="clear_current_result">Bersihkan hasil yang ditampilkan</string>
     <string name="guide_settings_title">Panduan interaktif</string>
-    <string name="guide_settings_detail">Ikuti urutan Beranda, Riwayat, Format, Server VPN, lalu Pengaturan. Panduan dapat diulang kapan saja.</string>
+    <string name="guide_settings_detail">Jelajahi Beranda, Riwayat, Analisis APK, Server VPN, dan Pengaturan. Panduan ini dapat diulang kapan saja.</string>
     <string name="guide_replay">Mulai tur panduan</string>
     <string name="settings_version">Versi %1$s</string>
     <string name="settings_build_code">Build %1$d</string>
@@ -199,7 +203,7 @@
     <string name="hc_auth_enter_manually">Masukkan kata sandi secara manual</string>
     <string name="hc_auth_input_invalid">Masukkan kata sandi yang diperlukan dan/atau HWID 32 karakter yang valid.</string>
     <string name="hc_auth_failed">Berkas HTTP Custom terlindungi ini tidak dapat diautentikasi. Periksa kata sandi dan/atau HWID; berkas juga mungkin rusak atau memakai varian yang tidak didukung.</string>
-    <string name="guide_step_six">Format: jelajahi aplikasi dan ekstensi yang didukung.</string>
+    <string name="guide_step_six">Analisis APK: fitur ini segera hadir.</string>
     <string name="guide_step_seven">Server VPN: pilih aplikasi lalu dekode katalog servernya.</string>
     <string name="guide_step_eight">Pengaturan: ubah bahasa, baca informasi privasi, dan atur aplikasi.</string>
     <string name="server_vpn">Server VPN</string>
@@ -212,4 +216,22 @@
     <string name="nur_servers_invalid_url">Masukkan URL HTTPS yang valid untuk daftar server.</string>
     <string name="nur_servers_failed">Gagal mengunduh, mengautentikasi, atau mendekode katalog server.</string>
     <string name="language_screen_title">Pilih bahasa</string>
+    <string name="apk_analysis_title">Analisis APK</string>
+    <string name="apk_analysis_coming_soon">Segera hadir</string>
+    <string name="settings_formats_title">Format yang didukung</string>
+    <string name="settings_formats_detail">Lihat ekstensi berkas dan protokol teks yang kompatibel.</string>
+    <string name="apk_analysis_intro_title">Dari APK menjadi laporan riset teknis</string>
+    <string name="apk_analysis_intro_detail">Saat tersedia, analisis statis akan memeriksa manifes, metadata, sumber daya, dan pustaka native untuk membantu menyiapkan skrip dekoder.</string>
+    <string name="apk_analysis_steps_title">Alur yang direncanakan</string>
+    <string name="apk_analysis_step_import">Pilih APK yang boleh Anda analisis</string>
+    <string name="apk_analysis_step_inspect">Periksa metadata, sumber daya, dan pustaka</string>
+    <string name="apk_analysis_step_report">Siapkan laporan teknis terstruktur</string>
+    <string name="apk_analysis_subscription_title">Akses dengan langganan</string>
+    <string name="apk_analysis_subscription_detail">Langganan akan diperlukan. Paket dan ketentuan pembayaran belum ditentukan.</string>
+    <string name="apk_analysis_credit_cost">1 APK = 1 kredit</string>
+    <string name="apk_analysis_credit_price">1 kredit = 4 USD</string>
+    <string name="apk_analysis_price_note">4 USD adalah harga yang direncanakan per kredit, bukan biaya langganan.</string>
+    <string name="apk_analysis_safety_note">Analisis yang direncanakan bersifat statis: APK tidak dipasang atau dijalankan.</string>
+    <string name="apk_analysis_import_unavailable">Impor APK (belum tersedia)</string>
+    <string name="apk_analysis_no_charge">Layanan belum aktif. Tidak ada APK yang dikirim atau kredit yang dipotong.</string>
 </resources>

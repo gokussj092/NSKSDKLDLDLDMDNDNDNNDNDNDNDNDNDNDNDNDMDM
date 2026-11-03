@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feedback_title">الأخطاء والاقتراحات</string>
+    <string name="feedback_settings_detail">أبلغ عن المشاكل أو اطلب إضافة طرق APK جديدة</string>
+    <string name="feedback_intro">اختر نوع الطلب. لن يتم إرسال شيء حتى تضغط إرسال.</string>
+    <string name="feedback_category">نوع الطلب</string>
+    <string name="feedback_category_method">إضافة طريقة APK جديدة</string>
+    <string name="feedback_category_bug">الإبلاغ عن خطأ</string>
+    <string name="feedback_category_suggestion">اقتراح تحسين</string>
+    <string name="feedback_method_help">ألصق رابط Google Play أو Uptodown أو أي مزود آخر واشرح ما تريد إضافته.</string>
+    <string name="feedback_app_link">رابط التطبيق</string>
+    <string name="feedback_app_link_hint">https://play.google.com/store/apps/details?id=...</string>
+    <string name="feedback_bug_instruction">حدد جميع الأخطاء التي واجهتها (خطأ واحد على الأقل).</string>
+    <string name="feedback_issue_decode">فشل فك تشفير الملف</string>
+    <string name="feedback_issue_catalog">فشل تنزيل كتالوج VPN</string>
+    <string name="feedback_issue_import">مشكلة في استيراد الملفات</string>
+    <string name="feedback_issue_export">فشل التصدير أو إلغاء قفل الإعدادات</string>
+    <string name="feedback_issue_crash">أغلق التطبيق بشكل غير متوقع</string>
+    <string name="feedback_issue_cloud">مشكلة في الوصول إلى السحابة أو الخادم</string>
+    <string name="feedback_issue_other">خطأ آخر</string>
+    <string name="feedback_optional_report">تقرير إضافي (اختياري)</string>
+    <string name="feedback_description_required">ما الذي تريد إضافته أو تحسينه؟</string>
+    <string name="feedback_report_hint">يمكنك وصف الخطوات أو التفاصيل، لكن ذلك غير إلزامي.</string>
+    <string name="feedback_description_hint">اشرح الطريقة أو الملفات أو الكتالوج أو التحسين المطلوب.</string>
+    <string name="feedback_privacy_note">لا تضف كلمات مرور أو مفاتيح خاصة أو إعدادات مفككة التشفير أو سجلات حساسة. يتم إرسال المعلومات التي تختارها فقط.</string>
+    <string name="feedback_error">تعذر إرسال الطلب. تم الاحتفاظ بإجاباتك.</string>
+    <string name="feedback_received">تم استلام الطلب. المرجع: %1$s</string>
+    <string name="feedback_send">إرسال الطلب</string>
+    <string name="feedback_sending">جارٍ الإرسال…</string>
+</resources>

@@ -3,7 +3,7 @@ import Link from "next/link";
 import {usePathname} from "next/navigation";
 import {useEffect,useState} from "react";
 export const groups=[
- {label:"General",links:[["Resumen","/admin","dashboard"],["Analítica","/admin/analytics","chart"],["Incidencias","/admin/reports","list"],["Diagnóstico","/admin/diagnostics","search"]]},
+ {label:"General",links:[["Resumen","/admin","dashboard"],["Analítica","/admin/analytics","chart"],["Incidencias","/admin/reports","list"],["Solicitudes","/admin/requests","message"],["Diagnóstico","/admin/diagnostics","search"]]},
  {label:"Infraestructura",links:[["Estado del servidor","/admin/system","server"],["Mantenimiento","/admin/maintenance","power"],["API V1 y retiro","/admin/api-v1","clock"],["API V2","/admin/api-v2","shield"],["Google Play","/admin/play","phone"]]},
  {label:"Servicios",links:[["Proveedores VPN","/admin/providers","layers"],["Exportaciones","/admin/exports","file"],["Catálogo VPN","/admin/catalog","refresh"],["Notificaciones","/admin/notifications","bell"]]},
  {label:"Supervisión",links:[["Observabilidad","/admin/observability","activity"],["Alertas","/admin/alerts","alert"],["Rendimiento P95","/admin/performance","chart"],["Documentación","/admin/resources","book"]]}
@@ -14,6 +14,7 @@ function NavIcon({name}){
   chart:"M3 3v18h18 M6 16l5-5 4 3 6-8",
   list:"M8 5h13 M8 12h13 M8 19h13 M3 5h1 M3 12h1 M3 19h1",
   search:"M10.5 3a7.5 7.5 0 1 0 0 15a7.5 7.5 0 1 0 0-15 M16 16l5 5",
+  message:"M21 11.5a8.5 8.5 0 0 1-8.5 8.5H4l2-4.3A8.5 8.5 0 1 1 21 11.5z M8 10h8 M8 14h5",
   server:"M4 4h16v7H4z M4 14h16v7H4z M8 8h1 M8 18h1",
   power:"M12 2v11 M6 6a9 9 0 1 0 12 0",
   clock:"M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18 M12 7v5l4 2",

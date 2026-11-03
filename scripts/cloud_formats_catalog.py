@@ -30,6 +30,47 @@ CREDENTIAL_FIELDS = {
 }
 
 
+def existing_unlocked() -> tuple[int | None, dict[str, dict]]:
+    """Preserve vetted Unlocked capabilities in this SAME generated catalog.
+
+    The source of truth is file-formats.json itself; no second manifest or
+    implicit eligibility based on decryption support is permitted.
+    """
+    if not OUTPUT.is_file():
+        return None, {}
+    previous = json.loads(OUTPUT.read_text(encoding="utf-8"))
+    revision = previous.get("unlockedRevision")
+    markers = {}
+    target_ids = set()
+    for item in previous.get("formats", []):
+        if "unlockedExport" not in item:
+            continue
+        suffix = item.get("suffix")
+        value = item["unlockedExport"]
+        if (not isinstance(suffix, str) or suffix in markers or
+                not re.fullmatch(r"[a-z0-9][a-z0-9_-]{0,15}", suffix) or
+                not isinstance(value, dict) or set(value) != {"targetAppId", "name", "banner"}):
+            raise ValueError("INVALID_UNLOCKED_MARKER")
+        target, name, banner = value["targetAppId"], value["name"], value["banner"]
+        if (not isinstance(target, str) or
+                not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,47}", target) or
+                target in target_ids or not isinstance(name, str) or
+                not name or name != name.strip() or len(name) > 80 or
+                any(ord(c) < 32 or 127 <= ord(c) <= 159 or
+                    0x202A <= ord(c) <= 0x202E or
+                    0x2066 <= ord(c) <= 0x2069 for c in name) or
+                banner not in ("none", "spdecode-html")):
+            raise ValueError("INVALID_UNLOCKED_MARKER")
+        target_ids.add(target)
+        markers[suffix] = value
+    if revision is not None:
+        if type(revision) is not int or not (1 <= revision <= 100000):
+            raise ValueError("INVALID_UNLOCKED_REVISION")
+    elif markers:
+        raise ValueError("UNLOCKED_REVISION_REQUIRED")
+    return revision, markers
+
+
 def generate() -> dict:
     from cloud.workers.python.engine import load_runtime_file_engines
 
@@ -47,6 +88,11 @@ def generate() -> dict:
     if not worker:
         raise ValueError("No server formats")
 
+    unlocked_revision, unlocked = existing_unlocked()
+    unknown = set(unlocked) - set(worker)
+    if unknown:
+        raise ValueError("UNLOCKED_FORMAT_NO_LONGER_SUPPORTED: " + ",".join(sorted(unknown)))
+
     formats = []
     for suffix, details in sorted(worker.items(), key=lambda pair: (-len(pair[0]), pair[0])):
         if (len(suffix) > 64 or not re.fullmatch(r"[\w.-]+", suffix, re.UNICODE) or
@@ -55,15 +101,18 @@ def generate() -> dict:
         name = details["name"]
         if not isinstance(name, str) or not name.strip() or len(name) > 120:
             raise ValueError("Invalid public format name")
-        formats.append({
+        entry = {
             "suffix": suffix,
             "name": name,
             "kind": "file",
             "offlineSupported": suffix in native,
             "cloudSupported": True,
             "credentialFields": CREDENTIAL_FIELDS.get(suffix, []),
-        })
-    return {
+        }
+        if suffix in unlocked:
+            entry["unlockedExport"] = unlocked[suffix]
+        formats.append(entry)
+    generated = {
         "schemaVersion": 1,
         "detection": {
             "rule": "longest-filename-suffix",
@@ -72,6 +121,9 @@ def generate() -> dict:
         },
         "formats": formats,
     }
+    if unlocked_revision is not None:
+        generated["unlockedRevision"] = unlocked_revision
+    return generated
 
 
 def main() -> None:

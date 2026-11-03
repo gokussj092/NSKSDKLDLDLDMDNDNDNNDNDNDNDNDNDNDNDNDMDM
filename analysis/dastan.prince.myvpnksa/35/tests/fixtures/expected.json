@@ -1,0 +1,35 @@
+{
+  "Version": "test35",
+  "Free_servers": [
+    {
+      "friendly_name": "Fictional server",
+      "server_host": "vpn.example.org",
+      "server_port": "443"
+    }
+  ],
+  "Premium_servers": [],
+  "Vip_servers": [],
+  "Private_servers": [],
+  "Payloads": [
+    {
+      "friendly_name": "Preserve plain hex",
+      "host": "80",
+      "payload": "deadbeef",
+      "sausage": "443"
+    },
+    {
+      "friendly_name": "Unicode",
+      "host": "sni.example.org",
+      "payload": "GET / HTTP/1.1\r\nHost: example.org\r\n\r\n",
+      "sausage": "prueba ñ 🦊"
+    }
+  ],
+  "Changelogs": "Fictional only",
+  "FutureMetadata": {
+    "nested": [
+      true,
+      null,
+      35
+    ]
+  }
+}

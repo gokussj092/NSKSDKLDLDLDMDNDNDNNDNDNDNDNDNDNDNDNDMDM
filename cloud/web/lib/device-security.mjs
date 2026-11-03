@@ -14,6 +14,7 @@ export async function registeredKey(redis, key, cfg) {
   try {
     const value = JSON.parse(raw);
     if (value.epoch !== cfg.epoch || !Number.isSafeInteger(value.expires) || value.expires <= Date.now() ||
+        (value.deviceRevision??0)!==(cfg.deviceRevision??0) ||
         value.expires > Date.now()+86400000 ||
         (cfg.playIntegrityRequired===false&&
          (!Number.isSafeInteger(value.versionCode)||value.versionCode<cfg.minimumVersionCode)) ||
@@ -32,10 +33,10 @@ export async function verifyHardware(chain, challenge, publicKey, cfg, {fetchImp
   // Server-to-server policy is never provided by Android and cannot weaken
   // trust anchor, APK signer, Keystore level or challenge verification.
   const policy=await policyLoader();
-  const devicePolicy=policy.relaxed?{
+  const devicePolicy={
     patchMonths:policy.patchMonths,enforcePatch:policy.enforcePatch,
-    enforceBoot:policy.enforceBoot,expiresAt:Date.parse(policy.expiresAt),
-  }:null;
+    enforceBoot:policy.enforceBoot,expiresAt:Date.now()+60_000,
+  };
   const response = await fetchImpl(cfg.attestationUrl, {
     method:"POST", redirect:"error", signal:AbortSignal.timeout(10000), cache:"no-store",
     headers:{"Content-Type":"application/json", "X-SP-Attestation-Token":cfg.attestationToken},
@@ -57,7 +58,7 @@ export async function verifyHardware(chain, challenge, publicKey, cfg, {fetchImp
 
 export async function rememberKey(redis, key, level, cfg, versionCode=null) {
   if (await redis.get("spsec:revoked:" + keyId(key))) return false;
-  const value={level,epoch:cfg.epoch,expires:Date.now()+86400000,
+  const value={level,epoch:cfg.epoch,deviceRevision:cfg.deviceRevision??0,expires:Date.now()+86400000,
     ...(Number.isSafeInteger(versionCode)&&versionCode>=cfg.minimumVersionCode?
       {versionCode}:{})};
   return await redis.set(keyRecordName(key),JSON.stringify(value),{EX:86400}) === "OK";

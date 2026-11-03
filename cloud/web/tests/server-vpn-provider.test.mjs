@@ -7,6 +7,7 @@ import {downloadVpnCatalog,mkkSourceIds} from "../lib/server-vpn-provider.mjs";
 import {packMkkSources} from "../lib/mkk-source-bundle.mjs";
 
 for(const provider of [
+  {id:"ha-tunnel-plus",host:"www.hatunnel.me",path:"/resources/main.txt",query:"",agent:"Dalvik/2.1.0"},
   {id:"bd-net-vpn",host:"raw.githubusercontent.com",path:"/panigbatanc/BDNET2023/main/JSONDEC2025",query:"",agent:"BD NET VPN/PrinceBuild111"},
   {id:"aura-net-vpn",host:"strongteam.co",path:"/api/kidvpn/v4/aurav1.txt",query:"",agent:"Aura Net VPN"},
   {id:"apna-vpn",host:"paperonboard.com",path:"/updater/3c3c4c58d864ca394da16656b4d0c4",query:"",agent:"Dalvik/2.1.0"},
@@ -16,7 +17,7 @@ for(const provider of [
   {id:"abowaged-vpn",host:"raw.githubusercontent.com",path:"/th3fre/Testing/refs/heads/main/Elk.txt",query:"",agent:"AboWaged VPN/1.0"},
   {id:"http-socketclay",host:"dl.dropboxusercontent.com",path:"/scl/fi/vh319xyu0ck84ks0wdqw8/ServersSC",query:"?rlkey=b9g57byy0igz2jitqix31t4i4&st=evmzpf11&dl=1",agent:"HTTP SocketClay/3.4.0"},
   {id:"tunneltweak",host:"tunneltweak.com",path:"/api/servers",query:"",agent:"TunnelTweak/1.0 (Android)",headers:{"ngrok-skip-browser-warning":"true","x-app-version":"51","x-cfg-keyed":"1"}},
-  {id:"http-jireh",host:"raw.githubusercontent.com",path:"/alvarofelizzola/GEN-JIREH/refs/heads/main/GENERADOR",query:"",agent:"HTTP Jireh/2.0"},
+  {id:"http-jireh",host:"dl.dropboxusercontent.com",path:"/scl/fi/9p6vvoa8jfch3ribneckq/HTTPJIREH1117",query:"?rlkey=05z97u9cg8tv4k5xem9m1uxu2&st=huezcplw&dl=1",agent:"HTTP Jireh/2.2"},
   {id:"http-fenixvpn",host:"raw.githubusercontent.com",path:"/Fenix1998x/GEN-SERVIDORES-NUEVO-24-08-2027/refs/heads/main/Fenix",query:"",agent:"HTTP FenixVPN/19.4"},
   {id:"austroplus-vpn",host:"raw.githubusercontent.com",path:"/SpkHexX/HexX/refs/heads/main/AustroPlusVPN.json",query:"",agent:"AustroPlus VPN/13.0.1"},
   {id:"ac-tunnel-vpn",host:"rttunnelv2ray.xyz",path:"/api/files/app",query:"?json=7ef7a9a142eb1f77a56f",agent:"AC TUNNEL VPN/1.4"},

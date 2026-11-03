@@ -75,6 +75,9 @@ def load_file_engines() -> dict[str, dict[str, str]]:
 # C8 additions are separate from the frozen 240-route C0 inventory.
 # Keep each format pinned to its own source codec; never route HX .hxt into xor_family.
 _C8_FILE_ENGINES = {
+    "hexcm": ("decoders/Python/apps/Hex_Tunnel/file_decoder.py", "Hex Tunnel / HexVPN 1.7.3-Rev"),
+    "enaa": ("decoders/Python/apps/Enaa_Tunnel/file_decoder.py", "Enaa Tunnel Enna-1.07"),
+    "wolf": ("decoders/Python/apps/Wolf_Custom_VPN/file_decoder.py", "Wolf Custom VPN v2.8.1.2"),
     "v2": ("decoders/Python/apps/MTM_Tunnel_Lite/file_decoder.py", "e-V2Ray / MTM Tunnel Lite"),
     "stp": ("decoders/Python/apps/MNR_TUNNEL_PLUS/file_decoder.py", "MNR TUNNEL PLUS 3.1"),
     "kyz": ("decoders/Python/apps/HTTP_Door/file_decoder.py", "HTTP Door 5.0"),
@@ -83,7 +86,7 @@ _C8_FILE_ENGINES = {
     "apnavpn": ("decoders/Python/apps/APNA_VPN/file_decoder.py", "APNA VPN 3.9"),
     "dtk": ("decoders/Python/apps/ANY_VPN/file_decoder.py", "ANY VPN build 40"),
     "tx": ("decoders/Python/apps/Tx_Tunnel/file_decoder.py", "Tx Tunnel v2.17"),
-    "mmt": ("decoders/Python/apps/MM_Tunnel/file_decoder.py", "MM Tunnel v1.10.11.1"),
+    "mmt": ("decoders/Python/apps/MM_Tunnel/file_decoder.py", "MM Tunnel v1.10.30.2"),
     "crev": ("decoders/Python/apps/CREEB_VPN/file_decoder.py", "CREEB VPN 50.0"),
     "creeb": ("decoders/Python/apps/CREEB_INJECTOR/file_decoder.py", "CREEB INJECTOR 38.0"),
     "awg": ("decoders/Python/apps/AboWaged_VPN/file_decoder.py", "AboWaged VPN 1.0"),
@@ -250,7 +253,7 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
             legacy_sks = False
         if legacy_sks:
             engine = load_file_engines()["sks"]
-    if suffix == "hat" and full_hat and input_suffix == "hat":
+    if suffix == "hat" and (full_hat or compatible_export is not None) and input_suffix == "hat":
         # Cloud UI requires the complete document. Preserve the original
         # legacy route for frozen C2 reference output parity.
         # Historical hat.js flattens and drops nested configuration fields.
@@ -398,7 +401,7 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
 
 def decode_provider_catalog(provider_id: str, contents: bytes) -> dict:
     """One fixed provider codec, child-isolated; broker performs all network I/O."""
-    if provider_id not in ("tunneldoom-vpn", "mtm-tunnel-lite", "mnr-tunnel-plus", "bd-net-vpn", "aura-net-vpn", "apna-vpn", "any-vpn", "speicers-pro-vpn", "tx-tunnel", "mm-tunnel", "creeb-vpn", "abowaged-vpn", "7net-vpn", "xhypher-tunnel-pro", "ut-loop-pro-vpn", "turbomx-vpn", "superflash-vpn", "rmp-tunnel-pro", "rjc-tunnel-pro", "proneet-vpn", "onspace-vpn", "mx-tunnel-pro", "megatunnel", "http-internet-infinito", "24clan-green", "hx-tunnel", "mkk-hyper", "my-tunnel-proxy", "robust-tunnel", "royal-tunnel", "trv-tunnel", "4u-tunnel-lite", "ac-tunnel-vpn", "austroplus-vpn", "http-fenixvpn", "http-jireh", "http-socketclay", "http-wakko", "v2ray-tunnel-plus", "eut-vpn", "focus-vpn-cloud", "freedom-vpn", "tunelguard-vpn", "tunneltweak", "ksh-vpn", "dtunnel-mod"):
+    if provider_id not in ("fnf-tunnel-bd", "alsaher-vip", "halcon-r-net", "ha-tunnel-plus", "ultra-tunnel", "zig-tunnel", "enaa-tunnel", "alfaisal-tunnel-plus", "izph-vpn-pro", "vip-snipher-pro", "netcol-vpn", "wolf-custom-vpn", "jyfast-vpn-ultra", "tunneldoom-vpn", "mtm-tunnel-lite", "mnr-tunnel-plus", "bd-net-vpn", "aura-net-vpn", "apna-vpn", "any-vpn", "speicers-pro-vpn", "tx-tunnel", "mm-tunnel", "creeb-vpn", "abowaged-vpn", "7net-vpn", "xhypher-tunnel-pro", "ut-loop-pro-vpn", "turbomx-vpn", "superflash-vpn", "rmp-tunnel-pro", "rjc-tunnel-pro", "proneet-vpn", "onspace-vpn", "mx-tunnel-pro", "megatunnel", "http-internet-infinito", "24clan-green", "hx-tunnel", "mkk-hyper", "my-tunnel-proxy", "robust-tunnel", "royal-tunnel", "trv-tunnel", "4u-tunnel-lite", "ac-tunnel-vpn", "austroplus-vpn", "http-fenixvpn", "http-jireh", "http-socketclay", "http-wakko", "v2ray-tunnel-plus", "eut-vpn", "focus-vpn-cloud", "freedom-vpn", "tunelguard-vpn", "tunneltweak", "ksh-vpn", "dtunnel-mod"):
         raise DecodeFailure("UNSUPPORTED_FORMAT")
     if not isinstance(contents, bytes) or not contents:
         raise DecodeFailure("INVALID_INPUT")
@@ -409,6 +412,13 @@ def decode_provider_catalog(provider_id: str, contents: bytes) -> dict:
         raise DecodeFailure("INPUT_TOO_LARGE")
     bridge=Path(__file__).with_name("catalog_vpn_bridge.py")
     with tempfile.TemporaryDirectory(prefix="spdecode-c8-catalog-") as folder:
+        child_env=_child_env(folder)
+        if provider_id=="halcon-r-net":
+            # Content key only; request signing material never reaches a decoder.
+            key=os.environ.get("SPDECODE_HALCON_CATALOG_PASSWORD", "")
+            if not key:
+                raise DecodeFailure("REMOTE_NOT_CONFIGURED")
+            child_env["SPDECODE_HALCON_CATALOG_PASSWORD"]=key
         source=Path(folder)/"catalog.enc"
         target=Path(folder)/"stdout"
         source.write_bytes(contents)
@@ -417,7 +427,7 @@ def decode_provider_catalog(provider_id: str, contents: bytes) -> dict:
             with target.open("wb") as output:
                 proc=subprocess.Popen(
                     [sys.executable,str(bridge),provider_id,str(source)],
-                    cwd=ROOT,env=_child_env(folder),stdin=subprocess.DEVNULL,
+                    cwd=ROOT,env=child_env,stdin=subprocess.DEVNULL,
                     stdout=output,stderr=subprocess.DEVNULL,close_fds=True,
                     start_new_session=True,preexec_fn=partial(_child_limits,CATALOG_TIMEOUT_SECONDS,
                                                 MAX_MKK_OUTPUT_BYTES if provider_id=="mkk-hyper"

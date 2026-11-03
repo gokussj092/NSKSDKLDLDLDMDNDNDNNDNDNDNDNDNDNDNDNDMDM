@@ -11,8 +11,8 @@ class ServerVpnUpdateOptInContracts(unittest.TestCase):
     def test_manual_probe_prompts_before_download_and_header_only_button(self):
         activity=(SRC/"MainActivity.kt").read_text("utf-8")
         ui=(SRC/"SpDecodeApp.kt").read_text("utf-8")
-        self.assertIn("cloudClient.watchCatalogVersion(0)",activity)
-        self.assertIn("pendingServerVpnCatalogVersion=remoteVersion",activity)
+        self.assertIn("CloudCatalogUpdates.pendingVersion(this)",activity)
+        self.assertIn("pendingServerVpnCatalogVersion=latest",activity)
         self.assertIn("onConfirmServerVpnUpdate={confirmServerVpnUpdate()}",activity)
         self.assertIn("if(force) {",activity)
         self.assertIn("probeUpdatesOnEntry()",activity)
@@ -30,13 +30,13 @@ class ServerVpnUpdateOptInContracts(unittest.TestCase):
         self.assertIn("PeriodicWorkRequestBuilder<CloudCatalogSyncWorker>(24,TimeUnit.HOURS)",code)
         self.assertIn("watchCatalogVersion(0)",code)
         self.assertNotIn("repository.refreshIfDue(announcedVersion=requested)",code)
-        self.assertIn("ExistingPeriodicWorkPolicy.UPDATE",code)
+        self.assertIn("ExistingPeriodicWorkPolicy.KEEP",code)
         self.assertIn("wm.cancelUniqueWork(BACKUP)",code)
-        self.assertIn("wm.cancelUniqueWork(PUSH_WORK_NAME)",code)
+        self.assertIn("WorkManager.getInstance(context).cancelUniqueWork(PUSH_WORK_NAME)",code)
 
     def test_all_public_catalog_entries_have_paired_png_icons(self):
         catalog=(WEB/"lib/server-vpn-catalog.mjs").read_text("utf-8")
-        ids=re.findall(r'\{id:"([a-z0-9-]+)", name:"[^"]+", icon:"([a-z0-9-]+\.png)"',catalog)
+        ids=re.findall(r'\{id:"([a-z0-9-]+)",\s*name:"[^"]+",\s*icon:"([a-z0-9-]+\.png)"',catalog)
         # Every catalog provider must have a registered PNG. Do not hardcode a
         # historical provider count: new catalog integrations are expected.
         total_entries=len(re.findall(r'\{id:"[a-z0-9-]+"',catalog))

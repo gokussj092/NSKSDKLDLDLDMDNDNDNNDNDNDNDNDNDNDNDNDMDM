@@ -1,11 +1,15 @@
 /**
  * C8 public VPN catalog broker. Fixed approved providers ONLY.
- * DNS is revalidated, every HTTPS connection is bound to one vetted IPv4,
- * redirects are constrained to the original HTTPS origin, and only temporary
- * socket errors may retry on another validated IP (NUR C3.5 policy).
+ * DNS is revalidated and every connection is bound to one vetted IPv4.
+ * HTTPS is required except the fixed JyFast APK URLs on HTTP port 85.
+ * Redirects stay on the original origin (paired sources refuse all redirects);
+ * only temporary socket errors may retry on a vetted IP (NUR C3.5 policy).
  */
 import dns from "node:dns/promises";
 import https from "node:https";
+import http from "node:http";
+import {ALFAISAL_SOURCE,ALFAISAL_METADATA,alfaisalConfigured,alfaisalRequest} from "./alfaisal-protocol.mjs";
+import {HALCON_SOURCE,halconConfigured,halconRequest} from "./halcon-protocol.mjs";
 import {publicIpv4} from "./c35-provider.mjs";
 
 const ABOWAGED_SOURCES=Object.freeze({
@@ -36,8 +40,35 @@ const V2PLUS_SOURCES=Object.freeze({
   base64:"https://raw.githubusercontent.com/roosterkid/openproxylist/main/V2RAY_BASE64.txt",
   raw:"https://raw.githubusercontent.com/roosterkid/openproxylist/main/V2RAY_RAW.txt",
 });
-const PAIRED_SOURCES=Object.freeze({"abowaged-vpn":ABOWAGED_SOURCES,"turbomx-vpn":TURBOMX_SOURCES,"superflash-vpn":SUPERFLASH_SOURCES,"onspace-vpn":ONSPACE_SOURCES,"http-socketclay":SOCKETCLAY_SOURCES,"http-wakko":WAKKO_SOURCES,"v2ray-tunnel-plus":V2PLUS_SOURCES});
+// Original APK 9 source uses HTTP on port 85; this exception is restricted
+// to these two fixed vendor paths and is never selected by a client URL.
+const JYFAST_SOURCES=Object.freeze({
+  free:"http://dev.jenrri.shop:85/ignix_update.php?cfg=free",
+  premium:"http://dev.jenrri.shop:85/ignix_update.php?cfg=premium",
+});
+const PAIRED_SOURCES=Object.freeze({"jyfast-vpn-ultra":JYFAST_SOURCES,"abowaged-vpn":ABOWAGED_SOURCES,"turbomx-vpn":TURBOMX_SOURCES,"superflash-vpn":SUPERFLASH_SOURCES,"onspace-vpn":ONSPACE_SOURCES,"http-socketclay":SOCKETCLAY_SOURCES,"http-wakko":WAKKO_SOURCES,"v2ray-tunnel-plus":V2PLUS_SOURCES});
 const PROVIDERS = Object.freeze({
+  "fnf-tunnel-bd": {url:"https://raw.githubusercontent.com/pipoyrichards/FNFTUNNELBD/refs/heads/main/FEB52025",agent:"FNF TUNNEL BD/PrinceBuild35"},
+  "alsaher-vip": {url:"https://raw.githubusercontent.com/Skytells0/Alsaher/main/jihadvip.json",agent:"okhttp/4.12.0"},
+  "halcon-r-net": {url:HALCON_SOURCE,agent:"Dalvik/2.1.0"},
+  // ResourceUpdater GET; Volley uses Android's default Dalvik agent family.
+  "ha-tunnel-plus": {url:"https://www.hatunnel.me/resources/main.txt",agent:"Dalvik/2.1.0"},
+  "ultra-tunnel": {url:"https://strongteam.co/api/ultrasystem/ultrav3.txt",agent:"Ultra Tunnel"},
+  "mm-tunnel": {url:"https://strongteam.co/api/mmtunnel/",agent:"Go-http-client/1.1",
+    headers:{"Content-Type":"application/x-www-form-urlencoded"},
+    method:"POST",body:Buffer.from("hash=xsandokUpdatex")},
+  "zig-tunnel": {url:"https://zimbotunnel.co.zw/default_config.hs",agent:"okhttp/5.3.2"},
+  "enaa-tunnel": {url:"https://strongteam.co/api/wolftunnellite/enaav1.txt",agent:"Enaa Tunnel"},
+  "alfaisal-tunnel-plus": {url:ALFAISAL_SOURCE,agent:"ALFAISAL Tunnel+/39"},
+  "izph-vpn-pro": {url:"https://raw.githubusercontent.com/kiranoble/config/refs/heads/main/izph49",agent:"IZPH VPN PRO/6.0"},
+  "vip-snipher-pro": {
+    url:"https://raw.githubusercontent.com/Civ3snipher/NEW-VIP-SNIPHER-PRO-3/refs/heads/main/update.json?ref=main",
+    agent:"VIP Snipher Pro/2.9",
+    headers:{"Accept":"application/json","X-GitHub-Api-Version":"2022-11-28"},
+  },
+  "netcol-vpn": {url:"https://raw.githubusercontent.com/jdavidag/setting/main/tO6oD1drTvL2.json",agent:"Netcol VPN/14.2"},
+  "wolf-custom-vpn": {url:"https://strongteam.co/api/wolfcustom/newv1.txt",agent:"Wolf Custom VPN"},
+  "jyfast-vpn-ultra": {url:JYFAST_SOURCES.free,agent:"JyFast VPN Ultra/9",headers:{"X-IGNIX-SIG":"10c7440b8feac5cee6a54959e7599ff26bd27153"}},
   "tunneldoom-vpn": {url:"https://panel.tunneldoom.space/config.json",agent:"Dalvik/2.1.0"},
   "mtm-tunnel-lite": {url:"https://xtmtunnel.xyz/updater/527543543860c45bf4238f2a1b56c3",agent:"Dalvik/2.1.0"},
   "mnr-tunnel-plus": {url:"https://raw.githubusercontent.com/buttacuore2025/up/refs/heads/main/plusfast",agent:"MNR TUNNEL PLUS/3.1"},
@@ -72,8 +103,10 @@ const PROVIDERS = Object.freeze({
     headers:{"ngrok-skip-browser-warning":"true","x-app-version":"51","x-cfg-keyed":"1"},
   },
   "http-jireh": {
-    url:"https://raw.githubusercontent.com/alvarofelizzola/GEN-JIREH/refs/heads/main/GENERADOR",
-    agent:"HTTP Jireh/2.0",
+    // Build 13 moved NETWORK to Dropbox; the former GitHub URL is stale.
+    // Use the fixed raw-content host so no cross-origin redirect is needed.
+    url:"https://dl.dropboxusercontent.com/scl/fi/9p6vvoa8jfch3ribneckq/HTTPJIREH1117?rlkey=05z97u9cg8tv4k5xem9m1uxu2&st=huezcplw&dl=1",
+    agent:"HTTP Jireh/2.2",
   },
   "http-fenixvpn": {
     url:"https://raw.githubusercontent.com/Fenix1998x/GEN-SERVIDORES-NUEVO-24-08-2027/refs/heads/main/Fenix",
@@ -138,7 +171,13 @@ export class VpnProviderError extends Error {
 }
 function fail(code){throw new VpnProviderError(code);}
 export function providerEnabled(id,env=process.env){
-  return Object.hasOwn(PROVIDERS,id) && env.CLOUD_SERVER_VPN_ENABLED==="true";
+  if(!Object.hasOwn(PROVIDERS,id) || env.CLOUD_SERVER_VPN_ENABLED!=="true")return false;
+  if(id==="halcon-r-net")return halconConfigured(env);
+  if(id==="alfaisal-tunnel-plus")return alfaisalConfigured(env);
+  if(id!=="vip-snipher-pro")return true;
+  const authorization=env.SPDECODE_VIP_SNIPHER_AUTHORIZATION;
+  return typeof authorization==="string" && authorization.length<=2048 &&
+    /^(Bearer|token) [!-~]+$/.test(authorization) && !/[\r\n]/.test(authorization);
 }
 export function providerIds(){return Object.keys(PROVIDERS);}
 
@@ -152,7 +191,7 @@ async function vettedIpv4(host) {
   return [...new Set(list.map(item=>item.address))].slice(0,8);
 }
 
-function pinnedGet(url,ip,agent,timeout,headers={}){
+function pinnedRequest(url,ip,agent,timeout,headers={}, {method="GET",body=null}={}){
   return new Promise((resolve,reject)=>{
     const parsed=new URL(url);
     let settled=false,bytes=0;
@@ -161,10 +200,12 @@ function pinnedGet(url,ip,agent,timeout,headers={}){
       if(settled)return;settled=true;
       if(err)reject(err);else resolve(data);
     };
-    const req=https.request(parsed,{
-      method:"GET",agent:false,rejectUnauthorized:true,minVersion:"TLSv1.2",
+    const transport=parsed.protocol==="http:"?http:https;
+    const req=transport.request(parsed,{
+      method,agent:false,
+      ...(parsed.protocol==="https:"?{rejectUnauthorized:true,minVersion:"TLSv1.2"}:{}),
       timeout,
-      headers:{...headers,"User-Agent":agent,"Accept-Encoding":"identity","Connection":"close"},
+      headers:{...headers,...(body?{"Content-Length":String(body.length)}:{}),"User-Agent":agent,"Accept-Encoding":"identity","Connection":"close"},
       lookup:(host,options,callback)=>{
         if(host!==parsed.hostname)return callback(Object.assign(new Error("hostname"),{code:"EHOSTUNREACH"}));
         if(options?.all)return callback(null,[{address:ip,family:4}]);
@@ -200,20 +241,93 @@ function pinnedGet(url,ip,agent,timeout,headers={}){
     });
     req.on("timeout",()=>req.destroy(Object.assign(new Error("timeout"),{code:"ETIMEDOUT"})));
     req.on("error",err=>finish(err));
-    req.end();
+    req.end(body??undefined);
   });
 }
 
-export async function downloadVpnCatalog(id,source=id==="v2ray-tunnel-plus"?"base64":"servers"){
+// The build39 app uses metadata policy + a signed POST, not a public GET.
+async function downloadAlfaisal(provider){
+  const config={SPDECODE_ALFAISAL_API_KEY:process.env.SPDECODE_ALFAISAL_API_KEY,
+    SPDECODE_ALFAISAL_SIGNING_KEY:process.env.SPDECODE_ALFAISAL_SIGNING_KEY,
+    SPDECODE_ALFAISAL_DEVICE_UUID:process.env.SPDECODE_ALFAISAL_DEVICE_UUID};
+  const deadline=Date.now()+DEADLINE_MS;
+  async function request(url,headers,options={}){
+    const dest=new URL(url);
+    // Both paths are build39 literals. Never follow metadata-provided URLs.
+    if(dest.origin!==new URL(ALFAISAL_SOURCE).origin ||
+       ![ALFAISAL_METADATA,ALFAISAL_SOURCE].includes(dest.origin+dest.pathname))fail("REMOTE_NETWORK_DENIED");
+    const addresses=await vettedIpv4(dest.hostname);
+    const remaining=deadline-Date.now();
+    if(remaining<=0)fail("REMOTE_PROVIDER_UNAVAILABLE");
+    let answer;
+    try{answer=await pinnedRequest(url,addresses[0],provider.agent,
+      Math.min(options.method==="POST"?20000:10000,remaining),headers,options);}
+    catch(error){
+      if(error instanceof VpnProviderError)throw error;
+      fail("REMOTE_PROVIDER_UNAVAILABLE");
+    }
+    // A signed POST is never retried with a reused nonce, even on a 503.
+    if(Object.hasOwn(answer,"redirect"))fail("REMOTE_NETWORK_DENIED");
+    if(!Buffer.isBuffer(answer.data)||!answer.data.length)fail("REMOTE_RESPONSE_INVALID");
+    return answer.data;
+  }
+  const metadata=new URL(ALFAISAL_METADATA);
+  metadata.searchParams.set("json_client_capability","2");
+  metadata.searchParams.set("device_uuid",config.SPDECODE_ALFAISAL_DEVICE_UUID);
+  const raw=await request(metadata.href,{Accept:"application/json"});
+  if(raw.length>1024*1024)fail("REMOTE_RESPONSE_INVALID");
+  let policy;
+  try{policy=JSON.parse(raw.toString("utf8"));}catch{fail("REMOTE_RESPONSE_INVALID");}
+  if(!policy||Array.isArray(policy)||(policy.success!==undefined&&policy.success!==true)||policy.json_requires_integrity!==false)
+    fail("REMOTE_PROVIDER_UNAVAILABLE");
+  const signed=alfaisalRequest(config);
+  const data=await request(ALFAISAL_SOURCE,signed.headers,{method:"POST",body:signed.body});
+  if(data.subarray(0,64).toString("utf8").trimStart().startsWith("<"))fail("REMOTE_RESPONSE_INVALID");
+  return data;
+}
+
+async function downloadHalcon(provider){
+  const dest=new URL(HALCON_SOURCE);
+  const addresses=await vettedIpv4(dest.hostname);
+  const signed=halconRequest();
+  let answer;
+  try{answer=await pinnedRequest(HALCON_SOURCE,addresses[0],provider.agent,DEADLINE_MS,
+    signed.headers,{method:"POST",body:signed.body});}
+  catch(error){
+    if(error instanceof VpnProviderError)throw error;
+    fail("REMOTE_PROVIDER_UNAVAILABLE");
+  }
+  // Never forward signed headers to another path/origin or retry a signed POST.
+  if(Object.hasOwn(answer,"redirect"))fail("REMOTE_NETWORK_DENIED");
+  if(!Buffer.isBuffer(answer.data)||!answer.data.length||
+     answer.data.subarray(0,64).toString("utf8").trimStart().startsWith("<"))fail("REMOTE_RESPONSE_INVALID");
+  return answer.data;
+}
+
+export async function downloadVpnCatalog(id,source=id==="jyfast-vpn-ultra"?"free":id==="v2ray-tunnel-plus"?"base64":"servers"){
   const provider=PROVIDERS[id];
   if(!provider)fail("UNSUPPORTED_FORMAT");
   if(!providerEnabled(id))fail("REMOTE_NOT_CONFIGURED");
+  if(id==="halcon-r-net"){
+    if(source!=="servers")fail("UNSUPPORTED_FORMAT");
+    return downloadHalcon(provider);
+  }
+  if(id==="alfaisal-tunnel-plus"){
+    if(source!=="servers")fail("UNSUPPORTED_FORMAT");
+    return downloadAlfaisal(provider);
+  }
+  // Read the secret per request, only for the fixed VIP updater. Never expose it
+  // in the public catalog, worker payload, provider switches or error messages.
+  const headers=id==="vip-snipher-pro" ?
+    {...provider.headers,Authorization:process.env.SPDECODE_VIP_SNIPHER_AUTHORIZATION} : provider.headers;
   if(id!=="mkk-hyper" && !Object.hasOwn(PAIRED_SOURCES,id) && source!=="servers")fail("UNSUPPORTED_FORMAT");
   if(id==="mkk-hyper" && !Object.hasOwn(MKK_SOURCES,source))fail("UNSUPPORTED_FORMAT");
   if(Object.hasOwn(PAIRED_SOURCES,id) && !Object.hasOwn(PAIRED_SOURCES[id],source))fail("UNSUPPORTED_FORMAT");
   const initial=new URL(id==="mkk-hyper"?MKK_SOURCES[source]:
     Object.hasOwn(PAIRED_SOURCES,id)?PAIRED_SOURCES[id][source]:provider.url);
-  if(initial.protocol!=="https:"||initial.port||initial.username||initial.password||
+  const jyfast=id==="jyfast-vpn-ultra";
+  if((jyfast ? (initial.protocol!=="http:"||initial.port!=="85"||initial.hostname!=="dev.jenrri.shop")
+               : (initial.protocol!=="https:"||initial.port)) || initial.username||initial.password||
      initial.hash)fail("REMOTE_NETWORK_DENIED");
   const deadline=Date.now()+DEADLINE_MS;
   let target=initial.href;
@@ -222,8 +336,8 @@ export async function downloadVpnCatalog(id,source=id==="v2ray-tunnel-plus"?"bas
     if(visited.has(target))fail("REMOTE_NETWORK_DENIED");
     visited.add(target);
     const dest=new URL(target);
-    if(dest.protocol!=="https:"||dest.host!==initial.host||dest.username||
-       dest.password||dest.search!==initial.search||dest.hash||dest.port)fail("REMOTE_NETWORK_DENIED");
+    if(dest.protocol!==initial.protocol||dest.host!==initial.host||dest.username||
+       dest.password||dest.search!==initial.search||dest.hash||dest.port!==initial.port)fail("REMOTE_NETWORK_DENIED");
     const addresses=await vettedIpv4(dest.hostname);
     let redirected=false;
     // A single-address CDN sometimes drops one request. Retry once on the
@@ -233,7 +347,8 @@ export async function downloadVpnCatalog(id,source=id==="v2ray-tunnel-plus"?"bas
       const remaining=deadline-Date.now();
       if(remaining<=0)fail("REMOTE_PROVIDER_UNAVAILABLE");
       let answer;
-      try{answer=await pinnedGet(target,ip,provider.agent,Math.min(CONNECT_MS,remaining),provider.headers);}
+      try{answer=await pinnedRequest(target,ip,provider.agent,Math.min(CONNECT_MS,remaining),headers,
+        {method:provider.method??"GET",body:provider.body??null});}
       catch(error){
         if(error instanceof VpnProviderError){
           if(!error.retryable)throw error;
@@ -244,7 +359,7 @@ export async function downloadVpnCatalog(id,source=id==="v2ray-tunnel-plus"?"bas
         continue;
       }
       if(answer.redirect!==undefined){
-        if(["tunneldoom-vpn","mtm-tunnel-lite","mnr-tunnel-plus","bd-net-vpn","aura-net-vpn","apna-vpn","any-vpn","speicers-pro-vpn","7net-vpn","xhypher-tunnel-pro","focus-vpn-cloud","freedom-vpn","http-internet-infinito","megatunnel","mx-tunnel-pro","rjc-tunnel-pro","rmp-tunnel-pro"].includes(id)||Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
+        if(["fnf-tunnel-bd","alsaher-vip","ha-tunnel-plus","ultra-tunnel","mm-tunnel","zig-tunnel","enaa-tunnel","izph-vpn-pro","vip-snipher-pro","netcol-vpn","wolf-custom-vpn","tunneldoom-vpn","mtm-tunnel-lite","mnr-tunnel-plus","bd-net-vpn","aura-net-vpn","apna-vpn","any-vpn","speicers-pro-vpn","7net-vpn","xhypher-tunnel-pro","focus-vpn-cloud","freedom-vpn","http-internet-infinito","megatunnel","mx-tunnel-pro","rjc-tunnel-pro","rmp-tunnel-pro","http-jireh"].includes(id)||Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
         const next=answer.redirect;
         if(typeof next!=="string"||next.length>2048)fail("REMOTE_NETWORK_DENIED");
         target=new URL(next,dest).href;

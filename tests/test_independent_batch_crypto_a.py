@@ -110,12 +110,12 @@ def izph_threefish_encrypt(data: bytes, key: bytes) -> bytes:
         for group in range(18):
             for step in range(4):
                 r0, r1 = rotations[(group * 4 + step) % 8]
-                words = [words[i] for i in izph.IZPH_THREEFISH256_PERMUTE]
                 for i, rot in ((0, r0), (2, r1)):
                     y0 = (words[i] + words[i + 1]) & mask
                     y1 = (((words[i + 1] << rot) |
                            (words[i + 1] >> (64 - rot))) & mask) ^ y0
                     words[i:i + 2] = (y0, y1)
+                words = [words[i] for i in izph.IZPH_THREEFISH256_PERMUTE]
             words = [(words[i] + subkeys[group + 1][i]) & mask
                      for i in range(4)]
         output.extend(struct.pack("<4Q", *words))

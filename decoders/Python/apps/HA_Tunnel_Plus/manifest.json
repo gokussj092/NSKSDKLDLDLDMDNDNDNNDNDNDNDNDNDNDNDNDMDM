@@ -6,20 +6,43 @@
   "apkSha256": "741e283ba3ee4b04b6988d5842d38491a51fa0bddfaf52d9c6bca9e6245ad051",
   "format": {
     "suffix": "hat",
-    "scope": "historical AES-128-ECB full JSON; current build constants require runtime confirmation",
-    "codec": "hat_decoder.py"
+    "scope": "full historical .hat JSON; AES/XOR constants confirmed in supplied 1.7.1 MOD source",
+    "codec": "hat_decoder.py",
+    "compatibleExport": {
+      "codec": "cloud/workers/python/exports/hat.py",
+      "profile": "original-app-open-v1",
+      "layout": "profile + description, complete connection and unknown metadata preserved",
+      "state": "source-and-two-real-historical-files-verified; Android-import-pending"
+    }
   },
   "catalog": {
     "id": "ha-tunnel-plus",
-    "state": "pending-protected-resources",
-    "remoteEnabled": false,
+    "state": "real-remote-download-full-json-verified; deployment-pending",
+    "remoteEnabled": true,
     "assetPaths": [
-      "resources/servers.json",
-      "resources/methods.json",
-      "resources/customs.json",
-      "resources/allowed_apps.json",
-      "resources/whatsnew.json"
-    ]
+      "assets/resources/servers.json",
+      "assets/resources/methods.json",
+      "assets/resources/customs.json",
+      "assets/resources/allowed_apps.json",
+      "assets/resources/whatsnew.json"
+    ],
+    "codec": "server_catalog_decoder.py",
+    "source": "https://www.hatunnel.me/resources/main.txt",
+    "method": "GET",
+    "userAgent": "Dalvik/2.1.0",
+    "sessionRequired": false,
+    "remoteEvidence": {
+      "httpStatus": 200,
+      "bytes": 296647,
+      "sha256": "dae31d366acf3f8abc5f58cb306a391af2eb70dec52a3104b30dda2551bd44fa",
+      "serversVersion": "2022.01.08.02",
+      "servers": 13,
+      "methodsVersion": "2026.06.27",
+      "methods": 644,
+      "allowedAppsVersion": "2021.02.04.00",
+      "allowedAppGroups": 4,
+      "fullJcaCliWorkerEqual": true
+    }
   },
   "onlineImports": {
     "state": "no-independent-link-or-cloud-id-verified"
@@ -31,6 +54,16 @@
   "validation": {
     "historicalRealFixtures": 2,
     "syntheticJcaVectors": 6,
-    "android171": "pending-runtime"
+    "android171": "pending-runtime-import-and-new-export",
+    "nativeStringsRecovered": 925,
+    "deployment": "not-performed",
+    "nodeLiveTransport": "DNS-EAI_AGAIN; VPS-check-pending"
+  },
+  "analysisSample": {
+    "kind": "user-supplied-mod",
+    "sha256": "49784eadfcfb5d0ec9cbb5e24b96a0f02d5ed53314b0b068ff261c8a0ad6c4e0",
+    "bytes": 28602472,
+    "certificateSha256": "aba330e2fd110da02c277765be6241584213cb8e876d143aff9c889978696071",
+    "sameAsOriginalSigner": false
   }
 }

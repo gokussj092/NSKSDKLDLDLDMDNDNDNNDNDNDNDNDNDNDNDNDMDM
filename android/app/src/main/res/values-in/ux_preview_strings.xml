@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="apk_import_button">Impor APK</string>
+    <string name="apk_future_message">Analisis APK akan tersedia pada pembaruan mendatang.</string>
+    <string name="apk_credits_title">Pusat kredit</string>
+    <string name="apk_credits_intro">Kelola kredit dan pembelian analisis APK di masa depan.</string>
+    <string name="apk_credits_notice">Saldo dan pembelian akan tersedia saat layanan diluncurkan.</string>
+    <string name="apk_credits_buy_title">Beli kredit</string>
+    <string name="apk_credits_one">1 kredit</string>
+    <string name="apk_credits_buy_one">Beli 1 kredit · Segera hadir</string>
+    <string name="apk_credits_packages">Paket kredit</string>
+    <string name="apk_credits_buy_package">Beli paket · Segera hadir</string>
+    <string name="apk_credits_prices_title">Harga</string>
+    <string name="apk_credits_subscriptions">Langganan</string>
+    <string name="apk_credits_button">Kredit: 1+</string>
+    <string name="apk_credits_back">Kembali</string>
+    <string name="feedback_details_title">Detail permintaan</string>
+    <string name="feedback_method_description">Minta dukungan file atau katalog server VPN baru.</string>
+    <string name="feedback_bug_description">Laporkan masalah dekripsi, kompatibilitas, atau aplikasi.</string>
+    <string name="feedback_suggestion_description">Sarankan fitur baru atau perbaikan tampilan.</string>
+    <string name="feedback_extra_title">Informasi tambahan (opsional)</string>
+    <string name="feedback_extra_hint">Versi, format terkait, atau detail lainnya</string>
+</resources>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="apk_import_button">APK आयात करें</string>
+    <string name="apk_future_message">APK विश्लेषण आगामी अपडेट में उपलब्ध होगा।</string>
+    <string name="apk_credits_title">क्रेडिट केंद्र</string>
+    <string name="apk_credits_intro">भविष्य के APK विश्लेषण क्रेडिट और खरीद प्रबंधित करें।</string>
+    <string name="apk_credits_notice">सेवा शुरू होने पर शेष क्रेडिट और खरीद उपलब्ध होंगे।</string>
+    <string name="apk_credits_buy_title">क्रेडिट खरीदें</string>
+    <string name="apk_credits_one">1 क्रेडिट</string>
+    <string name="apk_credits_buy_one">1 क्रेडिट खरीदें · जल्द आ रहा है</string>
+    <string name="apk_credits_packages">क्रेडिट पैक</string>
+    <string name="apk_credits_buy_package">पैक खरीदें · जल्द आ रहा है</string>
+    <string name="apk_credits_prices_title">कीमतें</string>
+    <string name="apk_credits_subscriptions">सदस्यताएँ</string>
+    <string name="apk_credits_button">क्रेडिट: 1+</string>
+    <string name="apk_credits_back">वापस</string>
+    <string name="feedback_details_title">अनुरोध का विवरण</string>
+    <string name="feedback_method_description">नई फ़ाइलों या VPN सर्वर कैटलॉग का समर्थन माँगें।</string>
+    <string name="feedback_bug_description">डिक्रिप्शन, अनुकूलता या ऐप की समस्या रिपोर्ट करें।</string>
+    <string name="feedback_suggestion_description">नई सुविधाएँ या डिज़ाइन सुधार सुझाएँ।</string>
+    <string name="feedback_extra_title">अतिरिक्त जानकारी (वैकल्पिक)</string>
+    <string name="feedback_extra_hint">संस्करण, प्रभावित फ़ॉर्मैट या अन्य विवरण</string>
+</resources>

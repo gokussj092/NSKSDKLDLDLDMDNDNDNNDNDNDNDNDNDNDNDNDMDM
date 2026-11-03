@@ -1,5 +1,6 @@
 package com.ghostdeveloper.spdecode
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -64,6 +65,7 @@ fun SpDecodeApp(
     busy:Boolean,
     error:String?,
     progressStage:Int,
+    cloudProgressPhase:Int?=null,
     progressFilename:String?,
     progressPosition:Int,
     progressTotal:Int,
@@ -120,15 +122,23 @@ fun SpDecodeApp(
     onCatalogUpdates:(Boolean)->Unit={},
     usageAnalyticsEnabled:Boolean=false,
     onUsageAnalytics:(Boolean)->Unit={},
+    onFeedbackSubmit:suspend (FeedbackDraft)->String={throw IllegalStateException("FEEDBACK_UNAVAILABLE")},
 ){
     var dialog by remember{mutableStateOf<String?>(null)}
+    var creditsPage by rememberSaveable { mutableStateOf(false) }
+    BackHandler(enabled=creditsPage && activeTab==2) { creditsPage=false }
     SpDecodeAmoledTheme {
         Column(
             modifier=Modifier.fillMaxSize().background(Background).safeDrawingPadding()
         ) {
             BrandHeader(
                 onSettings={onTab(4)},
-                showServerVpnRefresh=(activeTab==2 || activeTab==3) &&
+                showCreditsAction=activeTab==2 && !creditsPage,
+                showCreditsBack=activeTab==2 && creditsPage,
+                onCredits={creditsPage=true},
+                onCreditsBack={creditsPage=false},
+                showServerVpnRefresh=(activeTab==3 ||
+                    (activeTab==2 && !creditsPage)) &&
                     BuildConfig.SPDECODE_CLOUD_ENABLED,
                 refreshingServerVpn=serverVpnLoading,
                 enableServerVpnRefresh=!busy && !serverVpnLoading,
@@ -142,7 +152,8 @@ fun SpDecodeApp(
                         onDecodeCloud=onDecodeCloud,
                         highlightGuide=if(!whatsNew && !busy)guideStep else null)
                     1->HistoryScreen(session,onSelect,onDeleteSelected,onClear,onImportMultiple,onFavorite)
-                    2->FormatsScreen(cloudFormats,cloudTextFormats,serverVpnLoading,catalogProgress)
+                    2->if(creditsPage) ApkCreditsComingSoonScreen()
+                        else ApkAnalysisComingSoonScreen()
                     3->ServerVpnScreen(busy,serverVpnApps,serverVpnLoading,serverVpnUnavailable,
                         onDecodeServerCatalog,onDecodeServerApp,catalogProgress)
                     else->FunctionalSettingsPanel(selectedLanguage,hideCredentials,
@@ -150,13 +161,16 @@ fun SpDecodeApp(
                         retentionDays,onRetention,onShowGuide=onGuideRestart,
                         onLegalLink=onLegalLink,onWithdrawConsent=onWithdrawCloudConsent,
                         catalogUpdatesEnabled=catalogUpdatesEnabled,onCatalogUpdates=onCatalogUpdates,
-                        usageAnalyticsEnabled=usageAnalyticsEnabled,onUsageAnalytics=onUsageAnalytics)
+                        usageAnalyticsEnabled=usageAnalyticsEnabled,onUsageAnalytics=onUsageAnalytics,
+                         supportedFormats=cloudFormats,supportedTextFormats=cloudTextFormats,
+                         catalogLoading=serverVpnLoading,catalogProgress=catalogProgress,
+                         onFeedbackSubmit=onFeedbackSubmit)
                 }
                 if(guideStep!=null && !whatsNew && !busy && error==null && dialog==null) {
                     CenteredFirstRunGuide(guideStep,onGuideNext,onGuideSkip)
                 }
             }
-            BottomTabs(activeTab,onTab,
+            BottomTabs(activeTab,onTab={destination->creditsPage=false;onTab(destination)},
                 spotlight=if(guideStep!=null && !whatsNew && !busy)
                     FirstRunGuide.targetTab(guideStep) else null)
         }
@@ -165,8 +179,9 @@ fun SpDecodeApp(
             icon={Image(painter=painterResource(R.drawable.ic_launcher_foreground),
                 contentDescription=null,modifier=Modifier.size(46.dp))},
             title={Text(stringResource(R.string.catalog_available_title))},
-            text={Text(stringResource(R.string.catalog_available_body,
-                pendingServerVpnCatalogVersion),color=Secondary)},
+            text={Text(if(pendingServerVpnCatalogVersion==0)
+                stringResource(R.string.catalog_download_confirm_body)
+                else stringResource(R.string.catalog_available_body,pendingServerVpnCatalogVersion),color=Secondary)},
             confirmButton={TextButton(onClick=onConfirmServerVpnUpdate) {
                 Text(stringResource(R.string.server_vpn_catalog_download),color=White)
             }},
@@ -259,6 +274,16 @@ fun SpDecodeApp(
                         2->R.string.decode_progress_saving
                         else->R.string.decode_progress_decoding
                     }),color=Secondary,fontSize=14.sp,textAlign=TextAlign.Center)
+                    if(BuildConfig.SPDECODE_CLOUD_ENABLED && cloudProgressPhase!=null) {
+                        Text(stringResource(R.string.decode_progress_wait),
+                            color=Secondary,fontSize=13.sp,textAlign=TextAlign.Center)
+                        Text(stringResource(when(cloudProgressPhase) {
+                            0->R.string.decode_progress_sending
+                            1->R.string.decode_progress_processing
+                            else->R.string.decode_progress_downloading_results
+                        }),color=White,fontSize=15.sp,fontWeight=FontWeight.SemiBold,
+                            textAlign=TextAlign.Center)
+                    }
                     if(progressTotal>1) Text(
                         stringResource(R.string.batch_progress_count,progressPosition,progressTotal),
                         color=White,fontSize=13.sp)
@@ -349,6 +374,10 @@ fun SpDecodeApp(
 @Composable
 private fun BrandHeader(
     onSettings:()->Unit,
+    showCreditsAction:Boolean=false,
+    showCreditsBack:Boolean=false,
+    onCredits:()->Unit={},
+    onCreditsBack:()->Unit={},
     showServerVpnRefresh:Boolean=false,
     refreshingServerVpn:Boolean=false,
     enableServerVpnRefresh:Boolean=true,
@@ -366,28 +395,63 @@ private fun BrandHeader(
         }
         Spacer(Modifier.width(11.dp))
         Column(Modifier.weight(1f)){
-            Text("SP-DECODE",color=White,fontSize=23.sp,fontWeight=FontWeight.Bold,
+            Text("SP-DECODE",color=White,
+                fontSize=if(showCreditsAction)21.sp else 23.sp,fontWeight=FontWeight.Bold,
                 maxLines=1)
             Text(stringResource(R.string.subtitle),color=Secondary,fontSize=14.sp,
                 maxLines=1,overflow=TextOverflow.Ellipsis)
         }
         if(showServerVpnRefresh) {
-            OutlinedButton(
-                onClick=onRefreshServerVpn,enabled=enableServerVpnRefresh,
-                modifier=Modifier.testTag("server_vpn_manual_refresh"),
-                contentPadding=PaddingValues(horizontal=12.dp,vertical=7.dp),
-            ) {
-                if(refreshingServerVpn) CircularProgressIndicator(
-                    modifier=Modifier.size(17.dp),strokeWidth=2.dp,color=White)
-                else Icon(Icons.Outlined.Refresh,null,tint=White,
-                    modifier=Modifier.size(17.dp))
-                Spacer(Modifier.width(6.dp))
-                Text(stringResource(if(refreshingServerVpn) R.string.catalog_checking
-                    else R.string.catalog_check_action),fontSize=12.sp,color=White)
+            if(showCreditsAction) {
+                // Keep the APK refresh control without squeezing the brand and Credits button.
+                IconButton(onClick=onRefreshServerVpn,
+                    enabled=enableServerVpnRefresh,
+                    modifier=Modifier.testTag("server_vpn_manual_refresh")) {
+                    if(refreshingServerVpn) CircularProgressIndicator(
+                        modifier=Modifier.size(18.dp),strokeWidth=2.dp,color=White)
+                    else Icon(Icons.Outlined.Refresh,
+                        stringResource(R.string.catalog_check_action),tint=White,
+                        modifier=Modifier.size(20.dp))
+                }
+            } else {
+                OutlinedButton(
+                    onClick=onRefreshServerVpn,enabled=enableServerVpnRefresh,
+                    modifier=Modifier.testTag("server_vpn_manual_refresh"),
+                    contentPadding=PaddingValues(horizontal=12.dp,vertical=7.dp),
+                ) {
+                    if(refreshingServerVpn) CircularProgressIndicator(
+                        modifier=Modifier.size(17.dp),strokeWidth=2.dp,color=White)
+                    else Icon(Icons.Outlined.Refresh,null,tint=White,
+                        modifier=Modifier.size(17.dp))
+                    Spacer(Modifier.width(6.dp))
+                    Text(stringResource(if(refreshingServerVpn) R.string.catalog_checking
+                        else R.string.catalog_check_action),fontSize=12.sp,color=White)
+                }
             }
-            Spacer(Modifier.width(8.dp))
+            Spacer(Modifier.width(4.dp))
         }
-        IconButton(onClick=onSettings){
+        if(showCreditsAction) {
+            OutlinedButton(onClick=onCredits,
+                modifier=Modifier.testTag("apk_credits_open"),
+                contentPadding=PaddingValues(horizontal=8.dp,vertical=7.dp),
+                shape=RoundedCornerShape(13.dp)) {
+                Icon(Icons.Outlined.CreditCard,null,tint=White,
+                    modifier=Modifier.size(16.dp))
+                Spacer(Modifier.width(5.dp))
+                Text(stringResource(R.string.apk_credits_button),
+                    color=White,fontSize=11.sp,maxLines=1)
+            }
+        } else if(showCreditsBack) {
+            OutlinedButton(onClick=onCreditsBack,
+                modifier=Modifier.testTag("apk_credits_back"),
+                contentPadding=PaddingValues(horizontal=9.dp,vertical=7.dp)) {
+                Icon(Icons.Outlined.ArrowBack,null,tint=White,
+                    modifier=Modifier.size(17.dp))
+                Spacer(Modifier.width(5.dp))
+                Text(stringResource(R.string.apk_credits_back),
+                    color=White,fontSize=12.sp)
+            }
+        } else IconButton(onClick=onSettings){
             Icon(Icons.Outlined.Tune,stringResource(R.string.options),tint=Secondary)
         }
     }
@@ -774,8 +838,9 @@ private fun HistoryScreen(
 }
 
 @Composable
-private fun FormatsScreen(cloudFormats:List<AndroidDecoderCatalog.Format>,
-    textFormats:List<CloudTextRoute>,catalogLoading:Boolean=false,catalogProgress:Int?=null) {
+internal fun FormatsScreen(cloudFormats:List<AndroidDecoderCatalog.Format>,
+    textFormats:List<CloudTextRoute>,catalogLoading:Boolean=false,
+    catalogProgress:Int?=null,onBack:(()->Unit)?=null) {
     val context = LocalContext.current
     val baseline = remember(context) { AndroidDecoderCatalog.read(context) }
     val formats = if(BuildConfig.SPDECODE_CLOUD_ENABLED && cloudFormats.isNotEmpty())
@@ -791,7 +856,18 @@ private fun FormatsScreen(cloudFormats:List<AndroidDecoderCatalog.Format>,
             .sortedBy { it.first.lowercase(java.util.Locale.ROOT) }
     }
     Column(Modifier.fillMaxSize().padding(horizontal = 20.dp, vertical = 12.dp)) {
-        Text(stringResource(R.string.formats), fontSize = 24.sp, fontWeight = FontWeight.Bold)
+        if(onBack!=null) {
+            Row(verticalAlignment=Alignment.CenterVertically) {
+                IconButton(onClick=onBack,modifier=Modifier.testTag("settings_formats_back")) {
+                    Icon(Icons.Outlined.ArrowBack,
+                        stringResource(R.string.settings),tint=White)
+                }
+                Text(stringResource(R.string.settings),color=Secondary,fontSize=14.sp)
+            }
+            Spacer(Modifier.height(5.dp))
+        }
+        Text(stringResource(R.string.settings_formats_title),
+            fontSize = 24.sp, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(8.dp))
         Text(stringResource(R.string.catalog_note), fontSize = 13.sp,
             color = Secondary, lineHeight = 20.sp)
@@ -900,13 +976,18 @@ private fun ServerVpnScreen(
     }
     val newBadgeStore=remember(context) { ServerVpnNewBadges(context) }
     var newProviderIds by remember { mutableStateOf<Set<String>>(emptySet()) }
-    // NEW applies only to newly incorporated server VPN providers.
+    var updatedProviderIds by remember { mutableStateOf<Set<String>>(emptySet()) }
+    // New providers and method revisions use independent device-local timers.
     LaunchedEffect(apps,newBadgeStore) {
         if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
             while(true) {
                 val snapshot=newBadgeStore.observeCatalog(apps.map { it.id }.toSet())
+                val methodSnapshot=newBadgeStore.observeMethods(
+                    apps.associate { it.id to it.methodRevision })
                 newProviderIds=snapshot.ids
-                val nearest=snapshot.nextExpiryMs ?:break
+                updatedProviderIds=methodSnapshot.ids
+                val nearest=listOfNotNull(snapshot.nextExpiryMs,
+                    methodSnapshot.nextExpiryMs).minOrNull() ?:break
                 // The same device clock controls the expiry even when the user
                 // remains on this screen; reopening never restarts the timer.
                 delay(nearest.coerceAtLeast(1L))
@@ -1032,14 +1113,24 @@ private fun ServerVpnScreen(
                                             fontWeight=FontWeight.SemiBold,
                                             maxLines=2,overflow=TextOverflow.Ellipsis)
                                         
-                                        Text(stringResource(if(app.decodeEnabled)
-                                            R.string.server_vpn_catalog_enabled
-                                            else R.string.server_vpn_catalog_disabled),
-                                            color=Secondary,fontSize=11.sp)
-                                    }
-                                    if(app.id in newProviderIds) {
-                                        ServerVpnNewTag()
-                                        Spacer(Modifier.width(5.dp))
+                                        Text(stringResource(when {
+                                            app.maintenance -> R.string.server_vpn_maintenance_detail
+                                            app.decodeEnabled -> R.string.server_vpn_catalog_enabled
+                                            else -> R.string.server_vpn_catalog_disabled
+                                        }),color=Secondary,fontSize=11.sp)
+                                        when(ServerVpnBadgePriority.resolve(
+                                            maintenance=app.maintenance,
+                                            updated=app.id in updatedProviderIds,
+                                            newlyAdded=app.id in newProviderIds)) {
+                                            ServerVpnBadgeType.MAINTENANCE -> ServerVpnStatusTag(
+                                                R.string.server_vpn_maintenance_badge,
+                                                "server_vpn_maintenance_badge")
+                                            ServerVpnBadgeType.UPDATED -> ServerVpnStatusTag(
+                                                R.string.server_vpn_updated_badge,
+                                                "server_vpn_updated_badge")
+                                            ServerVpnBadgeType.NEW -> ServerVpnNewTag()
+                                            null -> Unit
+                                        }
                                     }
                                     val isFavorite=app.id in favoriteIds
                                     IconButton(
@@ -1067,7 +1158,7 @@ private fun ServerVpnScreen(
                                                 if(app.id=="nur-tunnel")onDecodeCatalog()
                                                 else onDecodeApp(app.id)
                                             },
-                                            enabled=!busy && app.decodeEnabled,
+                                            enabled=!busy && app.decodeEnabled && !app.maintenance,
                                             modifier=Modifier.fillMaxWidth()
                                                 .heightIn(min=50.dp),
                                             shape=RoundedCornerShape(13.dp),
@@ -1141,6 +1232,20 @@ private fun ServerVpnScreen(
     }
 }
 
+/** Neutral accessible labels; maintenance has priority over Updated and New. */
+@Composable
+private fun ServerVpnStatusTag(label:Int,tag:String) {
+    Surface(
+        color=Raised,shape=RoundedCornerShape(10.dp),
+        border=BorderStroke(1.dp,Color(0xFF818181)),
+        modifier=Modifier.testTag(tag),
+    ) {
+        Text(stringResource(label),color=White,fontSize=10.sp,
+            maxLines=1,fontWeight=FontWeight.SemiBold,
+            modifier=Modifier.padding(horizontal=7.dp,vertical=4.dp))
+    }
+}
+
 /** Neutral, readable, reusable two-hour marker for new client features and VPNs. */
 @Composable
 private fun ServerVpnNewTag() {
@@ -1173,7 +1278,7 @@ private fun BottomTabs(active:Int,onTab:(Int)->Unit,spotlight:Int?=null) {
     val tabs=listOf(
         Triple(R.string.home,Icons.Outlined.Home,0),
         Triple(R.string.history,Icons.Outlined.History,1),
-        Triple(R.string.formats,Icons.Outlined.Code,2),
+        Triple(R.string.apk_analysis_title,Icons.Outlined.Android,2),
         Triple(R.string.server_vpn,Icons.Outlined.Dns,3),
         Triple(R.string.settings,Icons.Outlined.Settings,4)
     )
@@ -1193,7 +1298,7 @@ private fun BottomTabs(active:Int,onTab:(Int)->Unit,spotlight:Int?=null) {
                 verticalArrangement=Arrangement.spacedBy(4.dp)){
                 Icon(icon,stringResource(label),
                     tint=if(selected)White else Secondary,modifier=Modifier.size(21.dp))
-                Text(stringResource(label),fontSize=11.sp,
+                Text(if(index==2) "APK" else stringResource(label),fontSize=11.sp,
                     color=if(selected)White else Secondary,
                     maxLines=1,overflow=TextOverflow.Ellipsis)
             }

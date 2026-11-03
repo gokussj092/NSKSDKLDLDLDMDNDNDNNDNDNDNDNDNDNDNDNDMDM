@@ -1,24 +1,35 @@
 #!/usr/bin/env python3
-"""Speicers`Pro VPN 104.1.17 (120): descarga privada para Python/Termux."""
+"""Speicers`Pro VPN 104.1.17/104.1.20 (120/123): descarga privada para Python/Termux."""
 from __future__ import annotations
 
 import argparse
 import base64
 import hashlib
+import hmac
 import json
 import math
 import os
+import re
 from pathlib import Path
 import sys
 import unicodedata
 from urllib.request import HTTPRedirectHandler, Request, build_opener
+from urllib.error import HTTPError
 import zipfile
 
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import unpad
+from Crypto.PublicKey import RSA
+from Crypto.Hash import SHA256
+from Crypto.Signature import pkcs1_15
 
 MAX_BYTES = 8 * 1024 * 1024
 CATALOG_URL = "https://raw.githubusercontent.com/satanas66666/Aplicaciones/refs/heads/main/speicerspro/servidores_pro"
+UPDATE_ORIGIN = "https://gen.spei.click"
+UPDATE_MANIFEST_URL = UPDATE_ORIGIN + "/updates/servers.json"
+SPCF_KEY_ID = "a8d4e7d79e33bcb8"
+SPCF_PUBLIC_KEY = "MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEA3AjjZkkCkznJzdy9YO7fPQUCaE7FrWnQeazmI7uMt6CrPL4XwXIYQDu+WSAKyQUkfCRrDnWBDYZac4cHjqxnYLyu/gaFvjIu6VAqq/GwZ3RzK586ST+AIH4nT++BnHQOzh9uciEhUM6xuZfGh2XJm+51WCytP0tijSKglw37O+WIK6+fwbvtS1UJYLsDSmfbzRFO8wX3iD5H65XouYC7sl2YfYz7IKFYnI6wzz3R6JbobGg8g52T31kR1cPmDc7rHZuz2btOrV44Nmm5UmpA78oGdtfTiIzEBSNXBOuP/AbCpu7J/Xly75FfjG2HSUBFS3OoMkvYoIT1rkLndahMJEsTJPXlxyehZZXGWYTy8uYlmnjCCdMLKuxLdKjs/STpDuHF2U41DR/r90cRwNZ2gkRquahG0VO8XLR1VrUUosdN5iETOXjA3Yhgd4zzIgy2bx29Dg2cPhs0zrqYyecQGvfONeKYflVRQajyUNXpPsw9mLQRJc6I2OjVtsTrcLt1AgMBAAE="
+SPCF_HMAC_KEY = bytes.fromhex("15960080267cfa3877dce327aa0cfbbaadf8dc4ff47a3cad680e865bdbc18000")
 # Build constants from LICENSE and the DEX, not downloaded account credentials.
 CATALOG_PASSWORD = b"ProteccionSanta$666"
 FIELD_KEY = b"Diablo2310BAX9t".ljust(32, b"\0")
@@ -42,6 +53,10 @@ FIELD_NAMES = {
 
 class DecodeError(ValueError):
     """Errors never include catalog contents or remote response bodies."""
+
+
+class NoUpdatePublished(DecodeError):
+    """Original updater treats manifest HTTP404/410 as no published update."""
 
 
 def bounded(data):
@@ -116,8 +131,81 @@ def _validate(obj):
             raise DecodeError("JSON con números no finitos.")
 
 
+def _json(text):
+    value = json.loads(text, object_pairs_hook=_unique, parse_constant=_constant)
+    _validate(value)
+    return value
+
+
+def _url64(text):
+    if not isinstance(text, str) or not re.fullmatch(r"[A-Za-z0-9_-]+={0,2}", text):
+        raise DecodeError("Base64 URL inválido.")
+    raw = _base64(text, urlsafe=True)
+    if base64.urlsafe_b64encode(raw).decode().rstrip("=") != text.rstrip("="):
+        raise DecodeError("Base64 URL no canónico.")
+    return raw
+
+
+def _signed(value, max_payload):
+    if (not isinstance(value, dict) or value.get("alg") != "RS256"
+            or not isinstance(value.get("payload"), str)
+            or not re.fullmatch(r"[A-Za-z0-9_-]+", value["payload"])
+            or len(value["payload"]) > max_payload):
+        raise DecodeError("Sobre firmado incompatible.")
+    signature = _url64(value.get("signature"))
+    pkcs1_15.new(RSA.import_key(base64.b64decode(SPCF_PUBLIC_KEY))).verify(
+        SHA256.new(value["payload"].encode("ascii")), signature)
+    payload = _json(_url64(value["payload"]).decode("utf-8"))
+    if not isinstance(payload, dict) or payload.get("app") != "netfree.mx.store":
+        raise DecodeError("Publicación de otra aplicación.")
+    return payload
+
+
+def decrypt_spcf(text):
+    if not text.startswith("SPCF1\n") or len(text) > 3_000_000:
+        raise DecodeError("Archivo SPCF1 incompatible.")
+    obj = _signed(_json(text[6:]), 3_000_000)
+    expected = {"v": 1, "kind": "servers_file", "format": "SPCF1",
+                "kdf": "PBKDF2-HMAC-SHA256", "iterations": 600000, "key_id": SPCF_KEY_ID}
+    if any(type(obj.get(k)) is not type(v) or obj[k] != v for k, v in expected.items()):
+        raise DecodeError("Parámetros SPCF1 incompatibles.")
+    salt, nonce, ciphertext = (_url64(obj.get(k)) for k in ("salt", "nonce", "ciphertext"))
+    if len(salt) != 32 or len(nonce) != 12 or not 16 <= len(ciphertext) <= 1_500_016:
+        raise DecodeError("Archivo SPCF1 incompleto.")
+    password = base64.urlsafe_b64encode(hmac.new(SPCF_HMAC_KEY,
+        b"SPEICERS_FILE_PASSWORD_V1\0" + CATALOG_PASSWORD, "sha256").digest()).rstrip(b"=")
+    key = hashlib.pbkdf2_hmac("sha256", password, salt, 600000, 32)
+    cipher = AES.new(key, AES.MODE_GCM, nonce=nonce, mac_len=16)
+    cipher.update((f"SPCF1|netfree.mx.store|servers|{SPCF_KEY_ID}|600000|{obj['salt']}").encode("ascii"))
+    plain = cipher.decrypt_and_verify(ciphertext[:-16], ciphertext[-16:]).decode("utf-8")
+    document = _json(plain)
+    if not isinstance(document, dict) or not isinstance(document.get("Servers"), list) or len(document["Servers"]) > 10000:
+        raise DecodeError("Lista SPCF1 incompatible.")
+    return plain
+
+
+def update_manifest(data):
+    if not isinstance(data, bytes) or not 0 < len(data) <= 16000:
+        raise DecodeError("Publicación superior al límite.")
+    obj = _signed(_json(data.decode("utf-8")), 800000)
+    expected = {"v": 1, "kind": "server_update", "origin": UPDATE_ORIGIN, "format": "SPCF1", "min_app_code": 121}
+    if any(type(obj.get(k)) is not type(v) or obj[k] != v for k, v in expected.items()):
+        raise DecodeError("Publicación no compatible.")
+    version, digest = obj.get("version"), obj.get("sha256")
+    if (not isinstance(version, str) or not re.fullmatch(r"[1-9][0-9]{0,9}", version)
+            or int(version) > 2147483647 or not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest)
+            or type(obj.get("size")) is not int or not 1 <= obj["size"] <= 3_000_000
+            or type(obj.get("count")) is not int or not 0 <= obj["count"] <= 10000):
+        raise DecodeError("Publicación incompleta.")
+    if obj.get("url") != f"{UPDATE_ORIGIN}/updates/servers/{version}/{digest}.png":
+        raise DecodeError("Ruta de actualización no permitida.")
+    return obj
+
+
 def decrypt_document(data):
     text = bounded(data).decode("utf-8-sig").strip()
+    if text.startswith("SPCF1"):
+        return decrypt_spcf(text)
     if text and text[0] in ALPHABET:
         if len(text) % 2 or any(c not in ALPHABET for c in text):
             raise DecodeError("Alfabeto de catálogo inválido.")
@@ -169,7 +257,7 @@ def decode_catalog(data):
         _validate(obj)
         return obj
     except (ValueError, UnicodeError, TypeError, RecursionError) as exc:
-        raise DecodeError("Catálogo inválido o incompatible con Speicers Pro 104.1.17.") from exc
+        raise DecodeError("Catálogo inválido o incompatible con Speicers Pro 120/123.") from exc
 
 
 def render(obj):
@@ -186,7 +274,7 @@ class _NoRedirect(HTTPRedirectHandler):
         raise DecodeError("La fuente fija intentó redirigir la descarga.")
 
 
-def download():
+def download_legacy():
     request = Request(CATALOG_URL, headers={"Accept-Encoding": "identity"})
     try:
         with build_opener(_NoRedirect()).open(request, timeout=25) as response:
@@ -197,6 +285,39 @@ def download():
         raise DecodeError("No se pudo descargar el catálogo oficial.") from exc
 
 
+def _request_update(url, limit, accept):
+    request = Request(url, headers={"Cache-Control": "no-cache", "Accept": accept,
+                                   "User-Agent": "Dalvik/2.1.0", "Accept-Encoding": "identity"})
+    try:
+        with build_opener(_NoRedirect()).open(request, timeout=20) as response:
+            if response.status != 200 or response.headers.get("Content-Encoding", "identity") != "identity":
+                raise DecodeError("Respuesta de actualización inválida.")
+            data = response.read(limit + 1)
+    except HTTPError as exc:
+        if url == UPDATE_MANIFEST_URL and exc.code in (404, 410):
+            raise NoUpdatePublished("La API no tiene una actualización publicada; use --apk para el catálogo incluido.") from exc
+        raise DecodeError("Respuesta de actualización inválida.") from exc
+    except OSError as exc:
+        raise DecodeError("No se pudo descargar la actualización oficial.") from exc
+    if not 0 < len(data) <= limit:
+        raise DecodeError("Actualización superior al límite.")
+    return data
+
+
+def download():
+    # Both URLs are fixed by the original signed publication, never caller input.
+    manifest = update_manifest(_request_update(UPDATE_MANIFEST_URL, 16000, "application/json"))
+    data = _request_update(manifest["url"], 3_000_000, "application/octet-stream")
+    if len(data) != manifest["size"] or hashlib.sha256(data).hexdigest() != manifest["sha256"]:
+        raise DecodeError("Actualización incompleta o alterada.")
+    if not data.startswith(b"SPCF1\n"):
+        raise DecodeError("Actualización sin protección SPCF1.")
+    document = decode_catalog(data)
+    if document.get("Version") != manifest["version"] or len(document.get("Servers", [])) != manifest["count"]:
+        raise DecodeError("La lista no coincide con la publicación firmada.")
+    return data
+
+
 def _read(path):
     with path.open("rb") as stream:
         return bounded(stream.read(MAX_BYTES + 1))
@@ -205,6 +326,7 @@ def _read(path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     source = parser.add_mutually_exclusive_group()
+    source.add_argument("--legacy-remote", action="store_true", help="GET histórico del build120; no sustituye el feed SPCF1 actual")
     source.add_argument("--input", type=Path, help="Descifrar una copia cifrada local")
     source.add_argument("--apk", type=Path, help="Leer un catálogo incluido en base.apk")
     parser.add_argument("--asset", choices=["flags/config.png", "config/config.json"], default="flags/config.png")
@@ -218,7 +340,7 @@ def main():
                 with archive.open("assets/" + args.asset) as stream:
                     data = bounded(stream.read(MAX_BYTES + 1))
         else:
-            data = download()
+            data = download_legacy() if args.legacy_remote else download()
         obj = decode_catalog(data)
         rendered = (render(obj) + "\n").encode("utf-8")
         with os.fdopen(os.open(args.output, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600), "wb") as stream:
@@ -226,6 +348,9 @@ def main():
         records = obj.get("Servers", obj.get("servers", []))
         print(f"Guardado: {args.output} | versión {obj.get('Version', obj.get('version'))} | {len(records)} servidores")
         return 0
+    except NoUpdatePublished as exc:
+        print(str(exc), file=sys.stderr)
+        return 3
     except (OSError, ValueError, KeyError, zipfile.BadZipFile) as exc:
         print(str(exc) if isinstance(exc, DecodeError) else "No se pudo leer o guardar; el destino debe ser un archivo nuevo.", file=sys.stderr)
         return 1

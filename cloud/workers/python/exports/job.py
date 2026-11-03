@@ -12,12 +12,27 @@ import tempfile
 PROFILE = 'original-app-open-v1'
 MAX_ARTIFACT = 1024*1024
 MAX_REPLY = 6*1024*1024-8192
-TARGETS = {
-    'hc': ('http-custom', 'HTTP Custom'),
-    'dark': ('dark-tunnel', 'Dark Tunnel'),
-    'ehi': ('http-injector', 'HTTP Injector'),
-    'npvs': ('npv-tunnel', 'NPV Tunnel'),
-}
+def _registered_targets():
+    # Source of truth: unlockedExport flags in the existing file-format catalog.
+    # exports/bridge.py must still have a tested real writer for each suffix.
+    path = Path(__file__).resolve().parents[4] / 'cloud/web/content/file-formats.json'
+    data = json.loads(path.read_text(encoding='utf-8'))
+    formats = [dict(suffix=f['suffix'], **f['unlockedExport'])
+               for f in data['formats'] if 'unlockedExport' in f]
+    if data['schemaVersion'] != 1 or not 5 <= len(formats) <= 64 or \
+            type(data.get('unlockedRevision')) is not int or data['unlockedRevision'] < 1:
+        raise ValueError('EXPORT_REGISTRY_INVALID')
+    result = {}
+    for f in formats:
+        suffix = f['suffix']
+        if suffix in result or not suffix.isascii() or not suffix.replace('_','').replace('-','').isalnum() or len(suffix) > 16:
+            raise ValueError('EXPORT_REGISTRY_INVALID')
+        result[suffix] = (f['targetAppId'], f['name'])
+    if not {'hc','dark','ehi','npvs','hat'} <= result.keys():
+        raise ValueError('EXPORT_REGISTRY_INVALID')
+    return result
+
+TARGETS = _registered_targets()
 
 
 def validate_options(options):

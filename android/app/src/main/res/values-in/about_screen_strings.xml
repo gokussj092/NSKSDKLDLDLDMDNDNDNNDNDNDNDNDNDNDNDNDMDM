@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_screen_entry_detail">Versi, keamanan, dan tautan resmi</string>
+    <string name="about_screen_description">Alat analisis dan dekode konfigurasi VPN</string>
+    <string name="about_screen_version_badge">Versi %1$s · Build %2$d</string>
+    <string name="about_screen_info">Informasi aplikasi</string>
+    <string name="about_screen_languages">Bahasa tersedia</string>
+    <string name="about_screen_installed">Versi terpasang</string>
+    <string name="about_screen_features">Fitur utama</string>
+    <string name="about_screen_feature_decode">Dekode berkas VPN</string>
+    <string name="about_screen_feature_catalog">Katalog Server VPN</string>
+    <string name="about_screen_feature_export">Ekspor JSON dan unlocked</string>
+    <string name="about_screen_feature_history">Riwayat hasil</string>
+    <string name="about_screen_security">Keamanan dan privasi</string>
+    <string name="about_screen_cloud_security">Komunikasi Cloud V2 memakai enkripsi HPKE dan pemeriksaan integritas sesuai konfigurasi layanan.</string>
+    <string name="about_screen_local_security">Riwayat lokal terenkripsi di perangkat ini.</string>
+    <string name="about_screen_privacy">Kebijakan privasi</string>
+    <string name="about_screen_terms">Ketentuan penggunaan</string>
+    <string name="about_screen_links">Komunitas dan tautan resmi</string>
+    <string name="about_screen_website">Situs web resmi</string>
+    <string name="about_screen_community_detail">Komunitas resmi Telegram</string>
+    <string name="about_screen_credit">Dikembangkan oleh Ghost Developer</string>
+    <string name="about_screen_copyright">SP-DECODE · Hak cipta dilindungi</string>
+</resources>

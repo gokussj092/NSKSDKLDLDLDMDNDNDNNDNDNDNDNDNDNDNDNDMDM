@@ -25,12 +25,18 @@ class CloudC4Tests(unittest.TestCase):
     def test_four_user_flows_have_no_offline_fallback_in_cloud_branch(self):
         source = ACTIVITY.read_text("utf-8")
         for route in (
-            "cloudClient.decodeText(userText,password)",
-            "cloudClient.decodeHttpInjectorCloud(parsed)",
-            "cloudClient.decodeNurCatalog()",
+            "cloudClient.decodeText(userText,password,",
+            "cloudClient.decodeOnlineReference(target.provider,target.reference,",
+            "cloudClient.decodeNurCatalog(",
+            "cloudClient.decodeServerVpnProvider(id,",
             "cloudClient.decodeFile(supported.suffix,input",
         ):
             self.assertIn(route, source)
+        # Six decode routes plus HC preflight each deliver request-bound phases.
+        self.assertEqual(
+            source.count("onPhase={phase->markCloudProgress(generation,phase)}"), 6
+        )
+        self.assertIn("onPhase={phase->markCloudProgress(phaseGeneration,phase)}", source)
         self.assertIn("if(BuildConfig.SPDECODE_CLOUD_ENABLED)", source)
         self.assertIn("val routingName=ImportFilenameNormalizer.forDetection(name)", source)
         self.assertIn("else AndroidOfflineDecoderRouter.decode(this@MainActivity,routingName,input)",source)
@@ -83,11 +89,15 @@ class CloudC4Tests(unittest.TestCase):
 
     def test_original_ui_sources_exactly_match_c0(self):
         frozen=json.loads((ROOT/"docs/cloud/C0_UI_BASELINE.json").read_text("utf-8"))
+        approved=json.loads((ROOT/"docs/cloud/C0_UI_APPROVED_1_1_26.json").read_text("utf-8"))
+        deltas=approved["uiGitBlobSha1"]
+        self.assertEqual(len(deltas),3)
+        self.assertTrue(set(deltas).issubset(frozen["uiGitBlobSha1"]))
         import hashlib
         for path,expected in frozen["uiGitBlobSha1"].items():
             raw=(ROOT/path).read_bytes()
             actual=hashlib.sha1(b"blob "+str(len(raw)).encode()+b"\0"+raw).hexdigest()
-            self.assertEqual(actual,expected,path)
+            self.assertEqual(actual,deltas.get(path,expected),path)
 
     def test_no_bot_files_affected_by_c4_contract(self):
         # This test guards the design intent; the PR diff must still be reviewed.

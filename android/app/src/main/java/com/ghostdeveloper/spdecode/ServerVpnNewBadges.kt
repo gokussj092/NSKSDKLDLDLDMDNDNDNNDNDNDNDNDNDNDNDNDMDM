@@ -16,6 +16,8 @@ internal class ServerVpnNewBadges(
         private const val KNOWN_IDS="known-provider-ids"
         private const val PREFIX="provider:"
         private const val FEATURE_PREFIX="feature:"
+        private const val METHOD_VERSION_PREFIX="method-version:"
+        private const val METHOD_PREFIX="method-updated:"
         private val VALID_ID=Regex("[a-z0-9-]{1,48}")
     }
 
@@ -63,6 +65,54 @@ internal class ServerVpnNewBadges(
             }
         }
         if(hasRemovals)remove.apply()
+        return Snapshot(active,nextExpiry)
+    }
+
+    /** Explicit method revisions are device-local and independent of icon,
+     * provider availability and overall catalog version. The first verified
+     * catalog establishes a baseline; later higher revisions get a 2h marker. */
+    @Synchronized
+    fun observeMethods(
+        revisions:Map<String,Int>,
+        nowMillis:Long=System.currentTimeMillis(),
+    ):Snapshot {
+        val valid=revisions.filter { (id,version) ->
+            VALID_ID.matches(id) && version in 0..1_000_000
+        }
+        val edit=preferences.edit()
+        var changed=false
+        for((id,revision) in valid) {
+            val key=METHOD_VERSION_PREFIX+id
+            if(!preferences.contains(key)) {
+                edit.putInt(key,revision)
+                changed=true
+            }else{
+                val old=preferences.getInt(key,0)
+                if(revision>old) {
+                    edit.putInt(key,revision)
+                    edit.putLong(METHOD_PREFIX+id,nowMillis)
+                    changed=true
+                }
+            }
+        }
+        if(changed)edit.apply()
+        val active=mutableSetOf<String>()
+        var nextExpiry:Long?=null
+        val cleanup=preferences.edit()
+        var expired=false
+        for((id,_) in valid) {
+            val key=METHOD_PREFIX+id
+            if(!preferences.contains(key))continue
+            val remaining=remaining(preferences.getLong(key,0L),nowMillis)
+            if(remaining==null) {
+                cleanup.remove(key)
+                expired=true
+            }else{
+                active+=id
+                nextExpiry=nextExpiry?.let { minOf(it,remaining) } ?: remaining
+            }
+        }
+        if(expired)cleanup.apply()
         return Snapshot(active,nextExpiry)
     }
 

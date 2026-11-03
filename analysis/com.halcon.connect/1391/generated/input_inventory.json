@@ -1,0 +1,37 @@
+{
+  "input": {
+    "path": "halcon-1391.xapk",
+    "bytes": 34644705,
+    "sha256": "f90ef42a4c610afd35eb5ea496cccfc3fb3ded473cf8949d8a1056a51b879077"
+  },
+  "entries": [
+    {
+      "path": "com.halcon.connect.apk",
+      "bytes": 12884825,
+      "sha256": "bd5a259b37427914a44a3e49f7ad4f9a8b22823285f6dc9d94f4e809036b8aac"
+    },
+    {
+      "path": "config.arm64_v8a.apk",
+      "bytes": 21607500,
+      "sha256": "36e08e29ba9ff1cdad10e04176f046e6726accf98f98ead5e6fc46c5458c0560"
+    },
+    {
+      "path": "config.en.apk",
+      "bytes": 61849,
+      "sha256": "e54e53232eb3f0eb86caba285a52f6df447ddda4278565da073d4ba35c2844dc"
+    },
+    {
+      "path": "config.xxxhdpi.apk",
+      "bytes": 88270,
+      "sha256": "334fb8a21548a5bf46ca7dc97615d272482b7edd7ba71987f08f612dcdd9522c"
+    }
+  ],
+  "declared_identity": {
+    "package_name": "com.halcon.connect",
+    "name": "Halcon R Net",
+    "version_code": "1391",
+    "version_name": "4.1.4",
+    "min_sdk_version": "24",
+    "target_sdk_version": "36"
+  }
+}

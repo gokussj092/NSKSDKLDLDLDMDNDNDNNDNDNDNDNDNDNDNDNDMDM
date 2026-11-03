@@ -41,7 +41,7 @@ internal object FirstRunGuide {
     fun targetTab(step: Int): Int = when (step) {
         in 0..3 -> 0  // File, text, Cloud, result
         4 -> 1        // History
-        5 -> 2        // Formats
+        5 -> 2        // APK analysis placeholder; Formats moved to Settings
         6 -> 3        // Servidores VPN
         7 -> 4        // Settings
         else -> 0

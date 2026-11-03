@@ -6,11 +6,21 @@
   "versionCode": 50,
   "engine": "python",
   "entrypoint": "file_decoder.py",
-  "extensions": ["crev"],
-  "formats": ["modified-xxtea-base64-json", "direct-import-json"],
-  "dependencies": ["pycryptodome==3.23.0"],
+  "extensions": [
+    "crev"
+  ],
+  "formats": [
+    "modified-xxtea-base64-json",
+    "direct-import-json"
+  ],
+  "dependencies": [
+    "pycryptodome==3.23.0"
+  ],
   "credentials": [],
-  "customPassword": {"cryptographicallyRequired": false, "kind": "post_decryption_comparison"},
+  "customPassword": {
+    "cryptographicallyRequired": false,
+    "kind": "post_decryption_comparison"
+  },
   "hwidCryptographicallyRequired": false,
   "catalog": {
     "entrypoint": "server_catalog_decoder.py",
@@ -33,5 +43,27 @@
   },
   "realFileSampleVerified": false,
   "syntheticDocumentsVerified": 5,
-  "deployment": "pending"
+  "deployment": "pending",
+  "reinvestigation20261101": {
+    "latestPlayVersion": "50.0",
+    "originalRecoveredFrom": "private original; live Play version matches; mirrors404/410",
+    "apkSha256": "ace1cef408f8fccbbdd103b0efd7df321e61e6ee435727cbc29397e41a029866",
+    "certificateSha256": "3d2426b63c3c16f825c71c7835339a560b10c4a06363ebc5895c546758182b8f",
+    "preflight": "fixed GET application/json; digest/raw-cache SHA256; server flag before Integrity",
+    "post": "fixed POST original token/nonce/package/diagnostics; no additional auth header identified",
+    "actualGet": {
+      "http": 200,
+      "bytes": 195,
+      "content": "HTML"
+    },
+    "actualOfflineFailurePost": {
+      "http": 405,
+      "bytes": 163,
+      "content": "HTML"
+    },
+    "validIntegrityRequestTested": false,
+    "remoteCatalogDownloaded": false,
+    "pythonTestsPassed": 26,
+    "currentCardEnabled": false
+  }
 }
