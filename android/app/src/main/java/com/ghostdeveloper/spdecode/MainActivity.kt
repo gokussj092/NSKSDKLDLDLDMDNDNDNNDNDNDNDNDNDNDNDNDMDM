@@ -816,9 +816,31 @@ class MainActivity : ComponentActivity() {
                 if(ImportFilenameNormalizer.forDetection(name).endsWith(".hc",ignoreCase=true)){
                     preview=withContext(Dispatchers.IO){readBounded(uri,
                         if(BuildConfig.SPDECODE_CLOUD_ENABLED) CloudDecodeClient.MAX_INPUT else MAX_BYTES)}
-                    val requirements=if(BuildConfig.SPDECODE_CLOUD_ENABLED)
-                        cloudClient.inspectHcRequirements(preview)
-                    else HcHccfgPort.inspectRequirements(preview)
+                    val requirements=if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
+                        // HCCFG inspection may call the server before the normal import
+                        // starts; it must show the same request phases and release the
+                        // dialog before any password/HWID prompt is displayed.
+                        val phaseGeneration=++importGeneration
+                        busy=true
+                        progressStage=1
+                        cloudProgressPhase=0
+                        progressPosition=1
+                        progressTotal=1
+                        progressFilename=name
+                        message=null
+                        try {
+                            cloudClient.inspectHcRequirements(preview,
+                                onPhase={phase->markCloudProgress(phaseGeneration,phase)})
+                        } finally {
+                            if(generation==credentialPrepareGeneration &&
+                                phaseGeneration==importGeneration) {
+                                busy=false
+                                progressStage=0
+                                cloudProgressPhase=null
+                                progressFilename=null
+                            }
+                        }
+                    } else HcHccfgPort.inspectRequirements(preview)
                     if(requirements?.requiresCredentials==true) {
                         val credentials=if(requirements.passwordRequired &&
                             !requirements.hwidRequired) withContext(Dispatchers.IO){
