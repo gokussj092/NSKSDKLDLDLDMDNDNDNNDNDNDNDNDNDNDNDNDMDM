@@ -101,6 +101,10 @@
     <string name="decode_progress_reading">جارٍ قراءة الملف المحدد…</string>
     <string name="decode_progress_decoding">جارٍ فك ترميز الإعداد عبر Cloud…</string>
     <string name="decode_progress_saving">جارٍ حفظ النتيجة المشفرة…</string>
+    <string name="decode_progress_wait">يرجى الانتظار…</string>
+    <string name="decode_progress_sending">جارٍ الإرسال…</string>
+    <string name="decode_progress_processing">جارٍ المعالجة…</string>
+    <string name="decode_progress_downloading_results">جارٍ تنزيل النتائج…</string>
     <string name="history_search">البحث باسم الملف أو الامتداد</string>
     <string name="history_favorites">المفضلة</string>
     <string name="history_sort">ترتيب</string>
