@@ -36,8 +36,14 @@ class GlobalCloudUiContracts(unittest.TestCase):
                 found=resources(locale,"compatible_export_strings.xml")
                 self.assertEqual(found["compatible_export_redecode"].count("%1$s"),1)
                 self.assertLess(len(found["compatible_export_redecode"]),180)
+                self.assertEqual(found["compatible_export_for"].count("%1$s"),1)
+                self.assertLess(len(found["compatible_export_for"]),180)
         button=text("android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CompatibleExportButton.kt")
-        self.assertIn("CompatibleExportArtifact.targets.getValue(entry.extension).second",button)
+        # The translated action uses verified target metadata from the server;
+        # a legacy fixed list would suppress legitimate new Unlocked exports.
+        self.assertIn("Text(stringResource(R.string.compatible_export_for,artifact.targetAppName))",button)
+        self.assertIn("if(artifact!=null)",button)
+        self.assertNotIn("CompatibleExportArtifact.targets.getValue",button)
 
     def test_private_screen_contrast_has_exact_am_ol_ed_colors(self):
         source=text("android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/PrivateScreenSettings.kt")
