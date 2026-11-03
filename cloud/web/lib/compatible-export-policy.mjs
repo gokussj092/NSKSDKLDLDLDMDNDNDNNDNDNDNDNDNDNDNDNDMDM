@@ -27,12 +27,13 @@ export function validateExportRegistry(registry,{knownFormats=publicFormats()}={
  for(const f of registry.formats) {
   if(!same(f,['suffix','targetAppId','name','banner']) ||
      typeof f.suffix!=='string'||!/^[a-z0-9][a-z0-9_-]{0,15}$/.test(f.suffix)||
-     !allowed.has(f.suffix)||!observed.add(f.suffix) ||
+     !allowed.has(f.suffix)||observed.has(f.suffix) ||
      typeof f.targetAppId!=='string'||!/^[a-z0-9][a-z0-9-]{0,47}$/.test(f.targetAppId)||
-     !identities.add(f.targetAppId) ||
+     identities.has(f.targetAppId) ||
      typeof f.name!=='string'||f.name!==f.name.trim()||f.name.length<1||
      f.name.length>80||/[\x00-\x1f\x7f\u202a-\u202e\u2066-\u2069]/.test(f.name)||
      !['none','spdecode-html'].includes(f.banner)) throw Error('EXPORT_REGISTRY_INVALID');
+  observed.add(f.suffix);identities.add(f.targetAppId);
  }
  if(LEGACY_SUFFIXES.some(s=>!observed.has(s)))throw Error('EXPORT_REGISTRY_INVALID');
  return Object.freeze({schemaVersion:1,revision:registry.revision,

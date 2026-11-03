@@ -12,7 +12,7 @@ import { maintenanceEnabled, serviceMaintenanceEnabled, recordWorkerResult } fro
 import {admissionPolicy} from "./c11-play-admission.mjs";
 import {publicFormats} from "./file-format-catalog.mjs";
 
-import {negotiatesExport,negotiatesHatExport,exportPolicy,exportAllowed,EXPORT_PROFILE} from "./compatible-export-policy.mjs";
+import {negotiatesExport,negotiatesHatExport,negotiatesDynamicExport,exportPolicy,exportAllowed,EXPORT_PROFILE} from "./compatible-export-policy.mjs";
 
 const ERROR_MESSAGES = Object.freeze({
   INVALID_REQUEST:"Solicitud inválida.",
@@ -460,7 +460,10 @@ export async function decodeRequest(request,kind,options={}) {
       let policy=null;
       try{policy=await (options.exportPolicyProvider||exportPolicy)();}
       catch{ /* Export failure must not discard a valid decode. */ }
-      const clientSupportsFormat=payload.format.toLowerCase()!=="hat"||negotiatesHatExport(request);
+      // Legacy clients need the HA opt-in, but dynamic clients are not
+      // restricted to compiled per-application export target lists.
+      const clientSupportsFormat=negotiatesDynamicExport(request)||
+        payload.format.toLowerCase()!=="hat"||negotiatesHatExport(request);
       if(!policy||!exportAllowed(request,policy)||!clientSupportsFormat){
         workerPayload={...payload};delete workerPayload.compatibleExport;
         exportUnavailable={status:"unavailable",code:!policy?"EXPORT_POLICY_UNAVAILABLE":
