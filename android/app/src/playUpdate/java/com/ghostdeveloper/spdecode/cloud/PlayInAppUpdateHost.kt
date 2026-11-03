@@ -111,6 +111,12 @@ internal fun PlayInAppUpdateHost(
                 exclusiveCallback(true)
                 return@addOnSuccessListener
             }
+            if (info.installStatus() == InstallStatus.PENDING ||
+                info.installStatus() == InstallStatus.DOWNLOADING ||
+                info.installStatus() == InstallStatus.INSTALLING) {
+                // Flexible download is already managed by Google Play.
+                return@addOnSuccessListener
+            }
             if (info.updateAvailability() ==
                 UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
                 if (info.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE) &&

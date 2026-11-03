@@ -140,8 +140,12 @@ if(providers.environmentVariable("SPDECODE_CLOUD_RELEASE").orNull=="true") {
 gradle.taskGraph.whenReady {
     val distributesRelease=allTasks.any { it.project==project &&
         it.name in setOf("assembleRelease","packageRelease","bundleRelease") }
+    val hasPlayBundle=allTasks.any { it.project==project && it.name=="bundleRelease" }
+    if(hasPlayBundle) require(enablePlayAab) {
+        "Every release AAB must enable -PspdecodePlayAab=true and be built separately"
+    }
     if(enablePlayAab) {
-        require(allTasks.any { it.project==project && it.name=="bundleRelease" } &&
+        require(hasPlayBundle &&
             allTasks.none { it.project==project &&
                 it.name in setOf("assembleRelease","packageRelease") }) {
             "Play AAB must be built separately: -PspdecodePlayAab=true :app:bundleRelease"

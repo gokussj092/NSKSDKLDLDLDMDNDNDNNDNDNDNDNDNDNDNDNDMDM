@@ -50,13 +50,16 @@ jobs:
           "$SDKMANAGER" --install "platforms;android-36" "build-tools;35.0.0" "platform-tools" "cmake;3.22.1" "ndk;27.2.12479018"
       - name: Compile release R8 Android APK and AAB (not DEBUG)
         working-directory: android
-        run: gradle --no-daemon --max-workers=2 :app:assembleRelease :app:bundleRelease
+        run: |
+          gradle --no-daemon --max-workers=2 :app:assembleRelease
+          gradle --no-daemon --max-workers=2 -PspdecodePlayAab=true :app:bundleRelease
       - name: Validate compiled outputs
         shell: bash
         run: |
           set -euo pipefail
           APK=android/app/build/outputs/apk/release/app-release-unsigned.apk
           AAB=android/app/build/outputs/bundle/release/app-release.aab
+          python3 scripts/ci/verify_play_update_artifacts.py "$APK" "$AAB"
           test -s "$APK" && test -s "$AAB"
           test -s android/app/build/outputs/mapping/release/mapping.txt
           python3 scripts/ci/verify_aab_locales.py "$AAB"
