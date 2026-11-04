@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "package_name": "maya.tun.udp",
+  "app_name": "MAYA TUN PRO",
+  "version_name": "43.0",
+  "version_code": 43,
+  "observed_at": "2026-11-04",
+  "source_category": "user_supplied_script_and_reference",
+  "authorization_note": "The user provided a reference and decoder script; no live or leaked token was used. Revoke the credential pasted in chat and provision a new scoped one only through server secrets.",
+  "status": "PARTIAL",
+  "targets": [
+    {
+      "kind": "text",
+      "format": "maya://",
+      "status": "VERIFIED_LOCAL_VECTOR",
+      "enabled_scope": "strict reference parsing and opt-in server-side fetch, full configuration requires authorized access"
+    },
+    {
+      "kind": "file",
+      "format": ".maya",
+      "status": "VERIFIED_SYNTHETIC",
+      "enabled_scope": "existing offline AES-CBC+AES-GCM worker"
+    },
+    {
+      "kind": "catalog",
+      "status": "NETWORK_AUTH_PENDING",
+      "enabled": false,
+      "reason": "GitHub unauthenticated 404, source is file-by-ID not a listing of VPN servers"
+    }
+  ],
+  "inputs": [
+    {
+      "type": "user_sample_maya_uri",
+      "bytes": null,
+      "sha256": null,
+      "source": "user-provided sample; no secrets archived"
+    },
+    {
+      "type": "remote_unauthenticated_attempt",
+      "http_status": 404,
+      "source": "GitHub API /repos/janatshaban/noob_files; content path fixed and inaccessible anonymously"
+    }
+  ],
+  "tooling": [
+    {
+      "path": "analysis/maya.tun.udp/43/tools/probe_reference.py",
+      "origin": "project-owned, sanitized reproduction",
+      "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7"
+    },
+    {
+      "path": "cloud/web/tests/maya-reference.test.mjs",
+      "origin": "synthetic security and protocol tests",
+      "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7"
+    },
+    {
+      "path": "tests/test_maya_text_reference.py",
+      "origin": "synthetic cryptographic cross-check",
+      "approval": "UNREVIEWED_FOR_AUTOMATIC_PHASE_7"
+    }
+  ],
+  "code_paths": [
+    "decoders/Python/maya.py",
+    "decoders/Python/_noobcrypt.py",
+    "cloud/web/lib/maya-reference.mjs",
+    "cloud/web/lib/c35-provider.mjs",
+    "cloud/web/lib/c3-gateway.mjs",
+    "cloud/web/content/text-formats.json"
+  ],
+  "evidence_refs": [
+    "analysis/maya.tun.udp/43/RESULTS.md",
+    "analysis/maya.tun.udp/43/REPRODUCE.md"
+  ],
+  "limitations": [
+    "No authenticated remote download confirmed. No real servers count or JSON SHA.",
+    "Maya link names one private/public GitHub file, not an entire server catalog.",
+    "Cloud token must be separately provisioned and rotated; old pasted credential is not used."
+  ],
+  "network_requirements": [
+    "HTTPS fixed api.github.com; access subject to GitHub repository ACL and source availability."
+  ],
+  "manual_steps": [
+    "Revoke exposed GitHub token",
+    "If owner-authorized, configure CLOUD_MAYA_GITHUB_TOKEN in root-only VPS secrets",
+    "Run real remote smoke test without printing payload or token"
+  ],
+  "unresolved_questions": [
+    "Is janatshaban/noob_files intended to be private, and is the sample file still present?",
+    "Does .maya profile in the live repository match the preexisting NoobCrypt file decoder?"
+  ]
+}
