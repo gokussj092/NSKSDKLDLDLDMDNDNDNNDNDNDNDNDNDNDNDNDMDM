@@ -1,0 +1,44 @@
+{
+  "observedAt": "2026-11-04T16:15:23.997060+00:00",
+  "status": "PENDING_APK_ACQUISITION",
+  "responses": [
+    {
+      "source": "https://www.mediafire.com/file/ypaiywpzrvslef1/Hex+Custom.apk/file",
+      "httpStatus": null,
+      "contentType": null,
+      "bytes": 195,
+      "sha256": "5b131ca14aa96311d3432b0062c7443d3b0e6346ec279bd376a75f0a76bcd5d7",
+      "title": "Site Unavailable",
+      "apkContainerCandidate": false,
+      "provenance": "existing curl/urllib response; original status observed separately"
+    },
+    {
+      "source": "https://www.mediafire.com/file/ypaiywpzrvslef1",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "bytes": 195,
+      "sha256": "5b131ca14aa96311d3432b0062c7443d3b0e6346ec279bd376a75f0a76bcd5d7",
+      "title": "Site Unavailable",
+      "apkContainerCandidate": false,
+      "provenance": "existing curl/urllib response; original status observed separately"
+    },
+    {
+      "source": "https://www.mediafire.com/api/1.5/file/get_info.php?quick_key=ypaiywpzrvslef1&response_format=json",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "bytes": 195,
+      "sha256": "5b131ca14aa96311d3432b0062c7443d3b0e6346ec279bd376a75f0a76bcd5d7",
+      "title": "Site Unavailable",
+      "apkContainerCandidate": false,
+      "provenance": "existing curl/urllib response; original status observed separately"
+    }
+  ],
+  "apkReceived": false,
+  "browserObservation": {
+    "source": "https://www.mediafire.com/file/ypaiywpzrvslef1/Hex+Custom.apk/file",
+    "title": "Site Unavailable",
+    "visibleText": "Unable to access this site.",
+    "observedDate": "2026-11-04",
+    "provenance": "Historical observation in cloud browser, not inferred from this script."
+  }
+}

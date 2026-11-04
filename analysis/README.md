@@ -38,3 +38,5 @@ El archivo histórico [SOCKSIP_VER8_VER7_VER6_STUDY.md](SOCKSIP_VER8_VER7_VER6_S
 - [com.doriaxvpn.unlimited / 129 — HTTP Conexión](com.doriaxvpn.unlimited/README.md): VERIFIED_REAL; fuente Firebase17 /new, catálogo107/244 servidores/5325 campos GCM, entero igual a JCA/CLI/worker. Solo Cloud, Node/VPS pendiente.
 
 - [Speicers`Turbo VPN 217.4.4 / build217](netfree.mx.anuncios/217/ANALYSIS.md): remoto17/266 servidores +2/2 usuarios, JCA/CLI/worker completos; scripts y recuperación conservados.
+
+- [Hex Custom.apk de MediaFire: recepción pendiente](_intake/mediafire-ypaiywpzrvslef1/README.md): HTML de 195 bytes, Site Unavailable, sin APK ni identidad confirmada.
