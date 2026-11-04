@@ -7,3 +7,5 @@
 [Expediente](129/MANIFEST.json), [reproducción](129/REPRODUCE.md).
 El nombre actual difiere del packageId histórico. /Update57/251 no sustituye
 el origen /new seleccionado por Remote Config(template17, perfil analítico MX).
+
+[Actualización automática integrada](129/REFRESH_2026_11_04.md): ockla_url/gretta_pass se resuelven juntos desde Firebase, caché de una hora y reintento forzado único; Node/VPS y rollout pendientes.

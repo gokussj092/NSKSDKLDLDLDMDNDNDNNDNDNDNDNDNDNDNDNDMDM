@@ -1,3 +1,5 @@
+> **Actualización 2026-11-04:** la consulta automática de URL/contraseña ya está implementada en CLI y broker. [Comportamiento vigente y pruebas](REFRESH_2026_11_04.md). El texto siguiente conserva la investigación inicial y sus limitaciones históricas.
+
 # Resultados y límites
 
 | Entrada | Estado | Versión /servidores | Campos GCM | Paridad |

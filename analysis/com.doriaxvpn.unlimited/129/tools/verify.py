@@ -20,7 +20,8 @@ def reference(data,password,key):
             if row.get(name) not in (None,''):row[name]=mapping[row[name]]
     return doc,count,len(values)
 def verify(path,recipe,out,worker=True):
-    data=path.read_bytes();expected,count,unique=reference(data,recipe['password'].encode(),recipe['field_key'].encode())
+    data=path.read_bytes();raw,password=codec.unpack_catalog(data)
+    expected,count,unique=reference(raw,password if password is not None else recipe['password'].encode(),recipe['field_key'].encode())
     actual=json.loads(catalog.run(data));assert actual==expected,'Entire Python/JCA document differs'
     done=subprocess.run([sys.executable,str(ROOT/'decoders/Python/apps/HTTP_Conexion/server_catalog_decoder.py'),str(path.resolve())],
       capture_output=True,check=True,timeout=45)
@@ -39,7 +40,7 @@ def verify(path,recipe,out,worker=True):
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('private',type=Path);p.add_argument('catalogs',nargs='+',type=Path)
     p.add_argument('--download',action='store_true');p.add_argument('--no-worker',action='store_true');a=p.parse_args()
-    recipe=json.loads((a.private/'recipe.json').read_text());assert codec.CATALOG_PASSWORD==recipe['password'].encode() and codec.FIELD_KEY==recipe['field_key'].encode()
+    recipe=json.loads((a.private/'recipe.json').read_text());assert codec.FIELD_KEY==recipe['field_key'].encode()
     out=a.private/'verified';out.mkdir(parents=True,exist_ok=True,mode=0o700);paths=a.catalogs
     if a.download:
         f=out/'downloaded.enc';f.touch(mode=0o600,exist_ok=True);f.chmod(0o600);f.write_bytes(catalog.download());paths.append(f)

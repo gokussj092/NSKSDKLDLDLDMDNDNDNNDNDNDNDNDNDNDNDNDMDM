@@ -1,0 +1,10 @@
+{
+  "transport": "SIMULATED_HTTP_REAL_CONFIG_PAIR_AND_BYTES",
+  "status": "PASS",
+  "calls": 1,
+  "bytes": 4311432,
+  "bundleBytes": 5748670,
+  "wholeWorkerContractEqual": true,
+  "version": "107",
+  "servers": 244
+}

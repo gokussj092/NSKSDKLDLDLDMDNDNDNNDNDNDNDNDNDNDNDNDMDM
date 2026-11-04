@@ -85,3 +85,7 @@ están implementados. Revisión humana y despliegue permanecen separados.
 |traitlets|5.16.1|Instalado del entorno previo/transitivas; no validado por separado aquí.|
 |typing_extensions|4.16.0|Instalado del entorno previo/transitivas; no validado por separado aquí.|
 |wcwidth|0.9.4|Instalado del entorno previo/transitivas; no validado por separado aquí.|
+
+## Revisión automática 2026-11-04
+
+Sin paquetes nuevos: el cliente utiliza urllib/gzip/secrets/threading/time y JSON de stdlib; Node crypto/zlib/HTTPS/DNS nativos. Mismas versiones fijadas en lock; el finalizador comprueba las 42 distribuciones instaladas. Las opciones Android públicas se extraen con Androguard existente, no se instala Firebase SDK/npm ni Admin SDK. Nuevos scripts físicos y ejecución en tools/refresh, referencias y hashes en MANIFEST. Los tokens FIS emitidos no son constantes: viven solo en memoria y no se publican.

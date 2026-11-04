@@ -1,23 +1,15 @@
-# Pruebas
+# Validación de HTTP Conexión
 
-10 Python y147 Node correctas. El vector ficticio fue producido por JCA,
-incluyendo Base64 con saltos de línea dentro y fuera del sobre GCM, ROT34,
-Unicode, campos vacíos y metadatos desconocidos. Negativos: glifos/longitud,
-CBC/clave incorrecta, GCM con tag inválido, Base64 interior inválido aunque el
-tag sea válido, truncado, HTML, duplicados, NaN, esquema y límites.
-
-Se contrastaron íntegramente remoto107/244/5325 campos y asset1/7/84 campos con
-JCA independiente, CLI y worker aislado. La descarga operativa volvió a obtener
-HTTP200/4311432bytes y el mismo SHA256. No se guardan perfiles reales en Git.
+Desde la raíz, con el venv fijado en el expediente:
 
 ```sh
-python analysis/com.doriaxvpn.unlimited/129/tools/run_checks.py /ruta/privada/checks
+$PY -m unittest discover -s tests -p 'test_http_conexion*.py' -v
+$PY analysis/com.doriaxvpn.unlimited/129/tools/refresh/run_checks.py private/http-conexion-refresh/checks
+$PY analysis/com.doriaxvpn.unlimited/129/tools/refresh/verify_auto.py private/http-conexion-refresh
 ```
 
-Node se ejecuta desde cloud/web. Valida destino /new, timestamp, headers
-originales, TLS/DNS público, redirects, rechazo de URL del cliente y404 sin
-fallback obsoleto, icono original grande, controles y contrato no parcial.
-El probe real Node fue denegado por la red; el replay usa HTTP simulado y
-ciphertext/worker reales. No constituye prueba de producción en VPS.
+Resultado de la revisión 2026-11-04: 18 Python HTTP Conexión +9 Python Genis de regresión, 172 Node, todas aprobadas. Incluye JCA independiente, CLI y worker aislado, cambio de contraseña, caché/expiración, negativos de tags/HTML/JSON, rutas no aprobadas, credenciales restringidas a Google, sesión autenticada y un único reintento de descarga/descifrado.
 
-[Resultados, negativos y dependencias](../../../../analysis/com.doriaxvpn.unlimited/129/RESULTS.md).
+La prueba real recibe configuración Firebase y el catálogo107/244/5325; compara todo el documento. La contraseña real actual coincide con la previa: su rotación se demuestra mediante un vector ficticio JCA y worker real, no mediante un cambio remoto inventado. Los fixtures no son perfiles VPN reales ni exportadores certificados.
+
+Node real no completa el transporte en este ejecutor; el replay usa pareja/bytes/resultado reales con HTTP simulado y queda expresamente identificado. Debe probarse Node en VPS antes de desplegar. Recetas, fuentes, hashes y limitaciones: [REFRESH_2026_11_04.md](../../../../analysis/com.doriaxvpn.unlimited/129/REFRESH_2026_11_04.md).

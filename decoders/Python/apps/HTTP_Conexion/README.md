@@ -1,39 +1,11 @@
-# HTTP Conexión — catálogo Cloud
+# HTTP Conexión 1.2.9 / build129
 
-Paquete `com.doriaxvpn.unlimited`, muestra1.2.9/build129. El catálogo vigente
-observado es **107 /244 servidores /5325 campos GCM**, íntegro e igual a JCA,
-CLI y worker aislado. Las dos constantes del formato están incorporadas en
-`codec.py`; no requiere `.env`, archivos de claves ni credenciales HTTP nuevas.
+El script de catálogo incluye la consulta automática de `ockla_url` y `gretta_pass` en Firebase. Sin argumentos, obtiene la pareja vigente, descarga el catálogo con el protocolo original y lo descifra íntegramente. No requiere un probe externo, tokens manuales ni editar la contraseña en cada cambio.
 
-```sh
-python decoders/Python/apps/HTTP_Conexion/server_catalog_decoder.py catalogo.enc > catalogo.json
-python decoders/Python/apps/HTTP_Conexion/server_catalog_decoder.py --stdin < catalogo.enc
-python decoders/Python/apps/HTTP_Conexion/server_catalog_decoder.py > catalogo-remoto.json
-```
+Pareja en caché durante una hora; un fallo de descarga/descifrado fuerza una consulta nueva y un único reintento. Firebase ausente, parámetros inválidos o destino no aprobado producen error, sin volver al default/asset antiguo. Solo HTTPS raw.githubusercontent.com, sin redirecciones ni URLs aportadas por el cliente. Las opciones públicas Firebase del APK están en el backend; los tokens emitidos solo viven temporalmente en memoria y se intenta eliminar la instalación al terminar.
 
-`run(bytes)` es offline. Sin argumentos, CLI descarga el updater fijo **/new**,
-comprobado mediante Firebase Remote Config real(template17). Conserva GET,
-User-Agent original `HTTP-Conexion-VPN/3.0`, headers de caché y `nocache` dinámico.
-El /Update antiguo todavía responde57/251, pero no es la fuente seleccionada
-por esa configuración: no se usa como fallback de producción ni se sustituye
-un fallo remoto por el asset1/7.
+La contraseña de la capa exterior se pasa por operación al worker aislado; no cambia globals ni la clave GCM interna. Archivo y --stdin conservan compatibilidad con entradas históricas y con el sobre interno versionado. La salida pública sigue siendo el JSON completo con nombres, metadata y todos los campos GCM autenticados. El CBC exterior no autentica la metadata.
 
-Sobre: glifos→Base64→AES256-CBC, clave SHA256(hexUTF8(password) en mayúsculas),
-IV cero/PKCS7. Campos: Base64(nonce12+ciphertext+tag16), AES-GCM autenticado,
-Base64 interior y rotación -1 en alfabeto34. Se admiten los saltos de línea
-de Android Base64.DEFAULT. Un tag inválido falla; no devuelve ciphertext como
-si estuviera descifrado. Se conservan metadatos, valores vacíos, tipos y claves
-desconocidas. No se infiere soporte de archivos, texto o exportación.
+Verificación real actual: catálogo107, 244 servidores, 5.325 campos GCM, documento entero igual a JCA/CLI/worker. Rotación de contraseña probada con un fixture JCA ficticio y worker real. Node con red simulada pasa; transporte Node real en VPS y despliegue pendientes. Sin cambios ni build Android, sin exportación unlocked certificada.
 
-Icono launcher PNG original618×613/449874bytes sin recodificar. Proveedor
-`http-conexion`, controles y validación de documento completo conectados;
-piso de catálogo67/63 fichas,256 formatos. Android no cambia.
-
-El origen queda fijado al observado; si Firebase cambia URL/contraseña, requiere
-revisión del método. No se permite que datos remotos elijan una URL arbitraria.
-Node real aquí: REMOTE_NETWORK_DENIED; replay con bytes reales/HTTP simulado
-aprobado. Falta comprobar Node en VPS y rollout del operador.
-
-[Expediente y scripts](../../../../analysis/com.doriaxvpn.unlimited/129/MANIFEST.json),
-[reproducción](../../../../analysis/com.doriaxvpn.unlimited/129/REPRODUCE.md),
-[pruebas](TESTING.md).
+[Expediente](../../../../analysis/com.doriaxvpn.unlimited/129/ANALYSIS.md) · [Actualización automática y receta](../../../../analysis/com.doriaxvpn.unlimited/129/REFRESH_2026_11_04.md).

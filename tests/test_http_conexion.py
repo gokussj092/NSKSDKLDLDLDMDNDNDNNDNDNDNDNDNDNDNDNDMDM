@@ -68,10 +68,11 @@ class HttpConexionTests(unittest.TestCase):
                 self.assertEqual(req.full_url,cli.SOURCE+'?nocache=1700000000000');self.assertEqual(req.get_method(),'GET')
                 for k,v in cli.HEADERS.items():self.assertEqual(req.get_header(k.capitalize()),v)
                 self.assertIsNone(req.get_header('Authorization'));return Reply()
-        with patch.object(cli.time,'time',return_value=1700000000),patch.object(cli,'build_opener',return_value=Opener()):self.assertEqual(cli.download(),self.data)
+        with patch.object(cli.time,'time',return_value=1700000000),patch.object(cli,'build_opener',return_value=Opener()),patch.object(cli,'resolve_config',return_value={'source':cli.SOURCE,'password':codec.CATALOG_PASSWORD.decode()}):
+            data,password=codec.unpack_catalog(cli.download());self.assertEqual(data,self.data);self.assertEqual(password,codec.CATALOG_PASSWORD)
     def test_redirect_network_and_cli_no_leak(self):
         with self.assertRaises(ValueError):cli._NoRedirect().redirect_request(None,None,302,'',{},cli.SOURCE)
-        with patch.object(cli,'build_opener',side_effect=OSError('network')):
+        with patch.object(cli,'build_opener',side_effect=OSError('network')),patch.object(cli,'resolve_config',return_value={'source':cli.SOURCE,'password':codec.CATALOG_PASSWORD.decode()}):
             with self.assertRaises(ValueError):cli.download()
         r=subprocess.run([sys.executable,str(ROOT/'decoders/Python/apps/HTTP_Conexion/server_catalog_decoder.py'),'--stdin'],input=b'<html>private-marker</html>',capture_output=True)
         self.assertEqual(r.returncode,1);self.assertEqual(r.stdout,b'');self.assertNotIn(b'private-marker',r.stderr)

@@ -35,7 +35,7 @@ El archivo histórico [SOCKSIP_VER8_VER7_VER6_STUDY.md](SOCKSIP_VER8_VER7_VER6_S
 
 - [com.appxrayservice.namovpn / 35 — NAMO VPN](com.appxrayservice.namovpn/README.md): VERIFIED_REAL; remoto22.3/14 servidores/13 redes, JSON entero igual a Java/CLI/worker. Constante de formato incluida en código; Node/VPS real pendiente.
 
-- [com.doriaxvpn.unlimited / 129 — HTTP Conexión](com.doriaxvpn.unlimited/README.md): VERIFIED_REAL; fuente Firebase17 /new, catálogo107/244 servidores/5325 campos GCM, entero igual a JCA/CLI/worker. Solo Cloud, Node/VPS pendiente.
+- [com.doriaxvpn.unlimited / 129 — HTTP Conexión](com.doriaxvpn.unlimited/README.md): VERIFIED_REAL; consulta automática de URL/contraseña Firebase, catálogo107/244 servidores/5325 campos GCM, entero igual a JCA/CLI/worker. Caché1h/reintento único. Solo Cloud, Node/VPS pendiente.
 
 - [Speicers`Turbo VPN 217.4.4 / build217](netfree.mx.anuncios/217/ANALYSIS.md): remoto17/266 servidores +2/2 usuarios, JCA/CLI/worker completos; scripts y recuperación conservados.
 

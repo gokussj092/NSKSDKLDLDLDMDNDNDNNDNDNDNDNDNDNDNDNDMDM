@@ -3,7 +3,7 @@
 Format constants are stored in this backend module. No external key file or
 HTTP credential is required. Never treat a failed GCM tag as plaintext success.
 """
-import base64,hashlib,re
+import base64,hashlib,re,json
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import unpad
 from decoders.Python.apps.BD_NET_VPN.codec import CatalogError,MAX_INPUT,parse_document,render
@@ -23,7 +23,7 @@ def _base64(value):
     raw=value.encode('ascii') if isinstance(value,str) else value
     return base64.b64decode(re.sub(rb'[\t\n\r ]+',b'',raw),validate=True)
 
-def open_outer(data: bytes) -> dict:
+def open_outer(data: bytes, password: bytes | None = None) -> dict:
     if not isinstance(data,bytes) or not data or len(data)>MAX_INPUT:
         raise CatalogError('Invalid HTTP Conexión input size')
     try:
@@ -32,7 +32,9 @@ def open_outer(data: bytes) -> dict:
         raw=bytes(GLYPHS.index(text[i])*16+GLYPHS.index(text[i+1]) for i in range(0,len(text),2))
         cipher=_base64(raw)
         if not cipher or len(cipher)%16:raise ValueError('CBC size')
-        key=hashlib.sha256(CATALOG_PASSWORD.hex().upper().encode('ascii')).digest()
+        password=CATALOG_PASSWORD if password is None else password
+        if not isinstance(password,bytes) or not 1<=len(password)<=1024:raise ValueError('password')
+        key=hashlib.sha256(password.hex().upper().encode('ascii')).digest()
         clear=unpad(AES.new(key,AES.MODE_CBC,bytes(16)).decrypt(cipher),16)
         if len(clear)>MAX_OUTPUT:raise ValueError('output size')
         doc=parse_document(clear.decode('utf-8'))
@@ -56,8 +58,8 @@ def decode_field(value: str) -> str:
     except (ValueError,UnicodeError,TypeError) as e:
         raise CatalogError('Invalid authenticated HTTP Conexión field') from e
 
-def decode_catalog(data: bytes) -> dict:
-    doc=open_outer(data);cache={}
+def decode_catalog(data: bytes, password: bytes | None = None) -> dict:
+    doc=open_outer(data,password);cache={}
     for row in doc['Servers']:
         for key in GCM_FIELDS & row.keys():
             value=row[key]
@@ -66,7 +68,28 @@ def decode_catalog(data: bytes) -> dict:
             row[key]=cache[value]
     return doc
 
+def pack_catalog(data: bytes, password: str) -> bytes:
+    if not isinstance(data,bytes) or not data or len(data)>MAX_INPUT:raise CatalogError('Invalid catalog size')
+    if not isinstance(password,str) or not password or '\x00' in password or len(password.encode())>1024:raise CatalogError('Invalid catalog password')
+    result=json.dumps({'kind':'spdecode-http-conexion-config-v1',
+      'passwordBase64':base64.b64encode(password.encode()).decode(),
+      'catalogBase64':base64.b64encode(data).decode()},separators=(',',':')).encode()
+    if len(result)>MAX_INPUT:raise CatalogError('HTTP Conexión bundle too large')
+    return result
+
+def unpack_catalog(data: bytes):
+    if not isinstance(data,bytes) or not data or len(data)>MAX_INPUT:raise CatalogError('Invalid HTTP Conexión input size')
+    if not data.lstrip().startswith(b'{'):return data,None
+    doc=parse_document(data.decode('utf-8'))
+    if set(doc)!={'kind','passwordBase64','catalogBase64'} or doc['kind']!='spdecode-http-conexion-config-v1':raise CatalogError('Invalid HTTP Conexión bundle')
+    password=_base64(doc['passwordBase64']);raw=_base64(doc['catalogBase64'])
+    if not 1<=len(password)<=1024 or b'\0' in password:raise CatalogError('Invalid HTTP Conexión password')
+    password.decode('utf-8')
+    if not raw or len(raw)>MAX_INPUT:raise CatalogError('Invalid HTTP Conexión catalog size')
+    return raw,password
+
 def run(data: bytes) -> str:
-    result=render(decode_catalog(data))
+    data,password=unpack_catalog(data)
+    result=render(decode_catalog(data,password))
     if len(result)>MAX_OUTPUT:raise CatalogError('HTTP Conexión output exceeds worker limit')
     return result.decode('utf-8')

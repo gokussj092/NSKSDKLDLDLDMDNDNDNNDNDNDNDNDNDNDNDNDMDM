@@ -4,7 +4,7 @@
   "app_name": "HTTP Conexión",
   "version_name": "1.2.9",
   "version_code": 129,
-  "observed_at": "2026-11-04T05:38:17.925901+00:00",
+  "observed_at": "2026-11-04T19:32:43.523880+00:00",
   "source_category": "user_store_link_public_mirror",
   "authorization_note": "Continue authorized Cloud catalog integrations on feat/nuevas-integraciones. Legitimate original updater download and complete decoding; no Android, merge or deployment.",
   "status": "VERIFIED",
@@ -20,7 +20,10 @@
       "included_version": "1",
       "included_servers": 7,
       "jca_cli_worker_whole_document_equal": true,
-      "node_vps_transport": "PENDING"
+      "node_vps_transport": "PENDING",
+      "firebase_auto_refresh": "VERIFIED_REAL_PYTHON_AND_SYNTHETIC_NODE_TRANSPORT",
+      "config_cache_seconds": 3600,
+      "max_forced_refresh_retry": 1
     },
     {
       "kind": "files",
@@ -58,7 +61,7 @@
       "type": "remote_catalog_active",
       "bytes": 4311432,
       "sha256": "582549fb87e8303010dc332ef770002e2c0e2bd9cc52b0542ff89d4c96522323",
-      "source": "Firebase-selected fixed /new with original headers and nocache"
+      "source": "Live Firebase-selected approved raw GitHub URL; original headers and nocache"
     },
     {
       "type": "obsolete_default_reference",
@@ -121,7 +124,7 @@
     },
     {
       "path": "analysis/com.doriaxvpn.unlimited/129/tools/probe_node.mjs",
-      "sha256": "2d706c7f93ddcce078d174fa984656ee41a9256f9be28a87829b58edcbc5ed0c",
+      "sha256": "17b256b82ef3269a90aa15cb918b490341ffd740d06f45e7c05481efc048df05",
       "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
     },
     {
@@ -151,8 +154,28 @@
     },
     {
       "path": "analysis/com.doriaxvpn.unlimited/129/tools/verify.py",
-      "sha256": "3933cef79fa64530f14049796b061c41ba94f6aa6a2a6834f1c48c5f24beb8b2",
+      "sha256": "a09f3eb9f14c89076fd0866d20b03780bc5cf9c8ad10f41c32ece2ccda4da4e0",
       "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    },
+    {
+      "path": "analysis/com.doriaxvpn.unlimited/129/tools/refresh/extract_options.py",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7",
+      "sha256": "c1e5772079b7b6461abea3a7a8b6a6b553632626b7299c95a6d98c3e4fb433d8"
+    },
+    {
+      "path": "analysis/com.doriaxvpn.unlimited/129/tools/refresh/finalize.py",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7",
+      "sha256": "95f09c4cd8b11c5513a81776e82dd58111dfc782b35f7747ac5835c8113e281d"
+    },
+    {
+      "path": "analysis/com.doriaxvpn.unlimited/129/tools/refresh/run_checks.py",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7",
+      "sha256": "eada32337dce0af7f2a3dbaa19c62a40a2f721427d11bf4f596eefc14e3c94f5"
+    },
+    {
+      "path": "analysis/com.doriaxvpn.unlimited/129/tools/refresh/verify_auto.py",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7",
+      "sha256": "386b5e1eabd9ea13667730502181620cabfa4a1ca12aebc5aca681e59820aeb5"
     }
   ],
   "dependencies": [
@@ -918,8 +941,13 @@
     "contract": "cloud/web/lib/c3-gateway.mjs",
     "tests": [
       "tests/test_http_conexion.py",
-      "cloud/web/tests/http-conexion.test.mjs"
-    ]
+      "cloud/web/tests/http-conexion.test.mjs",
+      "tests/test_http_conexion_refresh.py",
+      "cloud/web/tests/http-conexion-firebase.test.mjs"
+    ],
+    "firebase_python": "decoders/Python/apps/HTTP_Conexion/firebase.py",
+    "firebase_node": "cloud/web/lib/http-conexion-firebase.mjs",
+    "retry_gateway": "cloud/web/lib/server-vpn-gateway.mjs"
   },
   "evidence_refs": [
     "ANALYSIS.md",
@@ -933,27 +961,38 @@
     "generated/signature.json",
     "generated/field-census.json",
     "generated/protected-fields.json",
-    "generated/updater-references.json"
+    "generated/updater-references.json",
+    "REFRESH_2026_11_04.md",
+    "generated/refresh-2026-11-04/auto-verification.json",
+    "generated/refresh-2026-11-04/checks.json",
+    "generated/refresh-2026-11-04/firebase-report.json",
+    "generated/refresh-2026-11-04/node-real.json",
+    "generated/refresh-2026-11-04/node-replay.json",
+    "generated/refresh-2026-11-04/options-report.json"
   ],
   "limitations": [
     "Mirror sample, official Play latest/signing equivalence unverified; certificate presence/fingerprints only.",
     "JADX outputs3/0/3/3 with22/0/11/3 errors; missing updater recovered as Dalvik data.",
-    "Firebase observation is template17 for one analytical MX/es-MX/API34 profile; URL/password pinned to that observation.",
     "Node direct transport denied here; real VPS test, human PR review and operator rollout pending.",
     "No Android changes/builds, merge, deployment, account/VPN connection or file/text/export tests.",
     "Outer CBC does not authenticate all metadata; defined GCM fields authenticate their values.",
-    "Transitive licenses/Phase7 autoexecution remain NEEDS_REVIEW; evidence CI validator not implemented."
+    "Transitive licenses/Phase7 autoexecution remain NEEDS_REVIEW; evidence CI validator not implemented.",
+    "Firebase parameters use the analytical MX/es-MX/API34 profile, not device attestation.",
+    "Real URL/password unchanged during current validation; rotation verified with independent JCA fictional vector and real isolated worker.",
+    "New domains require allowlist review. Source/GCM algorithm changes are outside parameter-only refresh.",
+    "Temporary installation deletion is best effort under network failure; all observed research deletions returned200."
   ],
   "network_requirements": [
-    "HTTPS APK acquisition; original Firebase FIS/Remote Config discovery with public client options; pinned raw GitHub catalog GET."
+    "HTTPS FIS creation, Remote Config client fetch and temporary installation DELETE on fixed Google endpoints.",
+    "HTTPS approved raw GitHub updater, no redirects, public DNS and pinned IPv4/TLS in Node broker."
   ],
   "manual_steps": [
     "Review PR, test Node transport in VPS, maintain monotonic deployed catalog version before rollout."
   ],
   "unresolved_questions": [
-    "Real Node transport in VPS; any future Firebase parameter change requires reviewed revision."
+    "Real Node transport in VPS and deployment remain pending; evidence CI/automatic Phase7 approval remain pending."
   ],
-  "observed_local_date": "2026-11-03",
+  "observed_local_date": "2026-11-04",
   "source_commit": "61ad524ee44673d69b36253223dbc9d984663137",
   "branch": "feat/nuevas-integraciones",
   "apk_metadata": {
@@ -994,12 +1033,15 @@
   },
   "runtime_configuration": {
     "external_secrets": [],
-    "format_constants": "Inline CATALOG_PASSWORD and FIELD_KEY in HTTP_Conexion/codec.py; not HTTP authorization.",
-    "password_sha256": "7863407ed8a091eeb5dcc2f7c05a892d088fa7df0eb2650c770a03fc573a045b",
+    "public_client_options": "Inline public build129 Android Firebase options, extracted from exact APK.",
+    "format_constants": "FIELD_KEY and legacy offline password in codec.py; live outer password read from Firebase, passed per operation.",
     "field_key_sha256": "45ab405fcdd0a0f309b26a10752f88af8a8e616fa0ba31837b323f15c0237f1f",
-    "request_authentication": "none for catalog GET",
-    "discovery_authentication": "Real FIS-issued token; temporary analytical installation deleted200; tokens not retained in Git.",
-    "source_pinning": "Observed Remote Config template17 /new; changes require reviewed update, not arbitrary runtime routing."
+    "last_observed_outer_password_sha256": "7863407ed8a091eeb5dcc2f7c05a892d088fa7df0eb2650c770a03fc573a045b",
+    "request_authentication": "No credentials for catalog GET. FIS-issued credentials restricted to fixed Google endpoints, held only in memory.",
+    "config_resolution": "ockla_url and gretta_pass fetched together; 3600s per-process cache, 60s failure cooldown, one forced refresh on download/decode failure.",
+    "source_policy": "Canonical HTTPS raw.githubusercontent.com only, variable repository/path; no credentials/query/fragment/redirect/client-supplied URL.",
+    "worker_contract": "spdecode-http-conexion-config-v1: catalogBase64 and passwordBase64; worker remains offline; total8MiB limit.",
+    "installation_lifecycle": "Temporary analytical FIS installation, best-effort DELETE; observed200; no minted tokens persisted by runtime."
   },
   "shared_tooling": [
     {
@@ -1046,5 +1088,6 @@
       "path": "tests/fixtures/wire.json",
       "sha256": "d0d94bef530b8f75eba5b3efdf1dc37d7172d4b976fee210167687e15b340172"
     }
-  ]
+  ],
+  "latest_update_source_commit": "af4955fb87a27a3feb1b43469d9356f32afcccab"
 }

@@ -8,6 +8,7 @@ import {mkdtemp,rm} from "node:fs/promises";
 import {tmpdir} from "node:os";
 import {join} from "node:path";
 import {HTTP_CONEXION_SOURCE,httpConexionRequestUrl} from "../lib/http-conexion-protocol.mjs";
+import {httpConexionResolver} from "../lib/http-conexion-firebase.mjs";
 import {providerIds,providerEnabled,downloadVpnCatalog} from "../lib/server-vpn-provider.mjs";
 import {catalog,iconFor,CATALOG_VERSION,activeCatalogVersion} from "../lib/server-vpn-catalog.mjs";
 import {updateProvider,providerAllowed,PUBLIC_PROVIDER_IDS} from "../lib/c12-provider-controls.mjs";
@@ -17,6 +18,7 @@ const expected=JSON.parse(fs.readFileSync(new URL("../../../analysis/com.doriaxv
 function enable(t){
  const old=process.env.CLOUD_SERVER_VPN_ENABLED;process.env.CLOUD_SERVER_VPN_ENABLED="true";
  t.after(()=>{if(old===undefined)delete process.env.CLOUD_SERVER_VPN_ENABLED;else process.env.CLOUD_SERVER_VPN_ENABLED=old;});
+ t.mock.method(httpConexionResolver,"get",async()=>({source,password:"fictional-resolved-password"}));
 }
 function network(t,{status=200,location,data=Buffer.from("synthetic ciphertext"),check=()=>{}}={}){
  t.mock.method(dns,"lookup",async()=>[{address:"93.184.216.34",family:4}]);
@@ -40,7 +42,10 @@ test("HTTP Conexión sends the exact original GET agent/cache headers over pinne
   assert.equal(o.headers.Pragma,"no-cache");assert.equal(o.headers.Expires,"0");
   assert.equal(o.headers["Accept-Encoding"],"identity");assert.equal(o.headers.Authorization,undefined);
  }});
- assert.equal((await downloadVpnCatalog("http-conexion")).toString(),"synthetic ciphertext");
+ const envelope=JSON.parse((await downloadVpnCatalog("http-conexion")).toString());
+ assert.equal(envelope.kind,"spdecode-http-conexion-config-v1");
+ assert.equal(Buffer.from(envelope.catalogBase64,"base64").toString(),"synthetic ciphertext");
+ assert.equal(Buffer.from(envelope.passwordBase64,"base64").toString(),"fictional-resolved-password");
  await assert.rejects(()=>downloadVpnCatalog("http-conexion","https://example.org/"),{code:"UNSUPPORTED_FORMAT"});assert.equal(calls,1);
 });
 test("HTTP Conexión rejects private DNS and every redirect",async t=>{
@@ -56,7 +61,7 @@ test("HTTP Conexión never hides a current-source 404 with the obsolete default 
 test("HTTP Conexión original large PNG and availability retain all other public methods",()=>{
  assert(providerIds().includes("http-conexion"));assert(PUBLIC_PROVIDER_IDS.includes("http-conexion"));
  assert(providerEnabled("http-conexion",{CLOUD_SERVER_VPN_ENABLED:"true"}));
- assert.equal(CATALOG_VERSION,69);assert.equal(activeCatalogVersion({CLOUD_SERVER_VPN_CATALOG_VERSION:"215686715"}),215686715);
+ assert.equal(CATALOG_VERSION,70);assert.equal(activeCatalogVersion({CLOUD_SERVER_VPN_CATALOG_VERSION:"215686715"}),215686715);
  const doc=catalog(),app=doc.apps.find(x=>x.id==="http-conexion");assert.equal(doc.apps.length,65);assert.equal(doc.formats.length,256);
  assert.equal(app.name,"HTTP Conexión");assert.equal(app.iconSha256,"5b0e24bddf371bd0256c564c221c0fe87b8dc1b23340e51de6e224386f83b41a");
  assert.equal(iconFor(app.id).bytes.length,449874);assert(!JSON.stringify(app).includes("https://"));

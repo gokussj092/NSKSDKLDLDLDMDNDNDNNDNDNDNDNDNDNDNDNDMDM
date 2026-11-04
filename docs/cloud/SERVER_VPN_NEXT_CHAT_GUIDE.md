@@ -1,3 +1,13 @@
+# HTTP Conexión129 — actualización automática Firebase integrada
+
+2026-11-04. El CLI y el broker Cloud obtienen ockla_url/gretta_pass juntos. Caché1h por proceso, singleflight Node y un reintento forzado al fallar descarga/descifrado. Tokens FIS solo en memoria y DELETE temporal best effort (observado200). Opciones públicas del APK inline, sin tokens/configuración manual ni Admin SDK.
+
+URL dinámica únicamente HTTPS raw.githubusercontent.com; otros dominios requieren allowlist. Token Google nunca al updater. Worker offline recibe sobre privado con bytes y contraseña por operación, sin modificar globals. No hay fallback al /Update/asset/contraseña obsoletos.
+
+Real: Firebase200/200/DELETE200, catálogo107/244/5325; JSON entero igual a JCA/CLI/worker. Cambio de contraseña probado con JCA ficticio/worker real. 27 Python +172 Node pasan. Node real aquí no completa transporte; replay simulado con pareja/bytes/worker reales pasa. Probar Node en VPS antes del rollout. Piso70 /65 fichas /256 formatos; mantener versión efectiva monotónica y switches. Sin Android, build, merge ni deploy.
+
+[Expediente vigente](../../analysis/com.doriaxvpn.unlimited/129/REFRESH_2026_11_04.md). El historial de abajo se conserva.
+
 # Genis VPN 2.2.6/build76 — catálogo Cloud verificado
 
 2026-11-04. Paquete com.doriaxvip.tunnel; muestra APKPure manifest/hash verificados. Remoto1114:84 servidores,658 campos CBC no vacíos y241 vacíos, JSON íntegro igual a JCA/CLI/worker. Fuente fija original GitHub, GET sin autenticación; constantes de formato inline. Icono launcher WEBP original convertido a PNG con píxeles iguales.
@@ -37,7 +47,7 @@ Constantes de formato inline en HTTP_Conexion/codec.py, sin .env nuevo. PNG
 original618x613/449874bytes, proveedor/switch/gateway y piso67/63 fichas,
 formatos256.10 Python/147 Node pasan. Replay con bytes reales/HTTP simulado
 pasa; Node real aquí REMOTE_NETWORK_DENIED, VPS real pendiente. Sin Android,
-merge o despliegue. Si cambia Firebase URL/password, requiere revisión manual.
+merge o despliegue. La pareja URL/password ahora se renueva automáticamente; ver la actualización vigente al inicio.
 [Expediente, scripts y negativos](../../analysis/com.doriaxvpn.unlimited/129/ANALYSIS.md).
 
 ---

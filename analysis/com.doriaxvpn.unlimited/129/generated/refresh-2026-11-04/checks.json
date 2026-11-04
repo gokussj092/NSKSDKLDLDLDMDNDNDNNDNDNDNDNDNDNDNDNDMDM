@@ -1,0 +1,109 @@
+{
+  "python_http": 18,
+  "python_genis_regression": 9,
+  "python_total": 27,
+  "node_total": 172,
+  "all_passed": true,
+  "commands": [
+    {
+      "runtime": "python-http",
+      "exit_code": 0,
+      "cwd": ".",
+      "arguments": [
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_http_conexion*.py",
+        "-v"
+      ],
+      "log": "python-http.log"
+    },
+    {
+      "runtime": "python-genis",
+      "exit_code": 0,
+      "cwd": ".",
+      "arguments": [
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "analysis/com.doriaxvip.tunnel/76/tests",
+        "-v"
+      ],
+      "log": "python-genis.log"
+    },
+    {
+      "runtime": "node",
+      "exit_code": 0,
+      "cwd": "cloud/web",
+      "arguments": [
+        "--test",
+        "tests/http-conexion-firebase.test.mjs",
+        "tests/genis-vpn.test.mjs",
+        "tests/speicers-turbo-vpn.test.mjs",
+        "tests/http-conexion.test.mjs",
+        "tests/namo-vpn.test.mjs",
+        "tests/fnf-tunnel-bd.test.mjs",
+        "tests/alsaher-vip.test.mjs",
+        "tests/halcon-r-net.test.mjs",
+        "tests/server-vpn-provider.test.mjs",
+        "tests/server-vpn-worker-contract.test.mjs",
+        "tests/alfaisal-tunnel-plus.test.mjs",
+        "tests/server-vpn-catalog.test.mjs",
+        "tests/zig-tunnel.test.mjs",
+        "tests/mm-tunnel.test.mjs",
+        "tests/text-format-catalog.test.mjs",
+        "tests/vip-snipher-pro.test.mjs",
+        "tests/server-vpn-any-speicers.test.mjs",
+        "tests/enaa-tunnel.test.mjs",
+        "tests/ultra-tunnel.test.mjs",
+        "tests/jyfast-vpn-ultra.test.mjs"
+      ],
+      "log": "node.log"
+    }
+  ],
+  "real_firebase_download_jca_cli_worker": {
+    "requests": [
+      {
+        "role": "installations",
+        "http_status": 200
+      },
+      {
+        "role": "remote_config",
+        "http_status": 200
+      },
+      {
+        "role": "cleanup",
+        "http_status": 200
+      }
+    ],
+    "source_host": "raw.githubusercontent.com",
+    "source_sha256": "2ed04912d30667af659f8f521c5a4547d2a61b7a7fd81f99cf2bc264e258a4dc",
+    "password_sha256": "7863407ed8a091eeb5dcc2f7c05a892d088fa7df0eb2650c770a03fc573a045b",
+    "remote_bytes": 4311432,
+    "remote_sha256": "582549fb87e8303010dc332ef770002e2c0e2bd9cc52b0542ff89d4c96522323",
+    "bundle_bytes": 5748670,
+    "version": "107",
+    "servers": 244,
+    "gcm_fields": 5325,
+    "unique_gcm_fields": 5299,
+    "whole_jca_equal": true,
+    "whole_cli_equal": true,
+    "whole_worker_equal": true,
+    "prior_real_auto_cli_equal": true,
+    "cache_seconds": 3600,
+    "cleanup_http": 200
+  },
+  "dependency_versions_match_lock": true,
+  "new_packages_installed": false,
+  "catalog_floor": 70,
+  "cards": 65,
+  "formats": 256,
+  "android_changes": false,
+  "android_build": false,
+  "merge": false,
+  "deploy": false
+}
