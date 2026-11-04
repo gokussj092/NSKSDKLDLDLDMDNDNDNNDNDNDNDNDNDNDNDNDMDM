@@ -19,3 +19,5 @@ histórica de com.hex.custom.jotchuast 10.6.1 no identifica esta APK nueva.
 
 No se modificó ni habilitó ningún método, catálogo o cliente. La continuación
 requiere que el propietario adjunte la APK o aporte una descarga accesible.
+
+Actualización: el propietario aportó la URL directa completa. También devolvió el mismo HTML de 195 bytes con curl desde este ejecutor. Ver generated/direct.json y RESULTS.md; continúa pendiente de recibir la APK.

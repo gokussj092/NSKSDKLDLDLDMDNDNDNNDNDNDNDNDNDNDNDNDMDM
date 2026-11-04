@@ -36,3 +36,13 @@ para sustituir el enlace solicitado. Primero se necesita la APK exacta.
 ## Reintento del mismo día
 
 La receta inline utilizada queda conservada en tools/retry_mediafire.py. Se puede repetir desde la raíz con `python analysis/_intake/mediafire-ypaiywpzrvslef1/tools/retry_mediafire.py`; stdout JSON, HTML y headers en private/hexcustom/retry-20261104/. La copia física del script no se ejecutó de nuevo para evitar repetir una petición idéntica. Resultado real en generated/retry.json; evidencia adicional y límites en RETRY_2026_11_04.md. Mismas versiones Python/curl y sin nuevas dependencias.
+
+## Descarga directa realmente ejecutada
+
+Guardar la URL directa aportada en `private/hexcustom/direct-20261104/url.txt` (permisos 600; no publicar). Desde la raíz se ejecutó:
+
+```sh
+python analysis/_intake/mediafire-ypaiywpzrvslef1/tools/download_direct.py private/hexcustom/direct-20261104/url.txt private/hexcustom/direct-20261104 analysis/_intake/mediafire-ypaiywpzrvslef1/generated/direct.json
+```
+
+Python/curl de dependencies.lock.json; sin nuevas dependencias. Se mantiene proxy y TLS; no se ejecutó APK. Curl recibió HTML, no se disparó la validación ZIP positiva. El script comprueba manifest/CRC únicamente si llegan bytes ZIP completos; esa rama no está verificada con esta muestra. Resultado real en generated/direct.json; fuente temporal privada.

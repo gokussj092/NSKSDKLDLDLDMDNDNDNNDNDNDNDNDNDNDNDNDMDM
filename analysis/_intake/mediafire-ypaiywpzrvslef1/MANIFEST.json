@@ -48,6 +48,12 @@
       "sha256": "65287a92a78a23d563e6b81a96503fe34e75de9258524c4d11631e0a9fff877d",
       "version": "1",
       "executed_mode": "inline Python equivalent; physical copy preserved, not rerun"
+    },
+    {
+      "path": "analysis/_intake/mediafire-ypaiywpzrvslef1/tools/download_direct.py",
+      "sha256": "dc01a311db53400c67b0a3aa53a6766f5bb9654177bdab75c85c1caee569f4eb",
+      "version": "1",
+      "executed_mode": "actual curl GET using owner-provided direct URL from private file"
     }
   ],
   "dependencies": [
@@ -80,19 +86,21 @@
     "DEPENDENCIES.md",
     "generated/access.json",
     "RETRY_2026_11_04.md",
-    "generated/retry.json"
+    "generated/retry.json",
+    "generated/direct.json"
   ],
   "limitations": [
     "No APK obtained; package/build/signature/method cannot be established.",
     "Failure observed from this executor; owner screenshot shows download page available in their session; cause unknown.",
-    "No runtime or Android changes, activation, merge or deploy."
+    "No runtime or Android changes, activation, merge or deploy.",
+    "Direct URL request returned HTTP 200 text/html, 195 bytes; APK bytes not acquired."
   ],
   "network_requirements": [
     "Reachable public MediaFire download or owner-provided APK attachment."
   ],
   "manual_steps": [
-    "Receive the full direct download URL; hostname alone is insufficient.",
-    "Receive the requested APK and create a canonical package/build dossier after verifying its manifest."
+    "Receive the APK attachment: the complete direct URL was tried and returned the same HTML error from this executor.",
+    "After receipt, verify manifest/hash and create the canonical package/build dossier."
   ],
   "unresolved_questions": [
     "Exact APK identity and method."
