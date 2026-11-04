@@ -1,0 +1,38 @@
+[
+  {
+    "source": "remote.enc",
+    "bytes": 4311432,
+    "sha256": "582549fb87e8303010dc332ef770002e2c0e2bd9cc52b0542ff89d4c96522323",
+    "version": "107",
+    "servers": 244,
+    "gcm_fields": 5325,
+    "unique_gcm_fields": 5299,
+    "whole_jca_equal": true,
+    "whole_cli_equal": true,
+    "whole_worker_equal": true
+  },
+  {
+    "source": "config.json",
+    "bytes": 71568,
+    "sha256": "af1de9ead5d4cde9601d83b1f7663163ad52201c3d18def3ad540cd0957ab230",
+    "version": "1",
+    "servers": 7,
+    "gcm_fields": 84,
+    "unique_gcm_fields": 84,
+    "whole_jca_equal": true,
+    "whole_cli_equal": true,
+    "whole_worker_equal": true
+  },
+  {
+    "source": "downloaded.enc",
+    "bytes": 4311432,
+    "sha256": "582549fb87e8303010dc332ef770002e2c0e2bd9cc52b0542ff89d4c96522323",
+    "version": "107",
+    "servers": 244,
+    "gcm_fields": 5325,
+    "unique_gcm_fields": 5299,
+    "whole_jca_equal": true,
+    "whole_cli_equal": true,
+    "whole_worker_equal": true
+  }
+]

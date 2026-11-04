@@ -1,3 +1,4 @@
+import {HTTP_CONEXION_SOURCE,HTTP_CONEXION_AGENT,HTTP_CONEXION_HEADERS,httpConexionRequestUrl} from "./http-conexion-protocol.mjs";
 /**
  * C8 public VPN catalog broker. Fixed approved providers ONLY.
  * DNS is revalidated and every connection is bound to one vetted IPv4.
@@ -48,6 +49,7 @@ const JYFAST_SOURCES=Object.freeze({
 });
 const PAIRED_SOURCES=Object.freeze({"jyfast-vpn-ultra":JYFAST_SOURCES,"abowaged-vpn":ABOWAGED_SOURCES,"turbomx-vpn":TURBOMX_SOURCES,"superflash-vpn":SUPERFLASH_SOURCES,"onspace-vpn":ONSPACE_SOURCES,"http-socketclay":SOCKETCLAY_SOURCES,"http-wakko":WAKKO_SOURCES,"v2ray-tunnel-plus":V2PLUS_SOURCES});
 const PROVIDERS = Object.freeze({
+  "http-conexion": {url:HTTP_CONEXION_SOURCE,agent:HTTP_CONEXION_AGENT,headers:HTTP_CONEXION_HEADERS},
   "namo-vpn": {url:"https://raw.githubusercontent.com/Anurak2534/ohmvpn/refs/heads/main/newnamo.json",agent:"okhttp/5.3.2"},
   "fnf-tunnel-bd": {url:"https://raw.githubusercontent.com/pipoyrichards/FNFTUNNELBD/refs/heads/main/FEB52025",agent:"FNF TUNNEL BD/PrinceBuild35"},
   "alsaher-vip": {url:"https://raw.githubusercontent.com/Skytells0/Alsaher/main/jihadvip.json",agent:"okhttp/4.12.0"},
@@ -324,7 +326,7 @@ export async function downloadVpnCatalog(id,source=id==="jyfast-vpn-ultra"?"free
   if(id!=="mkk-hyper" && !Object.hasOwn(PAIRED_SOURCES,id) && source!=="servers")fail("UNSUPPORTED_FORMAT");
   if(id==="mkk-hyper" && !Object.hasOwn(MKK_SOURCES,source))fail("UNSUPPORTED_FORMAT");
   if(Object.hasOwn(PAIRED_SOURCES,id) && !Object.hasOwn(PAIRED_SOURCES[id],source))fail("UNSUPPORTED_FORMAT");
-  const initial=new URL(id==="mkk-hyper"?MKK_SOURCES[source]:
+  const initial=new URL(id==="http-conexion"?httpConexionRequestUrl():id==="mkk-hyper"?MKK_SOURCES[source]:
     Object.hasOwn(PAIRED_SOURCES,id)?PAIRED_SOURCES[id][source]:provider.url);
   const jyfast=id==="jyfast-vpn-ultra";
   if((jyfast ? (initial.protocol!=="http:"||initial.port!=="85"||initial.hostname!=="dev.jenrri.shop")
@@ -360,7 +362,7 @@ export async function downloadVpnCatalog(id,source=id==="jyfast-vpn-ultra"?"free
         continue;
       }
       if(answer.redirect!==undefined){
-        if(["namo-vpn","fnf-tunnel-bd","alsaher-vip","ha-tunnel-plus","ultra-tunnel","mm-tunnel","zig-tunnel","enaa-tunnel","izph-vpn-pro","vip-snipher-pro","netcol-vpn","wolf-custom-vpn","tunneldoom-vpn","mtm-tunnel-lite","mnr-tunnel-plus","bd-net-vpn","aura-net-vpn","apna-vpn","any-vpn","speicers-pro-vpn","7net-vpn","xhypher-tunnel-pro","focus-vpn-cloud","freedom-vpn","http-internet-infinito","megatunnel","mx-tunnel-pro","rjc-tunnel-pro","rmp-tunnel-pro","http-jireh"].includes(id)||Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
+        if(["http-conexion","namo-vpn","fnf-tunnel-bd","alsaher-vip","ha-tunnel-plus","ultra-tunnel","mm-tunnel","zig-tunnel","enaa-tunnel","izph-vpn-pro","vip-snipher-pro","netcol-vpn","wolf-custom-vpn","tunneldoom-vpn","mtm-tunnel-lite","mnr-tunnel-plus","bd-net-vpn","aura-net-vpn","apna-vpn","any-vpn","speicers-pro-vpn","7net-vpn","xhypher-tunnel-pro","focus-vpn-cloud","freedom-vpn","http-internet-infinito","megatunnel","mx-tunnel-pro","rjc-tunnel-pro","rmp-tunnel-pro","http-jireh"].includes(id)||Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
         const next=answer.redirect;
         if(typeof next!=="string"||next.length>2048)fail("REMOTE_NETWORK_DENIED");
         target=new URL(next,dest).href;

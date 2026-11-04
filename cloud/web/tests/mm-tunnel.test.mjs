@@ -43,7 +43,7 @@ test("MM refuses same-origin and foreign redirects",async t=>{
 
 test("MM original PNG, mmt metadata and card follow availability",()=>{
   const doc=catalog({availability:{"mm-tunnel":true}});
-  assert.equal(CATALOG_VERSION,66);assert.equal(doc.apps.length,62);
+  assert.equal(CATALOG_VERSION,67);assert.equal(doc.apps.length,63);
   const card=doc.apps.find(x=>x.id==="mm-tunnel");
   assert.equal(card.name,"MM Tunnel");assert.equal(card.decodeEnabled,true);
   assert.equal(card.iconSha256,"be2bb0a69da20838aaa46c388ab898a33b84cab59ccdad7413b76eac21b7b211");

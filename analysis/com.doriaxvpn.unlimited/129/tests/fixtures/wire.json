@@ -1,0 +1,28 @@
+{
+  "Version": "test129",
+  "ReleaseNotes": "Fictional prueba ñ ไทย 🦊",
+  "Servers": [
+    {
+      "Name": "Fictional HTTP profile",
+      "FLAG": "mx",
+      "ServerIP": "iE0SoqhMGa5jw5tPd1IZOUlQG1rYdJZS7SMA7Na5nAV9VUqryRt1FXpAMbgk5RA2WA==\n",
+      "ServerPort": "443",
+      "ServerUser": "uFydPCSjnyLNnikkkKZ5LeyUrzgOq6PPyKDFFuZylwae9yId9kXwq1AhASDW\n",
+      "ServerPass": "CAaTy4h0fYcKpVLL4laz3UFU6JFIG8PnX+VM3LbJTEXqsavPuwHwY8pBCQKH04aG5A==\n",
+      "Payload": "P/S5zSACcZLbGlWorZcWjxTLe+BjunTF/H8oQtWi9Y+zIUizCL6+GNbVXyLiqDiAGe6s9ygZjaOS\nMswQGNbm6jcaqC7hi/u2N8G7YKDJkE1D+oRnsZAibp+tqx4RPfkEDA==\n",
+      "SNI": "6gWFlls2hHLKTCZfAZ94u7zBpOKmWcJvRt6KZOgEQgnAM2eeGVFucS7hiyer1JmpT6o7j04=\n",
+      "UseTcp": "LpQwUHuS3uEeGgO8h/9lQyuAPHM6x05YnYUcp47kY0XN\n",
+      "udpObfs": "",
+      "v2rayFlow": "hIsR3kRfPwrx1XIQBLfKNcy0jKDdLiXPit1fgfkEsEtNsrBxZw03tP1W8JmbIgwJPELKsIE=\n",
+      "zivpnPassword": "WgLpdLC449Dx+1rhq0MHIa+63cn2kZ745YYqWlLteYo+RqX77WIGa7WnlAmMpTojQIYp+F8ADd8k\nZTclIpozUW1xf+0z/IzLhcDRZWw=\n",
+      "isSSL": true,
+      "UnknownData": {
+        "preserve": [
+          1,
+          null,
+          false
+        ]
+      }
+    }
+  ]
+}

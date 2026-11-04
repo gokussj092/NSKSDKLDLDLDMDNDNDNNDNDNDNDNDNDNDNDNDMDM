@@ -34,3 +34,5 @@ El archivo histórico [SOCKSIP_VER8_VER7_VER6_STUDY.md](SOCKSIP_VER8_VER7_VER6_S
 - [dastan.prince.myvpnksa / 35 — FNF TUNNEL BD](dastan.prince.myvpnksa/README.md): VERIFIED_REAL; remoto82.0/28 servidores/1193 payloads, documento entero igual a Java/CLI/worker. Solo Cloud; Node/VPS real pendiente.
 
 - [com.appxrayservice.namovpn / 35 — NAMO VPN](com.appxrayservice.namovpn/README.md): VERIFIED_REAL; remoto22.3/14 servidores/13 redes, JSON entero igual a Java/CLI/worker. Constante de formato incluida en código; Node/VPS real pendiente.
+
+- [com.doriaxvpn.unlimited / 129 — HTTP Conexión](com.doriaxvpn.unlimited/README.md): VERIFIED_REAL; fuente Firebase17 /new, catálogo107/244 servidores/5325 campos GCM, entero igual a JCA/CLI/worker. Solo Cloud, Node/VPS pendiente.

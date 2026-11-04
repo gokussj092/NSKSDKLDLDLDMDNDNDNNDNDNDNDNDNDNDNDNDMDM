@@ -1,3 +1,21 @@
+# HTTP Conexión1.2.9/build129 — catálogo vigente comprobado
+
+com.doriaxvpn.unlimited, misma rama feat/nuevas-integraciones/PR110. Firebase
+real FIS200/RemoteConfig200/template17 selecciona /new, diferente del default
+/Update57/251. Instalación analítica eliminada200; no atestación fabricada.
+GET original agente HTTP-Conexion-VPN/3.0, headers de caché y nocache dinámico:
+HTTP200/4311432bytes, catálogo107/244 servidores/5325 campos GCM(5299 únicos).
+JSON entero igual a JCA/CLI/worker; asset1/7/84 separado, sin fallback viejo.
+
+Constantes de formato inline en HTTP_Conexion/codec.py, sin .env nuevo. PNG
+original618x613/449874bytes, proveedor/switch/gateway y piso67/63 fichas,
+formatos256.10 Python/147 Node pasan. Replay con bytes reales/HTTP simulado
+pasa; Node real aquí REMOTE_NETWORK_DENIED, VPS real pendiente. Sin Android,
+merge o despliegue. Si cambia Firebase URL/password, requiere revisión manual.
+[Expediente, scripts y negativos](../../analysis/com.doriaxvpn.unlimited/129/ANALYSIS.md).
+
+---
+
 # NAMO VPN3.5-namo/build35 — nueva rama de integraciones
 
 Por petición del propietario, rama `feat/nuevas-integraciones` desde main45db1d4.

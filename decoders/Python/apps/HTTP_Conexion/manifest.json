@@ -1,0 +1,14 @@
+{
+  "id": "http-conexion",
+  "name": "HTTP Conexión",
+  "packageName": "com.doriaxvpn.unlimited",
+  "versionName": "1.2.9",
+  "versionCode": 129,
+  "engine": "python",
+  "methods": ["catalog"],
+  "extensions": [],
+  "runtimeSecrets": [],
+  "formatConstants": "Catalog password and GCM field key are included in codec.py; not HTTP authorization.",
+  "sourceDiscovery": "Observed Firebase Remote Config template17, pinned original /new updater; no arbitrary runtime URL.",
+  "evidence": "analysis/com.doriaxvpn.unlimited/129/MANIFEST.json"
+}
