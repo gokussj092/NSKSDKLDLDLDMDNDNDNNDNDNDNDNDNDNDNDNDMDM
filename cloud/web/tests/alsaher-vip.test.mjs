@@ -59,9 +59,9 @@ test("ALSAHER rejects private DNS and all redirects",async t=>{
 test("ALSAHER original PNG and public directory preserve metadata-only availability",t=>{
  enabled(t);const png=icons(t);
  assert(providerIds().includes("alsaher-vip"));assert(PUBLIC_PROVIDER_IDS.includes("alsaher-vip"));
- assert.equal(CATALOG_VERSION,71);assert.equal(activeCatalogVersion({CLOUD_SERVER_VPN_CATALOG_VERSION:"215686715"}),215686715);
+ assert.equal(CATALOG_VERSION,72);assert.equal(activeCatalogVersion({CLOUD_SERVER_VPN_CATALOG_VERSION:"215686715"}),215686715);
  const doc=catalog(),app=doc.apps.find(x=>x.id==="alsaher-vip");
- assert.equal(doc.apps.length,65);assert.equal(app.name,"ALSAHER VIP");assert.equal(app.decodeEnabled,true);
+ assert.equal(doc.apps.length,66);assert.equal(app.name,"ALSAHER VIP");assert.equal(app.decodeEnabled,true);
  assert.equal(app.iconSha256,"54f97101174f2fa5d53947ede0e628ea19caa87f7fd664652ff63f69aa325333");
  assert.equal(iconFor(app.id).bytes.length,205869);assert.equal(png.length,205869);
  assert(!JSON.stringify(app).includes("https://"));assert.equal(doc.formats.length,256);

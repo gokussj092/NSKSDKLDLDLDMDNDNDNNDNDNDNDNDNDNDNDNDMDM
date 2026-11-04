@@ -215,6 +215,19 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
        typeof decoded.rawText!=="string" || !decoded.rawText.length ||
        Buffer.byteLength(decoded.rawText,"utf8")>(isMkk?32*1024*1024:4*1024*1024))
       throw Error("INVALID_WORKER_RESULT");
+    if(kind==="server-vpn" && payload?.providerId==="catnet-vpn"){
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      if(decoded.kind!=="vpn_catalog"||decoded.providerId!==payload.providerId||!isRecord(parsed)||
+         !isDeepStrictEqual(parsed,decoded.structuredJson)||parsed.success!==true||
+         !Array.isArray(parsed.servers)||!parsed.servers.length||
+         parsed.servers.some(row=>!isRecord(row)||!Number.isSafeInteger(row.id)||row.id<=0||
+           ["servername","ip"].some(k=>typeof row[k]!=="string"||!row[k]))||
+         (Object.hasOwn(parsed,"message")&&typeof parsed.message!=="string")||
+         (Object.hasOwn(parsed,"has_defaults")&&typeof parsed.has_defaults!=="boolean")||
+         ["def_user","def_pass_plain","back_user","back_pass_plain"].some(k=>Object.hasOwn(parsed,k)&&typeof parsed[k]!=="string"))
+        throw Error("INVALID_WORKER_RESULT");
+    }
     if(kind==="server-vpn" && payload?.providerId==="genis-vpn"){
       let parsed;
       try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}

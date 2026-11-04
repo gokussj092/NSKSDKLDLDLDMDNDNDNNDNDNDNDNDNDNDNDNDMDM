@@ -1,5 +1,6 @@
 import {HTTP_CONEXION_AGENT,HTTP_CONEXION_HEADERS,httpConexionRequestUrl} from "./http-conexion-protocol.mjs";
 import {HTTP_CONEXION_FIREBASE_OPTIONS,httpConexionResolver,packHttpConexionCatalog} from "./http-conexion-firebase.mjs";
+import {CATNET_SOURCE,CATNET_PREFLIGHT,CATNET_AGENT,catnetHeaders,catnetPreflight} from "./catnet-protocol.mjs";
 /**
  * C8 public VPN catalog broker. Fixed approved providers ONLY.
  * DNS is revalidated and every connection is bound to one vetted IPv4.
@@ -54,6 +55,7 @@ const JYFAST_SOURCES=Object.freeze({
 });
 const PAIRED_SOURCES=Object.freeze({"speicers-turbo-vpn":SPEICERS_TURBO_SOURCES,"jyfast-vpn-ultra":JYFAST_SOURCES,"abowaged-vpn":ABOWAGED_SOURCES,"turbomx-vpn":TURBOMX_SOURCES,"superflash-vpn":SUPERFLASH_SOURCES,"onspace-vpn":ONSPACE_SOURCES,"http-socketclay":SOCKETCLAY_SOURCES,"http-wakko":WAKKO_SOURCES,"v2ray-tunnel-plus":V2PLUS_SOURCES});
 const PROVIDERS = Object.freeze({
+  "catnet-vpn": {url:CATNET_SOURCE,agent:CATNET_AGENT},
   // Build76 updater sets no UA; analytical Android runtime profile.
   "genis-vpn": {url:"https://raw.githubusercontent.com/nemygoku/genisvpn/refs/heads/main/genis",agent:"Dalvik/2.1.0 (Linux; U; Android 14)"},
   // No app-specific UA; analytical Android runtime profile.
@@ -344,10 +346,35 @@ async function downloadHttpConexion(provider,{forceRefresh=false}={}){
   catch(error){fail(error.message==="HTTP_CONEXION_BUNDLE_TOO_LARGE"?"REMOTE_TOO_LARGE":"REMOTE_RESPONSE_INVALID");}
 }
 
+async function downloadCatnet(provider){
+  const headers=catnetHeaders(),deadline=Date.now()+DEADLINE_MS;
+  async function get(url,maxBytes){
+    const addresses=await vettedIpv4(new URL(url).hostname);
+    const remaining=deadline-Date.now();
+    if(remaining<=0)fail("REMOTE_PROVIDER_UNAVAILABLE");
+    let answer;
+    try{answer=await pinnedRequest(url,addresses[0],provider.agent,Math.min(CONNECT_MS,remaining),headers,{maxBytes});}
+    catch(error){if(error instanceof VpnProviderError)throw error;fail("REMOTE_PROVIDER_UNAVAILABLE");}
+    if(Object.hasOwn(answer,"redirect"))fail("REMOTE_NETWORK_DENIED");
+    if(!Buffer.isBuffer(answer.data)||!answer.data.length||
+       answer.data.subarray(0,64).toString("utf8").trimStart().startsWith("<"))fail("REMOTE_RESPONSE_INVALID");
+    return answer.data;
+  }
+  const preflight=await get(CATNET_PREFLIGHT,65536);
+  try{catnetPreflight(preflight);}catch(error){
+    fail(["REMOTE_NOT_CONFIGURED","REMOTE_PROVIDER_UNAVAILABLE"].includes(error.message)?error.message:"REMOTE_RESPONSE_INVALID");
+  }
+  return get(CATNET_SOURCE,MAX_BYTES);
+}
+
 export async function downloadVpnCatalog(id,source=id==="jyfast-vpn-ultra"?"free":id==="v2ray-tunnel-plus"?"base64":"servers",options={}){
   const provider=PROVIDERS[id];
   if(!provider)fail("UNSUPPORTED_FORMAT");
   if(!providerEnabled(id))fail("REMOTE_NOT_CONFIGURED");
+  if(id==="catnet-vpn"){
+    if(source!=="servers")fail("UNSUPPORTED_FORMAT");
+    return downloadCatnet(provider);
+  }
   if(id==="http-conexion"){
     if(source!=="servers")fail("UNSUPPORTED_FORMAT");
     return downloadHttpConexion(provider,options);

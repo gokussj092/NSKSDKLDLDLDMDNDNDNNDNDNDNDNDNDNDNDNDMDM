@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 PROVIDERS = {
+    "catnet-vpn": "decoders.Python.apps.CATNET_VPN.server_catalog_decoder",
     "genis-vpn": "decoders.Python.apps.Genis_VPN.server_catalog_decoder",
     "speicers-turbo-vpn": "decoders.Python.apps.Speicers_Turbo_VPN.server_catalog_decoder",
     "http-conexion": "decoders.Python.apps.HTTP_Conexion.server_catalog_decoder",

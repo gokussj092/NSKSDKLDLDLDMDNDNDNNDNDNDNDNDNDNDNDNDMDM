@@ -1,0 +1,87 @@
+{
+  "package": "net.catnet.vpn",
+  "build": 27,
+  "source_checks": {
+    "net/xj/vpn/api/ApiClient.java": {
+      "sha256": "cb1c771627c737f4a4d054e1ec6677bea78f229111c462b0bd7795f3c23e7a4f",
+      "verified_tokens": [
+        "net.catnet.vpn",
+        "https://pussyvpn.com/xjvpn/",
+        "https://xjdev.net/xjvpn/",
+        "mobile/public/servers",
+        "mobile/public/payloads",
+        "mobile/public/xray_payloads"
+      ]
+    },
+    "net/xj/vpn/api/MobileApiService.java": {
+      "sha256": "f652074c8c4653f4d92333b509e16056ed2473de285257d20155521d42f4a02e",
+      "verified_tokens": [
+        "mobile/public/app-update",
+        "app_key",
+        "current_version_code"
+      ]
+    },
+    "defpackage/fe.java": {
+      "sha256": "0e3309b27f662fc7887837fbcd1d4b6f6c73a774f2845b8ebe1888a73e4aca62",
+      "verified_tokens": [
+        "getIntegrity_required()",
+        "Boolean.FALSE",
+        "setIntegritySession",
+        "Play token request",
+        "70000"
+      ]
+    },
+    "defpackage/t8.java": {
+      "sha256": "c79e26d23455fe0aa7cd9389d37b32794b66b90994149394b4318df902791198",
+      "verified_tokens": [
+        "okhttp/4.12.0"
+      ]
+    },
+    "net/xj/vpn/data/ServerDto.java": {
+      "sha256": "71cde6982cc0b8ba5bab317f14bdf91c1d1c5d24ae6a130161cd70e8bb0cd5d2",
+      "verified_tokens": [
+        "servername",
+        "ip",
+        "password",
+        "gcp_host"
+      ]
+    },
+    "net/xj/vpn/data/XjConfigCodec.java": {
+      "sha256": "fa00e8580c294519ffdec097e0230cfc151cf31c5bba6b192b79e760771dd6f5",
+      "verified_tokens": [
+        "PBKDF2_ITERATIONS = 120000",
+        "AES/GCM/NoPadding",
+        "xj-link-v1"
+      ]
+    }
+  },
+  "interceptor": {
+    "class": "Lnet/xj/vpn/api/ApiClient$special$$inlined$-addInterceptor$1;",
+    "method": "intercept",
+    "headers": [
+      "X-XJ-App-Key",
+      "X-App-Key",
+      "X-XJ-App-Package",
+      "X-App-Package",
+      "X-Package-Name",
+      "X-XJ-Package-Name",
+      "X-XJ-Integrity-Session",
+      "X-XJ-Integrity-Token",
+      "X-XJ-Integrity-Challenge",
+      "X-XJ-Request-Hash",
+      "X-XJ-Installation-Id",
+      "X-XJ-Version-Code"
+    ],
+    "conditional_integrity_headers": true,
+    "app_key": "pussy_vpn",
+    "app_package": "net.catnet.vpn"
+  },
+  "remote_scope": "complete public servers JSON only; payloads/xray endpoints unavailable",
+  "local_formats": "Observed XjConfigCodec and GcpHostUpdateCodec are NOT integrated/certified; no real file/link fixture provided.",
+  "jadx": {
+    "exit": 3,
+    "errors": 54,
+    "version": "1.5.6",
+    "partial_sources": true
+  }
+}
