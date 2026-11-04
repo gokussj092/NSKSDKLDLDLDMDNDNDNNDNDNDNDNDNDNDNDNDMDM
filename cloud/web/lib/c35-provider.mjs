@@ -16,6 +16,7 @@ export const EHI_ENDPOINT = "https://www.ehi.tools/httpinjector/import_config";
 export const NUR_ALLOWED_HOST = "strongteam.co";
 export const EHI_ALLOWED_HOST = "www.ehi.tools";
 export const MNR_ALLOWED_HOST = "firebasestorage.googleapis.com";
+export const MAYA_ALLOWED_HOST = "api.github.com";
 export const HC_HOST = "cloudvpn.mrfrankofc.com";
 export const HC_SHORT_HOST = "link.playsmarty.uk";
 export const MNR_BUCKET = "hamovpn.firebasestorage.app";
@@ -177,7 +178,8 @@ export function approvedUrl(address, kind) {
     if(result!==address)fail("REMOTE_NETWORK_DENIED");
     return new URL(result);
   }
-  const expectedHost = kind === "ehi" ? EHI_ALLOWED_HOST : kind === "nur" ? NUR_ALLOWED_HOST : kind === "mnr" ? MNR_ALLOWED_HOST : "";
+  const expectedHost = kind === "ehi" ? EHI_ALLOWED_HOST : kind === "nur" ? NUR_ALLOWED_HOST :
+    kind === "mnr" ? MNR_ALLOWED_HOST : kind === "maya" ? MAYA_ALLOWED_HOST : "";
   if (typeof address !== "string" || address.length > 2048 || !expectedHost)
     fail("REMOTE_NETWORK_DENIED");
   let parsed;
@@ -189,6 +191,8 @@ export function approvedUrl(address, kind) {
     fail("REMOTE_NETWORK_DENIED");
   if(kind==="mnr" && (!/^\/v0\/b\/hamovpn\.firebasestorage\.app\/o\/mnrtunneludp%3A%2F[A-Za-z0-9]{10}\.sky$/.test(parsed.pathname) ||
       (parsed.search!=="" && !/^\?alt=media&token=[A-Za-z0-9_-]{1,256}$/.test(parsed.search))))fail("REMOTE_NETWORK_DENIED");
+  if(kind==="maya" && !/^\/repos\/janatshaban\/noob_files\/contents\/config\/mayatun\/[A-Za-z0-9_-]{1,64}\.maya$/.test(parsed.pathname))
+    fail("REMOTE_NETWORK_DENIED");
   return parsed;
 }
 
@@ -213,7 +217,7 @@ export function publicIpv4(address) {
 
 export async function pinnedAddresses(host, resolver = dns.lookup) {
   // The only legal hosts come from approvedUrl; never accept raw user host.
-  if (![EHI_ALLOWED_HOST, NUR_ALLOWED_HOST, MNR_ALLOWED_HOST, HC_HOST, HC_SHORT_HOST].includes(host)) fail("REMOTE_NETWORK_DENIED");
+  if (![EHI_ALLOWED_HOST, NUR_ALLOWED_HOST, MNR_ALLOWED_HOST, MAYA_ALLOWED_HOST, HC_HOST, HC_SHORT_HOST].includes(host)) fail("REMOTE_NETWORK_DENIED");
   let answers;
   try { answers = await resolver(host, {all:true, family:4, verbatim:true}); }
   catch { fail("REMOTE_NETWORK_DENIED"); }
@@ -233,7 +237,7 @@ export async function downloadApproved({url,kind,method="GET",body,headers={},ma
   const initial=approvedUrl(url,kind);
   const upperLimit=kind==="nur" ? MAX_NUR_BYTES : MAX_REMOTE_BYTES;
   if (!Number.isSafeInteger(maxBytes) || maxBytes<1 || maxBytes>upperLimit ||
-      (!["GET","POST"].includes(method) || kind==="hc" && (method!=="GET" || body!==undefined)))
+      (!["GET","POST"].includes(method) || ["hc","maya"].includes(kind) && (method!=="GET" || body!==undefined)))
     fail("REMOTE_NETWORK_DENIED");
 
   const timeout=kind==="nur" ? NUR_TIMEOUT_MS : CONNECT_TIMEOUT_MS;
@@ -322,7 +326,7 @@ export async function downloadApproved({url,kind,method="GET",body,headers={},ma
               }
               return accept({redirect:next.href});
             }
-            if(["ehi","mnr","hc"].includes(kind) && [404,410].includes(status))
+            if(["ehi","mnr","hc","maya"].includes(kind) && [404,410].includes(status))
               return reject("REMOTE_CONFIG_UNAVAILABLE");
             return reject("REMOTE_PROVIDER_UNAVAILABLE","HTTP_"+String(status));
           }
