@@ -1,0 +1,50 @@
+name: Maya text reference – isolated Cloud verification
+
+on:
+  push:
+    branches:
+      - feat/maya-text-remote-reference
+    paths:
+      - .github/workflows/maya-text-reference-check.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  maya-cloud-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Python synthetic Maya crypto and offline worker tests
+        run: |
+          python -m pip install 'cryptography>=43,<47' 'pytest>=8,<10'
+          python -m pytest -q tests/test_maya_text_reference.py
+          python analysis/maya.tun.udp/43/tools/probe_reference.py
+      - name: JavaScript pinned source, URI and catalog tests
+        working-directory: cloud/web
+        run: node --test tests/maya-reference.test.mjs tests/text-format-catalog.test.mjs
+      - name: Static contract check (no embedded token or Android changes)
+        run: |
+          python - <<'PY'
+          import pathlib, subprocess
+          paths=subprocess.check_output(['git','diff','--name-only','origin/feat/nuevas-integraciones...HEAD'],text=True).splitlines()
+          assert not any(p.startswith('android/') for p in paths),paths
+          for path in paths:
+              if not path.endswith(('.mjs','.py','.md','.json')):continue
+              contents=pathlib.Path(path).read_text(encoding='utf-8')
+              assert ('gh'+'p_') not in contents and ('github'+'_pat_') not in contents,(path,'token-pattern')
+          print('CLOUD_ONLY_NO_GITHUB_PAT')
+          PY

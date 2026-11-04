@@ -8,6 +8,7 @@ import { jsonReply, unavailable } from "./responses.mjs";
 import { legacyCredentialError } from "./decoder-client-compat.mjs";
 import { ehiConfigured, nurConfigured, importMnrReference, importHttpCustomReference, isHttpCustomReference, isHttpCustomLegacyReference, parseHttpCustomLegacyReference, isExternalImportError } from "./c35-provider.mjs";
 import {providerAllowed} from "./c12-provider-controls.mjs";
+import {importMayaReference} from "./maya-reference.mjs";
 import { maintenanceEnabled, serviceMaintenanceEnabled, recordWorkerResult } from "./c6-ops-store.mjs";
 import {admissionPolicy} from "./c11-play-admission.mjs";
 import {publicFormats} from "./file-format-catalog.mjs";
@@ -557,6 +558,12 @@ export async function decodeRequest(request,kind,options={}) {
       // No arbitrary URL, storage listing, credential lookup or worker egress.
       const data=await importMnrReference(payload.text,options.vendor || {});
       outcome=await fetchWorker("file",{format:"stp",dataBase64:data.toString("base64")},cfg,options);
+    }else if(kind==="text" && payload.text.trim().startsWith("maya://")){
+      // Maya references identify one .maya file, never a catalog/listing.
+      // No untrusted host/path, exposed token, worker network or partial JSON.
+      const data=await importMayaReference(payload.text,options.vendor?.maya || {});
+      telemetry={kind:"file",format:"maya",bytes:data.length};
+      outcome=await fetchWorker("file",{format:"maya",dataBase64:data.toString("base64")},cfg,options);
     }else outcome=await fetchWorker(kind,workerPayload,cfg,options);
     if(kind==="file"&&outcome.ok){
       const body=await outcome.json();
