@@ -18,7 +18,7 @@ from pathlib import Path
 
 from cryptography.hazmat.primitives.ciphers.aead import ChaCha20Poly1305
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(ROOT))
 from decoders.Python._noobcrypt import KEYS, decrypt_profile  # noqa: E402
 
