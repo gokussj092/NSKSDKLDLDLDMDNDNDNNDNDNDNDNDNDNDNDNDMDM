@@ -42,6 +42,12 @@
       "sha256": "33d568f46208e0adb9b6d2d7f5509cc6013ffac0bb64b3e2322fd72dd03300df",
       "version": "2",
       "executed_mode": "--existing; import live curl/urllib observations"
+    },
+    {
+      "path": "analysis/_intake/mediafire-ypaiywpzrvslef1/tools/retry_mediafire.py",
+      "sha256": "65287a92a78a23d563e6b81a96503fe34e75de9258524c4d11631e0a9fff877d",
+      "version": "1",
+      "executed_mode": "inline Python equivalent; physical copy preserved, not rerun"
     }
   ],
   "dependencies": [
@@ -72,17 +78,20 @@
     "REPRODUCE.md",
     "RESULTS.md",
     "DEPENDENCIES.md",
-    "generated/access.json"
+    "generated/access.json",
+    "RETRY_2026_11_04.md",
+    "generated/retry.json"
   ],
   "limitations": [
     "No APK obtained; package/build/signature/method cannot be established.",
-    "Failure observed from this environment; cause and availability to user not established.",
+    "Failure observed from this executor; owner screenshot shows download page available in their session; cause unknown.",
     "No runtime or Android changes, activation, merge or deploy."
   ],
   "network_requirements": [
     "Reachable public MediaFire download or owner-provided APK attachment."
   ],
   "manual_steps": [
+    "Receive the full direct download URL; hostname alone is insufficient.",
     "Receive the requested APK and create a canonical package/build dossier after verifying its manifest."
   ],
   "unresolved_questions": [

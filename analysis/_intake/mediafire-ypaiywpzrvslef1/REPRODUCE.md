@@ -32,3 +32,7 @@ Sin CAPTCHA, login o advertencia identificados; no se afirma su causa técnica.
 Se consultaron README/ANALYSIS y hex_custom_recover.py históricos en Git como
 referencia, pero no se ejecutó su receta ni se reutilizó un binario anterior
 para sustituir el enlace solicitado. Primero se necesita la APK exacta.
+
+## Reintento del mismo día
+
+La receta inline utilizada queda conservada en tools/retry_mediafire.py. Se puede repetir desde la raíz con `python analysis/_intake/mediafire-ypaiywpzrvslef1/tools/retry_mediafire.py`; stdout JSON, HTML y headers en private/hexcustom/retry-20261104/. La copia física del script no se ejecutó de nuevo para evitar repetir una petición idéntica. Resultado real en generated/retry.json; evidencia adicional y límites en RETRY_2026_11_04.md. Mismas versiones Python/curl y sin nuevas dependencias.
