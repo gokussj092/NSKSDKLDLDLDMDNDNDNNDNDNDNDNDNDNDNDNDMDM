@@ -14,6 +14,12 @@
       "kind": "cloud"
     },
     {
+      "prefix": "maya://",
+      "name": "Maya Tun PRO (enlace remoto)",
+      "suffix": "maya",
+      "kind": "cloud"
+    },
+    {
       "prefix": "npvt-vless://",
       "name": "NPV Tunnel",
       "suffix": "npvs",
