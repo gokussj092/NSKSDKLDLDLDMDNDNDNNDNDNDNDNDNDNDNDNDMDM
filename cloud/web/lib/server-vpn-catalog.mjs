@@ -6,7 +6,7 @@ import {publicFormats,FORMAT_DETECTION} from "./file-format-catalog.mjs";
 import {publicTextFormats,publicOnlineReferenceFormats} from "./text-format-catalog.mjs";
 import {providerEnabled} from "./server-vpn-provider.mjs";
 
-export const CATALOG_VERSION = 72; // CATNET public servers; preserve higher VPS versions.
+export const CATALOG_VERSION = 73; // Maya remote text reference; preserve higher VPS versions.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
