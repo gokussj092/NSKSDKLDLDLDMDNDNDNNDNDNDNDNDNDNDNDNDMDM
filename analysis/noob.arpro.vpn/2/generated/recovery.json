@@ -1,0 +1,49 @@
+{
+  "native_sha256": "e4388396c5b5e7c4da6b22db50cb43605509b0c6cae75526fe20f45be6aebd32",
+  "field_key_sha256": "a5425e84b9ec69993d79cdea1defd9abea8b6a5b80d02a84682dc209e1c7fd0a",
+  "outer_key_sha256": "afc11fb51f838ce82d5e859cdd4142c09f0df6a70492beab23c48da5041d4171",
+  "outer_keys": [
+    "Servers",
+    "Tweaks",
+    "MyBool",
+    "showAds",
+    "testMode",
+    "useunity",
+    "isforce",
+    "unlimited",
+    "show_release",
+    "rewardInt",
+    "Version",
+    "Message",
+    "DefUpdateURL",
+    "updater",
+    "updatemsg",
+    "Banner_ID",
+    "AppOpenAd",
+    "Interstitial_ID",
+    "RewardAd_ID",
+    "RewardInter_ID",
+    "cardMessage",
+    "cardLink",
+    "n_obfs",
+    "defTime",
+    "addTime",
+    "bonus",
+    "versioncode"
+  ],
+  "root_decoded": [
+    "Version",
+    "Message",
+    "DefUpdateURL",
+    "updater"
+  ],
+  "version": "1.0.0",
+  "counts": {
+    "Servers": 1,
+    "Tweaks": 1
+  },
+  "update_urls": {
+    "DefUpdateURL": "https://jezvpn.xyz/api/app?json=743ebcbbf84f7f9cac2f",
+    "updater": "https://pastebin.com/raw/XrVPE3mj"
+  }
+}

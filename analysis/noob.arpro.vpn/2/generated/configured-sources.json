@@ -1,0 +1,20 @@
+[
+  {
+    "source": "https://jezvpn.xyz/api/app?json=743ebcbbf84f7f9cac2f",
+    "role": "configured-catalog",
+    "http": 200,
+    "content_type": "text/html",
+    "bytes": 195,
+    "sha256": "5b131ca14aa96311d3432b0062c7443d3b0e6346ec279bd376a75f0a76bcd5d7",
+    "html": true
+  },
+  {
+    "source": "https://pastebin.com/raw/XrVPE3mj",
+    "role": "app-update-metadata",
+    "http": 200,
+    "content_type": "text/plain; charset=utf-8",
+    "bytes": 3436,
+    "sha256": "a8546b555188a740bb2d61f31ade86b634f13245bab8409adb66f30898dc1afc",
+    "html": false
+  }
+]
