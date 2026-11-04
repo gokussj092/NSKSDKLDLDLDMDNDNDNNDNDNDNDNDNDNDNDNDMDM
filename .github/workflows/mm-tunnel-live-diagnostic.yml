@@ -1,0 +1,54 @@
+name: MM Tunnel live catalog diagnostic (isolated)
+on:
+  push:
+    branches:
+      - diagnostics/mm-tunnel-live-2026-11-04
+    paths:
+      - .github/workflows/mm-tunnel-live-diagnostic.yml
+permissions:
+  contents: read
+jobs:
+  verify-real-provider-and-codec:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - name: Checkout diagnostic branch
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned MM Tunnel requirements
+        run: python -m pip install -r decoders/Python/apps/MM_Tunnel/requirements.txt
+      - name: Download and fully authenticate real MM Tunnel catalog (no secret output)
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, time, sys, hashlib
+          from decoders.Python.apps.MM_Tunnel import codec, server_catalog_decoder
+          started=time.monotonic()
+          try:
+              data=server_catalog_decoder.download()
+              t_download=time.monotonic()
+              print("DOWNLOAD_OK", "bytes", len(data), "seconds", round(t_download-started,2),flush=True)
+              count=0
+              summed=0.0
+              open_original=codec.open_envelope
+              def instrumented(*args,**kwargs):
+                  global count, summed
+                  t=time.monotonic()
+                  try:
+                      return open_original(*args,**kwargs)
+                  finally:
+                      count+=1
+                      summed+=time.monotonic()-t
+              codec.open_envelope=instrumented
+              result=json.loads(server_catalog_decoder.run(data))
+              elapsed=time.monotonic()-t_download
+              print("DECODE_OK","version",str(result.get("Version"))[:30],"servers",len(result.get("Servers",[])),"networks",len(result.get("Networks",[])),flush=True)
+              print("DECODE_SECONDS",round(elapsed,2),"ENVELOPES_AUTHENTICATED",count,"KDF_SECONDS",round(summed,2),flush=True)
+              print("EXCEEDS_CURRENT_120S_LIMIT",elapsed>120,flush=True)
+          except Exception as error:
+              print("DIAGNOSTIC_ERROR",type(error).__name__,str(error)[:120],flush=True)
+              sys.exit(1)
+          PY
