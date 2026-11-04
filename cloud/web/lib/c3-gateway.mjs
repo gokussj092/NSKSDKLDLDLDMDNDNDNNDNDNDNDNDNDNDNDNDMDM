@@ -215,6 +215,20 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
        typeof decoded.rawText!=="string" || !decoded.rawText.length ||
        Buffer.byteLength(decoded.rawText,"utf8")>(isMkk?32*1024*1024:4*1024*1024))
       throw Error("INVALID_WORKER_RESULT");
+    if(kind==="server-vpn" && payload?.providerId==="speicers-turbo-vpn"){
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId || !isRecord(parsed) ||
+         parsed.provider!==payload.providerId || parsed.complete!==true || !isRecord(parsed.catalogs) ||
+         Object.keys(parsed.catalogs).sort().join(",")!=="servers,users" || !isDeepStrictEqual(parsed,decoded.structuredJson))
+        throw Error("INVALID_WORKER_RESULT");
+      for(const [source,section,name] of [["servers","Servers","p0PgL3l0d89mnssz7ImPJA=="],["users","Usuarios","Name"]]){
+        const doc=parsed.catalogs[source];
+        if(!isRecord(doc) || typeof doc.Version!=="string" || !doc.Version || !Array.isArray(doc[section]) || !doc[section].length ||
+           doc[section].some(row=>!isRecord(row) || typeof row[name]!=="string" || !row[name]) ||
+           (Object.hasOwn(doc,"ReleaseNotes") && typeof doc.ReleaseNotes!=="string"))throw Error("INVALID_WORKER_RESULT");
+      }
+    }
     if(kind==="server-vpn" && payload?.providerId==="http-conexion"){
       let parsed;
       try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}

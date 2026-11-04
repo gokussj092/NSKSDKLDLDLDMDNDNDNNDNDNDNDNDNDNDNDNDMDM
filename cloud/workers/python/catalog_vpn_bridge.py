@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 PROVIDERS = {
+    "speicers-turbo-vpn": "decoders.Python.apps.Speicers_Turbo_VPN.server_catalog_decoder",
     "http-conexion": "decoders.Python.apps.HTTP_Conexion.server_catalog_decoder",
     "namo-vpn": "decoders.Python.apps.NAMO_VPN.server_catalog_decoder",
     "fnf-tunnel-bd": "decoders.Python.apps.FNF_TUNNEL_BD.server_catalog_decoder",

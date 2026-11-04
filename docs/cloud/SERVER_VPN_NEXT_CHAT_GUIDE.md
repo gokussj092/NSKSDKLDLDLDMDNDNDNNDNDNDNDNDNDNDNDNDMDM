@@ -1,3 +1,19 @@
+# Speicers`Turbo VPN217.4.4/build217 — catálogo Cloud verificado
+
+netfree.mx.anuncios, rama feat/nuevas-integraciones/PR110. Dos GET públicos
+fijos raw GitHub: HTTP200/407832 bytes (17/266 servidores) y1984 bytes (2/2
+usuarios), 2649+12 campos CBC/ROT21. Incluidos17/266 y1/2 separados. JSON entero
+igual a JCA, CLI archivo/stdin y worker, repetido tras recuperar el entorno.
+
+Constantes inline, sin secreto HTTP extra. Paquete obligatorio de ambas fuentes,
+icono PNG original512x512/48036 bytes, switches preservados, piso68/64 fichas y
+256 formatos.10 Python/154 Node aprobadas. Node real aquí REMOTE_NETWORK_DENIED;
+replay real bytes/worker con HTTP simulado correcto; VPS y rollout pendientes.
+CBC no autentica datos. Sin archivos/texto/exportador/Android/build/merge/deploy.
+[Expediente, scripts, negativos y recuperación](../../analysis/netfree.mx.anuncios/217/ANALYSIS.md).
+
+---
+
 # HTTP Conexión1.2.9/build129 — catálogo vigente comprobado
 
 com.doriaxvpn.unlimited, misma rama feat/nuevas-integraciones/PR110. Firebase

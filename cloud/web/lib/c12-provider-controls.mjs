@@ -14,6 +14,7 @@ const ROOT="/app/provider-control";
 const IDS=Object.freeze(["ehi-cloud","hc-cloud","nur-tunnel",...providerIds()]);
 export const PUBLIC_PROVIDER_IDS=IDS;
 const LABELS=Object.freeze({
+  "speicers-turbo-vpn":"Speicers`Turbo VPN",
   "http-conexion":"HTTP Conexión",
   "namo-vpn":"NAMO VPN",
   "fnf-tunnel-bd":"FNF TUNNEL BD",

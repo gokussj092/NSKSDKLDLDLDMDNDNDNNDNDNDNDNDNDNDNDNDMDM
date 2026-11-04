@@ -17,6 +17,10 @@ const ABOWAGED_SOURCES=Object.freeze({
   servers:"https://raw.githubusercontent.com/th3fre/Testing/refs/heads/main/Elk.txt",
   udp:"https://raw.githubusercontent.com/janatshaban/REMOTEUPDATER/refs/heads/main/pickerver",
 });
+const SPEICERS_TURBO_SOURCES=Object.freeze({
+  servers:"https://raw.githubusercontent.com/apksdemons/apks2/refs/heads/main/speicers/spei_servrs",
+  users:"https://raw.githubusercontent.com/apksdemons/apks2/refs/heads/main/speicers/spei_users",
+});
 const TURBOMX_SOURCES=Object.freeze({
   servers:"https://raw.githubusercontent.com/apksdemons/apks2/refs/heads/main/turbomx/servr_turbomx_sv5c",
   users:"https://raw.githubusercontent.com/apksdemons/apks2/refs/heads/main/turbomx/user_turbomx_sv5c",
@@ -47,8 +51,10 @@ const JYFAST_SOURCES=Object.freeze({
   free:"http://dev.jenrri.shop:85/ignix_update.php?cfg=free",
   premium:"http://dev.jenrri.shop:85/ignix_update.php?cfg=premium",
 });
-const PAIRED_SOURCES=Object.freeze({"jyfast-vpn-ultra":JYFAST_SOURCES,"abowaged-vpn":ABOWAGED_SOURCES,"turbomx-vpn":TURBOMX_SOURCES,"superflash-vpn":SUPERFLASH_SOURCES,"onspace-vpn":ONSPACE_SOURCES,"http-socketclay":SOCKETCLAY_SOURCES,"http-wakko":WAKKO_SOURCES,"v2ray-tunnel-plus":V2PLUS_SOURCES});
+const PAIRED_SOURCES=Object.freeze({"speicers-turbo-vpn":SPEICERS_TURBO_SOURCES,"jyfast-vpn-ultra":JYFAST_SOURCES,"abowaged-vpn":ABOWAGED_SOURCES,"turbomx-vpn":TURBOMX_SOURCES,"superflash-vpn":SUPERFLASH_SOURCES,"onspace-vpn":ONSPACE_SOURCES,"http-socketclay":SOCKETCLAY_SOURCES,"http-wakko":WAKKO_SOURCES,"v2ray-tunnel-plus":V2PLUS_SOURCES});
 const PROVIDERS = Object.freeze({
+  // No app-specific UA; analytical Android runtime profile.
+  "speicers-turbo-vpn": {url:SPEICERS_TURBO_SOURCES.servers,agent:"Dalvik/2.1.0 (Linux; U; Android 14)"},
   "http-conexion": {url:HTTP_CONEXION_SOURCE,agent:HTTP_CONEXION_AGENT,headers:HTTP_CONEXION_HEADERS},
   "namo-vpn": {url:"https://raw.githubusercontent.com/Anurak2534/ohmvpn/refs/heads/main/newnamo.json",agent:"okhttp/5.3.2"},
   "fnf-tunnel-bd": {url:"https://raw.githubusercontent.com/pipoyrichards/FNFTUNNELBD/refs/heads/main/FEB52025",agent:"FNF TUNNEL BD/PrinceBuild35"},

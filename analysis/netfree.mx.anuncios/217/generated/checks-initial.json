@@ -1,0 +1,7 @@
+{
+  "provenance": "Preserved conversation of the first session; original local logs were cleaned before Git persistence.",
+  "pythonPassed": 10,
+  "nodePassed": 152,
+  "nodeFailed": 2,
+  "cause": "Two historical card-count assertions expected 63 after adding the 64th card. Corrected and passed 154 Node, then repeated after restoration."
+}

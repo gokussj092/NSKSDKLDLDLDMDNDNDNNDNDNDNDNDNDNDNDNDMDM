@@ -80,7 +80,7 @@ test("paired JyFast catalogs require both complete sources and preserve their by
 });
 test("public metadata contains the original icon and honors per-provider availability",()=>{
  const app=catalog({availability:{"jyfast-vpn-ultra":true}}).apps.find(x=>x.id==="jyfast-vpn-ultra");
- assert.equal(CATALOG_VERSION,67);assert.equal(catalog().apps.length,63);
+ assert.equal(CATALOG_VERSION,68);assert.equal(catalog().apps.length,64);
  assert.equal(app.name,"JyFast VPN Ultra");assert.equal(app.decodeEnabled,true);
  assert.equal(app.iconSha256,"05e176023754019f84135e0247d0db91370a450536ddbc7b035c626e0a094ae8");
  assert.equal(catalog({availability:{"jyfast-vpn-ultra":false}}).apps.find(x=>x.id===app.id).decodeEnabled,false);

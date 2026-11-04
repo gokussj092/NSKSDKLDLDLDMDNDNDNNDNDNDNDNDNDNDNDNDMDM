@@ -1,0 +1,12 @@
+{
+  "id": "speicers-turbo-vpn",
+  "name": "Speicers`Turbo VPN",
+  "package": "netfree.mx.anuncios",
+  "testedVersion": "217.4.4",
+  "versionCode": 217,
+  "engine": "python",
+  "catalog": "server_catalog_decoder.py",
+  "files": [],
+  "exporterCertified": false,
+  "evidence": "analysis/netfree.mx.anuncios/217/MANIFEST.json"
+}
