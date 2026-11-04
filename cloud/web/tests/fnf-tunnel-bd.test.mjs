@@ -59,9 +59,9 @@ test("FNF rejects private DNS and all redirects",async t=>{
 test("FNF original PNG and public directory preserve metadata-only availability",t=>{
  enabled(t);const png=icons(t);
  assert(providerIds().includes("fnf-tunnel-bd"));assert(PUBLIC_PROVIDER_IDS.includes("fnf-tunnel-bd"));
- assert.equal(CATALOG_VERSION,68);assert.equal(activeCatalogVersion({CLOUD_SERVER_VPN_CATALOG_VERSION:"215686715"}),215686715);
+ assert.equal(CATALOG_VERSION,69);assert.equal(activeCatalogVersion({CLOUD_SERVER_VPN_CATALOG_VERSION:"215686715"}),215686715);
  const doc=catalog(),app=doc.apps.find(x=>x.id==="fnf-tunnel-bd");
- assert.equal(doc.apps.length,64);assert.equal(app.name,"FNF TUNNEL BD");assert.equal(app.decodeEnabled,true);
+ assert.equal(doc.apps.length,65);assert.equal(app.name,"FNF TUNNEL BD");assert.equal(app.decodeEnabled,true);
  assert.equal(app.iconSha256,"e246d35183770494e3ed2f8e17f62a47d2f64fed3b6d3ce0491684575bf18823");
  assert.equal(iconFor(app.id).bytes.length,52532);assert.equal(png.length,52532);
  assert(!JSON.stringify(app).includes("https://"));assert.equal(doc.formats.length,256);

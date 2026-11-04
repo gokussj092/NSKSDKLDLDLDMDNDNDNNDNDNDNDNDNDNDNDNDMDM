@@ -40,3 +40,5 @@ El archivo histórico [SOCKSIP_VER8_VER7_VER6_STUDY.md](SOCKSIP_VER8_VER7_VER6_S
 - [Speicers`Turbo VPN 217.4.4 / build217](netfree.mx.anuncios/217/ANALYSIS.md): remoto17/266 servidores +2/2 usuarios, JCA/CLI/worker completos; scripts y recuperación conservados.
 
 - [Hex Custom.apk de MediaFire: recepción pendiente](_intake/mediafire-ypaiywpzrvslef1/README.md): HTML de 195 bytes, Site Unavailable, sin APK ni identidad confirmada.
+
+- [Genis VPN / com.doriaxvip.tunnel / 76](com.doriaxvip.tunnel/76/ANALYSIS.md): VERIFIED_REAL; remoto 1114 / 84 servidores / 658 campos CBC, JSON entero igual a JCA/CLI/worker. Solo Cloud; Node/VPS pendiente.

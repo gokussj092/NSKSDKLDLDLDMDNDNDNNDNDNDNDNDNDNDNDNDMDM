@@ -1,0 +1,5 @@
+{
+  "transport": "REAL_HTTP",
+  "status": "NETWORK_UNAVAILABLE",
+  "code": "REMOTE_NETWORK_DENIED"
+}

@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 PROVIDERS = {
+    "genis-vpn": "decoders.Python.apps.Genis_VPN.server_catalog_decoder",
     "speicers-turbo-vpn": "decoders.Python.apps.Speicers_Turbo_VPN.server_catalog_decoder",
     "http-conexion": "decoders.Python.apps.HTTP_Conexion.server_catalog_decoder",
     "namo-vpn": "decoders.Python.apps.NAMO_VPN.server_catalog_decoder",

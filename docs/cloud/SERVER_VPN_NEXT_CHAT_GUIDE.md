@@ -1,3 +1,13 @@
+# Genis VPN 2.2.6/build76 — catálogo Cloud verificado
+
+2026-11-04. Paquete com.doriaxvip.tunnel; muestra APKPure manifest/hash verificados. Remoto1114:84 servidores,658 campos CBC no vacíos y241 vacíos, JSON íntegro igual a JCA/CLI/worker. Fuente fija original GitHub, GET sin autenticación; constantes de formato inline. Icono launcher WEBP original convertido a PNG con píxeles iguales.
+
+Piso69 /65 fichas /256 formatos; preservar la versión superior del VPS y switches existentes. 9 Python +161 Node aprobadas. Descarga Python real repetida; Node directo devuelve REMOTE_NETWORK_DENIED en este entorno; replay explícitamente simulado con bytes y worker reales pasa. Repetir transporte Node en VPS antes del rollout. Sin Android, build, merge ni deploy.
+
+Usuarios incluidos v1/1 perfil verificados offline; no hay fuente remota de usuarios establecida ni fallback estático. Sin nuevo formato de archivo/texto ni unlocked certificado. Hex Custom de MediaFire continúa aplazado por petición del propietario.
+
+[Expediente y scripts](../../analysis/com.doriaxvip.tunnel/76/ANALYSIS.md). Rama feat/nuevas-integraciones, PR #110; el historial de abajo se conserva.
+
 # Speicers`Turbo VPN217.4.4/build217 — catálogo Cloud verificado
 
 netfree.mx.anuncios, rama feat/nuevas-integraciones/PR110. Dos GET públicos

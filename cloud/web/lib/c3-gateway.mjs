@@ -215,6 +215,16 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
        typeof decoded.rawText!=="string" || !decoded.rawText.length ||
        Buffer.byteLength(decoded.rawText,"utf8")>(isMkk?32*1024*1024:4*1024*1024))
       throw Error("INVALID_WORKER_RESULT");
+    if(kind==="server-vpn" && payload?.providerId==="genis-vpn"){
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId || !isRecord(parsed) ||
+         !isDeepStrictEqual(parsed,decoded.structuredJson) || typeof parsed.Version!=="string" || !parsed.Version ||
+         !Array.isArray(parsed.Servers) || !parsed.Servers.length || Object.hasOwn(parsed,"Usuarios") ||
+         parsed.Servers.some(row=>!isRecord(row) || typeof row["p0PgL3l0d89mnssz7ImPJA=="]!=="string" ||
+           !row["p0PgL3l0d89mnssz7ImPJA=="]) ||
+         (Object.hasOwn(parsed,"ReleaseNotes") && typeof parsed.ReleaseNotes!=="string"))throw Error("INVALID_WORKER_RESULT");
+    }
     if(kind==="server-vpn" && payload?.providerId==="speicers-turbo-vpn"){
       let parsed;
       try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}

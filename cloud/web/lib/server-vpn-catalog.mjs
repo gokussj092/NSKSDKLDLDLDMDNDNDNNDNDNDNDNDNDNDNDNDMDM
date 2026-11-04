@@ -6,7 +6,7 @@ import {publicFormats,FORMAT_DETECTION} from "./file-format-catalog.mjs";
 import {publicTextFormats,publicOnlineReferenceFormats} from "./text-format-catalog.mjs";
 import {providerEnabled} from "./server-vpn-provider.mjs";
 
-export const CATALOG_VERSION = 68; // HTTP Conexión catalog; VPS preserves its higher monotonic version.
+export const CATALOG_VERSION = 69; // Genis VPN; preserve higher monotonic VPS versions.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -24,6 +24,7 @@ export function activeCatalogVersion(env=process.env) {
 }
 
 const ITEMS = Object.freeze([
+  {id:"genis-vpn",name:"Genis VPN",icon:"genis-vpn.png",remote:"genis-vpn"},
   {id:"speicers-turbo-vpn",name:"Speicers`Turbo VPN",icon:"speicers-turbo-vpn.png",remote:"speicers-turbo-vpn"},
   {id:"http-conexion",name:"HTTP Conexión",icon:"http-conexion.png",remote:"http-conexion"},
   {id:"namo-vpn",name:"NAMO VPN",icon:"namo-vpn.png",remote:"namo-vpn"},
