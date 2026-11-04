@@ -102,7 +102,7 @@ test("Halcon rejects private DNS, redirects, HTML and does not retry signed POST
 });
 test("Halcon original raster, public card and configured availability",t=>{
   env(t);const png=iconFixture(t);
-  assert.equal(CATALOG_VERSION,70);
+  assert.equal(CATALOG_VERSION,71);
   assert.equal(createHash("sha256").update(png).digest("hex"),"859825df9e151d9b77039cc7f4a42b75feb3b9ea823999fa567ec823a173f143");
   const doc=catalog(),card=doc.apps.find(x=>x.id==="halcon-r-net");
   assert.equal(doc.apps.length,65);assert.equal(card.name,"HALCON RAMOS Conectividad");

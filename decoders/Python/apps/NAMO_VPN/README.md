@@ -19,13 +19,17 @@ python decoders/Python/apps/NAMO_VPN/server_catalog_decoder.py > catalogo-remoto
 `run(bytes)` es offline. Sin argumentos, CLI hace GET al updater fijo de la
 APK; TLS normal, sin redirects, URL arbitraria ni autenticación adicional.
 El sobre es Base64/XXTEA modificado(delta772515655), palabras little endian,
-clave16bytes rellenada con ceros y longitud final. El interior ya es JSON
-legible: se conserva entero sin renombrar claves ni descifrar campos otra vez.
+clave16bytes rellenada con ceros y longitud final. Después se decodifican una
+vez los campos Base64/UTF-8 documentados por la APK: hosts, credenciales,
+payloads, DNS y configuraciones. Se conserva el objeto entero sin renombrar
+claves, convertir strings en objetos ni transformar campos desconocidos.
+La revisión anterior solo abría el sobre; esa afirmación de descifrado completo
+era incorrecta. Se corrigieron 87 valores internos del catálogo real 22.3.
 Se reutilizan validadores JSON canónicos de BD_NET_VPN; no se modifica ese codec.
 Runtime únicamente stdlib.
 
 Proveedor `namo-vpn`, icono launcher PNG original192×192/25421bytes, ficha y
-switch individual conectados. Piso de catálogo66/62 fichas;256 formatos.
+switch individual conectados. Piso de catálogo71/65 fichas;256 formatos.
 No se añaden archivos/textos/exportadores. Android no se modifica ni compila.
 Transporte Node real pendiente en VPS: el ejecutor devolvió
 `REMOTE_NETWORK_DENIED`; el replay tiene HTTP simulado y bytes reales.

@@ -1,43 +1,51 @@
-# Resultados
+# Resultados actuales — corrección de campos 2026-11-04
 
-**VERIFIED_REAL**: GET original HTTP200, text/plain UTF8,72881bytes,
-catálogo22.3 con14 Servers/13 Networks. SHA256
+**VERIFIED_REAL:** catálogo 22.3, 14 Servers y 13 Networks; GET original
+HTTP 200, text/plain UTF-8, 72881 bytes, SHA256
 `578ad82fed747a2670a8fe4fb0abaeda16df60684581bec0a7e10e2d47aeee06`.
-La segunda descarga desde el adaptador operativo tuvo los mismos bytes.
-JSON entero igual entre referencia Java independiente, Python, CLI y worker
-aislado, sin filtrar/truncar valores ni alterar Message/setOpenVPN/claves futuras.
-No se encontró catálogo incluido; el template de V2Ray no se usa como sustituto.
+Se decodifican 87 valores internos, manteniendo todo el documento. Referencias
+Java independientes para XXTEA y Base64/UTF-8 iguales a Python, CLI y worker
+completos en dos descargas. Hash canónico del JSON final:
+`339be291594ac0b6fb587abe594693c092dc4c3c335d15eb0599375da2b1963c`.
+Los perfiles reales permanecen fuera de Git.
 
-**VERIFIED_SYNTHETIC**:10 pruebas Python y140 Node en16 archivos, todas pasan.
-Incluyen generación independiente Java, UTF8/Unicode/CRLF, cuatro paddings,
-clave incorrecta, corrupción, HTML, truncado, duplicados, NaN, esquema y límites;
-petición fija, agente original, DNS/TLS, redirects, switches y paridad completa
-del contrato. Los mocks son escenarios sintéticos, separados del GET real.
+**Corrección de evidencia:** el verificador anterior solo abría el sobre. Sus
+resultados no demostraban que los campos fueran legibles. Se retira la afirmación
+anterior de interior en texto. [Trazado completo](FIELDS_FIX.md).
 
-**Scripts y negativos conservados**:
+**VERIFIED_SYNTHETIC:** 15/15 pruebas Python y 172/172 Node en 20 archivos.
+Fixture ficticio de ambas capas generado por Java, todos los campos explícitos,
+alias y raíz, Unicode/CRLF, padding/whitespace, vacíos/faltantes, decodificación
+única y claves futuras intactas. Se rechazan 33 combinaciones de campos con
+alfabeto/padding/tipo/UTF-8 inválidos, además de los negativos del sobre,
+esquema, tamaños, clave, HTML, duplicados y NaN. Worker rechaza un campo corrupto
+sin resultado parcial ni filtración. Regresiones de descarga/contrato, TLS/DNS,
+redirects, switches, HTTP Conexión/Firebase y fichas/versiones pasan.
 
-- JADX1.5.6 termina3 con40 errores; ruta de catálogo y primitivas examinadas.
-- `XAPK/icon.png` tiene contenido JPEG. El extractor v1 rechazó esa suposición;
-  se conserva en history. El final copia sin modificar el PNG original de base.
-- Primer pase Node139/140: expectativa de URL copiada incorrectamente en el test
-  nuevo. Se corrigió a la fuente ya usada por producción/descarga real;
-  pase final140/140. No se omitió ni relajó la comprobación del destino.
-- Probe Node real: salida3/NETWORK_UNAVAILABLE/REMOTE_NETWORK_DENIED.
+Primer pase de esta revisión: Python 14/14 y Node 104/150 (46 fallos). El
+workspace parcial carecía del icono Genis, fixtures y módulos HTTP Firebase.
+Se restauraron bytes exactos de la revisión Git base; después Node 172/172.
+Pase final conjunto con el nuevo negativo de worker: Python 15/15 y Node 172/172.
+No se modificó producción ni se suavizaron pruebas para ocultar esas ausencias.
 
-**SIMULATED_HTTP_REAL_BYTES**: broker Node recibe ciphertext real y resultado
-real de worker, con DNS/HTTPS simulados, y aprueba documento completo22.3/14.
-No equivale a HTTP real Node. **PENDING**: ese transporte en VPS, revisión humana
-del PR y rollout. No se probaron conexiones VPN, vigencia de cuentas, archivos,
-texto, exportación ni importación Android. El descifrado XXTEA no autentica.
+**SIMULATED_HTTP_REAL_BYTES:** replay Node con ciphertext y worker reales pasa.
+**NETWORK_UNAVAILABLE:** Node HTTP real retorna REMOTE_NETWORK_DENIED aquí;
+VPS y rollout siguen pendientes. La descarga Python sí es HTTP real.
+No se certifican cuentas/conexiones VPN, archivos, texto, importación/exportación
+ni compatibilidad universal con builds futuras. XXTEA no autentica; el backend
+rechaza Base64/UTF-8 inválido más estrictamente que Android.
 
-Rama nueva desde main45db1d4: `feat/nuevas-integraciones`. Icono PNG192×192,
-25421bytes, SHA2561b40b83a…312f7e; piso de catálogo66/62 fichas y256 formatos.
-La constante de formato de10bytes está incorporada en codec.py por solicitud
-del propietario; no hay variables externas nuevas para esta app. Ninguna
-credencial HTTP fue necesaria. Solo el backend incorpora el método.
+Se conservan herramientas históricas y los negativos iniciales: JADX 1.5.6
+exit 3/40 errores; icon.png del XAPK era JPEG y el extractor v1 lo rechazó;
+primer test Node original tenía una expectativa de URL errónea, corregida en
+la integración inicial. No se certifica equivalencia de firma con Play.
 
-APK/SO, catálogos descifrados reales y registros con cuentas permanecen fuera de
-Git. No hay cambios/build Android, merge ni despliegue. Firma: presencia V2/V3
-y fingerprints inventariados; no equivalencia oficial Play ni última versión
-certificada. Licencias transitivas y aprobación Fase7 siguen NEEDS_REVIEW;
-el validador automático CI de evidencia sigue pendiente de implementación.
+CPython 3.12.14, OpenJDK 17.0.20+8, Node 24.22.1, Linux x86_64 y locks existentes;
+sin paquetes nuevos. Herramientas manuales, licencias transitivas/Fase7 pendientes
+de revisión; bloqueo CI de evidencias aún no implementado. Piso 71/65 fichas/256
+formatos; se preservan versiones VPS mayores. Solo Cloud, sin Android, merge ni
+despliegue. Evidencia sanitizada en generated/fields.json y MANIFEST.
+
+El wrapper nuevo de captura falló primero porque el auxiliar se llamaba
+inspect.py y ocultaba inspect de stdlib al cargar pyelftools. Se renombró
+inspect_fields.py; no cambió el algoritmo ni se añadió una dependencia.

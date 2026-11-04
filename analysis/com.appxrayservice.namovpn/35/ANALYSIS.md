@@ -44,15 +44,19 @@ no se verificó criptográficamente toda la firma ni equivalencia oficial Play.
 `j44.m/n` es XXTEA con **delta772515655**, enteros32bits little endian,
 clave truncada/rellenada16bytes, última palabra como longitud; entrada Base64.
 No es delta estándar0x9e3779b9 ni requiere el desplazamiento UTF16 de ZiG.
-El interior viene en texto. No aplicar heurísticas de recifrado o extracción
-de URI a Servers/Networks. `CatalogOracle.java` transcribe las dos direcciones
-independientemente de Python. El verificador real recibe la clave del SO fijado
-por hash, la coteja con la constante inline y compara todo el documento.
+**Corrección 2026-11-04:** la conclusión anterior de que el interior ya estaba
+en texto era incorrecta. El oráculo inicial solo validaba el sobre XXTEA;
+comparar ese JSON entero dejaba sin detectar los campos Base64 internos.
+`CatalogOracle.java` conserva su función de referencia del sobre. La segunda
+capa se contrasta ahora con `tools/fields/FieldOracle.java`, independientemente
+del codec Python. Ver [FIELDS_FIX.md](FIELDS_FIX.md) para el trazado y el alcance.
 
 GET original con agente5.3.2: HTTP200,72881bytes, text/plain UTF8. Java abre
 **22.3 /14 Servers /13 Networks**, con Version, Message, setOpenVPN preservados.
-Python, CLI y child worker dan el mismo objeto entero. Segunda descarga desde
-el adaptador operativo confirma bytes y resultado. Hashes/conteos en generated.
+Python, CLI y child worker dan ahora el mismo objeto entero tras ambas capas.
+La segunda descarga confirma bytes y resultado: 87 campos internos cambian.
+Hashes/conteos en `generated/fields.json`; los resultados previos del sobre no
+demostraban decodificación de campos ni deben interpretarse como tal.
 
 El propietario pidió incluir las claves en código para no perderlas. La
 constante es exclusivamente del formato local y se incorpora en `codec.py`;

@@ -61,7 +61,7 @@ test("HTTP Conexión never hides a current-source 404 with the obsolete default 
 test("HTTP Conexión original large PNG and availability retain all other public methods",()=>{
  assert(providerIds().includes("http-conexion"));assert(PUBLIC_PROVIDER_IDS.includes("http-conexion"));
  assert(providerEnabled("http-conexion",{CLOUD_SERVER_VPN_ENABLED:"true"}));
- assert.equal(CATALOG_VERSION,70);assert.equal(activeCatalogVersion({CLOUD_SERVER_VPN_CATALOG_VERSION:"215686715"}),215686715);
+ assert.equal(CATALOG_VERSION,71);assert.equal(activeCatalogVersion({CLOUD_SERVER_VPN_CATALOG_VERSION:"215686715"}),215686715);
  const doc=catalog(),app=doc.apps.find(x=>x.id==="http-conexion");assert.equal(doc.apps.length,65);assert.equal(doc.formats.length,256);
  assert.equal(app.name,"HTTP Conexión");assert.equal(app.iconSha256,"5b0e24bddf371bd0256c564c221c0fe87b8dc1b23340e51de6e224386f83b41a");
  assert.equal(iconFor(app.id).bytes.length,449874);assert(!JSON.stringify(app).includes("https://"));

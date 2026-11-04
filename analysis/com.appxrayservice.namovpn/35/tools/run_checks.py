@@ -3,7 +3,8 @@
 import argparse,json,subprocess,sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[4]
-NODE_TESTS=['namo-vpn','fnf-tunnel-bd','alsaher-vip','halcon-r-net','server-vpn-provider',
+NODE_TESTS=['namo-vpn','http-conexion','http-conexion-firebase','genis-vpn','speicers-turbo-vpn',
+ 'fnf-tunnel-bd','alsaher-vip','halcon-r-net','server-vpn-provider',
  'server-vpn-worker-contract','alfaisal-tunnel-plus','server-vpn-catalog','zig-tunnel',
  'mm-tunnel','text-format-catalog','vip-snipher-pro','server-vpn-any-speicers',
  'enaa-tunnel','ultra-tunnel','jyfast-vpn-ultra']

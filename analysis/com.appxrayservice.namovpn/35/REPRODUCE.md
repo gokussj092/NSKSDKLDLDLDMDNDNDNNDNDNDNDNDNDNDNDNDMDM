@@ -73,7 +73,8 @@ para NAMO. La clave no autentica peticiones ni pertenece a una cuenta.
 Se conserva en history la primera revisión que rechazó el JPEG llamado icon.png
 en el contenedor. No ejecutar esa revisión como método final.
 
-`verify.py` compara documento entero Java/Python/CLI/worker y vuelve a descargar
+`verify.py` compara documento entero tras XXTEA **y campos Base64/UTF-8** entre
+Java/Python/CLI/worker y vuelve a descargar
 con el adaptador operativo. Esperado:22.3,14 Servers,13 Networks, SHA256 remoto
 578ad82f…eee06. `make_vectors.py` genera datos ficticios con JavaE, nunca copia
 registros reales. `run_checks.py` ejecuta Node desde cloud/web y unittest desde
@@ -87,5 +88,31 @@ Inventario base ejecutado con
 `analysis/com.halcon.connect/1391/tools/dependency_inventory.py` y completado
 por `tools/finalize.py /ruta/privada/namo`. Fuentes compartidas se reutilizan
 sin cambios, con hash y commit en MANIFEST/lock. No hay autocertificación CI.
-Antes del rollout, subir la versión configurada del VPS si supera el piso66;
+Antes del rollout, subir la versión configurada del VPS si supera el piso71;
 conservar monotonía, controles y secretos existentes. No se despliega aquí.
+
+## Revisión de campos internos
+
+`recover.py` conserva su finalidad histórica de recuperar constantes y abrir el
+sobre; su JSON aún tiene campos Base64. La salida final correcta se obtiene con
+`verify.py` actualizado o el CLI operativo. No confundir ambas salidas.
+
+Después de prepare/JADX/strings, sitúe el XAPK en
+`/ruta/privada/namo/NAMO-VPN-35.xapk` y ejecute:
+
+```sh
+python analysis/com.appxrayservice.namovpn/35/tools/fields/capture_outer.py /ruta/privada/namo
+python analysis/com.appxrayservice.namovpn/35/tools/fields/inspect_fields.py /ruta/privada/namo
+python analysis/com.appxrayservice.namovpn/35/tools/verify.py /ruta/privada/namo/unpacked/extracted/config.arm64_v8a/lib/arm64-v8a/libapi-namo.so /ruta/privada/namo/verified /ruta/privada/namo/remote.enc --download
+python analysis/com.appxrayservice.namovpn/35/tools/make_vectors.py
+python analysis/com.appxrayservice.namovpn/35/tools/run_checks.py /ruta/privada/namo/final-checks
+node analysis/com.appxrayservice.namovpn/35/tools/probe_node.mjs --replay /ruta/privada/namo/remote.enc /ruta/privada/namo/verified/remote.worker.json
+node analysis/com.appxrayservice.namovpn/35/tools/probe_node.mjs --real /ruta/privada/namo/node.enc
+python analysis/com.appxrayservice.namovpn/35/tools/fields/finalize.py /ruta/privada/namo
+```
+
+Esperado: 87 campos de filas decodificados, igualdad completa en ambas descargas,
+15 pruebas Python y 172 Node. `FieldOracle.java` usa Java Base64/UTF-8 y se ejecuta
+por source launcher, sin Android ni dependencias Maven. El entorno debe contener
+los fixtures e iconos originales de la revisión Git; no reemplazarlos con mocks
+para ocultar ausencias. Los informes públicos contienen solo hashes y conteos.

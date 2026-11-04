@@ -60,7 +60,7 @@ test("Genis source failure never returns the included catalog",async t=>{
 
 test("Genis original launcher pixels, metadata and monotonic public catalog",()=>{
   assert(providerIds().includes(id));assert(PUBLIC_PROVIDER_IDS.includes(id));
-  assert.equal(CATALOG_VERSION,70);assert.equal(activeCatalogVersion({CLOUD_SERVER_VPN_CATALOG_VERSION:"215686715"}),215686715);
+  assert.equal(CATALOG_VERSION,71);assert.equal(activeCatalogVersion({CLOUD_SERVER_VPN_CATALOG_VERSION:"215686715"}),215686715);
   const doc=catalog(),app=doc.apps.find(x=>x.id===id);
   assert.equal(doc.apps.length,65);assert.equal(doc.formats.length,256);assert.equal(app.name,"Genis VPN");
   assert.equal(app.iconSha256,"ae3cc43d7f773363966b9afa2e981f0deee5e8c96d2611a2f8b768581311756b");

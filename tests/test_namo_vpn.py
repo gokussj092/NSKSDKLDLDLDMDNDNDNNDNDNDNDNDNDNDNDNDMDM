@@ -15,14 +15,48 @@ class NamoCatalogTests(unittest.TestCase):
         self.assertEqual(codec.decode_catalog(self.data)['Networks'][0]['UnusualPlainHex'],'deadbeef')
     def test_independent_java_and_all_padding_lengths(self):
         docs=[{**self.expected,'Message':'x'*n} for n in range(4)]
-        inputs=[json.dumps(d,ensure_ascii=False).encode() for d in docs]
+        inputs=[json.dumps(vectors.transform_fields(d,'E'),ensure_ascii=False).encode() for d in docs]
         for doc,enc in zip(docs,vectors.transform('E',inputs)):self.assertEqual(codec.decode_catalog(enc),doc)
-        self.assertEqual(json.loads(vectors.transform('D',[self.data])[0]),self.expected)
+        self.assertEqual(vectors.transform_fields(json.loads(vectors.transform('D',[self.data])[0])),self.expected)
+    def test_inner_fields_are_really_encoded_in_java_fixture(self):
+        outer=json.loads(vectors.transform('D',[self.data])[0])
+        for group,fields in [('Servers',codec.SERVER_FIELDS),('Networks',codec.NETWORK_FIELDS)]:
+            for key in fields:
+                self.assertNotEqual(outer[group][0][key],self.expected[group][0][key])
+        self.assertNotEqual(outer['setOpenVPN'],self.expected['setOpenVPN'])
+    def test_decode_once_and_preserve_metadata_and_string_types(self):
+        doc=json.loads(json.dumps(self.expected));doc['Servers'][0]['Username']='dGVzdA=='
+        enc=vectors.transform('E',[json.dumps(vectors.transform_fields(doc,'E')).encode()])[0]
+        out=codec.decode_catalog(enc);self.assertEqual(out,doc)
+        self.assertEqual(out['Networks'][0]['FutureBase64'],'cHJlc2VydmU=')
+        self.assertEqual(out['Servers'][0]['TCPPort'],'443')
+    def test_inner_empty_missing_and_unpadded(self):
+        doc=vectors.transform_fields(self.expected,'E')
+        doc['Servers'][0]['Password']='';del doc['Servers'][0]['ProxyIP']
+        doc['Networks'][0]['Sni']='ZnJvbnQuZXhhbXBsZS5vcmc' # unpadded
+        out=codec.decode_catalog(vectors.transform('E',[json.dumps(doc).encode()])[0])
+        self.assertEqual(out['Servers'][0]['Password'],'');self.assertNotIn('ProxyIP',out['Servers'][0])
+        self.assertEqual(out['Networks'][0]['Sni'],'front.example.org')
+    def test_inner_corruption_type_and_utf8_fail_closed(self):
+        base=vectors.transform_fields(self.expected,'E');docs=[]
+        for group,key in [('Servers','ServerIP'),('Networks','Payload'),(None,'setOpenVPN')]:
+            for bad in ['bad!', 'A', 'YQ===', 'YQ=x', 'YQ=', '\n ', '/w==', 'ไทย', 1, None, []]:
+                doc=json.loads(json.dumps(base))
+                (doc[group][0] if group else doc)[key]=bad
+                docs.append(json.dumps(doc).encode())
+        for i,enc in enumerate(vectors.transform('E',docs)):
+            with self.subTest(case=i),self.assertRaises(ValueError):codec.decode_catalog(enc)
     def test_worker_entire_document(self):
         from cloud.workers.python.engine import decode_provider_catalog
         r=decode_provider_catalog('namo-vpn',self.data)
         self.assertEqual(r['structuredJson'],self.expected);self.assertEqual(json.loads(r['rawText']),self.expected)
         self.assertEqual(r['providerId'],'namo-vpn');self.assertFalse(r['isPartial']);self.assertEqual(r['warnings'],[])
+    def test_worker_rejects_bad_inner_field_without_partial_result(self):
+        from cloud.workers.python.engine import decode_provider_catalog,DecodeFailure
+        doc=vectors.transform_fields(self.expected,'E');doc['Networks'][0]['Payload']='private-marker!'
+        data=vectors.transform('E',[json.dumps(doc).encode()])[0]
+        with self.assertRaises(DecodeFailure) as result:decode_provider_catalog('namo-vpn',data)
+        self.assertNotIn('private-marker',str(result.exception))
     def test_cli_file_and_stdin(self):
         for args in [[str(DOSSIER/'tests/fixtures/catalog.txt')],['--stdin']]:
             r=subprocess.run([sys.executable,str(ROOT/'decoders/Python/apps/NAMO_VPN/server_catalog_decoder.py'),*args],

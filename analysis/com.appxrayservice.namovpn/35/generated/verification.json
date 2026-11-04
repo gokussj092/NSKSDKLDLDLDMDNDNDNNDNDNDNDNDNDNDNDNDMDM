@@ -10,7 +10,10 @@
     },
     "whole_java_equal": true,
     "whole_cli_equal": true,
-    "whole_worker_equal": true
+    "whole_worker_equal": true,
+    "field_layer": "Base64/UTF-8 once; explicit app schema",
+    "changed_nonempty_fields": 87,
+    "decoded_sha256": "339be291594ac0b6fb587abe594693c092dc4c3c335d15eb0599375da2b1963c"
   },
   {
     "source": "downloaded.enc",
@@ -23,6 +26,9 @@
     },
     "whole_java_equal": true,
     "whole_cli_equal": true,
-    "whole_worker_equal": true
+    "whole_worker_equal": true,
+    "field_layer": "Base64/UTF-8 once; explicit app schema",
+    "changed_nonempty_fields": 87,
+    "decoded_sha256": "339be291594ac0b6fb587abe594693c092dc4c3c335d15eb0599375da2b1963c"
   }
 ]

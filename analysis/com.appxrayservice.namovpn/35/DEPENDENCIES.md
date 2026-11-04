@@ -1,5 +1,16 @@
 # Dependencias y herramientas realmente utilizadas
 
+Revisión de campos 2026-11-04: mismos CPython 3.12.14, OpenJDK 17.0.20+8,
+Node 24.22.1, Linux x86_64 y JADX 1.5.6 fijado por SHA256. Se reutilizan
+prepare/inspect_apk, paranoid_strings, elf_inspect y los locks siguientes.
+No se instala ni añade ningún paquete. La segunda referencia usa
+`java.util.Base64` y `java.nio.charset.StandardCharsets` del OpenJDK ya
+inventariado (GPLv2 con Classpath Exception), sin Maven. El codec usa solo
+`base64`, `re` y UTF-8 de la biblioteca estándar de Python (PSF).
+Scripts propios nuevos: `tools/fields/{inspect_fields.py,capture_outer.py,reference.py,FieldOracle.java,finalize.py}`;
+sus hashes y propósito quedan en MANIFEST y generated/fields.json. Uso manual
+de investigación; no constituye aprobación para ejecución automática Fase7.
+
 Linux x86_64, entorno Python aislado nuevo. Runtime NAMO: biblioteca estándar y
 validadores canónicos de BD_NET_VPN, sin cambios en ese proveedor. Análisis:
 Androguard, pyelftools, Capstone, Pillow y Loguru. PyCryptodome se instaló como

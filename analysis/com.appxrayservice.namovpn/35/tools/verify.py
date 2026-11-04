@@ -6,8 +6,11 @@ ROOT=Path(__file__).resolve().parents[4];sys.path.insert(0,str(ROOT))
 from recover import oracle,LIB_SHA
 from scripts.apk_analysis.elf_inspect import ElfImage
 from decoders.Python.apps.NAMO_VPN import codec,server_catalog_decoder as catalog
+sys.path.insert(0,str(Path(__file__).with_name('fields')))
+from reference import transform_fields
 def verify(path,key,out):
-    data=path.read_bytes();expected=json.loads(oracle('D',key,[data])[0]);actual=json.loads(catalog.run(data))
+    data=path.read_bytes();outer=json.loads(oracle('D',key,[data])[0])
+    expected=transform_fields(outer);actual=json.loads(catalog.run(data))
     assert actual==expected,'Whole Python/Java mismatch'
     done=subprocess.run([sys.executable,str(ROOT/'decoders/Python/apps/NAMO_VPN/server_catalog_decoder.py'),str(path.resolve())],
       capture_output=True,check=True,timeout=30)
@@ -19,7 +22,11 @@ def verify(path,key,out):
         f=out/(path.stem+suffix);f.touch(mode=0o600,exist_ok=True);f.chmod(0o600);f.write_text(json.dumps(value,ensure_ascii=False,indent=2)+'\n')
     return {'source':path.name,'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest(),
       'version':actual['Version'],'counts':{k:len(v) for k,v in actual.items() if isinstance(v,list)},
-      'whole_java_equal':True,'whole_cli_equal':True,'whole_worker_equal':True}
+      'whole_java_equal':True,'whole_cli_equal':True,'whole_worker_equal':True,
+      'field_layer':'Base64/UTF-8 once; explicit app schema',
+      'changed_nonempty_fields':sum(outer[g][i].get(k)!=r.get(k) for g in ['Servers','Networks']
+          for i,r in enumerate(actual[g]) for k in r),
+      'decoded_sha256':hashlib.sha256(json.dumps(actual,ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()).hexdigest()}
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('native',type=Path);p.add_argument('private_output',type=Path)
     p.add_argument('catalogs',nargs='+',type=Path);p.add_argument('--download',action='store_true');a=p.parse_args()

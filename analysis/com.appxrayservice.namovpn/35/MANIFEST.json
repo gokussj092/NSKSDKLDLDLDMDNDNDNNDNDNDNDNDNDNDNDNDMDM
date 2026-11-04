@@ -4,7 +4,7 @@
   "app_name": "NAMO VPN",
   "version_name": "3.5-namo",
   "version_code": 35,
-  "observed_at": "2026-11-04T05:05:25.048718+00:00",
+  "observed_at": "2026-11-04T20:49:59.255623+00:00",
   "source_category": "user_store_link_public_mirror",
   "authorization_note": "User requested the next Cloud catalog integration with legitimate original updater parameters; new branch from main. No Android build, merge or deployment requested.",
   "status": "VERIFIED",
@@ -19,7 +19,12 @@
         "Networks": 13
       },
       "java_cli_worker_whole_document_equal": true,
-      "node_vps_transport": "PENDING"
+      "node_vps_transport": "PENDING",
+      "layers_verified": [
+        "XXTEA envelope",
+        "Base64/UTF-8 fields"
+      ],
+      "changed_nonempty_fields": 87
     },
     {
       "kind": "files",
@@ -89,7 +94,7 @@
     },
     {
       "path": "analysis/com.appxrayservice.namovpn/35/tools/make_vectors.py",
-      "sha256": "04ac9421043489552b702ef6d1fcf0512e3baee8f835e99671cc7526c987f9ad",
+      "sha256": "49b4e585b5f5a7cecdaca4d33f1301b77a54ab6a07d9bb2a4d2693e0d512d0a9",
       "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
     },
     {
@@ -109,7 +114,7 @@
     },
     {
       "path": "analysis/com.appxrayservice.namovpn/35/tools/run_checks.py",
-      "sha256": "cedce545295179c60e5e4e6e0cf5ea291a14c5aeb17bde948f9a99e81db26801",
+      "sha256": "56dbd5d8d6555c1b34534efb14c884f1685d17bf3bbbe935eb765ac7c214991c",
       "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
     },
     {
@@ -124,7 +129,37 @@
     },
     {
       "path": "analysis/com.appxrayservice.namovpn/35/tools/verify.py",
-      "sha256": "6503f6ccf4c1206ac7d27670694a915fc820bb567bb508255648b8dbe72cf221",
+      "sha256": "26d5b4bca7cd527d996a492f6cfb03739a520541eb0439c8fcfdc0380075b59d",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    },
+    {
+      "path": "analysis/com.appxrayservice.namovpn/35/tools/fields/FieldOracle.java",
+      "sha256": "e431701390cc023b9debe456150cb1ffb72746650731c0cf4f5f763f2b12b20e",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    },
+    {
+      "path": "analysis/com.appxrayservice.namovpn/35/tools/fields/capture_outer.py",
+      "sha256": "a551f1364c43dd8f9946b129e186ed4be762705f932bf53df7c086d1f7c4509d",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    },
+    {
+      "path": "analysis/com.appxrayservice.namovpn/35/tools/fields/finalize.py",
+      "sha256": "3c4efd3f4bf7c1ee106e615690f646508f081073dabbd5fe80de726d46b71d37",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    },
+    {
+      "path": "analysis/com.appxrayservice.namovpn/35/tools/fields/history/inspect_v1_shadowed_stdlib.py",
+      "sha256": "7c12d90c69a7008453ef56df934be73bf40584a062892f2031eeb0313d0391b2",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    },
+    {
+      "path": "analysis/com.appxrayservice.namovpn/35/tools/fields/inspect_fields.py",
+      "sha256": "5696e56bfa09982092565002616d074f6de5a577de46ef9e3c57d97ef602541e",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    },
+    {
+      "path": "analysis/com.appxrayservice.namovpn/35/tools/fields/reference.py",
+      "sha256": "bd226ff67f9bf69efc712bfaddb9a412be378788a9ab1b38de7680d29cce95f0",
       "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
     }
   ],
@@ -911,7 +946,10 @@
     "generated/recovery.json",
     "generated/verification.json",
     "generated/checks.json",
-    "generated/signature.json"
+    "generated/signature.json",
+    "FIELDS_FIX.md",
+    "generated/fields.json",
+    "generated/field-inspection.json"
   ],
   "limitations": [
     "Mirror sample; latest official Play build/signing equivalence unverified.",
@@ -920,7 +958,8 @@
     "No Android changes/builds, merge, deployment, file/text/export or VPN connection tests.",
     "No included catalog found; bundled V2Ray template is not remote catalog evidence.",
     "XXTEA is unauthenticated; schema rejection is not universal integrity protection.",
-    "Transitive licenses/Phase7 auto-execution remain NEEDS_REVIEW; evidence CI validator not implemented."
+    "Transitive licenses/Phase7 auto-execution remain NEEDS_REVIEW; evidence CI validator not implemented.",
+    "Backend rejects invalid field Base64/UTF-8 more strictly than Android; no recursive decoding or unknown-field guessing."
   ],
   "network_requirements": [
     "HTTPS APKPure acquisition and fixed original raw GitHub updater; install dependencies/JADX only when absent."
@@ -931,7 +970,7 @@
   "unresolved_questions": [
     "Real Node transport in VPS."
   ],
-  "observed_local_date": "2026-11-03",
+  "observed_local_date": "2026-11-04",
   "source_commit": "45db1d4ed4c18df6911a7f77a744776353223a8c",
   "branch": "feat/nuevas-integraciones",
   "apk_metadata": {
@@ -990,11 +1029,27 @@
   "fixture_hashes": [
     {
       "path": "tests/fixtures/catalog.txt",
-      "sha256": "0c0058e7f2abca8b3edb4255c010965401847b0041abdab00c1c38a2558f8af4"
+      "sha256": "8bb0df9d873c49662fafd1c0c7f194623d82169d702c282f06c9b227b124e995"
     },
     {
       "path": "tests/fixtures/expected.json",
-      "sha256": "72d2ff25b5f1c2c3c5f981d468d1cdef9240891a031b7ee14e473e76560cda50"
+      "sha256": "2a82040841dd9c4a210f36e418868191c6e16a3ffbf02bbbdb3f137a61ebc382"
     }
-  ]
+  ],
+  "field_revision": {
+    "base_commit": "a1b6721e39657d9e6e5360de88dede30d772f764",
+    "previous_full_field_claim": "WITHDRAWN: previous oracle covered only XXTEA envelope",
+    "runtime_versions": {
+      "python": "3.12.14",
+      "java": "17.0.20+8-1-24.04-Ubuntu",
+      "node": "24.22.1",
+      "jadx": "1.5.6"
+    },
+    "dependency_changes": "none; Java/Python standard library only",
+    "catalog_floor": 71,
+    "cards": 65,
+    "formats": 256,
+    "evidence": "generated/fields.json",
+    "schema": "Explicit Base64/UTF-8 fields after XXTEA; once; preserve all keys/types"
+  }
 }

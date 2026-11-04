@@ -1,4 +1,4 @@
-"""NAMO VPN 3.5/code35: Base64 + XXTEA(delta772515655), complete plain JSON.
+"""NAMO VPN 3.5/code35: XXTEA envelope and explicit Base64/UTF-8 fields.
 
 The build's native format constant is part of this backend module. It is a
 decryption-format key, not an HTTP credential or a user/server account secret.
@@ -11,6 +11,35 @@ FORMAT_KEY = b'namo090529' # MainDetail.b, static format constant from libapi-na
 DELTA=772515655
 MASK=0xffffffff
 MAX_OUTPUT=4*1024*1024
+
+# sd0.v copies these catalog values into preferences; f60.m decodes them at
+# their consumers (x93, SSHCoreService, bo, d81 and MainActivity). No guessing
+# from the value's alphabet: names, ports, flags and unknown fields stay intact.
+SERVER_FIELDS=('ServerIP','Cloudfront','NameServer','PublicKey','ServerDNS',
+    'ProxyIP','Username','Password','setOpenVPN','OvpnCertificate','V2Ray','UDPConfig')
+NETWORK_FIELDS=('Sni','ServerDNS','Payload','SquidProxy')
+
+def decode_field(value):
+    if not isinstance(value,str):raise CatalogError('Invalid NAMO encoded field type')
+    if not value:return value
+    try:
+        compact=re.sub(rb'\s+',b'',value.encode('ascii'))
+        if (not compact or len(compact)%4==1 or
+            not re.fullmatch(rb'[A-Za-z0-9+/]*={0,2}',compact) or
+            (b'=' in compact and len(compact)%4)):
+            raise ValueError('Base64')
+        return base64.b64decode(compact+b'='*((-len(compact))%4),validate=True).decode('utf-8')
+    except (ValueError,UnicodeError) as e:
+        raise CatalogError('Invalid NAMO encoded field') from e
+
+def decode_fields(doc):
+    """Decode each documented field once, preserving keys, types and metadata."""
+    for rows,fields in [(doc['Servers'],SERVER_FIELDS),(doc['Networks'],NETWORK_FIELDS),
+                        ([doc],('setOpenVPN',))]:
+        for row in rows:
+            for field in fields:
+                if field in row:row[field]=decode_field(row[field])
+    return doc
 
 def decode_catalog(data: bytes) -> dict:
     if not isinstance(data,bytes) or not data or len(data)>MAX_INPUT:
@@ -43,7 +72,7 @@ def decode_catalog(data: bytes) -> dict:
                 raise CatalogError('Invalid NAMO catalog records')
         if 'Message' in doc and not isinstance(doc['Message'],str):
             raise CatalogError('Invalid NAMO message')
-        return doc
+        return decode_fields(doc)
     except (ValueError,UnicodeError,TypeError,RecursionError,struct.error) as e:
         raise CatalogError('Invalid or unsupported NAMO catalog') from e
 

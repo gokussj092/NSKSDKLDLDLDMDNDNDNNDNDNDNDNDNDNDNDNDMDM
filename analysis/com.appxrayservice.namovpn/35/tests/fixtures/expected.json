@@ -8,8 +8,15 @@
       "Username": "sample-user",
       "Password": "sample-password",
       "TCPPort": "443",
-      "setOpenVPN": "",
-      "V2Ray": "vless://fictional@example.org:443"
+      "setOpenVPN": "client\nremote vpn.example.org 443\n",
+      "OvpnCertificate": "client\n",
+      "V2Ray": "vless://fictional@example.org:443",
+      "Cloudfront": "front.example.org",
+      "NameServer": "ns.example.org",
+      "PublicKey": "0123456789abcdef",
+      "ServerDNS": "dns.example.org",
+      "ProxyIP": "proxy.example.org",
+      "UDPConfig": "{\"server\":\"example.org\"}"
     }
   ],
   "Networks": [
@@ -17,11 +24,15 @@
       "PayloadName": "Fictional network",
       "Sni": "front.example.org",
       "Payload": "GET / HTTP/1.1\r\nHost: example.org\r\n\r\n",
+      "ServerDNS": "dns.example.org",
+      "SquidProxy": "proxy.example.org",
       "Protocal": "SSL",
-      "UnusualPlainHex": "deadbeef"
+      "UnusualPlainHex": "deadbeef",
+      "FutureBase64": "cHJlc2VydmU=",
+      "empty": ""
     }
   ],
-  "setOpenVPN": "",
+  "setOpenVPN": "client\nremote root.example.org 443\n",
   "FutureMetadata": {
     "nested": [
       true,
