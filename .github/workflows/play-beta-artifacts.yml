@@ -1,7 +1,12 @@
 name: SP-DECODE Play closed-test AAB and external beta APK
-# Manual Play candidate preparation after private QA; no push trigger or release publishing.
+# One-time isolated Play candidate build; no release publishing and no changes to main.
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - build/aab-1-1-26-b41-45db1d4
+    paths:
+      - .github/workflows/play-beta-artifacts.yml
 
 permissions:
   contents: read
@@ -22,7 +27,7 @@ jobs:
     if: >-
       github.repository == 'gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM' &&
       github.event.repository.private == true &&
-      (github.ref == 'refs/heads/fix/http-jireh-current-method' || github.ref == 'refs/heads/feat/catalog-notifications-donations' || github.ref == 'refs/heads/main') &&
+      (github.ref == 'refs/heads/fix/http-jireh-current-method' || github.ref == 'refs/heads/feat/catalog-notifications-donations' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/build/aab-1-1-26-b41-45db1d4') &&
       github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 55
