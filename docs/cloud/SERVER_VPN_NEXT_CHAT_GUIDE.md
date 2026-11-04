@@ -1,3 +1,20 @@
+# NAMO VPN3.5-namo/build35 — nueva rama de integraciones
+
+Por petición del propietario, rama `feat/nuevas-integraciones` desde main45db1d4.
+Solo Cloud. Updater GET original público con OkHttp5.3.2, HTTP200/72881bytes,
+catálogo22.3/14 servidores/13 redes, documento entero igual a Java/CLI/worker.
+Constante de formato recuperada del getter JNI e incluida en NAMO_VPN/codec.py
+por solicitud del propietario: no es autorización HTTP y no requiere .env.
+
+PNG launcher original192x192/25421bytes, proveedor/switch/gateway conectados,
+piso66/62 fichas;256 formatos.10 Python/140 Node aprobadas. Node real aquí
+REMOTE_NETWORK_DENIED; replay real bytes con HTTP simulado pasa. VPS real y
+rollout pendientes; subir versión configurada manteniendo monotonía al desplegar.
+Sin Android/build, merge ni despliegue. No inferir archivos/textos/exportadores.
+[Expediente, scripts, dependencias y negativos](../../analysis/com.appxrayservice.namovpn/35/ANALYSIS.md).
+
+---
+
 # ALSAHER VIP 1.1/build2 — catálogo Cloud integrado en código, 2026-11-03
 
 El propietario aportó com.alsaher.vip desde Archive.org y pidió **solo Cloud,

@@ -1,0 +1,28 @@
+[
+  {
+    "source": "remote.enc",
+    "bytes": 72881,
+    "sha256": "578ad82fed747a2670a8fe4fb0abaeda16df60684581bec0a7e10e2d47aeee06",
+    "version": "22.3",
+    "counts": {
+      "Servers": 14,
+      "Networks": 13
+    },
+    "whole_java_equal": true,
+    "whole_cli_equal": true,
+    "whole_worker_equal": true
+  },
+  {
+    "source": "downloaded.enc",
+    "bytes": 72881,
+    "sha256": "578ad82fed747a2670a8fe4fb0abaeda16df60684581bec0a7e10e2d47aeee06",
+    "version": "22.3",
+    "counts": {
+      "Servers": 14,
+      "Networks": 13
+    },
+    "whole_java_equal": true,
+    "whole_cli_equal": true,
+    "whole_worker_equal": true
+  }
+]

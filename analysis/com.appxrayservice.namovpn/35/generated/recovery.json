@@ -1,0 +1,33 @@
+{
+  "source": "https://raw.githubusercontent.com/Anurak2534/ohmvpn/refs/heads/main/newnamo.json",
+  "nativeSha256": "c12426484f92371508ac44c9c207a03d1da4a2a97ec1e0ad5486effc95e17ebf",
+  "jniGetters": {
+    "a": "0x6b8/0x4f0",
+    "b": "0x6cc/0x541"
+  },
+  "formatKeyBytes": 10,
+  "formatKeySha256": "2f3cb6bebbf6d6ba8d4b69c4c968aac9f5eacf434e8a49b3f4a47e7647420ee6",
+  "delta": 772515655,
+  "authorization": "none; format key is local decryption only",
+  "userAgent": "okhttp/5.3.2",
+  "http": {
+    "status": 200,
+    "contentType": "text/plain; charset=utf-8",
+    "bytes": 72881,
+    "sha256": "578ad82fed747a2670a8fe4fb0abaeda16df60684581bec0a7e10e2d47aeee06"
+  },
+  "catalog": {
+    "version": "22.3",
+    "keys": [
+      "Version",
+      "Message",
+      "Servers",
+      "Networks",
+      "setOpenVPN"
+    ],
+    "counts": {
+      "Servers": 14,
+      "Networks": 13
+    }
+  }
+}

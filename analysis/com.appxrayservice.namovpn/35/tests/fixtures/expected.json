@@ -1,0 +1,32 @@
+{
+  "Version": "test35",
+  "Message": "Fictional; prueba ñ ไทย 🦊",
+  "Servers": [
+    {
+      "ServerName": "Fictional server",
+      "ServerIP": "vpn.example.org",
+      "Username": "sample-user",
+      "Password": "sample-password",
+      "TCPPort": "443",
+      "setOpenVPN": "",
+      "V2Ray": "vless://fictional@example.org:443"
+    }
+  ],
+  "Networks": [
+    {
+      "PayloadName": "Fictional network",
+      "Sni": "front.example.org",
+      "Payload": "GET / HTTP/1.1\r\nHost: example.org\r\n\r\n",
+      "Protocal": "SSL",
+      "UnusualPlainHex": "deadbeef"
+    }
+  ],
+  "setOpenVPN": "",
+  "FutureMetadata": {
+    "nested": [
+      true,
+      null,
+      35
+    ]
+  }
+}

@@ -32,3 +32,5 @@ El archivo histórico [SOCKSIP_VER8_VER7_VER6_STUDY.md](SOCKSIP_VER8_VER7_VER6_S
 - [com.alsaher.vip / 2 — ALSAHER VIP](com.alsaher.vip/README.md): VERIFIED_REAL; catálogo remoto9.9.58/14 servidores/3 HTTP/9 SSL, JSON entero igual a Java/CLI/worker. Solo Cloud; Node/VPS pendiente.
 
 - [dastan.prince.myvpnksa / 35 — FNF TUNNEL BD](dastan.prince.myvpnksa/README.md): VERIFIED_REAL; remoto82.0/28 servidores/1193 payloads, documento entero igual a Java/CLI/worker. Solo Cloud; Node/VPS real pendiente.
+
+- [com.appxrayservice.namovpn / 35 — NAMO VPN](com.appxrayservice.namovpn/README.md): VERIFIED_REAL; remoto22.3/14 servidores/13 redes, JSON entero igual a Java/CLI/worker. Constante de formato incluida en código; Node/VPS real pendiente.

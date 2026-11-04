@@ -14,6 +14,7 @@ const ROOT="/app/provider-control";
 const IDS=Object.freeze(["ehi-cloud","hc-cloud","nur-tunnel",...providerIds()]);
 export const PUBLIC_PROVIDER_IDS=IDS;
 const LABELS=Object.freeze({
+  "namo-vpn":"NAMO VPN",
   "fnf-tunnel-bd":"FNF TUNNEL BD",
   "alsaher-vip":"ALSAHER VIP",
   "halcon-r-net":"HALCON RAMOS Conectividad",
