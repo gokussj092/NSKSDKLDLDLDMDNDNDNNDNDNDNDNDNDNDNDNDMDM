@@ -8,6 +8,8 @@ import android.graphics.BitmapFactory
 import android.util.Base64
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -213,7 +215,8 @@ internal class ServerVpnCatalogRepository(
 
     /** VPS-only hint; verified HTTPS metadata and encrypted cache are authoritative. */
     suspend fun refreshIfDue(force:Boolean=false,announcedVersion:Int=0,
-        onProgress:((Int)->Unit)?=null):List<ServerVpnApp> = mutex.withLock {
+        onProgress:((Int)->Unit)?=null,
+        onTransfer:((Long,Long)->Unit)?=null):List<ServerVpnApp> = mutex.withLock {
         withContext(Dispatchers.IO) {
             val previous=stored()
             val available=verifiedApps(previous)
@@ -235,7 +238,8 @@ internal class ServerVpnCatalogRepository(
             try {
                 // Manual refresh still uses the version contract; metadata changes must bump version.
                 val knownVersion=if(!completeCache || cachedFormats.isEmpty() || !recipientMetadata)0 else previousVersion
-                val remote=client.serverVpnCatalog(knownVersion)
+                val remote=client.serverVpnCatalog(knownVersion,onTransfer)
+                currentCoroutineContext().ensureActive()
                 if(remote.optBoolean("unchanged",false)) {
                     if(available.isEmpty() || remote.optInt("catalogVersion")!=knownVersion)
                         throw IllegalStateException("Invalid catalog version response")
@@ -294,8 +298,13 @@ internal class ServerVpnCatalogRepository(
                     // processed, not a fake HTTP byte-level download progress.
                     onProgress?.invoke(minOf(99,(i+1)*100/array.length()))
                 }
-                // Write validated icons first, then atomically activate metadata.
-                for((id,data) in candidates)vault.write(id,data)
+                // Cancellation must never activate a partially validated catalog.
+                // Existing encrypted metadata remains authoritative until final write.
+                currentCoroutineContext().ensureActive()
+                for((id,data) in candidates) {
+                    currentCoroutineContext().ensureActive()
+                    vault.write(id,data)
+                }
                 val fresh=JSONObject()
                     .put("catalogVersion",remoteVersion)
                     .put("checkedAtMillis",now)
@@ -314,6 +323,7 @@ internal class ServerVpnCatalogRepository(
                     .put("onlineReferencesSchemaVersion",remote.getInt("onlineReferencesSchemaVersion"))
                     .put("onlineReferenceCount",remote.getInt("onlineReferenceCount"))
                     .put("onlineReferenceFormats",remote.getJSONArray("onlineReferenceFormats"))
+                currentCoroutineContext().ensureActive()
                 vault.write("catalog",fresh.toString().toByteArray(Charsets.UTF_8))
                 onProgress?.invoke(100)
                 verifiedApps(fresh).ifEmpty { available }.also { apps ->
