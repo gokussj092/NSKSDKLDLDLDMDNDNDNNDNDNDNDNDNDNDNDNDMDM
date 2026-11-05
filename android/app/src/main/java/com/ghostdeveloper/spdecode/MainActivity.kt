@@ -749,10 +749,19 @@ class MainActivity : ComponentActivity() {
     private fun handleExternalIntent(incoming:Intent?){
         if(incoming==null)return
         val uris: List<Uri> = when(incoming.action){
-            Intent.ACTION_VIEW->listOfNotNull(incoming.data)
-            Intent.ACTION_SEND->listOfNotNull(incoming.getParcelableExtra(Intent.EXTRA_STREAM) as? Uri)
-            Intent.ACTION_SEND_MULTIPLE->
-                incoming.getParcelableArrayListExtra<Uri>(Intent.EXTRA_STREAM)?.take(BatchImportQueue.MAX_FILES).orEmpty()
+            Intent.ACTION_VIEW->listOfNotNull(
+                incoming.data ?: incoming.clipData?.takeIf { it.itemCount>0 }?.getItemAt(0)?.uri)
+            Intent.ACTION_SEND->listOfNotNull(
+                (incoming.getParcelableExtra(Intent.EXTRA_STREAM) as? Uri)
+                    ?: incoming.clipData?.takeIf { it.itemCount>0 }?.getItemAt(0)?.uri)
+            Intent.ACTION_SEND_MULTIPLE->{
+                val extras=incoming.getParcelableArrayListExtra<Uri>(Intent.EXTRA_STREAM).orEmpty()
+                val clips=incoming.clipData?.let { clip ->
+                    (0 until clip.itemCount.coerceAtMost(BatchImportQueue.MAX_FILES))
+                        .mapNotNull { clip.getItemAt(it).uri }
+                }.orEmpty()
+                (extras+clips).distinct().take(BatchImportQueue.MAX_FILES)
+            }
             else->emptyList()
         }
         if(uris.size==1)prepareSingleImport(uris.first())
@@ -1304,6 +1313,16 @@ class MainActivity : ComponentActivity() {
             reveal=false
             try {
                 historyLoad?.await()
+                // Import routing always uses the latest authenticated encrypted local
+                // snapshot, even when an external intent starts the Activity before
+                // the asynchronous screen catalog load has finished.
+                val verifiedImportFormats=if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
+                    val cached=serverVpnCatalog.cachedFormats()
+                    if(cached.isNotEmpty()) {
+                        fileFormats=cached
+                        cached
+                    } else fileFormats
+                } else emptyList()
                 var failedNpvs=false
                 var failedProtectedHc=false
                 var cloudPasswordError:String?=null
@@ -1401,15 +1420,15 @@ class MainActivity : ComponentActivity() {
                     // Historical bundled routes are a fallback only before the
                     // first successful catalog download.
                     val supported=(if(BuildConfig.SPDECODE_CLOUD_ENABLED &&
-                        fileFormats.isNotEmpty())
-                        AndroidDecoderCatalog.detect(routingName,fileFormats)
+                        verifiedImportFormats.isNotEmpty())
+                        AndroidDecoderCatalog.detect(routingName,verifiedImportFormats)
                     else null)
                         // Pinned legacy Cloud routes remain compatible with a
                         // stale server snapshot; no general guess/fallback.
                         ?: (if(BuildConfig.SPDECODE_CLOUD_ENABLED)
                             CloudFileFormats.detect(routingName) else null)
                         ?: (if(BuildConfig.SPDECODE_CLOUD_ENABLED &&
-                                fileFormats.isNotEmpty()) null
+                                verifiedImportFormats.isNotEmpty()) null
                             else AndroidDecoderCatalog.detect(
                                 routingName,AndroidDecoderCatalog.read(this@MainActivity)))
                         ?:throw DecodeFailure(R.string.unsupported)
