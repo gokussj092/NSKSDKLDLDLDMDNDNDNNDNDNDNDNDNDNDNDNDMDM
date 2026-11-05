@@ -235,4 +235,10 @@
     <string name="apk_analysis_safety_note">प्रस्तावित विश्लेषण स्थिर है: APK इंस्टॉल या चलाया नहीं जाएगा।</string>
     <string name="apk_analysis_import_unavailable">APK आयात करें (अनुपलब्ध)</string>
     <string name="apk_analysis_no_charge">सेवा अभी सक्रिय नहीं है। कोई APK भेजा या क्रेडिट काटा नहीं जाता।</string>
+    <string name="catalog_transfer_downloading">कैटलॉग डाउनलोड हो रहा है</string>
+    <string name="catalog_transfer_completed">कैटलॉग अपडेट हो गया</string>
+    <string name="catalog_transfer_saved">सभी प्रारूप सहेजे गए हैं।</string>
+    <string name="catalog_transfer_finish">समाप्त</string>
+    <string name="catalog_transfer_bytes_total">%1$s MB / %2$s MB</string>
+    <string name="catalog_transfer_bytes_unknown">%1$s MB डाउनलोड हुआ</string>
 </resources>
