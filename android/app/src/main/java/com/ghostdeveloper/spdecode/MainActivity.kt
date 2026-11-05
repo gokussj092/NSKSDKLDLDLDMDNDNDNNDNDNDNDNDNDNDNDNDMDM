@@ -780,22 +780,7 @@ class MainActivity : ComponentActivity() {
     @Suppress("DEPRECATION")
     private fun handleExternalIntent(incoming:Intent?){
         if(incoming==null)return
-        val uris: List<Uri> = when(incoming.action){
-            Intent.ACTION_VIEW->listOfNotNull(
-                incoming.data ?: incoming.clipData?.takeIf { it.itemCount>0 }?.getItemAt(0)?.uri)
-            Intent.ACTION_SEND->listOfNotNull(
-                (incoming.getParcelableExtra(Intent.EXTRA_STREAM) as? Uri)
-                    ?: incoming.clipData?.takeIf { it.itemCount>0 }?.getItemAt(0)?.uri)
-            Intent.ACTION_SEND_MULTIPLE->{
-                val extras=incoming.getParcelableArrayListExtra<Uri>(Intent.EXTRA_STREAM).orEmpty()
-                val clips=incoming.clipData?.let { clip ->
-                    (0 until clip.itemCount.coerceAtMost(BatchImportQueue.MAX_FILES))
-                        .mapNotNull { clip.getItemAt(it).uri }
-                }.orEmpty()
-                (extras+clips).distinct().take(BatchImportQueue.MAX_FILES)
-            }
-            else->emptyList()
-        }
+        val uris=ExternalImportUris.resolve(incoming)
         if(uris.size==1)prepareSingleImport(uris.first())
         else if(uris.isNotEmpty())importFiles(uris.take(BatchImportQueue.MAX_FILES))
     }
@@ -1451,18 +1436,10 @@ class MainActivity : ComponentActivity() {
                     // not a decode request or an operational failure.
                     // Historical bundled routes are a fallback only before the
                     // first successful catalog download.
-                    val supported=(if(BuildConfig.SPDECODE_CLOUD_ENABLED &&
-                        verifiedImportFormats.isNotEmpty())
-                        AndroidDecoderCatalog.detect(routingName,verifiedImportFormats)
-                    else null)
-                        // Pinned legacy Cloud routes remain compatible with a
-                        // stale server snapshot; no general guess/fallback.
-                        ?: (if(BuildConfig.SPDECODE_CLOUD_ENABLED)
-                            CloudFileFormats.detect(routingName) else null)
-                        ?: (if(BuildConfig.SPDECODE_CLOUD_ENABLED &&
-                                verifiedImportFormats.isNotEmpty()) null
-                            else AndroidDecoderCatalog.detect(
-                                routingName,AndroidDecoderCatalog.read(this@MainActivity)))
+                    val supported=ImportFormatRouter.detect(
+                        routingName,BuildConfig.SPDECODE_CLOUD_ENABLED,
+                        verifiedImportFormats
+                    ) { AndroidDecoderCatalog.read(this@MainActivity) }
                         ?:throw DecodeFailure(R.string.unsupported)
                     // Phase A identifies pending formats but never reads or
                     // sends their bytes to a native decoder that does not exist.
