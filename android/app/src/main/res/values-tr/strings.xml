@@ -235,4 +235,10 @@
     <string name="apk_analysis_safety_note">Planlanan analiz statiktir: APK yüklenmez veya çalıştırılmaz.</string>
     <string name="apk_analysis_import_unavailable">APK içe aktar (kullanılamıyor)</string>
     <string name="apk_analysis_no_charge">Hizmet henüz aktif değil. APK gönderilmez ve kredi tahsil edilmez.</string>
+    <string name="catalog_transfer_downloading">Katalog indiriliyor</string>
+    <string name="catalog_transfer_completed">Katalog güncellendi</string>
+    <string name="catalog_transfer_saved">Tüm biçimler kaydedildi.</string>
+    <string name="catalog_transfer_finish">Bitir</string>
+    <string name="catalog_transfer_bytes_total">%1$s MB / %2$s MB</string>
+    <string name="catalog_transfer_bytes_unknown">%1$s MB indirildi</string>
 </resources>
