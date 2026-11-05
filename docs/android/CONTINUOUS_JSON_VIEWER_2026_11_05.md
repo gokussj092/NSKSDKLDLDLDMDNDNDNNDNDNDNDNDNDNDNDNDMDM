@@ -45,6 +45,6 @@ Cobertura sintética:
 
 Validación local adicional: `ContinuousJsonView` y `NativeResultEngine` compilan contra el `android.jar` oficial API 36. La plataforma se obtuvo de `platform-36_r02.zip`, verificada con el checksum publicado en el repositorio Android SDK.
 
-El workflow `json-continuous-viewer.yml` repite la validación host y ejecuta en emulador API 35 las clases `JsonTreeViewerInstrumentedTest`, `SingleResultViewInstrumentedTest` y `LargeResultEngineInstrumentedTest`. Cubre vista real, desplazamiento, última línea, valor largo, números, privacidad y acciones de la tarjeta. Su resultado debe consultarse en la ejecución del commit; agregar los tests no equivale a haberlos ejecutado satisfactoriamente.
+El workflow `json-continuous-viewer.yml` repite la validación host y ejecuta en emulador API 35 las clases `JsonTreeViewerInstrumentedTest`, `SingleResultViewInstrumentedTest` y `LargeResultEngineInstrumentedTest`. Cubre vista real, desplazamiento, última línea, valor largo, números, privacidad y acciones de la tarjeta. Las pruebas comunes están en `src/sharedAndroidTest/java`, incluido tanto en Cloud como en el build histórico; las fuentes históricas de decodificadores locales permanecen aisladas. Su resultado debe consultarse en la ejecución del commit; agregar los tests no equivale a haberlos ejecutado satisfactoriamente.
 
 No se cambian métodos de proveedores, endpoints, versiones, firma ni publicación en Google Play.

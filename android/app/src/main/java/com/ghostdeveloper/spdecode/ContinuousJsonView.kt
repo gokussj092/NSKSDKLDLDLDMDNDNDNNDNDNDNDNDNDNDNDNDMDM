@@ -57,6 +57,11 @@ internal class ContinuousJsonView(
             return true
         }
         override fun onScroll(first: MotionEvent?, last: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
+            // Let the surrounding screen continue scrolling at the document edge.
+            val canMove = if (kotlin.math.abs(distanceY) >= kotlin.math.abs(distanceX))
+                canScrollVertically(if (distanceY > 0) 1 else -1)
+            else canScrollHorizontally(if (distanceX > 0) 1 else -1)
+            parent?.requestDisallowInterceptTouchEvent(canMove)
             moveTo(offsetX + distanceX, offsetY + distanceY)
             return true
         }
@@ -151,7 +156,7 @@ internal class ContinuousJsonView(
     override fun onTouchEvent(event: MotionEvent): Boolean {
         if (event.actionMasked == MotionEvent.ACTION_DOWN) {
             downX = event.x; downY = event.y; dragging = false
-            parent?.requestDisallowInterceptTouchEvent(true)
+            parent?.requestDisallowInterceptTouchEvent(maxX() > 0 || maxY() > 0)
         } else if (event.actionMasked == MotionEvent.ACTION_MOVE && !dragging) {
             if (kotlin.math.abs(event.x - downX) > touchSlop || kotlin.math.abs(event.y - downY) > touchSlop) {
                 dragging = true

@@ -1,5 +1,7 @@
 package com.ghostdeveloper.spdecode
 
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.view.View
 import android.view.ViewGroup
 import android.view.MotionEvent
@@ -45,6 +47,15 @@ internal fun visibleJsonText(view: ContinuousJsonView): String {
     finally { info.recycle() }
 }
 
+private fun captureJsonView(view: ContinuousJsonView, name: String) {
+    val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
+    try {
+        view.draw(Canvas(bitmap))
+        val directory = view.context.filesDir.resolve("viewer-qa").apply { mkdirs() }
+        directory.resolve("$name.png").outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
+    } finally { bitmap.recycle() }
+}
+
 /** The actual Android surface: continuous scroll, complete values and shared baselines. */
 @RunWith(AndroidJUnit4::class)
 class JsonTreeViewerInstrumentedTest {
@@ -61,6 +72,7 @@ class JsonTreeViewerInstrumentedTest {
             assertTrue(text.contains("\"port\": 443"))
             assertFalse(text.contains("{…}"))
             assertEquals(view.rowHeight, view.lineBaseline(5) - view.lineBaseline(4), .01f)
+            captureJsonView(view, "nested")
         }
     }
 
@@ -84,6 +96,7 @@ class JsonTreeViewerInstrumentedTest {
             val text = visibleJsonText(view)
             assertTrue(text.contains("${3 * count}     \"id\": ${count - 1}"))
             assertTrue(text.contains("${3 * count + 2} ]"))
+            captureJsonView(view, "large-tail")
         }
     }
 
@@ -94,6 +107,7 @@ class JsonTreeViewerInstrumentedTest {
         ui.runOnIdle {
             view.scrollToColumn(Int.MAX_VALUE)
             assertTrue(view.visibleWindow(1).getString("text").contains("LAST_CHARACTER"))
+            captureJsonView(view, "long-value-tail")
         }
     }
 

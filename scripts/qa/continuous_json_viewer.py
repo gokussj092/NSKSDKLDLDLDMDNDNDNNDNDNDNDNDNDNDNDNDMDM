@@ -50,7 +50,7 @@ def main():
             run('jni_contract', ['java', ROOT / 'tests/native/result_engine_jni/NativeResultEngine.java', library])
             files = [JAVA / file for file in ['ContinuousJsonView.kt', 'JsonTreeViewer.kt',
                      'LargeResultViewer.kt', 'results/NativeResultEngine.kt']]
-            files += [ROOT / 'android/app/src/androidTest/java/com/ghostdeveloper/spdecode' / file
+            files += [ROOT / 'android/app/src/sharedAndroidTest/java/com/ghostdeveloper/spdecode' / file
                       for file in ['JsonTreeViewerInstrumentedTest.kt', 'SingleResultViewInstrumentedTest.kt']]
             run('kotlin_syntax', [sys.executable, ROOT / 'scripts/qa/kotlin_syntax.py', '--cache', args.cache, *files])
             # Compile the actual Kotlin JNI wrapper against its real JSON dependency.

@@ -9,8 +9,8 @@ on:
       - android/app/src/main/java/com/ghostdeveloper/spdecode/JsonTreeViewer.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/LargeResultViewer.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/results/NativeResultEngine.kt
-      - android/app/src/androidTest/java/com/ghostdeveloper/spdecode/JsonTreeViewerInstrumentedTest.kt
-      - android/app/src/androidTest/java/com/ghostdeveloper/spdecode/SingleResultViewInstrumentedTest.kt
+      - android/app/build.gradle.kts
+      - android/app/src/sharedAndroidTest/**
       - tests/native/result_lines_test.cpp
       - tests/native/result_engine_jni/**
       - scripts/qa/continuous_json_viewer.py
@@ -76,7 +76,12 @@ jobs:
           arch: x86_64
           disable-animations: true
           working-directory: android
-          script: gradle --no-daemon --max-workers=2 -Pandroid.testInstrumentationRunnerArguments.class=com.ghostdeveloper.spdecode.JsonTreeViewerInstrumentedTest,com.ghostdeveloper.spdecode.SingleResultViewInstrumentedTest,com.ghostdeveloper.spdecode.LargeResultEngineInstrumentedTest :app:connectedDebugAndroidTest
+          script: |
+            gradle --no-daemon --max-workers=2 -Pandroid.testInstrumentationRunnerArguments.class=com.ghostdeveloper.spdecode.JsonTreeViewerInstrumentedTest,com.ghostdeveloper.spdecode.SingleResultViewInstrumentedTest,com.ghostdeveloper.spdecode.LargeResultEngineInstrumentedTest :app:connectedDebugAndroidTest
+            mkdir -p app/build/viewer-screenshots
+            for capture in nested large-tail long-value-tail; do
+              adb exec-out run-as com.ghostdeveloper.spdecode cat "files/viewer-qa/$capture.png" > "app/build/viewer-screenshots/$capture.png"
+            done
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -84,4 +89,5 @@ jobs:
           path: |
             android/app/build/reports/androidTests/
             android/app/build/outputs/androidTest-results/
+            android/app/build/viewer-screenshots/
           if-no-files-found: ignore

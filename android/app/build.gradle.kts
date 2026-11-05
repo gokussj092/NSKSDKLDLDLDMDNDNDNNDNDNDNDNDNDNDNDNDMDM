@@ -747,6 +747,8 @@ android {
         sourceSets.getByName("main").assets.setSrcDirs(listOf(vaultPackagedAssets))
         sourceSets.getByName("main").java.srcDir(vaultGeneratedKotlin)
     }
+    // Viewer and native result tests exercise the same production classes in both builds.
+    sourceSets.getByName("androidTest").java.srcDir("src/sharedAndroidTest/java")
     compileSdk = 36
     ndkVersion = "27.2.12479018"
     defaultConfig {
@@ -903,4 +905,5 @@ tasks.configureEach {
         } else dependsOn(prepareSecureAssetVault)
     }
 }
+
 
