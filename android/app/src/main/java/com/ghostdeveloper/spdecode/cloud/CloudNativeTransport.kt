@@ -4,6 +4,7 @@ import com.ghostdeveloper.spdecode.BuildConfig
 import android.content.Context
 import org.json.JSONObject
 import java.io.IOException
+import java.util.concurrent.atomic.AtomicReference
 
 /**
  * Only libv7q3.so establishes HTTPS connections. Payload and response
@@ -11,6 +12,20 @@ import java.io.IOException
  */
 internal object CloudNativeTransport {
     init { System.loadLibrary("v7q3") }
+
+    private val catalogProgressListener=AtomicReference<((Long,Long)->Unit)?>(null)
+    @JvmStatic fun onCatalogTransferProgress(received:Long,total:Long) {
+        try { catalogProgressListener.get()?.invoke(received,total) }
+        catch (_:Exception) { /* UI cannot interrupt a valid encrypted transport. */ }
+    }
+    @JvmStatic private external fun nativeCancelCatalogDownload()
+    fun cancelCatalogDownload() = nativeCancelCatalogDownload()
+
+    fun <T> withCatalogProgress(callback:((Long,Long)->Unit)?, block:()->T):T {
+        val previous=catalogProgressListener.getAndSet(callback)
+        try { return block() }
+        finally { catalogProgressListener.set(previous) }
+    }
 
     @JvmStatic private external fun nativeRuntimeReport(): String
     @JvmStatic private external fun nativeConfigureRasp(enforce: Boolean)
