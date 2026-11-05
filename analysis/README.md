@@ -42,3 +42,5 @@ El archivo histórico [SOCKSIP_VER8_VER7_VER6_STUDY.md](SOCKSIP_VER8_VER7_VER6_S
 - [Hex Custom.apk de MediaFire: recepción pendiente](_intake/mediafire-ypaiywpzrvslef1/README.md): HTML de 195 bytes, Site Unavailable, sin APK ni identidad confirmada.
 
 - [Genis VPN / com.doriaxvip.tunnel / 76](com.doriaxvip.tunnel/76/ANALYSIS.md): VERIFIED_REAL; remoto 1114 / 84 servidores / 658 campos CBC, JSON entero igual a JCA/CLI/worker. Solo Cloud; Node/VPS pendiente.
+
+- [XXPICore Tunnel / build118](pro.xxpicore.tunnel/README.md): catálogo remoto2.427,64 servidores/1240 redes/7837 campos; entero igual a JCA/CLI/worker. Solo Cloud; Node/VPS pendiente.

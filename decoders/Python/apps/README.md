@@ -101,3 +101,5 @@ de cada carpeta no sustituyen esa nueva investigación ni describen el VPS actua
 - [Netcol VPN 14.2 (142)](Netcol_VPN/README.md): fuente activa resuelta mediante Firebase, sobre Unicode/AES-CBC y siete campos Blowfish; 172 servidores y 1204 campos completos iguales a JCA y worker. Icono y control individual; revisión 59 conservada por petición del propietario, sin inventar formato de archivo.
 
 - [Speicers`Turbo VPN](Speicers_Turbo_VPN/README.md) — netfree.mx.anuncios217.4.4/217; catálogo remoto de servidores17/266 y usuarios2/2, solo Cloud.
+
+- [XXPICore Tunnel](XXPICore_Tunnel/README.md) — pro.xxpicore.tunnel1.0.18/118; catálogo remoto2.427,64 servidores/1240 redes, solo Cloud. [Expediente](../../../analysis/pro.xxpicore.tunnel/118/ANALYSIS.md).

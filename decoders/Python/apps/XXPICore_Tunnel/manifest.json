@@ -1,0 +1,13 @@
+{
+  "appName": "XXPICore Tunnel",
+  "packageName": "pro.xxpicore.tunnel",
+  "versionName": "1.0.18",
+  "versionCode": 118,
+  "providerId": "xxpicore-tunnel",
+  "catalog": {"status": "VERIFIED_REAL", "version": "2.427", "servers": 64, "networks": 1240},
+  "files": false,
+  "text": false,
+  "exporterCertified": false,
+  "evidence": "analysis/pro.xxpicore.tunnel/118/MANIFEST.json",
+  "deployment": "PENDING_HUMAN_REVIEW_AND_VPS_VERIFICATION"
+}
