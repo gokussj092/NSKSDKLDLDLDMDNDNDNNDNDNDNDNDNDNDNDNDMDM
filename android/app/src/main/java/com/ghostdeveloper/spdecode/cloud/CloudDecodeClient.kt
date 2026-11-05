@@ -487,12 +487,16 @@ internal class CloudDecodeClient(context: Context) {
     }
 
     /** Public presentation metadata only; never contains provider operations. */
-    suspend fun serverVpnCatalog(knownVersion:Int): JSONObject =
+    suspend fun serverVpnCatalog(knownVersion:Int,
+        onTransfer:((Long,Long)->Unit)?=null): JSONObject =
         withContext(Dispatchers.IO) {
             requireLegalConsent()
-            CatalogEnvelope().use { envelope ->
-            envelope.open(extract(CloudNativeTransport.post(CloudOperation.CATALOG,
-                JSONObject().put("knownVersion",knownVersion).put("catalogKey",envelope.publicKey),session())),"catalog")
+            CloudNativeTransport.withCatalogProgress(onTransfer) {
+                CatalogEnvelope().use { envelope ->
+                    envelope.open(extract(CloudNativeTransport.post(CloudOperation.CATALOG,
+                        JSONObject().put("knownVersion",knownVersion)
+                            .put("catalogKey",envelope.publicKey),session())),"catalog")
+                }
             }
         }
 
