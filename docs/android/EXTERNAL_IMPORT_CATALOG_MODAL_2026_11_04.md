@@ -35,7 +35,9 @@ instead of `EXTRA_STREAM`.
   only the title, saved-formats message and Finish.
 - Cancel invalidates the native transfer generation and cancels the Kotlin job.
   Cancellation checks run before encrypted catalog metadata is activated;
-  previously validated metadata is retained. Native catalog read timeout is
+  previously validated metadata is retained. New icons are saved under immutable
+  SHA-256-derived cache keys instead of overwriting the previous snapshot's
+  ID-keyed icons. Old encrypted icon caches remain readable. Native catalog read timeout is
   60 seconds **of inactivity per read**, not a total deadline; connection,
   memory and server limits remain finite.
 
