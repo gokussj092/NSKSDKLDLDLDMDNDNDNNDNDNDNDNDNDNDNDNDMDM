@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import java.util.Locale
 
 /** Only authenticated catalog HTTP bytes are measured. No simulated progress. */
-internal data class CatalogTransferUiState(
+data class CatalogTransferUiState(
     val receivedBytes:Long=0L,
     val totalBytes:Long=-1L,
     val completed:Boolean=false,
