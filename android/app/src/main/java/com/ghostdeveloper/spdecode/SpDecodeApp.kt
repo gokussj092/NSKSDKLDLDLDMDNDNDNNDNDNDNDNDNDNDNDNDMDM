@@ -143,7 +143,7 @@ fun SpDecodeApp(
                 showServerVpnRefresh=(activeTab==3 ||
                     (activeTab==2 && !creditsPage)) &&
                     BuildConfig.SPDECODE_CLOUD_ENABLED,
-                refreshingServerVpn=serverVpnLoading,
+                refreshingServerVpn=serverVpnLoading && catalogTransfer==null,
                 enableServerVpnRefresh=!busy && !serverVpnLoading,
                 onRefreshServerVpn=onRefreshServerVpn,
             )
@@ -157,7 +157,7 @@ fun SpDecodeApp(
                     1->HistoryScreen(session,onSelect,onDeleteSelected,onClear,onImportMultiple,onFavorite)
                     2->if(creditsPage) ApkCreditsComingSoonScreen()
                         else ApkAnalysisComingSoonScreen()
-                    3->ServerVpnScreen(busy,serverVpnApps,serverVpnLoading,serverVpnUnavailable,
+                    3->ServerVpnScreen(busy,serverVpnApps,serverVpnLoading && catalogTransfer==null,serverVpnUnavailable,
                         onDecodeServerCatalog,onDecodeServerApp,catalogProgress)
                     else->FunctionalSettingsPanel(selectedLanguage,hideCredentials,
                         onLanguage,onMaskCredentials,onClear,onExternalLink,
@@ -166,7 +166,7 @@ fun SpDecodeApp(
                         catalogUpdatesEnabled=catalogUpdatesEnabled,onCatalogUpdates=onCatalogUpdates,
                         usageAnalyticsEnabled=usageAnalyticsEnabled,onUsageAnalytics=onUsageAnalytics,
                          supportedFormats=cloudFormats,supportedTextFormats=cloudTextFormats,
-                         catalogLoading=serverVpnLoading,catalogProgress=catalogProgress,
+                         catalogLoading=serverVpnLoading && catalogTransfer==null,catalogProgress=catalogProgress,
                          onFeedbackSubmit=onFeedbackSubmit)
                 }
                 if(guideStep!=null && !whatsNew && !busy && error==null && dialog==null) {
