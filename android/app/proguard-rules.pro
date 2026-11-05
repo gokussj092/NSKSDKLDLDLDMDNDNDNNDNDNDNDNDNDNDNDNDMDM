@@ -29,3 +29,9 @@
 -keep class com.ghostdeveloper.spdecode.cloud.CloudKeystorePlatform {
     public static *;
 }
+
+# Native catalog HTTP receive loop resolves this Kotlin @JvmStatic callback by
+# literal JNI name/signature. Prevent R8 from removing or renaming it in release.
+-keepclassmembers class com.ghostdeveloper.spdecode.cloud.CloudNativeTransport {
+    public static void onCatalogTransferProgress(long, long);
+}
