@@ -54,3 +54,5 @@ No se cambian métodos de proveedores, endpoints, versiones, firma ni publicaci�
 En el commit `115882338169df6af784f594d366a842cc8dec37`, el emulador API 35 compiló y ejecutó las **10 pruebas**, con **0 fallos** (`connectedDebugAndroidTest`, BUILD SUCCESSFUL). La ejecución `42003878354` falló después, al extraer capturas por un bucle de shell multilínea que el runner ejecutaba como comandos independientes. Se corrigió el bucle a una única línea, manteniendo intactos el código de producción y los tests que pasaron.
 
 La comprobación host de ese commit también pasó. La compilación firmada de APK / AAB se consulta en la ejecución `42003878403`.
+
+En el commit `6e57c509b9077b992b1bfd945776c8e182ec6447` pasaron **11 pruebas Android**, incluida la verificación de ancho CJK, además del host (ejecución `42005889501`). La extracción inicial de imágenes después de `connectedDebugAndroidTest` encontraba la APK ya desinstalada por AGP; el flujo de capturas se ajustó para preservarlas durante las pruebas y verificar su firma PNG antes de subirlas.

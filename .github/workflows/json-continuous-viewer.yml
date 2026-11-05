@@ -79,7 +79,8 @@ jobs:
           script: |
             gradle --no-daemon --max-workers=2 -Pandroid.testInstrumentationRunnerArguments.class=com.ghostdeveloper.spdecode.JsonTreeViewerInstrumentedTest,com.ghostdeveloper.spdecode.SingleResultViewInstrumentedTest,com.ghostdeveloper.spdecode.LargeResultEngineInstrumentedTest :app:connectedDebugAndroidTest
             mkdir -p app/build/viewer-screenshots
-            for capture in nested large-tail long-value-tail unicode-tail; do adb exec-out run-as com.ghostdeveloper.spdecode cat "files/viewer-qa/$capture.png" > "app/build/viewer-screenshots/$capture.png"; done
+            adb pull /sdcard/Download/spdecode-viewer-qa/. app/build/viewer-screenshots/
+            python3 -c 'from pathlib import Path; files=list(Path("app/build/viewer-screenshots").rglob("*.png")); assert len(files)==4; assert all(p.read_bytes().startswith(bytes.fromhex("89504e470d0a1a0a")) for p in files)'
       - uses: actions/upload-artifact@v4
         if: always()
         with:
