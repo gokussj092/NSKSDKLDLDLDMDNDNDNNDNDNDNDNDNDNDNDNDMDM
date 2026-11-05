@@ -103,6 +103,9 @@ fun SpDecodeApp(
     serverVpnLoading:Boolean=false,
     serverVpnUnavailable:Boolean=false,
     catalogProgress:Int?=null,
+    catalogTransfer:CatalogTransferUiState?=null,
+    onCancelCatalogTransfer:()->Unit={},
+    onFinishCatalogTransfer:()->Unit={},
     onRefreshServerVpn:()->Unit={},
     pendingServerVpnCatalogVersion:Int?=null,
     onConfirmServerVpnUpdate:()->Unit={},
@@ -192,6 +195,9 @@ fun SpDecodeApp(
             titleContentColor=White,
             textContentColor=Secondary,
         )
+        catalogTransfer?.let { transfer ->
+            CatalogTransferDialog(transfer,onCancelCatalogTransfer,onFinishCatalogTransfer)
+        }
         if(whatsNew && !busy && (cloudWhatsNew!=null || !BuildConfig.SPDECODE_CLOUD_ENABLED)) AlertDialog(
             onDismissRequest=onDismissWhatsNew,
             icon={Icon(Icons.Outlined.NewReleases,null,tint=Green)},
