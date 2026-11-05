@@ -235,4 +235,10 @@
     <string name="apk_analysis_safety_note">Phân tích dự kiến là phân tích tĩnh: APK sẽ không được cài đặt hoặc chạy.</string>
     <string name="apk_analysis_import_unavailable">Nhập APK (chưa khả dụng)</string>
     <string name="apk_analysis_no_charge">Dịch vụ chưa hoạt động. Không APK nào được gửi và không tín dụng nào bị trừ.</string>
+    <string name="catalog_transfer_downloading">Đang tải danh mục</string>
+    <string name="catalog_transfer_completed">Đã cập nhật danh mục</string>
+    <string name="catalog_transfer_saved">Đã lưu tất cả định dạng.</string>
+    <string name="catalog_transfer_finish">Hoàn tất</string>
+    <string name="catalog_transfer_bytes_total">%1$s MB / %2$s MB</string>
+    <string name="catalog_transfer_bytes_unknown">Đã tải %1$s MB</string>
 </resources>
