@@ -406,37 +406,40 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
         var batch=activity.substring(batchStart,batchEnd)
         // QA-only failures report sanitized status codes locally to the tester.
         // Never display user payloads, full filenames, credentials or exceptions.
-        // Re-read the encrypted catalog for every user-initiated batch.
-        // A background worker can update it while the Activity is alive.
+        // The base Activity already re-reads the verified local encrypted
+        // formats before each import. Keep the Cloud-only opt-in refresh
+        // behavior when a suffix is not recognized by that snapshot.
         batch=replaceOnce(batch,
-            "                historyLoad?.await()\n                var failedNpvs=false",
-            """                historyLoad?.await()
-                var latestFileFormats=if(BuildConfig.SPDECODE_CLOUD_ENABLED)
-                    serverVpnCatalog.cachedFormats().also { fileFormats=it }
-                else emptyList()
-                var checkedUnknownSuffix=false
-                var failedNpvs=false""")
-        // Only opted-in devices refresh automatically on an unknown suffix.
-        // Otherwise the user can manually update the catalog in Formats.
+            "                val verifiedImportFormats=if(BuildConfig.SPDECODE_CLOUD_ENABLED) {",
+            """                var checkedUnknownSuffix=false
+                var verifiedImportFormats=if(BuildConfig.SPDECODE_CLOUD_ENABLED) {""")
         batch=replaceOnce(batch,
-            """                    val supported=(if(BuildConfig.SPDECODE_CLOUD_ENABLED &&
-                        fileFormats.isNotEmpty())
-                        AndroidDecoderCatalog.detect(routingName,fileFormats)
-                    else null)""",
-            """                    var remoteFormat=if(BuildConfig.SPDECODE_CLOUD_ENABLED)
-                        AndroidDecoderCatalog.detect(routingName,latestFileFormats) else null
-                    if(BuildConfig.SPDECODE_CLOUD_ENABLED && remoteFormat==null &&
+            """                    val supported=ImportFormatRouter.detect(
+                        routingName,BuildConfig.SPDECODE_CLOUD_ENABLED,
+                        verifiedImportFormats
+                    ) { AndroidDecoderCatalog.read(this@MainActivity) }
+                        ?:throw DecodeFailure(R.string.unsupported)""",
+            """                    var supported=ImportFormatRouter.detect(
+                        routingName,BuildConfig.SPDECODE_CLOUD_ENABLED,
+                        verifiedImportFormats
+                    ) { AndroidDecoderCatalog.read(this@MainActivity) }
+                    if(supported==null && BuildConfig.SPDECODE_CLOUD_ENABLED &&
                         !checkedUnknownSuffix && CloudCatalogUpdates.enabled(this@MainActivity)) {
                         checkedUnknownSuffix=true
                         try {
                             serverVpnApps=serverVpnCatalog.refreshIfDue(force=true)
-                            latestFileFormats=serverVpnCatalog.cachedFormats()
-                            fileFormats=latestFileFormats
-                            remoteFormat=AndroidDecoderCatalog.detect(routingName,latestFileFormats)
+                            verifiedImportFormats=serverVpnCatalog.cachedFormats()
+                            fileFormats=verifiedImportFormats
+                            supported=ImportFormatRouter.detect(
+                                routingName,true,verifiedImportFormats
+                            ) { AndroidDecoderCatalog.read(this@MainActivity) }
                         }catch(error:CancellationException){throw error}
                          catch(_:Exception){ /* Keep the last verified snapshot. */ }
                     }
-                    val supported=remoteFormat""")
+                    val resolved=supported?:throw DecodeFailure(R.string.unsupported)""")
+        // Keep existing downstream supported references, but use a non-null
+        // variable after the early format failure.
+        batch=batch.replace(Regex("\\bsupported\\."), "resolved.")
         batch=replaceOnce(batch,
             "cloudClient.decodeFile(supported.suffix,input,password=secret,",
             """cloudClient.decodeFile(supported.suffix,input,password=secret,
@@ -746,8 +749,8 @@ android {
         applicationId = "com.ghostdeveloper.spdecode"
         minSdk = 24
         targetSdk = 36
-        versionCode = 41
-        versionName = "1.1.26"
+        versionCode = 42
+        versionName = "1.1.27"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // A public API origin is not a secret; all server secrets stay in the VPS.
         buildConfigField("boolean", "SPDECODE_CLOUD_ENABLED", enableCloud.toString())
