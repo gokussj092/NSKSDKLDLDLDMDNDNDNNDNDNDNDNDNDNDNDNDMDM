@@ -21,7 +21,7 @@ internal object CloudNativeTransport {
     @JvmStatic private external fun nativeCancelCatalogDownload()
     fun cancelCatalogDownload() = nativeCancelCatalogDownload()
 
-    fun <T> withCatalogProgress(callback:((Long,Long)->Unit)?, block:()->T):T {
+    suspend fun <T> withCatalogProgress(callback:((Long,Long)->Unit)?, block:suspend ()->T):T {
         val previous=catalogProgressListener.getAndSet(callback)
         try { return block() }
         finally { catalogProgressListener.set(previous) }
