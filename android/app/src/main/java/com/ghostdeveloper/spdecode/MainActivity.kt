@@ -280,8 +280,10 @@ class MainActivity : ComponentActivity() {
         serverVpnUnavailable=false
         serverVpnRefresh=scope.launch {
             try {
-                serverVpnApps=serverVpnCatalog.cached()
+                // Make supported extensions available before decoding and painting
+                // the larger icon directory on low-end devices.
                 fileFormats=serverVpnCatalog.cachedFormats()
+                serverVpnApps=serverVpnCatalog.cached()
                     textRoutes=serverVpnCatalog.cachedTextFormats()
                 if(force) {
                     serverVpnApps=serverVpnCatalog.refreshIfDue(force=force)
