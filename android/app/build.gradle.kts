@@ -347,9 +347,16 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
         activity = replaceOnce(activity,
             "                onDeleteSelected={ids->deleteHistory(ids)},",
             """                onDeleteSelected={ids->deleteHistory(ids)},
-                onExportHistory={entry->export(
-                    com.ghostdeveloper.spdecode.cloud.CloudHistoryJsonExport.content(entry),
-                    entry.filename,ResultExport.JSON)},
+                onExportHistory={entry->scope.launch {
+                    try {
+                        val opened=if(entry.metadataOnly)historyStore.open(entry.id) else entry
+                        sessionVm.stagedResultExport=opened to ResultExport.JSON
+                        val safe=opened.filename.substringBeforeLast('.')
+                            .replace(Regex("[^A-Za-z0-9._-]"),"_").take(50).ifEmpty{"spdecode"}
+                        jsonExporter.launch(safe+"-decoded.json")
+                    }catch(error:CancellationException){throw error}
+                     catch(_:Exception){toast(R.string.write_error)}
+                }},
             """.trimEnd())
         activity = replaceOnce(activity,
             "                onDecodeServerCatalog={decodeNurServers()},",
