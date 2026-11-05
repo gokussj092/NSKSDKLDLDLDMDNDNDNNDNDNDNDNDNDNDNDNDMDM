@@ -40,6 +40,10 @@ constexpr size_t kMaxReplyBytes = 6 * 1024 * 1024;
 constexpr size_t kMaxMkkReplyBytes = 96 * 1024 * 1024;
 constexpr jint kConnectTimeoutMs = 10000;
 constexpr jint kReadTimeoutMs = 25000;
+// For catalog transfers this is an inactivity timeout per read, not a total download deadline.
+constexpr jint kCatalogIdleTimeoutMs = 60000;
+std::atomic<uint64_t> catalogCancelGeneration{0};
+void nativeCancelCatalogDownload(JNIEnv*,jclass){catalogCancelGeneration.fetch_add(1,std::memory_order_relaxed);}
 constexpr jint kNurCatalogReadTimeoutMs = 165000; // heavy server-side Argon2id
 
 std::string utf(JNIEnv* env, jstring value) {
@@ -158,6 +162,7 @@ bool setHeader(JNIEnv* env,jobject conn,jclass cls,jmethodID method,
 jbyteArray post(JNIEnv* env,jclass,jint operation,jbyteArray bodyArg,jstring bearerArg,jstring versionArg,
              jstring timestampArg,jstring nonceArg,jstring proofArg,jstring actionChallengeArg,jstring actionIntegrityArg) {
     if(sensitiveOperation(operation) && !allowSensitiveRuntime(env))return nullptr;
+    const auto transferGeneration=catalogCancelGeneration.load(std::memory_order_relaxed);
     const std::string base=cloudOrigin();
     const std::string path=cloudTransportPath();
     const std::string timestamp=utf(env,timestampArg);
@@ -242,8 +247,9 @@ jbyteArray post(JNIEnv* env,jclass,jint operation,jbyteArray bodyArg,jstring bea
     if(ok){env->CallVoidMethod(conn,setConnect,kConnectTimeoutMs);ok=!env->ExceptionCheck();}
     // Do not relax ordinary decoder/session timeouts. NUR server catalog
     // can require up to 120s on the remote worker for nested Argon2id fields.
-    const jint readTimeout = (operation == 9 || operation == 12) ?
-        kNurCatalogReadTimeoutMs : (operation == 5 ? 55000 : kReadTimeoutMs);
+    const jint readTimeout = operation == 10 ? kCatalogIdleTimeoutMs :
+        (operation == 9 || operation == 12) ? kNurCatalogReadTimeoutMs :
+        (operation == 5 ? 55000 : kReadTimeoutMs);
     if(ok){env->CallVoidMethod(conn,setRead,readTimeout);ok=!env->ExceptionCheck();}
     if(ok){env->CallVoidMethod(conn,setOutput,JNI_TRUE);ok=!env->ExceptionCheck();}
     if(ok){env->CallVoidMethod(conn,setLength,8192);ok=!env->ExceptionCheck();}
@@ -298,12 +304,37 @@ jbyteArray post(JNIEnv* env,jclass,jint operation,jbyteArray bodyArg,jstring bea
         env->CallVoidMethod(conn,disconnect);env->DeleteLocalRef(conn);
         fail(env,"CLOUD_NATIVE_EMPTY_RESPONSE");return nullptr;
     }
+    // Report actual encrypted HTTP body bytes, not icon-processing percentages.
+    // A missing Content-Length is represented by -1; never invent a total.
+    jlong catalogTotal=-1;
+    jclass transportClass=nullptr;
+    jmethodID transferCallback=nullptr;
+    if(operation==10) {
+        auto getLength=env->GetMethodID(connectionClass,"getContentLengthLong","()J");
+        if(getLength) {
+            catalogTotal=env->CallLongMethod(conn,getLength);
+            if(env->ExceptionCheck()){env->ExceptionClear();catalogTotal=-1;}
+        }else if(env->ExceptionCheck())env->ExceptionClear();
+        transportClass=env->FindClass("com/ghostdeveloper/spdecode/cloud/CloudNativeTransport");
+        if(transportClass)
+            transferCallback=env->GetStaticMethodID(transportClass,
+                "onCatalogTransferProgress","(JJ)V");
+        if(env->ExceptionCheck()){env->ExceptionClear();transferCallback=nullptr;}
+        if(transferCallback) {
+            env->CallStaticVoidMethod(transportClass,transferCallback,jlong(0),catalogTotal);
+            if(env->ExceptionCheck())env->ExceptionClear();
+        }
+    }
     jbyteArray buffer=env->NewByteArray(8192);
     std::string result;
     const size_t replyCap=operation==10 ? 48U*1024U*1024U : operation==12 ? kMaxMkkReplyBytes :
         (operation==8 ? 12U*1024U*1024U : kMaxReplyBytes);
-    bool oversize=false,readFailed=false;
+    bool oversize=false,readFailed=false,cancelled=false;
     for(;;) {
+        if(operation==10 && transferGeneration!=
+            catalogCancelGeneration.load(std::memory_order_relaxed)) {
+            cancelled=true;break;
+        }
         const jint n=env->CallIntMethod(input,read,buffer,0,8192);
         if(clearException(env)){readFailed=true;break;}
         if(n<0)break;
@@ -313,7 +344,13 @@ jbyteArray post(JNIEnv* env,jclass,jint operation,jbyteArray bodyArg,jstring bea
         result.resize(offset+static_cast<size_t>(n));
         env->GetByteArrayRegion(buffer,0,n,reinterpret_cast<jbyte*>(&result[offset]));
         if(clearException(env)){readFailed=true;break;}
+        if(operation==10 && transferCallback) {
+            env->CallStaticVoidMethod(transportClass,transferCallback,
+                static_cast<jlong>(result.size()),catalogTotal);
+            if(env->ExceptionCheck())env->ExceptionClear();
+        }
     }
+    if(transportClass)env->DeleteLocalRef(transportClass);
     env->CallVoidMethod(input,closeInput);
     clearException(env);
     env->CallVoidMethod(conn,disconnect);
@@ -321,8 +358,9 @@ jbyteArray post(JNIEnv* env,jclass,jint operation,jbyteArray bodyArg,jstring bea
     env->DeleteLocalRef(buffer);
     env->DeleteLocalRef(input);
     env->DeleteLocalRef(conn);
-    if(readFailed || oversize || result.empty()) {
-        fail(env,oversize?"CLOUD_NATIVE_RESPONSE_TOO_LARGE":"CLOUD_NATIVE_READ_FAILED");
+    if(cancelled || readFailed || oversize || result.empty()) {
+        fail(env,cancelled?"CLOUD_NATIVE_CANCELLED":
+            (oversize?"CLOUD_NATIVE_RESPONSE_TOO_LARGE":"CLOUD_NATIVE_READ_FAILED"));
         return nullptr;
     }
     // The response body is a complete JSON document; Kotlin validates it.
@@ -821,6 +859,8 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm,void*) {
     jclass bridge=env->FindClass("com/ghostdeveloper/spdecode/cloud/CloudNativeTransport");
     if(!bridge)return JNI_ERR;
     JNINativeMethod methods[]={
+        {const_cast<char*>("nativeCancelCatalogDownload"),const_cast<char*>("()V"),
+        reinterpret_cast<void*>(nativeCancelCatalogDownload)},
         {const_cast<char*>("nativeRuntimeReport"),const_cast<char*>("()Ljava/lang/String;"),
         reinterpret_cast<void*>(nativeRuntimeReport)},
         {const_cast<char*>("nativeConfigureRasp"),const_cast<char*>("(Z)V"),
