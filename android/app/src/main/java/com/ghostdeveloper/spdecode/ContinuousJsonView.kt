@@ -101,7 +101,7 @@ internal class ContinuousJsonView(
     internal fun lineBaseline(line: Int) = inset + line * rowHeight - offsetY - metrics.ascent
     internal fun visibleWindow(line: Int): org.json.JSONObject {
         val column = max(0, floor(offsetX / cellWidth).toInt() - 1)
-        val count = ceil((width - gutter).coerceAtLeast(1f) / cellWidth).toInt().coerceIn(1, 2046) + 2
+        val count = ceil((width - gutter).coerceAtLeast(1f) / cellWidth).toInt().coerceIn(1, 1023) * 2 + 2
         val key = (line.toLong() shl 32) or column.toLong()
         return windows.getOrPut(key) { document.lineWindow(line, column, count, mask) }
     }
@@ -126,8 +126,8 @@ internal class ContinuousJsonView(
             val text = window.getString("text")
             val start = window.getInt("column")
             val valueColumn = window.getInt("valueColumn")
-            val keyEnd = (valueColumn - 2 - start).coerceIn(0, text.length)
-            val valueStart = (valueColumn - start).coerceIn(0, text.length)
+            val keyEnd = textIndex(text, valueColumn - 2 - start)
+            val valueStart = textIndex(text, valueColumn - start)
             val x = gutter + start * cellWidth - offsetX
             canvas.save()
             canvas.clipRect(gutter, 0f, width.toFloat(), height.toFloat())
@@ -145,6 +145,24 @@ internal class ContinuousJsonView(
         }
         paint.color = Color.rgb(41, 41, 41)
         canvas.drawLine(gutter - inset / 2, 0f, gutter - inset / 2, height.toFloat(), paint)
+    }
+
+    private fun textIndex(text: String, column: Int): Int {
+        var index = 0
+        var cells = 0
+        while (index < text.length && cells < column) {
+            val point = text.codePointAt(index)
+            val count = if (point < 128 || point == 0x2022) 1 else 2
+            if (cells + count > column) break
+            cells += count
+            index += Character.charCount(point)
+        }
+        return index
+    }
+
+    internal fun visibleTextRight(line: Int): Float {
+        val window = visibleWindow(line)
+        return gutter + window.getInt("column") * cellWidth - offsetX + paint.measureText(window.getString("text"))
     }
 
     private fun drawRun(canvas: Canvas, text: String, start: Int, end: Int, x: Float, y: Float, color: Int) {

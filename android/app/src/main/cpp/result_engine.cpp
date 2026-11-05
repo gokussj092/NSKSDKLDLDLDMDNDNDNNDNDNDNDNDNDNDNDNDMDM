@@ -131,11 +131,13 @@ std::string Document::page(int parent,int offset,int limit,bool mask)const{
 }
 std::string Document::original(size_t offset,size_t limit)const{if(offset>source_.size()||limit>65536)invalid();return source_.substr(offset,std::min(limit,source_.size()-offset));}
 namespace {
-// UTF-16 columns match Android's monospace text offsets, including surrogate pairs.
+// Conservative monospace cells keep wide fallback glyphs reachable horizontally.
+// Privacy bullets use one cell; other non-ASCII code points reserve two cells.
 uint32_t advanceColumn(const std::string& text,size_t& at){
     const auto c=static_cast<unsigned char>(text[at]);
+    const bool bullet=c==0xe2&&static_cast<unsigned char>(text[at+1])==0x80&&static_cast<unsigned char>(text[at+2])==0xa2;
     at+=c<128?1:(c<0xe0?2:(c<0xf0?3:4));
-    return c>=0xf0?2U:1U;
+    return c<128||bullet?1U:2U;
 }
 uint32_t width(const std::string& text){
     uint32_t columns=0;for(size_t at=0;at<text.size();)columns+=advanceColumn(text,at);return columns;

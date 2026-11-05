@@ -15,7 +15,15 @@ static std::string text(const std::string& response){
     }
     assert(false);return {};
 }
-static unsigned columns(const std::string& s){unsigned result=0;for(unsigned char c:s)if((c&0xc0)!=0x80)result+=c>=0xf0?2:1;return result;}
+static unsigned columns(const std::string& s){
+    unsigned result=0;
+    for(size_t at=0;at<s.size();){
+        const auto c=static_cast<unsigned char>(s[at]);
+        const bool bullet=c==0xe2&&static_cast<unsigned char>(s[at+1])==0x80&&static_cast<unsigned char>(s[at+2])==0xa2;
+        result+=c<128||bullet?1:2;at+=c<128?1:(c<0xe0?2:(c<0xf0?3:4));
+    }
+    return result;
+}
 static std::string line(const Document& doc,int row,bool mask=false){
     std::string out;unsigned column=0;
     while(true){
@@ -46,6 +54,9 @@ int main(){
     assert(line(secrets,4,true)=="  \"password\": \"••••••••\",");
     assert(line(secrets,2,false).find("FICTIONAL_ONLY")!=std::string::npos);
     assert(line(secrets,5,true)=="  \"ok\": 42");
+    Document multilingual("{\"消息\":\"地地地最后字符\",\"ñ\":\"مرحبا\"}");
+    assert(line(multilingual,1)=="  \"消息\": \"地地地最后字符\",");
+    assert(line(multilingual,2)=="  \"ñ\": \"مرحبا\"");
     Document empty("{\"a\":[],\"b\":{}}");
     assert(empty.lines()==6);assert(line(empty,2)=="  ],");
     Document duplicate("{\"x\":1,\"x\":2}");assert(line(duplicate,1)=="  \"x\": 1,");assert(line(duplicate,2)=="  \"x\": 2");

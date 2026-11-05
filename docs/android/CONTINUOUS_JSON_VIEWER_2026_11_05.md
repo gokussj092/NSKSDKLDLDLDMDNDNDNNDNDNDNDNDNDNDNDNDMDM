@@ -16,7 +16,7 @@ Sustituye el árbol plegable y las páginas de resultados de `JsonTreeViewer` / 
 
 `result_engine.cpp` crea un índice iterativo de líneas lógicas sobre los nodos existentes. El índice referencia la fuente original; no construye un DOM Gson ni una copia completa con formato para los JSON directos. Un índice de posiciones cada 128 caracteres permite buscar dentro de valores largos sin recorrerlos desde el principio.
 
-`NativeResultEngine.Document.lineCount`, `columnCount` y `lineWindow` permiten consultar cualquier línea y columna. La ventana JNI es un detalle del dibujo del área visible: no hay paginación en la interfaz ni límites de longitud de valor añadidos. Se conserva la transferencia JNI acotada, UTF-8 válido y pares sustitutos completos.
+`NativeResultEngine.Document.lineCount`, `columnCount` y `lineWindow` permiten consultar cualquier línea y columna. La ventana JNI es un detalle del dibujo del área visible: no hay paginación en la interfaz ni límites de longitud de valor añadidos. Se conserva la transferencia JNI acotada, UTF-8 válido y pares sustitutos completos. El ancho horizontal reserva espacio para glifos Unicode anchos (por ejemplo, CJK), y la vista convierte esas columnas a índices UTF-16 para colorear claves y valores sin dividir caracteres.
 
 `ContinuousJsonView` dibuja únicamente las filas y columnas visibles, con caché de 96 ventanas. La columna de números permanece fija horizontalmente. Un `OverScroller` permite desplazamiento táctil; accesibilidad expone el texto visible y acciones para recorrer ambos ejes. Copiar y exportar siguen usando sus rutas existentes de contenido completo.
 

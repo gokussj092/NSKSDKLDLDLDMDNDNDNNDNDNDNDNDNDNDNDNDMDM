@@ -111,6 +111,18 @@ class JsonTreeViewerInstrumentedTest {
         }
     }
 
+    @Test fun wideUnicodeGlyphsCanReachTheEndWithoutClippingTheLastCharacter() {
+        val raw = "{\"消息\":\"${"地".repeat(2000)}最后字符\"}"
+        ui.setContent { JsonTreeViewer(raw, "json", false, "wide-unicode") }
+        val view = continuousJsonView(ui)
+        ui.runOnIdle {
+            view.scrollToColumn(Int.MAX_VALUE)
+            assertTrue(view.visibleWindow(1).getString("text").contains("最后字符"))
+            assertTrue(view.visibleTextRight(1) <= view.width + 2f)
+            captureJsonView(view, "unicode-tail")
+        }
+    }
+
     @Test fun privacyToggleReplacesTheViewAndClearsVisibleSecrets() {
         val raw = """{"password":"FICTIONAL_ONLY","nested":{"password":"NESTED_SECRET"}}"""
         val mask = mutableStateOf(false)
