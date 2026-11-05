@@ -79,9 +79,7 @@ jobs:
           script: |
             gradle --no-daemon --max-workers=2 -Pandroid.testInstrumentationRunnerArguments.class=com.ghostdeveloper.spdecode.JsonTreeViewerInstrumentedTest,com.ghostdeveloper.spdecode.SingleResultViewInstrumentedTest,com.ghostdeveloper.spdecode.LargeResultEngineInstrumentedTest :app:connectedDebugAndroidTest
             mkdir -p app/build/viewer-screenshots
-            for capture in nested large-tail long-value-tail; do
-              adb exec-out run-as com.ghostdeveloper.spdecode cat "files/viewer-qa/$capture.png" > "app/build/viewer-screenshots/$capture.png"
-            done
+            for capture in nested large-tail long-value-tail; do adb exec-out run-as com.ghostdeveloper.spdecode cat "files/viewer-qa/$capture.png" > "app/build/viewer-screenshots/$capture.png"; done
       - uses: actions/upload-artifact@v4
         if: always()
         with:

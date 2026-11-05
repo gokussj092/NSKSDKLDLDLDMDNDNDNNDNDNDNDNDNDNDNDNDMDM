@@ -48,3 +48,9 @@ Validación local adicional: `ContinuousJsonView` y `NativeResultEngine` compila
 El workflow `json-continuous-viewer.yml` repite la validación host y ejecuta en emulador API 35 las clases `JsonTreeViewerInstrumentedTest`, `SingleResultViewInstrumentedTest` y `LargeResultEngineInstrumentedTest`. Cubre vista real, desplazamiento, última línea, valor largo, números, privacidad y acciones de la tarjeta. Las pruebas comunes están en `src/sharedAndroidTest/java`, incluido tanto en Cloud como en el build histórico; las fuentes históricas de decodificadores locales permanecen aisladas. Su resultado debe consultarse en la ejecución del commit; agregar los tests no equivale a haberlos ejecutado satisfactoriamente.
 
 No se cambian métodos de proveedores, endpoints, versiones, firma ni publicación en Google Play.
+
+## Resultado observado en GitHub Actions
+
+En el commit `115882338169df6af784f594d366a842cc8dec37`, el emulador API 35 compiló y ejecutó las **10 pruebas**, con **0 fallos** (`connectedDebugAndroidTest`, BUILD SUCCESSFUL). La ejecución `42003878354` falló después, al extraer capturas por un bucle de shell multilínea que el runner ejecutaba como comandos independientes. Se corrigió el bucle a una única línea, manteniendo intactos el código de producción y los tests que pasaron.
+
+La comprobación host de ese commit también pasó. La compilación firmada de APK / AAB se consulta en la ejecución `42003878403`.
