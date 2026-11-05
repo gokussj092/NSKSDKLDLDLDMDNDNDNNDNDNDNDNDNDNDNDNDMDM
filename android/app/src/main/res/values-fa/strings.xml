@@ -234,4 +234,10 @@
     <string name="apk_analysis_safety_note">تحلیل برنامه‌ریزی‌شده ایستا است: APK نصب یا اجرا نخواهد شد.</string>
     <string name="apk_analysis_import_unavailable">وارد کردن APK (غیرفعال)</string>
     <string name="apk_analysis_no_charge">این سرویس هنوز فعال نیست. هیچ APK ارسال و هیچ اعتباری کسر نمی‌شود.</string>
+    <string name="catalog_transfer_downloading">در حال دانلود فهرست</string>
+    <string name="catalog_transfer_completed">فهرست به‌روزرسانی شد</string>
+    <string name="catalog_transfer_saved">همه قالب‌ها ذخیره شدند.</string>
+    <string name="catalog_transfer_finish">پایان</string>
+    <string name="catalog_transfer_bytes_total">%1$s MB / %2$s MB</string>
+    <string name="catalog_transfer_bytes_unknown">%1$s مگابایت دانلود شده</string>
 </resources>
