@@ -1,4 +1,5 @@
 # SP-DECODE — Fase 7 (extensión futura): analizador automático de APK con DOS SALIDAS
+> **Anexos 2026-11-04 para la Fase 7:** [cuentas Google, nombres editables, Billing, reembolsos y soporte humano con descarga de APK + evidencias](FASE_7_CUENTAS_GOOGLE_PAGOS_Y_SOPORTE_APK_2026_11_04.md) · [fases de implementación y QA](FASE_7_PLAN_IMPLEMENTACION_Y_QA_2026_11_04.md). Son especificaciones pendientes, NO funciones activas.
 
 **Fecha:** 2026-11-02. **Estado:** PENDIENTE / diseño integral; NO código de producto, no endpoints, no worker, no IA ni cobros habilitados.  
 **Prioridad previa:** registrar y normalizar los scripts de investigación conforme a analysis/METHOD_EVIDENCE_POLICY.md.  
