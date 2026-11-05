@@ -1,0 +1,5 @@
+{
+  "schema_version": 1,
+  "packages": [],
+  "note": "Python 3.10+ stdlib-only; target host version to be recorded after real download."
+}

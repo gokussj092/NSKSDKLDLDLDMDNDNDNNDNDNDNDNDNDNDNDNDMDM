@@ -1,0 +1,3 @@
+# Dependencies and tools
+
+Python 3.10+ standard library only: `urllib.request` (HTTPS acquisition), `zipfile` (container inspection), `hashlib` (SHA256), `json` (XAPK metadata), `unittest` (synthetic regression). No third-party Python packages were added. Actual interpreter version of future network-connected environment: UNKNOWN. Proposed future static inspection tools, not executed here: Android SDK `aapt` / `apkanalyzer`, `apksigner` and JADX 1.5.6 (version previously documented for build430); see provenance/license from respective official projects before running. Tooling currently verified here is limited to synthetic tests and review of historical repository evidence.

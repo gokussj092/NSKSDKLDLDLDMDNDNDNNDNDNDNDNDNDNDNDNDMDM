@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "package_name": "com.tunneldoom.http",
+  "app_name": "TunnelDOOM VPN",
+  "version_name": "4.3.2",
+  "version_code": 432,
+  "observed_at": "2026-11-05",
+  "source_category": "public-app-store-candidate",
+  "authorization_note": "Publicly distributed APK; static research only.",
+  "status": "PENDING",
+  "targets": [
+    {
+      "kind": "catalog",
+      "status": "PENDING",
+      "urlConfirmed": false
+    },
+    {
+      "kind": "files",
+      "status": "PENDING"
+    }
+  ],
+  "inputs": [],
+  "tooling": [
+    {
+      "name": "Python standard library",
+      "version": "3.10+",
+      "script": "analysis/com.tunneldoom.http/432/tools/acquire.py",
+      "status": "synthetic-only"
+    }
+  ],
+  "dependencies": [],
+  "code_paths": [
+    "cloud/web/lib/server-vpn-provider.mjs",
+    "decoders/Python/apps/TunnelDOOM_VPN/codec.py"
+  ],
+  "evidence_refs": [
+    "analysis/com.tunneldoom.http/432/RESULTS.md",
+    "analysis/com.tunneldoom.http/432/tests/test_method.py"
+  ],
+  "limitations": [
+    "Original build432 archive and certificate unverified",
+    "New updater URL and real catalog unknown"
+  ],
+  "network_requirements": [
+    "HTTPS outbound to official APKPure distribution endpoint"
+  ],
+  "manual_steps": [
+    "Run private acquisition",
+    "Verify Android manifest and signer",
+    "Inspect updater DEX",
+    "Validate remote catalog and complete JSON"
+  ]
+}
