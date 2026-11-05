@@ -1,18 +1,20 @@
-# SP-DECODE — Catálogo Server VPN V2: descargas reanudables, progreso real, motor JSON nativo y versiones correctas
+# SP-DECODE — Directorio Server VPN V2: descargas reanudables, progreso real y versiones correctas
 
 **Fecha de diseño:** 2026-11-04 (hora local del proyecto). **Rama:** `feat/nuevas-integraciones`.  
 **Estado:** ESPECIFICACIÓN APROBABLE / PENDIENTE DE IMPLEMENTACIÓN. **Este commit solo documenta; no despliega VPS, no cambia código ejecutable, no altera la APK 1.1.27 (build 42) ni inicia un build.**
 
+> **CORRECCIÓN DE ALCANCE (aclaración del propietario, 2026-11-04):** el crash por resultados JSON extensos de **más de 8,000 líneas** ocurre al **visualizar/procesar resultados de descifrado de configuraciones VPN**, NO al descargar o cargar el inventario de apps Server VPN. La investigación, motor `libspdecode_result_engine.so`, virtualización del visor y QA de esos resultados están definidos exclusivamente en [Resultados de descifrado extensos: motor nativo y visor incremental](../../docs/android/RESULTADOS_DESCIFRADOS_JSON_GRANDES_MOTOR_NATIVO_2026_11_04.md). Este plan se limita a **descarga, caché, manifest, metadata e iconos del directorio de aplicaciones Server VPN**.
+
 ## 0. Propósito y criterios obligatorios
 
-Corregir de raíz las descargas del catálogo Server VPN que se interrumpen, fallan cerca de los 8 MB o son inestables en redes lentas. Hacer el sistema escalable para más aplicaciones, iconos originales y formatos, sin que la aplicación se cierre al procesar JSON grande. Conservar el diseño AMOLED modal aprobado y mostrar **bytes reales descargados / bytes reales por descargar**, la barra proporcional y una **versión visible del catálogo** correcta (distinta de la versión técnica de sincronización).
+Corregir de raíz las descargas del directorio de aplicaciones Server VPN que se interrumpen, fallan cerca de los 8 MB o son inestables en redes lentas. Hacer el sistema escalable para más aplicaciones, iconos originales y formatos, sin mezclar esta mejora con los resultados descifrados de miles de líneas. Conservar el diseño AMOLED modal aprobado y mostrar **bytes reales descargados / bytes reales por descargar**, la barra proporcional y una **versión visible del catálogo** correcta (distinta de la versión técnica de sincronización).
 
 **Requisitos innegociables:**
 - Descarga **reanudable por fragmentos verificados**; al fallar el tramo N, NO volver a descargar lo ya validado si el mismo snapshot sigue disponible.
 - Progreso **determinista basado en tamaños autenticados**, sin porcentaje estimado por tiempo y sin 100 % antes de que el snapshot esté validado y activado.
 - Mostrar el tamaño total verdadero y lo recibido bajo una unidad coherente, distinguiendo tamaño lógico total del catálogo de **datos pendientes de transferir**; no inventar totales cuando falte manifiesto válido.
 - No acumular catálogo, iconos, JSON expandido, bitmap y objetos Kotlin completos en RAM simultáneamente.
-- Motor C++/.so **independiente para ingestión/validación/lectura de catálogos**, con JNI de datos pequeños y límites estrictos de recursos. No mover descifradores de proveedores al cliente.
+- Ingestión/validación/lectura de **metadatos del directorio de apps** con límites de memoria y JNI acotado; una biblioteca `.so` exclusiva para el directorio es **opcional y separada**. El motor nativo `.so` específicamente solicitado para el crash de **resultados descifrados** se diseña en el documento de resultados citado arriba. No mover descifradores de proveedores al cliente.
 - Separar versión de presentación (ejemplo declarado por propietario: **13**, pendiente de fuente de verdad) de la revisión técnica interna (ejemplo observado en UI: **2738494**). No rebajar, falsificar, poner a cero ni reutilizar la versión interna del protocolo C10/C12.
 - Cache cifrada (Android Keystore AES-GCM), validación autenticada, hash por objeto, staging y confirmación atómica; siempre preservar el último catálogo completo y compatible.
 - Mantener compatibilidad con APK anteriores usando el contrato existente mientras se despliega el nuevo protocolo; no forzar descargas imposibles ni eliminar el endpoint anterior.
@@ -118,42 +120,30 @@ Alternativas `PAUSED_NETWORK`, `CANCELLED`, `RETRY_WAIT`, `FAILED_RETRYABLE`, `F
 - Si los iconos superan los límites legacy, el servidor debe poder ofrecer un snapshot legacy compatible, no romper en silencio a usuarios antiguos; documentar periodo de soporte y telemetría agregada.
 - Diferenciar «el servidor no admite v2» de «la respuesta v2 está alterada»: solo el primero permite fallback.
 
-## 5. Motor exclusivo `.so` de catálogo JSON: `libspdecode_catalog_engine.so` (nombre propuesto)
+## 5. Lectura eficiente del inventario Server VPN (NO los resultados descifrados)
 
-### 5.1. Objetivo
+**Corrección:** esta sección solo describe el JSON de metadatos e iconos del directorio Server VPN. **No investiga ni resuelve** cierres al mostrar catálogos **descifrados de configuraciones VPN** con más de 8,000 líneas. Para ello se elaboró `docs/android/RESULTADOS_DESCIFRADOS_JSON_GRANDES_MOTOR_NATIVO_2026_11_04.md` y se propone `libspdecode_result_engine.so` junto con `LazyColumn` de filas virtualizadas. Son proyectos distintos.
 
-Crear una biblioteca nativa independiente, dedicada **solo al almacenamiento lógico y lectura de catálogo**, sin llevar métodos de decodificación de proveedores ni endpoints/credenciales al Kotlin:
+### 5.1. Objetivo del directorio
 
-- `CatalogNativeEngine` (C++ core): parseo incremental/bounded, validación de esquema, índices de formatos, índice de apps y estado; manejo de cambios de versión y consistencia de referencias.
-- `CatalogObjectStore`: archivos por hash, descifrado de staging, comprobaciones de tamaño y hash, almacenamiento de cache cifrada mediante API controlada de Android Keystore y escrituras atómicas.
-- `CatalogManifestVerifier`: cotejar identificación de snapshot, tamaño de objetos y cuenta de chunks, formatos, iconos e información de capacidades; NO confiar en manifiestos sin autenticación.
-- `CatalogNativeBridge` (JNI): **interfaces pequeñas tipadas**, por ejemplo handles a snapshots, metadatos de revisión, iteración/paginación de apps/formatos, estado de carga y rutas seguras a iconos; no devolver `JSONObject` enorme ni cadena JSON completa al heap Java.
-- `CatalogImageLoader`: descargar/renderizar PNG solo para ítems visibles mediante carga diferida y `inSampleSize`; los iconos originales permanecen en cache cifrada; no crear bitmaps de cientos de imágenes a la vez.
+- El nuevo manifest ofrece metadatos compactos y referencias a iconos por hash; evitar embebido Base64 y procesamiento de todas las imágenes en una sola respuesta.
+- Mantener límites de profundidad, cardinalidad, bytes, UTF-8, duplicados y referencias válidas para `formats`, `apps`, `iconBundle` legacy y `compatibleExports`.
+- Procesar metadata de forma acotada fuera del hilo principal; no crear cientos de bitmaps al arrancar; mostrar solo tarjetas visibles con carga diferida.
+- No alterar métodos de descifrado Cloud ni los resultados (texto/JSON) que devuelve cada proveedor.
 
-**Selección del parser:** evaluar parser C++ con modo SAX/streaming y licencia compatible (ej. RapidJSON Reader) o equivalente; pin exacto versión y checksum, fuzzing de JSON. No usar un parser que obligue a construir un DOM gigante, aunque esté escrito en C++.
+### 5.2. ¿Se requiere un `.so` exclusivo para el directorio?
 
-### 5.2. Límites para prevenir crasheos
+**No automáticamente.** Primero probar la nueva transferencia por objetos y el parseo de metadata. Si sigue habiendo picos de memoria, evaluar un parser C++ SAX/JNI ligero **solo para el inventario**. Un eventual `libspdecode_catalog_engine.so` será **opcional, con decisión por mediciones**, independiente de `libspdecode_result_engine.so` que atiende el problema de resultados.
 
-- Límites independientes de entrada comprimida, salida descomprimida, profundidad de objetos/anidamientos, longitud UTF-8 por campo, número de apps, formatos, iconos, bytes por icono, total en disco y memoria. No subir de 32 a 512 MiB «por si acaso».
-- Comprobar enteros y desbordamiento antes de asignar, tamaños del manifest y número de objetos. Reducir número de copias `Buffer→jbyteArray→String→JSONObject→serialización`.
-- Descompresión incremental con `maxOutputBytes`, límites de ratio y tamaño esperados (defensa ante gzip/zip bomb); cerrar streams sobre error.
-- Índices para formatos y apps en estructuras compactas; no almacenar iconos como Base64 en memoria del motor. El UI recibe páginas y solo pequeños DTO.
-- Validar UTF-8, unicidad de sufijos/IDs, orden de lista, `formatCount` y schemas, campos permitidos, `compatibleExports`, metadatos de NPVS, límites de texto, `maintenance`/`methodRevision`; no permitir rutas, URLs, scripts, operaciones Cloud o formatos inyectados.
-- Operar fuera del hilo principal con límites de concurrencia y cancelación por pasos; el ciclo de vida debe liberar recursos incluso al rotar Android, cerrar Activity o reintentar.
-- Errores nativos pasan a códigos de error recuperables, sin `abort()`/crash no controlado por JSON inválido. `SIGSEGV` y OOM nativo siguen siendo posibles; fuzzing, ASAN/UBSAN de pruebas, RAII y límites reducen riesgo, no prometen invulnerabilidad.
-- Historial de snapshots: referencia atómica al último válido, mantener anterior y limpiar archivos huérfanos; recuperación tras caída de proceso o corte de energía. Versiones incompatibles deben rechazarse conservando la anterior.
+La protección de memoria y consistencia del directorio sí sigue siendo obligatoria:
+- Cotas de tamaño y descompresión, validación de esquema y hashes por objeto.
+- Cache cifrada Android Keystore sin llaves embebidas, staging, commit atómico y rollback.
+- Imágenes bajo demanda y liberación de recursos ante cancelación/error.
+- QA en dispositivos con poca RAM, lista creciente de aplicaciones y fallos de snapshot.
 
-### 5.3. Criptografía y frontera Android/C++
+### 5.3. Criterio de aceptación específico
 
-- Mantener transporte HPKE V2, pruebas de integridad/atestación y autoridades del servidor. No confiar únicamente en checksum SHA-256 público para autenticar un manifest: debe venir dentro de respuesta autenticada.
-- El motor `.so` debe integrarse con la implementación actual nativa de claves sin duplicar secretos; ninguna credencial ni llave del VPS en `.so` o Kotlin.
-- La llave de cache Android Keystore **no es exportable**; JNI puede orquestar su uso a través de un puente mínimo de Android; documentar cuidadosamente dónde se materializan bytes abiertos en RAM y limpiarlos cuando corresponda. No afirmar que mover el parseo a C++ hace secretos imposibles de extraer.
-- Los buffers con JSON abierto se mantienen en RAM mínima durante uso, jamás se escriben como plaintext a almacenamiento persistente. Metadatos públicos no son credenciales, pero las reglas de confidencialidad aplican a la cache.
-- Soportar ABI actuales, páginas de memoria Android 16 KiB, R8/proguard JNI, load ordering y el procedimiento de firma existente.
-
-### 5.4. Condición de éxito del motor
-
-El usuario podrá descargar y abrir un catálogo crecientemente grande **sin cargar todo su JSON en Compose/Kotlin ni todos sus PNG en bitmaps simultáneos**. El parser debe permitir reportar un error de esquema localizado sin cerrar la app y dejar intacto el snapshot anterior.
+El directorio de apps puede actualizarse y navegarse con los iconos originales sin descargar objetos no modificados ni exponer un JSON grande de iconos a Compose. **La ausencia de crash al mostrar 8,000 líneas descifradas no se valida con esta prueba**, sino con el plan de resultados.
 
 ## 6. Progreso UI AMOLED aprobado
 
@@ -273,7 +263,7 @@ La UI muestra `Catálogo de servidores VPN · Versión 13` solo si esa es la `di
 | **C-V2-1** | Modelo de versionado dual: `catalogVersion` interno + `displayVersion` editorial | Fuente editorial aprobada y compatibilidad watch probada |
 | **C-V2-2** | Backend snapshots inmutables, manifest, objetos iconográficos separados y chunks autenticados; protocolo negociado | Tests API/HPKE, backcompat V1/V2, política de retención |
 | **C-V2-3** | Cliente Android C++: descargas por chunks, verificación, journal cifrado, cancel/reanudar, progreso real y actualización atómica | Test de red a 100 kbps y reanudación tras caída |
-| **C-V2-4** | `libspdecode_catalog_engine.so` (nombre provisional): parseo incremental JSON, índice, límites RAM y JNI mínimo | Fuzzing, low-RAM, paridad de esquema y compatibilidad ABI |
+| **C-V2-4** | Ingestión eficiente de metadatos Server VPN (parser Kotlin limitado o `.so` del directorio solo si se demuestra necesario) | Límites RAM, paridad de esquema y compatibilidad de snapshots; el crash de resultados se atiende en plan R-0…R-6 independiente |
 | **C-V2-5** | UI AMOLED definitiva de progreso, reanudar, estados y versión visible | Capturas y pruebas de accesibilidad en 14 idiomas |
 | **C-V2-6** | Integración y despliegue gradual servidor primero, APK después | Pruebas e2e, telemetría, feature flags, rollback seguro |
 | **C-V2-7** | Pruebas de regresión 1.1.27, Android nuevos, producción y limpieza de snapshots | Gate de soporte sin pérdida de cache |
@@ -294,8 +284,8 @@ Se podrá adelantar un hotfix del error actual si D0 encuentra una causa concret
 El cambio SOLO se considera terminado cuando:
 - En una red 100 kbps se puede descargar un catálogo mayor que 8 MB sin corte por duración total; si se corta la conexión, se reanuda y **NO repite los chunks completos y verificados**.
 - La barra y la etiqueta `X / Y MiB` reflejan exactamente la cantidad de bytes definida y autenticada, muestran total al arrancar la transferencia y nunca avanzan por animación cuando ese total ya se conoce.
-- App no se cierra por JSON largo o PNG inválido; parser tiene límites, error controlado y cache anterior.
-- `libspdecode_catalog_engine.so` está empaquetada y verificada con ABIs, símbolo JNI, pruebas nativas, 16 KiB y QA, sin operaciones de descifrado transferidas a la app.
+- El directorio Server VPN no se cae por metadatos o PNG inválidos; carga de apps tiene límites y conserva snapshot anterior. El crash del **JSON descifrado de 8,000+ líneas** se valida en el plan separado de resultados.
+- Si se decide crear una biblioteca nativa separada para metadatos del directorio, se verificarán ABIs, JNI, memoria y páginas de 16 KiB. **La biblioteca `libspdecode_result_engine.so` de resultados grandes se valida únicamente en el plan de resultados descifrados**, no es prerrequisito del directorio.
 - Iconos no modificados se reutilizan; crecimiento del catálogo no dispara necesariamente el mismo volumen de red.
 - Interfaz muestra la edición editorial verdadera, p. ej. v13 **si fue confirmada**, y watch/sync mantiene su entero técnico alto.
 - El panel/admin y el VPS no anuncian versiones que carecen de objetos publicados, no hay pérdida de switches ni claves.
@@ -313,4 +303,4 @@ El cambio SOLO se considera terminado cuando:
 - `analysis/METHOD_EVIDENCE_POLICY.md`: política de evidencia de métodos; los cambios de catálogo no confirman automáticamente que un descifrador funcione.
 - `docs/FASE_7_CUENTAS_GOOGLE_PAGOS_Y_SOPORTE_APK_2026_11_04.md`: módulo comercial independiente; **no fusionar** la arquitectura de descarga de catálogos con uploads de APK de pago sin diseño explícito.
 
-**Fuera de alcance en este commit:** modificar servidor/VPS, configurar proxy, crear/borrar ramas, implementar `.so`, modificar Gradle/Kotlin/C++, subir la versión Android, compilar APK/AAB, tocar cuenta Google Play o fusionar a `main`. Es planificación y especificación solamente.
+**Fuera de alcance en este commit:** modificar servidor/VPS, configurar proxy, crear/borrar ramas, implementar `.so`, modificar Gradle/Kotlin/C++, subir la versión Android, compilar APK/AAB, tocar cuenta Google Play o fusionar a `main`. El motor de resultados extensos y el visor Compose se documentan en `docs/android/RESULTADOS_DESCIFRADOS_JSON_GRANDES_MOTOR_NATIVO_2026_11_04.md`. Es planificación y especificación solamente.
