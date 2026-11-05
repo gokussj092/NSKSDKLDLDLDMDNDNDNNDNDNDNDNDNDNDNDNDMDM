@@ -14,7 +14,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   release:
-    if: github.repository_owner == 'gokussj092' && github.ref == 'refs/heads/feat/nuevas-integraciones' && github.event.repository.private == true
+    if: github.repository_owner == 'gokussj092' && github.ref == 'refs/heads/feat/nuevas-integraciones'
     runs-on: ubuntu-latest
     timeout-minutes: 75
     env:
