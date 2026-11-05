@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <stdexcept>
 #include <vector>
+#include <mutex>
 
 #include "spdecode_hpke.h"
 #include "spdecode_security.h"
@@ -43,7 +44,27 @@ constexpr jint kReadTimeoutMs = 25000;
 // For catalog transfers this is an inactivity timeout per read, not a total download deadline.
 constexpr jint kCatalogIdleTimeoutMs = 60000;
 std::atomic<uint64_t> catalogCancelGeneration{0};
-void nativeCancelCatalogDownload(JNIEnv*,jclass){catalogCancelGeneration.fetch_add(1,std::memory_order_relaxed);}
+std::mutex catalogConnectionMutex;
+std::vector<jobject> catalogConnections;
+class CatalogConnection {
+    JNIEnv* env_;jobject reference_=nullptr;
+public:
+    CatalogConnection(JNIEnv* env,jobject connection,bool active):env_(env){
+        if(active){reference_=env->NewGlobalRef(connection);if(reference_){std::lock_guard<std::mutex> lock(catalogConnectionMutex);catalogConnections.push_back(reference_);}}
+    }
+    ~CatalogConnection(){if(reference_){std::lock_guard<std::mutex> lock(catalogConnectionMutex);catalogConnections.erase(std::remove(catalogConnections.begin(),catalogConnections.end(),reference_),catalogConnections.end());env_->DeleteGlobalRef(reference_);}}
+};
+void nativeCancelCatalogDownload(JNIEnv* env,jclass){
+    catalogCancelGeneration.fetch_add(1,std::memory_order_relaxed);
+    std::vector<jobject> local;
+    {std::lock_guard<std::mutex> lock(catalogConnectionMutex);for(auto reference:catalogConnections){auto ref=env->NewLocalRef(reference);if(ref)local.push_back(ref);}}
+    for(auto connection:local){
+        auto cls=env->GetObjectClass(connection);
+        if(cls){auto close=env->GetMethodID(cls,"disconnect","()V");if(close)env->CallVoidMethod(connection,close);env->DeleteLocalRef(cls);}
+        if(env->ExceptionCheck())env->ExceptionClear();
+        env->DeleteLocalRef(connection);
+    }
+}
 constexpr jint kNurCatalogReadTimeoutMs = 165000; // heavy server-side Argon2id
 
 std::string utf(JNIEnv* env, jstring value) {
@@ -62,7 +83,7 @@ void fail(JNIEnv* env, const char* message) {
 // Authenticated session policy controls supplemental RASP enforcement only.
 // A hooked client cannot change the independent server admission policy.
 std::atomic<bool> enforceRuntime{false};
-bool sensitiveOperation(int op){return (op>=4&&op<=10)||op==12||op==13||op==18;}
+bool sensitiveOperation(int op){return (op>=4&&op<=10)||op==12||op==13||op==18||op==19||op==20;}
 spdecode::RuntimeEvidence runtimeSnapshot(JNIEnv* env){
     auto result=spdecode::runtimeEvidence();
     jclass debug=env->FindClass("android/os/Debug");
@@ -125,7 +146,7 @@ bool safeBase(const std::string& value) {
     })) return false;
     return true;
 }
-bool safeOperation(jint operation) { return operation>=1 && operation<=18 && operation!=3; }
+bool safeOperation(jint operation) { return operation>=1 && operation<=20 && operation!=3; }
 bool safeProof(const std::string& value,size_t min,size_t max) {
     return value.size()>=min && value.size()<=max &&
         std::all_of(value.begin(),value.end(),[](unsigned char c){
@@ -239,6 +260,7 @@ jbyteArray post(JNIEnv* env,jclass,jint operation,jbyteArray bodyArg,jstring bea
         env->DeleteLocalRef(conn);
         fail(env,"CLOUD_NATIVE_TLS_REQUIRED");return nullptr;
     }
+    CatalogConnection activeCatalog(env,conn,conn!=nullptr&&(operation==10||operation==19||operation==20));
     jstring method=jstr(env,"POST");
     env->CallVoidMethod(conn,setMethod,method);
     bool ok=!env->ExceptionCheck();
@@ -247,7 +269,7 @@ jbyteArray post(JNIEnv* env,jclass,jint operation,jbyteArray bodyArg,jstring bea
     if(ok){env->CallVoidMethod(conn,setConnect,kConnectTimeoutMs);ok=!env->ExceptionCheck();}
     // Do not relax ordinary decoder/session timeouts. NUR server catalog
     // can require up to 120s on the remote worker for nested Argon2id fields.
-    const jint readTimeout = operation == 10 ? kCatalogIdleTimeoutMs :
+    const jint readTimeout = (operation == 10 || operation == 19 || operation == 20) ? kCatalogIdleTimeoutMs :
         (operation == 9 || operation == 12) ? kNurCatalogReadTimeoutMs :
         (operation == 5 ? 55000 : kReadTimeoutMs);
     if(ok){env->CallVoidMethod(conn,setRead,readTimeout);ok=!env->ExceptionCheck();}
@@ -272,9 +294,9 @@ jbyteArray post(JNIEnv* env,jclass,jint operation,jbyteArray bodyArg,jstring bea
         ok=setHeader(env,conn,connectionClass,setProperty,"X-SPDecode-Credential-Prompts","1");
     if(ok && operation == 10)
         ok=setHeader(env,conn,connectionClass,setProperty,"X-SPDecode-NPV-Identities","1");
-    if(ok && (operation == 5 || operation == 10 || operation == 13))
+    if(ok && (operation == 5 || operation == 10 || operation == 13 || operation == 19))
         ok=setHeader(env,conn,connectionClass,setProperty,"X-SPDecode-Compatible-Export","2");
-    if(ok && (operation == 5 || operation == 10 || operation == 13))
+    if(ok && (operation == 5 || operation == 10 || operation == 13 || operation == 19))
         ok=setHeader(env,conn,connectionClass,setProperty,"X-SPDecode-Compatible-Export-Hat","1");
     if(ok && !bearer.empty())ok=setHeader(env,conn,connectionClass,setProperty,"Authorization","Bearer "+bearer);
     if(!ok) {
@@ -331,7 +353,7 @@ jbyteArray post(JNIEnv* env,jclass,jint operation,jbyteArray bodyArg,jstring bea
         (operation==8 ? 12U*1024U*1024U : kMaxReplyBytes);
     bool oversize=false,readFailed=false,cancelled=false;
     for(;;) {
-        if(operation==10 && transferGeneration!=
+        if((operation==10 || operation==19 || operation==20) && transferGeneration!=
             catalogCancelGeneration.load(std::memory_order_relaxed)) {
             cancelled=true;break;
         }

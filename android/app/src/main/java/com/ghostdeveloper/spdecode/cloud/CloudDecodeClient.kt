@@ -59,7 +59,8 @@ internal class CloudDecodeClient(context: Context) {
     enum class TransferPhase { SENDING, PROCESSING, DOWNLOADING_RESULTS }
 
     class Failure(val code: String, val httpStatus: Int,
-        val passwordSubmitted:Boolean=false,val hwidSubmitted:Boolean=false) :
+        val passwordSubmitted:Boolean=false,val hwidSubmitted:Boolean=false,
+        val retryAfterMillis:Long=0L) :
         IOException("SP-DECODE CLOUD: $code")
 
     fun clearSession() = CloudNativeTransport.clearCachedSession()
@@ -73,7 +74,8 @@ internal class CloudDecodeClient(context: Context) {
         if (reply.status !in 200..299) {
             val code = reply.body.optJSONObject("error")?.optString("code")
                 ?.takeIf { it.matches(Regex("[A-Z_]{3,50}")) } ?: "SERVICE_UNAVAILABLE"
-            throw Failure(code, reply.status)
+            val retryAfter=reply.body.optJSONObject("error")?.optLong("retryAfterMillis",0L)?.coerceIn(0L,60_000L)?:0L
+            throw Failure(code, reply.status,retryAfterMillis=retryAfter)
         }
         return reply.body
     }
@@ -487,6 +489,34 @@ internal class CloudDecodeClient(context: Context) {
     }
 
     /** Public presentation metadata only; never contains provider operations. */
+    suspend fun catalogChunksSupported():Boolean = withContext(Dispatchers.IO) {
+        requireLegalConsent()
+        extract(CloudNativeTransport.post(CloudOperation.WATCH,
+            JSONObject().put("knownVersion",0),session()))
+            .optString("catalogTransferProtocol")=="catalog-chunks-v1"
+    }
+
+    suspend fun catalogManifest(knownVersion:Int,snapshotId:String?):JSONObject = withContext(Dispatchers.IO) {
+        requireLegalConsent()
+        val input=JSONObject().put("knownVersion",knownVersion)
+        if(snapshotId!=null)input.put("snapshotId",snapshotId)
+        extract(CloudNativeTransport.post(CloudOperation.CATALOG_MANIFEST,input,session()))
+    }
+
+    suspend fun catalogChunk(input:JSONObject):JSONObject = withContext(Dispatchers.IO) {
+        requireLegalConsent()
+        var retries=0
+        while(true) {
+            try {return@withContext extract(CloudNativeTransport.post(CloudOperation.CATALOG_CHUNK,input,session()))}
+            catch(error:Failure) {
+                if(retries>=2 || error.httpStatus !in setOf(429,500,502,503,504) || error.code !in setOf("RATE_LIMITED","SERVICE_UNAVAILABLE"))throw error
+                val backoff=500L*(1L shl retries++)
+                kotlinx.coroutines.delay(maxOf(backoff,error.retryAfterMillis)+kotlin.random.Random.nextLong(250L))
+            }
+        }
+        @Suppress("UNREACHABLE_CODE") error("unreachable")
+    }
+
     suspend fun serverVpnCatalog(knownVersion:Int,
         onTransfer:((Long,Long)->Unit)?=null): JSONObject =
         withContext(Dispatchers.IO) {
@@ -582,4 +612,3 @@ internal class CloudDecodeClient(context: Context) {
     }
 
 }
-

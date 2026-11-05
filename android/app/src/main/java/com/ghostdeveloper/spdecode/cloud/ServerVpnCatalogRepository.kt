@@ -24,6 +24,7 @@ data class ServerVpnApp(
     val decodeEnabled:Boolean,
     val methodRevision:Int=0,
     val maintenance:Boolean=false,
+    val iconLoader:(()->Bitmap?)?=null,
 )
 
 /** All app images are the original, hash-checked PNGs supplied by the API. */
@@ -34,6 +35,9 @@ internal class ServerVpnCatalogRepository(
     private val vault=ServerVpnSecureCache(context)
     private val newBadges=ServerVpnNewBadges(context)
     private val mutex=Mutex()
+    @Volatile var lastTransferResumable:Boolean=false
+        private set
+    private val placeholder by lazy { Bitmap.createBitmap(1,1,Bitmap.Config.ARGB_8888) }
     // Only a lightweight version check, not a full catalog download.
     private val versionCheckMillis=15*60_000L
 
@@ -63,10 +67,17 @@ internal class ServerVpnCatalogRepository(
             ?.takeIf { it.width>0 && it.height>0 }
     }
 
+    private fun validImage(bytes:ByteArray):Boolean {
+        if(!ServerVpnIconPolicy.isPng(bytes))return false
+        val bounds=BitmapFactory.Options().apply {inJustDecodeBounds=true}
+        BitmapFactory.decodeByteArray(bytes,0,bytes.size,bounds)
+        return bounds.outWidth>0 && bounds.outHeight>0
+    }
+
     private fun verifiedApps(record:JSONObject?):List<ServerVpnApp> {
         if(record==null || record.optInt("catalogVersion",0)<1)return emptyList()
         val array=record.optJSONArray("apps")?:return emptyList()
-        if(array.length() !in 1..100)return emptyList()
+        if(array.length() !in 1..500)return emptyList()
         val seen=mutableSetOf<String>()
         val apps=ArrayList<ServerVpnApp>(array.length())
         for(index in 0 until array.length()) {
@@ -83,7 +94,7 @@ internal class ServerVpnCatalogRepository(
                 ?.takeIf { digest(it)==checksum }
                 ?:vault.read("icon-$id")?.takeIf { digest(it)==checksum })
                 ?:return emptyList()
-            val bitmap=image(bytes)?:return emptyList()
+            if(!validImage(bytes))return emptyList()
             val revision=if(app.has("methodRevision")) {
                 val raw=app.opt("methodRevision")
                 if(raw !is Number || raw.toDouble()!=raw.toInt().toDouble() ||
@@ -95,8 +106,10 @@ internal class ServerVpnCatalogRepository(
                 if(raw !is Boolean)return emptyList()
                 raw
             }else false
-            apps.add(ServerVpnApp(id,name,bitmap,
-                app.optBoolean("decodeEnabled",false) && !maintenance,revision,maintenance))
+            apps.add(ServerVpnApp(id,name,placeholder,
+                app.optBoolean("decodeEnabled",false) && !maintenance,revision,maintenance,
+                iconLoader={val data=vault.read(iconCacheKey(checksum))?:vault.read("icon-$id")
+                    data?.takeIf{digest(it)==checksum}?.let(::image)}))
         }
         return apps
     }
@@ -220,6 +233,8 @@ internal class ServerVpnCatalogRepository(
     }
 
     fun currentVersion():Int = stored()?.optInt("catalogVersion",0)?:0
+    fun displayVersion():String?=stored()?.optString("displayVersion")?.takeIf{it.matches(Regex("[1-9][0-9]{0,8}"))}
+    suspend fun discardDownload()=mutex.withLock {withContext(Dispatchers.IO){vault.pruneDownloadCache(discard=true)}}
 
     /** VPS-only hint; verified HTTPS metadata and encrypted cache are authoritative. */
     suspend fun refreshIfDue(force:Boolean=false,announcedVersion:Int=0,
@@ -246,7 +261,11 @@ internal class ServerVpnCatalogRepository(
             try {
                 // Manual refresh still uses the version contract; metadata changes must bump version.
                 val knownVersion=if(!completeCache || cachedFormats.isEmpty() || !recipientMetadata)0 else previousVersion
-                val remote=client.serverVpnCatalog(knownVersion,onTransfer)
+                val chunked=client.catalogChunksSupported()
+                lastTransferResumable=chunked
+                val downloader=if(chunked)CatalogSnapshotDownload(client,vault) else null
+                val remote=downloader?.download(knownVersion,onTransfer)
+                    ?:client.serverVpnCatalog(knownVersion,onTransfer)
                 currentCoroutineContext().ensureActive()
                 if(remote.optBoolean("unchanged",false)) {
                     if(available.isEmpty() || remote.optInt("catalogVersion")!=knownVersion)
@@ -265,10 +284,11 @@ internal class ServerVpnCatalogRepository(
                 val remoteTexts=validateTextFormats(remote)
                 require(!remote.has("textSchemaVersion") || remoteTexts.isNotEmpty())
                 val array=remote.optJSONArray("apps")?:throw IllegalStateException("Missing app list")
-                if(array.length() !in 1..100)throw IllegalStateException("Invalid app count")
-                val bundle=remote.optJSONObject("iconBundle")?:throw IllegalStateException("Catalog bundle required")
-                val icons=bundle.getJSONArray("icons")
-                require(bundle.getInt("version")==1 && bundle.getInt("count")==array.length() && icons.length()==array.length())
+                if(array.length() !in 1..500)throw IllegalStateException("Invalid app count")
+                val bundle=remote.optJSONObject("iconBundle")
+                require(chunked || bundle!=null) { "Catalog bundle required" }
+                val icons=bundle?.getJSONArray("icons")?:JSONArray()
+                if(bundle!=null)require(bundle.getInt("version")==1 && bundle.getInt("count")==array.length() && icons.length()==array.length())
                 val bundled=HashMap<String,JSONObject>()
                 for(index in 0 until icons.length()) {
                     val icon=icons.getJSONObject(index)
@@ -289,21 +309,22 @@ internal class ServerVpnCatalogRepository(
                         throw IllegalStateException("Invalid app metadata")
                     val cacheKey=iconCacheKey(checksum)
                     var bytes=vault.read(cacheKey)
-                    val response=bundled[id]?:throw IllegalStateException("Missing bundled icon")
-                    if(response.optString("sha256")!=checksum || response.optString("mimeType")!="image/png")
+                    val response=bundled[id]
+                    if(response!=null && (response.optString("sha256")!=checksum || response.optString("mimeType")!="image/png"))
                         throw IllegalStateException("Icon metadata mismatch")
-                    if(bytes==null || digest(bytes)!=checksum || image(bytes)==null) {
+                    if(bytes==null || digest(bytes)!=checksum || !validImage(bytes)) {
                         // An older installation may still keep its valid icon
                         // under the original ID-keyed encrypted cache path.
                         bytes=vault.read("icon-$id")
-                        if(bytes==null || digest(bytes)!=checksum || image(bytes)==null) {
+                        if(bytes==null || digest(bytes)!=checksum || !validImage(bytes)) {
+                            require(response!=null) { "Missing verified snapshot icon" }
                             if(response.optString("id")!=id || response.optString("sha256")!=checksum ||
                                 response.optString("mimeType")!="image/png")
                                 throw IllegalStateException("Icon metadata mismatch")
                             val base64=response.getString("contentBase64")
                             bytes=Base64.decode(base64,Base64.NO_WRAP)
                             if(Base64.encodeToString(bytes,Base64.NO_WRAP)!=base64 ||
-                                digest(bytes)!=checksum || image(bytes)==null)
+                                digest(bytes)!=checksum || !validImage(bytes))
                                 throw IllegalStateException("Icon digest mismatch")
                             // Only publish under the immutable checksum name.
                             candidates.add(cacheKey to bytes)
@@ -329,6 +350,12 @@ internal class ServerVpnCatalogRepository(
                     .put("formatCount",remote.getInt("formatCount"))
                     .put("formatDetection",remote.getJSONObject("formatDetection"))
                     .put("formats",remote.getJSONArray("formats"))
+                if(remote.has("displayVersion") && !remote.isNull("displayVersion")) {
+                    val display=remote.getString("displayVersion")
+                    require(display.matches(Regex("[1-9][0-9]{0,8}")))
+                    fresh.put("displayVersion",display)
+                }
+                if(remote.has("snapshotId"))fresh.put("snapshotId",remote.getString("snapshotId"))
                 if(remote.has("compatibleExports"))fresh.put(
                     "compatibleExports",remote.getJSONObject("compatibleExports"))
                 if(remote.has("textSchemaVersion")) fresh
@@ -341,6 +368,7 @@ internal class ServerVpnCatalogRepository(
                     .put("onlineReferenceFormats",remote.getJSONArray("onlineReferenceFormats"))
                 currentCoroutineContext().ensureActive()
                 vault.write("catalog",fresh.toString().toByteArray(Charsets.UTF_8))
+                downloader?.committed()
                 onProgress?.invoke(100)
                 verifiedApps(fresh).ifEmpty { available }.also { apps ->
                     newBadges.observeCatalog(apps.map { it.id }.toSet())

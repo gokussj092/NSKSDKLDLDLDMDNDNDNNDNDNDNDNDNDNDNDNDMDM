@@ -239,6 +239,14 @@
     <string name="catalog_transfer_completed">कैटलॉग अपडेट हो गया</string>
     <string name="catalog_transfer_saved">सभी प्रारूप सहेजे गए हैं।</string>
     <string name="catalog_transfer_finish">समाप्त</string>
-    <string name="catalog_transfer_bytes_total">%1$s MB / %2$s MB</string>
-    <string name="catalog_transfer_bytes_unknown">%1$s MB डाउनलोड हुआ</string>
+    <string name="catalog_transfer_bytes_total">%1$s MiB / %2$s MiB</string>
+    <string name="catalog_transfer_bytes_unknown">%1$s MiB</string>
+    <string name="catalog_transfer_verifying">जाँच और सहेजना जारी है…</string>
+    <string name="result_engine_error">पूर्वावलोकन उपलब्ध नहीं है। पूरा परिणाम निर्यात किया जा सकता है।</string>
+    <string name="result_previous_page">पिछला पृष्ठ</string>
+    <string name="result_copy_too_large">क्लिपबोर्ड परिणाम स्वीकार नहीं कर सका। पूरी फ़ाइल निर्यात करें।</string>
+    <string name="catalog_transfer_paused">डाउनलोड बाधित हुआ</string>
+    <string name="catalog_transfer_resume">फिर कोशिश / जारी रखें</string>
+    <string name="catalog_transfer_discard">आंशिक डाउनलोड हटाएँ</string>
+    <string name="catalog_transfer_retention">सत्यापित भाग अधिकतम 7 दिनों तक एन्क्रिप्ट करके रखे जाते हैं।</string>
 </resources>

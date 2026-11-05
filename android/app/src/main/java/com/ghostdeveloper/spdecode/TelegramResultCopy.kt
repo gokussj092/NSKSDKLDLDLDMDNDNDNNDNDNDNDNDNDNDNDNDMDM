@@ -19,7 +19,7 @@ object TelegramResultCopy {
         }
         return when (format) {
             ResultExport.JSON -> buildString {
-                val json = ResultJsonDisplay.render(view.rawText, view.extension, false).trimEnd()
+                val json = if(ResultOutputWriter.isLarge(view.rawText))java.io.StringWriter().also{ResultOutputWriter.write(view.rawText,view.extension,ResultExport.JSON,it)}.toString().trimEnd() else ResultJsonDisplay.render(view.rawText, view.extension, false).trimEnd()
                 append(header).append("\n\n")
                 append("```json\n")
                 append(json).append('\n')
@@ -27,7 +27,7 @@ object TelegramResultCopy {
             }
             ResultExport.ORIGINAL ->
                 header + "\n\n" + view.rawText
-            ResultExport.ORDERED -> view.document.structured
+            ResultExport.ORDERED -> if(ResultOutputWriter.isLarge(view.rawText))java.io.StringWriter().also{ResultOutputWriter.write(view.rawText,view.extension,ResultExport.ORDERED,it)}.toString() else view.document.structured
         }
     }
 }

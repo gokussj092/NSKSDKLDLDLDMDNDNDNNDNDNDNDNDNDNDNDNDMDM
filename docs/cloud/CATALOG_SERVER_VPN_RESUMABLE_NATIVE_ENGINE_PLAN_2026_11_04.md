@@ -1,7 +1,9 @@
 # SP-DECODE — Directorio Server VPN V2: descargas reanudables, progreso real y versiones correctas
 
 **Fecha de diseño:** 2026-11-04 (hora local del proyecto). **Rama:** `feat/nuevas-integraciones`.  
-**Estado:** ESPECIFICACIÓN APROBABLE / PENDIENTE DE IMPLEMENTACIÓN. **Este commit solo documenta; no despliega VPS, no cambia código ejecutable, no altera la APK 1.1.27 (build 42) ni inicia un build.**
+**Estado actualizado 2026-11-05:** implementación inicial en código, detrás de flag de servidor apagado; pruebas host aprobadas. D0, red lenta/dispositivo y despliegue siguen pendientes. No se compiló APK/AAB.
+
+La solicitud posterior del propietario autoriza implementar este plan. «Solo documentación» era el alcance del commit original. Véase [implementación y procedimiento de validación](CATALOG_RESULTS_IMPLEMENTATION_2026_11_05.md). No se atribuye una causa al fallo original sin evidencia de producción.
 
 > **CORRECCIÓN DE ALCANCE (aclaración del propietario, 2026-11-04):** el crash por resultados JSON extensos de **más de 8,000 líneas** ocurre al **visualizar/procesar resultados de descifrado de configuraciones VPN**, NO al descargar o cargar el inventario de apps Server VPN. La investigación, motor `libspdecode_result_engine.so`, virtualización del visor y QA de esos resultados están definidos exclusivamente en [Resultados de descifrado extensos: motor nativo y visor incremental](../../docs/android/RESULTADOS_DESCIFRADOS_JSON_GRANDES_MOTOR_NATIVO_2026_11_04.md). Este plan se limita a **descarga, caché, manifest, metadata e iconos del directorio de aplicaciones Server VPN**.
 
@@ -303,4 +305,4 @@ El cambio SOLO se considera terminado cuando:
 - `analysis/METHOD_EVIDENCE_POLICY.md`: política de evidencia de métodos; los cambios de catálogo no confirman automáticamente que un descifrador funcione.
 - `docs/FASE_7_CUENTAS_GOOGLE_PAGOS_Y_SOPORTE_APK_2026_11_04.md`: módulo comercial independiente; **no fusionar** la arquitectura de descarga de catálogos con uploads de APK de pago sin diseño explícito.
 
-**Fuera de alcance en este commit:** modificar servidor/VPS, configurar proxy, crear/borrar ramas, implementar `.so`, modificar Gradle/Kotlin/C++, subir la versión Android, compilar APK/AAB, tocar cuenta Google Play o fusionar a `main`. El motor de resultados extensos y el visor Compose se documentan en `docs/android/RESULTADOS_DESCIFRADOS_JSON_GRANDES_MOTOR_NATIVO_2026_11_04.md`. Es planificación y especificación solamente.
+**Fuera de alcance en el commit documental original del 2026-11-04:** modificar servidor/VPS, configurar proxy, crear/borrar ramas, implementar `.so`, modificar Gradle/Kotlin/C++, subir la versión Android, compilar APK/AAB, tocar cuenta Google Play o fusionar a `main`. El motor de resultados extensos y el visor Compose se documentan en `docs/android/RESULTADOS_DESCIFRADOS_JSON_GRANDES_MOTOR_NATIVO_2026_11_04.md`. Es planificación y especificación solamente.

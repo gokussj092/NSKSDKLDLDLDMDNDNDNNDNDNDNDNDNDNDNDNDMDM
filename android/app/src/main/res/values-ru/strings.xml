@@ -238,6 +238,14 @@
     <string name="catalog_transfer_completed">Каталог обновлён</string>
     <string name="catalog_transfer_saved">Все форматы сохранены.</string>
     <string name="catalog_transfer_finish">Готово</string>
-    <string name="catalog_transfer_bytes_total">%1$s MB / %2$s MB</string>
-    <string name="catalog_transfer_bytes_unknown">Загружено %1$s МБ</string>
+    <string name="catalog_transfer_bytes_total">%1$s MiB / %2$s MiB</string>
+    <string name="catalog_transfer_bytes_unknown">%1$s MiB</string>
+    <string name="catalog_transfer_verifying">Проверка и сохранение…</string>
+    <string name="result_engine_error">Предпросмотр недоступен. Полный результат можно экспортировать.</string>
+    <string name="result_previous_page">Предыдущая страница</string>
+    <string name="result_copy_too_large">Буфер обмена не принял результат. Экспортируйте полный файл.</string>
+    <string name="catalog_transfer_paused">Загрузка прервана</string>
+    <string name="catalog_transfer_resume">Повторить / продолжить</string>
+    <string name="catalog_transfer_discard">Удалить частичную загрузку</string>
+    <string name="catalog_transfer_retention">Проверенные фрагменты хранятся зашифрованными до 7 дней.</string>
 </resources>

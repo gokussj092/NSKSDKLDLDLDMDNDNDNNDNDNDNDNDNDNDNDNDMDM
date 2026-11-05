@@ -5,6 +5,7 @@ import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performClick
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -28,8 +29,8 @@ class JsonTreeViewerInstrumentedTest {
         val original = ResultJsonDisplay.render(raw, "hc")
         val root = JsonParser.parseString(raw)
         val initial = JsonTreeProjection.project(root)
-        assertTrue(initial.any { it.key == "city" && it.kind == JsonTreeProjection.Kind.VALUE })
-        assertTrue(initial.any { it.key == "active" && it.value?.asBoolean == true })
+        assertFalse(initial.any { it.key == "city" })
+        assertTrue(initial.any { it.key == "nested" && !it.expanded })
 
         val collapsed = JsonTreeProjection.project(root, mapOf("root/1" to false))
         assertFalse(collapsed.any { it.key == "city" })
@@ -58,25 +59,17 @@ class JsonTreeViewerInstrumentedTest {
         assertEquals(12500, root.asJsonArray.size())
     }
 
-    @Test fun fullNestedJsonAndLongValuesUseOnlyTheOuterScroll() {
+    @Test fun longValueAndNestedBranchesRemainReachableOnDemand() {
         val longValue="x".repeat(1800)+"END_OF_COMPLETE_VALUE"
-        val raw="""{"profiles":[{"options":{"payload":"$longValue"}}],"items":${(0..99).toList()}}"""
-        compose.setContent {
-            Column(Modifier.verticalScroll(rememberScrollState())) {
-                CompleteResultCard(
-                    current=DecodeView("complete.hc","hc",raw,raw.length),
-                    reveal=false,hideCredentials=false,onReveal={},onCopy={},onExport={}
-                )
-            }
-        }
+        val raw="""{"options":{"payload":"$longValue"}}"""
+        compose.setContent { JsonTreeViewer(raw=raw,suffix="hc",maskCredentials=false,identity="long-value") }
         compose.waitUntil(timeoutMillis=20000) {
-            compose.onAllNodesWithText("END_OF_COMPLETE_VALUE",substring=true)
-                .fetchSemanticsNodes().isNotEmpty()
+            compose.onAllNodesWithText("options",substring=true).fetchSemanticsNodes().isNotEmpty()
         }
-        compose.onNodeWithText("\"payload\": \"$longValue\"",substring=true).assertExists()
-        assertEquals(1,compose.onAllNodes(hasScrollAction()).fetchSemanticsNodes().size)
-        compose.onNodeWithText("99",substring=false).performScrollTo().assertExists()
-        compose.onNodeWithText(ctx.getString(R.string.export)).performScrollTo().assertExists()
+        compose.onNodeWithText("options",substring=true).performClick()
+        compose.waitUntil(timeoutMillis=20000) {
+            compose.onAllNodesWithText("END_OF_COMPLETE_VALUE",substring=true).fetchSemanticsNodes().isNotEmpty()
+        }
         assertEquals(raw,DecodeView("complete.hc","hc",raw,raw.length).rawText)
     }
 
@@ -104,9 +97,11 @@ class JsonTreeViewerInstrumentedTest {
             )
         }
         compose.waitUntil(timeoutMillis = 20000) {
-            compose.onAllNodesWithText("\"city\": \"LA\"", substring = true)
+            compose.onAllNodesWithText("nested", substring = true)
                 .fetchSemanticsNodes().isNotEmpty()
         }
+        compose.onNodeWithText("nested", substring=true).performClick()
+        compose.waitUntil(timeoutMillis=20000) { compose.onAllNodesWithText("\"city\": \"LA\"",substring=true).fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("\"city\": \"LA\"", substring = true).assertExists()
         compose.onNodeWithText("\"port\": 443", substring = true).assertExists()
         compose.onNodeWithText("sample.hc").assertExists()

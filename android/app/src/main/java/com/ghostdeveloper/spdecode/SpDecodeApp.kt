@@ -106,6 +106,8 @@ fun SpDecodeApp(
     catalogTransfer:CatalogTransferUiState?=null,
     onCancelCatalogTransfer:()->Unit={},
     onFinishCatalogTransfer:()->Unit={},
+    onResumeCatalogTransfer:()->Unit={},
+    onDiscardCatalogTransfer:()->Unit={},
     onRefreshServerVpn:()->Unit={},
     pendingServerVpnCatalogVersion:Int?=null,
     onConfirmServerVpnUpdate:()->Unit={},
@@ -182,9 +184,7 @@ fun SpDecodeApp(
             icon={Image(painter=painterResource(R.drawable.ic_launcher_foreground),
                 contentDescription=null,modifier=Modifier.size(46.dp))},
             title={Text(stringResource(R.string.catalog_available_title))},
-            text={Text(if(pendingServerVpnCatalogVersion==0)
-                stringResource(R.string.catalog_download_confirm_body)
-                else stringResource(R.string.catalog_available_body,pendingServerVpnCatalogVersion),color=Secondary)},
+            text={Text(stringResource(R.string.catalog_download_confirm_body),color=Secondary)},
             confirmButton={TextButton(onClick=onConfirmServerVpnUpdate) {
                 Text(stringResource(R.string.server_vpn_catalog_download),color=White)
             }},
@@ -196,7 +196,7 @@ fun SpDecodeApp(
             textContentColor=Secondary,
         )
         catalogTransfer?.let { transfer ->
-            CatalogTransferDialog(transfer,onCancelCatalogTransfer,onFinishCatalogTransfer)
+            CatalogTransferDialog(transfer,onCancelCatalogTransfer,onFinishCatalogTransfer,onResumeCatalogTransfer,onDiscardCatalogTransfer)
         }
         if(whatsNew && !busy && (cloudWhatsNew!=null || !BuildConfig.SPDECODE_CLOUD_ENABLED)) AlertDialog(
             onDismissRequest=onDismissWhatsNew,
@@ -1107,7 +1107,10 @@ private fun ServerVpnScreen(
                                     Surface(color=Raised,shape=RoundedCornerShape(13.dp),
                                         modifier=Modifier.size(52.dp)) {
                                         Box(contentAlignment=Alignment.Center) {
-                                            Image(bitmap=app.icon.asImageBitmap(),
+                                            val visibleIcon by produceState(app.icon,app) {
+                                                value=kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {app.iconLoader?.invoke()?:app.icon}
+                                            }
+                                            Image(bitmap=visibleIcon.asImageBitmap(),
                                                 contentDescription=app.name,
                                                 modifier=Modifier.size(36.dp))
                                         }

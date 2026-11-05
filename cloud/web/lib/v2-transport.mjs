@@ -61,6 +61,8 @@ async function dispatch(operation,request) {
     14:()=>import("../app/api/v1/whats-new/route.js"),
     15:()=>import("../app/api/v1/telemetry/route.js"),
     18:()=>import("../app/api/v1/feedback/route.js"),
+    19:()=>import("../app/api/v1/server-vpn/manifest/route.js"),
+    20:()=>import("../app/api/v1/server-vpn/chunk/route.js"),
   };
   return (await handlers[operation]()).POST(request);
 }
@@ -79,7 +81,7 @@ async function jsonTransportCore(request,options={}) {
     deviceRevision:devicePolicy.revision};
   if(!cfg.configured)return fail("SERVICE_UNAVAILABLE",503);
   const url=new URL(request.url),header=request.headers.get("x-sp-operation")||"";
-  if(request.method!=="POST" || url.search || !/^(1|2|[4-9]|1[0-8])$/.test(header))
+  if(request.method!=="POST" || url.search || !/^(1|2|[4-9]|1[0-9]|20)$/.test(header))
     return fail("INVALID_REQUEST",400); // No QA/beta or arbitrary proxy.
   const op=Number(header);
   try {
@@ -233,7 +235,7 @@ async function jsonTransportCore(request,options={}) {
     const headers=new Headers(request.headers);headers.delete("content-length");
     const internal=new Request(new URL("/api/v1/"+routes[op],url),{
       method:"POST",headers,body:dispatchBytes,signal:request.signal});
-    bindVerifiedRequest(internal,claims);
+    bindVerifiedRequest(internal,{...claims,hpke:Boolean(options.hpkeWireBytes)});
     return await (options.dispatch||dispatch)(op,internal);
   } catch(error) {
     if(error?.message==="INPUT_TOO_LARGE")return fail("INPUT_TOO_LARGE",413);
@@ -299,7 +301,7 @@ export async function transportRequest(request,options={}) {
   }
   if(!isHpkeEnabled(env))return fail("SERVICE_UNAVAILABLE",503);
   const url=new URL(request.url),name=request.headers.get("x-sp-operation")||"";
-  if(request.method!=="POST"||url.search||!/^(1|2|[4-9]|1[0-8])$/.test(name))
+  if(request.method!=="POST"||url.search||!/^(1|2|[4-9]|1[0-9]|20)$/.test(name))
     return fail("INVALID_REQUEST",400);
   const op=Number(name);
   if(op>=4 && !(request.headers.get("authorization")||"").startsWith("Bearer "))
@@ -324,7 +326,7 @@ export async function transportRequest(request,options={}) {
     const responseBytes=await boundedReply(response);
     const ciphertext=sealHpkeReply(opened,response.status,responseBytes);
     return new Response(ciphertext,{status:response.status,headers:{
-      "Content-Type":"application/octet-stream","Cache-Control":"no-store","X-Content-Type-Options":"nosniff"
+      "Content-Type":"application/octet-stream","Content-Length":String(ciphertext.length),"Cache-Control":"no-store","X-Content-Type-Options":"nosniff"
     }});
   }catch(error) {
     // Do not disclose key IDs, invalid tags, keyring state or parsing exceptions.

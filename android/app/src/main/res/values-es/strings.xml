@@ -240,6 +240,14 @@
     <string name="catalog_transfer_completed">Catálogo actualizado</string>
     <string name="catalog_transfer_saved">Todos los formatos se han guardado.</string>
     <string name="catalog_transfer_finish">Finalizar</string>
-    <string name="catalog_transfer_bytes_total">%1$s MB / %2$s MB</string>
-    <string name="catalog_transfer_bytes_unknown">%1$s MB descargados</string>
+    <string name="catalog_transfer_bytes_total">%1$s MiB / %2$s MiB</string>
+    <string name="catalog_transfer_bytes_unknown">%1$s MiB</string>
+    <string name="catalog_transfer_verifying">Verificando y guardando…</string>
+    <string name="result_engine_error">Vista previa no disponible. El resultado completo sigue disponible para exportarlo.</string>
+    <string name="result_previous_page">Página anterior</string>
+    <string name="result_copy_too_large">El portapapeles no pudo aceptar el resultado. Exporta el archivo completo.</string>
+    <string name="catalog_transfer_paused">Descarga interrumpida</string>
+    <string name="catalog_transfer_resume">Reintentar / reanudar</string>
+    <string name="catalog_transfer_discard">Eliminar descarga parcial</string>
+    <string name="catalog_transfer_retention">Los fragmentos verificados se guardan cifrados hasta 7 días para reanudar.</string>
 </resources>

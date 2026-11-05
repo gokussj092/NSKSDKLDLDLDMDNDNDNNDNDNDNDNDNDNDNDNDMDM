@@ -238,6 +238,14 @@
     <string name="catalog_transfer_completed">تم تحديث الكتالوج</string>
     <string name="catalog_transfer_saved">تم حفظ جميع التنسيقات.</string>
     <string name="catalog_transfer_finish">إنهاء</string>
-    <string name="catalog_transfer_bytes_total">%1$s MB / %2$s MB</string>
-    <string name="catalog_transfer_bytes_unknown">تم تنزيل %1$s ميغابايت</string>
+    <string name="catalog_transfer_bytes_total">%1$s MiB / %2$s MiB</string>
+    <string name="catalog_transfer_bytes_unknown">%1$s MiB</string>
+    <string name="catalog_transfer_verifying">جارٍ التحقق والحفظ…</string>
+    <string name="result_engine_error">المعاينة غير متاحة. لا تزال النتيجة الكاملة متاحة للتصدير.</string>
+    <string name="result_previous_page">الصفحة السابقة</string>
+    <string name="result_copy_too_large">تعذر نسخ النتيجة إلى الحافظة. صدّر الملف الكامل.</string>
+    <string name="catalog_transfer_paused">انقطع التنزيل</string>
+    <string name="catalog_transfer_resume">إعادة المحاولة / الاستئناف</string>
+    <string name="catalog_transfer_discard">حذف التنزيل الجزئي</string>
+    <string name="catalog_transfer_retention">تُحفظ الأجزاء المتحقق منها مشفرة لمدة تصل إلى 7 أيام.</string>
 </resources>

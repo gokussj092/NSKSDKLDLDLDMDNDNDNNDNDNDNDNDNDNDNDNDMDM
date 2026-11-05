@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 1,
+  "syntheticOnly": true,
+  "androidBuildRun": false,
+  "deviceQaRun": false,
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "checks": [
+    {
+      "name": "kotlin_psi_syntax_only",
+      "exitCode": 0,
+      "seconds": 1.742,
+      "output": "Kotlin PSI syntax PASS files=35\n"
+    },
+    {
+      "name": "native_asan_ubsan_compile",
+      "exitCode": 0,
+      "seconds": 4.849,
+      "output": ""
+    },
+    {
+      "name": "native_asan_ubsan_no_leaksanitizer",
+      "exitCode": 0,
+      "seconds": 0.919,
+      "output": "rows=8000 nodes=24001 original_bytes=254893 export_equal=true\nrows=20000 nodes=60001 original_bytes=648893 export_equal=true\nrows=50000 nodes=150001 original_bytes=1638893 export_equal=true\nnegative_utf8_depth_mask_duplicate_and_fuzz=PASS\n"
+    },
+    {
+      "name": "host_jni_compile",
+      "exitCode": 0,
+      "seconds": 0.897,
+      "output": ""
+    },
+    {
+      "name": "host_jni_java_contract",
+      "exitCode": 0,
+      "seconds": 0.53,
+      "output": "JNI unicode length / 100 privacy toggles / exact original / close / invalid: PASS\n"
+    },
+    {
+      "name": "publisher_fixture",
+      "exitCode": 0,
+      "seconds": 0.102,
+      "output": ""
+    },
+    {
+      "name": "kotlin_production_algorithms_compile",
+      "exitCode": 0,
+      "seconds": 7.674,
+      "output": ""
+    },
+    {
+      "name": "kotlin_production_algorithms_execute",
+      "exitCode": 0,
+      "seconds": 1.406,
+      "output": "Typed Kotlin: actual downloader resume, monotonic verified bytes, full JSON/text export, GCM snapshot roundtrip/tamper/AAD, iterative display: PASS\n"
+    },
+    {
+      "name": "node_local_regressions",
+      "exitCode": 0,
+      "seconds": 1.304,
+      "output": "-only availability (20.69953ms)\n✔ FNF switch does not reset existing operator choices (28.219793ms)\n✔ FNF gateway requires complete matching JSON and rejects malformed/partial lists (18.47306ms)\n✔ Genis downloads only its fixed original source over pinned TLS (6.566455ms)\n✔ Genis denies private DNS and every redirect (3.107447ms)\n✔ Genis source failure never returns the included catalog (0.99277ms)\n✔ Genis original launcher pixels, metadata and monotonic public catalog (28.015784ms)\n✔ Genis switch preserves earlier provider choices (36.884638ms)\n✔ Genis gateway requires matching complete server JSON (12.169123ms)\n✔ authenticated Genis broker forwards all bytes and returns the complete worker document (9.631944ms)\n✔ Halcon signing matches the original timestamp+secret protocol (1.860441ms)\n✔ Halcon requires both secrets before DNS or download (2.915176ms)\n✔ Halcon sends one signed POST only to the fixed original TLS destination (2.658618ms)\n✔ Halcon rejects private DNS, redirects, HTML and does not retry signed POSTs (6.752812ms)\n✔ Halcon original raster, public card and configured availability (23.997902ms)\n✔ Halcon persistent switch preserves other operators' choices (36.436176ms)\n✔ Halcon worker contract accepts the full document and rejects partial or malformed results (16.382375ms)\n✔ HTTP Conexión selects URL/password together and rejects unapproved sources (2.882306ms)\n✔ FIS-issued token stays on Google; each temporary installation is deleted (2.476053ms)\n✔ concurrent clients share one config fetch and one immutable pair (2.443753ms)\n✔ TTL and forced refresh replace the pair; failure has a cooldown and no stale fallback (2.677026ms)\n✔ invalid Remote Config still cleans up and never uses fixed legacy values (0.811787ms)\n✔ broker resolves metadata through pinned TLS then wraps the exact new source and password (4.04308ms)\n✔ broker rejects private Google DNS before sending Firebase options (1.895905ms)\n✔ internal bundle rejects oversized payloads and invalid passwords (39.755348ms)\n✔ authenticated HTTP Conexión rotation refreshes once and preserves the matching pair (23.83137ms)\n✔ authenticated HTTP Conexión source-moved refreshes once and preserves the matching pair (9.015647ms)\n✔ authenticated HTTP Conexión still-invalid refreshes once and preserves the matching pair (5.232999ms)\n✔ HTTP Conexión pins the real Remote Config source and the APK nocache timestamp (1.385274ms)\n✔ HTTP Conexión sends the exact original GET agent/cache headers over pinned TLS (3.188239ms)\n✔ HTTP Conexión rejects private DNS and every redirect (2.218633ms)\n✔ HTTP Conexión never hides a current-source 404 with the obsolete default or an asset (0.683704ms)\n✔ HTTP Conexión original large PNG and availability retain all other public methods (23.632534ms)\n✔ HTTP Conexión switch preserves the operator's existing choices (30.62632ms)\n✔ HTTP Conexión gateway requires whole matching nonpartial JSON (10.332507ms)\n✔ JyFast pins both exact APK sources, port 85, certificate header and public DNS (4.996432ms)\n✔ JyFast refuses private DNS before any HTTP request (2.074546ms)\n✔ JyFast refuses every redirect without a stale or cross-origin fallback (0.776003ms)\n✔ JyFast respects the deployment switch before DNS (0.540397ms)\n✔ paired JyFast catalogs require both complete sources and preserve their bytes (0.476611ms)\n✔ public metadata contains the original icon and honors per-provider availability (42.135135ms)\n✔ JyFast admin control preserves an existing disabled provider and advances the version (19.395025ms)\n✔ worker contract accepts both full modes and rejects omitted or mismatched documents (9.460368ms)\n✔ MM denies private DNS before transport (6.036795ms)\n✔ MM refuses same-origin and foreign redirects (3.302677ms)\n✔ MM original PNG, mmt metadata and card follow availability (28.532704ms)\n✔ MM persistent switch preserves existing provider states (29.384703ms)\n✔ authenticated MM broker forwards all bytes and returns the complete worker document (20.413929ms)\n✔ MM gateway rejects inconsistent or partial worker catalogs (2.989679ms)\n✔ MM rejects client URLs, arbitrary sources and missing global availability (0.372042ms)\n✔ NAMO original public updater GET uses its original OkHttp agent and fixed TLS destination (4.961259ms)\n✔ NAMO rejects private DNS and all redirects (3.002989ms)\n✔ NAMO original PNG and public directory preserve metadata-only availability (16.543555ms)\n✔ NAMO switch does not reset existing operator choices (37.155178ms)\n✔ NAMO gateway requires complete matching JSON and rejects malformed/partial lists (13.141032ms)\n✔ ANY and Speicers are public cards with original icons and operator availability (36.679628ms)\n✔ both new cards use persistent switches without resetting previously disabled providers (24.935734ms)\n✔ HA Tunnel original PNG and the validated fixed updater are available (17.233562ms)\n✔ original provider PNGs match the public digest and never contain secrets (28.59858ms)\n✔ version match returns only a cheap unchanged response (12.790532ms)\n✔ current catalog still invalidates the release-57 Android catalog cache (12.566904ms)\n✔ new version returns catalog and invalid bodies fail closed (17.869879ms)\n✔ Wolf catalog refreshes a release-58 cache with its original icon (14.433475ms)\n✔ only registered icon identifiers are served (2.531285ms)\n✔ only fixed catalog providers are eligible for remote broker (2.240787ms)\n✔ deployment version is monotonic and rejects rollback (0.519575ms)\n✔ DTunnel Mod uses the confirmed green provider icon but never offers unauthenticated remote download (21.726003ms)\n✔ Royal retains its large original PNG and stays visible with decoding disabled (18.726378ms)\n✔ SocketClay original icon and verified remote source follow provider availability (13.057746ms)\n✔ Wakko original icon and verified remote source follow provider availability (13.774915ms)\n✔ TunelGuard keeps its original icon while the build-128 updater returns 404 (8.695493ms)\n✔ V2ray Tunnel Plus original icon and verified remote source follow provider availability (14.881838ms)\n✔ EUT VPN retains the original bundled icon while its API requires an accepted session (7.900546ms)\n✔ Focus original launcher icon and validated source follow provider controls (16.338936ms)\n✔ FreedomVPN original icon and verified source follow provider availability (21.586126ms)\n✔ Internet Infinito original icon and verified source follow provider availability (12.07794ms)\n✔ MegaTunnel original icon and real validated source follow provider controls (11.481304ms)\n✔ Mx Tunnel PRO exact original icon and real validated catalog follow provider controls (11.649577ms)\n✔ OnSpace VPN lossless original launcher and verified paired sources follow provider controls (18.369449ms)\n✔ ProNeet keeps its original icon visible while both official updater files are empty (5.121821ms)\n✔ RJC TUNNEL PRO original PNG and verified live catalog follow provider controls (11.310565ms)\n✔ RMP TUNNEL PRO exact original icon and real validated source follow provider controls (11.952845ms)\n✔ SuperFlash original PNG and validated paired sources follow provider controls (11.530918ms)\n✔ TurboMX original PNG and validated paired sources follow provider controls (11.302895ms)\n✔ UT Loop keeps its original icon visible while its official remote response remains unvalidated (6.434885ms)\n✔ Xhypher original PNG and validated complete catalog follow provider controls (8.883978ms)\n✔ 7NET original PNG and validated complete catalog follow provider controls (10.310193ms)\n✔ AM retains its original PNG while protected catalog support is pending (8.15083ms)\n✔ CREEB VPN remains disabled even with global availability (4.986928ms)\n✔ MM Tunnel keeps its original PNG and enables the validated hash POST (4.872013ms)\n✔ Tx original icon and verified fixed catalog follow individual availability (10.121498ms)\n✔ ha-tunnel-plus fixed endpoint is pinned across DNS, TLS and redirects (8.367907ms)\n✔ bd-net-vpn fixed endpoint is pinned across DNS, TLS and redirects (1.286595ms)\n✔ aura-net-vpn fixed endpoint is pinned across DNS, TLS and redirects (1.332724ms)\n✔ apna-vpn fixed endpoint is pinned across DNS, TLS and redirects (1.491905ms)\n✔ any-vpn fixed endpoint is pinned across DNS, TLS and redirects (0.978249ms)\n✔ speicers-pro-vpn fixed endpoint is pinned across DNS, TLS and redirects (0.747981ms)\n✔ tx-tunnel fixed endpoint is pinned across DNS, TLS and redirects (0.930186ms)\n✔ abowaged-vpn fixed endpoint is pinned across DNS, TLS and redirects (1.582491ms)\n✔ http-socketclay fixed endpoint is pinned across DNS, TLS and redirects (6.159209ms)\n✔ tunneltweak fixed endpoint is pinned across DNS, TLS and redirects (1.070858ms)\n✔ http-jireh fixed endpoint is pinned across DNS, TLS and redirects (0.643483ms)\n✔ http-fenixvpn fixed endpoint is pinned across DNS, TLS and redirects (0.622952ms)\n✔ austroplus-vpn fixed endpoint is pinned across DNS, TLS and redirects (0.6219ms)\n✔ ac-tunnel-vpn fixed endpoint is pinned across DNS, TLS and redirects (0.379774ms)\n✔ ksh-vpn fixed endpoint is pinned across DNS, TLS and redirects (0.470742ms)\n✔ my-tunnel-proxy fixed endpoint is pinned across DNS, TLS and redirects (0.606717ms)\n✔ robust-tunnel fixed endpoint is pinned across DNS, TLS and redirects (0.750985ms)\n✔ trv-tunnel fixed endpoint is pinned across DNS, TLS and redirects (0.596672ms)\n✔ 4u-tunnel-lite fixed endpoint is pinned across DNS, TLS and redirects (0.516942ms)\n✔ MKK four approved catalog sources are individually bound to fixed HTTPS endpoints (1.906001ms)\n✔ MKK intermittent HTTP 503 recovers with one bounded retry on same public IP (0.632196ms)\n✔ MKK budget preserves complete approved sources and marks omissions explicitly (0.496671ms)\n✔ first catalog sync increments above a previous higher persistent version and preserves disabled providers (52.01989ms)\n✔ simultaneous first sync is atomic and keeps the roster version stable (108.247418ms)\n✔ catalog sync handles local development without provider-control volume (1.738177ms)\n✔ enabling an existing card invalidates an older roster-only fingerprint above the release floor (16.205804ms)\n✔ MKK source failures preserve a successful partial HTTP response instead of SERVICE_UNAVAILABLE (10.164784ms)\n✔ MKK partial responses require explicit source failures and may not hide unsupported partials (1.655442ms)\n✔ non-MKK and complete worker results remain strictly non-partial (3.116149ms)\n✔ MKK partial catalog is an explicit warning, not a full success or an unknown error (0.258761ms)\n✔ Speicers Turbo fetches both fixed original documents over pinned TLS (5.250586ms)\n✔ Speicers Turbo denies private DNS and every redirect (0.624765ms)\n✔ a source HTTP error fails without using an included copy (0.479765ms)\n✔ paired transport rejects missing extra and empty sources (0.274465ms)\n✔ Speicers Turbo original PNG metadata and monotonic catalog version (19.925916ms)\n✔ Speicers Turbo switch preserves earlier operator choices (19.693415ms)\n✔ Speicers Turbo gateway requires the whole matching nonpartial pair (17.404305ms)\n✔ Cloud catalog advertises bounded file, text and online reference formats (20.123556ms)\n✔ Untrusted catalog cannot select worker modules, URLs, scripts or duplicate prefixes (0.630333ms)\n✔ App-update hint has no arbitrary link or release when not configured (0.651184ms)\n✔ Ultra denies private DNS before transport (2.550444ms)\n✔ Ultra refuses same-origin and foreign redirects (2.283801ms)\n✔ Ultra launcher PNG, public format and card follow availability (19.794097ms)\n✔ Ultra persistent switch preserves existing provider states (16.967095ms)\n✔ authenticated Ultra broker forwards all bytes and returns the complete worker document (17.977902ms)\n✔ Ultra gateway rejects inconsistent or partial worker catalogs (2.89127ms)\n✔ Ultra refuses caller sources and stops before DNS when unavailable (0.374286ms)\n✔ encrypted file attachment crosses HPKE boundary without Base64 on outer wire (24.313859ms)\n✔ tampered ciphertext or substituted operation is rejected (20.272681ms)\n✔ invalid key ID and malformed length are rejected (3.289051ms)\n✔ manifest and chunk operations authenticate distinct request bytes and reply contexts (18.330495ms)\n✔ V2 fails closed on missing signer, invalid version/epoch and beta-only Google setup (1.878929ms)\n✔ shared Android/server vector signs exact Unicode bytes using DER ECDSA (3.401ms)\n✔ V1 routes remain available; explicit retirement closes them without closing probes (0.177398ms)\n✔ attestation enforces package, signer, version, licensing, device, optional risk and freshness (0.970006ms)\n✔ challenge binds key and IP; invalid attestation consumes it and replay fails (40.61034ms)\n✔ valid proof reaches handler; concurrent replay and changed operation fail (8.663885ms)\n✔ stolen token without key, body/version tampering, stale proofs and invalid DER fail (11.74331ms)\n✔ V1/QA tokens cannot downgrade V2; epoch, release, signer and Redis revocation are live (6.999519ms)\n✔ bootstrap validates key, proof, fixed operation, encoding and query before dispatch (6.874139ms)\n✔ oversized bootstrap bodies, Google outage and Redis outage fail closed (5.093298ms)\n✔ metadata and expensive operation rate budgets remain independent (20.173651ms)\n✔ V2 reaches real decoder only after proof and preserves existing worker validation (5.922341ms)\n✔ notification operation requires bound authentication and is metadata only (3.576366ms)\n✔ temporary V2 Telegram mode requires hardware app identity and revokes beta sessions when Play resumes (4.044523ms)\n✔ V2 beta rejects invalid hardware version, forged Play token and unavailable transport (5.184576ms)\n✔ RASP is bound by exact PoP bytes, stripped before worker, observes legacy and revokes only affected session (9.373057ms)\n✔ a forged clean RASP report cannot bypass independent Play, proof or version policy (5.118696ms)\n✔ HPKE-only RASP admission authenticates encrypted reports and rejects wire replay/tamper (37.018286ms)\n✔ compatible Play observation survives Google outage while hardware remains mandatory (6.377334ms)\n✔ inline action performs one operation POST, binds exact body and bearer, and rejects replay with a fresh proof (11.307381ms)\n✔ basic integrity, licensing and missing optional SDK can be configured independently (0.352012ms)\n✔ VIP Snipher original icon and download follow secret configuration and availability (36.101776ms)\n✔ VIP requires a configured authorization before DNS or transport (9.534271ms)\n✔ VIP original icon is downloadable through the existing metadata API (5.198126ms)\n✔ VIP internal worker result preserves the complete offline document and rejects partial output (12.388039ms)\n✔ VIP fixed GET carries its secret only to the APK source (4.014188ms)\n✔ VIP rejects private DNS and all redirects before forwarding authorization (0.99927ms)\n✔ VIP persistent switch preserves other providers and never stores the secret (41.399262ms)\n✔ authenticated VIP gateway forwards the complete catalog without forwarding its source credential (9.473679ms)\n✔ XXPICore uses the exact fixed public updater and bounded TLS request (3.662466ms)\n✔ XXPICore rejects redirects, HTML and compressed responses (3.536615ms)\n✔ XXPICore rejects private DNS and client-selected sources (1.004909ms)\n✔ XXPICore original icon, public metadata, versions and formats (31.318015ms)\n✔ XXPICore operator switch preserves existing disabled providers (29.438153ms)\n✔ XXPICore accepts only a complete matching worker catalog (10.907577ms)\n✔ ZiG denies private DNS before transport (8.246695ms)\n✔ ZiG refuses same-origin and foreign redirects (3.16919ms)\n✔ ZiG launcher PNG, historical formats and card follow availability (24.9834ms)\n✔ ZiG persistent switch preserves existing provider states (25.319653ms)\n✔ authenticated ZiG broker forwards all bytes and returns the complete worker document (15.662903ms)\n✔ ZiG gateway rejects inconsistent or partial worker catalogs (2.424164ms)\nℹ tests 250\nℹ suites 0\nℹ pass 250\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 1241.831577\n"
+    },
+    {
+      "name": "xml_unique_keys_all_locales",
+      "exitCode": 0,
+      "files": 14
+    },
+    {
+      "name": "transport_cpp_syntax_only",
+      "exitCode": 0,
+      "command": "g++ -std=c++17 -Wall -Wextra -Werror -I $JNI -I $JNI/linux -I $MBEDTLS/include -fsyntax-only android/app/src/main/cpp/spdecode_transport.cpp",
+      "limitations": "Host syntax only; cloud_origin.h fixture uses empty encoded public addresses. No Android link, TLS request or device execution."
+    },
+    {
+      "name": "admin_jsx_parse_only",
+      "exitCode": 0,
+      "parser": "@babel/parser@7.26.10",
+      "limitations": "Temporary QA package only; no Next.js build or browser rendering."
+    },
+    {
+      "name": "xxpicore_python_regression",
+      "exitCode": 0,
+      "tests": 11,
+      "command": "python -m unittest discover -s analysis/pro.xxpicore.tunnel/118/tests -v"
+    }
+  ],
+  "dependencies": [
+    {
+      "artifact": "org.jetbrains.kotlin:kotlin-compiler-embeddable:2.1.20",
+      "source": "https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-compiler-embeddable/2.1.20/kotlin-compiler-embeddable-2.1.20.jar",
+      "sha256": "c54a00718c8c0e3ee858bf42771c7f401c5e3c1738861e18e9536371042fa1b3"
+    },
+    {
+      "artifact": "org.jetbrains.kotlin:kotlin-stdlib:2.1.20",
+      "source": "https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/2.1.20/kotlin-stdlib-2.1.20.jar",
+      "sha256": "1bcc74e8ce84e2c25eaafde10f1248349cce3062b6e36978cbeec610db1e930a"
+    },
+    {
+      "artifact": "org.jetbrains:annotations:13.0",
+      "source": "https://repo.maven.apache.org/maven2/org/jetbrains/annotations/13.0/annotations-13.0.jar",
+      "sha256": "ace2a10dc8e2d5fd34925ecac03e4988b2c0f851650c94b8cef49ba1bd111478"
+    },
+    {
+      "artifact": "org.jetbrains.intellij.deps:trove4j:1.0.20200330",
+      "source": "https://repo.maven.apache.org/maven2/org/jetbrains/intellij/deps/trove4j/1.0.20200330/trove4j-1.0.20200330.jar",
+      "sha256": "c5fd725bffab51846bf3c77db1383c60aaaebfe1b7fe2f00d23fe1b7df0a439d"
+    },
+    {
+      "artifact": "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.8.0",
+      "source": "https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/kotlinx-coroutines-core-jvm/1.8.0/kotlinx-coroutines-core-jvm-1.8.0.jar",
+      "sha256": "9860906a1937490bf5f3b06d2f0e10ef451e65b95b269f22daf68a3d1f5065c5"
+    },
+    {
+      "artifact": "com.google.code.gson:gson:2.13.1",
+      "source": "https://repo.maven.apache.org/maven2/com/google/code/gson/gson/2.13.1/gson-2.13.1.jar",
+      "sha256": "94855942d4992f112946d3de1c334e709237b8126d8130bf07807c018a4a2120"
+    },
+    {
+      "artifact": "org.json:json:20240303",
+      "source": "https://repo.maven.apache.org/maven2/org/json/json/20240303/json-20240303.jar",
+      "sha256": "3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed"
+    }
+  ],
+  "jniHeaders": [
+    {
+      "name": "jni.h",
+      "sha256": "1266aea5b9f5d5db1cb6f8e5c6c43cfa7f80bc4f72d7fe42c6131bb939dc70f4"
+    },
+    {
+      "name": "linux/jni_md.h",
+      "sha256": "88cb5c33e306900dd35a78d5a439087123b8e91b0986bb5acb42cc9bd2fcc42e"
+    }
+  ],
+  "nodeCounts": {
+    "tests": "250",
+    "pass": "250",
+    "fail": "0",
+    "skipped": "0"
+  },
+  "status": "HOST_CHECKS_PASSED_DEVICE_GATES_PENDING",
+  "sourceParent": "1b55fa6d39b92c21580527368dfebb0184bece0e",
+  "pending": [
+    "original Android crash reproduction/logcat R-0",
+    "catalog production failure diagnosis D0",
+    "Android compilation and types/ABIs/16KiB",
+    "physical low-RAM/performance/Keystore/SAF/Compose QA",
+    "50/100 kbps real HTTP interruption/process-death resume",
+    "VPS HPKE/session/operator rollout",
+    "full CI review and production human review"
+  ]
+}

@@ -239,6 +239,14 @@
     <string name="catalog_transfer_completed">Katalog güncellendi</string>
     <string name="catalog_transfer_saved">Tüm biçimler kaydedildi.</string>
     <string name="catalog_transfer_finish">Bitir</string>
-    <string name="catalog_transfer_bytes_total">%1$s MB / %2$s MB</string>
-    <string name="catalog_transfer_bytes_unknown">%1$s MB indirildi</string>
+    <string name="catalog_transfer_bytes_total">%1$s MiB / %2$s MiB</string>
+    <string name="catalog_transfer_bytes_unknown">%1$s MiB</string>
+    <string name="catalog_transfer_verifying">Doğrulanıyor ve kaydediliyor…</string>
+    <string name="result_engine_error">Önizleme kullanılamıyor. Tam sonuç dışa aktarılabilir.</string>
+    <string name="result_previous_page">Önceki sayfa</string>
+    <string name="result_copy_too_large">Pano sonucu kabul edemedi. Dosyanın tamamını dışa aktarın.</string>
+    <string name="catalog_transfer_paused">İndirme kesildi</string>
+    <string name="catalog_transfer_resume">Yeniden dene / sürdür</string>
+    <string name="catalog_transfer_discard">Kısmi indirmeyi sil</string>
+    <string name="catalog_transfer_retention">Doğrulanmış parçalar en fazla 7 gün şifreli olarak saklanır.</string>
 </resources>

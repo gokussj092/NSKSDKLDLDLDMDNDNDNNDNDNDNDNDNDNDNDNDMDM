@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.22.1)
 project(spdecode LANGUAGES CXX)
+add_library(spdecode_result_engine SHARED result_engine.cpp result_engine_jni.cpp)
+set_target_properties(spdecode_result_engine PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
+target_compile_options(spdecode_result_engine PRIVATE -Wall -Wextra -Werror -fvisibility=hidden -fstack-protector-strong)
+target_link_options(spdecode_result_engine PRIVATE -Wl,-z,relro,-z,now -Wl,-z,noexecstack -Wl,-z,max-page-size=16384 -Wl,-z,common-page-size=16384)
 # Per-build string encoding is reversible obfuscation, not secret encryption.
 if(NOT DEFINED SPDECODE_CLOUD_ORIGIN)
   set(SPDECODE_CLOUD_ORIGIN "")

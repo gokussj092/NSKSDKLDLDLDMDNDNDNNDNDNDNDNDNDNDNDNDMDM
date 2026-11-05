@@ -10,8 +10,12 @@ data class DecodeView(
     val savedAtMillis:Long=System.currentTimeMillis(),
     val favorite:Boolean=false,
     val compatibleExport:com.ghostdeveloper.spdecode.cloud.CompatibleExportArtifact?=null,
+    val metadataOnly:Boolean=false,
 ) {
+    /** History lists retain no result body or compatible binary export. */
+    fun historySummary()=copy(rawText="",compatibleExport=null,metadataOnly=true)
     val document:ResultDocument by lazy(LazyThreadSafetyMode.PUBLICATION) {
+        check(!metadataOnly)
         ResultPresentation.parse(rawText,extension)
     }
     val redactedText:String get()=RedactionPolicy.mask(rawText)

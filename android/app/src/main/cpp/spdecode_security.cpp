@@ -81,7 +81,7 @@ std::string formatProof(int op,const std::string& version,
                         const unsigned char* body,std::size_t size,
                         const std::string& bearer,const std::string& timestamp,
                         const std::string& nonce){
-    if(op<1||op>18||op==3||!acceptableVersion(version)||bearer.size()>2048||
+    if(op<1||op>20||op==3||!acceptableVersion(version)||bearer.size()>2048||
        timestamp.size()<10||timestamp.size()>11||!acceptableNonce(nonce)||
        size>12U*1024U*1024U)invalid();
     for(char c:timestamp)if(c<'0'||c>'9')invalid();

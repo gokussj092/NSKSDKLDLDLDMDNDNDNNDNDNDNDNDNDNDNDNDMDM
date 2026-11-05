@@ -239,6 +239,14 @@
     <string name="catalog_transfer_completed">カタログを更新しました</string>
     <string name="catalog_transfer_saved">すべての形式を保存しました。</string>
     <string name="catalog_transfer_finish">完了</string>
-    <string name="catalog_transfer_bytes_total">%1$s MB / %2$s MB</string>
-    <string name="catalog_transfer_bytes_unknown">%1$s MB ダウンロード済み</string>
+    <string name="catalog_transfer_bytes_total">%1$s MiB / %2$s MiB</string>
+    <string name="catalog_transfer_bytes_unknown">%1$s MiB</string>
+    <string name="catalog_transfer_verifying">検証して保存しています…</string>
+    <string name="result_engine_error">プレビューを表示できません。結果全体はエクスポートできます。</string>
+    <string name="result_previous_page">前のページ</string>
+    <string name="result_copy_too_large">クリップボードに保存できませんでした。ファイル全体をエクスポートしてください。</string>
+    <string name="catalog_transfer_paused">ダウンロードが中断されました</string>
+    <string name="catalog_transfer_resume">再試行 / 再開</string>
+    <string name="catalog_transfer_discard">部分ダウンロードを削除</string>
+    <string name="catalog_transfer_retention">検証済みの断片は再開用に最大7日間暗号化して保存されます。</string>
 </resources>

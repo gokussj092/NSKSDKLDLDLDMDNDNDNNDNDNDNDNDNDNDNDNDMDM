@@ -1,0 +1,344 @@
+{
+  "schemaVersion": 1,
+  "status": "HOST_CHECKS_PASSED_DEVICE_GATES_PENDING",
+  "parent": "1b55fa6d39b92c21580527368dfebb0184bece0e",
+  "branch": "feat/nuevas-integraciones",
+  "sourceFiles": [
+    {
+      "path": "android/app/src/main/cpp/result_engine_jni.cpp",
+      "sha256": "6f5d6071b660ab102ae459e35c145da47ae05ca1d61a641d6100b9563695e777"
+    },
+    {
+      "path": "android/app/src/main/cpp/result_engine.h",
+      "sha256": "6022f09c2fd6d950922531a865c8614e2cc60d0d07ec5c295fd2f0f09e224293"
+    },
+    {
+      "path": "android/app/src/main/cpp/spdecode_security.cpp",
+      "sha256": "0ef989a5294961d348e77c80df8c57fbf3936f8ebab5d652064483368f3b4076"
+    },
+    {
+      "path": "android/app/src/main/cpp/spdecode_transport.cpp",
+      "sha256": "850e00eabbccf6ee6e947ef10147d668dc0898467f3eac3c478181d344c11afc"
+    },
+    {
+      "path": "android/app/src/main/cpp/result_engine.cpp",
+      "sha256": "6e822f7332e7f14ca1fe5f0908438c79336bafc3aa12cc55c203366e10ecea43"
+    },
+    {
+      "path": "android/app/src/main/cpp/CMakeLists.txt",
+      "sha256": "d131d01cab1539d07dfc75ffffe451c9df9e24c480bf69e41609d814f26dbde4"
+    },
+    {
+      "path": "android/app/src/main/cpp/spdecode_hpke.cpp",
+      "sha256": "4fbc6ddbfee0e98f19753ec0ace88a828b33de5134b51c25240d87904ba3f4c3"
+    },
+    {
+      "path": "android/app/src/main/java/com/ghostdeveloper/spdecode/CatalogTransferDialog.kt",
+      "sha256": "8193cc11cd07e14f8dfbeb1de2e9fc3229a210cbcce3c0252156353797ea362b"
+    },
+    {
+      "path": "android/app/src/main/java/com/ghostdeveloper/spdecode/JsonTreeProjection.kt",
+      "sha256": "fe529e60fd07155748ddbaea5e56d2069cbfb64e0d4ebb5823cc6c25c3a5a2ad"
+    },
+    {
+      "path": "android/app/src/main/java/com/ghostdeveloper/spdecode/HistoryRepository.kt",
+      "sha256": "d9ab4916ed3f2315d919154218509b88fe92f3e3ce16840d4b31f01370459136"
+    },
+    {
+      "path": "android/app/src/main/java/com/ghostdeveloper/spdecode/TelegramResultCopy.kt",
+      "sha256": "5d2e7f43e7d2c2e143f3fa04cbc5fcce7e27a6092c75227f646f5a9b6b81f075"
+    },
+    {
+      "path": "android/app/src/main/java/com/ghostdeveloper/spdecode/JsonTreeViewer.kt",
+      "sha256": "2b9877ecd500c05a329998ffa0f7146526e52fe9b2c0565212ab11e06e9378fa"
+    },
+    {
+      "path": "android/app/src/main/java/com/ghostdeveloper/spdecode/ResultJsonDisplay.kt",
+      "sha256": "dc1f38c5db0f65e7588526873a94df242c8e9a818143239f0cc54b5361df90bd"
+    },
+    {
+      "path": "android/app/src/main/java/com/ghostdeveloper/spdecode/ResultSnapshotCodec.kt",
+      "sha256": "a39387f11598a0dad3bb10a7ce247705db73e3ccb369cef3c26334eb2b0b148f"
+    },
+    {
+      "path": "android/app/src/main/java/com/ghostdeveloper/spdecode/DecodeSessionViewModel.kt",
+      "sha256": "e2145e938b0290f73a1e618579513da5cc8885f3834cd9da8b47a3cd56807192"
+    },
+    {
+      "path": "android/app/src/main/java/com/ghostdeveloper/spdecode/DecodedResultSnapshot.kt",
+      "sha256": "83c493c52e5793573962beae46a502a4d1c5f733068c2142f1b86c078aec37f8"
+    },
+    {
+      "path": "android/app/src/main/java/com/ghostdeveloper/spdecode/LargeResultViewer.kt",
+      "sha256": "656e86eae6268194ac4022757d57d31836800a9e68407d4661c6c7b8ed9e53d3"
+    },
+    {
+      "path": "android/app/src/main/java/com/ghostdeveloper/spdecode/ResultOutputWriter.kt",
+      "sha256": "15f1852e797c4e01d553e4109daa2d68b3ae36369fc2c698c995a13d41ed0398"
+    },
+    {
+      "path": "android/app/src/main/java/com/ghostdeveloper/spdecode/DecoderPresentation.kt",
+      "sha256": "0145950e5addb65dfb545fc173643d271aaa2c8bd7ec1b9209ea7f11bac74a11"
+    },
+    {
+      "path": "android/app/src/main/java/com/ghostdeveloper/spdecode/MainActivity.kt",
+      "sha256": "bff46e9c28049a520b0a5619c0b1d47cb54d4fa336492f29b3bddc9463facfcf"
+    },
+    {
+      "path": "android/app/src/main/java/com/ghostdeveloper/spdecode/SecureDecodeHistory.kt",
+      "sha256": "7a0a3898f9252500b5e23650b8aa822d733fbed2c30b0e27051d9f97b0349e06"
+    },
+    {
+      "path": "android/app/src/main/java/com/ghostdeveloper/spdecode/SpDecodeApp.kt",
+      "sha256": "a96ff465b5925ab224e960876fb758b01286048dbe0a1a4256aa2ba41a5692c0"
+    },
+    {
+      "path": "android/app/src/main/java/com/ghostdeveloper/spdecode/results/NativeResultEngine.kt",
+      "sha256": "d7b9eff51ff43fe522daaec8ad6e965269d54991a26cc5011d8c860c1a6d538a"
+    },
+    {
+      "path": "android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/ServerVpnSecureCache.kt",
+      "sha256": "f91f7caed802bcf345e782c40bde138568f76b5f08de9af0a07c3121b577e3bd"
+    },
+    {
+      "path": "android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudNativeTransport.kt",
+      "sha256": "ebf34298d0e7f8fec7f54c7d67ff2ca3722a8bc586471d47f65c19413573ea2f"
+    },
+    {
+      "path": "android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudOperation.kt",
+      "sha256": "c8d62edd770403b150a73867f8f036349aaaf01ee7bb2be9ba2e24bb97370358"
+    },
+    {
+      "path": "android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/ServerVpnCatalogRepository.kt",
+      "sha256": "2c55a83a7257f6854a0820abcd24b88f5940a4b03389eb50d23c4c90c92c7409"
+    },
+    {
+      "path": "android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/V2HpkeEnvelope.kt",
+      "sha256": "e0940c69a1d085fe3be9503ffd480727935a39fadd8f9cb9d9468b8589def361"
+    },
+    {
+      "path": "android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudDecodeClient.kt",
+      "sha256": "a3010f81de90b81e274db10ea47b3347f7041b3f5e986050023b7a7cbf598eb1"
+    },
+    {
+      "path": "android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CatalogSnapshotDownload.kt",
+      "sha256": "026ade2824d559287ef43531979f35f87b33f0da4d975846e62d5242df8c843d"
+    },
+    {
+      "path": "android/app/src/main/res/values/strings.xml",
+      "sha256": "88372c2f948874031e65ab5b3341da8940b4702c1ccbf1c7a1f332e2335c88e7"
+    },
+    {
+      "path": "android/app/src/main/res/values-hi/strings.xml",
+      "sha256": "3abf15165a7c72c66c5acdbb6647310a52c91f04494194e8c4cba68f6c0c2d88"
+    },
+    {
+      "path": "android/app/src/main/res/values-tr/strings.xml",
+      "sha256": "b6bbc068f4f976daf303c6022fb8e1893a71b809a241231540f4f7cdd8aac71b"
+    },
+    {
+      "path": "android/app/src/main/res/values-de/strings.xml",
+      "sha256": "ef1feadd76deb240289b03063fd9486c6e299fda1526f89856e48df15fcf601a"
+    },
+    {
+      "path": "android/app/src/main/res/values-ar/strings.xml",
+      "sha256": "d01e82f6f952b70c2f9a88783595099bf7d598dc75e723ffc2f75bca9dfdc90a"
+    },
+    {
+      "path": "android/app/src/main/res/values-pt-rBR/strings.xml",
+      "sha256": "e47cab798d5840b413619185210234939b707c2e76a4dd092bdb2ec5334afc4f"
+    },
+    {
+      "path": "android/app/src/main/res/values-fa/strings.xml",
+      "sha256": "256cd512fb51a8d0026d2cb6e31b9886824b1c2a43ca806cf3c3429ed2f0fa69"
+    },
+    {
+      "path": "android/app/src/main/res/values-fr/strings.xml",
+      "sha256": "6e77babe7ad6d057ec40f19a808ba47cee315e07eb34bf7be00db693c4f38800"
+    },
+    {
+      "path": "android/app/src/main/res/values-it/strings.xml",
+      "sha256": "719b0c58f8f58a980a734db4f73eed5dbb8304caba70c567c1c21a056ce7f74c"
+    },
+    {
+      "path": "android/app/src/main/res/values-es/strings.xml",
+      "sha256": "de2838e3da8f3dc662ecb7459d9de84508fb36f5355574bc7ce04f2ea81c2037"
+    },
+    {
+      "path": "android/app/src/main/res/values-ru/strings.xml",
+      "sha256": "a53dce3f33d0bffe5a3301c2b5cc322bbacd80503d2cf388b1181a8aa5131f10"
+    },
+    {
+      "path": "android/app/src/main/res/values-in/strings.xml",
+      "sha256": "2f4cce8c1e5c8898386a2db0e16fab029f54e77ed45900f9901f6f5fbcc0b36b"
+    },
+    {
+      "path": "android/app/src/main/res/values-vi/strings.xml",
+      "sha256": "23907b13545995a46b5a0e1bff37afe0085bf33d65e0a1952dee3438fe0fca9d"
+    },
+    {
+      "path": "android/app/src/main/res/values-ja/strings.xml",
+      "sha256": "80b097cf8c160937139c625ee197726e10d5b37ac6e76255c7e0ecd4833224ff"
+    },
+    {
+      "path": "android/app/src/androidTest/java/com/ghostdeveloper/spdecode/LargeResultEngineInstrumentedTest.kt",
+      "sha256": "4c1215f8369b46f9d8d86875e611a23e347a12669ab97285feee45d8d0fffd8d"
+    },
+    {
+      "path": "android/app/src/androidTest/java/com/ghostdeveloper/spdecode/HistoryRoomMigrationInstrumentedTest.kt",
+      "sha256": "a2151a3716a838b7500d508a19f22bb1885020f6fadf55288acdfade6fa2d6e5"
+    },
+    {
+      "path": "android/app/src/androidTest/java/com/ghostdeveloper/spdecode/JsonTreeViewerInstrumentedTest.kt",
+      "sha256": "3190605edbc1fc017a8f1ab09b264d119251337e90ccc779f9f81a1927cd3785"
+    },
+    {
+      "path": "cloud/compose.yaml",
+      "sha256": "9dbcb66195bd413705317353e2a706fa5b5a9a0e730853a59174a46442a3fe1c"
+    },
+    {
+      "path": "cloud/web/tests/catalog-edition.test.mjs",
+      "sha256": "3e5769aaed3312f687815e2df12247ea77c0c25fd76f24b3dd41742b942dc09b"
+    },
+    {
+      "path": "cloud/web/tests/catalog-snapshots.test.mjs",
+      "sha256": "2716f368c681149ab1d35a7c46d28129199135732214e069859a2bd09cca7088"
+    },
+    {
+      "path": "cloud/web/tests/v2-hpke.test.mjs",
+      "sha256": "66e32c37930d1d48f9ebe62a0f8681db392e9ed243027f3de4947f1bbdc5260e"
+    },
+    {
+      "path": "cloud/web/lib/c12-provider-controls.mjs",
+      "sha256": "cea5e5a6bb3a3a3c9f632e9f8491aba1a4f35b5ba30e0863c04a1bdb2faa86ce"
+    },
+    {
+      "path": "cloud/web/lib/c6-admin-api.mjs",
+      "sha256": "f87c48f30d6fbcb07742d85ac54e84a331c80b01782a5f472e166a8844a5f99a"
+    },
+    {
+      "path": "cloud/web/lib/catalog-chunk-api.mjs",
+      "sha256": "5556ff407ff3c2390f515b7d6e7167c73793672adba6886f25e39683b321765f"
+    },
+    {
+      "path": "cloud/web/lib/v2-routes.mjs",
+      "sha256": "34d7fe045ab7adb0ef5dc90d6c7e7c643f93622b4b7d61ca7d8a4b5c9ea1d253"
+    },
+    {
+      "path": "cloud/web/lib/v2-hpke.mjs",
+      "sha256": "1fe50eac3b69fcb3e97c5d26e8120b3c013d9fae2e29fddbfed4a0d21b160356"
+    },
+    {
+      "path": "cloud/web/lib/catalog-snapshots.mjs",
+      "sha256": "99e9ce2502796f3f695311b33e783d16d0eebe1e7cf007b2ba6e965ff5b748f2"
+    },
+    {
+      "path": "cloud/web/lib/c10-catalog-watch.mjs",
+      "sha256": "dce5cbfc61868cd557bfe095cf73e26001bef52996d59b8357efa70a68b63fad"
+    },
+    {
+      "path": "cloud/web/lib/v2-transport.mjs",
+      "sha256": "78258ac384742b627ee75d228dedff4a63397b4dd997c241e2c4b2e2234f0d77"
+    },
+    {
+      "path": "cloud/web/lib/rasp-policy.mjs",
+      "sha256": "6695365b88454aff713ee33acaefab50a621fc69c7b2e8c3e2cba94630daf133"
+    },
+    {
+      "path": "cloud/web/app/admin/admin-dashboard.jsx",
+      "sha256": "0f3229066967eb9785ce8c44b897518c22ce2b1950bd93e9bf170f799bb12e39"
+    },
+    {
+      "path": "cloud/web/app/api/admin/catalog-edition/route.js",
+      "sha256": "9feddfee5ef69215fdfa0123b098942f1630c9a9ca909383a350c242476d4a68"
+    },
+    {
+      "path": "cloud/web/app/api/v1/server-vpn/catalog/route.js",
+      "sha256": "b1ad5e37271d655566decd5c7388218d27604855c7c88ad0cef55e6aeb5acbce"
+    },
+    {
+      "path": "cloud/web/app/api/v1/server-vpn/manifest/route.js",
+      "sha256": "83f9961bf5434a94e7fa5179f92f9527c68bbe74579489b8e63af1718210cbb7"
+    },
+    {
+      "path": "cloud/web/app/api/v1/server-vpn/chunk/route.js",
+      "sha256": "10d0feeaae9b477882dade352ca28d0ccdad38afd894e9ab9755257c2f1a3554"
+    },
+    {
+      "path": "scripts/qa/kotlin_syntax.py",
+      "sha256": "1f166b2b8a017082999b67f859d4ff8724ad5e029fae5ca5525623ace44fdbfa"
+    },
+    {
+      "path": "scripts/qa/catalog_fixture.mjs",
+      "sha256": "6374a40f53d30d123d977d4c5362b154436090269ef03cec6f30c29cae2fe019"
+    },
+    {
+      "path": "scripts/qa/catalog-results-dependencies.json",
+      "sha256": "06c7f830c78960a4f9c2f4d467f46e89863110f8051098eb70cda2bffd9a6870"
+    },
+    {
+      "path": "scripts/qa/catalog_results_host.py",
+      "sha256": "4ee7ea24cbc388b502c2b0094564be8eba2c55cfeb0615f955b8fc3c795ee609"
+    },
+    {
+      "path": "scripts/qa/catalog_result_strings.py",
+      "sha256": "5eb2ac06286998b68409819444179a08b791bb6d04521385bf4067eef191aae2"
+    },
+    {
+      "path": "tests/native/result_engine_test.cpp",
+      "sha256": "bc16599bf9f29cb5ce3d420d13f63d65c2166224abaaab9cf84e6be5faa8f5d8"
+    },
+    {
+      "path": "tests/host/annotation_keep.kt",
+      "sha256": "36097818e3641fcd1c84eb6ccfbbc289fbd93c60d10197206f72bfd4481b7f74"
+    },
+    {
+      "path": "tests/host/android_base64.kt",
+      "sha256": "f637855bf4474abd6920e1612dd98e06182dda488cf1efe533a2ea36a5064638"
+    },
+    {
+      "path": "tests/host/compatible_artifact.kt",
+      "sha256": "493a59ad1abe4b0f9aa621f9243562049aa7807f1d0c7d9305520bc57c9c9568"
+    },
+    {
+      "path": "tests/host/catalog_results_test.kt",
+      "sha256": "f69967f79335a3309088ed48c4b6571e518f3336be02debf2b51d074bfc65d6d"
+    },
+    {
+      "path": "tests/host/catalog_result_stubs.kt",
+      "sha256": "43bf47267e87b14f5ecfd4af46f2b0336343da30bfe7857235041279c7464c7f"
+    },
+    {
+      "path": "tests/native/result_engine_jni/NativeResultEngine.java",
+      "sha256": "93efa69f6d6934769ac50f2fd50adb09106b3f1fbe1571392d0bed874a66a4e2"
+    },
+    {
+      "path": "docs/android/RESULTADOS_DESCIFRADOS_JSON_GRANDES_MOTOR_NATIVO_2026_11_04.md",
+      "sha256": "340da096fb3bc11fb2c4cafb3e54820dc8163eaa0d6923f0ff4ff18f5b261ab0"
+    },
+    {
+      "path": "docs/cloud/CATALOG_RESULTS_IMPLEMENTATION_2026_11_05.md",
+      "sha256": "1ab1b61c1d48a276dfa5acfa8ba583aff84c2fd189d89b8f11b789d7d1db3611"
+    },
+    {
+      "path": "docs/cloud/CATALOG_SERVER_VPN_RESUMABLE_NATIVE_ENGINE_PLAN_2026_11_04.md",
+      "sha256": "90bb4493fe4b4dc7cdc3f69b3cb0a0794c0df9b86a78e9ae0950580134e7f36a"
+    },
+    {
+      "path": "docs/cloud/SERVER_VPN_NEXT_CHAT_GUIDE.md",
+      "sha256": "28da0c2f99a1957af70b8ac98b34e5caf138cfbd9978c7035b03fcf8bea06fe5"
+    }
+  ],
+  "tools": [
+    "scripts/qa/catalog_results_host.py",
+    "scripts/qa/kotlin_syntax.py",
+    "scripts/qa/catalog_fixture.mjs",
+    "scripts/qa/catalog_result_strings.py"
+  ],
+  "reports": [
+    "host-qa.json",
+    "upstream-qa.json"
+  ],
+  "productionDeployment": false,
+  "androidBuild": false
+}

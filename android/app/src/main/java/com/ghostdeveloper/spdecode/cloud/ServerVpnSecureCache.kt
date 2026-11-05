@@ -79,6 +79,14 @@ internal class ServerVpnSecureCache(context: Context) {
         if(file.exists() && !file.delete())throw IllegalStateException("Cannot clear consent")
     }
 
+    /** Only derived download staging is evicted; active catalog/icons are retained. */
+    @Synchronized
+    fun pruneDownloadCache(discard:Boolean=false) {
+        val files=directory.listFiles().orEmpty().filter {it.isFile && (it.name.startsWith("part-")||it.name.startsWith("object-")||it.name=="chunk-journal")}.sortedBy{it.lastModified()}
+        var bytes=files.sumOf{it.length()};val cutoff=System.currentTimeMillis()-7L*86400_000
+        for(file in files)if(discard||file.lastModified()<cutoff||bytes>96L*1024*1024){val size=file.length();check(file.delete());bytes-=size}
+    }
+
     @Synchronized
     fun write(name:String,plain:ByteArray) {
         checkName(name)
@@ -103,4 +111,3 @@ internal class ServerVpnSecureCache(context: Context) {
         }finally{temporary.delete()}
     }
 }
-

@@ -1,0 +1,33 @@
+{
+  "jni": {
+    "repository": "openjdk/jdk17u",
+    "ref": "jdk-17.0.16+8",
+    "gitBlobs": [
+      "aa0cdf5c2420508c16c4aff5aaaeb74f1cf37579",
+      "6e583da7147e762f5ebb9789b23257d3aeef4694"
+    ],
+    "headers": [
+      {
+        "path": "jni.h",
+        "sha256": "1266aea5b9f5d5db1cb6f8e5c6c43cfa7f80bc4f72d7fe42c6131bb939dc70f4"
+      },
+      {
+        "path": "jni_md.h",
+        "sha256": "88cb5c33e306900dd35a78d5a439087123b8e91b0986bb5acb42cc9bd2fcc42e"
+      }
+    ],
+    "vendored": false
+  },
+  "mbedtls": {
+    "repository": "Mbed-TLS/mbedtls",
+    "ref": "mbedtls-3.6.7",
+    "purpose": "Existing project pin; temporary headers for transport syntax check only",
+    "vendored": false
+  },
+  "babel": {
+    "artifact": "@babel/parser",
+    "version": "7.26.10",
+    "purpose": "Temporary JSX syntax QA only",
+    "productionDependencyAdded": false
+  }
+}

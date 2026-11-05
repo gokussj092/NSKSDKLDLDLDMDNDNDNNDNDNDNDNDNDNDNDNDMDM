@@ -825,3 +825,11 @@ No repetir la extracción de tablas: SO/rt.dat coinciden con el handoff anterior
 `go_inspect.py`, `npvs_verify.py` y referencias JDK/generador guardados.
 Ver `docs/NPVS_PROTECTED_FILES.md`; no anunciar public-key como descifrado,
 no modificar APK/UI ni volver a AM dentro de esta actualización.
+
+## Continuación 2026-11-05: directorio reanudable y resultados extensos
+
+Solicitud posterior del propietario: implementar ambos planes del 2026-11-04 y terminar XXPICore. XXPICore ya está integrado en `1b55fa6d39b92c21580527368dfebb0184bece0e` con expediente build118 y catálogo real2.427 (64 servidores/1240 redes/7837 campos). Se añadieron código Cloud y Android para chunks autenticados, progreso verificable, caché cifrada reanudable, edición editorial, motor nativo de resultados, viewport paginado, exportación completa e historial con lista de metadatos/apertura individual.
+
+Estado y restricciones exactas: [CATALOG_RESULTS_IMPLEMENTATION_2026_11_05.md](CATALOG_RESULTS_IMPLEMENTATION_2026_11_05.md). Evidencia host en `analysis/platform/catalog-results/2026-11-05/`; no equivale a Android físico ni a VPS real. Chunks permanecen desactivados por defecto. R-0/D0 y los gates de dispositivo/rollout siguen abiertos; no declarar el cierre original reproducido o corregido. El resultado activo aún tiene un String limitado por el contrato Cloud; no se afirma almacenamiento exclusivamente por handle de disco.
+
+No compilar ni esperar APK/AAB/artefactos en esta entrega. El workflow automático de esta rama produciría APK/AAB al cambiar `android/**`; se usa `[skip ci]` en el commit de implementación para no iniciarlo. CI completo queda pendiente. No merge ni despliegue. Conservar íntegros los expedientes, versiones superiores, switches y claves.

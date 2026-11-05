@@ -1,0 +1,21 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {mkdtemp,rm,readFile} from "node:fs/promises";
+import {tmpdir} from "node:os";
+import {join} from "node:path";
+import {updateDisplayVersion,providerOverview,updateProvider} from "../lib/c12-provider-controls.mjs";
+test("editorial edition is explicit, monotonic, persisted and independent of high sync revision",async t=>{
+ const root=await mkdtemp(join(tmpdir(),"catalog-edition-"));t.after(()=>rm(root,{recursive:true,force:true}));
+ const env={CLOUD_API_ENABLED:"true",CLOUD_SERVER_VPN_ENABLED:"true",CLOUD_SERVER_VPN_CATALOG_VERSION:"215686715"};
+ assert.equal((await providerOverview(env,{root})).displayVersion,null);
+ await updateProvider("xxpicore-tunnel",false,env,{root});const old=await providerOverview(env,{root});
+ const edition=await updateDisplayVersion(13,env,{root});assert.equal(edition.displayVersion,"13");assert(edition.catalogVersion>old.catalogVersion);
+ assert.equal(edition.providers.find(x=>x.id==="xxpicore-tunnel").enabled,false);
+ await assert.rejects(()=>updateDisplayVersion(12,env,{root}),/DISPLAY_VERSION_ROLLBACK/);
+ assert.equal((await updateDisplayVersion(13,env,{root})).catalogVersion,edition.catalogVersion);
+ const saved=await readFile(join(root,"switches.json"));
+ await assert.rejects(()=>updateDisplayVersion(14,env,{root,prepare:async()=>{throw Error("publication failed");}}),/publication failed/);
+ assert.deepEqual(await readFile(join(root,"switches.json")),saved);
+ const final=await updateDisplayVersion(14,env,{root,prepare:async state=>assert.equal(state.displayVersion,14)});
+ assert.equal(final.displayVersion,"14");assert(final.catalogVersion>edition.catalogVersion);
+});

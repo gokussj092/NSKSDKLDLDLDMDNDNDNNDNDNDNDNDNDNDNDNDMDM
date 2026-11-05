@@ -239,6 +239,14 @@
     <string name="catalog_transfer_completed">Đã cập nhật danh mục</string>
     <string name="catalog_transfer_saved">Đã lưu tất cả định dạng.</string>
     <string name="catalog_transfer_finish">Hoàn tất</string>
-    <string name="catalog_transfer_bytes_total">%1$s MB / %2$s MB</string>
-    <string name="catalog_transfer_bytes_unknown">Đã tải %1$s MB</string>
+    <string name="catalog_transfer_bytes_total">%1$s MiB / %2$s MiB</string>
+    <string name="catalog_transfer_bytes_unknown">%1$s MiB</string>
+    <string name="catalog_transfer_verifying">Đang xác minh và lưu…</string>
+    <string name="result_engine_error">Không có bản xem trước. Bạn vẫn có thể xuất toàn bộ kết quả.</string>
+    <string name="result_previous_page">Trang trước</string>
+    <string name="result_copy_too_large">Bảng nhớ tạm không nhận được kết quả. Hãy xuất toàn bộ tệp.</string>
+    <string name="catalog_transfer_paused">Tải xuống bị gián đoạn</string>
+    <string name="catalog_transfer_resume">Thử lại / tiếp tục</string>
+    <string name="catalog_transfer_discard">Xóa phần tải xuống</string>
+    <string name="catalog_transfer_retention">Các phần đã xác minh được lưu mã hóa tối đa 7 ngày.</string>
 </resources>

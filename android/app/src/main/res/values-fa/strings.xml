@@ -238,6 +238,14 @@
     <string name="catalog_transfer_completed">فهرست به‌روزرسانی شد</string>
     <string name="catalog_transfer_saved">همه قالب‌ها ذخیره شدند.</string>
     <string name="catalog_transfer_finish">پایان</string>
-    <string name="catalog_transfer_bytes_total">%1$s MB / %2$s MB</string>
-    <string name="catalog_transfer_bytes_unknown">%1$s مگابایت دانلود شده</string>
+    <string name="catalog_transfer_bytes_total">%1$s MiB / %2$s MiB</string>
+    <string name="catalog_transfer_bytes_unknown">%1$s MiB</string>
+    <string name="catalog_transfer_verifying">در حال بررسی و ذخیره…</string>
+    <string name="result_engine_error">پیش‌نمایش در دسترس نیست. نتیجه کامل همچنان قابل صدور است.</string>
+    <string name="result_previous_page">صفحه قبلی</string>
+    <string name="result_copy_too_large">حافظه موقت نتیجه را نپذیرفت. فایل کامل را صادر کنید.</string>
+    <string name="catalog_transfer_paused">دانلود قطع شد</string>
+    <string name="catalog_transfer_resume">تلاش دوباره / ادامه</string>
+    <string name="catalog_transfer_discard">حذف دانلود ناقص</string>
+    <string name="catalog_transfer_retention">بخش‌های تأییدشده تا ۷ روز به‌صورت رمزگذاری‌شده نگهداری می‌شوند.</string>
 </resources>

@@ -14,11 +14,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import java.util.Locale
 
-/** Only authenticated catalog HTTP bytes are measured. No simulated progress. */
+/** Chunk mode measures verified payload bytes; legacy mode measures HTTP bytes. */
 data class CatalogTransferUiState(
     val receivedBytes:Long=0L,
     val totalBytes:Long=-1L,
     val completed:Boolean=false,
+    val paused:Boolean=false,
+    val resumable:Boolean=false,
+    val displayVersion:String?=null,
 )
 
 @Composable
@@ -26,10 +29,12 @@ internal fun CatalogTransferDialog(
     state:CatalogTransferUiState,
     onCancel:()->Unit,
     onFinish:()->Unit,
+    onResume:()->Unit={},
+    onDiscard:()->Unit={},
 ) {
     val colors=MaterialTheme.colorScheme
-    val total=state.totalBytes.takeIf { it>0 }
-    val percent=total?.let { (state.receivedBytes.coerceIn(0L,it)*100L/it).toInt() }
+    val total=state.totalBytes.takeIf { it>=0 }
+    val percent=total?.let { if(it==0L)100 else (state.receivedBytes.coerceIn(0L,it)*100L/it).toInt() }
     val mb:(Long)->String={ bytes -> String.format(Locale.getDefault(),"%.2f",bytes/1048576.0) }
     androidx.compose.ui.window.Dialog(
         onDismissRequest={},
@@ -49,7 +54,7 @@ internal fun CatalogTransferDialog(
                 verticalArrangement=Arrangement.spacedBy(16.dp),
             ) {
                 if(state.completed) {
-                    Text(stringResource(R.string.catalog_transfer_completed),
+                    Text(stringResource(R.string.catalog_transfer_completed)+(state.displayVersion?.let{" v$it"}?:""),
                         color=colors.onSurface,
                         style=MaterialTheme.typography.titleMedium,
                         fontWeight=FontWeight.SemiBold,
@@ -63,14 +68,20 @@ internal fun CatalogTransferDialog(
                         Text(stringResource(R.string.catalog_transfer_finish))
                     }
                 } else {
-                    Text(stringResource(R.string.catalog_transfer_downloading),
+                    if(state.paused) {
+                        Text(stringResource(R.string.catalog_transfer_paused),color=colors.onSurface)
+                        Button(onClick=onResume){Text(stringResource(R.string.catalog_transfer_resume))}
+                        if(state.resumable)OutlinedButton(onClick=onDiscard){Text(stringResource(R.string.catalog_transfer_discard))}
+                    }
+                    if(state.resumable)Text(stringResource(R.string.catalog_transfer_retention),color=colors.onSurfaceVariant)
+                    Text(stringResource(if(percent==100)R.string.catalog_transfer_verifying else R.string.catalog_transfer_downloading),
                         color=colors.onSurface,
                         style=MaterialTheme.typography.titleMedium,
                         fontWeight=FontWeight.SemiBold,
                         textAlign=TextAlign.Center)
                     Column(verticalArrangement=Arrangement.spacedBy(8.dp)) {
                         if(percent!=null) {
-                            Text("$percent%",modifier=Modifier.fillMaxWidth(),
+                            if(percent<100)Text("$percent%",modifier=Modifier.fillMaxWidth(),
                                 textAlign=TextAlign.End,color=colors.onSurface,
                                 style=MaterialTheme.typography.labelMedium)
                             LinearProgressIndicator(

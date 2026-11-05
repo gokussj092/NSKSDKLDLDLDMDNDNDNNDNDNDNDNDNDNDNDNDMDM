@@ -240,6 +240,14 @@
     <string name="catalog_transfer_completed">Catalog updated</string>
     <string name="catalog_transfer_saved">All formats have been saved.</string>
     <string name="catalog_transfer_finish">Finish</string>
-    <string name="catalog_transfer_bytes_total">%1$s MB / %2$s MB</string>
-    <string name="catalog_transfer_bytes_unknown">%1$s MB downloaded</string>
+    <string name="catalog_transfer_bytes_total">%1$s MiB / %2$s MiB</string>
+    <string name="catalog_transfer_bytes_unknown">%1$s MiB</string>
+    <string name="catalog_transfer_verifying">Verifying and saving…</string>
+    <string name="result_engine_error">Preview unavailable. The complete result remains available for export.</string>
+    <string name="result_previous_page">Previous page</string>
+    <string name="result_copy_too_large">The clipboard could not accept this result. Export the complete file instead.</string>
+    <string name="catalog_transfer_paused">Download interrupted</string>
+    <string name="catalog_transfer_resume">Retry / resume</string>
+    <string name="catalog_transfer_discard">Delete partial download</string>
+    <string name="catalog_transfer_retention">Verified fragments stay encrypted for up to 7 days for resuming.</string>
 </resources>

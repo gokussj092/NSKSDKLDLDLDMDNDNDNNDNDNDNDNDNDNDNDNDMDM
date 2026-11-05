@@ -17,6 +17,7 @@ function Health({ok}){return <span className="sp-admin-health" data-ok={ok?"yes"
 export default function AdminDashboard({mode="system"}){
  const [data,setData]=useState(null),[busy,setBusy]=useState(false);
  const [error,setError]=useState(""),[loading,setLoading]=useState(true);
+ const [catalogEdition,setCatalogEdition]=useState("");
  const [providerQuery,setProviderQuery]=useState(""),[providerFilter,setProviderFilter]=useState("all");
  const [clock,setClock]=useState(null);
  const [patchMonths,setPatchMonths]=useState(24);
@@ -384,7 +385,17 @@ export default function AdminDashboard({mode="system"}){
      <h2>Disponibilidad de importaciones remotas</h2>
      <p className="muted">Activa o desactiva HTTP Injector Cloud, el catálogo Servidores VPN y cada proveedor individual. Estos controles no requieren QA. El servidor debe tener habilitados previamente los requisitos privados de cada integración.</p>
     </div><span className="sp-admin-chip">Servicios Cloud</span></div>
-    <div className="admin-kv"><span>Versión del catálogo Server VPN</span><strong>{data.providerControls?.catalogVersion??"—"}</strong></div>
+    <div className="admin-kv"><span>Revisión técnica de sincronización</span><strong>{data.providerControls?.catalogVersion??"—"}</strong></div>
+    <form onSubmit={async event=>{event.preventDefault();if(busy)return;setBusy(true);try{
+      const response=await fetch("/api/admin/catalog-edition",requestOptions({displayVersion:Number(catalogEdition)}));
+      const result=await response.json();if(!response.ok)throw Error(result.error?.code||"SERVICE_UNAVAILABLE");
+      setData(previous=>({...previous,providerControls:result.providerControls}));setCatalogEdition("");
+     }catch(error){setError(error.message);}finally{setBusy(false);}}}>
+     <label>Edición visible del catálogo: {data.providerControls?.displayVersion??"Sin definir"}
+      <input type="number" min="1" max="999999999" step="1" required value={catalogEdition} onChange={event=>setCatalogEdition(event.target.value)}/>
+     </label><button disabled={busy||data.maintenanceLocked}>Publicar edición</button>
+     <p className="muted">La edición se publica tras activar el snapshot verificado. No modifica ni reduce la revisión técnica.</p>
+    </form>
     <div className="sp-admin-provider-tools">
      <label>Buscar proveedor<input type="search" value={providerQuery} onChange={event=>setProviderQuery(event.target.value)}
       placeholder="Nombre o identificador" maxLength={80}/></label>

@@ -90,6 +90,7 @@ class MainActivity : ComponentActivity() {
     private var serverVpnLoading by mutableStateOf(false)
     private var catalogProgress by mutableStateOf<Int?>(null)
     private var catalogTransfer by mutableStateOf<CatalogTransferUiState?>(null)
+    private var interruptedCatalogVersion=0
     private var catalogTransferGeneration=0
     private var serverVpnUnavailable by mutableStateOf(false)
     private var pendingServerVpnCatalogVersion by mutableStateOf<Int?>(null)
@@ -309,6 +310,7 @@ class MainActivity : ComponentActivity() {
     /** Explicit confirmation starts one cancellable, byte-measured catalog transfer. */
     private fun confirmServerVpnUpdate() {
         val version=pendingServerVpnCatalogVersion?:return
+        interruptedCatalogVersion=version
         pendingServerVpnCatalogVersion=null
         if(!BuildConfig.SPDECODE_CLOUD_ENABLED || showCloudLegal || busy ||
             serverVpnRefresh?.isActive==true)return
@@ -324,7 +326,7 @@ class MainActivity : ComponentActivity() {
                         scope.launch(Dispatchers.Main.immediate) {
                             if(generation==catalogTransferGeneration &&
                                 catalogTransfer?.completed==false)
-                                catalogTransfer=CatalogTransferUiState(received,total)
+                                catalogTransfer=CatalogTransferUiState(received,total,resumable=serverVpnCatalog.lastTransferResumable)
                         }
                     })
                 if(generation!=catalogTransferGeneration)return@launch
@@ -334,12 +336,11 @@ class MainActivity : ComponentActivity() {
                 if(version!=0 && serverVpnCatalog.currentVersion()<version){
                     catalogTransfer=null
                     toast(R.string.server_vpn_catalog_update_error)
-                }else catalogTransfer=CatalogTransferUiState(completed=true)
+                }else catalogTransfer=CatalogTransferUiState(completed=true,displayVersion=serverVpnCatalog.displayVersion())
             }catch(error:CancellationException){throw error}
              catch(_:Exception){
                 if(generation==catalogTransferGeneration) {
-                    catalogTransfer=null
-                    toast(R.string.server_vpn_catalog_update_error)
+                    catalogTransfer=(catalogTransfer?:CatalogTransferUiState()).copy(paused=true,resumable=serverVpnCatalog.lastTransferResumable)
                 }
              }finally {
                 if(generation==catalogTransferGeneration) {
@@ -352,6 +353,14 @@ class MainActivity : ComponentActivity() {
     }
 
     /** Cancellation never replaces the previously verified encrypted catalog. */
+    private fun discardPartialCatalog() {
+        scope.launch {
+            try {serverVpnCatalog.discardDownload()}
+            catch(error:CancellationException){throw error}
+            catch(_:Exception){toast(R.string.write_error)}
+        }
+    }
+
     private fun cancelCatalogDownload() {
         catalogTransferGeneration++
         com.ghostdeveloper.spdecode.cloud.CloudNativeTransport.cancelCatalogDownload()
@@ -404,16 +413,22 @@ class MainActivity : ComponentActivity() {
     private fun saveExport(uri:Uri?){
         val text=stagedExport
         stagedExport=null
-        if(uri!=null && text!=null)scope.launch{
+        val large=sessionVm.stagedResultExport
+        sessionVm.stagedResultExport=null
+        if(uri!=null && (text!=null || large!=null))scope.launch{
             try{
                 withContext(Dispatchers.IO){
-                    contentResolver.openOutputStream(uri,"w")?.use{
-                        it.write(text.toByteArray(Charsets.UTF_8))
-                        it.flush()
+                    contentResolver.openOutputStream(uri,"w")?.use{output ->
+                        val encoder=Charsets.UTF_8.newEncoder().onMalformedInput(java.nio.charset.CodingErrorAction.REPORT)
+                        java.io.OutputStreamWriter(output,encoder).use {writer ->
+                            if(large!=null)ResultOutputWriter.write(large.first.rawText,large.first.extension,large.second,writer)
+                            else text!!.reader().use {reader ->reader.copyTo(writer,8192)}
+                        }
                     }?:throw IOException("Destination unavailable")
                 }
                 toast(R.string.saved)
-             }catch(_:Exception){
+             }catch(error:CancellationException){throw error}
+              catch(_:Exception){
             SafeDecodeDiagnostics.record(SafeDecodeDiagnostics.Event.EXPORT_FAILURE)
             toast(R.string.write_error)
         }
@@ -553,13 +568,30 @@ class MainActivity : ComponentActivity() {
                 onImportMultiple={multiPicker.launch(arrayOf("*/*"))},
                 onCancel={cancelImport()},
                 onReveal={reveal=it},
-                onCopy={format->result?.let { entry ->
+                onCopy={format->result?.let { entry ->scope.launch {
+                    // A multi-megabyte Binder transaction cannot be delivered safely.
+                    // Refuse the complete copy; never substitute a truncated result.
+                    if(entry.rawText.length>200_000){toast(R.string.result_copy_too_large);return@launch}
                     val date=DateFormat.getDateTimeInstance(DateFormat.MEDIUM,
                         DateFormat.SHORT,resources.configuration.locales[0])
                         .format(Date(entry.savedAtMillis))
-                    copy(TelegramResultCopy.clipboard(entry,format,date))
+                    try {val text=withContext(Dispatchers.Default){TelegramResultCopy.clipboard(entry,format,date)};copy(text)}
+                    catch(error:CancellationException){throw error}
+                    catch(_:Exception){toast(R.string.write_error)}
+                }}},
+                onExport={format->result?.let{entry ->
+                    if(ResultOutputWriter.isLarge(entry.rawText)) {
+                        sessionVm.stagedResultExport=entry to format
+                        val safe=entry.filename.substringBeforeLast('.').replace(Regex("[^A-Za-z0-9._-]"),"_").take(50).ifEmpty{"spdecode"}
+                        if(format==ResultExport.JSON)jsonExporter.launch("$safe-decoded.json") else exporter.launch("$safe-decoded.txt")
+                    }else scope.launch {
+                        try {
+                            val text=withContext(Dispatchers.Default){ResultPresentation.formatted(entry.document,format)}
+                            export(text,entry.filename,format)
+                        }catch(error:CancellationException){throw error}
+                         catch(_:Exception){toast(R.string.write_error)}
+                    }
                 }},
-                onExport={format->result?.let{export(ResultPresentation.formatted(it.document,format),it.filename,format)}},
                 selectedLanguage=selectedLanguage,
                 hideCredentials=hideCredentials,
                 onLanguage={tag->setLanguage(tag)},
@@ -622,6 +654,8 @@ class MainActivity : ComponentActivity() {
                             CloudCatalogUpdates.setEnabled(this@MainActivity,false)
                             catalogWatchJob?.cancel()
                             catalogUpdatesEnabled=false
+                            cancelCatalogDownload()
+                            discardPartialCatalog()
                             CloudLegalConsent.revoke(this@MainActivity)
                             cloudClient.clearSession()
                             serverVpnRefresh?.cancel()
@@ -643,6 +677,8 @@ class MainActivity : ComponentActivity() {
                 catalogTransfer=catalogTransfer,
                 onCancelCatalogTransfer={cancelCatalogDownload()},
                 onFinishCatalogTransfer={catalogTransfer=null},
+                onResumeCatalogTransfer={pendingServerVpnCatalogVersion=interruptedCatalogVersion;catalogTransfer=null;confirmServerVpnUpdate()},
+                onDiscardCatalogTransfer={cancelCatalogDownload();discardPartialCatalog()},
                 serverVpnUnavailable=serverVpnUnavailable,
                 onRefreshServerVpn={checkServerVpnUpdates()},
                 pendingServerVpnCatalogVersion=pendingServerVpnCatalogVersion,
@@ -1025,7 +1061,7 @@ class MainActivity : ComponentActivity() {
                     false
                 }
                 result=record
-                recent.add(0,record)
+                recent.add(0,if(stored)record.historySummary() else record)
                 if(!stored)toast(R.string.history_storage_error)
                 try{historyPreferences.setSelectedId(record.id)}
                 catch(e:CancellationException){throw e}
@@ -1124,7 +1160,7 @@ class MainActivity : ComponentActivity() {
                     false
                 }
                 result=record
-                recent.add(0,record)
+                recent.add(0,if(stored)record.historySummary() else record)
                 if(!stored)toast(R.string.history_storage_error)
                 try { historyPreferences.setSelectedId(record.id) }
                 catch(e:CancellationException){throw e}
@@ -1201,7 +1237,7 @@ class MainActivity : ComponentActivity() {
                     false
                 }
                 result=record
-                recent.add(0,record)
+                recent.add(0,if(saved)record.historySummary() else record)
                 if(!saved)toast(R.string.history_storage_error)
                 try {historyPreferences.setSelectedId(record.id)}
                 catch(e:CancellationException){throw e}
@@ -1227,6 +1263,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun clearVisibleResult() {
+        resultSelectionGeneration++
         if(busy)return
         result=null
         reveal=false
@@ -1239,12 +1276,19 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private var resultSelectionGeneration=0
     private fun selectResult(entry:DecodeView) {
-        result=entry
+        val generation=++resultSelectionGeneration
+        val previous=result?.id
         tab=0
         reveal=false
         scope.launch {
-            try{historyPreferences.setSelectedId(entry.id)}
+            try {
+                val selected=if(entry.metadataOnly)historyStore.open(entry.id) else entry
+                if(generation!=resultSelectionGeneration || result?.id!=previous)return@launch
+                result=selected
+                historyPreferences.setSelectedId(entry.id)
+            }
             catch(_:CancellationException){throw CancellationException()}
             catch(_:Exception){toast(R.string.history_storage_error)}
         }
@@ -1278,7 +1322,7 @@ class MainActivity : ComponentActivity() {
                 }catch(error:CancellationException){throw error}
                  catch(_:Exception){false}
                 result=record
-                recent.add(0,record)
+                recent.add(0,if(saved)record.historySummary() else record)
                 if(!saved)toast(R.string.history_storage_error)
                 try {historyPreferences.setSelectedId(record.id)}
                 catch(error:CancellationException){throw error}
@@ -1532,7 +1576,7 @@ class MainActivity : ComponentActivity() {
                         false
                     }
                     result=processed
-                    recent.add(0,processed)
+                    recent.add(0,if(saved)processed.historySummary() else processed)
                     if(!saved)toast(R.string.history_storage_error)
                     // Preference failure must not misreport a valid decoded file
                     // as failed after its encrypted record has already been saved.
@@ -1604,7 +1648,7 @@ class MainActivity : ComponentActivity() {
                     historyStore.favorite(id,favorite)
                 }
                 val index=recent.indexOfFirst{it.id==id}
-                if(index>=0)recent[index]=updated
+                if(index>=0)recent[index]=updated.historySummary()
                 if(result?.id==id)result=updated
             }catch(_:CancellationException){throw CancellationException()}
             catch(_:Exception){toast(R.string.history_storage_error)}
@@ -1705,6 +1749,7 @@ class MainActivity : ComponentActivity() {
         return uri.lastPathSegment?.substringAfterLast('/')?.take(220) ?:"file"
     }
     private fun copy(text:String){
+        if(text.length>250_000){toast(R.string.result_copy_too_large);return}
         val manager=getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
         val clip=ClipData.newPlainText("SP-DECODE",text)
         if(Build.VERSION.SDK_INT>=33){
@@ -1712,8 +1757,8 @@ class MainActivity : ComponentActivity() {
                 putBoolean("android.content.extra.IS_SENSITIVE",true)
             }
         }
-        manager.setPrimaryClip(clip)
-        toast(R.string.copied)
+        try {manager.setPrimaryClip(clip);toast(R.string.copied)}
+        catch(_:RuntimeException){toast(R.string.result_copy_too_large)}
     }
     private fun export(text:String,filename:String,format:ResultExport){
         stagedExport=text

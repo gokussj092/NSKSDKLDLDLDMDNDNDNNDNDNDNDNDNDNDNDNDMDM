@@ -1,7 +1,9 @@
 # SP-DECODE — Resultados de descifrado extensos: motor JSON nativo y visualización sin crashes
 
 **Fecha:** 2026-11-04. **Rama:** `feat/nuevas-integraciones`.
-**Estado:** ESPECIFICACIÓN / PENDIENTE DE IMPLEMENTACIÓN. Solo documentación. No modificar todavía APK, servidor, compilar ni desplegar.
+**Estado actualizado 2026-11-05:** implementación inicial en código; pruebas host aprobadas; reproducción del cierre y QA Android físico pendientes. No se compiló APK/AAB ni se desplegó.
+
+La solicitud posterior del propietario autoriza implementar este plan. El alcance de «solo documentación» describía el commit original. Véase [implementación, pruebas y límites actuales](../cloud/CATALOG_RESULTS_IMPLEMENTATION_2026_11_05.md). Los requisitos y gates de aceptación siguientes siguen vigentes.
 
 ## 0. Aclaración del propietario — problema y alcance exactos
 
@@ -59,7 +61,7 @@ Archivos verificados en `feat/nuevas-integraciones`:
 
 ### 3.2. Motor nativo `libspdecode_result_engine.so` (nombre de diseño)
 
-Funciones propuestas, **no implementadas**:
+Funciones del contrato de diseño (la correspondencia con la API implementada se registra en el informe del 2026-11-05):
 - `openResult(handle/pathAuthorized, format)`: abrir registro autorizado a través del almacén seguro y validar límites/checksum.
 - `indexDocument`: parseo streaming SAX/iterativo con límites de anidamiento, tokens, bytes, tamaño de clave/valor y UTF-8. Para texto tipo bot, lexer/transformación incremental sin producir otra cadena completa.
 - `getRootSummary`, `listChildren(nodeId, offset, limit)`, `getValueSlice(nodeId, offset, limit)`, `searchNodes(query, cursor)`: API de navegación **bounded** y paginada; cada respuesta JNI contiene solo datos pequeños.
@@ -173,4 +175,4 @@ La cantidad se calculará de datos reales y nunca truncará el contenido. El est
 - `analysis/METHOD_EVIDENCE_POLICY.md`: scripts e integridad de métodos server-side, no metadatos de vista previa.
 - `docs/FASE_7_APK_AUTOANALISIS_DOS_SALIDAS_PENDING_2026_11_02.md`: análisis de APK de pago, sistema completamente distinto.
 
-**Alcance de este commit:** crear documentación para resultados extensos y aclarar el alcance del plan del directorio Server VPN. NO modificar Kotlin, C++, JNI, Cloud, credenciales, endpoints, Gradle, versionCode, APK, AAB ni main.
+**Alcance histórico del commit documental del 2026-11-04:** crear documentación para resultados extensos y aclarar el alcance del plan del directorio Server VPN. NO modificar Kotlin, C++, JNI, Cloud, credenciales, endpoints, Gradle, versionCode, APK, AAB ni main.

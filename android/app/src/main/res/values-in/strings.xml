@@ -238,6 +238,14 @@
     <string name="catalog_transfer_completed">Katalog diperbarui</string>
     <string name="catalog_transfer_saved">Semua format telah disimpan.</string>
     <string name="catalog_transfer_finish">Selesai</string>
-    <string name="catalog_transfer_bytes_total">%1$s MB / %2$s MB</string>
-    <string name="catalog_transfer_bytes_unknown">%1$s MB diunduh</string>
+    <string name="catalog_transfer_bytes_total">%1$s MiB / %2$s MiB</string>
+    <string name="catalog_transfer_bytes_unknown">%1$s MiB</string>
+    <string name="catalog_transfer_verifying">Memverifikasi dan menyimpan…</string>
+    <string name="result_engine_error">Pratinjau tidak tersedia. Hasil lengkap tetap dapat diekspor.</string>
+    <string name="result_previous_page">Halaman sebelumnya</string>
+    <string name="result_copy_too_large">Papan klip tidak dapat menerima hasil ini. Ekspor berkas lengkap.</string>
+    <string name="catalog_transfer_paused">Unduhan terputus</string>
+    <string name="catalog_transfer_resume">Coba lagi / lanjutkan</string>
+    <string name="catalog_transfer_discard">Hapus unduhan parsial</string>
+    <string name="catalog_transfer_retention">Fragmen terverifikasi disimpan terenkripsi hingga 7 hari.</string>
 </resources>

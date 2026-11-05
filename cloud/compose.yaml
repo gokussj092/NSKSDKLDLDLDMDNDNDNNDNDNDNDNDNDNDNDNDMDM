@@ -8,6 +8,7 @@ services:
     environment:
       NODE_ENV: production
       WORKER_INTERNAL_URL: http://decoder-worker:8787
+      CLOUD_CATALOG_CHUNKS_ENABLED: ${CLOUD_CATALOG_CHUNKS_ENABLED:-false}
       CLOUD_API_ENABLED: ${CLOUD_API_ENABLED:-false}
       CLOUD_QA_ENABLED: ${CLOUD_QA_ENABLED:-false}
       CLOUD_QA_EXPIRES_AT: ${CLOUD_QA_EXPIRES_AT:-0}
@@ -86,6 +87,7 @@ services:
     # named volume. Redis sessions/challenges remain ephemeral and isolated.
     volumes:
       - provider-control:/app/provider-control:rw
+      - catalog-snapshots:/app/catalog-snapshots:rw
       - notice-feed:/app/notices:rw
     ports:
       # Bound to host loopback only; public HTTPS reverse proxy is a later phase.
@@ -191,6 +193,7 @@ services:
 
 volumes:
   provider-control: {}
+  catalog-snapshots: {}
   notice-feed: {}
 
 networks:

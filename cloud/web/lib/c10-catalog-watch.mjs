@@ -1,3 +1,5 @@
+import {chunksEnabled} from "./catalog-snapshots.mjs";
+import {currentSnapshot} from "./catalog-chunk-api.mjs";
 /** Short-lived HTTPS long-poll: Server VPN version only; no user account, FCM or identifiers. */
 import {providerOverview} from "./c12-provider-controls.mjs";
 import {boundedBody} from "./c3-gateway.mjs";
@@ -12,7 +14,7 @@ const pause=(ms,signal)=>new Promise(resolve=>{
  const timer=setTimeout(done,ms);
  signal?.addEventListener("abort",done,{once:true});
 });
-export async function catalogWatchRequest(request,{versionProvider=async()=> {const base=(await providerOverview(process.env,{syncCatalog:true})).catalogVersion;return negotiatesExport(request)?projectedCatalogVersion(request,base,await exportPolicy()):base;},wait=pause}={}){
+export async function catalogWatchRequest(request,{versionProvider=async()=> {if(chunksEnabled())return (await currentSnapshot(request)).core.catalogVersion;const base=(await providerOverview(process.env,{syncCatalog:true})).catalogVersion;return negotiatesExport(request)?projectedCatalogVersion(request,base,await exportPolicy()):base;},wait=pause}={}){
  let knownVersion;
  try{
   if(request.method!=="POST"||
@@ -36,7 +38,7 @@ export async function catalogWatchRequest(request,{versionProvider=async()=> {co
    current=await versionProvider();
   }
   return json({apiVersion:"v1",catalogVersion:current,
-   changed:current>knownVersion,checkOnly:true});
+   changed:current>knownVersion,checkOnly:true,...(chunksEnabled()?{catalogTransferProtocol:"catalog-chunks-v1"}:{})});
  }catch{return json({error:{code:"SERVICE_UNAVAILABLE"}},503);}
  finally{activeWatches--;}
 }

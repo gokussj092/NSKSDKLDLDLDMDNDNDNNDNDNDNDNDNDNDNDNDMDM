@@ -69,3 +69,14 @@ test("invalid key ID and malformed length are rejected",async()=>{
   const badLength=Buffer.from(e.wire);badLength.writeUInt32BE(0,67);
   await assert.rejects(()=>openHpkeRequest(badLength,14,e.env));
 });
+
+test("manifest and chunk operations authenticate distinct request bytes and reply contexts",async()=>{
+ for(const op of [19,20]){
+  const input=op===19?{knownVersion:0}:{snapshotId:"a".repeat(64),manifestHash:"a".repeat(64),objectHash:"b".repeat(64),chunkIndex:1};
+  const e=await encrypt(op,input);const opened=await openHpkeRequest(e.wire,op,e.env);
+  assert.deepEqual(JSON.parse(unpackHpkeBody(opened.plaintext,op)),input);
+  await assert.rejects(()=>openHpkeRequest(e.wire,op===19?20:19,e.env));
+  const response=sealHpkeReply(opened,200,Buffer.from(JSON.stringify({snapshotId:input.snapshotId??"c".repeat(64)})));
+  assert.deepEqual(response.subarray(7,23),e.wire.subarray(19,35));
+ }
+});

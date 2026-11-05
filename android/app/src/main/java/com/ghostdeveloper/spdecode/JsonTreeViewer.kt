@@ -2,6 +2,8 @@ package com.ghostdeveloper.spdecode
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ChevronRight
@@ -35,9 +37,8 @@ private val JsonPunctuation = Color(0xFFF7F7F7)
 private val JsonSecondary = Color(0xFFABABAB)
 
 /**
- * Complete syntax-highlighted JSON with parsing off the UI thread. Only the
- * surrounding screen scrolls; branches remain optionally collapsible. Raw data,
- * encrypted history, decoders, copy and export paths stay unchanged.
+ * Bounded lazy viewport with parsing off the UI thread. Large documents use
+ * native pages; small nested branches start collapsed. The raw source is immutable.
  */
 @Composable
 internal fun JsonTreeViewer(
@@ -46,6 +47,11 @@ internal fun JsonTreeViewer(
     maskCredentials: Boolean,
     identity: String,
 ) {
+    val extensive=remember(identity,raw){raw.length>=64*1024 || raw.count{it=='\n'||it=='\r'}>1000}
+    if(extensive) {
+        key(identity,raw){LargeResultViewer(raw,maskCredentials,identity)}
+        return
+    }
     // Keyed content prevents a frame of *unmasked* JSON from surviving
     // when the user switches the sensitive-values toggle.
     key(identity, maskCredentials, raw, suffix) {
@@ -60,11 +66,14 @@ private fun JsonTreeViewerContent(
     maskCredentials: Boolean,
     identity: String,
 ) {
+    var failed by remember(identity,raw,maskCredentials){mutableStateOf(false)}
     val document by produceState<JsonElement?>(
         initialValue = null, raw, suffix, maskCredentials, identity
     ) {
         value = withContext(Dispatchers.Default) {
-            ResultJsonDisplay.element(raw, suffix, maskCredentials)
+            try {ResultJsonDisplay.element(raw, suffix, maskCredentials)}
+            catch(error:kotlinx.coroutines.CancellationException){throw error}
+            catch(_:Exception){failed=true;null}
         }
     }
 
@@ -72,7 +81,7 @@ private fun JsonTreeViewerContent(
     val root = document
 
     if (root == null) {
-        Text(stringResource(R.string.json_viewer_loading),
+        Text(stringResource(if(failed)R.string.result_engine_error else R.string.json_viewer_loading),
             color = JsonSecondary, fontSize = 13.sp,
             style = TextStyle(textDirection = TextDirection.Ltr))
         return
@@ -81,8 +90,8 @@ private fun JsonTreeViewerContent(
     val rows by remember(root, identity, maskCredentials) {
         derivedStateOf { JsonTreeProjection.project(root, expanded) }
     }
-    Column(modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)) {
-        rows.forEach { row ->
+    LazyColumn(modifier = Modifier.fillMaxWidth().heightIn(min=100.dp,max=480.dp).padding(vertical = 2.dp)) {
+        items(rows,key={"${it.path}:${it.kind}"}) { row ->
             key("${row.path}:${row.kind}") {
                 val indent = (row.depth.coerceAtMost(32) * 12).dp
                 when (row.kind) {
