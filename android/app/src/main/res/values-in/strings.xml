@@ -234,4 +234,10 @@
     <string name="apk_analysis_safety_note">Analisis yang direncanakan bersifat statis: APK tidak dipasang atau dijalankan.</string>
     <string name="apk_analysis_import_unavailable">Impor APK (belum tersedia)</string>
     <string name="apk_analysis_no_charge">Layanan belum aktif. Tidak ada APK yang dikirim atau kredit yang dipotong.</string>
+    <string name="catalog_transfer_downloading">Mengunduh katalog</string>
+    <string name="catalog_transfer_completed">Katalog diperbarui</string>
+    <string name="catalog_transfer_saved">Semua format telah disimpan.</string>
+    <string name="catalog_transfer_finish">Selesai</string>
+    <string name="catalog_transfer_bytes_total">%1$s MB / %2$s MB</string>
+    <string name="catalog_transfer_bytes_unknown">%1$s MB diunduh</string>
 </resources>
