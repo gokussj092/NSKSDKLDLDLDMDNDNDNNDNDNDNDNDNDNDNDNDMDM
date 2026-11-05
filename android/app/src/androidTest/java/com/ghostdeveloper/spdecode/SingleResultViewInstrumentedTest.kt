@@ -28,14 +28,12 @@ class SingleResultViewInstrumentedTest {
         }
         ui.onNodeWithText(ctx.getString(R.string.result_decoded_by,"SP-DECODE"),substring=true).assertExists()
         ui.onNodeWithText(ctx.getString(R.string.result_decoded_by,"HTTP Injector"),substring=true).assertDoesNotExist()
-        ui.waitUntil(timeoutMillis=20000) {
-            ui.onAllNodesWithText("\"city\": \"LA\"",substring=true)
-                .fetchSemanticsNodes().isNotEmpty()
-        }
-        ui.onNodeWithText("\"city\": \"LA\"",substring=true).assertExists()
+        val surface=continuousJsonView(ui)
+        ui.runOnIdle { org.junit.Assert.assertTrue(visibleJsonText(surface).contains("\"city\": \"LA\"")) }
         ui.onNodeWithText(ctx.getString(R.string.detailed_fields)).assertDoesNotExist()
         ui.onNodeWithText(ctx.getString(R.string.raw_text)).assertDoesNotExist()
         ui.onNodeWithText(ctx.getString(R.string.copy)).assertExists()
         ui.onNodeWithText(ctx.getString(R.string.export)).assertExists()
     }
 }
+

@@ -1,111 +1,128 @@
 package com.ghostdeveloper.spdecode
 
-import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onAllNodesWithText
-import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.hasScrollAction
-import androidx.compose.ui.test.performScrollTo
-import androidx.compose.ui.test.performClick
+import android.view.View
+import android.view.ViewGroup
+import android.view.MotionEvent
+import android.os.SystemClock
+import android.view.accessibility.AccessibilityNodeInfo
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.junit4.ComposeContentTestRule
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.google.gson.JsonParser
+import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
+import androidx.test.runner.lifecycle.Stage
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/** Phase U: syntax-only visual changes; no decoded data is discarded. */
+internal fun continuousJsonView(ui: ComposeContentTestRule): ContinuousJsonView {
+    var result: ContinuousJsonView? = null
+    fun find(view: View): ContinuousJsonView? {
+        if (view is ContinuousJsonView) return view
+        if (view is ViewGroup) for (index in 0 until view.childCount) find(view.getChildAt(index))?.let { return it }
+        return null
+    }
+    ui.waitUntil(timeoutMillis = 20000) {
+        ui.runOnIdle {
+            result = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED)
+                .firstNotNullOfOrNull { find(it.window.decorView) }
+        }
+        result != null
+    }
+    return requireNotNull(result)
+}
+
+internal fun visibleJsonText(view: ContinuousJsonView): String {
+    val info = AccessibilityNodeInfo.obtain()
+    try { view.onInitializeAccessibilityNodeInfo(info); return info.text.toString() }
+    finally { info.recycle() }
+}
+
+/** The actual Android surface: continuous scroll, complete values and shared baselines. */
 @RunWith(AndroidJUnit4::class)
 class JsonTreeViewerInstrumentedTest {
-    @get:Rule val compose = createComposeRule()
+    @get:Rule val ui = createComposeRule()
     private val ctx get() = InstrumentationRegistry.getInstrumentation().targetContext
 
-    @Test fun nestedObjectsExpandAndCollapseWithoutChangingJson() {
+    @Test fun nestedObjectsAreVisibleImmediatelyWithoutExpansion() {
         val raw = """{"host":"vpn.test","nested":{"city":"LA","port":443,"active":true}}"""
-        val original = ResultJsonDisplay.render(raw, "hc")
-        val root = JsonParser.parseString(raw)
-        val initial = JsonTreeProjection.project(root)
-        assertFalse(initial.any { it.key == "city" })
-        assertTrue(initial.any { it.key == "nested" && !it.expanded })
-
-        val collapsed = JsonTreeProjection.project(root, mapOf("root/1" to false))
-        assertFalse(collapsed.any { it.key == "city" })
-        assertTrue(collapsed.any {
-            it.key == "nested" && it.kind == JsonTreeProjection.Kind.NODE && !it.expanded
-        })
-        val expanded = JsonTreeProjection.project(root, mapOf("root/1" to true))
-        assertTrue(expanded.any { it.key == "city" })
-        assertEquals(original, ResultJsonDisplay.render(raw, "hc"))
+        ui.setContent { JsonTreeViewer(raw, "hc", false, "nested") }
+        val view = continuousJsonView(ui)
+        ui.runOnIdle {
+            val text = visibleJsonText(view)
+            assertTrue(text.contains("\"city\": \"LA\""))
+            assertTrue(text.contains("\"port\": 443"))
+            assertFalse(text.contains("{…}"))
+            assertEquals(view.rowHeight, view.lineBaseline(5) - view.lineBaseline(4), .01f)
+        }
     }
 
-    @Test fun largeArraysShowEveryValueWithoutPaginationOrRowCutoff() {
-        val text = buildString {
-            append("[")
-            for (i in 0 until 12500) {
-                if (i > 0) append(",")
-                append(i)
+    @Test fun fiftyThousandRecordsReachTheFinalLineWithCorrectNumbers() {
+        val count = 50000
+        val raw = (0 until count).joinToString(",", "[", "]") { "{\"id\":$it}" }
+        ui.setContent {
+            Column(Modifier.verticalScroll(rememberScrollState())) { JsonTreeViewer(raw, "json", false, "large") }
+        }
+        val view = continuousJsonView(ui)
+        ui.runOnIdle {
+            val before = view.lineBaseline(0)
+            val time = SystemClock.uptimeMillis()
+            for ((step, action) in listOf(MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE, MotionEvent.ACTION_UP).withIndex()) {
+                val event = MotionEvent.obtain(time, time + step * 60L, action, view.width / 2f,
+                    view.height * if (step == 0) .8f else .2f, 0)
+                view.dispatchTouchEvent(event); event.recycle()
             }
-            append("]")
+            assertTrue(view.lineBaseline(0) < before)
+            view.scrollToLine(3 * count + 1)
+            val text = visibleJsonText(view)
+            assertTrue(text.contains("${3 * count}     \"id\": ${count - 1}"))
+            assertTrue(text.contains("${3 * count + 2} ]"))
         }
-        val root = JsonParser.parseString(text)
-        val first = JsonTreeProjection.project(root)
-        assertEquals(12500, first.count { it.kind == JsonTreeProjection.Kind.VALUE })
-        assertEquals(12499, first.last { it.kind == JsonTreeProjection.Kind.VALUE }.value!!.asInt)
-        assertEquals(12502, first.size)
-        assertEquals(12500, root.asJsonArray.size())
     }
 
-    @Test fun longValueAndNestedBranchesRemainReachableOnDemand() {
-        val longValue="x".repeat(1800)+"END_OF_COMPLETE_VALUE"
-        val raw="""{"options":{"payload":"$longValue"}}"""
-        compose.setContent { JsonTreeViewer(raw=raw,suffix="hc",maskCredentials=false,identity="long-value") }
-        compose.waitUntil(timeoutMillis=20000) {
-            compose.onAllNodesWithText("options",substring=true).fetchSemanticsNodes().isNotEmpty()
+    @Test fun hugeScalarAndLongKeyRemainReadableThroughHorizontalScroll() {
+        val raw = "{\"${"k".repeat(3500)}\":\"${"x".repeat(200000)}🌎LAST_CHARACTER\"}"
+        ui.setContent { JsonTreeViewer(raw, "json", false, "long") }
+        val view = continuousJsonView(ui)
+        ui.runOnIdle {
+            view.scrollToColumn(Int.MAX_VALUE)
+            assertTrue(view.visibleWindow(1).getString("text").contains("LAST_CHARACTER"))
         }
-        compose.onNodeWithText("options",substring=true).performClick()
-        compose.waitUntil(timeoutMillis=20000) {
-            compose.onAllNodesWithText("END_OF_COMPLETE_VALUE",substring=true).fetchSemanticsNodes().isNotEmpty()
-        }
-        assertEquals(raw,DecodeView("complete.hc","hc",raw,raw.length).rawText)
     }
 
-    @Test fun strangeObjectFieldNamesCannotCollideAndMaskingIsPreserved() {
-        val raw = """{"a/b":{"x":1},"a":{"b":{"x":2}},"password":"TEST_ONLY_SECRET"}"""
-        val doc = ResultJsonDisplay.element(raw, "ehi", true)
-        val rows = JsonTreeProjection.project(doc)
-        val paths = rows.map { it.path + ":" + it.kind.name }
-        assertEquals(paths.size, paths.distinct().size)
-        assertFalse(rows.any { it.value?.isJsonPrimitive == true &&
-            it.value.asString == "TEST_ONLY_SECRET" })
-        assertTrue(rows.any { it.key == "password" &&
-            it.value?.asString == "••••••••" })
-        assertEquals("TEST_ONLY_SECRET",JsonParser.parseString(raw)
-            .asJsonObject.get("password").asString)
+    @Test fun privacyToggleReplacesTheViewAndClearsVisibleSecrets() {
+        val raw = """{"password":"FICTIONAL_ONLY","nested":{"password":"NESTED_SECRET"}}"""
+        val mask = mutableStateOf(false)
+        ui.setContent { JsonTreeViewer(raw, "json", mask.value, "privacy") }
+        val clear = continuousJsonView(ui)
+        ui.runOnIdle { assertTrue(visibleJsonText(clear).contains("FICTIONAL_ONLY")); mask.value = true }
+        val hidden = continuousJsonView(ui)
+        ui.runOnIdle {
+            assertNotSame(clear, hidden)
+            val text = visibleJsonText(hidden)
+            assertFalse(text.contains("FICTIONAL_ONLY"))
+            assertFalse(text.contains("NESTED_SECRET"))
+            assertTrue(text.contains("••••••••"))
+        }
     }
 
-    @Test fun existingResultCardKeepsControlsAndShowsNestedColorReadyJson() {
-        val raw = """{"host":"vpn.test","nested":{"city":"LA","port":443,"active":true}}"""
-        compose.setContent {
-            CompleteResultCard(
-                current = DecodeView("sample.hc", "hc", raw, raw.length),
-                reveal = false, hideCredentials = false,
-                onReveal = {}, onCopy = {}, onExport = {}
-            )
+    @Test fun resultCardKeepsCopyExportAndFilename() {
+        val raw = """{"nested":{"city":"LA"}}"""
+        ui.setContent {
+            CompleteResultCard(DecodeView("sample.hc", "hc", raw, raw.length),
+                false, false, {}, {}, {})
         }
-        compose.waitUntil(timeoutMillis = 20000) {
-            compose.onAllNodesWithText("nested", substring = true)
-                .fetchSemanticsNodes().isNotEmpty()
-        }
-        compose.onNodeWithText("nested", substring=true).performClick()
-        compose.waitUntil(timeoutMillis=20000) { compose.onAllNodesWithText("\"city\": \"LA\"",substring=true).fetchSemanticsNodes().isNotEmpty() }
-        compose.onNodeWithText("\"city\": \"LA\"", substring = true).assertExists()
-        compose.onNodeWithText("\"port\": 443", substring = true).assertExists()
-        compose.onNodeWithText("sample.hc").assertExists()
-        compose.onNodeWithText(ctx.getString(R.string.copy)).assertExists()
-        compose.onNodeWithText(ctx.getString(R.string.export)).assertExists()
+        val view = continuousJsonView(ui)
+        ui.runOnIdle { assertTrue(visibleJsonText(view).contains("\"city\": \"LA\"")) }
+        ui.onNodeWithText("sample.hc").assertExists()
+        ui.onNodeWithText(ctx.getString(R.string.copy)).assertExists()
+        ui.onNodeWithText(ctx.getString(R.string.export)).assertExists()
     }
 }

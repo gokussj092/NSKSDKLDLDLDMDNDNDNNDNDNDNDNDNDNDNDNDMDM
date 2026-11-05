@@ -49,6 +49,9 @@ jlong openResult(JNIEnv* env,jclass,jstring data){
 jbyteArray page(JNIEnv* env,jclass,jlong id,jint parent,jint offset,jint limit,jboolean mask){try{return bytes(env,get(id)->page(parent,offset,limit,mask==JNI_TRUE));}catch(...){failure(env);return nullptr;}}
 jbyteArray value(JNIEnv* env,jclass,jlong id,jint node,jint offset,jint limit,jboolean mask){try{return bytes(env,get(id)->value(node,offset,limit,mask==JNI_TRUE));}catch(...){failure(env);return nullptr;}}
 jbyteArray original(JNIEnv* env,jclass,jlong id,jint offset,jint limit){try{if(offset<0||limit<1)throw std::runtime_error("range");return bytes(env,get(id)->original(static_cast<size_t>(offset),static_cast<size_t>(limit)));}catch(...){failure(env);return nullptr;}}
+jint lineCount(JNIEnv* env,jclass,jlong id){try{return static_cast<jint>(get(id)->lines());}catch(...){failure(env);return 0;}}
+jint columnCount(JNIEnv* env,jclass,jlong id){try{return static_cast<jint>(get(id)->columns());}catch(...){failure(env);return 0;}}
+jbyteArray lineWindow(JNIEnv* env,jclass,jlong id,jint line,jint column,jint count,jboolean mask){try{return bytes(env,get(id)->lineWindow(line,column,count,mask==JNI_TRUE));}catch(...){failure(env);return nullptr;}}
 void closeResult(JNIEnv*,jclass,jlong id){std::lock_guard<std::mutex> lock(mutex);documents.erase(id);}
 jint length(JNIEnv* env,jclass,jlong id){try{return static_cast<jint>(get(id)->bytes());}catch(...){failure(env);return 0;}}
 }
@@ -56,6 +59,9 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm,void*){
     JNIEnv* env=nullptr;if(vm->GetEnv(reinterpret_cast<void**>(&env),JNI_VERSION_1_6)!=JNI_OK)return JNI_ERR;
     auto cls=env->FindClass("com/ghostdeveloper/spdecode/results/NativeResultEngine");if(!cls)return JNI_ERR;
     const JNINativeMethod methods[]={
+        {const_cast<char*>("nativeLineCount"),const_cast<char*>("(J)I"),reinterpret_cast<void*>(lineCount)},
+        {const_cast<char*>("nativeColumnCount"),const_cast<char*>("(J)I"),reinterpret_cast<void*>(columnCount)},
+        {const_cast<char*>("nativeLineWindow"),const_cast<char*>("(JIIIZ)[B"),reinterpret_cast<void*>(lineWindow)},
         {const_cast<char*>("nativeOpen"),const_cast<char*>("(Ljava/lang/String;)J"),reinterpret_cast<void*>(openResult)},
         {const_cast<char*>("nativeLength"),const_cast<char*>("(J)I"),reinterpret_cast<void*>(length)},
         {const_cast<char*>("nativePage"),const_cast<char*>("(JIIIZ)[B"),reinterpret_cast<void*>(page)},
@@ -64,3 +70,4 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm,void*){
         {const_cast<char*>("nativeClose"),const_cast<char*>("(J)V"),reinterpret_cast<void*>(closeResult)}};
     const int status=env->RegisterNatives(cls,methods,sizeof(methods)/sizeof(methods[0]));env->DeleteLocalRef(cls);return status==0?JNI_VERSION_1_6:JNI_ERR;
 }
+

@@ -40,7 +40,7 @@ bool container(Kind k){return k==Kind::Object||k==Kind::Array;}
 }
 Document::Document(std::string source):source_(std::move(source)){
     if(source_.empty()||source_.size()>MaxBytes)invalid();
-    utf8(source_);parse();
+    utf8(source_);parse();indexLines();
 }
 Document::~Document(){volatile char* p=source_.empty()?nullptr:&source_[0];for(size_t i=0;i<source_.size();++i)p[i]=0;}
 const Node& Document::node(int id)const{if(id<0||static_cast<size_t>(id)>=nodes_.size())invalid();return nodes_[static_cast<size_t>(id)];}
@@ -130,4 +130,90 @@ std::string Document::page(int parent,int offset,int limit,bool mask)const{
     return out+"],\"next\":"+std::to_string(offset+count)+",\"hasMore\":"+(id>=0?"true":"false")+"}";
 }
 std::string Document::original(size_t offset,size_t limit)const{if(offset>source_.size()||limit>65536)invalid();return source_.substr(offset,std::min(limit,source_.size()-offset));}
+namespace {
+// UTF-16 columns match Android's monospace text offsets, including surrogate pairs.
+uint32_t advanceColumn(const std::string& text,size_t& at){
+    const auto c=static_cast<unsigned char>(text[at]);
+    at+=c<128?1:(c<0xe0?2:(c<0xf0?3:4));
+    return c>=0xf0?2U:1U;
 }
+uint32_t width(const std::string& text){
+    uint32_t columns=0;for(size_t at=0;at<text.size();)columns+=advanceColumn(text,at);return columns;
+}
+}
+std::string Document::prefix(const Line& line)const{
+    std::string result(line.depth*2,' ');
+    const auto& n=node(line.id);
+    if(!line.closing&&n.hasKey)result+=quoted(n.key)+": ";
+    return result;
+}
+void Document::indexLines(){
+    struct Pending{int id;uint32_t depth;bool closing;};
+    std::vector<Pending> pending{{0,0,false}};
+    while(!pending.empty()){
+        const auto item=pending.back();pending.pop_back();const auto& n=node(item.id);
+        Line line{item.id,item.depth,0,0,static_cast<uint32_t>(checkpoints_.size()),0,item.closing};
+        const auto start=prefix(line);line.keyColumns=width(start);
+        line.columns=line.keyColumns;
+        if(item.closing||container(n.kind))++line.columns;
+        else{
+            size_t at=n.start;uint32_t column=0,counter=0;
+            while(at<n.end){
+                if(counter++%128==0)checkpoints_.push_back({static_cast<uint32_t>(at),column});
+                column+=advanceColumn(source_,at);
+            }
+            line.columns+=column;
+            line.checkpointCount=static_cast<uint32_t>(checkpoints_.size())-line.checkpointStart;
+        }
+        if((item.closing||!container(n.kind))&&n.next>=0)++line.columns;
+        columns_=std::max(columns_,line.columns);lines_.push_back(line);
+        if(!item.closing&&container(n.kind)){
+            pending.push_back({item.id,item.depth,true});
+            std::vector<int> children;
+            for(int child=n.first;child>=0;child=node(child).next)children.push_back(child);
+            for(auto it=children.rbegin();it!=children.rend();++it)pending.push_back({*it,item.depth+1,false});
+        }
+    }
+}
+std::string Document::lineWindow(int index,int column,int count,bool mask)const{
+    if(index<0||static_cast<size_t>(index)>=lines_.size()||column<0||count<1||count>2048)invalid();
+    const auto& line=lines_[static_cast<size_t>(index)];const auto& n=node(line.id);
+    const uint64_t endColumn=static_cast<uint64_t>(column)+static_cast<unsigned>(count);
+    std::string text;uint32_t first=static_cast<uint32_t>(column);
+    auto append=[&](const std::string& data,size_t at,size_t end,uint32_t base){
+        while(at<end&&base<endColumn){
+            const size_t begin=at;const auto cells=advanceColumn(data,at);
+            if(static_cast<uint64_t>(base)+cells>static_cast<unsigned>(column)){
+                if(text.empty())first=base;
+                text.append(data,begin,at-begin);
+            }
+            base+=cells;
+        }
+    };
+    const auto start=prefix(line);append(start,0,start.size(),0);
+    uint32_t after=line.keyColumns;
+    if(line.closing||container(n.kind)){
+        const std::string bracket(1,n.kind==Kind::Object?(line.closing?'}':'{'):(line.closing?']':'['));
+        append(bracket,0,1,after++);
+    }else if(mask&&n.sensitive){
+        const std::string hidden="\"••••••••\"";append(hidden,0,hidden.size(),after);after+=10;
+    }else{
+        size_t at=n.start;uint32_t offset=0;
+        if(line.checkpointCount&&column>static_cast<int>(after)){
+            const auto begin=checkpoints_.begin()+line.checkpointStart;
+            const auto end=begin+line.checkpointCount;
+            auto found=std::upper_bound(begin,end,static_cast<uint32_t>(column)-after,
+                [](uint32_t target,const Checkpoint& cp){return target<cp.column;});
+            if(found!=begin){--found;at=found->byte;offset=found->column;}
+        }
+        append(source_,at,n.end,after+offset);
+        after=line.columns-(n.next>=0?1U:0U);
+    }
+    if((line.closing||!container(n.kind))&&n.next>=0){const std::string comma=",";append(comma,0,1,after);++after;}
+    return "{\"text\":"+quoted(text)+",\"column\":"+std::to_string(first)+
+        ",\"columns\":"+std::to_string(after)+",\"valueColumn\":"+std::to_string(line.keyColumns)+
+        ",\"type\":"+quoted(name(n.kind))+"}";
+}
+
+}
+

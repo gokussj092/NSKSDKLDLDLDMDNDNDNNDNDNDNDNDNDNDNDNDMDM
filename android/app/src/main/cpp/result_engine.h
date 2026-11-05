@@ -23,11 +23,27 @@ public:
     std::string page(int parent,int offset,int limit,bool mask)const;
     std::string value(int id,int offset,int limit,bool mask)const;
     std::string original(size_t offset,size_t limit)const;
+    size_t lines()const{return lines_.size();}
+    uint32_t columns()const{return columns_;}
+    // Random access to a viewport of a logical line. No values are truncated.
+    std::string lineWindow(int line,int column,int count,bool mask)const;
 private:
+    struct Checkpoint {uint32_t byte,column;};
+    struct Line {
+        int id;
+        uint32_t depth,columns,keyColumns,checkpointStart,checkpointCount;
+        bool closing;
+    };
     std::string source_;
     std::vector<Node> nodes_;
+    std::vector<Line> lines_;
+    std::vector<Checkpoint> checkpoints_;
+    uint32_t columns_=0;
     int add(Node item);
     void parse();
+    void indexLines();
+    std::string prefix(const Line& line)const;
     std::string row(int id,bool mask)const;
 };
 }
+

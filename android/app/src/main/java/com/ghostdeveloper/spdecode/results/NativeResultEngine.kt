@@ -14,12 +14,21 @@ internal object NativeResultEngine {
     @JvmStatic private external fun nativePage(handle:Long,parent:Int,offset:Int,limit:Int,mask:Boolean):ByteArray
     @JvmStatic private external fun nativeValue(handle:Long,node:Int,offset:Int,limit:Int,mask:Boolean):ByteArray
     @JvmStatic private external fun nativeOriginal(handle:Long,offset:Int,limit:Int):ByteArray
+    @JvmStatic private external fun nativeLineCount(handle:Long):Int
+    @JvmStatic private external fun nativeColumnCount(handle:Long):Int
+    @JvmStatic private external fun nativeLineWindow(handle:Long,line:Int,column:Int,count:Int,mask:Boolean):ByteArray
     @JvmStatic private external fun nativeClose(handle:Long)
     fun open(raw:String):Document {
         val handle=nativeOpen(raw)
         return try { Document(handle,nativeLength(handle)) }catch(error:Exception){nativeClose(handle);throw error}
     }
     class Document internal constructor(private var handle:Long,val byteLength:Int):Closeable {
+        val lineCount:Int = nativeLineCount(handle)
+        val columnCount:Int = nativeColumnCount(handle)
+        @Synchronized fun lineWindow(line:Int,column:Int,count:Int,mask:Boolean):JSONObject {
+            check(handle!=0L)
+            return JSONObject(nativeLineWindow(handle,line,column,count,mask).toString(Charsets.UTF_8))
+        }
         @Synchronized fun page(parent:Int,offset:Int,mask:Boolean):JSONObject {
             check(handle!=0L);return JSONObject(nativePage(handle,parent,offset,64,mask).toString(Charsets.UTF_8))
         }
@@ -34,3 +43,4 @@ internal object NativeResultEngine {
         @Synchronized override fun close(){if(handle!=0L){nativeClose(handle);handle=0L}}
     }
 }
+
