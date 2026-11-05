@@ -1,5 +1,7 @@
 # C10 — Server VPN catalog updates using only the SP-DECODE VPS
 
+> **Futura revisión C-V2 (solo documentación):** [Especificación integral de descarga fragmentada/reanudable, total real, motor nativo JSON y doble versionado](CATALOG_SERVER_VPN_RESUMABLE_NATIVE_ENGINE_PLAN_2026_11_04.md). El contrato C10 actual sigue vigente para APKs publicadas.
+
 ## Architecture (no Firebase or accounts)
 
 - The own VPS endpoint `POST /api/v1/server-vpn/watch` holds a bounded HTTPS request (up to 12 seconds), accepts only `{"knownVersion":N}`, and returns only the current public version and whether it changed. One application instance watches only **while visible and opted in**. Concurrent requests are capped server-side, and the client applies a delay/backoff. No raw device identifier, FCM token, file, password or provider URL is required.
