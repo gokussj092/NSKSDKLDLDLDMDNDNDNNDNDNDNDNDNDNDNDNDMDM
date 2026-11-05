@@ -89,6 +89,8 @@ class MainActivity : ComponentActivity() {
     private var serverVpnRefresh:Job?=null
     private var serverVpnLoading by mutableStateOf(false)
     private var catalogProgress by mutableStateOf<Int?>(null)
+    private var catalogTransfer by mutableStateOf<CatalogTransferUiState?>(null)
+    private var catalogTransferGeneration=0
     private var serverVpnUnavailable by mutableStateOf(false)
     private var pendingServerVpnCatalogVersion by mutableStateOf<Int?>(null)
     private val privateCredentialVault by lazy { DevicePrivateCredentialVault(this) }
@@ -302,32 +304,59 @@ class MainActivity : ComponentActivity() {
         pendingServerVpnCatalogVersion=0 // manual refresh; no invented remote version
     }
 
-    /** A confirmed manual download is the only non-opt-in update path. */
+    /** Explicit confirmation starts one cancellable, byte-measured catalog transfer. */
     private fun confirmServerVpnUpdate() {
         val version=pendingServerVpnCatalogVersion?:return
         pendingServerVpnCatalogVersion=null
         if(!BuildConfig.SPDECODE_CLOUD_ENABLED || showCloudLegal || busy ||
             serverVpnRefresh?.isActive==true)return
+        val generation=++catalogTransferGeneration
+        catalogTransfer=CatalogTransferUiState()
         serverVpnLoading=true
-        catalogProgress=0
+        catalogProgress=null
         serverVpnRefresh=scope.launch {
             try {
-                serverVpnApps=serverVpnCatalog.refreshIfDue(
+                val apps=serverVpnCatalog.refreshIfDue(
                     force=true,announcedVersion=version,
-                    onProgress={percent->scope.launch { catalogProgress=percent }})
+                    onTransfer={received,total->
+                        scope.launch(Dispatchers.Main.immediate) {
+                            if(generation==catalogTransferGeneration &&
+                                catalogTransfer?.completed==false)
+                                catalogTransfer=CatalogTransferUiState(received,total)
+                        }
+                    })
+                if(generation!=catalogTransferGeneration)return@launch
+                serverVpnApps=apps
                 fileFormats=serverVpnCatalog.cachedFormats()
-                    textRoutes=serverVpnCatalog.cachedTextFormats()
-                toast(if(version==0 || serverVpnCatalog.currentVersion()>=version)
-                    R.string.server_vpn_catalog_updated
-                    else R.string.server_vpn_catalog_update_error)
+                textRoutes=serverVpnCatalog.cachedTextFormats()
+                if(version!=0 && serverVpnCatalog.currentVersion()<version){
+                    catalogTransfer=null
+                    toast(R.string.server_vpn_catalog_update_error)
+                }else catalogTransfer=CatalogTransferUiState(completed=true)
             }catch(error:CancellationException){throw error}
-             catch(_:Exception){toast(R.string.server_vpn_catalog_update_error)}
-            finally {
-                serverVpnUnavailable=serverVpnApps.isEmpty()
-                serverVpnLoading=false
-                catalogProgress=null
-            }
+             catch(_:Exception){
+                if(generation==catalogTransferGeneration) {
+                    catalogTransfer=null
+                    toast(R.string.server_vpn_catalog_update_error)
+                }
+             }finally {
+                if(generation==catalogTransferGeneration) {
+                    serverVpnUnavailable=serverVpnApps.isEmpty()
+                    serverVpnLoading=false
+                    catalogProgress=null
+                }
+             }
         }
+    }
+
+    /** Cancellation never replaces the previously verified encrypted catalog. */
+    private fun cancelCatalogDownload() {
+        catalogTransferGeneration++
+        com.ghostdeveloper.spdecode.cloud.CloudNativeTransport.cancelCatalogDownload()
+        serverVpnRefresh?.cancel()
+        catalogTransfer=null
+        catalogProgress=null
+        serverVpnLoading=false
     }
 
     private fun requireCloudLegal():Boolean {
@@ -609,6 +638,9 @@ class MainActivity : ComponentActivity() {
                 cloudTextFormats=textRoutes,
                 serverVpnLoading=serverVpnLoading,
                 catalogProgress=catalogProgress,
+                catalogTransfer=catalogTransfer,
+                onCancelCatalogTransfer={cancelCatalogDownload()},
+                onFinishCatalogTransfer={catalogTransfer=null},
                 serverVpnUnavailable=serverVpnUnavailable,
                 onRefreshServerVpn={checkServerVpnUpdates()},
                 pendingServerVpnCatalogVersion=pendingServerVpnCatalogVersion,
