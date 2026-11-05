@@ -419,27 +419,24 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
                         verifiedImportFormats
                     ) { AndroidDecoderCatalog.read(this@MainActivity) }
                         ?:throw DecodeFailure(R.string.unsupported)""",
-            """                    var supported=ImportFormatRouter.detect(
+            """                    var candidateFormat=ImportFormatRouter.detect(
                         routingName,BuildConfig.SPDECODE_CLOUD_ENABLED,
                         verifiedImportFormats
                     ) { AndroidDecoderCatalog.read(this@MainActivity) }
-                    if(supported==null && BuildConfig.SPDECODE_CLOUD_ENABLED &&
+                    if(candidateFormat==null && BuildConfig.SPDECODE_CLOUD_ENABLED &&
                         !checkedUnknownSuffix && CloudCatalogUpdates.enabled(this@MainActivity)) {
                         checkedUnknownSuffix=true
                         try {
                             serverVpnApps=serverVpnCatalog.refreshIfDue(force=true)
                             verifiedImportFormats=serverVpnCatalog.cachedFormats()
                             fileFormats=verifiedImportFormats
-                            supported=ImportFormatRouter.detect(
+                            candidateFormat=ImportFormatRouter.detect(
                                 routingName,true,verifiedImportFormats
                             ) { AndroidDecoderCatalog.read(this@MainActivity) }
                         }catch(error:CancellationException){throw error}
                          catch(_:Exception){ /* Keep the last verified snapshot. */ }
                     }
-                    val resolved=supported?:throw DecodeFailure(R.string.unsupported)""")
-        // Keep existing downstream supported references, but use a non-null
-        // variable after the early format failure.
-        batch=batch.replace(Regex("\\bsupported\\."), "resolved.")
+                    val supported=candidateFormat?:throw DecodeFailure(R.string.unsupported)""")
         batch=replaceOnce(batch,
             "cloudClient.decodeFile(supported.suffix,input,password=secret,",
             """cloudClient.decodeFile(supported.suffix,input,password=secret,
