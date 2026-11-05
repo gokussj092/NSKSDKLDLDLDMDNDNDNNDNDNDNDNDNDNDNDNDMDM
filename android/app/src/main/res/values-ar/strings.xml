@@ -234,4 +234,10 @@
     <string name="apk_analysis_safety_note">التحليل المخطط له ثابت: لن يتم تثبيت APK أو تشغيله.</string>
     <string name="apk_analysis_import_unavailable">استيراد APK (غير متاح)</string>
     <string name="apk_analysis_no_charge">الخدمة غير مفعلة بعد. لا يتم إرسال ملفات APK أو خصم الأرصدة.</string>
+    <string name="catalog_transfer_downloading">جارٍ تنزيل الكتالوج</string>
+    <string name="catalog_transfer_completed">تم تحديث الكتالوج</string>
+    <string name="catalog_transfer_saved">تم حفظ جميع التنسيقات.</string>
+    <string name="catalog_transfer_finish">إنهاء</string>
+    <string name="catalog_transfer_bytes_total">%1$s MB / %2$s MB</string>
+    <string name="catalog_transfer_bytes_unknown">تم تنزيل %1$s ميغابايت</string>
 </resources>
