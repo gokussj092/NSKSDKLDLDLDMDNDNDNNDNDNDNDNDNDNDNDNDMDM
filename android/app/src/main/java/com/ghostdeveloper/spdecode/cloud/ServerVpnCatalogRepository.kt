@@ -40,6 +40,10 @@ internal class ServerVpnCatalogRepository(
     private fun digest(data:ByteArray):String =
         MessageDigest.getInstance("SHA-256").digest(data).joinToString("") { "%02x".format(it) }
 
+    // New icons are immutable and content-addressed. In-place writes to icon-ID
+    // paths could invalidate the old snapshot if a download is cancelled.
+    private fun iconCacheKey(checksum:String):String="icon-"+checksum.take(56)
+
     private fun stored():JSONObject? = try {
         vault.read("catalog")?.toString(Charsets.UTF_8)?.let(::JSONObject)
     }catch (_:Exception){null}
@@ -73,8 +77,12 @@ internal class ServerVpnCatalogRepository(
             if(!id.matches(Regex("[a-z0-9-]{1,48}")) || !seen.add(id) ||
                 name.isBlank() || name.length>80 ||
                 !checksum.matches(Regex("[0-9a-f]{64}"))) return emptyList()
-            val bytes=vault.read("icon-$id")?:return emptyList()
-            if(digest(bytes)!=checksum)return emptyList()
+            // Read new content-addressed entries; retain compatibility with
+            // pre-migration encrypted caches using the former icon-ID key.
+            val bytes=(vault.read(iconCacheKey(checksum))
+                ?.takeIf { digest(it)==checksum }
+                ?:vault.read("icon-$id")?.takeIf { digest(it)==checksum })
+                ?:return emptyList()
             val bitmap=image(bytes)?:return emptyList()
             val revision=if(app.has("methodRevision")) {
                 val raw=app.opt("methodRevision")
@@ -279,27 +287,35 @@ internal class ServerVpnCatalogRepository(
                         !checksum.matches(Regex("[0-9a-f]{64}")) ||
                         entry.optString("iconMimeType")!="image/png")
                         throw IllegalStateException("Invalid app metadata")
-                    var bytes=vault.read("icon-$id")
+                    val cacheKey=iconCacheKey(checksum)
+                    var bytes=vault.read(cacheKey)
                     val response=bundled[id]?:throw IllegalStateException("Missing bundled icon")
                     if(response.optString("sha256")!=checksum || response.optString("mimeType")!="image/png")
                         throw IllegalStateException("Icon metadata mismatch")
                     if(bytes==null || digest(bytes)!=checksum || image(bytes)==null) {
-                        if(response.optString("id")!=id || response.optString("sha256")!=checksum ||
-                            response.optString("mimeType")!="image/png")
-                            throw IllegalStateException("Icon metadata mismatch")
-                        val base64=response.getString("contentBase64")
-                        bytes=Base64.decode(base64,Base64.NO_WRAP)
-                        if(Base64.encodeToString(bytes,Base64.NO_WRAP)!=base64 ||
-                            digest(bytes)!=checksum || image(bytes)==null)
-                            throw IllegalStateException("Icon digest mismatch")
-                        candidates.add("icon-$id" to bytes)
+                        // An older installation may still keep its valid icon
+                        // under the original ID-keyed encrypted cache path.
+                        bytes=vault.read("icon-$id")
+                        if(bytes==null || digest(bytes)!=checksum || image(bytes)==null) {
+                            if(response.optString("id")!=id || response.optString("sha256")!=checksum ||
+                                response.optString("mimeType")!="image/png")
+                                throw IllegalStateException("Icon metadata mismatch")
+                            val base64=response.getString("contentBase64")
+                            bytes=Base64.decode(base64,Base64.NO_WRAP)
+                            if(Base64.encodeToString(bytes,Base64.NO_WRAP)!=base64 ||
+                                digest(bytes)!=checksum || image(bytes)==null)
+                                throw IllegalStateException("Icon digest mismatch")
+                            // Only publish under the immutable checksum name.
+                            candidates.add(cacheKey to bytes)
+                        }
                     }
                     // Percentage of catalog app records and hash-verified icons
                     // processed, not a fake HTTP byte-level download progress.
                     onProgress?.invoke(minOf(99,(i+1)*100/array.length()))
                 }
                 // Cancellation must never activate a partially validated catalog.
-                // Existing encrypted metadata remains authoritative until final write.
+                // Content-addressed icons preserve every previous snapshot's
+                // referenced icon digest even if the operation is cancelled.
                 currentCoroutineContext().ensureActive()
                 for((id,data) in candidates) {
                     currentCoroutineContext().ensureActive()
