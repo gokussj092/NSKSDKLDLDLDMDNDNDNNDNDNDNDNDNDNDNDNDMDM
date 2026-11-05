@@ -28,13 +28,13 @@ Rama: `feat/nuevas-integraciones`. Continuación autorizada por el propietario d
 
 ## Bytes, caché e interfaz
 
-El total de la ruta nueva significa **payload de los objetos que no están completos en la caché verificada**; excluye objetos completos reutilizados, sobre HPKE/Base64 y cabeceras HTTP. Los chunks parciales recuperados se vuelven a verificar y cuentan al recorrer el objeto. Puede haber un salto de progreso al recuperar bytes locales, sin repetirlos en red. La suma lógica de todo el snapshot queda en el manifest, separada del denominador pendiente.
+El total de la ruta nueva significa **payload de los objetos que no están completos en la caché verificada**; excluye objetos completos reutilizados, sobre HPKE/Base64 y cabeceras HTTP. Se consultan también los PNG por hash del catálogo activo, aunque el staging derivado haya caducado; la regresión Kotlin comprueba que no se vuelve a solicitar ningún chunk de esos iconos. Los chunks parciales recuperados se vuelven a verificar y cuentan al recorrer el objeto. Puede haber un salto de progreso al recuperar bytes locales, sin repetirlos en red. La suma lógica de todo el snapshot queda en el manifest, separada del denominador pendiente.
 
 La ruta legacy sigue midiendo bytes HTTP; ahora el servidor declara Content-Length del ciphertext sellado. No se comparan los dos tipos de contadores como si fueran iguales.
 
 La UI expresa MiB (1.048.576 bytes), muestra total cuando se autentica el manifest y solo usa indicador desconocido antes de conocerlo. «Verificando y guardando» distingue todos los bytes recibidos del catálogo ya activado; no se muestra éxito ni botón Finalizar antes del commit. Pausa/reintento, borrar parcial y aviso de conservación se incluyen en los 14 idiomas existentes. El número técnico se oculta cuando falta una edición editorial.
 
-El journal y los objetos/partes utilizan la caché no-backup con Android Keystore AES-GCM. Se verifican cada chunk y objeto antes del commit del catálogo. El catálogo anterior y sus iconos sobreviven a fallos/cancelación. La limpieza derivada tiene TTL de 7 días y cota 96 MiB, y nunca elimina el catálogo/iconos activos. Revocar consentimiento cancela y solicita borrar staging bajo el mutex del repositorio. Se conservan los switches, las claves y los volúmenes existentes.
+El journal y los objetos/partes utilizan la caché no-backup con Android Keystore AES-GCM. Se verifican cada chunk y objeto antes del commit del catálogo. El catálogo anterior y sus iconos sobreviven a fallos/cancelación. La limpieza derivada al iniciar una descarga aplica TTL de 7 días y umbral de 96 MiB, y nunca elimina el catálogo/iconos activos. El staging puede superar ese umbral durante una transferencia; falta QA de disco real y no se anuncia una reserva garantizada de espacio. Revocar consentimiento cancela y solicita borrar staging bajo el mutex del repositorio. Se conservan los switches, las claves y los volúmenes existentes.
 
 ## Motor de resultados y fidelidad
 

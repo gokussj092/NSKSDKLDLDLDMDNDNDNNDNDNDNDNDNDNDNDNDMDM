@@ -31,7 +31,7 @@ internal class CatalogSnapshotDownload(private val client:CloudDecodeClient,priv
         require(manifest.getInt("catalogVersion")>=knownVersion && manifest.getLong("validUntil")>System.currentTimeMillis())
         val objects=manifest.getJSONArray("objects");require(objects.length() in 2..501)
         val seen=HashSet<String>();var logical=0L;var pendingBytes=0L
-        data class ObjectPlan(val doc:JSONObject,val cached:Boolean)
+        data class ObjectPlan(val doc:JSONObject,val cachedKey:String?)
         val plans=ArrayList<ObjectPlan>()
         for(n in 0 until objects.length()) {
             val obj=objects.getJSONObject(n);val sha=obj.getString("sha256");val length=obj.getInt("byteLength")
@@ -41,9 +41,12 @@ internal class CatalogSnapshotDownload(private val client:CloudDecodeClient,priv
             for(i in 0 until chunks.length())require(chunks.getString(i).matches(Regex("[a-f0-9]{64}")))
             require(if(n==0)obj.getString("type")=="metadata"&&length<=2*1024*1024 else obj.getString("type")=="icon")
             logical+=length;require(logical<=64L*1024*1024)
-            val bytes=vault.read(key("object-",sha));val cached=bytes!=null&&bytes.size==length&&hash(bytes)==sha
-            if(!cached)pendingBytes+=length
-            plans.add(ObjectPlan(obj,cached))
+            // Reuse original PNGs already held by the active/legacy catalog,
+            // even when derived object staging expired or chunks are new to this install.
+            val candidates=listOf(key("object-",sha))+(if(obj.getString("type")=="icon")listOf("icon-"+sha.take(56)) else emptyList())
+            val cachedKey=candidates.firstOrNull {candidate ->val bytes=vault.read(candidate);bytes!=null&&bytes.size==length&&hash(bytes)==sha}
+            if(cachedKey==null)pendingBytes+=length
+            plans.add(ObjectPlan(obj,cachedKey))
         }
         require(logical==manifest.getLong("totalLogicalBytes"))
         vault.write("chunk-journal",JSONObject().put("snapshotId",id).put("validUntil",manifest.getLong("validUntil")).toString().toByteArray())
@@ -52,7 +55,7 @@ internal class CatalogSnapshotDownload(private val client:CloudDecodeClient,priv
         for(plan in plans) {
             currentCoroutineContext().ensureActive()
             val obj=plan.doc;val sha=obj.getString("sha256");val length=obj.getInt("byteLength")
-            val bytes=if(plan.cached)vault.read(key("object-",sha))!! else {
+            val bytes=if(plan.cachedKey!=null)vault.read(plan.cachedKey)!! else {
                 val output=ByteArrayOutputStream(length)
                 for(i in 0 until obj.getInt("chunkCount")) {
                     currentCoroutineContext().ensureActive()

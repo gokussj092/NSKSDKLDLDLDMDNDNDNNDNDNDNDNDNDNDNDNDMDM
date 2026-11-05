@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "status": "HOST_CHECKS_PASSED_DEVICE_GATES_PENDING",
-  "parent": "1b55fa6d39b92c21580527368dfebb0184bece0e",
+  "parent": "179292f11b1bea15ae57bf92cb852e2e4df982ad",
   "branch": "feat/nuevas-integraciones",
   "sourceFiles": [
     {
@@ -122,7 +122,7 @@
     },
     {
       "path": "android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CatalogSnapshotDownload.kt",
-      "sha256": "026ade2824d559287ef43531979f35f87b33f0da4d975846e62d5242df8c843d"
+      "sha256": "ada0ca69eb866cd2cc80486a62f11c8f0321f9d4180b4481d4296afa652c6dad"
     },
     {
       "path": "android/app/src/main/res/values/strings.xml",
@@ -302,7 +302,7 @@
     },
     {
       "path": "tests/host/catalog_results_test.kt",
-      "sha256": "f69967f79335a3309088ed48c4b6571e518f3336be02debf2b51d074bfc65d6d"
+      "sha256": "c439c2eb06f39d8033e33f79c951a97d93557b21b0145dcd01c3029388f16518"
     },
     {
       "path": "tests/host/catalog_result_stubs.kt",
@@ -318,7 +318,7 @@
     },
     {
       "path": "docs/cloud/CATALOG_RESULTS_IMPLEMENTATION_2026_11_05.md",
-      "sha256": "1ab1b61c1d48a276dfa5acfa8ba583aff84c2fd189d89b8f11b789d7d1db3611"
+      "sha256": "4b281e8d27dc38daaf512e6a967e5f223485b30a05ec978e74d82408fea7d76a"
     },
     {
       "path": "docs/cloud/CATALOG_SERVER_VPN_RESUMABLE_NATIVE_ENGINE_PLAN_2026_11_04.md",

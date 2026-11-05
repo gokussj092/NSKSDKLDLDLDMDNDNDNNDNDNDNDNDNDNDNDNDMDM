@@ -18,6 +18,11 @@ fun main(args:Array<String>)=runBlocking {
     check(metadata.getInt("catalogVersion")==73);check(client.requested.size==2);check(client.requested.none{it.endsWith(":0")})
     check(progress.last().first==progress.last().second);check(progress.zipWithNext().all{(a,b)->a.first<=b.first})
     downloader.committed();check(cache.read("chunk-journal")==null)
+    val iconSha=metadata.getJSONArray("apps").getJSONObject(0).getString("iconSha256")
+    cache.values.keys.filter{it.startsWith("object-"+iconSha.take(48))||it.startsWith("part-"+iconSha.take(48))}.toList().forEach{cache.delete(it)}
+    client.requested.clear();val reused=mutableListOf<Pair<Long,Long>>()
+    CatalogSnapshotDownload(client,cache).download(0){received,total->reused.add(received to total)}
+    check(client.requested.isEmpty());check(reused.last()==(0L to 0L))
     for(size in listOf(8000,20000,50000)) {
         val raw="[\r\n"+(0 until size).joinToString(",\r\n"){"{\"id\":$it,\"name\":\"demo🌎\"}"}+"\r\n]"
         val out=StringWriter();ResultOutputWriter.write(raw,"vpn",ResultExport.JSON,out);check(out.toString()==raw)
