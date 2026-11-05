@@ -235,4 +235,10 @@
     <string name="apk_analysis_safety_note">L’analisi prevista è statica: l’APK non viene installato né eseguito.</string>
     <string name="apk_analysis_import_unavailable">Importa APK (non disponibile)</string>
     <string name="apk_analysis_no_charge">Il servizio non è ancora attivo. Nessun APK viene inviato e non vengono addebitati crediti.</string>
+    <string name="catalog_transfer_downloading">Download del catalogo</string>
+    <string name="catalog_transfer_completed">Catalogo aggiornato</string>
+    <string name="catalog_transfer_saved">Tutti i formati sono stati salvati.</string>
+    <string name="catalog_transfer_finish">Fine</string>
+    <string name="catalog_transfer_bytes_total">%1$s MB / %2$s MB</string>
+    <string name="catalog_transfer_bytes_unknown">%1$s MB scaricati</string>
 </resources>
