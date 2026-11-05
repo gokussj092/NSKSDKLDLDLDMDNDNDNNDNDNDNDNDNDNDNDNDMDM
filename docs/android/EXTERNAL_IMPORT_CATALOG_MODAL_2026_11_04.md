@@ -1,6 +1,8 @@
 # External file import and verified catalog download modal (2026-11-04)
 
 Branch: `feat/nuevas-integraciones`. No new decoder methods or APK release artifacts.
+> **Plan futuro de escalabilidad (documentación, sin implementación):** [Catálogo Server VPN V2: chunks reanudables, barra y total reales, motor JSON .so, versiones visibles y QA](../cloud/CATALOG_SERVER_VPN_RESUMABLE_NATIVE_ENGINE_PLAN_2026_11_04.md). Este diseño no sustituye el comportamiento disponible en Android 1.1.27.
+
 
 ## Root cause and scope
 
