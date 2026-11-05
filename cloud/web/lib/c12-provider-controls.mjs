@@ -191,6 +191,7 @@ export async function providerOverview(env=process.env,{root=ROOT,syncCatalog=fa
       id,name:LABELS[id],configured:providerPrerequisite(id,env),
       enabled:providerEffective(id,state,env),
     })),
+    disabledProviderIds:[...state.disabled],
     methodStatuses:methodStatuses(state),
   };
 }
@@ -259,6 +260,7 @@ export async function updateProvider(id,enable,env=process.env,{root=ROOT}={}){
         id:k,name:LABELS[k],configured:providerPrerequisite(k,env),
         enabled:providerEffective(k,updated,env),
       })),
+      disabledProviderIds:[...updated.disabled],
       methodStatuses:methodStatuses(updated),
     };
   },root);
@@ -302,6 +304,7 @@ export async function updateMethodState(id,operation,maintenance,env=process.env
         id:k,name:LABELS[k],configured:providerPrerequisite(k,env),
         enabled:providerEffective(k,next,env),
       })),
+      disabledProviderIds:[...next.disabled],
       methodStatuses:methodStatuses(next),
     };
   },root);

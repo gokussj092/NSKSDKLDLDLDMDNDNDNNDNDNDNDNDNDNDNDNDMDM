@@ -61,9 +61,11 @@ export default function AdminDashboard({mode="system"}){
  async function changeProvider(id,enabled,name){
   if(!data?.providerControls||busy)return;
   const action=enabled?"Activar":"Desactivar";
+  const inMaintenance=data.providerControls.methodStatuses?.some(m=>m.id===id&&m.maintenance);
   const warning=enabled?
-   "El servidor utilizará la integración únicamente si están configurados los requisitos privados en la VPS.":
-   "Los nuevos descifrados de este proveedor quedarán deshabilitados.";
+   (inMaintenance?"La disponibilidad administrativa quedará activada, pero el método seguirá en mantenimiento y no admitirá descifrados hasta finalizarlo.":
+     "El servidor utilizará la integración únicamente si están configurados los requisitos privados en la VPS."):
+   "Los nuevos descifrados de este proveedor quedarán deshabilitados. La etiqueta de mantenimiento no cambia.";
   if(!window.confirm("¿"+action+" "+name+"? "+warning))return;
   setBusy(true);setError("");
   try{
@@ -88,7 +90,11 @@ export default function AdminDashboard({mode="system"}){
    const body=operation==="revision"?{id,operation}:{id,operation,maintenance};
    const response=await fetch("/api/admin/provider-methods",requestOptions(body));
    const result=await response.json();
-   if(!response.ok)throw Error("No se pudo actualizar el método ("+response.status+").");
+   if(!response.ok)throw Error(result.error?.code==="MAINTENANCE_LOCKED"?
+     "La VPS impide modificar estados de mantenimiento. Revisa CLOUD_FORCE_MAINTENANCE.":
+     result.error?.code==="PROVIDER_BUSY"?
+     "Otro cambio del catálogo está en curso. Actualiza el panel y vuelve a intentarlo.":
+     "No se pudo actualizar el método ("+response.status+").");
    setData(prev=>({...prev,providerControls:result.providerControls}));
    await refresh();
   }catch(e){setError(e.message||"No se pudo guardar el estado del método.");}
@@ -209,6 +215,19 @@ export default function AdminDashboard({mode="system"}){
   }catch(e){setError(e.message);}finally{setBusy(false);}
  }
  if(loading)return <div className="admin-card" role="status">Consultando el estado del servidor…</div>;
+ const methodStatuses=data?.providerControls?.methodStatuses||[];
+ const methodsById=Object.fromEntries(methodStatuses.map(m=>[m.id,m]));
+ const disabledProviderIds=data?.providerControls?.disabledProviderIds||[];
+ const searchTerm=providerQuery.trim().toLowerCase();
+ const visibleProviders=(data?.providerControls?.providers||[]).filter(p=>
+  (p.name.toLowerCase().includes(searchTerm)||p.id.toLowerCase().includes(searchTerm))&&
+  (providerFilter==="all"||
+   providerFilter==="enabled"&&p.enabled||
+   providerFilter==="disabled"&&disabledProviderIds.includes(p.id)||
+   providerFilter==="maintenance"&&methodsById[p.id]?.maintenance||
+   providerFilter==="unconfigured"&&!p.configured));
+ const visibleMethods=methodStatuses.filter(m=>
+  m.name.toLowerCase().includes(searchTerm)||m.id.toLowerCase().includes(searchTerm));
  return <section className="sp-admin-dashboard">
   {error&&<div className="form-message error" role="alert">{error}</div>}
   {data&&<>
@@ -398,57 +417,63 @@ export default function AdminDashboard({mode="system"}){
     </form>
     <div className="sp-admin-provider-tools">
      <label>Buscar proveedor<input type="search" value={providerQuery} onChange={event=>setProviderQuery(event.target.value)}
-      placeholder="Nombre o identificador" maxLength={80}/></label>
+       placeholder="Nombre o identificador" maxLength={80}/></label>
      <label>Estado<select value={providerFilter} onChange={event=>setProviderFilter(event.target.value)}>
       <option value="all">Todos</option>
       <option value="enabled">Habilitados</option>
-      <option value="disabled">Deshabilitados</option>
+      <option value="maintenance">En mantenimiento</option>
+      <option value="disabled">Desactivados manualmente</option>
       <option value="unconfigured">No configurados</option>
      </select></label>
     </div>
-    <p className="muted">Mostrando {(data.providerControls?.providers||[]).filter(p=>
-      (p.name.toLowerCase().includes(providerQuery.trim().toLowerCase())||p.id.toLowerCase().includes(providerQuery.trim().toLowerCase()))&&
-      (providerFilter==="all"||providerFilter==="enabled"&&p.enabled||providerFilter==="disabled"&&p.configured&&!p.enabled||providerFilter==="unconfigured"&&!p.configured)
-     ).length} de {(data.providerControls?.providers||[]).length} proveedores.</p>
-    {(data.providerControls?.providers||[]).filter(p=>
-      (p.name.toLowerCase().includes(providerQuery.trim().toLowerCase())||p.id.toLowerCase().includes(providerQuery.trim().toLowerCase()))&&
-      (providerFilter==="all"||providerFilter==="enabled"&&p.enabled||providerFilter==="disabled"&&p.configured&&!p.enabled||providerFilter==="unconfigured"&&!p.configured)
-     ).map(provider=>{
-     const locked=busy||!provider.configured||data.maintenance||data.maintenanceLocked;
+    <p className="muted">Mostrando {visibleProviders.length} de {(data.providerControls?.providers||[]).length} proveedores. La disponibilidad y el mantenimiento son controles independientes.</p>
+    {visibleProviders.map(provider=>{
+     const method=methodsById[provider.id];
+     const manuallyEnabled=!disabledProviderIds.includes(provider.id);
+     const locked=busy||data.maintenance||data.maintenanceLocked;
+     const status=method?.maintenance?"En mantenimiento — descifrado suspendido":
+       !manuallyEnabled?"Desactivado manualmente":
+       !provider.configured?"No configurado en la VPS":
+       provider.enabled?"Disponible para nuevos descifrados":"Sin disponibilidad técnica";
      return <div className="sp-admin-switch-row" key={provider.id}>
       <div><strong>{provider.name}</strong>
-       <small className="muted">{!provider.configured?"No configurado en la VPS":provider.enabled?"Habilitado para nuevos descifrados":"Deshabilitado desde el panel"}</small>
+       <small className="sp-admin-status-note">{status}</small>
+       {method&&<small className="muted">Revisión del método: {method.methodRevision}</small>}
       </div>
-      <button type="button" className="sp-admin-switch" role="switch"
-       aria-label={"Disponibilidad: "+provider.name} aria-checked={Boolean(provider.enabled)}
-       disabled={locked} onClick={()=>changeProvider(provider.id,!provider.enabled,provider.name)}><span/></button>
+      <div className="sp-admin-catalog-actions">
+       {method&&<div className="sp-admin-catalog-action">
+        <span>Mantenimiento</span>
+        <button type="button" className="sp-admin-switch" role="switch"
+         aria-label={"Mantenimiento del método: "+provider.name}
+         aria-checked={Boolean(method.maintenance)} disabled={busy||data.maintenanceLocked}
+         onClick={()=>changeMethodStatus(provider.id,"maintenance",!method.maintenance,provider.name)}><span/></button>
+       </div>}
+       <div className="sp-admin-catalog-action">
+        <span>Habilitado</span>
+        <button type="button" className="sp-admin-switch" role="switch"
+         aria-label={"Disponibilidad administrativa: "+provider.name}
+         aria-checked={manuallyEnabled} disabled={locked||(!provider.configured&&!manuallyEnabled)}
+         onClick={()=>changeProvider(provider.id,!manuallyEnabled,provider.name)}><span/></button>
+       </div>
+      </div>
      </div>;
     })}
     <p className="muted">Los cambios se guardan en un volumen de configuración independiente, incluso al reiniciar Redis o los contenedores. La versión del catálogo aumenta cuando cambias un proveedor; actualiza Server VPN en la aplicación. La activación de HTTP Injector requiere las claves originales del proveedor, que no se muestran aquí.</p>
    </section>
    <section className="admin-card sp-admin-services">
     <div className="sp-admin-section-heading"><div>
-      <h2>Estados de métodos Server VPN</h2>
-      <p className="muted">«Actualizado» se publica exclusivamente al registrar una revisión del método. «En mantenimiento» es un estado explícito que bloquea nuevas operaciones del método. Cambiar disponibilidad o iconos no crea estas etiquetas.</p>
+     <h2>Revisiones de métodos Server VPN</h2>
+     <p className="muted">Registra una actualización comprobada para mostrar «Actualizado». Para poner un catálogo en mantenimiento usa el interruptor junto al proveedor, o el apartado Mantenimiento.</p>
     </div></div>
-    {(data.providerControls?.methodStatuses||[]).filter(method=>
-      method.name.toLowerCase().includes(providerQuery.trim().toLowerCase())||
-      method.id.toLowerCase().includes(providerQuery.trim().toLowerCase())
-    ).map(method=><div className="sp-admin-switch-row" key={"method:"+method.id}>
-      <div><strong>{method.name}</strong>
-        <small className="muted">Revisión del método: {method.methodRevision} · {method.maintenance?"En mantenimiento":"Sin mantenimiento"}</small>
-      </div>
-      <div style={{display:"flex",alignItems:"center",gap:"8px",flexWrap:"wrap"}}>
-        <button type="button" className="button subtle" disabled={busy||data.maintenanceLocked}
-          onClick={()=>changeMethodStatus(method.id,"revision",undefined,method.name)}
-          aria-label={"Registrar actualización: "+method.name}>Marcar actualizado</button>
-        <button type="button" className="sp-admin-switch" role="switch"
-          aria-label={"Mantenimiento del método: "+method.name}
-          aria-checked={Boolean(method.maintenance)} disabled={busy||data.maintenanceLocked}
-          onClick={()=>changeMethodStatus(method.id,"maintenance",!method.maintenance,method.name)}><span/></button>
-      </div>
+    {visibleMethods.map(method=><div className="sp-admin-switch-row" key={"method:"+method.id}>
+     <div><strong>{method.name}</strong>
+      <small className="muted">Revisión del método: {method.methodRevision} · {method.maintenance?"En mantenimiento":"Sin mantenimiento"}</small>
+     </div>
+     <button type="button" className="button subtle" disabled={busy||data.maintenanceLocked}
+      onClick={()=>changeMethodStatus(method.id,"revision",undefined,method.name)}
+      aria-label={"Registrar actualización: "+method.name}>Marcar actualizado</button>
     </div>)}
-    <p className="muted">Los estados se incorporan a la misma respuesta versionada del catálogo. No se consultan por tarjeta.</p>
+    <p className="muted">La actualización del método modifica su revisión y la versión del catálogo. No cambia el estado de mantenimiento.</p>
    </section>   </>}
 
    {mode==="maintenance"&&<>
@@ -467,6 +492,34 @@ export default function AdminDashboard({mode="system"}){
      </div>;
     })}
     <p className="muted">Los estados se guardan en Redis. Las protecciones impuestas desde el VPS no se pueden anular aquí.</p>
+   </section>
+   <section className="admin-card sp-admin-services">
+    <div className="sp-admin-section-heading">
+     <div><h2>Mantenimiento por catálogo Server VPN</h2>
+      <p className="muted">Pausa o reanuda un proveedor individual sin desactivarlo ni pausar los demás. La aplicación recibe el estado «En mantenimiento» en la siguiente versión del catálogo.</p>
+     </div><span className="sp-admin-chip">Proveedores VPN</span>
+    </div>
+    <div className="sp-admin-provider-tools sp-admin-method-search">
+     <label>Buscar catálogo<input type="search" value={providerQuery}
+       onChange={event=>setProviderQuery(event.target.value)}
+       placeholder="Nombre o identificador" maxLength={80}/></label>
+    </div>
+    <p className="muted">Mostrando {visibleMethods.length} de {methodStatuses.length} catálogos. En mantenimiento: {methodStatuses.filter(m=>m.maintenance).length}.</p>
+    {visibleMethods.map(method=><div className="sp-admin-switch-row" key={"maintenance:"+method.id}>
+     <div><strong>{method.name}</strong>
+      <small className="sp-admin-status-note">{method.maintenance?"En mantenimiento":"Sin mantenimiento"}</small>
+     </div>
+     <div className="sp-admin-catalog-actions">
+      <div className="sp-admin-catalog-action">
+       <span>Mantenimiento</span>
+       <button type="button" className="sp-admin-switch" role="switch"
+        aria-label={"Mantenimiento del método: "+method.name}
+        aria-checked={Boolean(method.maintenance)} disabled={busy||data.maintenanceLocked}
+        onClick={()=>changeMethodStatus(method.id,"maintenance",!method.maintenance,method.name)}><span/></button>
+      </div>
+     </div>
+    </div>)}
+    <p className="muted">Este ajuste es independiente de la disponibilidad administrativa del proveedor y del mantenimiento global de Server VPN. Si el proveedor también está desactivado, finalizar su mantenimiento no lo activa automáticamente.</p>
    </section>   </>}
 
    </>}

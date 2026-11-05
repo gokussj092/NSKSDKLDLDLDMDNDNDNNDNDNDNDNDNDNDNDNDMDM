@@ -320,3 +320,16 @@ body:has(.sp-admin-frame){background:#000;color:#f7f7f7}
 .sp-feedback-review-form .sp-feedback-note,.sp-feedback-review-form .sp-feedback-actions{grid-column:1/-1}
 .sp-feedback-retention{font-size:12px;line-height:1.6}
 @media(max-width:660px){.sp-feedback-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.sp-feedback-filters,.sp-feedback-review-form{grid-template-columns:1fr}.sp-feedback-opener{align-items:flex-start}.sp-feedback-opener>.muted{max-width:95px;text-align:right}.sp-feedback-pagination .button{flex:1}}
+
+
+/* Independent catalog availability and method maintenance controls. */
+.sp-admin-switch-row>.sp-admin-catalog-actions{flex:0 1 auto;display:flex;align-items:center;justify-content:flex-end;gap:19px;flex-wrap:wrap}
+.sp-admin-catalog-action{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:91px}
+.sp-admin-catalog-action>span{font-size:11px;line-height:1.3;color:#d3d3d3;font-weight:650;text-align:center}
+.sp-admin-catalog-action .sp-admin-switch{flex:0 0 28px}
+.sp-admin-frame .sp-admin-method-search{grid-template-columns:minmax(0,1fr);max-width:540px}
+@media(max-width:640px){
+ .sp-admin-switch-row:has(.sp-admin-catalog-actions){flex-wrap:wrap;align-items:flex-start;gap:12px}
+ .sp-admin-switch-row>.sp-admin-catalog-actions{width:100%;justify-content:flex-start;gap:22px}
+ .sp-admin-catalog-action{min-width:95px}
+}
