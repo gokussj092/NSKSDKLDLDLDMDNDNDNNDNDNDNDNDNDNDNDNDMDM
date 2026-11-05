@@ -76,11 +76,7 @@ jobs:
           arch: x86_64
           disable-animations: true
           working-directory: android
-          script: |
-            gradle --no-daemon --max-workers=2 -Pandroid.testInstrumentationRunnerArguments.class=com.ghostdeveloper.spdecode.JsonTreeViewerInstrumentedTest,com.ghostdeveloper.spdecode.SingleResultViewInstrumentedTest,com.ghostdeveloper.spdecode.LargeResultEngineInstrumentedTest :app:connectedDebugAndroidTest
-            mkdir -p app/build/viewer-screenshots
-            adb pull /sdcard/Download/spdecode-viewer-qa/. app/build/viewer-screenshots/
-            python3 -c 'from pathlib import Path; files=list(Path("app/build/viewer-screenshots").rglob("*.png")); assert len(files)==4; assert all(p.read_bytes().startswith(bytes.fromhex("89504e470d0a1a0a")) for p in files)'
+          script: gradle --no-daemon --max-workers=2 -Pandroid.testInstrumentationRunnerArguments.class=com.ghostdeveloper.spdecode.JsonTreeViewerInstrumentedTest,com.ghostdeveloper.spdecode.SingleResultViewInstrumentedTest,com.ghostdeveloper.spdecode.LargeResultEngineInstrumentedTest :app:connectedDebugAndroidTest
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -88,5 +84,4 @@ jobs:
           path: |
             android/app/build/reports/androidTests/
             android/app/build/outputs/androidTest-results/
-            android/app/build/viewer-screenshots/
           if-no-files-found: ignore

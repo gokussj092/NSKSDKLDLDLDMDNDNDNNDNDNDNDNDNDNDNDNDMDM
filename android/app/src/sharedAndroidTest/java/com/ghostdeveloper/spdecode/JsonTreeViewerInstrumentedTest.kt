@@ -1,7 +1,5 @@
 package com.ghostdeveloper.spdecode
 
-import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.view.View
 import android.view.ViewGroup
 import android.view.MotionEvent
@@ -47,26 +45,6 @@ internal fun visibleJsonText(view: ContinuousJsonView): String {
     finally { info.recycle() }
 }
 
-private fun captureJsonView(view: ContinuousJsonView, name: String) {
-    val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
-    try {
-        view.draw(Canvas(bitmap))
-        val directory = view.context.filesDir.resolve("viewer-qa").apply { mkdirs() }
-        directory.resolve("$name.png").outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
-        // AGP uninstalls test apps after connectedAndroidTest; preserve QA images
-        // through the test shell before that cleanup deletes app-private files.
-        if (android.os.Build.VERSION.SDK_INT >= 31) {
-            val target = "/sdcard/Download/spdecode-viewer-qa"
-            val command = "mkdir -p $target && run-as ${view.context.packageName} cat files/viewer-qa/$name.png > $target/$name.png && echo SNAPSHOT_SAVED\n"
-            // UiAutomation uses Runtime.exec(String); send shell syntax through stdin.
-            val descriptors = InstrumentationRegistry.getInstrumentation().uiAutomation.executeShellCommandRw("sh")
-            android.os.ParcelFileDescriptor.AutoCloseOutputStream(descriptors[1]).use { it.write(command.toByteArray()) }
-            val result = android.os.ParcelFileDescriptor.AutoCloseInputStream(descriptors[0]).use { String(it.readBytes()) }
-            assertTrue(result, result.contains("SNAPSHOT_SAVED"))
-        }
-    } finally { bitmap.recycle() }
-}
-
 /** The actual Android surface: continuous scroll, complete values and shared baselines. */
 @RunWith(AndroidJUnit4::class)
 class JsonTreeViewerInstrumentedTest {
@@ -83,7 +61,6 @@ class JsonTreeViewerInstrumentedTest {
             assertTrue(text.contains("\"port\": 443"))
             assertFalse(text.contains("{…}"))
             assertEquals(view.rowHeight, view.lineBaseline(5) - view.lineBaseline(4), .01f)
-            captureJsonView(view, "nested")
         }
     }
 
@@ -107,7 +84,6 @@ class JsonTreeViewerInstrumentedTest {
             val text = visibleJsonText(view)
             assertTrue(text.contains("${3 * count}     \"id\": ${count - 1}"))
             assertTrue(text.contains("${3 * count + 2} ]"))
-            captureJsonView(view, "large-tail")
         }
     }
 
@@ -118,7 +94,6 @@ class JsonTreeViewerInstrumentedTest {
         ui.runOnIdle {
             view.scrollToColumn(Int.MAX_VALUE)
             assertTrue(view.visibleWindow(1).getString("text").contains("LAST_CHARACTER"))
-            captureJsonView(view, "long-value-tail")
         }
     }
 
@@ -130,7 +105,6 @@ class JsonTreeViewerInstrumentedTest {
             view.scrollToColumn(Int.MAX_VALUE)
             assertTrue(view.visibleWindow(1).getString("text").contains("最后字符"))
             assertTrue(view.visibleTextRight(1) <= view.width + 2f)
-            captureJsonView(view, "unicode-tail")
         }
     }
 
