@@ -157,3 +157,7 @@
 El workflow de firma de la rama se llama `android-branch-signed-release.yml` y obtiene versión y build desde Gradle; no se crea un nuevo workflow por cada versión. La clase Java del test de transporte V2 se genera desde Kotlin; al agregar o retirar un JNI no se actualizan manualmente el total ni las declaraciones del fixture. El test correspondiente valida **paridad dinámica**, no la existencia obligatoria del método de cancelación de una versión concreta.
 
 La suite Validate SP-DECODE aprobó tras eliminar los 13 fallos y 3 errores de origen: runs [42310607488](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42310607488) y [42310909607](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42310909607). Mantener pendiente el gate completo del último commit hasta verificar su ejecución propia, incluida la integración V2 del host JNI generado.
+
+## F7-A0-P01 — Avance 2026-11-06
+
+Estado PARCIAL. Se revisaron las siete dependencias directas con sus fichas y hashes SDIST publicados; 63/63 scripts están intactos. Restan ruedas instaladas, transitivas, mínimo Python 3.11 por Pillow 13 y revisión de licencias de Unicorn/CairoSVG. No se modificaron herramientas funcionales. Detalles: [F7-A0-P01](FASE_7_A0_P01_AUDITORIA_DEPENDENCIAS_2026_11_06.md).

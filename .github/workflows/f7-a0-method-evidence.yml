@@ -23,6 +23,10 @@ jobs:
           python-version: '3.11'
       - name: Unit tests for evidence gate
         run: python -m unittest discover -s tests -p 'test_method_evidence_a0.py' -v
+      - name: Dependency audit unit tests (offline)
+        run: python -m unittest discover -s tests -p 'test_a0_dependency_inventory.py' -v
+      - name: Check dependency registry metadata (no downloads)
+        run: python scripts/ci/check_apk_tool_dependencies.py
       - name: Inventory and audit (no APK execution)
         run: python scripts/ci/check_method_evidence.py --output "$RUNNER_TEMP/f7-a0-report.json"
       - name: Check evidence in pull requests

@@ -53,6 +53,8 @@ El último comando requiere que la referencia exista en el checkout y puede bloq
 
 **Matriz actualizada de todas las subfases, pendientes y handoff:** [FASE_7_SEGUIMIENTO_ESTADOS_Y_PENDIENTES_2026_11_06.md](FASE_7_SEGUIMIENTO_ESTADOS_Y_PENDIENTES_2026_11_06.md). Se registra F7-A0 como PARCIAL, no DONE.
 
+**F7-A0-P01 (parcial):** [auditoría de dependencias y licencias](FASE_7_A0_P01_AUDITORIA_DEPENDENCIAS_2026_11_06.md). Los 63 scripts siguen intactos; falta resolver wheels reales, transitivas y licencias.
+
 ## Pendientes para cerrar F7-A0
 
 - Revisión real de **licencias, procedencia, versiones y SHA-256 de distribuciones externas/transitivas** para cada herramienta, incluidas Java/Node/Unicorn/Frida/JADX si se utilizan. No atribuir aprobaciones ni hashes inventados.
