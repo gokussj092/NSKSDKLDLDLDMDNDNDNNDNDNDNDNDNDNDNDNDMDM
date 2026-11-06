@@ -161,3 +161,8 @@ La suite Validate SP-DECODE aprobó tras eliminar los 13 fallos y 3 errores de o
 ## F7-A0-P01 — Avance 2026-11-06
 
 Estado PARCIAL. Se revisaron las siete dependencias directas con sus fichas y hashes SDIST publicados; 63/63 scripts están intactos. Restan ruedas instaladas, transitivas, mínimo Python 3.11 por Pillow 13 y revisión de licencias de Unicorn/CairoSVG. No se modificaron herramientas funcionales. Detalles: [F7-A0-P01](FASE_7_A0_P01_AUDITORIA_DEPENDENCIAS_2026_11_06.md).
+
+
+### Validación CI de P01 (GitHub Actions)
+
+[F7-A0 Method Evidence, run 42314608709](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42314608709), resultado **SUCCESS** (commit f263c3587e9cca8d9a87496b95cf9ab7880719b9). Ejecutados 11 tests de evidencia + 6 tests nuevos de metadatos. Inventario: 63 scripts, 7 pins directos, 11 dossiers. Verificador P01: 7 SDIST de referencia, 0 wheels instalados atestiguados y 0 autorizaciones automáticas. Estado P01 **PARCIAL**, pendiente wheel/ABI/transitivas/revisión jurídica. No implica fallo funcional de herramientas anteriores.

@@ -32,3 +32,8 @@ Para cada versión se transcribió un **SHA-256 de distribución fuente SDIST** 
 
 ## Validación automatizada
 El archivo scripts/ci/check_apk_tool_dependencies.py compara requisitos fijos, versiones, fuentes y hashes SDIST; rechaza discrepancias, hashes falsamente rotulados como wheels o habilitación de ejecución. Pruebas offline: tests/test_a0_dependency_inventory.py. El workflow F7-A0 los ejecuta sin descargar, instalar ni abrir APKs. Esta auditoría no pretende probar la funcionalidad del analizador ni cambiar sus métodos.
+
+
+### Validación CI de P01 (GitHub Actions)
+
+[F7-A0 Method Evidence, run 42314608709](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42314608709), resultado **SUCCESS** (commit f263c3587e9cca8d9a87496b95cf9ab7880719b9). Ejecutados 11 tests de evidencia + 6 tests nuevos de metadatos. Inventario: 63 scripts, 7 pins directos, 11 dossiers. Verificador P01: 7 SDIST de referencia, 0 wheels instalados atestiguados y 0 autorizaciones automáticas. Estado P01 **PARCIAL**, pendiente wheel/ABI/transitivas/revisión jurídica. No implica fallo funcional de herramientas anteriores.

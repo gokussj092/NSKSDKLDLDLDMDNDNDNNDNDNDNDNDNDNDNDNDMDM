@@ -69,3 +69,8 @@ El último comando requiere que la referencia exista en el checkout y puede bloq
 **No se ha empezado** OAuth, cuentas, billing, transferencia de APK, worker de análisis automático, IA, panel Soporte APK o nuevas pantallas Android. Se conserva la UI «Próximamente». No se han modificado decodificadores, flag de proveedores, API de producción ni VPS.
 
 Reglas rectoras: [METHOD_EVIDENCE_POLICY.md](../analysis/METHOD_EVIDENCE_POLICY.md), [FASE_7_PLAN_IMPLEMENTACION_Y_QA](FASE_7_PLAN_IMPLEMENTACION_Y_QA_2026_11_04.md), [FASE_7_APK_AUTOANALISIS_DOS_SALIDAS](FASE_7_APK_AUTOANALISIS_DOS_SALIDAS_PENDING_2026_11_02.md).
+
+
+### Validación CI de P01 (GitHub Actions)
+
+[F7-A0 Method Evidence, run 42314608709](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42314608709), resultado **SUCCESS** (commit f263c3587e9cca8d9a87496b95cf9ab7880719b9). Ejecutados 11 tests de evidencia + 6 tests nuevos de metadatos. Inventario: 63 scripts, 7 pins directos, 11 dossiers. Verificador P01: 7 SDIST de referencia, 0 wheels instalados atestiguados y 0 autorizaciones automáticas. Estado P01 **PARCIAL**, pendiente wheel/ABI/transitivas/revisión jurídica. No implica fallo funcional de herramientas anteriores.
