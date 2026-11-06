@@ -1,16 +1,14 @@
-name: SP-DECODE 1.1.27 Branch Release APK and AAB
+name: SP-DECODE Branch Release APK and AAB
 on:
   push:
     branches: [feat/nuevas-integraciones]
     paths:
-      - .github/workflows/android-v1127-branch-signed-release.yml
       - android/**
-      - scripts/ci/**
   workflow_dispatch:
 permissions:
   contents: read
 concurrency:
-  group: spdecode-v1127-${{ github.ref }}
+  group: spdecode-current-${{ github.ref }}
   cancel-in-progress: false
 jobs:
   release:
@@ -42,8 +40,7 @@ jobs:
       - name: Version and source preflight
         run: |
           set -euo pipefail
-          grep -F 'versionCode = 42' android/app/build.gradle.kts
-          grep -F 'versionName = "1.1.27"' android/app/build.gradle.kts
+          python3 scripts/ci/current_android_contracts.py --github-env "$GITHUB_ENV"
           python3 scripts/android_s3_security_audit.py
           python3 scripts/android_s4_provisioning_audit.py
       - name: Android SDK / NDK
@@ -62,15 +59,15 @@ jobs:
           set -euo pipefail
           test -n "$STORE_BASE64" && test -n "$STORE_PASSWORD" && test -n "$KEY_ALIAS" && test -n "$KEY_PASSWORD"
           umask 077
-          printf '%s' "$STORE_BASE64" | base64 --decode > "$RUNNER_TEMP/spdecode-1127.p12"
-          keytool -list -keystore "$RUNNER_TEMP/spdecode-1127.p12" -storetype PKCS12 -storepass:env STORE_PASSWORD -alias "$KEY_ALIAS" >/dev/null
-          CERT="$(keytool -exportcert -keystore "$RUNNER_TEMP/spdecode-1127.p12" -storetype PKCS12 -storepass:env STORE_PASSWORD -alias "$KEY_ALIAS" | sha256sum | cut -d' ' -f1)"
+          printf '%s' "$STORE_BASE64" | base64 --decode > "$RUNNER_TEMP/spdecode-release.p12"
+          keytool -list -keystore "$RUNNER_TEMP/spdecode-release.p12" -storetype PKCS12 -storepass:env STORE_PASSWORD -alias "$KEY_ALIAS" >/dev/null
+          CERT="$(keytool -exportcert -keystore "$RUNNER_TEMP/spdecode-release.p12" -storetype PKCS12 -storepass:env STORE_PASSWORD -alias "$KEY_ALIAS" | sha256sum | cut -d' ' -f1)"
           [[ "$CERT" =~ ^[0-9a-f]{64}$ ]]
           PLAY_CERT="$(printf '%s' "$PLAY_CERT" | tr -d '[:space:]:' | tr '[:upper:]' '[:lower:]')"
           [[ "$PLAY_CERT" =~ ^[0-9a-f]{64}$ ]]
           echo "SPDECODE_TRUSTED_SIGNER_SHA256=$CERT" >> "$GITHUB_ENV"
           echo "SPDECODE_PLAY_APP_SIGNER_SHA256=$PLAY_CERT" >> "$GITHUB_ENV"
-          echo "SPDECODE_RELEASE_STORE_FILE=$RUNNER_TEMP/spdecode-1127.p12" >> "$GITHUB_ENV"
+          echo "SPDECODE_RELEASE_STORE_FILE=$RUNNER_TEMP/spdecode-release.p12" >> "$GITHUB_ENV"
       - name: Compile production signed APK
         working-directory: android
         env:
@@ -99,19 +96,19 @@ jobs:
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK"
           jarsigner -verify "$AAB" | grep -F 'jar verified.'
           "$ANDROID_HOME/build-tools/35.0.0/zipalign" -c -P 16 -v 4 "$APK"
-          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | grep -F "versionName='1.1.27'"
-          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | grep -F "versionCode='42'"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | grep -F "versionName='$SPDECODE_VERSION_NAME'"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | grep -F "versionCode='$SPDECODE_VERSION_CODE'"
           mkdir -p dist
-          cp "$APK" dist/SP-DECODE-v1.1.27-b42-release-signed.apk
-          cp "$AAB" dist/SP-DECODE-v1.1.27-b42-play-release-signed.aab
+          cp "$APK" dist/SP-DECODE-v${SPDECODE_VERSION_NAME}-b${SPDECODE_VERSION_CODE}-release-signed.apk
+          cp "$AAB" dist/SP-DECODE-v${SPDECODE_VERSION_NAME}-b${SPDECODE_VERSION_CODE}-play-release-signed.aab
           (cd dist && sha256sum *.apk *.aab > SHA256SUMS.txt)
-          printf 'Version: 1.1.27\nBuild: 42\nSource SHA: %s\n' "$GITHUB_SHA" > dist/BUILD_INFO.txt
+          printf 'Version: %s\nBuild: %s\nSource SHA: %s\n' "$SPDECODE_VERSION_NAME" "$SPDECODE_VERSION_CODE" "$GITHUB_SHA" > dist/BUILD_INFO.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: SP-DECODE-v1.1.27-b42-APK-AAB-SIGNED
+          name: SP-DECODE-BRANCH-APK-AAB-SIGNED
           path: dist/
           if-no-files-found: error
           retention-days: 30
       - name: Erase signing material
         if: always()
-        run: rm -f "$RUNNER_TEMP/spdecode-1127.p12"
+        run: rm -f "$RUNNER_TEMP/spdecode-release.p12"

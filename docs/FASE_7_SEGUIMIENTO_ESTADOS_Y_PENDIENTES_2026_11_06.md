@@ -137,3 +137,17 @@
 - [Política de evidencias](../analysis/METHOD_EVIDENCE_POLICY.md)
 - [Resultados A/B](FASE_7_APK_AUTOANALISIS_DOS_SALIDAS_PENDING_2026_11_02.md)
 - [Google, pagos y soporte humano](FASE_7_CUENTAS_GOOGLE_PAGOS_Y_SOPORTE_APK_2026_11_04.md)
+
+## QA-01 — CI dinámico y contratos de código vigente (2026-11-06)
+
+**Intervención en feat/nuevas-integraciones:** solo infraestructura CI, scripts de auditoría, pruebas y documentación. No modificar descifradores, métodos VPN o flujos Cloud operativos por errores de aserción histórica.
+
+- scripts/ci/current_android_contracts.py: obtiene versionName/versionCode de Gradle, compara dinámicamente registros JNI C++ con declaraciones Kotlin sin cuenta fija y comprueba launchers actuales y restricciones de backup/tráfico no cifrado.
+- tests/test_ci_current_android_contracts.py: tests positivos y negativos deliberados para versión, JNI y AndroidManifest.
+- Se eliminan hashes UI por versión como barrera activa de C0, pero permanecen los contratos Cloud/seguridad/catálogo y los informes históricos archivados.
+- Los tests que antes buscaban llamadas en MainActivity comprueban el router que realmente las implementa y la UI comprueba el cuadro de descarga con progreso de bytes y confirmación.
+- validate.yml mantiene la suite integral de Cloud/servidor y añade preflight dinámico. La compilación y las pruebas instrumentadas Android siguen siendo gates independientes.
+- workflows de APK/AAB ahora derivan versiones de Gradle; las identidades de firma y controles de distribución no se cambian.
+- QA-01 se considerará DONE **solo si el nuevo run de Validate SP-DECODE aprueba**, sin silenciar la suite ni modificar analizadores para satisfacer tests.
+
+**Observación:** el workflow manual play-beta-artifacts.yml mantiene la restricción de repositorio privado ya existente; en una copia pública no se ejecuta. Es una decisión de seguridad separada de los 16 fallos.

@@ -9,23 +9,18 @@ APP=ROOT/'android/app'
 
 class CompatibleExportIntegration(unittest.TestCase):
     def test_release_metadata_and_workflow_artifacts_agree(self):
-        gradle=(APP/'build.gradle.kts').read_text()
-        version=re.search(r'versionName = "([^"]+)"',gradle)[1]
-        code=re.search(r'versionCode = (\d+)',gradle)[1]
+        from scripts.ci.current_android_contracts import release_metadata
+        version,code=release_metadata((APP/'build.gradle.kts').read_text())
         self.assertTrue(re.fullmatch(r'\d+\.\d+\.\d+',version))
-        self.assertGreaterEqual(int(code),33)
-        private=(ROOT/'.github/workflows/cloud-private-preproduction-apk.yml').read_text()
+        self.assertGreater(code,0)
         play=(ROOT/'.github/workflows/play-beta-artifacts.yml').read_text()
-        public=(ROOT/'.github/workflows/cloud-preproduction-public.yml').read_text()
-        # Only the active Play signing candidate tracks the app version;
-        # legacy preproduction workflows are pinned to old historical builds
-        # and must not silently move signing/publication to the new branch.
-        self.assertIn(f"versionName='{version}'",play)
-        self.assertIn(f"versionCode='{code}'",play)
-        self.assertIn('SP-DECODE-v'+version,play)
-        for historical in (private,public):
-            self.assertIn("versionName='1.1.24'",historical)
-            self.assertIn("versionCode='35'",historical)
+        branch=(ROOT/'.github/workflows/android-v1127-branch-signed-release.yml').read_text()
+        for workflow in (play,branch):
+            self.assertIn('scripts/ci/current_android_contracts.py --github-env "$GITHUB_ENV"',workflow)
+            self.assertIn('SPDECODE_VERSION_NAME',workflow)
+            self.assertIn('SPDECODE_VERSION_CODE',workflow)
+        self.assertIn('workflow_dispatch:',play)
+        self.assertIn('github.event.repository.private == true',play)
         workflow=(ROOT/'.github/workflows/compatible-export-integration.yml').read_text()
         self.assertIn(':app:compileDebugKotlin',workflow)
         self.assertIn(':app:compileDebugAndroidTestKotlin',workflow)

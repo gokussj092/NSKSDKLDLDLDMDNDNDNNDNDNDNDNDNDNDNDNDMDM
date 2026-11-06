@@ -67,40 +67,43 @@ class RemoteFormatsAndroidTests(unittest.TestCase):
                       'vault.write("catalog",fresh'):
             self.assertIn(check,repo)
         activity=(JAVA/"MainActivity.kt").read_text("utf-8")
-        for check in ("AndroidDecoderCatalog.detect(routingName,fileFormats)",
-                      "serverVpnCatalog.cachedFormats()",
-                      "R.string.unsupported_file_detail",
-                      "R.string.unsupported_text_detail",
-                      "CloudUserErrors.httpInjectorMessage"):
-            self.assertIn(check,activity)
+        router=(JAVA/"ImportFormatRouter.kt").read_text("utf-8")
+        self.assertIn("ImportFormatRouter.detect(",activity)
+        self.assertIn("AndroidDecoderCatalog.detect(name,verifiedFormats)",router)
+        self.assertIn("CloudFileFormats.detect(name)",router)
+        self.assertIn("serverVpnCatalog.cachedFormats()",activity)
+        self.assertIn("R.string.unsupported_file_detail",activity)
+        self.assertIn("R.string.unsupported_text_detail",activity)
+        self.assertIn("CloudUserErrors.httpInjectorMessage",activity)
 
     def test_abowaged_fallback_survives_stale_remote_format_snapshot(self):
-        activity=(JAVA/"MainActivity.kt").read_text("utf-8")
         fallback=(JAVA/"cloud/CloudFileFormats.kt").read_text("utf-8")
-        remote='AndroidDecoderCatalog.detect(routingName,fileFormats)'
-        pinned='CloudFileFormats.detect(routingName)'
-        native='AndroidDecoderCatalog.detect(\n                            routingName,AndroidDecoderCatalog.read(this@MainActivity))'
-        route=activity.split('val supported=',1)[1].split('?:throw DecodeFailure(R.string.unsupported)',1)[0]
-        self.assertLess(route.index(remote),route.index(pinned))
-        self.assertLess(route.index(pinned),route.index('AndroidDecoderCatalog.read(this@MainActivity)'))
+        router=(JAVA/"ImportFormatRouter.kt").read_text("utf-8")
+        remote="AndroidDecoderCatalog.detect(name,verifiedFormats)"
+        pinned="CloudFileFormats.detect(name)"
+        native="return AndroidDecoderCatalog.detect(name,bundledFormats())"
+        self.assertLess(router.index(remote),router.index(pinned))
+        self.assertLess(router.index(pinned),router.index(native))
+        self.assertIn("if(verifiedFormats.isNotEmpty())return null",router)
         self.assertIn('"awg" to "AboWaged VPN 1.0"',fallback)
 
     def test_cloud_generated_ui_uses_dynamic_snapshot_during_import(self):
-        """The frozen C0 Activity is patched only in generated Cloud sources."""
         gradle=(ROOT/"android/app/build.gradle.kts").read_text("utf-8")
         client=(JAVA/"cloud/CloudDecodeClient.kt").read_text("utf-8")
         repository=(JAVA/"cloud/ServerVpnCatalogRepository.kt").read_text("utf-8")
         model=(JAVA/"parity/AndroidDecoderCatalog.kt").read_text("utf-8")
         for token in (
-            'serverVpnCatalog.cachedFormats().also { fileFormats=it }',
-            'AndroidDecoderCatalog.detect(routingName,latestFileFormats)',
-            'CloudCatalogUpdates.enabled(this@MainActivity)',
-            'var checkedUnknownSuffix=false',
+            "ImportFormatRouter.detect(",
+            "verifiedImportFormats=serverVpnCatalog.cachedFormats()",
+            "CloudCatalogUpdates.enabled(this@MainActivity)",
+            "var checkedUnknownSuffix=false",
             'allowPasswordFromCatalog="password" in supported.credentialFields',
         ):
             self.assertIn(token,gradle)
-        self.assertNotIn('if(newTab==2)refreshServerVpn()', (JAVA/'MainActivity.kt').read_text('utf-8'))
-        self.assertNotIn('if(newTab==3)refreshServerVpn()', (JAVA/'MainActivity.kt').read_text('utf-8'))
+        activity=(JAVA/"MainActivity.kt").read_text("utf-8")
+        self.assertNotIn('if(newTab==2)refreshServerVpn()',activity)
+        self.assertNotIn('if(newTab==3)refreshServerVpn()',activity)
+        self.assertIn("ImportFormatRouter.detect(",activity)
         self.assertIn('credentialFields=credentialNames.toSet()',repository)
         self.assertIn('val credentialFields: Set<String> = emptySet()',model)
         self.assertIn('allowPasswordFromCatalog: Boolean = false',client)
