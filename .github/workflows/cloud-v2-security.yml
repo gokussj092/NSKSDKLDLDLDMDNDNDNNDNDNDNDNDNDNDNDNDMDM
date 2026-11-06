@@ -33,9 +33,10 @@ jobs:
             -DCMAKE_CXX_FLAGS="-I$JAVA_HOME/include -I$JAVA_HOME/include/linux" \
             -DSPDECODE_CLOUD_ORIGIN=https://api.spdecode.example
           cmake --build /tmp/spdecode-native -j2
+          python3 scripts/ci/current_android_contracts.py --generate-host-java "$RUNNER_TEMP/spdecode-jni-sources"
           javac -d /tmp/spdecode-jni-test \
             tests/native/v2_transport_jni/android/content/Context.java \
-            tests/native/v2_transport_jni/CloudNativeTransport.java
+            "$RUNNER_TEMP/spdecode-jni-sources/CloudNativeTransport.java"
           java -Xcheck:jni -Dspdecode.native=/tmp/spdecode-native/libv7q3.so \
             -cp /tmp/spdecode-jni-test com.ghostdeveloper.spdecode.cloud.CloudNativeTransport
       - name: Install Android SDK and NDK

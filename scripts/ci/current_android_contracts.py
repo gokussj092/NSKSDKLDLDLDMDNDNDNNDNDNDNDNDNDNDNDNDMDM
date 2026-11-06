@@ -84,6 +84,65 @@ def current_ui_sources(src: Path) -> int:
     return len(kotlin)
 
 
+
+
+_JNI_TYPE = {
+    "Boolean": "boolean", "Int": "int", "Long": "long",
+    "String": "String", "ByteArray": "byte[]",
+    "Array<String>": "String[]", "Context": "android.content.Context",
+}
+
+
+def host_native_declarations(kotlin: str) -> str:
+    """Reproduce JNI signatures from current Kotlin, for the JVM host harness.
+
+    Unrecognized types fail closed rather than silently generating an incorrect
+    host stub. The real C++ and Android Kotlin sources remain untouched.
+    """
+    matches = re.findall(
+        r'@JvmStatic\s+private\s+external\s+fun\s+([A-Za-z_]\w*)\s*\(([^)]*)\)\s*(?::\s*(Array<String>|ByteArray|String|Boolean|Long|Int))?',
+        kotlin,
+        flags=re.S,
+    )
+    if not matches:
+        raise ContractError("No Kotlin JNI methods available for host stub")
+    decls = []
+    for name, params, return_type in matches:
+        signature = []
+        for index, param in enumerate(params.split(",")):
+            param = param.strip()
+            if not param:
+                continue
+            if ":" not in param:
+                raise ContractError("Malformed Kotlin native parameter: " + name)
+            _, type_name = param.split(":", 1)
+            kind = type_name.strip().replace("?", "")
+            if kind not in _JNI_TYPE:
+                raise ContractError("Unsupported native parameter type: " + kind)
+            signature.append(_JNI_TYPE[kind] + " arg" + str(index))
+        output_type = _JNI_TYPE.get(return_type or "", "void")
+        if return_type and return_type not in _JNI_TYPE:
+            raise ContractError("Unsupported native return type: " + return_type)
+        throws = " throws java.io.IOException" if name == "postNativeEncrypted" else ""
+        decls.append("    private static native " + output_type + " " + name +
+                     "(" + ", ".join(signature) + ")" + throws + ";")
+    if len(decls) != len(set(name for name,_,_ in matches)):
+        raise ContractError("Duplicate native host declaration")
+    return "\n".join(decls)
+
+
+def generate_host_fixture(root: Path, destination: Path) -> Path:
+    kotlin=(root/"android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudNativeTransport.kt").read_text("utf-8")
+    harness=(root/"tests/native/v2_transport_jni/CloudNativeTransport.java").read_text("utf-8")
+    marker="    // CI_HOST_JNI_DECLARATIONS"
+    if harness.count(marker)!=1:
+        raise ContractError("Exactly one host JNI declaration anchor required")
+    generated=harness.replace(marker,host_native_declarations(kotlin))
+    destination.mkdir(parents=True,exist_ok=True)
+    output=destination/"CloudNativeTransport.java"
+    output.write_text(generated,encoding="utf-8")
+    return output
+
 def check(root: Path=ROOT) -> dict:
     app=root/"android/app"
     version,code=release_metadata((app/"build.gradle.kts").read_text("utf-8"))
@@ -99,11 +158,18 @@ def main() -> None:
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--check",action="store_true")
     parser.add_argument("--github-env",type=Path)
+    parser.add_argument("--generate-host-java",type=Path,metavar="DIRECTORY")
     args=parser.parse_args()
     try:
         result=check()
     except (ContractError,OSError) as exc:
         parser.exit(1,"Android contract: "+str(exc)+"\n")
+    if args.generate_host_java:
+        try:
+            generated=generate_host_fixture(ROOT,args.generate_host_java)
+        except (ContractError,OSError) as exc:
+            parser.exit(1,"Host JNI fixture: "+str(exc)+"\n")
+        print("Generated host JNI declarations: "+str(generated))
     if args.github_env:
         with args.github_env.open("a",encoding="utf-8") as output:
             output.write("SPDECODE_VERSION_NAME="+result["version_name"]+"\n")

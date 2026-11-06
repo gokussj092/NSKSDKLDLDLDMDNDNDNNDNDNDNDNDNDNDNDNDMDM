@@ -4,7 +4,7 @@ from pathlib import Path
 import unittest
 
 from scripts.ci.current_android_contracts import (
-    ContractError, check, current_ui_sources, jni_registry, release_metadata
+    ContractError, check, current_ui_sources, jni_registry, release_metadata, host_native_declarations
 )
 
 
@@ -34,6 +34,15 @@ class CurrentAndroidContractsTests(unittest.TestCase):
             jni_registry(cpp+' const_cast<char*>("nativeTwo")',kotlin)
         with self.assertRaises(ContractError):
             jni_registry(cpp+' const_cast<char*>("nativeOne")',kotlin)
+
+    def test_host_jni_declarations_generated_from_current_kotlin(self):
+        src=Path(__file__).resolve().parents[1]/"android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudNativeTransport.kt"
+        text=host_native_declarations(src.read_text("utf-8"))
+        self.assertIn("private static native void nativeCancelCatalogDownload();",text)
+        self.assertIn("postNativeEncrypted(",text)
+        self.assertIn("throws java.io.IOException",text)
+        with self.assertRaises(ContractError):
+            host_native_declarations("@JvmStatic private external fun nativeBad(x: MysteryType)")
 
     def test_manifest_rejects_cleartext_backup_and_unknown_launcher(self):
         with tempfile.TemporaryDirectory() as folder:
