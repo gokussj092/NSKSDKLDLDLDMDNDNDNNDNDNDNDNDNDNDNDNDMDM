@@ -7,7 +7,8 @@
 ## Alcance observado
 
 - `scripts/apk_analysis/`: **63 archivos .py/.js** en el árbol Git de la línea base, conservados intactos. `tool_sources.v1.json` almacena ruta, bytes y OID de blob Git por herramienta. Un OID de Git **no** es un checksum SHA-256; el script local calcula también SHA-256 sobre bytes reales en un checkout.
-- `scripts/apk_analysis/requirements.txt`: ocho dependencias Python directas con versión exacta en ese archivo. El pin no demuestra ausencia de problemas de cadena de suministro ni pin de todas sus transitivas.
+- `analysis/platform/apk-tooling/dependencies.v1.json`: inventario de siete paquetes fijados, un runtime y JADX, con licencia/distribución pendientes de revisión.
+- `scripts/apk_analysis/requirements.txt`: siete dependencias Python directas con versión exacta en ese archivo. El pin no demuestra ausencia de problemas de cadena de suministro ni pin de todas sus transitivas.
 - `analysis/`: **11 expedientes de aplicaciones/build con MANIFEST.json** y estructura documental básica presente (ANALYSIS, REPRODUCE, RESULTS, DEPENDENCIES, lockfile y al menos un archivo en tools/ y tests/). Un expediente estructuralmente presente **no** es una certificación técnica, jurídica, de dependencias o de ejecución automática.
 - Otras carpetas con manifiesto: `analysis/_intake/mediafire-ypaiywpzrvslef1/` y `analysis/platform/catalog-results/2026-11-05/`. Son artefactos de ingreso/plataforma, no paquetes Android, por lo que el validador de expedientes por package/build no los debe tratar como fallos de aplicación.
 - Dos expedientes de aplicación necesitan conservarse como **no verificados en conjunto**: `com.tunneldoom.http/432` está PENDING y `noob.arpro.vpn/2` está PARTIAL. La presencia de documentación no modifica esos estados.

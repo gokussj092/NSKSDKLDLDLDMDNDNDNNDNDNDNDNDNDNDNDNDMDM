@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "source": "scripts/apk_analysis/requirements.txt",
+  "source_branch": "feat/nuevas-integraciones",
+  "purpose": "F7-A0 direct dependency registry: no download, installation or license approval performed",
+  "packages": [
+    {
+      "id": "pypi:androguard",
+      "name": "androguard",
+      "version": "4.1.4",
+      "requirement": "androguard==4.1.4",
+      "ecosystem": "PyPI",
+      "purpose": "APK analysis toolkit; individual consumers and transitives require review",
+      "distribution_sha256": null,
+      "license": "UNVERIFIED",
+      "review": "NEEDS_REVIEW",
+      "unattended_execution": "DISABLED"
+    },
+    {
+      "id": "pypi:pillow",
+      "name": "Pillow",
+      "version": "13.0.0",
+      "requirement": "Pillow==13.0.0",
+      "ecosystem": "PyPI",
+      "purpose": "APK analysis toolkit; individual consumers and transitives require review",
+      "distribution_sha256": null,
+      "license": "UNVERIFIED",
+      "review": "NEEDS_REVIEW",
+      "unattended_execution": "DISABLED"
+    },
+    {
+      "id": "pypi:pyelftools",
+      "name": "pyelftools",
+      "version": "0.33",
+      "requirement": "pyelftools==0.33",
+      "ecosystem": "PyPI",
+      "purpose": "APK analysis toolkit; individual consumers and transitives require review",
+      "distribution_sha256": null,
+      "license": "UNVERIFIED",
+      "review": "NEEDS_REVIEW",
+      "unattended_execution": "DISABLED"
+    },
+    {
+      "id": "pypi:capstone",
+      "name": "capstone",
+      "version": "5.0.9",
+      "requirement": "capstone==5.0.9",
+      "ecosystem": "PyPI",
+      "purpose": "APK analysis toolkit; individual consumers and transitives require review",
+      "distribution_sha256": null,
+      "license": "UNVERIFIED",
+      "review": "NEEDS_REVIEW",
+      "unattended_execution": "DISABLED"
+    },
+    {
+      "id": "pypi:unicorn",
+      "name": "unicorn",
+      "version": "2.1.4",
+      "requirement": "unicorn==2.1.4",
+      "ecosystem": "PyPI",
+      "purpose": "APK analysis toolkit; individual consumers and transitives require review",
+      "distribution_sha256": null,
+      "license": "UNVERIFIED",
+      "review": "NEEDS_REVIEW",
+      "unattended_execution": "DISABLED"
+    },
+    {
+      "id": "pypi:pycryptodome",
+      "name": "pycryptodome",
+      "version": "3.23.0",
+      "requirement": "pycryptodome==3.23.0",
+      "ecosystem": "PyPI",
+      "purpose": "APK analysis toolkit; individual consumers and transitives require review",
+      "distribution_sha256": null,
+      "license": "UNVERIFIED",
+      "review": "NEEDS_REVIEW",
+      "unattended_execution": "DISABLED"
+    },
+    {
+      "id": "pypi:cairosvg",
+      "name": "CairoSVG",
+      "version": "2.9.1",
+      "requirement": "CairoSVG==2.9.1",
+      "ecosystem": "PyPI",
+      "purpose": "APK analysis toolkit; individual consumers and transitives require review",
+      "distribution_sha256": null,
+      "license": "UNVERIFIED",
+      "review": "NEEDS_REVIEW",
+      "unattended_execution": "DISABLED"
+    }
+  ],
+  "other_toolchains": [
+    {
+      "name": "JADX",
+      "version": "1.5.6",
+      "origin": "https://github.com/skylot/jadx/releases/tag/v1.5.6",
+      "checksum_source": "scripts/apk_analysis/decompile.py",
+      "license": "NOT_REVIEWED_IN_THIS_AUDIT",
+      "review": "NEEDS_REVIEW",
+      "unattended_execution": "DISABLED"
+    },
+    {
+      "name": "Java JDK",
+      "version": "17+ (documented minimum)",
+      "origin": "scripts/apk_analysis/README.md",
+      "license": "DISTRIBUTION_DEPENDENT",
+      "review": "NEEDS_REVIEW",
+      "unattended_execution": "DISABLED"
+    }
+  ],
+  "transitive_dependencies": "NOT_YET_INVENTORIED",
+  "runtime_checks": "PENDING"
+}

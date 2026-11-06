@@ -19,6 +19,10 @@ Un resultado **no confirmado** también se archiva, con estado PENDING, PARTIAL 
 
 **La obligación documental ya está vigente; el validador automático de GitHub CI y la protección de rama están pendientes**, definidos en la política. Sin el expediente, los métodos nuevos NO se consideran finalizados.
 
+## Avance F7-A0 (2026-11-06)
+
+[Inventario y gate inicial](../docs/FASE_7_A0_INVENTARIO_Y_GATE_2026_11_06.md): scripts compartidos registrados, dependencias directas sin aprobación automática y comprobación documental en CI. **Etapa parcial**, sin análisis APK activo.
+
 ## Proyecto futuro que consumirá estas evidencias
 
 [Análisis automático de APK — dos salidas](../docs/FASE_7_APK_AUTOANALISIS_DOS_SALIDAS_PENDING_2026_11_02.md): A) informe estructurado con metadatos y hallazgos; B) código propuesto por IA más pruebas de validación. Ambas funciones permanecen deshabilitadas y pendientes de desarrollo.

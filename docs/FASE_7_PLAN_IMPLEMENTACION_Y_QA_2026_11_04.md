@@ -21,6 +21,8 @@ Dependencias principales:
 - Reembolsos, recibos, cancelaciones, account deletion y test de compra fallida son bloqueantes de producción.
 - Modo B de generación IA es una extensión habilitable por separado; no prometer capacidad ni precio no aprobados.
 
+**Seguimiento F7-A0 (2026-11-06):** [inventario y validador inicial](FASE_7_A0_INVENTARIO_Y_GATE_2026_11_06.md) registrados en feat/nuevas-integraciones. Estado PARTIAL; NO equivale a gate requerido ni ejecución aprobada de herramientas.
+
 ## 2. Fases y entregables
 
 ### F7-A0 — Inventario y política de evidencias (alta complejidad técnica)
