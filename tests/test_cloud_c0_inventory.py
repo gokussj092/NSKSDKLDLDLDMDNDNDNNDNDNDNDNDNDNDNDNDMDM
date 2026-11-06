@@ -62,7 +62,7 @@ class CloudC0BaselineTests(unittest.TestCase):
         self.assertTrue((ROOT / EXTRA_SURFACES["text_phase_g"]).exists())
         self.assertTrue((ROOT / EXTRA_SURFACES["nur_server_catalog"]).exists())
 
-    def test_ui_ux_source_files_have_exact_original_git_blob_ids(self):
+    def test_current_ui_sources_have_safe_manifest_and_launchers(self):
         # Legacy C0 blob hashes are archival. Live screens and manifest are
         # validated without requiring a per-version source snapshot.
         count=verify_ui_baseline()

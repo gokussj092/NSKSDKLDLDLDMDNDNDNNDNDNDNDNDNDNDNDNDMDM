@@ -91,7 +91,7 @@ class GlobalCloudUiContracts(unittest.TestCase):
             self.assertGreater(audio.getnframes(),audio.getframerate()//2)
             self.assertLess(audio.getnframes(),audio.getframerate()*2)
 
-    def test_frozen_c0_ui_remains_bit_for_bit_unchanged(self):
+    def test_current_ui_allows_screen_changes_with_security_controls(self):
         from scripts.ci.current_android_contracts import current_ui_sources
         self.assertGreater(current_ui_sources(ANDROID/"src/main"),0)
         # UI files may evolve; physical-device and Cloud route regression

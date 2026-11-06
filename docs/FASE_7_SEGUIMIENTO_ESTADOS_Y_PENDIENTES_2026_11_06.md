@@ -151,3 +151,9 @@
 - QA-01 se considerará DONE **solo si el nuevo run de Validate SP-DECODE aprueba**, sin silenciar la suite ni modificar analizadores para satisfacer tests.
 
 **Observación:** el workflow manual play-beta-artifacts.yml mantiene la restricción de repositorio privado ya existente; en una copia pública no se ejecuta. Es una decisión de seguridad separada de los 16 fallos.
+
+### Cierre del mantenimiento sin versiones fijas en workflows
+
+El workflow de firma de la rama se llama `android-branch-signed-release.yml` y obtiene versión y build desde Gradle; no se crea un nuevo workflow por cada versión. La clase Java del test de transporte V2 se genera desde Kotlin; al agregar o retirar un JNI no se actualizan manualmente el total ni las declaraciones del fixture. El test correspondiente valida **paridad dinámica**, no la existencia obligatoria del método de cancelación de una versión concreta.
+
+La suite Validate SP-DECODE aprobó tras eliminar los 13 fallos y 3 errores de origen: runs [42310607488](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42310607488) y [42310909607](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42310909607). Mantener pendiente el gate completo del último commit hasta verificar su ejecución propia, incluida la integración V2 del host JNI generado.

@@ -38,7 +38,14 @@ class CurrentAndroidContractsTests(unittest.TestCase):
     def test_host_jni_declarations_generated_from_current_kotlin(self):
         src=Path(__file__).resolve().parents[1]/"android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudNativeTransport.kt"
         text=host_native_declarations(src.read_text("utf-8"))
-        self.assertIn("private static native void nativeCancelCatalogDownload();",text)
+        from scripts.ci.current_android_contracts import jni_registry
+        root=Path(__file__).resolve().parents[1]
+        cpp=(root/"android/app/src/main/cpp/spdecode_transport.cpp").read_text("utf-8")
+        kotlin=src.read_text("utf-8")
+        methods=jni_registry(cpp,kotlin)
+        self.assertEqual(text.count("private static native "),len(methods))
+        for method in methods:
+            self.assertIn(" "+method+"(",text)
         self.assertIn("postNativeEncrypted(",text)
         self.assertIn("throws java.io.IOException",text)
         with self.assertRaises(ContractError):

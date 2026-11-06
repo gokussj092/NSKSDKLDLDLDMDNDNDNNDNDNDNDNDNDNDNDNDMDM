@@ -14,7 +14,7 @@ class CompatibleExportIntegration(unittest.TestCase):
         self.assertTrue(re.fullmatch(r'\d+\.\d+\.\d+',version))
         self.assertGreater(code,0)
         play=(ROOT/'.github/workflows/play-beta-artifacts.yml').read_text()
-        branch=(ROOT/'.github/workflows/android-v1127-branch-signed-release.yml').read_text()
+        branch=(ROOT/'.github/workflows/android-branch-signed-release.yml').read_text()
         for workflow in (play,branch):
             self.assertIn('scripts/ci/current_android_contracts.py --github-env "$GITHUB_ENV"',workflow)
             self.assertIn('SPDECODE_VERSION_NAME',workflow)

@@ -87,7 +87,7 @@ class CloudC4Tests(unittest.TestCase):
         self.assertNotIn("CLOUD_WORKER_TOKEN",source)
         self.assertNotIn("CLOUD_SESSION_SIGNING_KEY",source)
 
-    def test_original_ui_sources_exactly_match_c0(self):
+    def test_current_ui_sources_satisfy_manifest_contract(self):
         from scripts.ci.current_android_contracts import current_ui_sources
         self.assertGreater(current_ui_sources(APP),0)
         # Historical UI hashes are not active release gates; security and
