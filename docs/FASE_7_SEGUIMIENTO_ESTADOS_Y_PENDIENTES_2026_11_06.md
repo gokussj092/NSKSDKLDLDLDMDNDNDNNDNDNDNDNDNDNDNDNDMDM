@@ -35,7 +35,7 @@
 | A0-I06 | Workflow independiente | `.github/workflows/f7-a0-method-evidence.yml` | **SUCCESS** en run 42303343370, intento 2 |
 | A0-I07 | Documento técnico de alcance | `docs/FASE_7_A0_INVENTARIO_Y_GATE_2026_11_06.md` | Existe; vinculado a este tracker |
 
-**Prueba real:** [F7-A0 Method Evidence, intento 2, SUCCESS](https://github.com/gokussj092/NSKSDKLDLDMDNDNDNNDNDNDNDNDNDNDNDNDNDNDMDM/actions/runs/42303343370). Logs de job: `Ran 11 tests ... OK`; `F7-A0: tools=63 pinned-deps=7 app-dossiers=11 structurally-complete=11`. Los pasos de pruebas, inventario y gate de PR aprobaron.
+**Prueba real:** [F7-A0 Method Evidence, intento 2, SUCCESS](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42303343370). Logs de job: `Ran 11 tests ... OK`; `F7-A0: tools=63 pinned-deps=7 app-dossiers=11 structurally-complete=11`. Los pasos de pruebas, inventario y gate de PR aprobaron.
 
 **No se modificó el código de `scripts/apk_analysis/` ni los métodos `decoders/Python/apps/` para F7-A0.** Su código operativo no se reemplaza ni se «optimiza» de manera unilateral.
 
@@ -93,8 +93,8 @@
 
 ## 5. Incidencia transversal de QA (no atribuida a F7-A0 sin investigación)
 
-- **F7-A0 CI:** SUCCESS, run [42303343370](https://github.com/gokussj092/NSKSDKLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42303343370), intento 2.
-- **Validate SP-DECODE:** FAILURE, run [42303343453](https://github.com/gokussj092/NSKSDKLDLDMDNDNNDNDNDNDNDNDNDNDNDNDNDNDNDNDMDM/actions/runs/42303343453), intento 2. **1,206** tests ejecutados, **13 failures, 3 errors, 9 skipped**. Falla el paso `Run server and Cloud unit tests (no historical Android local decoder parity)`. Se requiere diagnóstico separado: no se ha probado que F7-A0 sea causa ni que los descifradores estén rotos.
+- **F7-A0 CI:** SUCCESS, run [42303343370](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42303343370), intento 2.
+- **Validate SP-DECODE:** FAILURE, run [42303343453](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42303343453), intento 2. **1,206** tests ejecutados, **13 failures, 3 errors, 9 skipped**. Falla el paso `Run server and Cloud unit tests (no historical Android local decoder parity)`. Se requiere diagnóstico separado: no se ha probado que F7-A0 sea causa ni que los descifradores estén rotos.
 
 **QA-01, errores (3):**
 - `test_android_remote_formats.RemoteFormatsAndroidTests.test_abowaged_fallback_survives_stale_remote_format_snapshot`

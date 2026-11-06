@@ -23,7 +23,7 @@ Dependencias principales:
 - Reembolsos, recibos, cancelaciones, account deletion y test de compra fallida son bloqueantes de producción.
 - Modo B de generación IA es una extensión habilitable por separado; no prometer capacidad ni precio no aprobados.
 
-**Seguimiento F7-A0 (2026-11-06):** [inventario y validador inicial](FASE_7_A0_INVENTARIO_Y_GATE_2026_11_06.md) registrados en feat/nuevas-integraciones. **Workflow F7-A0 validado**: [run 42303343370, intento 2, SUCCESS](https://github.com/gokussj092/NSKSDKLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42303343370), 11/11 tests. Estado global A0 **PARCIAL**: aún faltan aprobaciones de herramientas, esquema, corpus y required check. **Validate SP-DECODE global no está verde**: [run 42303343453, intento 2, FAILURE](https://github.com/gokussj092/NSKSDKLDLDMDNDNNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42303343453), 13 fallos/3 errores/9 omitidas entre 1,206 tests; ver QA-01 en registro de continuidad.
+**Seguimiento F7-A0 (2026-11-06):** [inventario y validador inicial](FASE_7_A0_INVENTARIO_Y_GATE_2026_11_06.md) registrados en feat/nuevas-integraciones. **Workflow F7-A0 validado**: [run 42303343370, intento 2, SUCCESS](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42303343370), 11/11 tests. Estado global A0 **PARCIAL**: aún faltan aprobaciones de herramientas, esquema, corpus y required check. **Validate SP-DECODE global no está verde**: [run 42303343453, intento 2, FAILURE](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42303343453), 13 fallos/3 errores/9 omitidas entre 1,206 tests; ver QA-01 en registro de continuidad.
 
 ## 2. Fases y entregables
 
