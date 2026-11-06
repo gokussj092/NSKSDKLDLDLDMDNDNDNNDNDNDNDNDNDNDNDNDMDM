@@ -42,7 +42,7 @@ El último comando requiere que la referencia exista en el checkout y puede bloq
 
 **11 tests, 11 OK** en el entorno de análisis, usando exclusivamente Python estándar y fixtures generados por cada test. Cobertura: hashes y dependencias, proveedor con/sin dossier, proveedor nuevo, faltantes de documentos/tests, protocolo de catálogo, cambios de herramientas compartidas, baseline obsoleta, documentación sola, validación de rutas, JSON inválido y package/build incongruente.
 
-**No corresponde afirmar ejecución verde de GitHub Actions ni de la suite completa del proyecto hasta consultar el resultado del run.** Las pruebas sintéticas de este gate NO prueban descifrado, descarga HTTP, integridad de una APK ni paridad con un motor Android.
+**Verificado en GitHub Actions:** [F7-A0 Method Evidence, run 42303343370, intento 2](https://github.com/gokussj092/NSKSDKLDLDMDNDNNDNDNDNDNDNDNDNDNDNDNDMDM/actions/runs/42303343370), estado **SUCCESS**. Logs: `Ran 11 tests ... OK`, `tools=63 pinned-deps=7 app-dossiers=11 structurally-complete=11`. Pasaron los pasos de tests, inventario y comprobación de PR. **La validación general NO está verde:** [Validate SP-DECODE, run 42303343453, intento 2](https://github.com/gokussj092/NSKSDKLDLDMDNDNNDNDNDNDNDNDNDNDNDNDNDMDM/actions/runs/42303343453), **FAILURE** con 13 failures, 3 errors y 9 skipped en 1,206 tests de la suite. Se documenta en QA-01 y no se atribuye causalidad a F7-A0 sin investigación. Las pruebas sintéticas de este gate NO prueban descifrado, descarga HTTP, integridad de una APK ni paridad con un motor Android.
 
 ## Modelo de aprobación y fronteras
 
@@ -50,6 +50,8 @@ El último comando requiere que la referencia exista en el checkout y puede bloq
 2. Un cambio en `scripts/apk_analysis/` exige actualizar la fuente del inventario; un cambio en un proveedor exige un expediente por package/build revisado en el mismo conjunto de cambios. El comprobador identifica algunos archivos genéricos del catálogo, pero **todavía no cubre todas las rutas y plugins dinámicos**.
 3. Ningún valor de `status: VERIFIED` de un expediente equivale automáticamente a `APPROVED_FOR_AUTO_EXECUTION`. Los modos A/B del futuro analizador requieren revisión específica de licencia, dependencias, comportamiento, aislamiento y uso de red.
 4. El nuevo código de F7-A0 no llama a `inspect_apk.py`, JADX, ADB, Frida ni a ningún binario de una APK; solo lee metadatos locales para su auditoría.
+
+**Matriz actualizada de todas las subfases, pendientes y handoff:** [FASE_7_SEGUIMIENTO_ESTADOS_Y_PENDIENTES_2026_11_06.md](FASE_7_SEGUIMIENTO_ESTADOS_Y_PENDIENTES_2026_11_06.md). Se registra F7-A0 como PARCIAL, no DONE.
 
 ## Pendientes para cerrar F7-A0
 

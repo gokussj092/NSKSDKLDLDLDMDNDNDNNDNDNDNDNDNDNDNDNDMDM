@@ -17,11 +17,11 @@ Los expedientes enlazan al decodificador operativo en `decoders/Python/apps/` y 
 
 Un resultado **no confirmado** también se archiva, con estado PENDING, PARTIAL o FAILED y las razones reales. No inventar éxito. No subir APK privado, datos de terceros, cuentas, claves ni archivos descifrados sensibles.
 
-**La obligación documental ya está vigente; el validador automático de GitHub CI y la protección de rama están pendientes**, definidos en la política. Sin el expediente, los métodos nuevos NO se consideran finalizados.
+**La obligación documental ya está vigente.** El validador inicial de CI F7-A0 existe y fue probado (11/11 tests); su cobertura ampliada y la protección de rama como check requerido siguen pendientes. Sin expediente, los métodos nuevos NO se consideran finalizados.
 
 ## Avance F7-A0 (2026-11-06)
 
-[Inventario y gate inicial](../docs/FASE_7_A0_INVENTARIO_Y_GATE_2026_11_06.md): scripts compartidos registrados, dependencias directas sin aprobación automática y comprobación documental en CI. **Etapa parcial**, sin análisis APK activo.
+[Inventario y gate inicial](../docs/FASE_7_A0_INVENTARIO_Y_GATE_2026_11_06.md): scripts compartidos registrados, dependencias directas sin aprobación automática y comprobación documental en CI. **Etapa parcial**, sin análisis APK activo. [Seguimiento detallado A0–A9 y pendientes](../docs/FASE_7_SEGUIMIENTO_ESTADOS_Y_PENDIENTES_2026_11_06.md).
 
 ## Proyecto futuro que consumirá estas evidencias
 

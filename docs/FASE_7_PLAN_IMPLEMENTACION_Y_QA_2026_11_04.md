@@ -1,6 +1,8 @@
 # SP-DECODE — Fase 7: fases de implementación, dependencias, pruebas y criterios de salida
 
-**Fecha: 2026-11-04 · Rama: feat/nuevas-integraciones · Estado: DISEÑO / NO IMPLEMENTADO.**
+**Plan original: 2026-11-04 · Rama: feat/nuevas-integraciones · Estado actualizado 2026-11-06: F7-A0 PARCIAL con CI específico SUCCESS; F7-A1–F7-A9 DOCUMENTADAS / NO IMPLEMENTADAS.**
+
+**Registro de continuidad, pendientes por fase y fallos de QA:** [FASE_7_SEGUIMIENTO_ESTADOS_Y_PENDIENTES_2026_11_06.md](FASE_7_SEGUIMIENTO_ESTADOS_Y_PENDIENTES_2026_11_06.md). La tabla de estados distingue hechos comprobados de requisitos de diseño.
 Documento operativo complementario de:
 - docs/FASE_7_CUENTAS_GOOGLE_PAGOS_Y_SOPORTE_APK_2026_11_04.md
 - docs/FASE_7_ARQUITECTURA_SUSCRIPCIONES_CREDITOS_APK_2026_11_02.md
@@ -21,7 +23,7 @@ Dependencias principales:
 - Reembolsos, recibos, cancelaciones, account deletion y test de compra fallida son bloqueantes de producción.
 - Modo B de generación IA es una extensión habilitable por separado; no prometer capacidad ni precio no aprobados.
 
-**Seguimiento F7-A0 (2026-11-06):** [inventario y validador inicial](FASE_7_A0_INVENTARIO_Y_GATE_2026_11_06.md) registrados en feat/nuevas-integraciones. Estado PARTIAL; NO equivale a gate requerido ni ejecución aprobada de herramientas.
+**Seguimiento F7-A0 (2026-11-06):** [inventario y validador inicial](FASE_7_A0_INVENTARIO_Y_GATE_2026_11_06.md) registrados en feat/nuevas-integraciones. **Workflow F7-A0 validado**: [run 42303343370, intento 2, SUCCESS](https://github.com/gokussj092/NSKSDKLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42303343370), 11/11 tests. Estado global A0 **PARCIAL**: aún faltan aprobaciones de herramientas, esquema, corpus y required check. **Validate SP-DECODE global no está verde**: [run 42303343453, intento 2, FAILURE](https://github.com/gokussj092/NSKSDKLDLDMDNDNNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42303343453), 13 fallos/3 errores/9 omitidas entre 1,206 tests; ver QA-01 en registro de continuidad.
 
 ## 2. Fases y entregables
 

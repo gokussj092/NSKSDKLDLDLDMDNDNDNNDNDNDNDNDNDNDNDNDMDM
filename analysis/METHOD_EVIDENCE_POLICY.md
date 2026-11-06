@@ -1,7 +1,7 @@
 # SP-DECODE — POLÍTICA OBLIGATORIA DE EVIDENCIAS Y SCRIPTS POR APLICACIÓN
 
 **Vigencia documental:** 2026-11-02.  
-**Estado:** regla de trabajo **OBLIGATORIA para nuevas investigaciones y revisiones**, con automatización CI pendiente de implementación.  
+**Estado:** regla de trabajo **OBLIGATORIA para nuevas investigaciones y revisiones**. **CI inicial F7-A0 IMPLEMENTADO y VALIDADO** (2026-11-06); su cobertura ampliada y configuración de required check en protección de rama siguen **PENDIENTES**. [Registro de avance](../docs/FASE_7_SEGUIMIENTO_ESTADOS_Y_PENDIENTES_2026_11_06.md).  
 **Ámbito:** todo método de archivo, texto, catálogo VPN, descarga autorizada, exportación compatible, actualización de decodificador y nuevo proveedor que se integre en SP-DECODE.  
 **Carpeta maestra:** analysis/ (nombre del repositorio en inglés). No confundir con scripts/apk_analysis/ ni con la documentación ANALYSIS.md existente dentro de cada decodificador.
 
@@ -79,7 +79,7 @@ Campos mínimos que el validador CI deberá exigir:
 
 ## 2.1. Registro obligatorio de herramientas, librerías y dependencias
 
-La regla estricta cubre **scripts propios, herramientas nuevas y de terceros, librerías, paquetes, runtimes, plugins y dependencias directas/transitivas relevantes** utilizados realmente durante una investigación, corrección o prueba. Guardar solo el script de descifrado NO satisface esta política. Esta exigencia documental es vigente; la instalación automática y el bloqueo en CI permanecen PENDIENTES.
+La regla estricta cubre **scripts propios, herramientas nuevas y de terceros, librerías, paquetes, runtimes, plugins y dependencias directas/transitivas relevantes** utilizados realmente durante una investigación, corrección o prueba. Guardar solo el script de descifrado NO satisface esta política. Esta exigencia documental es vigente; la instalación automática continúa **DESHABILITADA**. Existe un validador CI **parcial**, pero la ampliación de cobertura y su condición de check requerido para merge siguen **PENDIENTES**.
 
 ### Expediente obligatorio por aplicación y build
 
@@ -123,9 +123,9 @@ La regla estricta cubre **scripts propios, herramientas nuevas y de terceros, li
 
 Las peticiones de solo investigación (sin método funcional) también deben dejar expediente mínimo con scripts y estado PENDING. Si el equipo descubre un método manualmente, registrar un procedimiento reproducible o script de inventario antes de llamarlo integrado.
 
-## 5. Bloqueo de CI requerido (PENDIENTE DE CÓDIGO, NO ACTIVO HOY)
+## 5. Bloqueo de CI requerido (IMPLEMENTACIÓN PARCIAL; REQUIRED CHECK PENDIENTE)
 
-**Requisito funcional de la siguiente implementación de tooling**: crear scripts/ci/check_method_evidence.py y un job requerido en GitHub Actions (branch protection, cuando el propietario lo configure). Debe:
+**Estado observado 2026-11-06:** existen `scripts/ci/check_method_evidence.py`, `tests/test_method_evidence_a0.py` y `.github/workflows/f7-a0-method-evidence.yml`. El workflow [run 42303343370](https://github.com/gokussj092/NSKSDKLDLDMDNDNNDNNDNDNDNDNDNDNDNDNDNDMDM/actions/runs/42303343370), intento 2, pasó 11/11 tests y el gate de cambios de PR. **No** se considera completo el gate requerido: faltan cobertura de todas las rutas, comprobaciones de licencia/seguridad/hashes y configuración efectiva de branch protection. Los siguientes puntos son los requisitos completos, incluso cuando hoy exista una comprobación parcial de ellos:
 - Leer git diff para detectar apps nuevas/cambios en decoders/Python/apps/, fuentes de catálogo, workers o scripts de método.
 - Localizar analysis/<paquete>/<build>/MANIFEST.json actualizado, ANALYSIS.md, REPRODUCE.md, RESULTS.md, tools/, tests/.
 - Validar JSON/schema, rutas locales, existencia de scripts, hashes esperados, estado coherente con «habilitado» y mínimo de pruebas; prohibir rutas temporales y secretos evidentes. No imprimir muestras al fallar.
@@ -133,7 +133,7 @@ Las peticiones de solo investigación (sin método funcional) también deben dej
 - Bloquear merge cuando no exista el expediente requerido; mantener excepción explícita aprobada para cambios de documentación únicamente y modificaciones realmente no relacionadas.
 - Para legado existente: establecer baseline de paquetes previos y no invalidar todo el repositorio; exigir expediente desde la PRIMERA modificación futura de cada método y abrir inventario de migración gradual. No introducir excepciones silenciosas por proveedor.
 
-**Distinción de estado:** esta política ya es obligatoria para trabajos nuevos que realice cualquier asistente/colaborador, pero GitHub todavía NO la exige automáticamente mediante CI hasta que se implemente el check anterior y se active protección de rama. Ninguna documentación puede asegurar falsamente que existe ese bloqueo mecánico.
+**Distinción de estado:** esta política ya es obligatoria para trabajos nuevos de cualquier asistente/colaborador. El CI **ya ejecuta un control parcial**; no está demostrado que GitHub **bloquee todos los merges** hasta configurar/validar el check requerido y cerrar los huecos de cobertura. No equiparar presencia del workflow a protección completa. Véase el [seguimiento F7-A0–A9](../docs/FASE_7_SEGUIMIENTO_ESTADOS_Y_PENDIENTES_2026_11_06.md).
 
 ## 6. Reutilización por futuro servicio automático de APK
 
