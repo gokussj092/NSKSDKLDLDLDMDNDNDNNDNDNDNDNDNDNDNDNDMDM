@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "package_name": "com.ghostdeveloper.spdecode",
+  "app_name": "SP-DECODE APK QA first pass, internal app transport",
+  "version_name": "1.1.27",
+  "version_code": 42,
+  "observed_at": "2026-11-07",
+  "source_category": "owner_repository_internal_feature",
+  "authorization_note": "Owner requested account-free, zero-credit first-pass QA. Testers must own or be authorized to inspect submitted APKs; no third-party vendor method verification, unattended research tool approval or production rollout is implied.",
+  "status": "QA_STAGED_CI_BLOCKED",
+  "targets": [
+    {
+      "kind": "apk_static_qa",
+      "status": "NOT_CERTIFIED_END_TO_END",
+      "enabled_scope": "API gateway and Android UI wired; server feature flag defaults off; device SHA256 allowlist required",
+      "real_vendor_apk_tested": false,
+      "real_android_cloud_e2e_tested": false
+    }
+  ],
+  "tooling": [
+    {
+      "path": "cloud/apk_analysis/qa_static.py",
+      "approval": "ONLY_BOUNDED_STATIC_FIRST_PASS",
+      "kind": "Python standard library ZIP/DEX metadata parser",
+      "executes_apk_code": false
+    },
+    {
+      "path": "scripts/apk_analysis/",
+      "approval": "UNREVIEWED_UNTOUCHED"
+    }
+  ],
+  "dependencies": [],
+  "code_paths": [
+    "cloud/web/lib/f7-apk-qa-gateway.mjs",
+    "cloud/web/app/api/v1/apk-qa/chunk/route.js",
+    "cloud/web/app/api/v1/apk-qa/start/route.js",
+    "cloud/web/app/api/v1/apk-qa/finish/route.js",
+    "cloud/web/app/api/v1/apk-qa/result/route.js",
+    "cloud/web/lib/v2-transport.mjs",
+    "cloud/web/lib/v2-routes.mjs",
+    "cloud/web/lib/v2-hpke.mjs",
+    "cloud/web/lib/action-integrity.mjs",
+    "cloud/web/lib/rasp-policy.mjs",
+    "cloud/apk_analysis/qa_service.py",
+    "cloud/apk_analysis/qa_static.py"
+  ],
+  "tests": [
+    "tests/test_f7_apk_qa_service.py",
+    "cloud/web/tests/f7-apk-qa.test.mjs"
+  ],
+  "required_executable_environment": "PRIVATE_SEPARATE_QA_CONTAINER; V2_HPKE_DEVICE_BINDING_REQUIRED",
+  "approval_for_automated_vendor_methods": false,
+  "evidence_limitations": [
+    "CI_NO_RUNNER_STEPS_ON_2026_11_07",
+    "ANDROID_DEVICE_TO_VPS_NOT_PROVEN",
+    "REPORT_PRELIMINARY_ONLY",
+    "AT_REST_ENCRYPTION_PENDING_FOR_PRODUCTION",
+    "TESTER_ALLOWLIST_AND_SECRETS_NOT_PROVISIONED"
+  ]
+}

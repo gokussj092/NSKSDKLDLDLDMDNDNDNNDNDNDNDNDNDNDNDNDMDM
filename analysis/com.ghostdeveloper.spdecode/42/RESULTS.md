@@ -1,0 +1,3 @@
+# F7 APK QA results and unresolved tests
+
+**NOT CERTIFIED / CI BLOCKED.** GitHub Actions run `42403333789` (new QA integration), `42403333472` (P06 evidence), `42403333506` (Validate) and `42403333606` (P08) each concluded FAILURE within seconds without usable steps or logs. Because old unrelated workflows exhibit the same behavior, this is not proof the new code compiled or failed. All code paths are staged only. The previous P08 validated 79 Python and 69 Node cases on `42340438190` before this new feature. **PENDING:** QA service 13 synthetic lifecycle tests, Cloud 11 gateway tests, native JNI/Android compile, actual owner-signed APK scanner and physical device→private VPS E2E. No paid feature, credit, admin account or third-party APK is certified.

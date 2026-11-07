@@ -1,0 +1,3 @@
+# F7 APK QA static first-pass — architecture
+
+This is the OWNER'S SP-DECODE app versionCode 42, NOT an external vendor method dossier. V2 HPKE proof & Play Integrity/attestation remain mandatory. Operations 21 start, 22 binary chunk, 23 finish and 24 result pass only the bounded /api/v1/apk-qa gateway with server-side WeakMap identity. Untrusted APKs are examined by Python ZipFile and DEX header reading, without loading executable code, decompiling, calling vendor endpoints or using the original 63 research scripts. APK/APKS only; XAPK/ZIP explicitly denied. Startup OFF by default and restrict upload to server allowlisted SHA256 of device public key. This dossier documents new sources; no vendor verification/authorization.

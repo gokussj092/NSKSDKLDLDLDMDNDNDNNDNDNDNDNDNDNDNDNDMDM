@@ -1,0 +1,3 @@
+# Dependency / runtime review
+
+QA static parser uses Python 3.12 standard library (zipfile, hashlib, struct) only. Isolated Docker QA service does NOT install Ghidra/JADX or any prior research dependency, and is detached from the existing VPN worker and HPKE keyring. Cloud web uses existing Node 22, Next and @hpke/core, Android uses existing Kotlin, C++/JNI and Play Integrity; no new dependency is approved for arbitrary APK execution. Missing independent license/hashes for future decompilation tools remain F7-A0-P01/P03 pending. Disk encryption at rest of uploaded QA bytes is **not yet delivered**, so use authorized non-confidential test APKs only.
