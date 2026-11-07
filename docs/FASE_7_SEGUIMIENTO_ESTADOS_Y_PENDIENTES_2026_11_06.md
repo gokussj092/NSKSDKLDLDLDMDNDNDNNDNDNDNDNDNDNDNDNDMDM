@@ -11,7 +11,7 @@
 | Subfase | Estado | Implementado / evidencia disponible | Pendiente para poder terminarla |
 |---|---|---|---|
 | **F7-A0** Inventario y política de evidencias | **PARCIAL; CI específico VERDE** | Inventario **63 scripts**, **7 paquetes Python fijados**, **11 dossiers** de app/build; validador, tests y workflow. | Revisar licencias/transitivas/ABI/hash, aprobar herramientas individualmente, esquemas de reportes/checkpoints, corpus APK/APKS autorizado, ampliar CI y protección de rama. |
-| **F7-A1** Google Cloud y acceso Google | **DOCUMENTADO / NO IMPLEMENTADO** | Requisitos Google-only y arquitectura definidos. | Clientes OAuth Android/Web, backend de tokens/sesiones, Credential Manager, configuración real Google Cloud/Play y pruebas de seguridad. |
+| **F7-A1** Identidad híbrida (Google y correo/contraseña) | **EN IMPLEMENTACIÓN / NO ACTIVADA** | Primitivos de identidad, OTP, hash scrypt, registro en tres pasos con adaptadores, SQL PostgreSQL y suites CI; respaldos cifrados offline. | Base PostgreSQL real, verificación Google OAuth, mailer SMTP, rutas/API, sesiones, UI Android, respaldos Supabase y pruebas E2E. |
 | **F7-A2** Perfil, handle y privacidad | **DOCUMENTADO / NO IMPLEMENTADO** | Diseño y campos de Mi cuenta. | DB/migraciones, handle único, consentimiento/borrado, UI real y pruebas de concurrencia/privacidad. |
 | **F7-A3** Créditos y ledger | **DOCUMENTADO / NO IMPLEMENTADO** | Regla de reservar/cobrar al entregar/liberar en fallo. | Ledger ACID, idempotencia, reservas/expiración, ajustes auditados, 100 solicitudes concurrentes y pruebas de fallo. |
 | **F7-A4** Upload y almacenamiento APK | **DOCUMENTADO / NO IMPLEMENTADO** | Protocolo deseado de chunks, SHA-256, consentimiento. | Subida resumible, almacenamiento cifrado/TTL/cuotas, prevención ZIP bomb/traversal, permisos por cuenta. |
@@ -21,7 +21,7 @@
 | **F7-A8** Historial y reembolsos | **DOCUMENTADO / NO IMPLEMENTADO** | Reglas para recibos y devolución de crédito vs dinero. | Órdenes, recibos reales, historial, flujos refund de Google y conciliación/fiscalidad. |
 | **F7-A9** Integración Android y beta | **DOCUMENTADO / NO IMPLEMENTADO** | UI anterior «Próximamente» y propuestas AMOLED/localización; no acredita servicio APK funcional. | Pantallas y APIs reales, 14 idiomas, accesibilidad, pruebas Play e2e, privacidad, rollback y rollout progresivo. |
 
-**Resumen:** F7-A0 es la única subfase en ejecución. **Ninguna F7-A1…F7-A9 se declara completada.** Los módulos Android/Cloud previos se mantienen separados de estas nuevas subfases.
+**Resumen:** F7-A0 tiene regressiones P08 validadas y aceptación formal P09 pendiente; se inició F7-A1 bajo la nueva decisión del propietario de Google + email/contraseña, sin despliegue. **Ninguna F7-A1…F7-A9 está terminada.** Los módulos Android/Cloud previos se mantienen separados.
 
 ## 2. F7-A0: trabajos integrados y verificados
 
@@ -55,7 +55,7 @@
 
 ## 4. Qué falta exactamente en las etapas F7-A1…A9
 
-### F7-A1 — Google Sign-In
+### F7-A1 — Google y correo/contraseña
 **Hecho:** especificación Google-only, sin login por correo/contraseña obligatorio y sin bloquear funciones gratuitas.  
 **Falta:** branding y OAuth Cloud real (Android/Web/Play signing), Google Identity/Credential Manager en cliente, backend que valide `aud/iss/exp/sub/nonce`, sesiones, revocación y separación de roles. **Gate:** tokens incorrectos/caducados/replay rechazados y sesión recuperable en pruebas. **Depende de:** preparación externa Google Cloud.
 
@@ -272,3 +272,15 @@ Se integró un auditor P07 de configuración offline y tests negativos de wiring
 ### CI P08 — Resultado parcial y corrección de contexto
 
 [F7-A0 Evidence PR run 42339902423](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDNDNDMDM/actions/runs/42339902423) SUCCESS; [P08 Independent Regression run 42339902478](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNNDNNDNDNDNDNDNDNDNDNDNDMDM/actions/runs/42339902478) FAILURE en primer intento. Resultado: **Node 7/7 suites, 69/69 casos PASS**; Python **11/12 suites PASS**, último test `server-vpn-transport` falló por ejecución aislada con import `from engine` fuera de su ruta de módulos (su test en el Validate general anterior pasó 2/2). Todos los SHA de **486 fuentes operativas** se conservaron. Se corrigió exclusivamente el `PYTHONPATH` del runner P08 para emular la importación habitual del proceso worker y se añadió una regresión sobre ese contrato. No se tocó `cloud/workers/python/server.py`, ningún decodificador ni scripts de Work. **Run corregido aún pendiente de resultado; no marcar P08 DONE**. [Detalle técnico](FASE_7_A0_P08_REGRESION_FORMATOS_CONSUMIDORES_2026_11_06.md).
+
+## F7-A0-P08 — Validación final de la regresión independiente
+
+[F7-A0-P08 Independent Regression 42340438190](https://github.com/gokussj092/NSKSDKLDLDMDNDNDNNDNDNDNDNDNDNDNDNDNDMDM/actions/runs/42340438190): **SUCCESS** en ambos jobs, ejecutadas 12 suites Python (**79/79 casos PASS**) y 7 suites Cloud Node (**69/69 PASS**), 148 casos originales, 486 fuentes supervisadas sin cambios. [F7-A0 Evidence 42340438325](https://github.com/gokussj092/NSKSDKLDLDMDNDNNDNNDNDNDNDNDNDNDNDNDNDNDMDM/actions/runs/42340438325) **SUCCESS**; incluye el control de integridad y suites P08. Se ejecutó el código actual con fixtures offline y oráculos existentes, NO APK VPN externos autorizados. A0-P09 aún no tiene aceptación formal y existen riesgos A0-P01/P03/P05 documentados.
+
+## F7-A1 — Autenticación híbrida y respaldo externo cifrado
+
+**Cambio de decisión del propietario:** eliminar la antigua restricción «solo Google» para la nueva función comercial. Permitir también correo verificado, username único, nombre visible, OTP y contraseña hash; Google y credenciales propias comparten accountId inmutable con vinculación explícita. Las funciones VPN gratuitas no requieren cuenta. El proveedor de correo del dominio puede ser Dynadot Pro SMTP/IMAP, un proveedor transaccional o integración Gmail API autorizada según permisos; no se han enviado correos reales.
+
+**Integrado en rama, DESHABILITADO:** `cloud/web/lib/f7-account-identity.mjs` (scrypt, OTP/HMAC/normalización), `cloud/web/lib/f7-registration-flow.mjs` (email → OTP → password; adaptadores de DB/SMTP pendientes), `cloud/accounts/sql/001_identity_schema.sql` (esquema PostgreSQL, NO aplicado), `scripts/backups/f7_offsite_envelope.py` (X25519 + AES-GCM con clave privada solo fuera del VPS), pruebas Node/Python y workflow separado `.github/workflows/f7-a1-identity-backup.yml`. Ninguna clave privada real, OTP de usuario, `.env` ni DB se ha enviado a GitHub/Supabase. No hay nuevo proyecto de backup conectado ni API de subida programada. No hay registro o login de cuentas activo.
+
+**Documentación:** [F7-A1 identidad y recuperación](FASE_7_A1_IDENTIDAD_CORREO_BACKUP_2026_11_06.md) y [propuesta de términos/privacidad — NO PUBLICADA](FASE_7_A1_TERMINOS_PRIVACIDAD_ANEXO_BORRADOR_2026_11_06.md). Pendiente comprobar ejecución CI del último HEAD antes de declarar primitivos validados. No se modificaron scripts de análisis, catálogos, método VPN, rama principal o producción.
