@@ -248,4 +248,14 @@
     <string name="catalog_transfer_resume">إعادة المحاولة / الاستئناف</string>
     <string name="catalog_transfer_discard">حذف التنزيل الجزئي</string>
     <string name="catalog_transfer_retention">تُحفظ الأجزاء المتحقق منها مشفرة لمدة تصل إلى 7 أيام.</string>
+    <string name="apk_qa_title">تحليل APK — وضع الاختبار</string>
+    <string name="apk_qa_description">فحص ثابت فعلي لملفات APK/APKS. لا يلزم تسجيل دخول أو رصيد. لا يتم تثبيت التطبيقات أو تشغيلها.</string>
+    <string name="apk_qa_consent">أملك ملف APK هذا أو لدي إذن بتحليله.</string>
+    <string name="apk_qa_pick">اختيار APK أو APKS</string>
+    <string name="apk_qa_no_charge">لا يتم خصم أي رصيد أثناء الاختبار.</string>
+    <string name="apk_qa_limit">الحد الأقصى لحجم الملف: 96 MiB.</string>
+    <string name="apk_qa_reading">جارٍ قراءة APK…</string>
+    <string name="apk_qa_uploading">جارٍ رفع APK…</string>
+    <string name="apk_qa_processing">جارٍ التحليل على الخادم…</string>
+    <string name="apk_qa_report">تقرير فحص ثابت أولي</string>
 </resources>
