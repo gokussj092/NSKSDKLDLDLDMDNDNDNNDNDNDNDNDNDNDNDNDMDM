@@ -1,0 +1,322 @@
+{
+  "schema_version": 1,
+  "subphase": "F7-A0-P06",
+  "source_commit": "4fddee8924e58a9d1e6476974e9b7a9adda3e495",
+  "scope": "DIRECT_PROVIDER_DIRECTORY_NAMES_ONLY_NO_CONTENT_HASH_CERTIFICATION",
+  "note": "Legacy directory register: unchanged sources are reported as historical backlog, not approved or exempt from new changes. First future method change requires updated per-build evidence. No source, method, or dependency is approved for automatic execution.",
+  "exceptions": [],
+  "providers": [
+    {
+      "folder": "24clan_VPN_Green",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "4U_TUNNEL_LITE",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "AC_TUNNEL_VPN",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "ALFAISAL_Tunnel_Plus",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "ALSAHER_VIP",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "AM_TUNNEL_LITE_VPN",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "ANY_VPN",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "APNA_VPN",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "AboWaged_VPN",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "Aura_Net_VPN",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "AustroPlus_VPN",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "BD_NET_VPN",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "CATNET_VPN",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "CREEB_INJECTOR",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "CREEB_VPN",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "DTunnel_Mod",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "EUT_VPN",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "Enaa_Tunnel",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "FNF_TUNNEL_BD",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "FlexNet_B42",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "Focus_VPN_Cloud",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "FreedomVPN",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "Genis_VPN",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "HA_Tunnel_Plus",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "HTTP_Conexion",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "HTTP_Custom",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "HTTP_Door",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "HTTP_FenixVPN",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "HTTP_Internet_Infinito",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "HTTP_Jireh",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "HTTP_SocketClay",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "HTTP_Wakko",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "HX_Tunnel_VPN",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "Halcon_R_Net",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "Hex_Custom",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "Hex_Tunnel",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "IZPH_VPN_PRO",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "JyFast_VPN_Ultra",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "KSH_VPN",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "MKK_Hyper_VPN",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "MM_Tunnel",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "MNR_TUNNEL_PLUS",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "MTM_Tunnel_Lite",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "MegaTunnel",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "Mx_Tunnel_PRO",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "My_Tunnel_Proxy",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "NAMO_VPN",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "NPV_Tunnel",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "Netcol_VPN",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "Neutro_VPN",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "OnSpace_VPN",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "OneFTunnel",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "ProNeet_VPN",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "REESE_TUNNEL",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "RJC_TUNNEL_PRO",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "RMP_TUNNEL_PRO",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "Robust_Tunnel_VPN",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "Royal_Tunnel_VPN",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "SevenNET_VPN",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "Speicers_Pro_VPN",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "Speicers_Turbo_VPN",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "SuperFlash_VPN",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "TRV_TUNNEL",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "TunelGuard_VPN",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "TunnelDOOM_VPN",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "Tunneltweak",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "TurboMX_VPN",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "Tx_Tunnel",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "UT_Loop_Pro_VPN",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "Ultra_Custom",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "Ultra_Tunnel",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "V2ray_Tunnel_Plus",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "VIP_Snipher_Pro",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "VPN_PLUS_PERU",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "Wolf_Custom_VPN",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "XXPICore_Tunnel",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "Xhypher_Tunnel_Pro",
+      "status": "LEGACY_UNREVIEWED"
+    },
+    {
+      "folder": "ZiG_Tunnel",
+      "status": "LEGACY_UNREVIEWED"
+    }
+  ]
+}
