@@ -56,3 +56,12 @@ Consultar [F7-A0 P08 Independent Regression](https://github.com/gokussj092/NSKSD
 5. La aceptación global F7-A0-P09 sigue pendiente hasta cerrar o registrar formalmente riesgos residuales de P01–P08.
 
 **No marcar F7-A0, P08 ni la automatización de APK DONE solo porque el pipeline CI se muestre verde.**
+
+## Primeras ejecuciones y diagnóstico independiente
+
+- [F7-A0 Method Evidence — PR 42339902423](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNNDNNDNDNDNDNDNDNDNDMDM/actions/runs/42339902423) **SUCCESS** sobre `c72299fa`: matriz, tests P08, política P06 y anteriores aprobadas.
+- [P08 independiente — run 42339902478](https://github.com/gokussj092/NSKSDKLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42339902478) **FAILURE parcial** en primer intento: job Node **SUCCESS, 7/7 módulos y 69/69 tests**; job Python **11/12 módulos PASS**, registró 78 casos ejecutados y falló `server-vpn-transport` al ejecutarse solo, 1 caso `_FailedTest`.
+- **Causa identificada sin cambiar código funcional:** `cloud/workers/python/server.py` utiliza el import `from engine import ...`; su runtime normal añade `cloud/workers/python` al path de módulos. El nuevo runner independiente arrancaba los tests desde la raíz y no reproducía ese contexto. La suite de validación general sí ejecuta correctamente sus **2 casos** ([Validate 42335982835](https://github.com/gokussj092/NSKSDKLDLDMDNDNNDNNDNDNDNDNDNDNDNDMDM/actions/runs/42335982835), SUCCESS) gracias a su entorno y orden de importaciones. Se cambió **solo el PYTHONPATH del runner P08** para reproducir el entorno del worker, y se agregó test de contrato que verifica este entorno; no se tocó `server.py` ni `test_cloud_server_vpn_transport.py`.
+- El comparador SHA-256 informó **486 archivos operativos intactos** antes y después de la ejecución Python y Node. Los 63 scripts originales siguen sin cambios.
+
+**Pendiente para certificar ejecución completa:** obtener SUCCESS en ambas ramas del workflow con el último commit que incluye el ajuste al `PYTHONPATH`; no declarar el primer run fallido como verde, ni P08 completada mientras no termine CI. El primer fracaso corresponde a aislamiento de ejecución de tests, no prueba de error del descifrado en producción.
