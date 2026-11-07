@@ -45,7 +45,7 @@ function activeKeys(env=process.env) {
 }
 function cleanHeader(raw,op) {
   if(!Buffer.isBuffer(raw)||raw.length<HPKE_HEADER_BYTES+16||raw.length>HPKE_MAX_BYTES||
-     !Number.isInteger(op)||op<1||op>20||op===3||
+     !Number.isInteger(op)||op<1||op>24||op===3||
      raw.toString("ascii",0,4)!=="SPH2"||raw[4]!==1||
      raw.readUInt16BE(5)!==0x20||raw.readUInt16BE(7)!==1||raw.readUInt16BE(9)!==2||
      raw.readUInt32BE(67)!==raw.length-HPKE_HEADER_BYTES)throw Error("HPKE_INVALID");
@@ -71,7 +71,7 @@ export async function openHpkeRequest(raw,op,env=process.env) {
     requestHash:digest(raw),keyId:parsed.keyId};
 }
 /** Simple binary payload: u32be JSON metadata length | UTF-8 JSON | raw file bytes.
- * Only op=5 may carry the binary tail. V1 worker receives its existing Base64
+ * Only op=5 or op=22 may carry the binary tail. V1 worker receives its existing Base64
  * body internally; Base64 is not sent on the Android-VPS wire.
  */
 export function unpackHpkeBody(plaintext,op) {
@@ -82,8 +82,8 @@ export function unpackHpkeBody(plaintext,op) {
   const payload=JSON.parse(text);
   if(!payload||typeof payload!=="object"||Array.isArray(payload))throw Error("HPKE_INVALID");
   const tail=plaintext.subarray(4+size);
-  if(op===5) {
-    if(tail.length<1||tail.length>8*1024*1024||
+  if(op===5 || op===22) {
+    if(tail.length<1||tail.length>(op===22?2*1024*1024:8*1024*1024)||
        Object.prototype.hasOwnProperty.call(payload,"dataBase64"))throw Error("HPKE_INVALID");
     payload.dataBase64=tail.toString("base64");
   } else if(tail.length!==0)throw Error("HPKE_INVALID");
