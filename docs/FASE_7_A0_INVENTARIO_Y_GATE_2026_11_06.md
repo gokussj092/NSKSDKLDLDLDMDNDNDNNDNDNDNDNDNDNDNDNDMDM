@@ -63,6 +63,8 @@ El último comando requiere que la referencia exista en el checkout y puede bloq
 
 **Avance P05:** [corpus generado y pruebas APK/APKS en sandbox](FASE_7_A0_P05_CORPUS_APK_APKS_Y_LIMITES_2026_11_06.md). P05 sigue PARCIAL hasta muestras autorizadas de terceros, bundletool splits reales, JADX y perfiles ARM64 probados.
 
+**Avance P06:** [cobertura de rutas Cloud/worker/plugins y legado](FASE_7_A0_P06_COBERTURA_GATE_Y_LEGADO_2026_11_06.md). Nuevo inventario dinámico de SHA-256 de fuentes y dependencias/importaciones estáticas, gate de cambios y baseline explícita de 78 carpetas LEGACY_UNREVIEWED. Sin ejecución ni aprobación de herramientas; CI de P06 requiere confirmación del último run.
+
 ## Pendientes para cerrar F7-A0
 
 - Revisión real de **licencias, procedencia, versiones y SHA-256 de distribuciones externas/transitivas** para cada herramienta, incluidas Java/Node/Unicorn/Frida/JADX si se utilizan. No atribuir aprobaciones ni hashes inventados.
