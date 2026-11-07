@@ -89,7 +89,7 @@ test("five bad codes exhaust challenge without issuing a continuation",async()=>
   }
   const attempt=await s.flow.verify({challengeId:start.challengeId,code:otp});
   assert.equal(attempt.status,"INVALID_OR_EXPIRED_CODE");
-  assert.equal(s.pending.get(start.challengeId).attempts,6);
+  assert.equal(s.pending.get(start.challengeId).attempts,5);
 });
 test("expired verification blocks password creation",async()=>{
   const s=scenario(),start=await s.flow.start(first);
