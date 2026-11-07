@@ -249,4 +249,14 @@
     <string name="catalog_transfer_resume">Yeniden dene / sürdür</string>
     <string name="catalog_transfer_discard">Kısmi indirmeyi sil</string>
     <string name="catalog_transfer_retention">Doğrulanmış parçalar en fazla 7 gün şifreli olarak saklanır.</string>
+    <string name="apk_qa_title">APK analizi — test modu</string>
+    <string name="apk_qa_description">APK/APKS için gerçek statik inceleme. Giriş veya kredi gerekmez. Uygulamalar yüklenmez ya da çalıştırılmaz.</string>
+    <string name="apk_qa_consent">Bu APK bana ait veya analiz etme iznim var.</string>
+    <string name="apk_qa_pick">APK veya APKS seç</string>
+    <string name="apk_qa_no_charge">Test sırasında kredi alınmaz.</string>
+    <string name="apk_qa_limit">Azami dosya boyutu: 96 MiB.</string>
+    <string name="apk_qa_reading">APK okunuyor…</string>
+    <string name="apk_qa_uploading">APK yükleniyor…</string>
+    <string name="apk_qa_processing">Sunucuda analiz ediliyor…</string>
+    <string name="apk_qa_report">Ön statik rapor</string>
 </resources>
