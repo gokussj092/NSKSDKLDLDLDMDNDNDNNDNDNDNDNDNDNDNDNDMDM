@@ -250,4 +250,14 @@
     <string name="catalog_transfer_resume">Reintentar / reanudar</string>
     <string name="catalog_transfer_discard">Eliminar descarga parcial</string>
     <string name="catalog_transfer_retention">Los fragmentos verificados se guardan cifrados hasta 7 días para reanudar.</string>
+    <string name="apk_qa_title">Análisis de APK — modo de prueba</string>
+    <string name="apk_qa_description">Inspección estática real de APK/APKS. No requiere iniciar sesión ni créditos. Las aplicaciones no se instalan ni ejecutan.</string>
+    <string name="apk_qa_consent">Soy propietario de este APK o tengo permiso para analizarlo.</string>
+    <string name="apk_qa_pick">Seleccionar APK o APKS</string>
+    <string name="apk_qa_no_charge">No se cobran créditos durante las pruebas.</string>
+    <string name="apk_qa_limit">Tamaño máximo: 96 MiB.</string>
+    <string name="apk_qa_reading">Leyendo APK…</string>
+    <string name="apk_qa_uploading">Enviando APK…</string>
+    <string name="apk_qa_processing">Analizando en el servidor…</string>
+    <string name="apk_qa_report">Informe estático preliminar</string>
 </resources>
