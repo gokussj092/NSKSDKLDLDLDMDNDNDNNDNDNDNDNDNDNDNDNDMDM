@@ -8,6 +8,7 @@ on:
       - scripts/ci/build_p05_owned_apk.sh
       - tests/test_a0_apk_input_limits.py
       - cloud/apk_analysis/Dockerfile
+      - cloud/apk_analysis/compose.yaml
       - cloud/apk_analysis/runtime_preflight.py
       - scripts/apk_analysis/inspect_apk.py
       - scripts/apk_analysis/requirements.txt
