@@ -212,8 +212,7 @@ PreparedEnvelope hpkePrepare(int operation,const Bytes& metadata,
     const Bytes& attachment,const std::array<unsigned char,40>& pin) {
     if(operation<1||operation>24||operation==3 ||
        metadata.size()<2||metadata.size()>1024U*1024U ||
-       (operation==5?(attachment.empty()||attachment.size()>8U*1024U*1024U):
-                     !attachment.empty()))invalid();
+       !hpkeAttachmentAllowed(operation,attachment.size()))invalid();
     if(metadata.size()+attachment.size()+4+kHeader+16>kMaxWire)invalid();
 
     Bytes publicKey(pin.begin()+8,pin.end());
