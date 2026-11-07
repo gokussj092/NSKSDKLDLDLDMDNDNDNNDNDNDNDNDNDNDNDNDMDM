@@ -12,12 +12,12 @@ El identificador de cuenta es `account_id` UUID: el correo puede cambiar mediant
 
 | Subfase | Implementación / aceptación | Estado |
 |---|---|---|
-| **A1-P01** | Normalización handle/correo/nombre, política contraseña, `scrypt` con sal única, OTP HMAC aleatorio 6 dígitos de 10 min, máximo 5 intentos, continuación de registro de un solo uso | Código y tests integrados; CI pendiente |
+| **A1-P01** | Normalización handle/correo/nombre, política contraseña, `scrypt` con sal única, OTP HMAC aleatorio 6 dígitos de 10 min, máximo 5 intentos, continuación de registro de un solo uso | Código y tests de primitives validados (9/9); workflow inicial SUCCESS; regresión ampliada pendiente |
 | **A1-P02** | PostgreSQL principal ACID: cuentas, identidad Google/contraseña, OTP de registro, sesiones revocables, eventos | Migración SQL **NO aplicada** y contrato de transacciones por validar |
-| **A1-P03** | Registro `email + @username + nombre` → «Siguiente» → correo OTP → validación → contraseña → activar cuenta en una transacción; reservar username con concurrencia y no enumerar emails | Pendiente endpoints, mailer y pruebas DB |
-| **A1-P04** | Acceder con Google o email/contraseña; recuperación contraseña con OTP/token breve, cambio seguro, avisos new login/device, inicio de sesión sospechoso; revocación de sesiones y MFA admin | Pendiente OAuth, sesiones, envío |
+| **A1-P03** | Registro `email + @username + nombre` → «Siguiente» → correo OTP → validación → contraseña → activar cuenta en una transacción; reservar username con concurrencia y no enumerar emails | Flujo orquestador inerte con pruebas fake-store; pendientes endpoints, mailer real y pruebas DB ACID |
+| **A1-P04** | Acceder con Google o email/contraseña; recuperación contraseña con OTP/token breve, cambio seguro, avisos new login/device, inicio de sesión sospechoso; revocación de sesiones y MFA admin | Plantillas ES/EN implementadas sin envíos; pendientes OAuth, sesiones, reset/token distinto y SMTP |
 | **A1-P05** | Adaptador proveedor de correo: buzón de soporte, SMTP transaccional, SPF/DKIM/DMARC, bandeja del panel con sanitización | Pendiente definir proveedor, dominio y credenciales |
-| **A1-P06** | Respaldo: snapshot PostgreSQL + `cloud.env` cifrados **antes** de salir del VPS, destino Supabase separado, restauración atestiguada | Cifrador offline + tests; sin proyecto conectado, uploader/cron pendiente |
+| **A1-P06** | Respaldo: snapshot PostgreSQL + `cloud.env` cifrados **antes** de salir del VPS, destino Supabase separado, restauración atestiguada | Cifrador offline validado 12/12 en CI; sin proyecto conectado, uploader/cron y restauración externa pendiente |
 | **A1-P07** | Integrar Android/Next.js UX, idioma, términos/privacidad, pruebas Play real y flujo end-to-end; habilitar solo al cumplir gates | Pendiente |
 
 ### Flujo de cuenta previsto
@@ -65,3 +65,27 @@ Fuentes: https://supabase.com/docs/guides/storage/buckets/fundamentals ; https:/
 ## Intervenciones prohibidas en esta tanda
 
 No aplicar migraciones de base de datos productivas, no crear cuentas ni acceder a bandejas personales, no activar login/envíos, no crear cuenta Supabase sin autorización, no recuperar ni copiar `.env` de VPS, no fusionar `main`, no cambiar decodificadores ni los 63 scripts originales. Branch Protection continúa apagada por decisión del propietario.
+
+## Evidencia nueva y estado del flujo
+
+- [A1 contratos — run 42342414593](https://github.com/gokussj092/NSKSDKLDLDMDNDNDNNDNDNDNDNDNDNDNDNDNDMDM/actions/runs/42342414593) **SUCCESS** sobre `ee059d6d`: **9/9 pruebas Node** de identidad, hash y OTP; **12/12 pruebas Python** de cifrado/restauración autenticada.
+- Código adicional: `cloud/web/lib/f7-registration-flow.mjs` implementa orquestación en tres pasos con adaptadores inyectados; **no realiza DB ni SMTP real**. Suite `cloud/web/tests/f7-registration-flow.test.mjs` prueba errores de código, expiración, ausencia de duplicado y que una contraseña solo se cree después de verificar el correo. `cloud/web/lib/f7-account-email.mjs` prepara notificaciones ES/EN para OTP, restablecimiento de contraseña y alertas sin enviarlas; se añadió `cloud/web/tests/f7-account-email.test.mjs`. **Sus ejecuciones últimas permanecían en cola en la última comprobación**.
+- La clave privada de recuperación se genera únicamente en ordenador de confianza **distinto** del VPS. Ejemplo de uso manual tras instalar `cryptography` (no ejecutar sobre secretos reales hasta configurar retención, permisos y destino):
+
+```bash
+# En un equipo confiable fuera del VPS, no en GitHub ni Supabase:
+python scripts/backups/f7_offsite_envelope.py genkey --private-out recovery-private.pem --public-out backup-recipient-public.pem
+
+# Copiar solo backup-recipient-public.pem al VPS; después de crear un
+# dump consistente de una DB de prueba, cifrarlo antes de cualquier subida:
+python scripts/backups/f7_offsite_envelope.py seal --input db-test.dump --output db-test.spdbk --recipient-key backup-recipient-public.pem
+
+# Restaurar exclusivamente en un equipo aislado con la clave privada fuera de la nube:
+python scripts/backups/f7_offsite_envelope.py unseal --input db-test.spdbk --output db-test-restored.dump --recipient-key recovery-private.pem
+```
+
+**No** publicar `recovery-private.pem` en Git, Supabase, Gmail ni en el mismo VPS; las rutas anteriores son ejemplos de laboratorio. Se requiere una estrategia segura de custodia de la clave privada que soporte pérdida del equipo.
+
+### Destino Supabase: límite de tamaño y claves actuales
+
+El proyecto nuevo aún no existe ni está conectado. Las API keys recientes `sb_secret_*` son credenciales de servidor, deben transmitirse únicamente mediante cabecera `apikey`, no bajo `Authorization: Bearer` como si fueran JWT; jamás exponerlas a Android o frontend. Consultar https://supabase.com/docs/guides/getting-started/api-keys . Para archivos mayores a 6 MB se recomienda TUS reanudable y un límite absoluto de 50 MB por objeto en Free: https://supabase.com/docs/guides/storage/uploads/resumable-uploads y https://supabase.com/docs/guides/storage/uploads/file-limits . **No hay cliente API ni scheduler de respaldo activados todavía**.
