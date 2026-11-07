@@ -246,3 +246,17 @@ Los verificadores indicaron **63/63 scripts originales intactos**, 2 perfiles ca
 Se registraron **78 carpetas legadas** en `analysis/platform/apk-tooling/legacy_provider_baseline.v1.json` con `LEGACY_UNREVIEWED`; ninguna herramienta aprobada ni bypass automático. Las 63 herramientas originales permanecen sin cambios. `tests/test_a0_p06_coverage.py` contiene 12 pruebas unitarias sintéticas; gate añadido al workflow `f7-a0-method-evidence.yml`. Documento: [F7-A0-P06](FASE_7_A0_P06_COBERTURA_GATE_Y_LEGADO_2026_11_06.md).
 
 **Incidencia del primer CI:** el test P06 pasó 12 casos, pero el ejecutable lanzado por su ruta directa no hallaba `scripts` en `sys.path`; corregido acotadamente en commit `92fae370` sin tocar los decodificadores. Confirmar nueva ejecución antes de considerar el gate validado. **Pendientes:** revisión de rutas dinámicas/legado, distribuciones transitivas y licencias P01, PR real de prueba y protección de rama P07. P06/A0 y el análisis APK automático NO están completos.
+
+## F7-A0-P06 — Diagnóstico corregido y validado en CI de PR #110
+
+La versión inicial del gate P06 comparaba todos los cambios acumulados desde `main` en la PR #110 (144 commits), por lo que consideraba nuevas siete modificaciones Cloud históricas. Se corrigió con `post_cutover_changed_paths` (SHA de corte fijo **4fddee8924e58a9d1e6476974e9b7a9adda3e495**): se audita la PR completa, pero la exigencia documental se aplica únicamente a la intersección con archivos modificados después del corte. El SHA real del head debe tener el corte como ancestro; un corte o registro alterado falla de modo cerrado.
+
+**CI real confirmado:** [F7-A0 Pull Request 42335831332](https://github.com/gokussj092/NSKSDKLDLDMDNDNDNNDNDNDNDNDNDNDNDNDNDNDNDMDM/actions/runs/42335831332) SUCCESS; [Push 42335826786](https://github.com/gokussj092/NSKSDKLDLDMDNDNDNNDNDNDNDNDNDNDNDNDNDNDMDM/actions/runs/42335826786) SUCCESS, en commit `4e9093c7`: 17 pruebas P06 pasan y los dos gates sobre PR completos pasan; inventario 486 fuentes/399 candidatos, 63 herramientas originales intactas y 0 aprobaciones automáticas. Un nuevo cambio futuro del método legacy sigue bloqueado sin dossier. P06 continúa PARCIAL por revisión de indirectos/ABI/licencias.
+
+## F7-A0-P07 — Control requerido de GitHub y protección de main
+
+**Estado PARCIAL — protección remota NO activa**. Consulta GitHub real: `main.protected=false`, `feat/nuevas-integraciones.protected=false`; reglasets del repositorio `[]`. La lectura detallada de `/branches/main/protection` devuelve 403 (sin permiso de administración de protección en integración). Los dos contextos a exigir en `main` son `evidence-gate` y `validate`.
+
+Se integró un auditor P07 de configuración offline y tests negativos de wiring (sin secretos, sin API ni editar protección). Se mantienen las pruebas de no bypass del corte P06. Pendientes: resultado CI del último commit P07, activación en Settings por administrador, lectura posterior de `protected=true` y comprobación real de merge bloqueado ante un gate rojo. **Un workflow SUCCESS por sí solo no equivale a check requerido**.
+
+[Documentación P07 con procedimiento y evidencias](FASE_7_A0_P07_REQUIRED_CHECK_PROTECCION_2026_11_06.md). No se ha hecho merge, otra rama ni despliegue.
