@@ -73,7 +73,7 @@ def _event(state:dict, code:str, status:str) -> None:
     if code not in PUBLIC_EVENTS or status not in PUBLIC_STATES:
         raise ValueError("INVALID_PUBLIC_EVENT")
     events=state.setdefault("events",[])
-    if len(events)>=24:
+    if len(events)>=64:
         raise ValueError("EVENT_LIMIT_EXCEEDED")
     events.append({"sequence":len(events)+1, "code":code,
                    "status":status, "at":int(time.time())})
@@ -183,18 +183,22 @@ def _start(p:dict) -> dict:
         if path.is_dir() and HEX32.fullmatch(path.name):
             try:
                 existing=_json(path/"state.json")
+                matches_owner=hmac.compare_digest(existing.get("deviceKeyHash",""),owner)
+                if (matches_owner and start_id is not None and
+                    existing.get("clientStartId")==start_id and
+                    existing.get("sha256")==sha and
+                    existing.get("totalBytes")==total and
+                    existing.get("filename")==filename):
+                    # Retry after a lost START response: return the existing
+                    # capability even if the report is already committed.
+                    secret=_stable_upload_token(owner,start_id)
+                    if hmac.compare_digest(digest(secret),existing.get("tokenDigest","")):
+                        return {"jobId":existing["jobId"],"uploadToken":secret,
+                                "chunkBytes":CHUNK,"maxBytes":MAX_APK,
+                                "expiresIn":JOB_TTL,"status":existing["status"],
+                                "events":existing.get("events",[])}
                 if existing.get("status") in {"UPLOADING","PROCESSING"}:
-                    if hmac.compare_digest(existing.get("deviceKeyHash",""),owner):
-                        if (start_id is not None and existing.get("clientStartId")==start_id
-                            and existing.get("sha256")==sha and
-                            existing.get("totalBytes")==total and
-                            existing.get("filename")==filename):
-                            secret=_stable_upload_token(owner,start_id)
-                            if hmac.compare_digest(digest(secret),existing.get("tokenDigest","")):
-                                return {"jobId":existing["jobId"],"uploadToken":secret,
-                                        "chunkBytes":CHUNK,"maxBytes":MAX_APK,
-                                        "expiresIn":JOB_TTL,"status":existing["status"],
-                                        "events":existing.get("events",[])}
+                    if matches_owner:
                         raise ApiError("APK_QA_ALREADY_ACTIVE",409)
                     active+=1
             except ApiError as error:

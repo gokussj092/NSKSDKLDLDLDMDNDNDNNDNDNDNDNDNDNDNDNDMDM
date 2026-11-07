@@ -4,6 +4,7 @@ import base64
 from io import BytesIO
 import hashlib
 import json
+import os
 from pathlib import Path
 import struct
 import tempfile
@@ -182,6 +183,28 @@ class APKQAServiceTests(unittest.TestCase):
         self.assertEqual(self.finished(started)["status"],"COMPLETED")
         second=self.start()
         self.assertNotEqual(started["jobId"],second["jobId"])
+
+    def test_start_idempotency_survives_lost_response_and_final_completion(self):
+        with patch.dict(os.environ,{"SPDECODE_APK_QA_INTERNAL_TOKEN":"t"*48}):
+            start_id="9"*64
+            initial=self.start(clientStartId=start_id)
+            retry=self.start(clientStartId=start_id)
+            self.assertEqual(initial["jobId"],retry["jobId"])
+            self.assertEqual(initial["uploadToken"],retry["uploadToken"])
+            self.chunk(initial)
+            self.assertEqual(self.finished(initial)["status"],"COMPLETED")
+            terminal_retry=self.start(clientStartId=start_id)
+            self.assertEqual(terminal_retry["jobId"],initial["jobId"])
+            self.assertEqual(terminal_retry["status"],"COMPLETED")
+            independent=self.start(clientStartId="8"*64)
+            self.assertNotEqual(independent["jobId"],initial["jobId"])
+
+    def test_distinct_start_id_during_upload_is_still_blocked(self):
+        with patch.dict(os.environ,{"SPDECODE_APK_QA_INTERNAL_TOKEN":"t"*48}):
+            self.start(clientStartId="9"*64)
+            with self.assertRaises(qa.ApiError) as cm:
+                self.start(clientStartId="8"*64)
+            self.assertEqual(cm.exception.code,"APK_QA_ALREADY_ACTIVE")
 
     def test_resume_checkpoint_reports_authoritative_chunk_offset(self):
         started=self.start()

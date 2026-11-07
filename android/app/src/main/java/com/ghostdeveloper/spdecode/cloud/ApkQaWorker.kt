@@ -1,6 +1,7 @@
 package com.ghostdeveloper.spdecode.cloud
 
 import android.content.Context
+import kotlinx.coroutines.CancellationException
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
@@ -41,6 +42,8 @@ internal class ApkQaWorker(context:Context,params:WorkerParameters):
         return try {
             client.executeQueued()
             Result.success()
+        }catch(error:CancellationException) {
+            throw error
         }catch(error:CloudDecodeClient.Failure) {
             if(error.code in setOf("JOB_UNAVAILABLE","JOB_EXPIRED",
                     "INPUT_TOO_LARGE","UNSUPPORTED_FORMAT","INVALID_START_ID")) {
