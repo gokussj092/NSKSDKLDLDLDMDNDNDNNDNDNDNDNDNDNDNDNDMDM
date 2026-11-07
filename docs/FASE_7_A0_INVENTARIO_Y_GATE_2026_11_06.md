@@ -76,3 +76,16 @@ Reglas rectoras: [METHOD_EVIDENCE_POLICY.md](../analysis/METHOD_EVIDENCE_POLICY.
 ### Validación CI de P01 (GitHub Actions)
 
 [F7-A0 Method Evidence, run 42314608709](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42314608709), resultado **SUCCESS** (commit f263c3587e9cca8d9a87496b95cf9ab7880719b9). Ejecutados 11 tests de evidencia + 6 tests nuevos de metadatos. Inventario: 63 scripts, 7 pins directos, 11 dossiers. Verificador P01: 7 SDIST de referencia, 0 wheels instalados atestiguados y 0 autorizaciones automáticas. Estado P01 **PARCIAL**, pendiente wheel/ABI/transitivas/revisión jurídica. No implica fallo funcional de herramientas anteriores.
+
+
+### Validación verificada en GitHub Actions
+
+[F7-A0 Method Evidence — run 42316597610](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42316597610) concluyó **SUCCESS** sobre el commit `ca2f699`. Se aprobaron **11 pruebas de evidencia, 6 de dependencias y 7 del nuevo mapa** (24 pruebas en estas tres suites).
+
+El escaneo de P02 informó: **63 herramientas intactas**, 61 Python + 2 JavaScript, **63 mencionadas por al menos un archivo**, **8 con referencias explícitas en expedientes de app/build**, **22 con referencia explícita en pruebas**, 0 errores de parseo y **0 autorizaciones de ejecución automática**.
+
+**La cifra 63 mencionadas no indica 63 herramientas en producción**: las referencias pueden proceder de documentación general. Los grupos de 8 y 22 contabilizan *herramientas con al menos una referencia*, no número de aplicaciones ni pruebas exitosas.
+
+El workflow publicó el artefacto `f7-a0-evidence` (incluye `f7-a0-usage.json`), disponible desde la página de la ejecución durante su período de retención. Este informe es generado automáticamente, no un historial fijo por versión.
+
+**P02 sigue PARCIAL:** faltan análisis de consumidores indirectos y verificación de las capacidades reales por aplicación; estas auditorías no alteran ni certifican los métodos existentes.

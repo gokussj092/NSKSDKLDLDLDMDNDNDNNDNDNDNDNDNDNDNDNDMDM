@@ -43,3 +43,16 @@ El mapa se publica mediante `.github/workflows/f7-a0-method-evidence.yml` como a
 5. Mantener P01 abierto para locks transitivos, wheel/ABI y requisitos de licencia ya identificados, sin cambiar versiones que funcionan.
 
 **No declarar P02 completa ni el nuevo servicio de análisis APK al 100%** por el resultado de este escaneo. Se necesita integrar worker, pruebas reales y soporte de etapas posteriores.
+
+
+### Validación verificada en GitHub Actions
+
+[F7-A0 Method Evidence — run 42316597610](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42316597610) concluyó **SUCCESS** sobre el commit `ca2f699`. Se aprobaron **11 pruebas de evidencia, 6 de dependencias y 7 del nuevo mapa** (24 pruebas en estas tres suites).
+
+El escaneo de P02 informó: **63 herramientas intactas**, 61 Python + 2 JavaScript, **63 mencionadas por al menos un archivo**, **8 con referencias explícitas en expedientes de app/build**, **22 con referencia explícita en pruebas**, 0 errores de parseo y **0 autorizaciones de ejecución automática**.
+
+**La cifra 63 mencionadas no indica 63 herramientas en producción**: las referencias pueden proceder de documentación general. Los grupos de 8 y 22 contabilizan *herramientas con al menos una referencia*, no número de aplicaciones ni pruebas exitosas.
+
+El workflow publicó el artefacto `f7-a0-evidence` (incluye `f7-a0-usage.json`), disponible desde la página de la ejecución durante su período de retención. Este informe es generado automáticamente, no un historial fijo por versión.
+
+**P02 sigue PARCIAL:** faltan análisis de consumidores indirectos y verificación de las capacidades reales por aplicación; estas auditorías no alteran ni certifican los métodos existentes.

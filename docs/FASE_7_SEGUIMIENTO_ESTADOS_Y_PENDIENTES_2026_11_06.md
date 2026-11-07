@@ -170,3 +170,16 @@ Estado PARCIAL. Se revisaron las siete dependencias directas con sus fichas y ha
 ## F7-A0-P02 — Inventario dinámico (2026-11-06)
 
 **PARCIAL:** se agregó `scripts/ci/map_apk_tool_usage.py` y pruebas con fixtures `tests/test_a0_tool_usage.py`. El job F7-A0 genera el mapa `f7-a0-usage.json` con hashes, argumentos, imports, señales de riesgo, referencias a apps/build y tests; excluye la propia baseline para no inflar consumidores. **No se tocaron ni ejecutaron los métodos funcionales.** P02 pendiente: usos indirectos, capacidades realmente verificadas y política P03. [Documento de P02](FASE_7_A0_P02_MAPA_HERRAMIENTAS_2026_11_06.md).
+
+
+### Validación verificada en GitHub Actions
+
+[F7-A0 Method Evidence — run 42316597610](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42316597610) concluyó **SUCCESS** sobre el commit `ca2f699`. Se aprobaron **11 pruebas de evidencia, 6 de dependencias y 7 del nuevo mapa** (24 pruebas en estas tres suites).
+
+El escaneo de P02 informó: **63 herramientas intactas**, 61 Python + 2 JavaScript, **63 mencionadas por al menos un archivo**, **8 con referencias explícitas en expedientes de app/build**, **22 con referencia explícita en pruebas**, 0 errores de parseo y **0 autorizaciones de ejecución automática**.
+
+**La cifra 63 mencionadas no indica 63 herramientas en producción**: las referencias pueden proceder de documentación general. Los grupos de 8 y 22 contabilizan *herramientas con al menos una referencia*, no número de aplicaciones ni pruebas exitosas.
+
+El workflow publicó el artefacto `f7-a0-evidence` (incluye `f7-a0-usage.json`), disponible desde la página de la ejecución durante su período de retención. Este informe es generado automáticamente, no un historial fijo por versión.
+
+**P02 sigue PARCIAL:** faltan análisis de consumidores indirectos y verificación de las capacidades reales por aplicación; estas auditorías no alteran ni certifican los métodos existentes.
