@@ -206,6 +206,78 @@ PY
   log "APK QA enabled without manual device registration or user-entered token"
   compose --profile apk-qa ps web apk-qa
 }
+# Experimental high-memory worker, opt-in only; never start on the 1 GB VPS.
+# No device enrollment or operator-supplied token is required.
+apk_qa_enable_tools(){
+  preflight
+  grep -Fxq 'CLOUD_APK_QA_ENABLED=true' "$ENVFILE" ||
+    die "Run spdecode apk-qa enable first"
+  local mem_kib
+  mem_kib=$(awk '/^MemTotal:/ {print $2;exit}' /proc/meminfo)
+  [[ "$mem_kib" =~ ^[0-9]+$ && "$mem_kib" -ge 7800000 ]] ||
+    die "Advanced APK tools require a separate host with at least 8 GB RAM; the metadata lab remains operational"
+  local free_kib
+  free_kib=$(df -Pk "$REPO" | awk 'NR==2 {print $4}')
+  [[ "$free_kib" =~ ^[0-9]+$ && "$free_kib" -ge 8000000 ]] ||
+    die "Advanced APK tools require at least 8 GB free build/scratch disk"
+  local previous
+  previous=$(mktemp "$CFG/.apk-tools-before-XXXXXXXX")
+  cp -p "$ENVFILE" "$previous"
+  if ! python3 - "$ENVFILE" <<'PY'
+import os,pathlib,re,secrets,sys
+source=pathlib.Path(sys.argv[1])
+if not source.is_file() or source.is_symlink():
+    raise SystemExit("INVALID_ENV_FILE")
+rows=source.read_text("utf-8").splitlines()
+prefix="CLOUD_APK_QA_TOOLS_TOKEN="
+entries=[v.partition("=")[2].strip().strip("'\"")
+         for v in rows if v.startswith(prefix)]
+if len(entries)>1 or (entries and entries[0] and
+                     not re.fullmatch(r"[A-Za-z0-9_-]{32,128}",entries[0])):
+    raise SystemExit("INVALID_TOOL_SECRET")
+secret=entries[0] if entries and entries[0] else secrets.token_urlsafe(48)
+names=("CLOUD_APK_QA_TOOLS_TOKEN=","CLOUD_APK_QA_TOOLS_REMOTE=",
+       "CLOUD_APK_QA_TOOLS_REVIEWED=")
+rows=[line for line in rows if not line.startswith(names)]
+rows.extend(("CLOUD_APK_QA_TOOLS_TOKEN="+secret,
+             "CLOUD_APK_QA_TOOLS_REMOTE=enabled",
+             "CLOUD_APK_QA_TOOLS_REVIEWED=true"))
+tmp=source.with_name("."+source.name+".tools-tmp")
+fd=os.open(tmp,os.O_CREAT|os.O_EXCL|os.O_WRONLY,0o600)
+try:
+    with os.fdopen(fd,"w",encoding="utf-8") as dst:
+        dst.write("\n".join(rows)+"\n")
+        dst.flush();os.fsync(dst.fileno())
+    os.replace(tmp,source)
+finally:
+    tmp.unlink(missing_ok=True)
+os.chmod(source,0o600)
+print("Advanced APK tool channel configured without exposing credentials")
+PY
+  then
+    cp -p "$previous" "$ENVFILE"
+    rm -f "$previous"
+    return 1
+  fi
+  if ! (compose --profile apk-qa --profile apk-qa-tools build apk-tools apk-qa &&
+        compose --profile apk-qa --profile apk-qa-tools up -d --no-deps apk-tools &&
+        compose --profile apk-qa --profile apk-qa-tools exec -T apk-tools python3 -c \
+          "import urllib.request;urllib.request.urlopen('http://127.0.0.1:8793/health',timeout=5)" &&
+        compose --profile apk-qa --profile apk-qa-tools up -d --no-deps --force-recreate apk-qa &&
+        compose --profile apk-qa --profile apk-qa-tools exec -T apk-qa python -c \
+          "import urllib.request;urllib.request.urlopen('http://127.0.0.1:8792/health',timeout=5)")
+  then
+    log "Failed advanced APK tools activation; restoring prior configuration"
+    cp -p "$previous" "$ENVFILE"
+    compose --profile apk-qa --profile apk-qa-tools up -d --no-deps --force-recreate apk-qa || true
+    compose --profile apk-qa --profile apk-qa-tools stop apk-tools || true
+    rm -f "$previous"
+    return 1
+  fi
+  rm -f "$previous"
+  log "Advanced APK tools enabled with isolated worker; no manual token or device ID"
+  compose --profile apk-qa --profile apk-qa-tools ps apk-qa apk-tools
+}
 apk_qa_status(){
   preflight
   if grep -Fxq 'CLOUD_APK_QA_ENABLED=true' "$ENVFILE";then
@@ -214,6 +286,10 @@ apk_qa_status(){
     log "APK QA configured OFF"
   fi
   compose --profile apk-qa ps web apk-qa
+  if grep -Fxq 'CLOUD_APK_QA_TOOLS_REMOTE=enabled' "$ENVFILE";then
+    log "Advanced APK tool worker configured ON"
+    compose --profile apk-qa --profile apk-qa-tools ps apk-tools
+  fi
 }
 set_env(){
   local key="$1" value="$2"
@@ -448,11 +524,12 @@ case "${1:-help}" in
      python3 "$REPO/cloud/infra/vps/provider-services.py" "$2"
    fi;;
  apk-qa)
-   [[ $# -eq 2 ]] || die "spdecode apk-qa enable|status"
+   [[ $# -eq 2 ]] || die "spdecode apk-qa enable|enable-tools|status"
    case "$2" in
      enable) apk_qa_enable;;
+     enable-tools) apk_qa_enable_tools;;
      status) apk_qa_status;;
-     *) die "spdecode apk-qa enable|status";;
+     *) die "spdecode apk-qa enable|enable-tools|status";;
    esac;;
  qa)
    [[ $# -eq 2 ]] || die "spdecode qa start|stop|status|services|probe-nur"
@@ -484,6 +561,7 @@ SP-DECODE VPS commands:
   spdecode providers import-ehi /root/HTTPINJECTOR_CLOUD.py  # carga privada sin ejecutar el método
   spdecode qa start|stop|status|services|probe-nur  # ephemeral QA; services enables NUR and configured EHI
   spdecode apk-qa enable|status  # private APK lab; secrets created internally, no device registration
+  spdecode apk-qa enable-tools   # opt-in isolated JADX worker; requires 8 GB host RAM
   spdecode android setup
   spdecode android signing configure /root/upload-key.p12 alias
   spdecode android build --version-name 1.2.0 --version-code 26 --testing-only
