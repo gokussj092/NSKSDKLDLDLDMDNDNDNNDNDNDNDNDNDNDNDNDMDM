@@ -65,6 +65,42 @@ class F7QAActivationTests(unittest.TestCase):
         self.assertNotEqual(result.returncode,0)
         self.assertEqual(self.env.read_text(),"CLOUD_APK_QA_INTERNAL_TOKEN=short\n")
 
+    def test_advanced_worker_command_provisions_its_secret_idempotently(self):
+        begin=SCRIPT.index("apk_qa_enable_tools(){")
+        end=SCRIPT.index("apk_qa_status(){",begin)
+        tool_block=SCRIPT[begin:end]
+        marker='if ! python3 - "$ENVFILE" <<' + "'PY'\n"
+        self.assertIn(marker,tool_block)
+        body=tool_block.split(marker,1)[1].split("\nPY\n  then",1)[0]
+        self.env.write_text("CLOUD_APK_QA_ENABLED=true\n",encoding="utf-8")
+        def provision():
+            return subprocess.run([sys.executable,"-c",body,str(self.env)],
+                                  capture_output=True,text=True,check=False)
+        first=provision()
+        self.assertEqual(first.returncode,0,first.stderr)
+        raw=self.env.read_text(encoding="utf-8")
+        self.assertIn("CLOUD_APK_QA_TOOLS_REMOTE=enabled",raw)
+        self.assertIn("CLOUD_APK_QA_TOOLS_REVIEWED=true",raw)
+        credential=[row.partition("=")[2] for row in raw.splitlines()
+                    if row.startswith("CLOUD_APK_QA_TOOLS_TOKEN=")]
+        self.assertEqual(len(credential),1)
+        self.assertRegex(credential[0],r"^[A-Za-z0-9_-]{32,128}$")
+        self.assertNotIn(credential[0],first.stdout+first.stderr)
+        self.assertEqual(stat.S_IMODE(self.env.stat().st_mode),0o600)
+        again=provision()
+        self.assertEqual(again.returncode,0,again.stderr)
+        self.assertEqual(raw,self.env.read_text(encoding="utf-8"))
+
+    def test_advanced_worker_fails_closed_on_small_vps(self):
+        segment=SCRIPT.split("apk_qa_enable_tools(){",1)[1].split(
+            "apk_qa_status(){",1)[0]
+        self.assertIn("MemTotal",segment)
+        self.assertIn("7800000",segment)
+        self.assertIn("8000000",segment)
+        self.assertIn('CLOUD_APK_QA_TOOLS_REMOTE=enabled',segment)
+        self.assertIn("compose --profile apk-qa --profile apk-qa-tools",segment)
+        self.assertIn('return 1',segment)
+
     def test_shell_has_one_command_without_manual_device_or_user_token(self):
         self.assertIn("apk-qa)","\n"+SCRIPT)
         self.assertIn("apk_qa_enable()",SCRIPT)
