@@ -95,3 +95,8 @@ La ejecución [F7-A0 Method Evidence #42318706983](https://github.com/gokussj092
 Los verificadores indicaron **63/63 scripts originales intactos**, 2 perfiles candidatos en política, **0 aprobados para ejecución automática**, caché persistente separada y política de limpieza tras recibo de resultados. La comprobación `docker compose ... config --quiet` finalizó correctamente.
 
 **Alcance exacto:** son pruebas de fixtures y contratos. No se compiló la imagen Docker, no se ejecutaron APK reales y no se habilitó el análisis APK desde Android ni el VPS. Esas condiciones siguen pendientes para A4/A5/A9.
+
+
+### Ajuste de capacidad descubierto por P05
+
+La descarga comprobada del archivo ZIP oficial de JADX 1.5.6 agotó el tmpfs de **64 MB** del contenedor de **mantenimiento** (run 42326083344). Para conservar el comportamiento original `decompile.py --install` y **sin modificar ninguna herramienta**, se elevó únicamente el tmpfs de `apk-resource-preload` a **128 MB**. No se alteró el tmpfs de 64 MB del sandbox que ejecuta análisis de usuario. La precarga se verifica independientemente en [F7-A0-P05](FASE_7_A0_P05_CORPUS_APK_APKS_Y_LIMITES_2026_11_06.md).

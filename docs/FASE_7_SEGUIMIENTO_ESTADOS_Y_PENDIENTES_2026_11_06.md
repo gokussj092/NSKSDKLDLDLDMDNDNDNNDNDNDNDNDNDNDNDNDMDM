@@ -211,3 +211,10 @@ Los verificadores indicaron **63/63 scripts originales intactos**, 2 perfiles ca
 ## F7-A0-P05 — Corpus APK/APKS y límites (2026-11-06)
 
 **EN PRUEBAS CI, NO PRODUCCIÓN:** se añadió `cloud/apk_analysis/input_gate.py` para validar límites y estructura ZIP, `tests/test_a0_apk_input_limits.py` con 21 pruebas adversas, compilador de APK firmado temporal `scripts/ci/build_p05_owned_apk.sh` y workflow `f7-a0-p05-apk-lab.yml` para ejecutar el inspector original en un sandbox Docker offline. Los APK, llaves temporales y salidas no se guardan en Git. Pendientes: muestras VPN autorizadas reales, split APKS instalables, decompilación JADX y ABI/ELF, cuotas y carga, integración A4/A5/A9. Los 63 scripts se conservaron. [Plan/resultados P05](FASE_7_A0_P05_CORPUS_APK_APKS_Y_LIMITES_2026_11_06.md).
+
+
+### Incidencia real y corrección del entorno P05
+
+- P05 lab compilado/firmado propio, inspector APK+APKS, Docker offline: [run 42325768902](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42325768902) **SUCCESS**.
+- Precarga JADX falló por tmpfs de mantenimiento (64 MB; Errno 28), no por herramienta funcional: [run 42326083344](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42326083344). Se elevó **solo** precarga a 128 MB, sin modificar scripts o workers VPN.
+- Revalidación en [run 42326350743](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42326350743); **P05 sigue PARCIAL** hasta comprobar su conclusión y ejecutar muestras APK de terceros autorizadas con pruebas de recuperación/ABI.

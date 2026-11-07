@@ -69,3 +69,12 @@ python cloud/apk_analysis/input_gate.py /ruta/a/un.apk
 ```
 
 Esta fase añade tests, herramientas de QA y documentación, **no** modifica `scripts/apk_analysis/`, `decoders/`, workers de descifrado ni pantallas Android. Mantener separados métodos verificados con APKs reales, tests del fixture propio y mecanismos únicamente estructurales.
+
+
+### Evidencia real de GitHub Actions (laboratorio)
+
+- [P05 APK Lab run 42325768902](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42325768902): **SUCCESS**. La compilación/firmado real del APK propio, el gate de 21 fixtures, construcción de imagen Docker y ejecución del inspector original en APK y APKS culminaron correctamente. Se comprobó `metadata.json`, packageId, versionCode y SHA-256 de `classes.dex`.
+- [P05 JADX run 42326083344](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42326083344): **FAILURE** en precarga de JADX por espacio temporal de mantenimiento agotado (`Errno 28`); no por descifrado ni defecto del script original. Subfase corregida cambiando **únicamente** `apk-resource-preload.tmpfs` de 64 a 128 MB en `cloud/apk_analysis/compose.yaml`; entorno de análisis mantiene 64 MB, sin red ni privilegios. Nueva ejecución pendiente de verificar: [run 42326350743](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42326350743).
+- [F7-A0 Method Evidence run 42325858523](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42325858523): **SUCCESS**, incluidas 21 pruebas adversas P05 agregadas al gate existente.
+
+**Importante:** esos resultados de laboratorio no acreditan análisis de una VPN real externa, funcionamiento de APKs enviados desde Android ni soporte automático de todos los scripts de Work. El entorno real y P05 quedan sujetos a pruebas adicionales.
