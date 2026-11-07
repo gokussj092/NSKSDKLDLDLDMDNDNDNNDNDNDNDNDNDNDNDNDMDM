@@ -261,4 +261,5 @@
     <string name="apk_qa_report">Rapporto statico preliminare</string>
     <string name="apk_qa_copy_device_id">Copia ID del dispositivo di test</string>
     <string name="apk_qa_device_id_copied">ID dispositivo di test copiato</string>
+    <string name="apk_qa_retention_notice">Durante i test, l’APK viene salvato temporaneamente su un volume server riservato (non ancora cifrato a riposo) ed eliminato dopo l’analisi o la scadenza. Il rapporto resta fino a 12 ore più la pulizia. Non inviare APK riservati.</string>
 </resources>
