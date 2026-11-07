@@ -222,3 +222,9 @@ Los verificadores indicaron **63/63 scripts originales intactos**, 2 perfiles ca
 ### F7-A0-P05 — Cierre de laboratorio, pendientes reales
 
 [P05 lab #42326911352](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42326911352) **SUCCESS**: 21 casos adversos, APK propio firmado con DEX real, inspector original APK/APKS, precarga oficial SHA-256 de JADX 1.5.6 y reutilización offline, descompilación JADX con exit 0. [F7-A0 evidence #42326911348](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42326911348) **SUCCESS: 90 tests**. Sin alterar `scripts/apk_analysis/` ni decoders. Mantenimiento tmpfs=128 MiB y HOME/XDG en tmpfs para JADX; análisis mantiene red cerrada y filesystem raíz de solo lectura. **P05 PARCIAL** hasta APK VPN externo autorizado, APKS bundletool auténtico, ELF/ARM64 y estrés de cuotas/concurrencia/reinicio, pruebas con VM dedicada y conexión Android A4/A5/A9.
+
+### P05 — Inyección de fallos acotada y recuperación (continuación)
+
+**Estado: PARCIAL / SIN PRODUCCIÓN.** Nuevos `scripts/ci/p05_sandbox_faults.py` y `tests/test_a0_p05_failure_recovery.py`: observan límites del contenedor y ejercitan recuperación de procesos propios interrumpidos, escrituras fallidas y retención de soporte humano. `test_a0_apk_input_limits.py` excluye también `.zip` y `.xapk` expresamente. Se conectaron a `f7-a0-p05-apk-lab.yml` y `f7-a0-method-evidence.yml`; ejecutar y registrar resultados del último HEAD antes de cambiar cualquier estado a verificado.
+
+**No realizado:** VPN APK externa con autorización y hashes; APKS real de bundletool; ARM64/ELF; concurrencia y reinicio de VM persistente; transferencia autenticada desde Android; cuotas por usuario; almacenamiento cifrado con verificación de tenant; automatización de 63 métodos; atención humana y cobro end-to-end. Los 63 scripts siguen intocados. Una prueba en runner CI no valida hardware VPS ni habilita ejecución desatendida.
