@@ -90,3 +90,24 @@ El gate de evidencias [F7-A0 Method Evidence — #42326911348](https://github.co
 
 **Alcance:** APK firmado propio (real) y APKS de wrapper sintético; no es una certificación de APK VPN de terceros, split-set auténtico de bundletool, ELF ARM64 ni análisis automático desde Android. **P05 permanece PARCIAL** hasta esas pruebas y el despliegue aislado real A4/A5/A9.
 
+
+## Extensión de P05 — inyección de fallos y recuperación (rama, sin producción)
+
+Se añadieron `scripts/ci/p05_sandbox_faults.py`, `tests/test_a0_p05_failure_recovery.py` y aserciones explícitas de formato en `tests/test_a0_apk_input_limits.py`. Se conectaron al workflow **F7-A0-P05 APK Lab**, y la suite de recuperación al gate **F7-A0 Method Evidence**. Las nuevas pruebas NO alteran ninguna de las 63 herramientas ni los descifradores.
+
+| Caso | Qué se comprueba | Estado |
+| --- | --- | --- |
+| Sandbox Docker | UID 65532, capacidades vacías, rootfs de solo lectura, sin red, /tmp no ejecutable; cuota CPU/PID | CI en validación |
+| Memoria | Cgroup real de 96 MiB rechaza presión de páginas (se espera exit 137) | CI en validación |
+| Disco | tmpfs real de 8 MiB produce ENOSPC bajo presión acotada | CI en validación |
+| Tiempo e interrupción | Detención forzada de contenedor de prueba tras deadline y comprobación de no dejar contenedor huérfano | CI en validación |
+| Recursos | Comprobar que JADX con SHA-256 sigue disponible desde volumen de solo lectura y sin red después de fallos | CI en validación |
+| Host / SIGKILL | Proceso propio interrumpido; estado IN_PROGRESS, entrada y recursos permanecen | CI en validación |
+| Estado / ENOSPC | Fallo atómico de escritura simulado: el job no avanza ni se limpia | CI en validación |
+| Soporte humano | AWAITING_HUMAN nunca pasa al recolector automático | CI en validación |
+| Recibo y limpieza | Tras comprobación de integridad por oráculo de test y checkpoint confirmado, se elimina solo el workspace; conserva el resultado y la caché | CI en validación |
+| Formatos | .apk y .apks admitidos por gate; .zip y .xapk rechazados explícitamente | CI en validación |
+
+El test del oráculo de persistencia es **sintético**: NO acredita almacenamiento cifrado ni comprobación de propietario/tenant, que siguen siendo requisitos A4/A5. La inyección Docker es una prueba real de límites **en el runner efímero de GitHub**, NO certifica rendimiento sostenido ni persistencia de una VM dedicada. La CPU se inspecciona mediante cgroup cuando está disponible, no mediante benchmark estable. El disparador usa exclusivamente código/artefactos propios de CI, sin ejecutar APK de usuarios ni métodos VPN.
+
+La extensión continúa como **PARCIAL** hasta que existan pruebas verdes verificadas, corpus de VPN externas con autorización/consentimiento verificable, APKS real de bundletool, ELF ARM64, estrés concurrente/reinicio de host y flujo Android→A4→A5→A9 con resultados cifrados y soporte humano. Se prohíben merge a main y despliegue de producción en este avance.
