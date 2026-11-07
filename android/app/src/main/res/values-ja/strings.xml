@@ -261,4 +261,5 @@
     <string name="apk_qa_report">静的解析の暫定レポート</string>
     <string name="apk_qa_copy_device_id">テスト端末IDをコピー</string>
     <string name="apk_qa_device_id_copied">テスト端末IDをコピーしました</string>
+    <string name="apk_qa_retention_notice">テスト中、APKは制限付きサーバー領域に一時保存されます（保存時の暗号化は未対応）。解析完了またはアップロード期限切れ後に削除します。レポートは最長12時間と清掃時間残る場合があります。機密APKは送信しないでください。</string>
 </resources>
