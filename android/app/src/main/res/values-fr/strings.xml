@@ -260,4 +260,5 @@
     <string name="apk_qa_report">Rapport statique préliminaire</string>
     <string name="apk_qa_copy_device_id">Copier mon ID d’appareil de test</string>
     <string name="apk_qa_device_id_copied">ID de l’appareil de test copié</string>
+    <string name="apk_qa_retention_notice">En mode test, l’APK est conservé temporairement sur un volume serveur restreint (pas encore chiffré au repos), puis supprimé après analyse ou expiration. Le rapport peut rester 12 heures, plus le nettoyage. N’envoyez pas d’APK confidentiel.</string>
 </resources>
