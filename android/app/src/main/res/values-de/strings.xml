@@ -258,4 +258,6 @@
     <string name="apk_qa_uploading">APK wird hochgeladen…</string>
     <string name="apk_qa_processing">Server analysiert…</string>
     <string name="apk_qa_report">Vorläufiger statischer Bericht</string>
+    <string name="apk_qa_copy_device_id">Testgeräte-ID kopieren</string>
+    <string name="apk_qa_device_id_copied">Testgeräte-ID kopiert</string>
 </resources>
