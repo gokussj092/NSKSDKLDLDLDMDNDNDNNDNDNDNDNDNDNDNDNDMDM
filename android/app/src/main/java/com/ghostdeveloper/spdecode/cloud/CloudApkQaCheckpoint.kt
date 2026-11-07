@@ -7,6 +7,7 @@ import android.util.AtomicFile
 import org.json.JSONObject
 import java.io.File
 import java.io.IOException
+import java.io.FileNotFoundException
 import java.security.KeyStore
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
@@ -88,9 +89,11 @@ internal class CloudApkQaCheckpoint(context: Context) {
     }
 
     fun load(): State? = synchronized(LOCK) {
-        if(!file.baseFile.exists()) return@synchronized null
+        // AtomicFile.openRead() can recover a .bak after process death.
+        // Checking baseFile.exists() first would lose that recoverable state.
+        val ciphertext=try {file.openRead().use { it.readBytes() }}
+            catch(_:FileNotFoundException){return@synchronized null}
         try {
-            val ciphertext=file.openRead().use { it.readBytes() }
             if(ciphertext.size<29 || ciphertext.size>350000)
                 throw IOException("APK_QA_LOCAL_STATE_INVALID")
             val cipher=Cipher.getInstance("AES/GCM/NoPadding")

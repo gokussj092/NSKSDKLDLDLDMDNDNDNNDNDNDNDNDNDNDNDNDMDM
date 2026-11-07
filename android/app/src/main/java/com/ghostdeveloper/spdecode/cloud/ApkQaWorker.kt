@@ -39,6 +39,11 @@ internal class ApkQaWorker(context:Context,params:WorkerParameters):
 
     override suspend fun doWork():Result {
         val client=CloudApkQaClient(applicationContext,CloudDecodeClient(applicationContext))
+        if(!CloudLegalConsent.accepted(applicationContext)) {
+            // Withdrawal pauses work without pretending the remote job ended.
+            client.noteRecoverableError("LEGAL_CONSENT_REQUIRED")
+            return Result.failure()
+        }
         return try {
             client.executeQueued()
             Result.success()
