@@ -21,7 +21,7 @@ import time
 
 from .qa_static import inspect_static
 
-MAX_APK = 96 * 1024 * 1024  # QA cap, not the future paid production quota.
+MAX_APK = 100 * 1000 * 1000  # Exact 100 MB QA cap; other decoders retain their limits.
 CHUNK = 2 * 1024 * 1024
 MAX_POST = 3 * 1024 * 1024
 MAX_ACTIVE = 2
@@ -32,6 +32,14 @@ HEX32 = re.compile(r"[a-f0-9]{32}\Z")
 HEX64 = re.compile(r"[a-f0-9]{64}\Z")
 TOKEN = re.compile(r"[A-Za-z0-9_-]{43}\Z")
 ALLOWED = {"start", "chunk", "finish", "result"}
+# Public activity codes only. Never transmit tool names, scripts or techniques.
+PUBLIC_EVENTS = frozenset({
+    "UPLOAD_STARTED", "UPLOAD_RECEIVED", "UPLOAD_REJECTED",
+    "PACKAGE_VALIDATION", "PACKAGE_VALIDATED",
+    "COMPONENT_INSPECTION", "COMPONENTS_INSPECTED",
+    "REPORT_PREPARATION", "REPORT_READY", "ANALYSIS_FAILED",
+})
+PUBLIC_STATES = frozenset({"RUNNING", "DONE", "FAILED"})
 MUTEX = threading.RLock()
 
 
@@ -48,6 +56,16 @@ def canonical(obj:dict) -> bytes:
 
 def digest(token:str) -> str:
     return hashlib.sha256(token.encode("ascii")).hexdigest()
+
+
+def _event(state:dict, code:str, status:str) -> None:
+    if code not in PUBLIC_EVENTS or status not in PUBLIC_STATES:
+        raise ValueError("INVALID_PUBLIC_EVENT")
+    events=state.setdefault("events",[])
+    if len(events)>=24:
+        raise ValueError("EVENT_LIMIT_EXCEEDED")
+    events.append({"sequence":len(events)+1, "code":code,
+                   "status":status, "at":int(time.time())})
 
 
 def _json(path:Path) -> dict:
@@ -162,6 +180,7 @@ def _start(p:dict) -> dict:
            "tokenDigest":digest(secret),"filename":filename,"totalBytes":total,"sha256":sha,
            "status":"UPLOADING","receivedBytes":0,"nextChunk":0,"chunkDigests":[],
            "createdAt":now,"updatedAt":now}
+    _event(state,"UPLOAD_STARTED","RUNNING")
     _atomic(folder/"state.json",state)
     return {"jobId":job_id,"uploadToken":secret,"chunkBytes":CHUNK,
             "maxBytes":MAX_APK,"expiresIn":JOB_TTL,"status":"UPLOADING"}
@@ -210,9 +229,25 @@ def _chunk(p:dict) -> dict:
 
 def _process(job_id:str) -> None:
     folder=ROOT/job_id
+
+    def publish(code:str,status:str) -> None:
+        # Append only observations that the worker has actually reached.
+        with MUTEX:
+            state=_json(folder/"state.json")
+            if state["status"]!="PROCESSING":
+                raise ApiError("INVALID_STATE",409)
+            _event(state,code,status)
+            state["updatedAt"]=time.time()
+            _atomic(folder/"state.json",state)
+
     try:
         state=_json(folder/"state.json")
-        result=inspect_static(folder/("input"+Path(state["filename"]).suffix.lower()))
+        publish("PACKAGE_VALIDATION","RUNNING")
+        result=inspect_static(
+            folder/("input"+Path(state["filename"]).suffix.lower()),
+            on_stage=lambda code: publish(code,"DONE")
+        )
+        publish("REPORT_PREPARATION","RUNNING")
         status="COMPLETED"
     except Exception:
         result={"schemaVersion":1,"status":"FAILED","error":"STATIC_INSPECTION_FAILED",
@@ -223,6 +258,8 @@ def _process(job_id:str) -> None:
             _atomic(folder/"report.json",result)
             state=_json(folder/"state.json")
             state["status"]=status
+            _event(state,"REPORT_READY" if status=="COMPLETED" else "ANALYSIS_FAILED",
+                   "DONE" if status=="COMPLETED" else "FAILED")
             state["updatedAt"]=time.time()
             _atomic(folder/"state.json",state)
         finally:
@@ -243,12 +280,14 @@ def _finish(p:dict) -> dict:
         while chunk:=src.read(CHUNK):hashed.update(chunk)
     if hashed.hexdigest()!=state["sha256"]:
         state["status"]="REJECTED";state["updatedAt"]=time.time()
+        _event(state,"UPLOAD_REJECTED","FAILED")
         _atomic(folder/"state.json",state)
         file.unlink(missing_ok=True)
         raise ApiError("UPLOAD_HASH_MISMATCH",422)
     suffix=Path(state["filename"]).suffix.lower()
     file.rename(folder/("input"+suffix))
     state["status"]="PROCESSING";state["updatedAt"]=time.time()
+    _event(state,"UPLOAD_RECEIVED","DONE")
     _atomic(folder/"state.json",state)
     thread=threading.Thread(target=_process,args=(state["jobId"],),daemon=True)
     thread.start()
@@ -258,7 +297,8 @@ def _finish(p:dict) -> dict:
 def _result(p:dict) -> dict:
     folder,state=_authorized(p)
     base={"status":state["status"],"jobId":state["jobId"],
-          "receivedBytes":state["receivedBytes"],"totalBytes":state["totalBytes"]}
+          "receivedBytes":state["receivedBytes"],"totalBytes":state["totalBytes"],
+          "events":state.get("events",[])}
     if state["status"] in {"COMPLETED","FAILED"}:
         base["report"]=_json(folder/"report.json")
     return base
