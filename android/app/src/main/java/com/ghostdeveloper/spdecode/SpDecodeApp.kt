@@ -133,6 +133,7 @@ fun SpDecodeApp(
     apkQaReceived:Long=0L,
     apkQaTotal:Long=0L,
     apkQaReport:String?=null,
+    apkQaEvents:List<com.ghostdeveloper.spdecode.cloud.CloudApkQaClient.ActivityEvent> = emptyList(),
     apkQaError:String?=null,
     onApkQaPick:()->Unit={},
     onApkQaCancel:()->Unit={},
@@ -169,7 +170,8 @@ fun SpDecodeApp(
                     2->if(creditsPage) ApkCreditsComingSoonScreen()
                         else if(BuildConfig.SPDECODE_CLOUD_ENABLED)
                             ApkQaAnalysisScreen(apkQaRunning,apkQaPhase,apkQaReceived,
-                                apkQaTotal,apkQaReport,apkQaError,onApkQaPick,onApkQaCancel,onApkQaCopyDeviceId)
+                                apkQaTotal,apkQaReport,apkQaError,onApkQaPick,onApkQaCancel,
+                                onApkQaCopyDeviceId,events=apkQaEvents)
                         else ApkAnalysisComingSoonScreen()
                     3->ServerVpnScreen(busy,serverVpnApps,serverVpnLoading && catalogTransfer==null,serverVpnUnavailable,
                         onDecodeServerCatalog,onDecodeServerApp,catalogProgress)
