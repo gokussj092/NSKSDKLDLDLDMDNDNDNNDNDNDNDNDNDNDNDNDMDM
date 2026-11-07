@@ -59,9 +59,12 @@ class APKQAServiceTests(unittest.TestCase):
 
     def chunk(self,started,data=None,index=0,**extra):
         data=self.apk if data is None else data
-        args=self.cap(started,index=index,dataBase64=base64.b64encode(data).decode(),
-                      chunkSha256=hashlib.sha256(data).hexdigest(),**extra)
-        return qa.dispatch("chunk",args)
+        # Caller overrides (such as a deliberately invalid hash) must replace
+        # defaults, not duplicate a keyword before reaching the API.
+        options={"index":index,"dataBase64":base64.b64encode(data).decode(),
+                 "chunkSha256":hashlib.sha256(data).hexdigest()}
+        options.update(extra)
+        return qa.dispatch("chunk",self.cap(started,**options))
 
     def finished(self,started):
         state=qa.dispatch("finish",self.cap(started))

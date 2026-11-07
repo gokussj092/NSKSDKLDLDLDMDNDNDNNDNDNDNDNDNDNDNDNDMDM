@@ -58,7 +58,7 @@ private val Green=Color(0xFF38A36D)
 private val Amber=Color(0xFFE0B563)
 
 @Composable
-fun SpDecodeApp(
+internal fun SpDecodeApp(
     activeTab:Int,
     current:DecodeView?,
     session:List<DecodeView>,

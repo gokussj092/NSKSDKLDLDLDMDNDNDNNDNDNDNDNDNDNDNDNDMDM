@@ -1,4 +1,4 @@
-name: SP-DECODE Branch Release APK and AAB
+name: SP-DECODE Branch Release APK Signed
 on:
   push:
     branches: [feat/nuevas-integraciones]
@@ -75,37 +75,35 @@ jobs:
           SPDECODE_RELEASE_KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
           SPDECODE_RELEASE_KEY_PASSWORD: ${{ secrets.SPDECODE_SIGNING_KEY_PASSWORD }}
         run: gradle --no-daemon --max-workers=2 :app:assembleRelease
-      - name: Compile separately signed Play release AAB
-        working-directory: android
-        env:
-          SPDECODE_RELEASE_STORE_PASSWORD: ${{ secrets.SPDECODE_SIGNING_STORE_PASSWORD }}
-          SPDECODE_RELEASE_KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
-          SPDECODE_RELEASE_KEY_PASSWORD: ${{ secrets.SPDECODE_SIGNING_KEY_PASSWORD }}
-        run: gradle --no-daemon --max-workers=2 -PspdecodePlayAab=true :app:bundleRelease
-      - name: Validate release outputs
+      - name: Validate signed external APK only (no AAB)
         run: |
           set -euo pipefail
           APK=android/app/build/outputs/apk/release/app-release.apk
-          AAB=android/app/build/outputs/bundle/release/app-release.aab
-          test -s "$APK" && test -s "$AAB"
-          python3 scripts/ci/verify_play_update_artifacts.py "$APK" "$AAB"
-          python3 scripts/ci/verify_aab_locales.py "$AAB"
+          test -s "$APK"
           python3 scripts/ci/verify_release_signer_pins.py
-          python3 scripts/android_16kb_elf_audit.py "$APK" "$AAB"
+          python3 scripts/android_16kb_elf_audit.py "$APK"
           python3 tests/cloud_c5_apk_audit.py "$APK"
-          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK"
-          jarsigner -verify "$AAB" | grep -F 'jar verified.'
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK"
           "$ANDROID_HOME/build-tools/35.0.0/zipalign" -c -P 16 -v 4 "$APK"
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | grep -F "versionName='$SPDECODE_VERSION_NAME'"
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | grep -F "versionCode='$SPDECODE_VERSION_CODE'"
+          # Telegram/distribution APK must not accidentally contain the Play updater.
+          python3 - "$APK" <<'PY'
+          import sys
+          from zipfile import ZipFile
+          with ZipFile(sys.argv[1]) as apk:
+              files=set(apk.namelist())
+              assert "assets/spdecode-play-updates-enabled.marker" not in files
+              assert any(x.startswith("classes") and x.endswith(".dex") for x in files)
+          print("PASS: signed external APK contains dex and no Play updater marker")
+          PY
           mkdir -p dist
           cp "$APK" dist/SP-DECODE-v${SPDECODE_VERSION_NAME}-b${SPDECODE_VERSION_CODE}-release-signed.apk
-          cp "$AAB" dist/SP-DECODE-v${SPDECODE_VERSION_NAME}-b${SPDECODE_VERSION_CODE}-play-release-signed.aab
-          (cd dist && sha256sum *.apk *.aab > SHA256SUMS.txt)
+          (cd dist && sha256sum *.apk > SHA256SUMS.txt)
           printf 'Version: %s\nBuild: %s\nSource SHA: %s\n' "$SPDECODE_VERSION_NAME" "$SPDECODE_VERSION_CODE" "$GITHUB_SHA" > dist/BUILD_INFO.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: SP-DECODE-BRANCH-APK-AAB-SIGNED
+          name: SP-DECODE-BRANCH-APK-RELEASE-SIGNED
           path: dist/
           if-no-files-found: error
           retention-days: 30
