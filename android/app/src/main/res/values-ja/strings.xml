@@ -259,4 +259,6 @@
     <string name="apk_qa_uploading">APKを送信中…</string>
     <string name="apk_qa_processing">サーバーで解析中…</string>
     <string name="apk_qa_report">静的解析の暫定レポート</string>
+    <string name="apk_qa_copy_device_id">テスト端末IDをコピー</string>
+    <string name="apk_qa_device_id_copied">テスト端末IDをコピーしました</string>
 </resources>
