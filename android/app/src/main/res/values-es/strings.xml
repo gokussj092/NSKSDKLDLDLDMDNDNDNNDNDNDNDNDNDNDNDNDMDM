@@ -262,4 +262,5 @@
     <string name="apk_qa_report">Informe estático preliminar</string>
     <string name="apk_qa_copy_device_id">Copiar ID de mi dispositivo de prueba</string>
     <string name="apk_qa_device_id_copied">ID del dispositivo de prueba copiado</string>
+    <string name="apk_qa_retention_notice">En las pruebas, tu APK se guarda temporalmente en un volumen restringido del servidor (aún sin cifrado en reposo) y se elimina tras analizarlo o caducar la carga. El informe puede mantenerse hasta 12 horas más el ciclo de limpieza. No envíes APK confidenciales.</string>
 </resources>
