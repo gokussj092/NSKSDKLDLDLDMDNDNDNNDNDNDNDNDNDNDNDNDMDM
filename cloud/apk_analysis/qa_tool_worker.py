@@ -80,6 +80,8 @@ class Handler(BaseHTTPRequestHandler):
         if not BUSY.acquire(blocking=False):
             return self.respond(409,{"error":"WORKER_BUSY"})
         try:
+            # A peer that stops sending must not hold the single worker forever.
+            self.connection.settimeout(90)
             size,suffix=checked
             folder=Path(os.environ.get("SPDECODE_APK_QA_TOOLS_SCRATCH","/analysis"))
             with tempfile.TemporaryDirectory(prefix="job-",dir=folder) as td:

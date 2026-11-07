@@ -65,7 +65,7 @@ def inspect_remote(source:Path,*,host:str="apk-tools",port:int=8793)->dict:
         "X-SP-Tool-Ext":suffix,
         "X-SP-Tool-Mac":mac(token,size,digest,now,nonce,suffix),
     }
-    connection=http.client.HTTPConnection(host,port,timeout=700)
+    connection=http.client.HTTPConnection(host,port,timeout=1020)
     try:
         with source.open("rb") as inp:
             connection.request("POST","/analyze",body=inp,headers=headers)

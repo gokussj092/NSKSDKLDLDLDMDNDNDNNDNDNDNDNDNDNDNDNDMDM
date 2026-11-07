@@ -10,6 +10,7 @@ import json
 import os
 from pathlib import Path
 import re
+import signal
 import subprocess
 import tempfile
 import zipfile
@@ -55,11 +56,20 @@ def _run(command:list[str],*,cwd:Path,timeout:int,env:dict,
     # No shell, no APK-controlled argument strings, no stdout in JSON/logs.
     with logfile.open("wb") as log:
         try:
-            result=subprocess.run(command,cwd=cwd,env=env,
+            child=subprocess.Popen(command,cwd=cwd,env=env,
                 stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT,
-                timeout=timeout,check=False)
-            return result.returncode==0
-        except (OSError,subprocess.TimeoutExpired):
+                start_new_session=True)
+        except OSError:
+            return False
+        try:
+            return child.wait(timeout=timeout)==0
+        except subprocess.TimeoutExpired:
+            # Ghidra analyzeHeadless is a launcher. Kill the entire session,
+            # not just the shell parent, so no orphan Java process survives.
+            try:os.killpg(child.pid,signal.SIGKILL)
+            except ProcessLookupError:pass
+            try:child.wait(timeout=10)
+            except subprocess.TimeoutExpired:pass
             return False
 
 
