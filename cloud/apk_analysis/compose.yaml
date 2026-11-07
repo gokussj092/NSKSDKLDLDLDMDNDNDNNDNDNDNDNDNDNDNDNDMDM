@@ -40,7 +40,7 @@ services:
     cpus: 1.0
     restart: "no"
     tmpfs:
-      - /tmp:size=64m,noexec,nosuid,nodev
+      - /tmp:size=128m,noexec,nosuid,nodev
     volumes:
       # Only maintenance may populate the cache with hash-checked JADX.
       - apk-tool-cache:/opt/spdecode/scripts/apk_analysis/cache:rw
