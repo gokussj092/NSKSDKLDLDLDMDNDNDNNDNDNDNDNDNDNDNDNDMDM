@@ -90,6 +90,30 @@ class APKQAServiceTests(unittest.TestCase):
         self.assertFalse((self.root/started["jobId"]/"input.apk").exists())
         self.assertFalse((self.root/started["jobId"]/"input.part").exists())
 
+    def test_real_worker_events_are_ordered_and_never_expose_internal_methods(self):
+        started=self.start()
+        first=qa.dispatch("result",self.cap(started))
+        self.assertEqual(first["events"][0]["code"],"UPLOAD_STARTED")
+        self.chunk(started)
+        completed=self.finished(started)
+        events=completed["events"]
+        self.assertEqual([e["sequence"] for e in events],list(range(1,len(events)+1)))
+        self.assertEqual([e["code"] for e in events],[
+            "UPLOAD_STARTED","UPLOAD_RECEIVED","PACKAGE_VALIDATION",
+            "PACKAGE_VALIDATED","COMPONENT_INSPECTION","COMPONENTS_INSPECTED",
+            "REPORT_PREPARATION","REPORT_READY",
+        ])
+        self.assertTrue(all(e["status"] in qa.PUBLIC_STATES for e in events))
+        public=json.dumps(events).lower()
+        for forbidden in ("jadx","ghidra","script","algorithm","bruteforce","secret"):
+            self.assertNotIn(forbidden,public)
+
+    def test_exact_100_megabyte_cap_is_only_qa(self):
+        self.assertEqual(qa.MAX_APK,100_000_000)
+        with self.assertRaises(qa.ApiError) as cm:
+            self.start(totalBytes=100_000_001)
+        self.assertEqual(cm.exception.code,"INPUT_TOO_LARGE")
+
     def test_missing_consent_denied_without_creating_a_job(self):
         with self.assertRaises(qa.ApiError) as cm:self.start(consent=False)
         self.assertEqual(cm.exception.code,"CONSENT_REQUIRED")
@@ -157,6 +181,8 @@ class APKQAServiceTests(unittest.TestCase):
         result=self.finished(started)
         self.assertEqual(result["status"],"FAILED")
         self.assertEqual(result["report"]["error"],"STATIC_INSPECTION_FAILED")
+        self.assertEqual(result["events"][-1]["code"],"ANALYSIS_FAILED")
+        self.assertNotIn("PACKAGE_VALIDATED",[e["code"] for e in result["events"]])
         self.assertFalse((self.root/started["jobId"]/"input.apk").exists())
 
     def test_apks_bundle_accepts_valid_nested_base(self):
