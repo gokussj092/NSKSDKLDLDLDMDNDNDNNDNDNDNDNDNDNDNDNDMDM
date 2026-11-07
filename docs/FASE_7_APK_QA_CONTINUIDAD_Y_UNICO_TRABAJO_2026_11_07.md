@@ -6,7 +6,7 @@
 
 Solo una APK/APKS activa a la vez en la prueba privada: desde que se acepta el archivo hasta que exista un resultado final `COMPLETED`, `FAILED` o `REJECTED`. Se aplica **en el servidor**, con límite global QA `MAX_ACTIVE=1`, y **en Android**, con un único checkpoint y `WorkManager.enqueueUniqueWork`. No se permite iniciar otro trabajo porque se haya cerrado la pantalla, suspendido Android o perdido la conexión.
 
-La fase continúa sin login, créditos, compras y códigos regalo. Solo el dispositivo cuya clave pública esté inscrita en la allowlist puede enviar. Se mantiene V2 HPKE, PoP, atestación y Play Integrity según política remota. Máximo **100,000,000 bytes**, exclusivamente para APK/APKS; ZIP directo y XAPK no admitidos.
+La fase continúa sin login, créditos, compras, códigos regalo, registro de dispositivos o introducción de tokens. Se conservan V2 HPKE, PoP, atestación y Play Integrity según la política existente. La identidad técnica para aislar trabajos se obtiene automáticamente de la sesión V2 ya verificada; la credencial privada entre contenedores se genera automáticamente con `spdecode apk-qa enable`. El máximo es **100,000,000 bytes**, únicamente APK/APKS; XAPK y ZIP directos no están habilitados.
 
 ## Continuidad incorporada
 
@@ -32,3 +32,7 @@ La fase continúa sin login, créditos, compras y códigos regalo. Solo el dispo
 - El VPS reducido se debe dimensionar antes de activar `apk-qa`. No instalar ni desplegarlo automáticamente en producción sin recursos comprobados.
 
 **Criterio de aceptación:** runs CI completos verdes, APK firmado e instalado, envío real de 100 MB dentro de los límites, salida/reentrada de Activity, cierre forzoso del proceso, reinicio del servicio QA, bloqueo de segundo APK y recuperación del informe. Hasta entonces: **IMPLEMENTED / NOT CERTIFIED**.
+
+## Activación sin inscripción ni tokens manuales
+
+Tras las pruebas CI y la comprobación de recursos, usar `sudo spdecode update all feat/nuevas-integraciones`, seguido de `sudo spdecode apk-qa enable`. La CLI genera una credencial aleatoria solo entre los contenedores, preserva los secretos ya configurados del servicio, configura el interruptor de QA y comprueba salud. No exige copiar un ID o introducir un token en el teléfono. Ver estado sin secretos: `sudo spdecode apk-qa status`. **La seguridad no depende de que el endpoint sea desconocido**; el túnel V2 sigue autenticando y cifrando las solicitudes.
