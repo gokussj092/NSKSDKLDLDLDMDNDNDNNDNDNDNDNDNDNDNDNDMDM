@@ -32,6 +32,7 @@ internal fun ApkQaAnalysisScreen(
     report:String?,error:String?,
     onPick:()->Unit,onCancel:()->Unit,onCopyDeviceId:()->Unit,
     events:List<CloudApkQaClient.ActivityEvent> = emptyList(),
+    onRetry:()->Unit = {},
 ) {
     var authorized by rememberSaveable { mutableStateOf(false) }
     Column(Modifier.fillMaxSize().testTag("apk_qa_screen")
@@ -81,14 +82,14 @@ internal fun ApkQaAnalysisScreen(
                 Column(Modifier.padding(16.dp),
                     verticalArrangement=Arrangement.spacedBy(10.dp)) {
                     val label=when(phase) {
-                        "READING"->R.string.apk_qa_reading
-                        "SENDING"->R.string.apk_qa_uploading
+                        "QUEUED","READING"->R.string.apk_qa_reading
+                        "UPLOADING","SENDING"->R.string.apk_qa_uploading
                         else->R.string.apk_qa_processing
                     }
                     Text(stringResource(label),color=QA_WHITE,fontSize=14.sp)
                     val fraction=if(total>0L) (received.toDouble()/total)
                         .toFloat().coerceIn(0f,1f) else 0f
-                    if(phase=="SENDING" || phase=="READING")
+                    if(phase in setOf("QUEUED","UPLOADING","SENDING","READING"))
                         LinearProgressIndicator(progress={fraction},
                             modifier=Modifier.fillMaxWidth().testTag("apk_qa_progress"))
                     else
@@ -97,8 +98,13 @@ internal fun ApkQaAnalysisScreen(
                     if(total>0L) Text(String.format("%d / %d MiB",
                         received/1024L/1024L,total/1024L/1024L),
                         color=QA_MUTED,fontSize=12.sp)
-                    OutlinedButton(onClick=onCancel,modifier=Modifier.fillMaxWidth()) {
-                        Text(stringResource(R.string.cancel))
+                    Text(stringResource(R.string.apk_qa_one_at_time),
+                        color=QA_MUTED,fontSize=12.sp,lineHeight=18.sp)
+                    if(error!=null) {
+                        OutlinedButton(onClick=onRetry,
+                            modifier=Modifier.fillMaxWidth().testTag("apk_qa_reconnect")) {
+                            Text(stringResource(R.string.apk_qa_retry_connection))
+                        }
                     }
                 }
             }
@@ -122,6 +128,7 @@ internal fun ApkQaAnalysisScreen(
                             "REPORT_PREPARATION"->R.string.apk_qa_event_report_preparation
                             "REPORT_READY"->R.string.apk_qa_event_report_ready
                             "ANALYSIS_FAILED"->R.string.apk_qa_event_analysis_failed
+                            "ANALYSIS_RESUMED"->R.string.apk_qa_event_analysis_resumed
                             else->null
                         }
                         if(label!=null) Row(verticalAlignment=Alignment.CenterVertically) {
