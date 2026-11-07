@@ -665,14 +665,6 @@ class MainActivity : ComponentActivity() {
                 onApkQaPick={apkQaPicker.launch(arrayOf("application/vnd.android.package-archive","application/octet-stream","*/*"))},
                 onApkQaCancel={},
                 onApkQaRetry={reconnectApkQa()},
-                onApkQaCopyDeviceId={
-                    try {
-                        copy(apkQaClient.enrollmentId())
-                        toast(R.string.apk_qa_device_id_copied)
-                    }catch(_:Exception){
-                        apkQaError="APK_QA_DEVICE_ID_UNAVAILABLE"
-                    }
-                },
                 onCancel={cancelImport()},
                 onReveal={reveal=it},
                 onCopy={format->result?.let { entry ->scope.launch {

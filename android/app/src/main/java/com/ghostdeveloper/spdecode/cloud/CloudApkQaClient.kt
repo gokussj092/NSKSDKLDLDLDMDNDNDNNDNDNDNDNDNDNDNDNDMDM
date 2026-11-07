@@ -91,9 +91,6 @@ internal class CloudApkQaClient(context:Context,private val cloud:CloudDecodeCli
         "%02x".format(it.toInt() and 0xff)
     }
 
-    fun enrollmentId():String=hex(MessageDigest.getInstance("SHA-256").digest(
-        CloudRequestProof.publicKey().toByteArray(Charsets.UTF_8)))
-
     private fun filename(uri:Uri):String {
         var raw=""
         resolver.query(uri,arrayOf(OpenableColumns.DISPLAY_NAME),null,null,null)?.use { c->

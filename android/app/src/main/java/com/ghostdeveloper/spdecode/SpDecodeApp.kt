@@ -138,7 +138,6 @@ fun SpDecodeApp(
     onApkQaPick:()->Unit={},
     onApkQaCancel:()->Unit={},
     onApkQaRetry:()->Unit={},
-    onApkQaCopyDeviceId:()->Unit={},
 ){
     var dialog by remember{mutableStateOf<String?>(null)}
     var creditsPage by rememberSaveable { mutableStateOf(false) }
@@ -172,8 +171,7 @@ fun SpDecodeApp(
                         else if(BuildConfig.SPDECODE_CLOUD_ENABLED)
                             ApkQaAnalysisScreen(apkQaRunning,apkQaPhase,apkQaReceived,
                                 apkQaTotal,apkQaReport,apkQaError,onApkQaPick,onApkQaCancel,
-                                onApkQaCopyDeviceId,events=apkQaEvents,
-                                onRetry=onApkQaRetry)
+                                events=apkQaEvents,onRetry=onApkQaRetry)
                         else ApkAnalysisComingSoonScreen()
                     3->ServerVpnScreen(busy,serverVpnApps,serverVpnLoading && catalogTransfer==null,serverVpnUnavailable,
                         onDecodeServerCatalog,onDecodeServerApp,catalogProgress)

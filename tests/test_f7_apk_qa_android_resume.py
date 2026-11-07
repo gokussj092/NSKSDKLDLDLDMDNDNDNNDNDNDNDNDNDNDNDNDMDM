@@ -34,6 +34,8 @@ class APKQAAndroidResumeContracts(unittest.TestCase):
             self.assertIn(required,client)
         self.assertIn("enabled=authorized&&!active",ui)
         self.assertIn("apk_qa_one_at_time",ui)
+        self.assertNotIn("apk_qa_copy_device_id",ui)
+        self.assertNotIn("onApkQaCopyDeviceId",host)
         self.assertIn("apkQaClient.queue(uri)",host)
         self.assertNotIn("apkQaJob?.cancel()",host)
 
