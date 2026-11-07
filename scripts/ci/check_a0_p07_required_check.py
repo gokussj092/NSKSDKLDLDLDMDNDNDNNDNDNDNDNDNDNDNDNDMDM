@@ -76,7 +76,7 @@ def audit(root: Path) -> dict:
     if (not isinstance(cutoff, str)
         or not re.fullmatch("[0-9a-f]{40}", cutoff)
         or cutoff not in workflow
-        or ("PINNED_CUTOVER_SHA = " + repr(cutoff)) not in p06_source):
+        or ('PINNED_CUTOVER_SHA = "' + cutoff + '"') not in p06_source):
         errors.append("CUTOFF_NOT_PINNED_IN_BOTH_GATE_AND_WORKFLOW")
 
     return {
