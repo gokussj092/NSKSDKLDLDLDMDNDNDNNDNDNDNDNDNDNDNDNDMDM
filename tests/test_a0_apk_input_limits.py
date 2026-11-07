@@ -133,6 +133,11 @@ class ApkBoundaryTests(unittest.TestCase):
         self.reject(self.file("data.txt"),"INPUT_EXTENSION")
         self.reject(self.file(data=b"PKnotzip"),"ZIP_INVALID")
 
+    def test_zip_and_future_xapk_are_not_current_input_formats(self):
+        for suffix in (".zip", ".xapk", ".ZIP", ".XAPK"):
+            with self.subTest(suffix=suffix):
+                self.reject(self.file("disallowed" + suffix), "INPUT_EXTENSION")
+
     def test_input_symlink_denied(self):
         target=self.file()
         link=self.dir/"linked.apk"
