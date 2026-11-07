@@ -206,6 +206,14 @@ class APKQAServiceTests(unittest.TestCase):
                 self.start(clientStartId="8"*64)
             self.assertEqual(cm.exception.code,"APK_QA_ALREADY_ACTIVE")
 
+    def test_corrupt_existing_journal_blocks_new_upload_fail_closed(self):
+        started=self.start()
+        folder=self.root/started["jobId"]
+        (folder/"state.json").write_text("{corrupted",encoding="utf-8")
+        with self.assertRaises(qa.ApiError) as cm:
+            self.start(deviceKeyHash="a"*64)
+        self.assertEqual(cm.exception.code,"QA_BUSY")
+
     def test_resume_checkpoint_reports_authoritative_chunk_offset(self):
         started=self.start()
         uploaded=self.chunk(started)

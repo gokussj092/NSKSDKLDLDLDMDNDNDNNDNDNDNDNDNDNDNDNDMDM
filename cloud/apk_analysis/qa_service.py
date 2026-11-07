@@ -203,6 +203,9 @@ def _start(p:dict) -> dict:
                     active+=1
             except ApiError as error:
                 if error.code=="APK_QA_ALREADY_ACTIVE":raise
+                # Unknown persisted journal is not proof that the server is
+                # idle. Do not permit another APK until operator recovery.
+                raise ApiError("QA_BUSY",429) from None
     if active>=MAX_ACTIVE:raise ApiError("QA_BUSY",429)
     job_id=secrets.token_hex(16)
     folder=ROOT/job_id

@@ -2,6 +2,8 @@
 
 **Implementación en rama:** `feat/nuevas-integraciones`. **Estado: CÓDIGO INTEGRADO, PRUEBAS CI Y DESPLIEGUE REALES PENDIENTES**. Nunca declarar el analizador automático comercial completado por esto.
 
+> **Actualización posterior (2026-11-07):** el código ahora incluye un único trabajo QA global por vez, checkpoint Android cifrado, WorkManager con reintentos, START idempotente, reanudación por `nextChunk` confirmado y reconciliación del servidor tras reiniciar. Ver [continuidad y un solo trabajo](FASE_7_APK_QA_CONTINUIDAD_Y_UNICO_TRABAJO_2026_11_07.md). Las menciones originales a «recuperación pendiente» describen el estado anterior a esa implementación: **siguen pendientes las pruebas reales E2E, la certificación CI y el despliegue**, no la incorporación inicial del código.
+
 ## Alcance verificable
 
 - Android: selector SAF para `.apk`/`.apks`, consentimiento explícito, hash SHA-256 y subida de 2 MiB por fragmento cifrado con HPKE V2/JNI. Progreso, cancelación local, reintento por errores transitorios, polling y visualización del JSON preliminar. Idiomas actualizados: 14. Sin login ni débitos. La pantalla de tienda permanece desactivada.
