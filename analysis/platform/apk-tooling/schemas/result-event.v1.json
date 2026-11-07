@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "event_type",
+    "job_id",
+    "sequence",
+    "recorded_at_unix",
+    "previous_sha256",
+    "record",
+    "event_sha256"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "event_type": {
+      "const": "RESULT_COMMITTED"
+    },
+    "job_id": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{32}$"
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "recorded_at_unix": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "previous_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "event_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "result_ref",
+        "result_sha256",
+        "result_bytes",
+        "report_checkpoint_sha256"
+      ],
+      "properties": {
+        "result_ref": {
+          "type": "string",
+          "pattern": "^obj:[a-f0-9]{32}$"
+        },
+        "result_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "result_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 536870912
+        },
+        "report_checkpoint_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    }
+  },
+  "$id": "https://spdecode.xyz/schemas/apk-analysis/result-event.v1.json",
+  "title": "SP-DECODE APK Analysis Final Result Event v1",
+  "description": "Host-only checkpoint metadata. No APK bytes or secret-bearing text. Chain verified by CheckpointJournal."
+}
