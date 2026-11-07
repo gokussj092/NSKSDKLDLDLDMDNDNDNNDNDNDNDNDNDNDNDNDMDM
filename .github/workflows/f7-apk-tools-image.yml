@@ -1,0 +1,131 @@
+name: F7 APK Tools Image Real Offline E2E
+
+on:
+  push:
+    branches: [feat/nuevas-integraciones]
+    paths:
+      - cloud/apk_analysis/**
+      - .github/workflows/f7-apk-tools-image.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pinned-jadx-ghidra:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: Prepare owned Java and ELF laboratory specimens only
+        run: |
+          set -euo pipefail
+          mkdir -p tool-fixtures/src/com/spdecode/lab tool-fixtures/classes
+          cat > tool-fixtures/src/com/spdecode/lab/OwnedFixture.java <<'JAVA'
+          package com.spdecode.lab;
+          public final class OwnedFixture {
+            public static String decryptOwned(byte[] input) throws Exception {
+              javax.crypto.Cipher cipher =
+                  javax.crypto.Cipher.getInstance("AES/GCM/NoPadding");
+              return cipher.getAlgorithm();
+            }
+          }
+          JAVA
+          javac -d tool-fixtures/classes \
+              tool-fixtures/src/com/spdecode/lab/OwnedFixture.java
+          jar cf tool-fixtures/owned-fixture.jar -C tool-fixtures/classes .
+          cat > tool-fixtures/owned_fixture.c <<'C'
+          __attribute__((visibility("default")))
+          int encrypt_owned_configuration(int value) {
+            return value ^ 42;
+          }
+          C
+          gcc -shared -fPIC -O0 -o tool-fixtures/libowned.so \
+              tool-fixtures/owned_fixture.c
+          test -s tool-fixtures/owned-fixture.jar
+          test -s tool-fixtures/libowned.so
+      - name: Build isolated JVM21 JADX and pinned Ghidra image once
+        run: |
+          set -euo pipefail
+          docker build --pull \
+            -f cloud/apk_analysis/Dockerfile.qa-tools \
+            -t spdecode-f7-apk-tools-ci .
+      - name: Execute pinned decompiler and Ghidra on OUR code with no network
+        run: |
+          set -euo pipefail
+          docker run --rm \
+            --network none \
+            --read-only \
+            --user 65532:65532 \
+            --memory 4g --cpus 2 \
+            --cap-drop ALL \
+            --security-opt no-new-privileges \
+            --tmpfs /analysis:rw,size=1024m,uid=65532,gid=65532,mode=0700,noexec,nosuid,nodev \
+            --tmpfs /tmp:rw,size=128m,uid=65532,gid=65532,mode=0700,noexec,nosuid,nodev \
+            -v "$PWD/tool-fixtures:/samples:ro" \
+            --entrypoint python3 \
+            spdecode-f7-apk-tools-ci \
+            -B -c '
+          import json
+          from pathlib import Path
+          from cloud.apk_analysis.qa_tooling import (
+              _verified_jadx, _run, JADX_JAR, GHIDRA_SCRIPT
+          )
+          from cloud.apk_analysis.qa_jadx_refs import scan_jadx_sources
+          root=Path("/analysis")
+          env={
+              "PATH":"/opt/java/openjdk/bin:/usr/local/bin:/usr/bin:/bin",
+              "JAVA_HOME":"/opt/java/openjdk",
+              "HOME":str(root),"TMPDIR":str(root),
+              "XDG_CACHE_HOME":str(root),"XDG_CONFIG_HOME":str(root),
+              "LANG":"C.UTF-8","JAVA_TOOL_OPTIONS":"-Duser.home=/analysis",
+          }
+          assert _verified_jadx(), "JADX_JAR_PIN_FAIL"
+          assert Path("/opt/ghidra/support/analyzeHeadless").is_file()
+          out=root/"jadx"
+          out.mkdir()
+          command=[
+              "java","-Xmx1500m","-cp",str(JADX_JAR),
+              "jadx.cli.JadxCLI","--no-res",
+              "--decompilation-mode","simple","-j","2",
+              "-d",str(out),"/samples/owned-fixture.jar",
+          ]
+          if not _run(command,cwd=root,timeout=240,env=env,
+                      logfile=root/"jadx.log"):
+              raise RuntimeError("OWNED_JADX_EXECUTION_FAILED")
+          sources=scan_jadx_sources(out)
+          assert sources["candidateCallSites"], "OWNED_JADX_NO_EVIDENCE"
+          assert "JCA_CIPHER" in sources["cryptoReferenceCounts"]
+          assert sources["methodValidated"] is False
+          project=root/"ghidra-project"
+          project.mkdir()
+          summary=root/"ghidra-summary.json"
+          ghidra=[
+              "/opt/ghidra/support/analyzeHeadless",
+              str(project),"SPDecodeTest",
+              "-import","/samples/libowned.so",
+              "-analysisTimeoutPerFile","120",
+              "-scriptPath",str(GHIDRA_SCRIPT.parent),
+              "-postScript",GHIDRA_SCRIPT.name,str(summary),
+              "-deleteProject",
+          ]
+          if not _run(ghidra,cwd=root,timeout=240,env=env,
+                      logfile=root/"ghidra.log"):
+              raise RuntimeError("OWNED_GHIDRA_EXECUTION_FAILED")
+          report=json.loads(summary.read_text("utf-8"))
+          assert report["functions"]>0
+          assert any("encrypt_owned_configuration" in item["name"]
+                     for item in report["candidateFunctions"]), report
+          print("PASS: actual pinned JADX decompilation and Ghidra symbol analysis on owned fixtures")
+          '
+      - name: Verify no precompiled APK/AAB was produced
+        run: |
+          set -euo pipefail
+          test ! -d android/app/build/outputs/apk
+          test ! -d android/app/build/outputs/bundle
