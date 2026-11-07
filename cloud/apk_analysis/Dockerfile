@@ -4,7 +4,12 @@
 FROM python:3.12-slim-bookworm
 ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \
+    HOME=/tmp \
+    XDG_CONFIG_HOME=/tmp/.config \
+    XDG_CACHE_HOME=/tmp/.cache \
+    XDG_DATA_HOME=/tmp/.local/share \
+    JAVA_TOOL_OPTIONS="-Duser.home=/tmp"
 RUN apt-get update && apt-get install -y --no-install-recommends \
     openjdk-17-jre-headless libstdc++6 libcairo2 libpango-1.0-0 libffi8 \
     && rm -rf /var/lib/apt/lists/*
