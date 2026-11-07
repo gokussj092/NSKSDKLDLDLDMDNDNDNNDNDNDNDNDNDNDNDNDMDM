@@ -115,6 +115,17 @@ def _purge(now:float) -> None:
             pass
 
 
+def _sweep_loop() -> None:
+    # Enforce private job TTL even if nobody starts another upload.
+    while True:
+        time.sleep(300)
+        with MUTEX:
+            try:
+                _purge(time.time())
+            except (OSError,ValueError):
+                pass
+
+
 def _start(p:dict) -> dict:
     total=p.get("totalBytes")
     filename=p.get("filename")
@@ -306,6 +317,7 @@ def main():
     if len(os.environ.get("SPDECODE_APK_QA_INTERNAL_TOKEN",""))<32:
         raise RuntimeError("APK_QA_INTERNAL_TOKEN_NOT_CONFIGURED")
     ROOT.mkdir(mode=0o700,parents=True,exist_ok=True)
+    threading.Thread(target=_sweep_loop,daemon=True).start()
     server=ThreadingHTTPServer(("0.0.0.0",8792),Handler)
     server.serve_forever(poll_interval=0.2)
 
