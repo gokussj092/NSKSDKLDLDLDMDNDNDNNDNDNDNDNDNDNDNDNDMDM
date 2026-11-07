@@ -258,4 +258,6 @@
     <string name="apk_qa_uploading">در حال ارسال APK…</string>
     <string name="apk_qa_processing">در حال تحلیل در سرور…</string>
     <string name="apk_qa_report">گزارش اولیه تحلیل ایستا</string>
+    <string name="apk_qa_copy_device_id">کپی شناسه دستگاه آزمایشی</string>
+    <string name="apk_qa_device_id_copied">شناسه دستگاه آزمایشی کپی شد</string>
 </resources>
