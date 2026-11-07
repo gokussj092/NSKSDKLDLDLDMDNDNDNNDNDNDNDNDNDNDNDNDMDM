@@ -53,7 +53,11 @@ def scan(z: zipfile.ZipFile, *, apk: bool) -> dict:
             raise GateError("ZIP_DUPLICATE")
         seen.add(key)
         mode=(item.external_attr>>16)&0xffff
-        if stat.S_ISLNK(mode) or (mode and not (stat.S_ISREG(mode) or stat.S_ISDIR(mode))):
+        # ZIP files produced by Python may store permissions without S_IFREG.
+        # Mode 0 is unspecified (permitted); explicit symlink/device/socket
+        # types are never accepted. This is not a permission-bypass fallback.
+        file_kind=stat.S_IFMT(mode)
+        if file_kind not in (0, stat.S_IFREG, stat.S_IFDIR):
             raise GateError("ZIP_UNSAFE_TYPE")
         if item.flag_bits & 1:
             raise GateError("ZIP_ENCRYPTED")
