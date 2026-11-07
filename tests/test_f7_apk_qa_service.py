@@ -83,7 +83,12 @@ class APKQAServiceTests(unittest.TestCase):
         result=self.finished(started)
         self.assertEqual(result["status"],"COMPLETED")
         report=result["report"]
-        self.assertEqual(report["reportKind"],"APK_STATIC_QA_FIRST_PASS")
+        self.assertEqual(report["reportKind"],"APK_STATIC_QA_DEEP_V2")
+        self.assertEqual(report["status"],"COMPLETED_PARTIAL")
+        self.assertEqual(report["analysis"]["stage"],"DEEP_STATIC_METADATA")
+        self.assertIs(report["analysis"]["jadxExecuted"],False)
+        self.assertIs(report["analysis"]["ghidraExecuted"],False)
+        self.assertGreater(report["inventory"]["uncompressedBytesSeen"],0)
         self.assertEqual(report["input"]["sha256"],hashlib.sha256(self.apk).hexdigest())
         self.assertEqual(report["inventory"]["dexCount"],1)
         self.assertEqual(report["inventory"]["dexHeaders"][0]["classes"],3)

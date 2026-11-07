@@ -377,7 +377,8 @@ def _recover_jobs() -> None:
                 report_path=folder/"report.json"
                 if report_path.is_file() and not report_path.is_symlink():
                     report=_json(report_path)
-                    status=("COMPLETED" if report.get("status")=="COMPLETED_PRELIMINARY"
+                    status=("COMPLETED" if report.get("status") in
+                            {"COMPLETED_PRELIMINARY","COMPLETED_PARTIAL"}
                             else "FAILED")
                     state["status"]=status
                     final_event="REPORT_READY" if status=="COMPLETED" else "ANALYSIS_FAILED"

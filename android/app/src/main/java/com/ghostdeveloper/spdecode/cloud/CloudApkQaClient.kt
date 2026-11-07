@@ -242,7 +242,8 @@ internal class CloudApkQaClient(context:Context,private val cloud:CloudDecodeCli
         if(status=="COMPLETED") {
             val report=response.optJSONObject("report")
                 ?:throw IOException("APK_QA_REPORT_MISSING")
-            if(report.optString("reportKind")!="APK_STATIC_QA_FIRST_PASS")
+            if(report.optString("reportKind") !in setOf(
+                    "APK_STATIC_QA_FIRST_PASS","APK_STATIC_QA_DEEP_V2"))
                 throw IOException("APK_QA_REPORT_INVALID")
             checkpoint.save(savedProgress(state,response).copy(
                 phase="COMPLETED",receivedBytes=state.totalBytes,
