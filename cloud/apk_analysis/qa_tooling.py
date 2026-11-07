@@ -111,6 +111,7 @@ def _base_and_libs(source:Path,dest:Path):
                     if copied!=item.file_size:raise ValueError("SPLIT_TRUNCATED")
                 splits.append(split)
     binaries=[]
+    total_native=0;oversized_native=0
     def priority(item):
         name=item.filename.rsplit("/",1)[-1].lower()
         system=any(k in name for k in ("conscrypt","datastore","c++_shared",
@@ -120,10 +121,13 @@ def _base_and_libs(source:Path,dest:Path):
         return (1 if system else 0,0 if domain else 1,-item.file_size)
     for split in splits:
         with zipfile.ZipFile(split) as archive:
-            candidates=sorted((entry for entry in archive.infolist() if
+            all_native=[entry for entry in archive.infolist() if
                 entry.filename.startswith("lib/") and
-                entry.filename.endswith(".so") and
+                entry.filename.endswith(".so")]
+            total_native+=len(all_native)
+            candidates=sorted((entry for entry in all_native if
                 52<=entry.file_size<=32*1024*1024),key=priority)
+            oversized_native+=len(all_native)-len(candidates)
             for info in candidates:
                 if len(binaries)>=MAX_GHIDRA_LIBS:break
                 # Only a fixed, private basename is written, never an APK path.
@@ -136,7 +140,7 @@ def _base_and_libs(source:Path,dest:Path):
                         out.write(block)
                     if size!=info.file_size:raise ValueError("ELF_TRUNCATED")
                 binaries.append(native)
-    return base,binaries
+    return base,binaries,total_native,oversized_native
 
 
 def inspect_tooling(source:Path,report:dict)->dict:
@@ -172,7 +176,7 @@ def inspect_tooling(source:Path,report:dict)->dict:
                   hashlib.sha256(headless.read_bytes()).hexdigest()==expected)
     with tempfile.TemporaryDirectory(prefix=".apkqa-tools-",dir=source.parent) as td:
         scratch=Path(td)
-        base,libs=_base_and_libs(source,scratch)
+        base,libs,total_native,oversized_native=_base_and_libs(source,scratch)
         # Java writes only to ephemeral per-job workspace; no network and
         # no permission to the decoder worker, host keys, Redis or Docker.
         # A minimal fixed environment. Never copy the service's internal
@@ -200,9 +204,12 @@ def inspect_tooling(source:Path,report:dict)->dict:
         state["jadxExecuted"]=did_jadx
         state["status"]="PARTIAL_TOOLS_EXECUTED" if did_jadx else "TOOLS_FAILED"
         if not ghidra_ready:
-            state["ghidra"]={"status":"NOT_INSTALLED_OR_VERIFIED"}
+            state["ghidra"]={"status":"NOT_INSTALLED_OR_VERIFIED",
+                             "elfDiscovered":total_native}
         elif not libs:
-            state["ghidra"]={"status":"NO_ELF_CANDIDATES"}
+            state["ghidra"]={"status":"NO_ELF_CANDIDATES",
+                             "elfDiscovered":total_native,
+                             "elfOversized":oversized_native}
         else:
             analysed=0;failed=0;functions=0;candidate_names=[]
             for i,lib in enumerate(libs):
@@ -238,10 +245,17 @@ def inspect_tooling(source:Path,report:dict)->dict:
                         else:failed+=1
                     except (OSError,ValueError,TypeError):failed+=1
                 else:failed+=1
-            state["ghidra"]={"status":"COMPLETED" if analysed and not failed
-                             else "PARTIAL_OR_FAILED",
-                             "elfAnalysed":analysed,"elfFailed":failed,
-                             "functionsEnumerated":functions,
-                             "candidateFunctions":candidate_names}
+            fully_covered=analysed==total_native and not failed
+            state["ghidra"]={
+                "status":("COMPLETED" if fully_covered else
+                          "PARTIAL_LIMITED" if analysed else "FAILED_OR_TIMEOUT"),
+                "elfDiscovered":total_native,
+                "elfSelected":len(libs),
+                "elfSkipped":max(0,total_native-len(libs)),
+                "elfOversized":oversized_native,
+                "elfAnalysed":analysed,"elfFailed":failed,
+                "functionsEnumerated":functions,
+                "candidateFunctions":candidate_names,
+            }
             state["ghidraExecuted"]=analysed>0
         return state

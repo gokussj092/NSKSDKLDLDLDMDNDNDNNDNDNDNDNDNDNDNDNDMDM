@@ -48,7 +48,9 @@ def inspect_static(path:Path, on_stage=None)->dict:
             "ghidraExecuted":tooling["ghidraExecuted"],
             "nextStages":(
                 ([] if tooling["jadxExecuted"] else ["JADX_DECOMPILATION_PENDING"]) +
-                ([] if tooling["ghidraExecuted"] else ["GHIDRA_HEADLESS_PENDING"]) +
+                ([] if tooling.get("ghidra",{}).get("status")=="COMPLETED"
+                  else ["GHIDRA_HEADLESS_PARTIAL_PENDING"] if tooling["ghidraExecuted"]
+                  else ["GHIDRA_HEADLESS_PENDING"]) +
                 ["METHOD_EVIDENCE_PENDING"]),
         },
         "limitations":[
