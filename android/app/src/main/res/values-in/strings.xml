@@ -253,7 +253,7 @@
     <string name="apk_qa_consent">APK ini milik saya atau saya punya izin menganalisisnya.</string>
     <string name="apk_qa_pick">Pilih APK atau APKS</string>
     <string name="apk_qa_no_charge">Tidak ada kredit yang dipotong selama pengujian.</string>
-    <string name="apk_qa_limit">Ukuran maksimum: 96 MiB.</string>
+    <string name="apk_qa_limit">Ukuran maksimum: 100 MB.</string>
     <string name="apk_qa_reading">Membaca APK…</string>
     <string name="apk_qa_uploading">Mengunggah APK…</string>
     <string name="apk_qa_processing">Menganalisis di server…</string>
@@ -261,4 +261,15 @@
     <string name="apk_qa_copy_device_id">Salin ID perangkat pengujian saya</string>
     <string name="apk_qa_device_id_copied">ID perangkat pengujian disalin</string>
     <string name="apk_qa_retention_notice">Saat diuji, APK disimpan sementara pada volume server terbatas (belum dienkripsi saat tersimpan) dan dihapus setelah analisis atau unggahan kedaluwarsa. Laporan dapat disimpan hingga 12 jam ditambah waktu pembersihan. Jangan unggah APK rahasia.</string>
+    <string name="apk_qa_activity_title">Aktivitas server</string>
+    <string name="apk_qa_event_upload_started">Menyiapkan unggahan</string>
+    <string name="apk_qa_event_upload_received">Berkas diterima server</string>
+    <string name="apk_qa_event_upload_rejected">Verifikasi berkas gagal</string>
+    <string name="apk_qa_event_package_validation">Memvalidasi paket</string>
+    <string name="apk_qa_event_package_validated">Paket tervalidasi</string>
+    <string name="apk_qa_event_component_inspection">Memeriksa komponen</string>
+    <string name="apk_qa_event_components_inspected">Pemeriksaan komponen selesai</string>
+    <string name="apk_qa_event_report_preparation">Menyiapkan laporan</string>
+    <string name="apk_qa_event_report_ready">Laporan tersedia</string>
+    <string name="apk_qa_event_analysis_failed">Analisis tidak dapat diselesaikan</string>
 </resources>

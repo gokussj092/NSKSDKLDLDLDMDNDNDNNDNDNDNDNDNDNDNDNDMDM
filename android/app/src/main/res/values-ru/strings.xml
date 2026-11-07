@@ -253,7 +253,7 @@
     <string name="apk_qa_consent">Этот APK принадлежит мне или у меня есть разрешение на анализ.</string>
     <string name="apk_qa_pick">Выбрать APK или APKS</string>
     <string name="apk_qa_no_charge">В тестовом режиме кредиты не списываются.</string>
-    <string name="apk_qa_limit">Максимальный размер: 96 МиБ.</string>
+    <string name="apk_qa_limit">Максимальный размер: 100 MB.</string>
     <string name="apk_qa_reading">Чтение APK…</string>
     <string name="apk_qa_uploading">Отправка APK…</string>
     <string name="apk_qa_processing">Анализ на сервере…</string>
@@ -261,4 +261,15 @@
     <string name="apk_qa_copy_device_id">Скопировать ID тестового устройства</string>
     <string name="apk_qa_device_id_copied">ID тестового устройства скопирован</string>
     <string name="apk_qa_retention_notice">В тестовом режиме APK временно хранится на ограниченном томе сервера (пока без шифрования при хранении) и удаляется после анализа или истечения срока загрузки. Отчёт хранится до 12 часов плюс очистка. Не загружайте конфиденциальные APK.</string>
+    <string name="apk_qa_activity_title">Активность сервера</string>
+    <string name="apk_qa_event_upload_started">Подготовка отправки</string>
+    <string name="apk_qa_event_upload_received">Файл получен сервером</string>
+    <string name="apk_qa_event_upload_rejected">Ошибка проверки файла</string>
+    <string name="apk_qa_event_package_validation">Проверка пакета</string>
+    <string name="apk_qa_event_package_validated">Пакет проверен</string>
+    <string name="apk_qa_event_component_inspection">Проверка компонентов</string>
+    <string name="apk_qa_event_components_inspected">Проверка компонентов завершена</string>
+    <string name="apk_qa_event_report_preparation">Подготовка отчёта</string>
+    <string name="apk_qa_event_report_ready">Отчёт доступен</string>
+    <string name="apk_qa_event_analysis_failed">Анализ не завершён</string>
 </resources>

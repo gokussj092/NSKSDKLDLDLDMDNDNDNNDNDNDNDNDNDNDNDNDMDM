@@ -254,7 +254,7 @@
     <string name="apk_qa_consent">यह APK मेरा है या मुझे इसका विश्लेषण करने की अनुमति है।</string>
     <string name="apk_qa_pick">APK या APKS चुनें</string>
     <string name="apk_qa_no_charge">परीक्षण के दौरान कोई क्रेडिट नहीं कटेगा।</string>
-    <string name="apk_qa_limit">अधिकतम फ़ाइल आकार: 96 MiB।</string>
+    <string name="apk_qa_limit">अधिकतम फ़ाइल आकार: 100 MB।</string>
     <string name="apk_qa_reading">APK पढ़ा जा रहा है…</string>
     <string name="apk_qa_uploading">APK अपलोड हो रहा है…</string>
     <string name="apk_qa_processing">सर्वर पर विश्लेषण जारी है…</string>
@@ -262,4 +262,15 @@
     <string name="apk_qa_copy_device_id">मेरी परीक्षण डिवाइस आईडी कॉपी करें</string>
     <string name="apk_qa_device_id_copied">परीक्षण डिवाइस आईडी कॉपी हुई</string>
     <string name="apk_qa_retention_notice">परीक्षण में APK सीमित सर्वर भंडारण में अस्थायी रूप से रखा जाता है (अभी संग्रहण पर एन्क्रिप्ट नहीं है) और विश्लेषण या अपलोड समाप्ति के बाद हटाया जाता है। रिपोर्ट 12 घंटे और सफाई समय तक रह सकती है। गोपनीय APK न भेजें।</string>
+    <string name="apk_qa_activity_title">सर्वर गतिविधि</string>
+    <string name="apk_qa_event_upload_started">अपलोड की तैयारी</string>
+    <string name="apk_qa_event_upload_received">सर्वर को फ़ाइल मिल गई</string>
+    <string name="apk_qa_event_upload_rejected">फ़ाइल सत्यापन विफल</string>
+    <string name="apk_qa_event_package_validation">पैकेज सत्यापित किया जा रहा है</string>
+    <string name="apk_qa_event_package_validated">पैकेज सत्यापित</string>
+    <string name="apk_qa_event_component_inspection">घटकों की जाँच</string>
+    <string name="apk_qa_event_components_inspected">घटकों की जाँच पूरी</string>
+    <string name="apk_qa_event_report_preparation">रिपोर्ट तैयार की जा रही है</string>
+    <string name="apk_qa_event_report_ready">रिपोर्ट उपलब्ध</string>
+    <string name="apk_qa_event_analysis_failed">विश्लेषण पूरा नहीं हुआ</string>
 </resources>

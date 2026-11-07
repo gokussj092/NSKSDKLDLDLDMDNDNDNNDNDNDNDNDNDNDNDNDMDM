@@ -254,7 +254,7 @@
     <string name="apk_qa_consent">Tôi sở hữu APK này hoặc có quyền phân tích.</string>
     <string name="apk_qa_pick">Chọn APK hoặc APKS</string>
     <string name="apk_qa_no_charge">Không trừ tín dụng trong thời gian thử nghiệm.</string>
-    <string name="apk_qa_limit">Dung lượng tối đa: 96 MiB.</string>
+    <string name="apk_qa_limit">Dung lượng tối đa: 100 MB.</string>
     <string name="apk_qa_reading">Đang đọc APK…</string>
     <string name="apk_qa_uploading">Đang gửi APK…</string>
     <string name="apk_qa_processing">Máy chủ đang phân tích…</string>
@@ -262,4 +262,15 @@
     <string name="apk_qa_copy_device_id">Sao chép ID thiết bị thử nghiệm</string>
     <string name="apk_qa_device_id_copied">Đã sao chép ID thiết bị thử nghiệm</string>
     <string name="apk_qa_retention_notice">Trong chế độ thử nghiệm, APK được lưu tạm trên vùng máy chủ hạn chế (chưa mã hóa khi lưu trữ), rồi xóa sau khi phân tích hoặc tải lên hết hạn. Báo cáo có thể lưu tối đa 12 giờ cộng thời gian dọn dẹp. Không gửi APK bí mật.</string>
+    <string name="apk_qa_activity_title">Hoạt động máy chủ</string>
+    <string name="apk_qa_event_upload_started">Chuẩn bị tải lên</string>
+    <string name="apk_qa_event_upload_received">Máy chủ đã nhận tệp</string>
+    <string name="apk_qa_event_upload_rejected">Xác minh tệp thất bại</string>
+    <string name="apk_qa_event_package_validation">Đang kiểm tra gói</string>
+    <string name="apk_qa_event_package_validated">Gói đã được xác minh</string>
+    <string name="apk_qa_event_component_inspection">Đang kiểm tra thành phần</string>
+    <string name="apk_qa_event_components_inspected">Đã kiểm tra xong thành phần</string>
+    <string name="apk_qa_event_report_preparation">Đang chuẩn bị báo cáo</string>
+    <string name="apk_qa_event_report_ready">Báo cáo đã sẵn sàng</string>
+    <string name="apk_qa_event_analysis_failed">Không thể hoàn tất phân tích</string>
 </resources>

@@ -253,7 +253,7 @@
     <string name="apk_qa_consent">Je possède cet APK ou je suis autorisé à analyser ce fichier.</string>
     <string name="apk_qa_pick">Choisir APK ou APKS</string>
     <string name="apk_qa_no_charge">Aucun crédit facturé pendant les tests.</string>
-    <string name="apk_qa_limit">Taille maximale : 96 Mio.</string>
+    <string name="apk_qa_limit">Taille maximale : 100 MB.</string>
     <string name="apk_qa_reading">Lecture APK…</string>
     <string name="apk_qa_uploading">Envoi APK…</string>
     <string name="apk_qa_processing">Analyse sur le serveur…</string>
@@ -261,4 +261,15 @@
     <string name="apk_qa_copy_device_id">Copier mon ID d’appareil de test</string>
     <string name="apk_qa_device_id_copied">ID de l’appareil de test copié</string>
     <string name="apk_qa_retention_notice">En mode test, l’APK est conservé temporairement sur un volume serveur restreint (pas encore chiffré au repos), puis supprimé après analyse ou expiration. Le rapport peut rester 12 heures, plus le nettoyage. N’envoyez pas d’APK confidentiel.</string>
+    <string name="apk_qa_activity_title">Activité du serveur</string>
+    <string name="apk_qa_event_upload_started">Préparation de l\'envoi</string>
+    <string name="apk_qa_event_upload_received">Fichier reçu par le serveur</string>
+    <string name="apk_qa_event_upload_rejected">Échec de la vérification du fichier</string>
+    <string name="apk_qa_event_package_validation">Validation du paquet</string>
+    <string name="apk_qa_event_package_validated">Paquet validé</string>
+    <string name="apk_qa_event_component_inspection">Inspection des composants</string>
+    <string name="apk_qa_event_components_inspected">Inspection des composants terminée</string>
+    <string name="apk_qa_event_report_preparation">Préparation du rapport</string>
+    <string name="apk_qa_event_report_ready">Rapport disponible</string>
+    <string name="apk_qa_event_analysis_failed">Analyse non terminée</string>
 </resources>

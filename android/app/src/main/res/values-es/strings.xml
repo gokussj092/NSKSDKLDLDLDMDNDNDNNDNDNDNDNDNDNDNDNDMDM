@@ -255,7 +255,7 @@
     <string name="apk_qa_consent">Soy propietario de este APK o tengo permiso para analizarlo.</string>
     <string name="apk_qa_pick">Seleccionar APK o APKS</string>
     <string name="apk_qa_no_charge">No se cobran créditos durante las pruebas.</string>
-    <string name="apk_qa_limit">Tamaño máximo: 96 MiB.</string>
+    <string name="apk_qa_limit">Tamaño máximo: 100 MB.</string>
     <string name="apk_qa_reading">Leyendo APK…</string>
     <string name="apk_qa_uploading">Enviando APK…</string>
     <string name="apk_qa_processing">Analizando en el servidor…</string>
@@ -263,4 +263,15 @@
     <string name="apk_qa_copy_device_id">Copiar ID de mi dispositivo de prueba</string>
     <string name="apk_qa_device_id_copied">ID del dispositivo de prueba copiado</string>
     <string name="apk_qa_retention_notice">En las pruebas, tu APK se guarda temporalmente en un volumen restringido del servidor (aún sin cifrado en reposo) y se elimina tras analizarlo o caducar la carga. El informe puede mantenerse hasta 12 horas más el ciclo de limpieza. No envíes APK confidenciales.</string>
+    <string name="apk_qa_activity_title">Actividad del servidor</string>
+    <string name="apk_qa_event_upload_started">Preparando envío</string>
+    <string name="apk_qa_event_upload_received">Archivo recibido por el servidor</string>
+    <string name="apk_qa_event_upload_rejected">Falló la verificación del archivo</string>
+    <string name="apk_qa_event_package_validation">Validando paquete</string>
+    <string name="apk_qa_event_package_validated">Paquete validado</string>
+    <string name="apk_qa_event_component_inspection">Inspeccionando componentes</string>
+    <string name="apk_qa_event_components_inspected">Inspección de componentes completada</string>
+    <string name="apk_qa_event_report_preparation">Preparando informe</string>
+    <string name="apk_qa_event_report_ready">Informe disponible</string>
+    <string name="apk_qa_event_analysis_failed">No se pudo completar el análisis</string>
 </resources>

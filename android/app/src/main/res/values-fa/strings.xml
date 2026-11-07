@@ -253,7 +253,7 @@
     <string name="apk_qa_consent">مالک این APK هستم یا مجوز تحلیل آن را دارم.</string>
     <string name="apk_qa_pick">انتخاب APK یا APKS</string>
     <string name="apk_qa_no_charge">در حالت آزمایشی اعتباری کسر نمی‌شود.</string>
-    <string name="apk_qa_limit">حداکثر حجم فایل: 96 MiB.</string>
+    <string name="apk_qa_limit">حداکثر حجم فایل: 100 MB.</string>
     <string name="apk_qa_reading">در حال خواندن APK…</string>
     <string name="apk_qa_uploading">در حال ارسال APK…</string>
     <string name="apk_qa_processing">در حال تحلیل در سرور…</string>
@@ -261,4 +261,15 @@
     <string name="apk_qa_copy_device_id">کپی شناسه دستگاه آزمایشی</string>
     <string name="apk_qa_device_id_copied">شناسه دستگاه آزمایشی کپی شد</string>
     <string name="apk_qa_retention_notice">در حالت آزمایشی، فایل APK موقتاً در فضای محدود سرور (فعلاً بدون رمزنگاری هنگام ذخیره) نگهداری و پس از تحلیل یا انقضای آپلود حذف می‌شود. گزارش ممکن است تا ۱۲ ساعت به‌اضافه زمان پاکسازی باقی بماند. فایل APK محرمانه ارسال نکنید.</string>
+    <string name="apk_qa_activity_title">فعالیت سرور</string>
+    <string name="apk_qa_event_upload_started">آماده‌سازی ارسال</string>
+    <string name="apk_qa_event_upload_received">فایل به سرور رسید</string>
+    <string name="apk_qa_event_upload_rejected">تأیید فایل ناموفق بود</string>
+    <string name="apk_qa_event_package_validation">در حال بررسی بسته</string>
+    <string name="apk_qa_event_package_validated">بسته تأیید شد</string>
+    <string name="apk_qa_event_component_inspection">در حال بررسی اجزا</string>
+    <string name="apk_qa_event_components_inspected">بررسی اجزا کامل شد</string>
+    <string name="apk_qa_event_report_preparation">آماده‌سازی گزارش</string>
+    <string name="apk_qa_event_report_ready">گزارش آماده است</string>
+    <string name="apk_qa_event_analysis_failed">تحلیل کامل نشد</string>
 </resources>

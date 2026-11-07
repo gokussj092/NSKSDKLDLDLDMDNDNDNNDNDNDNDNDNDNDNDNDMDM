@@ -254,7 +254,7 @@
     <string name="apk_qa_consent">Bu APK bana ait veya analiz etme iznim var.</string>
     <string name="apk_qa_pick">APK veya APKS seç</string>
     <string name="apk_qa_no_charge">Test sırasında kredi alınmaz.</string>
-    <string name="apk_qa_limit">Azami dosya boyutu: 96 MiB.</string>
+    <string name="apk_qa_limit">Azami dosya boyutu: 100 MB.</string>
     <string name="apk_qa_reading">APK okunuyor…</string>
     <string name="apk_qa_uploading">APK yükleniyor…</string>
     <string name="apk_qa_processing">Sunucuda analiz ediliyor…</string>
@@ -262,4 +262,15 @@
     <string name="apk_qa_copy_device_id">Test cihazı kimliğimi kopyala</string>
     <string name="apk_qa_device_id_copied">Test cihazı kimliği kopyalandı</string>
     <string name="apk_qa_retention_notice">Testte APK, kısıtlı sunucu alanında geçici olarak tutulur (henüz depolamada şifreli değildir); analizden veya yükleme süresi dolduktan sonra silinir. Rapor en fazla 12 saat ve temizlik süresi kadar kalabilir. Gizli APK yüklemeyin.</string>
+    <string name="apk_qa_activity_title">Sunucu etkinliği</string>
+    <string name="apk_qa_event_upload_started">Yükleme hazırlanıyor</string>
+    <string name="apk_qa_event_upload_received">Dosya sunucuya ulaştı</string>
+    <string name="apk_qa_event_upload_rejected">Dosya doğrulaması başarısız</string>
+    <string name="apk_qa_event_package_validation">Paket doğrulanıyor</string>
+    <string name="apk_qa_event_package_validated">Paket doğrulandı</string>
+    <string name="apk_qa_event_component_inspection">Bileşenler inceleniyor</string>
+    <string name="apk_qa_event_components_inspected">Bileşen incelemesi tamamlandı</string>
+    <string name="apk_qa_event_report_preparation">Rapor hazırlanıyor</string>
+    <string name="apk_qa_event_report_ready">Rapor hazır</string>
+    <string name="apk_qa_event_analysis_failed">Analiz tamamlanamadı</string>
 </resources>

@@ -253,7 +253,7 @@
     <string name="apk_qa_consent">أملك ملف APK هذا أو لدي إذن بتحليله.</string>
     <string name="apk_qa_pick">اختيار APK أو APKS</string>
     <string name="apk_qa_no_charge">لا يتم خصم أي رصيد أثناء الاختبار.</string>
-    <string name="apk_qa_limit">الحد الأقصى لحجم الملف: 96 MiB.</string>
+    <string name="apk_qa_limit">الحد الأقصى لحجم الملف: 100 MB.</string>
     <string name="apk_qa_reading">جارٍ قراءة APK…</string>
     <string name="apk_qa_uploading">جارٍ رفع APK…</string>
     <string name="apk_qa_processing">جارٍ التحليل على الخادم…</string>
@@ -261,4 +261,15 @@
     <string name="apk_qa_copy_device_id">نسخ معرّف جهاز الاختبار</string>
     <string name="apk_qa_device_id_copied">تم نسخ معرّف جهاز الاختبار</string>
     <string name="apk_qa_retention_notice">أثناء الاختبار، يُخزن ملف APK مؤقتًا في مساحة مقيدة على الخادم (دون تشفير عند التخزين حاليًا) ثم يُحذف بعد التحليل أو انتهاء مهلة الرفع. قد يبقى التقرير حتى 12 ساعة مع وقت التنظيف. لا ترفع ملفات APK سرية.</string>
+    <string name="apk_qa_activity_title">نشاط الخادم</string>
+    <string name="apk_qa_event_upload_started">تجهيز الرفع</string>
+    <string name="apk_qa_event_upload_received">استلم الخادم الملف</string>
+    <string name="apk_qa_event_upload_rejected">فشل التحقق من الملف</string>
+    <string name="apk_qa_event_package_validation">التحقق من الحزمة</string>
+    <string name="apk_qa_event_package_validated">تم التحقق من الحزمة</string>
+    <string name="apk_qa_event_component_inspection">فحص المكونات</string>
+    <string name="apk_qa_event_components_inspected">اكتمل فحص المكونات</string>
+    <string name="apk_qa_event_report_preparation">تجهيز التقرير</string>
+    <string name="apk_qa_event_report_ready">التقرير متاح</string>
+    <string name="apk_qa_event_analysis_failed">تعذر إكمال التحليل</string>
 </resources>
