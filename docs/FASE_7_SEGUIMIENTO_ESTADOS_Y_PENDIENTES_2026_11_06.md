@@ -49,7 +49,7 @@
 | **A0-P04** | Esquemas versionados de resultado y checkpoint | Contratos con estado/certeza, hash, errores, privacy labels, provenance, outputs parciales y tests de validación. |
 | **A0-P05** | Corpus autorizado de APK/APKS y tests de límites | ZIP corrupto/bomb/traversal, DEX múltiple, ELF malformado, límites de tiempo/memoria/disco. No ejecutar APK de terceros en producción. |
 | **A0-P06** | Ampliar cobertura del gate y legado | Rutas Cloud/worker/plugins, hashes y dependencias de todos los afectados; baseline gradual y excepciones justificadas. |
-| **A0-P07** | Activar required check de rama tras cubrir gate | Configuración de branch protection + prueba de bloqueo; workflow verde no equivale a regla requerida. |
+| **A0-P07** | Validación CI y protección opcional de rama | Auditor de checks y tests en CI. Por decisión expresa del propietario, **NO** activar Branch Protection ahora; revisión manual antes de merge. Sin atribuir bloqueo de GitHub inexistente. |
 | **A0-P08** | Regresión real sin tocar scripts funcionales | Pruebas independientes por formatos/consumidores afectados, sin declarar VERIFIED_REAL por fixtures sintéticas. |
 | **A0-P09** | Aceptación formal de salida | Resolver P01–P08 o documentar expresamente limitaciones y decisiones de riesgo; no marcar A0 DONE anticipadamente. |
 
@@ -260,3 +260,11 @@ La versión inicial del gate P06 comparaba todos los cambios acumulados desde `m
 Se integró un auditor P07 de configuración offline y tests negativos de wiring (sin secretos, sin API ni editar protección). Se mantienen las pruebas de no bypass del corte P06. Pendientes: resultado CI del último commit P07, activación en Settings por administrador, lectura posterior de `protected=true` y comprobación real de merge bloqueado ante un gate rojo. **Un workflow SUCCESS por sí solo no equivale a check requerido**.
 
 [Documentación P07 con procedimiento y evidencias](FASE_7_A0_P07_REQUIRED_CHECK_PROTECCION_2026_11_06.md). No se ha hecho merge, otra rama ni despliegue.
+
+## F7-A0-P08 — Regresión independiente de formatos y consumidores
+
+**Estado:** implementación integrada, CI P08 independiente pendiente de resultado final. Se añadieron `analysis/platform/apk-tooling/p08_regression_matrix.v1.json` (19 suites existentes; 12 Python + 7 Node, mínimo 96 casos), `scripts/ci/run_a0_p08_regression.py`, `tests/test_a0_p08_regression.py` (16 casos de seguridad y detección de cambios) y `.github/workflows/f7-a0-p08-regression.yml` con jobs separados Python y Cloud web. La matriz cubre archivos/texto, catálogos, exportación unlocked y transporte; ejecuta los códigos actuales con fixtures existentes, comprueba hashes antes/después y falla si se omite una suite o se reduce su número de pruebas. Los 63 scripts originales quedan sin modificaciones.
+
+**Limitación de evidencia:** los fixtures sintéticos/sanitizados son regresión efectiva de código de producción, NO prueba de APK de tercero, descargas reales ni Android→Cloud E2E. No se otorgó autorización a herramientas ni se alteró servidor productivo. Ver [documentación P08](FASE_7_A0_P08_REGRESION_FORMATOS_CONSUMIDORES_2026_11_06.md).
+
+**Decisión P07:** el propietario mantiene GitHub Actions y revisión manual de todas las validaciones; Branch Protection **opcional y aplazada**, sin bloquear P08/P09 ni fingir que existe regla requerida. [Registro P07](FASE_7_A0_P07_REQUIRED_CHECK_PROTECCION_2026_11_06.md).
