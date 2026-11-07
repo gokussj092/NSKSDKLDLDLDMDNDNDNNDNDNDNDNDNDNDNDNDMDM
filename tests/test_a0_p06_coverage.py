@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import json
+import subprocess
+from unittest.mock import patch
 from pathlib import Path
 import tempfile
 import unittest
@@ -127,6 +129,97 @@ class P06CoverageTests(unittest.TestCase):
     def test_changed_path_rejects_traversal(self):
         with self.assertRaises(p06.CoverageError):
             p06.audit(self.root, ["../secrets"], enforce=True)
+
+
+
+class P06RealGitCutoverTests(unittest.TestCase):
+    """Real local git history: legacy pre-cutover edits are observed, not exempt forever."""
+
+    def setUp(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.root = Path(tmp.name)
+        self.method = "decoders/Python/apps/Old_VPN/codec.py"
+        self.registry = "analysis/platform/apk-tooling/legacy_provider_baseline.v1.json"
+        self.put(self.method, "LEGACY = 1\n")
+        self.put(self.registry, json.dumps({"schema_version": 1,
+                                            "source_commit": "0" * 40,
+                                            "providers": [{"folder": "Old_VPN",
+                                                           "status": "LEGACY_UNREVIEWED"}]}))
+        self.git("init", "-q")
+        self.git("config", "user.name", "CI Fixture")
+        self.git("config", "user.email", "ci-fixture@invalid.example")
+        self.commit("historical base")
+        self.pr_base = self.git("rev-parse", "HEAD").strip()
+
+        # This edit predates the P06 adoption date: PR main delta includes it.
+        self.put(self.method, "LEGACY = 2\n")
+        self.commit("old provider change before P06")
+        self.cutover = self.git("rev-parse", "HEAD").strip()
+
+        self.put(self.registry, json.dumps({"schema_version": 1,
+                                            "source_commit": self.cutover,
+                                            "providers": [{"folder": "Old_VPN",
+                                                           "status": "LEGACY_UNREVIEWED"}]}))
+        self.put("docs/p06.md", "new CI evidence\n")
+        self.commit("P06 after cutover")
+        self.pr_head = self.git("rev-parse", "HEAD").strip()
+
+    def put(self, path, content):
+        p = self.root / path
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(content, encoding="utf-8")
+
+    def git(self, *args):
+        return subprocess.run(["git", "-C", str(self.root), *args],
+                              check=True, capture_output=True, text=True).stdout
+
+    def commit(self, msg):
+        self.git("add", "-A")
+        self.git("commit", "-qm", msg)
+
+    def cutoff_diff(self, cutoff=None):
+        with patch.object(p06, "PINNED_CUTOVER_SHA", self.cutover):
+            return p06.post_cutover_changed_paths(
+                self.root, self.pr_base, self.pr_head, cutoff or self.cutover
+            )
+
+    def test_historical_pr_methods_reported_without_failure(self):
+        new, old = self.cutoff_diff()
+        self.assertIn(self.method, old)
+        self.assertNotIn(self.method, new)
+        self.assertIn("docs/p06.md", new)
+        with patch.object(p06, "PINNED_CUTOVER_SHA", self.cutover):
+            report = p06.audit(self.root, new, enforce=True)
+        self.assertEqual(report["findings"], [])
+
+    def test_first_post_cutover_method_edit_is_blocked(self):
+        self.put(self.method, "LEGACY = 3\n")
+        self.commit("first subsequent method update")
+        self.pr_head = self.git("rev-parse", "HEAD").strip()
+        new, old = self.cutoff_diff()
+        self.assertIn(self.method, new)
+        self.assertNotIn(self.method, old)
+        with patch.object(p06, "PINNED_CUTOVER_SHA", self.cutover):
+            report = p06.audit(self.root, new, enforce=True)
+        self.assertIn("CHANGED_METHOD_WITHOUT_UPDATED_DOSSIER",
+                      [x["code"] for x in report["findings"]])
+
+    def test_cutover_mismatch_fails_closed(self):
+        with self.assertRaises(p06.CoverageError):
+            self.cutoff_diff("e" * 40)
+
+    def test_registry_tampering_fails_closed(self):
+        self.put(self.registry, json.dumps({"schema_version": 1,
+                                            "source_commit": "f" * 40,
+                                            "providers": []}))
+        with self.assertRaises(p06.CoverageError):
+            self.cutoff_diff()
+
+    def test_unknown_or_nonancestor_head_fails_closed(self):
+        self.pr_head = "f" * 40
+        with self.assertRaises(p06.CoverageError):
+            self.cutoff_diff()
 
 
 if __name__ == "__main__":
