@@ -70,7 +70,9 @@ jobs:
           done
       - name: Verify extracted DEX, package identity and checksum
         run: |
-          python - <<'PY'
+          # The inspector intentionally emits private 0600 files under UID 65532.
+          # Read test-only metadata with runner-root, not by weakening file modes.
+          sudo env RUNNER_TEMP="$RUNNER_TEMP" python3 - <<'PY'
           import hashlib,json,os,pathlib
           base=pathlib.Path(os.environ["RUNNER_TEMP"])
           for name in ("p05-apk-out","p05-apks-out"):
