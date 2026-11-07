@@ -19,7 +19,7 @@ jobs:
         with:
           node-version: "22"
       - name: Verify disabled-by-default customer login and crypto contracts
-        run: node --test cloud/web/tests/f7-account-identity.test.mjs
+        run: node --test cloud/web/tests/f7-account-identity.test.mjs cloud/web/tests/f7-registration-flow.test.mjs
       - name: Confirm no account route or live user credential was introduced
         run: |
           python - <<'PY'
