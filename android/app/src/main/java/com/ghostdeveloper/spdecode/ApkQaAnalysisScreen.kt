@@ -88,8 +88,12 @@ internal fun ApkQaAnalysisScreen(
                     Text(stringResource(label),color=QA_WHITE,fontSize=14.sp)
                     val fraction=if(total>0L) (received.toDouble()/total)
                         .toFloat().coerceIn(0f,1f) else 0f
-                    LinearProgressIndicator(progress={fraction},
-                        modifier=Modifier.fillMaxWidth().testTag("apk_qa_progress"))
+                    if(phase=="SENDING" || phase=="READING")
+                        LinearProgressIndicator(progress={fraction},
+                            modifier=Modifier.fillMaxWidth().testTag("apk_qa_progress"))
+                    else
+                        LinearProgressIndicator(
+                            modifier=Modifier.fillMaxWidth().testTag("apk_qa_progress"))
                     if(total>0L) Text(String.format("%d / %d MiB",
                         received/1024L/1024L,total/1024L/1024L),
                         color=QA_MUTED,fontSize=12.sp)
