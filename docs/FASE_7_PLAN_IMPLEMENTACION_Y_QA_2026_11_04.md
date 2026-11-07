@@ -237,3 +237,9 @@ Todas las credenciales deberán quedar en secret manager o configuración de ser
 - https://developers.google.com/android-publisher/voided-purchases
 - https://support.google.com/googleplay/android-developer/answer/2741495
 - https://support.google.com/googleplay/android-developer/answer/13327111
+
+## Actualización F7-A0-P07/P08 — decisión operativa del propietario
+
+**Decisión expresa 2026-11-06:** conservar GitHub Actions, inspeccionar todas las ejecuciones, ejecutar pruebas funcionales sobre el código real y revisarlas manualmente antes de fusionar o desplegar. **Branch Protection queda opcional y sin activar**, no es requisito para avanzar a P08 o P09. Ningún workflow verde por sí solo prueba una VPN externa real ni impide un merge por GitHub.
+
+**P08 en curso:** [matriz de 19 suites originales, Python + Node](FASE_7_A0_P08_REGRESION_FORMATOS_CONSUMIDORES_2026_11_06.md) y [workflow independiente](https://github.com/gokussj092/NSKSDKLDLDMDNDNNDNNDNDNDNDNDNDNDNDNDMDM/actions/workflows/f7-a0-p08-regression.yml). P08 no altera descifradores, catálogos productivos ni los 63 scripts de investigación; valida fuentes originales con fixtures offline y documenta por separado los pendientes de APK reales autorizados, ABI y Android→Cloud E2E. A0 no se declara DONE hasta cerrar las limitaciones restantes y la aceptación P09.
