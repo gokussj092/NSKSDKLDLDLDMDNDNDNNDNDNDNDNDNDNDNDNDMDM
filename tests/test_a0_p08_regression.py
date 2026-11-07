@@ -96,6 +96,9 @@ class P08RegressionTests(unittest.TestCase):
         self.assertEqual(p08.parse_result("python",
                                          "Ran 4 tests in 0.001s\n\nOK (skipped=1)"),
                          (4, 3, 1))
+        self.assertEqual(p08.parse_result("python",
+                                         "Ran 6 tests in 0.001s\n\nFAILED (failures=2, errors=1, skipped=1)"),
+                         (6, 2, 1))
 
     def test_node_tap_result_parser_and_skips(self):
         out = "# tests 8\n# pass 8\n# fail 0\n# skipped 0\n"
