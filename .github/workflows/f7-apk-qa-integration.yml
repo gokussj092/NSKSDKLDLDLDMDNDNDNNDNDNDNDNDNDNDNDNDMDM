@@ -87,7 +87,10 @@ jobs:
           apk=Path('android/app/build/outputs/apk/debug/app-debug.apk')
           assert apk.is_file(), 'OWN_APK_NOT_BUILT'
           report=inspect_static(apk)
-          assert report["status"]=="COMPLETED_PRELIMINARY"
+          assert report["status"]=="COMPLETED_PARTIAL"
+          assert report["reportKind"]=="APK_STATIC_QA_DEEP_V2"
+          assert report["inventory"]["dexFilesObserved"]>0
+          assert report["analysis"]["codeExecuted"] is False
           assert report["input"]["format"]=="APK"
           assert report["inventory"]["dexCount"]>0
           assert report["analysis"]["codeExecuted"] is False
