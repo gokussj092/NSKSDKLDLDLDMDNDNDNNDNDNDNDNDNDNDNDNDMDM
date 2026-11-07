@@ -22,8 +22,8 @@ import time
 from .qa_static import inspect_static
 
 MAX_APK = 96 * 1024 * 1024  # QA cap, not the future paid production quota.
-CHUNK = 512 * 1024
-MAX_POST = 950 * 1024
+CHUNK = 2 * 1024 * 1024
+MAX_POST = 3 * 1024 * 1024
 MAX_ACTIVE = 2
 JOB_TTL = 3600
 RESULT_TTL = 12 * 3600
@@ -189,9 +189,7 @@ def _chunk(p:dict) -> dict:
             out.write(data)
             out.flush()
             os.fsync(out.fileno())
-    finally:
-        data=b""  # no raw payload in report or logs
-    state["receivedBytes"]+=len(base64.b64decode(content))
+    state["receivedBytes"]+=len(data)
     state["nextChunk"]+=1
     state["chunkDigests"].append(hash_value)
     state["updatedAt"]=time.time()
