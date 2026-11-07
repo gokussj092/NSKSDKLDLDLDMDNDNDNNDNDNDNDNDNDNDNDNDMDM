@@ -20,8 +20,10 @@ jobs:
           python-version: "3.12"
       - name: Compile actual analyzer sources without executing uploaded code
         run: python -m compileall -q cloud/apk_analysis/qa_service.py cloud/apk_analysis/qa_static.py
-      - name: Test actual synthetic APK and APKS bytes through chunked QA lifecycle
-        run: python -m unittest tests.test_f7_apk_qa_service tests.test_f7_apk_qa_android_resume -v
+      - name: Check VPS QA activation Bash syntax
+        run: bash -n cloud/infra/vps/spdecodectl
+      - name: Test actual APK QA lifecycle, Android contracts and automatic VPS setup
+        run: python -m unittest tests.test_f7_apk_qa_service tests.test_f7_apk_qa_android_resume tests.test_f7_apk_qa_cli -v
       - name: Validate isolated Docker topology without activating it
         run: docker compose --profile apk-qa -f cloud/compose.yaml config --quiet
       - name: Build the separate read-only static lab image once
