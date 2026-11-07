@@ -249,4 +249,14 @@
     <string name="catalog_transfer_resume">फिर कोशिश / जारी रखें</string>
     <string name="catalog_transfer_discard">आंशिक डाउनलोड हटाएँ</string>
     <string name="catalog_transfer_retention">सत्यापित भाग अधिकतम 7 दिनों तक एन्क्रिप्ट करके रखे जाते हैं।</string>
+    <string name="apk_qa_title">APK विश्लेषण — परीक्षण मोड</string>
+    <string name="apk_qa_description">APK/APKS का वास्तविक स्थिर निरीक्षण। लॉगिन या क्रेडिट की ज़रूरत नहीं। ऐप इंस्टॉल या चलाए नहीं जाते।</string>
+    <string name="apk_qa_consent">यह APK मेरा है या मुझे इसका विश्लेषण करने की अनुमति है।</string>
+    <string name="apk_qa_pick">APK या APKS चुनें</string>
+    <string name="apk_qa_no_charge">परीक्षण के दौरान कोई क्रेडिट नहीं कटेगा।</string>
+    <string name="apk_qa_limit">अधिकतम फ़ाइल आकार: 96 MiB।</string>
+    <string name="apk_qa_reading">APK पढ़ा जा रहा है…</string>
+    <string name="apk_qa_uploading">APK अपलोड हो रहा है…</string>
+    <string name="apk_qa_processing">सर्वर पर विश्लेषण जारी है…</string>
+    <string name="apk_qa_report">प्रारंभिक स्थिर रिपोर्ट</string>
 </resources>
