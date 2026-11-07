@@ -1,0 +1,191 @@
+{
+  "schema_version": 1,
+  "subphase": "F7-A0-P08",
+  "status": "REQUIRES_CI_EXECUTION",
+  "purpose": "Regression of existing production decoder and worker code without changing it. Separate independent parity, boundary and offline fixture checks from real third-party APK or network validation.",
+  "required_formats": [
+    "file",
+    "text",
+    "catalog",
+    "export",
+    "transport"
+  ],
+  "required_consumers": [
+    "worker",
+    "decoder",
+    "cli",
+    "export",
+    "handler"
+  ],
+  "minimum_suite_count": 12,
+  "minimum_total_cases": 55,
+  "approval": "NONE_GRANTED",
+  "execution": "CURRENT_PRODUCTION_CODE_WITH_OFFLINE_FIXTURES",
+  "real_vendor_apk_verified": false,
+  "real_vendor_endpoint_verified": false,
+  "real_android_e2e_verified": false,
+  "no_mutations": [
+    "scripts/apk_analysis/",
+    "decoders/Python/",
+    "cloud/workers/python/"
+  ],
+  "suites": [
+    {
+      "id": "cloud-file-parity",
+      "test_module": "tests.test_cloud_c2_golden",
+      "format": "file",
+      "consumer": "worker",
+      "reference_kind": "current_canonical_script_vs_worker",
+      "min_tests": 1,
+      "code_paths": [
+        "cloud/workers/python/engine.py"
+      ],
+      "fixture_classification": "SYNTHETIC_OR_SANITIZED_OFFLINE",
+      "claims_real_vendor_verified": false
+    },
+    {
+      "id": "cloud-hc-formats",
+      "test_module": "tests.test_cloud_c2_hc",
+      "format": "file",
+      "consumer": "worker",
+      "reference_kind": "offline_format_fixtures",
+      "min_tests": 2,
+      "code_paths": [
+        "cloud/workers/python/engine.py"
+      ],
+      "fixture_classification": "SYNTHETIC_OR_SANITIZED_OFFLINE",
+      "claims_real_vendor_verified": false
+    },
+    {
+      "id": "cloud-text-protocols",
+      "test_module": "tests.test_cloud_c2_text",
+      "format": "text",
+      "consumer": "worker",
+      "reference_kind": "offline_golden_and_invalid_inputs",
+      "min_tests": 2,
+      "code_paths": [
+        "cloud/workers/python/text_bridge.py"
+      ],
+      "fixture_classification": "SYNTHETIC_OR_SANITIZED_OFFLINE",
+      "claims_real_vendor_verified": false
+    },
+    {
+      "id": "tls-ev2ray",
+      "test_module": "tests.test_current_decoders",
+      "format": "file",
+      "consumer": "decoder",
+      "reference_kind": "offline_generated_crypto_vectors",
+      "min_tests": 2,
+      "code_paths": [
+        "decoders/Python/TLS.py",
+        "decoders/Python/EV2RAY.py"
+      ],
+      "fixture_classification": "SYNTHETIC_OR_SANITIZED_OFFLINE",
+      "claims_real_vendor_verified": false
+    },
+    {
+      "id": "server-catalog-worker",
+      "test_module": "tests.test_cloud_server_vpn_new",
+      "format": "catalog",
+      "consumer": "worker",
+      "reference_kind": "owner_supplied_synthetic_ciphertext",
+      "min_tests": 4,
+      "code_paths": [
+        "cloud/workers/python/engine.py"
+      ],
+      "fixture_classification": "SYNTHETIC_OR_SANITIZED_OFFLINE",
+      "claims_real_vendor_verified": false
+    },
+    {
+      "id": "catnet-catalog",
+      "test_module": "tests.test_catnet_vpn",
+      "format": "catalog",
+      "consumer": "cli",
+      "reference_kind": "independent_node_oracle_and_worker_fixture",
+      "min_tests": 12,
+      "code_paths": [
+        "decoders/Python/apps/CATNET_VPN/codec.py"
+      ],
+      "fixture_classification": "SYNTHETIC_OR_SANITIZED_OFFLINE",
+      "claims_real_vendor_verified": false
+    },
+    {
+      "id": "http-conexion-catalog",
+      "test_module": "tests.test_http_conexion",
+      "format": "catalog",
+      "consumer": "cli",
+      "reference_kind": "independent_java_oracle_and_worker_fixture",
+      "min_tests": 10,
+      "code_paths": [
+        "decoders/Python/apps/HTTP_Conexion/codec.py"
+      ],
+      "fixture_classification": "SYNTHETIC_OR_SANITIZED_OFFLINE",
+      "claims_real_vendor_verified": false
+    },
+    {
+      "id": "http-conexion-refresh",
+      "test_module": "tests.test_http_conexion_refresh",
+      "format": "catalog",
+      "consumer": "cli",
+      "reference_kind": "mock_firebase_rotation_and_worker_fixture",
+      "min_tests": 8,
+      "code_paths": [
+        "decoders/Python/apps/HTTP_Conexion/firebase.py"
+      ],
+      "fixture_classification": "SYNTHETIC_OR_SANITIZED_OFFLINE",
+      "claims_real_vendor_verified": false
+    },
+    {
+      "id": "namo-catalog",
+      "test_module": "tests.test_namo_vpn",
+      "format": "catalog",
+      "consumer": "cli",
+      "reference_kind": "independent_java_oracle_and_worker_fixture",
+      "min_tests": 15,
+      "code_paths": [
+        "decoders/Python/apps/NAMO_VPN/codec.py"
+      ],
+      "fixture_classification": "SYNTHETIC_OR_SANITIZED_OFFLINE",
+      "claims_real_vendor_verified": false
+    },
+    {
+      "id": "ha-unlocked-export",
+      "test_module": "tests.test_ha_catalog_export",
+      "format": "export",
+      "consumer": "export",
+      "reference_kind": "synthetic_roundtrip_and_worker_export",
+      "min_tests": 7,
+      "code_paths": [
+        "cloud/workers/python/exports/hat.py"
+      ],
+      "fixture_classification": "SYNTHETIC_OR_SANITIZED_OFFLINE",
+      "claims_real_vendor_verified": false
+    },
+    {
+      "id": "c8-worker-bridge",
+      "test_module": "tests.test_cloud_c8_worker_integration",
+      "format": "file",
+      "consumer": "worker",
+      "reference_kind": "offline_golden_real_bridge",
+      "min_tests": 10,
+      "code_paths": [
+        "cloud/workers/python/engine.py"
+      ],
+      "fixture_classification": "SYNTHETIC_OR_SANITIZED_OFFLINE",
+      "claims_real_vendor_verified": false
+    },
+    {
+      "id": "server-vpn-transport",
+      "test_module": "tests.test_cloud_server_vpn_transport",
+      "format": "transport",
+      "consumer": "handler",
+      "reference_kind": "synthetic_http_handler_boundaries",
+      "min_tests": 2,
+      "code_paths": [
+        "cloud/workers/python/server.py"
+      ],
+      "fixture_classification": "SYNTHETIC_OR_SANITIZED_OFFLINE",
+      "claims_real_vendor_verified": false
+    }
+  ]
+}
