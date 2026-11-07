@@ -14,6 +14,7 @@ import subprocess
 import tempfile
 import zipfile
 from .qa_jadx_refs import scan_jadx_sources
+from .qa_tool_rpc import inspect_remote
 
 JADX_JAR=Path("/opt/spdecode/scripts/apk_analysis/cache/jadx-1.5.6-all.jar")
 JADX_SHA256="fe3e12c45acf75f92369685fd02d1d7a7323385dc725680a9b98a0dac0ea554b"
@@ -122,6 +123,8 @@ def _base_and_libs(source:Path,dest:Path):
 
 def inspect_tooling(source:Path,report:dict)->dict:
     """One optional attempt *after* the full upload hash and ZIP gate."""
+    if os.environ.get("SPDECODE_APK_QA_TOOLS_REMOTE")=="enabled":
+        return inspect_remote(source)
     state={"status":"NOT_ENABLED","jadxExecuted":False,
            "ghidraExecuted":False,"jadx":{"status":"NOT_ENABLED"},
            "ghidra":{"status":"NOT_ENABLED"}}
