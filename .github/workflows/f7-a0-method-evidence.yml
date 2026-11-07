@@ -60,6 +60,10 @@ jobs:
           PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           P06_LEGACY_CUTOVER_SHA: 4fddee8924e58a9d1e6476974e9b7a9adda3e495
         run: python scripts/ci/check_a0_p06_coverage.py --enforce --base-ref "$PR_BASE_SHA" --pr-head-ref "$PR_HEAD_SHA" --legacy-cutover-ref "$P06_LEGACY_CUTOVER_SHA" --output "$RUNNER_TEMP/f7-a0-p06-gate.json"
+      - name: P07 required status wiring unit tests (offline)
+        run: python -m unittest discover -s tests -p 'test_a0_p07_required_checks.py' -v
+      - name: P07 verify required check workflow contract (no GitHub branch mutation)
+        run: python scripts/ci/check_a0_p07_required_check.py --output "$RUNNER_TEMP/f7-a0-p07-wiring.json"
       - name: Inventory and audit (no APK execution)
         run: python scripts/ci/check_method_evidence.py --output "$RUNNER_TEMP/f7-a0-report.json"
       - name: Check evidence in pull requests
