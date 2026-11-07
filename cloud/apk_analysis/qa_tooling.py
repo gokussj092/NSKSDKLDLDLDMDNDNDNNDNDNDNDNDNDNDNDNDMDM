@@ -10,7 +10,6 @@ import json
 import os
 from pathlib import Path
 import re
-import shutil
 import subprocess
 import tempfile
 import zipfile
@@ -136,9 +135,14 @@ def inspect_tooling(source:Path,report:dict)->dict:
     # Ghidra can be absent without invalidating the actual JADX result.
     home=Path(os.environ.get("SPDECODE_APK_QA_GHIDRA_HOME","/opt/ghidra"))
     headless=home/"support/analyzeHeadless"
-    ghidra_ready=(home.is_dir() and not home.is_symlink() and
+    # The tool executable itself must match an operator-reviewed SHA-256.
+    # This is an additional guard, not validation of the whole installation.
+    expected=os.environ.get("SPDECODE_APK_QA_GHIDRA_HEADLESS_SHA256","")
+    ghidra_ready=(bool(re.fullmatch(r"[a-f0-9]{64}",expected)) and
+                  home.is_dir() and not home.is_symlink() and
                   headless.is_file() and not headless.is_symlink() and
-                  GHIDRA_SCRIPT.is_file())
+                  GHIDRA_SCRIPT.is_file() and
+                  hashlib.sha256(headless.read_bytes()).hexdigest()==expected)
     with tempfile.TemporaryDirectory(prefix=".apkqa-tools-",dir=source.parent) as td:
         scratch=Path(td)
         base,libs=_base_and_libs(source,scratch)
