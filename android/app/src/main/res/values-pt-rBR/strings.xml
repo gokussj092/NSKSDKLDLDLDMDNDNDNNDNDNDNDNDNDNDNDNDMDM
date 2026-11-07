@@ -248,4 +248,14 @@
     <string name="catalog_transfer_resume">Tentar novamente / continuar</string>
     <string name="catalog_transfer_discard">Excluir download parcial</string>
     <string name="catalog_transfer_retention">Os fragmentos verificados ficam criptografados por até 7 dias.</string>
+    <string name="apk_qa_title">Análise de APK — modo de teste</string>
+    <string name="apk_qa_description">Inspeção estática real de APK/APKS. Não exige login nem créditos. Os apps não são instalados nem executados.</string>
+    <string name="apk_qa_consent">Sou dono deste APK ou tenho permissão para analisá-lo.</string>
+    <string name="apk_qa_pick">Selecionar APK ou APKS</string>
+    <string name="apk_qa_no_charge">Nenhum crédito será cobrado nos testes.</string>
+    <string name="apk_qa_limit">Tamanho máximo: 96 MiB.</string>
+    <string name="apk_qa_reading">Lendo APK…</string>
+    <string name="apk_qa_uploading">Enviando APK…</string>
+    <string name="apk_qa_processing">Analisando no servidor…</string>
+    <string name="apk_qa_report">Relatório estático preliminar</string>
 </resources>
