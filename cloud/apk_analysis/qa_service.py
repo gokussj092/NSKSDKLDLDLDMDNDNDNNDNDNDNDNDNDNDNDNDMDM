@@ -182,13 +182,12 @@ def _chunk(p:dict) -> dict:
     file=folder/"input.part"
     if file.is_symlink():raise ApiError("JOB_UNAVAILABLE",404)
     fd=os.open(file,os.O_RDWR|os.O_CREAT|getattr(os,"O_NOFOLLOW",0),0o600)
-    try:
-        with os.fdopen(fd,"r+b") as out:
-            out.truncate(state["receivedBytes"])
-            out.seek(state["receivedBytes"])
-            out.write(data)
-            out.flush()
-            os.fsync(out.fileno())
+    with os.fdopen(fd,"r+b") as out:
+        out.truncate(state["receivedBytes"])
+        out.seek(state["receivedBytes"])
+        out.write(data)
+        out.flush()
+        os.fsync(out.fileno())
     state["receivedBytes"]+=len(data)
     state["nextChunk"]+=1
     state["chunkDigests"].append(hash_value)
