@@ -22,7 +22,9 @@
 8. El módulo Fase 7 permanece en «Próximamente» hasta superar todas las puertas de QA, privacidad y pagos. No modificar la versión/build ni la lógica existente de Cloud.
 9. Precio de referencia solicitado previamente: **USD 4 por crédito**, **1 crédito por análisis tipo A**; usar siempre el precio local real devuelto por Play. Precio del modo B, suscripción (precio/periodicidad/beneficios), paquetes, caducidad y reglas de parcial siguen **pendientes de aprobación**, según documentos de base. No crear productos comerciales inventados.
 
-## 1. Identidad: solo Google y cuenta interna SP-DECODE
+> **Actualización de alcance (2026-11-06):** la decisión anterior de «solo Google» ha sido **reemplazada** por la instrucción explícita del propietario de ofrecer Google **y correo verificado + contraseña**, nombre de usuario único, OTP, recuperación y correos de seguridad. El anexo vigente de implementación es [F7-A1 identidad híbrida, correo y backups](FASE_7_A1_IDENTIDAD_CORREO_BACKUP_2026_11_06.md). Los fragmentos históricos Google-only que siguen en esta especificación documentan decisiones anteriores y **NO** deben interpretarse como restricciones vigentes. El login y respaldo no están activados en producción.
+
+## 1. Identidad: Google y correo verificado (plan actualizado) y cuenta interna SP-DECODE
 
 ### 1.1. Configuración necesaria en Google Cloud
 
