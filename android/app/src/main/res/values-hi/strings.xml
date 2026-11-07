@@ -259,4 +259,6 @@
     <string name="apk_qa_uploading">APK अपलोड हो रहा है…</string>
     <string name="apk_qa_processing">सर्वर पर विश्लेषण जारी है…</string>
     <string name="apk_qa_report">प्रारंभिक स्थिर रिपोर्ट</string>
+    <string name="apk_qa_copy_device_id">मेरी परीक्षण डिवाइस आईडी कॉपी करें</string>
+    <string name="apk_qa_device_id_copied">परीक्षण डिवाइस आईडी कॉपी हुई</string>
 </resources>
