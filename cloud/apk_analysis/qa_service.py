@@ -24,7 +24,7 @@ from .qa_static import inspect_static
 MAX_APK = 100 * 1000 * 1000  # Exact 100 MB QA cap; other decoders retain their limits.
 CHUNK = 2 * 1024 * 1024
 MAX_POST = 3 * 1024 * 1024
-MAX_ACTIVE = 2
+MAX_ACTIVE = 1  # Private trial: only one APK/APKS from upload through terminal report
 JOB_TTL = 3600
 RESULT_TTL = 12 * 3600
 ROOT = Path(os.environ.get("SPDECODE_APK_QA_ROOT", "/var/lib/spdecode/apkqa"))
@@ -38,6 +38,7 @@ PUBLIC_EVENTS = frozenset({
     "PACKAGE_VALIDATION", "PACKAGE_VALIDATED",
     "COMPONENT_INSPECTION", "COMPONENTS_INSPECTED",
     "REPORT_PREPARATION", "REPORT_READY", "ANALYSIS_FAILED",
+    "ANALYSIS_RESUMED",
 })
 PUBLIC_STATES = frozenset({"RUNNING", "DONE", "FAILED"})
 MUTEX = threading.RLock()
@@ -125,7 +126,7 @@ def _purge(now:float) -> None:
             state=_json(path/"state.json")
             ttl=RESULT_TTL if state.get("status") in {"COMPLETED","FAILED","REJECTED"} else JOB_TTL
             if now < state["updatedAt"] + ttl:continue
-            for name in ("input.part","report.json","state.json"):
+            for name in ("input.part","input.apk","input.apks","report.json","state.json"):
                 file=path/name
                 if not file.is_symlink():file.unlink(missing_ok=True)
             path.rmdir()
@@ -167,9 +168,13 @@ def _start(p:dict) -> dict:
     for path in ROOT.iterdir():
         if path.is_dir() and HEX32.fullmatch(path.name):
             try:
-                if _json(path/"state.json").get("status") in {"UPLOADING","PROCESSING"}:active+=1
-            except ApiError:
-                pass
+                existing=_json(path/"state.json")
+                if existing.get("status") in {"UPLOADING","PROCESSING"}:
+                    if hmac.compare_digest(existing.get("deviceKeyHash",""),owner):
+                        raise ApiError("APK_QA_ALREADY_ACTIVE",409)
+                    active+=1
+            except ApiError as error:
+                if error.code=="APK_QA_ALREADY_ACTIVE":raise
     if active>=MAX_ACTIVE:raise ApiError("QA_BUSY",429)
     job_id=secrets.token_hex(16)
     folder=ROOT/job_id
@@ -183,7 +188,8 @@ def _start(p:dict) -> dict:
     _event(state,"UPLOAD_STARTED","RUNNING")
     _atomic(folder/"state.json",state)
     return {"jobId":job_id,"uploadToken":secret,"chunkBytes":CHUNK,
-            "maxBytes":MAX_APK,"expiresIn":JOB_TTL,"status":"UPLOADING"}
+            "maxBytes":MAX_APK,"expiresIn":JOB_TTL,"status":"UPLOADING",
+            "events":state["events"]}
 
 
 def _chunk(p:dict) -> dict:
@@ -298,10 +304,78 @@ def _result(p:dict) -> dict:
     folder,state=_authorized(p)
     base={"status":state["status"],"jobId":state["jobId"],
           "receivedBytes":state["receivedBytes"],"totalBytes":state["totalBytes"],
+          "nextChunk":state["nextChunk"],"chunkBytes":CHUNK,
           "events":state.get("events",[])}
     if state["status"] in {"COMPLETED","FAILED"}:
         base["report"]=_json(folder/"report.json")
     return base
+
+
+def _recover_jobs() -> None:
+    """Reconcile durable QA journal before accepting requests after a restart.
+
+    A PROCESSING job either has a committed report, has its original verified
+    input ready for re-inspection, or must become a terminal failure. Uploading
+    jobs retain their byte acknowledgements and are resumed only by the owner's
+    existing capability and V2-bound identity; never invent a new uploadToken.
+    """
+    ROOT.mkdir(mode=0o700,parents=True,exist_ok=True)
+    with MUTEX:
+        _purge(time.time())
+        for folder in list(ROOT.iterdir()):
+            if folder.is_symlink() or not folder.is_dir() or not HEX32.fullmatch(folder.name):
+                continue
+            try:
+                state=_json(folder/"state.json")
+                status=state.get("status")
+                if status=="UPLOADING":
+                    file=folder/"input.part"
+                    received=state.get("receivedBytes",0)
+                    if received and (file.is_symlink() or not file.is_file()
+                                     or file.stat().st_size<received):
+                        state["status"]="FAILED"
+                        _event(state,"ANALYSIS_FAILED","FAILED")
+                        _atomic(folder/"report.json",{
+                            "schemaVersion":1,"status":"FAILED",
+                            "error":"UPLOAD_RECOVERY_FAILED","evidence":"NONE"})
+                        state["updatedAt"]=time.time()
+                        _atomic(folder/"state.json",state)
+                    continue
+                if status!="PROCESSING":
+                    continue
+                report_path=folder/"report.json"
+                if report_path.is_file() and not report_path.is_symlink():
+                    report=_json(report_path)
+                    status=("COMPLETED" if report.get("status")=="COMPLETED_PRELIMINARY"
+                            else "FAILED")
+                    state["status"]=status
+                    final_event="REPORT_READY" if status=="COMPLETED" else "ANALYSIS_FAILED"
+                    if not state.get("events") or state["events"][-1]["code"]!=final_event:
+                        _event(state,final_event,"DONE" if status=="COMPLETED" else "FAILED")
+                    state["updatedAt"]=time.time()
+                    _atomic(folder/"state.json",state)
+                else:
+                    suffix=Path(state.get("filename","")).suffix.lower()
+                    source=folder/("input"+suffix)
+                    if suffix in {".apk",".apks"} and source.is_file() and not source.is_symlink():
+                        _event(state,"ANALYSIS_RESUMED","RUNNING")
+                        state["updatedAt"]=time.time()
+                        _atomic(folder/"state.json",state)
+                        threading.Thread(target=_process,args=(state["jobId"],),
+                                         daemon=True).start()
+                        continue
+                    _atomic(report_path,{
+                        "schemaVersion":1,"status":"FAILED",
+                        "error":"PROCESSING_RECOVERY_FAILED","evidence":"NONE"})
+                    state["status"]="FAILED"
+                    _event(state,"ANALYSIS_FAILED","FAILED")
+                    state["updatedAt"]=time.time()
+                    _atomic(folder/"state.json",state)
+                (folder/"input.apk").unlink(missing_ok=True)
+                (folder/"input.apks").unlink(missing_ok=True)
+            except (OSError,ValueError,KeyError,ApiError):
+                # Fail closed: unknown/corrupt journals are not auto-unlocked.
+                continue
 
 
 def dispatch(action:str,payload:dict) -> dict:
@@ -356,7 +430,7 @@ class Handler(BaseHTTPRequestHandler):
 def main():
     if len(os.environ.get("SPDECODE_APK_QA_INTERNAL_TOKEN",""))<32:
         raise RuntimeError("APK_QA_INTERNAL_TOKEN_NOT_CONFIGURED")
-    ROOT.mkdir(mode=0o700,parents=True,exist_ok=True)
+    _recover_jobs()
     threading.Thread(target=_sweep_loop,daemon=True).start()
     server=ThreadingHTTPServer(("0.0.0.0",8792),Handler)
     server.serve_forever(poll_interval=0.2)
