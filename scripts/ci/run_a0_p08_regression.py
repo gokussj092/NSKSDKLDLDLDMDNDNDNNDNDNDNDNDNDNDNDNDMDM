@@ -161,7 +161,9 @@ def parse_result(runtime: str, output: str) -> tuple[int, int, int]:
         found = re.search(r"\bRan (\d+) tests? in \d+(?:\.\d+)?s", output)
         executed = int(found.group(1)) if found else 0
         skipped = sum(int(v) for v in re.findall(r"\bskipped=(\d+)\b", output))
-        return executed, max(executed - skipped, 0), skipped
+        failures = sum(int(v) for v in re.findall(r"\bfailures=(\d+)\b", output))
+        errors = sum(int(v) for v in re.findall(r"\berrors=(\d+)\b", output))
+        return executed, max(executed - skipped - failures - errors, 0), skipped
     found = re.search(r"(?m)^# tests (\d+)\s*$", output)
     passes = re.search(r"(?m)^# pass (\d+)\s*$", output)
     failures = re.search(r"(?m)^# fail (\d+)\s*$", output)
