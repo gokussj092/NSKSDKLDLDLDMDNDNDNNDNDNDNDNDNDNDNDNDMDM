@@ -57,3 +57,10 @@ Las pruebas utilizan IDs sintéticos y no descargan ni analizan APK, no llaman F
 - P05/P08: ejecutar corpus APK/APKS autorizado, inyección de fallos, carga de disco, carreras de procesos, contenedores Linux y pruebas E2E con servidor real.
 
 **No declarar la función APK comercial lista hasta superar las pruebas reales de A4/A5/A9.**
+
+
+### CI P04 verificado
+
+[F7-A0 Method Evidence — ejecución 42323587447](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42323587447) concluyó **SUCCESS** en el commit `aec3fdf90f288e7bd85e9f931cbc532aa2e93aad`. Pruebas: 11 evidencia + 6 dependencias + 7 mapa P02 + 9 workspace + 5 preflight + 7 política P03 + 20 checkpoint journal + 4 esquemas = **69 pruebas aprobadas**.
+
+**Confirmación de alcance:** no se ejecutaron APK reales ni herramientas de descifrado; el backend cifrado de objetos y la prueba de extremo a extremo siguen pendientes para A4/A5/A9. P04 queda **PARCIAL**, con contratos y pruebas cerrados pero integración productiva pendiente. Los JSON schemas se versionan por protocolo, no por versión de SP-DECODE Android.

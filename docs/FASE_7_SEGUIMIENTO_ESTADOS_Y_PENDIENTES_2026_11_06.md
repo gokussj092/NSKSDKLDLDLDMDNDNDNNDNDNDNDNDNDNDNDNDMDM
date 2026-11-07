@@ -200,3 +200,10 @@ Los verificadores indicaron **63/63 scripts originales intactos**, 2 perfiles ca
 ## F7-A0-P04 — Resultados y checkpoints (2026-11-06)
 
 **IMPLEMENTACIÓN DE CONTRATOS, NO DESPLEGADA:** `cloud/apk_analysis/checkpoint_journal.py` registra checkpoints de solo metadatos con números, SHA-256 encadenados y commits atómicos/fsync, verificación de resultado final a través del almacenamiento futuro y lectura segura para Android sin datos sensibles. Nuevos esquemas `checkpoint-event.v1`, `result-event.v1`, `user-progress.v1` se mantienen por protocolo, sin historial por versión Android. Pruebas negativas de corrupción, crash, privilegios, integridad e idempotencia en CI. **P04 parcial** hasta A4/A5/A9 y pruebas reales de APK autorizados. [Documento P04](FASE_7_A0_P04_RESULTADOS_Y_CHECKPOINTS_2026_11_06.md). Los 63 scripts funcionales se conservan intactos.
+
+
+### CI P04 verificado
+
+[F7-A0 Method Evidence — ejecución 42323587447](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42323587447) concluyó **SUCCESS** en el commit `aec3fdf90f288e7bd85e9f931cbc532aa2e93aad`. Pruebas: 11 evidencia + 6 dependencias + 7 mapa P02 + 9 workspace + 5 preflight + 7 política P03 + 20 checkpoint journal + 4 esquemas = **69 pruebas aprobadas**.
+
+**Confirmación de alcance:** no se ejecutaron APK reales ni herramientas de descifrado; el backend cifrado de objetos y la prueba de extremo a extremo siguen pendientes para A4/A5/A9. P04 queda **PARCIAL**, con contratos y pruebas cerrados pero integración productiva pendiente. Los JSON schemas se versionan por protocolo, no por versión de SP-DECODE Android.
