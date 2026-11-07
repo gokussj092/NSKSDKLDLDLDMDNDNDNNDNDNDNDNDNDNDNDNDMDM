@@ -258,4 +258,6 @@
     <string name="apk_qa_uploading">جارٍ رفع APK…</string>
     <string name="apk_qa_processing">جارٍ التحليل على الخادم…</string>
     <string name="apk_qa_report">تقرير فحص ثابت أولي</string>
+    <string name="apk_qa_copy_device_id">نسخ معرّف جهاز الاختبار</string>
+    <string name="apk_qa_device_id_copied">تم نسخ معرّف جهاز الاختبار</string>
 </resources>
