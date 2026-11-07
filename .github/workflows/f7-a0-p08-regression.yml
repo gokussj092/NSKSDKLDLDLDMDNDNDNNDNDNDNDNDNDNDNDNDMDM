@@ -1,0 +1,70 @@
+name: F7-A0 P08 Independent Regression
+
+on:
+  pull_request:
+    branches: [main, feat/nuevas-integraciones]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  original-python-methods:
+    name: P08 original Python methods and worker regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Install historical PHP script runtime
+        run: sudo apt-get update -qq && sudo apt-get install -y php-cli
+      - name: Install existing project Python test dependencies
+        run: python -m pip install -r requirements.txt cryptography==50.0.2
+      - name: P08 safety tests and immutable regression matrix
+        run: python -m unittest discover -s tests -p 'test_a0_p08_regression.py' -v
+      - name: Execute original decoder, worker, catalog and unlocked export regressions
+        run: python scripts/ci/run_a0_p08_regression.py --runtime python --output "$RUNNER_TEMP/f7-a0-p08-python.json"
+      - name: Publish sanitized Python regression metadata
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: f7-a0-p08-python
+          path: ${{ runner.temp }}/f7-a0-p08-python.json
+          retention-days: 7
+          if-no-files-found: ignore
+
+  original-cloud-web:
+    name: P08 original Node routes and web consumer regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install existing Cloud web dependencies
+        working-directory: cloud/web
+        run: npm install --no-audit --no-fund
+      - name: Execute real Cloud route, chunk, catalog and export policy regressions
+        run: python scripts/ci/run_a0_p08_regression.py --runtime node --output "$RUNNER_TEMP/f7-a0-p08-node.json"
+      - name: Publish sanitized Node regression metadata
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: f7-a0-p08-node
+          path: ${{ runner.temp }}/f7-a0-p08-node.json
+          retention-days: 7
+          if-no-files-found: ignore
