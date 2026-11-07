@@ -261,4 +261,5 @@
     <string name="apk_qa_report">प्रारंभिक स्थिर रिपोर्ट</string>
     <string name="apk_qa_copy_device_id">मेरी परीक्षण डिवाइस आईडी कॉपी करें</string>
     <string name="apk_qa_device_id_copied">परीक्षण डिवाइस आईडी कॉपी हुई</string>
+    <string name="apk_qa_retention_notice">परीक्षण में APK सीमित सर्वर भंडारण में अस्थायी रूप से रखा जाता है (अभी संग्रहण पर एन्क्रिप्ट नहीं है) और विश्लेषण या अपलोड समाप्ति के बाद हटाया जाता है। रिपोर्ट 12 घंटे और सफाई समय तक रह सकती है। गोपनीय APK न भेजें।</string>
 </resources>
