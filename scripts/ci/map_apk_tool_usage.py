@@ -175,6 +175,10 @@ def find_references(root: Path, tools: list[dict]) -> dict[str, list[dict]]:
     matches = {tool["path"]: set() for tool in tools}
     for path in reference_files(root):
         rel = path.relative_to(root).as_posix()
+        # Registry files are their own source inventory, not evidence of a
+        # real consumer. Without this exclusion every tool appears in use.
+        if rel.startswith("analysis/platform/") or rel.startswith("analysis/_intake/"):
+            continue
         try:
             content = path.read_text(encoding="utf-8")
         except UnicodeError:
@@ -234,7 +238,10 @@ def audit(root: Path = ROOT) -> dict:
     for tool in tools:
         items = refs[tool["path"]]
         tool["documented_app_build_references"] = sorted({x["app_build"] for x in items if x["app_build"]})
-        tool["test_source_references"] = sorted({x["source"] for x in items if x["kind"] == "TEST_SOURCE_REFERENCE"})
+        tool["test_source_references"] = sorted({
+            x["source"] for x in items
+            if x["kind"] == "TEST_SOURCE_REFERENCE" or "/tests/" in x["source"]
+        })
         tool["reference_count"] = len(items)
         tool["references"] = items[:REF_LIMIT]
         tool["references_truncated"] = len(items) > REF_LIMIT

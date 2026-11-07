@@ -74,6 +74,13 @@ class ToolUsageInventoryTests(unittest.TestCase):
         item = next(t for t in audit(self.root)["tools"] if t["path"].endswith("example.py"))
         self.assertEqual(item["documented_app_build_references"], ["com.example.vpn/42"])
 
+    def test_inventory_file_alone_is_not_a_consumer(self):
+        # A registered tool with no evidence outside the baseline remains unmapped.
+        self.write("tests/test_consumers.py", "import example\n")
+        report = audit(self.root)
+        capture = next(t for t in report["tools"] if t["path"].endswith("capture.js"))
+        self.assertEqual(capture["reference_count"], 0)
+
     def test_invalid_python_recorded_without_exec(self):
         out = python_signals("def broken(:\n  pass\n", set())
         self.assertEqual(out["parse_status"], "SYNTAX_ERROR_NOT_EXECUTED")

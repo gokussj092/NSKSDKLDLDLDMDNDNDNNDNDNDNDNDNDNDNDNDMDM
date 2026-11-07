@@ -166,3 +166,7 @@ Estado PARCIAL. Se revisaron las siete dependencias directas con sus fichas y ha
 ### Validación CI de P01 (GitHub Actions)
 
 [F7-A0 Method Evidence, run 42314608709](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42314608709), resultado **SUCCESS** (commit f263c3587e9cca8d9a87496b95cf9ab7880719b9). Ejecutados 11 tests de evidencia + 6 tests nuevos de metadatos. Inventario: 63 scripts, 7 pins directos, 11 dossiers. Verificador P01: 7 SDIST de referencia, 0 wheels instalados atestiguados y 0 autorizaciones automáticas. Estado P01 **PARCIAL**, pendiente wheel/ABI/transitivas/revisión jurídica. No implica fallo funcional de herramientas anteriores.
+
+## F7-A0-P02 — Inventario dinámico (2026-11-06)
+
+**PARCIAL:** se agregó `scripts/ci/map_apk_tool_usage.py` y pruebas con fixtures `tests/test_a0_tool_usage.py`. El job F7-A0 genera el mapa `f7-a0-usage.json` con hashes, argumentos, imports, señales de riesgo, referencias a apps/build y tests; excluye la propia baseline para no inflar consumidores. **No se tocaron ni ejecutaron los métodos funcionales.** P02 pendiente: usos indirectos, capacidades realmente verificadas y política P03. [Documento de P02](FASE_7_A0_P02_MAPA_HERRAMIENTAS_2026_11_06.md).
