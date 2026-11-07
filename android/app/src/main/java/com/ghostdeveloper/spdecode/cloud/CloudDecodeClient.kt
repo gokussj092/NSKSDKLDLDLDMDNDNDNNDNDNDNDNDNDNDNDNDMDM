@@ -566,6 +566,27 @@ internal class CloudDecodeClient(context: Context) {
 
     /** Voluntary feedback uses the existing V2 HPKE, PoP and action Integrity path.
      * No imported VPN files, decoded JSON, device logs or private keys are sent. */
+    /**
+     * F7 APK QA: protected first-pass static analysis WITHOUT user accounts,
+     * billing or credits. Full V2 native HPKE, PoP, attestation and rate limits
+     * remain mandatory. Upload chunks are individually authenticated; start and
+     * finalize additionally receive Action Integrity when the VPS requires it.
+     */
+    suspend fun apkQaRequest(operation:Int,payload:JSONObject,
+                             attachment:ByteArray?=null):JSONObject {
+        if (operation !in setOf(CloudOperation.APK_QA_START,CloudOperation.APK_QA_CHUNK,
+                CloudOperation.APK_QA_FINISH,CloudOperation.APK_QA_RESULT))
+            throw IOException("APK_QA_OPERATION_DENIED")
+        requireLegalConsent()
+        return withContext(Dispatchers.IO) {
+            val bearer=session()
+            extract(if(operation==CloudOperation.APK_QA_START ||
+                       operation==CloudOperation.APK_QA_FINISH)
+                protectedPost(operation,payload,bearer,attachment)
+            else CloudNativeTransport.post(operation,payload,bearer,attachment=attachment))
+        }
+    }
+
     suspend fun submitFeedback(draft:FeedbackDraft):String {
         requireLegalConsent()
         require(draft.submissionId.matches(Regex("[0-9a-fA-F-]{36}")))
