@@ -75,6 +75,23 @@ internal class CloudApkQaClient(context:Context,private val cloud:CloudDecodeCli
         return total to hex(md.digest())
     }
 
+    private suspend fun qaPost(operation:Int,payload:JSONObject,bytes:ByteArray?=null):JSONObject {
+        var retries=0
+        while(true) {
+            coroutineContext.ensureActive()
+            try {
+                return cloud.apkQaRequest(operation,payload,bytes)
+            }catch(error:CloudDecodeClient.Failure) {
+                if(error.code !in setOf("RATE_LIMITED","SERVICE_UNAVAILABLE","APK_QA_UNAVAILABLE")
+                    || retries>=5) throw error
+                retries++
+                delay(maxOf(error.retryAfterMillis, 15_000L).coerceAtMost(60_000L))
+                // Each retry sends a fresh HPKE frame and request proof; the
+                // QA chunk token/index makes accepted chunks idempotent.
+            }
+        }
+    }
+
     suspend fun analyze(uri:Uri,onProgress:suspend (String,Long,Long)->Unit):JSONObject =
         withContext(Dispatchers.IO) {
             val name=filename(uri)
@@ -82,7 +99,7 @@ internal class CloudApkQaClient(context:Context,private val cloud:CloudDecodeCli
             onProgress("READING",0,0)
             val (total,fullDigest)=digestAndSize(uri)
             coroutineContext.ensureActive()
-            val started=cloud.apkQaRequest(CloudOperation.APK_QA_START,JSONObject()
+            val started=qaPost(CloudOperation.APK_QA_START,JSONObject()
                 .put("filename",name).put("totalBytes",total)
                 .put("sha256",fullDigest).put("consent",true)
                 .put("qaFirstPass",true))
@@ -115,7 +132,7 @@ internal class CloudApkQaClient(context:Context,private val cloud:CloudDecodeCli
                             val hash=hex(MessageDigest.getInstance("SHA-256").digest(content))
                             // Binary attachment is encrypted inside native HPKE and
                             // encoded for the private QA worker on the server only.
-                            val response=cloud.apkQaRequest(CloudOperation.APK_QA_CHUNK,
+                            val response=qaPost(CloudOperation.APK_QA_CHUNK,
                                 JSONObject(base.toString())
                                     .put("index",index).put("chunkSha256",hash),content)
                             val received=response.getLong("receivedBytes")
@@ -124,17 +141,18 @@ internal class CloudApkQaClient(context:Context,private val cloud:CloudDecodeCli
                             sent=received
                             index++
                             onProgress("SENDING",sent,total)
+                            if(sent<total)delay(4500L) // Respect existing V2 request budget; no bypass
                         }finally{content.fill(0)}
                     }
                 }
-                val finish=cloud.apkQaRequest(CloudOperation.APK_QA_FINISH,JSONObject(base.toString()))
+                val finish=qaPost(CloudOperation.APK_QA_FINISH,JSONObject(base.toString()))
                 if(finish.optString("status")!="PROCESSING")
                     throw IOException("APK_QA_INVALID_STATE")
                 onProgress("PROCESSING",total,total)
                 repeat(MAX_POLL){
                     coroutineContext.ensureActive()
                     delay(2000L)
-                    val status=cloud.apkQaRequest(CloudOperation.APK_QA_RESULT,JSONObject(base.toString()))
+                    val status=qaPost(CloudOperation.APK_QA_RESULT,JSONObject(base.toString()))
                     when(status.optString("status")){
                         "COMPLETED"-> {
                             val report=status.optJSONObject("report")
