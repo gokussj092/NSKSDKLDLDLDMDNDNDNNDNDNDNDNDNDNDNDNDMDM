@@ -86,6 +86,7 @@ class MainActivity : ComponentActivity() {
     private var apkQaReceived by mutableStateOf(0L)
     private var apkQaTotal by mutableStateOf(0L)
     private var apkQaReport by mutableStateOf<String?>(null)
+    private var apkQaEvents by mutableStateOf<List<CloudApkQaClient.ActivityEvent>>(emptyList())
     private var apkQaError by mutableStateOf<String?>(null)
     private val serverVpnCatalog by lazy { ServerVpnCatalogRepository(this,cloudClient) }
     private val cloudNewsRepository by lazy { CloudWhatsNewRepository(this,cloudClient) }
@@ -425,16 +426,21 @@ class MainActivity : ComponentActivity() {
         apkQaReceived=0L
         apkQaTotal=0L
         apkQaReport=null
+        apkQaEvents=emptyList()
         apkQaError=null
         apkQaJob=scope.launch {
             try {
-                val report=apkQaClient.analyze(uri) { stage,done,all ->
+                val report=apkQaClient.analyze(uri, { stage,done,all ->
                     withContext(Dispatchers.Main.immediate) {
                         apkQaPhase=stage
                         apkQaReceived=done
                         apkQaTotal=all
                     }
-                }
+                }, { events ->
+                    withContext(Dispatchers.Main.immediate) {
+                        apkQaEvents=events
+                    }
+                })
                 apkQaReport=report.toString(2)
                 apkQaPhase="COMPLETE"
             }catch(error:CancellationException){
@@ -629,6 +635,7 @@ class MainActivity : ComponentActivity() {
                 apkQaReceived=apkQaReceived,
                 apkQaTotal=apkQaTotal,
                 apkQaReport=apkQaReport,
+                apkQaEvents=apkQaEvents,
                 apkQaError=apkQaError,
                 onApkQaPick={apkQaPicker.launch(arrayOf("application/vnd.android.package-archive","application/octet-stream","*/*"))},
                 onApkQaCancel={apkQaJob?.cancel();apkQaRunning=false;apkQaPhase=""},
