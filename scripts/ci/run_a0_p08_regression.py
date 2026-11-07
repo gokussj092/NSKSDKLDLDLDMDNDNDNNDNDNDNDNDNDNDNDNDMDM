@@ -151,9 +151,10 @@ def run_suite(root: Path, item: dict, timeout: int) -> dict:
     runtime, target, floor = REQUIRED[item["id"]]
     command = ([sys.executable, "-m", "unittest", "-v", target]
                if runtime == "python" else
-               ["node", "--test", "cloud/web/tests/" + target])
+               ["node", "--test", "tests/" + target])
+    working_dir = root if runtime == "python" else root / "cloud/web"
     try:
-        proc = subprocess.run(command, cwd=root, capture_output=True, text=True,
+        proc = subprocess.run(command, cwd=working_dir, capture_output=True, text=True,
                               errors="replace", timeout=timeout, check=False,
                               env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"})
         count, passed, skipped = parse_result(runtime, proc.stdout + "\n" + proc.stderr)
