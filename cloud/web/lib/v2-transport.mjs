@@ -63,6 +63,10 @@ async function dispatch(operation,request) {
     18:()=>import("../app/api/v1/feedback/route.js"),
     19:()=>import("../app/api/v1/server-vpn/manifest/route.js"),
     20:()=>import("../app/api/v1/server-vpn/chunk/route.js"),
+    21:()=>import("../app/api/v1/apk-qa/start/route.js"),
+    22:()=>import("../app/api/v1/apk-qa/chunk/route.js"),
+    23:()=>import("../app/api/v1/apk-qa/finish/route.js"),
+    24:()=>import("../app/api/v1/apk-qa/result/route.js"),
   };
   return (await handlers[operation]()).POST(request);
 }
@@ -81,7 +85,7 @@ async function jsonTransportCore(request,options={}) {
     deviceRevision:devicePolicy.revision};
   if(!cfg.configured)return fail("SERVICE_UNAVAILABLE",503);
   const url=new URL(request.url),header=request.headers.get("x-sp-operation")||"";
-  if(request.method!=="POST" || url.search || !/^(1|2|[4-9]|1[0-9]|20)$/.test(header))
+  if(request.method!=="POST" || url.search || !/^(1|2|[4-9]|1[0-9]|2[0-4])$/.test(header))
     return fail("INVALID_REQUEST",400); // No QA/beta or arbitrary proxy.
   const op=Number(header);
   try {
@@ -301,7 +305,7 @@ export async function transportRequest(request,options={}) {
   }
   if(!isHpkeEnabled(env))return fail("SERVICE_UNAVAILABLE",503);
   const url=new URL(request.url),name=request.headers.get("x-sp-operation")||"";
-  if(request.method!=="POST"||url.search||!/^(1|2|[4-9]|1[0-9]|20)$/.test(name))
+  if(request.method!=="POST"||url.search||!/^(1|2|[4-9]|1[0-9]|2[0-4])$/.test(name))
     return fail("INVALID_REQUEST",400);
   const op=Number(name);
   if(op>=4 && !(request.headers.get("authorization")||"").startsWith("Bearer "))
