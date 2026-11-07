@@ -13,7 +13,7 @@ const reply=(code,status)=>jsonReply({error:{code}},status);
 function settings(env=process.env){
   const key=env.CLOUD_APK_QA_INTERNAL_TOKEN||"";
   const raw=env.CLOUD_APK_QA_ALLOWED_KEY_SHA256||"";
-  const devices=raw.split(",").filter(Boolean);
+  const devices=raw.split(",");
   const configured=devices.length>0 && devices.length<=8 &&
     devices.every(v=>/^[a-f0-9]{64}$/.test(v)) &&
     new Set(devices).size===devices.length;
