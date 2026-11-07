@@ -59,6 +59,16 @@ def digest(token:str) -> str:
     return hashlib.sha256(token.encode("ascii")).hexdigest()
 
 
+def _stable_upload_token(owner:str,start_id:str) -> str:
+    key=os.environ.get("SPDECODE_APK_QA_INTERNAL_TOKEN","")
+    if len(key)<32:
+        raise ApiError("SERVICE_UNAVAILABLE",503)
+    value=hmac.new(key.encode("utf-8"),
+                   ("spdecode-apk-qa-v1:"+owner+":"+start_id).encode("ascii"),
+                   hashlib.sha256).digest()
+    return base64.urlsafe_b64encode(value).rstrip(b"=").decode("ascii")
+
+
 def _event(state:dict, code:str, status:str) -> None:
     if code not in PUBLIC_EVENTS or status not in PUBLIC_STATES:
         raise ValueError("INVALID_PUBLIC_EVENT")
@@ -150,6 +160,10 @@ def _start(p:dict) -> dict:
     filename=p.get("filename")
     sha=p.get("sha256")
     owner=p.get("deviceKeyHash")
+    start_id=p.get("clientStartId")
+    if start_id is not None and (not isinstance(start_id,str) or
+                                 not HEX64.fullmatch(start_id)):
+        raise ApiError("INVALID_START_ID")
     if not isinstance(total,int) or isinstance(total,bool) or total<=0 or total>MAX_APK:
         raise ApiError("INPUT_TOO_LARGE",413)
     if not isinstance(filename,str) or not re.fullmatch(r"[A-Za-z0-9_. -]{1,100}",filename) or filename.startswith("."):
@@ -171,6 +185,16 @@ def _start(p:dict) -> dict:
                 existing=_json(path/"state.json")
                 if existing.get("status") in {"UPLOADING","PROCESSING"}:
                     if hmac.compare_digest(existing.get("deviceKeyHash",""),owner):
+                        if (start_id is not None and existing.get("clientStartId")==start_id
+                            and existing.get("sha256")==sha and
+                            existing.get("totalBytes")==total and
+                            existing.get("filename")==filename):
+                            secret=_stable_upload_token(owner,start_id)
+                            if hmac.compare_digest(digest(secret),existing.get("tokenDigest","")):
+                                return {"jobId":existing["jobId"],"uploadToken":secret,
+                                        "chunkBytes":CHUNK,"maxBytes":MAX_APK,
+                                        "expiresIn":JOB_TTL,"status":existing["status"],
+                                        "events":existing.get("events",[])}
                         raise ApiError("APK_QA_ALREADY_ACTIVE",409)
                     active+=1
             except ApiError as error:
@@ -179,9 +203,9 @@ def _start(p:dict) -> dict:
     job_id=secrets.token_hex(16)
     folder=ROOT/job_id
     folder.mkdir(mode=0o700,exist_ok=False)
-    secret=secrets.token_urlsafe(32)
+    secret=_stable_upload_token(owner,start_id) if start_id is not None else secrets.token_urlsafe(32)
     now=time.time()
-    state={"jobId":job_id,"deviceKeyHash":owner,
+    state={"jobId":job_id,"deviceKeyHash":owner,"clientStartId":start_id,
            "tokenDigest":digest(secret),"filename":filename,"totalBytes":total,"sha256":sha,
            "status":"UPLOADING","receivedBytes":0,"nextChunk":0,"chunkDigests":[],
            "createdAt":now,"updatedAt":now}
