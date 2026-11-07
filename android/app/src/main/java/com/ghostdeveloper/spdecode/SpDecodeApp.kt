@@ -128,6 +128,14 @@ fun SpDecodeApp(
     usageAnalyticsEnabled:Boolean=false,
     onUsageAnalytics:(Boolean)->Unit={},
     onFeedbackSubmit:suspend (FeedbackDraft)->String={throw IllegalStateException("FEEDBACK_UNAVAILABLE")},
+    apkQaRunning:Boolean=false,
+    apkQaPhase:String="",
+    apkQaReceived:Long=0L,
+    apkQaTotal:Long=0L,
+    apkQaReport:String?=null,
+    apkQaError:String?=null,
+    onApkQaPick:()->Unit={},
+    onApkQaCancel:()->Unit={},
 ){
     var dialog by remember{mutableStateOf<String?>(null)}
     var creditsPage by rememberSaveable { mutableStateOf(false) }
@@ -158,6 +166,9 @@ fun SpDecodeApp(
                         highlightGuide=if(!whatsNew && !busy)guideStep else null)
                     1->HistoryScreen(session,onSelect,onDeleteSelected,onClear,onImportMultiple,onFavorite)
                     2->if(creditsPage) ApkCreditsComingSoonScreen()
+                        else if(BuildConfig.SPDECODE_CLOUD_ENABLED)
+                            ApkQaAnalysisScreen(apkQaRunning,apkQaPhase,apkQaReceived,
+                                apkQaTotal,apkQaReport,apkQaError,onApkQaPick,onApkQaCancel)
                         else ApkAnalysisComingSoonScreen()
                     3->ServerVpnScreen(busy,serverVpnApps,serverVpnLoading && catalogTransfer==null,serverVpnUnavailable,
                         onDecodeServerCatalog,onDecodeServerApp,catalogProgress)
