@@ -250,4 +250,14 @@
     <string name="catalog_transfer_resume">Retry / resume</string>
     <string name="catalog_transfer_discard">Delete partial download</string>
     <string name="catalog_transfer_retention">Verified fragments stay encrypted for up to 7 days for resuming.</string>
+    <string name="apk_qa_title">APK analysis — test mode</string>
+    <string name="apk_qa_description">Real static inspection of APK/APKS. No login or credits required. Apps are not installed or executed.</string>
+    <string name="apk_qa_consent">I own this APK or have permission to analyze it.</string>
+    <string name="apk_qa_pick">Select APK or APKS</string>
+    <string name="apk_qa_no_charge">No credits are charged during testing.</string>
+    <string name="apk_qa_limit">Maximum file size: 96 MiB.</string>
+    <string name="apk_qa_reading">Reading APK…</string>
+    <string name="apk_qa_uploading">Uploading APK…</string>
+    <string name="apk_qa_processing">Analyzing on server…</string>
+    <string name="apk_qa_report">Preliminary static report</string>
 </resources>
