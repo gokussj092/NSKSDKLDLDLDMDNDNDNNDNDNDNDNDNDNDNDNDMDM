@@ -260,4 +260,6 @@
     <string name="apk_qa_uploading">Uploading APK…</string>
     <string name="apk_qa_processing">Analyzing on server…</string>
     <string name="apk_qa_report">Preliminary static report</string>
+    <string name="apk_qa_copy_device_id">Copy my test device ID</string>
+    <string name="apk_qa_device_id_copied">Test device ID copied</string>
 </resources>
