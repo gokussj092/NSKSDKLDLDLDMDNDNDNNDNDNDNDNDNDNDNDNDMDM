@@ -7,6 +7,8 @@ on:
       - cloud/apk_analysis/input_gate.py
       - scripts/ci/build_p05_owned_apk.sh
       - tests/test_a0_apk_input_limits.py
+      - tests/test_a0_p05_failure_recovery.py
+      - scripts/ci/p05_sandbox_faults.py
       - cloud/apk_analysis/Dockerfile
       - cloud/apk_analysis/compose.yaml
       - cloud/apk_analysis/runtime_preflight.py
@@ -33,6 +35,8 @@ jobs:
           java-version: '17'
       - name: P05 ZIP boundary tests with deterministic fixtures
         run: python -m unittest discover -s tests -p 'test_a0_apk_input_limits.py' -v
+      - name: P05 real SIGKILL, disk failure and human-retention recovery tests
+        run: python -m unittest discover -s tests -p 'test_a0_p05_failure_recovery.py' -v
       - name: Generate first-party signed Android APK and APKS wrapper
         run: bash scripts/ci/build_p05_owned_apk.sh "$RUNNER_TEMP/p05-owned"
       - name: Check signed fixture and APKS using offline input gate
@@ -149,11 +153,15 @@ jobs:
           p.write_text(json.dumps(obj,sort_keys=True,indent=2)+"\n")
           print("P05: owned DEX decompiled offline using checksum-verified persistent JADX")
           PY
+      - name: P05 Docker fault injection (memory, disk, timeout, sandbox, offline cache)
+        run: python scripts/ci/p05_sandbox_faults.py --image spdecode-apk-tools:p05 --output "$RUNNER_TEMP/p05-fault-summary.json"
       - name: Publish sanitized report only, never APKs or signing key
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: p05-lab-summary
-          path: ${{ runner.temp }}/p05-sanitized-summary.json
+          path: |
+            ${{ runner.temp }}/p05-sanitized-summary.json
+            ${{ runner.temp }}/p05-fault-summary.json
           if-no-files-found: ignore
           retention-days: 7
