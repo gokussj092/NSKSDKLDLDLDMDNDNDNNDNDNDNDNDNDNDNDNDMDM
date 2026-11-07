@@ -2,7 +2,7 @@
   "schema_version": 1,
   "subphase": "F7-A0-P08",
   "status": "REQUIRES_CI_EXECUTION",
-  "purpose": "Regression of existing production decoder and worker code without changing it. Separate independent parity, boundary and offline fixture checks from real third-party APK or network validation.",
+  "purpose": "Regression of existing production decoder and worker code without changing it. Separate independent parity, boundary and offline fixture checks from real third-party APK or network validation. Includes Node/Next.js catalog, snapshots, resumability and export consumers using existing tests.",
   "required_formats": [
     "file",
     "text",
@@ -15,10 +15,11 @@
     "decoder",
     "cli",
     "export",
-    "handler"
+    "handler",
+    "web"
   ],
-  "minimum_suite_count": 12,
-  "minimum_total_cases": 55,
+  "minimum_suite_count": 19,
+  "minimum_total_cases": 90,
   "approval": "NONE_GRANTED",
   "execution": "CURRENT_PRODUCTION_CODE_WITH_OFFLINE_FIXTURES",
   "real_vendor_apk_verified": false,
@@ -27,7 +28,9 @@
   "no_mutations": [
     "scripts/apk_analysis/",
     "decoders/Python/",
-    "cloud/workers/python/"
+    "cloud/workers/python/",
+    "cloud/web/lib/",
+    "cloud/web/app/api/"
   ],
   "suites": [
     {
@@ -41,7 +44,8 @@
         "cloud/workers/python/engine.py"
       ],
       "fixture_classification": "SYNTHETIC_OR_SANITIZED_OFFLINE",
-      "claims_real_vendor_verified": false
+      "claims_real_vendor_verified": false,
+      "runtime": "python"
     },
     {
       "id": "cloud-hc-formats",
@@ -54,7 +58,8 @@
         "cloud/workers/python/engine.py"
       ],
       "fixture_classification": "SYNTHETIC_OR_SANITIZED_OFFLINE",
-      "claims_real_vendor_verified": false
+      "claims_real_vendor_verified": false,
+      "runtime": "python"
     },
     {
       "id": "cloud-text-protocols",
@@ -67,7 +72,8 @@
         "cloud/workers/python/text_bridge.py"
       ],
       "fixture_classification": "SYNTHETIC_OR_SANITIZED_OFFLINE",
-      "claims_real_vendor_verified": false
+      "claims_real_vendor_verified": false,
+      "runtime": "python"
     },
     {
       "id": "tls-ev2ray",
@@ -81,7 +87,8 @@
         "decoders/Python/EV2RAY.py"
       ],
       "fixture_classification": "SYNTHETIC_OR_SANITIZED_OFFLINE",
-      "claims_real_vendor_verified": false
+      "claims_real_vendor_verified": false,
+      "runtime": "python"
     },
     {
       "id": "server-catalog-worker",
@@ -94,7 +101,8 @@
         "cloud/workers/python/engine.py"
       ],
       "fixture_classification": "SYNTHETIC_OR_SANITIZED_OFFLINE",
-      "claims_real_vendor_verified": false
+      "claims_real_vendor_verified": false,
+      "runtime": "python"
     },
     {
       "id": "catnet-catalog",
@@ -107,7 +115,8 @@
         "decoders/Python/apps/CATNET_VPN/codec.py"
       ],
       "fixture_classification": "SYNTHETIC_OR_SANITIZED_OFFLINE",
-      "claims_real_vendor_verified": false
+      "claims_real_vendor_verified": false,
+      "runtime": "python"
     },
     {
       "id": "http-conexion-catalog",
@@ -120,7 +129,8 @@
         "decoders/Python/apps/HTTP_Conexion/codec.py"
       ],
       "fixture_classification": "SYNTHETIC_OR_SANITIZED_OFFLINE",
-      "claims_real_vendor_verified": false
+      "claims_real_vendor_verified": false,
+      "runtime": "python"
     },
     {
       "id": "http-conexion-refresh",
@@ -133,7 +143,8 @@
         "decoders/Python/apps/HTTP_Conexion/firebase.py"
       ],
       "fixture_classification": "SYNTHETIC_OR_SANITIZED_OFFLINE",
-      "claims_real_vendor_verified": false
+      "claims_real_vendor_verified": false,
+      "runtime": "python"
     },
     {
       "id": "namo-catalog",
@@ -146,7 +157,8 @@
         "decoders/Python/apps/NAMO_VPN/codec.py"
       ],
       "fixture_classification": "SYNTHETIC_OR_SANITIZED_OFFLINE",
-      "claims_real_vendor_verified": false
+      "claims_real_vendor_verified": false,
+      "runtime": "python"
     },
     {
       "id": "ha-unlocked-export",
@@ -159,7 +171,8 @@
         "cloud/workers/python/exports/hat.py"
       ],
       "fixture_classification": "SYNTHETIC_OR_SANITIZED_OFFLINE",
-      "claims_real_vendor_verified": false
+      "claims_real_vendor_verified": false,
+      "runtime": "python"
     },
     {
       "id": "c8-worker-bridge",
@@ -172,7 +185,8 @@
         "cloud/workers/python/engine.py"
       ],
       "fixture_classification": "SYNTHETIC_OR_SANITIZED_OFFLINE",
-      "claims_real_vendor_verified": false
+      "claims_real_vendor_verified": false,
+      "runtime": "python"
     },
     {
       "id": "server-vpn-transport",
@@ -183,6 +197,107 @@
       "min_tests": 2,
       "code_paths": [
         "cloud/workers/python/server.py"
+      ],
+      "fixture_classification": "SYNTHETIC_OR_SANITIZED_OFFLINE",
+      "claims_real_vendor_verified": false,
+      "runtime": "python"
+    },
+    {
+      "id": "snapshot-and-chunks",
+      "test_file": "catalog-snapshots.test.mjs",
+      "runtime": "node",
+      "format": "catalog",
+      "consumer": "web",
+      "reference_kind": "chunk_hash_and_resume_regression",
+      "min_tests": 3,
+      "code_paths": [
+        "cloud/web/lib/catalog-snapshots.mjs",
+        "cloud/web/lib/catalog-chunk-api.mjs"
+      ],
+      "fixture_classification": "SYNTHETIC_OR_SANITIZED_OFFLINE",
+      "claims_real_vendor_verified": false
+    },
+    {
+      "id": "server-catalog-route",
+      "test_file": "server-vpn-catalog.test.mjs",
+      "runtime": "node",
+      "format": "catalog",
+      "consumer": "web",
+      "reference_kind": "actual_http_route_synthetic_inputs",
+      "min_tests": 5,
+      "code_paths": [
+        "cloud/web/lib/server-vpn-catalog.mjs",
+        "cloud/web/app/api/v1/server-vpn/catalog/route.js"
+      ],
+      "fixture_classification": "SYNTHETIC_OR_SANITIZED_OFFLINE",
+      "claims_real_vendor_verified": false
+    },
+    {
+      "id": "unlocked-web-policy",
+      "test_file": "compatible-export-policy.test.mjs",
+      "runtime": "node",
+      "format": "export",
+      "consumer": "web",
+      "reference_kind": "backend_negotiation_permissions_and_persistence",
+      "min_tests": 3,
+      "code_paths": [
+        "cloud/web/lib/compatible-export-policy.mjs"
+      ],
+      "fixture_classification": "SYNTHETIC_OR_SANITIZED_OFFLINE",
+      "claims_real_vendor_verified": false
+    },
+    {
+      "id": "http-conexion-web",
+      "test_file": "http-conexion.test.mjs",
+      "runtime": "node",
+      "format": "catalog",
+      "consumer": "web",
+      "reference_kind": "mocked_HTTPS_worker_gateway",
+      "min_tests": 3,
+      "code_paths": [
+        "cloud/web/lib/server-vpn-provider.mjs"
+      ],
+      "fixture_classification": "SYNTHETIC_OR_SANITIZED_OFFLINE",
+      "claims_real_vendor_verified": false
+    },
+    {
+      "id": "xxpicore-web",
+      "test_file": "xxpicore-tunnel.test.mjs",
+      "runtime": "node",
+      "format": "catalog",
+      "consumer": "web",
+      "reference_kind": "mocked_https_and_catalog_integrity",
+      "min_tests": 3,
+      "code_paths": [
+        "cloud/web/lib/server-vpn-provider.mjs"
+      ],
+      "fixture_classification": "SYNTHETIC_OR_SANITIZED_OFFLINE",
+      "claims_real_vendor_verified": false
+    },
+    {
+      "id": "c10-catalog-watch",
+      "test_file": "c10-catalog-push.test.mjs",
+      "runtime": "node",
+      "format": "transport",
+      "consumer": "web",
+      "reference_kind": "synthetic_HTTP_watch_redis_stub",
+      "min_tests": 3,
+      "code_paths": [
+        "cloud/web/lib/c10-catalog-watch.mjs"
+      ],
+      "fixture_classification": "SYNTHETIC_OR_SANITIZED_OFFLINE",
+      "claims_real_vendor_verified": false
+    },
+    {
+      "id": "catalog-edition-web",
+      "test_file": "catalog-edition.test.mjs",
+      "runtime": "node",
+      "format": "catalog",
+      "consumer": "web",
+      "reference_kind": "atomic_metadata_version_control",
+      "min_tests": 1,
+      "code_paths": [
+        "cloud/web/lib/c12-provider-controls.mjs"
       ],
       "fixture_classification": "SYNTHETIC_OR_SANITIZED_OFFLINE",
       "claims_real_vendor_verified": false
