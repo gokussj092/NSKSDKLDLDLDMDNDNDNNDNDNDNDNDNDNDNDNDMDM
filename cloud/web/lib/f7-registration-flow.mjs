@@ -48,7 +48,11 @@ export function createRegistrationFlow({store, mail, otpKey, now=()=>Date.now()}
       if (typeof challengeId!=="string" || typeof code!=="string")
         return {status:"INVALID_OR_EXPIRED_CODE"};
       return store.withPendingLock(challengeId,async (tx,record)=>{
-        if (!record) return {status:"INVALID_OR_EXPIRED_CODE"};
+        if (!record || !Number.isInteger(record.attempts) ||
+            record.attempts >= accountPolicy.emailOtpMaxAttempts ||
+            record.consumedAt!==null || record.verifiedAt!==null ||
+            !Number.isFinite(record.expiresAt) || now()>=record.expiresAt)
+          return {status:"INVALID_OR_EXPIRED_CODE"};
         const valid=verifyEmailChallenge(record,code,otpKey,now());
         // Persist attempts even when code is invalid: transaction must commit.
         await tx.incrementAttempts(record.challengeId);
