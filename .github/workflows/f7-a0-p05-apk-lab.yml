@@ -96,6 +96,48 @@ jobs:
           (base/"p05-sanitized-summary.json").write_text(json.dumps(summary,indent=2)+"\n")
           print(json.dumps(summary,sort_keys=True))
           PY
+      - name: Preload original checksum-pinned JADX once in maintenance container
+        run: |
+          # Image is built once; the named tool cache is a separate persistent volume.
+          docker tag spdecode-apk-tools:p05 spdecode-apk-tools:p03
+          docker compose -f cloud/apk_analysis/compose.yaml --profile maintenance run --rm apk-resource-preload
+      - name: Verify JADX cache offline and decompile first-party DEX
+        run: |
+          # The second --install invocation MUST use the existing verified jar,
+          # since this container has no network access.
+          docker run --rm --network none --read-only --cap-drop ALL \
+            --security-opt no-new-privileges --user 65532:65532 \
+            --memory 3g --pids-limit 64 --cpus 1.5 \
+            --tmpfs /tmp:rw,noexec,nosuid,nodev,size=64m \
+            --mount type=volume,source=spdecode-apk-tools-cache,target=/opt/spdecode/scripts/apk_analysis/cache,readonly \
+            spdecode-apk-tools:p05 python -B scripts/apk_analysis/decompile.py --install
+          docker run --rm --network none --read-only --cap-drop ALL \
+            --security-opt no-new-privileges --user 65532:65532 \
+            --memory 3g --pids-limit 64 --cpus 1.5 \
+            --tmpfs /tmp:rw,noexec,nosuid,nodev,size=64m \
+            --mount type=volume,source=spdecode-apk-tools-cache,target=/opt/spdecode/scripts/apk_analysis/cache,readonly \
+            spdecode-apk-tools:p05 python -B cloud/apk_analysis/runtime_preflight.py --check
+          mkdir -p "$RUNNER_TEMP/p05-jadx-out"
+          sudo chown 65532:65532 "$RUNNER_TEMP/p05-jadx-out"
+          docker run --rm --network none --read-only --cap-drop ALL \
+            --security-opt no-new-privileges --user 65532:65532 \
+            --memory 3g --pids-limit 64 --cpus 1.5 \
+            --tmpfs /tmp:rw,noexec,nosuid,nodev,size=64m \
+            --mount "type=bind,source=$RUNNER_TEMP/p05-owned,target=/lab,readonly" \
+            --mount "type=bind,source=$RUNNER_TEMP/p05-jadx-out,target=/output" \
+            --mount type=volume,source=spdecode-apk-tools-cache,target=/opt/spdecode/scripts/apk_analysis/cache,readonly \
+            spdecode-apk-tools:p05 \
+            python -B scripts/apk_analysis/decompile.py /lab/owned-signed.apk /output
+          sudo find "$RUNNER_TEMP/p05-jadx-out" -type f -name '*.java' -print -quit | grep -q .
+          sudo env RUNNER_TEMP="$RUNNER_TEMP" python3 - <<'PY'
+          import json,os,pathlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"p05-sanitized-summary.json"
+          obj=json.loads(p.read_text())
+          obj["jadx_decompilation_tested"]=True
+          obj["jadx_cache_reused_offline"]=True
+          p.write_text(json.dumps(obj,sort_keys=True,indent=2)+"\n")
+          print("P05: owned DEX decompiled offline using checksum-verified persistent JADX")
+          PY
       - name: Publish sanitized report only, never APKs or signing key
         if: always()
         uses: actions/upload-artifact@v4
