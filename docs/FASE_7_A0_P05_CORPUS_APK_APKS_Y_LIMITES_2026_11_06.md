@@ -128,3 +128,7 @@ verified_jadx_cache_survives_faults_offline
 El artefacto publicado `p05-lab-summary` contiene solo resúmenes sanitizados, **no** APK, keystore, DEX ni descompilaciones. Esta ejecución de Docker es real en runner CI, con imagen y código de prueba propios; no es estrés sostenido de usuarios. El estado de la nueva prueba de exclusión `.xapk`/`.zip` y la integración del gate de evidencias debe confirmarse en una ejecución posterior que contenga ese commit.
 
 P05 sigue **PARCIAL**. No se han autorizado ni ejecutado análisis de APK VPN externos, y no existe todavía un flujo E2E Android→servidor.
+
+### Gate de evidencias ampliado: 95 pruebas
+
+[F7-A0 Method Evidence, run 42330901411](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42330901411), commit `bf6658398bedefcfea567d40d19c6454558ec17b`: **SUCCESS**. En logs: 11 + 6 + 7 + 9 + 5 + 7 + 20 + 4 + 22 + 4 = **95 pruebas** en diez suites, con 22 casos adversos de formato y 4 de recuperación. El mapa dinámico confirma `tools=63 unchanged=63 python=61 js=2 approved=0`. Las extensiones `.zip`/`.xapk` quedan rechazadas en el gate de servidor; la aplicación Android todavía no tiene la nueva subida habilitada. **No se otorga autorización para automatización de esas herramientas.**
