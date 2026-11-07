@@ -65,6 +65,7 @@ services:
       # Owner-opt-in APK static QA without commercial accounts, disabled by default.
       CLOUD_APK_QA_ENABLED: ${CLOUD_APK_QA_ENABLED:-false}
       CLOUD_APK_QA_INTERNAL_TOKEN: ${CLOUD_APK_QA_INTERNAL_TOKEN:-}
+      CLOUD_APK_QA_ALLOWED_KEY_SHA256: ${CLOUD_APK_QA_ALLOWED_KEY_SHA256:-}
       # C3.5 provider secrets are strictly backend-only; never NEXT_PUBLIC_*.
       CLOUD_HTTP_CUSTOM_IMPORT_ENABLED: ${CLOUD_HTTP_CUSTOM_IMPORT_ENABLED:-true}
       CLOUD_EHI_IMPORT_ENABLED: ${CLOUD_EHI_IMPORT_ENABLED:-false}
