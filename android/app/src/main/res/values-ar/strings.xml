@@ -272,4 +272,7 @@
     <string name="apk_qa_event_report_preparation">تجهيز التقرير</string>
     <string name="apk_qa_event_report_ready">التقرير متاح</string>
     <string name="apk_qa_event_analysis_failed">تعذر إكمال التحليل</string>
+    <string name="apk_qa_one_at_time">يمكن تحليل ملف APK/APKS واحد فقط في كل مرة. انتظر النتيجة النهائية قبل إرسال ملف آخر.</string>
+    <string name="apk_qa_retry_connection">إعادة الاتصال بالتحليل</string>
+    <string name="apk_qa_event_analysis_resumed">استئناف التحليل بعد إعادة التشغيل</string>
 </resources>

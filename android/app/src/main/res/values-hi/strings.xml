@@ -273,4 +273,7 @@
     <string name="apk_qa_event_report_preparation">रिपोर्ट तैयार की जा रही है</string>
     <string name="apk_qa_event_report_ready">रिपोर्ट उपलब्ध</string>
     <string name="apk_qa_event_analysis_failed">विश्लेषण पूरा नहीं हुआ</string>
+    <string name="apk_qa_one_at_time">एक समय में केवल एक APK/APKS का विश्लेषण हो सकता है। अगली फ़ाइल भेजने से पहले अंतिम परिणाम की प्रतीक्षा करें।</string>
+    <string name="apk_qa_retry_connection">विश्लेषण से दोबारा जुड़ें</string>
+    <string name="apk_qa_event_analysis_resumed">पुनः आरंभ होने के बाद विश्लेषण जारी</string>
 </resources>

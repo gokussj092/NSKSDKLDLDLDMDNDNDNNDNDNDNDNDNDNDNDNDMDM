@@ -273,4 +273,7 @@
     <string name="apk_qa_event_report_preparation">Rapor hazırlanıyor</string>
     <string name="apk_qa_event_report_ready">Rapor hazır</string>
     <string name="apk_qa_event_analysis_failed">Analiz tamamlanamadı</string>
+    <string name="apk_qa_one_at_time">Aynı anda yalnızca bir APK/APKS analiz edilebilir. Başka bir dosya göndermeden önce son sonucu bekleyin.</string>
+    <string name="apk_qa_retry_connection">Analize yeniden bağlan</string>
+    <string name="apk_qa_event_analysis_resumed">Yeniden başlatmadan sonra analiz sürdürülüyor</string>
 </resources>

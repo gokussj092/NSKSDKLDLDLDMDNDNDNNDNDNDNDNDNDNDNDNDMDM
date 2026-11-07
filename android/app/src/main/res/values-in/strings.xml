@@ -272,4 +272,7 @@
     <string name="apk_qa_event_report_preparation">Menyiapkan laporan</string>
     <string name="apk_qa_event_report_ready">Laporan tersedia</string>
     <string name="apk_qa_event_analysis_failed">Analisis tidak dapat diselesaikan</string>
+    <string name="apk_qa_one_at_time">Hanya satu APK/APKS yang dapat dianalisis dalam satu waktu. Tunggu hasil akhir sebelum mengirim berkas lain.</string>
+    <string name="apk_qa_retry_connection">Hubungkan ulang analisis</string>
+    <string name="apk_qa_event_analysis_resumed">Melanjutkan analisis setelah mulai ulang</string>
 </resources>

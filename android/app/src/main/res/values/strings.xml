@@ -274,4 +274,7 @@
     <string name="apk_qa_event_report_preparation">Preparing report</string>
     <string name="apk_qa_event_report_ready">Report available</string>
     <string name="apk_qa_event_analysis_failed">Analysis could not be completed</string>
+    <string name="apk_qa_one_at_time">Only one APK/APKS can be analyzed at a time. Wait for the final result before choosing another file.</string>
+    <string name="apk_qa_retry_connection">Reconnect to analysis</string>
+    <string name="apk_qa_event_analysis_resumed">Resuming analysis after restart</string>
 </resources>

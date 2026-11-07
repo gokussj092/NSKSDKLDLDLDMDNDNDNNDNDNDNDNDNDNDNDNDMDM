@@ -273,4 +273,7 @@
     <string name="apk_qa_event_report_preparation">Đang chuẩn bị báo cáo</string>
     <string name="apk_qa_event_report_ready">Báo cáo đã sẵn sàng</string>
     <string name="apk_qa_event_analysis_failed">Không thể hoàn tất phân tích</string>
+    <string name="apk_qa_one_at_time">Mỗi lần chỉ có thể phân tích một APK/APKS. Hãy đợi kết quả cuối cùng trước khi gửi tệp khác.</string>
+    <string name="apk_qa_retry_connection">Kết nối lại phân tích</string>
+    <string name="apk_qa_event_analysis_resumed">Đang tiếp tục phân tích sau khi khởi động lại</string>
 </resources>

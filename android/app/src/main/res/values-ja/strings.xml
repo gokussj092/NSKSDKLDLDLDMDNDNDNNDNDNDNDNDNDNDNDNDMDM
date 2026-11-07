@@ -273,4 +273,7 @@
     <string name="apk_qa_event_report_preparation">レポートを作成中</string>
     <string name="apk_qa_event_report_ready">レポートを表示できます</string>
     <string name="apk_qa_event_analysis_failed">解析を完了できませんでした</string>
+    <string name="apk_qa_one_at_time">同時に解析できる APK/APKS は1件のみです。次のファイルを送信する前に最終結果をお待ちください。</string>
+    <string name="apk_qa_retry_connection">解析に再接続</string>
+    <string name="apk_qa_event_analysis_resumed">再起動後に解析を再開</string>
 </resources>
