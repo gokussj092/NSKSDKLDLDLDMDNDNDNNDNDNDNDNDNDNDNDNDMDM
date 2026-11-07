@@ -124,7 +124,8 @@ def inspect_tooling(source:Path,report:dict)->dict:
     state={"status":"NOT_ENABLED","jadxExecuted":False,
            "ghidraExecuted":False,"jadx":{"status":"NOT_ENABLED"},
            "ghidra":{"status":"NOT_ENABLED"}}
-    if os.environ.get("SPDECODE_APK_QA_TOOL_MODE")!="enabled":
+    if (os.environ.get("SPDECODE_APK_QA_TOOL_MODE")!="enabled" or
+            os.environ.get("SPDECODE_APK_QA_TOOLS_REVIEWED")!="true"):
         return state
     if _memory_limit()<MIN_MEMORY:
         state["status"]="INSUFFICIENT_CONTAINER_MEMORY"
@@ -148,8 +149,12 @@ def inspect_tooling(source:Path,report:dict)->dict:
         base,libs=_base_and_libs(source,scratch)
         # Java writes only to ephemeral per-job workspace; no network and
         # no permission to the decoder worker, host keys, Redis or Docker.
-        env={**os.environ,"HOME":str(scratch),"XDG_CONFIG_HOME":str(scratch),
-             "XDG_CACHE_HOME":str(scratch),
+        # A minimal fixed environment. Never copy the service's internal
+        # inter-container credential or unrelated cloud secrets into tools.
+        env={"PATH":"/usr/local/bin:/usr/bin:/bin",
+             "HOME":str(scratch),"TMPDIR":str(scratch),
+             "XDG_CONFIG_HOME":str(scratch),"XDG_CACHE_HOME":str(scratch),
+             "LANG":"C.UTF-8",
              "JAVA_TOOL_OPTIONS":"-Duser.home="+str(scratch)}
         dest=scratch/"jadx-output"
         dest.mkdir(mode=0o700)
