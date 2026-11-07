@@ -1,0 +1,22 @@
+# Dockerfile-specific allowlist: never include repo secrets, APKs, results or work.
+**
+!cloud/
+!cloud/apk_analysis/
+!cloud/apk_analysis/__init__.py
+!cloud/apk_analysis/runtime_preflight.py
+!cloud/apk_analysis/workspace.py
+!cloud/apk_analysis/Dockerfile
+!scripts/
+!scripts/apk_analysis/
+!scripts/apk_analysis/inspect_apk.py
+!scripts/apk_analysis/decompile.py
+!scripts/apk_analysis/requirements.txt
+**/.env
+**/.env.*
+**/work/**
+**/cache/**
+**/*.apk
+**/*.apks
+**/*.xapk
+**/node_modules/**
+**/.git/**

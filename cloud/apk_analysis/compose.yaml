@@ -1,0 +1,54 @@
+# F7-A0-P03 opt-in container tooling only. NOT included in cloud/compose.yaml.
+# No public ports, worker token, account credentials, Docker socket or user APK.
+name: spdecode-apk-tooling
+services:
+  apk-runtime-preflight:
+    profiles: ["apk-analysis"]
+    build:
+      context: ../..
+      dockerfile: cloud/apk_analysis/Dockerfile
+    image: spdecode-apk-tools:p03
+    user: "65532:65532"
+    command: ["python", "-B", "cloud/apk_analysis/runtime_preflight.py", "--check"]
+    network_mode: none
+    read_only: true
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 64
+    mem_limit: 3072m
+    cpus: 1.5
+    restart: "no"
+    tmpfs:
+      - /tmp:size=64m,noexec,nosuid,nodev
+    volumes:
+      # Read-only trusted cache for analysis jobs. No user APK may be here.
+      - apk-tool-cache:/opt/spdecode/scripts/apk_analysis/cache:ro
+
+  apk-resource-preload:
+    profiles: ["maintenance"]
+    build:
+      context: ../..
+      dockerfile: cloud/apk_analysis/Dockerfile
+    image: spdecode-apk-tools:p03
+    user: "65532:65532"
+    command: ["python", "-B", "scripts/apk_analysis/decompile.py", "--install"]
+    read_only: true
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 64
+    mem_limit: 1024m
+    cpus: 1.0
+    restart: "no"
+    tmpfs:
+      - /tmp:size=64m,noexec,nosuid,nodev
+    volumes:
+      # Only maintenance may populate the cache with hash-checked JADX.
+      - apk-tool-cache:/opt/spdecode/scripts/apk_analysis/cache:rw
+    networks: [maintenance-egress]
+
+volumes:
+  apk-tool-cache:
+    name: spdecode-apk-tools-cache
+
+networks:
+  maintenance-egress: {}
