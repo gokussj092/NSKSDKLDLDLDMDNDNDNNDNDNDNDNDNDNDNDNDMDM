@@ -31,8 +31,11 @@ def _dex_header(z:zipfile.ZipFile, name:str) -> dict:
         return {"name":name,"status":"DEX_UNREADABLE"}
 
 
-def inspect_static(path:Path) -> dict:
+def inspect_static(path:Path, on_stage=None) -> dict:
     checked=inspect_input(path)
+    if on_stage is not None:
+        on_stage("PACKAGE_VALIDATED")
+        on_stage("COMPONENT_INSPECTION")
     # APKS members are already individually bounded/validated by input_gate.
     # The first pass inventories the outer bundle and base APK, without
     # extracting executable artifacts or visiting arbitrary paths.
@@ -62,6 +65,8 @@ def inspect_static(path:Path) -> dict:
                                        "file":parts[-1][:128],"bytes":info.file_size})
                 elif name.startswith("assets/"):assets+=1
                 elif name.startswith("res/"):resources+=1
+    if on_stage is not None:
+        on_stage("COMPONENTS_INSPECTED")
     return {
         "schemaVersion":1, "reportKind":"APK_STATIC_QA_FIRST_PASS",
         "status":"COMPLETED_PRELIMINARY",
