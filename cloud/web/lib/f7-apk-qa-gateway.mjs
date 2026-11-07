@@ -3,7 +3,7 @@
  * HPKE + PoP + Integrity tunnel. No public V1 or unauthenticated side door.
  * This is a temporary 0-credit owner's QA path, not commercial billing.
  */
-import {createHash,timingSafeEqual} from "node:crypto";
+import {createHash} from "node:crypto";
 import {boundRequestClaims} from "./v2-bound-request.mjs";
 import {jsonReply} from "./responses.mjs";
 const METHODS=Object.freeze({21:"start",22:"chunk",23:"finish",24:"result"});
@@ -12,15 +12,12 @@ const MAX_BODY=3*1024*1024;
 const reply=(code,status)=>jsonReply({error:{code}},status);
 function settings(env=process.env){
   const key=env.CLOUD_APK_QA_INTERNAL_TOKEN||"";
-  const raw=env.CLOUD_APK_QA_ALLOWED_KEY_SHA256||"";
-  const devices=raw.split(",");
-  const configured=devices.length>0 && devices.length<=8 &&
-    devices.every(v=>/^[a-f0-9]{64}$/.test(v)) &&
-    new Set(devices).size===devices.length;
+  // QA owner testing is opt-in on the VPS. No manual device registration:
+  // only the existing authenticated V2 HPKE/PoP/Integrity path is trusted.
+  // The internal web-to-lab credential is auto-provisioned by spdecode apk-qa enable.
   return {enabled:env.CLOUD_APK_QA_ENABLED==="true" &&
-    typeof key==="string" && key.length>=32 && configured,
-    allowedDevices:configured?devices:[],key,
-    endpoint:"http://apk-qa:8792"};
+    typeof key==="string" && key.length>=32,
+    key,endpoint:"http://apk-qa:8792"};
 }
 async function readJSON(request,limit){
   if(request.headers.get("content-type")?.split(";")[0]?.trim()!=="application/json"
@@ -61,9 +58,8 @@ export async function apkQaRequest(request,operation,{env=process.env,send=fetch
       return reply("CONSENT_REQUIRED",403);
   }
   const owner=createHash("sha256").update(claims.key,"utf8").digest("hex");
-  if(!cfg.allowedDevices.some(v=>timingSafeEqual(
-      Buffer.from(v,"hex"),Buffer.from(owner,"hex"))))
-    return reply("APK_QA_DEVICE_NOT_ALLOWED",403);
+  // No operator-entered device ID or allowlist. The verified public signing
+  // key binds each upload automatically so reconnects cannot cross owners.
   // Never trust the owner hash from the external payload.
   delete payload.deviceKeyHash;
   payload.deviceKeyHash=owner;
