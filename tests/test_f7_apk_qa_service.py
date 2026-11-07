@@ -169,10 +169,67 @@ class APKQAServiceTests(unittest.TestCase):
 
     def test_all_active_jobs_are_quota_bound(self):
         self.start()
-        self.start()
         with self.assertRaises(qa.ApiError) as cm:
             self.start()
+        self.assertEqual(cm.exception.code,"APK_QA_ALREADY_ACTIVE")
+        with self.assertRaises(qa.ApiError) as cm:
+            self.start(deviceKeyHash="a"*64)
         self.assertEqual(cm.exception.code,"QA_BUSY")
+
+    def test_same_device_cannot_start_second_until_first_is_terminal(self):
+        started=self.start()
+        self.chunk(started)
+        self.assertEqual(self.finished(started)["status"],"COMPLETED")
+        second=self.start()
+        self.assertNotEqual(started["jobId"],second["jobId"])
+
+    def test_resume_checkpoint_reports_authoritative_chunk_offset(self):
+        started=self.start()
+        uploaded=self.chunk(started)
+        state=qa.dispatch("result",self.cap(started))
+        self.assertEqual(state["status"],"UPLOADING")
+        self.assertEqual(state["receivedBytes"],uploaded["receivedBytes"])
+        self.assertEqual(state["nextChunk"],1)
+        self.assertEqual(state["chunkBytes"],qa.CHUNK)
+        self.assertEqual(state["events"][0]["code"],"UPLOAD_STARTED")
+        qa._recover_jobs()
+        persisted=qa.dispatch("result",self.cap(started))
+        self.assertEqual(persisted["nextChunk"],1)
+        self.assertEqual(persisted["receivedBytes"],len(self.apk))
+        self.assertEqual(self.finished(started)["status"],"COMPLETED")
+
+    def test_restart_requeues_verified_input_without_claiming_new_method(self):
+        started=self.start()
+        self.chunk(started)
+        folder=self.root/started["jobId"]
+        (folder/"input.part").rename(folder/"input.apk")
+        state=qa._json(folder/"state.json")
+        state["status"]="PROCESSING"
+        state["updatedAt"]=time.time()
+        qa._atomic(folder/"state.json",state)
+        qa._recover_jobs()
+        last=None
+        for _ in range(120):
+            last=qa.dispatch("result",self.cap(started))
+            if last["status"] in ("COMPLETED","FAILED"):break
+            time.sleep(.025)
+        self.assertEqual(last["status"],"COMPLETED")
+        self.assertIn("ANALYSIS_RESUMED",[e["code"] for e in last["events"]])
+        self.assertFalse((folder/"input.apk").exists())
+
+    def test_recovery_missing_source_releases_lock_with_terminal_error(self):
+        started=self.start()
+        self.chunk(started)
+        folder=self.root/started["jobId"]
+        state=qa._json(folder/"state.json")
+        state["status"]="PROCESSING"
+        qa._atomic(folder/"state.json",state)
+        (folder/"input.part").unlink()
+        qa._recover_jobs()
+        completed=qa.dispatch("result",self.cap(started))
+        self.assertEqual(completed["status"],"FAILED")
+        self.assertEqual(completed["report"]["error"],"PROCESSING_RECOVERY_FAILED")
+        self.assertEqual(self.start()["status"],"UPLOADING")
 
     def test_missing_or_invalid_archive_does_not_claim_success(self):
         invalid=b"invalid binary apk not a zip"
