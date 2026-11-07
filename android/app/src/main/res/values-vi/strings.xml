@@ -249,4 +249,14 @@
     <string name="catalog_transfer_resume">Thử lại / tiếp tục</string>
     <string name="catalog_transfer_discard">Xóa phần tải xuống</string>
     <string name="catalog_transfer_retention">Các phần đã xác minh được lưu mã hóa tối đa 7 ngày.</string>
+    <string name="apk_qa_title">Phân tích APK — chế độ thử nghiệm</string>
+    <string name="apk_qa_description">Kiểm tra tĩnh thực tế cho APK/APKS. Không cần đăng nhập hoặc tín dụng. Ứng dụng không được cài đặt hay thực thi.</string>
+    <string name="apk_qa_consent">Tôi sở hữu APK này hoặc có quyền phân tích.</string>
+    <string name="apk_qa_pick">Chọn APK hoặc APKS</string>
+    <string name="apk_qa_no_charge">Không trừ tín dụng trong thời gian thử nghiệm.</string>
+    <string name="apk_qa_limit">Dung lượng tối đa: 96 MiB.</string>
+    <string name="apk_qa_reading">Đang đọc APK…</string>
+    <string name="apk_qa_uploading">Đang gửi APK…</string>
+    <string name="apk_qa_processing">Máy chủ đang phân tích…</string>
+    <string name="apk_qa_report">Báo cáo tĩnh sơ bộ</string>
 </resources>
