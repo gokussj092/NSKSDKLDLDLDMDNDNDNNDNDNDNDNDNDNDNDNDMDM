@@ -1,6 +1,12 @@
 # F7-A0-P07 — Check obligatorio y protección efectiva de rama
 
-**Rama de trabajo:** `feat/nuevas-integraciones`. **Estado:** PARCIAL — infraestructura y validación del gate en progreso, protección remota NO activada. No hacer merge a `main` ni desplegar producción.
+**Rama de trabajo:** `feat/nuevas-integraciones`. **Estado:** controles CI IMPLEMENTADOS Y VALIDADOS, protección remota NO activada por decisión expresa del propietario (opcional y aplazada). No hacer merge a `main` ni desplegar producción.
+
+## Decisión posterior del propietario — sin Branch Protection
+
+El propietario de SP-DECODE confirmó que revisa manualmente las ejecuciones de GitHub Actions antes de cualquier fusión o despliegue y **no desea activar Branch Protection por ahora**. Se mantiene el auditor CI P07 y las pruebas de wiring; **no** se considera obligatoria la regla remota para avanzar a P08/P09. La implementación queda anotada como `OPCIONAL_APLAZADA`, no se atribuye a GitHub un bloqueo de merge inexistente. La validación del código y los métodos sigue siendo obligatoria.
+
+Los pasos de activación siguientes se conservan únicamente como referencia futura **si el propietario decide habilitarla**, no como instrucciones pendientes de ejecución automática.
 
 ## 1. Hallazgo de configuración real
 
