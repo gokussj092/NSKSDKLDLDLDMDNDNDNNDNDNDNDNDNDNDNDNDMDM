@@ -51,13 +51,13 @@ internal class CloudApkQaClient(context:Context,private val cloud:CloudDecodeCli
         return (base.ifEmpty{"spdecode-sample"})+"."+extension
     }
 
-    private fun digestAndSize(uri:Uri):Pair<Long,String> {
+    private suspend fun digestAndSize(uri:Uri):Pair<Long,String> {
         val md=MessageDigest.getInstance("SHA-256")
         var total=0L
         val buffer=ByteArray(256*1024)
         (resolver.openInputStream(uri)?:throw IOException("APK_QA_FILE_UNAVAILABLE")).use { src ->
             while(true){
-                coroutineCheck()
+                coroutineContext.ensureActive()
                 val n=src.read(buffer)
                 if(n<0)break
                 if(n==0)continue
@@ -70,8 +70,6 @@ internal class CloudApkQaClient(context:Context,private val cloud:CloudDecodeCli
         buffer.fill(0)
         return total to hex(md.digest())
     }
-
-    private fun coroutineCheck() { /* Coroutine cancellation checked at each I/O loop by caller. */ }
 
     suspend fun analyze(uri:Uri,onProgress:suspend (String,Long,Long)->Unit):JSONObject =
         withContext(Dispatchers.IO) {
