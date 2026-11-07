@@ -275,6 +275,14 @@ def audit(root: Path, changes: list[str] | None = None, *, enforce: bool = False
                           "affected_dossiers": len({d for p in impact for d in matched.get(p, ())}),
                           "unresolved_affected_consumers": len(unresolved_consumers)},
               "legacy": legacy_summary(root),
+              "source_inventory": [
+                  {"path": path, "sha256": info["sha256"],
+                   "method_candidate": info["method_candidate"],
+                   "direct_static_dependencies": info["direct_static_dependencies"],
+                   "uncertainty": info["uncertainty"],
+                   "linked_dossiers": sorted(matched.get(path, ()))}
+                  for path, info in sorted(items.items())
+              ],
               "changed_paths": changes,
               "affected": [{"path": k, "via": chain, "sha256": items[k]["sha256"] if k in items else None,
                             "direct_dependencies": items[k]["direct_static_dependencies"] if k in items else [],
