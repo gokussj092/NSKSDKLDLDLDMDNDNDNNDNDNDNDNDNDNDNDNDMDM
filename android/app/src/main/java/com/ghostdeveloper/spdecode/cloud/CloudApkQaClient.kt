@@ -289,6 +289,12 @@ internal class CloudApkQaClient(context:Context,private val cloud:CloudDecodeCli
         while(SystemClock.elapsedRealtime()<deadline) {
             coroutineContext.ensureActive()
             val status=qaPost(CloudOperation.APK_QA_RESULT,capability(state))
+            // Never publish a terminal state until its final report and events
+            // have been validated and durably encrypted in the same write.
+            if(status.optString("status") in setOf("COMPLETED","FAILED","REJECTED")) {
+                storeRemoteTerminal(state,status)
+                return@withContext
+            }
             state=savedProgress(state,status)
             checkpoint.save(state)
             when(status.optString("status")) {
@@ -302,10 +308,6 @@ internal class CloudApkQaClient(context:Context,private val cloud:CloudDecodeCli
                     checkpoint.save(state)
                 }
                 "PROCESSING"->delay(12_000L)
-                "COMPLETED","FAILED","REJECTED"->{
-                    storeRemoteTerminal(state,status)
-                    return@withContext
-                }
                 else->throw IOException("APK_QA_INVALID_STATE")
             }
         }
