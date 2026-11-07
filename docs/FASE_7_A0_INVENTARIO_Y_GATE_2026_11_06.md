@@ -61,6 +61,8 @@ El último comando requiere que la referencia exista en el checkout y puede bloq
 
 **Avance P04:** [esquemas de checkpoints y resultados con diario durable](FASE_7_A0_P04_RESULTADOS_Y_CHECKPOINTS_2026_11_06.md). Contratos implementados con pruebas sintéticas, no habilitados en producción; requieren almacenamiento cifrado/transaccional y pruebas reales A4/A5.
 
+**Avance P05:** [corpus generado y pruebas APK/APKS en sandbox](FASE_7_A0_P05_CORPUS_APK_APKS_Y_LIMITES_2026_11_06.md). P05 sigue PARCIAL hasta muestras autorizadas de terceros, bundletool splits reales, JADX y perfiles ARM64 probados.
+
 ## Pendientes para cerrar F7-A0
 
 - Revisión real de **licencias, procedencia, versiones y SHA-256 de distribuciones externas/transitivas** para cada herramienta, incluidas Java/Node/Unicorn/Frida/JADX si se utilizan. No atribuir aprobaciones ni hashes inventados.

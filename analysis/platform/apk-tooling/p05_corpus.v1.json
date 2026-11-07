@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "subphase": "F7-A0-P05",
+  "status": "CI_LAB_CORPUS_NOT_CUSTOMER_COMPATIBILITY_CERTIFICATION",
+  "author": "SP-DECODE first-party CI",
+  "policy": "NEVER_COMMIT_PRIVATE_APKS_APKS_XAPK_OR_SIGNING_KEYS",
+  "fixture_source": "scripts/ci/build_p05_owned_apk.sh",
+  "max_test_scope": "LAB_OWNED_APP_ONLY",
+  "test_workflow": ".github/workflows/f7-a0-p05-apk-lab.yml",
+  "real_third_party_authorized_apk_count": 0,
+  "cases": [
+    {
+      "id": "OWNED-SIGNED-APK",
+      "format": "APK",
+      "generation": "aapt2+d8+zipalign+ephemeral apksigner",
+      "rights": "FIRST_PARTY_SYNTHETIC",
+      "real_dex": true,
+      "expected": "INPUT_ACCEPTED_AND_ORIGINAL_INSPECTOR_EXTRACTS_DEX",
+      "status": "CI_RUN_REQUIRED"
+    },
+    {
+      "id": "OWNED-APKS-WRAPPER",
+      "format": "APKS",
+      "generation": "zip wrapper around signed owned APK",
+      "rights": "FIRST_PARTY_SYNTHETIC",
+      "installable_bundletool_split_set": false,
+      "expected": "INPUT_ACCEPTED_AND_ORIGINAL_INSPECTOR_EXTRACTS_DEX",
+      "status": "CI_RUN_REQUIRED"
+    },
+    {
+      "id": "ZIP-RATIO-BOMB",
+      "format": "APK",
+      "generation": "synthetic 1MiB zeros compressed",
+      "rights": "FIRST_PARTY_SYNTHETIC",
+      "expected": "REJECTED_ZIP_RATIO",
+      "status": "CI_RUN_REQUIRED"
+    },
+    {
+      "id": "ZIP-TRAVERSAL",
+      "format": "APK",
+      "generation": "synthetic unit test",
+      "rights": "FIRST_PARTY_SYNTHETIC",
+      "expected": "ZIP_ENTRY_UNSAFE",
+      "status": "UNIT_TEST"
+    },
+    {
+      "id": "ZIP-DUPLICATE",
+      "format": "APK",
+      "generation": "synthetic unit test",
+      "rights": "FIRST_PARTY_SYNTHETIC",
+      "expected": "ZIP_DUPLICATE",
+      "status": "UNIT_TEST"
+    },
+    {
+      "id": "ZIP-SYMLINK",
+      "format": "APK",
+      "generation": "synthetic unit test",
+      "rights": "FIRST_PARTY_SYNTHETIC",
+      "expected": "ZIP_UNSAFE_TYPE",
+      "status": "UNIT_TEST"
+    },
+    {
+      "id": "APKS-NO-BASE",
+      "format": "APKS",
+      "generation": "synthetic unit test",
+      "rights": "FIRST_PARTY_SYNTHETIC",
+      "expected": "APKS_NO_BASE",
+      "status": "UNIT_TEST"
+    },
+    {
+      "id": "TRUNCATED-ZIP",
+      "format": "APK",
+      "generation": "synthetic unit test",
+      "rights": "FIRST_PARTY_SYNTHETIC",
+      "expected": "ZIP_INVALID",
+      "status": "UNIT_TEST"
+    }
+  ],
+  "input_limits": {
+    "input_max_mib": 300,
+    "entry_max_mib": 300,
+    "expanded_max_mib": 600,
+    "zip_member_max": 20000,
+    "apk_count_max": 200,
+    "nested_apk_memory_spool_mib": 8,
+    "zip_compression_ratio_max": 400,
+    "manifest_max_mib": 8
+  },
+  "runtime_controls": {
+    "network": "DISABLED_AT_DOCKER_RUN",
+    "user": "65532:65532",
+    "read_only_root": true,
+    "capabilities": "ALL_DROPPED",
+    "mem_limit_gib": 3,
+    "pids_limit": 64,
+    "cpu_limit": 1.5,
+    "jadx_install_per_job": false,
+    "pip_install_per_job": false
+  },
+  "pending_production_gates": [
+    "AUTHORIZED_THIRD_PARTY_APK_WITH_HASH_AND_CONSENT",
+    "AUTHENTIC_BUNDLETOOL_APKS_SPLITS",
+    "JADX_REAL_DEX_DECOMPILATION_CHECKSUM_PRELOAD",
+    "ARM64_ELF_TEST",
+    "MALFORMED_DEX_AND_ELF_ABI",
+    "CRASH_TIMEOUT_RETRY_AND_RESOURCE_LIMITS",
+    "HOST_DISK_QUOTAS",
+    "DEDICATED_VM_PERSISTENT_CACHES",
+    "API_UPLOAD_AUTH_WORKER_JOB_ORCHESTRATOR",
+    "END_TO_END_ANDROID_AND_CREDIT_SUPPORT"
+  ]
+}
