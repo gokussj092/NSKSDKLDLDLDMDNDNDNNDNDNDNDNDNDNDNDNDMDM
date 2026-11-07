@@ -111,3 +111,20 @@ Se añadieron `scripts/ci/p05_sandbox_faults.py`, `tests/test_a0_p05_failure_rec
 El test del oráculo de persistencia es **sintético**: NO acredita almacenamiento cifrado ni comprobación de propietario/tenant, que siguen siendo requisitos A4/A5. La inyección Docker es una prueba real de límites **en el runner efímero de GitHub**, NO certifica rendimiento sostenido ni persistencia de una VM dedicada. La CPU se inspecciona mediante cgroup cuando está disponible, no mediante benchmark estable. El disparador usa exclusivamente código/artefactos propios de CI, sin ejecutar APK de usuarios ni métodos VPN.
 
 La extensión continúa como **PARCIAL** hasta que existan pruebas verdes verificadas, corpus de VPN externas con autorización/consentimiento verificable, APKS real de bundletool, ELF ARM64, estrés concurrente/reinicio de host y flujo Android→A4→A5→A9 con resultados cifrados y soporte humano. Se prohíben merge a main y despliegue de producción en este avance.
+
+### Evidencia ampliada real de fallos — GitHub Actions
+
+[F7-A0-P05 APK Lab, run 42330872990](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDMDM/actions/runs/42330872990), commit `562b567dd986ceff5eaa87f2bc5b84e54a0ea840`: **SUCCESS**. Logs observados: `Ran 21 tests` de límites APK/APKS y `Ran 4 tests` de recuperación; compilación de APK propio, inspector y JADX offline aprobados. El nuevo paso comunicó:
+
+```text
+P05 Docker fault tests PASS:
+sandbox_security_and_cpu_pid_policy,
+tmpfs_disk_quota_enforced,
+cgroup_memory_oom_enforced,
+interruption_container_removed,
+verified_jadx_cache_survives_faults_offline
+```
+
+El artefacto publicado `p05-lab-summary` contiene solo resúmenes sanitizados, **no** APK, keystore, DEX ni descompilaciones. Esta ejecución de Docker es real en runner CI, con imagen y código de prueba propios; no es estrés sostenido de usuarios. El estado de la nueva prueba de exclusión `.xapk`/`.zip` y la integración del gate de evidencias debe confirmarse en una ejecución posterior que contenga ese commit.
+
+P05 sigue **PARCIAL**. No se han autorizado ni ejecutado análisis de APK VPN externos, y no existe todavía un flujo E2E Android→servidor.
