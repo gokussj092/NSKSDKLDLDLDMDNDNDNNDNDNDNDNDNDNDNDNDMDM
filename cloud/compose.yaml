@@ -129,20 +129,21 @@ services:
     profiles: ["apk-qa"]
     build:
       context: ..
-      dockerfile: cloud/apk_analysis/Dockerfile.qa
+      dockerfile: ${SPDECODE_APK_QA_DOCKERFILE:-cloud/apk_analysis/Dockerfile.qa}
     restart: unless-stopped
     init: true
     user: "65532:65532"
     environment:
       SPDECODE_APK_QA_INTERNAL_TOKEN: ${CLOUD_APK_QA_INTERNAL_TOKEN:-}
       SPDECODE_APK_QA_ROOT: /var/lib/spdecode/apkqa
+      SPDECODE_APK_QA_TOOL_MODE: ${SPDECODE_APK_QA_TOOL_MODE:-metadata}
     volumes:
       - apk-qa-jobs:/var/lib/spdecode/apkqa:rw
     networks: [apk-private]
     read_only: true
     cap_drop: ["ALL"]
     security_opt: ["no-new-privileges:true"]
-    mem_limit: 320m
+    mem_limit: ${SPDECODE_APK_QA_MEM_LIMIT:-320m}
     cpus: 0.8
     pids_limit: 48
     tmpfs:

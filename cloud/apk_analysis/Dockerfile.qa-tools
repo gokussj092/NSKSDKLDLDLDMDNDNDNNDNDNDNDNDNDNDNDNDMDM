@@ -1,0 +1,27 @@
+# F7-A5 opt-in deep analysis profile for a 4+ GiB isolated host ONLY.
+# JVM and checksum-verified JADX installed at image build, never per APK.
+FROM python:3.12-slim-bookworm
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/opt/spdecode \
+    HOME=/tmp \
+    XDG_CACHE_HOME=/tmp \
+    XDG_CONFIG_HOME=/tmp/.config
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    openjdk-17-jre-headless ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+WORKDIR /opt/spdecode
+COPY scripts/apk_analysis/decompile.py ./scripts/apk_analysis/decompile.py
+RUN mkdir -p /opt/spdecode/scripts/apk_analysis/cache && \
+    python -B scripts/apk_analysis/decompile.py --install
+COPY cloud/apk_analysis/__init__.py cloud/apk_analysis/input_gate.py \
+     cloud/apk_analysis/qa_deep.py cloud/apk_analysis/qa_tooling.py \
+     cloud/apk_analysis/qa_static.py cloud/apk_analysis/qa_service.py \
+     cloud/apk_analysis/SpDecodeGhidraReport.java ./cloud/apk_analysis/
+RUN mkdir -p /var/lib/spdecode/apkqa && \
+    chown -R 65532:65532 /var/lib/spdecode/apkqa /opt/spdecode && \
+    chmod 0700 /var/lib/spdecode/apkqa
+USER 65532:65532
+EXPOSE 8792
+CMD ["python","-B","-m","cloud.apk_analysis.qa_service"]

@@ -4,7 +4,8 @@ FROM python:3.12-alpine
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PYTHONPATH=/opt/spdecode
 WORKDIR /opt/spdecode
 COPY cloud/apk_analysis/__init__.py cloud/apk_analysis/input_gate.py \
-     cloud/apk_analysis/qa_deep.py cloud/apk_analysis/qa_static.py cloud/apk_analysis/qa_service.py ./cloud/apk_analysis/
+     cloud/apk_analysis/qa_deep.py cloud/apk_analysis/qa_tooling.py \
+     cloud/apk_analysis/qa_static.py cloud/apk_analysis/qa_service.py ./cloud/apk_analysis/
 RUN mkdir -p /var/lib/spdecode/apkqa && \
     chown -R 65532:65532 /var/lib/spdecode/apkqa /opt/spdecode && \
     chmod 0700 /var/lib/spdecode/apkqa

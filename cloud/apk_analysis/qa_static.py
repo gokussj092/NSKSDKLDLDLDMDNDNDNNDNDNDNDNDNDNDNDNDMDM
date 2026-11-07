@@ -7,6 +7,7 @@ made without a separate isolated tool execution and real evidence.
 from pathlib import Path
 from .input_gate import inspect_input
 from .qa_deep import inspect_parts
+from .qa_tooling import inspect_tooling
 
 
 def inspect_static(path:Path, on_stage=None)->dict:
@@ -17,6 +18,7 @@ def inspect_static(path:Path, on_stage=None)->dict:
     inventory=inspect_parts(path,checked["format"])
     if on_stage:
         on_stage("COMPONENTS_INSPECTED")
+    tooling=inspect_tooling(path,inventory)
     return {
         "schemaVersion":2,
         "reportKind":"APK_STATIC_QA_DEEP_V2",
@@ -28,10 +30,13 @@ def inspect_static(path:Path, on_stage=None)->dict:
                      **inventory},
         "analysis":{
             "stage":"DEEP_STATIC_METADATA",
-            "codeExecuted":False,"jadxExecuted":False,"ghidraExecuted":False,
+            "codeExecuted":False,
             "vendorMethodValidated":False,"credentialsExtracted":False,"networkUsed":False,
+            "tooling":tooling,
             "dexTablesParsed":inventory["dexParsed"],
             "elfFilesParsed":inventory["elfParsed"],
+            "jadxExecuted":tooling["jadxExecuted"],
+            "ghidraExecuted":tooling["ghidraExecuted"],
             "nextStages":["JADX_DECOMPILATION_PENDING","GHIDRA_HEADLESS_PENDING",
                           "METHOD_EVIDENCE_PENDING"],
         },
@@ -40,6 +45,6 @@ def inspect_static(path:Path, on_stage=None)->dict:
             "CRYPTO_SIGNATURES_ARE_REFERENCES_NOT_PROOF",
             "NO_VPN_DECRYPTION_OR_METHOD_RECONSTRUCTION",
             "NO_EXTERNAL_NETWORK_OR_DYNAMIC_EXECUTION",
-            "JADX_AND_GHIDRA_NOT_EXECUTED",
+            "ADVANCED_TOOLS_REQUIRE_SEPARATE_RESOURCE_PROFILE",
         ],
     }
