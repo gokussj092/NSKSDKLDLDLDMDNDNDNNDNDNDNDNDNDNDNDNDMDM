@@ -74,6 +74,30 @@
       "rights": "FIRST_PARTY_SYNTHETIC",
       "expected": "ZIP_INVALID",
       "status": "UNIT_TEST"
+    },
+    {
+      "id": "ZIP-XAPK-EXTENSIONS-DENIED",
+      "format": "OTHER",
+      "generation": "synthetic unit test",
+      "rights": "FIRST_PARTY_SYNTHETIC",
+      "expected": "INPUT_EXTENSION",
+      "status": "PENDING_CI"
+    },
+    {
+      "id": "DOCKER-RESOURCE-FAULTS",
+      "format": "NONE",
+      "generation": "CI Docker first-party scripts",
+      "rights": "FIRST_PARTY_SYNTHETIC",
+      "expected": "MEMORY_OOM_DISK_ENOSPC_TIMEOUT_REMOVAL_SANDBOX_AND_OFFLINE_CACHE",
+      "status": "PENDING_CI"
+    },
+    {
+      "id": "HOST-SIGKILL-RECOVERY",
+      "format": "NONE",
+      "generation": "CI temporary first-party jobs",
+      "rights": "FIRST_PARTY_SYNTHETIC",
+      "expected": "UNFINISHED_AND_HUMAN_CASES_RETAINED_DURABLE_RESULT_REAPED",
+      "status": "PENDING_CI"
     }
   ],
   "input_limits": {
@@ -98,16 +122,16 @@
     "pip_install_per_job": false
   },
   "pending_production_gates": [
-    "",
-    "",
+    "AUTHORIZED_THIRD_PARTY_APK_SHA256_AND_CONSENT",
+    "REAL_BUNDLETOOL_APKS_SPLITS_SIGNATURES",
     "JADX_REAL_THIRD_PARTY_AUTHORIZED_DEX_ORACLE",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    ""
+    "ARM64_ELF_VALID_TRUNCATED_AND_ABI_FIXTURES",
+    "CONCURRENT_JOB_QUEUE_QUOTAS_ON_DEDICATED_VM",
+    "LONG_RUNNING_PRESSURE_AND_RESTART_ON_DEDICATED_VM",
+    "CHECKPOINT_TO_ENCRYPTED_RESULT_STORE_TENANT_VERIFY",
+    "HUMAN_SUPPORT_REVIEW_RETENTION_AND_DISPOSITION",
+    "ANDROID_A4_A5_A9_AUTHENTICATED_E2E",
+    "P01_LICENSE_AND_TRANSITIVE_DEPENDENCY_APPROVAL"
   ],
   "ci_evidence": {
     "owned_lab_run": 42326911352,
@@ -137,6 +161,24 @@
       ".github/workflows/f7-a0-p05-apk-lab.yml",
       "cloud/apk_analysis/compose.yaml",
       "cloud/apk_analysis/Dockerfile"
-    ]
+    ],
+    "new_fault_suite_status": "PENDING_GITHUB_ACTIONS",
+    "real_memory_disk_timeout_tests_verified": false,
+    "real_sigkill_host_recovery_verified": false,
+    "real_automated_android_analysis_verified": false
+  },
+  "android_extensions": {
+    "enabled": [
+      ".apk",
+      ".apks"
+    ],
+    "future": [
+      ".xapk"
+    ],
+    "rejected": [
+      ".zip"
+    ],
+    "enforced_in": "cloud/apk_analysis/input_gate.py",
+    "android_client_integrated": false
   }
 }
