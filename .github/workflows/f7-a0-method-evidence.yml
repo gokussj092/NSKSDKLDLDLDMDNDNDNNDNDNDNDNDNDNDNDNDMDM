@@ -47,6 +47,8 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_a0_checkpoint_schemas.py' -v
       - name: P05 adversarial APK/APKS archive boundaries (synthetic offline)
         run: python -m unittest discover -s tests -p 'test_a0_apk_input_limits.py' -v
+      - name: P05 interruption, disk failure and human-retention recovery regression
+        run: python -m unittest discover -s tests -p 'test_a0_p05_failure_recovery.py' -v
       - name: Inventory and audit (no APK execution)
         run: python scripts/ci/check_method_evidence.py --output "$RUNNER_TEMP/f7-a0-report.json"
       - name: Check evidence in pull requests
