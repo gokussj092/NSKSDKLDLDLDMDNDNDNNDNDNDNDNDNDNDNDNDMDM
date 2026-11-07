@@ -31,6 +31,16 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_a0_tool_usage.py' -v
       - name: Generate read-only P02 tool usage map
         run: python scripts/ci/map_apk_tool_usage.py --output "$RUNNER_TEMP/f7-a0-usage.json"
+      - name: P03 private workspace lifecycle tests
+        run: python -m unittest discover -s tests -p 'test_a0_runtime_workspace.py' -v
+      - name: P03 persistent resources and image preflight tests
+        run: python -m unittest discover -s tests -p 'test_a0_runtime_preflight.py' -v
+      - name: P03 deny-by-default execution policy tests
+        run: python -m unittest discover -s tests -p 'test_a0_execution_policy.py' -v
+      - name: P03 check sandbox policy against unchanged tools
+        run: python scripts/ci/check_apk_analysis_policy.py
+      - name: P03 validate isolated Compose syntax (no Docker build)
+        run: docker compose -f cloud/apk_analysis/compose.yaml --profile apk-analysis --profile maintenance config --quiet
       - name: Inventory and audit (no APK execution)
         run: python scripts/ci/check_method_evidence.py --output "$RUNNER_TEMP/f7-a0-report.json"
       - name: Check evidence in pull requests

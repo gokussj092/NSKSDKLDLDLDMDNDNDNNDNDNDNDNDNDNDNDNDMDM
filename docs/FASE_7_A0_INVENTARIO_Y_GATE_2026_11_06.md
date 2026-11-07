@@ -57,6 +57,8 @@ El último comando requiere que la referencia exista en el checkout y puede bloq
 
 **Avance P02:** [matriz dinámica de herramientas y consumidores](FASE_7_A0_P02_MAPA_HERRAMIENTAS_2026_11_06.md). La matriz se regenera desde las fuentes actuales; no ejecuta scripts. P02 sigue PARCIAL hasta confirmar usos indirectos y capacidades comprobadas.
 
+**Avance P03:** [entorno aislado y persistencia de recursos](FASE_7_A0_P03_ENTORNO_PERSISTENTE_2026_11_06.md). Base host-only y tests sintéticos, sin integración Android ni habilitación de herramientas reales; **P03 PARCIAL**.
+
 ## Pendientes para cerrar F7-A0
 
 - Revisión real de **licencias, procedencia, versiones y SHA-256 de distribuciones externas/transitivas** para cada herramienta, incluidas Java/Node/Unicorn/Frida/JADX si se utilizan. No atribuir aprobaciones ni hashes inventados.

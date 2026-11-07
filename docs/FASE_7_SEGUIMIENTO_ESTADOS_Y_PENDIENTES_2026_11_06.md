@@ -183,3 +183,7 @@ El escaneo de P02 informó: **63 herramientas intactas**, 61 Python + 2 JavaScri
 El workflow publicó el artefacto `f7-a0-evidence` (incluye `f7-a0-usage.json`), disponible desde la página de la ejecución durante su período de retención. Este informe es generado automáticamente, no un historial fijo por versión.
 
 **P02 sigue PARCIAL:** faltan análisis de consumidores indirectos y verificación de las capacidades reales por aplicación; estas auditorías no alteran ni certifican los métodos existentes.
+
+## F7-A0-P03 — Entorno separado y recursos persistentes
+
+**EN IMPLEMENTACIÓN (no desplegado):** nuevo `cloud/apk_analysis/` con Dockerfile dedicado, Compose opt-in, volumen `spdecode-apk-tools-cache` para JADX verificado, dependencias instaladas por imagen y no por trabajo, sandbox offline no root y gestor de job temporales. La limpieza **solo** se permite tras confirmación de resultado durable o cierre terminal; conserva trabajos escalados a soporte humano. Las 63 herramientas siguen intactas; `inspect_apk.py` y `decompile.py` son candidatos deshabilitados pendientes de pruebas P05. Requiere host de pruebas más potente que el VPS actual de ~1 GB. [Documentación P03](FASE_7_A0_P03_ENTORNO_PERSISTENTE_2026_11_06.md). Falta A4/A5/A9 para procesamiento automático desde Android y servidor.
