@@ -87,9 +87,12 @@ def scan(z: zipfile.ZipFile, *, apk: bool) -> dict:
     return {"entries":len(infos),"expanded_bytes":total,"dex_count":dex}
 
 
-def nested_apk(parent:zipfile.ZipFile, member:zipfile.ZipInfo) -> dict:
-    # Spool with bounded memory, and reject size/CRC mismatches.
-    with tempfile.SpooledTemporaryFile(mode="w+b",max_size=8*1024*1024) as tmp:
+def nested_apk(parent:zipfile.ZipFile, member:zipfile.ZipInfo,
+               temp_dir:Path|None=None) -> dict:
+    # Keep >48 MiB APKS splits out of the container's small /tmp tmpfs.
+    # The job volume is private, quota-bounded by MAX_ENTRY/MAX_EXPANDED,
+    # and TemporaryFile unlinks the intermediate on close or worker exit.
+    with tempfile.TemporaryFile(mode="w+b",dir=temp_dir) as tmp:
         count=0
         try:
             with parent.open(member) as file:
@@ -142,7 +145,7 @@ def inspect_input(path:Path) -> dict:
             entries=stats["entries"]
             dex=0
             for member in members:
-                nested=nested_apk(outer,member)
+                nested=nested_apk(outer,member,path.parent)
                 expanded+=nested["expanded_bytes"]
                 entries+=nested["entries"]
                 dex+=nested["dex_count"]
