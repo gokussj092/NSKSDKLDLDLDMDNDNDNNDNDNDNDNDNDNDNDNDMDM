@@ -1,7 +1,7 @@
 # SP-DECODE — POLÍTICA OBLIGATORIA DE EVIDENCIAS Y SCRIPTS POR APLICACIÓN
 
 **Vigencia documental:** 2026-11-02.  
-**Estado:** regla de trabajo **OBLIGATORIA para nuevas investigaciones y revisiones**. **CI inicial F7-A0 IMPLEMENTADO y VALIDADO** (2026-11-06); su cobertura ampliada y configuración de required check en protección de rama siguen **PENDIENTES**. [Registro de avance](../docs/FASE_7_SEGUIMIENTO_ESTADOS_Y_PENDIENTES_2026_11_06.md).  
+**Estado:** regla de trabajo **OBLIGATORIA para nuevas investigaciones y revisiones**. **CI inicial F7-A0 IMPLEMENTADO y VALIDADO** (2026-11-06); su cobertura ampliada sigue **PARCIAL**; la protección obligatoria de rama es **OPCIONAL Y APLAZADA por decisión del propietario**. [Registro de avance](../docs/FASE_7_SEGUIMIENTO_ESTADOS_Y_PENDIENTES_2026_11_06.md).  
 **Ámbito:** todo método de archivo, texto, catálogo VPN, descarga autorizada, exportación compatible, actualización de decodificador y nuevo proveedor que se integre en SP-DECODE.  
 **Carpeta maestra:** analysis/ (nombre del repositorio en inglés). No confundir con scripts/apk_analysis/ ni con la documentación ANALYSIS.md existente dentro de cada decodificador.
 
@@ -153,3 +153,7 @@ Este archivo es un contrato de procedencia para la futura función de APK (fase 
 - ANÁLISIS de SocksIP actual: analysis/SOCKSIP_VER8_VER7_VER6_STUDY.md es un documento histórico válido, pero NO sustituye el expediente por build requerido para integraciones nuevas.
 
 **Referencias existentes:** scripts/apk_analysis/README.md; scripts/apk_analysis/RESTORE.md; docs/cloud/SERVER_VPN_NEXT_CHAT_GUIDE.md; docs/FASE_7_ARQUITECTURA_SUSCRIPCIONES_CREDITOS_APK_2026_11_02.md; decoders/Python/apps/README.md.
+
+## Decisión de GitHub CI y protección de rama — 2026-11-06
+
+El propietario exige continuar con **todos los controles de GitHub Actions y pruebas funcionales reales** antes de merge/despliegue, pero **NO autoriza activar Branch Protection por ahora**. La política de evidencias por método sigue obligatoria; su gate CI parcial y las regresiones F7-A0-P08 siguen ejecutándose. La falta de protección remota no es criterio de bloqueo para avanzar a P08/P09. Nunca afirmar que GitHub bloquea merges automáticamente si la regla no está activada. Las pruebas con fixtures sintéticos no certifican APK de terceros ni métodos contra servidores reales. Referencias: [P07](../docs/FASE_7_A0_P07_REQUIRED_CHECK_PROTECCION_2026_11_06.md) y [P08](../docs/FASE_7_A0_P08_REGRESION_FORMATOS_CONSUMIDORES_2026_11_06.md).
