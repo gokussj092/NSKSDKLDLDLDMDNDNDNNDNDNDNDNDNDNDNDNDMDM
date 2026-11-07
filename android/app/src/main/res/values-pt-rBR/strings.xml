@@ -258,4 +258,6 @@
     <string name="apk_qa_uploading">Enviando APK…</string>
     <string name="apk_qa_processing">Analisando no servidor…</string>
     <string name="apk_qa_report">Relatório estático preliminar</string>
+    <string name="apk_qa_copy_device_id">Copiar ID do dispositivo de teste</string>
+    <string name="apk_qa_device_id_copied">ID do dispositivo de teste copiado</string>
 </resources>
