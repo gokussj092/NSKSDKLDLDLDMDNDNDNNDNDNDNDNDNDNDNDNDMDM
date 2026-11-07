@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
 import java.security.MessageDigest
@@ -24,9 +25,32 @@ internal class CloudApkQaClient(context:Context,private val cloud:CloudDecodeCli
     private val resolver=context.applicationContext.contentResolver
 
     companion object {
-        const val MAX_BYTES=96L*1024L*1024L
+        const val MAX_BYTES=100L*1000L*1000L
         private const val MAX_CHUNK=2*1024*1024
-        private const val MAX_POLL=45
+        private const val MAX_POLL=3600 // 12h at 12s: bounded to server retention
+    }
+
+    data class ActivityEvent(val sequence:Int,val code:String,val status:String)
+
+    private val allowedEvents=setOf(
+        "UPLOAD_STARTED","UPLOAD_RECEIVED","UPLOAD_REJECTED",
+        "PACKAGE_VALIDATION","PACKAGE_VALIDATED","COMPONENT_INSPECTION",
+        "COMPONENTS_INSPECTED","REPORT_PREPARATION","REPORT_READY","ANALYSIS_FAILED"
+    )
+
+    private fun activityEvents(message:JSONObject):List<ActivityEvent> {
+        val raw:JSONArray=message.optJSONArray("events") ?: return emptyList()
+        val safe=ArrayList<ActivityEvent>(minOf(raw.length(),24))
+        for (i in 0 until minOf(raw.length(),24)) {
+            val item=raw.optJSONObject(i) ?: continue
+            val sequence=item.optInt("sequence",-1)
+            val code=item.optString("code")
+            val status=item.optString("status")
+            if(sequence!=i+1 || code !in allowedEvents ||
+               status !in setOf("RUNNING","DONE","FAILED")) continue
+            safe.add(ActivityEvent(sequence,code,status))
+        }
+        return safe
     }
 
     private fun hex(bytes:ByteArray):String=bytes.joinToString("") {
@@ -92,8 +116,11 @@ internal class CloudApkQaClient(context:Context,private val cloud:CloudDecodeCli
         }
     }
 
-    suspend fun analyze(uri:Uri,onProgress:suspend (String,Long,Long)->Unit):JSONObject =
-        withContext(Dispatchers.IO) {
+    suspend fun analyze(
+        uri:Uri,
+        onProgress:suspend (String,Long,Long)->Unit,
+        onEvents:suspend (List<ActivityEvent>)->Unit = {}
+    ):JSONObject = withContext(Dispatchers.IO) {
             val name=filename(uri)
             coroutineContext.ensureActive()
             onProgress("READING",0,0)
@@ -103,6 +130,7 @@ internal class CloudApkQaClient(context:Context,private val cloud:CloudDecodeCli
                 .put("filename",name).put("totalBytes",total)
                 .put("sha256",fullDigest).put("consent",true)
                 .put("qaFirstPass",true))
+            onEvents(activityEvents(started))
             val id=started.getString("jobId")
             val token=started.getString("uploadToken")
             val step=started.getInt("chunkBytes")
@@ -151,8 +179,9 @@ internal class CloudApkQaClient(context:Context,private val cloud:CloudDecodeCli
                 onProgress("PROCESSING",total,total)
                 repeat(MAX_POLL){
                     coroutineContext.ensureActive()
-                    delay(2000L)
+                    delay(12_000L) // Respect bound transport rate limits while UI stays responsive
                     val status=qaPost(CloudOperation.APK_QA_RESULT,JSONObject(base.toString()))
+                    onEvents(activityEvents(status))
                     when(status.optString("status")){
                         "COMPLETED"-> {
                             val report=status.optJSONObject("report")
