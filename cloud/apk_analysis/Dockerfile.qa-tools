@@ -16,7 +16,8 @@ COPY scripts/apk_analysis/decompile.py ./scripts/apk_analysis/decompile.py
 RUN mkdir -p /opt/spdecode/scripts/apk_analysis/cache && \
     python -B scripts/apk_analysis/decompile.py --install
 COPY cloud/apk_analysis/__init__.py cloud/apk_analysis/input_gate.py \
-     cloud/apk_analysis/qa_dex_bytecode.py cloud/apk_analysis/qa_deep.py cloud/apk_analysis/qa_tooling.py \
+     cloud/apk_analysis/qa_dex_bytecode.py cloud/apk_analysis/qa_deep.py \
+     cloud/apk_analysis/qa_jadx_refs.py cloud/apk_analysis/qa_tooling.py \
      cloud/apk_analysis/qa_static.py cloud/apk_analysis/qa_service.py \
      cloud/apk_analysis/SpDecodeGhidraReport.java ./cloud/apk_analysis/
 RUN mkdir -p /var/lib/spdecode/apkqa && \

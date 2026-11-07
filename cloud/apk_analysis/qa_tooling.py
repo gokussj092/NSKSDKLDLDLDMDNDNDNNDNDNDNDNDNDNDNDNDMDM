@@ -13,6 +13,7 @@ import re
 import subprocess
 import tempfile
 import zipfile
+from .qa_jadx_refs import scan_jadx_sources
 
 JADX_JAR=Path("/opt/spdecode/scripts/apk_analysis/cache/jadx-1.5.6-all.jar")
 JADX_SHA256="fe3e12c45acf75f92369685fd02d1d7a7323385dc725680a9b98a0dac0ea554b"
@@ -165,9 +166,11 @@ def inspect_tooling(source:Path,report:dict)->dict:
         did_jadx=_run(command,cwd=scratch,timeout=240,env=env,
                       logfile=scratch/"jadx.log")
         # Do not return APK source code or stdout that could contain secrets.
-        source_files=sum(1 for _ in dest.rglob("*.java")) if did_jadx else 0
-        state["jadx"]={"status":"COMPLETED" if did_jadx else "FAILED_OR_TIMEOUT",
-                       "javaFiles":min(source_files,100000)}
+        source_refs=scan_jadx_sources(dest) if did_jadx else {}
+        state["jadx"]={
+            "status":"COMPLETED" if did_jadx else "FAILED_OR_TIMEOUT",
+            **source_refs,
+        }
         state["jadxExecuted"]=did_jadx
         state["status"]="PARTIAL_TOOLS_EXECUTED" if did_jadx else "TOOLS_FAILED"
         if not ghidra_ready:

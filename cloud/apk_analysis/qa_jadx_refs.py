@@ -31,7 +31,9 @@ IGNORE_METHOD={"if","for","switch","while","return","catch","new","throw"}
 
 def _is_framework(rel:Path):
     parts=rel.parts
-    if not parts:return True
+    while parts and parts[0] in ("sources","src"):
+        parts=parts[1:]
+    if not parts:return False
     if parts[0] in PRUNE:return True
     if len(parts)>1 and parts[0]=="com" and parts[1] in PRUNE_COM:return True
     return False
@@ -84,7 +86,10 @@ def scan_jadx_sources(output:Path)->dict:
                 methods=[(m.start(),m.group("name")) for m in METHOD.finditer(source)
                          if m.group("name") not in IGNORE_METHOD]
                 rel=path.relative_to(output)
-                classtag=str(rel.with_suffix("")).replace(os.sep,".").replace("/",".")
+                names=rel.with_suffix("").parts
+                while names and names[0] in ("sources","src"):
+                    names=names[1:]
+                classtag=".".join(names)
                 if len(found)<MAX_HITS:
                     unique={}
                     for pos,label in matches:
