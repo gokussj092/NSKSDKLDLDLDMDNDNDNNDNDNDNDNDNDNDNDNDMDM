@@ -260,4 +260,5 @@
     <string name="apk_qa_report">Laporan statis awal</string>
     <string name="apk_qa_copy_device_id">Salin ID perangkat pengujian saya</string>
     <string name="apk_qa_device_id_copied">ID perangkat pengujian disalin</string>
+    <string name="apk_qa_retention_notice">Saat diuji, APK disimpan sementara pada volume server terbatas (belum dienkripsi saat tersimpan) dan dihapus setelah analisis atau unggahan kedaluwarsa. Laporan dapat disimpan hingga 12 jam ditambah waktu pembersihan. Jangan unggah APK rahasia.</string>
 </resources>
