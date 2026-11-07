@@ -249,4 +249,14 @@
     <string name="catalog_transfer_resume">再試行 / 再開</string>
     <string name="catalog_transfer_discard">部分ダウンロードを削除</string>
     <string name="catalog_transfer_retention">検証済みの断片は再開用に最大7日間暗号化して保存されます。</string>
+    <string name="apk_qa_title">APK解析 — テストモード</string>
+    <string name="apk_qa_description">APK/APKSを実際に静的検査します。ログインやクレジットは不要です。アプリをインストール・実行しません。</string>
+    <string name="apk_qa_consent">このAPKの所有者であるか、解析の許可を得ています。</string>
+    <string name="apk_qa_pick">APKまたはAPKSを選択</string>
+    <string name="apk_qa_no_charge">テスト中はクレジットを消費しません。</string>
+    <string name="apk_qa_limit">最大ファイルサイズ: 96 MiB。</string>
+    <string name="apk_qa_reading">APKを読み込み中…</string>
+    <string name="apk_qa_uploading">APKを送信中…</string>
+    <string name="apk_qa_processing">サーバーで解析中…</string>
+    <string name="apk_qa_report">静的解析の暫定レポート</string>
 </resources>
