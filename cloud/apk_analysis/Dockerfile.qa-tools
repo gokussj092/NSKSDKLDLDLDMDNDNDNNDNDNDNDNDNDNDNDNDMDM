@@ -9,18 +9,34 @@ ENV DEBIAN_FRONTEND=noninteractive \
     XDG_CACHE_HOME=/tmp \
     XDG_CONFIG_HOME=/tmp/.config
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3 ca-certificates \
+    python3 ca-certificates curl unzip \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /opt/spdecode
 COPY scripts/apk_analysis/decompile.py ./scripts/apk_analysis/decompile.py
 RUN mkdir -p /opt/spdecode/scripts/apk_analysis/cache && \
     python3 -B scripts/apk_analysis/decompile.py --install
+# Reviewed official 12.1.4 release: use JDK21 and verify the complete ZIP.
+# The archive is installed at build time and cached in Docker layers.
+ARG GHIDRA_ZIP=ghidra_12.1.4_PUBLIC_20260921.zip
+ARG GHIDRA_SHA256=ddac49f903da9d5bac833e5cc79395098b9c33cfd3279be5f31bd00387d2d4db
+RUN set -eu; \
+    curl --fail --location --retry 3 --retry-delay 2 \
+      "https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_12.1.4_build/${GHIDRA_ZIP}" \
+      --output /tmp/spdecode-ghidra.zip; \
+    printf '%s  %s\n' "${GHIDRA_SHA256}" /tmp/spdecode-ghidra.zip | sha256sum -c -; \
+    unzip -q /tmp/spdecode-ghidra.zip -d /opt; \
+    test -f /opt/ghidra_12.1.4_PUBLIC/support/analyzeHeadless; \
+    mv /opt/ghidra_12.1.4_PUBLIC /opt/ghidra; \
+    rm -f /tmp/spdecode-ghidra.zip
 COPY cloud/apk_analysis/__init__.py cloud/apk_analysis/input_gate.py \
      cloud/apk_analysis/qa_dex_bytecode.py cloud/apk_analysis/qa_deep.py \
      cloud/apk_analysis/qa_jadx_refs.py cloud/apk_analysis/qa_tool_rpc.py \
      cloud/apk_analysis/qa_tooling.py cloud/apk_analysis/qa_tool_worker.py \
      cloud/apk_analysis/qa_static.py cloud/apk_analysis/qa_service.py \
      cloud/apk_analysis/SpDecodeGhidraReport.java ./cloud/apk_analysis/
+# Bind the headless entrypoint to its verified distribution in the image.
+RUN sha256sum /opt/ghidra/support/analyzeHeadless | cut -d' ' -f1 \
+    > /opt/spdecode/cloud/apk_analysis/ghidra-headless.sha256
 RUN mkdir -p /analysis && \
     chown -R 65532:65532 /analysis /opt/spdecode && \
     chmod 0700 /analysis

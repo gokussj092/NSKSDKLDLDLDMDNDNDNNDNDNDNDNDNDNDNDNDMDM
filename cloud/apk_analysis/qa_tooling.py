@@ -101,13 +101,21 @@ def _base_and_libs(source:Path,dest:Path):
                     if copied!=item.file_size:raise ValueError("SPLIT_TRUNCATED")
                 splits.append(split)
     binaries=[]
+    def priority(item):
+        name=item.filename.rsplit("/",1)[-1].lower()
+        system=any(k in name for k in ("conscrypt","datastore","c++_shared",
+                                        "firebase","sqlite","crashlytics"))
+        domain=any(k in name for k in ("vpn","hysteria","tun","tunnel",
+                                        "config","crypto","tls"))
+        return (1 if system else 0,0 if domain else 1,-item.file_size)
     for split in splits:
         with zipfile.ZipFile(split) as archive:
-            for info in archive.infolist():
+            candidates=sorted((entry for entry in archive.infolist() if
+                entry.filename.startswith("lib/") and
+                entry.filename.endswith(".so") and
+                52<=entry.file_size<=32*1024*1024),key=priority)
+            for info in candidates:
                 if len(binaries)>=MAX_GHIDRA_LIBS:break
-                if not info.filename.startswith("lib/") or not info.filename.endswith(".so"):
-                    continue
-                if info.file_size<52 or info.file_size>32*1024*1024:continue
                 # Only a fixed, private basename is written, never an APK path.
                 native=dest/("native-"+str(len(binaries))+".so")
                 with archive.open(info) as inp,native.open("xb") as out:
@@ -143,6 +151,10 @@ def inspect_tooling(source:Path,report:dict)->dict:
     # The tool executable itself must match an operator-reviewed SHA-256.
     # This is an additional guard, not validation of the whole installation.
     expected=os.environ.get("SPDECODE_APK_QA_GHIDRA_HEADLESS_SHA256","")
+    if not expected:
+        manifest=GHIDRA_SCRIPT.with_name("ghidra-headless.sha256")
+        if manifest.is_file() and not manifest.is_symlink():
+            expected=manifest.read_text("ascii").strip()
     ghidra_ready=(bool(re.fullmatch(r"[a-f0-9]{64}",expected)) and
                   home.is_dir() and not home.is_symlink() and
                   headless.is_file() and not headless.is_symlink() and
@@ -155,7 +167,8 @@ def inspect_tooling(source:Path,report:dict)->dict:
         # no permission to the decoder worker, host keys, Redis or Docker.
         # A minimal fixed environment. Never copy the service's internal
         # inter-container credential or unrelated cloud secrets into tools.
-        env={"PATH":"/usr/local/bin:/usr/bin:/bin",
+        env={"PATH":"/opt/java/openjdk/bin:/usr/local/bin:/usr/bin:/bin",
+             "JAVA_HOME":"/opt/java/openjdk",
              "HOME":str(scratch),"TMPDIR":str(scratch),
              "XDG_CONFIG_HOME":str(scratch),"XDG_CACHE_HOME":str(scratch),
              "LANG":"C.UTF-8",
@@ -181,7 +194,7 @@ def inspect_tooling(source:Path,report:dict)->dict:
         elif not libs:
             state["ghidra"]={"status":"NO_ELF_CANDIDATES"}
         else:
-            analysed=0;failed=0;functions=0
+            analysed=0;failed=0;functions=0;candidate_names=[]
             for i,lib in enumerate(libs):
                 result=scratch/("ghidra-result-"+str(i)+".json")
                 project=scratch/("ghidra-project-"+str(i))
@@ -199,12 +212,26 @@ def inspect_tooling(source:Path,report:dict)->dict:
                         if (isinstance(meta.get("functions"),int) and
                                 0<=meta["functions"]<=10_000_000):
                             functions+=meta["functions"];analysed+=1
+                            for item in meta.get("candidateFunctions",[])[:32]:
+                                if (isinstance(item,dict) and
+                                    re.fullmatch(r"[A-Za-z0-9_.$]{1,100}",
+                                                 str(item.get("name",""))) and
+                                    re.fullmatch(r"[0-9a-fA-F]{1,16}",
+                                                 str(item.get("address","")))):
+                                    if len(candidate_names)<48:
+                                        candidate_names.append({
+                                            "binary":lib.name,
+                                            "name":item["name"],
+                                            "address":item["address"],
+                                            "evidence":"GHIDRA_SYMBOL_NAME_ONLY",
+                                        })
                         else:failed+=1
                     except (OSError,ValueError,TypeError):failed+=1
                 else:failed+=1
             state["ghidra"]={"status":"COMPLETED" if analysed and not failed
                              else "PARTIAL_OR_FAILED",
                              "elfAnalysed":analysed,"elfFailed":failed,
-                             "functionsEnumerated":functions}
+                             "functionsEnumerated":functions,
+                             "candidateFunctions":candidate_names}
             state["ghidraExecuted"]=analysed>0
         return state
