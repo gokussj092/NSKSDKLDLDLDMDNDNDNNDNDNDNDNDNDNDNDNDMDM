@@ -86,3 +86,12 @@ docker compose -f cloud/apk_analysis/compose.yaml run --rm apk-runtime-preflight
 - `analysis/platform/apk-tooling/execution_policy.v1.json`
 - `docs/FASE_7_A0_P02_MAPA_HERRAMIENTAS_2026_11_06.md`
 - `docs/FASE_7_A0_P01_AUDITORIA_DEPENDENCIAS_2026_11_06.md`
+
+
+### Resultados verificados en GitHub Actions (P03)
+
+La ejecución [F7-A0 Method Evidence #42318706983](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42318706983) concluyó **SUCCESS**. Las suites: **11** pruebas de política de evidencias, **6** de dependencias, **7** de mapa P02, **9** de workspace aislado, **5** de recursos persistentes/preflight y **7** de política de ejecución = **45 pruebas aprobadas**.
+
+Los verificadores indicaron **63/63 scripts originales intactos**, 2 perfiles candidatos en política, **0 aprobados para ejecución automática**, caché persistente separada y política de limpieza tras recibo de resultados. La comprobación `docker compose ... config --quiet` finalizó correctamente.
+
+**Alcance exacto:** son pruebas de fixtures y contratos. No se compiló la imagen Docker, no se ejecutaron APK reales y no se habilitó el análisis APK desde Android ni el VPS. Esas condiciones siguen pendientes para A4/A5/A9.

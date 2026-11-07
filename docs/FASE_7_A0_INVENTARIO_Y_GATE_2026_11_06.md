@@ -91,3 +91,12 @@ El escaneo de P02 informó: **63 herramientas intactas**, 61 Python + 2 JavaScri
 El workflow publicó el artefacto `f7-a0-evidence` (incluye `f7-a0-usage.json`), disponible desde la página de la ejecución durante su período de retención. Este informe es generado automáticamente, no un historial fijo por versión.
 
 **P02 sigue PARCIAL:** faltan análisis de consumidores indirectos y verificación de las capacidades reales por aplicación; estas auditorías no alteran ni certifican los métodos existentes.
+
+
+### Resultados verificados en GitHub Actions (P03)
+
+La ejecución [F7-A0 Method Evidence #42318706983](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42318706983) concluyó **SUCCESS**. Las suites: **11** pruebas de política de evidencias, **6** de dependencias, **7** de mapa P02, **9** de workspace aislado, **5** de recursos persistentes/preflight y **7** de política de ejecución = **45 pruebas aprobadas**.
+
+Los verificadores indicaron **63/63 scripts originales intactos**, 2 perfiles candidatos en política, **0 aprobados para ejecución automática**, caché persistente separada y política de limpieza tras recibo de resultados. La comprobación `docker compose ... config --quiet` finalizó correctamente.
+
+**Alcance exacto:** son pruebas de fixtures y contratos. No se compiló la imagen Docker, no se ejecutaron APK reales y no se habilitó el análisis APK desde Android ni el VPS. Esas condiciones siguen pendientes para A4/A5/A9.
