@@ -259,7 +259,7 @@
     <string name="apk_qa_reading">Reading APK…</string>
     <string name="apk_qa_uploading">Uploading APK…</string>
     <string name="apk_qa_processing">Analyzing on server…</string>
-    <string name="apk_qa_report">Preliminary static report</string>
+    <string name="apk_qa_report">Partial technical report (DEX/ELF)</string>
     <string name="apk_qa_copy_device_id">Copy my test device ID</string>
     <string name="apk_qa_device_id_copied">Test device ID copied</string>
     <string name="apk_qa_retention_notice">In test mode, your APK is stored temporarily on a restricted server volume (not yet encrypted at rest) and deleted after analysis or upload expiry. Reports remain up to 12 hours plus cleanup time. Do not submit confidential APKs.</string>

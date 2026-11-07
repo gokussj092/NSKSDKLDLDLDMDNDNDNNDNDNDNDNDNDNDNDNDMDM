@@ -257,7 +257,7 @@
     <string name="apk_qa_reading">جارٍ قراءة APK…</string>
     <string name="apk_qa_uploading">جارٍ رفع APK…</string>
     <string name="apk_qa_processing">جارٍ التحليل على الخادم…</string>
-    <string name="apk_qa_report">تقرير فحص ثابت أولي</string>
+    <string name="apk_qa_report">تقرير تقني جزئي (DEX/ELF)</string>
     <string name="apk_qa_copy_device_id">نسخ معرّف جهاز الاختبار</string>
     <string name="apk_qa_device_id_copied">تم نسخ معرّف جهاز الاختبار</string>
     <string name="apk_qa_retention_notice">أثناء الاختبار، يُخزن ملف APK مؤقتًا في مساحة مقيدة على الخادم (دون تشفير عند التخزين حاليًا) ثم يُحذف بعد التحليل أو انتهاء مهلة الرفع. قد يبقى التقرير حتى 12 ساعة مع وقت التنظيف. لا ترفع ملفات APK سرية.</string>

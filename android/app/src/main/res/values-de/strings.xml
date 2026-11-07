@@ -257,7 +257,7 @@
     <string name="apk_qa_reading">APK wird gelesen…</string>
     <string name="apk_qa_uploading">APK wird hochgeladen…</string>
     <string name="apk_qa_processing">Server analysiert…</string>
-    <string name="apk_qa_report">Vorläufiger statischer Bericht</string>
+    <string name="apk_qa_report">Technischer Teilbericht (DEX/ELF)</string>
     <string name="apk_qa_copy_device_id">Testgeräte-ID kopieren</string>
     <string name="apk_qa_device_id_copied">Testgeräte-ID kopiert</string>
     <string name="apk_qa_retention_notice">Im Testmodus wird deine APK vorübergehend in einem eingeschränkten Serverbereich gespeichert (noch ohne Verschlüsselung im Ruhezustand) und nach der Analyse oder Ablauf gelöscht. Berichte bleiben bis zu 12 Stunden plus Bereinigung erhalten. Keine vertraulichen APKs hochladen.</string>

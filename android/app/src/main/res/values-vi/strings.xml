@@ -258,7 +258,7 @@
     <string name="apk_qa_reading">Đang đọc APK…</string>
     <string name="apk_qa_uploading">Đang gửi APK…</string>
     <string name="apk_qa_processing">Máy chủ đang phân tích…</string>
-    <string name="apk_qa_report">Báo cáo tĩnh sơ bộ</string>
+    <string name="apk_qa_report">Báo cáo kỹ thuật một phần (DEX/ELF)</string>
     <string name="apk_qa_copy_device_id">Sao chép ID thiết bị thử nghiệm</string>
     <string name="apk_qa_device_id_copied">Đã sao chép ID thiết bị thử nghiệm</string>
     <string name="apk_qa_retention_notice">Trong chế độ thử nghiệm, APK được lưu tạm trên vùng máy chủ hạn chế (chưa mã hóa khi lưu trữ), rồi xóa sau khi phân tích hoặc tải lên hết hạn. Báo cáo có thể lưu tối đa 12 giờ cộng thời gian dọn dẹp. Không gửi APK bí mật.</string>

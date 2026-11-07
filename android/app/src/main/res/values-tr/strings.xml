@@ -258,7 +258,7 @@
     <string name="apk_qa_reading">APK okunuyor…</string>
     <string name="apk_qa_uploading">APK yükleniyor…</string>
     <string name="apk_qa_processing">Sunucuda analiz ediliyor…</string>
-    <string name="apk_qa_report">Ön statik rapor</string>
+    <string name="apk_qa_report">Kısmi teknik rapor (DEX/ELF)</string>
     <string name="apk_qa_copy_device_id">Test cihazı kimliğimi kopyala</string>
     <string name="apk_qa_device_id_copied">Test cihazı kimliği kopyalandı</string>
     <string name="apk_qa_retention_notice">Testte APK, kısıtlı sunucu alanında geçici olarak tutulur (henüz depolamada şifreli değildir); analizden veya yükleme süresi dolduktan sonra silinir. Rapor en fazla 12 saat ve temizlik süresi kadar kalabilir. Gizli APK yüklemeyin.</string>

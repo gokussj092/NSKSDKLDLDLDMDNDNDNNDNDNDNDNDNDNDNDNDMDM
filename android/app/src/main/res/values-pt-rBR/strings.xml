@@ -257,7 +257,7 @@
     <string name="apk_qa_reading">Lendo APK…</string>
     <string name="apk_qa_uploading">Enviando APK…</string>
     <string name="apk_qa_processing">Analisando no servidor…</string>
-    <string name="apk_qa_report">Relatório estático preliminar</string>
+    <string name="apk_qa_report">Relatório técnico parcial (DEX/ELF)</string>
     <string name="apk_qa_copy_device_id">Copiar ID do dispositivo de teste</string>
     <string name="apk_qa_device_id_copied">ID do dispositivo de teste copiado</string>
     <string name="apk_qa_retention_notice">Nos testes, o APK fica temporariamente em um volume restrito do servidor (ainda sem criptografia em repouso) e é excluído após a análise ou expiração. O relatório pode permanecer por até 12 horas mais a limpeza. Não envie APK confidencial.</string>
