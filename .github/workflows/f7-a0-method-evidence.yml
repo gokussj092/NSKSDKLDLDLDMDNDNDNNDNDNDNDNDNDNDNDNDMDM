@@ -64,6 +64,10 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_a0_p07_required_checks.py' -v
       - name: P07 verify required check workflow contract (no GitHub branch mutation)
         run: python scripts/ci/check_a0_p07_required_check.py --output "$RUNNER_TEMP/f7-a0-p07-wiring.json"
+      - name: P08 regression matrix contract and safety tests (no method execution)
+        run: python -m unittest discover -s tests -p 'test_a0_p08_regression.py' -v
+      - name: P08 read-only regression inventory (no method execution)
+        run: python scripts/ci/run_a0_p08_regression.py --check-only --output "$RUNNER_TEMP/f7-a0-p08-inventory.json"
       - name: Inventory and audit (no APK execution)
         run: python scripts/ci/check_method_evidence.py --output "$RUNNER_TEMP/f7-a0-report.json"
       - name: Check evidence in pull requests
