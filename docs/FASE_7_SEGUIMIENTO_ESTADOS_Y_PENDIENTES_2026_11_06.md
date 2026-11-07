@@ -232,3 +232,9 @@ Los verificadores indicaron **63/63 scripts originales intactos**, 2 perfiles ca
 ### Gate de evidencias ampliado: 95 pruebas
 
 [F7-A0 Method Evidence, run 42330901411](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42330901411), commit `bf6658398bedefcfea567d40d19c6454558ec17b`: **SUCCESS**. En logs: 11 + 6 + 7 + 9 + 5 + 7 + 20 + 4 + 22 + 4 = **95 pruebas** en diez suites, con 22 casos adversos de formato y 4 de recuperación. El mapa dinámico confirma `tools=63 unchanged=63 python=61 js=2 approved=0`. Las extensiones `.zip`/`.xapk` quedan rechazadas en el gate de servidor; la aplicación Android todavía no tiene la nueva subida habilitada. **No se otorga autorización para automatización de esas herramientas.**
+
+### Verificación final del corpus de prueba (sin despliegue)
+
+[F7-A0-P05 APK Lab run 42330901519](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDNDMDM/actions/runs/42330901519), sobre `bf665839`, **SUCCESS**: 22 pruebas adversas de APK/APKS, 4 pruebas de SIGKILL/recuperación/soporte humano, compilación y firmado propio, inspector original, JADX offline y los cinco controles Docker (seguridad/CPU/PID, ENOSPC, cgroup OOM, eliminación tras timeout, cache persistente verificada). [F7-A0 Method Evidence run 42330901411](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42330901411), mismo SHA, **SUCCESS, 95 pruebas**, 63/63 herramientas intactas. La ejecución general Validate SP-DECODE de este SHA se sigue rastreando por separado; no afirmar que haya terminado si continúa en cola.
+
+**Decisión:** P05 permanece PARCIAL, sin análisis de APK ajenas, sin integración de subida Android y sin autorización de ejecución automática de herramientas. Se requiere corpus real consentido, bundletool auténtico, ARM64/ELF, estrés concurrencia/reinicio de VM y endpoints A4/A5/A9 antes de un cierre.
