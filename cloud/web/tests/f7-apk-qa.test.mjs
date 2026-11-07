@@ -7,7 +7,10 @@ import {routes,bodyLimit} from "../lib/v2-routes.mjs";
 import {protectedActions} from "../lib/action-integrity.mjs";
 import {unpackHpkeBody} from "../lib/v2-hpke.mjs";
 
-const cfg={CLOUD_APK_QA_ENABLED:"true",CLOUD_APK_QA_INTERNAL_TOKEN:"z".repeat(48)};
+const ownerTestKey="device-p256-public-key-verifiable-qa-test";
+const knownDigest=createHash("sha256").update(ownerTestKey).digest("hex");
+const cfg={CLOUD_APK_QA_ENABLED:"true",CLOUD_APK_QA_INTERNAL_TOKEN:"z".repeat(48),
+  CLOUD_APK_QA_ALLOWED_KEY_SHA256:knownDigest};
 function request(body,op,authorized=true){
   const req=new Request("https://api.spdecode.test/api/v1/apk-qa/test",{
     method:"POST",headers:{"content-type":"application/json"},
@@ -50,6 +53,23 @@ test("feature toggle fail-closed even with a verified caller",async()=>{
     env:{...cfg,CLOUD_APK_QA_ENABLED:"false"},send:a.send});
   assert.equal(result.status,503);
   assert.equal(a.count,0);
+});
+test("server rejects unregistered devices without creating a QA job",async()=>{
+  const a=sender();
+  const result=await apkQaRequest(request({consent:true,qaFirstPass:true},21),21,{
+    env:{...cfg,CLOUD_APK_QA_ALLOWED_KEY_SHA256:"1".repeat(64)},send:a.send});
+  assert.equal(result.status,403);
+  assert.deepEqual(await result.json(),{error:{code:"APK_QA_DEVICE_NOT_ALLOWED"}});
+  assert.equal(a.count,0);
+});
+test("empty or corrupted device allowlist disables QA even when flag is enabled",async()=>{
+  for(const value of ["", "not-a-hash", "1".repeat(64)+",", "1".repeat(64)+","+("1".repeat(64))]) {
+    const a=sender();
+    const result=await apkQaRequest(request({consent:true,qaFirstPass:true},21),21,{
+      env:{...cfg,CLOUD_APK_QA_ALLOWED_KEY_SHA256:value},send:a.send});
+    assert.equal(result.status,503);
+    assert.equal(a.count,0);
+  }
 });
 test("start requires explicit consent and static-only acknowledgment",async()=>{
   const a=sender();
