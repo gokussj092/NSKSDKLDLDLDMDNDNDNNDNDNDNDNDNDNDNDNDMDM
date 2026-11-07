@@ -259,4 +259,6 @@
     <string name="apk_qa_uploading">APK yükleniyor…</string>
     <string name="apk_qa_processing">Sunucuda analiz ediliyor…</string>
     <string name="apk_qa_report">Ön statik rapor</string>
+    <string name="apk_qa_copy_device_id">Test cihazı kimliğimi kopyala</string>
+    <string name="apk_qa_device_id_copied">Test cihazı kimliği kopyalandı</string>
 </resources>
