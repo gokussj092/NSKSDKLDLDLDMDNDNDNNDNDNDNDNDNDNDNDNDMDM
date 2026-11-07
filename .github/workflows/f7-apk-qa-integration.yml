@@ -23,7 +23,7 @@ jobs:
       - name: Check VPS QA activation Bash syntax
         run: bash -n cloud/infra/vps/spdecodectl
       - name: Test APK QA lifecycle, native attachment constraints, Android and VPS
-        run: python -m unittest tests.test_f7_apk_qa_service tests.test_f7_apk_qa_deep tests.test_f7_apk_qa_android_resume tests.test_f7_apk_qa_cli tests.test_f7_apk_qa_hpke_native_contract tests.test_f7_apk_qa_jadx_refs tests.test_f7_apk_qa_tool_rpc -v
+        run: python -m unittest tests.test_f7_apk_qa_service tests.test_f7_apk_qa_deep tests.test_f7_apk_qa_android_resume tests.test_f7_apk_qa_cli tests.test_f7_apk_qa_hpke_native_contract tests.test_f7_apk_qa_jadx_refs tests.test_f7_apk_qa_tool_rpc tests.test_f7_apk_qa_tooling_policy -v
       - name: Validate isolated Docker topology without activating it
         run: docker compose --profile apk-qa --profile apk-qa-tools -f cloud/compose.yaml config --quiet
       - name: Build the separate read-only static lab image once
