@@ -3,6 +3,8 @@
 **Plan original: 2026-11-04 · Rama: feat/nuevas-integraciones · Estado actualizado 2026-11-06: F7-A0 PARCIAL con CI específico SUCCESS; F7-A1–F7-A9 DOCUMENTADAS / NO IMPLEMENTADAS.**
 
 **Registro de continuidad, pendientes por fase y fallos de QA:** [FASE_7_SEGUIMIENTO_ESTADOS_Y_PENDIENTES_2026_11_06.md](FASE_7_SEGUIMIENTO_ESTADOS_Y_PENDIENTES_2026_11_06.md). La tabla de estados distingue hechos comprobados de requisitos de diseño.
+**Actualización de requisitos 2026-11-06:** el propietario decidió **Google y correo/contraseña**, con email OTP, username único y recuperación; además plantea respaldos cifrados fuera del VPS. Esta especificación actualizada [F7-A1](FASE_7_A1_IDENTIDAD_CORREO_BACKUP_2026_11_06.md) tiene prioridad sobre cualquier mención histórica «solo Google», «sin OTP» u otros estados anteriores de la Fase 7. A0-P09 aún pendiente de aceptación formal; A1-P01/P02 iniciadas sin activación pública. Branch Protection no se habilitará por decisión del propietario.
+
 Documento operativo complementario de:
 - docs/FASE_7_CUENTAS_GOOGLE_PAGOS_Y_SOPORTE_APK_2026_11_04.md
 - docs/FASE_7_ARQUITECTURA_SUSCRIPCIONES_CREDITOS_APK_2026_11_02.md
@@ -39,7 +41,7 @@ Dependencias principales:
 
 **Salida:** inventario y contratos cerrados, suite básica de verificación ejecutada, licencias revisadas, herramientas de ejecución aprobadas y documentadas. No desplegar analizador con métodos no registrados.
 
-### F7-A1 — Configuración de Google Cloud y acceso Google (complejidad media)
+### F7-A1 — Identidad híbrida Google + correo/contraseña (complejidad alta)
 
 **Administrativa:**
 - Elegir proyecto Google Cloud; configurar Google Auth Platform, SP-DECODE branding, soporte de dominio, sitio web, términos y privacidad verificables.
@@ -53,7 +55,7 @@ Dependencias principales:
 
 **Android:**
 - Credential Manager/Google Identity Services, selector de cuentas Google, validación visible, manejo de cuenta suspendida/sin conexión/cambio de cuenta.
-- No activar autenticación Facebook/Discord, login por email+contraseña ni OTP de correo.
+- **Decisión posterior del propietario (2026-11-06):** además de Google, implementar registro e inicio con correo verificado y contraseña, OTP de registro/recuperación, hash con sal, username único y sesiones propias; Facebook/Discord siguen fuera de alcance. [Especificación actualizada](FASE_7_A1_IDENTIDAD_CORREO_BACKUP_2026_11_06.md).
 
 **Gate:** token con audiencia equivocada, caducado, alterado o reutilizado es rechazado; cuenta Google no verificada/ambiguo correo tratada según política; sin cuenta no se bloquean funciones gratuitas; Play App Signing reconocido; nombre real SP-DECODE visible tras configuración y verificación de marca.
 
@@ -63,11 +65,11 @@ Dependencias principales:
 - accounts, identities, sessions, account_profile_events, consent_versions y deletion_requests;
 - Unique DB sobre google sub y username canonical; migración idempotente y control de colisiones;
 - Actualización independiente de display_name y username; límites, reautenticación, antifraude, reserva de nombres y auditoría;
-- Perfil correo de Google read-only; sin editar dirección manualmente ni depender de correo como identificador permanente.
+- Correo verificado procedente de Google o del registro email/contraseña; los cambios de correo requieren nueva verificación y revocación de sesiones apropiada. Nunca identificar una cuenta por email/handle mutable, sino por ID interno inmutable.
 
 **UI:**
 - Mi cuenta AMOLED: nombre visible arriba; debajo @handle y correo; créditos verificados; comprar créditos, mis análisis, historial, recibos, reembolsos, soporte, editar perfil, privacidad/eliminar cuenta, cerrar sesión.
-- Inicio desde función comercial muestra solo «Continuar con Google», sin registro forzado a usuarios gratuitos.
+- Inicio desde función comercial ofrece «Continuar con Google» **o** «Correo electrónico y contraseña», más «Crear cuenta» con verificación OTP. No forzar registro a usuarios gratuitos.
 - Edición de nombre visible no único y handle único, 409 con mensaje localizado, pending states sin datos ficticios.
 
 **Gate:** colisiones concurrentes de username dan un único ganador; casefold/canonical correcto; no enumeración de cuentas; restaurar cuenta al reinstalar; solicitud de eliminación desde app y web, revocación de sesión y retenciones legales coherentes.
@@ -208,7 +210,7 @@ Dependencias principales:
 
 **Google Play Console:** productos/consumibles, precio por país, testers, Google Play Developer API, permiso de lectura/validación y operación de refunds, notificaciones RTDN/PubSub; servicio de suscripciones a definir.
 
-**Correo del dominio:** dirección de soporte existente comprobada, SPF/DKIM/DMARC y proveedor SMTP/API de notificaciones si se decide enviar avisos/recibos; sin códigos OTP de login.
+**Correo del dominio:** confirmar buzón y SPF/DKIM/DMARC; proveedor SMTP transaccional para OTP de registro, recuperación y avisos de seguridad (deshabilitado hasta estar configurado). Lectura de mensajes en admin mediante IMAP restringido o Gmail API según proveedor y permisos.
 
 **VPS/Cloud:** storage cifrado, worker de análisis segregado, colas, bases transaccionales, backups, audit y plan de retención de APK/evidencias; valores de tamaño y costo medidos con pruebas reales.
 
