@@ -109,7 +109,12 @@ def _dex_info(file, size:int, apk:str, name:str, digest:str) -> dict:
         if (strings>MAX_DEX_STRINGS or types>MAX_DEX_STRINGS or
             methods>MAX_DEX_STRINGS or classes>MAX_DEX_STRINGS or
             strings_off+strings*4>size or types_off+types*4>size or
-            methods_off+methods*8>size or classes_off+classes*32>size):
+            methods_off+methods*8>size or classes_off+classes*32>size or
+            any(n and off<112 for n,off in
+                ((strings,strings_off),(types,types_off),
+                 (methods,methods_off),(classes,classes_off))) or
+            (classes and not types) or (methods and not strings)):
+
             data["tableStatus"]="UNAVAILABLE_OR_BOUNDED"
             return data
         found=set()
@@ -175,7 +180,7 @@ def _elf_info(file,size:int,apk:str,name:str,digest:str) -> dict:
         entry=_u16(mm,58 if is64 else 46,endian)
         count=_u16(mm,60 if is64 else 48,endian)
         minimal=64 if is64 else 40
-        if count>4096 or entry<minimal or offset+count*entry>size:
+        if count==0 or offset==0 or count>4096 or entry<minimal or offset+count*entry>size:
             data["sectionStatus"]="UNAVAILABLE_OR_BOUNDED"
             return data
         sections=[]
@@ -228,7 +233,7 @@ def _elf_info(file,size:int,apk:str,name:str,digest:str) -> dict:
 def inspect_parts(path:Path, kind:str) -> dict:
     """Analyze every APKS member with temporary seekable files on job volume."""
     dex=[];native=[];assets=0;resources=0;uncompressed=0;split_names=[]
-    dex_seen=0;native_seen=0;indicators=set();skipped=0
+    dex_seen=0;native_seen=0;indicators=set();skipped=0;split_errors=[]
     def visit(z:zipfile.ZipFile, apkname:str):
         nonlocal assets,resources,uncompressed,dex_seen,native_seen,skipped
         for info in z.infolist():
@@ -268,9 +273,17 @@ def inspect_parts(path:Path, kind:str) -> dict:
                 key=lambda x:x.filename)
             for info in members:
                 split_names.append(info.filename)
-                with _spool(outer,info,path.parent) as (tmp,_):
-                    with zipfile.ZipFile(tmp) as nested:
-                        visit(nested,info.filename)
+                try:
+                    with _spool(outer,info,path.parent) as (tmp,_):
+                        with zipfile.ZipFile(tmp) as nested:
+                            visit(nested,info.filename)
+                except (ValueError,OSError,RuntimeError,zipfile.BadZipFile):
+                    # Structural gate already validated the source. Exceeding
+                    # the deeper scanner's per-split disk budget is an honest
+                    # per-split partial result, not a successful empty APK.
+                    if len(split_errors)<64:
+                        split_errors.append({"apk":info.filename,
+                                             "status":"DEEP_SPLIT_SCAN_INCOMPLETE"})
     return {
         "dexHeaders":dex,"nativeLibraries":native,"dexParsed":sum(x.get("tableStatus")=="PARSED" for x in dex),
         "elfParsed":sum(x.get("sectionStatus")=="PARSED" for x in native),
@@ -278,6 +291,7 @@ def inspect_parts(path:Path, kind:str) -> dict:
         "assetFiles":assets,"resourceFiles":resources,
         "splitFiles":split_names[:64],"uncompressedBytesSeen":uncompressed,
         "displayEntriesSkipped":skipped,
+        "splitScanErrors":split_errors,
         "cryptoIndicators":{"status":"REFERENCES_ONLY_NOT_VALIDATED",
             "candidates":sorted(indicators)[:MAX_INDICATORS],
             "methodValidated":False},
