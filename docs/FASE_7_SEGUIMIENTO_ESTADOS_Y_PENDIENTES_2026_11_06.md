@@ -196,3 +196,7 @@ La ejecución [F7-A0 Method Evidence #42318706983](https://github.com/gokussj092
 Los verificadores indicaron **63/63 scripts originales intactos**, 2 perfiles candidatos en política, **0 aprobados para ejecución automática**, caché persistente separada y política de limpieza tras recibo de resultados. La comprobación `docker compose ... config --quiet` finalizó correctamente.
 
 **Alcance exacto:** son pruebas de fixtures y contratos. No se compiló la imagen Docker, no se ejecutaron APK reales y no se habilitó el análisis APK desde Android ni el VPS. Esas condiciones siguen pendientes para A4/A5/A9.
+
+## F7-A0-P04 — Resultados y checkpoints (2026-11-06)
+
+**IMPLEMENTACIÓN DE CONTRATOS, NO DESPLEGADA:** `cloud/apk_analysis/checkpoint_journal.py` registra checkpoints de solo metadatos con números, SHA-256 encadenados y commits atómicos/fsync, verificación de resultado final a través del almacenamiento futuro y lectura segura para Android sin datos sensibles. Nuevos esquemas `checkpoint-event.v1`, `result-event.v1`, `user-progress.v1` se mantienen por protocolo, sin historial por versión Android. Pruebas negativas de corrupción, crash, privilegios, integridad e idempotencia en CI. **P04 parcial** hasta A4/A5/A9 y pruebas reales de APK autorizados. [Documento P04](FASE_7_A0_P04_RESULTADOS_Y_CHECKPOINTS_2026_11_06.md). Los 63 scripts funcionales se conservan intactos.
