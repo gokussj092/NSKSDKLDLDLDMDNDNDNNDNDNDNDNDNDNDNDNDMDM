@@ -29,7 +29,7 @@ private val QA_BORDER=Color(0xFF383838)
 internal fun ApkQaAnalysisScreen(
     active:Boolean,phase:String,received:Long,total:Long,
     report:String?,error:String?,
-    onPick:()->Unit,onCancel:()->Unit,
+    onPick:()->Unit,onCancel:()->Unit,onCopyDeviceId:()->Unit,
 ) {
     var authorized by rememberSaveable { mutableStateOf(false) }
     Column(Modifier.fillMaxSize().testTag("apk_qa_screen")
@@ -64,6 +64,10 @@ internal fun ApkQaAnalysisScreen(
                     Text(stringResource(R.string.apk_qa_pick))
                 }
                 Text(stringResource(R.string.apk_qa_no_charge),color=QA_MUTED,fontSize=12.sp)
+                TextButton(onClick=onCopyDeviceId,enabled=!active,
+                    modifier=Modifier.fillMaxWidth().testTag("apk_qa_copy_device_id")) {
+                    Text(stringResource(R.string.apk_qa_copy_device_id),color=QA_WHITE)
+                }
             }
         }
 
