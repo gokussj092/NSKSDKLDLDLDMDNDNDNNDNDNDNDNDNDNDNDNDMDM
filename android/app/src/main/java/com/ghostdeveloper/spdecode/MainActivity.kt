@@ -28,6 +28,7 @@ import com.ghostdeveloper.spdecode.cloud.CloudNewsNotice
 import com.ghostdeveloper.spdecode.cloud.CloudWhatsNewRepository
 import com.ghostdeveloper.spdecode.cloud.CloudDecodeClient
 import com.ghostdeveloper.spdecode.cloud.CloudApkQaClient
+import com.ghostdeveloper.spdecode.cloud.ApkQaWorker
 import com.ghostdeveloper.spdecode.cloud.CloudDiagnosticsPrivacy
 import com.ghostdeveloper.spdecode.cloud.CloudCredentialPolicy
 import com.ghostdeveloper.spdecode.cloud.CloudUserErrors
@@ -80,7 +81,7 @@ class MainActivity : ComponentActivity() {
     private val scope=CoroutineScope(SupervisorJob()+Dispatchers.Main.immediate)
     private val cloudClient by lazy { CloudDecodeClient(this) }
     private val apkQaClient by lazy { CloudApkQaClient(this,cloudClient) }
-    private var apkQaJob:Job?=null
+    private var apkQaObserver:Job?=null
     private var apkQaRunning by mutableStateOf(false)
     private var apkQaPhase by mutableStateOf("")
     private var apkQaReceived by mutableStateOf(0L)
@@ -410,53 +411,77 @@ class MainActivity : ComponentActivity() {
         if(uri!=null)startApkQa(uri)
     }
 
+    private fun observeApkQa() {
+        if(apkQaObserver?.isActive==true || !BuildConfig.SPDECODE_CLOUD_ENABLED)return
+        apkQaObserver=scope.launch {
+            while(true) {
+                try {
+                    val latest=withContext(Dispatchers.IO){apkQaClient.snapshot()}
+                    if(latest!=null) {
+                        apkQaRunning=latest.active
+                        apkQaPhase=latest.phase
+                        apkQaReceived=latest.receivedBytes
+                        apkQaTotal=latest.totalBytes
+                        apkQaReport=latest.report?.let {raw->
+                            try {org.json.JSONObject(raw).toString(2)}
+                            catch(_:Exception){raw}
+                        }
+                        apkQaEvents=latest.events
+                        apkQaError=latest.error
+                    }else apkQaRunning=false
+                }catch(_:IOException){
+                    // Never unlock a potentially active remote job when the
+                    // AndroidKeyStore ciphertext is damaged or unavailable.
+                    apkQaRunning=true
+                    apkQaError="APK_QA_LOCAL_STATE_UNAVAILABLE"
+                }
+                delay(1200L)
+            }
+        }
+    }
+
+    private fun reconnectApkQa() {
+        try {
+            if(apkQaClient.hasActiveJob()){
+                ApkQaWorker.enqueue(this,replace=true)
+                observeApkQa()
+            }
+        }catch(_:Exception){
+            apkQaRunning=true
+            apkQaError="APK_QA_LOCAL_STATE_UNAVAILABLE"
+        }
+    }
+
     private fun startApkQa(uri:Uri) {
         if(apkQaRunning)return
         if(!BuildConfig.SPDECODE_CLOUD_ENABLED){
             apkQaError="APK_QA_CLOUD_REQUIRED";return
         }
         if(!CloudLegalConsent.accepted(this)){
-            apkQaError="LEGAL_CONSENT_REQUIRED"
-            showCloudLegal=true
-            return
+            apkQaError="LEGAL_CONSENT_REQUIRED";showCloudLegal=true;return
         }
-        apkQaJob?.cancel()
-        apkQaRunning=true
-        apkQaPhase="READING"
-        apkQaReceived=0L
-        apkQaTotal=0L
-        apkQaReport=null
-        apkQaEvents=emptyList()
-        apkQaError=null
-        apkQaJob=scope.launch {
-            try {
-                val report=apkQaClient.analyze(uri, { stage,done,all ->
-                    withContext(Dispatchers.Main.immediate) {
-                        apkQaPhase=stage
-                        apkQaReceived=done
-                        apkQaTotal=all
-                    }
-                }, { events ->
-                    withContext(Dispatchers.Main.immediate) {
-                        apkQaEvents=events
-                    }
-                })
-                apkQaReport=report.toString(2)
-                apkQaPhase="COMPLETE"
-            }catch(error:CancellationException){
-                apkQaPhase=""
-                throw error
-            }catch(error:CloudDecodeClient.Failure){
-                apkQaError=error.code
-            }catch(error:IOException){
-                apkQaError=error.message?.takeIf {
-                    it.matches(Regex("[A-Z_]{3,60}"))
-                } ?: "APK_QA_UNAVAILABLE"
-            }catch(_:Exception){
-                apkQaError="APK_QA_UNAVAILABLE"
-            }finally {
-                apkQaRunning=false
-            }
+        try {
+            // Persist job metadata before network I/O; WorkManager never stores
+            // the upload capability, URI or analysis report in its plaintext Data.
+            apkQaClient.queue(uri)
+            apkQaRunning=true
+            apkQaPhase="QUEUED"
+            apkQaReceived=0L
+            apkQaTotal=0L
+            apkQaReport=null
+            apkQaEvents=emptyList()
+            apkQaError=null
+            ApkQaWorker.enqueue(this)
+            observeApkQa()
+        }catch(error:IOException){
+            apkQaError=error.message?.takeIf{it.matches(Regex("[A-Z_]{3,80}"))}
+                ?: "APK_QA_UNAVAILABLE"
+            try {apkQaRunning=apkQaClient.hasActiveJob()}
+            catch(_:Exception){apkQaRunning=true}
+        }catch(_:Exception){
+            apkQaError="APK_QA_UNAVAILABLE"
+            try {apkQaRunning=apkQaClient.hasActiveJob()}
+            catch(_:Exception){apkQaRunning=true}
         }
     }
 
@@ -638,7 +663,8 @@ class MainActivity : ComponentActivity() {
                 apkQaEvents=apkQaEvents,
                 apkQaError=apkQaError,
                 onApkQaPick={apkQaPicker.launch(arrayOf("application/vnd.android.package-archive","application/octet-stream","*/*"))},
-                onApkQaCancel={apkQaJob?.cancel();apkQaRunning=false;apkQaPhase=""},
+                onApkQaCancel={},
+                onApkQaRetry={reconnectApkQa()},
                 onApkQaCopyDeviceId={
                     try {
                         copy(apkQaClient.enrollmentId())
@@ -739,8 +765,13 @@ class MainActivity : ComponentActivity() {
                             discardPartialCatalog()
                             CloudLegalConsent.revoke(this@MainActivity)
                             cloudClient.clearSession()
-                            apkQaJob?.cancel()
-                            apkQaRunning=false
+                            WorkManager.getInstance(this@MainActivity)
+                                .cancelUniqueWork("spdecode-apk-qa-single-upload")
+                            // Consent withdrawal pauses background work but
+                            // does not fake a terminal result or release server lock.
+                            apkQaRunning=try{apkQaClient.hasActiveJob()}
+                                catch(_:Exception){true}
+                            apkQaError="LEGAL_CONSENT_REQUIRED"
                             apkQaReport=null
                             serverVpnRefresh?.cancel()
                             job?.cancel()
@@ -870,6 +901,7 @@ class MainActivity : ComponentActivity() {
             }
             }
         }
+        if(BuildConfig.SPDECODE_CLOUD_ENABLED)observeApkQa()
         if(savedInstanceState==null && !showCloudLegal)handleExternalIntent(intent)
     }
 
@@ -880,6 +912,14 @@ class MainActivity : ComponentActivity() {
             return
         }
         observeRuntime()
+        if(BuildConfig.SPDECODE_CLOUD_ENABLED && !showCloudLegal){
+            observeApkQa()
+            try {if(apkQaClient.hasActiveJob())ApkQaWorker.enqueue(this)}
+            catch(_:Exception){
+                apkQaRunning=true
+                apkQaError="APK_QA_LOCAL_STATE_UNAVAILABLE"
+            }
+        }
         if(settings.getBoolean("private-screen",false))
             window.addFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE)
         else window.clearFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE)
