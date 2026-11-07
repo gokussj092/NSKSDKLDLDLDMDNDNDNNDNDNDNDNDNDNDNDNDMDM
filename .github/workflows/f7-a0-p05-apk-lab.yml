@@ -120,6 +120,9 @@ jobs:
             spdecode-apk-tools:p05 python -B cloud/apk_analysis/runtime_preflight.py --check
           mkdir -p "$RUNNER_TEMP/p05-jadx-out"
           sudo chown 65532:65532 "$RUNNER_TEMP/p05-jadx-out"
+          # Log contents are safe for this *first-party generated fixture only*.
+          # Never emit JADX source/logs for private customer APKs.
+          set +e
           docker run --rm --network none --read-only --cap-drop ALL \
             --security-opt no-new-privileges --user 65532:65532 \
             --memory 3g --pids-limit 64 --cpus 1.5 \
@@ -129,6 +132,13 @@ jobs:
             --mount type=volume,source=spdecode-apk-tools-cache,target=/opt/spdecode/scripts/apk_analysis/cache,readonly \
             spdecode-apk-tools:p05 \
             python -B scripts/apk_analysis/decompile.py /lab/owned-signed.apk /output
+          jadx_exit=$?
+          set -e
+          if [ "$jadx_exit" -ne 0 ]; then
+            echo "P05: owned-fixture JADX diagnostics (max 50 lines)" >&2
+            sudo tail -n 50 "$RUNNER_TEMP/p05-jadx-out/jadx.log" || true
+            exit "$jadx_exit"
+          fi
           sudo find "$RUNNER_TEMP/p05-jadx-out" -type f -name '*.java' -print -quit | grep -q .
           sudo env RUNNER_TEMP="$RUNNER_TEMP" python3 - <<'PY'
           import json,os,pathlib
