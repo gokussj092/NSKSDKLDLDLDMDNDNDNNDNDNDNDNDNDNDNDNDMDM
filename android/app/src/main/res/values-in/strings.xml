@@ -258,4 +258,6 @@
     <string name="apk_qa_uploading">Mengunggah APK…</string>
     <string name="apk_qa_processing">Menganalisis di server…</string>
     <string name="apk_qa_report">Laporan statis awal</string>
+    <string name="apk_qa_copy_device_id">Salin ID perangkat pengujian saya</string>
+    <string name="apk_qa_device_id_copied">ID perangkat pengujian disalin</string>
 </resources>
