@@ -27,6 +27,7 @@ import androidx.compose.runtime.setValue
 import com.ghostdeveloper.spdecode.cloud.CloudNewsNotice
 import com.ghostdeveloper.spdecode.cloud.CloudWhatsNewRepository
 import com.ghostdeveloper.spdecode.cloud.CloudDecodeClient
+import com.ghostdeveloper.spdecode.cloud.CloudApkQaClient
 import com.ghostdeveloper.spdecode.cloud.CloudDiagnosticsPrivacy
 import com.ghostdeveloper.spdecode.cloud.CloudCredentialPolicy
 import com.ghostdeveloper.spdecode.cloud.CloudUserErrors
@@ -78,6 +79,14 @@ class MainActivity : ComponentActivity() {
     private companion object { const val MAX_BYTES=1024*1024 }
     private val scope=CoroutineScope(SupervisorJob()+Dispatchers.Main.immediate)
     private val cloudClient by lazy { CloudDecodeClient(this) }
+    private val apkQaClient by lazy { CloudApkQaClient(this,cloudClient) }
+    private var apkQaJob:Job?=null
+    private var apkQaRunning by mutableStateOf(false)
+    private var apkQaPhase by mutableStateOf("")
+    private var apkQaReceived by mutableStateOf(0L)
+    private var apkQaTotal by mutableStateOf(0L)
+    private var apkQaReport by mutableStateOf<String?>(null)
+    private var apkQaError by mutableStateOf<String?>(null)
     private val serverVpnCatalog by lazy { ServerVpnCatalogRepository(this,cloudClient) }
     private val cloudNewsRepository by lazy { CloudWhatsNewRepository(this,cloudClient) }
     private var serverVpnApps by mutableStateOf<List<ServerVpnApp>>(emptyList())
@@ -396,6 +405,55 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private val apkQaPicker=registerForActivityResult(ActivityResultContracts.OpenDocument()){uri->
+        if(uri!=null)startApkQa(uri)
+    }
+
+    private fun startApkQa(uri:Uri) {
+        if(apkQaRunning)return
+        if(!BuildConfig.SPDECODE_CLOUD_ENABLED){
+            apkQaError="APK_QA_CLOUD_REQUIRED";return
+        }
+        if(!CloudLegalConsent.accepted(this)){
+            apkQaError="LEGAL_CONSENT_REQUIRED"
+            showCloudLegal=true
+            return
+        }
+        apkQaJob?.cancel()
+        apkQaRunning=true
+        apkQaPhase="READING"
+        apkQaReceived=0L
+        apkQaTotal=0L
+        apkQaReport=null
+        apkQaError=null
+        apkQaJob=scope.launch {
+            try {
+                val report=apkQaClient.analyze(uri) { stage,done,all ->
+                    withContext(Dispatchers.Main.immediate) {
+                        apkQaPhase=stage
+                        apkQaReceived=done
+                        apkQaTotal=all
+                    }
+                }
+                apkQaReport=report.toString(2)
+                apkQaPhase="COMPLETE"
+            }catch(error:CancellationException){
+                apkQaPhase=""
+                throw error
+            }catch(error:CloudDecodeClient.Failure){
+                apkQaError=error.code
+            }catch(error:IOException){
+                apkQaError=error.message?.takeIf {
+                    it.matches(Regex("[A-Z_]{3,60}"))
+                } ?: "APK_QA_UNAVAILABLE"
+            }catch(_:Exception){
+                apkQaError="APK_QA_UNAVAILABLE"
+            }finally {
+                apkQaRunning=false
+            }
+        }
+    }
+
     private val picker=registerForActivityResult(ActivityResultContracts.OpenDocument()){uri->
         if(uri!=null)prepareSingleImport(uri)
     }
@@ -566,6 +624,14 @@ class MainActivity : ComponentActivity() {
                 },
                 onImport={picker.launch(arrayOf("*/*"))},
                 onImportMultiple={multiPicker.launch(arrayOf("*/*"))},
+                apkQaRunning=apkQaRunning,
+                apkQaPhase=apkQaPhase,
+                apkQaReceived=apkQaReceived,
+                apkQaTotal=apkQaTotal,
+                apkQaReport=apkQaReport,
+                apkQaError=apkQaError,
+                onApkQaPick={apkQaPicker.launch(arrayOf("application/vnd.android.package-archive","application/octet-stream","*/*"))},
+                onApkQaCancel={apkQaJob?.cancel();apkQaRunning=false;apkQaPhase=""},
                 onCancel={cancelImport()},
                 onReveal={reveal=it},
                 onCopy={format->result?.let { entry ->scope.launch {
@@ -658,6 +724,9 @@ class MainActivity : ComponentActivity() {
                             discardPartialCatalog()
                             CloudLegalConsent.revoke(this@MainActivity)
                             cloudClient.clearSession()
+                            apkQaJob?.cancel()
+                            apkQaRunning=false
+                            apkQaReport=null
                             serverVpnRefresh?.cancel()
                             job?.cancel()
                             serverVpnApps=emptyList()
