@@ -19,7 +19,7 @@
       "required_status_checks": []
     }
   },
-  "activation": "PENDING_REPOSITORY_ADMIN_ACCESS",
+  "activation": "DEFERRED_BY_OWNER_DECISION",
   "evidence": "Run required-status-check failure PR smoke test after protection is enabled; offline CI alone is not branch protection.",
-  "note": "Metadata records desired checks and a point-in-time observation, not an applied GitHub rule. No merge, main push or production deployment."
+  "note": "Owner explicitly chose manual CI review before merge instead of branch protection. These status checks are desired metadata for possible future activation only; NOT a launch blocker for P08/P09. No repository rule applied."
 }
