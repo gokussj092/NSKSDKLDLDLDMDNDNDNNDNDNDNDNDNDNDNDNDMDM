@@ -16,6 +16,7 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -39,6 +40,9 @@ DYNAMIC_JS_IMPORT = re.compile(r"\b(?:import|require)\s*\(\s*[^'\"\s)]")
 LITERAL_PY_FILE = re.compile(r"(?<![\w/])(?:decoders/Python/|scripts/apk_analysis/)"
                              r"[\w./-]+\.(?:py|js)\b")
 LEGACY_REGISTRY = "analysis/platform/apk-tooling/legacy_provider_baseline.v1.json"
+# P05 handoff before P06 began. Fixed in the validator as well as the registry;
+# later PR edits cannot silently move the cutoff by editing JSON alone.
+PINNED_CUTOVER_SHA = "4fddee8924e58a9d1e6476974e9b7a9adda3e495"
 
 
 class CoverageError(ValueError):
@@ -229,6 +233,42 @@ def legacy_summary(root: Path) -> dict:
             "baseline_commit": obj.get("source_commit")}
 
 
+
+def post_cutover_changed_paths(root: Path, base_sha: str, head_sha: str,
+                               cutoff_sha: str = PINNED_CUTOVER_SHA) -> tuple[list[str], list[str]]:
+    """Return enforceable changes and historical PR changes, fail closed.
+
+    Inspect the complete PR against its base, but enforce only paths with a
+    net source change since the immutable P05->P06 cutover on this PR head.
+    No old path gets a permanent exemption: its next edit is enforceable.
+    The cutoff must be an ancestor of the actual PR head (not a merge ref).
+    """
+    if not all(re.fullmatch(r"[0-9a-f]{40}", s or "") for s in (base_sha, head_sha, cutoff_sha)):
+        raise CoverageError("P06 requires exact 40-digit SHA refs")
+    if cutoff_sha != PINNED_CUTOVER_SHA:
+        raise CoverageError("P06 cutoff cannot be substituted")
+    baseline = json.loads((root / LEGACY_REGISTRY).read_text("utf-8"))
+    if baseline.get("source_commit") != PINNED_CUTOVER_SHA:
+        raise CoverageError("P06 registry cutoff mismatches immutable SHA")
+    if baseline.get("schema_version") != 1:
+        raise CoverageError("P06 registry baseline schema mismatch")
+    ancestor = subprocess.run(
+        ["git", "-C", str(root), "merge-base", "--is-ancestor", cutoff_sha, head_sha],
+        capture_output=True, check=False
+    )
+    if ancestor.returncode != 0:
+        raise CoverageError("P06 cutoff not verified as ancestor of PR HEAD")
+    all_changes = set(base.changed_paths(root, base_sha, []))
+    delta = subprocess.run(
+        ["git", "-C", str(root), "diff", "--name-only", "--diff-filter=ACMRT",
+         "-z", cutoff_sha, head_sha], capture_output=True, check=True
+    )
+    after = set(filter(None, delta.stdout.decode("utf-8").split("\0")))
+    enforce_changes = sorted(all_changes & after)
+    historical = sorted(all_changes - after)
+    return enforce_changes, historical
+
+
 def audit(root: Path, changes: list[str] | None = None, *, enforce: bool = False) -> dict:
     root = root.resolve()
     records = base.collect_evidence(root)
@@ -301,14 +341,29 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--repo-root", type=Path, default=ROOT)
     ap.add_argument("--base-ref", help="PR base commit SHA")
+    ap.add_argument("--pr-head-ref", help="exact PR head commit SHA for post-cutover diff")
+    ap.add_argument("--legacy-cutover-ref", help="immutable P05/P06 cutover commit SHA")
     ap.add_argument("--changed-file", action="append", default=[])
     ap.add_argument("--enforce", action="store_true")
     ap.add_argument("--output", type=Path, required=True)
     args = ap.parse_args()
     try:
-        changes = (base.changed_paths(args.repo_root, args.base_ref, args.changed_file)
-                   if args.enforce else [])
+        historical = []
+        if args.enforce and args.legacy_cutover_ref:
+            if args.changed_file or not args.pr_head_ref or not args.base_ref:
+                raise CoverageError("Cutover gate requires PR base/head SHAs and no explicit fixtures")
+            changes, historical = post_cutover_changed_paths(
+                args.repo_root.resolve(), args.base_ref, args.pr_head_ref,
+                args.legacy_cutover_ref
+            )
+        else:
+            changes = (base.changed_paths(args.repo_root, args.base_ref, args.changed_file)
+                       if args.enforce else [])
         report = audit(args.repo_root, changes, enforce=args.enforce)
+        if args.enforce and args.legacy_cutover_ref:
+            report["enforcement_cutover_sha"] = PINNED_CUTOVER_SHA
+            report["pre_cutover_pr_paths_report_only"] = historical
+            report["pre_cutover_pr_paths_unapproved"] = len(historical)
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     except (OSError, ValueError, KeyError, TypeError) as exc:
