@@ -179,10 +179,18 @@ def run_suite(root: Path, item: dict, timeout: int) -> dict:
                if runtime == "python" else
                ["node", "--test", "tests/" + target])
     working_dir = root if runtime == "python" else root / "cloud/web"
+    environment = {**os.environ, "PYTHONDONTWRITEBYTECODE": "1"}
+    if runtime == "python":
+        # Worker is normally started from cloud/workers/python/, where
+        # 'from engine import ...' resolves. Recreate that module path for
+        # isolated unittest runs; never change the operational worker.
+        environment["PYTHONPATH"] = os.pathsep.join(filter(None, (
+            str(root), str(root / "cloud/workers/python"),
+            environment.get("PYTHONPATH", ""))))
     try:
         proc = subprocess.run(command, cwd=working_dir, capture_output=True, text=True,
                               errors="replace", timeout=timeout, check=False,
-                              env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"})
+                              env=environment)
         count, passed, skipped = parse_result(runtime, proc.stdout + "\n" + proc.stderr)
         ok = (proc.returncode == 0 and count >= floor
               and passed == count and skipped == 0)
