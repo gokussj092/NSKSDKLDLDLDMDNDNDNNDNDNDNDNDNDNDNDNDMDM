@@ -248,4 +248,14 @@
     <string name="catalog_transfer_resume">Erneut versuchen / fortsetzen</string>
     <string name="catalog_transfer_discard">Teildownload löschen</string>
     <string name="catalog_transfer_retention">Geprüfte Fragmente bleiben bis zu 7 Tage verschlüsselt gespeichert.</string>
+    <string name="apk_qa_title">APK-Analyse — Testmodus</string>
+    <string name="apk_qa_description">Echte statische Prüfung von APK/APKS. Kein Login und keine Credits nötig. Apps werden nicht installiert oder ausgeführt.</string>
+    <string name="apk_qa_consent">Ich besitze diese APK oder bin zur Analyse berechtigt.</string>
+    <string name="apk_qa_pick">APK oder APKS auswählen</string>
+    <string name="apk_qa_no_charge">Im Testmodus werden keine Credits berechnet.</string>
+    <string name="apk_qa_limit">Maximale Dateigröße: 96 MiB.</string>
+    <string name="apk_qa_reading">APK wird gelesen…</string>
+    <string name="apk_qa_uploading">APK wird hochgeladen…</string>
+    <string name="apk_qa_processing">Server analysiert…</string>
+    <string name="apk_qa_report">Vorläufiger statischer Bericht</string>
 </resources>
