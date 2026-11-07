@@ -18,9 +18,10 @@ from pathlib import Path
 import re
 import sys
 
-from scripts.ci import check_method_evidence as base
-
 ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))  # direct CLI invocation from scripts/ci/
+from scripts.ci import check_method_evidence as base
 SCAN_ROOTS = ("decoders/Python", "cloud/workers/python", "cloud/web/lib",
               "cloud/web/app/api", "scripts/apk_analysis")
 EXTENSIONS = frozenset({".py", ".js", ".mjs", ".ts", ".tsx"})
