@@ -48,6 +48,31 @@ REQUIRED = {
 }
 
 
+# The format/consumer attributed to each executed suite is part of the
+# evidence contract. A registry-only label edit cannot fake coverage.
+REQUIRED_LABELS = {
+    "cloud-file-parity": ("file", "worker"),
+    "cloud-hc-formats": ("file", "worker"),
+    "cloud-text-protocols": ("text", "worker"),
+    "tls-ev2ray": ("file", "decoder"),
+    "server-catalog-worker": ("catalog", "worker"),
+    "catnet-catalog": ("catalog", "cli"),
+    "http-conexion-catalog": ("catalog", "cli"),
+    "http-conexion-refresh": ("catalog", "cli"),
+    "namo-catalog": ("catalog", "cli"),
+    "ha-unlocked-export": ("export", "export"),
+    "c8-worker-bridge": ("file", "worker"),
+    "server-vpn-transport": ("transport", "handler"),
+    "snapshot-and-chunks": ("catalog", "web"),
+    "server-catalog-route": ("catalog", "web"),
+    "unlocked-web-policy": ("export", "web"),
+    "http-conexion-web": ("catalog", "web"),
+    "xxpicore-web": ("catalog", "web"),
+    "c10-catalog-watch": ("transport", "web"),
+    "catalog-edition-web": ("catalog", "web"),
+}
+
+
 class RegressionConfigError(ValueError):
     pass
 
@@ -97,8 +122,7 @@ def validate_matrix(matrix: dict, root: Path) -> list[dict]:
             or item.get("min_tests", 0) < minimum
             or item.get("claims_real_vendor_verified") is not False
             or item.get("fixture_classification") != "SYNTHETIC_OR_SANITIZED_OFFLINE"
-            or item.get("format") not in REQUIRED_FORMATS
-            or item.get("consumer") not in REQUIRED_CONSUMERS
+            or (item.get("format"), item.get("consumer")) != REQUIRED_LABELS[ident]
             or not isinstance(paths, list) or not paths or len(set(paths)) != len(paths)):
             raise RegressionConfigError("P08 suite contract changed: " + ident)
         if not (root / expected_path).is_file() or (root / expected_path).is_symlink():
