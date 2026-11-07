@@ -258,4 +258,6 @@
     <string name="apk_qa_uploading">Отправка APK…</string>
     <string name="apk_qa_processing">Анализ на сервере…</string>
     <string name="apk_qa_report">Предварительный статический отчёт</string>
+    <string name="apk_qa_copy_device_id">Скопировать ID тестового устройства</string>
+    <string name="apk_qa_device_id_copied">ID тестового устройства скопирован</string>
 </resources>
