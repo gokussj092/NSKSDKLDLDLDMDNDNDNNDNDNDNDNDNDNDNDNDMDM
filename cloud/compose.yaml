@@ -62,6 +62,9 @@ services:
       CLOUD_SITE_PUBLIC_ORIGIN: ${CLOUD_SITE_PUBLIC_ORIGIN:-}
       CLOUD_API_PUBLIC_ORIGIN: ${CLOUD_API_PUBLIC_ORIGIN:-}
       CLOUD_SUPPORT_EMAIL: ${CLOUD_SUPPORT_EMAIL:-soporte@spdecode.xyz}
+      # Owner-opt-in APK static QA without commercial accounts, disabled by default.
+      CLOUD_APK_QA_ENABLED: ${CLOUD_APK_QA_ENABLED:-false}
+      CLOUD_APK_QA_INTERNAL_TOKEN: ${CLOUD_APK_QA_INTERNAL_TOKEN:-}
       # C3.5 provider secrets are strictly backend-only; never NEXT_PUBLIC_*.
       CLOUD_HTTP_CUSTOM_IMPORT_ENABLED: ${CLOUD_HTTP_CUSTOM_IMPORT_ENABLED:-true}
       CLOUD_EHI_IMPORT_ENABLED: ${CLOUD_EHI_IMPORT_ENABLED:-false}
@@ -95,6 +98,7 @@ services:
     networks:
       - edge
       - private
+      - apk-private
     depends_on:
       decoder-worker:
         condition: service_healthy
@@ -116,6 +120,37 @@ services:
       timeout: 5s
       retries: 4
       start_period: 30s
+
+  # Opt-in private APK QA lab: independent from the production decoder-worker.
+  # Starts only with: docker compose --profile apk-qa ...
+  # Never mount the cloud.env file, keyrings, Redis or host Docker socket here.
+  apk-qa:
+    profiles: ["apk-qa"]
+    build:
+      context: ..
+      dockerfile: cloud/apk_analysis/Dockerfile.qa
+    restart: unless-stopped
+    init: true
+    user: "65532:65532"
+    environment:
+      SPDECODE_APK_QA_INTERNAL_TOKEN: ${CLOUD_APK_QA_INTERNAL_TOKEN:-}
+      SPDECODE_APK_QA_ROOT: /var/lib/spdecode/apkqa
+    volumes:
+      - apk-qa-jobs:/var/lib/spdecode/apkqa:rw
+    networks: [apk-private]
+    read_only: true
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 320m
+    cpus: 0.8
+    pids_limit: 48
+    tmpfs:
+      - /tmp:size=48m,noexec,nosuid,nodev
+    healthcheck:
+      test: ["CMD","python","-c","import urllib.request;urllib.request.urlopen('http://127.0.0.1:8792/health',timeout=3).read()"]
+      interval: 20s
+      timeout: 5s
+      retries: 4
 
   key-attestation:
     profiles: ["hardware-security"]
@@ -195,8 +230,11 @@ volumes:
   provider-control: {}
   catalog-snapshots: {}
   notice-feed: {}
+  apk-qa-jobs: {}
 
 networks:
   edge: {}
   private:
+    internal: true
+  apk-private:
     internal: true
