@@ -116,6 +116,18 @@ class P08RegressionTests(unittest.TestCase):
         self.assertNotIn("stderr", result)
         self.assertNotIn("stdout", result)
 
+    def test_isolated_worker_suite_recreates_actual_private_module_path(self):
+        suite = next(x for x in self.matrix["suites"]
+                     if x["id"] == "server-vpn-transport")
+        with patch.object(p08.subprocess, "run", return_value=subprocess.CompletedProcess(
+                args=[], returncode=0, stdout="",
+                stderr="Ran 2 tests in 0.002s\n\nOK")) as runner:
+            result = p08.run_suite(self.root, suite, 3)
+        self.assertEqual(result["status"], "PASS")
+        context = runner.call_args.kwargs["env"]["PYTHONPATH"].split(p08.os.pathsep)
+        self.assertIn(str(self.root / "cloud/workers/python"), context)
+        self.assertEqual(runner.call_args.kwargs["cwd"], self.root)
+
     def test_skipped_runtime_test_fails_closed(self):
         suite = self.variants()["suites"][0]
         with patch.object(p08.subprocess, "run", return_value=subprocess.CompletedProcess(
