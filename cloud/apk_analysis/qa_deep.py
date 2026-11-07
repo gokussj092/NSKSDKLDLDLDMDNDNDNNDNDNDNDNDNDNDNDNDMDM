@@ -16,6 +16,7 @@ import tempfile
 import zipfile
 
 from .input_gate import DEX, GateError
+from .qa_dex_bytecode import FRAMEWORK_PREFIXES, observe_method_code
 
 MAX_DISPLAY = 32
 MAX_NATIVE_DISPLAY = 48
@@ -144,11 +145,18 @@ def _dex_info(file, size:int, apk:str, name:str, digest:str) -> dict:
                 key=_u32(mm,methods_off+i*8+4)
                 method=_dex_string(mm,key,strings,strings_off)
                 if not RELEVANT_METHOD.search(method):continue
+                descriptor=typename(cls)
+                if descriptor.startswith(FRAMEWORK_PREFIXES):continue
                 if len(data["candidateMethods"])<MAX_SAMPLE_METHODS:
                     data["candidateMethods"].append({
-                        "class":typename(cls)[:144],"name":method[:80],
+                        "class":descriptor[:144],"name":method[:80],
                         "evidence":"METHOD_NAME_ONLY"})
             except (ValueError,IndexError):continue
+        data.update(observe_method_code(
+            mm,classes=classes,classes_off=classes_off,
+            methods=methods,methods_off=methods_off,
+            string_name=lambda idx:_dex_string(mm,idx,strings,strings_off),
+            class_name=typename))
         data["tableStatus"]="PARSED"
         data["shortClassNames"]=short
         data["classNameHeuristic"]="POSSIBLE_OBFUSCATION_NOT_PROVEN" if classes>=12 and short*2>classes else "NOT_ESTABLISHED"

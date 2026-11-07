@@ -21,6 +21,11 @@ def dex_fixture():
     struct.pack_into("<I",buf,0x90,0)
     struct.pack_into("<HHI",buf,0x94,0,0,1)
     struct.pack_into("<I",buf,0x9c,0)
+    # DEX class_data_item containing one method with a real code_item.
+    struct.pack_into("<I",buf,0x9c+24,0x170)
+    buf[0x170:0x178]=b"\x00\x00\x01\x00\x00\x01\x90\x03"
+    struct.pack_into("<HHHHII",buf,0x190,2,1,1,0,0,3)
+    struct.pack_into("<3H",buf,0x1a0,0x0012,0x000e,0x0000)
     at=0xc0
     for i,s in enumerate(strings):
         struct.pack_into("<I",buf,0x70+i*4,at)
@@ -79,6 +84,11 @@ class F7DeepReports(unittest.TestCase):
         self.assertEqual(entry["methods"],1)
         self.assertEqual(entry["sampledClasses"],["Lcom/example/Crypto;"])
         self.assertEqual(entry["candidateMethods"][0]["name"],"decryptConfiguration")
+        self.assertEqual(entry["methodCodeStatus"],"PARSED")
+        self.assertEqual(entry["candidateCodeItems"],1)
+        self.assertEqual(entry["methodCodeEvidence"][0]["status"],"CODE_ITEM_HASHED")
+        self.assertEqual(entry["methodCodeEvidence"][0]["dalvikCodeUnits"],3)
+        self.assertEqual(len(entry["methodCodeEvidence"][0]["bytecodeSha256"]),64)
         self.assertIn("AES/GCM/NoPadding",entry["cryptoReferences"])
         self.assertFalse(report["analysis"]["vendorMethodValidated"])
         self.assertFalse(report["analysis"]["jadxExecuted"])

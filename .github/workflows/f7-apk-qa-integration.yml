@@ -19,7 +19,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Compile actual analyzer sources without executing uploaded code
-        run: python -m compileall -q cloud/apk_analysis/qa_service.py cloud/apk_analysis/qa_static.py cloud/apk_analysis/qa_deep.py cloud/apk_analysis/qa_tooling.py
+        run: python -m compileall -q cloud/apk_analysis/qa_service.py cloud/apk_analysis/qa_static.py cloud/apk_analysis/qa_deep.py cloud/apk_analysis/qa_dex_bytecode.py cloud/apk_analysis/qa_tooling.py
       - name: Check VPS QA activation Bash syntax
         run: bash -n cloud/infra/vps/spdecodectl
       - name: Test APK QA lifecycle, native attachment constraints, Android and VPS
