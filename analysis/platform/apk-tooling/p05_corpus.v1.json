@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "subphase": "F7-A0-P05",
-  "status": "CI_LAB_CORPUS_NOT_CUSTOMER_COMPATIBILITY_CERTIFICATION",
+  "status": "OWNED_APK_AND_APKS_LAB_VALIDATED_THIRD_PARTY_PENDING",
   "author": "SP-DECODE first-party CI",
   "policy": "NEVER_COMMIT_PRIVATE_APKS_APKS_XAPK_OR_SIGNING_KEYS",
   "fixture_source": "scripts/ci/build_p05_owned_apk.sh",
@@ -16,7 +16,7 @@
       "rights": "FIRST_PARTY_SYNTHETIC",
       "real_dex": true,
       "expected": "INPUT_ACCEPTED_AND_ORIGINAL_INSPECTOR_EXTRACTS_DEX",
-      "status": "CI_RUN_REQUIRED"
+      "status": "VERIFIED_CI_RUN_42326911352"
     },
     {
       "id": "OWNED-APKS-WRAPPER",
@@ -25,7 +25,7 @@
       "rights": "FIRST_PARTY_SYNTHETIC",
       "installable_bundletool_split_set": false,
       "expected": "INPUT_ACCEPTED_AND_ORIGINAL_INSPECTOR_EXTRACTS_DEX",
-      "status": "CI_RUN_REQUIRED"
+      "status": "VERIFIED_CI_RUN_42326911352"
     },
     {
       "id": "ZIP-RATIO-BOMB",
@@ -33,7 +33,7 @@
       "generation": "synthetic 1MiB zeros compressed",
       "rights": "FIRST_PARTY_SYNTHETIC",
       "expected": "REJECTED_ZIP_RATIO",
-      "status": "CI_RUN_REQUIRED"
+      "status": "VERIFIED_CI_RUN_42326911352"
     },
     {
       "id": "ZIP-TRAVERSAL",
@@ -98,15 +98,45 @@
     "pip_install_per_job": false
   },
   "pending_production_gates": [
-    "AUTHORIZED_THIRD_PARTY_APK_WITH_HASH_AND_CONSENT",
-    "AUTHENTIC_BUNDLETOOL_APKS_SPLITS",
-    "JADX_REAL_DEX_DECOMPILATION_CHECKSUM_PRELOAD",
-    "ARM64_ELF_TEST",
-    "MALFORMED_DEX_AND_ELF_ABI",
-    "CRASH_TIMEOUT_RETRY_AND_RESOURCE_LIMITS",
-    "HOST_DISK_QUOTAS",
-    "DEDICATED_VM_PERSISTENT_CACHES",
-    "API_UPLOAD_AUTH_WORKER_JOB_ORCHESTRATOR",
-    "END_TO_END_ANDROID_AND_CREDIT_SUPPORT"
-  ]
+    "",
+    "",
+    "JADX_REAL_THIRD_PARTY_AUTHORIZED_DEX_ORACLE",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ],
+  "ci_evidence": {
+    "owned_lab_run": 42326911352,
+    "owned_lab_conclusion": "SUCCESS",
+    "method_evidence_run": 42326911348,
+    "method_evidence_conclusion": "SUCCESS",
+    "static_regression_count": 21,
+    "combined_a0_regression_count": 90,
+    "verified_original_inspect_apk": true,
+    "verified_original_decompile_jadx": true,
+    "jadx_version": "1.5.6",
+    "jadx_resource_checksum_verified": true,
+    "jadx_resource_reused_without_network": true,
+    "verified_signed_first_party_apk": true,
+    "verified_real_dex": true,
+    "verified_authentic_bundletool_apks": false,
+    "verified_third_party_apk": false,
+    "api_or_production_connected": false,
+    "previous_lab_failure_causes": [
+      "ZIP_PERMISSION_ONLY_MODE_IN_NEW_GATE",
+      "CI_ROOT_READER_OF_PRIVATE_0600_OUTPUT",
+      "MAINTENANCE_TMPFS_64_MIB",
+      "JADX_USER_HOME_ON_READ_ONLY_ROOT"
+    ],
+    "fixed_in": [
+      "cloud/apk_analysis/input_gate.py",
+      ".github/workflows/f7-a0-p05-apk-lab.yml",
+      "cloud/apk_analysis/compose.yaml",
+      "cloud/apk_analysis/Dockerfile"
+    ]
+  }
 }

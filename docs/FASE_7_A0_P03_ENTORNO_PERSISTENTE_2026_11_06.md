@@ -100,3 +100,7 @@ Los verificadores indicaron **63/63 scripts originales intactos**, 2 perfiles ca
 ### Ajuste de capacidad descubierto por P05
 
 La descarga comprobada del archivo ZIP oficial de JADX 1.5.6 agotó el tmpfs de **64 MB** del contenedor de **mantenimiento** (run 42326083344). Para conservar el comportamiento original `decompile.py --install` y **sin modificar ninguna herramienta**, se elevó únicamente el tmpfs de `apk-resource-preload` a **128 MB**. No se alteró el tmpfs de 64 MB del sandbox que ejecuta análisis de usuario. La precarga se verifica independientemente en [F7-A0-P05](FASE_7_A0_P05_CORPUS_APK_APKS_Y_LIMITES_2026_11_06.md).
+
+### P05 — Compatibilidad de JADX con rootfs read-only
+
+En el laboratorio se confirmó que JADX 1.5.6 inicializaba su configuración dentro de `/opt/spdecode` y fallaba al no poder escribir. Sin alterar `decompile.py`, el Dockerfile asigna `HOME`, `XDG_CONFIG_HOME`, `XDG_CACHE_HOME`, `XDG_DATA_HOME` y `JAVA_TOOL_OPTIONS=-Duser.home=/tmp` a un tmpfs por contenedor. Esto conservó rootfs de solo lectura, UID no root y falta de red. **La prueba real de decompilación del APK propio terminó con `JADX exit=0` en [run 42326911352](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42326911352)**.

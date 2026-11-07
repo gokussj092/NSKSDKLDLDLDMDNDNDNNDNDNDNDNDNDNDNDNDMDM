@@ -78,3 +78,15 @@ Esta fase añade tests, herramientas de QA y documentación, **no** modifica `sc
 - [F7-A0 Method Evidence run 42325858523](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42325858523): **SUCCESS**, incluidas 21 pruebas adversas P05 agregadas al gate existente.
 
 **Importante:** esos resultados de laboratorio no acreditan análisis de una VPN real externa, funcionamiento de APKs enviados desde Android ni soporte automático de todos los scripts de Work. El entorno real y P05 quedan sujetos a pruebas adicionales.
+
+
+### Resultado final de las pruebas automáticas de P05
+
+El workflow [F7-A0-P05 APK Lab — #42326911352](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42326911352) concluyó **SUCCESS**. Incluye 21 pruebas adversas de ZIP/APKS, generación/firmado de APK Android propio con DEX real, inspección del APK y wrapper APKS con el **script original**, precarga del JAR oficial **JADX 1.5.6 con SHA-256 comprobado**, reutilización en contenedores **sin red** y **JADX exit=0** al descompilar ese DEX propio. El resultado decompilado no contiene código ajeno y no se subió como artefacto.
+
+El gate de evidencias [F7-A0 Method Evidence — #42326911348](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42326911348) concluyó **SUCCESS**, con **90 pruebas** distribuidas en 9 suites (11+6+7+9+5+7+20+4+21). Se verificó de nuevo 63/63 scripts originales intactos.
+
+**Incidencias reales corregidas sin alterar herramientas originales:** (1) nuevo filtro ZIP interpretaba permisos sin tipo como symlink; (2) runner CI no leía archivos privados 0600; (3) precarga JADX agotaba tmpfs de 64 MiB, cambiado **solo mantenimiento** a 128 MiB; (4) JADX intentaba escribir configuración en rootfs de solo lectura, ahora el Dockerfile asigna HOME/XDG y `java.user.home` a `/tmp` temporal. El sandbox conserva UID 65532, red deshabilitada, `read_only`, límites y caché externa de solo lectura.
+
+**Alcance:** APK firmado propio (real) y APKS de wrapper sintético; no es una certificación de APK VPN de terceros, split-set auténtico de bundletool, ELF ARM64 ni análisis automático desde Android. **P05 permanece PARCIAL** hasta esas pruebas y el despliegue aislado real A4/A5/A9.
+
