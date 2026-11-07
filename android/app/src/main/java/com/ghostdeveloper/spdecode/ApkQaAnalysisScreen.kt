@@ -8,6 +8,7 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Android
+import com.ghostdeveloper.spdecode.cloud.CloudApkQaClient
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -30,6 +31,7 @@ internal fun ApkQaAnalysisScreen(
     active:Boolean,phase:String,received:Long,total:Long,
     report:String?,error:String?,
     onPick:()->Unit,onCancel:()->Unit,onCopyDeviceId:()->Unit,
+    events:List<CloudApkQaClient.ActivityEvent> = emptyList(),
 ) {
     var authorized by rememberSaveable { mutableStateOf(false) }
     Column(Modifier.fillMaxSize().testTag("apk_qa_screen")
@@ -93,6 +95,46 @@ internal fun ApkQaAnalysisScreen(
                         color=QA_MUTED,fontSize=12.sp)
                     OutlinedButton(onClick=onCancel,modifier=Modifier.fillMaxWidth()) {
                         Text(stringResource(R.string.cancel))
+                    }
+                }
+            }
+        }
+        if(events.isNotEmpty()) {
+            Surface(color=QA_CARD,shape=RoundedCornerShape(14.dp),
+                border=BorderStroke(1.dp,QA_BORDER),modifier=Modifier.fillMaxWidth()
+                    .testTag("apk_qa_activity")) {
+                Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
+                    Text(stringResource(R.string.apk_qa_activity_title),color=QA_WHITE,
+                        fontWeight=FontWeight.SemiBold,fontSize=16.sp)
+                    events.sortedBy { it.sequence }.forEach { entry ->
+                        val label=when(entry.code) {
+                            "UPLOAD_STARTED"->R.string.apk_qa_event_upload_started
+                            "UPLOAD_RECEIVED"->R.string.apk_qa_event_upload_received
+                            "UPLOAD_REJECTED"->R.string.apk_qa_event_upload_rejected
+                            "PACKAGE_VALIDATION"->R.string.apk_qa_event_package_validation
+                            "PACKAGE_VALIDATED"->R.string.apk_qa_event_package_validated
+                            "COMPONENT_INSPECTION"->R.string.apk_qa_event_component_inspection
+                            "COMPONENTS_INSPECTED"->R.string.apk_qa_event_components_inspected
+                            "REPORT_PREPARATION"->R.string.apk_qa_event_report_preparation
+                            "REPORT_READY"->R.string.apk_qa_event_report_ready
+                            "ANALYSIS_FAILED"->R.string.apk_qa_event_analysis_failed
+                            else->null
+                        }
+                        if(label!=null) Row(verticalAlignment=Alignment.CenterVertically) {
+                            val tint=when(entry.status) {
+                                "DONE"->Color(0xFF66B99A)
+                                "FAILED"->Color(0xFFFF9999)
+                                else->Color(0xFF84B8EA)
+                            }
+                            Text(when(entry.status) {
+                                "DONE"->"✓"
+                                "FAILED"->"!"
+                                else->"•"
+                            },color=tint,fontSize=18.sp)
+                            Spacer(Modifier.width(10.dp))
+                            Text(stringResource(label),color=QA_WHITE,
+                                fontSize=13.sp,lineHeight=18.sp)
+                        }
                     }
                 }
             }
