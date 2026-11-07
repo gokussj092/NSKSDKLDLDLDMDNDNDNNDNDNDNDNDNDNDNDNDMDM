@@ -248,4 +248,14 @@
     <string name="catalog_transfer_resume">Coba lagi / lanjutkan</string>
     <string name="catalog_transfer_discard">Hapus unduhan parsial</string>
     <string name="catalog_transfer_retention">Fragmen terverifikasi disimpan terenkripsi hingga 7 hari.</string>
+    <string name="apk_qa_title">Analisis APK — mode uji</string>
+    <string name="apk_qa_description">Pemeriksaan statis nyata untuk APK/APKS. Tidak perlu login atau kredit. Aplikasi tidak dipasang maupun dijalankan.</string>
+    <string name="apk_qa_consent">APK ini milik saya atau saya punya izin menganalisisnya.</string>
+    <string name="apk_qa_pick">Pilih APK atau APKS</string>
+    <string name="apk_qa_no_charge">Tidak ada kredit yang dipotong selama pengujian.</string>
+    <string name="apk_qa_limit">Ukuran maksimum: 96 MiB.</string>
+    <string name="apk_qa_reading">Membaca APK…</string>
+    <string name="apk_qa_uploading">Mengunggah APK…</string>
+    <string name="apk_qa_processing">Menganalisis di server…</string>
+    <string name="apk_qa_report">Laporan statis awal</string>
 </resources>
