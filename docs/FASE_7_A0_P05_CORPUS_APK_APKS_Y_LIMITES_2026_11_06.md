@@ -97,16 +97,16 @@ Se añadieron `scripts/ci/p05_sandbox_faults.py`, `tests/test_a0_p05_failure_rec
 
 | Caso | Qué se comprueba | Estado |
 | --- | --- | --- |
-| Sandbox Docker | UID 65532, capacidades vacías, rootfs de solo lectura, sin red, /tmp no ejecutable; cuota CPU/PID | CI en validación |
-| Memoria | Cgroup real de 96 MiB rechaza presión de páginas (se espera exit 137) | CI en validación |
-| Disco | tmpfs real de 8 MiB produce ENOSPC bajo presión acotada | CI en validación |
-| Tiempo e interrupción | Detención forzada de contenedor de prueba tras deadline y comprobación de no dejar contenedor huérfano | CI en validación |
-| Recursos | Comprobar que JADX con SHA-256 sigue disponible desde volumen de solo lectura y sin red después de fallos | CI en validación |
-| Host / SIGKILL | Proceso propio interrumpido; estado IN_PROGRESS, entrada y recursos permanecen | CI en validación |
-| Estado / ENOSPC | Fallo atómico de escritura simulado: el job no avanza ni se limpia | CI en validación |
-| Soporte humano | AWAITING_HUMAN nunca pasa al recolector automático | CI en validación |
-| Recibo y limpieza | Tras comprobación de integridad por oráculo de test y checkpoint confirmado, se elimina solo el workspace; conserva el resultado y la caché | CI en validación |
-| Formatos | .apk y .apks admitidos por gate; .zip y .xapk rechazados explícitamente | CI en validación |
+| Sandbox Docker | UID 65532, capacidades vacías, rootfs de solo lectura, sin red, /tmp no ejecutable; cuota CPU/PID | PASS — CI 42330901519 / 42330901411 |
+| Memoria | Cgroup real de 96 MiB rechaza presión de páginas (se espera exit 137) | PASS — CI 42330901519 / 42330901411 |
+| Disco | tmpfs real de 8 MiB produce ENOSPC bajo presión acotada | PASS — CI 42330901519 / 42330901411 |
+| Tiempo e interrupción | Detención forzada de contenedor de prueba tras deadline y comprobación de no dejar contenedor huérfano | PASS — CI 42330901519 / 42330901411 |
+| Recursos | Comprobar que JADX con SHA-256 sigue disponible desde volumen de solo lectura y sin red después de fallos | PASS — CI 42330901519 / 42330901411 |
+| Host / SIGKILL | Proceso propio interrumpido; estado IN_PROGRESS, entrada y recursos permanecen | PASS — CI 42330901519 / 42330901411 |
+| Estado / ENOSPC | Fallo atómico de escritura simulado: el job no avanza ni se limpia | PASS — CI 42330901519 / 42330901411 |
+| Soporte humano | AWAITING_HUMAN nunca pasa al recolector automático | PASS — CI 42330901519 / 42330901411 |
+| Recibo y limpieza | Tras comprobación de integridad por oráculo de test y checkpoint confirmado, se elimina solo el workspace; conserva el resultado y la caché | PASS — CI 42330901519 / 42330901411 |
+| Formatos | .apk y .apks admitidos por gate; .zip y .xapk rechazados explícitamente | PASS — CI 42330901519 / 42330901411 |
 
 El test del oráculo de persistencia es **sintético**: NO acredita almacenamiento cifrado ni comprobación de propietario/tenant, que siguen siendo requisitos A4/A5. La inyección Docker es una prueba real de límites **en el runner efímero de GitHub**, NO certifica rendimiento sostenido ni persistencia de una VM dedicada. La CPU se inspecciona mediante cgroup cuando está disponible, no mediante benchmark estable. El disparador usa exclusivamente código/artefactos propios de CI, sin ejecutar APK de usuarios ni métodos VPN.
 
@@ -132,3 +132,9 @@ P05 sigue **PARCIAL**. No se han autorizado ni ejecutado análisis de APK VPN ex
 ### Gate de evidencias ampliado: 95 pruebas
 
 [F7-A0 Method Evidence, run 42330901411](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42330901411), commit `bf6658398bedefcfea567d40d19c6454558ec17b`: **SUCCESS**. En logs: 11 + 6 + 7 + 9 + 5 + 7 + 20 + 4 + 22 + 4 = **95 pruebas** en diez suites, con 22 casos adversos de formato y 4 de recuperación. El mapa dinámico confirma `tools=63 unchanged=63 python=61 js=2 approved=0`. Las extensiones `.zip`/`.xapk` quedan rechazadas en el gate de servidor; la aplicación Android todavía no tiene la nueva subida habilitada. **No se otorga autorización para automatización de esas herramientas.**
+
+### Verificación final del corpus de prueba (sin despliegue)
+
+[F7-A0-P05 APK Lab run 42330901519](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDNDMDM/actions/runs/42330901519), sobre `bf665839`, **SUCCESS**: 22 pruebas adversas de APK/APKS, 4 pruebas de SIGKILL/recuperación/soporte humano, compilación y firmado propio, inspector original, JADX offline y los cinco controles Docker (seguridad/CPU/PID, ENOSPC, cgroup OOM, eliminación tras timeout, cache persistente verificada). [F7-A0 Method Evidence run 42330901411](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42330901411), mismo SHA, **SUCCESS, 95 pruebas**, 63/63 herramientas intactas. La ejecución general Validate SP-DECODE de este SHA se sigue rastreando por separado; no afirmar que haya terminado si continúa en cola.
+
+**Decisión:** P05 permanece PARCIAL, sin análisis de APK ajenas, sin integración de subida Android y sin autorización de ejecución automática de herramientas. Se requiere corpus real consentido, bundletool auténtico, ARM64/ELF, estrés concurrencia/reinicio de VM y endpoints A4/A5/A9 antes de un cierre.
