@@ -174,7 +174,14 @@
     "last_fault_workflow_sha": "562b567dd986ceff5eaa87f2bc5b84e54a0ea840",
     "last_full_evidence_run": 42330901411,
     "last_full_evidence_status": "SUCCESS",
-    "tool_inventory_integrity": "63_OF_63_UNCHANGED"
+    "tool_inventory_integrity": "63_OF_63_UNCHANGED",
+    "latest_full_lab_run": 42330901519,
+    "latest_full_lab_conclusion": "SUCCESS",
+    "latest_full_lab_sha": "bf6658398bedefcfea567d40d19c6454558ec17b",
+    "latest_real_zip_boundary_tests": 22,
+    "latest_host_crash_recovery_tests": 4,
+    "latest_docker_fault_checks": 5,
+    "latest_owned_dex_jadx_status": "OFFLINE_HASH_VERIFIED_SUCCESS"
   },
   "android_extensions": {
     "enabled": [
