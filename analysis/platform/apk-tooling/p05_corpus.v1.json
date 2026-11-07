@@ -89,7 +89,7 @@
       "generation": "CI Docker first-party scripts",
       "rights": "FIRST_PARTY_SYNTHETIC",
       "expected": "MEMORY_OOM_DISK_ENOSPC_TIMEOUT_REMOVAL_SANDBOX_AND_OFFLINE_CACHE",
-      "status": "PENDING_CI"
+      "status": "VERIFIED_CI_RUN_42330872990"
     },
     {
       "id": "HOST-SIGKILL-RECOVERY",
@@ -97,7 +97,7 @@
       "generation": "CI temporary first-party jobs",
       "rights": "FIRST_PARTY_SYNTHETIC",
       "expected": "UNFINISHED_AND_HUMAN_CASES_RETAINED_DURABLE_RESULT_REAPED",
-      "status": "PENDING_CI"
+      "status": "VERIFIED_CI_RUN_42330872990"
     }
   ],
   "input_limits": {
@@ -162,10 +162,16 @@
       "cloud/apk_analysis/compose.yaml",
       "cloud/apk_analysis/Dockerfile"
     ],
-    "new_fault_suite_status": "PENDING_GITHUB_ACTIONS",
-    "real_memory_disk_timeout_tests_verified": false,
-    "real_sigkill_host_recovery_verified": false,
-    "real_automated_android_analysis_verified": false
+    "new_fault_suite_status": "VERIFIED_CI_RUN_42330872990",
+    "real_memory_disk_timeout_tests_verified": true,
+    "real_sigkill_host_recovery_verified": true,
+    "real_automated_android_analysis_verified": false,
+    "real_memory_disk_timeout_scope": "DOCKER_EPHEMERAL_FIRST_PARTY_CI",
+    "real_sigkill_host_recovery_scope": "HOST_PROCESS_FIRST_PARTY_CI_AND_SYNTHETIC_DURABLE_RESULT_ORACLE",
+    "last_fault_run": 42330872990,
+    "host_recovery_tests_passed": 4,
+    "docker_fault_checks_passed": 5,
+    "last_fault_workflow_sha": "562b567dd986ceff5eaa87f2bc5b84e54a0ea840"
   },
   "android_extensions": {
     "enabled": [
