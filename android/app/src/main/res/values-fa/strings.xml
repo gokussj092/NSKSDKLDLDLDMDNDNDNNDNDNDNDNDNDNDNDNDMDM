@@ -248,4 +248,14 @@
     <string name="catalog_transfer_resume">تلاش دوباره / ادامه</string>
     <string name="catalog_transfer_discard">حذف دانلود ناقص</string>
     <string name="catalog_transfer_retention">بخش‌های تأییدشده تا ۷ روز به‌صورت رمزگذاری‌شده نگهداری می‌شوند.</string>
+    <string name="apk_qa_title">تحلیل APK — حالت آزمایشی</string>
+    <string name="apk_qa_description">بررسی ایستای واقعی APK/APKS. ورود یا اعتبار لازم نیست. برنامه نصب یا اجرا نمی‌شود.</string>
+    <string name="apk_qa_consent">مالک این APK هستم یا مجوز تحلیل آن را دارم.</string>
+    <string name="apk_qa_pick">انتخاب APK یا APKS</string>
+    <string name="apk_qa_no_charge">در حالت آزمایشی اعتباری کسر نمی‌شود.</string>
+    <string name="apk_qa_limit">حداکثر حجم فایل: 96 MiB.</string>
+    <string name="apk_qa_reading">در حال خواندن APK…</string>
+    <string name="apk_qa_uploading">در حال ارسال APK…</string>
+    <string name="apk_qa_processing">در حال تحلیل در سرور…</string>
+    <string name="apk_qa_report">گزارش اولیه تحلیل ایستا</string>
 </resources>
