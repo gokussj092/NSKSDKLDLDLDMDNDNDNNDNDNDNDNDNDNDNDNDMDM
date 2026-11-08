@@ -57,6 +57,37 @@ def main(exe):
                 missing=call(exe,make_file(locked=locked,protected=protected),password,"")
                 check(missing.returncode!=0,"missing HWID accepted")
                 passed+=1
+    # Historical HCCFG n1/n7 and v3 n8 HWID/dual-credential envelopes.
+    # These are independent of the build-899 HCX4 nonce/prestate KDF.
+    from tests.golden.hc_sip_new_variants import (
+        hccfg_file, hccfg_hwid_file, SYNTHETIC_HWID, S4_SYNTHETIC_PASSWORD)
+    from decoders.Python import _hc_hccfg as historical
+    for schema,schedule in ((1,"n1"),(2,"n1"),(5,"n1"),(7,"n7")):
+        for protected in (False,True):
+            pw=S4_SYNTHETIC_PASSWORD if protected else ""
+            source=hccfg_file(schema=schema,schedule=schedule,password=pw or None)
+            ref=historical.decrypt(source,password=pw or None)
+            result=call(exe,source,pw,"")
+            check(result.returncode==0,(schema,schedule,protected,result.stderr.decode(errors="replace")[:300]))
+            check(json.loads(result.stdout)==ref,(schema,schedule,protected,"historical mismatch"))
+            passed+=1
+    for protected in (False,True):
+        pw=S4_SYNTHETIC_PASSWORD if protected else ""
+        source=hccfg_hwid_file(password=pw or None)
+        expected=historical.decrypt(source,password=pw or None,hwid=SYNTHETIC_HWID)
+        result=call(exe,source,pw,SYNTHETIC_HWID)
+        check(result.returncode==0,(protected,result.stderr.decode(errors="replace")[:300]))
+        check(json.loads(result.stdout)==expected,(protected,"HWID/dual mismatch"))
+        passed+=1
+        for layer in ("slot","main","profile","hpr1","sidecar"):
+            invalid=call(exe,hccfg_hwid_file(password=pw or None,tamper_layer=layer),pw,SYNTHETIC_HWID)
+            check(invalid.returncode!=0,("historical tamper accepted",layer))
+            passed+=1
+        for wrongpw,wronghwid in ((pw,"B"*32),("bad" if pw else pw,SYNTHETIC_HWID)):
+            if wrongpw==pw and wronghwid==SYNTHETIC_HWID:continue
+            invalid=call(exe,source,wrongpw,wronghwid)
+            check(invalid.returncode!=0,("historical wrong credential accepted"))
+            passed+=1
     # Independent historical XOR + original ChaCha20 (64-bit nonce) vectors.
     # Unlike HCX4 these exporters have no authenticated tag, so test structural
     # parsing and exact clear fields rather than claiming AEAD security.
