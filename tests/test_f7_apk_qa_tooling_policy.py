@@ -37,6 +37,31 @@ class F7ToolingIsolationPolicy(unittest.TestCase):
         self.assertNotIn("env={**os.environ",tool)
         self.assertIn('SPDECODE_APK_QA_TOOLS_REVIEWED',tool)
 
+    def test_lite_toolchain_is_private_resource_limited_and_never_includes_ghidra(self):
+        compose=source("cloud/compose.yaml")
+        block=compose.split("  apk-tools:\n",1)[1].split("  key-attestation:",1)[0]
+        self.assertIn("SPDECODE_APK_TOOLS_MEM_LIMIT:-4096m",block)
+        self.assertIn("SPDECODE_APK_TOOLS_CPUS:-1.8",block)
+        self.assertIn("SPDECODE_APK_QA_LITE",block)
+        self.assertIn("apk-tools-scratch:/analysis:rw",block)
+        self.assertNotIn("\n    ports:",block)
+        docker=source("cloud/apk_analysis/Dockerfile.qa-lite")
+        self.assertIn("eclipse-temurin:21-jre-jammy",docker)
+        self.assertIn("scripts/apk_analysis/decompile.py --install",docker)
+        self.assertNotIn("ghidra/releases",docker)
+        self.assertIn("USER 65532:65532",docker)
+        tooling=source("cloud/apk_analysis/qa_tooling.py")
+        self.assertIn('"SPDECODE_APK_QA_LITE"',tooling)
+        self.assertIn('"-Xmx512m"',tooling)
+        self.assertIn('"DISABLED_IN_LITE_PROFILE"',tooling)
+        self.assertIn("base,libs,total_native,oversized_native=_base_and_libs(source,scratch,lite=lite)",tooling)
+        self.assertIn("not lite and bool(",tooling)
+        cli=source("cloud/infra/vps/spdecodectl")
+        self.assertIn("apk_qa_enable_lite(){",cli)
+        self.assertIn("enable-lite) apk_qa_enable_lite;;",cli)
+        self.assertIn("MemAvailable",cli)
+        self.assertIn("1100000",cli)
+
     def test_ci_runs_only_own_fixture_java_and_elf_not_app_release(self):
         ci=source(".github/workflows/f7-apk-tools-image.yml")
         self.assertIn("OwnedFixture.java",ci)
