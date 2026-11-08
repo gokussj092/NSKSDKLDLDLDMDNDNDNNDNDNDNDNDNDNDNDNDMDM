@@ -41,6 +41,13 @@ def main(exe):
         "profileNote":"synthetic-parity-test",
     },("standard mismatch",obj))
     count+=1
+    unicode_message="Unicode: español 日本語 🧪"
+    unifile,_=standard(unicode_message)
+    uniresult=invoke(exe,unifile)
+    require(uniresult.returncode==0,("unicode",uniresult.stderr.decode(errors="replace")[:250]))
+    require(json.loads(uniresult.stdout)["configMessage"]==unicode_message,
+            "EHI Unicode message changed during native decoding")
+    count+=1
     bad=bytearray(original);bad[-20]^=0x40
     require(invoke(exe,bad).returncode!=0,"standard corrupted file accepted")
     count+=1
