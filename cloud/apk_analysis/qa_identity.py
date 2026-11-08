@@ -81,6 +81,7 @@ def _parse(axml: bytes) -> dict:
     pool = []
     package = None
     label = None
+    label_ref = None
     off = 8
     while off + 8 <= limit:
         kind = _u16(axml, off)
@@ -111,11 +112,88 @@ def _parse(axml: bytes) -> dict:
                     value = pool[value_idx] if value_idx < len(pool) else None
                     if tag == "manifest" and name == "package" and value and PKG.fullmatch(value):
                         package = value
-                    if tag == "application" and name == "label" and value and 0 < len(value) <= 100:
-                        label = value
+                    if tag == "application" and name == "label":
+                        if value and 0 < len(value) <= 100:
+                            label = value
+                        elif data_type == 1:
+                            label_ref = data_idx
         off += length
     return {"packageName": package, "appName": label,
-            "identitySource": "COMPILED_ANDROID_MANIFEST" if package else "UNRESOLVED"}
+            "identitySource": "COMPILED_ANDROID_MANIFEST" if package else "UNRESOLVED",
+            "_labelResourceId": label_ref}
+
+
+
+def _resolve_label(arsc: bytes, resource_id: int) -> str | None:
+    """Resolve one literal TYPE_STRING resource, never execute resource code."""
+    if (len(arsc) < 12 or len(arsc) > 16 * 1024 * 1024 or
+        _u16(arsc, 0) != 2 or resource_id < 0x01000000):
+        return None
+    limit = min(len(arsc), _u32(arsc, 4))
+    strings: list[str] = []
+    cursor = _u16(arsc, 2)
+    if cursor < 12:
+        return None
+    while cursor + 8 <= limit:
+        kind = _u16(arsc, cursor)
+        head = _u16(arsc, cursor + 2)
+        size = _u32(arsc, cursor + 4)
+        if head < 8 or size < head or cursor + size > limit:
+            return None
+        if kind == 1:
+            strings = _strings(arsc, cursor, size)
+        elif kind == 0x0200 and head >= 12:
+            package_id = _u32(arsc, cursor + 8)
+            if package_id == resource_id >> 24:
+                pos = cursor + head
+                end = cursor + size
+                while pos + 8 <= end:
+                    child = _u16(arsc, pos)
+                    ch = _u16(arsc, pos + 2)
+                    length = _u32(arsc, pos + 4)
+                    if ch < 8 or length < ch or pos + length > end:
+                        break
+                    if child == 0x0201 and ch >= 20:
+                        type_id = arsc[pos + 8]
+                        index = resource_id & 0xffff
+                        count = _u32(arsc, pos + 12)
+                        start = _u32(arsc, pos + 16)
+                        if (type_id == (resource_id >> 16) & 0xff and
+                            index < count <= 65536 and
+                            pos + ch + count * 4 <= pos + length):
+                            entry_offset = _u32(arsc, pos + ch + index * 4)
+                            entry = pos + start + entry_offset
+                            if (entry_offset != 0xffffffff and entry + 16 <= pos + length and
+                                _u16(arsc, entry) >= 8 and
+                                (_u16(arsc, entry + 2) & 1) == 0 and
+                                arsc[entry + 11] == 3):
+                                value_index = _u32(arsc, entry + 12)
+                                if value_index < len(strings):
+                                    value = strings[value_index]
+                                    return value[:100] if 1 <= len(value) <= 100 else None
+                    pos += length
+        cursor += size
+    return None
+
+
+def _read_apk_identity(apk: zipfile.ZipFile) -> dict:
+    with apk.open("AndroidManifest.xml") as member:
+        xml = member.read(MAX_XML + 1)
+    if not 8 <= len(xml) <= MAX_XML:
+        raise ValueError("AXML_INVALID_SIZE")
+    result = _parse(xml)
+    ref = result.pop("_labelResourceId", None)
+    if not result["appName"] and ref is not None:
+        try:
+            with apk.open("resources.arsc") as member:
+                arsc = member.read(16 * 1024 * 1024 + 1)
+            name = _resolve_label(arsc, ref)
+            if name:
+                result["appName"] = name
+                result["identitySource"] = "MANIFEST_AND_ARSC_RESOURCE"
+        except (KeyError, OSError, ValueError, RuntimeError, zipfile.BadZipFile):
+            pass
+    return result
 
 
 def inspect_identity(source: Path, kind: str) -> dict:
@@ -123,8 +201,7 @@ def inspect_identity(source: Path, kind: str) -> dict:
     try:
         with zipfile.ZipFile(source) as outer:
             if kind == "APK":
-                with outer.open("AndroidManifest.xml") as member:
-                    xml = member.read(MAX_XML + 1)
+                return _read_apk_identity(outer)
             else:
                 members = [x for x in outer.infolist() if x.filename == "base.apk"]
                 if len(members) != 1 or members[0].file_size > MAX_BASE:
@@ -141,10 +218,6 @@ def inspect_identity(source: Path, kind: str) -> dict:
                         return fallback
                     spool.seek(0)
                     with zipfile.ZipFile(spool) as apk:
-                        with apk.open("AndroidManifest.xml") as member:
-                            xml = member.read(MAX_XML + 1)
-        if not 8 <= len(xml) <= MAX_XML:
-            return fallback
-        return _parse(xml)
+                        return _read_apk_identity(apk)
     except (OSError, KeyError, ValueError, RuntimeError, struct.error, zipfile.BadZipFile):
         return fallback
