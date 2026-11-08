@@ -68,6 +68,7 @@ private fun publicStages(events:List<CloudApkQaClient.ActivityEvent>):List<Publi
             listOf("metadata","dex","native").forEach { k ->
                 stages[k]?.let { stages[k]=it.copy(status="DONE") }
             }
+        }
         if(code in setOf("ADVANCED_ANALYSIS_COMPLETE","ADVANCED_ANALYSIS_PARTIAL",
                 "ADVANCED_ANALYSIS_SKIPPED")) {
             listOf("jadx","recovery","evidence").forEach { k ->
