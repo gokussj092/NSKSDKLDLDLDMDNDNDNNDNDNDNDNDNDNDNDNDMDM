@@ -143,5 +143,44 @@ class RecoveryTests(unittest.TestCase):
         self.assertEqual(graph["jadxRecoveredDexCount"], 1)
 
 
+    def test_scanner_preserves_app_owned_org_and_io_namespaces(self):
+        from cloud.apk_analysis.qa_jadx_refs import scan_jadx_sources
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            for rel in ("org/privateapp/Config.java", "io/privateapp/Config.java",
+                        "org/apache/Library.java"):
+                target = root / "sources" / rel
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text("public class Config { void process() {"
+                                  " Cipher.getInstance(\"AES\"); } }")
+            result = scan_jadx_sources(root)
+            self.assertEqual(result["sourceFilesInspected"], 2)
+            self.assertEqual(result["cryptoReferenceCounts"]["JCA_CIPHER"], 2)
+            self.assertFalse(result["methodValidated"])
+
+    def test_zero_exit_without_source_attempts_fallback(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            apk = self.make_apk(td, 1)
+            attempted = []
+            def runner(command, *, cwd, timeout, env, logfile):
+                mode = command[command.index("--decompilation-mode") + 1]
+                attempted.append(mode)
+                logfile.write_bytes(b"")
+                if mode == "fallback":
+                    folder = Path(command[command.index("-d") + 1]) / "sources/com/owned"
+                    folder.mkdir(parents=True)
+                    (folder / "Config.java").write_text(
+                        "public class Config { void process() { Cipher.getInstance(\"AES\"); } }")
+                return "EXIT_ZERO"
+            from cloud.apk_analysis.qa_jadx_refs import scan_jadx_sources
+            result = recover_jadx(apk, root, Path("/unused.jar"), {},
+                                  runner, scan_jadx_sources)
+            self.assertEqual(attempted, ["simple", "fallback"])
+            self.assertTrue(result["attempts"][0]["completed"])
+            self.assertFalse(result["attempts"][0]["usableSource"])
+            self.assertEqual(result["dexRecovered"], 1)
+
+
 if __name__ == "__main__":
     unittest.main()

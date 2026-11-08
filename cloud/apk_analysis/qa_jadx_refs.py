@@ -14,7 +14,10 @@ MAX_BYTES=64*1024*1024
 MAX_FILE_BYTES=256*1024
 MAX_HITS=48
 PRUNE={"android","androidx","java","javax","kotlin","kotlinx","okio",
-       "okhttp3","retrofit2","org","io"}
+       "okhttp3","retrofit2"}
+# Never drop all org.* or io.*: those namespaces can be the app itself.
+PRUNE_SUBTREES={"org":{"apache","jetbrains","bouncycastle","json","slf4j"},
+                "io":{"reactivex","netty","grpc"}}
 PRUNE_COM={"google","android","squareup","facebook","microsoft"}
 SIGNALS={
     "JCA_CIPHER":re.compile(r"\bCipher\.getInstance\s*\("),
@@ -35,6 +38,8 @@ def _is_framework(rel:Path):
         parts=parts[1:]
     if not parts:return False
     if parts[0] in PRUNE:return True
+    if len(parts)>1 and parts[0] in PRUNE_SUBTREES and parts[1] in PRUNE_SUBTREES[parts[0]]:
+        return True
     if len(parts)>1 and parts[0]=="com" and parts[1] in PRUNE_COM:return True
     return False
 

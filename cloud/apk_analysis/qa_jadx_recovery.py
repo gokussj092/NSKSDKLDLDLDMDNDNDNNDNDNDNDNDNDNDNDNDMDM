@@ -28,6 +28,8 @@ ERROR_SIGNATURES = (
 
 def diagnose_termination(logfile: Path, termination: str) -> str:
     """Classify known failures from a small log tail without returning any text."""
+    if termination == "EXIT_ZERO":
+        return "NONE"
     if termination == "TIMEOUT":
         return "TIME_LIMIT_EXCEEDED"
     if termination == "START_FAILED":
@@ -106,11 +108,13 @@ def recover_jadx(apk: Path, scratch: Path, jar: Path, env: dict,
                                    env=env, logfile=log)
             summary = scan_sources(output)
             generated = int(summary.get("sourceFilesInspected", 0))
-            successful = termination == "EXIT_ZERO"
+            # A zero exit without generated sources is not useful recovery.
+            successful = termination == "EXIT_ZERO" and generated > 0
             attempts.append({
                 "dexIndex": index + 1, "mode": mode, "terminationReason": termination,
                 "failureCategory": diagnose_termination(log, termination),
-                "sourceFilesInspected": generated, "completed": successful,
+                "sourceFilesInspected": generated,
+                "completed": termination == "EXIT_ZERO", "usableSource": generated > 0,
             })
             inspected += generated
             bytes_inspected += int(summary.get("sourceBytesInspected", 0))

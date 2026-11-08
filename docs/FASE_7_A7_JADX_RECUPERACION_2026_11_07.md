@@ -28,7 +28,7 @@ El primer intento conserva los campos históricos \`jadx.status\`, \`termination
 
 **Regla de honestidad:** si \`base.apk\` falla y se obtienen DEX parciales, \`jadx.status=PARTIAL_OUTPUT\`, \`jadxExecuted=false\`, \`methodValidated=false\`. Una salida Java existente no demuestra método criptográfico funcional ni cobertura de todos los DEX. Los indicadores por intentos pueden duplicarse con el primer intento y llevan \`sourceReferencesMayOverlapRetries\`.
 
-\`analysis.toolPlan\` diferencia descubrimiento de herramientas de aprobación de ejecución. \`analysis.methodEvidence\` solo conecta referencias **estáticas**; nunca devuelve código generado, cadenas arbitrarias ni secretos. La selección de hallazgos JADX continúa limitada a 48 elementos; esta cobertura **no es un inventario exhaustivo** y debe ampliarse mediante un esquema de exportación auditado si fuera requerido.
+\`analysis.toolPlan\` diferencia descubrimiento de herramientas de aprobación de ejecución. \`analysis.methodEvidence\` solo conecta referencias **estáticas**; nunca devuelve código generado, cadenas arbitrarias ni secretos. El escáner JADX deja de descartar todo `org.*` e `io.*`: solo excluye subárboles de bibliotecas conocidos. También prueba modo alternativo si el proceso sale con código cero pero no produce fuente útil. La selección de hallazgos JADX continúa limitada a 48 elementos; esta cobertura **no es un inventario exhaustivo** y debe ampliarse mediante un esquema de exportación auditado si fuera requerido.
 
 ## Reproducción
 
