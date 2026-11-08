@@ -84,6 +84,7 @@ class MainActivity : ComponentActivity() {
     private var apkQaObserver:Job?=null
     private var apkQaRunning by mutableStateOf(false)
     private var apkQaPhase by mutableStateOf("")
+    private var apkQaFilename by mutableStateOf("")
     private var apkQaReceived by mutableStateOf(0L)
     private var apkQaTotal by mutableStateOf(0L)
     private var apkQaReport by mutableStateOf<String?>(null)
@@ -420,6 +421,7 @@ class MainActivity : ComponentActivity() {
                     if(latest!=null) {
                         apkQaRunning=latest.active
                         apkQaPhase=latest.phase
+                        apkQaFilename=latest.filename
                         apkQaReceived=latest.receivedBytes
                         apkQaTotal=latest.totalBytes
                         // The indexed native viewer formats logical lines on demand.
@@ -467,6 +469,8 @@ class MainActivity : ComponentActivity() {
             apkQaClient.queue(uri)
             apkQaRunning=true
             apkQaPhase="QUEUED"
+            apkQaFilename=runCatching { apkQaClient.snapshot()?.filename.orEmpty() }
+                .getOrDefault("")
             apkQaReceived=0L
             apkQaTotal=0L
             apkQaReport=null
@@ -658,6 +662,7 @@ class MainActivity : ComponentActivity() {
                 onImportMultiple={multiPicker.launch(arrayOf("*/*"))},
                 apkQaRunning=apkQaRunning,
                 apkQaPhase=apkQaPhase,
+                apkQaFilename=apkQaFilename,
                 apkQaReceived=apkQaReceived,
                 apkQaTotal=apkQaTotal,
                 apkQaReport=apkQaReport,

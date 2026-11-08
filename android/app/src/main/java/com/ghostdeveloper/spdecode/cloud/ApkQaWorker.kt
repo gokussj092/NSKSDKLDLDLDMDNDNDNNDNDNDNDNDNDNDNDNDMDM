@@ -27,7 +27,7 @@ internal class ApkQaWorker(context:Context,params:WorkerParameters):
             val request=OneTimeWorkRequestBuilder<ApkQaWorker>()
                 .setConstraints(Constraints.Builder()
                     .setRequiredNetworkType(NetworkType.CONNECTED).build())
-                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL,30,TimeUnit.SECONDS)
+                .setBackoffCriteria(BackoffPolicy.LINEAR,20,TimeUnit.SECONDS)
                 .addTag(UNIQUE_NAME)
                 .build()
             WorkManager.getInstance(context.applicationContext).enqueueUniqueWork(
@@ -60,6 +60,9 @@ internal class ApkQaWorker(context:Context,params:WorkerParameters):
             }
         }catch(error:IOException) {
             val code=error.message.orEmpty()
+            // WorkManager time-slice rollover is an automatic continuation,
+            // not a disconnected QA session requiring manual intervention.
+            if(code=="APK_QA_RETRY_SCHEDULED")return Result.retry()
             if(code in setOf("APK_QA_INPUT_TOO_LARGE","APK_QA_EMPTY_FILE",
                     "APK_QA_FORMAT_UNSUPPORTED")) {
                 client.noteTerminalError(code)

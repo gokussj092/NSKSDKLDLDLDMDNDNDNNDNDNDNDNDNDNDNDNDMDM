@@ -298,4 +298,10 @@
     <string name="apk_qa_export_json">Exportar JSON</string>
     <string name="apk_qa_export_success">JSON guardado</string>
     <string name="apk_qa_export_failure">No se pudo guardar el JSON</string>
+    <string name="apk_qa_sub_metadata">Leyendo metadatos del paquete</string>
+    <string name="apk_qa_sub_dex">Analizando código DEX y métodos</string>
+    <string name="apk_qa_sub_native">Inspeccionando bibliotecas nativas (.so)</string>
+    <string name="apk_qa_sub_jadx">Descompilando código con JADX Lite</string>
+    <string name="apk_qa_sub_recovery">Recuperando resultados parciales de DEX</string>
+    <string name="apk_qa_sub_evidence">Relacionando referencias criptográficas</string>
 </resources>

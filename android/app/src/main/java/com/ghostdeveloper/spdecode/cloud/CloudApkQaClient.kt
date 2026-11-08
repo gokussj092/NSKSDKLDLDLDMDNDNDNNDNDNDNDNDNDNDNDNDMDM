@@ -41,7 +41,7 @@ internal class CloudApkQaClient(context:Context,private val cloud:CloudDecodeCli
     data class ActivityEvent(val sequence:Int,val code:String,val status:String)
     data class Snapshot(
         val active:Boolean,val phase:String,val receivedBytes:Long,
-        val totalBytes:Long,val report:String?,val error:String?,
+        val totalBytes:Long,val report:String?,val error:String?,val filename:String,
         val events:List<ActivityEvent>
     )
     private val allowedEvents=setOf(
@@ -50,7 +50,10 @@ internal class CloudApkQaClient(context:Context,private val cloud:CloudDecodeCli
         "COMPONENTS_INSPECTED","REPORT_PREPARATION","REPORT_READY",
         "ANALYSIS_FAILED","ANALYSIS_RESUMED",
         "ADVANCED_ANALYSIS","ADVANCED_ANALYSIS_COMPLETE",
-        "ADVANCED_ANALYSIS_PARTIAL","ADVANCED_ANALYSIS_SKIPPED"
+        "ADVANCED_ANALYSIS_PARTIAL","ADVANCED_ANALYSIS_SKIPPED",
+        "APK_METADATA_INSPECTION","DEX_BYTECODE_INSPECTION",
+        "NATIVE_LIBRARY_INSPECTION","JADX_DECOMPILATION",
+        "JADX_RECOVERY","CRYPTO_EVIDENCE_CORRELATION","ADVANCED_HEARTBEAT"
     )
 
     private fun safeEvents(message:JSONObject):JSONArray {
@@ -103,7 +106,7 @@ internal class CloudApkQaClient(context:Context,private val cloud:CloudDecodeCli
             cachedReport
         }else state.report.takeIf { it.isNotBlank() }
         return Snapshot(state.active,state.phase,state.receivedBytes,state.totalBytes,
-            saved,state.error.takeIf{it.isNotBlank()},eventsOf(state.events))
+            saved,state.error.takeIf{it.isNotBlank()},state.filename,eventsOf(state.events))
     }
 
     fun historyItems():List<ApkQaHistoryStore.Item> = history.list()

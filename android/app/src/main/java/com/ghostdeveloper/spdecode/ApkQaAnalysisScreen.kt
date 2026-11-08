@@ -33,6 +33,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
+import org.json.JSONObject
+import java.text.SimpleDateFormat
+import java.util.Locale
 import java.text.DateFormat
 import java.util.Date
 import java.io.OutputStreamWriter
@@ -49,9 +52,28 @@ private fun publicStages(events:List<CloudApkQaClient.ActivityEvent>):List<Publi
             "COMPONENT_INSPECTION","COMPONENTS_INSPECTED"->"components"
             "ADVANCED_ANALYSIS","ADVANCED_ANALYSIS_COMPLETE",
                 "ADVANCED_ANALYSIS_PARTIAL","ADVANCED_ANALYSIS_SKIPPED"->"advanced"
+            "ADVANCED_HEARTBEAT"->"heartbeat"
+            "APK_METADATA_INSPECTION"->"metadata"
+            "DEX_BYTECODE_INSPECTION"->"dex"
+            "NATIVE_LIBRARY_INSPECTION"->"native"
+            "JADX_DECOMPILATION"->"jadx"
+            "JADX_RECOVERY"->"recovery"
+            "CRYPTO_EVIDENCE_CORRELATION"->"evidence"
             "REPORT_PREPARATION","REPORT_READY"->"report"
             "ANALYSIS_FAILED"->"failure"
             else->return@forEach
+        }
+        if(key=="heartbeat")return@forEach
+        if(code=="COMPONENTS_INSPECTED") {
+            listOf("metadata","dex","native").forEach { k ->
+                stages[k]?.let { stages[k]=it.copy(status="DONE") }
+            }
+        if(code in setOf("ADVANCED_ANALYSIS_COMPLETE","ADVANCED_ANALYSIS_PARTIAL",
+                "ADVANCED_ANALYSIS_SKIPPED")) {
+            listOf("jadx","recovery","evidence").forEach { k ->
+                stages[k]?.let { if(it.status=="RUNNING") stages[k]=it.copy(
+                    status=if(code=="ADVANCED_ANALYSIS_COMPLETE") "DONE" else "PARTIAL") }
+            }
         }
         val final=code in setOf("UPLOAD_RECEIVED","PACKAGE_VALIDATED",
             "COMPONENTS_INSPECTED","ADVANCED_ANALYSIS_COMPLETE","REPORT_READY")
@@ -68,6 +90,12 @@ private fun publicStages(events:List<CloudApkQaClient.ActivityEvent>):List<Publi
             "validate"->if(final)R.string.apk_qa_event_package_validated else R.string.apk_qa_event_package_validation
             "components"->if(final)R.string.apk_qa_event_components_inspected else R.string.apk_qa_event_component_inspection
             "advanced"->R.string.apk_qa_advanced_stage
+            "metadata"->R.string.apk_qa_sub_metadata
+            "dex"->R.string.apk_qa_sub_dex
+            "native"->R.string.apk_qa_sub_native
+            "jadx"->R.string.apk_qa_sub_jadx
+            "recovery"->R.string.apk_qa_sub_recovery
+            "evidence"->R.string.apk_qa_sub_evidence
             "report"->if(final)R.string.apk_qa_event_report_ready else R.string.apk_qa_event_report_preparation
             else->R.string.apk_qa_event_analysis_failed
         }
@@ -100,6 +128,7 @@ internal fun ApkQaAnalysisScreen(
     report:String?,error:String?,
     onPick:()->Unit,onCancel:()->Unit,
     events:List<CloudApkQaClient.ActivityEvent> = emptyList(),
+    sourceFilename:String = "",
     onRetry:()->Unit = {},
 ) {
     var authorized by rememberSaveable { mutableStateOf(false) }
@@ -129,7 +158,9 @@ internal fun ApkQaAnalysisScreen(
                     withContext(Dispatchers.IO) {
                         val output=context.contentResolver.openOutputStream(uri,"w")
                             ?:throw java.io.IOException("WRITE_UNAVAILABLE")
-                        OutputStreamWriter(output,Charsets.UTF_8).use { it.write(snapshot) }
+                        OutputStreamWriter(output,Charsets.UTF_8).use {
+                            ApkReportJsonExport.writeIndented(snapshot,it)
+                        }
                     }
                     context.getString(R.string.apk_qa_export_success)
                 }catch(_:Exception){context.getString(R.string.apk_qa_export_failure)}
@@ -140,6 +171,13 @@ internal fun ApkQaAnalysisScreen(
     val displayEvents=remember(selectedRecord,events) {
         selectedRecord?.let{storedEvents(it.events)} ?: events
     }
+    val identity=remember(displayReport) {
+        runCatching { JSONObject(displayReport.orEmpty()).optJSONObject("appIdentity") }
+            .getOrNull()
+    }
+    val appName=identity?.optString("appName").orEmpty()
+        .takeIf { it.isNotBlank() && !it.startsWith("@") }.orEmpty()
+    val packageName=identity?.optString("packageName").orEmpty()
     val sections=remember(displayReport) {
         displayReport?.let(ApkReportMarkdown::blocks).orEmpty()
     }
@@ -191,6 +229,8 @@ internal fun ApkQaAnalysisScreen(
                         else->R.string.apk_qa_processing
                     }
                     Text(stringResource(label),color=QA_WHITE,fontSize=14.sp)
+                    if(sourceFilename.isNotBlank())
+                        Text(sourceFilename,color=QA_MUTED,fontSize=12.sp,maxLines=2)
                     val fraction=if(total>0L) (received.toDouble()/total)
                         .toFloat().coerceIn(0f,1f) else 0f
                     if(phase in setOf("QUEUED","UPLOADING","SENDING","READING"))
@@ -231,7 +271,8 @@ internal fun ApkQaAnalysisScreen(
                                 "FAILED"->Text("✕",color=Color(0xFFFF9999),fontSize=18.sp)
                                 else->Text("!",color=Color(0xFFFFCF75),fontSize=18.sp)
                             }
-                            Spacer(Modifier.width(12.dp))
+                            Spacer(Modifier.width(if(stage.id in setOf("metadata","dex","native",
+                                "jadx","recovery","evidence")) 26.dp else 12.dp))
                             Column {
                                 Text(stringResource(stage.label),color=QA_WHITE,fontSize=13.sp)
                                 Text(stringResource(when(stage.status) {
@@ -282,7 +323,11 @@ internal fun ApkQaAnalysisScreen(
                                     }
                                 },modifier=Modifier.weight(1f)) {
                                     Column {
-                                        Text(item.filename,color=QA_WHITE,maxLines=1,fontSize=12.sp)
+                                        Text(item.appName.ifBlank { item.filename },
+                                            color=QA_WHITE,maxLines=1,fontSize=12.sp)
+                                        if(item.packageName.isNotBlank())
+                                            Text(item.packageName,color=QA_MUTED,
+                                                maxLines=1,fontSize=11.sp)
                                         Text(
                                             DateFormat.getDateTimeInstance().format(Date(item.createdAt))+
                                                 " · "+item.phase,
@@ -315,15 +360,24 @@ internal fun ApkQaAnalysisScreen(
                     Text(stringResource(if(selectedRecord!=null)
                         R.string.apk_qa_history_title else R.string.apk_qa_report),color=QA_WHITE,
                         fontWeight=FontWeight.SemiBold,fontSize=17.sp)
+                    if(appName.isNotBlank() || packageName.isNotBlank()) {
+                        Text(appName.ifBlank { packageName },color=QA_WHITE,fontSize=14.sp)
+                        if(packageName.isNotBlank())Text(packageName,color=QA_MUTED,fontSize=11.sp)
+                    }
                     Row(verticalAlignment=Alignment.CenterVertically) {
                         Button(onClick={
                             val original=displayReport
                             if(original!=null) {
                                 exportText=original
-                                val base=(selectedRecord?.item?.filename
-                                    ?: "SP-DECODE_APK_Analysis").substringBeforeLast('.')
-                                    .replace(Regex("[^A-Za-z0-9_.-]"),"_").take(72)
-                                launcher.launch("${base}_analysis.json")
+                                val name=appName.ifBlank { packageName.ifBlank {
+                                    selectedRecord?.item?.filename?.substringBeforeLast('.')
+                                        ?: sourceFilename.substringBeforeLast('.')
+                                } }
+                                val base=name.replace(Regex("[^A-Za-z0-9_.-]"),"_")
+                                    .trim('_').take(68).ifBlank { "SP-DECODE_APK" }
+                                val timestamp=SimpleDateFormat("yyyyMMdd_HHmmss",Locale.US)
+                                    .format(Date())
+                                launcher.launch("${base}_${timestamp}_analysis.json")
                             }
                         },modifier=Modifier.testTag("apk_qa_export_json")) {
                             Text(stringResource(R.string.apk_qa_export_json))

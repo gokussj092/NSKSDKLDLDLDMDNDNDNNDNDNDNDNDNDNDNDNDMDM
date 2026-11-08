@@ -130,6 +130,7 @@ internal fun SpDecodeApp(
     onFeedbackSubmit:suspend (FeedbackDraft)->String={throw IllegalStateException("FEEDBACK_UNAVAILABLE")},
     apkQaRunning:Boolean=false,
     apkQaPhase:String="",
+    apkQaFilename:String="",
     apkQaReceived:Long=0L,
     apkQaTotal:Long=0L,
     apkQaReport:String?=null,
@@ -171,7 +172,8 @@ internal fun SpDecodeApp(
                         else if(BuildConfig.SPDECODE_CLOUD_ENABLED)
                             ApkQaAnalysisScreen(apkQaRunning,apkQaPhase,apkQaReceived,
                                 apkQaTotal,apkQaReport,apkQaError,onApkQaPick,onApkQaCancel,
-                                events=apkQaEvents,onRetry=onApkQaRetry)
+                                events=apkQaEvents,sourceFilename=apkQaFilename,
+                                onRetry=onApkQaRetry)
                         else ApkAnalysisComingSoonScreen()
                     3->ServerVpnScreen(busy,serverVpnApps,serverVpnLoading && catalogTransfer==null,serverVpnUnavailable,
                         onDecodeServerCatalog,onDecodeServerApp,catalogProgress)

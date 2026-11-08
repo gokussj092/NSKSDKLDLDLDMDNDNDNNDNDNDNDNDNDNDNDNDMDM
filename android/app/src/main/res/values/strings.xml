@@ -298,4 +298,10 @@
     <string name="apk_qa_export_json">Export JSON</string>
     <string name="apk_qa_export_success">JSON saved</string>
     <string name="apk_qa_export_failure">Unable to save JSON</string>
+    <string name="apk_qa_sub_metadata">Reading package metadata</string>
+    <string name="apk_qa_sub_dex">Analyzing DEX bytecode and methods</string>
+    <string name="apk_qa_sub_native">Inspecting native libraries (.so)</string>
+    <string name="apk_qa_sub_jadx">Decompiling code with JADX Lite</string>
+    <string name="apk_qa_sub_recovery">Recovering partial DEX output</string>
+    <string name="apk_qa_sub_evidence">Correlating cryptographic references</string>
 </resources>

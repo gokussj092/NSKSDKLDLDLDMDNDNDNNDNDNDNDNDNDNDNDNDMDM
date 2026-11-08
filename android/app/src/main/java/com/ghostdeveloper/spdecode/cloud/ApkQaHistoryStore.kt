@@ -22,7 +22,8 @@ import javax.crypto.spec.GCMParameterSpec
  */
 internal class ApkQaHistoryStore(context:Context) {
     data class Item(val id:String,val filename:String,val phase:String,
-        val createdAt:Long,val bytes:Long,val sha256:String,val hasReport:Boolean)
+        val createdAt:Long,val bytes:Long,val sha256:String,val hasReport:Boolean,
+        val packageName:String="",val appName:String="")
     data class Record(val item:Item,val report:String,val events:String,val error:String)
 
     companion object {
@@ -87,7 +88,7 @@ internal class ApkQaHistoryStore(context:Context) {
                 if(!IDENTIFIER.matches(id))throw IOException("APK_QA_HISTORY_CORRUPT")
                 entries.add(Item(id,v.getString("filename"),v.getString("phase"),
                     v.getLong("createdAt"),v.getLong("bytes"),v.optString("sha256"),
-                    v.optBoolean("hasReport")))
+                    v.optBoolean("hasReport"),v.optString("packageName"),v.optString("appName")))
             }
             return entries
         }finally{plain.fill(0)}
@@ -98,7 +99,8 @@ internal class ApkQaHistoryStore(context:Context) {
             arr.put(JSONObject().put("id",item.id).put("filename",item.filename)
                 .put("phase",item.phase).put("createdAt",item.createdAt)
                 .put("bytes",item.bytes).put("sha256",item.sha256)
-                .put("hasReport",item.hasReport))
+                .put("hasReport",item.hasReport)
+                .put("packageName",item.packageName).put("appName",item.appName))
         }
         encrypt(index,arr.toString().toByteArray(Charsets.UTF_8))
     }
@@ -110,8 +112,13 @@ internal class ApkQaHistoryStore(context:Context) {
         if(!IDENTIFIER.matches(id) ||
             state.phase !in setOf("COMPLETED","FAILED","REJECTED"))
             throw IOException("APK_QA_HISTORY_INVALID_STATE")
+        val identity=runCatching { JSONObject(report).optJSONObject("appIdentity") }.getOrNull()
+        val packageName=identity?.optString("packageName").orEmpty()
+            .takeIf { it.matches(Regex("[A-Za-z_][A-Za-z0-9_]*(\\.[A-Za-z_][A-Za-z0-9_]*){1,15}")) }.orEmpty()
+        val appName=identity?.optString("appName").orEmpty()
+            .takeIf { it.length in 1..100 && !it.startsWith("@") }.orEmpty()
         val item=Item(id,state.filename,state.phase,System.currentTimeMillis(),
-            state.totalBytes,state.sha256,report.isNotEmpty())
+            state.totalBytes,state.sha256,report.isNotEmpty(),packageName,appName)
         val record=JSONObject().put("version",1)
             .put("id",id).put("filename",state.filename).put("phase",state.phase)
             .put("events",state.events).put("report",report).put("error",state.error)
