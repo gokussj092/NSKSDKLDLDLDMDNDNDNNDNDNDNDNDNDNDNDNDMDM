@@ -19,6 +19,43 @@ class F7ToolingIsolationPolicy(unittest.TestCase):
         self.assertNotIn("/var/run/docker.sock",block)
         self.assertIn("internal: true",compose.split("  apk-tools-private:",1)[1])
 
+    def test_apk_tool_images_have_all_inputs_in_root_docker_context(self):
+        # The VPS builds with context: .. (repository root). A broad '**'
+        # ignore rule must not hide the pinned JADX installer or QA modules.
+        ignored=source(".dockerignore").splitlines()
+        self.assertIn("**",ignored)
+        allow={line[1:] for line in ignored if line.startswith("!")}
+        requested={
+            "scripts/apk_analysis/decompile.py",
+            "cloud/apk_analysis/__init__.py",
+            "cloud/apk_analysis/input_gate.py",
+            "cloud/apk_analysis/qa_dex_bytecode.py",
+            "cloud/apk_analysis/qa_deep.py",
+            "cloud/apk_analysis/qa_jadx_refs.py",
+            "cloud/apk_analysis/qa_tool_rpc.py",
+            "cloud/apk_analysis/qa_tooling.py",
+            "cloud/apk_analysis/qa_tool_worker.py",
+            "cloud/apk_analysis/qa_static.py",
+            "cloud/apk_analysis/qa_service.py",
+            "cloud/apk_analysis/SpDecodeGhidraReport.java",
+        }
+        self.assertTrue(requested.issubset(allow), requested-allow)
+        self.assertIn("scripts/",allow)
+        self.assertIn("scripts/apk_analysis/",allow)
+        self.assertIn("cloud/apk_analysis/",allow)
+        for name in requested:
+            self.assertTrue((ROOT/name).is_file(),name)
+        lite=source("cloud/apk_analysis/Dockerfile.qa-lite")
+        heavy=source("cloud/apk_analysis/Dockerfile.qa-tools")
+        for name in requested:
+            self.assertIn(name,lite)
+            self.assertIn(name,heavy)
+        for secret in ("**/.env","**/.env.*","**/config.json",
+                       "**/keyFile.json","**/.git/**"):
+            self.assertIn(secret,ignored)
+        self.assertNotIn("cloud/apk_analysis/**",allow)
+        self.assertNotIn("scripts/**",allow)
+
     def test_image_loads_reviewed_jdk21_and_pinned_toolchain_once(self):
         docker=source("cloud/apk_analysis/Dockerfile.qa-tools")
         self.assertIn("eclipse-temurin:21-jdk-jammy",docker)
