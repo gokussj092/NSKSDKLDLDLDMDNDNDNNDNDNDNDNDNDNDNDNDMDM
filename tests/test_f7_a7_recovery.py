@@ -68,7 +68,7 @@ class RecoveryTests(unittest.TestCase):
                 logfile.write_bytes(b"unsupported on primary")
                 output = Path(command[command.index("-d") + 1])
                 if mode == "fallback":
-                    p = output / "sources" / "org" / "local"
+                    p = output / "sources" / "com" / "local"
                     p.mkdir(parents=True)
                     (p / "Owned.java").write_text(
                         "class Owned { void decrypt() { Cipher.getInstance(\"AES\"); } }")

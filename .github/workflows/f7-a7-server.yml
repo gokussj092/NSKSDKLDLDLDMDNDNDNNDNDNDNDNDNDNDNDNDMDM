@@ -46,16 +46,16 @@ jobs:
         run: docker build -f cloud/apk_analysis/Dockerfile.qa-lite -t spdecode-f7-a7-lite .
       - name: Produce an owned Java test specimen
         run: |
-          mkdir -p tool-fixtures/src/org/spdecode/owned tool-fixtures/classes
-          cat > tool-fixtures/src/org/spdecode/owned/Owned.java <<'JAVA'
-          package org.spdecode.owned;
+          mkdir -p tool-fixtures/src/com/spdecode/owned tool-fixtures/classes
+          cat > tool-fixtures/src/com/spdecode/owned/Owned.java <<'JAVA'
+          package com.spdecode.owned;
           public class Owned {
               public String ownCryptoReference() throws Exception {
                   return javax.crypto.Cipher.getInstance("AES/GCM/NoPadding").getAlgorithm();
               }
           }
           JAVA
-          javac -d tool-fixtures/classes tool-fixtures/src/org/spdecode/owned/Owned.java
+          javac -d tool-fixtures/classes tool-fixtures/src/com/spdecode/owned/Owned.java
           jar cf tool-fixtures/owned.jar -C tool-fixtures/classes .
       - name: Real offline JADX execution; no Ghidra, Android release or uploaded APK
         run: |
