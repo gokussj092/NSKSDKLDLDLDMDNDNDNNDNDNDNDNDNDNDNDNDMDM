@@ -91,6 +91,11 @@ internal class CloudApkQaClient(context:Context,private val cloud:CloudDecodeCli
             history.save(state,state.report)
         }
         val saved=if(!state.active && state.report.isBlank()) {
+            if(cachedReportId==state.startId &&
+                history.list().none { it.id==state.startId }) {
+                cachedReportId=""
+                cachedReport=null
+            }
             if(cachedReportId!=state.startId) {
                 cachedReport=history.read(state.startId)?.report
                 cachedReportId=state.startId

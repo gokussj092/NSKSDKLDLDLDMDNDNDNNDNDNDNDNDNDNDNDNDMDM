@@ -298,6 +298,9 @@ internal fun ApkQaAnalysisScreen(
                         }
                     }
                     if(selectedRecord!=null) {
+                        selectedRecord?.error?.takeIf{it.isNotBlank()}?.let {
+                            Text(it,color=Color(0xFFFF9999),fontSize=12.sp)
+                        }
                         OutlinedButton(onClick={selectedRecord=null}) {
                             Text(stringResource(R.string.apk_qa_history_back))
                         }
@@ -305,7 +308,7 @@ internal fun ApkQaAnalysisScreen(
                 }
             }
         }
-        if(displayReport!=null) {
+        if(!displayReport.isNullOrBlank()) {
             Surface(color=QA_CARD,shape=RoundedCornerShape(14.dp),
                 border=BorderStroke(1.dp,QA_BORDER),modifier=Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(9.dp)) {
