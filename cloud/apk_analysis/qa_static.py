@@ -10,6 +10,7 @@ from .input_gate import inspect_input
 from .qa_deep import inspect_parts
 from .qa_tooling import inspect_tooling
 from .qa_tool_plan import plan_tools, correlate_evidence
+from .qa_identity import inspect_identity
 
 
 def inspect_static(path:Path, on_stage=None)->dict:
@@ -17,10 +18,14 @@ def inspect_static(path:Path, on_stage=None)->dict:
     if on_stage:
         on_stage("PACKAGE_VALIDATED")
         on_stage("COMPONENT_INSPECTION")
-    inventory=inspect_parts(path,checked["format"])
+    if on_stage:
+        on_stage("APK_METADATA_INSPECTION")
+    identity=inspect_identity(path,checked["format"])
+    inventory=inspect_parts(path,checked["format"],on_stage=on_stage)
     if on_stage:
         on_stage("COMPONENTS_INSPECTED")
         on_stage("ADVANCED_ANALYSIS")
+        on_stage("JADX_DECOMPILATION")
     try:
         tooling=inspect_tooling(path,inventory)
     except (OSError,ValueError,RuntimeError,zipfile.BadZipFile):
@@ -31,6 +36,9 @@ def inspect_static(path:Path, on_stage=None)->dict:
                  "jadx":{"status":"FAILED"},
                  "ghidra":{"status":"NOT_EXECUTED"}}
     if on_stage:
+        if tooling.get("jadx",{}).get("recovery",{}).get("attempts"):
+            on_stage("JADX_RECOVERY")
+        on_stage("CRYPTO_EVIDENCE_CORRELATION")
         on_stage("ADVANCED_ANALYSIS_SKIPPED" if tooling["status"] in
             {"NOT_ENABLED","INSUFFICIENT_CONTAINER_MEMORY",
              "JADX_NOT_PRELOADED_OR_HASH_MISMATCH"} else
@@ -42,6 +50,7 @@ def inspect_static(path:Path, on_stage=None)->dict:
         "reportKind":"APK_STATIC_QA_DEEP_V2",
         "status":"COMPLETED_PARTIAL",
         "evidence":"OBSERVED_LOCAL_APK_BYTES",
+        "appIdentity":identity,
         "input":{"format":checked["format"],"sha256":checked["input_sha256"],
                  "bytes":checked["input_bytes"],"apkCount":checked["apk_count"]},
         "inventory":{"zipEntries":checked["members"],"dexCount":checked["dex_count"],

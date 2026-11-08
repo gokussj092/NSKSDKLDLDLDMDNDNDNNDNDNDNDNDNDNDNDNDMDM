@@ -8,7 +8,7 @@ COPY cloud/apk_analysis/__init__.py cloud/apk_analysis/input_gate.py \
      cloud/apk_analysis/qa_jadx_refs.py cloud/apk_analysis/qa_jadx_recovery.py \
      cloud/apk_analysis/qa_tool_plan.py cloud/apk_analysis/qa_tool_rpc.py \
      cloud/apk_analysis/qa_tooling.py \
-     cloud/apk_analysis/qa_static.py cloud/apk_analysis/qa_service.py ./cloud/apk_analysis/
+     cloud/apk_analysis/qa_identity.py cloud/apk_analysis/qa_static.py cloud/apk_analysis/qa_service.py ./cloud/apk_analysis/
 # Fail Docker build immediately if any APK QA Python module is malformed.
 RUN python3 -m compileall -q cloud/apk_analysis
 RUN mkdir -p /var/lib/spdecode/apkqa && \

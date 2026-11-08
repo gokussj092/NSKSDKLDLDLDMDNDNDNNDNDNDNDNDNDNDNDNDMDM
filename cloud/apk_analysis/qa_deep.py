@@ -238,10 +238,15 @@ def _elf_info(file,size:int,apk:str,name:str,digest:str) -> dict:
         return data
 
 
-def inspect_parts(path:Path, kind:str) -> dict:
+def inspect_parts(path:Path, kind:str, on_stage=None) -> dict:
     """Analyze every APKS member with temporary seekable files on job volume."""
     dex=[];native=[];assets=0;resources=0;uncompressed=0;split_names=[]
     dex_seen=0;native_seen=0;indicators=set();skipped=0;split_errors=[]
+    stages_reported=set()
+    def stage_once(code):
+        if on_stage and code not in stages_reported:
+            stages_reported.add(code)
+            on_stage(code)
     def visit(z:zipfile.ZipFile, apkname:str):
         nonlocal assets,resources,uncompressed,dex_seen,native_seen,skipped
         for info in z.infolist():
@@ -249,6 +254,7 @@ def inspect_parts(path:Path, kind:str) -> dict:
             uncompressed+=info.file_size
             name=info.filename
             if DEX.fullmatch(name):
+                stage_once("DEX_BYTECODE_INSPECTION")
                 dex_seen+=1
                 if len(dex)>=MAX_DISPLAY:skipped+=1;continue
                 try:
@@ -259,6 +265,7 @@ def inspect_parts(path:Path, kind:str) -> dict:
                 except (ValueError,OSError,RuntimeError,zipfile.BadZipFile):
                     dex.append({"apk":apkname,"name":name,"status":"DEX_READ_FAILED"})
             elif name.startswith("lib/") and name.endswith(".so"):
+                stage_once("NATIVE_LIBRARY_INSPECTION")
                 native_seen+=1
                 if len(native)>=MAX_NATIVE_DISPLAY:skipped+=1;continue
                 abi=name.split("/")[1] if len(name.split("/"))>2 else "unknown"

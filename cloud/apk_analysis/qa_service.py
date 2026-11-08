@@ -39,6 +39,10 @@ PUBLIC_EVENTS = frozenset({
     "COMPONENT_INSPECTION", "COMPONENTS_INSPECTED",
     "REPORT_PREPARATION", "REPORT_READY", "ANALYSIS_FAILED",
     "ANALYSIS_RESUMED",
+    "APK_METADATA_INSPECTION", "DEX_BYTECODE_INSPECTION",
+    "NATIVE_LIBRARY_INSPECTION", "JADX_DECOMPILATION",
+    "JADX_RECOVERY", "CRYPTO_EVIDENCE_CORRELATION",
+    "ADVANCED_HEARTBEAT",
     "ADVANCED_ANALYSIS","ADVANCED_ANALYSIS_COMPLETE",
     "ADVANCED_ANALYSIS_PARTIAL","ADVANCED_ANALYSIS_SKIPPED",
 })
@@ -279,13 +283,31 @@ def _process(job_id:str) -> None:
             state["updatedAt"]=time.time()
             _atomic(folder/"state.json",state)
 
+    heartbeat_stop=threading.Event()
+    def heartbeat():
+        while not heartbeat_stop.wait(40):
+            with MUTEX:
+                try:
+                    current=_json(folder/"state.json")
+                    if current.get("status")!="PROCESSING":return
+                    if (len(current.get("events",[]))<58 and any(
+                        e.get("code")=="ADVANCED_ANALYSIS" for e in current.get("events",[]))):
+                        _event(current,"ADVANCED_HEARTBEAT","RUNNING")
+                    current["updatedAt"]=time.time()
+                    _atomic(folder/"state.json",current)
+                except (ApiError,OSError,ValueError,KeyError):return
+    heartbeat_thread=threading.Thread(target=heartbeat,daemon=True)
+    heartbeat_thread.start()
     try:
         state=_json(folder/"state.json")
         publish("PACKAGE_VALIDATION","RUNNING")
         result=inspect_static(
             folder/("input"+Path(state["filename"]).suffix.lower()),
             on_stage=lambda code: publish(code,
-                "RUNNING" if code in {"COMPONENT_INSPECTION","ADVANCED_ANALYSIS"} else
+                "RUNNING" if code in {"COMPONENT_INSPECTION","ADVANCED_ANALYSIS",
+                    "APK_METADATA_INSPECTION","DEX_BYTECODE_INSPECTION",
+                    "NATIVE_LIBRARY_INSPECTION","JADX_DECOMPILATION",
+                    "JADX_RECOVERY","CRYPTO_EVIDENCE_CORRELATION"} else
                 "PARTIAL" if code in {"ADVANCED_ANALYSIS_PARTIAL",
                     "ADVANCED_ANALYSIS_SKIPPED"} else "DONE")
         )
@@ -295,6 +317,7 @@ def _process(job_id:str) -> None:
         result={"schemaVersion":1,"status":"FAILED","error":"STATIC_INSPECTION_FAILED",
                 "evidence":"NONE"}
         status="FAILED"
+    heartbeat_stop.set()
     with MUTEX:
         try:
             _atomic(folder/"report.json",result)
