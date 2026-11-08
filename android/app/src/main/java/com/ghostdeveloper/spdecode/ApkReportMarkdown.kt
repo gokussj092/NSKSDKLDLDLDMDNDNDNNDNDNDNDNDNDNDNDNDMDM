@@ -1,6 +1,5 @@
 package com.ghostdeveloper.spdecode
 
-import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 
@@ -14,14 +13,15 @@ internal data class ApkReportBlock(val title:String,val language:String,val cont
 }
 
 internal object ApkReportMarkdown {
-    private val pretty=GsonBuilder().serializeNulls().disableHtmlEscaping().setPrettyPrinting().create()
     fun blocks(report:String):List<ApkReportBlock> {
         val source=report.trim()
         val root=runCatching { JsonParser.parseString(source) }.getOrNull()
         if (root==null || !root.isJsonObject) {
             return listOf(ApkReportBlock("Report",if (source.startsWith("#")||source.startsWith("```")) "markdown" else "text",report))
         }
-        val result=mutableListOf(ApkReportBlock("JSON","json",pretty.toJson(root)))
+        // Preserve the exact received JSON: the native viewer already exposes
+        // readable indexed lines, and reparsing/pretty-printing duplicates RAM.
+        val result=mutableListOf(ApkReportBlock("JSON","json",report))
         val artifacts=root.asJsonObject.get("artifacts")
         if (artifacts!=null && artifacts.isJsonArray) {
             artifacts.asJsonArray.forEachIndexed { index,entry ->
