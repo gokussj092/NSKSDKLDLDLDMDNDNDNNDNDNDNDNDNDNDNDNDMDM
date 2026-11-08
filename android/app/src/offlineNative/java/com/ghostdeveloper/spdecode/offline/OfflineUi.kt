@@ -510,7 +510,7 @@ private fun About(state:OfflineUiState,action:OfflineActions,p:OfflinePalette) {
     Header(txt("about",state.language),null,p)
     OfflineCard(p) {
         Column(Modifier.fillMaxWidth(),horizontalAlignment=Alignment.CenterHorizontally) {
-            Image(painter=painterResource(com.ghostdeveloper.spdecode.offline.R.mipmap.ic_launcher),
+            Image(painter=painterResource(com.ghostdeveloper.spdecode.R.mipmap.ic_launcher),
                 contentDescription="SP-DECODE Offline",modifier=Modifier.size(72.dp))
             Text("SP-DECODE Offline",color=p.ink,fontSize=23.sp,fontWeight=FontWeight.Bold)
             SmallCaption(txt("native_edition",state.language),p)
