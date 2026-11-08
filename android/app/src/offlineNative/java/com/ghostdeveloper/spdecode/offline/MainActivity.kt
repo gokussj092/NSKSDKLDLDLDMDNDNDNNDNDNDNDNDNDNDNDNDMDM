@@ -81,17 +81,18 @@ class MainActivity : ComponentActivity() {
         }
         root.addView(label("SP-DECODE Offline", 25f))
         root.addView(label("Sin Internet · Motor C++/JNI · Alfa de integración"))
-        root.addView(label("Descifrado disponible: NetMod Syna (.nm).\n"
+        root.addView(label("Descifrado disponible: NetMod Syna (.nm) y HTTP Custom (.hc) "
+            + "HCCFG/HCX4 compatible con contraseña, HWID y ambos.\n"
             + "Generación de identidad NPV P-256: disponible.\n"
-            + "HTTP Custom, HTTP Injector y descifrado NPV: migración nativa pendiente. "
-            + "Nunca se ejecutará un descifrador Kotlin como alternativa."))
+            + "HTTP Custom antiguo (no HCCFG), HTTP Injector y descifrado NPV: pendientes. "
+            + "Sin descifrado Kotlin ni servicios Cloud."))
         password = EditText(this).apply {
-            hint = "Contraseña HTTP Custom (futura integración)"
+            hint = "Contraseña HTTP Custom (si está protegida)"
             inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
             setTextColor(Color.WHITE); setHintTextColor(Color.LTGRAY)
         }
         hwid = EditText(this).apply {
-            hint = "HWID HTTP Custom (futura integración)"
+            hint = "HWID HTTP Custom (si está vinculado)"
             inputType = InputType.TYPE_CLASS_TEXT
             setTextColor(Color.WHITE); setHintTextColor(Color.LTGRAY)
         }
