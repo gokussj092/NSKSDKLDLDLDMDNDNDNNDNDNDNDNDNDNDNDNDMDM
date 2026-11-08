@@ -208,6 +208,75 @@ PY
 }
 # Experimental high-memory worker, opt-in only; never start on the 1 GB VPS.
 # No device enrollment or operator-supplied token is required.
+# Opt-in low-RAM JADX beta. Never substitutes for the full 8 GB tool profile.
+apk_qa_enable_lite(){
+  preflight
+  grep -Fxq 'CLOUD_APK_QA_ENABLED=true' "$ENVFILE" ||
+    die "Run spdecode apk-qa enable first"
+  local ram available disk
+  ram=$(awk '/^MemTotal:/ {print $2;exit}' /proc/meminfo)
+  available=$(awk '/^MemAvailable:/ {print $2;exit}' /proc/meminfo)
+  disk=$(df -Pk "$REPO" | awk 'NR==2 {print $4}')
+  [[ "$ram" =~ ^[0-9]+$ && "$ram" -ge 3400000 ]] ||
+    die "JADX Lite requires at least 3.3 GiB physical RAM"
+  [[ "$available" =~ ^[0-9]+$ && "$available" -ge 1100000 ]] ||
+    die "JADX Lite needs 1.1 GiB currently available; try when VPS load is lower"
+  [[ "$disk" =~ ^[0-9]+$ && "$disk" -ge 6000000 ]] ||
+    die "JADX Lite requires 6 GB free build and scratch disk"
+  local previous
+  previous=$(mktemp "$CFG/.apk-lite-before-XXXXXXXX")
+  cp -p "$ENVFILE" "$previous"
+  if ! python3 - "$ENVFILE" <<'PY'
+import os,pathlib,re,secrets,sys
+source=pathlib.Path(sys.argv[1])
+if source.is_symlink() or not source.is_file():raise SystemExit("INVALID_ENV_FILE")
+rows=source.read_text("utf-8").splitlines()
+values=[r.partition("=")[2].strip().strip("'\"") for r in rows
+        if r.startswith("CLOUD_APK_QA_TOOLS_TOKEN=")]
+if len(values)>1 or (values and values[0] and not re.fullmatch(r"[A-Za-z0-9_-]{32,128}",values[0])):
+    raise SystemExit("INVALID_EXISTING_TOOLS_TOKEN")
+secret=values[0] if values and values[0] else secrets.token_urlsafe(48)
+keys=("CLOUD_APK_QA_TOOLS_TOKEN=","CLOUD_APK_QA_TOOLS_REMOTE=",
+      "CLOUD_APK_QA_TOOLS_REVIEWED=","SPDECODE_APK_TOOLS_DOCKERFILE=",
+      "SPDECODE_APK_TOOLS_MEM_LIMIT=","SPDECODE_APK_TOOLS_CPUS=",
+      "SPDECODE_APK_QA_LITE=")
+rows=[r for r in rows if not r.startswith(keys)]
+rows.extend(("CLOUD_APK_QA_TOOLS_TOKEN="+secret,"CLOUD_APK_QA_TOOLS_REMOTE=enabled",
+             "CLOUD_APK_QA_TOOLS_REVIEWED=true",
+             "SPDECODE_APK_TOOLS_DOCKERFILE=cloud/apk_analysis/Dockerfile.qa-lite",
+             "SPDECODE_APK_TOOLS_MEM_LIMIT=1152m",
+             "SPDECODE_APK_TOOLS_CPUS=0.8","SPDECODE_APK_QA_LITE=true"))
+tmp=source.with_name("."+source.name+".apk-lite")
+fd=os.open(tmp,os.O_CREAT|os.O_EXCL|os.O_WRONLY,0o600)
+try:
+    with os.fdopen(fd,"w",encoding="utf-8") as out:
+        out.write("\n".join(rows)+"\n");out.flush();os.fsync(out.fileno())
+    os.replace(tmp,source)
+finally:tmp.unlink(missing_ok=True)
+os.chmod(source,0o600)
+PY
+  then
+    cp -p "$previous" "$ENVFILE";rm -f "$previous";return 1
+  fi
+  if ! (compose --profile apk-qa --profile apk-qa-tools build apk-tools apk-qa &&
+        compose --profile apk-qa --profile apk-qa-tools up -d --no-deps apk-tools &&
+        compose --profile apk-qa --profile apk-qa-tools exec -T apk-tools python3 -c \
+          "import urllib.request;urllib.request.urlopen('http://127.0.0.1:8793/health',timeout=5)" &&
+        compose --profile apk-qa --profile apk-qa-tools up -d --no-deps --force-recreate apk-qa &&
+        compose --profile apk-qa --profile apk-qa-tools exec -T apk-qa python -c \
+          "import urllib.request;urllib.request.urlopen('http://127.0.0.1:8792/health',timeout=5)")
+  then
+    log "JADX Lite activation failed; restoring prior configuration"
+    cp -p "$previous" "$ENVFILE"
+    compose --profile apk-qa --profile apk-qa-tools up -d --no-deps --force-recreate apk-qa || true
+    compose --profile apk-qa --profile apk-qa-tools stop apk-tools || true
+    rm -f "$previous";return 1
+  fi
+  rm -f "$previous"
+  log "JADX Lite enabled: one JVM (512 MB heap), one CPU, worker 1152 MB; Ghidra disabled"
+  compose --profile apk-qa --profile apk-qa-tools ps web apk-qa apk-tools
+}
+
 apk_qa_enable_tools(){
   preflight
   grep -Fxq 'CLOUD_APK_QA_ENABLED=true' "$ENVFILE" ||
@@ -237,7 +306,9 @@ if len(entries)>1 or (entries and entries[0] and
     raise SystemExit("INVALID_TOOL_SECRET")
 secret=entries[0] if entries and entries[0] else secrets.token_urlsafe(48)
 names=("CLOUD_APK_QA_TOOLS_TOKEN=","CLOUD_APK_QA_TOOLS_REMOTE=",
-       "CLOUD_APK_QA_TOOLS_REVIEWED=")
+       "CLOUD_APK_QA_TOOLS_REVIEWED=","SPDECODE_APK_TOOLS_DOCKERFILE=",
+       "SPDECODE_APK_TOOLS_MEM_LIMIT=","SPDECODE_APK_TOOLS_CPUS=",
+       "SPDECODE_APK_QA_LITE=")
 rows=[line for line in rows if not line.startswith(names)]
 rows.extend(("CLOUD_APK_QA_TOOLS_TOKEN="+secret,
              "CLOUD_APK_QA_TOOLS_REMOTE=enabled",
@@ -524,12 +595,13 @@ case "${1:-help}" in
      python3 "$REPO/cloud/infra/vps/provider-services.py" "$2"
    fi;;
  apk-qa)
-   [[ $# -eq 2 ]] || die "spdecode apk-qa enable|enable-tools|status"
+   [[ $# -eq 2 ]] || die "spdecode apk-qa enable|enable-lite|enable-tools|status"
    case "$2" in
      enable) apk_qa_enable;;
+     enable-lite) apk_qa_enable_lite;;
      enable-tools) apk_qa_enable_tools;;
      status) apk_qa_status;;
-     *) die "spdecode apk-qa enable|enable-tools|status";;
+     *) die "spdecode apk-qa enable|enable-lite|enable-tools|status";;
    esac;;
  qa)
    [[ $# -eq 2 ]] || die "spdecode qa start|stop|status|services|probe-nur"
