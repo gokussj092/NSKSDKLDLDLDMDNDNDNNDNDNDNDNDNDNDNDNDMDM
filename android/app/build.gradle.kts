@@ -779,37 +779,41 @@ android {
 }
 
 dependencies {
-    val composeBom = platform("androidx.compose:compose-bom:2025.04.01")
-    implementation(composeBom)
-    implementation("androidx.activity:activity-compose:1.10.1")
-    // Release lint: ActivityResultContracts requires Fragment >=1.3.0.
-    implementation("androidx.fragment:fragment:1.8.9")
-    implementation("com.google.code.gson:gson:2.13.1")
-    if (enableCloud) implementation("com.google.firebase:firebase-messaging:25.0.0")
-    // Classic Play Integrity nonce flow; the verdict is verified in C3 server-side.
-    implementation("com.google.android.play:integrity:1.6.0")
-    implementation("androidx.work:work-runtime-ktx:2.10.4")
-    // Legacy decoders require BC; Cloud HPKE uses pinned native Mbed TLS.
-    if (!enableCloud) implementation("org.bouncycastle:bcprov-jdk18on:1.86")
+    // No Compose, Integrity, WorkManager, Room, Firebase, or JVM cryptography
+    // in SP-DECODE Offline. The source set is an Android SAF UI with native JNI.
     implementation("androidx.activity:activity-ktx:1.10.1")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.0")
-    implementation("androidx.datastore:datastore-preferences:1.1.7")
-    implementation("androidx.core:core-splashscreen:1.0.1")
-    implementation("androidx.room:room-runtime:2.7.2")
-    implementation("androidx.room:room-ktx:2.7.2")
-    kapt("androidx.room:room-compiler:2.7.2")
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.foundation:foundation")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.material:material-icons-extended")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    debugImplementation("androidx.compose.ui:ui-tooling")
-
-    androidTestImplementation(composeBom)
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
-    androidTestImplementation("androidx.test.ext:junit:1.2.1")
-    androidTestImplementation("androidx.test:runner:1.6.2")
+    if (!nativeOffline) {
+        val composeBom = platform("androidx.compose:compose-bom:2025.04.01")
+        implementation(composeBom)
+        implementation("androidx.activity:activity-compose:1.10.1")
+        // Release lint: ActivityResultContracts requires Fragment >=1.3.0.
+        implementation("androidx.fragment:fragment:1.8.9")
+        implementation("com.google.code.gson:gson:2.13.1")
+        if (enableCloud) implementation("com.google.firebase:firebase-messaging:25.0.0")
+        // Classic Play Integrity nonce flow; the verdict is verified in C3 server-side.
+        implementation("com.google.android.play:integrity:1.6.0")
+        implementation("androidx.work:work-runtime-ktx:2.10.4")
+        // Legacy decoders require BC; Cloud HPKE uses pinned native Mbed TLS.
+        if (!enableCloud) implementation("org.bouncycastle:bcprov-jdk18on:1.86")
+        implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.0")
+        implementation("androidx.datastore:datastore-preferences:1.1.7")
+        implementation("androidx.core:core-splashscreen:1.0.1")
+        implementation("androidx.room:room-runtime:2.7.2")
+        implementation("androidx.room:room-ktx:2.7.2")
+        kapt("androidx.room:room-compiler:2.7.2")
+        implementation("androidx.compose.ui:ui")
+        implementation("androidx.compose.foundation:foundation")
+        implementation("androidx.compose.material3:material3")
+        implementation("androidx.compose.material:material-icons-extended")
+        implementation("androidx.compose.ui:ui-tooling-preview")
+        debugImplementation("androidx.compose.ui:ui-tooling")
+    
+        androidTestImplementation(composeBom)
+        androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+        debugImplementation("androidx.compose.ui:ui-test-manifest")
+        androidTestImplementation("androidx.test.ext:junit:1.2.1")
+        androidTestImplementation("androidx.test:runner:1.6.2")
+    }
 }
 
 // The generated Kotlin key and transformed assets must exist before each
