@@ -2,7 +2,7 @@
 
 Rama: feat/version-offline-apk. La variante nativa solo se selecciona con
 SPDECODE_OFFLINE_NATIVE=true, sin SPDECODE_CLOUD_API_BASE_URL.
-Este commit es una integración alfa; NO completa los cuatro descifradores.
+Integración alfa C++ para HC, EHI, NetMod y familia NPV. Las pruebas de paridad Linux no sustituyen una certificación con exportaciones reales en Android.
 
 ## Aislamiento de distribución
 - Identificador: com.ghostdeveloper.spdecode.offline
@@ -20,8 +20,12 @@ Este commit es una integración alfa; NO completa los cuatro descifradores.
 | NPV generador P-256 | C++ clave pública SEC1 comprimida, privada PKCS8, pendiente interoperabilidad | decoders/Python/npvs_identity.py |
 | HTTP Custom .hc legacy | C++ XOR/ChaCha20 64-bit nonce/AES-RST/JKL integrado; golden sintético validado, QA Android y variantes reales pendientes | decoders/Python/HTTPCUSTOM.py |
 | HTTP Custom contraseña/HWID/ambos | C++ HCCFG 1/2/5/7 y HCX4 10 n11/n12; Argon2id+XChaCha20-Poly1305; paridad Linux sintética validada, QA Android pendiente | cloud/workers/python/hc_bridge.py |
-| HTTP Injector .ehi | PENDIENTE; AES-CBC, XXTEA, Argon2id, ChaCha20-Poly1305 | decoders/Python/HTTPINJECTOR.py |
-| NPV Tunnel descifrado .npv4/.npvt/.npvs | PENDIENTE; whitebox, ECDH, firmas y AEAD | decoders/Python/NPVTUNNEL.py y npvs.py |
+| HTTP Injector .ehi | AES-CBC, XXTEA, XOR de campos, Argon2id y XChaCha20-Poly1305 C++ integrados; bypass y estándar validados con vectores sintéticos | decoders/Python/HTTPINJECTOR.py |
+| NPV Tunnel .npvs v1 | C++ firmado ECDSA P-256, contraseña PBKDF2, appkey whitebox, AEAD ChaCha20-Poly1305, descifrado íntegro y campos npvs1 | decoders/Python/npvs_v1.py |
+| NPV Tunnel .npvs v5 | C++ firma ECDSA, clave de app whitebox, contraseña, destinatarios ECDH/AES-GCM, metadatos, inventario HMAC y campos AEAD | decoders/Python/npvs.py |
+| NPV Tunnel .npvs v6 | C++ firmado, destinatario ECDH y máscara de vinculación whitebox; modos v6 no certificados por el servidor se rechazan | decoders/Python/npvs.py |
+| NPV Tunnel NPVT1/NPVTSUB1 | C++ whitebox CTR histórico; objetos y listas JSON completos; sin firma de autenticación original | decoders/Python/NPVTUNNEL.py |
+| NPV enlaces de texto | C++ Base64 JSON y npvs1 anidados, transporte NPVS delegado al verificador firmado | decoders/Python/apps/NPV_Tunnel/text_decoder.py |
 
 El JNI rechaza explícitamente los formatos pendientes. No habrá fallback a Kotlin ni Cloud.
 
@@ -30,5 +34,14 @@ El JNI rechaza explícitamente los formatos pendientes. No habrá fallback a Kot
 2. Pruebas diferenciales C++/Python para .nm con archivos legítimos, errores de Base64, padding y tamaño.
 3. Interoperabilidad P-256 comprobada con npvs_identity.normalize y Android NpvsIdentityVault.validate.
 4. Motor HC C++ integrado; 69 casos sintéticos Python/C++ pasan en Linux. Falta validar compilación y ejecución en Android, exportaciones legítimas actuales y versiones legacy adicionales.
-5. Puerto EHI y NPV con archivos exportados reales, JSON íntegro y autenticación estricta.
-6. No publicar una compilación final de cuatro métodos hasta pasar los controles anteriores.
+5. Los puertos EHI y NPV se validan con regresión sintética en Linux y compilación Android. FALTAN pruebas con exportaciones legítimas actuales en un teléfono antes de certificar todas las versiones del servidor.
+6. No publicar una compilación final de cuatro métodos hasta pasar los controles anteriores. Las versiones NPVS v6 no verificadas por Python NO se aceptan por heurística.
+
+## Tablas y seguridad
+
+- `scripts/build_offline_npv_tables.py` extrae literales auditados del servidor; valida hash SHA-256 de tabla moderna, tamaños v1 y pickle histórico solo con un Unpickler de datos. ÚNICAMENTE durante la compilación en GitHub Actions.
+- En Android solo se incluye el código C++ y bytes de tabla en `liboffdecode.so`; no se ejecuta Python ni pickle.
+- Mbed TLS 3.6.7, Argon2id de referencia y zlib enlazadas en el binario nativo.
+- Los NPVS firmados verifican ECDSA antes de derivación de claves o solicitar credenciales. Toda sección fallida provoca error, nunca JSON parcial.
+- El esquema P-256 conserva el material privado dentro del proceso de análisis. No se incorporan claves privadas de prueba al paquete.
+
