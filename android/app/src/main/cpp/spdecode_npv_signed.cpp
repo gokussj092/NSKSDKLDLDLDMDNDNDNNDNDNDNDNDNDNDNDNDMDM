@@ -16,7 +16,6 @@ bool same(const Bytes& a,const Bytes& b){
     for(size_t i=0;i<a.size();i++)mismatch|=a[i]^b[i];
     return mismatch==0;
 }
-Bytes concat(const Bytes& x,const Bytes& y){Bytes b=x;append(b,y);return b;}
 json jsonV1(const Bytes& rawData,const std::string& password,const std::string& recipient){
     need(rawData.size()>=89&&rawData.size()<=kMaxFile,"NPV_V1_BAD_SIZE");
     const auto headerSize=u32(rawData,5);
