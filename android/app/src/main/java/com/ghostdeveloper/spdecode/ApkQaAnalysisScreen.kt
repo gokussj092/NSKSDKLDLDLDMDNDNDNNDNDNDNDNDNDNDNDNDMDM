@@ -12,6 +12,9 @@ import com.ghostdeveloper.spdecode.cloud.CloudApkQaClient
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
@@ -35,6 +38,8 @@ internal fun ApkQaAnalysisScreen(
     onRetry:()->Unit = {},
 ) {
     var authorized by rememberSaveable { mutableStateOf(false) }
+    val clipboard=LocalClipboardManager.current
+    val sections=remember(report) { report?.let(ApkReportMarkdown::blocks).orEmpty() }
     Column(Modifier.fillMaxSize().testTag("apk_qa_screen")
         .verticalScroll(rememberScrollState())
         .padding(horizontal=20.dp,vertical=16.dp),
@@ -159,9 +164,34 @@ internal fun ApkQaAnalysisScreen(
                 Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(9.dp)) {
                     Text(stringResource(R.string.apk_qa_report),color=QA_WHITE,
                         fontWeight=FontWeight.SemiBold,fontSize=17.sp)
-                    SelectionContainer {
-                        Text(report,color=QA_WHITE,fontSize=12.sp,lineHeight=18.sp,
-                            modifier=Modifier.testTag("apk_qa_report_json"))
+                    sections.forEachIndexed { index, block ->
+                        Text(block.title,color=QA_WHITE,fontWeight=FontWeight.Medium,
+                            fontSize=13.sp)
+                        Row(horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+                            TextButton(onClick={
+                                clipboard.setText(AnnotatedString(block.markdown))
+                            }) { Text(stringResource(R.string.apk_qa_copy_markdown)) }
+                            TextButton(onClick={
+                                clipboard.setText(AnnotatedString(block.content))
+                            }) { Text(stringResource(R.string.copy)) }
+                        }
+                        if (block.language=="json") {
+                            Text("```json",color=QA_MUTED,fontFamily=FontFamily.Monospace,
+                                fontSize=12.sp)
+                            LargeResultViewer(
+                                raw=block.content,mask=false,
+                                identity="apk-qa-$index-${block.content.length}",
+                                suffix="json",
+                            )
+                            Text("```",color=QA_MUTED,fontFamily=FontFamily.Monospace,
+                                fontSize=12.sp)
+                        } else {
+                            SelectionContainer {
+                                Text(block.markdown,color=QA_WHITE,
+                                    fontFamily=FontFamily.Monospace,fontSize=12.sp,
+                                    lineHeight=18.sp,modifier=Modifier.testTag("apk_qa_report_json"))
+                            }
+                        }
                     }
                 }
             }
