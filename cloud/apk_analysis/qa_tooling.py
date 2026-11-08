@@ -73,7 +73,7 @@ def _run(command:list[str],*,cwd:Path,timeout:int,env:dict,
             return False
 
 
-def _base_and_libs(source:Path,dest:Path):
+def _base_and_libs(source:Path,dest:Path,*,lite:bool=False):
     """Extract one base APK and at most three bounded ELF candidates."""
     total=0
     splits=[]
@@ -97,7 +97,7 @@ def _base_and_libs(source:Path,dest:Path):
             splits=[base]
             # Limit additional target splits and do not retain them after work.
             for item in sorted(outer.infolist(),key=lambda z:z.filename):
-                if len(splits)>=8:break
+                if lite or len(splits)>=8:break
                 if not item.filename.startswith("split_config.") or not item.filename.endswith(".apk"):
                     continue
                 if "/" in item.filename or item.file_size>MAX_TOOL_APK:continue
@@ -129,7 +129,7 @@ def _base_and_libs(source:Path,dest:Path):
                 52<=entry.file_size<=32*1024*1024),key=priority)
             oversized_native+=len(all_native)-len(candidates)
             for info in candidates:
-                if len(binaries)>=MAX_GHIDRA_LIBS:break
+                if lite or len(binaries)>=MAX_GHIDRA_LIBS:break
                 # Only a fixed, private basename is written, never an APK path.
                 native=dest/("native-"+str(len(binaries))+".so")
                 with archive.open(info) as inp,native.open("xb") as out:
@@ -177,7 +177,7 @@ def inspect_tooling(source:Path,report:dict)->dict:
                   hashlib.sha256(headless.read_bytes()).hexdigest()==expected)
     with tempfile.TemporaryDirectory(prefix=".apkqa-tools-",dir=source.parent) as td:
         scratch=Path(td)
-        base,libs,total_native,oversized_native=_base_and_libs(source,scratch)
+        base,libs,total_native,oversized_native=_base_and_libs(source,scratch,lite=lite)
         # Java writes only to ephemeral per-job workspace; no network and
         # no permission to the decoder worker, host keys, Redis or Docker.
         # A minimal fixed environment. Never copy the service's internal
@@ -198,9 +198,13 @@ def inspect_tooling(source:Path,report:dict)->dict:
         did_jadx=_run(command,cwd=scratch,timeout=180 if lite else 240,env=env,
                       logfile=scratch/"jadx.log")
         # Do not return APK source code or stdout that could contain secrets.
-        source_refs=scan_jadx_sources(dest) if did_jadx else {}
+        # Preserve genuine partial source evidence on timeout/OOM, but do not
+        # claim the Java decompiler completed when its process failed.
+        source_refs=scan_jadx_sources(dest)
+        partial=not did_jadx and source_refs.get("sourceFilesInspected",0)>0
         state["jadx"]={
-            "status":"COMPLETED" if did_jadx else "FAILED_OR_TIMEOUT",
+            "status":"COMPLETED" if did_jadx else
+                     ("PARTIAL_OUTPUT" if partial else "FAILED_OR_TIMEOUT"),
             **source_refs,
         }
         state["jadxExecuted"]=did_jadx
