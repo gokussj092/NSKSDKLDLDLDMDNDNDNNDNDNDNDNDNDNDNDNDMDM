@@ -3,6 +3,7 @@ from pathlib import Path
 import tempfile
 import unittest
 import os
+import zipfile
 from unittest import mock
 from cloud.apk_analysis import qa_tooling
 from cloud.apk_analysis.qa_jadx_refs import scan_jadx_sources
@@ -49,7 +50,8 @@ class JadxReferenceTests(unittest.TestCase):
     def test_jadx_timeout_with_observed_sources_is_a_real_partial_not_success(self):
         with tempfile.TemporaryDirectory() as directory:
             path=Path(directory)/"authorized.apk"
-            path.write_bytes(b"fixture")
+            with zipfile.ZipFile(path,"w") as archive:
+                archive.writestr("classes.dex",b"dex\n035\0"+b"\0"*128)
             references={
                 "status":"OBSERVED","sourceFilesInspected":2493,
                 "sourceBytesInspected":3152472,"skippedLargeOrUnsafe":1,
