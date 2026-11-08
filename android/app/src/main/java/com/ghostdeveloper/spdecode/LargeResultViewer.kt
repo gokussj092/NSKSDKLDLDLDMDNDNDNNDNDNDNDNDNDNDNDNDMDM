@@ -1,9 +1,6 @@
 package com.ghostdeveloper.spdecode
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -13,7 +10,7 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.font.FontFamily
+import kotlinx.coroutines.launch
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -57,7 +54,9 @@ internal fun LargeResultViewer(raw: String, mask: Boolean, identity: String, suf
                 var query by rememberSaveable { mutableStateOf("") }
                 var action by remember { mutableIntStateOf(0) }
                 var match by remember { mutableIntStateOf(-1) }
-                var snippet by remember { mutableStateOf<String?>(null) }
+                var copyFailure by remember { mutableStateOf(false) }
+                var copying by remember { mutableStateOf(false) }
+                val taskScope=rememberCoroutineScope()
                 var view by remember { mutableStateOf<ContinuousJsonView?>(null) }
                 val clipboard = LocalClipboardManager.current
                 val fontScale = LocalDensity.current.fontScale
@@ -104,43 +103,32 @@ internal fun LargeResultViewer(raw: String, mask: Boolean, identity: String, suf
                     }
                     AndroidView(
                         factory = { context ->
-                            ContinuousJsonView(context, current, mask) { line, column ->
-                                snippet = runCatching {
-                                    current.lineWindow(line, column, 2048, mask)
-                                        .optString("text", "")
-                                }.getOrNull()
+                            ContinuousJsonView(context,current,mask) { fromLine,fromColumn,toLine,toColumn ->
+                                if (!copying) taskScope.launch {
+                                    copying=true
+                                    try {
+                                        val selected=withContext(Dispatchers.Default) {
+                                            current.selectedText(fromLine,fromColumn,toLine,toColumn,mask)
+                                        }
+                                        // The ClipboardManager uses Binder and cannot safely carry a
+                                        // multi-megabyte payload. Export large reports instead.
+                                        if(selected.length>700_000) copyFailure=true
+                                        else clipboard.setText(AnnotatedString(selected))
+                                    } catch (_:Exception) {
+                                        copyFailure=true
+                                    } finally {copying=false}
+                                }
                             }.also { view = it }
                         },
                         modifier = Modifier.fillMaxWidth()
                             .height((current.lineCount.coerceIn(4, 150) * 22f * fontScale).dp),
                     )
                 }
-                if (snippet != null) {
-                    val text = requireNotNull(snippet)
-                    AlertDialog(
-                        onDismissRequest={snippet=null},
-                        title={Text(stringResource(R.string.result_select_fragment))},
-                        text={
-                            Column(Modifier.heightIn(max=320.dp)
-                                .verticalScroll(rememberScrollState())) {
-                                SelectionContainer {
-                                    Text(text,color=Color.White,fontSize=12.sp,
-                                        fontFamily=FontFamily.Monospace)
-                                }
-                            }
-                        },
-                        confirmButton={
-                            TextButton(onClick={clipboard.setText(AnnotatedString(text));snippet=null}) {
-                                Text(stringResource(R.string.result_copy_fragment))
-                            }
-                        },
-                        dismissButton={
-                            TextButton(onClick={snippet=null}) {
-                                Text(stringResource(R.string.cancel))
-                            }
-                        },
-                    )
+                if(copyFailure) {
+                    Text(stringResource(R.string.result_copy_too_large),
+                        color=Color(0xFFFFAAAA),fontSize=12.sp)
                 }
+                if(copying) CircularProgressIndicator(modifier=Modifier.size(20.dp))
             }
         }
     }
