@@ -17,6 +17,7 @@ internal object NativeResultEngine {
     @JvmStatic private external fun nativeLineCount(handle:Long):Int
     @JvmStatic private external fun nativeColumnCount(handle:Long):Int
     @JvmStatic private external fun nativeLineWindow(handle:Long,line:Int,column:Int,count:Int,mask:Boolean):ByteArray
+    @JvmStatic private external fun nativeFindNext(handle:Long,term:ByteArray,start:Int,mask:Boolean):Int
     @JvmStatic private external fun nativeClose(handle:Long)
     fun open(raw:String):Document {
         val handle=nativeOpen(raw)
@@ -25,6 +26,12 @@ internal object NativeResultEngine {
     class Document internal constructor(private var handle:Long,val byteLength:Int):Closeable {
         val lineCount:Int = nativeLineCount(handle)
         val columnCount:Int = nativeColumnCount(handle)
+        @Synchronized fun findNext(term:String,start:Int,mask:Boolean):Int {
+            check(handle!=0L)
+            val bytes=term.trim().toByteArray(Charsets.UTF_8)
+            if(bytes.isEmpty()||bytes.size>256)return -1
+            return nativeFindNext(handle,bytes,start.coerceAtLeast(0),mask)
+        }
         @Synchronized fun lineWindow(line:Int,column:Int,count:Int,mask:Boolean):JSONObject {
             check(handle!=0L)
             return JSONObject(nativeLineWindow(handle,line,column,count,mask).toString(Charsets.UTF_8))

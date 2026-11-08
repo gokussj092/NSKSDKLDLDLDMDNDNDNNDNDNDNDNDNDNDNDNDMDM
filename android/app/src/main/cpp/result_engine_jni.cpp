@@ -51,6 +51,16 @@ jbyteArray value(JNIEnv* env,jclass,jlong id,jint node,jint offset,jint limit,jb
 jbyteArray original(JNIEnv* env,jclass,jlong id,jint offset,jint limit){try{if(offset<0||limit<1)throw std::runtime_error("range");return bytes(env,get(id)->original(static_cast<size_t>(offset),static_cast<size_t>(limit)));}catch(...){failure(env);return nullptr;}}
 jint lineCount(JNIEnv* env,jclass,jlong id){try{return static_cast<jint>(get(id)->lines());}catch(...){failure(env);return 0;}}
 jint columnCount(JNIEnv* env,jclass,jlong id){try{return static_cast<jint>(get(id)->columns());}catch(...){failure(env);return 0;}}
+jint findNext(JNIEnv* env,jclass,jlong id,jbyteArray term,jint start,jboolean mask){
+    try{
+        if(!term||env->GetArrayLength(term)<1||env->GetArrayLength(term)>256)return -1;
+        std::string needle(static_cast<size_t>(env->GetArrayLength(term)),'\0');
+        env->GetByteArrayRegion(term,0,static_cast<jsize>(needle.size()),
+            reinterpret_cast<jbyte*>(&needle[0]));
+        if(env->ExceptionCheck())return -1;
+        return static_cast<jint>(get(id)->findNext(needle,start,mask==JNI_TRUE));
+    }catch(...){failure(env);return -1;}
+}
 jbyteArray lineWindow(JNIEnv* env,jclass,jlong id,jint line,jint column,jint count,jboolean mask){try{return bytes(env,get(id)->lineWindow(line,column,count,mask==JNI_TRUE));}catch(...){failure(env);return nullptr;}}
 void closeResult(JNIEnv*,jclass,jlong id){std::lock_guard<std::mutex> lock(mutex);documents.erase(id);}
 jint length(JNIEnv* env,jclass,jlong id){try{return static_cast<jint>(get(id)->bytes());}catch(...){failure(env);return 0;}}
@@ -62,6 +72,7 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm,void*){
         {const_cast<char*>("nativeLineCount"),const_cast<char*>("(J)I"),reinterpret_cast<void*>(lineCount)},
         {const_cast<char*>("nativeColumnCount"),const_cast<char*>("(J)I"),reinterpret_cast<void*>(columnCount)},
         {const_cast<char*>("nativeLineWindow"),const_cast<char*>("(JIIIZ)[B"),reinterpret_cast<void*>(lineWindow)},
+        {const_cast<char*>("nativeFindNext"),const_cast<char*>("(J[BIZ)I"),reinterpret_cast<void*>(findNext)},
         {const_cast<char*>("nativeOpen"),const_cast<char*>("(Ljava/lang/String;)J"),reinterpret_cast<void*>(openResult)},
         {const_cast<char*>("nativeLength"),const_cast<char*>("(J)I"),reinterpret_cast<void*>(length)},
         {const_cast<char*>("nativePage"),const_cast<char*>("(JIIIZ)[B"),reinterpret_cast<void*>(page)},

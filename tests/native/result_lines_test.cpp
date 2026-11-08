@@ -57,6 +57,13 @@ int main(){
     Document multilingual("{\"消息\":\"地地地最后字符\",\"ñ\":\"مرحبا\"}");
     assert(line(multilingual,1)=="  \"消息\": \"地地地最后字符\",");
     assert(line(multilingual,2)=="  \"ñ\": \"مرحبا\"");
+    assert(nested.findNext("city",0,false)==2);
+    assert(nested.findNext("LAST",0,false)==9);
+    assert(nested.findNext("non-existent",0,false)==-1);
+    assert(nested.findNext("CITY",0,false)==2);
+    assert(secrets.findNext("FICTIONAL_ONLY",0,true)==-1);
+    assert(secrets.findNext("FICTIONAL_ONLY",0,false)==2);
+    assert(secrets.findNext("password",0,true)==4);
     Document empty("{\"a\":[],\"b\":{}}");
     assert(empty.lines()==6);assert(line(empty,2)=="  ],");
     Document duplicate("{\"x\":1,\"x\":2}");assert(line(duplicate,1)=="  \"x\": 1,");assert(line(duplicate,2)=="  \"x\": 2");

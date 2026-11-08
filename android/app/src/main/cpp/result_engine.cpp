@@ -3,6 +3,7 @@
 #include <cctype>
 #include <stdexcept>
 #include <utility>
+#include <string_view>
 
 namespace spdecode_result {
 namespace {
@@ -177,6 +178,39 @@ void Document::indexLines(){
         }
     }
 }
+
+namespace {
+bool containsFoldedAscii(std::string_view source,std::string_view term){
+    if(term.empty()||term.size()>256||term.size()>source.size())return false;
+    for(size_t i=0;i+term.size()<=source.size();++i){
+        size_t at=0;
+        for(;at<term.size();++at){
+            const auto a=static_cast<unsigned char>(source[i+at]);
+            const auto b=static_cast<unsigned char>(term[at]);
+            const auto lower=[](unsigned char c)->unsigned char{
+                return c>='A'&&c<='Z'?static_cast<unsigned char>(c+('a'-'A')):c;
+            };
+            if(lower(a)!=lower(b))break;
+        }
+        if(at==term.size())return true;
+    }
+    return false;
+}
+}
+int Document::findNext(const std::string& term,int start,bool mask)const{
+    if(start<0||term.empty()||term.size()>256)return -1;
+    // One bounded pass; caller may wrap around by searching again from 0.
+    for(size_t at=static_cast<size_t>(start);at<lines_.size();++at){
+        const auto& line=lines_[at];const auto& n=node(line.id);
+        if(containsFoldedAscii(prefix(line),term))return static_cast<int>(at);
+        if(!line.closing&&!container(n.kind)&&!(mask&&n.sensitive)){
+            const std::string_view raw(source_.data()+n.start,n.end-n.start);
+            if(containsFoldedAscii(raw,term))return static_cast<int>(at);
+        }
+    }
+    return -1;
+}
+
 std::string Document::lineWindow(int index,int column,int count,bool mask)const{
     if(index<0||static_cast<size_t>(index)>=lines_.size()||column<0||count<1||count>2048)invalid();
     const auto& line=lines_[static_cast<size_t>(index)];const auto& n=node(line.id);

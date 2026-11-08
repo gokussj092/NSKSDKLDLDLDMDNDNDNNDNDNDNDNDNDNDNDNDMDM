@@ -27,6 +27,8 @@ public:
     uint32_t columns()const{return columns_;}
     // Random access to a viewport of a logical line. No values are truncated.
     std::string lineWindow(int line,int column,int count,bool mask)const;
+    // Find the next displayed logical line without copying the entire document.
+    int findNext(const std::string& term,int start,bool mask)const;
 private:
     struct Checkpoint {uint32_t byte,column;};
     struct Line {
