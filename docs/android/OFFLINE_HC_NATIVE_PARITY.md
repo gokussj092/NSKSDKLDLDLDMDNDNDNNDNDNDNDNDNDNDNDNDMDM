@@ -11,11 +11,18 @@ tampered outer, slot, main, profile, HPR1 and sidecar tags; incorrect and
 missing credentials. This checks cryptography and JSON parity on Linux,
 **not** on-device execution or real exporter certification.
 
-Historical HCCFG 1/2/5/7 has a native code path but requires its own
-differential fixtures. The pre-HCCFG legacy .hc XOR+ChaCha8 formats are **not
-implemented in C++** and must not fall back to Kotlin or Cloud. They fail
-with `HC_UNRECOGNIZED_FORMAT`. The UI should surface this limitation.
+Historical HCCFG schemas 1/2/5/7 now have native C++ paths and are covered
+by independent synthetic Python reference fixtures: password-only and HWID
+or dual lock (including HPR1, sidecar and tampered tags). Legacy pre-HCCFG
+XOR + original 64-bit-nonce ChaCha20 + AES-RST + JKL is independently ported
+to spdecode_http_custom_legacy.cpp and a preexisting A.2.3 golden is tested.
+The code uses native-only C++ for cryptography. The host differential suite
+passes **69 synthetic cases**. Real exporter/device certification and
+additional legacy-version compatibility remain outstanding. The original
+legacy scheme lacks authenticated tags; parsing must never be described as
+strong authenticated decryption.
 
 Integration files: `spdecode_http_custom.{h,cpp}`,
-`spdecode_offline_native.cpp`, `CMakeLists.txt`. Pure C++ one binary target;
+`spdecode_http_custom_legacy.{h,cpp}`, `spdecode_offline_native.cpp`,
+`CMakeLists.txt`. Pure C++ one binary target;
 split by source files instead of packaging multiple unnecessary .so files.
