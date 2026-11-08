@@ -4,7 +4,15 @@ import json
 import struct
 import subprocess
 import sys
-from tests.golden.http_custom_899 import make_file, PASSWORD, HWID
+from pathlib import Path
+import importlib.util
+root = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(root))
+spec = importlib.util.spec_from_file_location("native_hc_fixture", root / "tests/golden/http_custom_899.py")
+assert spec is not None and spec.loader is not None
+fixture = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(fixture)
+make_file, PASSWORD, HWID = fixture.make_file, fixture.PASSWORD, fixture.HWID
 from decoders.Python.apps.HTTP_Custom.codec import decrypt
 
 def call(exe, data: bytes, password="", hwid=""):
