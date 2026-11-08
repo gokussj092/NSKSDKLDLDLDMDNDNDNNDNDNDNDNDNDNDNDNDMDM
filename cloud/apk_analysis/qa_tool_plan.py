@@ -123,6 +123,8 @@ def correlate_evidence(inventory: dict, tooling: dict) -> dict:
                        if isinstance(signal, str)})[:24]
     native_refs = sorted({signal for item in native for signal in item.get("cryptoReferences", [])
                           if isinstance(signal, str)})[:24]
+    code_evidence_count = sum(len(item.get("methodCodeEvidence", [])) for item in dex)
+    code_candidate_count = sum(int(item.get("candidateCodeItems", 0)) for item in dex)
     methods = [
         {"dex": item.get("name"), "class": method.get("class"),
          "name": method.get("name"), "evidence": method.get("evidence")}
@@ -141,7 +143,10 @@ def correlate_evidence(inventory: dict, tooling: dict) -> dict:
         "nativeCryptoReferences": native_refs,
         "candidateMethods": methods,
         "candidateMethodsTruncated": sum(len(x.get("candidateMethods", [])) for x in dex) > len(methods),
+        "dexCandidateCodeItems": code_candidate_count,
+        "dexCodeEvidenceEntries": code_evidence_count,
         "jadxCandidateSites": len(j.get("candidateCallSites", [])),
+        "jadxCandidateSitesTruncated": j.get("candidateCallSitesTruncated", False),
         "jadxRecoveredDexCount": recovered.get("dexRecovered", 0),
         "jadxDexDiscovered": recovered.get("dexDiscovered"),
         "methodValidated": False,

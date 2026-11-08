@@ -228,7 +228,14 @@ def inspect_tooling(source:Path,report:dict)->dict:
         if not did_jadx:
             # Keep the first, possibly useful, JADX output and retry only
             # independently extracted DEX files in a fixed sequential budget.
-            recovery=recover_jadx(base,scratch,JADX_JAR,env,_run_jadx,scan_jadx_sources)
+            try:
+                recovery=recover_jadx(base,scratch,JADX_JAR,env,_run_jadx,scan_jadx_sources)
+            except (OSError,ValueError,RuntimeError,zipfile.BadZipFile):
+                # The primary attempt may already contain valuable sources.
+                # A broken retry must not erase the primary evidence.
+                recovery={"status":"RECOVERY_FAILED","attempts":[],"dexRecovered":0,
+                          "sourceFilesInspected":0,"sourceBytesInspected":0,
+                          "candidateCallSites":[],"cryptoReferenceCounts":{}}
             source_refs["sourceFilesInspected"]=(
                 primary_files+recovery["sourceFilesInspected"])
             source_refs["sourceBytesInspected"]=(

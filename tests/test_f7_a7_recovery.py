@@ -3,6 +3,7 @@
 Synthetic fixtures prove orchestration only; no third-party APK is used.
 """
 import os
+import json
 from pathlib import Path
 import tempfile
 import unittest
@@ -122,6 +123,11 @@ class RecoveryTests(unittest.TestCase):
     def test_sixty_three_scripts_stay_unreviewed_and_not_executed(self):
         self.assertEqual(len(INVENTORY), 63)
         self.assertEqual(len(set(INVENTORY)), 63)
+        baseline = (Path(__file__).resolve().parents[1] /
+                    "analysis/platform/apk-tooling/tool_sources.v1.json")
+        expected = tuple(x["path"] for x in json.loads(
+            baseline.read_text("utf-8"))["sources"])
+        self.assertEqual(INVENTORY, expected)
         sample = {
             "dexHeaders": [{"tableStatus": "PARSED", "candidateMethods": []}],
             "nativeLibraries": [{"sectionStatus": "PARSED", "architecture": "AARCH64"}],

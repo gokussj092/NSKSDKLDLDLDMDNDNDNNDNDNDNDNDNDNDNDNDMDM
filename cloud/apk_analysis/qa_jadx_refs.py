@@ -47,6 +47,7 @@ def scan_jadx_sources(output:Path)->dict:
     skipped=0
     total=0
     completed=True
+    sites_observed=0
     for current,dirs,files in os.walk(output,topdown=True,followlinks=False):
         base=Path(current)
         rel_dir=base.relative_to(output)
@@ -90,12 +91,13 @@ def scan_jadx_sources(output:Path)->dict:
                 while names and names[0] in ("sources","src"):
                     names=names[1:]
                 classtag=".".join(names)
+                unique={}
+                for pos,label in matches:
+                    prior=next((m for offset,m in reversed(methods) if offset<=pos),"UNRESOLVED")
+                    if pos>0 and len(prior)>80:prior="UNRESOLVED"
+                    unique[(prior,label)]=True
+                sites_observed+=min(len(unique),6)
                 if len(found)<MAX_HITS:
-                    unique={}
-                    for pos,label in matches:
-                        prior=next((m for offset,m in reversed(methods) if offset<=pos),"UNRESOLVED")
-                        if pos>0 and len(prior)>80:prior="UNRESOLVED"
-                        unique[(prior,label)]=True
                     for method,label in list(unique)[:6]:
                         if len(found)>=MAX_HITS:break
                         found.append({
@@ -113,5 +115,8 @@ def scan_jadx_sources(output:Path)->dict:
         "skippedLargeOrUnsafe":skipped,
         "cryptoReferenceCounts":signals,
         "candidateCallSites":found,
+        "candidateCallSitesObserved":sites_observed,
+        "candidateCallSitesTruncated":sites_observed>len(found),
+        "sourceScanBudgetComplete":completed,
         "methodValidated":False,
     }
