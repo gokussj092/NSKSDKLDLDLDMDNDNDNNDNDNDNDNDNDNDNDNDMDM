@@ -15,7 +15,7 @@ import subprocess
 import tempfile
 import zipfile
 from .qa_jadx_refs import scan_jadx_sources
-from .qa_jadx_recovery import diagnose_termination, recover_jadx
+from .qa_jadx_recovery import DEX_NAME, diagnose_termination, recover_jadx
 from .qa_tool_rpc import inspect_remote
 
 JADX_JAR=Path("/opt/spdecode/scripts/apk_analysis/cache/jadx-1.5.6-all.jar")
@@ -163,6 +163,21 @@ def _base_and_libs(source:Path,dest:Path,*,lite:bool=False):
     return base,binaries,total_native,oversized_native
 
 
+def _prefer_dex_first(base:Path, lite:bool)->bool:
+    """Inspect the actual base archive rather than an optional upstream report.
+
+    The isolated RPC worker deliberately supplies an empty DEX inventory. This
+    bounded ZIP-directory check prevents monolithic JADX heap exhaustion there.
+    No DEX bytes are decompressed or executed during this preflight.
+    """
+    if not lite:
+        return False
+    with zipfile.ZipFile(base) as archive:
+        dex=[item for item in archive.infolist()
+             if DEX_NAME.fullmatch(item.filename) and not item.is_dir()]
+    return len(dex)>=2 and sum(item.file_size for item in dex)>=16*1024*1024
+
+
 def inspect_tooling(source:Path,report:dict)->dict:
     """One optional attempt *after* the full upload hash and ZIP gate."""
     if os.environ.get("SPDECODE_APK_QA_TOOLS_REMOTE")=="enabled":
@@ -219,9 +234,9 @@ def inspect_tooling(source:Path,report:dict)->dict:
         # Large multidex applications exhaust a small JVM on the monolithic pass.
         # Prefer bounded per-DEX work immediately, keeping the real output of
         # ordinary/smaller APKs unchanged.
-        headers=report.get("dexHeaders",[]) if isinstance(report,dict) else []
-        multidex=lite and sum(1 for x in headers if x.get("tableStatus")=="PARSED")>=2
-        large_dex=multidex and sum(x.get("bytes",0) for x in headers)>=16*1024*1024
+        # The remote worker calls inspect_tooling(source, {}) and therefore
+        # must determine this strategy from the validated base APK itself.
+        large_dex=_prefer_dex_first(base,lite)
         termination=("DEX_FIRST_RESOURCE_BUDGET" if large_dex else
                      _run_jadx(command,cwd=scratch,timeout=180 if lite else 240,env=env,
                                logfile=scratch/"jadx.log"))
