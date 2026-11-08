@@ -782,6 +782,8 @@ dependencies {
     // No Compose, Integrity, WorkManager, Room, Firebase, or JVM cryptography
     // in SP-DECODE Offline. The source set is an Android SAF UI with native JNI.
     implementation("androidx.activity:activity-ktx:1.10.1")
+    // Required by the project-wide Kotlin Compose compiler plugin; no Compose UI ships.
+    if (nativeOffline) implementation("androidx.compose.runtime:runtime:1.7.8")
     if (!nativeOffline) {
         val composeBom = platform("androidx.compose:compose-bom:2025.04.01")
         implementation(composeBom)
