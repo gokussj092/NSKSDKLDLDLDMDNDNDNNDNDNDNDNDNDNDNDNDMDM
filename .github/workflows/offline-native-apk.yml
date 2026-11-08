@@ -99,7 +99,7 @@ jobs:
           mkdir -p dist
           cp "$APK" dist/SP-DECODE-Offline-Native-alpha-debug.apk
           (cd dist && sha256sum *.apk > SHA256SUMS.txt)
-          echo "ALPHA: NetMod and P-256 generation; HC/EHI/NPV decryption pending" > dist/BUILD_INFO.txt
+          echo "ALPHA: native NetMod, HTTP Custom HCX4/HCCFG/legacy, and P-256 generation. Injector and NPV decryption pending. HC 69 host synthetic cases pass; real device tests pending." > dist/BUILD_INFO.txt
       - uses: actions/upload-artifact@v4
         with:
           name: SP-DECODE-OFFLINE-NATIVE-ALPHA
