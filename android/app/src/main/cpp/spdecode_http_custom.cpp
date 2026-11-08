@@ -1,4 +1,5 @@
 #include "spdecode_http_custom.h"
+#include "spdecode_http_custom_legacy.h"
 #include <argon2.h>
 #include <mbedtls/chacha20.h>
 #include <mbedtls/base64.h>
@@ -580,6 +581,8 @@ std::string decodeHttpCustom(const std::vector<unsigned char>& raw,
         auto material=derive(env,password,hwid,false);
         return decryptParsed(env,material,false).dump(2,' ',false,json::error_handler_t::strict)+"\n";
     }
+    std::string legacy;
+    if(decodeLegacyHttpCustom(raw,legacy))return legacy;
     throw HCError("HC_UNRECOGNIZED_FORMAT");
 }
 } // namespace spdecode::offline
