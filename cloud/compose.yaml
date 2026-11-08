@@ -163,7 +163,7 @@ services:
     profiles: ["apk-qa-tools"]
     build:
       context: ..
-      dockerfile: cloud/apk_analysis/Dockerfile.qa-tools
+      dockerfile: ${SPDECODE_APK_TOOLS_DOCKERFILE:-cloud/apk_analysis/Dockerfile.qa-tools}
     restart: unless-stopped
     init: true
     user: "65532:65532"
@@ -172,16 +172,19 @@ services:
       SPDECODE_APK_QA_TOOL_MODE: enabled
       SPDECODE_APK_QA_TOOLS_REVIEWED: ${CLOUD_APK_QA_TOOLS_REVIEWED:-false}
       SPDECODE_APK_QA_TOOLS_SCRATCH: /analysis
+      SPDECODE_APK_QA_LITE: ${SPDECODE_APK_QA_LITE:-false}
     networks: [apk-tools-private]
     read_only: true
     cap_drop: ["ALL"]
     security_opt: ["no-new-privileges:true"]
-    mem_limit: 4096m
-    cpus: 1.8
+    mem_limit: ${SPDECODE_APK_TOOLS_MEM_LIMIT:-4096m}
+    cpus: ${SPDECODE_APK_TOOLS_CPUS:-1.8}
     pids_limit: 96
+    # Disk-backed scratch: APKS and JADX source trees don't exhaust VPS RAM.
+    volumes:
+      - apk-tools-scratch:/analysis:rw
     tmpfs:
-      - /analysis:size=1024m,uid=65532,gid=65532,mode=0700,noexec,nosuid,nodev
-      - /tmp:size=128m,uid=65532,gid=65532,mode=0700,noexec,nosuid,nodev
+      - /tmp:size=48m,uid=65532,gid=65532,mode=0700,noexec,nosuid,nodev
     healthcheck:
       test: ["CMD","python3","-c","import urllib.request;urllib.request.urlopen('http://127.0.0.1:8793/health',timeout=3).read()"]
       interval: 25s
@@ -267,6 +270,7 @@ volumes:
   catalog-snapshots: {}
   notice-feed: {}
   apk-qa-jobs: {}
+  apk-tools-scratch: {}
 
 networks:
   edge: {}

@@ -1,0 +1,25 @@
+# F7-A5 safe, low-memory JADX-only tools. No Ghidra or extra service ports.
+FROM eclipse-temurin:21-jre-jammy
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/opt/spdecode \
+    HOME=/tmp
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 ca-certificates && rm -rf /var/lib/apt/lists/*
+WORKDIR /opt/spdecode
+COPY scripts/apk_analysis/decompile.py ./scripts/apk_analysis/decompile.py
+RUN mkdir -p /opt/spdecode/scripts/apk_analysis/cache && \
+    python3 -B scripts/apk_analysis/decompile.py --install
+COPY cloud/apk_analysis/__init__.py cloud/apk_analysis/input_gate.py \
+     cloud/apk_analysis/qa_dex_bytecode.py cloud/apk_analysis/qa_deep.py \
+     cloud/apk_analysis/qa_jadx_refs.py cloud/apk_analysis/qa_tool_rpc.py \
+     cloud/apk_analysis/qa_tooling.py cloud/apk_analysis/qa_tool_worker.py \
+     cloud/apk_analysis/qa_static.py cloud/apk_analysis/qa_service.py \
+     cloud/apk_analysis/SpDecodeGhidraReport.java ./cloud/apk_analysis/
+RUN mkdir -p /analysis && \
+    chown -R 65532:65532 /analysis /opt/spdecode && \
+    chmod 0700 /analysis
+USER 65532:65532
+EXPOSE 8793
+CMD ["python3","-B","-m","cloud.apk_analysis.qa_tool_worker"]

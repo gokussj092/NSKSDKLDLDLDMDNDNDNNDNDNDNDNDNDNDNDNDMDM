@@ -153,7 +153,8 @@ def inspect_tooling(source:Path,report:dict)->dict:
     if (os.environ.get("SPDECODE_APK_QA_TOOL_MODE")!="enabled" or
             os.environ.get("SPDECODE_APK_QA_TOOLS_REVIEWED")!="true"):
         return state
-    if _memory_limit()<MIN_MEMORY:
+    lite=os.environ.get("SPDECODE_APK_QA_LITE")=="true"
+    if _memory_limit()<(1024*1024*1024 if lite else MIN_MEMORY):
         state["status"]="INSUFFICIENT_CONTAINER_MEMORY"
         return state
     if not _verified_jadx():
@@ -169,7 +170,7 @@ def inspect_tooling(source:Path,report:dict)->dict:
         manifest=GHIDRA_SCRIPT.with_name("ghidra-headless.sha256")
         if manifest.is_file() and not manifest.is_symlink():
             expected=manifest.read_text("ascii").strip()
-    ghidra_ready=(bool(re.fullmatch(r"[a-f0-9]{64}",expected)) and
+    ghidra_ready=(not lite and bool(re.fullmatch(r"[a-f0-9]{64}",expected)) and
                   home.is_dir() and not home.is_symlink() and
                   headless.is_file() and not headless.is_symlink() and
                   GHIDRA_SCRIPT.is_file() and
@@ -189,11 +190,12 @@ def inspect_tooling(source:Path,report:dict)->dict:
              "JAVA_TOOL_OPTIONS":"-Duser.home="+str(scratch)}
         dest=scratch/"jadx-output"
         dest.mkdir(mode=0o700)
-        command=["java","-Xmx1800m","-XX:ActiveProcessorCount=2",
+        command=["java","-Xmx512m" if lite else "-Xmx1800m",
+                 "-XX:ActiveProcessorCount=1" if lite else "-XX:ActiveProcessorCount=2",
                  "-cp",str(JADX_JAR),"jadx.cli.JadxCLI",
-                 "--no-res","--decompilation-mode","simple","-j","2",
+                 "--no-res","--decompilation-mode","simple","-j","1" if lite else "2",
                  "-d",str(dest),str(base)]
-        did_jadx=_run(command,cwd=scratch,timeout=240,env=env,
+        did_jadx=_run(command,cwd=scratch,timeout=180 if lite else 240,env=env,
                       logfile=scratch/"jadx.log")
         # Do not return APK source code or stdout that could contain secrets.
         source_refs=scan_jadx_sources(dest) if did_jadx else {}
@@ -202,9 +204,10 @@ def inspect_tooling(source:Path,report:dict)->dict:
             **source_refs,
         }
         state["jadxExecuted"]=did_jadx
+        state["resourceProfile"]="JADX_LITE" if lite else "ADVANCED"
         state["status"]="PARTIAL_TOOLS_EXECUTED" if did_jadx else "TOOLS_FAILED"
         if not ghidra_ready:
-            state["ghidra"]={"status":"NOT_INSTALLED_OR_VERIFIED",
+            state["ghidra"]={"status":"DISABLED_IN_LITE_PROFILE" if lite else "NOT_INSTALLED_OR_VERIFIED",
                              "elfDiscovered":total_native}
         elif not libs:
             state["ghidra"]={"status":"NO_ELF_CANDIDATES",
