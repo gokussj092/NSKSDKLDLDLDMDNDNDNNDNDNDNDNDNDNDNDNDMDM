@@ -60,6 +60,65 @@ def main(exe):
             else:
                 negative(exe,fixture["data"],"bad-password");count+=1
                 negative(exe,fixture["data"]);count+=1
+    # Authentic v5 app-key mode 2, built with the same NPF field body but a
+    # separately signed app-key envelope. Confirms the 749,569-byte whitebox
+    # native evaluator (the recipient-only v6 path does not exercise this KDF).
+    from Crypto.Cipher import ChaCha20_Poly1305
+    from Crypto.Hash import SHA256
+    from Crypto.Protocol.KDF import HKDF
+    from Crypto.Signature import DSS
+    import hashlib
+    def seal(key, nonce, plain, aad):
+        c=ChaCha20_Poly1305.new(key=key,nonce=nonce)
+        c.update(aad)
+        out,tag=c.encrypt_and_digest(plain)
+        return out+tag
+    base=make()
+    raw=base["data"]
+    oldh=int.from_bytes(raw[5:9],"big")
+    oldhead=raw[9:9+oldh]
+    nonce=raw[9+oldh:9+oldh+12]
+    body=raw[9+oldh+16:-64]
+    prefix=bytearray(oldhead[:53])
+    prefix[50]=2
+    cid=bytes(prefix[1:17])
+    salt=bytes(range(16,32))
+    kdk=hashlib.sha256(b"npvtunnel/appkey/v2 "+npvs._whitebox_block(salt)+cid).digest()
+    wrapnonce=bytes(range(48,60))
+    prefix.extend(b"\x00\x02"+salt+wrapnonce+seal(kdk,wrapnonce,base["dek"],salt))
+    mkey=HKDF(base["dek"],32,nonce,SHA256,context=b"NPVS-v5/metadata")
+    meta=seal(mkey,nonce,npvs._canonical(base["expectedRaw"]["metadata"]),bytes(prefix))
+    header=bytes(prefix)+struct.pack(">I",len(meta))+meta
+    unsigned=b"NPVS\x05"+struct.pack(">I",len(header))+header+nonce+struct.pack(">I",len(body))+body
+    signed=unsigned+DSS.new(base["creator"],"deterministic-rfc6979",encoding="binary").sign(SHA256.new(unsigned))
+    assert npvs.decode_npvs_complete(signed)==npvs.decode_npvs_complete(raw,password=base["password"])
+    compare(exe,signed,npvs.decode_npvs_complete(signed));count+=1
+    negative(exe,signed[:-1]+bytes([signed[-1]^1]));count+=1
+    negative(exe,signed,"incorrect");count+=1
+    # A signed NPV blob transported through any supported NPV URI must use
+    # the same authenticated native codec, not a plaintext Base64 shortcut.
+    envelope=b"npvt://"+base64.urlsafe_b64encode(signed).rstrip(b"=")
+    compare(exe,envelope,npvs.decode_npvs_complete(signed));count+=1
+    # Recipient mode also accepts an explicit file-bound, captured agreement.
+    original=make(recipient=True,identity=identity)
+    first=npvs.inspect_npvs(original["data"])["recipients"][0]
+    from Crypto.PublicKey import ECC
+    private=ECC.import_key(npvs_identity.binary(identity["privateKey"]))
+    ephemeral=ECC.import_key(first[32:65],curve_name="P-256")
+    shared=int((ephemeral.pointQ*private.d).x).to_bytes(32,"big")
+    captured={
+       "schema":"spdecode.npvs.recipient.v1",
+       "kind":"agreement","source":"captured","curve":"P-256",
+       "fingerprint":identity["fingerprint"],
+       "fileSha256":hashlib.sha256(original["data"]).hexdigest(),
+       "peer":npvs_identity.encode(first[32:65]),
+       "sharedSecret":npvs_identity.encode(shared),
+    }
+    assert npvs.decode_npvs_complete(original["data"],recipient_key=captured)==npvs.decode_npvs_complete(original["data"],recipient_key=identity)
+    compare(exe,original["data"],npvs.decode_npvs_complete(original["data"],recipient_key=identity),identity=json.dumps(captured))
+    count+=1
+    negative(exe,original["data"],identity=json.dumps(captured|{"fileSha256":"0"*64}))
+    count+=1
     # Authenticated fields use a fixed mock nonce and inventory MAC; no partial
     # success when altering any tag or layout.
     obj={"configs":[{"host":"example.invalid","port":443,"nested":
