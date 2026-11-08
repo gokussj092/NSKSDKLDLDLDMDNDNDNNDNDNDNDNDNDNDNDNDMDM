@@ -40,7 +40,6 @@ constexpr const char* labels[]={
 "unknown22","extraSniffer","psiphon2","v2rayEnabled","v2rayConfig",
 "version","slowdnsEnabled","slowdnsServer","slowdnsPublickey","dnsResolver"
 };
-const std::string braille=u8"⠁⠃⠉⠙⠑⠋⠛⠓⠊⠚⠅⠇⠍⠝⠕⠏⠟⠗⠎⠞⠥⠧⠺⠭⠽⠵⠼⠁⠼⠃⠼⠉⠼⠙⠼⠑⠼⠋⠼⠛⠼⠊⠼⠚";
 constexpr std::array<unsigned char,20> jklOld={{
 0xd5,0xd4,0xd3,0xd2,0xd1,0xd0,0xcf,0xce,0xcd,0xcc,
 0xbd,0xbc,0xbb,0xba,0xb9,0xb8,0xb7,0xb6,0xb5,0xb4}};
