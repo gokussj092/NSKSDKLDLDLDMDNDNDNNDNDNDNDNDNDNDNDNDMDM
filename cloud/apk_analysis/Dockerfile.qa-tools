@@ -30,7 +30,8 @@ RUN set -eu; \
     rm -f /tmp/spdecode-ghidra.zip
 COPY cloud/apk_analysis/__init__.py cloud/apk_analysis/input_gate.py \
      cloud/apk_analysis/qa_dex_bytecode.py cloud/apk_analysis/qa_deep.py \
-     cloud/apk_analysis/qa_jadx_refs.py cloud/apk_analysis/qa_tool_rpc.py \
+     cloud/apk_analysis/qa_jadx_refs.py cloud/apk_analysis/qa_jadx_recovery.py \
+     cloud/apk_analysis/qa_tool_plan.py cloud/apk_analysis/qa_tool_rpc.py \
      cloud/apk_analysis/qa_tooling.py cloud/apk_analysis/qa_tool_worker.py \
      cloud/apk_analysis/qa_static.py cloud/apk_analysis/qa_service.py \
      cloud/apk_analysis/SpDecodeGhidraReport.java ./cloud/apk_analysis/
