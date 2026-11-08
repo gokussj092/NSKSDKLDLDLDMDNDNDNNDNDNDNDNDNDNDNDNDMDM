@@ -123,10 +123,12 @@ class MainActivity : ComponentActivity() {
                 },
                 decodeText={beginText(it)},
                 retryWithCredentials={password,hwid,recipient->
+                    val requestedIdentity=ui.pendingPrompt?.requireIdentity==true
                     ui.pendingPrompt=null
+                    // A password-protected NPVS must NOT receive an unused
+                    // saved recipient identity: the authenticated modes are distinct.
                     val identity=recipient.takeIf{it.isNotBlank()}
-                        ?: if(pendingSuffix in setOf("npv","npvt","npvs","npv4") &&
-                            ui.identity!=null) ui.identity.orEmpty() else ""
+                        ?: if(requestedIdentity) ui.identity.orEmpty() else ""
                     decodeAttempt(password,hwid,identity)
                 },
                 dismissPrompt={ui.pendingPrompt=null},
