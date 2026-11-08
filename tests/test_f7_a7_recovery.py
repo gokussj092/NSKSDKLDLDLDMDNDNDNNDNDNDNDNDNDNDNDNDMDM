@@ -188,7 +188,7 @@ class RecoveryTests(unittest.TestCase):
             apk = root / "sample.apk"
             with zipfile.ZipFile(apk, "w", compression=zipfile.ZIP_STORED) as z:
                 for name in ("classes.dex", "classes2.dex"):
-                    z.writestr(name, b"dex\\n035\\0" + b"\\0" * (9 * 1024 * 1024 - 8))
+                    z.writestr(name, b"dex\n035\0" + b"\0" * (9 * 1024 * 1024 - 8))
             self.assertTrue(qa_tooling._prefer_dex_first(apk, True))
             self.assertFalse(qa_tooling._prefer_dex_first(apk, False))
             calls = []
@@ -206,10 +206,10 @@ class RecoveryTests(unittest.TestCase):
                 "SPDECODE_APK_QA_TOOLS_REVIEWED": "true",
                 "SPDECODE_APK_QA_LITE": "true",
                 "SPDECODE_APK_QA_GHIDRA": "disabled",
-            }), mock.patch.object(qa_tooling, "_memory_limit", return_value=2**31), \\
-                 mock.patch.object(qa_tooling, "_verified_jadx", return_value=True), \\
+            }), mock.patch.object(qa_tooling, "_memory_limit", return_value=2**31), \
+                 mock.patch.object(qa_tooling, "_verified_jadx", return_value=True), \
                  mock.patch.object(qa_tooling, "_base_and_libs",
-                                   return_value=(apk, [], 0, 0)), \\
+                                   return_value=(apk, [], 0, 0)), \
                  mock.patch.object(qa_tooling, "_run_jadx", side_effect=fake_run):
                 result = qa_tooling.inspect_tooling(apk, {})
             self.assertEqual(len(calls), 2)
