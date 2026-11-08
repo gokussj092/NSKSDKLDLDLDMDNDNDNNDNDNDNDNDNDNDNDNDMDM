@@ -12,6 +12,7 @@ class NativeResultEngine {
  static native int nativeLineCount(long handle);
  static native int nativeColumnCount(long handle);
  static native byte[] nativeLineWindow(long handle,int line,int column,int count,boolean mask);
+ static native int nativeFindNext(long handle,byte[] term,int start,boolean mask);
  static native void nativeClose(long handle);
  public static void main(String[]args)throws Exception{
   System.load(args[0]);
@@ -27,6 +28,12 @@ class NativeResultEngine {
   if(!Arrays.equals(out.toByteArray(),raw.getBytes(StandardCharsets.UTF_8)))throw new AssertionError("export");
   if(nativeLineCount(handle)!=4)throw new AssertionError("logical line count");
   if(nativeColumnCount(handle)<4000)throw new AssertionError("full line width");
+  if(nativeFindNext(handle,"fictional-private".getBytes(StandardCharsets.UTF_8),0,true)!=-1)
+    throw new AssertionError("masked search leak");
+  if(nativeFindNext(handle,"FICTIONAL-PRIVATE".getBytes(StandardCharsets.UTF_8),0,false)!=1)
+    throw new AssertionError("case-insensitive find");
+  if(nativeFindNext(handle,"name".getBytes(StandardCharsets.UTF_8),0,true)!=2)
+    throw new AssertionError("full document search");
   String hiddenLine=new String(nativeLineWindow(handle,1,0,128,true),StandardCharsets.UTF_8);
   if(hiddenLine.contains("fictional-private")||!hiddenLine.contains("••••••••"))throw new AssertionError("line privacy");
   String lineEnd=new String(nativeLineWindow(handle,2,4000,128,false),StandardCharsets.UTF_8);
