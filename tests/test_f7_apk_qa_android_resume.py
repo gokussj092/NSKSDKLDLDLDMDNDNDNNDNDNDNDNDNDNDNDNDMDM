@@ -39,6 +39,59 @@ class APKQAAndroidResumeContracts(unittest.TestCase):
         self.assertIn("apkQaClient.queue(uri)",host)
         self.assertNotIn("apkQaJob?.cancel()",host)
 
+    def test_history_is_encrypted_durable_and_preserves_old_report(self):
+        store=content("cloud/ApkQaHistoryStore.kt")
+        client=content("cloud/CloudApkQaClient.kt")
+        for required in ("AndroidKeyStore","AES/GCM/NoPadding","AtomicFile",
+                         "noBackupFilesDir","fun save(","fun read(","fun list(",
+                         "fun delete(","finishWrite(","KEY_ALIAS"):
+            self.assertIn(required,store)
+        self.assertNotIn("SharedPreferences",store)
+        self.assertNotIn("uploadToken",store)
+        self.assertIn("history.save(terminal,report.toString())",client)
+        self.assertLess(client.index("history.save(terminal,report.toString())"),
+                        client.index("checkpoint.save(terminal)"))
+        self.assertIn("historyItems()",client)
+        self.assertIn("historyRecord(id:String)",client)
+        self.assertIn("history.save(previous,previous.report)",client)
+
+    def test_apk_export_and_history_use_full_original_report(self):
+        ui=content("ApkQaAnalysisScreen.kt")
+        host=content("MainActivity.kt")
+        markdown=content("ApkReportMarkdown.kt")
+        for required in ("ActivityResultContracts.CreateDocument",
+                         "openOutputStream(uri","OutputStreamWriter(output",
+                         "apk_qa_export_json","ApkQaHistoryStore",
+                         "historyStore.read(item.id)","historyStore.delete(item.id)",
+                         "LargeResultViewer(","publicStages("):
+            self.assertIn(required,ui)
+        self.assertIn('ApkReportBlock("JSON","json",report)',markdown)
+        self.assertNotIn("pretty.toJson(root)",markdown)
+        self.assertIn("apkQaReport=latest.report",host)
+        self.assertNotIn("org.json.JSONObject(raw).toString(2)",host)
+
+    def test_select_continuous_json_range_without_fragment_dialog(self):
+        viewer=content("ContinuousJsonView.kt")
+        large=content("LargeResultViewer.kt")
+        native=content("results/NativeResultEngine.kt")
+        self.assertIn("ActionMode.TYPE_FLOATING",viewer)
+        self.assertIn("movingHandle",viewer)
+        self.assertIn("postOnAnimation(autoScroll)",viewer)
+        self.assertIn("orderedSelection()",viewer)
+        self.assertIn("onCopyRange(",viewer)
+        self.assertIn("current.selectedText(",large)
+        self.assertNotIn("if (snippet != null)",large)
+        self.assertIn("fun selectedText(",native)
+
+    def test_stage_activity_never_marks_started_stage_done(self):
+        ui=content("ApkQaAnalysisScreen.kt")
+        service=(ROOT/"cloud/apk_analysis/qa_service.py").read_text("utf-8")
+        self.assertIn('else->"RUNNING" // Never display a green tick',ui)
+        self.assertIn('stage.status',ui)
+        self.assertIn('CircularProgressIndicator(',ui)
+        self.assertIn("ADVANCED_ANALYSIS_PARTIAL",service)
+        self.assertIn('"PARTIAL"',service)
+
     def test_no_qa_auth_bypass_or_new_public_endpoints(self):
         client=content("cloud/CloudApkQaClient.kt")
         server=(ROOT/"cloud/apk_analysis/qa_service.py").read_text("utf-8")
