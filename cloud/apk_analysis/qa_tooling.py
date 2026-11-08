@@ -190,8 +190,8 @@ def inspect_tooling(source:Path,report:dict)->dict:
         manifest=GHIDRA_SCRIPT.with_name("ghidra-headless.sha256")
         if manifest.is_file() and not manifest.is_symlink():
             expected=manifest.read_text("ascii").strip()
-    ghidra_ready=(not lite and os.environ.get("SPDECODE_APK_QA_GHIDRA")=="enabled" and
-                  bool(re.fullmatch(r"[a-f0-9]{64}",expected)) and
+    ghidra_ready=(not lite and bool(re.fullmatch(r"[a-f0-9]{64}",expected)) and
+                  os.environ.get("SPDECODE_APK_QA_GHIDRA")=="enabled" and
                   home.is_dir() and not home.is_symlink() and
                   headless.is_file() and not headless.is_symlink() and
                   GHIDRA_SCRIPT.is_file() and
