@@ -215,10 +215,10 @@ Java_com_ghostdeveloper_spdecode_offline_NativeOffline_decodeNative(
                 clear=spdecode::offline::decodeNpvText(source,fromJava(env,password),material);
             }else if(source.size()>=4&&std::equal(source.begin(),source.begin()+4,"NPVS")){
                 clear=spdecode::offline::decodeNpvSigned(source,fromJava(env,password),material);
-            }else if(source.size()>=6&&std::equal(source.begin(),source.begin()+6,"NPVO1\\n")){
+            }else if(source.size()>=6&&std::equal(source.begin(),source.begin()+6,"NPVO1\n")){
                 auto result=spdecode::offline::npv::parse(spdecode::offline::npv::slice(source,6,source.size()-6));
                 spdecode::offline::npv::embedded(result);
-                clear=result.dump(2,' ',false,nlohmann::json::error_handler_t::strict)+"\\n";
+                clear=result.dump(2,' ',false,nlohmann::json::error_handler_t::strict)+"\n";
             }else{
                 clear=spdecode::offline::decodeNpvLegacy(source);
             }
