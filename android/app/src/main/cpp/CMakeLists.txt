@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22.1)
-project(spdecode LANGUAGES CXX)
+project(spdecode LANGUAGES C CXX)
 # Per-build string encoding is reversible obfuscation, not secret encryption.
 if(NOT DEFINED SPDECODE_CLOUD_ORIGIN)
   set(SPDECODE_CLOUD_ORIGIN "")
@@ -38,8 +38,32 @@ FetchContent_MakeAvailable(spdecode_mbedtls)
 # Independent offline target; never embed Cloud transport or endpoints.
 option(SPDECODE_OFFLINE_NATIVE "Build standalone offline native engine" OFF)
 if(SPDECODE_OFFLINE_NATIVE)
-  add_library(offdecode SHARED spdecode_offline_native.cpp)
-  target_link_libraries(offdecode PRIVATE mbedcrypto)
+  # Pinned, reproducible sources: JSON is header-only, Argon2id is the
+  # reference implementation. Neither is needed by the Cloud APK.
+  FetchContent_Declare(spdecode_json
+    GIT_REPOSITORY https://github.com/nlohmann/json.git
+    GIT_TAG 9cca280a4d0ccf0c08f47a99aa71d1b0e52f8d03)
+  FetchContent_MakeAvailable(spdecode_json)
+  FetchContent_Declare(spdecode_argon2
+    GIT_REPOSITORY https://github.com/P-H-C/phc-winner-argon2.git
+    GIT_TAG 62358ba2123abd17fccf2a108a301d4b52c01a7c)
+  FetchContent_GetProperties(spdecode_argon2)
+  if(NOT spdecode_argon2_POPULATED)
+    FetchContent_Populate(spdecode_argon2)
+  endif()
+  add_library(spdecode_argon2_ref STATIC
+    ${spdecode_argon2_SOURCE_DIR}/src/argon2.c
+    ${spdecode_argon2_SOURCE_DIR}/src/core.c
+    ${spdecode_argon2_SOURCE_DIR}/src/encoding.c
+    ${spdecode_argon2_SOURCE_DIR}/src/ref.c
+    ${spdecode_argon2_SOURCE_DIR}/src/blake2/blake2b.c)
+  target_compile_definitions(spdecode_argon2_ref PRIVATE ARGON2_NO_THREADS)
+  target_include_directories(spdecode_argon2_ref PUBLIC
+    ${spdecode_argon2_SOURCE_DIR}/include PRIVATE
+    ${spdecode_argon2_SOURCE_DIR}/src)
+  set_target_properties(spdecode_argon2_ref PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  add_library(offdecode SHARED spdecode_offline_native.cpp spdecode_http_custom.cpp)
+  target_link_libraries(offdecode PRIVATE mbedcrypto spdecode_argon2_ref nlohmann_json::nlohmann_json)
   target_compile_features(offdecode PRIVATE cxx_std_17)
   target_compile_options(offdecode PRIVATE -Wall -Wextra -Werror
       -fvisibility=hidden -fvisibility-inlines-hidden
