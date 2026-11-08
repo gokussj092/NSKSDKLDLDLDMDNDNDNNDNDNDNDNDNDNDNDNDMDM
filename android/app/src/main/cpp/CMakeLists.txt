@@ -62,7 +62,7 @@ if(SPDECODE_OFFLINE_NATIVE)
     ${spdecode_argon2_SOURCE_DIR}/include PRIVATE
     ${spdecode_argon2_SOURCE_DIR}/src)
   set_target_properties(spdecode_argon2_ref PROPERTIES POSITION_INDEPENDENT_CODE ON)
-  add_library(offdecode SHARED spdecode_offline_native.cpp spdecode_http_custom.cpp)
+  add_library(offdecode SHARED spdecode_offline_native.cpp spdecode_http_custom.cpp spdecode_http_custom_legacy.cpp)
   target_link_libraries(offdecode PRIVATE mbedcrypto spdecode_argon2_ref nlohmann_json::nlohmann_json)
   target_compile_features(offdecode PRIVATE cxx_std_17)
   target_compile_options(offdecode PRIVATE -Wall -Wextra -Werror
