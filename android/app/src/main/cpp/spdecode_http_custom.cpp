@@ -1,6 +1,7 @@
 #include "spdecode_http_custom.h"
 #include <argon2.h>
 #include <mbedtls/chacha20.h>
+#include <mbedtls/base64.h>
 #include <mbedtls/chachapoly.h>
 #include <mbedtls/hkdf.h>
 #include <mbedtls/md.h>
@@ -210,9 +211,11 @@ int64_t integer(const json& j,const char* field){
 Bytes features(const json& envelope){
     ensure(envelope.contains("f")&&envelope["f"].is_array(),"HC_INVALID_FEATURES");
     std::string joined;
+    bool first=true;
     for(const auto& entry:envelope["f"]){
         ensure(entry.is_string(),"HC_INVALID_FEATURES");
-        if(!joined.empty())joined.push_back(',');
+        if(!first)joined.push_back(',');
+        first=false;
         joined+=entry.get<std::string>();
     }
     return asBytes(joined);
@@ -462,7 +465,17 @@ json content(const Bytes& raw,bool modern){
         const std::string alphabet="0123456789abcdef";
         std::string encoded;encoded.reserve(raw.size()*2);
         for(unsigned char b:raw){encoded+=alphabet[b>>4];encoded+=alphabet[b&15];}
-        return modern?json{{"base64_unavailable_hex",encoded}}:json{{"hex",encoded}};
+        if(modern){
+            // Modern other sections use Base64 for non-UTF8 blobs. Profile
+            // sidecars are preserved separately as exact hex bytes.
+            const auto rawSize=((raw.size()+2)/3)*4+4;
+            Bytes data(rawSize);
+            size_t actual=0;
+            if(mbedtls_base64_encode(data.data(),data.size(),&actual,
+                                     raw.data(),raw.size())==0)
+                return json{{"base64",std::string(data.begin(),data.begin()+actual)}};
+        }
+        return json{{"hex",encoded}};
     }
 }
 json protections(const json& root){
@@ -512,7 +525,14 @@ json decryptParsed(const json& envelope,const Material& material,bool modern){
                 if(scValue.is_string())parsed["custom_payload_sidecar"]=scValue;
                 else if(scValue.is_object()&&scValue.contains("hex"))
                     parsed["custom_payload_sidecar_hex"]=scValue["hex"];
-                else parsed["custom_payload_sidecar"]=scValue;
+                else if(scValue.is_object()&&scValue.contains("base64")){
+                    // The original Python HCX4 decoder represents invalid
+                    // UTF-8 sidecar bytes as exact hex, not Base64.
+                    std::string encoded;
+                    constexpr char digits[]="0123456789abcdef";
+                    for(unsigned char c:sc){encoded.push_back(digits[c>>4]);encoded.push_back(digits[c&15]);}
+                    parsed["custom_payload_sidecar_hex"]=encoded;
+                }else parsed["custom_payload_sidecar"]=scValue;
             }
             profiles.push_back(std::move(parsed));
         }else{
