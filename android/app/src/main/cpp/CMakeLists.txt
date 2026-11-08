@@ -35,6 +35,19 @@ FetchContent_Declare(spdecode_mbedtls
   URL_HASH SHA256=a7e8bcbec0e6f761b4af24f25677626b35f762f68eef79c08677a363212d11f6
 )
 FetchContent_MakeAvailable(spdecode_mbedtls)
+# Independent offline target; never embed Cloud transport or endpoints.
+option(SPDECODE_OFFLINE_NATIVE "Build standalone offline native engine" OFF)
+if(SPDECODE_OFFLINE_NATIVE)
+  add_library(offdecode SHARED spdecode_offline_native.cpp)
+  target_link_libraries(offdecode PRIVATE mbedcrypto)
+  target_compile_features(offdecode PRIVATE cxx_std_17)
+  target_compile_options(offdecode PRIVATE -Wall -Wextra -Werror
+      -fvisibility=hidden -fvisibility-inlines-hidden
+      -fstack-protector-strong -D_FORTIFY_SOURCE=2)
+  target_link_options(offdecode PRIVATE -Wl,-z,relro,-z,now
+      -Wl,-z,noexecstack -Wl,-z,max-page-size=16384)
+  return()
+endif()
 # Opaque ELF basename reduces casual metadata; not a security boundary.
 add_library(v7q3 SHARED spdecode_transport.cpp spdecode_hpke.cpp spdecode_security.cpp spdecode_session.cpp
     spdecode_keystore.cpp spdecode_keystore_policy.cpp spdecode_catalog.cpp spdecode_runtime_guard.cpp
