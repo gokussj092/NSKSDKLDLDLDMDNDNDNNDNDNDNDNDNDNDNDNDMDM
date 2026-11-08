@@ -190,17 +190,53 @@ Bytes masterKey(const json& cfg){
                          "lockModesHash","configHwid","configLockMobileOperatorId"}){
         std::string item=scalar(cfg,key,key==std::string("configTimestamp")||
                                             key==std::string("configExpiryTimestamp")?"0":"");
-        if(!item.empty()&&item!="0")source+=item;
+        if(!item.empty())source+=item;
     }
     return sha(bytes(source));
 }
+uint32_t rotate(uint32_t value,int n){return (value<<n)|(value>>(32-n));}
+void quarter(std::array<uint32_t,16>& s,int a,int b,int c,int d){
+    s[a]+=s[b];s[d]=rotate(s[d]^s[a],16);
+    s[c]+=s[d];s[b]=rotate(s[b]^s[c],12);
+    s[a]+=s[b];s[d]=rotate(s[d]^s[a],8);
+    s[c]+=s[d];s[b]=rotate(s[b]^s[c],7);
+}
+void setLE(unsigned char* dst,uint32_t v){
+    for(int i=0;i<4;i++)dst[i]=static_cast<unsigned char>((v>>(8*i))&255);
+}
+Bytes hchacha(const Bytes& key,const Bytes& nonce){
+    check(key.size()==32&&nonce.size()==24,"EHI_INVALID_XCHACHA");
+    std::array<uint32_t,16> s={};
+    s[0]=0x61707865;s[1]=0x3320646e;s[2]=0x79622d32;s[3]=0x6b206574;
+    for(int i=0;i<8;i++)s[4+i]=little(key.data()+4*i);
+    for(int i=0;i<4;i++)s[12+i]=little(nonce.data()+4*i);
+    for(int i=0;i<10;i++){
+        quarter(s,0,4,8,12);quarter(s,1,5,9,13);
+        quarter(s,2,6,10,14);quarter(s,3,7,11,15);
+        quarter(s,0,5,10,15);quarter(s,1,6,11,12);
+        quarter(s,2,7,8,13);quarter(s,3,4,9,14);
+    }
+    Bytes sub(32);
+    for(int i=0;i<4;i++)setLE(sub.data()+i*4,s[i]);
+    for(int i=0;i<4;i++)setLE(sub.data()+16+i*4,s[i+12]);
+    std::fill(s.begin(),s.end(),0);
+    return sub;
+}
 Bytes chacha(const Bytes& ciphertext,const Bytes& tag,const Bytes& key,
              const Bytes& nonce,const Bytes& aad){
-    check(key.size()==32&&nonce.size()==12&&tag.size()==16,"EHI_BAD_AEAD");
+    check(key.size()==32&&(nonce.size()==12||nonce.size()==24)&&tag.size()==16,
+          "EHI_BAD_AEAD");
+    Bytes actualKey=key;
+    Bytes actualNonce=nonce;
+    if(nonce.size()==24){
+        actualKey=hchacha(key,nonce);
+        actualNonce=Bytes(12,0);
+        std::copy(nonce.begin()+16,nonce.end(),actualNonce.begin()+4);
+    }
     mbedtls_chachapoly_context ctx;mbedtls_chachapoly_init(&ctx);
-    int rc=mbedtls_chachapoly_setkey(&ctx,key.data());
+    int rc=mbedtls_chachapoly_setkey(&ctx,actualKey.data());
     Bytes result(ciphertext.size());
-    if(rc==0)rc=mbedtls_chachapoly_auth_decrypt(&ctx,ciphertext.size(),nonce.data(),
+    if(rc==0)rc=mbedtls_chachapoly_auth_decrypt(&ctx,ciphertext.size(),actualNonce.data(),
         aad.data(),aad.size(),tag.data(),ciphertext.data(),result.data());
     mbedtls_chachapoly_free(&ctx);check(rc==0,"AUTH_FAILED");return result;
 }
@@ -281,12 +317,13 @@ std::string decodeHttpInjector(const std::vector<unsigned char>& raw){
         std::fill(secret.begin(),secret.end(),0);
         check(status==ARGON2_OK,"EHI_ARGON2_FAILED");
         const Bytes nonce(protectedPayload.begin()+26,protectedPayload.begin()+50);
-        // PyCryptodome uses XChaCha20-Poly1305 for 24-byte EHI nonces.
-        // We implement the HChaCha20 subkey in this dedicated module below.
-        // Kept fail-closed until the version-specific nonce is authenticated.
-        check(nonce.size()==12,"EHI_XCHACHA_NOT_READY");
-        (void)derived;
-        throw DecodeError("EHI_XCHACHA_NOT_READY");
+        const Bytes ciphertext(protectedPayload.begin()+50,protectedPayload.end()-16);
+        const Bytes tag(protectedPayload.end()-16,protectedPayload.end());
+        const Bytes aad(protectedPayload.begin(),protectedPayload.begin()+26);
+        const Bytes decoded=chacha(ciphertext,tag,derived,nonce,aad);
+        std::fill(derived.begin(),derived.end(),0);
+        result=json::parse(decoded.begin(),decoded.end());
+        check(result.is_object()||result.is_array(),"EHI_INVALID_DOCUMENT");
     }
     recursivelyDecode(result,"",salt,0);
     return result.dump(2,' ',false,json::error_handler_t::strict)+"\n";
