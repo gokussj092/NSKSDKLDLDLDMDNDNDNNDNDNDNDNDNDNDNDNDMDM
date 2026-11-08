@@ -33,7 +33,8 @@ def inspect_static(path:Path, on_stage=None)->dict:
         on_stage("ADVANCED_ANALYSIS_SKIPPED" if tooling["status"] in
             {"NOT_ENABLED","INSUFFICIENT_CONTAINER_MEMORY",
              "JADX_NOT_PRELOADED_OR_HASH_MISMATCH"} else
-            "ADVANCED_ANALYSIS_COMPLETE" if tooling["status"]=="PARTIAL_TOOLS_EXECUTED"
+            "ADVANCED_ANALYSIS_COMPLETE" if (tooling["status"]=="PARTIAL_TOOLS_EXECUTED"
+                and tooling.get("ghidraExecuted",False))
             else "ADVANCED_ANALYSIS_PARTIAL")
     return {
         "schemaVersion":2,
