@@ -82,7 +82,10 @@ if(SPDECODE_OFFLINE_NATIVE)
     spdecode_http_custom.cpp
     spdecode_http_custom_legacy.cpp
     spdecode_http_injector.cpp
-    spdecode_npv_text.cpp)
+    spdecode_npv_text.cpp
+    spdecode_npv_whitebox.cpp
+    spdecode_npv_signed.cpp
+    spdecode_npv_legacy.cpp)
   target_include_directories(offdecode PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
   target_link_libraries(offdecode PRIVATE mbedcrypto spdecode_argon2_ref nlohmann_json::nlohmann_json z)
   target_compile_features(offdecode PRIVATE cxx_std_17)
