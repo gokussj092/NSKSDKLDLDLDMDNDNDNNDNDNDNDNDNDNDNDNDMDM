@@ -29,3 +29,9 @@
 -keep class com.ghostdeveloper.spdecode.cloud.CloudKeystorePlatform {
     public static *;
 }
+
+# Offline JNI uses name-based native symbol exports. Keep only the bridge
+# class and native method signatures; R8 may obfuscate the UI and storage.
+-keepclasseswithmembers,includedescriptorclasses class com.ghostdeveloper.spdecode.offline.NativeOffline {
+    native <methods>;
+}
