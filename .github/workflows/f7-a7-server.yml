@@ -63,6 +63,7 @@ jobs:
             --memory 1152m --cpus 0.8 --cap-drop ALL \
             --security-opt no-new-privileges \
             --tmpfs /analysis:rw,size=256m,uid=65532,gid=65532,mode=0700 \
+            --tmpfs /tmp:rw,size=128m,uid=65532,gid=65532,mode=0700,noexec,nosuid,nodev \
             -v "$PWD/tool-fixtures:/samples:ro" --entrypoint python3 \
             spdecode-f7-a7-lite -B -c '
           from pathlib import Path
