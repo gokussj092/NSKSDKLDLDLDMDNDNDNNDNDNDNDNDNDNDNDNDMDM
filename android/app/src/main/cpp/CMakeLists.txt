@@ -62,8 +62,29 @@ if(SPDECODE_OFFLINE_NATIVE)
     ${spdecode_argon2_SOURCE_DIR}/include PRIVATE
     ${spdecode_argon2_SOURCE_DIR}/src)
   set_target_properties(spdecode_argon2_ref PROPERTIES POSITION_INDEPENDENT_CODE ON)
-  add_library(offdecode SHARED spdecode_offline_native.cpp spdecode_http_custom.cpp spdecode_http_custom_legacy.cpp spdecode_http_injector.cpp)
-  target_link_libraries(offdecode PRIVATE mbedcrypto spdecode_argon2_ref nlohmann_json::nlohmann_json)
+  # Reconstruct only audited, source-controlled NPV constants on the host.
+  # The Android APK receives raw C++ bytes, never Python, pickle or scripts.
+  find_package(Python3 REQUIRED COMPONENTS Interpreter)
+  set(SPDECODE_NPV_TABLES "${CMAKE_CURRENT_BINARY_DIR}/spdecode_npv_tables.h")
+  execute_process(
+    COMMAND "${Python3_EXECUTABLE}"
+      "${CMAKE_CURRENT_SOURCE_DIR}/../../../../../scripts/build_offline_npv_tables.py"
+      --output "${SPDECODE_NPV_TABLES}"
+    RESULT_VARIABLE SPDECODE_NPV_TABLES_RESULT
+    OUTPUT_VARIABLE SPDECODE_NPV_TABLES_LOG
+    ERROR_VARIABLE SPDECODE_NPV_TABLES_ERROR)
+  if(NOT SPDECODE_NPV_TABLES_RESULT EQUAL 0)
+    message(FATAL_ERROR "NPV native tables validation failed: ${SPDECODE_NPV_TABLES_ERROR}")
+  endif()
+  message(STATUS "${SPDECODE_NPV_TABLES_LOG}")
+  add_library(offdecode SHARED
+    spdecode_offline_native.cpp
+    spdecode_http_custom.cpp
+    spdecode_http_custom_legacy.cpp
+    spdecode_http_injector.cpp
+    spdecode_npv_text.cpp)
+  target_include_directories(offdecode PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
+  target_link_libraries(offdecode PRIVATE mbedcrypto spdecode_argon2_ref nlohmann_json::nlohmann_json z)
   target_compile_features(offdecode PRIVATE cxx_std_17)
   target_compile_options(offdecode PRIVATE -Wall -Wextra -Werror
       -fvisibility=hidden -fvisibility-inlines-hidden
