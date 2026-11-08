@@ -143,9 +143,47 @@ inline Bytes openGcm(const Bytes& key,const Bytes& nonce,const Bytes& sealed,
     return clear;
 }
 inline json parse(const Bytes& data){
-    // JSON parser is strict about invalid UTF-8, numbers and syntax.
-    try{return json::parse(data.begin(),data.end());}
-    catch(...){throw Error("NPV_INVALID_JSON");}
+    // Exact server parity: reject duplicates at every object depth. The
+    // default nlohmann parser would silently retain the last value.
+    try{
+        std::vector<std::set<std::string>> keyStack;
+        json::parser_callback_t callback=[&](int,json::parse_event_t event,json& parsed){
+            if(event==json::parse_event_t::object_start)keyStack.emplace_back();
+            else if(event==json::parse_event_t::object_end){
+                need(!keyStack.empty(),"NPV_INVALID_JSON");
+                keyStack.pop_back();
+            }else if(event==json::parse_event_t::key){
+                need(!keyStack.empty(),"NPV_INVALID_JSON");
+                need(keyStack.back().insert(parsed.get<std::string>()).second,
+                     "NPV_DUPLICATE_JSON_KEY");
+            }
+            return true;
+        };
+        return json::parse(data.begin(),data.end(),callback,true);
+    }catch(...){throw Error("NPV_INVALID_JSON");}
+}
+inline Bytes embeddedBase64(std::string value){
+    need(!value.empty()&&value.size()<=8u*1024u*1024u,"NPV_INVALID_EMBEDDED_B64");
+    for(char& c:value){
+        if(c=='-')c='+';
+        else if(c=='_')c='/';
+        need((c>='a'&&c<='z')||(c>='A'&&c<='Z')||
+             (c>='0'&&c<='9')||c=='+'||c=='/'||c=='=',"NPV_INVALID_EMBEDDED_B64");
+    }
+    const auto firstPadding=value.find('=');
+    if(firstPadding!=std::string::npos){
+        need(firstPadding>=value.size()-2&&value.size()%4==0&&
+             std::all_of(value.begin()+firstPadding,value.end(),
+                         [](char ch){return ch=='=';}),"NPV_INVALID_EMBEDDED_B64");
+    }
+    value.append((4-value.size()%4)%4,'=');
+    Bytes output(value.size()*3/4+4);
+    size_t n=0;
+    need(mbedtls_base64_decode(output.data(),output.size(),&n,
+         reinterpret_cast<const unsigned char*>(value.data()),value.size())==0,
+         "NPV_INVALID_EMBEDDED_B64");
+    output.resize(n);
+    return output;
 }
 inline std::string canonical(const json& value){
     try{return value.dump(-1,' ',false,json::error_handler_t::strict);}
@@ -163,7 +201,7 @@ inline void embedded(json& v,int depth=0){
         std::string value=text.substr(6);
         value.erase(std::remove_if(value.begin(),value.end(),
           [](char c){return c==' '||c=='\n'||c=='\r'||c=='\t';}),value.end());
-        const Bytes decoded=unurl(value,8*1024*1024);
+        const Bytes decoded=embeddedBase64(value);
         const auto strValue=str(decoded);
         if(strValue.rfind("npvs1:",0)==0){v=strValue;embedded(v,depth+1);return;}
         size_t i=0;
