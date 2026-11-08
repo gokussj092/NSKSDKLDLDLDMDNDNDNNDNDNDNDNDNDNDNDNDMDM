@@ -27,6 +27,9 @@ internal class CloudApkQaClient(context:Context,private val cloud:CloudDecodeCli
     private val app=context.applicationContext
     private val resolver=app.contentResolver
     private val checkpoint=CloudApkQaCheckpoint(app)
+    private val history=ApkQaHistoryStore(app)
+    private var cachedReportId=""
+    private var cachedReport:String?=null
     companion object {
         const val MAX_BYTES=100L*1000L*1000L
         private const val MAX_CHUNK=2*1024*1024
@@ -45,7 +48,9 @@ internal class CloudApkQaClient(context:Context,private val cloud:CloudDecodeCli
         "UPLOAD_STARTED","UPLOAD_RECEIVED","UPLOAD_REJECTED",
         "PACKAGE_VALIDATION","PACKAGE_VALIDATED","COMPONENT_INSPECTION",
         "COMPONENTS_INSPECTED","REPORT_PREPARATION","REPORT_READY",
-        "ANALYSIS_FAILED","ANALYSIS_RESUMED"
+        "ANALYSIS_FAILED","ANALYSIS_RESUMED",
+        "ADVANCED_ANALYSIS","ADVANCED_ANALYSIS_COMPLETE",
+        "ADVANCED_ANALYSIS_PARTIAL","ADVANCED_ANALYSIS_SKIPPED"
     )
 
     private fun safeEvents(message:JSONObject):JSONArray {
@@ -57,7 +62,7 @@ internal class CloudApkQaClient(context:Context,private val cloud:CloudDecodeCli
             val code=item.optString("code")
             val status=item.optString("status")
             if(sequence!=i+1 || code !in allowedEvents ||
-                status !in setOf("RUNNING","DONE","FAILED")) break
+                status !in setOf("RUNNING","DONE","FAILED","PARTIAL")) break
             result.put(JSONObject().put("sequence",sequence).put("code",code)
                 .put("status",status))
         }
@@ -72,7 +77,7 @@ internal class CloudApkQaClient(context:Context,private val cloud:CloudDecodeCli
             val code=item.optString("code")
             val status=item.optString("status")
             if(item.optInt("sequence")!=i+1 || code !in allowedEvents ||
-               status !in setOf("RUNNING","DONE","FAILED")) break
+               status !in setOf("RUNNING","DONE","FAILED","PARTIAL")) break
             events.add(ActivityEvent(i+1,code,status))
         }
         return events
@@ -80,9 +85,27 @@ internal class CloudApkQaClient(context:Context,private val cloud:CloudDecodeCli
 
     fun snapshot():Snapshot? {
         val state=checkpoint.load() ?: return null
+        // Migrate legacy single-checkpoint reports without modifying them.
+        if(!state.active && state.report.isNotBlank() &&
+            history.list().none { it.id==state.startId }) {
+            history.save(state,state.report)
+        }
+        val saved=if(!state.active && state.report.isBlank()) {
+            if(cachedReportId!=state.startId) {
+                cachedReport=history.read(state.startId)?.report
+                cachedReportId=state.startId
+            }
+            cachedReport
+        }else state.report.takeIf { it.isNotBlank() }
         return Snapshot(state.active,state.phase,state.receivedBytes,state.totalBytes,
-            state.report.takeIf{it.isNotBlank()},state.error.takeIf{it.isNotBlank()},
-            eventsOf(state.events))
+            saved,state.error.takeIf{it.isNotBlank()},eventsOf(state.events))
+    }
+
+    fun historyItems():List<ApkQaHistoryStore.Item> = history.list()
+    fun historyRecord(id:String):ApkQaHistoryStore.Record? = history.read(id)
+    fun deleteHistory(id:String) {
+        history.delete(id)
+        if(cachedReportId==id){cachedReportId="";cachedReport=null}
     }
 
     fun hasActiveJob():Boolean=checkpoint.hasActive()
@@ -110,6 +133,12 @@ internal class CloudApkQaClient(context:Context,private val cloud:CloudDecodeCli
     /** Called only after user consent and an OpenDocument picker result. */
     fun queue(uri:Uri) {
         if(checkpoint.hasActive())throw IOException("APK_QA_ALREADY_ACTIVE")
+        checkpoint.load()?.let { previous ->
+            if(!previous.active && previous.report.isNotBlank() &&
+                history.list().none{it.id==previous.startId})
+                history.save(previous,previous.report)
+        }
+        cachedReportId="";cachedReport=null
         // Read grant is required across process death; never store a file copy.
         try {
             resolver.takePersistableUriPermission(uri,Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -245,12 +274,20 @@ internal class CloudApkQaClient(context:Context,private val cloud:CloudDecodeCli
             if(report.optString("reportKind") !in setOf(
                     "APK_STATIC_QA_FIRST_PASS","APK_STATIC_QA_DEEP_V2"))
                 throw IOException("APK_QA_REPORT_INVALID")
-            checkpoint.save(savedProgress(state,response).copy(
+            val terminal=savedProgress(state,response).copy(
                 phase="COMPLETED",receivedBytes=state.totalBytes,
-                report=report.toString(),error=""))
+                report="",error="")
+            // Persist before the checkpoint becomes terminal. A failed write
+            // is retried by WorkManager without losing the server capability.
+            history.save(terminal,report.toString())
+            checkpoint.save(terminal)
+            cachedReportId="";cachedReport=null
         } else if(status in setOf("FAILED","REJECTED")) {
-            checkpoint.save(savedProgress(state,response).copy(
-                phase=status,error="APK_QA_ANALYSIS_FAILED"))
+            val terminal=savedProgress(state,response).copy(
+                phase=status,report="",error="APK_QA_ANALYSIS_FAILED")
+            history.save(terminal,response.optJSONObject("report")?.toString().orEmpty())
+            checkpoint.save(terminal)
+            cachedReportId="";cachedReport=null
         } else throw IOException("APK_QA_INVALID_STATE")
     }
 
