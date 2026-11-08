@@ -132,8 +132,10 @@ class APKQAServiceTests(unittest.TestCase):
         self.assertEqual([e["sequence"] for e in events],list(range(1,len(events)+1)))
         self.assertEqual([e["code"] for e in events],[
             "UPLOAD_STARTED","UPLOAD_RECEIVED","PACKAGE_VALIDATION",
-            "PACKAGE_VALIDATED","COMPONENT_INSPECTION","COMPONENTS_INSPECTED",
-            "ADVANCED_ANALYSIS","ADVANCED_ANALYSIS_SKIPPED",
+            "PACKAGE_VALIDATED","COMPONENT_INSPECTION","APK_METADATA_INSPECTION",
+            "DEX_BYTECODE_INSPECTION","NATIVE_LIBRARY_INSPECTION",
+            "COMPONENTS_INSPECTED","ADVANCED_ANALYSIS","CODE_DECOMPILATION",
+            "CRYPTO_EVIDENCE_CORRELATION","ADVANCED_ANALYSIS_SKIPPED",
             "REPORT_PREPARATION","REPORT_READY",
         ])
         self.assertTrue(all(e["status"] in qa.PUBLIC_STATES for e in events))

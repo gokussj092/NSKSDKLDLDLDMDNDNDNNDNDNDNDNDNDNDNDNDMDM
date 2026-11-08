@@ -25,7 +25,7 @@ def inspect_static(path:Path, on_stage=None)->dict:
     if on_stage:
         on_stage("COMPONENTS_INSPECTED")
         on_stage("ADVANCED_ANALYSIS")
-        on_stage("JADX_DECOMPILATION")
+        on_stage("CODE_DECOMPILATION")
     try:
         tooling=inspect_tooling(path,inventory)
     except (OSError,ValueError,RuntimeError,zipfile.BadZipFile):
@@ -37,7 +37,7 @@ def inspect_static(path:Path, on_stage=None)->dict:
                  "ghidra":{"status":"NOT_EXECUTED"}}
     if on_stage:
         if tooling.get("jadx",{}).get("recovery",{}).get("attempts"):
-            on_stage("JADX_RECOVERY")
+            on_stage("DEX_RECOVERY")
         on_stage("CRYPTO_EVIDENCE_CORRELATION")
         on_stage("ADVANCED_ANALYSIS_SKIPPED" if tooling["status"] in
             {"NOT_ENABLED","INSUFFICIENT_CONTAINER_MEMORY",
