@@ -25,7 +25,7 @@ internal object ApkReportMarkdown {
         val artifacts=root.asJsonObject.get("artifacts")
         if (artifacts!=null && artifacts.isJsonArray) {
             artifacts.asJsonArray.forEachIndexed { index,entry ->
-                if (index>=16 || !entry.isJsonObject) return@forEachIndexed
+                if (!entry.isJsonObject) return@forEachIndexed
                 val item:JsonObject=entry.asJsonObject
                 val body=item.get("content")?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isString }
                     ?.asString ?: return@forEachIndexed
