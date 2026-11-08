@@ -20,7 +20,25 @@ std::string decodeNpvLegacy(const std::vector<unsigned char>& data){
     encoded.erase(std::remove_if(encoded.begin(),encoded.end(),
             [](unsigned char c){return c==' '||c=='\n'||c=='\r'||c=='\t';}),
                   encoded.end());
-    const Bytes cipher=unurl(encoded,8u*1024u*1024u);
+    need(!encoded.empty()&&encoded.size()<=8u*1024u*1024u,"NPV_LEGACY_BASE64_LIMIT");
+    for(char& c:encoded){
+        if(c=='-')c='+';
+        else if(c=='_')c='/';
+        need((c>='A'&&c<='Z')||(c>='a'&&c<='z')||
+             (c>='0'&&c<='9')||c=='+'||c=='/'||c=='=',"NPV_LEGACY_BAD_BASE64");
+    }
+    const auto pad=encoded.find('=');
+    if(pad!=std::string::npos)
+        need(pad>=encoded.size()-2&&encoded.size()%4==0&&
+             std::all_of(encoded.begin()+pad,encoded.end(),
+                         [](char c){return c=='=';}),"NPV_LEGACY_BAD_BASE64");
+    encoded.append((4-encoded.size()%4)%4,'=');
+    Bytes cipher(encoded.size()*3/4+4);
+    size_t decodedLength=0;
+    need(mbedtls_base64_decode(cipher.data(),cipher.size(),&decodedLength,
+         reinterpret_cast<const unsigned char*>(encoded.data()),encoded.size())==0,
+         "NPV_LEGACY_BAD_BASE64");
+    cipher.resize(decodedLength);
     need(cipher.size()>16,"NPV_LEGACY_INVALID_CIPHERTEXT");
     Bytes iv=slice(cipher,0,16),plain(cipher.size()-16);
     for(size_t offset=16;offset<cipher.size();offset+=16){
