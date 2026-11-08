@@ -47,7 +47,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 -m venv /tmp/spdecode-hc-python
-          /tmp/spdecode-hc-python/bin/python -m pip install --disable-pip-version-check pycryptodome==3.23.0 argon2-cffi==25.1.0
+          /tmp/spdecode-hc-python/bin/python -m pip install --disable-pip-version-check pycryptodome==3.23.0 argon2-cffi==25.1.0 msgpack==1.1.1
           /tmp/spdecode-hc-python/bin/python tests/test_offline_hc_native_parity.py /tmp/spdecode-hc-native
   build:
     needs: hc-cpp-parity
