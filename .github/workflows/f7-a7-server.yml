@@ -6,6 +6,7 @@ on:
     paths:
       - cloud/apk_analysis/**
       - tests/test_f7_a7_recovery.py
+      - tests/test_f7_apk_qa_jadx_refs.py
       - .dockerignore
       - .github/workflows/f7-a7-server.yml
   workflow_dispatch:
