@@ -15,6 +15,7 @@ import subprocess
 import tempfile
 import zipfile
 from .qa_jadx_refs import scan_jadx_sources
+from .qa_jadx_recovery import diagnose_termination, recover_jadx
 from .qa_tool_rpc import inspect_remote
 
 JADX_JAR=Path("/opt/spdecode/scripts/apk_analysis/cache/jadx-1.5.6-all.jar")
@@ -189,7 +190,8 @@ def inspect_tooling(source:Path,report:dict)->dict:
         manifest=GHIDRA_SCRIPT.with_name("ghidra-headless.sha256")
         if manifest.is_file() and not manifest.is_symlink():
             expected=manifest.read_text("ascii").strip()
-    ghidra_ready=(not lite and bool(re.fullmatch(r"[a-f0-9]{64}",expected)) and
+    ghidra_ready=(not lite and os.environ.get("SPDECODE_APK_QA_GHIDRA")=="enabled" and
+                  bool(re.fullmatch(r"[a-f0-9]{64}",expected)) and
                   home.is_dir() and not home.is_symlink() and
                   headless.is_file() and not headless.is_symlink() and
                   GHIDRA_SCRIPT.is_file() and
@@ -221,6 +223,23 @@ def inspect_tooling(source:Path,report:dict)->dict:
         # Preserve genuine partial source evidence on timeout/OOM, but do not
         # claim the Java decompiler completed when its process failed.
         source_refs=scan_jadx_sources(dest)
+        primary_files=source_refs.get("sourceFilesInspected",0)
+        recovery={"status":"NOT_REQUIRED","attempts":[],"dexRecovered":0}
+        if not did_jadx:
+            # Keep the first, possibly useful, JADX output and retry only
+            # independently extracted DEX files in a fixed sequential budget.
+            recovery=recover_jadx(base,scratch,JADX_JAR,env,_run_jadx,scan_jadx_sources)
+            source_refs["sourceFilesInspected"]=(
+                primary_files+recovery["sourceFilesInspected"])
+            source_refs["sourceBytesInspected"]=(
+                source_refs.get("sourceBytesInspected",0)+
+                recovery["sourceBytesInspected"])
+            source_refs["candidateCallSites"]=(
+                source_refs.get("candidateCallSites",[])+
+                recovery["candidateCallSites"])[:48]
+            counts=source_refs.setdefault("cryptoReferenceCounts",{})
+            for label,value in recovery["cryptoReferenceCounts"].items():
+                counts[label]=counts.get(label,0)+value
         partial=not did_jadx and source_refs.get("sourceFilesInspected",0)>0
         reference_status=source_refs.pop("status","UNKNOWN")
         state["jadx"]={
@@ -229,6 +248,9 @@ def inspect_tooling(source:Path,report:dict)->dict:
             "status":"COMPLETED" if did_jadx else
                      ("PARTIAL_OUTPUT" if partial else "FAILED"),
             "terminationReason":termination,
+            "failureCategory":diagnose_termination(scratch/"jadx.log",termination),
+            "recovery":recovery,
+            "sourceReferencesMayOverlapRetries":not did_jadx,
             "attempted":True,
             "completed":did_jadx,
         }
