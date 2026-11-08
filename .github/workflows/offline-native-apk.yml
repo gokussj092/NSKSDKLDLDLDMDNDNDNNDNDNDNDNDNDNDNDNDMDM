@@ -1,0 +1,75 @@
+name: SP-DECODE Offline Native APK (alpha)
+on:
+  push:
+    branches: [feat/version-offline-apk]
+    paths:
+      - android/app/build.gradle.kts
+      - android/app/src/offlineNative/**
+      - android/app/src/main/cpp/CMakeLists.txt
+      - android/app/src/main/cpp/spdecode_offline_native.cpp
+      - .github/workflows/offline-native-apk.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+concurrency:
+  group: spdecode-offline-native
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    env:
+      SPDECODE_OFFLINE_NATIVE: "true"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.11.1"
+      - name: Install Android SDK and NDK
+        shell: bash
+        run: |
+          set -euo pipefail
+          SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -n 1)"
+          "$SDKMANAGER" --install "platforms;android-36" "build-tools;35.0.0" "platform-tools" "cmake;3.22.1" "ndk;27.2.12479018"
+      - name: Build standalone Offline debug APK
+        working-directory: android
+        run: gradle --no-daemon --max-workers=2 :app:assembleDebug
+      - name: Audit package, no Internet, library isolation
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=android/app/build/outputs/apk/debug/app-debug.apk
+          test -s "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | grep -F "package: name='com.ghostdeveloper.spdecode.offline'"
+          if "$ANDROID_HOME/build-tools/35.0.0/aapt" dump permissions "$APK" | grep -F "android.permission.INTERNET"; then
+            echo "ERROR: Offline APK requests Internet"; exit 1
+          fi
+          unzip -Z1 "$APK" | grep -F "liboffdecode.so"
+          if unzip -Z1 "$APK" | grep -E 'libv7q3\.so|spdecode-vault|npv_whitebox'; then
+            echo "ERROR: Cloud or legacy artifacts leaked into Offline"; exit 1
+          fi
+          python3 - <<'PY'
+          from pathlib import Path
+          files=list(Path("android/app/src/offlineNative/java").rglob("*.kt"))
+          assert files and all("javax.crypto." not in f.read_text() for f in files)
+          print("PASS: no Kotlin/JCA crypto in the isolated offline sources")
+          PY
+          mkdir -p dist
+          cp "$APK" dist/SP-DECODE-Offline-Native-alpha-debug.apk
+          (cd dist && sha256sum *.apk > SHA256SUMS.txt)
+          echo "ALPHA: NetMod and P-256 generation; HC/EHI/NPV decryption pending" > dist/BUILD_INFO.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SP-DECODE-OFFLINE-NATIVE-ALPHA
+          path: dist/
+          if-no-files-found: error
+          retention-days: 14
