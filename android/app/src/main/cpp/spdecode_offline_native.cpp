@@ -1,5 +1,6 @@
 #include <jni.h>
 #include "spdecode_http_custom.h"
+#include "spdecode_http_injector.h"
 #include <mbedtls/aes.h>
 #include <mbedtls/base64.h>
 #include <mbedtls/ctr_drbg.h>
@@ -200,8 +201,10 @@ Java_com_ghostdeveloper_spdecode_offline_NativeOffline_decodeNative(
             decoded.assign(clear.begin(),clear.end());
         }else if(format=="nm") {
             decoded=decryptNm(source);
+        }else if(format=="ehi"){
+            const std::string clear=spdecode::offline::decodeHttpInjector(source);
+            decoded.assign(clear.begin(),clear.end());
         }else {
-            if(format=="ehi")throw Failure("HTTP_INJECTOR_NATIVE_PARITY_PENDING");
             if(format=="npvs"||format=="npv4"||format=="npvt")
                 throw Failure("NPV_NATIVE_DECRYPTION_PENDING");
             throw Failure("UNSUPPORTED_OFFLINE_FORMAT");
@@ -215,7 +218,7 @@ Java_com_ghostdeveloper_spdecode_offline_NativeOffline_decodeNative(
     } catch(const Failure& problem){raise(env,problem.what());return nullptr;}
       catch(const std::exception& error){
         const std::string kind=error.what();
-        if(kind.rfind("HC_",0)==0||kind=="AUTH_FAILED"||
+        if(kind.rfind("HC_",0)==0||kind.rfind("EHI_",0)==0||kind=="AUTH_FAILED"||
            kind=="PASSWORD_REQUIRED"||kind=="HWID_REQUIRED"||
            kind=="HWID_PASSWORD_REQUIRED")raise(env,kind.c_str());
         else raise(env,"NATIVE_UNEXPECTED_ERROR");
