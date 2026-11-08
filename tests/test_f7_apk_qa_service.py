@@ -99,6 +99,29 @@ class APKQAServiceTests(unittest.TestCase):
         self.assertFalse((self.root/started["jobId"]/"input.apk").exists())
         self.assertFalse((self.root/started["jobId"]/"input.part").exists())
 
+    def test_advanced_stage_is_partial_when_decompilation_only_produced_sources(self):
+        partial={
+            "status":"TOOLS_PARTIAL","jadxAttempted":True,
+            "jadxExecuted":False,"ghidraExecuted":False,
+            "jadx":{"status":"PARTIAL_OUTPUT","referenceScanStatus":"OBSERVED",
+                    "sourceFilesInspected":2493,"terminationReason":"TIMEOUT"},
+            "ghidra":{"status":"DISABLED_IN_LITE_PROFILE"},
+        }
+        with patch("cloud.apk_analysis.qa_static.inspect_tooling",return_value=partial):
+            started=self.start()
+            self.chunk(started)
+            result=self.finished(started)
+        self.assertEqual(result["status"],"COMPLETED")
+        self.assertEqual(result["report"]["status"],"COMPLETED_PARTIAL")
+        self.assertEqual(result["report"]["analysis"]["tooling"]["status"],"TOOLS_PARTIAL")
+        events={row["code"]:row["status"] for row in result["events"]}
+        self.assertEqual(events["COMPONENT_INSPECTION"],"RUNNING")
+        self.assertEqual(events["COMPONENTS_INSPECTED"],"DONE")
+        self.assertEqual(events["ADVANCED_ANALYSIS"],"RUNNING")
+        self.assertEqual(events["ADVANCED_ANALYSIS_PARTIAL"],"PARTIAL")
+        self.assertEqual(events["REPORT_READY"],"DONE")
+        self.assertFalse(result["report"]["analysis"]["vendorMethodValidated"])
+
     def test_real_worker_events_are_ordered_and_never_expose_internal_methods(self):
         started=self.start()
         first=qa.dispatch("result",self.cap(started))
