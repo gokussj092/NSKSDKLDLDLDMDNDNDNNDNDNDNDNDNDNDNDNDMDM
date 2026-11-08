@@ -8,6 +8,7 @@ import android.graphics.Typeface
 import android.os.Bundle
 import android.view.GestureDetector
 import android.view.MotionEvent
+import android.view.ScaleGestureDetector
 import android.view.View
 import android.view.ViewConfiguration
 import android.view.accessibility.AccessibilityEvent
@@ -29,18 +30,21 @@ internal class ContinuousJsonView(
     context: Context,
     private val document: NativeResultEngine.Document,
     private val mask: Boolean,
+    private val onLongPressLine: (Int, Int) -> Unit = { _, _ -> },
 ) : View(context) {
     private val density = resources.displayMetrics.density
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         typeface = Typeface.MONOSPACE
         textSize = 13f * resources.displayMetrics.scaledDensity
     }
-    private val metrics = paint.fontMetrics
-    internal val rowHeight = max(19f * resources.displayMetrics.scaledDensity,
+    private val metrics get() = paint.fontMetrics
+    internal val rowHeight get() = max(19f * resources.displayMetrics.scaledDensity,
         metrics.descent - metrics.ascent + 2f * density)
-    private val cellWidth = paint.measureText("M")
+    private val cellWidth get() = paint.measureText("M")
     private val inset = 8f * density
-    private val gutter = paint.measureText(document.lineCount.toString()) + 2f * inset
+    private val gutter get() = paint.measureText(document.lineCount.toString()) + 2f * inset
+    private val originalTextSize = paint.textSize
+    private var searchLine = -1
     private val scroller = OverScroller(context)
     private var offsetX = 0f
     private var offsetY = 0f
@@ -51,7 +55,23 @@ internal class ContinuousJsonView(
     private val windows = object : LinkedHashMap<Long, org.json.JSONObject>(96, .75f, true) {
         override fun removeEldestEntry(eldest: MutableMap.MutableEntry<Long, org.json.JSONObject>?) = size > 96
     }
+    private val pinch = ScaleGestureDetector(context, object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
+        override fun onScale(detector: ScaleGestureDetector): Boolean {
+            paint.textSize = (paint.textSize * detector.scaleFactor)
+                .coerceIn(originalTextSize * 0.75f, originalTextSize * 2.1f)
+            windows.clear()
+            moveTo(offsetX, offsetY)
+            return true
+        }
+    })
     private val gestures = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
+        override fun onLongPress(event: MotionEvent) {
+            val line = floor((offsetY + event.y - inset) / rowHeight).toInt()
+                .coerceIn(0, document.lineCount - 1)
+            val column = floor((offsetX + event.x - gutter) / cellWidth).toInt()
+                .coerceAtLeast(0)
+            onLongPressLine(line, column)
+        }
         override fun onDown(event: MotionEvent): Boolean {
             scroller.forceFinished(true)
             return true
@@ -97,6 +117,10 @@ internal class ContinuousJsonView(
         scroller.forceFinished(true)
         moveTo(offsetX, line.coerceIn(0, document.lineCount - 1) * rowHeight)
     }
+    internal fun highlightLine(line: Int) {
+        searchLine = line
+        invalidate()
+    }
     internal fun scrollToColumn(column: Int) = moveTo(column.coerceAtLeast(0) * cellWidth, offsetY)
     internal fun lineBaseline(line: Int) = inset + line * rowHeight - offsetY - metrics.ascent
     internal fun visibleWindow(line: Int): org.json.JSONObject {
@@ -116,6 +140,11 @@ internal class ContinuousJsonView(
         val first = max(0, floor((offsetY - inset) / rowHeight).toInt())
         val last = min(document.lineCount - 1, ceil((offsetY + height - inset) / rowHeight).toInt())
         for (line in first..last) {
+            if (line == searchLine) {
+                paint.color = Color.rgb(32, 61, 52)
+                canvas.drawRect(gutter, line * rowHeight + inset - offsetY,
+                    width.toFloat(), (line + 1) * rowHeight + inset - offsetY, paint)
+            }
             val baseline = lineBaseline(line)
             // The exact same baseline is used for this line's number and code.
             paint.color = Color.rgb(145, 145, 145)
@@ -181,7 +210,8 @@ internal class ContinuousJsonView(
                 parent?.requestDisallowInterceptTouchEvent(true)
             }
         }
-        val handled = gestures.onTouchEvent(event)
+        pinch.onTouchEvent(event)
+        val handled = if (pinch.isInProgress) true else gestures.onTouchEvent(event)
         if (event.actionMasked == MotionEvent.ACTION_UP || event.actionMasked == MotionEvent.ACTION_CANCEL) {
             parent?.requestDisallowInterceptTouchEvent(false)
             dragging = false
