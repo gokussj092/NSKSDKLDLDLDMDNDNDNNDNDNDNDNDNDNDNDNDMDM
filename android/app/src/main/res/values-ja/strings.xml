@@ -283,4 +283,18 @@
     <string name="result_select_fragment">コピーするテキストを選択</string>
     <string name="result_copy_fragment">選択範囲をコピー</string>
     <string name="apk_qa_copy_markdown">Markdown をコピー</string>
+    <string name="result_select_all">すべて選択</string>
+    <string name="apk_qa_advanced_stage">詳細検査</string>
+    <string name="apk_qa_running_stage">処理中…</string>
+    <string name="apk_qa_done_stage">完了</string>
+    <string name="apk_qa_failed_stage">失敗</string>
+    <string name="apk_qa_partial_stage">一部完了または利用不可</string>
+    <string name="apk_qa_history_title">APK 解析履歴</string>
+    <string name="apk_qa_history_empty">保存済みの解析はありません</string>
+    <string name="apk_qa_history_delete">削除</string>
+    <string name="apk_qa_history_back">現在の解析に戻る</string>
+    <string name="apk_qa_history_confirm">保存した解析を削除しますか？</string>
+    <string name="apk_qa_export_json">JSONを書き出す</string>
+    <string name="apk_qa_export_success">JSONを保存しました</string>
+    <string name="apk_qa_export_failure">JSONを保存できませんでした</string>
 </resources>

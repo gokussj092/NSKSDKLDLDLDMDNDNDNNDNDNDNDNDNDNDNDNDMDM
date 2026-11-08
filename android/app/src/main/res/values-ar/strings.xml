@@ -282,4 +282,18 @@
     <string name="result_select_fragment">حدد النص لنسخه</string>
     <string name="result_copy_fragment">نسخ المقطع</string>
     <string name="apk_qa_copy_markdown">نسخ Markdown</string>
+    <string name="result_select_all">تحديد الكل</string>
+    <string name="apk_qa_advanced_stage">فحص متقدم</string>
+    <string name="apk_qa_running_stage">جارٍ التنفيذ…</string>
+    <string name="apk_qa_done_stage">مكتمل</string>
+    <string name="apk_qa_failed_stage">فشل</string>
+    <string name="apk_qa_partial_stage">جزئي أو غير متاح</string>
+    <string name="apk_qa_history_title">سجل تحليل APK</string>
+    <string name="apk_qa_history_empty">لا توجد تحليلات محفوظة</string>
+    <string name="apk_qa_history_delete">حذف</string>
+    <string name="apk_qa_history_back">العودة إلى التحليل الحالي</string>
+    <string name="apk_qa_history_confirm">هل تريد حذف هذا التحليل؟</string>
+    <string name="apk_qa_export_json">تصدير JSON</string>
+    <string name="apk_qa_export_success">تم حفظ JSON</string>
+    <string name="apk_qa_export_failure">تعذر حفظ JSON</string>
 </resources>

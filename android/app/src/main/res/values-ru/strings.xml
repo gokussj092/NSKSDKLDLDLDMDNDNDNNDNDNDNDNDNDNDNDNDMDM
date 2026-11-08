@@ -282,4 +282,18 @@
     <string name="result_select_fragment">Выберите текст для копирования</string>
     <string name="result_copy_fragment">Копировать фрагмент</string>
     <string name="apk_qa_copy_markdown">Копировать Markdown</string>
+    <string name="result_select_all">Выделить всё</string>
+    <string name="apk_qa_advanced_stage">Расширенная проверка</string>
+    <string name="apk_qa_running_stage">Выполняется…</string>
+    <string name="apk_qa_done_stage">Завершено</string>
+    <string name="apk_qa_failed_stage">Ошибка</string>
+    <string name="apk_qa_partial_stage">Частично или недоступно</string>
+    <string name="apk_qa_history_title">История анализа APK</string>
+    <string name="apk_qa_history_empty">Сохранённых анализов нет</string>
+    <string name="apk_qa_history_delete">Удалить</string>
+    <string name="apk_qa_history_back">К текущему анализу</string>
+    <string name="apk_qa_history_confirm">Удалить сохранённый анализ?</string>
+    <string name="apk_qa_export_json">Экспорт JSON</string>
+    <string name="apk_qa_export_success">JSON сохранён</string>
+    <string name="apk_qa_export_failure">Не удалось сохранить JSON</string>
 </resources>

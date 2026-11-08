@@ -284,4 +284,18 @@
     <string name="result_select_fragment">Seleccionar texto para copiar</string>
     <string name="result_copy_fragment">Copiar fragmento</string>
     <string name="apk_qa_copy_markdown">Copiar Markdown</string>
+    <string name="result_select_all">Seleccionar todo</string>
+    <string name="apk_qa_advanced_stage">Inspección avanzada</string>
+    <string name="apk_qa_running_stage">En ejecución…</string>
+    <string name="apk_qa_done_stage">Completado</string>
+    <string name="apk_qa_failed_stage">Fallido</string>
+    <string name="apk_qa_partial_stage">Parcial o no disponible</string>
+    <string name="apk_qa_history_title">Historial de APK</string>
+    <string name="apk_qa_history_empty">Todavía no hay análisis guardados</string>
+    <string name="apk_qa_history_delete">Eliminar</string>
+    <string name="apk_qa_history_back">Volver al análisis actual</string>
+    <string name="apk_qa_history_confirm">¿Eliminar este análisis guardado?</string>
+    <string name="apk_qa_export_json">Exportar JSON</string>
+    <string name="apk_qa_export_success">JSON guardado</string>
+    <string name="apk_qa_export_failure">No se pudo guardar el JSON</string>
 </resources>

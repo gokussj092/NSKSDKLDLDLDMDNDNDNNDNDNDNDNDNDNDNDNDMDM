@@ -283,4 +283,18 @@
     <string name="result_select_fragment">कॉपी करने के लिए चुनें</string>
     <string name="result_copy_fragment">अंश कॉपी करें</string>
     <string name="apk_qa_copy_markdown">Markdown कॉपी करें</string>
+    <string name="result_select_all">सभी चुनें</string>
+    <string name="apk_qa_advanced_stage">उन्नत निरीक्षण</string>
+    <string name="apk_qa_running_stage">प्रक्रिया जारी…</string>
+    <string name="apk_qa_done_stage">पूर्ण</string>
+    <string name="apk_qa_failed_stage">विफल</string>
+    <string name="apk_qa_partial_stage">आंशिक या अनुपलब्ध</string>
+    <string name="apk_qa_history_title">APK विश्लेषण इतिहास</string>
+    <string name="apk_qa_history_empty">कोई सहेजा हुआ विश्लेषण नहीं</string>
+    <string name="apk_qa_history_delete">हटाएँ</string>
+    <string name="apk_qa_history_back">वर्तमान विश्लेषण पर लौटें</string>
+    <string name="apk_qa_history_confirm">यह विश्लेषण हटाएँ?</string>
+    <string name="apk_qa_export_json">JSON निर्यात करें</string>
+    <string name="apk_qa_export_success">JSON सहेजा गया</string>
+    <string name="apk_qa_export_failure">JSON सहेजा नहीं जा सका</string>
 </resources>
