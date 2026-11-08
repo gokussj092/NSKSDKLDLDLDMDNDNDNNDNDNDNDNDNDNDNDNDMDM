@@ -1,4 +1,5 @@
 #include "spdecode_npv_text.h"
+#include "spdecode_npv_signed.h"
 #include <mbedtls/base64.h>
 #include <nlohmann/json.hpp>
 #include <algorithm>
@@ -102,7 +103,8 @@ bool isNpvText(const std::vector<unsigned char>& data){
     auto value=s(data);trim(value);
     return !label(value).empty();
 }
-std::string decodeNpvText(const std::vector<unsigned char>& data){
+std::string decodeNpvText(const std::vector<unsigned char>& data,
+                          const std::string& password,const std::string& recipient){
     require(isNpvText(data),"NPV_UNSUPPORTED_TEXT_FORMAT");
     auto value=s(data);trim(value);
     const auto prefix=label(value);
@@ -111,7 +113,8 @@ std::string decodeNpvText(const std::vector<unsigned char>& data){
     // Signed binary NPVS envelopes must dispatch to their separately
     // authenticated C++ codec; never parse them as plaintext.
     if(raw.size()>=4&&std::equal(raw.begin(),raw.begin()+4,"NPVS"))
-        throw Error("NPV_BINARY_TRANSPORT_REQUIRES_NATIVE_NPVS");
+        return decodeNpvSigned(raw,password,recipient);
+    require(password.empty()&&recipient.empty(),"NPV_CREDENTIALS_NOT_ALLOWED");
     size_t p=0;while(p<raw.size()&&asciiSpace(static_cast<char>(raw[p])))p++;
     require(p<raw.size()&&(raw[p]=='{'||raw[p]=='['),"NPV_UNSUPPORTED_TEXT_PAYLOAD");
     json document=parse(raw);
