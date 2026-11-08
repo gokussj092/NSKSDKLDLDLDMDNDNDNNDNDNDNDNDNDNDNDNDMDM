@@ -193,7 +193,7 @@ PY
        compose --profile apk-qa up -d --no-deps apk-qa &&
        compose --profile apk-qa up -d --no-deps web &&
        health &&
-       compose --profile apk-qa exec -T apk-qa python -c        "import urllib.request;urllib.request.urlopen('http://127.0.0.1:8792/health',timeout=5)")
+       apk_qa_wait_ready apk-qa 8792)
   then
     log "APK QA enable failed. Restoring previous protected settings"
     cp -p "$previous" "$ENVFILE"
@@ -209,6 +209,28 @@ PY
 # Experimental high-memory worker, opt-in only; never start on the 1 GB VPS.
 # No device enrollment or operator-supplied token is required.
 # Opt-in low-RAM JADX beta. Never substitutes for the full 8 GB tool profile.
+# Container start is asynchronous. Retry the private health endpoint while the
+# service initializes, instead of rolling back on the first ECONNREFUSED.
+# Never print internal HMAC tokens or health response data.
+apk_qa_wait_ready(){
+  local service="$1" port="$2" attempt
+  case "$service:$port" in
+    apk-qa:8792|apk-tools:8793) ;;
+    *) die "Invalid internal APK QA readiness target" ;;
+  esac
+  for attempt in $(seq 1 45); do
+    if compose --profile apk-qa --profile apk-qa-tools exec -T "$service" \
+        python3 -c "import urllib.request;urllib.request.urlopen('http://127.0.0.1:$port/health',timeout=3).read()" \
+        >/dev/null 2>&1; then
+      return 0
+    fi
+    if [[ "$attempt" -lt 45 ]]; then sleep 2; fi
+  done
+  log "Internal $service health did not become ready after 90 seconds"
+  compose --profile apk-qa --profile apk-qa-tools ps "$service" || true
+  return 1
+}
+
 apk_qa_enable_lite(){
   preflight
   grep -Fxq 'CLOUD_APK_QA_ENABLED=true' "$ENVFILE" ||
@@ -260,11 +282,9 @@ PY
   fi
   if ! (compose --profile apk-qa --profile apk-qa-tools build apk-tools apk-qa &&
         compose --profile apk-qa --profile apk-qa-tools up -d --no-deps apk-tools &&
-        compose --profile apk-qa --profile apk-qa-tools exec -T apk-tools python3 -c \
-          "import urllib.request;urllib.request.urlopen('http://127.0.0.1:8793/health',timeout=5)" &&
+        apk_qa_wait_ready apk-tools 8793 &&
         compose --profile apk-qa --profile apk-qa-tools up -d --no-deps --force-recreate apk-qa &&
-        compose --profile apk-qa --profile apk-qa-tools exec -T apk-qa python -c \
-          "import urllib.request;urllib.request.urlopen('http://127.0.0.1:8792/health',timeout=5)")
+        apk_qa_wait_ready apk-qa 8792)
   then
     log "JADX Lite activation failed; restoring prior configuration"
     cp -p "$previous" "$ENVFILE"
@@ -332,11 +352,9 @@ PY
   fi
   if ! (compose --profile apk-qa --profile apk-qa-tools build apk-tools apk-qa &&
         compose --profile apk-qa --profile apk-qa-tools up -d --no-deps apk-tools &&
-        compose --profile apk-qa --profile apk-qa-tools exec -T apk-tools python3 -c \
-          "import urllib.request;urllib.request.urlopen('http://127.0.0.1:8793/health',timeout=5)" &&
+        apk_qa_wait_ready apk-tools 8793 &&
         compose --profile apk-qa --profile apk-qa-tools up -d --no-deps --force-recreate apk-qa &&
-        compose --profile apk-qa --profile apk-qa-tools exec -T apk-qa python -c \
-          "import urllib.request;urllib.request.urlopen('http://127.0.0.1:8792/health',timeout=5)")
+        apk_qa_wait_ready apk-qa 8792)
   then
     log "Failed advanced APK tools activation; restoring prior configuration"
     cp -p "$previous" "$ENVFILE"
