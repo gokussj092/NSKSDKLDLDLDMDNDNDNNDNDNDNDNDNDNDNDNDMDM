@@ -96,7 +96,10 @@ def recover_jadx(apk: Path, scratch: Path, jar: Path, env: dict,
     bytes_inspected = 0
     recovered = 0
     for index, candidate in enumerate(dex_inputs):
-        for mode in ("simple", "fallback"):
+        # Multi-megabyte DEX files on 1 CPU routinely time out in simple mode.
+        # Prefer the already proven fallback, keeping both modes for small DEX.
+        large = candidate.stat().st_size >= 6 * 1024 * 1024
+        for mode in (("fallback",) if large else ("simple", "fallback")):
             output = scratch / ("recovery-output-" + str(index) + "-" + mode)
             output.mkdir(mode=0o700)
             log = scratch / ("recovery-" + str(index) + "-" + mode + ".log")
@@ -104,7 +107,8 @@ def recover_jadx(apk: Path, scratch: Path, jar: Path, env: dict,
                        "-cp", str(jar), "jadx.cli.JadxCLI", "--no-res",
                        "--decompilation-mode", mode, "-j", "1",
                        "-d", str(output), str(candidate)]
-            termination = run_jadx(command, cwd=scratch, timeout=ATTEMPT_TIMEOUT,
+            termination = run_jadx(command, cwd=scratch,
+                                   timeout=120 if large else ATTEMPT_TIMEOUT,
                                    env=env, logfile=log)
             summary = scan_sources(output)
             generated = int(summary.get("sourceFilesInspected", 0))
@@ -115,6 +119,7 @@ def recover_jadx(apk: Path, scratch: Path, jar: Path, env: dict,
                 "failureCategory": diagnose_termination(log, termination),
                 "sourceFilesInspected": generated,
                 "completed": termination == "EXIT_ZERO", "usableSource": generated > 0,
+                "dexFirstLargeMode": large,
             })
             inspected += generated
             bytes_inspected += int(summary.get("sourceBytesInspected", 0))

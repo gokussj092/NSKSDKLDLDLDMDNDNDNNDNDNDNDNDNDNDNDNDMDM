@@ -23,6 +23,7 @@
 !cloud/apk_analysis/qa_tool_worker.py
 !cloud/apk_analysis/qa_static.py
 !cloud/apk_analysis/qa_identity.py
+!cloud/apk_analysis/qa_tool_harness.py
 !cloud/apk_analysis/qa_service.py
 !cloud/apk_analysis/SpDecodeGhidraReport.java
 !scripts/

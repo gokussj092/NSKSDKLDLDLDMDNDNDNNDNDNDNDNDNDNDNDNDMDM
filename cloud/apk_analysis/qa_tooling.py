@@ -216,8 +216,15 @@ def inspect_tooling(source:Path,report:dict)->dict:
                  "-cp",str(JADX_JAR),"jadx.cli.JadxCLI",
                  "--no-res","--decompilation-mode","simple","-j","1" if lite else "2",
                  "-d",str(dest),str(base)]
-        termination=_run_jadx(command,cwd=scratch,timeout=180 if lite else 240,env=env,
-                      logfile=scratch/"jadx.log")
+        # Large multidex applications exhaust a small JVM on the monolithic pass.
+        # Prefer bounded per-DEX work immediately, keeping the real output of
+        # ordinary/smaller APKs unchanged.
+        headers=report.get("dexHeaders",[]) if isinstance(report,dict) else []
+        multidex=lite and sum(1 for x in headers if x.get("tableStatus")=="PARSED")>=2
+        large_dex=multidex and sum(x.get("bytes",0) for x in headers)>=16*1024*1024
+        termination=("DEX_FIRST_RESOURCE_BUDGET" if large_dex else
+                     _run_jadx(command,cwd=scratch,timeout=180 if lite else 240,env=env,
+                               logfile=scratch/"jadx.log"))
         did_jadx=termination=="EXIT_ZERO"
         # Do not return APK source code or stdout that could contain secrets.
         # Preserve genuine partial source evidence on timeout/OOM, but do not
@@ -255,7 +262,8 @@ def inspect_tooling(source:Path,report:dict)->dict:
             "status":"COMPLETED" if did_jadx else
                      ("PARTIAL_OUTPUT" if partial else "FAILED"),
             "terminationReason":termination,
-            "failureCategory":diagnose_termination(scratch/"jadx.log",termination),
+            "failureCategory":("MONOLITHIC_SKIPPED_FOR_DEX" if large_dex else
+                diagnose_termination(scratch/"jadx.log",termination)),
             "recovery":recovery,
             "sourceReferencesMayOverlapRetries":not did_jadx,
             "attempted":True,

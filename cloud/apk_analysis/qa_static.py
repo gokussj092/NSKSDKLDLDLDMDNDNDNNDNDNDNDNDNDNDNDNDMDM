@@ -11,6 +11,7 @@ from .qa_deep import inspect_parts
 from .qa_tooling import inspect_tooling
 from .qa_tool_plan import plan_tools, correlate_evidence
 from .qa_identity import inspect_identity
+from .qa_tool_harness import inspect_harness
 
 
 def inspect_static(path:Path, on_stage=None)->dict:
@@ -62,6 +63,7 @@ def inspect_static(path:Path, on_stage=None)->dict:
             "tooling":tooling,
             "toolPlan":plan_tools(inventory),
             "methodEvidence":correlate_evidence(inventory,tooling),
+            "harness":inspect_harness(inventory,tooling),
             "dexTablesParsed":inventory["dexParsed"],
             "elfFilesParsed":inventory["elfParsed"],
             "jadxExecuted":tooling["jadxExecuted"],
