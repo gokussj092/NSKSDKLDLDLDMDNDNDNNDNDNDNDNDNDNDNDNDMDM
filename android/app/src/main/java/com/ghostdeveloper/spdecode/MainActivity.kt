@@ -422,10 +422,11 @@ class MainActivity : ComponentActivity() {
                         apkQaPhase=latest.phase
                         apkQaReceived=latest.receivedBytes
                         apkQaTotal=latest.totalBytes
-                        apkQaReport=latest.report?.let {raw->
-                            try {org.json.JSONObject(raw).toString(2)}
-                            catch(_:Exception){raw}
-                        }
+                        // The indexed native viewer formats logical lines on demand.
+                        // Re-serializing a multi-megabyte report every 1.2 seconds
+                        // duplicates memory and can invalidate historic results.
+                        if(apkQaReport!==latest.report && apkQaReport!=latest.report)
+                            apkQaReport=latest.report
                         apkQaEvents=latest.events
                         apkQaError=latest.error
                     }else apkQaRunning=false
