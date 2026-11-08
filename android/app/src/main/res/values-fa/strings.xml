@@ -281,4 +281,5 @@
     <string name="result_search_empty">نتیجه‌ای یافت نشد</string>
     <string name="result_select_fragment">انتخاب متن برای کپی</string>
     <string name="result_copy_fragment">کپی بخش</string>
+    <string name="apk_qa_copy_markdown">کپی Markdown</string>
 </resources>

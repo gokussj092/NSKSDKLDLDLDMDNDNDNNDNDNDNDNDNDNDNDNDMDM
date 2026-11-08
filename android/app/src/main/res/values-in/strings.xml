@@ -281,4 +281,5 @@
     <string name="result_search_empty">Tidak ditemukan</string>
     <string name="result_select_fragment">Pilih teks untuk disalin</string>
     <string name="result_copy_fragment">Salin cuplikan</string>
+    <string name="apk_qa_copy_markdown">Salin Markdown</string>
 </resources>

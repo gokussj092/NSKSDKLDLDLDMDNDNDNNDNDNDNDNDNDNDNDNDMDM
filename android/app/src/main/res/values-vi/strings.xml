@@ -282,4 +282,5 @@
     <string name="result_search_empty">Không có kết quả</string>
     <string name="result_select_fragment">Chọn văn bản để sao chép</string>
     <string name="result_copy_fragment">Sao chép đoạn</string>
+    <string name="apk_qa_copy_markdown">Sao chép Markdown</string>
 </resources>

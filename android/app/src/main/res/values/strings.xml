@@ -283,4 +283,5 @@
     <string name="result_search_empty">No matches found</string>
     <string name="result_select_fragment">Select text to copy</string>
     <string name="result_copy_fragment">Copy fragment</string>
+    <string name="apk_qa_copy_markdown">Copy Markdown</string>
 </resources>

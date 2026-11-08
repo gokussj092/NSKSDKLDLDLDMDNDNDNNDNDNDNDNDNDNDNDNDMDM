@@ -281,4 +281,5 @@
     <string name="result_search_empty">لا توجد نتائج</string>
     <string name="result_select_fragment">حدد النص لنسخه</string>
     <string name="result_copy_fragment">نسخ المقطع</string>
+    <string name="apk_qa_copy_markdown">نسخ Markdown</string>
 </resources>

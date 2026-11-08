@@ -281,4 +281,5 @@
     <string name="result_search_empty">Aucun résultat</string>
     <string name="result_select_fragment">Sélectionner le texte à copier</string>
     <string name="result_copy_fragment">Copier l’extrait</string>
+    <string name="apk_qa_copy_markdown">Copier Markdown</string>
 </resources>
