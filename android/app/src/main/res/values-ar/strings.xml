@@ -275,4 +275,10 @@
     <string name="apk_qa_one_at_time">يمكن تحليل ملف APK/APKS واحد فقط في كل مرة. انتظر النتيجة النهائية قبل إرسال ملف آخر.</string>
     <string name="apk_qa_retry_connection">إعادة الاتصال بالتحليل</string>
     <string name="apk_qa_event_analysis_resumed">استئناف التحليل بعد إعادة التشغيل</string>
+    <string name="result_search_hint">البحث في النتيجة</string>
+    <string name="result_search_next">التالي</string>
+    <string name="result_search_line">السطر %1$d</string>
+    <string name="result_search_empty">لا توجد نتائج</string>
+    <string name="result_select_fragment">حدد النص لنسخه</string>
+    <string name="result_copy_fragment">نسخ المقطع</string>
 </resources>

@@ -275,4 +275,10 @@
     <string name="apk_qa_one_at_time">Одновременно можно анализировать только один APK/APKS. Дождитесь результата перед отправкой другого файла.</string>
     <string name="apk_qa_retry_connection">Переподключиться к анализу</string>
     <string name="apk_qa_event_analysis_resumed">Анализ возобновляется после перезапуска</string>
+    <string name="result_search_hint">Поиск по результату</string>
+    <string name="result_search_next">Далее</string>
+    <string name="result_search_line">Строка %1$d</string>
+    <string name="result_search_empty">Совпадений нет</string>
+    <string name="result_select_fragment">Выберите текст для копирования</string>
+    <string name="result_copy_fragment">Копировать фрагмент</string>
 </resources>

@@ -275,4 +275,10 @@
     <string name="apk_qa_one_at_time">Es kann jeweils nur eine APK/APKS analysiert werden. Warte auf das Endergebnis, bevor du eine weitere Datei sendest.</string>
     <string name="apk_qa_retry_connection">Analyse erneut verbinden</string>
     <string name="apk_qa_event_analysis_resumed">Analyse nach Neustart wird fortgesetzt</string>
+    <string name="result_search_hint">Ergebnis durchsuchen</string>
+    <string name="result_search_next">Weiter</string>
+    <string name="result_search_line">Zeile %1$d</string>
+    <string name="result_search_empty">Keine Treffer</string>
+    <string name="result_select_fragment">Text zum Kopieren auswählen</string>
+    <string name="result_copy_fragment">Ausschnitt kopieren</string>
 </resources>

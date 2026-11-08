@@ -276,4 +276,10 @@
     <string name="apk_qa_one_at_time">同時に解析できる APK/APKS は1件のみです。次のファイルを送信する前に最終結果をお待ちください。</string>
     <string name="apk_qa_retry_connection">解析に再接続</string>
     <string name="apk_qa_event_analysis_resumed">再起動後に解析を再開</string>
+    <string name="result_search_hint">結果内を検索</string>
+    <string name="result_search_next">次へ</string>
+    <string name="result_search_line">行 %1$d</string>
+    <string name="result_search_empty">一致なし</string>
+    <string name="result_select_fragment">コピーするテキストを選択</string>
+    <string name="result_copy_fragment">選択範囲をコピー</string>
 </resources>

@@ -276,4 +276,10 @@
     <string name="apk_qa_one_at_time">एक समय में केवल एक APK/APKS का विश्लेषण हो सकता है। अगली फ़ाइल भेजने से पहले अंतिम परिणाम की प्रतीक्षा करें।</string>
     <string name="apk_qa_retry_connection">विश्लेषण से दोबारा जुड़ें</string>
     <string name="apk_qa_event_analysis_resumed">पुनः आरंभ होने के बाद विश्लेषण जारी</string>
+    <string name="result_search_hint">परिणाम में खोजें</string>
+    <string name="result_search_next">अगला</string>
+    <string name="result_search_line">पंक्ति %1$d</string>
+    <string name="result_search_empty">कोई मिलान नहीं</string>
+    <string name="result_select_fragment">कॉपी करने के लिए चुनें</string>
+    <string name="result_copy_fragment">अंश कॉपी करें</string>
 </resources>

@@ -276,4 +276,10 @@
     <string name="apk_qa_one_at_time">Mỗi lần chỉ có thể phân tích một APK/APKS. Hãy đợi kết quả cuối cùng trước khi gửi tệp khác.</string>
     <string name="apk_qa_retry_connection">Kết nối lại phân tích</string>
     <string name="apk_qa_event_analysis_resumed">Đang tiếp tục phân tích sau khi khởi động lại</string>
+    <string name="result_search_hint">Tìm trong kết quả</string>
+    <string name="result_search_next">Tiếp</string>
+    <string name="result_search_line">Dòng %1$d</string>
+    <string name="result_search_empty">Không có kết quả</string>
+    <string name="result_select_fragment">Chọn văn bản để sao chép</string>
+    <string name="result_copy_fragment">Sao chép đoạn</string>
 </resources>
