@@ -1,4 +1,5 @@
 #include <jni.h>
+#include "spdecode_http_custom.h"
 #include <mbedtls/aes.h>
 #include <mbedtls/base64.h>
 #include <mbedtls/ctr_drbg.h>
@@ -188,18 +189,23 @@ void raise(JNIEnv* env,const char* reason){
 
 extern "C" JNIEXPORT jbyteArray JNICALL
 Java_com_ghostdeveloper_spdecode_offline_NativeOffline_decodeNative(
-    JNIEnv* env,jobject,jbyteArray file,jstring suffix,jstring /*password*/,jstring /*hwid*/){
+    JNIEnv* env,jobject,jbyteArray file,jstring suffix,jstring password,jstring hwid){
     try {
         const std::string format=fromJava(env,suffix);
         Bytes source=fromJava(env,file);
-        if(format!="nm"){
-            if(format=="hc")throw Failure("HTTP_CUSTOM_NATIVE_PARITY_PENDING");
+        Bytes decoded;
+        if(format=="hc") {
+            const std::string clear=spdecode::offline::decodeHttpCustom(
+                source,fromJava(env,password),fromJava(env,hwid));
+            decoded.assign(clear.begin(),clear.end());
+        }else if(format=="nm") {
+            decoded=decryptNm(source);
+        }else {
             if(format=="ehi")throw Failure("HTTP_INJECTOR_NATIVE_PARITY_PENDING");
             if(format=="npvs"||format=="npv4"||format=="npvt")
                 throw Failure("NPV_NATIVE_DECRYPTION_PENDING");
             throw Failure("UNSUPPORTED_OFFLINE_FORMAT");
         }
-        Bytes decoded=decryptNm(source);
         std::fill(source.begin(),source.end(),0);
         jbyteArray result=env->NewByteArray(static_cast<jsize>(decoded.size()));
         if(result)env->SetByteArrayRegion(result,0,static_cast<jsize>(decoded.size()),
@@ -207,7 +213,14 @@ Java_com_ghostdeveloper_spdecode_offline_NativeOffline_decodeNative(
         std::fill(decoded.begin(),decoded.end(),0);
         return result;
     } catch(const Failure& problem){raise(env,problem.what());return nullptr;}
-      catch(const std::exception&){raise(env,"NATIVE_UNEXPECTED_ERROR");return nullptr;}
+      catch(const std::exception& error){
+        const std::string kind=error.what();
+        if(kind.rfind("HC_",0)==0||kind=="AUTH_FAILED"||
+           kind=="PASSWORD_REQUIRED"||kind=="HWID_REQUIRED"||
+           kind=="HWID_PASSWORD_REQUIRED")raise(env,kind.c_str());
+        else raise(env,"NATIVE_UNEXPECTED_ERROR");
+        return nullptr;
+      }
 }
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_ghostdeveloper_spdecode_offline_NativeOffline_generateIdentityNative(
