@@ -34,6 +34,8 @@ COPY cloud/apk_analysis/__init__.py cloud/apk_analysis/input_gate.py \
      cloud/apk_analysis/qa_tooling.py cloud/apk_analysis/qa_tool_worker.py \
      cloud/apk_analysis/qa_static.py cloud/apk_analysis/qa_service.py \
      cloud/apk_analysis/SpDecodeGhidraReport.java ./cloud/apk_analysis/
+# Fail image build for syntax errors before any runtime deployment.
+RUN python3 -m compileall -q cloud/apk_analysis
 # Bind the headless entrypoint to its verified distribution in the image.
 RUN sha256sum /opt/ghidra/support/analyzeHeadless | cut -d' ' -f1 \
     > /opt/spdecode/cloud/apk_analysis/ghidra-headless.sha256

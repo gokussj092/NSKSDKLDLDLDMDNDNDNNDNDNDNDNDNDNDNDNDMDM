@@ -66,6 +66,18 @@ class F7ToolingIsolationPolicy(unittest.TestCase):
         self.assertIn("ghidra-headless.sha256",docker)
         self.assertIn("USER 65532:65532",docker)
 
+    def test_qa_python_modules_compile_and_all_images_enforce_syntax_gate(self):
+        # This catches syntax errors even when dependencies are unavailable.
+        files=sorted((ROOT/"cloud/apk_analysis").glob("*.py"))
+        self.assertGreater(len(files),5)
+        for path in files:
+            with self.subTest(path=path.name):
+                compile(path.read_text(encoding="utf-8"),str(path),"exec")
+        for name in ("Dockerfile.qa","Dockerfile.qa-lite","Dockerfile.qa-tools"):
+            with self.subTest(dockerfile=name):
+                self.assertIn("RUN python3 -m compileall -q cloud/apk_analysis",
+                    source("cloud/apk_analysis/"+name))
+
     def test_tool_process_environment_sanitized(self):
         tool=source("cloud/apk_analysis/qa_tooling.py")
         self.assertIn('"JAVA_HOME":"/opt/java/openjdk"',tool)

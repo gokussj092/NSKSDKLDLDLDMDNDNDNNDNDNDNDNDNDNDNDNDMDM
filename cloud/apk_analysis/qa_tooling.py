@@ -235,8 +235,10 @@ def inspect_tooling(source:Path,report:dict)->dict:
         state["jadxAttempted"]=True
         state["jadxExecuted"]=did_jadx
         state["resourceProfile"]="JADX_LITE" if lite else "ADVANCED"
-        state["status"]="PARTIAL_TOOLS_EXECUTED" if did_jadx else
-                         ("TOOLS_PARTIAL" if partial else "TOOLS_FAILED")
+        state["status"]=(
+            "PARTIAL_TOOLS_EXECUTED" if did_jadx
+            else ("TOOLS_PARTIAL" if partial else "TOOLS_FAILED")
+        )
         if not ghidra_ready:
             state["ghidra"]={"status":"DISABLED_IN_LITE_PROFILE" if lite else "NOT_INSTALLED_OR_VERIFIED",
                              "elfDiscovered":total_native}
