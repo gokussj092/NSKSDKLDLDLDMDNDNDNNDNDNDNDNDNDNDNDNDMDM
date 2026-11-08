@@ -9,6 +9,8 @@ on:
       - android/app/src/main/cpp/spdecode_offline_native.cpp
       - android/app/src/main/cpp/spdecode_http_custom.cpp
       - android/app/src/main/cpp/spdecode_http_custom.h
+      - android/app/src/main/cpp/spdecode_http_custom_legacy.cpp
+      - android/app/src/main/cpp/spdecode_http_custom_legacy.h
       - tests/native_http_custom_cli.cpp
       - tests/test_offline_hc_native_parity.py
       - .github/workflows/offline-native-apk.yml
@@ -39,6 +41,7 @@ jobs:
           g++ -O2 -std=c++17 -Wall -Wextra -Werror \
             tests/native_http_custom_cli.cpp \
             android/app/src/main/cpp/spdecode_http_custom.cpp \
+            android/app/src/main/cpp/spdecode_http_custom_legacy.cpp \
             -lmbedcrypto -largon2 -o /tmp/spdecode-hc-native
       - name: Assert all native decryption/credential/tamper vectors
         run: |
