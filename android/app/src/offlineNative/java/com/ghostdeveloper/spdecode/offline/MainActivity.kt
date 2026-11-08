@@ -19,6 +19,8 @@ import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import org.json.JSONObject
+import org.json.JSONArray
+import org.json.JSONTokener
 import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
 import java.nio.charset.CodingErrorAction
@@ -33,6 +35,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var output: TextView
     private lateinit var password: EditText
     private lateinit var hwid: EditText
+    private lateinit var recipient: EditText
     private var resultText = ""
     private var exportName = "spdecode-offline.json"
 
@@ -81,13 +84,13 @@ class MainActivity : ComponentActivity() {
         }
         root.addView(label("SP-DECODE Offline", 25f))
         root.addView(label("Sin Internet · Motor C++/JNI · Alfa de integración"))
-        root.addView(label("Descifrado disponible: NetMod Syna (.nm) y HTTP Custom (.hc) "
-            + "HCCFG/HCX4 compatible con contraseña, HWID y ambos.\n"
-            + "Generación de identidad NPV P-256: disponible.\n"
-            + "HTTP Custom antiguo (no HCCFG), HTTP Injector y descifrado NPV: pendientes. "
-            + "Sin descifrado Kotlin ni servicios Cloud."))
+        root.addView(label("Descifrado C++: NetMod (.nm), HTTP Custom (.hc), "
+            + "HTTP Injector (.ehi), NPV Tunnel firmado (v1/v5/v6), "
+            + "NPVT1/NPVTSUB1 histórico y enlaces de texto NPV.\n"
+            + "NPV con destinatario requiere su identidad PKCS8 o acuerdo capturado. "
+            + "Sin descifrado Kotlin, conexión Cloud ni catálogo de servidores."))
         password = EditText(this).apply {
-            hint = "Contraseña HTTP Custom (si está protegida)"
+            hint = "Contraseña de exportación HC / NPV (si corresponde)"
             inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
             setTextColor(Color.WHITE); setHintTextColor(Color.LTGRAY)
         }
@@ -96,8 +99,16 @@ class MainActivity : ComponentActivity() {
             inputType = InputType.TYPE_CLASS_TEXT
             setTextColor(Color.WHITE); setHintTextColor(Color.LTGRAY)
         }
+        recipient = EditText(this).apply {
+            hint = "Identidad NPV (JSON con clave privada P-256 o acuerdo)"
+            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE
+            setTextColor(Color.WHITE); setHintTextColor(Color.LTGRAY)
+            minLines = 2
+            maxLines = 5
+        }
         root.addView(password)
         root.addView(hwid)
+        root.addView(recipient)
         action("Importar archivo de configuración") { importer.launch(arrayOf("*/*")) }
         action("Generar clave pública y privada NPV") {
             status.text = "Generando claves P-256 localmente…"
@@ -141,12 +152,13 @@ class MainActivity : ComponentActivity() {
             }
         } catch (_: Exception) { } finally { cursor?.close() }
         val extension = fileName.substringAfterLast('.', "").lowercase()
-        if (extension !in setOf("nm", "hc", "ehi", "npv4", "npvt", "npvs")) {
+        if (extension !in setOf("nm", "hc", "ehi", "npv", "npv4", "npvt", "npvs")) {
             status.text = "Este formato no está incluido en la edición nativa."
             return
         }
         val pass = password.text.toString()
         val hardwareId = hwid.text.toString()
+        val recipientIdentity = recipient.text.toString()
         status.text = "Analizando localmente: " + fileName
         Thread {
             val result = runCatching {
@@ -162,12 +174,13 @@ class MainActivity : ComponentActivity() {
                     output.toByteArray()
                 } ?: error("Archivo inaccesible")
                 try {
-                    val nativeBytes = NativeOffline.decodeNative(bytes, extension, pass, hardwareId)
+                    val nativeBytes = NativeOffline.decodeNative(bytes, extension, pass, hardwareId, recipientIdentity)
                     val text = StandardCharsets.UTF_8.newDecoder()
                         .onMalformedInput(CodingErrorAction.REPORT)
                         .onUnmappableCharacter(CodingErrorAction.REPORT)
                         .decode(ByteBuffer.wrap(nativeBytes)).toString()
-                    JSONObject(text) // Validate JSON structure; no cryptographic work here.
+                    val parsed = JSONTokener(text).nextValue()
+                    require(parsed is JSONObject || parsed is JSONArray) { "JSON esperado" }
                     nativeBytes.fill(0)
                     text
                 } finally {
