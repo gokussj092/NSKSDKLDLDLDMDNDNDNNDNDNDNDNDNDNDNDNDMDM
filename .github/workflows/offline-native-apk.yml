@@ -14,6 +14,15 @@ on:
       - scripts/build_offline_npv_tables.py
       - android/app/src/main/cpp/spdecode_npv_text.cpp
       - android/app/src/main/cpp/spdecode_npv_text.h
+      - android/app/src/main/cpp/spdecode_npv_crypto.h
+      - android/app/src/main/cpp/spdecode_npv_whitebox.cpp
+      - android/app/src/main/cpp/spdecode_npv_whitebox.h
+      - android/app/src/main/cpp/spdecode_npv_signed.cpp
+      - android/app/src/main/cpp/spdecode_npv_signed.h
+      - android/app/src/main/cpp/spdecode_npv_legacy.cpp
+      - android/app/src/main/cpp/spdecode_npv_legacy.h
+      - tests/native_npv_cli.cpp
+      - tests/test_offline_npv_native_parity.py
       - android/app/src/main/cpp/spdecode_http_injector.cpp
       - android/app/src/main/cpp/spdecode_http_injector.h
       - tests/native_http_injector_cli.cpp
@@ -85,8 +94,37 @@ jobs:
           python3 -m venv /tmp/spdecode-ehi-env
           /tmp/spdecode-ehi-env/bin/pip install --disable-pip-version-check pycryptodome==3.23.0 argon2-cffi==25.1.0 msgpack==1.1.1
           /tmp/spdecode-ehi-env/bin/python tests/test_offline_ehi_native_parity.py /tmp/spdecode-ehi-native
+  npv-cpp-parity:
+    name: Native NPV historical, signed v1/v5/v6 and text parity
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install native P-256, zlib and test reference dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends g++ libmbedtls-dev libargon2-dev nlohmann-json3-dev zlib1g-dev python3-venv
+      - name: Generate audited whitebox constants and compile C++ engine
+        run: |
+          set -euo pipefail
+          python3 scripts/build_offline_npv_tables.py --output /tmp/spdecode_npv_tables.h
+          g++ -O2 -std=c++17 -Wall -Wextra -Werror -pthread -I/tmp \
+            tests/native_npv_cli.cpp \
+            android/app/src/main/cpp/spdecode_npv_signed.cpp \
+            android/app/src/main/cpp/spdecode_npv_whitebox.cpp \
+            android/app/src/main/cpp/spdecode_npv_text.cpp \
+            android/app/src/main/cpp/spdecode_npv_legacy.cpp \
+            -lmbedcrypto -lz -o /tmp/spdecode-npv-native
+      - name: Verify NPV v1/v5/v6, ECDH and complete JSON
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/spdecode-npv-env
+          /tmp/spdecode-npv-env/bin/pip install --disable-pip-version-check pycryptodome==3.23.0 argon2-cffi==25.1.0 msgpack==1.1.1
+          /tmp/spdecode-npv-env/bin/python tests/test_offline_npv_native_parity.py /tmp/spdecode-npv-native
   build:
-    needs: [hc-cpp-parity, ehi-cpp-parity]
+    needs: [hc-cpp-parity, ehi-cpp-parity, npv-cpp-parity]
     runs-on: ubuntu-latest
     timeout-minutes: 70
     env:
@@ -135,7 +173,7 @@ jobs:
           mkdir -p dist
           cp "$APK" dist/SP-DECODE-Offline-Native-alpha-debug.apk
           (cd dist && sha256sum *.apk > SHA256SUMS.txt)
-          echo "ALPHA: native NetMod, HTTP Custom HCX4/HCCFG/legacy, and P-256 generation. NPV decryption pending. HTTP Injector bypass and standard synthetic vectors tested. HC 69 host synthetic cases pass; real device tests pending." > dist/BUILD_INFO.txt
+          echo "ALPHA: native NetMod, HTTP Custom HCX4/HCCFG/legacy, and P-256 generation. HTTP Injector and NPV v1/v5/v6, legacy, text native parity tested. Device validation pending. HC 69 host synthetic cases pass; real device tests pending." > dist/BUILD_INFO.txt
       - uses: actions/upload-artifact@v4
         with:
           name: SP-DECODE-OFFLINE-NATIVE-ALPHA
