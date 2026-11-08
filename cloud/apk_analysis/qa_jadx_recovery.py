@@ -94,6 +94,7 @@ def recover_jadx(apk: Path, scratch: Path, jar: Path, env: dict,
     counts = {}
     inspected = 0
     bytes_inspected = 0
+    sites_observed = 0
     recovered = 0
     for index, candidate in enumerate(dex_inputs):
         # Multi-megabyte DEX files on 1 CPU routinely time out in simple mode.
@@ -123,6 +124,8 @@ def recover_jadx(apk: Path, scratch: Path, jar: Path, env: dict,
             })
             inspected += generated
             bytes_inspected += int(summary.get("sourceBytesInspected", 0))
+            sites_observed += int(summary.get("candidateCallSitesObserved",
+                                               len(summary.get("candidateCallSites", []))))
             for label, value in summary.get("cryptoReferenceCounts", {}).items():
                 if label in ("JCA_CIPHER", "JCA_KEY_SPEC", "JCA_GCM", "JCA_MAC",
                              "JCA_DIGEST", "JCA_PBKDF", "JNI_LOADER", "ANDROID_BASE64"):
@@ -141,6 +144,8 @@ def recover_jadx(apk: Path, scratch: Path, jar: Path, env: dict,
         **coverage, "attempts": attempts, "dexRecovered": recovered,
         "sourceFilesInspected": inspected, "sourceBytesInspected": bytes_inspected,
         "candidateCallSites": reference_sites,
+        "candidateCallSitesObserved": sites_observed,
+        "candidateCallSitesTruncated": sites_observed > len(reference_sites),
         "cryptoReferenceCounts": counts,
         "referencesMayOverlapPrimary": True,
         "methodValidated": False,

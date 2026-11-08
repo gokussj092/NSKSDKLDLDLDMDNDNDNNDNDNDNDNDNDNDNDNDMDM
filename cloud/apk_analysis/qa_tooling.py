@@ -248,9 +248,23 @@ def inspect_tooling(source:Path,report:dict)->dict:
             source_refs["sourceBytesInspected"]=(
                 source_refs.get("sourceBytesInspected",0)+
                 recovery["sourceBytesInspected"])
-            source_refs["candidateCallSites"]=(
-                source_refs.get("candidateCallSites",[])+
-                recovery["candidateCallSites"])[:48]
+            # Preserve the true per-attempt observation count while exporting
+            # only distinct bounded class/method/API indicators.
+            primary_sites=source_refs.get("candidateCallSites",[])
+            combined=primary_sites+recovery["candidateCallSites"]
+            distinct=[]
+            seen=set()
+            for site in combined:
+                key=(site.get("class"),site.get("method"),site.get("indicator"))
+                if key not in seen:
+                    seen.add(key)
+                    distinct.append(site)
+            source_refs["candidateCallSites"]=distinct[:48]
+            observed=(source_refs.get("candidateCallSitesObserved",len(primary_sites))+
+                      recovery.get("candidateCallSitesObserved",
+                                   len(recovery["candidateCallSites"])))
+            source_refs["candidateCallSitesObserved"]=observed
+            source_refs["candidateCallSitesTruncated"]=(observed>len(distinct[:48]))
             counts=source_refs.setdefault("cryptoReferenceCounts",{})
             for label,value in recovery["cryptoReferenceCounts"].items():
                 counts[label]=counts.get(label,0)+value
