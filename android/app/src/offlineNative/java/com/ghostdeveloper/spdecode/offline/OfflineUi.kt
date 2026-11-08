@@ -1,6 +1,7 @@
 package com.ghostdeveloper.spdecode.offline
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
@@ -15,6 +16,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -316,7 +318,7 @@ private fun Home(state:OfflineUiState,action:OfflineActions,p:OfflinePalette) {
             HorizontalDivider(color=p.line)
             // Complete source is selectable across lines, with separate aligned
             // line-number gutter. Nothing is truncated or paginated.
-            CompleteJsonViewer(state.result.orEmpty(),p)
+            CompleteJsonViewer(state.result.orEmpty(),p,state.language)
             Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
                 OutlinedButton(onClick=action.copyResult,modifier=Modifier.weight(1f)) {
                     Icon(Icons.Outlined.ContentCopy,null,modifier=Modifier.size(16.dp))
@@ -338,7 +340,7 @@ private fun Home(state:OfflineUiState,action:OfflineActions,p:OfflinePalette) {
 }
 
 @Composable
-private fun CompleteJsonViewer(content:String,p:OfflinePalette) {
+private fun CompleteJsonViewer(content:String,p:OfflinePalette,language:String) {
     val numberCount=remember(content) { content.count { it=='\n' } + 1 }
     val gutter=remember(numberCount) { (1..numberCount).joinToString("\n") }
     val rowScroll=rememberScrollState()
@@ -356,7 +358,7 @@ private fun CompleteJsonViewer(content:String,p:OfflinePalette) {
             }
         }
     }
-    SmallCaption(txt("json_selectable",if(p.bg==Color.White)"es" else "system"),p)
+    SmallCaption(txt("json_selectable",language),p)
 }
 
 @Composable
@@ -508,7 +510,8 @@ private fun About(state:OfflineUiState,action:OfflineActions,p:OfflinePalette) {
     Header(txt("about",state.language),null,p)
     OfflineCard(p) {
         Column(Modifier.fillMaxWidth(),horizontalAlignment=Alignment.CenterHorizontally) {
-            Icon(Icons.Outlined.Shield,null,tint=p.primary,modifier=Modifier.size(58.dp))
+            Image(painter=painterResource(com.ghostdeveloper.spdecode.offline.R.mipmap.ic_launcher),
+                contentDescription="SP-DECODE Offline",modifier=Modifier.size(72.dp))
             Text("SP-DECODE Offline",color=p.ink,fontSize=23.sp,fontWeight=FontWeight.Bold)
             SmallCaption(txt("native_edition",state.language),p)
             Text("1.1.25-offline.alpha1",color=p.subdued,fontSize=12.sp)
