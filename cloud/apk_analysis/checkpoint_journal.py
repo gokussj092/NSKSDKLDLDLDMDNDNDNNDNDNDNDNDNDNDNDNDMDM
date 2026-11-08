@@ -120,15 +120,22 @@ def checkpoint_record(*, stage: str, status: str, evidence: str, privacy: str,
 
 
 def _secure_dir(path: Path) -> None:
+    """Create or validate a private directory, safe against concurrent writers.
+
+    Parallel journal threads may both observe an absent directory; catching
+    only EEXIST preserves atomic creation without widening permissions.
+    Symlinks, regular files and group/world-accessible dirs fail closed.
+    """
     if path.is_symlink():
         raise CheckpointError("Symlinked checkpoint directory prohibited")
-    if path.exists():
-        if not path.is_dir() or (path.stat().st_mode & 0o077):
-            raise CheckpointError("Checkpoint directory must be private (0700)")
-    else:
+    try:
         path.mkdir(mode=0o700)
+    except FileExistsError:
+        pass
     if path.is_symlink():
         raise CheckpointError("Symlinked checkpoint directory prohibited")
+    if not path.is_dir() or (path.stat().st_mode & 0o077):
+        raise CheckpointError("Checkpoint directory must be private (0700)")
 
 
 def _fsync_dir(path: Path) -> None:
