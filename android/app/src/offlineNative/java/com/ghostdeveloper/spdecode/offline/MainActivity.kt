@@ -9,6 +9,7 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.provider.OpenableColumns
 import android.view.View
 import android.view.WindowManager
@@ -314,7 +315,7 @@ class MainActivity : ComponentActivity() {
     private fun copy(text:String) {
         val clip=ClipData.newPlainText("SP-DECODE Offline",text)
         if(Build.VERSION.SDK_INT>=33)clip.description.extras=
-            Bundle().apply{putBoolean(ClipDescription.EXTRA_IS_SENSITIVE,true)}
+            PersistableBundle().apply{putBoolean(ClipDescription.EXTRA_IS_SENSITIVE,true)}
         (getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(clip)
         ui.message=txt("copied",ui.language)
     }
