@@ -39,8 +39,10 @@ PUBLIC_EVENTS = frozenset({
     "COMPONENT_INSPECTION", "COMPONENTS_INSPECTED",
     "REPORT_PREPARATION", "REPORT_READY", "ANALYSIS_FAILED",
     "ANALYSIS_RESUMED",
+    "ADVANCED_ANALYSIS","ADVANCED_ANALYSIS_COMPLETE",
+    "ADVANCED_ANALYSIS_PARTIAL","ADVANCED_ANALYSIS_SKIPPED",
 })
-PUBLIC_STATES = frozenset({"RUNNING", "DONE", "FAILED"})
+PUBLIC_STATES = frozenset({"RUNNING", "DONE", "FAILED", "PARTIAL"})
 MUTEX = threading.RLock()
 
 
@@ -282,7 +284,10 @@ def _process(job_id:str) -> None:
         publish("PACKAGE_VALIDATION","RUNNING")
         result=inspect_static(
             folder/("input"+Path(state["filename"]).suffix.lower()),
-            on_stage=lambda code: publish(code,"DONE")
+            on_stage=lambda code: publish(code,
+                "RUNNING" if code in {"COMPONENT_INSPECTION","ADVANCED_ANALYSIS"} else
+                "PARTIAL" if code in {"ADVANCED_ANALYSIS_PARTIAL",
+                    "ADVANCED_ANALYSIS_SKIPPED"} else "DONE")
         )
         publish("REPORT_PREPARATION","RUNNING")
         status="COMPLETED"

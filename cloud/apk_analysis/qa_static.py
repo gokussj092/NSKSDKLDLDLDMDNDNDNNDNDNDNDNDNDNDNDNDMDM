@@ -17,6 +17,9 @@ def inspect_static(path:Path, on_stage=None)->dict:
         on_stage("PACKAGE_VALIDATED")
         on_stage("COMPONENT_INSPECTION")
     inventory=inspect_parts(path,checked["format"])
+    if on_stage:
+        on_stage("COMPONENTS_INSPECTED")
+        on_stage("ADVANCED_ANALYSIS")
     try:
         tooling=inspect_tooling(path,inventory)
     except (OSError,ValueError,RuntimeError,zipfile.BadZipFile):
@@ -27,7 +30,11 @@ def inspect_static(path:Path, on_stage=None)->dict:
                  "jadx":{"status":"FAILED"},
                  "ghidra":{"status":"NOT_EXECUTED"}}
     if on_stage:
-        on_stage("COMPONENTS_INSPECTED")
+        on_stage("ADVANCED_ANALYSIS_SKIPPED" if tooling["status"] in
+            {"NOT_ENABLED","INSUFFICIENT_CONTAINER_MEMORY",
+             "JADX_NOT_PRELOADED_OR_HASH_MISMATCH"} else
+            "ADVANCED_ANALYSIS_COMPLETE" if tooling["status"]=="PARTIAL_TOOLS_EXECUTED"
+            else "ADVANCED_ANALYSIS_PARTIAL")
     return {
         "schemaVersion":2,
         "reportKind":"APK_STATIC_QA_DEEP_V2",

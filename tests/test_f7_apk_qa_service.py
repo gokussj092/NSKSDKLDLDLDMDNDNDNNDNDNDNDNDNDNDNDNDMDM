@@ -110,9 +110,18 @@ class APKQAServiceTests(unittest.TestCase):
         self.assertEqual([e["code"] for e in events],[
             "UPLOAD_STARTED","UPLOAD_RECEIVED","PACKAGE_VALIDATION",
             "PACKAGE_VALIDATED","COMPONENT_INSPECTION","COMPONENTS_INSPECTED",
+            "ADVANCED_ANALYSIS","ADVANCED_ANALYSIS_SKIPPED",
             "REPORT_PREPARATION","REPORT_READY",
         ])
         self.assertTrue(all(e["status"] in qa.PUBLIC_STATES for e in events))
+        self.assertEqual(next(e["status"] for e in events
+            if e["code"]=="COMPONENT_INSPECTION"),"RUNNING")
+        self.assertEqual(next(e["status"] for e in events
+            if e["code"]=="COMPONENTS_INSPECTED"),"DONE")
+        self.assertEqual(next(e["status"] for e in events
+            if e["code"]=="ADVANCED_ANALYSIS"),"RUNNING")
+        self.assertEqual(next(e["status"] for e in events
+            if e["code"]=="ADVANCED_ANALYSIS_SKIPPED"),"PARTIAL")
         public=json.dumps(events).lower()
         for forbidden in ("jadx","ghidra","script","algorithm","bruteforce","secret"):
             self.assertNotIn(forbidden,public)

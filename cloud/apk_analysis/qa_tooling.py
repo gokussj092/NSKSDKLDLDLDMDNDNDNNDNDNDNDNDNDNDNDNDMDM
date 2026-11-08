@@ -51,6 +51,25 @@ def _verified_jadx()->bool:
         return False
 
 
+def _run_jadx(command:list[str],*,cwd:Path,timeout:int,env:dict,logfile:Path)->str:
+    """Minimal non-sensitive termination classification; never return logs."""
+    with logfile.open("wb") as log:
+        try:
+            child=subprocess.Popen(command,cwd=cwd,env=env,
+                stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT,
+                start_new_session=True)
+        except OSError:
+            return "START_FAILED"
+        try:
+            return "EXIT_ZERO" if child.wait(timeout=timeout)==0 else "EXIT_NONZERO"
+        except subprocess.TimeoutExpired:
+            try:os.killpg(child.pid,signal.SIGKILL)
+            except ProcessLookupError:pass
+            try:child.wait(timeout=10)
+            except subprocess.TimeoutExpired:pass
+            return "TIMEOUT"
+
+
 def _run(command:list[str],*,cwd:Path,timeout:int,env:dict,
          logfile:Path)->bool:
     # No shell, no APK-controlled argument strings, no stdout in JSON/logs.
@@ -195,21 +214,29 @@ def inspect_tooling(source:Path,report:dict)->dict:
                  "-cp",str(JADX_JAR),"jadx.cli.JadxCLI",
                  "--no-res","--decompilation-mode","simple","-j","1" if lite else "2",
                  "-d",str(dest),str(base)]
-        did_jadx=_run(command,cwd=scratch,timeout=180 if lite else 240,env=env,
+        termination=_run_jadx(command,cwd=scratch,timeout=180 if lite else 240,env=env,
                       logfile=scratch/"jadx.log")
+        did_jadx=termination=="EXIT_ZERO"
         # Do not return APK source code or stdout that could contain secrets.
         # Preserve genuine partial source evidence on timeout/OOM, but do not
         # claim the Java decompiler completed when its process failed.
         source_refs=scan_jadx_sources(dest)
         partial=not did_jadx and source_refs.get("sourceFilesInspected",0)>0
+        reference_status=source_refs.pop("status","UNKNOWN")
         state["jadx"]={
-            "status":"COMPLETED" if did_jadx else
-                     ("PARTIAL_OUTPUT" if partial else "FAILED_OR_TIMEOUT"),
             **source_refs,
+            "referenceScanStatus":reference_status,
+            "status":"COMPLETED" if did_jadx else
+                     ("PARTIAL_OUTPUT" if partial else "FAILED"),
+            "terminationReason":termination,
+            "attempted":True,
+            "completed":did_jadx,
         }
+        state["jadxAttempted"]=True
         state["jadxExecuted"]=did_jadx
         state["resourceProfile"]="JADX_LITE" if lite else "ADVANCED"
-        state["status"]="PARTIAL_TOOLS_EXECUTED" if did_jadx else "TOOLS_FAILED"
+        state["status"]="PARTIAL_TOOLS_EXECUTED" if did_jadx else
+                         ("TOOLS_PARTIAL" if partial else "TOOLS_FAILED")
         if not ghidra_ready:
             state["ghidra"]={"status":"DISABLED_IN_LITE_PROFILE" if lite else "NOT_INSTALLED_OR_VERIFIED",
                              "elfDiscovered":total_native}
