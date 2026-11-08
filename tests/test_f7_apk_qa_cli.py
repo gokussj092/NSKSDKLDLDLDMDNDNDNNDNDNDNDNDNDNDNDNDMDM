@@ -91,6 +91,64 @@ class F7QAActivationTests(unittest.TestCase):
         self.assertEqual(again.returncode,0,again.stderr)
         self.assertEqual(raw,self.env.read_text(encoding="utf-8"))
 
+    def test_private_readiness_retries_slow_boot_without_failing(self):
+        helper="apk_qa_wait_ready(){"+SCRIPT.split("apk_qa_wait_ready(){",1)[1].split(
+            "\napk_qa_enable_lite(){",1)[0]
+        self.assertIn("for attempt in $(seq 1 45)",helper)
+        self.assertIn("sleep 2",helper)
+        self.assertIn(">/dev/null 2>&1",helper)
+        lite=SCRIPT.split("apk_qa_enable_lite(){",1)[1].split(
+            "apk_qa_enable_tools(){",1)[0]
+        self.assertIn("apk_qa_wait_ready apk-tools 8793",lite)
+        self.assertIn("apk_qa_wait_ready apk-qa 8792",lite)
+        # Simulate an asynchronous Docker boot: first two internal health
+        # requests fail and the third succeeds, without waiting in the test.
+        script=helper+"""
+counter=0
+compose() {
+  if [[ "$*" == *" exec -T apk-tools python3 -c "* ]]; then
+    counter=$((counter+1))
+    [[ "$counter" -ge 3 ]]
+  else
+    return 1
+  fi
+}
+sleep() { :; }
+log() { :; }
+die() { return 1; }
+apk_qa_wait_ready apk-tools 8793 || exit 61
+printf 'attempts=%s\\n' "$counter"
+"""
+        result=subprocess.run(["bash","-c",script],capture_output=True,text=True)
+        self.assertEqual(result.returncode,0,result.stderr)
+        self.assertIn("attempts=3",result.stdout)
+
+    def test_private_readiness_has_bounded_timeout_and_keeps_rollback(self):
+        helper="apk_qa_wait_ready(){"+SCRIPT.split("apk_qa_wait_ready(){",1)[1].split(
+            "\napk_qa_enable_lite(){",1)[0]
+        script=helper+"""
+counter=0
+compose() {
+  if [[ "$*" == *" exec -T apk-tools python3 -c "* ]]; then
+    counter=$((counter+1))
+  fi
+  return 1
+}
+sleep() { :; }
+log() { :; }
+die() { return 1; }
+if apk_qa_wait_ready apk-tools 8793; then exit 62; fi
+printf 'attempts=%s\\n' "$counter"
+"""
+        result=subprocess.run(["bash","-c",script],capture_output=True,text=True)
+        self.assertEqual(result.returncode,0,result.stderr)
+        self.assertIn("attempts=45",result.stdout)
+        lite=SCRIPT.split("apk_qa_enable_lite(){",1)[1].split(
+            "apk_qa_enable_tools(){",1)[0]
+        self.assertIn("JADX Lite activation failed; restoring prior configuration",lite)
+        self.assertIn('cp -p "$previous" "$ENVFILE"',lite)
+        self.assertIn("stop apk-tools",lite)
+
     def test_lite_installer_provisions_existing_secret_idempotently(self):
         segment=SCRIPT.split("apk_qa_enable_lite(){",1)[1].split(
             "apk_qa_enable_tools(){",1)[0]
