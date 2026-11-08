@@ -9,6 +9,7 @@ import zipfile
 from .input_gate import inspect_input
 from .qa_deep import inspect_parts
 from .qa_tooling import inspect_tooling
+from .qa_tool_plan import plan_tools, correlate_evidence
 
 
 def inspect_static(path:Path, on_stage=None)->dict:
@@ -50,6 +51,8 @@ def inspect_static(path:Path, on_stage=None)->dict:
             "codeExecuted":False,
             "vendorMethodValidated":False,"credentialsExtracted":False,"networkUsed":False,
             "tooling":tooling,
+            "toolPlan":plan_tools(inventory),
+            "methodEvidence":correlate_evidence(inventory,tooling),
             "dexTablesParsed":inventory["dexParsed"],
             "elfFilesParsed":inventory["elfParsed"],
             "jadxExecuted":tooling["jadxExecuted"],
