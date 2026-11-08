@@ -144,7 +144,7 @@ Bytes outerPayload(const Bytes& raw){
         (static_cast<size_t>(raw[offset+1])<<16)|
         (static_cast<size_t>(raw[offset+2])<<8)|raw[offset+3];
     offset+=12;
-    check(length>0&&length<=maxBytes&&offset+length<=raw.size(),"EHI_BAD_PAYLOAD");
+    check(length>0&&length<=maxBytes&&offset+length==raw.size(),"EHI_BAD_PAYLOAD");
     return Bytes(raw.begin()+offset,raw.begin()+offset+length);
 }
 std::string xorLayer(const std::string& source,const std::string& key){
