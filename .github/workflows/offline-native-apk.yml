@@ -11,6 +11,10 @@ on:
       - android/app/src/main/cpp/spdecode_http_custom.h
       - android/app/src/main/cpp/spdecode_http_custom_legacy.cpp
       - android/app/src/main/cpp/spdecode_http_custom_legacy.h
+      - android/app/src/main/cpp/spdecode_http_injector.cpp
+      - android/app/src/main/cpp/spdecode_http_injector.h
+      - tests/native_http_injector_cli.cpp
+      - tests/test_offline_ehi_native_parity.py
       - tests/native_http_custom_cli.cpp
       - tests/test_offline_hc_native_parity.py
       - .github/workflows/offline-native-apk.yml
@@ -49,8 +53,33 @@ jobs:
           python3 -m venv /tmp/spdecode-hc-python
           /tmp/spdecode-hc-python/bin/python -m pip install --disable-pip-version-check pycryptodome==3.23.0 argon2-cffi==25.1.0 msgpack==1.1.1
           /tmp/spdecode-hc-python/bin/python tests/test_offline_hc_native_parity.py /tmp/spdecode-hc-native
+  ehi-cpp-parity:
+    name: HTTP Injector C++ differential fixture verification
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install native reference libraries
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends g++ libmbedtls-dev libargon2-dev nlohmann-json3-dev python3-venv
+      - name: Compile isolated EHI C++ engine
+        run: |
+          set -euo pipefail
+          g++ -O2 -std=c++17 -Wall -Wextra -Werror \
+            tests/native_http_injector_cli.cpp \
+            android/app/src/main/cpp/spdecode_http_injector.cpp \
+            -lmbedcrypto -largon2 -o /tmp/spdecode-ehi-native
+      - name: Compare EHI bypass and standard Python goldens
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/spdecode-ehi-env
+          /tmp/spdecode-ehi-env/bin/pip install --disable-pip-version-check pycryptodome==3.23.0 argon2-cffi==25.1.0 msgpack==1.1.1
+          /tmp/spdecode-ehi-env/bin/python tests/test_offline_ehi_native_parity.py /tmp/spdecode-ehi-native
   build:
-    needs: hc-cpp-parity
+    needs: [hc-cpp-parity, ehi-cpp-parity]
     runs-on: ubuntu-latest
     timeout-minutes: 70
     env:
@@ -99,7 +128,7 @@ jobs:
           mkdir -p dist
           cp "$APK" dist/SP-DECODE-Offline-Native-alpha-debug.apk
           (cd dist && sha256sum *.apk > SHA256SUMS.txt)
-          echo "ALPHA: native NetMod, HTTP Custom HCX4/HCCFG/legacy, and P-256 generation. Injector and NPV decryption pending. HC 69 host synthetic cases pass; real device tests pending." > dist/BUILD_INFO.txt
+          echo "ALPHA: native NetMod, HTTP Custom HCX4/HCCFG/legacy, and P-256 generation. NPV decryption pending. HTTP Injector bypass and standard synthetic vectors tested. HC 69 host synthetic cases pass; real device tests pending." > dist/BUILD_INFO.txt
       - uses: actions/upload-artifact@v4
         with:
           name: SP-DECODE-OFFLINE-NATIVE-ALPHA
