@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- No INTERNET permission, background services or Cloud provider directory. -->
-    <application android:label="SP-DECODE Offline" android:allowBackup="false"
+    <application android:label="SP-DECODE Offline" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher" android:allowBackup="false"
         android:usesCleartextTraffic="false" android:supportsRtl="true"
         android:theme="@android:style/Theme.Material.NoActionBar">
         <activity android:name="com.ghostdeveloper.spdecode.offline.MainActivity"
