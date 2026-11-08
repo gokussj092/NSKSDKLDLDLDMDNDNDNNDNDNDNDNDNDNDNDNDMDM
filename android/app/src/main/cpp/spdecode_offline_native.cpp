@@ -186,6 +186,32 @@ Bytes decryptNm(const Bytes& input){
     }
     throw Failure("NETMOD_AUTH_OR_PADDING_FAILED");
 }
+Bytes decryptNmText(const Bytes& input) {
+    const Bytes ciphertext=decodeB64(input);
+    static constexpr std::array<const char*,3> keys={
+        "<n3t5yn4^n3tm0d>","_netsyna_netmod_","nicetrybuddygoon"
+    };
+    for(const char* key:keys) {
+        Bytes plain=aes128Ecb(ciphertext,key);
+        if(plain.empty())continue;
+        const std::string text(reinterpret_cast<const char*>(plain.data()),plain.size());
+        const bool plausible=text.front()=='{' || text.front()=='[' ||
+            text.find("://")!=std::string::npos ||
+            text.find('=')!=std::string::npos || text.find('@')!=std::string::npos;
+        if(plausible) {
+            try {
+                const auto parsed=nlohmann::json::parse(text);
+                if(parsed.is_object()||parsed.is_array())return plain;
+            }catch(const std::exception&){}
+            const std::string wrapped=nlohmann::json({{"decodedText",text}})
+                .dump(2,' ',false,nlohmann::json::error_handler_t::strict);
+            std::fill(plain.begin(),plain.end(),0);
+            return Bytes(wrapped.begin(),wrapped.end());
+        }
+        std::fill(plain.begin(),plain.end(),0);
+    }
+    throw Failure("NETMOD_AUTH_OR_PADDING_FAILED");
+}
 void raise(JNIEnv* env,const char* reason){
     jclass type=env->FindClass("java/lang/IllegalArgumentException");
     if(type){env->ThrowNew(type,reason);env->DeleteLocalRef(type);}
@@ -205,6 +231,8 @@ Java_com_ghostdeveloper_spdecode_offline_NativeOffline_decodeNative(
             decoded.assign(clear.begin(),clear.end());
         }else if(format=="nm") {
             decoded=decryptNm(source);
+        }else if(format=="nmtext") {
+            decoded=decryptNmText(source);
         }else if(format=="ehi"){
             const std::string clear=spdecode::offline::decodeHttpInjector(source);
             decoded.assign(clear.begin(),clear.end());
