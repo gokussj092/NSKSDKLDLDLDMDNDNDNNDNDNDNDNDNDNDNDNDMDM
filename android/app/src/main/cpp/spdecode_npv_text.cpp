@@ -1,5 +1,6 @@
 #include "spdecode_npv_text.h"
 #include "spdecode_npv_signed.h"
+#include "spdecode_npv_crypto.h"
 #include <mbedtls/base64.h>
 #include <nlohmann/json.hpp>
 #include <algorithm>
@@ -68,9 +69,7 @@ Bytes base64(std::string enc){
     return value;
 }
 json parse(const Bytes& b){
-    const auto data=json::parse(b.begin(),b.end(),nullptr,false);
-    require(!data.is_discarded(),"NPV_INVALID_JSON");
-    return data;
+    return npv::parse(b); // Reject duplicate members as the server does.
 }
 void embedded(json& node,int depth){
     require(depth<=64,"NPV_NESTING_LIMIT");
@@ -87,10 +86,10 @@ void embedded(json& node,int depth){
         if(text.rfind("npvs1:",0)==0){node=text;embedded(node,depth+1);return;}
         size_t p=0;while(p<text.size()&&asciiSpace(text[p]))p++;
         if(p<text.size()&&(text[p]=='{'||text[p]=='[')){
-            auto value=json::parse(raw.begin(),raw.end(),nullptr,false);
-            if(!value.is_discarded()){
+            try{
+                auto value=npv::parse(raw);
                 node=std::move(value);embedded(node,depth+1);return;
-            }
+            }catch(const npv::Error&){/* Preserve brace-prefixed prose. */}
         }
         // Require valid UTF-8 even when decoded value is an opaque string.
         try{node=json(text);(void)node.dump(-1,' ',false,json::error_handler_t::strict);}
