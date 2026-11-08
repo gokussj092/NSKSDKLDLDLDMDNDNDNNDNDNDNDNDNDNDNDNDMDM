@@ -405,7 +405,8 @@ public:
     }
     uint64_t u64(){
         const auto data=take(8);uint64_t v=0;
-        for(unsigned char c:data)v=(v<<8)|c;return v;
+        for(unsigned char c:data){v=(v<<8)|c;}
+        return v;
     }
     std::string text(){
         const size_t len=u32();
