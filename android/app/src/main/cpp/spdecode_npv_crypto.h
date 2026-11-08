@@ -13,6 +13,9 @@
 #include <mbedtls/sha256.h>
 #include <nlohmann/json.hpp>
 #include <algorithm>
+#include <cctype>
+#include <functional>
+#include <map>
 #include <array>
 #include <cstdint>
 #include <cstring>
@@ -197,10 +200,16 @@ struct Mpi {
 inline void pointRead(Curve& curve,Point& q,const Bytes& packed){
     need(packed.size()==33&&(packed[0]==2||packed[0]==3),
          "NPV_BAD_COMPRESSED_POINT");
-    Mpi x,y,rhs,temp,exponent,checkY;
-    auto* const p=&curve.group.MBEDTLS_PRIVATE(P);
-    auto* const b=&curve.group.MBEDTLS_PRIVATE(B);
-    int rc=mbedtls_mpi_read_binary(&x.v,packed.data()+1,32);
+    Mpi x,y,rhs,temp,exponent,checkY,modulus,curveB;
+    // Public NIST P-256 parameters. Mbed TLS 3.6 stores its curve
+    // internals in opaque group handles, so do not access grp.P/grp.B.
+    int rc=mbedtls_mpi_read_string(&modulus.v,16,
+         "FFFFFFFF00000001000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF");
+    if(rc==0)rc=mbedtls_mpi_read_string(&curveB.v,16,
+         "5AC635D8AA3A93E7B3EBBD55769886BC651D06B0CC53B0F63BCE3C3E27D2604B");
+    auto* const p=&modulus.v;
+    auto* const b=&curveB.v;
+    if(rc==0)rc=mbedtls_mpi_read_binary(&x.v,packed.data()+1,32);
     if(rc==0)rc=mbedtls_mpi_cmp_mpi(&x.v,p)<0?0:-1;
     if(rc==0)rc=mbedtls_mpi_mul_mpi(&rhs.v,&x.v,&x.v);
     if(rc==0)rc=mbedtls_mpi_mod_mpi(&rhs.v,&rhs.v,p);
