@@ -1,5 +1,6 @@
 #include "../android/app/src/main/cpp/spdecode_http_custom.h"
 #include <cstdint>
+#include <algorithm>
 #include <iostream>
 #include <stdexcept>
 #include <string>
