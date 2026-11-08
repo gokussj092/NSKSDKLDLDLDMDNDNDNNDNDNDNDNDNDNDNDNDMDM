@@ -15,7 +15,7 @@ namespace spdecode::offline {
 namespace {
 using Bytes=std::vector<unsigned char>;
 using json=nlohmann::json;
-constexpr size_t MAX_INPUT=4u*1024u*1024u;
+constexpr size_t kLegacyInputMax=4u*1024u*1024u;
 constexpr const char* keys[]={
 "2be4342943c6f91ff58987f41a1aafd179eeb4e053f5cea55b11d6a7db58bd7d",
 "3380aa278b744ba5b529a7f32fa803e48749280dae378345d9b526cf1dbce372",
@@ -68,7 +68,7 @@ Bytes hexLoose(const std::string& input){
 }
 Bytes b64(const std::string& text){
     std::string value=text;
-    if(value.empty()||value.size()>MAX_INPUT*2||value.size()%4==1)throw std::runtime_error("BAD_B64");
+    if(value.empty()||value.size()>kLegacyInputMax*2||value.size()%4==1)throw std::runtime_error("BAD_B64");
     value.append((4-value.size()%4)%4,'=');
     Bytes result(value.size()*3/4+4);
     size_t size=0;
@@ -89,7 +89,7 @@ void q(std::array<uint32_t,16>& s,int a,int b,int c,int d){
     s[c]+=s[d];s[b]=rotl(s[b]^s[c],7);
 }
 Bytes chaCha8(const Bytes& input,const Bytes& key,const Bytes& nonce){
-    if(key.size()!=32||nonce.size()!=8||input.size()>MAX_INPUT)
+    if(key.size()!=32||nonce.size()!=8||input.size()>kLegacyInputMax)
         throw std::runtime_error("BAD_CHACHA");
     std::array<uint32_t,16> s{};
     s[0]=0x61707865;s[1]=0x3320646e;s[2]=0x79622d32;s[3]=0x6b206574;
@@ -364,7 +364,7 @@ bool decodeCarrier(const Bytes& bytes,json& result){
 }
 }
 bool decodeLegacyHttpCustom(const std::vector<unsigned char>& raw,std::string& result){
-    if(raw.empty()||raw.size()>MAX_INPUT)return false;
+    if(raw.empty()||raw.size()>kLegacyInputMax)return false;
     try{
         json decoded;
         if(decodeCarrier(raw,decoded)){
