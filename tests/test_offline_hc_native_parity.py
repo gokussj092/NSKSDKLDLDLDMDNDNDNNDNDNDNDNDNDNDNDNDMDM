@@ -57,10 +57,37 @@ def main(exe):
                 missing=call(exe,make_file(locked=locked,protected=protected),password,"")
                 check(missing.returncode!=0,"missing HWID accepted")
                 passed+=1
+    # Independent historical XOR + original ChaCha20 (64-bit nonce) vectors.
+    # Unlike HCX4 these exporters have no authenticated tag, so test structural
+    # parsing and exact clear fields rather than claiming AEAD security.
+    from Crypto.Cipher import ChaCha20
+    from decoders.Python.HTTPCUSTOM import HCConstants, HCDecryptor
+    def wrap_cha(clear, key):
+        stream=ChaCha20.new(key=key,nonce=bytes([0xdb])*8)
+        stream.seek(64)
+        return (stream.encrypt(clear.encode("utf-8"))+bytes(16)).hex()
+    for new in (False,True):
+        tokens="GET / HTTP/1.1[splitConfig]proxy.example:1080"
+        inner=wrap_cha(tokens,HCConstants.CHACHA_KEYS[1])
+        doc={"cfg":{"content":inner}} if new else {"xy":inner,"uv":"[splitConfig]"}
+        outside=wrap_cha(json.dumps(doc,separators=(",",":")),HCConstants.CHACHA_KEYS[5])
+        clear=outside.encode("ascii")
+        xor=bytes.fromhex("e382e4b8adc386f09f9293")
+        logical=bytes(c^xor[i%len(xor)] for i,c in enumerate(clear))
+        original=logical.decode("latin1").encode("utf-8")
+        reference=HCDecryptor.execute(original)
+        check(reference is not None and "proxy.example:1080" in reference,
+              "Python reference rejected historical synthetic vector")
+        native=call(exe,original)
+        check(native.returncode==0,(new,native.stderr.decode(errors="replace")[:200]))
+        result=json.loads(native.stdout)
+        check(result["Config"]["payload"]=="GET / HTTP/1.1","legacy payload differs")
+        check(result["Config"]["proxy"]=="proxy.example:1080","legacy proxy differs")
+        passed+=1
     for invalid in (b"",b"invalid","".encode()+b"\xff"*45):
         check(call(exe,invalid).returncode!=0,"invalid input accepted")
         passed+=1
-    print(f"PASS: native HCX4 Python parity and fail-closed checks: {passed} cases")
+    print(f"PASS: native HCX4 and legacy Python parity / tamper checks: {passed} cases")
 
 if __name__=="__main__":
     main(sys.argv[1])
