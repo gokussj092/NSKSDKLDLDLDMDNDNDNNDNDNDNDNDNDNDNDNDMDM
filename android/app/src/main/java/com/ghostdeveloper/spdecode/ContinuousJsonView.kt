@@ -6,6 +6,9 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Typeface
 import android.os.Bundle
+import android.view.ActionMode
+import android.view.Menu
+import android.view.MenuItem
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
@@ -30,7 +33,7 @@ internal class ContinuousJsonView(
     context: Context,
     private val document: NativeResultEngine.Document,
     private val mask: Boolean,
-    private val onLongPressLine: (Int, Int) -> Unit = { _, _ -> },
+    private val onCopyRange: (Int, Int, Int, Int) -> Unit = { _, _, _, _ -> },
 ) : View(context) {
     private val density = resources.displayMetrics.density
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -45,6 +48,30 @@ internal class ContinuousJsonView(
     private val gutter get() = paint.measureText(document.lineCount.toString()) + 2f * inset
     private val originalTextSize = paint.textSize
     private var searchLine = -1
+    private data class Cursor(val line:Int,val column:Int)
+    private var selectionStart:Cursor?=null
+    private var selectionEnd:Cursor?=null
+    private var movingHandle=-1
+    private var contextMode:ActionMode?=null
+    private var fingerX=0f
+    private var fingerY=0f
+    private var autoScrolling=false
+    private val autoScroll=object:Runnable {
+        override fun run() {
+            if(!autoScrolling || movingHandle<0)return
+            val edge=30f*density
+            val shift=when {
+                fingerY<edge -> -rowHeight*1.6f
+                fingerY>height-edge -> rowHeight*1.6f
+                else -> 0f
+            }
+            if(shift!=0f) {
+                moveTo(offsetX,offsetY+shift)
+                moveSelectionHandle(fingerX,fingerY)
+                postOnAnimation(this)
+            } else autoScrolling=false
+        }
+    }
     private val scroller = OverScroller(context)
     private var offsetX = 0f
     private var offsetY = 0f
@@ -70,7 +97,7 @@ internal class ContinuousJsonView(
                 .coerceIn(0, document.lineCount - 1)
             val column = floor((offsetX + event.x - gutter) / cellWidth).toInt()
                 .coerceAtLeast(0)
-            onLongPressLine(line, column)
+            beginSelection(event.x,event.y)
         }
         override fun onDown(event: MotionEvent): Boolean {
             scroller.forceFinished(true)
@@ -113,6 +140,123 @@ internal class ContinuousJsonView(
         invalidate()
     }
 
+
+    private fun cursorAt(x:Float,y:Float):Cursor {
+        val line=floor((offsetY+y-inset)/rowHeight).toInt()
+            .coerceIn(0,(document.lineCount-1).coerceAtLeast(0))
+        val col=floor((offsetX+x-gutter)/cellWidth).toInt()
+            .coerceIn(0,document.columnCount)
+        return Cursor(line,col)
+    }
+    private fun orderedSelection():Pair<Cursor,Cursor>? {
+        val a=selectionStart ?: return null
+        val b=selectionEnd ?: return null
+        return if(a.line<b.line || (a.line==b.line&&a.column<=b.column))a to b else b to a
+    }
+    private fun beginSelection(x:Float,y:Float) {
+        if(document.lineCount==0)return
+        contextMode?.finish()
+        val where=cursorAt(x,y)
+        selectionStart=where
+        selectionEnd=where.copy(column=(where.column+1).coerceAtMost(document.columnCount))
+        movingHandle=1
+        fingerX=x;fingerY=y
+        parent?.requestDisallowInterceptTouchEvent(true)
+        invalidate()
+        contextMode=startActionMode(object:ActionMode.Callback {
+            override fun onCreateActionMode(mode:ActionMode,menu:Menu):Boolean {
+                menu.add(0,android.R.id.copy,0,context.getString(android.R.string.copy))
+                    .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                menu.add(0,android.R.id.selectAll,1,context.getString(R.string.result_select_all))
+                return true
+            }
+            override fun onPrepareActionMode(mode:ActionMode,menu:Menu)=false
+            override fun onActionItemClicked(mode:ActionMode,item:MenuItem):Boolean {
+                when(item.itemId) {
+                    android.R.id.copy -> {
+                        val sel=orderedSelection() ?: return false
+                        if(sel.first!=sel.second)onCopyRange(
+                            sel.first.line,sel.first.column,sel.second.line,sel.second.column)
+                        mode.finish()
+                        return true
+                    }
+                    android.R.id.selectAll -> {
+                        selectionStart=Cursor(0,0)
+                        selectionEnd=Cursor(document.lineCount-1,document.columnCount)
+                        movingHandle=-1
+                        invalidate()
+                        return true
+                    }
+                }
+                return false
+            }
+            override fun onDestroyActionMode(mode:ActionMode) {
+                if(contextMode===mode)contextMode=null
+                selectionStart=null;selectionEnd=null
+                movingHandle=-1
+                stopAutoScroll()
+                invalidate()
+            }
+        },ActionMode.TYPE_FLOATING)
+    }
+    private fun handleAt(x:Float,y:Float):Int {
+        val slop=28f*density
+        val locations=listOf(selectionStart,selectionEnd)
+        for(i in 0..1) {
+            val anchor=locations[i] ?: continue
+            val anchorX=gutter+anchor.column*cellWidth-offsetX
+            val anchorY=inset+(anchor.line+1)*rowHeight-offsetY
+            if(kotlin.math.abs(x-anchorX)<slop && kotlin.math.abs(y-anchorY)<slop)
+                return i
+        }
+        return -1
+    }
+    private fun moveSelectionHandle(x:Float,y:Float) {
+        val point=cursorAt(x,y)
+        if(movingHandle==0)selectionStart=point else selectionEnd=point
+        invalidate()
+    }
+    private fun stopAutoScroll() {
+        autoScrolling=false
+        removeCallbacks(autoScroll)
+    }
+    private fun handleSelectionTouch(event:MotionEvent):Boolean {
+        when(event.actionMasked) {
+            MotionEvent.ACTION_DOWN -> {
+                movingHandle=handleAt(event.x,event.y)
+                if(movingHandle>=0) {
+                    fingerX=event.x;fingerY=event.y
+                    parent?.requestDisallowInterceptTouchEvent(true)
+                    return true
+                }
+            }
+            MotionEvent.ACTION_MOVE -> if(movingHandle>=0) {
+                fingerX=event.x;fingerY=event.y
+                moveSelectionHandle(fingerX,fingerY)
+                val edge=30f*density
+                if(!autoScrolling && (fingerY<edge || fingerY>height-edge)){
+                    autoScrolling=true;postOnAnimation(autoScroll)
+                }
+                return true
+            }
+            MotionEvent.ACTION_UP -> if(movingHandle>=0) {
+                moveSelectionHandle(event.x,event.y)
+                movingHandle=-1
+                stopAutoScroll()
+                contextMode?.invalidate()
+                parent?.requestDisallowInterceptTouchEvent(false)
+                return true
+            }
+            MotionEvent.ACTION_CANCEL -> if(movingHandle>=0) {
+                movingHandle=-1
+                stopAutoScroll()
+                parent?.requestDisallowInterceptTouchEvent(false)
+                return true
+            }
+        }
+        return false
+    }
+
     internal fun scrollToLine(line: Int) {
         scroller.forceFinished(true)
         moveTo(offsetX, line.coerceIn(0, document.lineCount - 1) * rowHeight)
@@ -145,6 +289,21 @@ internal class ContinuousJsonView(
                 canvas.drawRect(gutter, line * rowHeight + inset - offsetY,
                     width.toFloat(), (line + 1) * rowHeight + inset - offsetY, paint)
             }
+            val bounds=orderedSelection()
+            if(bounds!=null && line in bounds.first.line..bounds.second.line) {
+                val start=if(line==bounds.first.line)bounds.first.column else 0
+                val end=if(line==bounds.second.line)bounds.second.column else document.columnCount
+                if(end>start) {
+                    paint.color=Color.argb(125,49,121,212)
+                    canvas.save()
+                    canvas.clipRect(gutter,0f,width.toFloat(),height.toFloat())
+                    canvas.drawRect(gutter+start*cellWidth-offsetX,
+                        inset+line*rowHeight-offsetY,
+                        gutter+end*cellWidth-offsetX,
+                        inset+(line+1)*rowHeight-offsetY,paint)
+                    canvas.restore()
+                }
+            }
             val baseline = lineBaseline(line)
             // The exact same baseline is used for this line's number and code.
             paint.color = Color.rgb(145, 145, 145)
@@ -171,6 +330,16 @@ internal class ContinuousJsonView(
             }
             drawRun(canvas, text, valueStart, text.length, x, baseline, color)
             canvas.restore()
+        }
+        if(selectionStart!=null && selectionEnd!=null) {
+            paint.color=Color.rgb(87,166,255)
+            for(point in listOfNotNull(selectionStart,selectionEnd)) {
+                val x=gutter+point.column*cellWidth-offsetX
+                val y=inset+(point.line+1)*rowHeight-offsetY
+                if(x>=gutter-12*density && x<width+12*density &&
+                    y>=0 && y<=height+14*density)
+                    canvas.drawCircle(x,y,7f*density,paint)
+            }
         }
         paint.color = Color.rgb(41, 41, 41)
         canvas.drawLine(gutter - inset / 2, 0f, gutter - inset / 2, height.toFloat(), paint)
@@ -201,6 +370,7 @@ internal class ContinuousJsonView(
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
+        if(handleSelectionTouch(event))return true
         if (event.actionMasked == MotionEvent.ACTION_DOWN) {
             downX = event.x; downY = event.y; dragging = false
             parent?.requestDisallowInterceptTouchEvent(maxX() > 0 || maxY() > 0)
@@ -259,6 +429,8 @@ internal class ContinuousJsonView(
     }
 
     override fun onDetachedFromWindow() {
+        contextMode?.finish()
+        stopAutoScroll()
         scroller.forceFinished(true)
         windows.clear()
         super.onDetachedFromWindow()
