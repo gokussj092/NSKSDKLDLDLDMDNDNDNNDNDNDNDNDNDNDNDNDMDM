@@ -178,11 +178,13 @@ internal fun ApkQaAnalysisScreen(
                         if (block.language=="json") {
                             Text("```json",color=QA_MUTED,fontFamily=FontFamily.Monospace,
                                 fontSize=12.sp)
-                            LargeResultViewer(
+                            Box(Modifier.testTag("apk_qa_report_json")) {
+                                LargeResultViewer(
                                 raw=block.content,mask=false,
                                 identity="apk-qa-$index-${block.content.length}",
                                 suffix="json",
-                            )
+                                )
+                            }
                             Text("```",color=QA_MUTED,fontFamily=FontFamily.Monospace,
                                 fontSize=12.sp)
                         } else {
