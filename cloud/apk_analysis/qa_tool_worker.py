@@ -107,7 +107,9 @@ class Handler(BaseHTTPRequestHandler):
                 # Keep technical stage findings, not decompiled source or logs.
                 tooling.pop("vendorMethodValidated",None)
                 tooling.pop("credentialsExtracted",None)
-                return self.respond(200,tooling)
+            # Never tell the client a job is finished before its scratch
+            # directory has been removed. Otherwise rechecks race cleanup.
+            return self.respond(200,tooling)
         except (OSError,ValueError,RuntimeError):
             return self.respond(500,{"error":"TOOL_WORKER_FAILED"})
         finally:
