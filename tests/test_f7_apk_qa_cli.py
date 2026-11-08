@@ -91,6 +91,38 @@ class F7QAActivationTests(unittest.TestCase):
         self.assertEqual(again.returncode,0,again.stderr)
         self.assertEqual(raw,self.env.read_text(encoding="utf-8"))
 
+    def test_lite_installer_provisions_existing_secret_idempotently(self):
+        segment=SCRIPT.split("apk_qa_enable_lite(){",1)[1].split(
+            "apk_qa_enable_tools(){",1)[0]
+        self.assertIn("MemAvailable",segment)
+        self.assertIn("3400000",segment)
+        self.assertIn("1100000",segment)
+        self.assertIn("6000000",segment)
+        self.assertIn("1152m",segment)
+        self.assertIn("Dockerfile.qa-lite",segment)
+        self.assertIn("compose --profile apk-qa --profile apk-qa-tools",segment)
+        marker='if ! python3 - "$ENVFILE" <<' + "'PY'\n"
+        body=segment.split(marker,1)[1].split("\nPY\n  then",1)[0]
+        token="z"*48
+        self.env.write_text("CLOUD_APK_QA_ENABLED=true\n"
+                            "CLOUD_APK_QA_TOOLS_TOKEN="+token+"\n",
+                            encoding="utf-8")
+        def provision():
+            return subprocess.run([sys.executable,"-c",body,str(self.env)],
+                                  capture_output=True,text=True,check=False)
+        first=provision()
+        self.assertEqual(first.returncode,0,first.stderr)
+        raw=self.env.read_text(encoding="utf-8")
+        self.assertIn("SPDECODE_APK_QA_LITE=true",raw)
+        self.assertIn("SPDECODE_APK_TOOLS_DOCKERFILE=cloud/apk_analysis/Dockerfile.qa-lite",raw)
+        self.assertIn("SPDECODE_APK_TOOLS_MEM_LIMIT=1152m",raw)
+        self.assertIn("CLOUD_APK_QA_TOOLS_TOKEN="+token,raw)
+        self.assertNotIn(token,first.stdout+first.stderr)
+        self.assertEqual(stat.S_IMODE(self.env.stat().st_mode),0o600)
+        again=provision()
+        self.assertEqual(again.returncode,0,again.stderr)
+        self.assertEqual(raw,self.env.read_text(encoding="utf-8"))
+
     def test_advanced_worker_fails_closed_on_small_vps(self):
         segment=SCRIPT.split("apk_qa_enable_tools(){",1)[1].split(
             "apk_qa_status(){",1)[0]
