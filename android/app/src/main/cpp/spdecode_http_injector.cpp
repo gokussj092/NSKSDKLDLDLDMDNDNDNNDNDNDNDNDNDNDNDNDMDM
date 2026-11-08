@@ -240,19 +240,77 @@ Bytes chacha(const Bytes& ciphertext,const Bytes& tag,const Bytes& key,
         aad.data(),aad.size(),tag.data(),ciphertext.data(),result.data());
     mbedtls_chachapoly_free(&ctx);check(rc==0,"AUTH_FAILED");return result;
 }
+void putUtf8(std::string& out,uint32_t cp){
+    if(cp<=0x7f)out.push_back(static_cast<char>(cp));
+    else if(cp<=0x7ff){
+        out.push_back(static_cast<char>(0xc0|(cp>>6)));
+        out.push_back(static_cast<char>(0x80|(cp&63)));
+    }else if(cp<=0xffff){
+        out.push_back(static_cast<char>(0xe0|(cp>>12)));
+        out.push_back(static_cast<char>(0x80|((cp>>6)&63)));
+        out.push_back(static_cast<char>(0x80|(cp&63)));
+    }else{
+        out.push_back(static_cast<char>(0xf0|(cp>>18)));
+        out.push_back(static_cast<char>(0x80|((cp>>12)&63)));
+        out.push_back(static_cast<char>(0x80|((cp>>6)&63)));
+        out.push_back(static_cast<char>(0x80|(cp&63)));
+    }
+}
+std::vector<uint32_t> utf8CodepointsLossy(const Bytes& input){
+    std::vector<uint32_t> result;
+    for(size_t i=0;i<input.size();){
+        const uint32_t c=input[i];
+        if(c<0x80){result.push_back(c);i++;continue;}
+        size_t needed=0;uint32_t value=0,minimum=0;
+        if(c>=0xc2&&c<=0xdf){needed=2;value=c&31;minimum=0x80;}
+        else if(c>=0xe0&&c<=0xef){needed=3;value=c&15;minimum=0x800;}
+        else if(c>=0xf0&&c<=0xf4){needed=4;value=c&7;minimum=0x10000;}
+        if(needed&&i+needed<=input.size()){
+            bool valid=true;
+            for(size_t j=1;j<needed;j++){
+                const unsigned char x=input[i+j];
+                if((x&0xc0)!=0x80){valid=false;break;}
+                value=(value<<6)|(x&63);
+            }
+            if(valid&&value>=minimum&&value<=0x10ffff&&
+               (value<0xd800||value>0xdfff)){
+                result.push_back(value);i+=needed;continue;
+            }
+        }
+        result.push_back(0xfffd);
+        i++;
+    }
+    return result;
+}
 std::string configMessage(const std::string& source){
-    // The standard EHI message wrapper is UTF-8 Base64 of UTF-16 code
-    // units XORed with the constant "EHIMSG". For ASCII the mappings are
-    // identical byte-by-byte. Non-ASCII is preserved until a fully validated
-    // Unicode conversion is added instead of silently corrupting it.
+    // Parity with Python: Base64 -> lossy UTF8 -> UTF16BE code units,
+    // XOR "EHIMSG" per *unit*, then UTF16 decoding with surrogate checks.
     try{
         auto raw=b64(source);
-        std::string s=text(raw);
-        bool ascii=std::all_of(s.begin(),s.end(),[](unsigned char c){return c<128;});
-        if(!ascii)return source;
-        const std::string key="EHIMSG";
-        for(size_t i=0;i<s.size();i++)s[i]=static_cast<char>(s[i]^key[i%key.size()]);
-        return s;
+        const auto codepoints=utf8CodepointsLossy(raw);
+        std::vector<uint16_t> units;units.reserve(codepoints.size()*2);
+        for(uint32_t value:codepoints){
+            if(value<0x10000)units.push_back(static_cast<uint16_t>(value));
+            else {
+                value-=0x10000;
+                units.push_back(static_cast<uint16_t>(0xd800|(value>>10)));
+                units.push_back(static_cast<uint16_t>(0xdc00|(value&1023)));
+            }
+        }
+        static const std::string key="EHIMSG";
+        for(size_t i=0;i<units.size();i++)
+            units[i]^=static_cast<uint16_t>(static_cast<unsigned char>(key[i%key.size()]));
+        std::string output;
+        for(size_t i=0;i<units.size();i++){
+            uint32_t cp=units[i];
+            if(cp>=0xd800&&cp<=0xdbff){
+                if(i+1==units.size()||units[i+1]<0xdc00||units[i+1]>0xdfff)
+                    return source;
+                cp=0x10000+((cp-0xd800)<<10)+(units[++i]-0xdc00);
+            }else if(cp>=0xdc00&&cp<=0xdfff)return source;
+            putUtf8(output,cp);
+        }
+        return output;
     }catch(...){return source;}
 }
 void recursivelyDecode(json& value,const std::string& name,const std::string& salt,int depth){
