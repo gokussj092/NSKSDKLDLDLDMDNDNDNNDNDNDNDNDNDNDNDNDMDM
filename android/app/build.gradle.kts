@@ -109,6 +109,8 @@ internal object VaultBuildKey {
 
 val cloudOrigin=providers.environmentVariable("SPDECODE_CLOUD_API_BASE_URL").orNull.orEmpty().trim()
 val enableCloud=cloudOrigin.isNotEmpty()
+val nativeOffline=providers.environmentVariable("SPDECODE_OFFLINE_NATIVE").orNull=="true"
+require(!nativeOffline || !enableCloud) { "Offline cannot configure Cloud origin" }
 val enableQaBuild=providers.environmentVariable("SPDECODE_CLOUD_QA_BUILD").orNull=="true"
 require(!enableQaBuild || enableCloud) { "QA mode requires Cloud API" }
 if(enableCloud) {
@@ -135,7 +137,7 @@ gradle.taskGraph.whenReady {
     val distributesRelease=allTasks.any { it.project==project &&
         it.name in setOf("assembleRelease","packageRelease","bundleRelease") }
     if(distributesRelease) {
-        require(enableCloud) { "Release distribution requires the Cloud-only source set" }
+        require(enableCloud || nativeOffline) { "Release distribution requires Cloud or isolated native Offline" }
         require(!enableQaBuild) { "Release distribution must not enable the legacy QA launcher" }
     }
 }
@@ -649,7 +651,14 @@ android {
             enableSplit = false
         }
     }
-    if (enableCloud) {
+    if (nativeOffline) {
+        // Offline APK: Kotlin UI + JNI only. None of the historic Kotlin ciphers are compiled.
+        sourceSets.getByName("main").manifest.srcFile("src/offlineNative/AndroidManifest.xml")
+        sourceSets.getByName("main").java.setSrcDirs(listOf(file("src/offlineNative/java")))
+        sourceSets.getByName("main").res.setSrcDirs(listOf(file("src/offlineNative/res")))
+        sourceSets.getByName("main").assets.setSrcDirs(emptyList<File>())
+        sourceSets.getByName("androidTest").java.setSrcDirs(listOf(file("src/offlineNative/androidTest")))
+    } else if (enableCloud) {
         // Cloud source inputs are isolated from all 107 local engine classes.
         sourceSets.getByName("main").manifest.srcFile("src/cloud/AndroidManifest.xml")
         sourceSets.getByName("main").java.setSrcDirs(listOf(cloudSourceRoot))
@@ -667,11 +676,11 @@ android {
     compileSdk = 36
     ndkVersion = "27.2.12479018"
     defaultConfig {
-        applicationId = "com.ghostdeveloper.spdecode"
+        applicationId = if(nativeOffline) "com.ghostdeveloper.spdecode.offline" else "com.ghostdeveloper.spdecode"
         minSdk = 24
         targetSdk = 36
         versionCode = 40
-        versionName = "1.1.25"
+        versionName = if(nativeOffline) "1.1.25-offline.alpha1" else "1.1.25"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // A public API origin is not a secret; all server secrets stay in the VPS.
         buildConfigField("boolean", "SPDECODE_CLOUD_ENABLED", enableCloud.toString())
@@ -693,6 +702,7 @@ android {
         externalNativeBuild {
             cmake {
                 arguments += "-DSPDECODE_CLOUD_ORIGIN=$cloudOrigin"
+                arguments += "-DSPDECODE_OFFLINE_NATIVE=" + (if(nativeOffline) "ON" else "OFF")
             }
         }
         resourceConfigurations += listOf("en", "es", "pt-rBR", "ar", "fa", "fr", "in", "ru", "de", "tr", "vi", "hi", "ja", "it")
@@ -809,7 +819,9 @@ tasks.configureEach {
         (name.startsWith("merge") && name.endsWith("Assets")) ||
         (name.startsWith("compile") && name.endsWith("Kotlin")) ||
         name.startsWith("kaptGenerateStubs")) {
-        if (enableCloud) {
+        if (nativeOffline) {
+            // No legacy vault or Cloud generated sources.
+        } else if (enableCloud) {
             dependsOn(prepareCloudOnlySources)
             dependsOn(prepareCloudAssets)
         } else dependsOn(prepareSecureAssetVault)
