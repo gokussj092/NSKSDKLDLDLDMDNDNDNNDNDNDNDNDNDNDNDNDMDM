@@ -36,6 +36,48 @@ internal object NativeResultEngine {
             check(handle!=0L)
             return JSONObject(nativeLineWindow(handle,line,column,count,mask).toString(Charsets.UTF_8))
         }
+        /**
+         * Copy arbitrary continuous ranges from the indexed, rendered document.
+         * No document-wide Compose Text or pagination. Columns are monospace
+         * display cells, and all reads go through the existing privacy mask.
+         */
+        @Synchronized fun selectedText(
+            fromLine:Int,fromColumn:Int,toLine:Int,toColumn:Int,mask:Boolean
+        ):String {
+            check(handle!=0L)
+            require(fromLine in 0 until lineCount && toLine in 0 until lineCount)
+            val points=listOf(fromLine to fromColumn.coerceAtLeast(0),
+                              toLine to toColumn.coerceAtLeast(0)).sortedWith(
+                compareBy<Pair<Int,Int>> { it.first }.thenBy { it.second })
+            val start=points.first()
+            val end=points.last()
+            val result=StringBuilder()
+            for(line in start.first..end.first) {
+                val begin=if(line==start.first)start.second else 0
+                val limit=if(line==end.first)end.second else columnCount
+                var col=begin
+                while(col<limit) {
+                    val row=lineWindow(line,col,minOf(2048,limit-col),mask)
+                    val text=row.optString("text")
+                    if(text.isEmpty())break
+                    val at=row.optInt("column",col)
+                    var cell=at
+                    var index=0
+                    while(index<text.length) {
+                        val codePoint=Character.codePointAt(text,index)
+                        val cells=if(codePoint<128 || codePoint==0x2022)1 else 2
+                        if(cell>=begin && cell<limit)result.appendCodePoint(codePoint)
+                        cell+=cells
+                        index+=Character.charCount(codePoint)
+                    }
+                    if(cell<=col)break
+                    col=cell
+                }
+                if(line<end.first)result.append('\n')
+            }
+            return result.toString()
+        }
+
         @Synchronized fun page(parent:Int,offset:Int,mask:Boolean):JSONObject {
             check(handle!=0L);return JSONObject(nativePage(handle,parent,offset,64,mask).toString(Charsets.UTF_8))
         }
