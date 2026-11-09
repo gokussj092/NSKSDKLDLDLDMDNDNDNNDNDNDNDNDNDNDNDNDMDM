@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
             pendingFile=uri;pendingText=null
             pendingName=nameOf(uri)
             pendingSuffix=pendingName.substringAfterLast('.', "").lowercase()
-            if(pendingSuffix !in setOf("hc","ehi","nm","npv","npv4","npvt","npvs")) {
+            if(pendingSuffix !in setOf("hc","ehi","nm","npv","npv4","npvt","npvs","dark","dt","dtunnel","darktunnel")) {
                 ui.message=txt("unsupported",ui.language);return@registerForActivityResult
             }
             ui.pendingPrompt=null
@@ -225,15 +225,16 @@ class MainActivity : ComponentActivity() {
         }
         val first=value.substringBefore("://").lowercase()
         val npv=first in setOf("npvt","npvt-ssh","npvt-vless","npvt-vmess","npv")
+        val dark=first in setOf("dt","dtunnel","dark","darktunnel","dark-tunnel")
         val netmod=first.startsWith("nm-") || !value.contains("://")
-        if(!npv && !netmod){
+        if(!npv && !netmod && !dark){
             ui.message=txt("unsupported_text",ui.language);return
         }
         pendingFile=null
         pendingText=if(first.startsWith("nm-")&&value.contains("://"))
             value.substringAfter("://").trim() else value
-        pendingName=if(npv)"NPV text" else "NetMod text"
-        pendingSuffix=if(npv)"npv" else "nmtext"
+        pendingName=when {npv->"NPV text";dark->"Dark Tunnel text";else->"NetMod text"}
+        pendingSuffix=when {npv->"npv";dark->"dark";else->"nmtext"}
         ui.pendingPrompt=null
         decodeAttempt()
     }
