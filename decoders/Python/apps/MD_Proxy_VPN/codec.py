@@ -8,7 +8,8 @@ from ..Ultra_Tunnel.codec import DecodeError, MAX_BYTES, decode_catalog as _deco
 
 def decode_catalog(data):
     try:
-        return _decode(data)
+        # Same authenticated Ultra envelope; two independent fields in parallel.
+        return _decode(data, field_workers=2)
     except (ValueError, TypeError, RecursionError):
         raise DecodeError("Catálogo MD PROXY VPN inválido o incompatible.") from None
 
