@@ -39,6 +39,14 @@ internal fun readableDecodeError(reason: String, suffix: String, language: Strin
             "Este archivo NPV utiliza una modalidad de protección que esta versión todavía no admite. No significa necesariamente que esté dañado.",
             "Unsupported NPV protection",
             "This NPV file uses a protection mode not supported by this version. It is not necessarily corrupted.")
+    if(code=="INVALID_TEXT"||code=="UNSUPPORTED_TEXT")
+        return message("Texto no compatible",
+            "Pega un enlace completo de un formato admitido. No se puede procesar un texto incompleto.",
+            "Unsupported text","Paste a complete link in a supported format. Incomplete text cannot be processed.")
+    if(code=="BUSY")
+        return message("Hay un archivo en proceso",
+            "Finaliza el proceso actual antes de importar otro archivo.",
+            "A file is being processed","Finish the current file before importing another.")
     if(code.contains("UNSUPPORTED")||code=="HAT_UNSUPPORTED_VERSION"||
        code=="HC_UNRECOGNIZED_FORMAT"||
        code=="HC_INVALID_V3"||code=="HC_INVALID_MAGIC"||code=="HC_UNSUPPORTED_SCHEMA"||
@@ -65,10 +73,6 @@ internal fun readableDecodeError(reason: String, suffix: String, language: Strin
             "No se ha encontrado una configuración válida para $label. El contenido podría estar incompleto, alterado o tener una versión no compatible.",
             "Invalid or damaged file",
             "No valid $label configuration was found. The data may be incomplete, altered or use an unsupported version.")
-    if(code=="INVALID_TEXT"||code=="UNSUPPORTED_TEXT")
-        return message("Texto no compatible",
-            "Pega un enlace completo de un formato admitido. No se puede procesar un texto incompleto.",
-            "Unsupported text","Paste a complete link in a supported format. Incomplete text cannot be processed.")
     return message("No se pudo descifrar",
         "No fue posible obtener el contenido de $label. Comprueba que el archivo esté completo y sea compatible.",
         "Could not decode",
