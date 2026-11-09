@@ -258,7 +258,7 @@ private fun Home(state:OfflineUiState,action:OfflineActions,p:OfflinePalette) {
         }
         SmallCaption(txt("import_description",state.language),p)
         PrimaryButton(txt("import_file",state.language),p,!state.busy,action.importFile)
-        SmallCaption(".hc · .ehi · .nm · .npv · .npvs · .npvt · .npv4* · .dark · .dt",p)
+        SmallCaption(".hc · .ehi · .nm · .npv · .npvs · .npvt · .npv4* · .dark · .dt · .hat",p)
         OutlinedButton(onClick={state.showTextDecoder=!state.showTextDecoder},
             enabled=!state.busy,modifier=Modifier.fillMaxWidth(),
             shape=RoundedCornerShape(13.dp),
@@ -562,7 +562,7 @@ private fun About(state:OfflineUiState,action:OfflineActions,p:OfflinePalette) {
     }
     OfflineCard(p) {
         Section(txt("capabilities",state.language),p)
-        SmallCaption("HTTP Custom · HTTP Injector · NetMod Syna · NPV Tunnel · Dark Tunnel",p)
+        SmallCaption("HTTP Custom · HTTP Injector · NetMod Syna · NPV Tunnel · Dark Tunnel · Hat Tunnel",p)
         SmallCaption(txt("offline_footer",state.language),p)
     }
 }
