@@ -1,0 +1,41 @@
+{
+  "package": "com.evozi.injector",
+  "versionName": "6.5.0",
+  "versionCode": 244,
+  "observedAt": "2026-11-09",
+  "baseApkSha256": "5dc3976ad0d90c14b79f5848109296998f930c9d36be88fba9115c078f60dfe3",
+  "catalogStatus": "PENDING",
+  "catalogRequest": null,
+  "catalogHttpStatus": null,
+  "serverRecordCount": null,
+  "downloadAuthentication": "UNCONFIRMED",
+  "catalogVerified": false,
+  "apkCodeExecuted": false,
+  "authenticationMaterialCollected": false,
+  "runtimeAdapterAdded": false,
+  "historicalReference": {
+    "commit": "03bc9fe3c20a464dd1ea3848850b2d0227f5f477",
+    "branch": "analysis/http-injector-650-json-audit",
+    "script": "scripts/research/httpinjector_650_unpack_native.py",
+    "scope": "Container unpacking only; previous cloud-config import is a different request, not catalog evidence."
+  },
+  "recoveredNativeContainers": [
+    {
+      "name": "libDexHelper.so.unpacked",
+      "bytes": 1035949,
+      "sha256": "2e98206f73e2baa01b4251b9d471b65f63ded360efa9b3e3d70bc4787869d69b"
+    },
+    {
+      "name": "libdexjniehi.so.unpacked",
+      "bytes": 1512160,
+      "sha256": "ef88eeef8c7016e75887d7dd5c40d6711f90306dc613339533ddb7ee700fe92a"
+    }
+  ],
+  "blocker": "Server UI/model type names recovered, but no catalog endpoint/request reconstructed or complete server-list response obtained. Overwritten DEX metadata and unsupported class-data prevent treating the partial data as executable code.",
+  "nextEvidence": "An owner-provided, sanitized server-list request trace/export or the historical private partial-DEX reconstruction tools; exclude service signing secrets, tokens and VPN account credentials.",
+  "limits": [
+    "No successful or failed catalog HTTP transaction exists in this investigation: HTTP fields remain null.",
+    "No inference that authentication is absent or required follows from static names or algorithm markers.",
+    "Partial native/container recovery is not a complete app decompilation."
+  ]
+}

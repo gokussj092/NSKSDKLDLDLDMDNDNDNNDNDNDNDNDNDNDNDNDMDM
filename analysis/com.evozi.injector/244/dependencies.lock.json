@@ -20,6 +20,30 @@
       "version": "0.7.3",
       "source": "https://github.com/Delgan/loguru",
       "license": "MIT"
+    },
+    {
+      "name": "pycryptodome",
+      "version": "3.23.0",
+      "source": "https://www.pycryptodome.org/",
+      "license": "BSD-2-Clause / public domain portions"
+    },
+    {
+      "name": "libzstd (host)",
+      "version": "1.5.7",
+      "source": "https://github.com/facebook/zstd",
+      "license": "BSD-3-Clause"
+    },
+    {
+      "name": "GNU Binutils readelf",
+      "version": "2.44",
+      "source": "https://www.gnu.org/software/binutils/",
+      "license": "GPL-3.0-or-later"
     }
-  ]
+  ],
+  "catalogResearchEnvironment": {
+    "platform": "Linux x86_64 host, ARM64 APK/native inputs",
+    "distributionHashes": "UNKNOWN: additions were preinstalled, no package/wheel/distribution artifact retained.",
+    "reviewStatus": "NEEDS_REVIEW",
+    "nativeApkCodeExecuted": false
+  }
 }

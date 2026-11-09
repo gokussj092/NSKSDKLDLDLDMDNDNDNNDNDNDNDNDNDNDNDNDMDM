@@ -1,0 +1,22 @@
+{
+  "frameBytes": 31457280,
+  "frameSha256": "c27c702a5b4ed762b3389777a14547650e056615999bfcb9cf8b29b5ff22e654",
+  "hostZstdVersion": "1.5.7",
+  "tokenCounts": {
+    "server_list": 0,
+    "servers_list": 0,
+    "get_servers": 0,
+    "list_servers": 0,
+    "ServerList": 0,
+    "ServersActivity": 0,
+    "ServerRepository": 0,
+    "ApiService": 0,
+    "import_config": 0
+  },
+  "routeIdentifiers": [],
+  "classIdentifiers": [],
+  "sourceCandidates": [],
+  "apkCodeExecuted": false,
+  "authenticationMaterialCollected": false,
+  "limitation": "Code frame and identifiers do not establish a working remote catalog or a complete executable DEX."
+}
