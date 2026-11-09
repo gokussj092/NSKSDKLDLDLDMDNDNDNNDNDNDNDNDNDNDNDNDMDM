@@ -6,7 +6,7 @@ import {publicFormats,FORMAT_DETECTION} from "./file-format-catalog.mjs";
 import {publicTextFormats,publicOnlineReferenceFormats} from "./text-format-catalog.mjs";
 import {providerEnabled} from "./server-vpn-provider.mjs";
 
-export const CATALOG_VERSION = 78; // SpeiGo build159: separate configurations and SSH/users entries.
+export const CATALOG_VERSION = 79; // OpenTunnel files/public SSH hosts and MD PROXY combined catalog.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -24,6 +24,8 @@ export function activeCatalogVersion(env=process.env) {
 }
 
 const ITEMS = Object.freeze([
+  {id:"opentunnel-ssh",name:"OpenTunnel · Servidores SSH",icon:"opentunnel.png",remote:"opentunnel-ssh"},
+  {id:"md-proxy-vpn",name:"MD PROXY VPN",icon:"md-proxy-vpn.webp",remote:"md-proxy-vpn"},
   {id:"xxpicore-tunnel",name:"XXPICore Tunnel",icon:"xxpicore-tunnel.png",remote:"xxpicore-tunnel"},
   {id:"catnet-vpn",name:"CATNET VPN",icon:"catnet-vpn.png",remote:"catnet-vpn"},
   {id:"litron-vpn",name:"LITRON VPN",icon:"litron-vpn.png",remote:"litron-vpn"},
@@ -118,9 +120,12 @@ export function iconFor(id) {
   const item = ITEMS.find(x => x.id === id);
   if (!item) return null;
   const bytes = readFileSync(join(base(),item.icon));
-  if (bytes.length<32 || bytes.subarray(0,8).toString("hex")!=="89504e470d0a1a0a")
+  const mimeType=item.icon.endsWith(".webp")?"image/webp":"image/png";
+  const valid=mimeType==="image/png" ? bytes.subarray(0,8).toString("hex")==="89504e470d0a1a0a" :
+    bytes.toString("ascii",0,4)==="RIFF" && bytes.toString("ascii",8,12)==="WEBP" && bytes.readUInt32LE(4)===bytes.length-8;
+  if (bytes.length<32 || !valid)
     throw Error("INVALID_ORIGINAL_ICON");
-  return {id:item.id, bytes, sha256:createHash("sha256").update(bytes).digest("hex")};
+  return {id:item.id, bytes, mimeType, sha256:createHash("sha256").update(bytes).digest("hex")};
 }
 export function catalog({availability=null,methodStates=null,version=activeCatalogVersion()}={}) {
   return {
@@ -144,7 +149,7 @@ export function catalog({availability=null,methodStates=null,version=activeCatal
       methodRevision:Number.isSafeInteger(methodStates?.[x.id]?.methodRevision) && methodStates[x.id].methodRevision>=0 ? methodStates[x.id].methodRevision : 0,
       maintenance:methodStates?.[x.id]?.maintenance===true,
       iconSha256:iconFor(x.id).sha256,
-      iconMimeType:"image/png",
+      iconMimeType:iconFor(x.id).mimeType,
       // No decode button for a provider until its remote broker is enabled.
       decodeEnabled:methodStates?.[x.id]?.maintenance===true ? false :
         ["halcon-r-net","vip-snipher-pro","alfaisal-tunnel-plus"].includes(x.remote) ?

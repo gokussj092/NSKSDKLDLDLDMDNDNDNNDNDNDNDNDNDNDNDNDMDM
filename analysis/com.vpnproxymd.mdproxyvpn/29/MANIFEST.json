@@ -1,0 +1,177 @@
+{
+  "schema_version": 1,
+  "package_name": "com.vpnproxymd.mdproxyvpn",
+  "app_name": "MD PROXY VPN",
+  "version_name": "v1.0.8.8",
+  "version_code": 29,
+  "observed_at": "2026-11-09",
+  "source_category": "public distribution/static sample and public catalogue",
+  "authorization_note": "Owner requested interoperability on the existing feature branch. Public read-only catalogue requests, no cloud authentication bypass, no per-device SSH account generation, no APK execution or redistribution. Mirror identity is pinned, publisher provenance is not cryptographically established.",
+  "status": "VERIFIED",
+  "targets": [
+    {
+      "kind": "catalog",
+      "status": "VERIFIED_REAL",
+      "scope": "one combined remote5.25 and embedded3.95 document; complete independent host libsodium/JCA and isolated worker comparison"
+    }
+  ],
+  "inputs": {
+    "package": "com.vpnproxymd.mdproxyvpn",
+    "versionName": "v1.0.8.8",
+    "versionCode": 29,
+    "archiveBytes": 57951496,
+    "archiveSha256": "f12147253c560a36281068e1003df2d036681bb076628c5e793185ddaa26e859",
+    "apkBytes": 31787088,
+    "apkSha256": "69b73ec144a2e25afa7ed0e57ec1d7690ba2901cd0c9a27a1478494de06dede5",
+    "certificateSha256": [
+      "e9512a94487d64f6e4c00a7f72a7719f8c95ba3ef528892ee29136d1f3b1223b"
+    ],
+    "cryptographicApkSignatureVerified": false,
+    "apkCodeExecuted": false,
+    "sourceCategory": "public mirror, unverified publisher provenance; pinned actual AXML identity",
+    "baseArchiveMember": "MD_PROXY_VPN-v1.0.8.8.apk",
+    "apkMembers": [
+      "MD_PROXY_VPN-v1.0.8.8.apk",
+      "config.xxhdpi.apk",
+      "config.arm64_v8a.apk",
+      "config.en.apk"
+    ],
+    "sourceUrl": "https://apk.dog/download?split=604727/3533139/md-proxy-vpn"
+  },
+  "tooling": [
+    {
+      "name": "Owned static/probe/verification tools",
+      "path": "analysis/com.vpnproxymd.mdproxyvpn/29/tools"
+    },
+    {
+      "name": "Owned public acquisition/intake",
+      "path": "analysis/_intake/opentunnel-mdproxy-2026-11-09/tools"
+    },
+    {
+      "name": "Full JADX",
+      "version": "1.5.6",
+      "path": "analysis/_intake/austro-cat-2026-11-09/tools/decompile.py",
+      "exit_code": 3,
+      "global_errors": 177
+    },
+    {
+      "name": "Independent oracle",
+      "path": "tests/golden/ultra_tunnel_reference.py"
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "JADX",
+      "version": "1.5.6",
+      "source": "https://github.com/skylot/jadx/releases/tag/v1.5.6",
+      "license": "Apache-2.0",
+      "lockfile": "analysis/com.vpnproxymd.mdproxyvpn/29/dependencies.lock.json"
+    },
+    {
+      "name": "OpenJDK",
+      "version": "21.0.13",
+      "source": "https://openjdk.org/",
+      "license": "GPL-2.0-with-Classpath-exception",
+      "lockfile": "analysis/com.vpnproxymd.mdproxyvpn/29/dependencies.lock.json"
+    },
+    {
+      "name": "Node.js",
+      "version": "24.22.1 (local research tests); 22 in CI",
+      "source": "https://nodejs.org/",
+      "license": "MIT",
+      "lockfile": "analysis/com.vpnproxymd.mdproxyvpn/29/dependencies.lock.json"
+    },
+    {
+      "name": "libsodium (host system library, not APK library)",
+      "version": "1.0.18",
+      "source": "https://doc.libsodium.org/",
+      "license": "ISC",
+      "lockfile": "analysis/com.vpnproxymd.mdproxyvpn/29/dependencies.lock.json"
+    },
+    {
+      "name": "Python",
+      "version": "3.12.14",
+      "source": "https://python.org/",
+      "license": "PSF",
+      "lockfile": "analysis/com.vpnproxymd.mdproxyvpn/29/dependencies.lock.json"
+    },
+    {
+      "name": "Androguard",
+      "version": "4.1.3",
+      "source": "https://github.com/androguard/androguard",
+      "license": "Apache-2.0",
+      "lockfile": "analysis/com.vpnproxymd.mdproxyvpn/29/dependencies.lock.json"
+    },
+    {
+      "name": "pycryptodome",
+      "version": "3.23.0",
+      "source": "https://www.pycryptodome.org/",
+      "license": "BSD-2-Clause / Public-Domain components",
+      "lockfile": "analysis/com.vpnproxymd.mdproxyvpn/29/dependencies.lock.json"
+    },
+    {
+      "name": "argon2-cffi",
+      "version": "25.1.0",
+      "source": "https://github.com/hynek/argon2-cffi",
+      "license": "MIT",
+      "lockfile": "analysis/com.vpnproxymd.mdproxyvpn/29/dependencies.lock.json"
+    },
+    {
+      "name": "pyelftools",
+      "version": "0.32",
+      "source": "https://github.com/eliben/pyelftools",
+      "license": "Public-Domain",
+      "lockfile": "analysis/com.vpnproxymd.mdproxyvpn/29/dependencies.lock.json"
+    },
+    {
+      "name": "capstone",
+      "version": "5.0.6",
+      "source": "https://www.capstone-engine.org/",
+      "license": "BSD-3-Clause",
+      "lockfile": "analysis/com.vpnproxymd.mdproxyvpn/29/dependencies.lock.json"
+    }
+  ],
+  "code_paths": [
+    "cloud/web/lib/server-vpn-provider.mjs",
+    "cloud/web/lib/server-vpn-catalog.mjs",
+    "cloud/web/lib/c12-provider-controls.mjs",
+    "cloud/web/app/api/v1/server-vpn/icon/route.js",
+    "cloud/workers/python/engine.py",
+    "cloud/workers/python/catalog_vpn_bridge.py",
+    "decoders/Python/apps/MD_Proxy_VPN/server_catalog_decoder.py",
+    "decoders/Python/apps/MD_Proxy_VPN/codec.py",
+    "cloud/web/lib/c3-gateway.mjs"
+  ],
+  "evidence_refs": [
+    "analysis/com.vpnproxymd.mdproxyvpn/29/generated/catalog-proof.json",
+    "analysis/com.vpnproxymd.mdproxyvpn/29/generated/download-proof.json",
+    "analysis/com.vpnproxymd.mdproxyvpn/29/generated/embedded-proof.json",
+    "analysis/com.vpnproxymd.mdproxyvpn/29/generated/identity.json",
+    "analysis/com.vpnproxymd.mdproxyvpn/29/generated/inspection.json",
+    "analysis/com.vpnproxymd.mdproxyvpn/29/generated/native-proof.json",
+    "analysis/com.vpnproxymd.mdproxyvpn/29/generated/static-proof.json",
+    "analysis/com.vpnproxymd.mdproxyvpn/29/generated/validation.json",
+    "analysis/com.vpnproxymd.mdproxyvpn/29/ANALYSIS.md",
+    "analysis/com.vpnproxymd.mdproxyvpn/29/RESULTS.md",
+    "analysis/com.vpnproxymd.mdproxyvpn/29/REPRODUCE.md",
+    "analysis/com.vpnproxymd.mdproxyvpn/29/DEPENDENCIES.md",
+    "analysis/com.vpnproxymd.mdproxyvpn/29/dependencies.lock.json",
+    "analysis/com.vpnproxymd.mdproxyvpn/29/tests/test_method.py"
+  ],
+  "limitations": [
+    "Extracted signer certificate is not a full APK signature verification.",
+    "JADX global exit3; only relevant method call chain statically traced.",
+    "No VPN connection, phone UI or APK build tested.",
+    "Human review before merge/rollout; no unattended tool approval, main merge or VPS deployment.",
+    "Mirror wrapper was malformed; complete inner APK central directories and every ZIP CRC verified, no APK bytes repaired.",
+    "No MD file/text format added; catalog only."
+  ],
+  "network_requirements": [
+    "Fixed public HTTPS GET only; TLS/DNS/private-address and redirect guards retained.",
+    "Public sample acquisition is manual tooling, separate from production catalog network policy."
+  ],
+  "manual_steps": [
+    "Review branch evidence and server CI before rollout."
+  ],
+  "unresolved_questions": []
+}

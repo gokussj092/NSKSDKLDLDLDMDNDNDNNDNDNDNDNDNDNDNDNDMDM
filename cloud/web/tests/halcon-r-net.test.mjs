@@ -41,7 +41,7 @@ function iconFixture(t){
   // Halcon raster as a harmless stand-in while catalog() enumerates other IDs.
   const read=fs.readFileSync;
   const png=read(new URL("../public/server-vpn-icons/halcon-r-net.png",import.meta.url));
-  t.mock.method(fs,"readFileSync",(path,...args)=>String(path).includes("server-vpn-icons")?png:read(path,...args));
+  t.mock.method(fs,"readFileSync",(path,...args)=>String(path).includes("server-vpn-icons")&&String(path).endsWith(".png")?png:read(path,...args));
   syncBuiltinESMExports();
   t.after(()=>{t.mock.restoreAll();syncBuiltinESMExports();});
   return png;

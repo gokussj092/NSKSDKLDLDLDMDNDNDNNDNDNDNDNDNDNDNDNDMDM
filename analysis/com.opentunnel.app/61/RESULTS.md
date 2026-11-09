@@ -1,0 +1,7 @@
+# Resultado y límites
+
+PARTIAL por vía: catálogo de **hosts SSH VERIFIED_REAL**, archivos **VERIFIED_SYNTHETIC / REQUIRES_DEVICE**. Respuesta pública real7hosts/1515bytes, igualdad JSON completa con parser estándar y worker, advertencia de ausencia de credenciales. No se generaron cuentas. .tnl61 probado con JCA independiente en tres framings,5000líneas, XML/Unicode/CRLF/flags/vacíos, conservación del golden GCM heredado. No hay archivo real de teléfono ni exportación certificada.
+
+11pruebas Open y6MD nuevas pasan (17total). Pruebas Node de entradas/iconos/broker/TLS/GET único/redirecciones/privacidad/controles y catálogo:38/38 en conjunto. Regresiones completas y gates se registran en generated/validation.json al cerrar. Python3.12.14, Java21.0.13+9, Node24.22.1 local; no compilación APK. Datos privados no se suben; solo hashes y fixtures ficticios. Revisión humana pendiente antes de producción; rama de trabajo, sin merge ni VPS.
+
+Cierre local:147Python,212Node,45seguridad A0/P06/P08 y20arnés de descarga; build web correcto. A0sin bloqueos; P06PASS_WITH_UNRESOLVED sin hallazgos bloqueantes (consumidores dinámicos heredados siguen pendientes). La evidencia no concede aprobación automática. Inicialmente cuatro mocks PNG interceptaban el nuevo WebP; se acotaron a PNG y se repitió la suite completa. La copia local parcial carecía de decoder_catalog.json y el enlace de node_modules quedaba fuera del root de Turbopack; se materializaron los bytes canónicos y las dependencias existentes antes de repetir build/pruebas, sin cambiar Android ni lockfiles.

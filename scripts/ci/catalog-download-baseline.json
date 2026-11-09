@@ -341,6 +341,16 @@
       "payloadKind": "BINARY",
       "bodySha256": "3ed9b3d9009f472005170dddd329a76ebcdbf610b624b5ee99f552ef7d84d844",
       "shapeSha256": "4c77b56b7cf3077c725c2f433eb76156bd231c23b56805f5a06fc06b87450a43"
+    },
+    "opentunnel-ssh/servers": {
+      "payloadKind": "JSON_OBJECT",
+      "bodySha256": "e611ab5799ac5bdd16e1bb4dd70a144ce846ff4e619f965f754e81eebad918e0",
+      "shapeSha256": "2b873a2cda04cbc246cf97abe643f1c8479136dafb17eb4d6beace275bbaac60"
+    },
+    "md-proxy-vpn/servers": {
+      "payloadKind": "TEXT",
+      "bodySha256": "bfdc98492945d04fae4334c24d7938cf264a2207957f4032c564629bd00a77ce",
+      "shapeSha256": "e4ba216b53e675d3ce45a8584de79ecc013718ef83ebd53f29d47d97af594386"
     }
   }
 }

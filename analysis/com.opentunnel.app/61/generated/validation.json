@@ -1,0 +1,16 @@
+{
+  "scope": "SERVER_ONLY",
+  "pythonRegressionTests": 147,
+  "nodeRegressionTests": 212,
+  "a0P06P08SafetyTests": 45,
+  "downloadHarnessTests": 20,
+  "webBuild": "PASS",
+  "a0BlockingFindings": [],
+  "p06Gate": "PASS_WITH_UNRESOLVED",
+  "p06Findings": [],
+  "legacyDynamicConsumersResolved": false,
+  "remoteGithubCI": "PENDING_BRANCH_RUN",
+  "apkBuilt": false,
+  "vpsDeployed": false,
+  "humanProductionReview": "REQUIRED"
+}

@@ -17,6 +17,8 @@ const LABELS=Object.freeze({
   "xxpicore-tunnel":"XXPICore Tunnel",
   "catnet-vpn":"CATNET VPN",
   "litron-vpn":"LITRON VPN",
+  "opentunnel-ssh":"OpenTunnel · Servidores SSH",
+  "md-proxy-vpn":"MD PROXY VPN",
   "litron-pro-vpn":"Litron Pro VPN",
   "speigo-vpn-configs":"SpeiGo VPN · Configuraciones",
   "speigo-vpn-ssh":"SpeiGo VPN · Usuarios SSH",

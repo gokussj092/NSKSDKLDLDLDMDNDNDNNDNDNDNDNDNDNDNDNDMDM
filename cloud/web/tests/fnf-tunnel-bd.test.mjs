@@ -34,7 +34,7 @@ function network(t,{data=Buffer.from("synthetic envelope"),location,check=()=>{}
 function icons(t){
  const read=fs.readFileSync,png=read(new URL("../public/server-vpn-icons/fnf-tunnel-bd.png",import.meta.url));
  // Other apps' raster contents are outside this provider-specific test.
- t.mock.method(fs,"readFileSync",(path,...args)=>String(path).includes("server-vpn-icons")?png:read(path,...args));
+ t.mock.method(fs,"readFileSync",(path,...args)=>String(path).includes("server-vpn-icons")&&String(path).endsWith(".png")?png:read(path,...args));
  syncBuiltinESMExports();t.after(()=>{t.mock.restoreAll();syncBuiltinESMExports();});return png;
 }
 test("FNF original public updater GET uses its declared broker agent and fixed TLS destination",async t=>{

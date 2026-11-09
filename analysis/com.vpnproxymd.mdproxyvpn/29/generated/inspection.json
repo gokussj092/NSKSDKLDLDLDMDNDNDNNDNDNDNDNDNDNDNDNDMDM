@@ -1,0 +1,26 @@
+{
+  "package": "com.vpnproxymd.mdproxyvpn",
+  "versionName": "v1.0.8.8",
+  "versionCode": 29,
+  "apkBytes": 31787088,
+  "apkSha256": "69b73ec144a2e25afa7ed0e57ec1d7690ba2901cd0c9a27a1478494de06dede5",
+  "certificateSha256": [
+    "e9512a94487d64f6e4c00a7f72a7719f8c95ba3ef528892ee29136d1f3b1223b"
+  ],
+  "icon": {
+    "source": "res/mipmap-xxxhdpi-v4/ic_launcher.webp",
+    "bytes": 32208,
+    "sha256": "80d2b61d218690948a2b7e510668c91df69f828a1cfab9d51ac1c3c9592e71e1"
+  },
+  "sourceSha256": {
+    "com/v2ray/ang/Hometab.java": "25641cc41b42be7d3437705854795b674b7f01f1987dc800382793d081290f27",
+    "com/v2ray/ang/ui/HomeFragment.java": "42448d244ed9fc01204557aba4b0f82e9a7a221a29b1fa2951246e9406cdeafc",
+    "com/v2ray/ang/viewmodel/ConfigData.java": "673b013131e09ef32897f1da903a9af4fb5473a5dbf1b861730580efe90d4928",
+    "com/v2ray/ang/viewmodel/ServerList.java": "a9f876cea3074b8372b9d74e80ba3e30a8b3ce3c1a83edccc19d82dd505b68c7",
+    "com/v2ray/ang/viewmodel/NetworkList.java": "c0f3792907155f296e5b6d5e543cb4f28cf71bd4331e462abfd5dc845e2550e3",
+    "com/v2ray/ang/util/ConfigUpdate$configUpdate$1.java": "48547f06ebcfcb995568c4d3513192db544f58c4bbfd388b396b50de6fcc8cff",
+    "go/Seq.java": "0bd6d347569a93b6f426d4e124928dc9f1476f8524f720c11a9b2f72962c6720"
+  },
+  "apkCodeExecuted": false,
+  "cryptographicApkSignatureVerified": false
+}
