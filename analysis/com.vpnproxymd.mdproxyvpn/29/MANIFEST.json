@@ -147,7 +147,10 @@
     "cloud/workers/python/catalog_vpn_bridge.py",
     "decoders/Python/apps/MD_Proxy_VPN/server_catalog_decoder.py",
     "decoders/Python/apps/MD_Proxy_VPN/codec.py",
-    "cloud/web/lib/c3-gateway.mjs"
+    "cloud/web/lib/c3-gateway.mjs",
+    "cloud/workers/python/server.py",
+    "decoders/Python/apps/Ultra_Tunnel/codec.py",
+    "cloud/workers/python/test_worker_limits.py"
   ],
   "evidence_refs": [
     "analysis/com.vpnproxymd.mdproxyvpn/29/generated/catalog-proof.json",
@@ -163,7 +166,8 @@
     "analysis/com.vpnproxymd.mdproxyvpn/29/REPRODUCE.md",
     "analysis/com.vpnproxymd.mdproxyvpn/29/DEPENDENCIES.md",
     "analysis/com.vpnproxymd.mdproxyvpn/29/dependencies.lock.json",
-    "analysis/com.vpnproxymd.mdproxyvpn/29/tests/test_method.py"
+    "analysis/com.vpnproxymd.mdproxyvpn/29/tests/test_method.py",
+    "analysis/com.vpnproxymd.mdproxyvpn/29/CI_RECHECK_2026_11_09.md"
   ],
   "limitations": [
     "Extracted signer certificate is not a full APK signature verification.",

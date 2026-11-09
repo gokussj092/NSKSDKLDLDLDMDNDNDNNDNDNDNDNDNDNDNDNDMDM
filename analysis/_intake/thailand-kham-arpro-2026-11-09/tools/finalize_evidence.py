@@ -59,7 +59,7 @@ if __name__=='__main__':
             paths += ['cloud/web/lib/server-vpn-provider.mjs','cloud/web/lib/c12-provider-controls.mjs','cloud/web/lib/c3-gateway.mjs',
               'cloud/workers/python/engine.py','cloud/workers/python/catalog_vpn_bridge.py',f'decoders/Python/apps/{profile["decoder"]}/codec.py',f'decoders/Python/apps/{profile["decoder"]}/server_catalog_decoder.py',
               'tests/test_thailand_kham_vpn.py','cloud/web/tests/thailand-kham.test.mjs','scripts/ci/catalog-download-baseline.json']
-        if pkg=='thailand.vpn.globalvpn':paths.append('cloud/web/lib/thailand-firebase.mjs')
+        if pkg=='thailand.vpn.globalvpn':paths+=['cloud/web/lib/thailand-firebase.mjs','decoders/Python/apps/Thailand_VPN/protocol.py']
         paths+=['cloud/web/lib/catalog-icons.mjs','cloud/web/lib/catalog-icon-converter.mjs','cloud/web/scripts/convert-catalog-icon.mjs','cloud/web/scripts/prepare-catalog-icons.mjs','cloud/web/Dockerfile','cloud/web/package.json','cloud/web/package-lock.json','cloud/web/tests/catalog-icons.test.mjs']
         write(d/'MANIFEST.json',dict(schema_version=1,package_name=pkg,app_name=profile['name'],version_name=identity['versionName'],version_code=build,
           observed_at='2026-11-09',source_category='public store listing and APKPure distribution mirror/static analysis',

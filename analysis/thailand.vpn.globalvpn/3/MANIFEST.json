@@ -129,7 +129,8 @@
     "cloud/web/Dockerfile",
     "cloud/web/package.json",
     "cloud/web/package-lock.json",
-    "cloud/web/tests/catalog-icons.test.mjs"
+    "cloud/web/tests/catalog-icons.test.mjs",
+    "decoders/Python/apps/Thailand_VPN/protocol.py"
   ],
   "evidence_refs": [
     "analysis/thailand.vpn.globalvpn/3/generated",

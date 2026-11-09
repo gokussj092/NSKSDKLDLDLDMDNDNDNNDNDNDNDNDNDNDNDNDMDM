@@ -28,3 +28,7 @@ Catalog source floor81,76 visible cards, two new live routes and one pending car
 - Three canonical dossiers pass structural evidence validation. Public acquisition identities/certificates are recorded; full publisher APK-signature provenance was not established. No vendor APK/library/catalog/credentials are committed.
 
 All own acquisition, deobfuscation, native-static analysis, probes, golden-vector generation, independent oracles and validation scripts are preserved under analysis/_intake/thailand-kham-arpro-2026-11-09/tools, including failed hypothesis revisions. Existing AR PRO scripts/results remain retained. Research dependencies were not approved for unattended APK execution.
+
+## GitHub follow-up
+
+Catalog regressions passed on GitHub. The PR evidence gate exposed a missing Thailand protocol.py reference plus two earlier MD PROXY source edits without updated dossier links; these links are corrected. C1 exposed a synthetic test that assumed one heavy slot although the worker now has two; only the test fixture was corrected. Existing production worker/Ultra methods were preserved. See analysis/com.vpnproxymd.mdproxyvpn/29/CI_RECHECK_2026_11_09.md.
