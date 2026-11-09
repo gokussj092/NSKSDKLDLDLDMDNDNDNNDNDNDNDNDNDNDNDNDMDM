@@ -83,7 +83,7 @@ def decode_catalog(data: bytes, *, field_workers: int = 1) -> dict:
                     value = record.get(name)
                     if not isinstance(value, str):
                         continue
-                    packed = value.replace("\\r", "").replace("\\n", "")
+                    packed = value.replace("\r", "").replace("\n", "")
                     if len(packed) >= 60 and re.fullmatch(r"[A-Za-z0-9+/]*={0,2}", packed):
                         if packed not in unique:
                             if len(unique) >= MAX_FIELDS:
