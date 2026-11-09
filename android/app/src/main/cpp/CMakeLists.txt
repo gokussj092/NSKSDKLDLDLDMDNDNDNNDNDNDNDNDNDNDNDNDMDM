@@ -30,8 +30,18 @@ set(ENABLE_PROGRAMS OFF CACHE BOOL "" FORCE)
 set(ENABLE_TESTING OFF CACHE BOOL "" FORCE)
 set(USE_SHARED_MBEDTLS_LIBRARY OFF CACHE BOOL "" FORCE)
 set(USE_STATIC_MBEDTLS_LIBRARY ON CACHE BOOL "" FORCE)
+# CI prefetches and verifies this exact official source once, then uses the
+# same archive for debug/release and every ABI. This avoids repeated GitHub
+# release CDN requests (transient 504) without weakening the pinned SHA-256.
+set(SPDECODE_MBEDTLS_ARCHIVE "$ENV{SPDECODE_MBEDTLS_ARCHIVE}")
+if(SPDECODE_MBEDTLS_ARCHIVE AND EXISTS "${SPDECODE_MBEDTLS_ARCHIVE}")
+  set(SPDECODE_MBEDTLS_URL "file://${SPDECODE_MBEDTLS_ARCHIVE}")
+else()
+  set(SPDECODE_MBEDTLS_URL
+      "https://github.com/Mbed-TLS/mbedtls/releases/download/mbedtls-3.6.7/mbedtls-3.6.7.tar.bz2")
+endif()
 FetchContent_Declare(spdecode_mbedtls
-  URL https://github.com/Mbed-TLS/mbedtls/releases/download/mbedtls-3.6.7/mbedtls-3.6.7.tar.bz2
+  URL "${SPDECODE_MBEDTLS_URL}"
   URL_HASH SHA256=a7e8bcbec0e6f761b4af24f25677626b35f762f68eef79c08677a363212d11f6
 )
 FetchContent_MakeAvailable(spdecode_mbedtls)
