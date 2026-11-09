@@ -39,7 +39,7 @@ test("CATNET performs original preflight and server GET with consistent real ins
  for(const {options} of calls){
   assert.equal(options.method,"GET");assert.equal(options.rejectUnauthorized,true);assert.equal(options.minVersion,"TLSv1.2");
   assert.equal(options.headers["User-Agent"],"okhttp/4.12.0");assert.equal(options.headers["Accept-Encoding"],"identity");
-  assert.equal(options.headers["X-XJ-Version-Code"],"27");assert.equal(options.headers["X-App-Key"],"pussy_vpn");
+  assert.equal(options.headers["X-XJ-Version-Code"],"29");assert.equal(options.headers["X-App-Key"],"pussy_vpn");
   assert.equal(options.headers["X-XJ-App-Package"],"net.catnet.vpn");
   assert.equal(options.headers.Authorization,undefined);assert.equal(options.headers["X-XJ-Integrity-Token"],undefined);
   assert.equal(options.headers["X-XJ-Integrity-Session"],undefined);
@@ -106,7 +106,7 @@ test("CATNET original launcher, public metadata, monotonic versions and availabi
  enabled(t);assert(providerIds().includes("catnet-vpn"));assert(PUBLIC_PROVIDER_IDS.includes("catnet-vpn"));
  assert.ok(CATALOG_VERSION>=73);assert.equal(activeCatalogVersion({CLOUD_SERVER_VPN_CATALOG_VERSION:"215686715"}),215686715);
  const values=catalog(),app=values.apps.find(x=>x.id==="catnet-vpn");
- assert.equal(values.apps.length,67);assert.equal(values.formats.length,256);assert.equal(app.name,"CATNET VPN");assert.equal(app.decodeEnabled,true);
+ assert.ok(values.apps.length>=67);assert.equal(values.formats.length,256);assert.equal(app.name,"CATNET VPN");assert.equal(app.decodeEnabled,true);
  assert.equal(app.iconSha256,"f6d8e484d5ce00ce6c170bff16907ae3384909c147fc0d4f7ff4fdf20207d27d");
  assert.equal(iconFor(app.id).bytes.length,52811);assert(!JSON.stringify(app).includes("https://"));
  assert.equal(catalog({availability:{"catnet-vpn":false}}).apps.find(x=>x.id===app.id).decodeEnabled,false);

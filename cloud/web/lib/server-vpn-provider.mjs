@@ -59,6 +59,7 @@ const PROVIDERS = Object.freeze({
   // Build118 Volley updater has no custom UA; Android runtime profile.
   "xxpicore-tunnel": {url:"https://raw.githubusercontent.com/XyrussProject/infinite88/refs/heads/main/xxpicoretunnel888.hs",agent:"Dalvik/2.1.0 (Linux; U; Android 14)"},
   "catnet-vpn": {url:CATNET_SOURCE,agent:CATNET_AGENT},
+  "litron-vpn": {url:"https://godtechprime.github.io/latestv2ray.txt",agent:"okhttp/5.0.0-alpha.3"},
   // Build76 updater sets no UA; analytical Android runtime profile.
   "genis-vpn": {url:"https://raw.githubusercontent.com/nemygoku/genisvpn/refs/heads/main/genis",agent:"Dalvik/2.1.0 (Linux; U; Android 14)"},
   // No app-specific UA; analytical Android runtime profile.

@@ -16,6 +16,7 @@ export const PUBLIC_PROVIDER_IDS=IDS;
 const LABELS=Object.freeze({
   "xxpicore-tunnel":"XXPICore Tunnel",
   "catnet-vpn":"CATNET VPN",
+  "litron-vpn":"LITRON VPN",
   "genis-vpn":"Genis VPN",
   "speicers-turbo-vpn":"Speicers`Turbo VPN",
   "http-conexion":"HTTP Conexión",

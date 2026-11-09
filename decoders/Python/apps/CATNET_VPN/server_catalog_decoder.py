@@ -7,7 +7,8 @@ from urllib.error import HTTPError,URLError
 if not __package__:sys.path.insert(0,str(Path(__file__).resolve().parents[4]))
 from decoders.Python.apps.CATNET_VPN.codec import CatalogError,MAX_INPUT,parse_document,decode_catalog,run
 SOURCE='https://pussyvpn.com/xjvpn/mobile/public/servers'
-PREFLIGHT='https://pussyvpn.com/xjvpn/mobile/public/app-update?app_key=pussy_vpn&current_version_code=27'
+BUILD=29
+PREFLIGHT='https://pussyvpn.com/xjvpn/mobile/public/app-update?app_key=pussy_vpn&current_version_code='+str(BUILD)
 USER_AGENT='okhttp/4.12.0'
 class _NoRedirect(HTTPRedirectHandler):
     def redirect_request(self,*args,**kwargs):raise CatalogError('CATNET redirect denied')
@@ -15,7 +16,7 @@ def original_headers():
     return {'X-XJ-App-Key':'pussy_vpn','X-App-Key':'pussy_vpn',
         'X-XJ-App-Package':'net.catnet.vpn','X-App-Package':'net.catnet.vpn',
         'X-Package-Name':'net.catnet.vpn','X-XJ-Package-Name':'net.catnet.vpn',
-        'X-XJ-Version-Code':'27','X-XJ-Installation-Id':str(uuid.uuid4()),
+        'X-XJ-Version-Code':str(BUILD),'X-XJ-Installation-Id':str(uuid.uuid4()),
         'User-Agent':USER_AGENT,'Accept-Encoding':'identity'}
 def check_preflight(data):
     doc=parse_document(data.decode('utf-8'));info=doc.get('data')

@@ -1,0 +1,31 @@
+{
+  "changedMembers": [
+    {
+      "path": "AndroidManifest.xml",
+      "oldSha256": "9c400f17cf6a3ec405fee19337be83a635fbdb45b8b568600c17cdbe93ac7912",
+      "newSha256": "2b994fd897c83a2ac20cc9da5a5b2bbaf7847c8ee8e890905182f0d026071cc6"
+    },
+    {
+      "path": "assets/dexopt/baseline.prof",
+      "oldSha256": "5a290e3545b9d1e463b9fb0c8ac4ab3e76e21f73ed8b21ec8f7983d9d0b7999f",
+      "newSha256": "c9b59a560c203f2ef031e12d6b97a54dbf8e771427346882c93422f2d4dd0951"
+    },
+    {
+      "path": "assets/dexopt/baseline.profm",
+      "oldSha256": "c5d60e2a8bb782d5d3f91a3e3b3fdffe912aa048e1c8d368a458d3651bf92cff",
+      "newSha256": "9271d911d691ecedbecf9ac0740f18709cbd7e8e60d7def2a97134a9e2aadd14"
+    },
+    {
+      "path": "assets/flutter_assets/fonts/MaterialIcons-Regular.otf",
+      "oldSha256": "5945cfecb9480dcef01d1f30b423a1c81a0630e6d943dcc51f52a5495a3be73d",
+      "newSha256": "6ca7404ab92ead04095e50dd340ab8c86f3d1d8eb9137deef93b14185379e073"
+    },
+    {
+      "path": "classes.dex",
+      "oldSha256": "519891557fd6932e6b9139465b66268e25bd4e8b03ff55f8f14bbe3d97076451",
+      "newSha256": "67b5350ef0d6009f469887ee6612beda9108a63a1e236801cbac5e3fdab7929c"
+    }
+  ],
+  "unchangedMembers": 239,
+  "apkCodeExecuted": false
+}

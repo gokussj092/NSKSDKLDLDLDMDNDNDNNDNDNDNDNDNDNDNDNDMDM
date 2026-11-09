@@ -2,8 +2,8 @@
   "id": "catnet-vpn",
   "name": "CATNET VPN",
   "packageName": "net.catnet.vpn",
-  "versionName": "1.2.5",
-  "versionCode": 27,
+  "versionName": "1.2.7",
+  "versionCode": 29,
   "engine": "python",
   "methods": [
     "catalog"
@@ -11,12 +11,12 @@
   "catalogScope": "Complete public servers response only; payload/xray catalogs unavailable and not advertised",
   "extensions": [],
   "runtimeSecrets": [],
-  "evidence": "analysis/net.catnet.vpn/27/MANIFEST.json",
+  "evidence": "analysis/net.catnet.vpn/29",
   "maintenance20261109": {
     "status": "NETWORK_UNAVAILABLE",
-    "buildUnchanged": 27,
-    "retryLimitPerFixedRequest": 2,
-    "newLiveDownloadVerified": false,
-    "evidence": "analysis/net.catnet.vpn/27/generated/maintenance-20261109.json"
+    "source": "owner Play APKS",
+    "sourceBuild": 29,
+    "headersBuild": 29,
+    "newLiveDownloadVerified": false
   }
 }

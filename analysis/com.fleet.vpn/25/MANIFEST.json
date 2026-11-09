@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-11-09",
+  "source_category": "owner-authorized-static-research-and-public-catalog",
+  "authorization_note": "Owner supplied Play APKS, Litron method and icon for SP-DECODE catalog maintenance; no private account credentials, APK redistribution or app execution.",
+  "tooling": [
+    {
+      "name": "Full JADX",
+      "version": "1.5.6",
+      "path": "scripts/apk_analysis/decompile.py",
+      "invocation": "auto/no-res/Xmx2200m/j3"
+    },
+    {
+      "name": "Androguard",
+      "version": "4.1.3",
+      "role": "AXML/certificate inventory; no complete APK signature verification"
+    },
+    {
+      "name": "Per-build owned tools",
+      "path": "analysis/com.fleet.vpn/25/tools"
+    },
+    {
+      "name": "Retained intake recipes",
+      "path": "analysis/_intake/catnet-play-litron-2026-11-09/tools"
+    },
+    {
+      "name": "Owner-provided script",
+      "path": "analysis/com.fleet.vpn/25/tools/provided_spdecode_litronvpn.py",
+      "sha256": "070dd4a959ef438e1bab065d59f2eb0443a1483a1e0ae961327357f8c8107fd5",
+      "auto_installer_called": false
+    },
+    {
+      "name": "Own independent JCA oracle",
+      "path": "analysis/com.fleet.vpn/25/tools/LitronOracle.java"
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "Python",
+      "version": "3.12.14",
+      "source": "https://python.org/",
+      "license": "PSF",
+      "lockfile": "analysis/com.fleet.vpn/25/dependencies.lock.json"
+    },
+    {
+      "name": "Androguard",
+      "version": "4.1.3",
+      "source": "https://github.com/androguard/androguard",
+      "license": "Apache-2.0",
+      "lockfile": "analysis/com.fleet.vpn/25/dependencies.lock.json"
+    },
+    {
+      "name": "PyCryptodome",
+      "version": "3.23.0",
+      "source": "https://pycryptodome.org/",
+      "license": "BSD-2-Clause / Public-Domain components",
+      "lockfile": "analysis/com.fleet.vpn/25/dependencies.lock.json"
+    },
+    {
+      "name": "OpenJDK",
+      "version": "21.0.13",
+      "source": "https://openjdk.org/",
+      "license": "GPL2 with Classpath Exception",
+      "lockfile": "analysis/com.fleet.vpn/25/dependencies.lock.json"
+    },
+    {
+      "name": "JADX",
+      "version": "1.5.6",
+      "source": "https://github.com/skylot/jadx",
+      "license": "Apache-2.0",
+      "lockfile": "analysis/com.fleet.vpn/25/dependencies.lock.json"
+    },
+    {
+      "name": "Node",
+      "version": "24.22.1 local /22 CI",
+      "source": "https://nodejs.org/",
+      "license": "MIT",
+      "lockfile": "analysis/com.fleet.vpn/25/dependencies.lock.json"
+    }
+  ],
+  "limitations": [
+    "APK signature cryptographic verification not performed; extracted certificate fingerprint only.",
+    "JADX has unrelated failures, not a complete reconstructed application.",
+    "No Android/VPN session, file/text support, APK compilation, main merge or VPS deployment.",
+    "No automatic approval or execution of newly added research tools."
+  ],
+  "network_requirements": [
+    "Original fixed public catalog source only; no arbitrary URL input or authentication bypass."
+  ],
+  "manual_steps": [
+    "Review branch evidence and CI before operator VPS rollout."
+  ],
+  "unresolved_questions": [],
+  "package_name": "com.fleet.vpn",
+  "app_name": "LITRON VPN",
+  "version_name": "3.5.9",
+  "version_code": 25,
+  "inputs": {
+    "package": "com.fleet.vpn",
+    "versionName": "3.5.9",
+    "versionCode": 25,
+    "apkBytes": 39588577,
+    "apkSha256": "8d3818e7a60998f18275e9339f5578aba68153d79b50cfac7c0b7a1201f24a52",
+    "xapkBytes": 60523530,
+    "xapkSha256": "fbfd77bd062e28f2df4b278b064b4ac1f8d544aef21d09043a2e627c642d5657",
+    "certificateSha256": [
+      "ead8ad35c1d49802a84d12495885d96e29e40242f3be95e682eab8a2ab1a11f7"
+    ],
+    "cryptographicApkSignatureVerified": false,
+    "apkCodeExecuted": false
+  },
+  "evidence_refs": [
+    "analysis/com.fleet.vpn/25/ANALYSIS.md",
+    "analysis/com.fleet.vpn/25/REPRODUCE.md",
+    "analysis/com.fleet.vpn/25/RESULTS.md",
+    "analysis/com.fleet.vpn/25/DEPENDENCIES.md",
+    "analysis/com.fleet.vpn/25/dependencies.lock.json",
+    "analysis/com.fleet.vpn/25/generated/identity.json",
+    "analysis/com.fleet.vpn/25/generated/static-proof.json",
+    "analysis/com.fleet.vpn/25/generated/catalog-proof.json",
+    "analysis/com.fleet.vpn/25/generated/embedded-proof.json",
+    "analysis/com.fleet.vpn/25/generated/recipe.json"
+  ],
+  "code_paths": [
+    "cloud/web/lib/server-vpn-provider.mjs",
+    "cloud/web/lib/server-vpn-catalog.mjs",
+    "cloud/web/lib/c12-provider-controls.mjs",
+    "cloud/workers/python/catalog_vpn_bridge.py",
+    "cloud/workers/python/engine.py",
+    "decoders/Python/apps/Litron_VPN/codec.py",
+    "decoders/Python/apps/Litron_VPN/server_catalog_decoder.py"
+  ],
+  "status": "VERIFIED",
+  "targets": [
+    {
+      "kind": "catalog",
+      "status": "VERIFIED_REAL",
+      "scope": "remote v289 and embedded v12; full independent JCA/owner-helper/Python/isolated-worker JSON equality"
+    }
+  ],
+  "input_attribution": {
+    "script": "owner attachment, preserved byte-identical",
+    "icon": "owner supplied for base Litron, not an extracted APK icon",
+    "iconSha256": "38a931316e6ea65793f377eccd66924790a3ff273d250d8955b6b48a7867aae0"
+  },
+  "excluded_application": {
+    "name": "Litron Pro VPN",
+    "package": "com.litron.udp",
+    "status": "PENDING_SEPARATE_RESEARCH"
+  }
+}

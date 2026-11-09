@@ -1,0 +1,16 @@
+{
+  "inputBytes": 59520,
+  "inputSha256": "79b34dc814bc10c0b85efc4ccc8680fc6ae566b6d31e3b22f6731623e8cb2b7d",
+  "version": "12",
+  "servers": 5,
+  "networks": 5,
+  "hiddenFieldsCompared": 20,
+  "wholeIndependentJcaParity": true,
+  "wholeProvidedHelperParity": true,
+  "providedAutoInstallerCalled": false,
+  "clearJsonSha256": "6d5f17cd590b1eecb4845429c648be7a4d3f90ba478417fc647c941c02c63f69",
+  "rawOutputBytes": 6252,
+  "apkCodeExecuted": false,
+  "cipherAuthenticated": false,
+  "wholeWorkerParity": true
+}

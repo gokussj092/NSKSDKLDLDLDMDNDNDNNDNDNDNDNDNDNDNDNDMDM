@@ -1,4 +1,4 @@
-"""CATNET 1.2.5/code27 public server catalog: complete plain UTF-8 JSON.
+"""CATNET builds27/29 public server catalog: complete plain UTF-8 JSON.
 
 This endpoint has no observed encryption layer. Keep all fields and nested
 metadata; do not decode strings merely because they resemble Base64 or hex.

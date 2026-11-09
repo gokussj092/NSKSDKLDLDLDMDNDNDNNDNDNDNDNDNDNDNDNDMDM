@@ -105,7 +105,7 @@ test("Halcon original raster, public card and configured availability",t=>{
   assert.ok(CATALOG_VERSION>=73);
   assert.equal(createHash("sha256").update(png).digest("hex"),"859825df9e151d9b77039cc7f4a42b75feb3b9ea823999fa567ec823a173f143");
   const doc=catalog(),card=doc.apps.find(x=>x.id==="halcon-r-net");
-  assert.equal(doc.apps.length,67);assert.equal(card.name,"HALCON RAMOS Conectividad");
+  assert.ok(doc.apps.length>=67);assert.equal(card.name,"HALCON RAMOS Conectividad");
   assert.equal(card.decodeEnabled,true);assert.equal(iconFor(card.id).bytes.length,71433);
   assert.equal(catalog({availability:{"halcon-r-net":false}}).apps.find(x=>x.id===card.id).decodeEnabled,false);
   assert.equal(catalog({methodStates:{"halcon-r-net":{maintenance:true}}}).apps.find(x=>x.id===card.id).decodeEnabled,false);

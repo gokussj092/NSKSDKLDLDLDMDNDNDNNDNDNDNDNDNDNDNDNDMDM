@@ -59,7 +59,7 @@ class CatnetCatalogTests(unittest.TestCase):
         self.assertEqual(calls[0].get_header('X-xj-installation-id'),calls[1].get_header('X-xj-installation-id'))
         for r in calls:
             self.assertEqual(r.get_method(),'GET');self.assertEqual(r.get_header('User-agent'),'okhttp/4.12.0')
-            self.assertEqual(r.get_header('X-app-key'),'pussy_vpn');self.assertEqual(r.get_header('X-xj-version-code'),'27')
+            self.assertEqual(r.get_header('X-app-key'),'pussy_vpn');self.assertEqual(r.get_header('X-xj-version-code'),'29')
             self.assertIsNone(r.get_header('X-xj-integrity-token'));self.assertIsNone(r.get_header('Authorization'))
     def test_preflight_stops_if_integrity_required_or_unknown(self):
         for value in [True,None,0,'false']:
