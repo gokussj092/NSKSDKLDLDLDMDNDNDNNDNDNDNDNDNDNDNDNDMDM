@@ -96,3 +96,9 @@ Un worker se termina al agotar su plazo para que no queden sockets pendientes.
 La ejecución no cambia la aplicación, el servidor, los switches de proveedores
 ni el estado de mantenimiento.
 
+
+## Primera ejecución validada
+
+Se registraron 61 referencias de transporte después de la primera comprobación real:
+67 proveedores, 79 entradas, 61 descargas válidas y 18 advertencias. Las 20 pruebas
+pasaron y el job terminó en verde. [Resultados y límites](../../analysis/platform/catalog-download-health/2026-11-08/RESULTS.md).

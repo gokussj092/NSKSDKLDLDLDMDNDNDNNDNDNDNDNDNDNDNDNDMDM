@@ -1,5 +1,311 @@
 {
   "schemaVersion": 1,
   "scope": "TRANSPORT_ONLY_NO_DECRYPTION",
-  "entries": {}
+  "entries": {
+    "xxpicore-tunnel/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "5778e674aa2bdf87352070a80d908b4d655c5c6d5aa5b1ba401f68a7b5f7be48",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "genis-vpn/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "5b32c9773a06edcfcf5e4dc3506eec10d54af8640d88582bd1e8b55993fa45a0",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "speicers-turbo-vpn/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "c308adb881df9a40e8cf73ba1a995cccae59818ca12605953267476f6117b464",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "speicers-turbo-vpn/users": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "3a4da7b8d8137c32efa8cc45c9f06381be0aa19a609b1739b5c5d2da2d26a3ff",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "http-conexion/servers": {
+      "payloadKind": "TEXT",
+      "bodySha256": "582549fb87e8303010dc332ef770002e2c0e2bd9cc52b0542ff89d4c96522323",
+      "shapeSha256": "e4ba216b53e675d3ce45a8584de79ecc013718ef83ebd53f29d47d97af594386"
+    },
+    "namo-vpn/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "578ad82fed747a2670a8fe4fb0abaeda16df60684581bec0a7e10e2d47aeee06",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "fnf-tunnel-bd/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "b060c21630ad0a2337c9ee9e948b799fb7ec53771301d3d8ccdaec3e5a5c68f9",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "alsaher-vip/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "b8900e20f929652f9c1da615b19aba0dcd83d804a1a9006a5575bd10ebf085f3",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "ultra-tunnel/servers": {
+      "payloadKind": "TEXT",
+      "bodySha256": "bfdc98492945d04fae4334c24d7938cf264a2207957f4032c564629bd00a77ce",
+      "shapeSha256": "e4ba216b53e675d3ce45a8584de79ecc013718ef83ebd53f29d47d97af594386"
+    },
+    "zig-tunnel/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "2d01368fee662eb0973d0b2ae4ac688448f303c058ba6685660a1722887ee117",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "enaa-tunnel/servers": {
+      "payloadKind": "TEXT",
+      "bodySha256": "e7deee3ce5e05942aad5f597fd95fb911f9b52c12463ff6424a5668afaf33490",
+      "shapeSha256": "e4ba216b53e675d3ce45a8584de79ecc013718ef83ebd53f29d47d97af594386"
+    },
+    "izph-vpn-pro/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "97e9549c25cf300cd7970d3a77b3693599bad93649ce7dac94484e83608aef75",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "netcol-vpn/servers": {
+      "payloadKind": "TEXT",
+      "bodySha256": "6f847dfe13c1f95a3c9d0646c8f08352c25ca1d5b57b3c84950794cf1d856256",
+      "shapeSha256": "e4ba216b53e675d3ce45a8584de79ecc013718ef83ebd53f29d47d97af594386"
+    },
+    "jyfast-vpn-ultra/free": {
+      "payloadKind": "TEXT",
+      "bodySha256": "6eb2bad11d56eb8c50d4d55709c74e8a629758b7ff00314538172e0d6a68cddc",
+      "shapeSha256": "e4ba216b53e675d3ce45a8584de79ecc013718ef83ebd53f29d47d97af594386"
+    },
+    "jyfast-vpn-ultra/premium": {
+      "payloadKind": "TEXT",
+      "bodySha256": "ab366324cfc98d0f5aa0cd0d7676a4c67c72f4ffb718589c085c2746d5137ba6",
+      "shapeSha256": "e4ba216b53e675d3ce45a8584de79ecc013718ef83ebd53f29d47d97af594386"
+    },
+    "tunneldoom-vpn/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "f50f4ded7827abc0d904bd3d8008e71f8a15254d5ff0b892892af2778e00a552",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "ha-tunnel-plus/servers": {
+      "payloadKind": "TEXT",
+      "bodySha256": "dae31d366acf3f8abc5f58cb306a391af2eb70dec52a3104b30dda2551bd44fa",
+      "shapeSha256": "e4ba216b53e675d3ce45a8584de79ecc013718ef83ebd53f29d47d97af594386"
+    },
+    "mtm-tunnel-lite/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "031950626ee1cab7ad7b451c9c6270b8ecb455c325ec8d1a582fac3fbbd3f5f3",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "mnr-tunnel-plus/servers": {
+      "payloadKind": "TEXT",
+      "bodySha256": "c4f2b4ea4488965f6b7bffa46e11a8ba77baad7163b9f7d11e92e3b42db0cc10",
+      "shapeSha256": "e4ba216b53e675d3ce45a8584de79ecc013718ef83ebd53f29d47d97af594386"
+    },
+    "bd-net-vpn/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "ee5fddae38dda803af62536b52f7656edc878ed1eeb613d07d622e45c95d8a27",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "aura-net-vpn/servers": {
+      "payloadKind": "TEXT",
+      "bodySha256": "7f58d6a259041ed1cef40595badd048bd8f8b5fb6ab77f730d4bbcf5474ca6bf",
+      "shapeSha256": "e4ba216b53e675d3ce45a8584de79ecc013718ef83ebd53f29d47d97af594386"
+    },
+    "apna-vpn/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "d925846f7400407556f350ed617e7de190a44920b8d3d34fa7609e76fac7e56c",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "any-vpn/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "56512194915f0057d2b4a925d65a29bd51dfcaa40f1da07a639c41d20c8f2519",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "speicers-pro-vpn/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "713af873fc262136f9a51302f1119e6e09d10e5386a9e1fbe9e4054b25d16d16",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "tx-tunnel/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "fd2d2d429de46a0f97428ee18cb0c90b77713fd13c49d40eab9f8ffeee2e11e9",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "mm-tunnel/servers": {
+      "payloadKind": "TEXT",
+      "bodySha256": "df36535769a5676f1e2b811682a8c6aec4f139d8513ea99e491db487916559b5",
+      "shapeSha256": "e4ba216b53e675d3ce45a8584de79ecc013718ef83ebd53f29d47d97af594386"
+    },
+    "abowaged-vpn/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "932ed315985cdc289f2a4a7e81e775c1ded4e6f0a7e5db7ffa49f4c024fab8fa",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "abowaged-vpn/udp": {
+      "payloadKind": "JSON_ARRAY",
+      "bodySha256": "f55faf4c41899b0b973b42a2eefb6bbe8b3a526cc3e2f715173b31708641ebef",
+      "shapeSha256": "096ec95f4f9413a450c2350b53ffdeddcaacdd05ac6559d423e294becd20101a"
+    },
+    "7net-vpn/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "065d54e42b94c825bca2ec292789bbb227ccd67562e6b5a8d3a689a9f7a8e2df",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "xhypher-tunnel-pro/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "305adbbc318b5d5f5fac3ef0f86799f6f51d14c2dbb6cafda0d2adbcddb80304",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "turbomx-vpn/servers": {
+      "payloadKind": "BINARY",
+      "bodySha256": "d6cece89ef874cb1e24ed42326ccb921e5f49920a58080c3f6663bf7d41b074b",
+      "shapeSha256": "4c77b56b7cf3077c725c2f433eb76156bd231c23b56805f5a06fc06b87450a43"
+    },
+    "turbomx-vpn/users": {
+      "payloadKind": "BINARY",
+      "bodySha256": "c3e7f848b372d7ff46af66351e37d9af8063643a21f3083ddbe4812d97e22ddf",
+      "shapeSha256": "4c77b56b7cf3077c725c2f433eb76156bd231c23b56805f5a06fc06b87450a43"
+    },
+    "superflash-vpn/servers": {
+      "payloadKind": "BINARY",
+      "bodySha256": "9224ab9a4ad9133660347b62d7509fe1051485153ef68f0ee87cd63912aaabaf",
+      "shapeSha256": "4c77b56b7cf3077c725c2f433eb76156bd231c23b56805f5a06fc06b87450a43"
+    },
+    "superflash-vpn/users": {
+      "payloadKind": "BINARY",
+      "bodySha256": "0d276bc2717d650fc5c76fe5030fbe542365c310de870d0022e91f400074df0a",
+      "shapeSha256": "4c77b56b7cf3077c725c2f433eb76156bd231c23b56805f5a06fc06b87450a43"
+    },
+    "rmp-tunnel-pro/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "2abe6a0dc3776fd0b810649c5eb17493301e620968fcb3750c114cdaf9d1c80d",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "rjc-tunnel-pro/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "7b6316302d561bc7c85863cf7bae69ae407584e9d9c6599569023222c6e33854",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "onspace-vpn/servers": {
+      "payloadKind": "TEXT",
+      "bodySha256": "151f387e9e312de90535bde9a66bd4d126e1ff409961690d5c275c3ef002d60a",
+      "shapeSha256": "e4ba216b53e675d3ce45a8584de79ecc013718ef83ebd53f29d47d97af594386"
+    },
+    "onspace-vpn/users": {
+      "payloadKind": "TEXT",
+      "bodySha256": "0f610ab876997e7e78064394c2b8fcf62b4d1d369357897fef4b52b53fb9d880",
+      "shapeSha256": "e4ba216b53e675d3ce45a8584de79ecc013718ef83ebd53f29d47d97af594386"
+    },
+    "mx-tunnel-pro/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "5ff74e3eb1283ecbc2c0ee1a42aa6c96873d8fe204ffea44f6049110b6a6ca15",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "megatunnel/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "b89a4a83fed75f2316db70b8391a62367e008fbaa557747a4228f01c3ac218bf",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "http-internet-infinito/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "5f51e71e4b09fa828cf487bafc6824ed7f8080d27de255f331b9ea06f8815915",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "freedom-vpn/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "32f519effafe81a19b79d526eb52578d90e857de8122793d74ceea5e19696785",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "focus-vpn-cloud/servers": {
+      "payloadKind": "TEXT",
+      "bodySha256": "af26cb65526412b19226cbcf0b4ea9facf47b4dd3c8f10f76cd9bcc785ecf812",
+      "shapeSha256": "e4ba216b53e675d3ce45a8584de79ecc013718ef83ebd53f29d47d97af594386"
+    },
+    "v2ray-tunnel-plus/base64": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "415c0c4d699120f7468788dc0e32f22f490c49d7c67f588409f9a3f769b2a1aa",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "v2ray-tunnel-plus/raw": {
+      "payloadKind": "TEXT",
+      "bodySha256": "72cdd90422cec40c0f8e4826e2904a38065e3de29ec1bfffe89433a760d0bacc",
+      "shapeSha256": "e4ba216b53e675d3ce45a8584de79ecc013718ef83ebd53f29d47d97af594386"
+    },
+    "http-wakko/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "eb0b1b3a0b197938c030693aef8acb5bd078bb476db1299265933b37c32913b4",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "http-wakko/users": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "14e51272d934db3d7d2a46771a122c2ed5e33b898b2a6b603d5170f064d13c2d",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "http-socketclay/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "7102b8d3ceb7311de7d843ffb8b4e2a23cd2e08ee11de0a1da24f7dd93c11755",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "http-socketclay/users": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "3e6ec62d6410532f1a46c1bd2ee36f0d1975e7439e67c0b034a250e002ace563",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "http-jireh/servers": {
+      "payloadKind": "TEXT",
+      "bodySha256": "88e58d465a1ef91d34b96074e295120347f52f35f3c19972e831cd15a9f0c981",
+      "shapeSha256": "e4ba216b53e675d3ce45a8584de79ecc013718ef83ebd53f29d47d97af594386"
+    },
+    "http-fenixvpn/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "3c3887a4c82207b4dbe4280daff787a5dfa1adee652477031f0f1f6f37f3d2f9",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "ac-tunnel-vpn/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "056071af68f964a710f4bd9bdb37d7e91622ef13630547233c97dde999f02419",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "24clan-green/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "4e6bd763a88cf7b750125361d65c6c381b48582c9a63226c15bf97de6aeef171",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "hx-tunnel/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "9847bae4cb3cee5ecebf8d5b26ad2a6f8c2edb8cf81dabcc363be52b8351ea35",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "mkk-hyper/servers": {
+      "payloadKind": "JSON_OBJECT",
+      "bodySha256": "3507f5d8705f84f807d6f6c5574f19bce3af6b6b0808abe96723072ef9410bd1",
+      "shapeSha256": "56d580aa7acee469578a235c0036a0efffdde68366fc595fffd625ab2a9f23b3"
+    },
+    "mkk-hyper/subscriptions": {
+      "payloadKind": "JSON_OBJECT",
+      "bodySha256": "94b41f1ae01e29c245a15b8e7afc3a517bbff782c570a3e196920801b245ee60",
+      "shapeSha256": "be11a87633530dd9fcd844b79e27915a7b470479a59bdf9648b1de3d0dd65ed8"
+    },
+    "ksh-vpn/servers": {
+      "payloadKind": "JSON_OBJECT",
+      "bodySha256": "23b6c86da9f518116443873071666df0bbbb319c620da4e6679099f1664364c2",
+      "shapeSha256": "79e7b3637639b0b40801ab2583897e605eb0a3e9b8425ab3762d4a9cd2a006af"
+    },
+    "my-tunnel-proxy/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "91d02d783a87072dd2021d0d5abd2799be849222fc82147c3740f640868fce35",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "robust-tunnel/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "4359343a5e1336a1d8608c96ca3c2795b9535e93da72191c4ebec3d350cb2f34",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "trv-tunnel/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "ee58c3ac005d3b87e19dd09d927c73fe7abce7b4db49cfc6f0ac26ebcb0fe2e3",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "4u-tunnel-lite/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "f9aa183b6d27d458ff2796268d9b462cc39550fca870bdbb19e137b3d2a9e1c5",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    }
+  }
 }
