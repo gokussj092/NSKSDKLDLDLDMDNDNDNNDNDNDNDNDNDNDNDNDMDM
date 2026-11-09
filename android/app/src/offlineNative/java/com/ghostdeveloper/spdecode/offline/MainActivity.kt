@@ -234,7 +234,7 @@ class MainActivity : ComponentActivity() {
         pendingText=if(first.startsWith("nm-")&&value.contains("://"))
             value.substringAfter("://").trim() else value
         pendingName=when {npv->"NPV text";dark->"Dark Tunnel text";else->"NetMod text"}
-        pendingSuffix=when {npv->"npv";dark->"dark";else->"nmtext"}
+        pendingSuffix=when {npv->"npv";dark->"dark";else->"autotext"}
         ui.pendingPrompt=null
         decodeAttempt()
     }
