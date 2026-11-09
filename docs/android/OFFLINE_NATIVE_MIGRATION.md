@@ -45,3 +45,29 @@ El JNI rechaza explícitamente los formatos pendientes. No habrá fallback a Kot
 - Los NPVS firmados verifican ECDSA antes de derivación de claves o solicitar credenciales. Toda sección fallida provoca error, nunca JSON parcial.
 - El esquema P-256 conserva el material privado dentro del proceso de análisis. No se incorporan claves privadas de prueba al paquete.
 
+
+
+## SMART UI y Dark Tunnel offline (2026-11-08)
+- Navegación: Inicio, Historial y Ajustes. Acerca de está anidado en Ajustes,
+  con flecha y navegación Atrás del sistema. Se sustituyó la carga Compose de
+  `mipmap/ic_launcher` (adaptive-icon XML, no compatible con `painterResource`)
+  por el drawable vectorial `offline_launcher_foreground`. El fallo del
+  dispositivo se atribuye a esa referencia por análisis estático; pendiente
+  confirmación de no-crash en un dispositivo físico.
+- Visor JSON: alto según líneas reales, con un máximo de 150 líneas visibles;
+  conserva resultado completo seleccionable y desplazamiento si supera ese alto.
+  Copiar/exportar no agregan paginación ni cortes.
+- Dark Tunnel: módulo `spdecode_dark_tunnel.cpp`, AES-256-CFB exterior y
+  AES-192-CFB anidado, Base64 seguro, MessagePack y normalización JSON.
+  Extensiones `.dark`, `.dt`, `.dtunnel`; enlaces `dt://`, `dtunnel://`,
+  `dark://`, `darktunnel://`, `dark-tunnel://` y envoltorios Base64 sin prefijo
+  detectados por el campo estructural `encryptedLockedConfig`.
+  NUNCA usar los algoritmos históricos de Kotlin en el APK.
+- Gate diferencial: `tests/test_offline_dark_native_parity.py` compilado
+  con `tests/native_dark_tunnel_cli.cpp`, contra casos sintéticos Python
+  PyCryptodome/msgpack. Estos casos no equivalen a una certificación con
+  exportaciones reales de Dark Tunnel.
+- El archivo online y los motores Cloud no se tocan. R8 release requiere firma
+  alfa de CI, NO la clave de distribución estable. Verificar instalación,
+  pantalla Acerca de, desplazamiento JSON, formatos reales Dark y regresión
+  del resto de métodos en Android físico antes de promocionar como estable.
