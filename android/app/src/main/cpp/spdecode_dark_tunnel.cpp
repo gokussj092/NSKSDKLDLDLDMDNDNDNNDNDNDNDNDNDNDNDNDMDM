@@ -181,6 +181,18 @@ json normalize(const json& current,int depth,bool insideNested){
 }
 } // namespace
 
+bool isDarkTunnelEnvelope(const Bytes& source){
+    try{
+        const std::string encoded=unwrap(source);
+        json outer;
+        if(!encoded.empty()&&encoded.front()=='{')outer=json::parse(encoded);
+        else outer=json::parse(darkB64(encoded));
+        if(!outer.is_object())return false;
+        const auto field=outer.find("encryptedLockedConfig");
+        return field!=outer.end()&&field->is_string()&&!field->get<std::string>().empty();
+    }catch(const std::exception&){return false;}
+}
+
 std::string decodeDarkTunnel(const Bytes& source){
     const std::string encoded=unwrap(source);
     json envelope;
