@@ -48,3 +48,6 @@ El archivo histórico [SOCKSIP_VER8_VER7_VER6_STUDY.md](SOCKSIP_VER8_VER7_VER6_S
 - [Genis VPN / com.doriaxvip.tunnel / 76](com.doriaxvip.tunnel/76/ANALYSIS.md): VERIFIED_REAL; remoto 1114 / 84 servidores / 658 campos CBC, JSON entero igual a JCA/CLI/worker. Solo Cloud; Node/VPS pendiente.
 
 - [XXPICore Tunnel / build118](pro.xxpicore.tunnel/README.md): catálogo remoto2.427,64 servidores/1240 redes/7837 campos; entero igual a JCA/CLI/worker. Solo Cloud; Node/VPS pendiente.
+
+
+2026-11-09: [Thailand build3](thailand.vpn.globalvpn/3/ANALYSIS.md), [KHAM build24](com.khamvpn.net/24/ANALYSIS.md), [AR PRO build2 recheck](noob.arpro.vpn/2/ANALYSIS.md). Complete remote JSON verified for the first two; AR PRO source returns HTML, pending.

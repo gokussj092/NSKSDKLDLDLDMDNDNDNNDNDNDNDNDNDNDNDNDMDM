@@ -1,0 +1,16 @@
+{
+  "fisHttp": 200,
+  "configHttp": 200,
+  "catalogHttp": 200,
+  "sourceHost": "globalvpn.uk",
+  "catalogBytes": 868048,
+  "wireSha256": "1f822d51f6a891502734ad68644ff7f14c96f58fd59754bad6b2a17c83b4177e",
+  "topKeys": [
+    "Status",
+    "Servers",
+    "Settings"
+  ],
+  "serverCount": 373,
+  "status": true,
+  "deleteHttp": 200
+}

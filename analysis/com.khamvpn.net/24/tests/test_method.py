@@ -1,0 +1,1 @@
+from tests.test_thailand_kham_vpn import KhamTests

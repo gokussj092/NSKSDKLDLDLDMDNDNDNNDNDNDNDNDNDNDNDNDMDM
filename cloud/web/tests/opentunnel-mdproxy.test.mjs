@@ -10,7 +10,7 @@ import {POST as iconRoute} from "../app/api/v1/server-vpn/icon/route.js";
 import {fetchWorker} from "../lib/c3-gateway.mjs";
 const cases=[
  ["opentunnel-ssh","https://api.roosterkid.com/api/opentunnel/servers/","SP-DECODE/1.0","image/png","2687863c67e82e2fcff500ffd34d4fff6ec5b59662a4db6eb96650ed6aca8c98"],
- ["md-proxy-vpn","https://strongteam.co/api/ultrasystem/ultrav3.txt","MD PROXY VPN","image/webp","80d2b61d218690948a2b7e510668c91df69f828a1cfab9d51ac1c3c9592e71e1"]
+ ["md-proxy-vpn","https://strongteam.co/api/ultrasystem/ultrav3.txt","MD PROXY VPN","image/png","ed72522cbcf686afbfd340b1376ebe4076875f98377915d50168b4035c861b82"]
 ];
 function enabled(t){const before=process.env.CLOUD_SERVER_VPN_ENABLED;process.env.CLOUD_SERVER_VPN_ENABLED="true";t.after(()=>{if(before===undefined)delete process.env.CLOUD_SERVER_VPN_ENABLED;else process.env.CLOUD_SERVER_VPN_ENABLED=before;});}
 test("two new identities, exact original icons, and explicit OpenTunnel files",async t=>{

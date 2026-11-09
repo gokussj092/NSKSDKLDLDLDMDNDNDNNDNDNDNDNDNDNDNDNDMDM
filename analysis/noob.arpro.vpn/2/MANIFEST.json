@@ -9,7 +9,7 @@
   "authorization_note": "User requested Cloud catalog investigation/integration, strictly no Android compilation or waiting for artifacts. No deployment/merge requested.",
   "status": "PARTIAL",
   "enabled": false,
-  "public_catalog_changed": false,
+  "public_catalog_changed": true,
   "targets": [
     {
       "kind": "catalog",
@@ -138,6 +138,18 @@
       "path": "analysis/noob.arpro.vpn/2/tools/verify_pending.py",
       "sha256": "94e7d9c44b154b24122ba1e027d12e6067603cebf0545750d8dc469be8dcde69",
       "approval": "UNREVIEWED_MANUAL_RESEARCH_ONLY"
+    },
+    {
+      "name": "Shared owned intake/static/probe/oracle tools",
+      "path": "analysis/_intake/thailand-kham-arpro-2026-11-09/tools"
+    },
+    {
+      "name": "Build recipe",
+      "path": "analysis/noob.arpro.vpn/2/tools/reproduce.py"
+    },
+    {
+      "name": "Independent Java XXTEA oracle",
+      "path": "analysis/com.appxrayservice.namovpn/35/tools/CatalogOracle.java"
     }
   ],
   "shared_tooling": [
@@ -862,7 +874,19 @@
   "code_paths": {
     "production_provider": null,
     "research": "analysis/noob.arpro.vpn/2/tools/recover.py",
-    "tests": "analysis/noob.arpro.vpn/2/tests/test_research.py"
+    "tests": "analysis/noob.arpro.vpn/2/tests/test_research.py",
+    "recheck_2026_11_09": [
+      "cloud/web/lib/server-vpn-catalog.mjs",
+      "cloud/web/public/server-vpn-icons/ar-pro-vpn.png",
+      "cloud/web/lib/catalog-icons.mjs",
+      "cloud/web/lib/catalog-icon-converter.mjs",
+      "cloud/web/scripts/convert-catalog-icon.mjs",
+      "cloud/web/scripts/prepare-catalog-icons.mjs",
+      "cloud/web/Dockerfile",
+      "cloud/web/package.json",
+      "cloud/web/package-lock.json",
+      "cloud/web/tests/catalog-icons.test.mjs"
+    ]
   },
   "evidence_refs": [
     "ANALYSIS.md",
@@ -934,5 +958,26 @@
     "floor": 72,
     "apps": 66,
     "formats": 256
+  },
+  "latest_recheck_2026_11_09": {
+    "observed_at": "2026-11-09",
+    "targets": [
+      {
+        "kind": "catalog",
+        "status": "PENDING",
+        "scope": "PENDING remote catalog: the original DefUpdateURL GET returns HTTP200,195-byte HTML containing Site Unavailable. The separate app-update endpoint also returned that page. This is not JSON/catalog success. No remote worker method or broker route is activated; only the original PNG card is added disabled. Embedded sample evidence does not certify remote compatibility."
+      }
+    ],
+    "evidence_refs": [
+      "analysis/noob.arpro.vpn/2/generated",
+      "analysis/noob.arpro.vpn/2/tests/test_method.py"
+    ],
+    "limitations": [
+      "No Android build, phone import or live VPN connection was tested.",
+      "Actual Node/VPS network transport remains to verify; real Python requests and explicitly simulated Node replay are separate.",
+      "No main merge, VPS deployment or automatic publication.",
+      "No new file/text format or Unlocked export inferred.",
+      "Research dependencies remain subject to human review before automatic execution."
+    ]
   }
 }

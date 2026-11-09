@@ -20,6 +20,21 @@ on:
       - analysis/_intake/litron-pro-2026-11-09/**
       - cloud/workers/python/engine.py
       - cloud/workers/python/catalog_vpn_bridge.py
+      - cloud/web/lib/thailand-firebase.mjs
+      - cloud/web/lib/catalog-icon*.mjs
+      - cloud/web/scripts/*catalog-icon*.mjs
+      - cloud/web/package*.json
+      - cloud/web/Dockerfile
+      - cloud/web/tests/thailand-kham.test.mjs
+      - cloud/web/tests/catalog-icons.test.mjs
+      - tests/test_thailand_kham_vpn.py
+      - analysis/thailand.vpn.globalvpn/**
+      - analysis/com.khamvpn.net/**
+      - analysis/noob.arpro.vpn/**
+      - analysis/_intake/thailand-kham-arpro-2026-11-09/**
+      - decoders/Python/apps/Thailand_VPN/**
+      - decoders/Python/apps/KHAM_VPN/**
+      - cloud/web/public/server-vpn-icons/*.png
       - cloud/web/lib/server-vpn-*.mjs
       - cloud/web/lib/catnet-protocol.mjs
       - tests/test_litron_vpn.py
@@ -60,6 +75,21 @@ on:
       - analysis/_intake/litron-pro-2026-11-09/**
       - cloud/workers/python/engine.py
       - cloud/workers/python/catalog_vpn_bridge.py
+      - cloud/web/lib/thailand-firebase.mjs
+      - cloud/web/lib/catalog-icon*.mjs
+      - cloud/web/scripts/*catalog-icon*.mjs
+      - cloud/web/package*.json
+      - cloud/web/Dockerfile
+      - cloud/web/tests/thailand-kham.test.mjs
+      - cloud/web/tests/catalog-icons.test.mjs
+      - tests/test_thailand_kham_vpn.py
+      - analysis/thailand.vpn.globalvpn/**
+      - analysis/com.khamvpn.net/**
+      - analysis/noob.arpro.vpn/**
+      - analysis/_intake/thailand-kham-arpro-2026-11-09/**
+      - decoders/Python/apps/Thailand_VPN/**
+      - decoders/Python/apps/KHAM_VPN/**
+      - cloud/web/public/server-vpn-icons/*.png
       - cloud/web/lib/server-vpn-*.mjs
       - cloud/web/lib/catnet-protocol.mjs
       - tests/test_litron_vpn.py
@@ -107,13 +137,13 @@ jobs:
       - name: Verify generated public file metadata
         run: python scripts/cloud_formats_catalog.py
       - name: Complete JSON, strict Unicode, independent oracles and actual worker regressions
-        run: python -m unittest tests.test_opentunnel tests.test_md_proxy_vpn tests.test_cloud_c8_worker_integration tests.test_ultra_tunnel tests.test_speigo_vpn tests.test_litron_pro_vpn tests.test_litron_vpn tests.test_catnet_vpn tests.test_catnet_retry tests.test_austroplus_vpn tests.test_austroplus15 tests.test_tunneltweak tests.test_tunneltweak_builds tests.test_wolf_custom_vpn tests.test_wolf_v16 -v
+        run: python -m unittest tests.test_thailand_kham_vpn tests.test_opentunnel tests.test_md_proxy_vpn tests.test_cloud_c8_worker_integration tests.test_ultra_tunnel tests.test_speigo_vpn tests.test_litron_pro_vpn tests.test_litron_vpn tests.test_catnet_vpn tests.test_catnet_retry tests.test_austroplus_vpn tests.test_austroplus15 tests.test_tunneltweak tests.test_tunneltweak_builds tests.test_wolf_custom_vpn tests.test_wolf_v16 -v
       - name: Install existing server dependencies
         working-directory: cloud/web
-        run: npm install --ignore-scripts --no-audit --no-fund
+        run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Broker, roster compatibility and base-versus-Pro identity
         working-directory: cloud/web
-        run: node --test --test-concurrency=4 tests/opentunnel-mdproxy.test.mjs tests/file-formats.test.mjs tests/wolf-custom-vpn.test.mjs tests/server-vpn-provider.test.mjs tests/server-vpn-catalog.test.mjs tests/ultra-tunnel.test.mjs tests/halcon-r-net.test.mjs tests/namo-vpn.test.mjs tests/genis-vpn.test.mjs tests/zig-tunnel.test.mjs tests/http-conexion.test.mjs tests/mm-tunnel.test.mjs tests/alfaisal-tunnel-plus.test.mjs tests/jyfast-vpn-ultra.test.mjs tests/catnet-vpn.test.mjs tests/enaa-tunnel.test.mjs tests/vip-snipher-pro.test.mjs tests/server-vpn-any-speicers.test.mjs tests/xxpicore-tunnel.test.mjs tests/text-format-catalog.test.mjs tests/speicers-turbo-vpn.test.mjs tests/alsaher-vip.test.mjs tests/fnf-tunnel-bd.test.mjs tests/litron-vpn.test.mjs tests/litron-pro-vpn.test.mjs tests/speigo-vpn.test.mjs tests/tunneltweak-builds.test.mjs
+        run: node --test --test-concurrency=4 tests/catalog-icons.test.mjs tests/thailand-kham.test.mjs tests/opentunnel-mdproxy.test.mjs tests/file-formats.test.mjs tests/wolf-custom-vpn.test.mjs tests/server-vpn-provider.test.mjs tests/server-vpn-catalog.test.mjs tests/ultra-tunnel.test.mjs tests/halcon-r-net.test.mjs tests/namo-vpn.test.mjs tests/genis-vpn.test.mjs tests/zig-tunnel.test.mjs tests/http-conexion.test.mjs tests/mm-tunnel.test.mjs tests/alfaisal-tunnel-plus.test.mjs tests/jyfast-vpn-ultra.test.mjs tests/catnet-vpn.test.mjs tests/enaa-tunnel.test.mjs tests/vip-snipher-pro.test.mjs tests/server-vpn-any-speicers.test.mjs tests/xxpicore-tunnel.test.mjs tests/text-format-catalog.test.mjs tests/speicers-turbo-vpn.test.mjs tests/alsaher-vip.test.mjs tests/fnf-tunnel-bd.test.mjs tests/litron-vpn.test.mjs tests/litron-pro-vpn.test.mjs tests/speigo-vpn.test.mjs tests/tunneltweak-builds.test.mjs
       - name: Build server web application
         working-directory: cloud/web
         run: npm run build

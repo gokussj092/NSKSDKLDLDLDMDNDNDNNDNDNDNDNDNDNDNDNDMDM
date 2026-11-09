@@ -30,3 +30,12 @@ APK/JNI/SO. Estado y pruebas guardados en MANIFEST/generated. Licencias
 transitivas y reutilización Fase7 pendientes de revisión; CI de evidencias
 sigue sin implementarse. APK, datos reales, constantes nativas y respuestas
 privadas no entran en Git; solo la página HTML pública de error es fixture.
+
+
+# Recheck 2026-11-09
+
+# Results — AR PRO VPN
+
+PENDING remote catalog: the original DefUpdateURL GET returns HTTP200,195-byte HTML containing Site Unavailable. The separate app-update endpoint also returned that page. This is not JSON/catalog success. No remote worker method or broker route is activated; only the original PNG card is added disabled. Embedded sample evidence does not certify remote compatibility.
+
+Synthetic golden vectors prove parser/schema/negative handling only. Thailand/KHAM: 7 focused Python tests and 10 focused Node icon/provider tests initially passed; 698/700 full web tests passed,2 intentionally skipped,0 failed. Web production build passed. Final regression/CI results are recorded in docs/cloud/THAILAND_KHAM_ARPRO_2026_11_09.md. No live Android/VPS rollout is claimed.

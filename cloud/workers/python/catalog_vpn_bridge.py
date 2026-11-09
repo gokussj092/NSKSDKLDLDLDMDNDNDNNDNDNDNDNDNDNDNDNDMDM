@@ -7,6 +7,8 @@ import sys
 from pathlib import Path
 
 PROVIDERS = {
+    "thailand-vpn": "decoders.Python.apps.Thailand_VPN.server_catalog_decoder",
+    "kham-vpn": "decoders.Python.apps.KHAM_VPN.server_catalog_decoder",
     "opentunnel-ssh": "decoders.Python.apps.OpenTunnel.server_catalog_decoder",
     "md-proxy-vpn": "decoders.Python.apps.MD_Proxy_VPN.server_catalog_decoder",
     "xxpicore-tunnel": "decoders.Python.apps.XXPICore_Tunnel.server_catalog_decoder",

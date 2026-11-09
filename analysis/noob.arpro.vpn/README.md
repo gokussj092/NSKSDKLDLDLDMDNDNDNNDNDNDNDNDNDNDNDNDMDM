@@ -7,3 +7,6 @@
 
 No se añade un proveedor activo ni se anuncia un catálogo funcional.
 [Expediente y herramientas](2/MANIFEST.json), [reproducción](2/REPRODUCE.md).
+
+
+Recheck 2026-11-09: original source still returns HTTP200 HTML195. PNG card added disabled; see build2 generated/download-proof.json and appended analysis.

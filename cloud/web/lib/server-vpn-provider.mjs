@@ -2,6 +2,7 @@ import {HTTP_CONEXION_AGENT,HTTP_CONEXION_HEADERS,httpConexionRequestUrl} from "
 import {HTTP_CONEXION_FIREBASE_OPTIONS,httpConexionResolver,packHttpConexionCatalog} from "./http-conexion-firebase.mjs";
 import {CATNET_SOURCE,CATNET_PREFLIGHT,CATNET_AGENT,catnetHeaders,catnetPreflight} from "./catnet-protocol.mjs";
 import {resolveTunneltweakCatalog,TUNNELTWEAK_INITIAL_BUILD} from "./tunneltweak-builds.mjs";
+import {THAILAND_FIREBASE_OPTIONS,thailandResolver} from "./thailand-firebase.mjs";
 /**
  * C8 public VPN catalog broker. Fixed approved providers ONLY.
  * DNS is revalidated and every connection is bound to one vetted IPv4.
@@ -56,6 +57,8 @@ const JYFAST_SOURCES=Object.freeze({
 });
 const PAIRED_SOURCES=Object.freeze({"speicers-turbo-vpn":SPEICERS_TURBO_SOURCES,"jyfast-vpn-ultra":JYFAST_SOURCES,"abowaged-vpn":ABOWAGED_SOURCES,"turbomx-vpn":TURBOMX_SOURCES,"superflash-vpn":SUPERFLASH_SOURCES,"onspace-vpn":ONSPACE_SOURCES,"http-socketclay":SOCKETCLAY_SOURCES,"http-wakko":WAKKO_SOURCES,"v2ray-tunnel-plus":V2PLUS_SOURCES});
 const PROVIDERS = Object.freeze({
+  "thailand-vpn": {agent:"okhttp/4.12.0"},
+  "kham-vpn": {url:"https://pukangvpn.xyz/khamvpn/Config.json",agent:"okhttp/4.12.0"},
   // Build118 Volley updater has no custom UA; Android runtime profile.
   "xxpicore-tunnel": {url:"https://raw.githubusercontent.com/XyrussProject/infinite88/refs/heads/main/xxpicoretunnel888.hs",agent:"Dalvik/2.1.0 (Linux; U; Android 14)"},
   "catnet-vpn": {url:CATNET_SOURCE,agent:CATNET_AGENT},
@@ -358,6 +361,30 @@ async function downloadHttpConexion(provider,{forceRefresh=false}={}){
   catch(error){fail(error.message==="HTTP_CONEXION_BUNDLE_TOO_LARGE"?"REMOTE_TOO_LARGE":"REMOTE_RESPONSE_INVALID");}
 }
 
+async function downloadThailand(provider,{forceRefresh=false}={}){
+  const deadline=Date.now()+DEADLINE_MS,options=THAILAND_FIREBASE_OPTIONS;
+  const base=`https://firebaseinstallations.googleapis.com/v1/projects/${options.project_id}/installations`;
+  const remote=`https://firebaseremoteconfig.googleapis.com/v1/projects/${options.app_id.split(":")[1]}/namespaces/firebase:fetch`;
+  const catalogUrl="https://globalvpn.uk/global_admin/api/server?package_name=thailand.vpn.globalvpn";
+  async function request(url,requestOptions={}){
+    const metadata=url===base||url===remote||(url.startsWith(base+"/")&&/^[A-Za-z0-9_-]{22}$/.test(url.slice(base.length+1)));
+    if(!metadata&&url!==catalogUrl)fail("REMOTE_NETWORK_DENIED");
+    const remaining=deadline-Date.now();if(remaining<=0)fail("REMOTE_PROVIDER_UNAVAILABLE");
+    const addresses=await vettedIpv4(new URL(url).hostname);
+    let answer;
+    try{answer=await pinnedRequest(url,addresses[0],metadata?"Dalvik/2.1.0":provider.agent,Math.min(CONNECT_MS,remaining),
+      requestOptions.headers||{},{method:requestOptions.method||"GET",body:requestOptions.body||null,maxBytes:metadata?1024*1024:MAX_BYTES});}
+    catch(error){if(error instanceof VpnProviderError)throw error;fail("REMOTE_PROVIDER_UNAVAILABLE");}
+    if(Object.hasOwn(answer,"redirect"))fail("REMOTE_NETWORK_DENIED");
+    if(!Buffer.isBuffer(answer.data)||(!answer.data.length&&requestOptions.method!=="DELETE")||
+       answer.data.subarray(0,64).toString("utf8").trimStart().startsWith("<"))fail("REMOTE_RESPONSE_INVALID");
+    return answer.data;
+  }
+  let config;
+  try{config=await thailandResolver.get(request,{force:forceRefresh});}catch{fail("REMOTE_PROVIDER_UNAVAILABLE");}
+  return request(config.source);
+}
+
 async function downloadTunneltweak(provider){
   const deadline=Date.now()+DEADLINE_MS;
   try{return await resolveTunneltweakCatalog(async build=>{
@@ -409,6 +436,10 @@ export async function downloadVpnCatalog(id,source=id==="jyfast-vpn-ultra"?"free
   const provider=PROVIDERS[id];
   if(!provider)fail("UNSUPPORTED_FORMAT");
   if(!providerEnabled(id))fail("REMOTE_NOT_CONFIGURED");
+  if(id==="thailand-vpn"){
+    if(source!=="servers")fail("UNSUPPORTED_FORMAT");
+    return downloadThailand(provider,options);
+  }
   if(id==="tunneltweak"){
     if(source!=="servers")fail("UNSUPPORTED_FORMAT");
     return downloadTunneltweak(provider);
@@ -472,7 +503,7 @@ export async function downloadVpnCatalog(id,source=id==="jyfast-vpn-ultra"?"free
         continue;
       }
       if(answer.redirect!==undefined){
-        if(["opentunnel-ssh","md-proxy-vpn","xxpicore-tunnel","speigo-vpn-configs","speigo-vpn-ssh","litron-vpn","litron-pro-vpn","genis-vpn","http-conexion","namo-vpn","fnf-tunnel-bd","alsaher-vip","ha-tunnel-plus","ultra-tunnel","mm-tunnel","zig-tunnel","enaa-tunnel","izph-vpn-pro","vip-snipher-pro","netcol-vpn","wolf-custom-vpn","tunneldoom-vpn","mtm-tunnel-lite","mnr-tunnel-plus","bd-net-vpn","aura-net-vpn","apna-vpn","any-vpn","speicers-pro-vpn","7net-vpn","xhypher-tunnel-pro","focus-vpn-cloud","freedom-vpn","http-internet-infinito","megatunnel","mx-tunnel-pro","rjc-tunnel-pro","rmp-tunnel-pro","http-jireh"].includes(id)||Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
+        if(["kham-vpn","opentunnel-ssh","md-proxy-vpn","xxpicore-tunnel","speigo-vpn-configs","speigo-vpn-ssh","litron-vpn","litron-pro-vpn","genis-vpn","http-conexion","namo-vpn","fnf-tunnel-bd","alsaher-vip","ha-tunnel-plus","ultra-tunnel","mm-tunnel","zig-tunnel","enaa-tunnel","izph-vpn-pro","vip-snipher-pro","netcol-vpn","wolf-custom-vpn","tunneldoom-vpn","mtm-tunnel-lite","mnr-tunnel-plus","bd-net-vpn","aura-net-vpn","apna-vpn","any-vpn","speicers-pro-vpn","7net-vpn","xhypher-tunnel-pro","focus-vpn-cloud","freedom-vpn","http-internet-infinito","megatunnel","mx-tunnel-pro","rjc-tunnel-pro","rmp-tunnel-pro","http-jireh"].includes(id)||Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
         const next=answer.redirect;
         if(typeof next!=="string"||next.length>2048)fail("REMOTE_NETWORK_DENIED");
         target=new URL(next,dest).href;

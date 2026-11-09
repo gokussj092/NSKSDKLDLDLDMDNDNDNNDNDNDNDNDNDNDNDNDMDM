@@ -76,3 +76,18 @@ Se registra lo observado desde este entorno: no se atribuye una caída global al
 proveedor ni se afirma que falte autenticación. No se falsifican UA capturados,
 tokens, sesiones, atestaciones o éxito remoto. Sin JSON remoto verificable no
 se habilita `ar-pro-vpn`, ni se cambia el piso72/66 fichas/256 formatos existente.
+
+
+# Recheck 2026-11-09
+
+# AR PRO VPN — build 2
+
+Static P60/O60 string recovery, libovpn3 JNI_OnLoad registration table and ARM64 native disassembly identify NoobCrypt.b mode5 as AES256-XTS (16-byte tweak, rotated/XOR-derived 64-byte format constant), mode0 as AES256-GCM (12-byte nonce/16-byte tag). The included noobdev.js opens to a 1-server/1-tweak document, metadata GCM authenticates, and DefUpdateURL is recovered. No native APK code was loaded or executed.
+
+PENDING remote catalog: the original DefUpdateURL GET returns HTTP200,195-byte HTML containing Site Unavailable. The separate app-update endpoint also returned that page. This is not JSON/catalog success. No remote worker method or broker route is activated; only the original PNG card is added disabled. Embedded sample evidence does not certify remote compatibility.
+
+Observed identity and hashes: [identity](generated/identity.json). Full real APK/catalog bytes and decoded credentials remain outside Git. All own tools are preserved in [analysis/_intake/thailand-kham-arpro-2026-11-09/tools](../../_intake/thailand-kham-arpro-2026-11-09/tools); see static source hashes and original icon pixel comparison under generated/.
+
+The manifest certificate is not complete APK signature verification. Whole-APK JADX errors are recorded; no claim of a clean full decompilation. Initial unrestricted parallel JADX processes were killed for memory; bounded sequential runs and targeted classes replaced them. Thailand DEX string inventory first hit an unpaired UTF16 surrogate; the script now writes escaped surrogates. AR PRO initial XTS hypothesis omitted native per-byte rotate-right2 and failed UTF8; the corrected static transcription opens the embedded document. These observations are not simulated network success.
+
+Only original raster assets were used, converted to PNG with equal RGBA pixels. Automatic server startup/build conversion and bounded runtime fallback use pinned sharp; all icon responses and content hashes refer to actual PNG bytes. Existing MD PROXY PNG is now committed, replacing its Docker-only one-off conversion.

@@ -1,3 +1,9 @@
+# Thailand / KHAM / AR PRO — 2026-11-09
+
+Thailand373 servers and KHAM17 servers/19 networks: real complete JSON verified with independent references/CLI/worker. Dynamic Firebase source, worker/gateway/panel and original PNGs connected. AR PRO original source still returns HTTP200 HTML195; card stays disabled and historical evidence is preserved. Shared automatic PNG conversion replaces MD PROXY's Docker-only special case. Catalog floor81; the existing roster synchronizer advances the effective version automatically and preserves higher configured versions/switches. No Android build/merge/deploy. Actual Node transport on VPS remains pending. [Full handoff](THAILAND_KHAM_ARPRO_2026_11_09.md).
+
+---
+
 # HTTP Conexión129 — actualización automática Firebase integrada
 
 2026-11-04. El CLI y el broker Cloud obtienen ockla_url/gretta_pass juntos. Caché1h por proceso, singleflight Node y un reintento forzado al fallar descarga/descifrado. Tokens FIS solo en memoria y DELETE temporal best effort (observado200). Opciones públicas del APK inline, sin tokens/configuración manual ni Admin SDK.

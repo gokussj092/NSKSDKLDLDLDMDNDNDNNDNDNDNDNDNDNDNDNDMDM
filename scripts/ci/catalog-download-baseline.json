@@ -351,6 +351,16 @@
       "payloadKind": "TEXT",
       "bodySha256": "bfdc98492945d04fae4334c24d7938cf264a2207957f4032c564629bd00a77ce",
       "shapeSha256": "e4ba216b53e675d3ce45a8584de79ecc013718ef83ebd53f29d47d97af594386"
+    },
+    "thailand-vpn/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "1f822d51f6a891502734ad68644ff7f14c96f58fd59754bad6b2a17c83b4177e",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "kham-vpn/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "7ef4bd5b5c17a39a1d39049f71248007283d88a1559aa08a8dca71e3e75b6761",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
     }
   }
 }

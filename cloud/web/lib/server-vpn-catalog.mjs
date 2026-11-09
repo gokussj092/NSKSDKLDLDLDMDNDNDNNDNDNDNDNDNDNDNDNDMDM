@@ -1,12 +1,11 @@
 /** Public catalog presentation only: no provider credentials or vendor endpoints. */
-import {readFileSync} from "node:fs";
 import {join} from "node:path";
-import {createHash} from "node:crypto";
+import {readCatalogIcon} from "./catalog-icons.mjs";
 import {publicFormats,FORMAT_DETECTION} from "./file-format-catalog.mjs";
 import {publicTextFormats,publicOnlineReferenceFormats} from "./text-format-catalog.mjs";
 import {providerEnabled} from "./server-vpn-provider.mjs";
 
-export const CATALOG_VERSION = 80; // MD PROXY icon converted to PNG for Android and catalog-chunks compatibility.
+export const CATALOG_VERSION = 81; // All icon transports normalize vendor rasters to PNG.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -24,6 +23,10 @@ export function activeCatalogVersion(env=process.env) {
 }
 
 const ITEMS = Object.freeze([
+  // Original updater currently returns HTML "Site Unavailable", not a catalog.
+  {id:"ar-pro-vpn",name:"AR PRO VPN",icon:"ar-pro-vpn.png",remote:null},
+  {id:"thailand-vpn",name:"Thailand VPN",icon:"thailand-vpn.png",remote:"thailand-vpn"},
+  {id:"kham-vpn",name:"KHAM VPN",icon:"kham-vpn.png",remote:"kham-vpn"},
   {id:"opentunnel-ssh",name:"OpenTunnel · Servidores SSH",icon:"opentunnel.png",remote:"opentunnel-ssh"},
   {id:"md-proxy-vpn",name:"MD PROXY VPN",icon:"md-proxy-vpn.png",remote:"md-proxy-vpn"},
   {id:"xxpicore-tunnel",name:"XXPICore Tunnel",icon:"xxpicore-tunnel.png",remote:"xxpicore-tunnel"},
@@ -119,13 +122,7 @@ const base = () => join(process.cwd(),"public","server-vpn-icons");
 export function iconFor(id) {
   const item = ITEMS.find(x => x.id === id);
   if (!item) return null;
-  const bytes = readFileSync(join(base(),item.icon));
-  const mimeType=item.icon.endsWith(".webp")?"image/webp":"image/png";
-  const valid=mimeType==="image/png" ? bytes.subarray(0,8).toString("hex")==="89504e470d0a1a0a" :
-    bytes.toString("ascii",0,4)==="RIFF" && bytes.toString("ascii",8,12)==="WEBP" && bytes.readUInt32LE(4)===bytes.length-8;
-  if (bytes.length<32 || !valid)
-    throw Error("INVALID_ORIGINAL_ICON");
-  return {id:item.id, bytes, mimeType, sha256:createHash("sha256").update(bytes).digest("hex")};
+  return {id:item.id,...readCatalogIcon(base(),item.icon)};
 }
 export function catalog({availability=null,methodStates=null,version=activeCatalogVersion()}={}) {
   return {

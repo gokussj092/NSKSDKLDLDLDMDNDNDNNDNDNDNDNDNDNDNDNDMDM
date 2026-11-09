@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "package_name": "com.khamvpn.net",
+  "app_name": "KHAM VPN",
+  "version_name": "24",
+  "version_code": 24,
+  "observed_at": "2026-11-09",
+  "source_category": "public store listing and APKPure distribution mirror/static analysis",
+  "authorization_note": "Owner requested public-catalog interoperability on feat/nuevas-integraciones. Read-only original requests; no APK execution/redistribution, authentication bypass or VPN account generation. Mirror signer certificate extracted; complete publisher signature/provenance not established.",
+  "status": "PARTIAL",
+  "targets": [
+    {
+      "kind": "catalog",
+      "status": "VERIFIED_REAL",
+      "scope": "Real HTTP200/60588 bytes, version144, 17 servers/19 networks. Independent Java envelope oracle plus 264 Java-decoded fields equal the entire CLI file/stdin and isolated worker documents. Node actual transport failed REMOTE_NETWORK_DENIED here; explicitly simulated HTTP replay with real bytes/worker result passed."
+    }
+  ],
+  "inputs": {
+    "package": "com.khamvpn.net",
+    "versionName": "24",
+    "versionCode": 24,
+    "apkBytes": 6905767,
+    "apkSha256": "a9834982efb6d635bd8154c729a407debac50de7062077f98c5e45ef916469b9",
+    "distributionBytes": 32001938,
+    "distributionSha256": "eb39a9945879746809c4b4d807dbd0189985359cc2cd87041379983a73a87a3e",
+    "certificateSha256": [
+      "34eab6d53e94fd963f12c73f19f156cad48cf7c53cb6b65a40ea65aa575c476d"
+    ],
+    "cryptographicApkSignatureVerified": false,
+    "apkCodeExecuted": false
+  },
+  "tooling": [
+    {
+      "name": "Shared owned intake/static/probe/oracle tools",
+      "path": "analysis/_intake/thailand-kham-arpro-2026-11-09/tools"
+    },
+    {
+      "name": "Build recipe",
+      "path": "analysis/com.khamvpn.net/24/tools/reproduce.py"
+    },
+    {
+      "name": "Independent Java XXTEA oracle",
+      "path": "analysis/com.appxrayservice.namovpn/35/tools/CatalogOracle.java"
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "Python",
+      "version": "3.12.14",
+      "source": "https://python.org/",
+      "license": "PSF-2.0",
+      "lockfile": "analysis/com.khamvpn.net/24/dependencies.lock.json"
+    },
+    {
+      "name": "OpenJDK",
+      "version": "21.0.13",
+      "source": "https://openjdk.org/",
+      "license": "GPL-2.0-with-Classpath-exception",
+      "lockfile": "analysis/com.khamvpn.net/24/dependencies.lock.json"
+    },
+    {
+      "name": "Node.js",
+      "version": "24.22.1 local /22 CI",
+      "source": "https://nodejs.org/",
+      "license": "MIT",
+      "lockfile": "analysis/com.khamvpn.net/24/dependencies.lock.json"
+    },
+    {
+      "name": "JADX",
+      "version": "1.5.6",
+      "source": "https://github.com/skylot/jadx",
+      "license": "Apache-2.0",
+      "lockfile": "analysis/com.khamvpn.net/24/dependencies.lock.json"
+    },
+    {
+      "name": "sharp",
+      "version": "0.35.5",
+      "source": "https://sharp.pixelplumbing.com/",
+      "license": "Apache-2.0",
+      "lockfile": "analysis/com.khamvpn.net/24/dependencies.lock.json"
+    },
+    {
+      "name": "androguard",
+      "version": "4.1.3",
+      "source": "https://github.com/androguard/androguard",
+      "license": "Apache-2.0",
+      "lockfile": "analysis/com.khamvpn.net/24/dependencies.lock.json"
+    },
+    {
+      "name": "capstone",
+      "version": "5.0.6",
+      "source": "https://www.capstone-engine.org/",
+      "license": "BSD-3-Clause",
+      "lockfile": "analysis/com.khamvpn.net/24/dependencies.lock.json"
+    },
+    {
+      "name": "cryptography",
+      "version": "50.0.2",
+      "source": "https://cryptography.io/",
+      "license": "Apache-2.0 OR BSD-3-Clause",
+      "lockfile": "analysis/com.khamvpn.net/24/dependencies.lock.json"
+    },
+    {
+      "name": "pyelftools",
+      "version": "0.32",
+      "source": "https://github.com/eliben/pyelftools",
+      "license": "Public-Domain",
+      "lockfile": "analysis/com.khamvpn.net/24/dependencies.lock.json"
+    }
+  ],
+  "code_paths": [
+    "cloud/web/lib/server-vpn-catalog.mjs",
+    "cloud/web/public/server-vpn-icons/kham-vpn.png",
+    "cloud/web/lib/server-vpn-provider.mjs",
+    "cloud/web/lib/c12-provider-controls.mjs",
+    "cloud/web/lib/c3-gateway.mjs",
+    "cloud/workers/python/engine.py",
+    "cloud/workers/python/catalog_vpn_bridge.py",
+    "decoders/Python/apps/KHAM_VPN/codec.py",
+    "decoders/Python/apps/KHAM_VPN/server_catalog_decoder.py",
+    "tests/test_thailand_kham_vpn.py",
+    "cloud/web/tests/thailand-kham.test.mjs",
+    "scripts/ci/catalog-download-baseline.json",
+    "cloud/web/lib/catalog-icons.mjs",
+    "cloud/web/lib/catalog-icon-converter.mjs",
+    "cloud/web/scripts/convert-catalog-icon.mjs",
+    "cloud/web/scripts/prepare-catalog-icons.mjs",
+    "cloud/web/Dockerfile",
+    "cloud/web/package.json",
+    "cloud/web/package-lock.json",
+    "cloud/web/tests/catalog-icons.test.mjs"
+  ],
+  "evidence_refs": [
+    "analysis/com.khamvpn.net/24/generated",
+    "analysis/com.khamvpn.net/24/tests/test_method.py"
+  ],
+  "limitations": [
+    "No Android build, phone import or live VPN connection was tested.",
+    "Actual Node/VPS network transport remains to verify; real Python requests and explicitly simulated Node replay are separate.",
+    "No main merge, VPS deployment or automatic publication.",
+    "No new file/text format or Unlocked export inferred.",
+    "Research dependencies remain subject to human review before automatic execution."
+  ],
+  "network_requirements": [
+    "Original allowlisted HTTPS hosts; pinned TLS/DNS broker rejects private addresses and redirects."
+  ],
+  "manual_steps": [
+    "Review all Actions/evidence and validate Node transport on the intended VPS before rollout.",
+    "The existing roster-fingerprint synchronizer advances the effective catalog version on the mounted control volume; preserve configured higher versions and provider switches."
+  ],
+  "unresolved_questions": [
+    "Production Node transport on VPS pending."
+  ]
+}
