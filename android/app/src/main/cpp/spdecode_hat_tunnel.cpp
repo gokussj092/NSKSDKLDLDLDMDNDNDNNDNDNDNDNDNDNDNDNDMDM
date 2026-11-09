@@ -57,16 +57,20 @@ std::string xorField(const std::string& field){
 }
 void addV5Fields(json& document){
     auto it=document.find("profilev5");
-    if(it==document.end()||!it->is_object())return;
-    json expanded=json::object();
+    if(it==document.end())return;
+    check(it->is_object(),"HAT_UNSUPPORTED_VERSION");
+    // Match the historical Python decoder: replace the encrypted values in
+    // profilev5 itself. Empty fields (including payload) remain empty. Never
+    // leave the encrypted originals as the primary visible result.
     for(const char* name:{"connection_mode","custom_payload","custom_sni","custom_host"}){
         auto value=it->find(name);
-        if(value!=it->end()&&value->is_string()&&!value->get<std::string>().empty()){
-            try {expanded[name]=xorField(value->get<std::string>());}
-            catch(const HatError&){throw HatError("HAT_PROFILE_V5_UNSUPPORTED");}
-        }
+        if(value==it->end())continue;
+        check(value->is_string(),"HAT_PROFILE_V5_UNSUPPORTED");
+        const auto cipher=value->get<std::string>();
+        if(cipher.empty())continue;
+        try {*value=xorField(cipher);}
+        catch(const HatError&){throw HatError("HAT_PROFILE_V5_UNSUPPORTED");}
     }
-    if(!expanded.empty())document["decodedProfileV5"]=std::move(expanded);
 }
 }
 std::string decodeHatTunnel(const Bytes& source){
