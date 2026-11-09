@@ -26,6 +26,10 @@ on:
       - tests/test_offline_npv_native_parity.py
       - android/app/src/main/cpp/spdecode_http_injector.cpp
       - android/app/src/main/cpp/spdecode_http_injector.h
+      - android/app/src/main/cpp/spdecode_dark_tunnel.cpp
+      - android/app/src/main/cpp/spdecode_dark_tunnel.h
+      - tests/native_dark_tunnel_cli.cpp
+      - tests/test_offline_dark_native_parity.py
       - tests/native_http_injector_cli.cpp
       - tests/test_offline_ehi_native_parity.py
       - tests/native_http_custom_cli.cpp
@@ -124,8 +128,34 @@ jobs:
           python3 -m venv /tmp/spdecode-npv-env
           /tmp/spdecode-npv-env/bin/pip install --disable-pip-version-check pycryptodome==3.23.0 argon2-cffi==25.1.0 msgpack==1.1.1
           /tmp/spdecode-npv-env/bin/python tests/test_offline_npv_native_parity.py /tmp/spdecode-npv-native
+  dark-cpp-parity:
+    name: Native Dark Tunnel AES-CFB and MessagePack parity
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install Dark Tunnel C++ test dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends g++ libmbedtls-dev nlohmann-json3-dev python3-venv
+      - name: Compile Dark Tunnel isolated native decoder
+        run: |
+          set -euo pipefail
+          g++ -O2 -std=c++17 -Wall -Wextra -Werror \
+            tests/native_dark_tunnel_cli.cpp \
+            android/app/src/main/cpp/spdecode_dark_tunnel.cpp \
+            -lmbedcrypto -o /tmp/spdecode-dark-native
+      - name: Verify host-independent Dark Tunnel fixtures
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/spdecode-dark-test
+          /tmp/spdecode-dark-test/bin/pip install --disable-pip-version-check pycryptodome==3.23.0 msgpack==1.1.1
+          /tmp/spdecode-dark-test/bin/python tests/test_offline_dark_native_parity.py /tmp/spdecode-dark-native
+
   build:
-    needs: [hc-cpp-parity, ehi-cpp-parity, npv-cpp-parity]
+    needs: [hc-cpp-parity, ehi-cpp-parity, npv-cpp-parity, dark-cpp-parity]
     runs-on: ubuntu-latest
     timeout-minutes: 70
     env:
