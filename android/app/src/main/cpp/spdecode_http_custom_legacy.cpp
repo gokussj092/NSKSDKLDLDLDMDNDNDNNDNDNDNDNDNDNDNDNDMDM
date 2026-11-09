@@ -263,7 +263,6 @@ std::string unbraille(const std::string& raw){
     // Python returns the original encrypted field when UTF-8 decoding fails.
     try{
         const auto decoded=str(output);
-        std::vector<unsigned char> unused;
         // nlohmann JSON strings are strict UTF-8 during serialization.
         (void)json(decoded).dump();
         return decoded;
