@@ -331,6 +331,16 @@
       "payloadKind": "BASE64_TEXT",
       "bodySha256": "22068da7fd8f39184df5978209826104f7119c53f5930a2cd944024f34009c35",
       "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "speigo-vpn-configs/servers": {
+      "payloadKind": "BINARY",
+      "bodySha256": "caa4c35cc43dff97ea87d8a9abb7686412736aee7d239134ed833aa8426d7396",
+      "shapeSha256": "4c77b56b7cf3077c725c2f433eb76156bd231c23b56805f5a06fc06b87450a43"
+    },
+    "speigo-vpn-ssh/servers": {
+      "payloadKind": "BINARY",
+      "bodySha256": "3ed9b3d9009f472005170dddd329a76ebcdbf610b624b5ee99f552ef7d84d844",
+      "shapeSha256": "4c77b56b7cf3077c725c2f433eb76156bd231c23b56805f5a06fc06b87450a43"
     }
   }
 }

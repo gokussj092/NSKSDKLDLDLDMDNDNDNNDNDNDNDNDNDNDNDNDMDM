@@ -1,0 +1,17 @@
+{
+  "inputBytes": 408938,
+  "inputSha256": "caa4c35cc43dff97ea87d8a9abb7686412736aee7d239134ed833aa8426d7396",
+  "purpose": 1,
+  "section": "Servers",
+  "version": "29",
+  "records": 266,
+  "innerFieldsCompared": 2872,
+  "wholeIndependentJcaSodiumParity": true,
+  "signatureAndAllTagsVerified": true,
+  "clearJsonSha256": "2e1a71a1d991146a3b3ba5dc1b4bf329d5e1024440493155e1ff41b0b2a20973",
+  "rawOutputBytes": 215803,
+  "apkCodeExecuted": false,
+  "wholeWorkerParity": true,
+  "workerRejectsOppositeSection": true,
+  "wholeCliOutsideCheckoutParity": true
+}

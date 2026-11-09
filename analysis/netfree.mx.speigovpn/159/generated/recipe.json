@@ -1,0 +1,65 @@
+{
+  "serverFieldNamesFoundInApkResources": [
+    "2kDKELRmSE143VdcX3FPzw==",
+    "66P9ZUEM1ju4WGhv856BSg==",
+    "ACqWMY4zuZWzSEs8cZMXIw==",
+    "B5jcTSGuJUFbTtH5O1IaBg==",
+    "BWTPMwR0iRu1N9twHCpbAg==",
+    "EtNSBhechjWxm2t50NyB9Q==",
+    "Fo3TT4oONvv69IQIMg1aLg==",
+    "ITkWvEHp29BmMaLMEGUFcw==",
+    "MkRXl4D9vpREVCJ0w4qrgg==",
+    "PFFSWRJKZmOcNLTZxFwgjQ==",
+    "QSln2zKCBJvqH9qV4M0ifg==",
+    "SbDP19AbQur0YtkkyRlVMA==",
+    "U7V8DoP4cYkXJjCnpqW6nQ==",
+    "UxdyIntdYykCdV76crKnwg==",
+    "W4CbS1nMWo6Y2noeUFHmXQ==",
+    "aH2nzD4eDLxPSxIAlVivdg==",
+    "asmRO4zXsRjhDYX42dbNuw==",
+    "b3MPypEFR83rzFKUa4UbCw==",
+    "b6stZNVaFUjLCw88dn03Ng==",
+    "iW1aO5DgThVAeo23xTsXSw==",
+    "l7MIgkbuXMmGaaQGd54F2w==",
+    "mtw364P3ZslP2CZYuHTCHQ==",
+    "oAqgFKE3WywLRvSvKffLOA==",
+    "p0PgL3l0d89mnssz7ImPJA==",
+    "p9ZPlMv9V7gDszRoUaNaJw==",
+    "tmSbWiCK1hvytJ9f3gflkQ==",
+    "vXfVafVdyaCRTDj6uBT6lg=="
+  ],
+  "package": "netfree.mx.speigovpn",
+  "build": 159,
+  "splitSources": true,
+  "purposes": {
+    "configs": 1,
+    "ssh": 2
+  },
+  "securityRelease": 112,
+  "signaturePublicKey": "4733a5521e426f82a124adc047e68e486579da747944cfe8d80081b3e2fc92ce",
+  "staticSourceSha256": {
+    "com/google/webview/Configs.java": "dbcac7efc04ff581ac62e6889132519fbb667cc0d65bc9f20592fa4e9261d1e6",
+    "s8q/GSDdW6o8kgK7vQX.java": "c9ae4de18fd0449a3da5acc6187eb97937798c6cb94f4d032a0b9321883cee14",
+    "s8q/qZkq7BhAGyLyNBl.java": "d062e276b716206460fbb38e805164e1447f99ed2dcb0d0bdf5734cba2c7873b",
+    "x/h7/q.java": "bcb498d74a2a3a6ea0a55bcb4ac4d5cb07ba41358e73a4feb6249aeba4bf6e37"
+  },
+  "files": {
+    "assets/flags/config.png": {
+      "bytes": 325959,
+      "sha256": "3c91e512301715213e7318f620f05830dd338a08679e2b64d43ff4bbf222d819"
+    },
+    "assets/flags/usr.png": {
+      "bytes": 1685,
+      "sha256": "1e34c4439cbf3526b8396a42af848a66af014f251d3e935518758d97ffff05b6"
+    },
+    "res/mipmap-xxxhdpi/ic_launcher.png": {
+      "bytes": 21564,
+      "sha256": "09acd58c6af0d0892530574cd33e3d417ed1743bea741337de33f56b87dc6581"
+    },
+    "lib/armeabi-v7a/libspeigoshield.so": {
+      "bytes": 144228,
+      "sha256": "d36f50a2dcd3a6821d041d188ad492e9c6e681913508d05c3bfb10601603f700"
+    }
+  },
+  "apkCodeExecuted": false
+}

@@ -1,0 +1,7 @@
+# Revisión de consumidores — SpeiGo159
+
+Se registran dos entradas independientes: speigo-vpn-configs y speigo-vpn-ssh. El mínimo de versión pública avanza78 y el directorio alcanza71 entradas; una versión superior configurada por el operador se preserva. Cada fuente tiene su ID, validador de propósito, estado de mantenimiento y activación, sin emparejar ni mezclar los JSON. No se cambia el método de este expediente consumidor.
+
+Se revisaron los contratos c12-provider-controls, server-vpn-catalog, server-vpn-provider, bridge y engine, y la cadena de dependencias que identifica P06. Las adiciones a allowlists son explícitas; mantienen TLS/DNS/IP pública, límites y denegación de redirecciones. No se cambian fuentes, claves o solicitudes de otros proveedores. Los consumidores existentes conservan sus APIs y controles. SuperFlash/HTTP_FenixVPN aportan solo primitivas e inventarios sin modificar sus contratos o materiales.
+
+Validación conjunta local:112 pruebas Python,199 Node,20 del arnés y build web correctos. Las pruebas de red simulada no acreditan disponibilidad externa de este método. La prueba real nueva corresponde solo a SpeiGo:266 configuraciones/2872 campos y1 entrada SSH/6 campos, además de ambos assets, con JSON entero JCA/libsodium/Python/worker/CLI. Evidencia en analysis/netfree.mx.speigovpn/159/. P06 mantiene los consumidores sin resolución estática como pendientes de revisión, nunca aprobados automáticamente. No se certifica una nueva versión de este proveedor ni se despliega VPS/merge main.

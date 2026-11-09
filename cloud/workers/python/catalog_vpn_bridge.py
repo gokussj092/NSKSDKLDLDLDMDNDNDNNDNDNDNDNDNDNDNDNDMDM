@@ -11,6 +11,8 @@ PROVIDERS = {
     "catnet-vpn": "decoders.Python.apps.CATNET_VPN.server_catalog_decoder",
     "litron-vpn": "decoders.Python.apps.Litron_VPN.server_catalog_decoder",
     "litron-pro-vpn": "decoders.Python.apps.Litron_Pro_VPN.server_catalog_decoder",
+    "speigo-vpn-configs": "decoders.Python.apps.SpeiGo_VPN.server_catalog_decoder",
+    "speigo-vpn-ssh": "decoders.Python.apps.SpeiGo_VPN.ssh_catalog_decoder",
     "genis-vpn": "decoders.Python.apps.Genis_VPN.server_catalog_decoder",
     "speicers-turbo-vpn": "decoders.Python.apps.Speicers_Turbo_VPN.server_catalog_decoder",
     "http-conexion": "decoders.Python.apps.HTTP_Conexion.server_catalog_decoder",

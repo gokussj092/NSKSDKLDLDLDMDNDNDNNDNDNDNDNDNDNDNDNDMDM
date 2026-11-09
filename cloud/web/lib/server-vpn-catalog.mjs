@@ -6,7 +6,7 @@ import {publicFormats,FORMAT_DETECTION} from "./file-format-catalog.mjs";
 import {publicTextFormats,publicOnlineReferenceFormats} from "./text-format-catalog.mjs";
 import {providerEnabled} from "./server-vpn-provider.mjs";
 
-export const CATALOG_VERSION = 77; // Separate LITRON Pro build11 catalog and original icon.
+export const CATALOG_VERSION = 78; // SpeiGo build159: separate configurations and SSH/users entries.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -28,6 +28,8 @@ const ITEMS = Object.freeze([
   {id:"catnet-vpn",name:"CATNET VPN",icon:"catnet-vpn.png",remote:"catnet-vpn"},
   {id:"litron-vpn",name:"LITRON VPN",icon:"litron-vpn.png",remote:"litron-vpn"},
   {id:"litron-pro-vpn",name:"Litron Pro VPN",icon:"litron-pro-vpn.png",remote:"litron-pro-vpn"},
+  {id:"speigo-vpn-configs",name:"SpeiGo VPN · Configuraciones",icon:"speigo-vpn.png",remote:"speigo-vpn-configs"},
+  {id:"speigo-vpn-ssh",name:"SpeiGo VPN · Usuarios SSH",icon:"speigo-vpn.png",remote:"speigo-vpn-ssh"},
   {id:"genis-vpn",name:"Genis VPN",icon:"genis-vpn.png",remote:"genis-vpn"},
   {id:"speicers-turbo-vpn",name:"Speicers`Turbo VPN",icon:"speicers-turbo-vpn.png",remote:"speicers-turbo-vpn"},
   {id:"http-conexion",name:"HTTP Conexión",icon:"http-conexion.png",remote:"http-conexion"},

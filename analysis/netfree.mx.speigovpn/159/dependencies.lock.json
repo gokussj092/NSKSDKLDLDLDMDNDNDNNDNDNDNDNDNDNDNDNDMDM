@@ -1,0 +1,500 @@
+{
+  "schema_version": 1,
+  "python": "3.12.14",
+  "python_distributions": [
+    {
+      "name": "alembic",
+      "version": "1.20.1",
+      "source": "https://pypi.org/project/alembic/1.20.1/",
+      "license": "MIT",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "androguard",
+      "version": "4.1.3",
+      "source": "https://github.com/androguard/androguard",
+      "license": "Apache-2.0",
+      "role": "direct"
+    },
+    {
+      "name": "apkInspector",
+      "version": "1.3.7",
+      "source": "https://pypi.org/project/apkInspector/1.3.7/",
+      "license": "UNKNOWN_NEEDS_REVIEW",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "argon2-cffi",
+      "version": "25.1.0",
+      "source": "https://github.com/hynek/argon2-cffi",
+      "license": "MIT",
+      "role": "direct"
+    },
+    {
+      "name": "argon2-cffi-bindings",
+      "version": "26.1.0",
+      "source": "https://github.com/hynek/argon2-cffi-bindings",
+      "license": "MIT",
+      "role": "direct"
+    },
+    {
+      "name": "asn1crypto",
+      "version": "1.5.1",
+      "source": "https://pypi.org/project/asn1crypto/1.5.1/",
+      "license": "UNKNOWN_NEEDS_REVIEW",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "asttokens",
+      "version": "3.0.2",
+      "source": "https://pypi.org/project/asttokens/3.0.2/",
+      "license": "UNKNOWN_NEEDS_REVIEW",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "capstone",
+      "version": "5.0.6",
+      "source": "https://www.capstone-engine.org/",
+      "license": "BSD-3-Clause",
+      "role": "direct static ARMv7/ELF inspection"
+    },
+    {
+      "name": "cffi",
+      "version": "2.1.1",
+      "source": "https://pypi.org/project/cffi/2.1.1/",
+      "license": "MIT-0",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "click",
+      "version": "8.5.1",
+      "source": "https://pypi.org/project/click/8.5.1/",
+      "license": "BSD-3-Clause",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "colorama",
+      "version": "0.4.6",
+      "source": "https://pypi.org/project/colorama/0.4.6/",
+      "license": "UNKNOWN_NEEDS_REVIEW",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "contourpy",
+      "version": "1.4.0",
+      "source": "https://pypi.org/project/contourpy/1.4.0/",
+      "license": "BSD-3-Clause",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "cryptography",
+      "version": "50.0.2",
+      "source": "https://pypi.org/project/cryptography/50.0.2/",
+      "license": "Apache-2.0 OR BSD-3-Clause",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "cycler",
+      "version": "0.12.1",
+      "source": "https://pypi.org/project/cycler/0.12.1/",
+      "license": "UNKNOWN_NEEDS_REVIEW",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "dataset",
+      "version": "2.0.0",
+      "source": "https://pypi.org/project/dataset/2.0.0/",
+      "license": "UNKNOWN_NEEDS_REVIEW",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "executing",
+      "version": "2.3.0",
+      "source": "https://pypi.org/project/executing/2.3.0/",
+      "license": "UNKNOWN_NEEDS_REVIEW",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "fonttools",
+      "version": "4.68.0",
+      "source": "https://pypi.org/project/fonttools/4.68.0/",
+      "license": "UNKNOWN_NEEDS_REVIEW",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "frida",
+      "version": "17.26.2",
+      "source": "https://pypi.org/project/frida/17.26.2/",
+      "license": "UNKNOWN_NEEDS_REVIEW",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "ipython",
+      "version": "9.18.1",
+      "source": "https://pypi.org/project/ipython/9.18.1/",
+      "license": "BSD-3-Clause",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "ipython_pygments_lexers",
+      "version": "1.1.1",
+      "source": "https://pypi.org/project/ipython_pygments_lexers/1.1.1/",
+      "license": "UNKNOWN_NEEDS_REVIEW",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "jedi",
+      "version": "0.20.1",
+      "source": "https://pypi.org/project/jedi/0.20.1/",
+      "license": "UNKNOWN_NEEDS_REVIEW",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "kiwisolver",
+      "version": "1.5.1",
+      "source": "https://pypi.org/project/kiwisolver/1.5.1/",
+      "license": "UNKNOWN_NEEDS_REVIEW",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "loguru",
+      "version": "0.7.3",
+      "source": "https://pypi.org/project/loguru/0.7.3/",
+      "license": "UNKNOWN_NEEDS_REVIEW",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "lxml",
+      "version": "6.1.3",
+      "source": "https://pypi.org/project/lxml/6.1.3/",
+      "license": "UNKNOWN_NEEDS_REVIEW",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "Mako",
+      "version": "1.4.3",
+      "source": "https://pypi.org/project/Mako/1.4.3/",
+      "license": "MIT",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "MarkupSafe",
+      "version": "3.0.4",
+      "source": "https://pypi.org/project/MarkupSafe/3.0.4/",
+      "license": "BSD-3-Clause",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "matplotlib",
+      "version": "3.11.2",
+      "source": "https://pypi.org/project/matplotlib/3.11.2/",
+      "license": "UNKNOWN_NEEDS_REVIEW",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "matplotlib-inline",
+      "version": "0.2.2",
+      "source": "https://pypi.org/project/matplotlib-inline/0.2.2/",
+      "license": "BSD-3-Clause",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "mutf8",
+      "version": "1.1.0",
+      "source": "https://pypi.org/project/mutf8/1.1.0/",
+      "license": "MIT",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "networkx",
+      "version": "3.7",
+      "source": "https://pypi.org/project/networkx/3.7/",
+      "license": "BSD-3-Clause",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "numpy",
+      "version": "2.5.4",
+      "source": "https://pypi.org/project/numpy/2.5.4/",
+      "license": "BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "packaging",
+      "version": "26.3",
+      "source": "https://pypi.org/project/packaging/26.3/",
+      "license": "Apache-2.0 OR BSD-2-Clause",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "parso",
+      "version": "0.8.7",
+      "source": "https://pypi.org/project/parso/0.8.7/",
+      "license": "UNKNOWN_NEEDS_REVIEW",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "pexpect",
+      "version": "4.9.0",
+      "source": "https://pypi.org/project/pexpect/4.9.0/",
+      "license": "UNKNOWN_NEEDS_REVIEW",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "pillow",
+      "version": "13.0.0",
+      "source": "https://pypi.org/project/pillow/13.0.0/",
+      "license": "MIT-CMU",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "pip",
+      "version": "25.0.1",
+      "source": "https://pypi.org/project/pip/25.0.1/",
+      "license": "UNKNOWN_NEEDS_REVIEW",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "prompt_toolkit",
+      "version": "3.0.53",
+      "source": "https://pypi.org/project/prompt_toolkit/3.0.53/",
+      "license": "UNKNOWN_NEEDS_REVIEW",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "psutil",
+      "version": "7.2.2",
+      "source": "https://pypi.org/project/psutil/7.2.2/",
+      "license": "UNKNOWN_NEEDS_REVIEW",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "ptyprocess",
+      "version": "0.7.0",
+      "source": "https://pypi.org/project/ptyprocess/0.7.0/",
+      "license": "UNKNOWN_NEEDS_REVIEW",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "pure_eval",
+      "version": "0.2.4",
+      "source": "https://pypi.org/project/pure_eval/0.2.4/",
+      "license": "UNKNOWN_NEEDS_REVIEW",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "pycparser",
+      "version": "3.12",
+      "source": "https://pypi.org/project/pycparser/3.12/",
+      "license": "BSD-3-Clause",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "pycryptodome",
+      "version": "3.23.0",
+      "source": "https://www.pycryptodome.org/",
+      "license": "BSD-2-Clause / Public-Domain components",
+      "role": "direct"
+    },
+    {
+      "name": "pydot",
+      "version": "4.0.1",
+      "source": "https://pypi.org/project/pydot/4.0.1/",
+      "license": "MIT",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "pyelftools",
+      "version": "0.32",
+      "source": "https://github.com/eliben/pyelftools",
+      "license": "Public-Domain",
+      "role": "direct static ARMv7/ELF inspection"
+    },
+    {
+      "name": "Pygments",
+      "version": "2.21.0",
+      "source": "https://pypi.org/project/Pygments/2.21.0/",
+      "license": "BSD-2-Clause",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "pyparsing",
+      "version": "3.3.3",
+      "source": "https://pypi.org/project/pyparsing/3.3.3/",
+      "license": "MIT",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "python-dateutil",
+      "version": "4.0.0",
+      "source": "https://pypi.org/project/python-dateutil/4.0.0/",
+      "license": "BSD-3-Clause",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "PyYAML",
+      "version": "6.0.3",
+      "source": "https://pypi.org/project/PyYAML/6.0.3/",
+      "license": "UNKNOWN_NEEDS_REVIEW",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "SQLAlchemy",
+      "version": "2.1.8",
+      "source": "https://pypi.org/project/SQLAlchemy/2.1.8/",
+      "license": "MIT",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "stack-data",
+      "version": "0.6.3",
+      "source": "https://pypi.org/project/stack-data/0.6.3/",
+      "license": "UNKNOWN_NEEDS_REVIEW",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "traitlets",
+      "version": "5.16.1",
+      "source": "https://pypi.org/project/traitlets/5.16.1/",
+      "license": "UNKNOWN_NEEDS_REVIEW",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "typing_extensions",
+      "version": "4.16.0",
+      "source": "https://pypi.org/project/typing_extensions/4.16.0/",
+      "license": "PSF-2.0",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "tzdata",
+      "version": "2026.6",
+      "source": "https://pypi.org/project/tzdata/2026.6/",
+      "license": "UNKNOWN_NEEDS_REVIEW",
+      "role": "installed transitive / tooling; not all modules executed"
+    },
+    {
+      "name": "wcwidth",
+      "version": "0.9.4",
+      "source": "https://pypi.org/project/wcwidth/0.9.4/",
+      "license": "UNKNOWN_NEEDS_REVIEW",
+      "role": "installed transitive / tooling; not all modules executed"
+    }
+  ],
+  "java": "OpenJDK 21.0.13+9-1-deb13u2-Debian (JCA/source launcher)",
+  "jadx": {
+    "version": "1.5.6",
+    "jar_sha256": "fe3e12c45acf75f92369685fd02d1d7a7323385dc725680a9b98a0dac0ea554b",
+    "zip_sha256": "545ea2be9c242511bc145755cf4bda2485ade42966e096f8b4d3da2a230e8974"
+  },
+  "shared_sources": [
+    {
+      "path": "analysis/com.tunneldoom.http/432/tools/acquire.py",
+      "sha256": "7d8091243a8097fbaede447706aca4a0bcc03522a347396e20fe6075e5e8864b",
+      "modified": false,
+      "reference_commit": "b01e37ae712e00a380bd47768e8c16ae727f61e2"
+    },
+    {
+      "path": "scripts/apk_analysis/decompile.py",
+      "sha256": "dd04a05c2cb46bae494af412733d9e27b71167fc86f787371e76dfbddd50a3dd",
+      "modified": false,
+      "reference_commit": "b01e37ae712e00a380bd47768e8c16ae727f61e2"
+    },
+    {
+      "path": "analysis/_intake/austro-cat-2026-11-09/tools/decompile.py",
+      "sha256": "c55c999adf38f846ae5e66508b536eefea9b50b481ad1b5a539d968e6308bd77",
+      "modified": false,
+      "reference_commit": "b01e37ae712e00a380bd47768e8c16ae727f61e2"
+    },
+    {
+      "path": "decoders/Python/apps/SuperFlash_VPN/codec.py",
+      "sha256": "90c9e9c4872e21ce8f2fa6cb16c6938e9c170839a6415046d7fa137f5ab5885c",
+      "modified": false,
+      "reference_commit": "b01e37ae712e00a380bd47768e8c16ae727f61e2"
+    },
+    {
+      "path": "decoders/Python/apps/HTTP_FenixVPN/codec.py",
+      "sha256": "7e3de48e36d88dcbfa9afa94cc736d763bd7fe89de6d6d87d1d6ecb31e456c34",
+      "modified": false,
+      "reference_commit": "b01e37ae712e00a380bd47768e8c16ae727f61e2"
+    },
+    {
+      "path": "decoders/Python/apps/HTTP_FenixVPN/field_names.json",
+      "sha256": "0352b854bbb8153ac6a961e624e19e93de32ffdd3acc618d5f1a5ca02b2ad798",
+      "modified": false,
+      "reference_commit": "b01e37ae712e00a380bd47768e8c16ae727f61e2"
+    }
+  ],
+  "additional_tool_dependencies": [
+    {
+      "name": "JADX",
+      "version": "1.5.6",
+      "source": "https://github.com/skylot/jadx/releases/tag/v1.5.6",
+      "license": "Apache-2.0",
+      "checksum": "fe3e12c45acf75f92369685fd02d1d7a7323385dc725680a9b98a0dac0ea554b"
+    },
+    {
+      "name": "OpenJDK",
+      "version": "21.0.13",
+      "source": "https://openjdk.org/",
+      "license": "GPL-2.0-with-Classpath-exception"
+    },
+    {
+      "name": "Node.js",
+      "version": "24.22.1 (local research tests); 22 in CI",
+      "source": "https://nodejs.org/",
+      "license": "MIT"
+    },
+    {
+      "name": "libsodium (host system library, not APK library)",
+      "version": "1.0.18",
+      "source": "https://doc.libsodium.org/",
+      "license": "ISC",
+      "purpose": "independent Ed25519/XChaCha20-Poly1305 proof and fixtures"
+    }
+  ],
+  "approval": "Manual research record only; no automated tool approval or production installation is granted",
+  "research_scope": "Manual static identity/source trace, whole JSON proof where available, no execution of APK and no automated installation.",
+  "owned_intake_recipes": [
+    {
+      "path": "analysis/_intake/speigo-2026-11-09/tools/acquire.py",
+      "sha256": "fd6cf314043cdf2cc7a7573488bb287759d1a61cbfd06ad717598bf46295126d"
+    },
+    {
+      "path": "analysis/netfree.mx.speigovpn/159/tools/SpeigoOracle.java",
+      "sha256": "b7c639debefd4556ed120281770dc2f2c66076906e2ee60a8177a4e403aec14a"
+    },
+    {
+      "path": "analysis/netfree.mx.speigovpn/159/tools/acquire.py",
+      "sha256": "12ca38bb928ab7526b31628e029ac67a9d9dc50cd6de977aa1c1a58747a5ec54"
+    },
+    {
+      "path": "analysis/netfree.mx.speigovpn/159/tools/check_wire.py",
+      "sha256": "5564ab26c1e81578d2638efcd85e2e1786562982a332994715d4b6fd3bf54435"
+    },
+    {
+      "path": "analysis/netfree.mx.speigovpn/159/tools/elf32.py",
+      "sha256": "6337342a98e3c1d787ef18faea0103469f6addca44d693dd62bb699c647d3942"
+    },
+    {
+      "path": "analysis/netfree.mx.speigovpn/159/tools/inspect_apk.py",
+      "sha256": "8db1217627be1bcdb659ec0b899fb7c0c939847e5804905412bda60da48a6065"
+    },
+    {
+      "path": "analysis/netfree.mx.speigovpn/159/tools/make_fixture.py",
+      "sha256": "931ab172c445252060797a6a92eb44dfb56355737cedc5ae9372f930a02edfe9"
+    },
+    {
+      "path": "analysis/netfree.mx.speigovpn/159/tools/probe.py",
+      "sha256": "07ae6646651bcc901613c491f48719ecf0bec13418418351cb16c9b6f3b25895"
+    },
+    {
+      "path": "analysis/netfree.mx.speigovpn/159/tools/recover_native.py",
+      "sha256": "44290d9d71944bc4d0d0584768d31054ae4f7267b58cfe148f93b9c138a9cde9"
+    },
+    {
+      "path": "analysis/netfree.mx.speigovpn/159/tools/verify.py",
+      "sha256": "64915fa5ac7ac65045d3092a3a10a95a5110904729f9fab4b939c21711e05306"
+    }
+  ]
+}

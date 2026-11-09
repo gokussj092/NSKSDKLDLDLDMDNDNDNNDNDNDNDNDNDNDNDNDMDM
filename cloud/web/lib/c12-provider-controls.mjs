@@ -18,6 +18,8 @@ const LABELS=Object.freeze({
   "catnet-vpn":"CATNET VPN",
   "litron-vpn":"LITRON VPN",
   "litron-pro-vpn":"Litron Pro VPN",
+  "speigo-vpn-configs":"SpeiGo VPN · Configuraciones",
+  "speigo-vpn-ssh":"SpeiGo VPN · Usuarios SSH",
   "genis-vpn":"Genis VPN",
   "speicers-turbo-vpn":"Speicers`Turbo VPN",
   "http-conexion":"HTTP Conexión",
