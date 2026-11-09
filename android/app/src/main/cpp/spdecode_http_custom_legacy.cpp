@@ -177,9 +177,32 @@ std::string field(const std::string& token,const Bytes& nonce){
     if(token.empty()||token=="true"||token=="false"||token=="lifeTime"||
        token=="[splitPsiphon][splitPsiphon]"||token.front()=='<')return token;
     std::vector<Bytes> candidates;
-    auto loose=hexLoose(token);
-    if(isHex(token)&&loose.size()>16)candidates.push_back(loose);
-    if(token.size()>16)candidates.push_back(bytes(token));
+    // Python's HCDecryptor cleans separators/non-hex characters BEFORE
+    // recognizing a hexadecimal encrypted field. The previous port only
+    // handled an uninterrupted raw hex token.
+    const auto loose=hexLoose(token);
+    if(loose.size()>16)candidates.push_back(loose);
+    // Historical exports may store binary ciphertext as Latin-1 characters
+    // inside UTF-8 JSON. Python tries Latin-1 bytes before the UTF-8 bytes.
+    if(token.size()>16){
+        Bytes latin;
+        latin.reserve(token.size());
+        bool valid=true;
+        for(size_t i=0;i<token.size();){
+            const unsigned char lead=static_cast<unsigned char>(token[i++]);
+            if(lead<128){latin.push_back(lead);continue;}
+            if((lead==0xc2||lead==0xc3)&&i<token.size()){
+                const unsigned char next=static_cast<unsigned char>(token[i++]);
+                if(next>=0x80&&next<=0xbf){
+                    latin.push_back(static_cast<unsigned char>(((lead&3)<<6)|(next&63)));
+                    continue;
+                }
+            }
+            valid=false;break;
+        }
+        if(valid&&latin.size()>16&&latin!=bytes(token))candidates.push_back(std::move(latin));
+        candidates.push_back(bytes(token));
+    }
     for(const auto& data:candidates){
         if(data.size()<=16)continue;
         Bytes sealed=data;sealed.resize(sealed.size()-16);
