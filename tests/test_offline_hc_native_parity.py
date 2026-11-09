@@ -23,6 +23,95 @@ def call(exe, data: bytes, password="", hwid=""):
 def check(condition, message):
     if not condition: raise AssertionError(message)
 
+
+def legacy_http_custom_old_file():
+    """Synthetic old-style HC: legacy ChaCha8, JKL, Braille SSH and z3a."""
+    import base64
+    from Crypto.Cipher import ChaCha20
+    from decoders.Python.HTTPCUSTOM import HCConstants
+
+    def encrypt_hex(text, key, nonce=HCConstants.STATIC_NONCE):
+        cipher=ChaCha20.new(key=key,nonce=nonce)
+        cipher.seek(64)
+        return (cipher.encrypt(text.encode("utf-8"))+bytes(16)).hex()
+
+    def jkl_old(clear: str) -> str:
+        internal=base64.b64encode(clear.encode("utf-8"))
+        keyed=bytes(b ^ HCConstants.JKL_KEY_OLD[i%20] for i,b in enumerate(internal))
+        return base64.b64encode(keyed).decode("ascii")
+
+    alphabet=HCConstants.BRAILLE_ALPHABET
+    def to_braille(clear: str) -> str:
+        return "".join(alphabet[b//16]+alphabet[b%16] for b in clear.encode("utf-8"))
+
+    def z3a(clear: str) -> str:
+        count=len(clear)
+        return ",".join(f"{ord(letter)+count}.{count}" for letter in clear)
+
+    tokens=[""]*12
+    # Original historical field encryption chain:
+    # ChaCha8(field key 7, static nonce) -> JKL(legacy) -> text.
+    tokens[0]=encrypt_hex(jkl_old("GET / HTTP/1.1"),HCConstants.CHACHA_KEYS[7])
+    tokens[1]="example.org"
+    tokens[7]=to_braille("vpn.example:443@"+z3a("user")+":"+z3a("pass"))
+    tokens[11]=z3a("open")+":"+z3a("vpn")
+    sep="[splitConfig]"
+    clear=sep.join(tokens)
+    old={"a":{},"xy":encrypt_hex(clear,HCConstants.CHACHA_KEYS[1]),"uv":sep}
+    encoded=encrypt_hex(json.dumps(old,separators=(",",":")),HCConstants.CHACHA_KEYS[5]).encode()
+    key=bytes.fromhex("e382e4b8adc386f09f9293")
+    source=bytes(b ^ key[i%len(key)] for i,b in enumerate(encoded))
+    return source.decode("latin-1").encode("utf-8")
+
+
+def hccfg_early_hwid_file(schema: int, password: str | None = None):
+    """Build historical HCCFG n2 with authenticated HWID slots independently."""
+    import hashlib
+    from Crypto.Cipher import ChaCha20_Poly1305
+    from decoders.Python import _hc_hccfg as hc
+    from tests.golden.hc_sip_new_variants import SYNTHETIC_HWID
+    from argon2.low_level import Type,hash_secret_raw
+
+    def sealed(key,nonce,aad,plaintext):
+        cipher=ChaCha20_Poly1305.new(key=key,nonce=nonce)
+        cipher.update(aad)
+        ciphertext,tag=cipher.encrypt_and_digest(plaintext)
+        return ciphertext+tag
+    seed=bytes(range(32))
+    nonce_outer=bytes(range(48,72))
+    nonce_slot=bytes(range(72,96))
+    nonce_main=bytes(range(24))
+    env={"a":"HCCFG","b":schema,
+         "c":"XCHACHA20P1305" if schema==1 else "s1",
+         "d":"NATIVE-HKDF-SHA256" if schema==1 else "h1",
+         "e":"n2","f":["ssh","profiles"],"g":seed.hex(),
+         "h":int(password is not None),"n":760}
+    if password is not None:env.update({"k":"ARGON2ID13","l":2,"m":8*1024*1024})
+    hw=SYNTHETIC_HWID.encode()
+    transcript=(b"HCCFG\0"+hc.PKG+b"\0"+b"1\0ssh,profiles\0760\0"+
+                b"hwid\0"+hw+b"\0"+seed)
+    ikm=hashlib.sha256(hc.C0_PREFIX+transcript).digest()
+    protection=b"|0"
+    if password is not None:
+        ikm+=hash_secret_raw(password.encode(),seed[:16],time_cost=2,
+             memory_cost=8192,parallelism=1,hash_len=32,type=Type.ID,version=19)
+        protection=b"|1|ARGON2ID13|2|8388608"
+    info=b"app-config|n2|"+hc.PKG+b"|1|ssh,profiles|760|hwid|"+hw
+    wrapped=hc._hkdf(ikm,seed,info)
+    aad=(b"HCCFG|"+str(schema).encode()+b"|XCHACHA20P1305|NATIVE-HKDF-SHA256|n2|"+
+         hc.PKG+b"|1|ssh,profiles"+protection+b"|760")
+    section_key=bytes(reversed(range(32)))
+    env["o"]=[{"a":nonce_slot.hex(),"b":sealed(wrapped,nonce_slot,aad+b"\0w",section_key).hex()}]
+    env["i"]={"a":"m0","b":nonce_main.hex(),
+              "c":sealed(section_key,nonce_main,aad+b"\0m0",b'{"g":{"a":"free"}}').hex()}
+    # A single authenticated historical HPC1, no untrusted decrypted data.
+    from tests.golden.hc_sip_new_variants import hpc1,NONCE_PROFILE
+    env["j"]=[{"a":"s0","b":NONCE_PROFILE.hex(),
+              "c":sealed(section_key,NONCE_PROFILE,aad+b"\0s0",hpc1()).hex()}]
+    assert hc._derive(env,password,SYNTHETIC_HWID)==(section_key,aad)
+    return nonce_outer+sealed(hc._outer_key(),nonce_outer,hc.OUTER_AAD,
+        json.dumps(env,separators=(",",":")).encode("utf-8"))
+
 def main(exe):
     passed=0
     for locked in (False,True):
@@ -88,6 +177,35 @@ def main(exe):
             invalid=call(exe,source,wrongpw,wronghwid)
             check(invalid.returncode!=0,("historical wrong credential accepted"))
             passed+=1
+    # Historical n2 HWID handling for schema 1,2,5,7 was missing from
+    # the previous matrix; compare each against the actual server Python.
+    for schema in (1,2,5,7):
+        for protected in (False,True):
+            pw=S4_SYNTHETIC_PASSWORD if protected else ""
+            sample=hccfg_early_hwid_file(schema,pw or None)
+            expected=historical.decrypt(sample,password=pw or None,hwid=SYNTHETIC_HWID)
+            native=call(exe,sample,pw,SYNTHETIC_HWID)
+            check(native.returncode==0,(schema,"n2",native.stderr.decode(errors="replace")[:250]))
+            check(json.loads(native.stdout)==expected,(schema,"n2","mismatch"))
+            check(call(exe,sample,pw,"B"*32).returncode!=0,(schema,"incorrect HWID accepted"))
+            check(call(exe,sample,pw,"").returncode!=0,(schema,"missing HWID accepted"))
+            passed+=3
+    # The Python legacy decoder has an additional historical Braille SSH
+    # credential stage, which previously was absent from the standalone APK.
+    from decoders.Python.HTTPCUSTOM import HCDecryptor
+    old=legacy_http_custom_old_file()
+    legacy_ref=HCDecryptor.execute(old)
+    check(legacy_ref is not None and "vpn.example:443@user:pass" in legacy_ref,
+          "legacy reference must decode Braille and numeric SSH fields")
+    native=call(exe,old)
+    check(native.returncode==0,native.stderr.decode(errors="replace")[:250])
+    legacy=json.loads(native.stdout)
+    check(legacy["Config"]["payload"]=="GET / HTTP/1.1","old JKL payload chain mismatch")
+    check(legacy["Config"]["sshField"]=="vpn.example:443@user:pass",
+          "old Braille SSH credentials mismatch")
+    check(legacy["Config"]["ovpnUserAndPass"]=="open:vpn",
+          "old numeric OVPN credentials mismatch")
+    passed+=1
     # Reuse the existing, independently validated A.2.3 XOR + ChaCha8 +
     # RST AES golden instead of trusting newly invented exporter bytes.
     from tests.golden.a23_generators import httpcustom_bytes
