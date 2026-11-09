@@ -39,7 +39,8 @@ internal fun readableDecodeError(reason: String, suffix: String, language: Strin
             "Este archivo NPV utiliza una modalidad de protección que esta versión todavía no admite. No significa necesariamente que esté dañado.",
             "Unsupported NPV protection",
             "This NPV file uses a protection mode not supported by this version. It is not necessarily corrupted.")
-    if(code.contains("UNSUPPORTED")||code=="HC_UNRECOGNIZED_FORMAT"||
+    if(code.contains("UNSUPPORTED")||code=="HAT_UNSUPPORTED_VERSION"||
+       code=="HC_UNRECOGNIZED_FORMAT"||
        code=="HC_INVALID_V3"||code=="HC_INVALID_MAGIC"||code=="HC_UNSUPPORTED_SCHEMA"||
        code=="EHI_UNRECOGNIZED_FORMAT"||code=="EHI_INVALID_HEADER"||
        code=="HAT_UNRECOGNIZED_DOCUMENT")
