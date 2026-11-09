@@ -121,3 +121,22 @@ local de ejecución estaba desconectado. No se afirma validación de Litron Pro
 ni de las APK de esos informes. Las muestras propias prueban el arnés; cada
 método de terceros requiere su propio expediente y oráculo independiente antes
 de declararse validado.
+
+## Resultados observados de esta revisión
+
+- Código del servidor validado en `b2be8c44ad57ef6d702bd39ef2a757f7f986d385`.
+- [Pruebas del servidor y gateway](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42564695453):
+  72 pruebas Python y 20 pruebas Node aprobadas; sintaxis Bash, Docker Compose,
+  construcción de imagen y regresión del perfil Lite anterior también aprobadas.
+- [JADX completo y Ghidra reales](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42564558288):
+  aprobado sobre muestras Java/ELF propias, con el código de herramientas de
+  `5cbb259ca38fae927f12d145edd1b9297aa71cf2` (sin cambios posteriores en ese código).
+  Confirmó modo auto, recetas de métodos, llamadas locales y hash de C nativo.
+- [Gate P06 del PR](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42564701372):
+  aprobado después de enlazar también el decoder operativo de catálogo con el
+  expediente de TunnelDoom build432.
+- [Prueba remota de TunnelDoom](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42562741781):
+  HTTP 200, catálogo versión 496, 382 servidores y 4966 campos cifrados;
+  JSON completo comparado con el oráculo independiente Java/JCA.
+
+Estas verificaciones no son un despliegue ni una prueba del VPS del operador.
