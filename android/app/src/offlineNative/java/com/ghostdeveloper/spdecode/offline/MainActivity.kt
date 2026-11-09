@@ -64,7 +64,10 @@ class MainActivity : ComponentActivity() {
             }
             runOnUiThread {
                 result.onSuccess { ui.identity=it;ui.message=txt("identity_saved",ui.language) }
-                    .onFailure { ui.message=txt("identity_invalid",ui.language) }
+                    .onFailure { ui.error=OfflineUiError(
+                        if(ui.language=="es")"Identidad incorrecta" else "Invalid identity",
+                        if(ui.language=="es")"El archivo no contiene una identidad NPV válida. Necesitas las claves originales correspondientes." else "This file does not contain a valid NPV identity. Use the matching original keys."
+                    ) }
             }
         }.start()
     }
@@ -219,10 +222,7 @@ class MainActivity : ComponentActivity() {
 
     private fun importIncomingFile(uri:Uri) {
         if(ui.busy){
-            ui.error=OfflineUiError(
-                if(ui.language=="es")"Ya se está procesando un archivo" else "File being processed",
-                if(ui.language=="es")"Finaliza el proceso actual antes de importar otro archivo." else "Finish the current task before importing another file."
-            )
+            ui.error=readableDecodeError("BUSY","",ui.language)
             return
         }
         val filename=nameOf(uri).ifBlank{"document"}
@@ -269,17 +269,23 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun readBounded(uri:Uri,limit:Int):ByteArray {
-        return contentResolver.openInputStream(uri)?.use{ stream->
-            val out=ByteArrayOutputStream()
-            val buffer=ByteArray(8192)
-            while(true){
-                val read=stream.read(buffer)
-                if(read<0)break
-                if(out.size()+read>limit)error("FILE_TOO_LARGE")
-                out.write(buffer,0,read)
-            }
-            out.toByteArray()
-        }?:error("FILE_UNAVAILABLE")
+        return try {
+            contentResolver.openInputStream(uri)?.use{ stream->
+                val out=ByteArrayOutputStream()
+                val buffer=ByteArray(8192)
+                while(true){
+                    val read=stream.read(buffer)
+                    if(read<0)break
+                    if(out.size()+read>limit)error("FILE_TOO_LARGE")
+                    out.write(buffer,0,read)
+                }
+                out.toByteArray()
+            }?:error("FILE_UNAVAILABLE")
+        }catch(error:SecurityException){
+            throw IllegalArgumentException("FILE_UNAVAILABLE",error)
+        }catch(error:java.io.IOException){
+            throw IllegalArgumentException("FILE_UNAVAILABLE",error)
+        }
     }
 
     private fun beginText(text:String) {
