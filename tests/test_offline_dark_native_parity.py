@@ -35,10 +35,7 @@ def encode_document(obj: dict, encrypted: bool = False, prefix: str = "") -> byt
     return (prefix + b64(json.dumps(obj, ensure_ascii=False).encode())).encode()
 
 class NativeDarkParity(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.cli = sys.argv[1]
-        sys.argv = sys.argv[:1]
+    cli: str = ""
 
     def run_cli(self, value: bytes, succeeds=True):
         completed = subprocess.run([self.cli], input=value, capture_output=True,
@@ -103,4 +100,5 @@ class NativeDarkParity(unittest.TestCase):
                 self.run_cli(payload,False)
 
 if __name__=="__main__":
-    unittest.main()
+    NativeDarkParity.cli = sys.argv[1]
+    unittest.main(argv=[sys.argv[0]])
