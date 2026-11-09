@@ -164,6 +164,66 @@ class FullTooling(unittest.TestCase):
         self.assertFalse(harness["methodValidated"])
         self.assertEqual(harness["catalogue"]["researchScriptsAutoExecuted"], 0)
 
+    def test_full_native_metadata_survives_orchestrator_and_jni_join(self):
+        import hashlib
+        def decompile(command, **kwargs):
+            target = Path(command[command.index("-d")+1])/"sources/com/spdecode/owned/Owned.java"
+            target.parent.mkdir(parents=True)
+            target.write_text(OWNED)
+            return "EXIT_ZERO"
+        def native_run(command, **kwargs):
+            result = Path(command[command.index("-postScript")+2])
+            result.write_text(json.dumps({
+                "functions": 12,
+                "candidateFunctions": [{
+                    "name": "Java_com_spdecode_owned_Owned_decrypt",
+                    "address": "00100100",
+                    "decompilationCompleted": True,
+                    "decompiledCSha256": "a"*64,
+                    "decompiledCLines": 8,
+                    "calledCryptoFunctions": ["EVP_DecryptInit_ex"],
+                }],
+            }))
+            return True
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            home = root/"ghidra"
+            headless = home/"support/analyzeHeadless"
+            headless.parent.mkdir(parents=True)
+            headless.write_text("owned_launcher_fixture")
+            script = root/"SpDecodeGhidraReport.java"
+            script.write_text("// owned test script placeholder, not executed")
+            env = {
+                "SPDECODE_APK_QA_TOOL_MODE": "enabled",
+                "SPDECODE_APK_QA_TOOLS_REVIEWED": "true",
+                "SPDECODE_APK_QA_LITE": "false",
+                "SPDECODE_APK_QA_GHIDRA": "enabled",
+                "SPDECODE_APK_QA_GHIDRA_HOME": str(home),
+                "SPDECODE_APK_QA_GHIDRA_HEADLESS_SHA256":
+                    hashlib.sha256(headless.read_bytes()).hexdigest(),
+            }
+            source = root/"owned.apk"
+            with zipfile.ZipFile(source, "w") as archive:
+                archive.writestr("classes.dex", b"owned-fixture")
+                archive.writestr("lib/arm64-v8a/libowned.so", b"\x7fELF"+b"\x00"*60)
+            with patch.dict("os.environ", env, clear=True), \
+                 patch("cloud.apk_analysis.qa_tooling._memory_limit", return_value=4*GIB), \
+                 patch("cloud.apk_analysis.qa_tooling._verified_jadx", return_value=True), \
+                 patch("cloud.apk_analysis.qa_tooling.GHIDRA_SCRIPT", script), \
+                 patch("cloud.apk_analysis.qa_tooling._run_jadx", side_effect=decompile), \
+                 patch("cloud.apk_analysis.qa_tooling._run", side_effect=native_run):
+                result = inspect_tooling(source, {})
+        self.assertTrue(result["ghidraExecuted"])
+        self.assertEqual(result["ghidra"]["status"], "COMPLETED")
+        self.assertEqual(result["ghidra"]["nativeMethodsDecompiled"], 1)
+        function = result["ghidra"]["candidateFunctions"][0]
+        self.assertEqual(function["decompiledCLines"], 8)
+        self.assertEqual(function["decompiledCSha256"], "a"*64)
+        self.assertFalse(function["methodValidated"])
+        harness = inspect_harness({}, result)
+        self.assertEqual(len(harness["nativeBindings"]), 1)
+        self.assertEqual(harness["nativeBindings"][0]["class"], "com.spdecode.owned.Owned")
+
     def test_full_native_selection_exceeds_legacy_three_explicitly(self):
         with tempfile.TemporaryDirectory() as td:
             source = Path(td)/"owned.apk"

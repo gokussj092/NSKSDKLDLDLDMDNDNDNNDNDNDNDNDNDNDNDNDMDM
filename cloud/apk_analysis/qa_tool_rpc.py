@@ -16,7 +16,7 @@ import secrets
 import time
 
 MAX_APK=100_000_000
-MAX_REPORT=256_000
+MAX_REPORT=512_000
 TOKEN=re.compile(r"[A-Za-z0-9_-]{32,128}\Z")
 HEX64=re.compile(r"[0-9a-f]{64}\Z")
 NONCE=re.compile(r"[0-9a-f]{32}\Z")

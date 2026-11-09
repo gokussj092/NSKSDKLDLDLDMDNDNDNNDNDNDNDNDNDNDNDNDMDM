@@ -123,3 +123,19 @@ test("non-JSON private errors are replaced by a stable no-secret failure",async(
   assert.equal(result.status,503);
   assert.deepEqual(await result.json(),{error:{code:"APK_QA_UNAVAILABLE"}});
 });
+
+test("full analysis reports larger than 128 KiB reach the encrypted result intact",async()=>{
+  const complete={status:"COMPLETED",report:{synthetic:"á".repeat(160000)}};
+  const a=sender(()=>Response.json(complete));
+  const result=await apkQaRequest(request({jobId:"a".repeat(32)},24),24,{
+    env:cfg,send:a.send});
+  assert.equal(result.status,200);
+  assert.deepEqual(await result.json(),complete);
+});
+test("full result boundary counts UTF-8 bytes and rejects an oversized internal stream",async()=>{
+  const a=sender(()=>Response.json({report:{synthetic:"€".repeat(750000)}}));
+  const result=await apkQaRequest(request({jobId:"a".repeat(32)},24),24,{
+    env:cfg,send:a.send});
+  assert.equal(result.status,503);
+  assert.deepEqual(await result.json(),{error:{code:"APK_QA_UNAVAILABLE"}});
+});

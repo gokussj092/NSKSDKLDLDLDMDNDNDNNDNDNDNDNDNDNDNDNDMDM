@@ -25,6 +25,7 @@ JADX_JAR=Path("/opt/spdecode/scripts/apk_analysis/cache/jadx-1.5.6-all.jar")
 JADX_SHA256="fe3e12c45acf75f92369685fd02d1d7a7323385dc725680a9b98a0dac0ea554b"
 MAX_TOOL_APK=100*1000*1000
 MAX_GHIDRA_LIBS=3
+MAX_NATIVE_REPORT=256_000
 MIN_MEMORY=3*1024**3
 GHIDRA_SCRIPT=Path("/opt/spdecode/cloud/apk_analysis/SpDecodeGhidraReport.java")
 ID=re.compile(r"[0-9a-f]{32}\Z")
@@ -348,7 +349,7 @@ def inspect_tooling(source:Path,report:dict)->dict:
                      "-deleteProject"]
                 okay=_run(cmd,cwd=scratch,timeout=seconds,env=env,
                           logfile=scratch/("ghidra-"+str(i)+".log"))
-                if result.is_file() and result.stat().st_size<65536:
+                if result.is_file() and result.stat().st_size<=MAX_NATIVE_REPORT:
                     try:
                         meta=json.loads(result.read_text("utf-8"))
                         if (isinstance(meta.get("functions"),int) and
@@ -370,6 +371,8 @@ def inspect_tooling(source:Path,report:dict)->dict:
                                             "decompilationCompleted":item.get("decompilationCompleted") is True,
                                             **({"decompiledCSha256":item["decompiledCSha256"]}
                                                if re.fullmatch(r"[0-9a-f]{64}",str(item.get("decompiledCSha256",""))) else {}),
+                                            **({"decompiledCLines":item["decompiledCLines"]}
+                                               if type(item.get("decompiledCLines")) is int and 0<item["decompiledCLines"]<=10_000_000 else {}),
                                             "calledCryptoFunctions":[name for name in item.get("calledCryptoFunctions",[])[:16]
                                                 if isinstance(name,str) and re.fullmatch(r"[A-Za-z0-9_.$]{1,160}",name)],
                                             "methodValidated":False,

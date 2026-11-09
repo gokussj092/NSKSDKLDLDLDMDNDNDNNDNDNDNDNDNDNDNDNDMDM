@@ -8,6 +8,7 @@ import {boundRequestClaims} from "./v2-bound-request.mjs";
 import {jsonReply} from "./responses.mjs";
 const METHODS=Object.freeze({21:"start",22:"chunk",23:"finish",24:"result"});
 const MAX_BODY=3*1024*1024;
+const MAX_RESULT=2*1024*1024; // Complete bounded full-tool report plus DEX/ELF inventory.
 
 const reply=(code,status)=>jsonReply({error:{code}},status);
 function settings(env=process.env){
@@ -28,7 +29,7 @@ async function readJSON(request,limit){
   const reader=request.body.getReader(),chunks=[];let size=0;
   try{
     while(true){const {done,value}=await reader.read();if(done)break;
-      size+=value.length;if(size>limit)throw Error("INPUT_TOO_LARGE");
+      size+=value.length;if(size>limit){await reader.cancel();throw Error("INPUT_TOO_LARGE");}
       chunks.push(value);}
   }finally{reader.releaseLock();}
   const obj=JSON.parse(new TextDecoder("utf-8",{fatal:true}).decode(Buffer.concat(chunks)));
@@ -75,9 +76,7 @@ export async function apkQaRequest(request,operation,{env=process.env,send=fetch
       throw Error("INVALID_INTERNAL_RESPONSE");
     const type=response.headers.get("content-type")?.split(";")[0]?.trim();
     if(type!=="application/json")throw Error("INVALID_INTERNAL_RESPONSE");
-    const content=await response.text();
-    if(content.length>128*1024)throw Error("INVALID_INTERNAL_RESPONSE");
-    const value=JSON.parse(content);
+    const value=await readJSON(response,MAX_RESULT);
     if(!value||typeof value!=="object"||Array.isArray(value))
       throw Error("INVALID_INTERNAL_RESPONSE");
     if(!response.ok){

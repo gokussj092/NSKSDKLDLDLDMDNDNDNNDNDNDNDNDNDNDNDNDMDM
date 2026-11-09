@@ -93,11 +93,20 @@ JADX Lite hasta una actualización futura del cliente, fuera de este cambio.
 Estos comandos son instrucciones reproducibles; no se ejecutaron contra el VPS
 desde esta sesión. No se cambió producción ni se realizó merge a main.
 
+## Transporte del informe completo
+
+El antiguo gateway rechazaba informes mayores de 128 KiB. Se amplía a 2 MiB
+para el resultado completo (inventario y herramientas), con lectura limitada por
+bytes UTF-8 durante el streaming. El RPC privado de herramientas admite hasta
+512 000 bytes. HPKE ya admite respuestas mayores; no se cambia su seguridad ni
+la aplicación Android. Un resultado dentro de los límites se devuelve íntegro.
+
 ## Verificación reproducible
 
 1. `.github/workflows/f7-a7-server.yml`: compileall, sintaxis Bash, pruebas de
    perfiles, parser de métodos, recuperación, RPC, configuración idempotente,
-   ciclo completo del servicio QA y límites; valida Docker Compose. Conserva una
+   ciclo completo del servicio QA y límites; valida Docker Compose. Prueba también
+   el gateway del informe completo y las regresiones de TunnelDoom. Conserva una
    regresión offline del antiguo perfil Lite.
 2. `.github/workflows/f7-apk-tools-image.yml`: construye la imagen completa
    fijada, compila muestras Java/ELF propias y ejecuta JADX `auto` y Ghidra

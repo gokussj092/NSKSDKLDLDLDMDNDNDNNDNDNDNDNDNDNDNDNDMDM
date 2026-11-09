@@ -5,6 +5,8 @@ on:
     branches: [feat/nuevas-integraciones]
     paths:
       - cloud/apk_analysis/**
+      - cloud/web/lib/f7-apk-qa-gateway.mjs
+      - cloud/web/tests/f7-apk-qa.test.mjs
       - tests/test_f7_a9_full_harness.py
       - cloud/infra/vps/spdecodectl
       - cloud/compose.yaml
@@ -96,3 +98,20 @@ jobs:
           assert report["methodValidated"] is False
           print("F7-A7 real pinned JADX on owned fixture: PASS")
           '
+
+  server-report-gateway:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install locked server dependencies
+        working-directory: cloud/web
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Complete QA result and TunnelDoom gateway regressions
+        working-directory: cloud/web
+        run: node --test tests/f7-apk-qa.test.mjs tests/tunneldoom-vpn.test.mjs

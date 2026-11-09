@@ -147,7 +147,7 @@ def inspect_source(source: str, class_name: str) -> tuple[list[dict], list[dict]
         # Generic object.init/doFinal alone do not establish a cryptographic method.
         if not roles.intersection({"CIPHER_FACTORY", "KEY_SPEC", "GCM_SPEC", "PBKDF_SPEC",
                                   "KDF_FACTORY", "MAC_FACTORY", "DIGEST_FACTORY",
-                                  "JNI_LOADER", "UPDATER_CONNECTION"}):
+                                  "JNI_LOADER", "UPDATER_CONNECTION", "BASE64_DECODE", "GZIP_INPUT"}):
             observations = []
         direction = "UNRESOLVED"
         body_text = code[body:end]
@@ -249,7 +249,7 @@ def scan_method_recipes(output: Path) -> dict:
             "methods": found, "sameClassCalls": calls,
             "methodsObserved": observed, "methodsTruncated": observed > len(found),
             "sourceFilesInspected": min(files, MAX_FILES), "sourceBytesInspected": total,
-            "skippedLargeOrUnsafe": skipped, "sourceScanBudgetComplete": complete,
+            "skippedLargeOrUnsafe": skipped, "sourceScanBudgetComplete": complete and skipped == 0,
             "methodValidated": False, "codeExecuted": False,
             "rawSourceExported": False, "keyMaterialExported": False}
 
