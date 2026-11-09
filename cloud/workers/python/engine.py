@@ -75,7 +75,7 @@ def load_file_engines() -> dict[str, dict[str, str]]:
 # C8 additions are separate from the frozen 240-route C0 inventory.
 # Keep each format pinned to its own source codec; never route HX .hxt into xor_family.
 _C8_FILE_ENGINES = {
-    "tnl": ("decoders/Python/apps/OpenTunnel/file_decoder.py", "OpenTunnel1.1.1"),
+    "tnl": ("decoders/Python/apps/OpenTunnel/file_decoder.py", "OpenTunnel 1.1.1 / Tunnel"),
     "hexcm": ("decoders/Python/apps/Hex_Tunnel/file_decoder.py", "Hex Tunnel / HexVPN 1.7.3-Rev"),
     "enaa": ("decoders/Python/apps/Enaa_Tunnel/file_decoder.py", "Enaa Tunnel Enna-1.07"),
     "wolf": ("decoders/Python/apps/Wolf_Custom_VPN/file_decoder.py", "Wolf Custom VPN v2.8.1.2"),

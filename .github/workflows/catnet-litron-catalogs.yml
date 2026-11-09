@@ -104,6 +104,8 @@ jobs:
       - name: Install independent host libsodium oracle
         run: sudo apt-get update -qq && sudo apt-get install -y libsodium23
       - run: python -m pip install pycryptodome==3.23.0 argon2-cffi==25.1.0
+      - name: Verify generated public file metadata
+        run: python scripts/cloud_formats_catalog.py
       - name: Complete JSON, strict Unicode, independent oracles and actual worker regressions
         run: python -m unittest tests.test_opentunnel tests.test_md_proxy_vpn tests.test_cloud_c8_worker_integration tests.test_ultra_tunnel tests.test_speigo_vpn tests.test_litron_pro_vpn tests.test_litron_vpn tests.test_catnet_vpn tests.test_catnet_retry tests.test_austroplus_vpn tests.test_austroplus15 tests.test_tunneltweak tests.test_tunneltweak_builds tests.test_wolf_custom_vpn tests.test_wolf_v16 -v
       - name: Install existing server dependencies
