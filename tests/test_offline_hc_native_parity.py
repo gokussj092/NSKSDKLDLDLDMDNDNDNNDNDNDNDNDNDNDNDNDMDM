@@ -24,7 +24,7 @@ def check(condition, message):
     if not condition: raise AssertionError(message)
 
 
-def legacy_http_custom_old_file():
+def legacy_http_custom_old_file(*, nested=False):
     """Synthetic old-style HC: legacy ChaCha8, JKL, Braille SSH and z3a."""
     import base64
     from Crypto.Cipher import ChaCha20
@@ -48,16 +48,25 @@ def legacy_http_custom_old_file():
         count=len(clear)
         return ",".join(f"{ord(letter)+count}.{count}" for letter in clear)
 
-    tokens=[""]*12
+    tokens=[""]*(32 if nested else 12)
     # Original historical field encryption chain:
     # ChaCha8(field key 7, static nonce) -> JKL(legacy) -> text.
     tokens[0]=encrypt_hex(jkl_old("GET / HTTP/1.1"),HCConstants.CHACHA_KEYS[7])
     tokens[1]="example.org"
+    if nested:
+        # A valid Boolean can be accidentally Base64-decoded to non-UTF8 by
+        # the old standalone port; Python leaves it as "true".
+        tokens[2]="true"
+        tokens[5]="true"
+        tokens[13]="true"
     tokens[7]=to_braille("vpn.example:443@"+z3a("user")+":"+z3a("pass"))
     tokens[11]=z3a("open")+":"+z3a("vpn")
-    sep="[splitConfig]"
+    sep=("a1b2c3d4e5f6"*8) if nested else "[splitConfig]"
     clear=sep.join(tokens)
-    old={"a":{},"xy":encrypt_hex(clear,HCConstants.CHACHA_KEYS[1]),"uv":sep}
+    old=({"a":{"xy":encrypt_hex(clear,HCConstants.CHACHA_KEYS[1]),
+                "uv":sep,"yz":"synthetic-metadata"},
+          "b":"synthetic-profile"} if nested else
+         {"a":{},"xy":encrypt_hex(clear,HCConstants.CHACHA_KEYS[1]),"uv":sep})
     encoded=encrypt_hex(json.dumps(old,separators=(",",":")),HCConstants.CHACHA_KEYS[5]).encode()
     key=bytes.fromhex("e382e4b8adc386f09f9293")
     source=bytes(b ^ key[i%len(key)] for i,b in enumerate(encoded))
@@ -221,6 +230,25 @@ def main(exe):
             check(call(exe,sample,pw,"B"*32).returncode!=0,(schema,"incorrect HWID accepted"))
             check(call(exe,sample,pw,"").returncode!=0,(schema,"missing HWID accepted"))
             passed+=3
+    # Real-world bug signature without embedding any user sample:
+    # nested a.xy/a.uv, 31 separators, old true flags. The historical
+    # Python reader rejects invalid UTF-8 intermediate JKL bytes instead
+    # of corrupting the entire JSON result.
+    nested=legacy_http_custom_old_file(nested=True)
+    nested_reference=HCDecryptor.execute(nested)
+    check(nested_reference is not None and "lockAllConfig" in nested_reference,
+          "nested old-format Python reference should decode")
+    nested_result=call(exe,nested)
+    check(nested_result.returncode==0,
+          ("nested old format failed",nested_result.stderr.decode(errors="replace")[:250]))
+    nested_json=json.loads(nested_result.stdout)
+    check(nested_json["Config"]["lockAllConfig"]=="true",
+          "old boolean flag was corrupted during JKL UTF-8 decoding")
+    check(nested_json["Config"]["noteEnabled"]=="true",
+          "old note flag was corrupted during JKL UTF-8 decoding")
+    check(nested_json["Config"]["payload"]=="GET / HTTP/1.1",
+          "old protected payload regression")
+    passed+=1
     # The Python legacy decoder has an additional historical Braille SSH
     # credential stage, which previously was absent from the standalone APK.
     from decoders.Python.HTTPCUSTOM import HCDecryptor
