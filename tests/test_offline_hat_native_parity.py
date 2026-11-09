@@ -52,11 +52,11 @@ class HatNativeParity(unittest.TestCase):
         self.assertEqual(output["descriptionv5"],"alpha")
     def test_reported_real_profilev5_field_values(self):
         """Regression: encrypted labels captured from an actual user's .hat result."""
-        encoded={"connection_mode":"GQ==\\n",
-                 "custom_host":"WUkAMwJZJgctDRAcAys2\\n",
+        encoded={"connection_mode":"GQ=="+chr(10),
+                 "custom_host":"WUkAMwJZJgctDRAcAys2"+chr(10),
                  "custom_payload":"",
                  "custom_resolver":"1.1.1.1",
-                 "custom_sni":"QkUAPx1YKw4/Fw4cAys2\\n"}
+                 "custom_sni":"QkUAPx1YKw4/Fw4cAys2"+chr(10)}
         expected={"connection_mode":"3",
                   "custom_host":"screenclass.com",
                   "custom_payload":"",
