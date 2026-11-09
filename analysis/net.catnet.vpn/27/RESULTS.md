@@ -43,3 +43,11 @@ configuradas preservadas. Sin Android/build/merge/deploy. V2/V3 y fingerprint
 inventariados, no equivalencia oficial Play. XjConfigCodec/GcpHostUpdateCodec
 son observaciones estáticas, sin formato/archivo/texto/exportador habilitado.
 Licencias transitivas/Fase7 y validador CI de evidencias siguen pendientes.
+
+## Resultado de mantenimiento 2026-11-09
+
+Estado actual NETWORK_UNAVAILABLE, descarga nueva no verificada. Misma APK build27; trazado estático confirmado con JADX1.5.6 completo sobre JDK21.0.13, Androguard4.1.3. Los sondeos anteriores recibieron503/91bytes antes de cabeceras; el lector con recuperación limitada agotó18s aproximadamente. No hay nuevo conteo real de servidores. generated/maintenance-20261109.json conserva hashes/trazado y el estado; los6 servidores citados arriba pertenecen a la observación histórica, no a una descarga actual.
+
+15 tests Python (12 anteriores y3 de recuperación) y12 Node CATNET correctos. El conjunto de esta actualización pasa61 Python/77 Node. Se verifica recuperación simulada de503, persistencia de UUID, siguiente IP validada, límite de dos intentos y rechazo sin bypass de Integrity. Las simulaciones no acreditan disponibilidad remota. No se cambió el codec, ni se habilitaron rutas nuevas ni se modificaron iconos.
+
+Auditoría actual: A0 sin bloqueos; P06 PASS_WITH_UNRESOLVED,7 métodos modificados,90 fuentes alcanzadas,14 expedientes y46 consumidores sin resolución estática. Ocho expedientes consumidores incorporan revisión documental. Las incertidumbres no se consideran aprobadas. Build web correcto; la ruta compilada respondió503 esperado con servicio desactivado, sin error de carga del módulo.

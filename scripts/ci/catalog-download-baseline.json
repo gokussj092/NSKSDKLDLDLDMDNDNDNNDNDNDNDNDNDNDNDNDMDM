@@ -316,6 +316,11 @@
       "payloadKind": "JSON_OBJECT",
       "bodySha256": "85be8b4b72f83b3ef7f46569ee31b8d53e3caf86fb8e78146aa50714cc0fd25d",
       "shapeSha256": "c69265c9eab4d5b2494a988bca76da803e5e9dd162a5f585e3ac3efca1abb6a6"
+    },
+    "austroplus-vpn/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "0353262fb0cd5f2e9c0c879c22b146807b5342d869d9cb48e43b7b7f794ea701",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
     }
   }
 }

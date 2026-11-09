@@ -1,6 +1,7 @@
 import {HTTP_CONEXION_AGENT,HTTP_CONEXION_HEADERS,httpConexionRequestUrl} from "./http-conexion-protocol.mjs";
 import {HTTP_CONEXION_FIREBASE_OPTIONS,httpConexionResolver,packHttpConexionCatalog} from "./http-conexion-firebase.mjs";
 import {CATNET_SOURCE,CATNET_PREFLIGHT,CATNET_AGENT,catnetHeaders,catnetPreflight} from "./catnet-protocol.mjs";
+import {resolveTunneltweakCatalog,TUNNELTWEAK_INITIAL_BUILD} from "./tunneltweak-builds.mjs";
 /**
  * C8 public VPN catalog broker. Fixed approved providers ONLY.
  * DNS is revalidated and every connection is bound to one vetted IPv4.
@@ -118,7 +119,7 @@ const PROVIDERS = Object.freeze({
   "tunneltweak": {
     url:"https://tunneltweak.com/api/servers",
     agent:"TunnelTweak/1.0 (Android)",
-    headers:{"ngrok-skip-browser-warning":"true","x-app-version":"53","x-cfg-keyed":"1"},
+    headers:{"ngrok-skip-browser-warning":"true","x-app-version":String(TUNNELTWEAK_INITIAL_BUILD),"x-cfg-keyed":"1"},
   },
   "http-jireh": {
     // Build 13 moved NETWORK to Dropbox; the former GitHub URL is stale.
@@ -131,8 +132,8 @@ const PROVIDERS = Object.freeze({
     agent:"HTTP FenixVPN/19.4",
   },
   "austroplus-vpn": {
-    url:"https://raw.githubusercontent.com/SpkHexX/HexX/refs/heads/main/AustroPlusVPN.json",
-    agent:"AustroPlus VPN/13.0.1",
+    url:"https://raw.githubusercontent.com/SpkHexX/HexX/refs/heads/main/AustroTunVPN.json",
+    agent:"AustroPlus VPN/15.0.1",
   },
   "ac-tunnel-vpn": {
     url:"https://rttunnelv2ray.xyz/api/files/app?json=7ef7a9a142eb1f77a56f",
@@ -185,7 +186,7 @@ const CONNECT_MS=10000;
 const RETRY_CODES=new Set(["ECONNRESET","ETIMEDOUT","ESOCKETTIMEDOUT","ECONNREFUSED","EHOSTUNREACH","ENETUNREACH","EPIPE"]);
 
 export class VpnProviderError extends Error {
-  constructor(code,{retryable=false}={}) {super(code);this.code=code;this.retryable=retryable;}
+  constructor(code,{retryable=false,httpStatus=null}={}) {super(code);this.code=code;this.retryable=retryable;this.httpStatus=httpStatus;}
 }
 function fail(code){throw new VpnProviderError(code);}
 export function providerEnabled(id,env=process.env){
@@ -209,7 +210,7 @@ async function vettedIpv4(host) {
   return [...new Set(list.map(item=>item.address))].slice(0,8);
 }
 
-function pinnedRequest(url,ip,agent,timeout,headers={}, {method="GET",body=null,maxBytes=MAX_BYTES}={}){
+function pinnedRequest(url,ip,agent,timeout,headers={}, {method="GET",body=null,maxBytes=MAX_BYTES,allowUpdateRequired=false}={}){
   return new Promise((resolve,reject)=>{
     const parsed=new URL(url);
     let settled=false,bytes=0;
@@ -236,26 +237,26 @@ function pinnedRequest(url,ip,agent,timeout,headers={}, {method="GET",body=null,
         res.resume();
         return finish(null,{redirect:location});
       }
-      if(status!==200){
+      if(status!==200&&!(allowUpdateRequired&&status===426)){
         res.resume();
         // Retry only transient upstream throttling/outages, never auth, TLS or
         // a redirected origin. The bound IP, TLS hostname and deadline remain.
         const retryable=[429,500,502,503,504].includes(status);
-        return finish(new VpnProviderError("REMOTE_PROVIDER_UNAVAILABLE",{retryable}));
+        return finish(new VpnProviderError("REMOTE_PROVIDER_UNAVAILABLE",{retryable,httpStatus:status}));
       }
       if((res.headers["content-encoding"]||"identity")!=="identity"){
         res.resume();return finish(new VpnProviderError("REMOTE_RESPONSE_INVALID"));
       }
       res.on("data",part=>{
         bytes+=part.length;
-        if(bytes>maxBytes){
+        if(bytes>Math.min(maxBytes,status===426?65536:maxBytes)){
           finish(new VpnProviderError("REMOTE_TOO_LARGE"));req.destroy();
           return;
         }
         chunks.push(part);
       });
       res.on("error",err=>finish(err));
-      res.on("end",()=>finish(null,{data:Buffer.concat(chunks)}));
+      res.on("end",()=>finish(null,{data:Buffer.concat(chunks),...(status===426?{status}: {})}));
     });
     req.on("timeout",()=>req.destroy(Object.assign(new Error("timeout"),{code:"ETIMEDOUT"})));
     req.on("error",err=>finish(err));
@@ -350,6 +351,24 @@ async function downloadHttpConexion(provider,{forceRefresh=false}={}){
   catch(error){fail(error.message==="HTTP_CONEXION_BUNDLE_TOO_LARGE"?"REMOTE_TOO_LARGE":"REMOTE_RESPONSE_INVALID");}
 }
 
+async function downloadTunneltweak(provider){
+  const deadline=Date.now()+DEADLINE_MS;
+  try{return await resolveTunneltweakCatalog(async build=>{
+    const parsed=new URL(provider.url),remaining=deadline-Date.now();
+    if(remaining<=0)fail("REMOTE_PROVIDER_UNAVAILABLE");
+    const addresses=await vettedIpv4(parsed.hostname);
+    let answer;
+    try{answer=await pinnedRequest(provider.url,addresses[0],provider.agent,Math.min(CONNECT_MS,remaining),
+      {...provider.headers,"x-app-version":String(build)},{allowUpdateRequired:true});}
+    catch(error){if(error instanceof VpnProviderError)throw error;fail("REMOTE_PROVIDER_UNAVAILABLE");}
+    if(Object.hasOwn(answer,"redirect"))fail("REMOTE_NETWORK_DENIED");
+    return answer;
+  });}catch(error){
+    if(error instanceof VpnProviderError)throw error;
+    fail(error.message==="REMOTE_RESPONSE_INVALID"?"REMOTE_RESPONSE_INVALID":"REMOTE_PROVIDER_UNAVAILABLE");
+  }
+}
+
 async function downloadCatnet(provider){
   const headers=catnetHeaders(),deadline=Date.now()+DEADLINE_MS;
   async function get(url,maxBytes){
@@ -357,8 +376,16 @@ async function downloadCatnet(provider){
     const remaining=deadline-Date.now();
     if(remaining<=0)fail("REMOTE_PROVIDER_UNAVAILABLE");
     let answer;
-    try{answer=await pinnedRequest(url,addresses[0],provider.agent,Math.min(CONNECT_MS,remaining),headers,{maxBytes});}
-    catch(error){if(error instanceof VpnProviderError)throw error;fail("REMOTE_PROVIDER_UNAVAILABLE");}
+    for(let attempt=0;attempt<2;attempt++){
+      const budget=deadline-Date.now();if(budget<=0)fail("REMOTE_PROVIDER_UNAVAILABLE");
+      try{answer=await pinnedRequest(url,addresses[attempt%addresses.length],provider.agent,Math.min(CONNECT_MS,budget),headers,{maxBytes});break;}
+      catch(error){
+        const transient=[502,503,504].includes(error.httpStatus)||RETRY_CODES.has(error.code);
+        if(attempt===0&&transient)continue;
+        if(error instanceof VpnProviderError)throw error;
+        fail("REMOTE_PROVIDER_UNAVAILABLE");
+      }
+    }
     if(Object.hasOwn(answer,"redirect"))fail("REMOTE_NETWORK_DENIED");
     if(!Buffer.isBuffer(answer.data)||!answer.data.length||
        answer.data.subarray(0,64).toString("utf8").trimStart().startsWith("<"))fail("REMOTE_RESPONSE_INVALID");
@@ -375,6 +402,10 @@ export async function downloadVpnCatalog(id,source=id==="jyfast-vpn-ultra"?"free
   const provider=PROVIDERS[id];
   if(!provider)fail("UNSUPPORTED_FORMAT");
   if(!providerEnabled(id))fail("REMOTE_NOT_CONFIGURED");
+  if(id==="tunneltweak"){
+    if(source!=="servers")fail("UNSUPPORTED_FORMAT");
+    return downloadTunneltweak(provider);
+  }
   if(id==="catnet-vpn"){
     if(source!=="servers")fail("UNSUPPORTED_FORMAT");
     return downloadCatnet(provider);

@@ -87,8 +87,8 @@ services:
       CLOUD_WHATS_NEW_V1_JSON: ${CLOUD_WHATS_NEW_V1_JSON:-}
       # Existing V2 editorial notice and optional override are preserved.
       CLOUD_WHATS_NEW_JSON: ${CLOUD_WHATS_NEW_JSON:-}
-    # Only nonsecret, allowlisted provider switches live in this persistent
-    # named volume. Redis sessions/challenges remain ephemeral and isolated.
+    # Allowlisted provider switches and nonsecret Tunneltweak build history
+    # persist here. Redis sessions/challenges remain ephemeral and isolated.
     volumes:
       - provider-control:/app/provider-control:rw
       - catalog-snapshots:/app/catalog-snapshots:rw

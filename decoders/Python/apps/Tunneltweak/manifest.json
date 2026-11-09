@@ -8,7 +8,7 @@
   ],
   "versionCode": 53,
   "engine": "python-tut-cbc-pbe-gcm-xor-and-secure-catalog-gcm",
-  "engineVersion": 2,
+  "engineVersion": 3,
   "files": {
     "entrypoint": "file_decoder.py",
     "workerEntrypoint": "worker_bridge.py",
@@ -41,7 +41,7 @@
     "embeddedCatalogPresent": false,
     "expectedAsset": "data_encoded.txt (absent)",
     "subscriptionKeySupported": "standalone CLI only; provided by user; no real subscription key tested",
-    "publicCatalogVersion": 74,
+    "publicCatalogVersion": 75,
     "validation": "Complete independent oracle/Python/isolated-worker JSON parity; no partial output",
     "output": "outer metadata and announcement preserved; data replaced by full decoded object",
     "deploymentEnabledByDefault": false,
@@ -61,7 +61,13 @@
     },
     "nodeTransportValidation": "Updated fixed recipe and private-DNS/redirect/gateway regressions; live Node check required in CI",
     "requestBuildHeader": "53",
-    "evidenceDirectory": "analysis/com.tunneltweak.loyalteams/53"
+    "evidenceDirectory": "analysis/com.tunneltweak.loyalteams/53",
+    "buildSelection": "persistent JSON history; bounded HTTP426 recovery",
+    "buildHistoryPath": "/app/provider-control/tunneltweak-builds.json",
+    "realAutoRecovery": [
+      51,
+      53
+    ]
   },
   "cloudProfiles": {
     "source": "fixed /api/cloudconfig/<UUID> GET",
@@ -84,7 +90,9 @@
     "pycryptodome": "3.23.0",
     "supportFiles": [
       "codec.py",
-      "network.py"
+      "network.py",
+      "build_history.py",
+      "builds.seed.json"
     ],
     "workerOnly": "repository generic_des.py/generic_aes.py/generic_profiles.py, unchanged"
   },

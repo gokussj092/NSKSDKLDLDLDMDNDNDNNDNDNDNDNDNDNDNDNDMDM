@@ -1060,5 +1060,22 @@
       "sha256": "2517cbeb9adb1aa8aa6f1883f9719b87737e2bdcc722b69af6576d5388b2eed7",
       "source_commit": "2b7c842aa5ff67ec276aeaebded982e4c1eea121"
     }
-  ]
+  ],
+  "maintenance_20261109": {
+    "python": "3.12.14",
+    "java": "OpenJDK 21.0.13+9-1-deb13u2-Debian",
+    "node": "24.22.1 locally; 22 CI",
+    "dependenciesAdded": [],
+    "thirdPartyBinariesCommitted": false,
+    "sharedSourcesUnmodified": [
+      {
+        "path": "analysis/com.tunneldoom.http/432/tools/acquire.py",
+        "sha256": "1fbaa2243eacdfaf4404d7ea07886e9432262010bebf3595d51240097c37ed8b"
+      },
+      {
+        "path": "scripts/apk_analysis/decompile.py",
+        "sha256": "00b5d0ab68b9a46a5bd18ab0160c755adbfa180e81de0625b9dc8203f1c5036c"
+      }
+    ]
+  }
 }

@@ -46,3 +46,17 @@ El runtime no necesita secretos externos. No ejecutar history como receta actual
 son revisiones conservadas de investigación/negativos. Antes del rollout subir
 la versión configurada si el VPS ya supera el piso72; conservar monotonía y
 switches existentes. No se fusiona ni despliega con estos comandos.
+
+## Revisión actual (2026-11-09)
+
+Se conserva el entorno anterior como histórico. La revisión actual reutilizó Python3.12.14, Androguard4.1.3, OpenJDK21.0.13 y Node24.22.1; no Androguard4.1.4/JDK17 del primer expediente. Usar requirements-maintenance-20261109.lock.txt y dependencies-maintenance-20261109.lock.json para repetir esta revisión.
+
+~~~bash
+python analysis/net.catnet.vpn/27/tools/acquire.py /tmp/catnet27-private
+python analysis/_intake/austro-cat-2026-11-09/tools/decompile.py /tmp/catnet27-private
+python analysis/net.catnet.vpn/27/tools/recheck_20261109.py /tmp/catnet27-private
+python -m unittest tests.test_catnet_vpn tests.test_catnet_retry -v
+(cd cloud/web && node --test tests/catnet-vpn.test.mjs)
+~~~
+
+Si la fuente vuelve a entregar JSON real, aplicar tools/verify.py al archivo privado catalog-current.json antes de cambiar el estado a verificado. No sustituirlo por un fixture ni inferir restauración de pruebas simuladas.

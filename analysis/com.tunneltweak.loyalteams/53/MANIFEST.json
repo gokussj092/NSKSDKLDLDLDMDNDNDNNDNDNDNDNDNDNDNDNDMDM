@@ -129,7 +129,9 @@
     "decoders/Python/apps/Tunneltweak/codec.py",
     "decoders/Python/apps/Tunneltweak/server_catalog_decoder.py",
     "decoders/Python/apps/Tunneltweak/file_decoder.py",
-    "decoders/Python/apps/Tunneltweak/network.py"
+    "decoders/Python/apps/Tunneltweak/network.py",
+    "cloud/web/lib/tunneltweak-builds.mjs",
+    "decoders/Python/apps/Tunneltweak/build_history.py"
   ],
   "evidence_refs": [
     "analysis/com.tunneltweak.loyalteams/53/ANALYSIS.md",
@@ -139,7 +141,10 @@
     "analysis/com.tunneltweak.loyalteams/53/dependencies.lock.json",
     "analysis/com.tunneltweak.loyalteams/53/generated/identity.json",
     "analysis/com.tunneltweak.loyalteams/53/generated/catalog-proof.json",
-    "analysis/com.tunneltweak.loyalteams/53/generated/static-proof.json"
+    "analysis/com.tunneltweak.loyalteams/53/generated/static-proof.json",
+    "analysis/com.tunneltweak.loyalteams/53/generated/auto-build-proof.json",
+    "analysis/com.tunneltweak.loyalteams/53/generated/build-history-real.json",
+    "analysis/com.tunneltweak.loyalteams/53/tools/verify_auto_builds.py"
   ],
   "limitations": [
     "No APK code or native application library was executed.",
@@ -153,5 +158,16 @@
   ],
   "manual_steps": [
     "Review CI and evidence, then update server web and worker from feat/nuevas-integraciones."
-  ]
+  ],
+  "maintenance_20261109": {
+    "autoBuildHistory": "ENABLED",
+    "initialSeedBuild": 53,
+    "realRecoveryObserved": [
+      51,
+      53
+    ],
+    "advancement": "explicit HTTP426 update_required; prefer advertised minimum, otherwise bounded +1",
+    "temporaryOutagesDoNotInvalidateVersion": true,
+    "privateStateDefault": "/app/provider-control/tunneltweak-builds.json"
+  }
 }

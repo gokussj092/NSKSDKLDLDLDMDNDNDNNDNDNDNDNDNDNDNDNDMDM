@@ -1,0 +1,19 @@
+{
+  "scope": "REAL_HTTP426_RECOVERY_AND_COMPLETE_CATALOG_PROOF",
+  "initialBuild": 51,
+  "selectedBuild": 53,
+  "historyPersisted": true,
+  "noCatalogOrCredentialsInHistory": true,
+  "catalogProof": {
+    "inputBytes": 23789,
+    "inputSha256": "c4f4cefe770de0333a8d4a780e0b493c74c8bed73ba2d79e340f29de0d6db1d5",
+    "servers": 2,
+    "configs": 68,
+    "wholeIndependentJcaParity": true,
+    "clearJsonSha256": "0fbb6dad291225de5c118b3ea65dfe8debc40e5c407d591e0cca8fef88280277",
+    "rawOutputBytes": 25362,
+    "apkCodeExecuted": false,
+    "wholeWorkerParity": true
+  },
+  "apkCodeExecuted": false
+}

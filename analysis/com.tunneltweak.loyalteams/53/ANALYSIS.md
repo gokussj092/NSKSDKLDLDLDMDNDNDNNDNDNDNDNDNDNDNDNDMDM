@@ -48,3 +48,13 @@ Se conservan scripts propios de adquisición, inspección, solicitud y verificac
 en tools/. No se ejecutó código del APK. La firma APK completa, el despliegue VPS
 y una exportación real independiente del teléfono quedan fuera de lo validado.
 
+
+## Historial automático de builds (2026-11-09)
+
+Se elimina la cabecera fija como requisito de mantenimiento. El broker y el CLI toman el build activo de un JSON persistente. El seed versionado contiene solo51 rechazado y53 confirmado: no se inventó una observación de52. El JSON guarda build, working (true/false/null), contadores, fecha, estado HTTP y código fijo; nunca catálogos ni claves.
+
+Un426 con status update_required marca ese build obsoleto. Se usa minVersionCode si es un entero válido superior; si el proveedor omite ese campo, se prueba el sucesor. Máximo3 intentos con presupuesto de recuperación entre solicitudes. Un candidato pendiente se guarda con working=null; solo una respuesta200 con estructura válida marca true. Esa marca comprueba transporte/forma, no certifica que un cifrado futuro sea compatible.
+
+Red,503,401/403/429, HTML, redirects y errores TLS no provocan una búsqueda de versiones. Las caídas temporales no borran el último build válido. El almacenamiento usa archivo temporal0600, fsync, reemplazo atómico y lock compatible Node/Python; las llamadas públicas concurrentes Node comparten la descarga. Corrupción de metadatos recupera el seed con aviso; fallos de disco emiten aviso fijo sin impedir entregar una descarga válida.
+
+Prueba real: verify_auto_builds.py inicia el JSON con51, recibe426, selecciona53, guarda ambos estados y obtiene el catálogo entero. La comparación JCA y worker vuelve a dar2 servidores/68 configuraciones y el mismo hash canónico. La secuencia51->53 es real; los casos53->54/57 son exclusivamente sintéticos de regresión.

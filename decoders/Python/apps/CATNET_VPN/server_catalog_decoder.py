@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Offline CATNET servers JSON or original preflight + fixed public updater."""
-import argparse,sys,uuid
+import argparse,sys,uuid,time,socket
 from pathlib import Path
 from urllib.request import Request,build_opener,HTTPRedirectHandler
+from urllib.error import HTTPError,URLError
 if not __package__:sys.path.insert(0,str(Path(__file__).resolve().parents[4]))
 from decoders.Python.apps.CATNET_VPN.codec import CatalogError,MAX_INPUT,parse_document,decode_catalog,run
 SOURCE='https://pussyvpn.com/xjvpn/mobile/public/servers'
@@ -22,9 +23,19 @@ def check_preflight(data):
     if info.get('maintenance') is True:raise CatalogError('CATNET maintenance')
     if info.get('integrity_required') is not False:raise CatalogError('CATNET requires legitimate device verification')
 def download():
-    headers=original_headers()
+    headers=original_headers();deadline=time.monotonic()+30
     def get(url,limit):
-        with opener.open(Request(url,headers=headers),timeout=30) as r:
+        for attempt in range(2):
+            remaining=deadline-time.monotonic()
+            if remaining<=0:raise CatalogError('CATNET deadline exceeded')
+            try:reply=opener.open(Request(url,headers=headers),timeout=remaining);break
+            except HTTPError as e:
+                if attempt==0 and e.code in (502,503,504):e.close();continue
+                raise
+            except URLError as e:
+                if attempt==0 and (isinstance(e.reason,(socket.timeout,ConnectionError)) or getattr(e.reason,'errno',None) in (104,110,111,113,101,32)):continue
+                raise
+        with reply as r:
             if r.status!=200 or r.headers.get('Content-Encoding','identity')!='identity':
                 raise CatalogError('Invalid CATNET HTTP response')
             data=r.read(limit+1)

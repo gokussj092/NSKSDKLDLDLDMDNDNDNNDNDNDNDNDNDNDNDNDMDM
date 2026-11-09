@@ -18,11 +18,17 @@ Todas las distribuciones Python directas/transitivas realmente instaladas (inclu
 
 ## Fuentes compartidas conservadas
 
-- analysis/com.tunneldoom.http/432/tools/acquire.py — SHA-256 1fbaa2243eacdfaf4404d7ea07886e9432262010bebf3595d51240097c37ed8b; sin cambios.
-- scripts/apk_analysis/decompile.py — SHA-256 00b5d0ab68b9a46a5bd18ab0160c755adbfa180e81de0625b9dc8203f1c5036c; sin cambios.
-- tests/golden/tunneltweak_oracle.java — SHA-256 dd7438287ba357b5a83f2d25eed16ca7e97e10c34d659d9af3e5d0152acd9226; sin cambios.
+- analysis/com.tunneldoom.http/432/tools/acquire.py — SHA-256 7d8091243a8097fbaede447706aca4a0bcc03522a347396e20fe6075e5e8864b; sin cambios.
+- scripts/apk_analysis/decompile.py — SHA-256 dd04a05c2cb46bae494af412733d9e27b71167fc86f787371e76dfbddd50a3dd; sin cambios.
+- tests/golden/tunneltweak_oracle.java — SHA-256 5df4031f6c59b43f644cc07fa519c423726ef327ef5ed053604a4efb7b26f109; sin cambios.
 - tests/golden/tunneltweak_vectors.json — SHA-256 d7d789ed15183e0e157f46cb039cf2adc01d593c064d8effaf860ef634f2039c; sin cambios.
 
 El extractor usa Androguard para leer AXML/certificados, no para ejecutar DEX. Los JAR/compiladores se descargan desde su fuente oficial y se verifican; no se guardan binarios ajenos en Git. Los scripts propios quedan completos en tools/.
 
 El oráculo Java/JCA existente se reutilizó sin cambios. El algoritmo público del catálogo coincide con build51; la solicitud HTTP se actualizó al build53.
+
+## Historial de builds: reutilización 2026-11-09
+
+Implementación nueva exclusivamente con módulos estándar Node/Python (fs/path/crypto, json/os/urllib/time). Sin dependencias de terceros añadidas, sin descarga de herramientas en runtime. El oráculo JCA previo se reutilizó sin cambios para probar el catálogo recuperado. Node y Python comparten JSONschema/seed y lock por creación exclusiva; no dependen de Redis para este estado. Los checksums y versiones anteriores se conservan, más la revisión en el lock. verify_auto_builds.py es el wrapper propio nuevo; la implementación canónica está en cloud/web/lib/tunneltweak-builds.mjs y decoders/Python/apps/Tunneltweak/build_history.py para evitar copias divergentes.
+
+La instantánea local tenía un salto de línea final adicional en tres helpers. Se comprobó igualdad exacta al quitar solo finales de línea y se restauró el texto Git canónico. El lock registra los checksums de ambas representaciones y generated/provenance-normalization.json conserva la comparación. Se repitieron identidad, verificación del instalador y JCA con las fuentes canónicas; los helpers compartidos no se modifican en este commit.

@@ -7,19 +7,26 @@
   "observed_at": "2026-11-04T21:10:19.858578+00:00",
   "source_category": "user_store_link_public_mirror",
   "authorization_note": "User requested Cloud catalog integration using the original client flow, no Android build, merge or deployment.",
-  "status": "VERIFIED",
+  "status": "PARTIAL",
   "targets": [
     {
       "kind": "catalog",
       "source": "mobile/public/servers",
-      "status": "VERIFIED_REAL",
+      "status": "NETWORK_UNAVAILABLE",
       "enabled_scope": "complete servers document",
       "http": 200,
       "remote_version": null,
       "remote_version_note": "API does not publish a catalog version field",
       "servers": 6,
       "node_python_cli_worker_whole_equal": true,
-      "node_vps_transport": "PENDING"
+      "node_vps_transport": "PENDING",
+      "previous_verified_observation": {
+        "status": "VERIFIED_REAL",
+        "http": 200,
+        "servers": 6,
+        "node_python_cli_worker_whole_equal": true
+      },
+      "current_download_verified": false
     },
     {
       "kind": "catalog_payloads",
@@ -947,7 +954,9 @@
     "RESULTS.md",
     "DEPENDENCIES.md",
     "generated/results.json",
-    "tests/test_method.py"
+    "tests/test_method.py",
+    "analysis/net.catnet.vpn/27/generated/maintenance-20261109.json",
+    "analysis/net.catnet.vpn/27/tools/recheck_20261109.py"
   ],
   "fixture_hashes": [
     {
@@ -1007,5 +1016,13 @@
     "catalog_floor": 72,
     "cards": 66,
     "formats": 256
+  },
+  "maintenance_20261109": {
+    "identityUnchanged": true,
+    "currentDownload": "NETWORK_UNAVAILABLE",
+    "newTransportBehavior": "one bounded transient retry, same fixed endpoints and installation; policy gate retained",
+    "previousRealProofRetained": true,
+    "lockfile": "analysis/net.catnet.vpn/27/dependencies-maintenance-20261109.lock.json",
+    "requirements": "analysis/net.catnet.vpn/27/requirements-maintenance-20261109.lock.txt"
   }
 }

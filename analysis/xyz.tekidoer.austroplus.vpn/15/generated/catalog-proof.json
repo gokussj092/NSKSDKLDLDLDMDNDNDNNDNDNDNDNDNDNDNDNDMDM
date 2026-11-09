@@ -1,0 +1,13 @@
+{
+  "inputBytes": 82433,
+  "inputSha256": "0353262fb0cd5f2e9c0c879c22b146807b5342d869d9cb48e43b7b7f794ea701",
+  "version": "0.8",
+  "servers": 5,
+  "tweaks": 174,
+  "protectedFieldsCompared": 361,
+  "wholeIndependentJavaParity": true,
+  "clearJsonSha256": "6e6fb6580e119d8550dd72402bdc288205cd7d0155da8c203a3363697805185d",
+  "rawOutputBytes": 59729,
+  "apkCodeExecuted": false,
+  "wholeWorkerParity": true
+}

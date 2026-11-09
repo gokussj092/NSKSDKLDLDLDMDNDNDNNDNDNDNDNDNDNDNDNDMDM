@@ -23,3 +23,15 @@ verify.py reutiliza tests/golden/tunneltweak_oracle.java sin modificarlo.
 Compara el objeto completo, incluyendo data y announcement, con Python y el
 worker real. No muestra ni guarda el JSON claro en el informe de evidencia.
 
+
+## Recuperación automática y persistencia
+
+~~~bash
+python analysis/com.tunneltweak.loyalteams/53/tools/verify_auto_builds.py /tmp/tweak-auto-private
+python -m unittest tests.test_tunneltweak_builds tests.test_tunneltweak -v
+(cd cloud/web && node --test tests/tunneltweak-builds.test.mjs)
+~~~
+
+El servidor guarda /app/provider-control/tunneltweak-builds.json en el volumen provider-control existente; sobrevive a reinicios y actualizaciones de imágenes. No requiere un nuevo volumen ni recompilar APK. CLOUD_TUNNELTWEAK_BUILD_STATE_PATH permite una ruta privada alternativa controlada por el operador; en CI se usa runner.temp. El CLI usa esa variable o XDG_STATE_HOME/spdecode/tunneltweak-builds.json (por defecto ~/.local/state). El worker de descifrado puro nunca accede a este archivo ni a la red.
+
+Para consultar: cat /app/provider-control/tunneltweak-builds.json dentro del contenedor web. No modificar auto.build durante uso normal. El historial no cambia el catálogo público ni incluye sus contenidos. Los seeds Python/web deben coincidir; lo comprueba el test. Si se borra el volumen, se pierde el historial y se vuelve a aprender desde el seed.

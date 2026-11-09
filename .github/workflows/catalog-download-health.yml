@@ -56,6 +56,7 @@ jobs:
       - name: Download each source and record non-blocking provider warnings
         env:
           CLOUD_SERVER_VPN_ENABLED: "true"
+          CLOUD_TUNNELTWEAK_BUILD_STATE_PATH: ${{ runner.temp }}/tunneltweak-builds.json
           CLOUD_NUR_FETCH_ENABLED: "true"
           CLOUD_NUR_CATALOG_URL: ${{ secrets.CLOUD_NUR_CATALOG_URL }}
           SPDECODE_VIP_SNIPHER_AUTHORIZATION: ${{ secrets.SPDECODE_VIP_SNIPHER_AUTHORIZATION }}
@@ -75,6 +76,7 @@ jobs:
             ${{ runner.temp }}/catalog-download-health/report.json
             ${{ runner.temp }}/catalog-download-health/summary.md
             ${{ runner.temp }}/catalog-download-health/baseline-candidates.json
+            ${{ runner.temp }}/tunneltweak-builds.json
           if-no-files-found: warn
           retention-days: 14
 

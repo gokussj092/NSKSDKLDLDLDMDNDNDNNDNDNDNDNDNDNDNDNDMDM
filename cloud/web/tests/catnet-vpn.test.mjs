@@ -46,6 +46,23 @@ test("CATNET performs original preflight and server GET with consistent real ins
  }
  assert.notEqual(catnetHeaders()["X-XJ-Installation-Id"],first["X-XJ-Installation-Id"]);
 });
+test("CATNET transient preflight failure retries once with the same installation",async t=>{
+ enabled(t);const calls=network(t,[{status:503},preflight,raw]);
+ assert.deepEqual(await downloadVpnCatalog("catnet-vpn"),raw);assert.equal(calls.length,3);
+ assert.deepEqual(calls.map(x=>x.url.href),[CATNET_PREFLIGHT,CATNET_PREFLIGHT,CATNET_SOURCE]);
+ assert.equal(new Set(calls.map(x=>x.options.headers["X-XJ-Installation-Id"])).size,1);
+});
+test("CATNET persistent upstream failure is bounded and never replaces preflight with stale data",async t=>{
+ enabled(t);const calls=network(t,[{status:503},{status:503}]);
+ await assert.rejects(()=>downloadVpnCatalog("catnet-vpn"),{code:"REMOTE_PROVIDER_UNAVAILABLE"});assert.equal(calls.length,2);
+});
+test("CATNET transient retry selects the next vetted IP while preserving TLS host",async t=>{
+ enabled(t);const calls=network(t,[{status:502},preflight,raw]);
+ t.mock.method(dns,"lookup",async()=>[{address:"93.184.216.34",family:4},{address:"1.1.1.1",family:4}]);
+ await downloadVpnCatalog("catnet-vpn");
+ const ips=calls.slice(0,2).map(c=>{let ip;c.options.lookup("pussyvpn.com",{},(error,address)=>{assert.equal(error,null);ip=address;});return ip;});
+ assert.deepEqual(ips,["93.184.216.34","1.1.1.1"]);assert(calls.every(c=>c.options.rejectUnauthorized===true));
+});
 test("CATNET does not fetch catalogs when legitimate Play verification becomes required or unspecified",async t=>{
  enabled(t);
  for(const required of [true,null,undefined,0,"false"]){

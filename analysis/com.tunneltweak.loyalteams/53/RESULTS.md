@@ -28,3 +28,13 @@ No se verificó criptográficamente la firma completa del APK, una sesión Andro
 ## Auditoría de metadatos e impacto
 
 A0 sin hallazgos bloqueantes; P06 PASS_WITH_UNRESOLVED: 7 fuentes de método modificadas, 99 fuentes alcanzadas, 13 expedientes afectados y 56 consumidores sin resolución estática. Los nueve expedientes consumidores existentes incorporan revisión documental; estos resultados no aprueban herramientas ni validan catálogos adicionales.
+
+## Historial automático: prueba real adicional
+
+VERIFIED_REAL para recuperación51->53 con426 real y posterior200. Historial persistido en generated/build-history-real.json, validado contra el contrato de metadatos. generated/auto-build-proof.json conserva paridad completa JCA/Python/worker:2 servidores/68 configuraciones, JSON canónico0fbb6dad291225de5c118b3ea65dfe8debc40e5c407d591e0cca8fef88280277.
+
+10 nuevas pruebas Python y9 Node cubren persistencia entre llamadas, interoperabilidad Node/Python, permiso0600, acceso a symlinks, JSON corrupto, errores de red/auth/rate-limit, negativos de respuesta, saltos anunciados, incremento simple, límite de3 y concurrencia. Las17 Python anteriores también pasan. Con AustroPlus y CATNET:61 Python/77 Node. Python3.12.14/Node24.22.1/JDK21 locales, Node22/JDK21/Python3.12 en CI. No se instaló ninguna librería nueva; únicamente stdlib.
+
+El JSON de builds marca una descarga válida; si en una versión futura cambia el algoritmo de cifrado, habrá que actualizar el codec y volver a verificarlo. No se certifican versiones futuras ni se compila/despliega Android.
+
+Auditoría actual: A0 sin bloqueos; P06 PASS_WITH_UNRESOLVED,7 métodos modificados,90 fuentes alcanzadas,14 expedientes y46 consumidores sin resolución estática. Ocho expedientes consumidores incorporan revisión documental. Las incertidumbres no se consideran aprobadas. Build web correcto; la ruta compilada respondió503 esperado con servicio desactivado, sin error de carga del módulo.

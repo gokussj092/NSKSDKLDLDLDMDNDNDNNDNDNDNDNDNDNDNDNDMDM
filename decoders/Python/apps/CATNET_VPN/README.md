@@ -1,3 +1,9 @@
+# Mantenimiento 2026-11-09
+
+La distribución actual sigue siendo build27, con los mismos hashes. La consulta remota de disponibilidad falla antes de descargar servidores; estado NETWORK_UNAVAILABLE, sin un nuevo catálogo real verificado. Se incorpora un reintento temporal limitado manteniendo TLS, fuentes y preflight/Integrity. [Evidencia](../../../../analysis/net.catnet.vpn/27/RESULTS.md).
+
+## Investigación histórica
+
 # CATNET VPN — catálogo de servidores Cloud
 
 Build analizada: `net.catnet.vpn`, 1.2.5/code27 de APKPure, identidad comprobada

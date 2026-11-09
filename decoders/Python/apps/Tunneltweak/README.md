@@ -1,3 +1,11 @@
+# Builds automáticos y persistentes
+
+El build ya se toma de un JSON de historial. Si el servidor responde426/update_required, se guarda el rechazo y se intenta su mínimo anunciado (o el siguiente si no lo indica), hasta3 solicitudes. Se conserva el build confirmado para futuras descargas y reinicios. Fallos de red o autenticación no cambian la versión.
+
+Servidor: /app/provider-control/tunneltweak-builds.json en el volumen existente; CLI configurable con CLOUD_TUNNELTWEAK_BUILD_STATE_PATH. Solo metadatos, sin catálogos/credenciales. La prueba real recuperó51->53 y verificó2 servidores/68 configuraciones completos. [Reproducción y herramientas](../../../../analysis/com.tunneltweak.loyalteams/53/REPRODUCE.md). Un cambio futuro del cifrado necesita revisar el codec.
+
+## Formatos y evidencia previa
+
 # Tunneltweak — 6.2.3 / build53
 
 Expediente, herramientas y dependencias:

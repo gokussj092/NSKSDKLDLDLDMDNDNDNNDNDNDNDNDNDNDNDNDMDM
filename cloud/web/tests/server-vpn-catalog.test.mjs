@@ -40,7 +40,7 @@ test("current catalog still invalidates the release-57 Android catalog cache",as
  const data=await response.json();
  assert.equal(data.unchanged,false);
  assert.equal(data.catalogVersion,CATALOG_VERSION);
- assert.ok(CATALOG_VERSION>=74);
+ assert.ok(CATALOG_VERSION>=75);
  assert(data.apps.some(x=>x.id==="http-jireh"));
  assert(data.apps.some(x=>x.id==="jyfast-vpn-ultra"));
 });

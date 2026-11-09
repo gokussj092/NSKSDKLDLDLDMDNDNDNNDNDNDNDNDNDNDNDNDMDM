@@ -34,6 +34,14 @@ SERVER_FIELDS = frozenset({
     "DNSUsername", "DNSPassword", "WebUser", "WebPass",
 })
 TWEAK_FIELDS = frozenset({"ProxyHost", "Payload", "Bug", "Sni", "DNSHost"})
+CATALOG15_SERVER_FIELDS = frozenset({
+    "server_host", "username", "password", "udp_host", "udp_obf", "udp_auth",
+    "dns_pubkey", "name_server", "dns_user", "dns_pass", "v2uuid", "v2_host", "v2path",
+    "cf_server", "cf_user", "cf_pass", "ws_host", "ws_user", "ws_pass", "wireguard",
+})
+CATALOG15_TWEAK_FIELDS = frozenset({
+    "proxy_host", "custom_payload", "custom_bug", "custom_sni", "custom_dns", "custom_v2_sni", "custom_v2ray",
+})
 
 
 class DecodeError(ValueError):
@@ -158,12 +166,12 @@ def decode_catalog(data: bytes) -> dict:
         if (not isinstance(obj.get("version"), str) or not obj["version"] or
                 any(not isinstance(obj.get(k), list) for k in ("Servers", "Tweaks")) or
                 not (obj["Servers"] or obj["Tweaks"]) or
-                any(not isinstance(item, dict) or not isinstance(item.get("Name"), str)
+                any(not isinstance(item, dict) or not (isinstance(item.get("Name"), str) or isinstance(item.get("name"), str))
                     for k in ("Servers", "Tweaks") for item in obj[k])):
             raise DecodeError("Estructura de catálogo incompatible.")
         result = _fields(obj, frozenset({"url_updater"}), xor_field)
-        result["Servers"] = [_fields(item, SERVER_FIELDS, xor_field) for item in obj["Servers"]]
-        result["Tweaks"] = [_fields(item, TWEAK_FIELDS, xor_field) for item in obj["Tweaks"]]
+        result["Servers"] = [_fields(item, SERVER_FIELDS if isinstance(item.get("Name"),str) else CATALOG15_SERVER_FIELDS, xor_field) for item in obj["Servers"]]
+        result["Tweaks"] = [_fields(item, TWEAK_FIELDS if isinstance(item.get("Name"),str) else CATALOG15_TWEAK_FIELDS, xor_field) for item in obj["Tweaks"]]
         _validate(result)
         return result
     except (ValueError, UnicodeError, RecursionError) as exc:

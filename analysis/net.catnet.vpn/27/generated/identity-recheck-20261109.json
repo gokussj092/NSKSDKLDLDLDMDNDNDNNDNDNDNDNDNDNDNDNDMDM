@@ -1,0 +1,14 @@
+{
+  "package": "net.catnet.vpn",
+  "versionName": "1.2.5",
+  "versionCode": 27,
+  "xapkBytes": 48001874,
+  "xapkSha256": "70ba046c8e8da42bfb010b5a2d0ecc787b746e2eb39e2d5f74b53a34cba4dfb1",
+  "apkBytes": 14223639,
+  "apkSha256": "995d5d9d70e0f929bd92e29125bf1c9ab87f6f8a3d064b6657c6d230d8e8b31a",
+  "certificateSha256": [
+    "dcc1eb6396b9c1b8ec554c99bb8a9ca7feda3a00fee05a977ec186571661c90c"
+  ],
+  "cryptographicApkSignatureVerified": false,
+  "apkCodeExecuted": false
+}

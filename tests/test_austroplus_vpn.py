@@ -91,7 +91,7 @@ class AustroPlusTests(unittest.TestCase):
             self.assertEqual(catalog.download(), response.data)
             args, kwargs = factory.return_value.open.call_args
             self.assertEqual(args[0].full_url, catalog.CATALOG_URL)
-            self.assertEqual(args[0].get_header("User-agent"), "AustroPlus VPN/13.0.1")
+            self.assertEqual(args[0].get_header("User-agent"), "AustroPlus VPN/15.0.1")
             self.assertEqual(kwargs["timeout"], 25); self.assertEqual(response.limit, codec.MAX_BYTES + 1)
             for data in (b"", b"\r\n<html>Unavailable</html>", b"x" * (codec.MAX_BYTES + 1)):
                 factory.return_value.open.return_value = Response(data)
@@ -127,7 +127,7 @@ class AustroPlusTests(unittest.TestCase):
         manifest = json.loads((APP / "manifest.json").read_text()); icon = (APP / "AustroPlus_VPN.png").read_bytes()
         self.assertEqual(hashlib.sha256(icon).hexdigest(), manifest["icon"]["sha256"])
         self.assertEqual(icon, (ROOT / "cloud/web/public/server-vpn-icons/austroplus-vpn.png").read_bytes())
-        self.assertEqual(manifest["compatibleVersions"], ["13.0.1"]); self.assertFalse(manifest["files"]["exporterCertified"])
+        self.assertIn("13.0.1", manifest["compatibleVersions"]); self.assertFalse(manifest["files"]["exporterCertified"])
         shared = manifest["sharedPrimitive"]
         self.assertEqual(hashlib.sha256((ROOT / shared["source"]).read_bytes()).hexdigest(), shared["sha256"])
 

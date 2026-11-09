@@ -39,3 +39,11 @@ probe, signature, extract_icon, make_fixture, JsonOracle, verify, probe_node,
 run_checks y finalize; history conserva intentos anteriores. Se ejecutan manualmente,
 sin aprobación para reutilización automática Fase7. Licencias transitivas y
 registro central de herramientas siguen NEEDS_REVIEW; no se afirma control CI.
+
+## Herramientas realmente usadas en la revisión 2026-11-09
+
+El inventario anterior se conserva fechado. Ahora: Python3.12.14, Androguard4.1.3 (Apache2), JADX1.5.6 completo/auto (Apache2), OpenJDK21.0.13 Debian (GPL2+Classpath), Node24.22.1 (MIT;22 en CI). Se reutiliza el entorno aislado ya instalado: no se instala nada nuevo. No se volvieron a ejecutar inspección ELF ni extracción/recodificación de iconos. Inventario completo actual en dependencies-maintenance-20261109.lock.json y requirements-maintenance-20261109.lock.txt; licencias desconocidas siguen pendientes.
+
+Sin modificar: descargador validado de analysis/com.tunneldoom.http/432/tools/acquire.py, instalador scripts/apk_analysis/decompile.py y el sondeo tools/probe.py del expediente. Nuevos wrappers comunes preservados en analysis/_intake/austro-cat-2026-11-09/tools; tools/acquire.py fija27 y tools/recheck_20261109.py reproduce el trazado y el fallo. Las interfaces operativas Node/Python solo añaden recuperación temporal limitada. No se concede aprobación automática de herramientas al arnés de APK.
+
+La instantánea local tenía un salto de línea final adicional en tres helpers. Se comprobó igualdad exacta al quitar solo finales de línea y se restauró el texto Git canónico. El lock registra los checksums de ambas representaciones y generated/provenance-normalization.json conserva la comparación. Se repitieron identidad, verificación del instalador y JCA con las fuentes canónicas; los helpers compartidos no se modifican en este commit.

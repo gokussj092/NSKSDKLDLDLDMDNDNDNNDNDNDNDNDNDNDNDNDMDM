@@ -5,9 +5,18 @@
   "versionName": "1.2.5",
   "versionCode": 27,
   "engine": "python",
-  "methods": ["catalog"],
+  "methods": [
+    "catalog"
+  ],
   "catalogScope": "Complete public servers response only; payload/xray catalogs unavailable and not advertised",
   "extensions": [],
   "runtimeSecrets": [],
-  "evidence": "analysis/net.catnet.vpn/27/MANIFEST.json"
+  "evidence": "analysis/net.catnet.vpn/27/MANIFEST.json",
+  "maintenance20261109": {
+    "status": "NETWORK_UNAVAILABLE",
+    "buildUnchanged": 27,
+    "retryLimitPerFixedRequest": 2,
+    "newLiveDownloadVerified": false,
+    "evidence": "analysis/net.catnet.vpn/27/generated/maintenance-20261109.json"
+  }
 }

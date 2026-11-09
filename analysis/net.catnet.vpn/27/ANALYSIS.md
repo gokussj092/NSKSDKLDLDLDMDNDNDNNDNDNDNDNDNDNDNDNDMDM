@@ -81,3 +81,11 @@ Runtime stdlib; no secretos nuevos. Solo Cloud, proveedor/switch/contrato/icono,
 piso72/66 fichas/256 formatos. No Android, merge, despliegue, pruebas VPN,
 API de cuentas ni fabricación de credenciales. Dependencias/licencias transitivas
 y ejecución automática Fase7 pendientes de revisión; validador CI aún no existe.
+
+## Revisión 2026-11-09: la distribución sigue siendo build27
+
+Se readquirió el XAPK público: mismo SHA-256 y base APK que la investigación anterior, certificado extraído dcc1eb6396b9c1b8ec554c99bb8a9ca7feda3a00fee05a977ec186571661c90c. No hay evidencia de cambio de método o de build. Se ejecutó JADX completo1.5.6/auto con JDK21 y se revisaron ApiClient, MobileApiService y fe: mismas fuentes públicas, app_key/package, preflight e Integrity. El fallback DNS nativo se limita a xjdev.net (payloads); no autoriza redirigir servidores o preflight a otra fuente.
+
+Dos sondeos con el script original devolvieron503/91bytes, con error de conexión ascendente antes de cabeceras. Esto identifica fallo de transporte; no prueba que el método del APK haya muerto. No se confundió el mensaje del proxy con un JSON del proveedor. La descarga operativa actualizada también falla tras su presupuesto. Evidencia sanitizada en generated/maintenance-20261109.json.
+
+Se añadió un solo reintento para502/503/504 y fallos transitorios de socket, con presupuesto de30s entre solicitudes (timeouts de socket existentes). Node puede probar la siguiente IPv4 pública validada; TLS conserva el hostname. Se mantiene el mismo UUID de instalación para ambos intentos y la descarga. No se reintentan401/403/429, redirects, HTML, datos inválidos, mantenimiento ni requisitos de Integrity. No se omite el preflight, no se inventan sesiones/tokens y no se presenta una copia antigua como descarga vigente. Estado actual PARTIAL/NETWORK_UNAVAILABLE; las pruebas reales de6 servidores del04nov se conservan como evidencia histórica.
