@@ -558,5 +558,14 @@
       "installed": false,
       "result": "not found; Python bounded byte inspection used"
     }
-  ]
+  ],
+  "manual_workflow_syntax_check": {
+    "name": "PyYAML",
+    "version": "6.0.3",
+    "source": "https://pyyaml.org/",
+    "license": "MIT",
+    "python": "3.12.14 existing primary runtime",
+    "role": "one manual YAML parse of jobs; not a runtime/CI dependency of these decoders",
+    "installation": "none"
+  }
 }

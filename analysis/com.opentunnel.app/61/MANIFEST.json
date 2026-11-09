@@ -130,6 +130,13 @@
       "source": "https://www.capstone-engine.org/",
       "license": "BSD-3-Clause",
       "lockfile": "analysis/com.opentunnel.app/61/dependencies.lock.json"
+    },
+    {
+      "name": "PyYAML (manual workflow syntax check only)",
+      "version": "6.0.3",
+      "source": "https://pyyaml.org/",
+      "license": "MIT",
+      "lockfile": "analysis/com.opentunnel.app/61/dependencies.lock.json"
     }
   ],
   "code_paths": [

@@ -9,7 +9,86 @@
   "p06Gate": "PASS_WITH_UNRESOLVED",
   "p06Findings": [],
   "legacyDynamicConsumersResolved": false,
-  "remoteGithubCI": "PENDING_BRANCH_RUN",
+  "remoteGithubCI": {
+    "sourceCommit": "a347889585335668fde70557606e6cf05993146d",
+    "observedAt": "2026-11-09",
+    "catalogJob": {
+      "run": 42659434431,
+      "pythonTests": 147,
+      "nodeTests": 212,
+      "webBuild": "PASS"
+    },
+    "c6": {
+      "run": 42659455596,
+      "nodeTests": 690,
+      "passed": 688,
+      "failed": 0,
+      "skipped": 2,
+      "webBuild": "PASS"
+    },
+    "a0": {
+      "run": 42659455737,
+      "status": "success"
+    },
+    "p08": {
+      "run": 42659455581,
+      "status": "success"
+    },
+    "download": {
+      "run": 42659455438,
+      "scope": "TRANSPORT_ONLY_NO_DECRYPTION",
+      "total": {
+        "providers": 73,
+        "sources": 85,
+        "ok": 70,
+        "warnings": 15,
+        "internalErrors": 0,
+        "decryptionPerformed": false
+      },
+      "newProviders": [
+        {
+          "id": "opentunnel-ssh",
+          "name": "OpenTunnel · Servidores SSH",
+          "source": "servers",
+          "status": "OK",
+          "code": "CATALOG_CONTENT_CHANGED",
+          "bytes": 1305,
+          "payloadKind": "JSON_OBJECT",
+          "bodySha256": "0cb465088ebfb4dfc754a85fce02197a92398fff08859a7dd6f04d49d8991c93",
+          "shapeSha256": "2b873a2cda04cbc246cf97abe643f1c8479136dafb17eb4d6beace275bbaac60",
+          "decryptionPerformed": false,
+          "httpStatuses": [
+            200
+          ],
+          "baselineAvailable": true,
+          "contentChanged": true,
+          "formatChanged": false,
+          "durationMs": 501
+        },
+        {
+          "id": "md-proxy-vpn",
+          "name": "MD PROXY VPN",
+          "source": "servers",
+          "status": "OK",
+          "code": "DOWNLOAD_OK",
+          "bytes": 1388157,
+          "payloadKind": "TEXT",
+          "bodySha256": "bfdc98492945d04fae4334c24d7938cf264a2207957f4032c564629bd00a77ce",
+          "shapeSha256": "e4ba216b53e675d3ce45a8584de79ecc013718ef83ebd53f29d47d97af594386",
+          "decryptionPerformed": false,
+          "httpStatuses": [
+            200
+          ],
+          "baselineAvailable": true,
+          "contentChanged": false,
+          "formatChanged": false,
+          "durationMs": 1388
+        }
+      ]
+    },
+    "apkBuiltForThisTask": false,
+    "vpsDeployed": false
+  },
   "apkBuilt": false,
   "vpsDeployed": false,
   "humanProductionReview": "REQUIRED"
