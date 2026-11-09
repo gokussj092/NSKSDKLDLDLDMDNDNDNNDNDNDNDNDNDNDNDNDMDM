@@ -34,7 +34,8 @@ def vetted_url(url: str) -> str:
         if (parts.scheme != "https" or parts.port not in (None, 443)
                 or not host or (host != "apkpure.net" and
                 not host.endswith(".apkpure.net") and
-                host != "apkpure.com" and not host.endswith(".apkpure.com"))
+                host != "apkpure.com" and not host.endswith(".apkpure.com") and
+                host != "data.winudf.com")
                 or parts.username or parts.password or parts.fragment):
             raise AcquireError("UNTRUSTED_DOWNLOAD_URL")
     except ValueError as exc:

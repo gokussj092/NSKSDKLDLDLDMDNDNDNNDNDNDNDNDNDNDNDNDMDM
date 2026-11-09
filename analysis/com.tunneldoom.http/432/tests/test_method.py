@@ -42,6 +42,12 @@ class AcquireTests(unittest.TestCase):
             with self.subTest(url=url), self.assertRaises(mod.AcquireError):
                 mod.vetted_url(url)
 
+    def test_exact_distribution_cdn_allowed(self):
+        self.assertEqual(mod.vetted_url("https://data.winudf.com/release.xapk"),
+                         "https://data.winudf.com/release.xapk")
+        with self.assertRaises(mod.AcquireError):
+            mod.vetted_url("https://data.winudf.com.evil.test/release.xapk")
+
     def test_redirect_rejects_non_allowlisted_host(self):
         with self.assertRaises(mod.AcquireError):
             mod.SafeRedirects().redirect_request(
