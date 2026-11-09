@@ -91,6 +91,18 @@ class NativeDarkParity(unittest.TestCase):
         self.assertEqual(self.run_cli(safe.encode())["Host"],"x")
         self.assertEqual(self.run_cli(b'{"Host":"demo", "Port":80}')["Port"],80)
 
+    def test_strict_unprefixed_dark_recognition(self):
+        sample = encode_document({"Port":443}, True)
+        recognized=subprocess.run([self.cli,"--identify"],input=sample,
+            capture_output=True,timeout=10,check=True)
+        self.assertEqual(recognized.stdout.strip(),b"true")
+        for wrong in [b"not-a-dark-envelope", b64(b'{"a":"b"}').encode(),
+                      b"nm-vmess://AAAA", b64(b'{"encryptedLockedConfig":null}').encode()]:
+            with self.subTest(wrong=wrong):
+                result=subprocess.run([self.cli,"--identify"],input=wrong,
+                    capture_output=True,timeout=10,check=True)
+                self.assertEqual(result.stdout.strip(),b"false")
+
     def test_wrong_envelopes_fail_closed(self):
         for payload in [b"", b"!not-base64!", b"dt://", b"foo://AAAA",
                         b64(b'["not a map"]').encode(),
