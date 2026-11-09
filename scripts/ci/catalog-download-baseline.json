@@ -326,6 +326,11 @@
       "payloadKind": "TEXT",
       "bodySha256": "579dc907863a13330dd21e0b48f7122035bea276629f7592d0d614f299d9bf23",
       "shapeSha256": "e4ba216b53e675d3ce45a8584de79ecc013718ef83ebd53f29d47d97af594386"
+    },
+    "litron-pro-vpn/servers": {
+      "payloadKind": "BASE64_TEXT",
+      "bodySha256": "22068da7fd8f39184df5978209826104f7119c53f5930a2cd944024f34009c35",
+      "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
     }
   }
 }

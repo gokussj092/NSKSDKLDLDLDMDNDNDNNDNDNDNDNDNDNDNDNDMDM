@@ -146,6 +146,7 @@
   "excluded_application": {
     "name": "Litron Pro VPN",
     "package": "com.litron.udp",
-    "status": "PENDING_SEPARATE_RESEARCH"
+    "status": "INTEGRATED_SEPARATELY",
+    "evidence_directory": "analysis/com.litron.udp/11"
   }
 }

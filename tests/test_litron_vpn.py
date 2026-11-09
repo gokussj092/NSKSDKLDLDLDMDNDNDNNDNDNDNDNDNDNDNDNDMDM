@@ -26,7 +26,7 @@ class LitronTests(unittest.TestCase):
     def test_input_and_output_limits_do_not_truncate_json(self):
         with self.assertRaises(ValueError):codec.decode_catalog(b'x'*(codec.MAX_INPUT+1))
         with patch.object(codec,'MAX_OUTPUT',32),self.assertRaises(ValueError):codec.decode_catalog(V['catalog'].encode())
-    def test_isolated_worker_returns_every_field_and_rejects_pro_identifier(self):
+    def test_isolated_worker_returns_every_field_and_pro_rejects_base_bytes(self):
         from cloud.workers.python.engine import decode_provider_catalog,DecodeFailure
         r=decode_provider_catalog('litron-vpn',V['catalog'].encode())
         self.assertEqual(r['structuredJson'],V['expected']);self.assertEqual(json.loads(r['rawText']),V['expected']);self.assertFalse(r['isPartial'])

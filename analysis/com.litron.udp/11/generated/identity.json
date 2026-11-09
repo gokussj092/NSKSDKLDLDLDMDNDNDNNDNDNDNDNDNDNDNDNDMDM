@@ -1,0 +1,37 @@
+{
+  "package": "com.litron.udp",
+  "versionName": "11.0",
+  "versionCode": 11,
+  "apksBytes": 22493144,
+  "apksSha256": "a0b2e01fa614273d471f8897921bd9576dc3bdaa3d25e2ad597c818f267d467b",
+  "apkBytes": 25928872,
+  "apkSha256": "83425c38c72a04e0875374cc50706e3eb5ff518104e7edaa1e5f753e675484e1",
+  "splits": [
+    {
+      "name": "base.apk",
+      "bytes": 25928872,
+      "sha256": "83425c38c72a04e0875374cc50706e3eb5ff518104e7edaa1e5f753e675484e1"
+    },
+    {
+      "name": "split_config.arm64_v8a.apk",
+      "bytes": 11191156,
+      "sha256": "fe6894db6bb1619aaacee98831a21673ab123b46aeb647b39c9293608bbc214c"
+    },
+    {
+      "name": "split_config.es.apk",
+      "bytes": 49561,
+      "sha256": "0da5a37628f56adaa908119e4f75e1c119cc93e0719b09d7eba9cad2c06ee8c2"
+    },
+    {
+      "name": "split_config.xhdpi.apk",
+      "bytes": 67010,
+      "sha256": "9732a5e9a2e09fd643a353c62e57ab207287ecb330121c1750cfbbb946b362ef"
+    }
+  ],
+  "certificateSha256": [
+    "51633c1390d1ff21a71a1a256f5a81027c929d36385eafdb234a16697b6b607b"
+  ],
+  "cryptographicApkSignatureVerified": false,
+  "apkCodeExecuted": false,
+  "sourceCategory": "owner-provided APKS"
+}

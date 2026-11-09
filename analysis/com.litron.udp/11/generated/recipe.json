@@ -1,0 +1,32 @@
+{
+  "package": "com.litron.udp",
+  "build": 11,
+  "source": "https://godtechprime.github.io/litroproadfix.txt",
+  "outerKdf": "SHA256(UTF8(public app format input))",
+  "fieldKdf": "SHA256(8 ASCII spaces)",
+  "cipher": "AES-256-CBC/PKCS7, IV16 zero bytes",
+  "cipherAuthenticated": false,
+  "encryptedServerFields": [
+    "ChaveKey",
+    "DNS",
+    "NameServer",
+    "Password",
+    "Payload",
+    "ProxyIP",
+    "SNI",
+    "ServerHost",
+    "Username"
+  ],
+  "embeddedBytes": 15384,
+  "embeddedSha256": "ce2b493d3efefbd13686532aa923535bd6ec2db2883cf4de9bd94d092d3dc560",
+  "iconBytes": 165852,
+  "iconSha256": "625e93856e82f750a0a4590537aac184d8c9110a13877c446d2dcff9a043a887",
+  "staticSourceSha256": {
+    "util/ConfigUtil.java": "4504fd9f5fae450211d80e884d1633a385aba5d807e0949471a48d23e5204bf5",
+    "util/ConfigUpdate.java": "a5b044a35510f80048f46c58669663b9ecd2714c165907db9a9dc5f2fae0cfcf",
+    "util/AESCrypt.java": "c311d5013bd433b4a138b36f93ff51c8e519e41f19019f4d60f2b28d90cde7b3",
+    "MainActivity.java": "b7577b52cf2921446acfad39ad16048e85a294810f471f98d7992c9a6e472f7e",
+    "adapter/ServerDialog.java": "f6f158eababd2e201fb9c75c31b25bc154f58495de1fc48679fd9a5e18ec83ad"
+  },
+  "apkCodeExecuted": false
+}

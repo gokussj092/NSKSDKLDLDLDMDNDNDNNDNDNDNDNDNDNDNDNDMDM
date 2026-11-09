@@ -1,30 +1,46 @@
-name: CATNET Play29 and LITRON base25 catalogs
+name: CATNET and LITRON base-Pro catalogs
 on:
   push:
     branches: [feat/nuevas-integraciones, main]
     paths:
       - decoders/Python/apps/CATNET_VPN/**
       - decoders/Python/apps/Litron_VPN/**
+      - decoders/Python/apps/Litron_Pro_VPN/**
       - analysis/net.catnet.vpn/29/**
       - analysis/com.fleet.vpn/**
+      - analysis/com.litron.udp/**
+      - analysis/_intake/litron-pro-2026-11-09/**
       - cloud/workers/python/engine.py
       - cloud/workers/python/catalog_vpn_bridge.py
       - cloud/web/lib/server-vpn-*.mjs
       - cloud/web/lib/catnet-protocol.mjs
       - tests/test_litron_vpn.py
+      - tests/test_litron_pro_vpn.py
+      - cloud/web/tests/litron*.test.mjs
+      - cloud/web/tests/server-vpn-catalog.test.mjs
+      - cloud/web/lib/c12-provider-controls.mjs
+      - cloud/web/public/server-vpn-icons/litron*.png
       - .github/workflows/catnet-litron-catalogs.yml
   pull_request:
     branches: [main, feat/nuevas-integraciones]
     paths:
       - decoders/Python/apps/CATNET_VPN/**
       - decoders/Python/apps/Litron_VPN/**
+      - decoders/Python/apps/Litron_Pro_VPN/**
       - analysis/net.catnet.vpn/29/**
       - analysis/com.fleet.vpn/**
+      - analysis/com.litron.udp/**
+      - analysis/_intake/litron-pro-2026-11-09/**
       - cloud/workers/python/engine.py
       - cloud/workers/python/catalog_vpn_bridge.py
       - cloud/web/lib/server-vpn-*.mjs
       - cloud/web/lib/catnet-protocol.mjs
       - tests/test_litron_vpn.py
+      - tests/test_litron_pro_vpn.py
+      - cloud/web/tests/litron*.test.mjs
+      - cloud/web/tests/server-vpn-catalog.test.mjs
+      - cloud/web/lib/c12-provider-controls.mjs
+      - cloud/web/public/server-vpn-icons/litron*.png
       - .github/workflows/catnet-litron-catalogs.yml
   workflow_dispatch:
 permissions:
@@ -49,10 +65,10 @@ jobs:
           node-version: "22"
       - run: python -m pip install pycryptodome==3.23.0 argon2-cffi==25.1.0
       - name: Complete JSON, strict Unicode, independent oracles and actual worker regressions
-        run: python -m unittest tests.test_litron_vpn tests.test_catnet_vpn tests.test_catnet_retry tests.test_austroplus_vpn tests.test_austroplus15 tests.test_tunneltweak tests.test_tunneltweak_builds tests.test_wolf_custom_vpn tests.test_wolf_v16 -v
+        run: python -m unittest tests.test_litron_pro_vpn tests.test_litron_vpn tests.test_catnet_vpn tests.test_catnet_retry tests.test_austroplus_vpn tests.test_austroplus15 tests.test_tunneltweak tests.test_tunneltweak_builds tests.test_wolf_custom_vpn tests.test_wolf_v16 -v
       - name: Install existing server dependencies
         working-directory: cloud/web
         run: npm install --ignore-scripts --no-audit --no-fund
       - name: Broker, roster compatibility and base-versus-Pro identity
         working-directory: cloud/web
-        run: node --test --test-concurrency=4 tests/wolf-custom-vpn.test.mjs tests/server-vpn-provider.test.mjs tests/server-vpn-catalog.test.mjs tests/ultra-tunnel.test.mjs tests/halcon-r-net.test.mjs tests/namo-vpn.test.mjs tests/genis-vpn.test.mjs tests/zig-tunnel.test.mjs tests/http-conexion.test.mjs tests/mm-tunnel.test.mjs tests/alfaisal-tunnel-plus.test.mjs tests/jyfast-vpn-ultra.test.mjs tests/catnet-vpn.test.mjs tests/enaa-tunnel.test.mjs tests/vip-snipher-pro.test.mjs tests/server-vpn-any-speicers.test.mjs tests/xxpicore-tunnel.test.mjs tests/text-format-catalog.test.mjs tests/speicers-turbo-vpn.test.mjs tests/alsaher-vip.test.mjs tests/fnf-tunnel-bd.test.mjs tests/litron-vpn.test.mjs tests/tunneltweak-builds.test.mjs
+        run: node --test --test-concurrency=4 tests/wolf-custom-vpn.test.mjs tests/server-vpn-provider.test.mjs tests/server-vpn-catalog.test.mjs tests/ultra-tunnel.test.mjs tests/halcon-r-net.test.mjs tests/namo-vpn.test.mjs tests/genis-vpn.test.mjs tests/zig-tunnel.test.mjs tests/http-conexion.test.mjs tests/mm-tunnel.test.mjs tests/alfaisal-tunnel-plus.test.mjs tests/jyfast-vpn-ultra.test.mjs tests/catnet-vpn.test.mjs tests/enaa-tunnel.test.mjs tests/vip-snipher-pro.test.mjs tests/server-vpn-any-speicers.test.mjs tests/xxpicore-tunnel.test.mjs tests/text-format-catalog.test.mjs tests/speicers-turbo-vpn.test.mjs tests/alsaher-vip.test.mjs tests/fnf-tunnel-bd.test.mjs tests/litron-vpn.test.mjs tests/litron-pro-vpn.test.mjs tests/tunneltweak-builds.test.mjs
