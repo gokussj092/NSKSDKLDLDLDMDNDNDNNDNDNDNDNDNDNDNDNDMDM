@@ -242,18 +242,46 @@ std::string z3a(const std::string& text){
     }
     return result;
 }
+// Historic HTTP Custom SSH credentials can arrive encoded as pairs of
+// Unicode Braille glyphs. Mirror HTTPCUSTOM.py's alphabet before handling the
+// numeric z3a wrapper. This is not a guess-based decryption fallback.
+std::string unbraille(const std::string& raw){
+    static const std::string alphabet=
+        u8"⠁⠃⠉⠙⠑⠋⠛⠓⠊⠚⠅⠇⠍⠝⠕⠏⠟⠗⠎⠞⠥⠧⠺⠭⠽⠵⠼⠁⠼⠃⠼⠉⠼⠙⠼⠑⠼⠋⠼⠛⠼⠊⠼⠚";
+    // Every glyph is exactly three bytes of well-formed U+28xx UTF-8.
+    if(raw.size()<3||raw.size()%3!=0)return raw;
+    if(alphabet.find(raw.substr(0,3))==std::string::npos)return raw;
+    std::vector<unsigned char> output;
+    output.reserve(raw.size()/6);
+    for(size_t i=0;i+5<raw.size();i+=6){
+        const auto first=alphabet.find(raw.substr(i,3));
+        const auto second=alphabet.find(raw.substr(i+3,3));
+        if(first==std::string::npos||second==std::string::npos)return raw;
+        const size_t a=first/3,b=second/3;
+        output.push_back(static_cast<unsigned char>((a*16+b)&255));
+    }
+    // Python returns the original encrypted field when UTF-8 decoding fails.
+    try{
+        const auto decoded=str(output);
+        std::vector<unsigned char> unused;
+        // nlohmann JSON strings are strict UTF-8 during serialization.
+        (void)json(decoded).dump();
+        return decoded;
+    }catch(...){return raw;}
+}
 std::string credentials(const std::string& input,bool ssh){
     if(input.empty())return input;
+    const std::string clear=ssh?unbraille(input):input;
     // Reverse only recognized legacy numeric wrappers; preserve unrecognized
     // (including braille) rather than inventing incorrect credentials.
     if(ssh){
-        auto at=input.find('@');
-        if(at==std::string::npos)return input;
-        auto colon=input.find(':',at+1);
-        if(colon==std::string::npos)return input;
-        const auto username=input.substr(at+1,colon-at-1),password=input.substr(colon+1);
+        auto at=clear.find('@');
+        if(at==std::string::npos)return clear;
+        auto colon=clear.find(':',at+1);
+        if(colon==std::string::npos)return clear;
+        const auto username=clear.substr(at+1,colon-at-1),password=clear.substr(colon+1);
         const auto user=z3a(username),pw=z3a(password);
-        return input.substr(0,at+1)+(user.empty()?username:user)+":"+(pw.empty()?password:pw);
+        return clear.substr(0,at+1)+(user.empty()?username:user)+":"+(pw.empty()?password:pw);
     }
     const auto colon=input.find(':');
     if(colon==std::string::npos)return input;
