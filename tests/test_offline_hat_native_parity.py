@@ -47,9 +47,25 @@ class HatNativeParity(unittest.TestCase):
         encrypted={name:lock_v5(value) for name,value in expected.items()}
         obj={"profilev5":encrypted,"descriptionv5":"alpha"}
         output=self.read(pack_file(obj))
-        self.assertEqual(output["profilev5"],encrypted)
-        self.assertEqual(output["decodedProfileV5"],expected)
+        self.assertEqual(output["profilev5"],expected)
+        self.assertNotIn("decodedProfileV5",output)
         self.assertEqual(output["descriptionv5"],"alpha")
+    def test_reported_real_profilev5_field_values(self):
+        """Regression: encrypted labels captured from an actual user's .hat result."""
+        encoded={"connection_mode":"GQ==\\n",
+                 "custom_host":"WUkAMwJZJgctDRAcAys2\\n",
+                 "custom_payload":"",
+                 "custom_resolver":"1.1.1.1",
+                 "custom_sni":"QkUAPx1YKw4/Fw4cAys2\\n"}
+        expected={"connection_mode":"3",
+                  "custom_host":"screenclass.com",
+                  "custom_payload":"",
+                  "custom_resolver":"1.1.1.1",
+                  "custom_sni":"horizonesim.com"}
+        output=self.read(pack_file({"profilev5":encoded}))
+        self.assertEqual(output["profilev5"],expected)
+        self.assertNotIn("decodedProfileV5",output)
+
     def test_large_json_no_truncation(self):
         document={"configuration":{"server_host":"server.example","server_username":"u"},
                   "long":list(range(512))}
