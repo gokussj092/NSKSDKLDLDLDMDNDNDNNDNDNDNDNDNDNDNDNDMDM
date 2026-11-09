@@ -4,6 +4,13 @@ ENV NEXT_TELEMETRY_DISABLED=1
 COPY package.json ./
 RUN npm install --no-audit --no-fund
 COPY . .
+# Keep the vendor WebP unchanged and publish a PNG compatible with Android's
+# verified icon cache and the content-addressed catalog snapshot validator.
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends webp \
+ && dwebp public/server-vpn-icons/md-proxy-vpn.webp -o public/server-vpn-icons/md-proxy-vpn.png \
+ && node -e 'const b=require("node:fs").readFileSync("public/server-vpn-icons/md-proxy-vpn.png");if(b.subarray(0,8).toString("hex")!=="89504e470d0a1a0a")process.exit(1)' \
+ && rm -rf /var/lib/apt/lists/*
 RUN npm run build
 
 FROM node:22-bookworm-slim

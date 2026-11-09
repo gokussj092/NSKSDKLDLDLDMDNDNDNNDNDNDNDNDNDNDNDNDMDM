@@ -6,7 +6,7 @@ import {publicFormats,FORMAT_DETECTION} from "./file-format-catalog.mjs";
 import {publicTextFormats,publicOnlineReferenceFormats} from "./text-format-catalog.mjs";
 import {providerEnabled} from "./server-vpn-provider.mjs";
 
-export const CATALOG_VERSION = 79; // OpenTunnel files/public SSH hosts and MD PROXY combined catalog.
+export const CATALOG_VERSION = 80; // MD PROXY icon converted to PNG for Android and catalog-chunks compatibility.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -25,7 +25,7 @@ export function activeCatalogVersion(env=process.env) {
 
 const ITEMS = Object.freeze([
   {id:"opentunnel-ssh",name:"OpenTunnel · Servidores SSH",icon:"opentunnel.png",remote:"opentunnel-ssh"},
-  {id:"md-proxy-vpn",name:"MD PROXY VPN",icon:"md-proxy-vpn.webp",remote:"md-proxy-vpn"},
+  {id:"md-proxy-vpn",name:"MD PROXY VPN",icon:"md-proxy-vpn.png",remote:"md-proxy-vpn"},
   {id:"xxpicore-tunnel",name:"XXPICore Tunnel",icon:"xxpicore-tunnel.png",remote:"xxpicore-tunnel"},
   {id:"catnet-vpn",name:"CATNET VPN",icon:"catnet-vpn.png",remote:"catnet-vpn"},
   {id:"litron-vpn",name:"LITRON VPN",icon:"litron-vpn.png",remote:"litron-vpn"},
