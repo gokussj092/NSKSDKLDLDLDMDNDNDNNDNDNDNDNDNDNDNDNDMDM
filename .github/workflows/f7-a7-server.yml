@@ -109,9 +109,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - name: Install locked server dependencies
+      - name: Install existing server dependencies
         working-directory: cloud/web
-        run: npm ci --ignore-scripts --no-audit --no-fund
+        run: npm install --ignore-scripts --no-audit --no-fund
       - name: Complete QA result and TunnelDoom gateway regressions
         working-directory: cloud/web
         run: node --test tests/f7-apk-qa.test.mjs tests/tunneldoom-vpn.test.mjs

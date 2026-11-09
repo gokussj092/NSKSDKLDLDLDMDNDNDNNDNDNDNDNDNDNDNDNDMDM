@@ -258,13 +258,16 @@
   ],
   "code_paths": [
     "cloud/web/lib/server-vpn-provider.mjs",
-    "decoders/Python/apps/TunnelDOOM_VPN/codec.py"
+    "decoders/Python/apps/TunnelDOOM_VPN/codec.py",
+    "decoders/Python/apps/TunnelDOOM_VPN/server_catalog_decoder.py",
+    "cloud/web/tests/tunneldoom-vpn.test.mjs"
   ],
   "evidence_refs": [
     "analysis/com.tunneldoom.http/432/RESULTS.md",
     "analysis/com.tunneldoom.http/432/tests/test_method.py",
     "analysis/com.tunneldoom.http/432/generated/current-proof.json",
-    "analysis/com.tunneldoom.http/432/tools/revalidate.py"
+    "analysis/com.tunneldoom.http/432/tools/revalidate.py",
+    ".github/workflows/tunneldoom-build432-live.yml"
   ],
   "limitations": [
     "Certificate digest matches the previously authorized sample; cryptographic APK signature verification was not performed.",
