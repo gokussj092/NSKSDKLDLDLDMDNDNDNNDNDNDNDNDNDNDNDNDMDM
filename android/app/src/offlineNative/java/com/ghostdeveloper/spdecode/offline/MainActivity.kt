@@ -40,17 +40,13 @@ class MainActivity : ComponentActivity() {
     private var exportPayload:String=""
     private var exportingIdentity=false
 
+    private val supportedFiles=setOf(
+        "hc","ehi","nm","npv","npv4","npvt","npvs",
+        "dark","dt","dtunnel","darktunnel","hat"
+    )
+
     private val importer=registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-        if(uri!=null) {
-            pendingFile=uri;pendingText=null
-            pendingName=nameOf(uri)
-            pendingSuffix=pendingName.substringAfterLast('.', "").lowercase()
-            if(pendingSuffix !in setOf("hc","ehi","nm","npv","npv4","npvt","npvs","dark","dt","dtunnel","darktunnel")) {
-                ui.message=txt("unsupported",ui.language);return@registerForActivityResult
-            }
-            ui.pendingPrompt=null
-            decodeAttempt()
-        }
+        if(uri!=null) importIncomingFile(uri)
     }
     private val identityImporter=registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if(uri!=null) Thread {
@@ -177,6 +173,74 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }.start()
+        if(savedInstanceState==null)handleExternalIntent(intent)
+    }
+
+    override fun onNewIntent(intent:Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleExternalIntent(intent)
+    }
+
+    /** Files offered by Android's Open With and Share dialogs are read through
+     * granted content URIs. Never assume a provider filename proves compatibility.
+     */
+    private fun handleExternalIntent(shared:Intent?) {
+        val incoming=shared?:return
+        val action=incoming.action?:return
+        if(action !in setOf(Intent.ACTION_VIEW,Intent.ACTION_SEND,Intent.ACTION_SEND_MULTIPLE))return
+        if(action==Intent.ACTION_SEND_MULTIPLE){
+            ui.error=readableDecodeError("UNSUPPORTED_FORMAT","multiple",ui.language)
+            return
+        }
+        val attached=if(action==Intent.ACTION_SEND) {
+            if(Build.VERSION.SDK_INT>=33)
+                incoming.getParcelableExtra(Intent.EXTRA_STREAM,Uri::class.java)
+            else {
+                @Suppress("DEPRECATION")
+                incoming.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)
+            }
+        }else null
+        val uri=attached ?: incoming.data ?: incoming.clipData?.let {
+            if(it.itemCount>0)it.getItemAt(0).uri else null
+        }
+        if(uri!=null){
+            if(uri.scheme!="content"&&uri.scheme!="file"){
+                ui.error=readableDecodeError("UNSUPPORTED_FORMAT","",ui.language)
+            }else importIncomingFile(uri)
+            return
+        }
+        if(action==Intent.ACTION_SEND){
+            val plain=incoming.getStringExtra(Intent.EXTRA_TEXT)
+            if(!plain.isNullOrBlank()) beginText(plain)
+            else ui.error=readableDecodeError("UNSUPPORTED_FORMAT","",ui.language)
+        }
+    }
+
+    private fun importIncomingFile(uri:Uri) {
+        if(ui.busy){
+            ui.error=OfflineUiError(
+                if(ui.language=="es")"Ya se está procesando un archivo" else "File being processed",
+                if(ui.language=="es")"Finaliza el proceso actual antes de importar otro archivo." else "Finish the current task before importing another file."
+            )
+            return
+        }
+        val filename=nameOf(uri).ifBlank{"document"}
+        val guess=filename.substringAfterLast('.', "").lowercase()
+        val fallback=uri.lastPathSegment.orEmpty().substringAfterLast('.', "").lowercase()
+        val suffix=if(guess in supportedFiles)guess else fallback.takeIf{it in supportedFiles}?:guess
+        if(suffix !in supportedFiles){
+            ui.error=readableDecodeError("UNSUPPORTED_FORMAT",suffix,ui.language)
+            return
+        }
+        pendingFile=uri
+        pendingText=null
+        pendingName=filename
+        pendingSuffix=suffix
+        ui.tab=0
+        ui.pendingPrompt=null
+        ui.error=null
+        decodeAttempt()
     }
 
     private fun setBars() {
@@ -221,14 +285,14 @@ class MainActivity : ComponentActivity() {
     private fun beginText(text:String) {
         val value=text.trim()
         if(value.isBlank() || value.length>250_000){
-            ui.message=txt("invalid_text",ui.language);return
+            ui.error=readableDecodeError("INVALID_TEXT","",ui.language);return
         }
         val first=value.substringBefore("://").lowercase()
         val npv=first in setOf("npvt","npvt-ssh","npvt-vless","npvt-vmess","npv")
         val dark=first in setOf("dt","dtunnel","dark","darktunnel","dark-tunnel")
         val netmod=first.startsWith("nm-") || !value.contains("://")
         if(!npv && !netmod && !dark){
-            ui.message=txt("unsupported_text",ui.language);return
+            ui.error=readableDecodeError("UNSUPPORTED_TEXT","",ui.language);return
         }
         pendingFile=null
         pendingText=if(first.startsWith("nm-")&&value.contains("://"))
@@ -241,7 +305,7 @@ class MainActivity : ComponentActivity() {
 
     private fun decodeAttempt(pass:String="",hwid:String="",recipient:String="") {
         if(ui.busy)return
-        ui.busy=true;ui.message=null
+        ui.busy=true;ui.message=null;ui.error=null
         val file=pendingFile;val text=pendingText
         val suffix=pendingSuffix;val name=pendingName
         Thread {
@@ -298,19 +362,11 @@ class MainActivity : ComponentActivity() {
                         "RECIPIENT_MISMATCH","NPV_RECIPIENT_MISMATCH"->{
                             ui.pendingPrompt=OfflinePrompt(requireIdentity=true,errorMessage=reason)
                         }
-                        else->ui.message=errorMessage(reason,ui.language)
+                        else->ui.error=readableDecodeError(reason,suffix,ui.language)
                     }
                 }
             }
         }.start()
-    }
-
-    private fun errorMessage(code:String,language:String):String=when(code){
-        "FILE_TOO_LARGE"->txt("too_large",language)
-        "NETMOD_AUTH_OR_PADDING_FAILED"->txt("invalid_file",language)
-        "UNSUPPORTED_OFFLINE_FORMAT"->txt("unsupported",language)
-        else->txt("decode_failed",language)+if(code.matches(Regex("[A-Z0-9_]{3,80}")))
-            " ($code)" else ""
     }
 
     private fun copy(text:String) {
