@@ -16,7 +16,7 @@ for(const provider of [
   {id:"tx-tunnel",host:"strongteam.co",path:"/api/txtunnel/v1/",query:"?appcode=27.0",agent:"Tx Tunnel"},
   {id:"abowaged-vpn",host:"raw.githubusercontent.com",path:"/th3fre/Testing/refs/heads/main/Elk.txt",query:"",agent:"AboWaged VPN/1.0"},
   {id:"http-socketclay",host:"dl.dropboxusercontent.com",path:"/scl/fi/vh319xyu0ck84ks0wdqw8/ServersSC",query:"?rlkey=b9g57byy0igz2jitqix31t4i4&st=evmzpf11&dl=1",agent:"HTTP SocketClay/3.4.0"},
-  {id:"tunneltweak",host:"tunneltweak.com",path:"/api/servers",query:"",agent:"TunnelTweak/1.0 (Android)",headers:{"ngrok-skip-browser-warning":"true","x-app-version":"51","x-cfg-keyed":"1"}},
+  {id:"tunneltweak",host:"tunneltweak.com",path:"/api/servers",query:"",agent:"TunnelTweak/1.0 (Android)",headers:{"ngrok-skip-browser-warning":"true","x-app-version":"53","x-cfg-keyed":"1"}},
   {id:"http-jireh",host:"dl.dropboxusercontent.com",path:"/scl/fi/9p6vvoa8jfch3ribneckq/HTTPJIREH1117",query:"?rlkey=05z97u9cg8tv4k5xem9m1uxu2&st=huezcplw&dl=1",agent:"HTTP Jireh/2.2"},
   {id:"http-fenixvpn",host:"raw.githubusercontent.com",path:"/Fenix1998x/GEN-SERVIDORES-NUEVO-24-08-2027/refs/heads/main/Fenix",query:"",agent:"HTTP FenixVPN/19.4"},
   {id:"austroplus-vpn",host:"raw.githubusercontent.com",path:"/SpkHexX/HexX/refs/heads/main/AustroPlusVPN.json",query:"",agent:"AustroPlus VPN/13.0.1"},

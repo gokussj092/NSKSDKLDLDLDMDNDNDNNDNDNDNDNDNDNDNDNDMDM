@@ -1,0 +1,13 @@
+{
+  "inputBytes": 2455424,
+  "inputSha256": "2c69e4a803d46d3d1029d517ac25ae21fcba48b0bca78516e1658bb503881c48",
+  "version": "1.01",
+  "servers": 24,
+  "networks": 1851,
+  "encryptedFieldsCompared": 252,
+  "wholeIndependentGoParity": true,
+  "decoderSeconds": 4.971,
+  "clearJsonSha256": "82d195d4cadc49c3222b5f4de0e0c9a1043f1fa3a46bf50f0055802b0d4b256d",
+  "rawOutputBytes": 2197943,
+  "apkCodeExecuted": false
+}

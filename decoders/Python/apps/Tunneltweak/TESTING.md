@@ -1,3 +1,7 @@
+# Actualización 2026-11-09
+
+La evidencia vigente está en [RESULTS.md](../../../../analysis/com.tunneltweak.loyalteams/53/RESULTS.md) y su [REPRODUCE.md](../../../../analysis/com.tunneltweak.loyalteams/53/REPRODUCE.md). El informe histórico siguiente se conserva y no describe el build actual.
+
 # Verificación — Tunneltweak 6.2.1
 
 ## Fuente y evidencia

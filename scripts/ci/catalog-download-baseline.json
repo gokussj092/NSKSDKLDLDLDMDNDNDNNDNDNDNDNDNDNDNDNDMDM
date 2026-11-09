@@ -306,6 +306,16 @@
       "payloadKind": "BASE64_TEXT",
       "bodySha256": "f9aa183b6d27d458ff2796268d9b462cc39550fca870bdbb19e137b3d2a9e1c5",
       "shapeSha256": "2c883fba7f9eba122cf28966574d447d10e044d0803f34c72ff5bc9bfec08acf"
+    },
+    "wolf-custom-vpn/servers": {
+      "payloadKind": "TEXT",
+      "bodySha256": "972cec5b138171303807c57241c5014a74d2019025f5fc263c4edd17c811f612",
+      "shapeSha256": "e4ba216b53e675d3ce45a8584de79ecc013718ef83ebd53f29d47d97af594386"
+    },
+    "tunneltweak/servers": {
+      "payloadKind": "JSON_OBJECT",
+      "bodySha256": "85be8b4b72f83b3ef7f46569ee31b8d53e3caf86fb8e78146aa50714cc0fd25d",
+      "shapeSha256": "c69265c9eab4d5b2494a988bca76da803e5e9dd162a5f585e3ac3efca1abb6a6"
     }
   }
 }

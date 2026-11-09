@@ -132,7 +132,7 @@ class TunneltweakTests(unittest.TestCase):
         with patch.object(network, "build_opener", return_value=Opener()):
             network.download(); network.download(api_key="test-key"); network.download(cloud_id=uuid)
             self.assertEqual([r.full_url for r in seen], [network.CATALOG_URL, network.CATALOG_URL, network.CLOUD_BASE_URL+uuid])
-            self.assertEqual(seen[0].get_header("X-app-version"), "51")
+            self.assertEqual(seen[0].get_header("X-app-version"), "53")
             self.assertEqual(seen[0].get_header("X-cfg-keyed"), "1")
             self.assertIsNone(seen[0].get_header("X-api-key"))
             self.assertEqual(seen[1].get_header("X-api-key"), "test-key")

@@ -83,7 +83,9 @@ const PROVIDERS = Object.freeze({
     headers:{"Accept":"application/json","X-GitHub-Api-Version":"2022-11-28"},
   },
   "netcol-vpn": {url:"https://raw.githubusercontent.com/jdavidag/setting/main/tO6oD1drTvL2.json",agent:"Netcol VPN/14.2"},
-  "wolf-custom-vpn": {url:"https://strongteam.co/api/wolfcustom/newv1.txt",agent:"Wolf Custom VPN"},
+  "wolf-custom-vpn": {url:"https://strongteam.co/api/wolfcustomv2/",agent:"Go-http-client/1.1",
+    headers:{"Content-Type":"application/x-www-form-urlencoded"},
+    method:"POST",body:Buffer.from("hash=xsandokUpdatex")},
   "jyfast-vpn-ultra": {url:JYFAST_SOURCES.free,agent:"JyFast VPN Ultra/9",headers:{"X-IGNIX-SIG":"10c7440b8feac5cee6a54959e7599ff26bd27153"}},
   "tunneldoom-vpn": {url:"https://web.tunneldoom.space/config.json",agent:"Dalvik/2.1.0"},
   "mtm-tunnel-lite": {url:"https://xtmtunnel.xyz/updater/527543543860c45bf4238f2a1b56c3",agent:"Dalvik/2.1.0"},
@@ -116,7 +118,7 @@ const PROVIDERS = Object.freeze({
   "tunneltweak": {
     url:"https://tunneltweak.com/api/servers",
     agent:"TunnelTweak/1.0 (Android)",
-    headers:{"ngrok-skip-browser-warning":"true","x-app-version":"51","x-cfg-keyed":"1"},
+    headers:{"ngrok-skip-browser-warning":"true","x-app-version":"53","x-cfg-keyed":"1"},
   },
   "http-jireh": {
     // Build 13 moved NETWORK to Dropbox; the former GitHub URL is stale.

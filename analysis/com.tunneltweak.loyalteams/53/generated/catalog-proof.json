@@ -1,0 +1,11 @@
+{
+  "inputBytes": 23789,
+  "inputSha256": "85be8b4b72f83b3ef7f46569ee31b8d53e3caf86fb8e78146aa50714cc0fd25d",
+  "servers": 2,
+  "configs": 68,
+  "wholeIndependentJcaParity": true,
+  "clearJsonSha256": "0fbb6dad291225de5c118b3ea65dfe8debc40e5c407d591e0cca8fef88280277",
+  "rawOutputBytes": 25362,
+  "apkCodeExecuted": false,
+  "wholeWorkerParity": true
+}

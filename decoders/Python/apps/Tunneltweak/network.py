@@ -9,7 +9,7 @@ else:
 
 CATALOG_URL = "https://tunneltweak.com/api/servers"
 CLOUD_BASE_URL = "https://tunneltweak.com/api/cloudconfig/"
-CATALOG_HEADERS = {"User-Agent": "TunnelTweak/1.0 (Android)", "ngrok-skip-browser-warning": "true", "x-app-version": "51", "x-cfg-keyed": "1"}
+CATALOG_HEADERS = {"User-Agent": "TunnelTweak/1.0 (Android)", "ngrok-skip-browser-warning": "true", "x-app-version": "53", "x-cfg-keyed": "1"}
 
 
 class _NoRedirect(HTTPRedirectHandler):
@@ -40,3 +40,4 @@ def download(*, cloud_id: str | None = None, api_key: str | None = None) -> byte
     if not data or len(data) > MAX_BYTES or data.lstrip().startswith(b"<"):
         raise DecodeError("Respuesta vacía, incompatible o superior a 8 MiB.")
     return data
+

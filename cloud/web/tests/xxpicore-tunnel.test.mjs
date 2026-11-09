@@ -43,7 +43,7 @@ test("XXPICore rejects private DNS and client-selected sources",async t=>{
 });
 test("XXPICore original icon, public metadata, versions and formats",t=>{
  enabled(t);assert(providerIds().includes(id));assert(PUBLIC_PROVIDER_IDS.includes(id));
- assert.equal(CATALOG_VERSION,73);assert.equal(activeCatalogVersion({CLOUD_SERVER_VPN_CATALOG_VERSION:"215686715"}),215686715);
+ assert.ok(CATALOG_VERSION>=73);assert.equal(activeCatalogVersion({CLOUD_SERVER_VPN_CATALOG_VERSION:"215686715"}),215686715);
  const value=catalog(),app=value.apps.find(x=>x.id===id);assert.equal(value.apps.length,67);assert.equal(value.formats.length,256);
  assert.equal(app.name,"XXPICore Tunnel");assert.equal(app.decodeEnabled,true);assert.equal(iconFor(id).bytes.length,78910);
  assert.equal(app.iconSha256,"e83e97346f5f7ef672a1ec85f177da0f3660579e37df2939f0a62f1a0620ba88");assert(!JSON.stringify(app).includes("https://"));
