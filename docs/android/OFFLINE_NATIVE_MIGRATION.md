@@ -71,3 +71,13 @@ El JNI rechaza explícitamente los formatos pendientes. No habrá fallback a Kot
   alfa de CI, NO la clave de distribución estable. Verificar instalación,
   pantalla Acerca de, desplazamiento JSON, formatos reales Dark y regresión
   del resto de métodos en Android físico antes de promocionar como estable.
+
+
+## Offline file sharing, errors and Hat Tunnel (2026-11-08)
+- External imports: ACTION_SEND and ACTION_VIEW intents are declared in the isolated Android manifest; MainActivity processes EXTRA_STREAM, data and ClipData both in onCreate and onNewIntent. Supports Telegram, WhatsApp and document providers granting file read access. Unknown formats show a modal alert and never use unrelated decoders.
+- Readable errors: OfflineErrorMessages maps unsupported versions, invalid files, credentials and I/O failures to user-visible messages without raw exception codes. A file intended for another NPV recipient cannot be opened by creating a new key. Historical NPV recipient-v1 explicitly indicates unsupported protection.
+- No implementation details in visible UI copy. The implementation stays offline and cryptographic decoding stays in C++ behind JNI.
+- Native Hat Tunnel: .hat files, AES-128-ECB with PKCS7 unpadding, historical key, complete original JSON, and profilev5 XOR field interpretation. Independent golden tests live in tests/test_offline_hat_native_parity.py. Synthetic parity does not certify every real export.
+- Dark Tunnel text: darktunnel:// already routed through the Dark native decoder; retaining other supported schemes.
+- New UI contract: tests/test_offline_share_ui_contract.py checks intents, errors, Android isolation, and removal of UI implementation jargon.
+- Device QA pending: import through Telegram/WhatsApp, malformed files, unsupported HC version, NPV mismatched identity, actual HAT file and regression on existing methods. Alpha release has an ephemeral test signing certificate; back up local results and NPV identity before uninstall.
