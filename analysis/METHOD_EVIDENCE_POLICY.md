@@ -102,6 +102,23 @@ La regla estricta cubre **scripts propios, herramientas nuevas y de terceros, li
 
 **Ejemplos meramente ilustrativos:** PyCryptodome (paquete Python normalmente importado como `Crypto`), implementaciones de Argon2 como `argon2-cffi`, JADX, apktool y una herramienta «Hydra» específicamente identificada. Los ejemplos NO acreditan que esas dependencias estén instaladas, usadas ni aprobadas en SP-DECODE.
 
+## 2.2. Auditoría HMAC de conexión, separada del catálogo — 2026-11-09
+
+Toda investigación nueva o revisión debe comprobar y documentar si existe HMAC y cuál es su finalidad. No confundir estos ámbitos:
+
+| Ámbito | Evidencia necesaria |
+| --- | --- |
+| Archivo/catálogo | Verificación de integridad, derivación de una clave de formato u otra operación local documentada. |
+| Transporte VPN | MAC del protocolo de transporte, distinguiéndolo de la autenticación de una cuenta o cliente. |
+| Autenticación de conexión | Evidencia de que un verificador del servicio usa ese HMAC para autorizar el establecimiento de la conexión. |
+| Desconocido | Referencias estáticas o marcadores sin trazado suficiente: mantener UNCONFIRMED. |
+
+Registrar en el expediente `connection_authentication`: versión/paquete, estado (`CONFIRMED`, `NOT_OBSERVED` o `UNCONFIRMED`), algoritmo si está probado, ámbito, procedencia por categoría del material (negociado por sesión, Keystore, configuración autorizada o desconocida), verificador observado, fuente de evidencia y limitaciones. `NOT_OBSERVED` solo describe la cobertura revisada; no prueba ausencia universal. Referencias de bibliotecas, `Mac.init`, nombres de algoritmos o una cadena de 16 caracteres no bastan para confirmar el propósito.
+
+La auditoría conserva conteos, hashes y conclusiones sanitizadas. No captura, extrae, imprime ni versiona secretos de autenticación de servicios ajenos, claves de sesión, tokens, entradas/salidas sensibles de hooks o generadores reutilizables para suplantar al cliente. Las pruebas de autenticación se hacen con secretos ficticios o material suministrado por el propietario del servicio por sus mecanismos autorizados, sin incluir sus valores en Git.
+
+Esta regla añade una comprobación documental a la investigación. No activa nuevos adaptadores F7, instrumentación automática, pruebas contra servicios o un bloqueo CI adicional. La extracción de un catálogo no certifica la autenticación de una conexión VPN.
+
 ## 3. Prohibiciones y manejo de materiales
 
 - PROHIBIDO subir a Git: archivos APK/APKS/XAPK privados sin derechos de redistribución, muestras de clientes, perfiles VPN reales con credenciales, JSON descifrado sensible, private keys, claves de firma, usuarios/contraseñas, tokens, Google Play Integrity tokens, cookies, secretos de proveedores o logs con datos personales.

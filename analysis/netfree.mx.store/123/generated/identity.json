@@ -1,0 +1,16 @@
+{
+  "package": "netfree.mx.store",
+  "versionName": "104.1.20",
+  "versionCode": 123,
+  "source": "https://d.apkpure.net/b/XAPK/netfree.mx.store?versionCode=123",
+  "distributionBytes": 40752825,
+  "distributionSha256": "e3c46d1b467b16647c2546cb8525a4fc0c6258c2c79b9bca9f9ef4715d42d09d",
+  "baseApkBytes": 14758032,
+  "baseApkSha256": "b064d225c6a7c150d922057ad1304886b3dd3100b07d3d19a85057c0f4918427",
+  "certificateSha256": [
+    "0df454e6429e1e131aff6f49e1337cb5ef4c1abcd87427d22a5258c07f6d8c9e"
+  ],
+  "apkSignatureCryptographicallyVerified": false,
+  "apkCodeExecuted": false,
+  "bundleSha256": "e3c46d1b467b16647c2546cb8525a4fc0c6258c2c79b9bca9f9ef4715d42d09d"
+}

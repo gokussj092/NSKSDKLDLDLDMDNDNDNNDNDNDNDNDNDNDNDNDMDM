@@ -51,3 +51,6 @@ El archivo histórico [SOCKSIP_VER8_VER7_VER6_STUDY.md](SOCKSIP_VER8_VER7_VER6_S
 
 
 2026-11-09: [Thailand build3](thailand.vpn.globalvpn/3/ANALYSIS.md), [KHAM build24](com.khamvpn.net/24/ANALYSIS.md), [AR PRO build2 recheck](noob.arpro.vpn/2/ANALYSIS.md). Complete remote JSON verified for the first two; AR PRO source returns HTML, pending.
+
+
+2026-11-09: auditoría HMAC separada de catálogos para [Speicers Pro build123](netfree.mx.store/123/ANALYSIS.md) y [HTTP Injector6.5.0/build244](com.evozi.injector/244/ANALYSIS.md). Inventario estático sanitizado; autenticación VPN UNCONFIRMED, sin extracción de secretos. Regla obligatoria en METHOD_EVIDENCE_POLICY.md sección2.2.
