@@ -5,6 +5,8 @@ on:
     branches: [feat/nuevas-integraciones]
     paths:
       - cloud/apk_analysis/**
+      - tests/test_f7_a9_full_harness.py
+      - .dockerignore
       - .github/workflows/f7-apk-tools-image.yml
   workflow_dispatch:
 
@@ -30,10 +32,14 @@ jobs:
           cat > tool-fixtures/src/com/spdecode/lab/OwnedFixture.java <<'JAVA'
           package com.spdecode.lab;
           public final class OwnedFixture {
-            public static String decryptOwned(byte[] input) throws Exception {
-              javax.crypto.Cipher cipher =
-                  javax.crypto.Cipher.getInstance("AES/GCM/NoPadding");
-              return cipher.getAlgorithm();
+            public static byte[] decryptOwned(byte[] input, byte[] key, byte[] nonce) throws Exception {
+              javax.crypto.Cipher cipher = javax.crypto.Cipher.getInstance("AES/GCM/NoPadding");
+              cipher.init(2, new javax.crypto.spec.SecretKeySpec(key, "AES"),
+                  new javax.crypto.spec.GCMParameterSpec(128, nonce));
+              return cipher.doFinal(input);
+            }
+            public static byte[] caller(byte[] input, byte[] key, byte[] nonce) throws Exception {
+              return decryptOwned(input, key, nonce);
             }
           }
           JAVA
@@ -93,7 +99,7 @@ jobs:
           command=[
               "java","-Xmx1500m","-cp",str(JADX_JAR),
               "jadx.cli.JadxCLI","--no-res",
-              "--decompilation-mode","simple","-j","2",
+              "--decompilation-mode","auto","-j","2",
               "-d",str(out),"/samples/owned-fixture.jar",
           ]
           if not _run(command,cwd=root,timeout=240,env=env,
@@ -103,6 +109,13 @@ jobs:
           assert sources["candidateCallSites"], "OWNED_JADX_NO_EVIDENCE"
           assert "JCA_CIPHER" in sources["cryptoReferenceCounts"]
           assert sources["methodValidated"] is False
+          recipes=sources["methodRecipes"]
+          assert any(m["method"]=="decryptOwned" and
+                     "AES/GCM/NoPadding" in m["algorithms"] and
+                     any(o["role"]=="CIPHER_FINAL" for o in m["observations"])
+                     for m in recipes["methods"]), recipes
+          assert recipes["sameClassCalls"], recipes
+          assert recipes["rawSourceExported"] is False
           project=root/"ghidra-project"
           project.mkdir()
           summary=root/"ghidra-summary.json"
@@ -122,7 +135,13 @@ jobs:
           assert report["functions"]>0
           assert any("encrypt_owned_configuration" in item["name"]
                      for item in report["candidateFunctions"]), report
-          print("PASS: actual pinned JADX decompilation and Ghidra symbol analysis on owned fixtures")
+          native=next(item for item in report["candidateFunctions"]
+                      if item["name"]=="encrypt_owned_configuration")
+          assert native["decompilationCompleted"] is True, report
+          assert len(native["decompiledCSha256"])==64, report
+          assert report["rawSourceExported"] is False
+          assert report["codeExecuted"] is False
+          print("PASS: full JADX auto, method recipes/call references and actual Ghidra C decompilation on owned fixtures")
           '
       - name: Verify no precompiled APK/AAB was produced
         run: |

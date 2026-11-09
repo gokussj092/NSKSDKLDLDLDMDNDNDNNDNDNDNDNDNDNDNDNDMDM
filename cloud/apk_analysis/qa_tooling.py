@@ -13,6 +13,9 @@ import re
 import signal
 import subprocess
 import tempfile
+import time
+from .qa_full_profile import full_profile, remaining_seconds
+from .qa_method_recipes import merge_recipe_reports
 import zipfile
 from .qa_jadx_refs import scan_jadx_sources
 from .qa_jadx_recovery import DEX_NAME, diagnose_termination, recover_jadx
@@ -93,8 +96,8 @@ def _run(command:list[str],*,cwd:Path,timeout:int,env:dict,
             return False
 
 
-def _base_and_libs(source:Path,dest:Path,*,lite:bool=False):
-    """Extract one base APK and at most three bounded ELF candidates."""
+def _base_and_libs(source:Path,dest:Path,*,lite:bool=False,profile:dict|None=None):
+    """Extract one base APK and profile-bounded ELF candidates."""
     total=0
     splits=[]
     if source.suffix.lower()==".apk":
@@ -130,6 +133,8 @@ def _base_and_libs(source:Path,dest:Path,*,lite:bool=False):
                         out.write(block)
                     if copied!=item.file_size:raise ValueError("SPLIT_TRUNCATED")
                 splits.append(split)
+    native_limit=profile["nativeLibraries"] if profile else MAX_GHIDRA_LIBS
+    native_bytes=profile["nativeBytes"] if profile else 32*1024*1024
     binaries=[]
     total_native=0;oversized_native=0
     def priority(item):
@@ -146,10 +151,10 @@ def _base_and_libs(source:Path,dest:Path,*,lite:bool=False):
                 entry.filename.endswith(".so")]
             total_native+=len(all_native)
             candidates=sorted((entry for entry in all_native if
-                52<=entry.file_size<=32*1024*1024),key=priority)
+                52<=entry.file_size<=native_bytes),key=priority)
             oversized_native+=len(all_native)-len(candidates)
             for info in candidates:
-                if lite or len(binaries)>=MAX_GHIDRA_LIBS:break
+                if lite or len(binaries)>=native_limit:break
                 # Only a fixed, private basename is written, never an APK path.
                 native=dest/("native-"+str(len(binaries))+".so")
                 with archive.open(info) as inp,native.open("xb") as out:
@@ -192,6 +197,9 @@ def inspect_tooling(source:Path,report:dict)->dict:
     if _memory_limit()<(1024*1024*1024 if lite else MIN_MEMORY):
         state["status"]="INSUFFICIENT_CONTAINER_MEMORY"
         return state
+    profile=None if lite else full_profile(_memory_limit())
+    deadline=time.monotonic()+(profile["jobSeconds"] if profile else 900)
+    jadx_deadline=time.monotonic()+(profile["jadxSeconds"] if profile else 660)
     if not _verified_jadx():
         state["status"]="JADX_NOT_PRELOADED_OR_HASH_MISMATCH"
         return state
@@ -213,7 +221,7 @@ def inspect_tooling(source:Path,report:dict)->dict:
                   hashlib.sha256(headless.read_bytes()).hexdigest()==expected)
     with tempfile.TemporaryDirectory(prefix=".apkqa-tools-",dir=source.parent) as td:
         scratch=Path(td)
-        base,libs,total_native,oversized_native=_base_and_libs(source,scratch,lite=lite)
+        base,libs,total_native,oversized_native=_base_and_libs(source,scratch,lite=lite,profile=profile)
         # Java writes only to ephemeral per-job workspace; no network and
         # no permission to the decoder worker, host keys, Redis or Docker.
         # A minimal fixed environment. Never copy the service's internal
@@ -226,10 +234,11 @@ def inspect_tooling(source:Path,report:dict)->dict:
              "JAVA_TOOL_OPTIONS":"-Duser.home="+str(scratch)}
         dest=scratch/"jadx-output"
         dest.mkdir(mode=0o700)
-        command=["java","-Xmx512m" if lite else "-Xmx1800m",
-                 "-XX:ActiveProcessorCount=1" if lite else "-XX:ActiveProcessorCount=2",
+        command=["java","-Xmx512m" if lite else "-Xmx"+profile["heap"],
+                 "-XX:ActiveProcessorCount=1" if lite else "-XX:ActiveProcessorCount="+str(profile["threads"]),
                  "-cp",str(JADX_JAR),"jadx.cli.JadxCLI",
-                 "--no-res","--decompilation-mode","simple","-j","1" if lite else "2",
+                 "--no-res","--decompilation-mode","simple" if lite else "auto",
+                 "-j","1" if lite else str(profile["threads"]),
                  "-d",str(dest),str(base)]
         # Large multidex applications exhaust a small JVM on the monolithic pass.
         # Prefer bounded per-DEX work immediately, keeping the real output of
@@ -238,7 +247,7 @@ def inspect_tooling(source:Path,report:dict)->dict:
         # must determine this strategy from the validated base APK itself.
         large_dex=_prefer_dex_first(base,lite)
         termination=("DEX_FIRST_RESOURCE_BUDGET" if large_dex else
-                     _run_jadx(command,cwd=scratch,timeout=180 if lite else 240,env=env,
+                     _run_jadx(command,cwd=scratch,timeout=180 if lite else profile["primarySeconds"],env=env,
                                logfile=scratch/"jadx.log"))
         did_jadx=termination=="EXIT_ZERO"
         # Do not return APK source code or stdout that could contain secrets.
@@ -251,7 +260,8 @@ def inspect_tooling(source:Path,report:dict)->dict:
             # Keep the first, possibly useful, JADX output and retry only
             # independently extracted DEX files in a fixed sequential budget.
             try:
-                recovery=recover_jadx(base,scratch,JADX_JAR,env,_run_jadx,scan_jadx_sources)
+                recovery=recover_jadx(base,scratch,JADX_JAR,env,_run_jadx,scan_jadx_sources,
+                    **({} if lite else {"profile":profile,"deadline":jadx_deadline}))
             except (OSError,ValueError,RuntimeError,zipfile.BadZipFile):
                 # The primary attempt may already contain valuable sources.
                 # A broken retry must not erase the primary evidence.
@@ -280,6 +290,8 @@ def inspect_tooling(source:Path,report:dict)->dict:
                                    len(recovery["candidateCallSites"])))
             source_refs["candidateCallSitesObserved"]=observed
             source_refs["candidateCallSitesTruncated"]=(observed>len(distinct[:48]))
+            source_refs["methodRecipes"]=merge_recipe_reports([
+                source_refs.get("methodRecipes",{}),recovery.pop("methodRecipes",{})])
             counts=source_refs.setdefault("cryptoReferenceCounts",{})
             for label,value in recovery["cryptoReferenceCounts"].items():
                 counts[label]=counts.get(label,0)+value
@@ -295,12 +307,18 @@ def inspect_tooling(source:Path,report:dict)->dict:
                 diagnose_termination(scratch/"jadx.log",termination)),
             "recovery":recovery,
             "sourceReferencesMayOverlapRetries":not did_jadx,
+            "decompilationMode":"simple" if lite else "auto",
             "attempted":True,
             "completed":did_jadx,
         }
         state["jadxAttempted"]=True
         state["jadxExecuted"]=did_jadx
-        state["resourceProfile"]="JADX_LITE" if lite else "ADVANCED"
+        state["resourceProfile"]="JADX_LITE" if lite else profile["name"]
+        state["toolDistribution"]="JADX_LITE" if lite else "JADX_FULL"
+        if profile:
+            state["resourceBudget"]={key:profile[key] for key in (
+                "heap","threads","jobSeconds","jadxSeconds","nativeLibraries")}
+        state["uploadedCodeExecuted"]=False
         state["status"]=(
             "PARTIAL_TOOLS_EXECUTED" if did_jadx
             else ("TOOLS_PARTIAL" if partial else "TOOLS_FAILED")
@@ -314,26 +332,32 @@ def inspect_tooling(source:Path,report:dict)->dict:
                              "elfOversized":oversized_native}
         else:
             analysed=0;failed=0;functions=0;candidate_names=[]
+            budget_skipped=0
             for i,lib in enumerate(libs):
+                seconds=remaining_seconds(deadline,time.monotonic(),profile["ghidraProcessSeconds"])
+                if seconds<1:
+                    budget_skipped=len(libs)-i
+                    break
                 result=scratch/("ghidra-result-"+str(i)+".json")
                 project=scratch/("ghidra-project-"+str(i))
                 project.mkdir(mode=0o700)
                 cmd=[str(headless),str(project),"SPDecodeQA"+str(i),
-                     "-import",str(lib),"-analysisTimeoutPerFile","120",
+                     "-import",str(lib),"-analysisTimeoutPerFile",str(profile["ghidraAnalysisSeconds"]),
                      "-scriptPath",str(GHIDRA_SCRIPT.parent),
                      "-postScript",GHIDRA_SCRIPT.name,str(result),
                      "-deleteProject"]
-                okay=_run(cmd,cwd=scratch,timeout=180,env=env,
+                okay=_run(cmd,cwd=scratch,timeout=seconds,env=env,
                           logfile=scratch/("ghidra-"+str(i)+".log"))
-                if okay and result.is_file() and result.stat().st_size<4096:
+                if result.is_file() and result.stat().st_size<65536:
                     try:
                         meta=json.loads(result.read_text("utf-8"))
                         if (isinstance(meta.get("functions"),int) and
                                 0<=meta["functions"]<=10_000_000):
                             functions+=meta["functions"];analysed+=1
+                            if not okay:failed+=1
                             for item in meta.get("candidateFunctions",[])[:32]:
                                 if (isinstance(item,dict) and
-                                    re.fullmatch(r"[A-Za-z0-9_.$]{1,100}",
+                                    re.fullmatch(r"[A-Za-z0-9_.$]{1,160}",
                                                  str(item.get("name",""))) and
                                     re.fullmatch(r"[0-9a-fA-F]{1,16}",
                                                  str(item.get("address","")))):
@@ -342,12 +366,18 @@ def inspect_tooling(source:Path,report:dict)->dict:
                                             "binary":lib.name,
                                             "name":item["name"],
                                             "address":item["address"],
-                                            "evidence":"GHIDRA_SYMBOL_NAME_ONLY",
+                                            "evidence":"GHIDRA_STATIC_FUNCTION_EVIDENCE",
+                                            "decompilationCompleted":item.get("decompilationCompleted") is True,
+                                            **({"decompiledCSha256":item["decompiledCSha256"]}
+                                               if re.fullmatch(r"[0-9a-f]{64}",str(item.get("decompiledCSha256",""))) else {}),
+                                            "calledCryptoFunctions":[name for name in item.get("calledCryptoFunctions",[])[:16]
+                                                if isinstance(name,str) and re.fullmatch(r"[A-Za-z0-9_.$]{1,160}",name)],
+                                            "methodValidated":False,
                                         })
                         else:failed+=1
                     except (OSError,ValueError,TypeError):failed+=1
                 else:failed+=1
-            fully_covered=analysed==total_native and not failed
+            fully_covered=analysed==total_native and not failed and not budget_skipped
             state["ghidra"]={
                 "status":("COMPLETED" if fully_covered else
                           "PARTIAL_LIMITED" if analysed else "FAILED_OR_TIMEOUT"),
@@ -355,6 +385,8 @@ def inspect_tooling(source:Path,report:dict)->dict:
                 "elfSelected":len(libs),
                 "elfSkipped":max(0,total_native-len(libs)),
                 "elfOversized":oversized_native,
+                "elfBudgetSkipped":budget_skipped,
+                "nativeMethodsDecompiled":sum(x.get("decompilationCompleted",False) for x in candidate_names),
                 "elfAnalysed":analysed,"elfFailed":failed,
                 "functionsEnumerated":functions,
                 "candidateFunctions":candidate_names,

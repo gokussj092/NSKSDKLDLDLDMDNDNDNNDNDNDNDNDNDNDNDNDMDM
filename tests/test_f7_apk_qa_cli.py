@@ -69,18 +69,24 @@ class F7QAActivationTests(unittest.TestCase):
         begin=SCRIPT.index("apk_qa_enable_tools(){")
         end=SCRIPT.index("apk_qa_status(){",begin)
         tool_block=SCRIPT[begin:end]
-        marker='if ! python3 - "$ENVFILE" <<' + "'PY'\n"
+        marker='if ! python3 - "$ENVFILE" "$tool_mem" "$tool_cpus" <<' + "'PY'\n"
         self.assertIn(marker,tool_block)
         body=tool_block.split(marker,1)[1].split("\nPY\n  then",1)[0]
-        self.env.write_text("CLOUD_APK_QA_ENABLED=true\n",encoding="utf-8")
+        self.env.write_text("CLOUD_APK_QA_ENABLED=true\nSPDECODE_APK_QA_LITE=true\n",encoding="utf-8")
         def provision():
-            return subprocess.run([sys.executable,"-c",body,str(self.env)],
+            return subprocess.run([sys.executable,"-c",body,str(self.env),"8192m","3.0"],
                                   capture_output=True,text=True,check=False)
         first=provision()
         self.assertEqual(first.returncode,0,first.stderr)
         raw=self.env.read_text(encoding="utf-8")
         self.assertIn("CLOUD_APK_QA_TOOLS_REMOTE=enabled",raw)
         self.assertIn("CLOUD_APK_QA_TOOLS_REVIEWED=true",raw)
+        self.assertIn("SPDECODE_APK_QA_LITE=false",raw)
+        self.assertNotIn("SPDECODE_APK_QA_LITE=true",raw)
+        self.assertIn("SPDECODE_APK_QA_GHIDRA=enabled",raw)
+        self.assertIn("SPDECODE_APK_TOOLS_MEM_LIMIT=8192m",raw)
+        self.assertIn("SPDECODE_APK_TOOLS_CPUS=3.0",raw)
+        self.assertIn("SPDECODE_APK_TOOLS_DOCKERFILE=cloud/apk_analysis/Dockerfile.qa-tools",raw)
         credential=[row.partition("=")[2] for row in raw.splitlines()
                     if row.startswith("CLOUD_APK_QA_TOOLS_TOKEN=")]
         self.assertEqual(len(credential),1)

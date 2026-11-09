@@ -33,6 +33,8 @@ class F7ToolingIsolationPolicy(unittest.TestCase):
             "cloud/apk_analysis/qa_deep.py",
             "cloud/apk_analysis/qa_jadx_refs.py",
             "cloud/apk_analysis/qa_tool_rpc.py",
+            "cloud/apk_analysis/qa_full_profile.py",
+            "cloud/apk_analysis/qa_method_recipes.py",
             "cloud/apk_analysis/qa_tooling.py",
             "cloud/apk_analysis/qa_tool_worker.py",
             "cloud/apk_analysis/qa_static.py",
@@ -103,7 +105,7 @@ class F7ToolingIsolationPolicy(unittest.TestCase):
         self.assertIn('"SPDECODE_APK_QA_LITE"',tooling)
         self.assertIn('"-Xmx512m"',tooling)
         self.assertIn('"DISABLED_IN_LITE_PROFILE"',tooling)
-        self.assertIn("base,libs,total_native,oversized_native=_base_and_libs(source,scratch,lite=lite)",tooling)
+        self.assertIn("base,libs,total_native,oversized_native=_base_and_libs(source,scratch,lite=lite,profile=profile)",tooling)
         self.assertIn("not lite and bool(",tooling)
         cli=source("cloud/infra/vps/spdecodectl")
         self.assertIn("apk_qa_enable_lite(){",cli)

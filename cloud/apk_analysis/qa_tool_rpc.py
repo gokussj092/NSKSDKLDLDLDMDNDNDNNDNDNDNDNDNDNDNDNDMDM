@@ -16,7 +16,7 @@ import secrets
 import time
 
 MAX_APK=100_000_000
-MAX_REPORT=128_000
+MAX_REPORT=256_000
 TOKEN=re.compile(r"[A-Za-z0-9_-]{32,128}\Z")
 HEX64=re.compile(r"[0-9a-f]{64}\Z")
 NONCE=re.compile(r"[0-9a-f]{32}\Z")
@@ -65,7 +65,7 @@ def inspect_remote(source:Path,*,host:str="apk-tools",port:int=8793)->dict:
         "X-SP-Tool-Ext":suffix,
         "X-SP-Tool-Mac":mac(token,size,digest,now,nonce,suffix),
     }
-    connection=http.client.HTTPConnection(host,port,timeout=1020)
+    connection=http.client.HTTPConnection(host,port,timeout=1800)
     try:
         with source.open("rb") as inp:
             connection.request("POST","/analyze",body=inp,headers=headers)

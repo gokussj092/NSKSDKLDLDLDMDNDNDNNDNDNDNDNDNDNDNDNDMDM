@@ -173,6 +173,7 @@ services:
       SPDECODE_APK_QA_TOOLS_REVIEWED: ${CLOUD_APK_QA_TOOLS_REVIEWED:-false}
       SPDECODE_APK_QA_TOOLS_SCRATCH: /analysis
       SPDECODE_APK_QA_LITE: ${SPDECODE_APK_QA_LITE:-false}
+      SPDECODE_APK_QA_GHIDRA: ${SPDECODE_APK_QA_GHIDRA:-disabled}
     networks: [apk-tools-private]
     read_only: true
     cap_drop: ["ALL"]

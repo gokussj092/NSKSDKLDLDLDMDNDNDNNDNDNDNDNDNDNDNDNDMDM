@@ -305,16 +305,30 @@ apk_qa_enable_tools(){
   mem_kib=$(awk '/^MemTotal:/ {print $2;exit}' /proc/meminfo)
   [[ "$mem_kib" =~ ^[0-9]+$ && "$mem_kib" -ge 7800000 ]] ||
     die "Advanced APK tools require a separate host with at least 8 GB RAM; the metadata lab remains operational"
+  # Leave roughly 4 GB for the OS, web, database and normal decoder worker.
+  # Select the larger full profile only when this host actually has the RAM.
+  local tool_mem=4096m tool_cpus=1.8 disk_min=8000000 available_kib
+  if [[ "$mem_kib" -ge 11000000 ]]; then
+    tool_mem=8192m
+    disk_min=15000000
+    if [[ "$(getconf _NPROCESSORS_ONLN)" -ge 4 ]]; then tool_cpus=3.0;fi
+  fi
+  available_kib=$(awk '/^MemAvailable:/ {print $2;exit}' /proc/meminfo)
+  [[ "$available_kib" =~ ^[0-9]+$ && "$available_kib" -ge 3000000 ]] ||
+    die "Full APK tools need at least 3 GB currently available RAM; free server memory before activation"
   local free_kib
   free_kib=$(df -Pk "$REPO" | awk 'NR==2 {print $4}')
-  [[ "$free_kib" =~ ^[0-9]+$ && "$free_kib" -ge 8000000 ]] ||
-    die "Advanced APK tools require at least 8 GB free build/scratch disk"
+  [[ "$free_kib" =~ ^[0-9]+$ && "$free_kib" -ge "$disk_min" ]] ||
+    die "Advanced APK tools require 8 GB free disk (15 GB for the 12 GB host profile)"
   local previous
   previous=$(mktemp "$CFG/.apk-tools-before-XXXXXXXX")
   cp -p "$ENVFILE" "$previous"
-  if ! python3 - "$ENVFILE" <<'PY'
+  if ! python3 - "$ENVFILE" "$tool_mem" "$tool_cpus" <<'PY'
 import os,pathlib,re,secrets,sys
 source=pathlib.Path(sys.argv[1])
+tool_mem,tool_cpus=sys.argv[2:4]
+if tool_mem not in ("4096m","8192m") or tool_cpus not in ("1.8","3.0"):
+    raise SystemExit("INVALID_FULL_RESOURCE_PROFILE")
 if not source.is_file() or source.is_symlink():
     raise SystemExit("INVALID_ENV_FILE")
 rows=source.read_text("utf-8").splitlines()
@@ -328,11 +342,16 @@ secret=entries[0] if entries and entries[0] else secrets.token_urlsafe(48)
 names=("CLOUD_APK_QA_TOOLS_TOKEN=","CLOUD_APK_QA_TOOLS_REMOTE=",
        "CLOUD_APK_QA_TOOLS_REVIEWED=","SPDECODE_APK_TOOLS_DOCKERFILE=",
        "SPDECODE_APK_TOOLS_MEM_LIMIT=","SPDECODE_APK_TOOLS_CPUS=",
-       "SPDECODE_APK_QA_LITE=")
+       "SPDECODE_APK_QA_LITE=","SPDECODE_APK_QA_GHIDRA=")
 rows=[line for line in rows if not line.startswith(names)]
 rows.extend(("CLOUD_APK_QA_TOOLS_TOKEN="+secret,
              "CLOUD_APK_QA_TOOLS_REMOTE=enabled",
-             "CLOUD_APK_QA_TOOLS_REVIEWED=true"))
+             "CLOUD_APK_QA_TOOLS_REVIEWED=true",
+             "SPDECODE_APK_TOOLS_DOCKERFILE=cloud/apk_analysis/Dockerfile.qa-tools",
+             "SPDECODE_APK_TOOLS_MEM_LIMIT="+tool_mem,
+             "SPDECODE_APK_TOOLS_CPUS="+tool_cpus,
+             "SPDECODE_APK_QA_LITE=false",
+             "SPDECODE_APK_QA_GHIDRA=enabled"))
 tmp=source.with_name("."+source.name+".tools-tmp")
 fd=os.open(tmp,os.O_CREAT|os.O_EXCL|os.O_WRONLY,0o600)
 try:
@@ -343,7 +362,7 @@ try:
 finally:
     tmp.unlink(missing_ok=True)
 os.chmod(source,0o600)
-print("Advanced APK tool channel configured without exposing credentials")
+print("Full JADX + Ghidra configured: memory="+tool_mem+", CPUs="+tool_cpus)
 PY
   then
     cp -p "$previous" "$ENVFILE"
@@ -364,7 +383,7 @@ PY
     return 1
   fi
   rm -f "$previous"
-  log "Advanced APK tools enabled with isolated worker; no manual token or device ID"
+  log "Full JADX + Ghidra enabled in isolated worker: memory=$tool_mem CPUs=$tool_cpus"
   compose --profile apk-qa --profile apk-qa-tools ps apk-qa apk-tools
 }
 apk_qa_status(){

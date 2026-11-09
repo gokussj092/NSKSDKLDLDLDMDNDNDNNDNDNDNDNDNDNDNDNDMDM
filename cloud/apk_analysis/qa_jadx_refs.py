@@ -113,7 +113,9 @@ def scan_jadx_sources(output:Path)->dict:
                             "verifiedCryptoMethod":False,
                         })
         if not completed:break
+    from .qa_method_recipes import scan_method_recipes
     return {
+        "methodRecipes":scan_method_recipes(output),
         "status":"OBSERVED_PARTIAL" if not completed else "OBSERVED",
         "sourceFilesInspected":min(inspected,MAX_FILES),
         "sourceBytesInspected":min(total,MAX_BYTES),

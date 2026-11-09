@@ -111,7 +111,7 @@ def plan_tools(inventory: dict) -> dict:
         "automaticallyExecutedScripts": 0,
         "reviewCandidates": selected,
         "notSelectedCount": len(INVENTORY) - len(selected),
-        "note": "Only built-in DEX/ELF parsers and pinned JADX run in this profile; existing research scripts require per-tool review.",
+        "note": "Built-in DEX/ELF parsers, pinned full JADX, method-recipe correlation and verified Ghidra may run; historical research scripts still require per-tool review.",
     }
 
 
@@ -148,6 +148,8 @@ def correlate_evidence(inventory: dict, tooling: dict) -> dict:
         "jadxCandidateSites": len(j.get("candidateCallSites", [])),
         "jadxCandidateSitesTruncated": j.get("candidateCallSitesTruncated", False),
         "jadxRecoveredDexCount": recovered.get("dexRecovered", 0),
+        "jadxStaticMethodCandidates":j.get("methodRecipes",{}).get("methodsObserved",0),
+        "ghidraMethodsDecompiled":tooling.get("ghidra",{}).get("nativeMethodsDecompiled",0),
         "jadxDexDiscovered": recovered.get("dexDiscovered"),
         "methodValidated": False,
         "limitations": ["NO_CALL_GRAPH_PROOF", "NO_KEY_RECOVERY_CLAIM",

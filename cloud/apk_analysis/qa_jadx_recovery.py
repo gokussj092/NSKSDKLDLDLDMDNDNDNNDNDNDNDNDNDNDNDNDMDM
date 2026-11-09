@@ -6,6 +6,8 @@ private temporary files; only bounded metadata leaves this process.
 from __future__ import annotations
 
 import re
+import time
+from .qa_method_recipes import merge_recipe_reports
 from pathlib import Path
 import zipfile
 
@@ -47,7 +49,7 @@ def diagnose_termination(logfile: Path, termination: str) -> str:
     return "NONE" if termination == "EXIT_ZERO" else "EXIT_NONZERO_UNCLASSIFIED"
 
 
-def extract_dex_candidates(apk: Path, target: Path) -> tuple[list[Path], dict]:
+def extract_dex_candidates(apk: Path, target: Path, *, max_attempts: int = MAX_DEX_ATTEMPTS) -> tuple[list[Path], dict]:
     """Extract at most four bounded DEX files, with no unsafe archive paths."""
     candidates: list[Path] = []
     meta = {"dexDiscovered": 0, "dexSelected": 0, "dexSkipped": 0,
@@ -59,7 +61,7 @@ def extract_dex_candidates(apk: Path, target: Path) -> tuple[list[Path], dict]:
                          int(info.filename[7:-4]), info.filename))
             meta["dexDiscovered"] = len(entries)
             for entry in entries:
-                if len(candidates) >= MAX_DEX_ATTEMPTS:
+                if len(candidates) >= max_attempts:
                     meta["dexSkipped"] += 1
                     continue
                 if (entry.file_size <= 0 or entry.file_size > MAX_DEX_BYTES or
@@ -85,9 +87,12 @@ def extract_dex_candidates(apk: Path, target: Path) -> tuple[list[Path], dict]:
 
 
 def recover_jadx(apk: Path, scratch: Path, jar: Path, env: dict,
-                 run_jadx, scan_sources) -> dict:
+                 run_jadx, scan_sources, *, profile: dict | None = None,
+                 deadline: float | None = None) -> dict:
     """Sequential retries. Never asserts whole-APK completion."""
-    dex_inputs, coverage = extract_dex_candidates(apk, scratch)
+    dex_inputs, coverage = extract_dex_candidates(apk, scratch,
+        max_attempts=profile["recoveryDex"] if profile else MAX_DEX_ATTEMPTS)
+    recipe_reports = []
     attempts = []
     reference_sites = []
     references_seen = set()
@@ -100,18 +105,27 @@ def recover_jadx(apk: Path, scratch: Path, jar: Path, env: dict,
         # Multi-megabyte DEX files on 1 CPU routinely time out in simple mode.
         # Prefer the already proven fallback, keeping both modes for small DEX.
         large = candidate.stat().st_size >= 6 * 1024 * 1024
-        for mode in (("fallback",) if large else ("simple", "fallback")):
+        modes = ("auto", "fallback") if profile else (("fallback",) if large else ("simple", "fallback"))
+        for mode in modes:
+            seconds = profile["recoverySeconds"] if profile else (120 if large else ATTEMPT_TIMEOUT)
+            if deadline is not None:
+                seconds = min(seconds, max(0, int(deadline - time.monotonic())))
+            if seconds < 1:
+                coverage["recoveryBudgetExhausted"] = True
+                break
             output = scratch / ("recovery-output-" + str(index) + "-" + mode)
             output.mkdir(mode=0o700)
             log = scratch / ("recovery-" + str(index) + "-" + mode + ".log")
-            command = ["java", "-Xmx512m", "-XX:ActiveProcessorCount=1",
+            command = ["java", "-Xmx"+profile["heap"] if profile else "-Xmx512m",
+                       "-XX:ActiveProcessorCount="+str(profile["threads"]) if profile else "-XX:ActiveProcessorCount=1",
                        "-cp", str(jar), "jadx.cli.JadxCLI", "--no-res",
-                       "--decompilation-mode", mode, "-j", "1",
+                       "--decompilation-mode", mode, "-j", str(profile["threads"]) if profile else "1",
                        "-d", str(output), str(candidate)]
             termination = run_jadx(command, cwd=scratch,
-                                   timeout=120 if large else ATTEMPT_TIMEOUT,
+                                   timeout=seconds,
                                    env=env, logfile=log)
             summary = scan_sources(output)
+            recipe_reports.append(summary.get("methodRecipes", {}))
             generated = int(summary.get("sourceFilesInspected", 0))
             # A zero exit without generated sources is not useful recovery.
             successful = termination == "EXIT_ZERO" and generated > 0
@@ -142,6 +156,7 @@ def recover_jadx(apk: Path, scratch: Path, jar: Path, env: dict,
                 break
     return {
         **coverage, "attempts": attempts, "dexRecovered": recovered,
+        "methodRecipes": merge_recipe_reports(recipe_reports),
         "sourceFilesInspected": inspected, "sourceBytesInspected": bytes_inspected,
         "candidateCallSites": reference_sites,
         "candidateCallSitesObserved": sites_observed,

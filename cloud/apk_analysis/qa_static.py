@@ -43,8 +43,8 @@ def inspect_static(path:Path, on_stage=None)->dict:
         on_stage("ADVANCED_ANALYSIS_SKIPPED" if tooling["status"] in
             {"NOT_ENABLED","INSUFFICIENT_CONTAINER_MEMORY",
              "JADX_NOT_PRELOADED_OR_HASH_MISMATCH"} else
-            "ADVANCED_ANALYSIS_COMPLETE" if (tooling["status"]=="PARTIAL_TOOLS_EXECUTED"
-                and tooling.get("ghidraExecuted",False))
+            "ADVANCED_ANALYSIS_COMPLETE" if (tooling.get("jadx",{}).get("completed") is True
+                and tooling.get("ghidra",{}).get("status") in {"COMPLETED","NO_ELF_CANDIDATES"})
             else "ADVANCED_ANALYSIS_PARTIAL")
     return {
         "schemaVersion":2,
@@ -70,13 +70,14 @@ def inspect_static(path:Path, on_stage=None)->dict:
             "ghidraExecuted":tooling["ghidraExecuted"],
             "nextStages":(
                 ([] if tooling["jadxExecuted"] else ["JADX_DECOMPILATION_PENDING"]) +
-                ([] if tooling.get("ghidra",{}).get("status")=="COMPLETED"
+                ([] if tooling.get("ghidra",{}).get("status") in {"COMPLETED","NO_ELF_CANDIDATES"}
                   else ["GHIDRA_HEADLESS_PARTIAL_PENDING"] if tooling["ghidraExecuted"]
                   else ["GHIDRA_HEADLESS_PENDING"]) +
                 ["METHOD_EVIDENCE_PENDING"]),
         },
         "limitations":[
-            "STATIC_METADATA_NOT_SOURCE_DECOMPILATION",
+            *([] if tooling.get("jadxExecuted") else ["JAVA_DECOMPILATION_INCOMPLETE"]),
+            "STATIC_CANDIDATES_REQUIRE_INDEPENDENT_ORACLE",
             "CRYPTO_SIGNATURES_ARE_REFERENCES_NOT_PROOF",
             "NO_VPN_DECRYPTION_OR_METHOD_RECONSTRUCTION",
             "NO_EXTERNAL_NETWORK_OR_DYNAMIC_EXECUTION",

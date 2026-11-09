@@ -70,6 +70,29 @@ def inspect_harness(inventory: dict, tooling: dict) -> dict:
         method = site.get("method", "")
         if isinstance(method, str) and method != "UNRESOLVED" and len(method) <= 80:
             classes[name]["methods"].add(method)
+    recipes = jadx.get("methodRecipes", {})
+    for item in recipes.get("methods", [])[:64]:
+        name = _class_name(item.get("class", ""))
+        if not name or name.startswith(FRAMEWORK):
+            continue
+        classes[name]["sources"].add("JADX_METHOD_BODY_SHA256")
+        method = item.get("method", "")
+        if isinstance(method, str) and len(method) <= 80:
+            classes[name]["methods"].add(method)
+    native_bindings = []
+    for item in tooling.get("ghidra", {}).get("candidateFunctions", [])[:48]:
+        native = item.get("name", "")
+        if not isinstance(native, str) or not native.startswith("Java_"):
+            continue
+        for name, evidence in classes.items():
+            owner = name.replace("_", "_1").replace(".", "_")
+            prefix = "Java_" + owner + "_"
+            if native.startswith(prefix) and len(native_bindings) < 24:
+                native_bindings.append({"class": name, "nativeSymbol": native,
+                    "binary": item.get("binary"), "evidence": "JNI_SYMBOL_OWNER_REFERENCE",
+                    "decompilationCompleted": item.get("decompilationCompleted") is True,
+                    "methodValidated": False})
+                evidence["sources"].add("GHIDRA_JNI_SYMBOL")
     ordered = sorted(classes.items(), key=lambda entry: (
         -(int("DEX_CODE_ITEM_SHA256" in entry[1]["sources"])
           + int("JADX_REFERENCE" in entry[1]["sources"])
@@ -97,8 +120,18 @@ def inspect_harness(inventory: dict, tooling: dict) -> dict:
             {"name": "ELF_NATIVE_METADATA", "executed": bool(inventory.get("nativeLibraries"))},
             {"name": "JADX_STATIC_REFERENCES",
              "executed": bool(jadx.get("attempted") or tooling.get("jadxAttempted"))},
+            {"name": "JADX_METHOD_RECIPES", "executed": bool(recipes)},
+            {"name": "GHIDRA_STATIC_FUNCTIONS", "executed": tooling.get("ghidraExecuted") is True},
             {"name": "CROSS_REFERENCE", "executed": True},
         ],
+        "methodRecipeSummary": {
+            "status": recipes.get("status", "NOT_AVAILABLE"),
+            "methodsObserved": recipes.get("methodsObserved", 0),
+            "methodsExported": len(recipes.get("methods", [])),
+            "sameClassCalls": len(recipes.get("sameClassCalls", [])),
+            "methodValidated": False,
+        },
+        "nativeBindings": native_bindings,
         "candidateClasses": candidates,
         "candidateClassesObserved": len(classes),
         "candidateClassesTruncated": len(classes) > MAX_CLASSES,
