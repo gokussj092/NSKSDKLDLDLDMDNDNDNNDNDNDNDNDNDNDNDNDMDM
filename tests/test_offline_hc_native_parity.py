@@ -88,7 +88,7 @@ def hccfg_early_hwid_file(schema: int, password: str | None = None):
          "h":int(password is not None),"n":760}
     if password is not None:env.update({"k":"ARGON2ID13","l":2,"m":8*1024*1024})
     hw=SYNTHETIC_HWID.encode()
-    transcript=(b"HCCFG\0"+hc.PKG+b"\0"+b"1\0ssh,profiles\0760\0"+
+    transcript=(b"HCCFG\0"+hc.PKG+b"\0"+b"1\0ssh,profiles\0"+b"760\0"+
                 b"hwid\0"+hw+b"\0"+seed)
     ikm=hashlib.sha256(hc.C0_PREFIX+transcript).digest()
     protection=b"|0"
