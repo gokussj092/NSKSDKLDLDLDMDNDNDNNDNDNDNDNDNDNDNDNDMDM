@@ -235,8 +235,11 @@ Java_com_ghostdeveloper_spdecode_offline_NativeOffline_decodeNative(
             decoded.assign(clear.begin(),clear.end());
         }else if(format=="nm") {
             decoded=decryptNm(source);
-        }else if(format=="nmtext") {
-            decoded=decryptNmText(source);
+        }else if(format=="nmtext" || format=="autotext") {
+            if(format=="autotext" && spdecode::offline::isDarkTunnelEnvelope(source)) {
+                const std::string clear=spdecode::offline::decodeDarkTunnel(source);
+                decoded.assign(clear.begin(),clear.end());
+            }else decoded=decryptNmText(source);
         }else if(format=="ehi"){
             const std::string clear=spdecode::offline::decodeHttpInjector(source);
             decoded.assign(clear.begin(),clear.end());
