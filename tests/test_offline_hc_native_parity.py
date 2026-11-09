@@ -64,6 +64,37 @@ def legacy_http_custom_old_file():
     return source.decode("latin-1").encode("utf-8")
 
 
+
+def legacy_http_custom_field_file(style: str) -> bytes:
+    """Independent full historic exporter for separated hex or Latin1 field."""
+    import base64
+    from Crypto.Cipher import AES,ChaCha20
+    from Crypto.Util.Padding import pad
+    from decoders.Python.HTTPCUSTOM import HCConstants
+    assert style in ("separated_hex","latin1")
+    inner=base64.b64encode(b"GET / HTTP/1.1")
+    xored=bytes(value ^ HCConstants.JKL_KEY_OLD[i%20] for i,value in enumerate(inner))
+    token=base64.b64encode(xored)
+    cha=ChaCha20.new(key=HCConstants.CHACHA_KEYS[7],nonce=HCConstants.STATIC_NONCE)
+    cha.seek(64)
+    encrypted=cha.encrypt(token)+bytes(16)
+    if style=="separated_hex":
+        raw=encrypted.hex()
+        field=":".join(raw[i:i+10] for i in range(0,len(raw),10))
+    else:
+        field=encrypted.decode("latin-1")
+    plain="[splitConfig]".join((field,"example.org","false")).encode("utf8")
+    aes=AES.new(HCConstants.RST_KEYS[0],AES.MODE_ECB)
+    crypt=base64.b64encode(aes.encrypt(pad(plain,16)))
+    content=bytes(v ^ HCConstants.RST_XOR_KEY[i%20] for i,v in enumerate(crypt)).decode("ascii")
+    outer=json.dumps({"cfg":{"content":content}},separators=(",",":")).encode()
+    cipher=ChaCha20.new(key=HCConstants.CHACHA_KEYS[5],nonce=HCConstants.STATIC_NONCE)
+    cipher.seek(64)
+    outer_hex=(cipher.encrypt(outer)+bytes(16)).hex().encode("ascii")
+    key=bytes.fromhex("e382e4b8adc386f09f9293")
+    masked=bytes(x ^ key[i%len(key)] for i,x in enumerate(outer_hex))
+    return masked.decode("latin-1").encode("utf8")
+
 def hccfg_early_hwid_file(schema: int, password: str | None = None):
     """Build historical HCCFG n2 with authenticated HWID slots independently."""
     import hashlib
@@ -206,6 +237,17 @@ def main(exe):
     check(legacy["Config"]["ovpnUserAndPass"]=="open:vpn",
           "old numeric OVPN credentials mismatch")
     passed+=1
+    for style in ("separated_hex","latin1"):
+        sample=legacy_http_custom_field_file(style)
+        reference=HCDecryptor.execute(sample)
+        check(reference is not None and "GET / HTTP/1.1" in reference,
+              ("historic Python field candidate failed",style))
+        result=call(exe,sample)
+        check(result.returncode==0,(style,result.stderr.decode(errors="replace")[:250]))
+        actual=json.loads(result.stdout)
+        check(actual["Config"]["payload"]=="GET / HTTP/1.1",
+              ("historic field variant not decoded",style,actual["Config"].get("payload")))
+        passed+=1
     # Reuse the existing, independently validated A.2.3 XOR + ChaCha8 +
     # RST AES golden instead of trusting newly invented exporter bytes.
     from tests.golden.a23_generators import httpcustom_bytes
