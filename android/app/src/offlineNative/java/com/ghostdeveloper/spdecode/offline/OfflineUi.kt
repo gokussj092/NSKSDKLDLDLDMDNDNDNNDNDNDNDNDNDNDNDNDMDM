@@ -1,5 +1,6 @@
 package com.ghostdeveloper.spdecode.offline
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -108,6 +109,7 @@ internal fun OfflineScreen(state: OfflineUiState, action: OfflineActions) {
         outline=theme.line,
     )
     MaterialTheme(colorScheme=scheme) {
+        BackHandler(enabled=state.aboutOpen){state.aboutOpen=false}
         Scaffold(
             containerColor=theme.bg,
             bottomBar={
