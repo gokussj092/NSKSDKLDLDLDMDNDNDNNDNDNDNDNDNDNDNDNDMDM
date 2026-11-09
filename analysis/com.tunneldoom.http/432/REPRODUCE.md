@@ -1,14 +1,16 @@
-# Reproduction (network-connected host, private XAPK)
+# Reproduction
 
-Only Python standard library is required. From repository root:
+Use Python 3.12 and JDK21 in a private disposable directory. Do not install or
+execute the original application. Installed dependency versions from the actual
+CI run are recorded in dependencies.lock.json; distribution hashes for Python
+packages were not captured and must not be claimed.
 
-```bash
-python3 -m unittest discover -s analysis/com.tunneldoom.http/432/tests -v
-umask 077
-python3 analysis/com.tunneldoom.http/432/tools/acquire.py \\
-  --output /var/tmp/tunneldoom-4.3.2-candidate.xapk
-```
+    python -m pip install pycryptodome==3.23.0 androguard==4.1.3
+    python -m unittest discover -s analysis/com.tunneldoom.http/432/tests -v
+    python analysis/com.tunneldoom.http/432/tools/revalidate.py --report /tmp/tunneldoom-proof.json
 
-The downloader contacts the fixed publicly documented APKPure XAPK URL, does not accept a client URL, limits file size to 125 MiB, verifies ZIP and XAPK manifest metadata, and refuses overwrite. If APKPure redirects to a CDN outside the restricted allowlist it **fails closed**: review legitimate redirect host before changing the allowlist. An unexpected or older version is rejected and not saved.
-
-On success, validate base APK version with Android SDK `aapt` / `apkanalyzer`, validate signing certificate with `apksigner`, and statically inspect `ConfigUpdateco.doInBackground` with an appropriately reviewed version of JADX. Do not execute or install the downloaded APK, and do not commit the XAPK, secrets, server catalogs or decoded payloads. Use `scripts/apk_analysis/tunneldoom_verify.py` with an independently captured encrypted catalog after obtaining a confirmed updater source.
+The verifier accepts only the expected package, version432, prior certificate
+digest, one actual updater-method literal and a complete live catalog matching
+the independent JCA oracle. It removes private inputs with its temporary
+directory and emits only identity metadata, hashes, counts and parity status.
+A changed latest version or source fails explicitly; no guessed fallback runs.

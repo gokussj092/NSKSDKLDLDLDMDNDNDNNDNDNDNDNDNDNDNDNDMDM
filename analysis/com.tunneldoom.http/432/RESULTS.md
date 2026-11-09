@@ -1,5 +1,10 @@
-# Results — 2026-11-05
+# Results
 
-**Network download:** FAILED (the available tool environment cannot obtain binary response from the APKPure XAPK endpoint). **Build 432 identity:** UNVERIFIED. **HTTP updater:** UNKNOWN. **Provider source:** unchanged from build430. **Real catalog:** not captured. **Production status:** PENDING.
+VERIFIED_REAL in [GitHub Actions](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42562741781).
 
-The acquisition code and its synthetic fixtures validate metadata rejection, URL allowlisting, redirect handling and private non-overwriting writes. These tests DO NOT establish that the actual APKPure endpoint returns build432, that its signature is valid, or that its new catalog can be decoded. No API credentials, source aliases, filenames from the Work scratch directory, or new URLs have been invented.
+- APK: 4.3.2 / build432, com.tunneldoom.http; certificate digest matches prior sample.
+- Updater literal confirmed in actual DEX code; fixed GET and no redirect.
+- HTTP 200; catalog 496, 382 servers and 4966 encrypted fields.
+- Complete JSON and independent JCA parity: passed.
+- No APK execution, credentials in logs, real catalog files in Git, VPS deployment or Play publishing.
+- Real build432 SKS export remains PENDING.

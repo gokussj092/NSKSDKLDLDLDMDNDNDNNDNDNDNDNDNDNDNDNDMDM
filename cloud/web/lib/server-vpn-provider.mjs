@@ -85,7 +85,7 @@ const PROVIDERS = Object.freeze({
   "netcol-vpn": {url:"https://raw.githubusercontent.com/jdavidag/setting/main/tO6oD1drTvL2.json",agent:"Netcol VPN/14.2"},
   "wolf-custom-vpn": {url:"https://strongteam.co/api/wolfcustom/newv1.txt",agent:"Wolf Custom VPN"},
   "jyfast-vpn-ultra": {url:JYFAST_SOURCES.free,agent:"JyFast VPN Ultra/9",headers:{"X-IGNIX-SIG":"10c7440b8feac5cee6a54959e7599ff26bd27153"}},
-  "tunneldoom-vpn": {url:"https://panel.tunneldoom.space/config.json",agent:"Dalvik/2.1.0"},
+  "tunneldoom-vpn": {url:"https://web.tunneldoom.space/config.json",agent:"Dalvik/2.1.0"},
   "mtm-tunnel-lite": {url:"https://xtmtunnel.xyz/updater/527543543860c45bf4238f2a1b56c3",agent:"Dalvik/2.1.0"},
   "mnr-tunnel-plus": {url:"https://raw.githubusercontent.com/buttacuore2025/up/refs/heads/main/plusfast",agent:"MNR TUNNEL PLUS/3.1"},
   "bd-net-vpn": {url:"https://raw.githubusercontent.com/panigbatanc/BDNET2023/main/JSONDEC2025",agent:"BD NET VPN/PrinceBuild111"},

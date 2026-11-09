@@ -1,3 +1,17 @@
-# Dependencies and tools
+# Executed dependencies
 
-Python 3.10+ standard library only: `urllib.request` (HTTPS acquisition), `zipfile` (container inspection), `hashlib` (SHA256), `json` (XAPK metadata), `unittest` (synthetic regression). No third-party Python packages were added. Actual interpreter version of future network-connected environment: UNKNOWN. Proposed future static inspection tools, not executed here: Android SDK `aapt` / `apkanalyzer`, `apksigner` and JADX 1.5.6 (version previously documented for build430); see provenance/license from respective official projects before running. Tooling currently verified here is limited to synthetic tests and review of historical repository evidence.
+- CPython 3.12, standard library: fixed-source acquisition, input limits,
+  private temporary files, hashing and sanitized reports (PSF).
+- androguard 4.1.3: static Android manifest, certificate-block metadata and
+  DEX instructions; no APK execution (Apache-2.0).
+- PyCryptodome 3.23.0: existing AES field decoder (BSD/Public Domain).
+- Temurin OpenJDK21: independent Java/JCA oracle (GPL-2.0 with Classpath Exception).
+- The full installed Python distribution list from CI, including unused
+  transitive dependencies, is in dependencies.lock.json. Not all are execution
+  tools. No Frida, app instrumentation or dynamic target execution was used.
+- Python distribution archive hashes and transitive license review are UNKNOWN,
+  not invented. Reproduction must review those artifacts before deployment.
+
+All own scripts used for this recheck are acquire.py and revalidate.py.
+The shared canonical oracle is scripts/apk_analysis/tunneldoom_verify.py plus
+tests/golden/tunneldoom_oracle.java; no divergent copy was introduced.
