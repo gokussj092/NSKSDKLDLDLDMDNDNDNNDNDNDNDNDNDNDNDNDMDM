@@ -13,14 +13,14 @@ namespace {
 using Bytes=std::vector<unsigned char>;
 using json=nlohmann::json;
 struct HatError:std::runtime_error {using std::runtime_error::runtime_error;};
-constexpr size_t MAX_INPUT=4*1024*1024;
+constexpr size_t kMaxHatInput=4*1024*1024;
 constexpr std::array<unsigned char,16> HAT_KEY={
     205,179,100,184,208,134,72,184,175,164,75,158,167,112,92,52
 };
 constexpr char XOR_PASSWORD[]="**rVg7EkL~c2" "\x60" "D[aNn";
 void check(bool condition,const char* code){if(!condition)throw HatError(code);}
 Bytes fromB64(const std::string& text){
-    check(!text.empty()&&text.size()<=MAX_INPUT,"HAT_INVALID_SIZE");
+    check(!text.empty()&&text.size()<=kMaxHatInput,"HAT_INVALID_SIZE");
     std::string input;
     input.reserve(text.size()+4);
     bool padding=false;
@@ -42,7 +42,7 @@ Bytes fromB64(const std::string& text){
     size_t count=0;
     const int status=mbedtls_base64_decode(out.data(),out.size(),&count,
         reinterpret_cast<const unsigned char*>(input.data()),input.size());
-    check(status==0&&count>0&&count<=MAX_INPUT,"HAT_INVALID_BASE64");
+    check(status==0&&count>0&&count<=kMaxHatInput,"HAT_INVALID_BASE64");
     out.resize(count);
     return out;
 }
@@ -70,7 +70,7 @@ void addV5Fields(json& document){
 }
 }
 std::string decodeHatTunnel(const Bytes& source){
-    check(!source.empty()&&source.size()<=MAX_INPUT,"HAT_INVALID_SIZE");
+    check(!source.empty()&&source.size()<=kMaxHatInput,"HAT_INVALID_SIZE");
     const Bytes encrypted=fromB64(std::string(source.begin(),source.end()));
     check(encrypted.size()>=16&&encrypted.size()%16==0,"HAT_INVALID_BLOCKS");
     mbedtls_aes_context ctx;
