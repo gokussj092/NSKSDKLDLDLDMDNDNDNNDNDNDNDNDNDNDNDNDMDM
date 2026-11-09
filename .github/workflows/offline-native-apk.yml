@@ -188,6 +188,7 @@ jobs:
         run: python3 tests/test_offline_share_ui_contract.py
 
   build:
+    if: github.repository == 'gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM' && github.ref == 'refs/heads/feat/version-offline-apk'
     needs: [hc-cpp-parity, ehi-cpp-parity, npv-cpp-parity, dark-cpp-parity, hat-cpp-parity]
     runs-on: ubuntu-latest
     timeout-minutes: 70
@@ -235,34 +236,70 @@ jobs:
       - name: Build standalone Offline debug APK
         working-directory: android
         run: gradle --no-daemon --max-workers=2 :app:assembleDebug
-      - name: Build R8-obfuscated, signed Offline alpha release APK
+      - name: Restore permanent GitHub Secrets signing keystore (fail closed)
+        shell: bash
+        env:
+          STORE_BASE64: ${{ secrets.SPDECODE_SIGNING_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.SPDECODE_SIGNING_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.SPDECODE_SIGNING_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          for item in "$STORE_BASE64" "$STORE_PASSWORD" "$KEY_ALIAS" "$KEY_PASSWORD"; do
+            if [[ -z "$item" ]]; then
+              echo "::error::Permanent signing secrets missing; temporary signatures forbidden"
+              exit 1
+            fi
+          done
+          umask 077
+          KEYSTORE="$RUNNER_TEMP/spdecode-offline-persistent.p12"
+          printf '%s' "$STORE_BASE64" | base64 --decode > "$KEYSTORE"
+          test "$(stat -c %s "$KEYSTORE")" -gt 1000
+          keytool -list -keystore "$KEYSTORE" -storetype PKCS12 -storepass:env STORE_PASSWORD -alias "$KEY_ALIAS" >/dev/null
+          keytool -exportcert -keystore "$KEYSTORE" -storetype PKCS12 -storepass:env STORE_PASSWORD -alias "$KEY_ALIAS" | sha256sum | awk '{print $1}' > "$RUNNER_TEMP/expected-offline-signer-sha256.txt"
+          grep -Eq '^[0-9a-f]{64}$' "$RUNNER_TEMP/expected-offline-signer-sha256.txt"
+          echo 'PASS: permanent repository keystore loaded (certificate only)'
+
+      - name: Build R8 offline release with permanent certificate
         working-directory: android
+        shell: bash
+        env:
+          SPDECODE_RELEASE_STORE_FILE: ${{ runner.temp }}/spdecode-offline-persistent.p12
+          SPDECODE_RELEASE_STORE_PASSWORD: ${{ secrets.SPDECODE_SIGNING_STORE_PASSWORD }}
+          SPDECODE_RELEASE_KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
+          SPDECODE_RELEASE_KEY_PASSWORD: ${{ secrets.SPDECODE_SIGNING_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          gradle --no-daemon --max-workers=2 :app:assembleRelease
+          APK=app/build/outputs/apk/release/app-release.apk
+          test -s "$APK"
+          test -s app/build/outputs/mapping/release/mapping.txt
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | grep -F "package: name='com.ghostdeveloper.spdecode.offline'"
+          if "$ANDROID_HOME/build-tools/35.0.0/aapt" dump permissions "$APK" | grep -F android.permission.INTERNET; then
+            echo '::error::Offline release must not request Internet'
+            exit 1
+          fi
+
+      - name: Verify permanent signer and V1 V2 V3 signatures
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/offline-signing"
-          export SPDECODE_RELEASE_STORE_FILE="$RUNNER_TEMP/offline-signing/alpha-ci.p12"
-          export SPDECODE_RELEASE_STORE_PASSWORD="$(openssl rand -hex 16)"
-          export SPDECODE_RELEASE_KEY_ALIAS="offline-ci-alpha"
-          export SPDECODE_RELEASE_KEY_PASSWORD="$SPDECODE_RELEASE_STORE_PASSWORD"
-          keytool -genkeypair -noprompt -keyalg RSA -keysize 3072 \
-            -validity 30 -storetype PKCS12 \
-            -keystore "$SPDECODE_RELEASE_STORE_FILE" \
-            -storepass "$SPDECODE_RELEASE_STORE_PASSWORD" \
-            -keypass "$SPDECODE_RELEASE_KEY_PASSWORD" \
-            -alias "$SPDECODE_RELEASE_KEY_ALIAS" \
-            -dname "CN=SP-DECODE Offline CI Alpha,O=Ghost Developer,C=MX"
-          gradle --no-daemon --max-workers=2 :app:assembleRelease
-          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify \
-            app/build/outputs/apk/release/app-release.apk
-          test -s app/build/outputs/mapping/release/mapping.txt
-          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging \
-            app/build/outputs/apk/release/app-release.apk | \
-            grep -F "package: name='com.ghostdeveloper.spdecode.offline'"
-          if "$ANDROID_HOME/build-tools/35.0.0/aapt" dump permissions \
-            app/build/outputs/apk/release/app-release.apk | \
-            grep -F android.permission.INTERNET; then exit 1; fi
-          echo "PASS: R8 mapping and signed offline release alpha"
+          APK=android/app/build/outputs/apk/release/app-release.apk
+          TOOLS="$ANDROID_HOME/build-tools/35.0.0"
+          "$TOOLS/apksigner" verify --min-sdk-version 23 --max-sdk-version 23 --verbose "$APK" > "$RUNNER_TEMP/offline-signature-v1.txt"
+          "$TOOLS/apksigner" verify --min-sdk-version 24 --verbose --print-certs "$APK" > "$RUNNER_TEMP/offline-signature-all.txt"
+          grep -Eq 'Verified using v1 scheme.*true' "$RUNNER_TEMP/offline-signature-v1.txt"
+          grep -Eq 'Verified using v2 scheme.*true' "$RUNNER_TEMP/offline-signature-all.txt"
+          grep -Eq 'Verified using v3 scheme.*true' "$RUNNER_TEMP/offline-signature-all.txt"
+          EXPECTED="$(cat "$RUNNER_TEMP/expected-offline-signer-sha256.txt")"
+          ACTUAL="$(grep -m1 'Signer #1 certificate SHA-256 digest:' "$RUNNER_TEMP/offline-signature-all.txt" | awk '{print $NF}' | tr '[:upper:]' '[:lower:]')"
+          if [[ -z "$EXPECTED" || "$ACTUAL" != "$EXPECTED" ]]; then
+            echo '::error::APK certificate differs from permanent GitHub Secrets signer'
+            exit 1
+          fi
+          unzip -Z1 "$APK" | grep -F 'liboffdecode.so' >/dev/null
+          echo 'PASS: permanent signer matches; V1/V2/V3 verified'
+
       - name: Audit package, no Internet, library isolation
         shell: bash
         run: |
@@ -290,13 +327,24 @@ jobs:
           print("PASS: configuration crypto only in native; Kotlin Keystore only for encrypted storage")
           PY
           mkdir -p dist
-          cp "$APK" dist/SP-DECODE-Offline-Native-alpha-debug.apk
-          cp android/app/build/outputs/apk/release/app-release.apk dist/SP-DECODE-Offline-Native-alpha-R8-release.apk
+          # Debug uses a test certificate and is NEVER included in the distributed artifact.
+          cp android/app/build/outputs/apk/release/app-release.apk dist/SP-DECODE-Offline-Persistent-Signed-R8-QA.apk
           (cd dist && sha256sum *.apk > SHA256SUMS.txt)
-          echo "ALPHA: native NetMod, HTTP Custom HCX4/HCCFG/legacy, and P-256 generation. HTTP Injector and NPV v1/v5/v6, legacy, text native parity tested. Device validation pending. HC 69 host synthetic cases pass; real device tests pending." > dist/BUILD_INFO.txt
+          {
+            echo 'Channel: Offline QA; not production-certified'
+            echo "Source commit: $GITHUB_SHA"
+            echo 'Package: com.ghostdeveloper.spdecode.offline'
+            echo 'Signing: permanent GitHub Secrets keystore, verified V1/V2/V3'
+            echo "Certificate SHA-256: $(cat "$RUNNER_TEMP/expected-offline-signer-sha256.txt")"
+            echo 'HCX4 schema b11/n13 remains unsupported; Android physical QA pending'
+          } > dist/SIGNATURE_VERIFICATION.txt
+          echo 'Native Offline QA. Legacy HTTP Custom fixes and Hat Tunnel profilev5 included; HTTP Injector, Dark Tunnel, NPV included. Physical-device testing pending. Only the permanently signed Release APK is distributed.' > dist/BUILD_INFO.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: SP-DECODE-OFFLINE-NATIVE-ALPHA
+          name: SP-DECODE-OFFLINE-PERSISTENT-SIGNED-QA
           path: dist/
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 30
+      - name: Destroy CI-only copy of permanent signing keystore
+        if: always()
+        run: rm -f "$RUNNER_TEMP/spdecode-offline-persistent.p12"
