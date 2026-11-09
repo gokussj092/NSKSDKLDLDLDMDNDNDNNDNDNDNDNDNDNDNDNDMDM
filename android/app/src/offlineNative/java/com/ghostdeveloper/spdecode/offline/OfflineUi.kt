@@ -38,6 +38,7 @@ internal class OfflineUiState {
     var result by mutableStateOf<String?>(null)
     var busy by mutableStateOf(false)
     var message by mutableStateOf<String?>(null)
+    var error by mutableStateOf<OfflineUiError?>(null)
     var history by mutableStateOf<List<OfflineRecord>>(emptyList())
     var identity by mutableStateOf<String?>(null)
     var pendingPrompt by mutableStateOf<OfflinePrompt?>(null)
@@ -180,6 +181,13 @@ internal fun OfflineScreen(state: OfflineUiState, action: OfflineActions) {
             theme,onDismiss={confirmIdentity=false},onConfirm={
                 confirmIdentity=false;action.deleteIdentity()
             },state.language)
+        state.error?.let { problem ->
+            AlertDialog(onDismissRequest={state.error=null},
+                title={Text(problem.title)},text={Text(problem.description)},
+                confirmButton={TextButton(onClick={state.error=null}) {
+                    Text(txt("confirm",state.language))
+                }},containerColor=theme.panel)
+        }
         state.pendingPrompt?.let { prompt ->
             CredentialDialog(prompt,state.language,theme,
                 onDismiss=action.dismissPrompt,onRetry=action.retryWithCredentials,
@@ -601,8 +609,9 @@ private fun CredentialDialog(prompt:OfflinePrompt,language:String,p:OfflinePalet
                     modifier=Modifier.fillMaxWidth(),
                     label={Text("HWID")},singleLine=true)
                 if(prompt.requireIdentity) {
-                    SmallCaption(if(identityAvailable)
-                        txt("identity_retry",language) else txt("identity_missing",language),p)
+                    val wrongIdentity=prompt.errorMessage in setOf("RECIPIENT_MISMATCH","NPV_RECIPIENT_MISMATCH")
+                    SmallCaption(if(wrongIdentity)txt("recipient_mismatch_help",language)
+                        else txt("identity_original_help",language),p)
                     OutlinedTextField(value=identity,
                         onValueChange={identity=it.take(16000)},
                         label={Text(txt("identity_manual",language))},
@@ -615,7 +624,8 @@ private fun CredentialDialog(prompt:OfflinePrompt,language:String,p:OfflinePalet
             TextButton(
                 enabled=(!prompt.requirePassword||password.isNotEmpty())&&
                     (!prompt.requireHwid||hwid.isNotEmpty())&&
-                    (!prompt.requireIdentity||identity.isNotBlank()||identityAvailable),
+                    (!prompt.requireIdentity||identity.isNotBlank()||
+                        (identityAvailable && prompt.errorMessage=="PRIVATE_KEY_REQUIRED")),
                 onClick={onRetry(password,hwid,identity)}
             ){ Text(txt("retry",language)) }
         },
