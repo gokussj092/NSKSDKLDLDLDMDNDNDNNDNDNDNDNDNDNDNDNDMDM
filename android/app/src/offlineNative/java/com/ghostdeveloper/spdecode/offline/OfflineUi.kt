@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.json.JSONObject
@@ -40,6 +41,7 @@ internal class OfflineUiState {
     var identity by mutableStateOf<String?>(null)
     var pendingPrompt by mutableStateOf<OfflinePrompt?>(null)
     var showTextDecoder by mutableStateOf(false)
+    var aboutOpen by mutableStateOf(false)
 }
 
 internal data class OfflinePrompt(
@@ -111,15 +113,15 @@ internal fun OfflineScreen(state: OfflineUiState, action: OfflineActions) {
             bottomBar={
                 NavigationBar(containerColor=theme.panel,
                     contentColor=theme.ink) {
-                    val titles=listOf("home","history","settings","about")
+                    val titles=listOf("home","history","settings")
                     val icons=listOf(
                         Icons.Outlined.Home,Icons.Outlined.History,
-                        Icons.Outlined.Settings,Icons.Outlined.Info,
+                        Icons.Outlined.Settings,
                     )
                     titles.forEachIndexed { index,key ->
                         NavigationBarItem(
                             selected=state.tab==index,
-                            onClick={state.tab=index},
+                            onClick={state.tab=index;state.aboutOpen=false},
                             icon={Icon(icons[index],contentDescription=txt(key,state.language))},
                             label={Text(txt(key,state.language),fontSize=10.sp)},
                             colors=NavigationBarItemDefaults.colors(
@@ -144,8 +146,8 @@ internal fun OfflineScreen(state: OfflineUiState, action: OfflineActions) {
                 when(state.tab) {
                     0 -> Home(state,action,theme)
                     1 -> History(state,action,theme)
-                    2 -> Settings(state,action,theme)
-                    else -> About(state,action,theme)
+                    2 -> if(state.aboutOpen) About(state,action,theme) else Settings(state,action,theme)
+                    else -> Home(state,action,theme)
                 }
                 Spacer(Modifier.height(6.dp))
             }
@@ -344,7 +346,13 @@ private fun CompleteJsonViewer(content:String,p:OfflinePalette,language:String) 
     val numberCount=remember(content) { content.count { it=='\n' } + 1 }
     val gutter=remember(numberCount) { (1..numberCount).joinToString("\n") }
     val rowScroll=rememberScrollState()
-    Box(Modifier.fillMaxWidth().heightIn(max=440.dp)
+    // Height is measured from actual font scale. Up to 150 rows fit without
+    // blank padding; the original, complete document remains vertically scrollable.
+    val maxRows=numberCount.coerceAtMost(150)
+    val viewportHeight=with(LocalDensity.current) {
+        (18.sp.toPx()*maxRows + 14.dp.toPx()).toDp()
+    }
+    Box(Modifier.fillMaxWidth().heightIn(max=viewportHeight)
         .verticalScroll(rememberScrollState())) {
         Row(Modifier.horizontalScroll(rowScroll)) {
             Text(gutter,color=p.subdued,modifier=Modifier.background(p.raised)
@@ -502,19 +510,30 @@ private fun Settings(state:OfflineUiState,action:OfflineActions,p:OfflinePalette
         Section(txt("security",state.language),p)
         SmallCaption(txt("security_info",state.language),p)
     }
+    OutlinedButton(onClick={state.aboutOpen=true},modifier=Modifier.fillMaxWidth()) {
+        Icon(Icons.Outlined.Info,null)
+        Spacer(Modifier.width(9.dp))
+        Text(txt("about",state.language),modifier=Modifier.weight(1f))
+        Icon(Icons.Outlined.ChevronRight,null)
+    }
     if(!state.message.isNullOrBlank()) SmallCaption(state.message.orEmpty(),p)
 }
 
 @Composable
 private fun About(state:OfflineUiState,action:OfflineActions,p:OfflinePalette) {
-    Header(txt("about",state.language),null,p)
+    Row(verticalAlignment=Alignment.CenterVertically) {
+        IconButton(onClick={state.aboutOpen=false}) {
+            Icon(Icons.Outlined.ArrowBack,txt("settings",state.language),tint=p.ink)
+        }
+        Text(txt("about",state.language),color=p.ink,fontWeight=FontWeight.SemiBold,fontSize=21.sp)
+    }
     OfflineCard(p) {
         Column(Modifier.fillMaxWidth(),horizontalAlignment=Alignment.CenterHorizontally) {
-            Image(painter=painterResource(com.ghostdeveloper.spdecode.R.mipmap.ic_launcher),
+            Image(painter=painterResource(com.ghostdeveloper.spdecode.R.drawable.offline_launcher_foreground),
                 contentDescription="SP-DECODE Offline",modifier=Modifier.size(72.dp))
             Text("SP-DECODE Offline",color=p.ink,fontSize=23.sp,fontWeight=FontWeight.Bold)
             SmallCaption(txt("native_edition",state.language),p)
-            Text("1.1.25-offline.alpha1",color=p.subdued,fontSize=12.sp)
+            Text(com.ghostdeveloper.spdecode.BuildConfig.VERSION_NAME,color=p.subdued,fontSize=12.sp)
         }
     }
     OfflineCard(p) {
