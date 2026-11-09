@@ -153,6 +153,7 @@ def hccfg_early_hwid_file(schema: int, password: str | None = None):
         json.dumps(env,separators=(",",":")).encode("utf-8"))
 
 def main(exe):
+    from decoders.Python.HTTPCUSTOM import HCDecryptor
     passed=0
     for locked in (False,True):
         for protected in (False,True):
@@ -251,7 +252,6 @@ def main(exe):
     passed+=1
     # The Python legacy decoder has an additional historical Braille SSH
     # credential stage, which previously was absent from the standalone APK.
-    from decoders.Python.HTTPCUSTOM import HCDecryptor
     old=legacy_http_custom_old_file()
     legacy_ref=HCDecryptor.execute(old)
     check(legacy_ref is not None and "vpn.example:443@user:pass" in legacy_ref,
