@@ -161,7 +161,14 @@ std::string jkl(const std::string& token,bool isNew){
             v[i]=static_cast<unsigned char>((((d^255)&0xca)|(d&0x35))^
                 (((k^255)&0xca)|(k&0x35)));
         }
-        return str(b64(str(v)));
+        // Python's historical _jkl_decrypt() accepts the second Base64 layer
+        // only when it decodes to valid UTF-8. Otherwise it returns the
+        // original token. Without this guard, common legacy boolean/flag
+        // values can produce arbitrary binary, and JSON serialization fails
+        // for the entire otherwise-valid .hc file.
+        const auto decoded=str(b64(str(v)));
+        (void)json(decoded).dump(-1,' ',false,json::error_handler_t::strict);
+        return decoded;
     }catch(...){return token;}
 }
 bool printable(const std::string& value,bool strict=false){
