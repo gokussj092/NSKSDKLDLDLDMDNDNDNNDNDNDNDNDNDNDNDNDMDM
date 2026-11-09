@@ -88,3 +88,32 @@ El JNI rechaza explícitamente los formatos pendientes. No habrá fallback a Kot
 - Historic HTTP Custom: compared Python HTTPCUSTOM.py _process_credentials and _decrypt_field. The offline C++ historical branch now includes Braille-decoded SSH credentials, cleaned hex fields with nonhex separators, and Latin-1 ciphertext candidates before UTF-8. The modern HCCFG and legacy branches remain isolated and unchanged except for the historical decoder.
 - Differential validation: tests/test_offline_hc_native_parity.py now covers old-format ChaCha/JKL/Braille/z3a profiles, separated-hex encrypted fields, Latin-1 encrypted fields, historical n2 HWID schedules across schemas 1/2/5/7 and existing n1/n7/n8 HC variants; Python server reference and native results must match. Exact synthetic/test count is reported in Actions logs. All tests use artificial fixtures, not user private configurations.
 - The online Python reference for Hat is decoders/Python/hat.py, and for older HC is decoders/Python/HTTPCUSTOM.py with _hc_hccfg.py and apps/HTTP_Custom. Real exports from unsupported third-party builds may require separate evidence and additional methods. Never claim every historical vendor build is certified by synthetic goldens alone.
+
+## Real-file HTTP Custom investigation and fail-closed behavior (2026-11-09)
+
+Four files were privately provided for comparison; **none of their original bytes,
+sensitive fields, passwords, or reconstructed JSON is committed**.
+
+- Three samples use historic UTF-8-wrapped Latin-1 carriers with a two-key
+  ChaCha20 and XOR header. Their outer objects contain nested `a.xy` and
+  `a.uv`, with 32 historical field slots. The original server Python
+  `HCDecryptor._jkl_decrypt` rejects Base64-XOR output that cannot decode
+  as UTF-8; the offline C++ `jkl()` previously accepted arbitrary bytes.
+  Common Boolean values may accidentally appear to be valid double-Base64
+  and return binary garbage. Strict JSON serialization then aborts the entire
+  otherwise valid file. Native logic now checks the decoded string is valid
+  UTF-8 and falls back to the untouched token, as Python does.
+- A new deterministic fixture in `tests/test_offline_hc_native_parity.py`
+  models this exact **structural** shape and 32 fields with dummy flags,
+  artificial delimiter and fake host only; it verifies the complete JSON
+  and authentic native-Python agreement, without exposing actual profiles.
+- The fourth sample has an authenticated HCX4 outer envelope, schema b=11,
+  schedule n13, build n=914 and additional protection descriptor p. The
+  repository's documented inner key material for this family is unresolved.
+  The native decoder correctly reports HC_UNSUPPORTED_SCHEMA rather than
+  claiming a decrypted result or fabricating an authentication bypass.
+  Further work needs legitimate per-recipient protection context/method
+  evidence; the observed file alone cannot establish the necessary secret.
+- Full native differential tests and Android release build are checked
+  separately by CI. Real-device testing remains necessary; synthetic parity
+  is not a certification of every third-party historical exporter.
