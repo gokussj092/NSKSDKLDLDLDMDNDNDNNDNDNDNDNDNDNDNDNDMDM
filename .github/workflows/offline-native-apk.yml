@@ -210,6 +210,28 @@ jobs:
           set -euo pipefail
           SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -n 1)"
           "$SDKMANAGER" --install "platforms;android-36" "build-tools;35.0.0" "platform-tools" "cmake;3.22.1" "ndk;27.2.12479018"
+      - name: Prefetch official Mbed TLS source for every Android ABI
+        shell: bash
+        run: |
+          set -euo pipefail
+          ARCHIVE="$RUNNER_TEMP/spdecode-mbedtls-3.6.7.tar.bz2"
+          EXPECTED="a7e8bcbec0e6f761b4af24f25677626b35f762f68eef79c08677a363212d11f6"
+          URL="https://github.com/Mbed-TLS/mbedtls/releases/download/mbedtls-3.6.7/mbedtls-3.6.7.tar.bz2"
+          verified=0
+          for attempt in {1..10}; do
+            if curl -fLsS --retry 3 --retry-all-errors --retry-delay 2 \
+              --connect-timeout 20 --max-time 180 "$URL" -o "$ARCHIVE"; then
+              if printf '%s  %s\n' "$EXPECTED" "$ARCHIVE" | sha256sum --check --status; then
+                verified=1
+                break
+              fi
+            fi
+            sleep 3
+          done
+          test "$verified" -eq 1
+          printf '%s  %s\n' "$EXPECTED" "$ARCHIVE" | sha256sum --check
+          echo "SPDECODE_MBEDTLS_ARCHIVE=$ARCHIVE" >> "$GITHUB_ENV"
+          echo "PASS: official Mbed TLS 3.6.7 source verified for all ABIs"
       - name: Build standalone Offline debug APK
         working-directory: android
         run: gradle --no-daemon --max-workers=2 :app:assembleDebug
