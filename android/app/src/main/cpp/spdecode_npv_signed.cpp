@@ -75,7 +75,7 @@ json jsonV1(const Bytes& rawData,const std::string& password,const std::string& 
         dek=openChaCha(pbkdf2(password,salt,static_cast<uint32_t>(iter)),
                        slice(wrapped,0,12),slice(wrapped,12,48),salt);
     }else if(hasRecipient&&!hasApp&&!hasPhrase){
-        throw Error("PRIVATE_KEY_REQUIRED"); // Historical server cannot open v1 recipient files.
+        throw Error("NPV_RECIPIENT_V1_UNSUPPORTED"); // Recipient-mode v1 has no supported local unwrap.
     }else throw Error("NPV_PROTECTION_UNSUPPORTED");
     need(dek.size()==32,"NPV_INVALID_DOCUMENT_KEY");
     auto clear=openChaCha(dek,nonce,body,header);
