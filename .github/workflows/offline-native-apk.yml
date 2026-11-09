@@ -28,6 +28,11 @@ on:
       - android/app/src/main/cpp/spdecode_http_injector.h
       - android/app/src/main/cpp/spdecode_dark_tunnel.cpp
       - android/app/src/main/cpp/spdecode_dark_tunnel.h
+      - android/app/src/main/cpp/spdecode_hat_tunnel.cpp
+      - android/app/src/main/cpp/spdecode_hat_tunnel.h
+      - tests/native_hat_tunnel_cli.cpp
+      - tests/test_offline_hat_native_parity.py
+      - tests/test_offline_share_ui_contract.py
       - tests/native_dark_tunnel_cli.cpp
       - tests/test_offline_dark_native_parity.py
       - tests/native_http_injector_cli.cpp
@@ -154,8 +159,36 @@ jobs:
           /tmp/spdecode-dark-test/bin/pip install --disable-pip-version-check pycryptodome==3.23.0 msgpack==1.1.1
           /tmp/spdecode-dark-test/bin/python tests/test_offline_dark_native_parity.py /tmp/spdecode-dark-native
 
+  hat-cpp-parity:
+    name: Hat Tunnel native C++ decoding and profile v5 fixtures
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install native Hat test dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends g++ libmbedtls-dev nlohmann-json3-dev python3-venv
+      - name: Compile native Hat Tunnel reference CLI
+        run: |
+          set -euo pipefail
+          g++ -O2 -std=c++17 -Wall -Wextra -Werror \
+            tests/native_hat_tunnel_cli.cpp \
+            android/app/src/main/cpp/spdecode_hat_tunnel.cpp \
+            -lmbedcrypto -o /tmp/spdecode-hat-native
+      - name: Test Hat profiles and invalid version failures
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/spdecode-hat-test
+          /tmp/spdecode-hat-test/bin/pip install --disable-pip-version-check pycryptodome==3.23.0
+          /tmp/spdecode-hat-test/bin/python tests/test_offline_hat_native_parity.py /tmp/spdecode-hat-native
+      - name: Verify sharing, error messages and UI privacy
+        run: python3 tests/test_offline_share_ui_contract.py
+
   build:
-    needs: [hc-cpp-parity, ehi-cpp-parity, npv-cpp-parity, dark-cpp-parity]
+    needs: [hc-cpp-parity, ehi-cpp-parity, npv-cpp-parity, dark-cpp-parity, hat-cpp-parity]
     runs-on: ubuntu-latest
     timeout-minutes: 70
     env:
