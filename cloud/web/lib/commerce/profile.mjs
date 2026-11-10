@@ -26,9 +26,9 @@ export async function editProfile(accountId,body,db=database()){
    Object.keys(body).some(k=>!['username','name','bio','avatarData'].includes(k)))fail('INVALID_PROFILE');
  const handle=normalizeHandle(body.username),name=normalizeDisplayName(body.name);
  if(!handle||!name||name.length>NAME_MAX||
-   typeof body.bio!=='string'||body.bio.length>BIO_MAX||
-   /[\u0000-\u0008\u000b\u000c\u000e-\u001f]/.test(body.bio))fail('INVALID_PROFILE');
- const bio=body.bio.trim(),avatar=avatarInput(body.avatarData);
+   (body.bio!==undefined&&(typeof body.bio!=='string'||body.bio.length>BIO_MAX||
+   /[\u0000-\u0008\u000b\u000c\u000e-\u001f]/.test(body.bio))))fail('INVALID_PROFILE');
+ const bio=body.bio===undefined?null:body.bio.trim(),avatar=avatarInput(body.avatarData);
  try{return await transaction(async client=>{
    await profile(accountId,client);
    const old=(await client.query('SELECT * FROM spdecode_shop.profiles WHERE account_id=$1 FOR UPDATE',[accountId])).rows[0];
@@ -39,7 +39,7 @@ export async function editProfile(accountId,body,db=database()){
      if(reserved&&reserved.account_id!==accountId)fail('USERNAME_TAKEN',409);
      await client.query('INSERT INTO spdecode_shop.reserved_handles(username,account_id) VALUES($1,$2) ON CONFLICT DO NOTHING',[old.username,accountId]);
    }
-   await client.query('UPDATE spdecode_shop.profiles SET username=$2,handle_changed_at=CASE WHEN username<>$2 THEN now() ELSE handle_changed_at END,bio=$3 WHERE account_id=$1',
+   await client.query('UPDATE spdecode_shop.profiles SET username=$2,handle_changed_at=CASE WHEN username<>$2 THEN now() ELSE handle_changed_at END,bio=COALESCE($3,bio) WHERE account_id=$1',
      [accountId,handle,bio]);
    if(avatar===null)await client.query('UPDATE spdecode_shop.profiles SET avatar_data=NULL WHERE account_id=$1',[accountId]);
    else if(avatar!==undefined)await client.query('UPDATE spdecode_shop.profiles SET avatar_data=$2 WHERE account_id=$1',[accountId,avatar]);
