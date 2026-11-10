@@ -31,6 +31,9 @@ CREATE TABLE IF NOT EXISTS spdecode_shop.settings (
  id text PRIMARY KEY, value jsonb NOT NULL, updated_at timestamptz NOT NULL DEFAULT now()
 );
 INSERT INTO spdecode_shop.settings(id,value) VALUES ('tax-rules','[]') ON CONFLICT DO NOTHING;
+INSERT INTO spdecode_shop.settings(id,value) VALUES
+ ('cleanup-policy','{"enabled":false,"retentionHours":168,"requested":false,"lastRunAt":null,"lastResult":null}')
+ ON CONFLICT DO NOTHING;
 CREATE TABLE IF NOT EXISTS spdecode_shop.orders (
  id uuid PRIMARY KEY, account_id text NOT NULL, product_id text NOT NULL,
  product_snapshot jsonb NOT NULL, quote jsonb NOT NULL, provider text NOT NULL,
