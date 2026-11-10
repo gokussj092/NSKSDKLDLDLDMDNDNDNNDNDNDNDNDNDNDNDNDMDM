@@ -1,0 +1,1 @@
+import {OrdersPage} from '../public/account-pages.jsx';export const metadata={title:'Mis compras',robots:{index:false,follow:false}};export default function Page(){return <OrdersPage/>;}
