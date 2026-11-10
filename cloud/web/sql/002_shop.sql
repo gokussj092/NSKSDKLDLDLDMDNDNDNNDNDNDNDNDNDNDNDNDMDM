@@ -20,6 +20,18 @@ INSERT INTO spdecode_shop.products(id,settings) VALUES
  ('offline-3','{"id":"offline-3","enabled":false,"prices":{"USD":499},"maxDevices":3,"quota":null,"days":null}'),
  ('api-ip','{"id":"api-ip","enabled":false,"prices":{},"maxDevices":null,"quota":1000,"days":30}')
  ON CONFLICT DO NOTHING;
+-- Approved retail examples in USD, new only; never overwrite administrator edits.
+-- 30 days per commercial month; API and Offline sales remain independently gated.
+UPDATE spdecode_shop.products SET
+ settings=jsonb_set(settings,'{termPrices}',
+ '{"1m":{"USD":299},"2m":{"USD":549},"3m":{"USD":749},"6m":{"USD":1299},"12m":{"USD":2199}}'::jsonb,true),
+ version=version+1,updated_at=now()
+ WHERE id='offline-3' AND NOT (settings ? 'termPrices');
+UPDATE spdecode_shop.products SET
+ settings=jsonb_set(settings,'{termPrices}',
+ '{"1m":{"USD":599},"2m":{"USD":1099},"3m":{"USD":1549},"6m":{"USD":2799},"12m":{"USD":4999}}'::jsonb,true),
+ version=version+1,updated_at=now()
+ WHERE id='api-ip' AND NOT (settings ? 'termPrices');
 -- Add the optional analysis-credit product without modifying existing prices.
 ALTER TABLE spdecode_shop.products DROP CONSTRAINT IF EXISTS products_id_check;
 ALTER TABLE spdecode_shop.products ADD CONSTRAINT products_id_check
