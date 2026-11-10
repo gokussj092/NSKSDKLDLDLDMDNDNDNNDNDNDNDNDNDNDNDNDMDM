@@ -1,5 +1,7 @@
 # SP-DECODE — Licencias Offline, emisión manual y futura API vinculada a IP
 
+> Actualización 2026-11-10: el propietario autorizó implementar la tienda web y el acceso Google. Véase [implementación, configuración y límites actuales](STORE_GOOGLE_PAYMENTS_2026_11_10.md). Los apartados de aplazamiento de este plan son históricos; los cobros reales siguen deshabilitados hasta validar las integraciones.
+
 **Fecha:** 2026-11-09  
 **Rama de destino:** `feat/nuevas-integraciones` (rama Online).  
 **Rama de origen para migrar Offline:** `feat/version-offline-apk` (no modificar).  

@@ -1,5 +1,7 @@
 # SP-DECODE — Fase 7: cuentas Google, compras, reembolsos, evidencias y soporte APK
 
+> Actualización 2026-11-10: el propietario autorizó implementar la tienda web y el acceso Google. Véase [implementación, configuración y límites actuales](STORE_GOOGLE_PAYMENTS_2026_11_10.md). Los apartados de aplazamiento de este plan son históricos; los cobros reales siguen deshabilitados hasta validar las integraciones.
+
 **Especificación integral — 2026-11-04. Rama de trabajo: feat/nuevas-integraciones.**
 **Estado: DOCUMENTACIÓN / FUTURA IMPLEMENTACIÓN.** Este cambio documental NO habilita inicio de sesión, compras, análisis, facturación ni descargas de APK.
 

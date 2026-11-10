@@ -110,6 +110,9 @@ internal object VaultBuildKey {
 val cloudOrigin=providers.environmentVariable("SPDECODE_CLOUD_API_BASE_URL").orNull.orEmpty().trim()
 val enableCloud=cloudOrigin.isNotEmpty()
 val nativeOffline=providers.environmentVariable("SPDECODE_OFFLINE_NATIVE").orNull=="true"
+// Opt-in SDK preparation. Regular builds and Offline contain no ad SDK.
+val enableUnityAds=providers.gradleProperty("spdecodeUnityAds").orNull=="true"
+require(!enableUnityAds || (enableCloud && !nativeOffline)) { "Unity Ads is Online-only" }
 require(!nativeOffline || !enableCloud) { "Offline must not configure a Cloud origin" }
 val enableQaBuild=providers.environmentVariable("SPDECODE_CLOUD_QA_BUILD").orNull=="true"
 // Play In-App Updates is an AAB-only compile-time feature, not a runtime switch.
@@ -701,6 +704,7 @@ val prepareCloudOnlySources = tasks.register<Sync>("prepareCloudOnlySources") {
         into("com/ghostdeveloper/spdecode/parity")
     }
     from("src/cloud/java")
+    if(enableUnityAds) from("src/unityAds/java")
     if (enablePlayAab) from("src/playUpdate/java")
     dependsOn(prepareCloudHistoryUiSource)
     from(cloudHistoryUiRoot)
@@ -843,6 +847,7 @@ android {
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro")
+            if(enableUnityAds)proguardFiles("proguard-unity.pro")
             // Fingerprint of the permanent certificate, injected by release CI.
             val trustedSha = providers.environmentVariable("SPDECODE_TRUSTED_SIGNER_SHA256").orNull
                 .orEmpty().lowercase()
@@ -869,6 +874,10 @@ android {
 }
 
 dependencies {
+    if(enableUnityAds) {
+        implementation("com.unity3d.ads-mediation:mediation-sdk:9.7.0")
+        implementation("com.unity3d.ads-mediation:unityads-adapter:5.16.0")
+    }
     if(nativeOffline) {
         // Standalone APK: no Firebase, Play update, Room, WorkManager or Cloud SDK.
         val offlineBom = platform("androidx.compose:compose-bom:2025.04.01")

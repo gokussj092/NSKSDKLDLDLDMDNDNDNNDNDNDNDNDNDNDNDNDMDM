@@ -549,7 +549,10 @@ class MainActivity : ComponentActivity() {
             AboutOfficialLinks.CHANNEL,
             AboutOfficialLinks.COMMUNITY,
             AboutOfficialLinks.CONTACT,
+            "https://spdecode.xyz/account",
+            "https://spdecode.xyz/store",
         ))return
+        if(BuildConfig.SPDECODE_PLAY_UPDATES && url in setOf("https://spdecode.xyz/store","https://spdecode.xyz/account"))return
         try {startActivity(Intent(Intent.ACTION_VIEW,Uri.parse(url)))}
         catch(_:ActivityNotFoundException){toast(R.string.read_error)}
     }

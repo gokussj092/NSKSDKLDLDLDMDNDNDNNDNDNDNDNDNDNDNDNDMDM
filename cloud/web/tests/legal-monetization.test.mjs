@@ -16,8 +16,8 @@ test("public legal pages reflect current features, with no draft, advertising or
  assert.doesNotMatch(terms,/provisional|borrador/i);
  assert.doesNotMatch(legal,/play\.google\.com\/store\/account\/subscriptions/);
  assert.doesNotMatch(legal,/<a[^>]+play\.google\.com\/store\/account/);
- assert.match(legal,/25 de octubre de 2026/);
- assert.match(legal,/October 25, 2026/);
+ assert.match(legal,/10 de noviembre de 2026/);
+ assert.match(legal,/November 10, 2026/);
 });
 
 test("terms, privacy and support are served under existing bilingual routes",()=>{

@@ -3,7 +3,7 @@ import Link from "next/link";
 import {usePathname} from "next/navigation";
 import {useEffect,useState,createContext,useContext} from "react";
 import "./public.css";
-const publicRoutes=new Set(["/","/privacy","/terms","/support"]);
+const publicRoutes=new Set(["/","/privacy","/terms","/support","/store","/account"]);
 const LocaleContext=createContext({lang:"es",setLang:()=>{}});
 export const usePublicLocale=()=>useContext(LocaleContext);
 const labels={
@@ -12,6 +12,13 @@ const labels={
 };
 export function PublicChrome({children}){
  const [lang,setLang]=useState("es");
+ const [account,setAccount]=useState(null);
+ useEffect(()=>{
+  let active=true;
+  const load=()=>fetch('/api/account',{credentials:'same-origin',cache:'no-store'}).then(r=>r.ok?r.json():null).then(data=>{if(active)setAccount(data?.user||null);}).catch(()=>{});
+  load();window.addEventListener('focus',load);
+  return()=>{active=false;window.removeEventListener('focus',load);};
+ },[]);
  useEffect(()=>{
    let saved;try{saved=localStorage.getItem("spdecode.site.language");}catch{}
    const detected=saved==="es"||saved==="en"?saved:
@@ -30,7 +37,9 @@ export function PublicChrome({children}){
    <header className="sp-public-header">
     <div className="sp-container sp-header-row">
      <Link className="sp-logo" href="/" aria-label="SP-DECODE"><img src="/icon.svg" alt="" width="43" height="43"/><span><strong>SP-DECODE</strong><small>Configuration decoder</small></span></Link>
+     <div className="sp-header-actions"><nav className="sp-public-nav" aria-label={lang==='es'?'Navegación principal':'Main navigation'}><Link href="/#features">{lang==='es'?'Funciones':'Features'}</Link><Link href="/store">{lang==='es'?'Tienda':'Store'}</Link></nav>
      <label className="sp-language">{t.language}<select aria-label={t.language} value={lang} onChange={event=>select(event.target.value)}><option value="es">ES</option><option value="en">EN</option></select></label>
+     <Link className="sp-account-link" href="/account">{account?<span className="sp-header-avatar">{account.avatar&&<img src={account.avatar} alt="" referrerPolicy="no-referrer"/>}@{account.username}</span>:lang==='es'?'Iniciar sesión':'Sign in'}</Link></div>
     </div>
    </header>
    {children}

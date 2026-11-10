@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_sign_in">Oturum aç</string>
+    <string name="account_web_description">Hesabınızı ve satın alımlarınızı resmî siteden yönetin. Ücretsiz özellikler hesap olmadan kullanılabilir.</string>
+    <string name="account_continue_web">Web üzerinden devam et</string>
+    <string name="account_my_account">Hesabım</string>
+    <string name="account_store">Mağaza</string>
+    <string name="account_open_menu">Menüyü aç</string>
+</resources>

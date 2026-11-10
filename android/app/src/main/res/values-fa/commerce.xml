@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_sign_in">ورود</string>
+    <string name="account_web_description">حساب و خریدهای خود را در وب‌سایت رسمی مدیریت کنید. امکانات رایگان بدون حساب در دسترس هستند.</string>
+    <string name="account_continue_web">ادامه در وب</string>
+    <string name="account_my_account">حساب من</string>
+    <string name="account_store">فروشگاه</string>
+    <string name="account_open_menu">باز کردن منو</string>
+</resources>

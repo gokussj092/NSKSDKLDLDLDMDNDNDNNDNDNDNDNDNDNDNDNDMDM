@@ -5,7 +5,7 @@ const read=path=>readFileSync(new URL("../"+path,import.meta.url),"utf8");
 test("AMOLED admin has left hamburger navigation and a distinct route for every section",()=>{
  const nav=read("app/admin/admin-nav.jsx"),layout=read("app/admin/layout.jsx"),css=read("app/admin/admin-theme.css");
  const routes=["","analytics","reports","requests","diagnostics","system","maintenance","api-v1","api-v2",
-   "play","providers","exports","catalog","notifications","observability","alerts","performance","resources"];
+   "play","providers","exports","catalog","notifications","store","observability","alerts","performance","resources"];
  const matches=[...nav.matchAll(/"\/admin(?:\/([a-z0-9-]+))?"/g)].map(m=>m[1]||"").filter(x=>x!=="login");
  assert.deepEqual(matches,routes);
  assert.match(nav,/aria-expanded={expanded}/);

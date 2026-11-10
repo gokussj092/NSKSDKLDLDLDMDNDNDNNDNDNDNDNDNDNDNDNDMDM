@@ -144,10 +144,12 @@ internal fun SpDecodeApp(
     var creditsPage by rememberSaveable { mutableStateOf(false) }
     BackHandler(enabled=creditsPage && activeTab==2) { creditsPage=false }
     SpDecodeAmoledTheme {
+      AccountDrawer(busy,onExternalLink) { openMenu ->
         Column(
             modifier=Modifier.fillMaxSize().background(Background).safeDrawingPadding()
         ) {
             BrandHeader(
+                onMenu=openMenu,
                 onSettings={onTab(4)},
                 showCreditsAction=activeTab==2 && !creditsPage,
                 showCreditsBack=activeTab==2 && creditsPage,
@@ -390,11 +392,13 @@ internal fun SpDecodeApp(
                 textContentColor=White,
             )
         }
+      }
     }
 }
 
 @Composable
 private fun BrandHeader(
+    onMenu:()->Unit={},
     onSettings:()->Unit,
     showCreditsAction:Boolean=false,
     showCreditsBack:Boolean=false,
@@ -409,11 +413,11 @@ private fun BrandHeader(
         modifier=Modifier.fillMaxWidth().padding(start=20.dp,end=12.dp,top=14.dp,bottom=11.dp),
         verticalAlignment=Alignment.CenterVertically,
     ){
-        Box(
-            Modifier.size(45.dp).background(Panel,RoundedCornerShape(13.dp)),
-            contentAlignment=Alignment.Center,
+        IconButton(
+            onClick=onMenu,
+            modifier=Modifier.size(48.dp).background(Panel,RoundedCornerShape(13.dp)),
         ){
-            Icon(Icons.Outlined.Shield,null,tint=White,modifier=Modifier.size(26.dp))
+            Icon(Icons.Outlined.Menu,stringResource(R.string.account_open_menu),tint=White,modifier=Modifier.size(26.dp))
         }
         Spacer(Modifier.width(11.dp))
         Column(Modifier.weight(1f)){

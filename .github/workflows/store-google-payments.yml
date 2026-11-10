@@ -1,0 +1,79 @@
+name: Store Google and Payment Contracts
+on:
+  push:
+    branches: [feat/nuevas-integraciones]
+    paths:
+      - cloud/web/**
+      - cloud/accounts/**
+      - cloud/compose.yaml
+      - cloud/infra/vps/commerce-setup.py
+      - android/app/src/unityAds/**
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/AccountDrawer.kt
+      - .github/workflows/store-google-payments.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: spdecode-store-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: shop_test
+          POSTGRES_PASSWORD: synthetic-ci-only
+          POSTGRES_DB: shop_test
+        ports: [5432:5432]
+        options: >-
+          --health-cmd "pg_isready -U shop_test -d shop_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22', cache: npm, cache-dependency-path: cloud/web/package-lock.json}
+      - run: npm ci --no-audit --no-fund
+        working-directory: cloud/web
+      - name: Actual PostgreSQL commerce and concurrency contracts
+        working-directory: cloud/web
+        env:
+          SPDECODE_SHOP_TEST_DATABASE_URL: postgresql://shop_test:synthetic-ci-only@localhost:5432/shop_test
+        run: node --test tests/commerce.test.mjs
+      - name: Existing web regressions including isolated local PostgreSQL engine
+        working-directory: cloud/web
+        run: npm test
+      - name: Build the public site without merchant credentials
+        working-directory: cloud/web
+        run: npm run build
+      - name: Validate VPS configuration scripts
+        run: |
+          bash -n cloud/infra/vps/spdecodectl
+          python3 -m py_compile cloud/infra/vps/commerce-setup.py cloud/infra/vps/nginx-config.py
+          python3 -m unittest tests.test_store_infra -v
+  unity-compile:
+    name: Compile opt-in Online Unity adapter, no ad requests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      SPDECODE_CLOUD_API_BASE_URL: https://api.spdecode.xyz
+      SPDECODE_CLOUD_QA_BUILD: 'false'
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-java@v4
+        with: {distribution: temurin, java-version: '17'}
+      - uses: gradle/actions/setup-gradle@v4
+        with: {gradle-version: '8.11.1'}
+      - name: Android toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          manager="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -1)"
+          "$manager" --install "platforms;android-36" "build-tools;35.0.0" "cmake;3.22.1" "ndk;27.2.12479018"
+      - name: Compile only; never initialize Unity or simulate impressions
+        working-directory: android
+        run: gradle --no-daemon --max-workers=2 -PspdecodeUnityAds=true :app:compileDebugKotlin

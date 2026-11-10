@@ -573,6 +573,27 @@ case "${1:-help}" in
      worker|engines) compose logs --no-color --tail 120 decoder-worker;;
      all) compose logs --no-color --tail 120 web decoder-worker;;
      *) die "spdecode logs api|web|panel|worker|all";; esac;;
+ commerce)
+   preflight
+   case "${2:-}" in
+     init)
+       python3 "$REPO/cloud/infra/vps/commerce-setup.py" "$ENVFILE"
+       compose --profile commerce up -d shop-db
+       ready=0
+       for attempt in $(seq 1 20);do
+         if compose exec -T shop-db pg_isready -U spdecode_admin -d spdecode_shop >/dev/null 2>&1;then ready=1;break;fi
+         sleep 2
+       done
+       [[ "$ready" == 1 ]] || die "Commerce database not ready"
+       compose run --rm --no-deps web node scripts/commerce-migrate.mjs --apply
+       compose up -d --no-deps web
+       log "Commerce initialized. Configure Google, provider sandbox credentials and reviewed tax/product settings before enabling sales.";;
+     migrate)
+       compose run --rm --no-deps web node scripts/commerce-migrate.mjs --apply;;
+     status)
+       compose --profile commerce ps shop-db;;
+     *) die "spdecode commerce init|migrate|status";;
+   esac;;
  update)
    [[ $# -ge 2 ]] || die "spdecode update api|web|panel|worker|all [ref]"
    if [[ "$2" == app ]]; then
@@ -655,6 +676,7 @@ SP-DECODE VPS commands:
   spdecode restart api|web|panel|worker|all
   spdecode rollback
   spdecode backup
+  spdecode commerce init|migrate|status  # private PostgreSQL; never enables payments automatically
   spdecode config set CLOUD_FORCE_MAINTENANCE true|false
   spdecode config set CLOUD_API_ENABLED true|false
   spdecode config set CLOUD_ADMIN_ENABLED true|false

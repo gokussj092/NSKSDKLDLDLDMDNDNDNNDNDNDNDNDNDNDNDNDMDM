@@ -15,6 +15,12 @@
       "enabled_scope": "API gateway and Android UI wired; server feature flag defaults off; device SHA256 allowlist required",
       "real_vendor_apk_tested": false,
       "real_android_cloud_e2e_tested": false
+    },
+    {
+      "kind": "public_store_and_commercial_api",
+      "status": "STAGED_NO_REMOTE_PAYMENT_OR_DEVICE_CERTIFICATION",
+      "live_payments": false,
+      "source": "docs/STORE_GOOGLE_PAYMENTS_2026_11_10.md"
     }
   ],
   "tooling": [
@@ -29,7 +35,32 @@
       "approval": "UNREVIEWED_UNTOUCHED"
     }
   ],
-  "dependencies": [],
+  "dependencies": [
+    {
+      "name": "better-auth",
+      "version": "1.7.20",
+      "scope": "server Google OAuth",
+      "lockfile": "cloud/web/package-lock.json"
+    },
+    {
+      "name": "pg",
+      "version": "8.23.1",
+      "scope": "server PostgreSQL",
+      "lockfile": "cloud/web/package-lock.json"
+    },
+    {
+      "name": "stripe",
+      "version": "23.1.0",
+      "scope": "server PSP API and webhook verification",
+      "lockfile": "cloud/web/package-lock.json"
+    },
+    {
+      "name": "@electric-sql/pglite",
+      "version": "0.5.16",
+      "scope": "development-only PostgreSQL engine",
+      "lockfile": "cloud/web/package-lock.json"
+    }
+  ],
   "code_paths": [
     "cloud/web/lib/f7-apk-qa-gateway.mjs",
     "cloud/web/app/api/v1/apk-qa/chunk/route.js",
@@ -42,7 +73,23 @@
     "cloud/web/lib/action-integrity.mjs",
     "cloud/web/lib/rasp-policy.mjs",
     "cloud/apk_analysis/qa_service.py",
-    "cloud/apk_analysis/qa_static.py"
+    "cloud/apk_analysis/qa_static.py",
+    "cloud/web/lib/commerce/api.mjs",
+    "cloud/web/lib/commerce/auth.mjs",
+    "cloud/web/lib/commerce/catalog.mjs",
+    "cloud/web/lib/commerce/config.mjs",
+    "cloud/web/lib/commerce/db.mjs",
+    "cloud/web/lib/commerce/orders.mjs",
+    "cloud/web/lib/commerce/pricing.mjs",
+    "cloud/web/lib/commerce/profile.mjs",
+    "cloud/web/lib/commerce/providers.mjs",
+    "cloud/web/app/api/commercial/v1/decode/route.js",
+    "cloud/web/scripts/commerce-migrate.mjs",
+    "cloud/infra/vps/commerce-setup.py",
+    "cloud/web/tests/commerce.test.mjs",
+    "android/app/src/main/java/com/ghostdeveloper/spdecode/AccountDrawer.kt",
+    "cloud/web/app/api/store/catalog/route.js",
+    "cloud/web/app/api/store/webhooks/[provider]/route.js"
   ],
   "tests": [
     "tests/test_f7_apk_qa_service.py",
@@ -56,5 +103,8 @@
     "REPORT_PRELIMINARY_ONLY",
     "AT_REST_ENCRYPTION_PENDING_FOR_PRODUCTION",
     "TESTER_ALLOWLIST_AND_SECRETS_NOT_PROVISIONED"
+  ],
+  "evidence_refs": [
+    "docs/STORE_GOOGLE_PAYMENTS_2026_11_10.md"
   ]
 }

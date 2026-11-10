@@ -145,6 +145,11 @@ def generate(domain: str, api: str, panel: str, www: bool) -> str:
     }}
     limit_conn_status 429;
     # Android-only API; no public website or operator panel on this host.
+    # Dedicated commercial API: bearer/IP/quota checks remain in the server.
+    location = /api/commercial/v1/decode {{
+        client_max_body_size 12m;
+{common_headers().replace("proxy_read_timeout 35s;", "proxy_read_timeout 70s;")}
+    }}
     location = /api/v2/transport {{
         limit_conn spdecode_uploads 12;
         access_log off;

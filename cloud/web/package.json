@@ -17,11 +17,17 @@
     "test": "node --test tests/*.test.mjs"
   },
   "dependencies": {
-    "sharp": "0.35.5",
     "@hpke/core": "1.9.0",
+    "better-auth": "1.7.20",
     "next": "16.4.3",
+    "pg": "8.23.1",
     "react": "19.3.1",
     "react-dom": "19.3.1",
-    "redis": "^5.0.0"
+    "redis": "^5.0.0",
+    "sharp": "0.35.5",
+    "stripe": "23.1.0"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.16"
   }
 }
