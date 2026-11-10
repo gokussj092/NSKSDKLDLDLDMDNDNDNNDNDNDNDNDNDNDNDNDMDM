@@ -25,7 +25,7 @@ export async function checkout(accountId,input,{db=database(),start=startPayment
     const rules=await taxRules(client),quote=taxQuote(row.settings,body.currency,body.country,body.region||'',rules,body.term);
     const id=randomUUID();
     const term=planFor(row.settings,body.term);
-    const values=[id,accountId,body.product,{...row.settings,term:term.id,days:term.days,termsVersion:'2026-11-10'},quote,body.provider,body.idempotencyKey,fingerprint,body.allowedIp,live];
+    const values=[id,accountId,body.product,{...row.settings,term:term.id,credits:term.credits??null,days:term.days,termsVersion:'2026-11-10'},quote,body.provider,body.idempotencyKey,fingerprint,body.allowedIp,live];
     await client.query(`INSERT INTO spdecode_shop.orders
       (id,account_id,product_id,product_snapshot,quote,provider,idempotency_key,request_digest,allowed_ip,payment_live)
       VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) ON CONFLICT(account_id,idempotency_key) DO NOTHING`,values);
@@ -73,13 +73,34 @@ export async function settle(provider,event,{db=database()}={}){
         // Serialize against account deletion. Retain accounting for a late
         // payment without recreating active access or erased connection data.
         const owner=await client.query('SELECT id FROM shop_user WHERE id=$1 FOR KEY SHARE',[order.account_id]);
-        await client.query(`INSERT INTO spdecode_shop.entitlements(id,order_id,account_id,product_id,allowed_ip,quota,days,status,payment_live)
-          VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT(order_id) DO NOTHING`,
-          [randomUUID(),order.id,order.account_id,order.product_id,owner.rows.length?order.allowed_ip:null,p.quota,p.days,owner.rows.length?'active':'revoked',order.payment_live]);
+        if(order.product_id==='analysis-credits'){
+          // Never issue a license/API key for credits. The verified webhook is
+          // the only source of a positive balance movement.
+          if(owner.rows.length&&Number.isInteger(p.credits)&&p.credits>0&&p.credits<=100){
+            await client.query(`INSERT INTO spdecode_shop.credit_ledger
+              (id,account_id,order_id,movement_kind,delta,payment_live)
+              VALUES($1,$2,$3,'grant',$4,$5) ON CONFLICT(order_id,movement_kind) DO NOTHING`,
+              [randomUUID(),order.account_id,order.id,p.credits,order.payment_live]);
+          }
+        }else{
+          await client.query(`INSERT INTO spdecode_shop.entitlements(id,order_id,account_id,product_id,allowed_ip,quota,days,status,payment_live)
+            VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT(order_id) DO NOTHING`,
+            [randomUUID(),order.id,order.account_id,order.product_id,owner.rows.length?order.allowed_ip:null,p.quota,p.days,owner.rows.length?'active':'revoked',order.payment_live]);
+        }
       }
     }else{
       await client.query('UPDATE spdecode_shop.orders SET status=$2,refunded_at=now() WHERE id=$1',[order.id,event.type]);
       await client.query("UPDATE spdecode_shop.entitlements SET status='revoked' WHERE order_id=$1",[order.id]);
+      if(order.product_id==='analysis-credits'){
+        // A refund/dispute reverses the whole grant, including already-spent
+        // credits. Negative balances suspend future analysis reservations.
+        await client.query(`INSERT INTO spdecode_shop.credit_ledger
+          (id,account_id,order_id,movement_kind,delta,payment_live)
+          SELECT $1,account_id,order_id,'refund',-delta,payment_live
+          FROM spdecode_shop.credit_ledger
+          WHERE order_id=$2 AND movement_kind='grant'
+          ON CONFLICT(order_id,movement_kind) DO NOTHING`,[randomUUID(),order.id]);
+      }
     }
     return {received:true};
   },db);
