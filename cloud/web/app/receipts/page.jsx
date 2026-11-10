@@ -1,0 +1,1 @@
+import {ReceiptsPage} from '../public/account-pages.jsx';export const metadata={title:'Mis recibos',robots:{index:false,follow:false}};export default function Page(){return <ReceiptsPage/>;}
