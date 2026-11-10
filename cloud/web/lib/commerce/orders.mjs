@@ -1,7 +1,7 @@
 import {randomUUID,randomBytes,createHash,createHmac} from 'node:crypto';
 import {database,transaction} from './db.mjs';
 import {fail,paymentReady,publicIp} from './config.mjs';
-import {productAvailable,taxQuote,validatePurchase} from './catalog.mjs';
+import {planAvailable,planFor,taxQuote,validatePurchase} from './catalog.mjs';
 import {startPayment} from './providers.mjs';
 export async function catalog(db=database()){
   return (await db.query('SELECT * FROM spdecode_shop.products ORDER BY id')).rows;
@@ -14,17 +14,18 @@ export async function checkout(accountId,input,{db=database(),start=startPayment
   const body=validatePurchase(input);
   const live=process.env.SPDECODE_PAYMENTS_LIVE==='true';
   if(!paymentReady(body.provider))fail('PAYMENT_METHOD_UNAVAILABLE',409);
-  const fingerprint=digest([body.product,body.provider,body.currency,body.version,body.country,body.region,body.allowedIp,live]);
+  const fingerprint=digest([body.product,body.term,body.provider,body.currency,body.version,body.country,body.region,body.allowedIp,live]);
   const order=await transaction(async client=>{
     const existing=(await client.query('SELECT * FROM spdecode_shop.orders WHERE account_id=$1 AND idempotency_key=$2',
       [accountId,body.idempotencyKey])).rows[0];
     if(existing){if(existing.request_digest!==fingerprint)fail('IDEMPOTENCY_CONFLICT',409);return existing;}
     const row=(await client.query('SELECT * FROM spdecode_shop.products WHERE id=$1 FOR SHARE',[body.product])).rows[0];
     if(!row||row.version!==body.version)fail('PRICE_CHANGED',409);
-    if(!productAvailable(row.settings))fail('PRODUCT_UNAVAILABLE',409);
-    const rules=await taxRules(client),quote=taxQuote(row.settings,body.currency,body.country,body.region||'',rules);
+    if(!planAvailable(row.settings,body.term))fail('PRODUCT_UNAVAILABLE',409);
+    const rules=await taxRules(client),quote=taxQuote(row.settings,body.currency,body.country,body.region||'',rules,body.term);
     const id=randomUUID();
-    const values=[id,accountId,body.product,{...row.settings,termsVersion:'2026-11-10'},quote,body.provider,body.idempotencyKey,fingerprint,body.allowedIp,live];
+    const term=planFor(row.settings,body.term);
+    const values=[id,accountId,body.product,{...row.settings,term:term.id,days:term.days,termsVersion:'2026-11-10'},quote,body.provider,body.idempotencyKey,fingerprint,body.allowedIp,live];
     await client.query(`INSERT INTO spdecode_shop.orders
       (id,account_id,product_id,product_snapshot,quote,provider,idempotency_key,request_digest,allowed_ip,payment_live)
       VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) ON CONFLICT(account_id,idempotency_key) DO NOTHING`,values);
