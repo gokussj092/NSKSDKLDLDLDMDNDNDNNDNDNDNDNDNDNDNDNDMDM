@@ -48,8 +48,8 @@ class StoreConfigurationTests(unittest.TestCase):
         self.assertIn("WHERE rolname='spdecode_shop_app'",script)
         self.assertIn('ALTER ROLE spdecode_shop_app WITH LOGIN PASSWORD %L',script)
         self.assertIn('CREATE ROLE spdecode_shop_app LOGIN NOSUPERUSER',script)
-        self.assertEqual(ctl.count('compose exec -T shop-db sh /docker-entrypoint-initdb.d/00-shop-role.sh'),2)
-        self.assertIn('docker-entrypoint-initdb.d/00-shop-role.sh',ctl)
+        self.assertEqual(ctl.count('compose exec -T shop-db sh -s < "$REPO/cloud/accounts/shop-db-init.sh"'),2)
+        self.assertIn('cloud/accounts/shop-db-init.sh',ctl)
 
     def test_rejects_unsafe_permissions_duplicates_and_symlinks(self):
         with tempfile.TemporaryDirectory()as folder:
