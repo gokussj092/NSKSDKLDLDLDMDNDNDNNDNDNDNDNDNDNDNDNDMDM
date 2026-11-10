@@ -5,6 +5,7 @@ import {accountAuth,requireAccount} from './auth.mjs';
 import {catalog,taxRules,checkout,settle,claim,useApiKey,checkApiKey,releaseApiUsage,completeApiUsage} from './orders.mjs';
 import {publicProduct,taxQuote,validateProduct} from './catalog.mjs';
 import {profile,editProfile} from './profile.mjs';
+import {creditBalance} from './credits.mjs';
 import {capturePaypal,paymentEvent} from './providers.mjs';
 import {adminSettings,authenticateAdmin,validMutation} from '../c6-admin-auth.mjs';
 import {opsStore,serviceMaintenanceEnabled} from '../c6-ops-store.mjs';
@@ -13,7 +14,8 @@ import {reserveSlot,releaseSlot} from '../c3-store.mjs';
 export const publicCatalog=()=>safe(async()=>{
   const configured=authReady(),rows=configured?await catalog():[
     {version:1,settings:{id:'offline-3',enabled:false,prices:{USD:499},maxDevices:3,days:null,quota:null}},
-    {version:1,settings:{id:'api-ip',enabled:false,prices:{},maxDevices:null,days:null,quota:null}}];
+    {version:1,settings:{id:'api-ip',enabled:false,prices:{},maxDevices:null,days:null,quota:null}},
+    {version:1,settings:{id:'analysis-credits',enabled:false,prices:{},bundles:{}}}];
   return reply({authEnabled:configured,products:rows.map(row=>publicProduct(row)),
     live:process.env.SPDECODE_PAYMENTS_LIVE==='true'});
 });
@@ -22,13 +24,14 @@ export const accountSnapshot=request=>safe(async()=>{
   const session=await accountAuth().api.getSession({headers:request.headers});
   if(!session)return reply({user:null,authEnabled:true});
   const user=session.user,p=await profile(user.id),db=database();
-  const [orders,entitlements]=await Promise.all([
+  const [orders,entitlements,credits]=await Promise.all([
     db.query(`SELECT id,product_id,provider,status,quote,created_at,paid_at,payment_live,product_snapshot->>'term' AS term,product_snapshot->>'days' AS days FROM spdecode_shop.orders WHERE account_id=$1 ORDER BY created_at DESC LIMIT 50`,[user.id]),
-    db.query(`SELECT id,order_id,product_id,status,token_prefix,allowed_ip,quota,days,expires_at,claimed_at,payment_live FROM spdecode_shop.entitlements WHERE account_id=$1 ORDER BY created_at DESC`,[user.id])]);
+    db.query(`SELECT id,order_id,product_id,status,token_prefix,allowed_ip,quota,days,expires_at,claimed_at,payment_live FROM spdecode_shop.entitlements WHERE account_id=$1 ORDER BY created_at DESC`,[user.id]),
+    creditBalance(user.id,{db})]);
   const googleAvatar=typeof user.image==='string'&&/^https:\/\/lh[3-6]\.googleusercontent\.com\//.test(user.image)?user.image:null;
   return reply({authEnabled:true,live:process.env.SPDECODE_PAYMENTS_LIVE==='true',user:{id:user.id,name:user.name,email:user.email,avatar:p.avatar_data||googleAvatar,googleAvatar,username:p.username,bio:p.bio||'',
     privacyVersion:user.privacyVersion,termsVersion:user.termsVersion},
-    orders:orders.rows,entitlements:entitlements.rows});
+    orders:orders.rows,entitlements:entitlements.rows,credits});
 });
 export const profileMutation=request=>safe(async()=>{
   requireOrigin(request);const session=await requireAccount(request,{fresh:true});
