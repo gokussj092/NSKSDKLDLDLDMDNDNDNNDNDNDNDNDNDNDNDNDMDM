@@ -15,7 +15,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import org.json.JSONTokener
 
-/** One representation for the viewer, history, clipboard and JSON file. */
+/** Raw result stays unchanged in history; presentation is normalized on demand. */
 internal object OfflineJson {
     fun hasUnresolvedFields(source:String):Boolean = runCatching {
         val parsed=JSONTokener(source).nextValue() as? JSONObject
@@ -31,6 +31,64 @@ internal object OfflineJson {
             is JSONArray -> parsed.toString(2)
             else -> throw IllegalArgumentException("INVALID_JSON")
         }+"\n"
+    }
+
+    /**
+     * Presentation-only expansion. Native results and encrypted history
+     * retain their original value types; viewer, clipboard and JSON export
+     * consistently show embedded object/array strings as structured JSON.
+     */
+    fun formatExpanded(source:String):String {
+        val reader=JSONTokener(source)
+        val parsed=reader.nextValue()
+        require(reader.nextClean()=='\u0000') { "INVALID_JSON" }
+        val expanded=expandEmbedded(parsed,0)
+        return when(expanded) {
+            is JSONObject -> expanded.toString(2)
+            is JSONArray -> expanded.toString(2)
+            else -> throw IllegalArgumentException("INVALID_JSON")
+        }+"\n"
+    }
+
+    /** Only parse complete object/array values; scalar strings retain their type. */
+    private fun expandEmbedded(value:Any?,depth:Int):Any? {
+        if(depth>=32)return value
+        return when(value) {
+            is JSONObject -> {
+                val keys=value.keys()
+                while(keys.hasNext()) {
+                    val key=keys.next()
+                    val original=value.opt(key)
+                    val expanded=expandEmbedded(original,depth+1)
+                    if(expanded!==original)value.put(key,expanded)
+                }
+                value
+            }
+            is JSONArray -> {
+                for(index in 0 until value.length()) {
+                    val original=value.opt(index)
+                    val expanded=expandEmbedded(original,depth+1)
+                    if(expanded!==original)value.put(index,expanded)
+                }
+                value
+            }
+            is String -> {
+                val trimmed=value.trim()
+                val looksLikeJson=trimmed.length>=2 &&
+                    ((trimmed.first()=='{' && trimmed.last()=='}') ||
+                     (trimmed.first()=='[' && trimmed.last()==']'))
+                if(!looksLikeJson)value else runCatching {
+                    val nestedReader=JSONTokener(trimmed)
+                    val nested=nestedReader.nextValue()
+                    require(nestedReader.nextClean()=='\u0000') { "INVALID_EMBEDDED_JSON" }
+                    when(nested) {
+                        is JSONObject,is JSONArray -> expandEmbedded(nested,depth+1)
+                        else -> value
+                    }
+                }.getOrDefault(value)
+            }
+            else -> value
+        }
     }
 
     // Match complete strings, including escapes, before other JSON tokens.

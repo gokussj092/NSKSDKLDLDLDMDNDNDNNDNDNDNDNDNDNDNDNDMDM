@@ -112,10 +112,10 @@ class MainActivity : ComponentActivity() {
             if(showBrandedSplash.value) OfflineSplashScreen(ui.language)
             else OfflineScreen(ui,OfflineActions(
                 importFile={importer.launch(arrayOf("*/*"))},
-                copyResult={ui.result?.let{copy(OfflineJson.format(it))}},
+                copyResult={ui.result?.let{copy(OfflineJson.formatExpanded(it))}},
                 exportResult={
                     ui.result?.let {
-                        exportPayload=OfflineJson.format(it)
+                        exportPayload=OfflineJson.formatExpanded(it)
                         exporter.launch(ui.fileName.orEmpty().substringBeforeLast('.')+".json")
                     }
                 },

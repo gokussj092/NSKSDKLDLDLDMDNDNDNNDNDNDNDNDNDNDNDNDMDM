@@ -19,6 +19,7 @@ class OfflineImportContract(unittest.TestCase):
         cls.errors=(APP/"java/com/ghostdeveloper/spdecode/offline/OfflineErrorMessages.kt").read_text()
         cls.bridge=(ROOT/"spdecode_offline_native.cpp").read_text()
         cls.splash=(APP/"java/com/ghostdeveloper/spdecode/offline/OfflineSplashScreen.kt").read_text()
+        cls.json_viewer=(APP/"java/com/ghostdeveloper/spdecode/offline/OfflineJson.kt").read_text()
 
     def test_share_and_view_exported_activity(self):
         activity=self.manifest.find(".//activity")
@@ -80,6 +81,21 @@ class OfflineImportContract(unittest.TestCase):
             self.assertIn(f'"{lang}" to mapOf(',self.strings)
         self.assertIn("Configuration decoder",self.strings)
         self.assertIn("Powered by Ghost Developer",self.strings)
+
+    def test_nested_json_presentation_preserves_original_history(self):
+        # The viewer and the two full-result actions share the same formatter.
+        self.assertIn("fun formatExpanded(source:String):String",self.json_viewer)
+        self.assertIn("is JSONObject,is JSONArray -> expandEmbedded(nested,depth+1)",self.json_viewer)
+        self.assertIn("nestedReader.nextClean()=='\\u0000'",self.json_viewer)
+        self.assertIn("if(depth>=32)return value",self.json_viewer)
+        self.assertIn("if(!looksLikeJson)value",self.json_viewer)
+        self.assertIn("OfflineJson.formatExpanded(state.result.orEmpty())",self.ui)
+        self.assertIn("copy(OfflineJson.formatExpanded(it))",self.activity)
+        self.assertIn("exportPayload=OfflineJson.formatExpanded(it)",self.activity)
+        # Original native JSON values continue to be stored in encrypted history.
+        self.assertIn("OfflineJson.format(source)",self.activity)
+        self.assertIn("storage.save(record)",self.activity)
+        self.assertIn("OfflineJson.format(item.json)",self.activity)
 
     def test_no_implementation_jargon_in_visible_strings(self):
         values=re.findall(r'"[^"]+" to "((?:[^"\\]|\\.)*)"',self.strings)

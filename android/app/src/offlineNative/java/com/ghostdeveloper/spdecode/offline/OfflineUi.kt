@@ -334,7 +334,10 @@ private fun Home(state:OfflineUiState,action:OfflineActions,p:OfflinePalette) {
             HorizontalDivider(color=p.line)
             // Complete source is selectable across lines, with separate aligned
             // line-number gutter. Nothing is truncated or paginated.
-            CompleteJsonViewer(state.result.orEmpty(),p,state.language)
+            val visibleJson=remember(state.result) {
+                OfflineJson.formatExpanded(state.result.orEmpty())
+            }
+            CompleteJsonViewer(visibleJson,p,state.language)
             Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
                 OutlinedButton(onClick=action.copyResult,modifier=Modifier.weight(1f)) {
                     Icon(Icons.Outlined.ContentCopy,null,modifier=Modifier.size(16.dp))
