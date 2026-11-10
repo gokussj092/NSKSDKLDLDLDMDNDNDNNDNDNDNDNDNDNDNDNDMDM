@@ -25,14 +25,14 @@ export const accountSnapshot=request=>safe(async()=>{
   const [orders,entitlements]=await Promise.all([
     db.query(`SELECT id,product_id,provider,status,quote,created_at,paid_at,payment_live FROM spdecode_shop.orders WHERE account_id=$1 ORDER BY created_at DESC LIMIT 50`,[user.id]),
     db.query(`SELECT id,order_id,product_id,status,token_prefix,allowed_ip,quota,days,expires_at,claimed_at,payment_live FROM spdecode_shop.entitlements WHERE account_id=$1 ORDER BY created_at DESC`,[user.id])]);
-  const avatar=typeof user.image==='string'&&/^https:\/\/lh[3-6]\.googleusercontent\.com\//.test(user.image)?user.image:null;
-  return reply({authEnabled:true,live:process.env.SPDECODE_PAYMENTS_LIVE==='true',user:{id:user.id,name:user.name,email:user.email,avatar,username:p.username,
+  const googleAvatar=typeof user.image==='string'&&/^https:\/\/lh[3-6]\.googleusercontent\.com\//.test(user.image)?user.image:null;
+  return reply({authEnabled:true,live:process.env.SPDECODE_PAYMENTS_LIVE==='true',user:{id:user.id,name:user.name,email:user.email,avatar:p.avatar_data||googleAvatar,googleAvatar,username:p.username,bio:p.bio||'',
     privacyVersion:user.privacyVersion,termsVersion:user.termsVersion},
     orders:orders.rows,entitlements:entitlements.rows});
 });
 export const profileMutation=request=>safe(async()=>{
   requireOrigin(request);const session=await requireAccount(request,{fresh:true});
-  return reply(await editProfile(session.user.id,await jsonBody(request,2048)));
+  return reply(await editProfile(session.user.id,await jsonBody(request,120000)));
 });
 export const quoteRequest=request=>safe(async()=>{
   requireOrigin(request);await requireAccount(request);
