@@ -102,6 +102,32 @@ export const adminStore=request=>safe(async()=>{
   }else fail('INVALID_REQUEST');
   return reply({saved:true});
 });
+export const adminCleanup=request=>safe(async()=>{
+  const actor=await admin(request,request.method==='POST'),db=database();
+  const settings=async client=>(await client.query(
+    "SELECT value FROM spdecode_shop.settings WHERE id='cleanup-policy'")).rows[0]?.value||
+    {enabled:false,retentionHours:168,requested:false,lastRunAt:null,lastResult:null};
+  if(request.method==='GET')return reply({policy:await settings(),scope:'unused-docker-build-cache',
+    minimumAgeHours:168,automaticRequiresVpsTimer:true,qaJobsManagedSeparately:true});
+  const body=await jsonBody(request,2048);
+  if(!body||typeof body!=='object'||Array.isArray(body)||!['configure','request'].includes(body.action))fail('INVALID_REQUEST');
+  if(body.action==='configure'&&
+    (typeof body.enabled!=='boolean'||![168,336,720].includes(body.retentionHours)||
+     Object.keys(body).some(k=>!['action','enabled','retentionHours'].includes(k))))fail('INVALID_REQUEST');
+  if(body.action==='request'&&Object.keys(body).some(k=>k!=='action'))fail('INVALID_REQUEST');
+  await transaction(async client=>{
+    const row=(await client.query("SELECT value FROM spdecode_shop.settings WHERE id='cleanup-policy' FOR UPDATE")).rows[0];
+    if(!row)fail('CLEANUP_NOT_CONFIGURED',503);
+    const previous=row.value;
+    const value=body.action==='configure'
+       ?{...previous,enabled:body.enabled,retentionHours:body.retentionHours}
+       :{...previous,requested:true};
+    await client.query("UPDATE spdecode_shop.settings SET value=$1,updated_at=now() WHERE id='cleanup-policy'",[JSON.stringify(value)]);
+    await client.query('INSERT INTO spdecode_shop.audit(actor_id,action,resource_id) VALUES($1,$2,$3)',
+      [actor,body.action==='configure'?'cleanup_policy_updated':'cleanup_requested','cleanup-policy']);
+  },db);
+  return reply({policy:await settings(),queued:body.action==='request'});
+});
 export const commercialDecode=request=>safe(async()=>{
   if(process.env.SPDECODE_COMMERCIAL_API_ENABLED!=='true'||process.env.CLOUD_TRUST_PROXY!=='true')fail('SERVICE_UNAVAILABLE',503);
   const auth=request.headers.get('authorization')||'';
