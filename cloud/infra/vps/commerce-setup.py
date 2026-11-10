@@ -1,6 +1,7 @@
 """Provision private commerce secrets without enabling accounts or payments."""
 from pathlib import Path
 import os,secrets,stat,sys,tempfile
+from urllib.parse import urlsplit,unquote
 
 def prepare_configuration(path):
     path=Path(path)
@@ -18,6 +19,19 @@ def prepare_configuration(path):
       'SPDECODE_DATABASE_URL':value('SPDECODE_DATABASE_URL')or 'postgresql://spdecode_shop_app:'+app_password+'@shop-db:5432/spdecode_shop',
       'BETTER_AUTH_SECRET':value('BETTER_AUTH_SECRET')or secrets.token_urlsafe(48),
       'SPDECODE_SHOP_TOKEN_KEY':value('SPDECODE_SHOP_TOKEN_KEY')or secrets.token_urlsafe(48)}
+    # Fail before overwriting configuration if the connection string and the
+    # non-superuser role password disagree (PostgreSQL SQLSTATE 28P01).
+    try:
+        parsed=urlsplit(values['SPDECODE_DATABASE_URL'])
+        if not (parsed.scheme in ('postgres','postgresql') and
+                parsed.username=='spdecode_shop_app' and
+                parsed.hostname=='shop-db' and
+                parsed.port in (None,5432) and
+                parsed.path=='/spdecode_shop' and
+                unquote(parsed.password or '')==app_password):
+            raise ValueError('Inconsistent commerce database credentials')
+    except (TypeError, ValueError) as exc:
+        raise ValueError('Inconsistent commerce database credentials') from None
     for flag in ['SPDECODE_ACCOUNTS_ENABLED','SPDECODE_STORE_ENABLED','SPDECODE_PAYMENTS_LIVE',
                  'SPDECODE_COMMERCIAL_API_ENABLED','SPDECODE_OFFLINE_LICENSE_READY']:
         values[flag]=value(flag)or 'false'
