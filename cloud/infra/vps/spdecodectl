@@ -573,6 +573,27 @@ case "${1:-help}" in
      worker|engines) compose logs --no-color --tail 120 decoder-worker;;
      all) compose logs --no-color --tail 120 web decoder-worker;;
      *) die "spdecode logs api|web|panel|worker|all";; esac;;
+
+ cleanup)
+   preflight
+   case "${2:-}" in
+     status)
+       python3 "$REPO/cloud/infra/vps/cleanup-runner.py" --status
+       systemctl is-enabled spdecode-safe-cleanup.timer 2>/dev/null || true;;
+     run-timer)
+       python3 "$REPO/cloud/infra/vps/cleanup-runner.py" --once;;
+     install-timer)
+       command -v systemctl >/dev/null || die "systemd required"
+       install -m 0644 "$REPO/cloud/infra/vps/spdecode-safe-cleanup.service" /etc/systemd/system/spdecode-safe-cleanup.service
+       install -m 0644 "$REPO/cloud/infra/vps/spdecode-safe-cleanup.timer" /etc/systemd/system/spdecode-safe-cleanup.timer
+       systemctl daemon-reload
+       systemctl enable --now spdecode-safe-cleanup.timer
+       log "Safe cleanup timer installed; database policy stays OFF until administrator opts in";;
+     disable-timer)
+       systemctl disable --now spdecode-safe-cleanup.timer
+       log "Safe cleanup timer disabled";;
+     *) die "spdecode cleanup status|run-timer|install-timer|disable-timer";;
+   esac;;
  commerce)
    preflight
    case "${2:-}" in
@@ -682,6 +703,7 @@ SP-DECODE VPS commands:
   spdecode update app [branch] --version-name X.Y.Z --version-code N --testing-only
   spdecode restart api|web|panel|worker|all
   spdecode rollback
+  spdecode cleanup status|install-timer|disable-timer
   spdecode backup
   spdecode commerce init|migrate|status  # private PostgreSQL; never enables payments automatically
   spdecode config set CLOUD_FORCE_MAINTENANCE true|false
