@@ -1,0 +1,350 @@
+name: SP-DECODE Offline Native APK (unified branch, persistent signer)
+on:
+  push:
+    branches: [feat/nuevas-integraciones]
+    paths:
+      - android/app/build.gradle.kts
+      - android/app/proguard-rules.pro
+      - android/app/src/offlineNative/**
+      - android/app/src/main/cpp/CMakeLists.txt
+      - android/app/src/main/cpp/spdecode_offline_native.cpp
+      - android/app/src/main/cpp/spdecode_http_custom.cpp
+      - android/app/src/main/cpp/spdecode_http_custom.h
+      - android/app/src/main/cpp/spdecode_http_custom_legacy.cpp
+      - android/app/src/main/cpp/spdecode_http_custom_legacy.h
+      - scripts/build_offline_npv_tables.py
+      - android/app/src/main/cpp/spdecode_npv_text.cpp
+      - android/app/src/main/cpp/spdecode_npv_text.h
+      - android/app/src/main/cpp/spdecode_npv_crypto.h
+      - android/app/src/main/cpp/spdecode_npv_whitebox.cpp
+      - android/app/src/main/cpp/spdecode_npv_whitebox.h
+      - android/app/src/main/cpp/spdecode_npv_signed.cpp
+      - android/app/src/main/cpp/spdecode_npv_signed.h
+      - android/app/src/main/cpp/spdecode_npv_legacy.cpp
+      - android/app/src/main/cpp/spdecode_npv_legacy.h
+      - tests/native_npv_cli.cpp
+      - tests/test_offline_npv_native_parity.py
+      - android/app/src/main/cpp/spdecode_http_injector.cpp
+      - android/app/src/main/cpp/spdecode_http_injector.h
+      - android/app/src/main/cpp/spdecode_dark_tunnel.cpp
+      - android/app/src/main/cpp/spdecode_dark_tunnel.h
+      - android/app/src/main/cpp/spdecode_hat_tunnel.cpp
+      - android/app/src/main/cpp/spdecode_hat_tunnel.h
+      - tests/native_hat_tunnel_cli.cpp
+      - tests/test_offline_hat_native_parity.py
+      - tests/test_offline_share_ui_contract.py
+      - tests/native_dark_tunnel_cli.cpp
+      - tests/test_offline_dark_native_parity.py
+      - tests/native_http_injector_cli.cpp
+      - tests/test_offline_ehi_native_parity.py
+      - tests/native_http_custom_cli.cpp
+      - tests/test_offline_hc_native_parity.py
+      - .github/workflows/offline-native-apk.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+concurrency:
+  group: spdecode-offline-native-unified
+  cancel-in-progress: true
+
+jobs:
+  hc-cpp-parity:
+    name: HTTP Custom native C++ vs independent Python goldens
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install reference C++ cryptographic libraries
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends g++ libmbedtls-dev libargon2-dev nlohmann-json3-dev python3-venv
+      - name: Validate exact modern, v1 and historical NPV native whitebox tables
+        run: |
+          python3 scripts/build_offline_npv_tables.py --output /tmp/spdecode-npv-tables.h
+          test -s /tmp/spdecode-npv-tables.h
+      - name: Compile isolated C++ HTTP Custom core (no Kotlin/Java)
+        run: |
+          set -euo pipefail
+          g++ -O2 -std=c++17 -Wall -Wextra -Werror \
+            tests/native_http_custom_cli.cpp \
+            android/app/src/main/cpp/spdecode_http_custom.cpp \
+            android/app/src/main/cpp/spdecode_http_custom_legacy.cpp \
+            -lmbedcrypto -largon2 -o /tmp/spdecode-hc-native
+      - name: Assert all native decryption/credential/tamper vectors
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/spdecode-hc-python
+          /tmp/spdecode-hc-python/bin/python -m pip install --disable-pip-version-check pycryptodome==3.23.0 argon2-cffi==25.1.0 msgpack==1.1.1
+          /tmp/spdecode-hc-python/bin/python tests/test_offline_hc_native_parity.py /tmp/spdecode-hc-native
+  ehi-cpp-parity:
+    name: HTTP Injector C++ differential fixture verification
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install native reference libraries
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends g++ libmbedtls-dev libargon2-dev nlohmann-json3-dev python3-venv
+      - name: Compile isolated EHI C++ engine
+        run: |
+          set -euo pipefail
+          g++ -O2 -std=c++17 -Wall -Wextra -Werror \
+            tests/native_http_injector_cli.cpp \
+            android/app/src/main/cpp/spdecode_http_injector.cpp \
+            -lmbedcrypto -largon2 -o /tmp/spdecode-ehi-native
+      - name: Compare EHI bypass and standard Python goldens
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/spdecode-ehi-env
+          /tmp/spdecode-ehi-env/bin/pip install --disable-pip-version-check pycryptodome==3.23.0 argon2-cffi==25.1.0 msgpack==1.1.1
+          /tmp/spdecode-ehi-env/bin/python tests/test_offline_ehi_native_parity.py /tmp/spdecode-ehi-native
+  npv-cpp-parity:
+    name: Native NPV historical, signed v1/v5/v6 and text parity
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install native P-256, zlib and test reference dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends g++ libmbedtls-dev libargon2-dev nlohmann-json3-dev zlib1g-dev python3-venv
+      - name: Generate audited whitebox constants and compile C++ engine
+        run: |
+          set -euo pipefail
+          python3 scripts/build_offline_npv_tables.py --output /tmp/spdecode_npv_tables.h
+          g++ -O2 -std=c++17 -Wall -Wextra -Werror -pthread -I/tmp \
+            tests/native_npv_cli.cpp \
+            android/app/src/main/cpp/spdecode_npv_signed.cpp \
+            android/app/src/main/cpp/spdecode_npv_whitebox.cpp \
+            android/app/src/main/cpp/spdecode_npv_text.cpp \
+            android/app/src/main/cpp/spdecode_npv_legacy.cpp \
+            -lmbedcrypto -lz -o /tmp/spdecode-npv-native
+      - name: Verify NPV v1/v5/v6, ECDH and complete JSON
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/spdecode-npv-env
+          /tmp/spdecode-npv-env/bin/pip install --disable-pip-version-check pycryptodome==3.23.0 argon2-cffi==25.1.0 msgpack==1.1.1
+          /tmp/spdecode-npv-env/bin/python tests/test_offline_npv_native_parity.py /tmp/spdecode-npv-native
+  dark-cpp-parity:
+    name: Native Dark Tunnel AES-CFB and MessagePack parity
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install Dark Tunnel C++ test dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends g++ libmbedtls-dev nlohmann-json3-dev python3-venv
+      - name: Compile Dark Tunnel isolated native decoder
+        run: |
+          set -euo pipefail
+          g++ -O2 -std=c++17 -Wall -Wextra -Werror \
+            tests/native_dark_tunnel_cli.cpp \
+            android/app/src/main/cpp/spdecode_dark_tunnel.cpp \
+            -lmbedcrypto -o /tmp/spdecode-dark-native
+      - name: Verify host-independent Dark Tunnel fixtures
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/spdecode-dark-test
+          /tmp/spdecode-dark-test/bin/pip install --disable-pip-version-check pycryptodome==3.23.0 msgpack==1.1.1
+          /tmp/spdecode-dark-test/bin/python tests/test_offline_dark_native_parity.py /tmp/spdecode-dark-native
+
+  hat-cpp-parity:
+    name: Hat Tunnel native C++ decoding and profile v5 fixtures
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install native Hat test dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends g++ libmbedtls-dev nlohmann-json3-dev python3-venv
+      - name: Compile native Hat Tunnel reference CLI
+        run: |
+          set -euo pipefail
+          g++ -O2 -std=c++17 -Wall -Wextra -Werror \
+            tests/native_hat_tunnel_cli.cpp \
+            android/app/src/main/cpp/spdecode_hat_tunnel.cpp \
+            -lmbedcrypto -o /tmp/spdecode-hat-native
+      - name: Test Hat profiles and invalid version failures
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/spdecode-hat-test
+          /tmp/spdecode-hat-test/bin/pip install --disable-pip-version-check pycryptodome==3.23.0
+          /tmp/spdecode-hat-test/bin/python tests/test_offline_hat_native_parity.py /tmp/spdecode-hat-native
+      - name: Verify sharing, error messages and UI privacy
+        run: python3 tests/test_offline_share_ui_contract.py
+
+  build:
+    if: github.repository == 'gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM' && github.ref == 'refs/heads/feat/nuevas-integraciones'
+    needs: [hc-cpp-parity, ehi-cpp-parity, npv-cpp-parity, dark-cpp-parity, hat-cpp-parity]
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    env:
+      SPDECODE_OFFLINE_NATIVE: "true"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.11.1"
+      - name: Install Android SDK and NDK
+        shell: bash
+        run: |
+          set -euo pipefail
+          SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -n 1)"
+          "$SDKMANAGER" --install "platforms;android-36" "build-tools;35.0.0" "platform-tools" "cmake;3.22.1" "ndk;27.2.12479018"
+      - name: Prefetch official Mbed TLS source for every Android ABI
+        shell: bash
+        run: |
+          set -euo pipefail
+          ARCHIVE="$RUNNER_TEMP/spdecode-mbedtls-3.6.7.tar.bz2"
+          EXPECTED="a7e8bcbec0e6f761b4af24f25677626b35f762f68eef79c08677a363212d11f6"
+          URL="https://github.com/Mbed-TLS/mbedtls/releases/download/mbedtls-3.6.7/mbedtls-3.6.7.tar.bz2"
+          verified=0
+          for attempt in {1..10}; do
+            if curl -fLsS --retry 3 --retry-all-errors --retry-delay 2 \
+              --connect-timeout 20 --max-time 180 "$URL" -o "$ARCHIVE"; then
+              if printf '%s  %s\n' "$EXPECTED" "$ARCHIVE" | sha256sum --check --status; then
+                verified=1
+                break
+              fi
+            fi
+            sleep 3
+          done
+          test "$verified" -eq 1
+          printf '%s  %s\n' "$EXPECTED" "$ARCHIVE" | sha256sum --check
+          echo "SPDECODE_MBEDTLS_ARCHIVE=$ARCHIVE" >> "$GITHUB_ENV"
+          echo "PASS: official Mbed TLS 3.6.7 source verified for all ABIs"
+      - name: Build standalone Offline debug APK
+        working-directory: android
+        run: gradle --no-daemon --max-workers=2 :app:assembleDebug
+      - name: Restore permanent GitHub Secrets signing keystore (fail closed)
+        shell: bash
+        env:
+          STORE_BASE64: ${{ secrets.SPDECODE_SIGNING_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.SPDECODE_SIGNING_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.SPDECODE_SIGNING_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          for item in "$STORE_BASE64" "$STORE_PASSWORD" "$KEY_ALIAS" "$KEY_PASSWORD"; do
+            if [[ -z "$item" ]]; then
+              echo "::error::Permanent signing secrets missing; temporary signatures forbidden"
+              exit 1
+            fi
+          done
+          umask 077
+          KEYSTORE="$RUNNER_TEMP/spdecode-offline-persistent.p12"
+          printf '%s' "$STORE_BASE64" | base64 --decode > "$KEYSTORE"
+          test "$(stat -c %s "$KEYSTORE")" -gt 1000
+          keytool -list -keystore "$KEYSTORE" -storetype PKCS12 -storepass:env STORE_PASSWORD -alias "$KEY_ALIAS" >/dev/null
+          keytool -exportcert -keystore "$KEYSTORE" -storetype PKCS12 -storepass:env STORE_PASSWORD -alias "$KEY_ALIAS" | sha256sum | awk '{print $1}' > "$RUNNER_TEMP/expected-offline-signer-sha256.txt"
+          grep -Eq '^[0-9a-f]{64}$' "$RUNNER_TEMP/expected-offline-signer-sha256.txt"
+          echo 'PASS: permanent repository keystore loaded (certificate only)'
+
+      - name: Build R8 offline release with permanent certificate
+        working-directory: android
+        shell: bash
+        env:
+          SPDECODE_RELEASE_STORE_FILE: ${{ runner.temp }}/spdecode-offline-persistent.p12
+          SPDECODE_RELEASE_STORE_PASSWORD: ${{ secrets.SPDECODE_SIGNING_STORE_PASSWORD }}
+          SPDECODE_RELEASE_KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
+          SPDECODE_RELEASE_KEY_PASSWORD: ${{ secrets.SPDECODE_SIGNING_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          gradle --no-daemon --max-workers=2 :app:assembleRelease
+          APK=app/build/outputs/apk/release/app-release.apk
+          test -s "$APK"
+          test -s app/build/outputs/mapping/release/mapping.txt
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | grep -F "package: name='com.ghostdeveloper.spdecode.offline'"
+          if "$ANDROID_HOME/build-tools/35.0.0/aapt" dump permissions "$APK" | grep -F android.permission.INTERNET; then
+            echo '::error::Offline release must not request Internet'
+            exit 1
+          fi
+
+      - name: Verify permanent signer and V1 V2 V3 signatures
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=android/app/build/outputs/apk/release/app-release.apk
+          TOOLS="$ANDROID_HOME/build-tools/35.0.0"
+          "$TOOLS/apksigner" verify --min-sdk-version 23 --max-sdk-version 23 --verbose "$APK" > "$RUNNER_TEMP/offline-signature-v1.txt"
+          "$TOOLS/apksigner" verify --min-sdk-version 24 --verbose --print-certs "$APK" > "$RUNNER_TEMP/offline-signature-all.txt"
+          grep -Eq 'Verified using v1 scheme.*true' "$RUNNER_TEMP/offline-signature-v1.txt"
+          grep -Eq 'Verified using v2 scheme.*true' "$RUNNER_TEMP/offline-signature-all.txt"
+          grep -Eq 'Verified using v3 scheme.*true' "$RUNNER_TEMP/offline-signature-all.txt"
+          EXPECTED="$(cat "$RUNNER_TEMP/expected-offline-signer-sha256.txt")"
+          ACTUAL="$(grep -m1 'Signer #1 certificate SHA-256 digest:' "$RUNNER_TEMP/offline-signature-all.txt" | awk '{print $NF}' | tr '[:upper:]' '[:lower:]')"
+          if [[ -z "$EXPECTED" || "$ACTUAL" != "$EXPECTED" ]]; then
+            echo '::error::APK certificate differs from permanent GitHub Secrets signer'
+            exit 1
+          fi
+          unzip -Z1 "$APK" | grep -F 'liboffdecode.so' >/dev/null
+          echo 'PASS: permanent signer matches; V1/V2/V3 verified'
+
+      - name: Audit package, no Internet, library isolation
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=android/app/build/outputs/apk/debug/app-debug.apk
+          test -s "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | grep -F "package: name='com.ghostdeveloper.spdecode.offline'"
+          if "$ANDROID_HOME/build-tools/35.0.0/aapt" dump permissions "$APK" | grep -F "android.permission.INTERNET"; then
+            echo "ERROR: Offline APK requests Internet"; exit 1
+          fi
+          unzip -Z1 "$APK" | grep -F "liboffdecode.so"
+          if unzip -Z1 "$APK" | grep -E 'libv7q3\.so|spdecode-vault|npv_whitebox'; then
+            echo "ERROR: Cloud or legacy artifacts leaked into Offline"; exit 1
+          fi
+          python3 - <<'PY'
+          from pathlib import Path
+          files=list(Path("android/app/src/offlineNative/java").rglob("*.kt"))
+          assert files
+          allowed={"OfflineSecureStore.kt"}
+          assert all("javax.crypto." not in f.read_text() for f in files if f.name not in allowed)
+          vault=next(f for f in files if f.name=="OfflineSecureStore.kt")
+          assert "AndroidKeyStore" in vault.read_text() and "AES/GCM/NoPadding" in vault.read_text()
+          assert "decodeNative(" not in vault.read_text()
+          print("PASS: configuration crypto only in native; Kotlin Keystore only for encrypted storage")
+          PY
+          mkdir -p dist
+          # Debug uses a test certificate and is NEVER included in the distributed artifact.
+          cp android/app/build/outputs/apk/release/app-release.apk dist/SP-DECODE-Offline-Persistent-Signed-R8-QA.apk
+          (cd dist && sha256sum *.apk > SHA256SUMS.txt)
+          {
+            echo 'Channel: Offline QA; not production-certified'
+            echo "Source commit: $GITHUB_SHA"
+            echo 'Package: com.ghostdeveloper.spdecode.offline'
+            echo 'Signing: permanent GitHub Secrets keystore, verified V1/V2/V3'
+            echo "Certificate SHA-256: $(cat "$RUNNER_TEMP/expected-offline-signer-sha256.txt")"
+            echo 'HCX4 schema b11/n13 remains unsupported; Android physical QA pending'
+          } > dist/SIGNATURE_VERIFICATION.txt
+          echo 'Native Offline QA. Legacy HTTP Custom fixes and Hat Tunnel profilev5 included; HTTP Injector, Dark Tunnel, NPV included. Physical-device testing pending. Only the permanently signed Release APK is distributed.' > dist/BUILD_INFO.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SP-DECODE-OFFLINE-PERSISTENT-SIGNED-QA
+          path: dist/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Destroy CI-only copy of permanent signing keystore
+        if: always()
+        run: rm -f "$RUNNER_TEMP/spdecode-offline-persistent.p12"

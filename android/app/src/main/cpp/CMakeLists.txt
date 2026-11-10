@@ -1,9 +1,12 @@
 cmake_minimum_required(VERSION 3.22.1)
-project(spdecode LANGUAGES CXX)
+project(spdecode LANGUAGES C CXX)
+option(SPDECODE_OFFLINE_NATIVE "Build standalone offline native engine" OFF)
+if(NOT SPDECODE_OFFLINE_NATIVE)
 add_library(spdecode_result_engine SHARED result_engine.cpp result_engine_jni.cpp)
 set_target_properties(spdecode_result_engine PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
 target_compile_options(spdecode_result_engine PRIVATE -Wall -Wextra -Werror -fvisibility=hidden -fstack-protector-strong)
 target_link_options(spdecode_result_engine PRIVATE -Wl,-z,relro,-z,now -Wl,-z,noexecstack -Wl,-z,max-page-size=16384 -Wl,-z,common-page-size=16384)
+endif()
 # Per-build string encoding is reversible obfuscation, not secret encryption.
 if(NOT DEFINED SPDECODE_CLOUD_ORIGIN)
   set(SPDECODE_CLOUD_ORIGIN "")
@@ -34,11 +37,82 @@ set(ENABLE_PROGRAMS OFF CACHE BOOL "" FORCE)
 set(ENABLE_TESTING OFF CACHE BOOL "" FORCE)
 set(USE_SHARED_MBEDTLS_LIBRARY OFF CACHE BOOL "" FORCE)
 set(USE_STATIC_MBEDTLS_LIBRARY ON CACHE BOOL "" FORCE)
+# CI prefetches and verifies this exact official source once, then uses the
+# same archive for debug/release and every ABI. This avoids repeated GitHub
+# release CDN requests (transient 504) without weakening the pinned SHA-256.
+set(SPDECODE_MBEDTLS_ARCHIVE "$ENV{SPDECODE_MBEDTLS_ARCHIVE}")
+if(SPDECODE_MBEDTLS_ARCHIVE AND EXISTS "${SPDECODE_MBEDTLS_ARCHIVE}")
+  set(SPDECODE_MBEDTLS_URL "file://${SPDECODE_MBEDTLS_ARCHIVE}")
+else()
+  set(SPDECODE_MBEDTLS_URL
+      "https://github.com/Mbed-TLS/mbedtls/releases/download/mbedtls-3.6.7/mbedtls-3.6.7.tar.bz2")
+endif()
 FetchContent_Declare(spdecode_mbedtls
-  URL https://github.com/Mbed-TLS/mbedtls/releases/download/mbedtls-3.6.7/mbedtls-3.6.7.tar.bz2
+  URL "${SPDECODE_MBEDTLS_URL}"
   URL_HASH SHA256=a7e8bcbec0e6f761b4af24f25677626b35f762f68eef79c08677a363212d11f6
 )
 FetchContent_MakeAvailable(spdecode_mbedtls)
+if(SPDECODE_OFFLINE_NATIVE)
+  # Pinned, reproducible sources: JSON is header-only, Argon2id is the
+  # reference implementation. Neither is needed by the Cloud APK.
+  FetchContent_Declare(spdecode_json
+    GIT_REPOSITORY https://github.com/nlohmann/json.git
+    GIT_TAG 9cca280a4d0ccf0c08f47a99aa71d1b0e52f8d03)
+  FetchContent_MakeAvailable(spdecode_json)
+  FetchContent_Declare(spdecode_argon2
+    GIT_REPOSITORY https://github.com/P-H-C/phc-winner-argon2.git
+    GIT_TAG 62358ba2123abd17fccf2a108a301d4b52c01a7c)
+  FetchContent_GetProperties(spdecode_argon2)
+  if(NOT spdecode_argon2_POPULATED)
+    FetchContent_Populate(spdecode_argon2)
+  endif()
+  add_library(spdecode_argon2_ref STATIC
+    ${spdecode_argon2_SOURCE_DIR}/src/argon2.c
+    ${spdecode_argon2_SOURCE_DIR}/src/core.c
+    ${spdecode_argon2_SOURCE_DIR}/src/encoding.c
+    ${spdecode_argon2_SOURCE_DIR}/src/ref.c
+    ${spdecode_argon2_SOURCE_DIR}/src/blake2/blake2b.c)
+  target_compile_definitions(spdecode_argon2_ref PRIVATE ARGON2_NO_THREADS)
+  target_include_directories(spdecode_argon2_ref PUBLIC
+    ${spdecode_argon2_SOURCE_DIR}/include PRIVATE
+    ${spdecode_argon2_SOURCE_DIR}/src)
+  set_target_properties(spdecode_argon2_ref PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  # Reconstruct only audited, source-controlled NPV constants on the host.
+  # The Android APK receives raw C++ bytes, never Python, pickle or scripts.
+  find_package(Python3 REQUIRED COMPONENTS Interpreter)
+  set(SPDECODE_NPV_TABLES "${CMAKE_CURRENT_BINARY_DIR}/spdecode_npv_tables.h")
+  execute_process(
+    COMMAND "${Python3_EXECUTABLE}"
+      "${CMAKE_CURRENT_SOURCE_DIR}/../../../../../scripts/build_offline_npv_tables.py"
+      --output "${SPDECODE_NPV_TABLES}"
+    RESULT_VARIABLE SPDECODE_NPV_TABLES_RESULT
+    OUTPUT_VARIABLE SPDECODE_NPV_TABLES_LOG
+    ERROR_VARIABLE SPDECODE_NPV_TABLES_ERROR)
+  if(NOT SPDECODE_NPV_TABLES_RESULT EQUAL 0)
+    message(FATAL_ERROR "NPV native tables validation failed: ${SPDECODE_NPV_TABLES_ERROR}")
+  endif()
+  message(STATUS "${SPDECODE_NPV_TABLES_LOG}")
+  add_library(offdecode SHARED
+    spdecode_offline_native.cpp
+    spdecode_http_custom.cpp
+    spdecode_http_custom_legacy.cpp
+    spdecode_http_injector.cpp
+    spdecode_dark_tunnel.cpp
+    spdecode_hat_tunnel.cpp
+    spdecode_npv_text.cpp
+    spdecode_npv_whitebox.cpp
+    spdecode_npv_signed.cpp
+    spdecode_npv_legacy.cpp)
+  target_include_directories(offdecode PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
+  target_link_libraries(offdecode PRIVATE mbedcrypto spdecode_argon2_ref nlohmann_json::nlohmann_json z)
+  target_compile_features(offdecode PRIVATE cxx_std_17)
+  target_compile_options(offdecode PRIVATE -Wall -Wextra -Werror
+      -fvisibility=hidden -fvisibility-inlines-hidden
+      -fstack-protector-strong -D_FORTIFY_SOURCE=2)
+  target_link_options(offdecode PRIVATE -Wl,-z,relro,-z,now
+      -Wl,-z,noexecstack -Wl,-z,max-page-size=16384)
+  return()
+endif()
 # Opaque ELF basename reduces casual metadata; not a security boundary.
 add_library(v7q3 SHARED spdecode_transport.cpp spdecode_hpke.cpp spdecode_security.cpp spdecode_session.cpp
     spdecode_keystore.cpp spdecode_keystore_policy.cpp spdecode_catalog.cpp spdecode_runtime_guard.cpp

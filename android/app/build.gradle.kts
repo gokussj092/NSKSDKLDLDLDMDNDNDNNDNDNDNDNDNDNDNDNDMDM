@@ -109,10 +109,14 @@ internal object VaultBuildKey {
 
 val cloudOrigin=providers.environmentVariable("SPDECODE_CLOUD_API_BASE_URL").orNull.orEmpty().trim()
 val enableCloud=cloudOrigin.isNotEmpty()
+val nativeOffline=providers.environmentVariable("SPDECODE_OFFLINE_NATIVE").orNull=="true"
+require(!nativeOffline || !enableCloud) { "Offline must not configure a Cloud origin" }
 val enableQaBuild=providers.environmentVariable("SPDECODE_CLOUD_QA_BUILD").orNull=="true"
 // Play In-App Updates is an AAB-only compile-time feature, not a runtime switch.
 // Ordinary signed APKs (Telegram), legacy/QA builds and ownership proofs omit it.
 val enablePlayAab=providers.gradleProperty("spdecodePlayAab").orNull=="true"
+require(!nativeOffline || !enablePlayAab) { "Standalone Offline APK must not include Play AAB updates" }
+require(!nativeOffline || !enableQaBuild) { "Offline cannot enable Cloud QA" }
 require(!enablePlayAab || (enableCloud && !enableQaBuild)) {
     "Play update AAB requires a non-QA Cloud build"
 }
@@ -152,7 +156,7 @@ gradle.taskGraph.whenReady {
         }
     }
     if(distributesRelease) {
-        require(enableCloud) { "Release distribution requires the Cloud-only source set" }
+        require(enableCloud || nativeOffline) { "Release distribution requires Cloud or standalone native Offline" }
         require(!enableQaBuild) { "Release distribution must not enable the legacy QA launcher" }
     }
 }
@@ -732,7 +736,14 @@ android {
             enableSplit = false
         }
     }
-    if (enableCloud) {
+    if (nativeOffline) {
+        // Standalone offline application: only its own UI, resources and JNI engine.
+        sourceSets.getByName("main").manifest.srcFile("src/offlineNative/AndroidManifest.xml")
+        sourceSets.getByName("main").java.setSrcDirs(listOf(file("src/offlineNative/java")))
+        sourceSets.getByName("main").res.setSrcDirs(listOf(file("src/offlineNative/res")))
+        sourceSets.getByName("main").assets.setSrcDirs(emptyList<File>())
+        sourceSets.getByName("androidTest").java.setSrcDirs(listOf(file("src/offlineNative/androidTest")))
+    } else if (enableCloud) {
         // Cloud source inputs are isolated from all 107 local engine classes.
         sourceSets.getByName("main").manifest.srcFile("src/cloud/AndroidManifest.xml")
         sourceSets.getByName("main").java.setSrcDirs(listOf(cloudSourceRoot))
@@ -748,15 +759,15 @@ android {
         sourceSets.getByName("main").java.srcDir(vaultGeneratedKotlin)
     }
     // Viewer and native result tests exercise the same production classes in both builds.
-    sourceSets.getByName("androidTest").java.srcDir("src/sharedAndroidTest/java")
+    if (!nativeOffline) sourceSets.getByName("androidTest").java.srcDir("src/sharedAndroidTest/java")
     compileSdk = 36
     ndkVersion = "27.2.12479018"
     defaultConfig {
-        applicationId = "com.ghostdeveloper.spdecode"
+        applicationId = if(nativeOffline) "com.ghostdeveloper.spdecode.offline" else "com.ghostdeveloper.spdecode"
         minSdk = 24
         targetSdk = 36
         versionCode = 42
-        versionName = "1.1.27"
+        versionName = if(nativeOffline) "1.1.27-offline.alpha1" else "1.1.27"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // A public API origin is not a secret; all server secrets stay in the VPS.
         buildConfigField("boolean", "SPDECODE_CLOUD_ENABLED", enableCloud.toString())
@@ -779,6 +790,7 @@ android {
         externalNativeBuild {
             cmake {
                 arguments += "-DSPDECODE_CLOUD_ORIGIN=$cloudOrigin"
+                arguments += "-DSPDECODE_OFFLINE_NATIVE=" + (if(nativeOffline) "ON" else "OFF")
             }
         }
         resourceConfigurations += listOf("en", "es", "pt-rBR", "ar", "fa", "fr", "in", "ru", "de", "tr", "vi", "hi", "ja", "it")
@@ -855,41 +867,56 @@ android {
 }
 
 dependencies {
-    val composeBom = platform("androidx.compose:compose-bom:2025.04.01")
-    implementation(composeBom)
-    implementation("androidx.activity:activity-compose:1.10.1")
-    // Release lint: ActivityResultContracts requires Fragment >=1.3.0.
-    implementation("androidx.fragment:fragment:1.8.9")
-    implementation("com.google.code.gson:gson:2.13.1")
-    if (enableCloud) implementation("com.google.firebase:firebase-messaging:25.0.0")
-    if (enablePlayAab) {
-        implementation("com.google.android.play:app-update:2.1.0")
-        implementation("androidx.lifecycle:lifecycle-runtime-compose:2.9.0")
+    if(nativeOffline) {
+        // Standalone APK: no Firebase, Play update, Room, WorkManager or Cloud SDK.
+        val offlineBom = platform("androidx.compose:compose-bom:2025.04.01")
+        implementation(offlineBom)
+        implementation("androidx.activity:activity-compose:1.10.1")
+        implementation("androidx.activity:activity-ktx:1.10.1")
+        implementation("androidx.compose.runtime:runtime")
+        implementation("androidx.compose.ui:ui")
+        implementation("androidx.compose.foundation:foundation")
+        implementation("androidx.compose.material3:material3")
+        implementation("androidx.compose.material:material-icons-extended")
+        implementation("androidx.compose.ui:ui-tooling-preview")
+        debugImplementation("androidx.compose.ui:ui-tooling")
+    } else {
+        val composeBom = platform("androidx.compose:compose-bom:2025.04.01")
+        implementation(composeBom)
+        implementation("androidx.activity:activity-compose:1.10.1")
+        // Release lint: ActivityResultContracts requires Fragment >=1.3.0.
+        implementation("androidx.fragment:fragment:1.8.9")
+        implementation("com.google.code.gson:gson:2.13.1")
+        if (enableCloud) implementation("com.google.firebase:firebase-messaging:25.0.0")
+        if (enablePlayAab) {
+            implementation("com.google.android.play:app-update:2.1.0")
+            implementation("androidx.lifecycle:lifecycle-runtime-compose:2.9.0")
+        }
+        // Classic Play Integrity nonce flow; the verdict is verified in C3 server-side.
+        implementation("com.google.android.play:integrity:1.6.0")
+        implementation("androidx.work:work-runtime-ktx:2.10.4")
+        // Legacy decoders require BC; Cloud HPKE uses pinned native Mbed TLS.
+        if (!enableCloud) implementation("org.bouncycastle:bcprov-jdk18on:1.86")
+        implementation("androidx.activity:activity-ktx:1.10.1")
+        implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.0")
+        implementation("androidx.datastore:datastore-preferences:1.1.7")
+        implementation("androidx.core:core-splashscreen:1.0.1")
+        implementation("androidx.room:room-runtime:2.7.2")
+        implementation("androidx.room:room-ktx:2.7.2")
+        kapt("androidx.room:room-compiler:2.7.2")
+        implementation("androidx.compose.ui:ui")
+        implementation("androidx.compose.foundation:foundation")
+        implementation("androidx.compose.material3:material3")
+        implementation("androidx.compose.material:material-icons-extended")
+        implementation("androidx.compose.ui:ui-tooling-preview")
+        debugImplementation("androidx.compose.ui:ui-tooling")
+    
+        androidTestImplementation(composeBom)
+        androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+        debugImplementation("androidx.compose.ui:ui-test-manifest")
+        androidTestImplementation("androidx.test.ext:junit:1.2.1")
+        androidTestImplementation("androidx.test:runner:1.6.2")
     }
-    // Classic Play Integrity nonce flow; the verdict is verified in C3 server-side.
-    implementation("com.google.android.play:integrity:1.6.0")
-    implementation("androidx.work:work-runtime-ktx:2.10.4")
-    // Legacy decoders require BC; Cloud HPKE uses pinned native Mbed TLS.
-    if (!enableCloud) implementation("org.bouncycastle:bcprov-jdk18on:1.86")
-    implementation("androidx.activity:activity-ktx:1.10.1")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.0")
-    implementation("androidx.datastore:datastore-preferences:1.1.7")
-    implementation("androidx.core:core-splashscreen:1.0.1")
-    implementation("androidx.room:room-runtime:2.7.2")
-    implementation("androidx.room:room-ktx:2.7.2")
-    kapt("androidx.room:room-compiler:2.7.2")
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.foundation:foundation")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.material:material-icons-extended")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    debugImplementation("androidx.compose.ui:ui-tooling")
-
-    androidTestImplementation(composeBom)
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
-    androidTestImplementation("androidx.test.ext:junit:1.2.1")
-    androidTestImplementation("androidx.test:runner:1.6.2")
 }
 
 // The generated Kotlin key and transformed assets must exist before each
@@ -899,7 +926,9 @@ tasks.configureEach {
         (name.startsWith("merge") && name.endsWith("Assets")) ||
         (name.startsWith("compile") && name.endsWith("Kotlin")) ||
         name.startsWith("kaptGenerateStubs")) {
-        if (enableCloud) {
+        if (nativeOffline) {
+            // No generated legacy vault or Cloud source inputs in Offline.
+        } else if (enableCloud) {
             dependsOn(prepareCloudOnlySources)
             dependsOn(prepareCloudAssets)
         } else dependsOn(prepareSecureAssetVault)

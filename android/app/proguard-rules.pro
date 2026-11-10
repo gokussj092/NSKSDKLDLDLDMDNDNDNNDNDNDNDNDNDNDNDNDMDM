@@ -35,3 +35,8 @@
 -keepclassmembers class com.ghostdeveloper.spdecode.cloud.CloudNativeTransport {
     public static void onCatalogTransferProgress(long, long);
 }
+
+# Offline JNI bridge uses exported name-based symbols, even in R8 release.
+-keepclasseswithmembers,includedescriptorclasses class com.ghostdeveloper.spdecode.offline.NativeOffline {
+    native <methods>;
+}
