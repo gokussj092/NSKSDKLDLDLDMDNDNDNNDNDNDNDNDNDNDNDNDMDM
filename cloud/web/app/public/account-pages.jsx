@@ -13,8 +13,18 @@ function useSnapshot(){
 }
 function PrivatePage({title,subheading,path,children}){
  const {lang}=usePublicLocale(),{data,error,refresh}=useSnapshot(),es=lang==='es';
+ const [paymentStatus,setPaymentStatus]=useState('');
+ useEffect(()=>{const order=new URLSearchParams(window.location.search).get('order');
+   if(!data?.user||!order||!/^[0-9a-f-]{36}$/.test(order))return;
+   const provider=new URLSearchParams(window.location.search).get('provider');let alive=true,checks=0;
+   if(provider==='paypal')shopFetch('/api/store/capture',{orderId:order}).then(()=>{if(alive)setPaymentStatus('pending');}).catch(()=>{if(alive)setPaymentStatus('pending');});
+   const timer=setInterval(()=>{if(++checks>24){clearInterval(timer);return;}refresh().then(next=>{const status=next.orders?.find(x=>x.id===order)?.status;if(alive&&status){setPaymentStatus(status);if(['paid','failed','refunded','disputed'].includes(status))clearInterval(timer);}}).catch(()=>{});},5000);
+   return()=>{alive=false;clearInterval(timer);};
+ },[data?.user?.id,refresh]);
+
  return <main id="main" className="sp-public-main sp-private-page sp-container">
   <header className="sp-private-heading"><span className="sp-kicker">SP-DECODE · {es?'MI ESPACIO':'MY SPACE'}</span><h1>{title[lang]}</h1><p>{subheading[lang]}</p></header>
+  {paymentStatus&&<div role="status" className="sp-soft-notice">{paymentStatus==='paid'?(es?'Pago confirmado.':'Payment confirmed.'):(es?'Estamos comprobando el estado de tu pago. No vuelvas a pagarlo.':'We are checking your payment. Do not pay again.')} <Link href="/orders">{es?'Ver mis compras':'View purchases'}</Link></div>}
   {error&&<div role="alert" className="sp-form-error">{errorMessage(error,lang)} <button type="button" className="sp-text-button" onClick={()=>refresh().catch(()=>{})}>{es?'Reintentar':'Retry'}</button></div>}
   {!data?<div className="sp-loading" role="status">{es?'Cargando tu información…':'Loading your account…'}</div>:!data.user?<div className="sp-private-gate"><div className="sp-private-gate-icon"><img src="/icon.svg" alt="" width="58" height="58"/></div><h2>{es?'Tu espacio comienza aquí':'Your space starts here'}</h2><p>{es?'Inicia sesión con Google para consultar tu información. La tienda y las funciones públicas siguen disponibles sin cuenta.':'Sign in with Google to access your information. The store and public features are available without an account.'}</p><Link className="sp-shop-button" href={'/login?next='+encodeURIComponent(path)}>{es?'Continuar con Google':'Continue with Google'}</Link><Link className="sp-private-gate-store" href="/store">{es?'Explorar tienda':'Explore store'}</Link></div>:children(data,refresh)}
  </main>;
