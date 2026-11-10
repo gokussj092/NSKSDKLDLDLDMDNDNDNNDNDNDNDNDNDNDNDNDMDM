@@ -156,3 +156,5 @@ Revisión de paridad Offline 2026-11-09: expediente y comprobación privada sin
 datos de usuario en `analysis/_intake/httpcustom-offline-20261109/`. Corrige
 UTF-8 y clasificación Unicode en el lector histórico C++; no modifica este
 codec Python. El build exportador no se deduce del formato `verCfg:57`.
+
+Expediente del consumidor Offline build 42: `analysis/com.ghostdeveloper.spdecode.offline/42/`.

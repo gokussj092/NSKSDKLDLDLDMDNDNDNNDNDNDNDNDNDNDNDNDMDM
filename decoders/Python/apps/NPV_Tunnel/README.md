@@ -63,3 +63,5 @@ Revisión de Offline 2026-11-09: aliases, DNS/npvs1 y errores de campos anidados
 en `analysis/_intake/npv-offline-text-20261109/`. Solo C++ y entrada de textos
 Offline; el lector Python y el servicio no cambian. No se aportó un enlace
 real nuevo para certificar versiones adicionales.
+
+Expediente del consumidor Offline build 42: `analysis/com.ghostdeveloper.spdecode.offline/42/`.
