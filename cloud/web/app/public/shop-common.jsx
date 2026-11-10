@@ -20,6 +20,7 @@ export function errorMessage(code,lang){
     PUBLIC_IP_REQUIRED:'Introduce la IP pública de salida de tu servidor.',
     ALREADY_REVEALED:'Esta clave ya se mostró. Las API Keys se pueden renovar desde tu cuenta.',
     PRODUCT_UNAVAILABLE:'Este producto aún no está disponible para comprar.',
+    CREDITS_UNAVAILABLE:'Los créditos no están activados todavía.',INSUFFICIENT_CREDITS:'No tienes créditos suficientes.',
     ACCOUNTS_NOT_CONFIGURED:'El acceso a cuentas estará disponible próximamente.'};
   const en={SIGN_IN_REQUIRED:'Sign in to continue.',USERNAME_TAKEN:'That username is already taken.',
     INVALID_PROFILE:'Use a valid name and a username with 3–24 letters, numbers or underscores.',
@@ -31,6 +32,7 @@ export function errorMessage(code,lang){
     PUBLIC_IP_REQUIRED:'Enter your server’s public outbound IP address.',
     ALREADY_REVEALED:'This key has already been revealed. API keys can be rotated in your account.',
     PRODUCT_UNAVAILABLE:'This product is not available to purchase yet.',
+    CREDITS_UNAVAILABLE:'Credits are not available yet.',INSUFFICIENT_CREDITS:'You do not have enough credits.',
     ACCOUNTS_NOT_CONFIGURED:'Account sign-in is coming soon.'};
   return (lang==='es'?es:en)[code]||(lang==='es'?'No pudimos completar la solicitud. Inténtalo de nuevo.':'We could not complete the request. Please try again.');
 }
@@ -48,4 +50,4 @@ export function GoogleButton({disabled=false,callback='/account',onError}){
     <path fill="#EA4335" d="M24 12c3 0 5.7 1 7.8 3l5.8-5.7A19.7 19.7 0 0 0 24 4 20.4 20.4 0 0 0 6 15l6.8 5.3A12 12 0 0 1 24 12Z"/>
    </svg>{lang==='es'?'Continuar con Google':'Continue with Google'}</button>;
 }
-export function ProductIcon({type}){return <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={type==='offline-3'?'M7 2h10v20H7z M10 18h4 M10 6h4 M10 10h4':type==='api-ip'?'m8 5-6 7 6 7 M16 5l6 7-6 7 M14 3l-4 18':'M6 16a5 5 0 1 1 1-10 6 6 0 0 1 11 2 4 4 0 1 1 0 8H6z'}/></svg>;}
+export function ProductIcon({type}){return <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={type==='offline-3'?'M7 2h10v20H7z M10 18h4 M10 6h4 M10 10h4':type==='api-ip'?'m8 5-6 7 6 7 M16 5l6 7-6 7 M14 3l-4 18':type==='analysis-credits'?'M12 2l2.6 7.4L22 12l-7.4 2.6L12 22l-2.6-7.4L2 12l7.4-2.6z':'M6 16a5 5 0 1 1 1-10 6 6 0 0 1 11 2 4 4 0 1 1 0 8H6z'}/></svg>;}
