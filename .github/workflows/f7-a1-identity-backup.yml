@@ -20,15 +20,10 @@ jobs:
           node-version: "22"
       - name: Verify disabled-by-default customer login and crypto contracts
         run: node --test cloud/web/tests/f7-account-identity.test.mjs cloud/web/tests/f7-registration-flow.test.mjs cloud/web/tests/f7-account-email.test.mjs
-      - name: Confirm no account route or live user credential was introduced
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          src=Path('cloud/web/lib/f7-account-identity.mjs').read_text()
-          assert 'publicRegistrationEnabled: false' in src
-          assert 'randomInt' in src and 'timingSafeEqual' in src
-          assert not Path('cloud/web/app/api/account').exists()
-          PY
+      # Google accounts are now explicitly authorized. Verify that deployment
+      # still requires complete configuration, rather than forbidding routes.
+      - name: Verify optional Google accounts, payment mode and origin guards
+        run: node --test cloud/web/tests/commerce-config.test.mjs
 
   offsite-backup-contract:
     name: F7 recovery encryption and offline-key restoration

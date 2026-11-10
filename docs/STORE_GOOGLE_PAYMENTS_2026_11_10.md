@@ -161,7 +161,7 @@ No se habilitan nativos, banners ni rewarded, ni se crean IDs de ads.txt.
 
 ## Validación y límites
 
-- Regresión web local: 713 pruebas, 710 aprobadas y 3 omitidas; build Next.js correcto.
+- Regresión web local final: 715 pruebas, 712 aprobadas y 3 omitidas; build Next.js correcto.
   Python: 19 contratos de Android/VPS aprobados, además de la ruta Nginx comercial.
 - SQL real mediante PGlite para desarrollo y PostgreSQL en CI: esquemas,
   nombres únicos, precios, idempotencia, entrega, cuota, IP, rotación y revocación.
@@ -169,6 +169,12 @@ No se habilitan nativos, banners ni rewarded, ni se crean IDs de ads.txt.
   sesión Google como si fuera una autenticación real del propietario.
 - Build de Next.js y regresiones existentes; compilación Android y variante
   SDK opt-in se validan de forma independiente.
+- CI del código `9772084`: [Store Google and Payment Contracts](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42880025927):
+  11/11 contratos con PostgreSQL 16, incluida entrega y revelación concurrentes;
+  regresiones y build web correctos; compilación Kotlin con Unity opt-in correcta.
+  Ningún anuncio ni pago real se solicitó. El control F7-A1 previo que prohibía
+  toda ruta de cuenta se actualiza a pruebas de configuración, modo y origen;
+  las primitivas históricas de contraseña/OTP siguen deshabilitadas y verificadas.
 - La vista previa administrada no pudo arrancar: inyecta `--host`/`--strictPort`,
   opciones de Vite que Next.js no acepta. No se modificó la aplicación para
   sortear ese fallo de infraestructura. QA visual en navegador queda pendiente.
