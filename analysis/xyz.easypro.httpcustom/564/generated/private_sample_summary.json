@@ -27,5 +27,6 @@
   "worker_partial": true,
   "worker_warning_codes": [
     "HC_UNRESOLVED_FIELDS"
-  ]
+  ],
+  "broker_response_gate_status": 200
 }

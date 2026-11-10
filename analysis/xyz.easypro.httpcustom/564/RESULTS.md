@@ -17,6 +17,12 @@
 - Python: 21 focused HC/CLI/worker/Offline UI-import tests passed; the eight
   TunnelDOOM regression tests passed after correcting their stale expected
   URL to the downloader's existing URL. Its production method was unchanged.
+- Broker integration: the revision-57 exception is bound to the exact partial
+  schema and matching complete JSON. Truncation and arbitrary partial responses
+  remain rejected. The 45 combined C3/HC/HTTP Conexión/SpeiGo tests passed,
+  including 11 malformed partial responses. The actual private worker output
+  also passes the broker gate with HTTP 200. Online Android compilation is
+  tracked separately from Offline.
 - Android compilation/signing and physical-device behavior are separate
   checks. The existing Offline pipeline runs the new server suite and full
   native parity before release; CI run links are available per source commit.

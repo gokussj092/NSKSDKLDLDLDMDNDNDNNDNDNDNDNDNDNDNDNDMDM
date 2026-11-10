@@ -16,6 +16,8 @@ on:
       - decoders/Python/_hc_legacy57.py
       - decoders/Python/HTTPCUSTOM.py
       - cloud/workers/python/hc_bridge.py
+      - cloud/web/lib/hc-partial-result.mjs
+      - cloud/web/tests/hc-partial-result.test.mjs
       - tests/test_hc_legacy57.py
       - tests/golden/hc_legacy57.json
       - analysis/xyz.easypro.httpcustom/564/generated/native_codec_vectors.json
@@ -88,6 +90,8 @@ jobs:
           /tmp/spdecode-hc-python/bin/python tests/test_offline_hc_native_parity.py /tmp/spdecode-hc-native
       - name: Verify legacy HTTP Custom complete server and CLI outputs
         run: /tmp/spdecode-hc-python/bin/python -m unittest tests.test_hc_legacy57 -v
+      - name: Verify complete HC partial-result gateway response
+        run: node --test cloud/web/tests/hc-partial-result.test.mjs
   ehi-cpp-parity:
     name: HTTP Injector C++ differential fixture verification
     runs-on: ubuntu-latest

@@ -107,5 +107,6 @@
     "pytest==9.2.0",
     "unicorn==2.1.4"
   ],
-  "distribution_hashes_note": "Python wheel hashes were not retained; fixed package versions and installed transitives recorded. No new runtime Android dependency."
+  "distribution_hashes_note": "Python wheel hashes were not retained; fixed package versions and installed transitives recorded. No new runtime Android dependency.",
+  "node_runtime_tested": "24.22.1"
 }

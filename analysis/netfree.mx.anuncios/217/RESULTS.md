@@ -1,5 +1,13 @@
 # Resultados
 
+## Revisión de consumidor compartido, 2026-11-10
+
+Se revisó el cambio del broker C3 para HTTP Custom revision 57. La excepción
+solo permite `kind=file`/`format=hc` con el esquema exacto documentado; las
+dos rutas de catálogo SpeiGo conservan sus validaciones y separación. La
+prueba aislada de descargas y restricciones de destino pasó. Evidencia:
+[HTTP Custom 564](../../xyz.easypro.httpcustom/564/RESULTS.md).
+
 Catálogo: VERIFIED_REAL sobre APK217.4.4/build217; integración en código,
 sin merge ni despliegue.
 

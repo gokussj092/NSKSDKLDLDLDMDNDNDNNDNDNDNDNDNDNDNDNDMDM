@@ -13,6 +13,7 @@ python analysis/xyz.easypro.httpcustom/564/tools/native_inventory.py /private/li
 python analysis/xyz.easypro.httpcustom/564/tools/native_inventory.py /private/libsysNative.so --start 0x173c0 --size 0x138
 python analysis/xyz.easypro.httpcustom/564/tools/make_vectors.py --native-library /private/libeasypro.so
 python -m unittest tests.test_hc_legacy57 tests.test_http_custom_899 tests.test_offline_share_ui_contract -v
+(cd cloud/web && node --test tests/hc-partial-result.test.mjs tests/c3-security.test.mjs tests/http-conexion.test.mjs tests/http-conexion-firebase.test.mjs tests/speigo-vpn.test.mjs)
 python tests/test_offline_hc_native_parity.py /tmp/spdecode-hc-native
 python analysis/xyz.easypro.httpcustom/564/tools/probe_layers.py /private/test.hc
 python analysis/xyz.easypro.httpcustom/564/tools/verify_private.py /private/test.hc /tmp/spdecode-hc-native
@@ -40,7 +41,7 @@ The source change is on feat/nuevas-integraciones; no VPS deployment is made
 by this research. The existing cloud/infra/vps/spdecodectl interface is:
 
 ```sh
-spdecode update worker feat/nuevas-integraciones
+spdecode update all feat/nuevas-integraciones
 spdecode status
 ```
 

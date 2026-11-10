@@ -274,7 +274,9 @@ internal class CloudDecodeClient(context: Context) {
     private fun decodedResponse(operation:Int,payload:JSONObject,response:JSONObject):Decoded {
         if (response.optString("status") != "success" ||
             (response.optBoolean("isPartial",true) &&
-             !allowsMkkHyperPartial(operation,payload,response)))
+             !allowsMkkHyperPartial(operation,payload,response) &&
+             !(operation==CloudOperation.FILE && payload.optString("format")=="hc" &&
+               CloudHcPartialResult.allows(response))))
             throw IOException("CLOUD_PARTIAL_RESULT_REJECTED")
         if (!response.has("rawText") || response.isNull("rawText"))
             throw IOException("CLOUD_MISSING_RESULT")

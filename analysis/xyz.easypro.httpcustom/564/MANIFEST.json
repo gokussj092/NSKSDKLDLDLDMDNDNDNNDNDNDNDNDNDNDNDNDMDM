@@ -77,7 +77,7 @@
     {
       "path": "analysis/xyz.easypro.httpcustom/564/tools/verify_private.py",
       "version": 1,
-      "sha256": "3fcd01d85dc941f6b2a541034f9d2e1e697717267f982e153efab9e77e8904b4"
+      "sha256": "2770334730df20c80db9d5beec2442b5c2dc967fbce05e01b41de18c0885b418"
     }
   ],
   "dependencies": [
@@ -162,6 +162,13 @@
       "binding_license_metadata": "BSD",
       "core_license_review": "NEEDS_REVIEW",
       "purpose": "host-only bounded reviewed JNI string-codec oracle"
+    },
+    {
+      "name": "Node.js",
+      "version": "24.22.1",
+      "source": "https://nodejs.org/",
+      "license": "MIT",
+      "purpose": "local broker integration tests; no additional npm package required"
     }
   ],
   "dependency_lockfile": "analysis/xyz.easypro.httpcustom/564/dependencies.lock.json",
@@ -175,7 +182,12 @@
     "android/app/src/offlineNative/java/com/ghostdeveloper/spdecode/offline/OfflineJson.kt",
     "android/app/src/offlineNative/java/com/ghostdeveloper/spdecode/offline/MainActivity.kt",
     "tests/test_hc_legacy57.py",
-    "tests/test_offline_hc_native_parity.py"
+    "tests/test_offline_hc_native_parity.py",
+    "cloud/web/lib/hc-partial-result.mjs",
+    "cloud/web/lib/c3-gateway.mjs",
+    "cloud/web/tests/hc-partial-result.test.mjs",
+    "android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudDecodeClient.kt",
+    "android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudHcPartialResult.kt"
   ],
   "evidence_refs": [
     "analysis/xyz.easypro.httpcustom/564/ANALYSIS.md",
@@ -201,7 +213,8 @@
     "Historical field 17 remains encrypted/unrecognized. Kept verbatim and explicitly partial; not called decrypted.",
     "JNI oracle validates ASCII synthetic local primitives, not full JVM or application startup/import.",
     "Physical Android QA and a live VPS deployment are not performed locally.",
-    "No certification of every historical exporter or HCX4 11/n13."
+    "No certification of every historical exporter or HCX4 11/n13.",
+    "Online Android clients need the narrowly scoped HC partial-result acceptance update; older clients reject this flagged response. Broker and worker both need the repository update."
   ],
   "network_requirements": [
     "Dependency sources/GitHub build only; all actual decoder tests run offline without third-party VPN services."

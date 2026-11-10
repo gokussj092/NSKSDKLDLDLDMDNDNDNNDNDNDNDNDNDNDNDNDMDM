@@ -32,3 +32,5 @@ third-party binaries are not redistributed in Git or the APK.
 This does not approve any new unattended F7 adapter or dependency installation.
 The oracle's incomplete Java/JNI shims and omission of application startup mean
 it certifies the listed primitive vectors only. No VPN connection was made.
+
+Node.js 24.22.1 (https://nodejs.org/, MIT) ran the broker/HC integration tests. These use only built-in modules; no additional npm dependency was installed. Android/Gradle source and pinned toolchain remain unchanged.

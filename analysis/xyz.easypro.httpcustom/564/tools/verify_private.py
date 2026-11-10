@@ -3,7 +3,7 @@
 Print only counts, package/build metadata, hashes and JSON key names. Never
 print profile values, passwords, host names, UUIDs or static format material.
 """
-import argparse,base64,hashlib,json,sys
+import argparse,base64,hashlib,json,subprocess,sys
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[4]
@@ -29,6 +29,16 @@ def main():
     expected=decode(raw)
     assert server['structuredJson']==expected==native_json,'Cross-consumer JSON differs'
     assert expected['Config']['v2rayConfig'].encode()==clear
+    # Exercise the actual broker response gate without any network/service.
+    gate=subprocess.run(['node','--input-type=module','-e','''
+import {fetchWorker} from './cloud/web/lib/c3-gateway.mjs';
+let input='';for await(const chunk of process.stdin)input+=chunk;
+process.env.WORKER_INTERNAL_URL='http://decoder-worker:8787';
+const reply=await fetchWorker('file',{format:'hc'},{workerToken:'synthetic-test-only'},
+  {fetchImpl:async()=>Response.json(JSON.parse(input))});
+process.stdout.write(String(reply.status));
+'''],input=json.dumps(server),text=True,capture_output=True,cwd=ROOT,timeout=15)
+    assert gate.returncode==0 and gate.stdout=='200','Broker rejected intact private result'
     report={'input_sha256':hashlib.sha256(raw).hexdigest(),'input_size':len(raw),
         'declared_app_build':cfg['verApp'],'format_revision':outer['verCfg'],
         'field_count':len(slots),'retained_fields':len(expected['Config']),
@@ -36,7 +46,7 @@ def main():
         'v2ray_layers_bytes':[len(intermediate),len(one),len(clear)],
         'unresolved_fields':expected['UnresolvedFields'],
         'complete_server_native_equality':True,'worker_partial':server['isPartial'],
-        'worker_warning_codes':server['warnings']}
+        'worker_warning_codes':server['warnings'],'broker_response_gate_status':200}
     text=json.dumps(report,indent=2)+'\n'
     if a.output:a.output.write_text(text)
     print(text)

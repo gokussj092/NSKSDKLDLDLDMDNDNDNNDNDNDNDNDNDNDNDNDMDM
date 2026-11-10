@@ -2,6 +2,14 @@
 
 # Resultados y límites
 
+## Revisión de consumidor compartido, 2026-11-10
+
+Se revisó el cambio del broker C3 para HTTP Custom revision 57. La excepción
+exige `kind=file` y `format=hc`; no altera esta ruta de catálogo ni admite
+resultados parciales de HTTP Conexión. Las pruebas de rotación autenticada y
+rechazo de JSON parcial/no coincidente siguen pasando. Evidencia del cambio:
+[HTTP Custom 564](../../xyz.easypro.httpcustom/564/RESULTS.md).
+
 | Entrada | Estado | Versión /servidores | Campos GCM | Paridad |
 | --- | --- | --- | --- | --- |
 |Fuente /new elegida por Firebase|VERIFIED_REAL|107 /244|5325 /5299 únicos|JSON completo igual a JCA/CLI/worker|

@@ -11,6 +11,7 @@ import {providerAllowed} from "./c12-provider-controls.mjs";
 import { maintenanceEnabled, serviceMaintenanceEnabled, recordWorkerResult } from "./c6-ops-store.mjs";
 import {admissionPolicy} from "./c11-play-admission.mjs";
 import {publicFormats} from "./file-format-catalog.mjs";
+import {allowsHcPartial} from "./hc-partial-result.mjs";
 
 import {negotiatesExport,negotiatesHatExport,negotiatesDynamicExport,exportPolicy,exportAllowed,EXPORT_PROFILE} from "./compatible-export-policy.mjs";
 
@@ -200,8 +201,8 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
   if(!isRecord(decoded))throw Error("INVALID_WORKER_SHAPE");
   if(response.status===200){
     // MKK Hyper collects independent vendor sources. Missing sources are
-    // explicitly marked partial, not an invalid response. All other routes
-    // still reject incomplete results, and MKK partial must be schema-bound.
+    // explicitly marked partial, not an invalid response. Both exceptions
+    // below require a complete document and a narrowly defined schema.
     const partialMkk=kind==="server-vpn" && payload?.providerId==="mkk-hyper" &&
       decoded.kind==="vpn_catalog" && decoded.providerId==="mkk-hyper" &&
       decoded.isPartial===true && decoded.structuredJson?.complete===false &&
@@ -211,7 +212,8 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
       decoded.structuredJson.sources.some(x=>x?.status==="ok") &&
       decoded.structuredJson.sources.some(x=>x?.status==="error") &&
       Array.isArray(decoded.warnings) && decoded.warnings.includes("PARTIAL_SOURCE_FAILURE");
-    if(decoded.status!=="success" || (decoded.isPartial!==false && !partialMkk) ||
+    const partialHc=allowsHcPartial(kind,payload,decoded);
+    if(decoded.status!=="success" || (decoded.isPartial!==false && !partialMkk && !partialHc) ||
        typeof decoded.rawText!=="string" || !decoded.rawText.length ||
        Buffer.byteLength(decoded.rawText,"utf8")>(isMkk?32*1024*1024:4*1024*1024))
       throw Error("INVALID_WORKER_RESULT");

@@ -66,6 +66,13 @@ identifies the limitation. The Cloud worker sets isPartial and a warning;
 Offline shows a localized notice, including when opening saved history.
 All 32 fields and all observed metadata remain available for copy/export.
 
+End-to-end review also found the broker and online Android adapter reject
+all partial file results. A narrow revision-57 exception now requires an
+intact 32-string Config, supported metadata, the exact one-field warning and
+unresolved descriptor, and equality of rawText/structuredJson. Other partial
+files still fail closed. The online client must be updated for this response;
+the existing signed branch APK workflow compiles that adapter separately.
+
 ## HMAC scope
 
 The revised file path uses ChaCha20/Poly1305, not HMAC authentication of a VPN
