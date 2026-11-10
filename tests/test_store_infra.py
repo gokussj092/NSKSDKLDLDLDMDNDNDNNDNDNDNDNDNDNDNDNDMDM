@@ -27,6 +27,30 @@ class StoreConfigurationTests(unittest.TestCase):
             module.prepare_configuration(path);self.assertEqual(first,path.read_text())
             self.assertEqual(path.stat().st_mode&0o777,0o600)
 
+    def test_rejects_database_password_mismatch_before_changing_env(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path=Path(folder)/'cloud.env'
+            lines=[
+                'SPDECODE_SHOP_APP_PASSWORD=expected-password',
+                'SPDECODE_DATABASE_URL=postgresql://spdecode_shop_app:wrong-password@shop-db:5432/spdecode_shop',
+                'SPDECODE_ACCOUNTS_ENABLED=true'
+            ]
+            initial='\\n'.join(lines)+'\\n'
+            path.write_text(initial)
+            path.chmod(0o600)
+            with self.assertRaisesRegex(ValueError,'Inconsistent commerce database credentials'):
+                module.prepare_configuration(path)
+            self.assertEqual(path.read_text(),initial)
+
+    def test_role_sync_is_idempotent_and_invoked_before_migration(self):
+        script=(ROOT/'cloud/accounts/shop-db-init.sh').read_text()
+        ctl=(ROOT/'cloud/infra/vps/spdecodectl').read_text()
+        self.assertIn("WHERE rolname='spdecode_shop_app'",script)
+        self.assertIn('ALTER ROLE spdecode_shop_app WITH LOGIN PASSWORD %L',script)
+        self.assertIn('CREATE ROLE spdecode_shop_app LOGIN NOSUPERUSER',script)
+        self.assertEqual(ctl.count('compose exec -T shop-db sh /docker-entrypoint-initdb.d/00-shop-role.sh'),2)
+        self.assertIn('docker-entrypoint-initdb.d/00-shop-role.sh',ctl)
+
     def test_rejects_unsafe_permissions_duplicates_and_symlinks(self):
         with tempfile.TemporaryDirectory()as folder:
             path=Path(folder)/'cloud.env';path.write_text('');path.chmod(0o644)
