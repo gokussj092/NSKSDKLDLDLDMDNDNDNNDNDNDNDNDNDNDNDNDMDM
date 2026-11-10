@@ -23,6 +23,8 @@ internal fun languageLabel(tag:String):String =
     supportedOfflineLanguages.firstOrNull{it.first==tag}?.second ?: "System"
 private val translated:Map<String,Map<String,String>> = mapOf(
 "en" to mapOf(
+    "splash_subtitle" to "Configuration decoder",
+    "splash_powered_by" to "Powered by Ghost Developer",
     "identity_original_help" to "This file requires the recipient's original private identity. A newly generated identity cannot open another person's file.",
     "recipient_mismatch_help" to "The saved identity does not match this file. Use the real private identity of the intended recipient; generating a different key will not unlock it.",
     "home" to "Home",
@@ -105,6 +107,8 @@ private val translated:Map<String,Map<String,String>> = mapOf(
     "history_unavailable" to "Unable to access encrypted history"
 ),
 "es" to mapOf(
+    "splash_subtitle" to "Decodificador de configuraciones",
+    "splash_powered_by" to "Powered by Ghost Developer",
     "identity_original_help" to "Este archivo necesita la identidad privada original del destinatario. Una identidad recién generada no puede abrir archivos creados para otra persona.",
     "recipient_mismatch_help" to "La identidad guardada no corresponde a este archivo. Usa la identidad privada real del destinatario; generar otra clave no permitirá abrirlo.",
     "home" to "Inicio",
@@ -187,6 +191,8 @@ private val translated:Map<String,Map<String,String>> = mapOf(
     "history_unavailable" to "No se pudo acceder al historial cifrado"
 ),
 "pt-BR" to mapOf(
+    "splash_subtitle" to "Decodificador de configurações",
+    "splash_powered_by" to "Powered by Ghost Developer",
     "home" to "Início",
     "history" to "Histórico",
     "settings" to "Configurações",
@@ -220,6 +226,8 @@ private val translated:Map<String,Map<String,String>> = mapOf(
     "identity_warning" to "Copiar ou compartilhar pode expor credenciais a outros aplicativos."
 ),
 "ar" to mapOf(
+    "splash_subtitle" to "أداة فك ترميز الإعدادات",
+    "splash_powered_by" to "Powered by Ghost Developer",
     "home" to "الرئيسية",
     "history" to "السجل",
     "settings" to "الإعدادات",
@@ -253,6 +261,8 @@ private val translated:Map<String,Map<String,String>> = mapOf(
     "identity_warning" to "قد يؤدي النسخ أو المشاركة إلى كشف بيانات الدخول للتطبيقات الأخرى."
 ),
 "fa" to mapOf(
+    "splash_subtitle" to "رمزگشای پیکربندی",
+    "splash_powered_by" to "توسعه‌یافته توسط Ghost Developer",
     "home" to "خانه",
     "history" to "تاریخچه",
     "settings" to "تنظیمات",
@@ -286,6 +296,8 @@ private val translated:Map<String,Map<String,String>> = mapOf(
     "identity_warning" to "اشتراک‌گذاری یا کپی داده اصلی می‌تواند اطلاعات ورود را در اختیار برنامه‌های دیگر بگذارد."
 ),
 "fr" to mapOf(
+    "splash_subtitle" to "Décodeur de configurations",
+    "splash_powered_by" to "Propulsé par Ghost Developer",
     "home" to "Accueil",
     "history" to "Historique",
     "settings" to "Paramètres",
@@ -319,6 +331,8 @@ private val translated:Map<String,Map<String,String>> = mapOf(
     "identity_warning" to "Partager ou copier des données originales peut révéler des identifiants à d’autres applications."
 ),
 "id" to mapOf(
+    "splash_subtitle" to "Dekoder konfigurasi",
+    "splash_powered_by" to "Didukung oleh Ghost Developer",
     "home" to "Beranda",
     "history" to "Riwayat",
     "settings" to "Pengaturan",
@@ -352,6 +366,8 @@ private val translated:Map<String,Map<String,String>> = mapOf(
     "identity_warning" to "Membagikan atau menyalin data asli dapat membocorkan kredensial ke aplikasi lain."
 ),
 "ru" to mapOf(
+    "splash_subtitle" to "Декодер конфигураций",
+    "splash_powered_by" to "Разработано Ghost Developer",
     "home" to "Главная",
     "history" to "История",
     "settings" to "Настройки",
@@ -385,6 +401,8 @@ private val translated:Map<String,Map<String,String>> = mapOf(
     "identity_warning" to "Передача или копирование исходных данных может раскрыть учётные данные другим приложениям."
 ),
 "de" to mapOf(
+    "splash_subtitle" to "Konfigurationsdecoder",
+    "splash_powered_by" to "Bereitgestellt von Ghost Developer",
     "home" to "Startseite",
     "history" to "Verlauf",
     "settings" to "Einstellungen",
@@ -418,6 +436,8 @@ private val translated:Map<String,Map<String,String>> = mapOf(
     "identity_warning" to "Das Teilen oder Kopieren von Originaldaten kann Zugangsdaten an andere Apps weitergeben."
 ),
 "tr" to mapOf(
+    "splash_subtitle" to "Yapılandırma çözücü",
+    "splash_powered_by" to "Ghost Developer tarafından",
     "home" to "Ana sayfa",
     "history" to "Geçmiş",
     "settings" to "Ayarlar",
@@ -451,6 +471,8 @@ private val translated:Map<String,Map<String,String>> = mapOf(
     "identity_warning" to "Orijinal verileri paylaşmak veya kopyalamak kimlik bilgilerini diğer uygulamalara açığa çıkarabilir."
 ),
 "vi" to mapOf(
+    "splash_subtitle" to "Bộ giải mã cấu hình",
+    "splash_powered_by" to "Phát triển bởi Ghost Developer",
     "home" to "Trang chủ",
     "history" to "Lịch sử",
     "settings" to "Cài đặt",
@@ -484,6 +506,8 @@ private val translated:Map<String,Map<String,String>> = mapOf(
     "identity_warning" to "Chia sẻ hoặc sao chép dữ liệu gốc có thể lộ thông tin bí mật cho ứng dụng khác."
 ),
 "hi" to mapOf(
+    "splash_subtitle" to "कॉन्फ़िगरेशन डिकोडर",
+    "splash_powered_by" to "Ghost Developer द्वारा निर्मित",
     "home" to "होम",
     "history" to "इतिहास",
     "settings" to "सेटिंग",
@@ -517,6 +541,8 @@ private val translated:Map<String,Map<String,String>> = mapOf(
     "identity_warning" to "मूल डेटा साझा या कॉपी करने से दूसरे ऐप्स को क्रेडेंशियल दिख सकते हैं।"
 ),
 "ja" to mapOf(
+    "splash_subtitle" to "設定デコーダー",
+    "splash_powered_by" to "Ghost Developer 提供",
     "home" to "ホーム",
     "history" to "履歴",
     "settings" to "設定",
@@ -550,6 +576,8 @@ private val translated:Map<String,Map<String,String>> = mapOf(
     "identity_warning" to "元データの共有やコピーで認証情報が他のアプリに漏れるおそれがあります。"
 ),
 "it" to mapOf(
+    "splash_subtitle" to "Decodificatore di configurazioni",
+    "splash_powered_by" to "Sviluppato da Ghost Developer",
     "home" to "Home",
     "history" to "Cronologia",
     "settings" to "Impostazioni",
