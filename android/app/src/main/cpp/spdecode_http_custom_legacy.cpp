@@ -1,4 +1,5 @@
 #include "spdecode_http_custom_legacy.h"
+#include "spdecode_hc_unicode.h"
 #include <mbedtls/aes.h>
 #include <mbedtls/base64.h>
 #include <nlohmann/json.hpp>
@@ -47,6 +48,34 @@ constexpr std::array<unsigned char,20> jklNew={{
 8,9,10,11,12,13,14,15,17,17,5,4,3,2,1,0,255,254,253,252}};
 Bytes bytes(const std::string& v){return Bytes(v.begin(),v.end());}
 std::string str(const Bytes& v){return std::string(v.begin(),v.end());}
+// Historical Python uses decode('utf-8', errors='ignore') on ChaCha/RST
+// plaintext. Never let raw random bytes reach heuristics or JSON serialization.
+// Authenticated HCCFG/HCX4 is separate and keeps strict UTF-8 validation.
+bool codepoint(const std::string& value,size_t& at,uint32_t& cp){
+    const size_t start=at;
+    const auto first=static_cast<unsigned char>(value[at++]);
+    if(first<0x80){cp=first;return true;}
+    const size_t count=first>=0xc2&&first<=0xdf?2:
+        first>=0xe0&&first<=0xef?3:first>=0xf0&&first<=0xf4?4:0;
+    if(!count||start+count>value.size())return false;
+    cp=first&((1u<<(7-count))-1u);
+    for(size_t n=1;n<count;n++){
+        const auto b=static_cast<unsigned char>(value[start+n]);
+        if(b<0x80||b>0xbf)return false;
+        cp=(cp<<6)|(b&63);
+    }
+    if((count==2&&cp<0x80)||(count==3&&cp<0x800)||
+       (count==4&&cp<0x10000)||cp>0x10ffff||(cp>=0xd800&&cp<=0xdfff))return false;
+    at=start+count;return true;
+}
+std::string utf8Ignore(const std::string& input){
+    std::string output;output.reserve(input.size());
+    for(size_t at=0;at<input.size();){
+        const size_t start=at;uint32_t cp=0;
+        if(codepoint(input,at,cp))output.append(input,start,at-start);
+    }
+    return output;
+}
 int hexNibble(unsigned char c){
     if(c>='0'&&c<='9')return c-'0';
     if(c>='a'&&c<='f')return c-'a'+10;
@@ -66,10 +95,11 @@ Bytes hexLoose(const std::string& input){
         output.push_back(static_cast<unsigned char>((hexNibble(selected[i])<<4)|hexNibble(selected[i+1])));
     return output;
 }
-Bytes b64(const std::string& text){
+Bytes b64(const std::string& text,bool allowMissingPadding=false){
     std::string value=text;
     if(value.empty()||value.size()>kLegacyInputMax*2||value.size()%4==1)throw std::runtime_error("BAD_B64");
-    value.append((4-value.size()%4)%4,'=');
+    if(allowMissingPadding)value.append((4-value.size()%4)%4,'=');
+    else if(value.size()%4)throw std::runtime_error("BAD_B64");
     Bytes result(value.size()*3/4+4);
     size_t size=0;
     if(mbedtls_base64_decode(result.data(),result.size(),&size,
@@ -122,7 +152,7 @@ std::string abc(const std::string& cipher,const Bytes& key,const Bytes& nonce=no
         Bytes input=hexLoose(cipher);
         if(input.size()<=16)return "";
         input.resize(input.size()-16); // Legacy tag is not authenticated by exporter.
-        return str(chaCha8(input,key,nonce));
+        return utf8Ignore(str(chaCha8(input,key,nonce)));
     }catch(...){return "";}
 }
 std::string aesRst(const std::string& value){
@@ -145,7 +175,7 @@ std::string aesRst(const std::string& value){
             for(size_t i=0;i<padding;i++)if(output[output.size()-i-1]!=padding)correct=false;
             if(!correct)continue;
             output.resize(output.size()-padding);
-            auto text=str(output);
+            auto text=utf8Ignore(str(output));
             if(text.find("[splitConfig]")!=std::string::npos)return text;
         }
     }catch(...){}
@@ -154,7 +184,7 @@ std::string aesRst(const std::string& value){
 std::string jkl(const std::string& token,bool isNew){
     if(token.empty())return token;
     try{
-        Bytes v=b64(token);
+        Bytes v=b64(token,true);
         const auto& key=isNew?jklNew:jklOld;
         for(size_t i=0;i<v.size();i++){
             unsigned char d=v[i],k=key[i%20];
@@ -173,12 +203,22 @@ std::string jkl(const std::string& token,bool isNew){
 }
 bool printable(const std::string& value,bool strict=false){
     if(value.empty())return false;
-    if(value.size()<4)return true;
-    size_t count=0;
-    for(unsigned char c:value){
-        if(c>=32||c==9||c==10||c==13)count++;
+    size_t count=0,total=0;
+    for(size_t at=0;at<value.size();){
+        uint32_t cp=0;
+        if(!codepoint(value,at,cp))return false;
+        total++;
+        if(hcunicode::contains(hcunicode::printableRanges,cp)||cp==9||cp==10||cp==13)count++;
     }
-    return static_cast<double>(count)/value.size()>(strict?0.90:0.80);
+    return total<4||static_cast<double>(count)/total>(strict?0.90:0.80);
+}
+bool alphanumeric(const std::string& value){
+    if(value.empty())return false;
+    for(size_t at=0;at<value.size();){
+        uint32_t cp=0;
+        if(!codepoint(value,at,cp)||!hcunicode::contains(hcunicode::alnumRanges,cp))return false;
+    }
+    return true;
 }
 std::string field(const std::string& token,const Bytes& nonce){
     if(token.empty()||token=="true"||token=="false"||token=="lifeTime"||
@@ -215,7 +255,7 @@ std::string field(const std::string& token,const Bytes& nonce){
         Bytes sealed=data;sealed.resize(sealed.size()-16);
         for(const char* hexkey:keys){
             try{
-                auto trial=str(chaCha8(sealed,hexLoose(hexkey),nonce));
+                auto trial=utf8Ignore(str(chaCha8(sealed,hexLoose(hexkey),nonce)));
                 for(bool useNew:{true,false}){
                     auto next=jkl(trial,useNew);
                     if(next!=trial&&printable(next))return next;
@@ -223,8 +263,7 @@ std::string field(const std::string& token,const Bytes& nonce){
                 const bool marker=trial.find("HTTP")!=std::string::npos||
                     trial.find('@')!=std::string::npos||trial.find(':')!=std::string::npos||
                     trial.find('{')!=std::string::npos;
-                const bool alnum=!trial.empty()&&std::all_of(trial.begin(),trial.end(),
-                    [](unsigned char c){return std::isalnum(c)!=0;});
+                const bool alnum=alphanumeric(trial);
                 if((printable(trial,true)&&marker)||alnum)return trial;
             }catch(...){}
         }
@@ -270,7 +309,7 @@ std::string z3a(const std::string& text){
             result.push_back(static_cast<char>((quotient%256+256)%256));
         }catch(...){}
     }
-    return result;
+    return utf8Ignore(result);
 }
 // Historic HTTP Custom SSH credentials can arrive encoded as pairs of
 // Unicode Braille glyphs. Mirror HTTPCUSTOM.py's alphabet before handling the

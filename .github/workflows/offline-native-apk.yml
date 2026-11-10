@@ -12,6 +12,7 @@ on:
       - android/app/src/main/cpp/spdecode_http_custom.h
       - android/app/src/main/cpp/spdecode_http_custom_legacy.cpp
       - android/app/src/main/cpp/spdecode_http_custom_legacy.h
+      - android/app/src/main/cpp/spdecode_hc_unicode.h
       - scripts/build_offline_npv_tables.py
       - android/app/src/main/cpp/spdecode_npv_text.cpp
       - android/app/src/main/cpp/spdecode_npv_text.h

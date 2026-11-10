@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "package_name": "xyz.easypro.httpcustom",
+  "app_name": "HTTP Custom",
+  "version_name": null,
+  "version_code": null,
+  "observed_at": "2026-11-10T04:21:53.421971+00:00",
+  "source_category": "user_authorized_file",
+  "authorization_note": "Owner requested offline parity improvements and provided the HC sample for local diagnosis. No user bytes or recovered configuration are committed.",
+  "status": "PARTIAL",
+  "targets": [
+    {
+      "type": "files",
+      "family": "legacy cfg.content verCfg57",
+      "extensions": [
+        "hc"
+      ],
+      "status": "VERIFIED_REAL_SAMPLE"
+    },
+    {
+      "type": "files",
+      "family": "HCCFG 1/2/5/7 and HCX4 schema10 n11/n12",
+      "status": "VERIFIED_SYNTHETIC"
+    }
+  ],
+  "inputs": [
+    {
+      "size": 36840,
+      "sha256": "e109884b00889e85eb850b655b5f5f40b1a8be33f3cde860f000b6e5c0abdddd",
+      "origin": "private user attachment test.hc",
+      "format_version": 57
+    }
+  ],
+  "tooling": [
+    {
+      "script": "analysis/_intake/httpcustom-offline-20261109/tools/build_unicode_properties.py",
+      "version": 1,
+      "base_commit": "0992bf21648f92643d070e8b1eac0468a0b73134"
+    },
+    {
+      "script": "analysis/_intake/httpcustom-offline-20261109/tools/verify_private_sample.py",
+      "version": 1,
+      "base_commit": "0992bf21648f92643d070e8b1eac0468a0b73134"
+    },
+    {
+      "script": "analysis/_intake/httpcustom-offline-20261109/tools/diagnose_legacy.py",
+      "version": 1,
+      "purpose": "temporary exception diagnostic recreation"
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "Mbed TLS",
+      "version": "3.6.7",
+      "source": "https://github.com/Mbed-TLS/mbedtls/releases/tag/mbedtls-3.6.7",
+      "sha256": "a7e8bcbec0e6f761b4af24f25677626b35f762f68eef79c08677a363212d11f6",
+      "license": "Apache-2.0 OR GPL-2.0-or-later"
+    },
+    {
+      "name": "Argon2 reference",
+      "version": "20190702",
+      "commit": "62358ba2123abd17fccf2a108a301d4b52c01a7c",
+      "source": "https://github.com/P-H-C/phc-winner-argon2",
+      "license": "Apache-2.0 OR CC0-1.0"
+    },
+    {
+      "name": "nlohmann JSON",
+      "version": "3.11.3",
+      "source": "https://github.com/nlohmann/json",
+      "sha256": "9bea4c8066ef4a1c206b2be5a36302f8926f7fdc6087af5d20b417d0cf103ea6",
+      "license": "MIT"
+    },
+    {
+      "name": "PyCryptodome",
+      "version": "3.23.0",
+      "source": "https://pypi.org/project/pycryptodome/3.23.0/",
+      "license": "BSD-2-Clause AND public-domain"
+    },
+    {
+      "name": "argon2-cffi",
+      "version": "25.1.0",
+      "source": "https://pypi.org/project/argon2-cffi/25.1.0/",
+      "license": "MIT"
+    },
+    {
+      "name": "msgpack",
+      "version": "1.1.1",
+      "source": "https://pypi.org/project/msgpack/1.1.1/",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "zlib",
+      "version": "1.3.2",
+      "source": "https://zlib.net/",
+      "license": "Zlib"
+    }
+  ],
+  "code_paths": [
+    "android/app/src/main/cpp/spdecode_http_custom_legacy.cpp",
+    "android/app/src/main/cpp/spdecode_hc_unicode.h",
+    "tests/test_offline_hc_native_parity.py"
+  ],
+  "evidence_refs": [
+    "analysis/_intake/httpcustom-offline-20261109/ANALYSIS.md",
+    "analysis/_intake/httpcustom-offline-20261109/RESULTS.md",
+    "analysis/_intake/httpcustom-offline-20261109/REPRODUCE.md",
+    "analysis/_intake/httpcustom-offline-20261109/tests/test_method.py"
+  ],
+  "network_requirements": [
+    "Build dependency sources and GitHub Actions only; no VPN service contacted"
+  ],
+  "manual_steps": [
+    "Install the persistent-signed offline APK and check selection, line alignment, themes and actual NPV links on Android"
+  ],
+  "limitations": [
+    "APK exporter package/versionCode not independently observed. Stored under _intake to avoid inventing build provenance.",
+    "Synthetic cases do not certify every exporter. Unknown HCX4 schema 11/n13 remains unsupported.",
+    "Android device UI verification pending."
+  ],
+  "connection_authentication": {
+    "status": "NOT_OBSERVED",
+    "scope": "local file/text codecs only",
+    "algorithm": null,
+    "material_provenance": "existing repository format derivation, synthetic test credentials",
+    "verifier_observed": null,
+    "limitations": "No VPN connection, hooks or service authentication was inspected."
+  }
+}

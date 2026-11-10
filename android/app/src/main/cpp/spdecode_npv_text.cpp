@@ -24,7 +24,7 @@ void trim(std::string& str){
     while(b>a&&asciiSpace(str[b-1]))b--;
     str=str.substr(a,b-a);
 }
-const char* prefixes[]={"npvt://","npvt-ssh://","npvt-vless://","npvt-vmess://","npv://"};
+const char* prefixes[]={"npvt://","npvt-ssh://","npvt-vless://","npvt-vmess://","npv://","dns://","npvs1:"};
 std::string label(const std::string& text){
     for(const auto* prefix:prefixes){
         const size_t n=std::char_traits<char>::length(prefix);
@@ -86,10 +86,15 @@ void embedded(json& node,int depth){
         if(text.rfind("npvs1:",0)==0){node=text;embedded(node,depth+1);return;}
         size_t p=0;while(p<text.size()&&asciiSpace(text[p]))p++;
         if(p<text.size()&&(text[p]=='{'||text[p]=='[')){
+            json value;
             try{
-                auto value=npv::parse(raw);
-                node=std::move(value);embedded(node,depth+1);return;
-            }catch(const npv::Error&){/* Preserve brace-prefixed prose. */}
+                value=npv::parse(raw);
+            }catch(const npv::Error&){
+                // Only parse failure is prose. A nested field decoding or
+                // nesting-limit error must propagate, never return partial JSON.
+                node=text;return;
+            }
+            node=std::move(value);embedded(node,depth+1);return;
         }
         // Require valid UTF-8 even when decoded value is an opaque string.
         try{node=json(text);(void)node.dump(-1,' ',false,json::error_handler_t::strict);}
@@ -107,6 +112,13 @@ std::string decodeNpvText(const std::vector<unsigned char>& data,
     require(isNpvText(data),"NPV_UNSUPPORTED_TEXT_FORMAT");
     auto value=s(data);trim(value);
     const auto prefix=label(value);
+    if(prefix=="npvs1:"){
+        require(password.empty()&&recipient.empty(),"NPV_CREDENTIALS_NOT_ALLOWED");
+        json document=prefix+value.substr(prefix.size());
+        embedded(document,0);
+        if(!document.is_object()&&!document.is_array())document=json{{"decodedText",document}};
+        return document.dump(2,' ',false,json::error_handler_t::strict)+"\n";
+    }
     const auto raw=base64(value.substr(prefix.size()));
     require(raw.size()<=kMax,"NPV_INVALID_INPUT");
     // Signed binary NPVS envelopes must dispatch to their separately

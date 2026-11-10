@@ -25,6 +25,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
+import android.widget.HorizontalScrollView
+import android.widget.ScrollView
+import android.view.ViewGroup
 import org.json.JSONObject
 import java.text.DateFormat
 import java.util.Date
@@ -278,7 +282,7 @@ private fun Home(state:OfflineUiState,action:OfflineActions,p:OfflinePalette) {
         if(state.showTextDecoder) {
             var input by remember { mutableStateOf("") }
             OutlinedTextField(value=input,
-                onValueChange={if(it.length<=250_000)input=it},
+                onValueChange={if(it.length<=2*1024*1024)input=it},
                 label={Text(txt("paste_text",state.language))},
                 modifier=Modifier.fillMaxWidth(),
                 minLines=3,maxLines=7,
@@ -353,29 +357,27 @@ private fun Home(state:OfflineUiState,action:OfflineActions,p:OfflinePalette) {
 
 @Composable
 private fun CompleteJsonViewer(content:String,p:OfflinePalette,language:String) {
-    val numberCount=remember(content) { content.count { it=='\n' } + 1 }
-    val gutter=remember(numberCount) { (1..numberCount).joinToString("\n") }
-    val rowScroll=rememberScrollState()
-    // Height is measured from actual font scale. Up to 150 rows fit without
-    // blank padding; the original, complete document remains vertically scrollable.
-    val maxRows=numberCount.coerceAtMost(150)
+    val numberCount=remember(content) { content.trimEnd('\n').count { it=='\n' } + 1 }
+    val light=p.ink==Color(0xFF17232E)
+    val maxRows=numberCount.coerceIn(1,150)
     val viewportHeight=with(LocalDensity.current) {
-        (18.sp.toPx()*maxRows + 14.dp.toPx()).toDp()
+        (20.sp.toPx()*maxRows + 16.dp.toPx()).toDp()
     }
-    Box(Modifier.fillMaxWidth().heightIn(max=viewportHeight)
-        .verticalScroll(rememberScrollState())) {
-        Row(Modifier.horizontalScroll(rowScroll)) {
-            Text(gutter,color=p.subdued,modifier=Modifier.background(p.raised)
-                .padding(start=7.dp,end=9.dp,top=7.dp,bottom=7.dp),
-                fontFamily=FontFamily.Monospace,fontSize=11.sp,lineHeight=18.sp,
-                softWrap=false)
-            SelectionContainer {
-                Text(content,color=p.ink,modifier=Modifier.padding(7.dp),
-                    fontFamily=FontFamily.Monospace,fontSize=11.sp,
-                    lineHeight=18.sp,softWrap=false)
+    AndroidView(modifier=Modifier.fillMaxWidth().height(viewportHeight).background(p.raised),
+        factory={context->
+            ScrollView(context).apply {
+                isFillViewport=false
+                addView(HorizontalScrollView(context).apply {
+                    addView(OfflineJsonTextView(context),ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT))
+                },ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT))
             }
-        }
-    }
+        },
+        update={scroll->
+            val horizontal=scroll.getChildAt(0) as HorizontalScrollView
+            (horizontal.getChildAt(0) as OfflineJsonTextView).show(content,light)
+        })
     SmallCaption(txt("json_selectable",language),p)
 }
 

@@ -19,9 +19,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.mutableStateOf
 import androidx.activity.result.contract.ActivityResultContracts
-import org.json.JSONArray
 import org.json.JSONObject
-import org.json.JSONTokener
 import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
 import java.nio.charset.CodingErrorAction
@@ -114,10 +112,10 @@ class MainActivity : ComponentActivity() {
             if(showBrandedSplash.value) OfflineSplashScreen(ui.language)
             else OfflineScreen(ui,OfflineActions(
                 importFile={importer.launch(arrayOf("*/*"))},
-                copyResult={ui.result?.let{copy(it)}},
+                copyResult={ui.result?.let{copy(OfflineJson.format(it))}},
                 exportResult={
                     ui.result?.let {
-                        exportPayload=it
+                        exportPayload=OfflineJson.format(it)
                         exporter.launch(ui.fileName.orEmpty().substringBeforeLast('.')+".json")
                     }
                 },
@@ -139,7 +137,7 @@ class MainActivity : ComponentActivity() {
                 },
                 dismissPrompt={ui.pendingPrompt=null},
                 selectHistory={item->
-                    ui.result=item.json;ui.fileName=item.filename
+                    ui.result=OfflineJson.format(item.json);ui.fileName=item.filename
                     ui.extension=item.extension;ui.tab=0;ui.message=null
                 },
                 deleteHistory={item->deleteHistory(item)},
@@ -303,11 +301,12 @@ class MainActivity : ComponentActivity() {
 
     private fun beginText(text:String) {
         val value=text.trim()
-        if(value.isBlank() || value.length>250_000){
+        if(value.isBlank() || value.length>2*1024*1024){
             ui.error=readableDecodeError("INVALID_TEXT","",ui.language);return
         }
         val first=value.substringBefore("://").lowercase()
-        val npv=first in setOf("npvt","npvt-ssh","npvt-vless","npvt-vmess","npv")
+        val npv=first in setOf("npvt","npvt-ssh","npvt-vless","npvt-vmess","npv","dns") ||
+            value.startsWith("npvs1:",ignoreCase=true)
         val dark=first in setOf("dt","dtunnel","dark","darktunnel","dark-tunnel")
         val netmod=first.startsWith("nm-") || !value.contains("://")
         if(!npv && !netmod && !dark){
@@ -338,11 +337,7 @@ class MainActivity : ComponentActivity() {
                             .onMalformedInput(CodingErrorAction.REPORT)
                             .onUnmappableCharacter(CodingErrorAction.REPORT)
                             .decode(ByteBuffer.wrap(decoded)).toString()
-                        val parsed=JSONTokener(source).nextValue()
-                        require(parsed is JSONObject || parsed is JSONArray){"INVALID_JSON"}
-                        if(source.indexOf('\n')<0 && source.length<800_000)
-                            if(parsed is JSONObject)parsed.toString(2) else (parsed as JSONArray).toString(2)
-                        else source
+                        OfflineJson.format(source)
                     }finally{decoded.fill(0)}
                 }finally{bytes.fill(0)}
             }

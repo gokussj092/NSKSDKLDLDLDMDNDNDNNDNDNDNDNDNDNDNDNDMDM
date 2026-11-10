@@ -80,18 +80,23 @@ def legacy_http_custom_field_file(style: str) -> bytes:
     from Crypto.Cipher import AES,ChaCha20
     from Crypto.Util.Padding import pad
     from decoders.Python.HTTPCUSTOM import HCConstants
-    assert style in ("separated_hex","latin1")
+    assert style in ("separated_hex","latin1","utf8_ignored")
     inner=base64.b64encode(b"GET / HTTP/1.1")
     xored=bytes(value ^ HCConstants.JKL_KEY_OLD[i%20] for i,value in enumerate(inner))
     token=base64.b64encode(xored)
     cha=ChaCha20.new(key=HCConstants.CHACHA_KEYS[7],nonce=HCConstants.STATIC_NONCE)
     cha.seek(64)
-    encrypted=cha.encrypt(token)+bytes(16)
+    # Historical Python deliberately ignores malformed UTF-8 after ChaCha.
+    # The old C++ heuristic accepted these random bytes then failed JSON dump.
+    plaintext=b"\xffGET / HTTP/1.1\xc0\xaf" if style=="utf8_ignored" else token
+    encrypted=cha.encrypt(plaintext)+bytes(16)
     if style=="separated_hex":
         raw=encrypted.hex()
         field=":".join(raw[i:i+10] for i in range(0,len(raw),10))
-    else:
+    elif style=="latin1":
         field=encrypted.decode("latin-1")
+    else:
+        field=encrypted.hex()
     plain="[splitConfig]".join((field,"example.org","false")).encode("utf8")
     aes=AES.new(HCConstants.RST_KEYS[0],AES.MODE_ECB)
     crypt=base64.b64encode(aes.encrypt(pad(plain,16)))
@@ -265,7 +270,7 @@ def main(exe):
     check(legacy["Config"]["ovpnUserAndPass"]=="open:vpn",
           "old numeric OVPN credentials mismatch")
     passed+=1
-    for style in ("separated_hex","latin1"):
+    for style in ("separated_hex","latin1","utf8_ignored"):
         sample=legacy_http_custom_field_file(style)
         reference=HCDecryptor.execute(sample)
         check(reference is not None and "GET / HTTP/1.1" in reference,

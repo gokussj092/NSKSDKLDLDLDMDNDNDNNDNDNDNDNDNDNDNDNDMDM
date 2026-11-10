@@ -126,6 +126,35 @@ def main(exe):
     payload=json.dumps(obj,ensure_ascii=False,separators=(",",":")).encode()
     wrapped=b"npvt-ssh://"+base64.urlsafe_b64encode(payload).rstrip(b"=")
     compare(exe,wrapped,text_decoder.decode(wrapped.decode()));count+=1
+    # Every server URI alias, case, alphabet and padding combination must
+    # preserve full JSON and recursively decode explicit npvs1 layers.
+    for prefix in text_decoder.PREFIXES:
+        for encoder in (base64.b64encode,base64.urlsafe_b64encode):
+            for padded in (False,True):
+                for scheme in (prefix,prefix.upper()):
+                    token=encoder(payload)
+                    if not padded:token=token.rstrip(b"=")
+                    link=b" \n"+scheme.encode()+token+b"\r\n"
+                    compare(exe,link,text_decoder.decode(link.decode()));count+=1
+    from decoders.Python import npvt_links
+    for prefix in ("dns://","DNS://"):
+        link=prefix.encode()+base64.urlsafe_b64encode(payload).rstrip(b"=")
+        compare(exe,link,json.loads(npvt_links.decode_text(link.decode())));count+=1
+    for source in (json.dumps(obj,ensure_ascii=False),"example.invalid"):
+        link=b"npvs1:"+base64.urlsafe_b64encode(source.encode()).rstrip(b"=")
+        decoded=npvt_links.decode_text(link.decode())
+        expected=json.loads(decoded) if source.startswith("{") else {"decodedText":decoded}
+        compare(exe,link,expected);count+=1
+    # A failure inside an explicit encoded JSON object must not be swallowed
+    # by a prose fallback, leaving an apparently successful partial result.
+    bad_inner="npvs1:"+base64.b64encode(b'{"bad":"npvs1:!"}').decode()
+    for raw in (b'{"x":1,"x":2}',b'{"x":NaN}',b'{"x":"\xff"}',
+                json.dumps({"x":bad_inner}).encode(),
+                json.dumps({"x":"npvs1:/w=="}).encode()):
+        link=b"npvt-ssh://"+base64.b64encode(raw)
+        negative(exe,link);count+=1
+    for link in (b"npvt://AAAA==",b"npvt://AB",b"npvs1:!",b"dns://!"):
+        negative(exe,link);count+=1
     expected=[obj,obj,{"extra":"preserved"}]
     raw=json.dumps(expected,ensure_ascii=False).encode()
     link=b"npvt://"+base64.b64encode(raw)

@@ -151,3 +151,8 @@ Origen, dimensiones y checksums están en `manifest.json`. Se incluyen ambos.
 No se incluye APK, `.hc` privado, configuración recuperada ni credencial
 real. Este paquete es un lector; no implementa un exportador editable ni
 certifica un roundtrip de importación en un dispositivo Android.
+
+Revisión de paridad Offline 2026-11-09: expediente y comprobación privada sin
+datos de usuario en `analysis/_intake/httpcustom-offline-20261109/`. Corrige
+UTF-8 y clasificación Unicode en el lector histórico C++; no modifica este
+codec Python. El build exportador no se deduce del formato `verCfg:57`.
