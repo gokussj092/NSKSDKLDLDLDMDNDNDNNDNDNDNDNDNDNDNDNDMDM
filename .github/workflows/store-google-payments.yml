@@ -7,6 +7,8 @@ on:
       - cloud/accounts/**
       - cloud/compose.yaml
       - cloud/infra/vps/commerce-setup.py
+      - cloud/infra/vps/spdecodectl
+      - tests/test_store_infra.py
       - android/app/src/unityAds/**
       - android/app/src/main/java/com/ghostdeveloper/spdecode/AccountDrawer.kt
       - .github/workflows/store-google-payments.yml
