@@ -10,6 +10,7 @@ import {taxQuote,validatePurchase} from '../lib/commerce/catalog.mjs';
 import {publicIp,paymentReady} from '../lib/commerce/config.mjs';
 import {editProfile} from '../lib/commerce/profile.mjs';
 import {checkout,settle,claim,useApiKey,releaseApiUsage} from '../lib/commerce/orders.mjs';
+import {creditBalance,reserveCredit,completeCredit,releaseCredit} from '../lib/commerce/credits.mjs';
 import {verifyMpSignature,allowedCheckout,paymentEvent} from '../lib/commerce/providers.mjs';
 import {estimateRetail} from '../lib/commerce/pricing.mjs';
 import Stripe from 'stripe';
@@ -183,4 +184,42 @@ test('a late payment never recreates access after account deletion',async()=>{
  await settle('stripe',{eventId:randomUUID(),type:'paid',live:false,orderId:order.orderId,providerId:'cs_deleted_'+order.orderId,currency:'USD',total:579},{db});
  const item=(await db.query('SELECT * FROM spdecode_shop.entitlements WHERE order_id=$1',[order.orderId])).rows[0];
  assert.equal(item.status,'revoked');assert.equal(item.allowed_ip,null);
+});
+
+test('analysis credits are granted only once by verified payment and released on server failures',async()=>{
+ const oldReady=process.env.SPDECODE_ANALYSIS_CREDITS_READY;
+ process.env.SPDECODE_ANALYSIS_CREDITS_READY='true';
+ try{
+  await db.query("UPDATE spdecode_shop.products SET settings=$1,version=1 WHERE id='analysis-credits'",
+    [JSON.stringify({id:'analysis-credits',enabled:true,prices:{},
+      bundles:{'1c':{USD:399},'5c':{USD:1795},'10c':{USD:3290},'25c':{USD:7475},'50c':{USD:13450},'100c':{USD:23900}}})]);
+  const body={product:'analysis-credits',term:'10c',provider:'stripe',currency:'USD',country:'MX',region:'BC',
+    version:1,idempotencyKey:randomUUID(),acceptedTerms:'2026-11-10'};
+  const order=await checkout(other,body,{db,start:async row=>({id:'cs_credits_'+row.id,url:'https://checkout.stripe.com/c/pay/'+row.id})});
+  assert.equal((await creditBalance(other,{db})).balance,0);
+  const ev={eventId:randomUUID(),type:'paid',live:false,orderId:order.orderId,providerId:'cs_credits_'+order.orderId,
+    currency:'USD',total:3816};
+  // 3290 cents + 16% IVA (526).
+  await settle('stripe',ev,{db});await settle('stripe',ev,{db});
+  let balance=await creditBalance(other,{db});
+  assert.equal(balance.available,10);
+  assert.equal((await db.query('SELECT COUNT(*)::int AS n FROM spdecode_shop.credit_ledger WHERE order_id=$1',[order.orderId])).rows[0].n,1);
+  assert.equal((await db.query('SELECT COUNT(*)::int AS n FROM spdecode_shop.entitlements WHERE order_id=$1',[order.orderId])).rows[0].n,0);
+  const job1=randomUUID(),job2=randomUUID();
+  await reserveCredit(other,job1,{db});await reserveCredit(other,job1,{db});
+  await reserveCredit(other,job2,{db});
+  balance=await creditBalance(other,{db});assert.equal(balance.available,8);
+  await releaseCredit(other,job1,{db});await releaseCredit(other,job1,{db});
+  balance=await creditBalance(other,{db});assert.equal(balance.available,9);
+  await completeCredit(other,job2,{db});await completeCredit(other,job2,{db});
+  balance=await creditBalance(other,{db});assert.equal(balance.available,9);
+  await settle('stripe',{...ev,eventId:randomUUID(),type:'refunded'},{db});
+  assert.equal((await creditBalance(other,{db})).available,-1);
+  await assert.rejects(reserveCredit(other,randomUUID(),{db}),/INSUFFICIENT_CREDITS/);
+  await settle('stripe',{...ev,eventId:randomUUID(),type:'paid'},{db});
+  assert.equal((await creditBalance(other,{db})).available,-1);
+ }finally{
+   if(oldReady===undefined)delete process.env.SPDECODE_ANALYSIS_CREDITS_READY;
+   else process.env.SPDECODE_ANALYSIS_CREDITS_READY=oldReady;
+ }
 });
