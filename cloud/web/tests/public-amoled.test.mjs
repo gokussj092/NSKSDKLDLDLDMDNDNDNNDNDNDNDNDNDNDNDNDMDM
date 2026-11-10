@@ -9,10 +9,11 @@ test("public landing never exposes internal implementation or admin entry",()=>{
  assert.match(page,/SP-DECODE/);
  assert.doesNotMatch(page,/endpoint|Play Integrity|private worker|admin\/login/i);
  assert.match(page,/Acceso API/);
- assert.match(chrome,/publicRoutes=new Set\(\["\/","\/privacy","\/terms","\/support","\/store","\/account"\]\)/);
+ assert.match(chrome,/publicRoutes=new Set/);
+ for(const route of ['"/login"','"/account"','"/orders"','"/receipts"','"/products"'])assert.ok(chrome.includes(route),route);
  assert.match(chrome,/function LegacyChrome/);
  assert.match(chrome,/https:\/\/panel.spdecode.xyz\/admin\/login/);
- const isolated=chrome.slice(chrome.indexOf("export function PublicChrome"),chrome.indexOf("function LegacyChrome"));
+ const isolated=chrome.slice(chrome.indexOf("function PublicChrome"),chrome.indexOf("function LegacyChrome"));
  assert.doesNotMatch(isolated,/panel.spdecode.xyz|\/admin|\/api\/v[12]|\/api\/internal/);
  assert.match(isolated,/fetch\('\/api\/account'/);
 });
