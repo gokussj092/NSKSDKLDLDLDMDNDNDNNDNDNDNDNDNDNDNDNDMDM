@@ -35,7 +35,7 @@ class StoreConfigurationTests(unittest.TestCase):
                 'SPDECODE_DATABASE_URL=postgresql://spdecode_shop_app:wrong-password@shop-db:5432/spdecode_shop',
                 'SPDECODE_ACCOUNTS_ENABLED=true'
             ]
-            initial='\\n'.join(lines)+'\\n'
+            initial='\n'.join(lines)+'\n'
             path.write_text(initial)
             path.chmod(0o600)
             with self.assertRaisesRegex(ValueError,'Inconsistent commerce database credentials'):
