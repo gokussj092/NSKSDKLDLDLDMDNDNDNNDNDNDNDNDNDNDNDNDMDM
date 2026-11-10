@@ -21,7 +21,7 @@ export default {
         {key:"X-Robots-Tag",value:"noindex, nofollow"},
       ]},
       {source:"/account",headers:[{key:"Cache-Control",value:"private, no-store, max-age=0"},{key:"X-Robots-Tag",value:"noindex, nofollow"}]},
-      ...["/login","/orders","/receipts","/products"].map(source=>({source,headers:[{key:"Cache-Control",value:"private, no-store, max-age=0"},{key:"X-Robots-Tag",value:"noindex, nofollow"}]})),
+      ...["/login","/orders","/receipts","/products","/credits"].map(source=>({source,headers:[{key:"Cache-Control",value:"private, no-store, max-age=0"},{key:"X-Robots-Tag",value:"noindex, nofollow"}]})),
       {source:"/api/auth/:path*",headers:[{key:"Cache-Control",value:"private, no-store, max-age=0"}]},
       {source:"/api/account/:path*",headers:[{key:"Cache-Control",value:"private, no-store, max-age=0"}]},
       {source:"/api/store/:path*",headers:[{key:"Cache-Control",value:"private, no-store, max-age=0"}]},
