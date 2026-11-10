@@ -4,7 +4,7 @@ import {useEffect,useState} from 'react';
 import {useSearchParams,useRouter} from 'next/navigation';
 import {usePublicLocale,usePublicSession} from './site-chrome.jsx';
 import {GoogleButton} from './shop-common.jsx';
-const allowed=new Set(['/account','/store','/orders','/receipts','/products']);
+const allowed=new Set(['/account','/store','/orders','/receipts','/products','/credits']);
 export default function LoginPage(){
  const {lang}=usePublicLocale(),{account}=usePublicSession(),router=useRouter(),params=useSearchParams();
  const next=allowed.has(params.get('next'))?params.get('next'):'/account';
