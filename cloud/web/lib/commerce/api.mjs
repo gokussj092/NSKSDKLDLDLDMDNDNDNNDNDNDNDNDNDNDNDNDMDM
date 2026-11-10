@@ -23,7 +23,7 @@ export const accountSnapshot=request=>safe(async()=>{
   if(!session)return reply({user:null,authEnabled:true});
   const user=session.user,p=await profile(user.id),db=database();
   const [orders,entitlements]=await Promise.all([
-    db.query(`SELECT id,product_id,provider,status,quote,created_at,paid_at,payment_live FROM spdecode_shop.orders WHERE account_id=$1 ORDER BY created_at DESC LIMIT 50`,[user.id]),
+    db.query(`SELECT id,product_id,provider,status,quote,created_at,paid_at,payment_live,product_snapshot->>'term' AS term,product_snapshot->>'days' AS days FROM spdecode_shop.orders WHERE account_id=$1 ORDER BY created_at DESC LIMIT 50`,[user.id]),
     db.query(`SELECT id,order_id,product_id,status,token_prefix,allowed_ip,quota,days,expires_at,claimed_at,payment_live FROM spdecode_shop.entitlements WHERE account_id=$1 ORDER BY created_at DESC`,[user.id])]);
   const googleAvatar=typeof user.image==='string'&&/^https:\/\/lh[3-6]\.googleusercontent\.com\//.test(user.image)?user.image:null;
   return reply({authEnabled:true,live:process.env.SPDECODE_PAYMENTS_LIVE==='true',user:{id:user.id,name:user.name,email:user.email,avatar:p.avatar_data||googleAvatar,googleAvatar,username:p.username,bio:p.bio||'',
@@ -38,7 +38,7 @@ export const quoteRequest=request=>safe(async()=>{
   requireOrigin(request);await requireAccount(request);
   const body=await jsonBody(request,2048),row=(await catalog()).find(x=>x.id===body.product);
   if(!row)fail('INVALID_PRODUCT');
-  const q=taxQuote(row.settings,body.currency,body.country,body.region||'',await taxRules());
+  const q=taxQuote(row.settings,body.currency,body.country,body.region||'',await taxRules(),body.term||'base');
   return reply({...q,version:row.version,automaticTax:body.provider==='stripe'&&process.env.STRIPE_AUTOMATIC_TAX==='true'});
 });
 export const checkoutRequest=request=>safe(async()=>{
