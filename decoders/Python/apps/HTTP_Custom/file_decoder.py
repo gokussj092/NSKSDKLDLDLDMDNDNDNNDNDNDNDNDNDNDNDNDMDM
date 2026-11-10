@@ -28,8 +28,13 @@ def run(data: bytes, *, password: str | None = None, hwid: str | None = None) ->
                 raise
             if __package__:
                 from ...HTTPCUSTOM import HCDecryptor
+                from ..._hc_legacy57 import decode as decode_legacy57
             else:
                 from HTTPCUSTOM import HCDecryptor
+                from _hc_legacy57 import decode as decode_legacy57
+            complete=decode_legacy57(data)
+            if complete is not None:
+                return json.dumps(complete,ensure_ascii=False,indent=2)
             legacy = HCDecryptor.execute(data)
             if legacy is None:
                 raise HCError("UNRECOGNIZED_FORMAT") from error

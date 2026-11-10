@@ -158,3 +158,14 @@ UTF-8 y clasificación Unicode en el lector histórico C++; no modifica este
 codec Python. El build exportador no se deduce del formato `verCfg:57`.
 
 Expediente del consumidor Offline build 42: `analysis/com.ghostdeveloper.spdecode.offline/42/`.
+
+### Revisión original 4.10.16 / registros 57
+
+`analysis/xyz.easypro.httpcustom/564/` conserva el inventario del APKM del
+propietario, primitivas JNI originales y la comparación del archivo privado.
+El APK marca 564; el archivo declara verApp 565. El lector de revisión 57
+conserva los 32 campos y metadatos y recupera el JSON V2Ray antes omitido.
+Un valor histórico de Psiphon aún no interpretado se conserva con aviso de
+resultado parcial; no se presenta como descifrado. Servidor y Offline C++
+coinciden; las representaciones se eligen por versión observada, sin decidir
+por texto que simplemente parezca legible. No certifica todo exportador.

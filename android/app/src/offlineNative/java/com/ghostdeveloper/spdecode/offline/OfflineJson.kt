@@ -17,6 +17,11 @@ import org.json.JSONTokener
 
 /** One representation for the viewer, history, clipboard and JSON file. */
 internal object OfflineJson {
+    fun hasUnresolvedFields(source:String):Boolean = runCatching {
+        val parsed=JSONTokener(source).nextValue() as? JSONObject
+        (parsed?.optJSONArray("UnresolvedFields")?.length()?:0)>0
+    }.getOrDefault(false)
+
     fun format(source:String):String {
         val reader=JSONTokener(source)
         val parsed=reader.nextValue()

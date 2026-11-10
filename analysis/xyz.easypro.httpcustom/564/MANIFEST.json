@@ -1,0 +1,217 @@
+{
+  "schema_version": 1,
+  "package_name": "xyz.easypro.httpcustom",
+  "app_name": "HTTP Custom",
+  "version_name": "4.10.16",
+  "version_code": 564,
+  "observed_at": "2026-11-10T05:50:19.848459+00:00",
+  "source_category": "user_authorized_apkm_and_profile",
+  "authorization_note": "Owner supplied the APKM and private HC export for local interoperability analysis and corrections to their server/Offline application. No APK or private profile bytes are redistributed.",
+  "status": "PARTIAL",
+  "targets": [
+    {
+      "kind": "files",
+      "extensions": [
+        "hc"
+      ],
+      "format_revision": 57,
+      "apk_identity_build": 564,
+      "export_declared_verApp": 565,
+      "status": "PARTIAL_REAL",
+      "verified": "32 fields retained; 1026-byte V2Ray JSON recovered; one unresolved historical field preserved"
+    },
+    {
+      "kind": "native_primitive",
+      "build": 564,
+      "status": "VERIFIED_SYNTHETIC_ORIGINAL",
+      "algorithms": [
+        2,
+        3,
+        4
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "kind": "apkm",
+      "sha256": "a4ca4bf99cd6689279033570a0510ec6a0c5be490011e5ef7c029ff9be8731ba",
+      "size": 34333206,
+      "origin": "user attachment",
+      "identity_verified_from": "binary AndroidManifest.xml"
+    },
+    {
+      "kind": "private_hc",
+      "sha256": "e109884b00889e85eb850b655b5f5f40b1a8be33f3cde860f000b6e5c0abdddd",
+      "size": 36840,
+      "origin": "user attachment test.hc",
+      "declared_verApp": 565,
+      "format_revision": 57
+    }
+  ],
+  "tooling": [
+    {
+      "path": "analysis/xyz.easypro.httpcustom/564/tools/inspect_apkm.py",
+      "version": 1,
+      "sha256": "05bdf9f966b836c1326ef7d02d39fc7d27b14668a2aee5cbf8fea3c85190305b"
+    },
+    {
+      "path": "analysis/xyz.easypro.httpcustom/564/tools/make_vectors.py",
+      "version": 1,
+      "sha256": "242b5284c5cacc8f39234a75d40f482c2f2094eb9fced8fe78b014fd4de9e478"
+    },
+    {
+      "path": "analysis/xyz.easypro.httpcustom/564/tools/native_inventory.py",
+      "version": 1,
+      "sha256": "6bb21586ef01153875f41e2a74f02c12540bb8f95487eef8afea837ca18da8e3"
+    },
+    {
+      "path": "analysis/xyz.easypro.httpcustom/564/tools/native_oracle.py",
+      "version": 1,
+      "sha256": "f1e3efe2c84ce836fadd7ee82555d64f952e4049c858a67b47e217f7baa3936e"
+    },
+    {
+      "path": "analysis/xyz.easypro.httpcustom/564/tools/probe_layers.py",
+      "version": 1,
+      "sha256": "16df7505fec0073ede38333796f7e1ec5d17e8e796da94f5d8c3e1323da8ac13"
+    },
+    {
+      "path": "analysis/xyz.easypro.httpcustom/564/tools/verify_private.py",
+      "version": 1,
+      "sha256": "3fcd01d85dc941f6b2a541034f9d2e1e697717267f982e153efab9e77e8904b4"
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "Mbed TLS",
+      "version": "3.6.7",
+      "source": "https://github.com/Mbed-TLS/mbedtls/releases/tag/mbedtls-3.6.7",
+      "sha256": "a7e8bcbec0e6f761b4af24f25677626b35f762f68eef79c08677a363212d11f6",
+      "license": "Apache-2.0 OR GPL-2.0-or-later"
+    },
+    {
+      "name": "Argon2 reference",
+      "version": "20190702",
+      "commit": "62358ba2123abd17fccf2a108a301d4b52c01a7c",
+      "source": "https://github.com/P-H-C/phc-winner-argon2",
+      "license": "Apache-2.0 OR CC0-1.0"
+    },
+    {
+      "name": "nlohmann JSON",
+      "version": "3.11.3",
+      "source": "https://github.com/nlohmann/json",
+      "sha256": "9bea4c8066ef4a1c206b2be5a36302f8926f7fdc6087af5d20b417d0cf103ea6",
+      "license": "MIT"
+    },
+    {
+      "name": "PyCryptodome",
+      "version": "3.23.0",
+      "source": "https://pypi.org/project/pycryptodome/3.23.0/",
+      "license": "BSD-2-Clause AND public-domain"
+    },
+    {
+      "name": "argon2-cffi",
+      "version": "25.1.0",
+      "source": "https://pypi.org/project/argon2-cffi/25.1.0/",
+      "license": "MIT"
+    },
+    {
+      "name": "msgpack",
+      "version": "1.1.1",
+      "source": "https://pypi.org/project/msgpack/1.1.1/",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "zlib",
+      "version": "1.3.2",
+      "source": "https://zlib.net/",
+      "license": "Zlib"
+    },
+    {
+      "name": "libsodium",
+      "version": "1.0.18",
+      "source": "https://github.com/jedisct1/libsodium/tree/1.0.18",
+      "license": "ISC",
+      "purpose": "host-only independent AEAD fixture generation",
+      "binary_sha256": "85e2e494494f4f50c4b6d2b4ae90e885da1bfdefd52c4cc5767fd10abff62505"
+    },
+    {
+      "name": "JADX",
+      "version": "1.5.6",
+      "source": "https://github.com/skylot/jadx/releases/tag/v1.5.6",
+      "license": "Apache-2.0",
+      "purpose": "host-only static DEX inspection"
+    },
+    {
+      "name": "capstone",
+      "version": "5.0.7",
+      "source": "https://github.com/capstone-engine/capstone",
+      "license_review": "NEEDS_REVIEW",
+      "purpose": "host-only ARM64 instruction analysis"
+    },
+    {
+      "name": "pyelftools",
+      "version": "0.32",
+      "source": "https://github.com/eliben/pyelftools",
+      "license": "public-domain",
+      "purpose": "host-only ELF mapping"
+    },
+    {
+      "name": "unicorn",
+      "version": "2.1.4",
+      "source": "https://github.com/unicorn-engine/unicorn/releases/tag/2.1.4",
+      "binding_license_metadata": "BSD",
+      "core_license_review": "NEEDS_REVIEW",
+      "purpose": "host-only bounded reviewed JNI string-codec oracle"
+    }
+  ],
+  "dependency_lockfile": "analysis/xyz.easypro.httpcustom/564/dependencies.lock.json",
+  "code_paths": [
+    "decoders/Python/_hc_legacy57.py",
+    "decoders/Python/HTTPCUSTOM.py",
+    "decoders/Python/apps/HTTP_Custom/file_decoder.py",
+    "cloud/workers/python/hc_bridge.py",
+    "cloud/workers/python/engine.py",
+    "android/app/src/main/cpp/spdecode_http_custom_legacy.cpp",
+    "android/app/src/offlineNative/java/com/ghostdeveloper/spdecode/offline/OfflineJson.kt",
+    "android/app/src/offlineNative/java/com/ghostdeveloper/spdecode/offline/MainActivity.kt",
+    "tests/test_hc_legacy57.py",
+    "tests/test_offline_hc_native_parity.py"
+  ],
+  "evidence_refs": [
+    "analysis/xyz.easypro.httpcustom/564/ANALYSIS.md",
+    "analysis/xyz.easypro.httpcustom/564/RESULTS.md",
+    "analysis/xyz.easypro.httpcustom/564/REPRODUCE.md",
+    "analysis/xyz.easypro.httpcustom/564/generated/apkm_inventory.json",
+    "analysis/xyz.easypro.httpcustom/564/generated/native_codec_vectors.json",
+    "analysis/xyz.easypro.httpcustom/564/generated/private_sample_summary.json",
+    "analysis/xyz.easypro.httpcustom/564/generated/layer_probe.txt",
+    "analysis/xyz.easypro.httpcustom/564/tests/test_method.py",
+    "tests/golden/hc_legacy57.json"
+  ],
+  "connection_authentication": {
+    "status": "NOT_OBSERVED",
+    "scope": "local file formatting/decryption only",
+    "algorithm": null,
+    "material_provenance": "existing/supplied application local-format constants; synthetic oracle inputs",
+    "verifier_observed": null,
+    "limitations": "No VPN connection, authentication hook, account/session secret or service access was exercised. Poly1305 file integrity is distinct from HMAC connection authentication."
+  },
+  "limitations": [
+    "The original APK identity is 564; private export declares verApp 565. That field alone does not prove a separately installed APK version.",
+    "Historical field 17 remains encrypted/unrecognized. Kept verbatim and explicitly partial; not called decrypted.",
+    "JNI oracle validates ASCII synthetic local primitives, not full JVM or application startup/import.",
+    "Physical Android QA and a live VPS deployment are not performed locally.",
+    "No certification of every historical exporter or HCX4 11/n13."
+  ],
+  "network_requirements": [
+    "Dependency sources/GitHub build only; all actual decoder tests run offline without third-party VPN services."
+  ],
+  "manual_steps": [
+    "Install the persistently signed QA APK and compare the private file output, selection/copy/export and partial notice.",
+    "Review the explicit remaining field before applying the worker update to the VPS."
+  ],
+  "unresolved_questions": [
+    "What local representation/protection produced historical field 17?",
+    "Does the original writer assign verApp independently from Android versionCode? No full writer lifecycle was executed."
+  ]
+}

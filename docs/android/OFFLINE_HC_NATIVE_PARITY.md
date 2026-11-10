@@ -26,3 +26,16 @@ Integration files: `spdecode_http_custom.{h,cpp}`,
 `spdecode_http_custom_legacy.{h,cpp}`, `spdecode_offline_native.cpp`,
 `CMakeLists.txt`. Pure C++ one binary target;
 split by source files instead of packaging multiple unnecessary .so files.
+
+## Revision-57 completeness correction (2026-11-09)
+
+The supplied original APKM is 4.10.16/build 564; the private export declares
+verApp 565. Evidence and original native vectors are in
+analysis/xyz.easypro.httpcustom/564/. The earlier 17-field parity result was
+against an incomplete Python reader. The new versioned path retains 32 slots
+and all metadata, including the previously missing 1,026-byte V2Ray JSON.
+Original libsodium 64-bit-nonce AEAD tags are checked rather than using the
+IETF MAC or printable-byte heuristics. The complete suite now has 150 native
+HC cases. A remaining historical Psiphon value is explicitly preserved as
+unresolved and reported as partial in Cloud and Offline; it is not silently
+discarded or presented as decrypted. Physical-device QA remains separate.

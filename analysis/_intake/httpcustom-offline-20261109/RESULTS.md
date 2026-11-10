@@ -1,5 +1,11 @@
 # Results
 
+Completeness interpretation superseded by `analysis/xyz.easypro.httpcustom/564/`:
+the 17-field equality below was agreement with the then-incomplete server
+reader, not a full original-application comparison. Original APK research now
+retains 32 fields, recovers the missing V2Ray JSON and explicitly preserves one
+unresolved historical field. The initial UTF-8 crash correction remains valid.
+
 - VERIFIED_REAL_SAMPLE: native C++ now decodes the supplied file; complete
   JSON equality with the repository's Python server method, 17 Config fields
   and one Protections field. Before the correction: native exit 2.

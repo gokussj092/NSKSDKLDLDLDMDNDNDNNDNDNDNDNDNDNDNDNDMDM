@@ -298,6 +298,8 @@ def main(exe):
     for invalid in (b"",b"invalid","".encode()+b"\xff"*45):
         check(call(exe,invalid).returncode!=0,"invalid input accepted")
         passed+=1
+    from tests.test_hc_legacy57 import native_parity
+    passed+=native_parity(exe)
     print(f"PASS: native HCX4 and legacy Python parity / tamper checks: {passed} cases")
 
 if __name__=="__main__":

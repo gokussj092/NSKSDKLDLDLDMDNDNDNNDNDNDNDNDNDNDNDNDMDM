@@ -23,6 +23,7 @@ internal fun languageLabel(tag:String):String =
     supportedOfflineLanguages.firstOrNull{it.first==tag}?.second ?: "System"
 private val translated:Map<String,Map<String,String>> = mapOf(
 "en" to mapOf(
+    "decode_partial" to "Some fields could not be decoded; their original values are preserved.",
     "splash_subtitle" to "Configuration decoder",
     "splash_powered_by" to "Powered by Ghost Developer",
     "identity_original_help" to "This file requires the recipient's original private identity. A newly generated identity cannot open another person's file.",
@@ -107,6 +108,7 @@ private val translated:Map<String,Map<String,String>> = mapOf(
     "history_unavailable" to "Unable to access encrypted history"
 ),
 "es" to mapOf(
+    "decode_partial" to "Hay campos que no se pudieron descifrar; se conservan sus valores originales.",
     "splash_subtitle" to "Decodificador de configuraciones",
     "splash_powered_by" to "Powered by Ghost Developer",
     "identity_original_help" to "Este archivo necesita la identidad privada original del destinatario. Una identidad recién generada no puede abrir archivos creados para otra persona.",
@@ -191,6 +193,7 @@ private val translated:Map<String,Map<String,String>> = mapOf(
     "history_unavailable" to "No se pudo acceder al historial cifrado"
 ),
 "pt-BR" to mapOf(
+    "decode_partial" to "Alguns campos não puderam ser decodificados; os valores originais foram preservados.",
     "splash_subtitle" to "Decodificador de configurações",
     "splash_powered_by" to "Powered by Ghost Developer",
     "home" to "Início",
@@ -226,6 +229,7 @@ private val translated:Map<String,Map<String,String>> = mapOf(
     "identity_warning" to "Copiar ou compartilhar pode expor credenciais a outros aplicativos."
 ),
 "ar" to mapOf(
+    "decode_partial" to "تعذر فك تشفير بعض الحقول؛ تم الاحتفاظ بقيمها الأصلية.",
     "splash_subtitle" to "أداة فك ترميز الإعدادات",
     "splash_powered_by" to "Powered by Ghost Developer",
     "home" to "الرئيسية",
@@ -261,6 +265,7 @@ private val translated:Map<String,Map<String,String>> = mapOf(
     "identity_warning" to "قد يؤدي النسخ أو المشاركة إلى كشف بيانات الدخول للتطبيقات الأخرى."
 ),
 "fa" to mapOf(
+    "decode_partial" to "برخی فیلدها رمزگشایی نشدند؛ مقادیر اصلی آن‌ها حفظ شده‌اند.",
     "splash_subtitle" to "رمزگشای پیکربندی",
     "splash_powered_by" to "توسعه‌یافته توسط Ghost Developer",
     "home" to "خانه",
@@ -296,6 +301,7 @@ private val translated:Map<String,Map<String,String>> = mapOf(
     "identity_warning" to "اشتراک‌گذاری یا کپی داده اصلی می‌تواند اطلاعات ورود را در اختیار برنامه‌های دیگر بگذارد."
 ),
 "fr" to mapOf(
+    "decode_partial" to "Certains champs n’ont pas pu être décodés ; leurs valeurs originales sont conservées.",
     "splash_subtitle" to "Décodeur de configurations",
     "splash_powered_by" to "Propulsé par Ghost Developer",
     "home" to "Accueil",
@@ -331,6 +337,7 @@ private val translated:Map<String,Map<String,String>> = mapOf(
     "identity_warning" to "Partager ou copier des données originales peut révéler des identifiants à d’autres applications."
 ),
 "id" to mapOf(
+    "decode_partial" to "Beberapa kolom tidak dapat didekode; nilai aslinya dipertahankan.",
     "splash_subtitle" to "Dekoder konfigurasi",
     "splash_powered_by" to "Didukung oleh Ghost Developer",
     "home" to "Beranda",
@@ -366,6 +373,7 @@ private val translated:Map<String,Map<String,String>> = mapOf(
     "identity_warning" to "Membagikan atau menyalin data asli dapat membocorkan kredensial ke aplikasi lain."
 ),
 "ru" to mapOf(
+    "decode_partial" to "Некоторые поля не удалось расшифровать; исходные значения сохранены.",
     "splash_subtitle" to "Декодер конфигураций",
     "splash_powered_by" to "Разработано Ghost Developer",
     "home" to "Главная",
@@ -401,6 +409,7 @@ private val translated:Map<String,Map<String,String>> = mapOf(
     "identity_warning" to "Передача или копирование исходных данных может раскрыть учётные данные другим приложениям."
 ),
 "de" to mapOf(
+    "decode_partial" to "Einige Felder konnten nicht entschlüsselt werden; die Originalwerte bleiben erhalten.",
     "splash_subtitle" to "Konfigurationsdecoder",
     "splash_powered_by" to "Bereitgestellt von Ghost Developer",
     "home" to "Startseite",
@@ -436,6 +445,7 @@ private val translated:Map<String,Map<String,String>> = mapOf(
     "identity_warning" to "Das Teilen oder Kopieren von Originaldaten kann Zugangsdaten an andere Apps weitergeben."
 ),
 "tr" to mapOf(
+    "decode_partial" to "Bazı alanların şifresi çözülemedi; özgün değerleri korundu.",
     "splash_subtitle" to "Yapılandırma çözücü",
     "splash_powered_by" to "Ghost Developer tarafından",
     "home" to "Ana sayfa",
@@ -471,6 +481,7 @@ private val translated:Map<String,Map<String,String>> = mapOf(
     "identity_warning" to "Orijinal verileri paylaşmak veya kopyalamak kimlik bilgilerini diğer uygulamalara açığa çıkarabilir."
 ),
 "vi" to mapOf(
+    "decode_partial" to "Một số trường không thể giải mã; giá trị gốc được giữ nguyên.",
     "splash_subtitle" to "Bộ giải mã cấu hình",
     "splash_powered_by" to "Phát triển bởi Ghost Developer",
     "home" to "Trang chủ",
@@ -506,6 +517,7 @@ private val translated:Map<String,Map<String,String>> = mapOf(
     "identity_warning" to "Chia sẻ hoặc sao chép dữ liệu gốc có thể lộ thông tin bí mật cho ứng dụng khác."
 ),
 "hi" to mapOf(
+    "decode_partial" to "कुछ फ़ील्ड डिक्रिप्ट नहीं हो सकीं; उनके मूल मान सुरक्षित रखे गए हैं।",
     "splash_subtitle" to "कॉन्फ़िगरेशन डिकोडर",
     "splash_powered_by" to "Ghost Developer द्वारा निर्मित",
     "home" to "होम",
@@ -541,6 +553,7 @@ private val translated:Map<String,Map<String,String>> = mapOf(
     "identity_warning" to "मूल डेटा साझा या कॉपी करने से दूसरे ऐप्स को क्रेडेंशियल दिख सकते हैं।"
 ),
 "ja" to mapOf(
+    "decode_partial" to "一部のフィールドを復号できなかったため、元の値を保持しています。",
     "splash_subtitle" to "設定デコーダー",
     "splash_powered_by" to "Ghost Developer 提供",
     "home" to "ホーム",
@@ -576,6 +589,7 @@ private val translated:Map<String,Map<String,String>> = mapOf(
     "identity_warning" to "元データの共有やコピーで認証情報が他のアプリに漏れるおそれがあります。"
 ),
 "it" to mapOf(
+    "decode_partial" to "Alcuni campi non sono stati decodificati; i valori originali sono conservati.",
     "splash_subtitle" to "Decodificatore di configurazioni",
     "splash_powered_by" to "Sviluppato da Ghost Developer",
     "home" to "Home",

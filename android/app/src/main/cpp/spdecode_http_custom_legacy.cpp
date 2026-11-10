@@ -2,6 +2,7 @@
 #include "spdecode_hc_unicode.h"
 #include <mbedtls/aes.h>
 #include <mbedtls/base64.h>
+#include <mbedtls/poly1305.h>
 #include <nlohmann/json.hpp>
 #include <algorithm>
 #include <array>
@@ -118,7 +119,7 @@ void q(std::array<uint32_t,16>& s,int a,int b,int c,int d){
     s[a]+=s[b];s[d]=rotl(s[d]^s[a],8);
     s[c]+=s[d];s[b]=rotl(s[b]^s[c],7);
 }
-Bytes chaCha8(const Bytes& input,const Bytes& key,const Bytes& nonce){
+Bytes chaCha8(const Bytes& input,const Bytes& key,const Bytes& nonce,uint64_t initialCounter=1){
     if(key.size()!=32||nonce.size()!=8||input.size()>kLegacyInputMax)
         throw std::runtime_error("BAD_CHACHA");
     std::array<uint32_t,16> s{};
@@ -126,7 +127,7 @@ Bytes chaCha8(const Bytes& input,const Bytes& key,const Bytes& nonce){
     for(int i=0;i<8;i++)s[i+4]=le(key.data()+i*4);
     s[14]=le(nonce.data());s[15]=le(nonce.data()+4);
     Bytes out(input.size());
-    uint64_t counter=1;
+    uint64_t counter=initialCounter;
     for(size_t offset=0;offset<input.size();offset+=64){
         s[12]=static_cast<uint32_t>(counter);
         s[13]=static_cast<uint32_t>(counter>>32);
@@ -357,12 +358,119 @@ std::string credentials(const std::string& input,bool ssh){
     const auto user=z3a(username),pw=z3a(password);
     return (user.empty()?username:user)+":"+(pw.empty()?password:pw);
 }
+struct Legacy57Error:std::runtime_error {using std::runtime_error::runtime_error;};
+Bytes hex57(const std::string& input){
+    if(input.size()%2||!std::all_of(input.begin(),input.end(),
+        [](unsigned char c){return hexNibble(c)>=0;}))throw Legacy57Error("HC_INVALID_HEX");
+    return hexLoose(input);
+}
+Bytes open57(const Bytes& sealed,const Bytes& key,const Bytes& nonce){
+    if(sealed.size()<16)throw Legacy57Error("AUTH_FAILED");
+    Bytes cipher(sealed.begin(),sealed.end()-16);
+    const auto otk=chaCha8(Bytes(32,0),key,nonce,0);
+    // Original libsodium 64-bit-nonce MAC: aad || len(aad) || c || len(c).
+    // It has no IETF 16-byte alignment padding and must verify before decoding.
+    Bytes message(8,0);message.insert(message.end(),cipher.begin(),cipher.end());
+    const auto n=static_cast<uint64_t>(cipher.size());
+    for(int i=0;i<8;i++)message.push_back(static_cast<unsigned char>(n>>(i*8)));
+    std::array<unsigned char,16> tag{};
+    if(mbedtls_poly1305_mac(otk.data(),message.data(),message.size(),tag.data())!=0)
+        throw Legacy57Error("HC_LEGACY57_MAC_FAILED");
+    unsigned diff=0;
+    for(size_t i=0;i<tag.size();i++)diff|=tag[i]^sealed[cipher.size()+i];
+    if(diff)throw Legacy57Error("AUTH_FAILED");
+    return chaCha8(cipher,key,nonce);
+}
+bool readable57(const std::string& input){
+    if(input.empty())return false;
+    for(size_t at=0;at<input.size();){
+        uint32_t cp=0;
+        if(!codepoint(input,at,cp)||
+           !(hcunicode::contains(hcunicode::printableRanges,cp)||cp==9||cp==10||cp==13))return false;
+    }
+    return true;
+}
+bool json57(const std::string& input){
+    const auto parsed=json::parse(input,nullptr,false);
+    return parsed.is_object()||parsed.is_array();
+}
+std::string layers57(const std::string& input,bool jsonRequired,bool doubleWrapped){
+    static constexpr std::array<unsigned char,20> export565={{
+        237,236,235,234,233,232,231,230,229,228,213,212,211,210,209,208,207,206,205,204}};
+    static constexpr std::array<unsigned char,20> native4={{
+        237,236,235,234,233,232,231,230,229,228,5,4,3,2,1,0,255,254,253,252}};
+    // Select by the observed exporter version, never by plausible plaintext.
+    const auto& key=doubleWrapped?export565:native4;
+    try{
+        auto raw=b64(input);
+        for(size_t j=0;j<raw.size();j++)raw[j]^=key[j%20];
+        if(doubleWrapped)raw=b64(str(raw));
+        const auto text=str(raw);
+        if(jsonRequired?json57(text):readable57(text))return text;
+    }catch(const std::exception&){}
+    if(!jsonRequired||json57(input))return input;
+    throw Legacy57Error("HC_LEGACY57_UNSUPPORTED_FIELD");
+}
+json decode57(const json& outer,const std::string& outerHex){
+    const auto verified=open57(hex57(outerHex),hexLoose(keys[5]),nonceStatic());
+    const auto authenticated=json::parse(verified.begin(),verified.end());
+    if(authenticated!=outer)throw Legacy57Error("AUTH_FAILED");
+    const auto& cfg=outer.at("cfg");
+    if(!outer.contains("verCfg")||!outer["verCfg"].is_number_integer()||outer["verCfg"]!=57||
+       !cfg.contains("verApp")||!cfg["verApp"].is_number_integer()||
+       (cfg["verApp"]!=564&&cfg["verApp"]!=565))
+        throw Legacy57Error("HC_UNSUPPORTED_SCHEMA");
+    const bool doubleWrapped=cfg.at("verApp").get<int>()==565;
+    const auto opened=open57(hex57(safeValue(cfg,"content")),hexLoose(keys[1]),nonceStatic());
+    const auto sections=split(str(opened),"[splitConfig]");
+    if(sections.size()!=32)throw Legacy57Error("HC_LEGACY57_UNSUPPORTED_LAYOUT");
+    const auto h=safeValue(cfg,"b"),area=safeValue(cfg,"f");
+    const auto material=!h.empty()&&area.empty()?h+h:h+area;
+    auto nonce=nonceStatic();
+    for(size_t i=0;i<std::min<size_t>(8,material.size());i++)nonce[i]=static_cast<unsigned char>(material[i]);
+    json config=json::object(),unresolved=json::array();
+    for(size_t i=0;i<sections.size();i++){
+        const auto& token=sections[i];auto value=token;
+        const auto label=i<32?labels[i]:"field_"+std::to_string(i);
+        if(token.size()>=32&&token.size()%2==0&&isHex(token)){
+            bool success=false;Bytes fieldPlain;
+            for(const auto* key:keys){
+                try{fieldPlain=open57(hex57(token),hexLoose(key),nonce);success=true;break;}
+                catch(const Legacy57Error&){}
+            }
+            if(success){
+                value=str(fieldPlain);
+                try{(void)json(value).dump();}
+                catch(...){throw Legacy57Error("HC_INVALID_UTF8");}
+                if(!value.empty())value=layers57(value,i==26,doubleWrapped);
+            }else{
+                const bool sealedField=i==0||i==7||i==10||i==11||i==12||i==17||i==26||i==29||i==30||i==31;
+                if(sealedField){
+                    if(i!=17)throw Legacy57Error("AUTH_FAILED");
+                    unresolved.push_back({{"index",i},{"field",label},{"status","encrypted_unresolved"}});
+                }
+            }
+        }else if(!token.empty()&&(i==0||i==7||i==10||i==11||i==12||i==26||i==29||i==30||i==31)){
+            value=layers57(token,i==26,doubleWrapped);
+        }
+        if(i==7)value=credentials(value,true);
+        else if(i==11)value=credentials(value,false);
+        config[label]=value;
+    }
+    json protections=json::object();
+    if(!h.empty())protections["hwid"]=cfg["b"];
+    if(!area.empty())protections["area"]=cfg["f"];
+    auto envelope=outer;envelope.erase("cfg");
+    auto metadata=cfg;metadata.erase("content");
+    return {{"Protections",protections},{"Config",config},
+        {"Metadata",{{"envelope",envelope},{"config",metadata}}},{"UnresolvedFields",unresolved}};
+}
 bool decodeCarrier(const Bytes& bytes,json& result){
     const Bytes xorKey=hexLoose("e382e4b8adc386f09f9293");
     Bytes source=bytes;
     // Original bot treats binary as UTF-8 followed by Latin1. The safe
-    // decoder tries the logical original first, then one UTF-8/Latin1 pass.
-    for(int pass=0;pass<2;pass++){
+    // Try the same bounded UTF-8/Latin-1 carriers as the server reference.
+    for(int pass=0;pass<6;pass++){
         Bytes xorData(source.size());
         for(size_t i=0;i<source.size();i++)
             xorData[i]=static_cast<unsigned char>(source[i]^xorKey[i%xorKey.size()]);
@@ -372,6 +480,12 @@ bool decodeCarrier(const Bytes& bytes,json& result){
             if(obj.is_object()){
                 json cfg=obj.value("cfg",json::object());
                 bool newFormat=cfg.is_object()&&cfg.contains("content");
+                const bool revision57=obj.contains("verCfg")&&obj["verCfg"].is_number_integer()&&obj["verCfg"]==57;
+                const bool knownBuild=cfg.is_object()&&cfg.contains("verApp")&&cfg["verApp"].is_number_integer()&&
+                    (cfg["verApp"]==564||cfg["verApp"]==565);
+                if(newFormat&&(revision57||knownBuild)){
+                    result=decode57(obj,str(xorData));return true;
+                }
                 json protections=json::object();
                 std::string cipher,sep;
                 std::string h,pa,pr,ar;
@@ -467,7 +581,8 @@ bool decodeLegacyHttpCustom(const std::vector<unsigned char>& raw,std::string& r
             result=decoded.dump(2,' ',false,json::error_handler_t::strict)+"\n";
             return true;
         }
-    }catch(...){}
+    }catch(const Legacy57Error&){throw;}
+    catch(...){}
     return false;
 }
 } // namespace spdecode::offline

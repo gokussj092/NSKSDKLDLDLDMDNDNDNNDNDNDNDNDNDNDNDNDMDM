@@ -378,6 +378,7 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
             structured = json.loads(raw_text)
         except ValueError:
             pass
+        hc_unresolved = suffix == "hc" and isinstance(structured, dict) and bool(structured.get("UnresolvedFields"))
         result = {
             "apiVersion": "v1",
             "status": "success",
@@ -391,8 +392,8 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
             # Keep output including trailing newline; no truncation or masking.
             "rawText": raw_text,
             "structuredJson": structured,
-            "isPartial": False,
-            "warnings": [],
+            "isPartial": hc_unresolved,
+            "warnings": ["HC_UNRESOLVED_FIELDS"] if hc_unresolved else [],
         }
         if compatible_export is not None:
             from exports.job import prepare

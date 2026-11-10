@@ -257,6 +257,13 @@ class HCDecryptor:
 
     @classmethod
     def execute(cls, file_bytes: bytes) -> Optional[str]:
+        if __package__:
+            from ._hc_legacy57 import decode as decode_legacy57
+        else:
+            from _hc_legacy57 import decode as decode_legacy57
+        complete=decode_legacy57(file_bytes)
+        if complete is not None:
+            return _format_top_level_json(complete)
         if not file_bytes or not (hex_payload := cls._extract_initial_payload(file_bytes, "e382e4b8adc386f09f9293")):
             return None
 
@@ -369,6 +376,13 @@ def run(file_bytes: bytes) -> Optional[str]:
         pass
     except ModernHCError as exc:
         raise ValueError("HTTP Custom HCCFG: " + str(exc)) from exc
+    if __package__:
+        from ._hc_legacy57 import decode as decode_legacy57
+    else:
+        from _hc_legacy57 import decode as decode_legacy57
+    complete=decode_legacy57(file_bytes)
+    if complete is not None:
+        return json.dumps(complete,indent=2,ensure_ascii=False)
     legacy = HCDecryptor.execute(file_bytes)
     if legacy is not None:
         return legacy

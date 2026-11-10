@@ -138,7 +138,9 @@ class MainActivity : ComponentActivity() {
                 dismissPrompt={ui.pendingPrompt=null},
                 selectHistory={item->
                     ui.result=OfflineJson.format(item.json);ui.fileName=item.filename
-                    ui.extension=item.extension;ui.tab=0;ui.message=null
+                    ui.extension=item.extension;ui.tab=0
+                    ui.message=if(item.extension=="hc"&&OfflineJson.hasUnresolvedFields(ui.result.orEmpty()))
+                        txt("decode_partial",ui.language) else null
                 },
                 deleteHistory={item->deleteHistory(item)},
                 clearHistory={clearHistory()},
@@ -348,7 +350,8 @@ class MainActivity : ComponentActivity() {
                     ui.fileName=name
                     ui.extension=suffix
                     ui.tab=0
-                    ui.message=txt("decode_success",ui.language)
+                    val partial=suffix=="hc"&&OfflineJson.hasUnresolvedFields(json)
+                    ui.message=txt(if(partial)"decode_partial" else "decode_success",ui.language)
                     val record=OfflineRecord(UUID.randomUUID().toString(),name,suffix,
                         json,System.currentTimeMillis())
                     Thread {

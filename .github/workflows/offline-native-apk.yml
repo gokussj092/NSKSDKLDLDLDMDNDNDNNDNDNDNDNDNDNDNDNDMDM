@@ -13,6 +13,12 @@ on:
       - android/app/src/main/cpp/spdecode_http_custom_legacy.cpp
       - android/app/src/main/cpp/spdecode_http_custom_legacy.h
       - android/app/src/main/cpp/spdecode_hc_unicode.h
+      - decoders/Python/_hc_legacy57.py
+      - decoders/Python/HTTPCUSTOM.py
+      - cloud/workers/python/hc_bridge.py
+      - tests/test_hc_legacy57.py
+      - tests/golden/hc_legacy57.json
+      - analysis/xyz.easypro.httpcustom/564/generated/native_codec_vectors.json
       - scripts/build_offline_npv_tables.py
       - android/app/src/main/cpp/spdecode_npv_text.cpp
       - android/app/src/main/cpp/spdecode_npv_text.h
@@ -80,6 +86,8 @@ jobs:
           python3 -m venv /tmp/spdecode-hc-python
           /tmp/spdecode-hc-python/bin/python -m pip install --disable-pip-version-check pycryptodome==3.23.0 argon2-cffi==25.1.0 msgpack==1.1.1
           /tmp/spdecode-hc-python/bin/python tests/test_offline_hc_native_parity.py /tmp/spdecode-hc-native
+      - name: Verify legacy HTTP Custom complete server and CLI outputs
+        run: /tmp/spdecode-hc-python/bin/python -m unittest tests.test_hc_legacy57 -v
   ehi-cpp-parity:
     name: HTTP Injector C++ differential fixture verification
     runs-on: ubuntu-latest
@@ -338,6 +346,7 @@ jobs:
             echo 'Signing: permanent GitHub Secrets keystore, verified V1/V2/V3'
             echo "Certificate SHA-256: $(cat "$RUNNER_TEMP/expected-offline-signer-sha256.txt")"
             echo 'HCX4 schema b11/n13 remains unsupported; Android physical QA pending'
+            echo 'Revision 57: 32 fields retained and V2Ray JSON recovered; unresolved historical field 17 is preserved and reported as partial'
           } > dist/SIGNATURE_VERIFICATION.txt
           echo 'Native Offline QA. Legacy HTTP Custom fixes and Hat Tunnel profilev5 included; HTTP Injector, Dark Tunnel, NPV included. Physical-device testing pending. Only the permanently signed Release APK is distributed.' > dist/BUILD_INFO.txt
       - uses: actions/upload-artifact@v4
