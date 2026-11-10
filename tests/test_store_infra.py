@@ -51,6 +51,18 @@ class StoreConfigurationTests(unittest.TestCase):
         self.assertEqual(ctl.count('compose exec -T shop-db sh -s < "$REPO/cloud/accounts/shop-db-init.sh"'),2)
         self.assertIn('cloud/accounts/shop-db-init.sh',ctl)
 
+    def test_safe_cleanup_runner_limits_scope_and_has_disabled_default(self):
+        runner=(ROOT/'cloud/infra/vps/cleanup-runner.py').read_text()
+        timer=(ROOT/'cloud/infra/vps/spdecode-safe-cleanup.timer').read_text()
+        web=(ROOT/'cloud/web/app/admin/admin-cleanup.jsx').read_text()
+        self.assertIn("['docker','builder','prune','--force','--filter'",runner)
+        self.assertIn("CLEANUP_DISABLED",runner)
+        self.assertIn("other_running_containers()",runner)
+        self.assertNotIn("docker volume prune",runner)
+        self.assertNotIn("docker system prune",runner)
+        self.assertIn('OnUnitActiveSec=15min',timer)
+        self.assertIn('spdecode cleanup install-timer',web)
+
     def test_rejects_unsafe_permissions_duplicates_and_symlinks(self):
         with tempfile.TemporaryDirectory()as folder:
             path=Path(folder)/'cloud.env';path.write_text('');path.chmod(0o644)
