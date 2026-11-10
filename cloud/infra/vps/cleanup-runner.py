@@ -32,8 +32,8 @@ def policy():
     value=query(QUERY)
     if not value:raise RuntimeError('CLEANUP_POLICY_MISSING')
     parsed=json.loads(value)
-    if not isinstance(parsed,dict) or type(parsed.get('enabled')) is not bool or
-       type(parsed.get('requested')) is not bool or parsed.get('retentionHours') not in AGES:
+    if not (isinstance(parsed,dict) and type(parsed.get('enabled')) is bool and
+            type(parsed.get('requested')) is bool and parsed.get('retentionHours') in AGES):
         raise RuntimeError('CLEANUP_POLICY_INVALID')
     return parsed
 
