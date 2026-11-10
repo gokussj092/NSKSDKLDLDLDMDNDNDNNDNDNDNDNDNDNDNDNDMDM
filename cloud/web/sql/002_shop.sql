@@ -20,6 +20,13 @@ INSERT INTO spdecode_shop.products(id,settings) VALUES
  ('offline-3','{"id":"offline-3","enabled":false,"prices":{"USD":499},"maxDevices":3,"quota":null,"days":null}'),
  ('api-ip','{"id":"api-ip","enabled":false,"prices":{},"maxDevices":null,"quota":1000,"days":30}')
  ON CONFLICT DO NOTHING;
+-- Add the optional analysis-credit product without modifying existing prices.
+ALTER TABLE spdecode_shop.products DROP CONSTRAINT IF EXISTS products_id_check;
+ALTER TABLE spdecode_shop.products ADD CONSTRAINT products_id_check
+ CHECK(id IN ('offline-3','api-ip','analysis-credits'));
+INSERT INTO spdecode_shop.products(id,settings) VALUES
+ ('analysis-credits','{"id":"analysis-credits","enabled":false,"prices":{},"bundles":{"1c":{"USD":399},"5c":{"USD":1795},"10c":{"USD":3290},"25c":{"USD":7475},"50c":{"USD":13450},"100c":{"USD":23900}}}')
+ ON CONFLICT DO NOTHING;
 CREATE TABLE IF NOT EXISTS spdecode_shop.settings (
  id text PRIMARY KEY, value jsonb NOT NULL, updated_at timestamptz NOT NULL DEFAULT now()
 );
@@ -63,4 +70,22 @@ CREATE TABLE IF NOT EXISTS spdecode_shop.usage_reservations (
  period date NOT NULL, state text NOT NULL CHECK(state IN ('held','completed','released')),
  created_at timestamptz NOT NULL DEFAULT now()
 );
+-- Immutable credit movements: grants/reversals come only from verified payment
+-- events. Debits are recorded only after successful eligible analyses.
+CREATE TABLE IF NOT EXISTS spdecode_shop.credit_ledger (
+ id uuid PRIMARY KEY,account_id text NOT NULL REFERENCES shop_user(id) ON DELETE CASCADE,
+ order_id uuid REFERENCES spdecode_shop.orders(id),job_id uuid,
+ movement_kind text NOT NULL CHECK(movement_kind IN ('grant','refund','spend')),
+ delta integer NOT NULL CHECK(delta<>0 AND abs(delta)<=1000),
+ payment_live boolean NOT NULL,created_at timestamptz NOT NULL DEFAULT now(),
+ UNIQUE(order_id,movement_kind),UNIQUE(job_id,movement_kind)
+);
+CREATE INDEX IF NOT EXISTS credit_ledger_account ON spdecode_shop.credit_ledger(account_id,payment_live,created_at DESC);
+CREATE TABLE IF NOT EXISTS spdecode_shop.credit_reservations (
+ id uuid PRIMARY KEY,account_id text NOT NULL REFERENCES shop_user(id) ON DELETE CASCADE,
+ job_id uuid NOT NULL UNIQUE,payment_live boolean NOT NULL,
+ state text NOT NULL CHECK(state IN ('held','completed','released')),
+ created_at timestamptz NOT NULL DEFAULT now(),updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS credit_reserved_account ON spdecode_shop.credit_reservations(account_id,payment_live,state);
 REVOKE ALL ON ALL TABLES IN SCHEMA spdecode_shop FROM PUBLIC;
