@@ -9,12 +9,15 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.SystemClock
 import android.os.PersistableBundle
 import android.provider.OpenableColumns
 import android.view.View
-import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.mutableStateOf
 import androidx.activity.result.contract.ActivityResultContracts
 import org.json.JSONArray
 import org.json.JSONObject
@@ -31,6 +34,7 @@ import java.util.UUID
  */
 class MainActivity : ComponentActivity() {
     private val ui=OfflineUiState()
+    private val showBrandedSplash=mutableStateOf(true)
     private lateinit var storage:OfflineSecureStore
     private val settings by lazy { getSharedPreferences("offline-ui-v1",MODE_PRIVATE) }
     private var pendingFile:Uri?=null
@@ -95,8 +99,9 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState:Bundle?) {
+        val splashStarted=SystemClock.elapsedRealtime()
         super.onCreate(savedInstanceState)
-        window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        // Screen capture and recording are intentionally unrestricted in Offline.
         storage=OfflineSecureStore(applicationContext)
         ui.theme=settings.getString("theme","amoled")?.takeIf {
             it in setOf("amoled","dark","light")
@@ -106,7 +111,8 @@ class MainActivity : ComponentActivity() {
         }?:"system"
         setBars()
         setContent {
-            OfflineScreen(ui,OfflineActions(
+            if(showBrandedSplash.value) OfflineSplashScreen(ui.language)
+            else OfflineScreen(ui,OfflineActions(
                 importFile={importer.launch(arrayOf("*/*"))},
                 copyResult={ui.result?.let{copy(it)}},
                 exportResult={
@@ -164,6 +170,10 @@ class MainActivity : ComponentActivity() {
                 },
             ))
         }
+        // Match the online startup: initialize stored history behind a branded
+        // splash, show it for a minimum 1.6 s and never block longer than 5 s.
+        val splashHandler=Handler(Looper.getMainLooper())
+        splashHandler.postDelayed({showBrandedSplash.value=false},5_000L)
         Thread {
             val records=runCatching{storage.load()}
             val identity=runCatching{storage.readIdentity()}
@@ -174,6 +184,9 @@ class MainActivity : ComponentActivity() {
                 identity.onSuccess{ui.identity=it}.onFailure{
                     ui.message=txt("identity_invalid",ui.language)
                 }
+                val remaining=(1_600L-(SystemClock.elapsedRealtime()-splashStarted))
+                    .coerceAtLeast(0L)
+                splashHandler.postDelayed({showBrandedSplash.value=false},remaining)
             }
         }.start()
         if(savedInstanceState==null)handleExternalIntent(intent)
