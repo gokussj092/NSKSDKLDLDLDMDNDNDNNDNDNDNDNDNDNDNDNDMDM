@@ -54,6 +54,7 @@ function ProfileContent({data,refresh}){
   try{await shopFetch('/api/account/profile',{name,username,bio,...(avatar===undefined?{}:{avatarData:avatar})},'PATCH');await refresh();await refreshAccount();setAvatar(undefined);setMessage(es?'Perfil actualizado.':'Profile updated.');}
   catch(e){setError(errorMessage(e.message,lang));}finally{setSaving(false);}
  }
+ function exportData(){const payload=JSON.stringify(data,null,2);const url=URL.createObjectURL(new Blob([payload],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='spdecode-personal-data.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
  async function deleteAccount(){
   setSaving(true);setError('');try{const result=await authClient.deleteUser({callbackURL:'/'});if(result.error)throw Error(result.error.code);window.location.assign('/');}
   catch(e){setError(errorMessage(e.message,lang));setSaving(false);}
@@ -67,7 +68,7 @@ function ProfileContent({data,refresh}){
     <button className="sp-shop-button" disabled={saving}>{saving?'…':es?'Guardar perfil':'Save profile'}</button>
    </form></div></section>
    <section className="sp-profile-shortcuts"><h2>{es?'Accesos rápidos':'Quick links'}</h2><div><Link href="/orders">{es?'Mis compras':'My purchases'}<span>→</span></Link><Link href="/receipts">{es?'Mis recibos':'My receipts'}<span>→</span></Link><Link href="/products">{es?'Mis productos':'My products'}<span>→</span></Link></div></section>
-   <section className="sp-profile-danger"><h2>{es?'Privacidad y cuenta':'Privacy and account'}</h2><p>{es?'Puedes solicitar la eliminación de tu cuenta. Se revocarán tus accesos activos y se conservarán únicamente los registros exigidos por obligaciones legales.':'You can request account deletion. Active access will be revoked and only legally required records retained.'}</p><div><Link href="/privacy">{es?'Ver privacidad':'Privacy policy'}</Link><button className="sp-text-button danger" onClick={()=>setRemoving(!removing)}>{es?'Eliminar cuenta':'Delete account'}</button></div>
+   <section className="sp-profile-danger"><h2>{es?'Privacidad y cuenta':'Privacy and account'}</h2><p>{es?'Puedes solicitar la eliminación de tu cuenta. Se revocarán tus accesos activos y se conservarán únicamente los registros exigidos por obligaciones legales.':'You can request account deletion. Active access will be revoked and only legally required records retained.'}</p><div><Link href="/privacy">{es?'Ver privacidad':'Privacy policy'}</Link><button type="button" className="sp-text-button" onClick={exportData}>{es?'Descargar mis datos':'Download my data'}</button><button className="sp-text-button danger" onClick={()=>setRemoving(!removing)}>{es?'Eliminar cuenta':'Delete account'}</button></div>
     {removing&&<div className="sp-delete-confirm"><strong>{es?'¿Eliminar permanentemente tu cuenta?':'Permanently delete your account?'}</strong><p>{es?'La acción no se puede deshacer.':'This cannot be undone.'}</p><button type="button" disabled={saving} className="sp-shop-button danger" onClick={deleteAccount}>{es?'Sí, eliminar cuenta':'Yes, delete account'}</button><button type="button" className="sp-text-button" onClick={()=>setRemoving(false)}>{es?'Cancelar':'Cancel'}</button></div>}
    </section>
  </div>;
