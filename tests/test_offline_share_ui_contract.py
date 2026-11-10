@@ -18,6 +18,7 @@ class OfflineImportContract(unittest.TestCase):
         cls.strings=(APP/"java/com/ghostdeveloper/spdecode/offline/OfflineText.kt").read_text()
         cls.errors=(APP/"java/com/ghostdeveloper/spdecode/offline/OfflineErrorMessages.kt").read_text()
         cls.bridge=(ROOT/"spdecode_offline_native.cpp").read_text()
+        cls.splash=(APP/"java/com/ghostdeveloper/spdecode/offline/OfflineSplashScreen.kt").read_text()
 
     def test_share_and_view_exported_activity(self):
         activity=self.manifest.find(".//activity")
@@ -55,6 +56,30 @@ class OfflineImportContract(unittest.TestCase):
                      "UNSUPPORTED_OFFLINE_FORMAT","FILE_TOO_LARGE"):
             self.assertIn(code,self.errors)
         self.assertNotIn('\" ($code)\"',self.activity)
+
+    def test_screen_recording_is_never_blocked(self):
+        # A screen recorder must see the Offline UI, including result screens.
+        for source in (APP/"java").rglob("*.kt"):
+            self.assertNotIn("FLAG_SECURE",source.read_text(),str(source))
+            self.assertNotIn("setFlags(",source.read_text(),str(source))
+        self.assertNotIn("FLAG_SECURE",ET.tostring(self.manifest).decode())
+        self.assertNotIn("private-screen",self.ui)
+
+    def test_offline_splash_matches_online_startup(self):
+        self.assertIn("if(showBrandedSplash.value) OfflineSplashScreen(ui.language)",self.activity)
+        self.assertIn("splashStarted=SystemClock.elapsedRealtime()",self.activity)
+        self.assertIn("postDelayed({showBrandedSplash.value=false}",self.activity)
+        self.assertIn("5_000L",self.activity)
+        self.assertIn("1_600L",self.activity)
+        self.assertIn("offline_launcher_foreground",self.splash)
+        self.assertIn("CircularProgressIndicator",self.splash)
+        self.assertIn('txt("splash_subtitle",language)',self.splash)
+        self.assertIn('txt("splash_powered_by",language)',self.splash)
+        for lang in ("en","es","pt-BR","ar","fa","fr","id","ru","de",
+                     "tr","vi","hi","ja","it"):
+            self.assertIn(f'"{lang}" to mapOf(',self.strings)
+        self.assertIn("Configuration decoder",self.strings)
+        self.assertIn("Powered by Ghost Developer",self.strings)
 
     def test_no_implementation_jargon_in_visible_strings(self):
         values=re.findall(r'"[^"]+" to "((?:[^"\\]|\\.)*)"',self.strings)
