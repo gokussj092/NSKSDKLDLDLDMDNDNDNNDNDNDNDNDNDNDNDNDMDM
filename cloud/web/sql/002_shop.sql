@@ -45,6 +45,9 @@ CREATE TABLE IF NOT EXISTS spdecode_shop.entitlements (
  created_at timestamptz NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS shop_entitlements_owner ON spdecode_shop.entitlements(account_id);
+-- Additive for installations that ran the staged schema before mode binding.
+ALTER TABLE spdecode_shop.orders ADD COLUMN IF NOT EXISTS payment_live boolean NOT NULL DEFAULT false;
+ALTER TABLE spdecode_shop.entitlements ADD COLUMN IF NOT EXISTS payment_live boolean NOT NULL DEFAULT false;
 CREATE TABLE IF NOT EXISTS spdecode_shop.usage (
  entitlement_id uuid REFERENCES spdecode_shop.entitlements(id), period date NOT NULL,
  accepted integer NOT NULL DEFAULT 0 CHECK(accepted>=0), PRIMARY KEY(entitlement_id,period)

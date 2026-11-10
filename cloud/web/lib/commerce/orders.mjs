@@ -12,8 +12,9 @@ export async function taxRules(db=database()){
 const digest=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
 export async function checkout(accountId,input,{db=database(),start=startPayment}={}){
   const body=validatePurchase(input);
+  const live=process.env.SPDECODE_PAYMENTS_LIVE==='true';
   if(!paymentReady(body.provider))fail('PAYMENT_METHOD_UNAVAILABLE',409);
-  const fingerprint=digest([body.product,body.provider,body.currency,body.version,body.country,body.region,body.allowedIp]);
+  const fingerprint=digest([body.product,body.provider,body.currency,body.version,body.country,body.region,body.allowedIp,live]);
   const order=await transaction(async client=>{
     const existing=(await client.query('SELECT * FROM spdecode_shop.orders WHERE account_id=$1 AND idempotency_key=$2',
       [accountId,body.idempotencyKey])).rows[0];
@@ -23,10 +24,10 @@ export async function checkout(accountId,input,{db=database(),start=startPayment
     if(!productAvailable(row.settings))fail('PRODUCT_UNAVAILABLE',409);
     const rules=await taxRules(client),quote=taxQuote(row.settings,body.currency,body.country,body.region||'',rules);
     const id=randomUUID();
-    const values=[id,accountId,body.product,{...row.settings,termsVersion:'2026-11-10'},quote,body.provider,body.idempotencyKey,fingerprint,body.allowedIp];
+    const values=[id,accountId,body.product,{...row.settings,termsVersion:'2026-11-10'},quote,body.provider,body.idempotencyKey,fingerprint,body.allowedIp,live];
     await client.query(`INSERT INTO spdecode_shop.orders
-      (id,account_id,product_id,product_snapshot,quote,provider,idempotency_key,request_digest,allowed_ip)
-      VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT(account_id,idempotency_key) DO NOTHING`,values);
+      (id,account_id,product_id,product_snapshot,quote,provider,idempotency_key,request_digest,allowed_ip,payment_live)
+      VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) ON CONFLICT(account_id,idempotency_key) DO NOTHING`,values);
     const saved=(await client.query('SELECT * FROM spdecode_shop.orders WHERE account_id=$1 AND idempotency_key=$2',
       [accountId,body.idempotencyKey])).rows[0];
     if(saved.request_digest!==fingerprint)fail('IDEMPOTENCY_CONFLICT',409);return saved;
@@ -50,6 +51,7 @@ export async function settle(provider,event,{db=database()}={}){
   return transaction(async client=>{
     const order=(await client.query('SELECT * FROM spdecode_shop.orders WHERE id=$1 FOR UPDATE',[event.orderId])).rows[0];
     if(!order||order.provider!==provider||order.provider_id!==event.providerId)fail('PAYMENT_ORDER_MISMATCH',409);
+    if(typeof event.live!=='boolean'||event.live!==order.payment_live)fail('PAYMENT_MODE_MISMATCH',409);
     if(event.type==='paid'){
       const q=order.quote;
       if(event.currency!==q.currency||!Number.isSafeInteger(event.total)||event.total<1||
@@ -70,9 +72,9 @@ export async function settle(provider,event,{db=database()}={}){
         // Serialize against account deletion. Retain accounting for a late
         // payment without recreating active access or erased connection data.
         const owner=await client.query('SELECT id FROM shop_user WHERE id=$1 FOR KEY SHARE',[order.account_id]);
-        await client.query(`INSERT INTO spdecode_shop.entitlements(id,order_id,account_id,product_id,allowed_ip,quota,days,status)
-          VALUES($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT(order_id) DO NOTHING`,
-          [randomUUID(),order.id,order.account_id,order.product_id,owner.rows.length?order.allowed_ip:null,p.quota,p.days,owner.rows.length?'active':'revoked']);
+        await client.query(`INSERT INTO spdecode_shop.entitlements(id,order_id,account_id,product_id,allowed_ip,quota,days,status,payment_live)
+          VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT(order_id) DO NOTHING`,
+          [randomUUID(),order.id,order.account_id,order.product_id,owner.rows.length?order.allowed_ip:null,p.quota,p.days,owner.rows.length?'active':'revoked',order.payment_live]);
       }
     }else{
       await client.query('UPDATE spdecode_shop.orders SET status=$2,refunded_at=now() WHERE id=$1',[order.id,event.type]);
@@ -89,6 +91,7 @@ export async function claim(accountId,id,{rotate=false,db=database()}={}){
   return transaction(async client=>{
     const item=(await client.query('SELECT * FROM spdecode_shop.entitlements WHERE id=$1 AND account_id=$2 FOR UPDATE',[id,accountId])).rows[0];
     if(!item||item.status!=='active')fail('PURCHASE_NOT_AVAILABLE',404);
+    if(item.payment_live!==(process.env.SPDECODE_PAYMENTS_LIVE==='true'))fail('PAYMENT_MODE_MISMATCH',409);
     if(item.claimed_at&&!rotate)fail('ALREADY_REVEALED',409);
     if(rotate&&item.product_id!=='api-ip')fail('ROTATION_UNAVAILABLE',409);
     const token=(item.product_id==='api-ip'?'spd_api_':'SPD-OFF-')+randomBytes(32).toString('base64url');
@@ -107,7 +110,7 @@ export async function useApiKey(token,originIp,{db=database()}={}){
   const hashed=tokenDigest(token),ip=publicIp(originIp);
   return transaction(async client=>{
     const item=(await client.query(`SELECT e.* FROM spdecode_shop.entitlements e JOIN shop_user u ON u.id=e.account_id
-      WHERE e.token_digest=$1 AND e.product_id='api-ip' AND e.status='active' FOR UPDATE OF e`,[hashed])).rows[0];
+      WHERE e.token_digest=$1 AND e.product_id='api-ip' AND e.status='active' AND e.payment_live=$2 FOR UPDATE OF e`,[hashed,process.env.SPDECODE_PAYMENTS_LIVE==='true'])).rows[0];
     if(!item||!item.expires_at||new Date(item.expires_at)<=new Date())fail('UNAUTHORIZED',401);
     if(!ip||ip!==item.allowed_ip)fail('IP_NOT_ALLOWED',403);
     await client.query(`WITH released AS (
@@ -128,7 +131,7 @@ export async function useApiKey(token,originIp,{db=database()}={}){
 export async function checkApiKey(token,originIp,{db=database()}={}){
   if(!/^spd_api_[A-Za-z0-9_-]{43}$/.test(token||''))fail('UNAUTHORIZED',401);
   const item=(await db.query(`SELECT e.id,e.allowed_ip,e.expires_at FROM spdecode_shop.entitlements e
-    JOIN shop_user u ON u.id=e.account_id WHERE e.token_digest=$1 AND e.product_id='api-ip' AND e.status='active'`,[tokenDigest(token)])).rows[0];
+    JOIN shop_user u ON u.id=e.account_id WHERE e.token_digest=$1 AND e.product_id='api-ip' AND e.status='active' AND e.payment_live=$2`,[tokenDigest(token),process.env.SPDECODE_PAYMENTS_LIVE==='true'])).rows[0];
   if(!item||!item.expires_at||new Date(item.expires_at)<=new Date())fail('UNAUTHORIZED',401);
   const ip=publicIp(originIp);if(!ip||ip!==item.allowed_ip)fail('IP_NOT_ALLOWED',403);
   return item.id;

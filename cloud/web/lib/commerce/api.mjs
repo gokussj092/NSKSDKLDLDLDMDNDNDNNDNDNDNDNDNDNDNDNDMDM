@@ -23,10 +23,10 @@ export const accountSnapshot=request=>safe(async()=>{
   if(!session)return reply({user:null,authEnabled:true});
   const user=session.user,p=await profile(user.id),db=database();
   const [orders,entitlements]=await Promise.all([
-    db.query(`SELECT id,product_id,provider,status,quote,created_at,paid_at FROM spdecode_shop.orders WHERE account_id=$1 ORDER BY created_at DESC LIMIT 50`,[user.id]),
-    db.query(`SELECT id,order_id,product_id,status,token_prefix,allowed_ip,quota,days,expires_at,claimed_at FROM spdecode_shop.entitlements WHERE account_id=$1 ORDER BY created_at DESC`,[user.id])]);
+    db.query(`SELECT id,product_id,provider,status,quote,created_at,paid_at,payment_live FROM spdecode_shop.orders WHERE account_id=$1 ORDER BY created_at DESC LIMIT 50`,[user.id]),
+    db.query(`SELECT id,order_id,product_id,status,token_prefix,allowed_ip,quota,days,expires_at,claimed_at,payment_live FROM spdecode_shop.entitlements WHERE account_id=$1 ORDER BY created_at DESC`,[user.id])]);
   const avatar=typeof user.image==='string'&&/^https:\/\/lh[3-6]\.googleusercontent\.com\//.test(user.image)?user.image:null;
-  return reply({authEnabled:true,user:{id:user.id,name:user.name,email:user.email,avatar,username:p.username,
+  return reply({authEnabled:true,live:process.env.SPDECODE_PAYMENTS_LIVE==='true',user:{id:user.id,name:user.name,email:user.email,avatar,username:p.username,
     privacyVersion:user.privacyVersion,termsVersion:user.termsVersion},
     orders:orders.rows,entitlements:entitlements.rows});
 });

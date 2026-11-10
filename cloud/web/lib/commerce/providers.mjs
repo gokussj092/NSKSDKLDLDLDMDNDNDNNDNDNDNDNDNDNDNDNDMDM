@@ -111,7 +111,7 @@ export async function paymentEvent(provider,request,raw,{fetchImpl=fetch,stripeC
       const session=await client.checkout.sessions.retrieve(event.data.object.id);
       if(session.livemode!==(process.env.SPDECODE_PAYMENTS_LIVE==='true'))fail('PAYMENT_MODE_MISMATCH',409);
       if(session.payment_status!=='paid')return null;
-      return {eventId:event.id,type:'paid',orderId:session.client_reference_id,providerId:session.id,
+      return {eventId:event.id,type:'paid',live:session.livemode,orderId:session.client_reference_id,providerId:session.id,
         currency:session.currency?.toUpperCase(),subtotal:session.amount_subtotal,total:session.amount_total,
         tax:session.total_details?.amount_tax||0,automaticTax:session.automatic_tax?.enabled===true,
         country:session.customer_details?.address?.country,region:session.customer_details?.address?.state};
@@ -119,7 +119,7 @@ export async function paymentEvent(provider,request,raw,{fetchImpl=fetch,stripeC
     const charge=event.type==='charge.refunded'?event.data.object:await client.charges.retrieve(event.data.object.charge);
     const sessions=await client.checkout.sessions.list({payment_intent:charge.payment_intent,limit:1});
     const session=sessions.data[0];if(!session)return null;
-    return {eventId:event.id,type:event.type==='charge.refunded'?'refunded':'disputed',
+    return {eventId:event.id,type:event.type==='charge.refunded'?'refunded':'disputed',live:session.livemode,
       orderId:session.client_reference_id,providerId:session.id};
   }
   if(provider==='paypal'){
@@ -148,7 +148,7 @@ export async function paymentEvent(provider,request,raw,{fetchImpl=fetch,stripeC
     const data=await paypal('/v2/checkout/orders/'+orderId,null,fetchImpl);
     const unit=data.purchase_units?.[0],capture=unit?.payments?.captures?.find(x=>x.status==='COMPLETED');
     if(event.event_type==='PAYMENT.CAPTURE.COMPLETED'&&!capture)return null;
-    return {eventId:event.id,type:event.event_type==='PAYMENT.CAPTURE.COMPLETED'?'paid':
+    return {eventId:event.id,live:process.env.SPDECODE_PAYMENTS_LIVE==='true',type:event.event_type==='PAYMENT.CAPTURE.COMPLETED'?'paid':
       event.event_type==='PAYMENT.CAPTURE.REFUNDED'?'refunded':'disputed',orderId:unit?.custom_id,
       providerId:data.id,currency:capture?.amount?.currency_code,total:capture?cents(capture.amount.value):null};
   }
@@ -161,7 +161,7 @@ export async function paymentEvent(provider,request,raw,{fetchImpl=fetch,stripeC
   // The payment ID is the final object; preference_id is not an authentication token.
   const type=data.status==='approved'&&Number(data.transaction_amount_refunded)>0?'refunded':
     ({approved:'paid',refunded:'refunded',charged_back:'disputed'})[data.status];
-  return {eventId:id+':'+type,type,
+  return {eventId:id+':'+type,type,live:data.live_mode,
     orderId:data.external_reference,providerId:String(merchantOrder.preference_id||''),paymentId:id,
     currency:data.currency_id,total:cents(Number(data.transaction_amount).toFixed(2))};
 }

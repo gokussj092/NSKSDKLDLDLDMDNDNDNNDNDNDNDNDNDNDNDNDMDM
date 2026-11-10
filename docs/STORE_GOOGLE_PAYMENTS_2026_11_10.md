@@ -137,7 +137,9 @@ Configurar en `/etc/spdecode/cloud.env`, sin enviar secretos por chat ni Git:
 URI Google: `https://spdecode.xyz/api/auth/callback/google`.
 Webhooks: `https://spdecode.xyz/api/store/webhooks/stripe`, `/paypal` y
 `/mercadopago`. Suscribir eventos de pago completado, reembolso y disputa
-admitidos por cada adaptador. No mezclar cuentas sandbox/live ni webhook IDs.
+admitidos por cada adaptador. No mezclar cuentas sandbox/live ni webhook IDs. Cada pedido y permiso queda ligado
+a su modo de pago. Las claves de prueba no autorizan la API al pasar a producción;
+la web identifica las compras sandbox y el servidor rechaza entregas entre modos.
 Aplicar cambios con `spdecode restart web`; verificar pago sandbox, repetición,
 rechazo, impuesto, reembolso y entrega antes de activar producción. Ninguna
 credencial comercial ni sesión Google real se utilizó durante el desarrollo.

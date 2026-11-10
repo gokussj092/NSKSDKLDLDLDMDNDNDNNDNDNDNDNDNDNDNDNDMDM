@@ -5,3 +5,7 @@
 ## Account/store staging, 2026-11-10
 
 The owner authorized the public Google/store implementation. Its independent scope, SQL/PSP contracts, Android drawer, optional Unity SDK and explicit deployment/credential/device limits are recorded in [the commerce dossier](../../../docs/STORE_GOOGLE_PAYMENTS_2026_11_10.md). This does not certify the older APK QA target or any third-party VPN method. Live payment flags default OFF.
+
+## Payment mode isolation review — 2026-11-10
+
+Orders and entitlements persist a sandbox/live discriminator. Verified payment events must match the order mode; key reveal, rotation and commercial API use require the current deployment mode. Switching to live mode rejects previously issued sandbox keys. Web account receipts mark test purchases. Local SQL/semantic contracts and the Next build pass (712 web tests passed, 3 skipped). Remote PostgreSQL concurrency and Android release/optional Unity compilation passed for source 9772084; the mode-isolation extension requires its own PostgreSQL CI pass. This changes commerce fulfillment only and does not alter VPN decoder algorithms, catalogs or worker outputs.

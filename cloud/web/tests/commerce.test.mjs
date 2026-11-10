@@ -68,8 +68,9 @@ test('orders use authoritative prices, provider idempotency and verified payment
  assert.equal(calls,1);assert.equal((await checkout(user,body,{db,start})).orderId,order.orderId);assert.equal(calls,1);
  assert.equal((await db.query('SELECT * FROM spdecode_shop.entitlements WHERE order_id=$1',[order.orderId])).rowCount,0);
  await assert.rejects(checkout(user,{...body,currency:'MXN'},{db,start}),/IDEMPOTENCY_CONFLICT/);
- const event={eventId:randomUUID(),type:'paid',orderId:order.orderId,providerId:'cs_test_'+order.orderId,currency:'USD',total:579};
+ const event={eventId:randomUUID(),type:'paid',live:false,orderId:order.orderId,providerId:'cs_test_'+order.orderId,currency:'USD',total:579};
  await assert.rejects(settle('stripe',{...event,total:1},{db}),/PAYMENT_AMOUNT_MISMATCH/);
+ await assert.rejects(settle('stripe',{...event,live:true},{db}),/PAYMENT_MODE_MISMATCH/);
  await settle('stripe',event,{db});await settle('stripe',event,{db});await settle('stripe',{...event,eventId:randomUUID()},{db});
  const rows=(await db.query('SELECT * FROM spdecode_shop.entitlements WHERE order_id=$1',[order.orderId])).rows;
  assert.equal(rows.length,1);
@@ -81,6 +82,10 @@ test('orders use authoritative prices, provider idempotency and verified payment
  await assert.rejects(useApiKey(key.token,'1.1.1.1',{db}),/QUOTA_EXCEEDED/);
  await releaseApiUsage(first,db);await releaseApiUsage(first,db);await useApiKey(key.token,'1.1.1.1',{db});
  await assert.rejects(useApiKey(key.token,'1.1.1.1',{db}),/QUOTA_EXCEEDED/);
+ process.env.SPDECODE_PAYMENTS_LIVE='true';
+ try{await assert.rejects(useApiKey(key.token,'1.1.1.1',{db}),/UNAUTHORIZED/);
+  await assert.rejects(claim(user,rows[0].id,{rotate:true,db}),/PAYMENT_MODE_MISMATCH/);
+ }finally{process.env.SPDECODE_PAYMENTS_LIVE='false';}
  const rotated=await claim(user,rows[0].id,{rotate:true,db});assert.notEqual(rotated.token,key.token);
  await assert.rejects(useApiKey(key.token,'1.1.1.1',{db}),/UNAUTHORIZED/);
  await settle('stripe',{...event,eventId:randomUUID(),type:'refunded'},{db});
@@ -148,7 +153,7 @@ test('PostgreSQL concurrent delivery and key claims remain unique',async t=>{
  if(!process.env.SPDECODE_SHOP_TEST_DATABASE_URL){t.skip('Full concurrency runs against PostgreSQL service in CI; PGlite serializes one connection.');return;}
  const order=await checkout(user,{product:'api-ip',provider:'stripe',currency:'USD',country:'MX',region:'BC',allowedIp:'1.1.1.1',
   version:1,idempotencyKey:randomUUID(),acceptedTerms:'2026-11-10'},{db,start:async row=>({id:'cs_race_'+row.id,url:'https://checkout.stripe.com/c/pay/'+row.id})});
- const event={type:'paid',orderId:order.orderId,providerId:'cs_race_'+order.orderId,currency:'USD',total:579};
+ const event={type:'paid',live:false,orderId:order.orderId,providerId:'cs_race_'+order.orderId,currency:'USD',total:579};
  await Promise.all(Array.from({length:8},()=>settle('stripe',{...event,eventId:randomUUID()},{db})));
  const item=(await db.query('SELECT id FROM spdecode_shop.entitlements WHERE order_id=$1',[order.orderId])).rows;
  assert.equal(item.length,1);
@@ -175,7 +180,7 @@ test('a late payment never recreates access after account deletion',async()=>{
  const order=await checkout(id,{product:'api-ip',provider:'stripe',currency:'USD',country:'MX',region:'BC',allowedIp:'1.1.1.1',
   version:1,idempotencyKey:randomUUID(),acceptedTerms:'2026-11-10'},{db,start:async row=>({id:'cs_deleted_'+row.id,url:'https://checkout.stripe.com/c/pay/'+row.id})});
  await db.query('DELETE FROM shop_user WHERE id=$1',[id]);
- await settle('stripe',{eventId:randomUUID(),type:'paid',orderId:order.orderId,providerId:'cs_deleted_'+order.orderId,currency:'USD',total:579},{db});
+ await settle('stripe',{eventId:randomUUID(),type:'paid',live:false,orderId:order.orderId,providerId:'cs_deleted_'+order.orderId,currency:'USD',total:579},{db});
  const item=(await db.query('SELECT * FROM spdecode_shop.entitlements WHERE order_id=$1',[order.orderId])).rows[0];
  assert.equal(item.status,'revoked');assert.equal(item.allowed_ip,null);
 });
