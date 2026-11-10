@@ -8,6 +8,9 @@ on:
       - cloud/compose.yaml
       - cloud/infra/vps/commerce-setup.py
       - cloud/infra/vps/spdecodectl
+      - cloud/infra/vps/cleanup-runner.py
+      - cloud/infra/vps/spdecode-safe-cleanup.service
+      - cloud/infra/vps/spdecode-safe-cleanup.timer
       - tests/test_store_infra.py
       - android/app/src/unityAds/**
       - android/app/src/main/java/com/ghostdeveloper/spdecode/AccountDrawer.kt
@@ -54,7 +57,7 @@ jobs:
       - name: Validate VPS configuration scripts
         run: |
           bash -n cloud/infra/vps/spdecodectl
-          python3 -m py_compile cloud/infra/vps/commerce-setup.py cloud/infra/vps/nginx-config.py
+          python3 -m py_compile cloud/infra/vps/commerce-setup.py cloud/infra/vps/nginx-config.py cloud/infra/vps/cleanup-runner.py
           python3 -m unittest tests.test_store_infra -v
   unity-compile:
     name: Compile opt-in Online Unity adapter, no ad requests
