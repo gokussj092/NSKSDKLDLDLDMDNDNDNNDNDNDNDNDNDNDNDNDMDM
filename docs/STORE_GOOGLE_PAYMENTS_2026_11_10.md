@@ -4,6 +4,11 @@ Rama: `feat/nuevas-integraciones`. Implementación preparada para revisión;
 **no desplegada ni habilitada para cobros reales**. Esta petición autoriza la
 implementación de tienda que los planes anteriores dejaban aplazada.
 
+Para obtener credenciales y configurar cada servicio, seguir la
+[guía operativa y de continuidad](GUIA_CONFIGURACION_GOOGLE_PAGOS_UNITY_2026_11_10.md).
+Incluye un hallazgo pendiente `MP-01` sobre prefijos de tokens de prueba de
+Mercado Pago y la distinción entre Preferences API y Orders API.
+
 ## Experiencia
 
 - Web pública AMOLED ES/EN: información de Online, Offline y API, tienda,
