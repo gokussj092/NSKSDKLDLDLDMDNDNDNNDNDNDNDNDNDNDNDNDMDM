@@ -763,11 +763,13 @@ android {
     compileSdk = 36
     ndkVersion = "27.2.12479018"
     defaultConfig {
-        applicationId = if(nativeOffline) "com.ghostdeveloper.spdecode.offline" else "com.ghostdeveloper.spdecode"
+        applicationId = "com.ghostdeveloper.spdecode"
+        if(nativeOffline) applicationId = "com.ghostdeveloper.spdecode" + ".offline"
         minSdk = 24
         targetSdk = 36
         versionCode = 42
-        versionName = if(nativeOffline) "1.1.27-offline.alpha1" else "1.1.27"
+        versionName = "1.1.27"
+        if(nativeOffline) versionName = listOf("1.1.27", "offline.alpha1").joinToString("-")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // A public API origin is not a secret; all server secrets stay in the VPS.
         buildConfigField("boolean", "SPDECODE_CLOUD_ENABLED", enableCloud.toString())
