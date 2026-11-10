@@ -7,6 +7,8 @@ CREATE TABLE IF NOT EXISTS spdecode_shop.profiles (
  username text NOT NULL UNIQUE CHECK(username ~ '^[a-z][a-z0-9_]{2,23}$'),
  handle_changed_at timestamptz, created_at timestamptz NOT NULL DEFAULT now()
 );
+ALTER TABLE spdecode_shop.profiles ADD COLUMN IF NOT EXISTS bio text NOT NULL DEFAULT '';
+ALTER TABLE spdecode_shop.profiles ADD COLUMN IF NOT EXISTS avatar_data text;
 CREATE TABLE IF NOT EXISTS spdecode_shop.reserved_handles (
  username text PRIMARY KEY, account_id text NOT NULL, reserved_at timestamptz NOT NULL DEFAULT now()
 );
