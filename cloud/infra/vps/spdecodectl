@@ -585,10 +585,17 @@ case "${1:-help}" in
          sleep 2
        done
        [[ "$ready" == 1 ]] || die "Commerce database not ready"
+       # PostgreSQL only executes initdb scripts on fresh volumes.
+       # Reconcile the role on existing volumes before running Better Auth migrations.
+       compose exec -T shop-db sh /docker-entrypoint-initdb.d/00-shop-role.sh >/dev/null ||
+         die "Commerce role synchronization failed"
        compose run --rm --no-deps web node scripts/commerce-migrate.mjs --apply
        compose up -d --no-deps web
        log "Commerce initialized. Configure Google, provider sandbox credentials and reviewed tax/product settings before enabling sales.";;
      migrate)
+       compose --profile commerce up -d shop-db
+       compose exec -T shop-db sh /docker-entrypoint-initdb.d/00-shop-role.sh >/dev/null ||
+         die "Commerce role synchronization failed"
        compose run --rm --no-deps web node scripts/commerce-migrate.mjs --apply;;
      status)
        compose --profile commerce ps shop-db;;
