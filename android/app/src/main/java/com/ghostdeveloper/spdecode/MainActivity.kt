@@ -1388,7 +1388,7 @@ class MainActivity : ComponentActivity() {
                 catch(e:CancellationException){throw e}
                 catch(_:Exception){toast(R.string.history_storage_error)}
                 tab=0
-                if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED && !BuildConfig.SPDECODE_ADS_EVERY_FILE_QA)
+                if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED)
                     onlineAds?.onSavedResult(this@MainActivity,record.id,saved)
             }catch(e:CancellationException){throw e}
             catch(error:Exception) {
@@ -1475,7 +1475,7 @@ class MainActivity : ComponentActivity() {
                 catch(error:CancellationException){throw error}
                 catch(_:Exception){toast(R.string.history_storage_error)}
                 tab=0
-                if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED && !BuildConfig.SPDECODE_ADS_EVERY_FILE_QA)
+                if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED)
                     onlineAds?.onSavedResult(this@MainActivity,record.id,saved)
             }catch(error:CancellationException){throw error}
              catch(error:Exception) {
