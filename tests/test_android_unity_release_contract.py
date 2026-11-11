@@ -32,6 +32,21 @@ class AndroidUnityReleaseContract(unittest.TestCase):
         self.assertEqual(activity.count("onlineAds?.onSavedResult("), 5)
         self.assertIn("ads_privacy_options", read("android/app/src/main/java/com/ghostdeveloper/spdecode/FunctionalSettingsPanel.kt"))
 
+    def test_ads_retry_and_frequency_are_qa_safe(self):
+        host = read("android/app/src/unityAds/java/com/ghostdeveloper/spdecode/ads/UnityInterstitialHost.kt")
+        self.assertIn("MAX_DAILY_ADS=12", host)
+        self.assertIn("MIN_INTERVAL_MS=240_000L", host)
+        self.assertIn("LOAD_RETRY_MS=45_000L", host)
+        self.assertIn("retryAfterElapsed=SystemClock.elapsedRealtime()+LOAD_RETRY_MS", host)
+        self.assertIn("ad_load_failed_retry_later", host)
+        self.assertIn("requestLoadWhenReady()", host)
+        self.assertIn("SPDECODE_ADS", host)
+        self.assertIn("!consentInformation.canRequestAds()", host)
+        self.assertIn("!success||partial", host)
+        self.assertIn("onContinue={}", host)
+        self.assertNotIn("count>=3", host)
+        self.assertNotIn("putString(", host) # No decoded payloads stored in ad telemetry.
+
     def test_vps_online_fails_closed_for_missing_ads(self):
         build = read("cloud/infra/vps/android-public-build.sh")
         self.assertIn('UNITY_CONFIG="$CFG/unity-ads.env"', build)
