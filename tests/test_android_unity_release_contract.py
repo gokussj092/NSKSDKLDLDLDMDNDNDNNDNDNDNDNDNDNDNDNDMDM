@@ -54,7 +54,7 @@ class AndroidUnityReleaseContract(unittest.TestCase):
         self.assertIn('spdecodeAdsEveryFileQa', gradle)
         self.assertIn('SPDECODE_ADS_EVERY_FILE_QA', gradle)
         self.assertIn('(!previewDeferred || BuildConfig.SPDECODE_ADS_EVERY_FILE_QA)', gradle)
-        self.assertEqual(activity.count("&& !BuildConfig.SPDECODE_ADS_EVERY_FILE_QA"), 4)
+        self.assertEqual(activity.count("&& !BuildConfig.SPDECODE_ADS_EVERY_FILE_QA"), 2)
         self.assertEqual(activity.count("onlineAds?.onSavedResult("), 5)
         self.assertIn("val qaEveryFile=BuildConfig.SPDECODE_ADS_EVERY_FILE_QA", host)
         self.assertIn("val blockedByPacing=!qaEveryFile", host)
@@ -64,6 +64,29 @@ class AndroidUnityReleaseContract(unittest.TestCase):
         self.assertIn("UMP no permite anuncios", host)
         self.assertIn("success=(saved||qaEveryFile)", host)
         self.assertNotIn('putString(', host)
+
+    def test_decoded_catalogs_render_on_home_and_request_ads(self):
+        gradle = read("android/app/build.gradle.kts")
+        activity = read("android/app/src/main/java/com/ghostdeveloper/spdecode/MainActivity.kt")
+        viewer = read("android/app/src/main/java/com/ghostdeveloper/spdecode/LargeResultViewer.kt")
+        self.assertIn('val catalog=entry.extension=="nurservers" || entry.extension=="vpnservers"', gradle)
+        self.assertIn("if(catalog) {\\n            showLargeResultWarning=false\\n            result=entry", gradle)
+        self.assertIn("return false", gradle)
+        self.assertIn('entry.rawText.length>=250_000', gradle)
+        self.assertIn('updateResultBlock("    private fun decodeNurServers() {"', gradle)
+        self.assertIn('updateResultBlock("    private fun decodeServerVpnProvider(id:String) {"', gradle)
+        self.assertIn('val previewDeferred=presentDecodedRecord(', gradle)
+        self.assertIn('tab=if(previewDeferred)1 else 0', gradle)
+        for start,end in (
+            ("    private fun decodeNurServers() {","    private fun clearVisibleResult() {"),
+            ("    private fun decodeServerVpnProvider(id:String) {","    private fun importFiles(uris:List<Uri>,"),
+        ):
+            part = activity.split(start,1)[1].split(end,1)[0]
+            self.assertIn("onlineAds?.onSavedResult(this@MainActivity,record.id,saved)", part)
+            self.assertIn("if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED)", part)
+            self.assertNotIn("&& !BuildConfig.SPDECODE_ADS_EVERY_FILE_QA", part)
+        self.assertIn("NativeResultEngine.open(source)", viewer)
+        self.assertIn("ContinuousJsonView", viewer)
 
     def test_qa_defers_until_window_focus_returns(self):
         interface = read("android/app/src/main/java/com/ghostdeveloper/spdecode/OnlineAds.kt")
