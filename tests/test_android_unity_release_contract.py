@@ -65,6 +65,23 @@ class AndroidUnityReleaseContract(unittest.TestCase):
         self.assertIn("success=(saved||qaEveryFile)", host)
         self.assertNotIn('putString(', host)
 
+    def test_qa_defers_until_window_focus_returns(self):
+        interface = read("android/app/src/main/java/com/ghostdeveloper/spdecode/OnlineAds.kt")
+        activity = read("android/app/src/main/java/com/ghostdeveloper/spdecode/MainActivity.kt")
+        host = read("android/app/src/unityAds/java/com/ghostdeveloper/spdecode/ads/UnityInterstitialHost.kt")
+        self.assertIn("fun onWindowFocusChanged(activity:Activity,hasFocus:Boolean)", interface)
+        self.assertIn("override fun onWindowFocusChanged(hasFocus:Boolean)", activity)
+        self.assertIn("onlineAds?.onWindowFocusChanged(this,hasFocus)", activity)
+        self.assertIn('Log.i(LOG_TAG,"ad_deferred_$reason")', host)
+        self.assertIn("deferAd(activity,operationId,success,\"window_focus\")", host)
+        self.assertIn("activity.window.decorView.postDelayed({flushDeferred(activity)},150L)", host)
+        self.assertIn("DEFERRED_AD_TTL_MS=30_000L", host)
+        self.assertIn("if(!activity.hasWindowFocus())return", host)
+        self.assertIn("ad_deferred_ready", host)
+        self.assertIn("clearDeferred()", host)
+        self.assertIn("consentInformation.canRequestAds()", host)
+        self.assertNotIn("putString(", host)
+
     def test_vps_online_fails_closed_for_missing_ads(self):
         build = read("cloud/infra/vps/android-public-build.sh")
         self.assertIn('UNITY_CONFIG="$CFG/unity-ads.env"', build)
