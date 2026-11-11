@@ -13,6 +13,7 @@ import com.google.android.ump.UserMessagingPlatform
 import com.unity3d.mediation.*
 import com.unity3d.mediation.interstitial.LevelPlayInterstitialAd
 import com.unity3d.mediation.interstitial.LevelPlayInterstitialAdListener
+import java.lang.ref.WeakReference
 import java.util.concurrent.atomic.AtomicBoolean
 
 /** Online-only UMP consent and Unity LevelPlay host.
@@ -33,6 +34,60 @@ internal class UnityInterstitialHost(context:Context):OnlineAds {
     private var retryAfterElapsed=0L
     private val qaEveryFile=BuildConfig.SPDECODE_ADS_EVERY_FILE_QA
     private var lastAdErrorCode:Int?=null
+    private data class DeferredAdAttempt(
+        val operationId:String,
+        val success:Boolean,
+        val createdElapsed:Long,
+    )
+    private var deferredAttempt:DeferredAdAttempt?=null
+    private var deferredActivity:WeakReference<Activity>?=null
+
+    /** QA only: let the file picker/overlays release focus before showing. */
+    private fun deferAd(activity:Activity,operationId:String,success:Boolean,reason:String){
+        deferredAttempt=DeferredAdAttempt(operationId,success,SystemClock.elapsedRealtime())
+        deferredActivity=WeakReference(activity)
+        Log.i(LOG_TAG,"ad_deferred_$reason")
+        showQaFeedback(activity,if(reason=="window_focus") "esperando foco" else "cargando anuncio")
+    }
+    private fun clearDeferred(){
+        deferredAttempt=null
+        deferredActivity=null
+    }
+    override fun onWindowFocusChanged(activity:Activity,hasFocus:Boolean){
+        if(!qaEveryFile||!hasFocus||stopped)return
+        // A short posting delay lets Android finish the picker-to-Activity transition.
+        activity.window.decorView.postDelayed({flushDeferred(activity)},150L)
+    }
+    private fun flushDeferred(activity:Activity){
+        if(!qaEveryFile)return
+        val attempt=deferredAttempt?:return
+        if(deferredActivity?.get()!==activity)return
+        if(stopped||activity.isFinishing||activity.isDestroyed||
+            SystemClock.elapsedRealtime()-attempt.createdElapsed>DEFERRED_AD_TTL_MS){
+            Log.i(LOG_TAG,"ad_deferred_expired")
+            clearDeferred()
+            return
+        }
+        if(!activity.hasWindowFocus())return
+        if(!enabled||!consentInformation.canRequestAds()){
+            Log.i(LOG_TAG,"ad_deferred_not_permitted")
+            clearDeferred()
+            showQaFeedback(activity,"LevelPlay o UMP no disponible")
+            return
+        }
+        requestLoadWhenReady()
+        if(ad?.isAdReady()!=true){
+            Log.i(LOG_TAG,"ad_deferred_waiting_for_load")
+            if(!loading&&lastAdErrorCode!=null)
+                showQaFeedback(activity,"sin anuncio, error ${lastAdErrorCode}")
+            else showQaFeedback(activity,"cargando anuncio")
+            return
+        }
+        clearDeferred()
+        Log.i(LOG_TAG,"ad_deferred_ready")
+        showOrContinue(activity,attempt.operationId,attempt.success,partial=false,
+            killSwitchEnabled=consentInformation.canRequestAds(),onContinue={})
+    }
     private fun showQaFeedback(activity:Activity,detail:String){
         if(!qaEveryFile||activity.isFinishing||activity.isDestroyed)return
         Toast.makeText(activity.applicationContext,"Anuncios QA: $detail",Toast.LENGTH_SHORT).show()
@@ -42,6 +97,7 @@ internal class UnityInterstitialHost(context:Context):OnlineAds {
         const val MAX_DAILY_ADS=12
         const val MIN_INTERVAL_MS=240_000L
         const val LOAD_RETRY_MS=45_000L
+        const val DEFERRED_AD_TTL_MS=30_000L
     }
     private fun requestLoadWhenReady(){
         val item=ad ?: return
@@ -144,12 +200,18 @@ internal class UnityInterstitialHost(context:Context):OnlineAds {
                             loading=false
                             lastAdErrorCode=null
                             Log.i(LOG_TAG,"ad_loaded")
+                            deferredActivity?.get()?.let { active ->
+                                active.window.decorView.post {flushDeferred(active)}
+                            }
                         }
                         override fun onAdLoadFailed(error:LevelPlayAdError){
                             loading=false
                             lastAdErrorCode=error.errorCode
                             retryAfterElapsed=SystemClock.elapsedRealtime()+LOAD_RETRY_MS
                             Log.w(LOG_TAG,"ad_load_failed_code_${error.errorCode}_retry_later")
+                            deferredActivity?.get()?.let { active ->
+                                showQaFeedback(active,"sin anuncio, error ${error.errorCode}")
+                            }
                         }
                         override fun onAdDisplayed(info:LevelPlayAdInfo){
                             shown=true
@@ -175,6 +237,7 @@ internal class UnityInterstitialHost(context:Context):OnlineAds {
                     })
                 }
                 requestLoadWhenReady()
+                flushDeferred(activity)
             }
         })
     }
@@ -184,6 +247,20 @@ internal class UnityInterstitialHost(context:Context):OnlineAds {
         val once=AtomicBoolean(false);val continuation={if(once.compareAndSet(false,true))onContinue()}
         // A failed initial auction must not disable all future ads in this session.
         requestLoadWhenReady()
+        if(qaEveryFile&&success&&!partial&&killSwitchEnabled&&
+            !activity.isFinishing&&!activity.isDestroyed&&
+            operationId.matches(Regex("[A-Za-z0-9_-]{8,80}"))){
+            if(!activity.hasWindowFocus()){
+                deferAd(activity,operationId,success,"window_focus")
+                continuation()
+                return
+            }
+            if(enabled&&ad?.isAdReady()!=true){
+                deferAd(activity,operationId,success,"ad_loading")
+                continuation()
+                return
+            }
+        }
         val now=System.currentTimeMillis();val day=now/86400000
         val count=if(preferences.getLong("day",-1)==day)preferences.getInt("count",0)else 0
         val blockedByPacing=!qaEveryFile&&now-preferences.getLong("last",0)<MIN_INTERVAL_MS
@@ -230,5 +307,12 @@ internal class UnityInterstitialHost(context:Context):OnlineAds {
     }
     private fun finish(){val next=pending;pending=null;next?.invoke()}
     /** Called when consent is withdrawn or the owning Activity is destroyed. */
-    override fun stop(){stopped=true;enabled=false;loading=false;finish();ad=null}
+    override fun stop(){
+        stopped=true
+        enabled=false
+        loading=false
+        clearDeferred()
+        finish()
+        ad=null
+    }
 }
