@@ -97,6 +97,17 @@ unset SPDECODE_CLOUD_QA_BUILD
 unset SPDECODE_OFFLINE_NATIVE SPDECODE_CLOUD_API_BASE_URL SPDECODE_CLOUD_RELEASE
 unset SPDECODE_V2_HPKE_PINS SPDECODE_PLAY_APP_SIGNER_SHA256
 if [[ "$CHANNEL" == offline ]]; then
+ # Same SHA256-pinned upstream archive as the native Offline CI workflow.
+ # Verify provenance before CMake can consume the dependency.
+ ARCHIVE="$BUILDROOT/mbedtls-3.6.7.tar.bz2"
+ command -v curl >/dev/null || die "curl is required for verified native source"
+ curl -fLsS --retry 3 --connect-timeout 20 --max-time 240 \
+   "https://github.com/Mbed-TLS/mbedtls/releases/download/mbedtls-3.6.7/mbedtls-3.6.7.tar.bz2" \
+   -o "$ARCHIVE"
+ printf '%s  %s\n' \
+   'a7e8bcbec0e6f761b4af24f25677626b35f762f68eef79c08677a363212d11f6' "$ARCHIVE" |
+   sha256sum -c --status || die "Native Mbed TLS source archive failed SHA256 verification"
+ export SPDECODE_MBEDTLS_ARCHIVE="$ARCHIVE"
  export SPDECODE_OFFLINE_NATIVE=true
  PACKAGE="com.ghostdeveloper.spdecode.offline"
 else
