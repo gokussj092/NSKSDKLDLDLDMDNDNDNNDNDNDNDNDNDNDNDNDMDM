@@ -110,7 +110,7 @@ internal fun AccountDrawer(busy:Boolean,onExternalLink:(String)->Unit,
                         fontWeight=FontWeight.Bold,
                     )
                 }
-                Box(Modifier.fillMaxSize(),contentAlignment=Alignment.Center) {
+                Box(Modifier.fillMaxWidth().weight(1f),contentAlignment=Alignment.Center) {
                     Column(
                         horizontalAlignment=Alignment.CenterHorizontally,
                         verticalArrangement=Arrangement.spacedBy(14.dp),
