@@ -6,6 +6,7 @@ import java.io.IOException
 
 /** Production build only: zero network endpoints, tokens or background uploads. */
 internal class CloudApkQaClient(context:Context,cloud:CloudDecodeClient) {
+    companion object { const val MAX_BYTES=100L*1000L*1000L }
     data class ActivityEvent(val sequence:Int,val code:String,val status:String)
     data class Snapshot(
         val active:Boolean,val phase:String,val receivedBytes:Long,
