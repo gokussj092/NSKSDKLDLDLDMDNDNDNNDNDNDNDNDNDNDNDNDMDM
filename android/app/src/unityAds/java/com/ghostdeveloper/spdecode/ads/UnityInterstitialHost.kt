@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.os.SystemClock
 import android.util.Log
+import android.widget.Toast
 import com.ghostdeveloper.spdecode.BuildConfig
 import com.ghostdeveloper.spdecode.OnlineAds
 import com.google.android.ump.ConsentInformation
@@ -30,6 +31,12 @@ internal class UnityInterstitialHost(context:Context):OnlineAds {
     private var stopped=false
     private var loading=false
     private var retryAfterElapsed=0L
+    private val qaEveryFile=BuildConfig.SPDECODE_ADS_EVERY_FILE_QA
+    private var lastAdErrorCode:Int?=null
+    private fun showQaFeedback(activity:Activity,detail:String){
+        if(!qaEveryFile||activity.isFinishing||activity.isDestroyed)return
+        Toast.makeText(activity.applicationContext,"Anuncios QA: $detail",Toast.LENGTH_SHORT).show()
+    }
     private companion object {
         const val LOG_TAG="SPDECODE_ADS"
         const val MAX_DAILY_ADS=12
@@ -106,7 +113,8 @@ internal class UnityInterstitialHost(context:Context):OnlineAds {
     }
 
     override fun onSavedResult(activity:Activity,operationId:String,saved:Boolean) {
-        showOrContinue(activity,operationId,success=saved,partial=false,
+        // QA is triggered by a successful file decode even if history persistence failed.
+        showOrContinue(activity,operationId,success=(saved||qaEveryFile),partial=false,
             killSwitchEnabled=consentInformation.canRequestAds(),onContinue={})
     }
     fun initializeAfterConsent(activity:Activity,appKey:String,adUnitId:String,consent:Consent) {
@@ -119,7 +127,8 @@ internal class UnityInterstitialHost(context:Context):OnlineAds {
         Log.i(LOG_TAG,"levelplay_init_requested")
         LevelPlay.init(activity.applicationContext,LevelPlayInitRequest.Builder(appKey).build(),object:LevelPlayInitListener {
             override fun onInitFailed(error:LevelPlayInitError){
-                Log.w(LOG_TAG,"levelplay_init_failed")
+                lastAdErrorCode=error.errorCode
+                Log.w(LOG_TAG,"levelplay_init_failed_code_${error.errorCode}")
                 enabled=false
                 consentRequested=false // Allow a later retry after network recovery.
                 ad=null
@@ -133,12 +142,14 @@ internal class UnityInterstitialHost(context:Context):OnlineAds {
                     item.setListener(object:LevelPlayInterstitialAdListener {
                         override fun onAdLoaded(info:LevelPlayAdInfo){
                             loading=false
+                            lastAdErrorCode=null
                             Log.i(LOG_TAG,"ad_loaded")
                         }
                         override fun onAdLoadFailed(error:LevelPlayAdError){
                             loading=false
+                            lastAdErrorCode=error.errorCode
                             retryAfterElapsed=SystemClock.elapsedRealtime()+LOAD_RETRY_MS
-                            Log.w(LOG_TAG,"ad_load_failed_retry_later")
+                            Log.w(LOG_TAG,"ad_load_failed_code_${error.errorCode}_retry_later")
                         }
                         override fun onAdDisplayed(info:LevelPlayAdInfo){
                             shown=true
@@ -149,7 +160,8 @@ internal class UnityInterstitialHost(context:Context):OnlineAds {
                             preferences.edit().putLong("last",System.currentTimeMillis()).putLong("day",day).putInt("count",count+1).apply()
                         }
                         override fun onAdDisplayFailed(error:LevelPlayAdError,info:LevelPlayAdInfo){
-                            Log.w(LOG_TAG,"ad_display_failed")
+                            lastAdErrorCode=error.errorCode
+                            Log.w(LOG_TAG,"ad_display_failed_code_${error.errorCode}")
                             finish()
                             requestLoadWhenReady()
                         }
@@ -174,20 +186,35 @@ internal class UnityInterstitialHost(context:Context):OnlineAds {
         requestLoadWhenReady()
         val now=System.currentTimeMillis();val day=now/86400000
         val count=if(preferences.getLong("day",-1)==day)preferences.getInt("count",0)else 0
+        val blockedByPacing=!qaEveryFile&&now-preferences.getLong("last",0)<MIN_INTERVAL_MS
+        val blockedByDailyCap=!qaEveryFile&&count>=MAX_DAILY_ADS
         if(!enabled||!killSwitchEnabled||!success||partial||pending!=null||
             activity.isFinishing||activity.isDestroyed||!activity.hasWindowFocus()||
             !operationId.matches(Regex("[A-Za-z0-9_-]{8,80}"))||!consumed.add(operationId)||
-            now-preferences.getLong("last",0)<MIN_INTERVAL_MS||
-            count>=MAX_DAILY_ADS||ad?.isAdReady()!=true) {
+            blockedByPacing||blockedByDailyCap||ad?.isAdReady()!=true) {
             Log.i(LOG_TAG,when{
                 !enabled->"skip_not_initialized"
                 !killSwitchEnabled->"skip_consent"
                 !success||partial->"skip_no_saved_result"
-                count>=MAX_DAILY_ADS->"skip_daily_cap"
-                now-preferences.getLong("last",0)<MIN_INTERVAL_MS->"skip_pacing"
+                blockedByDailyCap->"skip_daily_cap"
+                blockedByPacing->"skip_pacing"
                 ad?.isAdReady()!=true->"skip_not_loaded"
                 else->"skip_other"
             })
+            val feedback=when{
+                !killSwitchEnabled->"UMP no permite anuncios"
+                !enabled->"LevelPlay no inicializado"
+                !success||partial->"resultado no valido"
+                pending!=null->"otro anuncio activo"
+                !activity.hasWindowFocus()->"pantalla sin foco"
+                blockedByDailyCap->"limite diario alcanzado"
+                blockedByPacing->"esperando intervalo"
+                ad?.isAdReady()!=true&&lastAdErrorCode!=null->"sin anuncio, error ${lastAdErrorCode}"
+                ad?.isAdReady()!=true&&loading->"cargando anuncio"
+                ad?.isAdReady()!=true->"anuncio no disponible"
+                else->"presentacion omitida"
+            }
+            showQaFeedback(activity,feedback)
             continuation();return
         }
         if(consumed.size>500)consumed.clear()
@@ -197,6 +224,7 @@ internal class UnityInterstitialHost(context:Context):OnlineAds {
             ad?.showAd(activity)
         }catch(_:Exception){
             Log.w(LOG_TAG,"ad_show_exception")
+            showQaFeedback(activity,"error al mostrar anuncio")
             finish()
         }
     }
