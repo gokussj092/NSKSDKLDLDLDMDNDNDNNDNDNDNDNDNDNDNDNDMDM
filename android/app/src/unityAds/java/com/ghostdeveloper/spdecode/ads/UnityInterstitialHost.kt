@@ -32,6 +32,7 @@ internal class UnityInterstitialHost(context:Context):OnlineAds {
     private var stopped=false
     private var loading=false
     private var retryAfterElapsed=0L
+    private var lastLoadRequestedElapsed=Long.MIN_VALUE
     private val qaEveryFile=BuildConfig.SPDECODE_ADS_EVERY_FILE_QA
     private var lastAdErrorCode:Int?=null
     private data class DeferredAdAttempt(
@@ -90,20 +91,27 @@ internal class UnityInterstitialHost(context:Context):OnlineAds {
     }
     private fun showQaFeedback(activity:Activity,detail:String){
         if(!qaEveryFile||activity.isFinishing||activity.isDestroyed)return
-        Toast.makeText(activity.applicationContext,"Anuncios QA: $detail",Toast.LENGTH_SHORT).show()
+        if(BuildConfig.DEBUG) Toast.makeText(activity.applicationContext,"Anuncios QA: $detail",Toast.LENGTH_SHORT).show()
     }
     private companion object {
         const val LOG_TAG="SPDECODE_ADS"
         const val MAX_DAILY_ADS=12
         const val MIN_INTERVAL_MS=240_000L
         const val LOAD_RETRY_MS=45_000L
+        const val LOAD_COOLDOWN_MS=60_000L
         const val DEFERRED_AD_TTL_MS=30_000L
     }
     private fun requestLoadWhenReady(){
         val item=ad ?: return
+        val now=SystemClock.elapsedRealtime()
+        // Throttle network ad *loads*, not user-visible decode/catalog results.
+        // No timer or automatic polling: next eligible result/close requests a load.
         if(stopped||!enabled||loading||item.isAdReady()||
-            SystemClock.elapsedRealtime()<retryAfterElapsed)return
+            now<retryAfterElapsed||
+            (lastLoadRequestedElapsed!=Long.MIN_VALUE &&
+                now-lastLoadRequestedElapsed<LOAD_COOLDOWN_MS))return
         loading=true
+        lastLoadRequestedElapsed=now
         try{
             Log.i(LOG_TAG,"load_requested")
             item.loadAd()
