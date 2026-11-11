@@ -28,6 +28,12 @@ def lock_v5(value: str) -> str:
 
 class HatNativeParity(unittest.TestCase):
     cli=""
+
+    @classmethod
+    def setUpClass(cls):
+        if not cls.cli:
+            raise unittest.SkipTest("Run this parity suite with an explicit compiled native CLI path")
+
     def read(self,source:bytes,success=True):
         job=subprocess.run([self.cli],input=source,capture_output=True,timeout=10)
         if success:
