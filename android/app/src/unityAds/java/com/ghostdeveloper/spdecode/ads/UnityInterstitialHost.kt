@@ -2,6 +2,8 @@ package com.ghostdeveloper.spdecode.ads
 
 import android.app.Activity
 import android.content.Context
+import android.os.SystemClock
+import android.util.Log
 import com.ghostdeveloper.spdecode.BuildConfig
 import com.ghostdeveloper.spdecode.OnlineAds
 import com.google.android.ump.ConsentInformation
@@ -26,6 +28,28 @@ internal class UnityInterstitialHost(context:Context):OnlineAds {
     private val consumed=mutableSetOf<String>()
     private var consentRequested=false
     private var stopped=false
+    private var loading=false
+    private var retryAfterElapsed=0L
+    private companion object {
+        const val LOG_TAG="SPDECODE_ADS"
+        const val MAX_DAILY_ADS=12
+        const val MIN_INTERVAL_MS=240_000L
+        const val LOAD_RETRY_MS=45_000L
+    }
+    private fun requestLoadWhenReady(){
+        val item=ad ?: return
+        if(stopped||!enabled||loading||item.isAdReady()||
+            SystemClock.elapsedRealtime()<retryAfterElapsed)return
+        loading=true
+        try{
+            Log.i(LOG_TAG,"load_requested")
+            item.loadAd()
+        }catch(_:RuntimeException){
+            loading=false
+            retryAfterElapsed=SystemClock.elapsedRealtime()+LOAD_RETRY_MS
+            Log.w(LOG_TAG,"load_exception_retry_later")
+        }
+    }
     private val consentInformation=UserMessagingPlatform.getConsentInformation(context.applicationContext)
 
     override fun initialize(activity:Activity) {
@@ -33,17 +57,30 @@ internal class UnityInterstitialHost(context:Context):OnlineAds {
         consentRequested=true
         val params=ConsentRequestParameters.Builder().build()
         try {
+            Log.i(LOG_TAG,"ump_update_requested")
             consentInformation.requestConsentInfoUpdate(activity,params,{
-                UserMessagingPlatform.loadAndShowConsentFormIfRequired(activity) { _ ->
+                Log.i(LOG_TAG,"ump_updated")
+                // Consent from a previous session may already permit requests.
+                initializeIfPermitted(activity)
+                UserMessagingPlatform.loadAndShowConsentFormIfRequired(activity) { error ->
+                    if(error!=null)Log.w(LOG_TAG,"ump_form_error")
                     initializeIfPermitted(activity)
                 }
-            },{ _ -> initializeIfPermitted(activity) })
-        }catch(_:RuntimeException){ /* CMP not available: continue without ads. */ }
+            },{
+                Log.w(LOG_TAG,"ump_update_error")
+                initializeIfPermitted(activity) // Prior-session status, if still valid.
+            })
+        }catch(_:RuntimeException){
+            Log.w(LOG_TAG,"ump_exception")
+        }
     }
 
     private fun initializeIfPermitted(activity:Activity) {
-        if(stopped||enabled||!consentInformation.canRequestAds()||
-            activity.isFinishing||activity.isDestroyed)return
+        if(stopped||enabled||activity.isFinishing||activity.isDestroyed)return
+        if(!consentInformation.canRequestAds()){
+            Log.i(LOG_TAG,"consent_not_ready")
+            return
+        }
         initializeAfterConsent(activity,BuildConfig.SPDECODE_UNITY_APP_KEY,
             BuildConfig.SPDECODE_UNITY_INTERSTITIAL_ID,
             Consent(cmpCompleted=true,advertisingAllowed=true,
@@ -79,26 +116,53 @@ internal class UnityInterstitialHost(context:Context):OnlineAds {
         LevelPlayPrivacySettings.setCCPA(consent.doNotSell)
         LevelPlayPrivacySettings.setCOPPA(consent.childDirected)
         enabled=true
+        Log.i(LOG_TAG,"levelplay_init_requested")
         LevelPlay.init(activity.applicationContext,LevelPlayInitRequest.Builder(appKey).build(),object:LevelPlayInitListener {
-            override fun onInitFailed(error:LevelPlayInitError){enabled=false;finish()}
+            override fun onInitFailed(error:LevelPlayInitError){
+                Log.w(LOG_TAG,"levelplay_init_failed")
+                enabled=false
+                consentRequested=false // Allow a later retry after network recovery.
+                ad=null
+                loading=false
+                finish()
+            }
             override fun onInitSuccess(configuration:LevelPlayConfiguration){
-                if(!enabled)return
+                if(!enabled||stopped)return
+                Log.i(LOG_TAG,"levelplay_init_ok")
                 ad=LevelPlayInterstitialAd(adUnitId).also { item ->
                     item.setListener(object:LevelPlayInterstitialAdListener {
-                        override fun onAdLoaded(info:LevelPlayAdInfo){}
-                        override fun onAdLoadFailed(error:LevelPlayAdError){}
+                        override fun onAdLoaded(info:LevelPlayAdInfo){
+                            loading=false
+                            Log.i(LOG_TAG,"ad_loaded")
+                        }
+                        override fun onAdLoadFailed(error:LevelPlayAdError){
+                            loading=false
+                            retryAfterElapsed=SystemClock.elapsedRealtime()+LOAD_RETRY_MS
+                            Log.w(LOG_TAG,"ad_load_failed_retry_later")
+                        }
                         override fun onAdDisplayed(info:LevelPlayAdInfo){
                             shown=true
+                            loading=false
+                            Log.i(LOG_TAG,"ad_displayed")
                             val day=System.currentTimeMillis()/86400000
                             val count=if(preferences.getLong("day",-1)==day)preferences.getInt("count",0)else 0
                             preferences.edit().putLong("last",System.currentTimeMillis()).putLong("day",day).putInt("count",count+1).apply()
                         }
-                        override fun onAdDisplayFailed(error:LevelPlayAdError,info:LevelPlayAdInfo){finish()}
+                        override fun onAdDisplayFailed(error:LevelPlayAdError,info:LevelPlayAdInfo){
+                            Log.w(LOG_TAG,"ad_display_failed")
+                            finish()
+                            requestLoadWhenReady()
+                        }
                         override fun onAdClicked(info:LevelPlayAdInfo){}
-                        override fun onAdClosed(info:LevelPlayAdInfo){finish();if(enabled)item.loadAd()}
+                        override fun onAdClosed(info:LevelPlayAdInfo){
+                            Log.i(LOG_TAG,"ad_closed")
+                            finish()
+                            requestLoadWhenReady()
+                        }
                         override fun onAdInfoChanged(info:LevelPlayAdInfo){}
-                    });item.loadAd()
+                    })
                 }
+                requestLoadWhenReady()
             }
         })
     }
@@ -106,19 +170,37 @@ internal class UnityInterstitialHost(context:Context):OnlineAds {
     fun showOrContinue(activity:Activity,operationId:String,success:Boolean,partial:Boolean,
         killSwitchEnabled:Boolean,onContinue:()->Unit) {
         val once=AtomicBoolean(false);val continuation={if(once.compareAndSet(false,true))onContinue()}
+        // A failed initial auction must not disable all future ads in this session.
+        requestLoadWhenReady()
         val now=System.currentTimeMillis();val day=now/86400000
         val count=if(preferences.getLong("day",-1)==day)preferences.getInt("count",0)else 0
         if(!enabled||!killSwitchEnabled||!success||partial||pending!=null||
             activity.isFinishing||activity.isDestroyed||!activity.hasWindowFocus()||
             !operationId.matches(Regex("[A-Za-z0-9_-]{8,80}"))||!consumed.add(operationId)||
-            now-preferences.getLong("last",0)<600000||count>=3||ad?.isAdReady()!=true) {
+            now-preferences.getLong("last",0)<MIN_INTERVAL_MS||
+            count>=MAX_DAILY_ADS||ad?.isAdReady()!=true) {
+            Log.i(LOG_TAG,when{
+                !enabled->"skip_not_initialized"
+                !killSwitchEnabled->"skip_consent"
+                !success||partial->"skip_no_saved_result"
+                count>=MAX_DAILY_ADS->"skip_daily_cap"
+                now-preferences.getLong("last",0)<MIN_INTERVAL_MS->"skip_pacing"
+                ad?.isAdReady()!=true->"skip_not_loaded"
+                else->"skip_other"
+            })
             continuation();return
         }
         if(consumed.size>500)consumed.clear()
         pending=continuation;shown=false
-        try{ad?.showAd(activity)}catch(_:Exception){finish()}
+        try{
+            Log.i(LOG_TAG,"ad_show_requested")
+            ad?.showAd(activity)
+        }catch(_:Exception){
+            Log.w(LOG_TAG,"ad_show_exception")
+            finish()
+        }
     }
     private fun finish(){val next=pending;pending=null;next?.invoke()}
     /** Called when consent is withdrawn or the owning Activity is destroyed. */
-    override fun stop(){stopped=true;enabled=false;finish();ad=null}
+    override fun stop(){stopped=true;enabled=false;loading=false;finish();ad=null}
 }
