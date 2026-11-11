@@ -99,3 +99,25 @@ En `ci/unity-ads-online-qa` se modificó `UnityInterstitialHost.kt` y se añadi�
 - Unity: https://docs.unity.com/en-us/grow/levelplay/sdk/android/troubleshoot-no-ads-displaying
 - Unity: https://docs.unity.com/en-us/grow/levelplay/sdk/android/interstitial-integration
 - Google UMP: https://developers.google.com/admob/android/privacy
+
+## 8. Observación QA en dispositivo: 2 intersticiales / ~15 descifrados (2026-11-11)
+
+**Evidencia reportada por el probador:** En la APK QA con corrección de foco (run [43062469936](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/43062469936)), se presentaron **2 anuncios** tras aproximadamente **15 operaciones de descifrado**. Las restantes operaciones mostraron un aviso similar a `Anuncios QA: sin anuncio, error 503`; el código no se ha confirmado mediante captura o Logcat.
+
+**Conclusiones sustentadas:**
+
+- La ruta Android → consentimiento/LevelPlay → anuncio listo → pantalla completa **funciona al menos en dos ocasiones**. El fallo ya no es «cero anuncios» en todos los casos.
+- Este mensaje, **si** comienza por `Anuncios QA: sin anuncio, error ...`, toma el número del callback `LevelPlayAdError.errorCode` en `UnityInterstitialHost.kt`; no prueba por sí mismo un HTTP 503 de `api.spdecode.xyz`.
+- `503` no figura en la tabla pública actual de errores Android de LevelPlay; no asignar automáticamente «no fill». Las definiciones documentadas incluyen 509 (no ads to show), 510 (server response failed), 524 (placement pace/cap), 526 (ad-unit session cap).
+- El modo de prueba deshabilita los límites **locales** de 12/día y 4 minutos, pero **no** los límites configurados en el panel LevelPlay ni garantiza inventario de cada red.
+- `requestLoadWhenReady()` solicita otro anuncio tras cerrar el anterior; ante error, bloquea nuevos intentos hasta 45 segundos y solo vuelve a cargar cuando ocurre otro evento elegible. Repetir 15 descifrados rápidamente no garantiza 15 anuncios preparados.
+
+**Acción de diagnóstico siguiente:**
+
+1. Confirmar texto **exacto** y captura del aviso, especialmente si dice `503` u otro código.
+2. Hacer dos pruebas separadas: **Integration Test Suite** (red por red, con inventario de prueba), y 3–4 descifrados espaciados al menos 4 minutos para evaluar las restricciones de LevelPlay sin recurrir a decenas de solicitudes consecutivas.
+3. Registrar en QA de forma segura `onAdLoadFailed` con **código y mensaje normalizado** del SDK, `onAdLoaded`, `onAdDisplayed`, `onAdClosed`, sin incluir datos del archivo ni datos del usuario.
+4. Revisar `All Countries` y límites de intersticial en el dashboard de LevelPlay. Aumentar cuotas solo cuando se confirme que el problema es un límite, y no un error de red o disponibilidad.
+5. Mantener versión `1.1.27 (42)`, APK de QA y firma persistente. **No publicar todavía.**
+
+Fuentes de referencia: [Errores Android LevelPlay](https://docs.unity.com/grow/levelplay/sdk/android/advanced-settings), [Intersticial Android](https://docs.unity.com/en-us/grow/levelplay/sdk/android/interstitial-integration).
