@@ -123,6 +123,7 @@ internal fun SpDecodeApp(
     onGuideRestart:()->Unit={},
     onLegalLink:(String)->Unit={},
     onWithdrawCloudConsent:()->Unit={},
+    onAdsPrivacyOptions:()->Unit={},
     catalogUpdatesEnabled:Boolean=false,
     onCatalogUpdates:(Boolean)->Unit={},
     usageAnalyticsEnabled:Boolean=false,
@@ -171,7 +172,7 @@ internal fun SpDecodeApp(
                         highlightGuide=if(!whatsNew && !busy)guideStep else null)
                     1->HistoryScreen(session,onSelect,onDeleteSelected,onClear,onImportMultiple,onFavorite)
                     2->if(creditsPage) ApkCreditsComingSoonScreen()
-                        else if(BuildConfig.SPDECODE_CLOUD_ENABLED)
+                        else if(BuildConfig.SPDECODE_APK_QA_ENABLED)
                             ApkQaAnalysisScreen(apkQaRunning,apkQaPhase,apkQaReceived,
                                 apkQaTotal,apkQaReport,apkQaError,onApkQaPick,onApkQaCancel,
                                 events=apkQaEvents,sourceFilename=apkQaFilename,
@@ -183,6 +184,7 @@ internal fun SpDecodeApp(
                         onLanguage,onMaskCredentials,onClear,onExternalLink,
                         retentionDays,onRetention,onShowGuide=onGuideRestart,
                         onLegalLink=onLegalLink,onWithdrawConsent=onWithdrawCloudConsent,
+                        onAdsPrivacyOptions=onAdsPrivacyOptions,
                         catalogUpdatesEnabled=catalogUpdatesEnabled,onCatalogUpdates=onCatalogUpdates,
                         usageAnalyticsEnabled=usageAnalyticsEnabled,onUsageAnalytics=onUsageAnalytics,
                          supportedFormats=cloudFormats,supportedTextFormats=cloudTextFormats,

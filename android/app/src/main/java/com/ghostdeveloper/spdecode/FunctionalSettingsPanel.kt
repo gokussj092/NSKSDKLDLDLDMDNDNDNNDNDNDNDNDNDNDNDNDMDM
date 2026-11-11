@@ -44,6 +44,7 @@ fun FunctionalSettingsPanel(
     onShowGuide:()->Unit={},
     onLegalLink:(String)->Unit={},
     onWithdrawConsent:()->Unit={},
+    onAdsPrivacyOptions:()->Unit={},
     catalogUpdatesEnabled:Boolean=false,
     onCatalogUpdates:(Boolean)->Unit={},
     usageAnalyticsEnabled:Boolean=false,
@@ -213,6 +214,9 @@ fun FunctionalSettingsPanel(
                 Spacer(Modifier.width(8.dp))
                 Text(stringResource(R.string.delete_session))
             }
+            if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED) OutlinedButton(
+                onClick=onAdsPrivacyOptions,modifier=Modifier.fillMaxWidth()
+            ) { Text(stringResource(R.string.ads_privacy_options)) }
             // Consent withdrawal remains accessible without duplicating legal links.
             if(BuildConfig.SPDECODE_CLOUD_ENABLED) OutlinedButton(
                 onClick={withdrawDialog=true},modifier=Modifier.fillMaxWidth()

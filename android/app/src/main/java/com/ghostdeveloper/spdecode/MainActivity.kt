@@ -80,6 +80,10 @@ class MainActivity : ComponentActivity() {
     private companion object { const val MAX_BYTES=1024*1024 }
     private val scope=CoroutineScope(SupervisorJob()+Dispatchers.Main.immediate)
     private val cloudClient by lazy { CloudDecodeClient(this) }
+    private val onlineAds by lazy {
+        if(BuildConfig.SPDECODE_CLOUD_ENABLED && BuildConfig.SPDECODE_UNITY_ADS_ENABLED)
+            OnlineAdsFactory.create(this) else null
+    }
     private val apkQaClient by lazy { CloudApkQaClient(this,cloudClient) }
     private var apkQaObserver:Job?=null
     private var apkQaRunning by mutableStateOf(false)
@@ -413,7 +417,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun observeApkQa() {
-        if(apkQaObserver?.isActive==true || !BuildConfig.SPDECODE_CLOUD_ENABLED)return
+        if(apkQaObserver?.isActive==true || !BuildConfig.SPDECODE_APK_QA_ENABLED)return
         apkQaObserver=scope.launch {
             while(true) {
                 try {
@@ -444,6 +448,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun reconnectApkQa() {
+        if(!BuildConfig.SPDECODE_APK_QA_ENABLED)return
         try {
             if(apkQaClient.hasActiveJob()){
                 ApkQaWorker.enqueue(this,replace=true)
@@ -456,6 +461,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun startApkQa(uri:Uri) {
+        if(!BuildConfig.SPDECODE_APK_QA_ENABLED)return
         if(apkQaRunning)return
         if(!BuildConfig.SPDECODE_CLOUD_ENABLED){
             apkQaError="APK_QA_CLOUD_REQUIRED";return
@@ -765,6 +771,7 @@ class MainActivity : ComponentActivity() {
                             cancelCatalogDownload()
                             discardPartialCatalog()
                             CloudLegalConsent.revoke(this@MainActivity)
+                            onlineAds?.stop()
                             cloudClient.clearSession()
                             WorkManager.getInstance(this@MainActivity)
                                 .cancelUniqueWork("spdecode-apk-qa-single-upload")
@@ -785,6 +792,7 @@ class MainActivity : ComponentActivity() {
                         }catch(_:Exception){message=getString(R.string.history_storage_error)}
                     }
                 },
+                onAdsPrivacyOptions={onlineAds?.showPrivacyOptions(this@MainActivity)},
                 serverVpnApps=serverVpnApps,
                 cloudFormats=fileFormats,
                 cloudTextFormats=textRoutes,
@@ -854,6 +862,7 @@ class MainActivity : ComponentActivity() {
                         try {
                             CloudLegalConsent.accept(this@MainActivity)
                             showCloudLegal=false
+                            if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED)onlineAds?.initialize(this@MainActivity)
                             requestNoticePermissionAfterConsent()
                             refreshServerVpn()
                             refreshCloudWhatsNew()
@@ -902,7 +911,7 @@ class MainActivity : ComponentActivity() {
             }
             }
         }
-        if(BuildConfig.SPDECODE_CLOUD_ENABLED)observeApkQa()
+        if(BuildConfig.SPDECODE_APK_QA_ENABLED)observeApkQa()
         if(savedInstanceState==null && !showCloudLegal)handleExternalIntent(intent)
     }
 
@@ -913,7 +922,8 @@ class MainActivity : ComponentActivity() {
             return
         }
         observeRuntime()
-        if(BuildConfig.SPDECODE_CLOUD_ENABLED && !showCloudLegal){
+        if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED && !showCloudLegal)onlineAds?.initialize(this)
+        if(BuildConfig.SPDECODE_APK_QA_ENABLED && !showCloudLegal){
             observeApkQa()
             try {if(apkQaClient.hasActiveJob())ApkQaWorker.enqueue(this)}
             catch(_:Exception){
@@ -1192,6 +1202,8 @@ class MainActivity : ComponentActivity() {
                 catch(e:CancellationException){throw e}
                 catch(_:Exception){toast(R.string.history_storage_error)}
                 tab=0
+                if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED)
+                    onlineAds?.onSavedResult(this@MainActivity,record.id,stored)
             }catch(e:CancellationException){throw e}
             catch(error:Exception){if(generation==importGeneration) {
                 if(BuildConfig.SPDECODE_CLOUD_ENABLED && password==null &&
@@ -1291,6 +1303,8 @@ class MainActivity : ComponentActivity() {
                 catch(e:CancellationException){throw e}
                 catch(_:Exception){toast(R.string.history_storage_error)}
                 tab=0
+                if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED)
+                    onlineAds?.onSavedResult(this@MainActivity,record.id,stored)
             }catch(e:CancellationException){throw e}
             catch(e:CloudDecodeClient.Failure) {
                 if(generation==importGeneration)
@@ -1368,6 +1382,8 @@ class MainActivity : ComponentActivity() {
                 catch(e:CancellationException){throw e}
                 catch(_:Exception){toast(R.string.history_storage_error)}
                 tab=0
+                if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED)
+                    onlineAds?.onSavedResult(this@MainActivity,record.id,saved)
             }catch(e:CancellationException){throw e}
             catch(error:Exception) {
                 if(generation==importGeneration) {
@@ -1453,6 +1469,8 @@ class MainActivity : ComponentActivity() {
                 catch(error:CancellationException){throw error}
                 catch(_:Exception){toast(R.string.history_storage_error)}
                 tab=0
+                if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED)
+                    onlineAds?.onSavedResult(this@MainActivity,record.id,saved)
             }catch(error:CancellationException){throw error}
              catch(error:Exception) {
                 if(generation==importGeneration) {
@@ -1709,6 +1727,8 @@ class MainActivity : ComponentActivity() {
                     catch(e:CancellationException){throw e}
                     catch(_:Exception){toast(R.string.history_storage_error)}
                     tab=0
+                if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED)
+                    onlineAds?.onSavedResult(this@MainActivity,processed.id,saved)
                 }
                 if(generation==importGeneration && report.failures>0 &&
                     pendingCloudPasswordFile==null) {
@@ -1903,6 +1923,7 @@ class MainActivity : ComponentActivity() {
         credentialPrepareJob?.cancel()
         cancelPrivateCredentialSelection()
         job?.cancel()
+        onlineAds?.stop()
         scope.cancel()
         super.onDestroy()
     }

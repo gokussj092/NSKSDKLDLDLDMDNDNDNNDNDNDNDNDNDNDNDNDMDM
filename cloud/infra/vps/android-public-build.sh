@@ -135,8 +135,23 @@ PY
  fi
  [[ -n "${SPDECODE_V2_HPKE_PINS:-}" ]] || die "No verified HPKE public pins available for Online"
 fi
+UNITY_ARGS=()
+if [[ "$CHANNEL" == online ]];then
+  UNITY_CONFIG="$CFG/unity-ads.env"
+  [[ -f "$UNITY_CONFIG" && $(stat -c %a "$UNITY_CONFIG") == 600 ]] ||
+    die "Unity configuration /etc/spdecode/unity-ads.env (mode 600) is required for Online publication"
+  # Public ad identifiers: no keystore, payment or API secrets are stored here.
+  set -a
+  # shellcheck source=/dev/null
+  source "$UNITY_CONFIG"
+  set +a
+  [[ -n "${SPDECODE_UNITY_APP_KEY:-}" && -n "${SPDECODE_UNITY_INTERSTITIAL_ID:-}" &&
+     -n "${SPDECODE_UNITY_UMP_APP_ID:-}" ]] ||
+    die "Incomplete Unity/CMP identifiers; refusing to publish an Online APK without ads"
+  UNITY_ARGS+=("-PspdecodeUnityAds=true")
+fi
 log "Compiling signed $CHANNEL APK (not an AAB) from verified CI source"
-(cd "$SOURCE/android" && "$GRADLE" --no-daemon --max-workers=1 :app:assembleRelease)
+(cd "$SOURCE/android" && "$GRADLE" --no-daemon --max-workers=1 "${UNITY_ARGS[@]}" :app:assembleRelease)
 APK="$SOURCE/android/app/build/outputs/apk/release/app-release.apk"
 [[ -s "$APK" ]] || die "Gradle did not produce the release APK"
 TOOLS="$SDK/build-tools/35.0.0"

@@ -112,6 +112,16 @@ val enableCloud=cloudOrigin.isNotEmpty()
 val nativeOffline=providers.environmentVariable("SPDECODE_OFFLINE_NATIVE").orNull=="true"
 // Opt-in SDK preparation. Regular builds and Offline contain no ad SDK.
 val enableUnityAds=providers.gradleProperty("spdecodeUnityAds").orNull=="true"
+val unityAppKey=providers.environmentVariable("SPDECODE_UNITY_APP_KEY").orNull.orEmpty().trim()
+val unityInterstitialId=providers.environmentVariable("SPDECODE_UNITY_INTERSTITIAL_ID").orNull.orEmpty().trim()
+val unityUmpAppId=providers.environmentVariable("SPDECODE_UNITY_UMP_APP_ID").orNull.orEmpty().trim()
+if(enableUnityAds) {
+    require(unityAppKey.matches(Regex("[A-Za-z0-9_-]{6,80}"))) { "Unity LevelPlay app key missing or invalid" }
+    require(unityInterstitialId.matches(Regex("[A-Za-z0-9_-]{6,80}"))) { "Unity interstitial ID missing or invalid" }
+    require(unityUmpAppId.matches(Regex("ca-app-pub-[0-9]{16}~[0-9]{10}"))) {
+        "Google UMP app ID missing or invalid; ads may not start without a configured CMP"
+    }
+}
 require(!enableUnityAds || (enableCloud && !nativeOffline)) { "Unity Ads is Online-only" }
 require(!nativeOffline || !enableCloud) { "Offline must not configure a Cloud origin" }
 val enableQaBuild=providers.environmentVariable("SPDECODE_CLOUD_QA_BUILD").orNull=="true"
@@ -698,7 +708,12 @@ val prepareCloudOnlySources = tasks.register<Sync>("prepareCloudOnlySources") {
         exclude("com/ghostdeveloper/spdecode/SpDecodeApp.kt")
         exclude("com/ghostdeveloper/spdecode/MainActivity.kt")
         exclude("com/ghostdeveloper/spdecode/FunctionalSettingsPanel.kt")
+        if(!enableQaBuild) {
+            exclude("com/ghostdeveloper/spdecode/cloud/CloudApkQaClient.kt")
+            exclude("com/ghostdeveloper/spdecode/cloud/ApkQaWorker.kt")
+        }
     }
+    if(!enableQaBuild) from("src/comingSoon/java")
     // This catalog is public display metadata, not a decryption engine.
     from("src/main/java/com/ghostdeveloper/spdecode/parity/AndroidDecoderCatalog.kt") {
         into("com/ghostdeveloper/spdecode/parity")
@@ -779,6 +794,10 @@ android {
         buildConfigField("boolean", "SPDECODE_CLOUD_ENABLED", enableCloud.toString())
         buildConfigField("boolean", "SPDECODE_QA_BUILD", enableQaBuild.toString())
         buildConfigField("boolean", "SPDECODE_PLAY_UPDATES", enablePlayAab.toString())
+        buildConfigField("boolean", "SPDECODE_APK_QA_ENABLED", (enableCloud && enableQaBuild).toString())
+        buildConfigField("boolean", "SPDECODE_UNITY_ADS_ENABLED", enableUnityAds.toString())
+        buildConfigField("String", "SPDECODE_UNITY_APP_KEY", "\""+(if(enableUnityAds)unityAppKey else "")+"\"")
+        buildConfigField("String", "SPDECODE_UNITY_INTERSTITIAL_ID", "\""+(if(enableUnityAds)unityInterstitialId else "")+"\"")
         // Public trust anchors; never package any recipient private key.
         // Public HPKE pin lives as masked bytes in native C++, not in BuildConfig.
 
@@ -793,6 +812,7 @@ android {
             providers.gradleProperty("noticeFirebase$it").orNull.orEmpty().isNotEmpty() }
         require(noticeKeys.all {it} || noticeKeys.none {it}) { "Firebase notice config must be complete" }
         manifestPlaceholders["spdecodeQaEnabled"] = enableQaBuild.toString()
+        manifestPlaceholders["spdecodeUmpAppId"] = if(enableUnityAds) unityUmpAppId else ""
         externalNativeBuild {
             cmake {
                 arguments += "-DSPDECODE_CLOUD_ORIGIN=$cloudOrigin"
@@ -877,6 +897,7 @@ dependencies {
     if(enableUnityAds) {
         implementation("com.unity3d.ads-mediation:mediation-sdk:9.7.0")
         implementation("com.unity3d.ads-mediation:unityads-adapter:5.16.0")
+        implementation("com.google.android.ump:user-messaging-platform:3.2.0")
     }
     if(nativeOffline) {
         // Standalone APK: no Firebase, Play update, Room, WorkManager or Cloud SDK.
