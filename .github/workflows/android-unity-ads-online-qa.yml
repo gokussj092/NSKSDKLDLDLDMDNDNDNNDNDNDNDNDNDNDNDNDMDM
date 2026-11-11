@@ -111,7 +111,7 @@ jobs:
           printf 'Version: %s\nBuild: %s\nSource SHA: %s\nUnity Ads: enabled\nDistribution: QA only, not published\n' "$SPDECODE_VERSION_NAME" "$SPDECODE_VERSION_CODE" "$GITHUB_SHA" > dist/BUILD_INFO.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: SP-DECODE-UNITY-ADS-ONLINE-1.1.27-b42-QA-EVERY-FILE-SIGNED
+          name: SP-DECODE-UNITY-ADS-ONLINE-1.1.27-b42-QA-FOCUS-RECOVERY-SIGNED
           path: dist/
           if-no-files-found: error
           retention-days: 30
