@@ -60,6 +60,11 @@ internal fun LargeResultViewer(raw: String, mask: Boolean, identity: String, suf
                 var view by remember { mutableStateOf<ContinuousJsonView?>(null) }
                 val clipboard = LocalClipboardManager.current
                 val fontScale = LocalDensity.current.fontScale
+                // The native editor uses a 19sp minimum row height and 8dp
+                // insets on both ends. A 150-line fixed allocation leaves a
+                // large black gap under short JSON; size to real rendered lines.
+                val visibleLines = current.lineCount.coerceIn(1, 150)
+                val jsonHeightDp = visibleLines * 19f * fontScale + 16f
 
                 LaunchedEffect(current, mask, query, action, view) {
                     val target = view ?: return@LaunchedEffect
@@ -121,7 +126,7 @@ internal fun LargeResultViewer(raw: String, mask: Boolean, identity: String, suf
                             }.also { view = it }
                         },
                         modifier = Modifier.fillMaxWidth()
-                            .height((current.lineCount.coerceIn(4, 150) * 22f * fontScale).dp),
+                            .height(jsonHeightDp.dp),
                     )
                 }
                 if(copyFailure) {
