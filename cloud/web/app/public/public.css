@@ -468,3 +468,9 @@ body:has(.sp-public-frame){background:#000;color:#f7f7f7}
 .sp-downloads-section small{display:block;margin-top:11px;color:#9caea0;overflow-wrap:anywhere}
 @media(max-width:930px){.sp-shop-product-layout{grid-template-columns:1fr}.sp-shop-summary{position:static;border-left:0;border-top:1px solid #263428}.sp-shop-inclusions{gap:15px}}
 @media(max-width:700px){.sp-shop-product-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.sp-shop-product-tabs button{min-height:62px;font-size:12.5px}.sp-shop-selected{padding:17px 14px}.sp-shop-selected-heading img{width:42px;height:42px}.sp-shop-selected-heading h2{font-size:19px}.sp-shop-inclusions{grid-template-columns:1fr}.sp-shop-summary{padding:23px 19px}.sp-downloads-section{grid-template-columns:1fr}}
+
+
+.sp-checkout-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;margin:9px 0 23px}
+.sp-checkout-steps>span{min-width:0;font-size:11px;line-height:1.5;text-align:center;font-weight:700;color:#8ea18f;padding:12px 5px;border-bottom:3px solid #2b3a2e}
+.sp-checkout-steps>span.current{color:#62ec9b;border-bottom-color:#2fe07c}
+.sp-checkout-steps>span.done{color:#e1f1e5;border-bottom-color:#226d42}
