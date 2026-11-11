@@ -60,7 +60,11 @@ export default function Storefront(){
   <section className="sp-container sp-shop-assurances"><article><h3>{t.info}</h3><p>{t.infoText}</p></article><article><h3>{t.faq}</h3>{t.faqItems.map(([q,a])=><details key={q} className="sp-shop-minifaq"><summary>{q}</summary><p>{a}</p></details>)}</article></section>
   <dialog ref={dialog} className="sp-checkout sp-premium-checkout" aria-labelledby="sp-checkout-title" onClose={()=>{setSelected(null);setError('');}}>
    <div className="sp-checkout-head"><span className="sp-kicker">SP-DECODE · CHECKOUT</span><button type="button" className="sp-dialog-close" aria-label={t.close} onClick={()=>dialog.current?.close()}>×</button></div>
-   {selected&&<><h2 id="sp-checkout-title">{selected.id==='analysis-credits'?t.credits:selected.id==='offline-3'?t.offline:t.api}</h2><p>{t.checkoutLead}</p>
+   {selected&&<><div className="sp-checkout-steps" aria-label={lang==='es'?'Etapas de compra':'Purchase stages'}>
+    <span className="done">1 · {lang==='es'?'Plan elegido':'Selected plan'}</span>
+    <span className="current" aria-current="step">2 · {lang==='es'?'Revisar pago':'Review payment'}</span>
+    <span>3 · {lang==='es'?'Confirmación':'Confirmation'}</span>
+   </div><h2 id="sp-checkout-title">{selected.id==='analysis-credits'?t.credits:selected.id==='offline-3'?t.offline:t.api}</h2><p>{t.checkoutLead}</p>
     <div className="sp-checkout-product-preview"><img src="/icon.svg" alt="" width="45" height="45"/><div><strong>{current?.credits?current.credits+' '+(lang==='es'?'créditos':'credits'):current?.days?current.days+' '+(lang==='es'?'días':'days'):lang==='es'?'Pago único':'One-time'}</strong><small>{selected.id==='analysis-credits'?t.credits:selected.id==='offline-3'?t.offline:t.api}</small></div><strong>{amount?money(amount,currency,lang):'—'}</strong></div>
     {!available?<div className="sp-soft-notice">{t.unavailable}</div>:!account?.user?<div className="sp-checkout-signin"><p>{t.login}</p><Link className="sp-shop-button" href="/login?next=/store">{t.signIn}</Link></div>:<>
      <div className="sp-checkout-methods">{selected.providers.filter(id=>id!=='mercadopago'||currency==='MXN').map(id=><label key={id} className={'sp-checkout-method sp-premium-method '+(provider===id?'chosen':'')}><input type="radio" name="provider" checked={provider===id} onChange={()=>setProvider(id)}/><PaymentMark id={id} lang={lang}/></label>)}</div>
