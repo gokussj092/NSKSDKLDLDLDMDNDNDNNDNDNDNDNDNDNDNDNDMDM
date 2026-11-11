@@ -32,7 +32,8 @@ def load_slot(folder):
     try:
         meta=json.loads((folder/'release.json').read_text())
         file=folder/'release.apk'
-        if (meta.get('channel') not in CHANNELS or
+        if (meta.get('packageName') != ('com.ghostdeveloper.spdecode.offline' if meta.get('channel')=='offline' else 'com.ghostdeveloper.spdecode') or
+            meta.get('channel') not in CHANNELS or
             not VERSION.fullmatch(meta.get('version','')) or
             not SOURCE.fullmatch(meta.get('sourceCommit','')) or
             not SHA.fullmatch(meta.get('sha256','')) or
@@ -84,7 +85,8 @@ def publish(root,channel,apk,version,code,source,signer):
         shutil.copyfile(apk,staged)
         os.chmod(staged,0o644)
         meta={
-          'channel':channel,'version':version,'versionCode':code,
+          'channel':channel,'packageName':('com.ghostdeveloper.spdecode.offline' if channel=='offline' else 'com.ghostdeveloper.spdecode'),
+          'version':version,'versionCode':code,
           'sourceCommit':source,'signerCertSha256':signer,
           'sha256':digest(staged),'bytes':staged.stat().st_size,
           'publishedAt':datetime.now(timezone.utc).isoformat(timespec='seconds')
