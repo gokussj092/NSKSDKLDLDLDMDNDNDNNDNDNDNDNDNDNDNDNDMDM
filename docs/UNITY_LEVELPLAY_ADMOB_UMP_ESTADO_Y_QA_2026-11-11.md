@@ -132,3 +132,18 @@ El desarrollador confirmó expresamente que el error indicado por la APK QA era 
 - **Código actual:** `onAdClosed` llama a `requestLoadWhenReady()`; se usa `isAdReady()` antes de presentar; la APK de QA conserva una ventana para recuperar el foco y no bloquea el resultado de descifrado. Los fallos de carga aplican una pausa local de 45 s antes de intentar otra carga. La prueba anula la frecuencia local, pero no puede anular controles de LevelPlay.
 - **Siguiente prueba recomendada:** realizar 3 descifrados espaciados 3–5 minutos, verificar `onAdLoaded`, `onAdLoadFailed` y la mediación por red desde Integration Test Suite. Mantener ads de prueba. Evitar solicitar un intersticial con cada operación rápida en producción.
 - **Sin cambios nuevos en código, versión, firma o VPS:** `1.1.27 (42)` sigue en QA hasta decisión de publicación.
+
+## 10. QA catálogos: JSON íntegro en Inicio + intersticial (2026-11-11)
+
+**Petición funcional:** aplicar a las solicitudes de resultados de catálogo VPN el mismo comportamiento publicitario de la prueba de archivos; navegar a Inicio con el JSON visible, sin el aviso `resultado demasiado largo / exportar desde historial`.
+
+**Implementación provisional en la rama `ci/unity-ads-online-qa` (no promovida a producción):**
+
+- Flujos cubiertos: `decodeNurServers()` y `decodeServerVpnProvider(id)` después de una respuesta de descifrado correcta. Los refrescos de la lista de apps/catálogos de metadatos no son resultados de JSON y no activan publicidad.
+- En el transformador de `android/app/build.gradle.kts`, `presentDecodedRecord` distingue `nurservers` y `vpnservers`: establece `result=entry`, `tab=0` y `showLargeResultWarning=false` para catálogos; se mantiene el control previo para otros archivos o textos excepcionalmente grandes.
+- `CompleteResultCard` usa `LargeResultViewer` / `NativeResultEngine` y `ContinuousJsonView`, que muestra el contenido indexado con scroll continuo. La vista contiene el JSON completo y mantiene la exportación directa desde Inicio.
+- Los dos flujos de catálogo llaman `onlineAds?.onSavedResult(...)` con la misma unidad de LevelPlay y manejo de foco/carga del modo `spdecodeAdsEveryFileQa`; siempre después de completar el resultado. No se alteran UMP ni los límites que impone el servidor de LevelPlay.
+- La APK de pruebas conserva **1.1.27 (42)** y la firma persistente. Código del cambio: `4bd6952fba6da44d37888ae1a369e11827d82193`. Workflow de QA: [43106942212](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/43106942212).
+- **Estado del workflow al redactar:** ejecución iniciada, pendiente de resultado final. **Resultado en un teléfono aún no verificado**; comprobar memoria/rendimiento con catálogos grandes e impresiones 509 si se repiten operaciones demasiado rápido.
+
+**Casos de aceptación en móvil:** 1) catálogo NUR con JSON completo en Inicio; 2) proveedor VPN con JSON en Inicio y scroll; 3) exportación del JSON sin pasar al historial; 4) intersticial si el SDK lo tiene cargado; 5) ante error 509 o falta de inventario, el resultado se entrega igualmente; 6) no aparece el aviso de longitud para estos catálogos.
