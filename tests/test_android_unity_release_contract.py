@@ -47,6 +47,24 @@ class AndroidUnityReleaseContract(unittest.TestCase):
         self.assertNotIn("count>=3", host)
         self.assertNotIn("putString(", host) # No decoded payloads stored in ad telemetry.
 
+    def test_every_file_ads_qa_excludes_catalogs_and_keeps_production_caps(self):
+        gradle = read("android/app/build.gradle.kts")
+        activity = read("android/app/src/main/java/com/ghostdeveloper/spdecode/MainActivity.kt")
+        host = read("android/app/src/unityAds/java/com/ghostdeveloper/spdecode/ads/UnityInterstitialHost.kt")
+        self.assertIn('spdecodeAdsEveryFileQa', gradle)
+        self.assertIn('SPDECODE_ADS_EVERY_FILE_QA', gradle)
+        self.assertIn('(!previewDeferred || BuildConfig.SPDECODE_ADS_EVERY_FILE_QA)', gradle)
+        self.assertEqual(activity.count("&& !BuildConfig.SPDECODE_ADS_EVERY_FILE_QA"), 4)
+        self.assertEqual(activity.count("onlineAds?.onSavedResult("), 5)
+        self.assertIn("val qaEveryFile=BuildConfig.SPDECODE_ADS_EVERY_FILE_QA", host)
+        self.assertIn("val blockedByPacing=!qaEveryFile", host)
+        self.assertIn("val blockedByDailyCap=!qaEveryFile", host)
+        self.assertIn("showQaFeedback(activity,feedback)", host)
+        self.assertIn("LevelPlay no inicializado", host)
+        self.assertIn("UMP no permite anuncios", host)
+        self.assertIn("success=(saved||qaEveryFile)", host)
+        self.assertNotIn('putString(', host)
+
     def test_vps_online_fails_closed_for_missing_ads(self):
         build = read("cloud/infra/vps/android-public-build.sh")
         self.assertIn('UNITY_CONFIG="$CFG/unity-ads.env"', build)
