@@ -95,6 +95,7 @@ internal fun AccountDrawer(busy:Boolean,onExternalLink:(String)->Unit,
             val store=destination=="store"
             Column(
                 Modifier.fillMaxSize().background(Color.Black)
+                    .safeDrawingPadding()
                     .padding(horizontal=20.dp, vertical=14.dp),
                 verticalArrangement=Arrangement.spacedBy(15.dp),
             ) {
