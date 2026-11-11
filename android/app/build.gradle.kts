@@ -408,6 +408,9 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
             section=replaceOnce(section,"historyPreferences.setSelectedId("+entry+".id)",
                 "historyPreferences.setSelectedId(if(previewDeferred) null else "+entry+".id)")
             section=replaceOnce(section,"                tab=0","                tab=if(previewDeferred)1 else 0")
+            section=section.replace(
+                "if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED)\n                    onlineAds?.onSavedResult(",
+                "if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED && !previewDeferred)\n                    onlineAds?.onSavedResult(")
             activity=activity.substring(0,from)+section+activity.substring(to)
         }
         updateResultBlock("    private fun decodeText(userText:String,password:ByteArray?=null) {",
@@ -535,8 +538,8 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
         batch=replaceOnce(batch,"historyPreferences.setSelectedId(processed.id)",
             "historyPreferences.setSelectedId(if(previewDeferred) null else processed.id)")
         batch=replaceOnce(batch,
-            "                    tab=0\n                }\n                if(generation==importGeneration",
-            "                    tab=if(previewDeferred)1 else 0\n                }\n                if(generation==importGeneration")
+            "                    tab=0\n                    if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED)\n                        onlineAds?.onSavedResult(this@MainActivity,processed.id,saved)\n                }\n                if(generation==importGeneration",
+            "                    tab=if(previewDeferred)1 else 0\n                    if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED && !previewDeferred)\n                        onlineAds?.onSavedResult(this@MainActivity,processed.id,saved)\n                }\n                if(generation==importGeneration")
         activity=activity.substring(0,batchStart)+batch+activity.substring(batchEnd)
 
         // Compatible export changes only the generated Cloud menu; C0 source

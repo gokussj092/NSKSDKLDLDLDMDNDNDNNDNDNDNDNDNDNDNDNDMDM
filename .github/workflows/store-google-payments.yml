@@ -64,6 +64,7 @@ jobs:
           python3 -m py_compile cloud/infra/vps/commerce-setup.py cloud/infra/vps/nginx-config.py cloud/infra/vps/cleanup-runner.py
           python3 -m unittest tests.test_store_infra -v
           python3 -m unittest tests.test_public_apk_publication -v
+          python3 -m unittest tests.test_android_unity_release_contract -v
   unity-compile:
     name: Compile opt-in Online Unity adapter, no ad requests
     runs-on: ubuntu-latest
@@ -71,6 +72,10 @@ jobs:
     env:
       SPDECODE_CLOUD_API_BASE_URL: https://api.spdecode.xyz
       SPDECODE_CLOUD_QA_BUILD: 'false'
+      # Synthetic public CI values, no ad initialization, no traffic or impressions.
+      SPDECODE_UNITY_APP_KEY: synthetic_ci_appkey_123
+      SPDECODE_UNITY_INTERSTITIAL_ID: synthetic_ci_interstitial_123
+      SPDECODE_UNITY_UMP_APP_ID: 'ca-app-pub-1234567890123456~1234567890'
     steps:
       - uses: actions/checkout@v4
         with: {persist-credentials: false}

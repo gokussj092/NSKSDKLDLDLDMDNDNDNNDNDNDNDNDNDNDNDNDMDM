@@ -1727,8 +1727,8 @@ class MainActivity : ComponentActivity() {
                     catch(e:CancellationException){throw e}
                     catch(_:Exception){toast(R.string.history_storage_error)}
                     tab=0
-                if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED)
-                    onlineAds?.onSavedResult(this@MainActivity,processed.id,saved)
+                    if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED)
+                        onlineAds?.onSavedResult(this@MainActivity,processed.id,saved)
                 }
                 if(generation==importGeneration && report.failures>0 &&
                     pendingCloudPasswordFile==null) {

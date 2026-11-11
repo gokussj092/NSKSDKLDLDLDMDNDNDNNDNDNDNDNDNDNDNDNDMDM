@@ -1,54 +1,7 @@
 name: SP-DECODE Offline Native APK (unified branch, persistent signer)
+# Offline APK gated pending mandatory license verification.
+# Never compile automatically from an Online/Unity change.
 on:
-  push:
-    branches: [feat/nuevas-integraciones]
-    paths:
-      - android/app/build.gradle.kts
-      - android/app/proguard-rules.pro
-      - android/app/src/offlineNative/**
-      - android/app/src/main/cpp/CMakeLists.txt
-      - android/app/src/main/cpp/spdecode_offline_native.cpp
-      - android/app/src/main/cpp/spdecode_http_custom.cpp
-      - android/app/src/main/cpp/spdecode_http_custom.h
-      - android/app/src/main/cpp/spdecode_http_custom_legacy.cpp
-      - android/app/src/main/cpp/spdecode_http_custom_legacy.h
-      - android/app/src/main/cpp/spdecode_hc_unicode.h
-      - decoders/Python/_hc_legacy57.py
-      - decoders/Python/HTTPCUSTOM.py
-      - cloud/workers/python/hc_bridge.py
-      - cloud/web/lib/hc-partial-result.mjs
-      - cloud/web/tests/hc-partial-result.test.mjs
-      - tests/test_hc_legacy57.py
-      - tests/golden/hc_legacy57.json
-      - analysis/xyz.easypro.httpcustom/564/generated/native_codec_vectors.json
-      - scripts/build_offline_npv_tables.py
-      - android/app/src/main/cpp/spdecode_npv_text.cpp
-      - android/app/src/main/cpp/spdecode_npv_text.h
-      - android/app/src/main/cpp/spdecode_npv_crypto.h
-      - android/app/src/main/cpp/spdecode_npv_whitebox.cpp
-      - android/app/src/main/cpp/spdecode_npv_whitebox.h
-      - android/app/src/main/cpp/spdecode_npv_signed.cpp
-      - android/app/src/main/cpp/spdecode_npv_signed.h
-      - android/app/src/main/cpp/spdecode_npv_legacy.cpp
-      - android/app/src/main/cpp/spdecode_npv_legacy.h
-      - tests/native_npv_cli.cpp
-      - tests/test_offline_npv_native_parity.py
-      - android/app/src/main/cpp/spdecode_http_injector.cpp
-      - android/app/src/main/cpp/spdecode_http_injector.h
-      - android/app/src/main/cpp/spdecode_dark_tunnel.cpp
-      - android/app/src/main/cpp/spdecode_dark_tunnel.h
-      - android/app/src/main/cpp/spdecode_hat_tunnel.cpp
-      - android/app/src/main/cpp/spdecode_hat_tunnel.h
-      - tests/native_hat_tunnel_cli.cpp
-      - tests/test_offline_hat_native_parity.py
-      - tests/test_offline_share_ui_contract.py
-      - tests/native_dark_tunnel_cli.cpp
-      - tests/test_offline_dark_native_parity.py
-      - tests/native_http_injector_cli.cpp
-      - tests/test_offline_ehi_native_parity.py
-      - tests/native_http_custom_cli.cpp
-      - tests/test_offline_hc_native_parity.py
-      - .github/workflows/offline-native-apk.yml
   workflow_dispatch:
 
 permissions:
