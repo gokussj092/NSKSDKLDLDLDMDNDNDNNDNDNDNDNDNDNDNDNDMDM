@@ -171,3 +171,20 @@ El desarrollador confirmó expresamente que el error indicado por la APK QA era 
 - **Fase D (para mejorar el fill):** revisar la incorporación real de la red AdMob como demanda adicional en LevelPlay. Tener App ID y UMP configurados no significa que AdMob ya participe en mediación; requiere alta de red, unidades, adaptador y validación del dashboard.
 
 **Documentación oficial:** https://docs.unity.com/grow/levelplay/platform/settings/capping-pacing ; https://docs.unity.com/en-us/grow/levelplay/sdk/android/banner-integration ; https://docs.unity.com/en-us/grow/levelplay/sdk/android/rewarded-ads-integration
+
+## 12. QA Android: cooldown, JSON adaptativo, Cuenta y Tienda internas
+
+**Pedido aprobado por el desarrollador:** mantener anuncios intersticiales después de descifrado de archivos y catálogos, sin cambiar sus triggers, volumen de prueba ni flujo de resultados. No añadir AdMob ni otros formatos en esta etapa; continuar la distribución APK mientras Google Play permanece en pruebas.
+
+**Cambios en `ci/unity-ads-online-qa` (no promovidos):**
+
+1. **Enfriamiento de solicitudes SDK:** `UnityInterstitialHost.requestLoadWhenReady()` introduce `LOAD_COOLDOWN_MS=60_000L` y `lastLoadRequestedElapsed`, para no iniciar más de una `loadAd()` cada 60 s. Conserva `LOAD_RETRY_MS=45_000L` como condición adicional, aunque el cooldown de 60 s prevalece entre peticiones reales. No introduce un temporizador de polling ni limita la visualización de un anuncio ya cargado. El anuncio solo se muestra si `isAdReady` y se permite por UMP.
+2. **Avisos de QA fuera del release:** `showQaFeedback()` requiere `BuildConfig.DEBUG` antes de mostrar Toast, aunque la compilación QA firmada mantenga `spdecodeAdsEveryFileQa=true`. Los códigos seguros en Logcat siguen disponibles. El resultado se entrega aunque falte inventario (incluyendo código 509).
+3. **JSON adaptativo:** `LargeResultViewer.kt` conserva el visor indexado nativo y límite de **150 líneas visibles antes de scroll**, pero adapta el alto del `AndroidView` al `lineCount` real (1–150 filas a 19sp + padding nativo de 16dp), eliminando parte del espacio negro innecesario debajo de JSON breves. El documento completo no se recorta ni se pagina.
+4. **Cuenta, perfil y Tienda:** `AccountDrawer.kt` muestra pantallas nativas diferenciadas, con títulos localizados reutilizados y `R.string.apk_analysis_coming_soon` en todos los idiomas. No se redirige el login, perfil o compras a `spdecode.xyz`; tampoco se simula autenticación, saldo, métodos de pago ni entrega de productos. Los enlaces de soporte, privacidad y comunidad oficiales permanecen como externos en el apartado About.
+5. **Pruebas de contrato:** `tests/test_android_unity_release_contract.py` añade aserciones de enfriamiento, altura, bloqueo de redirecciones y placeholders localizados.
+6. **Entrega prevista:** workflow `android-unity-ads-online-qa.yml`, run [43113154733](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/43113154733), APK firmada 1.1.27 (42) sujeta a validación GitHub Actions y pruebas en dispositivo.
+
+**Pendiente de una fase separada:** inicio de sesión Google OAuth nativo, cuentas sincronizadas, tienda, pagos y licencias requieren arquitectura de autenticación y checkout segura del lado servidor. No habilitar funcionalidades reales antes de completar credenciales, verificación, control antifraude y diseño de UX.
+
+**Fuera de alcance:** no se ha publicado en Google Play, no se ha desplegado VPS ni se ha cambiado `versionCode`.
