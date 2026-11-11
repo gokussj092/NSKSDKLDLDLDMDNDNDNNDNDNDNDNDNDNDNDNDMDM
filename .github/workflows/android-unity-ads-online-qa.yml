@@ -46,6 +46,7 @@ jobs:
           python3 scripts/ci/current_android_contracts.py --github-env "$GITHUB_ENV"
           python3 scripts/android_s3_security_audit.py
           python3 scripts/android_s4_provisioning_audit.py
+          # Every-file QA only: no catalog-triggered advertisements; native version 1.1.27 (42).
           python3 -m unittest tests.test_android_unity_release_contract -v
       - name: Android SDK / NDK
         run: |
