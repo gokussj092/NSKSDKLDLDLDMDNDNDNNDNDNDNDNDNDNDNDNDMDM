@@ -7,13 +7,14 @@ test('store uses the supplied emerald reference but real provider checkout',()=>
  const store=read('app/public/storefront.jsx');
  const experience=read('app/public/store-experience.jsx');
  const css=read('app/public/public.css');
+ const carousel=read('app/public/plan-carousel.jsx');
  assert.match(store,/import StoreExperience/);
  assert.match(store,/shopFetch\('\/api\/store\/quote'/);
  assert.match(store,/shopFetch\('\/api\/store\/checkout'/);
  for(const id of ['offline-3','api-ip','analysis-credits','online'])
   assert.ok(experience.includes(id),id);
  for(const label of ['Qué incluye','Qué no incluye','Resumen','Desliza'])
-  assert.ok((experience+css).includes(label),label);
+  assert.ok((experience+carousel+css).includes(label),label);
  assert.ok(css.includes('#2fe07c'));
  assert.match(experience,/sp-shop-summary/);
  assert.match(experience,/PlanCarousel/);
