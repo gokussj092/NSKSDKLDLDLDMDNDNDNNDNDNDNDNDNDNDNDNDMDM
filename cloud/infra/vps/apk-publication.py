@@ -64,7 +64,10 @@ def publish(root,channel,apk,version,code,source,signer):
     if not SOURCE.fullmatch(source):raise ValueError('BAD_SOURCE')
     if not SHA.fullmatch(signer):raise ValueError('BAD_SIGNER')
     if code<1:raise ValueError('BAD_VERSION_CODE')
-    apk=Path(apk);base=Path(root)/channel
+    apk=Path(apk);root=Path(root)
+    root.mkdir(parents=True,exist_ok=True)
+    root.chmod(0o755)
+    base=root/channel
     if not apk.is_file() or apk.stat().st_size<100000:raise RuntimeError('INVALID_APK')
     base.mkdir(parents=True,exist_ok=True)
     (base/'slots').mkdir(exist_ok=True)
