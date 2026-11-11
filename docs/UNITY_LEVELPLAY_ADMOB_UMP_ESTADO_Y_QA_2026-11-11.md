@@ -66,6 +66,17 @@ Workflow: https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM
 5. Mantener el tope de LevelPlay definido en panel (al tomar capturas: 8 impresiones/hora, intervalo 4 minutos); el servidor puede imponer límites adicionales.
 6. No agregar Banners o Rewarded solo para resolver fallos del Interstitial. Rewarded requiere una recompensa transparente y opt-in; Banner implica UI y permisos que deben diseñarse antes.
 
+## 4.1. Parche preparado en rama aislada (todavía NO promovido)
+
+En `ci/unity-ads-online-qa` se modificó `UnityInterstitialHost.kt` y se añadió una prueba contractual:
+
+- `MAX_DAILY_ADS=12` y `MIN_INTERVAL_MS=240_000L`.
+- Si `onAdLoadFailed` ocurre, el siguiente intento elegible solicita una nueva carga tras **45 segundos**; no se generan bucles automáticos ni se bloquea el resultado.
+- `onInitFailed` permite volver a intentar inicializar en una reanudación posterior.
+- Diagnósticos `SPDECODE_ADS` de UMP, init, load, show y skip. Solo estados, sin datos ni identificadores de usuarios.
+- Prueba de compilación firmada: run **43012363138**. **Resultado pendiente al redactar esta sección**.
+- Esta rama QA se mantiene separada de producción; **no** modificar `versionName` ni `versionCode` durante pruebas.
+
 ## 5. Cómo diagnosticar en dispositivo
 
 - Abrir **Unity LevelPlay → Setup/Settings → Test devices** y confirmar que la sesión de prueba para SP-DECODE utiliza el Advertising ID correcto. Activar anuncios de prueba para cada red/ad unit; Unity puede restablecer esta selección al cabo de una hora.
