@@ -78,7 +78,7 @@ jobs:
           SPDECODE_RELEASE_STORE_PASSWORD: ${{ secrets.SPDECODE_SIGNING_STORE_PASSWORD }}
           SPDECODE_RELEASE_KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
           SPDECODE_RELEASE_KEY_PASSWORD: ${{ secrets.SPDECODE_SIGNING_KEY_PASSWORD }}
-        run: gradle --no-daemon --max-workers=2 -PspdecodeUnityAds=true :app:assembleRelease
+        run: gradle --no-daemon --max-workers=2 -PspdecodeUnityAds=true -PspdecodeAdsEveryFileQa=true :app:assembleRelease
       - name: Validate signed external APK only (no AAB)
         run: |
           set -euo pipefail
@@ -110,7 +110,7 @@ jobs:
           printf 'Version: %s\nBuild: %s\nSource SHA: %s\nUnity Ads: enabled\nDistribution: QA only, not published\n' "$SPDECODE_VERSION_NAME" "$SPDECODE_VERSION_CODE" "$GITHUB_SHA" > dist/BUILD_INFO.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: SP-DECODE-UNITY-ADS-ONLINE-1.1.27-b42-QA-RETRY-DIAGNOSTICS-SIGNED
+          name: SP-DECODE-UNITY-ADS-ONLINE-1.1.27-b42-QA-EVERY-FILE-SIGNED
           path: dist/
           if-no-files-found: error
           retention-days: 30
