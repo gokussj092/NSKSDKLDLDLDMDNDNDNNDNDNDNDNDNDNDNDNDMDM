@@ -37,6 +37,12 @@ def encode_document(obj: dict, encrypted: bool = False, prefix: str = "") -> byt
 class NativeDarkParity(unittest.TestCase):
     cli: str = ""
 
+    @classmethod
+    def setUpClass(cls):
+        if not cls.cli:
+            raise unittest.SkipTest("Run this parity suite with an explicit compiled native CLI path")
+
+
     def run_cli(self, value: bytes, succeeds=True):
         completed = subprocess.run([self.cli], input=value, capture_output=True,
                                    timeout=10)
