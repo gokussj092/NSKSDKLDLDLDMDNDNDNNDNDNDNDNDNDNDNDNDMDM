@@ -38,7 +38,7 @@ class AndroidUnityReleaseContract(unittest.TestCase):
         self.assertIn("MIN_INTERVAL_MS=240_000L", host)
         self.assertIn("LOAD_RETRY_MS=45_000L", host)
         self.assertIn("retryAfterElapsed=SystemClock.elapsedRealtime()+LOAD_RETRY_MS", host)
-        self.assertIn("ad_load_failed_retry_later", host)
+        self.assertIn("ad_load_failed_code_", host)
         self.assertIn("requestLoadWhenReady()", host)
         self.assertIn("SPDECODE_ADS", host)
         self.assertIn("!consentInformation.canRequestAds()", host)
