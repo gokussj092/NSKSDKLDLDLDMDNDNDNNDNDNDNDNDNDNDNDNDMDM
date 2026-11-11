@@ -114,6 +114,8 @@ services:
       - provider-control:/app/provider-control:rw
       - catalog-snapshots:/app/catalog-snapshots:rw
       - notice-feed:/app/notices:rw
+      # Signed public APKs are host-published, atomic and read-only to Next.js.
+      - ${SPDECODE_PUBLIC_APK_DIR:-/opt/spdecode/public-apks}:/app/public-apks:ro
     ports:
       # Bound to host loopback only; public HTTPS reverse proxy is a later phase.
       - "127.0.0.1:3000:3000"
