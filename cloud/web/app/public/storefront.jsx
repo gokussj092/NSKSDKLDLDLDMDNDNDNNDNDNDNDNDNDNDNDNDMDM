@@ -3,7 +3,7 @@ import Link from 'next/link';
 import {useCallback,useEffect,useRef,useState} from 'react';
 import {usePublicLocale} from './site-chrome.jsx';
 import {shopFetch,money,errorMessage,ProductIcon} from './shop-common.jsx';
-import PlanCarousel from './plan-carousel.jsx';
+import StoreExperience from './store-experience.jsx';
 
 const providers={
  stripe:{name:'Stripe',detail:{es:'Tarjetas y billeteras disponibles',en:'Cards and eligible wallets'},icon:'/brands/stripe.svg'},
@@ -36,18 +36,6 @@ const copy={
  faq:'Before you buy',faqItems:[['Is Online free?','Yes. The Online application continues to offer its free features.'],['What is one credit?','One credit equals one successfully completed eligible advanced analysis. Server errors are not charged.'],['How do discounts work?','Displayed savings compare against the configured per-unit or monthly price.'],['Can I buy now?','Each product becomes purchasable once fulfillment is verified and payment methods are configured.']]}
 };
 function PaymentMark({id,lang,details=true}){const p=providers[id];return <span className="sp-pay-mark"><span className="sp-pay-icon"><img src={p.icon} alt="" width="24" height="24"/></span><span><strong>{p.name}</strong>{details&&<small>{p.detail[lang]}</small>}</span></span>;}
-function ProductSection({product,id,title,description,currency,lang,t,onOpen}){
- const [term,setTerm]=useState(id==='analysis-credits'?'1c':'1m');
- const current=product?.plans?.find(x=>x.id===term)||product?.plans?.[0];
- const select=useCallback(next=>setTerm(next),[]);
- const price=current?.prices?.[currency],canBuy=Boolean(product?.available&&current?.available&&price);
- return <section className="sp-premium-product" aria-labelledby={'sp-product-'+id}>
-  <div className="sp-premium-product-heading"><div className="sp-premium-app-badge"><img src="/icon.svg" width="51" height="51" alt="SP-DECODE"/></div><div><span className="sp-kicker">SP-DECODE</span><h2 id={'sp-product-'+id}>{title}</h2><p>{description}</p></div></div>
-  {product?<PlanCarousel product={product} currency={currency} lang={lang} selected={current?.id} onSelect={select}/>:<div className="sp-loading" role="status">SP-DECODE…</div>}
-  <div className="sp-premium-product-action"><p>{id==='analysis-credits'?(lang==='es'?'Saldo e historial disponibles en Mi cuenta':'Balance and history in My account'):id==='offline-3'?(lang==='es'?'Licencia para hasta 3 dispositivos':'License for up to 3 devices'):(lang==='es'?'API Key individual · Cuota por día':'Individual API key · Daily quota')}</p>
-  <button className="sp-shop-button" disabled={!product} onClick={()=>onOpen(product,current?.id)}>{canBuy?t.details:t.pending}</button></div>
- </section>;
-}
 export default function Storefront(){
  const {lang}=usePublicLocale(),t=copy[lang];
  const [catalog,setCatalog]=useState(null),[account,setAccount]=useState(null),[error,setError]=useState('');
@@ -65,12 +53,9 @@ export default function Storefront(){
  const names=new Intl.DisplayNames([lang],{type:'region'});
  return <main id="main" className="sp-shop sp-amoled-shop">
   <header className="sp-container sp-amoled-shop-hero"><div><span className="sp-kicker">{t.tag}</span><h1>{t.title}</h1><p>{t.lead}</p></div><label>{t.currency}<select value={currency} onChange={e=>setCurrency(e.target.value)}><option>USD</option><option>MXN</option><option>EUR</option></select></label></header>
-  <div className="sp-container"><article className="sp-free-product"><div className="sp-premium-app-badge"><img src="/icon.svg" alt="SP-DECODE" width="47" height="47"/></div><div><span className="sp-kicker">ANDROID</span><h2>{t.online}</h2><p>{t.onlineText}</p></div><div className="sp-free-product-action"><strong>{t.free}</strong><Link href="/#gallery" className="sp-shop-button secondary">{t.explore}</Link></div></article></div>
   {error&&!selected&&<p className="sp-container sp-form-error" role="alert">{error}</p>}
   {catalog&&!catalog.live&&catalog.products.some(p=>p.available)&&<p className="sp-container sp-soft-notice">{t.test}</p>}
-  <div className="sp-container sp-amoled-products">
-   {[['offline-3',t.offline,t.offlineText],['api-ip',t.api,t.apiText],['analysis-credits',t.credits,t.creditsText]].map(([id,title,desc])=><ProductSection key={id} id={id} title={title} description={desc} product={products.find(p=>p.id===id)} currency={currency} lang={lang} t={t} onOpen={open}/>)}
-  </div>
+  <div className="sp-container"><StoreExperience products={catalog?.products||[]} currency={currency} lang={lang} t={t} onOpen={open}/></div>
   <section className="sp-container sp-amoled-payment-info"><div><span className="sp-kicker">CHECKOUT</span><h2>{t.providers}</h2><p>{t.methods}</p></div><div className="sp-payment-logo-grid">{Object.entries(providers).map(([id,p])=><div className="sp-payment-logo-card" key={id}><PaymentMark id={id} lang={lang}/><small>{products.some(x=>x.providers?.includes(id))?t.providerReady:t.providerPending}</small></div>)}</div></section>
   <section className="sp-container sp-shop-assurances"><article><h3>{t.info}</h3><p>{t.infoText}</p></article><article><h3>{t.faq}</h3>{t.faqItems.map(([q,a])=><details key={q} className="sp-shop-minifaq"><summary>{q}</summary><p>{a}</p></details>)}</article></section>
   <dialog ref={dialog} className="sp-checkout sp-premium-checkout" aria-labelledby="sp-checkout-title" onClose={()=>{setSelected(null);setError('');}}>
