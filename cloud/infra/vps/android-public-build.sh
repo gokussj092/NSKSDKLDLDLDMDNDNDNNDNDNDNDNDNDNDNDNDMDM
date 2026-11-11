@@ -63,7 +63,12 @@ except (KeyError,AssertionError,ValueError):
  sys.exit(1)
 PY
   die "GitHub Actions verification failed"
-log "Verified signed release CI for $CHANNEL at $SOURCE_SHA"
+EXPECTED_ARTIFACT="SP-DECODE-BRANCH-APK-RELEASE-SIGNED"
+[[ "$CHANNEL" == offline ]] && EXPECTED_ARTIFACT="SP-DECODE-OFFLINE-PERSISTENT-SIGNED-QA"
+gh api "repos/$PROJECT/actions/runs/$RUN/artifacts" --jq '.artifacts[].name' |
+  grep -Fxq "$EXPECTED_ARTIFACT" ||
+  die "GitHub Actions run succeeded but has no verified signed APK artifact"
+log "Verified signed release CI and artifact for $CHANNEL at $SOURCE_SHA"
 # The existing VPS signing.env contains a protected shell-escaped PKCS12 path
 # and passwords. Never read it from the source tree or log its values.
 # shellcheck source=/dev/null
@@ -126,8 +131,14 @@ APK="$SOURCE/android/app/build/outputs/apk/release/app-release.apk"
 TOOLS="$SDK/build-tools/35.0.0"
 "$TOOLS/apksigner" verify --verbose --print-certs "$APK" > "$BUILDROOT/certificate.txt" ||
   die "APK signature verification failed"
-grep -Eiq 'Verified using v2 scheme .*: true' "$BUILDROOT/certificate.txt" ||
-  die "APK does not have a verified V2 signature"
+for scheme in v2 v3;do
+  grep -Eiq "Verified using $scheme scheme .*: true" "$BUILDROOT/certificate.txt" ||
+    die "APK does not have verified $scheme signature"
+done
+"$TOOLS/apksigner" verify --min-sdk-version 23 --max-sdk-version 23 --verbose "$APK" > "$BUILDROOT/certificate-v1.txt" ||
+  die "APK V1 signature verification failed"
+grep -Eiq 'Verified using v1 scheme .*: true' "$BUILDROOT/certificate-v1.txt" ||
+  die "APK V1 signature is missing"
 CERT=$(grep -m1 -i 'Signer #1 certificate SHA-256 digest:' "$BUILDROOT/certificate.txt" | awk '{print $NF}' | tr '[:upper:]' '[:lower:]')
 [[ "$CERT" == "$SPDECODE_TRUSTED_SIGNER_SHA256" ]] || die "APK signer does not match persistent key"
 "$TOOLS/zipalign" -c -P 16 -v 4 "$APK" >/dev/null || die "Invalid APK alignment"
