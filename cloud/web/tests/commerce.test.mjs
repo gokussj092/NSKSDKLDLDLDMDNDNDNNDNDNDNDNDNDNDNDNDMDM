@@ -14,7 +14,7 @@ import {creditBalance,reserveCredit,completeCredit,releaseCredit} from '../lib/c
 import {verifyMpSignature,allowedCheckout,paymentEvent} from '../lib/commerce/providers.mjs';
 import {estimateRetail} from '../lib/commerce/pricing.mjs';
 import Stripe from 'stripe';
-let db,embedded,auth;const user=randomUUID(),other=randomUUID();
+let db,embedded,auth,apiVersion;const user=randomUUID(),other=randomUUID();
 const env={...process.env,NODE_ENV:'test',SPDECODE_ACCOUNTS_ENABLED:'true',SPDECODE_STORE_ENABLED:'true',
   SPDECODE_COMMERCIAL_API_ENABLED:'true',SPDECODE_OFFLINE_LICENSE_READY:'true',
   CLOUD_SITE_PUBLIC_ORIGIN:'http://localhost:3000',SPDECODE_DATABASE_URL:'postgres://test-only',
@@ -43,6 +43,7 @@ before(async()=>{
     VALUES($1,'Synthetic buyer',$2,true,now(),now())`,[id,id+'@example.invalid']);
   await db.query(`UPDATE spdecode_shop.settings SET value=$1 WHERE id='tax-rules'`,[JSON.stringify([{country:'MX',region:'*',rateBps:1600,label:'IVA',reviewed:true}])]);
   await db.query(`UPDATE spdecode_shop.products SET settings=$1 WHERE id='api-ip'`,[JSON.stringify({id:'api-ip',enabled:true,prices:{USD:499,MXN:9900},quota:2,days:30})]);
+  apiVersion=(await db.query("SELECT version FROM spdecode_shop.products WHERE id='api-ip'")).rows[0].version;
 });
 after(async()=>{if(embedded)await embedded.close();else await db?.end();});
 test('checkout amounts are integer cents, taxes are separate, and currency/country require configured rules',()=>{
@@ -63,7 +64,7 @@ test('unique usernames are canonical, transactional and reserved after a change'
 });
 test('orders use authoritative prices, provider idempotency and verified payment before one entitlement',async()=>{
  const body={product:'api-ip',provider:'stripe',currency:'USD',country:'MX',region:'BC',allowedIp:'1.1.1.1',
-   version:1,idempotencyKey:randomUUID(),acceptedTerms:'2026-11-10'};
+   version:apiVersion,idempotencyKey:randomUUID(),acceptedTerms:'2026-11-10'};
  let calls=0;const start=async row=>{calls++;return {id:'cs_test_'+row.id,url:'https://checkout.stripe.com/c/pay/'+row.id};};
  const order=await checkout(user,body,{db,start});
  assert.equal(calls,1);assert.equal((await checkout(user,body,{db,start})).orderId,order.orderId);assert.equal(calls,1);
@@ -153,7 +154,7 @@ test('PayPal requires remote signature confirmation and re-reads its own order',
 test('PostgreSQL concurrent delivery and key claims remain unique',async t=>{
  if(!process.env.SPDECODE_SHOP_TEST_DATABASE_URL){t.skip('Full concurrency runs against PostgreSQL service in CI; PGlite serializes one connection.');return;}
  const order=await checkout(user,{product:'api-ip',provider:'stripe',currency:'USD',country:'MX',region:'BC',allowedIp:'1.1.1.1',
-  version:1,idempotencyKey:randomUUID(),acceptedTerms:'2026-11-10'},{db,start:async row=>({id:'cs_race_'+row.id,url:'https://checkout.stripe.com/c/pay/'+row.id})});
+  version:apiVersion,idempotencyKey:randomUUID(),acceptedTerms:'2026-11-10'},{db,start:async row=>({id:'cs_race_'+row.id,url:'https://checkout.stripe.com/c/pay/'+row.id})});
  const event={type:'paid',live:false,orderId:order.orderId,providerId:'cs_race_'+order.orderId,currency:'USD',total:579};
  await Promise.all(Array.from({length:8},()=>settle('stripe',{...event,eventId:randomUUID()},{db})));
  const item=(await db.query('SELECT id FROM spdecode_shop.entitlements WHERE order_id=$1',[order.orderId])).rows;
@@ -179,7 +180,7 @@ test('a late payment never recreates access after account deletion',async()=>{
  const id=randomUUID();await db.query(`INSERT INTO shop_user(id,name,email,"emailVerified","createdAt","updatedAt")
   VALUES($1,'Deleted buyer',$2,true,now(),now())`,[id,id+'@example.invalid']);
  const order=await checkout(id,{product:'api-ip',provider:'stripe',currency:'USD',country:'MX',region:'BC',allowedIp:'1.1.1.1',
-  version:1,idempotencyKey:randomUUID(),acceptedTerms:'2026-11-10'},{db,start:async row=>({id:'cs_deleted_'+row.id,url:'https://checkout.stripe.com/c/pay/'+row.id})});
+  version:apiVersion,idempotencyKey:randomUUID(),acceptedTerms:'2026-11-10'},{db,start:async row=>({id:'cs_deleted_'+row.id,url:'https://checkout.stripe.com/c/pay/'+row.id})});
  await db.query('DELETE FROM shop_user WHERE id=$1',[id]);
  await settle('stripe',{eventId:randomUUID(),type:'paid',live:false,orderId:order.orderId,providerId:'cs_deleted_'+order.orderId,currency:'USD',total:579},{db});
  const item=(await db.query('SELECT * FROM spdecode_shop.entitlements WHERE order_id=$1',[order.orderId])).rows[0];
