@@ -915,6 +915,12 @@ class MainActivity : ComponentActivity() {
         if(savedInstanceState==null && !showCloudLegal)handleExternalIntent(intent)
     }
 
+    override fun onWindowFocusChanged(hasFocus:Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED && !showCloudLegal)
+            onlineAds?.onWindowFocusChanged(this,hasFocus)
+    }
+
     override fun onResume() {
         super.onResume()
         if(!ReleaseIntegrity.isTrusted(this)) {
