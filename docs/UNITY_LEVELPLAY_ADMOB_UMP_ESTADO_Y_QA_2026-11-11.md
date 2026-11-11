@@ -121,3 +121,14 @@ En `ci/unity-ads-online-qa` se modificó `UnityInterstitialHost.kt` y se añadi�
 5. Mantener versión `1.1.27 (42)`, APK de QA y firma persistente. **No publicar todavía.**
 
 Fuentes de referencia: [Errores Android LevelPlay](https://docs.unity.com/grow/levelplay/sdk/android/advanced-settings), [Intersticial Android](https://docs.unity.com/en-us/grow/levelplay/sdk/android/interstitial-integration).
+
+## 9. Diagnóstico confirmado: error 509 en secuencias rápidas (2026-11-11)
+
+El desarrollador confirmó expresamente que el error indicado por la APK QA era **509**, no 503. En aproximadamente 15 descifrados rápidos se mostraron 2 anuncios; una nueva prueba también produjo **2 intersticiales**, y los demás intentos inmediatos mostraron 509.
+
+- **Definición oficial LevelPlay Android:** código **509**, `Show Fail: No ads to show`, aplicable a intersticiales y rewarded. Referencia: https://docs.unity.com/grow/levelplay/sdk/android/advanced-settings
+- **Conclusión probada:** el SDK tiene al menos dos impresiones funcionales. El problema de foco anterior no bloquea toda la publicidad.
+- **Hipótesis, no diagnóstico cerrado:** una nueva solicitud de anuncio puede no haber terminado de cargar cuando comienza otro descifrado; también puede faltar inventario de alguna red o aplicarse restricciones de servidor. El 509 no identifica inequívocamente cuál de esas causas se produjo.
+- **Código actual:** `onAdClosed` llama a `requestLoadWhenReady()`; se usa `isAdReady()` antes de presentar; la APK de QA conserva una ventana para recuperar el foco y no bloquea el resultado de descifrado. Los fallos de carga aplican una pausa local de 45 s antes de intentar otra carga. La prueba anula la frecuencia local, pero no puede anular controles de LevelPlay.
+- **Siguiente prueba recomendada:** realizar 3 descifrados espaciados 3–5 minutos, verificar `onAdLoaded`, `onAdLoadFailed` y la mediación por red desde Integration Test Suite. Mantener ads de prueba. Evitar solicitar un intersticial con cada operación rápida en producción.
+- **Sin cambios nuevos en código, versión, firma o VPS:** `1.1.27 (42)` sigue en QA hasta decisión de publicación.
