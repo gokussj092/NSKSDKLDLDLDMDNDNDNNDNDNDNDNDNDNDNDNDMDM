@@ -474,3 +474,6 @@ body:has(.sp-public-frame){background:#000;color:#f7f7f7}
 .sp-checkout-steps>span{min-width:0;font-size:11px;line-height:1.5;text-align:center;font-weight:700;color:#8ea18f;padding:12px 5px;border-bottom:3px solid #2b3a2e}
 .sp-checkout-steps>span.current{color:#62ec9b;border-bottom-color:#2fe07c}
 .sp-checkout-steps>span.done{color:#e1f1e5;border-bottom-color:#226d42}
+
+.sp-public-frame .sp-button-apk-download{display:inline-flex;align-items:center;justify-content:center;background:#2fe07c;border:1px solid #2fe07c;color:#04150a;border-radius:11px;padding:13px 20px;font-weight:850;text-decoration:none;margin:0 12px 10px 0}
+.sp-public-frame .sp-button-apk-download:hover{background:#4dea91;border-color:#4dea91}
