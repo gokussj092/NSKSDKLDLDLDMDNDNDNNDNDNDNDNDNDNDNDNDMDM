@@ -74,7 +74,7 @@ En `ci/unity-ads-online-qa` se modificó `UnityInterstitialHost.kt` y se añadi�
 - Si `onAdLoadFailed` ocurre, el siguiente intento elegible solicita una nueva carga tras **45 segundos**; no se generan bucles automáticos ni se bloquea el resultado.
 - `onInitFailed` permite volver a intentar inicializar en una reanudación posterior.
 - Diagnósticos `SPDECODE_ADS` de UMP, init, load, show y skip. Solo estados, sin datos ni identificadores de usuarios.
-- Prueba de compilación firmada: run **43012363138**. **Resultado pendiente al redactar esta sección**.
+- Prueba de compilación firmada: run **43012363138** completado **SUCCESS**; artefacto **SP-DECODE-UNITY-ADS-ONLINE-1.1.27-b42-QA-RETRY-DIAGNOSTICS-SIGNED** (APK 1.1.27/b42, 12,048,908 bytes, SHA-256 `8244469746b17b41f059b3e51bb56c4adb34a3aab2869ac0fe802f1bdb97d9fc`). **Compilación y auditorías aprobadas; entrega real de anuncios no verificada todavía en dispositivo**.
 - Esta rama QA se mantiene separada de producción; **no** modificar `versionName` ni `versionCode` durante pruebas.
 
 ## 5. Cómo diagnosticar en dispositivo
