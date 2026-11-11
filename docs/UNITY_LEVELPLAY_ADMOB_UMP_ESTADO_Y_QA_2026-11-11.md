@@ -147,3 +147,27 @@ El desarrollador confirmó expresamente que el error indicado por la APK QA era 
 - **Estado del workflow:** ejecución **43106942212** terminada en **SUCCESS**, APK de QA firmada de **12,048,903 bytes** con SHA-256 `b49e18e7ecf1c8c4535a02f981188d7615ab362ec4a89568c9f7aff8b202fa12` (ZIP GitHub `sha256:a73800a9ed4967825fb990f21642308614ecb1f72a733ec2513a937397bd47b8`). **Resultado en un teléfono aún no verificado**; comprobar memoria/rendimiento con catálogos grandes e impresiones 509 si se repiten operaciones demasiado rápido.
 
 **Casos de aceptación en móvil:** 1) catálogo NUR con JSON completo en Inicio; 2) proveedor VPN con JSON en Inicio y scroll; 3) exportación del JSON sin pasar al historial; 4) intersticial si el SDK lo tiene cargado; 5) ante error 509 o falta de inventario, el resultado se entrega igualmente; 6) no aparece el aviso de longitud para estos catálogos.
+
+## 11. Cierre de QA confirmado y preparación de producción (2026-11-11)
+
+**Confirmación del desarrollador:** la APK QA de la ejecución [43106942212](https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/43106942212) funciona correctamente tanto para descifrado de **archivos** como para descarga/descifrado de **catálogos NUR/Server VPN**. Los catálogos regresan a Inicio con JSON visible, sin el aviso antiguo que obligaba a exportar desde el historial. Se han visto intersticiales en ambos flujos. Las ejecuciones rápidas pueden mostrar código **509** (LevelPlay sin anuncio listo), que nunca debe bloquear el resultado.
+
+### Acciones obligatorias antes de producir
+
+1. **Promover los cambios probados desde `ci/unity-ads-online-qa` hacia `feat/nuevas-integraciones`**, conservando el parche de visor JSON y recuperación del foco. La rama de integración aún tiene la implementación publicitaria anterior y no basta con compilarla sin cambios.
+2. **Apagar el modo diagnóstico:** no pasar `-PspdecodeAdsEveryFileQa=true` en la compilación real. `SPDECODE_ADS_EVERY_FILE_QA=false` es el valor predeterminado; en ese modo `showQaFeedback()` retorna antes de llamar a `Toast.makeText()`. De ser posible, separar por completo código diagnóstico del artefacto público mediante source sets. Los registros técnicos no deben contener contenido de resultados, contraseñas, nombres de archivo ni identificadores privados.
+3. **Restaurar límites locales para uso real:** 12 impresiones diarias y 4 minutos mínimos desde la última visualización, además de los límites del dashboard LevelPlay. QA actual deshabilita solo esos límites locales.
+4. **Decidir disparadores de producción:** después de guardar archivo o catálogo con éxito, si el anuncio está listo. Nunca interrumpir una descarga, bloquear la visualización del JSON ni imponer un anuncio por cada operación inmediata. Sin anuncio o con código 509, continuar silenciosamente.
+5. **Verificación de privacidad y publicación:** UMP actualizado antes de pedir anuncios; respetar opciones de privacidad; probar aceptación/rechazo; revisar Play Console Data safety y declaraciones de anuncios, política de privacidad, ads.txt y SDKs terceros.
+6. **Verificación de firma y distribución:** mantener firma persistente, comprobar actualización sobre APK anterior y APK externa versus AAB Play. **No** usar el mismo `versionCode=42` para una actualización de Play si ya fue publicado ese número: el incremento requiere aprobación explícita.
+7. **QA smoke antes de publicación:** casos NUR, Server VPN, .hc, .ehi, sin anuncios, 509, sin foco, JSON largo, exportación, importación cancelada, UMP revocado y reinicio de actividad.
+8. **Producción aún no publicada:** esta nota no confirma que el código probando esté fusionado, desplegado ni autorizado para lanzamiento.
+
+### Fases de monetización
+
+- **Fase A (inmediata):** estabilizar Interstitial y medir sesiones, solicitudes, fill, impresiones y retención. Preparar binario release sin Toast de QA.
+- **Fase B (opcional):** Banner adaptativo mediante una unidad publicitaria propia, en espacio fijo de pantallas adecuadas, sin ocupar el área del JSON ni superponer controles. Crear Ad Unit y confirmar oferta de redes antes de implementarlo.
+- **Fase C (al habilitar tienda/créditos):** Rewarded **opt-in**: premio claro, verificación de finalización (callback/SSV cuando esté disponible), concesión idempotente en servidor y protección antifraude. No prometer créditos hasta estar implementada la economía y conciliación.
+- **Fase D (para mejorar el fill):** revisar la incorporación real de la red AdMob como demanda adicional en LevelPlay. Tener App ID y UMP configurados no significa que AdMob ya participe en mediación; requiere alta de red, unidades, adaptador y validación del dashboard.
+
+**Documentación oficial:** https://docs.unity.com/grow/levelplay/platform/settings/capping-pacing ; https://docs.unity.com/en-us/grow/levelplay/sdk/android/banner-integration ; https://docs.unity.com/en-us/grow/levelplay/sdk/android/rewarded-ads-integration
