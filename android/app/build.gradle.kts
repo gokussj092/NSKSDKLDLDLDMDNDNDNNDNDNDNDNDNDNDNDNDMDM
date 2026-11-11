@@ -125,6 +125,10 @@ if(enableUnityAds) {
 require(!enableUnityAds || (enableCloud && !nativeOffline)) { "Unity Ads is Online-only" }
 require(!nativeOffline || !enableCloud) { "Offline must not configure a Cloud origin" }
 val enableQaBuild=providers.environmentVariable("SPDECODE_CLOUD_QA_BUILD").orNull=="true"
+val adsEveryFileQa=providers.gradleProperty("spdecodeAdsEveryFileQa").orNull=="true"
+require(!adsEveryFileQa || (enableUnityAds && enableCloud && !nativeOffline && !enableQaBuild)) {
+    "Every-file ads QA requires Online Unity Ads with APK analyzer disabled"
+}
 // Play In-App Updates is an AAB-only compile-time feature, not a runtime switch.
 // Ordinary signed APKs (Telegram), legacy/QA builds and ownership proofs omit it.
 val enablePlayAab=providers.gradleProperty("spdecodePlayAab").orNull=="true"
@@ -411,6 +415,9 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
             section=section.replace(
                 "if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED)\n                    onlineAds?.onSavedResult(",
                 "if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED && !previewDeferred)\n                    onlineAds?.onSavedResult(")
+            section=section.replace(
+                "if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED && !BuildConfig.SPDECODE_ADS_EVERY_FILE_QA)\n                    onlineAds?.onSavedResult(",
+                "if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED && !BuildConfig.SPDECODE_ADS_EVERY_FILE_QA && !previewDeferred)\n                    onlineAds?.onSavedResult(")
             activity=activity.substring(0,from)+section+activity.substring(to)
         }
         updateResultBlock("    private fun decodeText(userText:String,password:ByteArray?=null) {",
@@ -539,7 +546,7 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
             "historyPreferences.setSelectedId(if(previewDeferred) null else processed.id)")
         batch=replaceOnce(batch,
             "                    tab=0\n                    if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED)\n                        onlineAds?.onSavedResult(this@MainActivity,processed.id,saved)\n                }\n                if(generation==importGeneration",
-            "                    tab=if(previewDeferred)1 else 0\n                    if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED && !previewDeferred)\n                        onlineAds?.onSavedResult(this@MainActivity,processed.id,saved)\n                }\n                if(generation==importGeneration")
+            "                    tab=if(previewDeferred)1 else 0\n                    if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED && (!previewDeferred || BuildConfig.SPDECODE_ADS_EVERY_FILE_QA))\n                        onlineAds?.onSavedResult(this@MainActivity,processed.id,saved)\n                }\n                if(generation==importGeneration")
         activity=activity.substring(0,batchStart)+batch+activity.substring(batchEnd)
 
         // Compatible export changes only the generated Cloud menu; C0 source
@@ -799,6 +806,7 @@ android {
         buildConfigField("boolean", "SPDECODE_PLAY_UPDATES", enablePlayAab.toString())
         buildConfigField("boolean", "SPDECODE_APK_QA_ENABLED", (enableCloud && enableQaBuild).toString())
         buildConfigField("boolean", "SPDECODE_UNITY_ADS_ENABLED", enableUnityAds.toString())
+        buildConfigField("boolean", "SPDECODE_ADS_EVERY_FILE_QA", adsEveryFileQa.toString())
         buildConfigField("String", "SPDECODE_UNITY_APP_KEY", "\""+(if(enableUnityAds)unityAppKey else "")+"\"")
         buildConfigField("String", "SPDECODE_UNITY_INTERSTITIAL_ID", "\""+(if(enableUnityAds)unityInterstitialId else "")+"\"")
         // Public trust anchors; never package any recipient private key.
