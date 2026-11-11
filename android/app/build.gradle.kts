@@ -386,12 +386,19 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
                 onDismissLargeResultWarning={showLargeResultWarning=false},""")
         activity = replaceOnce(activity,
             "    private fun decodeText(userText:String,password:ByteArray?=null) {",
-            """    // Large JSON documents must never be parsed eagerly by the preview.
-    // The complete result is already saved in encrypted history.
+            """    // Catalog JSON uses the native indexed, scrollable result viewer.
+    // Keep its full text visible on Home without a history-only notice.
     private fun presentDecodedRecord(entry:DecodeView, stored:Boolean):Boolean {
+        val catalog=entry.extension=="nurservers" || entry.extension=="vpnservers"
+        if(catalog) {
+            showLargeResultWarning=false
+            result=entry
+            reveal=false
+            return false
+        }
+        // Retain the existing unusually-large file/text safeguard.
         val large=BuildConfig.SPDECODE_CLOUD_ENABLED && stored &&
-            (entry.extension=="nurservers" || entry.extension=="vpnservers" ||
-                entry.rawText.length>=250_000)
+            entry.rawText.length>=250_000
         if(large) {
             result=null
             reveal=false
@@ -426,8 +433,8 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
             "    private fun decodeNurServers() {","record","stored")
         updateResultBlock("    private fun decodeNurServers() {",
             "    private fun clearVisibleResult() {","record","saved")
-        // The new cloud-only provider decoder stores complete JSON but its preview
-        // must use the same large-result guard as NUR, never render it eagerly.
+        // Catalog JSON can be rendered with the native indexed viewer, while
+        // maintaining the complete raw result for export.
         updateResultBlock("    private fun decodeServerVpnProvider(id:String) {",
             "    private fun importFiles(uris:List<Uri>,","record","saved")
         // Cloud MainActivity already classifies provider exceptions.
