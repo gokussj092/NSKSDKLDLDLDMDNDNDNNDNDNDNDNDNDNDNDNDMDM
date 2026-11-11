@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import ApkDownloads from "./apk-downloads.jsx";
 import {useRef} from "react";
 import {usePublicLocale} from "./site-chrome.jsx";
 const content={
@@ -98,6 +99,7 @@ export default function Home(){
     <article><span className="sp-kicker">OFFLINE</span><h3>{lang==='es'?'Trabaja en tu dispositivo':'Work on your device'}</h3><p>{lang==='es'?'Una licencia personal de pago único para hasta tres dispositivos. Sin anuncios y con resultados completos.':'A personal one-time license for up to three devices. No ads, with complete results.'}</p><Link href="/store">{lang==='es'?'Ver licencia Offline':'View Offline license'} →</Link></article>
     <article><span className="sp-kicker">DEVELOPERS</span><h3>{lang==='es'?'Integra tus herramientas':'Connect your tools'}</h3><p>{lang==='es'?'Acceso API con una clave propia, vinculación a una IP pública y límites definidos por tu plan.':'API access with a dedicated key, public-IP binding and plan-based limits.'}</p><Link href="/store">{lang==='es'?'Explorar acceso API':'Explore API access'} →</Link></article></div>
   </section>
+  <ApkDownloads/>
   <section className="sp-section sp-container sp-callout"><div><h2>{t.privacyTitle}</h2><p>{t.privacyText}</p></div><div className="sp-cta-links"><Link href="/privacy">{t.privacy}</Link><Link href="/terms">{t.terms}</Link><Link href="/support">{t.support}</Link></div></section>
  </main>;
 }
