@@ -89,7 +89,7 @@ jobs:
           test "$SPDECODE_VERSION_CODE" = "42"
           python3 scripts/ci/verify_release_signer_pins.py
           python3 scripts/android_16kb_elf_audit.py "$APK"
-          python3 tests/cloud_c5_apk_audit.py "$APK"
+          python3 tests/cloud_c5_apk_audit.py "$APK" --unity-ads
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK"
           "$ANDROID_HOME/build-tools/35.0.0/zipalign" -c -P 16 -v 4 "$APK"
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | grep -F "versionName='$SPDECODE_VERSION_NAME'"
