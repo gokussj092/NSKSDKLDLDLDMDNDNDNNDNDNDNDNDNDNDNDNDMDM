@@ -23,7 +23,8 @@ class R0R8NpvsContracts(unittest.TestCase):
         self.assertIn("isMinifyEnabled = true",gradle)
         self.assertIn("isShrinkResources = true",gradle)
         self.assertIn('proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt")',gradle)
-        self.assertIn('require(enableCloud) { "Release distribution requires the Cloud-only source set" }',gradle)
+        self.assertIn('require(enableCloud || nativeOffline) { "Release distribution requires Cloud or standalone native Offline" }',gradle)
+        self.assertIn('require(!nativeOffline || !enableCloud) { "Offline must not configure a Cloud origin" }',gradle)
         self.assertIn('exclude("com/ghostdeveloper/spdecode/parity/**")',gradle)
         self.assertIn('java.setSrcDirs(listOf(cloudSourceRoot))',gradle)
 
