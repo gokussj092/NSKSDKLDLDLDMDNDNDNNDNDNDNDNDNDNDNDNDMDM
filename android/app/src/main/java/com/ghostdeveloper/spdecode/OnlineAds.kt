@@ -7,6 +7,8 @@ import android.content.Context
 internal interface OnlineAds {
     fun initialize(activity:Activity)
     fun onSavedResult(activity:Activity,operationId:String,saved:Boolean)
+    /** Restore a QA ad attempt when the app regains focus after file picking. */
+    fun onWindowFocusChanged(activity:Activity,hasFocus:Boolean) {}
     fun showPrivacyOptions(activity:Activity)
     fun stop()
 }
