@@ -7,7 +7,7 @@ const content={
  es:{
   tag:"Aplicación para Android",title:"Tus configuraciones, más claras.",
   intro:"Explora e interpreta configuraciones VPN desde tu dispositivo Android con una experiencia sencilla, moderna y familiar.",
-  download:"Próximamente",play:"Google Play",note:"SP-DECODE estará disponible próximamente en Google Play.",
+  download:"Próximamente",apkDownload:"Ver descargas APK",play:"Google Play",note:"SP-DECODE estará disponible próximamente en Google Play.",
   explore:"Explora la aplicación",exploreText:"Desliza horizontalmente para explorar las cuatro pantallas reales de SP-DECODE.",
   features:"Lo esencial, en un solo lugar",
   featuresText:"Una interfaz diseñada para consultar tus configuraciones y organizar tus resultados sin complicaciones.",
@@ -19,7 +19,7 @@ const content={
  en:{
   tag:"Android application",title:"Make your configurations clearer.",
   intro:"Explore and interpret VPN configurations from your Android device through a simple, modern and familiar experience.",
-  download:"Coming soon",play:"Google Play",note:"SP-DECODE is coming soon to Google Play.",
+  download:"Coming soon",apkDownload:"View APK downloads",play:"Google Play",note:"SP-DECODE is coming soon to Google Play.",
   explore:"Explore the app",exploreText:"Swipe horizontally to explore all four real SP-DECODE screens.",
   features:"Everything you need, in one place",featuresText:"An interface designed to inspect your configurations and organize your results with less effort.",
   items:[["Files and text","Select configuration files or paste text inside the application."],["History","Review and manage your saved results."],["Formats","Browse supported formats in the catalog."],["Server VPN","Access compatible remote catalog features."]],
@@ -83,6 +83,7 @@ export default function Home(){
   <section className="sp-container sp-hero">
    <div className="sp-hero-copy"><span className="sp-kicker"><span aria-hidden="true" className="sp-small-dot"/> {t.tag}</span>
     <h1>SP-DECODE</h1><h2>{t.title}</h2><p>{t.intro}</p>
+    <a className="sp-button sp-button-apk-download" href="#downloads">{t.apkDownload}</a>
     <button className="sp-button sp-button-play-pending" type="button" disabled aria-disabled="true">
      <span className="sp-play-platform">{t.play}</span><strong>{t.download}</strong>
     </button>
