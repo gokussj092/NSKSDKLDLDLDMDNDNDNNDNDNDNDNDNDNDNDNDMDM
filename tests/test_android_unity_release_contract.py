@@ -107,6 +107,39 @@ class AndroidUnityReleaseContract(unittest.TestCase):
         self.assertIn("consentInformation.canRequestAds()", host)
         self.assertNotIn("putString(", host)
 
+    def test_ad_load_cooldown_and_silent_release_telemetry(self):
+        host = read("android/app/src/unityAds/java/com/ghostdeveloper/spdecode/ads/UnityInterstitialHost.kt")
+        self.assertIn("LOAD_COOLDOWN_MS=60_000L", host)
+        self.assertIn("lastLoadRequestedElapsed=now", host)
+        self.assertIn("now-lastLoadRequestedElapsed<LOAD_COOLDOWN_MS", host)
+        self.assertIn("now<retryAfterElapsed", host)
+        self.assertIn("if(BuildConfig.DEBUG) Toast.makeText(", host)
+        self.assertIn("MAX_DAILY_ADS=12", host)
+        self.assertIn("MIN_INTERVAL_MS=240_000L", host)
+        self.assertIn("val qaEveryFile=BuildConfig.SPDECODE_ADS_EVERY_FILE_QA", host)
+
+    def test_native_account_store_placeholders_are_localized(self):
+        drawer = read("android/app/src/main/java/com/ghostdeveloper/spdecode/AccountDrawer.kt")
+        activity = read("android/app/src/main/java/com/ghostdeveloper/spdecode/MainActivity.kt")
+        self.assertIn('openDestination("account")', drawer)
+        self.assertIn('openDestination("store")', drawer)
+        self.assertIn('R.string.apk_analysis_coming_soon', drawer)
+        self.assertIn("stringResource(if(store)R.string.account_store else R.string.account_my_account)",drawer)
+        self.assertIn("BackHandler(enabled=destination!=null)", drawer)
+        self.assertNotIn('https://spdecode.xyz/account', drawer)
+        self.assertNotIn('https://spdecode.xyz/store', drawer)
+        self.assertNotIn('"https://spdecode.xyz/account"',activity)
+        self.assertNotIn('"https://spdecode.xyz/store"',activity)
+
+    def test_json_height_tracks_native_lines_for_short_results(self):
+        viewer = read("android/app/src/main/java/com/ghostdeveloper/spdecode/LargeResultViewer.kt")
+        self.assertIn("current.lineCount.coerceIn(1, 150)", viewer)
+        self.assertIn("visibleLines * 19f * fontScale + 16f", viewer)
+        self.assertIn(".height(jsonHeightDp.dp)", viewer)
+        self.assertNotIn("current.lineCount.coerceIn(4, 150) * 22f", viewer)
+        self.assertIn("NativeResultEngine.open(source)", viewer)
+        self.assertIn("ContinuousJsonView", viewer)
+
     def test_vps_online_fails_closed_for_missing_ads(self):
         build = read("cloud/infra/vps/android-public-build.sh")
         self.assertIn('UNITY_CONFIG="$CFG/unity-ads.env"', build)
