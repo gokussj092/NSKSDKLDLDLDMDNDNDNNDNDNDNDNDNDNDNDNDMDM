@@ -693,7 +693,20 @@ case "${1:-help}" in
    [[ $# -eq 2 ]] || die "spdecode qa start|stop|status|services|probe-nur"
    preflight
    python3 "$REPO/cloud/infra/vps/qa-test.py" "$2";;
- android) shift;exec bash "$REPO/cloud/infra/vps/android-build.sh" "$@";;
+ android)
+   shift
+   case "${1:-}" in
+     public-build)
+       [[ $# -eq 4 && "$3" == --ci-run ]] || die "spdecode android public-build online|offline --ci-run ID"
+       exec bash "$REPO/cloud/infra/vps/android-public-build.sh" "$2" --ci-run "$4";;
+     public-status)
+       [[ $# -eq 2 ]] || die "spdecode android public-status online|offline"
+       exec bash "$REPO/cloud/infra/vps/android-public-build.sh" "$2" --status;;
+     public-rollback)
+       [[ $# -eq 2 ]] || die "spdecode android public-rollback online|offline"
+       exec bash "$REPO/cloud/infra/vps/android-public-build.sh" "$2" --rollback;;
+     *) exec bash "$REPO/cloud/infra/vps/android-build.sh" "$@";;
+   esac;;
  help|-h|--help)
    cat <<'USAGE'
 SP-DECODE VPS commands:
@@ -725,6 +738,9 @@ SP-DECODE VPS commands:
   spdecode android setup
   spdecode android signing configure /root/upload-key.p12 alias
   spdecode android build --version-name 1.2.0 --version-code 26 --testing-only
+  spdecode android public-build online|offline --ci-run SUCCESSFUL_RUN_ID
+  spdecode android public-status online|offline
+  spdecode android public-rollback online|offline
   spdecode android artifacts
 USAGE
    ;;
