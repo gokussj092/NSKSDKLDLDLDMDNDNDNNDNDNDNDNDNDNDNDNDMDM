@@ -296,4 +296,14 @@
     <string name="apk_qa_export_json">خروجی JSON</string>
     <string name="apk_qa_export_success">JSON ذخیره شد</string>
     <string name="apk_qa_export_failure">ذخیره JSON ناموفق بود</string>
+    <string name="decrypt_credits_title">اعتبار رمزگشایی</string>
+    <string name="decrypt_credits_description">نام کاربری تلگرام را به نتایج کپی‌شده اضافه کنید. فقط در این دستگاه ذخیره می‌شود.</string>
+    <string name="decrypt_credits_handle">نام کاربری تلگرام</string>
+    <string name="decrypt_credits_invalid">از ۵ تا ۳۲ حرف، عدد یا زیرخط استفاده کنید.</string>
+    <string name="decrypt_credits_save">ذخیره اعتبار</string>
+    <string name="decrypt_credits_saved">اعتبار ذخیره شد</string>
+    <string name="decrypt_credits_by">رمزگشایی توسط %1$s</string>
+    <string name="v2ray_share_auto">کپی پیوندهای شناسایی‌شده V2Ray</string>
+    <string name="v2ray_share_protocol">کپی پیوند %1$s</string>
+    <string name="v2ray_share_detail">پیوندها شامل اطلاعات اتصال هستند و به برنامه سازگار نیاز دارند. پروتکل سرور تغییر نمی‌کند.</string>
 </resources>

@@ -297,4 +297,14 @@
     <string name="apk_qa_export_json">Xuất JSON</string>
     <string name="apk_qa_export_success">Đã lưu JSON</string>
     <string name="apk_qa_export_failure">Không thể lưu JSON</string>
+    <string name="decrypt_credits_title">Ghi công giải mã</string>
+    <string name="decrypt_credits_description">Thêm tên người dùng Telegram vào kết quả đã sao chép. Chỉ lưu trên thiết bị này.</string>
+    <string name="decrypt_credits_handle">Tên người dùng Telegram</string>
+    <string name="decrypt_credits_invalid">Dùng 5–32 chữ cái, chữ số hoặc dấu gạch dưới.</string>
+    <string name="decrypt_credits_save">Lưu ghi công</string>
+    <string name="decrypt_credits_saved">Đã lưu ghi công</string>
+    <string name="decrypt_credits_by">Giải mã bởi %1$s</string>
+    <string name="v2ray_share_auto">Sao chép liên kết V2Ray đã phát hiện</string>
+    <string name="v2ray_share_protocol">Sao chép liên kết %1$s</string>
+    <string name="v2ray_share_detail">Liên kết chứa thông tin kết nối và cần ứng dụng tương thích. Không thay đổi giao thức máy chủ.</string>
 </resources>

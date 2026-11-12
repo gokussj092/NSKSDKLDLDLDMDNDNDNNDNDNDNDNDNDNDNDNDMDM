@@ -297,4 +297,14 @@
     <string name="apk_qa_export_json">JSONを書き出す</string>
     <string name="apk_qa_export_success">JSONを保存しました</string>
     <string name="apk_qa_export_failure">JSONを保存できませんでした</string>
+    <string name="decrypt_credits_title">復号クレジット</string>
+    <string name="decrypt_credits_description">コピーした結果に Telegram ユーザー名を表示します。この端末にのみ保存されます。</string>
+    <string name="decrypt_credits_handle">Telegram ユーザー名</string>
+    <string name="decrypt_credits_invalid">5～32文字の英数字またはアンダースコアを入力してください。</string>
+    <string name="decrypt_credits_save">クレジットを保存</string>
+    <string name="decrypt_credits_saved">保存しました</string>
+    <string name="decrypt_credits_by">復号者: %1$s</string>
+    <string name="v2ray_share_auto">検出した V2Ray リンクをコピー</string>
+    <string name="v2ray_share_protocol">%1$s リンクをコピー</string>
+    <string name="v2ray_share_detail">リンクには接続認証情報が含まれます。対応クライアントが必要です。サーバーのプロトコルは変更しません。</string>
 </resources>
