@@ -7,6 +7,7 @@ on:
       - android/app/src/main/java/com/ghostdeveloper/spdecode/SpDecodeApp.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/ContinuousJsonView.kt
       - android/app/src/main/AndroidManifest.xml
+      - android/app/build.gradle.kts
       - android/app/src/unityAds/java/com/ghostdeveloper/spdecode/ads/UnityInterstitialHost.kt
       - tests/test_android_unity_release_contract.py
 permissions:
