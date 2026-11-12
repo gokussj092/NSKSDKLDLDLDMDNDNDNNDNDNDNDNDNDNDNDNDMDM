@@ -184,6 +184,33 @@ class AndroidUnityReleaseContract(unittest.TestCase):
         self.assertIn("legacyHttpCustomValidJsonKeepsItsExactBytes", fixture)
         self.assertNotIn("decodeFile(", viewer)
 
+    def test_telegram_decrypt_credits_and_v2ray_export(self):
+        def src(name):
+            return read("android/app/src/main/java/com/ghostdeveloper/spdecode/"+name)
+        self.assertIn('fun normalizeUsername(input:String):String?',src("TelegramResultCopy.kt"))
+        self.assertNotIn('Credits: Ghost Developer',src("TelegramResultCopy.kt"))
+        self.assertIn('"telegram_decrypt_credit"',src("MainActivity.kt"))
+        self.assertIn('decrypt_credits_by',src("MainActivity.kt"))
+        self.assertIn('telegram_decrypt_credit',src("FunctionalSettingsPanel.kt"))
+        self.assertIn('onCopyV2rayLinks(links.joinToString',src("SpDecodeApp.kt"))
+        self.assertIn('V2rayShareLinks.extract(current.rawText)',src("SpDecodeApp.kt"))
+        self.assertIn('if(nestedV2ray || !startsAsJson)',src("LargeResultViewer.kt"))
+        link_parser=src("V2rayShareLinks.kt")
+        for protocol in ("vmess","vless","trojan"):
+            self.assertIn('"'+protocol+'"',link_parser)
+        self.assertIn('if(protocol=="trojan" && security!="tls")return null',link_parser)
+        for lang in ("values","values-es","values-pt-rBR","values-fr","values-de",
+                     "values-it","values-tr","values-ru","values-ar","values-fa",
+                     "values-hi","values-ja","values-in","values-vi"):
+            bundle=read("android/app/src/main/res/"+lang+"/strings.xml")
+            for key in ("decrypt_credits_title","decrypt_credits_by","v2ray_share_auto",
+                        "v2ray_share_protocol"):
+                self.assertIn('name="'+key+'"',bundle)
+        instrumented=read("android/app/src/sharedAndroidTest/java/com/ghostdeveloper/spdecode/V2rayShareLinksInstrumentedTest.kt")
+        self.assertIn("vmessLinkRetainsCompleteWebsocketTlsFields",instrumented)
+        self.assertIn("onlyRealProtocolOutboundsProduceLinks",instrumented)
+        self.assertIn("telegramCreditsAreNormalizedAndNotDuplicated",instrumented)
+
     def test_vps_online_fails_closed_for_missing_ads(self):
         build = read("cloud/infra/vps/android-public-build.sh")
         self.assertIn('UNITY_CONFIG="$CFG/unity-ads.env"', build)

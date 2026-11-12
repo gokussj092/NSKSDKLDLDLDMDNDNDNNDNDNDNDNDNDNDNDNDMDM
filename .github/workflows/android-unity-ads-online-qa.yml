@@ -7,6 +7,13 @@ on:
       - android/app/src/main/java/com/ghostdeveloper/spdecode/SpDecodeApp.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/ContinuousJsonView.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/LargeResultViewer.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/MainActivity.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/SpDecodeApp.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/FunctionalSettingsPanel.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/TelegramResultCopy.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/V2rayShareLinks.kt
+      - android/app/src/main/res/**/strings.xml
+      - android/app/src/sharedAndroidTest/java/com/ghostdeveloper/spdecode/V2rayShareLinksInstrumentedTest.kt
       - android/app/src/sharedAndroidTest/java/com/ghostdeveloper/spdecode/LargeResultEngineInstrumentedTest.kt
       - android/app/src/main/AndroidManifest.xml
       - android/app/src/cloud/AndroidManifest.xml
