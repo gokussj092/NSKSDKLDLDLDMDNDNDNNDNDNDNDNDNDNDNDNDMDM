@@ -307,4 +307,7 @@
     <string name="v2ray_share_auto">Algılanan V2Ray bağlantılarını kopyala</string>
     <string name="v2ray_share_protocol">%1$s bağlantısını kopyala</string>
     <string name="v2ray_share_detail">Bağlantılar kimlik bilgileri içerir ve uyumlu istemci gerektirir. Sunucu protokolü değiştirilmez.</string>
+    <string name="decrypt_credits_edit">Düzenle</string>
+    <string name="decrypt_credits_delete">Sil</string>
+    <string name="decrypt_credits_delete_confirm">Kaydedilmiş Telegram kullanıcı adı silinsin mi? Sonraki kopyalarda varsayılan SP-DECODE bilgileri kullanılacak.</string>
 </resources>

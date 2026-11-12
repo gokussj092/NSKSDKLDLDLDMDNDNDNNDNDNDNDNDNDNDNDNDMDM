@@ -306,4 +306,7 @@
     <string name="v2ray_share_auto">Erkannte V2Ray-Links kopieren</string>
     <string name="v2ray_share_protocol">%1$s-Link kopieren</string>
     <string name="v2ray_share_detail">Links enthalten Zugangsdaten und erfordern einen kompatiblen Client. Das Serverprotokoll bleibt unverändert.</string>
+    <string name="decrypt_credits_edit">Bearbeiten</string>
+    <string name="decrypt_credits_delete">Entfernen</string>
+    <string name="decrypt_credits_delete_confirm">Gespeicherten Telegram-Nutzernamen entfernen? Neue Kopien verwenden wieder die standardmäßige SP-DECODE-Zuordnung.</string>
 </resources>
