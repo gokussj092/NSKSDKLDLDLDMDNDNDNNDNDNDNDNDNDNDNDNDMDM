@@ -296,4 +296,14 @@
     <string name="apk_qa_export_json">تصدير JSON</string>
     <string name="apk_qa_export_success">تم حفظ JSON</string>
     <string name="apk_qa_export_failure">تعذر حفظ JSON</string>
+    <string name="decrypt_credits_title">نسب فك التشفير</string>
+    <string name="decrypt_credits_description">أضف اسم مستخدم تيليجرام إلى النتائج المنسوخة. يتم حفظه على هذا الجهاز فقط.</string>
+    <string name="decrypt_credits_handle">اسم مستخدم تيليجرام</string>
+    <string name="decrypt_credits_invalid">استخدم من 5 إلى 32 حرفًا أو رقمًا أو شرطة سفلية.</string>
+    <string name="decrypt_credits_save">حفظ النسب</string>
+    <string name="decrypt_credits_saved">تم حفظ النسب</string>
+    <string name="decrypt_credits_by">فك التشفير بواسطة %1$s</string>
+    <string name="v2ray_share_auto">نسخ روابط V2Ray المكتشفة</string>
+    <string name="v2ray_share_protocol">نسخ رابط %1$s</string>
+    <string name="v2ray_share_detail">تحتوي الروابط على بيانات اتصال وتتطلب عميلاً متوافقًا. لا يتم تغيير بروتوكول الخادم.</string>
 </resources>

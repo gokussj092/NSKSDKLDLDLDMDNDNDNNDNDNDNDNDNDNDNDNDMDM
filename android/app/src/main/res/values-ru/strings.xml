@@ -296,4 +296,14 @@
     <string name="apk_qa_export_json">Экспорт JSON</string>
     <string name="apk_qa_export_success">JSON сохранён</string>
     <string name="apk_qa_export_failure">Не удалось сохранить JSON</string>
+    <string name="decrypt_credits_title">Автор расшифровки</string>
+    <string name="decrypt_credits_description">Добавьте имя Telegram к скопированным результатам. Хранится только на этом устройстве.</string>
+    <string name="decrypt_credits_handle">Имя пользователя Telegram</string>
+    <string name="decrypt_credits_invalid">От 5 до 32 букв, цифр или символов подчёркивания.</string>
+    <string name="decrypt_credits_save">Сохранить автора</string>
+    <string name="decrypt_credits_saved">Автор сохранён</string>
+    <string name="decrypt_credits_by">Расшифровал: %1$s</string>
+    <string name="v2ray_share_auto">Копировать найденные ссылки V2Ray</string>
+    <string name="v2ray_share_protocol">Копировать ссылку %1$s</string>
+    <string name="v2ray_share_detail">Ссылки содержат учётные данные и требуют совместимый клиент. Протокол сервера не меняется.</string>
 </resources>

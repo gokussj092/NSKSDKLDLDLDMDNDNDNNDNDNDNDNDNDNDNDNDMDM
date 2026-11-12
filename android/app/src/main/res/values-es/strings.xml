@@ -304,4 +304,14 @@
     <string name="apk_qa_sub_jadx">Descompilando código con JADX Lite</string>
     <string name="apk_qa_sub_recovery">Recuperando resultados parciales de DEX</string>
     <string name="apk_qa_sub_evidence">Relacionando referencias criptográficas</string>
+    <string name="decrypt_credits_title">Créditos de descifrado</string>
+    <string name="decrypt_credits_description">Añade tu usuario de Telegram a los resultados copiados. Solo se guarda en este dispositivo.</string>
+    <string name="decrypt_credits_handle">Usuario de Telegram</string>
+    <string name="decrypt_credits_invalid">Utiliza entre 5 y 32 letras, números o guiones bajos.</string>
+    <string name="decrypt_credits_save">Guardar créditos</string>
+    <string name="decrypt_credits_saved">Créditos guardados</string>
+    <string name="decrypt_credits_by">Descifrado por %1$s</string>
+    <string name="v2ray_share_auto">Copiar enlaces V2Ray detectados</string>
+    <string name="v2ray_share_protocol">Copiar enlace %1$s</string>
+    <string name="v2ray_share_detail">Los enlaces contienen credenciales y requieren un cliente compatible. No se cambia el protocolo del servidor.</string>
 </resources>

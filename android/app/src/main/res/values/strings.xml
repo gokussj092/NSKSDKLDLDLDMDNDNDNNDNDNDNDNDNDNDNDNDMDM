@@ -304,4 +304,14 @@
     <string name="apk_qa_sub_jadx">Decompiling code with JADX Lite</string>
     <string name="apk_qa_sub_recovery">Recovering partial DEX output</string>
     <string name="apk_qa_sub_evidence">Correlating cryptographic references</string>
+    <string name="decrypt_credits_title">Decryption credits</string>
+    <string name="decrypt_credits_description">Add your Telegram username to copied results. Saved only on this device.</string>
+    <string name="decrypt_credits_handle">Telegram username</string>
+    <string name="decrypt_credits_invalid">Use 5–32 letters, digits or underscores.</string>
+    <string name="decrypt_credits_save">Save credits</string>
+    <string name="decrypt_credits_saved">Credits saved</string>
+    <string name="decrypt_credits_by">Decrypted by %1$s</string>
+    <string name="v2ray_share_auto">Copy detected V2Ray links</string>
+    <string name="v2ray_share_protocol">Copy %1$s import link</string>
+    <string name="v2ray_share_detail">Links include connection credentials and require a compatible client. The server protocol is not changed.</string>
 </resources>

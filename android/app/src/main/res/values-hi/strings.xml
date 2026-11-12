@@ -297,4 +297,14 @@
     <string name="apk_qa_export_json">JSON निर्यात करें</string>
     <string name="apk_qa_export_success">JSON सहेजा गया</string>
     <string name="apk_qa_export_failure">JSON सहेजा नहीं जा सका</string>
+    <string name="decrypt_credits_title">डिक्रिप्शन श्रेय</string>
+    <string name="decrypt_credits_description">कॉपी किए गए परिणामों में अपना Telegram यूज़रनेम जोड़ें। यह केवल इसी डिवाइस पर सहेजा जाता है।</string>
+    <string name="decrypt_credits_handle">Telegram यूज़रनेम</string>
+    <string name="decrypt_credits_invalid">5 से 32 अक्षर, अंक या अंडरस्कोर लिखें।</string>
+    <string name="decrypt_credits_save">श्रेय सहेजें</string>
+    <string name="decrypt_credits_saved">श्रेय सहेजा गया</string>
+    <string name="decrypt_credits_by">डिक्रिप्ट किया: %1$s</string>
+    <string name="v2ray_share_auto">पहचाने गए V2Ray लिंक कॉपी करें</string>
+    <string name="v2ray_share_protocol">%1$s लिंक कॉपी करें</string>
+    <string name="v2ray_share_detail">लिंक में कनेक्शन क्रेडेंशियल होते हैं और संगत क्लाइंट चाहिए। सर्वर प्रोटोकॉल नहीं बदला जाता।</string>
 </resources>

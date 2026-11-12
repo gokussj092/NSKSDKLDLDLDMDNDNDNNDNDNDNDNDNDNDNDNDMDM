@@ -296,4 +296,14 @@
     <string name="apk_qa_export_json">JSON exportieren</string>
     <string name="apk_qa_export_success">JSON gespeichert</string>
     <string name="apk_qa_export_failure">JSON konnte nicht gespeichert werden</string>
+    <string name="decrypt_credits_title">Entschlüsselungsnachweis</string>
+    <string name="decrypt_credits_description">Telegram-Nutzername zu kopierten Ergebnissen hinzufügen. Nur auf diesem Gerät gespeichert.</string>
+    <string name="decrypt_credits_handle">Telegram-Nutzername</string>
+    <string name="decrypt_credits_invalid">5 bis 32 Buchstaben, Ziffern oder Unterstriche verwenden.</string>
+    <string name="decrypt_credits_save">Nachweis speichern</string>
+    <string name="decrypt_credits_saved">Nachweis gespeichert</string>
+    <string name="decrypt_credits_by">Entschlüsselt von %1$s</string>
+    <string name="v2ray_share_auto">Erkannte V2Ray-Links kopieren</string>
+    <string name="v2ray_share_protocol">%1$s-Link kopieren</string>
+    <string name="v2ray_share_detail">Links enthalten Zugangsdaten und erfordern einen kompatiblen Client. Das Serverprotokoll bleibt unverändert.</string>
 </resources>

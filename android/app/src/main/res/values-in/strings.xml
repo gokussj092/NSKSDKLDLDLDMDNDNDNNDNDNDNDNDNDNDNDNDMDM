@@ -296,4 +296,14 @@
     <string name="apk_qa_export_json">Ekspor JSON</string>
     <string name="apk_qa_export_success">JSON disimpan</string>
     <string name="apk_qa_export_failure">Gagal menyimpan JSON</string>
+    <string name="decrypt_credits_title">Kredit dekripsi</string>
+    <string name="decrypt_credits_description">Tambahkan nama pengguna Telegram ke hasil yang disalin. Hanya tersimpan di perangkat ini.</string>
+    <string name="decrypt_credits_handle">Nama pengguna Telegram</string>
+    <string name="decrypt_credits_invalid">Gunakan 5–32 huruf, angka, atau garis bawah.</string>
+    <string name="decrypt_credits_save">Simpan kredit</string>
+    <string name="decrypt_credits_saved">Kredit tersimpan</string>
+    <string name="decrypt_credits_by">Didekripsi oleh %1$s</string>
+    <string name="v2ray_share_auto">Salin tautan V2Ray yang terdeteksi</string>
+    <string name="v2ray_share_protocol">Salin tautan %1$s</string>
+    <string name="v2ray_share_detail">Tautan berisi kredensial koneksi dan memerlukan klien yang kompatibel. Protokol server tidak diubah.</string>
 </resources>
