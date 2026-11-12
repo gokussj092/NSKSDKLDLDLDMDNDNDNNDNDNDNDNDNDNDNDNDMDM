@@ -114,6 +114,8 @@ export async function claim(accountId,id,{rotate=false,db=database()}={}){
     const item=(await client.query('SELECT * FROM spdecode_shop.entitlements WHERE id=$1 AND account_id=$2 FOR UPDATE',[id,accountId])).rows[0];
     if(!item||item.status!=='active')fail('PURCHASE_NOT_AVAILABLE',404);
     if(item.payment_live!==(process.env.SPDECODE_PAYMENTS_LIVE==='true'))fail('PAYMENT_MODE_MISMATCH',409);
+    // Never mint an API key with no network restriction in force.
+    if(item.product_id==='api-ip'&&!publicIp(item.allowed_ip))fail('PUBLIC_IP_REQUIRED',409);
     if(item.claimed_at&&!rotate)fail('ALREADY_REVEALED',409);
     if(rotate&&item.product_id!=='api-ip')fail('ROTATION_UNAVAILABLE',409);
     const token=(item.product_id==='api-ip'?'spd_api_':'SPD-OFF-')+randomBytes(32).toString('base64url');
@@ -125,6 +127,30 @@ export async function claim(accountId,id,{rotate=false,db=database()}={}){
     await client.query('INSERT INTO spdecode_shop.audit(actor_id,action,resource_id) VALUES($1,$2,$3)',
       [accountId,rotate?'api_key_rotated':'secret_claimed',id]);
     return {token,expiresAt:expiry,product:item.product_id};
+  },db);
+}
+/**
+ * Account owner can provision/change the authorized public address after
+ * payment. Updates immediately revoke permission for the prior IP. Keys stay
+ * server-side hashed; no token is returned by this operation.
+ */
+export async function updateApiAllowedIp(accountId,id,input,{db=database()}={}){
+  if(typeof id!=='string'||!/^[0-9a-f-]{36}$/.test(id))fail('INVALID_REQUEST');
+  const allowedIp=publicIp(input);
+  if(!allowedIp)fail('INVALID_PUBLIC_IP');
+  return transaction(async client=>{
+    const e=(await client.query(`SELECT id,account_id,product_id,status,payment_live,expires_at,allowed_ip
+      FROM spdecode_shop.entitlements WHERE id=$1 AND account_id=$2 FOR UPDATE`,
+      [id,accountId])).rows[0];
+    if(!e||e.product_id!=='api-ip'||e.status!=='active')fail('PURCHASE_NOT_AVAILABLE',404);
+    if(e.payment_live!==(process.env.SPDECODE_PAYMENTS_LIVE==='true'))fail('PAYMENT_MODE_MISMATCH',409);
+    if(e.expires_at && new Date(e.expires_at)<=new Date())fail('ACCESS_EXPIRED',409);
+    if(e.allowed_ip!==allowedIp){
+      await client.query('UPDATE spdecode_shop.entitlements SET allowed_ip=$2 WHERE id=$1',[id,allowedIp]);
+      await client.query("INSERT INTO spdecode_shop.audit(actor_id,action,resource_id) VALUES($1,'api_ip_updated',$2)",
+        [accountId,id]);
+    }
+    return {id,allowedIp,configured:true};
   },db);
 }
 export async function useApiKey(token,originIp,{db=database()}={}){

@@ -77,8 +77,12 @@ export function validatePurchase(body){
    (body.product==='analysis-credits'
      ?!Object.hasOwn(CREDIT_PACKS,body.term)
      :(body.term!==undefined&&body.term!=='base'&&!Object.hasOwn(TERMS,body.term))))fail('INVALID_REQUEST');
- const ip=body.product==='api-ip'?publicIp(body.allowedIp):null;
- if(body.product==='api-ip'&&!ip)fail('PUBLIC_IP_REQUIRED');
+ // An API license may be purchased before the owner provisions a VPS.
+ // The API key cannot be claimed or used until a public IP is bound.
+ const ip=body.product==='api-ip' && body.allowedIp!==undefined &&
+   body.allowedIp!==null && body.allowedIp!==''?publicIp(body.allowedIp):null;
+ if(body.product==='api-ip' && body.allowedIp!=null && body.allowedIp!=='' && !ip)
+   fail('INVALID_PUBLIC_IP');
  if(body.provider==='mercadopago'&&body.currency!=='MXN')fail('CURRENCY_UNAVAILABLE');
  return {...body,term:body.term||(body.product==='analysis-credits'?null:'base'),allowedIp:ip};
 }

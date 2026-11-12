@@ -2,7 +2,7 @@ import {randomUUID} from 'node:crypto';
 import {database,transaction} from './db.mjs';
 import {safe,reply,fail,ShopError,authReady,paymentReady,requireOrigin,jsonBody,boundedBody} from './config.mjs';
 import {accountAuth,requireAccount} from './auth.mjs';
-import {catalog,taxRules,checkout,settle,claim,useApiKey,checkApiKey,releaseApiUsage,completeApiUsage} from './orders.mjs';
+import {catalog,taxRules,checkout,settle,claim,updateApiAllowedIp,useApiKey,checkApiKey,releaseApiUsage,completeApiUsage} from './orders.mjs';
 import {publicProduct,taxQuote,validateProduct} from './catalog.mjs';
 import {profile,editProfile} from './profile.mjs';
 import {creditBalance} from './credits.mjs';
@@ -52,6 +52,13 @@ export const claimRequest=request=>safe(async()=>{
   requireOrigin(request);const session=await requireAccount(request,{fresh:true}),body=await jsonBody(request,2048);
   if(!/^[0-9a-f-]{36}$/.test(body.id||'')||typeof body.rotate!=='boolean')fail('INVALID_REQUEST');
   return reply(await claim(session.user.id,body.id,{rotate:body.rotate}));
+});
+export const apiIpMutation=request=>safe(async()=>{
+  requireOrigin(request);
+  const session=await requireAccount(request,{fresh:true});
+  const body=await jsonBody(request,2048);
+  if(!body||Object.keys(body).some(k=>!['id','allowedIp'].includes(k)))fail('INVALID_REQUEST');
+  return reply(await updateApiAllowedIp(session.user.id,body.id,body.allowedIp));
 });
 export const captureRequest=request=>safe(async()=>{
   requireOrigin(request);const session=await requireAccount(request),body=await jsonBody(request,2048);
