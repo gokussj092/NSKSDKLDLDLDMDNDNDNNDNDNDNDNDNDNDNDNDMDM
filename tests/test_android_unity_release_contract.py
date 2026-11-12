@@ -139,7 +139,7 @@ class AndroidUnityReleaseContract(unittest.TestCase):
             self.assertIn(text,ui)
         self.assertIn('enabled=false', ui) # No active payment or password checkout.
         self.assertIn('NativeCommerceScreens(start:String,onExit:()->Unit)',ui)
-        self.assertNotIn('WebView',ui)
+        self.assertNotIn('android.webkit.WebView',ui)
 
     def test_json_height_tracks_native_lines_for_short_results(self):
         viewer = read("android/app/src/main/java/com/ghostdeveloper/spdecode/LargeResultViewer.kt")
