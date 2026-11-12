@@ -171,6 +171,19 @@ class AndroidUnityReleaseContract(unittest.TestCase):
             self.assertNotIn('android:documentLaunchMode="intoExisting"', manifest)
         self.assertIn("ad?.showAd(activity)", host)
 
+    def test_legacy_http_custom_json_preview_is_recoverable_without_redecrypting(self):
+        viewer = read("android/app/src/main/java/com/ghostdeveloper/spdecode/LargeResultViewer.kt")
+        fixture = read("android/app/src/sharedAndroidTest/java/com/ghostdeveloper/spdecode/LargeResultEngineInstrumentedTest.kt")
+        self.assertIn("internal fun openJsonResultForViewer", viewer)
+        self.assertIn("NativeResultEngine.open(source)", viewer)
+        self.assertIn("catch(error:java.io.IOException)", viewer)
+        self.assertIn("ResultJsonDisplay.render(raw,suffix)", viewer)
+        self.assertIn("if(normalized==source)throw error", viewer)
+        self.assertIn("owned = openJsonResultForViewer(raw, suffix)", viewer)
+        self.assertIn("legacyHttpCustomPresentationRecoversMalformedJsonAndKeepsDecodedFields", fixture)
+        self.assertIn("legacyHttpCustomValidJsonKeepsItsExactBytes", fixture)
+        self.assertNotIn("decodeFile(", viewer)
+
     def test_vps_online_fails_closed_for_missing_ads(self):
         build = read("cloud/infra/vps/android-public-build.sh")
         self.assertIn('UNITY_CONFIG="$CFG/unity-ads.env"', build)
