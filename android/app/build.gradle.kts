@@ -577,25 +577,25 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
                 },
                 confirmButton={TextButton(onClick={dialog=null}){""")
 
-        // Refresh stays compact in APK; in Server VPN Cloud builds use the
-        // authenticated catalog-refresh component only for the full-size control.
+        // The shared header now shows one refresh control without the Credits shortcut.
+        // Cloud builds replace that control with the authenticated catalog component.
         app = replaceOnce(app,
-            """                OutlinedButton(
-                    onClick=onRefreshServerVpn,enabled=enableServerVpnRefresh,
-                    modifier=Modifier.testTag("server_vpn_manual_refresh"),
-                    contentPadding=PaddingValues(horizontal=12.dp,vertical=7.dp),
-                ) {
-                    if(refreshingServerVpn) CircularProgressIndicator(
-                        modifier=Modifier.size(17.dp),strokeWidth=2.dp,color=White)
-                    else Icon(Icons.Outlined.Refresh,null,tint=White,
-                        modifier=Modifier.size(17.dp))
-                    Spacer(Modifier.width(6.dp))
-                    Text(stringResource(if(refreshingServerVpn) R.string.catalog_checking
-                        else R.string.catalog_check_action),fontSize=12.sp,color=White)
-                }
+            """            OutlinedButton(
+                onClick=onRefreshServerVpn,enabled=enableServerVpnRefresh,
+                modifier=Modifier.testTag("server_vpn_manual_refresh"),
+                contentPadding=PaddingValues(horizontal=12.dp,vertical=7.dp),
+            ) {
+                if(refreshingServerVpn) CircularProgressIndicator(
+                    modifier=Modifier.size(17.dp),strokeWidth=2.dp,color=White)
+                else Icon(Icons.Outlined.Refresh,null,tint=White,
+                    modifier=Modifier.size(17.dp))
+                Spacer(Modifier.width(6.dp))
+                Text(stringResource(if(refreshingServerVpn) R.string.catalog_checking
+                    else R.string.catalog_check_action),fontSize=12.sp,color=White)
+            }
 """,
-            """                com.ghostdeveloper.spdecode.cloud.CatalogRefreshControl(
-                    refreshingServerVpn,enableServerVpnRefresh,onRefreshServerVpn)
+            """            com.ghostdeveloper.spdecode.cloud.CatalogRefreshControl(
+                refreshingServerVpn,enableServerVpnRefresh,onRefreshServerVpn)
 """)
         app = replaceOnce(app,
             "        if(catalogLoading) Row(verticalAlignment=Alignment.CenterVertically) {",
