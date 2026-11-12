@@ -161,10 +161,14 @@ class AndroidUnityReleaseContract(unittest.TestCase):
         self.assertIn("contextMode?.finish()", viewer)
 
     def test_android_recents_use_single_application_task(self):
-        manifest = read("android/app/src/main/AndroidManifest.xml")
         host = read("android/app/src/unityAds/java/com/ghostdeveloper/spdecode/ads/UnityInterstitialHost.kt")
-        self.assertIn('android:documentLaunchMode="never"', manifest)
-        self.assertNotIn('android:documentLaunchMode="intoExisting"', manifest)
+        for manifest_path in (
+            "android/app/src/main/AndroidManifest.xml",
+            "android/app/src/cloud/AndroidManifest.xml",
+        ):
+            manifest = read(manifest_path)
+            self.assertIn('android:documentLaunchMode="never"', manifest)
+            self.assertNotIn('android:documentLaunchMode="intoExisting"', manifest)
         self.assertIn("ad?.showAd(activity)", host)
 
     def test_vps_online_fails_closed_for_missing_ads(self):
