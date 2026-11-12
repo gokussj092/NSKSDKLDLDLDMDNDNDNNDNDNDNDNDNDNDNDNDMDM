@@ -1001,6 +1001,339 @@ Google से जारी रखें
 Google लिंक खोए बिना पासवर्ड जोड़ने, बदलने और पुनः पाने के लिए सुरक्षित सर्वर सपोर्ट चाहिए। क्रेडेंशियल नहीं बदले गए।
 ठीक है
 """.trimIndent().lines(),
+        "ja" to """
+詳細
+戻る
+マイアカウント
+安全なログイン
+カート
+ストア
+カート
+クレジット / APK解析
+解析クレジット
+1クレジットで対象のAPK/APKSを1件解析できます。通常のVPNファイルの復号には使用されません。
+パックを選択
+クレジット
+お得 
+USD建てのクレジットパックは未公開です。
+パック
+合計クレジット
+合計
+カートに追加
+APKクレジット
+サーバーからUSD価格を取得しました。購入には認証済みセッションと見積もりが必要です。
+商用API
+許可済みの公開IPに紐づくAPIキーで、自分のサーバーから復号機能を利用できます。
+含まれるサービス
+ファイルの復号
+テキストの復号
+オンライン方式
+カタログの復号
+APK/APKSアプリ解析は含まれません
+ライセンス期間
+日
+APIのUSD価格は公開されていません。
+サーバーの公開IP（購入時は任意）
+公開IPv4またはIPv6
+有効な公開IPを入力してください。プライベートIP、ローカルIP、ドメインは利用できません。
+IP未設定でも購入可能です。キーの利用前にマイアカウントで公開IPを登録してください。後から変更できます。
+APIをカートに追加
+体験 / SP-DECODE
+広告を削除
+アプリ内の広告なしで30日間
+全画面広告なし
+有効なアカウントに適用
+APKクレジットやAPIアクセスは含まれません。このプランは自動更新されません。
+近日公開
+SP-DECODEサービス
+あなたのプロジェクトを支援。
+クレジット、API、広告なしの体験。
+サーバー価格を読み込み中…
+カタログを取得できません。架空の価格は表示しません。
+サーバーの公式USD価格です。決済にはセッションと見積もりの確認が必要です。
+商品を見る
+APK/APKS解析と技術結果
+USD価格がありません
+ファイル、テキスト、オンライン方式、カタログ
+1か月間広告なし
+サポートとお支払い
+販売機能が有効になると、注文、領収書、残高、期間、キーがアカウントに表示されます。
+注文内容
+カートは空です。
+許可済みIP: 
+削除
+小計
+価格は参考です。税金、割引、提供状況、最終決済額はサーバーの見積もりが必要です。
+決済はまだ利用できません
+アカウントセンター
+ゲスト
+ログインしていません
+ログイン
+ログアウト
+注文
+セキュリティ
+概要
+購入履歴
+ログイン後に請求書、注文、確認済みの支払いが表示されます。
+APIキー
+上限とクォータを見る
+許可済みIPを確認
+キーを更新または無効化
+キーは確認済みライセンスにのみ表示されます。アプリに平文で保存されません。
+登録済み公開IP
+新しい公開IP
+許可済みIPを更新
+公開IPを更新しました
+IPを更新できませんでした。必要に応じて再ログインしてください。
+購入したAPIがここに表示され、公開IPを設定または変更できます。
+セキュリティと認証情報
+Google連携アカウント
+パスワードを追加または変更
+サーバーは現在Googleのみ対応しています。パスワードには本人確認、回復機能、安全なアカウント連携が必要です。
+マイサービス
+APKクレジット残高
+ログイン後に利用可能
+ライセンス、期間、IP
+状態と期限
+ストアを開く
+アプリ内からアカウントにアクセス
+アカウントを作成
+続行方法を選択
+ログインに失敗しました。アカウントサーバーとGoogle OAuth設定を確認してください。
+Googleで続行
+またはメールで
+メールで続行
+メールアドレス
+パスワード
+サーバーでパスワードログインはまだ有効ではありません。この情報は送信も保存もしません。
+その他のログイン方法
+プロフィールはSP-DECODE内で表示されます。GoogleはAndroidの安全な認証を使用し、偽の埋め込みフォームは使いません。
+アカウントのパスワード
+Google連携を維持したままパスワードの追加・変更・回復を行うには、安全なサーバー機能が必要です。認証情報は変更されていません。
+OK
+""".trimIndent().lines(),
+        "id" to """
+Detail
+Kembali
+Akun saya
+Masuk aman
+Keranjang Anda
+Toko
+Keranjang
+KREDIT / ANALISIS APK
+Kredit analisis
+Satu kredit untuk satu analisis APK/APKS yang memenuhi syarat. Dekripsi berkas VPN biasa tidak memakai kredit ini.
+Pilih paket
+kredit
+Hemat 
+Belum ada paket kredit berharga USD yang diterbitkan.
+Paket
+total kredit
+Total
+Tambahkan ke keranjang
+kredit APK
+Harga USD diterima dari server. Pembelian memerlukan sesi dan penawaran harga yang terverifikasi.
+API Komersial
+Gunakan metode dekripsi dari server Anda dengan kunci API yang terikat pada IP publik yang diizinkan.
+Layanan termasuk
+Dekripsi berkas
+Dekripsi teks
+Metode online
+Dekripsi katalog
+Analisis aplikasi APK/APKS tidak termasuk
+Masa lisensi
+hari
+Belum ada harga USD yang diterbitkan untuk API.
+IP publik server (opsional saat pembelian)
+IPv4 atau IPv6 publik
+Masukkan IP publik yang valid; IP privat, lokal, dan domain tidak diizinkan.
+Anda boleh membeli tanpa IP lalu menautkan IP publik dari Akun saya sebelum menggunakan kunci. IP dapat diganti nanti.
+Tambahkan API ke keranjang
+PENGALAMAN / SP-DECODE
+Hapus iklan
+30 hari tanpa iklan dalam aplikasi
+Tanpa iklan interstisial
+Berlaku untuk akun aktif Anda
+Tidak termasuk kredit APK atau akses API. Tidak ada perpanjangan otomatis dalam penawaran ini.
+Segera hadir
+LAYANAN SP-DECODE
+Semua untuk proyek Anda.
+Kredit, API, dan pengalaman tanpa iklan.
+Memuat harga dari server…
+Katalog tidak tersedia. Harga buatan tidak akan ditampilkan.
+Harga resmi USD dari server. Pembayaran memerlukan sesi dan penawaran yang terverifikasi.
+Jelajahi produk
+Analisis APK/APKS dan hasil teknis
+Harga USD tidak tersedia
+Berkas, teks, metode online, dan katalog
+Satu bulan tanpa iklan
+Bantuan dan penagihan
+Akun Anda akan menampilkan pesanan, tanda terima, saldo, masa aktif, dan kunci setelah perdagangan aktif.
+Ringkasan pesanan
+Keranjang Anda kosong.
+IP yang diizinkan: 
+Hapus
+Subtotal
+Harga hanya acuan; pajak, diskon, ketersediaan, dan pembayaran akhir memerlukan penawaran server.
+Pembayaran belum tersedia
+Pusat akun
+Tamu
+Tidak ada sesi terhubung
+Masuk
+Keluar
+Pesanan
+Keamanan
+Ringkasan
+Riwayat pembelian
+Faktur, pesanan, dan pembayaran terkonfirmasi muncul setelah masuk.
+Kunci API saya
+Lihat batas dan kuota
+Periksa IP yang diizinkan
+Rotasi atau cabut kunci
+Kunci hanya ditampilkan untuk lisensi terverifikasi dan tidak pernah disimpan sebagai teks biasa di aplikasi.
+IP publik terikat
+IP publik baru
+Perbarui IP yang diizinkan
+IP publik diperbarui
+Tidak dapat memperbarui IP. Masuk lagi jika diperlukan.
+API yang dibeli muncul di sini untuk mengatur atau mengubah IP publiknya.
+Keamanan dan kredensial
+Akun terhubung ke Google
+Tambah atau ubah kata sandi
+Server saat ini hanya mendukung Google. Kata sandi memerlukan verifikasi identitas, pemulihan, dan penautan akun yang aman.
+Layanan saya
+Saldo kredit APK
+Tersedia setelah masuk
+Lisensi, masa aktif, dan IP
+Status dan kedaluwarsa
+Buka toko
+Akses akun langsung dari aplikasi
+Buat akun
+Pilih cara melanjutkan
+Gagal masuk. Periksa server akun dan konfigurasi Google OAuth.
+Lanjutkan dengan Google
+atau lewat email
+Lanjutkan lewat email
+Alamat email
+Kata sandi
+Masuk dengan kata sandi belum diaktifkan di server. Data ini tidak dikirim atau disimpan.
+Metode masuk lainnya
+Profil tetap di SP-DECODE. Google menggunakan alur aman Android, bukan formulir palsu yang disematkan.
+Kata sandi akun
+Fitur ini memerlukan dukungan server yang aman untuk menambah, mengubah, dan memulihkan kata sandi tanpa kehilangan tautan Google. Kredensial belum berubah.
+OK
+""".trimIndent().lines(),
+        "vi" to """
+Chi tiết
+Quay lại
+Tài khoản của tôi
+Đăng nhập an toàn
+Giỏ hàng của bạn
+Cửa hàng
+Giỏ hàng
+TÍN DỤNG / PHÂN TÍCH APK
+Tín dụng phân tích
+Một tín dụng dùng để phân tích một APK/APKS đủ điều kiện. Giải mã tệp VPN thông thường không dùng tín dụng này.
+Chọn gói
+tín dụng
+Tiết kiệm 
+Chưa có gói tín dụng định giá bằng USD được công bố.
+Các gói
+tổng tín dụng
+Tổng
+Thêm vào giỏ hàng
+tín dụng APK
+Giá USD nhận từ máy chủ. Mua hàng cần phiên đăng nhập và báo giá đã xác minh.
+API thương mại
+Sử dụng phương pháp giải mã từ máy chủ của bạn bằng khóa API gắn với IP công khai được cho phép.
+Dịch vụ bao gồm
+Giải mã tệp
+Giải mã văn bản
+Phương pháp trực tuyến
+Giải mã danh mục
+Không bao gồm phân tích ứng dụng APK/APKS
+Thời hạn giấy phép
+ngày
+Chưa công bố giá API bằng USD.
+IP công khai của máy chủ (tùy chọn khi mua)
+IPv4 hoặc IPv6 công khai
+Nhập IP công khai hợp lệ; không chấp nhận IP riêng, IP nội bộ hoặc tên miền.
+Bạn có thể mua khi chưa có IP, sau đó liên kết IP tại Tài khoản của tôi trước khi dùng khóa. Có thể đổi IP sau.
+Thêm API vào giỏ hàng
+TRẢI NGHIỆM / SP-DECODE
+Xóa quảng cáo
+30 ngày không có quảng cáo trong ứng dụng
+Không có quảng cáo toàn màn hình
+Áp dụng cho tài khoản đang hoạt động
+Không bao gồm tín dụng APK hoặc quyền truy cập API. Gói này không tự động gia hạn.
+Sắp ra mắt
+DỊCH VỤ SP-DECODE
+Mọi thứ cho dự án của bạn.
+Tín dụng, API và trải nghiệm không quảng cáo.
+Đang tải giá từ máy chủ…
+Không có danh mục. Sẽ không hiển thị giá tự đặt.
+Giá chính thức bằng USD từ máy chủ. Thanh toán cần phiên và báo giá đã xác minh.
+Khám phá sản phẩm
+Phân tích APK/APKS và kết quả kỹ thuật
+Không có giá USD
+Tệp, văn bản, phương pháp trực tuyến và danh mục
+Một tháng không quảng cáo
+Hỗ trợ và thanh toán
+Tài khoản sẽ hiển thị đơn hàng, biên lai, số dư, thời hạn và khóa khi thương mại được bật.
+Tóm tắt đơn hàng
+Giỏ hàng của bạn trống.
+IP được phép: 
+Xóa
+Tạm tính
+Giá chỉ tham khảo; thuế, chiết khấu, tình trạng và khoản thanh toán cuối cùng cần báo giá từ máy chủ.
+Chưa hỗ trợ thanh toán
+Trung tâm tài khoản
+Khách
+Chưa có phiên liên kết
+Đăng nhập
+Đăng xuất
+Đơn hàng
+Bảo mật
+Tổng quan
+Lịch sử mua hàng
+Hóa đơn, đơn hàng và thanh toán xác nhận sẽ xuất hiện sau khi đăng nhập.
+Khóa API của tôi
+Xem giới hạn và hạn mức
+Xem IP được phép
+Xoay vòng hoặc thu hồi khóa
+Khóa chỉ hiện khi có giấy phép đã xác minh. Khóa không lưu dạng văn bản thuần trong ứng dụng.
+IP công khai đã liên kết
+IP công khai mới
+Cập nhật IP được phép
+Đã cập nhật IP công khai
+Không thể cập nhật IP. Hãy đăng nhập lại nếu cần.
+API đã mua sẽ xuất hiện ở đây để cấu hình hoặc đổi IP công khai.
+Bảo mật và thông tin xác thực
+Tài khoản liên kết Google
+Thêm hoặc đổi mật khẩu
+Máy chủ hiện chỉ hỗ trợ Google. Mật khẩu cần xác minh danh tính, khôi phục và liên kết tài khoản an toàn.
+Dịch vụ của tôi
+Số dư tín dụng APK
+Có sau khi đăng nhập
+Giấy phép, thời hạn và IP
+Trạng thái và hết hạn
+Mở cửa hàng
+Truy cập tài khoản ngay trong ứng dụng
+Tạo tài khoản
+Chọn cách tiếp tục
+Đăng nhập thất bại. Kiểm tra máy chủ tài khoản và cấu hình Google OAuth.
+Tiếp tục với Google
+hoặc qua email
+Tiếp tục qua email
+Địa chỉ email
+Mật khẩu
+Đăng nhập bằng mật khẩu chưa bật trên máy chủ. Dữ liệu này sẽ không được gửi hoặc lưu.
+Phương thức đăng nhập khác
+Hồ sơ nằm trong SP-DECODE. Google dùng quy trình an toàn Android, không dùng biểu mẫu đăng nhập giả nhúng.
+Mật khẩu tài khoản
+Tính năng cần máy chủ bảo mật để thêm, đổi và khôi phục mật khẩu mà không mất liên kết Google. Thông tin xác thực chưa bị thay đổi.
+OK
+""".trimIndent().lines(),
     )
     fun value(language:String,index:Int):String? {
         val values=translations[language]?:return null
