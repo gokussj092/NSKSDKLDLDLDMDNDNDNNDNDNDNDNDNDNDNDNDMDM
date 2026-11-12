@@ -287,6 +287,18 @@ class AndroidUnityReleaseContract(unittest.TestCase):
                              "decrypt_credits_delete_confirm"):
                 self.assertIn(f'name="{resource}"', strings)
 
+    def test_google_button_uses_explicit_google_sign_in_flow(self):
+        auth=read("android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceAuth.kt")
+        self.assertIn("GetSignInWithGoogleOption.Builder(clientId).build()", auth)
+        self.assertNotIn("GetGoogleIdOption.Builder()", auth)
+        self.assertIn("GOOGLE_NO_AVAILABLE_CREDENTIAL", auth)
+        self.assertIn("GOOGLE_CREDENTIAL_PROVIDER_MISCONFIGURED", auth)
+        self.assertIn("GOOGLE_CREDENTIAL_PROVIDER_UNSUPPORTED", auth)
+        self.assertIn("GOOGLE_CREDENTIAL_INTERRUPTED", auth)
+        self.assertIn("GOOGLE_SIGN_IN_CANCELLED", auth)
+        self.assertIn("CredentialManager.create(activity).getCredential(", auth)
+        self.assertIn('http("/api/auth/sign-in/social","POST",body)', auth)
+
     def test_native_google_signin_uses_activity_and_inline_legal_links(self):
         auth=read("android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceAuth.kt")
         screen=read("android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceScreens.kt")

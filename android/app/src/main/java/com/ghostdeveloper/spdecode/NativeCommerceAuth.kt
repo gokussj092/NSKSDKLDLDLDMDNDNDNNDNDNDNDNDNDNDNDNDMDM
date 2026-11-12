@@ -11,7 +11,11 @@ import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.credentials.exceptions.GetCredentialException
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import androidx.credentials.exceptions.GetCredentialInterruptedException
+import androidx.credentials.exceptions.GetCredentialProviderConfigurationException
+import androidx.credentials.exceptions.GetCredentialUnsupportedException
+import androidx.credentials.exceptions.NoCredentialException
+import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -168,13 +172,12 @@ internal class NativeCommerceAuth(private val context:Context) {
         val clientId=config.optString("googleWebClientId")
         if(!clientId.endsWith(".apps.googleusercontent.com") || clientId.length>256)
             throw AuthFailure("GOOGLE_WEB_CLIENT_ID_UNAVAILABLE")
-        val options=GetGoogleIdOption.Builder()
-            .setFilterByAuthorizedAccounts(false)
-            .setServerClientId(clientId)
-            .setAutoSelectEnabled(false)
-            .build()
-        // Credential Manager requires an Activity context to display Google
-        // account selection. LocalContext may be a language/theme wrapper.
+        // This is an explicit "Continue with Google" button; Google specifies
+        // GetSignInWithGoogleOption here, rather than the silent/bottom-sheet
+        // GetGoogleIdOption intended for sign-in suggestions.
+        val options=GetSignInWithGoogleOption.Builder(clientId).build()
+        // Credential Manager needs the foreground Activity, not an application
+        // or locale-wrapped non-Activity context.
         val activity=hostActivity()
         val credential=try {
             CredentialManager.create(activity).getCredential(
@@ -183,6 +186,14 @@ internal class NativeCommerceAuth(private val context:Context) {
             ).credential
         }catch(e:GetCredentialCancellationException){
             throw AuthFailure("GOOGLE_SIGN_IN_CANCELLED")
+        }catch(e:NoCredentialException){
+            throw AuthFailure("GOOGLE_NO_AVAILABLE_CREDENTIAL")
+        }catch(e:GetCredentialProviderConfigurationException){
+            throw AuthFailure("GOOGLE_CREDENTIAL_PROVIDER_MISCONFIGURED")
+        }catch(e:GetCredentialUnsupportedException){
+            throw AuthFailure("GOOGLE_CREDENTIAL_PROVIDER_UNSUPPORTED")
+        }catch(e:GetCredentialInterruptedException){
+            throw AuthFailure("GOOGLE_CREDENTIAL_INTERRUPTED")
         }catch(e:GetCredentialException){
             throw AuthFailure("GOOGLE_CREDENTIAL_PICKER_FAILED")
         }
