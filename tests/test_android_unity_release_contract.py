@@ -145,7 +145,9 @@ class AndroidUnityReleaseContract(unittest.TestCase):
                      'Descifrado de catálogos','No incluye análisis de aplicaciones APK/APKS'):
             self.assertIn(text,ui)
         self.assertIn('enabled=false', ui) # No active payment or password checkout.
-        self.assertIn('NativeCommerceScreens(start:String,onExit:()->Unit)',ui)
+        self.assertIn('internal fun NativeCommerceScreens(start:String,onExit:()->Unit,',ui)
+        self.assertIn('onLegalLink:(String)->Unit={}',ui)
+        self.assertIn('acceptedPolicies',ui)
         self.assertNotIn('android.webkit.WebView',ui)
 
     def test_all_commerce_locales_and_native_google_auth(self):
