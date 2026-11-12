@@ -297,6 +297,7 @@ class AndroidUnityReleaseContract(unittest.TestCase):
         activity=read("android/app/src/main/java/com/ghostdeveloper/spdecode/MainActivity.kt")
         bridge=read("cloud/workers/python/v2box_bridge.py")
         decoder=read("decoders/Python/v2box_export.py")
+        self.assertIn('when(obj.optInt("version",1))',probe)
         self.assertIn('header.optString("kdf")=="pbkdf2-sha256"',probe)
         self.assertIn('header.optInt("iterations",0) in 100_000..1_200_000',probe)
         self.assertIn("V2BoxPasswordProbe.requiresPassword(preview)",activity)
