@@ -110,6 +110,6 @@ test('disabled codes and account-bound brute-force limits reject new redemptions
  const disabled=await createGift({title:'Disabled gift',kind:'credits',credits:1,maxUses:1},'admin-qa',{db});
  await disableGift(disabled.id,'admin-qa',{db});
  await assert.rejects(redeemGift(users[2],disabled.code,{db}),/GIFT_INVALID/);
- for(let i=0;i<7;i++)await assert.rejects(redeemGift(users[2],'SPG-'+('A'.repeat(21))+i,{db}),/GIFT_INVALID/);
+ for(let i=0;i<6;i++)await assert.rejects(redeemGift(users[2],'SPG-'+('A'.repeat(21))+i,{db}),/GIFT_INVALID/);
  await assert.rejects(redeemGift(users[2],disabled.code,{db}),/GIFT_RATE_LIMITED/);
 });
