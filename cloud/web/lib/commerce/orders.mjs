@@ -83,9 +83,20 @@ export async function settle(provider,event,{db=database()}={}){
               [randomUUID(),order.account_id,order.id,p.credits,order.payment_live]);
           }
         }else{
-          await client.query(`INSERT INTO spdecode_shop.entitlements(id,order_id,account_id,product_id,allowed_ip,quota,days,status,payment_live)
-            VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT(order_id) DO NOTHING`,
-            [randomUUID(),order.id,order.account_id,order.product_id,owner.rows.length?order.allowed_ip:null,p.quota,p.days,owner.rows.length?'active':'revoked',order.payment_live]);
+          // Ad-free access starts only after a verified payment webhook.
+          // Existing paid time is preserved when the same owner renews.
+          let expires=null;
+          if(order.product_id==='ads-free'){
+            const prior=await client.query(`SELECT MAX(expires_at) AS until
+              FROM spdecode_shop.entitlements
+              WHERE account_id=$1 AND product_id='ads-free' AND status='active'
+                AND payment_live=$2 AND expires_at>now()`,[order.account_id,order.payment_live]);
+            const previous=prior.rows[0]?.until?.getTime?.()||0;
+            expires=new Date(Math.max(Date.now(),previous)+30*86400000);
+          }
+          await client.query(`INSERT INTO spdecode_shop.entitlements(id,order_id,account_id,product_id,allowed_ip,quota,days,status,payment_live,expires_at)
+            VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) ON CONFLICT(order_id) DO NOTHING`,
+            [randomUUID(),order.id,order.account_id,order.product_id,owner.rows.length?order.allowed_ip:null,p.quota,p.days,owner.rows.length?'active':'revoked',order.payment_live,expires]);
         }
       }
     }else{
