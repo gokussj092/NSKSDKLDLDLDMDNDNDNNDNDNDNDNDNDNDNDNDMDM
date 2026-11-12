@@ -720,9 +720,15 @@ class MainActivity : ComponentActivity() {
                 telegramCreditUsername=telegramCreditUsername,
                 onSaveTelegramCredit={value->
                     val normalized=TelegramResultCopy.normalizeUsername(value)
-                    if(normalized!=null && settings.edit()
-                            .putString("telegram_decrypt_credit",normalized).commit()){
-                        telegramCreditUsername=normalized
+                    if(normalized==null)false
+                    else {
+                        val editor=settings.edit()
+                        if(normalized.isBlank())editor.remove("telegram_decrypt_credit")
+                        else editor.putString("telegram_decrypt_credit",normalized)
+                        if(editor.commit()){
+                            telegramCreditUsername=normalized
+                            true
+                        } else false
                     }
                 },
                 onLanguage={tag->setLanguage(tag)},
