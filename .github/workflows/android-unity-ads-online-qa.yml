@@ -4,6 +4,11 @@ on:
     branches: [ci/unity-ads-online-qa]
     paths:
       - .github/workflows/android-unity-ads-online-qa.yml
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/SpDecodeApp.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/ContinuousJsonView.kt
+      - android/app/src/main/AndroidManifest.xml
+      - android/app/src/unityAds/java/com/ghostdeveloper/spdecode/ads/UnityInterstitialHost.kt
+      - tests/test_android_unity_release_contract.py
 permissions:
   contents: read
 concurrency:
