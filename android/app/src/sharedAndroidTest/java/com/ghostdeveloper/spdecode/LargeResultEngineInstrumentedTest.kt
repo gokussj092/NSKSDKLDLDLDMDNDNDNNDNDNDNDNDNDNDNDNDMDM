@@ -26,6 +26,27 @@ class LargeResultEngineInstrumentedTest {
             }
         }
     }
+    @Test fun legacyHttpCustomPresentationRecoversMalformedJsonAndKeepsDecodedFields() {
+        // Synthetic data: a legacy text wrapper starts with a brace but is not JSON.
+        val legacy="{invalid-legacy-header}\\n│[۞] Config: {\\\"host\\\":\\\"example.invalid\\\"}"
+        openJsonResultForViewer(legacy,"hc").use { document ->
+            val output=ByteArrayOutputStream()
+            document.exportOriginal(output)
+            val parsed=org.json.JSONObject(output.toString("UTF-8"))
+            assertEquals("example.invalid",parsed.getJSONObject("Config").getString("host"))
+        }
+        // The original immutable text is not rewritten by the viewer.
+        assertTrue(legacy.startsWith("{invalid-legacy-header}"))
+    }
+
+    @Test fun legacyHttpCustomValidJsonKeepsItsExactBytes() {
+        val raw="""{"Protections":{},"Config":{"host":"example.invalid"},"Metadata":{"envelope":{"verCfg":57},"config":{"verApp":565}},"UnresolvedFields":[{"index":17,"field":"psiphon","status":"encrypted_unresolved"}]}"""
+        openJsonResultForViewer(raw,"hc").use { document ->
+            val output=ByteArrayOutputStream()
+            document.exportOriginal(output)
+            assertEquals(raw,output.toString("UTF-8"))
+        }
+    }
     @Test fun privacyToggleDoesNotRetainUnmaskedNativePage() {
         NativeResultEngine.open("{\"password\":\"FICTIONAL_ONLY\",\"host\":\"example.invalid\"}").use {doc->
             repeat(100){assertTrue(doc.page(0,0,false).toString().contains("FICTIONAL_ONLY"));assertFalse(doc.page(0,0,true).toString().contains("FICTIONAL_ONLY"))}
