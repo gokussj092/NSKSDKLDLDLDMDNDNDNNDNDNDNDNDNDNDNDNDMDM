@@ -630,19 +630,22 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                     }
                 }
                 "login" -> {
-                    Column(Modifier.fillMaxWidth().padding(top=14.dp,bottom=6.dp),
-                        horizontalAlignment=Alignment.CenterHorizontally,
-                        verticalArrangement=Arrangement.spacedBy(12.dp)){
-                        Box(Modifier.size(76.dp).background(raised,RoundedCornerShape(22.dp)),
-                            contentAlignment=Alignment.Center){
-                            Icon(Icons.Outlined.Fingerprint,null,tint=white,
-                                modifier=Modifier.size(48.dp))
+                    Column(Modifier.fillMaxWidth().padding(top=22.dp,bottom=12.dp),
+                        verticalArrangement=Arrangement.spacedBy(9.dp)){
+                        Row(verticalAlignment=Alignment.CenterVertically,
+                            horizontalArrangement=Arrangement.spacedBy(10.dp)){
+                            Icon(Icons.Outlined.Shield,null,tint=white,
+                                modifier=Modifier.size(30.dp))
+                            Text("SP-DECODE",color=white,fontWeight=FontWeight.Bold,
+                                fontSize=18.sp)
                         }
-                        Text("SP-DECODE",color=white,fontWeight=FontWeight.Bold,
-                            fontSize=27.sp)
+                        Spacer(Modifier.height(9.dp))
+                        Text(if(authTab=="login")local("Iniciar sesión","Sign in")
+                            else local("Crear cuenta","Create account"),
+                            color=white,fontWeight=FontWeight.SemiBold,fontSize=31.sp)
                         Text(local("Accede a tu cuenta desde la aplicación",
                             "Access your account inside the app"),
-                            color=muted,fontSize=13.sp)
+                            color=muted,fontSize=14.sp)
                     }
                     SlateCard{
                         Row(Modifier.fillMaxWidth(),
@@ -660,7 +663,7 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                             }
                         }
                         Text(local("Elige cómo continuar","Choose how to continue"),
-                            color=white,fontSize=18.sp,fontWeight=FontWeight.SemiBold)
+                            color=white,fontSize=16.sp,fontWeight=FontWeight.Medium)
                         OutlinedButton(onClick={
                             if(!signingIn)scope.launch{
                                 signingIn=true
@@ -668,9 +671,15 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                                 try{
                                     accountSnapshot=auth.signInWithGoogle(acceptedPolicies)
                                     page="account"
-                                }catch(_:Exception){
-                                    notice=local("No se pudo iniciar sesión. Comprueba que el servidor y Google OAuth estén configurados.",
-                                        "Sign in failed. Verify account server and Google OAuth configuration.")
+                                }catch(error:kotlinx.coroutines.CancellationException){
+                                    throw error
+                                }catch(error:Exception){
+                                    val code=NativeCommerceAuth.diagnostic(error)
+                                    if(code!="GOOGLE_SIGN_IN_CANCELLED"){
+                                        notice=local("No se pudo iniciar sesión. Comprueba que el servidor y Google OAuth estén configurados.",
+                                            "Sign in failed. Verify account server and Google OAuth configuration.")+
+                                            " ("+code+")"
+                                    }
                                 }finally{signingIn=false}
                             }
                         },enabled=!signingIn && acceptedPolicies,modifier=Modifier.fillMaxWidth()) {
@@ -678,16 +687,8 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                             Spacer(Modifier.width(12.dp))
                             Text(local("Continuar con Google","Continue with Google"))
                         }
-                        Checkbox(checked=acceptedPolicies,onCheckedChange={acceptedPolicies=it})
-                        Text(CommerceI18n.policyConsent(language),color=muted,fontSize=12.sp)
-                        Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween) {
-                            TextButton(onClick={onLegalLink("terms")}){
-                                Text(CommerceI18n.termsLabel(language))
-                            }
-                            TextButton(onClick={onLegalLink("privacy")}){
-                                Text(CommerceI18n.privacyLabel(language))
-                            }
-                        }
+                        CommerceConsentRow(language,acceptedPolicies,
+                            onAccepted={acceptedPolicies=it},onLegalLink=onLegalLink)
                         Row(verticalAlignment=Alignment.CenterVertically){
                             HorizontalDivider(Modifier.weight(1f),color=stroke)
                             Text("   "+local("o por correo","or by email")+"   ",
@@ -728,11 +729,20 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                                 Text(local("Otros métodos de acceso","Other sign-in methods"))
                             }
                         }
+                        if(signingIn) LinearProgressIndicator(
+                            modifier=Modifier.fillMaxWidth(),color=white,
+                            trackColor=stroke)
                         if(notice!=null)Note(notice.orEmpty())
                     }
-                    Text(local("El perfil permanece dentro de SP-DECODE. La identidad de Google requiere el flujo seguro proporcionado por Android; no se insertará un formulario falso de Google.",
-                        "The profile stays inside SP-DECODE. Google identity uses Android's approved secure flow, not an embedded fake Google login form."),
-                        color=muted,fontSize=12.sp)
+                    Row(Modifier.fillMaxWidth().padding(vertical=8.dp),
+                        verticalAlignment=Alignment.CenterVertically,
+                        horizontalArrangement=Arrangement.spacedBy(8.dp)){
+                        Icon(Icons.Outlined.Lock,null,tint=muted,
+                            modifier=Modifier.size(16.dp))
+                        Text(local("Accede a tu cuenta desde la aplicación",
+                            "Access your account inside the app"),
+                            color=muted,fontSize=12.sp)
+                    }
                 }
             }
         }
