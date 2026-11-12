@@ -937,6 +937,11 @@ dependencies {
         // Release lint: ActivityResultContracts requires Fragment >=1.3.0.
         implementation("androidx.fragment:fragment:1.8.9")
         implementation("com.google.code.gson:gson:2.13.1")
+        if(enableCloud){
+            implementation("androidx.credentials:credentials:1.6.0")
+            implementation("androidx.credentials:credentials-play-services-auth:1.6.0")
+            implementation("com.google.android.libraries.identity.googleid:googleid:1.2.1")
+        }
         if (enableCloud) implementation("com.google.firebase:firebase-messaging:25.0.0")
         if (enablePlayAab) {
             implementation("com.google.android.play:app-update:2.1.0")
