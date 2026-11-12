@@ -28,7 +28,8 @@ class LargeResultEngineInstrumentedTest {
     }
     @Test fun legacyHttpCustomPresentationRecoversMalformedJsonAndKeepsDecodedFields() {
         // Synthetic data: a legacy text wrapper starts with a brace but is not JSON.
-        val legacy="{invalid-legacy-header}\\n│[۞] Config: {\\\"host\\\":\\\"example.invalid\\\"}"
+        val legacy="""{invalid-legacy-header}
+│[۞] Config: {"host":"example.invalid"}"""
         openJsonResultForViewer(legacy,"hc").use { document ->
             val output=ByteArrayOutputStream()
             document.exportOriginal(output)
