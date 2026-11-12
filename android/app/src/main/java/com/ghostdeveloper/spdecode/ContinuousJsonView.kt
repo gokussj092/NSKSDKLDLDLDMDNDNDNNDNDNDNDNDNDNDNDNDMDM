@@ -53,6 +53,7 @@ internal class ContinuousJsonView(
     private var selectionEnd:Cursor?=null
     private var movingHandle=-1
     private var contextMode:ActionMode?=null
+    private companion object { const val MENU_CANCEL_SELECTION=0x53444E01 }
     private var fingerX=0f
     private var fingerY=0f
     private var autoScrolling=false
@@ -118,7 +119,14 @@ internal class ContinuousJsonView(
             postInvalidateOnAnimation()
             return true
         }
-        override fun onSingleTapUp(event: MotionEvent): Boolean = performClick()
+        override fun onSingleTapUp(event: MotionEvent): Boolean {
+            // An accidental long press must be dismissible without copying anything.
+            if(selectionStart!=null || selectionEnd!=null) {
+                dismissSelection()
+                return true
+            }
+            return performClick()
+        }
     })
 
     init {
@@ -153,6 +161,16 @@ internal class ContinuousJsonView(
         val b=selectionEnd ?: return null
         return if(a.line<b.line || (a.line==b.line&&a.column<=b.column))a to b else b to a
     }
+    private fun dismissSelection() {
+        contextMode?.finish()
+        contextMode=null
+        selectionStart=null
+        selectionEnd=null
+        movingHandle=-1
+        stopAutoScroll()
+        parent?.requestDisallowInterceptTouchEvent(false)
+        invalidate()
+    }
     private fun beginSelection(x:Float,y:Float) {
         if(document.lineCount==0)return
         contextMode?.finish()
@@ -168,6 +186,8 @@ internal class ContinuousJsonView(
                 menu.add(0,android.R.id.copy,0,context.getString(android.R.string.copy))
                     .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 menu.add(0,android.R.id.selectAll,1,context.getString(R.string.result_select_all))
+                menu.add(0,MENU_CANCEL_SELECTION,2,context.getString(R.string.cancel))
+                    .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 return true
             }
             override fun onPrepareActionMode(mode:ActionMode,menu:Menu)=false
@@ -177,6 +197,10 @@ internal class ContinuousJsonView(
                         val sel=orderedSelection() ?: return false
                         if(sel.first!=sel.second)onCopyRange(
                             sel.first.line,sel.first.column,sel.second.line,sel.second.column)
+                        mode.finish()
+                        return true
+                    }
+                    MENU_CANCEL_SELECTION -> {
                         mode.finish()
                         return true
                     }
