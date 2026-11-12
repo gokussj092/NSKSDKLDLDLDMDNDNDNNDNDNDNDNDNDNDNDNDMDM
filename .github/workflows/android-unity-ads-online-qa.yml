@@ -7,6 +7,14 @@ on:
       - android/app/src/main/java/com/ghostdeveloper/spdecode/SpDecodeApp.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/AccountDrawer.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceProfile.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceAccountPages.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceAdFreePurchase.kt
+      - cloud/web/lib/commerce/catalog.mjs
+      - cloud/web/lib/commerce/orders.mjs
+      - cloud/web/lib/commerce/api.mjs
+      - cloud/web/lib/commerce/providers.mjs
+      - cloud/web/sql/002_shop.sql
+      - cloud/web/sql/003_ads_free.sql
       - android/app/src/main/java/com/ghostdeveloper/spdecode/NativeProfileRules.kt
       - android/app/src/main/cpp/spdecode_profile.cpp
       - android/app/src/main/cpp/CMakeLists.txt
@@ -83,12 +91,13 @@ jobs:
           node --check cloud/web/lib/commerce/orders.mjs
           node --check cloud/web/lib/commerce/api.mjs
           node --check cloud/web/lib/commerce/profile.mjs
+          node --check cloud/web/lib/commerce/providers.mjs
           node --check 'cloud/web/app/api/auth/[...all]/route.js'
           node --check cloud/web/app/api/account/api-ip/route.js
           node --input-type=module <<'JS'
           import assert from 'node:assert/strict';
           import { publicIp } from './cloud/web/lib/commerce/config.mjs';
-          import { validatePurchase } from './cloud/web/lib/commerce/catalog.mjs';
+          import { validatePurchase,validateProduct,plansFor } from './cloud/web/lib/commerce/catalog.mjs';
           assert.equal(publicIp('195.233.233.12'),'195.233.233.12');
           assert.equal(publicIp('8.8.8.8.8'),null);
           assert.equal(publicIp('192.168.1.25'),null);
@@ -99,7 +108,14 @@ jobs:
           assert.equal(validatePurchase({...input,allowedIp:'195.233.233.12'}).allowedIp,
             '195.233.233.12');
           assert.throws(()=>validatePurchase({...input,allowedIp:'8.8.8.8.8'}));
-          console.log('PASS: API can be purchased without IP, and requires public IP when supplied');
+          const adFree=validateProduct({id:'ads-free',enabled:false,
+            prices:{USD:100},days:30,termPrices:{}});
+          assert.equal(plansFor(adFree).length,1);
+          assert.equal(plansFor(adFree)[0].id,'base');
+          assert.throws(()=>validateProduct({...adFree,days:90}));
+          assert.equal(validatePurchase({...input,product:'ads-free',term:'base'}).product,'ads-free');
+          assert.throws(()=>validatePurchase({...input,product:'ads-free',term:'3m'}));
+          console.log('PASS: commercial API IP and 30-day ad-free purchase contracts');
           JS
       - name: Android SDK / NDK
         run: |

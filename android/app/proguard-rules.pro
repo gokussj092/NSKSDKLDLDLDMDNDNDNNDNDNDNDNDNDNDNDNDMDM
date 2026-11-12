@@ -45,3 +45,8 @@
 -keepclasseswithmembers,includedescriptorclasses class com.ghostdeveloper.spdecode.NativeProfileRules {
     native <methods>;
 }
+
+# Native ad-free projection validation; never keep broad commercial packages.
+-keepclasseswithmembers,includedescriptorclasses class com.ghostdeveloper.spdecode.NativeAdsGate {
+    native <methods>;
+}

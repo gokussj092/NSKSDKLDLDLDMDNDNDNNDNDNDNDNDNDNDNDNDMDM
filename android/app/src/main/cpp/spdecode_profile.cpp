@@ -53,3 +53,20 @@ Java_com_ghostdeveloper_spdecode_NativeProfileRules_validDisplayName(
     JNIEnv* env,jobject,jstring value){
     return valid_display_name(env,value)?JNI_TRUE:JNI_FALSE;
 }
+
+/** Validate the short-lived server entitlement projection at the native boundary.
+ * Purchase legitimacy is proved by the authenticated HTTPS account API, not by JNI. */
+extern "C" JNIEXPORT jboolean JNICALL
+Java_com_ghostdeveloper_spdecode_NativeAdsGate_validServerEntitlement(
+    JNIEnv* env,jobject,jstring accountId,jlong expires,jlong now){
+    if(!accountId||now<=0||expires<=now||
+       expires-now>366LL*86400000LL)return JNI_FALSE;
+    const char* bytes=env->GetStringUTFChars(accountId,nullptr);
+    if(!bytes)return JNI_FALSE;
+    const std::string_view id(bytes);
+    bool valid=id.size()>=16 && id.size()<=80;
+    for(char c:id)if(!((c>='a'&&c<='z')||(c>='A'&&c<='Z')||
+        (c>='0'&&c<='9')||c=='-'||c=='_'))valid=false;
+    env->ReleaseStringUTFChars(accountId,bytes);
+    return valid?JNI_TRUE:JNI_FALSE;
+}

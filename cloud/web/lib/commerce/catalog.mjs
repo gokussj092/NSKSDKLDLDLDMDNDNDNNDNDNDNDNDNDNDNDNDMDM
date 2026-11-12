@@ -1,5 +1,5 @@
 import {fail,publicIp,paymentReady} from './config.mjs';
-export const PRODUCT_IDS=['offline-3','api-ip','analysis-credits'];
+export const PRODUCT_IDS=['offline-3','api-ip','analysis-credits','ads-free'];
 export const TERMS={'1m':1,'2m':2,'3m':3,'6m':6,'12m':12};
 export const CREDIT_PACKS={'1c':1,'5c':5,'10c':10,'25c':25,'50c':50,'100c':100};
 export const CURRENCIES=['USD','MXN','EUR'];
@@ -21,13 +21,14 @@ export function validateProduct(value){
      quota:null,days:null,maxDevices:null};
  }
  const termPrices=value.termPrices??{};
+ if(value.id==='ads-free'&&(value.days!==30||Object.keys(termPrices).length!==0))fail('INVALID_ADS_PLAN');
  if(!termPrices||typeof termPrices!=='object'||Array.isArray(termPrices)||
    Object.keys(termPrices).some(k=>!Object.hasOwn(TERMS,k)||!validPrices(termPrices[k])))fail('INVALID_PRICE');
  if(value.enabled&&!Object.keys(prices).length&&!Object.values(termPrices).some(p=>Object.keys(p).length))fail('PRICE_REQUIRED');
  if(value.id==='api-ip'&&(!Number.isInteger(value.quota)||value.quota<1||value.quota>1000000||
    !Number.isInteger(value.days)||value.days<1||value.days>3650))fail('INVALID_API_PLAN');
  return {id:value.id,enabled:value.enabled,prices,termPrices,
-   quota:value.id==='api-ip'?value.quota:null,days:value.id==='api-ip'?value.days:null,
+   quota:value.id==='api-ip'?value.quota:null,days:value.id==='api-ip'?value.days:value.id==='ads-free'?30:null,
    maxDevices:value.id==='offline-3'?3:null};
 }
 export function planFor(product,term='base'){
@@ -36,11 +37,13 @@ export function planFor(product,term='base'){
    return {id:term,credits:CREDIT_PACKS[term],days:null,prices:product.bundles?.[term]||{}};
  }
  if(term==='base')return {id:'base',days:product.days??null,prices:product.prices||{}};
+ if(product.id==='ads-free')fail('INVALID_TERM');
  if(!Object.hasOwn(TERMS,term))fail('INVALID_TERM');
  return {id:term,days:TERMS[term]*30,prices:product.termPrices?.[term]||{}};
 }
 export function plansFor(product){
  if(product.id==='analysis-credits')return Object.keys(CREDIT_PACKS).map(id=>planFor(product,id));
+ if(product.id==='ads-free')return [planFor(product,'base')];
  const base=planFor(product);
  return [{...base,title:product.id==='offline-3'?'lifetime':'custom'},...Object.keys(TERMS).map(id=>planFor(product,id))];
 }
@@ -48,11 +51,13 @@ export function productAvailable(product,env=process.env){
  return product.enabled&&env.SPDECODE_STORE_ENABLED==='true'&&
    (product.id==='api-ip'?env.SPDECODE_COMMERCIAL_API_ENABLED==='true':
     product.id==='analysis-credits'?env.SPDECODE_ANALYSIS_CREDITS_READY==='true':
+    product.id==='ads-free'?true:
     env.SPDECODE_OFFLINE_LICENSE_READY==='true');
 }
 export function planAvailable(product,term,env=process.env){
  return productAvailable(product,env)&&
-   !(product.id==='offline-3'&&term!=='base'&&env.SPDECODE_OFFLINE_TIMED_LICENSE_READY!=='true');
+   !(product.id==='offline-3'&&term!=='base'&&env.SPDECODE_OFFLINE_TIMED_LICENSE_READY!=='true')&&
+   !(product.id==='ads-free'&&term!=='base');
 }
 export function publicProduct(row,env=process.env){
  const data=typeof row.settings==='string'?JSON.parse(row.settings):row.settings;
@@ -76,7 +81,7 @@ export function validatePurchase(body){
    !/^[0-9a-f-]{36}$/.test(body.idempotencyKey||'')||body.acceptedTerms!=='2026-11-10'||
    (body.product==='analysis-credits'
      ?!Object.hasOwn(CREDIT_PACKS,body.term)
-     :(body.term!==undefined&&body.term!=='base'&&!Object.hasOwn(TERMS,body.term))))fail('INVALID_REQUEST');
+     :(body.term!==undefined&&(body.product==='ads-free'?body.term!=='base':body.term!=='base'&&!Object.hasOwn(TERMS,body.term)))))fail('INVALID_REQUEST');
  // An API license may be purchased before the owner provisions a VPS.
  // The API key cannot be claimed or used until a public IP is bound.
  const ip=body.product==='api-ip' && body.allowedIp!==undefined &&

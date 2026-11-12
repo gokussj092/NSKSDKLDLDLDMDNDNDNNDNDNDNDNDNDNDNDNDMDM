@@ -219,7 +219,7 @@ internal class NativeCommerceAuth(private val context:Context) {
         catch(_:Exception){throw AuthFailure("ACCOUNT_SESSION_UNAVAILABLE")}
     }
     suspend fun account():JSONObject?{
-        if(sessionToken()==null)return null
+        if(sessionToken()==null){CommerceSession.clear();return null}
         val response=runCatching{http("/api/account",authenticated=true).first}.getOrNull()
         return response?.takeIf{!it.isNull("user") && it.optJSONObject("user")!=null}
             ?.also{CommerceSession.update(it)}
@@ -239,6 +239,34 @@ internal class NativeCommerceAuth(private val context:Context) {
         if(replaceAvatar)body.put("avatarData",avatarData ?: JSONObject.NULL)
         http("/api/account/profile","PATCH",body,true)
         return account()?:throw AuthFailure("ACCOUNT_SESSION_UNAVAILABLE")
+    }
+    /** Server-authoritative quote; amounts and taxes are never calculated here. */
+    suspend fun quoteAdFree(provider:String,country:String):JSONObject {
+        if(provider !in setOf("stripe","paypal") || !Regex("[A-Z]{2}").matches(country))
+            throw AuthFailure("INVALID_CHECKOUT")
+        val data=JSONObject().put("product","ads-free").put("provider",provider)
+            .put("currency","USD").put("country",country).put("region","")
+            .put("term","base")
+        return http("/api/store/quote","POST",data,true).first
+    }
+    suspend fun checkoutAdFree(provider:String,country:String,version:Int):String {
+        if(version<1 || provider !in setOf("stripe","paypal") ||
+            !Regex("[A-Z]{2}").matches(country))throw AuthFailure("INVALID_CHECKOUT")
+        val body=JSONObject().put("product","ads-free")
+            .put("provider",provider).put("currency","USD")
+            .put("country",country).put("region","")
+            .put("term","base").put("version",version)
+            .put("idempotencyKey",java.util.UUID.randomUUID().toString())
+            .put("acceptedTerms","2026-11-10")
+        val response=http("/api/store/checkout","POST",body,true).first
+        val checkout=response.optString("url")
+        val url=runCatching{URL(checkout)}.getOrNull()
+        val host=if(provider=="stripe")setOf("checkout.stripe.com") else
+            setOf("www.paypal.com","www.sandbox.paypal.com")
+        if(url==null || url.protocol!="https" || url.host !in host ||
+            url.userInfo!=null || url.port!=-1)
+            throw AuthFailure("INVALID_CHECKOUT_URL")
+        return checkout
     }
     suspend fun editApiIp(entitlementId:String,ip:String):JSONObject {
         if(!CommercialServerIp.isPublicLiteral(ip))throw IllegalArgumentException("INVALID_PUBLIC_IP")

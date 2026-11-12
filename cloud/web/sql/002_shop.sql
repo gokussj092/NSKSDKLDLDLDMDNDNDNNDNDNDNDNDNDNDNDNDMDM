@@ -35,7 +35,7 @@ UPDATE spdecode_shop.products SET
 -- Add the optional analysis-credit product without modifying existing prices.
 ALTER TABLE spdecode_shop.products DROP CONSTRAINT IF EXISTS products_id_check;
 ALTER TABLE spdecode_shop.products ADD CONSTRAINT products_id_check
- CHECK(id IN ('offline-3','api-ip','analysis-credits'));
+ CHECK(id IN ('offline-3','api-ip','analysis-credits','ads-free'));
 INSERT INTO spdecode_shop.products(id,settings) VALUES
  ('analysis-credits','{"id":"analysis-credits","enabled":false,"prices":{},"bundles":{"1c":{"USD":399},"5c":{"USD":1795},"10c":{"USD":3290},"25c":{"USD":7475},"50c":{"USD":13450},"100c":{"USD":23900}}}')
  ON CONFLICT DO NOTHING;
@@ -104,3 +104,9 @@ CREATE TABLE IF NOT EXISTS spdecode_shop.credit_reservations (
 );
 CREATE INDEX IF NOT EXISTS credit_reserved_account ON spdecode_shop.credit_reservations(account_id,payment_live,state);
 REVOKE ALL ON ALL TABLES IN SCHEMA spdecode_shop FROM PUBLIC;
+
+-- Ad-free product: 30-day license, no API key, priced and enabled by admin.
+-- Keep disabled at migration; only an approved administrator may launch sales.
+INSERT INTO spdecode_shop.products(id,settings) VALUES
+ ('ads-free','{"id":"ads-free","enabled":false,"prices":{"USD":100},"days":30,"termPrices":{}}')
+ ON CONFLICT DO NOTHING;

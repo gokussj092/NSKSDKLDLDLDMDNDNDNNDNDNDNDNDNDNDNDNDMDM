@@ -155,8 +155,8 @@ private fun SimpleFeature(title:String,subtitle:String?=null){
  */
 @Composable
 internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
-    onLegalLink:(String)->Unit={}) {
-    val entryPage=if(start in listOf("orders","api","security"))"account" else start
+    onLegalLink:(String)->Unit={},onCheckoutUrl:(String)->Unit={}) {
+    val entryPage=start
     var page by rememberSaveable(start){mutableStateOf(entryPage)}
     var detail by rememberSaveable {mutableStateOf("home")}
     var pack by rememberSaveable {mutableIntStateOf(1)}
@@ -164,17 +164,7 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
     var term by rememberSaveable {mutableIntStateOf(0)}
     var serverIp by rememberSaveable {mutableStateOf("")}
     var lines by remember {mutableStateOf<List<CommercialLine>>(emptyList())}
-    var profileTab by rememberSaveable(start){
-        mutableStateOf(if(start in listOf("orders","api","security"))start else "overview")
-    }
-    var authTab by rememberSaveable {mutableStateOf("login")}
-    var authMethod by rememberSaveable {mutableStateOf("choose")}
-    var email by rememberSaveable {mutableStateOf("")}
-    // Never serialize even an inactive password field to Android saved state.
-    var password by remember {mutableStateOf("")}
     var notice by remember {mutableStateOf<String?>(null)}
-    LaunchedEffect(page){if(page!="login")password=""}
-    var securityDialog by remember {mutableStateOf(false)}
     val context=LocalContext.current
     val language=context.resources.configuration.locales[0].language
     // Capture the actual app-specific locale, not Locale.getDefault().
@@ -186,7 +176,10 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
     var acceptedPolicies by rememberSaveable {mutableStateOf(false)}
     var accountSnapshot by remember {mutableStateOf<JSONObject?>(null)}
     var ipEdit by rememberSaveable{mutableStateOf("")}
-    LaunchedEffect(page){if(page=="account")accountSnapshot=auth.account()}
+    LaunchedEffect(page){
+        if(page in setOf("account","orders","api","security","ad-free","profile-edit"))
+            accountSnapshot=auth.account()
+    }
     var catalog by remember {mutableStateOf<NativeStoreCatalog?>(null)}
     var catalogLoaded by remember {mutableStateOf(false)}
     LaunchedEffect(Unit){catalog=NativeStoreCatalog.load();catalogLoaded=true}
@@ -203,6 +196,8 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
     fun back(){
         when {
             page=="profile-edit" -> page="account"
+            page in setOf("orders","api","security","ad-free") ->
+                if(start==page)onExit() else page="account"
             page=="cart" -> {page="store";detail="home"}
             page=="store" && detail!="home" -> detail="home"
             page=="login" && start!="login" -> page="account"
@@ -222,6 +217,10 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                 Text(when(page) {
                     "account" -> local("Mi cuenta","My account")
                     "profile-edit" -> CommerceProfileText.get(language,"Edit profile")
+                    "orders" -> CommerceAccountWords.get(language,"Your purchases")
+                    "api" -> CommerceAccountWords.get(language,"API licenses")
+                    "security" -> CommerceAccountWords.get(language,"Account security")
+                    "ad-free" -> CommerceAccountWords.get(language,"Ad-free experience")
                     "login" -> local("Acceso seguro","Secure sign in")
                     "cart" -> local("Tu carrito","Your cart")
                     else -> local("Tienda","Store")
@@ -273,7 +272,7 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                                     Text(usd(item.priceCents)+" USD",color=white)
                                 }
                             }
-                            if(creditPacks.isEmpty())Note(local("No hay paquetes USD publicados.","No published USD credit packs."))
+                            if(creditPacks.isEmpty())Note(local("No disponible actualmente.","Currently unavailable."))
                             HorizontalDivider(color=stroke)
                             Row(verticalAlignment=Alignment.CenterVertically){
                                 Column(Modifier.weight(1f)){
@@ -303,7 +302,7 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                                         selected.priceCents*quantity,"")
                                 page="cart"
                             }
-                            Note(local("Precios USD recibidos del servidor. La compra requiere verificar la sesión y la cotización.","USD prices received from the server. Purchasing requires session and quote verification."))
+                            Spacer(Modifier.height(2.dp))
                         }
                     }
                     "api" -> {
@@ -346,7 +345,7 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                                     Text(usd(item.priceCents)+" USD",color=white)
                                 }
                             }
-                            if(apiTerms.isEmpty())Note(local("No hay precios USD publicados para la API.","No published USD prices for the API."))
+                            if(apiTerms.isEmpty())Note(local("No disponible actualmente.","Currently unavailable."))
                             HorizontalDivider(color=stroke)
                             Text(local("IP pública del servidor (opcional al comprar)",
                                 "Public server IP (optional at purchase)"),color=white,fontWeight=FontWeight.Bold)
@@ -382,30 +381,8 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                         }
                     }
                     "ads" -> {
-                        Text(local("EXPERIENCIA / SP-DECODE","EXPERIENCE / SP-DECODE"),
-                            color=muted,fontSize=11.sp)
-                        Text(local("Quitar anuncios","Remove ads"),
-                            color=white,fontSize=26.sp,fontWeight=FontWeight.Bold)
-                        SlateCard{
-                            Box(Modifier.fillMaxWidth(),contentAlignment=Alignment.Center) {
-                                Icon(Icons.Outlined.Shield,null,tint=white,modifier=Modifier.size(65.dp))
-                            }
-                            Text("$1.00 USD",fontSize=30.sp,color=white,
-                                fontWeight=FontWeight.Bold,modifier=Modifier.align(Alignment.CenterHorizontally))
-                            Text(local("30 días sin publicidad dentro de la aplicación",
-                                "30 days without ads inside the app"),
-                                color=muted,textAlign=TextAlign.Center,fontSize=14.sp,
-                                modifier=Modifier.fillMaxWidth())
-                            HorizontalDivider(color=stroke)
-                            SimpleFeature(local("No muestra anuncios intersticiales",
-                                "No interstitial ads"))
-                            SimpleFeature(local("Se aplica a tu cuenta activa",
-                                "Applies to your active account"))
-                            Note(local("No incluye créditos APK ni acceso API. No se renueva automáticamente en esta propuesta.",
-                                "Does not include APK credits or API access. No automatic renewal in this proposal."))
-                            // A server-backed ads-30d entitlement is not implemented.
-                            PrimaryAction(local("Próximamente","Coming soon"),enabled=false){}
-                        }
+                        CommerceAdFreePurchase(language,catalog?.adFree,auth,
+                            onSignIn={page="login"},onOpenCheckout=onCheckoutUrl)
                     }
                     else -> {
                         SlateCard{
@@ -427,15 +404,17 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                                     modifier=Modifier.size(43.dp),tint=white)
                             }
                         }
-                        Note(if(!catalogLoaded)local("Consultando precios del servidor…","Loading server prices…") else if(catalog==null)
-                            local("Catálogo no disponible. No se mostrarán precios inventados.","Catalog unavailable. No invented prices will be shown.") else
-                            local("Precios USD oficiales del servidor. El pago requiere sesión y cotización verificadas.","Official USD prices from the server. Checkout requires a verified session and quote."))
+                        if(!catalogLoaded)LinearProgressIndicator(
+                            modifier=Modifier.fillMaxWidth(),color=good)
+                        else if(catalog==null)Note(local(
+                            "No se pudo cargar la tienda. Inténtalo de nuevo más tarde.",
+                            "The store is unavailable. Please try again later."))
                         Text(local("Explorar productos","Browse products"),fontSize=19.sp,
                             fontWeight=FontWeight.Bold,color=white)
                         ProductTile(local("Créditos de análisis","Analysis credits"),
                             local("Análisis de APK/APKS y resultados técnicos",
                                 "APK/APKS analysis and technical results"),
-                            creditPacks.minOfOrNull{it.priceCents}?.let{usd(it)+" USD"}?:local("Sin precio USD disponible","No USD price available"),
+                            creditPacks.minOfOrNull{it.priceCents}?.let{usd(it)+" USD"}?:local("No disponible","Unavailable"),
                             local("Ver detalles","Details"),
                             {Icon(Icons.Outlined.Inventory2,null,tint=white,modifier=Modifier.size(29.dp))}){
                             detail="credits"
@@ -443,14 +422,18 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                         ProductTile(local("API Comercial","Commercial API"),
                             local("Archivos, textos, métodos online y catálogos",
                                 "Files, text, online methods and catalogs"),
-                            apiTerms.minOfOrNull{it.priceCents}?.let{usd(it)+" USD"}?:local("Sin precio USD disponible","No USD price available"),
+                            apiTerms.minOfOrNull{it.priceCents}?.let{usd(it)+" USD"}?:local("No disponible","Unavailable"),
                             local("Ver detalles","Details"),
                             {Icon(Icons.Outlined.Code,null,tint=white,modifier=Modifier.size(29.dp))}){
                             detail="api"
                         }
                         ProductTile(local("Quitar anuncios","Remove ads"),
                             local("Un mes completo sin publicidad","One month without ads"),
-                            "$1.00 USD",
+                            when {
+                                CommerceSession.adFreeActive -> CommerceAccountWords.get(language,"Active")
+                                catalog?.adFree!=null -> usd(catalog!!.adFree!!.priceCents)+" USD"
+                                else -> local("No disponible","Unavailable")
+                            },
                             local("Ver detalles","Details"),
                             {Icon(Icons.Outlined.Shield,null,tint=white,modifier=Modifier.size(29.dp))}){
                             detail="ads"
@@ -499,124 +482,37 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                             Text(usd(total)+" USD",color=white,
                                 fontWeight=FontWeight.Bold,fontSize=19.sp)
                         }
-                        Note(local("Los precios son referenciales; impuestos, descuentos, disponibilidad y pago final requieren cotización del servidor.",
-                            "Reference prices only; taxes, discounts, availability and final payment require a server quote."))
-                        PrimaryAction(local("Pago aún no habilitado","Checkout not enabled"),
-                            enabled=false){}
+                        Spacer(Modifier.height(2.dp))
                     }
                 }
                 "account" -> {
-                    Text(local("Centro de cuenta","Account center"),color=white,
-                        fontSize=25.sp,fontWeight=FontWeight.Bold)
-                    CommerceAccountHero(language=language,user=CommerceSession.user,
+                    CommerceAccountHome(language,CommerceSession.user,accountSnapshot,
                         onSignIn={page="login"},onEdit={page="profile-edit"},
                         onSignOut={
-                            scope.launch{
-                                runCatching{auth.signOut()}
+                            scope.launch {
+                                runCatching {auth.signOut()}
                                 accountSnapshot=null
                                 page="login"
                             }
-                        })
-                    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(4.dp)){
-                        listOf("overview","orders","api","security").forEach{p->
-                            Box(Modifier.weight(1f).background(
-                                if(profileTab==p)Color(0xFF414141)else panel,
-                                RoundedCornerShape(10.dp))
-                                .clickable{profileTab=p}.padding(vertical=10.dp),
-                                contentAlignment=Alignment.Center){
-                                Text(when(p){
-                                    "orders"->local("Compras","Orders")
-                                    "api"->"API"
-                                    "security"->local("Seguridad","Security")
-                                    else->local("Resumen","Overview")
-                                },color=white,fontSize=11.sp)
-                            }
-                        }
-                    }
-                    SlateCard{
-                        when(profileTab){
-                            "orders" -> {
-                                Text(local("Historial de compras","Order history"),
-                                    color=white,fontWeight=FontWeight.Bold)
-                                Text(local("Facturas, pedidos y pagos confirmados aparecerán después de iniciar sesión.",
-                                    "Invoices, orders and confirmed payments will appear after sign-in."),
-                                    color=muted,fontSize=13.sp)
-                            }
-                            "api" -> {
-                                Text(local("Mis claves API","My API keys"),color=white,
-                                    fontWeight=FontWeight.Bold)
-                                SimpleFeature(local("Ver límites y cuota","View limits and quota"))
-                                SimpleFeature(local("Revisar IP autorizada","Review authorized IP"))
-                                SimpleFeature(local("Rotar o revocar la clave","Rotate or revoke key"))
-                                Note(local("La clave solamente se mostrará cuando exista una licencia verificada. Nunca se almacena como texto plano en la app.",
-                                    "A key is shown only for a verified license. It is never stored in plain text in the app."))
-                                val entitlements=accountSnapshot?.optJSONArray("entitlements")
-                                var selectedEntitlement:JSONObject?=null
-                                if(entitlements!=null)for(i in 0 until entitlements.length()){
-                                    val entry=entitlements.optJSONObject(i)?:continue
-                                    if(entry.optString("product_id")=="api-ip" &&
-                                        entry.optString("status")=="active"){
-                                        selectedEntitlement=entry
-                                        break
-                                    }
-                                }
-                                if(selectedEntitlement!=null){
-                                    val selected=selectedEntitlement
-                                    Text(local("IP pública vinculada","Bound public IP")+": "+
-                                        selected.optString("allowed_ip","—"),color=white)
-                                    OutlinedTextField(value=ipEdit,onValueChange={ipEdit=it.take(45)},
-                                        modifier=Modifier.fillMaxWidth().testTag("commerce_change_api_ip"),
-                                        placeholder={Text("195.233.233.12")},
-                                        singleLine=true,
-                                        label={Text(local("Nueva IP pública","New public IP"))})
-                                    PrimaryAction(local("Actualizar IP autorizada","Update authorized IP"),
-                                        enabled=CommercialServerIp.isPublicLiteral(ipEdit)) {
-                                        scope.launch {
-                                            try {
-                                                auth.editApiIp(selected.getString("id"),ipEdit)
-                                                accountSnapshot=auth.account()
-                                                ipEdit=""
-                                                notice=local("IP actualizada correctamente",
-                                                    "Public IP updated")
-                                            }catch(_:Exception){
-                                                notice=local("No se pudo actualizar la IP. Inicia sesión de nuevo si es necesario.",
-                                                    "Cannot update IP. Sign in again if required.")
-                                            }
-                                        }
-                                    }
-                                }else Note(local("Cuando compres una API aparecerá aquí para configurar o cambiar su IP pública.",
-                                    "Your purchased API will appear here to configure or change its public IP."))
-                            }
-                            "security" -> {
-                                Text(local("Seguridad y credenciales","Security & credentials"),
-                                    color=white,fontWeight=FontWeight.Bold)
-                                SimpleFeature(local("Cuenta vinculada a Google","Google-linked account"))
-                                OutlinedButton(
-                                    modifier=Modifier.fillMaxWidth(),
-                                    onClick={securityDialog=true}) {
-                                    Text(local("Agregar o cambiar contraseña",
-                                        "Add or change password"))
-                                }
-                                Note(local("El servidor todavía admite únicamente Google. Para ofrecer contraseñas habrá que verificar primero la identidad, añadir recuperación y evitar duplicar cuentas.",
-                                    "The server currently supports Google only. Password support requires identity verification, recovery and safe account linking."))
-                            }
-                            else -> {
-                                Text(local("Mis servicios","My services"),color=white,
-                                    fontWeight=FontWeight.Bold)
-                                SimpleFeature(local("Saldo de créditos APK","APK credit balance"),
-                                    local("Disponible tras iniciar sesión","Available after sign-in"))
-                                SimpleFeature(local("API comercial","Commercial API"),
-                                    local("Licencias, vigencia e IP","Licenses, terms and IP"))
-                                SimpleFeature(local("Quitar anuncios","Remove ads"),
-                                    local("Estado y vencimiento","Status and expiration"))
-                            }
-                        }
-                    }
-                    OutlinedButton(modifier=Modifier.fillMaxWidth(),
-                        onClick={page="store";detail="home"}){
-                        Text(local("Abrir tienda","Open store"))
-                    }
+                        },onNavigate={page=it})
                 }
+                "orders" -> CommerceOrdersPage(language,accountSnapshot)
+                "api" -> CommerceApiPage(language,accountSnapshot,
+                    onUpdateIp={id,ip->auth.editApiIp(id,ip)},
+                    onUpdated={
+                        scope.launch{accountSnapshot=auth.account()}
+                    })
+                "security" -> CommerceSecurityPage(language,CommerceSession.user,
+                    onEdit={page="profile-edit"},
+                    onSignOut={
+                        scope.launch{
+                            runCatching{auth.signOut()}
+                            accountSnapshot=null
+                            page="login"
+                        }
+                    })
+                "ad-free" -> CommerceAdFreePage(language,
+                    onExplore={page="store";detail="ads"})
                 "profile-edit" -> {
                     CommerceProfileEditor(language=language,auth=auth,
                         user=CommerceSession.user,onCancel={page="account"},
@@ -699,13 +595,4 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
             }
         }
     }
-    if(securityDialog)AlertDialog(
-        onDismissRequest={securityDialog=false},
-        title={Text(local("Contraseña de la cuenta","Account password"))},
-        text={Text(local("Esta función requiere soporte seguro del servidor para añadir, cambiar y recuperar contraseñas sin perder la vinculación con Google. No se han cambiado las credenciales.",
-            "This feature requires secure server support to add, change and recover passwords while keeping Google account linking intact. No credentials have been changed."))},
-        confirmButton={TextButton(onClick={securityDialog=false}) {
-            Text(local("Entendido","OK"))
-        }},
-        containerColor=panel,titleContentColor=white,textContentColor=muted)
 }

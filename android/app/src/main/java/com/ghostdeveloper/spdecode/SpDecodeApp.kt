@@ -84,6 +84,7 @@ internal fun SpDecodeApp(
     onLanguage:(String)->Unit,
     onMaskCredentials:(Boolean)->Unit,
     onExternalLink:(String)->Unit,
+    onCheckoutUrl:(String)->Unit={},
     onSelect:(DecodeView)->Unit,
     onClear:()->Unit,
     onClearResult:()->Unit,
@@ -145,7 +146,7 @@ internal fun SpDecodeApp(
 ){
     var dialog by remember{mutableStateOf<String?>(null)}
     SpDecodeAmoledTheme {
-      AccountDrawer(busy,onExternalLink,onLegalLink) { openMenu ->
+      AccountDrawer(busy,onExternalLink,onLegalLink,onCheckoutUrl) { openMenu ->
         Column(
             modifier=Modifier.fillMaxSize().background(Background).safeDrawingPadding()
         ) {

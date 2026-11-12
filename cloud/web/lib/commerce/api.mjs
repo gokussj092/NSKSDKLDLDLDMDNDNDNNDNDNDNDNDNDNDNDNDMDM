@@ -28,10 +28,17 @@ export const accountSnapshot=request=>safe(async()=>{
     db.query(`SELECT id,product_id,provider,status,quote,created_at,paid_at,payment_live,product_snapshot->>'term' AS term,product_snapshot->>'days' AS days,product_snapshot->>'credits' AS credits FROM spdecode_shop.orders WHERE account_id=$1 ORDER BY created_at DESC LIMIT 50`,[user.id]),
     db.query(`SELECT id,order_id,product_id,status,token_prefix,allowed_ip,quota,days,expires_at,claimed_at,payment_live FROM spdecode_shop.entitlements WHERE account_id=$1 ORDER BY created_at DESC`,[user.id]),
     creditBalance(user.id,{db})]);
+  const live=process.env.SPDECODE_PAYMENTS_LIVE==='true';
+  const adEntitlements=entitlements.rows.filter(e=>e.product_id==='ads-free'&&
+    e.status==='active'&&e.payment_live===live&&e.expires_at&&
+    new Date(e.expires_at).getTime()>Date.now());
+  const adsExpiry=adEntitlements.reduce((max,e)=>Math.max(max,new Date(e.expires_at).getTime()),0);
   const googleAvatar=typeof user.image==='string'&&/^https:\/\/lh[3-6]\.googleusercontent\.com\//.test(user.image)?user.image:null;
   return reply({authEnabled:true,live:process.env.SPDECODE_PAYMENTS_LIVE==='true',user:{id:user.id,name:user.name,email:user.email,avatar:p.avatar_data||googleAvatar,googleAvatar,username:p.username,bio:p.bio||'',
     privacyVersion:user.privacyVersion,termsVersion:user.termsVersion},
-    orders:orders.rows,entitlements:entitlements.rows,credits});
+    orders:orders.rows,entitlements:entitlements.rows,credits,
+    adsFree:{active:adsExpiry>Date.now(),
+      expiresAt:adsExpiry?new Date(adsExpiry).toISOString():null}});
 });
 export const profileMutation=request=>safe(async()=>{
   requireOrigin(request);const session=await requireAccount(request,{fresh:true});

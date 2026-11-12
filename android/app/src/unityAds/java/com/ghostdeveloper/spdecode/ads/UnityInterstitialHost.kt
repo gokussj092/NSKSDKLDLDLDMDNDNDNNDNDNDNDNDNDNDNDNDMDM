@@ -7,6 +7,8 @@ import android.util.Log
 import android.widget.Toast
 import com.ghostdeveloper.spdecode.BuildConfig
 import com.ghostdeveloper.spdecode.OnlineAds
+import com.ghostdeveloper.spdecode.CommerceSession
+import com.ghostdeveloper.spdecode.NativeCommerceAuth
 import com.google.android.ump.ConsentInformation
 import com.google.android.ump.ConsentRequestParameters
 import com.google.android.ump.UserMessagingPlatform
@@ -20,6 +22,9 @@ import java.util.concurrent.atomic.AtomicBoolean
  * No file, decoded data, email, account identifier or API key enters the SDK.
  */
 internal class UnityInterstitialHost(context:Context):OnlineAds {
+    private val nativeAuth by lazy{NativeCommerceAuth(context.applicationContext)}
+    private fun adsSuppressed():Boolean=CommerceSession.shouldHideAds ||
+        (nativeAuth.sessionToken()!=null && !CommerceSession.entitlementChecked)
     data class Consent(val cmpCompleted:Boolean,val advertisingAllowed:Boolean,
         val gdprConsent:Boolean,val doNotSell:Boolean,val childDirected:Boolean)
     private val preferences=context.applicationContext.getSharedPreferences("online_ad_frequency",Context.MODE_PRIVATE)
@@ -60,6 +65,7 @@ internal class UnityInterstitialHost(context:Context):OnlineAds {
         activity.window.decorView.postDelayed({flushDeferred(activity)},150L)
     }
     private fun flushDeferred(activity:Activity){
+        if(adsSuppressed()){clearDeferred();return}
         if(!qaEveryFile)return
         val attempt=deferredAttempt?:return
         if(deferredActivity?.get()!==activity)return
@@ -102,6 +108,7 @@ internal class UnityInterstitialHost(context:Context):OnlineAds {
         const val DEFERRED_AD_TTL_MS=30_000L
     }
     private fun requestLoadWhenReady(){
+        if(adsSuppressed())return
         val item=ad ?: return
         val now=SystemClock.elapsedRealtime()
         // Throttle network ad *loads*, not user-visible decode/catalog results.
@@ -124,6 +131,7 @@ internal class UnityInterstitialHost(context:Context):OnlineAds {
     private val consentInformation=UserMessagingPlatform.getConsentInformation(context.applicationContext)
 
     override fun initialize(activity:Activity) {
+        if(adsSuppressed())return
         if(consentRequested||stopped||!BuildConfig.SPDECODE_UNITY_ADS_ENABLED)return
         consentRequested=true
         val params=ConsentRequestParameters.Builder().build()
@@ -147,6 +155,7 @@ internal class UnityInterstitialHost(context:Context):OnlineAds {
     }
 
     private fun initializeIfPermitted(activity:Activity) {
+        if(adsSuppressed())return
         if(stopped||enabled||activity.isFinishing||activity.isDestroyed)return
         if(!consentInformation.canRequestAds()){
             Log.i(LOG_TAG,"consent_not_ready")
@@ -177,11 +186,13 @@ internal class UnityInterstitialHost(context:Context):OnlineAds {
     }
 
     override fun onSavedResult(activity:Activity,operationId:String,saved:Boolean) {
+        if(adsSuppressed()){clearDeferred();return}
         // QA is triggered by a successful file decode even if history persistence failed.
         showOrContinue(activity,operationId,success=(saved||qaEveryFile),partial=false,
             killSwitchEnabled=consentInformation.canRequestAds(),onContinue={})
     }
     fun initializeAfterConsent(activity:Activity,appKey:String,adUnitId:String,consent:Consent) {
+        if(adsSuppressed())return
         if(!consent.cmpCompleted||!consent.advertisingAllowed||consent.childDirected||enabled)return
         if(!appKey.matches(Regex("[A-Za-z0-9_-]{6,80}"))||!adUnitId.matches(Regex("[A-Za-z0-9_-]{6,80}")))return
         LevelPlayPrivacySettings.setGDPRConsent(consent.gdprConsent)
@@ -253,6 +264,7 @@ internal class UnityInterstitialHost(context:Context):OnlineAds {
     fun showOrContinue(activity:Activity,operationId:String,success:Boolean,partial:Boolean,
         killSwitchEnabled:Boolean,onContinue:()->Unit) {
         val once=AtomicBoolean(false);val continuation={if(once.compareAndSet(false,true))onContinue()}
+        if(adsSuppressed()){clearDeferred();continuation();return}
         // A failed initial auction must not disable all future ads in this session.
         requestLoadWhenReady()
         if(qaEveryFile&&success&&!partial&&killSwitchEnabled&&

@@ -44,13 +44,36 @@ internal data class CommerceIdentity(val id:String,val name:String,val username:
 internal object CommerceSession {
     var user by mutableStateOf<CommerceIdentity?>(null)
         private set
+    var adsExpiry by mutableLongStateOf(0L)
+        private set
+    var entitlementChecked by mutableStateOf(false)
+        private set
+    var checkoutPending by mutableStateOf(false)
+        private set
+    fun beginCheckout(){checkoutPending=true}
+    val adFreeActive:Boolean get() {
+        val current=user?:return false
+        return entitlementChecked && NativeAdsGate.validServerEntitlement(
+            current.id,adsExpiry,System.currentTimeMillis())
+    }
+    val shouldHideAds:Boolean get()=checkoutPending||adFreeActive
     fun update(snapshot:JSONObject) {
         val data=snapshot.optJSONObject("user")?:return
         val raw=data.optString("avatar").takeUnless{it.isBlank()||it=="null"}
         user=CommerceIdentity(data.optString("id"),data.optString("name"),
             data.optString("username"),data.optString("email"),raw)
+        val ad=snapshot.optJSONObject("adsFree")
+        adsExpiry=if(ad?.optBoolean("active")==true)
+            runCatching{java.time.Instant.parse(ad.optString("expiresAt")).toEpochMilli()}
+                .getOrDefault(0L) else 0L
+        entitlementChecked=true
+        checkoutPending=false
     }
-    fun clear(){user=null}
+    fun clear(){user=null;adsExpiry=0;entitlementChecked=false;checkoutPending=false}
+}
+internal object NativeAdsGate {
+    init { System.loadLibrary("spdecode_profile") }
+    external fun validServerEntitlement(accountId:String,expiryMillis:Long,nowMillis:Long):Boolean
 }
 
 internal object CommerceProfileText {
@@ -221,9 +244,7 @@ internal fun CommerceAccountHero(language:String,user:CommerceIdentity?,
                 Spacer(Modifier.width(9.dp))
                 Text(label("Edit profile"))
             }
-            OutlinedButton(onClick=onSignOut,modifier=Modifier.fillMaxWidth()){
-                Text(CommerceI18n.translate(language,"Cerrar sesión","Sign out"))
-            }
+
         }
     }
 }

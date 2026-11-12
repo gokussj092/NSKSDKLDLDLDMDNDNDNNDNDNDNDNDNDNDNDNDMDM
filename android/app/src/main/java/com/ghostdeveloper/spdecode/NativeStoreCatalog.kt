@@ -15,7 +15,11 @@ internal data class StoreCreditOffer(
 internal data class StoreApiOffer(
     val planId:String, val days:Int, val priceCents:Int, val available:Boolean
 )
+internal data class StoreAdFreeOffer(
+    val priceCents:Int,val version:Int,val available:Boolean,val providers:List<String>
+)
 internal data class NativeStoreCatalog(
+    val adFree:StoreAdFreeOffer?,
     val creditPacks:List<StoreCreditOffer>,
     val apiPlans:List<StoreApiOffer>,
     val creditsVersion:Int,
@@ -57,6 +61,7 @@ internal data class NativeStoreCatalog(
             if(payload.length>128*1024)return null
             val root=runCatching{JSONObject(payload)}.getOrNull()?:return null
             val products=root.optJSONArray("products")?:return null
+            var ads:StoreAdFreeOffer?=null
             var credits=emptyList<StoreCreditOffer>()
             var api=emptyList<StoreApiOffer>()
             var creditVersion=0
@@ -64,7 +69,25 @@ internal data class NativeStoreCatalog(
             for(i in 0 until minOf(products.length(),25)){
                 val product=products.optJSONObject(i)?:continue
                 val id=product.optString("id")
-                if(id!="analysis-credits" && id!="api-ip")continue
+                if(id !in setOf("analysis-credits","api-ip","ads-free"))continue
+                if(id=="ads-free"){
+                    val plan=product.optJSONArray("plans")?.optJSONObject(0)
+                    if(plan?.optString("id")=="base" && plan.optInt("days")==30){
+                        val cents=plan.optJSONObject("prices")?.optInt("USD",0)?:0
+                        val providers=product.optJSONArray("providers")
+                        val available=if(providers==null)emptyList<String>() else
+                            (0 until minOf(providers.length(),8)).mapNotNull{
+                                providers.optString(it).takeIf{provider->
+                                    provider in setOf("stripe","paypal") }
+                            }
+                        if(cents in 100..1_000_000){
+                            ads=StoreAdFreeOffer(cents,product.optInt("version",0),
+                                plan.optBoolean("available",false)&&available.isNotEmpty(),
+                                available)
+                        }
+                    }
+                    continue
+                }
                 val plans=product.optJSONArray("plans")?:continue
                 if(id=="analysis-credits")creditVersion=product.optInt("version",0)
                 else apiVersion=product.optInt("version",0)
@@ -86,7 +109,8 @@ internal data class NativeStoreCatalog(
                     }
                 }
             }
-            return NativeStoreCatalog(credits.distinctBy{it.planId}.sortedBy{it.credits},
+            return NativeStoreCatalog(ads,
+                credits.distinctBy{it.planId}.sortedBy{it.credits},
                 api.distinctBy{it.planId}.sortedBy{it.days},
                 creditVersion,apiVersion,root.optBoolean("authEnabled",false),
                 root.optBoolean("live",false))

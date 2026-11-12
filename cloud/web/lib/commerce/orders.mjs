@@ -72,7 +72,7 @@ export async function settle(provider,event,{db=database()}={}){
         const p=order.product_snapshot;
         // Serialize against account deletion. Retain accounting for a late
         // payment without recreating active access or erased connection data.
-        const owner=await client.query('SELECT id FROM shop_user WHERE id=$1 FOR KEY SHARE',[order.account_id]);
+        const owner=await client.query('SELECT id FROM shop_user WHERE id=$1 FOR UPDATE',[order.account_id]);
         if(order.product_id==='analysis-credits'){
           // Never issue a license/API key for credits. The verified webhook is
           // the only source of a positive balance movement.

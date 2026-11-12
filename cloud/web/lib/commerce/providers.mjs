@@ -47,7 +47,7 @@ export async function startPayment(order,{fetchImpl=fetch,stripeClient}={}){
     (process.env.SPDECODE_PAYMENTS_LIVE==='true'?'live':'test')+'_').test(process.env.STRIPE_SECRET_KEY))fail('PAYMENT_MODE_MISMATCH',503);
   const origin=siteOrigin(),success=origin+'/orders?order='+order.id,
     cancel=origin+'/store?cancelled='+order.id;
-  const name=order.product_id==='analysis-credits'?'SP-DECODE · Créditos de análisis ('+order.product_snapshot.credits+')':order.product_id==='offline-3'?'SP-DECODE Offline · 3 dispositivos':'SP-DECODE API';
+  const name=order.product_id==='analysis-credits'?'SP-DECODE · Créditos de análisis ('+order.product_snapshot.credits+')':order.product_id==='offline-3'?'SP-DECODE Offline · 3 dispositivos':order.product_id==='ads-free'?'SP-DECODE · 30 días sin anuncios':'SP-DECODE API';
   const q=order.quote;let id,url;
   if(order.provider==='stripe'){
     const automatic=process.env.STRIPE_AUTOMATIC_TAX==='true';

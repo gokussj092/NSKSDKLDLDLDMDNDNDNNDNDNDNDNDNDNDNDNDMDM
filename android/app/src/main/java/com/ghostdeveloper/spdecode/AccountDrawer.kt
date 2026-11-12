@@ -21,6 +21,7 @@ import kotlinx.coroutines.launch
 @Composable
 internal fun AccountDrawer(busy:Boolean,onExternalLink:(String)->Unit,
     onLegalLink:(String)->Unit={},
+    onCheckoutUrl:(String)->Unit={},
     content:@Composable (openMenu:()->Unit)->Unit) {
     val state=rememberDrawerState(DrawerValue.Closed)
     val scope=rememberCoroutineScope()
@@ -67,11 +68,11 @@ internal fun AccountDrawer(busy:Boolean,onExternalLink:(String)->Unit,
                                 color=Color(0xFFB8DCC0),fontSize=12.sp,
                                 modifier=Modifier.padding(horizontal=13.dp,vertical=8.dp))
                         }
-                        OutlinedButton(onClick={navigate("account")},
+                        OutlinedButton(onClick={navigate("profile-edit")},
                             modifier=Modifier.fillMaxWidth()){
-                            Icon(Icons.Outlined.AccountCircle,null)
+                            Icon(Icons.Outlined.Edit,null)
                             Spacer(Modifier.width(8.dp))
-                            Text(local("Mi cuenta","My account"))
+                            Text(CommerceProfileText.get(language,"Edit profile"))
                         }
                     }else Button(onClick={navigate("login")},enabled=!busy,
                         modifier=Modifier.fillMaxWidth(),
@@ -112,6 +113,6 @@ internal fun AccountDrawer(busy:Boolean,onExternalLink:(String)->Unit,
         val route=destination
         if(route==null)content {if(!busy)scope.launch{state.open()}}
         else NativeCommerceScreens(start=route,onExit={destination=null},
-            onLegalLink=onLegalLink)
+            onLegalLink=onLegalLink,onCheckoutUrl=onCheckoutUrl)
     }
 }

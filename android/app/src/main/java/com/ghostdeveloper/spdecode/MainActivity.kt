@@ -549,6 +549,15 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun openCheckout(url:String){
+        val parsed=runCatching{java.net.URI(url)}.getOrNull()?:return
+        val trusted=setOf("checkout.stripe.com","www.paypal.com","www.sandbox.paypal.com")
+        if(parsed.scheme!="https"||parsed.host?.lowercase(java.util.Locale.ROOT) !in trusted||
+            parsed.userInfo!=null||parsed.port!=-1)return
+        try{startActivity(Intent(Intent.ACTION_VIEW,Uri.parse(url)))}
+        catch(_:ActivityNotFoundException){toast(R.string.read_error)}
+    }
+
     private fun openExternal(url:String){
         // Exact official destinations only. Never accept an arbitrary URL.
         if(url !in setOf(
@@ -732,6 +741,7 @@ class MainActivity : ComponentActivity() {
                 onLanguage={tag->setLanguage(tag)},
                 onMaskCredentials={value->hideCredentials=value;settings.edit().putBoolean("mask_credentials",value).apply()},
                 onExternalLink={url->openExternal(url)},
+                onCheckoutUrl={url->openCheckout(url)},
                 onFeedbackSubmit={draft-> cloudClient.submitFeedback(draft)},
                 onSelect={selectResult(it)},
                 onClear={clearHistory()},
@@ -949,6 +959,9 @@ class MainActivity : ComponentActivity() {
             return
         }
         observeRuntime()
+        if(BuildConfig.SPDECODE_CLOUD_ENABLED)scope.launch {
+            runCatching{NativeCommerceAuth(this@MainActivity).account()}
+        }
         if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED && !showCloudLegal)onlineAds?.initialize(this)
         if(BuildConfig.SPDECODE_APK_QA_ENABLED && !showCloudLegal){
             observeApkQa()
