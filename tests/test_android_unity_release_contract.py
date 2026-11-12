@@ -13,7 +13,7 @@ class AndroidUnityReleaseContract(unittest.TestCase):
         app = read("android/app/src/main/java/com/ghostdeveloper/spdecode/SpDecodeApp.kt")
         gradle = read("android/app/build.gradle.kts")
         stub = read("android/app/src/comingSoon/java/com/ghostdeveloper/spdecode/cloud/CloudApkQaDisabled.kt")
-        self.assertIn("else if(BuildConfig.SPDECODE_APK_QA_ENABLED)", app)
+        self.assertIn("2->if(BuildConfig.SPDECODE_APK_QA_ENABLED)", app)
         self.assertIn('exclude("com/ghostdeveloper/spdecode/cloud/CloudApkQaClient.kt")', gradle)
         self.assertIn('exclude("com/ghostdeveloper/spdecode/cloud/ApkQaWorker.kt")', gradle)
         self.assertIn('if(!enableQaBuild) from("src/comingSoon/java")', gradle)
