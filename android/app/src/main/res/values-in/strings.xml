@@ -306,4 +306,7 @@
     <string name="v2ray_share_auto">Salin tautan V2Ray yang terdeteksi</string>
     <string name="v2ray_share_protocol">Salin tautan %1$s</string>
     <string name="v2ray_share_detail">Tautan berisi kredensial koneksi dan memerlukan klien yang kompatibel. Protokol server tidak diubah.</string>
+    <string name="decrypt_credits_edit">Ubah</string>
+    <string name="decrypt_credits_delete">Hapus</string>
+    <string name="decrypt_credits_delete_confirm">Hapus nama pengguna Telegram yang tersimpan? Salinan berikutnya akan memakai kredit bawaan SP-DECODE.</string>
 </resources>

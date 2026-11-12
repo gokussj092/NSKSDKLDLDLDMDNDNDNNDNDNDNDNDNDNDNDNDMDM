@@ -306,4 +306,7 @@
     <string name="v2ray_share_auto">کپی پیوندهای شناسایی‌شده V2Ray</string>
     <string name="v2ray_share_protocol">کپی پیوند %1$s</string>
     <string name="v2ray_share_detail">پیوندها شامل اطلاعات اتصال هستند و به برنامه سازگار نیاز دارند. پروتکل سرور تغییر نمی‌کند.</string>
+    <string name="decrypt_credits_edit">ویرایش</string>
+    <string name="decrypt_credits_delete">حذف</string>
+    <string name="decrypt_credits_delete_confirm">نام کاربری ذخیره‌شده تلگرام حذف شود؟ نسخه‌های بعدی از اعتبار پیش‌فرض SP-DECODE استفاده می‌کنند.</string>
 </resources>

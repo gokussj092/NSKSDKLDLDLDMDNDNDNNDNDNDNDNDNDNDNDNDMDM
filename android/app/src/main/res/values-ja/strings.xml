@@ -307,4 +307,7 @@
     <string name="v2ray_share_auto">検出した V2Ray リンクをコピー</string>
     <string name="v2ray_share_protocol">%1$s リンクをコピー</string>
     <string name="v2ray_share_detail">リンクには接続認証情報が含まれます。対応クライアントが必要です。サーバーのプロトコルは変更しません。</string>
+    <string name="decrypt_credits_edit">編集</string>
+    <string name="decrypt_credits_delete">削除</string>
+    <string name="decrypt_credits_delete_confirm">保存された Telegram ユーザー名を削除しますか？ 次回以降は SP-DECODE の標準クレジットを使用します。</string>
 </resources>
