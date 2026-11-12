@@ -287,6 +287,25 @@ class AndroidUnityReleaseContract(unittest.TestCase):
                              "decrypt_credits_delete_confirm"):
                 self.assertIn(f'name="{resource}"', strings)
 
+    def test_native_google_signin_uses_activity_and_inline_legal_links(self):
+        auth=read("android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceAuth.kt")
+        screen=read("android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceScreens.kt")
+        consent=read("android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceLegalConsent.kt")
+        self.assertIn("CredentialManager.create(activity).getCredential(",auth)
+        self.assertIn("private fun hostActivity():Activity",auth)
+        self.assertIn("GOOGLE_CREDENTIAL_PICKER_FAILED",auth)
+        self.assertIn("NATIVE_AUTH_NOT_DEPLOYED",auth)
+        self.assertIn("ACCOUNT_SESSION_UNAVAILABLE",auth)
+        self.assertIn('if(code!="GOOGLE_SIGN_IN_CANCELLED")',screen)
+        self.assertIn("CommerceConsentRow(language,acceptedPolicies,",screen)
+        self.assertNotIn("Text(CommerceI18n.policyConsent(language)",screen)
+        self.assertNotIn('TextButton(onClick={onLegalLink("terms")})',screen)
+        self.assertNotIn('TextButton(onClick={onLegalLink("privacy")})',screen)
+        self.assertIn('addStringAnnotation("legal",tag',consent)
+        self.assertIn('firstOrNull()?.item?.let(onLegalLink)',consent)
+        self.assertIn("Checkbox(checked=accepted,onCheckedChange=onAccepted",consent)
+        self.assertNotIn("idToken).idToken\n",auth)
+
     def test_vps_online_fails_closed_for_missing_ads(self):
         build = read("cloud/infra/vps/android-public-build.sh")
         self.assertIn('UNITY_CONFIG="$CFG/unity-ads.env"', build)

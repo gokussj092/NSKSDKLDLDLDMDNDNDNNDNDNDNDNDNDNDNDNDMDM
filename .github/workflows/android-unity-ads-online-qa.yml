@@ -10,6 +10,7 @@ on:
       - android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceAuth.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/NativeStoreCatalog.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceI18n.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceLegalConsent.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceLanguageData.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/ContinuousJsonView.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/LargeResultViewer.kt
