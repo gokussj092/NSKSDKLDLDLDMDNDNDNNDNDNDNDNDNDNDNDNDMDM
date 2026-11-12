@@ -306,4 +306,7 @@
     <string name="v2ray_share_auto">نسخ روابط V2Ray المكتشفة</string>
     <string name="v2ray_share_protocol">نسخ رابط %1$s</string>
     <string name="v2ray_share_detail">تحتوي الروابط على بيانات اتصال وتتطلب عميلاً متوافقًا. لا يتم تغيير بروتوكول الخادم.</string>
+    <string name="decrypt_credits_edit">تعديل</string>
+    <string name="decrypt_credits_delete">حذف</string>
+    <string name="decrypt_credits_delete_confirm">هل تريد حذف اسم مستخدم تيليجرام المحفوظ؟ ستستخدم النسخ التالية نسب SP-DECODE الافتراضي.</string>
 </resources>

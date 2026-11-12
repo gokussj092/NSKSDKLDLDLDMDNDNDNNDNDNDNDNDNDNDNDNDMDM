@@ -306,4 +306,7 @@
     <string name="v2ray_share_auto">Копировать найденные ссылки V2Ray</string>
     <string name="v2ray_share_protocol">Копировать ссылку %1$s</string>
     <string name="v2ray_share_detail">Ссылки содержат учётные данные и требуют совместимый клиент. Протокол сервера не меняется.</string>
+    <string name="decrypt_credits_edit">Изменить</string>
+    <string name="decrypt_credits_delete">Удалить</string>
+    <string name="decrypt_credits_delete_confirm">Удалить сохранённое имя Telegram? Следующие копии будут содержать стандартные сведения SP-DECODE.</string>
 </resources>

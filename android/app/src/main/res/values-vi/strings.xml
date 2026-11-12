@@ -307,4 +307,7 @@
     <string name="v2ray_share_auto">Sao chép liên kết V2Ray đã phát hiện</string>
     <string name="v2ray_share_protocol">Sao chép liên kết %1$s</string>
     <string name="v2ray_share_detail">Liên kết chứa thông tin kết nối và cần ứng dụng tương thích. Không thay đổi giao thức máy chủ.</string>
+    <string name="decrypt_credits_edit">Chỉnh sửa</string>
+    <string name="decrypt_credits_delete">Xóa</string>
+    <string name="decrypt_credits_delete_confirm">Xóa tên người dùng Telegram đã lưu? Các bản sao tiếp theo sẽ dùng ghi công mặc định của SP-DECODE.</string>
 </resources>
