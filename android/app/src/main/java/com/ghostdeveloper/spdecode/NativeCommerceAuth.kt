@@ -44,7 +44,8 @@ internal class NativeCommerceAuth(private val context:Context) {
     private fun hostActivity():Activity {
         var current:Context=context
         repeat(8) {
-            if(current is Activity)return current
+            val activity=current as? Activity
+            if(activity!=null)return activity
             current=(current as? ContextWrapper)?.baseContext
                 ?:throw AuthFailure("ACTIVITY_REQUIRED")
         }
