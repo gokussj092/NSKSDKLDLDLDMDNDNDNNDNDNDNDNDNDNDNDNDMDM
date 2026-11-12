@@ -124,6 +124,8 @@ export async function claim(accountId,id,{rotate=false,db=database()}={}){
   return transaction(async client=>{
     const item=(await client.query('SELECT * FROM spdecode_shop.entitlements WHERE id=$1 AND account_id=$2 FOR UPDATE',[id,accountId])).rows[0];
     if(!item||item.status!=='active')fail('PURCHASE_NOT_AVAILABLE',404);
+    // Ad-free is a session entitlement, never a transferable offline license.
+    if(item.product_id==='ads-free')fail('CLAIM_UNAVAILABLE',409);
     if(item.payment_live!==(process.env.SPDECODE_PAYMENTS_LIVE==='true'))fail('PAYMENT_MODE_MISMATCH',409);
     // Never mint an API key with no network restriction in force.
     if(item.product_id==='api-ip'&&!publicIp(item.allowed_ip))fail('PUBLIC_IP_REQUIRED',409);

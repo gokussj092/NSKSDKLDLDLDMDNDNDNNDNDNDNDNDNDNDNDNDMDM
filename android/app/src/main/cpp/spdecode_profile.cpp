@@ -60,7 +60,7 @@ extern "C" JNIEXPORT jboolean JNICALL
 Java_com_ghostdeveloper_spdecode_NativeAdsGate_validServerEntitlement(
     JNIEnv* env,jobject,jstring accountId,jlong expires,jlong now){
     if(!accountId||now<=0||expires<=now||
-       expires-now>366LL*86400000LL)return JNI_FALSE;
+       expires-now>3650LL*86400000LL)return JNI_FALSE;
     const char* bytes=env->GetStringUTFChars(accountId,nullptr);
     if(!bytes)return JNI_FALSE;
     const std::string_view id(bytes);

@@ -195,7 +195,8 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
     val apiSelection=apiTerms.getOrNull(term)
     fun back(){
         when {
-            page=="profile-edit" -> page="account"
+            page=="profile-edit" -> if(start=="profile-edit")onExit() else page="account"
+            page=="account" && start=="profile-edit" -> onExit()
             page in setOf("orders","api","security","ad-free") ->
                 if(start==page)onExit() else page="account"
             page=="cart" -> {page="store";detail="home"}
