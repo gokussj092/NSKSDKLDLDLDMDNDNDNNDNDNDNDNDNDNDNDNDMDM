@@ -118,18 +118,28 @@ class AndroidUnityReleaseContract(unittest.TestCase):
         self.assertIn("MIN_INTERVAL_MS=240_000L", host)
         self.assertIn("val qaEveryFile=BuildConfig.SPDECODE_ADS_EVERY_FILE_QA", host)
 
-    def test_native_account_store_placeholders_are_localized(self):
+    def test_native_commerce_navigation_and_api_ip_gate(self):
         drawer = read("android/app/src/main/java/com/ghostdeveloper/spdecode/AccountDrawer.kt")
+        ui = read("android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceScreens.kt")
         activity = read("android/app/src/main/java/com/ghostdeveloper/spdecode/MainActivity.kt")
-        self.assertIn('openDestination("account")', drawer)
-        self.assertIn('openDestination("store")', drawer)
-        self.assertIn('R.string.apk_analysis_coming_soon', drawer)
-        self.assertIn("stringResource(if(store)R.string.account_store else R.string.account_my_account)",drawer)
-        self.assertIn("BackHandler(enabled=destination!=null)", drawer)
+        self.assertIn('navigate("account")', drawer)
+        self.assertIn('navigate("store")', drawer)
+        self.assertIn('navigate("login")', drawer)
+        self.assertIn('NativeCommerceScreens(start=route', drawer)
         self.assertNotIn('https://spdecode.xyz/account', drawer)
         self.assertNotIn('https://spdecode.xyz/store', drawer)
-        self.assertNotIn('"https://spdecode.xyz/account"',activity)
-        self.assertNotIn('"https://spdecode.xyz/store"',activity)
+        self.assertNotIn('R.string.apk_analysis_coming_soon', drawer)
+        self.assertNotIn('"https://spdecode.xyz/account"', activity)
+        self.assertNotIn('"https://spdecode.xyz/store"', activity)
+        self.assertIn('internal object CommercialServerIp', ui)
+        self.assertIn('CommercialServerIp.isPublicLiteral(serverIp)', ui)
+        self.assertIn('enabled=CommercialServerIp.isPublicLiteral(serverIp)', ui)
+        for text in ('Descifrado de archivos','Descifrado de textos','Métodos online',
+                     'Descifrado de catálogos','No incluye análisis de aplicaciones APK/APKS'):
+            self.assertIn(text,ui)
+        self.assertIn('enabled=false', ui) # No active payment or password checkout.
+        self.assertIn('NativeCommerceScreens(start:String,onExit:()->Unit)',ui)
+        self.assertNotIn('WebView',ui)
 
     def test_json_height_tracks_native_lines_for_short_results(self):
         viewer = read("android/app/src/main/java/com/ghostdeveloper/spdecode/LargeResultViewer.kt")
@@ -148,7 +158,7 @@ class AndroidUnityReleaseContract(unittest.TestCase):
         self.assertNotIn("showCreditsAction", app)
         self.assertIn("2->if(BuildConfig.SPDECODE_APK_QA_ENABLED)", app)
         self.assertIn("showServerVpnRefresh=(activeTab==3 || activeTab==2)", app)
-        self.assertIn('openDestination("store")', drawer)
+        self.assertIn('navigate("store")', drawer)
 
     def test_json_selection_can_be_cancelled_without_copying(self):
         viewer = read("android/app/src/main/java/com/ghostdeveloper/spdecode/ContinuousJsonView.kt")
