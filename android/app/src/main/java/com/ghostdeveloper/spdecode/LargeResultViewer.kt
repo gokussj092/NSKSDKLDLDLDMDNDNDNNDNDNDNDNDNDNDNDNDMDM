@@ -19,6 +19,25 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+/**
+ * Keep the worker's original bytes untouched. Some legacy HC outputs look like
+ * JSON but include presentation text; only retry when the strict native JSON
+ * indexer rejects that source. No decoding is retried and exports stay original.
+ */
+internal fun openJsonResultForViewer(raw:String,suffix:String):NativeResultEngine.Document {
+    val first=raw.firstOrNull { !it.isWhitespace() }
+    val startsAsJson=first=='{' || first=='['
+    val source=if(startsAsJson) raw else ResultJsonDisplay.render(raw,suffix)
+    return try {
+        NativeResultEngine.open(source)
+    }catch(error:java.io.IOException){
+        if(!startsAsJson)throw error
+        val normalized=ResultJsonDisplay.render(raw,suffix)
+        if(normalized==source)throw error
+        NativeResultEngine.open(normalized)
+    }
+}
+
 /** Full indexed JSON. Search operates over native lines, not the visible window. */
 @Composable
 internal fun LargeResultViewer(raw: String, mask: Boolean, identity: String, suffix: String = "json") {
@@ -28,10 +47,7 @@ internal fun LargeResultViewer(raw: String, mask: Boolean, identity: String, suf
             var owned: NativeResultEngine.Document? = null
             try {
                 withContext(Dispatchers.Default) {
-                    val first = raw.firstOrNull { !it.isWhitespace() }
-                    val source = if (first == '{' || first == '[') raw
-                        else ResultJsonDisplay.render(raw, suffix)
-                    owned = NativeResultEngine.open(source)
+                    owned = openJsonResultForViewer(raw, suffix)
                 }
                 value = owned
                 awaitDispose { owned?.close() }
