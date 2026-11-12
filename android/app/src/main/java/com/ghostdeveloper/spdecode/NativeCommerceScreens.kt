@@ -153,7 +153,8 @@ private fun SimpleFeature(title:String,subtitle:String?=null){
  * session flow and verified payment callbacks.
  */
 @Composable
-internal fun NativeCommerceScreens(start:String,onExit:()->Unit) {
+internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
+    onLegalLink:(String)->Unit={}) {
     var page by rememberSaveable(start){mutableStateOf(start)}
     var detail by rememberSaveable {mutableStateOf("home")}
     var pack by rememberSaveable {mutableIntStateOf(1)}
@@ -178,6 +179,7 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit) {
     val auth=remember(context){NativeCommerceAuth(context)}
     val scope=rememberCoroutineScope()
     var signingIn by remember {mutableStateOf(false)}
+    var acceptedPolicies by rememberSaveable {mutableStateOf(false)}
     var accountSnapshot by remember {mutableStateOf<JSONObject?>(null)}
     var ipEdit by rememberSaveable{mutableStateOf("")}
     LaunchedEffect(page){if(page=="account")accountSnapshot=auth.account()}
@@ -664,17 +666,27 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit) {
                                 signingIn=true
                                 notice=null
                                 try{
-                                    accountSnapshot=auth.signInWithGoogle()
+                                    accountSnapshot=auth.signInWithGoogle(acceptedPolicies)
                                     page="account"
                                 }catch(_:Exception){
                                     notice=local("No se pudo iniciar sesión. Comprueba que el servidor y Google OAuth estén configurados.",
                                         "Sign in failed. Verify account server and Google OAuth configuration.")
                                 }finally{signingIn=false}
                             }
-                        },enabled=!signingIn,modifier=Modifier.fillMaxWidth()) {
+                        },enabled=!signingIn && acceptedPolicies,modifier=Modifier.fillMaxWidth()) {
                             Text("G",fontSize=19.sp,fontWeight=FontWeight.Bold)
                             Spacer(Modifier.width(12.dp))
                             Text(local("Continuar con Google","Continue with Google"))
+                        }
+                        Checkbox(checked=acceptedPolicies,onCheckedChange={acceptedPolicies=it})
+                        Text(CommerceI18n.policyConsent(language),color=muted,fontSize=12.sp)
+                        Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween) {
+                            TextButton(onClick={onLegalLink("terms")}){
+                                Text(CommerceI18n.termsLabel(language))
+                            }
+                            TextButton(onClick={onLegalLink("privacy")}){
+                                Text(CommerceI18n.privacyLabel(language))
+                            }
                         }
                         Row(verticalAlignment=Alignment.CenterVertically){
                             HorizontalDivider(Modifier.weight(1f),color=stroke)

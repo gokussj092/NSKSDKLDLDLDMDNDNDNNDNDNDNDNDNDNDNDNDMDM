@@ -25,6 +25,7 @@ import kotlinx.coroutines.launch
 @Suppress("UNUSED_PARAMETER")
 @Composable
 internal fun AccountDrawer(busy:Boolean,onExternalLink:(String)->Unit,
+    onLegalLink:(String)->Unit={},
     content:@Composable (openMenu:()->Unit)->Unit) {
     val state=rememberDrawerState(DrawerValue.Closed)
     val scope=rememberCoroutineScope()
@@ -69,6 +70,7 @@ internal fun AccountDrawer(busy:Boolean,onExternalLink:(String)->Unit,
         }){
         val route=destination
         if(route==null)content {if(!busy)scope.launch{state.open()}}
-        else NativeCommerceScreens(start=route,onExit={destination=null})
+        else NativeCommerceScreens(start=route,onExit={destination=null},
+            onLegalLink=onLegalLink)
     }
 }

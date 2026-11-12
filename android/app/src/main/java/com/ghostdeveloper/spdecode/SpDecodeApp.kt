@@ -145,7 +145,7 @@ internal fun SpDecodeApp(
 ){
     var dialog by remember{mutableStateOf<String?>(null)}
     SpDecodeAmoledTheme {
-      AccountDrawer(busy,onExternalLink) { openMenu ->
+      AccountDrawer(busy,onExternalLink,onLegalLink) { openMenu ->
         Column(
             modifier=Modifier.fillMaxSize().background(Background).safeDrawingPadding()
         ) {

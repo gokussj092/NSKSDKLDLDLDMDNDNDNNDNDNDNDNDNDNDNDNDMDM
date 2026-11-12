@@ -117,6 +117,34 @@ internal object CommerceI18n {
         "This feature requires secure server support to add, change and recover passwords while keeping Google account linking intact. No credentials have been changed.",
         "OK",
     )
+    fun policyConsent(locale:String):String=when(locale.lowercase()){
+        "es"->"Acepto los términos del servicio y la política de privacidad."
+        "pt"->"Aceito os termos de serviço e a política de privacidade."
+        "fr"->"J'accepte les conditions d'utilisation et la politique de confidentialité."
+        "de"->"Ich akzeptiere die Nutzungsbedingungen und die Datenschutzerklärung."
+        "it"->"Accetto i termini di servizio e l'informativa sulla privacy."
+        "tr"->"Hizmet şartlarını ve gizlilik politikasını kabul ediyorum."
+        "ru"->"Я принимаю условия обслуживания и политику конфиденциальности."
+        "ar"->"أوافق على شروط الخدمة وسياسة الخصوصية."
+        "fa"->"شرایط خدمات و سیاست حفظ حریم خصوصی را می‌پذیرم."
+        "hi"->"मैं सेवा की शर्तों और गोपनीयता नीति से सहमत हूँ।"
+        "ja"->"利用規約とプライバシーポリシーに同意します。"
+        "id","in"->"Saya menyetujui ketentuan layanan dan kebijakan privasi."
+        "vi"->"Tôi đồng ý với điều khoản dịch vụ và chính sách quyền riêng tư."
+        else->"I agree to the Terms of Service and Privacy Policy."
+    }
+    fun termsLabel(locale:String):String=when(locale.lowercase()){
+        "es"->"Términos";"pt"->"Termos";"fr"->"Conditions";"de"->"Bedingungen"
+        "it"->"Termini";"tr"->"Şartlar";"ru"->"Условия";"ar"->"الشروط"
+        "fa"->"شرایط";"hi"->"शर्तें";"ja"->"利用規約";"id","in"->"Ketentuan"
+        "vi"->"Điều khoản";else->"Terms"
+    }
+    fun privacyLabel(locale:String):String=when(locale.lowercase()){
+        "es"->"Privacidad";"pt"->"Privacidade";"fr"->"Confidentialité";"de"->"Datenschutz"
+        "it"->"Privacy";"tr"->"Gizlilik";"ru"->"Конфиденциальность";"ar"->"الخصوصية"
+        "fa"->"حریم خصوصی";"hi"->"गोपनीयता";"ja"->"プライバシー";"id","in"->"Privasi"
+        "vi"->"Quyền riêng tư";else->"Privacy"
+    }
     fun translate(locale:String,es:String,en:String):String{
         val normalized=when(locale.lowercase()){
             "in"->"id"

@@ -112,7 +112,8 @@ internal class NativeCommerceAuth(private val context:Context) {
                 connection.getHeaderField("set-auth-token"))
         } finally {connection.disconnect()}
     }
-    suspend fun signInWithGoogle():JSONObject {
+    suspend fun signInWithGoogle(acceptedPolicies:Boolean):JSONObject {
+        if(!acceptedPolicies)throw IllegalStateException("CONSENT_REQUIRED")
         val config=http("/api/auth/native-config").first
         if(!config.optBoolean("enabled",false))
             throw IllegalStateException("ACCOUNTS_NOT_CONFIGURED")
