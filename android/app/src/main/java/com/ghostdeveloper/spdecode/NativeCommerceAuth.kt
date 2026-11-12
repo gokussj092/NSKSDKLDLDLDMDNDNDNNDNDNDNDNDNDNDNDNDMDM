@@ -1,12 +1,16 @@
 package com.ghostdeveloper.spdecode
 
+import android.app.Activity
 import android.content.Context
+import android.content.ContextWrapper
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.GetCredentialCancellationException
+import androidx.credentials.exceptions.GetCredentialException
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import kotlinx.coroutines.Dispatchers
@@ -27,6 +31,25 @@ import javax.crypto.spec.GCMParameterSpec
  * No in-app WebView, no Google password interception and no API keys in prefs.
  */
 internal class NativeCommerceAuth(private val context:Context) {
+    /** A diagnostic identifier, never a bearer or Google ID token. */
+    internal class AuthFailure(val code:String):IllegalStateException(code)
+    companion object {
+        internal fun diagnostic(error:Throwable):String {
+            val code=(error as? AuthFailure)?.code
+                ?: (error as? IllegalStateException)?.message.orEmpty()
+            return code.takeIf{it.matches(Regex("[A-Z][A-Z0-9_]{2,64}"))}
+                ?: "NATIVE_AUTH_FAILED"
+        }
+    }
+    private fun hostActivity():Activity {
+        var current:Context=context
+        repeat(8) {
+            if(current is Activity)return current
+            current=(current as? ContextWrapper)?.baseContext
+                ?:throw AuthFailure("ACTIVITY_REQUIRED")
+        }
+        throw AuthFailure("ACTIVITY_REQUIRED")
+    }
     private val origin="https://spdecode.xyz"
     private val prefs=context.getSharedPreferences("spdecode-native-commerce-session",Context.MODE_PRIVATE)
     private val keyAlias="spdecode_commerce_session_v1"
@@ -94,8 +117,29 @@ internal class NativeCommerceAuth(private val context:Context) {
                 connection.outputStream.use{it.write(bytes)}
             }
             val status=connection.responseCode
-            if(status !in 200..299)throw IllegalStateException(
-                when(status){401->"SIGN_IN_REQUIRED";403->"NOT_AUTHORIZED";409->"CONFLICT";503->"SERVICE_UNAVAILABLE";else->"REQUEST_FAILED"})
+            if(status !in 200..299){
+                // Parse bounded, non-sensitive API error codes. Never expose tokens
+                // or arbitrary server response bodies in the user interface.
+                val returned=runCatching{
+                    connection.errorStream?.use{stream->
+                        val buffer=ByteArray(2048)
+                        val count=stream.read(buffer)
+                        if(count>0)JSONObject(String(buffer,0,count,Charsets.UTF_8))
+                            .optJSONObject("error")?.optString("code") else null
+                    }
+                }.getOrNull()
+                val known=returned?.takeIf{it.matches(Regex("[A-Z][A-Z0-9_]{2,64}"))}
+                val error=known?:when(status){
+                    400->"MOBILE_AUTH_BAD_REQUEST"
+                    401->"SIGN_IN_REQUIRED"
+                    403->"NOT_AUTHORIZED"
+                    404->"MOBILE_AUTH_ENDPOINT_MISSING"
+                    409->"AUTH_CONFLICT"
+                    503->"SERVICE_UNAVAILABLE"
+                    else->"MOBILE_AUTH_HTTP_"+status
+                }
+                throw AuthFailure(error)
+            }
             if(!connection.contentType.orEmpty().startsWith("application/json"))
                 throw IllegalStateException("INVALID_RESPONSE")
             val output=ByteArrayOutputStream()
@@ -114,33 +158,53 @@ internal class NativeCommerceAuth(private val context:Context) {
     }
     suspend fun signInWithGoogle(acceptedPolicies:Boolean):JSONObject {
         if(!acceptedPolicies)throw IllegalStateException("CONSENT_REQUIRED")
-        val config=http("/api/auth/native-config").first
+        val config=try { http("/api/auth/native-config").first }
+            catch(e:AuthFailure){throw AuthFailure(
+                if(e.code=="MOBILE_AUTH_ENDPOINT_MISSING")"NATIVE_AUTH_NOT_DEPLOYED"
+                else e.code)}
         if(!config.optBoolean("enabled",false))
-            throw IllegalStateException("ACCOUNTS_NOT_CONFIGURED")
+            throw AuthFailure("NATIVE_AUTH_DISABLED_ON_SERVER")
         val clientId=config.optString("googleWebClientId")
         if(!clientId.endsWith(".apps.googleusercontent.com") || clientId.length>256)
-            throw IllegalStateException("GOOGLE_OAUTH_NOT_CONFIGURED")
+            throw AuthFailure("GOOGLE_WEB_CLIENT_ID_UNAVAILABLE")
         val options=GetGoogleIdOption.Builder()
             .setFilterByAuthorizedAccounts(false)
             .setServerClientId(clientId)
             .setAutoSelectEnabled(false)
             .build()
-        val credential=CredentialManager.create(context).getCredential(
-            context,GetCredentialRequest.Builder().addCredentialOption(options).build()
-        ).credential
+        // Credential Manager requires an Activity context to display Google
+        // account selection. LocalContext may be a language/theme wrapper.
+        val activity=hostActivity()
+        val credential=try {
+            CredentialManager.create(activity).getCredential(
+                activity,GetCredentialRequest.Builder()
+                    .addCredentialOption(options).build()
+            ).credential
+        }catch(e:GetCredentialCancellationException){
+            throw AuthFailure("GOOGLE_SIGN_IN_CANCELLED")
+        }catch(e:GetCredentialException){
+            throw AuthFailure("GOOGLE_CREDENTIAL_PICKER_FAILED")
+        }
         if(credential !is CustomCredential ||
             credential.type!=GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL)
-            throw IllegalStateException("GOOGLE_CREDENTIAL_REQUIRED")
-        val idToken=GoogleIdTokenCredential.createFrom(credential.data).idToken
+            throw AuthFailure("GOOGLE_CREDENTIAL_REQUIRED")
+        val idToken=try{GoogleIdTokenCredential.createFrom(credential.data).idToken}
+            catch(_:Exception){throw AuthFailure("GOOGLE_ID_TOKEN_INVALID")}
         val body=JSONObject().put("provider","google").put("idToken",
             JSONObject().put("token",idToken))
             .put("acceptedTerms","2026-11-10")
             .put("acceptedPrivacy","2026-11-10")
         val response=http("/api/auth/sign-in/social","POST",body)
-        val session=response.second?:response.first.optString("token")
-        if(session.isNullOrBlank())throw IllegalStateException("SESSION_NOT_ISSUED")
+        if(response.first.optBoolean("redirect",false))
+            throw AuthFailure("GOOGLE_NATIVE_TOKEN_FLOW_UNSUPPORTED")
+        val session=response.second?.takeIf{it.isNotBlank()}
+            ?:response.first.optString("token").takeIf{it.isNotBlank()}
+            ?:throw AuthFailure("SESSION_NOT_ISSUED")
         save(session)
-        return account()?:throw IllegalStateException("SESSION_NOT_CONFIRMED")
+        return try {
+            account()?:throw AuthFailure("SESSION_NOT_CONFIRMED")
+        }catch(e:AuthFailure){throw e}
+        catch(_:Exception){throw AuthFailure("ACCOUNT_SESSION_UNAVAILABLE")}
     }
     suspend fun account():JSONObject?{
         if(sessionToken()==null)return null
