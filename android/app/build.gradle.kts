@@ -940,7 +940,7 @@ dependencies {
         if(enableCloud){
             implementation("androidx.credentials:credentials:1.6.0")
             implementation("androidx.credentials:credentials-play-services-auth:1.6.0")
-            implementation("com.google.android.libraries.identity.googleid:googleid:1.2.1")
+            implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
         }
         if (enableCloud) implementation("com.google.firebase:firebase-messaging:25.0.0")
         if (enablePlayAab) {

@@ -7,6 +7,10 @@ on:
       - android/app/src/main/java/com/ghostdeveloper/spdecode/SpDecodeApp.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/AccountDrawer.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceScreens.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceAuth.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/NativeStoreCatalog.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceI18n.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceLanguageData.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/ContinuousJsonView.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/LargeResultViewer.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/MainActivity.kt

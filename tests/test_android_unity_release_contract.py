@@ -148,6 +148,24 @@ class AndroidUnityReleaseContract(unittest.TestCase):
         self.assertIn('NativeCommerceScreens(start:String,onExit:()->Unit)',ui)
         self.assertNotIn('android.webkit.WebView',ui)
 
+    def test_all_commerce_locales_and_native_google_auth(self):
+        native = read("android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceScreens.kt")
+        i18n = read("android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceI18n.kt")
+        langs = read("android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceLanguageData.kt")
+        auth = read("android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceAuth.kt")
+        self.assertIn("context.resources.configuration.locales[0].language",native)
+        self.assertIn("CommerceI18n.translate(language,es,en)",native)
+        self.assertIn("GoogleIdTokenCredential.createFrom",auth)
+        self.assertIn("AndroidKeyStore",auth)
+        self.assertIn('"/api/auth/sign-in/social"',auth)
+        self.assertIn('"/api/account/api-ip"',auth)
+        self.assertIn("optJSONObject(\"user\")",native)
+        for locale in ("pt","fr","de","it","ru","tr","ar","fa","hi","ja","id","vi"):
+            self.assertIn('"' + locale + '" to """',langs)
+        self.assertIn("internal val keys=listOf(",i18n)
+        self.assertIn('val creditPacks=catalog?.creditPacks.orEmpty()',native)
+        self.assertIn('enabled=apiSelection?.available==true',native)
+
     def test_json_height_tracks_native_lines_for_short_results(self):
         viewer = read("android/app/src/main/java/com/ghostdeveloper/spdecode/LargeResultViewer.kt")
         self.assertIn("current.lineCount.coerceIn(1, 150)", viewer)
