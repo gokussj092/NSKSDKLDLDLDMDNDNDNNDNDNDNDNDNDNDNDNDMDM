@@ -6,6 +6,7 @@ import {catalog,taxRules,checkout,settle,claim,updateApiAllowedIp,useApiKey,chec
 import {publicProduct,taxQuote,validateProduct} from './catalog.mjs';
 import {profile,editProfile} from './profile.mjs';
 import {creditBalance} from './credits.mjs';
+import {createGift,disableGift,listGifts,redeemGift} from './gifts.mjs';
 import {capturePaypal,paymentEvent} from './providers.mjs';
 import {adminSettings,authenticateAdmin,validMutation} from '../c6-admin-auth.mjs';
 import {opsStore,serviceMaintenanceEnabled} from '../c6-ops-store.mjs';
@@ -24,10 +25,11 @@ export const accountSnapshot=request=>safe(async()=>{
   const session=await accountAuth().api.getSession({headers:request.headers});
   if(!session)return reply({user:null,authEnabled:true});
   const user=session.user,p=await profile(user.id),db=database();
-  const [orders,entitlements,credits]=await Promise.all([
+  const [orders,entitlements,credits,passwordAccount]=await Promise.all([
     db.query(`SELECT id,product_id,provider,status,quote,created_at,paid_at,payment_live,product_snapshot->>'term' AS term,product_snapshot->>'days' AS days,product_snapshot->>'credits' AS credits FROM spdecode_shop.orders WHERE account_id=$1 ORDER BY created_at DESC LIMIT 50`,[user.id]),
     db.query(`SELECT id,order_id,product_id,status,token_prefix,allowed_ip,quota,days,expires_at,claimed_at,payment_live FROM spdecode_shop.entitlements WHERE account_id=$1 ORDER BY created_at DESC`,[user.id]),
-    creditBalance(user.id,{db})]);
+    creditBalance(user.id,{db}),
+    db.query('SELECT 1 FROM shop_identity WHERE "userId"=$1 AND "providerId"=$2 AND password IS NOT NULL LIMIT 1',[user.id,'credential'])]);
   const live=process.env.SPDECODE_PAYMENTS_LIVE==='true';
   const adEntitlements=entitlements.rows.filter(e=>e.product_id==='ads-free'&&
     e.status==='active'&&e.payment_live===live&&e.expires_at&&
@@ -35,14 +37,59 @@ export const accountSnapshot=request=>safe(async()=>{
   const adsExpiry=adEntitlements.reduce((max,e)=>Math.max(max,new Date(e.expires_at).getTime()),0);
   const googleAvatar=typeof user.image==='string'&&/^https:\/\/lh[3-6]\.googleusercontent\.com\//.test(user.image)?user.image:null;
   return reply({authEnabled:true,live:process.env.SPDECODE_PAYMENTS_LIVE==='true',user:{id:user.id,name:user.name,email:user.email,avatar:p.avatar_data||googleAvatar,googleAvatar,username:p.username,bio:p.bio||'',
-    privacyVersion:user.privacyVersion,termsVersion:user.termsVersion},
+    privacyVersion:user.privacyVersion,termsVersion:user.termsVersion,
+    hasPassword:passwordAccount.rowCount>0},
     orders:orders.rows,entitlements:entitlements.rows,credits,
     adsFree:{active:adsExpiry>Date.now(),
       expiresAt:adsExpiry?new Date(adsExpiry).toISOString():null}});
 });
+export const giftRedeemRequest=request=>safe(async()=>{
+  requireOrigin(request);
+  const session=await requireAccount(request);
+  const body=await jsonBody(request,512);
+  if(!body||typeof body!=='object'||Array.isArray(body)||
+     Object.keys(body).length!==1||typeof body.code!=='string')
+    fail('INVALID_REQUEST');
+  return reply(await redeemGift(session.user.id,body.code));
+});
 export const profileMutation=request=>safe(async()=>{
-  requireOrigin(request);const session=await requireAccount(request,{fresh:true});
+  requireOrigin(request);const session=await requireAccount(request);
   return reply(await editProfile(session.user.id,await jsonBody(request,120000)));
+});
+/** Password changes are Better Auth credential operations; no passwords in
+ * the SP-DECODE profiles table, requests log, or Android preferences.
+ * First enrollment requires a recently verified Google OAuth session. */
+export const passwordMutation=request=>safe(async()=>{
+  requireOrigin(request);
+  const body=await jsonBody(request,2048);
+  if(!body||typeof body!=='object'||Array.isArray(body)||
+    Object.keys(body).some(key=>!['currentPassword','newPassword'].includes(key))||
+    typeof body.newPassword!=='string'||
+    body.newPassword.length<12||body.newPassword.length>128)
+    fail('INVALID_PASSWORD',400);
+  const session=await requireAccount(request);
+  const db=database();
+  const owned=await db.query('SELECT "providerId",password FROM shop_identity WHERE "userId"=$1 AND "providerId" IN ($2,$3)',[session.user.id,'credential','google']);
+  const credential=owned.rows.find(row=>row.providerId==='credential'&&!!row.password);
+  const google=owned.rows.some(row=>row.providerId==='google');
+  const auth=accountAuth();
+  if(credential){
+    if(typeof body.currentPassword!=='string'||!body.currentPassword||
+       body.currentPassword.length>128)fail('CURRENT_PASSWORD_REQUIRED',400);
+    try{
+      await auth.api.changePassword({body:{currentPassword:body.currentPassword,
+        newPassword:body.newPassword,revokeOtherSessions:true},headers:request.headers});
+    }catch{fail('CURRENT_PASSWORD_INVALID',403);}
+    return reply({passwordEnabled:true,updated:true});
+  }
+  if(body.currentPassword!==undefined)fail('CURRENT_PASSWORD_UNAVAILABLE',400);
+  if(!google)fail('GOOGLE_ACCOUNT_REQUIRED',403);
+  // Recheck session freshness only for first-time password enrollment.
+  await requireAccount(request,{fresh:true});
+  try{
+    await auth.api.setPassword({body:{newPassword:body.newPassword},headers:request.headers});
+  }catch{fail('PASSWORD_ENROLLMENT_FAILED',409);}
+  return reply({passwordEnabled:true,updated:true});
 });
 export const quoteRequest=request=>safe(async()=>{
   requireOrigin(request);await requireAccount(request);
@@ -62,7 +109,7 @@ export const claimRequest=request=>safe(async()=>{
 });
 export const apiIpMutation=request=>safe(async()=>{
   requireOrigin(request);
-  const session=await requireAccount(request,{fresh:true});
+  const session=await requireAccount(request);
   const body=await jsonBody(request,2048);
   if(!body||Object.keys(body).some(k=>!['id','allowedIp'].includes(k)))fail('INVALID_REQUEST');
   return reply(await updateApiAllowedIp(session.user.id,body.id,body.allowedIp));
@@ -115,6 +162,20 @@ export const adminStore=request=>safe(async()=>{
     },db);
   }else fail('INVALID_REQUEST');
   return reply({saved:true});
+});
+export const adminGiftCodes=request=>safe(async()=>{
+  const actor=await admin(request,request.method==='POST');
+  if(request.method==='GET')return reply(await listGifts());
+  const body=await jsonBody(request,2048);
+  if(!body||typeof body!=='object'||Array.isArray(body)||
+     typeof body.action!=='string')fail('INVALID_REQUEST');
+  if(body.action==='create') {
+    const {action,...spec}=body;
+    return reply(await createGift(spec,actor),201);
+  }
+  if(body.action==='disable'&&Object.keys(body).length===2)
+    return reply(await disableGift(body.id,actor));
+  fail('INVALID_REQUEST');
 });
 export const adminCleanup=request=>safe(async()=>{
   const actor=await admin(request,request.method==='POST'),db=database();

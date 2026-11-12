@@ -952,6 +952,10 @@ class MainActivity : ComponentActivity() {
             onlineAds?.onWindowFocusChanged(this,hasFocus)
     }
 
+    override fun onStop(){
+        NativeDeviceAccountGuard.lock()
+        super.onStop()
+    }
     override fun onResume() {
         super.onResume()
         if(!ReleaseIntegrity.isTrusted(this)) {

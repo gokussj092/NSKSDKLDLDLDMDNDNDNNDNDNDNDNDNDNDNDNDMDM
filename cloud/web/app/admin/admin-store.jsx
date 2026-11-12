@@ -15,6 +15,30 @@ function ProductForm({row,onSave,busy}){
   {row.id==='api-ip'&&<div className="sp-admin-price-fields"><label>Operaciones al día<input required type="number" min="1" max="1000000" value={values.quota} onChange={e=>change('quota',Number(e.target.value))}/></label><label>Vigencia en días<input required type="number" min="1" max="3650" value={values.days} onChange={e=>change('days',Number(e.target.value))}/></label></div>}
   <label className="sp-admin-shop-check"><input type="checkbox" checked={values.enabled} onChange={e=>change('enabled',e.target.checked)}/>Habilitar el producto cuando el servicio y las pasarelas estén preparados</label><button className="button" disabled={busy}>Guardar producto</button></form>;
 }
+function AdFreeForm({row,onSave,busy}){
+ const [values,setValues]=useState(row.settings);
+ useEffect(()=>setValues(row.settings),[row.version]);
+ return <form className="admin-card sp-admin-commerce-panel"
+  onSubmit={e=>{e.preventDefault();onSave({action:'product',product:values,version:row.version});}}>
+  <div className="sp-admin-commerce-panel-heading"><div>
+    <span className="sp-admin-commercial-kicker">ONLINE · SIN ANUNCIOS</span>
+    <h2>Acceso sin publicidad</h2>
+    <p className="muted">Licencia de 30 días vinculada a la cuenta. Se renueva al adquirir otros 30 días; no genera un cargo recurrente automático.</p>
+  </div><img src="/icon.svg" width="54" height="54" alt=""/></div>
+  <div className="sp-admin-price-fields"><label>Precio USD (30 días)
+    <input type="number" min="1" step="0.01" required
+      value={values.prices?.USD===undefined?'':values.prices.USD/100}
+      onChange={e=>setValues(v=>({...v,prices:{...v.prices,
+        USD:Math.round(Number(e.target.value)*100)}}))}/>
+    <small className="muted">La tienda consulta el precio vigente desde el servidor.</small>
+  </label></div>
+  <label className="sp-admin-shop-check"><input type="checkbox" checked={values.enabled===true}
+    onChange={e=>setValues(v=>({...v,enabled:e.target.checked}))}/>
+    Habilitar ventas después de configurar Stripe/PayPal, impuestos y webhooks verificados
+  </label>
+  <button className="button" disabled={busy}>Guardar acceso sin anuncios</button>
+ </form>;
+}
 const PACKS=[['1c',1],['5c',5],['10c',10],['25c',25],['50c',50],['100c',100]];
 function CreditsForm({row,onSave,busy}){
  const [values,setValues]=useState(row.settings);
@@ -41,7 +65,10 @@ export default function AdminStore(){
  let estimate=null;try{estimate=estimateRetail(net,{rateBps:rate,fixedCents:fixed,feeTaxBps:feeTax,salesTaxBps:saleTax});}catch{}
  return <div className="sp-admin-commerce"><header className="sp-admin-commerce-hero"><div><span className="sp-admin-commercial-kicker">SP-DECODE · COMERCIO</span><h2>Control comercial</h2><p>Productos, precios y medios de pago desde una misma consola.</p></div><img src="/icon.svg" alt="SP-DECODE" width="58" height="58"/></header>{error&&<p className="form-message error" role="alert">{error}</p>}{message&&<p className="form-message" role="status">{message}</p>}
   <section className="admin-card"><h2>Conexiones</h2><div className="sp-admin-price-fields">{['stripe','paypal','mercadopago'].map(id=><div key={id}><strong>{id==='mercadopago'?'Mercado Pago':id==='paypal'?'PayPal':'Stripe'}</strong><p className="muted">{data?.providers[id]?'Configurado':'No disponible'}</p></div>)}</div><p className="muted">Modo: {data?.live?'producción':'pruebas'}. Google: {data?.authEnabled?'configurado':'pendiente'}. Solo se publican métodos y monedas que el checkout pueda aceptar.</p></section>
-  {data?.products.map(row=>row.id==='analysis-credits'?<CreditsForm key={row.id} row={row} onSave={save} busy={busy}/>:<ProductForm key={row.id} row={row} onSave={save} busy={busy}/>)}
+  {data?.products.map(row=>row.id==='analysis-credits'?
+    <CreditsForm key={row.id} row={row} onSave={save} busy={busy}/>:
+    row.id==='ads-free'?<AdFreeForm key={row.id} row={row} onSave={save} busy={busy}/>:
+    <ProductForm key={row.id} row={row} onSave={save} busy={busy}/>)}
   <section className="admin-card"><h2>Planificar el precio final</h2><p className="muted">Estimación con tus comisiones contratadas. No es una garantía de liquidación. Compara tus proveedores y fija un precio comercial común que cubra el margen deseado; no se añade un recargo por usar PayPal.</p><div className="sp-admin-price-fields">{[['Neto objetivo (centavos)',net,setNet],['Comisión porcentual (puntos base)',rate,setRate],['Comisión fija (centavos)',fixed,setFixed],['IVA de la comisión (puntos base)',feeTax,setFeeTax],['Impuesto de la venta (puntos base)',saleTax,setSaleTax]].map(([label,value,set])=><label key={label}>{label}<input type="number" min="0" value={value} onChange={e=>set(Number(e.target.value))}/></label>)}</div>{estimate&&<p>Precio comercial estimado: <strong>{(estimate.retailCents/100).toFixed(2)}</strong> · Neto estimado: {(estimate.estimatedNetCents/100).toFixed(2)} · antes de conversión de moneda y otros ajustes.</p>}</section>
   <section className="admin-card"><h2>Reglas fiscales revisadas</h2><p className="muted">Configura únicamente jurisdicciones y tasas que correspondan a tus obligaciones y registros fiscales. Sin una regla revisada, ese destino no puede comprar. Stripe Tax necesita sus registros activos. Los puntos base usan 1600 para 16%. Para tasas manuales de Stripe agrega el ID de tasa verificado.</p><p className="muted">Formato por entrada: country, region (o *), rateBps, label, reviewed: true y stripeTaxRate opcional. No se aplica IVA a todos los países por defecto.</p><textarea aria-label="Reglas fiscales" value={taxes} rows={12} spellCheck="false" onChange={e=>setTaxes(e.target.value)}/><button className="button" disabled={busy||!data} onClick={()=>{try{save({action:'tax-rules',rules:JSON.parse(taxes)});}catch{setError('El documento de reglas no es JSON válido.');}}}>Guardar reglas fiscales</button></section>
  </div>;}

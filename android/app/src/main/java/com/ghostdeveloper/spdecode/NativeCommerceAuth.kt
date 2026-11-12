@@ -90,6 +90,27 @@ internal class NativeCommerceAuth(private val context:Context) {
         return try{decrypt(stored).takeIf{it.length in 24..1024}}
         catch(_:Exception){prefs.edit().remove("session").apply();null}
     }
+    fun restoreCachedIdentity(){
+        if(sessionToken()==null)return
+        if(CommerceSession.user!=null)return
+        val cached=prefs.getString("profile",null)?:return
+        runCatching{CommerceSession.restore(JSONObject(decrypt(cached)))}
+    }
+    private fun cacheIdentity(snapshot:JSONObject){
+        val user=snapshot.optJSONObject("user")?:return
+        val copy=JSONObject().put("id",user.optString("id"))
+            .put("name",user.optString("name"))
+            .put("username",user.optString("username"))
+            .put("email",user.optString("email"))
+            .put("avatar",user.optString("avatar"))
+        val text=copy.toString()
+        if(text.length<=125_000)
+            runCatching{prefs.edit().putString("profile",encrypt(text)).apply()}
+    }
+    private fun wipeSession(){
+        prefs.edit().remove("session").remove("profile").commit()
+        CommerceSession.clear()
+    }
     private fun save(token:String) {
         require(token.length in 24..1024 && !token.any{it.isWhitespace()})
         if(!prefs.edit().putString("session",encrypt(token)).commit())
@@ -220,11 +241,19 @@ internal class NativeCommerceAuth(private val context:Context) {
     }
     suspend fun account():JSONObject?{
         if(sessionToken()==null){CommerceSession.clear();return null}
-        val response=runCatching{http("/api/account",authenticated=true).first}.getOrNull()
-        return response?.takeIf{!it.isNull("user") && it.optJSONObject("user")!=null}
-            ?.also{CommerceSession.update(it)}
+        val response=try{http("/api/account",authenticated=true).first}
+            catch(e:AuthFailure){
+                if(e.code=="SIGN_IN_REQUIRED")wipeSession()
+                return null
+            }catch(_:Exception){return null}
+        if(response.isNull("user")||response.optJSONObject("user")==null){
+            wipeSession();return null
+        }
+        CommerceSession.update(response)
+        cacheIdentity(response)
+        return response
     }
-    /** Public profile edits. A fresh authenticated server session is required. */
+    /** Profile edits use the persistent authenticated account session. */
     suspend fun editProfile(name:String,username:String,avatarData:String?,
         replaceAvatar:Boolean):JSONObject {
         val normalizedName=name.trim()
@@ -239,6 +268,40 @@ internal class NativeCommerceAuth(private val context:Context) {
         if(replaceAvatar)body.put("avatarData",avatarData ?: JSONObject.NULL)
         http("/api/account/profile","PATCH",body,true)
         return account()?:throw AuthFailure("ACCOUNT_SESSION_UNAVAILABLE")
+    }
+    suspend fun redeemGift(code:String):JSONObject {
+        val normalized=code.trim()
+        if(!Regex("SPG-[A-Za-z0-9_-]{22}").matches(normalized))
+            throw AuthFailure("GIFT_INVALID")
+        val result=http("/api/store/redeem","POST",JSONObject().put("code",normalized),true).first
+        account()
+        return result
+    }
+    suspend fun changeAccountPassword(current:String?,newPassword:String):JSONObject {
+        if(newPassword.length !in 12..128 || (current!=null&&current.length !in 1..128))
+            throw AuthFailure("INVALID_PASSWORD")
+        val body=JSONObject().put("newPassword",newPassword)
+        if(current!=null)body.put("currentPassword",current)
+        return http("/api/account/password","PATCH",body,true).first
+    }
+    suspend fun signInWithEmail(email:String,password:String):JSONObject{
+        val identity=email.trim().lowercase(java.util.Locale.ROOT)
+        if(identity.length !in 3..254||!identity.contains("@")||password.isEmpty()||
+            password.length>128)throw AuthFailure("INVALID_CREDENTIALS")
+        val response=http("/api/auth/sign-in/email","POST",
+            JSONObject().put("email",identity).put("password",password)
+                .put("rememberMe",true))
+        val session=response.second?.takeIf{it.isNotBlank()}
+            ?:response.first.optString("token").takeIf{it.isNotBlank()}
+            ?:throw AuthFailure("SESSION_NOT_ISSUED")
+        save(session)
+        return account()?:throw AuthFailure("SESSION_NOT_CONFIRMED")
+    }
+    suspend fun reauthenticateWithGoogle(expectedId:String):JSONObject {
+        val snapshot=signInWithGoogle(true)
+        if(snapshot.optJSONObject("user")?.optString("id")!=expectedId)
+            throw AuthFailure("ACCOUNT_CHANGED_REAUTH")
+        return snapshot
     }
     /** Server-authoritative quote; amounts and taxes are never calculated here. */
     suspend fun quoteAdFree(provider:String,country:String):JSONObject {
@@ -277,8 +340,7 @@ internal class NativeCommerceAuth(private val context:Context) {
         try{
             if(sessionToken()!=null)http("/api/auth/sign-out","POST",JSONObject(),true)
         }finally{
-            prefs.edit().remove("session").commit()
-            CommerceSession.clear()
+            wipeSession()
         }
     }
 }

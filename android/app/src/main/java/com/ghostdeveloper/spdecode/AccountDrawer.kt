@@ -32,6 +32,7 @@ internal fun AccountDrawer(busy:Boolean,onExternalLink:(String)->Unit,
     val user=CommerceSession.user
     var destination by remember {mutableStateOf<String?>(null)}
     LaunchedEffect(Unit) {
+        auth.restoreCachedIdentity()
         if(auth.sessionToken()!=null)runCatching{auth.account()}
     }
     BackHandler(state.isOpen && destination==null){scope.launch{state.close()}}
@@ -56,7 +57,6 @@ internal fun AccountDrawer(busy:Boolean,onExternalLink:(String)->Unit,
                                 fontSize=20.sp,fontWeight=FontWeight.Bold,maxLines=2)
                             if(user!=null){
                                 Text("@"+user.username,color=Color(0xFFB8DCC0),fontSize=13.sp)
-                                Text(user.email,color=Color(0xFFAAAAAA),fontSize=11.sp,maxLines=1)
                             }else Text(local("Accede a tu cuenta desde la aplicación",
                                 "Access your account inside the app"),
                                 color=Color(0xFFAAAAAA),fontSize=12.sp)

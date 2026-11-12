@@ -69,6 +69,15 @@ internal object CommerceSession {
         entitlementChecked=true
         checkoutPending=false
     }
+    fun restore(data:JSONObject){
+        if(user!=null)return
+        val id=data.optString("id")
+        if(id.length !in 16..80)return
+        user=CommerceIdentity(id,data.optString("name"),data.optString("username"),
+            data.optString("email"),data.optString("avatar").takeUnless{it.isBlank()||it=="null"})
+        // A cached identity is never proof of active paid entitlements.
+        adsExpiry=0;entitlementChecked=false;checkoutPending=false
+    }
     fun clear(){user=null;adsExpiry=0;entitlementChecked=false;checkoutPending=false}
 }
 internal object NativeAdsGate {

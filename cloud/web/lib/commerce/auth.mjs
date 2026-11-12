@@ -8,12 +8,13 @@ let instance;
 export function makeAuth(db,env=process.env){
   return betterAuth({appName:'SP-DECODE',baseURL:siteOrigin(env),secret:env.BETTER_AUTH_SECRET,
     database:db, trustedOrigins:[siteOrigin(env)],
-    emailAndPassword:{enabled:false},
+    emailAndPassword:{enabled:true,disableSignUp:true,requireEmailVerification:true,
+      minPasswordLength:12,maxPasswordLength:128},
     plugins:[bearer()],
     socialProviders:{google:{clientId:env.GOOGLE_CLIENT_ID,clientSecret:env.GOOGLE_CLIENT_SECRET,prompt:'select_account'}},
     user:{modelName:'shop_user',deleteUser:{enabled:true},changeEmail:{enabled:false},additionalFields:{
       privacyVersion:{type:'string',required:false,input:false},termsVersion:{type:'string',required:false,input:false}}},
-    session:{modelName:'shop_session',expiresIn:7*86400,updateAge:86400,freshAge:900},
+    session:{modelName:'shop_session',expiresIn:90*86400,updateAge:43200,freshAge:900},
     account:{modelName:'shop_identity',accountLinking:{enabled:false},encryptOAuthTokens:true,storeStateStrategy:'database'},
     verification:{modelName:'shop_verification'},
     rateLimit:{enabled:true,storage:'database',modelName:'shop_rate_limit',window:60,max:60},

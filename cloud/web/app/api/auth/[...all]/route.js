@@ -7,10 +7,20 @@ async function handle(request){return safe(async()=>{
   if(path==='/api/auth/native-config'&&request.method==='GET')
     return reply({enabled:authReady(),googleWebClientId:authReady()?process.env.GOOGLE_CLIENT_ID:null});
   const allowed=new Set(['/api/auth/native-config','/api/auth/sign-in/social','/api/auth/callback/google','/api/auth/get-session',
-    '/api/auth/sign-out','/api/auth/delete-user','/api/auth/error','/api/auth/ok']);
+    '/api/auth/sign-out','/api/auth/delete-user','/api/auth/sign-in/email','/api/auth/error','/api/auth/ok']);
   if(!allowed.has(path))fail('NOT_FOUND',404);
   if(request.method==='POST'){
     requireOrigin(request);
+    if(path==='/api/auth/sign-in/email'){
+      const input=await jsonBody(request.clone(),2048);
+      if(!input||typeof input!=='object'||Array.isArray(input)||
+        Object.keys(input).some(k=>!['email','password','rememberMe'].includes(k))||
+        typeof input.email!=='string'||input.email.length>254||
+        !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(input.email)||
+        typeof input.password!=='string'||input.password.length>128||
+        (input.rememberMe!==undefined&&input.rememberMe!==true))
+        fail('INVALID_REQUEST');
+    }
     if(path.endsWith('/sign-in/social')){
       const body=await jsonBody(request.clone(),4096);
       if(body.provider!=='google'||body.requestSignUp!==undefined)fail('INVALID_REQUEST');

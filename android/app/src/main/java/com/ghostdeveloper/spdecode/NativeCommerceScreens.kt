@@ -173,11 +173,13 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
     val auth=remember(context){NativeCommerceAuth(context)}
     val scope=rememberCoroutineScope()
     var signingIn by remember {mutableStateOf(false)}
+    var email by remember {mutableStateOf("")}
+    var emailPassword by remember {mutableStateOf("")}
     var acceptedPolicies by rememberSaveable {mutableStateOf(false)}
     var accountSnapshot by remember {mutableStateOf<JSONObject?>(null)}
     var ipEdit by rememberSaveable{mutableStateOf("")}
     LaunchedEffect(page){
-        if(page in setOf("account","orders","api","security","ad-free","profile-edit"))
+        if(page in setOf("account","orders","api","security","ad-free","profile-edit","password","gift"))
             accountSnapshot=auth.account()
     }
     var catalog by remember {mutableStateOf<NativeStoreCatalog?>(null)}
@@ -196,6 +198,9 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
     fun back(){
         when {
             page=="profile-edit" -> if(start=="profile-edit")onExit() else page="account"
+            page=="password" -> if(start=="password")onExit() else page="security"
+            page=="email-login" -> page="login"
+            page=="gift" -> if(start=="gift")onExit() else {page="store";detail="home"}
             page=="account" && start=="profile-edit" -> onExit()
             page in setOf("orders","api","security","ad-free") ->
                 if(start==page)onExit() else page="account"
@@ -221,6 +226,9 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                     "orders" -> CommerceAccountWords.get(language,"Your purchases")
                     "api" -> CommerceAccountWords.get(language,"API licenses")
                     "security" -> CommerceAccountWords.get(language,"Account security")
+                    "password" -> CommerceSecurityText.get(language,"Password")
+                    "gift" -> CommerceGiftText.get(language,"Redeem gift code")
+                    "email-login" -> local("Acceso con correo","Email sign in")
                     "ad-free" -> CommerceAccountWords.get(language,"Ad-free experience")
                     "login" -> local("Acceso seguro","Secure sign in")
                     "cart" -> local("Tu carrito","Your cart")
@@ -238,7 +246,11 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
         Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState())
             .padding(horizontal=17.dp,vertical=19.dp),
             verticalArrangement=Arrangement.spacedBy(17.dp)){
-            when(page){
+            if(NativeDeviceAccountGuard.enabled(context) &&
+                !NativeDeviceAccountGuard.unlocked &&
+                page in setOf("account","orders","api","security","ad-free","profile-edit","password","gift"))
+                CommerceAccountUnlockPage(language)
+            else when(page){
                 "store" -> when(detail){
                     "credits" -> {
                         Text(local("CRÉDITOS / ANÁLISIS APK","CREDITS / APK ANALYSIS"),
@@ -439,6 +451,14 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                             {Icon(Icons.Outlined.Shield,null,tint=white,modifier=Modifier.size(29.dp))}){
                             detail="ads"
                         }
+                        ProductTile(local("Canjear código de regalo","Redeem gift code"),
+                            local("Créditos, licencias y tiempo sin anuncios",
+                                "Credits, licenses and ad-free access"),
+                            local("Canjear","Redeem"),"",
+                            {Icon(Icons.Outlined.CardGiftcard,null,tint=white,
+                                modifier=Modifier.size(29.dp))}){
+                            page="gift"
+                        }
                         SlateCard{
                             Row(verticalAlignment=Alignment.CenterVertically){
                                 Icon(Icons.Outlined.SupportAgent,null,tint=white)
@@ -446,8 +466,8 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                                 Text(local("Soporte y facturación","Support & billing"),
                                     fontWeight=FontWeight.SemiBold,color=white)
                             }
-                            Text(local("Tu cuenta mostrará los pedidos, recibos, saldos, vigencias y claves cuando el servidor comercial esté habilitado.",
-                                "Your account will display orders, receipts, balances, terms and keys when commerce services are enabled."),
+                            Text(local("Gestiona tus compras y beneficios desde Mi cuenta.",
+                                "Manage purchases and benefits in My account."),
                                 color=muted,fontSize=13.sp)
                         }
                     }
@@ -504,7 +524,8 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                         scope.launch{accountSnapshot=auth.account()}
                     })
                 "security" -> CommerceSecurityPage(language,CommerceSession.user,
-                    onEdit={page="profile-edit"},
+                    hasPassword=accountSnapshot?.optJSONObject("user")?.optBoolean("hasPassword")==true,
+                    onEdit={page="profile-edit"},onPassword={page="password"},
                     onSignOut={
                         scope.launch{
                             runCatching{auth.signOut()}
@@ -514,6 +535,11 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                     })
                 "ad-free" -> CommerceAdFreePage(language,
                     onExplore={page="store";detail="ads"})
+                "password" -> CommercePasswordPage(language,auth,CommerceSession.user,
+                    hasPassword=accountSnapshot?.optJSONObject("user")?.optBoolean("hasPassword")==true,
+                    onSaved={accountSnapshot=it;page="security"})
+                "gift" -> CommerceGiftRedeemPage(language,auth,
+                    onSignIn={page="login"},onAccount={page="account"})
                 "profile-edit" -> {
                     CommerceProfileEditor(language=language,auth=auth,
                         user=CommerceSession.user,onCancel={page="account"},
@@ -521,6 +547,40 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                             accountSnapshot=updated
                             page="account"
                         })
+                }
+                "email-login" -> {
+                    Text(local("Iniciar sesión con correo","Sign in with email"),
+                        color=white,fontSize=27.sp,fontWeight=FontWeight.Bold)
+                    SlateCard {
+                        OutlinedTextField(email,{email=it.take(254)},
+                            modifier=Modifier.fillMaxWidth(),singleLine=true,
+                            label={Text(local("Correo electrónico","Email address"))},
+                            colors=OutlinedTextFieldDefaults.colors(
+                                focusedTextColor=white,unfocusedTextColor=white))
+                        OutlinedTextField(emailPassword,{emailPassword=it.take(128)},
+                            modifier=Modifier.fillMaxWidth(),singleLine=true,
+                            visualTransformation=PasswordVisualTransformation(),
+                            label={Text(local("Contraseña","Password"))},
+                            colors=OutlinedTextFieldDefaults.colors(
+                                focusedTextColor=white,unfocusedTextColor=white))
+                        if(notice!=null)Note(notice.orEmpty())
+                        PrimaryAction(local("Iniciar sesión","Sign in"),
+                            enabled=!signingIn&&email.contains("@")&&emailPassword.isNotEmpty()){
+                            scope.launch{
+                                signingIn=true;notice=null
+                                try {
+                                    accountSnapshot=auth.signInWithEmail(email,emailPassword)
+                                    emailPassword=""
+                                    page="account"
+                                }catch(e:kotlinx.coroutines.CancellationException){throw e}
+                                catch(_:Exception){
+                                    notice=local("Credenciales incorrectas o cuenta no disponible.",
+                                        "Invalid credentials or account unavailable.")
+                                }finally{signingIn=false}
+                            }
+                        }
+                        if(signingIn)LinearProgressIndicator(Modifier.fillMaxWidth(),color=white)
+                    }
                 }
                 "login" -> {
                     Column(Modifier.fillMaxWidth().padding(top=22.dp,bottom=12.dp),
@@ -576,6 +636,13 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                         }
                         CommerceConsentRow(language,acceptedPolicies,
                             onAccepted={acceptedPolicies=it},onLegalLink=onLegalLink)
+                        OutlinedButton(onClick={page="email-login"},
+                            modifier=Modifier.fillMaxWidth()){
+                            Icon(Icons.Outlined.MailOutline,null,tint=white)
+                            Spacer(Modifier.width(10.dp))
+                            Text(local("Entrar con correo y contraseña",
+                                "Sign in with email and password"),color=white)
+                        }
                         Note(local("La cuenta se verifica mediante Google. Tus datos y compras quedan protegidos.",
                             "Google verifies your identity. Your account and purchases stay protected."))
                         if(signingIn) LinearProgressIndicator(

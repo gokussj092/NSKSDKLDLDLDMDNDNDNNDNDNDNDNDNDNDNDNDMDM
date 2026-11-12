@@ -249,7 +249,7 @@ internal fun CommerceApiPage(language:String,snapshot:JSONObject?,
 
 @Composable
 internal fun CommerceSecurityPage(language:String,user:CommerceIdentity?,
-    onEdit:()->Unit,onSignOut:()->Unit){
+    hasPassword:Boolean,onEdit:()->Unit,onPassword:()->Unit,onSignOut:()->Unit){
     val tr:(String)->String={CommerceAccountWords.get(language,it)}
     Text(tr("Account security"),fontSize=28.sp,fontWeight=FontWeight.Bold,color=foreground)
     SectionCard {
@@ -264,6 +264,12 @@ internal fun CommerceSecurityPage(language:String,user:CommerceIdentity?,
         Text(CommerceI18n.translate(language,"Autenticación con Google",
             "Google authentication"),color=accent,fontSize=12.sp)
     }
+    SectionButton(if(hasPassword)
+            CommerceSecurityText.get(language,"Change password")
+        else CommerceSecurityText.get(language,"Add password"),
+        CommerceSecurityText.get(language,"Email sign-in"),
+        Icons.Outlined.Lock,onPassword)
+    CommerceDeviceAccountSettings(language)
     SectionButton(CommerceProfileText.get(language,"Edit profile"),
         tr("Manage account"),Icons.Outlined.Edit,onEdit)
     OutlinedButton(onClick=onSignOut,modifier=Modifier.fillMaxWidth()){

@@ -9,6 +9,24 @@ on:
       - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/V2BoxPasswordProbe.kt
       - cloud/workers/python/v2box_bridge.py
       - cloud/workers/python/Dockerfile
+      - cloud/web/lib/commerce/gifts.mjs
+      - cloud/web/lib/commerce/auth.mjs
+      - cloud/web/lib/commerce/api.mjs
+      - cloud/web/app/api/admin/gifts/route.js
+      - cloud/web/app/api/account/password/route.js
+      - cloud/web/app/api/store/redeem/route.js
+      - cloud/web/sql/003_ads_free.sql
+      - cloud/web/sql/004_gifts.sql
+      - cloud/web/scripts/commerce-migrate.mjs
+      - cloud/web/app/admin/admin-gifts.jsx
+      - cloud/web/app/admin/gifts/page.jsx
+      - cloud/web/app/admin/admin-store.jsx
+      - cloud/web/app/admin/admin-nav.jsx
+      - cloud/web/app/admin/admin-theme.css
+      - cloud/web/tests/gifts.test.mjs
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceSecurityTools.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/NativeDeviceAccountGuard.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceGiftRedeemPage.kt
       - decoders/Python/v2box_export.py
       - tests/test_v2box_password.py
       - android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceProfile.kt
@@ -70,6 +88,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -97,6 +118,11 @@ jobs:
         run: |
           set -euo pipefail
           node --check cloud/web/lib/commerce/auth.mjs
+          node --check cloud/web/lib/commerce/gifts.mjs
+          node --check cloud/web/scripts/commerce-migrate.mjs
+          node --check cloud/web/app/api/admin/gifts/route.js
+          node --check cloud/web/app/api/account/password/route.js
+          node --check cloud/web/app/api/store/redeem/route.js
           node --check cloud/web/lib/commerce/catalog.mjs
           node --check cloud/web/lib/commerce/orders.mjs
           node --check cloud/web/lib/commerce/api.mjs
@@ -127,6 +153,11 @@ jobs:
           assert.throws(()=>validatePurchase({...input,product:'ads-free',term:'3m'}));
           console.log('PASS: commercial API IP and 30-day ad-free purchase contracts');
           JS
+      - name: Gift redemption, password configuration and PostgreSQL compatibility
+        run: |
+          set -euo pipefail
+          npm ci --prefix cloud/web --no-audit --no-fund
+          node --test cloud/web/tests/gifts.test.mjs
       - name: Android SDK / NDK
         run: |
           set -euo pipefail

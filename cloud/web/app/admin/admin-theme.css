@@ -392,3 +392,27 @@ body:has(.sp-admin-frame){background:#000;color:#f7f7f7}
 .sp-cleanup-secondary{background:#243855!important;color:#e8f3ff!important;border:1px solid #6684b2!important}
 @media(max-width:870px){.sp-admin-cleanup-items{grid-template-columns:1fr}.sp-admin-credit-prices{grid-template-columns:1fr}}
 @media(max-width:600px){.sp-admin-commerce-hero{padding:22px}.sp-admin-commerce-hero img{width:43px;height:43px}.sp-admin-cleanup-stats{grid-template-columns:1fr}.sp-admin-cleanup-controls{grid-template-columns:1fr}.sp-admin-cleanup-panel{padding:19px!important}.sp-admin-credit-pack .sp-admin-price-fields{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+/* Gift code management, matching the existing AMOLED commerce design. */
+.sp-gifts-admin .sp-gift-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:end}
+.sp-gifts-admin .sp-gift-form label{display:grid;gap:7px;color:#d6e2f1;font-size:13px}
+.sp-gifts-admin .sp-gift-form input,.sp-gifts-admin .sp-gift-form select{
+ background:#121722;border:1px solid #526276;border-radius:11px;color:#f4f7ff;
+ padding:13px;min-width:0;max-width:100%}
+.sp-gifts-admin .sp-gift-form .button{align-self:end}
+.sp-gifts-admin .sp-gift-list{display:grid;gap:11px;margin-top:17px}
+.sp-gifts-admin .sp-gift-row{display:flex;justify-content:space-between;gap:20px;
+ align-items:center;background:#161d29;border:1px solid #35455b;border-radius:15px;padding:15px}
+.sp-gifts-admin .sp-gift-row p{margin:6px 0}
+.sp-gifts-admin .sp-gift-row small{overflow-wrap:anywhere}
+.sp-gifts-admin .sp-gift-row>div:last-child{text-align:right;display:grid;gap:8px}
+.sp-gifts-admin .sp-gift-account{display:flex;gap:12px;align-items:center;min-width:0}
+.sp-gifts-admin .sp-gift-avatar{width:47px;height:47px;min-width:47px;border-radius:50%;
+ object-fit:cover;border:1px solid #5b7792}
+.sp-gifts-admin .sp-gift-initial{background:#223348;color:#fff;display:grid;place-items:center}
+.sp-gifts-admin .sp-gift-live{color:#a4e0b6}.sp-gifts-admin .sp-gift-off{color:#e6b4b4}
+.sp-gifts-admin .sp-gift-code{display:flex;gap:13px;align-items:center;flex-wrap:wrap}
+.sp-gifts-admin .sp-gift-code code{font-size:17px;letter-spacing:.06em;overflow-wrap:anywhere}
+@media(max-width:650px){.sp-gifts-admin .sp-gift-form{grid-template-columns:1fr}
+ .sp-gifts-admin .sp-gift-row{align-items:flex-start;flex-direction:column}
+ .sp-gifts-admin .sp-gift-row>div:last-child{text-align:left}}

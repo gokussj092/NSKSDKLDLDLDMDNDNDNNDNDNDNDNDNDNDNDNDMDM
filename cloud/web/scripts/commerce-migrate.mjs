@@ -10,13 +10,14 @@ try{
   const migration=await getMigrations(auth.options);
   if(!process.argv.includes('--apply')){
     console.log(JSON.stringify({authTablesToCreate:migration.toBeCreated.map(x=>x.table),
-      authTablesToUpdate:migration.toBeAdded.map(x=>x.table),shopMigration:'002_shop.sql',applied:false}));
+      authTablesToUpdate:migration.toBeAdded.map(x=>x.table),shopMigrations:['002_shop.sql','003_ads_free.sql','004_gifts.sql'],applied:false}));
   }else{
     await migration.runMigrations();
     // PostgreSQL advisory lock prevents competing migration processes.
     const client=await db.connect();
     try{await client.query('BEGIN');await client.query('SELECT pg_advisory_xact_lock(783441002)');
-      await client.query(await readFile(new URL('../sql/002_shop.sql',import.meta.url),'utf8'));
+      for(const filename of ['002_shop.sql','003_ads_free.sql','004_gifts.sql'])
+        await client.query(await readFile(new URL('../sql/'+filename,import.meta.url),'utf8'));
       await client.query('COMMIT');console.log('Commerce schema applied; existing product settings preserved.');
     }catch(e){await client.query('ROLLBACK');throw e;}finally{client.release();}
   }
