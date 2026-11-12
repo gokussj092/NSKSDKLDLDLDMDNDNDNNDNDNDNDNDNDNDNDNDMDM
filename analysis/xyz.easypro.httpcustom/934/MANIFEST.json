@@ -1,0 +1,452 @@
+{
+  "schema_version": 1,
+  "package_name": "xyz.easypro.httpcustom",
+  "app_name": "HTTP Custom",
+  "version_name": "8.0.22 - Patch 2",
+  "version_code": 934,
+  "observed_at": "2026-11-12T01:24:00Z",
+  "source_category": "owner_supplied_authorized_archive_and_samples",
+  "authorization_note": "Owner requested analysis and supplied test profiles and credentials; original bytes and credentials are excluded from Git.",
+  "status": "PENDING",
+  "targets": [
+    {
+      "kind": "files",
+      "extensions": [
+        ".hc"
+      ],
+      "formats": [
+        "HCX4/HCCFG 12/n15",
+        "HCX4/HCCFG 12/n16",
+        "HCX4/HCCFG 13/n18",
+        "HCCFG wrapper 9/access ID"
+      ],
+      "status": "PENDING",
+      "real_full_json_successes": 0,
+      "real_samples": 9
+    },
+    {
+      "kind": "text",
+      "format": "eprdv.link reference",
+      "status": "PENDING",
+      "observed_response": "HTTP 200 HTML landing page; no binary configuration downloaded"
+    }
+  ],
+  "inputs": [
+    {
+      "sha256": "9b17487f3999a7145ffb8f9515a828aaa35ad196d87ac64e83a8f14144e46d24",
+      "bytes": 34877353,
+      "apks": [
+        {
+          "name": "base.apk",
+          "bytes": 13164196,
+          "sha256": "d0a8c1ae3d8a490d10ac128be8a63a9cf8bdf4eb8186f3ab7f2c1bbe66f117b7",
+          "identity": {
+            "versionCode": 934,
+            "versionName": "8.0.22 - Patch 2",
+            "package": "xyz.easypro.httpcustom"
+          },
+          "libraries": []
+        },
+        {
+          "name": "split_config.arm64_v8a.apk",
+          "bytes": 28750812,
+          "sha256": "7f0cf08af562a2fbcb753775ea27cef8e8e17537d6d7bdc8738fe6a70d2a1610",
+          "identity": {
+            "versionCode": 934,
+            "package": "xyz.easypro.httpcustom"
+          },
+          "libraries": [
+            {
+              "path": "lib/arm64-v8a/libaio.so",
+              "bytes": 42633928,
+              "sha256": "28f0452a88d0e92619bce6ff83da9e87e11a954243311b6497e705ae8e5cfa0e"
+            },
+            {
+              "path": "lib/arm64-v8a/libandroidx.graphics.path.so",
+              "bytes": 10096,
+              "sha256": "41e9a793c43a0f4fddb19e33f346bace464f30f888ba7b9eaf96294ea115bfb6"
+            },
+            {
+              "path": "lib/arm64-v8a/libcodec.so",
+              "bytes": 114504,
+              "sha256": "f0ea17c7f0885c3f125dc6cbd11502d318db6ecc76dd91c672bfab0312f21737"
+            },
+            {
+              "path": "lib/arm64-v8a/libdatastore_shared_counter.so",
+              "bytes": 7784,
+              "sha256": "178f89a2c6c9234ddf980dd4cd1f3616186a46b2b932aafa6707abd04c5fd76a"
+            },
+            {
+              "path": "lib/arm64-v8a/libf2c.so",
+              "bytes": 15562432,
+              "sha256": "bc2262ec53b4f4312341bc2eca3dbe1ec826834fc98768c1e2b1acbc34d15308"
+            },
+            {
+              "path": "lib/arm64-v8a/libhev-socks5-tunnel.so",
+              "bytes": 333320,
+              "sha256": "b0cf8b2bfe34f23c8c0bbd231ee5eb864c541880edfa329612a91a2f152a1ead"
+            },
+            {
+              "path": "lib/arm64-v8a/liblitevpn.so",
+              "bytes": 6775184,
+              "sha256": "f11f2b0c0e6d6c70a631e466da3a6016184910ffd64764526809ccb04602cabe"
+            },
+            {
+              "path": "lib/arm64-v8a/libpolicy.so",
+              "bytes": 236696,
+              "sha256": "ab87a6dc104834005bbf1273eccc3bfef64d0b6c7d9e1c7e90d614e190d90361"
+            },
+            {
+              "path": "lib/arm64-v8a/libruntime.so",
+              "bytes": 6797136,
+              "sha256": "06cf083434ca2df73b00940faecd1053605222566fb6dac8fbe3ee6ce4665785"
+            },
+            {
+              "path": "lib/arm64-v8a/libsqlcipher.so",
+              "bytes": 2275368,
+              "sha256": "ca99ae45fa24be140a77c7bfd1728b282f4f2b8798fde4ed51821f89022b15ee"
+            },
+            {
+              "path": "lib/arm64-v8a/libtun2socks.so",
+              "bytes": 203584,
+              "sha256": "fe2e9d5ab7671996b28d481236791ad3c5d55fb8580cad322f723716693ef131"
+            }
+          ]
+        },
+        {
+          "name": "split_config.xhdpi.apk",
+          "bytes": 40815,
+          "sha256": "0982b99c269ded060533ea6c516b3035dd81248f19b6e37afd2eacc9bad32550",
+          "identity": {
+            "versionCode": 934,
+            "package": "xyz.easypro.httpcustom"
+          },
+          "libraries": []
+        }
+      ]
+    },
+    {
+      "name": "Test bloquear usuário y contraseña.hc",
+      "bytes": 6309,
+      "sha256": "8de37c01d4769fd159cccc8885b224b1297d1afe6d3abecb4210cd1a586a9003",
+      "outer_authenticated": true,
+      "metadata": {
+        "a": "HCCFG",
+        "b": 12,
+        "e": "n15",
+        "h": 0,
+        "n": 934
+      },
+      "section_count": 2,
+      "hwid_slot_count": 0,
+      "extra_protection_shape": [],
+      "access_wrapper": false
+    },
+    {
+      "name": "Test bloqueo ID de acceso.hc",
+      "bytes": 16231,
+      "sha256": "8c9916bd53b2e38ac1f7b723054cd75ac3729697c0dd92763148f7f63fe44684",
+      "outer_authenticated": true,
+      "metadata": {
+        "a": "HCCFG",
+        "b": 9,
+        "n": 934
+      },
+      "section_count": 0,
+      "hwid_slot_count": 0,
+      "extra_protection_shape": [],
+      "access_wrapper": true
+    },
+    {
+      "name": "Test bloqueo de operador.hc",
+      "bytes": 6432,
+      "sha256": "0cbeb11e5fc6dce179bf796f1836f3bd5b427f9f719708258ccb5282d9c8f17d",
+      "outer_authenticated": true,
+      "metadata": {
+        "a": "HCCFG",
+        "b": 12,
+        "e": "n15",
+        "h": 1,
+        "n": 934,
+        "k": "a1",
+        "l": 2,
+        "m": 67108864
+      },
+      "section_count": 2,
+      "hwid_slot_count": 0,
+      "extra_protection_shape": [],
+      "access_wrapper": false
+    },
+    {
+      "name": "Test bloqueo de root.hc",
+      "bytes": 6365,
+      "sha256": "34b53d7698381e39cf9ea001e74fe53a8f5bd036cb54a08b7bcb1d10d1886ba3",
+      "outer_authenticated": true,
+      "metadata": {
+        "a": "HCCFG",
+        "b": 12,
+        "e": "n15",
+        "h": 1,
+        "n": 934,
+        "k": "a1",
+        "l": 2,
+        "m": 67108864
+      },
+      "section_count": 2,
+      "hwid_slot_count": 0,
+      "extra_protection_shape": [],
+      "access_wrapper": false
+    },
+    {
+      "name": "Test bloqueo de root2.hc",
+      "bytes": 6385,
+      "sha256": "f1a50cf72b92fcdd389b7a6fd912153c67ee15270d859789b79543eadb5be195",
+      "outer_authenticated": true,
+      "metadata": {
+        "a": "HCCFG",
+        "b": 12,
+        "e": "n15",
+        "h": 0,
+        "n": 934
+      },
+      "section_count": 2,
+      "hwid_slot_count": 0,
+      "extra_protection_shape": [],
+      "access_wrapper": false
+    },
+    {
+      "name": "Test bloqueo inicio de sesión con hwid.hc",
+      "bytes": 6353,
+      "sha256": "4d8aa08d8be5d86e96af3c81d3db5a4b64e31ed2b5d67778149b4301959972e5",
+      "outer_authenticated": true,
+      "metadata": {
+        "a": "HCCFG",
+        "b": 12,
+        "e": "n15",
+        "h": 0,
+        "n": 934
+      },
+      "section_count": 2,
+      "hwid_slot_count": 0,
+      "extra_protection_shape": [],
+      "access_wrapper": false
+    },
+    {
+      "name": "Test bloqueo password y hwid.hc",
+      "bytes": 6784,
+      "sha256": "5eb097e70c0d779742d226f19c2e6d9f0a24e443f76b59a15c439ec841eda849",
+      "outer_authenticated": true,
+      "metadata": {
+        "a": "HCCFG",
+        "b": 12,
+        "e": "n16",
+        "h": 1,
+        "n": 934,
+        "k": "a1",
+        "l": 2,
+        "m": 67108864
+      },
+      "section_count": 2,
+      "hwid_slot_count": 1,
+      "extra_protection_shape": [],
+      "access_wrapper": false
+    },
+    {
+      "name": "Test desbloqueo payload.hc",
+      "bytes": 5263,
+      "sha256": "33cee484e9f2227e28fcf39a05091d20a4d1b160cd3a5945f3807aaccf10577e",
+      "outer_authenticated": true,
+      "metadata": {
+        "a": "HCCFG",
+        "b": 12,
+        "e": "n15",
+        "h": 0,
+        "n": 934
+      },
+      "section_count": 2,
+      "hwid_slot_count": 0,
+      "extra_protection_shape": [],
+      "access_wrapper": false
+    },
+    {
+      "name": "Test hwid.hc",
+      "bytes": 7576,
+      "sha256": "caf11ca2623cd6d41c2860b6742b7f86f7d6aa3437492df5f5e0cceff2075b87",
+      "outer_authenticated": true,
+      "metadata": {
+        "a": "HCCFG",
+        "b": 13,
+        "e": "n18",
+        "h": 0,
+        "n": 934
+      },
+      "section_count": 2,
+      "hwid_slot_count": 1,
+      "extra_protection_shape": [
+        "a",
+        "b",
+        "c"
+      ],
+      "access_wrapper": false
+    }
+  ],
+  "tooling": [
+    {
+      "path": "analysis/xyz.easypro.httpcustom/934/tools/decode_strings.py",
+      "version": "research snapshot"
+    },
+    {
+      "path": "analysis/xyz.easypro.httpcustom/934/tools/extract_apks.py",
+      "version": "research snapshot"
+    },
+    {
+      "path": "analysis/xyz.easypro.httpcustom/934/tools/inspect_access_wrapper.py",
+      "version": "research snapshot"
+    },
+    {
+      "path": "analysis/xyz.easypro.httpcustom/934/tools/inventory.py",
+      "version": "research snapshot"
+    },
+    {
+      "path": "analysis/xyz.easypro.httpcustom/934/tools/jni_format_probe.py",
+      "version": "research snapshot"
+    },
+    {
+      "path": "analysis/xyz.easypro.httpcustom/934/tools/preambles.py",
+      "version": "research snapshot"
+    },
+    {
+      "path": "analysis/xyz.easypro.httpcustom/934/tools/probe_existing_schedule.py",
+      "version": "research snapshot"
+    },
+    {
+      "path": "analysis/xyz.easypro.httpcustom/934/tools/probe_kdf.py",
+      "version": "research snapshot"
+    },
+    {
+      "path": "analysis/xyz.easypro.httpcustom/934/tools/unseal.py",
+      "version": "research snapshot"
+    },
+    {
+      "path": "analysis/xyz.easypro.httpcustom/934/tools/verify_private.py",
+      "version": "research snapshot"
+    },
+    {
+      "name": "JADX",
+      "version": "1.5.3",
+      "decompilation_errors": 55
+    },
+    {
+      "name": "shared isolated ARM64 emulator",
+      "path": "scripts/apk_analysis/arm64_function.py",
+      "base_commit": "932667d54a6ab12ae8c1834e9305ef8671a4f5c1"
+    },
+    {
+      "name": "shared ELF inspection",
+      "path": "scripts/apk_analysis/elf_inspect.py",
+      "base_commit": "932667d54a6ab12ae8c1834e9305ef8671a4f5c1"
+    },
+    {
+      "path": "analysis/xyz.easypro.httpcustom/934/tools/static_probe.py",
+      "version": "research snapshot"
+    }
+  ],
+  "dependencies": [
+    {
+      "id": "pycryptodome",
+      "version": "3.23.0",
+      "source": "https://pypi.org/project/pycryptodome/3.23.0/",
+      "lockfile": "analysis/xyz.easypro.httpcustom/934/dependencies.lock.json",
+      "review": "RESEARCH_ONLY"
+    },
+    {
+      "id": "argon2-cffi",
+      "version": "25.1.0",
+      "source": "https://pypi.org/project/argon2-cffi/25.1.0/",
+      "lockfile": "analysis/xyz.easypro.httpcustom/934/dependencies.lock.json",
+      "review": "RESEARCH_ONLY"
+    },
+    {
+      "id": "argon2-cffi-bindings",
+      "version": "26.1.0",
+      "source": "https://pypi.org/project/argon2-cffi-bindings/26.1.0/",
+      "lockfile": "analysis/xyz.easypro.httpcustom/934/dependencies.lock.json",
+      "review": "RESEARCH_ONLY"
+    },
+    {
+      "id": "cffi",
+      "version": "2.1.1",
+      "source": "https://pypi.org/project/cffi/2.1.1/",
+      "lockfile": "analysis/xyz.easypro.httpcustom/934/dependencies.lock.json",
+      "review": "RESEARCH_ONLY"
+    },
+    {
+      "id": "pycparser",
+      "version": "3.12",
+      "source": "https://pypi.org/project/pycparser/3.12/",
+      "lockfile": "analysis/xyz.easypro.httpcustom/934/dependencies.lock.json",
+      "review": "RESEARCH_ONLY"
+    },
+    {
+      "id": "unicorn",
+      "version": "2.1.4",
+      "source": "https://pypi.org/project/unicorn/2.1.4/",
+      "lockfile": "analysis/xyz.easypro.httpcustom/934/dependencies.lock.json",
+      "review": "RESEARCH_ONLY"
+    },
+    {
+      "id": "capstone",
+      "version": "5.0.7",
+      "source": "https://pypi.org/project/capstone/5.0.7/",
+      "lockfile": "analysis/xyz.easypro.httpcustom/934/dependencies.lock.json",
+      "review": "RESEARCH_ONLY"
+    },
+    {
+      "id": "pyelftools",
+      "version": "0.32",
+      "source": "https://pypi.org/project/pyelftools/0.32/",
+      "lockfile": "analysis/xyz.easypro.httpcustom/934/dependencies.lock.json",
+      "review": "RESEARCH_ONLY"
+    }
+  ],
+  "code_paths": [
+    "decoders/Python/apps/HTTP_Custom/codec.py",
+    "decoders/Python/apps/HTTP_Custom/file_decoder.py",
+    "cloud/workers/python/hc_bridge.py"
+  ],
+  "evidence_refs": [
+    "analysis/xyz.easypro.httpcustom/934/generated/inventory.json",
+    "analysis/xyz.easypro.httpcustom/934/generated/real_validation.json",
+    "analysis/xyz.easypro.httpcustom/934/generated/access_wrapper.json",
+    "analysis/xyz.easypro.httpcustom/934/tests/test_method.py",
+    "analysis/xyz.easypro.httpcustom/934/RESULTS.md"
+  ],
+  "signer_certificate_sha256": "95dd433d7e4a0be02d55cc62553edcfc8f077fe780be5a7da7f861c2558dc181",
+  "apk_signature_cryptographic_verification": "NOT_RUN",
+  "connection_authentication": {
+    "status": "UNCONFIRMED",
+    "algorithm": null,
+    "scope": "VPN connection authentication not exercised",
+    "material_provenance": "No service authentication secrets collected",
+    "verifier_observed": false
+  },
+  "limitations": [
+    "No new payload fully authenticated; reader not updated for these formats.",
+    "Modeled JNI calls and offline initializer memory do not certify an Android import or a new KDF.",
+    "Access ID is a public recipient identifier, not a private RSA key.",
+    "Extra-protection activation has not been observed on the original recipient device.",
+    "No ADB, Android emulator, or KVM device available."
+  ],
+  "network_requirements": [
+    "Anonymous landing-page GET only was performed; no activation, integrity assertion, session or API-key request was made."
+  ],
+  "manual_steps": [
+    "Observe an authorized original-app import on a suitable device and compare full plaintext/codec inputs with the new engine."
+  ],
+  "unresolved_questions": [
+    "Full n15/n16 key-session derivation and section authentication",
+    "Original-device access-ID unwrap contract",
+    "Extra-protection grant and local activation cache",
+    "Actual eprdv.link configuration retrieval protocol"
+  ]
+}

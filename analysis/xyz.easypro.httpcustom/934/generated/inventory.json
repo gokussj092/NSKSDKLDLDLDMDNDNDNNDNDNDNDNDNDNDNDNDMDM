@@ -1,0 +1,263 @@
+{
+  "samples": [
+    {
+      "name": "Test bloquear usuário y contraseña.hc",
+      "bytes": 6309,
+      "sha256": "8de37c01d4769fd159cccc8885b224b1297d1afe6d3abecb4210cd1a586a9003",
+      "outer_authenticated": true,
+      "metadata": {
+        "a": "HCCFG",
+        "b": 12,
+        "e": "n15",
+        "h": 0,
+        "n": 934
+      },
+      "section_count": 2,
+      "hwid_slot_count": 0,
+      "extra_protection_shape": [],
+      "access_wrapper": false
+    },
+    {
+      "name": "Test bloqueo ID de acceso.hc",
+      "bytes": 16231,
+      "sha256": "8c9916bd53b2e38ac1f7b723054cd75ac3729697c0dd92763148f7f63fe44684",
+      "outer_authenticated": true,
+      "metadata": {
+        "a": "HCCFG",
+        "b": 9,
+        "n": 934
+      },
+      "section_count": 0,
+      "hwid_slot_count": 0,
+      "extra_protection_shape": [],
+      "access_wrapper": true
+    },
+    {
+      "name": "Test bloqueo de operador.hc",
+      "bytes": 6432,
+      "sha256": "0cbeb11e5fc6dce179bf796f1836f3bd5b427f9f719708258ccb5282d9c8f17d",
+      "outer_authenticated": true,
+      "metadata": {
+        "a": "HCCFG",
+        "b": 12,
+        "e": "n15",
+        "h": 1,
+        "n": 934,
+        "k": "a1",
+        "l": 2,
+        "m": 67108864
+      },
+      "section_count": 2,
+      "hwid_slot_count": 0,
+      "extra_protection_shape": [],
+      "access_wrapper": false
+    },
+    {
+      "name": "Test bloqueo de root.hc",
+      "bytes": 6365,
+      "sha256": "34b53d7698381e39cf9ea001e74fe53a8f5bd036cb54a08b7bcb1d10d1886ba3",
+      "outer_authenticated": true,
+      "metadata": {
+        "a": "HCCFG",
+        "b": 12,
+        "e": "n15",
+        "h": 1,
+        "n": 934,
+        "k": "a1",
+        "l": 2,
+        "m": 67108864
+      },
+      "section_count": 2,
+      "hwid_slot_count": 0,
+      "extra_protection_shape": [],
+      "access_wrapper": false
+    },
+    {
+      "name": "Test bloqueo de root2.hc",
+      "bytes": 6385,
+      "sha256": "f1a50cf72b92fcdd389b7a6fd912153c67ee15270d859789b79543eadb5be195",
+      "outer_authenticated": true,
+      "metadata": {
+        "a": "HCCFG",
+        "b": 12,
+        "e": "n15",
+        "h": 0,
+        "n": 934
+      },
+      "section_count": 2,
+      "hwid_slot_count": 0,
+      "extra_protection_shape": [],
+      "access_wrapper": false
+    },
+    {
+      "name": "Test bloqueo inicio de sesión con hwid.hc",
+      "bytes": 6353,
+      "sha256": "4d8aa08d8be5d86e96af3c81d3db5a4b64e31ed2b5d67778149b4301959972e5",
+      "outer_authenticated": true,
+      "metadata": {
+        "a": "HCCFG",
+        "b": 12,
+        "e": "n15",
+        "h": 0,
+        "n": 934
+      },
+      "section_count": 2,
+      "hwid_slot_count": 0,
+      "extra_protection_shape": [],
+      "access_wrapper": false
+    },
+    {
+      "name": "Test bloqueo password y hwid.hc",
+      "bytes": 6784,
+      "sha256": "5eb097e70c0d779742d226f19c2e6d9f0a24e443f76b59a15c439ec841eda849",
+      "outer_authenticated": true,
+      "metadata": {
+        "a": "HCCFG",
+        "b": 12,
+        "e": "n16",
+        "h": 1,
+        "n": 934,
+        "k": "a1",
+        "l": 2,
+        "m": 67108864
+      },
+      "section_count": 2,
+      "hwid_slot_count": 1,
+      "extra_protection_shape": [],
+      "access_wrapper": false
+    },
+    {
+      "name": "Test desbloqueo payload.hc",
+      "bytes": 5263,
+      "sha256": "33cee484e9f2227e28fcf39a05091d20a4d1b160cd3a5945f3807aaccf10577e",
+      "outer_authenticated": true,
+      "metadata": {
+        "a": "HCCFG",
+        "b": 12,
+        "e": "n15",
+        "h": 0,
+        "n": 934
+      },
+      "section_count": 2,
+      "hwid_slot_count": 0,
+      "extra_protection_shape": [],
+      "access_wrapper": false
+    },
+    {
+      "name": "Test hwid.hc",
+      "bytes": 7576,
+      "sha256": "caf11ca2623cd6d41c2860b6742b7f86f7d6aa3437492df5f5e0cceff2075b87",
+      "outer_authenticated": true,
+      "metadata": {
+        "a": "HCCFG",
+        "b": 13,
+        "e": "n18",
+        "h": 0,
+        "n": 934
+      },
+      "section_count": 2,
+      "hwid_slot_count": 1,
+      "extra_protection_shape": [
+        "a",
+        "b",
+        "c"
+      ],
+      "access_wrapper": false
+    }
+  ],
+  "archives": [
+    {
+      "sha256": "9b17487f3999a7145ffb8f9515a828aaa35ad196d87ac64e83a8f14144e46d24",
+      "bytes": 34877353,
+      "apks": [
+        {
+          "name": "base.apk",
+          "bytes": 13164196,
+          "sha256": "d0a8c1ae3d8a490d10ac128be8a63a9cf8bdf4eb8186f3ab7f2c1bbe66f117b7",
+          "identity": {
+            "versionCode": 934,
+            "versionName": "8.0.22 - Patch 2",
+            "package": "xyz.easypro.httpcustom"
+          },
+          "libraries": []
+        },
+        {
+          "name": "split_config.arm64_v8a.apk",
+          "bytes": 28750812,
+          "sha256": "7f0cf08af562a2fbcb753775ea27cef8e8e17537d6d7bdc8738fe6a70d2a1610",
+          "identity": {
+            "versionCode": 934,
+            "package": "xyz.easypro.httpcustom"
+          },
+          "libraries": [
+            {
+              "path": "lib/arm64-v8a/libaio.so",
+              "bytes": 42633928,
+              "sha256": "28f0452a88d0e92619bce6ff83da9e87e11a954243311b6497e705ae8e5cfa0e"
+            },
+            {
+              "path": "lib/arm64-v8a/libandroidx.graphics.path.so",
+              "bytes": 10096,
+              "sha256": "41e9a793c43a0f4fddb19e33f346bace464f30f888ba7b9eaf96294ea115bfb6"
+            },
+            {
+              "path": "lib/arm64-v8a/libcodec.so",
+              "bytes": 114504,
+              "sha256": "f0ea17c7f0885c3f125dc6cbd11502d318db6ecc76dd91c672bfab0312f21737"
+            },
+            {
+              "path": "lib/arm64-v8a/libdatastore_shared_counter.so",
+              "bytes": 7784,
+              "sha256": "178f89a2c6c9234ddf980dd4cd1f3616186a46b2b932aafa6707abd04c5fd76a"
+            },
+            {
+              "path": "lib/arm64-v8a/libf2c.so",
+              "bytes": 15562432,
+              "sha256": "bc2262ec53b4f4312341bc2eca3dbe1ec826834fc98768c1e2b1acbc34d15308"
+            },
+            {
+              "path": "lib/arm64-v8a/libhev-socks5-tunnel.so",
+              "bytes": 333320,
+              "sha256": "b0cf8b2bfe34f23c8c0bbd231ee5eb864c541880edfa329612a91a2f152a1ead"
+            },
+            {
+              "path": "lib/arm64-v8a/liblitevpn.so",
+              "bytes": 6775184,
+              "sha256": "f11f2b0c0e6d6c70a631e466da3a6016184910ffd64764526809ccb04602cabe"
+            },
+            {
+              "path": "lib/arm64-v8a/libpolicy.so",
+              "bytes": 236696,
+              "sha256": "ab87a6dc104834005bbf1273eccc3bfef64d0b6c7d9e1c7e90d614e190d90361"
+            },
+            {
+              "path": "lib/arm64-v8a/libruntime.so",
+              "bytes": 6797136,
+              "sha256": "06cf083434ca2df73b00940faecd1053605222566fb6dac8fbe3ee6ce4665785"
+            },
+            {
+              "path": "lib/arm64-v8a/libsqlcipher.so",
+              "bytes": 2275368,
+              "sha256": "ca99ae45fa24be140a77c7bfd1728b282f4f2b8798fde4ed51821f89022b15ee"
+            },
+            {
+              "path": "lib/arm64-v8a/libtun2socks.so",
+              "bytes": 203584,
+              "sha256": "fe2e9d5ab7671996b28d481236791ad3c5d55fb8580cad322f723716693ef131"
+            }
+          ]
+        },
+        {
+          "name": "split_config.xhdpi.apk",
+          "bytes": 40815,
+          "sha256": "0982b99c269ded060533ea6c516b3035dd81248f19b6e37afd2eacc9bad32550",
+          "identity": {
+            "versionCode": 934,
+            "package": "xyz.easypro.httpcustom"
+          },
+          "libraries": []
+        }
+      ]
+    }
+  ]
+}
