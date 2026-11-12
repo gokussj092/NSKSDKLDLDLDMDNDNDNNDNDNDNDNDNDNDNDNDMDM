@@ -1,6 +1,5 @@
 package com.ghostdeveloper.spdecode
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -142,8 +141,6 @@ internal fun SpDecodeApp(
     onApkQaRetry:()->Unit={},
 ){
     var dialog by remember{mutableStateOf<String?>(null)}
-    var creditsPage by rememberSaveable { mutableStateOf(false) }
-    BackHandler(enabled=creditsPage && activeTab==2) { creditsPage=false }
     SpDecodeAmoledTheme {
       AccountDrawer(busy,onExternalLink) { openMenu ->
         Column(
@@ -152,12 +149,7 @@ internal fun SpDecodeApp(
             BrandHeader(
                 onMenu=openMenu,
                 onSettings={onTab(4)},
-                showCreditsAction=activeTab==2 && !creditsPage,
-                showCreditsBack=activeTab==2 && creditsPage,
-                onCredits={creditsPage=true},
-                onCreditsBack={creditsPage=false},
-                showServerVpnRefresh=(activeTab==3 ||
-                    (activeTab==2 && !creditsPage)) &&
+                showServerVpnRefresh=(activeTab==3 || activeTab==2) &&
                     BuildConfig.SPDECODE_CLOUD_ENABLED,
                 refreshingServerVpn=serverVpnLoading && catalogTransfer==null,
                 enableServerVpnRefresh=!busy && !serverVpnLoading,
@@ -171,8 +163,7 @@ internal fun SpDecodeApp(
                         onDecodeCloud=onDecodeCloud,
                         highlightGuide=if(!whatsNew && !busy)guideStep else null)
                     1->HistoryScreen(session,onSelect,onDeleteSelected,onClear,onImportMultiple,onFavorite)
-                    2->if(creditsPage) ApkCreditsComingSoonScreen()
-                        else if(BuildConfig.SPDECODE_APK_QA_ENABLED)
+                    2->if(BuildConfig.SPDECODE_APK_QA_ENABLED)
                             ApkQaAnalysisScreen(apkQaRunning,apkQaPhase,apkQaReceived,
                                 apkQaTotal,apkQaReport,apkQaError,onApkQaPick,onApkQaCancel,
                                 events=apkQaEvents,sourceFilename=apkQaFilename,
@@ -195,7 +186,7 @@ internal fun SpDecodeApp(
                     CenteredFirstRunGuide(guideStep,onGuideNext,onGuideSkip)
                 }
             }
-            BottomTabs(activeTab,onTab={destination->creditsPage=false;onTab(destination)},
+            BottomTabs(activeTab,onTab=onTab,
                 spotlight=if(guideStep!=null && !whatsNew && !busy)
                     FirstRunGuide.targetTab(guideStep) else null)
         }
@@ -402,10 +393,6 @@ internal fun SpDecodeApp(
 private fun BrandHeader(
     onMenu:()->Unit={},
     onSettings:()->Unit,
-    showCreditsAction:Boolean=false,
-    showCreditsBack:Boolean=false,
-    onCredits:()->Unit={},
-    onCreditsBack:()->Unit={},
     showServerVpnRefresh:Boolean=false,
     refreshingServerVpn:Boolean=false,
     enableServerVpnRefresh:Boolean=true,
@@ -424,62 +411,28 @@ private fun BrandHeader(
         Spacer(Modifier.width(11.dp))
         Column(Modifier.weight(1f)){
             Text("SP-DECODE",color=White,
-                fontSize=if(showCreditsAction)21.sp else 23.sp,fontWeight=FontWeight.Bold,
+                fontSize=23.sp,fontWeight=FontWeight.Bold,
                 maxLines=1)
             Text(stringResource(R.string.subtitle),color=Secondary,fontSize=14.sp,
                 maxLines=1,overflow=TextOverflow.Ellipsis)
         }
         if(showServerVpnRefresh) {
-            if(showCreditsAction) {
-                // Keep the APK refresh control without squeezing the brand and Credits button.
-                IconButton(onClick=onRefreshServerVpn,
-                    enabled=enableServerVpnRefresh,
-                    modifier=Modifier.testTag("server_vpn_manual_refresh")) {
-                    if(refreshingServerVpn) CircularProgressIndicator(
-                        modifier=Modifier.size(18.dp),strokeWidth=2.dp,color=White)
-                    else Icon(Icons.Outlined.Refresh,
-                        stringResource(R.string.catalog_check_action),tint=White,
-                        modifier=Modifier.size(20.dp))
-                }
-            } else {
-                OutlinedButton(
-                    onClick=onRefreshServerVpn,enabled=enableServerVpnRefresh,
-                    modifier=Modifier.testTag("server_vpn_manual_refresh"),
-                    contentPadding=PaddingValues(horizontal=12.dp,vertical=7.dp),
-                ) {
-                    if(refreshingServerVpn) CircularProgressIndicator(
-                        modifier=Modifier.size(17.dp),strokeWidth=2.dp,color=White)
-                    else Icon(Icons.Outlined.Refresh,null,tint=White,
-                        modifier=Modifier.size(17.dp))
-                    Spacer(Modifier.width(6.dp))
-                    Text(stringResource(if(refreshingServerVpn) R.string.catalog_checking
-                        else R.string.catalog_check_action),fontSize=12.sp,color=White)
-                }
+            OutlinedButton(
+                onClick=onRefreshServerVpn,enabled=enableServerVpnRefresh,
+                modifier=Modifier.testTag("server_vpn_manual_refresh"),
+                contentPadding=PaddingValues(horizontal=12.dp,vertical=7.dp),
+            ) {
+                if(refreshingServerVpn) CircularProgressIndicator(
+                    modifier=Modifier.size(17.dp),strokeWidth=2.dp,color=White)
+                else Icon(Icons.Outlined.Refresh,null,tint=White,
+                    modifier=Modifier.size(17.dp))
+                Spacer(Modifier.width(6.dp))
+                Text(stringResource(if(refreshingServerVpn) R.string.catalog_checking
+                    else R.string.catalog_check_action),fontSize=12.sp,color=White)
             }
             Spacer(Modifier.width(4.dp))
         }
-        if(showCreditsAction) {
-            OutlinedButton(onClick=onCredits,
-                modifier=Modifier.testTag("apk_credits_open"),
-                contentPadding=PaddingValues(horizontal=8.dp,vertical=7.dp),
-                shape=RoundedCornerShape(13.dp)) {
-                Icon(Icons.Outlined.CreditCard,null,tint=White,
-                    modifier=Modifier.size(16.dp))
-                Spacer(Modifier.width(5.dp))
-                Text(stringResource(R.string.apk_credits_button),
-                    color=White,fontSize=11.sp,maxLines=1)
-            }
-        } else if(showCreditsBack) {
-            OutlinedButton(onClick=onCreditsBack,
-                modifier=Modifier.testTag("apk_credits_back"),
-                contentPadding=PaddingValues(horizontal=9.dp,vertical=7.dp)) {
-                Icon(Icons.Outlined.ArrowBack,null,tint=White,
-                    modifier=Modifier.size(17.dp))
-                Spacer(Modifier.width(5.dp))
-                Text(stringResource(R.string.apk_credits_back),
-                    color=White,fontSize=12.sp)
-            }
-        } else IconButton(onClick=onSettings){
+        IconButton(onClick=onSettings) {
             Icon(Icons.Outlined.Tune,stringResource(R.string.options),tint=Secondary)
         }
     }
