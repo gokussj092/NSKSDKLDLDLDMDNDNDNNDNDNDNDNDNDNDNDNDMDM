@@ -22,14 +22,25 @@ internal object CommerceLegalConsent {
     fun text(language:String)=buildAnnotatedString {
         val sentence=CommerceI18n.policyConsent(language)
         append(sentence)
-        val locale=language.lowercase()
-        val terms=when(locale) {
-            "ar"->"شروط"
-            "hi"->"शर्तों"
-            else->CommerceI18n.termsLabel(locale)
+        // Highlight the entire legal phrase, not just one isolated word.
+        // This avoids multiple consent paragraphs or separate legal buttons.
+        val phrases=when(language.lowercase()) {
+            "es" -> "términos del servicio" to "política de privacidad"
+            "pt" -> "termos de serviço" to "política de privacidade"
+            "fr" -> "conditions d'utilisation" to "politique de confidentialité"
+            "de" -> "Nutzungsbedingungen" to "Datenschutzerklärung"
+            "it" -> "termini di servizio" to "informativa sulla privacy"
+            "tr" -> "Hizmet şartlarını" to "gizlilik politikasını"
+            "ru" -> "условия обслуживания" to "политику конфиденциальности"
+            "ar" -> "شروط الخدمة" to "سياسة الخصوصية"
+            "fa" -> "شرایط خدمات" to "سیاست حفظ حریم خصوصی"
+            "hi" -> "सेवा की शर्तों" to "गोपनीयता नीति"
+            "ja" -> "利用規約" to "プライバシーポリシー"
+            "id","in" -> "ketentuan layanan" to "kebijakan privasi"
+            "vi" -> "điều khoản dịch vụ" to "chính sách quyền riêng tư"
+            else -> "Terms of Service" to "Privacy Policy"
         }
-        val privacy=CommerceI18n.privacyLabel(locale)
-        for((tag,term) in listOf("terms" to terms,"privacy" to privacy)) {
+        for((tag,term) in listOf("terms" to phrases.first,"privacy" to phrases.second)) {
             val index=sentence.indexOf(term,ignoreCase=true)
             if(index>=0) {
                 addStyle(SpanStyle(color=Color(0xFFE7E7E7),
