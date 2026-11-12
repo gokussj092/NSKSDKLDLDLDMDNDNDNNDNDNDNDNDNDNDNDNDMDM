@@ -16,7 +16,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -36,9 +35,9 @@ private val muted=Color(0xFFB0B0B0)
 private val stroke=Color(0xFF444444)
 private val good=Color(0xFFB8DCC0)
 
-@Composable
+// The app recreates on language changes; this helper is safe in click handlers.
 private fun local(es:String,en:String):String =
-    if(LocalConfiguration.current.locales[0].language=="es")es else en
+    if(java.util.Locale.getDefault().language=="es")es else en
 
 internal object CommercialServerIp {
     /** UI preflight only; the Node server separately checks the authoritative IP. */
