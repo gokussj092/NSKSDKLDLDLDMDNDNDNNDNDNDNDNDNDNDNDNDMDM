@@ -292,6 +292,20 @@ class AndroidUnityReleaseContract(unittest.TestCase):
                              "decrypt_credits_delete_confirm"):
                 self.assertIn(f'name="{resource}"', strings)
 
+    def test_v2box_v2_cloud_password_reuses_existing_prompt(self):
+        probe=read("android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/V2BoxPasswordProbe.kt")
+        activity=read("android/app/src/main/java/com/ghostdeveloper/spdecode/MainActivity.kt")
+        bridge=read("cloud/workers/python/v2box_bridge.py")
+        decoder=read("decoders/Python/v2box_export.py")
+        self.assertIn('header.optString("kdf")=="pbkdf2-sha256"',probe)
+        self.assertIn('header.optInt("iterations",0) in 100_000..1_200_000',probe)
+        self.assertIn("V2BoxPasswordProbe.requiresPassword(preview)",activity)
+        self.assertIn("CloudPasswordDialog(candidate.name,",activity)
+        self.assertIn('v2box_bridge.py',read("cloud/workers/python/engine.py"))
+        self.assertIn('"PASSWORD_REQUIRED"',bridge)
+        self.assertIn("hmac_hash_module=SHA256",decoder)
+        self.assertIn('cipher.update(encoded_header.encode("ascii"))',decoder)
+
     def test_profile_editor_and_session_are_native_and_server_backed(self):
         auth=read("android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceAuth.kt")
         screen=read("android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceScreens.kt")

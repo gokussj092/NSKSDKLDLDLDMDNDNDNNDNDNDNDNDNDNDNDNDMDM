@@ -75,6 +75,11 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.11.1"
+      - name: Validate V2Box v1/v2 protected exports
+        run: |
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check --no-input pycryptodome==3.23.0
+          python3 -m unittest tests.test_v2box_password -v
       - name: Version and source preflight
         run: |
           set -euo pipefail

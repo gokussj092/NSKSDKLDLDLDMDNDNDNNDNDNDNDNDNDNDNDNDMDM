@@ -19,8 +19,23 @@ internal object V2BoxPasswordProbe {
             val obj=runCatching { JSONObject(raw) }.getOrNull()
                 ?: JSONObject(String(Base64.decode(raw.filterNot{it.isWhitespace()},
                     Base64.DEFAULT),Charsets.UTF_8))
-            if(obj.optString("magic")!="v2box_export" ||
-                !obj.optBoolean("isPasswordProtected",false))return false
+            if(obj.optString("magic")!="v2box_export")return false
+            val protected=when(obj.optInt("version",-1)){
+                1 -> obj.optBoolean("isPasswordProtected",false)
+                2 -> {
+                    val encoded=obj.optString("header")
+                    if(encoded.length !in 1..4096)return false
+                    val header=JSONObject(String(Base64.decode(encoded,Base64.DEFAULT),
+                        Charsets.UTF_8))
+                    val salt=Base64.decode(header.optString("salt"),Base64.DEFAULT)
+                    header.optInt("v",-1)==2 &&
+                        header.optString("kdf")=="pbkdf2-sha256" &&
+                        header.optInt("iterations",0) in 100_000..1_200_000 &&
+                        salt.size in 16..32
+                }
+                else -> false
+            }
+            if(!protected)return false
             val nonce=Base64.decode(obj.getString("nonce"),Base64.DEFAULT)
             val tag=Base64.decode(obj.getString("tag"),Base64.DEFAULT)
             val ciphertext=Base64.decode(obj.getString("ciphertext"),Base64.DEFAULT)

@@ -127,6 +127,43 @@ def decrypt_v2box_data(encrypted_json: str, password: str = None) -> dict:
         tag = base64.b64decode(tag_b64)
         ciphertext = base64.b64decode(ciphertext_b64)
 
+        # Export v2 uses a per-file PBKDF2 key and authenticates its
+        # base64-encoded header as GCM AAD. Never try the v1 fixed key here.
+        if type(data.get("version")) is int and data["version"] == 2:
+            encoded_header = data.get("header")
+            if not isinstance(encoded_header, str) or not 0 < len(encoded_header) <= 4096:
+                return None
+            try:
+                header_bytes = base64.b64decode(encoded_header, validate=True)
+                header = json.loads(header_bytes.decode("utf-8"))
+                if not isinstance(header, dict) or header.get("v") != 2 or (
+                    header.get("kdf") != "pbkdf2-sha256"
+                ):
+                    return None
+                iterations = header.get("iterations")
+                if type(iterations) is not int or not 100_000 <= iterations <= 1_200_000:
+                    return None
+                salt_value = header.get("salt")
+                if not isinstance(salt_value, str):
+                    return None
+                salt = base64.b64decode(salt_value, validate=True)
+                if not 16 <= len(salt) <= 32:
+                    return None
+            except (UnicodeError, ValueError, TypeError, binascii.Error):
+                return None
+            if password is None:
+                return {"__need_password__": True}
+            key = PBKDF2(password.encode("utf-8"), salt, dkLen=32,
+                         count=iterations, hmac_hash_module=SHA256)
+            try:
+                cipher = AES.new(key, AES.MODE_GCM, nonce=nonce)
+                cipher.update(encoded_header.encode("ascii"))
+                plaintext = cipher.decrypt_and_verify(ciphertext, tag)
+                result = json.loads(plaintext.decode("utf-8"))
+                return result if isinstance(result, dict) else None
+            except (ValueError, TypeError, UnicodeError):
+                return None
+
         # 5. تحديد المفاتيح المناسبة حسب الكود الأصلي في dg2.java
         keys_to_try = []
 
