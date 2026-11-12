@@ -80,7 +80,7 @@ internal fun SpDecodeApp(
     selectedLanguage:String,
     hideCredentials:Boolean,
     telegramCreditUsername:String="",
-    onSaveTelegramCredit:(String)->Unit={},
+    onSaveTelegramCredit:(String)->Boolean={false},
     onLanguage:(String)->Unit,
     onMaskCredentials:(Boolean)->Unit,
     onExternalLink:(String)->Unit,
