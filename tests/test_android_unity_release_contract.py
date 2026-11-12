@@ -161,7 +161,8 @@ class AndroidUnityReleaseContract(unittest.TestCase):
         self.assertIn("AndroidKeyStore",auth)
         self.assertIn('"/api/auth/sign-in/social"',auth)
         self.assertIn('"/api/account/api-ip"',auth)
-        self.assertIn("optJSONObject(\"user\")",native)
+        profile=read("android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceProfile.kt")
+        self.assertIn('optJSONObject("user")',profile)
         for locale in ("pt","fr","de","it","ru","tr","ar","fa","hi","ja","id","vi"):
             self.assertIn('"' + locale + '" to """',langs)
         self.assertIn("internal val keys=listOf(",i18n)
