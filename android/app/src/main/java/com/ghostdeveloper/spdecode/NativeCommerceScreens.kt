@@ -81,10 +81,8 @@ internal object CommercialServerIp {
 private data class CommercialLine(val key:String,val title:String,
     val priceCents:Int,val detail:String)
 
-private data class CreditPack(val credits:Int,val priceCents:Int)
-private val creditPacks=listOf(CreditPack(1,399),CreditPack(10,3290),CreditPack(100,23900))
-private data class ApiTerm(val key:String,val days:Int,val priceCents:Int)
-private val apiTerms=listOf(ApiTerm("1m",30,599),ApiTerm("3m",90,1549),ApiTerm("12m",360,4999))
+private data class CreditPack(val id:String,val credits:Int,val priceCents:Int,val available:Boolean)
+private data class ApiTerm(val key:String,val days:Int,val priceCents:Int,val available:Boolean)
 private fun usd(cents:Int):String = "$"+(cents/100)+"."+((cents%100).toString().padStart(2,'0'))
 
 @Composable
@@ -169,6 +167,19 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit) {
     var notice by remember {mutableStateOf<String?>(null)}
     LaunchedEffect(page){if(page!="login")password=""}
     var securityDialog by remember {mutableStateOf(false)}
+    var catalog by remember {mutableStateOf<NativeStoreCatalog?>(null)}
+    var catalogLoaded by remember {mutableStateOf(false)}
+    LaunchedEffect(Unit){catalog=NativeStoreCatalog.load();catalogLoaded=true}
+    val creditPacks=catalog?.creditPacks.orEmpty().map {
+        CreditPack(it.planId,it.credits,it.priceCents,it.available)
+    }
+    val apiTerms=catalog?.apiPlans.orEmpty().map {
+        ApiTerm(it.planId,it.days,it.priceCents,it.available)
+    }
+    LaunchedEffect(creditPacks.size){if(pack !in creditPacks.indices)pack=0}
+    LaunchedEffect(apiTerms.size){if(term !in apiTerms.indices)term=0}
+    val creditSelection=creditPacks.getOrNull(pack)
+    val apiSelection=apiTerms.getOrNull(term)
     fun back(){
         when {
             page=="cart" -> {page="store";detail="home"}
@@ -233,17 +244,18 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit) {
                                             fontWeight=FontWeight.SemiBold,color=white)
                                         if(item.credits>1)Text(
                                             local("Ahorra ","Save ")+
-                                                ((100-(item.priceCents*100/(399*item.credits))).toString())+"%",
+                                                ((100-(item.priceCents*100/((creditPacks.firstOrNull{it.credits==1}?.priceCents?:item.priceCents)*item.credits))).coerceAtLeast(0).toString())+"%",
                                             color=good,fontSize=12.sp)
                                     }
                                     Text(usd(item.priceCents)+" USD",color=white)
                                 }
                             }
+                            if(creditPacks.isEmpty())Note(local("No hay paquetes USD publicados.","No published USD credit packs."))
                             HorizontalDivider(color=stroke)
                             Row(verticalAlignment=Alignment.CenterVertically){
                                 Column(Modifier.weight(1f)){
                                     Text(local("Paquetes","Packs"),color=white)
-                                    Text((creditPacks[pack].credits*quantity).toString()+" "+
+                                    Text(((creditSelection?.credits?:0)*quantity).toString()+" "+
                                         local("créditos totales","total credits"),
                                         color=muted,fontSize=12.sp)
                                 }
@@ -256,11 +268,11 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit) {
                             Row(Modifier.fillMaxWidth(),
                                 horizontalArrangement=Arrangement.SpaceBetween){
                                 Text(local("Total","Total"),color=white,fontWeight=FontWeight.Bold)
-                                Text(usd(creditPacks[pack].priceCents*quantity)+" USD",
+                                Text(creditSelection?.let{usd(it.priceCents*quantity)+" USD"}?:"—",
                                     color=white,fontSize=20.sp,fontWeight=FontWeight.Bold)
                             }
-                            PrimaryAction(local("Agregar al carrito","Add to cart")){
-                                val selected=creditPacks[pack]
+                            PrimaryAction(local("Agregar al carrito","Add to cart"),enabled=creditSelection?.available==true){
+                                val selected=creditSelection?:return@PrimaryAction
                                 lines=lines.filterNot{it.key=="analysis-credits"}+
                                     CommercialLine("analysis-credits",
                                         (selected.credits*quantity).toString()+" "+
@@ -268,8 +280,7 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit) {
                                         selected.priceCents*quantity,"")
                                 page="cart"
                             }
-                            Note(local("Precios referenciales. El servidor determinará el precio definitivo al habilitar las compras.",
-                                "Reference prices only. The server will determine prices when purchases are enabled."))
+                            Note(local("Precios USD recibidos del servidor. La compra requiere verificar la sesión y la cotización.","USD prices received from the server. Purchasing requires session and quote verification."))
                         }
                     }
                     "api" -> {
@@ -312,18 +323,19 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit) {
                                     Text(usd(item.priceCents)+" USD",color=white)
                                 }
                             }
+                            if(apiTerms.isEmpty())Note(local("No hay precios USD publicados para la API.","No published USD prices for the API."))
                             HorizontalDivider(color=stroke)
-                            Text(local("IP pública del servidor (obligatoria)",
-                                "Server public IP (required)"),color=white,fontWeight=FontWeight.Bold)
+                            Text(local("IP pública del servidor (opcional al comprar)",
+                                "Public server IP (optional at purchase)"),color=white,fontWeight=FontWeight.Bold)
                             OutlinedTextField(
                                 value=serverIp,
                                 onValueChange={serverIp=it.take(45)},
                                 singleLine=true,
                                 label={Text(local("IPv4 o IPv6 pública","Public IPv4 or IPv6"))},
-                                placeholder={Text("8.8.8.8")},
+                                placeholder={Text("195.233.233.12")},
                                 leadingIcon={Icon(Icons.Outlined.Dns,null)},
                                 isError=serverIp.isNotBlank()&&!CommercialServerIp.isPublicLiteral(serverIp),
-                                modifier=Modifier.fillMaxWidth().testTag("commerce_api_required_ip"),
+                                modifier=Modifier.fillMaxWidth().testTag("commerce_api_public_server_ip"),
                                 colors=OutlinedTextFieldDefaults.colors(
                                     focusedTextColor=white,unfocusedTextColor=white,
                                     focusedBorderColor=white,unfocusedBorderColor=stroke,
@@ -334,14 +346,14 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit) {
                                 Text(local("Introduce una IP pública válida; no se permiten IP privadas, locales ni dominios.",
                                     "Enter a valid public IP; private, local and domain values are not accepted."),
                                     color=Color(0xFFFFB9B9),fontSize=12.sp)
-                            Note(local("La clave funcionará únicamente desde esta IP. La API no se activará sin una IP válida. El servidor volverá a verificarla.",
-                                "The API key will work only from this IP. Activation requires a valid IP, verified again by the server."))
+                            Note(local("Puedes comprar sin IP y configurarla después desde Mi cuenta. La clave no funcionará sin vincular una IP pública válida. Puedes cambiarla más adelante.",
+                                "You may buy without an IP, then bind a public server IP from My account before the key can be used. You may change it later."))
                             PrimaryAction(local("Agregar API al carrito","Add API to cart"),
-                                enabled=CommercialServerIp.isPublicLiteral(serverIp)){
-                                val chosen=apiTerms[term]
+                                enabled=apiSelection?.available==true && (serverIp.isBlank()||CommercialServerIp.isPublicLiteral(serverIp))){
+                                val chosen=apiSelection?:return@PrimaryAction
                                 lines=lines.filterNot{it.key=="api-ip"}+
                                     CommercialLine("api-ip","API · "+chosen.days+" "+local("días","days"),
-                                        chosen.priceCents,serverIp)
+                                        chosen.priceCents,serverIp.trim())
                                 page="cart"
                             }
                         }
@@ -368,12 +380,8 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit) {
                                 "Applies to your active account"))
                             Note(local("No incluye créditos APK ni acceso API. No se renueva automáticamente en esta propuesta.",
                                 "Does not include APK credits or API access. No automatic renewal in this proposal."))
-                            PrimaryAction(local("Agregar por $1.00","Add for $1.00")){
-                                lines=lines.filterNot{it.key=="ads-30d"}+
-                                    CommercialLine("ads-30d",local("Sin anuncios · 30 días",
-                                        "Ad-free · 30 days"),100,"")
-                                page="cart"
-                            }
+                            // A server-backed ads-30d entitlement is not implemented.
+                            PrimaryAction(local("Próximamente","Coming soon"),enabled=false){}
                         }
                     }
                     else -> {
@@ -396,21 +404,22 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit) {
                                     modifier=Modifier.size(43.dp),tint=white)
                             }
                         }
-                        Note(local("Tienda nativa en preparación. No se admiten pagos hasta conectar el catálogo, la cuenta y la verificación del servidor.",
-                            "Native storefront in preparation. Payments remain disabled until catalog, account and server verification are connected."))
+                        Note(if(!catalogLoaded)local("Consultando precios del servidor…","Loading server prices…") else if(catalog==null)
+                            local("Catálogo no disponible. No se mostrarán precios inventados.","Catalog unavailable. No invented prices will be shown.") else
+                            local("Precios USD oficiales del servidor. El pago requiere sesión y cotización verificadas.","Official USD prices from the server. Checkout requires a verified session and quote."))
                         Text(local("Explorar productos","Browse products"),fontSize=19.sp,
                             fontWeight=FontWeight.Bold,color=white)
                         ProductTile(local("Créditos de análisis","Analysis credits"),
                             local("Análisis de APK/APKS y resultados técnicos",
                                 "APK/APKS analysis and technical results"),
-                            local("Desde $3.99 USD","From $3.99 USD"),
+                            creditPacks.minOfOrNull{it.priceCents}?.let{usd(it)+" USD"}?:local("Sin precio USD disponible","No USD price available"),
                             {Icon(Icons.Outlined.Inventory2,null,tint=white,modifier=Modifier.size(29.dp))}){
                             detail="credits"
                         }
                         ProductTile(local("API Comercial","Commercial API"),
                             local("Archivos, textos, métodos online y catálogos",
                                 "Files, text, online methods and catalogs"),
-                            local("Desde $5.99 USD","From $5.99 USD"),
+                            apiTerms.minOfOrNull{it.priceCents}?.let{usd(it)+" USD"}?:local("Sin precio USD disponible","No USD price available"),
                             {Icon(Icons.Outlined.Code,null,tint=white,modifier=Modifier.size(29.dp))}){
                             detail="api"
                         }
