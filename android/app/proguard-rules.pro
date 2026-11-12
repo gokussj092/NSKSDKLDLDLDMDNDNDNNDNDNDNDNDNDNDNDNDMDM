@@ -40,3 +40,8 @@
 -keepclasseswithmembers,includedescriptorclasses class com.ghostdeveloper.spdecode.offline.NativeOffline {
     native <methods>;
 }
+
+# JNI profile validator uses name-based symbols in all online release ABIs.
+-keepclasseswithmembers,includedescriptorclasses class com.ghostdeveloper.spdecode.NativeProfileRules {
+    native <methods>;
+}

@@ -118,7 +118,7 @@ internal class NativeCommerceAuth(private val context:Context) {
                 if(path=="/api/auth/sign-in/social")
                     connection.setRequestProperty("X-SPDECODE-Mobile-Auth","android-v1")
                 val bytes=(body?:JSONObject()).toString().toByteArray(Charsets.UTF_8)
-                require(bytes.size<=16*1024)
+                require(bytes.size<=if(path=="/api/account/profile")119_000 else 16*1024)
                 connection.outputStream.use{it.write(bytes)}
             }
             val status=connection.responseCode
@@ -222,6 +222,23 @@ internal class NativeCommerceAuth(private val context:Context) {
         if(sessionToken()==null)return null
         val response=runCatching{http("/api/account",authenticated=true).first}.getOrNull()
         return response?.takeIf{!it.isNull("user") && it.optJSONObject("user")!=null}
+            ?.also{CommerceSession.update(it)}
+    }
+    /** Public profile edits. A fresh authenticated server session is required. */
+    suspend fun editProfile(name:String,username:String,avatarData:String?,
+        replaceAvatar:Boolean):JSONObject {
+        val normalizedName=name.trim()
+        val normalizedHandle=username.trim().lowercase(java.util.Locale.ROOT)
+        if(!NativeProfileRules.validDisplayName(normalizedName) ||
+            !NativeProfileRules.validUsername(normalizedHandle))
+            throw AuthFailure("INVALID_PROFILE")
+        if(replaceAvatar && avatarData!=null &&
+            (avatarData.length>115000 || !avatarData.startsWith("data:image/jpeg;base64,")))
+            throw AuthFailure("INVALID_AVATAR")
+        val body=JSONObject().put("name",normalizedName).put("username",normalizedHandle)
+        if(replaceAvatar)body.put("avatarData",avatarData ?: JSONObject.NULL)
+        http("/api/account/profile","PATCH",body,true)
+        return account()?:throw AuthFailure("ACCOUNT_SESSION_UNAVAILABLE")
     }
     suspend fun editApiIp(entitlementId:String,ip:String):JSONObject {
         if(!CommercialServerIp.isPublicLiteral(ip))throw IllegalArgumentException("INVALID_PUBLIC_IP")
@@ -233,6 +250,7 @@ internal class NativeCommerceAuth(private val context:Context) {
             if(sessionToken()!=null)http("/api/auth/sign-out","POST",JSONObject(),true)
         }finally{
             prefs.edit().remove("session").commit()
+            CommerceSession.clear()
         }
     }
 }

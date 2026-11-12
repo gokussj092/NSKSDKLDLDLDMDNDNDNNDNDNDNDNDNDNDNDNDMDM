@@ -287,6 +287,25 @@ class AndroidUnityReleaseContract(unittest.TestCase):
                              "decrypt_credits_delete_confirm"):
                 self.assertIn(f'name="{resource}"', strings)
 
+    def test_profile_editor_and_session_are_native_and_server_backed(self):
+        auth=read("android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceAuth.kt")
+        screen=read("android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceScreens.kt")
+        drawer=read("android/app/src/main/java/com/ghostdeveloper/spdecode/AccountDrawer.kt")
+        editor=read("android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceProfile.kt")
+        cpp=read("android/app/src/main/cpp/spdecode_profile.cpp")
+        cmake=read("android/app/src/main/cpp/CMakeLists.txt")
+        workflow=read(".github/workflows/android-unity-ads-online-qa.yml")
+        self.assertIn('http("/api/account/profile","PATCH",body,true)',auth)
+        self.assertIn("CommerceSession.update(it)",auth)
+        self.assertIn("CommerceSession.user",drawer)
+        self.assertIn("CommerceProfileEditor(",screen)
+        self.assertIn("ActivityResultContracts.GetContent()",editor)
+        self.assertIn("NativeProfileRules.validUsername",auth)
+        self.assertIn("Java_com_ghostdeveloper_spdecode_NativeProfileRules_validUsername",cpp)
+        self.assertIn("add_library(spdecode_profile",cmake)
+        self.assertIn("NativeCommerceProfile.kt",workflow)
+        self.assertIn("CommerceConsentRow(language,acceptedPolicies,",screen)
+
     def test_google_button_uses_explicit_google_sign_in_flow(self):
         auth=read("android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceAuth.kt")
         self.assertIn("GetSignInWithGoogleOption.Builder(clientId).build()", auth)

@@ -3,6 +3,7 @@ package com.ghostdeveloper.spdecode
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -155,14 +156,17 @@ private fun SimpleFeature(title:String,subtitle:String?=null){
 @Composable
 internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
     onLegalLink:(String)->Unit={}) {
-    var page by rememberSaveable(start){mutableStateOf(start)}
+    val entryPage=if(start in listOf("orders","api","security"))"account" else start
+    var page by rememberSaveable(start){mutableStateOf(entryPage)}
     var detail by rememberSaveable {mutableStateOf("home")}
     var pack by rememberSaveable {mutableIntStateOf(1)}
     var quantity by rememberSaveable {mutableIntStateOf(1)}
     var term by rememberSaveable {mutableIntStateOf(0)}
     var serverIp by rememberSaveable {mutableStateOf("")}
     var lines by remember {mutableStateOf<List<CommercialLine>>(emptyList())}
-    var profileTab by rememberSaveable {mutableStateOf("overview")}
+    var profileTab by rememberSaveable(start){
+        mutableStateOf(if(start in listOf("orders","api","security"))start else "overview")
+    }
     var authTab by rememberSaveable {mutableStateOf("login")}
     var authMethod by rememberSaveable {mutableStateOf("choose")}
     var email by rememberSaveable {mutableStateOf("")}
@@ -198,10 +202,11 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
     val apiSelection=apiTerms.getOrNull(term)
     fun back(){
         when {
+            page=="profile-edit" -> page="account"
             page=="cart" -> {page="store";detail="home"}
             page=="store" && detail!="home" -> detail="home"
             page=="login" && start!="login" -> page="account"
-            page!=start -> page=start
+            page!=entryPage -> page=entryPage
             else -> onExit()
         }
     }
@@ -216,6 +221,7 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                 Text("SP-DECODE",color=white,fontWeight=FontWeight.Bold,fontSize=21.sp)
                 Text(when(page) {
                     "account" -> local("Mi cuenta","My account")
+                    "profile-edit" -> CommerceProfileText.get(language,"Edit profile")
                     "login" -> local("Acceso seguro","Secure sign in")
                     "cart" -> local("Tu carrito","Your cart")
                     else -> local("Tienda","Store")
@@ -502,33 +508,15 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                 "account" -> {
                     Text(local("Centro de cuenta","Account center"),color=white,
                         fontSize=25.sp,fontWeight=FontWeight.Bold)
-                    SlateCard{
-                        Row(verticalAlignment=Alignment.CenterVertically){
-                            Box(Modifier.size(57.dp).background(raised,RoundedCornerShape(20.dp)),
-                                contentAlignment=Alignment.Center){
-                                Icon(Icons.Outlined.AccountCircle,null,tint=white,
-                                    modifier=Modifier.size(36.dp))
-                            }
-                            Spacer(Modifier.width(12.dp))
-                            Column(Modifier.weight(1f)){
-                                Text(accountSnapshot?.optJSONObject("user")?.optString("name")
-                                    ?.takeIf{it.isNotBlank()}?:local("Invitado","Guest"),color=white,
-                                    fontSize=17.sp,fontWeight=FontWeight.Bold)
-                                Text(accountSnapshot?.optJSONObject("user")?.optString("email")
-                                    ?.takeIf{it.isNotBlank()}?:local("Sin sesión vinculada","No linked session"),
-                                    color=muted,fontSize=12.sp)
-                            }
-                        }
-                        if(accountSnapshot==null)
-                            PrimaryAction(local("Iniciar sesión","Sign in")){page="login"}
-                        else OutlinedButton(modifier=Modifier.fillMaxWidth(),onClick={
+                    CommerceAccountHero(language=language,user=CommerceSession.user,
+                        onSignIn={page="login"},onEdit={page="profile-edit"},
+                        onSignOut={
                             scope.launch{
                                 runCatching{auth.signOut()}
                                 accountSnapshot=null
                                 page="login"
                             }
-                        }){Text(local("Cerrar sesión","Sign out"))}
-                    }
+                        })
                     Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(4.dp)){
                         listOf("overview","orders","api","security").forEach{p->
                             Box(Modifier.weight(1f).background(
@@ -629,6 +617,14 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                         Text(local("Abrir tienda","Open store"))
                     }
                 }
+                "profile-edit" -> {
+                    CommerceProfileEditor(language=language,auth=auth,
+                        user=CommerceSession.user,onCancel={page="account"},
+                        onSaved={updated->
+                            accountSnapshot=updated
+                            page="account"
+                        })
+                }
                 "login" -> {
                     Column(Modifier.fillMaxWidth().padding(top=22.dp,bottom=12.dp),
                         verticalArrangement=Arrangement.spacedBy(9.dp)){
@@ -639,31 +635,21 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                             Text("SP-DECODE",color=white,fontWeight=FontWeight.Bold,
                                 fontSize=18.sp)
                         }
-                        Spacer(Modifier.height(9.dp))
-                        Text(if(authTab=="login")local("Iniciar sesión","Sign in")
-                            else local("Crear cuenta","Create account"),
+                        Spacer(Modifier.height(15.dp))
+                        Box(Modifier.size(68.dp).background(raised,RoundedCornerShape(24.dp)),
+                            contentAlignment=Alignment.Center){
+                            Icon(Icons.Outlined.VerifiedUser,null,tint=good,
+                                modifier=Modifier.size(37.dp))
+                        }
+                        Text(local("Iniciar sesión","Sign in"),
                             color=white,fontWeight=FontWeight.SemiBold,fontSize=31.sp)
                         Text(local("Accede a tu cuenta desde la aplicación",
                             "Access your account inside the app"),
                             color=muted,fontSize=14.sp)
                     }
                     SlateCard{
-                        Row(Modifier.fillMaxWidth(),
-                            horizontalArrangement=Arrangement.spacedBy(8.dp)){
-                            listOf("login","register").forEach{item->
-                                Box(Modifier.weight(1f).background(
-                                    if(authTab==item)Color(0xFF464646)else raised,
-                                    RoundedCornerShape(14.dp))
-                                    .clickable{authTab=item;notice=null}.padding(12.dp),
-                                    contentAlignment=Alignment.Center){
-                                    Text(if(item=="login")local("Iniciar sesión","Sign in")
-                                        else local("Crear cuenta","Create account"),
-                                        color=white,fontSize=14.sp)
-                                }
-                            }
-                        }
                         Text(local("Elige cómo continuar","Choose how to continue"),
-                            color=white,fontSize=16.sp,fontWeight=FontWeight.Medium)
+                            color=white,fontSize=17.sp,fontWeight=FontWeight.SemiBold)
                         OutlinedButton(onClick={
                             if(!signingIn)scope.launch{
                                 signingIn=true
@@ -683,52 +669,18 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                                 }finally{signingIn=false}
                             }
                         },enabled=!signingIn && acceptedPolicies,modifier=Modifier.fillMaxWidth()) {
-                            Text("G",fontSize=19.sp,fontWeight=FontWeight.Bold)
+                            Box(Modifier.size(27.dp).background(white,CircleShape),
+                                contentAlignment=Alignment.Center) {
+                                Text("G",color=Color(0xFF4285F4),fontSize=19.sp,
+                                    fontWeight=FontWeight.ExtraBold)
+                            }
                             Spacer(Modifier.width(12.dp))
                             Text(local("Continuar con Google","Continue with Google"))
                         }
                         CommerceConsentRow(language,acceptedPolicies,
                             onAccepted={acceptedPolicies=it},onLegalLink=onLegalLink)
-                        Row(verticalAlignment=Alignment.CenterVertically){
-                            HorizontalDivider(Modifier.weight(1f),color=stroke)
-                            Text("   "+local("o por correo","or by email")+"   ",
-                                color=muted,fontSize=12.sp)
-                            HorizontalDivider(Modifier.weight(1f),color=stroke)
-                        }
-                        if(authMethod=="choose"){
-                            OutlinedButton(onClick={authMethod="email"},
-                                modifier=Modifier.fillMaxWidth()) {
-                                Icon(Icons.Outlined.Email,null)
-                                Spacer(Modifier.width(8.dp))
-                                Text(local("Continuar con correo","Continue with email"))
-                            }
-                        }else{
-                            OutlinedTextField(value=email,
-                                onValueChange={email=it.take(254)},
-                                label={Text(local("Correo electrónico","Email address"))},
-                                singleLine=true,modifier=Modifier.fillMaxWidth(),
-                                colors=OutlinedTextFieldDefaults.colors(
-                                    focusedTextColor=white,unfocusedTextColor=white,
-                                    focusedBorderColor=white,unfocusedBorderColor=stroke))
-                            OutlinedTextField(value=password,
-                                onValueChange={password=it.take(128)},
-                                label={Text(local("Contraseña","Password"))},
-                                singleLine=true,
-                                visualTransformation=PasswordVisualTransformation(),
-                                modifier=Modifier.fillMaxWidth(),
-                                colors=OutlinedTextFieldDefaults.colors(
-                                    focusedTextColor=white,unfocusedTextColor=white,
-                                    focusedBorderColor=white,unfocusedBorderColor=stroke))
-                            PrimaryAction(
-                                if(authTab=="login")local("Iniciar sesión","Sign in")
-                                else local("Crear cuenta","Create account"),
-                                enabled=false){}
-                            Note(local("El acceso con contraseña aún no está habilitado por el servidor. No se enviarán ni almacenarán estos datos.",
-                                "Password sign-in is not yet enabled on the server. These values will not be sent or stored."))
-                            TextButton(onClick={authMethod="choose";password="";notice=null}){
-                                Text(local("Otros métodos de acceso","Other sign-in methods"))
-                            }
-                        }
+                        Note(local("La cuenta se verifica mediante Google. Tus datos y compras quedan protegidos.",
+                            "Google verifies your identity. Your account and purchases stay protected."))
                         if(signingIn) LinearProgressIndicator(
                             modifier=Modifier.fillMaxWidth(),color=white,
                             trackColor=stroke)

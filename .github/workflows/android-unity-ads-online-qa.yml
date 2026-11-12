@@ -6,6 +6,10 @@ on:
       - .github/workflows/android-unity-ads-online-qa.yml
       - android/app/src/main/java/com/ghostdeveloper/spdecode/SpDecodeApp.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/AccountDrawer.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceProfile.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/NativeProfileRules.kt
+      - android/app/src/main/cpp/spdecode_profile.cpp
+      - android/app/src/main/cpp/CMakeLists.txt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceScreens.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceAuth.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/NativeStoreCatalog.kt
@@ -78,6 +82,7 @@ jobs:
           node --check cloud/web/lib/commerce/catalog.mjs
           node --check cloud/web/lib/commerce/orders.mjs
           node --check cloud/web/lib/commerce/api.mjs
+          node --check cloud/web/lib/commerce/profile.mjs
           node --check 'cloud/web/app/api/auth/[...all]/route.js'
           node --check cloud/web/app/api/account/api-ip/route.js
           node --input-type=module <<'JS'

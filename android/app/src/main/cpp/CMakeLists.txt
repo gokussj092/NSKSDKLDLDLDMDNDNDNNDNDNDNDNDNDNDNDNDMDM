@@ -6,6 +6,11 @@ add_library(spdecode_result_engine SHARED result_engine.cpp result_engine_jni.cp
 set_target_properties(spdecode_result_engine PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
 target_compile_options(spdecode_result_engine PRIVATE -Wall -Wextra -Werror -fvisibility=hidden -fstack-protector-strong)
 target_link_options(spdecode_result_engine PRIVATE -Wl,-z,relro,-z,now -Wl,-z,noexecstack -Wl,-z,max-page-size=16384 -Wl,-z,common-page-size=16384)
+# Profile UI input policy only; C++ does not hold Google credentials or bearer tokens.
+add_library(spdecode_profile SHARED spdecode_profile.cpp)
+set_target_properties(spdecode_profile PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
+target_compile_options(spdecode_profile PRIVATE -Wall -Wextra -Werror -fvisibility=hidden -fstack-protector-strong -D_FORTIFY_SOURCE=2)
+target_link_options(spdecode_profile PRIVATE -Wl,-z,relro,-z,now -Wl,-z,noexecstack -Wl,-z,max-page-size=16384 -Wl,-z,common-page-size=16384)
 endif()
 # Per-build string encoding is reversible obfuscation, not secret encryption.
 if(NOT DEFINED SPDECODE_CLOUD_ORIGIN)
