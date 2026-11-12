@@ -20,7 +20,7 @@ internal object V2BoxPasswordProbe {
                 ?: JSONObject(String(Base64.decode(raw.filterNot{it.isWhitespace()},
                     Base64.DEFAULT),Charsets.UTF_8))
             if(obj.optString("magic")!="v2box_export")return false
-            val protected=when(obj.optInt("version",-1)){
+            val protected=when(obj.optInt("version",1)){
                 1 -> obj.optBoolean("isPasswordProtected",false)
                 2 -> {
                     val encoded=obj.optString("header")
