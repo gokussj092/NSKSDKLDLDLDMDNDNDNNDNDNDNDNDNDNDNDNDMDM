@@ -1,0 +1,10 @@
+{
+  "package": "com.opentunnel.app",
+  "build": 61,
+  "jadxVersion": "1.5.6",
+  "jadxJarSha256": "fe3e12c45acf75f92369685fd02d1d7a7323385dc725680a9b98a0dac0ea554b",
+  "jadxExitCode": 3,
+  "apkCodeExecuted": false,
+  "jadxGlobalErrors": 24,
+  "globalDecompilationComplete": false
+}

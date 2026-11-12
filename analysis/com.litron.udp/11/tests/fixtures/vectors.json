@@ -1,0 +1,117 @@
+{
+  "provenance": "Independent standard JCA synthetic fixtures; no real server data",
+  "catalog": "GAZ4Zc87gZuqkyoD/F7Gm6Max9Z9a/RecBXEytIlBH5cuERzzcChU5TeC3ZPjuKmKUnn7/Kjy5Q2TlbWJ3mkvfl3haMoMCj/b0EzW4FnoH7ajvcVMpURyiqmB67sBiW1qrZnIRBuHSeiB28LWvyaMBf6yFuUk+Aiv0S0/r7xiZRZui1CVBH0kjlcGH6AkdP1hdu/K/iQ229h7ixsw3/E+gQyotspp7rqm38LI8Zq+oQBUurTO4ZqF3lwrZFsJeFfgyE+tLL//znS1u/Qeq/y1x5YjBogUOFlqoYQt4Xdd+VkMmhxVK3DxlH5rlt/piGu/iZaLKofj+EqLo2qI5/xhSO9mOD+ulubE83J9yNPs45hhsNjnKscN+p7c1oMVJHzLpfTXhlgmj+Xjy7agL7/OOnl6WJpMktofgskYd2CY9PoRkKE5FeuNQIKJAU3uQwY27K3uSxwMuUUEkoxTNun5dh3vl9RnRdUaa/DfkhuqJ44KjNGSGIAKnnkGrxNmtr4QhyyGC4OOs6scybf5ZcA6Kcq3YRn61L7s8aEb7ajTxpbHcmgf8v5Q+d7PzTUuEu0O+/THdcCHRjCEVp9bcziTSz5QWigXYI9yNo+Hd8N5MtPi5wRQZdH6DvDsKLPCNObufhQbOxUfYW/p/w8q6plXX/zkWb1Fxbio8WtDSxCJn5xgoV1UV/e/TEg6lcfs1H+hHzzCJqfBh5Q+e+1alU1/J8/jkFKCTan3Shyr9cAxUIwm/NyzsGT1ppao1xWEtEh5xbom9tL/UNKvRDX1ipbilhuDO8TWS7YLW5KjgwGJ89aqSY7H6WF3T+/HW0eXOLd+M0ZYzViGSXFwTwzUUoL8wj+PxBvalSmHO8DeTHCL2LeCM1pOT2lMum8KK6nzGge9gb44gtnRFLd/Sw7wYA0RwB7vHF9K//QgvL+aX+3dNMPTSoxLmlSGOC/3czCuZ1KPTUKCMWU0UZJh4xzdAlIG4YBbh8X9eO19MCqjaXWjtnoea17yqfmGOlSBhs9ArNoPHeyVh+qhyC9IzflQY9idY6oapqadGL7KwSAhBovB0rm0bjB+w8f6HSTa8Z37rR+OFHCgdXpRUJdUqYQZNqUieUY2q+Z00u+2Zit7PlkuWOLix5rLiLVQTVCKgo/nf4lbTaesJFRAzm6VZt1qMx7Z3Jd17WwI8GRjcYiigkV3KV0Ta/UxlN0B+p+hgsigs1iP3LCMoVbt/h53ghp1h3BX8dvPOlPmTbS+0HJG/jx0T7Kq2SIUpOZZ7Lv7BziAVO3sitR0FqgVCZEHj+i1RwXJEV2R4KgiHNvtQ0OPdbocgHdN3VTjmPtAR2jNfAAAQ5XyL8WjFqqFd7gv142+sEuu6Lwx8w4hRnAGccRYntyVVCLFSITn9gRIUauX7KzYrBTDVdQkgAA9huD9xO841rettt168201eYN22dZUVtcN1O4WGQAawtooTCfEEVAfX9e99sgl8Oe0am3IJSiAOhYx+A6XcUZyN8Mb7Z2Fu71pc8=",
+  "expected": {
+    "Version": "fixture.11",
+    "IsTimer": false,
+    "ReleaseNotes": "Prueba ñ 😀\nsegunda línea",
+    "Password": "root plaintext is untouched",
+    "Unknown": {
+      "a": [
+        1,
+        null,
+        true,
+        {
+          "keep": "YWJjZA=="
+        }
+      ]
+    },
+    "Servers": [
+      {
+        "Name": "Fictional full server",
+        "TunnelType": "5",
+        "ServerPort": "443",
+        "Json": "{\"nested\":[1,true]}",
+        "VendorOpaque": "YWJjZA==",
+        "ChaveKey": "ChaveKey.example.invalid\nñ 😀",
+        "DNS": "DNS.example.invalid\nñ 😀",
+        "NameServer": "NameServer.example.invalid\nñ 😀",
+        "Password": "Password.example.invalid\nñ 😀",
+        "Payload": "Payload.example.invalid\nñ 😀",
+        "ProxyIP": "ProxyIP.example.invalid\nñ 😀",
+        "SNI": "SNI.example.invalid\nñ 😀",
+        "ServerHost": "ServerHost.example.invalid\nñ 😀",
+        "Username": "Username.example.invalid\nñ 😀"
+      },
+      {
+        "Name": "Empty inactive fields",
+        "TunnelType": "6",
+        "ServerHost": "",
+        "SNI": "",
+        "Json": "{\"example\":\"config.invalid\"}"
+      },
+      {
+        "Name": "Unknown future protocol",
+        "TunnelType": "99",
+        "UnknownList": [
+          null,
+          2,
+          false
+        ]
+      }
+    ]
+  },
+  "invalidCatalogs": [
+    "RL6d2MSIZPke0cRka1bz6Q==",
+    "aidyS6rwqliAA2BA8/KGfB26kG74/hL2iIk4XCNuWNWxDVgWFFhZLGTnfwu379n+/5GAwjK9AQigfGqcLamqCw==",
+    "aidyS6rwqliAA2BA8/KGfAm2vH/tn4RNgwBE2RpVe7Zv9zGwksx29gcUiyiutikl",
+    "aidyS6rwqliAA2BA8/KGfAm2vH/tn4RNgwBE2RpVe7bxLVUAmcklOZu+xYhUXATk",
+    "aidyS6rwqliAA2BA8/KGfB/dkzS/pnFRmPwzRmmaKlGzBBNsqHMHWjRKwA2oEJll",
+    "PkKjzPtpS1JfXdV3+6nhDRjtiiO2WQzL7xuF2qSkFEw=",
+    "aidyS6rwqliAA2BA8/KGfMAr0ii/3nqo3cX2TYPIZIY=",
+    "aidyS6rwqliAA2BA8/KGfGvFZeq+zZabyHYzOw7qdRKSsmE5cH8/RR7nEbohPFtZ",
+    "aidyS6rwqliAA2BA8/KGfGvFZeq+zZabyHYzOw7qdRKOMagOc5ZeqUDAI9UvVEai1WEM910I5I+N+9N02v07HXEia1/M96iVxjAZAPqJ0xc=",
+    "aidyS6rwqliAA2BA8/KGfGvFZeq+zZabyHYzOw7qdRLN0D/iPpq68fhHKOI1DHBykUKLqs6G2AvgcWyBzrs/KA==",
+    "QcDgm464g+GSI6suTNy+ZVnJi/R9VdFPOcUaMsnmvsHTDmO+jYTzNT2VmWYP4LTCXeg0bQwBBKZja2Dy833XAT6ggTNJBxum2ExWop7DMjCs89XbfGKBA3V7gTa9vf17"
+  ],
+  "outerJson": {
+    "Version": "fixture.11",
+    "IsTimer": false,
+    "ReleaseNotes": "Prueba ñ 😀\nsegunda línea",
+    "Password": "root plaintext is untouched",
+    "Unknown": {
+      "a": [
+        1,
+        null,
+        true,
+        {
+          "keep": "YWJjZA=="
+        }
+      ]
+    },
+    "Servers": [
+      {
+        "Name": "Fictional full server",
+        "TunnelType": "5",
+        "ServerPort": "443",
+        "Json": "{\"nested\":[1,true]}",
+        "VendorOpaque": "YWJjZA==",
+        "ChaveKey": "uTK0TOoziwzW+LGQCw+17V40bOKASkJsfHPYRR+9RPJM/AwEK+5q2yxfoVfmI4qm",
+        "DNS": "e/8j9K9ztivJEgv01UFrkJBUdz4Ng7dFJVZpSirjdwg=",
+        "NameServer": "TO16oupYDCQg+oK6Zmm916skeSpXAM8U2H5xP6Tb2sgGn2IdTyNJold5GT33SSr3",
+        "Password": "Q8gvV0uXja73BxY+6WHa73GuaohhGBJZ8OyRg4d8XgvBDcgpyr6meEydYCbXfjH8",
+        "Payload": "zRQeFW1uLF6l0faYBqkcEaii0uIERjijlnsrmlY3m+E=",
+        "ProxyIP": "j8WhegasSuE3et3xuy0ycUzxgZ1jPJCldwDJ1f5nEhk=",
+        "SNI": "JlrbqhX9wtvuHl+zBluAy5K6fhCbuxW8LzxJrTOBH2Q=",
+        "ServerHost": "7GXI1MU9eNeyHd0Q5VrdSUAPeDkEclS6fMvtJwL7fzvWQVGEkJRAAysXHcK4m6SF",
+        "Username": "gpuQlfMHsoBSm0RgHzFMoBlaSIn897JJjqljtZ4rMdepoRavjYOYCq8In73/oyQ4"
+      },
+      {
+        "Name": "Empty inactive fields",
+        "TunnelType": "6",
+        "ServerHost": "",
+        "SNI": "",
+        "Json": "{\"example\":\"config.invalid\"}"
+      },
+      {
+        "Name": "Unknown future protocol",
+        "TunnelType": "99",
+        "UnknownList": [
+          null,
+          2,
+          false
+        ]
+      }
+    ]
+  }
+}

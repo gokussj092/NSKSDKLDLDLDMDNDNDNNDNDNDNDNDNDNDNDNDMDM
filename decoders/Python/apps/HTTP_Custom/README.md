@@ -1,5 +1,10 @@
 # HTTP Custom — archivos .hc
 
+**Investigación build 934 (8.0.22 Patch 2): PENDING.** Las nueve muestras
+aportadas autentican HCX4 exterior, pero **0/9 producen JSON interior
+completo**. No se habilitan HCCFG 12/n15/n16, 13/n18 ni el wrapper de ID de
+acceso. [Expediente reproducible](../../../../analysis/xyz.easypro.httpcustom/934/ANALYSIS.md).
+
 **Investigación 2026-11-01:** las dos muestras nuevas HCCFG 11/n13 con Extra
 Protection autentican HCX4, pero **0/2 están descifradas**. El motor sigue
 habilitado para HCCFG 10/n11/n12 y sus rutas históricas. No se anuncia soporte
@@ -151,3 +156,21 @@ Origen, dimensiones y checksums están en `manifest.json`. Se incluyen ambos.
 No se incluye APK, `.hc` privado, configuración recuperada ni credencial
 real. Este paquete es un lector; no implementa un exportador editable ni
 certifica un roundtrip de importación en un dispositivo Android.
+
+Revisión de paridad Offline 2026-11-09: expediente y comprobación privada sin
+datos de usuario en `analysis/_intake/httpcustom-offline-20261109/`. Corrige
+UTF-8 y clasificación Unicode en el lector histórico C++; no modifica este
+codec Python. El build exportador no se deduce del formato `verCfg:57`.
+
+Expediente del consumidor Offline build 42: `analysis/com.ghostdeveloper.spdecode.offline/42/`.
+
+### Revisión original 4.10.16 / registros 57
+
+`analysis/xyz.easypro.httpcustom/564/` conserva el inventario del APKM del
+propietario, primitivas JNI originales y la comparación del archivo privado.
+El APK marca 564; el archivo declara verApp 565. El lector de revisión 57
+conserva los 32 campos y metadatos y recupera el JSON V2Ray antes omitido.
+Un valor histórico de Psiphon aún no interpretado se conserva con aviso de
+resultado parcial; no se presenta como descifrado. Servidor y Offline C++
+coinciden; las representaciones se eligen por versión observada, sin decidir
+por texto que simplemente parezca legible. No certifica todo exportador.

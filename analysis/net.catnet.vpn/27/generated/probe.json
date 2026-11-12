@@ -1,0 +1,50 @@
+{
+  "outcome": "PREFLIGHT_ALLOWS_PUBLIC_CONFIG",
+  "requests": [
+    {
+      "source": "https://pussyvpn.com/xjvpn/mobile/public/app-update?app_key=pussy_vpn&current_version_code=27",
+      "status": 200,
+      "bytes": 313,
+      "sha256": "c2ab96e9892b3523629840daf81cdad4f4fb6ab908fb39e81b6e1f7d4667ece2",
+      "content_type": "application/json",
+      "json_type": "dict",
+      "keys": [
+        "success",
+        "data"
+      ]
+    },
+    {
+      "source": "https://xjdev.net/xjvpn/mobile/public/payloads",
+      "status": 200,
+      "bytes": 195,
+      "sha256": "5b131ca14aa96311d3432b0062c7443d3b0e6346ec279bd376a75f0a76bcd5d7",
+      "content_type": "text/html"
+    },
+    {
+      "source": "https://xjdev.net/xjvpn/mobile/public/xray_payloads",
+      "status": 200,
+      "bytes": 195,
+      "sha256": "5b131ca14aa96311d3432b0062c7443d3b0e6346ec279bd376a75f0a76bcd5d7",
+      "content_type": "text/html"
+    },
+    {
+      "source": "https://pussyvpn.com/xjvpn/mobile/public/servers",
+      "status": 200,
+      "bytes": 3710,
+      "sha256": "c17f1ed60e5e43991b3ab40f185bb4cede355f5dc6eec5a3755b448b7c58ead2",
+      "content_type": "application/json",
+      "json_type": "dict",
+      "keys": [
+        "success",
+        "message",
+        "servers",
+        "has_defaults",
+        "def_user",
+        "def_pass_plain",
+        "back_user",
+        "back_pass_plain"
+      ]
+    }
+  ],
+  "session_or_token_fabricated": false
+}

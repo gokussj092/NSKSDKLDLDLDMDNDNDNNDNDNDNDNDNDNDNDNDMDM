@@ -245,3 +245,35 @@ test("method updates reject arbitrary IDs and invalid maintenance values",async 
   }));
   await assert.rejects(()=>loadProviderState(root),/PROVIDER_STATE_INVALID/);
 });
+
+
+test("individual catalog maintenance stays independent from the administrative availability switch",async t=>{
+ const root=await fixture(t),opts={root},id="tunneldoom-vpn";
+ const initial=await providerOverview(env,opts);
+ assert.equal(initial.providers.find(p=>p.id===id).enabled,true);
+ assert.equal(initial.disabledProviderIds.includes(id),false);
+ const paused=await updateMethodState(id,"maintenance",true,env,opts);
+ assert.equal(paused.methodStatuses.find(m=>m.id===id).maintenance,true);
+ assert.equal(paused.providers.find(p=>p.id===id).enabled,false);
+ assert.equal(paused.disabledProviderIds.includes(id),false);
+ assert.equal(await providerAllowed(id,env,opts),false);
+ const repeated=await updateProvider(id,true,env,opts);
+ assert.equal(repeated.catalogVersion,paused.catalogVersion);
+ assert.equal(repeated.disabledProviderIds.includes(id),false);
+ const manualOff=await updateProvider(id,false,env,opts);
+ assert.equal(manualOff.disabledProviderIds.includes(id),true);
+ assert.equal(manualOff.methodStatuses.find(m=>m.id===id).maintenance,true);
+ const unpaused=await updateMethodState(id,"maintenance",false,env,opts);
+ assert.equal(unpaused.disabledProviderIds.includes(id),true);
+ assert.equal(unpaused.providers.find(p=>p.id===id).enabled,false);
+ assert.equal(await providerAllowed(id,env,opts),false);
+ const enabled=await updateProvider(id,true,env,opts);
+ assert.equal(enabled.providers.find(p=>p.id===id).enabled,true);
+ assert.equal(enabled.disabledProviderIds.includes(id),false);
+ const catalogVersion=enabled.catalogVersion;
+ const status=Object.fromEntries(enabled.methodStatuses.map(m=>[m.id,m]));
+ const available=Object.fromEntries(enabled.providers.map(p=>[p.id,p.enabled]));
+ const result=catalog({version:catalogVersion,availability:available,methodStates:status});
+ assert.equal(result.apps.find(app=>app.id===id).maintenance,false);
+ assert.equal(result.apps.find(app=>app.id===id).decodeEnabled,true);
+});

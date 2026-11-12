@@ -1,0 +1,77 @@
+{
+  "real_files": [
+    {
+      "name": "Test bloquear usuário y contraseña.hc",
+      "sha256": "8de37c01d4769fd159cccc8885b224b1297d1afe6d3abecb4210cd1a586a9003",
+      "status": "NOT_DECRYPTED",
+      "decoder_error": "UNSUPPORTED_SCHEMA",
+      "worker_status": "error",
+      "worker_error": "DECODE_FAILED"
+    },
+    {
+      "name": "Test bloqueo ID de acceso.hc",
+      "sha256": "8c9916bd53b2e38ac1f7b723054cd75ac3729697c0dd92763148f7f63fe44684",
+      "status": "NOT_DECRYPTED",
+      "decoder_error": "UNSUPPORTED_SCHEMA",
+      "worker_status": "error",
+      "worker_error": "DECODE_FAILED"
+    },
+    {
+      "name": "Test bloqueo de operador.hc",
+      "sha256": "0cbeb11e5fc6dce179bf796f1836f3bd5b427f9f719708258ccb5282d9c8f17d",
+      "status": "NOT_DECRYPTED",
+      "decoder_error": "UNSUPPORTED_SCHEMA",
+      "worker_status": "error",
+      "worker_error": "DECODE_FAILED"
+    },
+    {
+      "name": "Test bloqueo de root.hc",
+      "sha256": "34b53d7698381e39cf9ea001e74fe53a8f5bd036cb54a08b7bcb1d10d1886ba3",
+      "status": "NOT_DECRYPTED",
+      "decoder_error": "UNSUPPORTED_SCHEMA",
+      "worker_status": "error",
+      "worker_error": "DECODE_FAILED"
+    },
+    {
+      "name": "Test bloqueo de root2.hc",
+      "sha256": "f1a50cf72b92fcdd389b7a6fd912153c67ee15270d859789b79543eadb5be195",
+      "status": "NOT_DECRYPTED",
+      "decoder_error": "UNSUPPORTED_SCHEMA",
+      "worker_status": "error",
+      "worker_error": "DECODE_FAILED"
+    },
+    {
+      "name": "Test bloqueo inicio de sesión con hwid.hc",
+      "sha256": "4d8aa08d8be5d86e96af3c81d3db5a4b64e31ed2b5d67778149b4301959972e5",
+      "status": "NOT_DECRYPTED",
+      "decoder_error": "UNSUPPORTED_SCHEMA",
+      "worker_status": "error",
+      "worker_error": "DECODE_FAILED"
+    },
+    {
+      "name": "Test bloqueo password y hwid.hc",
+      "sha256": "5eb097e70c0d779742d226f19c2e6d9f0a24e443f76b59a15c439ec841eda849",
+      "status": "NOT_DECRYPTED",
+      "decoder_error": "UNSUPPORTED_SCHEMA",
+      "worker_status": "error",
+      "worker_error": "DECODE_FAILED"
+    },
+    {
+      "name": "Test desbloqueo payload.hc",
+      "sha256": "33cee484e9f2227e28fcf39a05091d20a4d1b160cd3a5945f3807aaccf10577e",
+      "status": "NOT_DECRYPTED",
+      "decoder_error": "UNSUPPORTED_SCHEMA",
+      "worker_status": "error",
+      "worker_error": "DECODE_FAILED"
+    },
+    {
+      "name": "Test hwid.hc",
+      "sha256": "caf11ca2623cd6d41c2860b6742b7f86f7d6aa3437492df5f5e0cceff2075b87",
+      "status": "NOT_DECRYPTED",
+      "decoder_error": "UNSUPPORTED_SCHEMA",
+      "worker_status": "error",
+      "worker_error": "DECODE_FAILED"
+    }
+  ],
+  "full_json_authenticated": 0
+}

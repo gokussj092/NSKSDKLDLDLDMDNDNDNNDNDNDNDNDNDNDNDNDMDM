@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "provider": "tunneltweak",
+  "auto": {"enabled": true, "build": 53},
+  "builds": [
+    {"build": 51, "working": false, "checks": 1, "successes": 0, "lastCheckedAt": "2026-11-09", "lastHttpStatus": 426, "lastCode": "UPDATE_REQUIRED"},
+    {"build": 53, "working": true, "checks": 1, "successes": 1, "lastCheckedAt": "2026-11-09", "lastHttpStatus": 200, "lastCode": "DOWNLOAD_OK"}
+  ]
+}

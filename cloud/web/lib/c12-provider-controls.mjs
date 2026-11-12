@@ -14,6 +14,20 @@ const ROOT="/app/provider-control";
 const IDS=Object.freeze(["ehi-cloud","hc-cloud","nur-tunnel",...providerIds()]);
 export const PUBLIC_PROVIDER_IDS=IDS;
 const LABELS=Object.freeze({
+  "xxpicore-tunnel":"XXPICore Tunnel",
+  "catnet-vpn":"CATNET VPN",
+  "litron-vpn":"LITRON VPN",
+  "thailand-vpn":"Thailand VPN",
+  "kham-vpn":"KHAM VPN",
+  "opentunnel-ssh":"OpenTunnel · Servidores SSH",
+  "md-proxy-vpn":"MD PROXY VPN",
+  "litron-pro-vpn":"Litron Pro VPN",
+  "speigo-vpn-configs":"SpeiGo VPN · Configuraciones",
+  "speigo-vpn-ssh":"SpeiGo VPN · Usuarios SSH",
+  "genis-vpn":"Genis VPN",
+  "speicers-turbo-vpn":"Speicers`Turbo VPN",
+  "http-conexion":"HTTP Conexión",
+  "namo-vpn":"NAMO VPN",
   "fnf-tunnel-bd":"FNF TUNNEL BD",
   "alsaher-vip":"ALSAHER VIP",
   "halcon-r-net":"HALCON RAMOS Conectividad",
@@ -98,6 +112,7 @@ function catalogFingerprint(){
   return rosterFingerprint;
 }
 const valid=s=>s && typeof s==="object" && !Array.isArray(s) &&
+  (s.displayVersion===undefined || (Number.isSafeInteger(s.displayVersion) && s.displayVersion>0 && s.displayVersion<1_000_000_000)) &&
   Number.isSafeInteger(s.version) && s.version>=0 && s.version<1_000_000_000 &&
   Array.isArray(s.disabled) && s.disabled.length<=IDS.length &&
   s.disabled.every(x=>typeof x==="string" && IDS.includes(x)) &&
@@ -179,10 +194,12 @@ export async function providerOverview(env=process.env,{root=ROOT,syncCatalog=fa
   const state=syncCatalog?await synchronizeCatalogVersion(env,{root}):await loadProviderState(root);
   return {
     catalogVersion:Math.max(activeCatalogVersion(env),state.version),
+    displayVersion:state.displayVersion===undefined?null:String(state.displayVersion),
     providers:IDS.map(id=>({
       id,name:LABELS[id],configured:providerPrerequisite(id,env),
       enabled:providerEffective(id,state,env),
     })),
+    disabledProviderIds:[...state.disabled],
     methodStatuses:methodStatuses(state),
   };
 }
@@ -201,6 +218,25 @@ async function locked(callback,root=ROOT){
   if(!file)throw Error("PROVIDER_BUSY");
   try{return await callback();}
   finally{await file.close();await unlink(LOCK).catch(()=>{});}
+}
+
+/** Editorial edition is explicit, audited and never substituted for sync revision. */
+export async function updateDisplayVersion(edition,env=process.env,{root=ROOT,prepare=null}={}){
+  if(!Number.isSafeInteger(edition)||edition<1||edition>=1_000_000_000)throw Error("INVALID_DISPLAY_VERSION");
+  if(env.CLOUD_FORCE_MAINTENANCE==="true")throw Error("MAINTENANCE_LOCKED");
+  return locked(async()=>{
+    const state=await loadProviderState(root);
+    if(edition<(state.displayVersion||0))throw Error("DISPLAY_VERSION_ROLLBACK");
+    if(edition===state.displayVersion)return providerOverview(env,{root});
+    const version=Math.max(state.version,activeCatalogVersion(env),Math.floor(Date.now()/1000)-1_577_836_800)+1;
+    if(version>=1_000_000_000)throw Error("CATALOG_VERSION_EXHAUSTED");
+    const next={...state,version,displayVersion:edition,displayVersionAudit:[...(state.displayVersionAudit||[]).slice(-9),{from:state.displayVersion??null,to:edition,at:Date.now()}]};
+    if(prepare)await prepare(next);
+    const temp=join(root,".switches-"+randomUUID());const file=await open(temp,"wx",0o600);
+    try{await file.writeFile(JSON.stringify(next)+"\n");await file.sync();}finally{await file.close();}
+    try{await rename(temp,join(root,"switches.json"));}catch(e){await unlink(temp).catch(()=>{});throw e;}
+    return providerOverview(env,{root});
+  },root);
 }
 export async function updateProvider(id,enable,env=process.env,{root=ROOT}={}){
   if(!IDS.includes(id) || typeof enable!=="boolean")throw Error("INVALID_PROVIDER");
@@ -227,10 +263,12 @@ export async function updateProvider(id,enable,env=process.env,{root=ROOT}={}){
     catch(e){await unlink(tmp).catch(()=>{});throw e;}
     return {
       catalogVersion:version,
+      displayVersion:state.displayVersion===undefined?null:String(state.displayVersion),
       providers:IDS.map(k=>({
         id:k,name:LABELS[k],configured:providerPrerequisite(k,env),
         enabled:providerEffective(k,updated,env),
       })),
+      disabledProviderIds:[...updated.disabled],
       methodStatuses:methodStatuses(updated),
     };
   },root);
@@ -269,10 +307,12 @@ export async function updateMethodState(id,operation,maintenance,env=process.env
     catch(error){await unlink(tmp).catch(()=>{});throw error;}
     return {
       catalogVersion:version,
+      displayVersion:state.displayVersion===undefined?null:String(state.displayVersion),
       providers:IDS.map(k=>({
         id:k,name:LABELS[k],configured:providerPrerequisite(k,env),
         enabled:providerEffective(k,next,env),
       })),
+      disabledProviderIds:[...next.disabled],
       methodStatuses:methodStatuses(next),
     };
   },root);

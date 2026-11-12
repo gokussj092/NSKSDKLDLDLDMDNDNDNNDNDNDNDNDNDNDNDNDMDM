@@ -1,0 +1,9 @@
+{
+  "base_sha256": "d55c4ce6181ccd82b1846fac4a2c2298b6e5f6e807b07509c84cfe654b777d82",
+  "package": "com.doriaxvpn.unlimited",
+  "version": "1.2.9",
+  "build": "129",
+  "public_options_sha256": "b806f42c0cd8a9e10be3d4cea2fd0608a374f72fe7ab41041fe4192feaf50c58",
+  "certificate_sha1": "38E634DA612E9CAE1D15584EE20A05486F47E04B",
+  "note": "Public Android client options, not an Admin/service-account key. No generated FIS credentials in code."
+}

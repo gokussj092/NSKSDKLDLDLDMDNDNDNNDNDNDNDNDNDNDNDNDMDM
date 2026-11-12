@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_sign_in">Iniciar sesión</string>
+    <string name="account_web_description">Administra tu cuenta y tus compras en el sitio oficial. Las funciones gratuitas siguen disponibles sin una cuenta.</string>
+    <string name="account_continue_web">Continuar en la web</string>
+    <string name="account_my_account">Mi cuenta</string>
+    <string name="account_store">Tienda</string>
+    <string name="account_open_menu">Abrir menú</string>
+    <string name="ads_privacy_options">Opciones de privacidad de anuncios</string>
+</resources>

@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "provider": "tunneltweak",
+  "auto": {
+    "enabled": true,
+    "build": 53
+  },
+  "builds": [
+    {
+      "build": 51,
+      "working": false,
+      "checks": 2,
+      "successes": 0,
+      "lastCheckedAt": "2026-11-09T09:57:52.748Z",
+      "lastHttpStatus": 426,
+      "lastCode": "UPDATE_REQUIRED"
+    },
+    {
+      "build": 53,
+      "working": true,
+      "checks": 2,
+      "successes": 2,
+      "lastCheckedAt": "2026-11-09T09:57:58.082Z",
+      "lastHttpStatus": 200,
+      "lastCode": "DOWNLOAD_OK"
+    }
+  ]
+}

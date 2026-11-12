@@ -1,0 +1,15 @@
+{
+  "package": "com.tunneltweak.loyalteams",
+  "build": 53,
+  "jadxVersion": "1.5.6",
+  "jadxJarSha256": "fe3e12c45acf75f92369685fd02d1d7a7323385dc725680a9b98a0dac0ea554b",
+  "jadxExitCode": 3,
+  "apkCodeExecuted": false,
+  "classesSha256": {
+    "ServerConfigManager.java": "7e687c5ed9c98ce7c7572a33e4efc8a0c97cf899671e2916b3da4058c71a14d1",
+    "SecureConfigEncryption.java": "cc0d5b55dfa10e4acc15c68081f17163e41315096427414e0767ebd0ff0b87ed",
+    "ConfigManager.java": "beb4220011ca97065e684ae7c98ca9d82c5f2b611b421086b4575b67d133e151"
+  },
+  "publicCatalogCryptoUnchanged": true,
+  "requestBuildHeader": "53"
+}

@@ -1,0 +1,233 @@
+{
+  "sha256": "7ead852bccaa5b17f62d145ea97915f7ea04c579891576f8466a22bb48dd2765",
+  "symbols": {
+    "_Z17generatePBKDF2KeyPKcmPh": {
+      "address": "0x3a5320",
+      "size": 92
+    },
+    "threefishEncryptBlockBytes": {
+      "address": "0x3ab510",
+      "size": 212
+    },
+    "threefishDecrypt512": {
+      "address": "0x3ad24c",
+      "size": 4284
+    },
+    "threefishEncrypt512": {
+      "address": "0x3ac618",
+      "size": 3124
+    },
+    "Java_renz_javacodez_vpn_utils_RenzUtils_setSessionOn": {
+      "address": "0x2f4758",
+      "size": 1440
+    },
+    "EVP_PKEY_CTX_add1_hkdf_info": {
+      "address": "0x4562f4",
+      "size": 44
+    },
+    "threefishEncryptBlockWords": {
+      "address": "0x3ab5e4",
+      "size": 44
+    },
+    "PKCS5_PBKDF2_HMAC": {
+      "address": "0x44a928",
+      "size": 32
+    },
+    "PBKDF2PARAM_free": {
+      "address": "0x449aa4",
+      "size": 12
+    },
+    "Java_renz_javacodez_vpn_utils_RenzUtils_encrypt": {
+      "address": "0x3a5db0",
+      "size": 724
+    },
+    "Java_renz_javacodez_vpn_utils_RenzUtils_decrypt": {
+      "address": "0x3a6c7c",
+      "size": 908
+    },
+    "EVP_PKEY_CTX_set1_hkdf_salt": {
+      "address": "0x45629c",
+      "size": 44
+    },
+    "threefishDecrypt256": {
+      "address": "0x3abd74",
+      "size": 2212
+    },
+    "threefishEncrypt256": {
+      "address": "0x3ab710",
+      "size": 1636
+    },
+    "tls13_hkdf_expand": {
+      "address": "0x5b9bec",
+      "size": 924
+    },
+    "Java_renz_javacodez_vpn_utils_RenzUtils_isRunning": {
+      "address": "0x2f4334",
+      "size": 260
+    },
+    "PKCS5_v2_PBKDF2_keyivgen": {
+      "address": "0x44afc4",
+      "size": 36
+    },
+    "Java_renz_javacodez_vpn_utils_RenzUtils_toggle": {
+      "address": "0x2f5214",
+      "size": 1484
+    },
+    "EVP_PKEY_CTX_set_hkdf_mode": {
+      "address": "0x456320",
+      "size": 360
+    },
+    "ossl_kdf_pbkdf2_default_checks": {
+      "address": "0x22b2dc",
+      "size": 4
+    },
+    "ossl_pkcs5_pbkdf2_hmac_ex": {
+      "address": "0x44a720",
+      "size": 520
+    },
+    "xxtea_decrypt": {
+      "address": "0x3a842c",
+      "size": 752
+    },
+    "Java_renz_javacodez_vpn_utils_RenzUtils_initializeApp": {
+      "address": "0x2f3244",
+      "size": 4124
+    },
+    "ossl_kdf_pbkdf2_functions": {
+      "address": "0x68ee08",
+      "size": 144
+    },
+    "ossl_kdf_hkdf_keyexch_functions": {
+      "address": "0x696b68",
+      "size": 128
+    },
+    "aes256DecryptRenz": {
+      "address": "0x3ab3a8",
+      "size": 4
+    },
+    "getPBKDF232BitKey": {
+      "address": "0x3ab3ac",
+      "size": 88
+    },
+    "PKCS5_v2_PBKDF2_keyivgen_ex": {
+      "address": "0x44ac80",
+      "size": 836
+    },
+    "Java_renz_javacodez_vpn_utils_RenzUtils_containsArray": {
+      "address": "0x2f4438",
+      "size": 800
+    },
+    "i2d_PBKDF2PARAM": {
+      "address": "0x449a8c",
+      "size": 12
+    },
+    "generateHKDF32BitKey": {
+      "address": "0x3aaf50",
+      "size": 260
+    },
+    "generatePBKDF232BitKey": {
+      "address": "0x3ab054",
+      "size": 88
+    },
+    "d2i_PBKDF2PARAM": {
+      "address": "0x449a80",
+      "size": 12
+    },
+    "Java_renz_javacodez_vpn_utils_RenzUtils_setSessionOff": {
+      "address": "0x2f4d94",
+      "size": 1152
+    },
+    "_Z12renz_decryptRKNSt6__ndk112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEE": {
+      "address": "0x3a7008",
+      "size": 600
+    },
+    "threefishEncrypt1024": {
+      "address": "0x3ae308",
+      "size": 7572
+    },
+    "ossl_kdf_hkdf_functions": {
+      "address": "0x68e6f0",
+      "size": 144
+    },
+    "_Z16decryptSensitiveP7_JNIEnvP8_jobjectP11_jbyteArray": {
+      "address": "0x3a64f8",
+      "size": 736
+    },
+    "PKCS5_pbkdf2_set": {
+      "address": "0x449f98",
+      "size": 8
+    },
+    "threefishDecryptBlockBytes": {
+      "address": "0x3ab610",
+      "size": 212
+    },
+    "threefishDecrypt1024": {
+      "address": "0x3b009c",
+      "size": 10084
+    },
+    "PKCS5_pbkdf2_set_ex": {
+      "address": "0x449d94",
+      "size": 492
+    },
+    "PBKDF2PARAM_new": {
+      "address": "0x449a98",
+      "size": 12
+    },
+    "threefishDecryptBlockWords": {
+      "address": "0x3ab6e4",
+      "size": 44
+    },
+    "ossl_kdf_sshkdf_functions": {
+      "address": "0x68f1f8",
+      "size": 144
+    },
+    "xxtea_encrypt": {
+      "address": "0x3a8140",
+      "size": 748
+    },
+    "aes256EncryptRenz": {
+      "address": "0x3ab3a4",
+      "size": 4
+    },
+    "_Z14decryptSpecialP7_JNIEnvP8_jobjectP11_jbyteArray": {
+      "address": "0x3a6084",
+      "size": 1140
+    },
+    "PBKDF2PARAM_it": {
+      "address": "0x449a74",
+      "size": 12
+    },
+    "EVP_PKEY_CTX_set_hkdf_md": {
+      "address": "0x456284",
+      "size": 24
+    },
+    "PKCS5_PBKDF2_HMAC_SHA1": {
+      "address": "0x44a948",
+      "size": 176
+    },
+    "EVP_PKEY_CTX_set1_hkdf_key": {
+      "address": "0x4562c8",
+      "size": 44
+    },
+    "ossl_kdf_pbkdf1_functions": {
+      "address": "0x6a01a8",
+      "size": 144
+    },
+    "threefishSetKey": {
+      "address": "0x3ab408",
+      "size": 264
+    },
+    "_Z15generateHKDFKeyPKhmPh": {
+      "address": "0x3a537c",
+      "size": 260
+    },
+    "FIXED_SALT": {
+      "address": "0x20add4",
+      "size": 32
+    },
+    "getHKDF32BitKey": {
+      "address": "0x3ab404",
+      "size": 4
+    }
+  }
+}

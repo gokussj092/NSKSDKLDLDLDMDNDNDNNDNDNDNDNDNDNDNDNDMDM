@@ -1,0 +1,31 @@
+{
+  "status": "PARTIAL",
+  "remote_catalog": "NETWORK_UNAVAILABLE_IN_THIS_ENVIRONMENT",
+  "remote_whole_document_verified": false,
+  "included": {
+    "outer_json_opened": true,
+    "servers": 1,
+    "tweaks": 1,
+    "version": "1.0.0",
+    "root_gcm_tags_verified": [
+      "Version",
+      "DefUpdateURL",
+      "updater"
+    ],
+    "all_fields_decoded": false,
+    "independent_xts_oracle": "PENDING"
+  },
+  "bootstrap_response": {
+    "outcome": "HTML_NOT_CATALOG",
+    "bytes": 195,
+    "sha256": "5b131ca14aa96311d3432b0062c7443d3b0e6346ec279bd376a75f0a76bcd5d7"
+  },
+  "configured_response": {
+    "outcome": "HTML_NOT_CATALOG",
+    "bytes": 195,
+    "sha256": "5b131ca14aa96311d3432b0062c7443d3b0e6346ec279bd376a75f0a76bcd5d7"
+  },
+  "app_update_metadata": "JSON contains matching package; no APK/artifact URL downloaded",
+  "enabled": false,
+  "cloud_runtime_changed": false
+}

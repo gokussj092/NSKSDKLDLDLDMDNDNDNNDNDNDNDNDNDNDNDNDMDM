@@ -1,0 +1,50 @@
+{
+  "metadata": [
+    {
+      "baseOffset": "0x4018",
+      "mapOffset": "0x163600",
+      "stringDataItemsVisited": 42543,
+      "typeItemsVisited": 11624,
+      "inRangeTypeStringReferences": 10600,
+      "selectedTypeIdentifiers": [
+        "Lcom/evozi/injector/fragment/HomeFragment$fetchAndUpdateServerConfig$1$onResponse$1;",
+        "Lcom/evozi/injector/fragment/HomeFragment$fetchAndUpdateServerConfig$1;",
+        "Lcom/evozi/injector/model/ConfigEhiServer;",
+        "Lcom/evozi/injector/model/EncryptedApi;",
+        "Lcom/evozi/injector/model/LogicalServers;",
+        "Lcom/evozi/injector/views/ServersActivity$mUiCommunicator$1$onEncryptedResponse$1;",
+        "Lcom/evozi/injector/views/ServersActivity$mUiCommunicator$1;",
+        "Lcom/evozi/injector/views/ServersActivity$showOldServersData$1;",
+        "Lcom/evozi/injector/views/ServersActivity$\uffa0\u206b\u206b;",
+        "Lcom/evozi/injector/views/ServersActivity$\uffa0\u206c\u034f;",
+        "Lcom/evozi/injector/views/ServersActivity$\uffa0\u206e\u034f$\uffa0\u206c\u034f;",
+        "Lcom/evozi/injector/views/ServersActivity$\uffa0\u206e\u034f$\uffa0\u206e\u034f;",
+        "Lcom/evozi/injector/views/ServersActivity$\uffa0\u206e\u034f;",
+        "Lcom/evozi/injector/views/ServersActivity;"
+      ],
+      "completeDexReconstructed": false
+    },
+    {
+      "baseOffset": "0x581000",
+      "mapOffset": "0x6ee49c",
+      "stringDataItemsVisited": 35460,
+      "typeItemsVisited": 12653,
+      "inRangeTypeStringReferences": 12653,
+      "selectedTypeIdentifiers": [],
+      "completeDexReconstructed": false
+    },
+    {
+      "baseOffset": "0x16cc000",
+      "mapOffset": "0x172c228",
+      "stringDataItemsVisited": 14511,
+      "typeItemsVisited": 3354,
+      "inRangeTypeStringReferences": 0,
+      "selectedTypeIdentifiers": [],
+      "completeDexReconstructed": false
+    }
+  ],
+  "apkCodeExecuted": false,
+  "authenticationMaterialCollected": false,
+  "catalogVerified": false,
+  "limitation": "Selected class names establish server UI/model presence only. Overwritten headers/tables and unsupported class-data do not establish a valid request, endpoint, credentials or authentication requirement."
+}

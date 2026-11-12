@@ -1,0 +1,17 @@
+[
+  {
+    "transport": "REAL_HTTP",
+    "status": "NETWORK_UNAVAILABLE",
+    "code": "REMOTE_NETWORK_DENIED",
+    "exit_code": 3
+  },
+  {
+    "transport": "SIMULATED_HTTP_REAL_BYTES",
+    "calls": 1,
+    "wholeWorkerEqual": true,
+    "version": "2.427",
+    "servers": 64,
+    "networks": 1240,
+    "exit_code": 0
+  }
+]

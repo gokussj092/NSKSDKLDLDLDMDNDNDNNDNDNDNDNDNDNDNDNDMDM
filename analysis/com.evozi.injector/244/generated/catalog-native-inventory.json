@@ -1,0 +1,40 @@
+{
+  "nativeContainers": [
+    {
+      "name": "libevozi.so",
+      "recovered": false,
+      "validations": [
+        "ValueError",
+        "ValueError"
+      ]
+    },
+    {
+      "name": "libevozi_sentinel.so",
+      "recovered": false,
+      "validations": [
+        "ValueError",
+        "ValueError"
+      ]
+    },
+    {
+      "name": "libdf.so",
+      "recovered": false,
+      "validations": [
+        "ValueError",
+        "ValueError"
+      ]
+    },
+    {
+      "name": "libtunnelcore.so",
+      "recovered": false,
+      "validations": [
+        "ValueError",
+        "ValueError"
+      ]
+    }
+  ],
+  "sourceCandidates": [],
+  "nativeApkCodeExecuted": false,
+  "authenticationMaterialCollected": false,
+  "catalogVerified": false
+}

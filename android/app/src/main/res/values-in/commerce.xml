@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_sign_in">Masuk</string>
+    <string name="account_web_description">Kelola akun dan pembelian di situs resmi. Fitur gratis tetap tersedia tanpa akun.</string>
+    <string name="account_continue_web">Lanjutkan di web</string>
+    <string name="account_my_account">Akun saya</string>
+    <string name="account_store">Toko</string>
+    <string name="account_open_menu">Buka menu</string>
+</resources>

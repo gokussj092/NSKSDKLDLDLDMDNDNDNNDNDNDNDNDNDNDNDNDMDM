@@ -1,0 +1,167 @@
+name: F7-A0-P05 APK Lab
+
+on:
+  push:
+    branches: [feat/nuevas-integraciones]
+    paths:
+      - cloud/apk_analysis/input_gate.py
+      - scripts/ci/build_p05_owned_apk.sh
+      - tests/test_a0_apk_input_limits.py
+      - tests/test_a0_p05_failure_recovery.py
+      - scripts/ci/p05_sandbox_faults.py
+      - cloud/apk_analysis/Dockerfile
+      - cloud/apk_analysis/compose.yaml
+      - cloud/apk_analysis/runtime_preflight.py
+      - scripts/apk_analysis/inspect_apk.py
+      - scripts/apk_analysis/requirements.txt
+      - .github/workflows/f7-a0-p05-apk-lab.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  owned-apk-sandbox:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: P05 ZIP boundary tests with deterministic fixtures
+        run: python -m unittest discover -s tests -p 'test_a0_apk_input_limits.py' -v
+      - name: P05 real SIGKILL, disk failure and human-retention recovery tests
+        run: python -m unittest discover -s tests -p 'test_a0_p05_failure_recovery.py' -v
+      - name: Generate first-party signed Android APK and APKS wrapper
+        run: bash scripts/ci/build_p05_owned_apk.sh "$RUNNER_TEMP/p05-owned"
+      - name: Check signed fixture and APKS using offline input gate
+        run: |
+          python cloud/apk_analysis/input_gate.py "$RUNNER_TEMP/p05-owned/owned-signed.apk"
+          python cloud/apk_analysis/input_gate.py "$RUNNER_TEMP/p05-owned/owned-container.apks"
+          if python cloud/apk_analysis/input_gate.py "$RUNNER_TEMP/p05-owned/negative-ratio.apk"; then
+            echo "P05: ZIP bomb was incorrectly accepted" >&2
+            exit 1
+          fi
+      - name: Build P03 isolated tooling image (no installation per APK)
+        run: docker build -f cloud/apk_analysis/Dockerfile -t spdecode-apk-tools:p05 .
+      - name: Verify container runtimes without downloading JADX per APK
+        run: |
+          docker run --rm --network none --read-only --cap-drop ALL \
+            --security-opt no-new-privileges --user 65532:65532 \
+            --memory 3g --pids-limit 64 --cpus 1.5 \
+            --tmpfs /tmp:rw,noexec,nosuid,nodev,size=64m \
+            spdecode-apk-tools:p05 python -B cloud/apk_analysis/runtime_preflight.py --check --allow-unprepared
+      - name: Execute unchanged inspector offline on owned APK and APKS
+        run: |
+          mkdir -p "$RUNNER_TEMP/p05-apk-out" "$RUNNER_TEMP/p05-apks-out"
+          sudo chown 65532:65532 "$RUNNER_TEMP/p05-apk-out" "$RUNNER_TEMP/p05-apks-out"
+          for format in apk apks; do
+            if [ "$format" = apk ]; then
+              INPUT=owned-signed.apk
+              OUTPUT="$RUNNER_TEMP/p05-apk-out"
+            else
+              INPUT=owned-container.apks
+              OUTPUT="$RUNNER_TEMP/p05-apks-out"
+            fi
+            docker run --rm --network none --read-only --cap-drop ALL \
+              --security-opt no-new-privileges --user 65532:65532 \
+              --memory 3g --pids-limit 64 --cpus 1.5 \
+              --tmpfs /tmp:rw,noexec,nosuid,nodev,size=64m \
+              --mount "type=bind,source=$RUNNER_TEMP/p05-owned,target=/lab,readonly" \
+              --mount "type=bind,source=$OUTPUT,target=/output" \
+              spdecode-apk-tools:p05 \
+              python -B scripts/apk_analysis/inspect_apk.py "/lab/$INPUT" /output
+          done
+      - name: Verify extracted DEX, package identity and checksum
+        run: |
+          # The inspector intentionally emits private 0600 files under UID 65532.
+          # Read test-only metadata with runner-root, not by weakening file modes.
+          sudo env RUNNER_TEMP="$RUNNER_TEMP" python3 - <<'PY'
+          import hashlib,json,os,pathlib
+          base=pathlib.Path(os.environ["RUNNER_TEMP"])
+          for name in ("p05-apk-out","p05-apks-out"):
+              folder=base/name
+              data=json.loads((folder/"metadata.json").read_text("utf-8"))
+              assert data["package"]=="org.spdecode.p05fixture", "Wrong owned package"
+              assert str(data["versionCode"])=="1"
+              dex=folder/"dex/classes.dex"
+              assert dex.is_file() and dex.read_bytes()[:4]==b"dex\n", "No generated real DEX"
+              actual=hashlib.sha256(dex.read_bytes()).hexdigest()
+              assert any(e["path"]=="classes.dex" and e["sha256"]==actual for e in data["entries"])
+          summary={"schema_version":1,"owned_signed_apk":"INSPECTED_COMPILED_LAB_APP",
+                   "owned_apks":"INSPECTED_SYNTHETIC_WRAPPER_NOT_BUNDLETOOL",
+                   "input_gate":"PASSED","isolated_container":"PASSED",
+                   "dex_extracted":"PASSED","third_party_apk_tested":False,
+                   "jadx_decompilation_tested":False,"production_enabled":False}
+          (base/"p05-sanitized-summary.json").write_text(json.dumps(summary,indent=2)+"\n")
+          print(json.dumps(summary,sort_keys=True))
+          PY
+      - name: Preload original checksum-pinned JADX once in maintenance container
+        run: |
+          # Image is built once; the named tool cache is a separate persistent volume.
+          docker tag spdecode-apk-tools:p05 spdecode-apk-tools:p03
+          docker compose -f cloud/apk_analysis/compose.yaml --profile maintenance run --rm apk-resource-preload
+      - name: Verify JADX cache offline and decompile first-party DEX
+        run: |
+          # The second --install invocation MUST use the existing verified jar,
+          # since this container has no network access.
+          docker run --rm --network none --read-only --cap-drop ALL \
+            --security-opt no-new-privileges --user 65532:65532 \
+            --memory 3g --pids-limit 64 --cpus 1.5 \
+            --tmpfs /tmp:rw,noexec,nosuid,nodev,size=64m \
+            --mount type=volume,source=spdecode-apk-tools-cache,target=/opt/spdecode/scripts/apk_analysis/cache,readonly \
+            spdecode-apk-tools:p05 python -B scripts/apk_analysis/decompile.py --install
+          docker run --rm --network none --read-only --cap-drop ALL \
+            --security-opt no-new-privileges --user 65532:65532 \
+            --memory 3g --pids-limit 64 --cpus 1.5 \
+            --tmpfs /tmp:rw,noexec,nosuid,nodev,size=64m \
+            --mount type=volume,source=spdecode-apk-tools-cache,target=/opt/spdecode/scripts/apk_analysis/cache,readonly \
+            spdecode-apk-tools:p05 python -B cloud/apk_analysis/runtime_preflight.py --check
+          mkdir -p "$RUNNER_TEMP/p05-jadx-out"
+          sudo chown 65532:65532 "$RUNNER_TEMP/p05-jadx-out"
+          # Log contents are safe for this *first-party generated fixture only*.
+          # Never emit JADX source/logs for private customer APKs.
+          set +e
+          docker run --rm --network none --read-only --cap-drop ALL \
+            --security-opt no-new-privileges --user 65532:65532 \
+            --memory 3g --pids-limit 64 --cpus 1.5 \
+            --tmpfs /tmp:rw,noexec,nosuid,nodev,size=64m \
+            --mount "type=bind,source=$RUNNER_TEMP/p05-owned,target=/lab,readonly" \
+            --mount "type=bind,source=$RUNNER_TEMP/p05-jadx-out,target=/output" \
+            --mount type=volume,source=spdecode-apk-tools-cache,target=/opt/spdecode/scripts/apk_analysis/cache,readonly \
+            spdecode-apk-tools:p05 \
+            python -B scripts/apk_analysis/decompile.py /lab/owned-signed.apk /output
+          jadx_exit=$?
+          set -e
+          if [ "$jadx_exit" -ne 0 ]; then
+            echo "P05: owned-fixture JADX diagnostics (max 50 lines)" >&2
+            sudo tail -n 50 "$RUNNER_TEMP/p05-jadx-out/jadx.log" || true
+            exit "$jadx_exit"
+          fi
+          sudo find "$RUNNER_TEMP/p05-jadx-out" -type f -name '*.java' -print -quit | grep -q .
+          sudo env RUNNER_TEMP="$RUNNER_TEMP" python3 - <<'PY'
+          import json,os,pathlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"p05-sanitized-summary.json"
+          obj=json.loads(p.read_text())
+          obj["jadx_decompilation_tested"]=True
+          obj["jadx_cache_reused_offline"]=True
+          p.write_text(json.dumps(obj,sort_keys=True,indent=2)+"\n")
+          print("P05: owned DEX decompiled offline using checksum-verified persistent JADX")
+          PY
+      - name: P05 Docker fault injection (memory, disk, timeout, sandbox, offline cache)
+        run: python scripts/ci/p05_sandbox_faults.py --image spdecode-apk-tools:p05 --output "$RUNNER_TEMP/p05-fault-summary.json"
+      - name: Publish sanitized report only, never APKs or signing key
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p05-lab-summary
+          path: |
+            ${{ runner.temp }}/p05-sanitized-summary.json
+            ${{ runner.temp }}/p05-fault-summary.json
+          if-no-files-found: ignore
+          retention-days: 7

@@ -1,0 +1,191 @@
+{
+  "schema_version": 1,
+  "package_name": "com.opentunnel.app",
+  "app_name": "OpenTunnel",
+  "version_name": "1.1.1",
+  "version_code": 61,
+  "observed_at": "2026-11-09",
+  "source_category": "public distribution/static sample and public catalogue",
+  "authorization_note": "Owner requested interoperability on the existing feature branch. Public read-only catalogue requests, no cloud authentication bypass, no per-device SSH account generation, no APK execution or redistribution. Mirror identity is pinned, publisher provenance is not cryptographically established.",
+  "status": "PARTIAL",
+  "targets": [
+    {
+      "kind": "files",
+      "extensions": [
+        "tnl"
+      ],
+      "status": "VERIFIED_SYNTHETIC",
+      "scope": "build61 static call chain + independent JCA OPL2/dotted/legacy vectors; no phone-produced file supplied"
+    },
+    {
+      "kind": "catalog",
+      "status": "VERIFIED_REAL",
+      "scope": "complete public SSH hosts only; no account username/password available"
+    }
+  ],
+  "inputs": {
+    "package": "com.opentunnel.app",
+    "versionName": "1.1.1",
+    "versionCode": 61,
+    "apkBytes": 7903443,
+    "apkSha256": "b4351ea4b967da946066a27b45a369a657842b36bedaa32562be37ff3cb74d36",
+    "xapkBytes": 20173824,
+    "xapkSha256": "d134b2c1563a55c64acdb28569cfdbb2fd48f78ffa9621528325915543c0d9e2",
+    "certificateSha256": [
+      "85c0c210daa2b87e667a74763d692fa612b3b18dc96841cb7db9ba8da267ec95"
+    ],
+    "cryptographicApkSignatureVerified": false,
+    "apkCodeExecuted": false,
+    "sourceCategory": "public distribution for owner-requested interoperability",
+    "sourceUrl": "https://d.apkpure.net/b/XAPK/com.opentunnel.app?versionCode=61"
+  },
+  "tooling": [
+    {
+      "name": "Owned static/probe/verification tools",
+      "path": "analysis/com.opentunnel.app/61/tools"
+    },
+    {
+      "name": "Owned public acquisition/intake",
+      "path": "analysis/_intake/opentunnel-mdproxy-2026-11-09/tools"
+    },
+    {
+      "name": "Full JADX",
+      "version": "1.5.6",
+      "path": "analysis/_intake/austro-cat-2026-11-09/tools/decompile.py",
+      "exit_code": 3,
+      "global_errors": 24
+    },
+    {
+      "name": "Independent oracle",
+      "path": "analysis/com.opentunnel.app/61/tools/OpenOracle.java"
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "JADX",
+      "version": "1.5.6",
+      "source": "https://github.com/skylot/jadx/releases/tag/v1.5.6",
+      "license": "Apache-2.0",
+      "lockfile": "analysis/com.opentunnel.app/61/dependencies.lock.json"
+    },
+    {
+      "name": "OpenJDK",
+      "version": "21.0.13",
+      "source": "https://openjdk.org/",
+      "license": "GPL-2.0-with-Classpath-exception",
+      "lockfile": "analysis/com.opentunnel.app/61/dependencies.lock.json"
+    },
+    {
+      "name": "Node.js",
+      "version": "24.22.1 (local research tests); 22 in CI",
+      "source": "https://nodejs.org/",
+      "license": "MIT",
+      "lockfile": "analysis/com.opentunnel.app/61/dependencies.lock.json"
+    },
+    {
+      "name": "libsodium (host system library, not APK library)",
+      "version": "1.0.18",
+      "source": "https://doc.libsodium.org/",
+      "license": "ISC",
+      "lockfile": "analysis/com.opentunnel.app/61/dependencies.lock.json"
+    },
+    {
+      "name": "Python",
+      "version": "3.12.14",
+      "source": "https://python.org/",
+      "license": "PSF",
+      "lockfile": "analysis/com.opentunnel.app/61/dependencies.lock.json"
+    },
+    {
+      "name": "Androguard",
+      "version": "4.1.3",
+      "source": "https://github.com/androguard/androguard",
+      "license": "Apache-2.0",
+      "lockfile": "analysis/com.opentunnel.app/61/dependencies.lock.json"
+    },
+    {
+      "name": "pycryptodome",
+      "version": "3.23.0",
+      "source": "https://www.pycryptodome.org/",
+      "license": "BSD-2-Clause / Public-Domain components",
+      "lockfile": "analysis/com.opentunnel.app/61/dependencies.lock.json"
+    },
+    {
+      "name": "argon2-cffi",
+      "version": "25.1.0",
+      "source": "https://github.com/hynek/argon2-cffi",
+      "license": "MIT",
+      "lockfile": "analysis/com.opentunnel.app/61/dependencies.lock.json"
+    },
+    {
+      "name": "pyelftools",
+      "version": "0.32",
+      "source": "https://github.com/eliben/pyelftools",
+      "license": "Public-Domain",
+      "lockfile": "analysis/com.opentunnel.app/61/dependencies.lock.json"
+    },
+    {
+      "name": "capstone",
+      "version": "5.0.6",
+      "source": "https://www.capstone-engine.org/",
+      "license": "BSD-3-Clause",
+      "lockfile": "analysis/com.opentunnel.app/61/dependencies.lock.json"
+    },
+    {
+      "name": "PyYAML (manual workflow syntax check only)",
+      "version": "6.0.3",
+      "source": "https://pyyaml.org/",
+      "license": "MIT",
+      "lockfile": "analysis/com.opentunnel.app/61/dependencies.lock.json"
+    }
+  ],
+  "code_paths": [
+    "cloud/web/lib/server-vpn-provider.mjs",
+    "cloud/web/lib/server-vpn-catalog.mjs",
+    "cloud/web/lib/c12-provider-controls.mjs",
+    "cloud/web/app/api/v1/server-vpn/icon/route.js",
+    "cloud/workers/python/engine.py",
+    "cloud/workers/python/catalog_vpn_bridge.py",
+    "decoders/Python/apps/OpenTunnel/server_catalog_decoder.py",
+    "decoders/Python/apps/OpenTunnel/file_decoder.py",
+    "decoders/Python/apps/OpenTunnel/file_codec.py",
+    "cloud/web/content/file-formats.json",
+    "cloud/web/lib/c3-gateway.mjs"
+  ],
+  "evidence_refs": [
+    "analysis/com.opentunnel.app/61/generated/catalog-proof.json",
+    "analysis/com.opentunnel.app/61/generated/download-proof.json",
+    "analysis/com.opentunnel.app/61/generated/identity.json",
+    "analysis/com.opentunnel.app/61/generated/inspection.json",
+    "analysis/com.opentunnel.app/61/generated/native-proof.json",
+    "analysis/com.opentunnel.app/61/generated/static-proof.json",
+    "analysis/com.opentunnel.app/61/generated/validation.json",
+    "analysis/com.opentunnel.app/61/ANALYSIS.md",
+    "analysis/com.opentunnel.app/61/RESULTS.md",
+    "analysis/com.opentunnel.app/61/REPRODUCE.md",
+    "analysis/com.opentunnel.app/61/DEPENDENCIES.md",
+    "analysis/com.opentunnel.app/61/dependencies.lock.json",
+    "analysis/com.opentunnel.app/61/tests/test_method.py"
+  ],
+  "limitations": [
+    "Extracted signer certificate is not a full APK signature verification.",
+    "JADX global exit3; only relevant method call chain statically traced.",
+    "No VPN connection, phone UI or APK build tested.",
+    "Human review before merge/rollout; no unattended tool approval, main merge or VPS deployment.",
+    "No real exported .tnl supplied; synthetic vectors do not certify a phone export.",
+    "Public SSH reply contains host metadata, not per-account credentials.",
+    "Redacted SSH fields cannot be recovered; restrictions are preserved; no compatible export certified.",
+    "Historical XOR is unauthenticated; historical C0 dotted framing remains separate."
+  ],
+  "network_requirements": [
+    "Fixed public HTTPS GET only; TLS/DNS/private-address and redirect guards retained.",
+    "Public sample acquisition is manual tooling, separate from production catalog network policy."
+  ],
+  "manual_steps": [
+    "Review branch evidence and server CI before rollout."
+  ],
+  "unresolved_questions": [
+    "Owner-provided build61 phone export is still needed for real file certification.",
+    "SSH account generation is deliberately outside public catalogue download."
+  ]
+}

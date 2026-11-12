@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_sign_in">Se connecter</string>
+    <string name="account_web_description">Gérez votre compte et vos achats sur le site officiel. Les fonctions gratuites restent accessibles sans compte.</string>
+    <string name="account_continue_web">Continuer sur le Web</string>
+    <string name="account_my_account">Mon compte</string>
+    <string name="account_store">Boutique</string>
+    <string name="account_open_menu">Ouvrir le menu</string>
+</resources>

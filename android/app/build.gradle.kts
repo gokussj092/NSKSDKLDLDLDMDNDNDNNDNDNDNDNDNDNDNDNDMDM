@@ -109,10 +109,27 @@ internal object VaultBuildKey {
 
 val cloudOrigin=providers.environmentVariable("SPDECODE_CLOUD_API_BASE_URL").orNull.orEmpty().trim()
 val enableCloud=cloudOrigin.isNotEmpty()
+val nativeOffline=providers.environmentVariable("SPDECODE_OFFLINE_NATIVE").orNull=="true"
+// Opt-in SDK preparation. Regular builds and Offline contain no ad SDK.
+val enableUnityAds=providers.gradleProperty("spdecodeUnityAds").orNull=="true"
+val unityAppKey=providers.environmentVariable("SPDECODE_UNITY_APP_KEY").orNull.orEmpty().trim()
+val unityInterstitialId=providers.environmentVariable("SPDECODE_UNITY_INTERSTITIAL_ID").orNull.orEmpty().trim()
+val unityUmpAppId=providers.environmentVariable("SPDECODE_UNITY_UMP_APP_ID").orNull.orEmpty().trim()
+if(enableUnityAds) {
+    require(unityAppKey.matches(Regex("[A-Za-z0-9_-]{6,80}"))) { "Unity LevelPlay app key missing or invalid" }
+    require(unityInterstitialId.matches(Regex("[A-Za-z0-9_-]{6,80}"))) { "Unity interstitial ID missing or invalid" }
+    require(unityUmpAppId.matches(Regex("ca-app-pub-[0-9]{16}~[0-9]{10}"))) {
+        "Google UMP app ID missing or invalid; ads may not start without a configured CMP"
+    }
+}
+require(!enableUnityAds || (enableCloud && !nativeOffline)) { "Unity Ads is Online-only" }
+require(!nativeOffline || !enableCloud) { "Offline must not configure a Cloud origin" }
 val enableQaBuild=providers.environmentVariable("SPDECODE_CLOUD_QA_BUILD").orNull=="true"
 // Play In-App Updates is an AAB-only compile-time feature, not a runtime switch.
 // Ordinary signed APKs (Telegram), legacy/QA builds and ownership proofs omit it.
 val enablePlayAab=providers.gradleProperty("spdecodePlayAab").orNull=="true"
+require(!nativeOffline || !enablePlayAab) { "Standalone Offline APK must not include Play AAB updates" }
+require(!nativeOffline || !enableQaBuild) { "Offline cannot enable Cloud QA" }
 require(!enablePlayAab || (enableCloud && !enableQaBuild)) {
     "Play update AAB requires a non-QA Cloud build"
 }
@@ -152,7 +169,7 @@ gradle.taskGraph.whenReady {
         }
     }
     if(distributesRelease) {
-        require(enableCloud) { "Release distribution requires the Cloud-only source set" }
+        require(enableCloud || nativeOffline) { "Release distribution requires Cloud or standalone native Offline" }
         require(!enableQaBuild) { "Release distribution must not enable the legacy QA launcher" }
     }
 }
@@ -347,9 +364,16 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
         activity = replaceOnce(activity,
             "                onDeleteSelected={ids->deleteHistory(ids)},",
             """                onDeleteSelected={ids->deleteHistory(ids)},
-                onExportHistory={entry->export(
-                    com.ghostdeveloper.spdecode.cloud.CloudHistoryJsonExport.content(entry),
-                    entry.filename,ResultExport.JSON)},
+                onExportHistory={entry->scope.launch {
+                    try {
+                        val opened=if(entry.metadataOnly)historyStore.open(entry.id) else entry
+                        sessionVm.stagedResultExport=opened to ResultExport.JSON
+                        val safe=opened.filename.substringBeforeLast('.')
+                            .replace(Regex("[^A-Za-z0-9._-]"),"_").take(50).ifEmpty{"spdecode"}
+                        jsonExporter.launch(safe+"-decoded.json")
+                    }catch(error:CancellationException){throw error}
+                     catch(_:Exception){toast(R.string.write_error)}
+                }},
             """.trimEnd())
         activity = replaceOnce(activity,
             "                onDecodeServerCatalog={decodeNurServers()},",
@@ -384,6 +408,9 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
             section=replaceOnce(section,"historyPreferences.setSelectedId("+entry+".id)",
                 "historyPreferences.setSelectedId(if(previewDeferred) null else "+entry+".id)")
             section=replaceOnce(section,"                tab=0","                tab=if(previewDeferred)1 else 0")
+            section=section.replace(
+                "if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED)\n                    onlineAds?.onSavedResult(",
+                "if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED && !previewDeferred)\n                    onlineAds?.onSavedResult(")
             activity=activity.substring(0,from)+section+activity.substring(to)
         }
         updateResultBlock("    private fun decodeText(userText:String,password:ByteArray?=null) {",
@@ -406,37 +433,37 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
         var batch=activity.substring(batchStart,batchEnd)
         // QA-only failures report sanitized status codes locally to the tester.
         // Never display user payloads, full filenames, credentials or exceptions.
-        // Re-read the encrypted catalog for every user-initiated batch.
-        // A background worker can update it while the Activity is alive.
+        // The base Activity already re-reads the verified local encrypted
+        // formats before each import. Keep the Cloud-only opt-in refresh
+        // behavior when a suffix is not recognized by that snapshot.
         batch=replaceOnce(batch,
-            "                historyLoad?.await()\n                var failedNpvs=false",
-            """                historyLoad?.await()
-                var latestFileFormats=if(BuildConfig.SPDECODE_CLOUD_ENABLED)
-                    serverVpnCatalog.cachedFormats().also { fileFormats=it }
-                else emptyList()
-                var checkedUnknownSuffix=false
-                var failedNpvs=false""")
-        // Only opted-in devices refresh automatically on an unknown suffix.
-        // Otherwise the user can manually update the catalog in Formats.
+            "                val verifiedImportFormats=if(BuildConfig.SPDECODE_CLOUD_ENABLED) {",
+            """                var checkedUnknownSuffix=false
+                var verifiedImportFormats=if(BuildConfig.SPDECODE_CLOUD_ENABLED) {""")
         batch=replaceOnce(batch,
-            """                    val supported=(if(BuildConfig.SPDECODE_CLOUD_ENABLED &&
-                        fileFormats.isNotEmpty())
-                        AndroidDecoderCatalog.detect(routingName,fileFormats)
-                    else null)""",
-            """                    var remoteFormat=if(BuildConfig.SPDECODE_CLOUD_ENABLED)
-                        AndroidDecoderCatalog.detect(routingName,latestFileFormats) else null
-                    if(BuildConfig.SPDECODE_CLOUD_ENABLED && remoteFormat==null &&
+            """                    val supported=ImportFormatRouter.detect(
+                        routingName,BuildConfig.SPDECODE_CLOUD_ENABLED,
+                        verifiedImportFormats
+                    ) { AndroidDecoderCatalog.read(this@MainActivity) }
+                        ?:throw DecodeFailure(R.string.unsupported)""",
+            """                    var candidateFormat=ImportFormatRouter.detect(
+                        routingName,BuildConfig.SPDECODE_CLOUD_ENABLED,
+                        verifiedImportFormats
+                    ) { AndroidDecoderCatalog.read(this@MainActivity) }
+                    if(candidateFormat==null && BuildConfig.SPDECODE_CLOUD_ENABLED &&
                         !checkedUnknownSuffix && CloudCatalogUpdates.enabled(this@MainActivity)) {
                         checkedUnknownSuffix=true
                         try {
                             serverVpnApps=serverVpnCatalog.refreshIfDue(force=true)
-                            latestFileFormats=serverVpnCatalog.cachedFormats()
-                            fileFormats=latestFileFormats
-                            remoteFormat=AndroidDecoderCatalog.detect(routingName,latestFileFormats)
+                            verifiedImportFormats=serverVpnCatalog.cachedFormats()
+                            fileFormats=verifiedImportFormats
+                            candidateFormat=ImportFormatRouter.detect(
+                                routingName,true,verifiedImportFormats
+                            ) { AndroidDecoderCatalog.read(this@MainActivity) }
                         }catch(error:CancellationException){throw error}
                          catch(_:Exception){ /* Keep the last verified snapshot. */ }
                     }
-                    val supported=remoteFormat""")
+                    val supported=candidateFormat?:throw DecodeFailure(R.string.unsupported)""")
         batch=replaceOnce(batch,
             "cloudClient.decodeFile(supported.suffix,input,password=secret,",
             """cloudClient.decodeFile(supported.suffix,input,password=secret,
@@ -511,8 +538,8 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
         batch=replaceOnce(batch,"historyPreferences.setSelectedId(processed.id)",
             "historyPreferences.setSelectedId(if(previewDeferred) null else processed.id)")
         batch=replaceOnce(batch,
-            "                    tab=0\n                }\n                if(generation==importGeneration",
-            "                    tab=if(previewDeferred)1 else 0\n                }\n                if(generation==importGeneration")
+            "                    tab=0\n                    if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED)\n                        onlineAds?.onSavedResult(this@MainActivity,processed.id,saved)\n                }\n                if(generation==importGeneration",
+            "                    tab=if(previewDeferred)1 else 0\n                    if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED && !previewDeferred)\n                        onlineAds?.onSavedResult(this@MainActivity,processed.id,saved)\n                }\n                if(generation==importGeneration")
         activity=activity.substring(0,batchStart)+batch+activity.substring(batchEnd)
 
         // Compatible export changes only the generated Cloud menu; C0 source
@@ -536,25 +563,25 @@ val prepareCloudHistoryUiSource = tasks.register("prepareCloudHistoryUiSource") 
                 },
                 confirmButton={TextButton(onClick={dialog=null}){""")
 
-        // Refresh stays compact in APK; in Server VPN Cloud builds use the
-        // authenticated catalog-refresh component only for the full-size control.
+        // The shared header now shows one refresh control without the Credits shortcut.
+        // Cloud builds replace that control with the authenticated catalog component.
         app = replaceOnce(app,
-            """                OutlinedButton(
-                    onClick=onRefreshServerVpn,enabled=enableServerVpnRefresh,
-                    modifier=Modifier.testTag("server_vpn_manual_refresh"),
-                    contentPadding=PaddingValues(horizontal=12.dp,vertical=7.dp),
-                ) {
-                    if(refreshingServerVpn) CircularProgressIndicator(
-                        modifier=Modifier.size(17.dp),strokeWidth=2.dp,color=White)
-                    else Icon(Icons.Outlined.Refresh,null,tint=White,
-                        modifier=Modifier.size(17.dp))
-                    Spacer(Modifier.width(6.dp))
-                    Text(stringResource(if(refreshingServerVpn) R.string.catalog_checking
-                        else R.string.catalog_check_action),fontSize=12.sp,color=White)
-                }
+            """            OutlinedButton(
+                onClick=onRefreshServerVpn,enabled=enableServerVpnRefresh,
+                modifier=Modifier.testTag("server_vpn_manual_refresh"),
+                contentPadding=PaddingValues(horizontal=12.dp,vertical=7.dp),
+            ) {
+                if(refreshingServerVpn) CircularProgressIndicator(
+                    modifier=Modifier.size(17.dp),strokeWidth=2.dp,color=White)
+                else Icon(Icons.Outlined.Refresh,null,tint=White,
+                    modifier=Modifier.size(17.dp))
+                Spacer(Modifier.width(6.dp))
+                Text(stringResource(if(refreshingServerVpn) R.string.catalog_checking
+                    else R.string.catalog_check_action),fontSize=12.sp,color=White)
+            }
 """,
-            """                com.ghostdeveloper.spdecode.cloud.CatalogRefreshControl(
-                    refreshingServerVpn,enableServerVpnRefresh,onRefreshServerVpn)
+            """            com.ghostdeveloper.spdecode.cloud.CatalogRefreshControl(
+                refreshingServerVpn,enableServerVpnRefresh,onRefreshServerVpn)
 """)
         app = replaceOnce(app,
             "        if(catalogLoading) Row(verticalAlignment=Alignment.CenterVertically) {",
@@ -684,12 +711,18 @@ val prepareCloudOnlySources = tasks.register<Sync>("prepareCloudOnlySources") {
         exclude("com/ghostdeveloper/spdecode/SpDecodeApp.kt")
         exclude("com/ghostdeveloper/spdecode/MainActivity.kt")
         exclude("com/ghostdeveloper/spdecode/FunctionalSettingsPanel.kt")
+        if(!enableQaBuild) {
+            exclude("com/ghostdeveloper/spdecode/cloud/CloudApkQaClient.kt")
+            exclude("com/ghostdeveloper/spdecode/cloud/ApkQaWorker.kt")
+        }
     }
+    if(!enableQaBuild) from("src/comingSoon/java")
     // This catalog is public display metadata, not a decryption engine.
     from("src/main/java/com/ghostdeveloper/spdecode/parity/AndroidDecoderCatalog.kt") {
         into("com/ghostdeveloper/spdecode/parity")
     }
     from("src/cloud/java")
+    if(enableUnityAds) from("src/unityAds/java")
     if (enablePlayAab) from("src/playUpdate/java")
     dependsOn(prepareCloudHistoryUiSource)
     from(cloudHistoryUiRoot)
@@ -725,7 +758,14 @@ android {
             enableSplit = false
         }
     }
-    if (enableCloud) {
+    if (nativeOffline) {
+        // Standalone offline application: only its own UI, resources and JNI engine.
+        sourceSets.getByName("main").manifest.srcFile("src/offlineNative/AndroidManifest.xml")
+        sourceSets.getByName("main").java.setSrcDirs(listOf(file("src/offlineNative/java")))
+        sourceSets.getByName("main").res.setSrcDirs(listOf(file("src/offlineNative/res")))
+        sourceSets.getByName("main").assets.setSrcDirs(emptyList<File>())
+        sourceSets.getByName("androidTest").java.setSrcDirs(listOf(file("src/offlineNative/androidTest")))
+    } else if (enableCloud) {
         // Cloud source inputs are isolated from all 107 local engine classes.
         sourceSets.getByName("main").manifest.srcFile("src/cloud/AndroidManifest.xml")
         sourceSets.getByName("main").java.setSrcDirs(listOf(cloudSourceRoot))
@@ -740,19 +780,27 @@ android {
         sourceSets.getByName("main").assets.setSrcDirs(listOf(vaultPackagedAssets))
         sourceSets.getByName("main").java.srcDir(vaultGeneratedKotlin)
     }
+    // Viewer and native result tests exercise the same production classes in both builds.
+    if (!nativeOffline) sourceSets.getByName("androidTest").java.srcDir("src/sharedAndroidTest/java")
     compileSdk = 36
     ndkVersion = "27.2.12479018"
     defaultConfig {
         applicationId = "com.ghostdeveloper.spdecode"
+        if(nativeOffline) applicationId = "com.ghostdeveloper.spdecode" + ".offline"
         minSdk = 24
         targetSdk = 36
-        versionCode = 41
-        versionName = "1.1.26"
+        versionCode = 42
+        versionName = "1.1.27"
+        if(nativeOffline) versionName = listOf("1.1.27", "offline.alpha1").joinToString("-")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // A public API origin is not a secret; all server secrets stay in the VPS.
         buildConfigField("boolean", "SPDECODE_CLOUD_ENABLED", enableCloud.toString())
         buildConfigField("boolean", "SPDECODE_QA_BUILD", enableQaBuild.toString())
         buildConfigField("boolean", "SPDECODE_PLAY_UPDATES", enablePlayAab.toString())
+        buildConfigField("boolean", "SPDECODE_APK_QA_ENABLED", (enableCloud && enableQaBuild).toString())
+        buildConfigField("boolean", "SPDECODE_UNITY_ADS_ENABLED", enableUnityAds.toString())
+        buildConfigField("String", "SPDECODE_UNITY_APP_KEY", "\""+(if(enableUnityAds)unityAppKey else "")+"\"")
+        buildConfigField("String", "SPDECODE_UNITY_INTERSTITIAL_ID", "\""+(if(enableUnityAds)unityInterstitialId else "")+"\"")
         // Public trust anchors; never package any recipient private key.
         // Public HPKE pin lives as masked bytes in native C++, not in BuildConfig.
 
@@ -767,9 +815,11 @@ android {
             providers.gradleProperty("noticeFirebase$it").orNull.orEmpty().isNotEmpty() }
         require(noticeKeys.all {it} || noticeKeys.none {it}) { "Firebase notice config must be complete" }
         manifestPlaceholders["spdecodeQaEnabled"] = enableQaBuild.toString()
+        manifestPlaceholders["spdecodeUmpAppId"] = if(enableUnityAds) unityUmpAppId else ""
         externalNativeBuild {
             cmake {
                 arguments += "-DSPDECODE_CLOUD_ORIGIN=$cloudOrigin"
+                arguments += "-DSPDECODE_OFFLINE_NATIVE=" + (if(nativeOffline) "ON" else "OFF")
             }
         }
         resourceConfigurations += listOf("en", "es", "pt-rBR", "ar", "fa", "fr", "in", "ru", "de", "tr", "vi", "hi", "ja", "it")
@@ -820,6 +870,7 @@ android {
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro")
+            if(enableUnityAds)proguardFiles("proguard-unity.pro")
             // Fingerprint of the permanent certificate, injected by release CI.
             val trustedSha = providers.environmentVariable("SPDECODE_TRUSTED_SIGNER_SHA256").orNull
                 .orEmpty().lowercase()
@@ -846,41 +897,61 @@ android {
 }
 
 dependencies {
-    val composeBom = platform("androidx.compose:compose-bom:2025.04.01")
-    implementation(composeBom)
-    implementation("androidx.activity:activity-compose:1.10.1")
-    // Release lint: ActivityResultContracts requires Fragment >=1.3.0.
-    implementation("androidx.fragment:fragment:1.8.9")
-    implementation("com.google.code.gson:gson:2.13.1")
-    if (enableCloud) implementation("com.google.firebase:firebase-messaging:25.0.0")
-    if (enablePlayAab) {
-        implementation("com.google.android.play:app-update:2.1.0")
-        implementation("androidx.lifecycle:lifecycle-runtime-compose:2.9.0")
+    if(enableUnityAds) {
+        implementation("com.unity3d.ads-mediation:mediation-sdk:9.7.0")
+        implementation("com.unity3d.ads-mediation:unityads-adapter:5.16.0")
+        implementation("com.google.android.ump:user-messaging-platform:3.2.0")
     }
-    // Classic Play Integrity nonce flow; the verdict is verified in C3 server-side.
-    implementation("com.google.android.play:integrity:1.6.0")
-    implementation("androidx.work:work-runtime-ktx:2.10.4")
-    // Legacy decoders require BC; Cloud HPKE uses pinned native Mbed TLS.
-    if (!enableCloud) implementation("org.bouncycastle:bcprov-jdk18on:1.86")
-    implementation("androidx.activity:activity-ktx:1.10.1")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.0")
-    implementation("androidx.datastore:datastore-preferences:1.1.7")
-    implementation("androidx.core:core-splashscreen:1.0.1")
-    implementation("androidx.room:room-runtime:2.7.2")
-    implementation("androidx.room:room-ktx:2.7.2")
-    kapt("androidx.room:room-compiler:2.7.2")
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.foundation:foundation")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.material:material-icons-extended")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    debugImplementation("androidx.compose.ui:ui-tooling")
-
-    androidTestImplementation(composeBom)
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
-    androidTestImplementation("androidx.test.ext:junit:1.2.1")
-    androidTestImplementation("androidx.test:runner:1.6.2")
+    if(nativeOffline) {
+        // Standalone APK: no Firebase, Play update, Room, WorkManager or Cloud SDK.
+        val offlineBom = platform("androidx.compose:compose-bom:2025.04.01")
+        implementation(offlineBom)
+        implementation("androidx.activity:activity-compose:1.10.1")
+        implementation("androidx.activity:activity-ktx:1.10.1")
+        implementation("androidx.compose.runtime:runtime")
+        implementation("androidx.compose.ui:ui")
+        implementation("androidx.compose.foundation:foundation")
+        implementation("androidx.compose.material3:material3")
+        implementation("androidx.compose.material:material-icons-extended")
+        implementation("androidx.compose.ui:ui-tooling-preview")
+        debugImplementation("androidx.compose.ui:ui-tooling")
+    } else {
+        val composeBom = platform("androidx.compose:compose-bom:2025.04.01")
+        implementation(composeBom)
+        implementation("androidx.activity:activity-compose:1.10.1")
+        // Release lint: ActivityResultContracts requires Fragment >=1.3.0.
+        implementation("androidx.fragment:fragment:1.8.9")
+        implementation("com.google.code.gson:gson:2.13.1")
+        if (enableCloud) implementation("com.google.firebase:firebase-messaging:25.0.0")
+        if (enablePlayAab) {
+            implementation("com.google.android.play:app-update:2.1.0")
+            implementation("androidx.lifecycle:lifecycle-runtime-compose:2.9.0")
+        }
+        // Classic Play Integrity nonce flow; the verdict is verified in C3 server-side.
+        implementation("com.google.android.play:integrity:1.6.0")
+        implementation("androidx.work:work-runtime-ktx:2.10.4")
+        // Legacy decoders require BC; Cloud HPKE uses pinned native Mbed TLS.
+        if (!enableCloud) implementation("org.bouncycastle:bcprov-jdk18on:1.86")
+        implementation("androidx.activity:activity-ktx:1.10.1")
+        implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.0")
+        implementation("androidx.datastore:datastore-preferences:1.1.7")
+        implementation("androidx.core:core-splashscreen:1.0.1")
+        implementation("androidx.room:room-runtime:2.7.2")
+        implementation("androidx.room:room-ktx:2.7.2")
+        kapt("androidx.room:room-compiler:2.7.2")
+        implementation("androidx.compose.ui:ui")
+        implementation("androidx.compose.foundation:foundation")
+        implementation("androidx.compose.material3:material3")
+        implementation("androidx.compose.material:material-icons-extended")
+        implementation("androidx.compose.ui:ui-tooling-preview")
+        debugImplementation("androidx.compose.ui:ui-tooling")
+    
+        androidTestImplementation(composeBom)
+        androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+        debugImplementation("androidx.compose.ui:ui-test-manifest")
+        androidTestImplementation("androidx.test.ext:junit:1.2.1")
+        androidTestImplementation("androidx.test:runner:1.6.2")
+    }
 }
 
 // The generated Kotlin key and transformed assets must exist before each
@@ -890,10 +961,13 @@ tasks.configureEach {
         (name.startsWith("merge") && name.endsWith("Assets")) ||
         (name.startsWith("compile") && name.endsWith("Kotlin")) ||
         name.startsWith("kaptGenerateStubs")) {
-        if (enableCloud) {
+        if (nativeOffline) {
+            // No generated legacy vault or Cloud source inputs in Offline.
+        } else if (enableCloud) {
             dependsOn(prepareCloudOnlySources)
             dependsOn(prepareCloudAssets)
         } else dependsOn(prepareSecureAssetVault)
     }
 }
+
 

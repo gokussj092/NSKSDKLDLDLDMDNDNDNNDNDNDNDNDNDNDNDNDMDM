@@ -1,0 +1,14 @@
+{
+  "package": "xyz.tekidoer.austroplus.vpn",
+  "versionName": "15.0.1",
+  "versionCode": 15,
+  "xapkBytes": 56213853,
+  "xapkSha256": "6f63005534a7add46791da4d0ab57fc97692d5d4820229ab547fd670946541c8",
+  "apkBytes": 26809725,
+  "apkSha256": "72b5976c94cbfa757f414af0634fda922910ad998d651c1b256ff139b89d1691",
+  "certificateSha256": [
+    "84f5332115ade1f014c654d0069dfd484c8c5e3cd2fd394323a18011ae679aea"
+  ],
+  "cryptographicApkSignatureVerified": false,
+  "apkCodeExecuted": false
+}

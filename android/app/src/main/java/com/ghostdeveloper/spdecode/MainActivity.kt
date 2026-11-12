@@ -27,6 +27,8 @@ import androidx.compose.runtime.setValue
 import com.ghostdeveloper.spdecode.cloud.CloudNewsNotice
 import com.ghostdeveloper.spdecode.cloud.CloudWhatsNewRepository
 import com.ghostdeveloper.spdecode.cloud.CloudDecodeClient
+import com.ghostdeveloper.spdecode.cloud.CloudApkQaClient
+import com.ghostdeveloper.spdecode.cloud.ApkQaWorker
 import com.ghostdeveloper.spdecode.cloud.CloudDiagnosticsPrivacy
 import com.ghostdeveloper.spdecode.cloud.CloudCredentialPolicy
 import com.ghostdeveloper.spdecode.cloud.CloudUserErrors
@@ -78,6 +80,20 @@ class MainActivity : ComponentActivity() {
     private companion object { const val MAX_BYTES=1024*1024 }
     private val scope=CoroutineScope(SupervisorJob()+Dispatchers.Main.immediate)
     private val cloudClient by lazy { CloudDecodeClient(this) }
+    private val onlineAds by lazy {
+        if(BuildConfig.SPDECODE_CLOUD_ENABLED && BuildConfig.SPDECODE_UNITY_ADS_ENABLED)
+            OnlineAdsFactory.create(this) else null
+    }
+    private val apkQaClient by lazy { CloudApkQaClient(this,cloudClient) }
+    private var apkQaObserver:Job?=null
+    private var apkQaRunning by mutableStateOf(false)
+    private var apkQaPhase by mutableStateOf("")
+    private var apkQaFilename by mutableStateOf("")
+    private var apkQaReceived by mutableStateOf(0L)
+    private var apkQaTotal by mutableStateOf(0L)
+    private var apkQaReport by mutableStateOf<String?>(null)
+    private var apkQaEvents by mutableStateOf<List<CloudApkQaClient.ActivityEvent>>(emptyList())
+    private var apkQaError by mutableStateOf<String?>(null)
     private val serverVpnCatalog by lazy { ServerVpnCatalogRepository(this,cloudClient) }
     private val cloudNewsRepository by lazy { CloudWhatsNewRepository(this,cloudClient) }
     private var serverVpnApps by mutableStateOf<List<ServerVpnApp>>(emptyList())
@@ -89,6 +105,9 @@ class MainActivity : ComponentActivity() {
     private var serverVpnRefresh:Job?=null
     private var serverVpnLoading by mutableStateOf(false)
     private var catalogProgress by mutableStateOf<Int?>(null)
+    private var catalogTransfer by mutableStateOf<CatalogTransferUiState?>(null)
+    private var interruptedCatalogVersion=0
+    private var catalogTransferGeneration=0
     private var serverVpnUnavailable by mutableStateOf(false)
     private var pendingServerVpnCatalogVersion by mutableStateOf<Int?>(null)
     private val privateCredentialVault by lazy { DevicePrivateCredentialVault(this) }
@@ -110,6 +129,7 @@ class MainActivity : ComponentActivity() {
     private var credentialPrepareGeneration=0
     private var selectedLanguage by mutableStateOf("system")
     private var hideCredentials by mutableStateOf(false)
+    private var telegramCreditUsername by mutableStateOf("")
     private val settings get()=getSharedPreferences("spdecode-ui-preferences",MODE_PRIVATE)
     private var job:Job?=null
     private val services by lazy { (application as SpDecodeApplication).services }
@@ -278,8 +298,10 @@ class MainActivity : ComponentActivity() {
         serverVpnUnavailable=false
         serverVpnRefresh=scope.launch {
             try {
-                serverVpnApps=serverVpnCatalog.cached()
+                // Make supported extensions available before decoding and painting
+                // the larger icon directory on low-end devices.
                 fileFormats=serverVpnCatalog.cachedFormats()
+                serverVpnApps=serverVpnCatalog.cached()
                     textRoutes=serverVpnCatalog.cachedTextFormats()
                 if(force) {
                     serverVpnApps=serverVpnCatalog.refreshIfDue(force=force)
@@ -302,32 +324,67 @@ class MainActivity : ComponentActivity() {
         pendingServerVpnCatalogVersion=0 // manual refresh; no invented remote version
     }
 
-    /** A confirmed manual download is the only non-opt-in update path. */
+    /** Explicit confirmation starts one cancellable, byte-measured catalog transfer. */
     private fun confirmServerVpnUpdate() {
         val version=pendingServerVpnCatalogVersion?:return
+        interruptedCatalogVersion=version
         pendingServerVpnCatalogVersion=null
         if(!BuildConfig.SPDECODE_CLOUD_ENABLED || showCloudLegal || busy ||
             serverVpnRefresh?.isActive==true)return
+        val generation=++catalogTransferGeneration
+        catalogTransfer=CatalogTransferUiState()
         serverVpnLoading=true
-        catalogProgress=0
+        catalogProgress=null
         serverVpnRefresh=scope.launch {
             try {
-                serverVpnApps=serverVpnCatalog.refreshIfDue(
+                val apps=serverVpnCatalog.refreshIfDue(
                     force=true,announcedVersion=version,
-                    onProgress={percent->scope.launch { catalogProgress=percent }})
+                    onTransfer={received,total->
+                        scope.launch(Dispatchers.Main.immediate) {
+                            if(generation==catalogTransferGeneration &&
+                                catalogTransfer?.completed==false)
+                                catalogTransfer=CatalogTransferUiState(received,total,resumable=serverVpnCatalog.lastTransferResumable)
+                        }
+                    })
+                if(generation!=catalogTransferGeneration)return@launch
+                serverVpnApps=apps
                 fileFormats=serverVpnCatalog.cachedFormats()
-                    textRoutes=serverVpnCatalog.cachedTextFormats()
-                toast(if(version==0 || serverVpnCatalog.currentVersion()>=version)
-                    R.string.server_vpn_catalog_updated
-                    else R.string.server_vpn_catalog_update_error)
+                textRoutes=serverVpnCatalog.cachedTextFormats()
+                if(version!=0 && serverVpnCatalog.currentVersion()<version){
+                    catalogTransfer=null
+                    toast(R.string.server_vpn_catalog_update_error)
+                }else catalogTransfer=CatalogTransferUiState(completed=true,displayVersion=serverVpnCatalog.displayVersion())
             }catch(error:CancellationException){throw error}
-             catch(_:Exception){toast(R.string.server_vpn_catalog_update_error)}
-            finally {
-                serverVpnUnavailable=serverVpnApps.isEmpty()
-                serverVpnLoading=false
-                catalogProgress=null
-            }
+             catch(_:Exception){
+                if(generation==catalogTransferGeneration) {
+                    catalogTransfer=(catalogTransfer?:CatalogTransferUiState()).copy(paused=true,resumable=serverVpnCatalog.lastTransferResumable)
+                }
+             }finally {
+                if(generation==catalogTransferGeneration) {
+                    serverVpnUnavailable=serverVpnApps.isEmpty()
+                    serverVpnLoading=false
+                    catalogProgress=null
+                }
+             }
         }
+    }
+
+    /** Cancellation never replaces the previously verified encrypted catalog. */
+    private fun discardPartialCatalog() {
+        scope.launch {
+            try {serverVpnCatalog.discardDownload()}
+            catch(error:CancellationException){throw error}
+            catch(_:Exception){toast(R.string.write_error)}
+        }
+    }
+
+    private fun cancelCatalogDownload() {
+        catalogTransferGeneration++
+        com.ghostdeveloper.spdecode.cloud.CloudNativeTransport.cancelCatalogDownload()
+        serverVpnRefresh?.cancel()
+        catalogTransfer=null
+        catalogProgress=null
+        serverVpnLoading=false
     }
 
     private fun requireCloudLegal():Boolean {
@@ -356,6 +413,90 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private val apkQaPicker=registerForActivityResult(ActivityResultContracts.OpenDocument()){uri->
+        if(uri!=null)startApkQa(uri)
+    }
+
+    private fun observeApkQa() {
+        if(apkQaObserver?.isActive==true || !BuildConfig.SPDECODE_APK_QA_ENABLED)return
+        apkQaObserver=scope.launch {
+            while(true) {
+                try {
+                    val latest=withContext(Dispatchers.IO){apkQaClient.snapshot()}
+                    if(latest!=null) {
+                        apkQaRunning=latest.active
+                        apkQaPhase=latest.phase
+                        apkQaFilename=latest.filename
+                        apkQaReceived=latest.receivedBytes
+                        apkQaTotal=latest.totalBytes
+                        // The indexed native viewer formats logical lines on demand.
+                        // Re-serializing a multi-megabyte report every 1.2 seconds
+                        // duplicates memory and can invalidate historic results.
+                        if(apkQaReport!==latest.report && apkQaReport!=latest.report)
+                            apkQaReport=latest.report
+                        apkQaEvents=latest.events
+                        apkQaError=latest.error
+                    }else apkQaRunning=false
+                }catch(_:IOException){
+                    // Never unlock a potentially active remote job when the
+                    // AndroidKeyStore ciphertext is damaged or unavailable.
+                    apkQaRunning=true
+                    apkQaError="APK_QA_LOCAL_STATE_UNAVAILABLE"
+                }
+                delay(1200L)
+            }
+        }
+    }
+
+    private fun reconnectApkQa() {
+        if(!BuildConfig.SPDECODE_APK_QA_ENABLED)return
+        try {
+            if(apkQaClient.hasActiveJob()){
+                ApkQaWorker.enqueue(this,replace=true)
+                observeApkQa()
+            }
+        }catch(_:Exception){
+            apkQaRunning=true
+            apkQaError="APK_QA_LOCAL_STATE_UNAVAILABLE"
+        }
+    }
+
+    private fun startApkQa(uri:Uri) {
+        if(!BuildConfig.SPDECODE_APK_QA_ENABLED)return
+        if(apkQaRunning)return
+        if(!BuildConfig.SPDECODE_CLOUD_ENABLED){
+            apkQaError="APK_QA_CLOUD_REQUIRED";return
+        }
+        if(!CloudLegalConsent.accepted(this)){
+            apkQaError="LEGAL_CONSENT_REQUIRED";showCloudLegal=true;return
+        }
+        try {
+            // Persist job metadata before network I/O; WorkManager never stores
+            // the upload capability, URI or analysis report in its plaintext Data.
+            apkQaClient.queue(uri)
+            apkQaRunning=true
+            apkQaPhase="QUEUED"
+            apkQaFilename=runCatching { apkQaClient.snapshot()?.filename.orEmpty() }
+                .getOrDefault("")
+            apkQaReceived=0L
+            apkQaTotal=0L
+            apkQaReport=null
+            apkQaEvents=emptyList()
+            apkQaError=null
+            ApkQaWorker.enqueue(this)
+            observeApkQa()
+        }catch(error:IOException){
+            apkQaError=error.message?.takeIf{it.matches(Regex("[A-Z_]{3,80}"))}
+                ?: "APK_QA_UNAVAILABLE"
+            try {apkQaRunning=apkQaClient.hasActiveJob()}
+            catch(_:Exception){apkQaRunning=true}
+        }catch(_:Exception){
+            apkQaError="APK_QA_UNAVAILABLE"
+            try {apkQaRunning=apkQaClient.hasActiveJob()}
+            catch(_:Exception){apkQaRunning=true}
+        }
+    }
+
     private val picker=registerForActivityResult(ActivityResultContracts.OpenDocument()){uri->
         if(uri!=null)prepareSingleImport(uri)
     }
@@ -373,16 +514,22 @@ class MainActivity : ComponentActivity() {
     private fun saveExport(uri:Uri?){
         val text=stagedExport
         stagedExport=null
-        if(uri!=null && text!=null)scope.launch{
+        val large=sessionVm.stagedResultExport
+        sessionVm.stagedResultExport=null
+        if(uri!=null && (text!=null || large!=null))scope.launch{
             try{
                 withContext(Dispatchers.IO){
-                    contentResolver.openOutputStream(uri,"w")?.use{
-                        it.write(text.toByteArray(Charsets.UTF_8))
-                        it.flush()
+                    contentResolver.openOutputStream(uri,"w")?.use{output ->
+                        val encoder=Charsets.UTF_8.newEncoder().onMalformedInput(java.nio.charset.CodingErrorAction.REPORT)
+                        java.io.OutputStreamWriter(output,encoder).use {writer ->
+                            if(large!=null)ResultOutputWriter.write(large.first.rawText,large.first.extension,large.second,writer)
+                            else text!!.reader().use {reader ->reader.copyTo(writer,8192)}
+                        }
                     }?:throw IOException("Destination unavailable")
                 }
                 toast(R.string.saved)
-             }catch(_:Exception){
+             }catch(error:CancellationException){throw error}
+              catch(_:Exception){
             SafeDecodeDiagnostics.record(SafeDecodeDiagnostics.Event.EXPORT_FAILURE)
             toast(R.string.write_error)
         }
@@ -432,6 +579,8 @@ class MainActivity : ComponentActivity() {
         }
         selectedLanguage=settings.getString("language","system") ?: "system"
         hideCredentials=settings.getBoolean("mask_credentials",false)
+        telegramCreditUsername=TelegramResultCopy.normalizeUsername(
+            settings.getString("telegram_decrypt_credit","").orEmpty()).orEmpty()
         usageOptIn=BuildConfig.SPDECODE_CLOUD_ENABLED && CloudDiagnosticsPrivacy.enabled(this)
         @Suppress("DEPRECATION")
         val installed=packageManager.getPackageInfo(packageName,0)
@@ -520,17 +669,65 @@ class MainActivity : ComponentActivity() {
                 },
                 onImport={picker.launch(arrayOf("*/*"))},
                 onImportMultiple={multiPicker.launch(arrayOf("*/*"))},
+                apkQaRunning=apkQaRunning,
+                apkQaPhase=apkQaPhase,
+                apkQaFilename=apkQaFilename,
+                apkQaReceived=apkQaReceived,
+                apkQaTotal=apkQaTotal,
+                apkQaReport=apkQaReport,
+                apkQaEvents=apkQaEvents,
+                apkQaError=apkQaError,
+                onApkQaPick={apkQaPicker.launch(arrayOf("application/vnd.android.package-archive","application/octet-stream","*/*"))},
+                onApkQaCancel={},
+                onApkQaRetry={reconnectApkQa()},
                 onCancel={cancelImport()},
                 onReveal={reveal=it},
-                onCopy={format->result?.let { entry ->
+                onCopy={format->result?.let { entry ->scope.launch {
+                    // A multi-megabyte Binder transaction cannot be delivered safely.
+                    // Refuse the complete copy; never substitute a truncated result.
+                    if(entry.rawText.length>200_000){toast(R.string.result_copy_too_large);return@launch}
                     val date=DateFormat.getDateTimeInstance(DateFormat.MEDIUM,
                         DateFormat.SHORT,resources.configuration.locales[0])
                         .format(Date(entry.savedAtMillis))
-                    copy(TelegramResultCopy.clipboard(entry,format,date))
+                    val attribution=telegramCreditUsername.takeIf{it.isNotBlank()}?.let{
+                        getString(R.string.decrypt_credits_by,it)
+                    }
+                    try {val text=withContext(Dispatchers.Default){
+                        TelegramResultCopy.clipboard(entry,format,date,attribution)
+                    };copy(text)}
+                    catch(error:CancellationException){throw error}
+                    catch(_:Exception){toast(R.string.write_error)}
+                }}},
+                onCopyV2rayLinks={links->copy(links)},
+                onExport={format->result?.let{entry ->
+                    if(ResultOutputWriter.isLarge(entry.rawText)) {
+                        sessionVm.stagedResultExport=entry to format
+                        val safe=entry.filename.substringBeforeLast('.').replace(Regex("[^A-Za-z0-9._-]"),"_").take(50).ifEmpty{"spdecode"}
+                        if(format==ResultExport.JSON)jsonExporter.launch("$safe-decoded.json") else exporter.launch("$safe-decoded.txt")
+                    }else scope.launch {
+                        try {
+                            val text=withContext(Dispatchers.Default){ResultPresentation.formatted(entry.document,format)}
+                            export(text,entry.filename,format)
+                        }catch(error:CancellationException){throw error}
+                         catch(_:Exception){toast(R.string.write_error)}
+                    }
                 }},
-                onExport={format->result?.let{export(ResultPresentation.formatted(it.document,format),it.filename,format)}},
                 selectedLanguage=selectedLanguage,
                 hideCredentials=hideCredentials,
+                telegramCreditUsername=telegramCreditUsername,
+                onSaveTelegramCredit={value->
+                    val normalized=TelegramResultCopy.normalizeUsername(value)
+                    if(normalized==null)false
+                    else {
+                        val editor=settings.edit()
+                        if(normalized.isBlank())editor.remove("telegram_decrypt_credit")
+                        else editor.putString("telegram_decrypt_credit",normalized)
+                        if(editor.commit()){
+                            telegramCreditUsername=normalized
+                            true
+                        } else false
+                    }
+                },
                 onLanguage={tag->setLanguage(tag)},
                 onMaskCredentials={value->hideCredentials=value;settings.edit().putBoolean("mask_credentials",value).apply()},
                 onExternalLink={url->openExternal(url)},
@@ -591,8 +788,19 @@ class MainActivity : ComponentActivity() {
                             CloudCatalogUpdates.setEnabled(this@MainActivity,false)
                             catalogWatchJob?.cancel()
                             catalogUpdatesEnabled=false
+                            cancelCatalogDownload()
+                            discardPartialCatalog()
                             CloudLegalConsent.revoke(this@MainActivity)
+                            onlineAds?.stop()
                             cloudClient.clearSession()
+                            WorkManager.getInstance(this@MainActivity)
+                                .cancelUniqueWork("spdecode-apk-qa-single-upload")
+                            // Consent withdrawal pauses background work but
+                            // does not fake a terminal result or release server lock.
+                            apkQaRunning=try{apkQaClient.hasActiveJob()}
+                                catch(_:Exception){true}
+                            apkQaError="LEGAL_CONSENT_REQUIRED"
+                            apkQaReport=null
                             serverVpnRefresh?.cancel()
                             job?.cancel()
                             serverVpnApps=emptyList()
@@ -604,11 +812,17 @@ class MainActivity : ComponentActivity() {
                         }catch(_:Exception){message=getString(R.string.history_storage_error)}
                     }
                 },
+                onAdsPrivacyOptions={onlineAds?.showPrivacyOptions(this@MainActivity)},
                 serverVpnApps=serverVpnApps,
                 cloudFormats=fileFormats,
                 cloudTextFormats=textRoutes,
                 serverVpnLoading=serverVpnLoading,
                 catalogProgress=catalogProgress,
+                catalogTransfer=catalogTransfer,
+                onCancelCatalogTransfer={cancelCatalogDownload()},
+                onFinishCatalogTransfer={catalogTransfer=null},
+                onResumeCatalogTransfer={pendingServerVpnCatalogVersion=interruptedCatalogVersion;catalogTransfer=null;confirmServerVpnUpdate()},
+                onDiscardCatalogTransfer={cancelCatalogDownload();discardPartialCatalog()},
                 serverVpnUnavailable=serverVpnUnavailable,
                 onRefreshServerVpn={checkServerVpnUpdates()},
                 pendingServerVpnCatalogVersion=pendingServerVpnCatalogVersion,
@@ -668,6 +882,7 @@ class MainActivity : ComponentActivity() {
                         try {
                             CloudLegalConsent.accept(this@MainActivity)
                             showCloudLegal=false
+                            if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED)onlineAds?.initialize(this@MainActivity)
                             requestNoticePermissionAfterConsent()
                             refreshServerVpn()
                             refreshCloudWhatsNew()
@@ -716,6 +931,7 @@ class MainActivity : ComponentActivity() {
             }
             }
         }
+        if(BuildConfig.SPDECODE_APK_QA_ENABLED)observeApkQa()
         if(savedInstanceState==null && !showCloudLegal)handleExternalIntent(intent)
     }
 
@@ -726,6 +942,15 @@ class MainActivity : ComponentActivity() {
             return
         }
         observeRuntime()
+        if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED && !showCloudLegal)onlineAds?.initialize(this)
+        if(BuildConfig.SPDECODE_APK_QA_ENABLED && !showCloudLegal){
+            observeApkQa()
+            try {if(apkQaClient.hasActiveJob())ApkQaWorker.enqueue(this)}
+            catch(_:Exception){
+                apkQaRunning=true
+                apkQaError="APK_QA_LOCAL_STATE_UNAVAILABLE"
+            }
+        }
         if(settings.getBoolean("private-screen",false))
             window.addFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE)
         else window.clearFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE)
@@ -748,13 +973,7 @@ class MainActivity : ComponentActivity() {
     @Suppress("DEPRECATION")
     private fun handleExternalIntent(incoming:Intent?){
         if(incoming==null)return
-        val uris: List<Uri> = when(incoming.action){
-            Intent.ACTION_VIEW->listOfNotNull(incoming.data)
-            Intent.ACTION_SEND->listOfNotNull(incoming.getParcelableExtra(Intent.EXTRA_STREAM) as? Uri)
-            Intent.ACTION_SEND_MULTIPLE->
-                incoming.getParcelableArrayListExtra<Uri>(Intent.EXTRA_STREAM)?.take(BatchImportQueue.MAX_FILES).orEmpty()
-            else->emptyList()
-        }
+        val uris=ExternalImportUris.resolve(incoming)
         if(uris.size==1)prepareSingleImport(uris.first())
         else if(uris.isNotEmpty())importFiles(uris.take(BatchImportQueue.MAX_FILES))
     }
@@ -997,12 +1216,14 @@ class MainActivity : ComponentActivity() {
                     false
                 }
                 result=record
-                recent.add(0,record)
+                recent.add(0,if(stored)record.historySummary() else record)
                 if(!stored)toast(R.string.history_storage_error)
                 try{historyPreferences.setSelectedId(record.id)}
                 catch(e:CancellationException){throw e}
                 catch(_:Exception){toast(R.string.history_storage_error)}
                 tab=0
+                if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED)
+                    onlineAds?.onSavedResult(this@MainActivity,record.id,stored)
             }catch(e:CancellationException){throw e}
             catch(error:Exception){if(generation==importGeneration) {
                 if(BuildConfig.SPDECODE_CLOUD_ENABLED && password==null &&
@@ -1096,12 +1317,14 @@ class MainActivity : ComponentActivity() {
                     false
                 }
                 result=record
-                recent.add(0,record)
+                recent.add(0,if(stored)record.historySummary() else record)
                 if(!stored)toast(R.string.history_storage_error)
                 try { historyPreferences.setSelectedId(record.id) }
                 catch(e:CancellationException){throw e}
                 catch(_:Exception){toast(R.string.history_storage_error)}
                 tab=0
+                if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED)
+                    onlineAds?.onSavedResult(this@MainActivity,record.id,stored)
             }catch(e:CancellationException){throw e}
             catch(e:CloudDecodeClient.Failure) {
                 if(generation==importGeneration)
@@ -1173,12 +1396,14 @@ class MainActivity : ComponentActivity() {
                     false
                 }
                 result=record
-                recent.add(0,record)
+                recent.add(0,if(saved)record.historySummary() else record)
                 if(!saved)toast(R.string.history_storage_error)
                 try {historyPreferences.setSelectedId(record.id)}
                 catch(e:CancellationException){throw e}
                 catch(_:Exception){toast(R.string.history_storage_error)}
                 tab=0
+                if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED)
+                    onlineAds?.onSavedResult(this@MainActivity,record.id,saved)
             }catch(e:CancellationException){throw e}
             catch(error:Exception) {
                 if(generation==importGeneration) {
@@ -1199,6 +1424,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun clearVisibleResult() {
+        resultSelectionGeneration++
         if(busy)return
         result=null
         reveal=false
@@ -1211,12 +1437,19 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private var resultSelectionGeneration=0
     private fun selectResult(entry:DecodeView) {
-        result=entry
+        val generation=++resultSelectionGeneration
+        val previous=result?.id
         tab=0
         reveal=false
         scope.launch {
-            try{historyPreferences.setSelectedId(entry.id)}
+            try {
+                val selected=if(entry.metadataOnly)historyStore.open(entry.id) else entry
+                if(generation!=resultSelectionGeneration || result?.id!=previous)return@launch
+                result=selected
+                historyPreferences.setSelectedId(entry.id)
+            }
             catch(_:CancellationException){throw CancellationException()}
             catch(_:Exception){toast(R.string.history_storage_error)}
         }
@@ -1250,12 +1483,14 @@ class MainActivity : ComponentActivity() {
                 }catch(error:CancellationException){throw error}
                  catch(_:Exception){false}
                 result=record
-                recent.add(0,record)
+                recent.add(0,if(saved)record.historySummary() else record)
                 if(!saved)toast(R.string.history_storage_error)
                 try {historyPreferences.setSelectedId(record.id)}
                 catch(error:CancellationException){throw error}
                 catch(_:Exception){toast(R.string.history_storage_error)}
                 tab=0
+                if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED)
+                    onlineAds?.onSavedResult(this@MainActivity,record.id,saved)
             }catch(error:CancellationException){throw error}
              catch(error:Exception) {
                 if(generation==importGeneration) {
@@ -1304,6 +1539,16 @@ class MainActivity : ComponentActivity() {
             reveal=false
             try {
                 historyLoad?.await()
+                // Import routing always uses the latest authenticated encrypted local
+                // snapshot, even when an external intent starts the Activity before
+                // the asynchronous screen catalog load has finished.
+                val verifiedImportFormats=if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
+                    val cached=serverVpnCatalog.cachedFormats()
+                    if(cached.isNotEmpty()) {
+                        fileFormats=cached
+                        cached
+                    } else fileFormats
+                } else emptyList()
                 var failedNpvs=false
                 var failedProtectedHc=false
                 var cloudPasswordError:String?=null
@@ -1400,18 +1645,10 @@ class MainActivity : ComponentActivity() {
                     // not a decode request or an operational failure.
                     // Historical bundled routes are a fallback only before the
                     // first successful catalog download.
-                    val supported=(if(BuildConfig.SPDECODE_CLOUD_ENABLED &&
-                        fileFormats.isNotEmpty())
-                        AndroidDecoderCatalog.detect(routingName,fileFormats)
-                    else null)
-                        // Pinned legacy Cloud routes remain compatible with a
-                        // stale server snapshot; no general guess/fallback.
-                        ?: (if(BuildConfig.SPDECODE_CLOUD_ENABLED)
-                            CloudFileFormats.detect(routingName) else null)
-                        ?: (if(BuildConfig.SPDECODE_CLOUD_ENABLED &&
-                                fileFormats.isNotEmpty()) null
-                            else AndroidDecoderCatalog.detect(
-                                routingName,AndroidDecoderCatalog.read(this@MainActivity)))
+                    val supported=ImportFormatRouter.detect(
+                        routingName,BuildConfig.SPDECODE_CLOUD_ENABLED,
+                        verifiedImportFormats
+                    ) { AndroidDecoderCatalog.read(this@MainActivity) }
                         ?:throw DecodeFailure(R.string.unsupported)
                     // Phase A identifies pending formats but never reads or
                     // sends their bytes to a native decoder that does not exist.
@@ -1502,7 +1739,7 @@ class MainActivity : ComponentActivity() {
                         false
                     }
                     result=processed
-                    recent.add(0,processed)
+                    recent.add(0,if(saved)processed.historySummary() else processed)
                     if(!saved)toast(R.string.history_storage_error)
                     // Preference failure must not misreport a valid decoded file
                     // as failed after its encrypted record has already been saved.
@@ -1510,6 +1747,8 @@ class MainActivity : ComponentActivity() {
                     catch(e:CancellationException){throw e}
                     catch(_:Exception){toast(R.string.history_storage_error)}
                     tab=0
+                    if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED)
+                        onlineAds?.onSavedResult(this@MainActivity,processed.id,saved)
                 }
                 if(generation==importGeneration && report.failures>0 &&
                     pendingCloudPasswordFile==null) {
@@ -1574,7 +1813,7 @@ class MainActivity : ComponentActivity() {
                     historyStore.favorite(id,favorite)
                 }
                 val index=recent.indexOfFirst{it.id==id}
-                if(index>=0)recent[index]=updated
+                if(index>=0)recent[index]=updated.historySummary()
                 if(result?.id==id)result=updated
             }catch(_:CancellationException){throw CancellationException()}
             catch(_:Exception){toast(R.string.history_storage_error)}
@@ -1675,6 +1914,7 @@ class MainActivity : ComponentActivity() {
         return uri.lastPathSegment?.substringAfterLast('/')?.take(220) ?:"file"
     }
     private fun copy(text:String){
+        if(text.length>250_000){toast(R.string.result_copy_too_large);return}
         val manager=getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
         val clip=ClipData.newPlainText("SP-DECODE",text)
         if(Build.VERSION.SDK_INT>=33){
@@ -1682,8 +1922,8 @@ class MainActivity : ComponentActivity() {
                 putBoolean("android.content.extra.IS_SENSITIVE",true)
             }
         }
-        manager.setPrimaryClip(clip)
-        toast(R.string.copied)
+        try {manager.setPrimaryClip(clip);toast(R.string.copied)}
+        catch(_:RuntimeException){toast(R.string.result_copy_too_large)}
     }
     private fun export(text:String,filename:String,format:ResultExport){
         stagedExport=text
@@ -1703,6 +1943,7 @@ class MainActivity : ComponentActivity() {
         credentialPrepareJob?.cancel()
         cancelPrivateCredentialSelection()
         job?.cancel()
+        onlineAds?.stop()
         scope.cancel()
         super.onDestroy()
     }

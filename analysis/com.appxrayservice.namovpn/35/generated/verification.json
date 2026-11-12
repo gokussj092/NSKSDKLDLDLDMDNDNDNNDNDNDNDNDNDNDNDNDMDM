@@ -1,0 +1,34 @@
+[
+  {
+    "source": "remote.enc",
+    "bytes": 72881,
+    "sha256": "578ad82fed747a2670a8fe4fb0abaeda16df60684581bec0a7e10e2d47aeee06",
+    "version": "22.3",
+    "counts": {
+      "Servers": 14,
+      "Networks": 13
+    },
+    "whole_java_equal": true,
+    "whole_cli_equal": true,
+    "whole_worker_equal": true,
+    "field_layer": "Base64/UTF-8 once; explicit app schema",
+    "changed_nonempty_fields": 87,
+    "decoded_sha256": "339be291594ac0b6fb587abe594693c092dc4c3c335d15eb0599375da2b1963c"
+  },
+  {
+    "source": "downloaded.enc",
+    "bytes": 72881,
+    "sha256": "578ad82fed747a2670a8fe4fb0abaeda16df60684581bec0a7e10e2d47aeee06",
+    "version": "22.3",
+    "counts": {
+      "Servers": 14,
+      "Networks": 13
+    },
+    "whole_java_equal": true,
+    "whole_cli_equal": true,
+    "whole_worker_equal": true,
+    "field_layer": "Base64/UTF-8 once; explicit app schema",
+    "changed_nonempty_fields": 87,
+    "decoded_sha256": "339be291594ac0b6fb587abe594693c092dc4c3c335d15eb0599375da2b1963c"
+  }
+]

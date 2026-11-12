@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "package_name": "core.vpn3jx.xtreme",
+  "app_name": "Wolf Custom VPN",
+  "version_name": "v1.11.06.1",
+  "version_code": 16,
+  "observed_at": "2026-11-09T06:14:31.826923+00:00",
+  "source_category": "public-distribution-static-and-authorized-public-catalog",
+  "authorization_note": "Owner requested method maintenance. Public client APK and public updater inspected statically; no account or subscription credentials, APK execution or authentication bypass.",
+  "status": "VERIFIED",
+  "targets": [
+    {
+      "kind": "catalog",
+      "status": "VERIFIED_REAL",
+      "scope": "complete independent oracle/Python/isolated worker JSON parity"
+    },
+    {
+      "kind": "files",
+      "status": "PARTIAL",
+      "scope": "owned synthetic vectors and backward compatibility; independent real phone exports not supplied"
+    }
+  ],
+  "inputs": {
+    "package": "core.vpn3jx.xtreme",
+    "versionName": "v1.11.06.1",
+    "versionCode": 16,
+    "xapkBytes": 56651661,
+    "xapkSha256": "074247463d1555dae35cd10ed7b15701a4076e659eaeebee70827e47fe09d860",
+    "apkBytes": 30557753,
+    "apkSha256": "bc2327ebe88f52a777701ac9332103078a7a3d7411cd65c3249ee167d9cbd726",
+    "certificateSha256": [
+      "bd6515d3f58f73aa59ae99ae1d2aff74c4e2665c3bd677fbefea77222e88fc6b"
+    ],
+    "certificateSha1MatchesPreviousDistribution": true,
+    "cryptographicApkSignatureVerified": false,
+    "apkCodeExecuted": false
+  },
+  "tooling": [
+    {
+      "name": "Androguard",
+      "version": "4.1.3",
+      "role": "APK manifest and certificate digest extraction; APK signature cryptographic verification not performed"
+    },
+    {
+      "name": "JADX",
+      "version": "1.5.6",
+      "script": "scripts/apk_analysis/decompile.py",
+      "mode": "auto",
+      "role": "reviewed pinned installer reused; CLI auto invoked by tools/inspect_apk.py; unrelated methods may have decompiler errors"
+    },
+    {
+      "name": "Own reproduction tools",
+      "path": "analysis/core.vpn3jx.xtreme/16/tools",
+      "apkCodeExecuted": false
+    },
+    {
+      "name": "Go/x-crypto oracle",
+      "path": "analysis/core.vpn3jx.xtreme/16/tools/oracle",
+      "version": "1.27.3 / x-crypto v0.36.0"
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "androguard",
+      "version": "4.1.3",
+      "source": "https://github.com/androguard/androguard",
+      "license": "Apache-2.0",
+      "lockfile": "analysis/core.vpn3jx.xtreme/16/dependencies.lock.json"
+    },
+    {
+      "name": "argon2-cffi",
+      "version": "25.1.0",
+      "source": "https://github.com/hynek/argon2-cffi",
+      "license": "MIT",
+      "lockfile": "analysis/core.vpn3jx.xtreme/16/dependencies.lock.json"
+    },
+    {
+      "name": "argon2-cffi-bindings",
+      "version": "26.1.0",
+      "source": "https://github.com/hynek/argon2-cffi-bindings",
+      "license": "MIT",
+      "lockfile": "analysis/core.vpn3jx.xtreme/16/dependencies.lock.json"
+    },
+    {
+      "name": "capstone",
+      "version": "5.0.6",
+      "source": "https://www.capstone-engine.org/",
+      "license": "BSD-3-Clause",
+      "lockfile": "analysis/core.vpn3jx.xtreme/16/dependencies.lock.json"
+    },
+    {
+      "name": "pycryptodome",
+      "version": "3.23.0",
+      "source": "https://www.pycryptodome.org/",
+      "license": "BSD-2-Clause / Public-Domain components",
+      "lockfile": "analysis/core.vpn3jx.xtreme/16/dependencies.lock.json"
+    },
+    {
+      "name": "pyelftools",
+      "version": "0.32",
+      "source": "https://github.com/eliben/pyelftools",
+      "license": "Public-Domain",
+      "lockfile": "analysis/core.vpn3jx.xtreme/16/dependencies.lock.json"
+    },
+    {
+      "name": "JADX",
+      "version": "1.5.6",
+      "source": "https://github.com/skylot/jadx/releases/tag/v1.5.6",
+      "license": "Apache-2.0",
+      "checksum": "fe3e12c45acf75f92369685fd02d1d7a7323385dc725680a9b98a0dac0ea554b"
+    },
+    {
+      "name": "OpenJDK",
+      "version": "21.0.13",
+      "source": "https://openjdk.org/",
+      "license": "GPL-2.0-with-Classpath-exception"
+    },
+    {
+      "name": "Node.js",
+      "version": "24.22.1 (local research tests); 22 in CI",
+      "source": "https://nodejs.org/",
+      "license": "MIT"
+    },
+    {
+      "name": "Go",
+      "version": "1.27.3",
+      "source": "https://go.dev/dl/",
+      "license": "BSD-3-Clause",
+      "checksum": "65efbc80fdc1fa2cd2631cad5b481777a68e8725f34e89f50fc6ac714e379b40"
+    },
+    {
+      "name": "golang.org/x/crypto",
+      "version": "v0.36.0",
+      "source": "https://pkg.go.dev/golang.org/x/crypto@v0.36.0",
+      "license": "BSD-3-Clause",
+      "lockfile": "analysis/core.vpn3jx.xtreme/16/tools/oracle/go.sum"
+    },
+    {
+      "name": "golang.org/x/sys",
+      "version": "v0.31.0",
+      "source": "https://pkg.go.dev/golang.org/x/sys@v0.31.0",
+      "license": "BSD-3-Clause",
+      "lockfile": "analysis/core.vpn3jx.xtreme/16/tools/oracle/go.sum"
+    }
+  ],
+  "code_paths": [
+    "cloud/web/lib/server-vpn-provider.mjs",
+    "cloud/web/lib/server-vpn-catalog.mjs",
+    "cloud/workers/python/catalog_vpn_bridge.py",
+    "decoders/Python/apps/Wolf_Custom_VPN/codec.py",
+    "decoders/Python/apps/Wolf_Custom_VPN/server_catalog_decoder.py",
+    "decoders/Python/apps/Wolf_Custom_VPN/file_decoder.py",
+    "decoders/Python/apps/Wolf_Custom_VPN/codec_v16.py"
+  ],
+  "evidence_refs": [
+    "analysis/core.vpn3jx.xtreme/16/ANALYSIS.md",
+    "analysis/core.vpn3jx.xtreme/16/REPRODUCE.md",
+    "analysis/core.vpn3jx.xtreme/16/RESULTS.md",
+    "analysis/core.vpn3jx.xtreme/16/DEPENDENCIES.md",
+    "analysis/core.vpn3jx.xtreme/16/dependencies.lock.json",
+    "analysis/core.vpn3jx.xtreme/16/generated/identity.json",
+    "analysis/core.vpn3jx.xtreme/16/generated/catalog-proof.json",
+    "analysis/core.vpn3jx.xtreme/16/generated/static-proof.json"
+  ],
+  "limitations": [
+    "No APK code or native application library was executed.",
+    "Certificate digest continuity checked; full APK cryptographic signature verification was not performed.",
+    "No independent real phone export or VPN connection was tested.",
+    "VPS rollout and authenticated acceptance on the operator device remain pending; no automatic deployment."
+  ],
+  "network_requirements": [
+    "Allowlisted APKPure distribution CDN for reproducible input acquisition.",
+    "Fixed original public updater only; no arbitrary destinations or private-account endpoints."
+  ],
+  "manual_steps": [
+    "Review CI and evidence, then update server web and worker from feat/nuevas-integraciones."
+  ]
+}

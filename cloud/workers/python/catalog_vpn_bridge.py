@@ -7,6 +7,20 @@ import sys
 from pathlib import Path
 
 PROVIDERS = {
+    "thailand-vpn": "decoders.Python.apps.Thailand_VPN.server_catalog_decoder",
+    "kham-vpn": "decoders.Python.apps.KHAM_VPN.server_catalog_decoder",
+    "opentunnel-ssh": "decoders.Python.apps.OpenTunnel.server_catalog_decoder",
+    "md-proxy-vpn": "decoders.Python.apps.MD_Proxy_VPN.server_catalog_decoder",
+    "xxpicore-tunnel": "decoders.Python.apps.XXPICore_Tunnel.server_catalog_decoder",
+    "catnet-vpn": "decoders.Python.apps.CATNET_VPN.server_catalog_decoder",
+    "litron-vpn": "decoders.Python.apps.Litron_VPN.server_catalog_decoder",
+    "litron-pro-vpn": "decoders.Python.apps.Litron_Pro_VPN.server_catalog_decoder",
+    "speigo-vpn-configs": "decoders.Python.apps.SpeiGo_VPN.server_catalog_decoder",
+    "speigo-vpn-ssh": "decoders.Python.apps.SpeiGo_VPN.ssh_catalog_decoder",
+    "genis-vpn": "decoders.Python.apps.Genis_VPN.server_catalog_decoder",
+    "speicers-turbo-vpn": "decoders.Python.apps.Speicers_Turbo_VPN.server_catalog_decoder",
+    "http-conexion": "decoders.Python.apps.HTTP_Conexion.server_catalog_decoder",
+    "namo-vpn": "decoders.Python.apps.NAMO_VPN.server_catalog_decoder",
     "fnf-tunnel-bd": "decoders.Python.apps.FNF_TUNNEL_BD.server_catalog_decoder",
     "alsaher-vip": "decoders.Python.apps.ALSAHER_VIP.server_catalog_decoder",
     "halcon-r-net": "decoders.Python.apps.Halcon_R_Net.server_catalog_decoder",

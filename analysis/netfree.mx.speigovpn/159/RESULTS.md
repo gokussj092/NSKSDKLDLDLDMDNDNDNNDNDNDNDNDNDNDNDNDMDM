@@ -1,0 +1,11 @@
+# Resultados SpeiGo159
+
+VERIFIED_REAL por separado. Configuraciones remotas: HTTP200,408938bytes, versión29,266 registros y2872 campos internos. Usuarios SSH remotos: HTTP200,1233bytes, versión3,1 registro/6 campos internos. Assets: configuraciones325959bytes, versión1,231 registros/2499 campos; usuarios1685bytes, versión1,2 registros/12 campos. Las cuatro comparaciones enteras JCA+libsodium/Python/worker/CLI fuera del checkout coinciden. structuredJson y rawText completos, isPartial=false. Cada worker rechaza la fuente de la otra entrada.
+
+SHA-256 canónico remoto de configuraciones2e1a71a1d991146a3b3ba5dc1b4bf329d5e1024440493155e1ff41b0b2a20973; usuarios437a6f0ec5a763e3b452ac55e84346ad3a7428cfc45173b48d8e98bda4493c68. Salidas215803bytes y776bytes. Se conservan todos los registros y campos; no se publican JSON o cuentas reales. Firma Ed25519 y todas las etiquetas de registros verificadas. Pruebas sintéticas no se presentan como conectividad real.
+
+Las11 pruebas Python nuevas cubren documentos completos, propósito/firmante, corrupción firmada de tags/campos/JSON/esquema, duplicados/no finitos/Unicode inválido, conflicto de metadatos, límites, independencia de proveedores, bridge y rechazo real del firmante ficticio en CLI/child, fuentes fijas, icono y oráculo independiente. Tres Node nuevas cubren dos entradas, controles independientes y transporte TLS/DNS/redirects, incluido fallo aislado de una fuente.
+
+JADX1.5.6 salió3/32 errores globales; no se afirma decompilación global completa. Análisis ARMv7 estático; no se ejecutaron o emularon APK/SO/DEX. La firma completa del APK no fue verificada. No se certifican sesión VPN o archivos/exportación de teléfono. No se instalaron dependencias nuevas, compiló APK, fusionó main ni desplegó VPS.
+
+Regresión local final:112 Python,199 Node y20 pruebas del arnés de descargas correctas; npm run build correcto. A0 sin bloqueos; P06 PASS_WITH_UNRESOLVED:8 fuentes de método cambiadas,86 fuentes alcanzadas,18 expedientes y46 consumidores sin resolución estática. Nueve expedientes consumidores incluyen revisión documental; no se concede aprobación a los casos no resueltos. El workflow global descubre ambas fuentes por sus IDs y comprueba solo descarga, sin descifrado, con advertencias no bloqueantes.

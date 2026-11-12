@@ -11,6 +11,7 @@ import {providerAllowed} from "./c12-provider-controls.mjs";
 import { maintenanceEnabled, serviceMaintenanceEnabled, recordWorkerResult } from "./c6-ops-store.mjs";
 import {admissionPolicy} from "./c11-play-admission.mjs";
 import {publicFormats} from "./file-format-catalog.mjs";
+import {allowsHcPartial} from "./hc-partial-result.mjs";
 
 import {negotiatesExport,negotiatesHatExport,negotiatesDynamicExport,exportPolicy,exportAllowed,EXPORT_PROFILE} from "./compatible-export-policy.mjs";
 
@@ -200,8 +201,8 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
   if(!isRecord(decoded))throw Error("INVALID_WORKER_SHAPE");
   if(response.status===200){
     // MKK Hyper collects independent vendor sources. Missing sources are
-    // explicitly marked partial, not an invalid response. All other routes
-    // still reject incomplete results, and MKK partial must be schema-bound.
+    // explicitly marked partial, not an invalid response. Both exceptions
+    // below require a complete document and a narrowly defined schema.
     const partialMkk=kind==="server-vpn" && payload?.providerId==="mkk-hyper" &&
       decoded.kind==="vpn_catalog" && decoded.providerId==="mkk-hyper" &&
       decoded.isPartial===true && decoded.structuredJson?.complete===false &&
@@ -211,10 +212,89 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
       decoded.structuredJson.sources.some(x=>x?.status==="ok") &&
       decoded.structuredJson.sources.some(x=>x?.status==="error") &&
       Array.isArray(decoded.warnings) && decoded.warnings.includes("PARTIAL_SOURCE_FAILURE");
-    if(decoded.status!=="success" || (decoded.isPartial!==false && !partialMkk) ||
+    const partialHc=allowsHcPartial(kind,payload,decoded);
+    if(decoded.status!=="success" || (decoded.isPartial!==false && !partialMkk && !partialHc) ||
        typeof decoded.rawText!=="string" || !decoded.rawText.length ||
        Buffer.byteLength(decoded.rawText,"utf8")>(isMkk?32*1024*1024:4*1024*1024))
       throw Error("INVALID_WORKER_RESULT");
+    if(kind==="server-vpn" && ["thailand-vpn","kham-vpn"].includes(payload?.providerId)){
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      if(decoded.kind!=="vpn_catalog"||decoded.providerId!==payload.providerId||decoded.isPartial!==false||
+         !isRecord(parsed)||!isDeepStrictEqual(parsed,decoded.structuredJson)||!Array.isArray(parsed.Servers)||!parsed.Servers.length||
+         parsed.Servers.some(row=>!isRecord(row)))throw Error("INVALID_WORKER_RESULT");
+      if(payload.providerId==="thailand-vpn"){
+        if(parsed.Status!==true||!isRecord(parsed.Settings)||parsed.Servers.some(row=>!Number.isSafeInteger(row.id)||
+          ["protocol_type","server_name","server_type"].some(k=>typeof row[k]!=="string"||!row[k])))throw Error("INVALID_WORKER_RESULT");
+      }else if(typeof parsed.Version!=="string"||!parsed.Version||!Array.isArray(parsed.Networks)||!parsed.Networks.length||
+        parsed.Servers.some(row=>typeof row.ServerName!=="string"||!row.ServerName)||
+        parsed.Networks.some(row=>!isRecord(row)||typeof row.PayloadName!=="string"||!row.PayloadName))throw Error("INVALID_WORKER_RESULT");
+    }
+    if(kind==="server-vpn" && payload?.providerId==="opentunnel-ssh"){
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId || !isRecord(parsed) ||
+         parsed.status!==200 || !Number.isSafeInteger(parsed.count) || parsed.count<0 ||
+         !Array.isArray(parsed.servers) || parsed.count!==parsed.servers.length ||
+         parsed.servers.some(x=>!isRecord(x) || typeof x.hostname!=="string" || !x.hostname) ||
+         !isDeepStrictEqual(parsed,decoded.structuredJson))throw Error("INVALID_WORKER_RESULT");
+    }
+    if(kind==="server-vpn" && payload?.providerId==="catnet-vpn"){
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      if(decoded.kind!=="vpn_catalog"||decoded.providerId!==payload.providerId||!isRecord(parsed)||
+         !isDeepStrictEqual(parsed,decoded.structuredJson)||parsed.success!==true||
+         !Array.isArray(parsed.servers)||!parsed.servers.length||
+         parsed.servers.some(row=>!isRecord(row)||!Number.isSafeInteger(row.id)||row.id<=0||
+           ["servername","ip"].some(k=>typeof row[k]!=="string"||!row[k]))||
+         (Object.hasOwn(parsed,"message")&&typeof parsed.message!=="string")||
+         (Object.hasOwn(parsed,"has_defaults")&&typeof parsed.has_defaults!=="boolean")||
+         ["def_user","def_pass_plain","back_user","back_pass_plain"].some(k=>Object.hasOwn(parsed,k)&&typeof parsed[k]!=="string"))
+        throw Error("INVALID_WORKER_RESULT");
+    }
+    if(kind==="server-vpn" && payload?.providerId==="genis-vpn"){
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId || !isRecord(parsed) ||
+         !isDeepStrictEqual(parsed,decoded.structuredJson) || typeof parsed.Version!=="string" || !parsed.Version ||
+         !Array.isArray(parsed.Servers) || !parsed.Servers.length || Object.hasOwn(parsed,"Usuarios") ||
+         parsed.Servers.some(row=>!isRecord(row) || typeof row["p0PgL3l0d89mnssz7ImPJA=="]!=="string" ||
+           !row["p0PgL3l0d89mnssz7ImPJA=="]) ||
+         (Object.hasOwn(parsed,"ReleaseNotes") && typeof parsed.ReleaseNotes!=="string"))throw Error("INVALID_WORKER_RESULT");
+    }
+    if(kind==="server-vpn" && payload?.providerId==="speicers-turbo-vpn"){
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId || !isRecord(parsed) ||
+         parsed.provider!==payload.providerId || parsed.complete!==true || !isRecord(parsed.catalogs) ||
+         Object.keys(parsed.catalogs).sort().join(",")!=="servers,users" || !isDeepStrictEqual(parsed,decoded.structuredJson))
+        throw Error("INVALID_WORKER_RESULT");
+      for(const [source,section,name] of [["servers","Servers","p0PgL3l0d89mnssz7ImPJA=="],["users","Usuarios","Name"]]){
+        const doc=parsed.catalogs[source];
+        if(!isRecord(doc) || typeof doc.Version!=="string" || !doc.Version || !Array.isArray(doc[section]) || !doc[section].length ||
+           doc[section].some(row=>!isRecord(row) || typeof row[name]!=="string" || !row[name]) ||
+           (Object.hasOwn(doc,"ReleaseNotes") && typeof doc.ReleaseNotes!=="string"))throw Error("INVALID_WORKER_RESULT");
+      }
+    }
+    if(kind==="server-vpn" && payload?.providerId==="http-conexion"){
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId || !isRecord(parsed) ||
+         !isDeepStrictEqual(parsed,decoded.structuredJson) || typeof parsed.Version!=="string" || !parsed.Version ||
+         !Array.isArray(parsed.Servers) || !parsed.Servers.length ||
+         parsed.Servers.some(row=>!isRecord(row) || typeof row.Name!=="string" || !row.Name) ||
+         (Object.hasOwn(parsed,"ReleaseNotes") && typeof parsed.ReleaseNotes!=="string"))throw Error("INVALID_WORKER_RESULT");
+    }
+    if(kind==="server-vpn" && payload?.providerId==="namo-vpn"){
+      let parsed;
+      try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId || !isRecord(parsed) ||
+         !isDeepStrictEqual(parsed,decoded.structuredJson) || typeof parsed.Version!=="string" || !parsed.Version ||
+         ["Servers","Networks"].some(k=>!Array.isArray(parsed[k]) || !parsed[k].length ||
+           parsed[k].some(row=>!isRecord(row) || typeof row[k==="Servers"?"ServerName":"PayloadName"]!=="string" ||
+             !row[k==="Servers"?"ServerName":"PayloadName"])) ||
+         (Object.hasOwn(parsed,"Message") && typeof parsed.Message!=="string"))throw Error("INVALID_WORKER_RESULT");
+    }
     if(kind==="server-vpn" && payload?.providerId==="fnf-tunnel-bd"){
       let parsed;
       try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
@@ -376,16 +456,16 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
          lists.some(k=>Object.hasOwn(parsed,k)&&(!Array.isArray(parsed[k])||parsed[k].some(x=>!isRecord(x)||typeof x.Name!=="string"))) ||
          JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))throw Error("INVALID_WORKER_RESULT");
     }
-    if(kind==="server-vpn" && ["ultra-tunnel","mm-tunnel","enaa-tunnel","7net-vpn","xhypher-tunnel-pro","vip-snipher-pro","izph-vpn-pro"].includes(payload?.providerId)){
+    if(kind==="server-vpn" && ["md-proxy-vpn","xxpicore-tunnel","ultra-tunnel","mm-tunnel","enaa-tunnel","7net-vpn","xhypher-tunnel-pro","vip-snipher-pro","izph-vpn-pro"].includes(payload?.providerId)){
       let parsed;
       try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
       if(decoded.kind!=="vpn_catalog" || decoded.providerId!==payload.providerId ||
          !isRecord(parsed) || !Object.hasOwn(parsed,"Version") ||
-         (["ultra-tunnel","mm-tunnel","enaa-tunnel"].includes(payload.providerId) && (typeof parsed.Version!=="string" || !parsed.Version)) ||
+         (["md-proxy-vpn","xxpicore-tunnel","ultra-tunnel","mm-tunnel","enaa-tunnel"].includes(payload.providerId) && (typeof parsed.Version!=="string" || !parsed.Version)) ||
          !Array.isArray(parsed.Servers) || !parsed.Servers.length ||
          !Array.isArray(parsed.Networks) || !parsed.Networks.length ||
          parsed.Servers.some(x=>!isRecord(x)) || parsed.Networks.some(x=>!isRecord(x)) ||
-         (payload.providerId==="ultra-tunnel" && (parsed.Servers.some(x=>typeof x.Name!=="string") || parsed.Networks.some(x=>typeof x.Name!=="string"))) ||
+         (["md-proxy-vpn","ultra-tunnel"].includes(payload.providerId) && (parsed.Servers.some(x=>typeof x.Name!=="string") || parsed.Networks.some(x=>typeof x.Name!=="string"))) ||
          JSON.stringify(parsed)!==JSON.stringify(decoded.structuredJson))throw Error("INVALID_WORKER_RESULT");
     }
     if(kind==="server-vpn" && payload?.providerId==="v2ray-tunnel-plus"){

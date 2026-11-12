@@ -67,7 +67,7 @@ class HistoryRepository(
 
     suspend fun load():List<DecodeView> = withContext(Dispatchers.IO) {
         mutex.withLock {
-            val records=encrypted.load()
+            val records=encrypted.load(metadataOnly=true)
             val rows=records.map { HistoryIndexRow(it.id,it.savedAtMillis) }
             // The index is an optimization, never a prerequisite to see an
             // authenticated encrypted file. Rebuild on the next successful load.
@@ -88,6 +88,10 @@ class HistoryRepository(
                 index.records().upsert(HistoryIndexRow(entry.id,entry.savedAtMillis))
             }.onFailure { if(it is kotlinx.coroutines.CancellationException)throw it }
         }
+    }
+
+    suspend fun open(id:String):DecodeView = withContext(Dispatchers.IO) {
+        mutex.withLock { encrypted.open(id) }
     }
 
     suspend fun favorite(id:String,value:Boolean):DecodeView = withContext(Dispatchers.IO) {

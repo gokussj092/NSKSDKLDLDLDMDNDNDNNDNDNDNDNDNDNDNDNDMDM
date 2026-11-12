@@ -11,7 +11,9 @@ import {v2PlayPolicyStatus,changeV2PlayPolicy,changeV2PlaySettings} from "./v2-p
 import {v2DevicePolicyStatus,changeV2DevicePolicy,PATCH_MONTHS,TEST_HOURS} from "./v2-device-admission-policy.mjs";
 import {admissionDiagnostics} from "./v2-admission-diagnostics.mjs";
 import {v2Settings} from "./v2-config.mjs";
-import {providerOverview,updateProvider,updateMethodState,PUBLIC_PROVIDER_IDS} from "./c12-provider-controls.mjs";
+import {providerOverview,updateProvider,updateMethodState,updateDisplayVersion,PUBLIC_PROVIDER_IDS} from "./c12-provider-controls.mjs";
+import {currentSnapshot} from "./catalog-chunk-api.mjs";
+import {chunksEnabled} from "./catalog-snapshots.mjs";
 import { ehiConfigured,nurConfigured } from "./c35-provider.mjs";
 import { jsonReply } from "./responses.mjs";
 import {readOpsReport,hostHealth} from "./c14-ops-observability.mjs";
@@ -347,6 +349,19 @@ export async function playAdmissionRequest(request,options={}){
 }
 
 /** Fixed-provider availability: CSRF protected, authenticated, never writes credentials. */
+export async function catalogEditionRequest(request,options={}){
+ const cfg=adminSettings();if(!cfg.enabled)return error("ADMIN_DISABLED",503);
+ if(!validMutation(request,cfg))return error("CSRF_REJECTED",403);
+ try{
+  const redis=await (options.storeProvider||opsStore)();
+  if(!await authenticateAdmin(redis,request,cfg))return error("UNAUTHORIZED",401);
+  const body=await parseSmallJson(request,128);
+  if(!own(body,["displayVersion"])||!Number.isSafeInteger(body.displayVersion)||body.displayVersion<1)return error("INVALID_REQUEST",400);
+  const providerControls=await updateDisplayVersion(body.displayVersion,process.env,{prepare:chunksEnabled()?async next=>currentSnapshot(request,{...await providerOverview(),catalogVersion:next.version,displayVersion:String(next.displayVersion)}):null});
+  return api({providerControls},200,{"Cache-Control":"private, no-store"});
+ }catch(cause){if(["DISPLAY_VERSION_ROLLBACK","MAINTENANCE_LOCKED","PROVIDER_BUSY"].includes(cause?.message))return error(cause.message,409);return error("SERVICE_UNAVAILABLE",503);}
+}
+
 export async function providerControlRequest(request,options={}){
  const cfg=adminSettings();
  if(!cfg.enabled)return error("ADMIN_DISABLED",503);

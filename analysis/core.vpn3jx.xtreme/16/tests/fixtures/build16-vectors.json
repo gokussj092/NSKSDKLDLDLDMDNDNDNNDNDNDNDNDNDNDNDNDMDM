@@ -1,0 +1,79 @@
+{
+  "origin": "OWNED_SYNTHETIC_GO_ORACLE",
+  "fieldPlain": {
+    "DefOVPNUser": "owned-user",
+    "ServerIPHost": "owned.example.invalid",
+    "UUID": "owned-uuid",
+    "Payload": "GET /owned HTTP/1.1\r\nHost: owned.example.invalid\r\n",
+    "SNI": "owned.example.invalid",
+    "V2rayConfig": "owned synthetic configuration"
+  },
+  "fieldCipher": {
+    "DefOVPNUser": "AAECAwQFBgcICQoLDA0ODwABAgMEBQYHCAkKC9T6cbyi/j7/1q9fW7RASSViH/F0XvVfCgMM",
+    "ServerIPHost": "AAECAwQFBgcICQoLDA0ODwABAgMEBQYHCAkKC9T6cbyi/S700rCh+WTBUCbnYfEC+pKDcx9XmI9yemT8Pmi8d3Q=",
+    "UUID": "AAECAwQFBgcICQoLDA0ODwABAgMEBQYHCAkKC9T6cbyi/j752rnk2Eozf+yX76gju3ectWev",
+    "Payload": "AAECAwQFBgcICQoLDA0ODwABAgMEBQYHCAkKC/zIS/npvDzi1rnx3VW7aWegLqxmlJGL3Dna04BNNJ5dOLSLNz/2dsrATuLJ6aH3VOO6r6v1RLG3FAmwKQX+GTYnWg==",
+    "SNI": "AAECAwQFBgcICQoLDA0ODwABAgMEBQYHCAkKC9T6cbyi/S700rCh+WTBUCbnYfEC+pKDcx9XmI9yemT8Pmi8d3Q=",
+    "V2rayConfig": "AAECAwQFBgcICQoLDA0ODwABAgMEBQYHCAkKC9T6cbyi8zj13am58HWGWmjyb/MN976R3SyUmoBUTWuDXIGTsl+cToMFlx1Dpw=="
+  },
+  "catalogTransport": "AAEZCAwQFBgcICQoLDA0ODwABAgMEBQYHCAkKCzTcwOpmWqO2xWqneG7bB7x7+BFEoj0Drc85QiH6DwUwu4jaYHpkGT0fQRPLsPKgaxu4B0+V/oYDPqjxTUbiJ5UCXJNu0LWeUugLNLOTcoRt4N21zUCueusJbYXRfSa3VLt57qJcsE9hrQQrpmu5gNTpbAIdb6l+Nl7YIFBPcFtKAcxY0aypkK3lAFlbqa+0pw3eZeawuY3pZzhbPcWOg2b2OuKru+m/zjBcH82Ts3H/uccd2BgNCky5/uQPHB8AtSWAps082lGSJ7K8sH7fwfMiG8PJoeVknjYidSq3BisXACEe4y1VLfaan0kUp0Z7wB5lzvef4w6dJ048LBLys2jic0zEos1ym4cbXsQLAUeiSpXdh0HZAtgXhqraOYjJpl6QDYtUQMvO639o9WWWaC5ndwBHy7j4MASImyNJWP5gXYBOr/fmtM1bFuOV8gcF2Dr5/enOgzxDSo32VUwOtzBYXSJCD0f/k7aCoVnMCptyeDgW9rulN3a2jMZC3eSUFdHpCr5MeWP9rUGA1q+9OYUfCSq1y3slKrMbYxOzz30qKM0zyS0B3JiWjIgSRohBeeFesZi/inSUP7SKjUHqngcFClBgtEHsWbJJE5BW3mwxQyBhf+yk45hhdQkRmgFRBGV8r8VLp0/G+yIHIZJV2znYAvtbl5AsfFy5UoiJd5hkgHmWGMgVeAWko/D/NKnljzsSYz6y7aag30YyHXGhkKoQkZVNwn550NCvdjFbHPNqfEw4OVbH//L579WjcDxpTY7+xBe4ieoT+jl1wBoKiORUZEVf4cTDlDMH092Ja8hM6KEt43hNADGSjyJyPO3Rz3ZS9kRJOyaPa9jWRRRsR/+L2LB8rS33qcHCV5qjeI4y4Jk8unTEgT/XVuJ3PpXHqhq3b1ARsEve3jj3wuYVWZMoiYAg19ZZ7BBbGu+wYl28qRSveAtwXmqvLmcaYQ4Dw+q2e3T+K0CIK+KuJ48PpPwvmp9y38DZA3gpiF93wt6E1GkkHmlORqmivetlfqJxvMsfm48w/PRo1x/cIiIQGJpw9L/EE2fUMesj9Vmjhq9KNwBtq3MkDSGh7Uxh16q9IGQfm5y9T3EbWRQ4H4kam6WaCDxBLz0XbGbtL/qknkxraa+2x9K7EbWsgRJWIrJXssaVIG34vi8U8DVu8NQGz89YEIhR51ItPgtht/HBD1LVXB2B88W7qtJXF+aIC8AXEfcVH+srsbcFDM8+8tRYiDKRFi9P5OA1gG9MEJIUp3uo/Qdy9FSvaSq0pGRiwvzaZvgGLKczmUgqbw==",
+  "catalogEmbedded": "AAECAwQFBgcICQoLDA0ODwABAgMEBQYHCAkKC8CvSby0oCLj3f/rtSOATib0ZLAJ67CIy3zW0cMaeL9ccJ6lBhzTacqcBbafqozfda3xn9OkvLpGG0DoS+BxmzDLMijcSzpYvsUoDmOK4xDVNZMJOY+Y51eIzjSAXwOV6MDfwCisafNum69gv+3u67RPQqMzjJ6gohSTl7PhPlfwKfaqksXnFk40uBaqRS64Esi8PPQ39JART3t7/lceLxMdw2pHj4aiKLHXy2FnPnxdkLS5vB1IWNU9BWDkaQWUcKQUBY2XTGH676H3N0+nQ0dKVFkuiPm2/nTFBupMAzrnW0i/ZEdRSjXglLxzgbJtNK/VYy4EkTi5E0lwlL1ORfSAJjEY4MR/CxEGYBX6q7ITx8Ik35Jw0Yf54qB97XgJcNM+DhtoJFF9TC3086h4zkTpUazSVdwxCyWT7vXy4FJ7aaMIM8wYKoob+KCCHSOyZ6gTZ6tPkmLN3Y5runzsgs7ezzaelRHRvuHpsFfmldNqkowuLz/IrlhbmUiNjSXC6gxaeGl6nGNS/BsoAMEUICsWcobLYtiVTSrBv6M8Fcu7N8GNV6IVjwv5yPKLeuiCNb7weXWSqr7PYEwfFY0HBsH7zh4q7dPlrhD3J7RA1HoPUsCw9fGLW7YtFqOxaWnGE6TLV7WXbMXshXua6iv6VULRehE70+MvO1XAN2NmGifGsU1t/3B+Y5R37Xh+w035/vAcR4jUWnFYRVSTJU7RFZxG/+RB4eiViWyndp1zg2YxlK7rDkMHIlIDLWBLIHITimcMoxstRKLd2KwTogjdedHHG+op5nPrNbDfsTi2dkNwdQEtGzvU7shXHKFWkmq2rx/LM+Osm5jxJYmxzjx9Jwr1RKpczDJkWjWqauS4mTW06hl/se1Ou14beJDW+tUtwjRdyU5DmpHECcGVaGvLxJx3pSoZngN3J81BHV4uBLRxkagAtIS8fBcD3ZONe3Km+MSTXpaKz/lk4ou9ZwBRRlr9EZmUj0Lo84KVq6qMqWtP8LawG0ab/DTeMcrXhY1Wee5Kx0DWMlCP16aWmy1J8j8yjpkIOKelX3S2X2cWn2ctPZUjYTz2gQ1skrIyx1xvIrkQNv7oVV0s8r7NPbbLRg96KoY722KU1SI4HYSpup1pLq6+f3lruyHFeIVWiE8T0JGTAXASzQWxAQGuk3Nov+wzjHH5JhwDxEbP9vOjYF+ePaKUGTsjpVmgq3sspIHRV8d2kdI0c+VIPoFTYlIasL7CX4W/64LHkQyn4gYvu1KxCg1h12Sxo0opfFaE8zh8P4SBJf0rsXVAgw==",
+  "profileTransport": "AAEZCAwQFBgcICQoLDA0ODwABAgMEBQYHCAkKCzTc2O55TOjji2rSLyLRFPJw+UhRuCYE69IvQlmvQy8wsZP1QFETUHhPNRu50+rDAnjbIH+q0I4BE8maAijnJ+AOWZN+1LaefOQKNIWXdYQ25Nr72DSMf98lAL6/GlSHBpZt9opUsDNZtDpAmjLQhOz3HDMHFeoFcxvHNFpUeWN+b8U85La76o7GKzFU7cK3gy/1e+nxuIztQx4MXa+asUu3GsiWxMvB13J6cbCA13HTi88N92IMHHK04MBjTnFo1DecrPNfojDXK7a7ombg0/QLN+O5toJosAsKajbEQVonAi548TtGIf27sHs5oTwEhjZD1OaJ6FTkLkUaKW2dt0feCEqZqpYV9IxJRtMgJi6VVajGxASWZNJlx+PAC4nq+gWeF4l5UOz623gloSPdTk0YFGNx27v5FhCQnjBBd/NiPKBGnPeUuu5hEuOFzAID2wDr9pPb3hRiCrDvXBlC7HpMXCE0AVCsgIeN0TjGCpcjMhYsmOnlR2nF1+NAwNLje6aoetV4Q2qi4Uit57SHEJsMS0z/nB1jKtFaLCPDvH8yR9w8wDpEnt3AjokLQ8UaN+Ew5I3zvFaJZP7PjQu42SJSKmdcuxiiCYdLBZtX1nJ2HS0zUd6I1LB5Sm1/3UB5NUZymqMwt1v2/hYgTNV26xfld5Mvi4YaUXj+YgE+IMKWjKIXRUNkeg==",
+  "invalidUtf8Transport": "AAEZCAwQFBgcICQoLDA0ODwABAgMEBQYHCAkKC7B+lnRSA6dwrTy2lh3yydT5keA=",
+  "expected": {
+    "Version": "owned-build16",
+    "DefOVPNUser": "owned-user",
+    "Servers": [
+      {
+        "Name": "Owned server",
+        "ServerIPHost": "owned.example.invalid",
+        "SSH_Port": "22",
+        "V2ray": {
+          "UUID": "owned-uuid",
+          "port": 443
+        }
+      }
+    ],
+    "Networks": [
+      {
+        "Name": "Owned network",
+        "TunnelType": "V2RAY",
+        "Payload": "GET /owned HTTP/1.1\r\nHost: owned.example.invalid\r\n",
+        "SNI": "owned.example.invalid",
+        "V2rayConfig": "owned synthetic configuration",
+        "URI": false,
+        "unknown": {
+          "SNI": "preserve-unrecognized-position",
+          "array": [
+            true,
+            null,
+            7
+          ]
+        }
+      }
+    ],
+    "unknown": {
+      "full": [
+        false,
+        null,
+        "ñ"
+      ]
+    }
+  },
+  "expectedProfile": {
+    "Name": "Owned network",
+    "TunnelType": "V2RAY",
+    "Payload": "GET /owned HTTP/1.1\r\nHost: owned.example.invalid\r\n",
+    "SNI": "owned.example.invalid",
+    "V2rayConfig": "owned synthetic configuration",
+    "URI": false,
+    "unknown": {
+      "SNI": "preserve-unrecognized-position",
+      "array": [
+        true,
+        null,
+        7
+      ]
+    }
+  }
+}

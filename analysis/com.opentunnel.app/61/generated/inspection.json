@@ -1,0 +1,25 @@
+{
+  "package": "com.opentunnel.app",
+  "versionName": "1.1.1",
+  "versionCode": 61,
+  "apkBytes": 7903443,
+  "apkSha256": "b4351ea4b967da946066a27b45a369a657842b36bedaa32562be37ff3cb74d36",
+  "certificateSha256": [
+    "85c0c210daa2b87e667a74763d692fa612b3b18dc96841cb7db9ba8da267ec95"
+  ],
+  "icon": {
+    "source": "res/mipmap-xxxhdpi-v4/ic_launcher.png",
+    "bytes": 4978,
+    "sha256": "2687863c67e82e2fcff500ffd34d4fff6ec5b59662a4db6eb96650ed6aca8c98"
+  },
+  "sourceSha256": {
+    "defpackage/pf.java": "81fb64efbbba1c62484084a5404f4edf64650d825148fb6ef11e5966279fcc4e",
+    "defpackage/wd1.java": "4d31bd4cb57d59f6969a8dbb6d578bae813a0c502dc8ca7d4402ddc5d0ffe66f",
+    "defpackage/k30.java": "0e98f8b01c02b85c726060876c83261b924be3fe6fbf707298d86347821a5916",
+    "defpackage/ji.java": "61f0e758352227a8ae3be68854dbe8176f2e963b2bb075f87a2f57bd74deb1be",
+    "defpackage/ba0.java": "8d8975c4bb49693b5d9dd1bc8534314f8220e9be66310fd8576bb0f4a06c6497",
+    "com/opentunnel/app/activities/ConfigExportFileActivity.java": "0d12990b1ded210e76e5d80920fcc483298441ea3a0bcf5b5b1de3323a941f1b"
+  },
+  "apkCodeExecuted": false,
+  "cryptographicApkSignatureVerified": false
+}

@@ -35,6 +35,8 @@ private val SurfaceLine=Color(0xFF343434)
 fun FunctionalSettingsPanel(
     language:String,
     maskCredentials:Boolean,
+    telegramCreditUsername:String="",
+    onSaveTelegramCredit:(String)->Boolean={false},
     onLanguage:(String)->Unit,
     onMaskCredentials:(Boolean)->Unit,
     onClear:()->Unit,
@@ -44,6 +46,7 @@ fun FunctionalSettingsPanel(
     onShowGuide:()->Unit={},
     onLegalLink:(String)->Unit={},
     onWithdrawConsent:()->Unit={},
+    onAdsPrivacyOptions:()->Unit={},
     catalogUpdatesEnabled:Boolean=false,
     onCatalogUpdates:(Boolean)->Unit={},
     usageAnalyticsEnabled:Boolean=false,
@@ -55,6 +58,13 @@ fun FunctionalSettingsPanel(
     onFeedbackSubmit:suspend (FeedbackDraft)->String={throw IllegalStateException("FEEDBACK_UNAVAILABLE")},
 ){
     var clearDialog by remember { mutableStateOf(false) }
+    var creditDraft by rememberSaveable(telegramCreditUsername) {
+        mutableStateOf(telegramCreditUsername.trimStart('@'))
+    }
+    var editingCredit by rememberSaveable { mutableStateOf(false) }
+    var deleteCreditDialog by remember { mutableStateOf(false) }
+    val hasSavedCredit=telegramCreditUsername.isNotBlank()
+    val normalizedCredit=TelegramResultCopy.normalizeUsername(creditDraft)
     var languagePage by rememberSaveable { mutableStateOf(false) }
     var formatsPage by rememberSaveable { mutableStateOf(false) }
     var feedbackPage by rememberSaveable { mutableStateOf(false) }
@@ -180,6 +190,64 @@ fun FunctionalSettingsPanel(
             Text(stringResource(R.string.export_security_note),
                 color=MutedText,fontSize=12.sp,lineHeight=17.sp)
         }
+        if(BuildConfig.SPDECODE_CLOUD_ENABLED) SettingsCard {
+            Row(verticalAlignment=Alignment.CenterVertically) {
+                Icon(Icons.Outlined.AlternateEmail,null,tint=TitleText)
+                Spacer(Modifier.width(10.dp))
+                Text(stringResource(R.string.decrypt_credits_title),
+                    color=TitleText,fontWeight=FontWeight.SemiBold,fontSize=17.sp)
+            }
+            Text(stringResource(R.string.decrypt_credits_description),
+                color=MutedText,fontSize=12.sp,lineHeight=18.sp)
+            if(hasSavedCredit && !editingCredit) {
+                Text(stringResource(R.string.decrypt_credits_saved),
+                    color=MutedText,fontSize=12.sp)
+                Text(telegramCreditUsername,color=TitleText,
+                    fontSize=17.sp,fontWeight=FontWeight.SemiBold,
+                    modifier=Modifier.testTag("telegram_decrypt_credit_saved"))
+                Row(horizontalArrangement=Arrangement.spacedBy(10.dp),
+                    modifier=Modifier.fillMaxWidth()) {
+                    OutlinedButton(
+                        onClick={
+                            creditDraft=telegramCreditUsername.trimStart('@')
+                            editingCredit=true
+                        },
+                        modifier=Modifier.weight(1f).testTag("telegram_decrypt_credit_edit")
+                    ) { Text(stringResource(R.string.decrypt_credits_edit)) }
+                    OutlinedButton(
+                        onClick={deleteCreditDialog=true},
+                        modifier=Modifier.weight(1f).testTag("telegram_decrypt_credit_delete")
+                    ) { Text(stringResource(R.string.decrypt_credits_delete)) }
+                }
+            } else {
+                OutlinedTextField(
+                    value=creditDraft,
+                    onValueChange={creditDraft=it.trimStart('@').take(40)},
+                    label={Text(stringResource(R.string.decrypt_credits_handle))},
+                    prefix={Text("@")},
+                    singleLine=true,
+                    isError=normalizedCredit==null,
+                    modifier=Modifier.fillMaxWidth().testTag("telegram_decrypt_credit")
+                )
+                if(normalizedCredit==null)
+                    Text(stringResource(R.string.decrypt_credits_invalid),
+                        color=Color(0xFFFF9696),fontSize=12.sp)
+                Button(onClick={
+                    normalizedCredit?.takeIf{it.isNotEmpty()}?.let{normalized->
+                        if(onSaveTelegramCredit(normalized))editingCredit=false
+                    }
+                },enabled=normalizedCredit?.isNotEmpty()==true,
+                    modifier=Modifier.fillMaxWidth().testTag("telegram_decrypt_credit_save")) {
+                    Text(stringResource(R.string.decrypt_credits_save))
+                }
+                if(hasSavedCredit) TextButton(
+                    onClick={
+                        creditDraft=telegramCreditUsername.trimStart('@')
+                        editingCredit=false
+                    },modifier=Modifier.fillMaxWidth()
+                ) { Text(stringResource(R.string.cancel)) }
+            }
+        }
         SettingsCard{
             Row(verticalAlignment=Alignment.CenterVertically){
                 Icon(Icons.Outlined.Lock,null,tint=TitleText)
@@ -213,6 +281,9 @@ fun FunctionalSettingsPanel(
                 Spacer(Modifier.width(8.dp))
                 Text(stringResource(R.string.delete_session))
             }
+            if(BuildConfig.SPDECODE_UNITY_ADS_ENABLED) OutlinedButton(
+                onClick=onAdsPrivacyOptions,modifier=Modifier.fillMaxWidth()
+            ) { Text(stringResource(R.string.ads_privacy_options)) }
             // Consent withdrawal remains accessible without duplicating legal links.
             if(BuildConfig.SPDECODE_CLOUD_ENABLED) OutlinedButton(
                 onClick={withdrawDialog=true},modifier=Modifier.fillMaxWidth()
@@ -288,6 +359,24 @@ fun FunctionalSettingsPanel(
         }
         Spacer(Modifier.height(6.dp))
     }
+    if(deleteCreditDialog) AlertDialog(
+        onDismissRequest={deleteCreditDialog=false},
+        title={Text(stringResource(R.string.decrypt_credits_delete),color=TitleText)},
+        text={Text(stringResource(R.string.decrypt_credits_delete_confirm),color=MutedText)},
+        confirmButton={TextButton(onClick={
+            if(onSaveTelegramCredit("")) {
+                creditDraft=""
+                editingCredit=false
+                deleteCreditDialog=false
+            }
+        }) { Text(stringResource(R.string.decrypt_credits_delete)) }},
+        dismissButton={TextButton(onClick={deleteCreditDialog=false}) {
+            Text(stringResource(R.string.cancel))
+        }},
+        containerColor=Color.Black,
+        titleContentColor=TitleText,
+        textContentColor=TitleText
+    )
     if(withdrawDialog) AlertDialog(
         onDismissRequest={withdrawDialog=false},
         title={Text(stringResource(R.string.cloud_legal_withdraw))},

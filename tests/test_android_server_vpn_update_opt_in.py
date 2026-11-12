@@ -17,7 +17,8 @@ class ServerVpnUpdateOptInContracts(unittest.TestCase):
         self.assertIn("if(force) {",activity)
         self.assertIn("probeUpdatesOnEntry()",activity)
         self.assertIn("refreshServerVpn()",activity)
-        self.assertIn("R.string.catalog_available_body",ui)
+        self.assertIn("confirmButton={TextButton(onClick=onConfirmServerVpnUpdate)",ui)
+        self.assertIn("catalogTransfer?.let { transfer ->",ui)
         self.assertIn('testTag("server_vpn_manual_refresh")',ui)
         header=ui[ui.index("private fun BrandHeader("):ui.index("private fun HomeScreen(")]
         self.assertIn('testTag("server_vpn_manual_refresh")',header)

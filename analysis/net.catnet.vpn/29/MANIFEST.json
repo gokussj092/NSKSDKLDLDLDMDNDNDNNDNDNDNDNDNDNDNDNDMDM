@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-11-09",
+  "source_category": "owner-provided-google-play-export",
+  "authorization_note": "Owner supplied Play APKS, Litron method and icon for SP-DECODE catalog maintenance; no private account credentials, APK redistribution or app execution.",
+  "tooling": [
+    {
+      "name": "Full JADX",
+      "version": "1.5.6",
+      "path": "scripts/apk_analysis/decompile.py",
+      "invocation": "auto/no-res/Xmx2200m/j3"
+    },
+    {
+      "name": "Androguard",
+      "version": "4.1.3",
+      "role": "AXML/certificate inventory; no complete APK signature verification"
+    },
+    {
+      "name": "Per-build owned tools",
+      "path": "analysis/net.catnet.vpn/29/tools"
+    },
+    {
+      "name": "Retained intake recipes",
+      "path": "analysis/_intake/catnet-play-litron-2026-11-09/tools"
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "Python",
+      "version": "3.12.14",
+      "source": "https://python.org/",
+      "license": "PSF",
+      "lockfile": "analysis/net.catnet.vpn/29/dependencies.lock.json"
+    },
+    {
+      "name": "Androguard",
+      "version": "4.1.3",
+      "source": "https://github.com/androguard/androguard",
+      "license": "Apache-2.0",
+      "lockfile": "analysis/net.catnet.vpn/29/dependencies.lock.json"
+    },
+    {
+      "name": "PyCryptodome",
+      "version": "3.23.0",
+      "source": "https://pycryptodome.org/",
+      "license": "BSD-2-Clause / Public-Domain components",
+      "lockfile": "analysis/net.catnet.vpn/29/dependencies.lock.json"
+    },
+    {
+      "name": "OpenJDK",
+      "version": "21.0.13",
+      "source": "https://openjdk.org/",
+      "license": "GPL2 with Classpath Exception",
+      "lockfile": "analysis/net.catnet.vpn/29/dependencies.lock.json"
+    },
+    {
+      "name": "JADX",
+      "version": "1.5.6",
+      "source": "https://github.com/skylot/jadx",
+      "license": "Apache-2.0",
+      "lockfile": "analysis/net.catnet.vpn/29/dependencies.lock.json"
+    },
+    {
+      "name": "Node",
+      "version": "24.22.1 local /22 CI",
+      "source": "https://nodejs.org/",
+      "license": "MIT",
+      "lockfile": "analysis/net.catnet.vpn/29/dependencies.lock.json"
+    }
+  ],
+  "limitations": [
+    "APK signature cryptographic verification not performed; extracted certificate fingerprint only.",
+    "JADX has unrelated failures, not a complete reconstructed application.",
+    "No Android/VPN session, file/text support, APK compilation, main merge or VPS deployment.",
+    "No automatic approval or execution of newly added research tools."
+  ],
+  "network_requirements": [
+    "Original fixed public catalog source only; no arbitrary URL input or authentication bypass."
+  ],
+  "manual_steps": [
+    "Review branch evidence and CI before operator VPS rollout."
+  ],
+  "unresolved_questions": [
+    "Public preflight/server availability outside the owner device; do not fabricate Integrity/session data."
+  ],
+  "package_name": "net.catnet.vpn",
+  "app_name": "CATNET VPN",
+  "version_name": "1.2.7",
+  "version_code": 29,
+  "inputs": {
+    "package": "net.catnet.vpn",
+    "versionName": "1.2.7",
+    "versionCode": 29,
+    "apksBytes": 43778444,
+    "apksSha256": "66b95fba41d70bcdf96d741e05ad305bb1d619afb8ebed8ce33ab0395a5212b8",
+    "apkBytes": 14223639,
+    "apkSha256": "870a4e41f11a1cc3987c2f6b098ffa6adb1f69877820065ab7d938b394b39676",
+    "splits": [
+      {
+        "name": "base.apk",
+        "bytes": 14223639,
+        "sha256": "870a4e41f11a1cc3987c2f6b098ffa6adb1f69877820065ab7d938b394b39676"
+      },
+      {
+        "name": "split_config.arm64_v8a.apk",
+        "bytes": 33264744,
+        "sha256": "f740a0b5fe0715aee449eff3de65b66236ac70d374ccfa40555ad20580ebc0c2"
+      },
+      {
+        "name": "split_config.es.apk",
+        "bytes": 45266,
+        "sha256": "637e0e1cb8a2dd71ff2ba231dd14710ced6861db4346b48b5d19d6483e968760"
+      },
+      {
+        "name": "split_config.xhdpi.apk",
+        "bytes": 126222,
+        "sha256": "835d0416c6960e8c99414424d70f3f0046f8ca4945aabc2ac964aebb36227388"
+      }
+    ],
+    "certificateSha256": [
+      "dcc1eb6396b9c1b8ec554c99bb8a9ca7feda3a00fee05a977ec186571661c90c"
+    ],
+    "sourceCategory": "owner-provided Play export; filename is not authoritative identity",
+    "cryptographicApkSignatureVerified": false,
+    "apkCodeExecuted": false
+  },
+  "evidence_refs": [
+    "analysis/net.catnet.vpn/29/ANALYSIS.md",
+    "analysis/net.catnet.vpn/29/REPRODUCE.md",
+    "analysis/net.catnet.vpn/29/RESULTS.md",
+    "analysis/net.catnet.vpn/29/DEPENDENCIES.md",
+    "analysis/net.catnet.vpn/29/dependencies.lock.json",
+    "analysis/net.catnet.vpn/29/generated/identity.json",
+    "analysis/net.catnet.vpn/29/generated/static-proof.json",
+    "analysis/net.catnet.vpn/29/generated/probe-summary.json",
+    "analysis/net.catnet.vpn/29/generated/build-diff.json"
+  ],
+  "code_paths": [
+    "cloud/web/lib/server-vpn-provider.mjs",
+    "cloud/web/lib/server-vpn-catalog.mjs",
+    "cloud/web/lib/c12-provider-controls.mjs",
+    "cloud/workers/python/catalog_vpn_bridge.py",
+    "cloud/workers/python/engine.py",
+    "cloud/web/lib/catnet-protocol.mjs",
+    "decoders/Python/apps/CATNET_VPN/server_catalog_decoder.py",
+    "decoders/Python/apps/CATNET_VPN/codec.py"
+  ],
+  "status": "PARTIAL",
+  "targets": [
+    {
+      "kind": "catalog",
+      "status": "NETWORK_UNAVAILABLE",
+      "scope": "Play build29 source trace and version headers verified; current preflight has no valid provider response"
+    }
+  ],
+  "play_update_date_reported_by_owner": "2026-11-05"
+}

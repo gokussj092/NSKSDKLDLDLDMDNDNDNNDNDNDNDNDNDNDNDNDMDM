@@ -20,7 +20,6 @@ object ResultJsonDisplay {
     private val decorativeLine=Regex("""^[\s│┌┐└┘├┤─═╔╗╚╝╠╣]+$""")
     private val decoratedHeading=Regex(
         """(?i)^\s*│?\s*(?:SP\s*[-–]\s*DECODE|[┌└├╔╚].*|(?:Developer|Group|Channel|Créditos|Credits|Copyright)\s*:)""")
-    private const val MAX_DEPTH=24
 
     fun render(raw:String,suffix:String,maskCredentials:Boolean=false):String =
         gson.toJson(element(raw,suffix,maskCredentials))
@@ -62,28 +61,33 @@ object ResultJsonDisplay {
     }catch(_:Exception){null}
 
     private fun normalize(input:JsonElement,mask:Boolean,depth:Int):JsonElement {
-        if(depth>=MAX_DEPTH)return input.deepCopy()
-        return when {
-            input.isJsonObject->JsonObject().also { output ->
-                for((key,value) in input.asJsonObject.entrySet()){
-                    output.add(key,if(mask && ResultPresentation.isCredential(key))
-                        JsonPrimitive("••••••••")
-                    else normalize(value,mask,depth+1))
+        data class Work(val value:JsonElement,val level:Int,val receive:(JsonElement)->Unit)
+        val tasks=ArrayDeque<Work>();var result:JsonElement?=null
+        tasks.addLast(Work(input,depth){result=it})
+        while(tasks.isNotEmpty()) {
+            val item=tasks.removeLast();require(item.level<=200) { "RESULT_INDEX_LIMIT" }
+            val value=item.value
+            when {
+                value.isJsonObject -> {
+                    val output=JsonObject();item.receive(output)
+                    for(entry in value.asJsonObject.entrySet().toList().asReversed()) {
+                        val key=entry.key
+                        val child=if(mask&&ResultPresentation.isCredential(key))JsonPrimitive("••••••••") else entry.value
+                        tasks.addLast(Work(child,item.level+1){output.add(key,it)})
+                    }
                 }
+                value.isJsonArray -> {
+                    val output=JsonArray();item.receive(output)
+                    for(index in value.asJsonArray.size()-1 downTo 0)tasks.addLast(Work(value.asJsonArray[index],item.level+1){output.add(it)})
+                }
+                value.isJsonPrimitive&&value.asJsonPrimitive.isString -> {
+                    val raw=value.asString.trim()
+                    val embedded=if((raw.startsWith("{")&&raw.endsWith("}"))||(raw.startsWith("[")&&raw.endsWith("]")))parse(raw) else null
+                    if(embedded!=null)tasks.addLast(Work(embedded,item.level+1,item.receive)) else item.receive(value)
+                }
+                else -> item.receive(value)
             }
-            input.isJsonArray->JsonArray().also { arr ->
-                for(value in input.asJsonArray)arr.add(normalize(value,mask,depth+1))
-            }
-            input.isJsonPrimitive && input.asJsonPrimitive.isString->{
-                val raw=input.asString
-                val trimmed=raw.trim()
-                val embedded=if((trimmed.startsWith("{")&&trimmed.endsWith("}"))||
-                    (trimmed.startsWith("[")&&trimmed.endsWith("]")))parse(trimmed) else null
-                if(embedded!=null && (embedded.isJsonObject||embedded.isJsonArray))
-                    normalize(embedded,mask,depth+1)
-                else input.deepCopy()
-            }
-            else->input.deepCopy()
         }
+        return requireNotNull(result)
     }
 }

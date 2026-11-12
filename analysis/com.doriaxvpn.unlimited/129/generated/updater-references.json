@@ -1,0 +1,50 @@
+[
+  {
+    "dex": "classes.dex",
+    "class": "Lcl;",
+    "method": "c",
+    "descriptor": "()Lorg/json/JSONObject;",
+    "instruction_count": 77,
+    "instructions_sha256": "6be097ca55ba1a59c74351fb90207c9fd19da92199b6ec6b35e94aadd5f88d43"
+  },
+  {
+    "dex": "classes.dex",
+    "class": "Lcom/doriaxvpn/unlimited/vpn/security/AppSecurityManager;",
+    "method": "lambda$fetchAsync$2",
+    "descriptor": "(Landroid/content/Context; Lcom/doriaxvpn/unlimited/vpn/security/AppSecurityManager$OnSecurityLoadedListener;)V",
+    "instruction_count": 77,
+    "instructions_sha256": "72f576d8d8fd4d0490fb2a7937f9c475dcb23dc1b21fa9b665a6d0ac609e9c89"
+  },
+  {
+    "dex": "classes.dex",
+    "class": "Ln61;",
+    "method": "b",
+    "descriptor": "(Landroid/content/Context;)V",
+    "instruction_count": 146,
+    "instructions_sha256": "f42dde1822174b1c9b515f0d5fd13e96029b3b9c0b6183ab87057db1cecb80c0"
+  },
+  {
+    "dex": "classes.dex",
+    "class": "Ln61;",
+    "method": "d",
+    "descriptor": "(Landroid/content/Context;)V",
+    "instruction_count": 80,
+    "instructions_sha256": "67e3dea58fd1c61ac8a64ea89dc71b9795488094472cccf9d734ed7b83363c4f"
+  },
+  {
+    "dex": "classes.dex",
+    "class": "Ln61;",
+    "method": "e",
+    "descriptor": "(Landroid/content/Context;)Ljava/lang/String;",
+    "instruction_count": 44,
+    "instructions_sha256": "96ebc86d8dfd3e09fac0363720d331dbddd879cbac19be0dc7247520f55003a1"
+  },
+  {
+    "dex": "classes.dex",
+    "class": "Lsc1;",
+    "method": "run",
+    "descriptor": "()V",
+    "instruction_count": 244,
+    "instructions_sha256": "6c4cae31a551a419b71bd1943586d30a5aaace8ce7662262238c6c87a9a7c967"
+  }
+]

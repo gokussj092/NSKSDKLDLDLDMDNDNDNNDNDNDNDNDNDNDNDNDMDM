@@ -1,0 +1,82 @@
+name: Catalog downloads - warnings only
+
+on:
+  push:
+    branches: [feat/nuevas-integraciones, main]
+    paths:
+      - .github/workflows/catalog-download-health.yml
+      - scripts/ci/catalog-download-*
+      - cloud/web/lib/server-vpn-provider.mjs
+      - cloud/web/lib/server-vpn-catalog.mjs
+      - cloud/web/lib/c35-provider.mjs
+      - cloud/web/lib/*-protocol.mjs
+      - cloud/web/lib/http-conexion-firebase.mjs
+  pull_request:
+    branches: [main, feat/nuevas-integraciones]
+    paths:
+      - .github/workflows/catalog-download-health.yml
+      - scripts/ci/catalog-download-*
+      - cloud/web/lib/server-vpn-provider.mjs
+      - cloud/web/lib/server-vpn-catalog.mjs
+      - cloud/web/lib/c35-provider.mjs
+      - cloud/web/lib/*-protocol.mjs
+      - cloud/web/lib/http-conexion-firebase.mjs
+  workflow_dispatch:
+    inputs:
+      provider:
+        description: "ID de proveedor, o all para comprobar todos"
+        required: false
+        default: all
+        type: string
+  # GitHub runs schedules only after this workflow reaches the default branch.
+  schedule:
+    - cron: "17 9 * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: catalog-download-health-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  download-health:
+    name: Download all catalogs without decryption
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Test inventory, warnings, privacy and bounded download harness
+        run: node --test scripts/ci/catalog-download-check.test.mjs
+      - name: Download each source and record non-blocking provider warnings
+        env:
+          CLOUD_SERVER_VPN_ENABLED: "true"
+          CLOUD_TUNNELTWEAK_BUILD_STATE_PATH: ${{ runner.temp }}/tunneltweak-builds.json
+          CLOUD_NUR_FETCH_ENABLED: "true"
+          CLOUD_NUR_CATALOG_URL: ${{ secrets.CLOUD_NUR_CATALOG_URL }}
+          SPDECODE_VIP_SNIPHER_AUTHORIZATION: ${{ secrets.SPDECODE_VIP_SNIPHER_AUTHORIZATION }}
+          SPDECODE_ALFAISAL_API_KEY: ${{ secrets.SPDECODE_ALFAISAL_API_KEY }}
+          SPDECODE_ALFAISAL_SIGNING_KEY: ${{ secrets.SPDECODE_ALFAISAL_SIGNING_KEY }}
+          SPDECODE_ALFAISAL_DEVICE_UUID: ${{ secrets.SPDECODE_ALFAISAL_DEVICE_UUID }}
+          SPDECODE_HALCON_REQUEST_SECRET: ${{ secrets.SPDECODE_HALCON_REQUEST_SECRET }}
+          SPDECODE_HALCON_CATALOG_PASSWORD: ${{ secrets.SPDECODE_HALCON_CATALOG_PASSWORD }}
+          CATALOG_DOWNLOAD_PROVIDER: ${{ inputs.provider || 'all' }}
+        run: node scripts/ci/catalog-download-check.mjs --out "$RUNNER_TEMP/catalog-download-health"
+      - name: Preserve sanitized report only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: catalog-download-health
+          path: |
+            ${{ runner.temp }}/catalog-download-health/report.json
+            ${{ runner.temp }}/catalog-download-health/summary.md
+            ${{ runner.temp }}/catalog-download-health/baseline-candidates.json
+            ${{ runner.temp }}/tunneltweak-builds.json
+          if-no-files-found: warn
+          retention-days: 14
+

@@ -25,6 +25,7 @@ export async function POST(request) {
     const methodStates=Object.fromEntries((summary.methodStatuses||[])
       .map(({id,methodRevision,maintenance})=>[id,{methodRevision,maintenance}]));
     const result=catalog({availability,methodStates,version:currentVersion});
+    if(summary.displayVersion!==null)result.displayVersion=summary.displayVersion;
     if(request.headers.get("x-spdecode-catalog-bundle")==="1"){
       const icons=result.apps.map(app=>{
         const icon=iconFor(app.id);

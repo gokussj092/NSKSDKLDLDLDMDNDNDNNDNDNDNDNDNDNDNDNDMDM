@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "scope": "CI_CATALOG_DOWNLOAD_OBSERVATION",
+  "status": "VALIDATED_EXECUTION_WITH_WARNINGS",
+  "observed_at": "2026-11-09T05:44:29Z",
+  "source_commit": "9d58137527fd5f1cdbbbdda4fbc1ab6a086ff508",
+  "workflow_url": "https://github.com/gokussj092/NSKSDKLDLDLDMDNDNDNNDNDNDNDNDNDNDNDNDMDM/actions/runs/42568911622",
+  "code_paths": [
+    ".github/workflows/catalog-download-health.yml",
+    "scripts/ci/catalog-download-check.mjs",
+    "scripts/ci/catalog-download-check.test.mjs",
+    "scripts/ci/catalog-download-baseline.json"
+  ],
+  "authorization_note": "Owner requested CI download checks for existing approved provider recipes; no decryption or method changes.",
+  "tooling": [
+    {
+      "name": "Node.js",
+      "version": "22.23.4",
+      "version_detail": "Observed by actions/setup-node in the linked run",
+      "source": "https://nodejs.org/",
+      "license": "MIT",
+      "dependencies": "Built-in modules only; no npm dependencies"
+    },
+    {
+      "name": "GitHub Actions",
+      "source": "https://github.com/actions",
+      "actions": [
+        "actions/checkout@v4",
+        "actions/setup-node@v4",
+        "actions/upload-artifact@v4"
+      ],
+      "pinning": "Existing major tags; not immutable release digests"
+    }
+  ],
+  "coverage": {
+    "providers": 67,
+    "sources": 79,
+    "download_ok": 61,
+    "warnings": 18,
+    "internal_errors": 0,
+    "offline_tests": 20
+  },
+  "decryption_performed": false,
+  "decoder_compatibility": "NOT_TESTED",
+  "evidence_refs": [
+    "RESULTS.md",
+    "generated/initial-report.json",
+    "docs/cloud/CATALOG_DOWNLOAD_HEALTH_ACTIONS.md"
+  ],
+  "limitations": [
+    "Download health does not prove that the decoder method is compatible.",
+    "Missing authorized CI configuration is reported explicitly without bypassing authentication.",
+    "Content and record-count changes alone do not indicate a broken method.",
+    "No production deployment or provider enablement changes."
+  ]
+}

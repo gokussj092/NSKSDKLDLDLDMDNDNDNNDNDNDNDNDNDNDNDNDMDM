@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "package_name": "netfree.mx.store",
+  "app_name": "Speicers Pro VPN",
+  "version_name": "104.1.20",
+  "version_code": 123,
+  "observed_at": "2026-11-09",
+  "source_category": "documented public mirror/build123",
+  "authorization_note": "Static, aggregate cryptographic-usage audit only. No extraction of service authentication secrets, APK execution, connection attempts or third-party binary redistribution.",
+  "status": "PARTIAL",
+  "targets": [
+    {
+      "kind": "connection_authentication_audit",
+      "status": "PENDING",
+      "scope": "Presence inventory completed; VPN authentication purpose unconfirmed; no keys recovered."
+    }
+  ],
+  "connection_authentication": {
+    "status": "UNCONFIRMED",
+    "scope": "VPN connection authentication",
+    "algorithm": null,
+    "material_provenance_category": "UNKNOWN",
+    "service_verifier_observed": false,
+    "secret_material_extracted": false,
+    "evidence": "Static aggregate API/algorithm inventory only; no per-function input/output capture.",
+    "limits": [
+      "Algorithm markers and Mac API references do not establish authentication purpose.",
+      "No service connection, key recovery, protocol impersonation or authentication bypass was attempted."
+    ]
+  },
+  "inputs": {
+    "package": "netfree.mx.store",
+    "versionName": "104.1.20",
+    "versionCode": 123,
+    "source": "https://d.apkpure.net/b/XAPK/netfree.mx.store?versionCode=123",
+    "distributionBytes": 40752825,
+    "distributionSha256": "e3c46d1b467b16647c2546cb8525a4fc0c6258c2c79b9bca9f9ef4715d42d09d",
+    "baseApkBytes": 14758032,
+    "baseApkSha256": "b064d225c6a7c150d922057ad1304886b3dd3100b07d3d19a85057c0f4918427",
+    "certificateSha256": [
+      "0df454e6429e1e131aff6f49e1337cb5ef4c1abcd87427d22a5258c07f6d8c9e"
+    ],
+    "apkSignatureCryptographicallyVerified": false,
+    "apkCodeExecuted": false,
+    "bundleSha256": "e3c46d1b467b16647c2546cb8525a4fc0c6258c2c79b9bca9f9ef4715d42d09d"
+  },
+  "dependencies": [
+    {
+      "name": "Python",
+      "version": "3.12.14",
+      "source": "https://python.org/",
+      "license": "PSF-2.0",
+      "lockfile": "analysis/netfree.mx.store/123/dependencies.lock.json"
+    },
+    {
+      "name": "androguard",
+      "version": "4.1.3",
+      "source": "https://github.com/androguard/androguard",
+      "license": "Apache-2.0",
+      "lockfile": "analysis/netfree.mx.store/123/dependencies.lock.json"
+    },
+    {
+      "name": "loguru",
+      "version": "0.7.3",
+      "source": "https://github.com/Delgan/loguru",
+      "license": "MIT",
+      "lockfile": "analysis/netfree.mx.store/123/dependencies.lock.json"
+    }
+  ],
+  "tooling": [
+    {
+      "name": "Owned aggregate static audit",
+      "path": "analysis/_intake/hmac-auth-audit-2026-11-09/tools/audit_hmac_usage.py",
+      "sha256": "dbec590c2b98f6546204214fe5b112ee9c4c5ed73d2caa6e2b91e96900233431"
+    },
+    {
+      "name": "Owned aggregate static audit",
+      "path": "analysis/_intake/hmac-auth-audit-2026-11-09/tools/test_audit_hmac_usage.py",
+      "sha256": "516543473ff3ba5805edb7ae18ee8c23cf548a5428dcc57f7e83217385bf83d2"
+    },
+    {
+      "name": "Owned aggregate static audit",
+      "path": "analysis/_intake/hmac-auth-audit-2026-11-09/tools/write_audit_reports.py",
+      "sha256": "30c7ed3970ffdfa1bf864deb6d7b69a9d786a93ca2024c6d8b2f23de5201fd01"
+    }
+  ],
+  "code_paths": [
+    "analysis/_intake/hmac-auth-audit-2026-11-09/tools/audit_hmac_usage.py",
+    "analysis/_intake/hmac-auth-audit-2026-11-09/tools/test_audit_hmac_usage.py",
+    "analysis/_intake/hmac-auth-audit-2026-11-09/tools/write_audit_reports.py",
+    "AGENTS.md",
+    "analysis/METHOD_EVIDENCE_POLICY.md",
+    "decoders/Python/apps/Speicers_Pro_VPN/README.md"
+  ],
+  "evidence_refs": [
+    "analysis/netfree.mx.store/123/generated/identity.json",
+    "analysis/netfree.mx.store/123/generated/hmac-usage-summary.json",
+    "analysis/netfree.mx.store/123/tests/test_method.py"
+  ],
+  "limitations": [
+    "Algorithm markers and Mac API references do not establish authentication purpose.",
+    "No service connection, key recovery, protocol impersonation or authentication bypass was attempted.",
+    "APK certificate digest is not complete publisher-signature/provenance verification.",
+    "No automatic F7 adapter or runtime authentication behavior changed."
+  ],
+  "network_requirements": [
+    "Acquisition from the documented HTTPS mirror only; static scan has no network access."
+  ],
+  "manual_steps": [
+    "Use independent references and owner-provided fictional service credentials for any authorized authentication test."
+  ],
+  "unresolved_questions": [
+    "Whether a service-authentication HMAC exists, its protocol role and its verifier remain unconfirmed."
+  ]
+}

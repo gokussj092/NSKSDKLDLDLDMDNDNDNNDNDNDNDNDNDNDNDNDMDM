@@ -1,3 +1,80 @@
+# Thailand / KHAM / AR PRO — 2026-11-09
+
+Thailand373 servers and KHAM17 servers/19 networks: real complete JSON verified with independent references/CLI/worker. Dynamic Firebase source, worker/gateway/panel and original PNGs connected. AR PRO original source still returns HTTP200 HTML195; card stays disabled and historical evidence is preserved. Shared automatic PNG conversion replaces MD PROXY's Docker-only special case. Catalog floor81; the existing roster synchronizer advances the effective version automatically and preserves higher configured versions/switches. No Android build/merge/deploy. Actual Node transport on VPS remains pending. [Full handoff](THAILAND_KHAM_ARPRO_2026_11_09.md).
+
+---
+
+# HTTP Conexión129 — actualización automática Firebase integrada
+
+2026-11-04. El CLI y el broker Cloud obtienen ockla_url/gretta_pass juntos. Caché1h por proceso, singleflight Node y un reintento forzado al fallar descarga/descifrado. Tokens FIS solo en memoria y DELETE temporal best effort (observado200). Opciones públicas del APK inline, sin tokens/configuración manual ni Admin SDK.
+
+URL dinámica únicamente HTTPS raw.githubusercontent.com; otros dominios requieren allowlist. Token Google nunca al updater. Worker offline recibe sobre privado con bytes y contraseña por operación, sin modificar globals. No hay fallback al /Update/asset/contraseña obsoletos.
+
+Real: Firebase200/200/DELETE200, catálogo107/244/5325; JSON entero igual a JCA/CLI/worker. Cambio de contraseña probado con JCA ficticio/worker real. 27 Python +172 Node pasan. Node real aquí no completa transporte; replay simulado con pareja/bytes/worker reales pasa. Probar Node en VPS antes del rollout. Piso70 /65 fichas /256 formatos; mantener versión efectiva monotónica y switches. Sin Android, build, merge ni deploy.
+
+[Expediente vigente](../../analysis/com.doriaxvpn.unlimited/129/REFRESH_2026_11_04.md). El historial de abajo se conserva.
+
+# Genis VPN 2.2.6/build76 — catálogo Cloud verificado
+
+2026-11-04. Paquete com.doriaxvip.tunnel; muestra APKPure manifest/hash verificados. Remoto1114:84 servidores,658 campos CBC no vacíos y241 vacíos, JSON íntegro igual a JCA/CLI/worker. Fuente fija original GitHub, GET sin autenticación; constantes de formato inline. Icono launcher WEBP original convertido a PNG con píxeles iguales.
+
+Piso69 /65 fichas /256 formatos; preservar la versión superior del VPS y switches existentes. 9 Python +161 Node aprobadas. Descarga Python real repetida; Node directo devuelve REMOTE_NETWORK_DENIED en este entorno; replay explícitamente simulado con bytes y worker reales pasa. Repetir transporte Node en VPS antes del rollout. Sin Android, build, merge ni deploy.
+
+Usuarios incluidos v1/1 perfil verificados offline; no hay fuente remota de usuarios establecida ni fallback estático. Sin nuevo formato de archivo/texto ni unlocked certificado. Hex Custom de MediaFire continúa aplazado por petición del propietario.
+
+[Expediente y scripts](../../analysis/com.doriaxvip.tunnel/76/ANALYSIS.md). Rama feat/nuevas-integraciones, PR #110; el historial de abajo se conserva.
+
+# Speicers`Turbo VPN217.4.4/build217 — catálogo Cloud verificado
+
+netfree.mx.anuncios, rama feat/nuevas-integraciones/PR110. Dos GET públicos
+fijos raw GitHub: HTTP200/407832 bytes (17/266 servidores) y1984 bytes (2/2
+usuarios), 2649+12 campos CBC/ROT21. Incluidos17/266 y1/2 separados. JSON entero
+igual a JCA, CLI archivo/stdin y worker, repetido tras recuperar el entorno.
+
+Constantes inline, sin secreto HTTP extra. Paquete obligatorio de ambas fuentes,
+icono PNG original512x512/48036 bytes, switches preservados, piso68/64 fichas y
+256 formatos.10 Python/154 Node aprobadas. Node real aquí REMOTE_NETWORK_DENIED;
+replay real bytes/worker con HTTP simulado correcto; VPS y rollout pendientes.
+CBC no autentica datos. Sin archivos/texto/exportador/Android/build/merge/deploy.
+[Expediente, scripts, negativos y recuperación](../../analysis/netfree.mx.anuncios/217/ANALYSIS.md).
+
+---
+
+# HTTP Conexión1.2.9/build129 — catálogo vigente comprobado
+
+com.doriaxvpn.unlimited, misma rama feat/nuevas-integraciones/PR110. Firebase
+real FIS200/RemoteConfig200/template17 selecciona /new, diferente del default
+/Update57/251. Instalación analítica eliminada200; no atestación fabricada.
+GET original agente HTTP-Conexion-VPN/3.0, headers de caché y nocache dinámico:
+HTTP200/4311432bytes, catálogo107/244 servidores/5325 campos GCM(5299 únicos).
+JSON entero igual a JCA/CLI/worker; asset1/7/84 separado, sin fallback viejo.
+
+Constantes de formato inline en HTTP_Conexion/codec.py, sin .env nuevo. PNG
+original618x613/449874bytes, proveedor/switch/gateway y piso67/63 fichas,
+formatos256.10 Python/147 Node pasan. Replay con bytes reales/HTTP simulado
+pasa; Node real aquí REMOTE_NETWORK_DENIED, VPS real pendiente. Sin Android,
+merge o despliegue. La pareja URL/password ahora se renueva automáticamente; ver la actualización vigente al inicio.
+[Expediente, scripts y negativos](../../analysis/com.doriaxvpn.unlimited/129/ANALYSIS.md).
+
+---
+
+# NAMO VPN3.5-namo/build35 — nueva rama de integraciones
+
+Por petición del propietario, rama `feat/nuevas-integraciones` desde main45db1d4.
+Solo Cloud. Updater GET original público con OkHttp5.3.2, HTTP200/72881bytes,
+catálogo22.3/14 servidores/13 redes, documento entero igual a Java/CLI/worker.
+Constante de formato recuperada del getter JNI e incluida en NAMO_VPN/codec.py
+por solicitud del propietario: no es autorización HTTP y no requiere .env.
+
+PNG launcher original192x192/25421bytes, proveedor/switch/gateway conectados,
+piso66/62 fichas;256 formatos.10 Python/140 Node aprobadas. Node real aquí
+REMOTE_NETWORK_DENIED; replay real bytes con HTTP simulado pasa. VPS real y
+rollout pendientes; subir versión configurada manteniendo monotonía al desplegar.
+Sin Android/build, merge ni despliegue. No inferir archivos/textos/exportadores.
+[Expediente, scripts, dependencias y negativos](../../analysis/com.appxrayservice.namovpn/35/ANALYSIS.md).
+
+---
+
 # ALSAHER VIP 1.1/build2 — catálogo Cloud integrado en código, 2026-11-03
 
 El propietario aportó com.alsaher.vip desde Archive.org y pidió **solo Cloud,
@@ -754,3 +831,11 @@ No repetir la extracción de tablas: SO/rt.dat coinciden con el handoff anterior
 `go_inspect.py`, `npvs_verify.py` y referencias JDK/generador guardados.
 Ver `docs/NPVS_PROTECTED_FILES.md`; no anunciar public-key como descifrado,
 no modificar APK/UI ni volver a AM dentro de esta actualización.
+
+## Continuación 2026-11-05: directorio reanudable y resultados extensos
+
+Solicitud posterior del propietario: implementar ambos planes del 2026-11-04 y terminar XXPICore. XXPICore ya está integrado en `1b55fa6d39b92c21580527368dfebb0184bece0e` con expediente build118 y catálogo real2.427 (64 servidores/1240 redes/7837 campos). Se añadieron código Cloud y Android para chunks autenticados, progreso verificable, caché cifrada reanudable, edición editorial, motor nativo de resultados, viewport paginado, exportación completa e historial con lista de metadatos/apertura individual.
+
+Estado y restricciones exactas: [CATALOG_RESULTS_IMPLEMENTATION_2026_11_05.md](CATALOG_RESULTS_IMPLEMENTATION_2026_11_05.md). Evidencia host en `analysis/platform/catalog-results/2026-11-05/`; no equivale a Android físico ni a VPS real. Chunks permanecen desactivados por defecto. R-0/D0 y los gates de dispositivo/rollout siguen abiertos; no declarar el cierre original reproducido o corregido. El resultado activo aún tiene un String limitado por el contrato Cloud; no se afirma almacenamiento exclusivamente por handle de disco.
+
+No compilar ni esperar APK/AAB/artefactos en esta entrega. El workflow automático de esta rama produciría APK/AAB al cambiar `android/**`; se usa `[skip ci]` en el commit de implementación para no iniciarlo. CI completo queda pendiente. No merge ni despliegue. Conservar íntegros los expedientes, versiones superiores, switches y claves.

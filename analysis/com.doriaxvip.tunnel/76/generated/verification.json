@@ -1,0 +1,47 @@
+{
+  "included": {
+    "inputBytes": 1216,
+    "inputSha256": "6b7e44decbe4c55d43f359ec1b41748000361bbf09e09b195bbda2a8af45e23f",
+    "version": "1",
+    "sections": {
+      "Servers": 1
+    },
+    "nonemptyFields": 8,
+    "emptyFields": 3,
+    "jcaFullDocumentEqual": true,
+    "cliFullDocumentEqual": true,
+    "workerFullDocumentEqual": true,
+    "outputBytes": 695,
+    "outputSha256": "825a95e47694b00b8b9bbe43136926b1f6cb28bdd8902038238cb55e8c5ffb49"
+  },
+  "included-users": {
+    "inputBytes": 576,
+    "inputSha256": "b69abc35fd2beacf7e72c72d14e134a7d69dccc4c02acf15b535e6de311ab6c2",
+    "version": "1",
+    "sections": {
+      "Usuarios": 1
+    },
+    "nonemptyFields": 7,
+    "emptyFields": 0,
+    "jcaFullDocumentEqual": true,
+    "cliFullDocumentEqual": true,
+    "workerFullDocumentEqual": true,
+    "outputBytes": 235,
+    "outputSha256": "21128645abe97189a86c0c7a6582841f582d8bb8c4f4f17eba0acba7a51cd60e"
+  },
+  "remote": {
+    "inputBytes": 107480,
+    "inputSha256": "0eb4a091e0f522cadb76c1172063bad1e1c136535b7945854fc0fdb88c01aa55",
+    "version": "1114",
+    "sections": {
+      "Servers": 84
+    },
+    "nonemptyFields": 658,
+    "emptyFields": 241,
+    "jcaFullDocumentEqual": true,
+    "cliFullDocumentEqual": true,
+    "workerFullDocumentEqual": true,
+    "outputBytes": 61319,
+    "outputSha256": "6d7d7b318a443292450af15e640714a848fd5db298d4fbafb73971974f49e56b"
+  }
+}

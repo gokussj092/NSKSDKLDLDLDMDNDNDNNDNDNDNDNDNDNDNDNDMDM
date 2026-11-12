@@ -1,0 +1,1 @@
+"""Genis VPN catalog support."""

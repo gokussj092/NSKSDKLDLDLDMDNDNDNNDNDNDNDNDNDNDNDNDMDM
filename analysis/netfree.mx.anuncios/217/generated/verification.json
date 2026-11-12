@@ -1,0 +1,68 @@
+[
+  {
+    "source": "included",
+    "catalogs": {
+      "servers": {
+        "version": "17",
+        "rows": 266,
+        "encryptedFields": 2649,
+        "bytes": 407832,
+        "sha256": "f45e960fbacf325ce52a5295376fc5b19901e328d3f4c05aa393ade2c5cdd2e3"
+      },
+      "users": {
+        "version": "1",
+        "rows": 2,
+        "encryptedFields": 12,
+        "bytes": 1984,
+        "sha256": "a6d48ad172a77bdc747d9e872ab32803759eb578639b4478c825974bc94566c6"
+      }
+    },
+    "wholeJcaEqual": true,
+    "wholeCliFileAndStdinEqual": true,
+    "wholeWorkerEqual": true
+  },
+  {
+    "source": "remote",
+    "catalogs": {
+      "servers": {
+        "version": "17",
+        "rows": 266,
+        "encryptedFields": 2649,
+        "bytes": 407832,
+        "sha256": "f45e960fbacf325ce52a5295376fc5b19901e328d3f4c05aa393ade2c5cdd2e3"
+      },
+      "users": {
+        "version": "2",
+        "rows": 2,
+        "encryptedFields": 12,
+        "bytes": 1984,
+        "sha256": "3a4da7b8d8137c32efa8cc45c9f06381be0aa19a609b1739b5c5d2da2d26a3ff"
+      }
+    },
+    "wholeJcaEqual": true,
+    "wholeCliFileAndStdinEqual": true,
+    "wholeWorkerEqual": true
+  },
+  {
+    "source": "downloaded",
+    "catalogs": {
+      "servers": {
+        "version": "17",
+        "rows": 266,
+        "encryptedFields": 2649,
+        "bytes": 407832,
+        "sha256": "f45e960fbacf325ce52a5295376fc5b19901e328d3f4c05aa393ade2c5cdd2e3"
+      },
+      "users": {
+        "version": "2",
+        "rows": 2,
+        "encryptedFields": 12,
+        "bytes": 1984,
+        "sha256": "3a4da7b8d8137c32efa8cc45c9f06381be0aa19a609b1739b5c5d2da2d26a3ff"
+      }
+    },
+    "wholeJcaEqual": true,
+    "wholeCliFileAndStdinEqual": true,
+    "wholeWorkerEqual": true
+  }
+]

@@ -3,11 +3,12 @@
   "name": "AustroPlus VPN",
   "package": "xyz.tekidoer.austroplus.vpn",
   "engine": "python-gcm-profile-and-shared-standard-xxtea-catalog",
-  "engineVersion": 1,
+  "engineVersion": 2,
   "compatibleVersions": [
-    "13.0.1"
+    "13.0.1",
+    "15.0.1"
   ],
-  "versionCode": 13,
+  "versionCode": 15,
   "files": {
     "entrypoint": "file_decoder.py",
     "extensions": [
@@ -17,19 +18,36 @@
     "exporterCertified": false,
     "validation": "original Java AES-GCM encrypt/decrypt and synthetic exports; independent real export not supplied",
     "legacyCompatibility": "C0 byte+18 JSON CONFIG envelope recognized before dispatch; no fallback after modern GCM failures",
-    "textPrefixes": []
+    "textPrefixes": [],
+    "validationScope": "Existing build13 vectors and historical formats; independent build15 export not certified"
   },
   "catalog": {
     "entrypoint": "server_catalog_decoder.py",
     "providerId": "austroplus-vpn",
     "validation": "complete local and remote JSON parity with original Java m83 XXTEA and ys.h XOR",
-    "validatedOn": "2026-10-19",
+    "validatedOn": "2026-11-09",
     "localServersObserved": 1,
     "localTweaksObserved": 1,
-    "remoteServersObserved": 6,
-    "remoteTweaksObserved": 198,
-    "publicCatalogVersion": 8,
-    "deploymentEnabledByDefault": false
+    "remoteServersObserved": 5,
+    "remoteTweaksObserved": 174,
+    "publicCatalogVersion": 75,
+    "deploymentEnabledByDefault": false,
+    "sourceBuild": 15,
+    "cloudSource": "https://raw.githubusercontent.com/SpkHexX/HexX/refs/heads/main/AustroTunVPN.json",
+    "currentProof": {
+      "inputBytes": 82433,
+      "inputSha256": "0353262fb0cd5f2e9c0c879c22b146807b5342d869d9cb48e43b7b7f794ea701",
+      "version": "0.8",
+      "servers": 5,
+      "tweaks": 174,
+      "protectedFieldsCompared": 361,
+      "wholeIndependentJavaParity": true,
+      "clearJsonSha256": "6e6fb6580e119d8550dd72402bdc288205cd7d0155da8c203a3363697805185d",
+      "rawOutputBytes": 59729,
+      "apkCodeExecuted": false,
+      "wholeWorkerParity": true
+    },
+    "evidenceDirectory": "analysis/xyz.tekidoer.austroplus.vpn/15"
   },
   "icon": {
     "file": "AustroPlus_VPN.png",
@@ -50,6 +68,12 @@
     "catalog": "Python >=3.10, standard library only",
     "files": "Python >=3.10, pycryptodome==3.23.0"
   },
-  "sourceApkSha256": "31664f1beffe1acf175b467397f70924087434518c17a145fcdafee6ab234871",
-  "baseMainCommit": "e6cbb5926372aa6b7d36105802bf366a2138c98e"
+  "sourceApkSha256": "72b5976c94cbfa757f414af0634fda922910ad998d651c1b256ff139b89d1691",
+  "baseMainCommit": "e6cbb5926372aa6b7d36105802bf366a2138c98e",
+  "previousSource": {
+    "versionCode": 13,
+    "sourceApkSha256": "31664f1beffe1acf175b467397f70924087434518c17a145fcdafee6ab234871"
+  },
+  "sourceXapkSha256": "6f63005534a7add46791da4d0ab57fc97692d5d4820229ab547fd670946541c8",
+  "sourceSignerSha256": "84f5332115ade1f014c654d0069dfd484c8c5e3cd2fd394323a18011ae679aea"
 }

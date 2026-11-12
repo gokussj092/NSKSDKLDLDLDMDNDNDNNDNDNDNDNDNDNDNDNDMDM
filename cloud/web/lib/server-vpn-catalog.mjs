@@ -1,12 +1,11 @@
 /** Public catalog presentation only: no provider credentials or vendor endpoints. */
-import {readFileSync} from "node:fs";
 import {join} from "node:path";
-import {createHash} from "node:crypto";
+import {readCatalogIcon} from "./catalog-icons.mjs";
 import {publicFormats,FORMAT_DETECTION} from "./file-format-catalog.mjs";
 import {publicTextFormats,publicOnlineReferenceFormats} from "./text-format-catalog.mjs";
 import {providerEnabled} from "./server-vpn-provider.mjs";
 
-export const CATALOG_VERSION = 65; // FNF TUNNEL BD catalog; VPS preserves its higher monotonic version.
+export const CATALOG_VERSION = 81; // All icon transports normalize vendor rasters to PNG.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -24,6 +23,22 @@ export function activeCatalogVersion(env=process.env) {
 }
 
 const ITEMS = Object.freeze([
+  // Original updater currently returns HTML "Site Unavailable", not a catalog.
+  {id:"ar-pro-vpn",name:"AR PRO VPN",icon:"ar-pro-vpn.png",remote:null},
+  {id:"thailand-vpn",name:"Thailand VPN",icon:"thailand-vpn.png",remote:"thailand-vpn"},
+  {id:"kham-vpn",name:"KHAM VPN",icon:"kham-vpn.png",remote:"kham-vpn"},
+  {id:"opentunnel-ssh",name:"OpenTunnel · Servidores SSH",icon:"opentunnel.png",remote:"opentunnel-ssh"},
+  {id:"md-proxy-vpn",name:"MD PROXY VPN",icon:"md-proxy-vpn.png",remote:"md-proxy-vpn"},
+  {id:"xxpicore-tunnel",name:"XXPICore Tunnel",icon:"xxpicore-tunnel.png",remote:"xxpicore-tunnel"},
+  {id:"catnet-vpn",name:"CATNET VPN",icon:"catnet-vpn.png",remote:"catnet-vpn"},
+  {id:"litron-vpn",name:"LITRON VPN",icon:"litron-vpn.png",remote:"litron-vpn"},
+  {id:"litron-pro-vpn",name:"Litron Pro VPN",icon:"litron-pro-vpn.png",remote:"litron-pro-vpn"},
+  {id:"speigo-vpn-configs",name:"SpeiGo VPN · Configuraciones",icon:"speigo-vpn.png",remote:"speigo-vpn-configs"},
+  {id:"speigo-vpn-ssh",name:"SpeiGo VPN · Usuarios SSH",icon:"speigo-vpn.png",remote:"speigo-vpn-ssh"},
+  {id:"genis-vpn",name:"Genis VPN",icon:"genis-vpn.png",remote:"genis-vpn"},
+  {id:"speicers-turbo-vpn",name:"Speicers`Turbo VPN",icon:"speicers-turbo-vpn.png",remote:"speicers-turbo-vpn"},
+  {id:"http-conexion",name:"HTTP Conexión",icon:"http-conexion.png",remote:"http-conexion"},
+  {id:"namo-vpn",name:"NAMO VPN",icon:"namo-vpn.png",remote:"namo-vpn"},
   {id:"fnf-tunnel-bd",name:"FNF TUNNEL BD",icon:"fnf-tunnel-bd.png",remote:"fnf-tunnel-bd"},
   {id:"alsaher-vip",name:"ALSAHER VIP",icon:"alsaher-vip.png",remote:"alsaher-vip"},
   {id:"halcon-r-net",name:"HALCON RAMOS Conectividad",icon:"halcon-r-net.png",remote:"halcon-r-net"},
@@ -107,10 +122,7 @@ const base = () => join(process.cwd(),"public","server-vpn-icons");
 export function iconFor(id) {
   const item = ITEMS.find(x => x.id === id);
   if (!item) return null;
-  const bytes = readFileSync(join(base(),item.icon));
-  if (bytes.length<32 || bytes.subarray(0,8).toString("hex")!=="89504e470d0a1a0a")
-    throw Error("INVALID_ORIGINAL_ICON");
-  return {id:item.id, bytes, sha256:createHash("sha256").update(bytes).digest("hex")};
+  return {id:item.id,...readCatalogIcon(base(),item.icon)};
 }
 export function catalog({availability=null,methodStates=null,version=activeCatalogVersion()}={}) {
   return {
@@ -134,7 +146,7 @@ export function catalog({availability=null,methodStates=null,version=activeCatal
       methodRevision:Number.isSafeInteger(methodStates?.[x.id]?.methodRevision) && methodStates[x.id].methodRevision>=0 ? methodStates[x.id].methodRevision : 0,
       maintenance:methodStates?.[x.id]?.maintenance===true,
       iconSha256:iconFor(x.id).sha256,
-      iconMimeType:"image/png",
+      iconMimeType:iconFor(x.id).mimeType,
       // No decode button for a provider until its remote broker is enabled.
       decodeEnabled:methodStates?.[x.id]?.maintenance===true ? false :
         ["halcon-r-net","vip-snipher-pro","alfaisal-tunnel-plus"].includes(x.remote) ?

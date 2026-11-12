@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_sign_in">Войти</string>
+    <string name="account_web_description">Управляйте учётной записью и покупками на официальном сайте. Бесплатные функции доступны без входа.</string>
+    <string name="account_continue_web">Продолжить на сайте</string>
+    <string name="account_my_account">Моя учётная запись</string>
+    <string name="account_store">Магазин</string>
+    <string name="account_open_menu">Открыть меню</string>
+</resources>

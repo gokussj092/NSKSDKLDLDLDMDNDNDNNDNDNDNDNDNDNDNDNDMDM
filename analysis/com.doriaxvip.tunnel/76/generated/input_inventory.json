@@ -1,0 +1,112 @@
+{
+  "bundleBytes": 43416878,
+  "bundleSha256": "a19dcdb4cd1c1af697e7f2b7dd76af19f5e018313e2ae9a94ca752cb4a372831",
+  "metadata": {
+    "package": "com.doriaxvip.tunnel",
+    "name": "Genis VPN",
+    "version": "2.2.6",
+    "versionCode": "76",
+    "baseSha256": "172da6fc4405d1cc4b70f69ce48b0f17f1b867c89a01017c991234f58ade229d",
+    "entries": [
+      {
+        "path": "classes.dex",
+        "bytes": 9754596,
+        "sha256": "8ce3b093cd94fc01931f02016c84feee61c4509249931fb65bc1e29e23ef9400"
+      }
+    ]
+  },
+  "entries": [
+    {
+      "apk": "config.arm64_v8a.apk",
+      "path": "lib/arm64-v8a/libV2ray2socks.so",
+      "bytes": 188672,
+      "sha256": "33379bb792c43aec169847d6d537e1de03a3e462f0388c6ea4a42e634c1d2c57"
+    },
+    {
+      "apk": "config.arm64_v8a.apk",
+      "path": "lib/arm64-v8a/libconscrypt_jni.so",
+      "bytes": 2103592,
+      "sha256": "a1438ab9aea8fcbd78a57777055ab157c67518475c577a85266063d659ccd85a"
+    },
+    {
+      "apk": "config.arm64_v8a.apk",
+      "path": "lib/arm64-v8a/libdns.so",
+      "bytes": 4912352,
+      "sha256": "86fb2698c4cbec8775f9aab0742bf3c4bbec111c61421d4a3b1a4eb408deaf90"
+    },
+    {
+      "apk": "config.arm64_v8a.apk",
+      "path": "lib/arm64-v8a/libfarikudp.so",
+      "bytes": 24745536,
+      "sha256": null,
+      "note": "Large generic asset/library inventoried only, not extracted or executed."
+    },
+    {
+      "apk": "config.arm64_v8a.apk",
+      "path": "lib/arm64-v8a/libgojni.so",
+      "bytes": 28386424,
+      "sha256": null,
+      "note": "Large generic asset/library inventoried only, not extracted or executed."
+    },
+    {
+      "apk": "config.arm64_v8a.apk",
+      "path": "lib/arm64-v8a/libpdnsd.so",
+      "bytes": 215632,
+      "sha256": "e5e7cfa0488a1a9faf93a294c865f3ece1675183aa03f1c36cc16c390992c43c"
+    },
+    {
+      "apk": "config.arm64_v8a.apk",
+      "path": "lib/arm64-v8a/libpl_droidsonroids_gif.so",
+      "bytes": 42400,
+      "sha256": "293297bc0d6aa2ea1936712a85639b58c20c5353d120b2af045fedd3ee24cb8e"
+    },
+    {
+      "apk": "config.arm64_v8a.apk",
+      "path": "lib/arm64-v8a/libtool-checker.so",
+      "bytes": 14112,
+      "sha256": "380c93c9d40227f1ca95fdbd8b70dbc178020fbc94bccf0a14c2b3a6629b8f2d"
+    },
+    {
+      "apk": "config.arm64_v8a.apk",
+      "path": "lib/arm64-v8a/libtoolChecker.so",
+      "bytes": 5512,
+      "sha256": "eeb2317e649e287b836b5e5c30cb07700f9eb900a53c297a3823592f15aa6352"
+    },
+    {
+      "apk": "config.arm64_v8a.apk",
+      "path": "lib/arm64-v8a/libtun2socks.so",
+      "bytes": 160232,
+      "sha256": "60564578b9a1c164fd8f27288d84fa04851a122b12e5ff16d72378ee69526b4e"
+    },
+    {
+      "apk": "com.doriaxvip.tunnel.apk",
+      "path": "assets/LICENSE",
+      "bytes": 10766,
+      "sha256": "ea27d5625f4705e44ad0d99cd860d59cfe37fa7f34fc362c9712071fcd6814e9"
+    },
+    {
+      "apk": "com.doriaxvip.tunnel.apk",
+      "path": "assets/Licence.bat",
+      "bytes": 11359,
+      "sha256": "f8127a12195c2fd3733bfe92e6a4f871646e8f2f081cb394da938d4dba268e93"
+    },
+    {
+      "apk": "com.doriaxvip.tunnel.apk",
+      "path": "assets/config.json",
+      "bytes": 8448,
+      "sha256": "da290f2096d5320e96024e5de95381aedd16fde91104afda708138845868d4a6"
+    },
+    {
+      "apk": "com.doriaxvip.tunnel.apk",
+      "path": "assets/flags/config.png",
+      "bytes": 1216,
+      "sha256": "6b7e44decbe4c55d43f359ec1b41748000361bbf09e09b195bbda2a8af45e23f"
+    },
+    {
+      "apk": "com.doriaxvip.tunnel.apk",
+      "path": "assets/flags/usr.png",
+      "bytes": 576,
+      "sha256": "b69abc35fd2beacf7e72c72d14e134a7d69dccc4c02acf15b535e6de311ab6c2"
+    }
+  ]
+}

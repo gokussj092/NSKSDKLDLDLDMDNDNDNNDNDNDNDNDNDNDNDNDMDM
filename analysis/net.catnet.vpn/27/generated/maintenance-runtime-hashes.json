@@ -1,0 +1,5 @@
+{
+  "decoders/Python/apps/CATNET_VPN/server_catalog_decoder.py": "34f540f1281e613c020af7ef2cfc62da872d86c881f28cf36368e016f7dbaa5f",
+  "cloud/web/lib/server-vpn-provider.mjs": "a6754cbf8c659b0297b7ae23cf87293d23a3fbb9fff3663ab2cd1f87f05ececa",
+  "cloud/web/lib/server-vpn-catalog.mjs": "a509caf6660508b3dbab4ddbb9fbcf81432adff2b2cf6a35d5ad4424156b4fa0"
+}

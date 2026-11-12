@@ -1,3 +1,8 @@
+import {HTTP_CONEXION_AGENT,HTTP_CONEXION_HEADERS,httpConexionRequestUrl} from "./http-conexion-protocol.mjs";
+import {HTTP_CONEXION_FIREBASE_OPTIONS,httpConexionResolver,packHttpConexionCatalog} from "./http-conexion-firebase.mjs";
+import {CATNET_SOURCE,CATNET_PREFLIGHT,CATNET_AGENT,catnetHeaders,catnetPreflight} from "./catnet-protocol.mjs";
+import {resolveTunneltweakCatalog,TUNNELTWEAK_INITIAL_BUILD} from "./tunneltweak-builds.mjs";
+import {THAILAND_FIREBASE_OPTIONS,thailandResolver} from "./thailand-firebase.mjs";
 /**
  * C8 public VPN catalog broker. Fixed approved providers ONLY.
  * DNS is revalidated and every connection is bound to one vetted IPv4.
@@ -15,6 +20,10 @@ import {publicIpv4} from "./c35-provider.mjs";
 const ABOWAGED_SOURCES=Object.freeze({
   servers:"https://raw.githubusercontent.com/th3fre/Testing/refs/heads/main/Elk.txt",
   udp:"https://raw.githubusercontent.com/janatshaban/REMOTEUPDATER/refs/heads/main/pickerver",
+});
+const SPEICERS_TURBO_SOURCES=Object.freeze({
+  servers:"https://raw.githubusercontent.com/apksdemons/apks2/refs/heads/main/speicers/spei_servrs",
+  users:"https://raw.githubusercontent.com/apksdemons/apks2/refs/heads/main/speicers/spei_users",
 });
 const TURBOMX_SOURCES=Object.freeze({
   servers:"https://raw.githubusercontent.com/apksdemons/apks2/refs/heads/main/turbomx/servr_turbomx_sv5c",
@@ -46,8 +55,26 @@ const JYFAST_SOURCES=Object.freeze({
   free:"http://dev.jenrri.shop:85/ignix_update.php?cfg=free",
   premium:"http://dev.jenrri.shop:85/ignix_update.php?cfg=premium",
 });
-const PAIRED_SOURCES=Object.freeze({"jyfast-vpn-ultra":JYFAST_SOURCES,"abowaged-vpn":ABOWAGED_SOURCES,"turbomx-vpn":TURBOMX_SOURCES,"superflash-vpn":SUPERFLASH_SOURCES,"onspace-vpn":ONSPACE_SOURCES,"http-socketclay":SOCKETCLAY_SOURCES,"http-wakko":WAKKO_SOURCES,"v2ray-tunnel-plus":V2PLUS_SOURCES});
+const PAIRED_SOURCES=Object.freeze({"speicers-turbo-vpn":SPEICERS_TURBO_SOURCES,"jyfast-vpn-ultra":JYFAST_SOURCES,"abowaged-vpn":ABOWAGED_SOURCES,"turbomx-vpn":TURBOMX_SOURCES,"superflash-vpn":SUPERFLASH_SOURCES,"onspace-vpn":ONSPACE_SOURCES,"http-socketclay":SOCKETCLAY_SOURCES,"http-wakko":WAKKO_SOURCES,"v2ray-tunnel-plus":V2PLUS_SOURCES});
 const PROVIDERS = Object.freeze({
+  "thailand-vpn": {agent:"okhttp/4.12.0"},
+  "kham-vpn": {url:"https://pukangvpn.xyz/khamvpn/Config.json",agent:"okhttp/4.12.0"},
+  // Build118 Volley updater has no custom UA; Android runtime profile.
+  "xxpicore-tunnel": {url:"https://raw.githubusercontent.com/XyrussProject/infinite88/refs/heads/main/xxpicoretunnel888.hs",agent:"Dalvik/2.1.0 (Linux; U; Android 14)"},
+  "catnet-vpn": {url:CATNET_SOURCE,agent:CATNET_AGENT},
+  "litron-vpn": {url:"https://godtechprime.github.io/latestv2ray.txt",agent:"okhttp/5.0.0-alpha.3"},
+  // Pro build11 public HttpURLConnection source; self-identified server UA.
+  "opentunnel-ssh": {url:"https://api.roosterkid.com/api/opentunnel/servers/",agent:"SP-DECODE/1.0"},
+  "md-proxy-vpn": {url:"https://strongteam.co/api/ultrasystem/ultrav3.txt",agent:"MD PROXY VPN"},
+  "litron-pro-vpn": {url:"https://godtechprime.github.io/litroproadfix.txt",agent:"SP-DECODE/1.0"},
+  "speigo-vpn-configs": {url:"https://raw.githubusercontent.com/apksdemons/apks2/refs/heads/main/speigo/servr_speigosx_sv5c",agent:"SP-DECODE/1.0",headers:{Accept:"application/octet-stream"}},
+  "speigo-vpn-ssh": {url:"https://raw.githubusercontent.com/apksdemons/apks2/refs/heads/main/speigo/user_speigo_sv5c",agent:"SP-DECODE/1.0",headers:{Accept:"application/octet-stream"}},
+  // Build76 updater sets no UA; analytical Android runtime profile.
+  "genis-vpn": {url:"https://raw.githubusercontent.com/nemygoku/genisvpn/refs/heads/main/genis",agent:"Dalvik/2.1.0 (Linux; U; Android 14)"},
+  // No app-specific UA; analytical Android runtime profile.
+  "speicers-turbo-vpn": {url:SPEICERS_TURBO_SOURCES.servers,agent:"Dalvik/2.1.0 (Linux; U; Android 14)"},
+  "http-conexion": {agent:HTTP_CONEXION_AGENT,headers:HTTP_CONEXION_HEADERS},
+  "namo-vpn": {url:"https://raw.githubusercontent.com/Anurak2534/ohmvpn/refs/heads/main/newnamo.json",agent:"okhttp/5.3.2"},
   "fnf-tunnel-bd": {url:"https://raw.githubusercontent.com/pipoyrichards/FNFTUNNELBD/refs/heads/main/FEB52025",agent:"FNF TUNNEL BD/PrinceBuild35"},
   "alsaher-vip": {url:"https://raw.githubusercontent.com/Skytells0/Alsaher/main/jihadvip.json",agent:"okhttp/4.12.0"},
   "halcon-r-net": {url:HALCON_SOURCE,agent:"Dalvik/2.1.0"},
@@ -67,9 +94,11 @@ const PROVIDERS = Object.freeze({
     headers:{"Accept":"application/json","X-GitHub-Api-Version":"2022-11-28"},
   },
   "netcol-vpn": {url:"https://raw.githubusercontent.com/jdavidag/setting/main/tO6oD1drTvL2.json",agent:"Netcol VPN/14.2"},
-  "wolf-custom-vpn": {url:"https://strongteam.co/api/wolfcustom/newv1.txt",agent:"Wolf Custom VPN"},
+  "wolf-custom-vpn": {url:"https://strongteam.co/api/wolfcustomv2/",agent:"Go-http-client/1.1",
+    headers:{"Content-Type":"application/x-www-form-urlencoded"},
+    method:"POST",body:Buffer.from("hash=xsandokUpdatex")},
   "jyfast-vpn-ultra": {url:JYFAST_SOURCES.free,agent:"JyFast VPN Ultra/9",headers:{"X-IGNIX-SIG":"10c7440b8feac5cee6a54959e7599ff26bd27153"}},
-  "tunneldoom-vpn": {url:"https://panel.tunneldoom.space/config.json",agent:"Dalvik/2.1.0"},
+  "tunneldoom-vpn": {url:"https://web.tunneldoom.space/config.json",agent:"Dalvik/2.1.0"},
   "mtm-tunnel-lite": {url:"https://xtmtunnel.xyz/updater/527543543860c45bf4238f2a1b56c3",agent:"Dalvik/2.1.0"},
   "mnr-tunnel-plus": {url:"https://raw.githubusercontent.com/buttacuore2025/up/refs/heads/main/plusfast",agent:"MNR TUNNEL PLUS/3.1"},
   "bd-net-vpn": {url:"https://raw.githubusercontent.com/panigbatanc/BDNET2023/main/JSONDEC2025",agent:"BD NET VPN/PrinceBuild111"},
@@ -100,7 +129,7 @@ const PROVIDERS = Object.freeze({
   "tunneltweak": {
     url:"https://tunneltweak.com/api/servers",
     agent:"TunnelTweak/1.0 (Android)",
-    headers:{"ngrok-skip-browser-warning":"true","x-app-version":"51","x-cfg-keyed":"1"},
+    headers:{"ngrok-skip-browser-warning":"true","x-app-version":String(TUNNELTWEAK_INITIAL_BUILD),"x-cfg-keyed":"1"},
   },
   "http-jireh": {
     // Build 13 moved NETWORK to Dropbox; the former GitHub URL is stale.
@@ -113,8 +142,8 @@ const PROVIDERS = Object.freeze({
     agent:"HTTP FenixVPN/19.4",
   },
   "austroplus-vpn": {
-    url:"https://raw.githubusercontent.com/SpkHexX/HexX/refs/heads/main/AustroPlusVPN.json",
-    agent:"AustroPlus VPN/13.0.1",
+    url:"https://raw.githubusercontent.com/SpkHexX/HexX/refs/heads/main/AustroTunVPN.json",
+    agent:"AustroPlus VPN/15.0.1",
   },
   "ac-tunnel-vpn": {
     url:"https://rttunnelv2ray.xyz/api/files/app?json=7ef7a9a142eb1f77a56f",
@@ -167,7 +196,7 @@ const CONNECT_MS=10000;
 const RETRY_CODES=new Set(["ECONNRESET","ETIMEDOUT","ESOCKETTIMEDOUT","ECONNREFUSED","EHOSTUNREACH","ENETUNREACH","EPIPE"]);
 
 export class VpnProviderError extends Error {
-  constructor(code,{retryable=false}={}) {super(code);this.code=code;this.retryable=retryable;}
+  constructor(code,{retryable=false,httpStatus=null}={}) {super(code);this.code=code;this.retryable=retryable;this.httpStatus=httpStatus;}
 }
 function fail(code){throw new VpnProviderError(code);}
 export function providerEnabled(id,env=process.env){
@@ -191,7 +220,7 @@ async function vettedIpv4(host) {
   return [...new Set(list.map(item=>item.address))].slice(0,8);
 }
 
-function pinnedRequest(url,ip,agent,timeout,headers={}, {method="GET",body=null}={}){
+function pinnedRequest(url,ip,agent,timeout,headers={}, {method="GET",body=null,maxBytes=MAX_BYTES,allowUpdateRequired=false}={}){
   return new Promise((resolve,reject)=>{
     const parsed=new URL(url);
     let settled=false,bytes=0;
@@ -218,26 +247,26 @@ function pinnedRequest(url,ip,agent,timeout,headers={}, {method="GET",body=null}
         res.resume();
         return finish(null,{redirect:location});
       }
-      if(status!==200){
+      if(status!==200&&!(allowUpdateRequired&&status===426)){
         res.resume();
         // Retry only transient upstream throttling/outages, never auth, TLS or
         // a redirected origin. The bound IP, TLS hostname and deadline remain.
         const retryable=[429,500,502,503,504].includes(status);
-        return finish(new VpnProviderError("REMOTE_PROVIDER_UNAVAILABLE",{retryable}));
+        return finish(new VpnProviderError("REMOTE_PROVIDER_UNAVAILABLE",{retryable,httpStatus:status}));
       }
       if((res.headers["content-encoding"]||"identity")!=="identity"){
         res.resume();return finish(new VpnProviderError("REMOTE_RESPONSE_INVALID"));
       }
       res.on("data",part=>{
         bytes+=part.length;
-        if(bytes>MAX_BYTES){
+        if(bytes>Math.min(maxBytes,status===426?65536:maxBytes)){
           finish(new VpnProviderError("REMOTE_TOO_LARGE"));req.destroy();
           return;
         }
         chunks.push(part);
       });
       res.on("error",err=>finish(err));
-      res.on("end",()=>finish(null,{data:Buffer.concat(chunks)}));
+      res.on("end",()=>finish(null,{data:Buffer.concat(chunks),...(status===426?{status}: {})}));
     });
     req.on("timeout",()=>req.destroy(Object.assign(new Error("timeout"),{code:"ETIMEDOUT"})));
     req.on("error",err=>finish(err));
@@ -304,10 +333,125 @@ async function downloadHalcon(provider){
   return answer.data;
 }
 
-export async function downloadVpnCatalog(id,source=id==="jyfast-vpn-ultra"?"free":id==="v2ray-tunnel-plus"?"base64":"servers"){
+async function downloadHttpConexion(provider,{forceRefresh=false}={}){
+  const deadline=Date.now()+DEADLINE_MS,options=HTTP_CONEXION_FIREBASE_OPTIONS;
+  const base=`https://firebaseinstallations.googleapis.com/v1/projects/${options.project_id}/installations`;
+  const remote=`https://firebaseremoteconfig.googleapis.com/v1/projects/${options.app_id.split(":")[1]}/namespaces/firebase:fetch`;
+  async function request(url,requestOptions={}){
+    const metadata=url===base||url===remote||new RegExp("^"+base.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"/[A-Za-z0-9_-]{22}$").test(url);
+    const parsed=new URL(url),remaining=deadline-Date.now();
+    if(!metadata&&parsed.hostname!=="raw.githubusercontent.com")fail("REMOTE_NETWORK_DENIED");
+    if(remaining<=0)fail("REMOTE_PROVIDER_UNAVAILABLE");
+    const ips=await vettedIpv4(parsed.hostname);
+    let answer;
+    try{answer=await pinnedRequest(url,ips[0],metadata?"Dalvik/2.1.0":provider.agent,Math.min(CONNECT_MS,remaining),
+      requestOptions.headers||HTTP_CONEXION_HEADERS,{method:requestOptions.method||"GET",body:requestOptions.body||null,
+      maxBytes:metadata?1024*1024:MAX_BYTES});}
+    catch(error){if(error instanceof VpnProviderError)throw error;fail("REMOTE_PROVIDER_UNAVAILABLE");}
+    if(Object.hasOwn(answer,"redirect"))fail("REMOTE_NETWORK_DENIED");
+    if(!Buffer.isBuffer(answer.data)||(!answer.data.length&&requestOptions.method!=="DELETE")||
+       answer.data.subarray(0,64).toString("utf8").trimStart().startsWith("<"))fail("REMOTE_RESPONSE_INVALID");
+    return answer.data;
+  }
+  let config;
+  try{config=await httpConexionResolver.get(request,{force:forceRefresh});}
+  catch{fail("REMOTE_PROVIDER_UNAVAILABLE");}
+  const bytes=await request(httpConexionRequestUrl(Date.now(),config.source));
+  try{return packHttpConexionCatalog(bytes,config.password);}
+  catch(error){fail(error.message==="HTTP_CONEXION_BUNDLE_TOO_LARGE"?"REMOTE_TOO_LARGE":"REMOTE_RESPONSE_INVALID");}
+}
+
+async function downloadThailand(provider,{forceRefresh=false}={}){
+  const deadline=Date.now()+DEADLINE_MS,options=THAILAND_FIREBASE_OPTIONS;
+  const base=`https://firebaseinstallations.googleapis.com/v1/projects/${options.project_id}/installations`;
+  const remote=`https://firebaseremoteconfig.googleapis.com/v1/projects/${options.app_id.split(":")[1]}/namespaces/firebase:fetch`;
+  const catalogUrl="https://globalvpn.uk/global_admin/api/server?package_name=thailand.vpn.globalvpn";
+  async function request(url,requestOptions={}){
+    const metadata=url===base||url===remote||(url.startsWith(base+"/")&&/^[A-Za-z0-9_-]{22}$/.test(url.slice(base.length+1)));
+    if(!metadata&&url!==catalogUrl)fail("REMOTE_NETWORK_DENIED");
+    const remaining=deadline-Date.now();if(remaining<=0)fail("REMOTE_PROVIDER_UNAVAILABLE");
+    const addresses=await vettedIpv4(new URL(url).hostname);
+    let answer;
+    try{answer=await pinnedRequest(url,addresses[0],metadata?"Dalvik/2.1.0":provider.agent,Math.min(CONNECT_MS,remaining),
+      requestOptions.headers||{},{method:requestOptions.method||"GET",body:requestOptions.body||null,maxBytes:metadata?1024*1024:MAX_BYTES});}
+    catch(error){if(error instanceof VpnProviderError)throw error;fail("REMOTE_PROVIDER_UNAVAILABLE");}
+    if(Object.hasOwn(answer,"redirect"))fail("REMOTE_NETWORK_DENIED");
+    if(!Buffer.isBuffer(answer.data)||(!answer.data.length&&requestOptions.method!=="DELETE")||
+       answer.data.subarray(0,64).toString("utf8").trimStart().startsWith("<"))fail("REMOTE_RESPONSE_INVALID");
+    return answer.data;
+  }
+  let config;
+  try{config=await thailandResolver.get(request,{force:forceRefresh});}catch{fail("REMOTE_PROVIDER_UNAVAILABLE");}
+  return request(config.source);
+}
+
+async function downloadTunneltweak(provider){
+  const deadline=Date.now()+DEADLINE_MS;
+  try{return await resolveTunneltweakCatalog(async build=>{
+    const parsed=new URL(provider.url),remaining=deadline-Date.now();
+    if(remaining<=0)fail("REMOTE_PROVIDER_UNAVAILABLE");
+    const addresses=await vettedIpv4(parsed.hostname);
+    let answer;
+    try{answer=await pinnedRequest(provider.url,addresses[0],provider.agent,Math.min(CONNECT_MS,remaining),
+      {...provider.headers,"x-app-version":String(build)},{allowUpdateRequired:true});}
+    catch(error){if(error instanceof VpnProviderError)throw error;fail("REMOTE_PROVIDER_UNAVAILABLE");}
+    if(Object.hasOwn(answer,"redirect"))fail("REMOTE_NETWORK_DENIED");
+    return answer;
+  });}catch(error){
+    if(error instanceof VpnProviderError)throw error;
+    fail(error.message==="REMOTE_RESPONSE_INVALID"?"REMOTE_RESPONSE_INVALID":"REMOTE_PROVIDER_UNAVAILABLE");
+  }
+}
+
+async function downloadCatnet(provider){
+  const headers=catnetHeaders(),deadline=Date.now()+DEADLINE_MS;
+  async function get(url,maxBytes){
+    const addresses=await vettedIpv4(new URL(url).hostname);
+    const remaining=deadline-Date.now();
+    if(remaining<=0)fail("REMOTE_PROVIDER_UNAVAILABLE");
+    let answer;
+    for(let attempt=0;attempt<2;attempt++){
+      const budget=deadline-Date.now();if(budget<=0)fail("REMOTE_PROVIDER_UNAVAILABLE");
+      try{answer=await pinnedRequest(url,addresses[attempt%addresses.length],provider.agent,Math.min(CONNECT_MS,budget),headers,{maxBytes});break;}
+      catch(error){
+        const transient=[502,503,504].includes(error.httpStatus)||RETRY_CODES.has(error.code);
+        if(attempt===0&&transient)continue;
+        if(error instanceof VpnProviderError)throw error;
+        fail("REMOTE_PROVIDER_UNAVAILABLE");
+      }
+    }
+    if(Object.hasOwn(answer,"redirect"))fail("REMOTE_NETWORK_DENIED");
+    if(!Buffer.isBuffer(answer.data)||!answer.data.length||
+       answer.data.subarray(0,64).toString("utf8").trimStart().startsWith("<"))fail("REMOTE_RESPONSE_INVALID");
+    return answer.data;
+  }
+  const preflight=await get(CATNET_PREFLIGHT,65536);
+  try{catnetPreflight(preflight);}catch(error){
+    fail(["REMOTE_NOT_CONFIGURED","REMOTE_PROVIDER_UNAVAILABLE"].includes(error.message)?error.message:"REMOTE_RESPONSE_INVALID");
+  }
+  return get(CATNET_SOURCE,MAX_BYTES);
+}
+
+export async function downloadVpnCatalog(id,source=id==="jyfast-vpn-ultra"?"free":id==="v2ray-tunnel-plus"?"base64":"servers",options={}){
   const provider=PROVIDERS[id];
   if(!provider)fail("UNSUPPORTED_FORMAT");
   if(!providerEnabled(id))fail("REMOTE_NOT_CONFIGURED");
+  if(id==="thailand-vpn"){
+    if(source!=="servers")fail("UNSUPPORTED_FORMAT");
+    return downloadThailand(provider,options);
+  }
+  if(id==="tunneltweak"){
+    if(source!=="servers")fail("UNSUPPORTED_FORMAT");
+    return downloadTunneltweak(provider);
+  }
+  if(id==="catnet-vpn"){
+    if(source!=="servers")fail("UNSUPPORTED_FORMAT");
+    return downloadCatnet(provider);
+  }
+  if(id==="http-conexion"){
+    if(source!=="servers")fail("UNSUPPORTED_FORMAT");
+    return downloadHttpConexion(provider,options);
+  }
   if(id==="halcon-r-net"){
     if(source!=="servers")fail("UNSUPPORTED_FORMAT");
     return downloadHalcon(provider);
@@ -359,7 +503,7 @@ export async function downloadVpnCatalog(id,source=id==="jyfast-vpn-ultra"?"free
         continue;
       }
       if(answer.redirect!==undefined){
-        if(["fnf-tunnel-bd","alsaher-vip","ha-tunnel-plus","ultra-tunnel","mm-tunnel","zig-tunnel","enaa-tunnel","izph-vpn-pro","vip-snipher-pro","netcol-vpn","wolf-custom-vpn","tunneldoom-vpn","mtm-tunnel-lite","mnr-tunnel-plus","bd-net-vpn","aura-net-vpn","apna-vpn","any-vpn","speicers-pro-vpn","7net-vpn","xhypher-tunnel-pro","focus-vpn-cloud","freedom-vpn","http-internet-infinito","megatunnel","mx-tunnel-pro","rjc-tunnel-pro","rmp-tunnel-pro","http-jireh"].includes(id)||Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
+        if(["kham-vpn","opentunnel-ssh","md-proxy-vpn","xxpicore-tunnel","speigo-vpn-configs","speigo-vpn-ssh","litron-vpn","litron-pro-vpn","genis-vpn","http-conexion","namo-vpn","fnf-tunnel-bd","alsaher-vip","ha-tunnel-plus","ultra-tunnel","mm-tunnel","zig-tunnel","enaa-tunnel","izph-vpn-pro","vip-snipher-pro","netcol-vpn","wolf-custom-vpn","tunneldoom-vpn","mtm-tunnel-lite","mnr-tunnel-plus","bd-net-vpn","aura-net-vpn","apna-vpn","any-vpn","speicers-pro-vpn","7net-vpn","xhypher-tunnel-pro","focus-vpn-cloud","freedom-vpn","http-internet-infinito","megatunnel","mx-tunnel-pro","rjc-tunnel-pro","rmp-tunnel-pro","http-jireh"].includes(id)||Object.hasOwn(PAIRED_SOURCES,id))fail("REMOTE_NETWORK_DENIED");
         const next=answer.redirect;
         if(typeof next!=="string"||next.length>2048)fail("REMOTE_NETWORK_DENIED");
         target=new URL(next,dest).href;
@@ -368,6 +512,8 @@ export async function downloadVpnCatalog(id,source=id==="jyfast-vpn-ultra"?"free
       }
       if(!Buffer.isBuffer(answer.data)||answer.data.length===0||
          answer.data.length>MAX_BYTES)fail("REMOTE_RESPONSE_INVALID");
+      if(id==="xxpicore-tunnel" && answer.data.subarray(0,256).toString("utf8").trimStart().startsWith("<"))
+        fail("REMOTE_RESPONSE_INVALID");
       return answer.data;
     }
     if(!redirected)fail("REMOTE_PROVIDER_UNAVAILABLE");

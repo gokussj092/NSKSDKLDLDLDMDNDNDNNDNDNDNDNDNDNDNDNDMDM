@@ -1,0 +1,18 @@
+{
+  "librarySha256": "d36f50a2dcd3a6821d041d188ad492e9c6e681913508d05c3bfb10601603f700",
+  "machine": "ARMv7 Thumb2",
+  "kdfAddress": "0x17f20",
+  "aadAddress": "0x18678",
+  "hmacAddress": "0x20d74",
+  "release": 112,
+  "signaturePublicKey": "4733a5521e426f82a124adc047e68e486579da747944cfe8d80081b3e2fc92ce",
+  "root": "e973cfb02d8a0fc2102cd8a0351c199c1cba7c04a507d082fa68231bea2f4fb3",
+  "context": "af9d380863dc5c05851192e82d6fda880ce0346f877ab0c093000c7dbe372194",
+  "baseSalt": "e16bc172948f3d5add29a76b8f30461e",
+  "recordSalt": "0f34b5982d7ae6c1",
+  "aadSalt": "38d6e952af04b17b",
+  "signatureSuffix": "d2f5270a3b6c91e4",
+  "fieldInput": "Diablo2105AZW8Es",
+  "scope": "public app-wide file format inputs; no account credentials or remote session",
+  "apkCodeExecuted": false
+}

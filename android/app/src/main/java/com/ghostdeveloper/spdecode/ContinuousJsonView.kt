@@ -1,0 +1,462 @@
+package com.ghostdeveloper.spdecode
+
+import android.content.Context
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Typeface
+import android.os.Bundle
+import android.view.ActionMode
+import android.view.Menu
+import android.view.MenuItem
+import android.view.GestureDetector
+import android.view.MotionEvent
+import android.view.ScaleGestureDetector
+import android.view.View
+import android.view.ViewConfiguration
+import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityNodeInfo
+import android.widget.OverScroller
+import com.ghostdeveloper.spdecode.results.NativeResultEngine
+import kotlin.math.ceil
+import kotlin.math.floor
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.roundToInt
+
+/**
+ * A continuous code surface. The gutter and code share one baseline and scroll
+ * offset, so neither wrapping nor independently measured Texts can misalign them.
+ * No StaticLayout/AnnotatedString is built for a whole document or huge scalar.
+ */
+internal class ContinuousJsonView(
+    context: Context,
+    private val document: NativeResultEngine.Document,
+    private val mask: Boolean,
+    private val onCopyRange: (Int, Int, Int, Int) -> Unit = { _, _, _, _ -> },
+) : View(context) {
+    private val density = resources.displayMetrics.density
+    private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        typeface = Typeface.MONOSPACE
+        textSize = 13f * resources.displayMetrics.scaledDensity
+    }
+    private val metrics get() = paint.fontMetrics
+    internal val rowHeight get() = max(19f * resources.displayMetrics.scaledDensity,
+        metrics.descent - metrics.ascent + 2f * density)
+    private val cellWidth get() = paint.measureText("M")
+    private val inset = 8f * density
+    private val gutter get() = paint.measureText(document.lineCount.toString()) + 2f * inset
+    private val originalTextSize = paint.textSize
+    private var searchLine = -1
+    private data class Cursor(val line:Int,val column:Int)
+    private var selectionStart:Cursor?=null
+    private var selectionEnd:Cursor?=null
+    private var movingHandle=-1
+    private var contextMode:ActionMode?=null
+    private companion object { const val MENU_CANCEL_SELECTION=0x53444E01 }
+    private var fingerX=0f
+    private var fingerY=0f
+    private var autoScrolling=false
+    private val autoScroll=object:Runnable {
+        override fun run() {
+            if(!autoScrolling || movingHandle<0)return
+            val edge=30f*density
+            val shift=when {
+                fingerY<edge -> -rowHeight*1.6f
+                fingerY>height-edge -> rowHeight*1.6f
+                else -> 0f
+            }
+            if(shift!=0f) {
+                moveTo(offsetX,offsetY+shift)
+                moveSelectionHandle(fingerX,fingerY)
+                postOnAnimation(this)
+            } else autoScrolling=false
+        }
+    }
+    private val scroller = OverScroller(context)
+    private var offsetX = 0f
+    private var offsetY = 0f
+    private var downX = 0f
+    private var downY = 0f
+    private val touchSlop = ViewConfiguration.get(context).scaledTouchSlop
+    private var dragging = false
+    private val windows = object : LinkedHashMap<Long, org.json.JSONObject>(96, .75f, true) {
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<Long, org.json.JSONObject>?) = size > 96
+    }
+    private val pinch = ScaleGestureDetector(context, object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
+        override fun onScale(detector: ScaleGestureDetector): Boolean {
+            paint.textSize = (paint.textSize * detector.scaleFactor)
+                .coerceIn(originalTextSize * 0.75f, originalTextSize * 2.1f)
+            windows.clear()
+            moveTo(offsetX, offsetY)
+            return true
+        }
+    })
+    private val gestures = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
+        override fun onLongPress(event: MotionEvent) {
+            val line = floor((offsetY + event.y - inset) / rowHeight).toInt()
+                .coerceIn(0, document.lineCount - 1)
+            val column = floor((offsetX + event.x - gutter) / cellWidth).toInt()
+                .coerceAtLeast(0)
+            beginSelection(event.x,event.y)
+        }
+        override fun onDown(event: MotionEvent): Boolean {
+            scroller.forceFinished(true)
+            return true
+        }
+        override fun onScroll(first: MotionEvent?, last: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
+            // Let the surrounding screen continue scrolling at the document edge.
+            val canMove = if (kotlin.math.abs(distanceY) >= kotlin.math.abs(distanceX))
+                canScrollVertically(if (distanceY > 0) 1 else -1)
+            else canScrollHorizontally(if (distanceX > 0) 1 else -1)
+            parent?.requestDisallowInterceptTouchEvent(canMove)
+            moveTo(offsetX + distanceX, offsetY + distanceY)
+            return true
+        }
+        override fun onFling(first: MotionEvent?, last: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
+            scroller.fling(offsetX.roundToInt(), offsetY.roundToInt(),
+                -velocityX.roundToInt(), -velocityY.roundToInt(), 0, maxX().roundToInt(), 0, maxY().roundToInt())
+            postInvalidateOnAnimation()
+            return true
+        }
+        override fun onSingleTapUp(event: MotionEvent): Boolean {
+            // An accidental long press must be dismissible without copying anything.
+            if(selectionStart!=null || selectionEnd!=null) {
+                dismissSelection()
+                return true
+            }
+            return performClick()
+        }
+    })
+
+    init {
+        setBackgroundColor(Color.BLACK)
+        isFocusable = true
+        isVerticalScrollBarEnabled = true
+        isHorizontalScrollBarEnabled = true
+        importantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_YES
+        tag = "continuous-json"
+    }
+
+    private fun maxX() = max(0f, document.columnCount * cellWidth - (width - gutter - inset).coerceAtLeast(1f))
+    private fun maxY() = max(0f, document.lineCount * rowHeight + 2f * inset - height)
+
+    private fun moveTo(x: Float, y: Float) {
+        offsetX = x.coerceIn(0f, maxX())
+        offsetY = y.coerceIn(0f, maxY())
+        awakenScrollBars()
+        invalidate()
+    }
+
+
+    private fun cursorAt(x:Float,y:Float):Cursor {
+        val line=floor((offsetY+y-inset)/rowHeight).toInt()
+            .coerceIn(0,(document.lineCount-1).coerceAtLeast(0))
+        val col=floor((offsetX+x-gutter)/cellWidth).toInt()
+            .coerceIn(0,document.columnCount)
+        return Cursor(line,col)
+    }
+    private fun orderedSelection():Pair<Cursor,Cursor>? {
+        val a=selectionStart ?: return null
+        val b=selectionEnd ?: return null
+        return if(a.line<b.line || (a.line==b.line&&a.column<=b.column))a to b else b to a
+    }
+    private fun dismissSelection() {
+        contextMode?.finish()
+        contextMode=null
+        selectionStart=null
+        selectionEnd=null
+        movingHandle=-1
+        stopAutoScroll()
+        parent?.requestDisallowInterceptTouchEvent(false)
+        invalidate()
+    }
+    private fun beginSelection(x:Float,y:Float) {
+        if(document.lineCount==0)return
+        contextMode?.finish()
+        val where=cursorAt(x,y)
+        selectionStart=where
+        selectionEnd=where.copy(column=(where.column+1).coerceAtMost(document.columnCount))
+        movingHandle=1
+        fingerX=x;fingerY=y
+        parent?.requestDisallowInterceptTouchEvent(true)
+        invalidate()
+        contextMode=startActionMode(object:ActionMode.Callback {
+            override fun onCreateActionMode(mode:ActionMode,menu:Menu):Boolean {
+                menu.add(0,android.R.id.copy,0,context.getString(android.R.string.copy))
+                    .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                menu.add(0,android.R.id.selectAll,1,context.getString(R.string.result_select_all))
+                menu.add(0,MENU_CANCEL_SELECTION,2,context.getString(R.string.cancel))
+                    .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                return true
+            }
+            override fun onPrepareActionMode(mode:ActionMode,menu:Menu)=false
+            override fun onActionItemClicked(mode:ActionMode,item:MenuItem):Boolean {
+                when(item.itemId) {
+                    android.R.id.copy -> {
+                        val sel=orderedSelection() ?: return false
+                        if(sel.first!=sel.second)onCopyRange(
+                            sel.first.line,sel.first.column,sel.second.line,sel.second.column)
+                        mode.finish()
+                        return true
+                    }
+                    MENU_CANCEL_SELECTION -> {
+                        mode.finish()
+                        return true
+                    }
+                    android.R.id.selectAll -> {
+                        selectionStart=Cursor(0,0)
+                        selectionEnd=Cursor(document.lineCount-1,document.columnCount)
+                        movingHandle=-1
+                        invalidate()
+                        return true
+                    }
+                }
+                return false
+            }
+            override fun onDestroyActionMode(mode:ActionMode) {
+                if(contextMode===mode)contextMode=null
+                selectionStart=null;selectionEnd=null
+                movingHandle=-1
+                stopAutoScroll()
+                invalidate()
+            }
+        },ActionMode.TYPE_FLOATING)
+    }
+    private fun handleAt(x:Float,y:Float):Int {
+        val slop=28f*density
+        val locations=listOf(selectionStart,selectionEnd)
+        for(i in 0..1) {
+            val anchor=locations[i] ?: continue
+            val anchorX=gutter+anchor.column*cellWidth-offsetX
+            val anchorY=inset+(anchor.line+1)*rowHeight-offsetY
+            if(kotlin.math.abs(x-anchorX)<slop && kotlin.math.abs(y-anchorY)<slop)
+                return i
+        }
+        return -1
+    }
+    private fun moveSelectionHandle(x:Float,y:Float) {
+        val point=cursorAt(x,y)
+        if(movingHandle==0)selectionStart=point else selectionEnd=point
+        invalidate()
+    }
+    private fun stopAutoScroll() {
+        autoScrolling=false
+        removeCallbacks(autoScroll)
+    }
+    private fun handleSelectionTouch(event:MotionEvent):Boolean {
+        when(event.actionMasked) {
+            MotionEvent.ACTION_DOWN -> {
+                movingHandle=handleAt(event.x,event.y)
+                if(movingHandle>=0) {
+                    fingerX=event.x;fingerY=event.y
+                    parent?.requestDisallowInterceptTouchEvent(true)
+                    return true
+                }
+            }
+            MotionEvent.ACTION_MOVE -> if(movingHandle>=0) {
+                fingerX=event.x;fingerY=event.y
+                moveSelectionHandle(fingerX,fingerY)
+                val edge=30f*density
+                if(!autoScrolling && (fingerY<edge || fingerY>height-edge)){
+                    autoScrolling=true;postOnAnimation(autoScroll)
+                }
+                return true
+            }
+            MotionEvent.ACTION_UP -> if(movingHandle>=0) {
+                moveSelectionHandle(event.x,event.y)
+                movingHandle=-1
+                stopAutoScroll()
+                contextMode?.invalidate()
+                parent?.requestDisallowInterceptTouchEvent(false)
+                return true
+            }
+            MotionEvent.ACTION_CANCEL -> if(movingHandle>=0) {
+                movingHandle=-1
+                stopAutoScroll()
+                parent?.requestDisallowInterceptTouchEvent(false)
+                return true
+            }
+        }
+        return false
+    }
+
+    internal fun scrollToLine(line: Int) {
+        scroller.forceFinished(true)
+        moveTo(offsetX, line.coerceIn(0, document.lineCount - 1) * rowHeight)
+    }
+    internal fun highlightLine(line: Int) {
+        searchLine = line
+        invalidate()
+    }
+    internal fun scrollToColumn(column: Int) = moveTo(column.coerceAtLeast(0) * cellWidth, offsetY)
+    internal fun lineBaseline(line: Int) = inset + line * rowHeight - offsetY - metrics.ascent
+    internal fun visibleWindow(line: Int): org.json.JSONObject {
+        val column = max(0, floor(offsetX / cellWidth).toInt() - 1)
+        val count = ceil((width - gutter).coerceAtLeast(1f) / cellWidth).toInt().coerceIn(1, 1023) * 2 + 2
+        val key = (line.toLong() shl 32) or column.toLong()
+        return windows.getOrPut(key) { document.lineWindow(line, column, count, mask) }
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        windows.clear()
+        moveTo(offsetX, offsetY)
+    }
+
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+        val first = max(0, floor((offsetY - inset) / rowHeight).toInt())
+        val last = min(document.lineCount - 1, ceil((offsetY + height - inset) / rowHeight).toInt())
+        for (line in first..last) {
+            if (line == searchLine) {
+                paint.color = Color.rgb(32, 61, 52)
+                canvas.drawRect(gutter, line * rowHeight + inset - offsetY,
+                    width.toFloat(), (line + 1) * rowHeight + inset - offsetY, paint)
+            }
+            val bounds=orderedSelection()
+            if(bounds!=null && line in bounds.first.line..bounds.second.line) {
+                val start=if(line==bounds.first.line)bounds.first.column else 0
+                val end=if(line==bounds.second.line)bounds.second.column else document.columnCount
+                if(end>start) {
+                    paint.color=Color.argb(125,49,121,212)
+                    canvas.save()
+                    canvas.clipRect(gutter,0f,width.toFloat(),height.toFloat())
+                    canvas.drawRect(gutter+start*cellWidth-offsetX,
+                        inset+line*rowHeight-offsetY,
+                        gutter+end*cellWidth-offsetX,
+                        inset+(line+1)*rowHeight-offsetY,paint)
+                    canvas.restore()
+                }
+            }
+            val baseline = lineBaseline(line)
+            // The exact same baseline is used for this line's number and code.
+            paint.color = Color.rgb(145, 145, 145)
+            paint.textAlign = Paint.Align.RIGHT
+            canvas.drawText((line + 1).toString(), gutter - inset, baseline, paint)
+            paint.textAlign = Paint.Align.LEFT
+            val window = visibleWindow(line)
+            val text = window.getString("text")
+            val start = window.getInt("column")
+            val valueColumn = window.getInt("valueColumn")
+            val keyEnd = textIndex(text, valueColumn - 2 - start)
+            val valueStart = textIndex(text, valueColumn - start)
+            val x = gutter + start * cellWidth - offsetX
+            canvas.save()
+            canvas.clipRect(gutter, 0f, width.toFloat(), height.toFloat())
+            drawRun(canvas, text, 0, keyEnd, x, baseline, Color.rgb(124, 183, 249))
+            drawRun(canvas, text, keyEnd, valueStart, x, baseline, Color.WHITE)
+            val color = when (window.getString("type")) {
+                "string", "text" -> Color.rgb(152, 217, 160)
+                "number" -> Color.rgb(232, 182, 109)
+                "boolean" -> Color.rgb(201, 160, 243)
+                "null" -> Color.rgb(231, 165, 180)
+                else -> Color.WHITE
+            }
+            drawRun(canvas, text, valueStart, text.length, x, baseline, color)
+            canvas.restore()
+        }
+        if(selectionStart!=null && selectionEnd!=null) {
+            paint.color=Color.rgb(87,166,255)
+            for(point in listOfNotNull(selectionStart,selectionEnd)) {
+                val x=gutter+point.column*cellWidth-offsetX
+                val y=inset+(point.line+1)*rowHeight-offsetY
+                if(x>=gutter-12*density && x<width+12*density &&
+                    y>=0 && y<=height+14*density)
+                    canvas.drawCircle(x,y,7f*density,paint)
+            }
+        }
+        paint.color = Color.rgb(41, 41, 41)
+        canvas.drawLine(gutter - inset / 2, 0f, gutter - inset / 2, height.toFloat(), paint)
+    }
+
+    private fun textIndex(text: String, column: Int): Int {
+        var index = 0
+        var cells = 0
+        while (index < text.length && cells < column) {
+            val point = text.codePointAt(index)
+            val count = if (point < 128 || point == 0x2022) 1 else 2
+            if (cells + count > column) break
+            cells += count
+            index += Character.charCount(point)
+        }
+        return index
+    }
+
+    internal fun visibleTextRight(line: Int): Float {
+        val window = visibleWindow(line)
+        return gutter + window.getInt("column") * cellWidth - offsetX + paint.measureText(window.getString("text"))
+    }
+
+    private fun drawRun(canvas: Canvas, text: String, start: Int, end: Int, x: Float, y: Float, color: Int) {
+        if (start >= end) return
+        paint.color = color
+        canvas.drawText(text, start, end, x + paint.measureText(text, 0, start), y, paint)
+    }
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        if(handleSelectionTouch(event))return true
+        if (event.actionMasked == MotionEvent.ACTION_DOWN) {
+            downX = event.x; downY = event.y; dragging = false
+            parent?.requestDisallowInterceptTouchEvent(maxX() > 0 || maxY() > 0)
+        } else if (event.actionMasked == MotionEvent.ACTION_MOVE && !dragging) {
+            if (kotlin.math.abs(event.x - downX) > touchSlop || kotlin.math.abs(event.y - downY) > touchSlop) {
+                dragging = true
+                parent?.requestDisallowInterceptTouchEvent(true)
+            }
+        }
+        pinch.onTouchEvent(event)
+        val handled = if (pinch.isInProgress) true else gestures.onTouchEvent(event)
+        if (event.actionMasked == MotionEvent.ACTION_UP || event.actionMasked == MotionEvent.ACTION_CANCEL) {
+            parent?.requestDisallowInterceptTouchEvent(false)
+            dragging = false
+        }
+        return handled || super.onTouchEvent(event)
+    }
+
+    override fun performClick(): Boolean { super.performClick(); return true }
+    override fun canScrollVertically(direction: Int) = if (direction < 0) offsetY > 0 else offsetY < maxY()
+    override fun canScrollHorizontally(direction: Int) = if (direction < 0) offsetX > 0 else offsetX < maxX()
+    override fun computeVerticalScrollRange() = (document.lineCount * rowHeight + inset * 2).roundToInt()
+    override fun computeVerticalScrollOffset() = offsetY.roundToInt()
+    override fun computeHorizontalScrollRange() = (document.columnCount * cellWidth + gutter + inset).roundToInt()
+    override fun computeHorizontalScrollOffset() = offsetX.roundToInt()
+    override fun computeScroll() {
+        if (scroller.computeScrollOffset()) {
+            moveTo(scroller.currX.toFloat(), scroller.currY.toFloat())
+            postInvalidateOnAnimation()
+        }
+    }
+
+    override fun onInitializeAccessibilityNodeInfo(info: AccessibilityNodeInfo) {
+        super.onInitializeAccessibilityNodeInfo(info)
+        info.className = "android.widget.TextView"
+        info.isScrollable = true
+        val first = max(0, floor(offsetY / rowHeight).toInt())
+        val last = min(document.lineCount - 1, first + ceil(height / rowHeight).toInt())
+        info.text = (first..last).joinToString("\n") { "${it + 1} ${visibleWindow(it).getString("text")}" }
+        if (canScrollVertically(1)) info.addAction(AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_FORWARD)
+        if (canScrollVertically(-1)) info.addAction(AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_BACKWARD)
+        if (canScrollHorizontally(1)) info.addAction(AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_RIGHT)
+        if (canScrollHorizontally(-1)) info.addAction(AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_LEFT)
+    }
+
+    override fun performAccessibilityAction(action: Int, arguments: Bundle?): Boolean {
+        when (action) {
+            AccessibilityNodeInfo.ACTION_SCROLL_FORWARD -> moveTo(offsetX, offsetY + height - rowHeight)
+            AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD -> moveTo(offsetX, offsetY - height + rowHeight)
+            android.R.id.accessibilityActionScrollRight -> moveTo(offsetX + width - gutter, offsetY)
+            android.R.id.accessibilityActionScrollLeft -> moveTo(offsetX - width + gutter, offsetY)
+            else -> return super.performAccessibilityAction(action, arguments)
+        }
+        sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_SCROLLED)
+        return true
+    }
+
+    override fun onDetachedFromWindow() {
+        contextMode?.finish()
+        stopAutoScroll()
+        scroller.forceFinished(true)
+        windows.clear()
+        super.onDetachedFromWindow()
+    }
+}

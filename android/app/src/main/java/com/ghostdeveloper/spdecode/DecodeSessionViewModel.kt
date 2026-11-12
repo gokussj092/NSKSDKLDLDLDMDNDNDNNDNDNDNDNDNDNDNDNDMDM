@@ -13,4 +13,5 @@ class DecodeSessionViewModel:ViewModel(){
     var current by mutableStateOf<DecodeView?>(null)
     var tab by mutableIntStateOf(0)
     var reveal by mutableStateOf(false)
+    var stagedResultExport:Pair<DecodeView,ResultExport>?=null
 }

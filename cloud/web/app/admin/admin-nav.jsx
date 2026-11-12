@@ -4,8 +4,8 @@ import {usePathname} from "next/navigation";
 import {useEffect,useState} from "react";
 export const groups=[
  {label:"General",links:[["Resumen","/admin","dashboard"],["Analítica","/admin/analytics","chart"],["Incidencias","/admin/reports","list"],["Solicitudes","/admin/requests","message"],["Diagnóstico","/admin/diagnostics","search"]]},
- {label:"Infraestructura",links:[["Estado del servidor","/admin/system","server"],["Mantenimiento","/admin/maintenance","power"],["API V1 y retiro","/admin/api-v1","clock"],["API V2","/admin/api-v2","shield"],["Google Play","/admin/play","phone"]]},
- {label:"Servicios",links:[["Proveedores VPN","/admin/providers","layers"],["Exportaciones","/admin/exports","file"],["Catálogo VPN","/admin/catalog","refresh"],["Notificaciones","/admin/notifications","bell"]]},
+ {label:"Infraestructura",links:[["Estado del servidor","/admin/system","server"],["Mantenimiento","/admin/maintenance","power"],["Limpieza de caché","/admin/cleanup","refresh"],["API V1 y retiro","/admin/api-v1","clock"],["API V2","/admin/api-v2","shield"],["Google Play","/admin/play","phone"]]},
+ {label:"Servicios",links:[["Proveedores VPN","/admin/providers","layers"],["Exportaciones","/admin/exports","file"],["Catálogo VPN","/admin/catalog","refresh"],["Notificaciones","/admin/notifications","bell"],["Tienda y pagos","/admin/store","file"]]},
  {label:"Supervisión",links:[["Observabilidad","/admin/observability","activity"],["Alertas","/admin/alerts","alert"],["Rendimiento P95","/admin/performance","chart"],["Documentación","/admin/resources","book"]]}
 ];
 function NavIcon({name}){
@@ -47,7 +47,7 @@ export default function AdminNav({children}){
   </div>
   {expanded&&<button className="sp-admin-menu-backdrop" type="button" aria-label="Cerrar menú" onClick={()=>setExpanded(false)}/>}
   <aside id="sp-admin-sidebar" className="sp-admin-sidebar" aria-label="Menú lateral de administración" aria-hidden={!expanded} inert={!expanded}>
-   <div className="sp-admin-sidebar-brand"><strong>SP-DECODE</strong><span>Centro de administración</span></div>
+   <div className="sp-admin-sidebar-brand"><img src="/icon.svg" width="36" height="36" alt=""/><div><strong>SP-DECODE</strong><span>Centro de administración</span></div></div>
    <nav className="sp-admin-sidebar-scroll" aria-label="Secciones administrativas">
     {groups.map(group=><section key={group.label} className="sp-admin-nav-group">
       <h2>{group.label}</h2>

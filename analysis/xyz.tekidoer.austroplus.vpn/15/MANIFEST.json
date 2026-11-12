@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "package_name": "xyz.tekidoer.austroplus.vpn",
+  "app_name": "AustroPlus VPN",
+  "version_name": "15.0.1",
+  "version_code": 15,
+  "observed_at": "2026-11-09",
+  "source_category": "public-distribution-static-and-authorized-public-catalog",
+  "authorization_note": "Owner requested method maintenance. Public client APK and public updater inspected statically; no account or subscription credentials, APK execution or authentication bypass.",
+  "status": "VERIFIED",
+  "targets": [
+    {
+      "kind": "catalog",
+      "status": "VERIFIED_REAL",
+      "scope": "complete build15 remote and embedded catalog, independent Java/Python/isolated-worker parity"
+    },
+    {
+      "kind": "files",
+      "status": "PARTIAL",
+      "scope": "build13 compatibility remains tested; build15 independent real export not supplied"
+    }
+  ],
+  "inputs": {
+    "package": "xyz.tekidoer.austroplus.vpn",
+    "versionName": "15.0.1",
+    "versionCode": 15,
+    "xapkBytes": 56213853,
+    "xapkSha256": "6f63005534a7add46791da4d0ab57fc97692d5d4820229ab547fd670946541c8",
+    "apkBytes": 26809725,
+    "apkSha256": "72b5976c94cbfa757f414af0634fda922910ad998d651c1b256ff139b89d1691",
+    "certificateSha256": [
+      "84f5332115ade1f014c654d0069dfd484c8c5e3cd2fd394323a18011ae679aea"
+    ],
+    "cryptographicApkSignatureVerified": false,
+    "apkCodeExecuted": false
+  },
+  "tooling": [
+    {
+      "name": "Own fixed acquisition and source trace",
+      "path": "analysis/xyz.tekidoer.austroplus.vpn/15/tools"
+    },
+    {
+      "name": "Shared acquisition/decompilation wrappers",
+      "path": "analysis/_intake/austro-cat-2026-11-09/tools"
+    },
+    {
+      "name": "JADX full",
+      "version": "1.5.6",
+      "script": "scripts/apk_analysis/decompile.py",
+      "mode": "auto"
+    },
+    {
+      "name": "Java Random long-array resolver",
+      "script": "scripts/apk_analysis/random_strings.py",
+      "class": "g40",
+      "strings": 6203
+    },
+    {
+      "name": "Independent existing Java XXTEA/XOR oracle",
+      "path": "tests/golden/austroplus_oracle.java",
+      "modified": false
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "androguard",
+      "version": "4.1.3",
+      "source": "https://github.com/androguard/androguard",
+      "license": "Apache-2.0",
+      "lockfile": "analysis/xyz.tekidoer.austroplus.vpn/15/dependencies.lock.json"
+    },
+    {
+      "name": "argon2-cffi",
+      "version": "25.1.0",
+      "source": "https://github.com/hynek/argon2-cffi",
+      "license": "MIT",
+      "lockfile": "analysis/xyz.tekidoer.austroplus.vpn/15/dependencies.lock.json"
+    },
+    {
+      "name": "argon2-cffi-bindings",
+      "version": "26.1.0",
+      "source": "https://github.com/hynek/argon2-cffi-bindings",
+      "license": "MIT",
+      "lockfile": "analysis/xyz.tekidoer.austroplus.vpn/15/dependencies.lock.json"
+    },
+    {
+      "name": "capstone",
+      "version": "5.0.6",
+      "source": "https://www.capstone-engine.org/",
+      "license": "BSD-3-Clause",
+      "lockfile": "analysis/xyz.tekidoer.austroplus.vpn/15/dependencies.lock.json"
+    },
+    {
+      "name": "pycryptodome",
+      "version": "3.23.0",
+      "source": "https://www.pycryptodome.org/",
+      "license": "BSD-2-Clause / Public-Domain components",
+      "lockfile": "analysis/xyz.tekidoer.austroplus.vpn/15/dependencies.lock.json"
+    },
+    {
+      "name": "pyelftools",
+      "version": "0.32",
+      "source": "https://github.com/eliben/pyelftools",
+      "license": "Public-Domain",
+      "lockfile": "analysis/xyz.tekidoer.austroplus.vpn/15/dependencies.lock.json"
+    },
+    {
+      "name": "JADX",
+      "version": "1.5.6",
+      "source": "https://github.com/skylot/jadx/releases/tag/v1.5.6",
+      "license": "Apache-2.0",
+      "checksum": "fe3e12c45acf75f92369685fd02d1d7a7323385dc725680a9b98a0dac0ea554b"
+    },
+    {
+      "name": "OpenJDK",
+      "version": "21.0.13",
+      "source": "https://openjdk.org/",
+      "license": "GPL-2.0-with-Classpath-exception"
+    },
+    {
+      "name": "Node.js",
+      "version": "24.22.1 (local research tests); 22 in CI",
+      "source": "https://nodejs.org/",
+      "license": "MIT"
+    }
+  ],
+  "code_paths": [
+    "decoders/Python/apps/AustroPlus_VPN/codec.py",
+    "decoders/Python/apps/AustroPlus_VPN/server_catalog_decoder.py",
+    "decoders/Python/apps/AustroPlus_VPN/file_decoder.py",
+    "decoders/Python/ec.py",
+    "cloud/web/lib/server-vpn-provider.mjs",
+    "cloud/web/lib/server-vpn-catalog.mjs",
+    "cloud/workers/python/catalog_vpn_bridge.py"
+  ],
+  "evidence_refs": [
+    "analysis/xyz.tekidoer.austroplus.vpn/15/ANALYSIS.md",
+    "analysis/xyz.tekidoer.austroplus.vpn/15/REPRODUCE.md",
+    "analysis/xyz.tekidoer.austroplus.vpn/15/RESULTS.md",
+    "analysis/xyz.tekidoer.austroplus.vpn/15/DEPENDENCIES.md",
+    "analysis/xyz.tekidoer.austroplus.vpn/15/dependencies.lock.json",
+    "analysis/xyz.tekidoer.austroplus.vpn/15/generated/identity.json",
+    "analysis/xyz.tekidoer.austroplus.vpn/15/generated/catalog-proof.json",
+    "analysis/xyz.tekidoer.austroplus.vpn/15/generated/embedded-proof.json",
+    "analysis/xyz.tekidoer.austroplus.vpn/15/generated/recipe.json",
+    "analysis/xyz.tekidoer.austroplus.vpn/15/tests/fixtures/catalog15.json"
+  ],
+  "limitations": [
+    "Full APK cryptographic signature verification not performed.",
+    "JADX has unrelated decompilation failures; no claim of complete reconstructed source.",
+    "Build15 file export and Android/VPN operation not certified.",
+    "No APK compilation, main merge, VPS deployment or automatic analysis-tool approval."
+  ],
+  "network_requirements": [
+    "Allowlisted APKPure distribution CDN for reproducible input acquisition.",
+    "Fixed original public updater only; no arbitrary destinations or private-account endpoints."
+  ],
+  "manual_steps": [
+    "Review CI and evidence, then update server web and worker from feat/nuevas-integraciones."
+  ]
+}

@@ -1,0 +1,117 @@
+name: F7-A7 Server JADX Recovery and Tool Safety
+
+on:
+  push:
+    branches: [feat/nuevas-integraciones]
+    paths:
+      - cloud/apk_analysis/**
+      - cloud/web/lib/f7-apk-qa-gateway.mjs
+      - cloud/web/tests/f7-apk-qa.test.mjs
+      - tests/test_f7_a9_full_harness.py
+      - cloud/infra/vps/spdecodectl
+      - cloud/compose.yaml
+      - tests/test_f7_a7_recovery.py
+      - tests/test_f7_apk_qa_jadx_refs.py
+      - .dockerignore
+      - .github/workflows/f7-a7-server.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  unit-and-docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 24
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Validate Python modules and existing VPS script
+        run: |
+          python -m compileall -q cloud/apk_analysis
+          bash -n cloud/infra/vps/spdecodectl
+      - name: F7-A7 plus existing APK QA regressions
+        run: |
+          python -m unittest \
+            tests.test_f7_apk_qa_cli \
+            tests.test_f7_apk_qa_service \
+            tests.test_f7_a9_full_harness \
+            tests.test_f7_a7_recovery \
+            tests.test_f7_a8_harness \
+            tests.test_f7_apk_qa_jadx_refs \
+            tests.test_f7_apk_qa_deep \
+            tests.test_f7_apk_qa_tooling_policy \
+            tests.test_f7_apk_qa_tool_rpc -v
+      - name: Check existing private Docker service configuration
+        run: docker compose --profile apk-qa --profile apk-qa-tools -f cloud/compose.yaml config --quiet
+      - name: "Legacy Lite compatibility: build JADX image with checksum-verified pinned JAR"
+        run: docker build -f cloud/apk_analysis/Dockerfile.qa-lite -t spdecode-f7-a7-lite .
+      - name: Produce an owned Java test specimen
+        run: |
+          mkdir -p tool-fixtures/src/com/spdecode/owned tool-fixtures/classes
+          cat > tool-fixtures/src/com/spdecode/owned/Owned.java <<'JAVA'
+          package com.spdecode.owned;
+          public class Owned {
+              public String ownCryptoReference() throws Exception {
+                  return javax.crypto.Cipher.getInstance("AES/GCM/NoPadding").getAlgorithm();
+              }
+          }
+          JAVA
+          javac -d tool-fixtures/classes tool-fixtures/src/com/spdecode/owned/Owned.java
+          jar cf tool-fixtures/owned.jar -C tool-fixtures/classes .
+      - name: "Legacy Lite compatibility: real offline JADX on owned code"
+        run: |
+          docker run --rm --network none --read-only --user 65532:65532 \
+            --memory 1152m --cpus 0.8 --cap-drop ALL \
+            --security-opt no-new-privileges \
+            --tmpfs /analysis:rw,size=256m,uid=65532,gid=65532,mode=0700 \
+            --tmpfs /tmp:rw,size=128m,uid=65532,gid=65532,mode=0700,noexec,nosuid,nodev \
+            -v "$PWD/tool-fixtures:/samples:ro" --entrypoint python3 \
+            spdecode-f7-a7-lite -B -c '
+          from pathlib import Path
+          from cloud.apk_analysis.qa_tooling import _verified_jadx, _run, JADX_JAR
+          from cloud.apk_analysis.qa_jadx_refs import scan_jadx_sources
+          assert _verified_jadx(), "PINNED_JADX_MISSING"
+          path=Path("/analysis"); target=path/"output"; target.mkdir()
+          env={"PATH":"/opt/java/openjdk/bin:/usr/local/bin:/usr/bin:/bin",
+               "JAVA_HOME":"/opt/java/openjdk","HOME":str(path),
+               "TMPDIR":str(path),"XDG_CACHE_HOME":str(path),
+               "XDG_CONFIG_HOME":str(path),"LANG":"C.UTF-8",
+               "JAVA_TOOL_OPTIONS":"-Duser.home=/analysis"}
+          cmd=["java","-Xmx512m","-XX:ActiveProcessorCount=1",
+               "-cp",str(JADX_JAR),"jadx.cli.JadxCLI","--no-res",
+               "--decompilation-mode","simple","-j","1",
+               "-d",str(target),"/samples/owned.jar"]
+          assert _run(cmd,cwd=path,timeout=180,env=env,logfile=path/"jadx.log"), \
+              "OWNED_JADX_EXECUTION_FAILED"
+          report=scan_jadx_sources(target)
+          assert report["sourceFilesInspected"]>0, report
+          assert "JCA_CIPHER" in report["cryptoReferenceCounts"], report
+          assert report["methodValidated"] is False
+          print("F7-A7 real pinned JADX on owned fixture: PASS")
+          '
+
+  server-report-gateway:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install existing server dependencies
+        working-directory: cloud/web
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Complete QA result and TunnelDoom gateway regressions
+        working-directory: cloud/web
+        run: node --test tests/f7-apk-qa.test.mjs tests/tunneldoom-vpn.test.mjs

@@ -1,0 +1,8 @@
+{
+  "source": "ssh",
+  "url": "https://raw.githubusercontent.com/apksdemons/apks2/refs/heads/main/speigo/user_speigo_sv5c",
+  "httpStatus": 200,
+  "bytes": 1233,
+  "sha256": "3ed9b3d9009f472005170dddd329a76ebcdbf610b624b5ee99f552ef7d84d844",
+  "decryptionPerformed": false
+}

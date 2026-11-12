@@ -1,0 +1,24 @@
+{
+  "package": "com.doriaxvip.tunnel",
+  "version": "2.2.6",
+  "versionCode": "76",
+  "launcherResource": "res/mipmap-anydpi-v26/ic_launcher.xml",
+  "bitmapResource": "res/mipmap-xxxhdpi-v4/ic_launcher.webp",
+  "sourceBytes": 14006,
+  "sourceSha256": "598b571a951dcceb781c6663d1c7e2e8fbc5073698781dec091e1f5cd51df259",
+  "pngBytes": 20306,
+  "pngSha256": "ae3cc43d7f773363966b9afa2e981f0deee5e8c96d2611a2f8b768581311756b",
+  "width": 192,
+  "height": 192,
+  "pixelEquality": true,
+  "note": "Original legacy launcher WEBP decoded to lossless PNG, no redraw. Certificate fingerprints/scheme presence do not constitute full apksigner verification.",
+  "v1": false,
+  "v2": true,
+  "v3": true,
+  "certificateSha1": [
+    "327f73ad5bf2f808fccc4709c79c47f45bd61b32"
+  ],
+  "certificateSha256": [
+    "2f4e515651bc2b446803be2a09c5b9df686682cf82af228cb041dea1a3d83c0f"
+  ]
+}

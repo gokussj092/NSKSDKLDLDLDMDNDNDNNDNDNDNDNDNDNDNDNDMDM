@@ -68,10 +68,10 @@ test("authenticated TunnelDOOM broker forwards all bytes and returns the complet
     expire:async()=>1,eval:async()=>1,zRem:async()=>1};
   const bytes=Buffer.from("synthetic encrypted TunnelDOOM response");
   t.mock.method(dns,"lookup",async host=>{
-    assert.equal(host,"panel.tunneldoom.space");return [{address:"93.184.216.34",family:4}];
+    assert.equal(host,"web.tunneldoom.space");return [{address:"93.184.216.34",family:4}];
   });
   t.mock.method(https,"request",(url,options,callback)=>{
-    assert.equal(url.href,"https://panel.tunneldoom.space/config.json");
+    assert.equal(url.href,"https://web.tunneldoom.space/config.json");
     assert.equal(options.headers["User-Agent"],"Dalvik/2.1.0");
     assert.equal(options.rejectUnauthorized,true);
     const req=new EventEmitter();req.destroy=()=>{};
@@ -110,7 +110,7 @@ test("TunnelDOOM fixed updater refuses redirects",async t=>{
   t.after(()=>{if(prior===undefined)delete process.env.CLOUD_SERVER_VPN_ENABLED;else process.env.CLOUD_SERVER_VPN_ENABLED=prior;});
   t.mock.method(dns,"lookup",async()=>[{address:"93.184.216.34",family:4}]);
   t.mock.method(https,"request",(url,options,callback)=>{
-    assert.equal(url.hostname,"panel.tunneldoom.space");
+    assert.equal(url.hostname,"web.tunneldoom.space");
     const req=new EventEmitter();req.destroy=()=>{};
     req.end=()=>queueMicrotask(()=>{
       const res=new EventEmitter();res.resume=()=>{};

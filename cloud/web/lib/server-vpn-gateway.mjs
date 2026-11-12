@@ -30,7 +30,7 @@ export async function decodeServerVpn(request,opts={}){
     lease=randomUUID();
     started=performance.now();
     if(!await reserveSlot(redis,claims.jti,lease))return failure("RATE_LIMITED",429);
-    let bytes;
+    let bytes,httpConexionRefreshed=false;
     if(providerId==="mkk-hyper"){
       // A single api_server.json call silently omitted static users and
       // subscription catalogs. Fetch each fixed source without caller URLs.
@@ -52,17 +52,30 @@ export async function decodeServerVpn(request,opts={}){
       // Each omitted source is explicitly marked REMOTE_TOO_LARGE. Remaining
       // sources are passed intact, with the worker's partial warning visible.
       bytes=bundle.payload;
-    }else if(["jyfast-vpn-ultra","abowaged-vpn","http-socketclay","http-wakko","v2ray-tunnel-plus","onspace-vpn","superflash-vpn","turbomx-vpn"].includes(providerId)){
+    }else if(["speicers-turbo-vpn","jyfast-vpn-ultra","abowaged-vpn","http-socketclay","http-wakko","v2ray-tunnel-plus","onspace-vpn","superflash-vpn","turbomx-vpn"].includes(providerId)){
       const names=providerId==="jyfast-vpn-ultra"?["free","premium"]:providerId==="abowaged-vpn"?["servers","udp"]:providerId==="v2ray-tunnel-plus"?["base64","raw"]:["servers","users"];
       const sources=await Promise.all(names.map(async name=>[name,await downloadVpnCatalog(providerId,name)]));
       bytes=packPairedVpnCatalogs(providerId,Object.fromEntries(sources));
+    }else if(providerId==="http-conexion"){
+      try{bytes=await downloadVpnCatalog(providerId);}
+      catch(error){
+        if(!(error instanceof VpnProviderError)||!["REMOTE_PROVIDER_UNAVAILABLE","REMOTE_RESPONSE_INVALID"].includes(error.code))throw error;
+        bytes=await downloadVpnCatalog(providerId,"servers",{forceRefresh:true});httpConexionRefreshed=true;
+      }
     }else{
       bytes=await downloadVpnCatalog(providerId);
     }
     downloadedBytes=bytes.length;
-    const response=await fetchWorker("server-vpn",{
+    let response=await fetchWorker("server-vpn",{
       providerId,dataBase64:bytes.toString("base64"),
     },settings(),opts);
+    if(providerId==="http-conexion"&&!httpConexionRefreshed&&!response.ok){
+      let code;try{code=(await response.clone().json()).error?.code;}catch{}
+      if(["DECODE_FAILED","REMOTE_DECODER_FAILED"].includes(code)){
+        bytes=await downloadVpnCatalog(providerId,"servers",{forceRefresh:true});downloadedBytes=bytes.length;
+        response=await fetchWorker("server-vpn",{providerId,dataBase64:bytes.toString("base64")},settings(),opts);
+      }
+    }
     try{
       let errorCode="",outcome=response.ok?"success":"failed";
       const result=await response.clone().json();

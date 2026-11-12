@@ -1,0 +1,17 @@
+{
+  "inputBytes": 1685,
+  "inputSha256": "1e34c4439cbf3526b8396a42af848a66af014f251d3e935518758d97ffff05b6",
+  "purpose": 2,
+  "section": "Usuarios",
+  "version": "1",
+  "records": 2,
+  "innerFieldsCompared": 12,
+  "wholeIndependentJcaSodiumParity": true,
+  "signatureAndAllTagsVerified": true,
+  "clearJsonSha256": "b6419b618b99e40fc69ceb60c7c1114b054f4e0998112bff015bb8c8ece6c869",
+  "rawOutputBytes": 1003,
+  "apkCodeExecuted": false,
+  "wholeWorkerParity": true,
+  "workerRejectsOppositeSection": true,
+  "wholeCliOutsideCheckoutParity": true
+}

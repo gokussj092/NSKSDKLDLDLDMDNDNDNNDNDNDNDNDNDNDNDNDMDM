@@ -1,0 +1,13 @@
+# Resultado y límites
+
+PARTIAL por vía: catálogo de **hosts SSH VERIFIED_REAL**, archivos **VERIFIED_SYNTHETIC / REQUIRES_DEVICE**. Respuesta pública real7hosts/1515bytes, igualdad JSON completa con parser estándar y worker, advertencia de ausencia de credenciales. No se generaron cuentas. .tnl61 probado con JCA independiente en tres framings,5000líneas, XML/Unicode/CRLF/flags/vacíos, conservación del golden GCM heredado. No hay archivo real de teléfono ni exportación certificada.
+
+11pruebas Open y6MD nuevas pasan (17total). Pruebas Node de entradas/iconos/broker/TLS/GET único/redirecciones/privacidad/controles y catálogo:38/38 en conjunto. Regresiones completas y gates se registran en generated/validation.json al cerrar. Python3.12.14, Java21.0.13+9, Node24.22.1 local; no compilación APK. Datos privados no se suben; solo hashes y fixtures ficticios. Revisión humana pendiente antes de producción; rama de trabajo, sin merge ni VPS.
+
+Cierre local:147Python,212Node,45seguridad A0/P06/P08 y20arnés de descarga; build web correcto. A0sin bloqueos; P06PASS_WITH_UNRESOLVED sin hallazgos bloqueantes (consumidores dinámicos heredados siguen pendientes). La evidencia no concede aprobación automática. Inicialmente cuatro mocks PNG interceptaban el nuevo WebP; se acotaron a PNG y se repitió la suite completa. La copia local parcial carecía de decoder_catalog.json y el enlace de node_modules quedaba fuera del root de Turbopack; se materializaron los bytes canónicos y las dependencias existentes antes de repetir build/pruebas, sin cambiar Android ni lockfiles.
+
+GitHub C6 detectó que el nombre público tnl no coincidía con la salida canónica de scripts/cloud_formats_catalog.py; se regeneró el catálogo a partir del overlay y se añadió la comprobación al workflow específico. No se debilita el validador ni se cambia C0.
+
+Validación remota del código a347889585335668fde70557606e6cf05993146d: Actions42659434431 (147Python/212Node/build), C642659455596 (690pruebas,688pasan,2omitidas,0fallos y build), A042659455737 y P0842659455581 correctos. Descargas42659455438:73proveedores/85fuentes,70OK,15advertencias,0errores internos; ambos proveedores nuevos HTTP200. Open cambió contenido, conservó estructura y siguió OK; no se interpreta un cambio normal de contenido como método roto. Referencias completas en generated/validation.json.
+
+El ensayo local adicional npm test de toda la aplicación encontró referencias estáticas Android ausentes de la copia parcial (sin compilarlas); por eso no se presenta como suite local completa aprobada. C6 sobre checkout completo de GitHub sí pasó íntegramente.

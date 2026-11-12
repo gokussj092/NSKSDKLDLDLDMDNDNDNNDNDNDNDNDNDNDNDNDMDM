@@ -1,0 +1,57 @@
+{
+  "Version": "fictional-1",
+  "Notes": "Synthetic fixture only",
+  "Username": "demo-user",
+  "Password": "demo-pass",
+  "Servers": [
+    {
+      "Name": "Prueba 日本語",
+      "Subname": "Fictional",
+      "ServerIPHost": "vpn.example.org",
+      "OpenVPNTCPPort": "443",
+      "OpenVPNSSLPort": "8443",
+      "CloudfrontDNS": "edge.example.org",
+      "flag": "ZZ",
+      "Obfs": "demo",
+      "CustomCert": "fictional-certificate",
+      "Username": "user",
+      "Password": "password",
+      "SlowDNS": {
+        "NSNameServer": "ns.example.org",
+        "PubKey": "fictional-public-key"
+      },
+      "V2Ray": {
+        "UUID": "00000000-0000-4000-8000-000000000000",
+        "PATH": "/demo",
+        "V2RayHost": "ws.example.org"
+      },
+      "unchanged": {
+        "foo": true
+      }
+    }
+  ],
+  "Networks": [
+    {
+      "Name": "Demo",
+      "Info": "Fictional only",
+      "DNSResolver": "1.1.1.1",
+      "TLSVersion": "TLSv1.3",
+      "SNIHost": "example.org",
+      "Payload": "GET /demo HTTP/1.1\r\nHost: example.org\r\n\r\n",
+      "ProxySettings": {
+        "Squid": "proxy.example.org",
+        "Port": "8080"
+      },
+      "UDPOptions": {
+        "UpMbps": "5",
+        "DlMbps": "10",
+        "RecvConnectionWindow": "1048576"
+      },
+      "V2Ray": {
+        "SNIHost": "example.org",
+        "CustomV2RAYConfig": "{\"outbounds\":[{\"protocol\":\"vless\"}]}"
+      },
+      "optional": null
+    }
+  ]
+}

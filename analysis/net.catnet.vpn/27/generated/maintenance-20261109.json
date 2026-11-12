@@ -1,0 +1,16 @@
+{
+  "identityUnchanged": true,
+  "sourceSha256": {
+    "net/xj/vpn/api/ApiClient.java": "62e2be5bc94f560bd0fadebb1b6b82d6ad78e820e7edd7919454d6f919ab4964",
+    "net/xj/vpn/api/MobileApiService.java": "048d44f746054b6efa493d928ae1471eb8dff9ee92169eb3e0c7af3b0882b507",
+    "defpackage/fe.java": "2ef1d2b712433f24ccc0d89e0cdf13d906bdff064c9be8a6112ca1b236e34298"
+  },
+  "apkCodeExecuted": false,
+  "retryLimitPerFixedRequest": 2,
+  "policyPreflightRequired": true,
+  "integrityBypassed": false,
+  "status": "NETWORK_UNAVAILABLE",
+  "downloadVerified": false,
+  "servers": null,
+  "elapsedSeconds": 17.989
+}

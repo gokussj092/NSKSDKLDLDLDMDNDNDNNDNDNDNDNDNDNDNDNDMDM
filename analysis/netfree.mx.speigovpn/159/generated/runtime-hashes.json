@@ -1,0 +1,10 @@
+{
+  "cloud/web/lib/server-vpn-provider.mjs": "0e344fe87be934b287bd0203391419ce615b22303568d5e81d9926075053ebab",
+  "cloud/web/lib/server-vpn-catalog.mjs": "0d7ed8c793dddae36998236d1ef54e07e0738dad0f4bf51bc1ef3b7797a83817",
+  "cloud/web/lib/c12-provider-controls.mjs": "8311bd50260737dce8396e7bea1edf9d509299e8de2538264f275fe1aa44ed38",
+  "cloud/workers/python/engine.py": "3ca2c68bcc9ff02e0885b8bc7cbb227420f31fc265b2f7bfcdb190f5ed23227a",
+  "cloud/workers/python/catalog_vpn_bridge.py": "5d72a8f51b2fa27ae7636f75e598d66bc6e388ca223c2d003e953db7b8849633",
+  "decoders/Python/apps/SpeiGo_VPN/codec.py": "a975520d4e67170ad6c7d4e586f64e933346403efb9c785a4dac051f02758e8e",
+  "decoders/Python/apps/SpeiGo_VPN/server_catalog_decoder.py": "22f7859cde715d399550de6c86bd62fab99286002058e06de5d318b4a7c03743",
+  "decoders/Python/apps/SpeiGo_VPN/ssh_catalog_decoder.py": "6e5a2b80cefb3cba3880e8ee58d93ffe00c641507832c2fce9510289e7c1556b"
+}

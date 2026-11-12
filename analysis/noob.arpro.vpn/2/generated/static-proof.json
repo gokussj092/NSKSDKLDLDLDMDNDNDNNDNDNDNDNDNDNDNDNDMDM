@@ -1,0 +1,30 @@
+{
+  "apkCodeExecuted": false,
+  "nativeCodeExecuted": false,
+  "jadxVersion": "1.5.6",
+  "jadxGlobalErrors": 119,
+  "jadxGlobalComplete": true,
+  "sources": [
+    {
+      "path": "com/noobdev/vpn/utils/preference/NoobCrypt.java",
+      "sha256": "a8e24faea09cd4a30adb1d40f4b1577ed5c0e0c53505a72c5338be1fc25acc2b"
+    },
+    {
+      "path": "defpackage/P60.java",
+      "sha256": "521884c5f346560d0a9bc662591cc6fee12ccd257a99d589741c9066ba7e0846"
+    },
+    {
+      "path": "defpackage/C4170vq.java",
+      "sha256": "682ddeba9cfa426e6c3b09402b6b820c28605c5827f17ebe6dfbff612caf1cad"
+    },
+    {
+      "path": "defpackage/C0579Kz.java",
+      "sha256": "33447a5ddde14c5007d9f6421d7573df1f55422b16981478e4ea15a3401da680"
+    },
+    {
+      "path": "com/noobdev/vpn/ARTunnelMain.java",
+      "sha256": "4afac34ff041ac89bbe53b8d48503541c34c939764cf598f413f0503ca937da8"
+    }
+  ],
+  "note": "Unbounded simultaneous JADX attempts exited137. Thailand full run interrupted after relevant classes; targeted JADX runs succeeded. KHAM bounded full run exit1/26 errors; AR PRO bounded full run exit1/119 errors. Relevant call paths were reviewed separately."
+}

@@ -33,6 +33,8 @@ de cada carpeta no sustituyen esa nueva investigación ni describen el VPS actua
 
 | Aplicación | Catálogo | Archivos/textos | Icono y documentación |
 | --- | --- | --- | --- |
+| HTTP Conexión 1.2.9 (129) | [GET real107/244 servidores/5325 campos GCM](HTTP_Conexion/server_catalog_decoder.py) | Sin nuevos formatos inferidos | [Expediente y claves inline](HTTP_Conexion/README.md) |
+| NAMO VPN 3.5-namo (35) | [GET real,22.3/14 servidores/13 redes](NAMO_VPN/server_catalog_decoder.py) | Sin nuevos formatos inferidos | [Expediente y clave inline](NAMO_VPN/README.md) |
 | FNF TUNNEL BD PrinceBuild35 (35) | [GET real,82.0/28 servidores/1193 payloads](FNF_TUNNEL_BD/server_catalog_decoder.py) | Sin nuevos formatos inferidos | [Expediente y límites](FNF_TUNNEL_BD/README.md) |
 | ALSAHER VIP 1.1 (2) | [GET real,9.9.58/14 servidores/3 HTTP/9 SSL](ALSAHER_VIP/server_catalog_decoder.py) | Sin nuevos formatos inferidos | [Expediente y límites](ALSAHER_VIP/README.md) |
 | HALCON RAMOS Conectividad / Halcon R Net 4.1.4 (1391) | [POST firmado HTTP200, catálogo635/101 servidores](Halcon_R_Net/server_catalog_decoder.py) | Sin nuevos formatos de archivo/texto inferidos | [Expediente y límites VPS](Halcon_R_Net/README.md) |
@@ -97,3 +99,7 @@ de cada carpeta no sustituyen esa nueva investigación ni describen el VPS actua
 - [Wolf Custom VPN v2.8.1.2 (13)](Wolf_Custom_VPN/README.md): fuente activa, catálogo completo y `.wolf` AES-GCM con dos claves nativas; 164 servidores / 2015 redes y 13267 campos comparados con JCA y worker. Conserva lector histórico, icono original y control individual; archivo exportado real pendiente.
 
 - [Netcol VPN 14.2 (142)](Netcol_VPN/README.md): fuente activa resuelta mediante Firebase, sobre Unicode/AES-CBC y siete campos Blowfish; 172 servidores y 1204 campos completos iguales a JCA y worker. Icono y control individual; revisión 59 conservada por petición del propietario, sin inventar formato de archivo.
+
+- [Speicers`Turbo VPN](Speicers_Turbo_VPN/README.md) — netfree.mx.anuncios217.4.4/217; catálogo remoto de servidores17/266 y usuarios2/2, solo Cloud.
+
+- [XXPICore Tunnel](XXPICore_Tunnel/README.md) — pro.xxpicore.tunnel1.0.18/118; catálogo remoto2.427,64 servidores/1240 redes, solo Cloud. [Expediente](../../../analysis/pro.xxpicore.tunnel/118/ANALYSIS.md).

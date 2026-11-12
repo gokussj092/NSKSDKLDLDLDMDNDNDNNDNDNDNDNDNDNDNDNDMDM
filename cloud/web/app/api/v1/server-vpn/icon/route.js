@@ -16,7 +16,7 @@ export async function POST(request) {
   try {
     const icon=iconFor(id);
     if(!icon)return reply({error:{code:"NOT_FOUND"}},404);
-    return replyFor({apiVersion:"v1",id,sha256:icon.sha256,mimeType:"image/png",
+    return replyFor({apiVersion:"v1",id,sha256:icon.sha256,mimeType:icon.mimeType,
       contentBase64:icon.bytes.toString("base64")},input.catalogKey);
   }catch{return reply({error:{code:"SERVICE_UNAVAILABLE"}},503);}
 }

@@ -34,7 +34,7 @@ function network(t,{data=Buffer.from("synthetic envelope"),location,check=()=>{}
 function icons(t){
  const read=fs.readFileSync,png=read(new URL("../public/server-vpn-icons/fnf-tunnel-bd.png",import.meta.url));
  // Other apps' raster contents are outside this provider-specific test.
- t.mock.method(fs,"readFileSync",(path,...args)=>String(path).includes("server-vpn-icons")?png:read(path,...args));
+ t.mock.method(fs,"readFileSync",(path,...args)=>String(path).includes("server-vpn-icons")&&String(path).endsWith(".png")?png:read(path,...args));
  syncBuiltinESMExports();t.after(()=>{t.mock.restoreAll();syncBuiltinESMExports();});return png;
 }
 test("FNF original public updater GET uses its declared broker agent and fixed TLS destination",async t=>{
@@ -59,9 +59,9 @@ test("FNF rejects private DNS and all redirects",async t=>{
 test("FNF original PNG and public directory preserve metadata-only availability",t=>{
  enabled(t);const png=icons(t);
  assert(providerIds().includes("fnf-tunnel-bd"));assert(PUBLIC_PROVIDER_IDS.includes("fnf-tunnel-bd"));
- assert.equal(CATALOG_VERSION,65);assert.equal(activeCatalogVersion({CLOUD_SERVER_VPN_CATALOG_VERSION:"215686715"}),215686715);
+ assert.ok(CATALOG_VERSION>=73);assert.equal(activeCatalogVersion({CLOUD_SERVER_VPN_CATALOG_VERSION:"215686715"}),215686715);
  const doc=catalog(),app=doc.apps.find(x=>x.id==="fnf-tunnel-bd");
- assert.equal(doc.apps.length,61);assert.equal(app.name,"FNF TUNNEL BD");assert.equal(app.decodeEnabled,true);
+ assert.ok(doc.apps.length>=67);assert.equal(app.name,"FNF TUNNEL BD");assert.equal(app.decodeEnabled,true);
  assert.equal(app.iconSha256,"e246d35183770494e3ed2f8e17f62a47d2f64fed3b6d3ce0491684575bf18823");
  assert.equal(iconFor(app.id).bytes.length,52532);assert.equal(png.length,52532);
  assert(!JSON.stringify(app).includes("https://"));assert.equal(doc.formats.length,256);

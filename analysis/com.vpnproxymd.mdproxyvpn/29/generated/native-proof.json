@@ -1,0 +1,32 @@
+{
+  "nativeSha256": "f7a1be6ef0cf4939e480cb772dbbaf49e68246a4ca205258e052e4215f015260",
+  "functions": {
+    "CU": {
+      "address": "0x10195c0",
+      "bytes": 1056
+    },
+    "decrypt": {
+      "address": "0x1016040",
+      "bytes": 576
+    },
+    "DO": {
+      "address": "0x10169d0",
+      "bytes": 944
+    }
+  },
+  "recipe": {
+    "method": "GET",
+    "url": "https://strongteam.co/api/ultrasystem/ultrav3.txt",
+    "header": "User-Agent",
+    "agent": "MD PROXY VPN"
+  },
+  "argon2id": {
+    "version": 19,
+    "memoryKiB": 8192,
+    "iterations": 3,
+    "parallelism": 1,
+    "keyBytes": 32
+  },
+  "commonFormatConstantsMatch": true,
+  "apkCodeExecuted": false
+}

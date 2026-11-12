@@ -1,0 +1,38 @@
+[
+  {
+    "input": "servers.json",
+    "bytes": 3710,
+    "sha256": "c17f1ed60e5e43991b3ab40f185bb4cede355f5dc6eec5a3755b448b7c58ead2",
+    "servers": 6,
+    "keys": [
+      "success",
+      "message",
+      "servers",
+      "has_defaults",
+      "def_user",
+      "def_pass_plain",
+      "back_user",
+      "back_pass_plain"
+    ],
+    "node_python_cli_worker_whole_equal": true,
+    "canonical_json_sha256": "8e276ab66eba1be9c1275547000f301b0caec35ec6f577551fe5ce95ac561ead"
+  },
+  {
+    "input": "downloaded.json",
+    "bytes": 3710,
+    "sha256": "c17f1ed60e5e43991b3ab40f185bb4cede355f5dc6eec5a3755b448b7c58ead2",
+    "servers": 6,
+    "keys": [
+      "success",
+      "message",
+      "servers",
+      "has_defaults",
+      "def_user",
+      "def_pass_plain",
+      "back_user",
+      "back_pass_plain"
+    ],
+    "node_python_cli_worker_whole_equal": true,
+    "canonical_json_sha256": "8e276ab66eba1be9c1275547000f301b0caec35ec6f577551fe5ce95ac561ead"
+  }
+]

@@ -1,0 +1,49 @@
+name: F7-A1 Account and Offsite Recovery Contracts
+
+on:
+  pull_request:
+    branches: [main, feat/nuevas-integraciones]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  account-contract:
+    name: F7-A1 identity/password/OTP security primitives
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Verify disabled-by-default customer login and crypto contracts
+        run: node --test cloud/web/tests/f7-account-identity.test.mjs cloud/web/tests/f7-registration-flow.test.mjs cloud/web/tests/f7-account-email.test.mjs
+      # Google accounts are now explicitly authorized. Verify that deployment
+      # still requires complete configuration, rather than forbidding routes.
+      - name: Verify optional Google accounts, payment mode and origin guards
+        run: node --test cloud/web/tests/commerce-config.test.mjs
+
+  offsite-backup-contract:
+    name: F7 recovery encryption and offline-key restoration
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install pinned existing cryptography test dependency
+        run: python -m pip install cryptography==50.0.2
+      - name: Test streaming public-key encryption and authenticated restore
+        run: python -m unittest tests.test_f7_offsite_envelope -v
+      - name: Confirm no live secret was bundled or uploaded
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          source=Path('scripts/backups/f7_offsite_envelope.py').read_text()
+          assert 'supabase.co' not in source
+          assert 'cloud.env' not in source
+          assert 'OFFSITE_V1' in source
+          PY

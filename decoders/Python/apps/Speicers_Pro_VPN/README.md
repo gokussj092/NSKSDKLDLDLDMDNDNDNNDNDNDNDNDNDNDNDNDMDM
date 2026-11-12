@@ -133,3 +133,8 @@ detectan errores, pero no prueban autenticidad criptográfica de una respuesta
 manipulada. HTTPS se valida normalmente. `.sks` GCM sí verifica su tag.
 
 Ver [ANALYSIS.md](ANALYSIS.md) y [TESTING.md](TESTING.md) para evidencia y límites.
+
+
+## Auditoría de HMAC de conexión — 2026-11-09
+
+[Expediente build123](../../../../analysis/netfree.mx.store/123/ANALYSIS.md): el HMAC documentado para archivos/catálogos permanece separado de la autenticación VPN. El nuevo inventario estático encuentra referencias HMAC, pero no confirma el propósito de autenticación de conexión. No se extrajeron claves de servicios ni se modificó el lector existente.

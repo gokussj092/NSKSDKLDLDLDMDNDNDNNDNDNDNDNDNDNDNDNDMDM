@@ -1,3 +1,7 @@
+## Actualización del actualizador 4.3.2
+
+La fuente fija de build432 está corregida y verificada con catálogo real completo y paridad JCA. Evidencia y reproducción: [expediente](../../../../analysis/com.tunneldoom.http/432/ANALYSIS.md). No se certifica una exportación SKS actual ni un despliegue VPS desde esta prueba.
+
 # TunnelDOOM VPN 4.2.4 / 4.2.7 / 4.3.0
 
 Paquete `com.tunneldoom.http`. PR **#102**, rama

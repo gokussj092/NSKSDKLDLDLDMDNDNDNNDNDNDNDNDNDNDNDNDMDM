@@ -1,0 +1,99 @@
+name: F7 APK QA First-Pass Real Integration
+
+on:
+  pull_request:
+    branches: [main, feat/nuevas-integraciones]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  private-qa-service:
+    name: F7 APK QA real upload and static scanner
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile actual analyzer sources without executing uploaded code
+        run: python -m compileall -q cloud/apk_analysis/qa_service.py cloud/apk_analysis/qa_static.py cloud/apk_analysis/qa_deep.py cloud/apk_analysis/qa_dex_bytecode.py cloud/apk_analysis/qa_jadx_refs.py cloud/apk_analysis/qa_tool_rpc.py cloud/apk_analysis/qa_tool_worker.py cloud/apk_analysis/qa_tooling.py
+      - name: Check VPS QA activation Bash syntax
+        run: bash -n cloud/infra/vps/spdecodectl
+      - name: Test APK QA lifecycle, native attachment constraints, Android and VPS
+        run: python -m unittest tests.test_f7_apk_qa_service tests.test_f7_apk_qa_deep tests.test_f7_apk_qa_android_resume tests.test_f7_apk_qa_cli tests.test_f7_apk_qa_hpke_native_contract tests.test_f7_apk_qa_jadx_refs tests.test_f7_apk_qa_tool_rpc tests.test_f7_apk_qa_tooling_policy -v
+      - name: Validate isolated Docker topology without activating it
+        run: docker compose --profile apk-qa --profile apk-qa-tools -f cloud/compose.yaml config --quiet
+      - name: Build the separate read-only static lab image once
+        run: docker build -f cloud/apk_analysis/Dockerfile.qa -t spdecode-apk-qa-ci .
+
+  bound-v2-gateway:
+    name: F7 APK QA V2 HPKE and gateway regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install existing cloud dependencies
+        working-directory: cloud/web
+        run: npm install --no-audit --no-fund
+      - name: Test V2-only upload consent and encrypted chunk gateway
+        working-directory: cloud/web
+        run: node --test tests/f7-apk-qa.test.mjs
+      - name: Full existing Cloud regression including the new tests
+        working-directory: cloud/web
+        run: npm test
+      - name: Build real Cloud routes with Next
+        working-directory: cloud/web
+        env:
+          NEXT_TELEMETRY_DISABLED: "1"
+        run: npm run build
+
+  android-qa-build:
+    name: F7 APK QA Android compile and own-APK real scanner
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.11.1"
+      - name: Provision Android SDK and native NDK toolchain
+        run: |
+          SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -n 1)"
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" "platforms;android-36" "build-tools;35.0.0" "cmake;3.22.1" "ndk;27.2.12479018"
+      - name: Compile app with real C++ HPKE operations and AMOLED APK picker
+        working-directory: android
+        env:
+          SPDECODE_CLOUD_API_BASE_URL: https://api.spdecode.example
+        run: gradle --no-daemon :app:assembleDebug
+      - name: Inspect the ACTUAL OWNED debug APK via the QA static inspector
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from cloud.apk_analysis.qa_static import inspect_static
+          apk=Path('android/app/build/outputs/apk/debug/app-debug.apk')
+          assert apk.is_file(), 'OWN_APK_NOT_BUILT'
+          report=inspect_static(apk)
+          assert report["status"]=="COMPLETED_PARTIAL"
+          assert report["reportKind"]=="APK_STATIC_QA_DEEP_V2"
+          assert report["inventory"]["dexFilesObserved"]>0
+          assert report["analysis"]["codeExecuted"] is False
+          assert report["input"]["format"]=="APK"
+          assert report["inventory"]["dexCount"]>0
+          assert report["analysis"]["codeExecuted"] is False
+          assert report["analysis"]["vendorMethodValidated"] is False
+          print("F7 owned APK real static first pass: PASS; no APK contents published")
+          PY

@@ -1,0 +1,13 @@
+{
+  "id": "namo-vpn",
+  "name": "NAMO VPN",
+  "packageName": "com.appxrayservice.namovpn",
+  "versionName": "3.5-namo",
+  "versionCode": 35,
+  "engine": "python",
+  "methods": ["catalog"],
+  "extensions": [],
+  "runtimeSecrets": [],
+  "formatKey": "Static decryption-format constant included in codec.py, recovered from pinned MainDetail.b; not HTTP authorization.",
+  "evidence": "analysis/com.appxrayservice.namovpn/35/MANIFEST.json"
+}

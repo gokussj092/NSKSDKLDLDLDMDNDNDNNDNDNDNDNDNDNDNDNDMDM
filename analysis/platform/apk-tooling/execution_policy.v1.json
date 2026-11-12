@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "phase": "F7-A0-P03",
+  "status": "SANDBOX_DESIGN_AND_UNIT_TESTED_NOT_PRODUCTION_ENABLED",
+  "execution_defaults": "DENY",
+  "commercial_worker_enabled": false,
+  "android_upload_enabled": false,
+  "existing_cloud_decoder_worker": "UNCHANGED_NO_SHARED_STORAGE_OR_CREDENTIALS",
+  "image": {
+    "python": "3.12",
+    "build_installation": "PINNED_DIRECT_REQUIREMENTS_DURING_IMAGE_BUILD",
+    "runtime_pip_install": false,
+    "resources_preloaded": "JADX_OFFICIAL_CHECKSUM_PINNED_SEPARATE_MAINTENANCE_ONLY",
+    "external_network_during_job": false
+  },
+  "runtime": {
+    "network_mode": "none",
+    "read_only_rootfs": true,
+    "drop_capabilities": [
+      "ALL"
+    ],
+    "no_new_privileges": true,
+    "run_as_uid": 65532,
+    "run_as_gid": 65532,
+    "share_docker_socket": false,
+    "host_credential_mounts": false,
+    "mem_limit_mb": 3072,
+    "pids_limit": 64,
+    "cpus": 1.5,
+    "tmpfs_mb": 64,
+    "host_resource_disk_quota_pending": true
+  },
+  "storage": {
+    "persistent_resource_cache": "apk-tool-cache",
+    "persistent_cache_purpose": "TRUSTED_TOOLS_ONLY_NO_USER_APKS",
+    "runtime_cache_access": "READ_ONLY",
+    "maintenance_cache_access": "READ_WRITE_WITH_CHECKSUM_CHECKS",
+    "job_workspace": "PER_JOB_UUID_PRIVATE_ROOT",
+    "job_lifecycle": "DELETE_ONLY_AFTER_TRUSTED_DURABLE_RESULT_RECEIPT_OR_TERMINAL_CLOSURE",
+    "human_pending": "KEEP_JOB_UNTIL_REVIEW_OR_RETENTION_DECISION",
+    "state_receipts": "HOST_ONLY_NOT_MOUNTED_IN_SANDBOX",
+    "results": "EXTERNAL_DURABLE_STORE_A4_A5_PENDING",
+    "stale_cleanup": "ONLY_TRUSTED_TERMINAL_JOBS",
+    "per_job_disk_quota": "PENDING_A4_A5"
+  },
+  "profiles": [
+    {
+      "id": "inspect-apk-static",
+      "path": "scripts/apk_analysis/inspect_apk.py",
+      "git_blob_sha1": "1f9c171375241523a77e704960a8e2c1e620684f",
+      "approval": "PENDING_P05_REAL_APK_TEST",
+      "auto_run": false,
+      "network": "DENIED",
+      "platform": "PYTHON_LINUX",
+      "capabilities": [
+        "APK_ZIP_STATIC_READING",
+        "DEX_RESOURCES_WITHOUT_EXECUTING_APP"
+      ],
+      "arguments": [
+        "input",
+        "output",
+        "--abi",
+        "--asset",
+        "--native",
+        "--resource"
+      ],
+      "timeout_seconds": 300,
+      "input_max_mib": 300,
+      "artifact_output_class": "SENSITIVE_WORKSPACE",
+      "review_note": "Do not run untrusted third-party binaries or grant package permissions; ZIP limits require P05 QA."
+    },
+    {
+      "id": "jadx-dex",
+      "path": "scripts/apk_analysis/decompile.py",
+      "git_blob_sha1": "41aab771061f4f5db5fae61a0f85a4ff5ad9d23f",
+      "approval": "PENDING_P05_REAL_DEX_TEST",
+      "auto_run": false,
+      "network": "DENIED",
+      "platform": "JAVA_17_PYTHON_LINUX",
+      "capabilities": [
+        "OFFLINE_JADX_DECOMPILE"
+      ],
+      "arguments": [
+        "input",
+        "output",
+        "--jar"
+      ],
+      "timeout_seconds": 900,
+      "input_max_mib": 300,
+      "artifact_output_class": "SENSITIVE_WORKSPACE",
+      "review_note": "--install is forbidden in the job environment; preloader only, cache integrity enforced by original tool."
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "package": "noob.arpro.vpn",
+  "versionName": "2.0",
+  "versionCode": 2,
+  "apkBytes": 24908033,
+  "apkSha256": "b159049c522923ac83e788bdc3b94df9dec034a7da44c90f14ff86b8db9ad1ad",
+  "distributionBytes": 59213969,
+  "distributionSha256": "867c1f0ba622d7a8e9e3d43a044556b2049273b421dea4b5e317539f886d00cf",
+  "certificateSha256": [
+    "ddbbabf3d9cd1fc39cf44308e40a5c84fc0fef10a8740d6dd502f106a67c91f8"
+  ],
+  "cryptographicApkSignatureVerified": false,
+  "apkCodeExecuted": false
+}

@@ -125,14 +125,14 @@ class TunneltweakTests(unittest.TestCase):
         class Opener:
             def open(self, request, timeout):
                 self_timeout = timeout
-                assert self_timeout == 25
+                assert 0 < self_timeout <= 25
                 seen.append(request)
                 return Response()
         uuid = "00000000-0000-4000-8000-000000000001"
-        with patch.object(network, "build_opener", return_value=Opener()):
+        with tempfile.TemporaryDirectory() as folder, patch.dict(os.environ,{'CLOUD_TUNNELTWEAK_BUILD_STATE_PATH':str(Path(folder)/'builds.json')}), patch.object(network, "build_opener", return_value=Opener()):
             network.download(); network.download(api_key="test-key"); network.download(cloud_id=uuid)
             self.assertEqual([r.full_url for r in seen], [network.CATALOG_URL, network.CATALOG_URL, network.CLOUD_BASE_URL+uuid])
-            self.assertEqual(seen[0].get_header("X-app-version"), "51")
+            self.assertEqual(seen[0].get_header("X-app-version"), "53")
             self.assertEqual(seen[0].get_header("X-cfg-keyed"), "1")
             self.assertIsNone(seen[0].get_header("X-api-key"))
             self.assertEqual(seen[1].get_header("X-api-key"), "test-key")

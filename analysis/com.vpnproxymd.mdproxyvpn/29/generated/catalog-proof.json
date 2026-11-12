@@ -1,0 +1,15 @@
+{
+  "inputBytes": 1388157,
+  "inputSha256": "bfdc98492945d04fae4334c24d7938cf264a2207957f4032c564629bd00a77ce",
+  "version": "5.25",
+  "servers": 40,
+  "networks": 919,
+  "protectedFields": 4976,
+  "uniqueFields": 4976,
+  "wholeIndependentParity": true,
+  "rawOutputBytes": 847110,
+  "canonicalClearSha256": "86d5f099f0396087ef20c3007610f81dd601a8313efdd6707c1c92d6723459a4",
+  "apkCodeExecuted": false,
+  "wholeWorkerParity": true,
+  "elapsedSeconds": 246.08
+}

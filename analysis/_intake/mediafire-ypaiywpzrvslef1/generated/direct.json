@@ -1,0 +1,17 @@
+{
+  "observedAt": "2026-11-04T16:26:43.952358+00:00",
+  "sourceHost": "download1587.mediafire.com",
+  "fileKey": "ypaiywpzrvslef1",
+  "sourceUrlSha256": "68bf5c1a3051e24534eae90b28aa6eae4f1389b18176b135864eb6e0345efa98",
+  "temporaryUrlOmitted": true,
+  "curlExit": 0,
+  "httpStatus": 200,
+  "contentType": "text/html",
+  "downloadedBytes": 195,
+  "sha256": "5b131ca14aa96311d3432b0062c7443d3b0e6346ec279bd376a75f0a76bcd5d7",
+  "htmlUnavailable": true,
+  "apkContainerCandidate": false,
+  "zipError": null,
+  "status": "PENDING_APK_ACQUISITION",
+  "transportError": null
+}

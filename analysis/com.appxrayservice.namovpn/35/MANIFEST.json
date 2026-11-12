@@ -1,0 +1,1055 @@
+{
+  "schema_version": 1,
+  "package_name": "com.appxrayservice.namovpn",
+  "app_name": "NAMO VPN",
+  "version_name": "3.5-namo",
+  "version_code": 35,
+  "observed_at": "2026-11-04T20:49:59.255623+00:00",
+  "source_category": "user_store_link_public_mirror",
+  "authorization_note": "User requested the next Cloud catalog integration with legitimate original updater parameters; new branch from main. No Android build, merge or deployment requested.",
+  "status": "VERIFIED",
+  "targets": [
+    {
+      "kind": "catalog",
+      "status": "VERIFIED_REAL",
+      "remote_http": 200,
+      "remote_version": "22.3",
+      "counts": {
+        "Servers": 14,
+        "Networks": 13
+      },
+      "java_cli_worker_whole_document_equal": true,
+      "node_vps_transport": "PENDING",
+      "layers_verified": [
+        "XXTEA envelope",
+        "Base64/UTF-8 fields"
+      ],
+      "changed_nonempty_fields": 87
+    },
+    {
+      "kind": "files",
+      "status": "NOT_INVESTIGATED"
+    },
+    {
+      "kind": "text",
+      "status": "NOT_INVESTIGATED"
+    },
+    {
+      "kind": "export",
+      "status": "NOT_CERTIFIED"
+    }
+  ],
+  "inputs": [
+    {
+      "type": "xapk",
+      "bytes": 33084055,
+      "sha256": "d97d9f0625f5aecc6641569df709dc32f72a51015f0c3273a92d3e5526290fb1",
+      "source": "APKPure build35 sv24 URL in REPRODUCE"
+    },
+    {
+      "type": "apk",
+      "bytes": 8046628,
+      "sha256": "1124a2344ec142526fc2b238f7333aa60a4fc624be3fa4b16846eaaad42516f6",
+      "source": "XAPK/base package APK"
+    },
+    {
+      "type": "native_inspected_only",
+      "bytes": 4312,
+      "sha256": "c12426484f92371508ac44c9c207a03d1da4a2a97ec1e0ad5486effc95e17ebf",
+      "source": "ARM64 split/libapi-namo.so"
+    },
+    {
+      "type": "remote_catalog",
+      "bytes": 72881,
+      "sha256": "578ad82fed747a2670a8fe4fb0abaeda16df60684581bec0a7e10e2d47aeee06",
+      "source": "fixed original public updater in server_catalog_decoder.py"
+    },
+    {
+      "type": "icon",
+      "bytes": 25421,
+      "sha256": "1b40b83a4ace052dfee16f56369143fc71b79c2dd34454ca4eb541d59f312f7e",
+      "source": "base.apk/res/mipmap-xxxhdpi-v4/ic_launcher.png"
+    }
+  ],
+  "tooling": [
+    {
+      "path": "analysis/com.appxrayservice.namovpn/35/tools/CatalogOracle.java",
+      "sha256": "5dc79aab8ae1e6162a0db2f0d3a833b73e55026f5f022e9882c0df91e4f9bee2",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    },
+    {
+      "path": "analysis/com.appxrayservice.namovpn/35/tools/extract_icon.py",
+      "sha256": "7339859e9b702e7192d483216d1aedf38c76b302a2d464e459ef8c1ded582045",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    },
+    {
+      "path": "analysis/com.appxrayservice.namovpn/35/tools/finalize.py",
+      "sha256": "36d7064ab467a5beaed043517c87f96fef34e3ca9c39c180b78822a6eadfc517",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    },
+    {
+      "path": "analysis/com.appxrayservice.namovpn/35/tools/history/extract_icon_v1_mislabeled_archive_icon.py",
+      "sha256": "eea3a3260019c420db0b59688bbf0c1a61f29211c033a65796accd016235c764",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    },
+    {
+      "path": "analysis/com.appxrayservice.namovpn/35/tools/make_vectors.py",
+      "sha256": "49b4e585b5f5a7cecdaca4d33f1301b77a54ab6a07d9bb2a4d2693e0d512d0a9",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    },
+    {
+      "path": "analysis/com.appxrayservice.namovpn/35/tools/prepare.py",
+      "sha256": "b8cadd3752a853c07a1de4581f17300ef6a387d33c3b1494f65e0191bf0ceecc",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    },
+    {
+      "path": "analysis/com.appxrayservice.namovpn/35/tools/probe_node.mjs",
+      "sha256": "e0ec54004a71700d8096d847be5974d9fff729c30aa355b754355353bbafe8fa",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    },
+    {
+      "path": "analysis/com.appxrayservice.namovpn/35/tools/recover.py",
+      "sha256": "ae51897b2ce11e121a9499bf7a3ebbfb795aad8d8fa545040a084564c789cd36",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    },
+    {
+      "path": "analysis/com.appxrayservice.namovpn/35/tools/run_checks.py",
+      "sha256": "56dbd5d8d6555c1b34534efb14c884f1685d17bf3bbbe935eb765ac7c214991c",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    },
+    {
+      "path": "analysis/com.appxrayservice.namovpn/35/tools/set_format_constant.py",
+      "sha256": "337d14a296b66b1e02e9b722e40e6975fbaffb18e9d5c3034e4303bbce313275",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    },
+    {
+      "path": "analysis/com.appxrayservice.namovpn/35/tools/signature.py",
+      "sha256": "5cb7577702348cb2b0a2ba0e95f157f34ca4932bcead350660dd6e76d75b4fd5",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    },
+    {
+      "path": "analysis/com.appxrayservice.namovpn/35/tools/verify.py",
+      "sha256": "26d5b4bca7cd527d996a492f6cfb03739a520541eb0439c8fcfdc0380075b59d",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    },
+    {
+      "path": "analysis/com.appxrayservice.namovpn/35/tools/fields/FieldOracle.java",
+      "sha256": "e431701390cc023b9debe456150cb1ffb72746650731c0cf4f5f763f2b12b20e",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    },
+    {
+      "path": "analysis/com.appxrayservice.namovpn/35/tools/fields/capture_outer.py",
+      "sha256": "a551f1364c43dd8f9946b129e186ed4be762705f932bf53df7c086d1f7c4509d",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    },
+    {
+      "path": "analysis/com.appxrayservice.namovpn/35/tools/fields/finalize.py",
+      "sha256": "3c4efd3f4bf7c1ee106e615690f646508f081073dabbd5fe80de726d46b71d37",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    },
+    {
+      "path": "analysis/com.appxrayservice.namovpn/35/tools/fields/history/inspect_v1_shadowed_stdlib.py",
+      "sha256": "7c12d90c69a7008453ef56df934be73bf40584a062892f2031eeb0313d0391b2",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    },
+    {
+      "path": "analysis/com.appxrayservice.namovpn/35/tools/fields/inspect_fields.py",
+      "sha256": "5696e56bfa09982092565002616d074f6de5a577de46ef9e3c57d97ef602541e",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    },
+    {
+      "path": "analysis/com.appxrayservice.namovpn/35/tools/fields/reference.py",
+      "sha256": "bd226ff67f9bf69efc712bfaddb9a412be378788a9ab1b38de7680d29cce95f0",
+      "approval": "MANUAL_RESEARCH_NOT_APPROVED_FOR_AUTOMATIC_PHASE7"
+    }
+  ],
+  "dependencies": [
+    {
+      "id": "pypi:alembic",
+      "name": "alembic",
+      "type": "PyPI",
+      "version": "1.20.1",
+      "source": [
+        "Homepage, https://alembic.sqlalchemy.org",
+        "Documentation, https://alembic.sqlalchemy.org/en/latest/",
+        "Changelog, https://alembic.sqlalchemy.org/en/latest/changelog.html",
+        "Source, https://github.com/sqlalchemy/alembic/",
+        "Issue Tracker, https://github.com/sqlalchemy/alembic/issues/"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "9970712cfb81ea26c8658d378aaa5b8f6ff9146e5bb111d70497c164016cf598",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:androguard",
+      "name": "androguard",
+      "type": "PyPI",
+      "version": "4.1.4",
+      "source": [
+        "Homepage, https://github.com/androguard/androguard"
+      ],
+      "license": "Apache Licence, Version 2.0",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "6265a6d4007401cf5a62a98fa99a1c2994644d4311da031a5398efe3bcaa63b0",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:apkInspector",
+      "name": "apkInspector",
+      "type": "PyPI",
+      "version": "1.3.7",
+      "source": [
+        "Repository, https://github.com/erev0s/apkInspector"
+      ],
+      "license": "Apache-2.0",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "fa3242baa7ba8e0eecd20a2fcf427fcfd34f4043902542d12110c7297649c590",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:asn1crypto",
+      "name": "asn1crypto",
+      "type": "PyPI",
+      "version": "1.5.1",
+      "source": [
+        "https://github.com/wbond/asn1crypto"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "db4e40728b728508912cbb3d44f19ce188f218e9eba635821bb4b68564f8fd67",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:asttokens",
+      "name": "asttokens",
+      "type": "PyPI",
+      "version": "3.0.2",
+      "source": [
+        "Documentation, https://asttokens.readthedocs.io/en/latest/index.html",
+        "Issue Tracker, https://github.com/gristlabs/asttokens/issues"
+      ],
+      "license": "Apache 2.0",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "9da13157f5b28becde0bd374fc677dcd3c290614264eff096f167c469cd9f933",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:capstone",
+      "name": "capstone",
+      "type": "PyPI",
+      "version": "5.0.9",
+      "source": [
+        "https://www.capstone-engine.org"
+      ],
+      "license": "UNKNOWN",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "273fd8d747d2e35c88f91450be51a603ecfaafb00d96d9f315dcb8689c86193e",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:cffi",
+      "name": "cffi",
+      "type": "PyPI",
+      "version": "2.1.1",
+      "source": [
+        "Documentation, https://cffi.readthedocs.io/",
+        "Changelog, https://cffi.readthedocs.io/en/latest/whatsnew.html",
+        "Download, https://github.com/python-cffi/cffi/releases",
+        "Contact, https://groups.google.com/forum/#!forum/python-cffi",
+        "Source Code, https://github.com/python-cffi/cffi",
+        "Issue Tracker, https://github.com/python-cffi/cffi/issues"
+      ],
+      "license": "MIT-0",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "c1453022f490d2459a11819d83ad1d586e9ff65a12ac3e705ffebd46d3685dcf",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:click",
+      "name": "click",
+      "type": "PyPI",
+      "version": "8.5.0",
+      "source": [
+        "Changes, https://click.palletsprojects.com/page/changes/",
+        "Chat, https://discord.gg/pallets",
+        "Documentation, https://click.palletsprojects.com/",
+        "Donate, https://palletsprojects.com/donate",
+        "Source, https://github.com/pallets/click/"
+      ],
+      "license": "BSD-3-Clause",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "255bc9599cf7748b4b1a446ccc735421bd08a2ae529a8b88597d3de5664ee360",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:colorama",
+      "name": "colorama",
+      "type": "PyPI",
+      "version": "0.4.6",
+      "source": [
+        "Homepage, https://github.com/tartley/colorama"
+      ],
+      "license": "UNKNOWN",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:cryptography",
+      "name": "cryptography",
+      "type": "PyPI",
+      "version": "50.0.2",
+      "source": [
+        "changelog, https://cryptography.io/en/latest/changelog/",
+        "documentation, https://cryptography.io/",
+        "homepage, https://github.com/pyca/cryptography",
+        "issues, https://github.com/pyca/cryptography/issues",
+        "source, https://github.com/pyca/cryptography/"
+      ],
+      "license": "Apache-2.0 OR BSD-3-Clause",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "9dab55f57c74c3cad24c323bacbbd04be4705ba6eb0d92e920b1fc4837ed5079",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:dataset",
+      "name": "dataset",
+      "type": "PyPI",
+      "version": "2.0.0",
+      "source": [
+        "Homepage, https://github.com/pudo/dataset",
+        "Repository, https://github.com/pudo/dataset",
+        "Documentation, https://dataset.readthedocs.io/"
+      ],
+      "license": "Copyright (c) 2013, Open Knowledge Foundation, Friedrich Lindenberg,",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "c08354c068002c2beb7811b37b8abf434e1fc333898f8cfc2be32df3f14099b3",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:executing",
+      "name": "executing",
+      "type": "PyPI",
+      "version": "2.3.0",
+      "source": [
+        "Homepage, https://github.com/alexmojaki/executing",
+        "Repository, https://github.com/alexmojaki/executing"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "736e859c9f8701f11fcf516856f26f562e04776387824b43a35a1dfe21c84122",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:ipython",
+      "name": "ipython",
+      "type": "PyPI",
+      "version": "9.18.1",
+      "source": [
+        "Homepage, https://ipython.org",
+        "Documentation, https://ipython.readthedocs.io/",
+        "Funding, https://jupyter.org/about#donate",
+        "Source, https://github.com/ipython/ipython",
+        "Tracker, https://github.com/ipython/ipython/issues"
+      ],
+      "license": "BSD-3-Clause",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "997ce9140d374531a61069c70c0f9ef299d6dd3559ea0f94b8af589726e3c1d5",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:ipython_pygments_lexers",
+      "name": "ipython_pygments_lexers",
+      "type": "PyPI",
+      "version": "1.1.1",
+      "source": [
+        "Source, https://github.com/ipython/ipython-pygments-lexers"
+      ],
+      "license": "UNKNOWN",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "a9462224a505ade19a605f71f8fa63c2048833ce50abc86768a0d81d876dc81c",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:jedi",
+      "name": "jedi",
+      "type": "PyPI",
+      "version": "0.20.1",
+      "source": [
+        "Documentation, https://jedi.readthedocs.io/en/latest/"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "0fb16d86c4a4c73c37ba518c77419975e30fcc620658a8d14fbb5720cdd34142",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:loguru",
+      "name": "loguru",
+      "type": "PyPI",
+      "version": "0.7.3",
+      "source": [
+        "Changelog, https://github.com/Delgan/loguru/blob/master/CHANGELOG.rst",
+        "Documentation, https://loguru.readthedocs.io/en/stable/index.html",
+        "Homepage, https://github.com/Delgan/loguru"
+      ],
+      "license": "UNKNOWN",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "31a33c10c8e1e10422bfd431aeb5d351c7cf7fa671e3c4df004162264b28220c",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:lxml",
+      "name": "lxml",
+      "type": "PyPI",
+      "version": "6.1.3",
+      "source": [
+        "Source, https://github.com/lxml/lxml",
+        "Bug Tracker, https://bugs.launchpad.net/lxml"
+      ],
+      "license": "BSD-3-Clause",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "909f4e927bb051f7740d6367285fc60cdcfdaf0258c2dba4ff5ba7eadadc250c",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:Mako",
+      "name": "Mako",
+      "type": "PyPI",
+      "version": "1.4.3",
+      "source": [
+        "Homepage, https://www.makotemplates.org/",
+        "Documentation, https://docs.makotemplates.org",
+        "Issue Tracker, https://github.com/sqlalchemy/mako"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "723296007c870bfd6b3f0c3230dba7198096e5269297ebf5e4eff9e7ffa39d4f",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:MarkupSafe",
+      "name": "MarkupSafe",
+      "type": "PyPI",
+      "version": "3.0.4",
+      "source": [
+        "Donate, https://palletsprojects.com/donate",
+        "Documentation, https://markupsafe.palletsprojects.com/",
+        "Changes, https://markupsafe.palletsprojects.com/page/changes/",
+        "Source, https://github.com/pallets/markupsafe/",
+        "Chat, https://discord.gg/pallets"
+      ],
+      "license": "BSD-3-Clause",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "8e124f974786f831d6043728e38296969d3579db8896fe004682f5758e613581",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:matplotlib-inline",
+      "name": "matplotlib-inline",
+      "type": "PyPI",
+      "version": "0.2.2",
+      "source": [
+        "Homepage, https://github.com/ipython/matplotlib-inline"
+      ],
+      "license": "BSD-3-Clause",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "3c821cf1c209f59fb2d2d64abbf5b23b67bcb2210d663f9918dd851c6da1fcf6",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:mutf8",
+      "name": "mutf8",
+      "type": "PyPI",
+      "version": "1.1.0",
+      "source": [
+        "Homepage, https://github.com/TkTech/mutf8",
+        "Source, https://github.com/TkTech/mutf8",
+        "Issues, https://github.com/TkTech/mutf8/issues"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "d5e852720303c709f0b8150603032518818c56d378d17c403cb42cfe399b9bb8",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:networkx",
+      "name": "networkx",
+      "type": "PyPI",
+      "version": "3.7",
+      "source": [
+        "Homepage, https://networkx.org/",
+        "Bug Tracker, https://github.com/networkx/networkx/issues",
+        "Documentation, https://networkx.org/documentation/stable/",
+        "Source Code, https://github.com/networkx/networkx"
+      ],
+      "license": "BSD-3-Clause",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "e3fd2c13a7814cee3746340d8d7f8598a67f16a58bf47fb7f8793fab6efca1b0",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:parso",
+      "name": "parso",
+      "type": "PyPI",
+      "version": "0.8.7",
+      "source": [
+        "https://github.com/davidhalter/parso"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "a8926eb2a1b915486941fdbd31e86a4baf88fe8c210f25f2f35ecec5b574ca1c",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:pexpect",
+      "name": "pexpect",
+      "type": "PyPI",
+      "version": "4.9.0",
+      "source": [
+        "Bug Tracker, https://github.com/pexpect/pexpect/issues",
+        "Documentation, https://pexpect.readthedocs.io/",
+        "Source Code, https://github.com/pexpect/pexpect",
+        "History, https://pexpect.readthedocs.io/en/stable/history.html"
+      ],
+      "license": "ISC license",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "7236d1e080e4936be2dc3e326cec0af72acf9212a7e1d060210e70a47e253523",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:pillow",
+      "name": "pillow",
+      "type": "PyPI",
+      "version": "13.0.0",
+      "source": [
+        "Release notes, https://pillow.readthedocs.io/en/stable/releasenotes/index.html",
+        "Changelog, https://github.com/python-pillow/Pillow/releases",
+        "Documentation, https://pillow.readthedocs.io",
+        "Funding, https://tidelift.com/lifter/search/pypi/pillow",
+        "Homepage, https://python-pillow.org",
+        "Mastodon, https://fosstodon.org/@pillow",
+        "Security, https://pillow.readthedocs.io/en/stable/handbook/security.html",
+        "Source, https://github.com/python-pillow/Pillow"
+      ],
+      "license": "MIT-CMU",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "42d63be3af4f9b951b199b0a9d23365d37ab14687e6d77b74940432c8515c4ca",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:pip",
+      "name": "pip",
+      "type": "PyPI",
+      "version": "25.0.1",
+      "source": [
+        "Homepage, https://pip.pypa.io/",
+        "Documentation, https://pip.pypa.io",
+        "Source, https://github.com/pypa/pip",
+        "Changelog, https://pip.pypa.io/en/stable/news/"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": null,
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:prompt_toolkit",
+      "name": "prompt_toolkit",
+      "type": "PyPI",
+      "version": "3.0.53",
+      "source": [
+        "Homepage, https://github.com/prompt-toolkit/python-prompt-toolkit",
+        "Documentation, https://python-prompt-toolkit.readthedocs.io/en/stable/"
+      ],
+      "license": "UNKNOWN",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "01c0891d7f9237d5e339f7d3e42cdae80b7534abb1c7c0e3352efba6231492f2",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:psutil",
+      "name": "psutil",
+      "type": "PyPI",
+      "version": "7.2.2",
+      "source": [
+        "https://github.com/giampaolo/psutil"
+      ],
+      "license": "BSD-3-Clause",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "076a2d2f923fd4821644f5ba89f059523da90dc9014e85f8e45a5774ca5bc6f9",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:ptyprocess",
+      "name": "ptyprocess",
+      "type": "PyPI",
+      "version": "0.7.0",
+      "source": [
+        "https://github.com/pexpect/ptyprocess"
+      ],
+      "license": "UNKNOWN",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "4b41f3967fce3af57cc7e94b888626c18bf37a083e3651ca8feeb66d492fef35",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:pure_eval",
+      "name": "pure_eval",
+      "type": "PyPI",
+      "version": "0.2.4",
+      "source": [
+        "http://github.com/alexmojaki/pure_eval"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "96cae060a313cfaad51bb761278bfb0e62dc0248d9315a81173752dc546cd37a",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:pycparser",
+      "name": "pycparser",
+      "type": "PyPI",
+      "version": "3.12",
+      "source": [
+        "Homepage, https://github.com/eliben/pycparser"
+      ],
+      "license": "BSD-3-Clause",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "a076f3f489b39b43ed13563a1dafe42447445bec2e294154ec5c57fcdda4c85e",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:pycryptodome",
+      "name": "pycryptodome",
+      "type": "PyPI",
+      "version": "3.23.0",
+      "source": [
+        "Source, https://github.com/Legrandin/pycryptodome/",
+        "Changelog, https://www.pycryptodome.org/src/changelog"
+      ],
+      "license": "BSD, Public Domain",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "c8987bd3307a39bc03df5c8e0e3d8be0c4c3518b7f044b0f4c15d1aa78f52575",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:pydot",
+      "name": "pydot",
+      "type": "PyPI",
+      "version": "4.0.1",
+      "source": [
+        "Homepage, https://github.com/pydot/pydot",
+        "Changelog, https://github.com/pydot/pydot/blob/main/ChangeLog",
+        "Bug Tracker, https://github.com/pydot/pydot/issues"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "869c0efadd2708c0be1f916eb669f3d664ca684bc57ffb7ecc08e70d5e93fee6",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:pyelftools",
+      "name": "pyelftools",
+      "type": "PyPI",
+      "version": "0.33",
+      "source": [
+        "Homepage, https://github.com/eliben/pyelftools",
+        "Repository, https://github.com/eliben/pyelftools.git",
+        "Issues, https://github.com/eliben/pyelftools/issues"
+      ],
+      "license": "Public domain",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "f215ad5f47d3f1373a21496a6c9e0707c622840d0622f23ff7ce08678b020036",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:Pygments",
+      "name": "Pygments",
+      "type": "PyPI",
+      "version": "2.21.0",
+      "source": [
+        "Homepage, https://pygments.org",
+        "Documentation, https://pygments.org/docs",
+        "Source, https://github.com/pygments/pygments",
+        "Bug Tracker, https://github.com/pygments/pygments/issues",
+        "Changelog, https://github.com/pygments/pygments/blob/master/CHANGES"
+      ],
+      "license": "BSD-2-Clause",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "2363c69b61c4a97c838da3b130dcd6468f4848992b21a82f2a63ec34377137d9",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:pyparsing",
+      "name": "pyparsing",
+      "type": "PyPI",
+      "version": "3.3.3",
+      "source": [
+        "Documentation, https://pyparsing-docs.readthedocs.io/en/latest/",
+        "Homepage, https://github.com/pyparsing/pyparsing/",
+        "Source, https://github.com/pyparsing/pyparsing.git"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "ece8c00a69cf01b45d0b1dedabb469c90d8caf996d4fda40f147627a122849a4",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:PyYAML",
+      "name": "PyYAML",
+      "type": "PyPI",
+      "version": "6.0.3",
+      "source": [
+        "Bug Tracker, https://github.com/yaml/pyyaml/issues",
+        "CI, https://github.com/yaml/pyyaml/actions",
+        "Documentation, https://pyyaml.org/wiki/PyYAMLDocumentation",
+        "Mailing lists, http://lists.sourceforge.net/lists/listinfo/yaml-core",
+        "Source Code, https://github.com/yaml/pyyaml"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "ba1cc08a7ccde2d2ec775841541641e4548226580ab850948cbfda66a1befcdc",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:SQLAlchemy",
+      "name": "SQLAlchemy",
+      "type": "PyPI",
+      "version": "2.1.8",
+      "source": [
+        "Homepage, https://www.sqlalchemy.org",
+        "Documentation, https://docs.sqlalchemy.org",
+        "Changelog, https://docs.sqlalchemy.org/latest/changelog/index.html",
+        "Source Code, https://github.com/sqlalchemy/sqlalchemy",
+        "Issue Tracker, https://github.com/sqlalchemy/sqlalchemy/issues",
+        "Discussions, https://github.com/sqlalchemy/sqlalchemy/discussions"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "6b9844ecf59d389648cf3ce2b387475f81b02c2d32f16b95a554ca535a68ba13",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:stack-data",
+      "name": "stack-data",
+      "type": "PyPI",
+      "version": "0.6.3",
+      "source": [
+        "http://github.com/alexmojaki/stack_data"
+      ],
+      "license": "MIT",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "d5558e0c25a4cb0853cddad3d77da9891a08cb85dd9f9f91b9f8cd66e511e695",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:traitlets",
+      "name": "traitlets",
+      "type": "PyPI",
+      "version": "5.16.1",
+      "source": [
+        "Homepage, https://github.com/ipython/traitlets",
+        "Documentation, https://traitlets.readthedocs.io",
+        "Source, https://github.com/ipython/traitlets",
+        "Tracker, https://github.com/ipython/traitlets/issues"
+      ],
+      "license": "BSD 3-Clause License",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "f775618166caa0396c8e337099240f2bd3e5e917d203b2e6fbe21a58d3cb1f6b",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:typing_extensions",
+      "name": "typing_extensions",
+      "type": "PyPI",
+      "version": "4.16.0",
+      "source": [
+        "Bug Tracker, https://github.com/python/typing_extensions/issues",
+        "Changes, https://github.com/python/typing_extensions/blob/main/CHANGELOG.md",
+        "Documentation, https://typing-extensions.readthedocs.io/",
+        "Home, https://github.com/python/typing_extensions",
+        "Q & A, https://github.com/python/typing/discussions",
+        "Repository, https://github.com/python/typing_extensions"
+      ],
+      "license": "PSF-2.0",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "pypi:wcwidth",
+      "name": "wcwidth",
+      "type": "PyPI",
+      "version": "0.9.4",
+      "source": [
+        "Homepage, https://github.com/jquast/wcwidth"
+      ],
+      "license": "UNKNOWN",
+      "review": "NEEDS_REVIEW",
+      "distribution_sha256": "b185c8b927b23af2721be1783499d1cfa5c028b098b0858951b4ae224477f1c2",
+      "lockfile": "dependencies.lock.json",
+      "use": "Direct/transitive roles in DEPENDENCIES.md"
+    },
+    {
+      "id": "CPython",
+      "name": "CPython",
+      "type": "runtime/tool",
+      "version": "3.12.14",
+      "source": "https://www.python.org/",
+      "license": "PSF",
+      "review": "MANUAL_USE_ONLY",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "OpenJDK",
+      "name": "OpenJDK",
+      "type": "runtime/tool",
+      "version": "17.0.20",
+      "source": "https://openjdk.org/",
+      "license": "GPL-2.0 WITH Classpath-exception-2.0",
+      "review": "MANUAL_USE_ONLY",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "JADX",
+      "name": "JADX",
+      "type": "runtime/tool",
+      "version": "1.5.6",
+      "source": "https://github.com/skylot/jadx",
+      "license": "Apache-2.0",
+      "review": "MANUAL_USE_ONLY",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "Node.js",
+      "name": "Node.js",
+      "type": "runtime/tool",
+      "version": "24.22.1",
+      "source": "https://nodejs.org/",
+      "license": "MIT and bundled components",
+      "review": "MANUAL_USE_ONLY",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "curl",
+      "name": "curl",
+      "type": "runtime/tool",
+      "version": "8.5.0",
+      "source": "https://curl.se/",
+      "license": "curl",
+      "review": "MANUAL_USE_ONLY",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "GNU readelf",
+      "name": "GNU readelf",
+      "type": "runtime/tool",
+      "version": "2.42",
+      "source": "https://www.gnu.org/software/binutils/",
+      "license": "GPL-3.0-or-later",
+      "review": "MANUAL_USE_ONLY",
+      "lockfile": "dependencies.lock.json"
+    },
+    {
+      "id": "GitHub connector",
+      "name": "GitHub connector",
+      "type": "hosted_service",
+      "version": null,
+      "version_status": "UNKNOWN_NOT_EXPOSED",
+      "source": "Codex connected service",
+      "license": "Service terms; not redistributed or part of codec",
+      "review": "MANUAL_USE_ONLY"
+    },
+    {
+      "id": "Library connector",
+      "name": "Library connector",
+      "type": "hosted_service",
+      "version": null,
+      "version_status": "UNKNOWN_NOT_EXPOSED",
+      "source": "Codex connected service",
+      "license": "Service terms; not redistributed or part of codec",
+      "review": "MANUAL_USE_ONLY"
+    },
+    {
+      "id": "Codex web search",
+      "name": "Codex web search",
+      "type": "hosted_service",
+      "version": null,
+      "version_status": "UNKNOWN_NOT_EXPOSED",
+      "source": "Codex connected service",
+      "license": "Service terms; not redistributed or part of codec",
+      "review": "MANUAL_USE_ONLY"
+    }
+  ],
+  "code_paths": {
+    "codec": "decoders/Python/apps/NAMO_VPN/codec.py",
+    "cli": "decoders/Python/apps/NAMO_VPN/server_catalog_decoder.py",
+    "worker": "cloud/workers/python/catalog_vpn_bridge.py",
+    "engine": "cloud/workers/python/engine.py",
+    "broker": "cloud/web/lib/server-vpn-provider.mjs",
+    "public_metadata": "cloud/web/lib/server-vpn-catalog.mjs",
+    "controls": "cloud/web/lib/c12-provider-controls.mjs",
+    "contract": "cloud/web/lib/c3-gateway.mjs",
+    "tests": [
+      "tests/test_namo_vpn.py",
+      "cloud/web/tests/namo-vpn.test.mjs"
+    ]
+  },
+  "evidence_refs": [
+    "ANALYSIS.md",
+    "REPRODUCE.md",
+    "RESULTS.md",
+    "DEPENDENCIES.md",
+    "generated/recovery.json",
+    "generated/verification.json",
+    "generated/checks.json",
+    "generated/signature.json",
+    "FIELDS_FIX.md",
+    "generated/fields.json",
+    "generated/field-inspection.json"
+  ],
+  "limitations": [
+    "Mirror sample; latest official Play build/signing equivalence unverified.",
+    "JADX exit3/40 errors; relevant methods and real independent results validated.",
+    "Node direct transport denied here; Node/VPS real check and rollout pending; replay is simulated HTTP.",
+    "No Android changes/builds, merge, deployment, file/text/export or VPN connection tests.",
+    "No included catalog found; bundled V2Ray template is not remote catalog evidence.",
+    "XXTEA is unauthenticated; schema rejection is not universal integrity protection.",
+    "Transitive licenses/Phase7 auto-execution remain NEEDS_REVIEW; evidence CI validator not implemented.",
+    "Backend rejects invalid field Base64/UTF-8 more strictly than Android; no recursive decoding or unknown-field guessing."
+  ],
+  "network_requirements": [
+    "HTTPS APKPure acquisition and fixed original raw GitHub updater; install dependencies/JADX only when absent."
+  ],
+  "manual_steps": [
+    "Review PR; test original Node transport on VPS; preserve monotonic deployed catalog version before operator rollout."
+  ],
+  "unresolved_questions": [
+    "Real Node transport in VPS."
+  ],
+  "observed_local_date": "2026-11-04",
+  "source_commit": "45db1d4ed4c18df6911a7f77a744776353223a8c",
+  "branch": "feat/nuevas-integraciones",
+  "apk_metadata": {
+    "package": "com.appxrayservice.namovpn",
+    "name": "NAMO VPN",
+    "version": "3.5-namo",
+    "versionCode": "35",
+    "baseSha256": "1124a2344ec142526fc2b238f7333aa60a4fc624be3fa4b16846eaaad42516f6",
+    "entries": [
+      {
+        "path": "classes.dex",
+        "bytes": 6435792,
+        "sha256": "730908adc50056f4d59e6ff9a87614e993734380234c84f3545319d219954daa"
+      }
+    ]
+  },
+  "runtime_configuration": {
+    "external_secrets": [],
+    "format_constant": "Inline FORMAT_KEY in NAMO_VPN/codec.py; reconstructed from pinned JNI b, not HTTP authentication.",
+    "key_sha256": "2f3cb6bebbf6d6ba8d4b69c4c968aac9f5eacf434e8a49b3f4a47e7647420ee6",
+    "request_authorization": "none",
+    "user_requested_inline_constant": true
+  },
+  "shared_tooling": [
+    {
+      "path": "scripts/apk_analysis/inspect_apk.py",
+      "sha256": "3207559b8bf015e374c695614cb3cb65b22eb6c960373ec863e81c91ad8606cb",
+      "source_commit": "45db1d4ed4c18df6911a7f77a744776353223a8c"
+    },
+    {
+      "path": "scripts/apk_analysis/decompile.py",
+      "sha256": "dd04a05c2cb46bae494af412733d9e27b71167fc86f787371e76dfbddd50a3dd",
+      "source_commit": "45db1d4ed4c18df6911a7f77a744776353223a8c"
+    },
+    {
+      "path": "scripts/apk_analysis/paranoid_strings.py",
+      "sha256": "cf91fd861d68e9767a6be966d8608aa59f33a97a063182354d9a1132167ef587",
+      "source_commit": "45db1d4ed4c18df6911a7f77a744776353223a8c"
+    },
+    {
+      "path": "scripts/apk_analysis/elf_inspect.py",
+      "sha256": "b20adfae49329677c313fddb4674a6964a26867b9a27868e6da906fd5aeddee1",
+      "source_commit": "45db1d4ed4c18df6911a7f77a744776353223a8c"
+    },
+    {
+      "path": "decoders/Python/apps/BD_NET_VPN/codec.py",
+      "sha256": "2517cbeb9adb1aa8aa6f1883f9719b87737e2bdcc722b69af6576d5388b2eed7",
+      "source_commit": "45db1d4ed4c18df6911a7f77a744776353223a8c"
+    },
+    {
+      "path": "analysis/com.halcon.connect/1391/tools/dependency_inventory.py",
+      "sha256": "ec181cd81869c3c7f1d8015b9055642f1b701b6c8f7a600aa72b5d486ef86fc4",
+      "source_commit": "45db1d4ed4c18df6911a7f77a744776353223a8c"
+    }
+  ],
+  "fixture_hashes": [
+    {
+      "path": "tests/fixtures/catalog.txt",
+      "sha256": "8bb0df9d873c49662fafd1c0c7f194623d82169d702c282f06c9b227b124e995"
+    },
+    {
+      "path": "tests/fixtures/expected.json",
+      "sha256": "2a82040841dd9c4a210f36e418868191c6e16a3ffbf02bbbdb3f137a61ebc382"
+    }
+  ],
+  "field_revision": {
+    "base_commit": "a1b6721e39657d9e6e5360de88dede30d772f764",
+    "previous_full_field_claim": "WITHDRAWN: previous oracle covered only XXTEA envelope",
+    "runtime_versions": {
+      "python": "3.12.14",
+      "java": "17.0.20+8-1-24.04-Ubuntu",
+      "node": "24.22.1",
+      "jadx": "1.5.6"
+    },
+    "dependency_changes": "none; Java/Python standard library only",
+    "catalog_floor": 71,
+    "cards": 65,
+    "formats": 256,
+    "evidence": "generated/fields.json",
+    "schema": "Explicit Base64/UTF-8 fields after XXTEA; once; preserve all keys/types"
+  }
+}

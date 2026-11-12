@@ -1,0 +1,1 @@
+Fixture canónico reutilizado sin cambios: tests/golden/ultra_tunnel_vectors.json, generado por tests/golden/ultra_tunnel_reference.py con host libsodium/JCA. Sintético, example.invalid y valores ficticios; compartir primitiva no implica que un fixture sea una respuesta MD real. Prueba real separada en generated/catalog-proof.json y embedded-proof.json.

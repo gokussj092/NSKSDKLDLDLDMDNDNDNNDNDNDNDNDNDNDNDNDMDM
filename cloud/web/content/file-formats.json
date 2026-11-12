@@ -1708,7 +1708,7 @@
     },
     {
       "suffix": "tnl",
-      "name": "Tunnel",
+      "name": "OpenTunnel 1.1.1 / Tunnel",
       "kind": "file",
       "offlineSupported": true,
       "cloudSupported": true,

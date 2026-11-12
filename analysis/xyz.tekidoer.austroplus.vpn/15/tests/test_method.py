@@ -1,0 +1,2 @@
+from tests.test_austroplus_vpn import AustroPlusTests
+from tests.test_austroplus15 import Austro15Tests

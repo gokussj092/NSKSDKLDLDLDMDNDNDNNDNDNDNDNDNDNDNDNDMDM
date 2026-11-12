@@ -1,0 +1,17 @@
+{
+  "sha256": "8c9916bd53b2e38ac1f7b723054cd75ac3729697c0dd92763148f7f63fe44684",
+  "schema": 9,
+  "build": 934,
+  "recipients": [
+    {
+      "public_key_bits": 2048,
+      "private_key_present": false,
+      "wrapped_key_bytes": 256,
+      "certificate_signature_bytes": 384,
+      "provided_access_id_matches": true
+    }
+  ],
+  "section_count": 2,
+  "certificate_signature_verified": false,
+  "payload_decrypted": false
+}

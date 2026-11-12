@@ -1,0 +1,247 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-11-09T04:36:34.001214+00:00",
+  "status": "VERIFIED_REAL",
+  "apk_executed": false,
+  "raw_values_logged": false,
+  "distribution": {
+    "status": "xapk_manifest_matches_expected_signer_unverified",
+    "package": "com.tunneldoom.http",
+    "versionName": "4.3.2",
+    "versionCode": 432,
+    "xapkSha256": "ccee7c659e666ab8d7bf428ba00f2a55a1ba7da731d0da034418fbe2e53c52d2",
+    "xapkBytes": 73828000,
+    "archiveApkCount": 4
+  },
+  "apk": {
+    "package_name": "com.tunneldoom.http",
+    "version_name": "4.3.2",
+    "version_code": 432,
+    "sha256": "c8fa18503ddaf2aaf8efea2d752935681ddf76e9a041c09bb1b6f1a2a7138276",
+    "bytes": 51699651,
+    "certificate_sha256": [
+      "12704504f5711f22d78ee436f38baeb90557c2fa72c4dfb281c766f59800461d"
+    ],
+    "certificate_matches_prior_authorized_sample": true,
+    "apk_signature_cryptographically_verified": false
+  },
+  "updater": {
+    "literal_confirmed_in_code": true,
+    "method": "GET",
+    "matching_code_methods": 1,
+    "no_redirect_followed": true
+  },
+  "http_status": 200,
+  "catalog": {
+    "version": "496",
+    "servers": 382,
+    "encrypted_fields": 4966,
+    "ciphertext_bytes": 651940,
+    "ciphertext_sha256": "f50f4ded7827abc0d904bd3d8008e71f8a15254d5ff0b892892af2778e00a552",
+    "plaintext_json_sha256": "8473e27a736194665c4ad828e06b31f0edd81652728e5f9b83979c7aedec7ac5",
+    "complete_json_and_jca_parity": true
+  },
+  "dependencies": [
+    {
+      "name": "alembic",
+      "version": "1.20.1"
+    },
+    {
+      "name": "androguard",
+      "version": "4.1.3"
+    },
+    {
+      "name": "apkInspector",
+      "version": "1.3.7"
+    },
+    {
+      "name": "asn1crypto",
+      "version": "1.5.1"
+    },
+    {
+      "name": "asttokens",
+      "version": "3.0.2"
+    },
+    {
+      "name": "cffi",
+      "version": "2.1.1"
+    },
+    {
+      "name": "click",
+      "version": "8.5.1"
+    },
+    {
+      "name": "colorama",
+      "version": "0.4.6"
+    },
+    {
+      "name": "contourpy",
+      "version": "1.4.0"
+    },
+    {
+      "name": "cryptography",
+      "version": "50.0.2"
+    },
+    {
+      "name": "cycler",
+      "version": "0.12.1"
+    },
+    {
+      "name": "dataset",
+      "version": "2.0.0"
+    },
+    {
+      "name": "executing",
+      "version": "2.3.0"
+    },
+    {
+      "name": "fonttools",
+      "version": "4.68.0"
+    },
+    {
+      "name": "frida",
+      "version": "17.26.2"
+    },
+    {
+      "name": "ipython",
+      "version": "9.18.1"
+    },
+    {
+      "name": "ipython_pygments_lexers",
+      "version": "1.1.1"
+    },
+    {
+      "name": "jedi",
+      "version": "0.20.1"
+    },
+    {
+      "name": "kiwisolver",
+      "version": "1.5.1"
+    },
+    {
+      "name": "loguru",
+      "version": "0.7.3"
+    },
+    {
+      "name": "lxml",
+      "version": "6.1.3"
+    },
+    {
+      "name": "Mako",
+      "version": "1.4.3"
+    },
+    {
+      "name": "MarkupSafe",
+      "version": "3.0.4"
+    },
+    {
+      "name": "matplotlib",
+      "version": "3.11.2"
+    },
+    {
+      "name": "matplotlib-inline",
+      "version": "0.2.2"
+    },
+    {
+      "name": "mutf8",
+      "version": "1.1.0"
+    },
+    {
+      "name": "networkx",
+      "version": "3.7"
+    },
+    {
+      "name": "numpy",
+      "version": "2.5.4"
+    },
+    {
+      "name": "packaging",
+      "version": "26.3"
+    },
+    {
+      "name": "parso",
+      "version": "0.8.7"
+    },
+    {
+      "name": "pexpect",
+      "version": "4.9.0"
+    },
+    {
+      "name": "pillow",
+      "version": "13.0.0"
+    },
+    {
+      "name": "pip",
+      "version": "26.2.2"
+    },
+    {
+      "name": "prompt_toolkit",
+      "version": "3.0.53"
+    },
+    {
+      "name": "psutil",
+      "version": "7.2.2"
+    },
+    {
+      "name": "ptyprocess",
+      "version": "0.7.0"
+    },
+    {
+      "name": "pure_eval",
+      "version": "0.2.4"
+    },
+    {
+      "name": "pycparser",
+      "version": "3.12"
+    },
+    {
+      "name": "pycryptodome",
+      "version": "3.23.0"
+    },
+    {
+      "name": "pydot",
+      "version": "4.0.1"
+    },
+    {
+      "name": "Pygments",
+      "version": "2.21.0"
+    },
+    {
+      "name": "pyparsing",
+      "version": "3.3.3"
+    },
+    {
+      "name": "python-dateutil",
+      "version": "4.0.0"
+    },
+    {
+      "name": "PyYAML",
+      "version": "6.0.3"
+    },
+    {
+      "name": "SQLAlchemy",
+      "version": "2.1.8"
+    },
+    {
+      "name": "stack-data",
+      "version": "0.6.3"
+    },
+    {
+      "name": "traitlets",
+      "version": "5.16.1"
+    },
+    {
+      "name": "typing_extensions",
+      "version": "4.16.0"
+    },
+    {
+      "name": "tzdata",
+      "version": "2026.6"
+    },
+    {
+      "name": "wcwidth",
+      "version": "0.9.4"
+    }
+  ],
+  "github_run": 42562741781
+}

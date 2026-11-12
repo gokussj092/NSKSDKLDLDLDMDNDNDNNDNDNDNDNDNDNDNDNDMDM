@@ -1,0 +1,60 @@
+{
+  "id": "litron-pro-vpn",
+  "name": "Litron Pro VPN",
+  "package": "com.litron.udp",
+  "versionCode": 11,
+  "compatibleVersions": [
+    "11.0"
+  ],
+  "engineVersion": 1,
+  "engine": "python-base64-two-layer-aes256-cbc",
+  "catalog": {
+    "entrypoint": "server_catalog_decoder.py",
+    "providerId": "litron-pro-vpn",
+    "source": "https://godtechprime.github.io/litroproadfix.txt",
+    "sourceBuild": 11,
+    "publicCatalogVersion": 77,
+    "validation": "complete independent JCA/Python/isolated-worker JSON equality, including observed inner fields",
+    "currentProof": {
+      "inputBytes": 31768,
+      "inputSha256": "22068da7fd8f39184df5978209826104f7119c53f5930a2cd944024f34009c35",
+      "version": "2.6.7",
+      "servers": 51,
+      "innerFieldsCompared": 206,
+      "wholeIndependentJcaParity": true,
+      "cipherAuthenticated": false,
+      "apkCodeExecuted": false,
+      "clearJsonSha256": "38f611754037f1cb7834988df83281ce1ad37cfcc7e9f34b51b0a557516e96c2",
+      "rawOutputBytes": 22084,
+      "wholeWorkerParity": true
+    },
+    "evidenceDirectory": "analysis/com.litron.udp/11"
+  },
+  "files": {
+    "supported": false,
+    "exporterCertified": false
+  },
+  "text": {
+    "supported": false
+  },
+  "icon": {
+    "file": "Litron_Pro_VPN.png",
+    "source": "res/drawable/icon.png from owner-supplied Pro APKS",
+    "bytes": 165852,
+    "width": 500,
+    "height": 500,
+    "sha256": "625e93856e82f750a0a4590537aac184d8c9110a13877c446d2dcff9a043a887"
+  },
+  "dependencies": {
+    "python": ">=3.10",
+    "pycryptodome": "3.23.0",
+    "sharedJsonValidation": "../BD_NET_VPN/codec.py"
+  },
+  "sourceApkSha256": "83425c38c72a04e0875374cc50706e3eb5ff518104e7edaa1e5f753e675484e1",
+  "sourceSignerSha256": "51633c1390d1ff21a71a1a256f5a81027c929d36385eafdb234a16697b6b607b",
+  "separateFromBaseLitron": true,
+  "limitations": [
+    "CBC is unauthenticated.",
+    "No real phone export, text format or VPN session certified."
+  ]
+}

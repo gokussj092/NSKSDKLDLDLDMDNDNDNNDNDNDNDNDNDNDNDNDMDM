@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "include": "analysis/_intake/hmac-auth-audit-2026-11-09/dependencies.lock.json",
+  "includeSha256": "c184da1f7b51b778fac51189cab229e3449d57b7f10f4d35a414a0fd2b5df6e8",
+  "direct": [
+    {
+      "name": "Python",
+      "version": "3.12.14",
+      "source": "https://python.org/",
+      "license": "PSF-2.0"
+    },
+    {
+      "name": "androguard",
+      "version": "4.1.3",
+      "source": "https://github.com/androguard/androguard",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "loguru",
+      "version": "0.7.3",
+      "source": "https://github.com/Delgan/loguru",
+      "license": "MIT"
+    }
+  ]
+}

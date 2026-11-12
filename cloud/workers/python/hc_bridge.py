@@ -13,8 +13,9 @@ from pathlib import Path
 from decoders.Python.HTTPCUSTOM import run as legacy_hc
 from decoders.Python import _hc_hccfg as hccfg
 from decoders.Python.apps.HTTP_Custom.codec import UnrecognizedFormat, decrypt as modern_hc
+from decoders.Python._hc_legacy57 import decode as legacy57_hc
 
-SAFE_ERRORS = {"PASSWORD_REQUIRED", "HWID_REQUIRED", "HWID_PASSWORD_REQUIRED", "AUTH_FAILED"}
+SAFE_ERRORS = {"PASSWORD_REQUIRED", "HWID_REQUIRED", "HWID_PASSWORD_REQUIRED", "AUTH_FAILED", "UNSUPPORTED_VERSION"}
 
 
 def main() -> int:
@@ -37,6 +38,10 @@ def main() -> int:
             pass
         else:
             sys.stdout.write(json.dumps(clear, ensure_ascii=False, indent=2) + "\n")
+            return 0
+        complete_legacy = legacy57_hc(raw)
+        if complete_legacy is not None:
+            sys.stdout.write(json.dumps(complete_legacy, ensure_ascii=False, indent=2) + "\n")
             return 0
         if password is None and hwid is None:
             # Existing legacy behaviour wins when no auth is required.

@@ -1,0 +1,7 @@
+{
+  "tests": 5,
+  "status": "PASS",
+  "scope": "Research only; does not certify complete remote catalog",
+  "command": "python -m unittest discover -s analysis/noob.arpro.vpn/2/tests -v",
+  "log_sha256": "7d4644d9ba539a7a13361a6f7e438b1435da7e5d467c1a1292e3d89dfdfb99c5"
+}

@@ -1,0 +1,38 @@
+{
+  "apkCodeExecuted": false,
+  "nativeCodeExecuted": false,
+  "jadxVersion": "1.5.6",
+  "jadxGlobalErrors": 26,
+  "jadxGlobalComplete": true,
+  "sources": [
+    {
+      "path": "com/khamvpn/net/MainDetail.java",
+      "sha256": "4fed4bf9784d2780a6dd6d7705e0da0245f942ca58c9e7531c525c2cefd9e03d"
+    },
+    {
+      "path": "com/khamvpn/net/MainActivity.java",
+      "sha256": "15c2f589d7a87a0635479ff723156b0ea41763afc792f61a8014a459199aa9b2"
+    },
+    {
+      "path": "defpackage/j72.java",
+      "sha256": "2db9e67c23110a3614b59661f13ad2e780ad78f044228a3d4390ebb5387436f4"
+    },
+    {
+      "path": "defpackage/ek0.java",
+      "sha256": "6139b18e99e60ecb3f0b99b97f9ab8f3e89c53fad2383956d87aade5335d84f7"
+    },
+    {
+      "path": "defpackage/xm1.java",
+      "sha256": "1630b1af30979227383e95c4d1003dec2788c699f11a1d9b28fea85db3486e9d"
+    },
+    {
+      "path": "defpackage/g72.java",
+      "sha256": "9b9cb84cb1faaccb201cd14faa45f2bb66a5d88dcab349a4ec0eeafce48c042d"
+    },
+    {
+      "path": "defpackage/c42.java",
+      "sha256": "5644277bbe23b6f76644c914d012ba2b19986ef4ba9672379b7e59755e5cc84c"
+    }
+  ],
+  "note": "Unbounded simultaneous JADX attempts exited137. Thailand full run interrupted after relevant classes; targeted JADX runs succeeded. KHAM bounded full run exit1/26 errors; AR PRO bounded full run exit1/119 errors. Relevant call paths were reviewed separately."
+}

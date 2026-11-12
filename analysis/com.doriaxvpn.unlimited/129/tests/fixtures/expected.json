@@ -1,0 +1,28 @@
+{
+  "Version": "test129",
+  "ReleaseNotes": "Fictional prueba ñ ไทย 🦊",
+  "Servers": [
+    {
+      "Name": "Fictional HTTP profile",
+      "FLAG": "mx",
+      "ServerIP": "vpn.example.org",
+      "ServerPort": "443",
+      "ServerUser": "sample-user",
+      "ServerPass": "sample-password",
+      "Payload": "CONNECT [host_port] HTTP/1.1\r\nHost: example.org\r\n\r\n",
+      "SNI": "front.example.org",
+      "UseTcp": "TCP",
+      "udpObfs": "",
+      "v2rayFlow": "xtls-rprx-vision",
+      "zivpnPassword": "0123456789ABCDEFGHJKLMNPQRSTUVWXYZ",
+      "isSSL": true,
+      "UnknownData": {
+        "preserve": [
+          1,
+          null,
+          false
+        ]
+      }
+    }
+  ]
+}
