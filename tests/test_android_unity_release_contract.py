@@ -140,6 +140,33 @@ class AndroidUnityReleaseContract(unittest.TestCase):
         self.assertIn("NativeResultEngine.open(source)", viewer)
         self.assertIn("ContinuousJsonView", viewer)
 
+    def test_apk_credits_button_removed_in_favor_of_store(self):
+        app = read("android/app/src/main/java/com/ghostdeveloper/spdecode/SpDecodeApp.kt")
+        drawer = read("android/app/src/main/java/com/ghostdeveloper/spdecode/AccountDrawer.kt")
+        self.assertNotIn("creditsPage", app)
+        self.assertNotIn("apk_credits_open", app)
+        self.assertNotIn("showCreditsAction", app)
+        self.assertIn("2->if(BuildConfig.SPDECODE_APK_QA_ENABLED)", app)
+        self.assertIn("showServerVpnRefresh=(activeTab==3 || activeTab==2)", app)
+        self.assertIn('openDestination("store")', drawer)
+
+    def test_json_selection_can_be_cancelled_without_copying(self):
+        viewer = read("android/app/src/main/java/com/ghostdeveloper/spdecode/ContinuousJsonView.kt")
+        self.assertIn("MENU_CANCEL_SELECTION", viewer)
+        self.assertIn("context.getString(R.string.cancel)", viewer)
+        self.assertIn("mode.finish()", viewer)
+        self.assertIn("private fun dismissSelection()", viewer)
+        self.assertIn("if(selectionStart!=null || selectionEnd!=null)", viewer)
+        self.assertIn("dismissSelection()", viewer)
+        self.assertIn("contextMode?.finish()", viewer)
+
+    def test_android_recents_use_single_application_task(self):
+        manifest = read("android/app/src/main/AndroidManifest.xml")
+        host = read("android/app/src/unityAds/java/com/ghostdeveloper/spdecode/ads/UnityInterstitialHost.kt")
+        self.assertIn('android:documentLaunchMode="never"', manifest)
+        self.assertNotIn('android:documentLaunchMode="intoExisting"', manifest)
+        self.assertIn("ad?.showAd(activity)", host)
+
     def test_vps_online_fails_closed_for_missing_ads(self):
         build = read("cloud/infra/vps/android-public-build.sh")
         self.assertIn('UNITY_CONFIG="$CFG/unity-ads.env"', build)
