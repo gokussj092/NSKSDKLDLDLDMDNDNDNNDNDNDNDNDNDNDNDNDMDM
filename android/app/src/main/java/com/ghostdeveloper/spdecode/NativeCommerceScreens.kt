@@ -17,6 +17,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.launch
+import org.json.JSONObject
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -167,6 +170,13 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit) {
     var notice by remember {mutableStateOf<String?>(null)}
     LaunchedEffect(page){if(page!="login")password=""}
     var securityDialog by remember {mutableStateOf(false)}
+    val context=LocalContext.current
+    val auth=remember(context){NativeCommerceAuth(context)}
+    val scope=rememberCoroutineScope()
+    var signingIn by remember {mutableStateOf(false)}
+    var accountSnapshot by remember {mutableStateOf<JSONObject?>(null)}
+    var ipEdit by rememberSaveable{mutableStateOf("")}
+    LaunchedEffect(page){if(page=="account")accountSnapshot=auth.account()}
     var catalog by remember {mutableStateOf<NativeStoreCatalog?>(null)}
     var catalogLoaded by remember {mutableStateOf(false)}
     LaunchedEffect(Unit){catalog=NativeStoreCatalog.load();catalogLoaded=true}
@@ -491,13 +501,23 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit) {
                             }
                             Spacer(Modifier.width(12.dp))
                             Column(Modifier.weight(1f)){
-                                Text(local("Invitado","Guest"),color=white,
+                                Text(accountSnapshot?.optJSONObject("user")?.optString("name")
+                                    ?.takeIf{it.isNotBlank()}?:local("Invitado","Guest"),color=white,
                                     fontSize=17.sp,fontWeight=FontWeight.Bold)
-                                Text(local("Sin sesión vinculada","No linked session"),
+                                Text(accountSnapshot?.optJSONObject("user")?.optString("email")
+                                    ?.takeIf{it.isNotBlank()}?:local("Sin sesión vinculada","No linked session"),
                                     color=muted,fontSize=12.sp)
                             }
                         }
-                        PrimaryAction(local("Iniciar sesión","Sign in")){page="login"}
+                        if(accountSnapshot==null)
+                            PrimaryAction(local("Iniciar sesión","Sign in")){page="login"}
+                        else OutlinedButton(modifier=Modifier.fillMaxWidth(),onClick={
+                            scope.launch{
+                                runCatching{auth.signOut()}
+                                accountSnapshot=null
+                                page="login"
+                            }
+                        }){Text(local("Cerrar sesión","Sign out"))}
                     }
                     Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(4.dp)){
                         listOf("overview","orders","api","security").forEach{p->
@@ -532,6 +552,42 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit) {
                                 SimpleFeature(local("Rotar o revocar la clave","Rotate or revoke key"))
                                 Note(local("La clave solamente se mostrará cuando exista una licencia verificada. Nunca se almacena como texto plano en la app.",
                                     "A key is shown only for a verified license. It is never stored in plain text in the app."))
+                                val entitlements=accountSnapshot?.optJSONArray("entitlements")
+                                var selectedEntitlement:JSONObject?=null
+                                if(entitlements!=null)for(i in 0 until entitlements.length()){
+                                    val entry=entitlements.optJSONObject(i)?:continue
+                                    if(entry.optString("product_id")=="api-ip" &&
+                                        entry.optString("status")=="active"){
+                                        selectedEntitlement=entry
+                                        break
+                                    }
+                                }
+                                if(selectedEntitlement!=null){
+                                    val selected=selectedEntitlement
+                                    Text(local("IP pública vinculada","Bound public IP")+": "+
+                                        selected.optString("allowed_ip","—"),color=white)
+                                    OutlinedTextField(value=ipEdit,onValueChange={ipEdit=it.take(45)},
+                                        modifier=Modifier.fillMaxWidth().testTag("commerce_change_api_ip"),
+                                        placeholder={Text("195.233.233.12")},
+                                        singleLine=true,
+                                        label={Text(local("Nueva IP pública","New public IP"))})
+                                    PrimaryAction(local("Actualizar IP autorizada","Update authorized IP"),
+                                        enabled=CommercialServerIp.isPublicLiteral(ipEdit)) {
+                                        scope.launch {
+                                            try {
+                                                auth.editApiIp(selected.getString("id"),ipEdit)
+                                                accountSnapshot=auth.account()
+                                                ipEdit=""
+                                                notice=local("IP actualizada correctamente",
+                                                    "Public IP updated")
+                                            }catch(_:Exception){
+                                                notice=local("No se pudo actualizar la IP. Inicia sesión de nuevo si es necesario.",
+                                                    "Cannot update IP. Sign in again if required.")
+                                            }
+                                        }
+                                    }
+                                }else Note(local("Cuando compres una API aparecerá aquí para configurar o cambiar su IP pública.",
+                                    "Your purchased API will appear here to configure or change its public IP."))
                             }
                             "security" -> {
                                 Text(local("Seguridad y credenciales","Security & credentials"),
@@ -596,9 +652,18 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit) {
                         Text(local("Elige cómo continuar","Choose how to continue"),
                             color=white,fontSize=18.sp,fontWeight=FontWeight.SemiBold)
                         OutlinedButton(onClick={
-                            notice=local("Google se conectará mediante el selector seguro de Android y el servidor de cuentas. Todavía no hay una sesión real.",
-                                "Google will use Android's secure account picker and the account server. No real session is active yet.")
-                        },modifier=Modifier.fillMaxWidth()) {
+                            if(!signingIn)scope.launch{
+                                signingIn=true
+                                notice=null
+                                try{
+                                    accountSnapshot=auth.signInWithGoogle()
+                                    page="account"
+                                }catch(_:Exception){
+                                    notice=local("No se pudo iniciar sesión. Comprueba que el servidor y Google OAuth estén configurados.",
+                                        "Sign in failed. Verify account server and Google OAuth configuration.")
+                                }finally{signingIn=false}
+                            }
+                        },enabled=!signingIn,modifier=Modifier.fillMaxWidth()) {
                             Text("G",fontSize=19.sp,fontWeight=FontWeight.Bold)
                             Spacer(Modifier.width(12.dp))
                             Text(local("Continuar con Google","Continue with Google"))
