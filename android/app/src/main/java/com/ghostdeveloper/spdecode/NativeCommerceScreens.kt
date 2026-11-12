@@ -171,8 +171,8 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit) {
         when {
             page=="cart" -> {page="store";detail="home"}
             page=="store" && detail!="home" -> detail="home"
-            page=="login" -> page="account"
-            page!="start" && page!=start -> page=start
+            page=="login" && start!="login" -> page="account"
+            page!=start -> page=start
             else -> onExit()
         }
     }
