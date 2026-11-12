@@ -112,7 +112,7 @@ private fun Note(text:String) {
     }
 }
 @Composable
-private fun ProductTile(name:String,description:String,price:String,icon:@Composable ()->Unit,
+private fun ProductTile(name:String,description:String,price:String,details:String,icon:@Composable ()->Unit,
     onClick:()->Unit){
     Column(Modifier.fillMaxWidth().background(panel,RoundedCornerShape(19.dp))
         .clickable(onClick=onClick).padding(18.dp),
@@ -132,7 +132,7 @@ private fun ProductTile(name:String,description:String,price:String,icon:@Compos
             horizontalArrangement=Arrangement.SpaceBetween,
             modifier=Modifier.fillMaxWidth()){
             Text(price,color=white,fontWeight=FontWeight.SemiBold,fontSize=16.sp)
-            Text(local("Ver detalles","Details"),color=white,fontSize=12.sp)
+            Text(details,color=white,fontSize=12.sp)
         }
     }
 }
@@ -171,6 +171,10 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit) {
     LaunchedEffect(page){if(page!="login")password=""}
     var securityDialog by remember {mutableStateOf(false)}
     val context=LocalContext.current
+    val language=context.resources.configuration.locales[0].language
+    // Capture the actual app-specific locale, not Locale.getDefault().
+    // The app's independent language selector overrides Activity resources.
+    val local:(String,String)->String={es,en->CommerceI18n.translate(language,es,en)}
     val auth=remember(context){NativeCommerceAuth(context)}
     val scope=rememberCoroutineScope()
     var signingIn by remember {mutableStateOf(false)}
@@ -423,6 +427,7 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit) {
                             local("Análisis de APK/APKS y resultados técnicos",
                                 "APK/APKS analysis and technical results"),
                             creditPacks.minOfOrNull{it.priceCents}?.let{usd(it)+" USD"}?:local("Sin precio USD disponible","No USD price available"),
+                            local("Ver detalles","Details"),
                             {Icon(Icons.Outlined.Inventory2,null,tint=white,modifier=Modifier.size(29.dp))}){
                             detail="credits"
                         }
@@ -430,12 +435,14 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit) {
                             local("Archivos, textos, métodos online y catálogos",
                                 "Files, text, online methods and catalogs"),
                             apiTerms.minOfOrNull{it.priceCents}?.let{usd(it)+" USD"}?:local("Sin precio USD disponible","No USD price available"),
+                            local("Ver detalles","Details"),
                             {Icon(Icons.Outlined.Code,null,tint=white,modifier=Modifier.size(29.dp))}){
                             detail="api"
                         }
                         ProductTile(local("Quitar anuncios","Remove ads"),
                             local("Un mes completo sin publicidad","One month without ads"),
                             "$1.00 USD",
+                            local("Ver detalles","Details"),
                             {Icon(Icons.Outlined.Shield,null,tint=white,modifier=Modifier.size(29.dp))}){
                             detail="ads"
                         }
