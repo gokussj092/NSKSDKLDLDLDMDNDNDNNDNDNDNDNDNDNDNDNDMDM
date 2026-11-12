@@ -306,4 +306,7 @@
     <string name="v2ray_share_auto">Copiar links V2Ray detectados</string>
     <string name="v2ray_share_protocol">Copiar link %1$s</string>
     <string name="v2ray_share_detail">Os links contêm credenciais e exigem um cliente compatível. O protocolo não é alterado.</string>
+    <string name="decrypt_credits_edit">Editar</string>
+    <string name="decrypt_credits_delete">Excluir</string>
+    <string name="decrypt_credits_delete_confirm">Excluir o usuário do Telegram salvo? As próximas cópias usarão os créditos padrão do SP-DECODE.</string>
 </resources>

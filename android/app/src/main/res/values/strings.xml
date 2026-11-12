@@ -314,4 +314,7 @@
     <string name="v2ray_share_auto">Copy detected V2Ray links</string>
     <string name="v2ray_share_protocol">Copy %1$s import link</string>
     <string name="v2ray_share_detail">Links include connection credentials and require a compatible client. The server protocol is not changed.</string>
+    <string name="decrypt_credits_edit">Edit</string>
+    <string name="decrypt_credits_delete">Remove</string>
+    <string name="decrypt_credits_delete_confirm">Remove the saved Telegram username? Future copied results will use the default SP-DECODE credits.</string>
 </resources>
