@@ -211,6 +211,30 @@ class AndroidUnityReleaseContract(unittest.TestCase):
         self.assertIn("onlyRealProtocolOutboundsProduceLinks",instrumented)
         self.assertIn("telegramCreditsAreNormalizedAndNotDuplicated",instrumented)
 
+    def test_saved_telegram_decryption_credit_can_be_edited_and_removed(self):
+        ui = read("android/app/src/main/java/com/ghostdeveloper/spdecode/FunctionalSettingsPanel.kt")
+        main = read("android/app/src/main/java/com/ghostdeveloper/spdecode/MainActivity.kt")
+        app = read("android/app/src/main/java/com/ghostdeveloper/spdecode/SpDecodeApp.kt")
+        self.assertIn("if(hasSavedCredit && !editingCredit)", ui)
+        self.assertIn('testTag("telegram_decrypt_credit_saved")', ui)
+        self.assertIn('testTag("telegram_decrypt_credit_edit")', ui)
+        self.assertIn('testTag("telegram_decrypt_credit_delete")', ui)
+        self.assertIn('if(onSaveTelegramCredit(""))', ui)
+        self.assertIn("if(editor.commit()){", main)
+        self.assertIn('editor.remove("telegram_decrypt_credit")', main)
+        self.assertIn("telegramCreditUsername=normalized", main)
+        self.assertIn("onSaveTelegramCredit:(String)->Boolean", ui)
+        self.assertIn("onSaveTelegramCredit:(String)->Boolean", app)
+        self.assertIn("telegramCreditUsername.takeIf{it.isNotBlank()}", main)
+        all_locales=("values","values-es","values-pt-rBR","values-fr","values-de",
+                     "values-it","values-tr","values-ru","values-ar","values-fa",
+                     "values-hi","values-ja","values-in","values-vi")
+        for locale in all_locales:
+            strings = read(f"android/app/src/main/res/{locale}/strings.xml")
+            for resource in ("decrypt_credits_edit","decrypt_credits_delete",
+                             "decrypt_credits_delete_confirm"):
+                self.assertIn(f'name="{resource}"', strings)
+
     def test_vps_online_fails_closed_for_missing_ads(self):
         build = read("cloud/infra/vps/android-public-build.sh")
         self.assertIn('UNITY_CONFIG="$CFG/unity-ads.env"', build)
