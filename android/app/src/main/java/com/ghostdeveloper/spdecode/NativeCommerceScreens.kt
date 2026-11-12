@@ -164,8 +164,10 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit) {
     var authTab by rememberSaveable {mutableStateOf("login")}
     var authMethod by rememberSaveable {mutableStateOf("choose")}
     var email by rememberSaveable {mutableStateOf("")}
-    var password by rememberSaveable {mutableStateOf("")}
+    // Never serialize even an inactive password field to Android saved state.
+    var password by remember {mutableStateOf("")}
     var notice by remember {mutableStateOf<String?>(null)}
+    LaunchedEffect(page){if(page!="login")password=""}
     var securityDialog by remember {mutableStateOf(false)}
     fun back(){
         when {
