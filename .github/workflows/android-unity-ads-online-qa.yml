@@ -6,6 +6,8 @@ on:
       - .github/workflows/android-unity-ads-online-qa.yml
       - android/app/src/main/java/com/ghostdeveloper/spdecode/SpDecodeApp.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/ContinuousJsonView.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/LargeResultViewer.kt
+      - android/app/src/sharedAndroidTest/java/com/ghostdeveloper/spdecode/LargeResultEngineInstrumentedTest.kt
       - android/app/src/main/AndroidManifest.xml
       - android/app/src/cloud/AndroidManifest.xml
       - android/app/build.gradle.kts
