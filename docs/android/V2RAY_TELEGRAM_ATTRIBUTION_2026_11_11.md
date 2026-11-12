@@ -42,3 +42,25 @@ copied to support compatible client import. Share links can reveal credentials.
 - Remaining device QA: nested v2rayConfig JSON expansion in a real HC file;
   Telegram handle persistence after app restart; sharing in each language;
   VMess URL import into a compatible client; negative unsupported protocols.
+
+## Saved alias UX (2026-11-12)
+
+The previous screen permanently displayed a Telegram handle input and Save
+button even after successful persistence. This was confusing. The fix:
+
+- With no saved alias: shows optional handle input and Save; blank values do
+  not generate an attribution line.
+- With a saved alias: displays the normalized `@handle` as read-only text,
+  with **Edit** and **Remove** buttons rather than an input.
+- Edit reopens the existing handle in the input. Cancel retains the saved
+  alias. Successful Save closes editing.
+- Remove requires confirmation. The SharedPreferences key is **removed**
+  (not replaced with a fake handle); new clipboard shares revert to the
+  default SP-DECODE/Powered by Ghost Developer header without a personalized
+  credit. Existing encrypted results remain unchanged.
+- Persistence returns a Boolean to the UI; failed writes do not display a
+  misleading Saved state.
+- Edit/Remove/confirmation strings are present in all 14 locales.
+- Source-level contract check in `tests/test_android_unity_release_contract.py`.
+- User-device tests still required: reopen Settings after Save, Edit/Cancel,
+  Delete/Confirm, copy JSON in Spanish and English and verify exactly one @.
