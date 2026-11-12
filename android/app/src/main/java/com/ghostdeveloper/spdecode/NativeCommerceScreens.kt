@@ -256,10 +256,11 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit) {
                                     Column(Modifier.weight(1f)){
                                         Text(item.credits.toString()+" "+local("créditos","credits"),
                                             fontWeight=FontWeight.SemiBold,color=white)
-                                        if(item.credits>1)Text(
-                                            local("Ahorra ","Save ")+
-                                                ((100-(item.priceCents*100/((creditPacks.firstOrNull{it.credits==1}?.priceCents?:item.priceCents)*item.credits))).coerceAtLeast(0).toString())+"%",
-                                            color=good,fontSize=12.sp)
+                                        val unit=creditPacks.firstOrNull{it.credits==1}?.priceCents
+                                        if(item.credits>1 && unit!=null && item.priceCents<unit*item.credits)
+                                            Text(local("Ahorra ","Save ")+
+                                                ((100-item.priceCents*100/(unit*item.credits)).toString())+"%",
+                                                color=good,fontSize=12.sp)
                                     }
                                     Text(usd(item.priceCents)+" USD",color=white)
                                 }
