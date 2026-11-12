@@ -296,4 +296,14 @@
     <string name="apk_qa_export_json">Exportar JSON</string>
     <string name="apk_qa_export_success">JSON salvo</string>
     <string name="apk_qa_export_failure">Não foi possível salvar o JSON</string>
+    <string name="decrypt_credits_title">Créditos de decifração</string>
+    <string name="decrypt_credits_description">Adicione seu usuário do Telegram aos resultados copiados. Salvo somente neste dispositivo.</string>
+    <string name="decrypt_credits_handle">Usuário do Telegram</string>
+    <string name="decrypt_credits_invalid">Use de 5 a 32 letras, números ou sublinhados.</string>
+    <string name="decrypt_credits_save">Salvar créditos</string>
+    <string name="decrypt_credits_saved">Créditos salvos</string>
+    <string name="decrypt_credits_by">Decifrado por %1$s</string>
+    <string name="v2ray_share_auto">Copiar links V2Ray detectados</string>
+    <string name="v2ray_share_protocol">Copiar link %1$s</string>
+    <string name="v2ray_share_detail">Os links contêm credenciais e exigem um cliente compatível. O protocolo não é alterado.</string>
 </resources>

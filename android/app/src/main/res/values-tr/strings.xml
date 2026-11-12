@@ -297,4 +297,14 @@
     <string name="apk_qa_export_json">JSON dışa aktar</string>
     <string name="apk_qa_export_success">JSON kaydedildi</string>
     <string name="apk_qa_export_failure">JSON kaydedilemedi</string>
+    <string name="decrypt_credits_title">Şifre çözme kredileri</string>
+    <string name="decrypt_credits_description">Telegram kullanıcı adını kopyalanan sonuçlara ekle. Yalnızca bu cihazda saklanır.</string>
+    <string name="decrypt_credits_handle">Telegram kullanıcı adı</string>
+    <string name="decrypt_credits_invalid">5–32 harf, rakam veya alt çizgi kullanın.</string>
+    <string name="decrypt_credits_save">Kredileri kaydet</string>
+    <string name="decrypt_credits_saved">Krediler kaydedildi</string>
+    <string name="decrypt_credits_by">Şifresini çözen: %1$s</string>
+    <string name="v2ray_share_auto">Algılanan V2Ray bağlantılarını kopyala</string>
+    <string name="v2ray_share_protocol">%1$s bağlantısını kopyala</string>
+    <string name="v2ray_share_detail">Bağlantılar kimlik bilgileri içerir ve uyumlu istemci gerektirir. Sunucu protokolü değiştirilmez.</string>
 </resources>
