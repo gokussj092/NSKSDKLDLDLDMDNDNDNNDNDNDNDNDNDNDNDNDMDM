@@ -35,6 +35,8 @@ private val SurfaceLine=Color(0xFF343434)
 fun FunctionalSettingsPanel(
     language:String,
     maskCredentials:Boolean,
+    telegramCreditUsername:String="",
+    onSaveTelegramCredit:(String)->Unit={},
     onLanguage:(String)->Unit,
     onMaskCredentials:(Boolean)->Unit,
     onClear:()->Unit,
@@ -56,6 +58,9 @@ fun FunctionalSettingsPanel(
     onFeedbackSubmit:suspend (FeedbackDraft)->String={throw IllegalStateException("FEEDBACK_UNAVAILABLE")},
 ){
     var clearDialog by remember { mutableStateOf(false) }
+    var creditDraft by rememberSaveable(telegramCreditUsername) { mutableStateOf(telegramCreditUsername.trimStart('@')) }
+    var creditSaved by remember { mutableStateOf(false) }
+    val normalizedCredit=TelegramResultCopy.normalizeUsername(creditDraft)
     var languagePage by rememberSaveable { mutableStateOf(false) }
     var formatsPage by rememberSaveable { mutableStateOf(false) }
     var feedbackPage by rememberSaveable { mutableStateOf(false) }
@@ -180,6 +185,35 @@ fun FunctionalSettingsPanel(
             }
             Text(stringResource(R.string.export_security_note),
                 color=MutedText,fontSize=12.sp,lineHeight=17.sp)
+        }
+        if(BuildConfig.SPDECODE_CLOUD_ENABLED) SettingsCard {
+            Row(verticalAlignment=Alignment.CenterVertically) {
+                Icon(Icons.Outlined.AlternateEmail,null,tint=TitleText)
+                Spacer(Modifier.width(10.dp))
+                Text(stringResource(R.string.decrypt_credits_title),
+                    color=TitleText,fontWeight=FontWeight.SemiBold,fontSize=17.sp)
+            }
+            Text(stringResource(R.string.decrypt_credits_description),
+                color=MutedText,fontSize=12.sp,lineHeight=18.sp)
+            OutlinedTextField(
+                value=creditDraft,
+                onValueChange={creditDraft=it.trimStart('@').take(40);creditSaved=false},
+                label={Text(stringResource(R.string.decrypt_credits_handle))},
+                prefix={Text("@")},
+                singleLine=true,
+                isError=normalizedCredit==null,
+                modifier=Modifier.fillMaxWidth().testTag("telegram_decrypt_credit")
+            )
+            if(normalizedCredit==null)
+                Text(stringResource(R.string.decrypt_credits_invalid),
+                    color=Color(0xFFFF9696),fontSize=12.sp)
+            Button(onClick={
+                normalizedCredit?.let { onSaveTelegramCredit(it);creditSaved=true }
+            },enabled=normalizedCredit!=null,modifier=Modifier.fillMaxWidth()) {
+                Text(stringResource(R.string.decrypt_credits_save))
+            }
+            if(creditSaved)Text(stringResource(R.string.decrypt_credits_saved),
+                color=TitleText,fontSize=12.sp)
         }
         SettingsCard{
             Row(verticalAlignment=Alignment.CenterVertically){

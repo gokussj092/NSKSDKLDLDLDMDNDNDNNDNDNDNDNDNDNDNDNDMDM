@@ -129,6 +129,7 @@ class MainActivity : ComponentActivity() {
     private var credentialPrepareGeneration=0
     private var selectedLanguage by mutableStateOf("system")
     private var hideCredentials by mutableStateOf(false)
+    private var telegramCreditUsername by mutableStateOf("")
     private val settings get()=getSharedPreferences("spdecode-ui-preferences",MODE_PRIVATE)
     private var job:Job?=null
     private val services by lazy { (application as SpDecodeApplication).services }
@@ -581,6 +582,8 @@ class MainActivity : ComponentActivity() {
         }
         selectedLanguage=settings.getString("language","system") ?: "system"
         hideCredentials=settings.getBoolean("mask_credentials",false)
+        telegramCreditUsername=TelegramResultCopy.normalizeUsername(
+            settings.getString("telegram_decrypt_credit","").orEmpty()).orEmpty()
         usageOptIn=BuildConfig.SPDECODE_CLOUD_ENABLED && CloudDiagnosticsPrivacy.enabled(this)
         @Suppress("DEPRECATION")
         val installed=packageManager.getPackageInfo(packageName,0)
@@ -689,10 +692,16 @@ class MainActivity : ComponentActivity() {
                     val date=DateFormat.getDateTimeInstance(DateFormat.MEDIUM,
                         DateFormat.SHORT,resources.configuration.locales[0])
                         .format(Date(entry.savedAtMillis))
-                    try {val text=withContext(Dispatchers.Default){TelegramResultCopy.clipboard(entry,format,date)};copy(text)}
+                    val attribution=telegramCreditUsername.takeIf{it.isNotBlank()}?.let{
+                        getString(R.string.decrypt_credits_by,it)
+                    }
+                    try {val text=withContext(Dispatchers.Default){
+                        TelegramResultCopy.clipboard(entry,format,date,attribution)
+                    };copy(text)}
                     catch(error:CancellationException){throw error}
                     catch(_:Exception){toast(R.string.write_error)}
                 }}},
+                onCopyV2rayLinks={links->copy(links)},
                 onExport={format->result?.let{entry ->
                     if(ResultOutputWriter.isLarge(entry.rawText)) {
                         sessionVm.stagedResultExport=entry to format
@@ -708,6 +717,14 @@ class MainActivity : ComponentActivity() {
                 }},
                 selectedLanguage=selectedLanguage,
                 hideCredentials=hideCredentials,
+                telegramCreditUsername=telegramCreditUsername,
+                onSaveTelegramCredit={value->
+                    val normalized=TelegramResultCopy.normalizeUsername(value)
+                    if(normalized!=null && settings.edit()
+                            .putString("telegram_decrypt_credit",normalized).commit()){
+                        telegramCreditUsername=normalized
+                    }
+                },
                 onLanguage={tag->setLanguage(tag)},
                 onMaskCredentials={value->hideCredentials=value;settings.edit().putBoolean("mask_credentials",value).apply()},
                 onExternalLink={url->openExternal(url)},
