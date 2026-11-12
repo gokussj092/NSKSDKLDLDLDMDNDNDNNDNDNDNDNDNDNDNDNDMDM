@@ -6,6 +6,11 @@ on:
       - .github/workflows/android-unity-ads-online-qa.yml
       - android/app/src/main/java/com/ghostdeveloper/spdecode/SpDecodeApp.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/AccountDrawer.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/V2BoxPasswordProbe.kt
+      - cloud/workers/python/v2box_bridge.py
+      - cloud/workers/python/Dockerfile
+      - decoders/Python/v2box_export.py
+      - tests/test_v2box_password.py
       - android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceProfile.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceAccountPages.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceAdFreePurchase.kt

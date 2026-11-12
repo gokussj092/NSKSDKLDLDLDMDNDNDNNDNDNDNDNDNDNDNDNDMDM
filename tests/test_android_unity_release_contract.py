@@ -296,6 +296,7 @@ class AndroidUnityReleaseContract(unittest.TestCase):
         probe=read("android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/V2BoxPasswordProbe.kt")
         activity=read("android/app/src/main/java/com/ghostdeveloper/spdecode/MainActivity.kt")
         bridge=read("cloud/workers/python/v2box_bridge.py")
+        docker=read("cloud/workers/python/Dockerfile")
         decoder=read("decoders/Python/v2box_export.py")
         self.assertIn('when(obj.optInt("version",1))',probe)
         self.assertIn('header.optString("kdf")=="pbkdf2-sha256"',probe)
@@ -304,6 +305,7 @@ class AndroidUnityReleaseContract(unittest.TestCase):
         self.assertIn("CloudPasswordDialog(candidate.name,",activity)
         self.assertIn('v2box_bridge.py',read("cloud/workers/python/engine.py"))
         self.assertIn('"PASSWORD_REQUIRED"',bridge)
+        self.assertIn("cloud/workers/python/v2box_bridge.py ./cloud/workers/python/",docker)
         self.assertIn("hmac_hash_module=SHA256",decoder)
         self.assertIn('cipher.update(encoded_header.encode("ascii"))',decoder)
 
