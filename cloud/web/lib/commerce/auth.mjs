@@ -1,4 +1,5 @@
 import {betterAuth} from "better-auth";
+import {bearer} from "better-auth/plugins";
 import {randomUUID} from "node:crypto";
 import {database} from "./db.mjs";
 import {authReady,siteOrigin,fail} from "./config.mjs";
@@ -8,6 +9,7 @@ export function makeAuth(db,env=process.env){
   return betterAuth({appName:'SP-DECODE',baseURL:siteOrigin(env),secret:env.BETTER_AUTH_SECRET,
     database:db, trustedOrigins:[siteOrigin(env)],
     emailAndPassword:{enabled:false},
+    plugins:[bearer()],
     socialProviders:{google:{clientId:env.GOOGLE_CLIENT_ID,clientSecret:env.GOOGLE_CLIENT_SECRET,prompt:'select_account'}},
     user:{modelName:'shop_user',deleteUser:{enabled:true},changeEmail:{enabled:false},additionalFields:{
       privacyVersion:{type:'string',required:false,input:false},termsVersion:{type:'string',required:false,input:false}}},
