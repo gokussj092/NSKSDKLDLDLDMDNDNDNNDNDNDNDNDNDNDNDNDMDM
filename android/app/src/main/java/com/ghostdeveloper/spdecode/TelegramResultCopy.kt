@@ -8,14 +8,20 @@ package com.ghostdeveloper.spdecode
  * Markdown formatting enabled. Attribution is deliberately outside the JSON.
  */
 object TelegramResultCopy {
-    private const val HEADER_CREDITS = "// Credits: Ghost Developer"
+    /** Telegram handles are optional. Remove all leading @ signs and reject markup. */
+    fun normalizeUsername(input:String):String? {
+        val handle=input.trim().trimStart('@')
+        if(handle.isEmpty())return ""
+        return if(Regex("[A-Za-z0-9_]{5,32}").matches(handle))"@"+handle else null
+    }
 
-    fun clipboard(view: DecodeView, format: ResultExport, displayDate: String): String {
+    fun clipboard(view: DecodeView, format: ResultExport, displayDate: String,
+                  attribution: String? = null): String {
         val header = buildString {
             append("// Decoded by SP-DECODE\n")
             append("// Date: ").append(displayDate).append('\n')
-            append("// Powered by Ghost Developer\n")
-            append(HEADER_CREDITS)
+            append("// Powered by Ghost Developer")
+            if(!attribution.isNullOrBlank())append("\n// ").append(attribution)
         }
         return when (format) {
             ResultExport.JSON -> buildString {
@@ -27,7 +33,12 @@ object TelegramResultCopy {
             }
             ResultExport.ORIGINAL ->
                 header + "\n\n" + view.rawText
-            ResultExport.ORDERED -> if(ResultOutputWriter.isLarge(view.rawText))java.io.StringWriter().also{ResultOutputWriter.write(view.rawText,view.extension,ResultExport.ORDERED,it)}.toString() else view.document.structured
+            ResultExport.ORDERED -> {
+                val ordered=if(ResultOutputWriter.isLarge(view.rawText))java.io.StringWriter().also{
+                    ResultOutputWriter.write(view.rawText,view.extension,ResultExport.ORDERED,it)
+                }.toString() else view.document.structured
+                if(attribution.isNullOrBlank())ordered else "// "+attribution+"\n\n"+ordered
+            }
         }
     }
 }

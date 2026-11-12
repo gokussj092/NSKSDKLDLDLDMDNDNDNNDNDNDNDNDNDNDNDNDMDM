@@ -76,8 +76,11 @@ internal fun SpDecodeApp(
     onReveal:(Boolean)->Unit,
     onCopy:(ResultExport)->Unit,
     onExport:(ResultExport)->Unit,
+    onCopyV2rayLinks:(String)->Unit={},
     selectedLanguage:String,
     hideCredentials:Boolean,
+    telegramCreditUsername:String="",
+    onSaveTelegramCredit:(String)->Unit={},
     onLanguage:(String)->Unit,
     onMaskCredentials:(Boolean)->Unit,
     onExternalLink:(String)->Unit,
@@ -171,8 +174,12 @@ internal fun SpDecodeApp(
                         else ApkAnalysisComingSoonScreen()
                     3->ServerVpnScreen(busy,serverVpnApps,serverVpnLoading && catalogTransfer==null,serverVpnUnavailable,
                         onDecodeServerCatalog,onDecodeServerApp,catalogProgress)
-                    else->FunctionalSettingsPanel(selectedLanguage,hideCredentials,
-                        onLanguage,onMaskCredentials,onClear,onExternalLink,
+                    else->FunctionalSettingsPanel(language=selectedLanguage,
+                        maskCredentials=hideCredentials,
+                        telegramCreditUsername=telegramCreditUsername,
+                        onSaveTelegramCredit=onSaveTelegramCredit,
+                        onLanguage=onLanguage,onMaskCredentials=onMaskCredentials,
+                        onClear=onClear,onExternalLink=onExternalLink,
                         retentionDays,onRetention,onShowGuide=onGuideRestart,
                         onLegalLink=onLegalLink,onWithdrawConsent=onWithdrawCloudConsent,
                         onAdsPrivacyOptions=onAdsPrivacyOptions,
@@ -373,6 +380,32 @@ internal fun SpDecodeApp(
                                 Icon(icon,null)
                                 Spacer(Modifier.width(9.dp))
                                 Text(stringResource(label))
+                            }
+                        }
+                        if(copy) {
+                            val links=remember(current.id,current.rawText) {
+                                V2rayShareLinks.extract(current.rawText)
+                            }
+                            if(links.isNotEmpty()){
+                                HorizontalDivider()
+                                Text(stringResource(R.string.v2ray_share_detail),
+                                    color=Secondary,fontSize=12.sp)
+                                OutlinedButton(modifier=Modifier.fillMaxWidth(),
+                                    onClick={
+                                        onCopyV2rayLinks(links.joinToString("\n"){it.value})
+                                        dialog=null
+                                    }){Text(stringResource(R.string.v2ray_share_auto))}
+                                links.map{it.protocol}.distinct().forEach{protocol->
+                                    OutlinedButton(modifier=Modifier.fillMaxWidth(),
+                                        onClick={
+                                            onCopyV2rayLinks(links.filter{it.protocol==protocol}
+                                                .joinToString("\n"){it.value})
+                                            dialog=null
+                                        }) {
+                                        Text(stringResource(R.string.v2ray_share_protocol,
+                                            protocol.uppercase(java.util.Locale.ROOT)))
+                                    }
+                                }
                             }
                         }
                     }

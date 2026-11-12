@@ -27,7 +27,11 @@ import kotlinx.coroutines.withContext
 internal fun openJsonResultForViewer(raw:String,suffix:String):NativeResultEngine.Document {
     val first=raw.firstOrNull { !it.isWhitespace() }
     val startsAsJson=first=='{' || first=='['
-    val source=if(startsAsJson) raw else ResultJsonDisplay.render(raw,suffix)
+    // Expand JSON-encoded V2Ray settings in the preview, not in raw history.
+    // Bounded normalization avoids multi-megabyte DOM allocations.
+    val nestedV2ray=raw.length<=500_000 && raw.contains("v2rayConfig")
+    val source=if(nestedV2ray || !startsAsJson)
+        ResultJsonDisplay.render(raw,suffix) else raw
     return try {
         NativeResultEngine.open(source)
     }catch(error:java.io.IOException){
