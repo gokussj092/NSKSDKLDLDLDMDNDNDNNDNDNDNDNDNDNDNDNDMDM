@@ -133,7 +133,14 @@ class AndroidUnityReleaseContract(unittest.TestCase):
         self.assertNotIn('"https://spdecode.xyz/store"', activity)
         self.assertIn('internal object CommercialServerIp', ui)
         self.assertIn('CommercialServerIp.isPublicLiteral(serverIp)', ui)
-        self.assertIn('enabled=CommercialServerIp.isPublicLiteral(serverIp)', ui)
+        self.assertIn('serverIp.isBlank()||CommercialServerIp.isPublicLiteral(serverIp)', ui)
+        self.assertIn('placeholder={Text("195.233.233.12")}', ui)
+        self.assertNotIn('placeholder={Text("8.8.8.8")}', ui)
+        market=read("android/app/src/main/java/com/ghostdeveloper/spdecode/NativeStoreCatalog.kt")
+        self.assertIn('https://spdecode.xyz/api/store/catalog',market)
+        self.assertIn('optJSONObject("prices")?.optInt("USD",0)',market)
+        self.assertNotIn('CreditPack(1,399)', ui)
+        self.assertNotIn('ApiTerm("1m",30,599)', ui)
         for text in ('Descifrado de archivos','Descifrado de textos','Métodos online',
                      'Descifrado de catálogos','No incluye análisis de aplicaciones APK/APKS'):
             self.assertIn(text,ui)

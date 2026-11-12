@@ -39,9 +39,15 @@ internal data class NativeStoreCatalog(
                     return@withContext null
                 val payload=connection.inputStream.use{stream->
                     // A tiny bounded catalog; never parse unbounded remote JSON.
-                    val bytes=stream.readNBytes(128*1024+1)
-                    if(bytes.size>128*1024)return@withContext null
-                    bytes.toString(Charsets.UTF_8)
+                    val out=java.io.ByteArrayOutputStream()
+                    val chunk=ByteArray(4096)
+                    while(true){
+                        val read=stream.read(chunk)
+                        if(read<0)break
+                        if(out.size()+read>128*1024)return@withContext null
+                        out.write(chunk,0,read)
+                    }
+                    out.toString(Charsets.UTF_8.name())
                 }
                 parse(payload)
             } catch(_:Exception){null}
