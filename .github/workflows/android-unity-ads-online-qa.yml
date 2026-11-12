@@ -70,6 +70,31 @@ jobs:
           python3 scripts/android_s4_provisioning_audit.py
           # Every-file QA only: no catalog-triggered advertisements; native version 1.1.27 (42).
           python3 -m unittest tests.test_android_unity_release_contract -v
+      - name: Commercial API syntax and public IP contract
+        run: |
+          set -euo pipefail
+          node --check cloud/web/lib/commerce/auth.mjs
+          node --check cloud/web/lib/commerce/catalog.mjs
+          node --check cloud/web/lib/commerce/orders.mjs
+          node --check cloud/web/lib/commerce/api.mjs
+          node --check 'cloud/web/app/api/auth/[...all]/route.js'
+          node --check cloud/web/app/api/account/api-ip/route.js
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import { publicIp } from './cloud/web/lib/commerce/config.mjs';
+          import { validatePurchase } from './cloud/web/lib/commerce/catalog.mjs';
+          assert.equal(publicIp('195.233.233.12'),'195.233.233.12');
+          assert.equal(publicIp('8.8.8.8.8'),null);
+          assert.equal(publicIp('192.168.1.25'),null);
+          const input={product:'api-ip',provider:'stripe',currency:'USD',
+            version:1,idempotencyKey:'00000000-0000-4000-8000-000000000001',
+            acceptedTerms:'2026-11-10',term:'1m'};
+          assert.equal(validatePurchase(input).allowedIp,null);
+          assert.equal(validatePurchase({...input,allowedIp:'195.233.233.12'}).allowedIp,
+            '195.233.233.12');
+          assert.throws(()=>validatePurchase({...input,allowedIp:'8.8.8.8.8'}));
+          console.log('PASS: API can be purchased without IP, and requires public IP when supplied');
+          JS
       - name: Android SDK / NDK
         run: |
           set -euo pipefail
