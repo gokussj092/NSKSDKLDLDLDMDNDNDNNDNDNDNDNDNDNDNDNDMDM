@@ -952,10 +952,6 @@ class MainActivity : ComponentActivity() {
             onlineAds?.onWindowFocusChanged(this,hasFocus)
     }
 
-    override fun onStop(){
-        NativeDeviceAccountGuard.lock()
-        super.onStop()
-    }
     override fun onResume() {
         super.onResume()
         if(!ReleaseIntegrity.isTrusted(this)) {
@@ -1959,6 +1955,7 @@ class MainActivity : ComponentActivity() {
     private fun toast(id:Int)=Toast.makeText(this,id,Toast.LENGTH_SHORT).show()
 
     override fun onStop(){
+        NativeDeviceAccountGuard.lock()
         catalogWatchJob?.cancel()
         reveal=false
         super.onStop()
