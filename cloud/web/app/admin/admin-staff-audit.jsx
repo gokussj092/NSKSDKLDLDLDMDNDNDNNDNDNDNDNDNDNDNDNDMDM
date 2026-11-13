@@ -27,3 +27,4 @@ export default function StaffAudit(){
   </table></div>
   {!events.length&&!error&&<p className="muted">No se registraron acciones recientes.</p>}
  </section>;
+}
