@@ -474,7 +474,8 @@ class AndroidUnityReleaseContract(unittest.TestCase):
 
     def test_login_design_covers_all_fourteen_languages(self):
         landing=read("android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceAuthLanding.kt")
-        self.assertIn("R.mipmap.ic_launcher",landing)
+        self.assertIn("getApplicationIcon(ctx.packageName)",landing)
+        self.assertNotIn("painterResource(id=R.mipmap.ic_launcher)",landing)
         self.assertIn("AuthLandingLanguage.text(language,es,en)",landing)
         for locale in ("pt","fr","de","it","tr","ru","ar","fa","hi","ja","id","vi"):
             self.assertIn('"'+locale+'" to ',landing)
