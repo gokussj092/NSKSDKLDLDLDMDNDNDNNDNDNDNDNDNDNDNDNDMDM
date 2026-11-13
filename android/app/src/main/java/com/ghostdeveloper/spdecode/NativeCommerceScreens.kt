@@ -179,7 +179,7 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
     var accountSnapshot by remember {mutableStateOf<JSONObject?>(null)}
     var ipEdit by rememberSaveable{mutableStateOf("")}
     LaunchedEffect(page){
-        if(page in setOf("account","orders","api","security","ad-free","profile-edit","password","gift"))
+        if(page in setOf("account","orders","api","security","ad-free","profile-edit","password","gift","delete-account"))
             accountSnapshot=auth.account()
     }
     var catalog by remember {mutableStateOf<NativeStoreCatalog?>(null)}
@@ -201,6 +201,8 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
             page=="password" -> if(start=="password")onExit() else page="security"
             page=="email-login" -> page="login"
             page=="gift" -> if(start=="gift")onExit() else {page="store";detail="home"}
+            page=="delete-account" -> if(start=="delete-account")onExit() else page="account"
+            page in setOf("support","report") -> if(start==page)onExit() else page="account"
             page=="account" && start=="profile-edit" -> onExit()
             page in setOf("orders","api","security","ad-free") ->
                 if(start==page)onExit() else page="account"
@@ -229,6 +231,9 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                     "password" -> CommerceSecurityText.get(language,"Password")
                     "gift" -> CommerceGiftText.get(language,"Redeem gift code")
                     "email-login" -> local("Acceso con correo","Email sign in")
+                    "support" -> local("Soporte técnico","Technical support")
+                    "report" -> local("Reportar un error","Report an issue")
+                    "delete-account" -> local("Eliminar cuenta","Delete account")
                     "ad-free" -> CommerceAccountWords.get(language,"Ad-free experience")
                     "login" -> local("Acceso seguro","Secure sign in")
                     "cart" -> local("Tu carrito","Your cart")
@@ -248,7 +253,7 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
             verticalArrangement=Arrangement.spacedBy(17.dp)){
             if(NativeDeviceAccountGuard.enabled(context) &&
                 !NativeDeviceAccountGuard.unlocked &&
-                page in setOf("account","orders","api","security","ad-free","profile-edit","password","gift"))
+                page in setOf("account","orders","api","security","ad-free","profile-edit","password","gift","delete-account","support","report"))
                 CommerceAccountUnlockPage(language)
             else when(page){
                 "store" -> when(detail){
@@ -452,8 +457,8 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                             detail="ads"
                         }
                         ProductTile(local("Canjear código de regalo","Redeem gift code"),
-                            local("Créditos, licencias y tiempo sin anuncios",
-                                "Credits, licenses and ad-free access"),
+                            local("Una sorpresa te espera. Descúbrela al canjear tu código.",
+                                "A surprise awaits. Redeem your code to discover it."),
                             local("Canjear","Redeem"),"",
                             {Icon(Icons.Outlined.CardGiftcard,null,tint=white,
                                 modifier=Modifier.size(29.dp))}){
@@ -540,6 +545,10 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                     onSaved={accountSnapshot=it;page="security"})
                 "gift" -> CommerceGiftRedeemPage(language,auth,
                     onSignIn={page="login"},onAccount={page="account"})
+                "support" -> CommerceSupportPage(language,auth,false,onSignIn={page="login"})
+                "report" -> CommerceSupportPage(language,auth,true,onSignIn={page="login"})
+                "delete-account" -> CommerceDeleteAccountPage(language,auth,
+                    onDeleted={accountSnapshot=null;page="login"})
                 "profile-edit" -> {
                     CommerceProfileEditor(language=language,auth=auth,
                         user=CommerceSession.user,onCancel={page="account"},
@@ -564,6 +573,26 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                             colors=OutlinedTextFieldDefaults.colors(
                                 focusedTextColor=white,unfocusedTextColor=white))
                         if(notice!=null)Note(notice.orEmpty())
+                        if(NativeDeviceAccountGuard.enabled(context) &&
+                           auth.sessionToken()!=null &&
+                           NativeDeviceAccountGuard.supported(context)){
+                            OutlinedButton(modifier=Modifier.fillMaxWidth(),onClick={
+                                NativeDeviceAccountGuard.authenticate(context,
+                                    local("Iniciar con huella o PIN","Sign in with fingerprint or PIN")){ok->
+                                    if(ok)scope.launch{
+                                        accountSnapshot=auth.account()
+                                        if(accountSnapshot!=null)page="account"
+                                        else notice=local("La sesión venció. Inicia con contraseña o Google.",
+                                            "Session expired. Sign in with password or Google.")
+                                    }
+                                }
+                            }){
+                                Icon(Icons.Outlined.Fingerprint,null,tint=white)
+                                Spacer(Modifier.width(8.dp))
+                                Text(local("Acceso rápido con huella o PIN",
+                                    "Quick sign in with fingerprint or PIN"),color=white)
+                            }
+                        }
                         PrimaryAction(local("Iniciar sesión","Sign in"),
                             enabled=!signingIn&&email.contains("@")&&emailPassword.isNotEmpty()){
                             scope.launch{

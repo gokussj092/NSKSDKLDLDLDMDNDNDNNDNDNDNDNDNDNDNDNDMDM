@@ -292,6 +292,30 @@ class AndroidUnityReleaseContract(unittest.TestCase):
                              "decrypt_credits_delete_confirm"):
                 self.assertIn(f'name="{resource}"', strings)
 
+    def test_support_security_and_commercial_apk_auth(self):
+        gateway=read("cloud/web/lib/f7-apk-qa-gateway.mjs")
+        support=read("cloud/web/lib/commerce/support.mjs")
+        account=read("cloud/web/lib/commerce/account-device.mjs")
+        screen=read("android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceScreens.kt")
+        drawer=read("android/app/src/main/java/com/ghostdeveloper/spdecode/AccountDrawer.kt")
+        client=read("android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudApkQaClient.kt")
+        native=read("android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceAuth.kt")
+        self.assertIn("verifyApkAccount",gateway)
+        self.assertIn("reserveCredit(accountId,id)",gateway)
+        self.assertIn("completeCredit(accountId,id)",gateway)
+        self.assertIn("releaseCredit(accountId,id)",gateway)
+        self.assertIn("SIGN_IN_REQUIRED",gateway)
+        self.assertIn('accountToken',client)
+        self.assertIn('CloudDecodeClient.Failure("SIGN_IN_REQUIRED",401)',client)
+        self.assertIn("aes-256-gcm",support)
+        self.assertIn("listAdminSupport",support)
+        self.assertIn("makeDeletionChallenge",account)
+        self.assertIn("authorizeDeviceDeletion",account)
+        self.assertIn("CommerceSupportPage",screen)
+        self.assertIn("CommerceDeleteAccountPage",screen)
+        self.assertIn("deleteWithDevice",native)
+        self.assertNotIn('onClick={navigate("profile-edit")}',drawer)
+
     def test_persistent_account_and_gift_redemption_contracts(self):
         auth=read("cloud/web/lib/commerce/auth.mjs")
         api=read("cloud/web/lib/commerce/api.mjs")

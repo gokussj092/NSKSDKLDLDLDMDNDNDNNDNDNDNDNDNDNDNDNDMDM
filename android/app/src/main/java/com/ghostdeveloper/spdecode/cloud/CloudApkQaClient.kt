@@ -1,5 +1,6 @@
 package com.ghostdeveloper.spdecode.cloud
 
+import com.ghostdeveloper.spdecode.NativeCommerceAuth
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -18,7 +19,7 @@ import java.security.SecureRandom
 import kotlin.coroutines.coroutineContext
 
 /**
- * One device-bound, no-login QA upload at a time. Each checkpoint (including
+ * One device-bound, authenticated and credit-backed upload at a time. Each checkpoint (including
  * opaque bearer capability and SAF URI) is encrypted with AndroidKeyStore.
  * Worker may be stopped at any time: resume reads the server-acknowledged
  * nextChunk/receivedBytes and never trusts a local progress estimate.
@@ -185,7 +186,12 @@ internal class CloudApkQaClient(context:Context,private val cloud:CloudDecodeCli
         var attempts=0
         while(true) {
             coroutineContext.ensureActive()
-            try {return cloud.apkQaRequest(op,payload,bytes)}
+            val accountToken=NativeCommerceAuth(app).sessionToken()
+                ?:throw CloudDecodeClient.Failure("SIGN_IN_REQUIRED",401)
+            // The bearer travels ONLY within the V2 HPKE-encrypted request.
+            // It is never saved in WorkManager or sent to the APK lab.
+            val bound=JSONObject(payload.toString()).put("accountToken",accountToken)
+            try {return cloud.apkQaRequest(op,bound,bytes)}
             catch(error:CloudDecodeClient.Failure) {
                 if(error.code !in setOf("RATE_LIMITED","SERVICE_UNAVAILABLE",
                         "APK_QA_UNAVAILABLE") || attempts>=5)throw error

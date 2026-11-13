@@ -303,6 +303,43 @@ internal class NativeCommerceAuth(private val context:Context) {
             throw AuthFailure("ACCOUNT_CHANGED_REAUTH")
         return snapshot
     }
+    suspend fun supportInbox():JSONObject =
+        http("/api/support",authenticated=true).first
+    suspend fun openSupportThread(subject:String,category:String,message:String):JSONObject =
+        http("/api/support","POST",JSONObject().put("action","new")
+            .put("subject",subject).put("category",category).put("message",message),true).first
+    suspend fun sendSupportMessage(threadId:String,message:String):JSONObject =
+        http("/api/support","POST",JSONObject().put("action","send")
+            .put("threadId",threadId).put("message",message),true).first
+    suspend fun registerDeviceKey(device:NativeDeviceAccountGuard.DeviceKey,signature:String):JSONObject =
+        http("/api/account/device-key","POST",JSONObject().put("keyId",device.keyId)
+            .put("publicKey",device.publicKey).put("signature",signature),true).first
+    suspend fun deletionChallenge(device:NativeDeviceAccountGuard.DeviceKey):JSONObject =
+        http("/api/account/delete-challenge","POST",
+            JSONObject().put("keyId",device.keyId),true).first
+    suspend fun deleteWithDevice(device:NativeDeviceAccountGuard.DeviceKey,
+        challenge:JSONObject,signature:String):JSONObject{
+        val result=http("/api/account/delete","POST",JSONObject().put("method","device")
+            .put("keyId",device.keyId)
+            .put("challengeId",challenge.getString("challengeId"))
+            .put("challenge",challenge.getString("challenge"))
+            .put("signature",signature),true).first
+        wipeSession()
+        return result
+    }
+    suspend fun deleteWithGoogle(expectedId:String):JSONObject{
+        reauthenticateWithGoogle(expectedId)
+        val result=http("/api/account/delete","POST",JSONObject().put("method","google"),true).first
+        wipeSession()
+        return result
+    }
+    suspend fun deleteWithPassword(password:String):JSONObject{
+        if(password.isEmpty()||password.length>128)throw AuthFailure("INVALID_PASSWORD")
+        val result=http("/api/account/delete","POST",JSONObject().put("method","password")
+            .put("password",password),true).first
+        wipeSession()
+        return result
+    }
     /** Server-authoritative quote; amounts and taxes are never calculated here. */
     suspend fun quoteAdFree(provider:String,country:String):JSONObject {
         if(provider !in setOf("stripe","paypal") || !Regex("[A-Z]{2}").matches(country))

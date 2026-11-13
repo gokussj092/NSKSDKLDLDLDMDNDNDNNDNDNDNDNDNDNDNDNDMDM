@@ -51,7 +51,8 @@ internal class ApkQaWorker(context:Context,params:WorkerParameters):
             throw error
         }catch(error:CloudDecodeClient.Failure) {
             if(error.code in setOf("JOB_UNAVAILABLE","JOB_EXPIRED",
-                    "INPUT_TOO_LARGE","UNSUPPORTED_FORMAT","INVALID_START_ID")) {
+                    "INPUT_TOO_LARGE","UNSUPPORTED_FORMAT","INVALID_START_ID",
+                    "INSUFFICIENT_CREDITS","SIGN_IN_REQUIRED","APK_QA_ACCESS_DENIED")) {
                 client.noteTerminalError(error.code)
                 Result.failure()
             } else {

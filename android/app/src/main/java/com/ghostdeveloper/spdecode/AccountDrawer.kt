@@ -68,12 +68,6 @@ internal fun AccountDrawer(busy:Boolean,onExternalLink:(String)->Unit,
                                 color=Color(0xFFB8DCC0),fontSize=12.sp,
                                 modifier=Modifier.padding(horizontal=13.dp,vertical=8.dp))
                         }
-                        OutlinedButton(onClick={navigate("profile-edit")},
-                            modifier=Modifier.fillMaxWidth()){
-                            Icon(Icons.Outlined.Edit,null)
-                            Spacer(Modifier.width(8.dp))
-                            Text(CommerceProfileText.get(language,"Edit profile"))
-                        }
                     }else Button(onClick={navigate("login")},enabled=!busy,
                         modifier=Modifier.fillMaxWidth(),
                         colors=ButtonDefaults.buttonColors(containerColor=Color.White,
@@ -90,6 +84,14 @@ internal fun AccountDrawer(busy:Boolean,onExternalLink:(String)->Unit,
                     label={Text(local("Tienda","Store"))},
                     icon={Icon(Icons.Outlined.Storefront,null)},
                     onClick={navigate("store")})
+                NavigationDrawerItem(selected=false,
+                    label={Text(local("Soporte técnico","Technical support"))},
+                    icon={Icon(Icons.Outlined.SupportAgent,null)},
+                    onClick={navigate("support")})
+                NavigationDrawerItem(selected=false,
+                    label={Text(local("Reportar un error","Report an issue"))},
+                    icon={Icon(Icons.Outlined.BugReport,null)},
+                    onClick={navigate("report")})
                 if(user!=null) {
                     NavigationDrawerItem(selected=false,label={Text(local("Compras","Orders"))},
                         icon={Icon(Icons.Outlined.ReceiptLong,null)},onClick={navigate("orders")})

@@ -119,6 +119,11 @@ jobs:
           set -euo pipefail
           node --check cloud/web/lib/commerce/auth.mjs
           node --check cloud/web/lib/commerce/gifts.mjs
+          node --check cloud/web/lib/commerce/support.mjs
+          node --check cloud/web/lib/commerce/support-route.mjs
+          node --check cloud/web/lib/commerce/account-device.mjs
+          node --check cloud/web/lib/commerce/account-device-route.mjs
+          node --check cloud/web/lib/f7-apk-qa-gateway.mjs
           node --check cloud/web/scripts/commerce-migrate.mjs
           node --check cloud/web/app/api/admin/gifts/route.js
           node --check cloud/web/app/api/account/password/route.js
@@ -158,6 +163,8 @@ jobs:
           set -euo pipefail
           npm ci --prefix cloud/web --no-audit --no-fund
           node --test cloud/web/tests/gifts.test.mjs
+          node --test cloud/web/tests/account-support-security.test.mjs
+          node --test cloud/web/tests/f7-apk-qa.test.mjs
       - name: Android SDK / NDK
         run: |
           set -euo pipefail

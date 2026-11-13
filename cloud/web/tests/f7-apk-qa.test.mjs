@@ -1,18 +1,34 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {createHash} from "node:crypto";
-import {apkQaRequest} from "../lib/f7-apk-qa-gateway.mjs";
+import {apkQaRequest as apkQaGuarded} from "../lib/f7-apk-qa-gateway.mjs";
+import {ShopError} from "../lib/commerce/config.mjs";
+const QA_TOKEN='qa-better-auth-account-bearer-opaque-123456';
+const callCounts={preflight:0,bind:0,authorize:0,settle:0};
+const billing={
+ preflight:async()=>{callCounts.preflight++;},
+ bindJob:async()=>{callCounts.bind++;},
+ authorizeJob:async()=>{callCounts.authorize++;},
+ settleJob:async()=>{callCounts.settle++;}
+};
+async function verifyToken(token){
+ if(token!==QA_TOKEN)throw new ShopError('SIGN_IN_REQUIRED',401);
+ return 'verified-account-id';
+}
+function apkQaRequest(request,op,opts={}){
+ return apkQaGuarded(request,op,{...opts,authenticate:verifyToken,billing});
+}
 import {bindVerifiedRequest} from "../lib/v2-bound-request.mjs";
 import {routes,bodyLimit} from "../lib/v2-routes.mjs";
 import {protectedActions} from "../lib/action-integrity.mjs";
 import {unpackHpkeBody} from "../lib/v2-hpke.mjs";
 
 const ownerTestKey="device-p256-public-key-verifiable-qa-test";
-const cfg={CLOUD_APK_QA_ENABLED:"true",CLOUD_APK_QA_INTERNAL_TOKEN:"z".repeat(48)};
+const cfg={CLOUD_APK_QA_ENABLED:"true",SPDECODE_ANALYSIS_CREDITS_READY:"true",CLOUD_APK_QA_INTERNAL_TOKEN:"z".repeat(48)};
 function request(body,op,authorized=true){
   const req=new Request("https://api.spdecode.test/api/v1/apk-qa/test",{
     method:"POST",headers:{"content-type":"application/json"},
-    body:JSON.stringify(body)});
+    body:JSON.stringify({...body,accountToken:body.accountToken??QA_TOKEN})});
   if(authorized)bindVerifiedRequest(req,{
     hpke:true,key:"device-p256-public-key-verifiable-qa-test",scope:"decode",versionCode:42});
   return req;
@@ -52,12 +68,15 @@ test("feature toggle fail-closed even with a verified caller",async()=>{
   assert.equal(result.status,503);
   assert.equal(a.count,0);
 });
-test("verified V2 caller needs no manual device enrollment",async()=>{
+test("verified V2 caller also has a verified account and a credit preflight",async()=>{
   const a=sender();
   const result=await apkQaRequest(request({consent:true,qaFirstPass:true},21),21,{
     env:cfg,send:a.send});
   assert.equal(result.status,200);
   assert.equal(a.count,1);
+  assert.ok(callCounts.preflight>=1);
+  assert.ok(callCounts.bind>=1);
+  assert.equal(a.captured.body.accountToken,undefined);
   assert.equal(a.captured.body.deviceKeyHash,
     createHash("sha256").update(ownerTestKey).digest("hex"));
 });
@@ -138,4 +157,36 @@ test("full result boundary counts UTF-8 bytes and rejects an oversized internal 
     env:cfg,send:a.send});
   assert.equal(result.status,503);
   assert.deepEqual(await result.json(),{error:{code:"APK_QA_UNAVAILABLE"}});
+});
+
+test('APK jobs reject missing commercial session before contacting lab',async()=>{
+ const a=sender();
+ const req=request({consent:true,qaFirstPass:true,accountToken:'wrong'},21);
+ const res=await apkQaRequest(req,21,{env:cfg,send:a.send});
+ assert.equal(res.status,401);assert.equal(a.count,0);
+});
+test('credit denial prevents creating remote APK jobs',async()=>{
+ const a=sender();
+ const res=await apkQaGuarded(request({consent:true,qaFirstPass:true},21),21,{
+   env:cfg,send:a.send,authenticate:verifyToken,
+   billing:{...billing,preflight:async()=>{throw new ShopError('INSUFFICIENT_CREDITS',402);}}
+ });
+ assert.equal(res.status,402);assert.equal(a.count,0);
+});
+test('resume and finish require account-bound reservation before lab access',async()=>{
+ const a=sender();
+ const res=await apkQaGuarded(request({jobId:'a'.repeat(32)},24),24,{
+  env:cfg,send:a.send,authenticate:verifyToken,
+  billing:{...billing,authorizeJob:async()=>{throw new ShopError('APK_QA_ACCESS_DENIED',403);}}
+ });
+ assert.equal(res.status,403);assert.equal(a.count,0);
+});
+test('completed verified report causes exactly one server-side settlement',async()=>{
+ let settlements=0;
+ const a=sender(()=>Response.json({status:'COMPLETED',report:{reportKind:'APK_STATIC_QA_DEEP_V2'}}));
+ const res=await apkQaGuarded(request({jobId:'a'.repeat(32)},24),24,{
+  env:cfg,send:a.send,authenticate:verifyToken,
+  billing:{...billing,settleJob:async()=>{settlements++;}}
+ });
+ assert.equal(res.status,200);assert.equal(settlements,1);
 });

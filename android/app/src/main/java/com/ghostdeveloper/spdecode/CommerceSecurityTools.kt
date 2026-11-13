@@ -147,6 +147,9 @@ internal fun CommerceDeviceAccountSettings(language:String){
     val tr:(String)->String={CommerceSecurityText.get(language,it)}
     var selected by remember {mutableStateOf(NativeDeviceAccountGuard.enabled(context))}
     var working by remember {mutableStateOf(false)}
+    var error by remember {mutableStateOf<String?>(null)}
+    val scope=rememberCoroutineScope()
+    val auth=remember(context){NativeCommerceAuth(context)}
     val supported=NativeDeviceAccountGuard.supported(context)
     Row(Modifier.fillMaxWidth().background(Color(0xFF222222),RoundedCornerShape(20.dp))
         .padding(16.dp),verticalAlignment=Alignment.CenterVertically){
@@ -160,14 +163,31 @@ internal fun CommerceDeviceAccountSettings(language:String){
         Switch(checked=selected,enabled=supported&&!working,onCheckedChange={enabled->
             working=true
             NativeDeviceAccountGuard.authenticate(context,tr("Confirm with your device")){success->
-                if(success){
-                    NativeDeviceAccountGuard.setEnabled(context,enabled)
-                    selected=enabled
-                }
-                working=false
+                if(success&&enabled){
+                    val current=CommerceSession.user
+                    if(current==null){working=false;error=tr("Google verification required")}
+                    else scope.launch{
+                        try{
+                            val device=NativeDeviceAccountGuard.ensureDeviceKey(context,current.id)
+                            val proof=NativeDeviceAccountGuard.signedChallenge(context,current.id,
+                                "SPDECODE-DEVICE-REGISTER-v1:"+current.id+":"+device.keyId)
+                            auth.registerDeviceKey(device,proof)
+                            NativeDeviceAccountGuard.setEnabled(context,true)
+                            selected=true;error=null
+                        }catch(_:Exception){error=CommerceI18n.translate(language,
+                            "No se pudo vincular la seguridad del dispositivo.",
+                            "Device protection could not be linked.")}
+                        finally{working=false}
+                    }
+                }else if(success){
+                    NativeDeviceAccountGuard.setEnabled(context,false)
+                    selected=false;error=null
+                    working=false
+                }else working=false
             }
         })
     }
+    if(error!=null)Text(error.orEmpty(),color=Color(0xFFFFBABA),fontSize=12.sp)
 }
 
 @Composable

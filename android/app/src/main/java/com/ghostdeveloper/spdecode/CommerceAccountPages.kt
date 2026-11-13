@@ -150,6 +150,12 @@ internal fun CommerceAccountHome(language:String,user:CommerceIdentity?,
         Icons.Outlined.VerifiedUser){onNavigate("ad-free")}
     SectionButton(tr("Account security"),tr("Linked account"),
         Icons.Outlined.Shield){onNavigate("security")}
+    SectionButton(CommerceI18n.translate(language,"Soporte técnico","Technical support"),
+        CommerceI18n.translate(language,"Tus conversaciones","Your conversations"),
+        Icons.Outlined.SupportAgent){onNavigate("support")}
+    SectionButton(CommerceI18n.translate(language,"Eliminar cuenta","Delete account"),
+        CommerceI18n.translate(language,"Privacidad y datos de la cuenta","Privacy and account data"),
+        Icons.Outlined.DeleteForever){onNavigate("delete-account")}
 }
 
 @Composable
