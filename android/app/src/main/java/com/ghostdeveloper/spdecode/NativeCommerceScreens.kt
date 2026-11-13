@@ -636,6 +636,20 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                                 }finally{signingIn=false}
                             }
                         }
+                        TextButton(onClick={
+                            emailPassword=""
+                            notice=null
+                            page="login"
+                        },modifier=Modifier.fillMaxWidth()){
+                            Icon(Icons.Outlined.AccountCircle,null,tint=good)
+                            Spacer(Modifier.width(9.dp))
+                            Text(local("¿Olvidaste tu contraseña? Recupera el acceso con Google",
+                                "Forgot password? Recover access with Google"),
+                                color=good,fontSize=13.sp)
+                        }
+                        Text(local("Para cuentas vinculadas a Google, inicia con Google y cambia tu contraseña en Seguridad.",
+                            "For Google-linked accounts, sign in with Google and change your password in Security."),
+                            color=muted,fontSize=11.sp,lineHeight=17.sp)
                         if(signingIn)LinearProgressIndicator(Modifier.fillMaxWidth(),color=white)
                     }
                 }
