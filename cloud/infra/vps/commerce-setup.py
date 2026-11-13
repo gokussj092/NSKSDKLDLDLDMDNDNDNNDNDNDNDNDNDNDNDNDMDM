@@ -71,7 +71,7 @@ def prepare_support_only(path):
         temp=Path(f.name)
         try:
             os.fchmod(f.fileno(),0o600)
-            f.write(content.rstrip('\\n')+'\\nSPDECODE_SUPPORT_ENCRYPTION_KEY='+secret+'\\n')
+            f.write(content.rstrip('\n')+'\nSPDECODE_SUPPORT_ENCRYPTION_KEY='+secret+'\n')
             f.flush()
             os.fsync(f.fileno())
         finally:
