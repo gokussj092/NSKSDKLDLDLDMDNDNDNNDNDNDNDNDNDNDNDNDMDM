@@ -44,6 +44,7 @@ on:
       - cloud/infra/vps/tests/test_support_secret_setup.py
       - cloud/compose.yaml
       - android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceAuthLanding.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/AdFreeSymbol.kt
       - cloud/web/lib/commerce/support.mjs
       - cloud/web/lib/commerce/support-route.mjs
       - cloud/web/lib/commerce/account-device.mjs
