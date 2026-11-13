@@ -39,7 +39,7 @@ CREATE INDEX IF NOT EXISTS apk_qa_owner ON spdecode_shop.apk_qa_jobs(account_id,
 CREATE TABLE IF NOT EXISTS spdecode_shop.account_device_keys (
  account_id text NOT NULL REFERENCES shop_user(id) ON DELETE CASCADE,
  key_id uuid NOT NULL,
- public_key text NOT NULL CHECK(length(public_key) BETWEEN 140 AND 2048),
+ public_key text NOT NULL CHECK(length(public_key) BETWEEN 80 AND 2048),
  created_at timestamptz NOT NULL DEFAULT now(),
  PRIMARY KEY(account_id,key_id), UNIQUE(key_id)
 );
