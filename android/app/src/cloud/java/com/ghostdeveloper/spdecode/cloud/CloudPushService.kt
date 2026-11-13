@@ -26,7 +26,9 @@ class CloudPushInitializer:ContentProvider() {
         val jobScope=CoroutineScope(SupervisorJob()+Dispatchers.IO)
         CloudNoticePush.syncAccount={ctx->
             if(CloudNotifications.enabled(ctx)&&CloudLegalConsent.accepted(ctx)&&
-                NativeCommerceAuth(ctx).sessionToken()!=null){
+                NativeCommerceAuth(ctx).sessionToken()!=null&&
+                BuildConfig.NOTICE_FIREBASE_APP_ID.isNotEmpty()&&
+                FirebaseApp.getApps(ctx).isNotEmpty()){
                 FirebaseMessaging.getInstance().token.addOnSuccessListener{token->
                     jobScope.launch {
                         runCatching{NativeCommerceAuth(ctx).registerPushToken(token)}

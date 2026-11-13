@@ -519,6 +519,20 @@ class AndroidUnityReleaseContract(unittest.TestCase):
         self.assertIn("default_notification_channel_id",manifest)
         self.assertIn("registerPushToken",auth)
         self.assertIn("unregisterPushToken",auth)
+        # Login can happen after Firebase's startup callback. Bind the FCM token
+        # immediately after Better Auth confirms the account, never pre-login.
+        self.assertIn("CommerceSession.update(response)\n        cacheIdentity(response)",auth)
+        self.assertIn("CloudNoticePush.syncAccount(context)",auth)
+        self.assertGreater(
+            auth.index("CloudNoticePush.syncAccount(context)"),
+            auth.index("cacheIdentity(response)")
+        )
+        self.assertIn("BuildConfig.NOTICE_FIREBASE_APP_ID.isNotEmpty()",service)
+        self.assertIn("FirebaseApp.getApps(ctx).isNotEmpty()",service)
+        workflow=read(".github/workflows/android-unity-ads-online-qa.yml")
+        self.assertIn("Assert Firebase Android push configuration",workflow)
+        self.assertIn("Missing GitHub Actions variable",workflow)
+        self.assertIn("ORG_GRADLE_PROJECT_noticeFirebasePROJECT_ID",workflow)
         self.assertIn("CommerceNotificationCenter",ui)
         self.assertIn("CommerceActivityPage",ui)
         self.assertIn("encryptPushToken",store)

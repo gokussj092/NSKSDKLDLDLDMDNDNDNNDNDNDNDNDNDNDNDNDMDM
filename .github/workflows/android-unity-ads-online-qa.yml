@@ -166,6 +166,26 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.11.1"
+      - name: Assert Firebase Android push configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          missing=0
+          for key in \
+            ORG_GRADLE_PROJECT_noticeFirebaseAPP_ID \
+            ORG_GRADLE_PROJECT_noticeFirebaseAPI_KEY \
+            ORG_GRADLE_PROJECT_noticeFirebasePROJECT_ID \
+            ORG_GRADLE_PROJECT_noticeFirebaseSENDER_ID; do
+            if [[ -z "${!key:-}" ]]; then
+              echo "::error title=Android FCM not configured::Missing GitHub Actions variable ${key#ORG_GRADLE_PROJECT_noticeFirebase}"
+              missing=1
+            fi
+          done
+          if ((missing)); then
+            echo "::error::Set all four SPDECODE_NOTICE_FIREBASE_* repository variables before producing a push-enabled APK."
+            exit 1
+          fi
+          echo "Firebase Android public identifiers present. Device delivery requires runtime verification."
       - name: Validate V2Box v1/v2 protected exports
         run: |
           set -euo pipefail

@@ -257,6 +257,13 @@ internal class NativeCommerceAuth(private val context:Context) {
         }
         CommerceSession.update(response)
         cacheIdentity(response)
+        // The app may have started before Google/email sign-in. At startup FCM
+        // had no authenticated account to bind the device token to; register it
+        // after every confirmed account session so background support/purchase
+        // notifications work without needing another app launch.
+        runCatching{
+            com.ghostdeveloper.spdecode.cloud.CloudNoticePush.syncAccount(context)
+        }
         return response
     }
     /** Profile edits use the persistent authenticated account session. */
