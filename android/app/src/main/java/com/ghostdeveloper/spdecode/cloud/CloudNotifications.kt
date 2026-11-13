@@ -42,12 +42,15 @@ internal object NoticeSubscriptionPolicy {
 /** Optional push implementation is installed only by the Cloud source set. */
 internal object CloudNoticePush {
     var configure:(Context,Boolean)->Unit={_,_->}
+    var syncAccount:(Context)->Unit={_->}
+    var revokeAccount:suspend (Context)->Unit={_->}
 }
 
 internal object CloudNotifications {
     private const val PREFS="spdecode-notifications"
     private const val CHANNEL="service-notices-chime-v2"
     private const val LEGACY_CHANNEL="service-notices-v1"
+    private const val ACCOUNT_CHANNEL="account-alerts-v1"
     private const val PERIODIC="service-notices-recovery"
     private const val IMMEDIATE="service-notices-refresh"
     private fun prefs(c:Context)=c.applicationContext.getSharedPreferences(PREFS,Context.MODE_PRIVATE)
@@ -77,6 +80,9 @@ internal object CloudNotifications {
             channel.setSound(notificationSound(c),attributes)
         }
         manager.createNotificationChannel(channel)
+        val privateChannel=NotificationChannel(ACCOUNT_CHANNEL,
+            "SP-DECODE · Cuenta y soporte",NotificationManager.IMPORTANCE_HIGH)
+        manager.createNotificationChannel(privateChannel)
     }
     fun enabled(c:Context)=BuildConfig.SPDECODE_CLOUD_ENABLED && prefs(c).getBoolean("enabled",false)
     fun allowed(c:Context)=Build.VERSION.SDK_INT<33 || ContextCompat.checkSelfPermission(c,
@@ -96,7 +102,7 @@ internal object CloudNotifications {
         }
         edit.commit()
         CloudNoticePush.configure(c,value)
-        if(value) {ensureScheduled(c);enqueue(c)} else {
+        if(value) {ensureSoundChannel(c);ensureScheduled(c);enqueue(c)} else {
             WorkManager.getInstance(c).cancelUniqueWork(PERIODIC)
             WorkManager.getInstance(c).cancelUniqueWork(IMMEDIATE)
             NotificationManagerCompat.from(c).cancelAll()
@@ -115,6 +121,32 @@ internal object CloudNotifications {
             .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
             .setBackoffCriteria(BackoffPolicy.EXPONENTIAL,30,TimeUnit.SECONDS).build()
         WorkManager.getInstance(c).enqueueUniqueWork(IMMEDIATE,ExistingWorkPolicy.KEEP,work)
+    }
+    /** A generic push is safe to display immediately, without a network request.
+     * Never display a message body, payment value or arbitrary FCM text.
+     * The private inbox remains authoritative and authenticated.
+     */
+    fun showPushHint(c:Context,id:String,privateAccount:Boolean){
+        if(!enabled(c)||!allowed(c)||!CloudLegalConsent.accepted(c))return
+        if(!id.matches(Regex("[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}")))return
+        ensureSoundChannel(c)
+        val manager=NotificationManagerCompat.from(c)
+        if(!manager.areNotificationsEnabled())return
+        val intent=Intent(c,MainActivity::class.java)
+            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        val tap=PendingIntent.getActivity(c,0,intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+        val notification=NotificationCompat.Builder(c,if(privateAccount)ACCOUNT_CHANNEL else CHANNEL)
+            .setSmallIcon(R.drawable.ic_service_notice)
+            .setContentTitle("SP-DECODE")
+            .setContentText(if(privateAccount)"Tienes una actualización en tu cuenta"
+                else "Nuevo aviso disponible")
+            .setContentIntent(tap).setAutoCancel(true)
+            .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
+            .setPriority(if(privateAccount)NotificationCompat.PRIORITY_HIGH
+                else NotificationCompat.PRIORITY_DEFAULT).build()
+        try{manager.notify(id,0,notification)}
+        catch(_:SecurityException){}
     }
     /** Arbitrary push text/URLs are never displayed; fetch the authenticated feed first. */
     fun hint(c:Context,id:String) {

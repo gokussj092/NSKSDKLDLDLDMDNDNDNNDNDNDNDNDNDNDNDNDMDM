@@ -150,6 +150,14 @@ internal fun CommerceAccountHome(language:String,user:CommerceIdentity?,
         Icons.Outlined.VerifiedUser){onNavigate("ad-free")}
     SectionButton(tr("Account security"),tr("Linked account"),
         Icons.Outlined.Shield){onNavigate("security")}
+    SectionButton(CommerceI18n.translate(language,"Notificaciones","Notifications"),
+        CommerceI18n.translate(language,"Respuestas, compras y seguridad",
+            "Replies, purchases and security"),
+        Icons.Outlined.Notifications){onNavigate("notifications")}
+    SectionButton(CommerceI18n.translate(language,"Historial de operaciones","Activity history"),
+        CommerceI18n.translate(language,"Compras, análisis, créditos y regalos",
+            "Purchases, analyses, credits and gifts"),
+        Icons.Outlined.History){onNavigate("activity")}
     SectionButton(CommerceI18n.translate(language,"Soporte técnico","Technical support"),
         CommerceI18n.translate(language,"Tus conversaciones","Your conversations"),
         Icons.Outlined.SupportAgent){onNavigate("support")}

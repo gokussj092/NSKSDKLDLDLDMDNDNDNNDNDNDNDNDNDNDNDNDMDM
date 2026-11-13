@@ -1,3 +1,4 @@
+import {recordAccountNotice,pushAccountNotice} from './account-notices.mjs';
 import {randomUUID,randomBytes,createHash,createHmac} from 'node:crypto';
 import {database,transaction} from './db.mjs';
 import {fail,paymentReady,publicIp} from './config.mjs';
@@ -49,7 +50,7 @@ export async function checkout(accountId,input,{db=database(),start=startPayment
 export async function settle(provider,event,{db=database()}={}){
   if(!event)return {ignored:true};
   if(!/^[0-9a-f-]{36}$/.test(event.orderId||'')||typeof event.eventId!=='string'||event.eventId.length>200)fail('INVALID_PAYMENT_EVENT');
-  return transaction(async client=>{
+  const result=await transaction(async client=>{
     const order=(await client.query('SELECT * FROM spdecode_shop.orders WHERE id=$1 FOR UPDATE',[event.orderId])).rows[0];
     if(!order||order.provider!==provider||order.provider_id!==event.providerId)fail('PAYMENT_ORDER_MISMATCH',409);
     if(typeof event.live!=='boolean'||event.live!==order.payment_live)fail('PAYMENT_MODE_MISMATCH',409);
@@ -113,8 +114,15 @@ export async function settle(provider,event,{db=database()}={}){
           ON CONFLICT(order_id,movement_kind) DO NOTHING`,[randomUUID(),order.id]);
       }
     }
-    return {received:true};
+    let accountNoticeId=null;
+    const owner=await client.query('SELECT id FROM shop_user WHERE id=$1',[order.account_id]);
+    if(owner.rowCount)accountNoticeId=await recordAccountNotice(client,order.account_id,
+      'purchase:'+order.id+':'+event.type,'purchase',order.id);
+    return {received:true,accountId:order.account_id,accountNoticeId};
   },db);
+  if(result.accountNoticeId)
+    await pushAccountNotice(result.accountId,result.accountNoticeId,'purchase',{db}).catch(()=>{});
+  return result.accountNoticeId?{received:true}:result;
 }
 export function tokenDigest(token,key=process.env.SPDECODE_SHOP_TOKEN_KEY){
   if(typeof key!=='string'||key.length<32)fail('ENTITLEMENTS_NOT_CONFIGURED',503);

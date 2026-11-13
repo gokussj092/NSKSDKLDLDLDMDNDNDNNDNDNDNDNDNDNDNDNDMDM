@@ -1,6 +1,7 @@
 package com.ghostdeveloper.spdecode
 
 import androidx.activity.compose.BackHandler
+import com.ghostdeveloper.spdecode.cloud.CloudNoticePush
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -33,7 +34,8 @@ internal fun AccountDrawer(busy:Boolean,onExternalLink:(String)->Unit,
     var destination by remember {mutableStateOf<String?>(null)}
     LaunchedEffect(Unit) {
         auth.restoreCachedIdentity()
-        if(auth.sessionToken()!=null)runCatching{auth.account()}
+        if(auth.sessionToken()!=null&&runCatching{auth.account()}.getOrNull()!=null)
+            CloudNoticePush.syncAccount(context)
     }
     BackHandler(state.isOpen && destination==null){scope.launch{state.close()}}
     fun navigate(route:String) {
@@ -84,6 +86,14 @@ internal fun AccountDrawer(busy:Boolean,onExternalLink:(String)->Unit,
                     label={Text(local("Tienda","Store"))},
                     icon={Icon(Icons.Outlined.Storefront,null)},
                     onClick={navigate("store")})
+                NavigationDrawerItem(selected=false,
+                    label={Text(local("Notificaciones","Notifications"))},
+                    icon={Icon(Icons.Outlined.Notifications,null)},
+                    onClick={navigate("notifications")})
+                NavigationDrawerItem(selected=false,
+                    label={Text(local("Actividad","Activity"))},
+                    icon={Icon(Icons.Outlined.History,null)},
+                    onClick={navigate("activity")})
                 NavigationDrawerItem(selected=false,
                     label={Text(local("Soporte técnico","Technical support"))},
                     icon={Icon(Icons.Outlined.SupportAgent,null)},

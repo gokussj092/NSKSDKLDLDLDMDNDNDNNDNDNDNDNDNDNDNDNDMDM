@@ -34,7 +34,7 @@ before(async()=>{
  auth=makeAuth(db,env);
  await (await getMigrations(auth.options)).runMigrations();
  for(const name of ['002_shop.sql','003_ads_free.sql','004_gifts.sql',
-   '005_account_support_apk.sql','006_support_agent_identity.sql','007_staff_permissions.sql']){
+   '005_account_support_apk.sql','006_support_agent_identity.sql','007_staff_permissions.sql','008_account_notifications.sql']){
   const sql=await readFile(new URL('../sql/'+name,import.meta.url),'utf8');
   await pg.exec(sql);
  }

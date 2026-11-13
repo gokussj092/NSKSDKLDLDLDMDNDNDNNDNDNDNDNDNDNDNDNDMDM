@@ -20,6 +20,23 @@ on:
       - cloud/web/sql/005_account_support_apk.sql
       - cloud/web/sql/006_support_agent_identity.sql
       - cloud/web/sql/007_staff_permissions.sql
+      - cloud/web/sql/008_account_notifications.sql
+      - cloud/web/lib/commerce/account-notices.mjs
+      - cloud/web/lib/commerce/orders.mjs
+      - cloud/web/lib/commerce/support.mjs
+      - android/app/src/cloud/AndroidManifest.xml
+      - cloud/web/lib/commerce/account-activity.mjs
+      - cloud/web/lib/notice-push.mjs
+      - cloud/web/app/api/account/notifications/route.js
+      - cloud/web/app/api/account/activity/route.js
+      - cloud/web/tests/account-notices.test.mjs
+      - cloud/web/tests/app-notifications.test.mjs
+      - android/app/src/cloud/java/com/ghostdeveloper/spdecode/cloud/CloudPushService.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudNotifications.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceNotificationCenter.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceAuth.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceScreens.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceAccountPages.kt
       - cloud/web/lib/commerce/staff.mjs
       - cloud/web/lib/commerce/staff-route.mjs
       - cloud/web/lib/commerce/users-admin.mjs
@@ -164,6 +181,9 @@ jobs:
           node --check cloud/web/lib/commerce/auth.mjs
           node --check cloud/web/lib/commerce/gifts.mjs
           node --check cloud/web/lib/commerce/support.mjs
+          node --check cloud/web/lib/commerce/account-notices.mjs
+          node --check cloud/web/lib/commerce/account-activity.mjs
+          node --check cloud/web/lib/notice-push.mjs
           node --check cloud/web/lib/commerce/staff.mjs
           node --check cloud/web/lib/commerce/staff-route.mjs
           node --check cloud/web/lib/commerce/users-admin.mjs
@@ -213,6 +233,8 @@ jobs:
           npm ci --prefix cloud/web --no-audit --no-fund
           node --test cloud/web/tests/gifts.test.mjs
           node --test cloud/web/tests/account-support-security.test.mjs
+          node --test cloud/web/tests/account-notices.test.mjs
+          node --test cloud/web/tests/app-notifications.test.mjs
           node --test cloud/web/tests/staff-console.test.mjs
           npm run build --prefix cloud/web
           node --test cloud/web/tests/f7-apk-qa.test.mjs

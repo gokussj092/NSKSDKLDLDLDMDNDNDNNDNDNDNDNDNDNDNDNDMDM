@@ -1,6 +1,7 @@
 package com.ghostdeveloper.spdecode
 
 import android.content.res.Configuration
+import com.ghostdeveloper.spdecode.cloud.CloudNoticePush
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.CircleShape
@@ -179,7 +180,7 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
     var accountSnapshot by remember {mutableStateOf<JSONObject?>(null)}
     var ipEdit by rememberSaveable{mutableStateOf("")}
     LaunchedEffect(page){
-        if(page in setOf("account","orders","api","security","ad-free","profile-edit","password","gift","delete-account"))
+        if(page in setOf("account","orders","api","security","ad-free","profile-edit","password","gift","delete-account","notifications","activity"))
             accountSnapshot=auth.account()
     }
     var catalog by remember {mutableStateOf<NativeStoreCatalog?>(null)}
@@ -209,7 +210,8 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
             page=="email-login" -> page="login"
             page=="gift" -> if(start=="gift")onExit() else {page="store";detail="home"}
             page=="delete-account" -> if(start=="delete-account")onExit() else page="account"
-            page in setOf("support","report") -> if(start==page)onExit() else page="account"
+            page in setOf("support","report","notifications","activity") ->
+                if(start==page)onExit() else page="account"
             page=="account" && start=="profile-edit" -> onExit()
             page in setOf("orders","api","security","ad-free") ->
                 if(start==page)onExit() else page="account"
@@ -240,6 +242,8 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                     "email-login" -> local("Acceso con correo","Email sign in")
                     "support" -> local("Soporte técnico","Technical support")
                     "report" -> local("Reportar un error","Report an issue")
+                    "notifications" -> local("Notificaciones","Notifications")
+                    "activity" -> local("Historial de operaciones","Activity history")
                     "delete-account" -> local("Eliminar cuenta","Delete account")
                     "ad-free" -> CommerceAccountWords.get(language,"Ad-free experience")
                     "login" -> local("Acceso seguro","Secure sign in")
@@ -255,7 +259,7 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
             }
         }
         HorizontalDivider(color=Color(0xFF292929))
-        val chatPage=page=="support"||page=="report"
+        val chatPage=page in setOf("support","report","notifications","activity")
         val bodyModifier=if(chatPage)
             Modifier.weight(1f).fillMaxWidth()
                 .padding(horizontal=15.dp,vertical=10.dp)
@@ -265,7 +269,7 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
         Column(bodyModifier,verticalArrangement=Arrangement.spacedBy(17.dp)){
             if(NativeDeviceAccountGuard.enabled(context) &&
                 !NativeDeviceAccountGuard.unlocked &&
-                page in setOf("account","orders","api","security","ad-free","profile-edit","password","gift","delete-account","support","report"))
+                page in setOf("account","orders","api","security","ad-free","profile-edit","password","gift","delete-account","support","report","notifications","activity"))
                 CommerceAccountUnlockPage(language)
             else when(page){
                 "store" -> when(detail){
@@ -543,6 +547,9 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                         },onNavigate={page=it})
                 }
                 "orders" -> CommerceOrdersPage(language,accountSnapshot)
+                "notifications" -> CommerceNotificationCenter(language,auth,
+                    onSignIn={page="login"},onOpen={route->page=route})
+                "activity" -> CommerceActivityPage(language,auth,onSignIn={page="login"})
                 "api" -> CommerceApiPage(language,accountSnapshot,
                     onUpdateIp={id,ip->auth.editApiIp(id,ip)},
                     onUpdated={
@@ -620,6 +627,7 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                                 try {
                                     accountSnapshot=auth.signInWithEmail(email,emailPassword)
                                     emailPassword=""
+                                    CloudNoticePush.syncAccount(context)
                                     page="account"
                                 }catch(e:kotlinx.coroutines.CancellationException){throw e}
                                 catch(_:Exception){
@@ -639,6 +647,7 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                             signingIn=true;notice=null
                             try{
                                 accountSnapshot=auth.signInWithGoogle(acceptedPolicies)
+                                CloudNoticePush.syncAccount(context)
                                 page="account"
                             }catch(e:kotlinx.coroutines.CancellationException){throw e}
                             catch(e:Exception){

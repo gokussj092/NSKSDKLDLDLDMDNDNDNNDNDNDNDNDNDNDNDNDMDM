@@ -1,5 +1,6 @@
 import {randomBytes,randomUUID,createCipheriv,createDecipheriv} from 'node:crypto';
 import {database,transaction} from './db.mjs';
+import {recordAccountNotice,pushAccountNotice} from './account-notices.mjs';
 import {fail} from './config.mjs';
 
 const UUID=/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/;
@@ -133,12 +134,13 @@ export async function replyAdminSupport(actor,input,{db=database(),env=process.e
     Object.keys(input||{}).some(k=>!['threadId','action','message'].includes(k))||
     !['reply','close','reopen'].includes(input?.action))fail('INVALID_REQUEST');
   const text=input.action==='reply'?validateText(input.message):null;
-  return transaction(async client=>{
-    const thread=(await client.query('SELECT id,status,assigned_staff_id FROM spdecode_shop.support_threads WHERE id=$1 FOR UPDATE',
+  const result=await transaction(async client=>{
+    const thread=(await client.query('SELECT id,status,account_id,assigned_staff_id FROM spdecode_shop.support_threads WHERE id=$1 FOR UPDATE',
       [input.threadId])).rows[0];
     if(!thread)fail('SUPPORT_NOT_FOUND',404);
     if(operator.role==='support'&&thread.assigned_staff_id!==operator.id)
       fail('SUPPORT_NOT_ASSIGNED',403);
+    let accountNoticeId=null;
     if(input.action==='reply'){
       if(thread.status==='closed')fail('SUPPORT_THREAD_CLOSED',409);
       const id=randomUUID();
@@ -147,6 +149,8 @@ export async function replyAdminSupport(actor,input,{db=database(),env=process.e
         VALUES($1,$2,'admin',$3,$4,$5,$6)`,
         [id,thread.id,encryptMessage(thread.id,id,'admin',text,{env}),
          operator.id,operator.name,operator.role]);
+      accountNoticeId=await recordAccountNotice(client,thread.account_id,
+        'support:'+id,'support',thread.id);
     }
     const state=input.action==='reply'?'answered':input.action==='close'?'closed':'open';
     await client.query(`UPDATE spdecode_shop.support_threads SET status=$2,
@@ -158,8 +162,11 @@ export async function replyAdminSupport(actor,input,{db=database(),env=process.e
       VALUES($1,$2,$3,$4,$5,$6)`,[
       randomUUID(),operator.id,operator.role,'support_'+input.action,thread.id,
       JSON.stringify({status:state})]);
-    return {saved:true,status:state};
+    return {saved:true,status:state,accountId:thread.account_id,accountNoticeId};
   },db);
+  if(result.accountNoticeId)
+    await pushAccountNotice(result.accountId,result.accountNoticeId,'support',{db,env}).catch(()=>{});
+  return {saved:result.saved,status:result.status};
 }
 
 export async function assignSupportThread(principal,input,{db=database()}={}){

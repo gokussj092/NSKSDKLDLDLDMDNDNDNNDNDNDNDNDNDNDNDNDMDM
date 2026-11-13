@@ -44,7 +44,7 @@ test('publication requires admin and CSRF; replay cannot duplicate; expired noti
 test('without Firebase credentials no external request is attempted',async()=>{
  assert.equal(await pushNotice(randomUUID(),{env:{},fetchImpl:()=>{throw Error('unexpected network')}}),'periodic');
 });
-test('FCM uses separate OAuth scope and sends only an identifier hint to the fixed project',async()=>{
+test('FCM displays a generic system notification while keeping private content server-side',async()=>{
  const {generateKeyPairSync,verify}=await import('node:crypto');
  const pair=generateKeyPairSync('rsa',{modulusLength:2048}),id=randomUUID();
  const account={type:'service_account',project_id:'notice-project',client_email:'notices@notice-project.iam.gserviceaccount.com',
@@ -65,7 +65,8 @@ test('FCM uses separate OAuth scope and sends only an identifier hint to the fix
   assert.equal(opts.headers.Authorization,'Bearer synthetic-oauth');
   const data=JSON.parse(opts.body);assert.deepEqual(data.message.data,{noticeId:id});
   assert.equal(data.message.topic,'spdecode-notices-v1');assert.equal(data.message.android.priority,'normal');
-  assert.equal(data.message.notification,undefined);
+  assert.deepEqual(data.message.notification,{title:'SP-DECODE',body:'Nuevo aviso disponible'});
+   assert.equal(data.message.android.notification.channel_id,'service-notices-chime-v2');
   return Response.json({name:'synthetic-message'});
  }});
  assert.equal(result,'push');assert.equal(calls.length,2);
@@ -78,7 +79,7 @@ test('FCM diagnostic uses validate_only and never transmits notice text',async()
   if(++calls===1)return Response.json({token_type:'Bearer',access_token:'synthetic-token'});
   assert.equal(url,'https://fcm.googleapis.com/v1/projects/sp-decode-android/messages:send');
   const body=JSON.parse(options.body);assert.equal(body.validate_only,true);assert.deepEqual(body.message.data,{noticeId:id});
-  assert.equal(body.message.notification,undefined);return Response.json({});
+  assert.equal(body.message.notification.title,'SP-DECODE');return Response.json({});
  }}),'push');assert.equal(calls,2);
 });
 
@@ -117,7 +118,7 @@ test('new notifications are typed, have bounded expiry, and periodic-only avoids
  assert.equal(pushed.length,1);
  assert.deepEqual(pushed[0].opts,{priority:'high',ttlSeconds:86400});
 });
-test('high-priority FCM remains a payload-free hint with a validated bounded TTL',async()=>{
+test('high-priority FCM shows generic, bounded notices when the app is closed',async()=>{
  const {generateKeyPairSync}=await import('node:crypto');
  const pair=generateKeyPairSync('rsa',{modulusLength:2048});
  const account={type:'service_account',project_id:'notice-project',client_email:'notices@notice-project.iam.gserviceaccount.com',
@@ -131,7 +132,8 @@ test('high-priority FCM remains a payload-free hint with a validated bounded TTL
    const msg=JSON.parse(options.body).message;
    assert.equal(msg.android.priority,'high');
    assert.equal(msg.android.ttl,'21600s');
-   assert.equal(msg.notification,undefined);
+   assert.equal(msg.notification.title,'SP-DECODE');
+    assert.equal(msg.notification.body,'Nuevo aviso disponible');
    assert.deepEqual(Object.keys(msg.data),['noticeId']);
    return Response.json({name:'sent-for-test'});
   }
@@ -142,3 +144,27 @@ test('high-priority FCM remains a payload-free hint with a validated bounded TTL
  await assert.rejects(pushNotice(randomUUID(),{env:{},ttlSeconds:86401}),/PUSH_INVALID/);
 });
 
+
+test('private account FCM messages cannot leak plaintext or target a public topic',async()=>{
+ const {generateKeyPairSync}=await import('node:crypto');
+ const pair=generateKeyPairSync('rsa',{modulusLength:2048});
+ const account={type:'service_account',project_id:'notice-project',
+   client_email:'notices@notice-project.iam.gserviceaccount.com',
+   private_key:pair.privateKey.export({format:'pem',type:'pkcs8'})};
+ const token='fcm_token:APA91_'+('x'.repeat(100));
+ let calls=0;
+ const result=await pushNotice(randomUUID(),{env:{CLOUD_NOTICE_FCM_SERVICE_ACCOUNT_JSON:JSON.stringify(account)},
+   targetToken:token,privateKind:'support',priority:'high',fetchImpl:async(_url,opts)=>{
+    if(++calls===1)return Response.json({token_type:'Bearer',access_token:'synthetic'});
+    const body=JSON.parse(opts.body);
+    assert.equal(body.message.token,token);
+    assert.equal(body.message.topic,undefined);
+    assert.equal(body.message.notification.body,'Nueva respuesta de soporte');
+    assert.deepEqual(Object.keys(body.message.data).sort(),['kind','noticeId']);
+    assert.equal(body.message.android.notification.channel_id,'account-alerts-v1');
+    return Response.json({name:'safe-account-notice'});
+   }});
+ assert.equal(result,'push');assert.equal(calls,2);
+ await assert.rejects(pushNotice(randomUUID(),{env:{},targetToken:'INVALID',privateKind:'support'}),/PUSH_INVALID/);
+ await assert.rejects(pushNotice(randomUUID(),{env:{},targetToken:token}),/PUSH_INVALID/);
+});

@@ -309,6 +309,25 @@ internal class NativeCommerceAuth(private val context:Context) {
             throw AuthFailure("ACCOUNT_CHANGED_REAUTH")
         return snapshot
     }
+    suspend fun notificationInbox():JSONObject =
+        http("/api/account/notifications",authenticated=true).first
+    suspend fun markNotification(id:String):JSONObject =
+        http("/api/account/notifications","POST",
+            JSONObject().put("action","read").put("id",id),true).first
+    suspend fun markAllNotifications():JSONObject =
+        http("/api/account/notifications","POST",
+            JSONObject().put("action","read-all"),true).first
+    suspend fun accountActivity():JSONObject =
+        http("/api/account/activity",authenticated=true).first
+    suspend fun registerPushToken(token:String):JSONObject {
+        if(!token.matches(Regex("[A-Za-z0-9:_-]{32,512}")))
+            throw AuthFailure("INVALID_PUSH_TOKEN")
+        return http("/api/account/notifications","POST",
+            JSONObject().put("action","register").put("token",token),true).first
+    }
+    suspend fun unregisterPushToken(token:String):JSONObject =
+        http("/api/account/notifications","POST",
+            JSONObject().put("action","unregister").put("token",token),true).first
     suspend fun supportInbox():JSONObject =
         http("/api/support",authenticated=true).first
     suspend fun openSupportThread(subject:String,category:String,message:String):JSONObject =
@@ -381,9 +400,11 @@ internal class NativeCommerceAuth(private val context:Context) {
     }
     suspend fun signOut(){
         try{
-            if(sessionToken()!=null)http("/api/auth/sign-out","POST",JSONObject(),true)
-        }finally{
-            wipeSession()
-        }
+            if(sessionToken()!=null){
+                // Revoke only this device's private FCM token before session deletion.
+                runCatching{com.ghostdeveloper.spdecode.cloud.CloudNoticePush.revokeAccount(context)}
+                http("/api/auth/sign-out","POST",JSONObject(),true)
+            }
+        }finally{wipeSession()}
     }
 }

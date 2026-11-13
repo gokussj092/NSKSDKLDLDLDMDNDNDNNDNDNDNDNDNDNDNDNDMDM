@@ -39,6 +39,8 @@ before(async()=>{
   auth=makeAuth(db,env);const migration=await getMigrations(auth.options);await migration.runMigrations();
   const sql=await readFile(new URL('../sql/002_shop.sql',import.meta.url),'utf8');
   if(embedded)await embedded.exec(sql);else await db.query(sql);
+  const notices=await readFile(new URL('../sql/008_account_notifications.sql',import.meta.url),'utf8');
+  if(embedded)await embedded.exec(notices);else await db.query(notices);
   for(const id of [user,other])await db.query(`INSERT INTO shop_user(id,name,email,"emailVerified","createdAt","updatedAt")
     VALUES($1,'Synthetic buyer',$2,true,now(),now())`,[id,id+'@example.invalid']);
   await db.query(`UPDATE spdecode_shop.settings SET value=$1 WHERE id='tax-rules'`,[JSON.stringify([{country:'MX',region:'*',rateBps:1600,label:'IVA',reviewed:true}])]);
