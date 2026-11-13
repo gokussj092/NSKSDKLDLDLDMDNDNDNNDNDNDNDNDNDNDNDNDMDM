@@ -19,7 +19,9 @@ export default function AdminLogin(){
       const result=await r.json();
       setPassword("");
       if(!r.ok)throw Error(result.error?.code==="RATE_LIMITED"?"Demasiados intentos. Prueba más tarde.":"Acceso no autorizado o panel no configurado.");
-      router.replace(result.staff?(result.mustChangePassword?"/admin/staff-password":"/admin/support"):"/admin");
+      router.replace(result.staff?
+        (result.mustChangePassword?"/admin/staff-password":
+          result.role==="billing"?"/admin/users":"/admin/support"):"/admin");
       router.refresh();
     }catch(err){setMessage(err.message||"No se pudo iniciar sesión.");}
     finally{setLoading(false);}

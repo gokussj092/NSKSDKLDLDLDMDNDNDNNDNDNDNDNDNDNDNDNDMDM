@@ -30,7 +30,7 @@ function Detail({data,onBack}){
   <section><h2>Pedidos y pagos</h2>{!orders.length?<p className="muted">Sin pedidos.</p>:
    <div className="sp-admin-table-wrap"><table className="sp-admin-directory-table"><thead><tr><th>Producto</th><th>Estado</th><th>Proveedor</th><th>Total</th><th>Fecha</th></tr></thead>
     <tbody>{orders.map(x=><tr key={x.id}><td>{x.product_id}</td><td>{x.status}</td><td>{x.provider}</td>
-     <td>{x.quote?.total!=null?x.quote.total+' '+(x.quote.currency||'USD'):'—'}</td><td>{date(x.created_at)}</td></tr>)}</tbody></table></div>}</section>
+     <td>{x.quote?.total!=null?(Number(x.quote.total)/100).toFixed(2)+' '+(x.quote.currency||'USD'):'—'}</td><td>{date(x.created_at)}</td></tr>)}</tbody></table></div>}</section>
   <section><h2>Licencias y servicios</h2>{!entitlements.length?<p className="muted">Sin licencias.</p>:<div className="sp-admin-table-wrap"><table className="sp-admin-directory-table"><thead><tr><th>Servicio</th><th>Estado</th><th>Vence</th><th>IP autorizada</th></tr></thead><tbody>{entitlements.map(x=><tr key={x.id}><td>{x.product_id}</td><td>{x.status}</td><td>{date(x.expires_at)}</td><td>{x.allowed_ip||'—'}</td></tr>)}</tbody></table></div>}</section>
   <section><h2>Códigos canjeados</h2>{!redemptions.length?<p className="muted">Sin canjes.</p>:<div className="sp-customer-tags">{redemptions.map((x,i)=><span key={i}>{x.title} · {date(x.created_at)}</span>)}</div>}</section>
   <section><h2>Soporte</h2>{!tickets.length?<p className="muted">Sin conversaciones.</p>:<div className="sp-customer-tags">{tickets.map(t=><span key={t.id}>{t.subject} · {t.status}</span>)}</div>}</section>
