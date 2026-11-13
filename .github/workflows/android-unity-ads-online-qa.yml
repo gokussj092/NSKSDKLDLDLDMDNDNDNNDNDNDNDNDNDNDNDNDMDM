@@ -17,6 +17,21 @@ on:
       - cloud/web/app/api/store/redeem/route.js
       - cloud/web/sql/003_ads_free.sql
       - cloud/web/sql/004_gifts.sql
+      - cloud/web/sql/005_account_support_apk.sql
+      - cloud/web/lib/commerce/support.mjs
+      - cloud/web/lib/commerce/support-route.mjs
+      - cloud/web/lib/commerce/account-device.mjs
+      - cloud/web/lib/commerce/account-device-route.mjs
+      - cloud/web/lib/f7-apk-qa-gateway.mjs
+      - cloud/web/tests/account-support-security.test.mjs
+      - cloud/web/tests/f7-apk-qa.test.mjs
+      - cloud/web/app/api/support/route.js
+      - cloud/web/app/api/admin/support/route.js
+      - cloud/web/app/api/account/delete/route.js
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceSupportPage.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceDeleteAccountPage.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudApkQaClient.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/ApkQaWorker.kt
       - cloud/web/scripts/commerce-migrate.mjs
       - cloud/web/app/admin/admin-gifts.jsx
       - cloud/web/app/admin/gifts/page.jsx
