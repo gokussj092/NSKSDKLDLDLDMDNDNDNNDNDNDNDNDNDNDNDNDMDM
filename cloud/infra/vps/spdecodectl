@@ -407,8 +407,7 @@ set_env(){
     CLOUD_ADMIN_USERNAME)
       [[ "$value" =~ ^[a-zA-Z][a-zA-Z0-9._-]{2,63}$ ]] || die "Username: 3-64 letters/numbers/._- and starts with letter";;
     SPDECODE_SUPPORT_AGENT_NAME)
-      [[ ${#value} -ge 2 && ${#value} -le 80 &&
-         "$value" != *
+      [[ ${#value} -ge 2 && ${#value} -le 80 ]] || die "Support name must have 2-80 characters";;
     CLOUD_GOOGLE_PLAY_PACKAGE)
       [[ "$value" =~ ^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$ ]] || die "Invalid package";;
     *) die "Unsupported configuration key";;
@@ -417,6 +416,10 @@ set_env(){
 from pathlib import Path
 import sys
 file=Path(sys.argv[1]); key=sys.argv[2]; value=sys.argv[3]
+if key=="SPDECODE_SUPPORT_AGENT_NAME" and (
+    not 2<=len(value)<=80 or not all(c.isalnum() or c in ' ._-' for c in value)
+):
+    raise SystemExit("Invalid support agent name")
 lines=[row for row in file.read_text().splitlines() if not row.startswith(key+"=")]
 file.write_text("\n".join(lines+[key+"="+value])+"\n")
 file.chmod(0o600)
