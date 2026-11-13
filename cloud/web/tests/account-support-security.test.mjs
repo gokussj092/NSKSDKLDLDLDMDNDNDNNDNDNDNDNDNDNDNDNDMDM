@@ -27,7 +27,7 @@ before(async()=>{
  db={query,connect:async()=>({query,release(){}})};
  auth=makeAuth(db,env);
  await (await getMigrations(auth.options)).runMigrations();
- for(const name of ['002_shop.sql','003_ads_free.sql','004_gifts.sql','005_account_support_apk.sql','006_support_agent_identity.sql']){
+ for(const name of ['002_shop.sql','003_ads_free.sql','004_gifts.sql','005_account_support_apk.sql','006_support_agent_identity.sql','007_staff_permissions.sql']){
   const sql=await readFile(new URL('../sql/'+name,import.meta.url),'utf8');
   await pg.exec(sql);
  }
@@ -54,14 +54,14 @@ test('private inbox, reply, status and distinct-account ACL',async()=>{
  assert.equal(messages[0].ciphertext.includes('Unexpected result'),false);
  const other=await listUserSupport(ids[1],{db,env});assert.equal(other.threads.length,0);
  await assert.rejects(sendSupportMessage(ids[1],thread.id,{message:'Intrusion'},{db,env}),/SUPPORT_NOT_FOUND/);
- await replyAdminSupport({id:'admin-test',name:'Operator QA',role:'support'},
+ await replyAdminSupport({id:'admin-test',name:'Operator QA',role:'admin'},
    {threadId:thread.id,action:'reply',message:'We will investigate.'},{db,env});
  await sendSupportMessage(ids[0],thread.id,{message:'Thank you'},{db,env});
  const owner=await listUserSupport(ids[0],{db,env});
  assert.deepEqual(owner.threads[0].messages.map(x=>x.sender),['user','admin','user']);
  assert.equal(owner.threads[0].messages[1].text,'We will investigate.');
  assert.equal(owner.threads[0].messages[1].agent.name,'Operator QA');
- assert.equal(owner.threads[0].messages[1].agent.role,'support');
+ assert.equal(owner.threads[0].messages[1].agent.role,'admin');
  const admin=await listAdminSupport({db,env});
  assert.equal(admin.threads[0].account_id,ids[0]);
  await replyAdminSupport('admin-test',{threadId:thread.id,action:'close'},{db,env});

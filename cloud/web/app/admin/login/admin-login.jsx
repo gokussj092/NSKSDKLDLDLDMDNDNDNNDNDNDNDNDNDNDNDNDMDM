@@ -19,7 +19,8 @@ export default function AdminLogin(){
       const result=await r.json();
       setPassword("");
       if(!r.ok)throw Error(result.error?.code==="RATE_LIMITED"?"Demasiados intentos. Prueba más tarde.":"Acceso no autorizado o panel no configurado.");
-      router.replace("/admin");router.refresh();
+      router.replace(result.staff?(result.mustChangePassword?"/admin/staff-password":"/admin/support"):"/admin");
+      router.refresh();
     }catch(err){setMessage(err.message||"No se pudo iniciar sesión.");}
     finally{setLoading(false);}
   }
@@ -27,8 +28,8 @@ export default function AdminLogin(){
     <label htmlFor="admin-username" className="field-label">Usuario</label>
     <input className="field" autoComplete="username" id="admin-username"
       type="text" required minLength={3} maxLength={64} value={username}
-      onChange={e=>setUsername(e.target.value)} placeholder="Usuario de administración"/>
-    <label htmlFor="admin-password" className="field-label">Contraseña de administración</label>
+      onChange={e=>setUsername(e.target.value)} placeholder="Usuario de administración o personal"/>
+    <label htmlFor="admin-password" className="field-label">Contraseña de acceso</label>
     <input className="field" autoComplete="current-password" id="admin-password"
       type="password" required minLength={16} maxLength={512} value={password}
       onChange={e=>setPassword(e.target.value)} placeholder="Contraseña de acceso"/>

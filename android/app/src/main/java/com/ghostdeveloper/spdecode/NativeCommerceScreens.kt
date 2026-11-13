@@ -255,9 +255,14 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
             }
         }
         HorizontalDivider(color=Color(0xFF292929))
-        Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState())
-            .padding(horizontal=17.dp,vertical=19.dp),
-            verticalArrangement=Arrangement.spacedBy(17.dp)){
+        val chatPage=page=="support"||page=="report"
+        val bodyModifier=if(chatPage)
+            Modifier.weight(1f).fillMaxWidth()
+                .padding(horizontal=15.dp,vertical=10.dp)
+        else
+            Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState())
+                .padding(horizontal=17.dp,vertical=19.dp)
+        Column(bodyModifier,verticalArrangement=Arrangement.spacedBy(17.dp)){
             if(NativeDeviceAccountGuard.enabled(context) &&
                 !NativeDeviceAccountGuard.unlocked &&
                 page in setOf("account","orders","api","security","ad-free","profile-edit","password","gift","delete-account","support","report"))

@@ -19,6 +19,26 @@ on:
       - cloud/web/sql/004_gifts.sql
       - cloud/web/sql/005_account_support_apk.sql
       - cloud/web/sql/006_support_agent_identity.sql
+      - cloud/web/sql/007_staff_permissions.sql
+      - cloud/web/lib/commerce/staff.mjs
+      - cloud/web/lib/commerce/staff-route.mjs
+      - cloud/web/lib/commerce/users-admin.mjs
+      - cloud/web/lib/commerce/users-route.mjs
+      - cloud/web/lib/c6-admin-api.mjs
+      - cloud/web/tests/staff-console.test.mjs
+      - cloud/web/app/admin/admin-staff.jsx
+      - cloud/web/app/admin/admin-users.jsx
+      - cloud/web/app/admin/admin-staff-audit.jsx
+      - cloud/web/app/admin/admin-support.jsx
+      - cloud/web/app/admin/staff/**
+      - cloud/web/app/admin/staff-password/**
+      - cloud/web/app/admin/staff-audit/**
+      - cloud/web/app/admin/users/**
+      - cloud/web/app/api/admin/staff/**
+      - cloud/web/app/api/admin/staff-password/**
+      - cloud/web/app/api/admin/staff-audit/**
+      - cloud/web/app/api/admin/access/**
+      - cloud/web/app/api/admin/users/**
       - cloud/infra/vps/commerce-setup.py
       - cloud/infra/vps/spdecodectl
       - cloud/infra/vps/tests/test_support_secret_setup.py
@@ -143,6 +163,11 @@ jobs:
           node --check cloud/web/lib/commerce/auth.mjs
           node --check cloud/web/lib/commerce/gifts.mjs
           node --check cloud/web/lib/commerce/support.mjs
+          node --check cloud/web/lib/commerce/staff.mjs
+          node --check cloud/web/lib/commerce/staff-route.mjs
+          node --check cloud/web/lib/commerce/users-admin.mjs
+          node --check cloud/web/lib/commerce/users-route.mjs
+          node --check cloud/web/lib/c6-admin-api.mjs
           node --check cloud/web/lib/commerce/support-route.mjs
           node --check cloud/web/lib/commerce/account-device.mjs
           node --check cloud/web/lib/commerce/account-device-route.mjs
@@ -187,6 +212,8 @@ jobs:
           npm ci --prefix cloud/web --no-audit --no-fund
           node --test cloud/web/tests/gifts.test.mjs
           node --test cloud/web/tests/account-support-security.test.mjs
+          node --test cloud/web/tests/staff-console.test.mjs
+          npm run build --prefix cloud/web
           node --test cloud/web/tests/f7-apk-qa.test.mjs
       - name: Android SDK / NDK
         run: |

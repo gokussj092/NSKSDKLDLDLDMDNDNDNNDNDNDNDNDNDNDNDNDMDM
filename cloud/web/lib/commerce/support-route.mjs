@@ -1,9 +1,9 @@
 import {requireAccount} from './auth.mjs';
 import {safe,reply,requireOrigin,jsonBody,fail} from './config.mjs';
 import {createSupportThread,sendSupportMessage,listUserSupport,listAdminSupport,
-  replyAdminSupport} from './support.mjs';
-import {adminSettings,authenticateAdmin,validMutation} from '../c6-admin-auth.mjs';
-import {opsStore} from '../c6-ops-store.mjs';
+  replyAdminSupport,assignSupportThread} from './support.mjs';
+import {adminSettings,validMutation} from '../c6-admin-auth.mjs';
+import {requirePanel} from './staff.mjs';
 
 export const supportUserRequest=request=>safe(async()=>{
  const session=await requireAccount(request);
@@ -19,17 +19,18 @@ export const supportUserRequest=request=>safe(async()=>{
  fail('INVALID_REQUEST');
 });
 export const supportAdminRequest=request=>safe(async()=>{
- const settings=adminSettings(),redis=await opsStore();
- const actor=await authenticateAdmin(redis,request,settings);
- if(!actor)fail('UNAUTHORIZED',401);
- if(request.method==='GET')return reply(await listAdminSupport());
+ const principal=await requirePanel(request,
+   request.method==='GET'?'support.read':'support.write');
+ if(request.method==='GET')return reply(await listAdminSupport({principal}));
  if(request.method!=='POST')fail('METHOD_NOT_ALLOWED',405);
- if(!validMutation(request,settings))fail('CSRF_REJECTED',403);
+ if(!validMutation(request,adminSettings()))fail('CSRF_REJECTED',403);
  const body=await jsonBody(request,6200);
- // Identity is derived from the verified administrator session, never the request.
- const claimedName=(process.env.SPDECODE_SUPPORT_AGENT_NAME||settings.username||'').trim();
- const displayName=claimedName.length>=2&&claimedName.length<=80?claimedName:settings.username;
+ if(!body||typeof body!=='object'||Array.isArray(body))fail('INVALID_REQUEST');
+ if(body.action==='assign'){
+   if(!principal.capabilities.includes('support.assign'))fail('FORBIDDEN',403);
+   return reply(await assignSupportThread(principal,body));
+ }
  return reply(await replyAdminSupport({
-   id:actor.sub,name:displayName,role:'owner'
+   id:principal.id,name:principal.name,role:principal.role
  },body));
 });

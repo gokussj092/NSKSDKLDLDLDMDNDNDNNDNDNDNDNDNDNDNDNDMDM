@@ -5,7 +5,7 @@ import {useEffect,useState} from "react";
 export const groups=[
  {label:"General",links:[["Resumen","/admin","dashboard"],["Analítica","/admin/analytics","chart"],["Incidencias","/admin/reports","list"],["Solicitudes","/admin/requests","message"],["Diagnóstico","/admin/diagnostics","search"]]},
  {label:"Infraestructura",links:[["Estado del servidor","/admin/system","server"],["Mantenimiento","/admin/maintenance","power"],["Limpieza de caché","/admin/cleanup","refresh"],["API V1 y retiro","/admin/api-v1","clock"],["API V2","/admin/api-v2","shield"],["Google Play","/admin/play","phone"]]},
- {label:"Servicios",links:[["Proveedores VPN","/admin/providers","layers"],["Exportaciones","/admin/exports","file"],["Catálogo VPN","/admin/catalog","refresh"],["Notificaciones","/admin/notifications","bell"],["Tienda y pagos","/admin/store","file"],["Mensajes de soporte","/admin/support","message"],["Códigos de regalo","/admin/gifts","file"]]},
+ {label:"Servicios",links:[["Proveedores VPN","/admin/providers","layers"],["Exportaciones","/admin/exports","file"],["Catálogo VPN","/admin/catalog","refresh"],["Notificaciones","/admin/notifications","bell"],["Tienda y pagos","/admin/store","file"],["Mensajes de soporte","/admin/support","message"],["Usuarios registrados","/admin/users","list"],["Equipo y cargos","/admin/staff","shield"],["Auditoría del equipo","/admin/staff-audit","activity"],["Códigos de regalo","/admin/gifts","file"]]},
  {label:"Supervisión",links:[["Observabilidad","/admin/observability","activity"],["Alertas","/admin/alerts","alert"],["Rendimiento P95","/admin/performance","chart"],["Documentación","/admin/resources","book"]]}
 ];
 function NavIcon({name}){
@@ -33,8 +33,26 @@ function NavIcon({name}){
   strokeLinejoin="round" aria-hidden="true"><path d={icons[name]||icons.dashboard}/></svg>;
 }
 export default function AdminNav({children}){
- const pathname=usePathname(),[expanded,setExpanded]=useState(false);
+ const pathname=usePathname(),[expanded,setExpanded]=useState(false),
+  [principal,setPrincipal]=useState(null);
+ const permissionForPath={
+  '/admin/support':'support.read','/admin/users':'users.read',
+  '/admin/staff':'staff.read','/admin/staff-audit':'audit.read'
+ };
+ const filteredGroups=groups.map(group=>({
+   ...group,links:group.links.filter(([,url])=>
+     principal?.role==='owner'||(permissionForPath[url]&&
+       principal?.capabilities?.includes(permissionForPath[url])))
+ })).filter(group=>group.links.length);
  useEffect(()=>{setExpanded(window.matchMedia("(min-width: 980px)").matches);},[]);
+ useEffect(()=>{
+  let active=true;
+  if(pathname==='/admin/login'){setPrincipal(null);return;}
+  fetch('/api/admin/access',{credentials:'same-origin',cache:'no-store'})
+   .then(r=>r.ok?r.json():null).then(x=>{if(active)setPrincipal(x?.principal||null);})
+   .catch(()=>{if(active)setPrincipal(null);});
+  return()=>{active=false};
+ },[pathname]);
  useEffect(()=>{const onKey=e=>{if(e.key==="Escape")setExpanded(false);};window.addEventListener("keydown",onKey);return()=>window.removeEventListener("keydown",onKey);},[]);
  if(pathname==="/admin/login")return children;
  const name=groups.flatMap(g=>g.links).find(item=>item[1]===pathname)?.[0]||"Panel";
@@ -43,13 +61,13 @@ export default function AdminNav({children}){
    <button type="button" className="sp-admin-hamburger" aria-controls="sp-admin-sidebar"
     aria-expanded={expanded} aria-label={expanded?"Cerrar menú lateral":"Abrir menú lateral"}
     onClick={()=>setExpanded(x=>!x)}><span/><span/><span/></button>
-   <strong>{name}</strong><small>SP-DECODE · Administración Cloud</small>
+   <strong>{name}</strong><small>SP-DECODE · {principal?.role==='owner'?'Administración Cloud':principal?.name||'Equipo'}</small>
   </div>
   {expanded&&<button className="sp-admin-menu-backdrop" type="button" aria-label="Cerrar menú" onClick={()=>setExpanded(false)}/>}
   <aside id="sp-admin-sidebar" className="sp-admin-sidebar" aria-label="Menú lateral de administración" aria-hidden={!expanded} inert={!expanded}>
    <div className="sp-admin-sidebar-brand"><img src="/icon.svg" width="36" height="36" alt=""/><div><strong>SP-DECODE</strong><span>Centro de administración</span></div></div>
    <nav className="sp-admin-sidebar-scroll" aria-label="Secciones administrativas">
-    {groups.map(group=><section key={group.label} className="sp-admin-nav-group">
+    {filteredGroups.map(group=><section key={group.label} className="sp-admin-nav-group">
       <h2>{group.label}</h2>
       {group.links.map(([label,url,icon])=><Link key={url} href={url} aria-current={pathname===url?"page":undefined}
        className={pathname===url?"current":""} onClick={()=>{if(window.innerWidth<980)setExpanded(false);}}>
