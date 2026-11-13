@@ -13,7 +13,7 @@ function valid(input){
   !Array.isArray(input.permissions)||input.permissions.length>5||
   new Set(input.permissions).size!==input.permissions.length||
   input.permissions.some(p=>!CUSTOM_PERMISSION_KEYS.includes(p))||
-  input.enabled!==undefined&&typeof input.enabled!=='boolean)fail('INVALID_ROLE',400);
+  input.enabled!==undefined&&typeof input.enabled!=='boolean')fail('INVALID_ROLE',400);
  const ps=new Set(input.permissions);
  if((ps.has('support.write')||ps.has('support.assign'))&&!ps.has('support.read'))
   fail('ROLE_REQUIRES_SUPPORT_READ',400);
