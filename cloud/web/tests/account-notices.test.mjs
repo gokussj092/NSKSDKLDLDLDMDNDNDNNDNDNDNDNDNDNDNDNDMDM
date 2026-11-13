@@ -21,7 +21,7 @@ Object.assign(process.env,env);
 before(async()=>{
  pg=new PGlite();
  const query=async(sql,params=[])=>{
-  const r=await pg.query(sql,params);return {rows:r.rows,rowCount:r.affectedRows??r.rows.length};
+  const r=await pg.query(sql,params);return {rows:r.rows,rowCount:r.rows.length||r.affectedRows||0};
  };
  db={query,connect:async()=>({query,release(){}})};
  auth=makeAuth(db,env);
