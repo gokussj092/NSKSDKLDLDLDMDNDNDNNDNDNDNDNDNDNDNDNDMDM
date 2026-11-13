@@ -468,6 +468,15 @@ class AndroidUnityReleaseContract(unittest.TestCase):
         self.assertIn("Checkbox(checked=accepted,onCheckedChange=onAccepted",consent)
         self.assertNotIn("idToken).idToken\n",auth)
 
+    def test_login_design_covers_all_fourteen_languages(self):
+        landing=read("android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceAuthLanding.kt")
+        self.assertIn("R.mipmap.ic_launcher",landing)
+        self.assertIn("AuthLandingLanguage.text(language,es,en)",landing)
+        for locale in ("pt","fr","de","it","tr","ru","ar","fa","hi","ja","id","vi"):
+            self.assertIn('"'+locale+'" to ',landing)
+        self.assertIn('Create account with Google',landing)
+        self.assertIn('CommerceConsentRow(language,accepted,onAccepted,onLegalLink)',landing)
+
     def test_support_agent_identity_and_vps_secret_automation(self):
         support=read("cloud/web/lib/commerce/support.mjs")
         route=read("cloud/web/lib/commerce/support-route.mjs")

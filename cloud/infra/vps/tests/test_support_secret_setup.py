@@ -21,6 +21,13 @@ class SupportSecretSetupTests(unittest.TestCase):
         return file
     def pairs(self,path):
         return dict(row.split("=",1) for row in path.read_text().splitlines() if "=" in row)
+    def test_operator_cli_remains_single_and_parseable(self):
+        import subprocess
+        cli=PATH.parent/"spdecodectl"
+        script=cli.read_text()
+        self.assertEqual(script.count('case "${1:-help}" in'),1)
+        self.assertEqual(script.count("set_env(){"),1)
+        self.assertEqual(subprocess.run(["bash","-n",str(cli)],capture_output=True).returncode,0)
     def test_create_and_repeat_support_only(self):
         f=self.new_env("CLOUD_ADMIN_ENABLED=true\n")
         self.assertTrue(commerce_setup.prepare_support_only(f))

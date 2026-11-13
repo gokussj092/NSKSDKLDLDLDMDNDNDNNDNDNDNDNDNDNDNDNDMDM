@@ -21,12 +21,43 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+private object AuthLandingLanguage {
+    private val keys=listOf("Welcome back","Create your account","Sign in to continue",
+        "Join SP-DECODE with your Google account","Sign in","Create account",
+        "Access your account","Create with Google","Continue with Google",
+        "Create account with Google","or with email","Email and password",
+        "Your account and purchases are securely linked.")
+    private val translated=mapOf(
+        "pt" to "Bem-vindo de volta|Crie sua conta|Entre para continuar|Entre no SP-DECODE com sua conta Google|Entrar|Criar conta|Acessar sua conta|Criar com Google|Continuar com Google|Criar conta com Google|ou com e-mail|E-mail e senha|Sua conta e compras estão vinculadas com segurança.",
+        "fr" to "Bon retour|Créez votre compte|Connectez-vous pour continuer|Rejoignez SP-DECODE avec Google|Connexion|Créer un compte|Accéder à votre compte|Créer avec Google|Continuer avec Google|Créer avec Google|ou par e-mail|E-mail et mot de passe|Votre compte et vos achats sont liés en toute sécurité.",
+        "de" to "Willkommen zurück|Erstelle dein Konto|Zum Fortfahren anmelden|Tritt SP-DECODE mit deinem Google-Konto bei|Anmelden|Konto erstellen|Auf dein Konto zugreifen|Mit Google erstellen|Mit Google fortfahren|Google-Konto erstellen|oder per E-Mail|E-Mail und Passwort|Dein Konto und deine Käufe sind sicher verknüpft.",
+        "it" to "Bentornato|Crea il tuo account|Accedi per continuare|Unisciti a SP-DECODE con Google|Accedi|Crea account|Accedi al tuo account|Crea con Google|Continua con Google|Crea account con Google|oppure con e-mail|E-mail e password|Il tuo account e gli acquisti sono collegati in modo sicuro.",
+        "tr" to "Tekrar hoş geldin|Hesabını oluştur|Devam etmek için giriş yap|Google hesabınla SP-DECODE'a katıl|Giriş yap|Hesap oluştur|Hesabına eriş|Google ile oluştur|Google ile devam et|Google ile hesap oluştur|veya e-posta ile|E-posta ve şifre|Hesabın ve satın alımların güvenle bağlı.",
+        "ru" to "С возвращением|Создайте аккаунт|Войдите, чтобы продолжить|Присоединяйтесь к SP-DECODE через Google|Войти|Создать аккаунт|Войти в аккаунт|Создать через Google|Продолжить с Google|Создать аккаунт Google|или по почте|Почта и пароль|Аккаунт и покупки надёжно связаны.",
+        "ar" to "مرحبًا بعودتك|أنشئ حسابك|سجل الدخول للمتابعة|انضم إلى SP-DECODE بحساب Google|تسجيل الدخول|إنشاء حساب|الوصول إلى حسابك|الإنشاء باستخدام Google|المتابعة باستخدام Google|إنشاء حساب عبر Google|أو بالبريد الإلكتروني|البريد وكلمة المرور|حسابك ومشترياتك مرتبطان بأمان.",
+        "fa" to "خوش آمدید|حساب خود را بسازید|برای ادامه وارد شوید|با حساب گوگل به SP-DECODE بپیوندید|ورود|ایجاد حساب|دسترسی به حساب|ساخت با گوگل|ادامه با گوگل|ساخت حساب با گوگل|یا با ایمیل|ایمیل و رمز عبور|حساب و خریدهای شما به‌طور امن متصل‌اند.",
+        "hi" to "वापसी पर स्वागत है|अपना खाता बनाएँ|जारी रखने के लिए लॉगिन करें|Google खाते से SP-DECODE से जुड़ें|लॉगिन|खाता बनाएँ|अपने खाते में जाएँ|Google से बनाएँ|Google से जारी रखें|Google से खाता बनाएँ|या ईमेल से|ईमेल और पासवर्ड|आपका खाता और खरीदारी सुरक्षित रूप से जुड़े हैं।",
+        "ja" to "おかえりなさい|アカウントを作成|ログインして続行|GoogleアカウントでSP-DECODEに登録|ログイン|アカウント作成|アカウントにアクセス|Googleで作成|Googleで続行|Googleでアカウント作成|またはメールで|メールとパスワード|アカウントと購入履歴は安全に関連付けられています。",
+        "id" to "Selamat datang kembali|Buat akun Anda|Masuk untuk melanjutkan|Bergabung dengan SP-DECODE menggunakan Google|Masuk|Buat akun|Akses akun Anda|Buat dengan Google|Lanjutkan dengan Google|Buat akun dengan Google|atau dengan email|Email dan kata sandi|Akun dan pembelian Anda terhubung secara aman.",
+        "vi" to "Chào mừng trở lại|Tạo tài khoản|Đăng nhập để tiếp tục|Tham gia SP-DECODE bằng tài khoản Google|Đăng nhập|Tạo tài khoản|Truy cập tài khoản|Tạo bằng Google|Tiếp tục với Google|Tạo tài khoản với Google|hoặc qua email|Email và mật khẩu|Tài khoản và giao dịch được liên kết an toàn."
+    ).mapValues{it.value.split("|")}
+    fun text(lang:String,es:String,en:String):String{
+        val idx=keys.indexOf(en)
+        if(idx<0)return CommerceI18n.translate(lang,es,en)
+        return when(val normalized=lang.lowercase(java.util.Locale.ROOT)){
+            "es"->es
+            "en"->en
+            else->translated[if(normalized=="in")"id" else normalized]?.getOrNull(idx)?:en
+        }
+    }
+}
+
 /** The real packaged launcher resource is the identity on this screen. */
 @Composable
 internal fun CommerceAuthLanding(language:String,accepted:Boolean,
     busy:Boolean,error:String?,onAccepted:(Boolean)->Unit,
     onLegalLink:(String)->Unit,onGoogle:()->Unit,onEmail:()->Unit){
-    val t:(String,String)->String={es,en->CommerceI18n.translate(language,es,en)}
+    val t:(String,String)->String={es,en->AuthLandingLanguage.text(language,es,en)}
     val bg=Color(0xFF222222)
     val selected=Color(0xFFF7F7F7)
     val secondary=Color(0xFFB3B3B3)
@@ -73,7 +104,7 @@ internal fun CommerceAuthLanding(language:String,accepted:Boolean,
                     }
                 }
             }
-            Text(if(mode==0)t("Accede a tu cuenta","Acceso a tu cuenta")
+            Text(if(mode==0)t("Accede a tu cuenta","Access your account")
                    else t("Registrarse con Google","Create with Google"),
                 color=selected,fontWeight=FontWeight.SemiBold,fontSize=17.sp)
             OutlinedButton(onClick=onGoogle,enabled=accepted&&!busy,
