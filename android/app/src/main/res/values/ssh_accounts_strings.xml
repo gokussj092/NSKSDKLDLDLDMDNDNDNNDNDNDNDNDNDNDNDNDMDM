@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_filter_ssh_accounts">SSH accounts</string>
+    <string name="server_vpn_ssh_notice_text">These SSH accounts can only be used in the following app:</string>
+    <string name="server_vpn_ssh_no_matches">No SSH accounts match your search.</string>
+</resources>

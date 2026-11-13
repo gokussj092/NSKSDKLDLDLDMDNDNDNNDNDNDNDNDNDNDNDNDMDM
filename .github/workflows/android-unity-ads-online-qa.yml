@@ -115,6 +115,10 @@ on:
       - android/app/src/main/java/com/ghostdeveloper/spdecode/ContinuousJsonView.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/LargeResultViewer.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/MainActivity.kt
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/ServerVpnDirectory.kt
+      - android/app/src/main/res/**/ssh_accounts_strings.xml
+      - android/app/src/androidTest/java/com/ghostdeveloper/spdecode/ServerVpnDirectoryInstrumentedTest.kt
+      - tests/test_android_ssh_accounts_ui.py
       - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudCatalogUpdates.kt
       - android/app/src/main/res/**/catalog_offer_strings.xml
       - tests/test_catalog_entry_prompt.py
@@ -203,6 +207,7 @@ jobs:
           # Every-file QA only: no catalog-triggered advertisements; native version 1.1.27 (42).
           python3 -m unittest tests.test_android_unity_release_contract -v
           python3 -m unittest tests.test_catalog_entry_prompt -v
+          python3 -m unittest tests.test_android_ssh_accounts_ui -v
           python3 -m unittest discover -s cloud/infra/vps/tests -p 'test_support_secret_setup.py' -v
           bash -n cloud/infra/vps/spdecodectl
       - name: Commercial API syntax and public IP contract

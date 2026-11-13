@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_filter_ssh_accounts">Cuentas SSH</string>
+    <string name="server_vpn_ssh_notice_text">Estas cuentas SSH solo se pueden utilizar dentro de la aplicación:</string>
+    <string name="server_vpn_ssh_no_matches">No se encontraron cuentas SSH para esta búsqueda.</string>
+</resources>

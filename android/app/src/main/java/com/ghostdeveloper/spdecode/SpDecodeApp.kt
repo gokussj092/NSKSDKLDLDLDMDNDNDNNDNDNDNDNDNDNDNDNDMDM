@@ -175,7 +175,7 @@ internal fun SpDecodeApp(
                                 onRetry=onApkQaRetry)
                         else ApkAnalysisComingSoonScreen()
                     3->ServerVpnScreen(busy,serverVpnApps,serverVpnLoading && catalogTransfer==null,serverVpnUnavailable,
-                        onDecodeServerCatalog,onDecodeServerApp,catalogProgress)
+                        onDecodeServerCatalog,onDecodeServerApp,onExternalLink,catalogProgress)
                     else->FunctionalSettingsPanel(language=selectedLanguage,
                         maskCredentials=hideCredentials,
                         telegramCreditUsername=telegramCreditUsername,
@@ -1015,6 +1015,7 @@ private fun ServerVpnScreen(
     catalogUnavailable:Boolean,
     onDecodeCatalog:()->Unit,
     onDecodeApp:(String)->Unit,
+    onExternalLink:(String)->Unit,
     catalogProgress:Int?=null,
 ) {
     var selected by rememberSaveable { mutableStateOf(false) }
@@ -1064,7 +1065,7 @@ private fun ServerVpnScreen(
                     }
                 },
                 singleLine=true,modifier=Modifier.fillMaxWidth(),
-                shape=RoundedCornerShape(16.dp),
+                shape=RoundedCornerShape(30.dp),
                 colors=OutlinedTextFieldDefaults.colors(
                     focusedBorderColor=Color(0xFF8873AC),
                     unfocusedBorderColor=Color(0xFF565656),
@@ -1110,6 +1111,41 @@ private fun ServerVpnScreen(
                     leadingIcon={Icon(Icons.Outlined.StarBorder,null,
                         modifier=Modifier.size(16.dp))},
                 )
+                FilterChip(
+                    selected=filter==ServerVpnListFilter.SSH_ACCOUNTS,
+                    onClick={filter=ServerVpnListFilter.SSH_ACCOUNTS;selectedId=""},
+                    modifier=Modifier.testTag("server_vpn_ssh_accounts_tab"),
+                    shape=RoundedCornerShape(12.dp),
+                    colors=FilterChipDefaults.filterChipColors(
+                        containerColor=Background,labelColor=Secondary,
+                        selectedContainerColor=Color(0xFF4E455E),
+                        selectedLabelColor=White),
+                    label={Text(stringResource(R.string.server_vpn_filter_ssh_accounts))},
+                    leadingIcon={Icon(Icons.Outlined.AccountCircle,null,
+                        modifier=Modifier.size(16.dp))},
+                )
+            }
+            if(filter==ServerVpnListFilter.SSH_ACCOUNTS) {
+                Surface(
+                    modifier=Modifier.fillMaxWidth().testTag("server_vpn_ssh_notice"),
+                    color=Panel,shape=RoundedCornerShape(18.dp),
+                    border=BorderStroke(1.dp,Outline)
+                ) {
+                    Column(Modifier.padding(horizontal=14.dp,vertical=10.dp),
+                        verticalArrangement=Arrangement.spacedBy(3.dp)) {
+                        Text(stringResource(R.string.server_vpn_ssh_notice_text),
+                            color=Secondary,fontSize=12.sp,lineHeight=18.sp)
+                        TextButton(onClick={onExternalLink(HEX_TUNNEL_PLAY_URL)},
+                            modifier=Modifier.testTag("server_vpn_ssh_hex_tunnel"),
+                            contentPadding=PaddingValues(horizontal=0.dp,vertical=0.dp)) {
+                            Text("Hex Tunnel",color=Color(0xFF38B6FF),
+                                fontWeight=FontWeight.SemiBold,fontSize=14.sp)
+                            Spacer(Modifier.width(6.dp))
+                            Icon(Icons.Outlined.OpenInNew,null,
+                                tint=Color(0xFF38B6FF),modifier=Modifier.size(16.dp))
+                        }
+                    }
+                }
             }
             if(catalogLoading) {
                 Row(verticalAlignment=Alignment.CenterVertically) {
@@ -1131,7 +1167,9 @@ private fun ServerVpnScreen(
                         color=Secondary,fontSize=12.sp)
                 }
             }else if(visibleApps.isEmpty()) {
-                Text(stringResource(R.string.server_vpn_no_matches),
+                Text(stringResource(if(filter==ServerVpnListFilter.SSH_ACCOUNTS)
+                    R.string.server_vpn_ssh_no_matches
+                    else R.string.server_vpn_no_matches),
                     color=Secondary,fontSize=13.sp)
             }else{
                 LazyColumn(

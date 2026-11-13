@@ -1,6 +1,7 @@
 package com.ghostdeveloper.spdecode
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -112,6 +113,7 @@ internal fun LargeResultViewer(raw: String, mask: Boolean, identity: String, suf
                             label={Text(stringResource(R.string.result_search_hint))},
                             modifier=Modifier.weight(1f),
                             singleLine=true,
+                            shape=RoundedCornerShape(30.dp),
                             textStyle=androidx.compose.ui.text.TextStyle(color=Color.White),
                         )
                         TextButton(

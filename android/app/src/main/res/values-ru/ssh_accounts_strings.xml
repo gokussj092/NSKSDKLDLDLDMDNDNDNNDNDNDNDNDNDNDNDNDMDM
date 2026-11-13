@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_filter_ssh_accounts">SSH-аккаунты</string>
+    <string name="server_vpn_ssh_notice_text">Эти SSH-аккаунты можно использовать только в приложении:</string>
+    <string name="server_vpn_ssh_no_matches">По вашему запросу SSH-аккаунты не найдены.</string>
+</resources>

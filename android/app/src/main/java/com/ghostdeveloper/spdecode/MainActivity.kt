@@ -592,6 +592,7 @@ class MainActivity : ComponentActivity() {
             AboutOfficialLinks.CHANNEL,
             AboutOfficialLinks.COMMUNITY,
             AboutOfficialLinks.CONTACT,
+            HEX_TUNNEL_PLAY_URL,
         ))return
         // Account, login and store are native placeholders until APIs are ready.
         try {startActivity(Intent(Intent.ACTION_VIEW,Uri.parse(url)))}

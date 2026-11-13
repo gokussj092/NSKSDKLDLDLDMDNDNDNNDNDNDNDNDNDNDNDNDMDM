@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_vpn_filter_ssh_accounts">Tài khoản SSH</string>
+    <string name="server_vpn_ssh_notice_text">Các tài khoản SSH này chỉ có thể được sử dụng trong ứng dụng:</string>
+    <string name="server_vpn_ssh_no_matches">Không tìm thấy tài khoản SSH phù hợp với tìm kiếm.</string>
+</resources>
