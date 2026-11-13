@@ -28,7 +28,11 @@ export function decryptMessage(row,{env=process.env}={}){
   }catch{fail('SUPPORT_MESSAGE_UNAVAILABLE',503);}
 }
 function messageRow(row,env){
-  return {id:row.id,sender:row.sender_kind,text:decryptMessage(row,{env}),at:row.created_at};
+  return {id:row.id,sender:row.sender_kind,text:decryptMessage(row,{env}),at:row.created_at,
+    ...(row.sender_kind==='admin'?{agent:{
+      name:row.agent_name||'SP-DECODE',
+      role:row.agent_role||'support'
+    }}:{})};
 }
 async function rate(accountId,db){
   const n=(await db.query(`INSERT INTO spdecode_shop.support_limits(account_id,messages)
@@ -91,7 +95,7 @@ export async function listUserSupport(accountId,{db=database(),env=process.env}=
     FROM spdecode_shop.support_threads WHERE account_id=$1
     ORDER BY last_message_at DESC LIMIT 50`,[accountId])).rows;
   const messages=await Promise.all(threads.map(async thread=>{
-    const rows=(await db.query(`SELECT id,thread_id,sender_kind,ciphertext,created_at
+    const rows=(await db.query(`SELECT id,thread_id,sender_kind,ciphertext,created_at,agent_name,agent_role,agent_name,agent_role
       FROM spdecode_shop.support_messages WHERE thread_id=$1
       ORDER BY created_at ASC,id ASC LIMIT 150`,[thread.id])).rows;
     return {...thread,messages:rows.map(x=>messageRow(x,env))};
@@ -115,7 +119,11 @@ export async function listAdminSupport({db=database(),env=process.env}={}){
 }
 export async function replyAdminSupport(actor,input,{db=database(),env=process.env}={}){
   secret(env);
-  if(typeof actor!=='string'||!actor||!UUID.test(input?.threadId)||
+  const operator=typeof actor==='string'?{id:actor,name:'SP-DECODE',role:'admin'}:actor;
+  if(!operator||typeof operator.id!=='string'||!operator.id||
+     typeof operator.name!=='string'||operator.name.length<2||operator.name.length>80||
+     !['owner','admin','support'].includes(operator.role)||
+     !UUID.test(input?.threadId)||
     Object.keys(input||{}).some(k=>!['threadId','action','message'].includes(k))||
     !['reply','close','reopen'].includes(input?.action))fail('INVALID_REQUEST');
   const text=input.action==='reply'?validateText(input.message):null;
@@ -126,14 +134,17 @@ export async function replyAdminSupport(actor,input,{db=database(),env=process.e
     if(input.action==='reply'){
       if(thread.status==='closed')fail('SUPPORT_THREAD_CLOSED',409);
       const id=randomUUID();
-      await client.query(`INSERT INTO spdecode_shop.support_messages(id,thread_id,sender_kind,ciphertext)
-        VALUES($1,$2,'admin',$3)`,[id,thread.id,encryptMessage(thread.id,id,'admin',text,{env})]);
+      await client.query(`INSERT INTO spdecode_shop.support_messages
+        (id,thread_id,sender_kind,ciphertext,agent_id,agent_name,agent_role)
+        VALUES($1,$2,'admin',$3,$4,$5,$6)`,
+        [id,thread.id,encryptMessage(thread.id,id,'admin',text,{env}),
+         operator.id,operator.name,operator.role]);
     }
     const state=input.action==='reply'?'answered':input.action==='close'?'closed':'open';
     await client.query(`UPDATE spdecode_shop.support_threads SET status=$2,
       last_message_at=now() WHERE id=$1`,[thread.id,state]);
     await client.query(`INSERT INTO spdecode_shop.audit(actor_id,action,resource_id)
-      VALUES($1,$2,$3)`,[actor,'support_'+input.action,thread.id]);
+      VALUES($1,$2,$3)`,[operator.id,'support_'+input.action,thread.id]);
     return {saved:true,status:state};
   },db);
 }

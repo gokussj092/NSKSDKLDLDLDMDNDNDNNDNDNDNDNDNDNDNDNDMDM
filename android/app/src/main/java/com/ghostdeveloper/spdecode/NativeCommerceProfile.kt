@@ -56,7 +56,9 @@ internal object CommerceSession {
         return entitlementChecked && NativeAdsGate.validServerEntitlement(
             current.id,adsExpiry,System.currentTimeMillis())
     }
-    val shouldHideAds:Boolean get()=checkoutPending||adFreeActive
+    // Only a verified, unexpired server entitlement suppresses Unity Ads.
+    // A pending checkout is not proof of payment.
+    val shouldHideAds:Boolean get()=adFreeActive
     fun update(snapshot:JSONObject) {
         val data=snapshot.optJSONObject("user")?:return
         val raw=data.optString("avatar").takeUnless{it.isBlank()||it=="null"}

@@ -18,6 +18,12 @@ on:
       - cloud/web/sql/003_ads_free.sql
       - cloud/web/sql/004_gifts.sql
       - cloud/web/sql/005_account_support_apk.sql
+      - cloud/web/sql/006_support_agent_identity.sql
+      - cloud/infra/vps/commerce-setup.py
+      - cloud/infra/vps/spdecodectl
+      - cloud/infra/vps/tests/test_support_secret_setup.py
+      - cloud/compose.yaml
+      - android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceAuthLanding.kt
       - cloud/web/lib/commerce/support.mjs
       - cloud/web/lib/commerce/support-route.mjs
       - cloud/web/lib/commerce/account-device.mjs
@@ -129,6 +135,8 @@ jobs:
           python3 scripts/android_s4_provisioning_audit.py
           # Every-file QA only: no catalog-triggered advertisements; native version 1.1.27 (42).
           python3 -m unittest tests.test_android_unity_release_contract -v
+          python3 -m unittest discover -s cloud/infra/vps/tests -p 'test_support_secret_setup.py' -v
+          bash -n cloud/infra/vps/spdecodectl
       - name: Commercial API syntax and public IP contract
         run: |
           set -euo pipefail

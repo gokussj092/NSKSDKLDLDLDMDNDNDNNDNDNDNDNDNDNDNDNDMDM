@@ -406,6 +406,9 @@ set_env(){
       [[ "$value" == true || "$value" == false ]] || die "Expected true or false";;
     CLOUD_ADMIN_USERNAME)
       [[ "$value" =~ ^[a-zA-Z][a-zA-Z0-9._-]{2,63}$ ]] || die "Username: 3-64 letters/numbers/._- and starts with letter";;
+    SPDECODE_SUPPORT_AGENT_NAME)
+      [[ ${#value} -ge 2 && ${#value} -le 80 &&
+         "$value" != *
     CLOUD_GOOGLE_PLAY_PACKAGE)
       [[ "$value" =~ ^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$ ]] || die "Invalid package";;
     *) die "Unsupported configuration key";;
@@ -613,6 +616,12 @@ case "${1:-help}" in
        compose run --rm --no-deps web node scripts/commerce-migrate.mjs --apply
        compose up -d --no-deps web
        log "Commerce initialized. Configure Google, provider sandbox credentials and reviewed tax/product settings before enabling sales.";;
+     support-key)
+       [[ $# -eq 2 ]] || die "spdecode commerce support-key"
+       python3 "$REPO/cloud/infra/vps/commerce-setup.py" --support-only "$ENVFILE"
+       compose up -d --no-deps --force-recreate web
+       health || die "Support key configured but web health check failed"
+       log "Support key ready and web restarted; secret never displayed";;
      migrate)
        compose --profile commerce up -d shop-db
        compose exec -T shop-db sh -s < "$REPO/cloud/accounts/shop-db-init.sh" >/dev/null ||
@@ -620,7 +629,7 @@ case "${1:-help}" in
        compose run --rm --no-deps web node scripts/commerce-migrate.mjs --apply;;
      status)
        compose --profile commerce ps shop-db;;
-     *) die "spdecode commerce init|migrate|status";;
+     *) die "spdecode commerce init|migrate|support-key|status";;
    esac;;
  update)
    [[ $# -ge 2 ]] || die "spdecode update api|web|panel|worker|all [ref]"
@@ -718,7 +727,705 @@ SP-DECODE VPS commands:
   spdecode rollback
   spdecode cleanup status|install-timer|disable-timer
   spdecode backup
-  spdecode commerce init|migrate|status  # private PostgreSQL; never enables payments automatically
+  spdecode commerce init|migrate|support-key|status  # support secret generated automatically
+  spdecode config set CLOUD_FORCE_MAINTENANCE true|false
+  spdecode config set CLOUD_API_ENABLED true|false
+  spdecode config set CLOUD_ADMIN_ENABLED true|false
+  spdecode config google-service-account /root/play-service.json
+  spdecode config admin-password
+  spdecode config admin-username NAME
+  spdecode config set SPDECODE_SUPPORT_AGENT_NAME 'Agent name'
+  spdecode panel enable
+  spdecode panel disable
+  spdecode panel check
+  spdecode panel reset-admin   # generate credentials and validate real HTTPS login
+  spdecode panel sync-routes   # update Nginx public links without rotating credentials
+  spdecode providers status|enable|disable  # persistent remote providers, no QA required
+  spdecode providers import-ehi /root/HTTPINJECTOR_CLOUD.py  # carga privada sin ejecutar el método
+  spdecode qa start|stop|status|services|probe-nur  # ephemeral QA; services enables NUR and configured EHI
+  spdecode apk-qa enable|status  # private APK lab; secrets created internally, no device registration
+  spdecode apk-qa enable-tools   # opt-in isolated JADX worker; requires 8 GB host RAM
+  spdecode android setup
+  spdecode android signing configure /root/upload-key.p12 alias
+  spdecode android build --version-name 1.2.0 --version-code 26 --testing-only
+  spdecode android public-build online|offline --ci-run SUCCESSFUL_RUN_ID
+  spdecode android public-status online|offline
+  spdecode android public-rollback online|offline
+  spdecode android artifacts
+USAGE
+   ;;
+ *) die "Unknown command; use spdecode help";;
+esac
+\\n'* && "$value" != *
+    CLOUD_GOOGLE_PLAY_PACKAGE)
+      [[ "$value" =~ ^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$ ]] || die "Invalid package";;
+    *) die "Unsupported configuration key";;
+  esac
+  python3 - "$ENVFILE" "$key" "$value" <<'PY'
+from pathlib import Path
+import sys
+file=Path(sys.argv[1]); key=sys.argv[2]; value=sys.argv[3]
+lines=[row for row in file.read_text().splitlines() if not row.startswith(key+"=")]
+file.write_text("\n".join(lines+[key+"="+value])+"\n")
+file.chmod(0o600)
+PY
+  log "Updated $key. Apply using: spdecode restart web"
+}
+admin_password(){
+  # Python scrypt parameters exactly match Next.js C6 settings.
+  python3 - "$ENVFILE" <<'PY'
+import getpass, hashlib, pathlib, secrets, sys
+file=pathlib.Path(sys.argv[1])
+password=getpass.getpass("New admin password (>=16 characters): ")
+confirm=getpass.getpass("Confirm admin password: ")
+if len(password)<16 or len(password)>512 or password!=confirm:
+    raise SystemExit("Password invalid, too short, or confirmation differs")
+salt=secrets.token_bytes(16)
+digest=hashlib.scrypt(password.encode(),salt=salt,n=16384,r=8,p=1,dklen=64,maxmem=32*1024*1024)
+hashed="scrypt$16384$8$1$"+salt.hex()+"$"+digest.hex()
+rows=[x for x in file.read_text().splitlines() if not x.startswith("CLOUD_ADMIN_PASSWORD_SCRYPT=")]
+file.write_text("\n".join(rows+["CLOUD_ADMIN_PASSWORD_SCRYPT='"+hashed+"'"])+"\n")
+file.chmod(0o600)
+print("Admin password hash stored (password not printed)")
+PY
+}
+panel_check(){
+  preflight
+  local panel status
+  [[ -s "$CFG/panel-domain" ]] || die "Configured panel domain missing"
+  panel=$(cat "$CFG/panel-domain")
+  [[ "$panel" =~ ^[A-Za-z0-9.-]+$ ]] || die "Invalid panel hostname"
+  # Check effective environment INSIDE the running Next.js container.
+  # Never print usernames, password hashes, secret variables or cookies.
+  if ! compose exec -T web node --input-type=module -e \
+    'import {adminSettings} from "./lib/c6-admin-auth.mjs";process.exit(adminSettings().enabled?0:1)' \
+    >/dev/null 2>&1; then
+    log "Panel is NOT authenticated/enabled inside Next.js. Check Compose env mapping and admin setup."
+    return 1
+  fi
+  status=$(curl --noproxy '*' --proxy '' --silent --show-error \
+    --connect-timeout 3 --max-time 8 --resolve "$panel:443:127.0.0.1" \
+    -o /dev/null -w '%{http_code}' "https://$panel/api/admin/session") || {
+      log "Cannot reach panel through local Nginx HTTPS."
+      return 1
+    }
+  if [[ "$status" != 401 ]]; then
+    log "Panel session endpoint returned HTTP $status, expected 401 for a guest."
+    return 1
+  fi
+  log "Panel login backend active (guest session correctly returns 401)."
+  return 0
+}
+panel_routes(){
+  preflight
+  local domain api panel conf temp stamp
+  [[ -s "$CFG/domain" && -s "$CFG/api-domain" && -s "$CFG/panel-domain" ]] ||
+    die "Missing configured hostnames"
+  domain=$(cat "$CFG/domain");api=$(cat "$CFG/api-domain");panel=$(cat "$CFG/panel-domain")
+  [[ "$domain" =~ ^[A-Za-z0-9.-]+$ && "$api" =~ ^[A-Za-z0-9.-]+$ &&
+     "$panel" =~ ^[A-Za-z0-9.-]+$ ]] || die "Invalid hostname"
+  conf=/etc/nginx/sites-available/spdecode.conf
+  [[ -f "$conf" ]] || die "Existing SP-DECODE Nginx configuration not found"
+  local opts=("$domain" --api-domain "$api" --panel-domain "$panel")
+  if grep -Eq "server_name[[:space:]]+www\\.$domain;" "$conf"; then opts+=(--www); fi
+  mkdir -p "$CFG/backups"
+  stamp=$(date -u +%Y%m%dT%H%M%SZ)
+  cp -p "$conf" "$CFG/backups/routing-before-$stamp.conf"
+  temp=$(mktemp /etc/nginx/sites-available/.spdecode-routes-XXXXXX)
+  if ! python3 "$REPO/cloud/infra/vps/nginx-config.py" "${opts[@]}" > "$temp"; then
+    rm -f "$temp";die "Could not generate panel routing"
+  fi
+  install -m 0644 "$temp" "$conf"
+  rm -f "$temp"
+  if ! nginx -t || ! systemctl reload nginx; then
+    cp -p "$CFG/backups/routing-before-$stamp.conf" "$conf"
+    nginx -t && systemctl reload nginx || true
+    die "Nginx rejected panel routing; restored the previous configuration"
+  fi
+  # Test actual Next.js routing through local HTTPS before declaring success.
+  local path status
+  for path in /admin /admin/analytics /admin/reports /admin/system /features /docs /privacy /status /api/site/status; do
+    status=$(curl --noproxy '*' --proxy '' --silent --show-error \
+      --connect-timeout 3 --max-time 10 \
+      --resolve "$panel:443:127.0.0.1" -o /dev/null -w '%{http_code}' \
+      "https://$panel$path") || status=000
+    if [[ "$status" != 200 ]]; then
+      cp -p "$CFG/backups/routing-before-$stamp.conf" "$conf"
+      nginx -t && systemctl reload nginx || true
+      die "Panel $path returned HTTP $status; previous routing restored"
+    fi
+  done
+  log "SP-DECODE panel routes passed real HTTPS navigation checks."
+  log "No admin usernames, passwords or API settings changed."
+}
+panel_enable(){
+  preflight
+  local username domain api panel conf stamp temp candidate
+  read -r -p "Nombre de usuario del panel (3-64 caracteres): " username </dev/tty
+  [[ "$username" =~ ^[a-zA-Z][a-zA-Z0-9._-]{2,63}$ ]] || die "Nombre de usuario inválido"
+  set_env CLOUD_ADMIN_USERNAME "$username"
+  admin_password
+  # Check the destination host is the same one enforced by admin CSRF origin.
+  [[ -s "$CFG/domain" && -s "$CFG/api-domain" && -s "$CFG/panel-domain" ]] ||
+    die "Hostnames not provisioned"
+  domain=$(cat "$CFG/domain");api=$(cat "$CFG/api-domain");panel=$(cat "$CFG/panel-domain")
+  grep -Fxq "CLOUD_ADMIN_PUBLIC_ORIGIN=https://$panel" "$ENVFILE" ||
+    die "Configured admin origin mismatches panel hostname"
+  conf=/etc/nginx/sites-available/spdecode.conf
+  [[ -f "$conf" && -f "$REPO/cloud/infra/vps/nginx-config.py" ]] ||
+    die "Nginx configuration or generator missing"
+  mkdir -p "$CFG/backups"
+  stamp=$(date -u +%Y%m%dT%H%M%SZ)
+  cp -p "$conf" "$CFG/backups/panel-before-login-$stamp.conf"
+  temp=$(mktemp /etc/nginx/sites-available/.panel-XXXXXX)
+  local opts=("$domain" --api-domain "$api" --panel-domain "$panel")
+  if grep -Eq "server_name[[:space:]]+www\\.$domain;" "$conf"; then opts+=(--www); fi
+  if ! python3 "$REPO/cloud/infra/vps/nginx-config.py" "${opts[@]}" > "$temp"; then
+    rm -f "$temp";die "Failed to generate Nginx vhosts"
+  fi
+  install -m 0644 "$temp" "$conf"
+  rm -f "$temp"
+  if ! nginx -t || ! systemctl reload nginx; then
+    cp -p "$CFG/backups/panel-before-login-$stamp.conf" "$conf"
+    nginx -t && systemctl reload nginx || true
+    die "Nginx rejected the config; previous vhosts restored"
+  fi
+  set_env CLOUD_ADMIN_ENABLED true
+  compose up -d --no-deps --force-recreate web
+  health || die "Web healthcheck failed; review docker logs spdecode-web-1"
+  panel_check || die "Panel credentials saved, but login is not active. Check Compose env wiring; do not re-enter your password yet."
+  log "Panel enabled at https://$panel/admin/login with username and password only."
+  log "No IP verification or IP allowlist. Keep your password private."
+}
+google_account(){
+  [[ -f "$1" && $(stat -c %a "$1") =~ ^(400|600)$ ]] || die "Service account must be a file with chmod 600"
+  python3 - "$ENVFILE" "$1" <<'PY'
+import json,sys
+from pathlib import Path
+out=Path(sys.argv[1]); data=json.loads(Path(sys.argv[2]).read_text())
+if data.get("type")!="service_account" or not data.get("private_key") or not data.get("client_email"):
+    raise SystemExit("Invalid Google service account JSON")
+serialized=json.dumps(data,separators=(",",":"))
+if "'" in serialized:raise SystemExit("Unsupported quote in JSON")
+rows=[x for x in out.read_text().splitlines() if not x.startswith("CLOUD_GOOGLE_SERVICE_ACCOUNT_JSON=")]
+out.write_text("\n".join(rows+["CLOUD_GOOGLE_SERVICE_ACCOUNT_JSON='"+serialized+"'"])+"\n")
+out.chmod(0o600)
+print("Service account stored privately (not printed)")
+PY
+}
+case "${1:-help}" in
+ status)
+   preflight; log "Source $(git -C "$REPO" rev-parse --short HEAD)"
+   compose ps
+   health && log "HTTP health OK" || log "HTTP health DOWN"
+   ;;
+ logs)
+   case "${2:-}" in api|web|panel) compose logs --no-color --tail 120 web;;
+     worker|engines) compose logs --no-color --tail 120 decoder-worker;;
+     all) compose logs --no-color --tail 120 web decoder-worker;;
+     *) die "spdecode logs api|web|panel|worker|all";; esac;;
+
+ cleanup)
+   preflight
+   case "${2:-}" in
+     status)
+       python3 "$REPO/cloud/infra/vps/cleanup-runner.py" --status
+       systemctl is-enabled spdecode-safe-cleanup.timer 2>/dev/null || true;;
+     run-timer)
+       python3 "$REPO/cloud/infra/vps/cleanup-runner.py" --once;;
+     install-timer)
+       command -v systemctl >/dev/null || die "systemd required"
+       install -m 0644 "$REPO/cloud/infra/vps/spdecode-safe-cleanup.service" /etc/systemd/system/spdecode-safe-cleanup.service
+       install -m 0644 "$REPO/cloud/infra/vps/spdecode-safe-cleanup.timer" /etc/systemd/system/spdecode-safe-cleanup.timer
+       systemctl daemon-reload
+       systemctl enable --now spdecode-safe-cleanup.timer
+       log "Safe cleanup timer installed; database policy stays OFF until administrator opts in";;
+     disable-timer)
+       systemctl disable --now spdecode-safe-cleanup.timer
+       log "Safe cleanup timer disabled";;
+     *) die "spdecode cleanup status|run-timer|install-timer|disable-timer";;
+   esac;;
+ commerce)
+   preflight
+   case "${2:-}" in
+     init)
+       python3 "$REPO/cloud/infra/vps/commerce-setup.py" "$ENVFILE"
+       compose --profile commerce up -d shop-db
+       ready=0
+       for attempt in $(seq 1 20);do
+         if compose exec -T shop-db pg_isready -U spdecode_admin -d spdecode_shop >/dev/null 2>&1;then ready=1;break;fi
+         sleep 2
+       done
+       [[ "$ready" == 1 ]] || die "Commerce database not ready"
+       # PostgreSQL only executes initdb scripts on fresh volumes.
+       # Reconcile the role on existing volumes before running Better Auth migrations.
+       compose exec -T shop-db sh -s < "$REPO/cloud/accounts/shop-db-init.sh" >/dev/null ||
+         die "Commerce role synchronization failed"
+       compose run --rm --no-deps web node scripts/commerce-migrate.mjs --apply
+       compose up -d --no-deps web
+       log "Commerce initialized. Configure Google, provider sandbox credentials and reviewed tax/product settings before enabling sales.";;
+     support-key)
+       [[ $# -eq 2 ]] || die "spdecode commerce support-key"
+       python3 "$REPO/cloud/infra/vps/commerce-setup.py" --support-only "$ENVFILE"
+       compose up -d --no-deps --force-recreate web
+       health || die "Support key configured but web health check failed"
+       log "Support key ready and web restarted; secret never displayed";;
+     migrate)
+       compose --profile commerce up -d shop-db
+       compose exec -T shop-db sh -s < "$REPO/cloud/accounts/shop-db-init.sh" >/dev/null ||
+         die "Commerce role synchronization failed"
+       compose run --rm --no-deps web node scripts/commerce-migrate.mjs --apply;;
+     status)
+       compose --profile commerce ps shop-db;;
+     *) die "spdecode commerce init|migrate|support-key|status";;
+   esac;;
+ update)
+   [[ $# -ge 2 ]] || die "spdecode update api|web|panel|worker|all [ref]"
+   if [[ "$2" == app ]]; then
+     ref="$SPDECODE_REF"
+     shift 2
+     if (($#)) && [[ "$1" != --* ]]; then ref="$1";shift;fi
+     sync_ref "$ref"
+     exec bash "$REPO/cloud/infra/vps/android-build.sh" build "$@"
+   fi
+   update "$2" "${3:-$SPDECODE_REF}";;
+ restart)
+   case "${2:-}" in
+     api|web|panel) compose up -d --no-deps --force-recreate web;health;;
+     worker|engines) compose up -d --no-deps --force-recreate decoder-worker;;
+     all) compose up -d --force-recreate;health;;
+     *) die "spdecode restart api|web|panel|worker|all";; esac;;
+ backup)
+   mkdir -p "$ROOT/backups"; stamp=$(date -u +%Y%m%dT%H%M%SZ)
+   cp -p "$ENVFILE" "$ROOT/backups/cloud-$stamp.env"
+   cp -p "$CONF" "$ROOT/backups/source-$stamp.conf"
+   git -C "$REPO" rev-parse HEAD > "$ROOT/backups/commit-$stamp.txt"
+   chmod 600 "$ROOT/backups/"*"$stamp"*
+   log "Sensitive backup saved at $ROOT/backups; copy off-VPS encrypted";;
+ rollback)
+   preflight
+   [[ -f "$ROOT/previous.sha" ]] || die "No rollback SHA"
+   old=$(cat "$ROOT/previous.sha")
+   [[ "$old" =~ ^[0-9a-f]{40}$ ]] || die "Bad rollback SHA"
+   clean_repo;git -C "$REPO" cat-file -e "$old^{commit}"
+   git -C "$REPO" reset --hard "$old"
+   deploy all
+   install -m 0755 "$REPO/cloud/infra/vps/spdecodectl" /usr/local/bin/spdecode.next
+  mv -f /usr/local/bin/spdecode.next /usr/local/bin/spdecode;;
+ panel)
+   case "${2:-}" in
+     enable) [[ $# -eq 2 ]] || die "spdecode panel enable";panel_enable;;
+     disable) [[ $# -eq 2 ]] || die "spdecode panel disable";set_env CLOUD_ADMIN_ENABLED false;compose up -d --no-deps --force-recreate web;health;;
+     check) [[ $# -eq 2 ]] || die "spdecode panel check";panel_check;;
+     reset-admin) [[ $# -eq 2 ]] || die "spdecode panel reset-admin";preflight;python3 "$REPO/cloud/infra/vps/panel-reset.py";;
+     sync-routes) [[ $# -eq 2 ]] || die "spdecode panel sync-routes";panel_routes;;
+     *) die "spdecode panel enable|disable|check|reset-admin|sync-routes";; esac;;
+ config)
+   case "${2:-}" in
+     set) [[ $# -eq 4 ]] || die "spdecode config set KEY VALUE";set_env "$3" "$4";;
+     google-service-account) [[ $# -eq 3 ]] || die "spdecode config google-service-account /root/key.json";google_account "$3";;
+     admin-password) [[ $# -eq 2 ]] || die "spdecode config admin-password";admin_password;;
+     admin-username) [[ $# -eq 3 ]] || die "spdecode config admin-username USER";set_env CLOUD_ADMIN_USERNAME "$3";;
+     *) die "spdecode config set KEY VALUE | google-service-account FILE | admin-password | admin-username NAME";; esac;;
+ providers)
+   if [[ "${2:-}" == import-ehi ]]; then
+     [[ $# -eq 3 ]] || die "spdecode providers import-ehi /root/HTTPINJECTOR_CLOUD.py"
+     preflight
+     python3 "$REPO/cloud/infra/vps/provider-services.py" "$2" "$3"
+   else
+     [[ $# -eq 2 ]] || die "spdecode providers status|enable|disable"
+     preflight
+     python3 "$REPO/cloud/infra/vps/provider-services.py" "$2"
+   fi;;
+ apk-qa)
+   [[ $# -eq 2 ]] || die "spdecode apk-qa enable|enable-lite|enable-tools|status"
+   case "$2" in
+     enable) apk_qa_enable;;
+     enable-lite) apk_qa_enable_lite;;
+     enable-tools) apk_qa_enable_tools;;
+     status) apk_qa_status;;
+     *) die "spdecode apk-qa enable|enable-lite|enable-tools|status";;
+   esac;;
+ qa)
+   [[ $# -eq 2 ]] || die "spdecode qa start|stop|status|services|probe-nur"
+   preflight
+   python3 "$REPO/cloud/infra/vps/qa-test.py" "$2";;
+ android)
+   shift
+   case "${1:-}" in
+     public-build)
+       [[ $# -eq 4 && "$3" == --ci-run ]] || die "spdecode android public-build online|offline --ci-run ID"
+       exec bash "$REPO/cloud/infra/vps/android-public-build.sh" "$2" --ci-run "$4";;
+     public-status)
+       [[ $# -eq 2 ]] || die "spdecode android public-status online|offline"
+       exec bash "$REPO/cloud/infra/vps/android-public-build.sh" "$2" --status;;
+     public-rollback)
+       [[ $# -eq 2 ]] || die "spdecode android public-rollback online|offline"
+       exec bash "$REPO/cloud/infra/vps/android-public-build.sh" "$2" --rollback;;
+     *) exec bash "$REPO/cloud/infra/vps/android-build.sh" "$@";;
+   esac;;
+ help|-h|--help)
+   cat <<'USAGE'
+SP-DECODE VPS commands:
+  spdecode status
+  spdecode logs api|web|panel|worker|all
+  spdecode update api|web|panel|worker|all [branch/tag/SHA]
+  spdecode update app [branch] --version-name X.Y.Z --version-code N --testing-only
+  spdecode restart api|web|panel|worker|all
+  spdecode rollback
+  spdecode cleanup status|install-timer|disable-timer
+  spdecode backup
+  spdecode commerce init|migrate|support-key|status  # support secret generated automatically
+  spdecode config set CLOUD_FORCE_MAINTENANCE true|false
+  spdecode config set CLOUD_API_ENABLED true|false
+  spdecode config set CLOUD_ADMIN_ENABLED true|false
+  spdecode config google-service-account /root/play-service.json
+  spdecode config admin-password
+  spdecode config admin-username NAME
+  spdecode panel enable
+  spdecode panel disable
+  spdecode panel check
+  spdecode panel reset-admin   # generate credentials and validate real HTTPS login
+  spdecode panel sync-routes   # update Nginx public links without rotating credentials
+  spdecode providers status|enable|disable  # persistent remote providers, no QA required
+  spdecode providers import-ehi /root/HTTPINJECTOR_CLOUD.py  # carga privada sin ejecutar el método
+  spdecode qa start|stop|status|services|probe-nur  # ephemeral QA; services enables NUR and configured EHI
+  spdecode apk-qa enable|status  # private APK lab; secrets created internally, no device registration
+  spdecode apk-qa enable-tools   # opt-in isolated JADX worker; requires 8 GB host RAM
+  spdecode android setup
+  spdecode android signing configure /root/upload-key.p12 alias
+  spdecode android build --version-name 1.2.0 --version-code 26 --testing-only
+  spdecode android public-build online|offline --ci-run SUCCESSFUL_RUN_ID
+  spdecode android public-status online|offline
+  spdecode android public-rollback online|offline
+  spdecode android artifacts
+USAGE
+   ;;
+ *) die "Unknown command; use spdecode help";;
+esac
+\\r'* &&
+         "$value" != *"#"* && "$value" != *"="* &&
+         "$value" != *"'"* && "$value" != *'"'* ]] ||
+         die "Support name must have 2-80 safe characters";;
+    CLOUD_GOOGLE_PLAY_PACKAGE)
+      [[ "$value" =~ ^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$ ]] || die "Invalid package";;
+    *) die "Unsupported configuration key";;
+  esac
+  python3 - "$ENVFILE" "$key" "$value" <<'PY'
+from pathlib import Path
+import sys
+file=Path(sys.argv[1]); key=sys.argv[2]; value=sys.argv[3]
+lines=[row for row in file.read_text().splitlines() if not row.startswith(key+"=")]
+file.write_text("\n".join(lines+[key+"="+value])+"\n")
+file.chmod(0o600)
+PY
+  log "Updated $key. Apply using: spdecode restart web"
+}
+admin_password(){
+  # Python scrypt parameters exactly match Next.js C6 settings.
+  python3 - "$ENVFILE" <<'PY'
+import getpass, hashlib, pathlib, secrets, sys
+file=pathlib.Path(sys.argv[1])
+password=getpass.getpass("New admin password (>=16 characters): ")
+confirm=getpass.getpass("Confirm admin password: ")
+if len(password)<16 or len(password)>512 or password!=confirm:
+    raise SystemExit("Password invalid, too short, or confirmation differs")
+salt=secrets.token_bytes(16)
+digest=hashlib.scrypt(password.encode(),salt=salt,n=16384,r=8,p=1,dklen=64,maxmem=32*1024*1024)
+hashed="scrypt$16384$8$1$"+salt.hex()+"$"+digest.hex()
+rows=[x for x in file.read_text().splitlines() if not x.startswith("CLOUD_ADMIN_PASSWORD_SCRYPT=")]
+file.write_text("\n".join(rows+["CLOUD_ADMIN_PASSWORD_SCRYPT='"+hashed+"'"])+"\n")
+file.chmod(0o600)
+print("Admin password hash stored (password not printed)")
+PY
+}
+panel_check(){
+  preflight
+  local panel status
+  [[ -s "$CFG/panel-domain" ]] || die "Configured panel domain missing"
+  panel=$(cat "$CFG/panel-domain")
+  [[ "$panel" =~ ^[A-Za-z0-9.-]+$ ]] || die "Invalid panel hostname"
+  # Check effective environment INSIDE the running Next.js container.
+  # Never print usernames, password hashes, secret variables or cookies.
+  if ! compose exec -T web node --input-type=module -e \
+    'import {adminSettings} from "./lib/c6-admin-auth.mjs";process.exit(adminSettings().enabled?0:1)' \
+    >/dev/null 2>&1; then
+    log "Panel is NOT authenticated/enabled inside Next.js. Check Compose env mapping and admin setup."
+    return 1
+  fi
+  status=$(curl --noproxy '*' --proxy '' --silent --show-error \
+    --connect-timeout 3 --max-time 8 --resolve "$panel:443:127.0.0.1" \
+    -o /dev/null -w '%{http_code}' "https://$panel/api/admin/session") || {
+      log "Cannot reach panel through local Nginx HTTPS."
+      return 1
+    }
+  if [[ "$status" != 401 ]]; then
+    log "Panel session endpoint returned HTTP $status, expected 401 for a guest."
+    return 1
+  fi
+  log "Panel login backend active (guest session correctly returns 401)."
+  return 0
+}
+panel_routes(){
+  preflight
+  local domain api panel conf temp stamp
+  [[ -s "$CFG/domain" && -s "$CFG/api-domain" && -s "$CFG/panel-domain" ]] ||
+    die "Missing configured hostnames"
+  domain=$(cat "$CFG/domain");api=$(cat "$CFG/api-domain");panel=$(cat "$CFG/panel-domain")
+  [[ "$domain" =~ ^[A-Za-z0-9.-]+$ && "$api" =~ ^[A-Za-z0-9.-]+$ &&
+     "$panel" =~ ^[A-Za-z0-9.-]+$ ]] || die "Invalid hostname"
+  conf=/etc/nginx/sites-available/spdecode.conf
+  [[ -f "$conf" ]] || die "Existing SP-DECODE Nginx configuration not found"
+  local opts=("$domain" --api-domain "$api" --panel-domain "$panel")
+  if grep -Eq "server_name[[:space:]]+www\\.$domain;" "$conf"; then opts+=(--www); fi
+  mkdir -p "$CFG/backups"
+  stamp=$(date -u +%Y%m%dT%H%M%SZ)
+  cp -p "$conf" "$CFG/backups/routing-before-$stamp.conf"
+  temp=$(mktemp /etc/nginx/sites-available/.spdecode-routes-XXXXXX)
+  if ! python3 "$REPO/cloud/infra/vps/nginx-config.py" "${opts[@]}" > "$temp"; then
+    rm -f "$temp";die "Could not generate panel routing"
+  fi
+  install -m 0644 "$temp" "$conf"
+  rm -f "$temp"
+  if ! nginx -t || ! systemctl reload nginx; then
+    cp -p "$CFG/backups/routing-before-$stamp.conf" "$conf"
+    nginx -t && systemctl reload nginx || true
+    die "Nginx rejected panel routing; restored the previous configuration"
+  fi
+  # Test actual Next.js routing through local HTTPS before declaring success.
+  local path status
+  for path in /admin /admin/analytics /admin/reports /admin/system /features /docs /privacy /status /api/site/status; do
+    status=$(curl --noproxy '*' --proxy '' --silent --show-error \
+      --connect-timeout 3 --max-time 10 \
+      --resolve "$panel:443:127.0.0.1" -o /dev/null -w '%{http_code}' \
+      "https://$panel$path") || status=000
+    if [[ "$status" != 200 ]]; then
+      cp -p "$CFG/backups/routing-before-$stamp.conf" "$conf"
+      nginx -t && systemctl reload nginx || true
+      die "Panel $path returned HTTP $status; previous routing restored"
+    fi
+  done
+  log "SP-DECODE panel routes passed real HTTPS navigation checks."
+  log "No admin usernames, passwords or API settings changed."
+}
+panel_enable(){
+  preflight
+  local username domain api panel conf stamp temp candidate
+  read -r -p "Nombre de usuario del panel (3-64 caracteres): " username </dev/tty
+  [[ "$username" =~ ^[a-zA-Z][a-zA-Z0-9._-]{2,63}$ ]] || die "Nombre de usuario inválido"
+  set_env CLOUD_ADMIN_USERNAME "$username"
+  admin_password
+  # Check the destination host is the same one enforced by admin CSRF origin.
+  [[ -s "$CFG/domain" && -s "$CFG/api-domain" && -s "$CFG/panel-domain" ]] ||
+    die "Hostnames not provisioned"
+  domain=$(cat "$CFG/domain");api=$(cat "$CFG/api-domain");panel=$(cat "$CFG/panel-domain")
+  grep -Fxq "CLOUD_ADMIN_PUBLIC_ORIGIN=https://$panel" "$ENVFILE" ||
+    die "Configured admin origin mismatches panel hostname"
+  conf=/etc/nginx/sites-available/spdecode.conf
+  [[ -f "$conf" && -f "$REPO/cloud/infra/vps/nginx-config.py" ]] ||
+    die "Nginx configuration or generator missing"
+  mkdir -p "$CFG/backups"
+  stamp=$(date -u +%Y%m%dT%H%M%SZ)
+  cp -p "$conf" "$CFG/backups/panel-before-login-$stamp.conf"
+  temp=$(mktemp /etc/nginx/sites-available/.panel-XXXXXX)
+  local opts=("$domain" --api-domain "$api" --panel-domain "$panel")
+  if grep -Eq "server_name[[:space:]]+www\\.$domain;" "$conf"; then opts+=(--www); fi
+  if ! python3 "$REPO/cloud/infra/vps/nginx-config.py" "${opts[@]}" > "$temp"; then
+    rm -f "$temp";die "Failed to generate Nginx vhosts"
+  fi
+  install -m 0644 "$temp" "$conf"
+  rm -f "$temp"
+  if ! nginx -t || ! systemctl reload nginx; then
+    cp -p "$CFG/backups/panel-before-login-$stamp.conf" "$conf"
+    nginx -t && systemctl reload nginx || true
+    die "Nginx rejected the config; previous vhosts restored"
+  fi
+  set_env CLOUD_ADMIN_ENABLED true
+  compose up -d --no-deps --force-recreate web
+  health || die "Web healthcheck failed; review docker logs spdecode-web-1"
+  panel_check || die "Panel credentials saved, but login is not active. Check Compose env wiring; do not re-enter your password yet."
+  log "Panel enabled at https://$panel/admin/login with username and password only."
+  log "No IP verification or IP allowlist. Keep your password private."
+}
+google_account(){
+  [[ -f "$1" && $(stat -c %a "$1") =~ ^(400|600)$ ]] || die "Service account must be a file with chmod 600"
+  python3 - "$ENVFILE" "$1" <<'PY'
+import json,sys
+from pathlib import Path
+out=Path(sys.argv[1]); data=json.loads(Path(sys.argv[2]).read_text())
+if data.get("type")!="service_account" or not data.get("private_key") or not data.get("client_email"):
+    raise SystemExit("Invalid Google service account JSON")
+serialized=json.dumps(data,separators=(",",":"))
+if "'" in serialized:raise SystemExit("Unsupported quote in JSON")
+rows=[x for x in out.read_text().splitlines() if not x.startswith("CLOUD_GOOGLE_SERVICE_ACCOUNT_JSON=")]
+out.write_text("\n".join(rows+["CLOUD_GOOGLE_SERVICE_ACCOUNT_JSON='"+serialized+"'"])+"\n")
+out.chmod(0o600)
+print("Service account stored privately (not printed)")
+PY
+}
+case "${1:-help}" in
+ status)
+   preflight; log "Source $(git -C "$REPO" rev-parse --short HEAD)"
+   compose ps
+   health && log "HTTP health OK" || log "HTTP health DOWN"
+   ;;
+ logs)
+   case "${2:-}" in api|web|panel) compose logs --no-color --tail 120 web;;
+     worker|engines) compose logs --no-color --tail 120 decoder-worker;;
+     all) compose logs --no-color --tail 120 web decoder-worker;;
+     *) die "spdecode logs api|web|panel|worker|all";; esac;;
+
+ cleanup)
+   preflight
+   case "${2:-}" in
+     status)
+       python3 "$REPO/cloud/infra/vps/cleanup-runner.py" --status
+       systemctl is-enabled spdecode-safe-cleanup.timer 2>/dev/null || true;;
+     run-timer)
+       python3 "$REPO/cloud/infra/vps/cleanup-runner.py" --once;;
+     install-timer)
+       command -v systemctl >/dev/null || die "systemd required"
+       install -m 0644 "$REPO/cloud/infra/vps/spdecode-safe-cleanup.service" /etc/systemd/system/spdecode-safe-cleanup.service
+       install -m 0644 "$REPO/cloud/infra/vps/spdecode-safe-cleanup.timer" /etc/systemd/system/spdecode-safe-cleanup.timer
+       systemctl daemon-reload
+       systemctl enable --now spdecode-safe-cleanup.timer
+       log "Safe cleanup timer installed; database policy stays OFF until administrator opts in";;
+     disable-timer)
+       systemctl disable --now spdecode-safe-cleanup.timer
+       log "Safe cleanup timer disabled";;
+     *) die "spdecode cleanup status|run-timer|install-timer|disable-timer";;
+   esac;;
+ commerce)
+   preflight
+   case "${2:-}" in
+     init)
+       python3 "$REPO/cloud/infra/vps/commerce-setup.py" "$ENVFILE"
+       compose --profile commerce up -d shop-db
+       ready=0
+       for attempt in $(seq 1 20);do
+         if compose exec -T shop-db pg_isready -U spdecode_admin -d spdecode_shop >/dev/null 2>&1;then ready=1;break;fi
+         sleep 2
+       done
+       [[ "$ready" == 1 ]] || die "Commerce database not ready"
+       # PostgreSQL only executes initdb scripts on fresh volumes.
+       # Reconcile the role on existing volumes before running Better Auth migrations.
+       compose exec -T shop-db sh -s < "$REPO/cloud/accounts/shop-db-init.sh" >/dev/null ||
+         die "Commerce role synchronization failed"
+       compose run --rm --no-deps web node scripts/commerce-migrate.mjs --apply
+       compose up -d --no-deps web
+       log "Commerce initialized. Configure Google, provider sandbox credentials and reviewed tax/product settings before enabling sales.";;
+     support-key)
+       [[ $# -eq 2 ]] || die "spdecode commerce support-key"
+       python3 "$REPO/cloud/infra/vps/commerce-setup.py" --support-only "$ENVFILE"
+       compose up -d --no-deps --force-recreate web
+       health || die "Support key configured but web health check failed"
+       log "Support key ready and web restarted; secret never displayed";;
+     migrate)
+       compose --profile commerce up -d shop-db
+       compose exec -T shop-db sh -s < "$REPO/cloud/accounts/shop-db-init.sh" >/dev/null ||
+         die "Commerce role synchronization failed"
+       compose run --rm --no-deps web node scripts/commerce-migrate.mjs --apply;;
+     status)
+       compose --profile commerce ps shop-db;;
+     *) die "spdecode commerce init|migrate|support-key|status";;
+   esac;;
+ update)
+   [[ $# -ge 2 ]] || die "spdecode update api|web|panel|worker|all [ref]"
+   if [[ "$2" == app ]]; then
+     ref="$SPDECODE_REF"
+     shift 2
+     if (($#)) && [[ "$1" != --* ]]; then ref="$1";shift;fi
+     sync_ref "$ref"
+     exec bash "$REPO/cloud/infra/vps/android-build.sh" build "$@"
+   fi
+   update "$2" "${3:-$SPDECODE_REF}";;
+ restart)
+   case "${2:-}" in
+     api|web|panel) compose up -d --no-deps --force-recreate web;health;;
+     worker|engines) compose up -d --no-deps --force-recreate decoder-worker;;
+     all) compose up -d --force-recreate;health;;
+     *) die "spdecode restart api|web|panel|worker|all";; esac;;
+ backup)
+   mkdir -p "$ROOT/backups"; stamp=$(date -u +%Y%m%dT%H%M%SZ)
+   cp -p "$ENVFILE" "$ROOT/backups/cloud-$stamp.env"
+   cp -p "$CONF" "$ROOT/backups/source-$stamp.conf"
+   git -C "$REPO" rev-parse HEAD > "$ROOT/backups/commit-$stamp.txt"
+   chmod 600 "$ROOT/backups/"*"$stamp"*
+   log "Sensitive backup saved at $ROOT/backups; copy off-VPS encrypted";;
+ rollback)
+   preflight
+   [[ -f "$ROOT/previous.sha" ]] || die "No rollback SHA"
+   old=$(cat "$ROOT/previous.sha")
+   [[ "$old" =~ ^[0-9a-f]{40}$ ]] || die "Bad rollback SHA"
+   clean_repo;git -C "$REPO" cat-file -e "$old^{commit}"
+   git -C "$REPO" reset --hard "$old"
+   deploy all
+   install -m 0755 "$REPO/cloud/infra/vps/spdecodectl" /usr/local/bin/spdecode.next
+  mv -f /usr/local/bin/spdecode.next /usr/local/bin/spdecode;;
+ panel)
+   case "${2:-}" in
+     enable) [[ $# -eq 2 ]] || die "spdecode panel enable";panel_enable;;
+     disable) [[ $# -eq 2 ]] || die "spdecode panel disable";set_env CLOUD_ADMIN_ENABLED false;compose up -d --no-deps --force-recreate web;health;;
+     check) [[ $# -eq 2 ]] || die "spdecode panel check";panel_check;;
+     reset-admin) [[ $# -eq 2 ]] || die "spdecode panel reset-admin";preflight;python3 "$REPO/cloud/infra/vps/panel-reset.py";;
+     sync-routes) [[ $# -eq 2 ]] || die "spdecode panel sync-routes";panel_routes;;
+     *) die "spdecode panel enable|disable|check|reset-admin|sync-routes";; esac;;
+ config)
+   case "${2:-}" in
+     set) [[ $# -eq 4 ]] || die "spdecode config set KEY VALUE";set_env "$3" "$4";;
+     google-service-account) [[ $# -eq 3 ]] || die "spdecode config google-service-account /root/key.json";google_account "$3";;
+     admin-password) [[ $# -eq 2 ]] || die "spdecode config admin-password";admin_password;;
+     admin-username) [[ $# -eq 3 ]] || die "spdecode config admin-username USER";set_env CLOUD_ADMIN_USERNAME "$3";;
+     *) die "spdecode config set KEY VALUE | google-service-account FILE | admin-password | admin-username NAME";; esac;;
+ providers)
+   if [[ "${2:-}" == import-ehi ]]; then
+     [[ $# -eq 3 ]] || die "spdecode providers import-ehi /root/HTTPINJECTOR_CLOUD.py"
+     preflight
+     python3 "$REPO/cloud/infra/vps/provider-services.py" "$2" "$3"
+   else
+     [[ $# -eq 2 ]] || die "spdecode providers status|enable|disable"
+     preflight
+     python3 "$REPO/cloud/infra/vps/provider-services.py" "$2"
+   fi;;
+ apk-qa)
+   [[ $# -eq 2 ]] || die "spdecode apk-qa enable|enable-lite|enable-tools|status"
+   case "$2" in
+     enable) apk_qa_enable;;
+     enable-lite) apk_qa_enable_lite;;
+     enable-tools) apk_qa_enable_tools;;
+     status) apk_qa_status;;
+     *) die "spdecode apk-qa enable|enable-lite|enable-tools|status";;
+   esac;;
+ qa)
+   [[ $# -eq 2 ]] || die "spdecode qa start|stop|status|services|probe-nur"
+   preflight
+   python3 "$REPO/cloud/infra/vps/qa-test.py" "$2";;
+ android)
+   shift
+   case "${1:-}" in
+     public-build)
+       [[ $# -eq 4 && "$3" == --ci-run ]] || die "spdecode android public-build online|offline --ci-run ID"
+       exec bash "$REPO/cloud/infra/vps/android-public-build.sh" "$2" --ci-run "$4";;
+     public-status)
+       [[ $# -eq 2 ]] || die "spdecode android public-status online|offline"
+       exec bash "$REPO/cloud/infra/vps/android-public-build.sh" "$2" --status;;
+     public-rollback)
+       [[ $# -eq 2 ]] || die "spdecode android public-rollback online|offline"
+       exec bash "$REPO/cloud/infra/vps/android-public-build.sh" "$2" --rollback;;
+     *) exec bash "$REPO/cloud/infra/vps/android-build.sh" "$@";;
+   esac;;
+ help|-h|--help)
+   cat <<'USAGE'
+SP-DECODE VPS commands:
+  spdecode status
+  spdecode logs api|web|panel|worker|all
+  spdecode update api|web|panel|worker|all [branch/tag/SHA]
+  spdecode update app [branch] --version-name X.Y.Z --version-code N --testing-only
+  spdecode restart api|web|panel|worker|all
+  spdecode rollback
+  spdecode cleanup status|install-timer|disable-timer
+  spdecode backup
+  spdecode commerce init|migrate|support-key|status  # support secret generated automatically
   spdecode config set CLOUD_FORCE_MAINTENANCE true|false
   spdecode config set CLOUD_API_ENABLED true|false
   spdecode config set CLOUD_ADMIN_ENABLED true|false

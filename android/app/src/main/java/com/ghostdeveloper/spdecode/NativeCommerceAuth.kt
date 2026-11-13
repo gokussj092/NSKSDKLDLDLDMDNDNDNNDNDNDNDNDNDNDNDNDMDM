@@ -246,6 +246,12 @@ internal class NativeCommerceAuth(private val context:Context) {
                 if(e.code=="SIGN_IN_REQUIRED")wipeSession()
                 return null
             }catch(_:Exception){return null}
+        // A temporary commerce outage is not session revocation. Keep the
+        // Android Keystore-encrypted bearer for recovery after server rollout,
+        // but don't expose cached entitlements while authentication is offline.
+        if(!response.optBoolean("authEnabled",true)){
+            CommerceSession.clear();return null
+        }
         if(response.isNull("user")||response.optJSONObject("user")==null){
             wipeSession();return null
         }

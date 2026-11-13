@@ -57,7 +57,7 @@ export default function AdminSupport(){
      </header>
      <div className="sp-support-history" role="log" aria-live="polite">
       {selected.messages.map(m=><div key={m.id} className={'sp-support-message '+m.sender}>
-       <small>{m.sender==='admin'?'Soporte SP-DECODE':'Usuario'}</small>
+       <small>{m.sender==='admin'?((m.agent?.name||'SP-DECODE')+' · '+(m.agent?.role==='owner'?'Administrador':m.agent?.role==='admin'?'Administración':'Soporte')):'Usuario'}</small>
        <p>{m.text}</p><time>{new Date(m.at).toLocaleString('es-MX')}</time>
       </div>)}
      </div>

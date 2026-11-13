@@ -61,7 +61,8 @@ internal object CommercePaymentText {
 
 @Composable
 internal fun CommerceAdFreePurchase(language:String,offer:StoreAdFreeOffer?,
-    auth:NativeCommerceAuth,onSignIn:()->Unit,onOpenCheckout:(String)->Unit){
+    auth:NativeCommerceAuth,onSignIn:()->Unit,onOpenCheckout:(String)->Unit,
+    onReloadCatalog:()->Unit){
     val tr:(String)->String={CommercePaymentText.get(language,it)}
     val scope=rememberCoroutineScope()
     val identity=CommerceSession.user
@@ -72,7 +73,7 @@ internal fun CommerceAdFreePurchase(language:String,offer:StoreAdFreeOffer?,
     var countryMenu by remember{mutableStateOf(false)}
     val countryCodes=listOf("MX","US","CA","CO","PE","AR","BR","CL","ES","FR",
         "DE","IT","GB","PT","TR","IN","ID","JP","AU","NZ")
-    var quote by remember{mutableStateOf<JSONObject?>(null)}
+    var quote by remember(offer?.version,offer?.priceCents){mutableStateOf<JSONObject?>(null)}
     var busy by remember{mutableStateOf(false)}
     var notice by remember{mutableStateOf<String?>(null)}
     val saleEnabled=offer?.available==true && offer.providers.isNotEmpty()
@@ -87,6 +88,12 @@ internal fun CommerceAdFreePurchase(language:String,offer:StoreAdFreeOffer?,
                 fontWeight=FontWeight.Bold)
             if(CommerceSession.adFreeActive){
                 Text(tr("Your ad-free access is active"),color=ivy,fontSize=14.sp)
+                if(CommerceSession.adsExpiry>System.currentTimeMillis()){
+                    val expiry=java.text.DateFormat.getDateInstance(java.text.DateFormat.MEDIUM,
+                        Locale.forLanguageTag(language)).format(java.util.Date(CommerceSession.adsExpiry))
+                    Text(CommerceI18n.translate(language,"Válido hasta ","Active until ")+expiry,
+                        color=pale,fontSize=12.sp)
+                }
             }else{
                 Text(offer?.let{String.format(Locale.US,"%.2f USD",it.priceCents/100.0)}
                     ?:tr("Payment service unavailable"),
@@ -173,6 +180,13 @@ internal fun CommerceAdFreePurchase(language:String,offer:StoreAdFreeOffer?,
             }
         }else{
             Text(tr("Payment service unavailable"),color=pale,fontSize=14.sp)
+        }
+        OutlinedButton(modifier=Modifier.fillMaxWidth(),enabled=!busy,
+            onClick={notice=null;quote=null;onReloadCatalog()}){
+            Icon(Icons.Outlined.Refresh,null,tint=silver)
+            Spacer(Modifier.width(9.dp))
+            Text(CommerceI18n.translate(language,"Actualizar precios","Refresh prices"),
+                color=silver)
         }
         if(identity!=null && (CommerceSession.checkoutPending||CommerceSession.adFreeActive)){
             OutlinedButton(modifier=Modifier.fillMaxWidth(),enabled=!busy,

@@ -151,7 +151,14 @@ internal fun CommerceSupportPage(language:String,auth:NativeCommerceAuth,report:
                         .background(if(fromUser)Color(0xFF2A4031) else supportBg,
                             RoundedCornerShape(17.dp)).padding(13.dp),
                         verticalArrangement=Arrangement.spacedBy(6.dp)){
-                        Text(if(fromUser)local("Tú","You") else "SP-DECODE",
+                        val staff=row.optJSONObject("agent")
+                        val staffName=staff?.optString("name")?.trim()
+                            ?.takeIf{it.isNotBlank()}?:"SP-DECODE"
+                        val staffRole=when(staff?.optString("role")){
+                            "owner","admin"->local("Administración","Administrator")
+                            else->local("Soporte técnico","Technical support")
+                        }
+                        Text(if(fromUser)local("Tú","You") else staffName+" · "+staffRole,
                             color=supportAccent,fontSize=11.sp,fontWeight=FontWeight.Bold)
                         Text(row.optString("text"),color=supportText,fontSize=14.sp)
                         val date=runCatching{Date.from(java.time.Instant.parse(row.optString("at")))}

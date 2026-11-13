@@ -184,7 +184,14 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
     }
     var catalog by remember {mutableStateOf<NativeStoreCatalog?>(null)}
     var catalogLoaded by remember {mutableStateOf(false)}
-    LaunchedEffect(Unit){catalog=NativeStoreCatalog.load();catalogLoaded=true}
+    // Read new offers whenever the user enters the store; prices are server-owned.
+    LaunchedEffect(page,detail){
+        if(page=="store"||page=="ad-free"){
+            catalogLoaded=false
+            catalog=NativeStoreCatalog.load()
+            catalogLoaded=true
+        }
+    }
     val creditPacks=catalog?.creditPacks.orEmpty().map {
         CreditPack(it.planId,it.credits,it.priceCents,it.available)
     }
@@ -400,7 +407,15 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                     }
                     "ads" -> {
                         CommerceAdFreePurchase(language,catalog?.adFree,auth,
-                            onSignIn={page="login"},onOpenCheckout=onCheckoutUrl)
+                            onSignIn={page="login"},onOpenCheckout=onCheckoutUrl,
+                            onReloadCatalog={
+                                scope.launch{
+                                    catalogLoaded=false
+                                    catalog=NativeStoreCatalog.load()
+                                    catalogLoaded=true
+                                    accountSnapshot=auth.account()
+                                }
+                            })
                     }
                     else -> {
                         SlateCard{
@@ -611,84 +626,25 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                         if(signingIn)LinearProgressIndicator(Modifier.fillMaxWidth(),color=white)
                     }
                 }
-                "login" -> {
-                    Column(Modifier.fillMaxWidth().padding(top=22.dp,bottom=12.dp),
-                        verticalArrangement=Arrangement.spacedBy(9.dp)){
-                        Row(verticalAlignment=Alignment.CenterVertically,
-                            horizontalArrangement=Arrangement.spacedBy(10.dp)){
-                            Icon(Icons.Outlined.Shield,null,tint=white,
-                                modifier=Modifier.size(30.dp))
-                            Text("SP-DECODE",color=white,fontWeight=FontWeight.Bold,
-                                fontSize=18.sp)
+                "login" -> CommerceAuthLanding(language,acceptedPolicies,
+                    signingIn,notice,
+                    onAccepted={acceptedPolicies=it},onLegalLink=onLegalLink,
+                    onGoogle={
+                        if(!signingIn)scope.launch{
+                            signingIn=true;notice=null
+                            try{
+                                accountSnapshot=auth.signInWithGoogle(acceptedPolicies)
+                                page="account"
+                            }catch(e:kotlinx.coroutines.CancellationException){throw e}
+                            catch(e:Exception){
+                                val code=NativeCommerceAuth.diagnostic(e)
+                                if(code!="GOOGLE_SIGN_IN_CANCELLED")
+                                    notice=local("No se pudo iniciar sesión. Verifica Google y tu conexión.",
+                                        "Sign-in failed. Verify Google and your connection.")+
+                                        " ("+code+")"
+                            }finally{signingIn=false}
                         }
-                        Spacer(Modifier.height(15.dp))
-                        Box(Modifier.size(68.dp).background(raised,RoundedCornerShape(24.dp)),
-                            contentAlignment=Alignment.Center){
-                            Icon(Icons.Outlined.VerifiedUser,null,tint=good,
-                                modifier=Modifier.size(37.dp))
-                        }
-                        Text(local("Iniciar sesión","Sign in"),
-                            color=white,fontWeight=FontWeight.SemiBold,fontSize=31.sp)
-                        Text(local("Accede a tu cuenta desde la aplicación",
-                            "Access your account inside the app"),
-                            color=muted,fontSize=14.sp)
-                    }
-                    SlateCard{
-                        Text(local("Elige cómo continuar","Choose how to continue"),
-                            color=white,fontSize=17.sp,fontWeight=FontWeight.SemiBold)
-                        OutlinedButton(onClick={
-                            if(!signingIn)scope.launch{
-                                signingIn=true
-                                notice=null
-                                try{
-                                    accountSnapshot=auth.signInWithGoogle(acceptedPolicies)
-                                    page="account"
-                                }catch(error:kotlinx.coroutines.CancellationException){
-                                    throw error
-                                }catch(error:Exception){
-                                    val code=NativeCommerceAuth.diagnostic(error)
-                                    if(code!="GOOGLE_SIGN_IN_CANCELLED"){
-                                        notice=local("No se pudo iniciar sesión. Comprueba que el servidor y Google OAuth estén configurados.",
-                                            "Sign in failed. Verify account server and Google OAuth configuration.")+
-                                            " ("+code+")"
-                                    }
-                                }finally{signingIn=false}
-                            }
-                        },enabled=!signingIn && acceptedPolicies,modifier=Modifier.fillMaxWidth()) {
-                            Box(Modifier.size(27.dp).background(white,CircleShape),
-                                contentAlignment=Alignment.Center) {
-                                Text("G",color=Color(0xFF4285F4),fontSize=19.sp,
-                                    fontWeight=FontWeight.ExtraBold)
-                            }
-                            Spacer(Modifier.width(12.dp))
-                            Text(local("Continuar con Google","Continue with Google"))
-                        }
-                        CommerceConsentRow(language,acceptedPolicies,
-                            onAccepted={acceptedPolicies=it},onLegalLink=onLegalLink)
-                        OutlinedButton(onClick={page="email-login"},
-                            modifier=Modifier.fillMaxWidth()){
-                            Icon(Icons.Outlined.MailOutline,null,tint=white)
-                            Spacer(Modifier.width(10.dp))
-                            Text(local("Entrar con correo y contraseña",
-                                "Sign in with email and password"),color=white)
-                        }
-                        Note(local("La cuenta se verifica mediante Google. Tus datos y compras quedan protegidos.",
-                            "Google verifies your identity. Your account and purchases stay protected."))
-                        if(signingIn) LinearProgressIndicator(
-                            modifier=Modifier.fillMaxWidth(),color=white,
-                            trackColor=stroke)
-                        if(notice!=null)Note(notice.orEmpty())
-                    }
-                    Row(Modifier.fillMaxWidth().padding(vertical=8.dp),
-                        verticalAlignment=Alignment.CenterVertically,
-                        horizontalArrangement=Arrangement.spacedBy(8.dp)){
-                        Icon(Icons.Outlined.Lock,null,tint=muted,
-                            modifier=Modifier.size(16.dp))
-                        Text(local("Accede a tu cuenta desde la aplicación",
-                            "Access your account inside the app"),
-                            color=muted,fontSize=12.sp)
-                    }
-                }
+                    },onEmail={page="email-login"})
             }
         }
     }
