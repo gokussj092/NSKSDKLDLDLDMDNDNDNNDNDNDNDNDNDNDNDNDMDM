@@ -525,6 +525,20 @@ class AndroidUnityReleaseContract(unittest.TestCase):
         self.assertIn("account_notices",sql)
         self.assertIn("'008_account_notifications.sql'",migration)
 
+    def test_custom_roles_never_escalate_vps_owner_privileges(self):
+        roles=read("cloud/web/lib/commerce/staff-roles.mjs")
+        accounts=read("cloud/web/lib/commerce/staff.mjs")
+        sql=read("cloud/web/sql/009_staff_custom_roles.sql")
+        ui=read("cloud/web/app/admin/admin-staff.jsx")
+        support=read("cloud/web/lib/commerce/support.mjs")
+        self.assertIn("CUSTOM_PERMISSION_KEYS",roles)
+        self.assertIn("STAFF_CAPABILITIES",accounts)
+        self.assertIn("roleCapabilities",accounts)
+        self.assertIn("session_version=session_version+1",roles)
+        self.assertIn("staff_custom_roles",sql)
+        self.assertIn("onSave={saveRole}",ui)
+        self.assertIn("support.assign",support)
+
     def test_support_agent_identity_and_vps_secret_automation(self):
         support=read("cloud/web/lib/commerce/support.mjs")
         route=read("cloud/web/lib/commerce/support-route.mjs")

@@ -10,13 +10,13 @@ try{
   const migration=await getMigrations(auth.options);
   if(!process.argv.includes('--apply')){
     console.log(JSON.stringify({authTablesToCreate:migration.toBeCreated.map(x=>x.table),
-      authTablesToUpdate:migration.toBeAdded.map(x=>x.table),shopMigrations:['002_shop.sql','003_ads_free.sql','004_gifts.sql','005_account_support_apk.sql','006_support_agent_identity.sql','007_staff_permissions.sql','008_account_notifications.sql'],applied:false}));
+      authTablesToUpdate:migration.toBeAdded.map(x=>x.table),shopMigrations:['002_shop.sql','003_ads_free.sql','004_gifts.sql','005_account_support_apk.sql','006_support_agent_identity.sql','007_staff_permissions.sql','008_account_notifications.sql','009_staff_custom_roles.sql'],applied:false}));
   }else{
     await migration.runMigrations();
     // PostgreSQL advisory lock prevents competing migration processes.
     const client=await db.connect();
     try{await client.query('BEGIN');await client.query('SELECT pg_advisory_xact_lock(783441002)');
-      for(const filename of ['002_shop.sql','003_ads_free.sql','004_gifts.sql','005_account_support_apk.sql','006_support_agent_identity.sql','007_staff_permissions.sql','008_account_notifications.sql'])
+      for(const filename of ['002_shop.sql','003_ads_free.sql','004_gifts.sql','005_account_support_apk.sql','006_support_agent_identity.sql','007_staff_permissions.sql','008_account_notifications.sql','009_staff_custom_roles.sql'])
         await client.query(await readFile(new URL('../sql/'+filename,import.meta.url),'utf8'));
       await client.query('COMMIT');console.log('Commerce schema applied; existing product settings preserved.');
     }catch(e){await client.query('ROLLBACK');throw e;}finally{client.release();}

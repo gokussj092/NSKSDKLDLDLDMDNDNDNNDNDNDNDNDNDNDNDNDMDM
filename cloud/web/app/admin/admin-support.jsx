@@ -13,15 +13,17 @@ function Initial({name,src}){
  return avatar(src)?<img className="sp-conversation-avatar" src={avatar(src)} alt=""/>:
  <div className="sp-conversation-avatar sp-initial">{name?.slice(0,1)?.toUpperCase()||'?'}</div>;
 }
-function SenderLabel({message}){
+function SenderLabel({message,customLabels={}}){
  const staff=message.sender==='admin';
- const role=message.agent?.role==='owner'?'Propietario':message.agent?.role==='admin'?'Administración':
-  message.agent?.role==='moderator'?'Moderación':'Soporte';
+ const role=customLabels[message.agent?.role]||
+  (message.agent?.role==='owner'?'Propietario':message.agent?.role==='admin'?'Administración':
+   message.agent?.role==='moderator'?'Moderación':'Soporte');
  return <span>{staff?(message.agent?.name||'SP-DECODE')+' · '+role:'Cliente'}</span>;
 }
 export default function AdminSupport(){
  const router=useRouter(),endRef=useRef(null);
  const [threads,setThreads]=useState([]),[access,setAccess]=useState(null),[staff,setStaff]=useState([]),
+ [customRoles,setCustomRoles]=useState([]),
  [active,setActive]=useState(''),[answer,setAnswer]=useState(''),[busy,setBusy]=useState(false),
  [error,setError]=useState(''),[notice,setNotice]=useState(''),[filter,setFilter]=useState('all'),
  [query,setQuery]=useState('');
@@ -36,10 +38,14 @@ export default function AdminSupport(){
   setAccess(auth);setThreads((await r.json()).threads||[]);
   if(auth.capabilities?.includes('support.assign')){
    const staffResponse=await fetch('/api/admin/staff',{cache:'no-store'});
-   if(staffResponse.ok)setStaff((await staffResponse.json()).staff||[]);
+   if(staffResponse.ok){
+     const payload=await staffResponse.json();
+     setStaff(payload.staff||[]);setCustomRoles(payload.roleDefinitions||[]);
+   }
   }
  },[router]);
  useEffect(()=>{load().catch(e=>setError(e.message));const t=setInterval(()=>load().catch(()=>{}),15000);return()=>clearInterval(t);},[load]);
+ const customLabels=Object.fromEntries(customRoles.map(r=>[r.code,r.name]));
  const selected=threads.find(t=>t.id===active);
  useEffect(()=>{endRef.current?.scrollIntoView({block:'end',behavior:'smooth'});},
    [active,selected?.messages?.length]);
@@ -108,7 +114,8 @@ export default function AdminSupport(){
       <label>Agente<select disabled={busy} value={selected.assigned_staff_id||''}
        onChange={e=>assign({assignedId:e.target.value||null})}>
        <option value="">Sin asignar</option>{staff.filter(x=>x.enabled&&!x.mustChangePassword&&
-        ['admin','support','moderator'].includes(x.role)).map(x=>
+        (['admin','support','moderator'].includes(x.role)||
+         customRoles.some(r=>r.code===x.role&&r.enabled&&r.permissions.includes('support.write')))).map(x=>
          <option key={x.id} value={x.id}>{x.name} · @{x.username}</option>)}
       </select></label>
       <label>Prioridad<select disabled={busy} value={selected.priority||'normal'}
@@ -118,7 +125,7 @@ export default function AdminSupport(){
      </div>}
      <div className="sp-chat-message-scroller" role="log" aria-live="polite">
       {selected.messages?.map(m=><div key={m.id} className={'sp-chat-bubble '+(m.sender==='admin'?'outgoing':'incoming')}>
-       <strong><SenderLabel message={m}/></strong>
+       <strong><SenderLabel message={m} customLabels={customLabels}/></strong>
        <p>{m.text}</p><time>{new Date(m.at).toLocaleString('es-MX',{hour:'2-digit',minute:'2-digit'})}</time>
       </div>)}
       <div ref={endRef}/>

@@ -31,6 +31,7 @@ export const supportAdminRequest=request=>safe(async()=>{
    return reply(await assignSupportThread(principal,body));
  }
  return reply(await replyAdminSupport({
-   id:principal.id,name:principal.name,role:principal.role
+   id:principal.id,name:principal.name,role:principal.role,
+   canAssign:principal.capabilities.includes('support.assign')
  },body));
 });

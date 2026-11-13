@@ -105,7 +105,7 @@ export async function listUserSupport(accountId,{db=database(),env=process.env}=
 }
 export async function listAdminSupport({db=database(),env=process.env,principal=null}={}){
   secret(env);
-  const limited=principal?.role==='support';
+  const limited=!!principal&&!principal.capabilities?.includes('support.assign');
   const threads=(await db.query(`SELECT t.id,t.subject,t.category,t.status,t.priority,
     t.assigned_staff_id,t.last_message_at,t.account_id,u.name,p.username,
     COALESCE(p.avatar_data,u.image) AS avatar,
@@ -129,7 +129,7 @@ export async function replyAdminSupport(actor,input,{db=database(),env=process.e
   const operator=typeof actor==='string'?{id:actor,name:'SP-DECODE',role:'admin'}:actor;
   if(!operator||typeof operator.id!=='string'||!operator.id||
      typeof operator.name!=='string'||operator.name.length<2||operator.name.length>80||
-     !['owner','admin','support','moderator'].includes(operator.role)||
+     !/^(owner|admin|support|moderator|x_[a-z][a-z0-9_]{1,12})$/.test(operator.role)||
      !UUID.test(input?.threadId)||
     Object.keys(input||{}).some(k=>!['threadId','action','message'].includes(k))||
     !['reply','close','reopen'].includes(input?.action))fail('INVALID_REQUEST');
@@ -138,7 +138,8 @@ export async function replyAdminSupport(actor,input,{db=database(),env=process.e
     const thread=(await client.query('SELECT id,status,account_id,assigned_staff_id FROM spdecode_shop.support_threads WHERE id=$1 FOR UPDATE',
       [input.threadId])).rows[0];
     if(!thread)fail('SUPPORT_NOT_FOUND',404);
-    if(operator.role==='support'&&thread.assigned_staff_id!==operator.id)
+    if(!['owner','admin','moderator'].includes(operator.role)&&
+       !operator.canAssign&&thread.assigned_staff_id!==operator.id)
       fail('SUPPORT_NOT_ASSIGNED',403);
     let accountNoticeId=null;
     if(input.action==='reply'){
@@ -170,7 +171,8 @@ export async function replyAdminSupport(actor,input,{db=database(),env=process.e
 }
 
 export async function assignSupportThread(principal,input,{db=database()}={}){
-  if(!['owner','admin','moderator'].includes(principal?.role)||
+  if(!(['owner','admin','moderator'].includes(principal?.role)||
+      principal?.capabilities?.includes('support.assign'))||
      !UUID.test(input?.threadId)||
      Object.keys(input||{}).some(k=>!['threadId','action','assignedId','priority'].includes(k))||
      input.action!=='assign'||(input.assignedId!==null&&!UUID.test(input.assignedId))||
@@ -180,9 +182,12 @@ export async function assignSupportThread(principal,input,{db=database()}={}){
     const thread=(await client.query('SELECT * FROM spdecode_shop.support_threads WHERE id=$1 FOR UPDATE',[input.threadId])).rows[0];
     if(!thread)fail('SUPPORT_NOT_FOUND',404);
     if(input.assignedId){
-      const agent=(await client.query(`SELECT id FROM spdecode_shop.staff_accounts
-        WHERE id=$1 AND enabled=true AND must_change_password=false
-          AND role IN ('admin','support','moderator')`,[input.assignedId])).rows[0];
+      const agent=(await client.query(`SELECT a.id FROM spdecode_shop.staff_accounts a
+        LEFT JOIN spdecode_shop.staff_custom_roles c ON c.code=a.role
+        WHERE a.id=$1 AND a.enabled=true AND a.must_change_password=false
+          AND (a.role IN ('admin','support','moderator') OR
+               (c.enabled=true AND c.permissions @> ARRAY['support.write']::text[]))`,
+        [input.assignedId])).rows[0];
       if(!agent)fail('AGENT_NOT_AVAILABLE',409);
     }
     await client.query(`UPDATE spdecode_shop.support_threads

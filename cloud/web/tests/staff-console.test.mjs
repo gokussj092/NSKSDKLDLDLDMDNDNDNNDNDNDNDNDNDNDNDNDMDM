@@ -10,6 +10,7 @@ import {createStaff,updateStaff,listStaff,loginStaff,panelPrincipal,can,
 import {createSupportThread,assignSupportThread,replyAdminSupport,
   listAdminSupport,listUserSupport} from '../lib/commerce/support.mjs';
 import {userDirectory,userDetail} from '../lib/commerce/users-admin.mjs';
+import {customRoles,writeCustomRole,roleCapabilities} from '../lib/commerce/staff-roles.mjs';
 let pg,db,auth,redis;
 const users=[randomUUID(),randomUUID()],owner={
  id:'f'.repeat(64),name:'SP-DECODE Owner',username:'rootadmin',
@@ -34,7 +35,7 @@ before(async()=>{
  auth=makeAuth(db,env);
  await (await getMigrations(auth.options)).runMigrations();
  for(const name of ['002_shop.sql','003_ads_free.sql','004_gifts.sql',
-   '005_account_support_apk.sql','006_support_agent_identity.sql','007_staff_permissions.sql','008_account_notifications.sql']){
+   '005_account_support_apk.sql','006_support_agent_identity.sql','007_staff_permissions.sql','008_account_notifications.sql','009_staff_custom_roles.sql']){
   const sql=await readFile(new URL('../sql/'+name,import.meta.url),'utf8');
   await pg.exec(sql);
  }
@@ -141,4 +142,49 @@ test('registered customers directory is scoped, paginated and redacts secrets',a
  const audit=await recentStaffAudit({db});
  assert.ok(audit.events.some(x=>x.action==='customer_viewed'));
  await assert.rejects(userDirectory({db,page:1001}),/INVALID_REQUEST/);
+});
+
+test('owner creates least-privilege custom role with no escalation to staff administration',async()=>{
+ const custom={action:'create',code:'x_careqa',name:'Atención QA',
+   permissions:['support.read','support.write'],enabled:true};
+ const made=await writeCustomRole(owner,custom,{db});
+ assert.equal(made.role.code,'x_careqa');
+ assert.deepEqual(await roleCapabilities('x_careqa',db),['support.read','support.write']);
+ await assert.rejects(writeCustomRole(owner,{...custom,code:'x_adminqa',
+   permissions:['staff.write']},{db}),/INVALID_ROLE/);
+ await assert.rejects(writeCustomRole({role:'admin'},custom,{db}),/FORBIDDEN/);
+ await assert.rejects(writeCustomRole(owner,{...custom,code:'x_badperm',
+   permissions:['support.write']},{db}),/ROLE_REQUIRES_SUPPORT_READ/);
+ const person=await createStaff(owner,{username:'custom.qa',name:'Custom Support QA',
+   role:'x_careqa'},{db});
+ const login=await loginStaff(redis,person.staff.username,person.temporaryPassword,{db,config});
+ let req=new Request('https://panel.spdecode.xyz/api/admin/access',{headers:{
+  cookie:'spdecode_staff_session='+login.token}});
+ let principal=await panelPrincipal(req,{db,redis,config});
+ assert.equal(principal.mustChangePassword,true);
+ assert.equal(can(principal,'support.read'),false);
+ await changeStaffPassword(principal,person.temporaryPassword,'ChangedCustomPass#2026',{db});
+ const active=await loginStaff(redis,'custom.qa','ChangedCustomPass#2026',{db,config});
+ req=new Request('https://panel.spdecode.xyz/api/admin/access',{
+  headers:{cookie:'spdecode_staff_session='+active.token}});
+ principal=await panelPrincipal(req,{db,redis,config});
+ assert.ok(can(principal,'support.read'));
+ assert.ok(can(principal,'support.write'));
+ assert.equal(can(principal,'support.assign'),false);
+ assert.equal(can(principal,'staff.write'),false);
+ assert.equal(can(principal,'billing.read'),false);
+ const edited=await writeCustomRole(owner,{action:'update',code:'x_careqa',
+   name:'Atención QA',permissions:['users.read'],enabled:true},{db});
+ assert.equal(edited.role.permissions.length,1);
+ assert.equal(await panelPrincipal(req,{db,redis,config}),null);
+ const changed=await loginStaff(redis,'custom.qa','ChangedCustomPass#2026',{db,config});
+ const req2=new Request('https://panel.spdecode.xyz/api/admin/access',
+   {headers:{cookie:'spdecode_staff_session='+changed.token}});
+ const refreshed=await panelPrincipal(req2,{db,redis,config});
+ assert.equal(can(refreshed,'users.read'),true);
+ assert.equal(can(refreshed,'support.read'),false);
+ await writeCustomRole(owner,{action:'update',code:'x_careqa',name:'Atención QA',
+   permissions:['users.read'],enabled:false},{db});
+ assert.equal(await panelPrincipal(req2,{db,redis,config}),null);
+ assert.equal(await roleCapabilities('x_careqa',db),null);
 });

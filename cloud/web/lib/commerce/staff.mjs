@@ -1,6 +1,7 @@
 import {randomBytes,randomUUID,scrypt as scryptCb,createHmac,timingSafeEqual} from 'node:crypto';
 import {promisify} from 'node:util';
 import {database,transaction} from './db.mjs';
+import {customRoles,roleCapabilities,roleExists} from './staff-roles.mjs';
 import {fail} from './config.mjs';
 import {adminSettings,authenticateAdmin,checkPassword} from '../c6-admin-auth.mjs';
 import {opsStore} from '../c6-ops-store.mjs';
@@ -20,7 +21,8 @@ export const STAFF_CAPABILITIES=Object.freeze({
 });
 export function privileges(role){return STAFF_CAPABILITIES[role]||[];}
 export function can(principal,cap){
- return !!principal && !principal.mustChangePassword && privileges(principal.role).includes(cap);
+ return !!principal && !principal.mustChangePassword &&
+    (principal.capabilities||privileges(principal.role)).includes(cap);
 }
 export function safeStaff(row){
  return {id:row.id,username:row.username,name:row.display_name,role:row.role,
@@ -65,9 +67,12 @@ async function getStaffAuth(request,{db=database(),redis,config=adminSettings()}
     FROM spdecode_shop.staff_accounts WHERE id=$1`,[claim.sub]);
  const row=result.rows[0];
  if(!row||!row.enabled||row.session_version!==claim.version)return null;
+ const capabilities=row.role.startsWith('x_')?
+   await roleCapabilities(row.role,db):privileges(row.role);
+ if(capabilities===null)return null;
  return {id:row.id,username:row.username,name:row.display_name,role:row.role,
    mustChangePassword:row.must_change_password,sessionId:claim.jti,
-   capabilities:privileges(row.role)};
+   capabilities};
 }
 export async function panelPrincipal(request,{db=database(),redis,config=adminSettings()}={}){
  const source=redis||await opsStore();
@@ -120,12 +125,16 @@ export async function listStaff({db=database()}={}){
  const rows=(await db.query(`SELECT id,username,display_name,role,enabled,
   must_change_password,last_login_at,created_at,updated_at
   FROM spdecode_shop.staff_accounts ORDER BY created_at DESC LIMIT 200`)).rows;
- return {staff:rows.map(safeStaff),roles:STAFF_ROLES};
+ const extras=(await customRoles({db})).roles;
+ return {staff:rows.map(safeStaff),
+   roles:[...STAFF_ROLES,...extras.filter(r=>r.enabled).map(r=>r.code)],
+   roleDefinitions:extras};
 }
 export async function createStaff(principal,input,{db=database()}={}){
  if(principal.role!=='owner')fail('FORBIDDEN',403);
  if(!input||Object.keys(input).some(k=>!['username','name','role'].includes(k))||
-    !safeUser(input.username)||!nameValid(input.name)||!STAFF_ROLES.includes(input.role))
+    !safeUser(input.username)||!nameValid(input.name)||
+    !(STAFF_ROLES.includes(input.role)||await roleExists(input.role,db)))
   fail('INVALID_STAFF');
  const password=generatedPassword(),hash=await digestPassword(password),id=randomUUID();
  try{
@@ -145,7 +154,8 @@ export async function updateStaff(principal,input,{db=database()}={}){
     Object.keys(input).some(k=>!['id','username','name','role','enabled','resetPassword'].includes(k))||
     (input.username!==undefined&&!safeUser(input.username))||
     (input.name!==undefined&&!nameValid(input.name))||
-    (input.role!==undefined&&!STAFF_ROLES.includes(input.role))||
+    (input.role!==undefined&&
+      !(STAFF_ROLES.includes(input.role)||await roleExists(input.role,db)))||
     (input.enabled!==undefined&&typeof input.enabled!=='boolean')||
     (input.resetPassword!==undefined&&input.resetPassword!==true))fail('INVALID_STAFF');
  const temporary=input.resetPassword?generatedPassword():null;
