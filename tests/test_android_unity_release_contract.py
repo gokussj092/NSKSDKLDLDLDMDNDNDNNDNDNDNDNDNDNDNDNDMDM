@@ -388,7 +388,11 @@ class AndroidUnityReleaseContract(unittest.TestCase):
         self.assertIn("NativeCommerceProfile.kt",workflow)
         landing=read("android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceAuthLanding.kt")
         self.assertIn("CommerceConsentRow(language,accepted,onAccepted,onLegalLink)",landing)
-        self.assertIn("R.mipmap.ic_launcher",landing)
+        # The packaged launcher icon is adaptive on API 26+; Compose painterResource
+        # crashes on that XML. Render it through Android ImageView.
+        self.assertIn("AndroidView(",landing)
+        self.assertIn("getApplicationIcon(ctx.packageName)",landing)
+        self.assertNotIn("painterResource(id=R.mipmap.ic_launcher)",landing)
         self.assertIn('t("Crear cuenta","Create account")',landing)
         self.assertIn('CommerceAuthLanding(language,acceptedPolicies,',screen)
 
@@ -476,6 +480,22 @@ class AndroidUnityReleaseContract(unittest.TestCase):
             self.assertIn('"'+locale+'" to ',landing)
         self.assertIn('Create account with Google',landing)
         self.assertIn('CommerceConsentRow(language,accepted,onAccepted,onLegalLink)',landing)
+
+    def test_advertising_icon_and_messaging_composer(self):
+        logo=read("android/app/src/main/java/com/ghostdeveloper/spdecode/AdFreeSymbol.kt")
+        checkout=read("android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceAdFreePurchase.kt")
+        account=read("android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceAccountPages.kt")
+        store=read("android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceScreens.kt")
+        chat=read("android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceSupportPage.kt")
+        self.assertIn("Icons.Outlined.Campaign",logo)
+        self.assertIn("Icons.Outlined.Block",logo)
+        self.assertIn("AdFreeSymbol(modifier=Modifier.size(65.dp))",checkout)
+        self.assertIn("AdFreeSymbol(modifier=Modifier.size(65.dp))",account)
+        self.assertIn("AdFreeSymbol(modifier=Modifier.size(29.dp))",store)
+        self.assertIn("BasicTextField(",chat)
+        self.assertIn("itemsIndexed(messages",chat)
+        self.assertIn("ChatDayDivider(",chat)
+        self.assertIn("Modifier.size(40.dp)",chat)
 
     def test_support_agent_identity_and_vps_secret_automation(self):
         support=read("cloud/web/lib/commerce/support.mjs")

@@ -291,7 +291,7 @@ internal fun CommerceAdFreePage(language:String,onExplore:()->Unit){
     Text(tr("Ad-free experience"),color=foreground,fontSize=28.sp,fontWeight=FontWeight.Bold)
     SectionCard {
         Box(Modifier.fillMaxWidth(),contentAlignment=Alignment.Center){
-            Icon(Icons.Outlined.Shield,null,tint=accent,modifier=Modifier.size(65.dp))
+            AdFreeSymbol(modifier=Modifier.size(65.dp))
         }
         Text(if(CommerceSession.adFreeActive)tr("Active") else tr("No subscription"),
             color=foreground,fontSize=21.sp,fontWeight=FontWeight.Bold)

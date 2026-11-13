@@ -83,7 +83,7 @@ internal fun CommerceAdFreePurchase(language:String,offer:StoreAdFreeOffer?,
         Column(Modifier.fillMaxWidth().background(shell,RoundedCornerShape(24.dp))
             .padding(22.dp),horizontalAlignment=Alignment.CenterHorizontally,
             verticalArrangement=Arrangement.spacedBy(12.dp)){
-            Icon(Icons.Outlined.Shield,null,tint=ivy,modifier=Modifier.size(65.dp))
+            AdFreeSymbol(modifier=Modifier.size(65.dp))
             Text(tr("Ad-free for 30 days"),color=silver,fontSize=21.sp,
                 fontWeight=FontWeight.Bold)
             if(CommerceSession.adFreeActive){

@@ -1,6 +1,6 @@
 package com.ghostdeveloper.spdecode
 
-import androidx.compose.foundation.Image
+import android.widget.ImageView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -15,7 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -69,9 +69,22 @@ internal fun CommerceAuthLanding(language:String,accepted:Boolean,
             .background(bg,RoundedCornerShape(27.dp))
             .border(1.dp,Color(0xFF484848),RoundedCornerShape(27.dp)),
             contentAlignment=Alignment.Center){
-            Image(painterResource(id=R.mipmap.ic_launcher),
-                contentDescription="SP-DECODE",
-                modifier=Modifier.size(82.dp))
+            // Android's launcher resource can be an adaptive-icon XML on API 26+.
+            // painterResource() supports vector/raster drawables, not adaptive icons.
+            // Let ImageView render the actual installed application icon instead.
+            AndroidView(
+                factory={ctx->
+                    ImageView(ctx).apply{
+                        scaleType=ImageView.ScaleType.FIT_CENTER
+                        val installedIcon=runCatching{
+                            ctx.packageManager.getApplicationIcon(ctx.packageName)
+                        }.getOrNull()
+                        if(installedIcon!=null)setImageDrawable(installedIcon)
+                        else setImageResource(R.drawable.ic_launcher_foreground)
+                    }
+                },
+                modifier=Modifier.size(82.dp)
+            )
         }
         Text("SP-DECODE",color=selected,fontSize=21.sp,fontWeight=FontWeight.Bold)
         Text(if(mode==0)t("Bienvenido de nuevo","Welcome back")

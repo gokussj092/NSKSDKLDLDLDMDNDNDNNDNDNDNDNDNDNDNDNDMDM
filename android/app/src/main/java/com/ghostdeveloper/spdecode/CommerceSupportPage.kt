@@ -6,6 +6,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,6 +18,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -28,6 +32,8 @@ import org.json.JSONObject
 import java.text.DateFormat
 import java.time.Instant
 import java.util.Date
+import java.util.Locale
+import java.time.ZoneId
 
 private val chatWhite=Color(0xFFF6F6F6)
 private val chatMuted=Color(0xFFA9A9A9)
@@ -38,11 +44,30 @@ private val chatOutgoing=Color(0xFF244233)
 private val chatIncoming=Color(0xFF262626)
 
 private fun chatTime(input:String,full:Boolean=false):String = runCatching{
-    val value=Date.from(Instant.parse(input))
-    DateFormat.getDateTimeInstance(
-        if(full)DateFormat.SHORT else DateFormat.SHORT,
-        if(full)DateFormat.SHORT else DateFormat.SHORT).format(value)
+    val date=Date.from(Instant.parse(input))
+    if(full)DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT).format(date)
+    else DateFormat.getTimeInstance(DateFormat.SHORT).format(date)
 }.getOrDefault("")
+
+private fun chatDateKey(value:String):String=runCatching{
+    Instant.parse(value).atZone(ZoneId.systemDefault()).toLocalDate().toString()
+}.getOrDefault("")
+
+@Composable
+private fun ChatDayDivider(input:String,language:String){
+    val label=runCatching{
+        DateFormat.getDateInstance(DateFormat.MEDIUM,Locale.forLanguageTag(language))
+            .format(Date.from(Instant.parse(input)))
+    }.getOrDefault("")
+    if(label.isNotEmpty()){
+        Row(Modifier.fillMaxWidth().padding(vertical=12.dp),
+            horizontalArrangement=Arrangement.Center){
+            Text(label,color=chatMuted,fontSize=11.sp,
+                modifier=Modifier.background(Color(0xFF292929),RoundedCornerShape(40.dp))
+                    .padding(horizontal=13.dp,vertical=6.dp))
+        }
+    }
+}
 
 @Composable
 private fun SupportAvatar(letters:String,fromTeam:Boolean=false){
@@ -78,26 +103,31 @@ private fun SupportBubble(row:JSONObject,language:String){
     val role=when(agent?.optString("role")){
         "owner","admin"->CommerceI18n.translate(language,"Administración","Administrator")
         "moderator"->CommerceI18n.translate(language,"Moderación","Moderation")
-        else->CommerceI18n.translate(language,"Soporte","Support")
+        else->CommerceI18n.translate(language,"Soporte técnico","Technical support")
     }
-    Row(Modifier.fillMaxWidth().padding(vertical=4.dp),
+    val shape=RoundedCornerShape(topStart=18.dp,topEnd=18.dp,
+        bottomStart=if(mine)18.dp else 5.dp,bottomEnd=if(mine)5.dp else 18.dp)
+    Row(Modifier.fillMaxWidth().padding(vertical=3.dp),
+        verticalAlignment=Alignment.Bottom,
         horizontalArrangement=if(mine)Arrangement.End else Arrangement.Start){
-        Column(Modifier.fillMaxWidth(.86f)
-            .background(if(mine)chatOutgoing else chatIncoming,
-                RoundedCornerShape(topStart=18.dp,topEnd=18.dp,
-                    bottomStart=if(mine)18.dp else 5.dp,
-                    bottomEnd=if(mine)5.dp else 18.dp))
-            .padding(horizontal=14.dp,vertical=11.dp),
-            verticalArrangement=Arrangement.spacedBy(5.dp)){
+        if(!mine)Box(Modifier.padding(end=8.dp,bottom=2.dp).size(28.dp)
+            .background(Color(0xFF31533F),CircleShape),contentAlignment=Alignment.Center){
+            Icon(Icons.Outlined.SupportAgent,null,tint=chatGreen,modifier=Modifier.size(17.dp))
+        }
+        Column(Modifier.fillMaxWidth(if(mine).83f else .82f)
+            .background(if(mine)chatOutgoing else chatIncoming,shape)
+            .border(.5.dp,if(mine)Color(0xFF3A6750) else chatLine,shape)
+            .padding(horizontal=13.dp,vertical=10.dp),
+            verticalArrangement=Arrangement.spacedBy(6.dp)){
             if(!mine)Text(person+" · "+role,color=chatGreen,
-                fontSize=11.sp,fontWeight=FontWeight.SemiBold)
+                fontSize=11.sp,fontWeight=FontWeight.Bold)
             Text(row.optString("text"),color=chatWhite,fontSize=14.sp,lineHeight=20.sp)
-            Text(chatTime(row.optString("at")),
-                color=Color(0xFFBDBDBD),fontSize=10.sp,
-                modifier=Modifier.align(Alignment.End))
+            Text(chatTime(row.optString("at")),color=Color(0xFFC0C8C1),
+                fontSize=10.sp,modifier=Modifier.align(Alignment.End))
         }
     }
 }
+
 @Composable
 internal fun CommerceSupportPage(language:String,auth:NativeCommerceAuth,
     report:Boolean,onSignIn:()->Unit){
@@ -175,7 +205,10 @@ internal fun CommerceSupportPage(language:String,auth:NativeCommerceAuth,
             LazyColumn(modifier=Modifier.weight(1f).fillMaxWidth(),
                 state=scroll,contentPadding=PaddingValues(vertical=10.dp),
                 verticalArrangement=Arrangement.spacedBy(5.dp)){
-                items(messages,key={it.optString("id")}){message->
+                itemsIndexed(messages,key={_,item->item.optString("id")}){index,message->
+                    if(index==0||chatDateKey(messages[index-1].optString("at"))!=
+                        chatDateKey(message.optString("at")))
+                        ChatDayDivider(message.optString("at"),language)
                     SupportBubble(message,language)
                 }
             }
@@ -186,18 +219,17 @@ internal fun CommerceSupportPage(language:String,auth:NativeCommerceAuth,
                     .padding(start=14.dp,end=6.dp,top=5.dp,bottom=5.dp),
                     verticalAlignment=Alignment.Bottom,
                     horizontalArrangement=Arrangement.spacedBy(8.dp)){
-                    TextField(value=text,onValueChange={text=it.take(4000)},
-                        modifier=Modifier.weight(1f),
-                        placeholder={Text(t("Escribe un mensaje","Write a message"),
-                            color=chatMuted,fontSize=14.sp)},
-                        maxLines=5,
-                        colors=TextFieldDefaults.colors(
-                            focusedContainerColor=Color.Transparent,
-                            unfocusedContainerColor=Color.Transparent,
-                            focusedTextColor=chatWhite,
-                            unfocusedTextColor=chatWhite,
-                            focusedIndicatorColor=Color.Transparent,
-                            unfocusedIndicatorColor=Color.Transparent))
+                    BasicTextField(value=text,onValueChange={text=it.take(4000)},
+                        modifier=Modifier.weight(1f),enabled=!busy,maxLines=4,
+                        cursorBrush=SolidColor(chatGreen),
+                        textStyle=TextStyle(color=chatWhite,fontSize=14.sp,lineHeight=20.sp),
+                        decorationBox={inner->
+                            Box(Modifier.padding(vertical=12.dp)){
+                                if(text.isBlank())Text(t("Escribe un mensaje","Write a message"),
+                                    color=chatMuted,fontSize=14.sp)
+                                inner()
+                            }
+                        })
                     IconButton(
                         onClick={
                             scope.launch{
@@ -212,12 +244,14 @@ internal fun CommerceSupportPage(language:String,auth:NativeCommerceAuth,
                             }
                         },
                         enabled=!cannotSend(),
-                        modifier=Modifier.size(46.dp)
+                        modifier=Modifier.size(40.dp)
                             .background(if(cannotSend())Color(0xFF444444) else chatGreen,
                                 CircleShape)){
-                        Icon(Icons.Outlined.Send,t("Enviar","Send"),
+                        if(busy)CircularProgressIndicator(
+                            color=chatWhite,strokeWidth=2.dp,modifier=Modifier.size(18.dp))
+                        else Icon(Icons.Outlined.Send,t("Enviar","Send"),
                             tint=if(cannotSend())chatMuted else Color.Black,
-                            modifier=Modifier.size(21.dp))
+                            modifier=Modifier.size(19.dp))
                     }
                 }
             }else{
@@ -304,15 +338,17 @@ internal fun CommerceSupportPage(language:String,auth:NativeCommerceAuth,
             }
             HorizontalDivider(color=chatLine)
             LazyColumn(modifier=Modifier.weight(1f),
-                verticalArrangement=Arrangement.spacedBy(5.dp)){
+                verticalArrangement=Arrangement.spacedBy(9.dp)){
                 items(threads,key={it.optString("id")}){thread->
                     val all=thread.optJSONArray("messages")
                     val last=all?.optJSONObject((all.length()-1).coerceAtLeast(0))
                     Row(Modifier.fillMaxWidth()
+                        .background(chatPanel,RoundedCornerShape(18.dp))
+                        .border(1.dp,chatLine,RoundedCornerShape(18.dp))
                         .clickable{
                             activeId=thread.optString("id");text="";error=null
                         }
-                        .padding(horizontal=7.dp,vertical=13.dp),
+                        .padding(horizontal=13.dp,vertical=15.dp),
                         verticalAlignment=Alignment.CenterVertically,
                         horizontalArrangement=Arrangement.spacedBy(13.dp)){
                         SupportAvatar("SP",true)
@@ -323,7 +359,7 @@ internal fun CommerceSupportPage(language:String,auth:NativeCommerceAuth,
                                     fontSize=16.sp,fontWeight=FontWeight.SemiBold,
                                     maxLines=1,overflow=TextOverflow.Ellipsis,
                                     modifier=Modifier.weight(1f))
-                                Text(chatTime(thread.optString("last_message_at")),
+                                Text(chatTime(thread.optString("last_message_at"),true),
                                     color=chatMuted,fontSize=10.sp)
                             }
                             Text(last?.optString("text")?:"",
@@ -334,7 +370,6 @@ internal fun CommerceSupportPage(language:String,auth:NativeCommerceAuth,
                         Icon(Icons.Outlined.ChevronRight,null,
                             tint=Color(0xFF777777),modifier=Modifier.size(20.dp))
                     }
-                    HorizontalDivider(color=Color(0xFF242424))
                 }
             }
             if(threads.isEmpty()){

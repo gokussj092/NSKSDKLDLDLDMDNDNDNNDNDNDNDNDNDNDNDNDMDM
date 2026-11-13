@@ -473,7 +473,7 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                                 else -> local("No disponible","Unavailable")
                             },
                             local("Ver detalles","Details"),
-                            {Icon(Icons.Outlined.Shield,null,tint=white,modifier=Modifier.size(29.dp))}){
+                            {AdFreeSymbol(modifier=Modifier.size(29.dp))}){
                             detail="ads"
                         }
                         ProductTile(local("Canjear código de regalo","Redeem gift code"),
