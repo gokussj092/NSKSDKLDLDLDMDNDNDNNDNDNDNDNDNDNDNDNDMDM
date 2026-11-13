@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_offer_title">New catalog available</string>
+    <string name="catalog_offer_body">Catalog version %1$d is ready. Update to access newly supported apps, methods and improvements.</string>
+    <string name="catalog_offer_update">Update now</string>
+    <string name="catalog_offer_later">Cancel</string>
+    <string name="catalog_postpone_title">Continue without updating?</string>
+    <string name="catalog_postpone_body">If you cancel, the latest catalog apps, methods and improvements will not be available until you update. You can update later in Server VPN.</string>
+    <string name="catalog_postpone_confirm">Continue without updating</string>
+    <string name="catalog_postpone_back">Go back</string>
+</resources>

@@ -145,6 +145,7 @@ internal fun SpDecodeApp(
     onApkQaRetry:()->Unit={},
 ){
     var dialog by remember{mutableStateOf<String?>(null)}
+    var confirmCatalogPostpone by remember(pendingServerVpnCatalogVersion){mutableStateOf(false)}
     SpDecodeAmoledTheme {
       AccountDrawer(busy,onExternalLink,onLegalLink,onCheckoutUrl) { openMenu ->
         Column(
@@ -198,22 +199,59 @@ internal fun SpDecodeApp(
                 spotlight=if(guideStep!=null && !whatsNew && !busy)
                     FirstRunGuide.targetTab(guideStep) else null)
         }
-        if(pendingServerVpnCatalogVersion!=null && !busy) AlertDialog(
-            onDismissRequest=onDismissServerVpnUpdate,
-            icon={Image(painter=painterResource(R.drawable.ic_launcher_foreground),
-                contentDescription=null,modifier=Modifier.size(46.dp))},
-            title={Text(stringResource(R.string.catalog_available_title))},
-            text={Text(stringResource(R.string.catalog_download_confirm_body),color=Secondary)},
-            confirmButton={TextButton(onClick=onConfirmServerVpnUpdate) {
-                Text(stringResource(R.string.server_vpn_catalog_download),color=White)
-            }},
-            dismissButton={TextButton(onClick=onDismissServerVpnUpdate) {
-                Text(stringResource(R.string.cancel),color=White)
-            }},
-            containerColor=Background,
-            titleContentColor=White,
-            textContentColor=Secondary,
-        )
+        if(pendingServerVpnCatalogVersion!=null && !busy && !whatsNew) {
+            val remote=pendingServerVpnCatalogVersion ?: 0
+            if(confirmCatalogPostpone && remote>0) {
+                AlertDialog(
+                    onDismissRequest={confirmCatalogPostpone=false},
+                    icon={Icon(Icons.Outlined.Info,null,tint=Amber,
+                        modifier=Modifier.size(36.dp))},
+                    title={Text(stringResource(R.string.catalog_postpone_title))},
+                    text={Text(stringResource(R.string.catalog_postpone_body),
+                        color=Secondary)},
+                    confirmButton={TextButton(onClick={
+                        confirmCatalogPostpone=false
+                        onDismissServerVpnUpdate()
+                    }){Text(stringResource(R.string.catalog_postpone_confirm),
+                        color=Amber)}},
+                    dismissButton={TextButton(onClick={confirmCatalogPostpone=false}){
+                        Text(stringResource(R.string.catalog_postpone_back),
+                            color=White)
+                    }},
+                    containerColor=Panel,titleContentColor=White,
+                    textContentColor=Secondary
+                )
+            }else{
+                AlertDialog(
+                    onDismissRequest={
+                        if(remote>0)confirmCatalogPostpone=true
+                        else onDismissServerVpnUpdate()
+                    },
+                    icon={Icon(Icons.Outlined.CloudDownload,null,tint=Green,
+                        modifier=Modifier.size(38.dp))},
+                    title={Text(stringResource(R.string.catalog_offer_title),
+                        fontWeight=FontWeight.Bold)},
+                    text={Text(if(remote>0)
+                        stringResource(R.string.catalog_offer_body,remote)
+                        else stringResource(R.string.catalog_download_confirm_body),
+                        color=Secondary,lineHeight=21.sp)},
+                    confirmButton={Button(onClick=onConfirmServerVpnUpdate,
+                        colors=ButtonDefaults.buttonColors(
+                            containerColor=White,contentColor=Color.Black)){
+                        Text(stringResource(R.string.catalog_offer_update))
+                    }},
+                    dismissButton={TextButton(onClick={
+                        if(remote>0)confirmCatalogPostpone=true
+                        else onDismissServerVpnUpdate()
+                    }) {
+                        Text(stringResource(R.string.catalog_offer_later),
+                            color=Secondary)
+                    }},
+                    containerColor=Panel,titleContentColor=White,
+                    textContentColor=Secondary
+                )
+            }
+        }
         catalogTransfer?.let { transfer ->
             CatalogTransferDialog(transfer,onCancelCatalogTransfer,onFinishCatalogTransfer,onResumeCatalogTransfer,onDiscardCatalogTransfer)
         }

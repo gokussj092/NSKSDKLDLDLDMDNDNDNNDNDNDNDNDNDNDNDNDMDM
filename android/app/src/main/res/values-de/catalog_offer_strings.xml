@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_offer_title">Neuer Katalog verfügbar</string>
+    <string name="catalog_offer_body">Katalogversion %1$d ist verfügbar. Aktualisieren Sie für neue unterstützte Apps, Methoden und Verbesserungen.</string>
+    <string name="catalog_offer_update">Aktualisieren</string>
+    <string name="catalog_offer_later">Abbrechen</string>
+    <string name="catalog_postpone_title">Ohne Aktualisierung fortfahren?</string>
+    <string name="catalog_postpone_body">Wenn Sie abbrechen, sind neue Apps, Methoden und Verbesserungen erst nach dem Katalogupdate verfügbar. Sie können später unter VPN-Server aktualisieren.</string>
+    <string name="catalog_postpone_confirm">Ohne Aktualisierung fortfahren</string>
+    <string name="catalog_postpone_back">Zurück</string>
+</resources>

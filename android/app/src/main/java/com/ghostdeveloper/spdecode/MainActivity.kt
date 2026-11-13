@@ -165,6 +165,8 @@ class MainActivity : ComponentActivity() {
     private var catalogUpdatesEnabled by mutableStateOf(false)
     private var catalogWatchJob:Job?=null
     private var entryProbeJob:Job?=null
+    private var lastCatalogEntryProbeElapsed=0L
+    private val catalogPostponeMillis=24L*60*60*1000
     private var availableAppUpdateCode by mutableIntStateOf(0)
     private var reportBusy by mutableStateOf(false)
     private var reveal:Boolean
@@ -243,28 +245,53 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    /** Direct VPS watch runs only while the application is visible. */
+    /** A new server-published version supersedes a deferred version immediately.
+     * Previously deferred versions become eligible again after 24 hours, so
+     * "Cancel" does not permanently hide improvements from the customer.
+     */
+    private fun offerServerCatalogVersion(version:Int){
+        if(version !in 1..999999999 || version<=serverVpnCatalog.currentVersion())return
+        val previous=settings.getInt("last_dismissed_catalog_version",0)
+        val until=settings.getLong("last_dismissed_catalog_until",0L)
+        val now=System.currentTimeMillis()
+        if(version<=previous && until>now && until-now<=catalogPostponeMillis)return
+        val pending=pendingServerVpnCatalogVersion
+        if(pending==null || version>pending)pendingServerVpnCatalogVersion=version
+    }
+
+    /** Server-triggered HTTPS long-poll while visible and background sync opted in. */
     private fun startCatalogWatch(){
         if(showCloudLegal || !BuildConfig.SPDECODE_CLOUD_ENABLED ||
             catalogWatchJob?.isActive==true)return
         catalogWatchJob=scope.launch {
             CloudCatalogUpdates.watchWhileVisible(
                 this@MainActivity,cloudClient,serverVpnCatalog
-            ){version->
-                if(version>serverVpnCatalog.currentVersion() &&
-                    version>settings.getInt("last_dismissed_catalog_version",0))
-                    pendingServerVpnCatalogVersion=version
-            }
+            ){version->offerServerCatalogVersion(version)}
         }
     }
 
-    /** Pending push hints are local state; navigation never probes the network. */
+    /** On every new entry, obtain ONLY the server version: no catalogs, URLs or
+     * icon payloads are downloaded without an explicit confirmation.
+     * This is foreground checking; it does not require background-sync opt-in.
+     */
     private fun probeUpdatesOnEntry(){
         if(!BuildConfig.SPDECODE_CLOUD_ENABLED || showCloudLegal)return
-        val latest=CloudCatalogUpdates.pendingVersion(this)
-        if(latest>serverVpnCatalog.currentVersion() &&
-            latest>settings.getInt("last_dismissed_catalog_version",0))
-            pendingServerVpnCatalogVersion=latest
+        offerServerCatalogVersion(CloudCatalogUpdates.pendingVersion(this))
+        if(entryProbeJob?.isActive==true)return
+        val now=SystemClock.elapsedRealtime()
+        if(lastCatalogEntryProbeElapsed>0L &&
+            now-lastCatalogEntryProbeElapsed<45_000L)return
+        lastCatalogEntryProbeElapsed=now
+        entryProbeJob=scope.launch {
+            try{
+                // A knownVersion of zero returns current metadata immediately
+                // instead of waiting 12 seconds for a long-poll timeout.
+                val remote=cloudClient.watchCatalogVersion(0)
+                CloudCatalogUpdates.markOffered(this@MainActivity,remote)
+                offerServerCatalogVersion(remote)
+            }catch(error:CancellationException){throw error}
+             catch(_:Exception){ /* A temporarily offline VPS never blocks decoding. */ }
+        }
     }
 
     /** Server publication version is independent of the APK versionCode. */
@@ -798,6 +825,7 @@ class MainActivity : ComponentActivity() {
                             usageOptIn=false
                             CloudCatalogUpdates.setEnabled(this@MainActivity,false)
                             catalogWatchJob?.cancel()
+                            entryProbeJob?.cancel()
                             catalogUpdatesEnabled=false
                             cancelCatalogDownload()
                             discardPartialCatalog()
@@ -845,8 +873,12 @@ class MainActivity : ComponentActivity() {
                 },
                 onConfirmServerVpnUpdate={confirmServerVpnUpdate()},
                 onDismissServerVpnUpdate={
-                    pendingServerVpnCatalogVersion?.let {version ->
-                        settings.edit().putInt("last_dismissed_catalog_version",version).apply()
+                    pendingServerVpnCatalogVersion?.takeIf{it>0}?.let {version ->
+                        settings.edit()
+                            .putInt("last_dismissed_catalog_version",version)
+                            .putLong("last_dismissed_catalog_until",
+                                System.currentTimeMillis()+catalogPostponeMillis)
+                            .apply()
                     }
                     pendingServerVpnCatalogVersion=null
                 },
