@@ -280,8 +280,16 @@ class AdminFlowTest {
             ui.onNodeWithContentDescription("Añadir mensaje local")
                 .assertIsDisplayed()
                 .performClick()
+            capture("23-compact-keyboard-after-send")
             ui.onNodeWithText("Prueba local en pantalla compacta").assertIsDisplayed()
             capture("23-compact-keyboard-130pct")
+        } catch (error: Throwable) {
+            runCatching { capture("failure-compact-before-reset") }
+            runCatching {
+                File(outputFolder(), "failure-compact-before-reset.txt")
+                    .writeText(ui.onRoot(useUnmergedTree = true).printToString())
+            }
+            throw error
         } finally {
             shell("input keyevent 4")
             shell("settings put system font_scale 1.0")

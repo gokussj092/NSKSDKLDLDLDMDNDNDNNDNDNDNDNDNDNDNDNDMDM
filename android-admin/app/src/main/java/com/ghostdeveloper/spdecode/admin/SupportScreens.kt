@@ -18,7 +18,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filter
 
 @Composable
 internal fun SupportScreen(state: PreviewState, open: (String) -> Unit) {
@@ -119,9 +120,13 @@ internal fun ChatScreen(state: PreviewState, id: String, feedback: (String) -> U
         val expectedItems = ticket.messages.size + 1
         if (ticket.messages.isNotEmpty()) {
             snapshotFlow { list.layoutInfo.totalItemsCount to list.layoutInfo.viewportSize.height }
-                .first { (count, height) -> count == expectedItems && height > 0 }
-            withFrameNanos {}
-            list.scrollToItem(expectedItems - 1)
+                .filter { (count, height) -> count == expectedItems && height > 0 }
+                .collectLatest {
+                    // Both the keyboard and clearing a multiline draft can resize the viewport.
+                    // Follow each size change so the final layout still shows the sent message.
+                    withFrameNanos {}
+                    list.scrollToItem(expectedItems - 1)
+                }
         }
     }
     Box(Modifier.fillMaxSize().imePadding(), contentAlignment = Alignment.TopCenter) {
