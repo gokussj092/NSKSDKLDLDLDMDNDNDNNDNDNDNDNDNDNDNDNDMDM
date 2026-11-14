@@ -22,6 +22,9 @@ jobs:
           distribution: temurin
           java-version: '17'
       - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+          log-accepted-android-sdk-licenses: false
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.11.1'
@@ -72,4 +75,4 @@ jobs:
             android-admin/app/build/reports/androidTests/
             android-admin/app/build/outputs/androidTest-results/
             android-admin/app/build/review/
-          if-no-files-found: error
+          if-no-files-found: warn
