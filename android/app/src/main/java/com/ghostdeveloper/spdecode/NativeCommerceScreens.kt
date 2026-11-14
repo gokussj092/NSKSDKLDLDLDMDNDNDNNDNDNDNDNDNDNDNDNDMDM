@@ -384,7 +384,9 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                                     Spacer(Modifier.width(10.dp))
                                     Text(item.days.toString()+" "+local("días","days"),
                                         color=white,modifier=Modifier.weight(1f))
-                                    Text(usd(item.priceCents)+" USD",color=white)
+                                    val offer=catalog?.apiPlans?.getOrNull(index)
+                                    val displayCurrency=offer?.prices?.keys?.firstOrNull()?:"USD"
+                                    Text(usd(item.priceCents)+" "+displayCurrency,color=white)
                                 }
                             }
                             if(apiTerms.isEmpty())Note(local("No disponible actualmente.","Currently unavailable."))
@@ -412,13 +414,16 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                                     color=Color(0xFFFFB9B9),fontSize=12.sp)
                             Note(local("Puedes comprar sin IP y configurarla después desde Mi cuenta. La clave no funcionará sin vincular una IP pública válida. Puedes cambiarla más adelante.",
                                 "You may buy without an IP, then bind a public server IP from My account before the key can be used. You may change it later."))
-                            PrimaryAction(local("Agregar API al carrito","Add API to cart"),
-                                enabled=apiSelection?.available==true && (serverIp.isBlank()||CommercialServerIp.isPublicLiteral(serverIp))){
-                                val chosen=apiSelection?:return@PrimaryAction
-                                lines=lines.filterNot{it.key=="api-ip"}+
-                                    CommercialLine("api-ip","API · "+chosen.days+" "+local("días","days"),
-                                        chosen.priceCents,serverIp.trim())
-                                page="cart"
+                            val selectedOffer=catalog?.apiPlans?.getOrNull(term)
+                            if(selectedOffer!=null && (serverIp.isBlank()||CommercialServerIp.isPublicLiteral(serverIp))){
+                                CommerceAdFreePurchase(language,null,auth,
+                                    onSignIn={page="login"},onOpenCheckout=onCheckoutUrl,
+                                    onReloadCatalog={scope.launch{
+                                        catalogLoaded=false
+                                        catalog=NativeStoreCatalog.load()
+                                        catalogLoaded=true
+                                        accountSnapshot=auth.account()
+                                    }},apiOffer=selectedOffer,apiVersion=catalog?.apiVersion?:0,allowedIp=serverIp.trim())
                             }
                         }
                     }
@@ -472,7 +477,7 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                         ProductTile(local("API Comercial","Commercial API"),
                             local("Archivos, textos, métodos online y catálogos",
                                 "Files, text, online methods and catalogs"),
-                            apiTerms.minOfOrNull{it.priceCents}?.let{usd(it)+" USD"}?:local("No disponible","Unavailable"),
+                            catalog?.apiPlans.orEmpty().firstOrNull()?.let{usd(it.priceCents)+" "+(it.prices.keys.firstOrNull()?:"USD")}?:local("No disponible","Unavailable"),
                             local("Ver detalles","Details"),
                             {Icon(Icons.Outlined.Code,null,tint=white,modifier=Modifier.size(29.dp))}){
                             detail="api"
@@ -481,7 +486,7 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                             local("Un mes completo sin publicidad","One month without ads"),
                             when {
                                 CommerceSession.adFreeActive -> CommerceAccountWords.get(language,"Active")
-                                catalog?.adFree!=null -> usd(catalog!!.adFree!!.priceCents)+" USD"
+                                catalog?.adFree!=null -> usd(catalog!!.adFree!!.priceCents)+" "+(catalog!!.adFree!!.prices.keys.firstOrNull()?:"USD")
                                 else -> local("No disponible","Unavailable")
                             },
                             local("Ver detalles","Details"),

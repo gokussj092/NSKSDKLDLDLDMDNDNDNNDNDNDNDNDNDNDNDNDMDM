@@ -47,6 +47,8 @@ fun FunctionalSettingsPanel(
     onLegalLink:(String)->Unit={},
     onWithdrawConsent:()->Unit={},
     onAdsPrivacyOptions:()->Unit={},
+    catalogDownloadChunks:Boolean=false,
+    onCatalogDownloadChunks:(Boolean)->Unit={},
     catalogUpdatesEnabled:Boolean=false,
     onCatalogUpdates:(Boolean)->Unit={},
     usageAnalyticsEnabled:Boolean=false,
@@ -321,6 +323,36 @@ fun FunctionalSettingsPanel(
                     colors=SwitchDefaults.colors(checkedThumbColor=Color.Black,
                         checkedTrackColor=TitleText))
             }
+        }
+        if(BuildConfig.SPDECODE_CLOUD_ENABLED) SettingsCard {
+            val labels=when(language.substringBefore('-')){
+                "es"->listOf("Modo de descarga del catálogo","Descarga completa","Conexión estable · descarga normal","Por partes (chunks)","Conexión lenta o inestable · permite reanudar","Se aplicará en la próxima descarga.")
+                "pt"->listOf("Modo de download do catálogo","Download completo","Conexão estável · download normal","Por partes (chunks)","Conexão lenta ou instável · permite retomar","Aplica-se ao próximo download.")
+                "fr"->listOf("Mode de téléchargement du catalogue","Téléchargement complet","Connexion stable · téléchargement normal","Par fragments","Connexion lente ou instable · reprise possible","Appliqué au prochain téléchargement.")
+                "de"->listOf("Katalog-Downloadmodus","Vollständiger Download","Stabile Verbindung · normaler Download","In Teilen (Chunks)","Langsame oder instabile Verbindung · fortsetzbar","Gilt für den nächsten Download.")
+                "it"->listOf("Modalità download catalogo","Download completo","Connessione stabile · download normale","A blocchi","Connessione lenta o instabile · riprendibile","Si applica al prossimo download.")
+                "ru"->listOf("Режим загрузки каталога","Полная загрузка","Стабильное соединение · обычная загрузка","По частям","Медленное или нестабильное соединение · с возобновлением","Применится при следующей загрузке.")
+                "ar"->listOf("وضع تنزيل الكتالوج","تنزيل كامل","اتصال مستقر · تنزيل عادي","تنزيل على أجزاء","اتصال بطيء أو غير مستقر · قابل للاستئناف","يطبق عند التنزيل التالي.")
+                "fa"->listOf("روش دانلود کاتالوگ","دانلود کامل","اتصال پایدار · دانلود عادی","دانلود بخش‌بخش","اتصال کند یا ناپایدار · قابل ادامه","در دانلود بعدی اعمال می‌شود.")
+                "hi"->listOf("कैटलॉग डाउनलोड मोड","पूरा डाउनलोड","स्थिर कनेक्शन · सामान्य डाउनलोड","भागों में (chunks)","धीमा या अस्थिर कनेक्शन · फिर शुरू कर सकते हैं","अगले डाउनलोड पर लागू होगा।")
+                "id","in"->listOf("Mode unduhan katalog","Unduhan penuh","Koneksi stabil · unduhan normal","Per bagian (chunks)","Koneksi lambat atau tidak stabil · dapat dilanjutkan","Berlaku untuk unduhan berikutnya.")
+                "ja"->listOf("カタログのダウンロード方式","一括ダウンロード","安定した接続 · 通常のダウンロード","分割ダウンロード","低速・不安定な接続 · 再開可能","次回のダウンロードから適用されます。")
+                "tr"->listOf("Katalog indirme modu","Tam indirme","Kararlı bağlantı · normal indirme","Parçalı indirme","Yavaş veya kararsız bağlantı · devam edilebilir","Sonraki indirmede uygulanır.")
+                "vi"->listOf("Chế độ tải danh mục","Tải đầy đủ","Kết nối ổn định · tải thông thường","Tải theo phần","Kết nối chậm hoặc không ổn định · có thể tiếp tục","Áp dụng cho lần tải tiếp theo.")
+                else->listOf("Catalog download mode","Full download","Stable connection · normal download","Chunked download","Slow or unstable connection · resumable","Applies to the next download.")
+            }
+            Text(labels[0],color=TitleText,fontWeight=FontWeight.SemiBold,fontSize=17.sp)
+            listOf(false,true).forEachIndexed { index,value->
+                Row(Modifier.fillMaxWidth().clickable(enabled=!catalogLoading){onCatalogDownloadChunks(value)}
+                    .padding(vertical=6.dp),verticalAlignment=Alignment.CenterVertically){
+                    RadioButton(selected=catalogDownloadChunks==value,onClick={onCatalogDownloadChunks(value)},enabled=!catalogLoading)
+                    Column(Modifier.weight(1f)){
+                        Text(labels[1+index*2],color=TitleText,fontSize=14.sp)
+                        Text(labels[2+index*2],color=MutedText,fontSize=12.sp)
+                    }
+                }
+            }
+            Text(labels[5],color=MutedText,fontSize=11.sp)
         }
         // Settings additions injected here by the Android Gradle task.
         SettingsCard {

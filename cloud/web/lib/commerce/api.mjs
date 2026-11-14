@@ -17,7 +17,7 @@ export const publicCatalog=()=>safe(async()=>{
     {version:1,settings:{id:'offline-3',enabled:false,prices:{USD:499},maxDevices:3,days:null,quota:null}},
     {version:1,settings:{id:'api-ip',enabled:false,prices:{},maxDevices:null,days:null,quota:null}},
     {version:1,settings:{id:'analysis-credits',enabled:false,prices:{},bundles:{}}}];
-  return reply({authEnabled:configured,products:rows.map(row=>publicProduct(row)),
+  return reply({authEnabled:configured,products:rows.filter(row=>(row.id||row.settings?.id)!=='offline-3').map(row=>publicProduct(row)),
     live:process.env.SPDECODE_PAYMENTS_LIVE==='true'});
 });
 export const accountSnapshot=request=>safe(async()=>{
@@ -95,6 +95,7 @@ export const quoteRequest=request=>safe(async()=>{
   requireOrigin(request);await requireAccount(request);
   const body=await jsonBody(request,2048),row=(await catalog()).find(x=>x.id===body.product);
   if(!row)fail('INVALID_PRODUCT');
+  if(body.product==='offline-3')fail('PRODUCT_UNAVAILABLE',409);
   const q=taxQuote(row.settings,body.currency,body.country,body.region||'',await taxRules(),body.term||'base');
   return reply({...q,version:row.version,automaticTax:body.provider==='stripe'&&process.env.STRIPE_AUTOMATIC_TAX==='true'});
 });

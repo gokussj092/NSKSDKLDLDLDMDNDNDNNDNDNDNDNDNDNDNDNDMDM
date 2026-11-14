@@ -163,6 +163,7 @@ class MainActivity : ComponentActivity() {
     private var messageIsCredentialNotice by mutableStateOf(false)
     private var usageOptIn by mutableStateOf(false)
     private var catalogUpdatesEnabled by mutableStateOf(false)
+    private var catalogDownloadChunks by mutableStateOf(false)
     private var catalogWatchJob:Job?=null
     private var entryProbeJob:Job?=null
     private var lastCatalogEntryProbeElapsed=0L
@@ -578,7 +579,7 @@ class MainActivity : ComponentActivity() {
 
     private fun openCheckout(url:String){
         val parsed=runCatching{java.net.URI(url)}.getOrNull()?:return
-        val trusted=setOf("checkout.stripe.com","www.paypal.com","www.sandbox.paypal.com")
+        val trusted=setOf("checkout.stripe.com","www.paypal.com","www.sandbox.paypal.com","www.mercadopago.com.mx","www.mercadopago.com","sandbox.mercadopago.com.mx")
         if(parsed.scheme!="https"||parsed.host?.lowercase(java.util.Locale.ROOT) !in trusted||
             parsed.userInfo!=null||parsed.port!=-1)return
         try{startActivity(Intent(Intent.ACTION_VIEW,Uri.parse(url)))}
@@ -627,6 +628,7 @@ class MainActivity : ComponentActivity() {
             settings.getLong("last_seen_whats_new_version",0L)<runningVersionCode
         showCloudLegal=BuildConfig.SPDECODE_CLOUD_ENABLED && !CloudLegalConsent.accepted(this)
         if (!showCloudLegal) requestNoticePermissionAfterConsent()
+        catalogDownloadChunks=getSharedPreferences("spdecode-catalog-sync",MODE_PRIVATE).getBoolean("download-by-chunks",false)
         catalogUpdatesEnabled=CloudCatalogUpdates.enabled(this)
         if(BuildConfig.SPDECODE_CLOUD_ENABLED) {
             // Refresh the visible provider list as soon as a background push completes.
@@ -804,6 +806,11 @@ class MainActivity : ComponentActivity() {
                         usageOptIn=enabled
                         if(enabled)syncOptInUsage()
                     }catch(_:Exception){message=getString(R.string.history_storage_error)}
+                },
+                catalogDownloadChunks=catalogDownloadChunks,
+                onCatalogDownloadChunks={value->
+                    getSharedPreferences("spdecode-catalog-sync",MODE_PRIVATE).edit().putBoolean("download-by-chunks",value).apply()
+                    catalogDownloadChunks=value
                 },
                 catalogUpdatesEnabled=catalogUpdatesEnabled,
                 onCatalogUpdates={enabled->

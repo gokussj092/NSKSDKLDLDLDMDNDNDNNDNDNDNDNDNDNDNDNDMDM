@@ -9,6 +9,17 @@ def read(path):
 
 
 class AndroidUnityReleaseContract(unittest.TestCase):
+    def test_catalog_mode_is_exclusive_and_full_download_skips_probe(self):
+        prefix="android/app/src/main/java/com/ghostdeveloper/spdecode/"
+        repository=read(prefix+"cloud/ServerVpnCatalogRepository.kt")
+        self.assertIn('getBoolean("download-by-chunks",false)',repository)
+        self.assertNotIn("client.catalogChunksSupported()",repository)
+        self.assertIn("client.serverVpnCatalog(knownVersion,onTransfer)",repository)
+        self.assertIn("RadioButton(selected=catalogDownloadChunks==value",read(prefix+"FunctionalSettingsPanel.kt"))
+        self.assertIn('putBoolean("download-by-chunks",value)',read(prefix+"MainActivity.kt"))
+        self.assertIn('CLOUD_CATALOG_CHUNKS_ENABLED:-true',read("cloud/compose.yaml"))
+        self.assertIn("spdecodeAdsEveryFileQa=false",read(".github/workflows/android-unity-ads-online-qa.yml"))
+
     def test_production_apk_qa_only_coming_soon(self):
         app = read("android/app/src/main/java/com/ghostdeveloper/spdecode/SpDecodeApp.kt")
         gradle = read("android/app/build.gradle.kts")
@@ -138,7 +149,7 @@ class AndroidUnityReleaseContract(unittest.TestCase):
         self.assertNotIn('placeholder={Text("8.8.8.8")}', ui)
         market=read("android/app/src/main/java/com/ghostdeveloper/spdecode/NativeStoreCatalog.kt")
         self.assertIn('https://spdecode.xyz/api/store/catalog',market)
-        self.assertIn('optJSONObject("prices")?.optInt("USD",0)',market)
+        self.assertIn('optJSONObject("prices")?.optInt(currency,0)',market)
         self.assertNotIn('CreditPack(1,399)', ui)
         self.assertNotIn('ApiTerm("1m",30,599)', ui)
         for text in ('Descifrado de archivos','Descifrado de textos','Métodos online',
@@ -171,7 +182,8 @@ class AndroidUnityReleaseContract(unittest.TestCase):
             self.assertIn('"' + locale + '" to """',langs)
         self.assertIn("internal val keys=listOf(",i18n)
         self.assertIn('val creditPacks=catalog?.creditPacks.orEmpty()',native)
-        self.assertIn('enabled=apiSelection?.available==true',native)
+        self.assertIn('apiOffer=selectedOffer',native)
+        self.assertIn('quoteProduct(product,term,provider,currency,country,region,allowedIp)',read("android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceAdFreePurchase.kt"))
 
     def test_commerce_catalog_ip_and_translation_alignment(self):
         ui=read("android/app/src/main/java/com/ghostdeveloper/spdecode/NativeCommerceScreens.kt")
@@ -433,7 +445,7 @@ class AndroidUnityReleaseContract(unittest.TestCase):
         self.assertIn("adsExpiry",profile)
         self.assertIn("val shouldHideAds:Boolean get()=adFreeActive",profile)
         self.assertIn("onReloadCatalog",checkout)
-        self.assertIn("remember(offer?.version,offer?.priceCents)",checkout)
+        self.assertIn("remember(product,term,version,currency,provider,country,region,allowedIp)",checkout)
         self.assertIn("ReleaseIntegrity.isTrusted(this)",main)
         self.assertIn("isMinifyEnabled = true",gradle)
         self.assertIn("isShrinkResources = true",gradle)

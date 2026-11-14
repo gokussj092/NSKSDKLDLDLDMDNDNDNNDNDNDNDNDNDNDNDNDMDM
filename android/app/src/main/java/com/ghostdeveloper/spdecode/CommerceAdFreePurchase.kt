@@ -62,25 +62,36 @@ internal object CommercePaymentText {
 @Composable
 internal fun CommerceAdFreePurchase(language:String,offer:StoreAdFreeOffer?,
     auth:NativeCommerceAuth,onSignIn:()->Unit,onOpenCheckout:(String)->Unit,
-    onReloadCatalog:()->Unit){
+    onReloadCatalog:()->Unit,apiOffer:StoreApiOffer?=null,apiVersion:Int=0,allowedIp:String=""){
     val tr:(String)->String={CommercePaymentText.get(language,it)}
     val scope=rememberCoroutineScope()
     val identity=CommerceSession.user
-    var provider by remember(offer){mutableStateOf(offer?.providers?.firstOrNull().orEmpty())}
+    val isApi=apiOffer!=null
+    val product=if(isApi)"api-ip" else "ads-free"
+    val term=apiOffer?.planId?:"base"
+    val version=if(isApi)apiVersion else offer?.version?:0
+    val prices=apiOffer?.prices?:offer?.prices.orEmpty()
+    val methods=apiOffer?.providers?:offer?.providers.orEmpty()
+    var currency by remember(prices,methods){mutableStateOf(prices.keys.firstOrNull { code->methods.any{it!="mercadopago"||code=="MXN"} }?:prices.keys.firstOrNull().orEmpty())}
+    val availableMethods=methods.filter{it!="mercadopago"||currency=="MXN"}
+    var provider by remember(availableMethods){mutableStateOf(availableMethods.firstOrNull().orEmpty())}
+    var region by remember{mutableStateOf("")}
+    var accepted by remember(product,term,version,currency,provider){mutableStateOf(false)}
     var country by remember{mutableStateOf(
         Locale.getDefault().country.takeIf{it.matches(Regex("[A-Za-z]{2}"))}
             ?.uppercase(Locale.ROOT)?:"MX")}
     var countryMenu by remember{mutableStateOf(false)}
     val countryCodes=listOf("MX","US","CA","CO","PE","AR","BR","CL","ES","FR",
         "DE","IT","GB","PT","TR","IN","ID","JP","AU","NZ")
-    var quote by remember(offer?.version,offer?.priceCents){mutableStateOf<JSONObject?>(null)}
+    var quote by remember(product,term,version,currency,provider,country,region,allowedIp){mutableStateOf<JSONObject?>(null)}
+    var requestKey by remember(product,term,version,currency,provider,country,region,allowedIp){mutableStateOf(java.util.UUID.randomUUID().toString())}
     var busy by remember{mutableStateOf(false)}
     var notice by remember{mutableStateOf<String?>(null)}
-    val saleEnabled=offer?.available==true && offer.providers.isNotEmpty()
+    val saleEnabled=!BuildConfig.SPDECODE_PLAY_UPDATES && (apiOffer?.available?:offer?.available?:false) && availableMethods.isNotEmpty() && version>0
     Column(verticalArrangement=Arrangement.spacedBy(16.dp)){
-        Text(CommerceI18n.translate(language,"Sin anuncios","Ad-free"),
+        if(!isApi)Text(CommerceI18n.translate(language,"Sin anuncios","Ad-free"),
             color=silver,fontSize=29.sp,fontWeight=FontWeight.Bold)
-        Column(Modifier.fillMaxWidth().background(shell,RoundedCornerShape(24.dp))
+        if(!isApi)Column(Modifier.fillMaxWidth().background(shell,RoundedCornerShape(24.dp))
             .padding(22.dp),horizontalAlignment=Alignment.CenterHorizontally,
             verticalArrangement=Arrangement.spacedBy(12.dp)){
             AdFreeSymbol(modifier=Modifier.size(65.dp))
@@ -95,7 +106,7 @@ internal fun CommerceAdFreePurchase(language:String,offer:StoreAdFreeOffer?,
                         color=pale,fontSize=12.sp)
                 }
             }else{
-                Text(offer?.let{String.format(Locale.US,"%.2f USD",it.priceCents/100.0)}
+                Text(prices[currency]?.let{String.format(Locale.US,"%.2f %s",it/100.0,currency)}
                     ?:tr("Payment service unavailable"),
                     color=silver,fontSize=26.sp,fontWeight=FontWeight.Bold)
             }
@@ -105,9 +116,12 @@ internal fun CommerceAdFreePurchase(language:String,offer:StoreAdFreeOffer?,
                 colors=ButtonDefaults.buttonColors(containerColor=silver,contentColor=Color.Black)){
                 Text(tr("Sign in to continue"))
             }
-        }else if(saleEnabled){
+        }else if((apiOffer?.available?:offer?.available?:false) && !BuildConfig.SPDECODE_PLAY_UPDATES){
+            Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){
+                prices.keys.forEach{code-> FilterChip(selected=currency==code,onClick={currency=code},label={Text(code)},enabled=!busy) }
+            }
             Text(tr("Select payment method"),color=silver,fontSize=17.sp,fontWeight=FontWeight.SemiBold)
-            offer!!.providers.forEach{id->
+            availableMethods.forEach{id->
                 Row(Modifier.fillMaxWidth().background(if(provider==id)Color(0xFF303D34)else shell,
                     RoundedCornerShape(15.dp)).clickable{
                         provider=id;quote=null;notice=null
@@ -115,7 +129,7 @@ internal fun CommerceAdFreePurchase(language:String,offer:StoreAdFreeOffer?,
                     Icon(if(provider==id)Icons.Outlined.CheckCircle else Icons.Outlined.RadioButtonUnchecked,
                         null,tint=if(provider==id)ivy else pale)
                     Spacer(Modifier.width(12.dp))
-                    Text(when(id){"stripe"->"Stripe";"paypal"->"PayPal";else->id},
+                    Text(when(id){"stripe"->"Stripe";"paypal"->"PayPal";"mercadopago"->"Mercado Pago";else->id},
                         color=silver,fontSize=16.sp)
                 }
             }
@@ -138,15 +152,17 @@ internal fun CommerceAdFreePurchase(language:String,offer:StoreAdFreeOffer?,
                     }
                 }
             }
+            OutlinedTextField(value=region,onValueChange={region=it.uppercase(Locale.ROOT).filter{ch->ch in 'A'..'Z'||ch in '0'..'9'||ch=='-'}.take(12)},singleLine=true,
+                label={Text(CommerceI18n.translate(language,"Estado / región (opcional)","State / region (optional)"))},modifier=Modifier.fillMaxWidth(),enabled=!busy)
             if(quote==null){
                 Button(onClick={
                     scope.launch{
                         busy=true;notice=null
-                        try{quote=auth.quoteAdFree(provider,country)}
+                        try{quote=auth.quoteProduct(product,term,provider,currency,country,region,allowedIp)}
                         catch(_:Exception){notice=tr("Couldn't complete your request")}
                         finally{busy=false}
                     }
-                },enabled=!busy&&provider.isNotEmpty()&&Regex("[A-Z]{2}").matches(country),
+                },enabled=!busy&&saleEnabled&&provider.isNotEmpty()&&Regex("[A-Z]{2}").matches(country),
                     modifier=Modifier.fillMaxWidth(),
                     colors=ButtonDefaults.buttonColors(containerColor=silver,contentColor=Color.Black)){
                     Text(tr("Calculate total"))
@@ -156,15 +172,21 @@ internal fun CommerceAdFreePurchase(language:String,offer:StoreAdFreeOffer?,
                     .padding(18.dp),verticalArrangement=Arrangement.spacedBy(10.dp)){
                     val total=quote!!.optInt("total",0)
                     val tax=quote!!.optInt("tax",0)
-                    Text(tr("Taxes")+": "+String.format(Locale.US,"%.2f USD",tax/100.0),
+                    Text(tr("Taxes")+": "+String.format(Locale.US,"%.2f %s",tax/100.0,currency),
                         color=pale,fontSize=14.sp)
-                    Text(tr("Total")+": "+String.format(Locale.US,"%.2f USD",total/100.0),
+                    Text(tr("Total")+": "+String.format(Locale.US,"%.2f %s",total/100.0,currency),
                         color=silver,fontSize=22.sp,fontWeight=FontWeight.Bold)
+                    Row(verticalAlignment=Alignment.CenterVertically){
+                        Checkbox(checked=accepted,onCheckedChange={accepted=it},enabled=!busy)
+                        Text(CommerceI18n.translate(language,"Acepto los términos de compra","I accept the purchase terms"),color=silver,fontSize=13.sp)
+                    }
                     Button(onClick={
                         scope.launch {
                             busy=true;notice=null
                             try {
-                                val url=auth.checkoutAdFree(provider,country,offer!!.version)
+                                val quotedVersion=quote!!.optInt("version",0)
+                                if(quotedVersion!=version)throw IllegalStateException("PRICE_CHANGED")
+                                val url=auth.checkoutProduct(product,term,provider,currency,country,region,allowedIp,quotedVersion,requestKey)
                                 CommerceSession.beginCheckout()
                                 onOpenCheckout(url)
                                 notice=tr("Payment pending")
@@ -172,7 +194,7 @@ internal fun CommerceAdFreePurchase(language:String,offer:StoreAdFreeOffer?,
                                 notice=tr("Couldn't complete your request")
                             }finally{busy=false}
                         }
-                    },modifier=Modifier.fillMaxWidth(),enabled=!busy&&total>=100,
+                    },modifier=Modifier.fillMaxWidth(),enabled=!busy&&saleEnabled&&accepted&&total>=100,
                         colors=ButtonDefaults.buttonColors(containerColor=silver,contentColor=Color.Black)){
                         Text(tr("Continue to payment"))
                     }
@@ -188,7 +210,7 @@ internal fun CommerceAdFreePurchase(language:String,offer:StoreAdFreeOffer?,
             Text(CommerceI18n.translate(language,"Actualizar precios","Refresh prices"),
                 color=silver)
         }
-        if(identity!=null && (CommerceSession.checkoutPending||CommerceSession.adFreeActive)){
+        if(!isApi && identity!=null && (CommerceSession.checkoutPending||CommerceSession.adFreeActive)){
             OutlinedButton(modifier=Modifier.fillMaxWidth(),enabled=!busy,
                 onClick={
                     scope.launch{

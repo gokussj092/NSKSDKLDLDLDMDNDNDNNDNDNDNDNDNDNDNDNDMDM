@@ -48,7 +48,8 @@ export function plansFor(product){
  return [{...base,title:product.id==='offline-3'?'lifetime':'custom'},...Object.keys(TERMS).map(id=>planFor(product,id))];
 }
 export function productAvailable(product,env=process.env){
- return product.enabled&&env.SPDECODE_STORE_ENABLED==='true'&&
+ // Offline licenses are no longer offered for public sale; historical entitlements remain valid.
+ return product.id!=='offline-3'&&product.enabled&&env.SPDECODE_STORE_ENABLED==='true'&&
    (product.id==='api-ip'?env.SPDECODE_COMMERCIAL_API_ENABLED==='true':
     product.id==='analysis-credits'?env.SPDECODE_ANALYSIS_CREDITS_READY==='true':
     product.id==='ads-free'?true:
@@ -76,6 +77,7 @@ export function taxQuote(product,currency,country,region,rules,term='base'){
    ...(rule.stripeTaxRate?{stripeTaxRate:rule.stripeTaxRate}:{})};
 }
 export function validatePurchase(body){
+ if(body?.product==='offline-3')fail('PRODUCT_UNAVAILABLE',409);
  if(!body||!PRODUCT_IDS.includes(body.product)||!['stripe','paypal','mercadopago'].includes(body.provider)||
    !CURRENCIES.includes(body.currency)||!Number.isSafeInteger(body.version)||
    !/^[0-9a-f-]{36}$/.test(body.idempotencyKey||'')||body.acceptedTerms!=='2026-11-10'||

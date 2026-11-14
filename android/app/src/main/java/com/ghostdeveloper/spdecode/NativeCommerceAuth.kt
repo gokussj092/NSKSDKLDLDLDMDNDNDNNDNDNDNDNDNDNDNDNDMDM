@@ -400,6 +400,39 @@ internal class NativeCommerceAuth(private val context:Context) {
             throw AuthFailure("INVALID_CHECKOUT_URL")
         return checkout
     }
+    private fun purchaseInput(product:String,term:String,provider:String,currency:String,country:String,region:String,allowedIp:String):JSONObject {
+        if(product !in setOf("api-ip","ads-free")||
+            (product=="ads-free"&&term!="base")||
+            (product=="api-ip"&&term !in setOf("base","1m","2m","3m","6m","12m"))||
+            provider !in setOf("stripe","paypal","mercadopago")||currency !in setOf("USD","MXN","EUR")||
+            (provider=="mercadopago"&&currency!="MXN")||!Regex("[A-Z]{2}").matches(country)||
+            !Regex("[A-Z0-9-]{0,12}").matches(region)||
+            (allowedIp.isNotBlank()&&(product!="api-ip"||!CommercialServerIp.isPublicLiteral(allowedIp))))
+            throw AuthFailure("INVALID_CHECKOUT")
+        return JSONObject().put("product",product).put("term",term).put("provider",provider)
+            .put("currency",currency).put("country",country).put("region",region).put("allowedIp",allowedIp)
+    }
+    suspend fun quoteProduct(product:String,term:String,provider:String,currency:String,country:String,region:String,allowedIp:String):JSONObject =
+        http("/api/store/quote","POST",purchaseInput(product,term,provider,currency,country,region,allowedIp),true).first
+
+    suspend fun checkoutProduct(product:String,term:String,provider:String,currency:String,country:String,region:String,
+        allowedIp:String,version:Int,idempotencyKey:String):String {
+        if(version<1||!Regex("[0-9a-f-]{36}").matches(idempotencyKey))throw AuthFailure("INVALID_CHECKOUT")
+        val data=purchaseInput(product,term,provider,currency,country,region,allowedIp)
+            .put("version",version).put("idempotencyKey",idempotencyKey).put("acceptedTerms","2026-11-10")
+        val response=http("/api/store/checkout","POST",data,true).first
+        val urlString=response.optString("url")
+        val url=runCatching{URL(urlString)}.getOrNull()
+        val hosts=when(provider){
+            "stripe"->setOf("checkout.stripe.com")
+            "paypal"->setOf("www.paypal.com","www.sandbox.paypal.com")
+            else->setOf("www.mercadopago.com.mx","www.mercadopago.com","sandbox.mercadopago.com.mx")
+        }
+        if(url==null||url.protocol!="https"||url.host !in hosts||url.userInfo!=null||url.port!=-1)
+            throw AuthFailure("INVALID_CHECKOUT_URL")
+        return urlString
+    }
+
     suspend fun editApiIp(entitlementId:String,ip:String):JSONObject {
         if(!CommercialServerIp.isPublicLiteral(ip))throw IllegalArgumentException("INVALID_PUBLIC_IP")
         return http("/api/account/api-ip","PATCH",

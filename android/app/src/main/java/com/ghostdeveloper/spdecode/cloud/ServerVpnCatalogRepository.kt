@@ -32,6 +32,7 @@ internal class ServerVpnCatalogRepository(
     context: Context,
     private val client: CloudDecodeClient,
 ) {
+    private val downloadPreferences=context.applicationContext.getSharedPreferences("spdecode-catalog-sync",Context.MODE_PRIVATE)
     private val vault=ServerVpnSecureCache(context)
     private val newBadges=ServerVpnNewBadges(context)
     private val mutex=Mutex()
@@ -261,7 +262,9 @@ internal class ServerVpnCatalogRepository(
             try {
                 // Manual refresh still uses the version contract; metadata changes must bump version.
                 val knownVersion=if(!completeCache || cachedFormats.isEmpty() || !recipientMetadata)0 else previousVersion
-                val chunked=client.catalogChunksSupported()
+                // One explicit preference for the entire transfer; no capability
+                // long-poll on the full-download path. Both routes stay protected.
+                val chunked=downloadPreferences.getBoolean("download-by-chunks",false)
                 lastTransferResumable=chunked
                 val downloader=if(chunked)CatalogSnapshotDownload(client,vault) else null
                 val remote=downloader?.download(knownVersion,onTransfer)

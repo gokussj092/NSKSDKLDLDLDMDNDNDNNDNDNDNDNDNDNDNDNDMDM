@@ -13,10 +13,12 @@ internal data class StoreCreditOffer(
     val planId:String, val credits:Int, val priceCents:Int, val available:Boolean
 )
 internal data class StoreApiOffer(
-    val planId:String, val days:Int, val priceCents:Int, val available:Boolean
+    val planId:String, val days:Int, val priceCents:Int, val available:Boolean,
+    val prices:Map<String,Int> = mapOf("USD" to priceCents),val providers:List<String> = emptyList()
 )
 internal data class StoreAdFreeOffer(
-    val priceCents:Int,val version:Int,val available:Boolean,val providers:List<String>
+    val priceCents:Int,val version:Int,val available:Boolean,val providers:List<String>,
+    val prices:Map<String,Int> = mapOf("USD" to priceCents)
 )
 internal data class NativeStoreCatalog(
     val adFree:StoreAdFreeOffer?,
@@ -57,6 +59,17 @@ internal data class NativeStoreCatalog(
             } catch(_:Exception){null}
             finally{connection?.disconnect()}
         }
+        private fun prices(plan:JSONObject):Map<String,Int> =
+            listOf("USD","MXN","EUR").mapNotNull { currency->
+                val amount=plan.optJSONObject("prices")?.optInt(currency,0)?:0
+                if(amount in 100..1_000_000)currency to amount else null
+            }.toMap()
+        private fun providers(product:JSONObject):List<String> {
+            val array=product.optJSONArray("providers")?:return emptyList()
+            return (0 until minOf(array.length(),8)).mapNotNull { i->
+                array.optString(i).takeIf { it in setOf("stripe","paypal","mercadopago") }
+            }.distinct()
+        }
         internal fun parse(payload:String):NativeStoreCatalog? {
             if(payload.length>128*1024)return null
             val root=runCatching{JSONObject(payload)}.getOrNull()?:return null
@@ -73,17 +86,13 @@ internal data class NativeStoreCatalog(
                 if(id=="ads-free"){
                     val plan=product.optJSONArray("plans")?.optJSONObject(0)
                     if(plan?.optString("id")=="base" && plan.optInt("days")==30){
-                        val cents=plan.optJSONObject("prices")?.optInt("USD",0)?:0
-                        val providers=product.optJSONArray("providers")
-                        val available=if(providers==null)emptyList<String>() else
-                            (0 until minOf(providers.length(),8)).mapNotNull{
-                                providers.optString(it).takeIf{provider->
-                                    provider in setOf("stripe","paypal") }
-                            }
+                        val amounts=prices(plan)
+                        val methods=providers(product)
+                        val cents=amounts["USD"]?:amounts.values.firstOrNull()?:0
                         if(cents in 100..1_000_000){
                             ads=StoreAdFreeOffer(cents,product.optInt("version",0),
-                                plan.optBoolean("available",false)&&available.isNotEmpty(),
-                                available)
+                                plan.optBoolean("available",false)&&methods.isNotEmpty(),
+                                methods,amounts)
                         }
                     }
                     continue
@@ -94,7 +103,8 @@ internal data class NativeStoreCatalog(
                 for(j in 0 until minOf(plans.length(),30)){
                     val plan=plans.optJSONObject(j)?:continue
                     val term=plan.optString("id")
-                    val price=plan.optJSONObject("prices")?.optInt("USD",0)?:0
+                    val amounts=prices(plan)
+                    val price=if(id=="analysis-credits") amounts["USD"]?:0 else amounts["USD"]?:amounts.values.firstOrNull()?:0
                     if(price !in 100..1_000_000 || term.isBlank())continue
                     val enabled=plan.optBoolean("available",false)
                     if(id=="analysis-credits"){
@@ -105,7 +115,7 @@ internal data class NativeStoreCatalog(
                         val days=plan.optInt("days",0)
                         if(days !in 1..3650 || term !in setOf("base","1m","2m","3m","6m","12m"))
                             continue
-                        api=api+StoreApiOffer(term,days,price,enabled)
+                        api=api+StoreApiOffer(term,days,price,enabled&&providers(product).isNotEmpty(),amounts,providers(product))
                     }
                 }
             }

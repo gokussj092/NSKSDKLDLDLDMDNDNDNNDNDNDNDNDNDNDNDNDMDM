@@ -22,13 +22,13 @@ const SPEC={
   excludes:{es:['No equivale a una licencia Offline','No garantiza compatibilidad con cualquier APK','La compra permanece cerrada hasta activar el consumo real'],en:['Not an Offline license','Not every APK is guaranteed compatible','Purchases remain disabled until actual usage is integrated']}
  }
 };
-const ORDER=['offline-3','api-ip','analysis-credits','online'];
+const ORDER=['api-ip','analysis-credits','online'];
 export default function StoreExperience({products,currency,lang,t,onOpen}){
  const es=lang==='es';
- const [active,setActive]=useState('offline-3');
+ const [active,setActive]=useState('api-ip');
  const [selection,setSelection]=useState({'offline-3':'1m','api-ip':'1m','analysis-credits':'1c'});
  const [downloads,setDownloads]=useState({});
- useEffect(()=>{let mounted=true;Promise.all(['online','offline'].map(async key=>{
+ useEffect(()=>{let mounted=true;Promise.all(['online'].map(async key=>{
   try{const r=await fetch('/api/downloads/'+key+'?metadata',{cache:'no-store'});if(!r.ok)return [key,null];const d=await r.json();return [key,d.available?d:null];}catch{return [key,null];}
  })).then(rows=>{if(mounted)setDownloads(Object.fromEntries(rows));});return()=>{mounted=false;};},[]);
  const labels={'offline-3':t.offline,'api-ip':t.api,'analysis-credits':t.credits,online:t.online};
