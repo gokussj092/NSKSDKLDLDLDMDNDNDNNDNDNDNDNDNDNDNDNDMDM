@@ -13,6 +13,7 @@ import {providerIds,providerEnabled,downloadVpnCatalog} from "../lib/server-vpn-
 import {PUBLIC_PROVIDER_IDS} from "../lib/c12-provider-controls.mjs";
 import {loadServerVpnResult} from "../lib/server-vpn-gateway.mjs";
 import {fetchWorker} from "../lib/c3-gateway.mjs";
+import {DEFAULT_DTUNNEL_REQUEST_ID} from "../lib/dtunnel-credentials.server.mjs";
 
 function environment(t,extra={}){
  for(const [key,value] of Object.entries({CLOUD_SERVER_VPN_ENABLED:"true",...extra})){
@@ -49,15 +50,21 @@ test("all supplied catalog methods reach pinned fixed sources and operator contr
  assert(!JSON.stringify(catalog()).includes("synthetic-authorized-account"));
  assert(!JSON.stringify(catalog()).includes("catalogModule"));
 });
-test("DTunnel activation requires a private ID, while invalid inputs never trigger downloads",async t=>{
+test("DTunnel uses the authorized script default; invalid explicit IDs never trigger downloads",async t=>{
  environment(t,{SPDECODE_DTUNNEL_REQUEST_ID:""});const calls=network(t);
- assert(providerIds().includes("dtunnel-mod"));assert.equal(providerEnabled("dtunnel-mod"),false);
- await assert.rejects(()=>downloadVpnCatalog("dtunnel-mod"),{code:"REMOTE_NOT_CONFIGURED"});
+ assert(providerIds().includes("dtunnel-mod"));assert.equal(providerEnabled("dtunnel-mod"),true);
+ assert(catalog().apps.find(x=>x.id==="dtunnel-mod").decodeEnabled);
+ await downloadVpnCatalog("dtunnel-mod");
+ assert(calls[0].options.headers["dtunnel-token"]===DEFAULT_DTUNNEL_REQUEST_ID);
+ assert(!JSON.stringify(catalog()).includes(DEFAULT_DTUNNEL_REQUEST_ID));
+ assert(!JSON.stringify(SUPPLIED_INTEGRATIONS).includes(DEFAULT_DTUNNEL_REQUEST_ID));
+ const before=calls.length;
  for(const value of ["bad\r\nInjected: yes","x".repeat(513)]){
   process.env.SPDECODE_DTUNNEL_REQUEST_ID=value;assert.equal(providerEnabled("dtunnel-mod"),false);
+  await assert.rejects(()=>downloadVpnCatalog("dtunnel-mod"),{code:"REMOTE_NOT_CONFIGURED"});
  }
  await assert.rejects(()=>downloadVpnCatalog("at-net-vpn","https://attacker.invalid/"),{code:"UNSUPPORTED_FORMAT"});
- assert.equal(calls.length,0);
+ assert.equal(calls.length,before);
 });
 test("supplied routes reject private DNS, redirects, HTML and truncated empty replies",async t=>{
  environment(t);

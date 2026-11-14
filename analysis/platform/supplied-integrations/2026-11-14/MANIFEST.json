@@ -100,10 +100,10 @@
       "package_name": "com.dtunnel.v2ray.pro",
       "version_code": 9,
       "catalog_module": "decoders/Python/apps/DTunnel_Mod/DTunnel.py",
-      "catalog_module_sha256": "af929b15cf196e8b1e38098f11b931462000d4b04886edd738148d4cb47d5806",
+      "catalog_module_sha256": "c0ebe3eb3f38307d16ce47692930e61c87f809cf3fa020f15f117b7ee3437e5e",
       "file_module": "decoders/Python/apps/DTunnel_Mod/DTunnel_archivos.py",
       "source_readme": "decoders/Python/apps/DTunnel_Mod/README.md",
-      "integration_status": "Muestra completa de 49 perfiles OK. Descarga autenticada conectada; falta configurar user_id privado en el VPS.",
+      "integration_status": "Authorized default embedded by express owner request. Real HTTP 200, 80600 bytes, 49 profiles, complete isolated-worker match; no manual configuration required.",
       "network_sources": 1,
       "connection_authentication": {
         "status": "UNCONFIRMED",
@@ -867,7 +867,6 @@
     "cloud/workers/python/supplied_bridge.py"
   ],
   "limitations": [
-    "Missing authorized DTunnel updater user_id",
     "Some supplied methods explicitly incomplete or provider-authenticated",
     "Three supplied catalog samples fail their own decoders",
     "No VPS deployment performed"

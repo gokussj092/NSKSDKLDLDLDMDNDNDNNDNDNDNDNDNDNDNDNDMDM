@@ -22,11 +22,13 @@ El catálogo no tiene campo de versión: es una lista plana de perfiles de
 servidor (22 campos cada uno). El enlace vpn:// es Base64 estándar de un
 objeto JSON UTF-8, sin cifrar.
 
-Sin dependencias: stdlib puro (AES implementado aquí). El identificador de
-acceso lo aporta quien ejecuta el script (--credentials-file o
---request-id-file); nunca se incrusta en este archivo.
+Sin dependencias: stdlib puro (AES implementado aquí). Incluye el identificador
+aportado y autorizado expresamente por el propietario. Los parámetros
+--credentials-file y --request-id-file permiten sustituirlo. El valor
+integrado solo se envía al endpoint original, sin redirecciones.
 
 Uso:
+    python3 DTunnel.py --url
     python3 DTunnel.py --url --credentials-file credentials.json
     python3 DTunnel.py --url --credentials-file credentials.json --kind layout
     python3 DTunnel.py --url --credentials-file credentials.json --kind texts
@@ -57,6 +59,9 @@ MAX_NODES = 1_000_000
 MAX_DEPTH = 64
 CATALOG_URL = "https://dtmod.cloud/api/dtunnelmod"
 USER_AGENT = "DTunnelMod (@DTunnelMod, @DTunnelModGroup, @LightXVD)"
+# Owner supplied and explicitly authorized this default on 2026-11-14.
+# Used only for the fixed DTunnel updater, never public catalog metadata.
+DEFAULT_REQUEST_ID = "3d61851c-7098-4c5f-8400-a581c3abd547"
 # Constante de formato compartida del cliente (no es una credencial de cuenta).
 CATALOG_SEED = (
     b"DTunnelModSecret-API-9c69a0b72b442ccac3e6aaaa7630d12f2b"
@@ -378,14 +383,16 @@ class _NoRedirect(HTTPRedirectHandler):
         return None
 
 
-def fetch_catalog(url: str, request_id: str, *, kind: str = "catalog") -> bytes:
-    """GET explícito con el identificador del llamador; sin redirecciones ni reintentos."""
+def fetch_catalog(url: str, request_id: str = DEFAULT_REQUEST_ID, *, kind: str = "catalog") -> bytes:
+    """GET with the authorized default or an explicit caller ID; no redirects."""
     if not isinstance(request_id, str) or not re.fullmatch(r"[\x21-\x7e]{1,512}", request_id):
         raise DecodeError("CREDENTIALS_REQUIRED", "Se necesita un identificador válido sin espacios ni saltos de línea.")
     if kind not in UPDATE_KINDS:
         raise DecodeError("FORMAT_ERROR", "Tipo de actualización desconocido.")
     try:
         parts = urlsplit(url)
+        if request_id == DEFAULT_REQUEST_ID and parts != urlsplit(CATALOG_URL):
+            raise ValueError("default identity is restricted to the original updater")
         if parts.scheme != "https" or not parts.hostname or parts.username is not None or parts.password is not None or parts.fragment:
             raise ValueError("invalid URL")
         request = Request(url, headers={"User-Agent": USER_AGENT,
@@ -501,7 +508,7 @@ def main(argv=None) -> int:
             elif args.request_id_file:
                 request_id = _read(args.request_id_file, 514).decode("utf-8").removesuffix("\n").removesuffix("\r")
             else:
-                raise DecodeError("CREDENTIALS_REQUIRED", "Use --credentials-file o --request-id-file para descargar.")
+                request_id = DEFAULT_REQUEST_ID
             result = decode_catalog(fetch_catalog(args.url, request_id, kind=args.kind), kind=args.kind)
         elif args.link is not None:
             result = decode_link(args.link)

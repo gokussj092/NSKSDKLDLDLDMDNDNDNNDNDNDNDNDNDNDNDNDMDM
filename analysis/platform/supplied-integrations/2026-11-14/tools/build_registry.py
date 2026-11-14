@@ -52,6 +52,12 @@ def build():
             script = "server_catalog_decoder.py"
         assert script and (folder / script).is_file(), app
         values = constants(folder / script)
+        if app == "DTunnel_Mod":
+            # Generate a server-module literal, never a public JSON credential.
+            request_id = values["DEFAULT_REQUEST_ID"]
+            target = ROOT / "cloud/web/lib/dtunnel-credentials.server.mjs"
+            target.write_text("/** Generated from the owner's authorized DTunnel script default. Server use only. */\n"
+                              + "export const DEFAULT_DTUNNEL_REQUEST_ID = " + json.dumps(request_id) + ";\n")
         item = {"id": manifest["id"], "appDir": app, "name": manifest["name"],
                 "package": manifest.get("package") or manifest.get("packageName"), "versionCode": manifest.get("versionCode"),
                 "versionName": manifest.get("versionName"), "catalogModule": script,

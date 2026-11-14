@@ -6,7 +6,7 @@ import {publicTextFormats,publicOnlineReferenceFormats} from "./text-format-cata
 import {providerEnabled} from "./server-vpn-provider.mjs";
 import {SUPPLIED_CATALOG_ITEMS,suppliedProviderConfigured} from "./supplied-integrations.mjs";
 
-export const CATALOG_VERSION = 82; // Supplied app catalogs, file routes and text handlers.
+export const CATALOG_VERSION = 83; // Authorized DTunnel updater default enables its catalog.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon

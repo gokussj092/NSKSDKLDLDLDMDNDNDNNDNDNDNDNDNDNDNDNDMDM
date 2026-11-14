@@ -2,6 +2,7 @@
 import {readFileSync,existsSync} from "node:fs";
 import {join} from "node:path";
 import {randomBytes,randomUUID} from "node:crypto";
+import {DEFAULT_DTUNNEL_REQUEST_ID} from "./dtunnel-credentials.server.mjs";
 
 const deployed=join(process.cwd(),"content/supplied-integrations.json");
 const source=existsSync(deployed)?deployed:new URL("../content/supplied-integrations.json",import.meta.url);
@@ -14,17 +15,22 @@ export const SUPPLIED_CATALOG_ITEMS=Object.freeze(SUPPLIED_INTEGRATIONS
  .filter(x=>x.requests.length||x.existingBroker)
  .map(x=>Object.freeze({id:x.id,name:x.name,icon:x.icon,remote:x.id})));
 export const suppliedProviderIds=()=>SUPPLIED_INTEGRATIONS.filter(x=>x.requests.length).map(x=>x.id);
+function credential(id,request,env){
+ const value=env[request.secretHeader.env];
+ if(value!==undefined&&value!=="")return value;
+ return id==="dtunnel-mod"?DEFAULT_DTUNNEL_REQUEST_ID:undefined;
+}
 export function suppliedProviderConfigured(id,env=process.env){
  const item=byId.get(id);if(!item?.requests.length)return false;
  return item.requests.every(r=>!r.secretHeader||
-  (typeof env[r.secretHeader.env]==="string"&&/^[\x21-\x7e]{1,512}$/.test(env[r.secretHeader.env])));
+  (typeof credential(id,r,env)==="string"&&/^[\x21-\x7e]{1,512}$/.test(credential(id,r,env))));
 }
 export function suppliedRequests(id,env=process.env){
  const item=byId.get(id);if(!item?.requests.length)throw Error("UNSUPPORTED_FORMAT");
  if(!suppliedProviderConfigured(id,env))throw Error("REMOTE_NOT_CONFIGURED");
  return item.requests.map(r=>{
   const headers={...r.headers};
-  if(r.secretHeader)headers[r.secretHeader.header]=env[r.secretHeader.env];
+  if(r.secretHeader)headers[r.secretHeader.header]=credential(id,r,env);
   if(r.sessionHeaders)Object.assign(headers,{"X-App-Device":randomUUID().replaceAll("-",""),
    "X-App-Ts":String(Math.floor(Date.now()/1000)),"X-App-Nonce":randomBytes(8).toString("hex")});
   return {name:r.name,url:r.url,agent:r.agent,headers,method:r.method,body:r.body?Buffer.from(r.body):null};

@@ -74,9 +74,9 @@ dtunnel-update: app_config
 - `DTunnel.py` — stdlib puro. `decode()` + `run()` + CLI `--url/--file/--stdin/
   --link/--self-test/-o` y `--kind catalog|layout|texts`. `--self-test` 9/9
   OK (vectores FIPS-197 AES-256, round-trip CBC con la clave del catálogo,
-  round-trip `vpn://`, rechazos honestos). Para `--url` hace falta
-  `--credentials-file credentials.json` (el `assets/credentials.json` del
-  APK) o `--request-id-file`; el identificador nunca se incrusta.
+  round-trip `vpn://`, rechazos honestos). `--url` usa ahora el identificador
+  suministrado y autorizado expresamente por el propietario el 2026-11-14.
+  `--credentials-file` y `--request-id-file` siguen disponibles como overrides.
 - `DTunnel_archivos.py` — enlaces `vpn://`, deep links `dt.com.br/import/`,
   respuestas cifradas guardadas y JSON en claro. `--self-test` 9/9 OK,
   incluido el catálogo vivo real de 49 perfiles.
@@ -87,6 +87,12 @@ dtunnel-update: app_config
   del APK — solo para la prueba en vivo, no se distribuye).
 
 ## Pendiente
+
+El valor integrado se publica en el repositorio público por autorización
+expresa del propietario. No se incorpora al catálogo público ni a la APK.
+La descarga con ese valor y el worker aislado fue verificada: HTTP 200,
+80.600 bytes y 49 perfiles completos. Evidencia sanitizada:
+`analysis/com.dtunnel.v2ray.pro/9/generated/authorized-catalog-proof.json`.
 
 Un enlace `vpn://` real copiado de la app cerraría la verificación extremo a
 extremo del importador (el formato está validado contra el código de la app

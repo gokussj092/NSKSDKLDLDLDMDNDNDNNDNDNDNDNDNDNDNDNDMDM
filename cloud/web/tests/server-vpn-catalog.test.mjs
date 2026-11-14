@@ -89,15 +89,16 @@ test("deployment version is monotonic and rejects rollback",()=>{
  }
 });
 
-test("DTunnel Mod uses the confirmed green provider icon but never offers unauthenticated remote download",async t=>{
+test("DTunnel Mod is enabled with the owner's authorized server default and keeps its original icon",async t=>{
  const old=process.env.CLOUD_SERVER_VPN_ENABLED;
  process.env.CLOUD_SERVER_VPN_ENABLED="true";
  t.after(()=>{if(old===undefined)delete process.env.CLOUD_SERVER_VPN_ENABLED;else process.env.CLOUD_SERVER_VPN_ENABLED=old;});
  const record=catalog().apps.find(app=>app.id==="dtunnel-mod");
  assert(record);
  assert.equal(record.name,"DTunnel Mod");
- assert.equal(record.decodeEnabled,false);
- assert.equal(catalog({availability:{"dtunnel-mod":true}}).apps.find(app=>app.id==="dtunnel-mod").decodeEnabled,false);
+ assert.equal(record.decodeEnabled,true);
+ assert.equal(catalog({availability:{"dtunnel-mod":true}}).apps.find(app=>app.id==="dtunnel-mod").decodeEnabled,true);
+ assert.equal(catalog({availability:{"dtunnel-mod":false}}).apps.find(app=>app.id==="dtunnel-mod").decodeEnabled,false);
  const result=await getIcon(body({id:"dtunnel-mod"}));
  assert.equal(result.status,200);
  const icon=await result.json();
