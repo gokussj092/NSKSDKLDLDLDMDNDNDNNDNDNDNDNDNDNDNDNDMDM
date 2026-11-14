@@ -45,7 +45,7 @@ test("Netcol launcher PNG, public format and card follow availability",()=>{
   assert.equal(iconFor("netcol-vpn").bytes.length,19306);
   assert(PUBLIC_PROVIDER_IDS.includes("netcol-vpn"));
   assert.equal(catalog({availability:{"netcol-vpn":false}}).apps.find(x=>x.id==="netcol-vpn").decodeEnabled,false);
-  assert.equal(doc.formats.length,256);
+  assert.equal(doc.formats.length,270);
   assert(!doc.formats.some(x=>x.suffix==="netcol"));
   assert(!JSON.stringify(card).includes("https://"));
 });

@@ -45,7 +45,7 @@ test("Enaa launcher PNG, public format and card follow availability",()=>{
   assert.equal(iconFor("enaa-tunnel").bytes.length,14892);
   assert(PUBLIC_PROVIDER_IDS.includes("enaa-tunnel"));
   assert.equal(catalog({availability:{"enaa-tunnel":false}}).apps.find(x=>x.id==="enaa-tunnel").decodeEnabled,false);
-  assert.equal(doc.formats.length,256);
+  assert.equal(doc.formats.length,270);
   assert(doc.formats.some(x=>x.suffix==="enaa"));
   assert(!JSON.stringify(card).includes("https://"));
 });

@@ -9,11 +9,13 @@ import {randomUUID,createHash} from "node:crypto";
 import {providerIds,providerEnabled} from "./server-vpn-provider.mjs";
 import {ehiConfigured,nurConfigured} from "./c35-provider.mjs";
 import {activeCatalogVersion,catalog,SERVER_VPN_METHODS} from "./server-vpn-catalog.mjs";
+import {SUPPLIED_CATALOG_ITEMS} from "./supplied-integrations.mjs";
 
 const ROOT="/app/provider-control";
 const IDS=Object.freeze(["ehi-cloud","hc-cloud","nur-tunnel",...providerIds()]);
 export const PUBLIC_PROVIDER_IDS=IDS;
 const LABELS=Object.freeze({
+  ...Object.fromEntries(SUPPLIED_CATALOG_ITEMS.map(({id,name})=>[id,name])),
   "xxpicore-tunnel":"XXPICore Tunnel",
   "catnet-vpn":"CATNET VPN",
   "litron-vpn":"LITRON VPN",
@@ -107,6 +109,7 @@ function catalogFingerprint(){
     formatsSchemaVersion:snapshot.formatsSchemaVersion,
     formatDetection:snapshot.formatDetection,
     formats:snapshot.formats,
+    textFormats:snapshot.textFormats,
     onlineReferenceFormats:snapshot.onlineReferenceFormats,
   })).digest("hex");
   return rosterFingerprint;

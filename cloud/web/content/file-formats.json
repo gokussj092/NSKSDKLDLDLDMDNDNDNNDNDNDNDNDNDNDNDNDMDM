@@ -360,7 +360,7 @@
     },
     {
       "suffix": "1ftnl",
-      "name": "1FTunnel 0.6.99",
+      "name": "1FTunnel 0.7.1",
       "kind": "file",
       "offlineSupported": false,
       "cloudSupported": true,
@@ -1161,7 +1161,7 @@
     },
     {
       "suffix": "fat",
-      "name": "Fat Tunnel Lite V1.12",
+      "name": "Fat Tunnel Lite Fat V1.12",
       "kind": "file",
       "offlineSupported": false,
       "cloudSupported": true,
@@ -1382,7 +1382,7 @@
     },
     {
       "suffix": "lnk",
-      "name": "LinkLayer VPN",
+      "name": "LinkLayer VPN 3.11.2",
       "kind": "file",
       "offlineSupported": true,
       "cloudSupported": true,
@@ -1422,7 +1422,7 @@
     },
     {
       "suffix": "mmt",
-      "name": "MM Tunnel v1.10.30.2",
+      "name": "MM Tunnel v1.11.06.1",
       "kind": "file",
       "offlineSupported": true,
       "cloudSupported": true,
@@ -1526,7 +1526,7 @@
     },
     {
       "suffix": "ost",
-      "name": "Shield Tunnel 1.11.06.1",
+      "name": "Shield Tunnel / One Shield Tunnel v1.11.06.1",
       "kind": "file",
       "offlineSupported": true,
       "cloudSupported": true,
@@ -1742,7 +1742,7 @@
     },
     {
       "suffix": "t20",
-      "name": "Marvs SSH / T20-VPN 1.10.5.3",
+      "name": "Marvs SSH / T20-VPN v1.10.5.3",
       "kind": "file",
       "offlineSupported": true,
       "cloudSupported": true,
@@ -1863,6 +1863,14 @@
       "credentialFields": []
     },
     {
+      "suffix": "vcv",
+      "name": "VC VPN 8.0",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
       "suffix": "vel",
       "name": "VEL TUNNEL",
       "kind": "file",
@@ -1928,7 +1936,7 @@
     },
     {
       "suffix": "xui",
-      "name": "XUI Tunnel",
+      "name": "XUI Tunnel VPN 6.0",
       "kind": "file",
       "offlineSupported": true,
       "cloudSupported": true,
@@ -1944,7 +1952,7 @@
     },
     {
       "suffix": "zvn",
-      "name": "Zam VIP NET 42.0",
+      "name": "Zam VIP NET / Free VIP Net 42.0",
       "kind": "file",
       "offlineSupported": false,
       "cloudSupported": true,
@@ -2135,6 +2143,17 @@
       "credentialFields": []
     },
     {
+      "suffix": "sn",
+      "name": "SN VPN 5.0.7",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": [
+        "password",
+        "hwid"
+      ]
+    },
+    {
       "suffix": "st",
       "name": "Sentinel Tunnel",
       "kind": "file",
@@ -2181,6 +2200,14 @@
       "name": "Generic AES-GCM / PBKDF2",
       "kind": "file",
       "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "xj",
+      "name": "XJ VPN 1.9.7",
+      "kind": "file",
+      "offlineSupported": false,
       "cloudSupported": true,
       "credentialFields": []
     }

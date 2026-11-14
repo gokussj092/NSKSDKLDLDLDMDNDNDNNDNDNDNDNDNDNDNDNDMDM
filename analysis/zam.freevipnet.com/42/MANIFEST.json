@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "package_name": "zam.freevipnet.com",
+  "version_code": 42,
+  "app_name": "Zam VIP NET / Free VIP Net",
+  "version_name": "42.0",
+  "status": "PARTIAL",
+  "source_category": "owner-supplied repository code",
+  "authorization_note": "Owner explicitly requested connection of all supplied methods on ci/unity-ads-online-qa; no service credentials or attestation fabrication authorized.",
+  "targets": [
+    {
+      "kind": "catalog",
+      "status": "CONNECTED"
+    },
+    {
+      "kind": "files",
+      "extensions": [
+        "zvn",
+        "js",
+        "rj"
+      ]
+    },
+    {
+      "kind": "text",
+      "prefixes": [
+        "zamvipnet://"
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "path": "decoders/Python/apps/Zam_VIP_NET/Zam_VIP_NET.py",
+      "sha256": "68591b5508a1144edda4968c309d1e5a9d0e008c59e67d2b18ff7b5fd9eccc1f"
+    }
+  ],
+  "tooling": [
+    {
+      "path": "analysis/platform/supplied-integrations/2026-11-14/tools/verify_provider.py",
+      "command": "python analysis/platform/supplied-integrations/2026-11-14/tools/verify_provider.py zam-vip-net"
+    }
+  ],
+  "dependencies": [
+    {
+      "lockfile": "requirements.txt",
+      "purpose": "Existing pinned server codec dependencies"
+    },
+    {
+      "lockfile": "cloud/web/package-lock.json",
+      "purpose": "Existing pinned Node broker/build dependencies"
+    }
+  ],
+  "code_paths": [
+    "cloud/web/lib/server-vpn-catalog.mjs",
+    "cloud/web/lib/server-vpn-gateway.mjs",
+    "cloud/web/lib/server-vpn-provider.mjs",
+    "cloud/web/lib/supplied-integrations.mjs",
+    "cloud/workers/python/catalog_vpn_bridge.py",
+    "cloud/workers/python/supplied_bridge.py",
+    "decoders/Python/apps/Zam_VIP_NET/Zam_VIP_NET.py"
+  ],
+  "limitations": [
+    "See supplied README and central per-app integration matrix. No new live service validation asserted."
+  ],
+  "connection_authentication": {
+    "status": "UNCONFIRMED",
+    "scope": "No new VPN connection-authentication research; existing methods only."
+  },
+  "integration_review": {
+    "scope": "Connection only; existing algorithm evidence/status preserved.",
+    "record": "analysis/platform/supplied-integrations/2026-11-14/MANIFEST.json",
+    "status": "PARTIAL"
+  }
+}

@@ -50,8 +50,8 @@ test("MM original PNG, mmt metadata and card follow availability",()=>{
   assert.equal(iconFor("mm-tunnel").bytes.length,109337);
   assert(PUBLIC_PROVIDER_IDS.includes("mm-tunnel"));
   assert.equal(catalog({availability:{"mm-tunnel":false}}).apps.find(x=>x.id==="mm-tunnel").decodeEnabled,false);
-  assert.equal(doc.formats.length,256);
-  assert(doc.formats.some(x=>x.suffix==="mmt" && x.name==="MM Tunnel v1.10.30.2"));
+  assert.equal(doc.formats.length,270);
+  assert(doc.formats.some(x=>x.suffix==="mmt" && x.name==="MM Tunnel v1.11.06.1"));
   assert(!JSON.stringify(card).includes("https://"));
 });
 

@@ -45,7 +45,7 @@ test("Ultra launcher PNG, public format and card follow availability",()=>{
   assert.equal(iconFor("ultra-tunnel").bytes.length,306646);
   assert(PUBLIC_PROVIDER_IDS.includes("ultra-tunnel"));
   assert.equal(catalog({availability:{"ultra-tunnel":false}}).apps.find(x=>x.id==="ultra-tunnel").decodeEnabled,false);
-  assert.equal(doc.formats.length,256);
+  assert.equal(doc.formats.length,270);
   assert(doc.formats.some(x=>x.suffix==="ultra"));
   assert(!JSON.stringify(card).includes("https://"));
 });

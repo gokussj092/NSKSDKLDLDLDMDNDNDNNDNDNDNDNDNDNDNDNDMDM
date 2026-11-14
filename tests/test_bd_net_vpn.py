@@ -100,7 +100,7 @@ class BDNetTests(unittest.TestCase):
             self.assertEqual(json.loads(output["rawText"]), expected)
             self.assertFalse(output["isPartial"])
         base = load_file_engines(); runtime = load_runtime_file_engines()
-        self.assertEqual(len(base), 240); self.assertEqual(len(runtime), 267)
+        self.assertEqual(len(base), 240); self.assertEqual(len(runtime), 270)
         self.assertTrue(base["bdnet"]["source"].endswith("/xor_family.py"))
         self.assertIn("/BD_NET_VPN/", runtime["bdnet"]["source"])
         self.assertEqual(runtime["fnf"], base["fnf"])

@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "package_name": "codes.juanscript.vertexsnipher",
+  "version_code": 46,
+  "app_name": "VertexSnipher",
+  "version_name": "0.1.46",
+  "status": "PARTIAL",
+  "source_category": "owner-supplied repository code",
+  "authorization_note": "Owner explicitly requested connection of all supplied methods on ci/unity-ads-online-qa; no service credentials or attestation fabrication authorized.",
+  "targets": [
+    {
+      "kind": "catalog",
+      "status": "PROVIDER_IDENTITY_REQUIRED"
+    },
+    {
+      "kind": "files",
+      "extensions": []
+    },
+    {
+      "kind": "text",
+      "prefixes": [
+        "snipher://"
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "path": "decoders/Python/apps/VertexSnipher/VertexSnipher.py",
+      "sha256": "d864a2b6a93b484ff0ff020b0a5c275f4a5cf10faa394274baf543ae8cf1f8ae"
+    }
+  ],
+  "tooling": [
+    {
+      "path": "analysis/platform/supplied-integrations/2026-11-14/tools/verify_provider.py",
+      "command": "python analysis/platform/supplied-integrations/2026-11-14/tools/verify_provider.py vertexsnipher"
+    }
+  ],
+  "dependencies": [
+    {
+      "lockfile": "requirements.txt",
+      "purpose": "Existing pinned server codec dependencies"
+    },
+    {
+      "lockfile": "cloud/web/package-lock.json",
+      "purpose": "Existing pinned Node broker/build dependencies"
+    }
+  ],
+  "code_paths": [
+    "cloud/web/lib/server-vpn-catalog.mjs",
+    "cloud/web/lib/server-vpn-gateway.mjs",
+    "cloud/web/lib/server-vpn-provider.mjs",
+    "cloud/web/lib/supplied-integrations.mjs",
+    "cloud/workers/python/catalog_vpn_bridge.py",
+    "cloud/workers/python/supplied_bridge.py",
+    "decoders/Python/apps/VertexSnipher/VertexSnipher.py"
+  ],
+  "limitations": [
+    "See supplied README and central per-app integration matrix. No new live service validation asserted."
+  ],
+  "connection_authentication": {
+    "status": "UNCONFIRMED",
+    "scope": "No new VPN connection-authentication research; existing methods only."
+  },
+  "integration_review": {
+    "scope": "Connection only; existing algorithm evidence/status preserved.",
+    "record": "analysis/platform/supplied-integrations/2026-11-14/MANIFEST.json",
+    "status": "PARTIAL"
+  }
+}

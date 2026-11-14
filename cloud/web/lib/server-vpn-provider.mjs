@@ -16,6 +16,8 @@ import http from "node:http";
 import {ALFAISAL_SOURCE,ALFAISAL_METADATA,alfaisalConfigured,alfaisalRequest} from "./alfaisal-protocol.mjs";
 import {HALCON_SOURCE,halconConfigured,halconRequest} from "./halcon-protocol.mjs";
 import {publicIpv4} from "./c35-provider.mjs";
+import {suppliedProviderIds,suppliedProviderConfigured,suppliedRequests,packSuppliedCatalog} from "./supplied-integrations.mjs";
+const SUPPLIED_IDS=new Set(suppliedProviderIds());
 
 const ABOWAGED_SOURCES=Object.freeze({
   servers:"https://raw.githubusercontent.com/th3fre/Testing/refs/heads/main/Elk.txt",
@@ -200,6 +202,7 @@ export class VpnProviderError extends Error {
 }
 function fail(code){throw new VpnProviderError(code);}
 export function providerEnabled(id,env=process.env){
+  if(SUPPLIED_IDS.has(id))return env.CLOUD_SERVER_VPN_ENABLED==="true"&&suppliedProviderConfigured(id,env);
   if(!Object.hasOwn(PROVIDERS,id) || env.CLOUD_SERVER_VPN_ENABLED!=="true")return false;
   if(id==="halcon-r-net")return halconConfigured(env);
   if(id==="alfaisal-tunnel-plus")return alfaisalConfigured(env);
@@ -208,7 +211,7 @@ export function providerEnabled(id,env=process.env){
   return typeof authorization==="string" && authorization.length<=2048 &&
     /^(Bearer|token) [!-~]+$/.test(authorization) && !/[\r\n]/.test(authorization);
 }
-export function providerIds(){return Object.keys(PROVIDERS);}
+export function providerIds(){return [...new Set([...Object.keys(PROVIDERS),...SUPPLIED_IDS])];}
 
 async function vettedIpv4(host) {
   let list;
@@ -433,6 +436,13 @@ async function downloadCatnet(provider){
 }
 
 export async function downloadVpnCatalog(id,source=id==="jyfast-vpn-ultra"?"free":id==="v2ray-tunnel-plus"?"base64":"servers",options={}){
+  // Existing CATNET keeps its dedicated preflight resolver. Every supplied
+  // literal source uses the same pinned DNS/TLS transport as older providers.
+  if(SUPPLIED_IDS.has(id)&&id!=="catnet-vpn"){
+    if(source!=="servers")fail("UNSUPPORTED_FORMAT");
+    if(!providerEnabled(id))fail("REMOTE_NOT_CONFIGURED");
+    return downloadSupplied(id);
+  }
   const provider=PROVIDERS[id];
   if(!provider)fail("UNSUPPORTED_FORMAT");
   if(!providerEnabled(id))fail("REMOTE_NOT_CONFIGURED");
@@ -519,4 +529,35 @@ export async function downloadVpnCatalog(id,source=id==="jyfast-vpn-ultra"?"free
     if(!redirected)fail("REMOTE_PROVIDER_UNAVAILABLE");
   }
   fail("REMOTE_NETWORK_DENIED");
+}
+
+async function downloadSupplied(id){
+  let requests;try{requests=suppliedRequests(id);}catch(error){fail(error.message);}
+  const sources={};const deadline=Date.now()+DEADLINE_MS;
+  for(const request of requests){
+    const url=new URL(request.url);
+    // Two owner-supplied apps use HTTP. Exceptions are exact URL literals,
+    // never a client URL or an arbitrary host, port, redirect or query.
+    const plain=["http://servers.jk5.fun/servers.json","http://unifi.thai-vpn.com/app-patch/patch-siam-3"].includes(request.url);
+    if((url.protocol!=="https:"&&!plain)||url.port||url.username||url.password||url.hash)fail("REMOTE_NETWORK_DENIED");
+    const addresses=await vettedIpv4(url.hostname);
+    let bytes;
+    for(const ip of addresses.length===1?[addresses[0],addresses[0]]:addresses){
+      const remaining=deadline-Date.now();if(remaining<=0)fail("REMOTE_PROVIDER_UNAVAILABLE");
+      try{
+        const answer=await pinnedRequest(url.href,ip,request.agent,Math.min(CONNECT_MS,remaining),request.headers,
+          {method:request.method,body:request.body});
+        if(answer.redirect!==undefined)fail("REMOTE_NETWORK_DENIED");
+        bytes=answer.data;break;
+      }catch(error){
+        if(error instanceof VpnProviderError){if(!error.retryable)throw error;}
+        else if(!RETRY_CODES.has(error?.code))fail("REMOTE_PROVIDER_UNAVAILABLE");
+      }
+    }
+    if(!bytes)fail("REMOTE_PROVIDER_UNAVAILABLE");
+    if(!Buffer.isBuffer(bytes)||!bytes.length||bytes.length>MAX_BYTES||
+       bytes.subarray(0,256).toString("utf8").trimStart().startsWith("<"))fail("REMOTE_RESPONSE_INVALID");
+    sources[request.name]=bytes;
+  }
+  try{return packSuppliedCatalog(id,sources);}catch(error){fail(error.message);}
 }

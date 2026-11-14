@@ -64,7 +64,7 @@ test("FNF original PNG and public directory preserve metadata-only availability"
  assert.ok(doc.apps.length>=67);assert.equal(app.name,"FNF TUNNEL BD");assert.equal(app.decodeEnabled,true);
  assert.equal(app.iconSha256,"e246d35183770494e3ed2f8e17f62a47d2f64fed3b6d3ce0491684575bf18823");
  assert.equal(iconFor(app.id).bytes.length,52532);assert.equal(png.length,52532);
- assert(!JSON.stringify(app).includes("https://"));assert.equal(doc.formats.length,256);
+ assert(!JSON.stringify(app).includes("https://"));assert.equal(doc.formats.length,270);
  assert.equal(catalog({availability:{"fnf-tunnel-bd":false}}).apps.find(x=>x.id===app.id).decodeEnabled,false);
  assert.equal(catalog({methodStates:{"fnf-tunnel-bd":{maintenance:true}}}).apps.find(x=>x.id===app.id).decodeEnabled,false);
 });

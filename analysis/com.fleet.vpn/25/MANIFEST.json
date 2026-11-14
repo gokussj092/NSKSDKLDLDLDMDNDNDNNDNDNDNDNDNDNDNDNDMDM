@@ -122,11 +122,14 @@
     "analysis/com.fleet.vpn/25/generated/recipe.json"
   ],
   "code_paths": [
-    "cloud/web/lib/server-vpn-provider.mjs",
-    "cloud/web/lib/server-vpn-catalog.mjs",
     "cloud/web/lib/c12-provider-controls.mjs",
+    "cloud/web/lib/server-vpn-catalog.mjs",
+    "cloud/web/lib/server-vpn-gateway.mjs",
+    "cloud/web/lib/server-vpn-provider.mjs",
+    "cloud/web/lib/supplied-integrations.mjs",
     "cloud/workers/python/catalog_vpn_bridge.py",
     "cloud/workers/python/engine.py",
+    "cloud/workers/python/supplied_bridge.py",
     "decoders/Python/apps/Litron_VPN/codec.py",
     "decoders/Python/apps/Litron_VPN/server_catalog_decoder.py"
   ],
@@ -148,5 +151,10 @@
     "package": "com.litron.udp",
     "status": "INTEGRATED_SEPARATELY",
     "evidence_directory": "analysis/com.litron.udp/11"
+  },
+  "integration_review": {
+    "scope": "Connection only; existing algorithm evidence/status preserved.",
+    "record": "analysis/platform/supplied-integrations/2026-11-14/MANIFEST.json",
+    "status": "PARTIAL"
   }
 }

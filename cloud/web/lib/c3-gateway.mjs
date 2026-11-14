@@ -12,6 +12,8 @@ import { maintenanceEnabled, serviceMaintenanceEnabled, recordWorkerResult } fro
 import {admissionPolicy} from "./c11-play-admission.mjs";
 import {publicFormats} from "./file-format-catalog.mjs";
 import {allowsHcPartial} from "./hc-partial-result.mjs";
+import {SUPPLIED_CATALOG_ITEMS} from "./supplied-integrations.mjs";
+const suppliedCatalogIds=new Set(SUPPLIED_CATALOG_ITEMS.map(x=>x.id));
 
 import {negotiatesExport,negotiatesHatExport,negotiatesDynamicExport,exportPolicy,exportAllowed,EXPORT_PROFILE} from "./compatible-export-policy.mjs";
 
@@ -213,10 +215,24 @@ export async function fetchWorker(kind,payload,cfg,{fetchImpl=fetch}={}) {
       decoded.structuredJson.sources.some(x=>x?.status==="error") &&
       Array.isArray(decoded.warnings) && decoded.warnings.includes("PARTIAL_SOURCE_FAILURE");
     const partialHc=allowsHcPartial(kind,payload,decoded);
-    if(decoded.status!=="success" || (decoded.isPartial!==false && !partialMkk && !partialHc) ||
+    const partialDocnet=kind==="server-vpn"&&["docnet-vpn","mm-tunnel"].includes(payload?.providerId)&&
+      decoded.providerId===payload.providerId&&decoded.kind==="vpn_catalog"&&decoded.isPartial===true&&
+      (payload.providerId==="docnet-vpn"?Array.isArray(decoded.structuredJson?.configs):
+        decoded.structuredJson?.decryptionStatus?.complete===false&&
+        Number.isSafeInteger(decoded.structuredJson?.decryptionStatus?.unresolvedFields)&&
+        decoded.structuredJson.decryptionStatus.unresolvedFields>0)&&Array.isArray(decoded.warnings)&&
+      decoded.warnings.length===1&&decoded.warnings[0]==="ENCRYPTED_FIELDS_PENDING"&&
+      isDeepStrictEqual(JSON.parse(decoded.rawText),decoded.structuredJson);
+    if(decoded.status!=="success" || (decoded.isPartial!==false && !partialMkk && !partialHc && !partialDocnet) ||
        typeof decoded.rawText!=="string" || !decoded.rawText.length ||
        Buffer.byteLength(decoded.rawText,"utf8")>(isMkk?32*1024*1024:4*1024*1024))
       throw Error("INVALID_WORKER_RESULT");
+    if(kind==="server-vpn"&&suppliedCatalogIds.has(payload?.providerId)){
+      let parsed;try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}
+      if(decoded.kind!=="vpn_catalog"||decoded.providerId!==payload.providerId||
+         (!isRecord(parsed)&&!Array.isArray(parsed))||!Object.keys(parsed).length||
+         !isDeepStrictEqual(parsed,decoded.structuredJson))throw Error("INVALID_WORKER_RESULT");
+    }
     if(kind==="server-vpn" && ["thailand-vpn","kham-vpn"].includes(payload?.providerId)){
       let parsed;
       try{parsed=JSON.parse(decoded.rawText);}catch{throw Error("INVALID_WORKER_RESULT");}

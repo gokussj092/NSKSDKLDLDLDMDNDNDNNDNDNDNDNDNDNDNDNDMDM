@@ -64,7 +64,7 @@ test("ALSAHER original PNG and public directory preserve metadata-only availabil
  assert.ok(doc.apps.length>=67);assert.equal(app.name,"ALSAHER VIP");assert.equal(app.decodeEnabled,true);
  assert.equal(app.iconSha256,"54f97101174f2fa5d53947ede0e628ea19caa87f7fd664652ff63f69aa325333");
  assert.equal(iconFor(app.id).bytes.length,205869);assert.equal(png.length,205869);
- assert(!JSON.stringify(app).includes("https://"));assert.equal(doc.formats.length,256);
+ assert(!JSON.stringify(app).includes("https://"));assert.equal(doc.formats.length,270);
  assert.equal(catalog({availability:{"alsaher-vip":false}}).apps.find(x=>x.id===app.id).decodeEnabled,false);
  assert.equal(catalog({methodStates:{"alsaher-vip":{maintenance:true}}}).apps.find(x=>x.id===app.id).decodeEnabled,false);
 });

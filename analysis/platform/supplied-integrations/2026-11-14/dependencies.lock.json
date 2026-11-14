@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "python": "3.12",
+  "production_requirements": "requirements.txt",
+  "node_lock": "cloud/web/package-lock.json",
+  "direct_crypto": {
+    "pycryptodome": "3.23.0",
+    "argon2-cffi": "25.1.0",
+    "msgpack": "1.2.4"
+  },
+  "new_production_dependencies": []
+}

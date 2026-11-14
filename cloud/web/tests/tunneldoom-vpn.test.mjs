@@ -139,7 +139,7 @@ test("TunnelDOOM reuses SKS without claiming generic JSON or invented text prefi
   assert(file.name.includes("TunnelDOOM VPN 4.2.4"));
   assert.equal(file.cloudSupported,true);
   assert.deepEqual(file.credentialFields,[]);
-  assert.equal(doc.formatCount,256);
+  assert.equal(doc.formatCount,270);
   assert(!doc.formats.some(x=>["doom","tdoom","json"].includes(x.suffix)));
   assert(!doc.textFormats.some(x=>/doom/i.test(x.prefix)));
   assert.equal(activeCatalogVersion({CLOUD_SERVER_VPN_CATALOG_VERSION:"54"}),CATALOG_VERSION);

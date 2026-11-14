@@ -31,7 +31,7 @@ test("VIP Snipher original icon and download follow secret configuration and ava
   assert.equal(card.iconSha256,"6a2ecaacc5fdf2a20f23cf31a58838854d7573dfb58c738274e150c31978e1e6");
   assert.equal(iconFor(card.id).bytes.length,25374);
   assert(!JSON.stringify(card).includes("https://"));
-  assert.equal(doc.formats.length,256);
+  assert.equal(doc.formats.length,270);
   assert(!doc.formats.some(x=>x.suffix==="js"||x.suffix==="rj"));
   assert.equal(catalog({availability:{"vip-snipher-pro":false}}).apps.find(x=>x.id===card.id).decodeEnabled,false);
   delete process.env.SPDECODE_VIP_SNIPHER_AUTHORIZATION;

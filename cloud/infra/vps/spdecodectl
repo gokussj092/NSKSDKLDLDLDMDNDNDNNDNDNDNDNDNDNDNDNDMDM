@@ -634,6 +634,12 @@ case "${1:-help}" in
        compose --profile commerce ps shop-db;;
      *) die "spdecode commerce init|migrate|support-key|status";;
    esac;;
+ catalog-auth)
+   [[ $# -eq 3 && "$2" == dtunnel ]] || die "spdecode catalog-auth dtunnel /absolute/path/credentials.json"
+   [[ "$3" == /* && -f "$3" ]] || die "Provide an existing private credentials JSON by absolute path"
+   python3 "$REPO/cloud/infra/vps/catalog-auth.py" "$3" "$ENVFILE"
+   compose up -d --no-deps --force-recreate web
+   health || die "DTunnel configuration saved but web health check failed";;
  update)
    [[ $# -ge 2 ]] || die "spdecode update api|web|panel|worker|all [ref]"
    if [[ "$2" == app ]]; then

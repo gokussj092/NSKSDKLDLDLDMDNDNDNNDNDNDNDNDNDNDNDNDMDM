@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "package_name": "vpn.marvs.ssh",
+  "version_code": 47,
+  "app_name": "Marvs SSH / T20-VPN",
+  "version_name": "v1.10.5.3",
+  "status": "PARTIAL",
+  "source_category": "owner-supplied repository code",
+  "authorization_note": "Owner explicitly requested connection of all supplied methods on ci/unity-ads-online-qa; no service credentials or attestation fabrication authorized.",
+  "targets": [
+    {
+      "kind": "catalog",
+      "status": "CONNECTED"
+    },
+    {
+      "kind": "files",
+      "extensions": [
+        "t20"
+      ]
+    },
+    {
+      "kind": "text",
+      "prefixes": []
+    }
+  ],
+  "inputs": [
+    {
+      "path": "decoders/Python/apps/Marvs_SSH/Marvs_SSH.py",
+      "sha256": "df566d3b541a3a56884c99463a64b5f15f5a330476c1ba4af17543ebbe5e4563"
+    }
+  ],
+  "tooling": [
+    {
+      "path": "analysis/platform/supplied-integrations/2026-11-14/tools/verify_provider.py",
+      "command": "python analysis/platform/supplied-integrations/2026-11-14/tools/verify_provider.py marvs-ssh"
+    }
+  ],
+  "dependencies": [
+    {
+      "lockfile": "requirements.txt",
+      "purpose": "Existing pinned server codec dependencies"
+    },
+    {
+      "lockfile": "cloud/web/package-lock.json",
+      "purpose": "Existing pinned Node broker/build dependencies"
+    }
+  ],
+  "code_paths": [
+    "cloud/web/lib/server-vpn-catalog.mjs",
+    "cloud/web/lib/server-vpn-gateway.mjs",
+    "cloud/web/lib/server-vpn-provider.mjs",
+    "cloud/web/lib/supplied-integrations.mjs",
+    "cloud/workers/python/catalog_vpn_bridge.py",
+    "cloud/workers/python/supplied_bridge.py",
+    "decoders/Python/apps/Marvs_SSH/Marvs_SSH.py"
+  ],
+  "limitations": [
+    "See supplied README and central per-app integration matrix. No new live service validation asserted."
+  ],
+  "connection_authentication": {
+    "status": "UNCONFIRMED",
+    "scope": "No new VPN connection-authentication research; existing methods only."
+  },
+  "integration_review": {
+    "scope": "Connection only; existing algorithm evidence/status preserved.",
+    "record": "analysis/platform/supplied-integrations/2026-11-14/MANIFEST.json",
+    "status": "PARTIAL"
+  }
+}

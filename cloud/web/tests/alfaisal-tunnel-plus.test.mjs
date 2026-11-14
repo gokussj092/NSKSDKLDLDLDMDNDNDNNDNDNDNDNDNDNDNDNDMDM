@@ -57,7 +57,7 @@ test("ALFAISAL requires all backend secrets before DNS and public card enablemen
 test("ALFAISAL original icon, 55 cards and historical 254 formats remain available",t=>{
  environment(t);
  const doc=catalog({availability:{[ID]:true}}),card=doc.apps.find(x=>x.id===ID);
- assert.ok(CATALOG_VERSION>=73);assert.ok(doc.apps.length>=67);assert.equal(doc.formats.length,256);
+ assert.ok(CATALOG_VERSION>=73);assert.ok(doc.apps.length>=67);assert.equal(doc.formats.length,270);
  assert.equal(card.name,"ALFAISAL Tunnel+");assert.equal(card.decodeEnabled,true);
  assert.equal(card.iconSha256,"17c87ccc847a7babf655170044967e9120609793381800c664b73a17ad1ebaff");
  assert.equal(iconFor(ID).bytes.length,24520);assert(PUBLIC_PROVIDER_IDS.includes(ID));

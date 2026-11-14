@@ -64,7 +64,7 @@ test("NAMO original PNG and public directory preserve metadata-only availability
  assert.ok(doc.apps.length>=67);assert.equal(app.name,"NAMO VPN");assert.equal(app.decodeEnabled,true);
  assert.equal(app.iconSha256,"1b40b83a4ace052dfee16f56369143fc71b79c2dd34454ca4eb541d59f312f7e");
  assert.equal(iconFor(app.id).bytes.length,25421);assert.equal(png.length,25421);
- assert(!JSON.stringify(app).includes("https://"));assert.equal(doc.formats.length,256);
+ assert(!JSON.stringify(app).includes("https://"));assert.equal(doc.formats.length,270);
  assert.equal(catalog({availability:{"namo-vpn":false}}).apps.find(x=>x.id===app.id).decodeEnabled,false);
  assert.equal(catalog({methodStates:{"namo-vpn":{maintenance:true}}}).apps.find(x=>x.id===app.id).decodeEnabled,false);
 });

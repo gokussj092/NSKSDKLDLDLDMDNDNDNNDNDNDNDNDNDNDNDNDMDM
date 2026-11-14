@@ -22,6 +22,8 @@ COPY docs/cloud/C0_FORMAT_MATRIX.csv ./docs/cloud/C0_FORMAT_MATRIX.csv
 COPY cloud/workers/python/engine.py cloud/workers/python/server.py cloud/workers/python/text_bridge.py cloud/workers/python/hc_bridge.py cloud/workers/python/catalog_bridge.py cloud/workers/python/catalog_vpn_bridge.py cloud/workers/python/hat_complete.js ./cloud/workers/python/
 COPY cloud/workers/python/mkk_bundle.py cloud/workers/python/ultra_custom_bridge.py cloud/workers/python/npvs_bridge.py ./cloud/workers/python/
 COPY cloud/workers/python/dark_bridge.py cloud/workers/python/v2box_bridge.py cloud/workers/python/hex_custom_bridge.py cloud/workers/python/vc_tgv_bridge.py ./cloud/workers/python/
+COPY cloud/workers/python/supplied_bridge.py ./cloud/workers/python/
+COPY cloud/web/content/supplied-integrations.json ./cloud/web/content/supplied-integrations.json
 COPY cloud/workers/python/exports/ ./cloud/workers/python/exports/
 # Same verified file-format catalog shared by web and worker (no private keys).
 COPY cloud/web/content/file-formats.json ./cloud/web/content/file-formats.json

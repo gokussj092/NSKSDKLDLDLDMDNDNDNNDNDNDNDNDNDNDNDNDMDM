@@ -45,7 +45,7 @@ test("HA launcher PNG, public format and card follow availability",()=>{
   assert.equal(iconFor("ha-tunnel-plus").bytes.length,20416);
   assert(PUBLIC_PROVIDER_IDS.includes("ha-tunnel-plus"));
   assert.equal(catalog({availability:{"ha-tunnel-plus":false}}).apps.find(x=>x.id==="ha-tunnel-plus").decodeEnabled,false);
-  assert.equal(doc.formats.length,256);
+  assert.equal(doc.formats.length,270);
   assert(doc.formats.some(x=>x.suffix==="hat"));
   assert(!JSON.stringify(card).includes("https://"));
 });

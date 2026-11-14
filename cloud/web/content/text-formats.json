@@ -282,6 +282,114 @@
       "name": "V2Box",
       "suffix": "v2box",
       "kind": "text"
+    },
+    {
+      "prefix": "1ftunnel://locked-v2/",
+      "name": "1FTunnel",
+      "suffix": "1ftnl",
+      "kind": "text"
+    },
+    {
+      "prefix": "1ftunnel://locked/",
+      "name": "1FTunnel",
+      "suffix": "1ftnl",
+      "kind": "text"
+    },
+    {
+      "prefix": "1ftunnel://1ftlb/",
+      "name": "1FTunnel",
+      "suffix": "1ftnl",
+      "kind": "text"
+    },
+    {
+      "prefix": "binkevoltvpn://",
+      "name": "Binke Volt",
+      "suffix": "bvv",
+      "kind": "text"
+    },
+    {
+      "prefix": "hamaratnl://",
+      "name": "HAMARA TUNNEL LITE",
+      "suffix": "hamaratnl",
+      "kind": "text"
+    },
+    {
+      "prefix": "letsvpngo://",
+      "name": "Lets VPN Go",
+      "suffix": "lets-vpn-go",
+      "kind": "text"
+    },
+    {
+      "prefix": "osptunnel://",
+      "name": "OSP Tunnel",
+      "suffix": "osp",
+      "kind": "text"
+    },
+    {
+      "prefix": "snitunnel://",
+      "name": "SNI Tunnel",
+      "suffix": "sni-tunnel",
+      "kind": "text"
+    },
+    {
+      "prefix": "zamvipnet://",
+      "name": "Zam VIP NET / Free VIP Net",
+      "suffix": "zvn",
+      "kind": "text"
+    },
+    {
+      "prefix": "1ftunnel://",
+      "name": "1FTunnel",
+      "suffix": "1ftnl",
+      "kind": "text"
+    },
+    {
+      "prefix": "snipher://",
+      "name": "VertexSnipher",
+      "suffix": "vertexsnipher",
+      "kind": "text"
+    },
+    {
+      "prefix": "v2ray://",
+      "name": "SNI Tunnel",
+      "suffix": "sni-tunnel",
+      "kind": "text"
+    },
+    {
+      "prefix": "xjgcp://",
+      "name": "XJ VPN",
+      "suffix": "xj",
+      "kind": "text"
+    },
+    {
+      "prefix": "xjdev://",
+      "name": "XJ VPN",
+      "suffix": "xj",
+      "kind": "text"
+    },
+    {
+      "prefix": "xjvpn://",
+      "name": "XJ VPN",
+      "suffix": "xj",
+      "kind": "text"
+    },
+    {
+      "prefix": "osp://",
+      "name": "OSP Tunnel",
+      "suffix": "osp",
+      "kind": "text"
+    },
+    {
+      "prefix": "1ftlb.",
+      "name": "1FTunnel",
+      "suffix": "1ftnl",
+      "kind": "text"
+    },
+    {
+      "prefix": "xj://",
+      "name": "XJ VPN",
+      "suffix": "xj",
+      "kind": "text"
     }
   ]
 }

@@ -45,7 +45,7 @@ test("ZiG launcher PNG, historical formats and card follow availability",()=>{
   assert.equal(iconFor("zig-tunnel").bytes.length,186687);
   assert(PUBLIC_PROVIDER_IDS.includes("zig-tunnel"));
   assert.equal(catalog({availability:{"zig-tunnel":false}}).apps.find(x=>x.id==="zig-tunnel").decodeEnabled,false);
-  assert.equal(doc.formats.length,256);
+  assert.equal(doc.formats.length,270);
   assert(doc.formats.some(x=>x.suffix==="enaa"));
   assert(!JSON.stringify(card).includes("https://"));
 });

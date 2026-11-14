@@ -5,6 +5,7 @@ import importlib
 import json
 import sys
 from pathlib import Path
+from cloud.workers.python.supplied_bridge import offline
 
 PROVIDERS = {
     "thailand-vpn": "decoders.Python.apps.Thailand_VPN.server_catalog_decoder",
@@ -86,6 +87,9 @@ PROVIDERS = {
 }
 
 def decode(provider_id: str, payload: bytes) -> str:
+    from cloud.workers.python.supplied_bridge import BY_ID, catalog as decode_supplied
+    if provider_id in BY_ID and provider_id not in {"catnet-vpn", "litron-vpn", "hx-tunnel"}:
+        return json.dumps(decode_supplied(provider_id, payload), ensure_ascii=False, indent=2)
     module_name = PROVIDERS.get(provider_id)
     if module_name is None:
         raise ValueError("Unsupported provider")
@@ -103,6 +107,7 @@ def decode(provider_id: str, payload: bytes) -> str:
         raise ValueError("Invalid catalog result")
     return result
 
+@offline()
 def main() -> int:
     if len(sys.argv)!=3:
         return 2

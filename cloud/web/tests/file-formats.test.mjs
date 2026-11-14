@@ -45,7 +45,7 @@ test("extension precedence, native/cloud overlap and credential metadata",()=>{
   assert.equal(candidates("backup.sksrv.png")[0].suffix,"sksrv.png");
   assert.equal(formats.find(x=>x.suffix==="npvs").credentialFields.join(","),"password,publicKey,recipientKey");
   assert.equal(formats.find(x=>x.suffix==="hc").credentialFields.join(","),"password,hwid");
-  assert.equal(formats.find(x=>x.suffix==="mmt").name,"MM Tunnel v1.10.30.2");
+  assert.equal(formats.find(x=>x.suffix==="mmt").name,"MM Tunnel v1.11.06.1");
   assert.deepEqual(formats.find(x=>x.suffix==="mmt").credentialFields,[]);
   assert.equal(formats.find(x=>x.suffix==="1ftnl").offlineSupported,false);
   assert.equal(formats.find(x=>x.suffix==="1ftnl").cloudSupported,true);
@@ -130,11 +130,11 @@ test("Cloud catalog v38 refreshes AWG and password-protected UA without an APK u
   assert.deepEqual(body.formats.find(f=>f.suffix==="ua"),ua);
 });
 
-test("Hex Tunnel publishes .hexcm as a Cloud file without ID credentials and refreshes v60",async()=>{
+test("Hex Tunnel and supplied HXS3 share .hexcm with an optional password and refresh v60",async()=>{
   const format=publicFormats().find(f=>f.suffix==="hexcm");
   assert.deepEqual(format,{
     suffix:"hexcm",name:"Hex Tunnel / HexVPN 1.7.3-Rev",kind:"file",
-    offlineSupported:false,cloudSupported:true,credentialFields:[],
+    offlineSupported:false,cloudSupported:true,credentialFields:["password"],
   });
   const response=await endpoint(request(60));
   assert.equal(response.status,200);

@@ -4,8 +4,9 @@ import {readCatalogIcon} from "./catalog-icons.mjs";
 import {publicFormats,FORMAT_DETECTION} from "./file-format-catalog.mjs";
 import {publicTextFormats,publicOnlineReferenceFormats} from "./text-format-catalog.mjs";
 import {providerEnabled} from "./server-vpn-provider.mjs";
+import {SUPPLIED_CATALOG_ITEMS,suppliedProviderConfigured} from "./supplied-integrations.mjs";
 
-export const CATALOG_VERSION = 81; // All icon transports normalize vendor rasters to PNG.
+export const CATALOG_VERSION = 82; // Supplied app catalogs, file routes and text handlers.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -22,7 +23,7 @@ export function activeCatalogVersion(env=process.env) {
   return Math.max(number,CATALOG_VERSION);
 }
 
-const ITEMS = Object.freeze([
+const BASE_ITEMS = [
   // Original updater currently returns HTML "Site Unavailable", not a catalog.
   {id:"ar-pro-vpn",name:"AR PRO VPN",icon:"ar-pro-vpn.png",remote:null},
   {id:"thailand-vpn",name:"Thailand VPN",icon:"thailand-vpn.png",remote:"thailand-vpn"},
@@ -108,11 +109,15 @@ const ITEMS = Object.freeze([
   {id:"robust-tunnel", name:"Robust Tunnel VPN", icon:"robust-tunnel.png", remote:"robust-tunnel"},
   {id:"trv-tunnel", name:"TRV TUNNEL", icon:"trv-tunnel.png", remote:"trv-tunnel"},
   {id:"4u-tunnel-lite", name:"4U TUNNEL LITE", icon:"4u-tunnel-lite.png", remote:"4u-tunnel-lite"},
-  // DTunnel Mod can decrypt offline, but remote catalogs require a private
-  // account identifier. Show the owner-confirmed icon; do not enable download.
+  // The supplied inventory connects this card to its authenticated updater.
   {id:"dtunnel-mod", name:"DTunnel Mod", icon:"dtunnel-mod.png", remote:null},
   // Keep Royal's original icon visible while its live catalog remains unvalidated.
   {id:"royal-tunnel", name:"Royal Tunnel VPN", icon:"royal-tunnel.png", remote:null},
+];
+const suppliedById=new Map(SUPPLIED_CATALOG_ITEMS.map(item=>[item.id,item]));
+const ITEMS=Object.freeze([
+  ...BASE_ITEMS.map(item=>suppliedById.has(item.id)?{...item,remote:item.id}:item),
+  ...SUPPLIED_CATALOG_ITEMS.filter(item=>!BASE_ITEMS.some(old=>old.id===item.id)),
 ]);
 
 /** Public, ordered method identifiers used by the operator method-status controls. */
@@ -152,7 +157,8 @@ export function catalog({availability=null,methodStates=null,version=activeCatal
         ["halcon-r-net","vip-snipher-pro","alfaisal-tunnel-plus"].includes(x.remote) ?
         providerEnabled(x.remote) && (availability?.[x.id] ?? true) :
         x.remote==="nur" ? (availability?.["nur-tunnel"] ?? process.env.CLOUD_NUR_FETCH_ENABLED==="true") :
-        Boolean(x.remote) && (availability?.[x.id] ?? process.env.CLOUD_SERVER_VPN_ENABLED==="true"),
+        Boolean(x.remote) && (x.id!=="dtunnel-mod"||suppliedProviderConfigured(x.id)) &&
+        (availability?.[x.id] ?? process.env.CLOUD_SERVER_VPN_ENABLED==="true"),
     })),
   };
 }

@@ -26,10 +26,12 @@ class C8WorkerIntegrationTests(unittest.TestCase):
         base=load_file_engines()
         extended=load_runtime_file_engines()
         self.assertEqual(len(base),240)
-        self.assertEqual(len(extended),267)
+        self.assertEqual(len(extended),270)
         from engine import _C8_FILE_ENGINES
         overlays=set(_C8_FILE_ENGINES)
-        self.assertEqual(len(overlays),48)
+        self.assertEqual(len(overlays),53)
+        from cloud.workers.python.supplied_bridge import FILE_ROUTES
+        overlays.update(FILE_ROUTES)
         self.assertIn('hexcm',overlays)
         self.assertEqual({k:v for k,v in extended.items() if k not in overlays},
                          {k:v for k,v in base.items() if k not in overlays})

@@ -43,10 +43,10 @@ export async function decodeServerVpn(request,opts={}){
       let errorCode="",outcome=response.ok?"success":"failed";
       const result=await response.clone().json();
       if(!response.ok)errorCode=result.error?.code||"";
-      else if(providerId==="mkk-hyper" && result.isPartial===true){
+      else if(result.isPartial===true){
         // Decoding succeeded but some vendor sources failed; this is not a
         // completely successful catalog. Preserve the warning in diagnostics.
-        outcome="warning";errorCode="PARTIAL_SOURCE_FAILURE";
+        outcome="warning";errorCode=result.warnings?.[0]||"PARTIAL_SOURCE_FAILURE";
       }
       await recordWorkerResult(redis,outcome,{
         kind:"server-vpn",format:providerId,bytes:downloadedBytes,errorCode,

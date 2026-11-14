@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "package_name": "com.xui_tunnel",
+  "version_code": 6,
+  "app_name": "XUI Tunnel VPN",
+  "version_name": "6.0",
+  "status": "PARTIAL",
+  "source_category": "owner-supplied repository code",
+  "authorization_note": "Owner explicitly requested connection of all supplied methods on ci/unity-ads-online-qa; no service credentials or attestation fabrication authorized.",
+  "targets": [
+    {
+      "kind": "catalog",
+      "status": "CONNECTED"
+    },
+    {
+      "kind": "files",
+      "extensions": [
+        "xui"
+      ]
+    },
+    {
+      "kind": "text",
+      "prefixes": []
+    }
+  ],
+  "inputs": [
+    {
+      "path": "decoders/Python/apps/XUI_Tunnel/XUI_Tunnel.py",
+      "sha256": "722e79e9226fad1ad5e2d5db0ea43551eeb078f2fdc9f944c0e322dae28933f8"
+    }
+  ],
+  "tooling": [
+    {
+      "path": "analysis/platform/supplied-integrations/2026-11-14/tools/verify_provider.py",
+      "command": "python analysis/platform/supplied-integrations/2026-11-14/tools/verify_provider.py xui-tunnel"
+    }
+  ],
+  "dependencies": [
+    {
+      "lockfile": "requirements.txt",
+      "purpose": "Existing pinned server codec dependencies"
+    },
+    {
+      "lockfile": "cloud/web/package-lock.json",
+      "purpose": "Existing pinned Node broker/build dependencies"
+    }
+  ],
+  "code_paths": [
+    "cloud/web/lib/server-vpn-catalog.mjs",
+    "cloud/web/lib/server-vpn-gateway.mjs",
+    "cloud/web/lib/server-vpn-provider.mjs",
+    "cloud/web/lib/supplied-integrations.mjs",
+    "cloud/workers/python/catalog_vpn_bridge.py",
+    "cloud/workers/python/supplied_bridge.py",
+    "decoders/Python/apps/XUI_Tunnel/XUI_Tunnel.py"
+  ],
+  "limitations": [
+    "See supplied README and central per-app integration matrix. No new live service validation asserted."
+  ],
+  "connection_authentication": {
+    "status": "UNCONFIRMED",
+    "scope": "No new VPN connection-authentication research; existing methods only."
+  },
+  "integration_review": {
+    "scope": "Connection only; existing algorithm evidence/status preserved.",
+    "record": "analysis/platform/supplied-integrations/2026-11-14/MANIFEST.json",
+    "status": "PARTIAL"
+  }
+}

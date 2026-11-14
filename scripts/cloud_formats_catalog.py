@@ -29,6 +29,7 @@ CREDENTIAL_FIELDS = {
     "v2box": ["password"],
     # HXS3 .hexcm files are password-locked; old Hex Tunnel files need none.
     "hexcm": ["password"],
+    "sn": ["password", "hwid"],
 }
 
 

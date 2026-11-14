@@ -136,14 +136,17 @@
     "analysis/net.catnet.vpn/29/generated/build-diff.json"
   ],
   "code_paths": [
-    "cloud/web/lib/server-vpn-provider.mjs",
-    "cloud/web/lib/server-vpn-catalog.mjs",
     "cloud/web/lib/c12-provider-controls.mjs",
+    "cloud/web/lib/catnet-protocol.mjs",
+    "cloud/web/lib/server-vpn-catalog.mjs",
+    "cloud/web/lib/server-vpn-gateway.mjs",
+    "cloud/web/lib/server-vpn-provider.mjs",
+    "cloud/web/lib/supplied-integrations.mjs",
     "cloud/workers/python/catalog_vpn_bridge.py",
     "cloud/workers/python/engine.py",
-    "cloud/web/lib/catnet-protocol.mjs",
-    "decoders/Python/apps/CATNET_VPN/server_catalog_decoder.py",
-    "decoders/Python/apps/CATNET_VPN/codec.py"
+    "cloud/workers/python/supplied_bridge.py",
+    "decoders/Python/apps/CATNET_VPN/codec.py",
+    "decoders/Python/apps/CATNET_VPN/server_catalog_decoder.py"
   ],
   "status": "PARTIAL",
   "targets": [
@@ -153,5 +156,10 @@
       "scope": "Play build29 source trace and version headers verified; current preflight has no valid provider response"
     }
   ],
-  "play_update_date_reported_by_owner": "2026-11-05"
+  "play_update_date_reported_by_owner": "2026-11-05",
+  "integration_review": {
+    "scope": "Connection only; existing algorithm evidence/status preserved.",
+    "record": "analysis/platform/supplied-integrations/2026-11-14/MANIFEST.json",
+    "status": "PARTIAL"
+  }
 }

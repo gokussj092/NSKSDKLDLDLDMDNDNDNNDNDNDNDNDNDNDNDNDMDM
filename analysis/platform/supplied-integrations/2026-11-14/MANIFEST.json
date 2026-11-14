@@ -1,0 +1,886 @@
+{
+  "schema_version": 1,
+  "status": "PARTIAL",
+  "scope": "Connect supplied unchanged codecs; not a certification of all vendor methods or production deployment.",
+  "source_category": "owner-supplied repository batches",
+  "source_commit": "361e73c",
+  "apps": [
+    {
+      "id": "24clan-vpn-lite",
+      "package_name": "net.tcodes.vpn",
+      "version_code": 71,
+      "catalog_module": "decoders/Python/apps/24clan_VPN_Lite/24clan_VPN_Lite.py",
+      "catalog_module_sha256": "a4379455817c161fb2f39def33d409b8a8d74e02655ce79b811282cfc0260035",
+      "file_module": null,
+      "source_readme": "decoders/Python/apps/24clan_VPN_Lite/README.md",
+      "integration_status": "Ruta conectada; sin prueba remota nueva en esta entrega.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "apna-tunnel-lite",
+      "package_name": "com.apnatunnel.lite",
+      "version_code": 51,
+      "catalog_module": "decoders/Python/apps/APNA_Tunnel_Lite/APNA_Tunnel_Lite.py",
+      "catalog_module_sha256": "7bd51cd33a14705623635a168ffb3fb2103bf52ad20fb21257e9bb6f7b727b77",
+      "file_module": null,
+      "source_readme": "decoders/Python/apps/APNA_Tunnel_Lite/README.md",
+      "integration_status": "Ruta conectada; sin prueba remota nueva en esta entrega.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "ar-pro-vpn",
+      "package_name": "noob.arpro.vpn",
+      "version_code": 1,
+      "catalog_module": "decoders/Python/apps/AR_PRO_VPN/AR_PRO_VPN.py",
+      "catalog_module_sha256": "9462e36341466090621df1219c9bdac6980e3f24e5161225534f7b9377f6e10a",
+      "file_module": "decoders/Python/apps/AR_PRO_VPN/AR_PRO_VPN_archivos.py",
+      "source_readme": "decoders/Python/apps/AR_PRO_VPN/README.md",
+      "integration_status": "Ruta conectada; sin prueba remota nueva en esta entrega.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "at-net-vpn",
+      "package_name": "com.technore.atnetvpn",
+      "version_code": 103,
+      "catalog_module": "decoders/Python/apps/AT_NET_VPN/AT_NET_VPN.py",
+      "catalog_module_sha256": "b024a1c174b6fdb5a86974da9f86ae115340ed507430bcbfa504a27236d7eed4",
+      "file_module": "decoders/Python/apps/AT_NET_VPN/AT_NET_VPN_archivos.py",
+      "source_readme": "decoders/Python/apps/AT_NET_VPN/README.md",
+      "integration_status": "Ruta conectada y muestra local descifrada.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "binke-volt",
+      "package_name": "xyz.binkevoltvpn.org",
+      "version_code": 11,
+      "catalog_module": "decoders/Python/apps/Binke_Volt/Binke_Volt.py",
+      "catalog_module_sha256": "99ed40b8eb939e053a3fd777442c1f423fd617cb95d872ea79be32926e4e920d",
+      "file_module": "decoders/Python/apps/Binke_Volt/Binke_Volt_archivos.py",
+      "source_readme": "decoders/Python/apps/Binke_Volt/README.md",
+      "integration_status": "Ruta conectada y muestra local descifrada.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "catnet-vpn",
+      "package_name": "net.catnet.vpn",
+      "version_code": 29,
+      "catalog_module": "decoders/Python/apps/CATNET_VPN/server_catalog_decoder.py",
+      "catalog_module_sha256": "87ef9d76133e95db9e855a598759599400b38816be3e5a910aa32288e0973e37",
+      "file_module": null,
+      "source_readme": "decoders/Python/apps/CATNET_VPN/README.md",
+      "integration_status": "Ruta conectada; sin prueba remota nueva en esta entrega.",
+      "network_sources": 0,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "dtunnel-mod",
+      "package_name": "com.dtunnel.v2ray.pro",
+      "version_code": 9,
+      "catalog_module": "decoders/Python/apps/DTunnel_Mod/DTunnel.py",
+      "catalog_module_sha256": "af929b15cf196e8b1e38098f11b931462000d4b04886edd738148d4cb47d5806",
+      "file_module": "decoders/Python/apps/DTunnel_Mod/DTunnel_archivos.py",
+      "source_readme": "decoders/Python/apps/DTunnel_Mod/README.md",
+      "integration_status": "Muestra completa de 49 perfiles OK. Descarga autenticada conectada; falta configurar user_id privado en el VPS.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "docnet-vpn",
+      "package_name": "tech.docnet.docnetvpn",
+      "version_code": 314,
+      "catalog_module": "decoders/Python/apps/DocNet_VPN/DocNet_VPN.py",
+      "catalog_module_sha256": "a0f8cf2621d5624a764851ab97b5d102c9871c903dcf5bdd4ecb07105371a983",
+      "file_module": null,
+      "source_readme": "decoders/Python/apps/DocNet_VPN/README.md",
+      "integration_status": "Listado accesible; campos config cifrados sin clave. Respuesta marcada parcial.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "edoz-tunnel",
+      "package_name": "net.androidtechvilla.edoztunnel",
+      "version_code": 28,
+      "catalog_module": "decoders/Python/apps/EDOZ_Tunnel/EDOZ_Tunnel.py",
+      "catalog_module_sha256": "b15e52a8e64c3c3f295aedbb1f38e4b984d95b01d45d67633a0dac36ac8d3dbd",
+      "file_module": null,
+      "source_readme": "decoders/Python/apps/EDOZ_Tunnel/README.md",
+      "integration_status": "Ruta conectada; sin prueba remota nueva en esta entrega.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "edoz-tunnel-pro",
+      "package_name": "net.androidtechvilla.edoztunnelpro",
+      "version_code": 15,
+      "catalog_module": "decoders/Python/apps/EDOZ_Tunnel_Pro/EDOZ_Tunnel_Pro.py",
+      "catalog_module_sha256": "0988d3806d77c9e6ec2e0bc8ebfc3f7080b7bfc96783594bded65a356e2b0124",
+      "file_module": null,
+      "source_readme": "decoders/Python/apps/EDOZ_Tunnel_Pro/README.md",
+      "integration_status": "Ruta conectada; sin prueba remota nueva en esta entrega.",
+      "network_sources": 2,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "e-san-vpn",
+      "package_name": "com.misaki.esanvpn",
+      "version_code": 74,
+      "catalog_module": "decoders/Python/apps/E_SAN_VPN/E_SAN_VPN.py",
+      "catalog_module_sha256": "d059b8ebae7a6c333dc78b72c953c364b7d542d0dfa243b1571b89c486bb334c",
+      "file_module": "decoders/Python/apps/E_SAN_VPN/E_SAN_VPN_archivos.py",
+      "source_readme": "decoders/Python/apps/E_SAN_VPN/README.md",
+      "integration_status": "Ruta conectada y muestra local descifrada.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "fat-tunnel-lite",
+      "package_name": "vpn.jx.strongudp",
+      "version_code": 12,
+      "catalog_module": "decoders/Python/apps/Fat_Tunnel_Lite/Fat_Tunnel_Lite.py",
+      "catalog_module_sha256": "7e43070e67ec490d71baa38020df6349a864da8823bce9830b42a1804efc9f7b",
+      "file_module": "decoders/Python/apps/Fat_Tunnel_Lite/Fat_Tunnel_Lite_archivos.py",
+      "source_readme": "decoders/Python/apps/Fat_Tunnel_Lite/README.md",
+      "integration_status": "Ruta conectada; sin prueba remota nueva en esta entrega.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "guruz-tunnel",
+      "package_name": "com.guruz.tunnel",
+      "version_code": 186,
+      "catalog_module": "decoders/Python/apps/Guruz_Tunnel/Guruz_Tunnel.py",
+      "catalog_module_sha256": "ec3640c59938825464a92f8dc81f8f066f7d2ac22dc46dd1c0fd7356adbd3eb8",
+      "file_module": null,
+      "source_readme": "decoders/Python/apps/Guruz_Tunnel/README.md",
+      "integration_status": "Ruta conectada; sin prueba remota nueva en esta entrega.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "guruz-vpn",
+      "package_name": "guruz.vpn.tunnel",
+      "version_code": 184,
+      "catalog_module": "decoders/Python/apps/Guruz_VPN/Guruz_VPN.py",
+      "catalog_module_sha256": "62887c197cbdea697f1fd40c85a3bd4798e21f1614a2829cf763f157d3f18804",
+      "file_module": null,
+      "source_readme": "decoders/Python/apps/Guruz_VPN/README.md",
+      "integration_status": "Ruta conectada; sin prueba remota nueva en esta entrega.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "hamara-tunnel-lite",
+      "package_name": "com.hamarateam.litetunnel",
+      "version_code": 20,
+      "catalog_module": "decoders/Python/apps/HAMARA_TUNNEL_LITE/HAMARA_TUNNEL_LITE.py",
+      "catalog_module_sha256": "1cb76b9731f6787b52bc6dfbd50bd751d82c46c4208b87db91c20ad2a6b226de",
+      "file_module": "decoders/Python/apps/HAMARA_TUNNEL_LITE/HAMARA_TUNNEL_LITE_archivos.py",
+      "source_readme": "decoders/Python/apps/HAMARA_TUNNEL_LITE/README.md",
+      "integration_status": "Ruta conectada y muestra local descifrada.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "hx-tunnel",
+      "package_name": "com.hxtunnel.vpn",
+      "version_code": 14,
+      "catalog_module": "decoders/Python/apps/HX_Tunnel_VPN/HX_Tunnel_VPN.py",
+      "catalog_module_sha256": "0182b78bc2620594cfdc741b3b9ba84acfe36269ec397eda429c90f8e71b9695",
+      "file_module": "decoders/Python/apps/HX_Tunnel_VPN/HX_Tunnel_VPN_archivos.py",
+      "source_readme": "decoders/Python/apps/HX_Tunnel_VPN/README.md",
+      "integration_status": "Ruta conectada; sin prueba remota nueva en esta entrega.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "handsome-fast",
+      "package_name": "com.handsomefast.app",
+      "version_code": 13,
+      "catalog_module": "decoders/Python/apps/Handsome_Fast/Handsome_Fast.py",
+      "catalog_module_sha256": "a0f5922d69d0a806796ad4e7c1cd2a86b2b27eec7fa509c6fdea0e68cab18f5c",
+      "file_module": "decoders/Python/apps/Handsome_Fast/Handsome_Fast_archivos.py",
+      "source_readme": "decoders/Python/apps/Handsome_Fast/README.md",
+      "integration_status": "Ruta conectada; sin prueba remota nueva en esta entrega.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "hex-custom",
+      "package_name": "com.hex.custom.jotchuast",
+      "version_code": 104,
+      "catalog_module": "decoders/Python/apps/Hex_Custom/Hex_Custom.py",
+      "catalog_module_sha256": "3eeb376f99cb14e90789eeb8d4bce9216a64d6fd0d18512434adf847f8fa8110",
+      "file_module": "decoders/Python/apps/Hex_Custom/Hex_Custom_archivos.py",
+      "source_readme": "decoders/Python/apps/Hex_Custom/README.md",
+      "integration_status": "Solo archivos: no tiene catálogo público propio.",
+      "network_sources": 0,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "rev-hunter",
+      "package_name": "com.hunter.net",
+      "version_code": 48,
+      "catalog_module": "decoders/Python/apps/Hunter_VPN/Hunter_VPN.py",
+      "catalog_module_sha256": "94782fcfdaa2dc2f08a9e9582155e2f9083bf46e71212845051b293e6adaf83b",
+      "file_module": "decoders/Python/apps/Hunter_VPN/Hunter_VPN_archivos.py",
+      "source_readme": "decoders/Python/apps/Hunter_VPN/README.md",
+      "integration_status": "Ruta conectada; sin prueba remota nueva en esta entrega.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "ignix-vpn-max",
+      "package_name": "http.ignixmax.vpn",
+      "version_code": 44,
+      "catalog_module": "decoders/Python/apps/IGNIX_VPN_MAX/IGNIX_VPN_MAX.py",
+      "catalog_module_sha256": "34408a15bf286bcf5a0879adc7c80d21f80934018facf9b5c30a085d790ae906",
+      "file_module": "decoders/Python/apps/IGNIX_VPN_MAX/IGNIX_VPN_MAX_archivos.py",
+      "source_readme": "decoders/Python/apps/IGNIX_VPN_MAX/README.md",
+      "integration_status": "El propio descifrador declara cifrado pendiente.",
+      "network_sources": 0,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "ip-tunnel",
+      "package_name": "com.iptunnel.tunnel",
+      "version_code": 49,
+      "catalog_module": "decoders/Python/apps/IP_Tunnel/IP_Tunnel.py",
+      "catalog_module_sha256": "4f346ff21cc4e11df770397854829981363d38fd6456604e641307ed953b4fa5",
+      "file_module": "decoders/Python/apps/IP_Tunnel/IP_Tunnel_archivos.py",
+      "source_readme": "decoders/Python/apps/IP_Tunnel/README.md",
+      "integration_status": "Ruta conectada y muestra local descifrada.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "jetroi",
+      "package_name": "co.strongteam.jetroi",
+      "version_code": 13,
+      "catalog_module": "decoders/Python/apps/JetRoi/JetRoi.py",
+      "catalog_module_sha256": "e029709381fa9792bf4cd0c30ba7810a4b8dee20b85264ae8a49c1b9ed4d07a7",
+      "file_module": "decoders/Python/apps/JetRoi/JetRoi_archivos.py",
+      "source_readme": "decoders/Python/apps/JetRoi/README.md",
+      "integration_status": "LIVE_DECRYPT_FAILED en la muestra aportada; limitación documentada por su script.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "lets-vpn-go",
+      "package_name": "smith.vpn.ko.ni.pro",
+      "version_code": 17,
+      "catalog_module": "decoders/Python/apps/Lets_VPN_Go/Lets_VPN_Go.py",
+      "catalog_module_sha256": "771a902ecf58ada7fd33c29f0063ceb4fecda3d38d67ffb88410403c01ed34d0",
+      "file_module": "decoders/Python/apps/Lets_VPN_Go/Lets_VPN_Go_archivos.py",
+      "source_readme": "decoders/Python/apps/Lets_VPN_Go/README.md",
+      "integration_status": "Ruta conectada; sin prueba remota nueva en esta entrega.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "linklayer",
+      "package_name": "com.newtoolsworks.linklayer",
+      "version_code": 93,
+      "catalog_module": "decoders/Python/apps/LinkLayer/LinkLayer.py",
+      "catalog_module_sha256": "f6e7390541b723ba30c9aec574eafa2f6d6ab3595cbfa34a4beb178d77da1a32",
+      "file_module": "decoders/Python/apps/LinkLayer/LinkLayer_archivos.py",
+      "source_readme": "decoders/Python/apps/LinkLayer/README.md",
+      "integration_status": "Ruta conectada y muestra local descifrada.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "litron-vpn",
+      "package_name": "com.fleet.vpn",
+      "version_code": 25,
+      "catalog_module": "decoders/Python/apps/Litron_VPN/server_catalog_decoder.py",
+      "catalog_module_sha256": "1d214528815dc85fd843c5405e51d26d5a56db43926fd92996365a99535a7973",
+      "file_module": null,
+      "source_readme": "decoders/Python/apps/Litron_VPN/README.md",
+      "integration_status": "Ruta conectada y muestra local descifrada.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "mm-tunnel",
+      "package_name": "co.strongteam.marvsudp",
+      "version_code": 48,
+      "catalog_module": "decoders/Python/apps/MM_Tunnel/Marvs_UDP.py",
+      "catalog_module_sha256": "39bfe37d2df50287d53a08fab67648c11482ca48aeaf08d5ad4c7de4ffb7703e",
+      "file_module": "decoders/Python/apps/MM_Tunnel/Marvs_UDP_archivos.py",
+      "source_readme": "decoders/Python/apps/MM_Tunnel/README.md",
+      "integration_status": "Muestra incluida completa en 69.09 s. El README documenta 37 campos fallidos en otro catálogo remoto; se conservan como parciales con ubicaciones.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "marvs-ssh",
+      "package_name": "vpn.marvs.ssh",
+      "version_code": 47,
+      "catalog_module": "decoders/Python/apps/Marvs_SSH/Marvs_SSH.py",
+      "catalog_module_sha256": "df566d3b541a3a56884c99463a64b5f15f5a330476c1ba4af17543ebbe5e4563",
+      "file_module": "decoders/Python/apps/Marvs_SSH/Marvs_SSH_archivos.py",
+      "source_readme": "decoders/Python/apps/Marvs_SSH/README.md",
+      "integration_status": "DECODE_FAILED en la muestra de catálogo aportada; archivos .t20 conectados.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "netmx-vpn",
+      "package_name": "com.imxfree.vpn",
+      "version_code": 207,
+      "catalog_module": "decoders/Python/apps/NetMx_VPN/NetMx_VPN.py",
+      "catalog_module_sha256": "a174f1e36b9c211b028e2a3ab11792b5d88c1fa9ae7509c5773f524f1334caf7",
+      "file_module": "decoders/Python/apps/NetMx_VPN/NetMx_VPN_archivos.py",
+      "source_readme": "decoders/Python/apps/NetMx_VPN/README.md",
+      "integration_status": "Ruta conectada; sin prueba remota nueva en esta entrega.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "osp-tunnel",
+      "package_name": "xyz.osptunnel.org",
+      "version_code": 37,
+      "catalog_module": "decoders/Python/apps/OSP_Tunnel/OSP_Tunnel.py",
+      "catalog_module_sha256": "0a60488e1f86b07f5a87ef5ea4cb62d277912b98f6ecebe556b31ee27816228e",
+      "file_module": "decoders/Python/apps/OSP_Tunnel/OSP_Tunnel_archivos.py",
+      "source_readme": "decoders/Python/apps/OSP_Tunnel/README.md",
+      "integration_status": "Ruta conectada; sin prueba remota nueva en esta entrega.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "oneftunnel",
+      "package_name": "com.oneftunnel.app",
+      "version_code": 127,
+      "catalog_module": "decoders/Python/apps/OneFTunnel/1FTunnel.py",
+      "catalog_module_sha256": "d3d6762fb084da04b61da374d82f730f59e8dce04f7b387573dc32667d63f8f5",
+      "file_module": "decoders/Python/apps/OneFTunnel/1FTunnel_archivos.py",
+      "source_readme": "decoders/Python/apps/OneFTunnel/README.md",
+      "integration_status": "Archivos y enlaces de usuario; no tiene catálogo público propio.",
+      "network_sources": 0,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "pnt-vpn",
+      "package_name": "com.pntvpn.net",
+      "version_code": 28,
+      "catalog_module": "decoders/Python/apps/PNT_VPN/PNT_VPN.py",
+      "catalog_module_sha256": "942665ab745125a2679e0865c8321d8d2028ee85aa96abcb7469bdb5f740b9e9",
+      "file_module": null,
+      "source_readme": "decoders/Python/apps/PNT_VPN/README.md",
+      "integration_status": "Ruta conectada; sin prueba remota nueva en esta entrega.",
+      "network_sources": 2,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "pukang-vpn",
+      "package_name": "com.pukangvpn.th",
+      "version_code": 87,
+      "catalog_module": "decoders/Python/apps/PUKANG_VPN/PUKANG_VPN.py",
+      "catalog_module_sha256": "193643da97c46a18a3bb916e207e18e9232f4e001060e11b6d416f53f0d5ee55",
+      "file_module": "decoders/Python/apps/PUKANG_VPN/PUKANG_VPN_archivos.py",
+      "source_readme": "decoders/Python/apps/PUKANG_VPN/README.md",
+      "integration_status": "Ruta conectada y muestra local descifrada.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "peru-vpn",
+      "package_name": "com.peru.vpn",
+      "version_code": 410,
+      "catalog_module": "decoders/Python/apps/Peru_VPN/Peru_VPN.py",
+      "catalog_module_sha256": "c65b053dc468f91591bee69b0bfa3b68aec898ae3ed525841d0cce4a896ea032",
+      "file_module": "decoders/Python/apps/Peru_VPN/Peru_VPN_archivos.py",
+      "source_readme": "decoders/Python/apps/Peru_VPN/README.md",
+      "integration_status": "Ruta conectada; sin prueba remota nueva en esta entrega.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "ra-tunnel",
+      "package_name": "org.ratunnellite.xyz",
+      "version_code": 13,
+      "catalog_module": "decoders/Python/apps/RA_Tunnel/RA_Tunnel.py",
+      "catalog_module_sha256": "d3b411b0487f7a1e13628cfd2faeacf85d8eafe9711f48ea95ab406ff06b778d",
+      "file_module": null,
+      "source_readme": "decoders/Python/apps/RA_Tunnel/README.md",
+      "integration_status": "Ruta conectada; sin prueba remota nueva en esta entrega.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "reg-tunnel",
+      "package_name": "io.isvsoft.pub.regtunnelvpn",
+      "version_code": 101,
+      "catalog_module": "decoders/Python/apps/REG_Tunnel_VPN/REG_Tunnel_VPN.py",
+      "catalog_module_sha256": "8d883bd483c63104c0717d2afafeaa72f880eacc3315ca18755bae289a2f6c23",
+      "file_module": "decoders/Python/apps/REG_Tunnel_VPN/REG_Tunnel_VPN_archivos.py",
+      "source_readme": "decoders/Python/apps/REG_Tunnel_VPN/README.md",
+      "integration_status": "DECODE_FAILED en la muestra de catálogo aportada; archivos .reg conectados.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "rjc-tunnel-vpn",
+      "package_name": "com.rjctunnel.vpn",
+      "version_code": 19,
+      "catalog_module": "decoders/Python/apps/RJC_Tunnel_VPN/RJC_Tunnel_VPN.py",
+      "catalog_module_sha256": "cfef12bd96399acdfc95cf558d4b6b2d036118cf2ca83ca705b48a494cbe8ae5",
+      "file_module": "decoders/Python/apps/RJC_Tunnel_VPN/RJC_Tunnel_VPN_archivos.py",
+      "source_readme": "decoders/Python/apps/RJC_Tunnel_VPN/README.md",
+      "integration_status": "Ruta conectada; sin prueba remota nueva en esta entrega.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "rnv-tunnel-vpn",
+      "package_name": "io.isvsoft.pub.rnvtunnelvpn",
+      "version_code": 101,
+      "catalog_module": "decoders/Python/apps/RNV_Tunnel_VPN/RNV_Tunnel_VPN.py",
+      "catalog_module_sha256": "36f46b5f5e51a733354b109e6d7924eb4c06352ea2ed65edafeef357f75b7fde",
+      "file_module": "decoders/Python/apps/RNV_Tunnel_VPN/RNV_Tunnel_VPN_archivos.py",
+      "source_readme": "decoders/Python/apps/RNV_Tunnel_VPN/README.md",
+      "integration_status": "Ruta conectada y muestra local descifrada.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "rovpn",
+      "package_name": "com.mobileapp.rovpn",
+      "version_code": 76,
+      "catalog_module": "decoders/Python/apps/RoVPN/RoVPN.py",
+      "catalog_module_sha256": "5c922cca3980855fd4c7dc996622b9d394283b174f912f50f2e3ee9514115cff",
+      "file_module": "decoders/Python/apps/RoVPN/RoVPN_archivos.py",
+      "source_readme": "decoders/Python/apps/RoVPN/README.md",
+      "integration_status": "Ruta conectada y muestra local descifrada.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "slow-dns",
+      "package_name": "slowdns.minapronetvpn.com.eg",
+      "version_code": 6,
+      "catalog_module": "decoders/Python/apps/SLOW_DNS/SLOW_DNS.py",
+      "catalog_module_sha256": "ed67a7d4a193ca212bb57a02e0a623d8aaea8a81131fb76b30729206104341d4",
+      "file_module": null,
+      "source_readme": "decoders/Python/apps/SLOW_DNS/README.md",
+      "integration_status": "Ruta conectada; sin prueba remota nueva en esta entrega.",
+      "network_sources": 2,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "sni-tunnel",
+      "package_name": "com.asnly.snitunnel",
+      "version_code": 32,
+      "catalog_module": "decoders/Python/apps/SNI_Tunnel/SNI_Tunnel.py",
+      "catalog_module_sha256": "31e62344f653fa3a8fe4e71d2fb1708485a14d63d419c792074aa7c111aed318",
+      "file_module": "decoders/Python/apps/SNI_Tunnel/SNI_Tunnel_archivos.py",
+      "source_readme": "decoders/Python/apps/SNI_Tunnel/README.md",
+      "integration_status": "Suscripciones del usuario: no hay catálogo público fijo.",
+      "network_sources": 0,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "sn-vpn",
+      "package_name": "com.snnombre.snvpn",
+      "version_code": 507,
+      "catalog_module": "decoders/Python/apps/SN_VPN/SN_VPN.py",
+      "catalog_module_sha256": "6ffcaa3300f3702bfcf6f262ff0e0e45df54a338c60aa0ac61772ba67a0befcb",
+      "file_module": "decoders/Python/apps/SN_VPN/SN_VPN_archivos.py",
+      "source_readme": "decoders/Python/apps/SN_VPN/README.md",
+      "integration_status": "Ruta conectada; sin prueba remota nueva en esta entrega.",
+      "network_sources": 2,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "s-tunnel",
+      "package_name": "com.stunnel.dev",
+      "version_code": 147,
+      "catalog_module": "decoders/Python/apps/S_Tunnel/S_Tunnel.py",
+      "catalog_module_sha256": "bea350d7d8ad88b1063be8b54f2ef781ede3a8897d469f37400e5ae4b3ad8764",
+      "file_module": null,
+      "source_readme": "decoders/Python/apps/S_Tunnel/README.md",
+      "integration_status": "Ruta conectada; sin prueba remota nueva en esta entrega.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "shield-tunnel",
+      "package_name": "one.shield.tunnel",
+      "version_code": 79,
+      "catalog_module": "decoders/Python/apps/Shield_Tunnel/Shield_Tunnel.py",
+      "catalog_module_sha256": "ecdbbb2c7db8b6be16a5208e316814ea44fc0f4d088e6193eb0e41e422c5e2e4",
+      "file_module": "decoders/Python/apps/Shield_Tunnel/Shield_Tunnel_archivos.py",
+      "source_readme": "decoders/Python/apps/Shield_Tunnel/README.md",
+      "integration_status": "Ruta conectada y muestra local descifrada.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "shield-vpn",
+      "package_name": "litron.shield.vpn",
+      "version_code": 18,
+      "catalog_module": "decoders/Python/apps/Shield_VPN/Shield_VPN.py",
+      "catalog_module_sha256": "0352dc5b933ddd88b7bb04b299e9658b5d8723428184f78b0c6e84683b4bfa42",
+      "file_module": null,
+      "source_readme": "decoders/Python/apps/Shield_VPN/README.md",
+      "integration_status": "Ruta conectada y muestra local descifrada.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "siam-vpn",
+      "package_name": "siam.pro.net",
+      "version_code": 49,
+      "catalog_module": "decoders/Python/apps/Siam_VPN/Siam_VPN.py",
+      "catalog_module_sha256": "a7a288977f64ee47d9e5dd88cc0bcf4d67c6a046f867ec2f1a50766688394c54",
+      "file_module": "decoders/Python/apps/Siam_VPN/Siam_VPN_archivos.py",
+      "source_readme": "decoders/Python/apps/Siam_VPN/README.md",
+      "integration_status": "Ruta conectada; sin prueba remota nueva en esta entrega.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "trm-tunnel",
+      "package_name": "com.trm.tunnel",
+      "version_code": 19,
+      "catalog_module": "decoders/Python/apps/TRM_Tunnel/TRM_Tunnel.py",
+      "catalog_module_sha256": "a01894f42139f44b61d0e5c4a565240fae51232eda996823a88b0a4638920ded",
+      "file_module": "decoders/Python/apps/TRM_Tunnel/TRM_Tunnel_archivos.py",
+      "source_readme": "decoders/Python/apps/TRM_Tunnel/README.md",
+      "integration_status": "Ruta conectada; sin prueba remota nueva en esta entrega.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "trp-tunnel",
+      "package_name": "com.trptunnel.xyz",
+      "version_code": 109,
+      "catalog_module": "decoders/Python/apps/TRP_Tunnel/TRP_Tunnel.py",
+      "catalog_module_sha256": "94d108ba9d59e5435c209e0999807021b7b37f904488be5a38c8505e06850890",
+      "file_module": null,
+      "source_readme": "decoders/Python/apps/TRP_Tunnel/README.md",
+      "integration_status": "Ruta conectada y muestra local descifrada.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "udp-thunder-vpn",
+      "package_name": "com.udpthunder.vpn",
+      "version_code": 6,
+      "catalog_module": "decoders/Python/apps/UDP_Thunder_VPN/UDP_Thunder_VPN.py",
+      "catalog_module_sha256": "66e16fed1eeca4815f08a3cf09fad9321eb63c38a10a001cf5983cc4728f26ec",
+      "file_module": "decoders/Python/apps/UDP_Thunder_VPN/UDP_Thunder_VPN_archivos.py",
+      "source_readme": "decoders/Python/apps/UDP_Thunder_VPN/README.md",
+      "integration_status": "Ruta conectada y muestra local descifrada.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "v2box",
+      "package_name": "dev.hexasoftware.v2box",
+      "version_code": 88,
+      "catalog_module": "decoders/Python/apps/V2Box/V2Box.py",
+      "catalog_module_sha256": "3b098ac93adbe6b919d363294dd55adda956097e33cb3c87400a08ea8716a337",
+      "file_module": "decoders/Python/apps/V2Box/V2Box_archivos.py",
+      "source_readme": "decoders/Python/apps/V2Box/README.md",
+      "integration_status": "Suscripciones del usuario: no hay catálogo público fijo.",
+      "network_sources": 0,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "v2ovpn",
+      "package_name": "com.v2rayservice.v2ovpn",
+      "version_code": 63,
+      "catalog_module": "decoders/Python/apps/V2OVPN/V2OVPN.py",
+      "catalog_module_sha256": "505ab4d37257a740bde815f0920eabfe2c15233ebb46a8d5afa9dedc6ad28d66",
+      "file_module": "decoders/Python/apps/V2OVPN/V2OVPN_archivos.py",
+      "source_readme": "decoders/Python/apps/V2OVPN/README.md",
+      "integration_status": "Ruta conectada y muestra local descifrada.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "vc-vpn",
+      "package_name": "com.vc.vpn",
+      "version_code": 80,
+      "catalog_module": "decoders/Python/apps/VC_VPN/VC_VPN.py",
+      "catalog_module_sha256": "8c5cee33ff25ee6c0db6fbdfe81336b35258f13740f67341155c261f1c3ef98d",
+      "file_module": "decoders/Python/apps/VC_VPN/VC_VPN_archivos.py",
+      "source_readme": "decoders/Python/apps/VC_VPN/README.md",
+      "integration_status": "Ruta conectada y muestra local descifrada.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "vertexsnipher",
+      "package_name": "codes.juanscript.vertexsnipher",
+      "version_code": 46,
+      "catalog_module": "decoders/Python/apps/VertexSnipher/VertexSnipher.py",
+      "catalog_module_sha256": "d864a2b6a93b484ff0ff020b0a5c275f4a5cf10faa394274baf543ae8cf1f8ae",
+      "file_module": "decoders/Python/apps/VertexSnipher/VertexSnipher_archivos.py",
+      "source_readme": "decoders/Python/apps/VertexSnipher/README.md",
+      "integration_status": "El proveedor exige identidad/integridad autorizada no suministrada.",
+      "network_sources": 0,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "xj-vpn",
+      "package_name": "net.xj.vpn",
+      "version_code": 99,
+      "catalog_module": "decoders/Python/apps/XJ_VPN/XJ_VPN.py",
+      "catalog_module_sha256": "98bc77397be92b1e65b9d1b32c42e7eeada437df99cd1ef7beefd6bb6aa583b3",
+      "file_module": "decoders/Python/apps/XJ_VPN/XJ_VPN_archivos.py",
+      "source_readme": "decoders/Python/apps/XJ_VPN/README.md",
+      "integration_status": "El proveedor exige Play Integrity; no hay token genuino suministrado.",
+      "network_sources": 0,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "xui-tunnel",
+      "package_name": "com.xui_tunnel",
+      "version_code": 6,
+      "catalog_module": "decoders/Python/apps/XUI_Tunnel/XUI_Tunnel.py",
+      "catalog_module_sha256": "722e79e9226fad1ad5e2d5db0ea43551eeb078f2fdc9f944c0e322dae28933f8",
+      "file_module": "decoders/Python/apps/XUI_Tunnel/XUI_Tunnel_archivos.py",
+      "source_readme": "decoders/Python/apps/XUI_Tunnel/README.md",
+      "integration_status": "Ruta conectada; sin prueba remota nueva en esta entrega.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "xtravpn",
+      "package_name": "com.xtravpn.dev",
+      "version_code": 62,
+      "catalog_module": "decoders/Python/apps/XtraVPN/XtraVPN.py",
+      "catalog_module_sha256": "1a137a62aab933d18c9c445fb10c775f12a57424cecef2a1dd6653476c656167",
+      "file_module": null,
+      "source_readme": "decoders/Python/apps/XtraVPN/README.md",
+      "integration_status": "Necesita una URL custom code; falta entrada de usuario para ese flujo remoto.",
+      "network_sources": 0,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "yla-vpn",
+      "package_name": "com.thuaung.ylavpn",
+      "version_code": 10,
+      "catalog_module": "decoders/Python/apps/YLA_VPN/YLA_VPN.py",
+      "catalog_module_sha256": "3d25d95cf241140b28bcf35c9b7350419f8bd41862e3e85258b745542bb9ab3e",
+      "file_module": null,
+      "source_readme": "decoders/Python/apps/YLA_VPN/README.md",
+      "integration_status": "La fórmula de firma del proveedor está pendiente en el código aportado.",
+      "network_sources": 0,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    },
+    {
+      "id": "zam-vip-net",
+      "package_name": "zam.freevipnet.com",
+      "version_code": 42,
+      "catalog_module": "decoders/Python/apps/Zam_VIP_NET/Zam_VIP_NET.py",
+      "catalog_module_sha256": "68591b5508a1144edda4968c309d1e5a9d0e008c59e67d2b18ff7b5fd9eccc1f",
+      "file_module": "decoders/Python/apps/Zam_VIP_NET/Zam_VIP_NET_archivos.py",
+      "source_readme": "decoders/Python/apps/Zam_VIP_NET/README.md",
+      "integration_status": "Ruta conectada; sin prueba remota nueva en esta entrega.",
+      "network_sources": 1,
+      "connection_authentication": {
+        "status": "UNCONFIRMED",
+        "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
+      }
+    }
+  ],
+  "code_paths": [
+    "cloud/web/content/supplied-integrations.json",
+    "cloud/web/lib/supplied-integrations.mjs",
+    "cloud/workers/python/supplied_bridge.py"
+  ],
+  "limitations": [
+    "Missing authorized DTunnel updater user_id",
+    "Some supplied methods explicitly incomplete or provider-authenticated",
+    "Three supplied catalog samples fail their own decoders",
+    "No VPS deployment performed"
+  ],
+  "tooling": [
+    "tools/build_registry.py",
+    "tests/test_supplied_integrations.py",
+    "cloud/web/tests/supplied-integrations.test.mjs"
+  ],
+  "dependencies": {
+    "python": "3.12.14",
+    "pycryptodome": "3.23.0",
+    "argon2-cffi": "25.1.0",
+    "msgpack": "1.2.4"
+  }
+}

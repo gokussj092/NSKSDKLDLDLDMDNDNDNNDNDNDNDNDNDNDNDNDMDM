@@ -13,15 +13,15 @@ import {fetchWorker} from "../lib/c3-gateway.mjs";
 const source="https://globalvpn.uk/global_admin/api/server?package_name=thailand.vpn.globalvpn";
 function enable(t){const old=process.env.CLOUD_SERVER_VPN_ENABLED;process.env.CLOUD_SERVER_VPN_ENABLED="true";
  t.after(()=>{if(old===undefined)delete process.env.CLOUD_SERVER_VPN_ENABLED;else process.env.CLOUD_SERVER_VPN_ENABLED=old;});}
-test("two live providers, original PNGs, disabled AR PRO, monotonic versions and independent switches",t=>{
+test("live providers, original PNGs, connected supplied AR PRO, monotonic versions and independent switches",t=>{
  enable(t);for(const id of ["thailand-vpn","kham-vpn"]){
   assert(providerIds().includes(id));assert(PUBLIC_PROVIDER_IDS.includes(id));assert(catalog().apps.find(x=>x.id===id).decodeEnabled);
   assert.equal(iconFor(id).mimeType,"image/png");
   assert.equal(catalog({availability:{[id]:false}}).apps.find(x=>x.id===id).decodeEnabled,false);
   assert.equal(catalog({methodStates:{[id]:{maintenance:true}}}).apps.find(x=>x.id===id).decodeEnabled,false);
  }
- assert.equal(catalog({availability:{"ar-pro-vpn":true}}).apps.find(x=>x.id==="ar-pro-vpn").decodeEnabled,false);
- assert.equal(iconFor("ar-pro-vpn").mimeType,"image/png");assert(!providerIds().includes("ar-pro-vpn"));
+ assert.equal(catalog({availability:{"ar-pro-vpn":true}}).apps.find(x=>x.id==="ar-pro-vpn").decodeEnabled,true);
+ assert.equal(iconFor("ar-pro-vpn").mimeType,"image/png");assert(providerIds().includes("ar-pro-vpn"));
  assert.equal(activeCatalogVersion({CLOUD_SERVER_VPN_CATALOG_VERSION:"215686715"}),215686715);
 });
 test("Firebase validates original source, caches successful resolution and deletes transient installation",async()=>{

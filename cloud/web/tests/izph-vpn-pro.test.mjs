@@ -45,7 +45,7 @@ test("IZPH launcher PNG, public format and card follow availability",()=>{
   assert.equal(iconFor("izph-vpn-pro").bytes.length,156041);
   assert(PUBLIC_PROVIDER_IDS.includes("izph-vpn-pro"));
   assert.equal(catalog({availability:{"izph-vpn-pro":false}}).apps.find(x=>x.id==="izph-vpn-pro").decodeEnabled,false);
-  assert.equal(doc.formats.length,256);
+  assert.equal(doc.formats.length,270);
   assert(doc.formats.some(x=>x.suffix==="izph"));
   assert(!JSON.stringify(card).includes("https://"));
 });

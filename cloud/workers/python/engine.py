@@ -22,6 +22,8 @@ import sys
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[3]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 MATRIX = ROOT / "docs/cloud/C0_FORMAT_MATRIX.csv"
 DECODERS = (ROOT / "decoders").resolve()
 MAX_INPUT_BYTES = 16 * 1024 * 1024
@@ -128,6 +130,11 @@ _C8_FILE_ENGINES = {
     "ar": ("decoders/Python/apps/AR_PRO_VPN/AR_PRO_VPN_archivos.py", "AR PRO VPN 1.0"),
     "t20": ("decoders/Python/apps/Marvs_SSH/Marvs_SSH_archivos.py", "Marvs SSH / T20-VPN 1.10.5.3"),
     "ost": ("decoders/Python/apps/Shield_Tunnel/Shield_Tunnel_archivos.py", "Shield Tunnel 1.11.06.1"),
+    "lnk": ("decoders/Python/apps/LinkLayer/LinkLayer_archivos.py", "LinkLayer VPN 3.11.2"),
+    "xj": ("decoders/Python/apps/XJ_VPN/XJ_VPN_archivos.py", "XJ VPN 1.9.7"),
+    "xui": ("decoders/Python/apps/XUI_Tunnel/XUI_Tunnel_archivos.py", "XUI Tunnel VPN 6.0"),
+    "sn": ("decoders/Python/apps/SN_VPN/SN_VPN_archivos.py", "SN VPN 5.0.7"),
+    "vcv": ("decoders/Python/apps/VC_VPN/VC_VPN_archivos.py", "VC VPN 8.0"),
 }
 
 def load_runtime_file_engines() -> dict[str, dict[str, str]]:
@@ -142,6 +149,11 @@ def load_runtime_file_engines() -> dict[str, dict[str, str]]:
             "name": name,
             "phase": "C8",
         }
+    from cloud.workers.python.supplied_bridge import FILE_ROUTES, BY_ID
+    for suffix, provider in FILE_ROUTES.items():
+        item = BY_ID[provider]
+        result[suffix] = {"source": str(ROOT / "decoders/Python/apps" / item["appDir"] / item["fileModule"]),
+                          "runtime": "python", "name": item["name"]+" "+str(item["versionName"] or item["versionCode"] or ""), "phase": "C8"}
     return result
 
 
@@ -420,7 +432,7 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
     elif suffix == "ost" and not _is_shield_ost(contents):
         engine = load_file_engines()["ost"]
     if credentials is not None:
-        allowed = {"password", "hwid"} if suffix == "hc" else {"password", "publicKey", "recipientKey"} if suffix == "npvs" else {"password"} if suffix in ("tut", "ua", "1ftnl", "v2box") or is_hex_custom else None
+        allowed = {"password", "hwid"} if suffix in ("hc", "sn") else {"password", "publicKey", "recipientKey"} if suffix == "npvs" else {"password"} if suffix in ("tut", "ua", "1ftnl", "v2box") or is_hex_custom else None
         if allowed is None or not isinstance(credentials, dict) or set(credentials) - allowed:
             raise DecodeFailure("CREDENTIALS_NOT_ALLOWED")
         for name, maximum in (("password", 4096), ("hwid", 128), ("publicKey", 128), ("recipientKey", 16384)):
@@ -440,20 +452,30 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
     protected_onef = suffix == "1ftnl"
     protected_npvs = suffix == "npvs"
     protected_v2box = suffix == "v2box"
-    credential_input = protected_hc or protected_tut or protected_ua or protected_onef or protected_npvs or protected_v2box or is_hex_custom
+    from cloud.workers.python.supplied_bridge import FILE_ROUTES
+    supplied_file = suffix in FILE_ROUTES
+    if suffix == "v2box":
+        try:
+            v2box_document = json.loads(contents)
+            supplied_file = isinstance(v2box_document, dict) and "version" in v2box_document
+        except (ValueError, UnicodeError):
+            supplied_file = False
+    credential_input = supplied_file or protected_hc or protected_tut or protected_ua or protected_onef or protected_npvs or protected_v2box or is_hex_custom
     source = engine["source"]
     if suffix == "dark":
         source = str(Path(__file__).with_name("dark_bridge.py"))
     elif protected_hc:
         source = str(Path(__file__).with_name("hc_bridge.py"))
-    elif protected_tut or protected_onef:
+    elif protected_tut or (protected_onef and not supplied_file):
         source = str(Path(source).with_name("worker_bridge.py"))
     elif protected_ua:
         source = str(Path(__file__).with_name("ultra_custom_bridge.py"))
     elif protected_npvs:
         source = str(Path(__file__).with_name("npvs_bridge.py"))
-    elif protected_v2box:
+    elif protected_v2box and not supplied_file:
         source = str(Path(__file__).with_name("v2box_bridge.py"))
+    if supplied_file:
+        source = str(Path(__file__).with_name("supplied_bridge.py"))
     runtime = sys.executable if credential_input or engine["runtime"] == "python" else shutil.which(engine["runtime"])
     if not runtime:
         raise DecodeFailure("ENGINE_UNAVAILABLE")
@@ -545,8 +567,10 @@ def decode_file(suffix: str, contents: bytes, *, timeout: int = TIMEOUT_SECONDS,
 
 def decode_provider_catalog(provider_id: str, contents: bytes) -> dict:
     """One fixed provider codec, child-isolated; broker performs all network I/O."""
+    from cloud.workers.python.supplied_bridge import BY_ID as supplied_providers
     if provider_id not in ("thailand-vpn", "kham-vpn", "opentunnel-ssh", "md-proxy-vpn", "xxpicore-tunnel", "catnet-vpn", "litron-vpn", "litron-pro-vpn", "speigo-vpn-configs", "speigo-vpn-ssh", "genis-vpn", "speicers-turbo-vpn", "http-conexion", "namo-vpn", "fnf-tunnel-bd", "alsaher-vip", "halcon-r-net", "ha-tunnel-plus", "ultra-tunnel", "zig-tunnel", "enaa-tunnel", "alfaisal-tunnel-plus", "izph-vpn-pro", "vip-snipher-pro", "netcol-vpn", "wolf-custom-vpn", "jyfast-vpn-ultra", "tunneldoom-vpn", "mtm-tunnel-lite", "mnr-tunnel-plus", "bd-net-vpn", "aura-net-vpn", "apna-vpn", "any-vpn", "speicers-pro-vpn", "tx-tunnel", "mm-tunnel", "creeb-vpn", "abowaged-vpn", "7net-vpn", "xhypher-tunnel-pro", "ut-loop-pro-vpn", "turbomx-vpn", "superflash-vpn", "rmp-tunnel-pro", "rjc-tunnel-pro", "proneet-vpn", "onspace-vpn", "mx-tunnel-pro", "megatunnel", "http-internet-infinito", "24clan-green", "hx-tunnel", "mkk-hyper", "my-tunnel-proxy", "robust-tunnel", "royal-tunnel", "trv-tunnel", "4u-tunnel-lite", "ac-tunnel-vpn", "austroplus-vpn", "http-fenixvpn", "http-jireh", "http-socketclay", "http-wakko", "v2ray-tunnel-plus", "eut-vpn", "focus-vpn-cloud", "freedom-vpn", "tunelguard-vpn", "tunneltweak", "ksh-vpn", "dtunnel-mod"):
-        raise DecodeFailure("UNSUPPORTED_FORMAT")
+        if provider_id not in supplied_providers:
+            raise DecodeFailure("UNSUPPORTED_FORMAT")
     if not isinstance(contents, bytes) or not contents:
         raise DecodeFailure("INVALID_INPUT")
     # MKK source bundle carries four separately encrypted fixed-origin replies
@@ -606,12 +630,14 @@ def decode_provider_catalog(provider_id: str, contents: bytes) -> dict:
                 raise ValueError("invalid")
         except (ValueError,UnicodeError) as error:
             raise DecodeFailure("OUTPUT_INVALID") from error
+        supplied_partial = provider_id == "docnet-vpn" or (provider_id == "mm-tunnel" and
+            isinstance(structured,dict) and structured.get("decryptionStatus",{}).get("complete") is False)
         return {
             "apiVersion":"v1","status":"success","kind":"vpn_catalog",
             "providerId":provider_id,"rawText":raw_text,
             "structuredJson":structured,
-            "isPartial":provider_id=="mkk-hyper" and isinstance(structured,dict) and structured.get("complete") is False,
-            "warnings":["PARTIAL_SOURCE_FAILURE"] if provider_id=="mkk-hyper" and isinstance(structured,dict) and structured.get("complete") is False else (["El listado público de OpenTunnel contiene hosts SSH; el usuario y la contraseña se generan por cuenta en la aplicación oficial."] if provider_id=="opentunnel-ssh" else []),
+            "isPartial":supplied_partial or (provider_id=="mkk-hyper" and isinstance(structured,dict) and structured.get("complete") is False),
+            "warnings":["ENCRYPTED_FIELDS_PENDING"] if supplied_partial else (["PARTIAL_SOURCE_FAILURE"] if provider_id=="mkk-hyper" and isinstance(structured,dict) and structured.get("complete") is False else (["El listado público de OpenTunnel contiene hosts SSH; el usuario y la contraseña se generan por cuenta en la aplicación oficial."] if provider_id=="opentunnel-ssh" else [])),
             "exporterCertified":False,
         }
 
@@ -634,8 +660,8 @@ def decode_text(text: str, *, timeout: int = TIMEOUT_SECONDS, credentials: dict 
         raise DecodeFailure("INVALID_REQUEST")
     if credentials is not None:
         if (not isinstance(credentials, dict) or set(credentials) != {"password"} or
-                not (text.strip().lower().startswith("ua://") or text.strip().startswith(
-                    ("1FTnl.", "1FT1.", "1ftunnel://1FTnl/", "1ftunnel://1FT1/")) or
+                not (text.strip().lower().startswith(("ua://", "v2box://", "1ftunnel://")) or text.strip().startswith(
+                    ("1FTnl.", "1FT1.", "1FTlb.", "1ftunnel://1FTnl/", "1ftunnel://1FT1/")) or
                     any(text.strip().lower().startswith(prefix) and
                         len(text.strip()) > len(prefix) for prefix in
                         ("npvt://", "npvt-ssh://", "npvt-vless://", "npvt-vmess://", "npv://"))) or
