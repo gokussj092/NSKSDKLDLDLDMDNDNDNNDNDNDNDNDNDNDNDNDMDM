@@ -1,0 +1,36 @@
+name: SP-DECODE Server VPN shared cache tests
+on:
+  push:
+    branches: [ci/unity-ads-online-qa]
+    paths:
+      - 'cloud/web/lib/server-vpn*'
+      - 'cloud/web/lib/c35-gateway.mjs'
+      - 'cloud/web/instrumentation.js'
+      - 'cloud/web/tests/server-vpn-result-cache.test.mjs'
+      - 'cloud/compose.yaml'
+      - 'cloud/web/Dockerfile'
+      - '.github/workflows/server-vpn-shared-cache.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  cache:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate syntax, encrypted cache, concurrency and renewal
+        working-directory: cloud/web
+        run: |
+          set -euo pipefail
+          for file in lib/server-vpn-result-cache.mjs lib/server-vpn-cache-controls.mjs lib/server-vpn-cache-refresh.mjs lib/server-vpn-gateway.mjs lib/c35-gateway.mjs instrumentation.js; do
+            node --check "$file"
+          done
+          node --test tests/server-vpn-result-cache.test.mjs
+      - name: Validate Docker Compose
+        run: docker compose -f cloud/compose.yaml config --quiet
+      - name: Build web image (including instrumentation and volume)
+        run: docker build -t spdecode-cache-test cloud/web

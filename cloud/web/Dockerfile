@@ -15,9 +15,9 @@ COPY --from=build --chown=node:node /app ./
 # The catalog-chunks feature publishes immutable objects before advertising a
 # snapshot through /watch. This writable named volume must be owned by the
 # unprivileged runtime user (also when Docker initializes a fresh volume).
-RUN mkdir -p /app/provider-control /app/notices /app/catalog-snapshots \
- && chown node:node /app/provider-control /app/notices /app/catalog-snapshots \
- && chmod 0700 /app/provider-control /app/notices /app/catalog-snapshots
+RUN mkdir -p /app/provider-control /app/notices /app/catalog-snapshots /app/server-vpn-results \
+ && chown node:node /app/provider-control /app/notices /app/catalog-snapshots /app/server-vpn-results \
+ && chmod 0700 /app/provider-control /app/notices /app/catalog-snapshots /app/server-vpn-results
 USER node
 EXPOSE 3000
 CMD ["npm", "run", "start"]

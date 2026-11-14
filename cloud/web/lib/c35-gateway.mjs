@@ -1,5 +1,7 @@
 /** C3.5 session-gated remote imports; only the broker knows external URLs. */
 import {jsonReply} from "./responses.mjs";
+import {sharedCatalog} from "./server-vpn-result-cache.mjs";
+import {catalogCacheConfig} from "./server-vpn-cache-controls.mjs";
 import { randomUUID } from "node:crypto";
 import {providerAllowed} from "./c12-provider-controls.mjs";
 import { settings } from "./c3-config.mjs";
@@ -61,6 +63,22 @@ export async function externalImportRequest(request,kind,opts={}) {
       if(!ownKeys(body,["consent"])||body.consent!==true)
         return failure("USER_CONSENT_REQUIRED",400);
     }else return failure("INVALID_REQUEST",400);
+    if(kind==="nur"){
+      const load=async()=>{
+        const requestId=randomUUID();
+        if(!await reserveSlot(redis,claims.jti,requestId))return failure("RATE_LIMITED",429);
+        lease=requestId;started=performance.now();
+        let count=0;
+        const response=await loadNurCatalogResult(opts,n=>{count=n;});
+        let errorCode="";
+        if(!response.ok){try{errorCode=(await response.clone().json()).error?.code||"";}catch{}}
+        try{await recordWorkerResult(redis,response.ok?"success":"failed",{
+          kind:"catalog",bytes:count,errorCode,latencyMs:performance.now()-started,
+          appVersion:request.headers.get("x-spdecode-app-version")});}catch{}
+        return response;
+      };
+      return await sharedCatalog(redis,await catalogCacheConfig(redis,"nur-tunnel",load));
+    }
     const requestId=randomUUID();
     if(!await reserveSlot(redis,claims.jti,requestId)) return failure("RATE_LIMITED",429);
     lease=requestId;
@@ -109,15 +127,7 @@ export async function externalImportRequest(request,kind,opts={}) {
       });}catch{}
       return result;
     }
-    const catalog=await downloadNur(vendor);
-    const result=await fetchWorker("catalog",{dataBase64:catalog.toString("base64")},settings(),opts);
-    let errorCode="";
-    if(!result.ok){try{errorCode=(await result.clone().json()).error?.code||"";}catch{}}
-    try{await recordWorkerResult(redis,result.ok?"success":"failed",{
-      kind:"catalog",bytes:catalog.length,errorCode,latencyMs:performance.now()-started,
-      appVersion:request.headers.get("x-spdecode-app-version"),
-    });}catch{}
-    return result;
+    return failure("INVALID_REQUEST",400);
   }catch(error) {
     // Count provider/download failures after authorization, without storing URLs.
     if(redis && lease){
@@ -135,4 +145,10 @@ export async function externalImportRequest(request,kind,opts={}) {
   }finally{
     if(redis&&lease)try{await releaseSlot(redis,claims.jti,lease);}catch{}
   }
+}
+
+export async function loadNurCatalogResult(opts={},onBytes=()=>{}){
+  const catalog=await downloadNur(opts.vendor||{});
+  onBytes(catalog.length);
+  return fetchWorker("catalog",{dataBase64:catalog.toString("base64")},settings(),opts);
 }

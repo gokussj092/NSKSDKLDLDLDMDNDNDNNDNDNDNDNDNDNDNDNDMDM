@@ -9,6 +9,9 @@ services:
       NODE_ENV: production
       WORKER_INTERNAL_URL: http://decoder-worker:8787
       CLOUD_CATALOG_CHUNKS_ENABLED: ${CLOUD_CATALOG_CHUNKS_ENABLED:-false}
+      CLOUD_SERVER_VPN_CACHE_ENABLED: ${CLOUD_SERVER_VPN_CACHE_ENABLED:-true}
+      CLOUD_SERVER_VPN_CACHE_REVISION: ${CLOUD_SERVER_VPN_CACHE_REVISION:-1}
+      CLOUD_SERVER_VPN_CACHE_ROOT: /app/server-vpn-results
       CLOUD_API_ENABLED: ${CLOUD_API_ENABLED:-false}
       CLOUD_QA_ENABLED: ${CLOUD_QA_ENABLED:-false}
       CLOUD_QA_EXPIRES_AT: ${CLOUD_QA_EXPIRES_AT:-0}
@@ -116,6 +119,7 @@ services:
     volumes:
       - provider-control:/app/provider-control:rw
       - catalog-snapshots:/app/catalog-snapshots:rw
+      - server-vpn-results:/app/server-vpn-results:rw
       - notice-feed:/app/notices:rw
       # Signed public APKs are host-published, atomic and read-only to Next.js.
       - ${SPDECODE_PUBLIC_APK_DIR:-/opt/spdecode/public-apks}:/app/public-apks:ro
@@ -323,6 +327,7 @@ volumes:
   shop-database: {}
   provider-control: {}
   catalog-snapshots: {}
+  server-vpn-results: {}
   notice-feed: {}
   apk-qa-jobs: {}
   apk-tools-scratch: {}
