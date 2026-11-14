@@ -1,0 +1,34 @@
+{
+    "catalog": {
+        "entrypoint": "SN_VPN.py",
+        "method": "GET",
+        "networks": 0,
+        "payloads": 0,
+        "servers": 0,
+        "status": "empty_live_catalog",
+        "url": "https://raw.githubusercontent.com/SINNOMBRE22/Fallas/main/online.json",
+        "version": "4.0"
+    },
+    "catalogV2": {
+        "configs": 25,
+        "entrypoint": "SN_VPN.py",
+        "method": "GET",
+        "status": "verified_live_not_downloaded_by_app",
+        "url": "https://raw.githubusercontent.com/SINNOMBRE22/Fallas/main/online_v2.json",
+        "version": "2.0.27"
+    },
+    "deployment": "pending",
+    "engine": "python",
+    "entrypoint": "SN_VPN.py",
+    "extensions": [
+        "sn"
+    ],
+    "fileDecoder": "SN_VPN_archivos.py",
+    "id": "sn-vpn",
+    "name": "SN VPN",
+    "package": "com.snnombre.snvpn",
+    "realSampleVerified": true,
+    "textPrefixes": [],
+    "versionCode": 507,
+    "versionName": "5.0.7"
+}

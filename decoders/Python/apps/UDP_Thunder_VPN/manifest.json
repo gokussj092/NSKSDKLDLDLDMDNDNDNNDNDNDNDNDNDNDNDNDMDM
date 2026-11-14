@@ -1,0 +1,35 @@
+{
+  "id": "udp-thunder-vpn",
+  "name": "UDP Thunder VPN",
+  "package": "com.udpthunder.vpn",
+  "versionName": "1.5",
+  "versionCode": 6,
+  "engine": "python",
+  "entrypoint": "UDP_Thunder_VPN.py",
+  "extensions": [],
+  "textPrefixes": [],
+  "dependencies": [],
+  "catalog": {
+    "entrypoint": "UDP_Thunder_VPN.py",
+    "method": "GET",
+    "url": "https://freedomnavigate.com/updater/2ee4ec6e75df8910d98e7bb33f12e1",
+    "status": "live_verified",
+    "version": "27.6",
+    "servers": 23,
+    "networks": null,
+    "payloads": 1,
+    "freeServers": 23,
+    "notes": "Base64 + XXTEA modificado (delta 0x9E5729B1, misma clave/delta que la familia APNA/TRM/HX/Handsome/RJC/Hamara). Asset incluido aug.json: Version 18.0, 25 servidores libres, 1 payload (el script tambien abre esa version anterior)."
+  },
+  "files": {
+    "supported": true,
+    "entrypoint": "UDP_Thunder_VPN_archivos.py",
+    "extensions": [],
+    "notes": "Sin formato propio de perfil; el script descifra el archivo aug.json (catalogo guardado / asset) con el mismo metodo del catalogo. Importa el descifrador de UDP_Thunder_VPN.py: mantener juntos. Sin .sks, sin esquema URI propio."
+  },
+  "embeddedAsset": "aug.json",
+  "embeddedVersion": "18.0",
+  "embeddedServers": 25,
+  "realSampleVerified": true,
+  "deployment": "pending"
+}

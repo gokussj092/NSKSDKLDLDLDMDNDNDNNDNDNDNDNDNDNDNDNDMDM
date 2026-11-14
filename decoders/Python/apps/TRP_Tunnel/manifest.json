@@ -1,0 +1,23 @@
+{
+    "catalog": {
+        "entrypoint": "TRP_Tunnel.py",
+        "method": "GET",
+        "networks": 222,
+        "payloads": 134,
+        "servers": 14,
+        "url": "https://raw.githubusercontent.com/Jcacanog12/trinet-pro-reborn-auto/refs/heads/main/Trinetv5",
+        "version": "1.2.322"
+    },
+    "deployment": "pending",
+    "engine": "python",
+    "entrypoint": "TRP_Tunnel.py",
+    "extensions": [],
+    "fileDecoder": null,
+    "id": "trp-tunnel",
+    "name": "TRP Tunnel",
+    "package": "com.trptunnel.xyz",
+    "realSampleVerified": true,
+    "textPrefixes": [],
+    "versionCode": 109,
+    "versionName": "1.0.9"
+}

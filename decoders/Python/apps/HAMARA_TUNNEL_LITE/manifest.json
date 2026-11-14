@@ -1,0 +1,31 @@
+{
+  "id": "hamara-tunnel-lite",
+  "name": "HAMARA TUNNEL LITE",
+  "package": "com.hamarateam.litetunnel",
+  "versionName": "2.9",
+  "versionCode": 20,
+  "engine": "python",
+  "entrypoint": "HAMARA_TUNNEL_LITE.py",
+  "extensions": [
+    "hamaratnl"
+  ],
+  "textPrefixes": [
+    "hamaratnl://"
+  ],
+  "catalog": {
+    "entrypoint": "HAMARA_TUNNEL_LITE.py",
+    "method": "Base64 -> modified XXTEA (delta 0x9E5729B1), same as APNA Tunnel Lite; only the updater token differs",
+    "url": "https://paperonboard.com/updater/d146deb8a1d4f91cc0a7bbdac230da",
+    "liveVersion": "587",
+    "servers": 38,
+    "networks": null,
+    "payloads": 640,
+    "status": "live_verified",
+    "assetVersion": "322",
+    "assetServers": 23,
+    "assetPayloads": 504,
+    "notes": "38 free servers; Premium/VIP/Private 0. UpdaterLink is reported, never fetched by this version."
+  },
+  "filesEntrypoint": "HAMARA_TUNNEL_LITE_archivos.py",
+  "filesNote": ".hamaratnl = one lowercase hex line = hex(XOR(UTF-8 JSON, 12-byte key 4%PdXch>fkP])); offline catalog-update file = Base64 -> XXTEA -> catalog JSON saved as janu.json. No real .hamaratnl / hamaratnl:// sample from a phone yet (round-trip self-test only)."
+}

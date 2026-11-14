@@ -1,0 +1,24 @@
+{
+  "id": "v2ovpn",
+  "name": "V2OVPN",
+  "package": "com.v2rayservice.v2ovpn",
+  "versionName": "2.2.3",
+  "versionCode": 63,
+  "engine": "python",
+  "entrypoint": "V2OVPN.py",
+  "extensions": [],
+  "textPrefixes": [],
+  "catalog": {
+    "entrypoint": "V2OVPN.py",
+    "method": "Google Tink AesGcmHkdfStreaming: PBKDF2-HmacSHA256 100000 iters + HKDF-SHA256 + AES-256-GCM segments; ED: fields are Base32 of cleartext",
+    "url": "https://iovpn.me/app/config/rooojshsh727272h3n.php",
+    "liveVersion": "46.1",
+    "servers": 12,
+    "networks": 23,
+    "payloads": 23,
+    "status": "live_verified",
+    "notes": "Live body byte-identical to RoVPN (same endpoint, same key_secured, same catalog; live SHA-256 9a0b7ae53f0ad88518ef2da16c117808cb50429336c7f020650f3430383d8642). Secondary: ping.json (4 TH servers) and :82/server/online_app.json."
+  },
+  "filesEntrypoint": "V2OVPN_archivos.py",
+  "filesNote": "profile.json double layer (Tink -> Base64 -> XXTEA) supported, verified against the app's own classes in the JVM. profile.enc is Tink with the app keyset key: NOT openable offline, reported as PROFILE_ENC_KEY."
+}

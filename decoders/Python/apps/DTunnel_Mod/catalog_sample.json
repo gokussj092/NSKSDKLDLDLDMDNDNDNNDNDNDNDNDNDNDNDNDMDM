@@ -1,0 +1,2501 @@
+[
+  {
+    "category": {
+      "id": 20628,
+      "name": "SERVIDOR VIP",
+      "color": "#FF1F0B33",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-01-24T19:36:13.510Z",
+      "updated_at": "2026-10-28T00:43:48.325Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 20628,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "𝙨𝙚𝙧𝙫𝙞𝙙𝙤𝙧 𝙫𝙞𝙥 𝙙𝙚 𝙥𝙖𝙜𝙖",
+    "icon": "https://i.ibb.co/WpjZVZtc/Picsart-26-01-17-16-44-59-136.png",
+    "id": 188710,
+    "mode": "SSH_PROXY",
+    "name": "𝗘𝗡𝗧𝗘𝗟 SIN BANANEX",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": null,
+    "updated_at": "2026-10-21T13:48:57.180Z",
+    "created_at": "2026-01-24T19:39:12.271Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": "172.67.161.210",
+      "port": 80
+    },
+    "server": {
+      "host": "becasgruporomero.pe",
+      "port": 80
+    },
+    "dns_server": {
+      "dns1": "1.1.1.1",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": "GET /cdn-cgi/trace HTTP/1.1[crlf]Host: [rotate=cpcontacts.bicentenariodelperu.pe;www.bicentenariodelperu.pe;cpanel.bicentenariodelperu.pe;www.bicentenariodelperu.pe][crlf][crlf]CF-RAY / HTTP/1.1[crlf]Host: vip.fastrivervip.store[crlf]Upgrade: websocket[crlf]Connection: Keep-Alive[crlf]User-Agent: YES[crlf]Upgrade: websocket[crlf][crlf]",
+      "sni": null
+    }
+  },
+  {
+    "category": {
+      "id": 20628,
+      "name": "SERVIDOR VIP",
+      "color": "#FF1F0B33",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-01-24T19:36:13.510Z",
+      "updated_at": "2026-10-28T00:43:48.325Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 20628,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "𝙨𝙚𝙧𝙫𝙞𝙙𝙤𝙧 𝙫𝙞𝙥 𝙙𝙚 𝙥𝙖𝙜𝙖",
+    "icon": "https://i.ibb.co/WpjZVZtc/Picsart-26-01-17-16-44-59-136.png",
+    "id": 188711,
+    "mode": "SSH_PROXY",
+    "name": "𝗘𝗡𝗧𝗘𝗟 2𝗚𝗕🍋‍🟩💎🔴",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": null,
+    "updated_at": "2026-10-10T19:44:48.426Z",
+    "created_at": "2026-01-24T19:48:50.679Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": "cpcalendars.bicentenariodelperu.pe",
+      "port": 80
+    },
+    "server": {
+      "host": "cpcalendars.bicentenariodelperu.pe",
+      "port": 80
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": "GET / HTTP/1.5[crlf]Host: [host][crlf]Expect: 500-Continue[crlf][crlf][split][crlf][crlf]CF-RAY / HTTP/1.8[crlf]Host: vip.fastrivervip.store[crlf]Upgrade: websocket[crlf]Referer: close[crlf][crlf]",
+      "sni": null
+    }
+  },
+  {
+    "category": {
+      "id": 20628,
+      "name": "SERVIDOR VIP",
+      "color": "#FF1F0B33",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-01-24T19:36:13.510Z",
+      "updated_at": "2026-10-28T00:43:48.325Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 20628,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "𝙨𝙚𝙧𝙫𝙞𝙙𝙤𝙧 𝙫𝙞𝙥 𝙙𝙚 𝙥𝙖𝙜𝙖",
+    "icon": "https://i.ibb.co/WpjZVZtc/Picsart-26-01-17-16-44-59-136.png",
+    "id": 188712,
+    "mode": "SSH_PROXY",
+    "name": "𝙀𝙉𝙏𝙀𝙇 5𝙂𝘽 𝘼𝙋𝙉💎",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": null,
+    "updated_at": "2026-10-10T19:44:58.874Z",
+    "created_at": "2026-01-24T19:51:02.443Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": "104.18.1.9",
+      "port": 80
+    },
+    "server": {
+      "host": "vip.fastrivervip.store",
+      "port": 80
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": "DELETE /cdn-cgi/trace HTTP/1.1[crlf]Host: 104.18.1.9[crlf][crlf]GET-RAY / HTTP/1.1[crlf]Host: [host][crlf]Connection: Upgrade[crlf]User-Agent: [ua][crlf]Upgrade: websocket[crlf][crlf]",
+      "sni": null
+    }
+  },
+  {
+    "category": {
+      "id": 20628,
+      "name": "SERVIDOR VIP",
+      "color": "#FF1F0B33",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-01-24T19:36:13.510Z",
+      "updated_at": "2026-10-28T00:43:48.325Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 20628,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "𝙨𝙚𝙧𝙫𝙞𝙙𝙤𝙧 𝙫𝙞𝙥 𝙙𝙚 𝙥𝙖𝙜𝙖",
+    "icon": "https://i.ibb.co/WpjZVZtc/Picsart-26-01-17-16-44-59-136.png",
+    "id": 188713,
+    "mode": "SSH_PROXY",
+    "name": "𝗘𝗡𝗧𝗘𝗟 𝗥𝗘𝗗𝗘𝗦 𝗧𝗜𝗞𝗧𝗢𝗞💎🔴",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": null,
+    "updated_at": "2026-10-14T17:50:43.604Z",
+    "created_at": "2026-01-24T19:52:37.747Z",
+    "udp_ports": [
+      7200
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": "api24-normal.tiktokv.com",
+      "port": 80
+    },
+    "server": {
+      "host": "api24-normal.tiktokv.com",
+      "port": 443
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": "GET / HTTP/1.1[crlf]Host: [host][crlf]except: 100-continue[lf][lf][split][lf][lf]PIN- / HTTP/1.1[crlf]Host: vip.fastrivervip.store[crlf]Upgrade: Websocket[crlf][crlf]",
+      "sni": null
+    }
+  },
+  {
+    "category": {
+      "id": 20628,
+      "name": "SERVIDOR VIP",
+      "color": "#FF1F0B33",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-01-24T19:36:13.510Z",
+      "updated_at": "2026-10-28T00:43:48.325Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 20628,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "𝙨𝙚𝙧𝙫𝙞𝙙𝙤𝙧 𝙫𝙞𝙥 𝙙𝙚 𝙥𝙖𝙜𝙖",
+    "icon": "https://i.ibb.co/WpjZVZtc/Picsart-26-01-17-16-44-59-136.png",
+    "id": 188714,
+    "mode": "SSH_PROXY",
+    "name": "𝗘𝗡𝗧𝗘𝗟 𝗣𝗔𝗤𝗤 𝗚𝗔𝗠𝗘𝗥",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": null,
+    "updated_at": "2026-10-28T13:47:42.725Z",
+    "created_at": "2026-01-24T19:53:40.191Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": "gamerfun.fastrivervip.store",
+      "port": 80
+    },
+    "server": {
+      "host": "gamerfun.fastrivervip.store",
+      "port": 80
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": "GET /cdn-cgi/trace HTTP/1.1[crlf]Host: [rotate=gamerfun.fastrivervip.store;gamerfun.fastrivervip.store;gamerfun.fastrivervip.store;gamerfun.fastrivervip.store][crlf][crlf]CF-RAY / HTTP/1.1[crlf]Host: vip.fastrivervip.store[crlf]Upgrade: websocket[crlf]Connection: Keep-Alive[crlf]User-Agent: YES[crlf]Upgrade: websocket[crlf][crlf]",
+      "sni": null
+    }
+  },
+  {
+    "category": {
+      "id": 20628,
+      "name": "SERVIDOR VIP",
+      "color": "#FF1F0B33",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-01-24T19:36:13.510Z",
+      "updated_at": "2026-10-28T00:43:48.325Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 20628,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "𝙨𝙚𝙧𝙫𝙞𝙙𝙤𝙧 𝙫𝙞𝙥 𝙙𝙚 𝙥𝙖𝙜𝙖",
+    "icon": "https://i.ibb.co/8gVkhqWM/Picsart-26-01-17-16-53-17-980.png",
+    "id": 188716,
+    "mode": "SSL_PROXY",
+    "name": "𝑴𝑶𝑽𝑰𝑺𝑻𝑨𝑹 𝑺𝑷𝑶𝑻𝑰𝑭𝒀 𝑷𝑶𝑺𝑻💎",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": "TLSv1.2",
+    "updated_at": "2026-10-10T19:47:35.009Z",
+    "created_at": "2026-01-24T19:59:18.065Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": "investors.spotify.com",
+      "port": 443
+    },
+    "server": {
+      "host": "investors.spotify.com",
+      "port": 443
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": "GET / HTTP/1.1[crlf]Host: vip.fastrivervip.store[crlf]Upgrade: websocket[crlf][crlf]",
+      "sni": "vip.fastrivervip.store"
+    }
+  },
+  {
+    "category": {
+      "id": 20628,
+      "name": "SERVIDOR VIP",
+      "color": "#FF1F0B33",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-01-24T19:36:13.510Z",
+      "updated_at": "2026-10-28T00:43:48.325Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 20628,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "conecta primero está opción 3 segundos",
+    "icon": "https://i.ibb.co/8gVkhqWM/Picsart-26-01-17-16-53-17-980.png",
+    "id": 188717,
+    "mode": "SSL_PROXY",
+    "name": "𝙈𝙊𝙑𝙄𝙎𝙏𝘼𝙍 𝙁𝘽 𝘽𝙐𝙂 𝟯𝗦",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": "TLSv1.2",
+    "updated_at": "2026-10-30T03:13:42.670Z",
+    "created_at": "2026-01-24T20:01:22.117Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": "investor.fb.com",
+      "port": 443
+    },
+    "server": {
+      "host": "vip.fastriverpro.store",
+      "port": 443
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": "GET /cdn-cgi/trace HTTP/1.1[crlf]Host: [rotate=investor.fb.com;investor.fb.com;investor.fb.com;investor.fb.com][crlf][crlf]CF-RAY / HTTP/1.1[crlf]Host: vip.fastriverpro.store[crlf]Upgrade: websocket[crlf]Connection: Keep-Alive[crlf]User-Agent: YES[crlf]Upgrade: websocket[crlf][crlf]",
+      "sni": "investor.fb.com"
+    }
+  },
+  {
+    "category": {
+      "id": 20628,
+      "name": "SERVIDOR VIP",
+      "color": "#FF1F0B33",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-01-24T19:36:13.510Z",
+      "updated_at": "2026-10-28T00:43:48.325Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 20628,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "𝙘𝙤𝙣𝙚𝙘𝙩𝙖𝙧 𝙞𝙣𝙢𝙚𝙙𝙞𝙖𝙩𝙖𝙢𝙚𝙣𝙩𝙚 𝙙𝙚𝙨𝙥𝙪𝙚𝙨 𝙙𝙚𝙡 𝙗𝙪𝙜 ",
+    "icon": "https://i.ibb.co/8gVkhqWM/Picsart-26-01-17-16-53-17-980.png",
+    "id": 188719,
+    "mode": "SSL_PROXY",
+    "name": "𝙈𝙊𝙑𝙄𝙎𝙏𝘼𝙍 𝙁𝘼𝘾𝙀𝘽𝙊𝙊𝙆 𝙁𝙐𝙇𝙇",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": "TLSv1.2",
+    "updated_at": "2026-10-30T03:14:00.205Z",
+    "created_at": "2026-01-24T20:02:46.071Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": "investor.fb.com",
+      "port": 443
+    },
+    "server": {
+      "host": "investor.fb.com",
+      "port": 443
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": "GET /cdn-cgi/trace HTTP/1.1[crlf]Host: [rotate=investor.fb.com;investor.fb.com;investor.fb.com;investor.fb.com][crlf][crlf]CF-RAY / HTTP/1.1[crlf]Host: vip.fastriverpro.store[crlf]Upgrade: websocket[crlf]Connection: Keep-Alive[crlf]User-Agent: YES[crlf]Upgrade: websocket[crlf][crlf]",
+      "sni": "vip.fastriverpro.store"
+    }
+  },
+  {
+    "category": {
+      "id": 20628,
+      "name": "SERVIDOR VIP",
+      "color": "#FF1F0B33",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-01-24T19:36:13.510Z",
+      "updated_at": "2026-10-28T00:43:48.325Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 20628,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "𝙨𝙚𝙧𝙫𝙞𝙙𝙤𝙧 𝙫𝙞𝙥 𝙙𝙚 𝙥𝙖𝙜𝙖🤝",
+    "icon": "https://i.ibb.co/8gVkhqWM/Picsart-26-01-17-16-53-17-980.png",
+    "id": 188720,
+    "mode": "SSL_DIRECT",
+    "name": "𝐌𝐎𝐕𝐈𝐒𝐓𝐀𝐑 𝐏𝐀𝐐 𝐅𝐑𝐄 𝐅𝐈𝐑𝐄",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": "TLSv1.2",
+    "updated_at": "2026-10-10T19:49:28.082Z",
+    "created_at": "2026-01-24T20:04:24.655Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": null,
+      "port": null
+    },
+    "server": {
+      "host": "173.255.199.228",
+      "port": 443
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": null,
+      "sni": "freefiremobile-a.akamaihd.net"
+    }
+  },
+  {
+    "category": {
+      "id": 20628,
+      "name": "SERVIDOR VIP",
+      "color": "#FF1F0B33",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-01-24T19:36:13.510Z",
+      "updated_at": "2026-10-28T00:43:48.325Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 20628,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "𝙨𝙚𝙧𝙫𝙞𝙙𝙤𝙧 𝙫𝙞𝙥 𝙙𝙚 𝙥𝙖𝙜𝙖",
+    "icon": "https://i.ibb.co/8gVkhqWM/Picsart-26-01-17-16-53-17-980.png",
+    "id": 188721,
+    "mode": "SSH_DIRECT",
+    "name": "𝙈𝙊𝙑𝙄𝙎𝙏𝘼𝙍 𝙋𝘼𝙌𝙐𝙀𝙏𝙀 𝙎𝙉𝘼𝙋𝘾𝙃𝘼𝙏 ",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": "TLSv1.3",
+    "updated_at": "2026-10-10T19:51:38.493Z",
+    "created_at": "2026-01-24T20:08:19.759Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": "investor.fb.com",
+      "port": 443
+    },
+    "server": {
+      "host": "click.snapchat.com",
+      "port": 80
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": "GET / HTTP/1.1[crlf]Host: vip.fastrivervip.store[crlf]Upgrade: websocket[crlf][crlf]",
+      "sni": "[rotate=investor.fb.com;vip.fastrivervip.store]"
+    }
+  },
+  {
+    "category": {
+      "id": 20628,
+      "name": "SERVIDOR VIP",
+      "color": "#FF1F0B33",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-01-24T19:36:13.510Z",
+      "updated_at": "2026-10-28T00:43:48.325Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 20628,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "𝙨𝙚𝙧𝙫𝙞𝙙𝙤𝙧 𝙫𝙞𝙥 𝙙𝙚 𝙥𝙖𝙜𝙖",
+    "icon": "https://i.ibb.co/8gVkhqWM/Picsart-26-01-17-16-53-17-980.png",
+    "id": 188722,
+    "mode": "SSL_DIRECT",
+    "name": "𝐌𝐎𝐕𝐈𝐒𝐓𝐀𝐑 𝐖𝐇𝐀𝐓𝐒𝐀𝐏𝐏 𝟐𝟎𝟐𝟔🎉",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": "TLSv1.2",
+    "updated_at": "2026-11-02T20:41:15.748Z",
+    "created_at": "2026-01-24T20:18:12.332Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": null,
+      "port": null
+    },
+    "server": {
+      "host": "173.255.199.228",
+      "port": 443
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": null,
+      "sni": "media-ccu1-2.cdn.whatsapp.net"
+    }
+  },
+  {
+    "category": {
+      "id": 20628,
+      "name": "SERVIDOR VIP",
+      "color": "#FF1F0B33",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-01-24T19:36:13.510Z",
+      "updated_at": "2026-10-28T00:43:48.325Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 20628,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "𝙨𝙚𝙧𝙫𝙞𝙙𝙤𝙧 𝙫𝙞𝙥 𝙙𝙚 𝙥𝙖𝙜𝙖",
+    "icon": "https://i.ibb.co/Jj3TWY6s/Picsart-26-02-03-20-40-58-133.png",
+    "id": 188725,
+    "mode": "SSH_PROXY",
+    "name": "𝗕𝗜𝗧𝗘𝗟 𝗧𝗜𝟱-𝗧𝗜𝟭𝟬✅",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": null,
+    "updated_at": "2026-10-10T19:51:58.750Z",
+    "created_at": "2026-01-24T20:23:22.631Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": "gamerfun.fastrivervip.store",
+      "port": 80
+    },
+    "server": {
+      "host": "gamerfun.fastrivervip.store",
+      "port": 80
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": "GET / HTTP/1.1[crlf]Host: [host][crlf]except: 100-continue[lf][lf][split][lf][lf]PIN- / HTTP/1.1[crlf]Host: vip.fastrivervip.store[crlf]Upgrade: Websocket[crlf][crlf]",
+      "sni": null
+    }
+  },
+  {
+    "category": {
+      "id": 20628,
+      "name": "SERVIDOR VIP",
+      "color": "#FF1F0B33",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-01-24T19:36:13.510Z",
+      "updated_at": "2026-10-28T00:43:48.325Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 20628,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "𝙨𝙚𝙧𝙫𝙞𝙙𝙤𝙧 𝙫𝙞𝙥 𝙙𝙚 𝙥𝙖𝙜𝙖",
+    "icon": "https://i.ibb.co/nNF4QDZr/Picsart-26-01-17-16-41-51-159.png",
+    "id": 188726,
+    "mode": "SSH_PROXY",
+    "name": "𝘾𝙇𝘼𝙍𝙊 𝙏𝙄𝙏𝙆𝙊𝙆💎",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": null,
+    "updated_at": "2026-10-30T20:41:04.159Z",
+    "created_at": "2026-01-24T20:24:32.733Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": "api24-normal-useast1a.tiktokv.com",
+      "port": 80
+    },
+    "server": {
+      "host": "vip.fastrivervip.store",
+      "port": 80
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": "GET /cdn-cgi/trace HTTP/1.1[crlf]Host: api24-normal.tiktokv.com[crlf][crlf]GET-RAY / HTTP/1.1[crlf]Host: [host][crlf]Upgrade: Websocket[crlf][crlf]",
+      "sni": null
+    }
+  },
+  {
+    "category": {
+      "id": 20628,
+      "name": "SERVIDOR VIP",
+      "color": "#FF1F0B33",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-01-24T19:36:13.510Z",
+      "updated_at": "2026-10-28T00:43:48.325Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 20628,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "𝙨𝙚𝙧𝙫𝙞𝙙𝙤𝙧 𝙫𝙞𝙥 𝙙𝙚 𝙥𝙖𝙜𝙖",
+    "icon": "https://i.ibb.co/nNF4QDZr/Picsart-26-01-17-16-41-51-159.png",
+    "id": 188727,
+    "mode": "SSL_DIRECT",
+    "name": "𝗖𝗟𝗔𝗥𝗢 𝗙𝗥𝗘𝗙𝗜𝗥𝗘 𝟲𝗚𝗕💎",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": "TLSv1.2",
+    "updated_at": "2026-10-10T20:08:57.647Z",
+    "created_at": "2026-01-24T20:26:03.764Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": null,
+      "port": null
+    },
+    "server": {
+      "host": "vip.fastrivervip.store",
+      "port": 443
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": null,
+      "sni": "telegram.dog"
+    }
+  },
+  {
+    "category": {
+      "id": 20656,
+      "name": "SERVIDOR PÚBLICO GRATIS ",
+      "color": "#BEFF0000",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-01-26T17:43:36.722Z",
+      "updated_at": "2026-02-04T01:47:44.601Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 20656,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "VPZ FRE",
+    "icon": "https://i.ibb.co/XZXKCyZF/Picsart-26-01-17-16-53-17-980.png",
+    "id": 188841,
+    "mode": "SSL_PROXY",
+    "name": "MOV FACEBOOK BUG",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": "TLSv1.2",
+    "updated_at": "2026-10-21T11:30:39.701Z",
+    "created_at": "2026-01-26T22:08:14.651Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": "TUCUMAN",
+      "username": "SSHFREE",
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": "investor.fb.com",
+      "port": 443
+    },
+    "server": {
+      "host": "brasil2.br1.online",
+      "port": 443
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": "PACTH / HTTP/1.1[crlf]Host: brasil2.br1.online[crlf]Host: investor.fb.com[crlf]Connection: Upgrade[crlf]User-Agent: [ua][crlf]Upgrade: websocket[crlf][crlf]",
+      "sni": "investor.fb.com"
+    }
+  },
+  {
+    "category": {
+      "id": 20656,
+      "name": "SERVIDOR PÚBLICO GRATIS ",
+      "color": "#BEFF0000",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-01-26T17:43:36.722Z",
+      "updated_at": "2026-02-04T01:47:44.601Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 20656,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "paq fre fire",
+    "icon": "https://i.ibb.co/XZXKCyZF/Picsart-26-01-17-16-53-17-980.png",
+    "id": 188842,
+    "mode": "SSL_DIRECT",
+    "name": "MOVISTAR FRE FIRE🇵🇪💯",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": "TLSv1.2",
+    "updated_at": "2026-10-09T14:55:16.732Z",
+    "created_at": "2026-01-26T22:11:29.471Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": "full",
+      "username": "vps",
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": null,
+      "port": null
+    },
+    "server": {
+      "host": "ssh.manuvps.click",
+      "port": 443
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": null,
+      "sni": "freefiremobile-a.akamaihd.net"
+    }
+  },
+  {
+    "category": {
+      "id": 20656,
+      "name": "SERVIDOR PÚBLICO GRATIS ",
+      "color": "#BEFF0000",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-01-26T17:43:36.722Z",
+      "updated_at": "2026-02-04T01:47:44.601Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 20656,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "EN CLARO TIKTOK CREAR APN NUEVO ",
+    "icon": "https://i.ibb.co/MyTsKjLj/Picsart-26-01-17-16-41-51-159.png",
+    "id": 188844,
+    "mode": "SSH_DIRECT",
+    "name": "ENTEL Y CLARO TIKTOK🇵🇪💯",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": null,
+    "updated_at": "2026-10-21T11:30:05.436Z",
+    "created_at": "2026-01-26T22:16:43.888Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": "TUCUMAN",
+      "username": "SSHFREE",
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": "api24-normal-useast1a.tiktokv.com",
+      "port": 80
+    },
+    "server": {
+      "host": "api24-normal-useast1a.tiktokv.com",
+      "port": 80
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": "GET / HTTP/1.5[crlf]Host: [host][crlf]Expect: 500-Continue[crlf][crlf][split][crlf][crlf]CF-RAY / HTTP/1.8[crlf]Host: brasil2.br1.online[crlf]Upgrade: websocket[crlf]Referer: close[crlf][crlf]",
+      "sni": null
+    }
+  },
+  {
+    "category": {
+      "id": 22648,
+      "name": "MULTIPAIS📱🇦🇷🇲🇽🇨🇴🇨🇱🇧🇯🇪🇨",
+      "color": "#80FF308A",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-09-26T14:15:12.890Z",
+      "updated_at": "2026-09-26T14:15:12.890Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 22648,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "tls",
+    "icon": "https://i.ibb.co/HDrmmnqV/Picsart-26-01-26-20-17-17-448.png",
+    "id": 188852,
+    "mode": "SSL_DIRECT",
+    "name": "TELCEL REDES MX",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": "TLSv1.2",
+    "updated_at": "2026-10-10T20:14:42.713Z",
+    "created_at": "2026-01-26T22:43:19.325Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": null,
+      "port": null
+    },
+    "server": {
+      "host": "173.255.199.228",
+      "port": 443
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": null,
+      "sni": "help.twitter.com"
+    }
+  },
+  {
+    "category": {
+      "id": 22648,
+      "name": "MULTIPAIS📱🇦🇷🇲🇽🇨🇴🇨🇱🇧🇯🇪🇨",
+      "color": "#80FF308A",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-09-26T14:15:12.890Z",
+      "updated_at": "2026-09-26T14:15:12.890Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 22648,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "mexico ssl",
+    "icon": "https://i.ibb.co/VYXMFd2G/Picsart-26-01-26-20-13-39-649.png",
+    "id": 188853,
+    "mode": "SSL_DIRECT",
+    "name": "VIRGIN SIN REDES",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": "TLSv1.2",
+    "updated_at": "2026-10-10T20:14:49.572Z",
+    "created_at": "2026-01-26T22:47:02.220Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": null,
+      "port": null
+    },
+    "server": {
+      "host": "173.255.199.228",
+      "port": 443
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": null,
+      "sni": "chatbot-widget.virginmobile.mx"
+    }
+  },
+  {
+    "category": {
+      "id": 22648,
+      "name": "MULTIPAIS📱🇦🇷🇲🇽🇨🇴🇨🇱🇧🇯🇪🇨",
+      "color": "#80FF308A",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-09-26T14:15:12.890Z",
+      "updated_at": "2026-09-26T14:15:12.890Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 22648,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "mexico ssl",
+    "icon": "https://i.ibb.co/kVPKCLRd/Picsart-26-01-26-20-13-18-106.png",
+    "id": 188854,
+    "mode": "SSL_DIRECT",
+    "name": "BAIT SIN SALDO MX",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": "TLSv1.2",
+    "updated_at": "2026-10-10T20:13:23.258Z",
+    "created_at": "2026-01-26T22:48:25.493Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": null,
+      "port": null
+    },
+    "server": {
+      "host": "173.255.199.228",
+      "port": 443
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": null,
+      "sni": "aprendeencasa.sep.gob.mx"
+    }
+  },
+  {
+    "category": {
+      "id": 22648,
+      "name": "MULTIPAIS📱🇦🇷🇲🇽🇨🇴🇨🇱🇧🇯🇪🇨",
+      "color": "#80FF308A",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-09-26T14:15:12.890Z",
+      "updated_at": "2026-09-26T14:15:12.890Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 22648,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "REDES ",
+    "icon": "https://i.ibb.co/kVPKCLRd/Picsart-26-01-26-20-13-18-106.png",
+    "id": 188855,
+    "mode": "SSL_DIRECT",
+    "name": "BAIT CONGELA MB",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": "TLSv1.2",
+    "updated_at": "2026-10-10T20:13:14.914Z",
+    "created_at": "2026-01-26T22:49:44.141Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": null,
+      "port": null
+    },
+    "server": {
+      "host": "173.255.199.228",
+      "port": 443
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": null,
+      "sni": "starmini.c10r.facebook.com"
+    }
+  },
+  {
+    "category": {
+      "id": 22648,
+      "name": "MULTIPAIS📱🇦🇷🇲🇽🇨🇴🇨🇱🇧🇯🇪🇨",
+      "color": "#80FF308A",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-09-26T14:15:12.890Z",
+      "updated_at": "2026-09-26T14:15:12.890Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 22648,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "REDES MEXICO",
+    "icon": "https://i.ibb.co/XZXKCyZF/Picsart-26-01-17-16-53-17-980.png",
+    "id": 188856,
+    "mode": "SSL_DIRECT",
+    "name": "MOVISTAR  CONGELA MB MX",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": "TLSv1.2",
+    "updated_at": "2026-10-10T20:13:07.095Z",
+    "created_at": "2026-01-26T22:51:15.894Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": null,
+      "port": null
+    },
+    "server": {
+      "host": "173.255.199.228",
+      "port": 443
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": null,
+      "sni": "status.twitter.com"
+    }
+  },
+  {
+    "category": {
+      "id": 22648,
+      "name": "MULTIPAIS📱🇦🇷🇲🇽🇨🇴🇨🇱🇧🇯🇪🇨",
+      "color": "#80FF308A",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-09-26T14:15:12.890Z",
+      "updated_at": "2026-09-26T14:15:12.890Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 22648,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "mx ",
+    "icon": "https://i.ibb.co/XZXKCyZF/Picsart-26-01-17-16-53-17-980.png",
+    "id": 188857,
+    "mode": "SSL_DIRECT",
+    "name": "MOVISTAR SIN SALDO MÉXICO ",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": "TLSv1.2",
+    "updated_at": "2026-10-10T20:12:59.571Z",
+    "created_at": "2026-01-26T23:03:36.131Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": null,
+      "port": null
+    },
+    "server": {
+      "host": "173.255.199.228",
+      "port": 443
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": null,
+      "sni": "tienda.movistar.com.mx"
+    }
+  },
+  {
+    "category": {
+      "id": 22648,
+      "name": "MULTIPAIS📱🇦🇷🇲🇽🇨🇴🇨🇱🇧🇯🇪🇨",
+      "color": "#80FF308A",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-09-26T14:15:12.890Z",
+      "updated_at": "2026-09-26T14:15:12.890Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 22648,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "Plan de 100 arriba😚",
+    "icon": "https://i.ibb.co/MxYBBT48/Picsart-26-01-29-21-50-46-044.png",
+    "id": 189042,
+    "mode": "SSH_PROXY",
+    "name": "TELCEL REDES TODAS LAS REGIONES MX",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": null,
+    "updated_at": "2026-10-10T20:12:49.279Z",
+    "created_at": "2026-01-30T02:51:40.898Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": "video-cf.twimg.com",
+      "port": 80
+    },
+    "server": {
+      "host": "video-cf.twimg.com",
+      "port": 80
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": "GET /cdn-cgi/trace HTTP/1.1[crlf]Host: [rotate=video-t-2.twimg.com;video-cf.twimg.com;pbs.twimg.com;abs.twimg.com][crlf][crlf]CF-RAY / HTTP/1.1[crlf]Host: vip.fastrivervip.store[crlf]Upgrade: websocket[crlf]Connection: Keep-Alive[crlf]User-Agent: YES[crlf]Upgrade: websocket[crlf][crlf]",
+      "sni": null
+    }
+  },
+  {
+    "category": {
+      "id": 22648,
+      "name": "MULTIPAIS📱🇦🇷🇲🇽🇨🇴🇨🇱🇧🇯🇪🇨",
+      "color": "#80FF308A",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-09-26T14:15:12.890Z",
+      "updated_at": "2026-09-26T14:15:12.890Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 22648,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "🇲🇽MEXICO🇲🇽",
+    "icon": "https://i.ibb.co/x8G69FYS/Picsart-26-01-17-16-53-17-980.png",
+    "id": 189148,
+    "mode": "SSH_DIRECT",
+    "name": "MOVISTAR SIN SALDO ",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": null,
+    "updated_at": "2026-10-10T20:12:30.744Z",
+    "created_at": "2026-01-31T21:19:19.888Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": null,
+      "port": null
+    },
+    "server": {
+      "host": "104.20.45.23",
+      "port": 80
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": "GET / HTTP/1.1[crlf]Host: vip.fastrivervip.store[crlf]Connection: Upgrade[crlf]User-Agent: [ua][crlf]Upgrade: websocket[crlf][crlf]",
+      "sni": null
+    }
+  },
+  {
+    "category": {
+      "id": 22648,
+      "name": "MULTIPAIS📱🇦🇷🇲🇽🇨🇴🇨🇱🇧🇯🇪🇨",
+      "color": "#80FF308A",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-09-26T14:15:12.890Z",
+      "updated_at": "2026-09-26T14:15:12.890Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 22648,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "MULTIOPERADOR MX ",
+    "icon": "https://i.ibb.co/bjX01JLx/Picsart-26-01-26-20-13-18-106.png",
+    "id": 189149,
+    "mode": "SSL_DIRECT",
+    "name": "🇲🇽Altan & Bait & Movistar Redes🇲🇽",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": "TLSv1.2",
+    "updated_at": "2026-10-10T20:12:18.353Z",
+    "created_at": "2026-01-31T21:38:56.519Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": null,
+      "port": null
+    },
+    "server": {
+      "host": "173.255.199.228",
+      "port": 443
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": null,
+      "sni": "mp-internal.twitter.com"
+    }
+  },
+  {
+    "category": {
+      "id": 22648,
+      "name": "MULTIPAIS📱🇦🇷🇲🇽🇨🇴🇨🇱🇧🇯🇪🇨",
+      "color": "#80FF308A",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-09-26T14:15:12.890Z",
+      "updated_at": "2026-09-26T14:15:12.890Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 22648,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "SIN SALDO",
+    "icon": "https://i.ibb.co/TBtwwP8t/Picsart-26-01-31-16-41-35-457.png",
+    "id": 189150,
+    "mode": "SSL_DIRECT",
+    "name": "🇲🇽OXXOCEL🇲🇽",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": "TLSv1.2",
+    "updated_at": "2026-10-10T20:11:55.198Z",
+    "created_at": "2026-01-31T21:43:32.142Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": null,
+      "port": null
+    },
+    "server": {
+      "host": "173.255.199.228",
+      "port": 443
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": null,
+      "sni": "www.ahorrocel.com"
+    }
+  },
+  {
+    "category": {
+      "id": 22648,
+      "name": "MULTIPAIS📱🇦🇷🇲🇽🇨🇴🇨🇱🇧🇯🇪🇨",
+      "color": "#80FF308A",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-09-26T14:15:12.890Z",
+      "updated_at": "2026-09-26T14:15:12.890Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 22648,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "SIN SALDO 2",
+    "icon": "https://i.ibb.co/TBtwwP8t/Picsart-26-01-31-16-41-35-457.png",
+    "id": 189151,
+    "mode": "SSL_DIRECT",
+    "name": "🇲🇽OXXOCEL🇲🇽",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": "TLSv1.2",
+    "updated_at": "2026-10-10T20:12:03.218Z",
+    "created_at": "2026-01-31T21:45:14.522Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": null,
+      "port": null
+    },
+    "server": {
+      "host": "173.255.199.228",
+      "port": 443
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": null,
+      "sni": "www.freedompop.mx"
+    }
+  },
+  {
+    "category": {
+      "id": 22648,
+      "name": "MULTIPAIS📱🇦🇷🇲🇽🇨🇴🇨🇱🇧🇯🇪🇨",
+      "color": "#80FF308A",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-09-26T14:15:12.890Z",
+      "updated_at": "2026-09-26T14:15:12.890Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 22648,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "ECUADOR ",
+    "icon": "https://i.ibb.co/v6H81w6m/Picsart-26-01-31-16-51-59-092.png",
+    "id": 189152,
+    "mode": "SSL_DIRECT",
+    "name": "TUENTI PACK INSTAGRAM🇪🇨",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": "TLSv1.2",
+    "updated_at": "2026-10-10T20:14:24.141Z",
+    "created_at": "2026-01-31T21:52:20.863Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": null,
+      "port": null
+    },
+    "server": {
+      "host": "173.255.199.228",
+      "port": 443
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": null,
+      "sni": "ayuda.instagram.com"
+    }
+  },
+  {
+    "category": {
+      "id": 22648,
+      "name": "MULTIPAIS📱🇦🇷🇲🇽🇨🇴🇨🇱🇧🇯🇪🇨",
+      "color": "#80FF308A",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-09-26T14:15:12.890Z",
+      "updated_at": "2026-09-26T14:15:12.890Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 22648,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "funciona con paquete ",
+    "icon": "https://i.ibb.co/s941VxL5/Picsart-26-02-05-23-30-39-628.png",
+    "id": 189614,
+    "mode": "SSH_DIRECT",
+    "name": "AT&T Unefon Rds Nuevo ✅️",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": null,
+    "updated_at": "2026-10-10T20:14:00.684Z",
+    "created_at": "2026-02-09T12:32:24.951Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": null,
+      "port": null
+    },
+    "server": {
+      "host": "x.com",
+      "port": 80
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": "GET /cdn-cgi/trace HTTP/1.1[crlf]Host: [rotate=x.com;cf.x.com;x.com;x.com;x.com][crlf][crlf]CF-RAY / HTTP/1.1[crlf]Host: vip.fastrivervip.store[crlf]Upgrade: websocket[crlf]Connection: Keep-Alive[crlf]User-Agent:  mozilla[crlf]Upgrade: websocket[crlf][crlf]",
+      "sni": null
+    }
+  },
+  {
+    "category": {
+      "id": 22648,
+      "name": "MULTIPAIS📱🇦🇷🇲🇽🇨🇴🇨🇱🇧🇯🇪🇨",
+      "color": "#80FF308A",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-09-26T14:15:12.890Z",
+      "updated_at": "2026-09-26T14:15:12.890Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 22648,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "redes congela mb😁",
+    "icon": "https://i.ibb.co/27T38Psk/Picsart-26-01-29-21-50-46-044.png",
+    "id": 189615,
+    "mode": "SSH_PROXY",
+    "name": "TELCEL OXXOCEL REDES",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": null,
+    "updated_at": "2026-10-10T20:13:49.487Z",
+    "created_at": "2026-02-09T12:37:39.097Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": "pbs-cloudflare.twimg.com",
+      "port": 80
+    },
+    "server": {
+      "host": "pbs-cloudflare.twimg.com",
+      "port": 80
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": "HEAD / HTTP/1.1[crlf]Host: pbs-cloudflare.twimg.com[crlf]Expect: 100-continue[lf][lf][split][lf][lf]GET / HTTP/1.1[lf]Host: vip.fastrivervip.store[lf]Expect: 100-continue[lf]Connection: Upgrade[lf]Upgrade: websocket[lf]User-Agent: Googlebot/2.1 (+http://www.google.com/bot.html)[lf][lf]",
+      "sni": null
+    }
+  },
+  {
+    "category": {
+      "id": 22648,
+      "name": "MULTIPAIS📱🇦🇷🇲🇽🇨🇴🇨🇱🇧🇯🇪🇨",
+      "color": "#80FF308A",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-09-26T14:15:12.890Z",
+      "updated_at": "2026-09-26T14:15:12.890Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 22648,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "funciona con redes",
+    "icon": "https://i.ibb.co/27T38Psk/Picsart-26-01-29-21-50-46-044.png",
+    "id": 189616,
+    "mode": "SSH_PROXY",
+    "name": "TELCEL TODAS LAS REGIONES ",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": null,
+    "updated_at": "2026-10-10T20:13:36.271Z",
+    "created_at": "2026-02-09T12:40:21.905Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": "video-cf.twimg.com",
+      "port": 80
+    },
+    "server": {
+      "host": "video-cf.twimg.com",
+      "port": 80
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": "GET /cdn-cgi/trace HTTP/1.1[crlf]Host: [rotate=video-t-2.twimg.com;video-cf.twimg.com;pbs.twimg.com;abs.twimg.com][crlf][crlf]CF-RAY / HTTP/1.1[crlf]Host: vip.fastrivervip.store[crlf]Upgrade: websocket[crlf]Connection: Keep-Alive[crlf]User-Agent: YES[crlf]Upgrade: websocket[crlf][crlf]",
+      "sni": null
+    }
+  },
+  {
+    "category": {
+      "id": 20628,
+      "name": "SERVIDOR VIP",
+      "color": "#FF1F0B33",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-01-24T19:36:13.510Z",
+      "updated_at": "2026-10-28T00:43:48.325Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 20628,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "BAM FULL 1GB ",
+    "icon": "https://i.ibb.co/JR30TJqy/Picsart-26-01-17-16-44-59-136.png",
+    "id": 191098,
+    "mode": "SSH_PROXY",
+    "name": "ENTEL SIN R3DES 2026",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": null,
+    "updated_at": "2026-10-10T20:11:06.661Z",
+    "created_at": "2026-03-24T20:43:53.012Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": "crunchyroll.entel.pe",
+      "port": 80
+    },
+    "server": {
+      "host": "crunchyroll.entel.pe",
+      "port": 80
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": "GET / HTTP/1.1[crlf]Host: [host][crlf]except: 100-continue[lf][lf][split][lf][lf]PIN- / HTTP/1.1[crlf]Host: vip.fastrivervip.store[crlf]Upgrade: Websocket[crlf][crlf]",
+      "sni": null
+    }
+  },
+  {
+    "category": {
+      "id": 20628,
+      "name": "SERVIDOR VIP",
+      "color": "#FF1F0B33",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-01-24T19:36:13.510Z",
+      "updated_at": "2026-10-28T00:43:48.325Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 20628,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "FUNCIONA CON APN WAP",
+    "icon": "https://i.ibb.co/3mTZd8zH/Picsart-26-10-17-13-14-33-642.jpg",
+    "id": 199276,
+    "mode": "SSH_DIRECT",
+    "name": "ENTEL FULL SOLO ZONAS ",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": null,
+    "updated_at": "2026-10-17T18:19:45.776Z",
+    "created_at": "2026-09-25T11:43:11.001Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": null,
+      "port": null
+    },
+    "server": {
+      "host": "app.entel.pe",
+      "port": 80
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": "GET /cdn-cgi/trace HTTP/1.1[crlf]Host: [rotate=app.entel.pe;tinder.entel.pe;app.entel.pe;tinder.entel.pe][crlf][crlf]CF-RAY / HTTP/1.1[crlf]Host: vip.fastrivervip.store[crlf]Upgrade: websocket[crlf]Connection: Keep-Alive[crlf]User-Agent: YES[crlf]Upgrade: websocket[crlf][crlf]",
+      "sni": null
+    }
+  },
+  {
+    "category": {
+      "id": 20628,
+      "name": "SERVIDOR VIP",
+      "color": "#FF1F0B33",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-01-24T19:36:13.510Z",
+      "updated_at": "2026-10-28T00:43:48.325Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 20628,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "SOLO USO X EMERGENCIA❤️",
+    "icon": "https://i.ibb.co/JwSXSHhc/Picsart-26-08-09-20-45-52-722.jpg",
+    "id": 199293,
+    "mode": "SSH_PROXY",
+    "name": "BITEL FULL CON BAM 200MB",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": null,
+    "updated_at": "2026-10-10T20:10:28.093Z",
+    "created_at": "2026-09-26T14:09:33.142Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": "bipay.bitel.com.pe",
+      "port": 80
+    },
+    "server": {
+      "host": "bipay.bitel.com.pe",
+      "port": 80
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": "GET / HTTP/1.1[crlf]Host: bipay.bitel.com.pe[crlf]Expect: 100-continue[lf][lf][split][lf][lf]ACL /FASTRIVER/ HTTP/1.1[lf]Host: vip.fastrivervip.store[lf]Expect: 100-continue[lf]Connection: Upgrade[lf]Upgrade: websocket[lf]User-Agent: Googlebot/2.1 (+http://www.google.com/bot.html)[lf][lf]",
+      "sni": null
+    }
+  },
+  {
+    "category": {
+      "id": 20628,
+      "name": "SERVIDOR VIP",
+      "color": "#FF1F0B33",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-01-24T19:36:13.510Z",
+      "updated_at": "2026-10-28T00:43:48.325Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 20628,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "full acelerador",
+    "icon": "https://i.ibb.co/JwSXSHhc/Picsart-26-08-09-20-45-52-722.jpg",
+    "id": 199294,
+    "mode": "SSH_PROXY",
+    "name": "BITEL TI5",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": null,
+    "updated_at": "2026-10-10T20:10:13.539Z",
+    "created_at": "2026-09-26T14:19:49.941Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": "api24-normal-alisg.tiktokv.com",
+      "port": 80
+    },
+    "server": {
+      "host": "api24-normal-alisg.tiktokv.com",
+      "port": 80
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": "GET / HTTP/1.1[crlf]Host: [host][crlf]except: 100-continue[lf][lf][split][lf][lf]PIN- / HTTP/1.1[crlf]Host: vip.fastrivervip.store[crlf]Upgrade: Websocket[crlf][crlf]",
+      "sni": null
+    }
+  },
+  {
+    "category": {
+      "id": 20656,
+      "name": "SERVIDOR PÚBLICO GRATIS ",
+      "color": "#BEFF0000",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-01-26T17:43:36.722Z",
+      "updated_at": "2026-02-04T01:47:44.601Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 20656,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "para el grupo ",
+    "icon": "https://i.ibb.co/7ttR0k3Y/trashed-1794852976-Picsart-26-10-17-13-14-25-405.png",
+    "id": 199295,
+    "mode": "SSH_PROXY",
+    "name": "ENTEL BAM 1GB ",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": null,
+    "updated_at": "2026-10-21T13:32:44.534Z",
+    "created_at": "2026-09-26T14:56:59.889Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": "TUCUMAN",
+      "username": "SSHFREE",
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": "entel.cdn.modyo.com",
+      "port": 80
+    },
+    "server": {
+      "host": "argentina.br1.online",
+      "port": 80
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": "GET /cdn-cgi/trace HTTP/1.1[crlf]Host: entel.cdn.modyo.com[crlf][crlf]GET-RAY / HTTP/1.1[crlf]Host: [host][crlf]Connection: Upgrade[crlf]User-Agent: [ua][crlf]Upgrade: websocket[crlf][crlf]",
+      "sni": null
+    }
+  },
+  {
+    "category": {
+      "id": 20628,
+      "name": "SERVIDOR VIP",
+      "color": "#FF1F0B33",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-01-24T19:36:13.510Z",
+      "updated_at": "2026-10-28T00:43:48.325Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 20628,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "SIN APN WAP Y CON APN",
+    "icon": "https://i.ibb.co/3mTZd8zH/Picsart-26-10-17-13-14-33-642.jpg",
+    "id": 199305,
+    "mode": "SSH_DIRECT",
+    "name": "ENTEL FULL SIN BAM",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": null,
+    "updated_at": "2026-10-17T18:21:27.056Z",
+    "created_at": "2026-09-27T11:46:31.528Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": null,
+      "port": null
+    },
+    "server": {
+      "host": "bumeran.com.pe",
+      "port": 80
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": "GET / HTTP/1.5[crlf]Host: [host][crlf]Expect: 500-Continue[crlf][crlf][split][crlf][crlf]CF-RAY / HTTP/1.8[crlf]Host: vip.fastrivervip.store[crlf]Upgrade: websocket[crlf]Referer: close[crlf][crlf]",
+      "sni": null
+    }
+  },
+  {
+    "category": {
+      "id": 20628,
+      "name": "SERVIDOR VIP",
+      "color": "#FF1F0B33",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-01-24T19:36:13.510Z",
+      "updated_at": "2026-10-28T00:43:48.325Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 20628,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "SIN REDES PRUEBA ",
+    "icon": "https://i.ibb.co/7ttR0k3Y/trashed-1794852976-Picsart-26-10-17-13-14-25-405.png",
+    "id": 199306,
+    "mode": "SSH_DIRECT",
+    "name": "ENTEL SIN BAM ",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": null,
+    "updated_at": "2026-10-17T18:23:11.601Z",
+    "created_at": "2026-09-27T11:51:36.999Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": null,
+      "port": null
+    },
+    "server": {
+      "host": "crunchyroll.entel.pe",
+      "port": 80
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": "GET /cdn-cgi/trace HTTP/1.1[crlf]Host: [rotate=crunchyroll.entel.pe;crunchyroll.entel.pe;crunchyroll.entel.pe;crunchyroll.entel.pe][crlf][crlf]CF-RAY / HTTP/1.1[crlf]Host: vip.fastrivervip.store[crlf]Upgrade: websocket[crlf]Connection: Keep-Alive[crlf]User-Agent: YES[crlf]Upgrade: websocket[crlf][crlf]",
+      "sni": null
+    }
+  },
+  {
+    "category": {
+      "id": 20628,
+      "name": "SERVIDOR VIP",
+      "color": "#FF1F0B33",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-01-24T19:36:13.510Z",
+      "updated_at": "2026-10-28T00:43:48.325Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 20628,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "FULL CON APN Y SIN APN ",
+    "icon": "https://i.ibb.co/3mTZd8zH/Picsart-26-10-17-13-14-33-642.jpg",
+    "id": 199353,
+    "mode": "SSH_PROXY",
+    "name": "ENTEL FULL SIN BAM",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": null,
+    "updated_at": "2026-10-17T18:19:09.067Z",
+    "created_at": "2026-09-29T17:50:59.070Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": "entel.cdn.modyo.com",
+      "port": 80
+    },
+    "server": {
+      "host": "vip.fastrivervip.store",
+      "port": 80
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": "GET /cdn-cgi/trace HTTP/1.1[crlf]Host: entel.cdn.modyo.com[crlf][crlf]GET-RAY / HTTP/1.1[crlf]Host: [host][crlf]Connection: Upgrade[crlf]User-Agent: [ua][crlf]Upgrade: websocket[crlf][crlf]",
+      "sni": null
+    }
+  },
+  {
+    "category": {
+      "id": 20656,
+      "name": "SERVIDOR PÚBLICO GRATIS ",
+      "color": "#BEFF0000",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-01-26T17:43:36.722Z",
+      "updated_at": "2026-02-04T01:47:44.601Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 20656,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "",
+    "icon": "https://i.ibb.co/MDZj2hkz/Picsart-26-02-24-21-34-14-489.png",
+    "id": 199701,
+    "mode": "SSL_PROXY",
+    "name": "MOVISTAR FACEBOOK FULL ",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": "TLSv1.2",
+    "updated_at": "2026-10-21T11:31:53.167Z",
+    "created_at": "2026-10-09T16:13:15.473Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": "TUCUMAN",
+      "username": "SSHFREE",
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": "investor.fb.com",
+      "port": 443
+    },
+    "server": {
+      "host": "investor.fb.com",
+      "port": 443
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": "PACTH / HTTP/1.1[crlf]Host: brasil2.br1.online[crlf]Host: investor.fb.com[crlf]Connection: Upgrade[crlf]User-Agent: [ua][crlf]Upgrade: websocket[crlf][crlf]",
+      "sni": "brasil2.br1.online"
+    }
+  },
+  {
+    "category": {
+      "id": 20656,
+      "name": "SERVIDOR PÚBLICO GRATIS ",
+      "color": "#BEFF0000",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-01-26T17:43:36.722Z",
+      "updated_at": "2026-02-04T01:47:44.601Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 20656,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "",
+    "icon": "https://i.ibb.co/wFr41X11/Picsart-26-08-09-20-46-42-344.jpg",
+    "id": 199702,
+    "mode": "SSH_DIRECT",
+    "name": "ENTEL BAM 2GB FULL",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": null,
+    "updated_at": "2026-10-21T11:32:16.779Z",
+    "created_at": "2026-10-09T16:17:04.142Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": "TUCUMAN",
+      "username": "SSHFREE",
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": null,
+      "port": null
+    },
+    "server": {
+      "host": "cpcalendars.bicentenariodelperu.pe",
+      "port": 80
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": "GET / HTTP/1.5[crlf]Host: [host][crlf]Expect: 500-Continue[crlf][crlf][split][crlf][crlf]CF-RAY / HTTP/1.8[crlf]Host: brasil2.br1.online[crlf]Upgrade: websocket[crlf]Referer: close[crlf][crlf]",
+      "sni": null
+    }
+  },
+  {
+    "category": {
+      "id": 20628,
+      "name": "SERVIDOR VIP",
+      "color": "#FF1F0B33",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-01-24T19:36:13.510Z",
+      "updated_at": "2026-10-28T00:43:48.325Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 20628,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "full se paciente hasta que jale",
+    "icon": "https://i.ibb.co/qY0mGQKC/Picsart-26-10-17-13-12-45-142.png",
+    "id": 199718,
+    "mode": "SSL_PROXY",
+    "name": "MOVISTAR SIN REDES 2",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": "TLSv1.2",
+    "updated_at": "2026-11-02T20:39:17.886Z",
+    "created_at": "2026-10-10T22:05:25.234Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": "app.movistar.com.pe",
+      "port": 443
+    },
+    "server": {
+      "host": "172.66.0.157",
+      "port": 443
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": "GET / HTTP/1.3[crlf]Host: vip.fastriverpro.store[crlf]Upgrade: websocket[crlf][crlf]",
+      "sni": "vip.fastriverpro.store"
+    }
+  },
+  {
+    "category": {
+      "id": 20628,
+      "name": "SERVIDOR VIP",
+      "color": "#FF1F0B33",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-01-24T19:36:13.510Z",
+      "updated_at": "2026-10-28T00:43:48.325Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 20628,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "modo avion varias veces ",
+    "icon": "https://i.ibb.co/qY0mGQKC/Picsart-26-10-17-13-12-45-142.png",
+    "id": 199890,
+    "mode": "SSL_PROXY",
+    "name": "MOVI SIN REDES FULL 😜🥳🫣",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": "TLSv1.2",
+    "updated_at": "2026-10-28T16:49:47.727Z",
+    "created_at": "2026-10-17T17:41:31.717Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": "104.18.34.21",
+      "port": 443
+    },
+    "server": {
+      "host": " 104.18.34.21",
+      "port": 443
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": "GET / HTTP/1.1[crlf]Host: vip.fastriverpro.store[crlf]Upgrade: websocket[crlf][crlf]",
+      "sni": "vip.fastriverpro.store"
+    }
+  },
+  {
+    "category": {
+      "id": 20628,
+      "name": "SERVIDOR VIP",
+      "color": "#FF1F0B33",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-01-24T19:36:13.510Z",
+      "updated_at": "2026-10-28T00:43:48.325Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 20628,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "full avionazo hasta que jale",
+    "icon": "https://i.ibb.co/qY0mGQKC/Picsart-26-10-17-13-12-45-142.png",
+    "id": 199891,
+    "mode": "SSL_PROXY",
+    "name": "MOV 4 SIN REDES",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": "TLSv1.2",
+    "updated_at": "2026-10-28T16:49:26.038Z",
+    "created_at": "2026-10-17T17:42:22.633Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": " mirecibo.movistar.com.pe",
+      "port": 443
+    },
+    "server": {
+      "host": " mirecibo.movistar.com.pe",
+      "port": 443
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": "GET / HTTP/1.1[crlf]Host: vip.fastrivervip.store[crlf]Upgrade: websocket[crlf][crlf]",
+      "sni": "vip.fastrivervip.store"
+    }
+  },
+  {
+    "category": {
+      "id": 20628,
+      "name": "SERVIDOR VIP",
+      "color": "#FF1F0B33",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-01-24T19:36:13.510Z",
+      "updated_at": "2026-10-28T00:43:48.325Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 20628,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "SSL FULL",
+    "icon": "https://i.ibb.co/3yc2cq1k/Picsart-26-10-17-13-12-45-142.png",
+    "id": 199995,
+    "mode": "SSL_DIRECT",
+    "name": "MOVI WHATSAPP FULL😋🍇",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": "TLSv1.2",
+    "updated_at": "2026-11-02T20:40:57.670Z",
+    "created_at": "2026-10-24T02:38:09.461Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": null,
+      "port": null
+    },
+    "server": {
+      "host": "vip.fastriverpro.store",
+      "port": 443
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": null,
+      "sni": "betablog.whatsapp.com"
+    }
+  },
+  {
+    "category": {
+      "id": 20628,
+      "name": "SERVIDOR VIP",
+      "color": "#FF1F0B33",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-01-24T19:36:13.510Z",
+      "updated_at": "2026-10-28T00:43:48.325Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 20628,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "WEBSOCKET",
+    "icon": "https://i.ibb.co/3yc2cq1k/Picsart-26-10-17-13-12-45-142.png",
+    "id": 199996,
+    "mode": "SSL_PROXY",
+    "name": "MOVI REDES WHATSAPP ",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": "TLSv1.2",
+    "updated_at": "2026-10-24T02:40:32.622Z",
+    "created_at": "2026-10-24T02:40:32.622Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": "162.159.140.229",
+      "port": 443
+    },
+    "server": {
+      "host": "162.159.140.229",
+      "port": 443
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": "GET / HTTP/1.1[crlf]Host: vip.fastrivervip.store[crlf]Upgrade: websocket[crlf][crlf]",
+      "sni": "vip.fastrivervip.store"
+    }
+  },
+  {
+    "category": {
+      "id": 20628,
+      "name": "SERVIDOR VIP",
+      "color": "#FF1F0B33",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-01-24T19:36:13.510Z",
+      "updated_at": "2026-10-28T00:43:48.325Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 20628,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "full avionazo🥵",
+    "icon": "https://i.ibb.co/3yc2cq1k/Picsart-26-10-17-13-12-45-142.png",
+    "id": 199997,
+    "mode": "SSL_DIRECT",
+    "name": "MOVI INSTAGRAM ",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": "TLSv1.2",
+    "updated_at": "2026-10-24T02:43:46.071Z",
+    "created_at": "2026-10-24T02:43:46.071Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": null,
+      "port": null
+    },
+    "server": {
+      "host": "vip.fastrivervip.store",
+      "port": 443
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": null,
+      "sni": "instagram.c10r.instagram.com"
+    }
+  },
+  {
+    "category": {
+      "id": 20628,
+      "name": "SERVIDOR VIP",
+      "color": "#FF1F0B33",
+      "sorter": 1,
+      "status": "ACTIVE",
+      "created_at": "2026-01-24T19:36:13.510Z",
+      "updated_at": "2026-10-28T00:43:48.325Z",
+      "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547"
+    },
+    "category_id": 20628,
+    "config_openvpn": null,
+    "config_v2ray": null,
+    "description": "sin redes nuevo",
+    "icon": "https://i.ibb.co/vbmmdq0/trashed-1794852976-Picsart-26-10-17-13-14-25-405.png",
+    "id": 200101,
+    "mode": "SSH_PROXY",
+    "name": "entel full sin bam",
+    "sorter": 1,
+    "status": "ACTIVE",
+    "tls_version": null,
+    "updated_at": "2026-10-30T03:24:54.586Z",
+    "created_at": "2026-10-29T20:53:45.531Z",
+    "udp_ports": [
+      7300
+    ],
+    "url_check_user": "",
+    "user_id": "3d61851c-7098-4c5f-8400-a581c3abd547",
+    "auth": {
+      "password": null,
+      "username": null,
+      "v2ray_uuid": null
+    },
+    "proxy": {
+      "host": "entel.cdn.modyo.com",
+      "port": 80
+    },
+    "server": {
+      "host": "entel.cdn.modyo.com",
+      "port": 80
+    },
+    "dns_server": {
+      "dns1": "8.8.8.8",
+      "dns2": "8.8.4.4"
+    },
+    "config_payload": {
+      "payload": "GET / HTTP/1.5[crlf]Host: [host][crlf]Expect: 500-Continue[crlf][crlf][split][crlf][crlf]CF-RAY / HTTP/1.8[crlf]Host: vip.fastriverpro.store[crlf]Upgrade: websocket[crlf]Referer: close[crlf][crlf]",
+      "sni": null
+    }
+  }
+]

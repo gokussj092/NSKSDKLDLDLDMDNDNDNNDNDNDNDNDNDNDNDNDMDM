@@ -1,0 +1,25 @@
+{
+  "id": "shield-vpn",
+  "name": "Shield VPN",
+  "package": "litron.shield.vpn",
+  "versionName": "18.0",
+  "versionCode": 18,
+  "engine": "python",
+  "entrypoint": "Shield_VPN.py",
+  "extensions": [],
+  "textPrefixes": [],
+  "catalog": {
+    "entrypoint": "Shield_VPN.py",
+    "method": "Unicode nibble carrier U+2000..U+200F -> Base64 -> AES-256-CBC, key = SHA-256 of UPPERCASE hex of godtech25, IV 16 zero bytes (Litron family format)",
+    "url": "https://godtechprime.github.io/shieldneko.txt",
+    "liveVersion": "31.73",
+    "servers": 8,
+    "networks": 65,
+    "payloads": 44,
+    "status": "live_verified",
+    "assetVersion": "1",
+    "assetServers": 5,
+    "assetNetworks": 15,
+    "notes": "Output byte-identical to the repo Litron codec (verified with PyCryptodome). Distinct package from com.fleet.vpn (Litron VPN) and com.litron.udp (Litron Pro VPN)."
+  }
+}

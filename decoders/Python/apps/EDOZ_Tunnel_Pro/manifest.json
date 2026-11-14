@@ -1,0 +1,27 @@
+{
+  "id": "edoz-tunnel-pro",
+  "name": "EDOZ Tunnel Pro",
+  "package": "net.androidtechvilla.edoztunnelpro",
+  "versionName": "2.4",
+  "versionCode": 15,
+  "engine": "python",
+  "entrypoint": "EDOZ_Tunnel_Pro.py",
+  "extensions": [],
+  "textPrefixes": [],
+  "catalog": {
+    "entrypoint": "EDOZ_Tunnel_Pro.py",
+    "method": "Base64 -> OpenSSL Salted__ container -> EVP_BytesToKey/MD5 -> AES-256-CBC, format password securedjson (tcodes framework)",
+    "url": "https://raw.githubusercontent.com/chrisrepair/Updates/main/Edoztunnel%20Pro%20V7%202024",
+    "vipUrl": "https://raw.githubusercontent.com/chrisrepair/Updates/main/Edoztunnel%20Pro%20VIP%20V3",
+    "liveVersion": "50.8",
+    "servers": 23,
+    "networks": null,
+    "payloads": 1558,
+    "status": "live_verified_free_vip_failed",
+    "vipStatus": "VIP_DECRYPT_FAILED",
+    "assetVersion": "23.08",
+    "assetServers": 20,
+    "assetPayloads": 900,
+    "notes": "Payloads = Tweaks (1558). VIP live body (HTTP 200, 1097 B) does not start with Salted__ and does not open with any tested cipher/password; --vip reports VIP_DECRYPT_FAILED, exit 2. Free catalog body is byte-identical to EDOZ Tunnel free catalog."
+  }
+}

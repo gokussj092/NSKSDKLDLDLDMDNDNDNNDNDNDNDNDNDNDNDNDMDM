@@ -16,22 +16,24 @@
     "publicCatalogVersion": 76,
     "validation": "whole independent JCA, owner helper, Python and isolated-worker JSON parity",
     "currentProof": {
-      "inputBytes": 444168,
-      "inputSha256": "579dc907863a13330dd21e0b48f7122035bea276629f7592d0d614f299d9bf23",
-      "version": "289",
+      "inputBytes": 446856,
+      "inputSha256": "209b15fd112fe99d44163410987edebfcda74b46c824ebbd27f70189e4bfb96a",
+      "version": "293",
       "servers": 8,
       "networks": 86,
       "hiddenFieldsCompared": 40,
       "wholeIndependentJcaParity": true,
       "wholeProvidedHelperParity": true,
       "providedAutoInstallerCalled": false,
-      "clearJsonSha256": "98aa5f644106254168fffa5bbd53ef9844362c7daee5070c4f602513a2916c0c",
-      "rawOutputBytes": 65689,
+      "clearJsonSha256": null,
+      "rawOutputBytes": null,
       "apkCodeExecuted": false,
       "cipherAuthenticated": false,
-      "wholeWorkerParity": true
+      "wholeWorkerParity": true,
+      "note": "v293 verified live 2026-11-13 with the standalone stdlib Fleet_VPN.py (PyCryptodome-independent parity); clearJsonSha256/rawOutputBytes not documented for v293, so the v289 values were removed, not carried over. JCA/worker parity flags are carried from the v289 validation."
     },
-    "evidenceDirectory": "analysis/com.fleet.vpn/25"
+    "evidenceDirectory": "analysis/com.fleet.vpn/25",
+    "note": "Standalone stdlib decoder staged as server_catalog_decoder.py (Fleet_VPN.py, byte-identical content); repo codec.py (PyCryptodome + BD_NET_VPN shared validator) is NOT staged — merge must decide whether it stays or is retired."
   },
   "files": {
     "supported": false,
