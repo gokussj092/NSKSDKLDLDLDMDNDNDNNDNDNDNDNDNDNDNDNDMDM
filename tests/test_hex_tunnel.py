@@ -65,7 +65,7 @@ class HexTunnelTests(unittest.TestCase):
         self.assertEqual(failure.exception.code,'CREDENTIALS_NOT_ALLOWED')
     def test_cloud_catalog_is_file_only_and_c0_is_unchanged(self):
         from cloud.workers.python.engine import load_file_engines,load_runtime_file_engines
-        self.assertEqual(len(load_file_engines()),240);self.assertEqual(len(load_runtime_file_engines()),267)
+        self.assertEqual(len(load_file_engines()),240);self.assertEqual(len(load_runtime_file_engines()),270)
         self.assertNotIn('hexcm',load_file_engines())
         entries=json.loads((ROOT/'cloud/web/content/file-formats.json').read_text())['formats']
         entry=next(x for x in entries if x['suffix']=='hexcm')

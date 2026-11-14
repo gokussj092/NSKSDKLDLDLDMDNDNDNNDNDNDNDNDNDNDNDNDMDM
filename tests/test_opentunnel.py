@@ -38,7 +38,7 @@ class OpenTunnelTests(unittest.TestCase):
         self.assertEqual(codec.decode_file(tnl_bytes()),{'Host':'example.org','Port':'443'})
     def test_worker_inventory_is_frozen_and_overlay_is_explicit(self):
         from cloud.workers.python.engine import load_file_engines,load_runtime_file_engines,decode_file
-        self.assertEqual(len(load_file_engines()),240);self.assertEqual(len(load_runtime_file_engines()),267)
+        self.assertEqual(len(load_file_engines()),240);self.assertEqual(len(load_runtime_file_engines()),270)
         self.assertIn('/OpenTunnel/file_decoder.py',load_runtime_file_engines()['tnl']['source'])
         for case in V['documents']:
             result=decode_file('tnl',base64.b64decode(case['base64']));self.assertEqual(result['structuredJson'],V['expected'])

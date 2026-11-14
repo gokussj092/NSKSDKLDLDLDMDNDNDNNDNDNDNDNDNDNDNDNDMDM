@@ -15,3 +15,7 @@ Estado: PARTIAL. Las conexiones implementadas pasan sus comprobaciones; no equiv
 - Ningún script original en decoders/Python/apps fue modificado. Se añaden únicamente adaptadores, inventario, fichas, copias públicas de iconos, controles y pruebas.
 
 No ejecutado: actualización del VPS, nueva APK, publicación Play, extracción de credenciales ajenas, nuevos veredictos de integridad o pruebas autenticadas de proveedores que exigen datos no suministrados.
+
+## Cierre de controles
+
+Se ejecutaron además 151/151 pruebas Python de proveedores anteriores, aprobadas tras actualizar sus expectativas de inventario a 270 rutas. La auditoría F7-A0 con --enforce pasó con 82 expedientes estructuralmente completos, sin equivaler a validación remota. GitHub Actions compartido de caché pasó en 40a19fd. El primer preflight Android detectó una expectativa literal de COPY para V2Box ya desactualizada por la tanda anterior; se separa la instrucción COPY manteniendo todos los archivos y los 34/34 contratos de release pasan localmente. No se afirma una APK nueva compilada hasta que termine la ejecución remota.

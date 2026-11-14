@@ -44,7 +44,7 @@ class ZigTests(unittest.TestCase):
   from cloud.workers.python.engine import decode_provider_catalog,load_runtime_file_engines
   out=decode_provider_catalog('zig-tunnel',V['catalog'].encode());self.assertEqual(out['structuredJson'],V['expected']);self.assertEqual(json.loads(out['rawText']),V['expected']);self.assertFalse(out['isPartial']);self.assertFalse(out['exporterCertified'])
   r=subprocess.run([sys.executable,str(APP/'server_catalog_decoder.py'),'--stdin'],input=V['catalog'].encode(),capture_output=True,cwd='/tmp',timeout=20)
-  self.assertEqual(r.returncode,0);self.assertEqual(r.stderr,b'');self.assertEqual(json.loads(r.stdout),V['expected']);self.assertEqual(len(load_runtime_file_engines()),267)
+  self.assertEqual(r.returncode,0);self.assertEqual(r.stderr,b'');self.assertEqual(json.loads(r.stdout),V['expected']);self.assertEqual(len(load_runtime_file_engines()),270)
  def test_original_user_agent_fixed_source_redirects_and_sanitized_failure(self):
   class Opener:
    def open(self,r,timeout):

@@ -163,7 +163,7 @@ class TRVTunnelTests(unittest.TestCase):
         result = decode_provider_catalog("trv-tunnel", fixture["catalog"].encode())
         self.assertEqual(result["structuredJson"], fixture["expectedCatalog"])
         self.assertFalse(result["isPartial"])
-        self.assertEqual(len(load_runtime_file_engines()), 267)
+        self.assertEqual(len(load_runtime_file_engines()), 270)
         self.assertIn("/HX_Tunnel_VPN/HX_Tunnel_VPN_archivos.py", load_runtime_file_engines()["hxt"]["source"])
         with self.assertRaises(DecodeFailure): decode_provider_catalog("trv-tunnel", fixture["invalidCatalogs"][0].encode())
 

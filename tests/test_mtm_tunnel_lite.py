@@ -115,7 +115,7 @@ class MtmTests(unittest.TestCase):
         from cloud.workers.python.engine import load_file_engines,load_runtime_file_engines
         from spdecode.registry import get_decoder
         self.assertEqual(len(load_file_engines()),240)
-        self.assertEqual(len(load_runtime_file_engines()),267)
+        self.assertEqual(len(load_runtime_file_engines()),270)
         self.assertTrue(load_file_engines()['v2']['source'].endswith('/EV2RAY.py'))
         self.assertTrue(get_decoder('v2').script.endswith('/MTM_Tunnel_Lite/file_decoder.py'))
         self.assertNotIn('json',load_runtime_file_engines())
