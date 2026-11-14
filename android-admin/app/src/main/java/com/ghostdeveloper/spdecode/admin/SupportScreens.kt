@@ -158,7 +158,7 @@ internal fun ChatScreen(state: PreviewState, id: String, feedback: (String) -> U
                         )
                     }
                 }
-                items(ticket.messages, key = { it.id }) { MessageBubble(it) }
+                items(ticket.messages, key = { it.id }) { MessageBubble(it, keyboardOpen) }
             }
             HorizontalDivider(color = Border)
             if (!keyboardOpen)
@@ -201,7 +201,20 @@ internal fun ChatScreen(state: PreviewState, id: String, feedback: (String) -> U
                     TextField(
                         draft,
                         { draft = it.take(2000) },
-                        placeholder = { Text("Escribir mensaje...", fontSize = 14.sp) },
+                        placeholder = {
+                            Text(
+                                "Escribir mensaje...",
+                                fontSize = 14.sp,
+                                lineHeight = 20.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        },
+                        textStyle =
+                            MaterialTheme.typography.bodyMedium.copy(
+                                fontSize = 15.sp,
+                                lineHeight = 20.sp,
+                            ),
                         shape = RoundedCornerShape(25.dp),
                         maxLines = if (keyboardOpen) 2 else 4,
                         colors = fieldColors(),
@@ -282,7 +295,7 @@ internal fun ChatScreen(state: PreviewState, id: String, feedback: (String) -> U
 }
 
 @Composable
-private fun MessageBubble(message: PreviewMessage) {
+private fun MessageBubble(message: PreviewMessage, compact: Boolean) {
     BoxWithConstraints(Modifier.fillMaxWidth()) {
         val width = maxWidth * .86f
         Row(
@@ -300,17 +313,18 @@ private fun MessageBubble(message: PreviewMessage) {
                             bottomEnd = if (message.outgoing) 4.dp else 17.dp,
                         ),
                     )
-                    .padding(horizontal = 14.dp, vertical = 11.dp),
-                verticalArrangement = Arrangement.spacedBy(6.dp),
+                    .padding(horizontal = 14.dp, vertical = if (compact) 8.dp else 11.dp),
+                verticalArrangement = Arrangement.spacedBy(if (compact) 4.dp else 6.dp),
             ) {
-                if (message.outgoing) Small(message.author, color = Mint)
-                Text(message.text, color = Ink, fontSize = 15.sp)
+                if (message.outgoing)
+                    Text(message.author, color = Mint, fontSize = 12.sp, lineHeight = 16.sp)
+                Text(message.text, color = Ink, fontSize = 15.sp, lineHeight = 20.sp)
                 Row(
                     Modifier.align(Alignment.End),
                     horizontalArrangement = Arrangement.spacedBy(5.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Small(message.time)
+                    Text(message.time, color = Muted, fontSize = 12.sp, lineHeight = 16.sp)
                     if (message.outgoing) {
                         Icon(
                             if (message.local) Icons.Outlined.Schedule else Icons.Outlined.DoneAll,
@@ -319,7 +333,8 @@ private fun MessageBubble(message: PreviewMessage) {
                             Modifier.size(14.dp),
                             Mint,
                         )
-                        if (message.local) Small("Local", color = Mint)
+                        if (message.local)
+                            Text("Local", color = Mint, fontSize = 12.sp, lineHeight = 16.sp)
                     }
                 }
             }

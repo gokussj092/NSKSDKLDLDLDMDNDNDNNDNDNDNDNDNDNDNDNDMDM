@@ -18,6 +18,7 @@ import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -263,9 +264,18 @@ internal fun AdminApplication(state: PreviewState) {
                                         fontSize = 17.sp,
                                         fontWeight = FontWeight.SemiBold,
                                     )
-                                    Small(
-                                        if (t.closed) "Ticket cerrado" else "Chat privado",
+                                    Text(
+                                        if (t.closed) "Ticket cerrado"
+                                        else if (
+                                            WindowInsets.ime.getBottom(LocalDensity.current) > 0
+                                        )
+                                            "Vista previa · local"
+                                        else "Chat privado",
                                         color = if (t.closed) Muted else Mint,
+                                        fontSize = 11.sp,
+                                        lineHeight = 15.sp,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
                                     )
                                 }
                             }
@@ -470,7 +480,8 @@ internal fun AdminApplication(state: PreviewState) {
             Column(
                 Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding).imePadding()
             ) {
-                PreviewBanner()
+                if (current != Page.Chat || WindowInsets.ime.getBottom(LocalDensity.current) == 0)
+                    PreviewBanner()
                 holder.SaveableStateProvider(current.name) {
                     when (current) {
                         Page.Dashboard -> DashboardScreen(state, ::go)

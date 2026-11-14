@@ -401,7 +401,12 @@ internal fun PreviewBanner() {
     ) {
         Icon(Icons.Outlined.Science, null, Modifier.size(13.dp), Amber)
         Spacer(Modifier.width(6.dp))
-        Text("Vista previa · datos de prueba · sin conexión", color = Amber, fontSize = 10.sp)
+        Text(
+            "Vista previa · datos de prueba · sin conexión",
+            color = Amber,
+            fontSize = 10.sp,
+            lineHeight = 14.sp,
+        )
     }
 }
 
