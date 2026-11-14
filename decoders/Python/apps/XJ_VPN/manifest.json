@@ -1,0 +1,35 @@
+{
+  "id": "xj-vpn",
+  "name": "XJ VPN",
+  "package": "net.xj.vpn",
+  "versionName": "1.9.7",
+  "versionCode": 99,
+  "engine": "python",
+  "entrypoint": "XJ_VPN.py",
+  "fileDecoder": "XJ_VPN_archivos.py",
+  "extensions": [
+    "xj"
+  ],
+  "textPrefixes": [
+    "xj://",
+    "xjgcp://",
+    "xjdev://",
+    "xjvpn://"
+  ],
+  "dependencies": [],
+  "credentials": [
+    "password"
+  ],
+  "catalog": {
+    "status": "LIVE_BLOCKED_BY_INTEGRITY",
+    "method": "GET",
+    "url": "https://onlinetoolx.com/xjvpn/mobile/public/app-update?app_key=xj_vpn&current_version_code=99",
+    "version": null,
+    "servers": null,
+    "networks": null,
+    "payloads": null,
+    "note": "Preflight HTTP 200 integrity_required:true; los 5 endpoints (servers, payloads, xray_payloads, v2ray-configs, accounts) responden HTTP 403, 242 B, modified_app:true. Solo un token Play Integrity de un dispositivo real con la app de Play lo desbloquea."
+  },
+  "realSampleVerified": false,
+  "deployment": "pending"
+}

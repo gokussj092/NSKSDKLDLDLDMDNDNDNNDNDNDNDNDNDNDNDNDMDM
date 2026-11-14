@@ -2,8 +2,8 @@
   "id": "mm-tunnel",
   "name": "MM Tunnel",
   "package": "co.strongteam.marvsudp",
-  "versionName": "v1.10.30.2",
-  "versionCode": 47,
+  "versionName": "v1.11.06.1",
+  "versionCode": 48,
   "engine": "python",
   "entrypoint": "file_decoder.py",
   "extensions": [
@@ -22,7 +22,7 @@
   "userPasswordCryptographicallyRequired": false,
   "legacyMmtFallback": "decoders/Python/ultra.py:decrypt_ultra_file",
   "catalog": {
-    "entrypoint": "server_catalog_decoder.py",
+    "entrypoint": "Marvs_UDP.py",
     "asset": "assets/configfile.json",
     "embeddedVerified": true,
     "embeddedVersion": "1.01",
@@ -30,14 +30,18 @@
     "embeddedNetworks": 555,
     "embeddedEncryptedFields": 3335,
     "remote": "fixed-original-hash-post",
-    "remoteStatus": "http_200_full_catalog_verified",
+    "remoteStatus": "http_200_envelope_verified_fields_partial",
     "cardDecodeEnabled": true,
-    "remoteVersion": "2.46",
-    "remoteServers": 38,
-    "remoteNetworks": 557,
-    "remoteBytes": 822713,
-    "remoteEncryptedFields": 3399,
-    "remoteSha256": "d36899110cd6976e8e43935fdd6a0e19952f8a3f12716f8a36fd7642fecc6241"
+    "remoteVersion": "2.71",
+    "remoteServers": 37,
+    "remoteNetworks": 818,
+    "remoteBytes": 1154861,
+    "remoteEncryptedFields": 3464,
+    "remoteSha256": "e94bb7420c32325844079a9528266e285db0f9e095c3768ef091c39834e26773",
+    "remoteFieldsDecoded": 3427,
+    "remoteFieldsFailed": 37,
+    "remoteFieldsFailedNote": "16 redes de Egipto (Etisalat/WE): Payload 15, SNI 13, CustomProxy 9; usar --fields-partial",
+    "routeSwitchPending": "Cloud routes (bridge mm-tunnel + .mmt) still use build 47 codec.py/file_decoder.py/server_catalog_decoder.py; switch to Marvs_UDP.py/Marvs_UDP_archivos.py after test rewrite with new golden vectors (new API + new secrets, Ultra fallback to preserve)."
   },
   "icon": {
     "originalResource": "res/drawable/icon.png",
@@ -52,10 +56,16 @@
   "deployment": "pending",
   "compatibleVersionCodes": [
     45,
-    47
+    47,
+    48
   ],
   "originalSha256": "8cf714a8545caa92a85bf956af8ab61a8edc3f385914533877d34ef29338b1e1",
   "requestMethod": "POST",
   "privateBackendCredentialsRequired": false,
-  "deployed": false
+  "deployed": false,
+  "files": {
+    "catalogDecoder": "Marvs_UDP.py",
+    "fileDecoder": "Marvs_UDP_archivos.py",
+    "status": "in_repo_pending_route_switch"
+  }
 }
