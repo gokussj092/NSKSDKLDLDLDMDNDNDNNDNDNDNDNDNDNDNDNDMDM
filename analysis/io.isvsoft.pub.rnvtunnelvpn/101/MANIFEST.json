@@ -10,7 +10,8 @@
   "targets": [
     {
       "kind": "catalog",
-      "status": "CONNECTED"
+      "status": "PENDING",
+      "default_enabled": false
     },
     {
       "kind": "files",
@@ -46,10 +47,14 @@
     }
   ],
   "code_paths": [
+    "cloud/web/app/admin/admin-dashboard.jsx",
+    "cloud/web/lib/c12-provider-controls.mjs",
+    "cloud/web/lib/catalog-provider-policy.mjs",
     "cloud/web/lib/server-vpn-catalog.mjs",
     "cloud/web/lib/server-vpn-gateway.mjs",
     "cloud/web/lib/server-vpn-provider.mjs",
     "cloud/web/lib/supplied-integrations.mjs",
+    "cloud/web/tests/catalog-pending-controls.test.mjs",
     "cloud/workers/python/catalog_vpn_bridge.py",
     "cloud/workers/python/supplied_bridge.py",
     "decoders/Python/apps/RNV_Tunnel_VPN/RNV_Tunnel_VPN.py"
@@ -65,5 +70,13 @@
     "scope": "Connection only; existing algorithm evidence/status preserved.",
     "record": "analysis/platform/supplied-integrations/2026-11-14/MANIFEST.json",
     "status": "PARTIAL"
+  },
+  "catalog_control_review": {
+    "scope": "Operator defaults and reversible panel controls only; original file/text/catalog codecs unchanged.",
+    "default_enabled": false,
+    "control": "Persistent admin enable/disable; technical prerequisites still required",
+    "proof": "analysis/platform/supplied-integrations/2026-11-14/generated/catalog-controls-proof.json",
+    "reproduce": "node analysis/platform/supplied-integrations/2026-11-14/tools/check_catalog_controls.mjs",
+    "known_limit": "Clave remota pendiente de analizar en una app actualizada, según confirmación del propietario."
   }
 }

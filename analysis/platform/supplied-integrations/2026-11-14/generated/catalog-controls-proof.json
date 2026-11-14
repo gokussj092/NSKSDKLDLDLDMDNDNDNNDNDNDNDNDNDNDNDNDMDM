@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "scope": "Administrative defaults, persistent overrides and technical availability; no remote decoder validation",
+  "node": "v24.22.1",
+  "command": "node --test --test-reporter=tap tests/catalog-pending-controls.test.mjs",
+  "cwd": "cloud/web",
+  "tests": 5,
+  "passed": 5,
+  "failed": 0,
+  "network": false
+}

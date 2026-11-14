@@ -5,8 +5,9 @@ import {publicFormats,FORMAT_DETECTION} from "./file-format-catalog.mjs";
 import {publicTextFormats,publicOnlineReferenceFormats} from "./text-format-catalog.mjs";
 import {providerEnabled} from "./server-vpn-provider.mjs";
 import {SUPPLIED_CATALOG_ITEMS,suppliedProviderConfigured} from "./supplied-integrations.mjs";
+import {catalogDefaultEnabled} from "./catalog-provider-policy.mjs";
 
-export const CATALOG_VERSION = 83; // Authorized DTunnel updater default enables its catalog.
+export const CATALOG_VERSION = 84; // Pending catalogs default off; persistent panel overrides.
 export const RECHECK_SECONDS = 15 * 60; // Version-only recovery; full download occurs on version change.
 
 /** Monotonic deployment version. Bump this override for ANY metadata, icon
@@ -116,7 +117,7 @@ const BASE_ITEMS = [
 ];
 const suppliedById=new Map(SUPPLIED_CATALOG_ITEMS.map(item=>[item.id,item]));
 const ITEMS=Object.freeze([
-  ...BASE_ITEMS.map(item=>suppliedById.has(item.id)?{...item,remote:item.id}:item),
+  ...BASE_ITEMS.map(item=>suppliedById.has(item.id)?{...item,remote:suppliedById.get(item.id).remote}:item),
   ...SUPPLIED_CATALOG_ITEMS.filter(item=>!BASE_ITEMS.some(old=>old.id===item.id)),
 ]);
 
@@ -158,7 +159,7 @@ export function catalog({availability=null,methodStates=null,version=activeCatal
         providerEnabled(x.remote) && (availability?.[x.id] ?? true) :
         x.remote==="nur" ? (availability?.["nur-tunnel"] ?? process.env.CLOUD_NUR_FETCH_ENABLED==="true") :
         Boolean(x.remote) && (x.id!=="dtunnel-mod"||suppliedProviderConfigured(x.id)) &&
-        (availability?.[x.id] ?? process.env.CLOUD_SERVER_VPN_ENABLED==="true"),
+        (availability?.[x.id] ?? (catalogDefaultEnabled(x.id)&&process.env.CLOUD_SERVER_VPN_ENABLED==="true")),
     })),
   };
 }

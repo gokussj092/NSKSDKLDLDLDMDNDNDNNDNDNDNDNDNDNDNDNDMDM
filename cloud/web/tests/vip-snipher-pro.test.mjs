@@ -139,7 +139,13 @@ test("VIP persistent switch preserves other providers and never stores the secre
   assert(!JSON.stringify(status).includes(secret));
   const missing=await providerOverview({...env,SPDECODE_VIP_SNIPHER_AUTHORIZATION:""},{root});
   assert.equal(missing.providers.find(x=>x.id==="vip-snipher-pro").configured,false);
-  await assert.rejects(()=>updateProvider("vip-snipher-pro",true,{...env,SPDECODE_VIP_SNIPHER_AUTHORIZATION:""},{root}),/PROVIDER_NOT_CONFIGURED/);
+  const noKey={...env,SPDECODE_VIP_SNIPHER_AUTHORIZATION:""};
+  await updateProvider("vip-snipher-pro",false,noKey,{root});
+  const pending=await updateProvider("vip-snipher-pro",true,noKey,{root});
+  assert.equal(pending.providers.find(x=>x.id==="vip-snipher-pro").administrativelyEnabled,true);
+  assert.equal(await providerAllowed("vip-snipher-pro",noKey,{root}),false);
+  assert.equal(await providerAllowed("vip-snipher-pro",env,{root}),true);
+  assert.equal(await providerAllowed("netcol-vpn",env,{root}),false);
 });
 test("authenticated VIP gateway forwards the complete catalog without forwarding its source credential",async t=>{
   const env={CLOUD_API_ENABLED:"true",CLOUD_SERVER_VPN_ENABLED:"true",CLOUD_BETA_ADMISSION_ENABLED:"true",

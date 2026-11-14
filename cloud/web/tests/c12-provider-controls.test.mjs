@@ -27,7 +27,7 @@ test("allowlist is fixed and remote URLs are never stored as provider IDs",()=>{
   assert(PUBLIC_PROVIDER_IDS.includes("tunneltweak"));
   assert(PUBLIC_PROVIDER_IDS.includes("http-socketclay"));
   assert(PUBLIC_PROVIDER_IDS.includes("http-wakko"));
-  assert(!PUBLIC_PROVIDER_IDS.includes("royal-tunnel"));
+  assert(PUBLIC_PROVIDER_IDS.includes("royal-tunnel"));
   assert(!PUBLIC_PROVIDER_IDS.includes("https://evil.example/"));
   assert.throws(()=>providerPrerequisite("https://evil.example/",env));
 });
@@ -64,14 +64,20 @@ test("turning off EHI and NUR is enforced while file decoding remains independen
     .apps.find(x=>x.id==="nur-tunnel").decodeEnabled,false);
   assert.equal(map["http-jireh"],true);
 });
-test("panel cannot enable missing private EHI keys or disabled VPS integration",async t=>{
+test("panel saves activation independently of missing keys or disabled VPS integration",async t=>{
   const root=await fixture(t),opts={root};
   const noKeys={...env,CLOUD_EHI_RESPONSE_KEY:""};
   const disabled=await updateProvider("ehi-cloud",false,noKeys,opts);
   assert.equal(disabled.providers.find(x=>x.id==="ehi-cloud").configured,false);
-  await assert.rejects(()=>updateProvider("ehi-cloud",true,noKeys,opts),/PROVIDER_NOT_CONFIGURED/);
-  await assert.rejects(()=>updateProvider("http-jireh",true,{...env,CLOUD_SERVER_VPN_ENABLED:"false"},opts),
-    /PROVIDER_NOT_CONFIGURED/);
+  const requested=await updateProvider("ehi-cloud",true,noKeys,opts);
+  assert.equal(requested.providers.find(p=>p.id==="ehi-cloud").administrativelyEnabled,true);
+  assert.equal(await providerAllowed("ehi-cloud",noKeys,opts),false);
+  assert.equal(await providerAllowed("ehi-cloud",env,opts),true);
+  const serviceOff={...env,CLOUD_SERVER_VPN_ENABLED:"false"};
+  await updateProvider("http-jireh",false,serviceOff,opts);
+  await updateProvider("http-jireh",true,serviceOff,opts);
+  assert.equal(await providerAllowed("http-jireh",serviceOff,opts),false);
+  assert.equal(await providerAllowed("http-jireh",env,opts),true);
   await assert.rejects(()=>updateProvider("http-jireh",true,{...env,CLOUD_FORCE_MAINTENANCE:"true"},opts),
     /MAINTENANCE_LOCKED/);
 });
@@ -99,7 +105,7 @@ test("SocketClay has a named control and can be enabled or disabled without touc
  const root=await fixture(t),opts={root};
  let overview=await providerOverview(env,opts);
  assert.deepEqual(overview.providers.find(x=>x.id==="http-socketclay"),{
-   id:"http-socketclay",name:"HTTP SocketClay",configured:true,enabled:true,
+   id:"http-socketclay",name:"HTTP SocketClay",configured:true,enabled:true,administrativelyEnabled:true,
  });
  overview=await updateProvider("http-socketclay",false,env,opts);
  let availability=Object.fromEntries(overview.providers.map(x=>[x.id,x.enabled]));
@@ -114,7 +120,7 @@ test("Wakko has a named control and can be enabled or disabled without touching 
  const root=await fixture(t),opts={root};
  let overview=await providerOverview(env,opts);
  assert.deepEqual(overview.providers.find(x=>x.id==="http-wakko"),{
-   id:"http-wakko",name:"HTTP Wakko",configured:true,enabled:true,
+   id:"http-wakko",name:"HTTP Wakko",configured:true,enabled:true,administrativelyEnabled:true,
  });
  overview=await updateProvider("http-wakko",false,env,opts);
  let availability=Object.fromEntries(overview.providers.map(x=>[x.id,x.enabled]));
@@ -129,7 +135,7 @@ test("V2ray Tunnel Plus has a named control and can be enabled or disabled witho
  const root=await fixture(t),opts={root};
  let overview=await providerOverview(env,opts);
  assert.deepEqual(overview.providers.find(x=>x.id==="v2ray-tunnel-plus"),{
-   id:"v2ray-tunnel-plus",name:"V2ray Tunnel Plus",configured:true,enabled:true,
+   id:"v2ray-tunnel-plus",name:"V2ray Tunnel Plus",configured:true,enabled:true,administrativelyEnabled:true,
  });
  overview=await updateProvider("v2ray-tunnel-plus",false,env,opts);
  let availability=Object.fromEntries(overview.providers.map(x=>[x.id,x.enabled]));
@@ -145,7 +151,7 @@ test("Xhypher Tunnel Pro has a named control and can be enabled or disabled with
  const root=await fixture(t),opts={root};
  let overview=await providerOverview(env,opts);
  assert.deepEqual(overview.providers.find(x=>x.id==="xhypher-tunnel-pro"),{
-   id:"xhypher-tunnel-pro",name:"Xhypher Tunnel Pro",configured:true,enabled:true,
+   id:"xhypher-tunnel-pro",name:"Xhypher Tunnel Pro",configured:true,enabled:true,administrativelyEnabled:true,
  });
  overview=await updateProvider("xhypher-tunnel-pro",false,env,opts);
  let availability=Object.fromEntries(overview.providers.map(x=>[x.id,x.enabled]));
@@ -160,7 +166,7 @@ test("7NET VPN has a named control and can be enabled or disabled without touchi
  const root=await fixture(t),opts={root};
  let overview=await providerOverview(env,opts);
  assert.deepEqual(overview.providers.find(x=>x.id==="7net-vpn"),{
-   id:"7net-vpn",name:"7NET VPN",configured:true,enabled:true,
+   id:"7net-vpn",name:"7NET VPN",configured:true,enabled:true,administrativelyEnabled:true,
  });
  overview=await updateProvider("7net-vpn",false,env,opts);
  let availability=Object.fromEntries(overview.providers.map(x=>[x.id,x.enabled]));

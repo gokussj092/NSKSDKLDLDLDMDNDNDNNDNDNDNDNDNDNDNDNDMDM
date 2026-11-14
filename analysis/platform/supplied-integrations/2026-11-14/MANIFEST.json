@@ -123,7 +123,9 @@
       "connection_authentication": {
         "status": "UNCONFIRMED",
         "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
-      }
+      },
+      "catalog_default_enabled": false,
+      "catalog_limitation": "Los campos de configuración conservan cifrado AES pendiente; resultado parcial."
     },
     {
       "id": "edoz-tunnel",
@@ -303,7 +305,9 @@
       "connection_authentication": {
         "status": "UNCONFIRMED",
         "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
-      }
+      },
+      "catalog_default_enabled": false,
+      "catalog_limitation": "Descifrado y token remoto pendientes de captura autorizada; no existe broker completo."
     },
     {
       "id": "ip-tunnel",
@@ -333,7 +337,9 @@
       "connection_authentication": {
         "status": "UNCONFIRMED",
         "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
-      }
+      },
+      "catalog_default_enabled": false,
+      "catalog_limitation": "El propietario confirma el catálogo incluido en APK; la muestra remota cambió de clave después de 1.9.28.1."
     },
     {
       "id": "lets-vpn-go",
@@ -408,7 +414,9 @@
       "connection_authentication": {
         "status": "UNCONFIRMED",
         "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
-      }
+      },
+      "catalog_default_enabled": false,
+      "catalog_limitation": "El propietario confirma el catálogo incluido en APK; la muestra remota cambió de clave después de 1.9.28.1."
     },
     {
       "id": "netmx-vpn",
@@ -528,7 +536,9 @@
       "connection_authentication": {
         "status": "UNCONFIRMED",
         "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
-      }
+      },
+      "catalog_default_enabled": false,
+      "catalog_limitation": "El propietario confirma el catálogo incluido en APK; la muestra remota cambió de clave después de 1.9.28.1."
     },
     {
       "id": "rjc-tunnel-vpn",
@@ -558,7 +568,9 @@
       "connection_authentication": {
         "status": "UNCONFIRMED",
         "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
-      }
+      },
+      "catalog_default_enabled": false,
+      "catalog_limitation": "Clave remota pendiente de analizar en una app actualizada, según confirmación del propietario."
     },
     {
       "id": "rovpn",
@@ -783,7 +795,9 @@
       "connection_authentication": {
         "status": "UNCONFIRMED",
         "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
-      }
+      },
+      "catalog_default_enabled": false,
+      "catalog_limitation": "Play Integrity e identidad genuina pendientes de captura autorizada; no existe broker completo."
     },
     {
       "id": "xj-vpn",
@@ -798,7 +812,9 @@
       "connection_authentication": {
         "status": "UNCONFIRMED",
         "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
-      }
+      },
+      "catalog_default_enabled": false,
+      "catalog_limitation": "Play Integrity e identidad genuina pendientes de captura autorizada; no existe broker completo."
     },
     {
       "id": "xui-tunnel",
@@ -843,7 +859,9 @@
       "connection_authentication": {
         "status": "UNCONFIRMED",
         "scope": "Integration review only; no new service-authentication research, hooks, secret extraction or attestations."
-      }
+      },
+      "catalog_default_enabled": false,
+      "catalog_limitation": "Firma del proveedor pendiente de captura autorizada con app real; no existe broker completo."
     },
     {
       "id": "zam-vip-net",
@@ -862,8 +880,12 @@
     }
   ],
   "code_paths": [
+    "cloud/web/app/admin/admin-dashboard.jsx",
     "cloud/web/content/supplied-integrations.json",
+    "cloud/web/lib/c12-provider-controls.mjs",
+    "cloud/web/lib/catalog-provider-policy.mjs",
     "cloud/web/lib/supplied-integrations.mjs",
+    "cloud/web/tests/catalog-pending-controls.test.mjs",
     "cloud/workers/python/supplied_bridge.py"
   ],
   "limitations": [
@@ -881,5 +903,23 @@
     "pycryptodome": "3.23.0",
     "argon2-cffi": "25.1.0",
     "msgpack": "1.2.4"
+  },
+  "catalog_control_review": {
+    "scope": "Pending catalog controls; per-app status remains independent.",
+    "default_enabled": false,
+    "control": "Persistent admin enable/disable; technical prerequisites still required",
+    "proof": "analysis/platform/supplied-integrations/2026-11-14/generated/catalog-controls-proof.json",
+    "reproduce": "node analysis/platform/supplied-integrations/2026-11-14/tools/check_catalog_controls.mjs",
+    "pending_ids": [
+      "jetroi",
+      "marvs-ssh",
+      "reg-tunnel",
+      "rnv-tunnel-vpn",
+      "ignix-vpn-max",
+      "yla-vpn",
+      "xj-vpn",
+      "vertexsnipher",
+      "docnet-vpn"
+    ]
   }
 }

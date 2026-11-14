@@ -14,6 +14,9 @@ test("the provider list exposes independent visible maintenance and administrati
  assert.match(view,/<option value="maintenance">En mantenimiento<\/option>/);
  assert.match(view,/method\?\.maintenance\?"En mantenimiento/);
  assert.match(view,/aria-checked=\{manuallyEnabled\}/);
+ assert.match(view,/manuallyEnabled=provider\.administrativelyEnabled\?\?/);
+ assert.match(view,/aria-checked=\{manuallyEnabled\} disabled=\{locked\}/);
+ assert.doesNotMatch(view,/disabled=\{locked\|\|\(!provider\.configured/);
 });
 
 test("maintenance page lists individual catalog statuses without disabling the whole VPN service",()=>{

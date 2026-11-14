@@ -14,3 +14,16 @@ npm run build
 Las pruebas de Node que ejecutan el worker usan python3; SPC_QA_PYTHON permite seleccionar un virtualenv de QA. Todas las peticiones de esas pruebas usan transporte simulado; las muestras se descifran con el subprocess real. No se emulan veredictos Play Integrity.
 
 Las muestras existentes se leen en su ubicación original; no se copian perfiles privados al expediente. No ejecutar los flujos de registro/integridad de proveedores para sustituir credenciales ausentes.
+
+## Controles de los catálogos pendientes (revisión posterior)
+
+Desde la raíz del repositorio:
+
+```bash
+node analysis/platform/supplied-integrations/2026-11-14/tools/check_catalog_controls.mjs
+cd cloud/web
+node --test tests/catalog-pending-controls.test.mjs tests/c12-provider-controls.test.mjs tests/admin-provider-maintenance.test.mjs tests/server-vpn-version-sync.test.mjs tests/supplied-integrations.test.mjs tests/server-vpn-catalog.test.mjs tests/c6-admin.test.mjs tests/catalog-provider-check.test.mjs tests/server-vpn-worker-contract.test.mjs
+npm run build
+```
+
+El primer comando guarda solo conteos y alcance en generated/catalog-controls-proof.json. No ejecuta peticiones de proveedores ni cambia el estado de producción. Las pruebas cubren estados antiguos, activación de catálogos desactivados por defecto, reinicio del módulo, reconciliación de despliegue, requisitos técnicos ausentes, mantenimiento y rechazo de overrides inválidos. Para las pruebas del worker, Python debe tener las dependencias del proyecto; también se puede seleccionar con SPC_QA_PYTHON.

@@ -3,6 +3,7 @@ import {readFileSync,existsSync} from "node:fs";
 import {join} from "node:path";
 import {randomBytes,randomUUID} from "node:crypto";
 import {DEFAULT_DTUNNEL_REQUEST_ID} from "./dtunnel-credentials.server.mjs";
+import {PENDING_CATALOGS} from "./catalog-provider-policy.mjs";
 
 const deployed=join(process.cwd(),"content/supplied-integrations.json");
 const source=existsSync(deployed)?deployed:new URL("../content/supplied-integrations.json",import.meta.url);
@@ -12,8 +13,8 @@ if(document.schemaVersion!==1||document.apps.length!==57||
 export const SUPPLIED_INTEGRATIONS=Object.freeze(document.apps.map(x=>Object.freeze(x)));
 const byId=new Map(SUPPLIED_INTEGRATIONS.map(x=>[x.id,x]));
 export const SUPPLIED_CATALOG_ITEMS=Object.freeze(SUPPLIED_INTEGRATIONS
- .filter(x=>x.requests.length||x.existingBroker)
- .map(x=>Object.freeze({id:x.id,name:x.name,icon:x.icon,remote:x.id})));
+ .filter(x=>x.requests.length||x.existingBroker||Object.hasOwn(PENDING_CATALOGS,x.id))
+ .map(x=>Object.freeze({id:x.id,name:x.name,icon:x.icon,remote:x.requests.length||x.existingBroker?x.id:null})));
 export const suppliedProviderIds=()=>SUPPLIED_INTEGRATIONS.filter(x=>x.requests.length).map(x=>x.id);
 function credential(id,request,env){
  const value=env[request.secretHeader.env];

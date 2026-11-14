@@ -222,8 +222,8 @@ export default function AdminDashboard({mode="system"}){
  const visibleProviders=(data?.providerControls?.providers||[]).filter(p=>
   (p.name.toLowerCase().includes(searchTerm)||p.id.toLowerCase().includes(searchTerm))&&
   (providerFilter==="all"||
-   providerFilter==="enabled"&&p.enabled||
-   providerFilter==="disabled"&&disabledProviderIds.includes(p.id)||
+   providerFilter==="enabled"&&(p.administrativelyEnabled??!disabledProviderIds.includes(p.id))||
+   providerFilter==="disabled"&&!(p.administrativelyEnabled??!disabledProviderIds.includes(p.id))||
    providerFilter==="maintenance"&&methodsById[p.id]?.maintenance||
    providerFilter==="unconfigured"&&!p.configured));
  const visibleMethods=methodStatuses.filter(m=>
@@ -422,22 +422,23 @@ export default function AdminDashboard({mode="system"}){
       <option value="all">Todos</option>
       <option value="enabled">Habilitados</option>
       <option value="maintenance">En mantenimiento</option>
-      <option value="disabled">Desactivados manualmente</option>
+      <option value="disabled">Desactivados</option>
       <option value="unconfigured">No configurados</option>
      </select></label>
     </div>
     <p className="muted">Mostrando {visibleProviders.length} de {(data.providerControls?.providers||[]).length} proveedores. La disponibilidad y el mantenimiento son controles independientes.</p>
     {visibleProviders.map(provider=>{
      const method=methodsById[provider.id];
-     const manuallyEnabled=!disabledProviderIds.includes(provider.id);
+     const manuallyEnabled=provider.administrativelyEnabled??!disabledProviderIds.includes(provider.id);
      const locked=busy||data.maintenance||data.maintenanceLocked;
      const status=method?.maintenance?"En mantenimiento — descifrado suspendido":
-       !manuallyEnabled?"Desactivado manualmente":
-       !provider.configured?"No configurado en la VPS":
+       !manuallyEnabled?"Desactivado":
+       !provider.configured?"Habilitado en el panel; pendiente de disponibilidad técnica":
        provider.enabled?"Disponible para nuevos descifrados":"Sin disponibilidad técnica";
      return <div className="sp-admin-switch-row" key={provider.id}>
       <div><strong>{provider.name}</strong>
        <small className="sp-admin-status-note">{status}</small>
+       {provider.pendingReason&&<small className="muted">{provider.pendingReason}</small>}
        {method&&<small className="muted">Revisión del método: {method.methodRevision}</small>}
       </div>
       <div className="sp-admin-catalog-actions">
@@ -452,13 +453,13 @@ export default function AdminDashboard({mode="system"}){
         <span>Habilitado</span>
         <button type="button" className="sp-admin-switch" role="switch"
          aria-label={"Disponibilidad administrativa: "+provider.name}
-         aria-checked={manuallyEnabled} disabled={locked||(!provider.configured&&!manuallyEnabled)}
+         aria-checked={manuallyEnabled} disabled={locked}
          onClick={()=>changeProvider(provider.id,!manuallyEnabled,provider.name)}><span/></button>
        </div>
       </div>
      </div>;
     })}
-    <p className="muted">Los cambios se guardan en un volumen de configuración independiente, incluso al reiniciar Redis o los contenedores. La versión del catálogo aumenta cuando cambias un proveedor; actualiza Server VPN en la aplicación. La activación de HTTP Injector requiere las claves originales del proveedor, que no se muestran aquí.</p>
+    <p className="muted">Los cambios se guardan en un volumen de configuración independiente, incluso al reiniciar Redis o los contenedores. La versión del catálogo aumenta cuando cambias un proveedor; actualiza Server VPN en la aplicación. Puedes guardar la activación aunque falten claves o requisitos técnicos; la descarga estará disponible cuando estén resueltos. Los métodos de archivo y texto son independientes.</p>
    </section>
    <section className="admin-card sp-admin-services">
     <div className="sp-admin-section-heading"><div>

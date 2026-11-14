@@ -1,5 +1,12 @@
 {
   "tool": "analysis/platform/supplied-integrations/2026-11-14/tools/verify_provider.py",
   "provider_id": "jetroi",
-  "network": false
+  "network": false,
+  "catalog_controls": {
+    "scope": "Operator defaults and reversible panel controls only; original file/text/catalog codecs unchanged.",
+    "default_enabled": false,
+    "control": "Persistent admin enable/disable; technical prerequisites still required",
+    "proof": "analysis/platform/supplied-integrations/2026-11-14/generated/catalog-controls-proof.json",
+    "reproduce": "node analysis/platform/supplied-integrations/2026-11-14/tools/check_catalog_controls.mjs"
+  }
 }

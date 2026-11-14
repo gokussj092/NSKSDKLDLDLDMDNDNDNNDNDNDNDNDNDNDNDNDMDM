@@ -13,3 +13,11 @@ python analysis/platform/supplied-integrations/2026-11-14/tools/verify_provider.
 ```
 
 Las pruebas de broker, worker aislado y regresión se ejecutan desde el expediente compartido. Las muestras faltantes y bloqueos se mantienen explícitos; esta comprobación no certifica al proveedor.
+
+## Control administrativo del catálogo — 2026-11-14
+
+Firma del proveedor pendiente de captura autorizada con app real; no existe broker completo. No se repitió investigación criptográfica ni validación remota en esta revisión.
+
+Catálogo desactivado por defecto, activable y desactivable desde el panel. La elección se persiste de forma independiente; cuando faltan broker/configuración, el estado técnico permanece no disponible. Las rutas de archivo y texto no se modifican.
+
+Prueba reproducible: `node analysis/platform/supplied-integrations/2026-11-14/tools/check_catalog_controls.mjs`. Evidencia compartida: `analysis/platform/supplied-integrations/2026-11-14/generated/catalog-controls-proof.json`.

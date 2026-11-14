@@ -1,8 +1,8 @@
 # Conexión de las aplicaciones aportadas — ci/unity-ads-online-qa
 
-Se añadieron 42 fichas públicas de catálogo (118 totales), 270 rutas de archivo y 65 prefijos de texto. Las 57 aplicaciones tienen inventario y revisión explícita. Las apps que solo importan perfiles o suscripciones no reciben un catálogo público ficticio. Los algoritmos aportados se conservan; DTunnel incorpora posteriormente el identificador autorizado por el propietario.
+Se añadieron 46 fichas públicas de catálogo (122 totales), incluidas cuatro fichas pendientes desactivadas, 270 rutas de archivo y 65 prefijos de texto. Las 57 aplicaciones tienen inventario y revisión explícita. Las apps que solo importan perfiles o suscripciones no reciben un catálogo público ficticio. Los algoritmos aportados se conservan; DTunnel incorpora posteriormente el identificador autorizado por el propietario.
 
-La versión base de catálogo es 83 para reflejar la activación autorizada de DTunnel; la reconciliación existente incrementa la versión efectiva aunque el VPS tenga un override superior. Se conservan favoritos, switches individuales, claves HPKE, firma y versión Android. No hace falta recompilar la APK para las nuevas fichas/rutas publicadas mediante el contrato existente. El flujo adicional de URL custom code de XtraVPN no se presenta como implementado en el cliente.
+La versión base de catálogo es 84 para reflejar los estados pendientes y sus controles; la reconciliación existente incrementa la versión efectiva aunque el VPS tenga un override superior. Se conservan favoritos, switches individuales, claves HPKE, firma y versión Android. No hace falta recompilar la APK para las nuevas fichas/rutas publicadas mediante el contrato existente. El flujo adicional de URL custom code de XtraVPN no se presenta como implementado en el cliente.
 
 ## DTunnel Mod
 
@@ -24,6 +24,12 @@ Ese comando opcional valida el JSON, actualiza cloud.env con modo 0600 y recrea 
 
 ## Límites de producción
 
-JetRoi, Marvs SSH y REG Tunnel rechazan sus muestras de catálogo. IGNIX aún declara CIPHER_PENDING; YLA tiene firma pendiente; XJ y Vertex requieren autenticación/integridad genuina del proveedor. DocNet conserva payloads cifrados y se entrega explícitamente parcial. MM usa descifrado de campos acelerado y conserva como parciales los campos cuyo tag no verifica, sin perder las ubicaciones ni el resto del documento. Ninguno de esos límites se corrige activando un Boolean.
+El propietario confirmó que JetRoi, Marvs SSH y REG Tunnel abren los catálogos incluidos en sus APK; el catálogo remoto cambió de clave después de 1.9.28.1. Esta confirmación no es una nueva prueba remota realizada por esta integración. RNV también mantiene pendiente la clave del servidor. IGNIX aún declara CIPHER_PENDING; YLA tiene firma pendiente; XJ y Vertex requieren autenticación/integridad genuina del proveedor. DocNet conserva campos cifrados y su resultado es parcial. Son límites conocidos de los métodos aportados, no defectos nuevos de sus scripts.
+
+Los nueve catálogos anteriores quedan desactivados por defecto. Todos tienen controles en el panel, incluidos IGNIX, YLA, XJ y Vertex, que ahora aparecen como fichas pendientes con sus iconos originales. El interruptor administrativo se guarda independientemente de la disponibilidad técnica: se puede activar y desactivar aunque falte una clave o no exista aún un broker implementado. El panel muestra ambos estados. La descarga sigue bloqueada cuando falta el broker o su configuración; habilitarla no inventa claves, firmas ni identidades. JetRoi/Marvs/REG/RNV/DocNet conservan sus rutas existentes para su activación explícita por el operador. DTunnel continúa activo por defecto.
+
+El estado persistente añade una lista `enabled` de activaciones explícitas junto a `disabled`; ambas listas son de IDs permitidos, no se solapan y se escriben atómicamente en el volumen de controles. Los archivos previos sin `enabled` siguen siendo válidos. Las desactivaciones anteriores se respetan; las activaciones de catálogos inicialmente desactivados sobreviven al reinicio y a la reconciliación de despliegue. Mantenimiento sigue siendo un control independiente. Los métodos de archivo y texto se conservan sin cambios.
+
+MM usa descifrado de campos acelerado y conserva como parciales los campos cuyo tag no verifica, sin perder las ubicaciones ni el resto del documento.
 
 La matriz completa y las pruebas están en analysis/platform/supplied-integrations/2026-11-14/. No se certifican las 57 aplicaciones ni se ejecuta despliegue de producción.

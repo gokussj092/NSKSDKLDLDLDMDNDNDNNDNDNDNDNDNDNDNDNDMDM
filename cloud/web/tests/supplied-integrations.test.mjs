@@ -13,6 +13,7 @@ import {providerIds,providerEnabled,downloadVpnCatalog} from "../lib/server-vpn-
 import {PUBLIC_PROVIDER_IDS} from "../lib/c12-provider-controls.mjs";
 import {loadServerVpnResult} from "../lib/server-vpn-gateway.mjs";
 import {fetchWorker} from "../lib/c3-gateway.mjs";
+import {catalogDefaultEnabled} from "../lib/catalog-provider-policy.mjs";
 import {DEFAULT_DTUNNEL_REQUEST_ID} from "../lib/dtunnel-credentials.server.mjs";
 
 function environment(t,extra={}){
@@ -36,8 +37,11 @@ test("all supplied catalog methods reach pinned fixed sources and operator contr
  environment(t,{SPDECODE_DTUNNEL_REQUEST_ID:"synthetic-authorized-account"});const calls=network(t);
  assert.equal(SUPPLIED_INTEGRATIONS.length,57);
  for(const item of SUPPLIED_CATALOG_ITEMS){
-  assert(providerIds().includes(item.id));assert(PUBLIC_PROVIDER_IDS.includes(item.id));
-  assert(catalog().apps.some(x=>x.id===item.id&&x.decodeEnabled));assert(iconFor(item.id).bytes.length);
+  assert(PUBLIC_PROVIDER_IDS.includes(item.id));
+  const card=catalog().apps.find(x=>x.id===item.id);assert(card);assert(iconFor(item.id).bytes.length);
+  assert.equal(card.decodeEnabled,Boolean(item.remote)&&catalogDefaultEnabled(item.id));
+  if(!item.remote){assert(!providerIds().includes(item.id));continue;}
+  assert(providerIds().includes(item.id));
   if(item.id==="catnet-vpn")continue; // Dedicated preflight protocol has its own regressions.
   const before=calls.length,result=await downloadVpnCatalog(item.id);
   assert(result.length);assert(calls.length>before);

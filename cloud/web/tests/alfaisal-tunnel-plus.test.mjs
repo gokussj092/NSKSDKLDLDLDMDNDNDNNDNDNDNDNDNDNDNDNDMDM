@@ -119,7 +119,12 @@ test("ALFAISAL persistent switch preserves other providers and requires secrets"
  assert.equal(await providerAllowed(ID,env,{root}),true);
  const overview=await providerOverview(env,{root});assert.equal(overview.providers.find(x=>x.id===ID).name,"ALFAISAL Tunnel+");
  assert.equal(overview.providers.find(x=>x.id==="speicers-pro-vpn").enabled,false);
- await assert.rejects(()=>updateProvider(ID,true,{...env,SPDECODE_ALFAISAL_DEVICE_UUID:""},{root}),/PROVIDER_NOT_CONFIGURED/);
+ const noKey={...env,SPDECODE_ALFAISAL_DEVICE_UUID:""};
+ await updateProvider(ID,false,noKey,{root});
+ const pending=await updateProvider(ID,true,noKey,{root});
+ assert.equal(pending.providers.find(x=>x.id===ID).administrativelyEnabled,true);
+ assert.equal(await providerAllowed(ID,noKey,{root}),false);
+ assert.equal(await providerAllowed(ID,env,{root}),true);
 });
 test("ALFAISAL gateway requires complete three-list parity and accepts SSL-only networks",async t=>{
  environment(t,{WORKER_INTERNAL_URL:"http://decoder-worker:8787"});
