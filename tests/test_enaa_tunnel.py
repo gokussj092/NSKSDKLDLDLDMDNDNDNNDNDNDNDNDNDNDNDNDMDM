@@ -36,7 +36,7 @@ class EnaaTests(unittest.TestCase):
    expected=case['expected'] if kind=='catalog' else {'application':'Enaa Tunnel','extension':'.enaa','config':case['expected']}
    self.assertEqual(result['structuredJson'],expected);self.assertEqual(json.loads(result['rawText']),expected);self.assertFalse(result['isPartial'])
    if kind=='catalog':self.assertFalse(result['exporterCertified'])
-  self.assertEqual(len(load_file_engines()),240);self.assertEqual(len(load_runtime_file_engines()),256)
+  self.assertEqual(len(load_file_engines()),240);self.assertEqual(len(load_runtime_file_engines()),267)
  def test_cli_runs_outside_checkout_and_errors_are_sanitized(self):
   case=V['documents'][0];r=subprocess.run([sys.executable,str(APP/'file_decoder.py'),'-'],input=case['wire'].encode(),capture_output=True,cwd='/tmp',timeout=20)
   self.assertEqual(r.returncode,0);self.assertEqual(json.loads(r.stdout)['config'],case['expected']);self.assertEqual(r.stderr,b'')

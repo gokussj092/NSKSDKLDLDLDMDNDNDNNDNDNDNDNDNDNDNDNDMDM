@@ -82,7 +82,7 @@ class WolfTests(unittest.TestCase):
             parsed = json.loads(result);self.assertEqual(parsed['config']['Name'], 'synthetic historical')
         from cloud.workers.python.engine import load_file_engines, load_runtime_file_engines
         before, after = load_file_engines(), load_runtime_file_engines()
-        self.assertEqual((len(before), len(after)), (240, 256))
+        self.assertEqual((len(before), len(after)), (240, 267))
         self.assertEqual(before['wolftunnel'], after['wolftunnel'])
         self.assertNotEqual(before['wolf']['source'], after['wolf']['source'])
 

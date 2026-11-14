@@ -75,7 +75,7 @@ class AuraNetTests(unittest.TestCase):
     def test_actual_worker_catalog_file_and_inventory(self):
         from cloud.workers.python.engine import decode_file, decode_provider_catalog, load_file_engines, load_runtime_file_engines
         canonical = load_file_engines(); runtime = load_runtime_file_engines()
-        self.assertEqual(len(canonical), 240); self.assertEqual(len(runtime), 256)
+        self.assertEqual(len(canonical), 240); self.assertEqual(len(runtime), 267)
         self.assertTrue(canonical["aura"]["source"].endswith("/ultra.py"))
         self.assertTrue(runtime["aura"]["source"].endswith("/Aura_Net_VPN/file_decoder.py"))
         self.assertEqual(runtime["bcl"], canonical["bcl"])

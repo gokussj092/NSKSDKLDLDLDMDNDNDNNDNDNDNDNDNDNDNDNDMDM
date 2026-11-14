@@ -47,7 +47,7 @@ class AlfaisalTests(unittest.TestCase):
         result=decode_provider_catalog('alfaisal-tunnel-plus',V['catalog'].encode())
         self.assertEqual(result['structuredJson'],V['expected']);self.assertEqual(json.loads(result['rawText']),V['expected'])
         self.assertFalse(result['isPartial']);self.assertFalse(result['exporterCertified'])
-        self.assertEqual(len(load_runtime_file_engines()),256)
+        self.assertEqual(len(load_runtime_file_engines()),267)
         self.assertNotIn('js',load_runtime_file_engines())
 
     def test_invalid_outer_and_known_field_types_reject_the_whole_document(self):

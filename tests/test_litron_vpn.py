@@ -45,7 +45,7 @@ class LitronTests(unittest.TestCase):
             def __exit__(self,*a):pass
             def read(self,n):return V['catalog'].encode()[:n]
         with patch.object(cli,'build_opener') as p:
-            p.return_value.open.return_value=Reply();self.assertEqual(cli.download(),V['catalog'].encode())
+            p.return_value.open.return_value=Reply();self.assertEqual(cli.fetch_catalog(),V['catalog'].encode())
             req=p.return_value.open.call_args.args[0];self.assertEqual(req.full_url,'https://godtechprime.github.io/latestv2ray.txt')
             self.assertEqual(req.get_header('Accept-encoding'),'identity')
         with self.assertRaises(ValueError):cli._NoRedirect().redirect_request(None)

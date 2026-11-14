@@ -119,6 +119,14 @@
       "credentialFields": []
     },
     {
+      "suffix": "hamaratnl",
+      "name": "HAMARA TUNNEL LITE 2.9",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
       "suffix": "ignix_vpn",
       "name": "Generic AES-GCM / PBKDF2",
       "kind": "file",
@@ -287,10 +295,26 @@
       "credentialFields": []
     },
     {
+      "suffix": "bccnet",
+      "name": "JetRoi v1.9.28.1",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
       "suffix": "cloudy",
       "name": "Cloudy Inject",
       "kind": "file",
       "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "custom",
+      "name": "Rev Hunter 48",
+      "kind": "file",
+      "offlineSupported": false,
       "cloudSupported": true,
       "credentialFields": []
     },
@@ -349,6 +373,14 @@
       "name": "AC TUNNEL VPN 1.4",
       "kind": "file",
       "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "atnet",
+      "name": "AT NET VPN v1.9.28.1",
+      "kind": "file",
+      "offlineSupported": false,
       "cloudSupported": true,
       "credentialFields": []
     },
@@ -414,11 +446,13 @@
       "kind": "file",
       "offlineSupported": false,
       "cloudSupported": true,
-      "credentialFields": []
+      "credentialFields": [
+        "password"
+      ]
     },
     {
       "suffix": "hsome",
-      "name": "XOR VPN family",
+      "name": "Handsome Fast 2.2",
       "kind": "file",
       "offlineSupported": true,
       "cloudSupported": true,
@@ -498,7 +532,7 @@
     },
     {
       "suffix": "v2box",
-      "name": "V2Box Export",
+      "name": "V2Box 6.2.3",
       "kind": "file",
       "offlineSupported": true,
       "cloudSupported": true,
@@ -953,6 +987,14 @@
       "credentialFields": []
     },
     {
+      "suffix": "bvv",
+      "name": "Binke Volt 1.1",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
       "suffix": "cbp",
       "name": "Generic AES-GCM / PBKDF2",
       "kind": "file",
@@ -1114,6 +1156,14 @@
       "name": "Generic AES-GCM / PBKDF2",
       "kind": "file",
       "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "fat",
+      "name": "Fat Tunnel Lite V1.12",
+      "kind": "file",
+      "offlineSupported": false,
       "cloudSupported": true,
       "credentialFields": []
     },
@@ -1468,7 +1518,7 @@
     },
     {
       "suffix": "osp",
-      "name": "RENZ / 7NET",
+      "name": "OSP Tunnel 3.7",
       "kind": "file",
       "offlineSupported": true,
       "cloudSupported": true,
@@ -1476,7 +1526,7 @@
     },
     {
       "suffix": "ost",
-      "name": "OUSS Tunnel",
+      "name": "Shield Tunnel 1.11.06.1",
       "kind": "file",
       "offlineSupported": true,
       "cloudSupported": true,
@@ -1539,10 +1589,42 @@
       "credentialFields": []
     },
     {
+      "suffix": "reg",
+      "name": "REG Tunnel VPN v1.9.28.1",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "rev",
+      "name": "Rev Hunter 48",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
       "suffix": "rez",
       "name": "Rez Tunnel",
       "kind": "file",
       "offlineSupported": true,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "rjc",
+      "name": "RJC Tunnel VPN RJC-19",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
+      "suffix": "rnv",
+      "name": "RNV Tunnel VPN v1.9.28.1",
+      "kind": "file",
+      "offlineSupported": false,
       "cloudSupported": true,
       "credentialFields": []
     },
@@ -1660,7 +1742,7 @@
     },
     {
       "suffix": "t20",
-      "name": "T20 TUNNEL",
+      "name": "Marvs SSH / T20-VPN 1.10.5.3",
       "kind": "file",
       "offlineSupported": true,
       "cloudSupported": true,
@@ -1861,6 +1943,14 @@
       "credentialFields": []
     },
     {
+      "suffix": "zvn",
+      "name": "Zam VIP NET 42.0",
+      "kind": "file",
+      "offlineSupported": false,
+      "cloudSupported": true,
+      "credentialFields": []
+    },
+    {
       "suffix": "ai",
       "name": "Generic AES-GCM / PBKDF2",
       "kind": "file",
@@ -1870,7 +1960,7 @@
     },
     {
       "suffix": "ar",
-      "name": "AR Pro / MSY",
+      "name": "AR PRO VPN 1.0",
       "kind": "file",
       "offlineSupported": true,
       "cloudSupported": true,
