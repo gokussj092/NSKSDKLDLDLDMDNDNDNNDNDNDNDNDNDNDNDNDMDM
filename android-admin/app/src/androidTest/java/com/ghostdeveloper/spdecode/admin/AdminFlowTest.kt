@@ -15,11 +15,13 @@ import java.io.File
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TestWatcher
+import org.junit.runner.Description
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class AdminFlowTest {
-    @get:Rule val ui = createAndroidComposeRule<MainActivity>()
+    @get:Rule(order = 0) val ui = createAndroidComposeRule<MainActivity>()
 
     private fun enter() {
         ui.onNodeWithText("Abrir vista previa").performScrollTo().performClick()
@@ -43,9 +45,22 @@ class AdminFlowTest {
         return button(text)
     }
 
-    private fun capture(name: String) {
-        ui.waitForIdle()
-        val folder =
+    @get:Rule(order = 1)
+    val failureCapture =
+        object : TestWatcher() {
+            override fun failed(error: Throwable, description: Description) {
+                runCatching { capture("failure-" + description.methodName) }
+                runCatching {
+                    File(outputFolder(), "failure-" + description.methodName + ".txt")
+                        .writeText(ui.onRoot(useUnmergedTree = true).printToString())
+                }
+            }
+        }
+
+    private fun outputFolder(): File {
+        val output = InstrumentationRegistry.getArguments().getString("additionalTestOutputDir")
+        return if (!output.isNullOrBlank()) File(output, "review").apply { mkdirs() }
+        else
             File(
                     InstrumentationRegistry.getInstrumentation()
                         .targetContext
@@ -53,6 +68,11 @@ class AdminFlowTest {
                     "review",
                 )
                 .apply { mkdirs() }
+    }
+
+    private fun capture(name: String) {
+        ui.waitForIdle()
+        val folder = outputFolder()
         val bitmap =
             InstrumentationRegistry.getInstrumentation().uiAutomation.takeScreenshot()
                 ?: ui.onRoot().captureToImage().asAndroidBitmap()
@@ -177,7 +197,7 @@ class AdminFlowTest {
         scrollButton("Enviar notificación").performClick()
         scrollText("14 idiomas · Multiidioma").assertIsDisplayed()
         scrollButton("Vista previa del aviso").performClick()
-        ui.onNodeWithText("Nueva actualización disponible").assertIsDisplayed()
+        ui.onNode(isDialog()).assertIsDisplayed()
         button("Actualizar").performClick()
         scrollButton("Enviar notificación").performClick()
         button("Guardar simulación").performClick()

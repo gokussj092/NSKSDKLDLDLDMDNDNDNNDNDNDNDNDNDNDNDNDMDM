@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.flow.first
 
 @Composable
 internal fun SupportScreen(state: PreviewState, open: (String) -> Unit) {
@@ -114,8 +115,14 @@ internal fun ChatScreen(state: PreviewState, id: String, feedback: (String) -> U
     var assignment by rememberSaveable { mutableStateOf(false) }
     var attach by rememberSaveable { mutableStateOf(false) }
     val list = rememberLazyListState()
-    LaunchedEffect(id, ticket.messages.size) {
-        if (ticket.messages.isNotEmpty()) list.animateScrollToItem(ticket.messages.size)
+    LaunchedEffect(id, ticket.messages.size, keyboardOpen) {
+        val expectedItems = ticket.messages.size + 1
+        if (ticket.messages.isNotEmpty()) {
+            snapshotFlow { list.layoutInfo.totalItemsCount to list.layoutInfo.viewportSize.height }
+                .first { (count, height) -> count == expectedItems && height > 0 }
+            withFrameNanos {}
+            list.scrollToItem(expectedItems - 1)
+        }
     }
     Box(Modifier.fillMaxSize().imePadding(), contentAlignment = Alignment.TopCenter) {
         Column(Modifier.widthIn(max = 840.dp).fillMaxSize().padding(horizontal = 16.dp)) {

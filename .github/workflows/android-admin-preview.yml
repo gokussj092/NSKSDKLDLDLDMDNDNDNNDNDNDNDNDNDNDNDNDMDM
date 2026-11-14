@@ -84,7 +84,6 @@ jobs:
           test_pid=$!
           wait "$test_pid" && test_result=0 || test_result=$?
           mkdir -p android-admin/app/build/review
-          adb pull /sdcard/Android/data/com.ghostdeveloper.spdecode.admin.preview/files/review/. android-admin/app/build/review/ || true
           exit "$test_result"
       - uses: actions/upload-artifact@v4
         if: always()
@@ -96,5 +95,6 @@ jobs:
             android-admin/app/build/reports/tests/testDebugUnitTest/
             android-admin/app/build/reports/androidTests/
             android-admin/app/build/outputs/androidTest-results/
+            android-admin/app/build/outputs/connected_android_test_additional_output/
             android-admin/app/build/review/
           if-no-files-found: warn
