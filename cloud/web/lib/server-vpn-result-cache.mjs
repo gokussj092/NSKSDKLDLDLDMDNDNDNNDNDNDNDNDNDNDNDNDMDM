@@ -1,4 +1,4 @@
-/** Encrypted shared cache of complete fixed-provider results. Never cache user input. */
+/** Encrypted cache of fixed-provider results, including validated MKK partials. Never cache user input. */
 import {createCipheriv,createDecipheriv,createHmac,randomBytes,randomUUID} from "node:crypto";
 import {mkdir,open,readFile,readdir,rename,stat,unlink} from "node:fs/promises";
 import {join} from "node:path";
@@ -10,6 +10,8 @@ export const TTL_MS=4*60*60*1000;
 export const REFRESH_AHEAD_MS=15*60*1000;
 export const DEMAND_SECONDS=24*60*60;
 export const MAX_ENTRY=6*1024*1024;
+export const MAX_MKK_ENTRY=32*1024*1024;
+const entryLimit=id=>id==="mkk-hyper"?MAX_MKK_ENTRY:MAX_ENTRY;
 export const MAX_DISK=256*1024*1024;
 const LEASE_MS=420_000,RETRY_SECONDS=300;
 const pack=promisify(gzip),unpack=promisify(gunzip);
@@ -18,8 +20,8 @@ const GLOBAL=PREFIX+"refresh";
 const WRITE=PREFIX+"write";
 const delay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const safeId=id=>typeof id==="string"&&/^[a-z0-9-]{1,48}$/.test(id);
-// SSH user/account and MKK subscription source results are not shared.
-const EXCLUDED=new Set(["opentunnel-ssh","speigo-vpn-ssh","mkk-hyper"]);
+// Dedicated SSH-account catalogs remain excluded from shared caching.
+const EXCLUDED=new Set(["opentunnel-ssh","speigo-vpn-ssh"]);
 export const cacheable=id=>safeId(id)&&!EXCLUDED.has(id);
 export const cacheEnabled=(env=process.env)=>env.CLOUD_SERVER_VPN_CACHE_ENABLED==="true";
 const rootDefault=()=>process.env.CLOUD_SERVER_VPN_CACHE_ROOT||"/app/server-vpn-results";
@@ -32,6 +34,22 @@ const pathFor=(root,id)=>join(root,"catalog-"+id+".bin");
 const derive=secret=>createHmac("sha256",secret).update("spdecode:server-vpn-results:v1").digest();
 const aad=(id,revision)=>Buffer.from(JSON.stringify(["spdecode-catalog-result-v1",id,revision]));
 const complete=(value)=>value?.status==="success"&&value.isPartial===false&&typeof value.rawText==="string"&&value.rawText.length>0;
+// MKK is a fixed-source aggregate. Its worker contract already validates the
+// full document; a successful partial must retain its explicit source warning.
+function accepted(id,value){
+ if(id!=="mkk-hyper")return complete(value);
+ if(value?.status!=="success"||value.kind!=="vpn_catalog"||value.providerId!==id||
+    typeof value.rawText!=="string"||!value.rawText.length)return false;
+ const doc=value.structuredJson;
+ if(doc?.provider!==id||doc.sourceCount!==4||!Array.isArray(doc.sources)||
+    doc.sources.length!==4||
+    doc.sources.some((s,i)=>s?.name!==["servers","static","subscriptions","legacy-subscriptions"][i]||
+       !["ok","error"].includes(s.status)))return false;
+ const good=doc.sources.filter(s=>s.status==="ok").length;
+ if(good<1||doc.successfulSources!==good||doc.complete!==(good===4))return false;
+ return good===4?value.isPartial===false:
+   value.isPartial===true&&Array.isArray(value.warnings)&&value.warnings.includes("PARTIAL_SOURCE_FAILURE");
+}
 async function acquire(redis,key,ms=LEASE_MS){
  const token=randomUUID();
  return await redis.set(key,token,{NX:true,PX:ms})==="OK"?token:null;
@@ -44,15 +62,15 @@ async function release(redis,key,token){
 async function readEntry({root,secret,id,revision,now}){
  try{
   const file=pathFor(root,id),info=await stat(file);
-  if(!info.isFile()||info.size<29||info.size>MAX_ENTRY+65536)return null;
+  if(!info.isFile()||info.size<29||info.size>entryLimit(id)+65536)return null;
   const bytes=await readFile(file);
-  if(bytes.length<29||bytes.length>MAX_ENTRY+65536)return null;
+  if(bytes.length<29||bytes.length>entryLimit(id)+65536)return null;
   const cipher=createDecipheriv("aes-256-gcm",derive(secret),bytes.subarray(0,12));
   cipher.setAAD(aad(id,revision));cipher.setAuthTag(bytes.subarray(12,28));
   const compressed=Buffer.concat([cipher.update(bytes.subarray(28)),cipher.final()]);
-  const clear=await unpack(compressed,{maxOutputLength:MAX_ENTRY});
+  const clear=await unpack(compressed,{maxOutputLength:entryLimit(id)});
   const item=JSON.parse(clear.toString("utf8"));
-  if(!Number.isSafeInteger(item.createdAt)||item.createdAt>now()+5000||!complete(item.result))return null;
+  if(!Number.isSafeInteger(item.createdAt)||item.createdAt>now()+5000||!accepted(id,item.result))return null;
   return item;
  }catch{return null;}
 }
@@ -60,10 +78,10 @@ function current(item,now){return item&&now()-item.createdAt<TTL_MS;}
 function reply(item){return jsonReply({...item.result,requestId:randomUUID()},200);}
 async function writeEntry(redis,ctx,result,lockToken){
  // The original worker response is already validated by fetchWorker.
- if(!complete(result)||await redis.get(lockKey(ctx.id))!==lockToken)return false;
+ if(!accepted(ctx.id,result)||await redis.get(lockKey(ctx.id))!==lockToken)return false;
  const safe={...result};delete safe.requestId;
  const clear=Buffer.from(JSON.stringify({createdAt:ctx.now(),result:safe}));
- if(clear.length>MAX_ENTRY)return false;
+ if(clear.length>entryLimit(ctx.id))return false;
  const compressed=await pack(clear,{level:3});
  const nonce=randomBytes(12),cipher=createCipheriv("aes-256-gcm",derive(ctx.secret),nonce);
  cipher.setAAD(aad(ctx.id,ctx.revision));
@@ -131,7 +149,7 @@ export async function sharedCatalog(redis,config){
   if(!await ctx.isCurrent())throw expiryError();
   if(response.ok){
    const result=await response.clone().json().catch(()=>null);
-   if(complete(result))await writeEntry(redis,ctx,result,token).catch(()=>false);
+   if(accepted(ctx.id,result))await writeEntry(redis,ctx,result,token).catch(()=>false);
    else await redis.set(backoffKey(ctx.id),"1",{EX:RETRY_SECONDS});
   }else if(response.status!==429){
    await redis.set(backoffKey(ctx.id),"1",{EX:RETRY_SECONDS});
@@ -165,7 +183,9 @@ export async function renewDemandedCatalog(redis,configs){
     const response=await ctx.load();
     if(response.status!==429){
      const result=response.ok?await response.json().catch(()=>null):null;
-     if(!complete(result)||!await writeEntry(redis,ctx,result,token))
+     // Never degrade an unexpired complete MKK snapshot to a partial one.
+     const downgrade=ctx.id==="mkk-hyper"&&current(old,ctx.now)&&old.result.isPartial===false&&result?.isPartial===true;
+     if(downgrade||!accepted(ctx.id,result)||!await writeEntry(redis,ctx,result,token))
       await redis.set(backoffKey(ctx.id),"1",{EX:RETRY_SECONDS});
     }
     return true;

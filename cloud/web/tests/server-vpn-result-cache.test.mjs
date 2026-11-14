@@ -89,13 +89,13 @@ test("partial, failure, disabled and excluded providers cannot publish",async t=
  const {r,cfg,calls}=await fixture(t);
  assert.equal(cacheable("opentunnel-ssh"),false);
  assert.equal(cacheable("speigo-vpn-ssh"),false);
- assert.equal(cacheable("mkk-hyper"),false);
+ assert.equal(cacheable("mkk-hyper"),true);
  assert.equal(cacheable("../escape"),false);
  const partial=await sharedCatalog(r,{...cfg,load:async()=>result("partial",{isPartial:true})});
  assert.equal((await partial.json()).isPartial,true);
  assert.deepEqual(await readdir(cfg.root),[]);
  await sharedCatalog(r,{...cfg,id:"disabled",enabled:false});
- await sharedCatalog(r,{...cfg,id:"mkk-hyper"});
+ await sharedCatalog(r,{...cfg,id:"opentunnel-ssh"});
  assert.deepEqual(await readdir(cfg.root),[]);
  assert.equal(calls.value,2);
 });
@@ -106,4 +106,49 @@ test("maintenance or provider revocation prevents use and publication",async t=>
 });
 test("scheduler never warms catalog without user demand",async t=>{
  const {r,cfg,calls}=await fixture(t);assert.equal(await renewDemandedCatalog(r,[cfg]),false);assert.equal(calls.value,0);
+});
+
+function mkkResult(partial,tag="mkk",padding=""){
+ const sources=["servers","static","subscriptions","legacy-subscriptions"].map((name,i)=>
+   partial&&i>0?{name,status:"error",error:"REMOTE_PROVIDER_UNAVAILABLE"}:
+   {name,status:"ok",records:1,data:[{tag,padding:i===0?padding:""}]});
+ const doc={provider:"mkk-hyper",complete:!partial,sourceCount:4,successfulSources:partial?1:4,sources};
+ return result(JSON.stringify(doc),{kind:"vpn_catalog",providerId:"mkk-hyper",
+   structuredJson:doc,isPartial:partial,warnings:partial?["PARTIAL_SOURCE_FAILURE"]:[]});
+}
+test("MKK validated partial is shared, preserving warnings, then upgrades to complete",async t=>{
+ const {r,cfg,clock,calls}=await fixture(t,{id:"mkk-hyper"});
+ const path=join(cfg.root,"catalog-mkk-hyper.bin");
+ cfg.load=async()=>{calls.value++;return mkkResult(true);};
+ await sharedCatalog(r,cfg);
+ const hit=await (await sharedCatalog(r,cfg)).json();
+ assert.equal(calls.value,1);assert.equal(hit.isPartial,true);
+ assert.deepEqual(hit.warnings,["PARTIAL_SOURCE_FAILURE"]);
+ assert.equal(hit.structuredJson.successfulSources,1);
+ clock.value+=TTL_MS-REFRESH_AHEAD_MS+1000;
+ const old=new Date(Date.now()-TTL_MS+REFRESH_AHEAD_MS-1000);await utimes(path,old,old);
+ assert.equal(await renewDemandedCatalog(r,[{...cfg,load:async()=>mkkResult(false)}]),true);
+ assert.equal((await (await sharedCatalog(r,cfg)).json()).isPartial,false);
+});
+test("MKK fresh complete result is not degraded by partial renewal",async t=>{
+ const {r,cfg,clock}=await fixture(t,{id:"mkk-hyper",load:async()=>mkkResult(false,"complete")});
+ const path=join(cfg.root,"catalog-mkk-hyper.bin");await sharedCatalog(r,cfg);
+ clock.value+=TTL_MS-REFRESH_AHEAD_MS+1000;
+ const old=new Date(Date.now()-TTL_MS+REFRESH_AHEAD_MS-1000);await utimes(path,old,old);
+ await renewDemandedCatalog(r,[{...cfg,load:async()=>mkkResult(true)}]);
+ const hit=await (await sharedCatalog(r,cfg)).json();assert.equal(hit.isPartial,false);
+ assert.equal(hit.structuredJson.sources[0].data[0].tag,"complete");
+});
+test("MKK result above ordinary 6 MiB cap can be cached",async t=>{
+ const {r,cfg,calls}=await fixture(t,{id:"mkk-hyper"});
+ cfg.load=async()=>{calls.value++;return mkkResult(false,"large","x".repeat(4*1024*1024));};
+ await sharedCatalog(r,cfg);
+ const hit=await (await sharedCatalog(r,cfg)).json();
+ assert.equal(calls.value,1);assert.equal(hit.isPartial,false);
+ assert.equal(hit.structuredJson.sources[0].data[0].padding.length,4*1024*1024);
+});
+test("MKK missing partial warnings must not be cached",async t=>{
+ const {r,cfg}=await fixture(t,{id:"mkk-hyper"});
+ cfg.load=async()=>{const data=await mkkResult(true).json();data.warnings=[];return Response.json(data);};
+ await sharedCatalog(r,cfg);assert.deepEqual(await readdir(cfg.root),[]);
 });

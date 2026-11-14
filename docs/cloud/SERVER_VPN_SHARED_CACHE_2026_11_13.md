@@ -11,21 +11,24 @@ request ID. User-supplied files, links and password/HWID fields are excluded.
   refresh at a time, preferentially when the global worker queue is idle. The
   API continues serving the valid old result during renewal. The timer ticks
   every ten seconds; Redis leases deduplicate concurrent requests and scheduled
-  work. At expiry no old result is served. Failed/partial jobs are not cached.
+  work. At expiry no old result is served. Failed jobs are not cached; validated MKK Hyper partials are the sole partial-result exception.
 - Only recently requested catalog IDs (last request within 24 hours) are
   proactively renewed, so new catalog integrations do not flood the VPS;
   the next authorized request reactivates demand. This lightweight demand
   marker is ephemeral Redis state and does not include user identity.
 - Standalone SSH-account catalog IDs (`opentunnel-ssh`, `speigo-vpn-ssh`)
-  and `mkk-hyper` are excluded because of account/subscription sensitivity
-  and the exceptional size/partial-source contract. All other fixed-provider
-  catalogs use the common mechanism when enabled. Never cache new personalized
-  endpoints without additional privacy/authorization review.
+  remain excluded. MKK Hyper is included at the owner's request, using the
+  existing fixed-source, session-gated broker. Only successful complete or
+  explicitly validated partial MKK results are cached; source failures and
+  warnings remain intact. Refresh may upgrade a partial result to complete;
+  a still-valid complete result is not replaced with a partial. No new
+  personalized sources or user-supplied inputs may enter this cache.
 - Data: gzip + authenticated AES-256-GCM, key derived with HMAC domain
   separation from the existing server-side signing secret. Private named volume
   `server-vpn-results` with 0700 ownership and 0600 files. No catalog body
-  inside Redis. Maximum six MiB serialization per cache entry, 256 MiB
-  disk budget; larger results still use the normal response path. Files are
+  inside Redis. Maximum six MiB serialization per regular cache entry and
+  32 MiB for MKK Hyper, 256 MiB total disk budget; larger results still use
+  the normal response path. Files are
   replaced atomically, expired files pruned on writes. Freshness and method
   revision are authenticated; deployment build ID, operator revision, provider
   revision/state and secret rotation invalidate old results.

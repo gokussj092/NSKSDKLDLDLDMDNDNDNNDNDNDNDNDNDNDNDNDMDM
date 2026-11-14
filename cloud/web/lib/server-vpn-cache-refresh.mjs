@@ -20,8 +20,13 @@ async function runProvider(redis,id){
   const result=id==="nur-tunnel"?await loadNurCatalogResult({},n=>{bytes=n;}):
    await loadServerVpnResult(id,{},n=>{bytes=n;});
   // Record only the real worker job; cache hits never increment decode metrics.
-  let code="";if(!result.ok){try{code=(await result.clone().json()).error?.code||"";}catch{}}
-  await recordWorkerResult(redis,result.ok?"success":"failed",{kind,
+  let code="",outcome=result.ok?"success":"failed";
+  if(!result.ok||id==="mkk-hyper"){try{
+    const data=await result.clone().json();
+    if(!result.ok)code=data.error?.code||"";
+    else if(data.isPartial===true){code="PARTIAL_SOURCE_FAILURE";outcome="warning";}
+  }catch{}}
+  await recordWorkerResult(redis,outcome,{kind,
    format:id,bytes,errorCode:code,latencyMs:performance.now()-start}).catch(()=>{});
   return result;
  }catch(error){
