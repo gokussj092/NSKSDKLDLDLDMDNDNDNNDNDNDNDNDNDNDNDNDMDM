@@ -1,0 +1,25 @@
+{
+  "id": "ra-tunnel",
+  "name": "RA Tunnel Lite",
+  "package": "org.ratunnellite.xyz",
+  "versionName": "1.3",
+  "versionCode": 13,
+  "engine": "python",
+  "entrypoint": "RA_Tunnel.py",
+  "extensions": [],
+  "textPrefixes": [],
+  "dependencies": [],
+  "credentials": [],
+  "catalog": {
+    "status": "live_verified",
+    "method": "GET",
+    "url": "https://rajonvipnet.xyz/uploads/json/ce5941b7a22b0ee3e1c1.json",
+    "version": "334",
+    "servers": 12,
+    "networks": 147,
+    "payloads": 50,
+    "note": "50 networks con Payload (28 distintos); 83 con SNIHost; 0 SSLNetworks; sin campo IsPremium. Sin formato propio ni esquema URI."
+  },
+  "realSampleVerified": false,
+  "deployment": "pending"
+}

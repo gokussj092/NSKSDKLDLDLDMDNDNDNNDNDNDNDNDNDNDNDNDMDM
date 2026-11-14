@@ -1,0 +1,32 @@
+{
+  "id": "guruz-tunnel",
+  "name": "Guruz Tunnel",
+  "package": "com.guruz.tunnel",
+  "versionName": "18.6",
+  "versionCode": 186,
+  "engine": "python",
+  "entrypoint": "Guruz_Tunnel.py",
+  "extensions": [],
+  "textPrefixes": [],
+  "dependencies": [],
+  "catalog": {
+    "entrypoint": "Guruz_Tunnel.py",
+    "method": "GET",
+    "url": "https://raw.githubusercontent.com/guruzgh-ed/conf/refs/heads/main/gt.js",
+    "status": "live_verified",
+    "version": "1.1",
+    "servers": 76,
+    "networks": null,
+    "payloads": 618,
+    "tweaks": 1198,
+    "freeServers": 0,
+    "notes": "STGCM3.GT AES-256-GCM (clave KEY_CONFIG3; valores internos r95 / u8: / GTCR1.). Familia tekidoer. Seed de primer arranque incluido en el script: version 0.1, 1 servidor, 1 tweak (el script tambien abre esa version anterior / STGCM2 legacy)."
+  },
+  "files": {
+    "supported": false,
+    "entrypoint": null,
+    "notes": "Sin formato propio importable (sin ACTION_VIEW ni extension propia; la config vive cifrada en system.db, no es archivo de usuario); no hay script _archivos.py. Sin .sks, sin esquema URI propio."
+  },
+  "realSampleVerified": true,
+  "deployment": "pending"
+}

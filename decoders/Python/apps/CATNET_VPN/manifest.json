@@ -13,10 +13,11 @@
   "runtimeSecrets": [],
   "evidence": "analysis/net.catnet.vpn/29",
   "maintenance20261109": {
-    "status": "NETWORK_UNAVAILABLE",
-    "source": "owner Play APKS",
+    "status": "INTEGRITY_REQUIRED",
+    "source": "live verification 2026-11-13 (APKPure 1.2.7 APK, standalone CATNET_VPN.py)",
     "sourceBuild": 29,
     "headersBuild": 29,
-    "newLiveDownloadVerified": false
+    "newLiveDownloadVerified": false,
+    "note": "Preflight HTTP 200 with integrity_required=true + integrity_challenge JWT; servers/payloads/xray_payloads HTTP 403 modified_app=true on pussyvpn.com and xjdev.net. Same method as repo codec; standalone script inlines the codec and adds proxy handling, --url/-o and --self-test (8/8). No new live catalog version: Play is on 1.2.9, unanalysed."
   }
 }
