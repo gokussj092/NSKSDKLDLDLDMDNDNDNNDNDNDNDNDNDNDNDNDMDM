@@ -1,9 +1,7 @@
-/** Encrypted cache of fixed-provider results, including validated MKK partials. Never cache user input. */
-import {createCipheriv,createDecipheriv,createHmac,randomBytes,randomUUID} from "node:crypto";
+/** Private plain-JSON cache of authorized shared fixed-provider results. Never cache user input. */
+import {randomUUID} from "node:crypto";
 import {mkdir,open,readFile,readdir,rename,stat,unlink} from "node:fs/promises";
 import {join} from "node:path";
-import {gzip,gunzip} from "node:zlib";
-import {promisify} from "node:util";
 import {jsonReply} from "./responses.mjs";
 
 export const TTL_MS=4*60*60*1000;
@@ -14,7 +12,6 @@ export const MAX_MKK_ENTRY=32*1024*1024;
 const entryLimit=id=>id==="mkk-hyper"?MAX_MKK_ENTRY:MAX_ENTRY;
 export const MAX_DISK=256*1024*1024;
 const LEASE_MS=420_000,RETRY_SECONDS=300;
-const pack=promisify(gzip),unpack=promisify(gunzip);
 const PREFIX="spc8:catalog-cache:v1:";
 const GLOBAL=PREFIX+"refresh";
 const WRITE=PREFIX+"write";
@@ -25,14 +22,12 @@ const EXCLUDED=new Set(["opentunnel-ssh","speigo-vpn-ssh"]);
 export const cacheable=id=>safeId(id)&&!EXCLUDED.has(id);
 export const cacheEnabled=(env=process.env)=>env.CLOUD_SERVER_VPN_CACHE_ENABLED==="true";
 const rootDefault=()=>process.env.CLOUD_SERVER_VPN_CACHE_ROOT||"/app/server-vpn-results";
-const secretDefault=()=>process.env.CLOUD_SESSION_SIGNING_KEY||"";
 const expiryError=()=>Object.assign(Error("SERVICE_UNAVAILABLE"),{code:"SERVICE_UNAVAILABLE"});
 const demandKey=id=>PREFIX+"demand:"+id;
 const lockKey=id=>PREFIX+"lock:"+id;
 const backoffKey=id=>PREFIX+"retry:"+id;
-const pathFor=(root,id)=>join(root,"catalog-"+id+".bin");
-const derive=secret=>createHmac("sha256",secret).update("spdecode:server-vpn-results:v1").digest();
-const aad=(id,revision)=>Buffer.from(JSON.stringify(["spdecode-catalog-result-v1",id,revision]));
+const pathFor=(root,id)=>join(root,"catalog-"+id+".json");
+const SCHEMA=2;
 const complete=(value)=>value?.status==="success"&&value.isPartial===false&&typeof value.rawText==="string"&&value.rawText.length>0;
 // MKK is a fixed-source aggregate. Its worker contract already validates the
 // full document; a successful partial must retain its explicit source warning.
@@ -59,18 +54,16 @@ async function release(redis,key,token){
  await redis.eval("if redis.call('GET',KEYS[1])==ARGV[1] then return redis.call('DEL',KEYS[1]) else return 0 end",
   {keys:[key],arguments:[token]}).catch(()=>{});
 }
-async function readEntry({root,secret,id,revision,now}){
+async function readEntry({root,id,revision,now}){
  try{
   const file=pathFor(root,id),info=await stat(file);
-  if(!info.isFile()||info.size<29||info.size>entryLimit(id)+65536)return null;
+  if(!info.isFile()||(info.mode&0o077)!==0||info.size<2||info.size>entryLimit(id))return null;
   const bytes=await readFile(file);
-  if(bytes.length<29||bytes.length>entryLimit(id)+65536)return null;
-  const cipher=createDecipheriv("aes-256-gcm",derive(secret),bytes.subarray(0,12));
-  cipher.setAAD(aad(id,revision));cipher.setAuthTag(bytes.subarray(12,28));
-  const compressed=Buffer.concat([cipher.update(bytes.subarray(28)),cipher.final()]);
-  const clear=await unpack(compressed,{maxOutputLength:entryLimit(id)});
-  const item=JSON.parse(clear.toString("utf8"));
-  if(!Number.isSafeInteger(item.createdAt)||item.createdAt>now()+5000||!accepted(id,item.result))return null;
+  if(bytes.length<2||bytes.length>entryLimit(id))return null;
+  const item=JSON.parse(bytes.toString("utf8"));
+  if(item?.schema!==SCHEMA||item.id!==id||item.revision!==revision||
+     !Number.isSafeInteger(item.createdAt)||item.createdAt>now()+5000||
+     !accepted(id,item.result))return null;
   return item;
  }catch{return null;}
 }
@@ -80,13 +73,8 @@ async function writeEntry(redis,ctx,result,lockToken){
  // The original worker response is already validated by fetchWorker.
  if(!accepted(ctx.id,result)||await redis.get(lockKey(ctx.id))!==lockToken)return false;
  const safe={...result};delete safe.requestId;
- const clear=Buffer.from(JSON.stringify({createdAt:ctx.now(),result:safe}));
- if(clear.length>entryLimit(ctx.id))return false;
- const compressed=await pack(clear,{level:3});
- const nonce=randomBytes(12),cipher=createCipheriv("aes-256-gcm",derive(ctx.secret),nonce);
- cipher.setAAD(aad(ctx.id,ctx.revision));
- const encrypted=Buffer.concat([cipher.update(compressed),cipher.final()]);
- const bytes=Buffer.concat([nonce,cipher.getAuthTag(),encrypted]);
+ const bytes=Buffer.from(JSON.stringify({schema:SCHEMA,id:ctx.id,revision:ctx.revision,createdAt:ctx.now(),result:safe}));
+ if(bytes.length>entryLimit(ctx.id))return false;
  const writer=await acquire(redis,WRITE,60_000);
  if(!writer)return false;
  let tmp;
@@ -95,13 +83,16 @@ async function writeEntry(redis,ctx,result,lockToken){
   let total=0;
   const file=pathFor(ctx.root,ctx.id);
   for(const name of await readdir(ctx.root)){
-   if(!/^catalog-[a-z0-9-]{1,48}\.bin$/.test(name)&&!/^\.tmp-[a-f0-9-]{36}$/.test(name))continue;
+   const legacy=/^catalog-[a-z0-9-]{1,48}\.bin$/.test(name);
+   if(!legacy&&!/^catalog-[a-z0-9-]{1,48}\.json$/.test(name)&&!/^\.tmp-[a-f0-9-]{36}$/.test(name))continue;
    const other=join(ctx.root,name);
    try{
     const info=await stat(other);
     if(other===file)continue;
-    if(ctx.now()-info.mtimeMs>TTL_MS){await unlink(other).catch(()=>{});}
-    else total+=info.size;
+    // Old encrypted entries are disposable; do not decrypt/migrate them.
+    if(legacy||ctx.now()-info.mtimeMs>TTL_MS){
+     try{await unlink(other);}catch{total+=info.size;}
+    }else total+=info.size;
    }catch{}
   }
   if(total+bytes.length>MAX_DISK)return false;
@@ -115,9 +106,9 @@ async function writeEntry(redis,ctx,result,lockToken){
 }
 async function requestContext(redis,config){
  const {id,revision,load}=config;
- const ctx={id,revision,load,root:config.root??rootDefault(),secret:config.secret??secretDefault(),
+ const ctx={id,revision,load,root:config.root??rootDefault(),
   now:config.now??Date.now,isCurrent:config.isCurrent??(async()=>true)};
- if(!cacheable(id)||typeof revision!=="string"||ctx.secret.length<32)return null;
+ if(!cacheable(id)||typeof revision!=="string"||!revision)return null;
  return ctx;
 }
 /** On a miss only the Redis lease owner calls the worker. Hits never occupy worker slots. */
@@ -171,7 +162,7 @@ export async function renewDemandedCatalog(redis,configs){
    const ctx=await requestContext(redis,config);if(!ctx)continue;
    if(!await redis.get(demandKey(ctx.id))||await redis.get(backoffKey(ctx.id)))continue;
    if(!await ctx.isCurrent())continue;
-   // Do not decrypt every large catalog on every scheduler tick.
+   // Do not parse every large catalog on every scheduler tick.
    let age=Infinity;
    try{age=ctx.now()-(await stat(pathFor(ctx.root,ctx.id))).mtimeMs;}catch{}
    if(age<TTL_MS-REFRESH_AHEAD_MS)continue;

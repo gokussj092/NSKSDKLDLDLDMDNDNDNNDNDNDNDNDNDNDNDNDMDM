@@ -22,7 +22,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Validate syntax, encrypted cache, concurrency and renewal
+      - name: Validate syntax, private JSON cache, concurrency and renewal
         working-directory: cloud/web
         run: |
           set -euo pipefail

@@ -23,15 +23,27 @@ request ID. User-supplied files, links and password/HWID fields are excluded.
   warnings remain intact. Refresh may upgrade a partial result to complete;
   a still-valid complete result is not replaced with a partial. No new
   personalized sources or user-supplied inputs may enter this cache.
-- Data: gzip + authenticated AES-256-GCM, key derived with HMAC domain
-  separation from the existing server-side signing secret. Private named volume
-  `server-vpn-results` with 0700 ownership and 0600 files. No catalog body
-  inside Redis. Maximum six MiB serialization per regular cache entry and
-  32 MiB for MKK Hyper, 256 MiB total disk budget; larger results still use
-  the normal response path. Files are
-  replaced atomically, expired files pruned on writes. Freshness and method
-  revision are authenticated; deployment build ID, operator revision, provider
-  revision/state and secret rotation invalidate old results.
+- Storage revision 2: private, uncompressed plain JSON in the existing
+  named volume `server-vpn-results` (0700 directory, 0600 files). No gzip,
+  AES-GCM or cache-key derivation on reads or writes. No new RAM cache,
+  service or polling. Existing HPKE transport protection remains unchanged.
+  The entry stores schema, provider, revision, computed timestamp and result;
+  validates JSON and freshness before use and issues a fresh request ID.
+  The existing six MiB per ordinary entry, 32 MiB for MKK and 256 MiB
+  aggregate disk limits are unchanged; uncompressed files will generally
+  take more disk/OS page-cache space and may hit the disk budget sooner.
+  Oversized results use the normal path. No catalog body in Redis.
+  Atomic writes and opportunistic expiry cleanup remain. Old .bin entries
+  are never decoded or migrated and are removed on subsequent writes;
+  the first new request may be a cold miss. Deployment/catalog/provider
+  revisions and operator revision still invalidate cached results.
+  No cryptographic integrity or confidentiality at rest: local privileged
+  access, compromised runtime users and backups can expose or alter the
+  data. Do not include this disposable volume in backups or serve it via
+  public routes. Cache only shared catalogs the operator is authorized
+  to store and distribute; do not store user-specific credentials or
+  private inputs. For sensitive catalogs requiring encryption at rest,
+  disable the shared cache instead of using this plaintext mode.
 - A failed refresh preserves a still-fresh result and backs off five minutes.
   If no fresh data exists, return a controlled error rather than inventing data.
   On successful refresh, TTL resets, not extended by read hits.
@@ -43,11 +55,11 @@ request ID. User-supplied files, links and password/HWID fields are excluded.
   in `/etc/spdecode/cloud.env` and recreate web to disable. Increment
   `CLOUD_SERVER_VPN_CACHE_REVISION` to invalidate all stored data.
   No need to compile Android for this change. Do not erase Redis security
-  state to clear catalog cache. No VPS deployment from this commit.
+  state to clear catalog cache. No VPS deployment from this commit. The format change intentionally incurs a one-time cold refill.
 - Real throughput and proactive refresh timing depend on upstream/worker
   health and load. This does not guarantee instantaneous delivery if a
   catalog expires while the server is busy.
 
 Validation: source checks, dedicated cache test suite and web image build in
 GitHub Actions. Fixtures do not contact vendor endpoints, and do not certify
-actual VPS throughput or third-party permissions.
+actual VPS throughput or third-party permissions. A plain cache reduces per-hit CPU work but cannot guarantee lower total CPU/RAM/disk consumption or eliminate transport/client-side latency.

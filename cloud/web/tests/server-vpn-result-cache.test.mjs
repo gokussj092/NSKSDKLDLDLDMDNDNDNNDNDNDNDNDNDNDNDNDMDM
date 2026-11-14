@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {mkdtemp,readFile,writeFile,rm,utimes,readdir} from "node:fs/promises";
+import {mkdtemp,readFile,writeFile,rm,utimes,readdir,stat,chmod} from "node:fs/promises";
 import {tmpdir} from "node:os";
 import {join} from "node:path";
 import {sharedCatalog,renewDemandedCatalog,TTL_MS,REFRESH_AHEAD_MS,cacheable} from "../lib/server-vpn-result-cache.mjs";
@@ -22,12 +22,12 @@ const result=(text,extra={})=>Response.json({status:"success",rawText:text,isPar
 async function fixture(t,extra={}){
  const root=await mkdtemp(join(tmpdir(),"catalog-cache-"));t.after(()=>rm(root,{recursive:true,force:true}));
  const r=new RedisFixture(),clock={value:Date.now()},calls={value:0};
- const cfg={id:"sample-vpn",revision:"test-v1",secret:"cache-test-secret".repeat(3),root,enabled:true,
+ const cfg={id:"sample-vpn",revision:"test-v1",root,enabled:true,
   now:()=>clock.value,sleep:()=>new Promise(r=>setTimeout(r,15)),waitMs:5000,
   load:async()=>result("fixture-"+(++calls.value)),...extra};
- return {r,cfg,clock,calls,path:join(root,"catalog-sample-vpn.bin")};
+ return {r,cfg,clock,calls,path:join(root,"catalog-sample-vpn.json")};
 }
-test("shared result: worker called once; disk encrypted; new requestId and no-store",async t=>{
+test("shared result: worker called once; private plain JSON; new requestId and no-store",async t=>{
  const {r,cfg,calls,path}=await fixture(t);
  const x=await (await sharedCatalog(r,cfg)).json();
  const second=await sharedCatalog(r,cfg),y=await second.json();
@@ -35,8 +35,11 @@ test("shared result: worker called once; disk encrypted; new requestId and no-st
  assert.equal(calls.value,1);assert.equal(x.rawText,y.rawText);assert.equal(third.rawText,y.rawText);
  assert.notEqual(y.requestId,x.requestId);assert.notEqual(y.requestId,third.requestId);
  assert.match(second.headers.get("cache-control"),/no-store/);
- const disk=await readFile(path);assert.equal(disk.includes(Buffer.from("fixture-1")),false);
- assert.equal(disk.includes(Buffer.from("original-private-id")),false);
+ const disk=await readFile(path,"utf8");const entry=JSON.parse(disk);
+ assert.equal(entry.result.rawText,"fixture-1");assert.equal(entry.id,cfg.id);
+ assert.equal(entry.revision,cfg.revision);assert.equal(entry.schema,2);
+ assert.equal((await stat(path)).mode&0o777,0o600);
+ assert.equal(disk.includes("original-private-id"),false);
 });
 test("concurrent misses use just one load",async t=>{
  const {r,cfg,calls}=await fixture(t);
@@ -70,15 +73,27 @@ test("failed refresh keeps still-valid result; expiration fails closed",async t=
  clock.value+=REFRESH_AHEAD_MS;
  await assert.rejects(()=>sharedCatalog(r,cfg),/SERVICE_UNAVAILABLE/);
 });
-test("cache misses after revision change, tampering or signing secret rotation",async t=>{
+test("cache misses after revision change, malformed JSON, wrong provider or loose permissions",async t=>{
  const {r,cfg,calls,path}=await fixture(t);
  await sharedCatalog(r,cfg);
  const newCfg={...cfg,revision:"test-v2"};
  assert.equal((await (await sharedCatalog(r,newCfg)).json()).rawText,"fixture-2");
- const buf=await readFile(path);buf[buf.length-1]^=1;await writeFile(path,buf);
+ await writeFile(path,"{incomplete");
  assert.equal((await (await sharedCatalog(r,newCfg)).json()).rawText,"fixture-3");
- const rotated={...newCfg,secret:"new-test-secret".repeat(4)};
- assert.equal((await (await sharedCatalog(r,rotated)).json()).rawText,"fixture-4");assert.equal(calls.value,4);
+ const wrong=JSON.parse(await readFile(path,"utf8"));wrong.id="other-vpn";
+ await writeFile(path,JSON.stringify(wrong));
+ assert.equal((await (await sharedCatalog(r,newCfg)).json()).rawText,"fixture-4");
+ await chmod(path,0o644);
+ assert.equal((await (await sharedCatalog(r,newCfg)).json()).rawText,"fixture-5");
+ assert.equal(calls.value,5);assert.equal((await stat(path)).mode&0o777,0o600);
+});
+test("legacy binary entries are discarded without conversion",async t=>{
+ const {r,cfg,calls,path}=await fixture(t);
+ await writeFile(join(cfg.root,"catalog-sample-vpn.bin"),"legacy",{mode:0o600});
+ assert.equal((await (await sharedCatalog(r,cfg)).json()).rawText,"fixture-1");
+ assert.deepEqual(await readdir(cfg.root),["catalog-sample-vpn.json"]);
+ assert.equal(JSON.parse(await readFile(path,"utf8")).result.rawText,"fixture-1");
+ await sharedCatalog(r,cfg);assert.equal(calls.value,1);
 });
 test("expired result cannot be served; eligible provider is downloaded again",async t=>{
  const {r,cfg,clock,calls}=await fixture(t);
@@ -118,7 +133,7 @@ function mkkResult(partial,tag="mkk",padding=""){
 }
 test("MKK validated partial is shared, preserving warnings, then upgrades to complete",async t=>{
  const {r,cfg,clock,calls}=await fixture(t,{id:"mkk-hyper"});
- const path=join(cfg.root,"catalog-mkk-hyper.bin");
+ const path=join(cfg.root,"catalog-mkk-hyper.json");
  cfg.load=async()=>{calls.value++;return mkkResult(true);};
  await sharedCatalog(r,cfg);
  const hit=await (await sharedCatalog(r,cfg)).json();
@@ -132,7 +147,7 @@ test("MKK validated partial is shared, preserving warnings, then upgrades to com
 });
 test("MKK fresh complete result is not degraded by partial renewal",async t=>{
  const {r,cfg,clock}=await fixture(t,{id:"mkk-hyper",load:async()=>mkkResult(false,"complete")});
- const path=join(cfg.root,"catalog-mkk-hyper.bin");await sharedCatalog(r,cfg);
+ const path=join(cfg.root,"catalog-mkk-hyper.json");await sharedCatalog(r,cfg);
  clock.value+=TTL_MS-REFRESH_AHEAD_MS+1000;
  const old=new Date(Date.now()-TTL_MS+REFRESH_AHEAD_MS-1000);await utimes(path,old,old);
  await renewDemandedCatalog(r,[{...cfg,load:async()=>mkkResult(true)}]);
