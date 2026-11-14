@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 3.22.1)
+project(spdecode_admin LANGUAGES CXX)
+add_library(spdecode_admin SHARED admin_routes.cpp admin_jni.cpp)
+target_compile_features(spdecode_admin PRIVATE cxx_std_17)
+target_compile_options(spdecode_admin PRIVATE -Wall -Wextra -Wpedantic -fvisibility=hidden -fstack-protector-strong)
