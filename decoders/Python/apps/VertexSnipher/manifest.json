@@ -1,0 +1,36 @@
+{
+  "id": "vertexsnipher",
+  "name": "VertexSnipher",
+  "package": "codes.juanscript.vertexsnipher",
+  "versionName": "0.1.46",
+  "versionCode": 46,
+  "engine": "python",
+  "entrypoint": "VertexSnipher.py",
+  "extensions": [],
+  "textPrefixes": [
+    "snipher://"
+  ],
+  "dependencies": [],
+  "catalog": {
+    "entrypoint": "VertexSnipher.py",
+    "method": "GET",
+    "url": "https://www.juanscript.codes/api/servers",
+    "status": "blocked_device_identity_play_integrity",
+    "version": null,
+    "servers": null,
+    "networks": null,
+    "payloads": null,
+    "notes": "Catalogo BLOQUEADO por identidad de dispositivo (ANDROID_ID + installation-id) + Play Integrity; verificado en vivo 3 veces el 2026-11-13 (403 device_identity_required, luego 403 play_integrity_required). Version, servidores y payloads INDETERMINADOS. Otros endpoints: /api/prebuilt-configs, /api/prebuilt-xrays, /api/openvpn-files, /api/app-sync (misma base https://www.juanscript.codes)."
+  },
+  "files": {
+    "supported": true,
+    "entrypoint": "VertexSnipher_archivos.py",
+    "extensions": [],
+    "textPrefixes": [
+      "snipher://"
+    ],
+    "notes": "Sin formato propio de archivo; VertexSnipher_archivos.py es el decodificador snipher:// (v2/v3/heredado, AES-256-GCM + PBKDF2 + GZIP), COMPLETO y verificado por ida y vuelta. .ovpn es OpenVPN estandar, ya cubierto por SP-DECODE. mobivpn://message/<id> es solo enlace interno de notificaciones, no formato de importacion."
+  },
+  "realSampleVerified": false,
+  "deployment": "pending"
+}

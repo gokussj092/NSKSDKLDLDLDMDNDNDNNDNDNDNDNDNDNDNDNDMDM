@@ -1,0 +1,29 @@
+{
+    "catalog": {
+        "entrypoint": "Binke_Volt.py",
+        "method": "GET",
+        "networks": 789,
+        "payloads": 410,
+        "servers": 55,
+        "url": "https://raw.githubusercontent.com/snapb/B_SHIELD/refs/heads/main/Benben_cnofig.js",
+        "version": "13.67"
+    },
+    "deployment": "pending",
+    "engine": "python",
+    "entrypoint": "Binke_Volt.py",
+    "extensions": [
+        "bvv",
+        "js",
+        "rj"
+    ],
+    "fileDecoder": "Binke_Volt_archivos.py",
+    "id": "binke-volt",
+    "name": "Binke Volt",
+    "package": "xyz.binkevoltvpn.org",
+    "realSampleVerified": true,
+    "textPrefixes": [
+        "binkevoltvpn://"
+    ],
+    "versionCode": 11,
+    "versionName": "1.1"
+}

@@ -1,18 +1,54 @@
 {
-  "id": "oneftunnel",
-  "name": "1FTunnel",
-  "package": "com.oneftunnel.app",
-  "versionName": "0.6.99",
-  "versionCode": 125,
-  "engine": "python",
-  "entrypoint": "file_decoder.py",
-  "extensions": ["1ftnl"],
-  "textPrefixes": ["1FTnl.", "1FT1.", "1ftunnel://1FTnl/", "1ftunnel://1FT1/"],
-  "containerVersions": [1, 2, 3],
-  "payloadVersions": [1, 2, 3, 4, 5],
-  "dependencies": ["pycryptodome>=3.20,<4"],
-  "credentials": ["password"],
-  "catalog": {"status": "not_identified", "remote": null},
-  "realSampleVerified": true,
-  "deployment": "pending"
+    "catalog": {
+        "entrypoint": null,
+        "method": null,
+        "networks": null,
+        "payloads": null,
+        "remote": null,
+        "servers": null,
+        "status": "not_identified",
+        "url": null,
+        "version": null
+    },
+    "containerVersions": [
+        1,
+        2,
+        3
+    ],
+    "credentials": [
+        "password"
+    ],
+    "dependencies": [],
+    "deployment": "pending",
+    "engine": "python",
+    "entrypoint": "1FTunnel.py",
+    "extensions": [
+        "1ftnl"
+    ],
+    "fileDecoder": "1FTunnel_archivos.py",
+    "id": "oneftunnel",
+    "name": "1FTunnel",
+    "package": "com.oneftunnel.app",
+    "payloadVersions": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+    ],
+    "realSampleVerified": true,
+    "textPrefixes": [
+        "1FTnl.",
+        "1FT1.",
+        "1ftunnel://1FTnl/",
+        "1ftunnel://1FT1/",
+        "1ftunnel://locked-v2/",
+        "1ftunnel://locked/",
+        "1FTlb.",
+        "1ftunnel://1FTlb/",
+        "1ftunnel://"
+    ],
+    "versionCode": 127,
+    "versionName": "0.7.1"
 }

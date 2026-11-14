@@ -1,0 +1,38 @@
+{
+  "id": "linklayer",
+  "name": "LinkLayer VPN",
+  "package": "com.newtoolsworks.linklayer",
+  "versionName": "3.11.2",
+  "versionCode": 93,
+  "engine": "python",
+  "entrypoint": "LinkLayer.py",
+  "extensions": [
+    "lnk"
+  ],
+  "textPrefixes": [],
+  "dependencies": [
+    "pycryptodome>=3.20,<4"
+  ],
+  "catalog": {
+    "entrypoint": "LinkLayer.py",
+    "method": "GET",
+    "url": "https://linklayer.newtoolsworks.com/free.php",
+    "status": "live_verified",
+    "version": "v3.1- IPV6",
+    "servers": 3,
+    "networks": null,
+    "payloads": 0,
+    "notes": "Base64 + Salted__ + EVP_BytesToKey MD5 + AES-256-CBC (contrasena 98548632458oMkh2bs3pZcJL1XAb84277). 3 ubicaciones gratuitas (USA 1, USA 2, Amsterdam 1); 0 payloads (el catalogo no trae seccion de payloads; las opciones son httpdual). Asset flayer.dat: misma version v3.1, 3 ubicaciones, hosts *.ntwtunnel.com."
+  },
+  "files": {
+    "supported": true,
+    "entrypoint": "LinkLayer_archivos.py",
+    "extensions": [
+      "lnk"
+    ],
+    "notes": "Archivos .lnk VER6 (Blowfish-CFB64 | AES-CFB128 | Salsa20 | CAST5-CFB64 | PBKDF2-SHA1 32 iters XOR 1500 B | AES-CFB128 -> gob NativeConfig). REQUIERE PyCryptodome (ver dependencies). Mismo metodo VER6 que el decoder legacy del repo decoders/Python/linklayer.py; salida identica en pruebas sinteticas. CONFLICTO DE REGISTRO: decoders.json ya registra \"lnk\" -> decoders/Python/linklayer.py (legacy); no duplicar sin decidir. Sin .sks, sin esquema URI propio."
+  },
+  "legacyRelation": "El repo ya cubria LinkLayer SOLO como formato de archivo (decoders/Python/linklayer.py, VER6, verificado contra exportado real de 3.11.2/93; expediente en docs/LINKLAYER_VER6_INVESTIGATION_HANDOFF.md). Esta carpeta apps/LinkLayer es NUEVA y aporta el catalogo en vivo + el decoder VER6 adaptado a ESTE APK (constantes IV/XOR_SALT verificadas en libgojni.so). No se toca el legacy.",
+  "realSampleVerified": true,
+  "deployment": "pending"
+}

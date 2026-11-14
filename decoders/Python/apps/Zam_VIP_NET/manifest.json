@@ -1,0 +1,32 @@
+{
+  "id": "zam-vip-net",
+  "name": "Zam VIP NET / Free VIP Net",
+  "package": "zam.freevipnet.com",
+  "versionName": "42.0",
+  "versionCode": 42,
+  "engine": "python",
+  "entrypoint": "Zam_VIP_NET.py",
+  "fileDecoder": "Zam_VIP_NET_archivos.py",
+  "extensions": [
+    "zvn",
+    "js",
+    "rj"
+  ],
+  "textPrefixes": [
+    "zamvipnet://"
+  ],
+  "dependencies": [],
+  "credentials": [],
+  "catalog": {
+    "status": "live_verified",
+    "method": "GET",
+    "url": "https://www.zamscript.xyz/api/json/l160D7cKZ9XXUQTJMjnpZKNp5QvVBMEC0GRihMCQBr2mSPNBrkvWMv547qVefd5F",
+    "version": "2.458",
+    "servers": 113,
+    "networks": 591,
+    "payloads": 276,
+    "note": "0 campos indescifrables; usuario/clave zambro1/zambro1; 239 redes con SNIHost; 37 servidores V2Ray; 5 SlowDNS."
+  },
+  "realSampleVerified": false,
+  "deployment": "pending"
+}

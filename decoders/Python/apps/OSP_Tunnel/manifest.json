@@ -1,0 +1,28 @@
+{
+    "catalog": {
+        "entrypoint": "OSP_Tunnel.py",
+        "method": "GET",
+        "networks": 621,
+        "payloads": 485,
+        "servers": 81,
+        "url": "https://raw.githubusercontent.com/MAKE-MONEY-MILLION-DOLLAR-PER-DAY/7net-Team/refs/heads/main/7net%2BAll_Team.js",
+        "version": "40.71"
+    },
+    "deployment": "pending",
+    "engine": "python",
+    "entrypoint": "OSP_Tunnel.py",
+    "extensions": [
+        "osp"
+    ],
+    "fileDecoder": "OSP_Tunnel_archivos.py",
+    "id": "osp-tunnel",
+    "name": "OSP Tunnel",
+    "package": "xyz.osptunnel.org",
+    "realSampleVerified": true,
+    "textPrefixes": [
+        "osptunnel://",
+        "osp://"
+    ],
+    "versionCode": 37,
+    "versionName": "3.7"
+}

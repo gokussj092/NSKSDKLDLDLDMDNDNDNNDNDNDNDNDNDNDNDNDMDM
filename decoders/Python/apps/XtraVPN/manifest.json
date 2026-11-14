@@ -1,0 +1,24 @@
+{
+  "id": "xtravpn",
+  "name": "XtraVPN",
+  "package": "com.xtravpn.dev",
+  "versionName": "1.0.36",
+  "versionCode": 62,
+  "engine": "python",
+  "entrypoint": "XtraVPN.py",
+  "extensions": [],
+  "textPrefixes": [],
+  "catalog": {
+    "entrypoint": "XtraVPN.py",
+    "method": "Base64 -> modified XXTEA (delta 0xF5D09E4D); keys Pitingo2089 (asset) / AdMob banner ID (remote); per-field K9.h + AES; per-device custom-code URL, no public catalog URL",
+    "url": null,
+    "liveVersion": "1.0.0 (bundled asset only; no live catalog without a device custom-code URL)",
+    "servers": 1,
+    "networks": null,
+    "payloads": null,
+    "status": "asset_verified_no_public_url",
+    "assetVersion": "1.0.0",
+    "assetServers": 1,
+    "notes": "No separate Networks/payloads section: the payload lives inside the server Payload field. Sig-config remote does not decrypt with the 1.0.36 key (honest failure, --sig-config reports it). Only file format is .sks, excluded at Pedro's request."
+  }
+}
