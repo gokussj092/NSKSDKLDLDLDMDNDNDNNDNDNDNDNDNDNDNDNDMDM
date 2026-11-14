@@ -1,0 +1,28 @@
+{
+  "id": "marvs-ssh",
+  "name": "Marvs SSH / T20-VPN",
+  "package": "vpn.marvs.ssh",
+  "versionName": "v1.10.5.3",
+  "versionCode": 47,
+  "engine": "python",
+  "entrypoint": "Marvs_SSH.py",
+  "fileDecoder": "Marvs_SSH_archivos.py",
+  "extensions": [
+    "t20"
+  ],
+  "textPrefixes": [],
+  "dependencies": [],
+  "credentials": [],
+  "catalog": {
+    "status": "LIVE_DECRYPT_FAILED",
+    "method": "POST",
+    "url": "https://strongteam.co/api/t20/",
+    "version": null,
+    "servers": null,
+    "networks": null,
+    "payloads": null,
+    "note": "HTTP 200, cuerpo 416145 B, SHA-256 49088c1b7962dcc5e28ae7a67845a22f38209f4bd92dfe3c5b47bc515e0973cf; no verifica con K1 ni K2: clave viva rotada tras v1.10.5.3. Asset configfile.json abre con K2: v1.01, 1 servidor, 1 red."
+  },
+  "realSampleVerified": false,
+  "deployment": "pending"
+}

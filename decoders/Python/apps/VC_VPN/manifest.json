@@ -1,0 +1,39 @@
+{
+  "id": "vc-vpn",
+  "name": "VC VPN",
+  "package": "com.vc.vpn",
+  "versionName": "8.0",
+  "versionCode": 80,
+  "engine": "python",
+  "entrypoint": "VC_VPN.py",
+  "extensions": [
+    "tgv",
+    "vcv"
+  ],
+  "textPrefixes": [],
+  "dependencies": [],
+  "catalog": {
+    "entrypoint": "VC_VPN.py",
+    "method": "GET",
+    "url": "https://raw.githubusercontent.com/guruzgh-ed/conf/refs/heads/main/vc.js",
+    "status": "live_verified",
+    "version": "1.4",
+    "servers": 19,
+    "networks": null,
+    "payloads": 311,
+    "tweaks": 634,
+    "freeServers": 0,
+    "notes": "STGCM3.VC AES-256-GCM (claves propias; prefijo VC, no GT). Familia tekidoer, igual que Guruz Tunnel pero catalogo propio vc.js (19 servidores) frente a gt.js (76). Seed del APK: version 0.1, 1 servidor, 1 tweak (el script tambien abre esa version anterior / STGCM2 legacy)."
+  },
+  "files": {
+    "supported": true,
+    "entrypoint": "VC_VPN_archivos.py",
+    "extensions": [
+      "tgv",
+      "vcv"
+    ],
+    "notes": ".tgv COMPLETO: texto con sobre STGCM2/STGCM3.VC. (mismo sobre del catalogo), intent-filter VIEW pathPattern .*.tgv. .vcv PENDIENTE: export a Documents/<app>/<nombre>.vcv = TekProtect.nEncryptUserConfig(JSON {\"VCV_CONFIG\": perfil}); sin muestra real no se resolvio offline; el script lo detecta y reporta VCV_PENDING con SHA-256 y tamano, sin inventar contenido. Importa de VC_VPN.py: mantener juntos. Sin .sks, sin esquema URI propio."
+  },
+  "realSampleVerified": true,
+  "deployment": "pending"
+}
