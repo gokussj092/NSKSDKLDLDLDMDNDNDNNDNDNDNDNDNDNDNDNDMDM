@@ -43,15 +43,38 @@ jobs:
           test -c /dev/kvm
           sudo chmod a+rw /dev/kvm
           sdkmanager 'emulator' 'system-images;android-35;default;x86_64'
-          echo no | avdmanager create avd -n admin-review -k 'system-images;android-35;default;x86_64' --device pixel_6 --force
-          "$ANDROID_HOME/emulator/emulator" -avd admin-review -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect -accel on -memory 2048 > /tmp/admin-emulator.log 2>&1 &
-          trap 'adb emu kill || true' EXIT
-          adb wait-for-device
+          export ANDROID_AVD_HOME="$RUNNER_TEMP/admin-avds"
+          mkdir -p "$ANDROID_AVD_HOME"
+          echo no | avdmanager create avd -n admin-review -k 'system-images;android-35;default;x86_64' --device pixel_6 --path "$RUNNER_TEMP/admin-review.avd" --force
+          python3 - <<'PYAVD'
+          import os
+          from pathlib import Path
+          path = Path(os.environ['RUNNER_TEMP']) / 'admin-review.avd/config.ini'
+          lines = path.read_text().splitlines()
+          updates = {'disk.dataPartition.size': '2G', 'hw.ramSize': '2048'}
+          lines = [line for line in lines if line.split('=', 1)[0] not in updates]
+          path.write_text('\n'.join(lines + [key + '=' + value for key, value in updates.items()]) + '\n')
+          index = Path(os.environ['ANDROID_AVD_HOME']) / 'admin-review.ini'
+          index.write_text('avd.ini.encoding=UTF-8\npath=' + str(path.parent) + '\ntarget=android-35\n')
+          PYAVD
+          mkdir -p android-admin/app/build/review
+          EMU_LOG="$PWD/android-admin/app/build/review/emulator.log"
+          "$ANDROID_HOME/emulator/emulator" -avd admin-review -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader -accel on -memory 2048 > "$EMU_LOG" 2>&1 &
+          emulator_pid=$!
+          trap 'adb emu kill || true; tail -n 100 "$EMU_LOG" || true' EXIT
+          adb start-server
           for attempt in $(seq 1 90); do
-            if [ "$(adb shell getprop sys.boot_completed | tr -d '\r')" = 1 ]; then break; fi
+            if ! kill -0 "$emulator_pid" 2>/dev/null; then cat "$EMU_LOG"; exit 1; fi
+            if timeout 5 adb get-state 2>/dev/null | grep -qx device; then break; fi
             sleep 2
           done
-          test "$(adb shell getprop sys.boot_completed | tr -d '\r')" = 1
+          timeout 5 adb get-state | grep -qx device
+          for attempt in $(seq 1 90); do
+            if ! kill -0 "$emulator_pid" 2>/dev/null; then cat "$EMU_LOG"; exit 1; fi
+            if [ "$(timeout 10 adb shell getprop sys.boot_completed | tr -d '\r')" = 1 ]; then break; fi
+            sleep 2
+          done
+          test "$(timeout 10 adb shell getprop sys.boot_completed | tr -d '\r')" = 1
           adb shell input keyevent 82
           adb shell settings put secure show_ime_with_hard_keyboard 1
           adb shell settings put global window_animation_scale 0
@@ -62,7 +85,6 @@ jobs:
           wait "$test_pid" && test_result=0 || test_result=$?
           mkdir -p android-admin/app/build/review
           adb pull /sdcard/Android/data/com.ghostdeveloper.spdecode.admin.preview/files/review/. android-admin/app/build/review/ || true
-          cp /tmp/admin-emulator.log android-admin/app/build/review/emulator.log
           exit "$test_result"
       - uses: actions/upload-artifact@v4
         if: always()
