@@ -223,7 +223,12 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
         }
     }
     BackHandler{back()}
+    // Support owns its contact header and back navigation; do not nest the
+    // generic SP-DECODE title above the contact's own toolbar.
+    val supportOwnHeader=page in setOf("support","report") &&
+        (!NativeDeviceAccountGuard.enabled(context)||NativeDeviceAccountGuard.unlocked)
     Column(Modifier.fillMaxSize().background(black).safeDrawingPadding()){
+        if(!supportOwnHeader){
         Row(Modifier.fillMaxWidth().padding(horizontal=12.dp,vertical=9.dp),
             verticalAlignment=Alignment.CenterVertically){
             IconButton(onClick={back()}){
@@ -259,8 +264,11 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
             }
         }
         HorizontalDivider(color=Color(0xFF292929))
+        }
         val chatPage=page in setOf("support","report","notifications","activity")
-        val bodyModifier=if(chatPage)
+        val bodyModifier=if(supportOwnHeader)
+            Modifier.weight(1f).fillMaxWidth()
+        else if(chatPage)
             Modifier.weight(1f).fillMaxWidth()
                 .padding(horizontal=15.dp,vertical=10.dp)
         else
@@ -572,8 +580,10 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                     onSaved={accountSnapshot=it;page="security"})
                 "gift" -> CommerceGiftRedeemPage(language,auth,
                     onSignIn={page="login"},onAccount={page="account"})
-                "support" -> CommerceSupportPage(language,auth,false,onSignIn={page="login"})
-                "report" -> CommerceSupportPage(language,auth,true,onSignIn={page="login"})
+                "support" -> CommerceSupportPage(language,auth,false,
+                    onSignIn={page="login"},onExit={back()})
+                "report" -> CommerceSupportPage(language,auth,true,
+                    onSignIn={page="login"},onExit={back()})
                 "delete-account" -> CommerceDeleteAccountPage(language,auth,
                     onDeleted={accountSnapshot=null;page="login"})
                 "profile-edit" -> {

@@ -1,5 +1,6 @@
 package com.ghostdeveloper.spdecode
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -35,13 +36,14 @@ import java.util.Date
 import java.util.Locale
 import java.time.ZoneId
 
-private val chatWhite=Color(0xFFF6F6F6)
-private val chatMuted=Color(0xFFA9A9A9)
-private val chatPanel=Color(0xFF1C1C1C)
-private val chatGreen=Color(0xFFB8DCC0)
-private val chatLine=Color(0xFF353535)
-private val chatOutgoing=Color(0xFF244233)
-private val chatIncoming=Color(0xFF262626)
+private val chatWhite=Color(0xFFF0F6F9)
+private val chatMuted=Color(0xFF94AAB6)
+private val chatPanel=Color(0xFF101D27)
+private val chatHeader=Color(0xFF0B1923)
+private val chatGreen=Color(0xFF76D6E7)
+private val chatLine=Color(0xFF27404D)
+private val chatOutgoing=Color(0xFF123B4B)
+private val chatIncoming=Color(0xFF1C2934)
 
 private fun chatTime(input:String,full:Boolean=false):String = runCatching{
     val date=Date.from(Instant.parse(input))
@@ -60,39 +62,48 @@ private fun ChatDayDivider(input:String,language:String){
             .format(Date.from(Instant.parse(input)))
     }.getOrDefault("")
     if(label.isNotEmpty()){
-        Row(Modifier.fillMaxWidth().padding(vertical=12.dp),
-            horizontalArrangement=Arrangement.Center){
+        Row(Modifier.fillMaxWidth().padding(horizontal=12.dp,vertical=16.dp),
+            verticalAlignment=Alignment.CenterVertically,
+            horizontalArrangement=Arrangement.spacedBy(12.dp)){
+            HorizontalDivider(modifier=Modifier.weight(1f),color=chatLine)
             Text(label,color=chatMuted,fontSize=11.sp,
-                modifier=Modifier.background(Color(0xFF292929),RoundedCornerShape(40.dp))
-                    .padding(horizontal=13.dp,vertical=6.dp))
+                modifier=Modifier.background(chatHeader,RoundedCornerShape(50))
+                    .border(.6.dp,chatLine,RoundedCornerShape(50))
+                    .padding(horizontal=13.dp,vertical=7.dp))
+            HorizontalDivider(modifier=Modifier.weight(1f),color=chatLine)
         }
     }
 }
-
 @Composable
 private fun SupportAvatar(letters:String,fromTeam:Boolean=false){
     Box(Modifier.size(44.dp)
-        .background(if(fromTeam)Color(0xFF31533F) else Color(0xFF373737),CircleShape),
+        .background(if(fromTeam)Color(0xFF194557) else Color(0xFF253644),CircleShape)
+        .border(1.dp,if(fromTeam)Color(0xFF39778A) else chatLine,CircleShape),
         contentAlignment=Alignment.Center){
-        Text(letters.take(2).uppercase(),color=chatWhite,fontWeight=FontWeight.SemiBold,
-            fontSize=15.sp)
+        Text(letters.take(2).uppercase(),color=chatWhite,fontWeight=FontWeight.Bold,
+            fontSize=14.sp)
     }
 }
 @Composable
 private fun StatusChip(status:String,language:String){
-    val text=when(status){
+    val label=when(status){
         "answered"->CommerceI18n.translate(language,"Respondido","Answered")
         "closed"->CommerceI18n.translate(language,"Cerrado","Closed")
         else->CommerceI18n.translate(language,"Pendiente","Pending")
     }
     val tint=when(status){
-        "answered"->chatGreen
-        "closed"->chatMuted
+        "answered"->Color(0xFF78E1C0)
+        "closed"->Color(0xFFB4C6D0)
         else->Color(0xFFFFCF8F)
     }
-    Box(Modifier.background(Color(0xFF303030),RoundedCornerShape(50))
-        .padding(horizontal=10.dp,vertical=5.dp)){
-        Text(text,color=tint,fontWeight=FontWeight.Medium,fontSize=11.sp)
+    val shape=RoundedCornerShape(50)
+    Row(Modifier.background(chatPanel,shape).border(.8.dp,chatLine,shape)
+        .padding(horizontal=10.dp,vertical=7.dp),
+        verticalAlignment=Alignment.CenterVertically,
+        horizontalArrangement=Arrangement.spacedBy(6.dp)){
+        Box(Modifier.size(6.dp).background(tint,CircleShape))
+        Text(label,color=tint,fontWeight=FontWeight.SemiBold,fontSize=10.sp,
+            maxLines=1)
     }
 }
 @Composable
@@ -105,32 +116,34 @@ private fun SupportBubble(row:JSONObject,language:String){
         "moderator"->CommerceI18n.translate(language,"Moderación","Moderation")
         else->CommerceI18n.translate(language,"Soporte técnico","Technical support")
     }
-    val shape=RoundedCornerShape(topStart=18.dp,topEnd=18.dp,
-        bottomStart=if(mine)18.dp else 5.dp,bottomEnd=if(mine)5.dp else 18.dp)
-    Row(Modifier.fillMaxWidth().padding(vertical=3.dp),
+    val shape=RoundedCornerShape(topStart=20.dp,topEnd=20.dp,
+        bottomStart=if(mine)20.dp else 6.dp,bottomEnd=if(mine)6.dp else 20.dp)
+    Row(Modifier.fillMaxWidth().padding(horizontal=10.dp,vertical=3.dp),
         verticalAlignment=Alignment.Bottom,
         horizontalArrangement=if(mine)Arrangement.End else Arrangement.Start){
-        if(!mine)Box(Modifier.padding(end=8.dp,bottom=2.dp).size(28.dp)
-            .background(Color(0xFF31533F),CircleShape),contentAlignment=Alignment.Center){
-            Icon(Icons.Outlined.SupportAgent,null,tint=chatGreen,modifier=Modifier.size(17.dp))
+        if(!mine)Box(Modifier.padding(end=8.dp,bottom=3.dp).size(29.dp)
+            .background(Color(0xFF194557),CircleShape)
+            .border(.8.dp,Color(0xFF39778A),CircleShape),
+            contentAlignment=Alignment.Center){
+            Icon(Icons.Outlined.SupportAgent,null,tint=chatGreen,modifier=Modifier.size(16.dp))
         }
-        Column(Modifier.fillMaxWidth(if(mine).83f else .82f)
+        Column(Modifier.widthIn(min=90.dp,max=292.dp)
             .background(if(mine)chatOutgoing else chatIncoming,shape)
-            .border(.5.dp,if(mine)Color(0xFF3A6750) else chatLine,shape)
-            .padding(horizontal=13.dp,vertical=10.dp),
-            verticalArrangement=Arrangement.spacedBy(6.dp)){
+            .border(.8.dp,if(mine)Color(0xFF266479) else chatLine,shape)
+            .padding(horizontal=14.dp,vertical=11.dp),
+            verticalArrangement=Arrangement.spacedBy(7.dp)){
             if(!mine)Text(person+" · "+role,color=chatGreen,
-                fontSize=11.sp,fontWeight=FontWeight.Bold)
-            Text(row.optString("text"),color=chatWhite,fontSize=14.sp,lineHeight=20.sp)
-            Text(chatTime(row.optString("at")),color=Color(0xFFC0C8C1),
+                fontSize=11.sp,fontWeight=FontWeight.SemiBold,maxLines=2)
+            Text(row.optString("text"),color=chatWhite,fontSize=14.sp,lineHeight=21.sp)
+            Text(chatTime(row.optString("at")),
+                color=if(mine)Color(0xFFB3D7E3) else chatMuted,
                 fontSize=10.sp,modifier=Modifier.align(Alignment.End))
         }
     }
 }
-
 @Composable
 internal fun CommerceSupportPage(language:String,auth:NativeCommerceAuth,
-    report:Boolean,onSignIn:()->Unit){
+    report:Boolean,onSignIn:()->Unit,onExit:()->Unit){
     val t:(String,String)->String={es,en->CommerceI18n.translate(language,es,en)}
     val scope=rememberCoroutineScope()
     var inbox by remember{mutableStateOf<JSONObject?>(null)}
@@ -166,9 +179,29 @@ internal fun CommerceSupportPage(language:String,auth:NativeCommerceAuth,
             scroll.animateScrollToItem(messages.lastIndex)
     }
     fun cannotSend():Boolean = busy||text.trim().isEmpty()
-    Column(Modifier.fillMaxSize(),
-        verticalArrangement=Arrangement.spacedBy(12.dp)){
+    fun navigateBack(){
+        when{
+            active!=null->{activeId="";text="";creating=false;error=null}
+            creating && report -> onExit()
+            creating->{creating=false;text="";error=null}
+            else->onExit()
+        }
+    }
+    // The parent owns hardware Back at inbox level; a conversation consumes
+    // Back first so it returns to the inbox instead of leaving Support.
+    BackHandler(enabled=active!=null||creating){navigateBack()}
+    Column(Modifier.fillMaxSize().background(Color.Black),
+        verticalArrangement=Arrangement.spacedBy(8.dp)){
         if(auth.sessionToken()==null){
+            Row(Modifier.fillMaxWidth().background(chatHeader)
+                .padding(horizontal=8.dp,vertical=8.dp),
+                verticalAlignment=Alignment.CenterVertically){
+                IconButton(onClick=onExit){
+                    Icon(Icons.Outlined.ArrowBack,t("Volver","Back"),tint=chatWhite)
+                }
+                Text(t("Centro de asistencia","Support center"),
+                    color=chatWhite,fontSize=18.sp,fontWeight=FontWeight.SemiBold)
+            }
             Column(Modifier.fillMaxWidth().padding(24.dp),
                 horizontalAlignment=Alignment.CenterHorizontally,
                 verticalArrangement=Arrangement.spacedBy(16.dp)){
@@ -183,27 +216,28 @@ internal fun CommerceSupportPage(language:String,auth:NativeCommerceAuth,
                 }
             }
         }else if(active!=null){
-            Row(Modifier.fillMaxWidth().padding(bottom=3.dp),
+            Row(Modifier.fillMaxWidth().background(chatHeader)
+                .border(width=.6.dp,color=chatLine)
+                .padding(start=4.dp,end=12.dp,top=10.dp,bottom=10.dp),
                 verticalAlignment=Alignment.CenterVertically,
-                horizontalArrangement=Arrangement.spacedBy(12.dp)){
-                IconButton(onClick={activeId="";text="";creating=false},
-                    modifier=Modifier.size(42.dp)){
+                horizontalArrangement=Arrangement.spacedBy(9.dp)){
+                IconButton(onClick={navigateBack()},modifier=Modifier.size(43.dp)){
                     Icon(Icons.Outlined.ArrowBack,
                         t("Conversaciones","Conversations"),tint=chatWhite)
                 }
                 SupportAvatar("SP",true)
-                Column(Modifier.weight(1f)){
-                    Text(active.optString("subject"),color=chatWhite,fontSize=16.sp,
-                        fontWeight=FontWeight.SemiBold,maxLines=1,
+                Column(Modifier.weight(1f),
+                    verticalArrangement=Arrangement.spacedBy(3.dp)){
+                    Text(active.optString("subject"),color=chatWhite,fontSize=17.sp,
+                        fontWeight=FontWeight.Bold,maxLines=1,
                         overflow=TextOverflow.Ellipsis)
-                    Text(t("Chat privado de soporte","Private support conversation"),
+                    Text(t("Soporte privado de SP-DECODE","Private SP-DECODE support"),
                         color=chatMuted,fontSize=11.sp,maxLines=1)
                 }
                 StatusChip(active.optString("status"),language)
             }
-            HorizontalDivider(color=chatLine)
             LazyColumn(modifier=Modifier.weight(1f).fillMaxWidth(),
-                state=scroll,contentPadding=PaddingValues(vertical=10.dp),
+                state=scroll,contentPadding=PaddingValues(horizontal=4.dp,vertical=14.dp),
                 verticalArrangement=Arrangement.spacedBy(5.dp)){
                 itemsIndexed(messages,key={_,item->item.optString("id")}){index,message->
                     if(index==0||chatDateKey(messages[index-1].optString("at"))!=
@@ -214,9 +248,10 @@ internal fun CommerceSupportPage(language:String,auth:NativeCommerceAuth,
             }
             if(active.optString("status")!="closed"){
                 Row(Modifier.fillMaxWidth()
-                    .background(chatPanel,RoundedCornerShape(27.dp))
-                    .border(1.dp,chatLine,RoundedCornerShape(27.dp))
-                    .padding(start=14.dp,end=6.dp,top=5.dp,bottom=5.dp),
+                    .padding(horizontal=12.dp,vertical=8.dp)
+                    .background(chatPanel,RoundedCornerShape(28.dp))
+                    .border(1.dp,chatLine,RoundedCornerShape(28.dp))
+                    .padding(start=15.dp,end=6.dp,top=5.dp,bottom=5.dp),
                     verticalAlignment=Alignment.Bottom,
                     horizontalArrangement=Arrangement.spacedBy(8.dp)){
                     BasicTextField(value=text,onValueChange={text=it.take(4000)},
@@ -255,17 +290,34 @@ internal fun CommerceSupportPage(language:String,auth:NativeCommerceAuth,
                     }
                 }
             }else{
-                Text(t("Conversación cerrada","Conversation closed"),
-                    color=chatMuted,fontSize=13.sp,
-                    modifier=Modifier.fillMaxWidth().padding(12.dp))
+                val shape=RoundedCornerShape(16.dp)
+                Row(Modifier.fillMaxWidth()
+                    .padding(horizontal=12.dp,vertical=12.dp)
+                    .background(chatHeader,shape)
+                    .border(1.dp,chatLine,shape)
+                    .padding(horizontal=14.dp,vertical=12.dp),
+                    verticalAlignment=Alignment.CenterVertically,
+                    horizontalArrangement=Arrangement.spacedBy(12.dp)){
+                    Icon(Icons.Outlined.Lock,null,tint=chatGreen,
+                        modifier=Modifier.size(19.dp))
+                    Column(verticalArrangement=Arrangement.spacedBy(3.dp)){
+                        Text(t("Conversación cerrada","Conversation closed"),
+                            color=chatWhite,fontSize=13.sp,fontWeight=FontWeight.SemiBold)
+                        Text(t("Puedes consultar los mensajes anteriores.",
+                            "You can still read earlier messages."),
+                            color=chatMuted,fontSize=11.sp)
+                    }
+                }
             }
         }else if(creating){
-            Row(verticalAlignment=Alignment.CenterVertically){
-                IconButton(onClick={creating=false;text="";error=null}){
-                    Icon(Icons.Outlined.ArrowBack,null,tint=chatWhite)
+            Row(Modifier.fillMaxWidth().background(chatHeader)
+                .padding(horizontal=7.dp,vertical=9.dp),
+                verticalAlignment=Alignment.CenterVertically){
+                IconButton(onClick={navigateBack()}){
+                    Icon(Icons.Outlined.ArrowBack,t("Volver","Back"),tint=chatWhite)
                 }
                 Text(t("Nueva conversación","New conversation"),color=chatWhite,
-                    fontSize=20.sp,fontWeight=FontWeight.Bold)
+                    fontSize=19.sp,fontWeight=FontWeight.Bold)
             }
             Column(Modifier.fillMaxWidth()
                 .background(chatPanel,RoundedCornerShape(22.dp)).padding(16.dp),
@@ -319,32 +371,38 @@ internal fun CommerceSupportPage(language:String,auth:NativeCommerceAuth,
             }
             Spacer(Modifier.weight(1f))
         }else{
-            Row(Modifier.fillMaxWidth().padding(vertical=4.dp),
-                verticalAlignment=Alignment.CenterVertically){
+            Row(Modifier.fillMaxWidth().background(chatHeader)
+                .padding(horizontal=5.dp,vertical=9.dp),
+                verticalAlignment=Alignment.CenterVertically,
+                horizontalArrangement=Arrangement.spacedBy(7.dp)){
+                IconButton(onClick=onExit,modifier=Modifier.size(42.dp)){
+                    Icon(Icons.Outlined.ArrowBack,t("Volver","Back"),tint=chatWhite)
+                }
                 Column(Modifier.weight(1f)){
                     Text(t("Mensajes","Messages"),color=chatWhite,
-                        fontSize=24.sp,fontWeight=FontWeight.Bold)
+                        fontSize=20.sp,fontWeight=FontWeight.Bold)
                     Text(t("Asistencia privada de SP-DECODE",
-                        "Private SP-DECODE support"),color=chatMuted,fontSize=12.sp)
+                        "Private SP-DECODE support"),color=chatMuted,
+                        fontSize=11.sp,maxLines=1)
                 }
                 FilledTonalButton(onClick={creating=true;text="";error=null},
-                    contentPadding=PaddingValues(horizontal=14.dp,vertical=9.dp),
+                    contentPadding=PaddingValues(horizontal=12.dp,vertical=8.dp),
                     colors=ButtonDefaults.filledTonalButtonColors(
-                        containerColor=chatWhite,contentColor=Color.Black)){
-                    Icon(Icons.Outlined.Add,null,modifier=Modifier.size(18.dp))
-                    Spacer(Modifier.width(5.dp))
-                    Text(t("Nuevo","New"),fontSize=12.sp)
+                        containerColor=chatGreen,contentColor=chatHeader)){
+                    Icon(Icons.Outlined.Add,null,modifier=Modifier.size(17.dp))
+                    Spacer(Modifier.width(3.dp))
+                    Text(t("Nuevo","New"),fontSize=11.sp)
                 }
             }
-            HorizontalDivider(color=chatLine)
-            LazyColumn(modifier=Modifier.weight(1f),
+            LazyColumn(modifier=Modifier.weight(1f)
+                    .padding(horizontal=12.dp,vertical=6.dp),
                 verticalArrangement=Arrangement.spacedBy(9.dp)){
                 items(threads,key={it.optString("id")}){thread->
                     val all=thread.optJSONArray("messages")
                     val last=all?.optJSONObject((all.length()-1).coerceAtLeast(0))
                     Row(Modifier.fillMaxWidth()
-                        .background(chatPanel,RoundedCornerShape(18.dp))
-                        .border(1.dp,chatLine,RoundedCornerShape(18.dp))
+                        .background(chatPanel,RoundedCornerShape(20.dp))
+                        .border(1.dp,chatLine,RoundedCornerShape(20.dp))
                         .clickable{
                             activeId=thread.optString("id");text="";error=null
                         }
@@ -374,7 +432,8 @@ internal fun CommerceSupportPage(language:String,auth:NativeCommerceAuth,
             }
             if(threads.isEmpty()){
                 Text(t("Todavía no tienes conversaciones.",
-                    "You have no conversations yet."),color=chatMuted,fontSize=13.sp)
+                    "You have no conversations yet."),color=chatMuted,fontSize=13.sp,
+                    modifier=Modifier.fillMaxWidth().padding(18.dp))
             }
         }
         if(busy)LinearProgressIndicator(Modifier.fillMaxWidth(),color=chatGreen)

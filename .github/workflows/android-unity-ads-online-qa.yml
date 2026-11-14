@@ -79,6 +79,8 @@ on:
       - cloud/web/app/api/admin/support/route.js
       - cloud/web/app/api/account/delete/route.js
       - android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceSupportPage.kt
+      - cloud/web/public/app-ads.txt
+      - tests/test_android_support_chat_design.py
       - android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceDeleteAccountPage.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/CloudApkQaClient.kt
       - android/app/src/main/java/com/ghostdeveloper/spdecode/cloud/ApkQaWorker.kt
@@ -208,6 +210,7 @@ jobs:
           python3 -m unittest tests.test_android_unity_release_contract -v
           python3 -m unittest tests.test_catalog_entry_prompt -v
           python3 -m unittest tests.test_android_ssh_accounts_ui -v
+          python3 -m unittest tests.test_android_support_chat_design -v
           python3 -m unittest discover -s cloud/infra/vps/tests -p 'test_support_secret_setup.py' -v
           bash -n cloud/infra/vps/spdecodectl
       - name: Commercial API syntax and public IP contract
