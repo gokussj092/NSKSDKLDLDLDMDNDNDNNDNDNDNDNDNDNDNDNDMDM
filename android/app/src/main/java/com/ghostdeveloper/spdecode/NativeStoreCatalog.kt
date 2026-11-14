@@ -7,8 +7,8 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 /** Public, unsigned store catalog is DISPLAY DATA only. Prices must be re-quoted
- * by the authenticated server before any real checkout. USD is the only client
- * currency here; absent prices never become locally invented prices. */
+ * by the authenticated server before any real checkout. Prices and currencies
+ * are server-owned; absent prices never become locally invented prices. */
 internal data class StoreCreditOffer(
     val planId:String, val credits:Int, val priceCents:Int, val available:Boolean
 )
@@ -29,6 +29,16 @@ internal data class NativeStoreCatalog(
     val authEnabled:Boolean,
     val live:Boolean
 ) {
+    // Sandbox is for private QA, never a customer-facing purchase.
+    val publicSalesOpen:Boolean get()=live&&authEnabled&&!BuildConfig.SPDECODE_PLAY_UPDATES
+    val purchasableApiPlans:List<StoreApiOffer> get()=if(publicSalesOpen&&apiVersion>0)
+        apiPlans.filter{it.available&&it.prices.keys.any{currency->it.providers.any{p->p!="mercadopago"||currency=="MXN"}}}
+        else emptyList()
+    val adFreeForSale:StoreAdFreeOffer? get()=adFree?.takeIf{offer->
+        publicSalesOpen&&offer.version>0&&offer.available&&offer.prices.keys.any{currency->
+            offer.providers.any{p->p!="mercadopago"||currency=="MXN"}
+        }
+    }
     companion object {
         private const val URL_CATALOG="https://spdecode.xyz/api/store/catalog"
         suspend fun load():NativeStoreCatalog?=withContext(Dispatchers.IO) {

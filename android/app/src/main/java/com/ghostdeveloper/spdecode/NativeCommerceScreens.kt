@@ -83,10 +83,6 @@ internal object CommercialServerIp {
     }
 }
 
-private data class CommercialLine(val key:String,val title:String,
-    val priceCents:Int,val detail:String)
-
-private data class CreditPack(val id:String,val credits:Int,val priceCents:Int,val available:Boolean)
 private data class ApiTerm(val key:String,val days:Int,val priceCents:Int,val available:Boolean)
 private fun usd(cents:Int):String = "$"+(cents/100)+"."+((cents%100).toString().padStart(2,'0'))
 
@@ -149,22 +145,15 @@ private fun SimpleFeature(title:String,subtitle:String?=null){
     }
 }
 
-/**
- * Native, isolated UI pilot. Checkout and authentication are deliberately
- * unavailable until the server exposes approved product prices, a mobile-safe
- * session flow and verified payment callbacks.
- */
+/** Customer storefront: display real purchasable offers only. */
 @Composable
 internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
     onLegalLink:(String)->Unit={},onCheckoutUrl:(String)->Unit={}) {
     val entryPage=start
     var page by rememberSaveable(start){mutableStateOf(entryPage)}
     var detail by rememberSaveable {mutableStateOf("home")}
-    var pack by rememberSaveable {mutableIntStateOf(1)}
-    var quantity by rememberSaveable {mutableIntStateOf(1)}
     var term by rememberSaveable {mutableIntStateOf(0)}
     var serverIp by rememberSaveable {mutableStateOf("")}
-    var lines by remember {mutableStateOf<List<CommercialLine>>(emptyList())}
     var notice by remember {mutableStateOf<String?>(null)}
     val context=LocalContext.current
     val language=context.resources.configuration.locales[0].language
@@ -193,16 +182,16 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
             catalogLoaded=true
         }
     }
-    val creditPacks=catalog?.creditPacks.orEmpty().map {
-        CreditPack(it.planId,it.credits,it.priceCents,it.available)
+    val disabledLabel=StorefrontLabels.disabled(language)
+    val buyLabel=StorefrontLabels.buy(language)
+    val publicSalesOpen=catalogLoaded&&catalog?.publicSalesOpen==true
+    val availableApiOffers=if(publicSalesOpen)catalog?.purchasableApiPlans.orEmpty() else emptyList()
+    val adFreeOffer=if(publicSalesOpen)catalog?.adFreeForSale else null
+    val apiTerms=availableApiOffers.map {
+        val currency=it.prices.keys.first{code->it.providers.any{p->p!="mercadopago"||code=="MXN"}}
+        ApiTerm(it.planId,it.days,it.prices.getValue(currency),it.available)
     }
-    val apiTerms=catalog?.apiPlans.orEmpty().map {
-        ApiTerm(it.planId,it.days,it.priceCents,it.available)
-    }
-    LaunchedEffect(creditPacks.size){if(pack !in creditPacks.indices)pack=0}
     LaunchedEffect(apiTerms.size){if(term !in apiTerms.indices)term=0}
-    val creditSelection=creditPacks.getOrNull(pack)
-    val apiSelection=apiTerms.getOrNull(term)
     fun back(){
         when {
             page=="profile-edit" -> if(start=="profile-edit")onExit() else page="account"
@@ -215,7 +204,6 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
             page=="account" && start=="profile-edit" -> onExit()
             page in setOf("orders","api","security","ad-free") ->
                 if(start==page)onExit() else page="account"
-            page=="cart" -> {page="store";detail="home"}
             page=="store" && detail!="home" -> detail="home"
             page=="login" && start!="login" -> page="account"
             page!=entryPage -> page=entryPage
@@ -252,16 +240,10 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                     "delete-account" -> local("Eliminar cuenta","Delete account")
                     "ad-free" -> CommerceAccountWords.get(language,"Ad-free experience")
                     "login" -> local("Acceso seguro","Secure sign in")
-                    "cart" -> local("Tu carrito","Your cart")
                     else -> local("Tienda","Store")
                 },color=muted,fontSize=12.sp)
             }
-            if(page=="store"){
-                IconButton(onClick={page="cart"}) {
-                    Icon(Icons.Outlined.ShoppingCart,local("Carrito","Cart"),tint=white)
-                }
-                if(lines.isNotEmpty())Text(lines.size.toString(),color=white,fontSize=12.sp)
-            }
+
         }
         HorizontalDivider(color=Color(0xFF292929))
         }
@@ -289,63 +271,7 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                         Text(local("Un crédito permite analizar una aplicación APK/APKS elegible. Los archivos VPN normales no consumen estos créditos.",
                             "One credit covers one eligible APK/APKS analysis. Normal VPN file decoding does not use these credits."),
                             color=muted,fontSize=13.sp)
-                        SlateCard{
-                            Text(local("Selecciona un paquete","Choose a pack"),
-                                color=white,fontWeight=FontWeight.Bold)
-                            creditPacks.forEachIndexed{index,item->
-                                Row(Modifier.fillMaxWidth().background(
-                                        if(pack==index)Color(0xFF414141)else raised,
-                                        RoundedCornerShape(12.dp))
-                                    .clickable{pack=index}.padding(13.dp),
-                                    verticalAlignment=Alignment.CenterVertically){
-                                    Icon(if(pack==index)Icons.Outlined.CheckCircle
-                                        else Icons.Outlined.RadioButtonUnchecked,null,
-                                        tint=white,modifier=Modifier.size(20.dp))
-                                    Spacer(Modifier.width(10.dp))
-                                    Column(Modifier.weight(1f)){
-                                        Text(item.credits.toString()+" "+local("créditos","credits"),
-                                            fontWeight=FontWeight.SemiBold,color=white)
-                                        val unit=creditPacks.firstOrNull{it.credits==1}?.priceCents
-                                        if(item.credits>1 && unit!=null && item.priceCents<unit*item.credits)
-                                            Text(local("Ahorra ","Save ")+
-                                                ((100-item.priceCents*100/(unit*item.credits)).toString())+"%",
-                                                color=good,fontSize=12.sp)
-                                    }
-                                    Text(usd(item.priceCents)+" USD",color=white)
-                                }
-                            }
-                            if(creditPacks.isEmpty())Note(local("No disponible actualmente.","Currently unavailable."))
-                            HorizontalDivider(color=stroke)
-                            Row(verticalAlignment=Alignment.CenterVertically){
-                                Column(Modifier.weight(1f)){
-                                    Text(local("Paquetes","Packs"),color=white)
-                                    Text(((creditSelection?.credits?:0)*quantity).toString()+" "+
-                                        local("créditos totales","total credits"),
-                                        color=muted,fontSize=12.sp)
-                                }
-                                IconButton(onClick={quantity=(quantity-1).coerceAtLeast(1)},
-                                    enabled=quantity>1) {Icon(Icons.Outlined.Remove,null,tint=white)}
-                                Text(quantity.toString(),color=white,fontWeight=FontWeight.Bold)
-                                IconButton(onClick={quantity=(quantity+1).coerceAtMost(20)},
-                                    enabled=quantity<20) {Icon(Icons.Outlined.Add,null,tint=white)}
-                            }
-                            Row(Modifier.fillMaxWidth(),
-                                horizontalArrangement=Arrangement.SpaceBetween){
-                                Text(local("Total","Total"),color=white,fontWeight=FontWeight.Bold)
-                                Text(creditSelection?.let{usd(it.priceCents*quantity)+" USD"}?:"—",
-                                    color=white,fontSize=20.sp,fontWeight=FontWeight.Bold)
-                            }
-                            PrimaryAction(local("Agregar al carrito","Add to cart"),enabled=creditSelection?.available==true){
-                                val selected=creditSelection?:return@PrimaryAction
-                                lines=lines.filterNot{it.key=="analysis-credits"}+
-                                    CommercialLine("analysis-credits",
-                                        (selected.credits*quantity).toString()+" "+
-                                            local("créditos APK","APK credits"),
-                                        selected.priceCents*quantity,"")
-                                page="cart"
-                            }
-                            Spacer(Modifier.height(2.dp))
-                        }
+                        SlateCard{Text(disabledLabel,color=muted,fontWeight=FontWeight.SemiBold)}
                     }
                     "api" -> {
                         Text("API / SP-DECODE",color=muted,fontSize=11.sp)
@@ -370,8 +296,10 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                                     color=muted,fontSize=13.sp,fontWeight=FontWeight.SemiBold)
                             }
                         }
-                        SlateCard{
-                            Text(local("Duración de la licencia","License duration"),
+                        if(!catalogLoaded)LinearProgressIndicator(Modifier.fillMaxWidth(),color=good)
+                        else if(availableApiOffers.isEmpty())SlateCard{Text(disabledLabel,color=muted,fontWeight=FontWeight.SemiBold)}
+                        else SlateCard{
+                            Text(local("Duración del acceso","Access duration"),
                                 color=white,fontWeight=FontWeight.Bold)
                             apiTerms.forEachIndexed{index,item->
                                 Row(Modifier.fillMaxWidth().background(
@@ -384,12 +312,11 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                                     Spacer(Modifier.width(10.dp))
                                     Text(item.days.toString()+" "+local("días","days"),
                                         color=white,modifier=Modifier.weight(1f))
-                                    val offer=catalog?.apiPlans?.getOrNull(index)
-                                    val displayCurrency=offer?.prices?.keys?.firstOrNull()?:"USD"
+                                    val offer=availableApiOffers[index]
+                                    val displayCurrency=offer.prices.keys.first{code->offer.providers.any{p->p!="mercadopago"||code=="MXN"}}
                                     Text(usd(item.priceCents)+" "+displayCurrency,color=white)
                                 }
                             }
-                            if(apiTerms.isEmpty())Note(local("No disponible actualmente.","Currently unavailable."))
                             HorizontalDivider(color=stroke)
                             Text(local("IP pública del servidor (opcional al comprar)",
                                 "Public server IP (optional at purchase)"),color=white,fontWeight=FontWeight.Bold)
@@ -414,7 +341,7 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                                     color=Color(0xFFFFB9B9),fontSize=12.sp)
                             Note(local("Puedes comprar sin IP y configurarla después desde Mi cuenta. La clave no funcionará sin vincular una IP pública válida. Puedes cambiarla más adelante.",
                                 "You may buy without an IP, then bind a public server IP from My account before the key can be used. You may change it later."))
-                            val selectedOffer=catalog?.apiPlans?.getOrNull(term)
+                            val selectedOffer=availableApiOffers.getOrNull(term)
                             if(selectedOffer!=null && (serverIp.isBlank()||CommercialServerIp.isPublicLiteral(serverIp))){
                                 CommerceAdFreePurchase(language,null,auth,
                                     onSignIn={page="login"},onOpenCheckout=onCheckoutUrl,
@@ -423,12 +350,13 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                                         catalog=NativeStoreCatalog.load()
                                         catalogLoaded=true
                                         accountSnapshot=auth.account()
-                                    }},apiOffer=selectedOffer,apiVersion=catalog?.apiVersion?:0,allowedIp=serverIp.trim())
+                                    }},apiOffer=selectedOffer,apiVersion=catalog?.apiVersion?:0,allowedIp=serverIp.trim(),publicSalesOpen=publicSalesOpen)
                             }
                         }
                     }
                     "ads" -> {
-                        CommerceAdFreePurchase(language,catalog?.adFree,auth,
+                        CommerceAdFreePurchase(language,adFreeOffer,auth,
+                            publicSalesOpen=publicSalesOpen,
                             onSignIn={page="login"},onOpenCheckout=onCheckoutUrl,
                             onReloadCatalog={
                                 scope.launch{
@@ -446,14 +374,9 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                                     Text(local("SERVICIOS SP-DECODE","SP-DECODE SERVICES"),
                                         color=muted,fontSize=11.sp)
                                     Spacer(Modifier.height(8.dp))
-                                    Text(local("Todo para tus proyectos.",
-                                        "Everything for your projects."),
+                                    Text(local("Tienda","Store"),
                                         color=white,fontSize=25.sp,fontWeight=FontWeight.Bold,
                                         lineHeight=29.sp)
-                                    Spacer(Modifier.height(7.dp))
-                                    Text(local("Créditos, API y una experiencia libre de anuncios.",
-                                        "Credits, API and an ad-free experience."),
-                                        color=muted,fontSize=13.sp)
                                 }
                                 Icon(Icons.Outlined.Storefront,null,
                                     modifier=Modifier.size(43.dp),tint=white)
@@ -469,16 +392,19 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                         ProductTile(local("Créditos de análisis","Analysis credits"),
                             local("Análisis de APK/APKS y resultados técnicos",
                                 "APK/APKS analysis and technical results"),
-                            creditPacks.minOfOrNull{it.priceCents}?.let{usd(it)+" USD"}?:local("No disponible","Unavailable"),
-                            local("Ver detalles","Details"),
+                            disabledLabel,
+                            "",
                             {Icon(Icons.Outlined.Inventory2,null,tint=white,modifier=Modifier.size(29.dp))}){
                             detail="credits"
                         }
                         ProductTile(local("API Comercial","Commercial API"),
                             local("Archivos, textos, métodos online y catálogos",
                                 "Files, text, online methods and catalogs"),
-                            catalog?.apiPlans.orEmpty().firstOrNull()?.let{usd(it.priceCents)+" "+(it.prices.keys.firstOrNull()?:"USD")}?:local("No disponible","Unavailable"),
-                            local("Ver detalles","Details"),
+                            apiTerms.firstOrNull()?.let{offer->
+                                val selected=availableApiOffers.first()
+                                usd(offer.priceCents)+" "+selected.prices.keys.first{code->selected.providers.any{p->p!="mercadopago"||code=="MXN"}}
+                            }?:disabledLabel,
+                            if(availableApiOffers.isNotEmpty())buyLabel else "",
                             {Icon(Icons.Outlined.Code,null,tint=white,modifier=Modifier.size(29.dp))}){
                             detail="api"
                         }
@@ -486,10 +412,10 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                             local("Un mes completo sin publicidad","One month without ads"),
                             when {
                                 CommerceSession.adFreeActive -> CommerceAccountWords.get(language,"Active")
-                                catalog?.adFree!=null -> usd(catalog!!.adFree!!.priceCents)+" "+(catalog!!.adFree!!.prices.keys.firstOrNull()?:"USD")
-                                else -> local("No disponible","Unavailable")
+                                adFreeOffer!=null -> adFreeOffer.prices.entries.first{entry->adFreeOffer.providers.any{p->p!="mercadopago"||entry.key=="MXN"}}.let{usd(it.value)+" "+it.key}
+                                else -> disabledLabel
                             },
-                            local("Ver detalles","Details"),
+                            if(adFreeOffer!=null)buyLabel else "",
                             {AdFreeSymbol(modifier=Modifier.size(29.dp))}){
                             detail="ads"
                         }
@@ -514,40 +440,7 @@ internal fun NativeCommerceScreens(start:String,onExit:()->Unit,
                         }
                     }
                 }
-                "cart" -> {
-                    Text(local("Resumen del pedido","Order summary"),color=white,
-                        fontSize=25.sp,fontWeight=FontWeight.Bold)
-                    SlateCard{
-                        if(lines.isEmpty()){
-                            Text(local("Todavía no agregaste productos.","Your cart is empty."),
-                                color=muted)
-                        }else lines.forEach{item->
-                            Row(verticalAlignment=Alignment.CenterVertically){
-                                Column(Modifier.weight(1f)){
-                                    Text(item.title,color=white,fontWeight=FontWeight.SemiBold)
-                                    if(item.detail.isNotEmpty())Text(
-                                        local("IP autorizada: ","Authorized IP: ")+item.detail,
-                                        color=muted,fontSize=12.sp)
-                                    Text(usd(item.priceCents)+" USD",color=muted,fontSize=13.sp)
-                                }
-                                IconButton(onClick={lines=lines.filterNot{it.key==item.key}}){
-                                    Icon(Icons.Outlined.Delete,
-                                        local("Quitar","Remove"),tint=white)
-                                }
-                            }
-                            HorizontalDivider(color=stroke)
-                        }
-                        val total=lines.sumOf{it.priceCents}
-                        Row(Modifier.fillMaxWidth(),
-                            horizontalArrangement=Arrangement.SpaceBetween){
-                            Text(local("Subtotal","Subtotal"),
-                                fontWeight=FontWeight.SemiBold,color=white)
-                            Text(usd(total)+" USD",color=white,
-                                fontWeight=FontWeight.Bold,fontSize=19.sp)
-                        }
-                        Spacer(Modifier.height(2.dp))
-                    }
-                }
+
                 "account" -> {
                     CommerceAccountHome(language,CommerceSession.user,accountSnapshot,
                         onSignIn={page="login"},onEdit={page="profile-edit"},

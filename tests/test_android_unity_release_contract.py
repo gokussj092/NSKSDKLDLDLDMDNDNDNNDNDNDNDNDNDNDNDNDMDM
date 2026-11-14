@@ -9,6 +9,19 @@ def read(path):
 
 
 class AndroidUnityReleaseContract(unittest.TestCase):
+    def test_store_shows_only_live_purchases_and_simple_disabled_label(self):
+        base="android/app/src/main/java/com/ghostdeveloper/spdecode/"
+        model=read(base+"NativeStoreCatalog.kt")
+        ui=read(base+"NativeCommerceScreens.kt")
+        checkout=read(base+"CommerceAdFreePurchase.kt")
+        self.assertIn("live&&authEnabled&&!BuildConfig.SPDECODE_PLAY_UPDATES",model)
+        self.assertIn("purchasableApiPlans",ui)
+        self.assertIn("adFreeForSale",ui)
+        self.assertIn("Desactivado por el momento",checkout)
+        self.assertIn("if(!saleEnabled)",checkout)
+        self.assertIn("Text(StorefrontLabels.buy(language))",checkout)
+        self.assertNotIn('page="cart"',ui)
+
     def test_catalog_mode_is_exclusive_and_full_download_skips_probe(self):
         prefix="android/app/src/main/java/com/ghostdeveloper/spdecode/"
         repository=read(prefix+"cloud/ServerVpnCatalogRepository.kt")
@@ -155,7 +168,7 @@ class AndroidUnityReleaseContract(unittest.TestCase):
         for text in ('Descifrado de archivos','Descifrado de textos','Métodos online',
                      'Descifrado de catálogos','No incluye análisis de aplicaciones APK/APKS'):
             self.assertIn(text,ui)
-        self.assertIn('CommerceAdFreePurchase(language,catalog?.adFree,auth,',ui)
+        self.assertIn('CommerceAdFreePurchase(language,adFreeOffer,auth,',ui)
         self.assertIn('"orders" -> CommerceOrdersPage(language,accountSnapshot)',ui)
         self.assertIn('"security" -> CommerceSecurityPage(language,CommerceSession.user,',ui)
         self.assertNotIn('profileTab',ui)
@@ -181,7 +194,7 @@ class AndroidUnityReleaseContract(unittest.TestCase):
         for locale in ("pt","fr","de","it","ru","tr","ar","fa","hi","ja","id","vi"):
             self.assertIn('"' + locale + '" to """',langs)
         self.assertIn("internal val keys=listOf(",i18n)
-        self.assertIn('val creditPacks=catalog?.creditPacks.orEmpty()',native)
+        self.assertIn('val availableApiOffers=if(publicSalesOpen)',native)
         self.assertIn('apiOffer=selectedOffer',native)
         self.assertIn('quoteProduct(product,term,provider,currency,country,region,allowedIp)',read("android/app/src/main/java/com/ghostdeveloper/spdecode/CommerceAdFreePurchase.kt"))
 
@@ -191,7 +204,8 @@ class AndroidUnityReleaseContract(unittest.TestCase):
         product=read("cloud/web/lib/commerce/catalog.mjs")
         orders=read("cloud/web/lib/commerce/orders.mjs")
         api=read("cloud/web/lib/commerce/api.mjs")
-        self.assertIn("priceCents<unit*item.credits",ui)
+        self.assertIn('SlateCard{Text(disabledLabel',ui)
+        self.assertNotIn('Agregar al carrito',ui)
         self.assertIn("body.allowedIp!==undefined",product)
         self.assertIn("if(item.product_id==='api-ip'&&!publicIp(item.allowed_ip))",orders)
         self.assertIn("export async function updateApiAllowedIp",orders)

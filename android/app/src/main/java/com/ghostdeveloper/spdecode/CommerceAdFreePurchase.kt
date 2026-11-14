@@ -23,6 +23,28 @@ private val pale=Color(0xFFADB4B0)
 private val shell=Color(0xFF222222)
 private val ivy=Color(0xFFB7DBBE)
 
+internal object StorefrontLabels {
+    private val words=mapOf(
+        "es" to ("Desactivado por el momento" to "Comprar"),
+        "en" to ("Temporarily disabled" to "Buy"),
+        "pt" to ("Desativado por enquanto" to "Comprar"),
+        "fr" to ("Désactivé pour le moment" to "Acheter"),
+        "de" to ("Derzeit deaktiviert" to "Kaufen"),
+        "it" to ("Disattivato per il momento" to "Acquista"),
+        "ru" to ("Временно отключено" to "Купить"),
+        "tr" to ("Şimdilik devre dışı" to "Satın al"),
+        "ar" to ("معطّل مؤقتًا" to "شراء"),
+        "fa" to ("فعلاً غیرفعال" to "خرید"),
+        "hi" to ("फ़िलहाल निष्क्रिय" to "खरीदें"),
+        "ja" to ("現在無効" to "購入"),
+        "id" to ("Dinonaktifkan sementara" to "Beli"),
+        "vi" to ("Tạm thời bị vô hiệu hóa" to "Mua")
+    )
+    private fun labels(language:String)=words[language.substringBefore('-').let{if(it=="in")"id" else it}]?:words.getValue("en")
+    fun disabled(language:String)=labels(language).first
+    fun buy(language:String)=labels(language).second
+}
+
 internal object CommercePaymentText {
     private val keys=listOf("Select payment method","Billing country","Calculate total",
         "Total","Taxes","Continue to payment","Payment service unavailable",
@@ -62,7 +84,7 @@ internal object CommercePaymentText {
 @Composable
 internal fun CommerceAdFreePurchase(language:String,offer:StoreAdFreeOffer?,
     auth:NativeCommerceAuth,onSignIn:()->Unit,onOpenCheckout:(String)->Unit,
-    onReloadCatalog:()->Unit,apiOffer:StoreApiOffer?=null,apiVersion:Int=0,allowedIp:String=""){
+    onReloadCatalog:()->Unit,apiOffer:StoreApiOffer?=null,apiVersion:Int=0,allowedIp:String="",publicSalesOpen:Boolean=false){
     val tr:(String)->String={CommercePaymentText.get(language,it)}
     val scope=rememberCoroutineScope()
     val identity=CommerceSession.user
@@ -70,8 +92,10 @@ internal fun CommerceAdFreePurchase(language:String,offer:StoreAdFreeOffer?,
     val product=if(isApi)"api-ip" else "ads-free"
     val term=apiOffer?.planId?:"base"
     val version=if(isApi)apiVersion else offer?.version?:0
-    val prices=apiOffer?.prices?:offer?.prices.orEmpty()
     val methods=apiOffer?.providers?:offer?.providers.orEmpty()
+    val prices=(apiOffer?.prices?:offer?.prices.orEmpty()).filterKeys{currency->
+        methods.any{it!="mercadopago"||currency=="MXN"}
+    }
     var currency by remember(prices,methods){mutableStateOf(prices.keys.firstOrNull { code->methods.any{it!="mercadopago"||code=="MXN"} }?:prices.keys.firstOrNull().orEmpty())}
     val availableMethods=methods.filter{it!="mercadopago"||currency=="MXN"}
     var provider by remember(availableMethods){mutableStateOf(availableMethods.firstOrNull().orEmpty())}
@@ -87,7 +111,7 @@ internal fun CommerceAdFreePurchase(language:String,offer:StoreAdFreeOffer?,
     var requestKey by remember(product,term,version,currency,provider,country,region,allowedIp){mutableStateOf(java.util.UUID.randomUUID().toString())}
     var busy by remember{mutableStateOf(false)}
     var notice by remember{mutableStateOf<String?>(null)}
-    val saleEnabled=!BuildConfig.SPDECODE_PLAY_UPDATES && (apiOffer?.available?:offer?.available?:false) && availableMethods.isNotEmpty() && version>0
+    val saleEnabled=publicSalesOpen && !BuildConfig.SPDECODE_PLAY_UPDATES && (apiOffer?.available?:offer?.available?:false) && availableMethods.isNotEmpty() && version>0
     Column(verticalArrangement=Arrangement.spacedBy(16.dp)){
         if(!isApi)Text(CommerceI18n.translate(language,"Sin anuncios","Ad-free"),
             color=silver,fontSize=29.sp,fontWeight=FontWeight.Bold)
@@ -105,18 +129,20 @@ internal fun CommerceAdFreePurchase(language:String,offer:StoreAdFreeOffer?,
                     Text(CommerceI18n.translate(language,"Válido hasta ","Active until ")+expiry,
                         color=pale,fontSize=12.sp)
                 }
-            }else{
+            }else if(saleEnabled){
                 Text(prices[currency]?.let{String.format(Locale.US,"%.2f %s",it/100.0,currency)}
                     ?:tr("Payment service unavailable"),
                     color=silver,fontSize=26.sp,fontWeight=FontWeight.Bold)
             }
         }
-        if(identity==null){
+        if(!saleEnabled){
+            Text(StorefrontLabels.disabled(language),color=pale,fontSize=14.sp)
+        }else if(identity==null){
             Button(onClick=onSignIn,modifier=Modifier.fillMaxWidth(),
                 colors=ButtonDefaults.buttonColors(containerColor=silver,contentColor=Color.Black)){
                 Text(tr("Sign in to continue"))
             }
-        }else if((apiOffer?.available?:offer?.available?:false) && !BuildConfig.SPDECODE_PLAY_UPDATES){
+        }else if(saleEnabled){
             Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){
                 prices.keys.forEach{code-> FilterChip(selected=currency==code,onClick={currency=code},label={Text(code)},enabled=!busy) }
             }
@@ -196,12 +222,10 @@ internal fun CommerceAdFreePurchase(language:String,offer:StoreAdFreeOffer?,
                         }
                     },modifier=Modifier.fillMaxWidth(),enabled=!busy&&saleEnabled&&accepted&&total>=100,
                         colors=ButtonDefaults.buttonColors(containerColor=silver,contentColor=Color.Black)){
-                        Text(tr("Continue to payment"))
+                        Text(StorefrontLabels.buy(language))
                     }
                 }
             }
-        }else{
-            Text(tr("Payment service unavailable"),color=pale,fontSize=14.sp)
         }
         OutlinedButton(modifier=Modifier.fillMaxWidth(),enabled=!busy,
             onClick={notice=null;quote=null;onReloadCatalog()}){
