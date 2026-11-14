@@ -21,6 +21,33 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class AdminFlowTest {
+    @get:Rule(order = -1)
+    val deviceConfiguration =
+        object : TestWatcher() {
+            override fun starting(description: Description) {
+                if (description.methodName.startsWith("compactScreen")) {
+                    // Apply accessibility/display settings before ActivityScenario launches.
+                    // Changing all three during launch also restarts the system launcher.
+                    shell("wm size 640x1136")
+                    shell("wm density 320")
+                    shell("settings put system font_scale 1.3")
+                    shell("settings put secure show_ime_with_hard_keyboard 1")
+                    shell("am force-stop com.android.launcher3")
+                    android.os.SystemClock.sleep(500)
+                }
+            }
+
+            override fun finished(description: Description) {
+                if (description.methodName.startsWith("compactScreen")) {
+                    shell("input keyevent 4")
+                    shell("settings put system font_scale 1.0")
+                    shell("wm density reset")
+                    shell("wm size reset")
+                    shell("am force-stop com.android.launcher3")
+                }
+            }
+        }
+
     @get:Rule(order = 0) val ui = createAndroidComposeRule<MainActivity>()
 
     private fun enter() {
@@ -72,6 +99,8 @@ class AdminFlowTest {
 
     private fun capture(name: String) {
         ui.waitForIdle()
+        // Window bars and the IME are rendered outside Compose's idling resource.
+        android.os.SystemClock.sleep(200)
         val folder = outputFolder()
         val bitmap =
             InstrumentationRegistry.getInstrumentation().uiAutomation.takeScreenshot()
@@ -257,10 +286,6 @@ class AdminFlowTest {
     fun compactScreenKeepsTheComposerVisibleWithLargeTextAndKeyboard() {
         enter()
         try {
-            shell("wm size 640x1136")
-            shell("wm density 320")
-            shell("settings put system font_scale 1.3")
-            shell("settings put secure show_ime_with_hard_keyboard 1")
             ui.waitUntil(15000) {
                 runCatching {
                         ui.activity.resources.configuration.screenWidthDp <= 330 &&
@@ -290,11 +315,6 @@ class AdminFlowTest {
                     .writeText(ui.onRoot(useUnmergedTree = true).printToString())
             }
             throw error
-        } finally {
-            shell("input keyevent 4")
-            shell("settings put system font_scale 1.0")
-            shell("wm density reset")
-            shell("wm size reset")
         }
     }
 
