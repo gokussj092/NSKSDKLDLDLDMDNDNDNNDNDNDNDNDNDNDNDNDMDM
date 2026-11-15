@@ -90,10 +90,10 @@ internal fun AdminApplication(state: AdminState) {
   val scope = rememberCoroutineScope()
   val lifecycle = LocalLifecycleOwner.current
   val snack = remember { SnackbarHostState() }
-  LaunchedEffect(state.error, state.message) {
-    val text = state.error ?: state.message
-    if (text != null) {
-      snack.showSnackbar(text)
+  val snackbarText = (state.error ?: state.message)?.let { AdminErrorLabel(it) }
+  LaunchedEffect(snackbarText) {
+    if (snackbarText != null) {
+      snack.showSnackbar(snackbarText)
       state.message = null
     }
   }
@@ -116,7 +116,7 @@ internal fun AdminApplication(state: AdminState) {
     state.navigate(
         if (state.page == Page.Chat) Page.Support
         else if (state.page == Page.UserDetail) Page.Users
-        else if (state.page in listOf(Page.AppearanceSettings, Page.AboutSettings)) Page.Settings
+        else if (state.page in listOf(Page.AppearanceSettings, Page.AboutSettings, Page.LanguageSettings)) Page.Settings
         else Page.Dashboard)
   }
   fun open(title: String, fields: List<FormField>, action: suspend (Map<String, String>) -> Unit) {
@@ -150,10 +150,10 @@ internal fun AdminApplication(state: AdminState) {
                   Small(state.principal.optString("role"))
                 }
                 menuGroups.forEach { (title, pages) ->
-                  item { Small(title, Modifier.padding(top = 22.dp, bottom = 8.dp)) }
+                  item { Small(L(title), Modifier.padding(top = 22.dp, bottom = 8.dp)) }
                   items(pages.filter { state.allowed(it) }) { p ->
                     NavigationDrawerItem(
-                        label = { Text(p.title) },
+                        label = { Text(L(p.title)) },
                         selected = state.page == p,
                         icon = { Icon(p.icon, null) },
                         onClick = {
@@ -168,7 +168,7 @@ internal fun AdminApplication(state: AdminState) {
                         confirm = "Cerrar sesión en este dispositivo" to { state.signOut() }
                       }) {
                         Icon(Icons.AutoMirrored.Outlined.Logout, null)
-                        Text("Cerrar sesión")
+                        Text(L("Cerrar sesión"))
                       }
                 }
               }
@@ -181,7 +181,7 @@ internal fun AdminApplication(state: AdminState) {
               TopAppBar(
                   title = {
                     Text(
-                        if (state.page == Page.Dashboard) "SP-DECODE Admin" else state.page.title,
+                        if (state.page == Page.Dashboard) "SP-DECODE Admin" else L(state.page.title),
                         fontSize = 19.sp)
                   },
                   navigationIcon = {
@@ -189,11 +189,11 @@ internal fun AdminApplication(state: AdminState) {
                         onClick = {
                           if (state.page == Page.Chat) state.navigate(Page.Support)
                           else if (state.page == Page.UserDetail) state.navigate(Page.Users)
-                          else if (state.page in listOf(Page.AppearanceSettings, Page.AboutSettings)) state.navigate(Page.Settings)
+                          else if (state.page in listOf(Page.AppearanceSettings, Page.AboutSettings, Page.LanguageSettings)) state.navigate(Page.Settings)
                           else scope.launch { drawer.open() }
                         }) {
                           Icon(
-                              if (state.page in listOf(Page.Chat, Page.UserDetail, Page.AppearanceSettings, Page.AboutSettings))
+                              if (state.page in listOf(Page.Chat, Page.UserDetail, Page.AppearanceSettings, Page.AboutSettings, Page.LanguageSettings))
                                   Icons.AutoMirrored.Outlined.ArrowBack
                               else Icons.Outlined.Menu,
                               "Menú")
@@ -221,7 +221,7 @@ internal fun AdminApplication(state: AdminState) {
                               icon = { Icon(p.icon, null) },
                               label = {
                                 Text(
-                                    if (p == Page.Dashboard) "Inicio" else p.title,
+                                    if (p == Page.Dashboard) L("Inicio") else L(p.title),
                                     fontSize = 11.sp)
                               })
                         }
@@ -242,12 +242,12 @@ internal fun AdminApplication(state: AdminState) {
                     }
                     if (state.mustChangePassword && state.page != Page.Security) {
                       TextButton(onClick = { state.navigate(Page.Security) }) {
-                        Text("Cambiar contraseña temporal")
+                        Text(L("Cambiar contraseña temporal"))
                       }
                     }
                     when (state.page) {
                       Page.Chat -> ChatScreen(state)
-                      Page.Settings, Page.AppearanceSettings, Page.AboutSettings -> SettingsScreen(state)
+                      Page.Settings, Page.AppearanceSettings, Page.AboutSettings, Page.LanguageSettings -> SettingsScreen(state)
                       else ->
                           ScreenList(state.page) {
                              moduleSubtitle(state.page)?.let { summary ->
@@ -256,8 +256,8 @@ internal fun AdminApplication(state: AdminState) {
                                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(13.dp)) {
                                      Avatar(state.page.icon, Mint, 48)
                                      Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                                       Text(state.page.title, color = Ink, fontSize = 21.sp, fontWeight = FontWeight.SemiBold)
-                                       Small(summary)
+                                       Text(L(state.page.title), color = Ink, fontSize = 21.sp, fontWeight = FontWeight.SemiBold)
+                                       Small(L(summary))
                                      }
                                    }
                                  }
@@ -266,13 +266,13 @@ internal fun AdminApplication(state: AdminState) {
                             if (state.data.has("live"))
                                 item {
                                   Small(
-                                      if (state.data.optBoolean("live")) "Operaciones reales"
-                                      else "Entorno de pruebas de pagos configurado en el servidor",
+                                      L(if (state.data.optBoolean("live")) "Operaciones reales"
+                                      else "Entorno de pruebas de pagos configurado en el servidor"),
                                       color = Amber)
                                 }
                             if (state.page in searchableModules) item {
                               SearchField(moduleQuery, { moduleQuery = it }, "Buscar en los registros cargados")
-                              if (state.data.has("count") && moduleQuery.isNotBlank()) Small("Búsqueda en la página actual")
+                              if (state.data.has("count") && moduleQuery.isNotBlank()) Small(L("Búsqueda en la página actual"))
                             }
                             when (state.page) {
                               Page.Dashboard -> {
@@ -333,10 +333,10 @@ internal fun AdminApplication(state: AdminState) {
                                   TextButton(enabled = !state.busy, onClick = {
                                     state.pageIndex = 0
                                     state.refresh()
-                                  }) { Text("Buscar en el servidor") }
-                                  if (state.data.has("count")) Small("${state.data.optInt("count")} usuarios registrados")
+                                  }) { Text(L("Buscar en el servidor")) }
+                                  if (state.data.has("count")) Small(LF("%1\$s usuarios registrados", state.data.optInt("count")))
                                   FilterRow(listOf("Todos", "Verificados", "Con compras", "Con créditos", "Sin anuncios"), directoryFilter) { directoryFilter = it }
-                                  if (directoryFilter != "Todos") Small("Filtro aplicado a la página actual")
+                                  if (directoryFilter != "Todos") Small(L("Filtro aplicado a la página actual"))
                                 }
                                 val rows = state.data.array("users").filter { row ->
                                   when (directoryFilter) {
@@ -382,9 +382,9 @@ internal fun AdminApplication(state: AdminState) {
                                       "creditMovements" to "Movimientos de créditos").forEach { (key, label) ->
                                     if (state.data.has(key)) item {
                                       val values = state.data.optJSONArray(key)
-                                      SectionHeading(label, values?.let { "${it.length()} registros" })
+                                      SectionHeading(label, values?.let { LF("%1\$s registros", it.length()) })
                                       Tile(Modifier.fillMaxWidth()) {
-                                        if (values != null && values.length() == 0) Small("Sin registros")
+                                        if (values != null && values.length() == 0) Small(L("Sin registros"))
                                         else if (values != null) {
                                           values.objects().forEachIndexed { index, record ->
                                             if (index > 0) HorizontalDivider(color = Border)
@@ -403,10 +403,10 @@ internal fun AdminApplication(state: AdminState) {
                                     item {
                                       Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                         TextButton(onClick = { staffForm(state, null, ::open) }) {
-                                          Text("Crear personal")
+                                          Text(L("Crear personal"))
                                         }
                                         TextButton(onClick = { roleForm(state, null, ::open) }) {
-                                          Text("Crear cargo")
+                                          Text(L("Crear cargo"))
                                         }
                                       }
                                     }
@@ -419,7 +419,7 @@ internal fun AdminApplication(state: AdminState) {
                                 }
                                 item {
                                   Text(
-                                      "Cargos personalizados",
+                                      L("Cargos personalizados"),
                                       color = Ink,
                                       fontWeight = FontWeight.Bold)
                                 }
@@ -446,7 +446,7 @@ internal fun AdminApplication(state: AdminState) {
                                 item {
                                   SectionHeading("Bandeja de soporte", "Conversaciones y estado del servidor")
                                   SearchField(moduleQuery, { moduleQuery = it }, "Buscar ticket o usuario")
-                                  TicketSummary(state.data.array("threads"))
+                                  if (state.data.has("threads")) TicketSummary(state.data.array("threads"))
                                   FilterRow(listOf("Todos", "Abiertos", "Respondidos", "Cerrados", "Sin asignar"), ticketFilter) { ticketFilter = it }
                                 }
                                 if (threads.isEmpty() && !state.busy)
@@ -466,11 +466,11 @@ internal fun AdminApplication(state: AdminState) {
                                 if (state.page == Page.Finance) {
                                   item {
                                     Text(
-                                        "Ingresos confirmados",
+                                        L("Ingresos confirmados"),
                                         color = Ink,
                                         fontSize = 24.sp,
                                         fontWeight = FontWeight.Bold)
-                                    Small("Pedidos pagados; totales separados por moneda.")
+                                    Small(L("Pedidos pagados; totales separados por moneda."))
                                   }
                                   items(state.data.array("totals")) { t ->
                                     Tile(Modifier.fillMaxWidth(), GreenPanel) {
@@ -478,13 +478,13 @@ internal fun AdminApplication(state: AdminState) {
                                           "${money(t.optString("cents").toLongOrNull()?:0)} ${t.optString("currency")}",
                                           color = Mint,
                                           fontSize = 24.sp)
-                                      Small("${t.optInt("orders")} pedidos pagados")
+                                      Small(LF("%1\$s pedidos pagados", t.optInt("orders")))
                                     }
                                   }
                                 }
                                 item {
                                   FilterRow(listOf("Todos", "Pagados", "Pendientes", "Reembolsados", "Fallidos"), moduleFilter) { moduleFilter = it }
-                                  if (moduleFilter != "Todos") Small("Filtro aplicado a la página actual")
+                                  if (moduleFilter != "Todos") Small(L("Filtro aplicado a la página actual"))
                                 }
                                 val orders = state.data.array("items").filter { row ->
                                   matchesRecord(row, moduleQuery) && when(moduleFilter) {
@@ -506,7 +506,7 @@ internal fun AdminApplication(state: AdminState) {
                                 val id = if (state.page == Page.Api) "api-ip" else "offline-3"
                                 item {
                                   Small(
-                                      "Los accesos corresponden a pedidos registrados. Las claves completas se entregan una sola vez al titular.")
+                                      L("Los accesos corresponden a pedidos registrados. Las claves completas se entregan una sola vez al titular."))
                                 }
                                 items(
                                     state.data.array("items").filter {
@@ -515,7 +515,7 @@ internal fun AdminApplication(state: AdminState) {
                                     key = { it.getString("id") }) { row ->
                                       Tile(Modifier.fillMaxWidth()) {
                                         EntitlementSummary(row, id == "api-ip")
-                                        TextButton(onClick = { state.detail = row }) { Text("Ver detalles") }
+                                        TextButton(onClick = { state.detail = row }) { Text(L("Ver detalles")) }
                                         if (state.owner) {
                                           TextButton(
                                               enabled = !state.busy,
@@ -558,7 +558,7 @@ internal fun AdminApplication(state: AdminState) {
                                                                   .put("allowedIp", v["ip"]))
                                                         }
                                                   }) {
-                                                    Text("Cambiar IP")
+                                                    Text(L("Cambiar IP"))
                                                   }
                                         }
                                       }
@@ -580,7 +580,7 @@ internal fun AdminApplication(state: AdminState) {
                                   ->
                                   Tile(Modifier.fillMaxWidth()) {
                                     GiftSummary(row)
-                                    TextButton(onClick = { state.detail = row }) { Text("Ver detalles") }
+                                    TextButton(onClick = { state.detail = row }) { Text(L("Ver detalles")) }
                                     if (row.optBoolean("enabled"))
                                         TextButton(
                                             onClick = {
@@ -591,13 +591,13 @@ internal fun AdminApplication(state: AdminState) {
                                                       .put("action", "disable")
                                                       .put("id", row.getString("id")))
                                             }) {
-                                              Text("Desactivar", color = Red)
+                                              Text(L("Desactivar"), color = Red)
                                             }
                                   }
                                 }
                                 item {
                                   Text(
-                                      "Canjes recientes", color = Ink, fontWeight = FontWeight.Bold)
+                                      L("Canjes recientes"), color = Ink, fontWeight = FontWeight.Bold)
                                 }
                                 items(state.data.array("redemptions").filter { matchesRecord(it, moduleQuery) }) { row ->
                                   RedemptionCard(row) { state.detail = row }
@@ -615,7 +615,7 @@ internal fun AdminApplication(state: AdminState) {
                                             "Publicar el aviso de la versión actual del catálogo",
                                             "catalog_publish")
                                       }) {
-                                        Text("Avisar actualización")
+                                        Text(L("Avisar actualización"))
                                       }
                                 }
                                 val providers =
@@ -634,7 +634,7 @@ internal fun AdminApplication(state: AdminState) {
                                 items(providers.filter { matchesRecord(it, moduleQuery) }) { row ->
                                   Tile(Modifier.fillMaxWidth()) {
                                     ProviderSummary(row)
-                                    TextButton(onClick = { state.detail = row }) { Text("Ver datos técnicos") }
+                                    TextButton(onClick = { state.detail = row }) { Text(L("Ver datos técnicos")) }
                                     TextButton(
                                         onClick = {
                                           mutate(
@@ -654,21 +654,21 @@ internal fun AdminApplication(state: AdminState) {
                               Page.Server -> {
                                 item {
                                   Text(
-                                      "Estado del servicio",
+                                      L("Estado del servicio"),
                                       color = Ink,
                                       fontSize = 24.sp,
                                       fontWeight = FontWeight.Bold)
                                   Small(
-                                      "Las métricas del contenedor web no representan el consumo total del VPS.")
+                                      L("Las métricas del contenedor web no representan el consumo total del VPS."))
                                   ServiceOverview(state.data)
-                                  TextButton(onClick = { state.detail = state.data }) { Text("Diagnóstico detallado") }
+                                  TextButton(onClick = { state.detail = state.data }) { Text(L("Diagnóstico detallado")) }
                                 }
                               }
                               Page.Notices -> {
                                 item {
                                   TextButton(onClick = { noticeForm(state, ::open) }) {
                                     Icon(Icons.Outlined.Campaign, null)
-                                    Text("Enviar notificación")
+                                    Text(L("Enviar notificación"))
                                   }
                                   Small(
                                       if (state.data.optBoolean("pushConfigured"))
@@ -679,7 +679,7 @@ internal fun AdminApplication(state: AdminState) {
                                     row ->
                                   Tile(Modifier.fillMaxWidth()) {
                                     NoticeSummary(row)
-                                    TextButton(onClick = { state.detail = row }) { Text("Ver detalles") }
+                                    TextButton(onClick = { state.detail = row }) { Text(L("Ver detalles")) }
                                   }
                                 }
                               }
@@ -695,7 +695,7 @@ internal fun AdminApplication(state: AdminState) {
                                         state.principal.optString("name"),
                                         color = Ink,
                                         fontSize = 22.sp)
-                                    Small("Conexión HTTPS autenticada")
+                                    Small(L("Conexión HTTPS autenticada"))
                                     Small(
                                         "${state.principal.optString("username")} · ${state.principal.optString("role")}")
                                   }
@@ -734,7 +734,7 @@ internal fun AdminApplication(state: AdminState) {
                                 if (state.owner)
                                     item {
                                       Small(
-                                          "La contraseña de propietario se administra desde el servidor.")
+                                          L("La contraseña de propietario se administra desde el servidor."))
                                     }
                                 item {
                                   Tile(Modifier.fillMaxWidth()) {
@@ -748,7 +748,7 @@ internal fun AdminApplication(state: AdminState) {
                                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                                       Avatar(Icons.Outlined.Devices, Mint, 48)
                                       Column(Modifier.weight(1f)) {
-                                        Text("Este dispositivo", color = Ink, fontWeight = FontWeight.Bold)
+                                        Text(L("Este dispositivo"), color = Ink, fontWeight = FontWeight.Bold)
                                         Small("Android · ${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}")
                                       }
                                       StatusPill("Sesión actual")
@@ -756,10 +756,10 @@ internal fun AdminApplication(state: AdminState) {
                                     Small(
                                         "${state.principal.optString("name")} · ${state.principal.optString("role")}")
                                     Small(
-                                        "La sesión tiene la vigencia y revocación establecidas por el servidor.")
+                                        L("La sesión tiene la vigencia y revocación establecidas por el servidor."))
                                     TextButton(
                                         enabled = !state.busy, onClick = { state.logout() }) {
-                                          Text("Cerrar sesión", color = Red)
+                                          Text(L("Cerrar sesión"), color = Red)
                                         }
                                   }
                                 }
@@ -768,10 +768,10 @@ internal fun AdminApplication(state: AdminState) {
                                 item {
                                   Tile(Modifier.fillMaxWidth()) {
                                     Text(
-                                        "Mantenimiento del servicio",
+                                        L("Mantenimiento del servicio"),
                                         color = Ink,
                                         fontWeight = FontWeight.Bold)
-                                    Small("Estas acciones modifican la disponibilidad del servicio para los clientes.")
+                                    Small(L("Estas acciones modifican la disponibilidad del servicio para los clientes."))
                                     TextButton(
                                         onClick = {
                                           mutate(
@@ -779,7 +779,7 @@ internal fun AdminApplication(state: AdminState) {
                                               "maintenance",
                                               JSONObject().put("enabled", true))
                                         }) {
-                                          Text("Activar mantenimiento", color = Amber)
+                                          Text(L("Activar mantenimiento"), color = Amber)
                                         }
                                     TextButton(
                                         onClick = {
@@ -788,18 +788,18 @@ internal fun AdminApplication(state: AdminState) {
                                               "maintenance",
                                               JSONObject().put("enabled", false))
                                         }) {
-                                          Text("Desactivar mantenimiento")
+                                          Text(L("Desactivar mantenimiento"))
                                         }
                                   }
                                 }
                                 item {
                                   Tile(Modifier.fillMaxWidth()) {
                                     Text(
-                                        "Caché de compilación del servidor",
+                                        L("Caché de compilación del servidor"),
                                         color = Ink,
                                         fontWeight = FontWeight.Bold)
                                     Small(
-                                        "La limpieza la ejecuta el servicio de mantenimiento del VPS.")
+                                        L("La limpieza la ejecuta el servicio de mantenimiento del VPS."))
                                     TextButton(
                                         onClick = {
                                           mutate(
@@ -807,12 +807,12 @@ internal fun AdminApplication(state: AdminState) {
                                               "cleanup",
                                               JSONObject().put("action", "request"))
                                         }) {
-                                          Text("Solicitar limpieza")
+                                          Text(L("Solicitar limpieza"))
                                         }
                                   }
                                 }
                               }
-                              else -> item { Small("Selecciona una sección en el menú.") }
+                              else -> item { Small(L("Selecciona una sección en el menú.")) }
                             }
                             if (state.data.has("count"))
                                 item {
@@ -824,14 +824,14 @@ internal fun AdminApplication(state: AdminState) {
                                         TextButton(
                                             enabled = state.pageIndex > 0 && !state.busy,
                                             onClick = { state.next(-1) }) {
-                                              Text("Anterior")
+                                              Text(L("Anterior"))
                                             }
-                                        Small("Página ${state.pageIndex+1} · $total registros")
+                                        Small(LF("Página %1\$s · %2\$s registros", state.pageIndex + 1, total))
                                         TextButton(
                                             enabled =
                                                 (state.pageIndex + 1) * size < total && !state.busy,
                                             onClick = { state.next(1) }) {
-                                              Text("Siguiente")
+                                              Text(L("Siguiente"))
                                             }
                                       }
                                 }
@@ -846,7 +846,7 @@ internal fun AdminApplication(state: AdminState) {
                                         Page.Security,
                                         Page.Sessions,
                                         Page.Maintenance))
-                                item { Small("Datos recibidos de panel.spdecode.xyz") }
+                                item { Small(L("Datos recibidos de panel.spdecode.xyz")) }
                           }
                     }
                   }
@@ -857,8 +857,8 @@ internal fun AdminApplication(state: AdminState) {
     AlertDialog(
         onDismissRequest = { if (!state.busy) confirm = null },
         containerColor = Panel,
-        title = { Text(title) },
-        text = { Text("La acción se aplicará en el servidor.", color = Muted) },
+        title = { Text(L(title)) },
+        text = { Text(L("La acción se aplicará en el servidor."), color = Muted) },
         confirmButton = {
           TextButton(
               enabled = !state.busy,
@@ -868,11 +868,11 @@ internal fun AdminApplication(state: AdminState) {
                   confirm = null
                 }
               }) {
-                Text("Confirmar")
+                Text(L("Confirmar"))
               }
         },
         dismissButton = {
-          TextButton(enabled = !state.busy, onClick = { confirm = null }) { Text("Cancelar") }
+          TextButton(enabled = !state.busy, onClick = { confirm = null }) { Text(L("Cancelar")) }
         })
   }
   state.detail?.let { row ->
@@ -898,12 +898,12 @@ private fun LoginScreen(state: AdminState) {
         Text("SP-DECODE", color = Ink, fontSize = 30.sp, fontWeight = FontWeight.Bold)
         Text("ADMINISTRATION", color = Mint, fontWeight = FontWeight.SemiBold, letterSpacing = 2.sp)
         Spacer(Modifier.height(10.dp))
-        Small("Acceso administrativo seguro")
+        Small(L("Acceso administrativo seguro"))
         Spacer(Modifier.height(30.dp))
         OutlinedTextField(
             username,
             { username = it.take(128) },
-            label = { Text("Usuario") },
+            label = { Text(L("Usuario")) },
             enabled = !state.busy,
             singleLine = true,
             modifier = Modifier.fillMaxWidth().testTag("login-username"),
@@ -912,7 +912,7 @@ private fun LoginScreen(state: AdminState) {
         OutlinedTextField(
             password,
             { password = it.take(512) },
-            label = { Text("Contraseña") },
+            label = { Text(L("Contraseña")) },
             enabled = !state.busy,
             singleLine = true,
             modifier = Modifier.fillMaxWidth().testTag("login-password"),
@@ -935,9 +935,9 @@ private fun LoginScreen(state: AdminState) {
             },
             modifier = Modifier.fillMaxWidth().testTag("login-submit"),
             shape = Rounded) {
-              Text(if (state.busy) "Conectando…" else "Iniciar sesión")
+              Text(L(if (state.busy) "Conectando…" else "Iniciar sesión"))
             }
-        state.error?.let { Text(it, color = Red, modifier = Modifier.padding(top = 12.dp)) }
+        state.error?.let { Text(AdminErrorLabel(it), color = Red, modifier = Modifier.padding(top = 12.dp)) }
         Spacer(Modifier.height(24.dp))
         Small("panel.spdecode.xyz")
         Small("Ghost Nexora Studio")
@@ -975,10 +975,10 @@ private fun UserCard(row: JSONObject, onClick: () -> Unit) {
       if (row.optString("providers").contains("google", ignoreCase = true)) StatusPill("Google", Blue)
       if (row.optBoolean("password_enabled")) StatusPill("Contraseña", Muted)
       if (row.optBoolean("ad_free")) StatusPill("Sin anuncios")
-      if (row.optInt("credits") > 0) StatusPill("${row.optInt("credits")} créditos", Purple)
+      if (row.optInt("credits") > 0) StatusPill(LF("%1\$s créditos", row.optInt("credits")), Purple)
     }
     if (row.has("orders_count") && row.has("open_tickets")) Small(
-        "${row.optInt("orders_count")} pedidos · ${row.optInt("open_tickets")} tickets abiertos")
+        LF("%1\$s pedidos · %2\$s tickets abiertos", row.optInt("orders_count"), row.optInt("open_tickets")))
   }
 }
 
@@ -1000,7 +1000,7 @@ private fun TicketCard(row: JSONObject, onClick: () -> Unit) {
       Text(it, color = Muted, maxLines = 2, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis, fontSize = 13.sp)
     }
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-      Small(row.optString("assigned_name").takeUnless { it == "null" }.orEmpty().ifBlank { "Sin asignar" })
+      Small(row.optString("assigned_name").takeUnless { it == "null" }.orEmpty().ifBlank { L("Sin asignar") })
       Small(row.optString("last_message_at").take(16).replace('T', ' '))
     }
   }
@@ -1112,7 +1112,7 @@ private fun Fields(value: JSONObject, skip: Set<String> = emptySet(), depth: Int
           when (item) {
             is JSONObject -> {
               Text(
-                  labels[key] ?: key,
+                  L(labels[key] ?: key),
                   color = Mint,
                   fontWeight = FontWeight.Medium,
                   modifier = Modifier.padding(top = 8.dp))
@@ -1120,7 +1120,7 @@ private fun Fields(value: JSONObject, skip: Set<String> = emptySet(), depth: Int
             }
             is JSONArray -> {
               Text(
-                  labels[key] ?: key,
+                  L(labels[key] ?: key),
                   color = Mint,
                   fontWeight = FontWeight.Medium,
                   modifier = Modifier.padding(top = 8.dp))
@@ -1129,13 +1129,13 @@ private fun Fields(value: JSONObject, skip: Set<String> = emptySet(), depth: Int
                 if (row != null && depth < 4) {
                   Fields(row, depth = depth + 1)
                   HorizontalDivider(color = Border)
-                } else Small(translated(item.optString(i)))
+                } else Small(L(translated(item.optString(i))))
               }
             }
             else -> {
               Row(Modifier.fillMaxWidth().padding(vertical = 5.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text(labels[key] ?: prettyKey(key), color = Muted, fontSize = 12.sp, modifier = Modifier.weight(.44f))
-                Text(translated(item.toString()), color = Ink, fontSize = 14.sp, modifier = Modifier.weight(.56f))
+                Text(L(labels[key] ?: prettyKey(key)), color = Muted, fontSize = 12.sp, modifier = Modifier.weight(.44f))
+                Text(L(translated(item.toString())), color = Ink, fontSize = 14.sp, modifier = Modifier.weight(.56f))
               }
               HorizontalDivider(color = Border.copy(alpha = .45f))
             }
@@ -1156,7 +1156,7 @@ private fun FormDialog(state: AdminState, form: RemoteForm, dismiss: () -> Unit)
   AlertDialog(
       onDismissRequest = { if (!state.busy) dismiss() },
       containerColor = Panel,
-      title = { Text(form.title) },
+      title = { Text(L(form.title)) },
       text = {
         Column(
             Modifier.heightIn(max = 480.dp).verticalScroll(rememberScrollState()),
@@ -1166,7 +1166,7 @@ private fun FormDialog(state: AdminState, form: RemoteForm, dismiss: () -> Unit)
                     OutlinedTextField(
                         values[field.key].orEmpty(),
                         { values[field.key] = it.take(if (field.secret) 128 else 500) },
-                        label = { Text(field.label) },
+                        label = { Text(dynamicUiLabel(field.label)) },
                         enabled = !state.busy,
                         singleLine = field.key != "body",
                         visualTransformation =
@@ -1174,7 +1174,7 @@ private fun FormDialog(state: AdminState, form: RemoteForm, dismiss: () -> Unit)
                             else VisualTransformation.None,
                         modifier = Modifier.fillMaxWidth())
                 else {
-                  Small(field.label)
+                  Small(dynamicUiLabel(field.label))
                   field.choices.forEach { choice ->
                     Row(
                         Modifier.fillMaxWidth().clickable(enabled = !state.busy) {
@@ -1185,12 +1185,12 @@ private fun FormDialog(state: AdminState, form: RemoteForm, dismiss: () -> Unit)
                               values[field.key] == choice,
                               { values[field.key] = choice },
                               enabled = !state.busy)
-                          Text(translated(choice), color = Ink)
+                          Text(L(translated(choice)), color = Ink)
                         }
                   }
                 }
               }
-              (error ?: state.error)?.let { Text(it, color = Red) }
+              (error ?: state.error)?.let { Text(AdminErrorLabel(it), color = Red) }
             }
       },
       confirmButton = {
@@ -1206,10 +1206,10 @@ private fun FormDialog(state: AdminState, form: RemoteForm, dismiss: () -> Unit)
                 }
               }
             }) {
-              Text(if (state.busy) "Guardando…" else "Guardar")
+              Text(L(if (state.busy) "Guardando…" else "Guardar"))
             }
       },
-      dismissButton = { TextButton(enabled = !state.busy, onClick = dismiss) { Text("Cancelar") } })
+      dismissButton = { TextButton(enabled = !state.busy, onClick = dismiss) { Text(L("Cancelar")) } })
 }
 
 @Composable
@@ -1219,10 +1219,10 @@ private fun SecretDialog(value: JSONObject, dismiss: () -> Unit) {
   AlertDialog(
       onDismissRequest = dismiss,
       containerColor = Panel,
-      title = { Text("Guarda estos datos") },
+      title = { Text(L("Guarda estos datos")) },
       text = {
         Column {
-          Small("Se muestran una sola vez.")
+          Small(L("Se muestran una sola vez."))
           value.optJSONObject("staff")?.let {
             Text("${it.optString("username")} · ${it.optString("name")}", color = Ink)
           }
@@ -1231,15 +1231,31 @@ private fun SecretDialog(value: JSONObject, dismiss: () -> Unit) {
         }
       },
       confirmButton = {
-        TextButton(onClick = { clipboard.setText(AnnotatedString(secret)) }) { Text("Copiar") }
+        TextButton(onClick = { clipboard.setText(AnnotatedString(secret)) }) { Text(L("Copiar")) }
       },
-      dismissButton = { TextButton(onClick = dismiss) { Text("Cerrar") } })
+      dismissButton = { TextButton(onClick = dismiss) { Text(L("Cerrar")) } })
 }
 
 @Composable
 private fun SettingsScreen(state: AdminState) {
   ScreenList(state.page) {
     when (state.page) {
+      Page.LanguageSettings -> {
+        item { SectionHeading("Idioma", "Elige el idioma de la interfaz") }
+        items(AdminLanguage.entries) { language ->
+          Tile(Modifier.fillMaxWidth().testTag("language-${language.tag}").clickable { state.setLanguage(language) }) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+              Avatar(Icons.Outlined.Language, if (state.language == language) Mint else Muted, 44)
+              Column(Modifier.weight(1f)) {
+                Text(language.nativeName, color = Ink, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
+                if (state.language == language) Small(L("Idioma actual"), color = Mint)
+              }
+              RadioButton(state.language == language, { state.setLanguage(language) })
+            }
+          }
+        }
+        item { Small(L("El cambio se aplica inmediatamente.")) }
+      }
       Page.AppearanceSettings -> {
         item { SectionHeading("Apariencia", "Los cambios se guardan en este dispositivo") }
         items(Appearance.entries) { value ->
@@ -1247,16 +1263,16 @@ private fun SettingsScreen(state: AdminState) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
               Avatar(Icons.Outlined.Palette, if (state.appearance == value) Mint else Muted, 44)
               Column(Modifier.weight(1f)) {
-                Text(when(value) {
+                Text(L(when(value) {
                   Appearance.Amoled -> "AMOLED"
                   Appearance.Dark -> "Oscuro"
                   Appearance.Light -> "Claro"
-                }, color = Ink, fontWeight = FontWeight.SemiBold)
-                Small(when(value) {
+                }), color = Ink, fontWeight = FontWeight.SemiBold)
+                Small(L(when(value) {
                   Appearance.Amoled -> "Negro profundo"
                   Appearance.Dark -> "Contraste suave"
                   Appearance.Light -> "Superficies claras"
-                })
+                }))
               }
               RadioButton(state.appearance == value, { state.theme(value) })
             }
@@ -1267,7 +1283,7 @@ private fun SettingsScreen(state: AdminState) {
         Tile(Modifier.fillMaxWidth(), GreenPanel) {
           Avatar(Icons.Outlined.VerifiedUser, Mint, 58)
           Text("SP-DECODE Admin", color = Ink, fontSize = 23.sp, fontWeight = FontWeight.Bold)
-          Small("Versión ${BuildConfig.VERSION_NAME}")
+          Small(LF("Versión %1\$s", BuildConfig.VERSION_NAME))
           Small("Ghost Nexora Studio")
           Small("panel.spdecode.xyz")
         }
@@ -1281,9 +1297,10 @@ private fun SettingsScreen(state: AdminState) {
         }
         item {
           Tile(Modifier.fillMaxWidth()) {
+            ActionRow("Idioma", Icons.Outlined.Language, state.language.nativeName) { state.navigate(Page.LanguageSettings) }
             ActionRow("Apariencia", Icons.Outlined.Palette, state.appearance.name) { state.navigate(Page.AppearanceSettings) }
             ActionRow("Acerca de", Icons.Outlined.Info, BuildConfig.VERSION_NAME) { state.navigate(Page.AboutSettings) }
-            TextButton(enabled = !state.busy, onClick = { state.logout() }) { Text("Cerrar sesión", color = Red) }
+            TextButton(enabled = !state.busy, onClick = { state.logout() }) { Text(L("Cerrar sesión"), color = Red) }
           }
         }
         item {
@@ -1305,7 +1322,7 @@ private fun ChatScreen(state: AdminState) {
   if (thread == null) {
     if (!state.busy)
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-          Text("La conversación no está disponible.", color = Muted)
+          Text(L("La conversación no está disponible."), color = Muted)
         }
     return
   }
@@ -1323,7 +1340,7 @@ private fun ChatScreen(state: AdminState) {
   }
   Column(Modifier.fillMaxSize()) {
     ChatHeader(thread)
-    state.supportSyncError?.let { Small(it, Modifier.padding(horizontal = 16.dp), Amber) }
+    state.supportSyncError?.let { Small(AdminErrorLabel(it), Modifier.padding(horizontal = 16.dp), Amber) }
     Row {
       if (state.can("support.write"))
           TextButton(
@@ -1339,13 +1356,13 @@ private fun ChatScreen(state: AdminState) {
                               if (thread.optString("status") == "closed") "reopen" else "close"))
                 }
               }) {
-                Text(if (thread.optString("status") == "closed") "Reabrir" else "Cerrar ticket")
+                Text(L(if (thread.optString("status") == "closed") "Reabrir" else "Cerrar ticket"))
               }
       if (state.can("support.assign"))
           TextButton(enabled = !state.busy, onClick = {
             assignedId = thread.optString("assigned_staff_id").takeUnless { it == "null" }.orEmpty()
             assignment = true
-          }) { Text("Asignar agente") }
+          }) { Text(L("Asignar agente")) }
     }
     LazyColumn(
         Modifier.weight(1f).fillMaxWidth(),
@@ -1362,9 +1379,9 @@ private fun ChatScreen(state: AdminState) {
           }
         }
     if (thread.optString("status") == "closed")
-      Small("Conversación cerrada. Reabre el ticket para responder.", Modifier.padding(16.dp))
+      Small(L("Conversación cerrada. Reabre el ticket para responder."), Modifier.padding(16.dp))
     else if (!state.can("support.write"))
-      Small("Tu cargo tiene acceso de solo lectura.", Modifier.padding(16.dp))
+      Small(L("Tu cargo tiene acceso de solo lectura."), Modifier.padding(16.dp))
     if (state.can("support.write") && thread.optString("status") != "closed")
         Row(
             Modifier.fillMaxWidth().padding(10.dp),
@@ -1373,7 +1390,7 @@ private fun ChatScreen(state: AdminState) {
               OutlinedTextField(
                   draft,
                   { state.updateSupportDraft(state.selectedId, it.take(2000)) },
-                  placeholder = { Text("Mensaje") },
+                  placeholder = { Text(L("Mensaje")) },
                   modifier = Modifier.weight(1f),
                   shape = Rounded,
                   maxLines = 4)
@@ -1391,14 +1408,14 @@ private fun ChatScreen(state: AdminState) {
       AlertDialog(
           onDismissRequest = { assignment = false },
           containerColor = Panel,
-          title = { Text("Asignar agente") },
+          title = { Text(L("Asignar agente")) },
           text = {
             Column(Modifier.heightIn(max = 400.dp).verticalScroll(rememberScrollState())) {
               Row(
                   Modifier.fillMaxWidth().clickable { assignedId = "" },
                   verticalAlignment = Alignment.CenterVertically) {
                     RadioButton(assignedId.isEmpty(), { assignedId = "" })
-                    Text("Sin asignación", color = Ink)
+                    Text(L("Sin asignación"), color = Ink)
                   }
               state.data.array("agents").forEach { agent ->
                 Row(
@@ -1413,7 +1430,7 @@ private fun ChatScreen(state: AdminState) {
                     }
               }
               if (!state.data.has("agents"))
-                  Small("Actualiza el servidor para consultar los agentes disponibles.")
+                  Small(L("Actualiza el servidor para consultar los agentes disponibles."))
             }
           },
           confirmButton = {
@@ -1430,10 +1447,10 @@ private fun ChatScreen(state: AdminState) {
                     assignment = false
                   }
                 }) {
-                  Text("Guardar")
+                  Text(L("Guardar"))
                 }
           },
-          dismissButton = { TextButton(onClick = { assignment = false }) { Text("Cancelar") } })
+          dismissButton = { TextButton(onClick = { assignment = false }) { Text(L("Cancelar")) } })
 }
 
 private fun staffForm(
@@ -1654,3 +1671,9 @@ private fun moduleSubtitle(page: Page): String? = when (page) {
   Page.Maintenance -> "Operaciones de mantenimiento controladas"
   else -> null
 }
+
+@Composable
+private fun dynamicUiLabel(label: String): String =
+    if (label.startsWith("Precio base (") && label.endsWith(")"))
+      LF("Precio base (%1\$s)", label.removePrefix("Precio base (").removeSuffix(")"))
+    else L(label)

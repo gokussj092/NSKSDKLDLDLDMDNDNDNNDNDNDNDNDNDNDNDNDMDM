@@ -47,7 +47,8 @@ internal fun localDate(value: String?): String? {
 }
 
 internal fun displayAmount(quote: JSONObject?): String? {
-  val count = quote?.optString("total")?.toLongOrNull() ?: return null
+  if (quote == null) return null
+  val count = quote.optString("total").toLongOrNull() ?: return null
   val currency = recordValue(quote, "currency") ?: return null
   return "${money(count)} $currency"
 }
@@ -76,7 +77,7 @@ private fun RecordHeader(title: String, subtitle: String?, icon: ImageVector, st
 private fun Fact(label: String, value: String?) {
   if (value.isNullOrBlank()) return
   Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.Top) {
-    Small(label, Modifier.weight(.42f))
+    Small(L(label), Modifier.weight(.42f))
     Text(value, color = Ink, fontSize = 13.sp, modifier = Modifier.weight(.58f))
   }
 }
@@ -84,7 +85,7 @@ private fun Fact(label: String, value: String?) {
 @Composable
 private fun ActionHint(text: String = "Ver detalles") {
   Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
-    Small(text, color = Mint)
+    Small(L(text), color = Mint)
     Icon(Icons.Outlined.ChevronRight, null, tint = Mint, modifier = Modifier.size(18.dp))
   }
 }
@@ -111,17 +112,17 @@ internal fun DashboardOverview(state: AdminState) {
         if (row.size == 1) Spacer(Modifier.weight(1f))
       }
     }
-    if (stats.isEmpty()) Small("Consultando los datos disponibles…")
-    if (overview.keys().asSequence().any { it.endsWith("Unavailable") }) Small("Algunos módulos no respondieron.", color = Amber)
+    if (stats.isEmpty()) Small(L("Consultando los datos disponibles…"))
+    if (overview.keys().asSequence().any { it.endsWith("Unavailable") }) Small(L("Algunos módulos no respondieron."), color = Amber)
     orders?.let { data ->
       val totals = data.array("totals")
       if (totals.isNotEmpty()) Tile(Modifier.fillMaxWidth()) {
-        Text("Ingresos confirmados", color = Ink, fontWeight = FontWeight.SemiBold)
-        if (data.has("live") && !data.optBoolean("live")) Small("Entorno de pruebas", color = Amber)
+        Text(L("Ingresos confirmados"), color = Ink, fontWeight = FontWeight.SemiBold)
+        if (data.has("live") && !data.optBoolean("live")) Small(L("Entorno de pruebas"), color = Amber)
         totals.forEach { total ->
           val cents = total.optString("cents").toLongOrNull()
           if (cents != null) Fact(total.optString("currency"), money(cents))
-          if (total.has("orders")) Small("${total.optInt("orders")} pedidos pagados")
+          if (total.has("orders")) Small(LF("%1\$s pedidos pagados", total.optInt("orders")))
         }
       }
     }
@@ -134,7 +135,7 @@ internal fun TicketSummary(threads: List<JSONObject>) {
     listOf("open" to "Abiertos", "answered" to "Respondidos", "closed" to "Cerrados").forEach { (key, label) ->
       Tile(Modifier.weight(1f)) {
         Text(threads.count { it.optString("status") == key }.toString(), color = toneFor(key), fontWeight = FontWeight.Bold, fontSize = 20.sp)
-        Small(label)
+        Small(L(label))
       }
     }
   }
@@ -174,7 +175,7 @@ internal fun ProductCard(title: String, row: JSONObject, onClick: () -> Unit) {
     settings?.let {
       if (it.has("enabled")) StatusPill(if (it.optBoolean("enabled")) "Habilitado" else "Deshabilitado", if (it.optBoolean("enabled")) Mint else Muted)
       it.optJSONObject("prices")?.let { prices ->
-        prices.keys().forEach { currency -> prices.optString(currency).toLongOrNull()?.let { amount -> Fact("Precio base · $currency", money(amount)) } }
+        prices.keys().forEach { currency -> prices.optString(currency).toLongOrNull()?.let { amount -> Fact(LF("Precio base · %1\$s", currency), money(amount)) } }
       }
       for (key in listOf("termPrices", "bundles")) {
         val terms = it.optJSONObject(key) ?: continue
@@ -219,7 +220,7 @@ internal fun CreditCard(row: JSONObject, onClick: () -> Unit) {
   Tile(Modifier.fillMaxWidth().clickable(onClick = onClick)) {
     RecordHeader(displayName(row), recordValue(row, "email"), Icons.Outlined.Payments)
     amount?.let {
-      Text((if (it > 0) "+" else "") + it.toString() + " créditos", color = if (it < 0) Amber else Mint,
+      Text(LF("%1\$s créditos", (if (it > 0) "+" else "") + it.toString()), color = if (it < 0) Amber else Mint,
           fontSize = 23.sp, fontWeight = FontWeight.Bold)
     }
     Fact("Movimiento", recordValue(row, "movement_kind")?.let(::translated))
@@ -294,11 +295,11 @@ internal fun ServiceIndicators(services: JSONObject) {
       known = true
       val ready = services.optBoolean(key)
       Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        Text(title, color = Ink, modifier = Modifier.weight(1f))
+        Text(L(title), color = Ink, modifier = Modifier.weight(1f))
         StatusPill(if (ready) "Disponible" else "Revisar", if (ready) Mint else Amber)
       }
     }
-    if (!known) Small("El servidor no reportó indicadores reconocidos.")
+    if (!known) Small(L("El servidor no reportó indicadores reconocidos."))
   }
 }
 
@@ -332,7 +333,7 @@ internal fun ProfileSummary(data: JSONObject) {
       val values = data.optJSONArray(key)
       if (values != null) Tile(Modifier.weight(1f)) {
         Text(values.length().toString(), color = Mint, fontWeight = FontWeight.Bold, fontSize = 21.sp)
-        Small(label)
+        Small(L(label))
       }
     }
   }
@@ -365,7 +366,7 @@ internal fun ProfileRecord(group: String, row: JSONObject) {
 internal fun DetailScreen(page: Page, row: JSONObject, onClose: () -> Unit, content: @Composable () -> Unit) {
   Dialog(onDismissRequest = onClose, properties = DialogProperties(usePlatformDefaultWidth = false)) {
     Scaffold(modifier = Modifier.fillMaxSize().safeDrawingPadding(), containerColor = MaterialTheme.colorScheme.background,
-        topBar = { TopAppBar(title = { Text("Detalle · ${page.title}") }, navigationIcon = {
+        topBar = { TopAppBar(title = { Text(LF("Detalle · %1\$s", L(page.title))) }, navigationIcon = {
           IconButton(onClick = onClose) { Icon(Icons.AutoMirrored.Outlined.ArrowBack, "Volver") }
         }) }) { padding ->
       Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp),
@@ -392,7 +393,7 @@ internal fun ChatHeader(thread: JSONObject) {
       }
       recordValue(thread, "status")?.let { StatusPill(translated(it), toneFor(it)) }
     }
-    recordValue(thread, "assigned_name")?.let { Small("Agente: $it") }
+    recordValue(thread, "assigned_name")?.let { Small(LF("Agente: %1\$s", it)) }
   }
 }
 

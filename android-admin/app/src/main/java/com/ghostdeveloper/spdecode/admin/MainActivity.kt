@@ -109,7 +109,7 @@ class MainActivity : ComponentActivity() {
                 else SystemBarStyle.dark(android.graphics.Color.BLACK),
         )
       }
-      AdminTheme(state.appearance) { AdminApplication(state) }
+      AdminLocaleProvider(state.language) { AdminTheme(state.appearance) { AdminApplication(state) } }
     }
   }
 }
@@ -136,6 +136,7 @@ internal enum class Page(val title: String, val icon: ImageVector) {
   Sessions("Mis sesiones", Icons.Outlined.Devices),
   Settings("Ajustes", Icons.Outlined.Settings),
   AppearanceSettings("Apariencia", Icons.Outlined.Palette),
+  LanguageSettings("Idioma", Icons.Outlined.Language),
   AboutSettings("Acerca de", Icons.Outlined.Info),
   UserDetail("Detalles de usuario", Icons.Outlined.Person),
   UserEdit("Editar perfil", Icons.Outlined.Edit),

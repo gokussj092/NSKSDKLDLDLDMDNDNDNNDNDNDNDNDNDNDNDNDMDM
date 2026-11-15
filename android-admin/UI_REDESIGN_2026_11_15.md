@@ -8,3 +8,6 @@ Follow-up: section headers for secondary modules, actual decode metric tiles, pa
 
 ## Second pass — module-specific layouts
 Dashboard now reads existing capability-scoped API counts and separates totals by currency. Transactions, licenses, API, credits, products, gifts, staff, audit, notices and catalog use structured summaries with details on demand. Directory profiles have record-level summaries; chat drafts are retained in memory (cleared on logout), polling failures have a non-destructive indicator, and accepted ticket status is applied before reload. No backend, online client, decoder, signing or workflow changes. Global filters are not claimed: search operates on the loaded page. Admin push and localization remain pending, as does validation of this revision.
+
+## Language resources
+Added a persistent language screen and 349 Spanish/English Android string resource pairs. App-owned labels, navigation, forms, statuses and common errors resolve through the selected app locale; server payloads and message text are not translated. Other languages and exhaustive localization/device QA are pending. The default remains Spanish. No backend changes.

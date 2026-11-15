@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="admin_label_001" formatted="false">ADMINISTRACIÓN</string>
+    <string name="admin_label_002" formatted="false">COMERCIO</string>
+    <string name="admin_label_003" formatted="false">PLATAFORMA</string>
+    <string name="admin_label_004" formatted="false">Administrador</string>
+    <string name="admin_label_005" formatted="false">Resumen general</string>
+    <string name="admin_label_006" formatted="false">Inicio</string>
+    <string name="admin_label_007" formatted="false">Usuarios</string>
+    <string name="admin_label_008" formatted="false">Roles y permisos</string>
+    <string name="admin_label_009" formatted="false">Soporte</string>
+    <string name="admin_label_010" formatted="false">Finanzas</string>
+    <string name="admin_label_011" formatted="false">Transacciones</string>
+    <string name="admin_label_012" formatted="false">Productos</string>
+    <string name="admin_label_013" formatted="false">Licencias Offline</string>
+    <string name="admin_label_014" formatted="false">API comercial</string>
+    <string name="admin_label_015" formatted="false">Créditos</string>
+    <string name="admin_label_016" formatted="false">Catálogo VPN</string>
+    <string name="admin_label_017" formatted="false">Estado del servidor</string>
+    <string name="admin_label_018" formatted="false">Notificaciones</string>
+    <string name="admin_label_019" formatted="false">Enviar notificación</string>
+    <string name="admin_label_020" formatted="false">Actividad del sistema</string>
+    <string name="admin_label_021" formatted="false">Centro de seguridad</string>
+    <string name="admin_label_022" formatted="false">Mantenimiento</string>
+    <string name="admin_label_023" formatted="false">Mis sesiones</string>
+    <string name="admin_label_024" formatted="false">Ajustes</string>
+    <string name="admin_label_025" formatted="false">Apariencia</string>
+    <string name="admin_label_026" formatted="false">Acerca de</string>
+    <string name="admin_label_027" formatted="false">Idioma</string>
+    <string name="admin_label_028" formatted="false">Detalles de usuario</string>
+    <string name="admin_label_029" formatted="false">Editar perfil</string>
+    <string name="admin_label_030" formatted="false">Compras del usuario</string>
+    <string name="admin_label_031" formatted="false">Dispositivos y sesiones</string>
+    <string name="admin_label_032" formatted="false">Licencias y productos</string>
+    <string name="admin_label_033" formatted="false">Actividad del usuario</string>
+    <string name="admin_label_034" formatted="false">Administración de personal</string>
+    <string name="admin_label_035" formatted="false">Chat de soporte</string>
+    <string name="admin_label_036" formatted="false">Detalle de transacción</string>
+    <string name="admin_label_037" formatted="false">Detalle de licencia</string>
+    <string name="admin_label_038" formatted="false">Acceso API</string>
+    <string name="admin_label_039" formatted="false">Historial de gift codes</string>
+    <string name="admin_label_040" formatted="false">Movimientos de créditos</string>
+    <string name="admin_label_041" formatted="false">Cerrar sesión en este dispositivo</string>
+    <string name="admin_label_042" formatted="false">Cerrar sesión</string>
+    <string name="admin_label_043" formatted="false">Menú</string>
+    <string name="admin_label_044" formatted="false">Actualizar</string>
+    <string name="admin_label_045" formatted="false">Cambiar contraseña temporal</string>
+    <string name="admin_label_046" formatted="false">Operaciones reales</string>
+    <string name="admin_label_047" formatted="false">Entorno de pruebas de pagos configurado en el servidor</string>
+    <string name="admin_label_048" formatted="false">Buscar en los registros cargados</string>
+    <string name="admin_label_049" formatted="false">Búsqueda en la página actual</string>
+    <string name="admin_label_050" formatted="false">En mantenimiento</string>
+    <string name="admin_label_051" formatted="false">Panel conectado</string>
+    <string name="admin_label_052" formatted="false">Actividad del servicio</string>
+    <string name="admin_label_053" formatted="false">Métricas reportadas por el servidor</string>
+    <string name="admin_label_054" formatted="false">Procesados</string>
+    <string name="admin_label_055" formatted="false">Fallidos</string>
+    <string name="admin_label_056" formatted="false">Advertencias</string>
+    <string name="admin_label_057" formatted="false">Estado de la plataforma</string>
+    <string name="admin_label_058" formatted="false">Acciones rápidas</string>
+    <string name="admin_label_059" formatted="false">Buscar usuario</string>
+    <string name="admin_label_060" formatted="false">Revisar soporte</string>
+    <string name="admin_label_061" formatted="false">Diagnóstico del servidor</string>
+    <string name="admin_label_062" formatted="false">Gestionar gift codes</string>
+    <string name="admin_label_063" formatted="false">Directorio de usuarios</string>
+    <string name="admin_label_064" formatted="false">Busca por nombre, @usuario, correo o ID</string>
+    <string name="admin_label_065" formatted="false">Buscar en el servidor</string>
+    <string name="admin_label_066" formatted="false">Todos</string>
+    <string name="admin_label_067" formatted="false">Verificados</string>
+    <string name="admin_label_068" formatted="false">Con compras</string>
+    <string name="admin_label_069" formatted="false">Con créditos</string>
+    <string name="admin_label_070" formatted="false">Sin anuncios</string>
+    <string name="admin_label_071" formatted="false">Filtro aplicado a la página actual</string>
+    <string name="admin_label_072" formatted="false">Sin resultados</string>
+    <string name="admin_label_073" formatted="false">Prueba otra búsqueda.</string>
+    <string name="admin_label_074" formatted="false">Perfil</string>
+    <string name="admin_label_075" formatted="false">Correo verificado</string>
+    <string name="admin_label_076" formatted="false">Métodos de acceso</string>
+    <string name="admin_label_077" formatted="false">Canjes de gift codes</string>
+    <string name="admin_label_078" formatted="false">Seguridad y sesiones</string>
+    <string name="admin_label_079" formatted="false">Sin registros</string>
+    <string name="admin_label_080" formatted="false">Perfil no disponible</string>
+    <string name="admin_label_081" formatted="false">Actualiza para consultar los datos del servidor.</string>
+    <string name="admin_label_082" formatted="false">Crear personal</string>
+    <string name="admin_label_083" formatted="false">Crear cargo</string>
+    <string name="admin_label_084" formatted="false">Cargos personalizados</string>
+    <string name="admin_label_085" formatted="false">Abiertos</string>
+    <string name="admin_label_086" formatted="false">Respondidos</string>
+    <string name="admin_label_087" formatted="false">Cerrados</string>
+    <string name="admin_label_088" formatted="false">Sin asignar</string>
+    <string name="admin_label_089" formatted="false">Bandeja de soporte</string>
+    <string name="admin_label_090" formatted="false">Conversaciones y estado del servidor</string>
+    <string name="admin_label_091" formatted="false">Buscar ticket o usuario</string>
+    <string name="admin_label_092" formatted="false">Sin conversaciones</string>
+    <string name="admin_label_093" formatted="false">No hay tickets disponibles para tu cargo.</string>
+    <string name="admin_label_094" formatted="false">Ingresos confirmados</string>
+    <string name="admin_label_095" formatted="false">Pedidos pagados; totales separados por moneda.</string>
+    <string name="admin_label_096" formatted="false">Pagados</string>
+    <string name="admin_label_097" formatted="false">Pendientes</string>
+    <string name="admin_label_098" formatted="false">Reembolsados</string>
+    <string name="admin_label_099" formatted="false">Sin pedidos</string>
+    <string name="admin_label_100" formatted="false">No hay pedidos que coincidan con la selección.</string>
+    <string name="admin_label_101" formatted="false">Los accesos corresponden a pedidos registrados. Las claves completas se entregan una sola vez al titular.</string>
+    <string name="admin_label_102" formatted="false">Ver detalles</string>
+    <string name="admin_label_103" formatted="false">Revocar este acceso</string>
+    <string name="admin_label_104" formatted="false">Restaurar este acceso</string>
+    <string name="admin_label_105" formatted="false">Revocar</string>
+    <string name="admin_label_106" formatted="false">Restaurar</string>
+    <string name="admin_label_107" formatted="false">IP autorizada</string>
+    <string name="admin_label_108" formatted="false">Dirección IP pública</string>
+    <string name="admin_label_109" formatted="false">Cambiar IP</string>
+    <string name="admin_label_110" formatted="false">Sin movimientos</string>
+    <string name="admin_label_111" formatted="false">No hay movimientos que coincidan con la búsqueda.</string>
+    <string name="admin_label_112" formatted="false">Generar gift code</string>
+    <string name="admin_label_113" formatted="false">Desactivar este gift code</string>
+    <string name="admin_label_114" formatted="false">Desactivar</string>
+    <string name="admin_label_115" formatted="false">Activar</string>
+    <string name="admin_label_116" formatted="false">Canjes recientes</string>
+    <string name="admin_label_117" formatted="false">Publicar el aviso de la versión actual del catálogo</string>
+    <string name="admin_label_118" formatted="false">Avisar actualización</string>
+    <string name="admin_label_119" formatted="false">Ver datos técnicos</string>
+    <string name="admin_label_120" formatted="false">Estado del servicio</string>
+    <string name="admin_label_121" formatted="false">Las métricas del contenedor web no representan el consumo total del VPS.</string>
+    <string name="admin_label_122" formatted="false">Diagnóstico detallado</string>
+    <string name="admin_label_123" formatted="false">Push configurado</string>
+    <string name="admin_label_124" formatted="false">Push sin configurar; consulta periódica disponible</string>
+    <string name="admin_label_125" formatted="false">Conexión HTTPS autenticada</string>
+    <string name="admin_label_126" formatted="false">Cambiar contraseña</string>
+    <string name="admin_label_127" formatted="false">Contraseña actual</string>
+    <string name="admin_label_128" formatted="false">Nueva contraseña (16–128 caracteres)</string>
+    <string name="admin_label_129" formatted="false">La nueva contraseña debe tener entre 16 y 128 caracteres.</string>
+    <string name="admin_label_130" formatted="false">La contraseña de propietario se administra desde el servidor.</string>
+    <string name="admin_label_131" formatted="false">Mi sesión</string>
+    <string name="admin_label_132" formatted="false">Acceso de este dispositivo</string>
+    <string name="admin_label_133" formatted="false">Este dispositivo</string>
+    <string name="admin_label_134" formatted="false">Sesión actual</string>
+    <string name="admin_label_135" formatted="false">La sesión tiene la vigencia y revocación establecidas por el servidor.</string>
+    <string name="admin_label_136" formatted="false">Mantenimiento del servicio</string>
+    <string name="admin_label_137" formatted="false">Estas acciones modifican la disponibilidad del servicio para los clientes.</string>
+    <string name="admin_label_138" formatted="false">Activar mantenimiento para todos los clientes</string>
+    <string name="admin_label_139" formatted="false">Activar mantenimiento</string>
+    <string name="admin_label_140" formatted="false">Desactivar mantenimiento</string>
+    <string name="admin_label_141" formatted="false">Caché de compilación del servidor</string>
+    <string name="admin_label_142" formatted="false">La limpieza la ejecuta el servicio de mantenimiento del VPS.</string>
+    <string name="admin_label_143" formatted="false">Solicitar limpieza de caché del servidor</string>
+    <string name="admin_label_144" formatted="false">Solicitar limpieza</string>
+    <string name="admin_label_145" formatted="false">Selecciona una sección en el menú.</string>
+    <string name="admin_label_146" formatted="false">Datos recibidos de panel.spdecode.xyz</string>
+    <string name="admin_label_147" formatted="false">La acción se aplicará en el servidor.</string>
+    <string name="admin_label_148" formatted="false">Confirmar</string>
+    <string name="admin_label_149" formatted="false">Cancelar</string>
+    <string name="admin_label_150" formatted="false">Acceso administrativo seguro</string>
+    <string name="admin_label_151" formatted="false">Usuario</string>
+    <string name="admin_label_152" formatted="false">Contraseña</string>
+    <string name="admin_label_153" formatted="false">Mostrar u ocultar contraseña</string>
+    <string name="admin_label_154" formatted="false">Conectando…</string>
+    <string name="admin_label_155" formatted="false">Iniciar sesión</string>
+    <string name="admin_label_156" formatted="false">Sin nombre</string>
+    <string name="admin_label_157" formatted="false">Verificado</string>
+    <string name="admin_label_158" formatted="false">No verificado</string>
+    <string name="admin_label_159" formatted="false">Identificador</string>
+    <string name="admin_label_160" formatted="false">Nombre</string>
+    <string name="admin_label_161" formatted="false">Correo</string>
+    <string name="admin_label_162" formatted="false">Estado</string>
+    <string name="admin_label_163" formatted="false">Fecha</string>
+    <string name="admin_label_164" formatted="false">Fecha de creación</string>
+    <string name="admin_label_165" formatted="false">Fecha de pago</string>
+    <string name="admin_label_166" formatted="false">Vencimiento</string>
+    <string name="admin_label_167" formatted="false">Producto</string>
+    <string name="admin_label_168" formatted="false">Cuenta</string>
+    <string name="admin_label_169" formatted="false">Pedido</string>
+    <string name="admin_label_170" formatted="false">Pedidos</string>
+    <string name="admin_label_171" formatted="false">Método de pago</string>
+    <string name="admin_label_172" formatted="false">Importe del pedido</string>
+    <string name="admin_label_173" formatted="false">Importe</string>
+    <string name="admin_label_174" formatted="false">Moneda</string>
+    <string name="admin_label_175" formatted="false">Total (centavos)</string>
+    <string name="admin_label_176" formatted="false">Subtotal (centavos)</string>
+    <string name="admin_label_177" formatted="false">Impuestos (centavos)</string>
+    <string name="admin_label_178" formatted="false">Prefijo de clave</string>
+    <string name="admin_label_179" formatted="false">Solicitudes</string>
+    <string name="admin_label_180" formatted="false">Movimiento</string>
+    <string name="admin_label_181" formatted="false">Usos máximos</string>
+    <string name="admin_label_182" formatted="false">Usos</string>
+    <string name="admin_label_183" formatted="false">Habilitado</string>
+    <string name="admin_label_184" formatted="false">Deshabilitado</string>
+    <string name="admin_label_185" formatted="false">Tipo</string>
+    <string name="admin_label_186" formatted="false">Vigencia (días)</string>
+    <string name="admin_label_187" formatted="false">Título</string>
+    <string name="admin_label_188" formatted="false">Mensaje</string>
+    <string name="admin_label_189" formatted="false">Cargo</string>
+    <string name="admin_label_190" formatted="false">Acción</string>
+    <string name="admin_label_191" formatted="false">Detalles</string>
+    <string name="admin_label_192" formatted="false">Sesiones</string>
+    <string name="admin_label_193" formatted="false">Servicios</string>
+    <string name="admin_label_194" formatted="false">Estadísticas</string>
+    <string name="admin_label_195" formatted="false">Memoria usada (bytes)</string>
+    <string name="admin_label_196" formatted="false">Límite de memoria (bytes)</string>
+    <string name="admin_label_197" formatted="false">Alcance</string>
+    <string name="admin_label_198" formatted="false">Worker disponible</string>
+    <string name="admin_label_199" formatted="false">Redis disponible</string>
+    <string name="admin_label_200" formatted="false">Salud del servicio</string>
+    <string name="admin_label_201" formatted="false">Debe cambiar contraseña</string>
+    <string name="admin_label_202" formatted="false">Pagado</string>
+    <string name="admin_label_203" formatted="false">Pendiente</string>
+    <string name="admin_label_204" formatted="false">Reembolsado</string>
+    <string name="admin_label_205" formatted="false">En disputa</string>
+    <string name="admin_label_206" formatted="false">Fallido</string>
+    <string name="admin_label_207" formatted="false">Activo</string>
+    <string name="admin_label_208" formatted="false">Revocado</string>
+    <string name="admin_label_209" formatted="false">Abierto</string>
+    <string name="admin_label_210" formatted="false">Cerrado</string>
+    <string name="admin_label_211" formatted="false">Respondido</string>
+    <string name="admin_label_212" formatted="false">Abono</string>
+    <string name="admin_label_213" formatted="false">Reversión</string>
+    <string name="admin_label_214" formatted="false">Consumo</string>
+    <string name="admin_label_215" formatted="false">Sí</string>
+    <string name="admin_label_216" formatted="false">Solo contenedor web</string>
+    <string name="admin_label_217" formatted="false">Licencia Offline</string>
+    <string name="admin_label_218" formatted="false">Créditos APK</string>
+    <string name="admin_label_219" formatted="false">Revisa los campos.</string>
+    <string name="admin_label_220" formatted="false">Guardando…</string>
+    <string name="admin_label_221" formatted="false">Guardar</string>
+    <string name="admin_label_222" formatted="false">Guarda estos datos</string>
+    <string name="admin_label_223" formatted="false">Se muestran una sola vez.</string>
+    <string name="admin_label_224" formatted="false">Copiar</string>
+    <string name="admin_label_225" formatted="false">Cerrar</string>
+    <string name="admin_label_226" formatted="false">Los cambios se guardan en este dispositivo</string>
+    <string name="admin_label_227" formatted="false">Negro profundo</string>
+    <string name="admin_label_228" formatted="false">Contraste suave</string>
+    <string name="admin_label_229" formatted="false">Superficies claras</string>
+    <string name="admin_label_230" formatted="false">Oscuro</string>
+    <string name="admin_label_231" formatted="false">Claro</string>
+    <string name="admin_label_232" formatted="false">Cuenta y seguridad</string>
+    <string name="admin_label_233" formatted="false">Seguridad</string>
+    <string name="admin_label_234" formatted="false">Notificaciones del sistema</string>
+    <string name="admin_label_235" formatted="false">La conversación no está disponible.</string>
+    <string name="admin_label_236" formatted="false">Cerrar ticket</string>
+    <string name="admin_label_237" formatted="false">Asignar agente</string>
+    <string name="admin_label_238" formatted="false">Reabrir</string>
+    <string name="admin_label_239" formatted="false">Conversación cerrada. Reabre el ticket para responder.</string>
+    <string name="admin_label_240" formatted="false">Tu cargo tiene acceso de solo lectura.</string>
+    <string name="admin_label_241" formatted="false">Sin asignación</string>
+    <string name="admin_label_242" formatted="false">Actualiza el servidor para consultar los agentes disponibles.</string>
+    <string name="admin_label_243" formatted="false">Editar personal</string>
+    <string name="admin_label_244" formatted="false">Nombre visible</string>
+    <string name="admin_label_245" formatted="false">Acceso habilitado</string>
+    <string name="admin_label_246" formatted="false">Restablecer contraseña</string>
+    <string name="admin_label_247" formatted="false">Consultar usuarios</string>
+    <string name="admin_label_248" formatted="false">Leer soporte</string>
+    <string name="admin_label_249" formatted="false">Responder soporte</string>
+    <string name="admin_label_250" formatted="false">Asignar soporte</string>
+    <string name="admin_label_251" formatted="false">Consultar compras</string>
+    <string name="admin_label_252" formatted="false">Editar cargo</string>
+    <string name="admin_label_253" formatted="false">Nombre del cargo</string>
+    <string name="admin_label_254" formatted="false">Cargo habilitado</string>
+    <string name="admin_label_255" formatted="false">Escribe un precio válido.</string>
+    <string name="admin_label_256" formatted="false">Recompensa</string>
+    <string name="admin_label_257" formatted="false">Créditos o días de acceso</string>
+    <string name="admin_label_258" formatted="false">Escribe un número de usos válido.</string>
+    <string name="admin_label_259" formatted="false">Escribe una cantidad válida.</string>
+    <string name="admin_label_260" formatted="false">Entrega</string>
+    <string name="admin_label_261" formatted="false">Importancia</string>
+    <string name="admin_label_262" formatted="false">Vigencia (horas)</string>
+    <string name="admin_label_263" formatted="false">El título debe tener hasta 80 caracteres y el mensaje hasta 500.</string>
+    <string name="admin_label_264" formatted="false">Personal autorizado y cargos administrativos</string>
+    <string name="admin_label_265" formatted="false">Configuración de la tienda y disponibilidad</string>
+    <string name="admin_label_266" formatted="false">Resumen de ingresos y operaciones pagadas</string>
+    <string name="admin_label_267" formatted="false">Historial de pedidos y sus estados</string>
+    <string name="admin_label_268" formatted="false">Administración de accesos Offline</string>
+    <string name="admin_label_269" formatted="false">Accesos comerciales e IP autorizada</string>
+    <string name="admin_label_270" formatted="false">Registro de movimientos de créditos</string>
+    <string name="admin_label_271" formatted="false">Emisión, disponibilidad y canjes</string>
+    <string name="admin_label_272" formatted="false">Versiones y disponibilidad de proveedores</string>
+    <string name="admin_label_273" formatted="false">Diagnóstico y salud de la plataforma</string>
+    <string name="admin_label_274" formatted="false">Publicación e historial de avisos</string>
+    <string name="admin_label_275" formatted="false">Registro de acciones administrativas</string>
+    <string name="admin_label_276" formatted="false">Credenciales y protección de la cuenta</string>
+    <string name="admin_label_277" formatted="false">Acceso desde este dispositivo</string>
+    <string name="admin_label_278" formatted="false">Operaciones de mantenimiento controladas</string>
+    <string name="admin_label_279" formatted="false">Anterior</string>
+    <string name="admin_label_280" formatted="false">Siguiente</string>
+    <string name="admin_label_281" formatted="false">Resumen administrativo</string>
+    <string name="admin_label_282" formatted="false">Datos consultados según tus permisos</string>
+    <string name="admin_label_283" formatted="false">Usuarios registrados</string>
+    <string name="admin_label_284" formatted="false">Tickets abiertos · visibles</string>
+    <string name="admin_label_285" formatted="false">Pedidos registrados</string>
+    <string name="admin_label_286" formatted="false">Licencias registradas</string>
+    <string name="admin_label_287" formatted="false">Consultando los datos disponibles…</string>
+    <string name="admin_label_288" formatted="false">Algunos módulos no respondieron.</string>
+    <string name="admin_label_289" formatted="false">Entorno de pruebas</string>
+    <string name="admin_label_290" formatted="false">Ver permisos</string>
+    <string name="admin_label_291" formatted="false">Permisos</string>
+    <string name="admin_label_292" formatted="false">Configuración del producto</string>
+    <string name="admin_label_293" formatted="false">Editar configuración</string>
+    <string name="admin_label_294" formatted="false">Administrar</string>
+    <string name="admin_label_295" formatted="false">Activación</string>
+    <string name="admin_label_296" formatted="false">Solicitudes registradas</string>
+    <string name="admin_label_297" formatted="false">Cuota</string>
+    <string name="admin_label_298" formatted="false">Canjes</string>
+    <string name="admin_label_299" formatted="false">Días</string>
+    <string name="admin_label_300" formatted="false">Canje</string>
+    <string name="admin_label_301" formatted="false">Versión</string>
+    <string name="admin_label_302" formatted="false">Revisión</string>
+    <string name="admin_label_303" formatted="false">Responsable</string>
+    <string name="admin_label_304" formatted="false">Disponible</string>
+    <string name="admin_label_305" formatted="false">Revisar</string>
+    <string name="admin_label_306" formatted="false">El servidor no reportó indicadores reconocidos.</string>
+    <string name="admin_label_307" formatted="false">Recursos reportados</string>
+    <string name="admin_label_308" formatted="false">Memoria usada</string>
+    <string name="admin_label_309" formatted="false">Límite de memoria</string>
+    <string name="admin_label_310" formatted="false">Accesos</string>
+    <string name="admin_label_311" formatted="false">Registro</string>
+    <string name="admin_label_312" formatted="false">Contraseña configurada</string>
+    <string name="admin_label_313" formatted="false">Volver</string>
+    <string name="admin_label_314" formatted="false">Enviar</string>
+    <string name="admin_label_315" formatted="false">Sincronización interrumpida. Se volverá a intentar.</string>
+    <string name="admin_label_316" formatted="false">Contraseña actualizada. Inicia sesión con la nueva contraseña.</string>
+    <string name="admin_label_317" formatted="false">Aviso publicado. La entrega push falló; permanece disponible dentro de la aplicación.</string>
+    <string name="admin_label_318" formatted="false">Solicitud registrada en el servidor.</string>
+    <string name="admin_label_319" formatted="false">Guardado en el servidor.</string>
+    <string name="admin_label_320" formatted="false">La acción fue aceptada. No se pudo actualizar la pantalla; pulsa Actualizar.</string>
+    <string name="admin_label_321" formatted="false">Usuario o contraseña incorrectos.</string>
+    <string name="admin_label_322" formatted="false">La sesión venció. Vuelve a iniciar sesión.</string>
+    <string name="admin_label_323" formatted="false">Tu cargo no tiene permiso para esta acción.</string>
+    <string name="admin_label_324" formatted="false">No se pudo conectar con el servidor. Comprueba la conexión y vuelve a intentarlo.</string>
+    <string name="admin_label_325" formatted="false">Demasiados intentos. Espera antes de volver a intentarlo.</string>
+    <string name="admin_label_326" formatted="false">Esta sección necesita que se actualice el servidor.</string>
+    <string name="admin_label_327" formatted="false">El servicio administrativo no está disponible.</string>
+    <string name="admin_label_328" formatted="false">El producto cambió en el servidor. Actualiza la pantalla antes de editarlo.</string>
+    <string name="admin_label_329" formatted="false">Escribe una única dirección IP pública válida.</string>
+    <string name="admin_label_330" formatted="false">El pedido no está pagado o el acceso ya venció.</string>
+    <string name="admin_label_331" formatted="false">Debes cambiar la contraseña temporal.</string>
+    <string name="admin_label_332" formatted="false">Elige el idioma de la interfaz</string>
+    <string name="admin_label_333" formatted="false">El cambio se aplica inmediatamente.</string>
+    <string name="admin_label_334" formatted="false">Idioma actual</string>
+    <string name="admin_label_335" formatted="false">%1$s usuarios registrados</string>
+    <string name="admin_label_336" formatted="false">%1$s registros</string>
+    <string name="admin_label_337" formatted="false">%1$s pedidos pagados</string>
+    <string name="admin_label_338" formatted="false">%1$s créditos</string>
+    <string name="admin_label_339" formatted="false">%1$s pedidos · %2$s tickets abiertos</string>
+    <string name="admin_label_340" formatted="false">Página %1$s · %2$s registros</string>
+    <string name="admin_label_341" formatted="false">Versión %1$s</string>
+    <string name="admin_label_342" formatted="false">Versión del catálogo: %1$s</string>
+    <string name="admin_label_343" formatted="false">Sin datos</string>
+    <string name="admin_label_344" formatted="false">Agente: %1$s</string>
+    <string name="admin_label_345" formatted="false">Detalle · %1$s</string>
+    <string name="admin_label_346" formatted="false">Precio base · %1$s</string>
+    <string name="admin_label_347" formatted="false">Precio base (%1$s)</string>
+    <string name="admin_label_348" formatted="false">No se pudo completar la operación (%1$s).</string>
+    <string name="admin_label_349" formatted="false">Cambiar disponibilidad de %1$s</string>
+</resources>

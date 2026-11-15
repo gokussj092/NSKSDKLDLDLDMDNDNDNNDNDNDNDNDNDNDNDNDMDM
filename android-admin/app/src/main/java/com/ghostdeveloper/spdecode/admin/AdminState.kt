@@ -22,6 +22,14 @@ internal class AdminState(app: Application) : AndroidViewModel(app) {
       mutableStateOf(
           runCatching { Appearance.valueOf(preferences.getString("appearance", "Amoled")!!) }
               .getOrDefault(Appearance.Amoled))
+  var language by mutableStateOf(AdminLanguage.fromTag(preferences.getString("language", "es")))
+    private set
+
+  fun setLanguage(value: AdminLanguage) {
+    language = value
+    preferences.edit().putString("language", value.tag).apply()
+  }
+
   var entered by mutableStateOf(false)
   var checking by mutableStateOf(true)
   var busy by mutableStateOf(false)
@@ -47,7 +55,7 @@ internal class AdminState(app: Application) : AndroidViewModel(app) {
 
   fun supportDraft(id: String): String = supportDrafts[id].orEmpty()
   fun updateSupportDraft(id: String, value: String) {
-    if (value.isBlank()) supportDrafts.remove(id) else supportDrafts[id] = value
+    if (value.isEmpty()) supportDrafts.remove(id) else supportDrafts[id] = value
   }
 
   fun sendSupportReply(id: String, draft: String) {

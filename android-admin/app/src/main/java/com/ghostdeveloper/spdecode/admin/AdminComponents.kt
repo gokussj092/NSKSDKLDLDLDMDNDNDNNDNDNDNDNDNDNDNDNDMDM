@@ -95,7 +95,7 @@ internal fun Metric(
   Tile(modifier) {
     Icon(icon, null, Modifier.size(21.dp), tint)
     Text(value, color = Ink, fontWeight = FontWeight.SemiBold, fontSize = 26.sp)
-    Text(label, color = Muted, fontSize = 13.sp)
+    Text(L(label), color = Muted, fontSize = 13.sp)
   }
 }
 
@@ -119,7 +119,7 @@ internal fun SearchField(
   TextField(
       query,
       { change(it.take(100)) },
-      placeholder = { Text(placeholder, fontSize = 14.sp) },
+      placeholder = { Text(L(placeholder), fontSize = 14.sp) },
       leadingIcon = { Icon(Icons.Outlined.Search, null, Modifier.size(21.dp)) },
       trailingIcon = trailing,
       singleLine = true,
@@ -139,7 +139,7 @@ internal fun FilterRow(labels: List<String>, selected: String, onSelect: (String
       FilterChip(
           selected == label,
           { onSelect(label) },
-          { Text(label, fontSize = 13.sp) },
+          { Text(L(label), fontSize = 13.sp) },
           shape = CircleShape,
           border = null,
           colors =
@@ -164,7 +164,7 @@ internal fun EditorField(
   OutlinedTextField(
       value,
       { change(it.take(max)) },
-      label = { Text(label) },
+      label = { Text(L(label)) },
       singleLine = lines == 1,
       minLines = if (lines == 1) 1 else 3,
       maxLines = lines,
@@ -186,8 +186,8 @@ internal fun EmptyState(
       verticalArrangement = Arrangement.spacedBy(12.dp),
   ) {
     Avatar(icon, Muted, 60)
-    Text(title, color = Ink, fontWeight = FontWeight.SemiBold)
-    Text(description, color = Muted, fontSize = 13.sp, textAlign = TextAlign.Center)
+    Text(L(title), color = Ink, fontWeight = FontWeight.SemiBold)
+    Text(L(description), color = Muted, fontSize = 13.sp, textAlign = TextAlign.Center)
   }
 }
 
@@ -206,8 +206,8 @@ internal fun ActionRow(
     ) {
       Icon(icon, null, Modifier.size(21.dp), Mint)
       Column(Modifier.weight(1f)) {
-        Text(label, color = Ink, fontSize = 15.sp)
-        if (detail != null) Small(detail)
+        Text(L(label), color = Ink, fontSize = 15.sp)
+        if (detail != null) Small(L(detail))
       }
       Icon(Icons.Outlined.ChevronRight, null, tint = Muted)
     }
@@ -223,7 +223,7 @@ internal fun PrimaryAction(label: String, enabled: Boolean = true, onClick: () -
       shape = Rounded,
       modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp),
   ) {
-    Text(label, fontWeight = FontWeight.Medium)
+    Text(L(label), fontWeight = FontWeight.Medium)
   }
 }
 
@@ -239,7 +239,7 @@ internal fun SecondaryAction(label: String, danger: Boolean = false, onClick: ()
           ),
       modifier = Modifier.fillMaxWidth().heightIn(min = 50.dp),
   ) {
-    Text(label)
+    Text(L(label))
   }
 }
 
@@ -262,12 +262,12 @@ internal fun ConfirmationDialog(
             tint = if (danger) Red else Mint,
         )
       },
-      title = { Text(title) },
-      text = { Text(text, color = Muted) },
+      title = { Text(L(title)) },
+      text = { Text(L(text), color = Muted) },
       confirmButton = {
-        TextButton(onClick = onConfirm) { Text(confirm, color = if (danger) Red else Mint) }
+        TextButton(onClick = onConfirm) { Text(L(confirm), color = if (danger) Red else Mint) }
       },
-      dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar") } },
+      dismissButton = { TextButton(onClick = onDismiss) { Text(L("Cancelar")) } },
   )
 }
 
@@ -283,7 +283,7 @@ internal fun FormDialog(
   AlertDialog(
       onDismissRequest = onDismiss,
       containerColor = Panel,
-      title = { Text(title, fontSize = 20.sp, fontWeight = FontWeight.SemiBold) },
+      title = { Text(L(title), fontSize = 20.sp, fontWeight = FontWeight.SemiBold) },
       text = {
         Column(
             Modifier.heightIn(max = 460.dp).verticalScroll(rememberScrollState()),
@@ -291,8 +291,8 @@ internal fun FormDialog(
             content = content,
         )
       },
-      confirmButton = { TextButton(onClick = onConfirm, enabled = valid) { Text(confirm) } },
-      dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar") } },
+      confirmButton = { TextButton(onClick = onConfirm, enabled = valid) { Text(L(confirm)) } },
+      dismissButton = { TextButton(onClick = onDismiss) { Text(L("Cancelar")) } },
   )
 }
 
@@ -306,7 +306,7 @@ internal fun <T> SelectField(
 ) {
   var open by remember { mutableStateOf(false) }
   Column(verticalArrangement = Arrangement.spacedBy(7.dp)) {
-    Small(label)
+    Small(L(label))
     Box {
       Row(
           Modifier.fillMaxWidth()
@@ -375,14 +375,14 @@ internal fun userHandle(row: JSONObject): String? =
 @Composable
 internal fun SectionHeading(title: String, subtitle: String? = null) {
   Column(Modifier.fillMaxWidth().padding(bottom = 8.dp), verticalArrangement = Arrangement.spacedBy(3.dp)) {
-    Text(title, color = Ink, fontSize = 19.sp, fontWeight = FontWeight.SemiBold)
-    if (subtitle != null) Small(subtitle)
+    Text(L(title), color = Ink, fontSize = 19.sp, fontWeight = FontWeight.SemiBold)
+    if (subtitle != null) Small(L(subtitle))
   }
 }
 
 @Composable
 internal fun StatusPill(value: String, tint: Color = Mint) {
-  Text(value, color = tint, fontSize = 11.sp, fontWeight = FontWeight.Medium,
+  Text(L(value), color = tint, fontSize = 11.sp, fontWeight = FontWeight.Medium,
       modifier = Modifier.background(tint.copy(alpha = .10f), CircleShape).padding(horizontal = 9.dp, vertical = 5.dp))
 }
 
