@@ -1,11 +1,18 @@
 name: SP-DECODE Admin Signed Release
 on:
   workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Rama, tag o SHA a compilar; vacío usa la rama seleccionada'
+        required: false
+        type: string
+        default: ''
   push:
-    branches: [feat/android-admin-panel, ci/unity-ads-online-qa]
+    branches: ["**"]
     paths:
       - 'android-admin/**'
       - '.github/workflows/android-admin-release.yml'
+      - 'tests/test_android_admin_workflow.py'
       - 'cloud/web/lib/commerce/mobile-admin.mjs'
       - 'cloud/web/app/api/admin/mobile/**'
       - 'cloud/web/tests/mobile-admin.test.mjs'
@@ -15,7 +22,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: android-admin-release-${{ github.ref }}
+  group: android-admin-release-${{ inputs.ref || github.ref_name }}
   cancel-in-progress: true
 jobs:
   build:
@@ -23,6 +30,8 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -43,6 +52,9 @@ jobs:
         working-directory: cloud/web
         run: |
           npm ci --ignore-scripts --no-audit --no-fund
+          if [ -f ../../tests/test_android_admin_workflow.py ]; then
+            (cd ../.. && python3 -m unittest tests.test_android_admin_workflow -v)
+          fi
           node --test tests/mobile-admin.test.mjs tests/staff-console.test.mjs tests/c6-admin.test.mjs
       - name: Validate native routes and JVM bridge
         run: |
@@ -56,19 +68,86 @@ jobs:
           KEY_PASSWORD: ${{ secrets.SPDECODE_SIGNING_KEY_PASSWORD }}
         run: |
           set -euo pipefail
-          test -n "$STORE_BASE64" && test -n "$STORE_PASSWORD" && test -n "$KEY_ALIAS" && test -n "$KEY_PASSWORD"
+          for name in STORE_BASE64 STORE_PASSWORD KEY_ALIAS KEY_PASSWORD; do
+            if [ -z "${!name:-}" ]; then
+              echo "::error::Falta la firma persistente: $name. No se generará otra clave."
+              exit 1
+            fi
+          done
           umask 077
           printf '%s' "$STORE_BASE64" | base64 --decode > "$RUNNER_TEMP/spdecode-admin-release.p12"
           keytool -list -keystore "$RUNNER_TEMP/spdecode-admin-release.p12" -storetype PKCS12 -storepass:env STORE_PASSWORD -alias "$KEY_ALIAS" >/dev/null
           keytool -exportcert -keystore "$RUNNER_TEMP/spdecode-admin-release.p12" -storetype PKCS12 -storepass:env STORE_PASSWORD -alias "$KEY_ALIAS" | sha256sum | cut -d' ' -f1 > "$RUNNER_TEMP/admin-signer-sha256"
           echo "SPDECODE_RELEASE_STORE_FILE=$RUNNER_TEMP/spdecode-admin-release.p12" >> "$GITHUB_ENV"
+          # Apply after the selected branch's DSL, before AGP creates any variant.
+          # This also covers old branches whose Debug variant used a default key.
+          cat > "$RUNNER_TEMP/admin-permanent-signing.init.gradle" <<'GRADLE'
+          gradle.beforeProject { project ->
+              if (project.path == ':app') {
+                  project.plugins.withId('com.android.application') {
+                      project.extensions.getByName('androidComponents').finalizeDsl({ android ->
+                          if (android.namespace != 'com.ghostdeveloper.spdecode.admin') {
+                              throw new GradleException('Expected the SP-DECODE Admin application')
+                          }
+                          def required = [:]
+                          ['SPDECODE_RELEASE_STORE_FILE', 'SPDECODE_RELEASE_STORE_PASSWORD',
+                           'SPDECODE_RELEASE_KEY_ALIAS', 'SPDECODE_RELEASE_KEY_PASSWORD'].each { name ->
+                              def value = System.getenv(name)
+                              if (!value) throw new GradleException('Permanent signing required: ' + name)
+                              required[name] = value
+                          }
+                          def store = new File(required['SPDECODE_RELEASE_STORE_FILE'])
+                          if (!store.isFile()) throw new GradleException('Permanent signing store missing')
+                          def signing = android.signingConfigs.findByName('production')
+                          if (signing == null) signing = android.signingConfigs.create('production')
+                          signing.storeFile = store
+                          signing.storePassword = required['SPDECODE_RELEASE_STORE_PASSWORD']
+                          signing.keyAlias = required['SPDECODE_RELEASE_KEY_ALIAS']
+                          signing.keyPassword = required['SPDECODE_RELEASE_KEY_PASSWORD']
+                          signing.enableV1Signing = true
+                          signing.enableV2Signing = true
+                          signing.enableV3Signing = true
+                          android.buildTypes.each { buildType -> buildType.signingConfig = signing }
+                      } as org.gradle.api.Action)
+                  }
+              }
+          }
+          GRADLE
       - name: Compile signed release with R8, lint and tests
         env:
           SPDECODE_RELEASE_STORE_PASSWORD: ${{ secrets.SPDECODE_SIGNING_STORE_PASSWORD }}
           SPDECODE_RELEASE_KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
           SPDECODE_RELEASE_KEY_PASSWORD: ${{ secrets.SPDECODE_SIGNING_KEY_PASSWORD }}
-        run: gradle -p android-admin :app:assembleRelease :app:lintRelease :app:assembleDebug :app:testDebugUnitTest :app:assembleDebugAndroidTest --console=plain
+        run: |
+          set -euo pipefail
+          gradle --init-script "$RUNNER_TEMP/admin-permanent-signing.init.gradle" -p android-admin :app:assembleRelease :app:lintRelease :app:assembleDebug :app:testDebugUnitTest :app:assembleDebugAndroidTest --console=plain
+      - name: Verify permanent signer and APK contents
+        run: |
+          set -euo pipefail
+          EXPECTED=$(cat "$RUNNER_TEMP/admin-signer-sha256")
+          for APK in \
+            android-admin/app/build/outputs/apk/release/app-release.apk \
+            android-admin/app/build/outputs/apk/debug/app-debug.apk \
+            android-admin/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk; do
+            test -s "$APK"
+            "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK" > "$RUNNER_TEMP/admin-certificate.txt"
+            grep -Fx 'Number of signers: 1' "$RUNNER_TEMP/admin-certificate.txt"
+            grep -Fx "Signer #1 certificate SHA-256 digest: $EXPECTED" "$RUNNER_TEMP/admin-certificate.txt"
+          done
+          mkdir -p android-admin/app/build/review
+          git rev-parse HEAD > android-admin/app/build/review/SOURCE_COMMIT.txt
+          APK=android-admin/app/build/outputs/apk/release/app-release.apk
+          "$ANDROID_HOME/build-tools/35.0.0/zipalign" -c -P 16 -v 4 "$APK"
+          python3 scripts/android_16kb_elf_audit.py "$APK" --library libspdecode_admin.so
+          test -s android-admin/app/build/outputs/mapping/release/mapping.txt
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump permissions "$APK" | grep -F android.permission.INTERNET
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | grep -F "package: name='com.ghostdeveloper.spdecode.admin'"
+          sha256sum "$APK" > android-admin/app/build/review/SHA256SUMS.txt
       - name: Run reference flows on accelerated Android
+        env:
+          SPDECODE_RELEASE_STORE_PASSWORD: ${{ secrets.SPDECODE_SIGNING_STORE_PASSWORD }}
+          SPDECODE_RELEASE_KEY_ALIAS: ${{ secrets.SPDECODE_SIGNING_KEY_ALIAS }}
+          SPDECODE_RELEASE_KEY_PASSWORD: ${{ secrets.SPDECODE_SIGNING_KEY_PASSWORD }}
         timeout-minutes: 15
         run: |
           set -euo pipefail
@@ -125,38 +204,35 @@ jobs:
           adb shell settings put global window_animation_scale 0
           adb shell settings put global transition_animation_scale 0
           adb shell settings put global animator_duration_scale 0
-          gradle -p android-admin :app:connectedDebugAndroidTest --console=plain &
+          gradle --init-script "$RUNNER_TEMP/admin-permanent-signing.init.gradle" -p android-admin :app:connectedDebugAndroidTest --console=plain &
           test_pid=$!
           wait "$test_pid" && test_result=0 || test_result=$?
           mkdir -p android-admin/app/build/review
           exit "$test_result"
-      - name: Verify permanent signer and APK contents
-        run: |
-          set -euo pipefail
-          APK=android-admin/app/build/outputs/apk/release/app-release.apk
-          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK" > "$RUNNER_TEMP/admin-certificate.txt"
-          EXPECTED=$(cat "$RUNNER_TEMP/admin-signer-sha256")
-          grep -F "Signer #1 certificate SHA-256 digest: $EXPECTED" "$RUNNER_TEMP/admin-certificate.txt"
-          "$ANDROID_HOME/build-tools/35.0.0/zipalign" -c -P 16 -v 4 "$APK"
-          python3 scripts/android_16kb_elf_audit.py "$APK" --library libspdecode_admin.so
-          test -s android-admin/app/build/outputs/mapping/release/mapping.txt
-          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump permissions "$APK" | grep -F android.permission.INTERNET
-          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | grep -F "package: name='com.ghostdeveloper.spdecode.admin'"
-          sha256sum "$APK" > android-admin/app/build/review/SHA256SUMS.txt
       - name: Erase signing material
         if: always()
-        run: rm -f "$RUNNER_TEMP/spdecode-admin-release.p12"
-      - uses: actions/upload-artifact@v4
-        if: always()
+        run: rm -f "$RUNNER_TEMP/spdecode-admin-release.p12" "$RUNNER_TEMP/admin-permanent-signing.init.gradle"
+      - name: Upload verified signed release
+        uses: actions/upload-artifact@v4
+        if: success()
         with:
           name: SP-DECODE-Admin-1.0.0-Signed-R8
           path: |
             android-admin/app/build/outputs/apk/release/*.apk
             android-admin/app/build/outputs/mapping/release/mapping.txt
+            android-admin/app/build/review/SHA256SUMS.txt
+            android-admin/app/build/review/SOURCE_COMMIT.txt
+          if-no-files-found: error
+      - name: Upload test diagnostics
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: SP-DECODE-Admin-Diagnostics-${{ github.run_number }}
+          path: |
             android-admin/app/build/reports/lint-results-release.html
             android-admin/app/build/reports/tests/testDebugUnitTest/
             android-admin/app/build/reports/androidTests/
             android-admin/app/build/outputs/androidTest-results/
             android-admin/app/build/outputs/connected_android_test_additional_output/
             android-admin/app/build/review/
-          if-no-files-found: error
+          if-no-files-found: warn
