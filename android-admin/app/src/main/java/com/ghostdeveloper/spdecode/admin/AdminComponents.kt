@@ -15,6 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.AsyncImage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -36,7 +41,7 @@ internal fun Tile(
     content: @Composable ColumnScope.() -> Unit,
 ) {
   Column(
-      modifier.clip(Rounded).background(color).padding(16.dp),
+      modifier.clip(Rounded).background(color).border(1.dp, Border.copy(alpha = .75f), Rounded).padding(15.dp),
       verticalArrangement = Arrangement.spacedBy(9.dp),
       content = content,
   )
@@ -69,7 +74,7 @@ internal fun ScreenList(content: androidx.compose.foundation.lazy.LazyListScope.
   Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
     LazyColumn(
         Modifier.widthIn(max = 840.dp).fillMaxSize().testTag("screen-list"),
-        contentPadding = PaddingValues(20.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 18.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         content = content,
     )
@@ -353,5 +358,50 @@ internal fun rememberCopyToClipboard(): (String) -> Unit {
           .getSystemService(android.content.ClipboardManager::class.java)
           .setPrimaryClip(android.content.ClipData.newPlainText("SP-DECODE", text))
     }
+  }
+}
+
+internal fun displayName(row: JSONObject): String =
+    row.optString("name").takeUnless { it.isBlank() || it == "null" }
+        ?: row.optString("username").takeUnless { it.isBlank() || it == "null" }
+        ?: "Sin nombre"
+
+internal fun userHandle(row: JSONObject): String? =
+    row.optString("username").takeUnless { it.isBlank() || it == "null" }?.let { "@" + it.trimStart('@') }
+
+@Composable
+internal fun SectionHeading(title: String, subtitle: String? = null) {
+  Column(Modifier.fillMaxWidth().padding(bottom = 8.dp), verticalArrangement = Arrangement.spacedBy(3.dp)) {
+    Text(title, color = Ink, fontSize = 19.sp, fontWeight = FontWeight.SemiBold)
+    if (subtitle != null) Small(subtitle)
+  }
+}
+
+@Composable
+internal fun StatusPill(value: String, tint: Color = Mint) {
+  Text(value, color = tint, fontSize = 11.sp, fontWeight = FontWeight.Medium,
+      modifier = Modifier.background(tint.copy(alpha = .10f), CircleShape).padding(horizontal = 9.dp, vertical = 5.dp))
+}
+
+@Composable
+internal fun ProfileAvatar(row: JSONObject, size: Int = 48) {
+  val raw = row.optString("avatar").takeUnless { it.isBlank() || it == "null" } ?: row.optString("image")
+  val model by produceState<Any?>(null, raw) {
+    value = withContext(Dispatchers.Default) {
+      if (raw.length <= 2_800_000 && raw.matches(Regex("^data:image/(png|jpeg|webp);base64,[A-Za-z0-9+/=\\r\\n]+$"))) {
+        runCatching { android.util.Base64.decode(raw.substringAfter(','), android.util.Base64.DEFAULT) }.getOrNull()
+      } else if (raw.length <= 4096) {
+        val uri = runCatching { java.net.URI(raw) }.getOrNull()
+        if (uri?.scheme == "https" && uri.userInfo == null &&
+            uri.host in setOf("lh3.googleusercontent.com", "lh4.googleusercontent.com", "lh5.googleusercontent.com", "lh6.googleusercontent.com"))
+          raw else null
+      } else null
+    }
+  }
+  val initials = displayName(row).trim().split(Regex("\\s+")).take(2).mapNotNull { it.firstOrNull()?.uppercase() }.joinToString("")
+  Box(Modifier.size(size.dp).clip(CircleShape).background(GreenPanel).border(1.dp, Border, CircleShape),
+      contentAlignment = Alignment.Center) {
+    Text(initials, color = Mint, fontWeight = FontWeight.SemiBold, fontSize = (size / 3).sp)
+    if (model != null) AsyncImage(model = model, contentDescription = null, modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
   }
 }

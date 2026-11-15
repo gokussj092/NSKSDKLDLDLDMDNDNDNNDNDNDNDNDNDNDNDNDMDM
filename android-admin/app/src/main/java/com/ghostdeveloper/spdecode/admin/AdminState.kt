@@ -5,6 +5,7 @@ import androidx.compose.runtime.*
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.CancellationException
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -35,6 +36,7 @@ internal class AdminState(app: Application) : AndroidViewModel(app) {
   var search by mutableStateOf("")
   var oneTimeSecret by mutableStateOf<JSONObject?>(null)
   private var generation = 0
+  private var taskRevision = 0
   val owner
     get() = principal.optString("role") == "owner"
 
@@ -93,6 +95,7 @@ internal class AdminState(app: Application) : AndroidViewModel(app) {
 
   fun task(action: suspend () -> Unit) {
     if (busy) return
+    taskRevision++
     busy = true
     error = null
     viewModelScope.launch {
@@ -154,6 +157,33 @@ internal class AdminState(app: Application) : AndroidViewModel(app) {
 
   fun refresh() = task { loadCurrent() }
 
+  // Foreground polling is deliberately separate from mutations and never disables the composer.
+  suspend fun refreshSupport() {
+    val current = page
+    if (busy || !entered || current !in listOf(Page.Support, Page.Chat)) return
+    val version = generation
+    val revision = taskRevision
+    try {
+      val result = api.call("support")
+      if (entered && !busy && generation == version && taskRevision == revision && page == current &&
+          data.toString() != result.toString()) data = result
+    } catch (e: CancellationException) {
+      throw e
+    } catch (e: Exception) {
+      if ((e as? AdminApi.Failure)?.http == 401 && entered && !busy &&
+          generation == version && taskRevision == revision) {
+        api.clear()
+        entered = false
+        data = JSONObject()
+        detail = null
+        oneTimeSecret = null
+        error = errorText("UNAUTHORIZED")
+        generation++
+      }
+      // Transient polling failures leave the currently visible conversation intact.
+    }
+  }
+
   fun next(delta: Int) {
     if (busy) return
     pageIndex = (pageIndex + delta).coerceAtLeast(0)
@@ -167,7 +197,7 @@ internal class AdminState(app: Application) : AndroidViewModel(app) {
         when (current) {
           Page.Dashboard ->
               if (owner) api.call("session") else JSONObject().put("principal", principal)
-          Page.Users -> api.call("users", search.take(80), pageIndex)
+          Page.Users -> api.call("users", search.trim().removePrefix("@").take(80), pageIndex)
           Page.UserDetail -> api.call("user_detail", selectedId)
           Page.Roles -> api.call("staff")
           Page.Support,

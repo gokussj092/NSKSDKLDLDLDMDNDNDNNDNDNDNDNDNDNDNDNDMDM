@@ -135,6 +135,8 @@ internal enum class Page(val title: String, val icon: ImageVector) {
   Maintenance("Mantenimiento", Icons.Outlined.Build),
   Sessions("Mis sesiones", Icons.Outlined.Devices),
   Settings("Ajustes", Icons.Outlined.Settings),
+  AppearanceSettings("Apariencia", Icons.Outlined.Palette),
+  AboutSettings("Acerca de", Icons.Outlined.Info),
   UserDetail("Detalles de usuario", Icons.Outlined.Person),
   UserEdit("Editar perfil", Icons.Outlined.Edit),
   UserPurchases("Compras del usuario", Icons.Outlined.ShoppingBag),

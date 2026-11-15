@@ -98,14 +98,16 @@ internal fun AdminApplication(state: AdminState) {
         lifecycle.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
           while (true) {
             delay(10000)
-            if (!state.busy) state.refresh()
+            state.refreshSupport()
           }
         }
   }
   BackHandler(state.entered && state.page != Page.Dashboard) {
     state.navigate(
         if (state.page == Page.Chat) Page.Support
-        else if (state.page == Page.UserDetail) Page.Users else Page.Dashboard)
+        else if (state.page == Page.UserDetail) Page.Users
+        else if (state.page in listOf(Page.AppearanceSettings, Page.AboutSettings)) Page.Settings
+        else Page.Dashboard)
   }
   fun open(title: String, fields: List<FormField>, action: suspend (Map<String, String>) -> Unit) {
     form = RemoteForm(title, fields, action)
@@ -177,10 +179,11 @@ internal fun AdminApplication(state: AdminState) {
                         onClick = {
                           if (state.page == Page.Chat) state.navigate(Page.Support)
                           else if (state.page == Page.UserDetail) state.navigate(Page.Users)
+                          else if (state.page in listOf(Page.AppearanceSettings, Page.AboutSettings)) state.navigate(Page.Settings)
                           else scope.launch { drawer.open() }
                         }) {
                           Icon(
-                              if (state.page in listOf(Page.Chat, Page.UserDetail))
+                              if (state.page in listOf(Page.Chat, Page.UserDetail, Page.AppearanceSettings, Page.AboutSettings))
                                   Icons.AutoMirrored.Outlined.ArrowBack
                               else Icons.Outlined.Menu,
                               "Menú")
@@ -234,7 +237,7 @@ internal fun AdminApplication(state: AdminState) {
                     }
                     when (state.page) {
                       Page.Chat -> ChatScreen(state)
-                      Page.Settings -> SettingsScreen(state)
+                      Page.Settings, Page.AppearanceSettings, Page.AboutSettings -> SettingsScreen(state)
                       else ->
                           ScreenList {
                             if (state.data.has("live"))
@@ -247,62 +250,90 @@ internal fun AdminApplication(state: AdminState) {
                             when (state.page) {
                               Page.Dashboard -> {
                                 item {
-                                  Text(
-                                      "Hola, ${state.principal.optString("name")}",
-                                      color = Ink,
-                                      fontSize = 26.sp,
-                                      fontWeight = FontWeight.Bold)
-                                  Small("${state.principal.optString("role")} · panel.spdecode.xyz")
-                                }
-                                if (state.owner) {
-                                  item {
-                                    Tile(Modifier.fillMaxWidth(), GreenPanel) {
-                                      Text(
-                                          if (state.data.optBoolean("maintenance"))
-                                              "Mantenimiento activado"
-                                          else "Panel conectado",
-                                          color = Mint,
-                                          fontWeight = FontWeight.Bold)
-                                      Fields(state.data.optJSONObject("services") ?: JSONObject())
-                                      Fields(state.data.optJSONObject("metrics") ?: JSONObject())
-                                    }
+                                  Tile(Modifier.fillMaxWidth(), GreenPanel) {
+                                    Small("SP-DECODE · ADMIN", color = Mint)
+                                    Text(state.principal.optString("name").ifBlank { "Administrador" },
+                                        color = Ink, fontSize = 29.sp, fontWeight = FontWeight.Bold)
+                                    Small(state.principal.optString("role"))
+                                    if (state.data.has("maintenance")) StatusPill(
+                                        if (state.data.optBoolean("maintenance")) "En mantenimiento" else "Panel conectado",
+                                        if (state.data.optBoolean("maintenance")) Amber else Mint)
                                   }
                                 }
-                                items(
-                                    menuGroups
-                                        .flatMap { it.second }
-                                        .filter { it != Page.Dashboard && state.allowed(it) }) { p
-                                      ->
-                                      ActionRow(p.title, p.icon) { state.navigate(p) }
-                                    }
+                                state.data.optJSONObject("metrics")?.let { metrics ->
+                                  item {
+                                    SectionHeading("Actividad del servicio", "Métricas reportadas por el servidor")
+                                    Tile(Modifier.fillMaxWidth()) { Fields(metrics) }
+                                  }
+                                }
+                                state.data.optJSONObject("services")?.let { services ->
+                                  item {
+                                    SectionHeading("Estado de la plataforma")
+                                    Tile(Modifier.fillMaxWidth()) { Fields(services) }
+                                  }
+                                }
+                                if (listOf(Page.Users, Page.Support, Page.Server, Page.Gifts).any { state.allowed(it) }) item {
+                                  SectionHeading("Acciones rápidas")
+                                  Tile(Modifier.fillMaxWidth()) {
+                                    if (state.allowed(Page.Users)) ActionRow("Buscar usuario", Icons.Outlined.Search) { state.navigate(Page.Users) }
+                                    if (state.allowed(Page.Support)) ActionRow("Revisar soporte", Icons.Outlined.Forum) { state.navigate(Page.Support) }
+                                    if (state.allowed(Page.Server)) ActionRow("Diagnóstico del servidor", Icons.Outlined.Dns) { state.navigate(Page.Server) }
+                                    if (state.allowed(Page.Gifts)) ActionRow("Gestionar gift codes", Icons.Outlined.CardGiftcard) { state.navigate(Page.Gifts) }
+                                  }
+                                }
                               }
                               Page.Users -> {
                                 item {
-                                  SearchField(
-                                      state.search,
-                                      { state.search = it.take(80) },
-                                      "Buscar usuario o correo")
-                                  TextButton(
-                                      enabled = !state.busy,
-                                      onClick = {
-                                        state.pageIndex = 0
-                                        state.refresh()
-                                      }) {
-                                        Text("Buscar en el servidor")
-                                      }
-                                  Small("${state.data.optInt("count")} usuarios registrados")
+                                  SectionHeading("Directorio de usuarios", "Busca por nombre, @usuario, correo o ID")
+                                  SearchField(state.search, { state.search = it.take(80) }, "Buscar usuario")
+                                  TextButton(enabled = !state.busy, onClick = {
+                                    state.pageIndex = 0
+                                    state.refresh()
+                                  }) { Text("Buscar en el servidor") }
+                                  if (state.data.has("count")) Small("${state.data.optInt("count")} usuarios registrados")
                                 }
-                                items(state.data.array("users"), key = { it.getString("id") }) { row
-                                  ->
-                                  RecordCard(
-                                      row.optString("username").ifBlank { row.optString("name") },
-                                      row.optString("email")) {
-                                        state.navigate(Page.UserDetail, row.getString("id"))
-                                      }
+                                items(state.data.array("users"), key = { it.getString("id") }) { row ->
+                                  UserCard(row) { state.navigate(Page.UserDetail, row.getString("id")) }
                                 }
+                                if (!state.busy && state.data.has("users") && state.data.array("users").isEmpty())
+                                    item { EmptyState("Sin resultados", "Prueba otra búsqueda.") }
                               }
                               Page.UserDetail -> {
-                                item { Fields(state.data) }
+                                val user = state.data.optJSONObject("user")
+                                if (user != null) {
+                                  item {
+                                    Tile(Modifier.fillMaxWidth(), GreenPanel) {
+                                      Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                                        ProfileAvatar(user, 68)
+                                        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                                          Text(displayName(user), color = Ink, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                                          userHandle(user)?.let { Small(it, color = Mint) }
+                                          Small(user.optString("email"))
+                                          if (user.optBoolean("email_verified")) StatusPill("Correo verificado")
+                                        }
+                                      }
+                                    }
+                                  }
+                                  item {
+                                    SectionHeading("Perfil")
+                                    Tile(Modifier.fillMaxWidth()) { Fields(user, skip = setOf("name", "username", "email", "email_verified")) }
+                                  }
+                                  listOf("identities" to "Métodos de acceso", "orders" to "Pedidos",
+                                      "entitlements" to "Licencias y productos", "redemptions" to "Canjes de gift codes",
+                                      "tickets" to "Soporte", "sessions" to "Seguridad y sesiones",
+                                      "creditMovements" to "Movimientos de créditos").forEach { (key, label) ->
+                                    if (state.data.has(key)) item {
+                                      val values = state.data.optJSONArray(key)
+                                      SectionHeading(label, values?.let { "${it.length()} registros" })
+                                      Tile(Modifier.fillMaxWidth()) {
+                                        if (values != null && values.length() == 0) Small("Sin registros")
+                                        else Fields(JSONObject().put(key, state.data.opt(key)))
+                                      }
+                                    }
+                                  }
+                                } else if (!state.busy && state.error == null) item {
+                                  EmptyState("Perfil no disponible", "Actualiza para consultar los datos del servidor.")
+                                }
                               }
                               Page.Roles -> {
                                 if (state.owner)
@@ -342,19 +373,11 @@ internal fun AdminApplication(state: AdminState) {
                               }
                               Page.Support -> {
                                 val threads = state.data.array("threads")
-                                if (threads.isEmpty())
-                                    item {
-                                      EmptyState(
-                                          "Sin conversaciones",
-                                          "No hay tickets disponibles para tu cargo.",
-                                          Icons.Outlined.Forum)
-                                    }
+                                item { SectionHeading("Bandeja de soporte", "Conversaciones y estado del servidor") }
+                                if (threads.isEmpty() && !state.busy)
+                                    item { EmptyState("Sin conversaciones", "No hay tickets disponibles para tu cargo.", Icons.Outlined.Forum) }
                                 items(threads, key = { it.getString("id") }) { row ->
-                                  RecordCard(
-                                      row.optString("username").ifBlank { row.optString("name") },
-                                      "${row.optString("subject")} · ${translated(row.optString("status"))}") {
-                                        state.navigate(Page.Chat, row.getString("id"))
-                                      }
+                                  TicketCard(row) { state.navigate(Page.Chat, row.getString("id")) }
                                 }
                               }
                               Page.Products -> {
@@ -873,8 +896,62 @@ private fun LoginScreen(state: AdminState) {
 @Composable
 private fun RecordCard(title: String, subtitle: String, onClick: () -> Unit) {
   Tile(Modifier.fillMaxWidth().clickable(onClick = onClick)) {
-    Text(title.ifBlank { "Sin nombre" }, color = Ink, fontWeight = FontWeight.SemiBold)
-    Small(subtitle)
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+      Avatar(Icons.Outlined.Description, Mint, 40)
+      Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
+        Text(title.ifBlank { "Sin nombre" }, color = Ink, fontWeight = FontWeight.SemiBold)
+        if (subtitle.isNotBlank()) Small(subtitle)
+      }
+      Icon(Icons.Outlined.ChevronRight, null, tint = Muted)
+    }
+  }
+}
+
+@Composable
+private fun UserCard(row: JSONObject, onClick: () -> Unit) {
+  Tile(Modifier.fillMaxWidth().clickable(onClick = onClick)) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+      ProfileAvatar(row, 52)
+      Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
+        Text(displayName(row), color = Ink, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
+        userHandle(row)?.let { Small(it, color = Mint) }
+        Small(row.optString("email"))
+      }
+      Icon(Icons.Outlined.ChevronRight, null, tint = Muted)
+    }
+    Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(7.dp)) {
+      if (row.has("email_verified")) StatusPill(if (row.optBoolean("email_verified")) "Verificado" else "No verificado", if (row.optBoolean("email_verified")) Mint else Muted)
+      if (row.optString("providers").contains("google", ignoreCase = true)) StatusPill("Google", Blue)
+      if (row.optBoolean("password_enabled")) StatusPill("Contraseña", Muted)
+      if (row.optBoolean("ad_free")) StatusPill("Sin anuncios")
+      if (row.optInt("credits") > 0) StatusPill("${row.optInt("credits")} créditos", Purple)
+    }
+    if (row.has("orders_count") && row.has("open_tickets")) Small(
+        "${row.optInt("orders_count")} pedidos · ${row.optInt("open_tickets")} tickets abiertos")
+  }
+}
+
+@Composable
+private fun TicketCard(row: JSONObject, onClick: () -> Unit) {
+  val status = row.optString("status")
+  val last = row.array("messages").lastOrNull()
+  Tile(Modifier.fillMaxWidth().clickable(onClick = onClick)) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+      ProfileAvatar(row, 48)
+      Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
+        Text(displayName(row), color = Ink, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
+        userHandle(row)?.let { Small(it, color = Mint) }
+        Text(row.optString("subject"), color = Ink, fontSize = 13.sp, maxLines = 1)
+      }
+      if (status.isNotBlank()) StatusPill(translated(status), if (status == "closed") Muted else Mint)
+    }
+    last?.optString("text")?.takeIf { it.isNotBlank() }?.let {
+      Text(it, color = Muted, maxLines = 2, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis, fontSize = 13.sp)
+    }
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+      Small(row.optString("assigned_name").takeUnless { it == "null" }.orEmpty().ifBlank { "Sin asignar" })
+      Small(row.optString("last_message_at").take(16).replace('T', ' '))
+    }
   }
 }
 
@@ -1108,29 +1185,61 @@ private fun SecretDialog(value: JSONObject, dismiss: () -> Unit) {
 @Composable
 private fun SettingsScreen(state: AdminState) {
   ScreenList {
-    item { Text("Apariencia", color = Ink, fontSize = 24.sp, fontWeight = FontWeight.Bold) }
-    items(Appearance.entries) { value ->
-      Row(
-          Modifier.fillMaxWidth().clickable { state.theme(value) },
-          verticalAlignment = Alignment.CenterVertically) {
-            RadioButton(state.appearance == value, { state.theme(value) })
-            Text(
-                when (value) {
+    when (state.page) {
+      Page.AppearanceSettings -> {
+        item { SectionHeading("Apariencia", "Los cambios se guardan en este dispositivo") }
+        items(Appearance.entries) { value ->
+          Tile(Modifier.fillMaxWidth().clickable { state.theme(value) }) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+              Avatar(Icons.Outlined.Palette, if (state.appearance == value) Mint else Muted, 44)
+              Column(Modifier.weight(1f)) {
+                Text(when(value) {
                   Appearance.Amoled -> "AMOLED"
                   Appearance.Dark -> "Oscuro"
                   Appearance.Light -> "Claro"
-                },
-                color = Ink)
+                }, color = Ink, fontWeight = FontWeight.SemiBold)
+                Small(when(value) {
+                  Appearance.Amoled -> "Negro profundo"
+                  Appearance.Dark -> "Contraste suave"
+                  Appearance.Light -> "Superficies claras"
+                })
+              }
+              RadioButton(state.appearance == value, { state.theme(value) })
+            }
           }
-    }
-    item {
-      Small("SP-DECODE Admin ${BuildConfig.VERSION_NAME}")
-      Small("Ghost Nexora Studio")
-      Small("panel.spdecode.xyz")
-    }
-    item {
-      TextButton(enabled = !state.busy, onClick = { state.logout() }) {
-        Text("Cerrar sesión", color = Red)
+        }
+      }
+      Page.AboutSettings -> item {
+        Tile(Modifier.fillMaxWidth(), GreenPanel) {
+          Avatar(Icons.Outlined.VerifiedUser, Mint, 58)
+          Text("SP-DECODE Admin", color = Ink, fontSize = 23.sp, fontWeight = FontWeight.Bold)
+          Small("Versión ${BuildConfig.VERSION_NAME}")
+          Small("Ghost Nexora Studio")
+          Small("panel.spdecode.xyz")
+        }
+      }
+      else -> {
+        item {
+          Tile(Modifier.fillMaxWidth(), GreenPanel) {
+            Text(state.principal.optString("name"), color = Ink, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            Small(state.principal.optString("role"))
+          }
+        }
+        item {
+          Tile(Modifier.fillMaxWidth()) {
+            ActionRow("Apariencia", Icons.Outlined.Palette, state.appearance.name) { state.navigate(Page.AppearanceSettings) }
+            ActionRow("Acerca de", Icons.Outlined.Info, BuildConfig.VERSION_NAME) { state.navigate(Page.AboutSettings) }
+            TextButton(enabled = !state.busy, onClick = { state.logout() }) { Text("Cerrar sesión", color = Red) }
+          }
+        }
+        item {
+          SectionHeading("Cuenta y seguridad")
+          Tile(Modifier.fillMaxWidth()) {
+            ActionRow("Seguridad", Icons.Outlined.Security) { state.navigate(Page.Security) }
+            ActionRow("Mis sesiones", Icons.Outlined.Devices) { state.navigate(Page.Sessions) }
+            if (state.allowed(Page.Notices)) ActionRow("Notificaciones del sistema", Icons.Outlined.Notifications) { state.navigate(Page.Notices) }
+          }
+        }
       }
     }
   }
@@ -1151,8 +1260,12 @@ private fun ChatScreen(state: AdminState) {
   var draft by rememberSaveable(state.selectedId) { mutableStateOf("") }
   var assignment by remember { mutableStateOf(false) }
   var assignedId by remember { mutableStateOf(thread.optString("assigned_staff_id", "")) }
-  LaunchedEffect(messages.size) {
-    if (messages.isNotEmpty()) list.animateScrollToItem(messages.lastIndex)
+  var previousCount by remember(state.selectedId) { mutableIntStateOf(0) }
+  LaunchedEffect(state.selectedId, messages.size) {
+    val lastVisible = list.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
+    val wasNearEnd = previousCount == 0 || lastVisible >= previousCount - 2
+    if (messages.isNotEmpty() && wasNearEnd) list.scrollToItem(messages.lastIndex)
+    previousCount = messages.size
   }
   Column(Modifier.fillMaxSize()) {
     Text(
@@ -1161,6 +1274,11 @@ private fun ChatScreen(state: AdminState) {
         fontWeight = FontWeight.Bold,
         modifier = Modifier.padding(horizontal = 20.dp))
     Small(thread.optString("subject"), Modifier.padding(horizontal = 20.dp))
+    Row(Modifier.padding(horizontal = 20.dp, vertical = 4.dp), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+      ProfileAvatar(thread, 32)
+      userHandle(thread)?.let { Small(it, color = Mint) }
+      StatusPill(translated(thread.optString("status")), if (thread.optString("status") == "closed") Muted else Mint)
+    }
     Row {
       if (state.can("support.write"))
           TextButton(
@@ -1210,8 +1328,7 @@ private fun ChatScreen(state: AdminState) {
                   placeholder = { Text("Mensaje") },
                   modifier = Modifier.weight(1f),
                   shape = Rounded,
-                  maxLines = 4,
-                  enabled = !state.busy)
+                  maxLines = 4)
               FilledIconButton(
                   enabled = !state.busy && draft.isNotBlank(),
                   onClick = {
@@ -1223,7 +1340,7 @@ private fun ChatScreen(state: AdminState) {
                               .put("threadId", state.selectedId)
                               .put("action", "reply")
                               .put("message", sent))
-                      draft = ""
+                      if (draft == sent) draft = ""
                     }
                   }) {
                     Icon(Icons.AutoMirrored.Outlined.Send, "Enviar")
