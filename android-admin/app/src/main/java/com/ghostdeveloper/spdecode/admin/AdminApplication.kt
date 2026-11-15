@@ -84,6 +84,8 @@ internal fun AdminApplication(state: AdminState) {
   var confirm by remember { mutableStateOf<Pair<String, suspend () -> Unit>?>(null) }
   var directoryFilter by rememberSaveable { mutableStateOf("Todos") }
   var ticketFilter by rememberSaveable { mutableStateOf("Todos") }
+  var moduleQuery by rememberSaveable(state.page) { mutableStateOf("") }
+  var moduleFilter by rememberSaveable(state.page) { mutableStateOf("Todos") }
   val drawer = rememberDrawerState(DrawerValue.Closed)
   val scope = rememberCoroutineScope()
   val lifecycle = LocalLifecycleOwner.current
@@ -94,6 +96,12 @@ internal fun AdminApplication(state: AdminState) {
       snack.showSnackbar(text)
       state.message = null
     }
+  }
+  LaunchedEffect(state.entered, state.page, state.dashboardRevision, lifecycle) {
+    if (state.entered && state.page == Page.Dashboard && state.dashboardRevision > 0)
+      lifecycle.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+        state.refreshDashboardOverview()
+      }
   }
   LaunchedEffect(state.entered, state.page, lifecycle) {
     if (state.entered && (state.page == Page.Support || state.page == Page.Chat))
@@ -262,6 +270,10 @@ internal fun AdminApplication(state: AdminState) {
                                       else "Entorno de pruebas de pagos configurado en el servidor",
                                       color = Amber)
                                 }
+                            if (state.page in searchableModules) item {
+                              SearchField(moduleQuery, { moduleQuery = it }, "Buscar en los registros cargados")
+                              if (state.data.has("count") && moduleQuery.isNotBlank()) Small("Búsqueda en la página actual")
+                            }
                             when (state.page) {
                               Page.Dashboard -> {
                                 item {
@@ -275,6 +287,7 @@ internal fun AdminApplication(state: AdminState) {
                                         if (state.data.optBoolean("maintenance")) Amber else Mint)
                                   }
                                 }
+                                item { DashboardOverview(state) }
                                 state.data.optJSONObject("metrics")?.let { metrics ->
                                   item {
                                     SectionHeading("Actividad del servicio", "Métricas reportadas por el servidor")
@@ -293,13 +306,14 @@ internal fun AdminApplication(state: AdminState) {
                                       }
                                       Spacer(Modifier.height(8.dp))
                                     }
-                                    Tile(Modifier.fillMaxWidth()) { Fields(metrics, skip = counters.map { it.first }.toSet()) }
+                                    val extraKeys = metrics.keys().asSequence().filter { it !in counters.map { entry -> entry.first } }.toList()
+                                    if (extraKeys.isNotEmpty()) Tile(Modifier.fillMaxWidth()) { Fields(metrics, skip = counters.map { it.first }.toSet()) }
                                   }
                                 }
                                 state.data.optJSONObject("services")?.let { services ->
                                   item {
                                     SectionHeading("Estado de la plataforma")
-                                    Tile(Modifier.fillMaxWidth()) { Fields(services) }
+                                    ServiceIndicators(services)
                                   }
                                 }
                                 if (listOf(Page.Users, Page.Support, Page.Server, Page.Gifts).any { state.allowed(it) }) item {
@@ -356,6 +370,9 @@ internal fun AdminApplication(state: AdminState) {
                                     }
                                   }
                                   item {
+                                    ProfileSummary(state.data)
+                                  }
+                                  item {
                                     SectionHeading("Perfil")
                                     Tile(Modifier.fillMaxWidth()) { Fields(user, skip = setOf("name", "username", "email", "email_verified")) }
                                   }
@@ -368,7 +385,12 @@ internal fun AdminApplication(state: AdminState) {
                                       SectionHeading(label, values?.let { "${it.length()} registros" })
                                       Tile(Modifier.fillMaxWidth()) {
                                         if (values != null && values.length() == 0) Small("Sin registros")
-                                        else Fields(JSONObject().put(key, state.data.opt(key)))
+                                        else if (values != null) {
+                                          values.objects().forEachIndexed { index, record ->
+                                            if (index > 0) HorizontalDivider(color = Border)
+                                            ProfileRecord(key, record)
+                                          }
+                                        } else state.data.optJSONObject(key)?.let { Fields(it) }
                                       }
                                     }
                                   }
@@ -388,11 +410,9 @@ internal fun AdminApplication(state: AdminState) {
                                         }
                                       }
                                     }
-                                items(state.data.array("staff"), key = { it.getString("id") }) { row
+                                items(state.data.array("staff").filter { matchesRecord(it, moduleQuery) }, key = { it.getString("id") }) { row
                                   ->
-                                  RecordCard(
-                                      row.optString("name"),
-                                      "${row.optString("username")} · ${row.optString("role")}") {
+                                  StaffCard(row) {
                                         if (state.owner) staffForm(state, row, ::open)
                                         else state.detail = row
                                       }
@@ -404,9 +424,9 @@ internal fun AdminApplication(state: AdminState) {
                                       fontWeight = FontWeight.Bold)
                                 }
                                 items(
-                                    state.data.array("roleDefinitions"),
+                                    state.data.array("roleDefinitions").filter { matchesRecord(it, moduleQuery) },
                                     key = { it.getString("code") }) { row ->
-                                      RecordCard(row.optString("name"), row.optString("code")) {
+                                      RoleCard(row) {
                                         if (state.owner) roleForm(state, row, ::open)
                                         else state.detail = row
                                       }
@@ -414,6 +434,7 @@ internal fun AdminApplication(state: AdminState) {
                               }
                               Page.Support -> {
                                 val threads = state.data.array("threads").filter { row ->
+                                  if (!matchesRecord(row, moduleQuery)) return@filter false
                                   when (ticketFilter) {
                                     "Abiertos" -> row.optString("status") == "open"
                                     "Respondidos" -> row.optString("status") == "answered"
@@ -424,6 +445,8 @@ internal fun AdminApplication(state: AdminState) {
                                 }
                                 item {
                                   SectionHeading("Bandeja de soporte", "Conversaciones y estado del servidor")
+                                  SearchField(moduleQuery, { moduleQuery = it }, "Buscar ticket o usuario")
+                                  TicketSummary(state.data.array("threads"))
                                   FilterRow(listOf("Todos", "Abiertos", "Respondidos", "Cerrados", "Sin asignar"), ticketFilter) { ticketFilter = it }
                                 }
                                 if (threads.isEmpty() && !state.busy)
@@ -433,15 +456,9 @@ internal fun AdminApplication(state: AdminState) {
                                 }
                               }
                               Page.Products -> {
-                                items(state.data.array("products"), key = { it.getString("id") }) {
+                                items(state.data.array("products").filter { matchesRecord(it, moduleQuery) || productName(it.optString("id")).contains(moduleQuery, true) }, key = { it.getString("id") }) {
                                     row ->
-                                  val settings = row.optJSONObject("settings") ?: JSONObject()
-                                  RecordCard(
-                                      productName(row.getString("id")),
-                                      if (settings.optBoolean("enabled")) "Habilitado"
-                                      else "Deshabilitado") {
-                                        productForm(state, row, ::open)
-                                      }
+                                  ProductCard(productName(row.getString("id")), row) { productForm(state, row, ::open) }
                                 }
                               }
                               Page.Finance,
@@ -465,14 +482,24 @@ internal fun AdminApplication(state: AdminState) {
                                     }
                                   }
                                 }
-                                items(state.data.array("items"), key = { it.getString("id") }) { row
-                                  ->
-                                  RecordCard(
-                                      productName(row.optString("product_id")),
-                                      "${row.optString("name")} · ${translated(row.optString("status"))}") {
-                                        state.detail = row
-                                      }
+                                item {
+                                  FilterRow(listOf("Todos", "Pagados", "Pendientes", "Reembolsados", "Fallidos"), moduleFilter) { moduleFilter = it }
+                                  if (moduleFilter != "Todos") Small("Filtro aplicado a la página actual")
                                 }
+                                val orders = state.data.array("items").filter { row ->
+                                  matchesRecord(row, moduleQuery) && when(moduleFilter) {
+                                    "Pagados" -> row.optString("status") == "paid"
+                                    "Pendientes" -> row.optString("status") in listOf("pending", "created")
+                                    "Reembolsados" -> row.optString("status") == "refunded"
+                                    "Fallidos" -> row.optString("status") == "failed"
+                                    else -> true
+                                  }
+                                }
+                                items(orders, key = { it.getString("id") }) { row ->
+                                  OrderCard(productName(row.optString("product_id")), row) { state.detail = row }
+                                }
+                                if (orders.isEmpty() && !state.busy && state.data.has("items"))
+                                  item { EmptyState("Sin pedidos", "No hay pedidos que coincidan con la selección.") }
                               }
                               Page.Licenses,
                               Page.Api -> {
@@ -483,16 +510,12 @@ internal fun AdminApplication(state: AdminState) {
                                 }
                                 items(
                                     state.data.array("items").filter {
-                                      it.optString("product_id") == id
+                                      it.optString("product_id") == id && matchesRecord(it, moduleQuery)
                                     },
                                     key = { it.getString("id") }) { row ->
                                       Tile(Modifier.fillMaxWidth()) {
-                                        Text(
-                                            row.optString("name"),
-                                            color = Ink,
-                                            fontWeight = FontWeight.Bold)
-                                        Small(row.optString("email"))
-                                        Fields(row)
+                                        EntitlementSummary(row, id == "api-ip")
+                                        TextButton(onClick = { state.detail = row }) { Text("Ver detalles") }
                                         if (state.owner) {
                                           TextButton(
                                               enabled = !state.busy,
@@ -542,30 +565,22 @@ internal fun AdminApplication(state: AdminState) {
                                     }
                               }
                               Page.Credits -> {
-                                items(state.data.array("items"), key = { it.getString("id") }) { row
-                                  ->
-                                  RecordCard(
-                                      row.optString("name"),
-                                      "${row.optInt("delta")} · ${translated(row.optString("movement_kind"))}") {
-                                        state.detail = row
-                                      }
+                                val movements = state.data.array("items").filter { matchesRecord(it, moduleQuery) }
+                                items(movements, key = { it.getString("id") }) { row ->
+                                  CreditCard(row) { state.detail = row }
                                 }
+                                if (movements.isEmpty() && !state.busy && state.data.has("items"))
+                                  item { EmptyState("Sin movimientos", "No hay movimientos que coincidan con la búsqueda.") }
                               }
                               Page.Gifts -> {
                                 item {
-                                  TextButton(onClick = { giftForm(state, ::open) }) {
-                                    Icon(Icons.Outlined.Add, null)
-                                    Text("Generar código")
-                                  }
+                                  PrimaryAction("Generar gift code", !state.busy) { giftForm(state, ::open) }
                                 }
-                                items(state.data.array("codes"), key = { it.getString("id") }) { row
+                                items(state.data.array("codes").filter { matchesRecord(it, moduleQuery) }, key = { it.getString("id") }) { row
                                   ->
                                   Tile(Modifier.fillMaxWidth()) {
-                                    Text(
-                                        row.optString("title"),
-                                        color = Ink,
-                                        fontWeight = FontWeight.Bold)
-                                    Fields(row)
+                                    GiftSummary(row)
+                                    TextButton(onClick = { state.detail = row }) { Text("Ver detalles") }
                                     if (row.optBoolean("enabled"))
                                         TextButton(
                                             onClick = {
@@ -584,10 +599,8 @@ internal fun AdminApplication(state: AdminState) {
                                   Text(
                                       "Canjes recientes", color = Ink, fontWeight = FontWeight.Bold)
                                 }
-                                items(state.data.array("redemptions")) { row ->
-                                  RecordCard(row.optString("title"), row.optString("name")) {
-                                    state.detail = row
-                                  }
+                                items(state.data.array("redemptions").filter { matchesRecord(it, moduleQuery) }) { row ->
+                                  RedemptionCard(row) { state.detail = row }
                                 }
                               }
                               Page.Catalog -> {
@@ -618,13 +631,10 @@ internal fun AdminApplication(state: AdminState) {
                                                   .toList()
                                             }
                                             .orEmpty()
-                                items(providers) { row ->
+                                items(providers.filter { matchesRecord(it, moduleQuery) }) { row ->
                                   Tile(Modifier.fillMaxWidth()) {
-                                    Text(
-                                        row.optString("name").ifBlank { row.optString("id") },
-                                        color = Ink,
-                                        fontWeight = FontWeight.Bold)
-                                    Fields(row)
+                                    ProviderSummary(row)
+                                    TextButton(onClick = { state.detail = row }) { Text("Ver datos técnicos") }
                                     TextButton(
                                         onClick = {
                                           mutate(
@@ -650,7 +660,8 @@ internal fun AdminApplication(state: AdminState) {
                                       fontWeight = FontWeight.Bold)
                                   Small(
                                       "Las métricas del contenedor web no representan el consumo total del VPS.")
-                                  Fields(state.data)
+                                  ServiceOverview(state.data)
+                                  TextButton(onClick = { state.detail = state.data }) { Text("Diagnóstico detallado") }
                                 }
                               }
                               Page.Notices -> {
@@ -664,27 +675,17 @@ internal fun AdminApplication(state: AdminState) {
                                           "Push configurado"
                                       else "Push sin configurar; consulta periódica disponible")
                                 }
-                                items(state.data.array("notices"), key = { it.getString("id") }) {
+                                items(state.data.array("notices").filter { matchesRecord(it, moduleQuery) }, key = { it.getString("id") }) {
                                     row ->
                                   Tile(Modifier.fillMaxWidth()) {
-                                    Text(
-                                        row.optString("title"),
-                                        color = Ink,
-                                        fontWeight = FontWeight.Bold)
-                                    Text(row.optString("body"), color = Ink)
-                                    Fields(row, setOf("title", "body"))
+                                    NoticeSummary(row)
+                                    TextButton(onClick = { state.detail = row }) { Text("Ver detalles") }
                                   }
                                 }
                               }
                               Page.Logs -> {
-                                items(state.data.array("events")) { row ->
-                                  Tile(Modifier.fillMaxWidth()) {
-                                    Text(
-                                        row.optString("action"),
-                                        color = Ink,
-                                        fontWeight = FontWeight.Bold)
-                                    Fields(row)
-                                  }
+                                items(state.data.array("events").filter { matchesRecord(it, moduleQuery) }) { row ->
+                                  AuditCard(row) { state.detail = row }
                                 }
                               }
                               Page.Security -> {
@@ -736,18 +737,22 @@ internal fun AdminApplication(state: AdminState) {
                                           "La contraseña de propietario se administra desde el servidor.")
                                     }
                                 item {
-                                  TextButton(onClick = { state.navigate(Page.Sessions) }) {
-                                    Text("Mi sesión")
+                                  Tile(Modifier.fillMaxWidth()) {
+                                    ActionRow("Mi sesión", Icons.Outlined.Devices, "Acceso de este dispositivo") { state.navigate(Page.Sessions) }
                                   }
                                 }
                               }
                               Page.Sessions -> {
                                 item {
                                   Tile(Modifier.fillMaxWidth()) {
-                                    Text(
-                                        "Este dispositivo",
-                                        color = Ink,
-                                        fontWeight = FontWeight.Bold)
+                                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                                      Avatar(Icons.Outlined.Devices, Mint, 48)
+                                      Column(Modifier.weight(1f)) {
+                                        Text("Este dispositivo", color = Ink, fontWeight = FontWeight.Bold)
+                                        Small("Android · ${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}")
+                                      }
+                                      StatusPill("Sesión actual")
+                                    }
                                     Small(
                                         "${state.principal.optString("name")} · ${state.principal.optString("role")}")
                                     Small(
@@ -766,6 +771,7 @@ internal fun AdminApplication(state: AdminState) {
                                         "Mantenimiento del servicio",
                                         color = Ink,
                                         fontWeight = FontWeight.Bold)
+                                    Small("Estas acciones modifican la disponibilidad del servicio para los clientes.")
                                     TextButton(
                                         onClick = {
                                           mutate(
@@ -870,16 +876,7 @@ internal fun AdminApplication(state: AdminState) {
         })
   }
   state.detail?.let { row ->
-    AlertDialog(
-        onDismissRequest = { state.detail = null },
-        containerColor = Panel,
-        title = { Text("Detalles") },
-        text = {
-          Column(Modifier.heightIn(max = 480.dp).verticalScroll(rememberScrollState())) {
-            Fields(row)
-          }
-        },
-        confirmButton = { TextButton(onClick = { state.detail = null }) { Text("Cerrar") } })
+    DetailScreen(state.page, row, { state.detail = null }) { Fields(row) }
   }
   state.oneTimeSecret?.let { row -> SecretDialog(row) { state.oneTimeSecret = null } }
 }
@@ -1070,9 +1067,9 @@ private val hidden =
         "avatar",
         "avatar_data",
         "ciphertext",
-        "product_snapshot")
+        "product_snapshot", "token", "token_hash", "secret", "cookie", "session_token", "accessToken", "refreshToken", "code_digest")
 
-private fun translated(value: String): String =
+internal fun translated(value: String): String =
     when (value) {
       "paid" -> "Pagado"
       "pending",
@@ -1094,7 +1091,7 @@ private fun translated(value: String): String =
       else -> value
     }
 
-private fun productName(id: String) =
+internal fun productName(id: String) =
     when (id) {
       "offline-3" -> "Licencia Offline"
       "api-ip" -> "API comercial"
@@ -1136,8 +1133,11 @@ private fun Fields(value: JSONObject, skip: Set<String> = emptySet(), depth: Int
               }
             }
             else -> {
-              Small(labels[key] ?: key)
-              Text(translated(item.toString()), color = Ink, fontSize = 14.sp)
+              Row(Modifier.fillMaxWidth().padding(vertical = 5.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                Text(labels[key] ?: prettyKey(key), color = Muted, fontSize = 12.sp, modifier = Modifier.weight(.44f))
+                Text(translated(item.toString()), color = Ink, fontSize = 14.sp, modifier = Modifier.weight(.56f))
+              }
+              HorizontalDivider(color = Border.copy(alpha = .45f))
             }
           }
         }
@@ -1311,7 +1311,7 @@ private fun ChatScreen(state: AdminState) {
   }
   val messages = thread.array("messages")
   val list = rememberLazyListState()
-  var draft by rememberSaveable(state.selectedId) { mutableStateOf("") }
+  val draft = state.supportDraft(state.selectedId)
   var assignment by remember { mutableStateOf(false) }
   var assignedId by remember { mutableStateOf(thread.optString("assigned_staff_id", "")) }
   var previousCount by remember(state.selectedId) { mutableIntStateOf(0) }
@@ -1322,17 +1322,8 @@ private fun ChatScreen(state: AdminState) {
     previousCount = messages.size
   }
   Column(Modifier.fillMaxSize()) {
-    Text(
-        thread.optString("name"),
-        color = Ink,
-        fontWeight = FontWeight.Bold,
-        modifier = Modifier.padding(horizontal = 20.dp))
-    Small(thread.optString("subject"), Modifier.padding(horizontal = 20.dp))
-    Row(Modifier.padding(horizontal = 20.dp, vertical = 4.dp), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-      ProfileAvatar(thread, 32)
-      userHandle(thread)?.let { Small(it, color = Mint) }
-      StatusPill(translated(thread.optString("status")), if (thread.optString("status") == "closed") Muted else Mint)
-    }
+    ChatHeader(thread)
+    state.supportSyncError?.let { Small(it, Modifier.padding(horizontal = 16.dp), Amber) }
     Row {
       if (state.can("support.write"))
           TextButton(
@@ -1366,14 +1357,14 @@ private fun ChatScreen(state: AdminState) {
             Row(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = if (outgoing) Arrangement.End else Arrangement.Start) {
-                  Tile(Modifier.widthIn(max = 340.dp), if (outgoing) GreenPanel else Panel) {
-                    m.optJSONObject("agent")?.let { Small(it.optString("name"), color = Mint) }
-                    Text(m.optString("text"), color = Ink)
-                    Small(m.optString("at"))
-                  }
+                  MessageBubble(m, outgoing)
                 }
           }
         }
+    if (thread.optString("status") == "closed")
+      Small("Conversación cerrada. Reabre el ticket para responder.", Modifier.padding(16.dp))
+    else if (!state.can("support.write"))
+      Small("Tu cargo tiene acceso de solo lectura.", Modifier.padding(16.dp))
     if (state.can("support.write") && thread.optString("status") != "closed")
         Row(
             Modifier.fillMaxWidth().padding(10.dp),
@@ -1381,24 +1372,16 @@ private fun ChatScreen(state: AdminState) {
             horizontalArrangement = Arrangement.spacedBy(8.dp)) {
               OutlinedTextField(
                   draft,
-                  { draft = it.take(2000) },
+                  { state.updateSupportDraft(state.selectedId, it.take(2000)) },
                   placeholder = { Text("Mensaje") },
                   modifier = Modifier.weight(1f),
                   shape = Rounded,
                   maxLines = 4)
               FilledIconButton(
+                  modifier = Modifier.size(44.dp),
                   enabled = !state.busy && draft.isNotBlank(),
                   onClick = {
-                    val sent = draft
-                    state.task {
-                      state.mutate(
-                          "support_send",
-                          JSONObject()
-                              .put("threadId", state.selectedId)
-                              .put("action", "reply")
-                              .put("message", sent))
-                      if (draft == sent) draft = ""
-                    }
+                    state.sendSupportReply(state.selectedId, draft)
                   }) {
                     Icon(Icons.AutoMirrored.Outlined.Send, "Enviar")
                   }
@@ -1410,7 +1393,7 @@ private fun ChatScreen(state: AdminState) {
           containerColor = Panel,
           title = { Text("Asignar agente") },
           text = {
-            Column {
+            Column(Modifier.heightIn(max = 400.dp).verticalScroll(rememberScrollState())) {
               Row(
                   Modifier.fillMaxWidth().clickable { assignedId = "" },
                   verticalAlignment = Alignment.CenterVertically) {
@@ -1443,7 +1426,7 @@ private fun ChatScreen(state: AdminState) {
                         JSONObject()
                             .put("action", "assign")
                             .put("threadId", state.selectedId)
-                            .put("assignedId", assignedId.ifBlank { null }))
+                            .put("assignedId", if (assignedId.isBlank()) JSONObject.NULL else assignedId))
                     assignment = false
                   }
                 }) {

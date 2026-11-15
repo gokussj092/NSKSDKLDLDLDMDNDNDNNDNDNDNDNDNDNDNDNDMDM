@@ -37,6 +37,32 @@ internal class AdminState(app: Application) : AndroidViewModel(app) {
   var oneTimeSecret by mutableStateOf<JSONObject?>(null)
   private var generation = 0
   private var taskRevision = 0
+  var dashboardRevision by mutableIntStateOf(0)
+    private set
+  var dashboardOverview by mutableStateOf(JSONObject())
+    private set
+  var supportSyncError by mutableStateOf<String?>(null)
+    private set
+  private val supportDrafts = mutableStateMapOf<String, String>()
+
+  fun supportDraft(id: String): String = supportDrafts[id].orEmpty()
+  fun updateSupportDraft(id: String, value: String) {
+    if (value.isBlank()) supportDrafts.remove(id) else supportDrafts[id] = value
+  }
+
+  fun sendSupportReply(id: String, draft: String) {
+    if (draft.isBlank() || !can("support.write")) return
+    task {
+      mutate("support_send", JSONObject().put("threadId", id).put("action", "reply").put("message", draft))
+      if (supportDrafts[id] == draft) supportDrafts.remove(id)
+    }
+  }
+
+  private fun clearPrivateUiState() {
+    supportDrafts.clear()
+    dashboardOverview = JSONObject()
+    supportSyncError = null
+  }
   val owner
     get() = principal.optString("role") == "owner"
 
@@ -56,7 +82,12 @@ internal class AdminState(app: Application) : AndroidViewModel(app) {
         entered = true
         if (mustChangePassword) page = Page.Security else loadCurrent()
       } catch (e: Exception) {
-        if ((e as? AdminApi.Failure)?.http == 401) api.clear()
+        if ((e as? AdminApi.Failure)?.http == 401) {
+          api.clear()
+          entered = false
+          principal = JSONObject()
+          clearPrivateUiState()
+        }
         else error = errorText((e as? AdminApi.Failure)?.code ?: "NETWORK_ERROR")
       } finally {
         checking = false
@@ -101,6 +132,8 @@ internal class AdminState(app: Application) : AndroidViewModel(app) {
     viewModelScope.launch {
       try {
         action()
+      } catch (e: CancellationException) {
+        throw e
       } catch (e: Exception) {
         val failure = e as? AdminApi.Failure
         if (failure?.http == 401) {
@@ -109,6 +142,8 @@ internal class AdminState(app: Application) : AndroidViewModel(app) {
           data = JSONObject()
           detail = null
           oneTimeSecret = null
+          principal = JSONObject()
+          clearPrivateUiState()
         }
         error = errorText(failure?.code ?: "NETWORK_ERROR")
       } finally {
@@ -119,6 +154,7 @@ internal class AdminState(app: Application) : AndroidViewModel(app) {
 
   fun login(username: String, password: String) = task {
     api.clear()
+    clearPrivateUiState()
     api.call(
         "login", input = JSONObject().put("username", username.trim()).put("password", password))
     principal = api.call("access").getJSONObject("principal")
@@ -139,6 +175,7 @@ internal class AdminState(app: Application) : AndroidViewModel(app) {
       data = JSONObject()
       detail = null
       oneTimeSecret = null
+      clearPrivateUiState()
       generation++
     }
   }
@@ -148,6 +185,7 @@ internal class AdminState(app: Application) : AndroidViewModel(app) {
     page = p
     selectedId = id
     search = ""
+    supportSyncError = null
     pageIndex = 0
     detail = null
     data = JSONObject()
@@ -165,8 +203,10 @@ internal class AdminState(app: Application) : AndroidViewModel(app) {
     val revision = taskRevision
     try {
       val result = api.call("support")
-      if (entered && !busy && generation == version && taskRevision == revision && page == current &&
-          data.toString() != result.toString()) data = result
+      if (entered && !busy && generation == version && taskRevision == revision && page == current) {
+        if (data.toString() != result.toString()) data = result
+        supportSyncError = null
+      }
     } catch (e: CancellationException) {
       throw e
     } catch (e: Exception) {
@@ -178,9 +218,12 @@ internal class AdminState(app: Application) : AndroidViewModel(app) {
         detail = null
         oneTimeSecret = null
         error = errorText("UNAUTHORIZED")
+        principal = JSONObject()
+        clearPrivateUiState()
         generation++
+      } else if (entered && generation == version && taskRevision == revision && page == current) {
+        supportSyncError = "Sincronización interrumpida. Se volverá a intentar."
       }
-      // Transient polling failures leave the currently visible conversation intact.
     }
   }
 
@@ -215,7 +258,68 @@ internal class AdminState(app: Application) : AndroidViewModel(app) {
           Page.Logs -> api.call("audit")
           else -> JSONObject()
         }
-    if (version == generation && current == page) data = result
+    if (version == generation && current == page) {
+      data = result
+      if (current == Page.Support || current == Page.Chat) supportSyncError = null
+      if (current == Page.Dashboard) dashboardRevision++
+    }
+  }
+
+  // Only aggregate information is retained. Existing capability checks and native routes remain authoritative.
+  suspend fun refreshDashboardOverview() {
+    if (!entered || page != Page.Dashboard || mustChangePassword) return
+    val version = generation
+    val revision = dashboardRevision
+    fun current() = entered && page == Page.Dashboard && generation == version && dashboardRevision == revision
+    val overview = JSONObject()
+    suspend fun collect(key: String, block: suspend () -> Any?) {
+      if (!current()) return
+      try {
+        block()?.let { overview.put(key, it) }
+      } catch (e: CancellationException) {
+        throw e
+      } catch (e: Exception) {
+        if ((e as? AdminApi.Failure)?.http == 401 && current()) {
+          // End the authenticated UI rather than showing stale private data.
+          api.clear()
+          entered = false
+          principal = JSONObject()
+          data = JSONObject()
+          detail = null
+          oneTimeSecret = null
+          clearPrivateUiState()
+          error = errorText("UNAUTHORIZED")
+          generation++
+          return
+        }
+        overview.put(key + "Unavailable", true)
+      }
+      if (current()) dashboardOverview = JSONObject(overview.toString())
+    }
+    if (can("users.read")) collect("users") {
+      val result = api.call("users", "", 0)
+      if (result.has("count")) result.optInt("count") else null
+    }
+    if (can("support.read")) collect("support") {
+      val result = api.call("support")
+      if (!result.has("threads")) null else {
+        val threads = result.array("threads")
+        JSONObject().put("visible", threads.size)
+            .put("open", threads.count { it.optString("status") == "open" })
+            .put("answered", threads.count { it.optString("status") == "answered" })
+      }
+    }
+    if (can("billing.read")) {
+      collect("orders") {
+        val result = api.call("mobile", "orders", 0)
+        if (!result.has("count")) null else JSONObject().put("count", result.optInt("count"))
+            .put("live", result.opt("live")).put("totals", result.optJSONArray("totals") ?: JSONArray())
+      }
+      collect("licenses") {
+        val result = api.call("mobile", "licenses", 0)
+        if (result.has("count")) result.optInt("count") else null
+      }
+    }
   }
 
   suspend fun mutate(operation: String, input: JSONObject? = null) {
@@ -225,6 +329,8 @@ internal class AdminState(app: Application) : AndroidViewModel(app) {
       api.clear()
       entered = false
       data = JSONObject()
+      principal = JSONObject()
+      clearPrivateUiState()
       message = "Contraseña actualizada. Inicia sesión con la nueva contraseña."
       return
     }
@@ -234,7 +340,16 @@ internal class AdminState(app: Application) : AndroidViewModel(app) {
         else if (result.optBoolean("queued")) "Solicitud registrada en el servidor."
         else "Guardado en el servidor."
     try {
+      // Apply successful ticket status immediately; a failed reload must not misrepresent a closed ticket.
+      if (operation == "support_send" && result.has("status") && input != null) {
+        val next = JSONObject(data.toString())
+        next.array("threads").firstOrNull { it.optString("id") == input.optString("threadId") }
+            ?.put("status", result.optString("status"))
+        data = next
+      }
       loadCurrent()
+    } catch (e: CancellationException) {
+      throw e
     } catch (e: Exception) {
       if ((e as? AdminApi.Failure)?.http == 401) throw e
       error = "La acción fue aceptada. No se pudo actualizar la pantalla; pulsa Actualizar."
