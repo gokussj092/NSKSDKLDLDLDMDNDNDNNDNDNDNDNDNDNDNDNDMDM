@@ -14,6 +14,10 @@ import javax.net.ssl.HttpsURLConnection
 /** Instrumentation-only HTTPS peer. No fixtures or transport switch ship in the app. */
 internal object AdminHttpsFixture {
   val paths: MutableList<String> = Collections.synchronizedList(mutableListOf())
+  private var ticketStatus = "open"
+  private val messages = org.json.JSONArray().put(org.json.JSONObject()
+      .put("id", "message_1").put("sender", "user").put("text", "Mensaje de integración")
+      .put("at", "2026-11-14T12:00:00Z"))
 
   fun install() {
     URL.setURLStreamHandlerFactory { protocol ->
@@ -68,9 +72,34 @@ internal object AdminHttpsFixture {
           when (url.path) {
             "/api/admin/login" -> """{"role":"owner"}"""
             "/api/admin/access" ->
-                """{"principal":{"id":"fixture_owner","name":"Operador de integración","username":"fixture.owner","role":"owner","capabilities":["users.read","staff.read","billing.read","support.read","audit.read"]}}"""
+                """{"principal":{"id":"fixture_owner","name":"Operador de integración","username":"fixture.owner","role":"owner","capabilities":["users.read","staff.read","billing.read","support.read","support.write","support.assign","audit.read"]}}"""
             "/api/admin/users" ->
-                """{"count":1,"page":0,"pageSize":30,"users":[{"id":"fixture_account_001","name":"Usuario recibido por HTTPS","email":"fixture@example.invalid"}]}"""
+                if (url.query?.startsWith("id=") == true)
+                  """{"user":{"id":"fixture_account_001","name":"Usuario recibido por HTTPS","username":"fixture.user","email":"fixture@example.invalid","email_verified":true},"identities":[],"orders":[],"entitlements":[],"redemptions":[],"tickets":[],"sessions":{"total":1},"creditMovements":[]}"""
+                else """{"count":1,"page":0,"pageSize":30,"users":[{"id":"fixture_account_001","name":"Usuario recibido por HTTPS","username":"fixture.user","email":"fixture@example.invalid","email_verified":true}]}"""
+            "/api/admin/support" -> synchronized(AdminHttpsFixture) {
+              if (requestMethod == "POST") {
+                val input = org.json.JSONObject(body.toString("UTF-8"))
+                check(input.optString("threadId") == "fixture_ticket_001")
+                when(input.optString("action")) {
+                  "reply" -> {
+                    messages.put(org.json.JSONObject().put("id", "message_" + (messages.length() + 1))
+                        .put("sender", "admin").put("text", input.getString("message"))
+                        .put("at", "2026-11-14T12:01:00Z")
+                        .put("agent", org.json.JSONObject().put("name", "Operador de integración")))
+                    ticketStatus = "answered"
+                  }
+                  "close" -> ticketStatus = "closed"
+                  "reopen" -> ticketStatus = "open"
+                }
+                org.json.JSONObject().put("saved", true).put("status", ticketStatus).toString()
+              } else org.json.JSONObject().put("threads", org.json.JSONArray().put(org.json.JSONObject()
+                  .put("id", "fixture_ticket_001").put("name", "Usuario recibido por HTTPS")
+                  .put("username", "fixture.user").put("subject", "Ticket de integración")
+                  .put("status", ticketStatus).put("messages", messages)
+                  .put("last_message_at", "2026-11-14T12:01:00Z"))).put("agents", org.json.JSONArray()).toString()
+            }
+            "/api/admin/mobile" -> """{"items":[],"count":0,"page":0,"pageSize":50,"live":false,"totals":[]}"""
             else -> "{}"
           }
       return ByteArrayInputStream(value.toByteArray(Charsets.UTF_8))

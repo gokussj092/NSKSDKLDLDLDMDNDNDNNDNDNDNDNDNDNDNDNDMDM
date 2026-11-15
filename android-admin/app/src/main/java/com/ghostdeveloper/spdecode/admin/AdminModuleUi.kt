@@ -112,7 +112,7 @@ internal fun DashboardOverview(state: AdminState) {
         if (row.size == 1) Spacer(Modifier.weight(1f))
       }
     }
-    if (stats.isEmpty()) Small(L("Consultando los datos disponibles…"))
+    if (stats.isEmpty() && overview.length() == 0) Small(L("Consultando los datos disponibles…"))
     if (overview.keys().asSequence().any { it.endsWith("Unavailable") }) Small(L("Algunos módulos no respondieron."), color = Amber)
     orders?.let { data ->
       val totals = data.array("totals")
@@ -171,7 +171,7 @@ internal fun ProductCard(title: String, row: JSONObject, onClick: () -> Unit) {
     else -> Icons.Outlined.ShoppingBag
   }
   Tile(Modifier.fillMaxWidth().clickable(onClick = onClick)) {
-    RecordHeader(title, "Configuración del producto", icon)
+    RecordHeader(L(title), L("Configuración del producto"), icon)
     settings?.let {
       if (it.has("enabled")) StatusPill(if (it.optBoolean("enabled")) "Habilitado" else "Deshabilitado", if (it.optBoolean("enabled")) Mint else Muted)
       it.optJSONObject("prices")?.let { prices ->
@@ -193,7 +193,7 @@ internal fun ProductCard(title: String, row: JSONObject, onClick: () -> Unit) {
 @Composable
 internal fun OrderCard(title: String, row: JSONObject, onClick: () -> Unit) {
   Tile(Modifier.fillMaxWidth().clickable(onClick = onClick)) {
-    RecordHeader(title, displayName(row), Icons.Outlined.ShoppingBag, recordValue(row, "status"))
+    RecordHeader(L(title), displayName(row), Icons.Outlined.ShoppingBag, recordValue(row, "status"))
     displayAmount(row.optJSONObject("quote"))?.let { Text(it, color = Ink, fontWeight = FontWeight.Bold, fontSize = 24.sp) }
     Fact("Método de pago", recordValue(row, "provider"))
     Fact("Fecha", localDate(recordValue(row, "created_at")))
@@ -231,7 +231,7 @@ internal fun CreditCard(row: JSONObject, onClick: () -> Unit) {
 
 @Composable
 internal fun GiftSummary(row: JSONObject) {
-  RecordHeader(row.optString("title"), productName(row.optString("kind")), Icons.Outlined.CardGiftcard)
+  RecordHeader(row.optString("title"), L(productName(row.optString("kind"))), Icons.Outlined.CardGiftcard)
   if (row.has("enabled")) StatusPill(if (row.optBoolean("enabled")) "Habilitado" else "Deshabilitado", if (row.optBoolean("enabled")) Mint else Muted)
   val max = row.optInt("max_uses", 0)
   val used = row.optInt("used", 0)
@@ -350,7 +350,7 @@ internal fun ProfileRecord(group: String, row: JSONObject) {
     else -> null
   }
   Row(verticalAlignment = Alignment.CenterVertically) {
-    Text(title ?: "Registro", color = Ink, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
+    Text(if (group in listOf("orders", "entitlements", "creditMovements")) L(title ?: "Registro") else title ?: L("Registro"), color = Ink, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
     recordValue(row, "status")?.let { StatusPill(translated(it), toneFor(it)) }
   }
   displayAmount(row.optJSONObject("quote"))?.let { Fact("Importe", it) }
@@ -367,7 +367,7 @@ internal fun DetailScreen(page: Page, row: JSONObject, onClose: () -> Unit, cont
   Dialog(onDismissRequest = onClose, properties = DialogProperties(usePlatformDefaultWidth = false)) {
     Scaffold(modifier = Modifier.fillMaxSize().safeDrawingPadding(), containerColor = MaterialTheme.colorScheme.background,
         topBar = { TopAppBar(title = { Text(LF("Detalle · %1\$s", L(page.title))) }, navigationIcon = {
-          IconButton(onClick = onClose) { Icon(Icons.AutoMirrored.Outlined.ArrowBack, "Volver") }
+          IconButton(onClick = onClose) { Icon(Icons.AutoMirrored.Outlined.ArrowBack, L("Volver")) }
         }) }) { padding ->
       Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp),
           verticalArrangement = Arrangement.spacedBy(14.dp)) {

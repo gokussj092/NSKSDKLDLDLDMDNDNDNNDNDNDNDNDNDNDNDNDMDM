@@ -90,6 +90,17 @@ internal fun AdminApplication(state: AdminState) {
   val scope = rememberCoroutineScope()
   val lifecycle = LocalLifecycleOwner.current
   val snack = remember { SnackbarHostState() }
+  LaunchedEffect(state.entered) {
+    if (!state.entered) {
+      form = null
+      confirm = null
+      directoryFilter = "Todos"
+      ticketFilter = "Todos"
+      moduleQuery = ""
+      moduleFilter = "Todos"
+      drawer.close()
+    }
+  }
   val snackbarText = (state.error ?: state.message)?.let { AdminErrorLabel(it) }
   LaunchedEffect(snackbarText) {
     if (snackbarText != null) {
@@ -196,12 +207,12 @@ internal fun AdminApplication(state: AdminState) {
                               if (state.page in listOf(Page.Chat, Page.UserDetail, Page.AppearanceSettings, Page.AboutSettings, Page.LanguageSettings))
                                   Icons.AutoMirrored.Outlined.ArrowBack
                               else Icons.Outlined.Menu,
-                              "Menú")
+                              L("Menú"))
                         }
                   },
                   actions = {
                     IconButton(enabled = !state.busy, onClick = { state.refresh() }) {
-                      Icon(Icons.Outlined.Refresh, "Actualizar")
+                      Icon(Icons.Outlined.Refresh, L("Actualizar"))
                     }
                   },
                   colors =
@@ -232,10 +243,13 @@ internal fun AdminApplication(state: AdminState) {
                       .padding(padding)
                       .consumeWindowInsets(padding)
                       .imePadding()) {
-                    if (state.busy) LinearProgressIndicator(Modifier.fillMaxWidth(), color = Mint)
-                    state.error?.let {
+                    Box(Modifier.fillMaxWidth().height(4.dp)) {
+                      if (state.busy || state.loading)
+                        LinearProgressIndicator(Modifier.fillMaxWidth(), color = Mint)
+                    }
+                    if (state.page != Page.Chat) state.error?.let {
                       Text(
-                          it,
+                          AdminErrorLabel(it),
                           color = Red,
                           fontSize = 13.sp,
                           modifier = Modifier.fillMaxWidth().padding(12.dp))
@@ -350,7 +364,7 @@ internal fun AdminApplication(state: AdminState) {
                                 items(rows, key = { it.getString("id") }) { row ->
                                   UserCard(row) { state.navigate(Page.UserDetail, row.getString("id")) }
                                 }
-                                if (!state.busy && state.data.has("users") && rows.isEmpty())
+                                if (!state.busy && !state.loading && state.data.has("users") && rows.isEmpty())
                                     item { EmptyState("Sin resultados", "Prueba otra búsqueda.") }
                               }
                               Page.UserDetail -> {
@@ -394,7 +408,7 @@ internal fun AdminApplication(state: AdminState) {
                                       }
                                     }
                                   }
-                                } else if (!state.busy && state.error == null) item {
+                                } else if (!state.busy && !state.loading && state.error == null) item {
                                   EmptyState("Perfil no disponible", "Actualiza para consultar los datos del servidor.")
                                 }
                               }
@@ -449,7 +463,7 @@ internal fun AdminApplication(state: AdminState) {
                                   if (state.data.has("threads")) TicketSummary(state.data.array("threads"))
                                   FilterRow(listOf("Todos", "Abiertos", "Respondidos", "Cerrados", "Sin asignar"), ticketFilter) { ticketFilter = it }
                                 }
-                                if (threads.isEmpty() && !state.busy)
+                                if (threads.isEmpty() && !state.busy && !state.loading && state.data.has("threads"))
                                     item { EmptyState("Sin conversaciones", "No hay tickets disponibles para tu cargo.", Icons.Outlined.Forum) }
                                 items(threads, key = { it.getString("id") }) { row ->
                                   TicketCard(row) { state.navigate(Page.Chat, row.getString("id")) }
@@ -474,10 +488,12 @@ internal fun AdminApplication(state: AdminState) {
                                   }
                                   items(state.data.array("totals")) { t ->
                                     Tile(Modifier.fillMaxWidth(), GreenPanel) {
-                                      Text(
-                                          "${money(t.optString("cents").toLongOrNull()?:0)} ${t.optString("currency")}",
-                                          color = Mint,
-                                          fontSize = 24.sp)
+                                      t.optString("cents").toLongOrNull()?.let { amount ->
+                                        Text(
+                                            "${money(amount)} ${t.optString("currency")}",
+                                            color = Mint,
+                                            fontSize = 24.sp)
+                                      }
                                       Small(LF("%1\$s pedidos pagados", t.optInt("orders")))
                                     }
                                   }
@@ -498,7 +514,7 @@ internal fun AdminApplication(state: AdminState) {
                                 items(orders, key = { it.getString("id") }) { row ->
                                   OrderCard(productName(row.optString("product_id")), row) { state.detail = row }
                                 }
-                                if (orders.isEmpty() && !state.busy && state.data.has("items"))
+                                if (orders.isEmpty() && !state.busy && !state.loading && state.data.has("items"))
                                   item { EmptyState("Sin pedidos", "No hay pedidos que coincidan con la selección.") }
                               }
                               Page.Licenses,
@@ -569,7 +585,7 @@ internal fun AdminApplication(state: AdminState) {
                                 items(movements, key = { it.getString("id") }) { row ->
                                   CreditCard(row) { state.detail = row }
                                 }
-                                if (movements.isEmpty() && !state.busy && state.data.has("items"))
+                                if (movements.isEmpty() && !state.busy && !state.loading && state.data.has("items"))
                                   item { EmptyState("Sin movimientos", "No hay movimientos que coincidan con la búsqueda.") }
                               }
                               Page.Gifts -> {
@@ -822,14 +838,14 @@ internal fun AdminApplication(state: AdminState) {
                                       Modifier.fillMaxWidth(),
                                       horizontalArrangement = Arrangement.SpaceBetween) {
                                         TextButton(
-                                            enabled = state.pageIndex > 0 && !state.busy,
+                                            enabled = state.pageIndex > 0 && !state.busy && !state.loading,
                                             onClick = { state.next(-1) }) {
                                               Text(L("Anterior"))
                                             }
                                         Small(LF("Página %1\$s · %2\$s registros", state.pageIndex + 1, total))
                                         TextButton(
                                             enabled =
-                                                (state.pageIndex + 1) * size < total && !state.busy,
+                                                (state.pageIndex + 1) * size < total && !state.busy && !state.loading,
                                             onClick = { state.next(1) }) {
                                               Text(L("Siguiente"))
                                             }
@@ -1135,7 +1151,9 @@ private fun Fields(value: JSONObject, skip: Set<String> = emptySet(), depth: Int
             else -> {
               Row(Modifier.fillMaxWidth().padding(vertical = 5.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 Text(L(labels[key] ?: prettyKey(key)), color = Muted, fontSize = 12.sp, modifier = Modifier.weight(.44f))
-                Text(L(translated(item.toString())), color = Ink, fontSize = 14.sp, modifier = Modifier.weight(.56f))
+                val raw = item.toString()
+                val display = translated(raw)
+                Text(if (display == raw) raw else L(display), color = Ink, fontSize = 14.sp, modifier = Modifier.weight(.56f))
               }
               HorizontalDivider(color = Border.copy(alpha = .45f))
             }
@@ -1320,7 +1338,7 @@ private fun SettingsScreen(state: AdminState) {
 private fun ChatScreen(state: AdminState) {
   val thread = state.data.array("threads").firstOrNull { it.optString("id") == state.selectedId }
   if (thread == null) {
-    if (!state.busy)
+    if (!state.busy && !state.loading)
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
           Text(L("La conversación no está disponible."), color = Muted)
         }
@@ -1391,16 +1409,16 @@ private fun ChatScreen(state: AdminState) {
                   draft,
                   { state.updateSupportDraft(state.selectedId, it.take(2000)) },
                   placeholder = { Text(L("Mensaje")) },
-                  modifier = Modifier.weight(1f),
+                  modifier = Modifier.weight(1f).testTag("chat-draft"),
                   shape = Rounded,
                   maxLines = 4)
               FilledIconButton(
-                  modifier = Modifier.size(44.dp),
+                  modifier = Modifier.size(44.dp).testTag("chat-send"),
                   enabled = !state.busy && draft.isNotBlank(),
                   onClick = {
                     state.sendSupportReply(state.selectedId, draft)
                   }) {
-                    Icon(Icons.AutoMirrored.Outlined.Send, "Enviar")
+                    Icon(Icons.AutoMirrored.Outlined.Send, L("Enviar"))
                   }
             }
   }

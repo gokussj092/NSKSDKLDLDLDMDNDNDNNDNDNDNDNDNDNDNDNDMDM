@@ -5,6 +5,7 @@ import androidx.compose.runtime.*
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.CancellationException
 import org.json.JSONArray
 import org.json.JSONObject
@@ -33,6 +34,11 @@ internal class AdminState(app: Application) : AndroidViewModel(app) {
   var entered by mutableStateOf(false)
   var checking by mutableStateOf(true)
   var busy by mutableStateOf(false)
+  var loading by mutableStateOf(false)
+    private set
+  private var loadJob: Job? = null
+  private var savedDirectoryQuery = ""
+  private var savedDirectoryPage = 0
   var error by mutableStateOf<String?>(null)
   var message by mutableStateOf<String?>(null)
   var page by mutableStateOf(Page.Dashboard)
@@ -70,6 +76,11 @@ internal class AdminState(app: Application) : AndroidViewModel(app) {
     supportDrafts.clear()
     dashboardOverview = JSONObject()
     supportSyncError = null
+    savedDirectoryQuery = ""
+    savedDirectoryPage = 0
+    search = ""
+    pageIndex = 0
+    selectedId = ""
   }
   val owner
     get() = principal.optString("role") == "owner"
@@ -132,8 +143,15 @@ internal class AdminState(app: Application) : AndroidViewModel(app) {
         else -> true
       }
 
+  private fun cancelLoad() {
+    loadJob?.cancel()
+    loadJob = null
+    loading = false
+  }
+
   fun task(action: suspend () -> Unit) {
     if (busy) return
+    cancelLoad()
     taskRevision++
     busy = true
     error = null
@@ -189,24 +207,67 @@ internal class AdminState(app: Application) : AndroidViewModel(app) {
   }
 
   fun navigate(p: Page, id: String = "") {
-    if (busy || !allowed(p)) return
+    if (busy || !allowed(p) || (p == page && id == selectedId)) return
+    val previous = page
+    val sameSupport = previous in listOf(Page.Support, Page.Chat) && p in listOf(Page.Support, Page.Chat)
+    if (previous == Page.Users && p == Page.UserDetail) {
+      savedDirectoryQuery = search
+      savedDirectoryPage = pageIndex
+    }
+    cancelLoad()
     page = p
     selectedId = id
-    search = ""
+    val returningToDirectory = previous == Page.UserDetail && p == Page.Users
+    search = if (returningToDirectory) savedDirectoryQuery else ""
+    pageIndex = if (returningToDirectory) savedDirectoryPage else 0
     supportSyncError = null
-    pageIndex = 0
     detail = null
-    data = JSONObject()
+    if (!sameSupport) data = JSONObject()
     generation++
     refresh()
   }
 
-  fun refresh() = task { loadCurrent() }
+  // Reads and writes have separate UI state. Navigation cancels obsolete reads.
+  fun refresh() {
+    if (busy || !entered) return
+    cancelLoad()
+    taskRevision++
+    val revision = taskRevision
+    val version = generation
+    loading = true
+    error = null
+    loadJob = viewModelScope.launch {
+      try {
+        loadCurrent()
+      } catch (e: CancellationException) {
+        throw e
+      } catch (e: Exception) {
+        if (revision == taskRevision && version == generation) {
+          val failure = e as? AdminApi.Failure
+          if (failure?.http == 401) {
+            api.clear()
+            entered = false
+            principal = JSONObject()
+            data = JSONObject()
+            detail = null
+            oneTimeSecret = null
+            clearPrivateUiState()
+          }
+          error = errorText(failure?.code ?: "NETWORK_ERROR")
+        }
+      } finally {
+        if (revision == taskRevision && version == generation) {
+          loading = false
+          loadJob = null
+        }
+      }
+    }
+  }
 
   // Foreground polling is deliberately separate from mutations and never disables the composer.
   suspend fun refreshSupport() {
     val current = page
-    if (busy || !entered || current !in listOf(Page.Support, Page.Chat)) return
+    if (busy || loading || !entered || current !in listOf(Page.Support, Page.Chat)) return
     val version = generation
     val revision = taskRevision
     try {
@@ -236,7 +297,7 @@ internal class AdminState(app: Application) : AndroidViewModel(app) {
   }
 
   fun next(delta: Int) {
-    if (busy) return
+    if (busy || loading) return
     pageIndex = (pageIndex + delta).coerceAtLeast(0)
     refresh()
   }
@@ -244,6 +305,7 @@ internal class AdminState(app: Application) : AndroidViewModel(app) {
   suspend fun loadCurrent() {
     val current = page
     val version = generation
+    val revision = taskRevision
     val result =
         when (current) {
           Page.Dashboard ->
@@ -266,7 +328,7 @@ internal class AdminState(app: Application) : AndroidViewModel(app) {
           Page.Logs -> api.call("audit")
           else -> JSONObject()
         }
-    if (version == generation && current == page) {
+    if (version == generation && current == page && revision == taskRevision) {
       data = result
       if (current == Page.Support || current == Page.Chat) supportSyncError = null
       if (current == Page.Dashboard) dashboardRevision++
@@ -283,7 +345,9 @@ internal class AdminState(app: Application) : AndroidViewModel(app) {
     suspend fun collect(key: String, block: suspend () -> Any?) {
       if (!current()) return
       try {
-        block()?.let { overview.put(key, it) }
+        val value = block()
+        if (value == null) overview.put(key + "Unavailable", true)
+        else overview.put(key, value)
       } catch (e: CancellationException) {
         throw e
       } catch (e: Exception) {

@@ -11,3 +11,6 @@ Dashboard now reads existing capability-scoped API counts and separates totals b
 
 ## Language resources
 Added a persistent language screen and 349 Spanish/English Android string resource pairs. App-owned labels, navigation, forms, statuses and common errors resolve through the selected app locale; server payloads and message text are not translated. Other languages and exhaustive localization/device QA are pending. The default remains Spanish. No backend changes.
+
+## Navigation and QA
+Separated cancellable screen reads from mutations, restored directory query/page on returning from profile, retained support data while switching between inbox and chat, removed layout jumps from the progress bar, and reset session-local UI on logout. Added instrumentation fixture coverage for identities, profile retrieval, chat sending and real language changes. Fixture data is restricted to androidTest; the release app continues using authenticated native transport. Requires signed workflow and real device verification.

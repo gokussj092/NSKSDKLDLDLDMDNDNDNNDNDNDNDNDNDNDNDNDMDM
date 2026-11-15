@@ -32,9 +32,49 @@ class AdminFlowTest {
         compose.onAllNodesWithText("Usuario recibido por HTTPS").fetchSemanticsNodes().isNotEmpty()
       }
       compose.onNodeWithText("Usuario recibido por HTTPS").assertIsDisplayed()
+      compose.onNodeWithText("@fixture.user").assertExists()
+      compose.onNodeWithText("Usuario recibido por HTTPS").performClick()
+      compose.waitUntil(10000) {
+        compose.onAllNodesWithText("Correo verificado").fetchSemanticsNodes().isNotEmpty()
+      }
+      compose.onNodeWithText("Correo verificado").assertExists()
+      compose.runOnUiThread { compose.activity.onBackPressedDispatcher.onBackPressed() }
+      compose.waitUntil(10000) {
+        compose.onAllNodesWithTag("nav-Users").fetchSemanticsNodes().isNotEmpty()
+      }
+      compose.onNodeWithTag("nav-Support").performClick()
+      compose.waitUntil(10000) {
+        compose.onAllNodesWithText("Ticket de integración").fetchSemanticsNodes().isNotEmpty()
+      }
+      compose.onNodeWithText("Ticket de integración").performClick()
+      compose.waitUntil(10000) {
+        compose.onAllNodesWithTag("chat-draft").fetchSemanticsNodes().isNotEmpty()
+      }
+      compose.onNodeWithTag("chat-draft").performTextInput("Respuesta de integración")
+      compose.onNodeWithTag("chat-draft").assertTextContains("Respuesta de integración")
+      compose.onNodeWithTag("chat-send").performClick()
+      compose.waitUntil(10000) {
+        compose.onAllNodesWithText("Respuesta de integración", substring = false).fetchSemanticsNodes().isNotEmpty()
+      }
+      compose.onNodeWithText("Respuesta de integración").assertExists()
+      compose.runOnUiThread { compose.activity.onBackPressedDispatcher.onBackPressed() }
+      compose.waitUntil(10000) {
+        compose.onAllNodesWithTag("nav-Settings").fetchSemanticsNodes().isNotEmpty()
+      }
+      assertTrue(AdminHttpsFixture.paths.contains("/api/admin/support"))
       assertTrue(AdminHttpsFixture.paths.contains("/api/admin/login"))
       assertTrue(AdminHttpsFixture.paths.contains("/api/admin/users"))
       compose.onNodeWithTag("nav-Settings").performClick()
+      compose.onNodeWithText("Idioma").performClick()
+      compose.onNodeWithTag("language-en").performClick()
+      compose.onNodeWithText("Current language").assertExists()
+      assertEquals("en", context.getSharedPreferences("admin-display", 0).getString("language", null))
+      compose.onNodeWithTag("language-es").performClick()
+      compose.onNodeWithText("Idioma actual").assertExists()
+      compose.runOnUiThread { compose.activity.onBackPressedDispatcher.onBackPressed() }
+      compose.waitUntil(10000) {
+        compose.onAllNodesWithText("Cerrar sesión").fetchSemanticsNodes().isNotEmpty()
+      }
       compose.onNodeWithText("Cerrar sesión").performClick()
       compose.waitUntil(10000) {
         compose.onAllNodesWithTag("login-username").fetchSemanticsNodes().isNotEmpty()
@@ -43,6 +83,7 @@ class AdminFlowTest {
       assertNull(SessionVault(context).restore())
     } finally {
       SessionVault(context).clear()
+      context.getSharedPreferences("admin-display", 0).edit().remove("language").apply()
     }
   }
 
